@@ -5,9 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_OFFSCREENCANVAS2D_OFFSCREEN_CANVAS_RENDERING_CONTEXT_2D_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_OFFSCREENCANVAS2D_OFFSCREEN_CANVAS_RENDERING_CONTEXT_2D_H_
 
-#include <memory>
-#include <random>
-
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
@@ -195,8 +192,6 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
 
   bool is_valid_size_ = false;
 
-  std::mt19937 random_generator_;
-  std::bernoulli_distribution bernoulli_distribution_;
   CanvasColorParams color_params_;
 };
 

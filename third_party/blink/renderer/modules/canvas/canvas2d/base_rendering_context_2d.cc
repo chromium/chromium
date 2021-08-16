@@ -1811,8 +1811,6 @@ void BaseRenderingContext2D::drawImage(ScriptState* script_state,
   if (!GetOrCreatePaintCanvas())
     return;
 
-  base::TimeTicks start_time = base::TimeTicks::Now();
-
   scoped_refptr<Image> image;
   FloatSize default_object_size(Width(), Height());
   SourceImageStatus source_image_status = kInvalidSourceImageStatus;
@@ -1867,8 +1865,6 @@ void BaseRenderingContext2D::drawImage(ScriptState* script_state,
 
   WillDrawImage(image_source);
 
-  ValidateStateStack();
-
   if (!origin_tainted_by_content_ && WouldTaintOrigin(image_source))
     SetOriginTaintedByContent();
 
@@ -1889,62 +1885,6 @@ void BaseRenderingContext2D::drawImage(ScriptState* script_state,
       image_source->IsOpaque() ? CanvasRenderingContext2DState::kOpaqueImage
                                : CanvasRenderingContext2DState::kNonOpaqueImage,
       CanvasPerformanceMonitor::DrawType::kImage);
-
-  ValidateStateStack();
-  bool source_is_canvas = false;
-  if (!IsPaint2D()) {
-    std::string image_source_name;
-    if (image_source->IsCanvasElement()) {
-      image_source_name = "Canvas";
-      source_is_canvas = true;
-    } else if (image_source->IsCSSImageValue()) {
-      image_source_name = "CssImage";
-    } else if (image_source->IsImageElement()) {
-      image_source_name = "ImageElement";
-    } else if (image_source->IsImageBitmap()) {
-      image_source_name = "ImageBitmap";
-    } else if (image_source->IsOffscreenCanvas()) {
-      image_source_name = "OffscreenCanvas";
-      source_is_canvas = true;
-    } else if (image_source->IsSVGSource()) {
-      image_source_name = "SVG";
-    } else if (image_source->IsVideoElement()) {
-      image_source_name = "Video";
-    } else if (image_source->IsVideoFrame()) {
-      image_source_name = "VideoFrame";
-    } else {  // Unknown source.
-      image_source_name = "Unknown";
-    }
-
-    std::string duration_histogram_name =
-        "Blink.Canvas.DrawImage.Duration2." + image_source_name;
-    std::string size_histogram_name =
-        "Blink.Canvas.DrawImage.SqrtNumberOfPixels." + image_source_name;
-
-    if (CanCreateCanvas2dResourceProvider() && IsAccelerated()) {
-      if (source_is_canvas)
-        size_histogram_name.append(".GPU");
-      duration_histogram_name.append(".GPU");
-    } else {
-      if (source_is_canvas)
-        size_histogram_name.append(".CPU");
-      duration_histogram_name.append(".CPU");
-    }
-
-    base::TimeDelta elapsed = base::TimeTicks::Now() - start_time;
-
-    base::UmaHistogramMicrosecondsTimes(duration_histogram_name, elapsed);
-
-    float sqrt_pixels_float =
-        std::sqrt(dst_rect.Width()) * std::sqrt(dst_rect.Height());
-    // If sqrt_pixels_float overflows as int CheckedNumeric will store it
-    // as invalid, then ValueOrDefault will return the maximum int.
-    base::CheckedNumeric<int> sqrt_pixels = sqrt_pixels_float;
-    base::UmaHistogramCustomCounts(
-        size_histogram_name,
-        sqrt_pixels.ValueOrDefault(std::numeric_limits<int>::max()), 1, 5000,
-        50);
-  }
 }
 
 void BaseRenderingContext2D::ClearCanvas() {
@@ -2198,8 +2138,6 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
     return nullptr;
   }
 
-  base::TimeTicks start_time = base::TimeTicks::Now();
-
   if (!OriginClean()) {
     exception_state.ThrowSecurityError(
         "The canvas has been tainted by cross-origin data.");
@@ -2305,32 +2243,7 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
     }
   }
 
-  if (!IsPaint2D()) {
-    int scaled_time = getScaledElapsedTime(
-        image_data_rect.Width(), image_data_rect.Height(), start_time);
-    if (CanCreateCanvas2dResourceProvider() && IsAccelerated()) {
-      base::UmaHistogramCounts1000(
-          "Blink.Canvas.GetImageDataScaledDuration.GPU", scaled_time);
-    } else {
-      base::UmaHistogramCounts1000(
-          "Blink.Canvas.GetImageDataScaledDuration.CPU", scaled_time);
-    }
-  }
   return image_data;
-}
-
-int BaseRenderingContext2D::getScaledElapsedTime(float width,
-                                                 float height,
-                                                 base::TimeTicks start_time) {
-  base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time;
-  float sqrt_pixels = std::sqrt(width) * std::sqrt(height);
-  float scaled_time_float = elapsed_time.InMicrosecondsF() * 10.0f /
-                            (sqrt_pixels == 0 ? 1.0f : sqrt_pixels);
-
-  // If scaled_time_float overflows as integer, CheckedNumeric will store it
-  // as invalid, then ValueOrDefault will return the maximum int.
-  base::CheckedNumeric<int> checked_scaled_time = scaled_time_float;
-  return checked_scaled_time.ValueOrDefault(std::numeric_limits<int>::max());
 }
 
 void BaseRenderingContext2D::putImageData(ImageData* data,
@@ -2352,7 +2265,6 @@ void BaseRenderingContext2D::putImageData(ImageData* data,
   if (!base::CheckMul(dirty_width, dirty_height).IsValid<int>()) {
     return;
   }
-  base::TimeTicks start_time = base::TimeTicks::Now();
 
   if (data->IsBufferBaseDetached()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -2444,18 +2356,6 @@ void BaseRenderingContext2D::putImageData(ImageData* data,
     }
   } else {
     PutByteArray(data_pixmap, source_rect, IntPoint(dest_offset));
-  }
-
-  if (!IsPaint2D()) {
-    int scaled_time =
-        getScaledElapsedTime(dest_rect.Width(), dest_rect.Height(), start_time);
-    if (CanCreateCanvas2dResourceProvider() && IsAccelerated()) {
-      base::UmaHistogramCounts1000(
-          "Blink.Canvas.PutImageDataScaledDuration.GPU", scaled_time);
-    } else {
-      base::UmaHistogramCounts1000(
-          "Blink.Canvas.PutImageDataScaledDuration.CPU", scaled_time);
-    }
   }
 
   GetPaintCanvasForDraw(dest_rect,

@@ -27,8 +27,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_RENDERING_CONTEXT_2D_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_RENDERING_CONTEXT_2D_H_
 
-#include <random>
-
 #include "base/macros.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_formatted_text.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_rendering_context_2d_settings.h"
@@ -310,9 +308,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   bool should_prune_local_font_cache_;
   LinkedHashSet<String> font_lru_list_;
 
-  static constexpr float kRasterMetricProbability = 0.01;
-  std::mt19937 random_generator_;
-  std::bernoulli_distribution bernoulli_distribution_;
   CanvasColorParams color_params_;
 
   // For privacy reasons we need to delay contextLost events until the page is

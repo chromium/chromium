@@ -121,7 +121,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.Canvas.ContextType" enum="CanvasContextType"
-    expires_after="2021-12-12">
+    expires_after="2022-01-31">
   <owner>fserb@chromium.org</owner>
   <owner>aaronhk@chromium.org</owner>
   <summary>
@@ -156,7 +156,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Blink.Canvas.DrawImage.Duration2"
-    units="microseconds" expires_after="2022-01-09">
+    units="microseconds" expires_after="M93">
+  <obsolete>
+    Retired in M94.
+  </obsolete>
   <owner>fserb@chromium.org</owner>
   <owner>aaronhk@chromium.org</owner>
   <summary>
@@ -174,7 +177,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Blink.Canvas.DrawImage.SqrtNumberOfPixels{BlinkCanvasDrawImageSizeType}"
-    units="sqrt(pixels)" expires_after="2021-12-12">
+    units="sqrt(pixels)" expires_after="M93">
+  <obsolete>
+    Retired in M94.
+  </obsolete>
   <owner>fserb@chromium.org</owner>
   <owner>aaronhk@chromium.org</owner>
   <summary>
@@ -202,7 +208,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Blink.Canvas.GetImageDataScaledDuration"
-    units="microseconds * 10/sqrt(pixels)" expires_after="2022-05-10">
+    units="microseconds * 10/sqrt(pixels)" expires_after="M93">
+  <obsolete>
+    Retired in M94.
+  </obsolete>
   <owner>fserb@chromium.org</owner>
   <owner>aaronhk@chromium.org</owner>
   <summary>
@@ -226,7 +235,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.Canvas.GPUFallbackToCPU"
-    enum="CanvasGPUFallbackToCPUScenario" expires_after="2021-01-31">
+    enum="CanvasGPUFallbackToCPUScenario" expires_after="2022-01-31">
   <owner>fserb@chromium.org</owner>
   <summary>Logs the occurrences of canvas fallback from GPU to CPU.</summary>
 </histogram>
@@ -241,7 +250,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.Canvas.HibernationEvents" enum="CanvasHibernationEvent"
-    expires_after="2021-04-04">
+    expires_after="2022-01-31">
   <owner>fserb@chromium.org</owner>
   <summary>
     Records the occurrence of events related to 2D canvas GPU resource
@@ -250,7 +259,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.Canvas.ImageSmoothingQuality"
-    enum="ImageSmoothingQuality" expires_after="2021-05-31">
+    enum="ImageSmoothingQuality" expires_after="2022-01-31">
   <obsolete>
     Removed in M92. This metric is added to do some research, and the research
     is now completed.
@@ -278,7 +287,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.Canvas.MaximumInflightResources"
-    units="canvas resources" expires_after="2021-08-09">
+    units="canvas resources" expires_after="2022-01-31">
   <owner>aaronhk@chromium.org</owner>
   <owner>fserb@chromium.org</owner>
   <summary>
@@ -289,7 +298,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.Canvas.NumCanvasesPerPage" units="canvases"
-    expires_after="2021-12-12">
+    expires_after="2022-01-31">
   <owner>aaronhk@chromium.org</owner>
   <owner>fserb@chromium.org</owner>
   <summary>
@@ -298,7 +307,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Blink.Canvas.PutImageDataScaledDuration"
-    units="microseconds * 10/sqrt(pixels)" expires_after="2022-05-10">
+    units="microseconds * 10/sqrt(pixels)" expires_after="M93">
+  <obsolete>
+    Retired in M94.
+  </obsolete>
   <owner>fserb@chromium.org</owner>
   <owner>aaronhk@chromium.org</owner>
   <summary>
@@ -322,7 +334,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.Canvas.RasterDuration{BlinkCanvasRasterDurationType}"
-    units="microseconds" expires_after="2021-12-12">
+    units="microseconds" expires_after="2022-01-31">
   <owner>aaronhk@chromium.org</owner>
   <owner>fserb@chromium.org</owner>
   <summary>

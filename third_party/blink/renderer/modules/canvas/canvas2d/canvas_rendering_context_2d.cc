@@ -130,8 +130,6 @@ CanvasRenderingContext2D::CanvasRenderingContext2D(
     const CanvasContextCreationAttributesCore& attrs)
     : CanvasRenderingContext(canvas, attrs, CanvasRenderingAPI::k2D),
       should_prune_local_font_cache_(false),
-      random_generator_((uint32_t)base::RandUint64()),
-      bernoulli_distribution_(kRasterMetricProbability),
       color_params_(attrs.color_space, attrs.pixel_format, attrs.alpha) {
   identifiability_study_helper_.SetExecutionContext(
       canvas->GetTopExecutionContext());
@@ -482,7 +480,6 @@ void CanvasRenderingContext2D::setFont(const String& new_font) {
         CanvasOps::kSetFont, IdentifiabilityBenignStringToken(new_font));
   }
 
-  base::TimeTicks start_time = base::TimeTicks::Now();
   canvas()->GetDocument().UpdateStyleAndLayoutTreeForNode(canvas());
 
   // The following early exit is dependent on the cache not being empty
@@ -558,10 +555,6 @@ void CanvasRenderingContext2D::setFont(const String& new_font) {
   String new_font_safe_copy(new_font);  // Create a string copy since newFont
                                         // can be deleted inside realizeSaves.
   GetState().SetUnparsedFont(new_font_safe_copy);
-  if (bernoulli_distribution_(random_generator_)) {
-    base::TimeDelta elapsed = base::TimeTicks::Now() - start_time;
-    base::UmaHistogramMicrosecondsTimes("Canvas.TextMetrics.SetFont2", elapsed);
-  }
 }
 
 void CanvasRenderingContext2D::DidProcessTask(

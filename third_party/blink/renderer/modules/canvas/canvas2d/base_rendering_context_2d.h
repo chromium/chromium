@@ -584,10 +584,6 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
     return false;
   }
 
-  int getScaledElapsedTime(float width,
-                           float height,
-                           base::TimeTicks start_time);
-
   // Only call if identifiability_study_helper_.ShouldUpdateBuilder() returns
   // true.
   void IdentifiabilityUpdateForStyleUnion(

@@ -34,7 +34,6 @@
 namespace {
 const size_t kHardMaxCachedFonts = 250;
 const size_t kMaxCachedFonts = 25;
-const float kUMASampleProbability = 0.01;
 // Max delay to fire context lost for context in iframes.
 static const unsigned kMaxIframeContextLoseDelay = 100;
 
@@ -97,8 +96,6 @@ OffscreenCanvasRenderingContext2D::OffscreenCanvasRenderingContext2D(
     OffscreenCanvas* canvas,
     const CanvasContextCreationAttributesCore& attrs)
     : CanvasRenderingContext(canvas, attrs, CanvasRenderingAPI::k2D),
-      random_generator_(static_cast<uint32_t>(base::RandUint64())),
-      bernoulli_distribution_(kUMASampleProbability),
       color_params_(attrs.color_space, attrs.pixel_format, attrs.alpha) {
   identifiability_study_helper_.SetExecutionContext(
       canvas->GetTopExecutionContext());
@@ -398,7 +395,6 @@ void OffscreenCanvasRenderingContext2D::setFont(const String& new_font) {
         CanvasOps::kSetFont, IdentifiabilityBenignStringToken(new_font));
   }
 
-  base::TimeTicks start_time = base::TimeTicks::Now();
   OffscreenFontCache& font_cache = GetOffscreenFontCache();
 
   FontDescription* cached_font = font_cache.GetFont(new_font);
@@ -417,11 +413,6 @@ void OffscreenCanvasRenderingContext2D::setFont(const String& new_font) {
     GetState().SetFont(desc, Host()->GetFontSelector());
   }
   GetState().SetUnparsedFont(new_font);
-  if (bernoulli_distribution_(random_generator_)) {
-    base::TimeDelta elapsed = base::TimeTicks::Now() - start_time;
-    base::UmaHistogramMicrosecondsTimes("OffscreenCanvas.TextMetrics.SetFont2",
-                                        elapsed);
-  }
 }
 
 static inline TextDirection ToTextDirection(
