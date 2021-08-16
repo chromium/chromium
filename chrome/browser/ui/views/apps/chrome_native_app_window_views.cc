@@ -130,12 +130,16 @@ void ChromeNativeAppWindowViews::InitializeDefaultWindow(
       create_params.visible_on_all_workspaces;
 
   OnBeforeWidgetInit(create_params, &init_params, widget());
+  gfx::Rect init_param_bounds = init_params.bounds;
   widget()->Init(std::move(init_params));
 
   // The frame insets are required to resolve the bounds specifications
   // correctly. So we set the window bounds and constraints now.
   gfx::Insets frame_insets = GetFrameInsets();
-  gfx::Rect window_bounds = create_params.GetInitialWindowBounds(frame_insets);
+  gfx::Rect window_bounds =
+      init_param_bounds.IsEmpty()
+          ? create_params.GetInitialWindowBounds(frame_insets)
+          : init_param_bounds;
   SetContentSizeConstraints(create_params.GetContentMinimumSize(frame_insets),
                             create_params.GetContentMaximumSize(frame_insets));
   if (!window_bounds.IsEmpty()) {
