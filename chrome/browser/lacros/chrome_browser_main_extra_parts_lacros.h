@@ -11,6 +11,7 @@
 
 class AutomationManagerLacros;
 class BrowserServiceLacros;
+class DriveFsCache;
 class DownloadControllerClientLacros;
 class LacrosExtensionAppsController;
 class LacrosExtensionAppsPublisher;
@@ -41,6 +42,9 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
 
   // Handles task manager crosapi from ash for sending lacros tasks to ash.
   std::unique_ptr<crosapi::TaskManagerLacros> task_manager_provider_;
+
+  // Receiver and cache of drive mount point path updates.
+  std::unique_ptr<DriveFsCache> drivefs_cache_;
 
   // Sends lacros download information to ash.
   std::unique_ptr<DownloadControllerClientLacros> download_controller_client_;

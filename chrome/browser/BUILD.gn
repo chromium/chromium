@@ -4874,6 +4874,8 @@ static_library("browser") {
       "lacros/crosapi_pref_observer.h",
       "lacros/download_controller_client_lacros.cc",
       "lacros/download_controller_client_lacros.h",
+      "lacros/drivefs_cache.cc",
+      "lacros/drivefs_cache.h",
       "lacros/feedback_util.cc",
       "lacros/feedback_util.h",
       "lacros/immersive_context_lacros.cc",

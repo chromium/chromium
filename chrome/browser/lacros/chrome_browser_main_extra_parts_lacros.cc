@@ -7,6 +7,7 @@
 #include "chrome/browser/lacros/automation_manager_lacros.h"
 #include "chrome/browser/lacros/browser_service_lacros.h"
 #include "chrome/browser/lacros/download_controller_client_lacros.h"
+#include "chrome/browser/lacros/drivefs_cache.h"
 #include "chrome/browser/lacros/lacros_extension_apps_controller.h"
 #include "chrome/browser/lacros/lacros_extension_apps_publisher.h"
 #include "chrome/browser/lacros/lacros_memory_pressure_evaluator.h"
@@ -41,4 +42,9 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
       std::make_unique<LacrosExtensionAppsController>();
   extension_apps_controller_->Initialize(
       extension_apps_publisher_->publisher());
+
+  // Start Lacros' drive mount point path caching, since it is available in Ash.
+  drivefs_cache_ = std::make_unique<DriveFsCache>();
+  // After construction finishes, start caching.
+  drivefs_cache_->Start();
 }

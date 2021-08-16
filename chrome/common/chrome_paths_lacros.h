@@ -18,6 +18,10 @@ void SetLacrosDefaultPaths(const base::FilePath& documents_dir,
                            const base::FilePath& downloads_dir,
                            const base::FilePath& drivefs);
 
+// The drive fs mount point path is sent by ash-chrome, `drivefs` may be empty
+// in case drive is disabled in Ash. `SetDriveFsMountPointPath()` is triggered
+// in case drive availability in Ash is changed.
+void SetDriveFsMountPointPath(const base::FilePath& drivefs);
 // Returns false if Drive is not enabled in Ash.
 bool GetDriveFsMountPointPath(base::FilePath* result);
 
