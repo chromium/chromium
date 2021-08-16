@@ -342,10 +342,6 @@ class TestReportingService : public ReportingService {
 
   ReportingContext* GetContextForTesting() const override;
 
-  std::vector<const ReportingReport*> GetReports() const override;
-  void AddReportingCacheObserver(ReportingCacheObserver* observer) override;
-  void RemoveReportingCacheObserver(ReportingCacheObserver* observer) override;
-
  private:
   std::vector<Report> reports_;
   ReportingPolicy dummy_policy_;

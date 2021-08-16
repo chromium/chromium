@@ -10,15 +10,10 @@
 
 namespace net {
 
-struct ReportingReport;
-
 class NET_EXPORT ReportingCacheObserver {
  public:
   // Called whenever any change is made to the reports in the ReportingCache.
   virtual void OnReportsUpdated();
-
-  // Called whenever a new report is added to the ReportingCache.
-  virtual void OnReportAdded(const ReportingReport* report);
 
   // Called whenever any change is made to the client entries in the
   // ReportingCache.

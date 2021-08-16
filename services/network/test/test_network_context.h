@@ -73,9 +73,6 @@ class TestNetworkContext : public mojom::NetworkContext {
   void DeleteStoredTrustTokens(
       const url::Origin& issuer,
       DeleteStoredTrustTokensCallback callback) override {}
-  void AddReportingApiObserver(
-      mojo::PendingRemote<network::mojom::ReportingApiObserver> observer,
-      AddReportingApiObserverCallback callback) override {}
   void ClearNetworkingHistoryBetween(
       base::Time start_time,
       base::Time end_time,

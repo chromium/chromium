@@ -13,7 +13,6 @@
 #include "base/macros.h"
 #include "net/base/net_export.h"
 #include "net/reporting/reporting_cache.h"
-#include "net/reporting/reporting_cache_observer.h"
 
 class GURL;
 
@@ -98,11 +97,6 @@ class NET_EXPORT ReportingService {
   virtual const ReportingPolicy& GetPolicy() const = 0;
 
   virtual base::Value StatusAsValue() const;
-
-  virtual std::vector<const ReportingReport*> GetReports() const = 0;
-  virtual void AddReportingCacheObserver(ReportingCacheObserver* observer) = 0;
-  virtual void RemoveReportingCacheObserver(
-      ReportingCacheObserver* observer) = 0;
 
   virtual ReportingContext* GetContextForTesting() const = 0;
 

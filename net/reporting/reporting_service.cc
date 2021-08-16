@@ -144,20 +144,6 @@ class ReportingServiceImpl : public ReportingService {
     return dict;
   }
 
-  std::vector<const ReportingReport*> GetReports() const override {
-    std::vector<const net::ReportingReport*> reports;
-    context_->cache()->GetReports(&reports);
-    return reports;
-  }
-
-  void AddReportingCacheObserver(ReportingCacheObserver* observer) override {
-    context_->AddCacheObserver(observer);
-  }
-
-  void RemoveReportingCacheObserver(ReportingCacheObserver* observer) override {
-    context_->RemoveCacheObserver(observer);
-  }
-
   ReportingContext* GetContextForTesting() const override {
     return context_.get();
   }

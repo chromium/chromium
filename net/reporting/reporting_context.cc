@@ -71,11 +71,6 @@ void ReportingContext::NotifyCachedReportsUpdated() {
     observer.OnReportsUpdated();
 }
 
-void ReportingContext::NotifyReportAdded(const ReportingReport* report) {
-  for (auto& observer : cache_observers_)
-    observer.OnReportAdded(report);
-}
-
 void ReportingContext::NotifyCachedClientsUpdated() {
   for (auto& observer : cache_observers_)
     observer.OnClientsUpdated();

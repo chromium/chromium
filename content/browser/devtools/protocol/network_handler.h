@@ -20,7 +20,6 @@
 #include "net/cookies/canonical_cookie.h"
 #include "net/filter/source_stream.h"
 #include "services/network/public/mojom/devtools_observer.mojom-forward.h"
-#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -57,8 +56,7 @@ class BackgroundSyncRestorer;
 class DevToolsNetworkResourceLoader;
 
 class NetworkHandler : public DevToolsDomainHandler,
-                       public Network::Backend,
-                       public network::mojom::ReportingApiObserver {
+                       public Network::Backend {
  public:
   NetworkHandler(const std::string& host_id,
                  const base::UnguessableToken& devtools_token,
@@ -92,10 +90,6 @@ class NetworkHandler : public DevToolsDomainHandler,
                   Maybe<int> max_resource_size,
                   Maybe<int> max_post_data_size) override;
   Response Disable() override;
-
-  void OnReportsAdded(
-      std::vector<network::mojom::ReportingApiReportPtr> reports) override;
-  Response EnableReportingApi(bool enable) override;
 
   Response SetCacheDisabled(bool cache_disabled) override;
 
@@ -306,7 +300,6 @@ class NetworkHandler : public DevToolsDomainHandler,
   StoragePartition* storage_partition_;
   RenderFrameHostImpl* host_;
   bool enabled_;
-  mojo::Receiver<network::mojom::ReportingApiObserver> reporting_receiver_;
   std::vector<std::pair<std::string, std::string>> extra_headers_;
   std::unique_ptr<DevToolsURLLoaderInterceptor> url_loader_interceptor_;
   bool bypass_service_worker_;

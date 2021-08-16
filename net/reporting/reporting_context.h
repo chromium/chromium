@@ -58,7 +58,6 @@ class NET_EXPORT ReportingContext {
   void RemoveCacheObserver(ReportingCacheObserver* observer);
 
   void NotifyCachedReportsUpdated();
-  void NotifyReportAdded(const ReportingReport* report);
   void NotifyCachedClientsUpdated();
 
   // Returns whether the data in the cache is persisted across restarts in the

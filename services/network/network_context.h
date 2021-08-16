@@ -28,7 +28,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "mojo/public/cpp/bindings/remote_set.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "net/base/network_isolation_key.h"
 #include "net/cert/cert_verifier.h"
@@ -65,11 +64,6 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "crypto/scoped_nss_types.h"
 #endif
-
-#if BUILDFLAG(ENABLE_REPORTING)
-#include "net/reporting/reporting_cache_observer.h"
-#include "net/reporting/reporting_report.h"
-#endif  // BUILDFLAG(ENABLE_REPORTING)
 
 namespace base {
 class UnguessableToken;
@@ -125,15 +119,8 @@ class CorsURLLoaderFactory;
 // NetworkService's mojo interface and are owned jointly by the NetworkService
 // and the mojo::Remote<NetworkContext> used to talk to them, and the
 // NetworkContext is destroyed when either one is torn down.
-#if BUILDFLAG(ENABLE_REPORTING)
-class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
-    : public mojom::NetworkContext,
-      public net::ReportingCacheObserver {
-#else
 class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
     : public mojom::NetworkContext {
-#endif  // BUILDFLAG(ENABLE_REPORTING)
-
  public:
   using OnConnectionCloseCallback =
       base::OnceCallback<void(NetworkContext* network_context)>;
@@ -560,15 +547,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
     return require_network_isolation_key_;
   }
 
-  void AddReportingApiObserver(
-      mojo::PendingRemote<network::mojom::ReportingApiObserver> observer,
-      AddReportingApiObserverCallback callback) override;
-
-#if BUILDFLAG(ENABLE_REPORTING)
-  void OnReportAdded(const net::ReportingReport* service_report) override;
-  void OnReportingObserverDisconnect(mojo::RemoteSetElementId mojo_id);
-#endif  // BUILDFLAG(ENABLE_REPORTING)
-
  private:
   URLRequestContextOwner MakeURLRequestContext(
       mojo::PendingRemote<mojom::URLLoaderFactory>
@@ -635,12 +613,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   URLRequestContextOwner url_request_context_owner_;
 
   net::URLRequestContext* url_request_context_;
-
-#if BUILDFLAG(ENABLE_REPORTING)
-  bool is_observing_reporting_service_;
-  mojo::RemoteSet<network::mojom::ReportingApiObserver>
-      reporting_api_observers_;
-#endif  // BUILDFLAG(ENABLE_REPORTING)
 
   // Owned by URLRequestContext.
   NetworkServiceNetworkDelegate* network_delegate_ = nullptr;
