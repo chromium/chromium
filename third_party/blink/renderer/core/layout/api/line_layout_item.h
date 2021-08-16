@@ -313,7 +313,7 @@ class LineLayoutItem {
   const LayoutObject* GetLayoutObject() const { return layout_object_; }
 
  private:
-  UntracedMember<LayoutObject> layout_object_;
+  WeakPersistent<LayoutObject> layout_object_;
 
   friend class LayoutBlockFlow;
   friend class LineLayoutAPIShim;

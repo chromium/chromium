@@ -40,7 +40,7 @@ class LayoutObject;
 struct SameSizeAsInlineBox : DisplayItemClient {
   ~SameSizeAsInlineBox() override = default;
   void* a[3];
-  UntracedMember<void*> members[1];
+  WeakPersistent<void*> members[1];
   LayoutPoint b;
   LayoutUnit c;
   uint32_t bitfields;
