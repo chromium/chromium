@@ -205,6 +205,36 @@ Polymer({
   },
 
   /**
+   * @return {boolean}
+   * @private
+   */
+  shouldShowPolicyIndicator_() {
+    return this.getDeviceNameIndicatorType_() !== CrPolicyIndicatorType.NONE;
+  },
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getDeviceNameIndicatorType_() {
+    if (!this.deviceNameMetadata_) {
+      return CrPolicyIndicatorType.NONE;
+    }
+
+    if (this.deviceNameMetadata_.deviceNameState ===
+        DeviceNameState.CANNOT_BE_MODIFIED_BECAUSE_OF_POLICIES) {
+      return CrPolicyIndicatorType.DEVICE_POLICY;
+    }
+
+    if (this.deviceNameMetadata_.deviceNameState ===
+        DeviceNameState.CANNOT_BE_MODIFIED_BECAUSE_NOT_DEVICE_OWNER) {
+      return CrPolicyIndicatorType.OWNER;
+    }
+
+    return CrPolicyIndicatorType.NONE;
+  },
+
+  /**
    * @param {boolean} canChangeChannel
    * @return {string}
    * @private

@@ -75,6 +75,13 @@
         [[getDeviceNameText_(deviceNameMetadata_)]]
       </div>
     </div>
+    <template is="dom-if" if="[[shouldShowPolicyIndicator_(
+        deviceNameMetadata_)]]">
+      <cr-policy-indicator
+          id="editHostnamePolicyIndicator"
+          indicator-type="[[getDeviceNameIndicatorType_(deviceNameMetadata_)]]">
+      </cr-policy-indicator>
+    </template>
     <cr-icon-button id="editHostnameButton"
         class="icon-edit"
         on-click="onEditHostnameTap_"

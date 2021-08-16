@@ -12,6 +12,7 @@
 // #import {TestLifetimeBrowserProxy} from './test_os_lifetime_browser_proxy.m.js';
 // #import {eventToPromise,flushTasks,waitAfterNextRender} from 'chrome://test/test_util.m.js';
 // #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+// #import {CrPolicyIndicatorType} from '//resources/cr_elements/policy/cr_policy_indicator_behavior.m.js';
 // clang-format on
 
 cr.define('settings_about_page', function() {
@@ -704,6 +705,12 @@ cr.define('settings_about_page', function() {
       checkCopyBuildDetailsButton();
     });
 
+    function flushAsync() {
+      Polymer.dom.flush();
+      // Use setTimeout to wait for the next macrotask.
+      return new Promise(resolve => setTimeout(resolve));
+    }
+
     /**
      * Checks whether the "edit device name" button state (enabled/disabled)
      * correctly reflects whether the user is allowed to edit the name.
@@ -730,6 +737,24 @@ cr.define('settings_about_page', function() {
       const canEditDeviceNameButton = page.$$('cr-icon-button');
       assertTrue(!!canEditDeviceNameButton);
       assertEquals(canEditDeviceName, !canEditDeviceNameButton.disabled);
+
+      flushAsync();
+      const policyIndicator = page.$$('#editHostnamePolicyIndicator');
+      if (deviceNameState === DeviceNameState.CAN_BE_MODIFIED) {
+        assertFalse(!!policyIndicator);
+      } else if (
+          deviceNameState ===
+          DeviceNameState.CANNOT_BE_MODIFIED_BECAUSE_OF_POLICIES) {
+        assertTrue(!!policyIndicator);
+        assertEquals(
+            CrPolicyIndicatorType.DEVICE_POLICY, policyIndicator.indicatorType);
+      } else if (
+          deviceNameState ===
+          DeviceNameState.CANNOT_BE_MODIFIED_BECAUSE_NOT_DEVICE_OWNER) {
+        assertTrue(!!policyIndicator);
+        assertEquals(
+            CrPolicyIndicatorType.OWNER, policyIndicator.indicatorType);
+      }
     }
 
     test('DeviceNameMetadata', async () => {
@@ -770,6 +795,12 @@ cr.define('settings_about_page', function() {
       dialog = null;
       settings.Router.getInstance().resetRouteForTesting();
     });
+
+    function flushAsync() {
+      Polymer.dom.flush();
+      // Use setTimeout to wait for the next macrotask.
+      return new Promise(resolve => setTimeout(resolve));
+    }
 
     test('OpenAndCloseDialog', async () => {
       loadTimeData.overrideValues({
