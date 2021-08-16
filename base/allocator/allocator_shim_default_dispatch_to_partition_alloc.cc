@@ -57,7 +57,19 @@ class LeakySingleton {
 
   // Replaces the instance pointer with a new one.
   void Replace(T* new_instance) {
+    // Lock. Semantically equivalent to base::Lock::Acquire().
+    bool expected = false;
+    while (!initialization_lock_.compare_exchange_strong(
+        expected, true, std::memory_order_acquire, std::memory_order_acquire)) {
+      expected = false;
+    }
+
+    // Modify under the lock to avoid race between |if (instance)| and
+    // |instance_.store()| in GetSlowPath().
     instance_.store(new_instance, std::memory_order_release);
+
+    // Unlock.
+    initialization_lock_.store(false, std::memory_order_release);
   }
 
  private:
@@ -88,9 +100,8 @@ T* LeakySingleton<T, Constructor>::GetSlowPath() {
   // compare-and-exchange on a lock variable, which provides the same
   // guarantees.
   //
-  // Lock.
+  // Lock. Semantically equivalent to base::Lock::Acquire().
   bool expected = false;
-  // Semantically equivalent to base::Lock::Acquire().
   while (!initialization_lock_.compare_exchange_strong(
       expected, true, std::memory_order_acquire, std::memory_order_acquire)) {
     expected = false;
