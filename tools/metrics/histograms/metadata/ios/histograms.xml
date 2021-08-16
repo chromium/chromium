@@ -1348,6 +1348,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="IOS.WindowIDInjection.ElapsedTime" units="ms"
+    expires_after="2021-12-11">
+  <owner>michaeldo@chromium.org</owner>
+  <owner>rohitrao@chromium.org</owner>
+  <summary>
+    Measures the time taken for windowID injection to complete. Logged once per
+    pageload.
+  </summary>
+</histogram>
+
 <histogram name="IOS.WKWebViewClobberedHistory" enum="Boolean"
     expires_after="2021-09-24">
   <owner>ajuma@chromium.org</owner>
