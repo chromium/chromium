@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/test/ash_test_base.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -78,7 +79,7 @@ class FakeObserver : public PciePeripheralManager::Observer {
   bool is_current_guest_device_tbt_only_ = false;
 };
 
-class PciePeripheralManagerTest : public testing::Test {
+class PciePeripheralManagerTest : public AshTestBase {
  protected:
   PciePeripheralManagerTest() = default;
   PciePeripheralManagerTest(const PciePeripheralManagerTest&) = delete;
@@ -88,6 +89,8 @@ class PciePeripheralManagerTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
+    AshTestBase::SetUp();
+
     chromeos::TypecdClient::InitializeFake();
     fake_typecd_client_ =
         static_cast<chromeos::FakeTypecdClient*>(chromeos::TypecdClient::Get());
@@ -110,6 +113,8 @@ class PciePeripheralManagerTest : public testing::Test {
   }
 
   void TearDown() override {
+    AshTestBase::TearDown();
+
     manager_->RemoveObserver(&fake_observer_);
     PciePeripheralManager::Shutdown();
     chromeos::TypecdClient::Shutdown();
@@ -378,6 +383,8 @@ TEST_F(PciePeripheralManagerTest, BillboardDevice) {
   const auto fake_device = CreateTestDeviceOfClass(kBillboardDeviceClassCode);
   const auto device = fake_device->GetDeviceInfo().Clone();
   PciePeripheralManager::Get()->OnDeviceConnected(device.get());
+
+  task_environment()->RunUntilIdle();
 
   EXPECT_EQ(0u, GetNumLimitedPerformanceObserverCalls());
   EXPECT_EQ(0u, GetNumGuestModeNotificationObserverCalls());

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/component_export.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "chromeos/dbus/pciguard/pciguard_client.h"
@@ -105,14 +106,11 @@ class COMPONENT_EXPORT(ASH_PCIE_PERIPHERAL) PciePeripheralManager
   void NotifyLimitedPerformancePeripheralReceived();
   void NotifyGuestModeNotificationReceived(bool is_thunderbolt_only);
   void NotifyPeripheralBlockedReceived();
-  void NotifyBillboardDeviceReceived();
+  void OnBillboardDeviceConnected(bool billboard_is_supported);
 
   // Called by unit tests to set up root_prefix_ for simulating the existence
   // of a system folder.
   void SetRootPrefixForTesting(const std::string& prefix);
-
-  // Checks if the board supports Thunderbolt.
-  bool CheckIfThunderboltFilepathExists();
 
   const bool is_guest_profile_;
   // Pcie tunneling refers to allowing Thunderbolt/USB4 peripherals to run at
@@ -124,6 +122,9 @@ class COMPONENT_EXPORT(ASH_PCIE_PERIPHERAL) PciePeripheralManager
   base::ObserverList<Observer> observer_list_;
 
   std::string root_prefix_ = "";
+
+  // Used for callbacks.
+  base::WeakPtrFactory<PciePeripheralManager> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
