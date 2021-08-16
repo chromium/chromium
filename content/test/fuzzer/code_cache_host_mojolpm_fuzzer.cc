@@ -30,6 +30,7 @@
 #include "content/public/test/test_content_client_initializer.h"
 #include "content/test/fuzzer/code_cache_host_mojolpm_fuzzer.pb.h"
 #include "mojo/core/embedder/embedder.h"
+#include "mojo/public/cpp/bindings/lib/validation_errors.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
@@ -84,6 +85,10 @@ class ContentFuzzerEnvironment {
   base::Thread fuzzer_thread_;
   content::BrowserTaskEnvironment task_environment_;
   content::TestContentClientInitializer content_client_initializer_;
+  mojo::internal::ScopedSuppressValidationErrorLoggingForTests
+      validation_error_suppressor_;
+  mojo::internal::SerializationWarningObserverForTesting
+      serialization_error_suppressor_;
 };
 
 ContentFuzzerEnvironment& GetEnvironment() {
