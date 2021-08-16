@@ -211,6 +211,21 @@ def _component_property_path(paths, dist_config):
     return component_property_path
 
 
+def _minimum_os_version(app_paths, dist_config):
+    """Returns the minimum OS requirement for the copy of Chrome being packaged.
+
+    Args:
+        app_paths: A |model.Paths| object for the app.
+        dist_config: The |config.CodeSignConfig| object.
+    Returns:
+        The minimum OS requirement.
+    """
+    app_plist_path = os.path.join(app_paths.work, dist_config.app_dir,
+                                  'Contents', 'Info.plist')
+    with commands.PlistContext(app_plist_path) as app_plist:
+        return app_plist['LSMinimumSystemVersion']
+
+
 def _productbuild_distribution_path(app_paths, pkg_paths, dist_config,
                                     component_pkg_path):
     """Creates a distribution XML file for use by `productbuild`. This copies
@@ -325,12 +340,23 @@ def _package_and_sign_pkg(paths, dist_config):
             pkg_paths, dist_config)
         scripts_path = _create_pkgbuild_scripts(pkg_paths, dist_config)
 
-        commands.run_command([
+        command = [
             'pkgbuild', '--root', root_directory, '--component-plist',
             component_property_path, '--identifier', dist_config.base_bundle_id,
             '--version', dist_config.version, '--install-location',
-            '/Applications', '--scripts', scripts_path, component_pkg_path
-        ])
+            '/Applications', '--scripts', scripts_path
+        ]
+        # The pkgbuild command on macOS 12 Monterey gained the ability to
+        # compress component packages based on the minimum OS requirement for
+        # their contents. If running under at least macOS 12, take advantage of
+        # this.
+        if commands.macos_version() >= [12, 0]:
+            command.append('--compression')
+            command.append('latest')
+            command.append('--min-os-version')
+            command.append(_minimum_os_version(paths, dist_config))
+        command.append(component_pkg_path)
+        commands.run_command(command)
 
         ## The distribution package.
 

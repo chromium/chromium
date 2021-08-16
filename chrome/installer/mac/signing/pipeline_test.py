@@ -31,6 +31,18 @@ def _create_pkgbuild_scripts(p, d):
     return '/$W_1/scripts'
 
 
+def _macos_version_pre_12():
+    return [11, 0]
+
+
+def _macos_version_12():
+    return [12, 0]
+
+
+def _minimum_os_version(a, d):
+    return '10.11.0'
+
+
 def _read_plist(p):
     return {'LSMinimumSystemVersion': '10.19.7'}
 
@@ -421,7 +433,8 @@ framework dir is 'App Product.app/Contents/Frameworks/Product Framework.framewor
                 _productbuild_distribution_path)
     @mock.patch('signing.pipeline._create_pkgbuild_scripts',
                 _create_pkgbuild_scripts)
-    def test_package_and_sign_pkg_no_branding(self, **kwargs):
+    @mock.patch('signing.commands.macos_version', _macos_version_pre_12)
+    def test_package_and_sign_pkg_no_branding_pre_12(self, **kwargs):
         manager = mock.Mock()
         for attr in kwargs:
             manager.attach_mock(kwargs[attr], attr)
@@ -454,6 +467,68 @@ framework dir is 'App Product.app/Contents/Frameworks/Product Framework.framewor
                          _get_adjacent_item(pkgbuild_args, '--version'))
         self.assertEqual('/$W_1/scripts',
                          _get_adjacent_item(pkgbuild_args, '--scripts'))
+
+        self.assertNotIn('--compression', pkgbuild_args)
+        self.assertNotIn('--min-os-version', pkgbuild_args)
+
+        self.assertEqual('test.signing.bundle_id',
+                         _get_adjacent_item(productbuild_args, '--identifier'))
+        self.assertEqual('99.0.9999.99',
+                         _get_adjacent_item(productbuild_args, '--version'))
+        self.assertEqual(
+            '/$W_1/App Product.dist',
+            _get_adjacent_item(productbuild_args, '--distribution'))
+        self.assertEqual(
+            '/$W_1', _get_adjacent_item(productbuild_args, '--package-path'))
+        self.assertEqual('[INSTALLER-IDENTITY]',
+                         _get_adjacent_item(productbuild_args, '--sign'))
+
+    @mock.patch('signing.pipeline._component_property_path',
+                _component_property_path)
+    @mock.patch('signing.pipeline._productbuild_distribution_path',
+                _productbuild_distribution_path)
+    @mock.patch('signing.pipeline._create_pkgbuild_scripts',
+                _create_pkgbuild_scripts)
+    @mock.patch('signing.commands.macos_version', _macos_version_12)
+    @mock.patch('signing.pipeline._minimum_os_version', _minimum_os_version)
+    def test_package_and_sign_pkg_no_branding_12(self, **kwargs):
+        manager = mock.Mock()
+        for attr in kwargs:
+            manager.attach_mock(kwargs[attr], attr)
+
+        config = test_config.TestConfig()
+        dist = model.Distribution(package_as_dmg=False, package_as_pkg=True)
+        dist_config = dist.to_config(config)
+
+        paths = self.paths.replace_work('/$W')
+        self.assertEqual('/$O/AppProduct-99.0.9999.99.pkg',
+                         pipeline._package_and_sign_pkg(paths, dist_config))
+
+        manager.assert_has_calls(
+            [mock.call.run_command(mock.ANY),
+             mock.call.run_command(mock.ANY)])
+
+        run_commands = [
+            call for call in manager.mock_calls if call[0] == 'run_command'
+        ]
+        pkgbuild_args = run_commands[0][1][0]
+        productbuild_args = run_commands[1][1][0]
+
+        self.assertEqual('/$W_1/payload',
+                         _get_adjacent_item(pkgbuild_args, '--root'))
+        self.assertEqual('/$W_1/App Product.plist',
+                         _get_adjacent_item(pkgbuild_args, '--component-plist'))
+        self.assertEqual('test.signing.bundle_id',
+                         _get_adjacent_item(pkgbuild_args, '--identifier'))
+        self.assertEqual('99.0.9999.99',
+                         _get_adjacent_item(pkgbuild_args, '--version'))
+        self.assertEqual('/$W_1/scripts',
+                         _get_adjacent_item(pkgbuild_args, '--scripts'))
+
+        self.assertEqual('latest',
+                         _get_adjacent_item(pkgbuild_args, '--compression'))
+        self.assertEqual('10.11.0',
+                         _get_adjacent_item(pkgbuild_args, '--min-os-version'))
 
         self.assertEqual('test.signing.bundle_id',
                          _get_adjacent_item(productbuild_args, '--identifier'))
@@ -509,7 +584,8 @@ framework dir is 'App Product.app/Contents/Frameworks/Product Framework.framewor
                 _productbuild_distribution_path)
     @mock.patch('signing.pipeline._create_pkgbuild_scripts',
                 _create_pkgbuild_scripts)
-    def test_package_and_sign_pkg_branding(self, **kwargs):
+    @mock.patch('signing.commands.macos_version', _macos_version_pre_12)
+    def test_package_and_sign_pkg_branding_pre12(self, **kwargs):
         manager = mock.Mock()
         for attr in kwargs:
             manager.attach_mock(kwargs[attr], attr)
@@ -546,6 +622,72 @@ framework dir is 'App Product.app/Contents/Frameworks/Product Framework.framewor
                          _get_adjacent_item(pkgbuild_args, '--version'))
         self.assertEqual('/$W_1/scripts',
                          _get_adjacent_item(pkgbuild_args, '--scripts'))
+
+        self.assertNotIn('--compression', pkgbuild_args)
+        self.assertNotIn('--min-os-version', pkgbuild_args)
+
+        self.assertEqual('test.signing.bundle_id',
+                         _get_adjacent_item(productbuild_args, '--identifier'))
+        self.assertEqual('99.0.9999.99',
+                         _get_adjacent_item(productbuild_args, '--version'))
+        self.assertEqual(
+            '/$W_1/App Product.dist',
+            _get_adjacent_item(productbuild_args, '--distribution'))
+        self.assertEqual(
+            '/$W_1', _get_adjacent_item(productbuild_args, '--package-path'))
+        self.assertEqual('[INSTALLER-IDENTITY]',
+                         _get_adjacent_item(productbuild_args, '--sign'))
+
+    @mock.patch('signing.pipeline._component_property_path',
+                _component_property_path)
+    @mock.patch('signing.pipeline._productbuild_distribution_path',
+                _productbuild_distribution_path)
+    @mock.patch('signing.pipeline._create_pkgbuild_scripts',
+                _create_pkgbuild_scripts)
+    @mock.patch('signing.commands.macos_version', _macos_version_12)
+    @mock.patch('signing.pipeline._minimum_os_version', _minimum_os_version)
+    def test_package_and_sign_pkg_branding_12(self, **kwargs):
+        manager = mock.Mock()
+        for attr in kwargs:
+            manager.attach_mock(kwargs[attr], attr)
+
+        config = test_config.TestConfig()
+        dist = model.Distribution(
+            branding_code='MOO',
+            packaging_name_fragment='ForCows',
+            package_as_dmg=False,
+            package_as_pkg=True)
+        dist_config = dist.to_config(config)
+
+        paths = self.paths.replace_work('/$W')
+        self.assertEqual('/$O/AppProduct-99.0.9999.99-ForCows.pkg',
+                         pipeline._package_and_sign_pkg(paths, dist_config))
+
+        manager.assert_has_calls(
+            [mock.call.run_command(mock.ANY),
+             mock.call.run_command(mock.ANY)])
+
+        run_commands = [
+            call for call in manager.mock_calls if call[0] == 'run_command'
+        ]
+        pkgbuild_args = run_commands[0][1][0]
+        productbuild_args = run_commands[1][1][0]
+
+        self.assertEqual('/$W_1/payload',
+                         _get_adjacent_item(pkgbuild_args, '--root'))
+        self.assertEqual('/$W_1/App Product.plist',
+                         _get_adjacent_item(pkgbuild_args, '--component-plist'))
+        self.assertEqual('test.signing.bundle_id',
+                         _get_adjacent_item(pkgbuild_args, '--identifier'))
+        self.assertEqual('99.0.9999.99',
+                         _get_adjacent_item(pkgbuild_args, '--version'))
+        self.assertEqual('/$W_1/scripts',
+                         _get_adjacent_item(pkgbuild_args, '--scripts'))
+
+        self.assertEqual('latest',
+                         _get_adjacent_item(pkgbuild_args, '--compression'))
+        self.assertEqual('10.11.0',
+                         _get_adjacent_item(pkgbuild_args, '--min-os-version'))
 
         self.assertEqual('test.signing.bundle_id',
                          _get_adjacent_item(productbuild_args, '--identifier'))
