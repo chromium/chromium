@@ -25,9 +25,6 @@ interface SettingsController {
   // Sets whether spoken feedback is enabled.
   SetSpokenFeedbackEnabled(bool value);
 
-  // Sets whether dark mode is enabled.
-  SetDarkModeEnabled(bool value);
-
   // Sets whether hotword detection is enabled.
   SetHotwordEnabled(bool value);
 

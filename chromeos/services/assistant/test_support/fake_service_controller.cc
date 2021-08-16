@@ -81,7 +81,6 @@ void FakeServiceController::Initialize(
 
   authentication_tokens_ =
       std::move(libassistant_config_->authentication_tokens);
-  dark_mode_enabled_ = libassistant_config_->dark_mode_enabled;
 }
 
 void FakeServiceController::Start() {
@@ -114,10 +113,6 @@ void FakeServiceController::AddAndFireStateObserver(
 void FakeServiceController::SetAuthenticationTokens(
     std::vector<chromeos::libassistant::mojom::AuthenticationTokenPtr> tokens) {
   authentication_tokens_ = std::move(tokens);
-}
-
-void FakeServiceController::SetDarkModeEnabled(bool value) {
-  dark_mode_enabled_ = value;
 }
 
 void FakeServiceController::UpdateSettings(const std::string& settings,

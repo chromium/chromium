@@ -202,12 +202,10 @@ class AssistantManagerServiceImplTest : public testing::Test {
 
   void RunUntilIdle() {
     // First ensure our mojom thread is finished.
-    FlushForTesting();
+    background_thread().FlushForTesting();
     // Then handle any callbacks.
     base::RunLoop().RunUntilIdle();
   }
-
-  void FlushForTesting() { background_thread().FlushForTesting(); }
 
   // Adds a state observer mock, and add the expectation for the fact that it
   // auto-fires the observer.
@@ -719,21 +717,6 @@ TEST_F(AssistantManagerServiceImplTest,
   StartAndWaitForRunning();
 
   mojom_mock.FlushForTesting();
-}
-
-TEST_F(AssistantManagerServiceImplTest, ShouldPropagateColorMode) {
-  ASSERT_FALSE(mojom_service_controller().dark_mode_enabled().has_value());
-
-  StartAndWaitForRunning();
-
-  ASSERT_TRUE(mojom_service_controller().dark_mode_enabled().has_value());
-  EXPECT_FALSE(mojom_service_controller().dark_mode_enabled().value());
-
-  assistant_manager_service()->OnColorModeChanged(true);
-  FlushForTesting();
-
-  ASSERT_TRUE(mojom_service_controller().dark_mode_enabled().has_value());
-  EXPECT_TRUE(mojom_service_controller().dark_mode_enabled().value());
 }
 
 }  // namespace assistant

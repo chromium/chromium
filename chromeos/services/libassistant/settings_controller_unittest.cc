@@ -132,7 +132,6 @@ TEST_F(AssistantSettingsControllerTest,
   controller().SetListeningEnabled(true);
   controller().SetLocale("locale");
   controller().SetSpokenFeedbackEnabled(true);
-  controller().SetDarkModeEnabled(false);
 }
 
 TEST_F(AssistantSettingsControllerTest,
@@ -145,7 +144,6 @@ TEST_F(AssistantSettingsControllerTest,
   controller().SetListeningEnabled(true);
   controller().SetLocale("locale");
   controller().SetSpokenFeedbackEnabled(true);
-  controller().SetDarkModeEnabled(false);
 }
 
 TEST_F(AssistantSettingsControllerTest,
@@ -154,7 +152,6 @@ TEST_F(AssistantSettingsControllerTest,
   controller().SetHotwordEnabled(true);
   controller().SetLocale("locale");
   controller().SetSpokenFeedbackEnabled(true);
-  controller().SetDarkModeEnabled(true);
 
   DestroyLibassistant();
 
@@ -194,7 +191,6 @@ TEST_F(AssistantSettingsControllerTest,
   EXPECT_NO_CALLS(assistant_manager_internal_mock(), SetOptions);
 
   controller().SetSpokenFeedbackEnabled(true);
-  controller().SetDarkModeEnabled(false);
 }
 
 TEST_F(AssistantSettingsControllerTest,
@@ -205,25 +201,12 @@ TEST_F(AssistantSettingsControllerTest,
   EXPECT_NO_CALLS(assistant_manager_internal_mock(), SetOptions);
 
   controller().SetLocale("locale");
-  controller().SetDarkModeEnabled(false);
-}
-
-TEST_F(AssistantSettingsControllerTest,
-       ShouldNotSetInternalOptionsWhenDarkModeEnabledIsNotSet) {
-  IGNORE_CALLS(assistant_manager_internal_mock(), SetLocaleOverride);
-  CreateLibassistant();
-
-  EXPECT_NO_CALLS(assistant_manager_internal_mock(), SetOptions);
-
-  controller().SetLocale("locale");
-  controller().SetSpokenFeedbackEnabled(true);
 }
 
 TEST_F(AssistantSettingsControllerTest,
        ShouldSetInternalOptionsWhenLocaleIsUpdated) {
   IGNORE_CALLS(assistant_manager_internal_mock(), SetLocaleOverride);
   controller().SetSpokenFeedbackEnabled(true);
-  controller().SetDarkModeEnabled(false);
   CreateLibassistant();
 
   EXPECT_CALL(assistant_manager_internal_mock(), SetOptions);
@@ -235,31 +218,17 @@ TEST_F(AssistantSettingsControllerTest,
        ShouldSetInternalOptionsWhenSpokenFeedbackEnabledIsUpdated) {
   IGNORE_CALLS(assistant_manager_internal_mock(), SetLocaleOverride);
   controller().SetLocale("locale");
-  controller().SetDarkModeEnabled(false);
   CreateLibassistant();
 
   EXPECT_CALL(assistant_manager_internal_mock(), SetOptions);
 
   controller().SetSpokenFeedbackEnabled(true);
-}
-
-TEST_F(AssistantSettingsControllerTest,
-       ShouldSetInternalOptionsWhenDarkModeEnabledIsUpdated) {
-  IGNORE_CALLS(assistant_manager_internal_mock(), SetLocaleOverride);
-  controller().SetLocale("locale");
-  controller().SetSpokenFeedbackEnabled(true);
-  CreateLibassistant();
-
-  EXPECT_CALL(assistant_manager_internal_mock(), SetOptions);
-
-  controller().SetDarkModeEnabled(false);
 }
 
 TEST_F(AssistantSettingsControllerTest,
        ShouldSetInternalOptionsAndLocaleWhenLibassistantIsCreated) {
   controller().SetLocale("locale");
   controller().SetSpokenFeedbackEnabled(true);
-  controller().SetDarkModeEnabled(false);
 
   EXPECT_CALL(assistant_manager_internal_mock(), SetLocaleOverride);
   EXPECT_CALL(assistant_manager_internal_mock(), SetOptions);
