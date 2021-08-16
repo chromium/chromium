@@ -54,6 +54,9 @@ void SecurePaymentConfirmationNoCredsDialogView::ShowDialog(
   SetAcceptCallback(base::BindOnce(
       &SecurePaymentConfirmationNoCredsDialogView::OnDialogClosed,
       weak_ptr_factory_.GetWeakPtr()));
+  SetCancelCallback(base::BindOnce(
+      &SecurePaymentConfirmationNoCredsDialogView::OnDialogClosed,
+      weak_ptr_factory_.GetWeakPtr()));
   SetCloseCallback(base::BindOnce(
       &SecurePaymentConfirmationNoCredsDialogView::OnDialogClosed,
       weak_ptr_factory_.GetWeakPtr()));
