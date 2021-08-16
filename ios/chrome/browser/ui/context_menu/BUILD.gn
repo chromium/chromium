@@ -1,0 +1,14 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("context_menu") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "link_no_preview_view.h",
+    "link_no_preview_view.mm",
+    "link_no_preview_view_controller.h",
+    "link_no_preview_view_controller.mm",
+  ]
+  deps = [ "//ios/chrome/common/ui/colors" ]
+}

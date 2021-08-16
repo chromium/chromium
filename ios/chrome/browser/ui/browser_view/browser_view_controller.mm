@@ -86,6 +86,7 @@
 #import "ios/chrome/browser/ui/commands/show_signin_command.h"
 #import "ios/chrome/browser/ui/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
+#import "ios/chrome/browser/ui/context_menu/link_no_preview_view_controller.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h"
 #import "ios/chrome/browser/ui/default_promo/default_promo_non_modal_presentation_delegate.h"
 #import "ios/chrome/browser/ui/download/download_manager_coordinator.h"
@@ -3903,9 +3904,18 @@ NSString* const kBrowserViewControllerSnackbarCategory =
         return [UIMenu menuWithTitle:menuTitle children:menuElements];
       };
 
+  UIContextMenuContentPreviewProvider previewProvider = ^UIViewController* {
+    if (!base::FeatureList::IsEnabled(
+            web::features::kWebViewNativeContextMenuPhase2)) {
+      return nil;
+    }
+    if (isLink)
+      return [[LinkNoPreviewViewController alloc] init];
+    return nil;
+  };
   UIContextMenuConfiguration* configuration =
       [UIContextMenuConfiguration configurationWithIdentifier:nil
-                                              previewProvider:nil
+                                              previewProvider:previewProvider
                                                actionProvider:actionProvider];
   completionHandler(configuration);
 }
