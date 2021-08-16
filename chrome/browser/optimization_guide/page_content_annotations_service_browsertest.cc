@@ -397,8 +397,14 @@ class PageContentAnnotationsServiceLoadEachExecutionTest
 };
 
 // Regression test for crbug/1204162.
+// Flaky on Win7 (32) Tests (https://crbug.com/1239996).
+#if defined(OS_WIN)
+#define MAYBE_ModelLoadsAndExecutes DISABLED_ModelLoadsAndExecutes
+#else
+#define MAYBE_ModelLoadsAndExecutes ModelLoadsAndExecutes
+#endif
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceLoadEachExecutionTest,
-                       ModelLoadsAndExecutes) {
+                       MAYBE_ModelLoadsAndExecutes) {
   base::HistogramTester histogram_tester;
 
   GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
