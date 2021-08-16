@@ -32,16 +32,15 @@ class SystemExtensionsInstallManager {
  private:
   void InstallFromCommandLineIfNecessary();
   void OnGetSystemExtensionFromDir(
-      SystemExtensionsSandboxedUnpacker::Status status,
-      std::unique_ptr<SystemExtension> system_extension);
+      StatusOrSystemExtension<SystemExtensionsSandboxedUnpacker::Status>
+          result);
 
   base::OneShotEvent on_command_line_install_finished_;
 
   SystemExtensionsSandboxedUnpacker sandboxed_unpacker_;
 
   // TODO(ortuno): Move this to a Registrar or Database.
-  std::map<SystemExtensionId, std::unique_ptr<SystemExtension>>
-      system_extensions_;
+  std::map<SystemExtensionId, SystemExtension> system_extensions_;
 
   base::WeakPtrFactory<SystemExtensionsInstallManager> weak_ptr_factory_{this};
 };

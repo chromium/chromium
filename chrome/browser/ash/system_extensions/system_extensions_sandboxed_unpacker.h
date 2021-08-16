@@ -7,9 +7,8 @@
 
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
-#include "chrome/browser/ash/system_extensions/system_extension.h"
+#include "chrome/browser/ash/system_extensions/system_extensions_status_or.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 class SystemExtensionsSandboxedUnpacker {
  public:
@@ -22,6 +21,8 @@ class SystemExtensionsSandboxedUnpacker {
 
   enum class Status {
     kOk,
+    // This is used for the default constructor of `StatusOrSystemExtension`.
+    kUnknown,
     kFailedJsonErrorParsingManifest,
     kFailedIdMissing,
     kFailedIdInvalid,
@@ -36,7 +37,7 @@ class SystemExtensionsSandboxedUnpacker {
 
   // Attempts to create a SystemExtension object from a manifest string.
   using GetSystemExtensionFromStringCallback =
-      base::OnceCallback<void(Status, std::unique_ptr<SystemExtension>)>;
+      base::OnceCallback<void(StatusOrSystemExtension<Status>)>;
   void GetSystemExtensionFromString(
       base::StringPiece system_extension_manifest_string,
       GetSystemExtensionFromStringCallback callback);

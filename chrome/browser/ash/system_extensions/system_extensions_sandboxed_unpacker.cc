@@ -64,88 +64,87 @@ void SystemExtensionsSandboxedUnpacker::OnSystemExtensionManifestParsed(
     GetSystemExtensionFromStringCallback callback,
     data_decoder::DataDecoder::ValueOrError value_or_error) {
   if (value_or_error.error.has_value()) {
-    std::move(callback).Run(Status::kFailedJsonErrorParsingManifest, nullptr);
+    std::move(callback).Run(Status::kFailedJsonErrorParsingManifest);
     return;
   }
 
   base::Value& parsed_manifest = value_or_error.value.value();
 
-  auto system_extension = std::make_unique<SystemExtension>();
+  SystemExtension system_extension;
 
   // Parse mandatory fields.
 
   // Parse id.
   std::string* id_str = parsed_manifest.FindStringKey(kIdKey);
   if (!id_str) {
-    std::move(callback).Run(Status::kFailedIdMissing, nullptr);
+    std::move(callback).Run(Status::kFailedIdMissing);
     return;
   }
   absl::optional<SystemExtensionId> id = SystemExtension::StringToId(*id_str);
   if (!id.has_value()) {
-    std::move(callback).Run(Status::kFailedIdInvalid, nullptr);
+    std::move(callback).Run(Status::kFailedIdInvalid);
     return;
   }
-  system_extension->id = id.value();
+  system_extension.id = id.value();
 
   // Parse type.
   std::string* type_str = parsed_manifest.FindStringKey(kTypeKey);
   if (!type_str) {
-    std::move(callback).Run(Status::kFailedTypeMissing, nullptr);
+    std::move(callback).Run(Status::kFailedTypeMissing);
     return;
   }
   if (base::CompareCaseInsensitiveASCII("echo", *type_str) != 0) {
-    std::move(callback).Run(Status::kFailedTypeInvalid, nullptr);
+    std::move(callback).Run(Status::kFailedTypeInvalid);
     return;
   }
-  system_extension->type = SystemExtensionType::kEcho;
+  system_extension.type = SystemExtensionType::kEcho;
 
   // Parse base_url.
-  const GURL base_url = GetBaseURL(*id_str, system_extension->type);
+  const GURL base_url = GetBaseURL(*id_str, system_extension.type);
   // If both the type and id are valid, there is no possible way for the
   // base_url to be invalid.
   CHECK(base_url.is_valid());
-  system_extension->base_url = base_url;
+  system_extension.base_url = base_url;
 
   // Parse service_worker_url.
   std::string* service_worker_path =
       parsed_manifest.FindStringKey(kServiceWorkerUrlKey);
   if (!service_worker_path) {
-    std::move(callback).Run(Status::kFailedServiceWorkerUrlMissing, nullptr);
+    std::move(callback).Run(Status::kFailedServiceWorkerUrlMissing);
     return;
   }
   const GURL service_worker_url = base_url.Resolve(*service_worker_path);
   if (!service_worker_url.is_valid() || service_worker_url == base_url) {
-    std::move(callback).Run(Status::kFailedServiceWorkerUrlInvalid, nullptr);
+    std::move(callback).Run(Status::kFailedServiceWorkerUrlInvalid);
     return;
   }
   if (!url::IsSameOriginWith(base_url, service_worker_url)) {
-    std::move(callback).Run(Status::kFailedServiceWorkerUrlDifferentOrigin,
-                            nullptr);
+    std::move(callback).Run(Status::kFailedServiceWorkerUrlDifferentOrigin);
     return;
   }
-  system_extension->service_worker_url = service_worker_url;
+  system_extension.service_worker_url = service_worker_url;
 
   // Parse name.
   // TODO(ortuno): Decide a set of invalid characters and remove them/fail
   // installation.
   std::string* name = parsed_manifest.FindStringKey(kNameKey);
   if (!name) {
-    std::move(callback).Run(Status::kFailedNameMissing, nullptr);
+    std::move(callback).Run(Status::kFailedNameMissing);
     return;
   }
 
   if (name->empty()) {
-    std::move(callback).Run(Status::kFailedNameEmpty, nullptr);
+    std::move(callback).Run(Status::kFailedNameEmpty);
     return;
   }
-  system_extension->name = *name;
+  system_extension.name = *name;
 
   // Parse optional fields.
 
   // Parse short_name.
   std::string* short_name_str = parsed_manifest.FindStringKey(kShortNameKey);
   if (short_name_str && !short_name_str->empty()) {
-    system_extension->short_name = *short_name_str;
+    system_extension.short_name = *short_name_str;
   }
 
   // Parse companion_web_app_url.
@@ -154,12 +153,12 @@ void SystemExtensionsSandboxedUnpacker::OnSystemExtensionManifestParsed(
     GURL companion_web_app_url(*companion_web_app_url_str);
     if (companion_web_app_url.is_valid() &&
         companion_web_app_url.SchemeIs(url::kHttpsScheme)) {
-      system_extension->companion_web_app_url = companion_web_app_url;
+      system_extension.companion_web_app_url = companion_web_app_url;
     } else {
       LOG(WARNING) << "Companion Web App URL is invalid: "
                    << companion_web_app_url;
     }
   }
 
-  std::move(callback).Run(Status::kOk, std::move(system_extension));
+  std::move(callback).Run(std::move(system_extension));
 }

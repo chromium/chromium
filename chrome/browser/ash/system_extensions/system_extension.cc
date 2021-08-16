@@ -9,6 +9,8 @@
 
 SystemExtension::SystemExtension() = default;
 
+SystemExtension::SystemExtension(SystemExtension&&) = default;
+
 SystemExtension::~SystemExtension() = default;
 
 // static

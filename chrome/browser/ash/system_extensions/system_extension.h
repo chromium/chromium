@@ -23,6 +23,7 @@ struct SystemExtension {
   SystemExtension();
   ~SystemExtension();
   SystemExtension(const SystemExtension&) = delete;
+  SystemExtension(SystemExtension&&);
   SystemExtension& operator=(const SystemExtension&) = delete;
   SystemExtension& operator=(SystemExtension&&) = default;
 

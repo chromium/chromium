@@ -54,7 +54,7 @@ const SystemExtension* SystemExtensionsInstallManager::GetSystemExtensionById(
   const auto it = system_extensions_.find(id);
   if (it == system_extensions_.end())
     return nullptr;
-  return it->second.get();
+  return &it->second;
 }
 
 void SystemExtensionsInstallManager::InstallFromCommandLineIfNecessary() {
@@ -66,20 +66,18 @@ void SystemExtensionsInstallManager::InstallFromCommandLineIfNecessary() {
 }
 
 void SystemExtensionsInstallManager::OnGetSystemExtensionFromDir(
-    SystemExtensionsSandboxedUnpacker::Status status,
-    std::unique_ptr<SystemExtension> system_extension) {
-  if (status != SystemExtensionsSandboxedUnpacker::Status::kOk) {
+    StatusOrSystemExtension<SystemExtensionsSandboxedUnpacker::Status> result) {
+  if (!result.ok()) {
     LOG(ERROR) << "Failed to install extension from command line: "
-               << static_cast<int32_t>(status);
+               << static_cast<int32_t>(result.status());
     on_command_line_install_finished_.Signal();
     return;
   }
 
   // TODO(ortuno): Move resources from the specified directory into the user
   // profile.
-
   SystemExtensionsWebUIConfigMap::GetInstance().AddForSystemExtension(
-      *system_extension.get());
-  system_extensions_[{1, 2, 3, 4}] = std::move(system_extension);
+      result.system_extension());
+  system_extensions_[{1, 2, 3, 4}] = std::move(result).system_extension();
   on_command_line_install_finished_.Signal();
 }
