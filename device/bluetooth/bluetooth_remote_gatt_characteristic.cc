@@ -90,6 +90,12 @@ void BluetoothRemoteGattCharacteristic::NotifySessionCommand::Execute(
 }
 
 void BluetoothRemoteGattCharacteristic::NotifySessionCommand::Cancel() {
+  // Cancel() may be called on a currently executing command. This is only valid
+  // when the BluetoothRemoteGattCharacteristic instance is being deleted
+  // because the completion callback for the async task posted by Execute() will
+  // never be called due to the characteristic weak pointer being invalidated.
+  // This guarantees that one and only one success/error callback is called for
+  // a NotifySessionCommand.
   std::move(cancel_callback_).Run();
 }
 
