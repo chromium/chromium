@@ -1874,6 +1874,7 @@ component("ash") {
     "//ash/quick_pair",
     "//ash/quick_pair/keyed_service",
     "//ash/services/quick_pair",
+    "//ash/services/quick_pair/public/cpp",
     "//ash/services/quick_pair/public/mojom",
     "//ash/services/recording",
     "//ash/services/recording/public/mojom",

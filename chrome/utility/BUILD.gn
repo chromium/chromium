@@ -161,6 +161,7 @@ static_library("utility") {
 
   if (is_chromeos_ash) {
     deps += [
+      "//ash/services/quick_pair",
       "//ash/services/recording",
       "//chrome/services/file_util",
       "//chrome/services/sharing",

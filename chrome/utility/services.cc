@@ -95,6 +95,7 @@
 #include "components/services/paint_preview_compositor/public/mojom/paint_preview_compositor.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/services/quick_pair/quick_pair_service.h"
 #include "ash/services/recording/recording_service.h"
 #include "chrome/services/sharing/sharing_impl.h"
 #include "chromeos/assistant/buildflags.h"  // nogncheck
@@ -292,6 +293,12 @@ auto RunLocalSearchService(
       std::move(receiver));
 }
 
+auto RunQuickPairService(
+    mojo::PendingReceiver<ash::quick_pair::mojom::QuickPairService> receiver) {
+  return std::make_unique<ash::quick_pair::QuickPairService>(
+      std::move(receiver));
+}
+
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 auto RunAssistantAudioDecoder(
     mojo::PendingReceiver<
@@ -384,6 +391,7 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunSharing);
   services.Add(RunTtsService);
   services.Add(RunLocalSearchService);
+  services.Add(RunQuickPairService);
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
   services.Add(RunAssistantAudioDecoder);
   services.Add(RunLibassistantService);
