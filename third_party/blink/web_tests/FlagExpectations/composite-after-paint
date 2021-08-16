@@ -55,3 +55,6 @@ crbug.com/1058792 fast/multicol/composited-with-child-layer-vertical-rl.html [ S
 crbug.com/1191032 http/tests/devtools/tracing/frame-model-instrumentation.js [ Failure ]
 crbug.com/1191032 http/tests/devtools/tracing/timeline-paint/paint-profiler-update.js [ Timeout ]
 crbug.com/1191032 virtual/threaded/http/tests/devtools/tracing/timeline-paint/paint-profiler-update.js [ Timeout ]
+
+# Legacy block fragmentation triggers a DCHECK failure here
+crbug.com/1240080 external/wpt/svg/crashtests/chrome-bug-1238412.html [ Crash ]

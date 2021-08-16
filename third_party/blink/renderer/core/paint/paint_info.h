@@ -149,12 +149,8 @@ struct CORE_EXPORT PaintInfo {
   // Returns the fragment of the current painting object matching the current
   // layer fragment.
   const FragmentData* LegacyFragmentToPaint(const LayoutObject& object) const {
-    if (fragment_id_ == WTF::kNotFound) {
-      // We haven't been set up for legacy block fragmentation, so the object
-      // better not be fragmented, then.
-      DCHECK(!object.FirstFragment().NextFragment());
+    if (fragment_id_ == WTF::kNotFound)
       return &object.FirstFragment();
-    }
     for (const auto* fragment = &object.FirstFragment(); fragment;
          fragment = fragment->NextFragment()) {
       if (fragment->FragmentID() == fragment_id_)
