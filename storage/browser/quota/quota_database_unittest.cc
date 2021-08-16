@@ -384,7 +384,7 @@ TEST_P(QuotaDatabaseTest, BucketLastAccessTimeLRU) {
 
   // Test that unlimited origins are excluded from eviction, but
   // protected origins are not excluded.
-  scoped_refptr<MockSpecialStoragePolicy> policy(new MockSpecialStoragePolicy);
+  auto policy = base::MakeRefCounted<MockSpecialStoragePolicy>();
   policy->AddUnlimited(bucket1.storage_key.origin().GetURL());
   policy->AddProtected(bucket2.storage_key.origin().GetURL());
   result = db.GetLRUBucket(kTemp, bucket_exceptions, policy.get());

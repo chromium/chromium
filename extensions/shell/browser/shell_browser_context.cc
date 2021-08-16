@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/post_task.h"
 #include "components/guest_view/browser/guest_view_manager.h"
 #include "extensions/shell/browser/shell_special_storage_policy.h"
@@ -18,7 +19,7 @@ namespace extensions {
 ShellBrowserContext::ShellBrowserContext()
     : content::ShellBrowserContext(false /* off_the_record */,
                                    true /* delay_services_creation */),
-      storage_policy_(new ShellSpecialStoragePolicy) {}
+      storage_policy_(base::MakeRefCounted<ShellSpecialStoragePolicy>()) {}
 
 ShellBrowserContext::~ShellBrowserContext() {
   NotifyWillBeDestroyed();

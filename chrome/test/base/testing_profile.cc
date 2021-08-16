@@ -727,17 +727,20 @@ bool TestingProfile::AllowsBrowserWindows() const {
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 void TestingProfile::SetExtensionSpecialStoragePolicy(
-    ExtensionSpecialStoragePolicy* extension_special_storage_policy) {
-  extension_special_storage_policy_ = extension_special_storage_policy;
+    scoped_refptr<ExtensionSpecialStoragePolicy>
+        extension_special_storage_policy) {
+  extension_special_storage_policy_ =
+      std::move(extension_special_storage_policy);
 }
 #endif
 
 ExtensionSpecialStoragePolicy*
 TestingProfile::GetExtensionSpecialStoragePolicy() {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  if (!extension_special_storage_policy_.get())
+  if (!extension_special_storage_policy_.get()) {
     extension_special_storage_policy_ =
-        new ExtensionSpecialStoragePolicy(nullptr);
+        base::MakeRefCounted<ExtensionSpecialStoragePolicy>(nullptr);
+  }
   return extension_special_storage_policy_.get();
 #else
   return nullptr;

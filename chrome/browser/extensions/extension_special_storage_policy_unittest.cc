@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/cxx17_backports.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -99,7 +100,9 @@ class ExtensionSpecialStoragePolicyTest : public testing::Test {
     DISALLOW_COPY_AND_ASSIGN(PolicyChangeObserver);
   };
 
-  void SetUp() override { policy_ = new ExtensionSpecialStoragePolicy(NULL); }
+  void SetUp() override {
+    policy_ = base::MakeRefCounted<ExtensionSpecialStoragePolicy>(nullptr);
+  }
 
   scoped_refptr<Extension> CreateProtectedApp() {
 #if defined(OS_WIN)
@@ -305,7 +308,8 @@ TEST_F(ExtensionSpecialStoragePolicyTest, HasSessionOnlyOrigins) {
   TestingProfile profile;
   content_settings::CookieSettings* cookie_settings =
       CookieSettingsFactory::GetForProfile(&profile).get();
-  policy_ = new ExtensionSpecialStoragePolicy(cookie_settings);
+  policy_ =
+      base::MakeRefCounted<ExtensionSpecialStoragePolicy>(cookie_settings);
 
   EXPECT_FALSE(policy_->HasSessionOnlyOrigins());
 
@@ -332,7 +336,8 @@ TEST_F(ExtensionSpecialStoragePolicyTest, IsStorageDurableTest) {
   TestingProfile profile;
   content_settings::CookieSettings* cookie_settings =
       CookieSettingsFactory::GetForProfile(&profile).get();
-  policy_ = new ExtensionSpecialStoragePolicy(cookie_settings);
+  policy_ =
+      base::MakeRefCounted<ExtensionSpecialStoragePolicy>(cookie_settings);
   const GURL kHttpUrl("http://foo.com");
 
   EXPECT_FALSE(policy_->IsStorageDurable(kHttpUrl));
