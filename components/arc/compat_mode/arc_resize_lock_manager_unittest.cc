@@ -51,9 +51,9 @@ class ScopedWindowPropertyObserver : public aura::WindowObserver {
   base::ScopedObservation<aura::Window, aura::WindowObserver> observer_{this};
 };
 
-class TestArcResizeLockManager : public ArcResizeLockManager {
+class TestCompatModeButtonController : public CompatModeButtonController {
  public:
-  TestArcResizeLockManager() : ArcResizeLockManager(nullptr, nullptr) {}
+  ~TestCompatModeButtonController() override = default;
 
   bool IsUpdateCompatModeButtonCalled(const aura::Window* window) const {
     return update_compat_mode_button_called.contains(window);
@@ -62,8 +62,9 @@ class TestArcResizeLockManager : public ArcResizeLockManager {
     update_compat_mode_button_called.clear();
   }
 
-  // ArcResizeLockManager:
-  void UpdateCompatModeButton(aura::Window* window) override {
+  // CompatModeButtonController:
+  void Update(ArcResizeLockPrefDelegate* pref_delegate,
+              aura::Window* window) override {
     update_compat_mode_button_called.insert(window);
   }
 
@@ -85,6 +86,11 @@ class ArcResizeLockManagerTest : public CompatModeTestBase {
   void SetUp() override {
     CompatModeTestBase::SetUp();
     arc_resize_lock_manager_.SetPrefDelegate(pref_delegate());
+
+    auto controller = std::make_unique<TestCompatModeButtonController>();
+    test_compat_mode_button_controller_ = controller.get();
+    arc_resize_lock_manager_.compat_mode_button_controller_ =
+        std::move(controller);
   }
 
   std::unique_ptr<aura::Window> CreateFakeWindow(bool is_arc) {
@@ -105,14 +111,18 @@ class ArcResizeLockManagerTest : public CompatModeTestBase {
   }
 
   bool IsUpdateCompatModeButtonCalled(const aura::Window* window) const {
-    return arc_resize_lock_manager_.IsUpdateCompatModeButtonCalled(window);
+    return test_compat_mode_button_controller_->IsUpdateCompatModeButtonCalled(
+        window);
   }
   void ResetUpdateCompatModeButtonCalled() {
-    arc_resize_lock_manager_.ResetUpdateCompatModeButtonCalled();
+    test_compat_mode_button_controller_->ResetUpdateCompatModeButtonCalled();
   }
 
  private:
-  TestArcResizeLockManager arc_resize_lock_manager_;
+  ArcResizeLockManager arc_resize_lock_manager_{nullptr, nullptr};
+
+  // Owned by |arc_resize_lock_manager_|.
+  TestCompatModeButtonController* test_compat_mode_button_controller_;
 };
 
 TEST_F(ArcResizeLockManagerTest, ConstructDestruct) {}

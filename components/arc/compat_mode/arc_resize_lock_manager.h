@@ -8,8 +8,7 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "components/arc/compat_mode/arc_resize_lock_pref_delegate.h"
-#include "components/arc/compat_mode/resize_toggle_menu.h"
-#include "components/arc/compat_mode/resize_util.h"
+#include "components/arc/compat_mode/compat_mode_button_controller.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "ui/aura/env.h"
 #include "ui/aura/env_observer.h"
@@ -19,10 +18,6 @@
 namespace content {
 class BrowserContext;
 }  // namespace content
-
-namespace views {
-class Widget;
-}  // namespace views
 
 namespace arc {
 
@@ -61,20 +56,16 @@ class ArcResizeLockManager : public KeyedService,
     pref_delegate_ = delegate;
   }
 
-  void ToggleResizeToggleMenu(views::Widget* widget);
-
  private:
   friend class ArcResizeLockManagerTest;
 
   void EnableResizeLock(aura::Window* window);
   void DisableResizeLock(aura::Window* window);
 
-  // virtual for testing.
-  virtual void UpdateCompatModeButton(aura::Window* window);
-
   ArcResizeLockPrefDelegate* pref_delegate_{nullptr};
 
-  std::unique_ptr<ResizeToggleMenu> resize_toggle_menu_;
+  // Using unique_ptr to allow unittest to override.
+  std::unique_ptr<CompatModeButtonController> compat_mode_button_controller_;
 
   base::flat_set<aura::Window*> resize_lock_enabled_windows_;
 
