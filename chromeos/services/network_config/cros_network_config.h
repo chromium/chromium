@@ -161,7 +161,7 @@ class CrosNetworkConfig : public mojom::CrosNetworkConfig,
                         std::string mode,
                         std::string service_path);
   void PopulateTrafficCounters(RequestTrafficCountersCallback callback,
-                               const base::ListValue& traffic_counters);
+                               absl::optional<base::Value> traffic_counters);
 
   // NetworkStateHandlerObserver:
   void NetworkListChanged() override;

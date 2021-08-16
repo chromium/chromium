@@ -76,9 +76,9 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillServiceClient
   void GetEapPassphrase(const dbus::ObjectPath& service_path,
                         StringCallback callback,
                         ErrorCallback error_callback) override;
-  void RequestTrafficCounters(const dbus::ObjectPath& service_path,
-                              ListValueCallback callback,
-                              ErrorCallback error_callback) override;
+  void RequestTrafficCounters(
+      const dbus::ObjectPath& service_path,
+      DBusMethodCallback<base::Value> callback) override;
   void ResetTrafficCounters(const dbus::ObjectPath& service_path,
                             base::OnceClosure callback,
                             ErrorCallback error_callback) override;

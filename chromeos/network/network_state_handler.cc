@@ -220,7 +220,7 @@ void NetworkStateHandler::SyncStubCellularNetworks() {
 
 void NetworkStateHandler::RequestTrafficCounters(
     const std::string& service_path,
-    ShillServiceClient::ListValueCallback callback) {
+    DBusMethodCallback<base::Value> callback) {
   shill_property_handler_->RequestTrafficCounters(service_path,
                                                   std::move(callback));
 }

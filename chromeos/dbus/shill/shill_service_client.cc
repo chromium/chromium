@@ -224,15 +224,13 @@ class ShillServiceClientImpl : public ShillServiceClient {
                                             std::move(error_callback));
   }
 
-  void RequestTrafficCounters(const dbus::ObjectPath& service_path,
-                              ListValueCallback callback,
-                              ErrorCallback error_callback) override {
+  void RequestTrafficCounters(
+      const dbus::ObjectPath& service_path,
+      DBusMethodCallback<base::Value> callback) override {
     dbus::MethodCall method_call(shill::kFlimflamServiceInterface,
                                  shill::kRequestTrafficCountersFunction);
 
-    GetHelper(service_path)
-        ->CallListValueMethodWithErrorCallback(
-            &method_call, std::move(callback), std::move(error_callback));
+    GetHelper(service_path)->CallValueMethod(&method_call, std::move(callback));
   }
 
   void ResetTrafficCounters(const dbus::ObjectPath& service_path,

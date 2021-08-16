@@ -2962,21 +2962,16 @@ void CrosNetworkConfig::RequestTrafficCounters(
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-// static
-mojom::TrafficCounterSource CrosNetworkConfig::GetTrafficCounterEnumForTesting(
-    const std::string& source) {
-  return ConvertToTrafficCounterSourceEnum(source);
-}
-
 void CrosNetworkConfig::PopulateTrafficCounters(
     RequestTrafficCountersCallback callback,
-    const base::ListValue& traffic_counters) {
-  if (!traffic_counters.GetList().size()) {
+    absl::optional<base::Value> traffic_counters) {
+  if (!traffic_counters || !traffic_counters->is_list() ||
+      !traffic_counters->GetList().size()) {
     std::move(callback).Run({});
     return;
   }
   std::vector<mojom::TrafficCounterPtr> counters;
-  for (const base::Value& tc : traffic_counters.GetList()) {
+  for (const base::Value& tc : traffic_counters->GetList()) {
     DCHECK(tc.is_dict());
     const base::Value* source =
         tc.FindKeyOfType("source", base::Value::Type::STRING);
@@ -3026,6 +3021,12 @@ void CrosNetworkConfig::ResetTrafficCounters(const std::string& guid) {
     return;
   }
   network_state_handler_->ResetTrafficCounters(service_path);
+}
+
+// static
+mojom::TrafficCounterSource CrosNetworkConfig::GetTrafficCounterEnumForTesting(
+    const std::string& source) {
+  return ConvertToTrafficCounterSourceEnum(source);
 }
 
 // NetworkStateHandlerObserver

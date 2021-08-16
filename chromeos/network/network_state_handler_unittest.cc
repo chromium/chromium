@@ -2570,16 +2570,16 @@ TEST_F(NetworkStateHandlerTest, RequestTrafficCounters) {
 
   base::RunLoop run_loop;
   network_state_handler_->RequestTrafficCounters(
-      kWifiName1,
-      base::BindOnce(
-          [](base::Value* expected_traffic_counters,
-             base::OnceClosure quit_closure,
-             const base::ListValue& actual_traffic_counters) {
-            EXPECT_EQ(base::Value::AsListValue(*expected_traffic_counters),
-                      actual_traffic_counters);
-            std::move(quit_closure).Run();
-          },
-          &traffic_counters, run_loop.QuitClosure()));
+      kWifiName1, base::BindOnce(
+                      [](base::Value* expected_traffic_counters,
+                         base::OnceClosure quit_closure,
+                         absl::optional<base::Value> actual_traffic_counters) {
+                        ASSERT_TRUE(actual_traffic_counters);
+                        EXPECT_EQ(*expected_traffic_counters,
+                                  *actual_traffic_counters);
+                        std::move(quit_closure).Run();
+                      },
+                      &traffic_counters, run_loop.QuitClosure()));
   run_loop.Run();
 }
 

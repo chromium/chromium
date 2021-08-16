@@ -448,7 +448,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
 
   // Requests traffic counters for a service denoted by |service_path|.
   void RequestTrafficCounters(const std::string& service_path,
-                              ShillServiceClient::ListValueCallback callback);
+                              DBusMethodCallback<base::Value>);
 
   // Resets traffic counters for a service denoted by |service_path|.
   void ResetTrafficCounters(const std::string& service_path);

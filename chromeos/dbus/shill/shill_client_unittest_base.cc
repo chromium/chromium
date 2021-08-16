@@ -99,13 +99,12 @@ void ShillClientUnittestBase::SetUp() {
   mock_proxy_ = new dbus::MockObjectProxy(
       mock_bus_.get(), shill::kFlimflamServiceName, object_path_);
 
-  // Set an expectation so mock_proxy's CallMethod() will use OnCallMethod()
-  // to return responses.
+  // Set expectations so that mock_proxy's Call methods will return responses.
   EXPECT_CALL(*mock_proxy_.get(), DoCallMethod(_, _, _))
       .WillRepeatedly(Invoke(this, &ShillClientUnittestBase::OnCallMethod));
-
-  // Set an expectation so mock_proxy's CallMethodWithErrorCallback() will use
-  // OnCallMethodWithErrorCallback() to return responses.
+  EXPECT_CALL(*mock_proxy_.get(), DoCallMethodWithErrorResponse(_, _, _))
+      .WillRepeatedly(Invoke(
+          this, &ShillClientUnittestBase::OnCallMethodWithErrorResponse));
   EXPECT_CALL(*mock_proxy_.get(), DoCallMethodWithErrorCallback(_, _, _, _))
       .WillRepeatedly(Invoke(
           this, &ShillClientUnittestBase::OnCallMethodWithErrorCallback));
@@ -400,6 +399,19 @@ void ShillClientUnittestBase::OnCallMethod(
   argument_checker_.Run(&reader);
   task_environment_.GetMainThreadTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(std::move(*response_callback), response_));
+}
+
+void ShillClientUnittestBase::OnCallMethodWithErrorResponse(
+    dbus::MethodCall* method_call,
+    int timeout_ms,
+    dbus::ObjectProxy::ResponseOrErrorCallback* response_callback) {
+  EXPECT_EQ(interface_name_, method_call->GetInterface());
+  EXPECT_EQ(expected_method_name_, method_call->GetMember());
+  dbus::MessageReader reader(method_call);
+  argument_checker_.Run(&reader);
+  task_environment_.GetMainThreadTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(*response_callback), response_, nullptr));
 }
 
 void ShillClientUnittestBase::OnCallMethodWithErrorCallback(

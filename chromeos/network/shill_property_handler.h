@@ -161,7 +161,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ShillPropertyHandler
   // Requests traffic counters for a Service denoted by |service_path|.
   // Traffic counters are returned via |callback|.
   void RequestTrafficCounters(const std::string& service_path,
-                              ShillServiceClient::ListValueCallback callback);
+                              DBusMethodCallback<base::Value> callback);
 
   // Resets traffic counters for a Service denoted by |service_path|.
   void ResetTrafficCounters(const std::string& service_path);

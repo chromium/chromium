@@ -223,9 +223,9 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillServiceClient {
 
   // Calls the RequestTrafficCounters method.
   // |callback| is called after the method call succeeds.
-  virtual void RequestTrafficCounters(const dbus::ObjectPath& service_path,
-                                      ListValueCallback callback,
-                                      ErrorCallback error_callback) = 0;
+  virtual void RequestTrafficCounters(
+      const dbus::ObjectPath& service_path,
+      DBusMethodCallback<base::Value> callback) = 0;
 
   // Calls the ResetTrafficCounters method.
   // |callback| is called after the method call succeeds.

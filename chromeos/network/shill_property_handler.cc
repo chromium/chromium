@@ -302,20 +302,23 @@ void ShillPropertyHandler::RequestProperties(ManagedState::ManagedType type,
 
 void ShillPropertyHandler::RequestTrafficCounters(
     const std::string& service_path,
-    ShillServiceClient::ListValueCallback callback) {
+    DBusMethodCallback<base::Value> callback) {
   ShillServiceClient::Get()->RequestTrafficCounters(
       dbus::ObjectPath(service_path),
       base::BindOnce(
-          [](const std::string* sp, ShillServiceClient::ListValueCallback cb,
-             const base::ListValue& traffic_counters) {
-            NET_LOG(EVENT) << "Received traffic counters for "
-                           << NetworkPathId(*sp);
-            std::move(cb).Run(traffic_counters);
+          [](const std::string& service_path,
+             DBusMethodCallback<base::Value> callback,
+             absl::optional<base::Value> traffic_counters) {
+            if (!traffic_counters) {
+              NET_LOG(ERROR) << "Error requesting traffic counters for: "
+                             << NetworkPathId(service_path);
+            } else {
+              NET_LOG(EVENT) << "Received traffic counters for "
+                             << NetworkPathId(service_path);
+            }
+            std::move(callback).Run(std::move(traffic_counters));
           },
-          &service_path, std::move(callback)),
-      base::BindOnce(&network_handler::ShillErrorCallbackFunction,
-                     "RequestTrafficCounters Failed", service_path,
-                     network_handler::ErrorCallback()));
+          service_path, std::move(callback)));
 }
 
 void ShillPropertyHandler::ResetTrafficCounters(

@@ -380,16 +380,15 @@ void FakeShillServiceClient::GetEapPassphrase(
 
 void FakeShillServiceClient::RequestTrafficCounters(
     const dbus::ObjectPath& service_path,
-    ListValueCallback callback,
-    ErrorCallback error_callback) {
-  std::move(callback).Run(
-      base::Value::AsListValue(fake_traffic_counters_.Clone()));
+    DBusMethodCallback<base::Value> callback) {
+  std::move(callback).Run(fake_traffic_counters_.Clone());
 }
 
 void FakeShillServiceClient::ResetTrafficCounters(
     const dbus::ObjectPath& service_path,
     base::OnceClosure callback,
     ErrorCallback error_callback) {
+  fake_traffic_counters_.ClearList();
   base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(callback));
 }
 

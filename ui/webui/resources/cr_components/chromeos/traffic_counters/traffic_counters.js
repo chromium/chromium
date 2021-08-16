@@ -190,7 +190,7 @@ export class TrafficCountersElement extends TrafficCountersElementBase {
   async getLastResetTime(guid) {
     const managedPropertiesPromise =
         await this.networkConfig_.getManagedProperties(guid);
-    if (!managedPropertiesPromise) {
+    if (!managedPropertiesPromise || !managedPropertiesPromise.result) {
       return null;
     }
 
@@ -309,6 +309,9 @@ export class TrafficCountersElement extends TrafficCountersElementBase {
    * @private
    */
   lastResetTimeString_(network) {
+    if (network.lastResetTime === null) {
+      return '';
+    }
     return JSON.stringify(network.lastResetTime.internalValue, replacer, '\t');
   }
 }
