@@ -711,15 +711,19 @@ public final class R {
         }
         sResourcesDidLoad = true;
         int packageIdTransform = (packageId ^ 0x7f) << 24;
-        // These int[] resources need to be transformed first as they may refer
-        // to other resources by name. This avoids transforming the same value
-        // twice (https://crbug.com/1237059).
+        // The new aapt2 makes int[] resources refer to other non-android
+        // resources by reference rather than by value. Thus we explicitly
+        // transform the int[] resources first, before the referenced resources
+        // are transformed in order to ensure the transform applies exactly
+        // once. See https://crbug.com/1237059 for context.
+        {% for resource_type in resource_types %}
         {% for e in non_final_resources[resource_type] %}
         {% if e.java_type == 'int[]' %}
         for(""" + for_loop_condition + """) {
             """ + create_id_arr + """
         }
         {% endif %}
+        {% endfor %}
         {% endfor %}
         {% for resource_type in resource_types %}
         onResourcesLoaded{{ resource_type|title }}(packageIdTransform);
