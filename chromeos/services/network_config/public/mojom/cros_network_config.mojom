@@ -363,6 +363,19 @@ struct PaymentPortalProperties {
   string? url;
 };
 
+// WireGuard per-peer properties (https://www.wireguard.com/xplatform/).
+// These properties (particularly, allowed_ip and endpoint) are opaquely passed
+// as strings to the platform daemon (e.g. Shill) and only from there are then
+// parsed syntacticly.
+struct WireGuardPeerProperties {
+  string public_key;
+  // Note: |preshared_key| contains a placeholder if set to avoid leaking secrets.
+  string? preshared_key;
+  array<string>? allowed_ips;
+  string? endpoint;
+  int32 persistent_keepalive_interval;
+};
+
 // Managed property types. These types all share a common structure.
 // The structure differs from the structure used in //components/onc which
 // relies on optional boolean and integer values which are unsupported in mojo,
@@ -556,6 +569,19 @@ struct ManagedOpenVPNProperties {
   ManagedVerifyX509Properties? verify_x509;
 };
 
+struct ManagedWireGuardPeerList {
+  array<WireGuardPeerProperties> active_value;
+  PolicySource policy_source = kNone;
+  array<WireGuardPeerProperties>? policy_value;
+};
+
+struct ManagedWireGuardProperties {
+  // Note: |private_key| is not readable to avoid leaking secrets.
+  ManagedString? private_key;
+  ManagedString? public_key;
+  ManagedWireGuardPeerList peers;
+};
+
 // Managed NetworkType specific dictionaries.
 
 struct ManagedCellularProperties {
@@ -604,10 +630,13 @@ struct ManagedEthernetProperties {
 
 struct ManagedVPNProperties {
   ManagedBoolean? auto_connect;
+  // Note: in the case of WireGuard VPN |host| is not relevant and contains a
+  // placeholder value.
   ManagedString? host;
   ManagedIPSecProperties? ip_sec;
   ManagedL2TPProperties? l2tp;
   ManagedOpenVPNProperties? open_vpn;
+  ManagedWireGuardProperties? wireguard;
   ManagedString? provider_id;
   string provider_name;
   VpnType type;

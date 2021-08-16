@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/guid.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/components/sync_wifi/network_eligibility_checker.h"
@@ -1283,6 +1284,76 @@ mojom::ManagedOpenVPNPropertiesPtr GetManagedOpenVPNProperties(
   return openvpn;
 }
 
+mojom::WireGuardPeerPropertiesPtr GetWireGuardPeerProperties(
+    const base::Value* dict) {
+  auto peer = mojom::WireGuardPeerProperties::New();
+  peer->public_key = GetRequiredString(dict, ::onc::wireguard::kPublicKey);
+  peer->preshared_key = GetString(dict, ::onc::wireguard::kPresharedKey);
+  absl::optional<std::string> allowed_ips =
+      GetString(dict, ::onc::wireguard::kAllowedIPs);
+  if (allowed_ips) {
+    peer->allowed_ips = base::SplitString(
+        *allowed_ips, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  }
+  peer->endpoint = GetString(dict, ::onc::wireguard::kEndpoint);
+  peer->persistent_keepalive_interval =
+      GetInt32(dict, ::onc::wireguard::kPersistentKeepalive);
+  return peer;
+}
+
+mojom::ManagedWireGuardPeerListPtr GetManagedWireGuardPeerList(
+    const base::Value* dict,
+    const char* key) {
+  auto result = mojom::ManagedWireGuardPeerList::New();
+  const base::Value* value = dict->FindKey(key);
+  if (!value)
+    return result;
+  if (value->is_list()) {
+    std::vector<mojom::WireGuardPeerPropertiesPtr> active;
+    for (const base::Value& value : value->GetList())
+      active.push_back(GetWireGuardPeerProperties(&value));
+    result->active_value = std::move(active);
+    return result;
+  }
+  if (value->is_dict()) {
+    ManagedDictionary managed_dict = GetManagedDictionary(value);
+    if (!managed_dict.active_value.is_list()) {
+      NET_LOG(ERROR) << "No active or effective value for WireGuardPeerList";
+      return result;
+    }
+    for (const base::Value& e : managed_dict.active_value.GetList())
+      result->active_value.push_back(GetWireGuardPeerProperties(&e));
+    result->policy_source = managed_dict.policy_source;
+    if (!managed_dict.policy_value.is_none()) {
+      result->policy_value = std::vector<mojom::WireGuardPeerPropertiesPtr>();
+      for (const base::Value& e : managed_dict.policy_value.GetList())
+        result->policy_value->push_back(GetWireGuardPeerProperties(&e));
+    }
+    return result;
+  }
+  NET_LOG(ERROR) << "Expected list or dictionary, found: " << *value;
+  return result;
+}
+
+mojom::ManagedWireGuardPropertiesPtr GetManagedWireGuardProperties(
+    const base::Value* dict,
+    const char* key) {
+  auto wg = mojom::ManagedWireGuardProperties::New();
+  const base::Value* wg_dict = dict->FindKey(key);
+  if (!wg_dict) {
+    NET_LOG(ERROR) << "Missing WireGuard properties element";
+    return wg;
+  }
+  if (!wg_dict->is_dict()) {
+    NET_LOG(ERROR) << "Expected dictionary, found: " << *wg_dict;
+    return wg;
+  }
+  wg->private_key = GetManagedString(wg_dict, ::onc::wireguard::kPrivateKey);
+  wg->public_key = GetManagedString(wg_dict, ::onc::wireguard::kPublicKey);
+  wg->peers = GetManagedWireGuardPeerList(wg_dict, ::onc::wireguard::kPeers);
+  return wg;
+}
+
 mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
     NetworkStateHandler* network_state_handler,
     CellularESimProfileHandler* cellular_esim_profile_handler,
@@ -1509,7 +1580,8 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
               GetManagedOpenVPNProperties(vpn_dict, ::onc::vpn::kOpenVPN);
           break;
         case mojom::VpnType::kWireGuard:
-          // TODO: Detail Managed ONC implemention in following patches
+          vpn->wireguard =
+              GetManagedWireGuardProperties(vpn_dict, ::onc::vpn::kWireGuard);
           break;
         case mojom::VpnType::kExtension:
         case mojom::VpnType::kArc:
