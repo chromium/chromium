@@ -4,6 +4,8 @@
 
 #include "components/arc/compat_mode/compat_mode_button_controller.h"
 
+#include <string>
+
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/arc_resize_lock_type.h"
@@ -18,9 +20,39 @@
 #include "components/arc/vector_icons/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/vector_icons.h"
 
 namespace arc {
+
+namespace {
+
+const gfx::VectorIcon& GetIcon(const ResizeCompatMode& mode) {
+  switch (mode) {
+    case ResizeCompatMode::kPhone:
+      return ash::kSystemMenuPhoneIcon;
+    case ResizeCompatMode::kTablet:
+      return ash::kSystemMenuTabletIcon;
+    case ResizeCompatMode::kResizable:
+      return kResizableIcon;
+  }
+}
+
+std::u16string GetText(const ResizeCompatMode& mode) {
+  switch (mode) {
+    case ResizeCompatMode::kPhone:
+      return l10n_util::GetStringUTF16(
+          IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_PHONE);
+    case ResizeCompatMode::kTablet:
+      return l10n_util::GetStringUTF16(
+          IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_TABLET);
+    case ResizeCompatMode::kResizable:
+      return l10n_util::GetStringUTF16(
+          IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_RESIZABLE);
+  }
+}
+
+}  // namespace
 
 CompatModeButtonController::CompatModeButtonController() = default;
 CompatModeButtonController::~CompatModeButtonController() = default;
@@ -58,42 +90,16 @@ void CompatModeButtonController::Update(
       frame_view->GetHeaderView()->UpdateCaptionButtons();
   }
 
+  const auto mode = PredictCurrentMode(window);
+  const auto& icon = GetIcon(mode);
+  const auto text = GetText(mode);
+
+  compat_mode_button->SetImage(views::CAPTION_BUTTON_ICON_CENTER,
+                               views::FrameCaptionButton::Animate::kNo, icon);
+  compat_mode_button->SetText(text);
+  compat_mode_button->SetAccessibleName(text);
+
   const auto resize_lock_type = window->GetProperty(ash::kArcResizeLockTypeKey);
-
-  switch (PredictCurrentMode(window)) {
-    case ResizeCompatMode::kPhone:
-      compat_mode_button->SetImage(views::CAPTION_BUTTON_ICON_CENTER,
-                                   views::FrameCaptionButton::Animate::kNo,
-                                   ash::kSystemMenuPhoneIcon);
-      compat_mode_button->SetText(l10n_util::GetStringUTF16(
-          IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_PHONE));
-      compat_mode_button->SetAccessibleName(l10n_util::GetStringUTF16(
-          IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_PHONE));
-      if (resize_lock_type == ash::ArcResizeLockType::FULLY_LOCKED) {
-        compat_mode_button->SetTooltipText(l10n_util::GetStringUTF16(
-            IDS_ASH_ARC_APP_COMPAT_DISABLED_COMPAT_MODE_BUTTON_TOOLTIP_PHONE));
-      }
-      break;
-    case ResizeCompatMode::kTablet:
-      compat_mode_button->SetImage(views::CAPTION_BUTTON_ICON_CENTER,
-                                   views::FrameCaptionButton::Animate::kNo,
-                                   ash::kSystemMenuTabletIcon);
-      compat_mode_button->SetText(l10n_util::GetStringUTF16(
-          IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_TABLET));
-      compat_mode_button->SetAccessibleName(l10n_util::GetStringUTF16(
-          IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_TABLET));
-      break;
-    case ResizeCompatMode::kResizable:
-      compat_mode_button->SetImage(views::CAPTION_BUTTON_ICON_CENTER,
-                                   views::FrameCaptionButton::Animate::kNo,
-                                   kResizableIcon);
-      compat_mode_button->SetText(l10n_util::GetStringUTF16(
-          IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_RESIZABLE));
-      compat_mode_button->SetAccessibleName(l10n_util::GetStringUTF16(
-          IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_RESIZABLE));
-      break;
-  }
-
   switch (resize_lock_type) {
     case ash::ArcResizeLockType::RESIZE_LIMITED:
     case ash::ArcResizeLockType::RESIZABLE:
@@ -101,6 +107,8 @@ void CompatModeButtonController::Update(
       break;
     case ash::ArcResizeLockType::FULLY_LOCKED:
       compat_mode_button->SetEnabled(false);
+      compat_mode_button->SetTooltipText(l10n_util::GetStringUTF16(
+          IDS_ASH_ARC_APP_COMPAT_DISABLED_COMPAT_MODE_BUTTON_TOOLTIP_PHONE));
       break;
   }
 
