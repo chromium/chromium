@@ -29,16 +29,14 @@ BluetoothAdvertisementMonitorServiceProviderImpl::
   DVLOG(2)
       << "Created Bluetooth Bluetooth Advertisement Monitor Service Provider: "
       << object_path.value();
-  if (!bus_) {
-    LOG(WARNING) << "Invalid bus";
-    return;
-  }
 
+  DCHECK(bus_);
   DCHECK(object_path_.IsValid());
 
   exported_object_ = bus_->GetExportedObject(object_path_);
   if (!exported_object_) {
     LOG(WARNING) << "Invalid exported_object";
+    return;
   }
 
   exported_object_->ExportMethod(
@@ -86,6 +84,7 @@ BluetoothAdvertisementMonitorServiceProviderImpl::
     ~BluetoothAdvertisementMonitorServiceProviderImpl() {
   DVLOG(2) << "Cleaning up Bluetooth Advertisement Monitor Service: "
            << object_path_.value();
+  DCHECK(bus_);
   bus_->UnregisterExportedObject(object_path_);
 }
 

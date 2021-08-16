@@ -262,9 +262,13 @@ test("device_unittests") {
       "bluetooth/test/bluetooth_test_bluez.h",
     ]
 
-    deps += [ "//dbus" ]
+    deps += [
+      "//dbus",
+      "//dbus:test_support",
+    ]
 
     if (is_chromeos_ash) {
+      sources += [ "bluetooth/dbus/bluetooth_advertisement_monitor_service_provider_unittest.cc" ]
       deps += [ "//services/data_decoder/public/mojom" ]
     }
   }
