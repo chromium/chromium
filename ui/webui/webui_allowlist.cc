@@ -107,10 +107,9 @@ void WebUIAllowlist::ResetWebUIAllowlistProvider() {
 
 std::unique_ptr<content_settings::RuleIterator> WebUIAllowlist::GetRuleIterator(
     ContentSettingsType content_type) const {
-  const auto& type_to_origin_rules = permissions_.find(content_type);
-  if (type_to_origin_rules != permissions_.cend()) {
-    return std::make_unique<AllowlistRuleIterator>(
-        type_to_origin_rules->second);
+  auto permissions_it = permissions_.find(content_type);
+  if (permissions_it != permissions_.end()) {
+    return std::make_unique<AllowlistRuleIterator>(permissions_it->second);
   }
 
   return nullptr;
