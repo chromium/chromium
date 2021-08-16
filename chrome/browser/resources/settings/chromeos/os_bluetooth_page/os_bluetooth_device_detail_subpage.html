@@ -40,7 +40,9 @@
         [[getDeviceName_(device_.*)]]
       </div>
     </div>
-    <cr-button id="changeNameBtn" class="layout end cancel-button">
+    <cr-button id="changeNameBtn"
+        on-click="onChangeNameClick_"
+        class="layout end cancel-button">
       $i18n{bluetoothDeviceDetailChangeDeviceName}
     </cr-button>
   </div>
@@ -48,3 +50,11 @@
     <!-- TODO(crbug.com/1010321): Add device settings string -->
   </div>
 </div>
+
+<template is="dom-if" if="[[shouldShowChangeDeviceNameDialog_]]" restamp>
+  <os-settings-bluetooth-change-device-name-dialog
+      id="changeDeviceNameDialog"
+      device="[[device_]]"
+      on-close="onCloseChangeDeviceNameDialog_">
+  </os-settings-bluetooth-change-device-name-dialog>
+</template>

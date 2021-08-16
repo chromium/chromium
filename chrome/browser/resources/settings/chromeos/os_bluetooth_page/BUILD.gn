@@ -10,6 +10,7 @@ js_type_check("closure_compile_module") {
   closure_flags = os_settings_closure_flags
   is_polymer3 = true
   deps = [
+    ":os_bluetooth_change_device_name_dialog",
     ":os_bluetooth_device_detail_subpage",
     ":os_bluetooth_devices_subpage",
     ":os_bluetooth_page",
@@ -69,8 +70,17 @@ js_library("os_paired_bluetooth_list_item") {
 
 js_library("os_bluetooth_device_detail_subpage") {
   deps = [
+    ":os_bluetooth_change_device_name_dialog",
     "..:os_route.m",
     "../..:router",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_utils",
+    "//ui/webui/resources/js:i18n_behavior.m",
+  ]
+}
+
+js_library("os_bluetooth_change_device_name_dialog") {
+  deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_utils",
     "//ui/webui/resources/js:i18n_behavior.m",
@@ -85,5 +95,6 @@ html_to_js("web_components") {
     "os_bluetooth_page.js",
     "os_bluetooth_summary.js",
     "os_bluetooth_device_detail_subpage.js",
+    "os_bluetooth_change_device_name_dialog.js",
   ]
 }

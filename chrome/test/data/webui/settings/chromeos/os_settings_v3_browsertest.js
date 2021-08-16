@@ -397,6 +397,10 @@ TEST_F('OSSettingsOsBluetoothDeviceDetailSubpageV3Test', 'AllJsTests', () => {
  ['OsBluetoothDevicesSubpage', 'os_bluetooth_devices_subpage_tests.m.js'],
  ['OsBluetoothPage', 'os_bluetooth_page_tests.m.js'],
  ['OsBluetoothSummary', 'os_bluetooth_summary_tests.m.js'],
+ [
+   'OsBluetoothChangeDeviceNameDialog',
+   'os_bluetooth_change_device_name_dialog_tests.m.js'
+ ],
  ['OsEditDictionaryPage', 'os_edit_dictionary_page_test.m.js'],
  ['OsLanguagesPageV2', 'os_languages_page_v2_tests.m.js'],
  ['OsPairedBluetoothList', 'os_paired_bluetooth_list_tests.m.js'],

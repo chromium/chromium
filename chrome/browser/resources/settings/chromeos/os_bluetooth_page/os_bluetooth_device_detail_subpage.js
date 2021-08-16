@@ -10,6 +10,7 @@
 
 import '../../settings_shared_css.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import './os_bluetooth_change_device_name_dialog.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -74,6 +75,12 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
         type: Boolean,
         computed: 'computeIsDeviceConnected_(device_.*)',
       },
+
+      /** @private */
+      shouldShowChangeDeviceNameDialog_: {
+        type: Boolean,
+        value: false,
+      }
     };
   }
 
@@ -181,6 +188,16 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
       return;
     }
     this.parentNode.pageTitle = getDeviceName(this.device_);
+  }
+
+  /** @private */
+  onChangeNameClick_() {
+    this.shouldShowChangeDeviceNameDialog_ = true;
+  }
+
+  /** @private */
+  onCloseChangeDeviceNameDialog_() {
+    this.shouldShowChangeDeviceNameDialog_ = false;
   }
 }
 

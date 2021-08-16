@@ -1,0 +1,31 @@
+<style include="settings-shared">
+  :host {
+    --cr-dialog-width: 320px;
+  }
+
+  [slot='button-container'] {
+    padding-top: 0;
+  }
+</style>
+
+<cr-dialog id="dialog" show-on-attach>
+  <div id="title" slot="title">
+    $i18n{bluetoothDeviceDetailName}
+  </div>
+  <div slot="body">
+    <cr-input id="changeNameInput"
+        value="{{deviceName_}}"
+        label="$i18n{bluetoothDeviceDetailChangeNameDialogNewName}">
+    </cr-input>
+  </div>
+  <div slot="button-container">
+    <cr-button id="cancel" class="cancel-button"
+        on-click="onCancelClick_">
+      $i18n{bluetoothDeviceDetailChangeNameDialogCancel}
+    </cr-button>
+    <cr-button id="done" class="action-button"
+        on-click="onDoneClick_">
+      $i18n{bluetoothDeviceDetailChangeNameDialogDone}
+    </cr-button>
+  </div>
+</cr-dialog>

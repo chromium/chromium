@@ -181,4 +181,39 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     assertEquals(
         'os-settings:bluetooth-disabled', getBluetoothStatusIcon().icon);
   });
+
+  test(
+      'Change device dialog is shown after change name button click',
+      async function() {
+        init();
+        bluetoothConfig.setBluetoothEnabledState(/*enabled=*/ true);
+
+        const getChangeDeviceNameDialog = () =>
+            bluetoothDeviceDetailPage.$$('#changeDeviceNameDialog');
+
+        const device1 = createDefaultBluetoothDevice(
+            /*id=*/ '12//345&6789',
+            /*publicName=*/ 'BeatsX',
+            /*connected=*/ true,
+            /*nickname=*/ 'device1');
+
+        bluetoothConfig.appendToPairedDeviceList([device1]);
+        await flushAsync();
+
+        const params = new URLSearchParams();
+        params.append('id', '12//345&6789');
+        settings.Router.getInstance().navigateTo(
+            settings.routes.BLUETOOTH_DEVICE_DETAIL, params);
+
+        await flushAsync();
+
+        assertFalse(!!getChangeDeviceNameDialog());
+
+        const changeNameBtn = bluetoothDeviceDetailPage.$$('#changeNameBtn');
+        assertTrue(!!changeNameBtn);
+        changeNameBtn.click();
+
+        await flushAsync();
+        assertTrue(!!getChangeDeviceNameDialog());
+      });
 });
