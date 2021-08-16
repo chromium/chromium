@@ -910,10 +910,12 @@ void AppendSwitchesFromExperimentalSettings(base::CommandLine* command_line) {
   NSString* restriction_pattern =
       [defaults stringForKey:@"RestrictAccountsToPatterns"];
   if ([restriction_pattern length] > 0) {
+    NSString* restrict_key =
+        base::SysUTF8ToNSString(policy::key::kRestrictAccountsToPatterns);
     [testing_policies addEntriesFromDictionary:@{
-      base::SysUTF8ToNSString(policy::key::kRestrictAccountsToPatterns) :
-          @[ restriction_pattern ]
+      restrict_key : @[ restriction_pattern ]
     }];
+    [allowed_experimental_policies addObject:restrict_key];
   }
 
   // If any experimental policy was allowed, set the EnableExperimentalPolicies
