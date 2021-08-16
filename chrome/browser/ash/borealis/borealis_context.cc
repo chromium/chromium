@@ -57,7 +57,7 @@ class BorealisLifetimeObserver
     : public BorealisWindowManager::AppWindowLifetimeObserver {
  public:
   explicit BorealisLifetimeObserver(Profile* profile)
-      : profile_(profile), observation_{this} {
+      : profile_(profile), observation_(this), weak_factory_(this) {
     observation_.Observe(
         &BorealisService::GetForProfile(profile_)->WindowManager());
   }
@@ -82,19 +82,11 @@ class BorealisLifetimeObserver
                      aura::Window* last_window) override {
     // Launch post-game survey.
     // TODO(b/188745351): Remove this once it's no longer wanted.
-    GURL url = FeedbackFormUrl(
+    FeedbackFormUrl(
         guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_),
-        app_id, base::UTF16ToUTF8(last_window->GetTitle()));
-    if (url.is_valid()) {
-      // Unretained is safe here since we transitively own the
-      // ScopedDelayedCallback's weak factory.
-      app_delayers_.emplace(
-          app_id,
-          std::make_unique<ScopedDelayedCallback>(
-              base::BindOnce(&BorealisLifetimeObserver::OnDelayComplete,
-                             base::Unretained(this), std::move(url), app_id),
-              base::TimeDelta::FromSeconds(5)));
-    }
+        app_id, base::UTF16ToUTF8(last_window->GetTitle()),
+        base::BindOnce(&BorealisLifetimeObserver::OnFeedbackUrlGenerated,
+                       weak_factory_.GetWeakPtr(), app_id));
   }
 
   void OnWindowManagerDeleted(BorealisWindowManager* window_manager) override {
@@ -103,6 +95,17 @@ class BorealisLifetimeObserver
   }
 
  private:
+  void OnFeedbackUrlGenerated(std::string app_id, GURL url) {
+    if (url.is_valid()) {
+      app_delayers_.emplace(
+          app_id, std::make_unique<ScopedDelayedCallback>(
+                      base::BindOnce(&BorealisLifetimeObserver::OnDelayComplete,
+                                     weak_factory_.GetWeakPtr(), std::move(url),
+                                     app_id),
+                      base::TimeDelta::FromSeconds(5)));
+    }
+  }
+
   void OnDelayComplete(GURL gurl, std::string app_id) {
     app_delayers_.erase(app_id);
     ash::NewWindowDelegate::GetInstance()->NewTabWithUrl(
@@ -115,6 +118,8 @@ class BorealisLifetimeObserver
       observation_;
   base::flat_map<std::string, std::unique_ptr<ScopedDelayedCallback>>
       app_delayers_;
+
+  base::WeakPtrFactory<BorealisLifetimeObserver> weak_factory_;
 };
 
 // Borealis' main app extensively relies on self-activation, and it does not
