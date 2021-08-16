@@ -47,14 +47,27 @@ bool ShouldRouteToRuleBasedEngine(const std::string& engine_id) {
   return base::StartsWith(engine_id, "vkd_", base::CompareCase::SENSITIVE);
 }
 
-bool ShouldRouteToFstMojoEngine(const std::string& engine_id) {
+bool IsFstEngine(const std::string& engine_id) {
+  return base::StartsWith(engine_id, "xkb:", base::CompareCase::SENSITIVE);
+}
+
+bool IsKoreanEngine(const std::string& engine_id) {
+  return base::StartsWith(engine_id, "ko-", base::CompareCase::SENSITIVE);
+}
+
+bool ShouldRouteToNativeMojoEngine(const std::string& engine_id) {
   // To avoid handling tricky cases where the user types with both the virtual
   // and the physical keyboard, only run the native code path if the virtual
   // keyboard is disabled. Otherwise, just let the extension handle any physical
   // key events.
-  return features::IsSystemLatinPhysicalTypingEnabled() &&
-         base::StartsWith(engine_id, "xkb:", base::CompareCase::SENSITIVE) &&
-         !ChromeKeyboardControllerClient::Get()->GetKeyboardEnabled();
+  if (ChromeKeyboardControllerClient::Get()->GetKeyboardEnabled()) {
+    return false;
+  }
+
+  return (features::IsSystemKoreanPhysicalTypingEnabled() &&
+          IsKoreanEngine(engine_id)) ||
+         (features::IsSystemLatinPhysicalTypingEnabled() &&
+          IsFstEngine(engine_id));
 }
 
 bool IsPhysicalKeyboardAutocorrectEnabled(PrefService* prefs,
@@ -478,7 +491,7 @@ void NativeInputMethodEngine::ImeObserver::OnActivate(
     const std::string& engine_id) {
   // TODO(b/181077907): Always launch the IME service and let IME service decide
   // whether it should shutdown or not.
-  if (ShouldRouteToFstMojoEngine(engine_id) &&
+  if (IsFstEngine(engine_id) && ShouldRouteToNativeMojoEngine(engine_id) &&
       !IsPhysicalKeyboardAutocorrectEnabled(prefs_, engine_id)) {
     remote_manager_.reset();
     input_method_.reset();
@@ -509,7 +522,7 @@ void NativeInputMethodEngine::ImeObserver::OnActivate(
 
     // Notify the virtual keyboard extension that the IME has changed.
     ime_base_observer_->OnActivate(engine_id);
-  } else if (ShouldRouteToFstMojoEngine(engine_id)) {
+  } else if (ShouldRouteToNativeMojoEngine(engine_id)) {
     if (!remote_manager_.is_bound()) {
       auto* ime_manager = InputMethodManager::Get();
       ime_manager->ConnectInputEngineManager(
@@ -549,7 +562,7 @@ void NativeInputMethodEngine::ImeObserver::OnFocus(
   if (grammar_manager_->IsOnDeviceGrammarEnabled()) {
     grammar_manager_->OnFocus(context_id, context.flags);
   }
-  if (ShouldRouteToFstMojoEngine(engine_id)) {
+  if (ShouldRouteToNativeMojoEngine(engine_id)) {
     if (input_method_.is_bound()) {
       input_method_->OnFocus(mojom::InputFieldInfo::New(
           TextInputTypeToMojoType(context.type),
@@ -567,7 +580,7 @@ void NativeInputMethodEngine::ImeObserver::OnBlur(const std::string& engine_id,
   if (assistive_suggester_->IsAssistiveFeatureEnabled())
     assistive_suggester_->OnBlur();
 
-  if (ShouldRouteToFstMojoEngine(engine_id)) {
+  if (ShouldRouteToNativeMojoEngine(engine_id)) {
     if (input_method_.is_bound()) {
       input_method_->OnBlur();
     }
@@ -597,7 +610,7 @@ void NativeInputMethodEngine::ImeObserver::OnKeyEvent(
   }
 
   if (ShouldRouteToRuleBasedEngine(engine_id) ||
-      ShouldRouteToFstMojoEngine(engine_id)) {
+      ShouldRouteToNativeMojoEngine(engine_id)) {
     if (input_method_.is_bound()) {
       // CharacterComposer only takes KEY_PRESSED events.
       const bool filtered = event.type() == ui::ET_KEY_PRESSED &&
@@ -643,7 +656,7 @@ void NativeInputMethodEngine::ImeObserver::OnKeyEvent(
 
 void NativeInputMethodEngine::ImeObserver::OnReset(
     const std::string& engine_id) {
-  if (ShouldRouteToFstMojoEngine(engine_id) ||
+  if (ShouldRouteToNativeMojoEngine(engine_id) ||
       ShouldRouteToRuleBasedEngine(engine_id)) {
     if (input_method_.is_bound()) {
       input_method_->OnCompositionCanceledBySystem();
@@ -684,7 +697,7 @@ void NativeInputMethodEngine::ImeObserver::OnSurroundingTextChanged(
   if (grammar_manager_->IsOnDeviceGrammarEnabled()) {
     grammar_manager_->OnSurroundingTextChanged(text, cursor_pos, anchor_pos);
   }
-  if (ShouldRouteToFstMojoEngine(engine_id)) {
+  if (ShouldRouteToNativeMojoEngine(engine_id)) {
     if (input_method_.is_bound()) {
       std::vector<size_t> selection_indices = {static_cast<size_t>(anchor_pos),
                                                static_cast<size_t>(cursor_pos)};
@@ -881,7 +894,7 @@ void NativeInputMethodEngine::ImeObserver::OnProfileWillBeDestroyed() {
 }
 
 void NativeInputMethodEngine::OnInputMethodOptionsChanged() {
-  if (ShouldRouteToFstMojoEngine(GetActiveComponentId())) {
+  if (ShouldRouteToNativeMojoEngine(GetActiveComponentId())) {
     Enable(GetActiveComponentId());
   } else {
     InputMethodEngine::OnInputMethodOptionsChanged();

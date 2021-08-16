@@ -112,8 +112,8 @@ void ImeService::ConnectToInputMethod(
     std::move(callback).Run(/*bound=*/input_engine_ != nullptr);
     return;
   }
-  if (!base::FeatureList::IsEnabled(
-          chromeos::features::kSystemLatinPhysicalTyping)) {
+  if (!features::IsSystemKoreanPhysicalTypingEnabled() &&
+      !features::IsSystemLatinPhysicalTypingEnabled()) {
     std::move(callback).Run(/*bound=*/false);
     return;
   }
@@ -153,9 +153,11 @@ bool ImeService::IsFeatureEnabled(const char* feature_name) {
   if (strcmp(feature_name, "AssistiveMultiWord") == 0) {
     return chromeos::features::IsAssistiveMultiWordEnabled();
   }
+  if (strcmp(feature_name, "SystemKoreanPhysicalTyping") == 0) {
+    return features::IsSystemKoreanPhysicalTypingEnabled();
+  }
   if (strcmp(feature_name, "SystemLatinPhysicalTyping") == 0) {
-    return base::FeatureList::IsEnabled(
-        chromeos::features::kSystemLatinPhysicalTyping);
+    return features::IsSystemLatinPhysicalTypingEnabled();
   }
   return false;
 }
