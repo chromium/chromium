@@ -5,6 +5,7 @@
 #include "ash/system/message_center/unified_message_list_view.h"
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/system/message_center/message_center_style.h"
 #include "ash/system/message_center/message_center_utils.h"
@@ -22,6 +23,7 @@
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/canvas.h"
 #include "ui/message_center/message_center.h"
+#include "ui/message_center/notification_view_controller.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/views/message_view.h"
 #include "ui/views/background.h"
@@ -261,15 +263,17 @@ void UnifiedMessageListView::Init() {
   bool is_latest = true;
   for (auto* notification :
        message_center_utils::GetSortedVisibleNotifications()) {
-    if (notification->group_child()) {
-      // TODO(crbug/1223697): Add grouped notifications to existing parent
-      // message views.
+    if (notification->group_child())
       continue;
-    }
+
     auto* view =
         new MessageViewContainer(CreateMessageView(*notification), this);
     view->LoadExpandedState(model_, is_latest);
     AddChildViewAt(view, 0);
+
+    if (notification->group_parent())
+      PopulateGroupParent(notification->id());
+
     MessageCenter::Get()->DisplayedNotification(
         notification->id(), message_center::DISPLAY_SOURCE_MESSAGE_CENTER);
     is_latest = false;
@@ -404,7 +408,17 @@ UnifiedMessageListView::GetMessageViewForNotificationId(const std::string& id) {
   return static_cast<MessageViewContainer*>(*it)->message_view();
 }
 
+void UnifiedMessageListView::ConvertNotificationViewToGroupedNotificationView(
+    const std::string& ungrouped_notification_id,
+    const std::string& new_grouped_notification_id) {
+  GetMessageViewForNotificationId(ungrouped_notification_id)
+      ->set_notification_id(new_grouped_notification_id);
+}
+
 void UnifiedMessageListView::OnNotificationAdded(const std::string& id) {
+  if (ash::features::IsNotificationsRefreshEnabled())
+    message_center::NotificationViewController::OnNotificationAdded(id);
+
   auto* notification = MessageCenter::Get()->FindVisibleNotificationById(id);
   if (!notification)
     return;
@@ -445,6 +459,10 @@ void UnifiedMessageListView::OnNotificationRemoved(const std::string& id,
                                                    bool by_user) {
   if (ignore_notification_remove_)
     return;
+
+  if (ash::features::IsNotificationsRefreshEnabled())
+    message_center::NotificationViewController::OnNotificationRemoved(id,
+                                                                      by_user);
 
   // The corresponding MessageView may have already been deleted after being
   // manually slid out.

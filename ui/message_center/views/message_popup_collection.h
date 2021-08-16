@@ -60,6 +60,9 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
   // NotificationViewController:
   MessageView* GetMessageViewForNotificationId(
       const std::string& notification_id) override;
+  void ConvertNotificationViewToGroupedNotificationView(
+      const std::string& ungrouped_notification_id,
+      const std::string& new_grouped_notification_id) override;
   void OnNotificationAdded(const std::string& notification_id) override;
   void OnNotificationRemoved(const std::string& notification_id,
                              bool by_user) override;
