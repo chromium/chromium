@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview Defines DeviceNameState enum.
+ * @fileoverview Defines DeviceNameState and NameUpdateResult enum.
  */
 
 /**
@@ -22,4 +22,24 @@ export const DeviceNameState = {
   // We cannot modify the device name because user is not device
   // owner.
   CANNOT_BE_MODIFIED_BECAUSE_NOT_DEVICE_OWNER: 2,
+};
+
+/**
+ * NameUpdateResult stores information about the result of the name update
+ * attempt. Numerical values from this enum must stay in sync with the C++ enum
+ * in device_name_store.h.
+ * @enum {number}
+ */
+export const SetDeviceNameResult = {
+  // Update was successful.
+  UPDATE_SUCCESSFUL: 0,
+
+  // Update was unsuccessful because it is prohibited by policy.
+  ERROR_DUE_TO_POLICY: 1,
+
+  // Update was unsuccessful because user is not the device owner.
+  ERROR_DUE_TO_NOT_DEVICE_OWNER: 2,
+
+  // Update was unsuccessful because user input an invalid name.
+  ERROR_DUE_TO_INVALID_INPUT: 3,
 };

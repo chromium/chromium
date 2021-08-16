@@ -4,6 +4,7 @@
 
 // clang-format off
 // #import {TestBrowserProxy} from '../../test_browser_proxy.js';
+// #import {SetDeviceNameResult} from 'chrome://os-settings/chromeos/os_settings.js'
 // clang-format on
 
 /** @implements {DeviceNameBrowserProxy} */
@@ -11,11 +12,38 @@
   constructor() {
     super([
       'notifyReadyForDeviceName',
+      'attemptSetDeviceName',
     ]);
+
+    /** @private {string} */
+    this.deviceName_ = '';
+
+    /** @private {!SetDeviceNameResult} */
+    this.deviceNameResult_ = SetDeviceNameResult.UPDATE_SUCCESSFUL;
+  }
+
+  /** @param {!SetDeviceNameResult} deviceNameResult */
+  setDeviceNameResult(deviceNameResult) {
+    this.deviceNameResult_ = deviceNameResult;
+  }
+
+  /** @return {string} */
+  getDeviceName() {
+    return this.deviceName_;
   }
 
   /** @override */
   notifyReadyForDeviceName() {
     this.methodCalled('notifyReadyForDeviceName');
+  }
+
+  /** @override */
+  attemptSetDeviceName(name) {
+    if (this.deviceNameResult_ === SetDeviceNameResult.UPDATE_SUCCESSFUL) {
+      this.deviceName_ = name;
+    }
+
+    this.methodCalled('attemptSetDeviceName');
+    return Promise.resolve(this.deviceNameResult_);
   }
 }

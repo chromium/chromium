@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
-import {DeviceNameState} from './device_name_util.js';
+import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {DeviceNameState, SetDeviceNameResult} from './device_name_util.js';
 // clang-format on
 
 /**
@@ -22,6 +22,13 @@ export class DeviceNameBrowserProxy {
    * @return {!Promise<!DeviceNameMetadata>}
    */
   notifyReadyForDeviceName() {}
+
+  /**
+   * Attempts to set the device name to the new name entered by the user.
+   * @param {string} name
+   * @return {!Promise<!SetDeviceNameResult>}
+   */
+  attemptSetDeviceName(name) {}
 }
 
 /**
@@ -31,6 +38,11 @@ export class DeviceNameBrowserProxyImpl {
   /** @override */
   notifyReadyForDeviceName() {
     return chrome.send('notifyReadyForDeviceName');
+  }
+
+  /** @override */
+  attemptSetDeviceName(name) {
+    return sendWithPromise('attemptSetDeviceName', name);
   }
 }
 
