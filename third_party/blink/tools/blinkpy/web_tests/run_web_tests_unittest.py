@@ -240,7 +240,8 @@ class RunTest(unittest.TestCase, StreamTestingMixin):
     def test_max_locked_shards(self):
         # Tests for the default of using one locked shard even in the case of more than one child process.
         _, regular_output, _ = logging_run(
-            ['--debug-rwt-logging', '--jobs', '2'], shared_port=False)
+            ['--debug-rwt-logging', '--jobs', '2', 'passes', 'http/tests', 'perf/foo'],
+            tests_included=True, shared_port=False)
         self.assertTrue(
             any('1 locked' in line for line in regular_output.buflist))
 
@@ -471,7 +472,7 @@ class RunTest(unittest.TestCase, StreamTestingMixin):
         tests_to_run = ['http/tests/ssl', 'perf/foo', 'http/tests/passes']
         tests_run = get_tests_run(['--order=none'] + tests_to_run)
         self.assertEqual(tests_run, [
-            'http/tests/ssl/text.html', 'perf/foo/test.html',
+            'perf/foo/test.html', 'http/tests/ssl/text.html',
             'http/tests/passes/image.html', 'http/tests/passes/text.html'
         ])
 

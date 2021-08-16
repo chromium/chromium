@@ -354,7 +354,7 @@ class Manager(object):
         Perf tests are locked because heavy load caused by running other
         tests in parallel might cause some of them to time out.
         """
-        return self._is_http_test(test_file) or self._is_perf_test(test_file)
+        return self._is_perf_test(test_file)
 
     def _test_is_slow(self, test_file):
         if not self._expectations:
@@ -365,7 +365,7 @@ class Manager(object):
 
     def _needs_servers(self, test_names):
         return any(
-            self._test_requires_lock(test_name) for test_name in test_names)
+            self._is_http_test(test_name) for test_name in test_names)
 
     def _rename_results_folder(self):
         try:
