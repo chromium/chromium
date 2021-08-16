@@ -5047,6 +5047,11 @@
     "expiry_milestone": 98
   },
   {
+    "name": "shopping-list",
+    "owners": [ "mdjones", "chrome-shopping-eng@google.com" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "show-autofill-type-predictions",
     "owners": [ "ftirelo", "mathp" ],
     // This is used by autofill devs to debug on Android.

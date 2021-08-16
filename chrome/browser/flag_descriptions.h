@@ -1268,7 +1268,11 @@ extern const char kSendTabToSelfWhenSignedInDescription[];
 extern const char kSendTabToSelfV2Name[];
 extern const char kSendTabToSelfV2Description[];
 
+extern const char kShoppingListName[];
+extern const char kShoppingListDescription[];
+
 extern const char kSidePanelFlagId[];
+
 extern const char kSidePanelName[];
 extern const char kSidePanelDescription[];
 

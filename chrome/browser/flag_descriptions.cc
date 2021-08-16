@@ -2219,7 +2219,11 @@ extern const char kSendTabToSelfV2Description[] =
     "Enables new received tab "
     "UI shown next to the profile icon instead of using system notifications.";
 
+const char kShoppingListName[] = "Shopping List";
+const char kShoppingListDescription[] = "Enable shopping list in bookmarks.";
+
 const char kSidePanelFlagId[] = "side-panel";
+
 const char kSidePanelName[] = "Side panel";
 const char kSidePanelDescription[] =
     "Enables a browser-level side panel for a useful and persistent way to "

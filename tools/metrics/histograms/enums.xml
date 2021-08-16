@@ -49136,6 +49136,7 @@ from previous Chrome versions.
   <int value="-215580565"
       label="OmniboxEnableClipboardProviderImageSuggestions:disabled"/>
   <int value="-215534141" label="NativeWindowNavButtons:enabled"/>
+  <int value="-215103767" label="ShoppingList:disabled"/>
   <int value="-214618160" label="ESimPolicy:enabled"/>
   <int value="-213518852" label="protect-sync-credential:enabled"/>
   <int value="-213214894" label="enable-chromevox-arc-support"/>
@@ -50282,6 +50283,7 @@ from previous Chrome versions.
   <int value="701766325" label="PerNavigationMojoInterface:enabled"/>
   <int value="701795774" label="WebAppEnableUrlHandlers:enabled"/>
   <int value="702060507" label="SafetyCheckWeakPasswords:disabled"/>
+  <int value="703122112" label="ShoppingList:enabled"/>
   <int value="703469777" label="AndroidNightModeTabReparenting:enabled"/>
   <int value="703621694" label="UseSodaForLiveCaption:disabled"/>
   <int value="705407202" label="AutofillSaveCardImprovedUserConsent:disabled"/>

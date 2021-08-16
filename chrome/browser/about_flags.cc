@@ -4986,6 +4986,9 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          chrome::android::kQuickActionSearchWidgetAndroidDinoVariant)},
 
+    {"shopping-list", flag_descriptions::kShoppingListName,
+     flag_descriptions::kShoppingListDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(commerce::kShoppingList)},
 #endif  // OS_ANDROID
 
     {"enable-layout-ng", flag_descriptions::kEnableLayoutNGName,

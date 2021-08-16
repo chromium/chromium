@@ -486,6 +486,7 @@ public abstract class ChromeFeatureList {
     public static final String SHARED_HIGHLIGHTING_V2 = "SharedHighlightingV2";
     public static final String SHARED_HIGHLIGHTING_AMP = "SharedHighlightingAmp";
     public static final String SHARING_HUB_LINK_TOGGLE = "SharingHubLinkToggle";
+    public static final String SHOPPING_LIST = "ShoppingList";
     public static final String SINGLE_TOUCH_SELECT = "SingleTouchSelect";
     public static final String SHOW_TRUSTED_PUBLISHER_URL = "ShowTrustedPublisherURL";
     public static final String SMART_SUGGESTION_FOR_LARGE_DOWNLOADS =
