@@ -5,9 +5,12 @@
 #ifndef CHROME_BROWSER_CHROMEOS_NET_NETWORK_HEALTH_NETWORK_HEALTH_H_
 #define CHROME_BROWSER_CHROMEOS_NET_NETWORK_HEALTH_NETWORK_HEALTH_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 
+#include "base/timer/timer.h"
+#include "chrome/browser/chromeos/net/network_health/signal_strength_tracker.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -54,6 +57,11 @@ class NetworkHealth : public mojom::NetworkHealthService,
   // |kMaxSignalStrengthFluctuationTolerance| trigger a signal strength change
   // event.
   static constexpr int kMaxSignalStrengthFluctuationTolerance = 10;
+
+ protected:
+  // Used to set the internal timer. Can be called by derived classes for
+  // testing.
+  void SetTimer(std::unique_ptr<base::RepeatingTimer> timer);
 
  private:
   // Handler for receiving the network state list.
@@ -103,6 +111,10 @@ class NetworkHealth : public mojom::NetworkHealthService,
       const mojom::NetworkPtr& network,
       const network_config::mojom::NetworkStatePropertiesPtr& network_state);
 
+  // Function to add a signal strength sample for each network and update the
+  // statistics over time for each network.
+  void AnalyzeSignalStrength();
+
   // Remotes for tracking observers that will be notified of network events in
   // the mojom::NetworkEventsObserver interface.
   mojo::RemoteSet<mojom::NetworkEventsObserver> observers_;
@@ -114,6 +126,12 @@ class NetworkHealth : public mojom::NetworkHealthService,
       cros_network_config_observer_receiver_{this};
   // Receivers for external requests (WebUI, Feedback, CrosHealthdClient).
   mojo::ReceiverSet<mojom::NetworkHealthService> receivers_;
+
+  // Container for storing a running tally of the average signal strength per
+  // network GUID.
+  std::map<std::string, SignalStrengthTracker> signal_strength_trackers_;
+  // Timer that triggers the function to analyze the networks' signal strengths.
+  std::unique_ptr<base::RepeatingTimer> timer_;
 
   mojom::NetworkHealthState network_health_state_;
   std::vector<network_config::mojom::DeviceStatePropertiesPtr>

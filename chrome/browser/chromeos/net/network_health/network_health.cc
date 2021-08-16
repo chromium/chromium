@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/time/time.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/services/network_config/in_process_instance.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
@@ -20,6 +21,10 @@ namespace chromeos {
 namespace network_health {
 
 namespace {
+
+// The rate in seconds at which to sample all network's signal strengths.
+constexpr base::TimeDelta kSignalStrengthSampleRate =
+    base::TimeDelta::FromSeconds(5);
 
 constexpr mojom::NetworkState DeviceStateToNetworkState(
     network_config::mojom::DeviceStateType device_state) {
@@ -97,6 +102,13 @@ NetworkHealth::NetworkHealth() {
   remote_cros_network_config_->AddObserver(
       cros_network_config_observer_receiver_.BindNewPipeAndPassRemote());
   RefreshNetworkHealthState();
+  SetTimer(std::make_unique<base::RepeatingTimer>());
+}
+
+void NetworkHealth::SetTimer(std::unique_ptr<base::RepeatingTimer> timer) {
+  timer_ = std::move(timer);
+  timer_->Start(FROM_HERE, kSignalStrengthSampleRate, this,
+                &NetworkHealth::AnalyzeSignalStrength);
 }
 
 NetworkHealth::~NetworkHealth() = default;
@@ -329,6 +341,32 @@ bool NetworkHealth::SignalStrengthChanged(
     return false;
   }
   return true;
+}
+
+void NetworkHealth::AnalyzeSignalStrength() {
+  std::set<std::string> analyzed_networks;
+  for (auto& network : network_health_state_.networks) {
+    if (!network->guid.has_value() || network->signal_strength.is_null())
+      continue;
+
+    auto guid = network->guid.value();
+    auto& tracker = signal_strength_trackers_[guid];
+    tracker.AddSample(static_cast<uint8_t>(network->signal_strength->value));
+
+    network->signal_strength_average =
+        mojom::FloatValue::New(tracker.Average());
+    network->signal_strength_std_dev = mojom::FloatValue::New(tracker.StdDev());
+    network->signal_strength_samples = tracker.Samples();
+    analyzed_networks.insert(guid);
+  }
+
+  // Remove all entries that are not actively being analyzed.
+  for (auto it = signal_strength_trackers_.begin();
+       it != signal_strength_trackers_.end(); it++) {
+    if (!analyzed_networks.count(it->first)) {
+      it = signal_strength_trackers_.erase(it);
+    }
+  }
 }
 
 }  // namespace network_health

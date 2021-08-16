@@ -31,10 +31,17 @@ enum NetworkState {
   kOnline,
 };
 
+// Wrapper for optional float. // TODO(https://crbug.com/657632): Remove this
+// once Mojo properly supports this.
+struct FloatValue {
+  // The value of the float.
+  float value;
+};
+
 // Wrapper for optional uint32. // TODO(https://crbug.com/657632): Remove this
 // once Mojo properly supports this.
 struct UInt32Value {
-  // The value of the uint64.
+  // The value of the uint32.
   uint32 value;
 };
 
@@ -54,6 +61,15 @@ struct Network {
   // considered potentially problematic for the connection. See
   // src/platform2/shill/doc/service-api.txt for more details.
   UInt32Value? signal_strength;
+  // An average value of the signal strength of the network over 15 minutes. The
+  // signal strength is polled every five seconds.
+  FloatValue? signal_strength_average;
+  // The standard deviation of the signal strength of the network over 15
+  // minutes. The signal strength is polled every five seconds.
+  FloatValue? signal_strength_std_dev;
+  // The sampled signal strength data of the network over 15 minutes. The signal
+  // strength is polled every five seconds. Max Size: (12 * 15) = 180 samples.
+  array<uint8>? signal_strength_samples;
   // Optional string for the network's ipv4_address. This is only intended to be
   // used for display and is not meant to be parsed.
   string? ipv4_address;
