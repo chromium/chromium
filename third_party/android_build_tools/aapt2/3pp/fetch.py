@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 # Copyright 2021 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -8,17 +8,21 @@ from __future__ import print_function
 import argparse
 import json
 import os
+import re
+import urllib2
 
 _FILE_URL = 'https://dl.google.com/dl/android/maven2/com/android/tools/build/aapt2/{0}/aapt2-{0}-linux.jar'
+_GROUP_INDEX_URL = 'https://dl.google.com/dl/android/maven2/com/android/tools/build/group-index.xml'
 _FILE_NAME = 'aapt2-{0}-linux.jar'
-# This is the version that the 3pp bot will be building, this is usually the
-# same or newer than the one in README.chromium. This version is not actively
-# used in Chromium. The authoratative version is the one in README.chromium.
-_FILE_VERSION = '7.0.0-beta03-7147631'
 
 
 def do_latest():
-    print(_FILE_VERSION)
+    response = urllib2.urlopen(_GROUP_INDEX_URL)
+    match = re.search(r'<aapt2 versions="([^"]+)"', response.read())
+    versions = match.group(1).split(',')
+    # The versions appear to be sorted already, no need to deal with sorting
+    # their weird version scheme ourselves. Just print the last one.
+    print(versions[-1])
 
 
 def get_download_url(version):
