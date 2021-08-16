@@ -284,15 +284,13 @@ public class ChromeContextMenuPopulatorTest {
         checkMenuOptions(expected2);
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.CUSTOM_TAB, params);
-        int[] expected3 = {R.id.contextmenu_open_in_browser_id, R.id.contextmenu_share_link,
-                R.id.contextmenu_send_message, R.id.contextmenu_add_to_contacts,
-                R.id.contextmenu_copy};
+        int[] expected3 = {R.id.contextmenu_share_link, R.id.contextmenu_send_message,
+                R.id.contextmenu_add_to_contacts, R.id.contextmenu_copy};
         checkMenuOptions(expected3);
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.WEB_APP, params);
         int[] expected4 = {R.id.contextmenu_share_link, R.id.contextmenu_send_message,
-                R.id.contextmenu_add_to_contacts, R.id.contextmenu_copy,
-                R.id.contextmenu_open_in_chrome};
+                R.id.contextmenu_add_to_contacts, R.id.contextmenu_copy};
         checkMenuOptions(expected4);
     }
 
@@ -326,15 +324,15 @@ public class ChromeContextMenuPopulatorTest {
         checkMenuOptions(expected2);
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.CUSTOM_TAB, params);
-        int[] expected3 = {R.id.contextmenu_open_in_browser_id, R.id.contextmenu_share_link,
-                R.id.contextmenu_call, R.id.contextmenu_send_message,
-                R.id.contextmenu_add_to_contacts, R.id.contextmenu_copy};
+        int[] expected3 = {R.id.contextmenu_share_link, R.id.contextmenu_call,
+                R.id.contextmenu_send_message, R.id.contextmenu_add_to_contacts,
+                R.id.contextmenu_copy};
         checkMenuOptions(expected3);
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.WEB_APP, params);
         int[] expected4 = {R.id.contextmenu_share_link, R.id.contextmenu_call,
                 R.id.contextmenu_send_message, R.id.contextmenu_add_to_contacts,
-                R.id.contextmenu_copy, R.id.contextmenu_open_in_chrome};
+                R.id.contextmenu_copy};
         checkMenuOptions(expected4);
     }
 
