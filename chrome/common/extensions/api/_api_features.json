@@ -89,6 +89,8 @@
       "web_page",
       "blessed_web_page"
     ],
+    "disallow_for_service_workers": true,
+    "max_manifest_version": 2,
     // Any webpage can use the app API.
     "matches": ["<all_urls>"]
   },

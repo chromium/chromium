@@ -533,6 +533,13 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, RuntimeMisc) {
       << message_;
 }
 
+// Tests chrome.app namespace is undefined for service worker-based extensions.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, ChromeAppUndefined) {
+  ASSERT_TRUE(RunExtensionTest(
+      "service_worker/worker_based_background/chrome_app_undefined"))
+      << message_;
+}
+
 // Tests chrome.storage APIs.
 // TODO(crbug.com/1185226): Change parent class to
 // `ServiceWorkerBasedBackgroundTest` when chrome.storage.session is released in
