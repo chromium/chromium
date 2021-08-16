@@ -120,7 +120,9 @@ void H264Encoder::EncodeOnEncodingTaskRunner(
 
   const gfx::Size frame_size = frame->visible_rect().size();
   if (!openh264_encoder_ || configured_size_ != frame_size) {
-    ConfigureEncoderOnEncodingTaskRunner(frame_size);
+    if (!ConfigureEncoderOnEncodingTaskRunner(frame_size)) {
+      return;
+    }
     first_frame_timestamp_ = capture_timestamp;
   }
 
@@ -174,13 +176,13 @@ void H264Encoder::EncodeOnEncodingTaskRunner(
                           capture_timestamp, is_key_frame));
 }
 
-void H264Encoder::ConfigureEncoderOnEncodingTaskRunner(const gfx::Size& size) {
+bool H264Encoder::ConfigureEncoderOnEncodingTaskRunner(const gfx::Size& size) {
   TRACE_EVENT0("media", "H264Encoder::ConfigureEncoderOnEncodingTaskRunner");
   DCHECK(encoding_task_runner_->RunsTasksInCurrentSequence());
   ISVCEncoder* temp_encoder = nullptr;
   if (WelsCreateSVCEncoder(&temp_encoder) != 0) {
     NOTREACHED() << "Failed to create OpenH264 encoder";
-    return;
+    return false;
   }
   openh264_encoder_.reset(temp_encoder);
   configured_size_ = size;
@@ -250,12 +252,14 @@ void H264Encoder::ConfigureEncoderOnEncodingTaskRunner(const gfx::Size& size) {
       SM_FIXEDSLCNUM_SLICE;
 
   if (openh264_encoder_->InitializeExt(&init_params) != cmResultSuccess) {
-    NOTREACHED() << "Failed to initialize OpenH264 encoder";
-    return;
+    DLOG(WARNING) << "Failed to initialize OpenH264 encoder";
+    openh264_encoder_.reset();
+    return false;
   }
 
   int pixel_format = EVideoFormatType::videoFormatI420;
   openh264_encoder_->SetOption(ENCODER_OPTION_DATAFORMAT, &pixel_format);
+  return true;
 }
 
 SEncParamExt H264Encoder::GetEncoderOptionForTesting() {
