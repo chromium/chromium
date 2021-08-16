@@ -53,12 +53,6 @@ export class ReadLaterAppElement extends PolymerElement {
         value: readLater.mojom.CurrentPageActionButtonState.kAdd,
       },
 
-      /** @private {!url.mojom.Url} */
-      currentUrl_: {
-        type: Object,
-        value: null,
-      },
-
       /** @type {boolean} */
       buttonRipples: {
         type: Boolean,
@@ -96,7 +90,7 @@ export class ReadLaterAppElement extends PolymerElement {
         callbackRouter.itemsChanged.addListener(
             entries => this.updateItems_(entries)),
         callbackRouter.currentPageActionButtonStateChanged.addListener(
-            (state, url) => this.updateCurrentPageActionButton_(state, url)));
+            (state) => this.updateCurrentPageActionButton_(state)));
 
     // If added in a visible state update current read later items.
     if (document.visibilityState === 'visible') {
@@ -153,12 +147,10 @@ export class ReadLaterAppElement extends PolymerElement {
 
   /**
    * @param {!readLater.mojom.CurrentPageActionButtonState} state
-   * @param {!url.mojom.Url} url
    * @private
    */
-  updateCurrentPageActionButton_(state, url) {
+  updateCurrentPageActionButton_(state) {
     this.currentPageActionButtonState_ = state;
-    this.currentUrl_ = url;
   }
 
   /**
@@ -181,55 +173,6 @@ export class ReadLaterAppElement extends PolymerElement {
   }
 
   /**
-   * @return {string} The appropriate class for the current state
-   * @private
-   */
-  getCurrentPageActionButtonClass_() {
-    if (this.currentPageActionButtonState_ ===
-        readLater.mojom.CurrentPageActionButtonState.kRemove) {
-      return 'remove';
-    } else if (
-        this.currentPageActionButtonState_ ===
-        readLater.mojom.CurrentPageActionButtonState.kAdd) {
-      return 'add';
-    }
-    return 'disabled';
-  }
-
-  /**
-   * @return {string} The appropriate text for the current state
-   * @private
-   */
-  getCurrentPageActionButtonText_() {
-    if (this.currentPageActionButtonState_ ===
-        readLater.mojom.CurrentPageActionButtonState.kAdd) {
-      return loadTimeData.getString('addCurrentTab');
-    } else if (
-        this.currentPageActionButtonState_ ===
-        readLater.mojom.CurrentPageActionButtonState.kRemove) {
-      return loadTimeData.getString('removeCurrentTab');
-    }
-    return loadTimeData.getString('cantAddCurrentTab');
-  }
-
-  /**
-   * @param {string} addIcon
-   * @param {string} removeIcon
-   * @return {string} The appropriate icon for the current state
-   * @private
-   */
-  getCurrentPageActionButtonIcon_(addIcon, removeIcon) {
-    switch (this.currentPageActionButtonState_) {
-      case readLater.mojom.CurrentPageActionButtonState.kAdd:
-        return addIcon;
-      case readLater.mojom.CurrentPageActionButtonState.kRemove:
-      case readLater.mojom.CurrentPageActionButtonState.kDisabled:
-      default:
-        return removeIcon;
-    }
-  }
-
-  /**
    * @return {boolean}
    * @private
    */
@@ -239,15 +182,7 @@ export class ReadLaterAppElement extends PolymerElement {
 
   /** @private */
   onCurrentPageActionButtonClick_() {
-    if (this.currentPageActionButtonState_ ===
-        readLater.mojom.CurrentPageActionButtonState.kAdd) {
-      this.apiProxy_.addCurrentTab();
-    } else if (
-        this.currentPageActionButtonState_ ===
-            readLater.mojom.CurrentPageActionButtonState.kRemove &&
-        !!this.currentUrl_) {
-      this.apiProxy_.removeEntry(this.currentUrl_);
-    }
+    this.apiProxy_.addCurrentTab();
   }
 
   /**

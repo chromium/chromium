@@ -52,16 +52,6 @@
     transition: background-color 300ms cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  #currentPageActionButton.remove {
-    --text-color: var(--google-grey-700);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    #currentPageActionButton.remove {
-      --text-color: var(--google-grey-500);
-    }
-  }
-
   :host([side-panel]) #currentPageActionButton {
     margin: 8px 16px 0 16px;
   }
@@ -171,20 +161,16 @@
   <div id="empty-state-subheader">$i18n{emptyStateSubheader}</div>
 </div>
 <cr-button id="currentPageActionButton"
-    class$="[[getCurrentPageActionButtonClass_(
-        currentPageActionButtonState_)]]"
     hidden$="[[!shouldShowCurrentPageActionButton_()]]"
-    aria-label="[[getCurrentPageActionButtonText_(
-        currentPageActionButtonState_)]]"
+    aria-label="$i18n{addCurrentTab}"
     on-click="onCurrentPageActionButtonClick_"
     disabled="[[getCurrentPageActionButtonDisabled_(
         currentPageActionButtonState_)]]">
   <iron-icon id="currentPageActionButtonIcon" aria-hidden="true"
-      icon$="[[getCurrentPageActionButtonIcon_('cr:add', 'cr:close',
-          currentPageActionButtonState_)]]">
+      icon="cr:add">
   </iron-icon>
   <div id="currentPageActionButtonText" aria-hidden="true">
-    [[getCurrentPageActionButtonText_(currentPageActionButtonState_)]]
+    $i18n{addCurrentTab}
   </div>
 </cr-button>
 <div id="readLaterList">
