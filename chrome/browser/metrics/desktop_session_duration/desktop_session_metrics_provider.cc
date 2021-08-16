@@ -4,7 +4,7 @@
 
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_metrics_provider.h"
 
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
 
 namespace metrics {
@@ -16,8 +16,9 @@ class DesktopSessionMetricsProvider : public MetricsProvider {
   void ProvideCurrentSessionData(
       ChromeUserMetricsExtension* /*uma_proto*/) override {
     if (DesktopSessionDurationTracker::IsInitialized()) {
-      UMA_HISTOGRAM_BOOLEAN("Session.IsActive",
-                            DesktopSessionDurationTracker::Get()->in_session());
+      base::UmaHistogramBoolean(
+          "Session.IsActive",
+          DesktopSessionDurationTracker::Get()->in_session());
     }
   }
 };
