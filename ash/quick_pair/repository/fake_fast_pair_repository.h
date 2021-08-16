@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_QUICK_PAIR_REPOSITORY_FAST_PAIR_REPOSITORY_H_
-#define ASH_QUICK_PAIR_REPOSITORY_FAST_PAIR_REPOSITORY_H_
+#ifndef ASH_QUICK_PAIR_REPOSITORY_FAKE_FAST_PAIR_REPOSITORY_H_
+#define ASH_QUICK_PAIR_REPOSITORY_FAKE_FAST_PAIR_REPOSITORY_H_
 
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/proto/fastpair.pb.h"
 #include "ash/quick_pair/repository/fast_pair/device_metadata.h"
+#include "ash/quick_pair/repository/fast_pair_repository.h"
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -19,52 +20,55 @@ class BluetoothDevice;
 namespace ash {
 namespace quick_pair {
 
-using AssociatedAccountKeyCallback =
-    base::OnceCallback<void(absl::optional<std::string>)>;
-using DeviceMetadataCallback = base::OnceCallback<void(DeviceMetadata*)>;
-using ValidModelIdCallback = base::OnceCallback<void(bool)>;
-
 // The entry point for the Repository component in the Quick Pair system,
 // responsible for connecting to back-end services.
-class FastPairRepository {
+class FakeFastPairRepository : public FastPairRepository {
  public:
-  static FastPairRepository* Get();
+  FakeFastPairRepository();
+  FakeFastPairRepository(const FakeFastPairRepository&) = delete;
+  FakeFastPairRepository& operator=(const FakeFastPairRepository&) = delete;
+  ~FakeFastPairRepository() override;
 
-  FastPairRepository();
-  virtual ~FastPairRepository();
+  void SetFakeMetadata(const std::string& hex_model_id,
+                       nearby::fastpair::Device metadata,
+                       gfx::Image image = gfx::Image());
+
+  void ClearFakeMetadata(const std::string& hex_model_id);
 
   // Returns the DeviceMetadata for a given |hex_model_id| to the provided
   // |callback|, if available.
-  virtual void GetDeviceMetadata(const std::string& hex_model_id,
-                                 DeviceMetadataCallback callback) = 0;
+  void GetDeviceMetadata(const std::string& hex_model_id,
+                         DeviceMetadataCallback callback) override;
 
   // Checks if the input |hex_model_id| is valid and notifies the requester
   // through the provided |callback|.
-  virtual void IsValidModelId(const std::string& hex_model_id,
-                              ValidModelIdCallback callback) = 0;
+  void IsValidModelId(const std::string& hex_model_id,
+                      base::OnceCallback<void(bool)> callback) override;
 
   // Looks up the key associated with either |address| or |account_key_filter|
   // and returns it to the provided |callback|, if available.  If this
   // information is available locally that will be returned immediately,
   // otherwise this will request data from the footprints server.
-  virtual void GetAssociatedAccountKey(
+  void GetAssociatedAccountKey(
       const std::string& address,
       const std::string& account_key_filter,
-      AssociatedAccountKeyCallback callback) = 0;
+      base::OnceCallback<void(absl::optional<std::string>)> callback) override;
 
   // Stores the given |account_key| for a |device| on the server.
-  virtual void AssociateAccountKey(const Device& device,
-                                   const std::string& account_key) = 0;
+  void AssociateAccountKey(const Device& device,
+                           const std::string& account_key) override;
 
   // Deletes the associated data for a given |device|.
-  virtual void DeleteAssociatedDevice(
-      const device::BluetoothDevice* device) = 0;
+  void DeleteAssociatedDevice(const device::BluetoothDevice* device) override;
 
- protected:
+ private:
   static void SetInstance(FastPairRepository* instance);
+
+  base::flat_map<std::string, std::unique_ptr<DeviceMetadata>> data_;
+  base::WeakPtrFactory<FakeFastPairRepository> weak_ptr_factory_{this};
 };
 
 }  // namespace quick_pair
 }  // namespace ash
 
-#endif  // ASH_QUICK_PAIR_REPOSITORY_FAST_PAIR_REPOSITORY_H_
+#endif  // ASH_QUICK_PAIR_REPOSITORY_FAKE_FAST_PAIR_REPOSITORY_H_

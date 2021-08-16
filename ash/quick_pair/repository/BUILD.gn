@@ -17,6 +17,8 @@ source_set("repository") {
     "fast_pair/fast_pair_image_decoder.h",
     "fast_pair_repository.cc",
     "fast_pair_repository.h",
+    "fast_pair_repository_impl.cc",
+    "fast_pair_repository_impl.h",
     "http_fetcher.cc",
     "http_fetcher.h",
   ]
@@ -40,12 +42,16 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "fake_fast_pair_repository.cc",
+    "fake_fast_pair_repository.h",
     "mock_http_fetcher.cc",
     "mock_http_fetcher.h",
   ]
 
   deps = [
     ":repository",
+    "//ash/quick_pair/common",
+    "//ash/quick_pair/proto:fastpair_proto",
     "//base",
     "//base/test:test_support",
     "//net/traffic_annotation:test_support",
