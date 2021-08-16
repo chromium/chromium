@@ -207,8 +207,9 @@ bool InitializeExtensionSettingsOneOffPlatform() {
       NOTREACHED() << "Expected Mock or Stub, actual:" << GetGLImplementation();
       return false;
   }
-#endif
+#else
   return false;
+#endif
 }
 
 }  // namespace init

@@ -677,7 +677,6 @@ MULTIPROCESS_TEST_MAIN(ChildMain) {
   // Wait to be terminated.
   while (true)
     PlatformThread::Sleep(TimeDelta::FromSeconds(1));
-  return 0;
 }
 
 }  // namespace

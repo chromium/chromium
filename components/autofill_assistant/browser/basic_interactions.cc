@@ -502,7 +502,6 @@ bool BasicInteractions::ComputeValue(const ComputeValueProto& proto) {
       return CreateLoginOptionResponse(delegate_->GetUserModel(),
                                        proto.result_model_identifier(),
                                        proto.create_login_option_response());
-      break;
     case ComputeValueProto::kStringEmpty:
       if (!proto.string_empty().has_value()) {
         DVLOG(2)

@@ -183,7 +183,6 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaDrawable(
           return Java_AssistantDrawable_createRectangleShape(
               env, jbackground_color, jstroke_color, stroke_width_pixels,
               corner_radius_pixels);
-          break;
         }
         case ShapeDrawableProto::SHAPE_NOT_SET:
           return nullptr;

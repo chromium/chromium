@@ -186,8 +186,9 @@ bool IsSafebrowsingSupported() {
   // TODO(timvolodine): consider refactoring this out into safe_browsing/.
 #if defined(OS_ANDROID)
   return true;
-#endif
+#else
   return false;
+#endif
 }
 
 bool IsNetworkErrorAutoReloadEnabled() {

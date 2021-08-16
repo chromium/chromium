@@ -420,8 +420,9 @@ class BlockTabUnderTest : public PopupOpenerTabHelperTest {
         static_cast<infobars::InfoBarAndroid*>(manager->infobar_at(0));
     EXPECT_TRUE(infobar);
     return infobar;
-#endif  // defined(OS_ANDROID)
+#else
     return nullptr;
+#endif  // defined(OS_ANDROID)
   }
 
   void ExpectUIShown(bool shown) {

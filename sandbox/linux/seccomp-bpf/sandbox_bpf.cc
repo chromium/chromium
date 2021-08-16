@@ -155,7 +155,6 @@ bool SandboxBPF::StartSandbox(SeccompLevel seccomp_level, bool enable_ibpb) {
     SANDBOX_DIE(
         "Cannot repeatedly start sandbox. Create a separate Sandbox "
         "object instead.");
-    return false;
   }
 
   if (!proc_fd_.is_valid()) {

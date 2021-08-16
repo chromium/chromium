@@ -83,8 +83,6 @@ fuchsia::accessibility::semantics::Role AxRoleToFuchsiaSemanticRole(
     default:
       return fuchsia::accessibility::semantics::Role::UNKNOWN;
   }
-
-  return fuchsia::accessibility::semantics::Role::UNKNOWN;
 }
 
 // This function handles conversions for all data that is part of a Semantic

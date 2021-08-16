@@ -29,9 +29,10 @@ class SingleClientTypedUrlsSyncTest : public SyncTest {
 // so verifier needs to be disabled.
 #if defined(OS_ANDROID)
     return false;
-#endif
+#else
     // TODO(crbug.com/1137779): rewrite tests to not use verifier.
     return true;
+#endif
   }
 };
 

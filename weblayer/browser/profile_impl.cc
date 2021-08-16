@@ -682,22 +682,25 @@ bool ProfileImpl::GetBooleanSetting(SettingType type) {
     case SettingType::BASIC_SAFE_BROWSING_ENABLED:
 #if defined(OS_ANDROID)
       return safe_browsing::IsSafeBrowsingEnabled(*pref_service);
-#endif
+#else
       return false;
+#endif
     case SettingType::UKM_ENABLED:
       return pref_service->GetBoolean(prefs::kUkmEnabled);
     case SettingType::EXTENDED_REPORTING_SAFE_BROWSING_ENABLED:
 #if defined(OS_ANDROID)
       return pref_service->GetBoolean(
           ::prefs::kSafeBrowsingScoutReportingEnabled);
-#endif
+#else
       return false;
+#endif
     case SettingType::REAL_TIME_SAFE_BROWSING_ENABLED:
 #if defined(OS_ANDROID)
       return pref_service->GetBoolean(
           unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled);
-#endif
+#else
       return false;
+#endif
     case SettingType::NETWORK_PREDICTION_ENABLED:
       return pref_service->GetBoolean(prefs::kNoStatePrefetchEnabled);
   }

@@ -202,15 +202,11 @@ std::vector<std::string> DefaultRankingForLocaleAndType(
   if (IsEnUsLocale(locale)) {
     if (IsImageType(type))
       return DefaultEnUsImageRanking();
-    else
-      return DefaultEnUsTextRanking();
-  } else {
-    if (IsImageType(type))
-      return DefaultWorldImageRanking();
-    else
-      return DefaultWorldTextRanking();
+    return DefaultEnUsTextRanking();
   }
-  return {};
+  if (IsImageType(type))
+    return DefaultWorldImageRanking();
+  return DefaultWorldTextRanking();
 }
 
 }  // namespace sharing

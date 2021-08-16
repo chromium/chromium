@@ -36,8 +36,9 @@ bool ShowInfoBarOnAndroid(content::WebContents* web_contents) {
 #if defined(OS_ANDROID)
   return PreviewsAndroidBridge::CreateHttpsImageCompressionInfoBar(
       web_contents);
-#endif
+#else
   return true;
+#endif
 }
 
 // Returns the litepage robots origin from one of the image or src video

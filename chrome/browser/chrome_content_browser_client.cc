@@ -5656,8 +5656,9 @@ bool ChromeContentBrowserClient::ShouldLoadExtraIcuDataFile(
 #if defined(OS_ANDROID)
   *split_name = "extra_icu";
   return extra_icu::ModuleProvider::IsModuleInstalled();
-#endif
+#else
   return false;
+#endif
 }
 
 bool ChromeContentBrowserClient::ArePersistentMediaDeviceIDsAllowed(

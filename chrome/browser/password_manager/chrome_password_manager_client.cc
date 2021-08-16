@@ -476,8 +476,9 @@ scoped_refptr<device_reauth::BiometricAuthenticator>
 ChromePasswordManagerClient::GetBiometricAuthenticator() {
 #if defined(OS_ANDROID)
   return ChromeBiometricAuthenticatorFactory::GetBiometricAuthenticator();
-#endif
+#else
   return nullptr;
+#endif
 }
 
 void ChromePasswordManagerClient::GeneratePassword(

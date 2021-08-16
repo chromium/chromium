@@ -393,9 +393,9 @@ bool DownloadPrefs::PromptForDownload() const {
   // dialog shown, show the dialog.
   return *prompt_for_download_android_ !=
          static_cast<int>(DownloadPromptStatus::DONT_SHOW);
-#endif
-
+#else
   return *prompt_for_download_;
+#endif
 }
 
 bool DownloadPrefs::PromptDownloadLater() const {

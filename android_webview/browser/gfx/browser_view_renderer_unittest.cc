@@ -301,7 +301,6 @@ class TestAnimateOnScreenWithoutOnDraw : public RenderingTest {
         break;
       default:
         FAIL();
-        break;
     }
   }
 

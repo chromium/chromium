@@ -215,8 +215,9 @@ std::string ShellDevToolsManagerDelegate::GetDiscoveryPageHTML() {
 bool ShellDevToolsManagerDelegate::HasBundledFrontendResources() {
 #if defined(OS_ANDROID)
   return false;
-#endif
+#else
   return true;
+#endif
 }
 
 }  // namespace content

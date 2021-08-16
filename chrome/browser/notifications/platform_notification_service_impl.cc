@@ -102,9 +102,8 @@ static bool ShouldDisplayWebNotificationOnFullScreen(Profile* profile,
       return true;
     }
   }
-#endif
-
   return false;
+#endif
 }
 
 // Records the total number of deleted notifications after all storage

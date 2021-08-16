@@ -78,7 +78,6 @@ AvailableContentType ContentType(const OfflineItem& item) {
       if (item.is_suggested)
         return AvailableContentType::kPrefetchedPage;
       return AvailableContentType::kOtherPage;
-      break;
     case offline_items_collection::FILTER_VIDEO:
       return AvailableContentType::kVideo;
     case offline_items_collection::FILTER_AUDIO:

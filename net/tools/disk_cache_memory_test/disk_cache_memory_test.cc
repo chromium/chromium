@@ -216,7 +216,6 @@ uint64_t GetMemoryConsumption() {
         return total_size;
     }
   }
-  return total_size;
 }
 
 bool CacheMemTest(const std::vector<std::unique_ptr<CacheSpec>>& specs) {

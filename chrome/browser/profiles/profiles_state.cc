@@ -54,8 +54,9 @@ namespace profiles {
 bool IsMultipleProfilesEnabled() {
 #if defined(OS_ANDROID)
   return false;
-#endif
+#else
   return true;
+#endif
 }
 
 base::FilePath GetDefaultProfileDir(const base::FilePath& user_data_dir) {

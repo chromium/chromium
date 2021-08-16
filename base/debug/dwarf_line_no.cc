@@ -325,7 +325,6 @@ void EvaluateLineNumberProgram(const int fd,
 
             default:
               abort();
-              return;
           }
 
           // Skip any padding bytes in extended opcode.
@@ -427,7 +426,6 @@ void EvaluateLineNumberProgram(const int fd,
 
         default:
           abort();
-          return;
       }
     }
   }
@@ -560,11 +558,9 @@ bool ReadProgramInfo(const int fd,
   if (version == 4) {
     return ParseDwarf4ProgramInfo(&reader, is_64bit, cu_name_offset,
                                   program_info);
-  } else {
-    // Currently does not support other DWARF versions.
-    return false;
   }
 
+  // Currently does not support other DWARF versions.
   return false;
 }
 

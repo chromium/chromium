@@ -464,8 +464,9 @@ bool MediaStreamDevicesController::IsUserAcceptAllowed(
   // TODO(qinmin): Add a test for this. http://crbug.com/396869.
   // TODO(raymes): Shouldn't this apply to all permissions not just audio/video?
   return web_contents_->GetRenderWidgetHostView()->IsShowing();
-#endif
+#else
   return true;
+#endif
 }
 
 bool MediaStreamDevicesController::PermissionIsBlockedForReason(

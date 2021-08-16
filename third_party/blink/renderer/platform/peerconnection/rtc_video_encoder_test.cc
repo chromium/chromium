@@ -364,10 +364,9 @@ TEST_P(RTCVideoEncoderTest, RepeatedInitSucceeds) {
 
 TEST_P(RTCVideoEncoderTest, CreateAndInitSucceedsForTemporalLayer) {
   const webrtc::VideoCodecType codec_type = GetParam();
-  if (codec_type == webrtc::kVideoCodecVP8) {
+  if (codec_type == webrtc::kVideoCodecVP8)
     GTEST_SKIP() << "VP8 temporal layer encoding is not supported";
-    return;
-  }
+
   webrtc::VideoCodec tl_codec = GetSVCLayerCodec(codec_type,
                                                  /*num_spatial_layers=*/1);
   CreateEncoder(tl_codec.codecType);

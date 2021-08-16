@@ -298,9 +298,9 @@ bool SharingDeviceRegistration::IsClickToCallSupported() const {
 #if defined(OS_ANDROID)
   JNIEnv* env = base::android::AttachCurrentThread();
   return Java_SharingJNIBridge_isTelephonySupported(env);
-#endif
-
+#else
   return false;
+#endif
 }
 
 bool SharingDeviceRegistration::IsSharedClipboardSupported() const {
@@ -315,9 +315,9 @@ bool SharingDeviceRegistration::IsSharedClipboardSupported() const {
 bool SharingDeviceRegistration::IsSmsFetcherSupported() const {
 #if defined(OS_ANDROID)
   return base::FeatureList::IsEnabled(kWebOTPCrossDevice);
-#endif
-
+#else
   return false;
+#endif
 }
 
 bool SharingDeviceRegistration::IsRemoteCopySupported() const {

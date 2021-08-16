@@ -29,8 +29,9 @@ const char kNonRenewingExpiryTime[] = "NonRenewingExpiryTime";
 bool ShouldUseSmartUI() {
 #if defined(OS_ANDROID)
   return true;
-#endif
+#else
   return false;
+#endif
 }
 
 }  // namespace

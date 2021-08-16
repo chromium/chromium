@@ -78,13 +78,13 @@ bool IsPageInTabGroup(content::WebContents* contents) {
       return true;
     }
   }
+  return false;
 #else   // defined(OS_ANDROID)
   TabAndroid* const tab = TabAndroid::FromWebContents(contents);
   if (!tab)
     return false;
   return TabModelJniBridge::HasOtherRelatedTabs(tab);
 #endif  // defined(OS_ANDROID)
-  return false;
 }
 
 // Pass in a separate `url` parameter to ensure that we check the same URL that
