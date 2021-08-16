@@ -36,6 +36,7 @@ class InternalAuthenticatorAndroid : public autofill::InternalAuthenticator {
 
   // InternalAuthenticator:
   void SetEffectiveOrigin(const url::Origin& origin) override;
+  void SetPaymentOptions(blink::mojom::PaymentOptionsPtr payment) override;
   void MakeCredential(
       blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
       blink::mojom::Authenticator::MakeCredentialCallback callback) override;

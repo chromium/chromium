@@ -9,6 +9,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.blink.mojom.PaymentOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -54,10 +55,10 @@ public class Fido2ApiHandler {
     }
 
     protected void getAssertion(PublicKeyCredentialRequestOptions options,
-            RenderFrameHost frameHost, Origin origin, GetAssertionResponseCallback callback,
-            FidoErrorResponseCallback errorCallback) {
+            RenderFrameHost frameHost, Origin origin, PaymentOptions payment,
+            GetAssertionResponseCallback callback, FidoErrorResponseCallback errorCallback) {
         new Fido2CredentialRequest().handleGetAssertionRequest(
-                options, frameHost, origin, callback, errorCallback);
+                options, frameHost, origin, payment, callback, errorCallback);
     }
 
     protected void isUserVerifyingPlatformAuthenticatorAvailable(

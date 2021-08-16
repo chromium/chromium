@@ -70,13 +70,16 @@ class CONTENT_EXPORT AuthenticatorCommon {
 
   // This is not-quite an implementation of blink::mojom::Authenticator. The
   // first two functions take the caller's origin explicitly. This allows the
-  // caller origin to be overridden if needed.
+  // caller origin to be overridden if needed. `GetAssertion()` also takes the
+  // optional `payment` to add to "clientDataJson" after the browser displays
+  // the payment confirmation dialog to the user.
   void MakeCredential(
       url::Origin caller_origin,
       blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
       blink::mojom::Authenticator::MakeCredentialCallback callback);
   void GetAssertion(url::Origin caller_origin,
                     blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
+                    blink::mojom::PaymentOptionsPtr payment,
                     blink::mojom::Authenticator::GetAssertionCallback callback);
   void IsUserVerifyingPlatformAuthenticatorAvailable(
       blink::mojom::Authenticator::

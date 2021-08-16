@@ -26,6 +26,11 @@ class InternalAuthenticator {
   // process, the Relying Party ID may be different from the renderer's origin.
   virtual void SetEffectiveOrigin(const url::Origin& origin) = 0;
 
+  // Sets the payment information to be added to the "clientDataJson". Should be
+  // used only if the user has confirmed the payment information that was
+  // displayed to the user.
+  virtual void SetPaymentOptions(blink::mojom::PaymentOptionsPtr payment) = 0;
+
   // Gets the credential info for a new public key credential created by an
   // authenticator for the given |options|. Invokes |callback| with credentials
   // if authentication was successful.

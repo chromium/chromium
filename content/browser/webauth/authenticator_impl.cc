@@ -59,7 +59,7 @@ void AuthenticatorImpl::GetAssertion(
     blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
     GetAssertionCallback callback) {
   authenticator_common_->GetAssertion(origin(), std::move(options),
-                                      std::move(callback));
+                                      /*payment=*/nullptr, std::move(callback));
 }
 
 void AuthenticatorImpl::IsUserVerifyingPlatformAuthenticatorAvailable(

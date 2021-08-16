@@ -1098,6 +1098,7 @@ void AuthenticatorCommon::MakeCredential(
 void AuthenticatorCommon::GetAssertion(
     url::Origin caller_origin,
     blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
+    blink::mojom::PaymentOptionsPtr payment,
     blink::mojom::Authenticator::GetAssertionCallback callback) {
   if (request_) {
     if (WebAuthRequestSecurityChecker::OriginIsCryptoTokenExtension(
@@ -1168,7 +1169,7 @@ void AuthenticatorCommon::GetAssertion(
     client_data_json_ = BuildClientDataJson(
         ClientDataRequestType::kU2fSign, options->relying_party_id,
         options->challenge, /*is_cross_origin=*/false);
-  } else if (options->payment) {
+  } else if (payment) {
     auto* web_contents = WebContents::FromRenderFrameHost(GetRenderFrameHost());
     if (!web_contents) {
       CompleteGetAssertionRequest(
@@ -1179,7 +1180,7 @@ void AuthenticatorCommon::GetAssertion(
         url::Origin::Create(web_contents->GetLastCommittedURL());
     client_data_json_ = BuildClientDataJson(
         ClientDataRequestType::kPaymentGet, caller_origin_.Serialize(),
-        options->challenge, is_cross_origin, std::move(options->payment),
+        options->challenge, is_cross_origin, std::move(payment),
         relying_party_id_, top_origin.Serialize());
   } else {
     client_data_json_ = BuildClientDataJson(

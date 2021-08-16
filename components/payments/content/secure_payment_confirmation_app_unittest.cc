@@ -43,6 +43,7 @@ class MockAuthenticator : public autofill::InternalAuthenticator {
   ~MockAuthenticator() override = default;
 
   MOCK_METHOD1(SetEffectiveOrigin, void(const url::Origin&));
+  MOCK_METHOD1(SetPaymentOptions, void(blink::mojom::PaymentOptionsPtr));
   MOCK_METHOD2(
       MakeCredential,
       void(blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
