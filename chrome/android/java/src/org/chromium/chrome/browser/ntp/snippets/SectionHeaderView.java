@@ -87,7 +87,7 @@ public class SectionHeaderView extends LinearLayout {
     private @Nullable SectionHeaderTabListener mTabListener;
     private boolean mAnimatePaddingWhenDisabled;
     private @Nullable View mDivider;
-    private @Nullable LinearLayout mContent;
+    private LinearLayout mContent;
 
     // Cached the indicator drawables for easy swapping.
     private Drawable mEnabledIndicatorDrawable;
@@ -356,13 +356,12 @@ public class SectionHeaderView extends LinearLayout {
      * @param hasBackground true to set background; false to clear background.
      */
     private void setMaterialCardBackground(boolean hasBackground) {
-        LinearLayout layout = mContent == null ? this : mContent;
         if (!hasBackground) {
-            layout.setBackgroundResource(0);
+            mContent.setBackgroundResource(0);
             return;
         }
-        layout.setBackgroundResource(R.drawable.card_with_corners_background);
-        GradientDrawable gradientDrawable = (GradientDrawable) layout.getBackground();
+        mContent.setBackgroundResource(R.drawable.card_with_corners_background);
+        GradientDrawable gradientDrawable = (GradientDrawable) mContent.getBackground();
         gradientDrawable.setColor(
                 ChromeColors.getSurfaceColor(getContext(), R.dimen.card_elevation));
     }
