@@ -352,6 +352,12 @@ export let NetworkGuidInfo;
 export let WiFiStateProperties = ash.diagnostics.mojom.WiFiStateProperties;
 
 /**
+ * Type alias for SecurityType.
+ * @typedef {ash.diagnostics.mojom.SecurityType}
+ */
+export let SecurityType = ash.diagnostics.mojom.SecurityType;
+
+/**
  * Type alias for ConnectionType.
  * @typedef {ash.diagnostics.mojom.ConnectionType}
  */

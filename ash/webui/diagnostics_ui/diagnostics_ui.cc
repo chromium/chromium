@@ -144,6 +144,12 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
       {"networkStateOnlineText", IDS_NETWORK_HEALTH_STATE_ONLINE},
       {"networkStatePortalText", IDS_NETWORK_HEALTH_STATE_PORTAL},
       {"networkSecurityLabel", IDS_NETWORK_DIAGNOSTICS_SECURITY},
+      {"networkSecurityNoneLabel", IDS_ONC_WIFI_SECURITY_NONE},
+      // 8021x uses EAP label in network element localization function.
+      {"networkSecurityWep8021xLabel", IDS_ONC_WIFI_SECURITY_EAP},
+      {"networkSecurityWepPskLabel", IDS_ONC_WIFI_SECURITY_WEP},
+      {"networkSecurityWpaEapLabel", IDS_ONC_WIFI_SECURITY_EAP},
+      {"networkSecurityWpaPskLabel", IDS_ONC_WIFI_SECURITY_PSK},
       {"notEnoughAvailableMemoryMessage",
        IDS_DIAGNOSTICS_NOT_ENOUGH_AVAILABLE_MEMORY},
       {"overviewText", IDS_DIAGNOSTICS_OVERVIEW},

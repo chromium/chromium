@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BatteryChargeStatus, BatteryHealth, BatteryInfo, BatteryState, ConnectionType, CpuUsage, ExternalPowerSource, KeyboardInfo, MechanicalLayout, MemoryUsage, Network, NetworkGuidInfo, NetworkState, NetworkType, PhysicalLayout, PowerRoutineResult, RoutineType, StandardRoutineResult, SystemInfo, TouchDeviceInfo, TouchDeviceType, WiFiStateProperties} from './diagnostics_types.js'
+import {BatteryChargeStatus, BatteryHealth, BatteryInfo, BatteryState, ConnectionType, CpuUsage, ExternalPowerSource, KeyboardInfo, MechanicalLayout, MemoryUsage, Network, NetworkGuidInfo, NetworkState, NetworkType, PhysicalLayout, PowerRoutineResult, RoutineType, SecurityType, StandardRoutineResult, SystemInfo, TouchDeviceInfo, TouchDeviceType, WiFiStateProperties} from './diagnostics_types.js'
 import {stringToMojoString16} from './mojo_utils.js';
 
 /** @type {!Array<!BatteryChargeStatus>} */
@@ -294,6 +294,7 @@ export const fakeWiFiStateProperties = {
   frequency: 5745,
   bssid: '44:07:0b:06:2d:85',
   ssid: 'Dial Up',
+  security: SecurityType.kWepPsk,
 };
 
 /** @type {!Network} */
@@ -306,6 +307,7 @@ export let fakeWifiNetwork = {
       frequency: 5745,
       bssid: '44:07:0b:06:2d:85',
       ssid: 'Dial Up',
+      security: SecurityType.kNone,
     },
   },
   guid: 'wifiGuid',
@@ -329,6 +331,7 @@ export let fakeWifiNetworkNoNameServers = {
       frequency: 5745,
       bssid: '44:07:0b:06:2d:85',
       ssid: 'Dial Up',
+      security: SecurityType.kNone,
     },
   },
   guid: 'wifiGuid',
@@ -352,6 +355,7 @@ export let fakeWifiNetworkEmptyNameServers = {
       frequency: 5745,
       bssid: '44:07:0b:06:2d:85',
       ssid: 'Dial Up',
+      security: SecurityType.kNone,
     },
   },
   guid: 'wifiGuid',
@@ -375,6 +379,7 @@ export let fakeWifiNetworkMultipleNameServers = {
       frequency: 5745,
       bssid: '44:07:0b:06:2d:85',
       ssid: 'Dial Up',
+      security: SecurityType.kNone,
     },
   },
   guid: 'wifiGuid',

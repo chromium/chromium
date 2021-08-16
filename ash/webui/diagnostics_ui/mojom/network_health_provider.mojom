@@ -41,6 +41,15 @@ struct EthernetStateProperties {
 
 };
 
+// The security type for WiFi Ethernet networks.
+enum SecurityType {
+  kNone,
+  kWep8021x,
+  kWepPsk,
+  kWpaEap,
+  kWpaPsk,
+};
+
 // Contains network properties related to WiFi connections.
 struct WiFiStateProperties {
   // Indicates the signal strength of the service. This is a normalized value
@@ -49,6 +58,7 @@ struct WiFiStateProperties {
   int32 frequency;
   string ssid;
   string bssid;
+  SecurityType security;
 };
 
 // Contains network properties specific to a network type.

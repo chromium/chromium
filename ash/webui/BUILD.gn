@@ -19,6 +19,7 @@ test("ash_webui_unittests") {
   deps = [
     "//ash/webui/common/backend:unit_tests",
     "//ash/webui/diagnostics_ui/backend:unit_tests",
+    "//ash/webui/diagnostics_ui/mojom:unit_tests",
     "//ash/webui/scanning:unit_tests",
     "//ash/webui/shimless_rma/backend:unit_tests",
     "//ash/webui/shimless_rma/mojom:unit_tests",

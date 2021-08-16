@@ -6,10 +6,12 @@ import './data_point.js';
 import './diagnostics_fonts_css.js';
 import './diagnostics_shared_css.js';
 
+import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Network} from './diagnostics_types.js';
+import {Network, SecurityType} from './diagnostics_types.js';
 import {convertFrequencyToChannel, getSubnetMaskFromRoutingPrefix} from './diagnostics_utils.js';
 
 /**
@@ -28,6 +30,15 @@ Polymer({
     /** @type {!Network} */
     network: {
       type: Object,
+    },
+
+    /**
+     * @protected
+     * @type {string}
+     */
+    security_: {
+      type: String,
+      computed: 'computeSecurity_(network.typeProperties.wifi.security)'
     },
 
     /**
@@ -58,6 +69,32 @@ Polymer({
     const channel = convertFrequencyToChannel(frequency);
     const ghz = (frequency / 1000).toFixed(3);
     return `${channel || '?'} (${ghz} GHz)`;
+  },
+
+  /**
+   * @protected
+   * @return {string}
+   */
+  computeSecurity_() {
+    if (!this.network.typeProperties) {
+      return '';
+    }
+
+    switch (this.network.typeProperties.wifi.security) {
+      case SecurityType.kNone:
+        return loadTimeData.getString('networkSecurityNoneLabel');
+      case SecurityType.kWep8021x:
+        return loadTimeData.getString('networkSecurityWep8021xLabel');
+      case SecurityType.kWepPsk:
+        return loadTimeData.getString('networkSecurityWepPskLabel');
+      case SecurityType.kWpaEap:
+        return loadTimeData.getString('networkSecurityWpaEapLabel');
+      case SecurityType.kWpaPsk:
+        return loadTimeData.getString('networkSecurityWpaPskLabel');
+      default:
+        assertNotReached();
+        return '';
+    }
   },
 
   /**

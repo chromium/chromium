@@ -354,6 +354,16 @@ class NetworkHealthProviderTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
+  void SetWifiSecurity(const std::string& securityClass,
+                       const std::string& eapKeyMgmt) {
+    SetWifiSecurity(securityClass);
+    SetWifiProperty(shill::kEapKeyMgmtProperty, base::Value(eapKeyMgmt));
+  }
+
+  void SetWifiSecurity(const std::string& securityClass) {
+    SetWifiProperty(shill::kSecurityClassProperty, base::Value(securityClass));
+  }
+
   void SetupObserver(FakeNetworkListObserver* observer) {
     network_health_provider_->ObserveNetworkList(observer->pending_remote());
     base::RunLoop().RunUntilIdle();
@@ -667,6 +677,16 @@ TEST_F(NetworkHealthProviderTest, ChangingWifiProperties) {
   EXPECT_EQ(observer.GetLatestState()->type_properties->get_wifi()->frequency,
             frequency_2);
 
+  // By default security should be NONE.
+  EXPECT_EQ(observer.GetLatestState()->type_properties->get_wifi()->security,
+            mojom::SecurityType::kNone);
+
+  // Enable security as WEP_8021x.
+  mojom::SecurityType security_2 = mojom::SecurityType::kWep8021x;
+  SetWifiSecurity(shill::kSecurityWep, shill::kKeyManagementIEEE8021X);
+  EXPECT_EQ(observer.GetLatestState()->type_properties->get_wifi()->security,
+            security_2);
+
   // Verify all properties are still set.
   EXPECT_EQ(
       observer.GetLatestState()->type_properties->get_wifi()->signal_strength,
@@ -675,6 +695,8 @@ TEST_F(NetworkHealthProviderTest, ChangingWifiProperties) {
             bssid_2);
   EXPECT_EQ(observer.GetLatestState()->type_properties->get_wifi()->frequency,
             frequency_2);
+  EXPECT_EQ(observer.GetLatestState()->type_properties->get_wifi()->security,
+            security_2);
 }
 
 // Start with an online ethernet connection and validate the interaction
@@ -868,6 +890,63 @@ TEST_F(NetworkHealthProviderTest, IPConfig) {
   EXPECT_EQ(name_servers.size(), 2U);
   EXPECT_EQ(name_servers[0], dns_server_1);
   EXPECT_EQ(name_servers[1], dns_server_2);
+}
+
+TEST_F(NetworkHealthProviderTest, SetupWifiNetworkWithSecurity) {
+  // Create a wifi device.
+  FakeNetworkListObserver list_observer;
+  SetupObserver(&list_observer);
+  CreateWifiDevice();
+  ASSERT_EQ(1u, list_observer.observer_guids().size());
+  const std::string guid = list_observer.observer_guids()[0];
+  size_t state_call_count = 0;
+  size_t list_call_count = 0;
+
+  // Put wifi online and validate it is active.
+  FakeNetworkStateObserver observer;
+  SetupObserver(&observer, guid);
+  AssociateWifi();
+  SetWifiOnline();
+  ExpectListObserverFired(list_observer,
+                          /*prior_call_count=*/&list_call_count);
+  EXPECT_EQ(observer.GetLatestState()->state, mojom::NetworkState::kOnline);
+  EXPECT_FALSE(list_observer.active_guid().empty());
+  EXPECT_EQ(guid, list_observer.active_guid());
+
+  // By default security should be NONE.
+  ExpectStateObserverFired(observer, &state_call_count);
+  EXPECT_EQ(observer.GetLatestState()->type_properties->get_wifi()->security,
+            mojom::SecurityType::kNone);
+
+  // Enable security as WEP_8021x.
+  SetWifiSecurity(shill::kSecurityWep, shill::kKeyManagementIEEE8021X);
+  EXPECT_EQ(observer.GetLatestState()->type_properties->get_wifi()->security,
+            mojom::SecurityType::kWep8021x);
+  ExpectStateObserverFired(observer, &state_call_count);
+
+  // Enable security as WEP_PSK.
+  SetWifiSecurity(shill::kSecurityWep, std::string());
+  EXPECT_EQ(observer.GetLatestState()->type_properties->get_wifi()->security,
+            mojom::SecurityType::kWepPsk);
+  ExpectStateObserverFired(observer, &state_call_count);
+
+  // Enable security as WPA_EAP.
+  SetWifiSecurity(shill::kSecurity8021x);
+  EXPECT_EQ(observer.GetLatestState()->type_properties->get_wifi()->security,
+            mojom::SecurityType::kWpaEap);
+  ExpectStateObserverFired(observer, &state_call_count);
+
+  // Enable security as WPA_PSK.
+  SetWifiSecurity(shill::kSecurityPsk);
+  EXPECT_EQ(observer.GetLatestState()->type_properties->get_wifi()->security,
+            mojom::SecurityType::kWpaPsk);
+  ExpectStateObserverFired(observer, &state_call_count);
+
+  // Enable security as NONE.
+  SetWifiSecurity(shill::kSecurityNone);
+  EXPECT_EQ(observer.GetLatestState()->type_properties->get_wifi()->security,
+            mojom::SecurityType::kNone);
+  ExpectStateObserverFired(observer, &state_call_count);
 }
 
 // Verifies that the list of observer guids and the active guid are set

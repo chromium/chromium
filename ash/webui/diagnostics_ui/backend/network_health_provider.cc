@@ -94,6 +94,11 @@ constexpr mojom::NetworkType ConvertNetworkType(
   }
 }
 
+mojom::SecurityType ConvertSecurityType(network_mojom::SecurityType type) {
+  return mojo::EnumTraits<mojom::SecurityType,
+                          network_mojom::SecurityType>::ToMojom(type);
+}
+
 mojom::IPConfigPropertiesPtr CreateIPConfigProperties(
     const network_mojom::IPConfigPropertiesPtr& ip_config_props) {
   mojom::IPConfigPropertiesPtr ip_config = mojom::IPConfigProperties::New();
@@ -111,6 +116,8 @@ mojom::WiFiStatePropertiesPtr CreateWiFiStateProperties(
   wifi_props->frequency = network_type_props.get_wifi()->frequency;
   wifi_props->ssid = network_type_props.get_wifi()->ssid;
   wifi_props->bssid = network_type_props.get_wifi()->bssid;
+  wifi_props->security =
+      ConvertSecurityType(network_type_props.get_wifi()->security);
   return wifi_props;
 }
 

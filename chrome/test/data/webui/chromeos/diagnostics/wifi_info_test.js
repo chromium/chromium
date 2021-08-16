@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://diagnostics/wifi_info.js';
-import {Network, WiFiStateProperties} from 'chrome://diagnostics/diagnostics_types.js';
+import {Network, SecurityType, WiFiStateProperties} from 'chrome://diagnostics/diagnostics_types.js';
 import {fakeDisconnectedWifiNetwork, fakeWifiNetwork, fakeWiFiStateProperties} from 'chrome://diagnostics/fake_data.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
@@ -71,7 +71,8 @@ export function wifiInfoTestSuite() {
           `${fakeWifiNetwork.typeProperties.wifi.bssid}`);
       assertDataPointHasExpectedHeaderAndValue(
           wifiInfoElement, '#security',
-          wifiInfoElement.i18n('networkSecurityLabel'), '');
+          wifiInfoElement.i18n('networkSecurityLabel'),
+          wifiInfoElement.i18n('networkSecurityNoneLabel'));
       assertDataPointHasExpectedHeaderAndValue(
           wifiInfoElement, '#signalStrength',
           wifiInfoElement.i18n('networkSignalStrengthLabel'),
@@ -125,12 +126,60 @@ export function wifiInfoTestSuite() {
     });
   });
 
-  test('WiFiInfoSecurityBasedOnNetwork', () => {
-    return initializeWifiInfo().then(() => {
+  test('WiFiInfoSecurityWhenNone', () => {
+    const testNetwork = getWifiNetworkWithWiFiStatePropertiesOf(
+        /** @type {!WiFiStateProperties} */ ({security: SecurityType.kNone}));
+    return initializeWifiInfo(testNetwork).then(() => {
       const expectedHeader = wifiInfoElement.i18n('networkSecurityLabel');
-      // TODO(ashleydp): Update test when security data provided.
+      const expectedValue = wifiInfoElement.i18n('networkSecurityNoneLabel');
       assertDataPointHasExpectedHeaderAndValue(
-          wifiInfoElement, '#security', expectedHeader, '');
+          wifiInfoElement, '#security', expectedHeader, expectedValue);
+    });
+  });
+
+  test('WiFiInfoSecurityWhenWep8021x', () => {
+    const testNetwork = getWifiNetworkWithWiFiStatePropertiesOf(
+        /** @type {!WiFiStateProperties} */ (
+            {security: SecurityType.kWep8021x}));
+    return initializeWifiInfo(testNetwork).then(() => {
+      const expectedHeader = wifiInfoElement.i18n('networkSecurityLabel');
+      const expectedValue =
+          wifiInfoElement.i18n('networkSecurityWep8021xLabel');
+      assertDataPointHasExpectedHeaderAndValue(
+          wifiInfoElement, '#security', expectedHeader, expectedValue);
+    });
+  });
+
+  test('WiFiInfoSecurityWhenWepPsk', () => {
+    const testNetwork = getWifiNetworkWithWiFiStatePropertiesOf(
+        /** @type {!WiFiStateProperties} */ ({security: SecurityType.kWepPsk}));
+    return initializeWifiInfo(testNetwork).then(() => {
+      const expectedHeader = wifiInfoElement.i18n('networkSecurityLabel');
+      const expectedValue = wifiInfoElement.i18n('networkSecurityWepPskLabel');
+      assertDataPointHasExpectedHeaderAndValue(
+          wifiInfoElement, '#security', expectedHeader, expectedValue);
+    });
+  });
+
+  test('WiFiInfoSecurityWhenWpaEap', () => {
+    const testNetwork = getWifiNetworkWithWiFiStatePropertiesOf(
+        /** @type {!WiFiStateProperties} */ ({security: SecurityType.kWpaEap}));
+    return initializeWifiInfo(testNetwork).then(() => {
+      const expectedHeader = wifiInfoElement.i18n('networkSecurityLabel');
+      const expectedValue = wifiInfoElement.i18n('networkSecurityWpaEapLabel');
+      assertDataPointHasExpectedHeaderAndValue(
+          wifiInfoElement, '#security', expectedHeader, expectedValue);
+    });
+  });
+
+  test('WiFiInfoSecurityWhenWpaPsk', () => {
+    const testNetwork = getWifiNetworkWithWiFiStatePropertiesOf(
+        /** @type {!WiFiStateProperties} */ ({security: SecurityType.kWpaPsk}));
+    return initializeWifiInfo(testNetwork).then(() => {
+      const expectedHeader = wifiInfoElement.i18n('networkSecurityLabel');
+      const expectedValue = wifiInfoElement.i18n('networkSecurityWpaPskLabel');
+      assertDataPointHasExpectedHeaderAndValue(
+          wifiInfoElement, '#security', expectedHeader, expectedValue);
     });
   });
 
