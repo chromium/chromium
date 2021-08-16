@@ -44,6 +44,8 @@
 #elif defined(OS_FUCHSIA)
 #include "base/lazy_instance.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
+#elif defined(OS_WIN)
+#include "net/cert/internal/trust_store_win.h"
 #endif
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 #include "net/cert/internal/trust_store_chrome.h"
@@ -320,6 +322,29 @@ std::unique_ptr<SystemTrustStore> CreateSslSystemTrustStore() {
 std::unique_ptr<SystemTrustStore> CreateSslSystemTrustStoreChromeRoot() {
   return std::make_unique<DummySystemTrustStore>();
 }
+
+#elif defined(OS_WIN)
+
+// Using the Builtin Verifier w/o the Chrome Root Store is unsupported on
+// Windows.
+std::unique_ptr<SystemTrustStore> CreateSslSystemTrustStore() {
+  return std::make_unique<DummySystemTrustStore>();
+}
+
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+
+std::unique_ptr<SystemTrustStore> CreateSslSystemTrustStoreChromeRoot() {
+  return std::make_unique<SystemTrustStoreChrome>(
+      std::make_unique<TrustStoreChrome>(), TrustStoreWin::Create());
+}
+
+#else
+
+std::unique_ptr<SystemTrustStore> CreateSslSystemTrustStoreChromeRoot() {
+  return std::make_unique<DummySystemTrustStore>();
+}
+
+#endif  // CHROME_ROOT_STORE_SUPPORTED
 
 #else
 

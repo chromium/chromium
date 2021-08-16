@@ -126,10 +126,9 @@ int main(int argc, char** argv) {
   if ((proto_path.empty() && cpp_path.empty()) ||
       command_line.HasSwitch("help")) {
     std::cerr << "Usage: root_store_tool "
-                 "[--root-store-dir=<relative-path>]
-                 "[--write-proto=PROTO_FILE] "
-                 "[--write-cpp=CPP_FILE]"
-              << std::endl;
+              << "[--root-store-dir=<relative-path>] "
+              << "[--write-proto=PROTO_FILE] "
+              << "[--write-cpp=CPP_FILE]" << std::endl;
     return 1;
   }
 
@@ -151,7 +150,7 @@ int main(int argc, char** argv) {
                          .AppendASCII("data")
                          .AppendASCII("ssl")
                          .AppendASCII("chrome_root_store")
-                         .AppendASCII("base");
+                         .AppendASCII("store");
   } else {
     root_store_dir = source_root.Append(root_store_dir);
   }

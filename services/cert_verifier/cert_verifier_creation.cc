@@ -103,7 +103,8 @@ scoped_refptr<net::CertVerifyProc> CreateOldDefaultWithoutCaching(
 scoped_refptr<net::CertVerifyProc> CreateNewDefaultWithoutCaching(
     scoped_refptr<net::CertNetFetcher> cert_net_fetcher) {
   scoped_refptr<net::CertVerifyProc> verify_proc;
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED) && defined(OS_LINUX)
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED) && \
+    (defined(OS_LINUX) || defined(OS_WIN))
   verify_proc = net::CreateCertVerifyProcBuiltin(
       std::move(cert_net_fetcher), net::CreateSslSystemTrustStoreChromeRoot());
 #elif BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)

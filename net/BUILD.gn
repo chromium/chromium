@@ -1397,6 +1397,14 @@ component("net") {
       "cert/internal/trust_store_chrome.h",
     ]
     deps += [ "//net/data/ssl/chrome_root_store:gen_root_store_inc" ]
+    if (is_win) {
+      sources += [
+        "cert/internal/trust_store_win.cc",
+        "cert/internal/trust_store_win.h",
+        "third_party/mozilla_win/cert/win_util.cc",
+        "third_party/mozilla_win/cert/win_util.h",
+      ]
+    }
   }
 
   if (use_nss_certs) {
@@ -4716,11 +4724,6 @@ test("net_unittests") {
     ]
   }
 
-  if (chrome_root_store_supported) {
-    sources += [ "cert/internal/trust_store_chrome_unittest.cc" ]
-    deps += [ "//net/data/ssl/chrome_root_store:gen_root_store_test_inc" ]
-  }
-
   if (!disable_brotli_filter) {
     sources += [ "filter/brotli_source_stream_unittest.cc" ]
   }
@@ -4754,6 +4757,16 @@ test("net_unittests") {
       "iphlpapi.lib",
       "ncrypt.lib",
     ]
+  }
+
+  if (chrome_root_store_supported) {
+    sources += [ "cert/internal/trust_store_chrome_unittest.cc" ]
+    deps += [ "//net/data/ssl/chrome_root_store:gen_root_store_test_inc" ]
+
+    if (is_win) {
+      sources += [ "cert/internal/trust_store_win_unittest.cc" ]
+      libs += [ "crypt32.lib" ]
+    }
   }
 
   if (trial_comparison_cert_verifier_supported) {
