@@ -122,7 +122,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
       /** @private */
       showWallpaperOptions_: {
         type: Boolean,
-        computed: 'computeShowWallpaperOptions_(image_)',
+        computed: 'computeShowWallpaperOptions_(image_, path)',
       },
 
       /** @private */
@@ -237,8 +237,8 @@ export class WallpaperSelected extends WithPersonalizationStore {
    */
   computeTextContainerClass_(image, path) {
     let className = 'text-container';
-    if (!!image && image.type === WallpaperType.kCustomized ||
-        path === Paths.CollectionImages) {
+    if (this.computeShowWallpaperOptions_(image, path) ||
+        this.computeShowCollectionOptions_(path)) {
       return className + ' options';
     }
     return className;
@@ -291,11 +291,13 @@ export class WallpaperSelected extends WithPersonalizationStore {
 
   /**
    * @param {?chromeos.personalizationApp.mojom.CurrentWallpaper} image
+   * @param {string} path
    * @return {boolean}
    * @private
    */
-  computeShowWallpaperOptions_(image) {
-    return !!image && image.type === WallpaperType.kCustomized;
+  computeShowWallpaperOptions_(image, path) {
+    return !!image && image.type === WallpaperType.kCustomized &&
+        path === Paths.LocalCollection;
   }
 
   /**
