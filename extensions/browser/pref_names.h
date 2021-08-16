@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "build/build_config.h"
 #include "extensions/browser/extension_prefs_scope.h"
 
 // Preference keys which are needed by both the ExtensionPrefs and by external
@@ -99,6 +100,13 @@ extern const char kToolbar[];
 // A preference for a list of Component extensions that have been
 // uninstalled/removed and should not be reloaded.
 extern const char kDeletedComponentExtensions[];
+
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+// A preference for whether Chrome Apps should be allowed. The default depends
+// on the ChromeAppsDeprecation feature flag, and this pref can extend support
+// for Chrome Apps by enterprise policy.
+extern const char kChromeAppsEnabled[];
+#endif
 
 // Properties in kExtensions dictionaries --------------------------------------
 

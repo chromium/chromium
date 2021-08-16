@@ -524,29 +524,59 @@ enum class ChromeAppDeprecationFeatureValue {
 #endif
 };
 
+enum class ChromeAppsEnabledPrefValue {
+  kDefault,
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+  kEnabled,
+  kDisabled,
+#endif
+};
+
 std::string ChromeAppDeprecationFeatureValueToString(
-    const ::testing::TestParamInfo<ChromeAppDeprecationFeatureValue>&
+    const ::testing::TestParamInfo<std::tuple<ChromeAppDeprecationFeatureValue,
+                                              ChromeAppsEnabledPrefValue>>&
         param_info) {
-  switch (param_info.param) {
+  std::string result;
+  switch (std::get<0>(param_info.param)) {
     case ChromeAppDeprecationFeatureValue::kDefault:
-      return "Default";
+      result = "ChromeAppDeprecationFeatureDefault";
+      break;
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
     case ChromeAppDeprecationFeatureValue::kEnabled:
-      return "ChromeAppsEnabled";
+      result = "ChromeAppDeprecationFeatureEnabled";
+      break;
     case ChromeAppDeprecationFeatureValue::kDisabled:
-      return "ChromeAppsDisabled";
+      result = "ChromeAppDeprecationFeatureDisabled";
+      break;
 #endif
   }
+  result += '_';
+  switch (std::get<1>(param_info.param)) {
+    case ChromeAppsEnabledPrefValue::kDefault:
+      result += "ChromeAppsEnabledPrefDefault";
+      break;
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+    case ChromeAppsEnabledPrefValue::kEnabled:
+      result += "ChromeAppsEnabledPrefEnabled";
+      break;
+    case ChromeAppsEnabledPrefValue::kDisabled:
+      result += "ChromeAppsEnabledPrefDisabled";
+      break;
+#endif
+  }
+  return result;
 }
 
 }  // namespace
 
 class StartupBrowserCreatorChromeAppShortcutTest
     : public StartupBrowserCreatorTest,
-      public ::testing::WithParamInterface<ChromeAppDeprecationFeatureValue> {
+      public ::testing::WithParamInterface<
+          std::tuple<ChromeAppDeprecationFeatureValue,
+                     ChromeAppsEnabledPrefValue>> {
  protected:
   StartupBrowserCreatorChromeAppShortcutTest() {
-    switch (GetParam()) {
+    switch (std::get<0>(GetParam())) {
       case ChromeAppDeprecationFeatureValue::kDefault:
         break;
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
@@ -557,6 +587,24 @@ class StartupBrowserCreatorChromeAppShortcutTest
       case ChromeAppDeprecationFeatureValue::kDisabled:
         scoped_feature_list_.InitAndDisableFeature(
             features::kChromeAppsDeprecation);
+        break;
+#endif
+    }
+  }
+
+  void SetUpOnMainThread() override {
+    StartupBrowserCreatorTest::SetUpOnMainThread();
+    switch (std::get<1>(GetParam())) {
+      case ChromeAppsEnabledPrefValue::kDefault:
+        break;
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+      case ChromeAppsEnabledPrefValue::kEnabled:
+        browser()->profile()->GetPrefs()->SetBoolean(
+            extensions::pref_names::kChromeAppsEnabled, true);
+        break;
+      case ChromeAppsEnabledPrefValue::kDisabled:
+        browser()->profile()->GetPrefs()->SetBoolean(
+            extensions::pref_names::kChromeAppsEnabled, false);
         break;
 #endif
     }
@@ -582,17 +630,24 @@ class StartupBrowserCreatorChromeAppShortcutTest
               other_tab_strip->GetWebContentsAt(0)->GetURL());
   }
 
-  bool ShouldExpectBlockLaunch() {
+  bool IsExpectedToAllowLaunch() {
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
-    switch (GetParam()) {
-      case ChromeAppDeprecationFeatureValue::kEnabled:
+    switch (std::get<1>(GetParam())) {
+      case ChromeAppsEnabledPrefValue::kEnabled:
         return true;
+      case ChromeAppsEnabledPrefValue::kDisabled:
+      case ChromeAppsEnabledPrefValue::kDefault:
+        break;
+    }
+    switch (std::get<0>(GetParam())) {
+      case ChromeAppDeprecationFeatureValue::kEnabled:
+        return false;
       case ChromeAppDeprecationFeatureValue::kDefault:
       case ChromeAppDeprecationFeatureValue::kDisabled:
-        return false;
+        return true;
     }
 #endif
-    return false;
+    return true;
   }
 
  private:
@@ -617,9 +672,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
       command_line, base::FilePath(), /*process_startup=*/false,
       browser()->profile(), {}));
 
-  if (ShouldExpectBlockLaunch()) {
-    ExpectBlockLaunch();
-  } else {
+  if (IsExpectedToAllowLaunch()) {
     // No pref was set, so the app should have opened in a tab in the existing
     // window.
     ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
@@ -637,6 +690,8 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
     content::TitleWatcher title_watcher(tab_strip->GetActiveWebContents(),
                                         expected_title);
     EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
+  } else {
+    ExpectBlockLaunch();
   }
 }
 
@@ -654,9 +709,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
       command_line, base::FilePath(), /*process_startup=*/false,
       browser()->profile(), {}));
 
-  if (ShouldExpectBlockLaunch()) {
-    ExpectBlockLaunch();
-  } else {
+  if (IsExpectedToAllowLaunch()) {
     // Pref was set to open in a window, so the app should have opened in a
     // window.  The launch should have created a new browser. Find the new
     // browser.
@@ -670,6 +723,8 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
     EXPECT_NE(new_browser->app_name().find(extension_app->id()),
               std::string::npos)
         << new_browser->app_name();
+  } else {
+    ExpectBlockLaunch();
   }
 }
 
@@ -692,9 +747,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
       command_line, base::FilePath(), /*process_startup=*/false,
       browser()->profile(), {}));
 
-  if (ShouldExpectBlockLaunch()) {
-    ExpectBlockLaunch();
-  } else {
+  if (IsExpectedToAllowLaunch()) {
     // When an app shortcut is open and the pref indicates a tab should open,
     // the tab is open in the existing browser window.
     ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
@@ -714,6 +767,8 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
     content::TitleWatcher title_watcher(tab_strip->GetActiveWebContents(),
                                         expected_title);
     EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
+  } else {
+    ExpectBlockLaunch();
   }
 }
 
@@ -766,13 +821,21 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     StartupBrowserCreatorChromeAppShortcutTest,
-    ::testing::Values(ChromeAppDeprecationFeatureValue::kDefault
+    ::testing::Combine(
+        ::testing::Values(ChromeAppDeprecationFeatureValue::kDefault
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
-                      ,
-                      ChromeAppDeprecationFeatureValue::kEnabled,
-                      ChromeAppDeprecationFeatureValue::kDisabled
+                          ,
+                          ChromeAppDeprecationFeatureValue::kEnabled,
+                          ChromeAppDeprecationFeatureValue::kDisabled
 #endif
-                      ),
+                          ),
+        ::testing::Values(ChromeAppsEnabledPrefValue::kDefault
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+                          ,
+                          ChromeAppsEnabledPrefValue::kEnabled,
+                          ChromeAppsEnabledPrefValue::kDisabled
+#endif
+                          )),
     ChromeAppDeprecationFeatureValueToString);
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)

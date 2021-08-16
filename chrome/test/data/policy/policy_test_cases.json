@@ -15649,5 +15649,34 @@
         }
       }
     ]
+  },
+  "ChromeAppsEnabled": {
+    "os": ["win", "linux", "mac"],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": { "ChromeAppsEnabled": false },
+        "prefs": {
+          "extensions.chrome_apps_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": { "ChromeAppsEnabled": true },
+        "prefs": {
+          "extensions.chrome_apps_enabled": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "extensions.chrome_apps_enabled": {
+            "default_value": false
+          }
+        }
+      }
+    ]
   }
 }

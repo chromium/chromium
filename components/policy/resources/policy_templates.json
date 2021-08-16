@@ -27235,6 +27235,36 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
 
           If this policy is set to true or unset, the enhanced network text-to-speech voices feature in Select-to-speak can be enabled or disabled by the user.''',
     },
+    {
+      'name': 'ChromeAppsEnabled',
+      'owners': ['mattm@chromium.org'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'future_on': ['chrome.win', 'chrome.mac', 'chrome.linux'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Chrome Apps will be allowed to run on these platforms.',
+        },
+        {
+          'value': False,
+          'caption': 'Chrome Apps may not be allowed to run, depending on the status of the deprecation rollout.',
+        },
+      ],
+      'default': False,
+      'example_value': True,
+      'id': 892,
+      'tags': [],
+      'caption': '''Extend support for Chrome Apps on Windows, Mac, and Linux.''',
+      'desc': '''Chrome Apps are deprecated on Windows, Mac, and Linux.
+      If this policy is enabled, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will continue to allow Chrome Apps to be run on these platforms until the final date when Chrome Apps support is removed on all platforms, June 2022.
+      If this policy is disabled or unset, Chrome Apps may not be allowed to run, depending on the status of the deprecation rollout.
+      In either case, Chrome Apps that are force installed by policy will continue to be allowed.''',
+    },
   ],
   'messages': {
     # Messages that are not associated to any policies.
@@ -28189,6 +28219,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 891,
+  'highest_id_currently_used': 892,
   'highest_atomic_group_id_currently_used': 41
 }

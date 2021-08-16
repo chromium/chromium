@@ -41,6 +41,7 @@
 #include "extensions/browser/install_flag.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_info.h"
@@ -2268,6 +2269,9 @@ void ExtensionPrefs::RegisterProfilePrefs(
   registry->RegisterStringPref(pref_names::kLastChromeVersion, std::string());
   registry->RegisterDictionaryPref(kInstallSignature);
   registry->RegisterListPref(kExternalUninstalls);
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+  registry->RegisterBooleanPref(pref_names::kChromeAppsEnabled, false);
+#endif
 
   registry->RegisterListPref(pref_names::kNativeMessagingBlocklist);
   registry->RegisterListPref(pref_names::kNativeMessagingAllowlist);

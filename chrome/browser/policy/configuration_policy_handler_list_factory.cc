@@ -1468,6 +1468,12 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     policy_prefs::kDlpClipboardCheckSizeLimit,
     base::Value::Type::INTEGER },
 #endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS) && (defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX))
+  { key::kChromeAppsEnabled,
+    extensions::pref_names::kChromeAppsEnabled,
+    base::Value::Type::BOOLEAN },
+#endif
 };
 // clang-format on
 
