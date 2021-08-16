@@ -685,11 +685,11 @@ base::FilePath GuestOsRegistryService::GetIconPath(
     ui::ResourceScaleFactor scale_factor) const {
   const base::FilePath app_path = GetAppPath(app_id);
   switch (scale_factor) {
-    case ui::SCALE_FACTOR_100P:
+    case ui::k100Percent:
       return app_path.AppendASCII("icon_100p.png");
-    case ui::SCALE_FACTOR_200P:
+    case ui::k200Percent:
       return app_path.AppendASCII("icon_200p.png");
-    case ui::SCALE_FACTOR_300P:
+    case ui::k300Percent:
       return app_path.AppendASCII("icon_300p.png");
     default:
       NOTREACHED();
@@ -1053,10 +1053,10 @@ void GuestOsRegistryService::RequestContainerAppIcon(
   // needs.
   uint32_t icon_scale = 1;
   switch (scale_factor) {
-    case ui::SCALE_FACTOR_200P:
+    case ui::k200Percent:
       icon_scale = 2;
       break;
-    case ui::SCALE_FACTOR_300P:
+    case ui::k300Percent:
       icon_scale = 3;
       break;
     default:

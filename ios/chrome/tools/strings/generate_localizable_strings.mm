@@ -59,7 +59,7 @@ std::unique_ptr<ui::DataPack> LoadResourceDataPack(
   if (!base::PathExists(resources_pak_path))
     return resource_data_pack;
 
-  resource_data_pack.reset(new ui::DataPack(ui::SCALE_FACTOR_100P));
+  resource_data_pack.reset(new ui::DataPack(ui::k100Percent));
   if (!resource_data_pack->LoadFromPath(resources_pak_path))
     resource_data_pack.reset();
 

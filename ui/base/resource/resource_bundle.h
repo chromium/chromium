@@ -266,7 +266,7 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
 
   // Loads the raw bytes of a data resource nearest the scale factor
   // |scale_factor| into |bytes|. If the resource is compressed, decompress
-  // before returning. Use ResourceHandle::SCALE_FACTOR_NONE for scale
+  // before returning. Use ResourceHandle::kScaleFactorNone for scale
   // independent image resources (such as wallpaper). Returns null if we fail
   // to read the resource.
   base::RefCountedMemory* LoadDataResourceBytesForScale(
@@ -279,7 +279,7 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
 
   // Return the contents of a resource in a StringPiece given the resource id
   // nearest the scale factor |scale_factor|.
-  // Use ResourceHandle::SCALE_FACTOR_NONE for scale independent image resources
+  // Use ResourceHandle::kScaleFactorNone for scale independent image resources
   // (such as wallpaper).
   base::StringPiece GetRawDataResourceForScale(
       int resource_id,
@@ -348,7 +348,7 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   static base::FilePath GetLocaleFilePath(const std::string& app_locale);
 
   // Returns the maximum scale factor currently loaded.
-  // Returns SCALE_FACTOR_100P if no resource is loaded.
+  // Returns k100Percent if no resource is loaded.
   ResourceScaleFactor GetMaxResourceScaleFactor() const;
 
   // Returns true if |scale_factor| is supported by this platform.
@@ -443,8 +443,8 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
 
   // Fills the |bitmap| given the |resource_id| and |scale_factor|.
   // Returns false if the resource does not exist. This may fall back to
-  // the data pack with SCALE_FACTOR_NONE, and when this happens,
-  // |scale_factor| will be set to SCALE_FACTOR_NONE.
+  // the data pack with kScaleFactorNone, and when this happens,
+  // |scale_factor| will be set to kScaleFactorNone.
   bool LoadBitmap(int resource_id,
                   ResourceScaleFactor* scale_factor,
                   SkBitmap* bitmap,

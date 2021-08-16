@@ -250,7 +250,7 @@ void CastMainDelegate::InitializeResourceBundle() {
     ui::ResourceBundle::InitSharedInstanceWithPakFileRegion(
         android_pak_file.Duplicate(), pak_region);
     ui::ResourceBundle::GetSharedInstance().AddDataPackFromFileRegion(
-        std::move(android_pak_file), pak_region, ui::SCALE_FACTOR_100P);
+        std::move(android_pak_file), pak_region, ui::k100Percent);
     return;
   } else {
     pak_fd = base::android::OpenApkAsset("assets/cast_shell.pak", &pak_region);
@@ -276,10 +276,10 @@ void CastMainDelegate::InitializeResourceBundle() {
 
 #if defined(OS_ANDROID)
   ui::ResourceBundle::GetSharedInstance().AddDataPackFromFileRegion(
-      base::File(pak_fd), pak_region, ui::SCALE_FACTOR_NONE);
+      base::File(pak_fd), pak_region, ui::kScaleFactorNone);
 #else
   ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
-      pak_file, ui::SCALE_FACTOR_NONE);
+      pak_file, ui::kScaleFactorNone);
 #endif  // defined(OS_ANDROID)
 }
 

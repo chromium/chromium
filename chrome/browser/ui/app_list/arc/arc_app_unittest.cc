@@ -373,9 +373,9 @@ void OnPaiStartedCallback(bool* started_flag) {
 int GetAppListIconDimensionForScaleFactor(
     ui::ResourceScaleFactor scale_factor) {
   switch (scale_factor) {
-    case ui::SCALE_FACTOR_100P:
+    case ui::k100Percent:
       return ash::SharedAppListConfig::instance().default_grid_icon_dimension();
-    case ui::SCALE_FACTOR_200P:
+    case ui::k200Percent:
       return ash::SharedAppListConfig::instance()
                  .default_grid_icon_dimension() *
              2;
@@ -887,8 +887,8 @@ class ArcAppModelIconTest : public ArcAppModelBuilderRecreate,
     ArcAppModelBuilderRecreate::SetUp();
 
     std::vector<ui::ResourceScaleFactor> supported_scale_factors;
-    supported_scale_factors.push_back(ui::SCALE_FACTOR_100P);
-    supported_scale_factors.push_back(ui::SCALE_FACTOR_200P);
+    supported_scale_factors.push_back(ui::k100Percent);
+    supported_scale_factors.push_back(ui::k200Percent);
     scoped_supported_scale_factors_ =
         std::make_unique<ui::test::ScopedSetSupportedResourceScaleFactors>(
             supported_scale_factors);
@@ -954,11 +954,10 @@ class ArcAppModelIconTest : public ArcAppModelBuilderRecreate,
     // ArcAppIcon::LoadForScaleFactor.
     const std::vector<int> requested_dims = {icon_requests[0]->dimension(),
                                              icon_requests[1]->dimension()};
-    ASSERT_THAT(
-        requested_dims,
-        testing::UnorderedElementsAre(
-            GetAppListIconDimensionForScaleFactor(ui::SCALE_FACTOR_100P),
-            GetAppListIconDimensionForScaleFactor(ui::SCALE_FACTOR_200P)));
+    ASSERT_THAT(requested_dims,
+                testing::UnorderedElementsAre(
+                    GetAppListIconDimensionForScaleFactor(ui::k100Percent),
+                    GetAppListIconDimensionForScaleFactor(ui::k200Percent)));
 
     WaitForIconUpdates(profile_.get(), app_id, expected_update_count);
   }
@@ -3400,13 +3399,13 @@ TEST_P(ArcAppLauncherForDefaultAppTest, DISABLED_AppIconUpdated) {
   EXPECT_FALSE(prefs->GetApp(app_id));
   EXPECT_TRUE(prefs
                   ->MaybeGetIconPathForDefaultApp(
-                      app_id, GetAppListIconDescriptor(ui::SCALE_FACTOR_100P))
+                      app_id, GetAppListIconDescriptor(ui::k100Percent))
                   .empty());
   arc_test()->WaitForDefaultApps();
   EXPECT_TRUE(prefs->GetApp(app_id));
   EXPECT_FALSE(prefs
                    ->MaybeGetIconPathForDefaultApp(
-                       app_id, GetAppListIconDescriptor(ui::SCALE_FACTOR_100P))
+                       app_id, GetAppListIconDescriptor(ui::k100Percent))
                    .empty());
 
   // Icon can be only fetched after app is registered in the system.
@@ -3434,12 +3433,12 @@ TEST_P(ArcAppLauncherForDefaultAppTest, DISABLED_AppIconUpdated) {
   // (asynchronously).
   EXPECT_TRUE(prefs
                   ->MaybeGetIconPathForDefaultApp(
-                      app_id, GetAppListIconDescriptor(ui::SCALE_FACTOR_100P))
+                      app_id, GetAppListIconDescriptor(ui::k100Percent))
                   .empty());
   icon_delegate2.WaitForIconUpdates(1);
   EXPECT_FALSE(prefs
                    ->MaybeGetIconPathForDefaultApp(
-                       app_id, GetAppListIconDescriptor(ui::SCALE_FACTOR_100P))
+                       app_id, GetAppListIconDescriptor(ui::k100Percent))
                    .empty());
   icon_loader.reset();
 }

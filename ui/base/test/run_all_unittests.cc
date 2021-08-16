@@ -98,7 +98,7 @@ void UIBaseTestSuite::Initialize() {
   base::FilePath ui_base_test_resources_pak =
       dir_resources.Append(FILE_PATH_LITERAL("ui_base_test_resources.pak"));
   ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
-      ui_base_test_resources_pak, ui::SCALE_FACTOR_NONE);
+      ui_base_test_resources_pak, ui::kScaleFactorNone);
 }
 
 void UIBaseTestSuite::Shutdown() {

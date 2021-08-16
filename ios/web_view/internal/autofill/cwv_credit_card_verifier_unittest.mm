@@ -101,19 +101,19 @@ class CWVCreditCardVerifierTest : public PlatformTest {
         ui::ResourceBundle::GetSharedInstance();
 
     // Don't load 100P resource since no @1x devices are supported.
-    if (ui::ResourceBundle::IsScaleFactorSupported(ui::SCALE_FACTOR_200P)) {
+    if (ui::ResourceBundle::IsScaleFactorSupported(ui::k200Percent)) {
       base::FilePath pak_file_200;
       base::PathService::Get(base::DIR_MODULE, &pak_file_200);
       pak_file_200 =
           pak_file_200.Append(FILE_PATH_LITERAL("web_view_200_percent.pak"));
-      resource_bundle.AddDataPackFromPath(pak_file_200, ui::SCALE_FACTOR_200P);
+      resource_bundle.AddDataPackFromPath(pak_file_200, ui::k200Percent);
     }
-    if (ui::ResourceBundle::IsScaleFactorSupported(ui::SCALE_FACTOR_300P)) {
+    if (ui::ResourceBundle::IsScaleFactorSupported(ui::k300Percent)) {
       base::FilePath pak_file_300;
       base::PathService::Get(base::DIR_MODULE, &pak_file_300);
       pak_file_300 =
           pak_file_300.Append(FILE_PATH_LITERAL("web_view_300_percent.pak"));
-      resource_bundle.AddDataPackFromPath(pak_file_300, ui::SCALE_FACTOR_300P);
+      resource_bundle.AddDataPackFromPath(pak_file_300, ui::k300Percent);
     }
 
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();

@@ -213,7 +213,7 @@ base::RefCountedMemory* ThemeHelper::GetRawData(
   if (!data) {
     data =
         ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
-            id, ui::SCALE_FACTOR_100P);
+            id, ui::k100Percent);
   }
 
   return data;

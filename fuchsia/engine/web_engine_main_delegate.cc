@@ -48,14 +48,14 @@ void InitializeResources() {
       asset_root.Append(kWebUiResourcesPakPath);
   if (base::PathExists(webui_resources_path)) {
     ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
-        webui_resources_path, ui::SCALE_FACTOR_NONE);
+        webui_resources_path, ui::kScaleFactorNone);
   }
 
   const base::FilePath webui_generated_resources_path =
       asset_root.Append(kWebUiGeneratedResourcesPakPath);
   if (base::PathExists(webui_generated_resources_path)) {
     ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
-        webui_generated_resources_path, ui::SCALE_FACTOR_NONE);
+        webui_generated_resources_path, ui::kScaleFactorNone);
   }
 }
 

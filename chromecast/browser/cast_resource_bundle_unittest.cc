@@ -36,7 +36,7 @@ TEST_F(CastResourceBundleTest, DelegateLoadLocalizedResourceBytes) {
   int resource_id = 5;
 
   EXPECT_CALL(delegate,
-              LoadDataResourceBytes(resource_id, ui::SCALE_FACTOR_NONE))
+              LoadDataResourceBytes(resource_id, ui::kScaleFactorNone))
       .Times(1)
       .WillOnce(Return(static_memory.get()));
 

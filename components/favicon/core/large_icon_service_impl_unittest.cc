@@ -105,7 +105,7 @@ bool HasBackgroundColor(
 class LargeIconServiceTest : public testing::Test {
  public:
   LargeIconServiceTest()
-      : scoped_set_supported_scale_factors_({ui::SCALE_FACTOR_200P}),
+      : scoped_set_supported_scale_factors_({ui::k200Percent}),
         mock_image_fetcher_(new NiceMock<MockImageFetcher>()),
         large_icon_service_(&mock_favicon_service_,
                             base::WrapUnique(mock_image_fetcher_),

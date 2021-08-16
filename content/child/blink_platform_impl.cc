@@ -160,7 +160,7 @@ WebData BlinkPlatformImpl::GetDataResource(
 
 WebData BlinkPlatformImpl::UncompressDataResource(int resource_id) {
   base::StringPiece resource =
-      GetContentClient()->GetDataResource(resource_id, ui::SCALE_FACTOR_NONE);
+      GetContentClient()->GetDataResource(resource_id, ui::kScaleFactorNone);
   if (resource.empty())
     return WebData(resource.data(), resource.size());
   std::string uncompressed;

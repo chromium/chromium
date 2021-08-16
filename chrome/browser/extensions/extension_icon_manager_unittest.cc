@@ -219,15 +219,15 @@ TEST_F(ExtensionIconManagerTest, ScaleFactors) {
   constexpr int kMaxIconSizeInManifest = 32;
   std::vector<std::vector<ui::ResourceScaleFactor>> supported_scales = {
       // Base case.
-      {ui::SCALE_FACTOR_100P},
+      {ui::k100Percent},
       // Two scale factors.
-      {ui::SCALE_FACTOR_100P, ui::SCALE_FACTOR_200P},
+      {ui::k100Percent, ui::k200Percent},
       // One scale factor for which we have an icon, one scale factor for which
       // we don't.
-      {ui::SCALE_FACTOR_100P, ui::SCALE_FACTOR_300P},
+      {ui::k100Percent, ui::k300Percent},
       // Just a scale factor where we don't have any icon. This falls back to
       // the default icon.
-      {ui::SCALE_FACTOR_300P}};
+      {ui::k300Percent}};
 
   for (size_t i = 0; i < supported_scales.size(); ++i) {
     SCOPED_TRACE(testing::Message() << "Test case: " << i);
@@ -263,7 +263,7 @@ TEST_F(ExtensionIconManagerTest, ScaleFactors) {
 
     gfx::ImageSkia image_skia = icon.AsImageSkia();
 
-    for (int scale_factor_iter = ui::SCALE_FACTOR_NONE + 1;
+    for (int scale_factor_iter = ui::kScaleFactorNone + 1;
          scale_factor_iter < ui::NUM_SCALE_FACTORS; ++scale_factor_iter) {
       auto scale_factor =
           static_cast<ui::ResourceScaleFactor>(scale_factor_iter);

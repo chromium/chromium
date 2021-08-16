@@ -120,7 +120,7 @@ scoped_refptr<base::RefCountedMemory> GetUserImageInternal(
   const user_manager::User* user =
       user_manager::UserManager::Get()->FindUser(account_id);
 
-  ui::ResourceScaleFactor scale_factor = ui::SCALE_FACTOR_100P;
+  ui::ResourceScaleFactor scale_factor = ui::k100Percent;
   // Use the scaling that matches primary display. These source images are
   // 96x96 and often used at that size in WebUI pages.
   display::Screen* screen = display::Screen::GetScreen();

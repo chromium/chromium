@@ -293,7 +293,7 @@ bool SearchTable(const CursorData* table,
 
   bool resource_2x_available =
       ResourceBundle::GetSharedInstance().GetMaxResourceScaleFactor() ==
-      SCALE_FACTOR_200P;
+      k200Percent;
   for (size_t i = 0; i < table_length; ++i) {
     if (table[i].id == id) {
       *resource_id = table[i].resource_id;

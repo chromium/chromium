@@ -44,19 +44,19 @@ base::FilePath GetResourcesPakFilePath(NSString* name, NSString* mac_locale) {
 }  // namespace
 
 void ResourceBundle::LoadCommonResources() {
-  if (IsScaleFactorSupported(SCALE_FACTOR_100P)) {
+  if (IsScaleFactorSupported(k100Percent)) {
     AddDataPackFromPath(GetResourcesPakFilePath(@"chrome_100_percent", nil),
-                        SCALE_FACTOR_100P);
+                        k100Percent);
   }
 
-  if (IsScaleFactorSupported(SCALE_FACTOR_200P)) {
+  if (IsScaleFactorSupported(k200Percent)) {
     AddDataPackFromPath(GetResourcesPakFilePath(@"chrome_200_percent", nil),
-                        SCALE_FACTOR_200P);
+                        k200Percent);
   }
 
-  if (IsScaleFactorSupported(SCALE_FACTOR_300P)) {
+  if (IsScaleFactorSupported(k300Percent)) {
     AddDataPackFromPath(GetResourcesPakFilePath(@"chrome_300_percent", nil),
-                        SCALE_FACTOR_300P);
+                        k300Percent);
   }
 }
 

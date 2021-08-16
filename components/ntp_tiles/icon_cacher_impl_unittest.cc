@@ -18,6 +18,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "components/favicon/core/favicon_client.h"
 #include "components/favicon/core/favicon_service_impl.h"
 #include "components/favicon/core/favicon_util.h"
@@ -180,7 +181,7 @@ class IconCacherTestPopularSites : public IconCacherTestBase {
 
     ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
         pak_path.AppendASCII("components_tests_resources.pak"),
-        ui::SCALE_FACTOR_NONE);
+        ui::kScaleFactorNone);
   }
 
   PopularSites::Site site_;

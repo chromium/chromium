@@ -223,8 +223,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest, SC_SetFaviconHiDPI) {
   // creates a favicon with hidpi representations and that methods in the
   // FaviconService request hidpi favicons.
   std::vector<ui::ResourceScaleFactor> supported_scale_factors;
-  supported_scale_factors.push_back(ui::SCALE_FACTOR_100P);
-  supported_scale_factors.push_back(ui::SCALE_FACTOR_200P);
+  supported_scale_factors.push_back(ui::k100Percent);
+  supported_scale_factors.push_back(ui::k200Percent);
   ui::SetSupportedResourceScaleFactors(supported_scale_factors);
 
   const GURL page_url(kGenericURL);
@@ -278,7 +278,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest,
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
 
   std::vector<ui::ResourceScaleFactor> supported_scale_factors;
-  supported_scale_factors.push_back(ui::SCALE_FACTOR_100P);
+  supported_scale_factors.push_back(ui::k100Percent);
   ui::SetSupportedResourceScaleFactors(supported_scale_factors);
 
   const GURL page_url(kGenericURL);

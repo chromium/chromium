@@ -57,7 +57,7 @@ const std::vector<ResourceScaleFactor>& GetSupportedResourceScaleFactors() {
 
 ResourceScaleFactor GetSupportedResourceScaleFactor(float scale) {
   DCHECK(g_supported_resource_scale_factors != nullptr);
-  ResourceScaleFactor closest_match = SCALE_FACTOR_100P;
+  ResourceScaleFactor closest_match = k100Percent;
   float smallest_diff =  std::numeric_limits<float>::max();
   for (auto scale_factor : *g_supported_resource_scale_factors) {
     float diff = std::abs(GetScaleForResourceScaleFactor(scale_factor) - scale);
@@ -66,7 +66,7 @@ ResourceScaleFactor GetSupportedResourceScaleFactor(float scale) {
       smallest_diff = diff;
     }
   }
-  DCHECK_NE(closest_match, SCALE_FACTOR_NONE);
+  DCHECK_NE(closest_match, kScaleFactorNone);
   return closest_match;
 }
 

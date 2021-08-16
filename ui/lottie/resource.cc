@@ -45,14 +45,14 @@ std::unique_ptr<Animation> GetVectorAnimationNamed(int resource_id) {
 #elif defined(OS_WIN)
   ui::ResourceScaleFactor scale_factor_to_load =
       display::win::GetDPIScale() > 1.25 ? rb.GetMaxResourceScaleFactor()
-                                         : ui::SCALE_FACTOR_100P;
+                                         : ui::k100Percent;
 #else
-  ui::ResourceScaleFactor scale_factor_to_load = ui::SCALE_FACTOR_100P;
+  ui::ResourceScaleFactor scale_factor_to_load = ui::k100Percent;
 #endif
   // Clamp the scale factor to 2x. At most we will only be needing 2 versions
   // for a given file.
-  if (scale_factor_to_load > ui::SCALE_FACTOR_200P)
-    scale_factor_to_load = ui::SCALE_FACTOR_200P;
+  if (scale_factor_to_load > ui::k200Percent)
+    scale_factor_to_load = ui::k200Percent;
 
   auto compressed_raw_data =
       rb.GetRawDataResourceForScale(resource_id, scale_factor_to_load);

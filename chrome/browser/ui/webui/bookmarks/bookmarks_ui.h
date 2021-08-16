@@ -7,7 +7,7 @@
 
 #include "base/macros.h"
 #include "content/public/browser/web_ui_controller.h"
-#include "ui/base/resource/scale_factor.h"
+#include "ui/base/resource/resource_scale_factor.h"
 
 namespace base {
 class RefCountedMemory;

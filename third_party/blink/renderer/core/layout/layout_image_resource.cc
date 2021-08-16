@@ -34,7 +34,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_for_container.h"
 #include "third_party/blink/renderer/platform/graphics/placeholder_image.h"
-#include "ui/base/resource/scale_factor.h"
+#include "ui/base/resource/resource_scale_factor.h"
 
 namespace blink {
 
@@ -146,7 +146,7 @@ Image* LayoutImageResource::BrokenImage(float device_scale_factor) {
   if (device_scale_factor >= 2) {
     DEFINE_STATIC_REF(
         Image, broken_image_hi_res,
-        (Image::LoadPlatformResource(IDR_BROKENIMAGE, ui::SCALE_FACTOR_200P)));
+        (Image::LoadPlatformResource(IDR_BROKENIMAGE, ui::k200Percent)));
     return broken_image_hi_res;
   }
 

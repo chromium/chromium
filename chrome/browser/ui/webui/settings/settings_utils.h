@@ -9,7 +9,7 @@
 
 #include "base/macros.h"
 #include "build/build_config.h"
-#include "ui/base/resource/scale_factor.h"
+#include "ui/base/resource/resource_scale_factor.h"
 
 class GURL;
 class PrefService;

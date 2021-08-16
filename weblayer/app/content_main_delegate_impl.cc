@@ -393,8 +393,8 @@ void ContentMainDelegateImpl::InitializeResourceBundle() {
                                                   pak_region);
 
     std::vector<std::pair<int, ui::ResourceScaleFactor>> extra_paks = {
-        {kWebLayerMainPakDescriptor, ui::SCALE_FACTOR_NONE},
-        {kWebLayer100PercentPakDescriptor, ui::SCALE_FACTOR_100P}};
+        {kWebLayerMainPakDescriptor, ui::kScaleFactorNone},
+        {kWebLayer100PercentPakDescriptor, ui::k100Percent}};
 
     for (const auto& pak_info : extra_paks) {
       pak_fd = global_descriptors->Get(pak_info.first);

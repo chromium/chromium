@@ -79,7 +79,7 @@ include_rules = [
     "+third_party/blink/renderer/platform/weborigin/kurl.h",
     "+third_party/blink/renderer/platform/web_task_runner.h",
     "+third_party/blink/renderer/platform/wtf",
-    "+ui/base/resource/scale_factor.h",
+    "+ui/base/resource/resource_scale_factor.h",
     "+ui/gfx/geometry",
 ]
 

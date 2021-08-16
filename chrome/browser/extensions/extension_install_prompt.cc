@@ -623,10 +623,8 @@ void ExtensionInstallPrompt::LoadImageIfNeeded() {
 
   std::vector<extensions::ImageLoader::ImageRepresentation> images_list;
   images_list.push_back(extensions::ImageLoader::ImageRepresentation(
-      image,
-      extensions::ImageLoader::ImageRepresentation::NEVER_RESIZE,
-      gfx::Size(),
-      ui::SCALE_FACTOR_100P));
+      image, extensions::ImageLoader::ImageRepresentation::NEVER_RESIZE,
+      gfx::Size(), ui::k100Percent));
   loader->LoadImagesAsync(extension_.get(), images_list,
                           base::BindOnce(&ExtensionInstallPrompt::OnImageLoaded,
                                          weak_factory_.GetWeakPtr()));

@@ -203,10 +203,10 @@ class ResourceBundle::ResourceBundleImageSource : public gfx::ImageSkiaSource {
 #endif
     }
 
-    // If the resource is in the package with SCALE_FACTOR_NONE, it
-    // can be used in any scale factor. The image is maked as "unscaled"
+    // If the resource is in the package with kScaleFactorNone, it
+    // can be used in any scale factor. The image is marked as "unscaled"
     // so that the ImageSkia do not automatically scale.
-    if (scale_factor == ui::SCALE_FACTOR_NONE)
+    if (scale_factor == ui::kScaleFactorNone)
       return gfx::ImageSkiaRep(image, 0.0f);
 
     if (fell_back_to_1x) {
@@ -263,7 +263,7 @@ void ResourceBundle::InitSharedInstanceWithPakFileRegion(
     base::File pak_file,
     const base::MemoryMappedFile::Region& region) {
   InitSharedInstance(nullptr);
-  auto data_pack = std::make_unique<DataPack>(SCALE_FACTOR_100P);
+  auto data_pack = std::make_unique<DataPack>(k100Percent);
   if (!data_pack->LoadFromFileRegion(std::move(pak_file), region)) {
     LOG(WARNING) << "failed to load pak file";
     NOTREACHED();
@@ -310,7 +310,7 @@ ResourceBundle& ResourceBundle::GetSharedInstance() {
 void ResourceBundle::LoadSecondaryLocaleDataWithPakFileRegion(
     base::File pak_file,
     const base::MemoryMappedFile::Region& region) {
-  auto data_pack = std::make_unique<DataPack>(SCALE_FACTOR_100P);
+  auto data_pack = std::make_unique<DataPack>(k100Percent);
   if (!data_pack->LoadFromFileRegion(std::move(pak_file), region)) {
     LOG(WARNING) << "failed to load secondary pak file";
     NOTREACHED();
@@ -404,7 +404,7 @@ std::string ResourceBundle::LoadLocaleResources(const std::string& pref_locale,
     return std::string();
   }
 
-  auto data_pack = std::make_unique<DataPack>(SCALE_FACTOR_100P);
+  auto data_pack = std::make_unique<DataPack>(k100Percent);
   if (!data_pack->LoadFromPath(locale_file_path) && crash_on_failure) {
     // https://crbug.com/1076423: Chrome can't start when the locale file cannot
     // be loaded. Crash early and gather some data.
@@ -439,11 +439,11 @@ void ResourceBundle::LoadTestResources(const base::FilePath& path,
     AddDataPack(std::move(data_pack));
   }
 
-  auto data_pack = std::make_unique<DataPack>(ui::SCALE_FACTOR_NONE);
+  auto data_pack = std::make_unique<DataPack>(ui::kScaleFactorNone);
   if (!locale_path.empty() && data_pack->LoadFromPath(locale_path)) {
     locale_resources_data_ = std::move(data_pack);
   } else {
-    locale_resources_data_ = std::make_unique<DataPack>(ui::SCALE_FACTOR_NONE);
+    locale_resources_data_ = std::make_unique<DataPack>(ui::kScaleFactorNone);
   }
 
   // This is necessary to initialize ICU since we won't be calling
@@ -536,9 +536,9 @@ gfx::Image& ResourceBundle::GetImageNamed(int resource_id) {
 #elif defined(OS_WIN)
     ResourceScaleFactor scale_factor_to_load =
         display::win::GetDPIScale() > 1.25 ? GetMaxResourceScaleFactor()
-                                           : ui::SCALE_FACTOR_100P;
+                                           : ui::k100Percent;
 #else
-    ResourceScaleFactor scale_factor_to_load = ui::SCALE_FACTOR_100P;
+    ResourceScaleFactor scale_factor_to_load = ui::k100Percent;
 #endif
     // TODO(oshima): Consider reading the image size from png IHDR chunk and
     // skip decoding here and remove #ifdef below.
@@ -568,7 +568,7 @@ constexpr uint8_t ResourceBundle::kBrotliConst[];
 
 base::RefCountedMemory* ResourceBundle::LoadDataResourceBytes(
     int resource_id) const {
-  return LoadDataResourceBytesForScale(resource_id, ui::SCALE_FACTOR_NONE);
+  return LoadDataResourceBytesForScale(resource_id, ui::kScaleFactorNone);
 }
 
 base::RefCountedMemory* ResourceBundle::LoadDataResourceBytesForScale(
@@ -604,7 +604,7 @@ base::RefCountedMemory* ResourceBundle::LoadDataResourceBytesForScale(
 }
 
 base::StringPiece ResourceBundle::GetRawDataResource(int resource_id) const {
-  return GetRawDataResourceForScale(resource_id, ui::SCALE_FACTOR_NONE);
+  return GetRawDataResourceForScale(resource_id, ui::kScaleFactorNone);
 }
 
 base::StringPiece ResourceBundle::GetRawDataResourceForScale(
@@ -616,7 +616,7 @@ base::StringPiece ResourceBundle::GetRawDataResourceForScale(
     return data;
   }
 
-  if (scale_factor != ui::SCALE_FACTOR_100P) {
+  if (scale_factor != ui::k100Percent) {
     for (size_t i = 0; i < data_packs_.size(); i++) {
       if (data_packs_[i]->GetResourceScaleFactor() == scale_factor &&
           data_packs_[i]->GetStringPiece(static_cast<uint16_t>(resource_id),
@@ -626,10 +626,10 @@ base::StringPiece ResourceBundle::GetRawDataResourceForScale(
   }
 
   for (size_t i = 0; i < data_packs_.size(); i++) {
-    if ((data_packs_[i]->GetResourceScaleFactor() == ui::SCALE_FACTOR_100P ||
-         data_packs_[i]->GetResourceScaleFactor() == ui::SCALE_FACTOR_200P ||
-         data_packs_[i]->GetResourceScaleFactor() == ui::SCALE_FACTOR_300P ||
-         data_packs_[i]->GetResourceScaleFactor() == ui::SCALE_FACTOR_NONE) &&
+    if ((data_packs_[i]->GetResourceScaleFactor() == ui::k100Percent ||
+         data_packs_[i]->GetResourceScaleFactor() == ui::k200Percent ||
+         data_packs_[i]->GetResourceScaleFactor() == ui::k300Percent ||
+         data_packs_[i]->GetResourceScaleFactor() == ui::kScaleFactorNone) &&
         data_packs_[i]->GetStringPiece(static_cast<uint16_t>(resource_id),
                                        &data)) {
       return data;
@@ -647,7 +647,7 @@ std::string ResourceBundle::LoadDataResourceString(int resource_id) const {
       return data.value();
   }
 
-  return LoadDataResourceStringForScale(resource_id, ui::SCALE_FACTOR_NONE);
+  return LoadDataResourceStringForScale(resource_id, ui::kScaleFactorNone);
 }
 
 std::string ResourceBundle::LoadDataResourceStringForScale(
@@ -837,7 +837,7 @@ void ResourceBundle::CheckCanOverrideStringResources() {
 ResourceBundle::ResourceBundle(Delegate* delegate)
     : delegate_(delegate),
       locale_resources_data_lock_(new base::Lock),
-      max_scale_factor_(SCALE_FACTOR_100P) {
+      max_scale_factor_(k100Percent) {
   mangle_localized_strings_ = base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kMangleLocalizedStrings);
 }
@@ -856,20 +856,20 @@ void ResourceBundle::InitSharedInstance(Delegate* delegate) {
   display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
   if (display.device_scale_factor() > 2.0) {
     DCHECK_EQ(3.0, display.device_scale_factor());
-    supported_scale_factors.push_back(SCALE_FACTOR_300P);
+    supported_scale_factors.push_back(k300Percent);
   } else if (display.device_scale_factor() > 1.0) {
     DCHECK_EQ(2.0, display.device_scale_factor());
-    supported_scale_factors.push_back(SCALE_FACTOR_200P);
+    supported_scale_factors.push_back(k200Percent);
   } else {
-    supported_scale_factors.push_back(SCALE_FACTOR_100P);
+    supported_scale_factors.push_back(k100Percent);
   }
 #else
   // On platforms other than iOS, 100P is always a supported scale factor.
   // For Windows we have a separate case in this function.
-  supported_scale_factors.push_back(SCALE_FACTOR_100P);
+  supported_scale_factors.push_back(k100Percent);
 #if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
     defined(OS_WIN)
-  supported_scale_factors.push_back(SCALE_FACTOR_200P);
+  supported_scale_factors.push_back(k200Percent);
 #endif
 #endif
   ui::SetSupportedResourceScaleFactors(supported_scale_factors);
@@ -883,14 +883,14 @@ void ResourceBundle::LoadChromeResources() {
   // Always load the 1x data pack first as the 2x data pack contains both 1x and
   // 2x images. The 1x data pack only has 1x images, thus passes in an accurate
   // scale factor to gfx::ImageSkia::AddRepresentation.
-  if (IsScaleFactorSupported(SCALE_FACTOR_100P)) {
-    AddDataPackFromPath(GetResourcesPakFilePath(
-        "chrome_100_percent.pak"), SCALE_FACTOR_100P);
+  if (IsScaleFactorSupported(k100Percent)) {
+    AddDataPackFromPath(GetResourcesPakFilePath("chrome_100_percent.pak"),
+                        k100Percent);
   }
 
-  if (IsScaleFactorSupported(SCALE_FACTOR_200P)) {
-    AddOptionalDataPackFromPath(GetResourcesPakFilePath(
-        "chrome_200_percent.pak"), SCALE_FACTOR_200P);
+  if (IsScaleFactorSupported(k200Percent)) {
+    AddOptionalDataPackFromPath(
+        GetResourcesPakFilePath("chrome_200_percent.pak"), k200Percent);
   }
 }
 
@@ -986,10 +986,10 @@ bool ResourceBundle::LoadBitmap(int resource_id,
                                 bool* fell_back_to_1x) const {
   DCHECK(fell_back_to_1x);
   for (const auto& pack : data_packs_) {
-    if (pack->GetResourceScaleFactor() == ui::SCALE_FACTOR_NONE &&
+    if (pack->GetResourceScaleFactor() == ui::kScaleFactorNone &&
         LoadBitmap(*pack, resource_id, bitmap, fell_back_to_1x)) {
       DCHECK(!*fell_back_to_1x);
-      *scale_factor = ui::SCALE_FACTOR_NONE;
+      *scale_factor = ui::kScaleFactorNone;
       return true;
     }
 
@@ -1001,9 +1001,9 @@ bool ResourceBundle::LoadBitmap(int resource_id,
 
   // Unit tests may only have 1x data pack. Allow them to fallback to 1x
   // resources.
-  if (is_test_resources_ && *scale_factor != ui::SCALE_FACTOR_100P) {
+  if (is_test_resources_ && *scale_factor != ui::k100Percent) {
     for (const auto& pack : data_packs_) {
-      if (pack->GetResourceScaleFactor() == ui::SCALE_FACTOR_100P &&
+      if (pack->GetResourceScaleFactor() == ui::k100Percent &&
           LoadBitmap(*pack, resource_id, bitmap, fell_back_to_1x)) {
         *fell_back_to_1x = true;
         return true;

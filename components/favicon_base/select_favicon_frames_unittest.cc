@@ -19,12 +19,12 @@ using std::vector;
 namespace {
 
 const ui::ResourceScaleFactor FaviconScaleFactor1x[] = {
-    ui::SCALE_FACTOR_100P,
+    ui::k100Percent,
 };
 
 const ui::ResourceScaleFactor FaviconScaleFactor1xAnd2x[] = {
-    ui::SCALE_FACTOR_100P,
-    ui::SCALE_FACTOR_200P,
+    ui::k100Percent,
+    ui::k200Percent,
 };
 
 #define SCOPED_FAVICON_SCALE_FACTOR(list)                  \

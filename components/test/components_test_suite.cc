@@ -95,7 +95,7 @@ class ComponentsTestSuite : public base::TestSuite {
 
     ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
         pak_path.AppendASCII("components_tests_resources.pak"),
-        ui::SCALE_FACTOR_NONE);
+        ui::kScaleFactorNone);
 
     ContentSettingsPattern::SetNonWildcardDomainNonPortSchemes(
         kNonWildcardDomainNonPortSchemes,

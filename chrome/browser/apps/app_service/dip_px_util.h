@@ -12,7 +12,7 @@
 // (representing one of a finite number of floating point values) returned by
 // ui::GetSupportedScaleFactor, defined in ui/base/layout.h.
 
-#include "ui/base/resource/scale_factor.h"
+#include "ui/base/resource/resource_scale_factor.h"
 
 namespace apps_util {
 

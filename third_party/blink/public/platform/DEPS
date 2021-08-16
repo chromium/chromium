@@ -80,7 +80,7 @@ include_rules = [
     "+ui/base/ime/mojom/virtual_keyboard_types.mojom-shared.h",
     "+ui/base/page_transition_types.h",
     "+ui/base/prediction",
-    "+ui/base/resource/scale_factor.h",
+    "+ui/base/resource/resource_scale_factor.h",
     "+ui/events/types",
     "+ui/gfx",
     "+url",

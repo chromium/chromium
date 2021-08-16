@@ -27,8 +27,8 @@ ArcAppIconDescriptor::ArcAppIconDescriptor(int dip_size,
                                            ui::ResourceScaleFactor scale_factor)
     : dip_size(dip_size), scale_factor(scale_factor) {
   DCHECK_GT(dip_size, 0);
-  DCHECK_GT(scale_factor, ui::ResourceScaleFactor::SCALE_FACTOR_NONE);
-  DCHECK_LE(scale_factor, ui::ResourceScaleFactor::SCALE_FACTOR_300P);
+  DCHECK_GT(scale_factor, ui::ResourceScaleFactor::kScaleFactorNone);
+  DCHECK_LE(scale_factor, ui::ResourceScaleFactor::k300Percent);
 }
 
 int ArcAppIconDescriptor::GetSizeInPixels() const {

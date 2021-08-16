@@ -110,7 +110,7 @@ std::string InitResourceBundleAndDetermineLocale(PrefService* local_state,
     // resources are loaded on-use, when an already-installed DFM loads.
 #else
     ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
-        resources_pack_path, ui::SCALE_FACTOR_NONE);
+        resources_pack_path, ui::kScaleFactorNone);
 #endif  // defined(OS_ANDROID)
   }
 

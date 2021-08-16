@@ -19,7 +19,7 @@ void ResourceBundle::LoadCommonResources() {
   DCHECK(result);
 
   AddDataPackFromPath(asset_root.Append(kCommonResourcesPakPath),
-                      ui::SCALE_FACTOR_100P);
+                      ui::k100Percent);
 }
 
 gfx::Image& ResourceBundle::GetNativeImageNamed(int resource_id) {

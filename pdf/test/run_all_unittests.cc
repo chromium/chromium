@@ -99,7 +99,7 @@ class PdfTestSuite final : public base::TestSuite {
     pdf_tests_pak_path =
         pdf_tests_pak_path.AppendASCII("pdf_tests_resources.pak");
     ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
-        pdf_tests_pak_path, ui::SCALE_FACTOR_NONE);
+        pdf_tests_pak_path, ui::kScaleFactorNone);
   }
 
   std::unique_ptr<BlinkPlatformForTesting> platform_;

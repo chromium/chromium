@@ -32,7 +32,7 @@ void InitI18n() {
   base::FilePath chromeos_test_strings_path =
       dir_module_path.Append(FILE_PATH_LITERAL("chromeos_test_strings.pak"));
   ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
-      chromeos_test_strings_path, ui::SCALE_FACTOR_NONE);
+      chromeos_test_strings_path, ui::kScaleFactorNone);
 }
 
 }  // namespace

@@ -139,8 +139,8 @@ BrowserThemePackTest::BrowserThemePackTest()
     : theme_pack_(
           new BrowserThemePack(CustomThemeSupplier::ThemeType::EXTENSION)) {
   std::vector<ui::ResourceScaleFactor> scale_factors;
-  scale_factors.push_back(ui::SCALE_FACTOR_100P);
-  scale_factors.push_back(ui::SCALE_FACTOR_200P);
+  scale_factors.push_back(ui::k100Percent);
+  scale_factors.push_back(ui::k200Percent);
   scoped_set_supported_scale_factors_ =
       std::make_unique<ui::test::ScopedSetSupportedResourceScaleFactors>(
           scale_factors);
@@ -655,10 +655,10 @@ TEST_F(BrowserThemePackTest, CanParsePaths) {
   // By default the scale factor is for 100%.
   EXPECT_TRUE(base::FilePath(FILE_PATH_LITERAL("one")) ==
               out_file_paths[static_cast<BrowserThemePack::PersistentID>(12)]
-                            [ui::SCALE_FACTOR_100P]);
+                            [ui::k100Percent]);
   EXPECT_TRUE(base::FilePath(FILE_PATH_LITERAL("two")) ==
               out_file_paths[static_cast<BrowserThemePack::PersistentID>(5)]
-                            [ui::SCALE_FACTOR_100P]);
+                            [ui::k100Percent]);
 }
 
 TEST_F(BrowserThemePackTest, InvalidPathNames) {

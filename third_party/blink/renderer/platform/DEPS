@@ -80,7 +80,7 @@ include_rules = [
     "+third_party/skia",
     "+ui/base/cursor/cursor.h",
     "+ui/base/prediction",
-    "+ui/base/resource/scale_factor.h",
+    "+ui/base/resource/resource_scale_factor.h",
     "+ui/display/mojom",
     "+ui/display/screen_info.h",
     "+ui/display/screen_infos.h",

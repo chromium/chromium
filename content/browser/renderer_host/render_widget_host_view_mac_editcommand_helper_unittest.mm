@@ -143,7 +143,7 @@ TEST_F(RenderWidgetHostViewMacEditCommandHelperWithTaskEnvTest,
       std::make_unique<AgentSchedulingGroupHost>(*process_host);
   // Populates |g_supported_scale_factors|.
   std::vector<ui::ResourceScaleFactor> supported_factors;
-  supported_factors.push_back(ui::SCALE_FACTOR_100P);
+  supported_factors.push_back(ui::k100Percent);
   ui::test::ScopedSetSupportedResourceScaleFactors scoped_supported(
       supported_factors);
 

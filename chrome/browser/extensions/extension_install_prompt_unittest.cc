@@ -179,7 +179,7 @@ TEST_F(ExtensionInstallPromptTestWithService, ExtensionInstallPromptIconsTest) {
                                         extension_misc::EXTENSION_ICON_LARGE,
                                         ExtensionIconSet::MATCH_BIGGER),
              ImageLoader::ImageRepresentation::NEVER_RESIZE, gfx::Size(),
-             ui::SCALE_FACTOR_100P));
+             ui::k100Percent));
   base::RunLoop image_loop;
   gfx::Image image;
   ImageLoader::Get(browser_context())

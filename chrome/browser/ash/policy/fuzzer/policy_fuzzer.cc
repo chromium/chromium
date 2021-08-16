@@ -59,7 +59,7 @@ struct Environment {
     base::FilePath pak_path = base::PathService::CheckedGet(base::DIR_MODULE);
     ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
         pak_path.AppendASCII("components_tests_resources.pak"),
-        ui::SCALE_FACTOR_NONE);
+        ui::kScaleFactorNone);
   }
 
   ~Environment() { ui::ResourceBundle::CleanupSharedInstance(); }

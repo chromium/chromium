@@ -100,7 +100,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "ui/base/resource/scale_factor.h"
+#include "ui/base/resource/resource_scale_factor.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -727,8 +727,8 @@ void HTMLCanvasElement::NotifyListenersCanvasChanged() {
 static std::pair<blink::Image*, float> BrokenCanvas(float device_scale_factor) {
   if (device_scale_factor >= 2) {
     DEFINE_STATIC_REF(blink::Image, broken_canvas_hi_res,
-                      (blink::Image::LoadPlatformResource(
-                          IDR_BROKENCANVAS, ui::SCALE_FACTOR_200P)));
+                      (blink::Image::LoadPlatformResource(IDR_BROKENCANVAS,
+                                                          ui::k200Percent)));
     return std::make_pair(broken_canvas_hi_res, 2);
   }
 

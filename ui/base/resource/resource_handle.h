@@ -9,7 +9,7 @@
 
 #include "base/strings/string_piece.h"
 #include "ui/base/resource/data_pack_export.h"
-#include "ui/base/resource/scale_factor.h"
+#include "ui/base/resource/resource_scale_factor.h"
 
 namespace base {
 class RefCountedStaticMemory;

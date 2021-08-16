@@ -1489,6 +1489,12 @@ _CONFIG = [
         ],
         'allowed': ['cc::DocumentTransitionSharedElementId'],
     },
+    {
+        'paths': [
+            'third_party/blink/renderer/core/',
+        ],
+        'allowed': ['ui::k200Percent'],
+    },
 ]
 
 

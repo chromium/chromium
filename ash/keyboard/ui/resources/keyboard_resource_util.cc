@@ -107,8 +107,8 @@ void InitializeKeyboardResources() {
   base::PathService::Get(base::DIR_MODULE, &pak_dir);
   base::FilePath pak_file =
       pak_dir.Append(FILE_PATH_LITERAL("keyboard_resources.pak"));
-  ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
-      pak_file, ui::SCALE_FACTOR_100P);
+  ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(pak_file,
+                                                              ui::k100Percent);
 }
 
 }  // namespace keyboard

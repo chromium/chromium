@@ -41,8 +41,8 @@ component("ui_data_pack") {
     "resource/data_pack.h",
     "resource/data_pack_export.h",
     "resource/resource_handle.h",
-    "resource/scale_factor.cc",
-    "resource/scale_factor.h",
+    "resource/resource_scale_factor.cc",
+    "resource/resource_scale_factor.h",
   ]
 
   deps = [

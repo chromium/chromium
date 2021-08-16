@@ -317,7 +317,7 @@ void ShellMainDelegate::InitializeResourceBundle() {
   ui::ResourceBundle::InitSharedInstanceWithPakFileRegion(
       android_pak_file.Duplicate(), pak_region);
   ui::ResourceBundle::GetSharedInstance().AddDataPackFromFileRegion(
-      std::move(android_pak_file), pak_region, ui::SCALE_FACTOR_100P);
+      std::move(android_pak_file), pak_region, ui::k100Percent);
 #elif defined(OS_MAC)
   ui::ResourceBundle::InitSharedInstanceWithPakPath(GetResourcesPakFilePath());
 #else

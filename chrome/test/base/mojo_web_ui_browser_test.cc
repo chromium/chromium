@@ -104,7 +104,7 @@ void MojoWebUIBrowserTest::SetUpOnMainThread() {
   ASSERT_TRUE(base::PathService::Get(base::DIR_MODULE, &pak_path));
   pak_path = pak_path.AppendASCII("browser_tests.pak");
   ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
-      pak_path, ui::SCALE_FACTOR_NONE);
+      pak_path, ui::kScaleFactorNone);
 
   content::SetBrowserClientForTesting(test_content_browser_client_.get());
 }

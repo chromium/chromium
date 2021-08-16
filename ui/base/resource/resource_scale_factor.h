@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_BASE_RESOURCE_SCALE_FACTOR_H_
-#define UI_BASE_RESOURCE_SCALE_FACTOR_H_
+#ifndef UI_BASE_RESOURCE_RESOURCE_SCALE_FACTOR_H_
+#define UI_BASE_RESOURCE_RESOURCE_SCALE_FACTOR_H_
 
 #include "ui/base/resource/data_pack_export.h"
 
@@ -11,14 +11,14 @@ namespace ui {
 
 // Supported resource scale factors for the platform. This is used as an index
 // into the array |kScaleFactorScales| which maps the enum value to a float.
-// SCALE_FACTOR_NONE is used for density independent resources such as
+// kScaleFactorNone is used for density independent resources such as
 // string, html/js files or an image that can be used for any scale factors
 // (such as wallpapers).
 enum ResourceScaleFactor : int {
-  SCALE_FACTOR_NONE = 0,
-  SCALE_FACTOR_100P,
-  SCALE_FACTOR_200P,
-  SCALE_FACTOR_300P,
+  kScaleFactorNone = 0,
+  k100Percent,
+  k200Percent,
+  k300Percent,
 
   NUM_SCALE_FACTORS  // This always appears last.
 };
@@ -29,4 +29,4 @@ UI_DATA_PACK_EXPORT float GetScaleForResourceScaleFactor(
 
 }  // namespace ui
 
-#endif  // UI_BASE_RESOURCE_SCALE_FACTOR_H_
+#endif  // UI_BASE_RESOURCE_RESOURCE_SCALE_FACTOR_H_
