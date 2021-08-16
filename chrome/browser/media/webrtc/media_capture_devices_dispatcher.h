@@ -165,7 +165,6 @@ class MediaCaptureDevicesDispatcher
       int render_process_id,
       int render_frame_id,
       int page_request_id,
-      const GURL& security_origin,
       blink::mojom::MediaStreamType stream_type,
       content::MediaRequestState state);
   void OnCreatingAudioStreamOnUIThread(int render_process_id,
