@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
+#include "components/services/app_service/public/cpp/types_util.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -207,6 +208,9 @@ void BrowserAppsTracker::OnBrowserNoLongerActive(Browser* browser) {
 }
 
 void BrowserAppsTracker::OnAppUpdate(const apps::AppUpdate& update) {
+  if (!apps_util::AppTypeUsesWebContents(update.AppType())) {
+    return;
+  }
   // Sync app instances for existing tabs.
   for (auto* browser : *BrowserList::GetInstance()) {
     if (!IsBrowserTracked(browser)) {
