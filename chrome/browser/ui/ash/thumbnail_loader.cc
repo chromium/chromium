@@ -183,7 +183,13 @@ class ThumbnailLoader::ThumbnailDecoder : public BitmapFetcherDelegate {
 
 ThumbnailLoader::ThumbnailLoader(Profile* profile) : profile_(profile) {}
 
-ThumbnailLoader::~ThumbnailLoader() = default;
+ThumbnailLoader::~ThumbnailLoader() {
+  // Run any pending callbacks to clean them up.
+  for (auto it = requests_.begin(); it != requests_.end();) {
+    std::move(it->second).Run(nullptr, base::File::Error::FILE_ERROR_ABORT);
+    it = requests_.erase(it);
+  }
+}
 
 ThumbnailLoader::ThumbnailRequest::ThumbnailRequest(
     const base::FilePath& item_path,

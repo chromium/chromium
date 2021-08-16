@@ -95,9 +95,6 @@ class ChromePersonalizationAppUiDelegate : public PersonalizationAppUiDelegate {
       UpdateDailyRefreshWallpaperCallback callback) override;
 
  private:
-  mojo::Receiver<chromeos::personalization_app::mojom::WallpaperProvider>
-      wallpaper_receiver_{this};
-
   void OnFetchCollections(FetchCollectionsCallback callback,
                           bool success,
                           const std::vector<backdrop::Collection>& collections);
@@ -149,6 +146,11 @@ class ChromePersonalizationAppUiDelegate : public PersonalizationAppUiDelegate {
 
   // Pointer to profile of user that opened personalization SWA. Not owned.
   Profile* const profile_ = nullptr;
+
+  // Place near bottom of class so this is cleaned up before any pending
+  // callbacks are dropped.
+  mojo::Receiver<chromeos::personalization_app::mojom::WallpaperProvider>
+      wallpaper_receiver_{this};
 
   // Used for interacting with local filesystem and fetching online image
   // attribution.
