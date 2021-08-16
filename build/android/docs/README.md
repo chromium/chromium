@@ -1,5 +1,6 @@
 # Android Build Docs
 
+* [//docs/android_build_instructions.md](/docs/android_build_instructions.md)
 * [android_app_bundles.md](android_app_bundles.md)
 * [build_config.md](build_config.md)
 * [coverage.md](coverage.md)
@@ -8,6 +9,8 @@
 * [lint.md](lint.md)
 * [life_of_a_resource.md](life_of_a_resource.md)
 * [../incremental_install/README.md](../incremental_install/README.md)
+* [//docs/ui/android/bytecode_rewriting.md](/docs/ui/android/bytecode_rewriting.md)
+* [go/doubledown](https://goto.google.com/doubledown) (Googlers only)
 
 See also:
 * [//build/README.md](../../README.md)
