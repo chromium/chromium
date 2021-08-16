@@ -41,6 +41,7 @@ class CORE_EXPORT NGSimplifiedOOFLayoutAlgorithm
  private:
   void AddChildFragment(const NGLink& old_fragment);
   void AdvanceChildIterator();
+  void AdvanceBreakTokenIterator();
 
   const WritingDirectionMode writing_direction_;
   PhysicalSize previous_physical_container_size_;
@@ -50,6 +51,7 @@ class CORE_EXPORT NGSimplifiedOOFLayoutAlgorithm
   const NGBlockBreakToken* incoming_break_token_;
   const NGBlockBreakToken* old_fragment_break_token_;
   base::span<const NGBreakToken* const>::iterator break_token_iterator_;
+  bool only_copy_break_tokens_ = false;
 };
 
 }  // namespace blink

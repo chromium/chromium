@@ -27,6 +27,8 @@ NGSimplifiedOOFLayoutAlgorithm::NGSimplifiedOOFLayoutAlgorithm(
   container_builder_.SetBoxType(previous_fragment.BoxType());
   container_builder_.SetFragmentBlockSize(
       params.space.FragmentainerBlockSize());
+  if (incoming_break_token_)
+    break_token_iterator_ = incoming_break_token_->ChildBreakTokens().begin();
   old_fragment_break_token_ =
       To<NGBlockBreakToken>(previous_fragment.BreakToken());
   if (old_fragment_break_token_) {
@@ -43,18 +45,12 @@ NGSimplifiedOOFLayoutAlgorithm::NGSimplifiedOOFLayoutAlgorithm(
     // children is resumed after the spanner.
     if (has_column_spanner && is_new_fragment) {
       should_break_for_oof = true;
-      for (const auto* child_break_token :
-           old_fragment_break_token_->ChildBreakTokens()) {
-        if (!child_break_token->InputNode().IsOutOfFlowPositioned())
-          container_builder_.AddBreakToken(child_break_token);
-      }
+      only_copy_break_tokens_ = true;
+      AdvanceBreakTokenIterator();
     }
   }
   if (should_break_for_oof)
     container_builder_.SetDidBreakSelf();
-
-  if (incoming_break_token_)
-    break_token_iterator_ = incoming_break_token_->ChildBreakTokens().begin();
 
   // Don't apply children to new fragments.
   if (is_new_fragment) {
@@ -118,7 +114,10 @@ void NGSimplifiedOOFLayoutAlgorithm::AppendOutOfFlowResult(
                 .IsFirstForNode() ||
            To<NGBlockBreakToken>(*break_token_iterator_)->IsBreakBefore());
     break_token_iterator_++;
-    AdvanceChildIterator();
+    if (only_copy_break_tokens_)
+      AdvanceBreakTokenIterator();
+    else
+      AdvanceChildIterator();
   }
 }
 
@@ -141,6 +140,7 @@ void NGSimplifiedOOFLayoutAlgorithm::AddChildFragment(const NGLink& child) {
 }
 
 void NGSimplifiedOOFLayoutAlgorithm::AdvanceChildIterator() {
+  DCHECK(!only_copy_break_tokens_);
   while (child_iterator_ != children_.end()) {
     const auto& child_link = *child_iterator_;
     if (incoming_break_token_ &&
@@ -167,6 +167,28 @@ void NGSimplifiedOOFLayoutAlgorithm::AdvanceChildIterator() {
       // children in |child_iterator_|.
       AddChildFragment(child_link);
       child_iterator_++;
+    }
+  }
+}
+
+// In some cases, for example in the case of a column spanner, we may add a new
+// column before the multicol has finished layout, so we will want to carry
+// over any child break tokens from the previous fragmentainer without adding
+// their associated child fragments.
+void NGSimplifiedOOFLayoutAlgorithm::AdvanceBreakTokenIterator() {
+  DCHECK(only_copy_break_tokens_);
+  while (incoming_break_token_ &&
+         break_token_iterator_ !=
+             incoming_break_token_->ChildBreakTokens().end()) {
+    // Add the current break token if it is not an OOF positioned element.
+    const auto* break_token = *break_token_iterator_;
+    if (!break_token->InputNode().IsOutOfFlowPositioned()) {
+      container_builder_.AddBreakToken(break_token);
+      break_token_iterator_++;
+    } else {
+      // The break token must belong to an OOF positioned element that has not
+      // yet been added via AppendOutOfFlowResult().
+      break;
     }
   }
 }
