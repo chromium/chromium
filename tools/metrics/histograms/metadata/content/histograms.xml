@@ -1848,6 +1848,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Android: status of pulling-to-refresh the {FeedType} stream per the user
     request. Reported when the refresh completes.
   </summary>
+  <token key="FeedType">
+    <variant name="Feed" summary="For-You Feed"/>
+    <variant name="Feed.WebFeed" summary="Web Feed"/>
+  </token>
 </histogram>
 
 <histogram name="ContentSuggestions.{FeedType}.ReachedEndOfFeed" units="index"
