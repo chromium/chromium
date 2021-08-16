@@ -339,7 +339,7 @@
 <translation id="1369149969991017342">స్విచ్ యాక్సెస్ (కేవలం ఒకటి లేదా రెండు స్విచ్‌లతో కంప్యూటర్‌ను నియంత్రించండి)</translation>
 <translation id="1372841398847029212">మీ ఖాతాకు సింక్ చేయండి</translation>
 <translation id="1373176046406139583">మీ స్క్రీన్ అన్‌లాక్ చేసి ఉన్నప్పుడు, మీతో ఎవరు షేర్ చేయవచ్చనే విషయాన్ని, పరికరం విజిబిలిటీ కంట్రోల్ చేస్తుంది. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
-<translation id="1374844444528092021">"<ph name="NETWORK_NAME" />" నెట్‌వర్క్‌కు అవసరమైన ప్రమాణపత్రం ఇన్‌స్టాల్ చేయబడలేదు లేదా చెల్లదు. దయచేసి క్రొత్త ప్రమాణపత్రాన్ని పొందండి మరియు మళ్లీ కనెక్ట్ చేయడాన్ని ప్రయత్నించండి.</translation>
+<translation id="1374844444528092021">"<ph name="NETWORK_NAME" />" నెట్‌వర్క్‌కు అవసరమైన ప్రమాణపత్రం ఇన్‌స్టాల్ చేయబడలేదు లేదా చెల్లదు. దయచేసి కొత్త ప్రమాణపత్రాన్ని పొందండి మరియు మళ్లీ కనెక్ట్ చేయడాన్ని ప్రయత్నించండి.</translation>
 <translation id="1375321115329958930">సేవ్ చేసిన పాస్‌వర్డ్‌లు</translation>
 <translation id="137651782282853227">సేవ్ చేసిన అడ్రస్‌లు ఇక్కడ కనిపిస్తాయి</translation>
 <translation id="1376771218494401509">పేరు &amp;విండో...</translation>
@@ -1206,7 +1206,7 @@
 <translation id="2249605167705922988">ఉదా. 1-5, 8, 11-13</translation>
 <translation id="2251218783371366160">సిస్టమ్ వ్యూయర్‌తో తెరువు</translation>
 <translation id="225163402930830576">నెట్‌వర్క్‌లను రిఫ్రెష్ చేయి</translation>
-<translation id="2251809247798634662">క్రొత్త అజ్ఞాత విండో</translation>
+<translation id="2251809247798634662">కొత్త అజ్ఞాత విండో</translation>
 <translation id="225240747099314620">రక్షిత కంటెంట్ కోసం ఐడెంటిఫైయర్‌లను అనుమతించు (కంప్యూటర్‌ను పునఃప్రారంభించాల్సి రావచ్చు)</translation>
 <translation id="2255077166240162850">వేరే డొమైన్ లేదా మోడ్‌కు ఈ పరికరం లాక్ చేయబడింది.</translation>
 <translation id="2255317897038918278">Microsoft Time Stamping</translation>
@@ -2302,7 +2302,7 @@
 <translation id="3432762828853624962">షేర్డ్ వర్కర్స్</translation>
 <translation id="3433621910545056227">అయ్యో!  పరికరం ఇన్‌స్టాలేషన్-సమయ లక్షణాల లాక్‌ను ఏర్పాటు చేయడంలో సిస్టమ్ విఫలమైంది.</translation>
 <translation id="3434272557872943250">మీ చిన్నారి కోసం అదనపు వెబ్ &amp; యాప్ యాక్టివిటీ సెట్టింగ్‌ను ఆన్ చేసినట్లయితే, ఈ డేటా వారి Google ఖాతాలో సేవ్ చేయబడవచ్చు. ఈ సెట్టింగ్‌ల గురించి, వాటిని ఎలా సర్దుబాటు చేయాలనే దాని గురించి families.google.comలో మరింత తెలుసుకోండి.</translation>
-<translation id="3435541101098866721">క్రొత్త ఫోన్‌ని జోడించండి</translation>
+<translation id="3435541101098866721">కొత్త ఫోన్‌ని జోడించండి</translation>
 <translation id="3435688026795609344">"<ph name="EXTENSION_NAME" />" మీ <ph name="CODE_TYPE" />ని అభ్యర్థిస్తోంది</translation>
 <translation id="3435738964857648380">భద్రత</translation>
 <translation id="343578350365773421">కాగితం లేదు</translation>
@@ -2361,7 +2361,7 @@
 <translation id="3481268647794498892"><ph name="COUNTDOWN_SECONDS" /> క్షణాలలో <ph name="ALTERNATIVE_BROWSER_NAME" />లో తెరవబోతోంది</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" />, కింద ఉన్న ఫైళ్లను చూడగలదు</translation>
 <translation id="3484273680291419129">హానికరమైన సాఫ్ట్‌వేర్‌ని తీసివేస్తోంది...</translation>
-<translation id="3484869148456018791">క్రొత్త ప్రమాణపత్రాన్ని పొందండి</translation>
+<translation id="3484869148456018791">కొత్త ప్రమాణపత్రాన్ని పొందండి</translation>
 <translation id="3487007233252413104">అజ్ఞాత కార్యాచరణ</translation>
 <translation id="348780365869651045">AppCache కోసం నిరీక్షిస్తోంది...</translation>
 <translation id="3490695139702884919">డౌన్‌లోడ్ చేస్తోంది... <ph name="PERCENT" />%</translation>
@@ -2849,7 +2849,7 @@
 <translation id="3976108569178263973">అందుబాటులో ఉన్న ప్రింటర్లు లేవు.</translation>
 <translation id="397703832102027365">పూర్తి చేస్తోంది...</translation>
 <translation id="3977886311744775419">ఈ రకమైన నెట్‌వర్క్‌లో ఆటోమేటిక్ అప్‌డేట్‌లు డౌన్‌లోడ్ చేయబడవు, కానీ మీరు మాన్యువల్‌గా అప్‌డేట్‌లను తనిఖీ చేయవచ్చు.</translation>
-<translation id="3979395879372752341">క్రొత్త ఎక్స్‌టెన్షన్‌ జోడించబడింది (<ph name="EXTENSION_NAME" />)</translation>
+<translation id="3979395879372752341">కొత్త ఎక్స్‌టెన్షన్‌ జోడించబడింది (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326"><ph name="NETWORKDEVICE" />ను ప్రారంభించు</translation>
 <translation id="3981058120448670012">సమీపంలోని పరికరాలకు <ph name="REMAINING_TIME" /> పాటు <ph name="DEVICE_NAME" />గా కనిపిస్తుంది...</translation>
 <translation id="3981760180856053153">చెల్లని సేవ్ రకం ఎంటర్ చేయబడింది.</translation>
@@ -4489,7 +4489,7 @@
 <translation id="5855267860608268405">తెలిసిన Wi-Fi నెట్‌వర్క్‌లు</translation>
 <translation id="5855643921295613558">0.6 సెకన్లు</translation>
 <translation id="5856721540245522153">డీబగ్గింగ్ ఫీచ‌ర్‌లను ప్రారంభించండి</translation>
-<translation id="5857090052475505287">క్రొత్త ఫోల్డర్</translation>
+<translation id="5857090052475505287">కొత్త ఫోల్డర్</translation>
 <translation id="5857171483910641802">మీరు తరచుగా సందర్శించే వెబ్‌సైట్‌ల ఆధారంగా షార్ట్‌కట్‌లు సూచించబడతాయి</translation>
 <translation id="5857675236236529683">మీరు సిద్ధంగా ఉన్నప్పుడు, మీ చదవాల్సిన లిస్ట్‌ను ఇక్కడ కనుగొనండి</translation>
 <translation id="5858490737742085133">టెర్మినల్</translation>
@@ -6307,7 +6307,7 @@
 <translation id="7814458197256864873">&amp;కాపీ</translation>
 <translation id="7815680994978050279">ప్రమాదకరమైన డౌన్‌లోడ్ బ్లాక్ చేయబడింది</translation>
 <translation id="7817361223956157679">స్క్రీన్‌పై కీబోర్డ్ ఇంకా Linux యాప్‌లలో పనిచేయడం లేదు</translation>
-<translation id="7818135753970109980">క్రొత్త థీమ్ జోడించబడింది (<ph name="EXTENSION_NAME" />)</translation>
+<translation id="7818135753970109980">కొత్త థీమ్ జోడించబడింది (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="7819992334107904369">Chrome సింక్‌</translation>
 <translation id="782057141565633384">వీడియో అడ్రస్‌ను కా&amp;పీ చేయండి</translation>
 <translation id="7822187537422052256">మీరు ఈ అడ్రస్‌ను ఖచ్చితంగా తీసివేయాలనుకుంటున్నారా?</translation>
@@ -6497,7 +6497,7 @@
 <translation id="7997826902155442747">ప్రాసెస్ ప్రాధాన్యత</translation>
 <translation id="7999229196265990314">ఈ క్రింది ఫైళ్ళను సృష్టించింది:
 
-ఎక్స్‌టెన్షన్‌: <ph name="EXTENSION_FILE" />కీ ఫైల్: <ph name="KEY_FILE" />మీ కీ ఫైల్‌ను ఒక సురక్షితమైన స్థలంలో ఉంచండి. మీ ఎక్స్‌టెన్షన్‌ యొక్క క్రొత్త సంస్కరణను సృష్టించడానికి మీకు ఇది అవసరం అవుతుంది.</translation>
+ఎక్స్‌టెన్షన్‌: <ph name="EXTENSION_FILE" />కీ ఫైల్: <ph name="KEY_FILE" />మీ కీ ఫైల్‌ను ఒక సురక్షితమైన స్థలంలో ఉంచండి. మీ ఎక్స్‌టెన్షన్‌ యొక్క కొత్త సంస్కరణను సృష్టించడానికి మీకు ఇది అవసరం అవుతుంది.</translation>
 <translation id="8002274832045662704">అధునాతన ప్రింటర్ కాన్ఫిగరేషన్</translation>
 <translation id="8002670234429879764">ఇకపై <ph name="PRINTER_NAME" /> అందుబాటులో ఉండదు</translation>
 <translation id="8004582292198964060">బ్రౌజర్</translation>
@@ -7450,7 +7450,7 @@
 <translation id="9024158959543687197">షేర్‌ను మౌంట్ చేయడంలో ఎర్రర్ ఏర్పడింది. ఫైల్ షేర్ URLని తనిఖీ చేసి, ఆపై మళ్లీ ప్రయత్నించండి.</translation>
 <translation id="9026731007018893674">డౌన్‌లోడ్</translation>
 <translation id="9026852570893462412">ఈ ప్రాసెస్‌కు కొన్ని నిమిషాలు పట్టవచ్చు. మర్చువల్ మెషీన్ డౌన్‌లోడ్ అవుతోంది.</translation>
-<translation id="9027459031423301635">లింక్‌ను క్రొత్త &amp;టాబ్‌లో తెరువు</translation>
+<translation id="9027459031423301635">లింక్‌ను కొత్త &amp;టాబ్‌లో తెరువు</translation>
 <translation id="9030515284705930323">మీ సంస్థ మీ ఖాతా కోసం Google Play స్టోర్‌ను ప్రారంభించలేదు. మరింత సమాచారం కోసం మీ నిర్వాహకులను సంప్రదించండి.</translation>
 <translation id="9030754204056345429">చాలా వేగంగా</translation>
 <translation id="9030785788945687215">Gmail</translation>
@@ -7652,7 +7652,7 @@
 <translation id="938568644810664664">"Ok Google, ఇది ఏ పాట?" లేదా "Ok Google, నా స్క్రీన్‌పై ఏముంది?" అని అడిగి చూడండి</translation>
 <translation id="939252827960237676">స్క్రీన్‌షాట్‌ను సేవ్ చేయడంలో విఫలమైంది</translation>
 <translation id="939598580284253335">రహస్య పదబంధాన్ని నమోదు చేయండి</translation>
-<translation id="939736085109172342">క్రొత్త  ఫోల్డర్</translation>
+<translation id="939736085109172342">కొత్త  ఫోల్డర్</translation>
 <translation id="941070664607309480">కనిపించేలా చేయడానికి క్లిక్ చేయండి, తద్వారా ఇది మీతో షేర్ చేయవచ్చు</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> ఒక Chrome ట్యాబ్‌ను మరియు ఆడియోను భాగస్వామ్యం చేస్తోంది.</translation>
 <translation id="945522503751344254">ఫీడ్‌బ్యాక్ పంపండి</translation>

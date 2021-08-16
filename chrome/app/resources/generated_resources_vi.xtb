@@ -441,7 +441,7 @@
 <translation id="1470084204649225129">{NUM_TABS,plural, =1{Thêm thẻ vào nhóm mới}other{Thêm các thẻ vào nhóm mới}}</translation>
 <translation id="1470350905258700113">Sử dụng thiết bị này</translation>
 <translation id="1470946456740188591">Để bật hoặc tắt tính năng duyệt web có con nháy, hãy dùng phím tắt Ctrl+Search+7</translation>
-<translation id="1472675084647422956">Hiển thị thêm</translation>
+<translation id="1472675084647422956">Hiện thêm</translation>
 <translation id="1474785664565228650">Bạn cần chạy lại ứng dụng Parallels Desktop để thay đổi tùy chọn cài đặt micrô. Hãy chạy lại ứng dụng Parallels Desktop để tiếp tục.</translation>
 <translation id="1475502736924165259">Bạn có các chứng chỉ trên tệp không phù hợp với bất kỳ danh mục nào khác</translation>
 <translation id="1476088332184200792">Sao chép vào Thiết bị của bạn</translation>
@@ -2237,7 +2237,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3364986687961713424">Thông báo của quản trị viên: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Sử dụng phím Ctrl hoặc Alt</translation>
 <translation id="3368922792935385530">Đã kết nối</translation>
-<translation id="3369067987974711168">Hiển thị thêm thao tác đối với cổng này</translation>
+<translation id="3369067987974711168">Hiện thêm thao tác đối với cổng này</translation>
 <translation id="3369624026883419694">Đang phân giải máy chủ...</translation>
 <translation id="3370260763947406229">Tự động sửa lỗi</translation>
 <translation id="3371140690572404006">Thiết bị USB-C (cổng phía trước, bên phải)</translation>
