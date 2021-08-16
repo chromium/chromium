@@ -5,6 +5,7 @@
 #include "extensions/browser/service_worker_task_queue.h"
 
 #include <memory>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -206,7 +207,10 @@ void ServiceWorkerTaskQueue::DidStartWorkerFail(
   // TODO(https://crbug/1062936): Needs more thought: extension would be in
   // perma-broken state after this as the registration wouldn't be stored if
   // this happens.
-  LOG(ERROR) << "DidStartWorkerFail " << context_id.first.extension_id();
+  LOG(ERROR)
+      << "DidStartWorkerFail " << context_id.first.extension_id() << ": "
+      << static_cast<std::underlying_type_t<blink::ServiceWorkerStatusCode>>(
+             status_code);
 }
 
 void ServiceWorkerTaskQueue::DidInitializeServiceWorkerContext(
