@@ -555,6 +555,13 @@
      ]
     },
     "css-lists": {
+     "before-after-selectors-on-code-element-crash.html": [
+      "cc0e16e766f15acdb872873203ceab2995d9e243",
+      [
+       null,
+       {}
+      ]
+     ],
      "list-marker-position-crash.html": [
       "06ae5fa45bd06f5df306d96a665d6c7653c4dff0",
       [
@@ -2020,6 +2027,13 @@
      ],
      "chrome-bug-1207590.html": [
       "3cbf61f02fdcaee91a614c11abbfa4701f3d16ac",
+      [
+       null,
+       {}
+      ]
+     ],
+     "chrome-bug-1238412.html": [
+      "93e12f6e135a8bdd92fdcee055a9e5cf2474dbe8",
       [
        null,
        {}
@@ -128294,6 +128308,19 @@
        {}
       ]
      ],
+     "paint-function-arguments-var.https.html": [
+      "e06231cb1d7aca8f8caddf4581ebbb388fbfbedb",
+      [
+       null,
+       [
+        [
+         "/css/css-paint-api/paint-function-arguments-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "paint-function-arguments.https.html": [
       "c613bd159f928e91dac25fba4a83b344843d8ade",
       [
@@ -230786,10 +230813,6 @@
       "0cc1184a83a8d87edbaf0648e664dc1d9e1f0932",
       []
      ],
-     "generic-family-keywords-001-expected.txt": [
-      "85ec8839fba729aa82168c814ca086c7daa88411",
-      []
-     ],
      "idlharness-expected.txt": [
       "75abe96d15bc8bdde35f9cec7686d280a251a580",
       []
@@ -231120,7 +231143,7 @@
        []
       ],
       "font-family-keywords.js": [
-       "fc5b723e6875c8abe4905a23b8ab631db9934dfd",
+       "caa3e75dd0ff5700b648dd8d436b46b6fbce7734",
        []
       ],
       "font-weight-bolder-001-ref.png": [
@@ -252724,6 +252747,18 @@
       "5614ec09b2641a580f8c965c339568701e46b612",
       []
      ],
+     "calc-infinity-nan-serialize-angle-expected.txt": [
+      "5258069b2e47eedb46f3af28398a3f1cdefce7ee",
+      []
+     ],
+     "calc-infinity-nan-serialize-length-expected.txt": [
+      "8aa9ef0140bf92ea318bd14ef0797bde436f26ea",
+      []
+     ],
+     "calc-infinity-nan-serialize-time-expected.txt": [
+      "e6956f0548a2b6f81be61bed720270be5b1cb9e3",
+      []
+     ],
      "calc-margin-block-1-ref.html": [
       "acfc0889206431f6f4c1343c06b156ae3e8492c8",
       []
@@ -265614,6 +265649,18 @@
         "eccadadf41a873d9b50f643dcdc5fd83336f1605",
         []
        ],
+       "initial-empty-document": {
+        "load-event-iframe-element-expected.txt": [
+         "67ea925ee40ffd4a19b02871ce8fb4ab9293359b",
+         []
+        ],
+        "resources": {
+         "helpers.js": [
+          "aa78fdc37b41730bd67eb1313948ed689dfd2554",
+          []
+         ]
+        }
+       },
        "javascript-url-abort": {
         "support": {
          "iframe-and-links.html": [
@@ -282127,7 +282174,7 @@
     ]
    },
    "lint.ignore": [
-    "d486fb9ed3c10788d7c3a0b6a66ffa046e242b22",
+    "fea89bb62d9cf9dc5ff1fa5e44b69b4290bc8796",
     []
    ],
    "loading": {
@@ -352301,7 +352348,7 @@
         ]
        ],
        "set.tentative.html": [
-        "d9c24fafc22b898ffc4ed442d00d5adbd81a1da7",
+        "53c3c75d184f08c5ec8c28f73f46fc848cc52493",
         [
          null,
          {}
@@ -352401,7 +352448,7 @@
         ]
        ],
        "set.tentative.html": [
-        "048ad87e8b1360995a2a7f20fd1e1ee0b9764567",
+        "50c685b4b3a5a14a4c636a46226c15f44eddb6fa",
         [
          null,
          {}
@@ -391453,6 +391500,36 @@
          {}
         ]
        ],
+       "initial-empty-document": {
+        "initial-content-replacement.html": [
+         "44f890df6cace05a48ba8030c109f176b4efb35e",
+         [
+          null,
+          {}
+         ]
+        ],
+        "load-event-iframe-element.html": [
+         "0d19770cc1eb8cc97cf5ece953428f5bebb72fbd",
+         [
+          null,
+          {}
+         ]
+        ],
+        "load-pageshow-events-iframe-contentWindow.html": [
+         "4aea4aac8135adcf5d700373ea44855d0304c082",
+         [
+          null,
+          {}
+         ]
+        ],
+        "load-pageshow-events-window-open.html": [
+         "9703502f7fbc96be606e556c81e0c43076bb5f15",
+         [
+          null,
+          {}
+         ]
+        ]
+       },
        "javascript-url-abort": {
         "javascript-url-abort-return-value-string.tentative.html": [
          "f626a79ae66ab4502e611f4c713c2240d1a12722",

@@ -4,7 +4,7 @@ FAIL font-family: -webkit-sans-serif treated as <font-family>, not <generic-name
 FAIL font-family: -webkit-cursive treated as <font-family>, not <generic-name> assert_equals: expected 50 but got 26
 FAIL font-family: -webkit-fantasy treated as <font-family>, not <generic-name> assert_equals: expected 50 but got 33
 FAIL font-family: -webkit-monospace treated as <font-family>, not <generic-name> assert_equals: expected 50 but got 30
-PASS font-family: -webkit-system treated as <font-family>, not <generic-name>
+PASS font-family: -webkit-system-ui treated as <font-family>, not <generic-name>
 PASS font-family: -webkit-emoji treated as <font-family>, not <generic-name>
 PASS font-family: -webkit-math treated as <font-family>, not <generic-name>
 PASS font-family: -webkit-fangsong treated as <font-family>, not <generic-name>
