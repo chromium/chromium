@@ -1238,6 +1238,20 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionContentSettingJSTest, DISABLED_NoBeepCsp) {
   RunTestsInJsModule("nobeep_test.js", "test-nobeep-csp.pdf");
 }
 
+class PDFExtensionWebUICodeCacheJSTest : public PDFExtensionJSTest {
+ protected:
+  std::vector<base::Feature> GetEnabledFeatures() const override {
+    auto enabled = PDFExtensionJSTest::GetEnabledFeatures();
+    enabled.push_back(features::kWebUICodeCache);
+    return enabled;
+  }
+};
+
+// Regression test for https://crbug.com/1239148.
+IN_PROC_BROWSER_TEST_P(PDFExtensionWebUICodeCacheJSTest, Basic) {
+  RunTestsInJsModule("basic_test.js", "test.pdf");
+}
+
 // Service worker tests are regression tests for
 // https://crbug.com/916514.
 class PDFExtensionServiceWorkerJSTest : public PDFExtensionJSTest {
@@ -3494,6 +3508,7 @@ INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFPluginDisabledTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionJSTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionContentSettingJSTest);
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionWebUICodeCacheJSTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionServiceWorkerJSTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionLinkClickTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionInternalLinkClickTest);

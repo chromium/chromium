@@ -59,14 +59,18 @@ bool CheckSecurityForAccessingCodeCacheData(const GURL& resource_url,
       // malicious, but we don't trust it enough to store data.
       return false;
     }
-    if (!process_lock.matches_scheme(content::kChromeUIScheme) &&
-        !process_lock.matches_scheme(content::kChromeUIUntrustedScheme)) {
+    if (process_lock.matches_scheme(url::kHttpScheme) ||
+        process_lock.matches_scheme(url::kHttpsScheme)) {
       if (operation == Operation::kWrite) {
-        mojo::ReportBadMessage("Non-WebUI pages cannot cache WebUI code");
+        mojo::ReportBadMessage("HTTP(S) pages cannot cache WebUI code");
       }
       return false;
     }
-    return true;
+    // Other schemes which might successfully load chrome or chrome-untrusted
+    // scripts, such as the PDF viewer, are unsupported but not considered
+    // dangerous.
+    return process_lock.matches_scheme(content::kChromeUIScheme) ||
+           process_lock.matches_scheme(content::kChromeUIUntrustedScheme);
   }
   if (resource_url.SchemeIsHTTPOrHTTPS()) {
     if (process_lock.matches_scheme(content::kChromeUIScheme) ||
