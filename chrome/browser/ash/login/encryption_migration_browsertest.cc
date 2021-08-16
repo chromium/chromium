@@ -58,10 +58,14 @@ const test::UIPath kInsufficientSpaceRestartButton = {
 
 }  // namespace
 
-class EncryptionMigrationTest : public OobeBaseTest {
+// Base class for testing encryption migration during sign-in.
+// The test user account will be specified by the base class.
+class EncryptionMigrationTestBase : public OobeBaseTest {
  public:
-  EncryptionMigrationTest() = default;
-  ~EncryptionMigrationTest() override = default;
+  explicit EncryptionMigrationTestBase(
+      const LoginManagerMixin::TestUserInfo& test_user)
+      : test_user_(test_user) {}
+  ~EncryptionMigrationTestBase() override = default;
 
   // OobeBaseTest:
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -82,7 +86,7 @@ class EncryptionMigrationTest : public OobeBaseTest {
         WizardController::default_controller()
             ->GetScreen<EncryptionMigrationScreen>();
     screen->set_free_disk_space_fetcher_for_testing(base::BindRepeating(
-        &EncryptionMigrationTest::GetFreeSpace, base::Unretained(this)));
+        &EncryptionMigrationTestBase::GetFreeSpace, base::Unretained(this)));
   }
 
  protected:
@@ -173,10 +177,37 @@ class EncryptionMigrationTest : public OobeBaseTest {
   // free space to an arbitrary amount above that limit.
   int64_t free_space_ = 200 * 1024 * 1024;
 
-  const LoginManagerMixin::TestUserInfo test_user_{
-      AccountId::FromUserEmailGaiaId("user@gmail.com", "user")};
+  const LoginManagerMixin::TestUserInfo test_user_;
   LoginManagerMixin login_manager_{&mixin_host_, {test_user_}};
   UserPolicyMixin user_policy_mixin_{&mixin_host_, test_user_.account_id};
+};
+
+// Test for encryption migration during sign-in for regular users.
+class EncryptionMigrationTest : public EncryptionMigrationTestBase {
+ public:
+  EncryptionMigrationTest()
+      : EncryptionMigrationTestBase(LoginManagerMixin::TestUserInfo{
+            AccountId::FromUserEmailGaiaId("user@gmail.com", "user")}) {}
+  ~EncryptionMigrationTest() override = default;
+
+  EncryptionMigrationTest(const EncryptionMigrationTest& other) = delete;
+  EncryptionMigrationTest& operator=(const EncryptionMigrationTest& other) =
+      delete;
+};
+
+// Test for encryption migration during sign-in for child users.
+class EncryptionMigrationChildUserTest : public EncryptionMigrationTestBase {
+ public:
+  EncryptionMigrationChildUserTest()
+      : EncryptionMigrationTestBase(LoginManagerMixin::TestUserInfo{
+            AccountId::FromUserEmailGaiaId("userchild@gmail.com", "userchild"),
+            user_manager::USER_TYPE_CHILD}) {}
+  ~EncryptionMigrationChildUserTest() override = default;
+
+  EncryptionMigrationChildUserTest(
+      const EncryptionMigrationChildUserTest& other) = delete;
+  EncryptionMigrationChildUserTest& operator=(
+      const EncryptionMigrationChildUserTest& other) = delete;
 };
 
 IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, SkipWithNoPolicySet) {
@@ -253,6 +284,16 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest,
   SetUpStubAuthenticatorAndAttemptLogin(true /* has_incomplete_migration */);
   OobeScreenWaiter(EncryptionMigrationScreenView::kScreenId).Wait();
 
+  RunFullMigrationFlowTest();
+}
+
+IN_PROC_BROWSER_TEST_F(EncryptionMigrationChildUserTest, MigrateForChildUser) {
+  OobeScreenWaiter encryption_migration_screen_waiter(
+      EncryptionMigrationScreenView::kScreenId);
+  SetUpStubAuthenticatorAndAttemptLogin(false /* has_incomplete_migration */);
+  encryption_migration_screen_waiter.Wait();
+
+  // With kMigrate policy, the migration should start immediately.
   RunFullMigrationFlowTest();
 }
 

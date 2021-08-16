@@ -301,9 +301,8 @@ absl::optional<EncryptionMigrationMode> GetEncryptionMigrationMode(
   }
 
   if (user_context.GetUserType() == user_manager::USER_TYPE_CHILD) {
-    // TODO(https://crbug.com/1147009): Remove child user special case or
-    // implement finch experiment for child user migration mode.
-    return absl::nullopt;
+    // Force-migrate child users.
+    return EncryptionMigrationMode::START_MIGRATION;
   }
 
   const bool profile_has_policy =
