@@ -7,6 +7,7 @@
 #include "chrome/browser/image_editor/screenshot_flow.h"
 #include "chrome/browser/lens/metrics/lens_metrics.h"
 #include "content/public/browser/web_contents.h"
+
 namespace lens {
 
 class LensRegionSearchController {
@@ -19,9 +20,22 @@ class LensRegionSearchController {
   // around the web contents. When finished with selection, the region is
   // converted into a PNG and sent to Lens.
   void Start();
+  // Calculates the percentage that the image area takes up in the screen area.
+  // This value is calculated as double and then floored to the nearest integer.
+  static int CalculateViewportProportionFromAreas(int screen_height,
+                                                  int screen_width,
+                                                  int image_width,
+                                                  int image_height);
+  // Returns an enum representing the aspect ratio of the image as defined in
+  // lens_metrics.h.
+  static lens::LensRegionSearchAspectRatio GetAspectRatioFromSize(
+      int image_height,
+      int image_width);
 
  private:
   void RecordCaptureResult(lens::LensRegionSearchCaptureResult result);
+  void RecordRegionSizeRelatedMetrics(gfx::Rect screen_bounds,
+                                      gfx::Size region_size);
 
   void OnCaptureCompleted(const image_editor::ScreenshotCaptureResult& result);
   gfx::Image ResizeImageIfNecessary(const gfx::Image& image);

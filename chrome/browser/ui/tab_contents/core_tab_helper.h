@@ -40,8 +40,11 @@ class CoreTabHelper : public content::WebContentsObserver,
                               const GURL& src_url);
 
   // Open the Lens experience for an image. Used for sending the bitmap selected
-  // via Lens Region Search.
-  void SearchWithLensInNewTab(gfx::Image image, lens::EntryPoint entry_point);
+  // via Lens Region Search. |image_original_size| is specified in case of
+  // resizing that happens prior to passing the image to CoreTabHelper.
+  void SearchWithLensInNewTab(gfx::Image image,
+                              const gfx::Size& image_original_size,
+                              lens::EntryPoint entry_point);
 
   // Perform an image search for the image that triggered the context menu.  The
   // |src_url| is passed to the search request and is not used directly to fetch

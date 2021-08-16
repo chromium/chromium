@@ -34,6 +34,8 @@ namespace image_editor {
 struct ScreenshotCaptureResult {
   // The image obtained from capture. Empty on failure.
   gfx::Image image;
+  // The bounds of the screen during which capture took place. Empty on failure.
+  gfx::Rect screen_bounds;
 };
 
 // Callback for obtaining image data.

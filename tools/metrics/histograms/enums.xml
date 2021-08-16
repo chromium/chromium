@@ -45315,6 +45315,20 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="11" label="Success: Image is translatable"/>
 </enum>
 
+<enum name="LensRegionSearchAspectRatio">
+  <summary>
+    Enum describing the aspect ratio of the captured region. The aspect ratios
+    are defined arbitrarly as follows: SQUARE: [0.8, 1.2] WIDE: (1.2, 1.7]
+    VERY_WIDE: (1.7, infinity] TALL: [0.3, 0.8) VERY_TALL: [0, 0.3)
+  </summary>
+  <int value="0" label="Undefined Aspect Ratio"/>
+  <int value="1" label="Square Aspect Ratio"/>
+  <int value="2" label="Wide Aspect Ratio"/>
+  <int value="3" label="Very Wide Aspect Ratio"/>
+  <int value="4" label="Tall Aspect Ratio"/>
+  <int value="5" label="Very Tall Aspect Ratio"/>
+</enum>
+
 <enum name="LensRegionSearchCaptureResult">
   <summary>Result of Lens Region Search feature.</summary>
   <int value="0" label="Success"/>

@@ -7492,6 +7492,13 @@ test("unit_tests") {
       "../browser/ui/webui/management/management_ui_handler_unittest.cc",
     ]
   }
+
+  if (is_win || is_linux || is_chromeos) {
+    sources += [
+      "../browser/lens/region_search/lens_region_search_controller_unittest.cc",
+    ]
+    deps += [ "//chrome/browser/lens/region_search" ]
+  }
 }
 
 static_library("test_support_unit") {

@@ -159,6 +159,7 @@ void ScreenshotFlow::CompleteCapture(const gfx::Rect& region) {
     canvas.DrawImageInt(image_foreground_, region.x(), region.y(), w, h, 0, 0,
                         w, h, false);
     result.image = gfx::Image::CreateFrom1xBitmap(canvas.GetBitmap());
+    result.screen_bounds = screen_capture_layer_->bounds();
   }
 
   RemoveUIOverlay();
