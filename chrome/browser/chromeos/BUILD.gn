@@ -87,6 +87,7 @@ source_set("chromeos") {
     "//ash/public/cpp/external_arc",
     "//ash/public/mojom",
     "//ash/quick_pair/common",
+    "//ash/services/quick_pair/public/mojom",
     "//ash/webui/diagnostics_ui",
     "//ash/webui/file_manager:file_manager_ui",
     "//ash/webui/file_manager/resources:file_manager_swa_resources_grit",
