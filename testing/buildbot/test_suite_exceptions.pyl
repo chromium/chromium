@@ -3391,8 +3391,6 @@
         ],
       },
       'android-marshmallow-x86-rel': {
-        #TODO(crbug.com/1127110): Enable this on CQ
-        'ci_only': True,
         'swarming': {
           'shards': 9,
         },

@@ -38595,7 +38595,6 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android23.textpb"
         ],
-        "ci_only": true,
         "merge": {
           "args": [
             "--bucket",
