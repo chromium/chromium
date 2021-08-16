@@ -4,6 +4,7 @@
 
 #include "components/segmentation_platform/internal/signals/histogram_signal_handler.h"
 
+#include "base/callback_helpers.h"
 #include "base/metrics/metrics_hashes.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
 
