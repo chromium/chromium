@@ -49,7 +49,6 @@ class AppHistoryApiNavigation final
   Member<ScriptPromiseResolver> resolver;
   ScriptPromise returned_promise;
   String key;
-  bool had_navigateerror = false;
 
   void Trace(Visitor* visitor) const {
     visitor->Trace(info);
@@ -604,7 +603,7 @@ AppHistory::DispatchResult AppHistory::DispatchNavigateEvent(
   post_navigate_event_ongoing_navigation_signal_ = navigate_event->signal();
 
   if (navigate_event->defaultPrevented()) {
-    if (!navigation || !navigation->had_navigateerror)
+    if (!navigate_event->signal()->aborted())
       FinalizeWithAbortedNavigationError(script_state, navigation);
     return DispatchResult::kAbort;
   }
@@ -637,7 +636,7 @@ AppHistory::DispatchResult AppHistory::DispatchNavigateEvent(
 }
 
 void AppHistory::InformAboutCanceledNavigation() {
-  if (ongoing_non_traversal_navigation_ || ongoing_navigate_event_ ||
+  if (ongoing_navigate_event_ ||
       post_navigate_event_ongoing_navigation_signal_) {
     auto* script_state =
         ToScriptStateForMainWorld(GetSupplementable()->GetFrame());
@@ -665,10 +664,8 @@ void AppHistory::InformAboutCanceledNavigation() {
 void AppHistory::RejectPromiseAndFireNavigateErrorEvent(
     AppHistoryApiNavigation* navigation,
     ScriptValue value) {
-  if (navigation) {
+  if (navigation)
     navigation->resolver->Reject(value);
-    navigation->had_navigateerror = true;
-  }
   auto* isolate = GetSupplementable()->GetIsolate();
   v8::Local<v8::Message> message =
       v8::Exception::CreateMessage(isolate, value.V8Value());
@@ -696,13 +693,11 @@ void AppHistory::FinalizeWithAbortedNavigationError(
   }
 
   to_be_set_serialized_state_ = nullptr;
-  if (navigation) {
-    RejectPromiseAndFireNavigateErrorEvent(
-        navigation,
-        ScriptValue::From(script_state, MakeGarbageCollected<DOMException>(
-                                            DOMExceptionCode::kAbortError,
-                                            "Navigation was aborted")));
-  }
+  RejectPromiseAndFireNavigateErrorEvent(
+      navigation,
+      ScriptValue::From(script_state, MakeGarbageCollected<DOMException>(
+                                          DOMExceptionCode::kAbortError,
+                                          "Navigation was aborted")));
 }
 
 int AppHistory::GetIndexFor(AppHistoryEntry* entry) {
