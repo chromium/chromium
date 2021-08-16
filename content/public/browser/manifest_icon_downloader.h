@@ -9,6 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 
@@ -57,14 +58,12 @@ class CONTENT_EXPORT ManifestIconDownloader final {
   static const int kMaxWidthToHeightRatio = 5;
 
  private:
-  class DevToolsConsoleHelper;
-
   // Callback run after the manifest icon downloaded successfully or the
   // download failed.
   static void OnIconFetched(int ideal_icon_size_in_px,
                             int minimum_icon_size_in_px,
                             bool square_only,
-                            DevToolsConsoleHelper* console_helper,
+                            base::WeakPtr<WebContents> web_contents,
                             IconFetchCallback callback,
                             int id,
                             int http_status_code,

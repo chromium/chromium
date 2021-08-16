@@ -21,35 +21,6 @@
 
 namespace content {
 
-// DevToolsConsoleHelper is a class that holds a WebContents in order to be able
-// to send a message to the WebContents' main frame. It is used so
-// ManifestIconDownloader and the callers do not have to worry about
-// |web_contents| lifetime. If the |web_contents| is invalidated before the
-// message can be sent, the message will simply be ignored.
-class ManifestIconDownloader::DevToolsConsoleHelper {
- public:
-  explicit DevToolsConsoleHelper(WebContents* web_contents);
-  ~DevToolsConsoleHelper() = default;
-
-  void AddMessage(blink::mojom::ConsoleMessageLevel level,
-                  const std::string& message);
-
- private:
-  base::WeakPtr<WebContents> web_contents_;
-};
-
-ManifestIconDownloader::DevToolsConsoleHelper::DevToolsConsoleHelper(
-    WebContents* web_contents)
-    : web_contents_(web_contents->GetWeakPtr()) {}
-
-void ManifestIconDownloader::DevToolsConsoleHelper::AddMessage(
-    blink::mojom::ConsoleMessageLevel level,
-    const std::string& message) {
-  if (!web_contents_)
-    return;
-  web_contents_->GetMainFrame()->AddMessageToConsole(level, message);
-}
-
 bool ManifestIconDownloader::Download(
     WebContents* web_contents,
     const GURL& icon_url,
@@ -71,8 +42,7 @@ bool ManifestIconDownloader::Download(
       false,                    // bypass_cache
       base::BindOnce(&ManifestIconDownloader::OnIconFetched,
                      ideal_icon_size_in_px, minimum_icon_size_in_px,
-                     square_only,
-                     base::Owned(new DevToolsConsoleHelper(web_contents)),
+                     square_only, web_contents->GetWeakPtr(),
                      std::move(callback)));
   return true;
 }
@@ -81,7 +51,7 @@ void ManifestIconDownloader::OnIconFetched(
     int ideal_icon_size_in_px,
     int minimum_icon_size_in_px,
     bool square_only,
-    DevToolsConsoleHelper* console_helper,
+    base::WeakPtr<WebContents> web_contents,
     IconFetchCallback callback,
     int id,
     int http_status_code,
@@ -91,10 +61,12 @@ void ManifestIconDownloader::OnIconFetched(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (bitmaps.empty()) {
-    console_helper->AddMessage(
-        blink::mojom::ConsoleMessageLevel::kError,
-        "Error while trying to use the following icon from the Manifest: " +
-            url.spec() + " (Download error or resource isn't a valid image)");
+    if (web_contents) {
+      web_contents->GetMainFrame()->AddMessageToConsole(
+          blink::mojom::ConsoleMessageLevel::kError,
+          "Error while trying to use the following icon from the Manifest: " +
+              url.spec() + " (Download error or resource isn't a valid image)");
+    }
 
     std::move(callback).Run(SkBitmap());
     return;
@@ -104,11 +76,13 @@ void ManifestIconDownloader::OnIconFetched(
       ideal_icon_size_in_px, minimum_icon_size_in_px, square_only, bitmaps);
 
   if (closest_index == -1) {
-    console_helper->AddMessage(
-        blink::mojom::ConsoleMessageLevel::kError,
-        "Error while trying to use the following icon from the Manifest: " +
-            url.spec() +
-            " (Resource size is not correct - typo in the Manifest?)");
+    if (web_contents) {
+      web_contents->GetMainFrame()->AddMessageToConsole(
+          blink::mojom::ConsoleMessageLevel::kError,
+          "Error while trying to use the following icon from the Manifest: " +
+              url.spec() +
+              " (Resource size is not correct - typo in the Manifest?)");
+    }
 
     std::move(callback).Run(SkBitmap());
     return;
