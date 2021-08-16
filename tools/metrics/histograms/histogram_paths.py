@@ -70,8 +70,9 @@ HISTOGRAMS_INDEX = path_util.GetInputFile(
 def main():
   with open(HISTOGRAMS_INDEX, 'w+') as f:
     # Force all OSes to use '/' as the separator.
-    f.write("\n".join(
-        [path.replace(os.sep, '/') for path in HISTOGRAMS_XMLS_RELATIVE]))
+    f.write(''.join([
+        path.replace(os.sep, '/') + '\n' for path in HISTOGRAMS_XMLS_RELATIVE
+    ]))
 
 
 if __name__ == '__main__':
