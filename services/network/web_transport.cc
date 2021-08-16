@@ -6,6 +6,7 @@
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
+#include "base/notreached.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "net/base/io_buffer.h"
@@ -134,16 +135,30 @@ class WebTransport::Stream final {
     MaySendFin();
   }
 
-  void Abort(quic::QuicRstStreamErrorCode code) {
+  void Abort(uint8_t code) {
+    // The type QuicRstStreamErrorCode is too small for the code once it has
+    // been translated into the WebTransport error space, so just used a fixed
+    // code instead.
+    // TODO(ricea): Use a different type once quiche supports it.
+    const auto quic_code = quic::QUIC_STREAM_UNKNOWN_APPLICATION_ERROR_CODE;
     auto* stream = incoming_ ? incoming_ : outgoing_;
     if (!stream) {
       return;
     }
-    stream->ResetWithUserCode(code);
+    stream->ResetWithUserCode(quic_code);
     incoming_ = nullptr;
     outgoing_ = nullptr;
     readable_watcher_.Cancel();
     readable_.reset();
+    MayDisposeLater();
+  }
+
+  void StopSending(uint8_t code) {
+    if (!incoming_) {
+      return;
+    }
+    NOTIMPLEMENTED() << "TODO(ricea): Pass this to Quiche";
+    incoming_ = nullptr;
     MayDisposeLater();
   }
 
@@ -428,16 +443,20 @@ void WebTransport::SendFin(uint32_t stream) {
   it->second->NotifyFinFromClient();
 }
 
-void WebTransport::AbortStream(uint32_t stream, uint64_t code) {
+void WebTransport::AbortStream(uint32_t stream, uint8_t code) {
   auto it = streams_.find(stream);
   if (it == streams_.end()) {
     return;
   }
-  auto code_to_pass = quic::QuicRstStreamErrorCode::QUIC_STREAM_NO_ERROR;
-  if (code < quic::QuicRstStreamErrorCode::QUIC_STREAM_LAST_ERROR) {
-    code_to_pass = static_cast<quic::QuicRstStreamErrorCode>(code);
+  it->second->Abort(code);
+}
+
+void WebTransport::StopSending(uint32_t stream, uint8_t code) {
+  auto it = streams_.find(stream);
+  if (it == streams_.end()) {
+    return;
   }
-  it->second->Abort(code_to_pass);
+  it->second->StopSending(code);
 }
 
 void WebTransport::SetOutgoingDatagramExpirationDuration(

@@ -133,7 +133,8 @@ class MockWebTransport : public network::mojom::blink::WebTransport {
   MOCK_METHOD1(SetOutgoingDatagramExpirationDuration, void(base::TimeDelta));
 
   void SendFin(uint32_t stream_id) override {}
-  void AbortStream(uint32_t stream_id, uint64_t code) override {}
+  void AbortStream(uint32_t stream_id, uint8_t code) override {}
+  void StopSending(uint32_t stream_id, uint8_t code) override {}
 
  private:
   mojo::Receiver<network::mojom::blink::WebTransport> receiver_;

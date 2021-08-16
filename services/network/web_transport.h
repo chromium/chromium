@@ -64,7 +64,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebTransport final
   void AcceptUnidirectionalStream(
       UnidirectionalStreamAcceptanceCallback callback) override;
   void SendFin(uint32_t stream_id) override;
-  void AbortStream(uint32_t stream_id, uint64_t code) override;
+  void AbortStream(uint32_t stream_id, uint8_t code) override;
+  void StopSending(uint32_t stream_id, uint8_t code) override;
   void SetOutgoingDatagramExpirationDuration(base::TimeDelta duration) override;
 
   // WebTransportClientVisitor implementation:

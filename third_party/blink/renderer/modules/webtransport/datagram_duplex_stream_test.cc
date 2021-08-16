@@ -74,7 +74,9 @@ class StubWebTransport final : public network::mojom::blink::WebTransport {
 
   void SendFin(uint32_t stream_id) override {}
 
-  void AbortStream(uint32_t stream_id, uint64_t code) override {}
+  void AbortStream(uint32_t stream_id, uint8_t code) override {}
+
+  void StopSending(uint32_t stream_id, uint8_t code) override {}
 
   void SetOutgoingDatagramExpirationDuration(base::TimeDelta value) override {
     outgoing_datagram_expiration_duration_value_ = value;

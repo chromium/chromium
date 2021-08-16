@@ -149,9 +149,13 @@ class StubWebTransport : public network::mojom::blink::WebTransport {
     was_send_fin_called_ = true;
   }
 
-  void AbortStream(uint32_t stream_id, uint64_t code) override {
+  void AbortStream(uint32_t stream_id, uint8_t code) override {
     EXPECT_EQ(stream_id, kDefaultStreamId);
     was_abort_stream_called_ = true;
+  }
+
+  void StopSending(uint32_t stream_id, uint8_t code) override {
+    // TODO(ricea): Record that this was called when a test needs it.
   }
 
   void SetOutgoingDatagramExpirationDuration(base::TimeDelta) override {}

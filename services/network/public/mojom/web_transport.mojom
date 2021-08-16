@@ -66,7 +66,10 @@ interface WebTransport {
   SendFin(uint32 stream_id);
 
   // Aborts the stream for |stream_id|.
-  AbortStream(uint32 stream_id, uint64 code);
+  AbortStream(uint32 stream_id, uint8 code);
+
+  // Sends a STOP_SENDING message on an incoming or bidirectional stream.
+  StopSending(uint32 stream_id, uint8 code);
 
   // Sets the duration which determines whether an outgoing datagram should be
   // discarded due to being in the queue for too long. A duration of 0 means to
