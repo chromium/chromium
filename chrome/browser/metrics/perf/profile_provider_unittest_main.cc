@@ -36,6 +36,17 @@ const base::TimeDelta kCollectionDuration = base::TimeDelta::FromSeconds(2);
 // beyond the collection duration used.
 const base::TimeDelta kCollectionDoneTimeout = base::TimeDelta::FromSeconds(20);
 
+CollectionParams GetTestCollectionParams() {
+  CollectionParams test_params;
+  test_params.collection_duration = kCollectionDuration;
+  test_params.resume_from_suspend.sampling_factor = 1;
+  test_params.resume_from_suspend.max_collection_delay = kMaxCollectionDelay;
+  test_params.restore_session.sampling_factor = 1;
+  test_params.restore_session.max_collection_delay = kMaxCollectionDelay;
+  test_params.periodic_interval = kPeriodicCollectionInterval;
+  return test_params;
+}
+
 class TestPerfCollector : public PerfCollector {
  public:
   explicit TestPerfCollector(const CollectionParams& params) : PerfCollector() {
@@ -58,15 +69,9 @@ class TestMetricProvider : public MetricProvider {
 // Allows access to some private methods for testing.
 class TestProfileProvider : public ProfileProvider {
  public:
-  TestProfileProvider() {
-    CollectionParams test_params;
-    test_params.collection_duration = kCollectionDuration;
-    test_params.resume_from_suspend.sampling_factor = 1;
-    test_params.resume_from_suspend.max_collection_delay = kMaxCollectionDelay;
-    test_params.restore_session.sampling_factor = 1;
-    test_params.restore_session.max_collection_delay = kMaxCollectionDelay;
-    test_params.periodic_interval = kPeriodicCollectionInterval;
+  TestProfileProvider() : TestProfileProvider(GetTestCollectionParams()) {}
 
+  explicit TestProfileProvider(const CollectionParams& test_params) {
     collectors_.clear();
     auto metric_provider = std::make_unique<TestMetricProvider>(
         std::make_unique<TestPerfCollector>(test_params), nullptr);
@@ -280,7 +285,6 @@ TEST_F(ProfileProviderRealCollectionTest, SessionRestoreDone) {
   AssertProfileData(SampledProfile::RESTORE_SESSION);
 }
 
-// Flaky on Chrome OS: crbug.com/1188498.
 TEST_F(ProfileProviderRealCollectionTest, OnJankStarted) {
   // Trigger a resume from suspend.
   profile_provider_->OnJankStarted();
@@ -291,16 +295,26 @@ TEST_F(ProfileProviderRealCollectionTest, OnJankStarted) {
   AssertProfileData(SampledProfile::JANKY_TASK);
 }
 
-// TODO(crbug.com/1177150) Re-enable test
-TEST_F(ProfileProviderRealCollectionTest, DISABLED_OnJankStopped) {
+TEST_F(ProfileProviderRealCollectionTest, OnJankStopped) {
+  // Override the default collection duration.
+  auto test_params_override = GetTestCollectionParams();
+  auto full_collection_duration = kCollectionDuration * 2;
+  test_params_override.collection_duration = full_collection_duration;
+
+  // Reinitialize |profile_provider_| with the override.
+  profile_provider_ =
+      std::make_unique<TestProfileProvider>(test_params_override);
+  profile_provider_->Init();
+
   profile_provider_->OnJankStarted();
 
   // Call ProfileProvider::OnJankStopped() halfway through the collection
   // duration.
   base::OneShotTimer stop_timer;
   base::RunLoop run_loop;
-  // The jank lasts for 0.75*(collection duration), which is 1.5 sec.
-  stop_timer.Start(FROM_HERE, kCollectionDuration * 3 / 4,
+  // The jank lasts for 0.75*(collection duration). We'd like to stop the
+  // collection before the full duration elapses.
+  stop_timer.Start(FROM_HERE, full_collection_duration * 3 / 4,
                    base::BindLambdaForTesting([&]() {
                      profile_provider_->OnJankStopped();
                      run_loop.Quit();
