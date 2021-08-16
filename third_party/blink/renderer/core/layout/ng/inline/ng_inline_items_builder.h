@@ -48,7 +48,7 @@ class NGInlineItemsBuilderTemplate {
   // Create a builder that appends items to |items|.
   NGInlineItemsBuilderTemplate(
       LayoutBlockFlow* block_flow,
-      Vector<NGInlineItem>* items,
+      HeapVector<NGInlineItem>* items,
       const SvgTextChunkOffsets* chunk_offsets = nullptr)
       : block_flow_(block_flow),
         items_(items),
@@ -152,11 +152,23 @@ class NGInlineItemsBuilderTemplate {
   void ClearNeedsLayout(LayoutObject*);
   void UpdateShouldCreateBoxFragment(LayoutInline*);
 
+  // In public to modify VectorTraits<BidiContext> in WTF namespace.
+  struct BidiContext {
+    DISALLOW_NEW();
+
+   public:
+    void Trace(Visitor*) const;
+
+    Member<LayoutObject> node;
+    UChar enter;
+    UChar exit;
+  };
+
  private:
   static bool NeedsBoxInfo();
 
   LayoutBlockFlow* const block_flow_;
-  Vector<NGInlineItem>* items_;
+  HeapVector<NGInlineItem>* items_;
   StringBuilder text_;
 
   // |mapping_builder_| builds the whitespace-collapsed offset mapping
@@ -175,16 +187,11 @@ class NGInlineItemsBuilderTemplate {
 
     BoxInfo(unsigned item_index, const NGInlineItem& item);
     bool ShouldCreateBoxFragmentForChild(const BoxInfo& child) const;
-    void SetShouldCreateBoxFragment(Vector<NGInlineItem>* items);
+    void SetShouldCreateBoxFragment(HeapVector<NGInlineItem>* items);
   };
   Vector<BoxInfo> boxes_;
 
-  struct BidiContext {
-    UntracedMember<LayoutObject> node;
-    UChar enter;
-    UChar exit;
-  };
-  Vector<BidiContext> bidi_context_;
+  HeapVector<BidiContext> bidi_context_;
 
   const SvgTextChunkOffsets* text_chunk_offsets_;
 
@@ -278,5 +285,10 @@ using NGInlineItemsBuilderForOffsetMapping =
     NGInlineItemsBuilderTemplate<NGOffsetMappingBuilder>;
 
 }  // namespace blink
+
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
+    blink::NGInlineItemsBuilder::BidiContext)
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
+    blink::NGInlineItemsBuilderForOffsetMapping::BidiContext)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_INLINE_ITEMS_BUILDER_H_

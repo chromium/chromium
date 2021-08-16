@@ -376,7 +376,7 @@ TEST_F(NGLineBreakerTest, OverflowMargin) {
     </style>
     <div id=container><span>123 456</span> 789</div>
   )HTML");
-  const Vector<NGInlineItem>& items = node.ItemsData(false).items;
+  const HeapVector<NGInlineItem>& items = node.ItemsData(false).items;
 
   // While "123 456" can fit in a line, "456" has a right margin that cannot
   // fit. Since "456" and its right margin is not breakable, "456" should be on

@@ -150,7 +150,7 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
 
   bool IsPrepareLayoutFinished() const;
 
-  void PrepareLayout(std::unique_ptr<NGInlineNodeData> previous_data) const;
+  void PrepareLayout(NGInlineNodeData* previous_data) const;
 
   void CollectInlines(NGInlineNodeData*,
                       NGInlineNodeData* previous_data = nullptr) const;
@@ -162,7 +162,7 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
   void SegmentBidiRuns(NGInlineNodeData*) const;
   void ShapeText(NGInlineItemsData*,
                  const String* previous_text = nullptr,
-                 const Vector<NGInlineItem>* previous_items = nullptr,
+                 const HeapVector<NGInlineItem>* previous_items = nullptr,
                  const Font* override_font = nullptr) const;
   void ShapeTextForFirstLineIfNeeded(NGInlineNodeData*) const;
   void AssociateItemsWithInlines(NGInlineNodeData*) const;

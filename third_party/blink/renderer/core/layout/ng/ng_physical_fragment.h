@@ -605,7 +605,7 @@ class CORE_EXPORT NGPhysicalFragment
  protected:
   const ComputedStyle& SlowEffectiveStyle() const;
 
-  const Vector<NGInlineItem>& InlineItemsOfContainingBlock() const;
+  const HeapVector<NGInlineItem>& InlineItemsOfContainingBlock() const;
 
   void AddScrollableOverflowForInlineChild(
       const NGPhysicalBoxFragment& container,

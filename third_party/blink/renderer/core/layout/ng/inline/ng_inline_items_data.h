@@ -18,14 +18,15 @@ class NGOffsetMapping;
 
 // Represents a text content with a list of NGInlineItem. A node may have an
 // additional NGInlineItemsData for ::first-line pseudo element.
-struct CORE_EXPORT NGInlineItemsData {
-  USING_FAST_MALLOC(NGInlineItemsData);
-
+struct CORE_EXPORT NGInlineItemsData
+    : public GarbageCollected<NGInlineItemsData> {
  public:
+  virtual ~NGInlineItemsData() = default;
+
   // Text content for all inline items represented by a single NGInlineNode.
   // Encoded either as UTF-16 or latin-1 depending on the content.
   String text_content;
-  Vector<NGInlineItem> items;
+  HeapVector<NGInlineItem> items;
 
   // Cache RunSegmenter segments when at least one item has multiple runs.
   // Set to nullptr when all items has only single run, which is common case for
@@ -50,6 +51,8 @@ struct CORE_EXPORT NGInlineItemsData {
   // Get a list of |kOpenTag| that are open at |size|.
   using OpenTagItems = Vector<const NGInlineItem*, 16>;
   void GetOpenTagItems(wtf_size_t size, OpenTagItems* open_items) const;
+
+  virtual void Trace(Visitor* visitor) const;
 };
 
 }  // namespace blink

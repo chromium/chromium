@@ -234,7 +234,7 @@ NGSvgTextLayoutAttributesBuilder::NGSvgTextLayoutAttributesBuilder(
 // [1]: https://svgwg.org/svg2-draft/text.html#TextLayoutAlgorithm
 void NGSvgTextLayoutAttributesBuilder::Build(
     const String& ifc_text_content,
-    const Vector<NGInlineItem>& items) {
+    const HeapVector<NGInlineItem>& items) {
   LayoutAttributesStack attr_stack;
   HeapVector<SVGTextLengthContext> text_length_stack;
   unsigned addressable_index = 0;

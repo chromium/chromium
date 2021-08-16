@@ -174,7 +174,7 @@ class ReusingTextShaper final {
 
  public:
   ReusingTextShaper(NGInlineItemsData* data,
-                    const Vector<NGInlineItem>* reusable_items)
+                    const HeapVector<NGInlineItem>* reusable_items)
       : data_(*data),
         reusable_items_(reusable_items),
         shaper_(data->text_content) {}
@@ -281,7 +281,7 @@ class ReusingTextShaper final {
   }
 
   NGInlineItemsData& data_;
-  const Vector<NGInlineItem>* const reusable_items_;
+  const HeapVector<NGInlineItem>* const reusable_items_;
   HarfBuzzShaper shaper_;
 };
 
@@ -495,7 +495,7 @@ bool NGInlineNode::IsPrepareLayoutFinished() const {
 }
 
 void NGInlineNode::PrepareLayoutIfNeeded() const {
-  std::unique_ptr<NGInlineNodeData> previous_data;
+  NGInlineNodeData* previous_data = nullptr;
   LayoutBlockFlow* block_flow = GetLayoutBlockFlow();
   if (IsPrepareLayoutFinished()) {
     if (!block_flow->NeedsCollectInlines())
@@ -504,20 +504,25 @@ void NGInlineNode::PrepareLayoutIfNeeded() const {
     // Note: For "text-combine-upright:all", we use a font calculated from
     // text width, so we can't reuse previous data.
     if (LIKELY(!IsTextCombine()))
-      previous_data.reset(block_flow->TakeNGInlineNodeData());
+      previous_data = block_flow->TakeNGInlineNodeData();
     block_flow->ResetNGInlineNodeData();
   }
 
-  PrepareLayout(std::move(previous_data));
+  PrepareLayout(previous_data);
+
+  if (previous_data) {
+    // previous_data is not used from now on but exists until GC happens, so it
+    // is better to eagerly clear HeapVector to improve memory utilization.
+    previous_data->items.clear();
+  }
 }
 
-void NGInlineNode::PrepareLayout(
-    std::unique_ptr<NGInlineNodeData> previous_data) const {
+void NGInlineNode::PrepareLayout(NGInlineNodeData* previous_data) const {
   // Scan list of siblings collecting all in-flow non-atomic inlines. A single
   // NGInlineNode represent a collection of adjacent non-atomic inlines.
   NGInlineNodeData* data = MutableData();
   DCHECK(data);
-  CollectInlines(data, previous_data.get());
+  CollectInlines(data, previous_data);
   SegmentText(data);
   ShapeText(data, previous_data ? &previous_data->text_content : nullptr);
   ShapeTextForFirstLineIfNeeded(data);
@@ -591,8 +596,13 @@ class NGInlineNodeDataEditor final {
     const NGOffsetMapping* const offset_mapping =
         NGInlineNode::GetOffsetMapping(block_flow_);
     DCHECK(offset_mapping);
-    data_.reset(block_flow_->TakeNGInlineNodeData());
-    return data_.get();
+    if (data_) {
+      // data_ is not used from now on but exists until GC happens, so it is
+      // better to eagerly clear HeapVector to improve memory utilization.
+      data_->items.clear();
+    }
+    data_ = block_flow_->TakeNGInlineNodeData();
+    return data_;
   }
 
   void Run() {
@@ -611,8 +621,9 @@ class NGInlineNodeDataEditor final {
     DCHECK_LE(start_offset, new_length - matched_length);
     const unsigned end_offset = old_length - matched_length;
     DCHECK_LE(start_offset, end_offset);
+    HeapVector<NGInlineItem> items;
+    ClearCollectionScope<HeapVector<NGInlineItem>> clear_scope(&items);
 
-    Vector<NGInlineItem> items;
     // +3 for before and after replaced text.
     items.ReserveInitialCapacity(data_->items.size() + 3);
 
@@ -685,6 +696,8 @@ class NGInlineNodeDataEditor final {
     }
 
     VerifyItems(items);
+    // eagerly clear HeapVector to improve memory utilization.
+    data_->items.clear();
     data_->items = std::move(items);
     data_->text_content = new_data.text_content;
   }
@@ -853,7 +866,7 @@ class NGInlineNodeDataEditor final {
         item->shape_result_->CopyAdjustedOffset(item->start_offset_);
   }
 
-  void VerifyItems(const Vector<NGInlineItem>& items) const {
+  void VerifyItems(const HeapVector<NGInlineItem>& items) const {
 #if DCHECK_IS_ON()
     if (items.IsEmpty())
       return;
@@ -873,7 +886,7 @@ class NGInlineNodeDataEditor final {
 #endif
   }
 
-  std::unique_ptr<NGInlineNodeData> data_;
+  NGInlineNodeData* data_ = nullptr;
   LayoutBlockFlow* const block_flow_;
   const LayoutText& layout_text_;
 };
@@ -958,7 +971,8 @@ void NGInlineNode::ComputeOffsetMapping(LayoutBlockFlow* layout_block_flow,
   // NGInlineItems and text content built by |builder|, because they are
   // already there in NGInlineNodeData. For efficiency, we should make
   // |builder| not construct items and text content.
-  Vector<NGInlineItem> items;
+  HeapVector<NGInlineItem> items;
+  ClearCollectionScope<HeapVector<NGInlineItem>> clear_scope(&items);
   items.ReserveCapacity(EstimateInlineItemsCount(*layout_block_flow));
   NGInlineItemsBuilderForOffsetMapping builder(layout_block_flow, &items,
                                                chunk_offsets);
@@ -1007,10 +1021,10 @@ const NGOffsetMapping* NGInlineNode::GetOffsetMapping(
   // |LayoutBlockFlowRareData|.
   if (const NGOffsetMapping* mapping = layout_block_flow->GetOffsetMapping())
     return mapping;
-  NGInlineNodeData data;
-  ComputeOffsetMapping(layout_block_flow, &data);
-  NGOffsetMapping* const mapping = data.offset_mapping.get();
-  layout_block_flow->SetOffsetMapping(std::move(data.offset_mapping));
+  NGInlineNodeData* data = MakeGarbageCollected<NGInlineNodeData>();
+  ComputeOffsetMapping(layout_block_flow, data);
+  NGOffsetMapping* const mapping = data->offset_mapping.get();
+  layout_block_flow->SetOffsetMapping(std::move(data->offset_mapping));
   return mapping;
 }
 
@@ -1048,7 +1062,8 @@ const SvgTextChunkOffsets* NGInlineNode::FindSvgTextChunks(
   // Build NGInlineItems and NGOffsetMapping first.  They are used only by
   // NGSVGTextLayoutAttributesBuilder, and are discarded because they might
   // be different from final ones.
-  Vector<NGInlineItem> items;
+  HeapVector<NGInlineItem> items;
+  ClearCollectionScope<HeapVector<NGInlineItem>> clear_scope(&items);
   items.ReserveCapacity(EstimateInlineItemsCount(block));
   NGInlineItemsBuilderForOffsetMapping items_builder(&block, &items);
   NGOffsetMappingBuilder& mapping_builder =
@@ -1161,7 +1176,7 @@ void NGInlineNode::SegmentFontOrientation(NGInlineNodeData* data) const {
   if (GetLayoutBlockFlow()->IsHorizontalWritingMode())
     return;
 
-  Vector<NGInlineItem>& items = data->items;
+  HeapVector<NGInlineItem>& items = data->items;
   if (items.IsEmpty())
     return;
   String& text_content = data->text_content;
@@ -1220,7 +1235,7 @@ void NGInlineNode::SegmentBidiRuns(NGInlineNodeData* data) const {
     return;
   }
 
-  Vector<NGInlineItem>& items = data->items;
+  HeapVector<NGInlineItem>& items = data->items;
   unsigned item_index = 0;
   for (unsigned start = 0; start < data->text_content.length();) {
     UBiDiLevel level;
@@ -1242,11 +1257,11 @@ void NGInlineNode::SegmentBidiRuns(NGInlineNodeData* data) const {
 
 void NGInlineNode::ShapeText(NGInlineItemsData* data,
                              const String* previous_text,
-                             const Vector<NGInlineItem>* previous_items,
+                             const HeapVector<NGInlineItem>* previous_items,
                              const Font* override_font) const {
   TRACE_EVENT0("fonts", "NGInlineNode::ShapeText");
   const String& text_content = data->text_content;
-  Vector<NGInlineItem>* items = &data->items;
+  HeapVector<NGInlineItem>* items = &data->items;
 
   // Provide full context of the entire node to the shaper.
   ReusingTextShaper shaper(data, previous_items);
@@ -1438,7 +1453,7 @@ void NGInlineNode::ShapeText(NGInlineItemsData* data,
 #endif
 }
 
-// Create Vector<NGInlineItem> with :first-line rules applied if needed.
+// Create HeapVector<NGInlineItem> with :first-line rules applied if needed.
 void NGInlineNode::ShapeTextForFirstLineIfNeeded(NGInlineNodeData* data) const {
   // First check if the document has any :first-line rules.
   DCHECK(!data->first_line_items_);
@@ -1452,7 +1467,7 @@ void NGInlineNode::ShapeTextForFirstLineIfNeeded(NGInlineNodeData* data) const {
   if (block_style == first_line_style)
     return;
 
-  auto first_line_items = std::make_unique<NGInlineItemsData>();
+  auto* first_line_items = MakeGarbageCollected<NGInlineItemsData>();
   first_line_items->text_content = data->text_content;
   bool needs_reshape = false;
   if (first_line_style->TextTransform() != block_style->TextTransform()) {
@@ -1479,18 +1494,19 @@ void NGInlineNode::ShapeTextForFirstLineIfNeeded(NGInlineNodeData* data) const {
 
   // Re-shape if the font is different.
   if (needs_reshape || FirstLineNeedsReshape(*first_line_style, *block_style))
-    ShapeText(first_line_items.get());
+    ShapeText(first_line_items);
 
-  data->first_line_items_ = std::move(first_line_items);
+  data->first_line_items_ = first_line_items;
 }
 
 void NGInlineNode::AssociateItemsWithInlines(NGInlineNodeData* data) const {
 #if DCHECK_IS_ON()
   HeapHashSet<Member<LayoutObject>> associated_objects;
 #endif
-  Vector<NGInlineItem>& items = data->items;
-  for (NGInlineItem* item = items.begin(); item != items.end();) {
-    LayoutObject* object = item->GetLayoutObject();
+  HeapVector<NGInlineItem>& items = data->items;
+  WTF::wtf_size_t size = items.size();
+  for (WTF::wtf_size_t i = 0; i != size;) {
+    LayoutObject* object = items[i].GetLayoutObject();
     if (auto* layout_text = DynamicTo<LayoutNGText>(object)) {
 #if DCHECK_IS_ON()
       // Items split from a LayoutObject should be consecutive.
@@ -1498,19 +1514,20 @@ void NGInlineNode::AssociateItemsWithInlines(NGInlineNodeData* data) const {
 #endif
       layout_text->ClearHasBidiControlInlineItems();
       bool has_bidi_control = false;
-      NGInlineItem* begin = item;
-      for (++item; item != items.end(); ++item) {
-        if (item->GetLayoutObject() != object)
+      WTF::wtf_size_t begin = i;
+      for (++i; i != size; ++i) {
+        auto& item = items[i];
+        if (item.GetLayoutObject() != object)
           break;
-        if (item->Type() == NGInlineItem::kBidiControl)
+        if (item.Type() == NGInlineItem::kBidiControl)
           has_bidi_control = true;
       }
-      layout_text->SetInlineItems(begin, item);
+      layout_text->SetInlineItems(data, begin, i - begin);
       if (has_bidi_control)
         layout_text->SetHasBidiControlInlineItems();
       continue;
     }
-    ++item;
+    ++i;
   }
 }
 
@@ -1902,7 +1919,7 @@ bool NGInlineNode::UseFirstLineStyle() const {
 
 void NGInlineNode::CheckConsistency() const {
 #if DCHECK_IS_ON()
-  const Vector<NGInlineItem>& items = Data().items;
+  const HeapVector<NGInlineItem>& items = Data().items;
   for (const NGInlineItem& item : items) {
     DCHECK(!item.GetLayoutObject() || !item.Style() ||
            item.Style() == item.GetLayoutObject()->Style());

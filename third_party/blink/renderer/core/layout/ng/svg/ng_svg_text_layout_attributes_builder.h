@@ -33,7 +33,8 @@ class NGSvgTextLayoutAttributesBuilder final {
  public:
   explicit NGSvgTextLayoutAttributesBuilder(NGInlineNode ifc);
 
-  void Build(const String& ifc_text_content, const Vector<NGInlineItem>& items);
+  void Build(const String& ifc_text_content,
+             const HeapVector<NGInlineItem>& items);
 
   // This function can be called just once after Build().
   Vector<std::pair<unsigned, NGSvgCharacterData>> CharacterDataList();

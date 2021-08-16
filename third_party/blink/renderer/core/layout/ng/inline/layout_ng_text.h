@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_LAYOUT_NG_TEXT_H_
 
 #include "third_party/blink/renderer/core/layout/layout_text.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item_span.h"
 
 namespace blink {
 
@@ -28,17 +29,22 @@ class CORE_EXPORT LayoutNGText : public LayoutText {
     return true;
   }
 
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(inline_items_);
+    LayoutText::Trace(visitor);
+  }
+
  private:
-  const base::span<NGInlineItem>* GetNGInlineItems() const final {
+  const NGInlineItemSpan* GetNGInlineItems() const final {
     NOT_DESTROYED();
     return &inline_items_;
   }
-  base::span<NGInlineItem>* GetNGInlineItems() final {
+  NGInlineItemSpan* GetNGInlineItems() final {
     NOT_DESTROYED();
     return &inline_items_;
   }
 
-  base::span<NGInlineItem> inline_items_;
+  NGInlineItemSpan inline_items_;
 };
 
 template <>

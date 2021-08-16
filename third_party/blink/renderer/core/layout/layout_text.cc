@@ -61,6 +61,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_abstract_inline_text_box.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item_span.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
@@ -2858,29 +2859,30 @@ ContentCaptureManager* LayoutText::GetContentCaptureManager() {
   return nullptr;
 }
 
-void LayoutText::SetInlineItems(NGInlineItem* begin, NGInlineItem* end) {
+void LayoutText::SetInlineItems(NGInlineItemsData* data,
+                                size_t begin,
+                                size_t size) {
   NOT_DESTROYED();
 #if DCHECK_IS_ON()
-  for (NGInlineItem* item = begin; item != end; ++item) {
-    DCHECK_EQ(item->GetLayoutObject(), this);
-  }
+  for (size_t i = begin; i < begin + size; i++)
+    DCHECK_EQ(data->items[SafeCast<wtf_size_t>(i)].GetLayoutObject(), this);
 #endif
-  base::span<NGInlineItem>* items = GetNGInlineItems();
+  auto* items = GetNGInlineItems();
   if (!items)
     return;
   valid_ng_items_ = true;
-  *items = base::make_span(begin, end);
+  items->SetItems(data, begin, size);
 }
 
 void LayoutText::ClearInlineItems() {
   NOT_DESTROYED();
   has_bidi_control_items_ = false;
   valid_ng_items_ = false;
-  if (base::span<NGInlineItem>* items = GetNGInlineItems())
-    *items = base::span<NGInlineItem>();
+  if (auto* items = GetNGInlineItems())
+    items->Clear();
 }
 
-const base::span<NGInlineItem>& LayoutText::InlineItems() const {
+const NGInlineItemSpan& LayoutText::InlineItems() const {
   NOT_DESTROYED();
   DCHECK(valid_ng_items_);
   DCHECK(GetNGInlineItems());

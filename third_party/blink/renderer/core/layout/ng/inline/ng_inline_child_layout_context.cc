@@ -31,7 +31,7 @@ NGInlineChildLayoutContext::~NGInlineChildLayoutContext() = default;
 
 NGInlineLayoutStateStack*
 NGInlineChildLayoutContext::BoxStatesIfValidForItemIndex(
-    const Vector<NGInlineItem>& items,
+    const HeapVector<NGInlineItem>& items,
     unsigned item_index) {
   if (box_states_.has_value() && items_ == &items && item_index_ == item_index)
     return &*box_states_;

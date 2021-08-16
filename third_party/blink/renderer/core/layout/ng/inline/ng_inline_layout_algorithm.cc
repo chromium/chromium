@@ -136,7 +136,7 @@ void NGInlineLayoutAlgorithm::PrepareBoxStates(
   // Check if the box states in NGChildLayoutContext is valid for this line.
   // If the previous line was ::first-line, always rebuild because box states
   // have ::first-line styles.
-  const Vector<NGInlineItem>& items = line_info.ItemsData().items;
+  const HeapVector<NGInlineItem>& items = line_info.ItemsData().items;
   if (!break_token->UseFirstLineStyle()) {
     box_states_ =
         context_->BoxStatesIfValidForItemIndex(items, break_token->ItemIndex());
@@ -1296,7 +1296,7 @@ scoped_refptr<const NGLayoutResult> NGInlineLayoutAlgorithm::Layout() {
 unsigned NGInlineLayoutAlgorithm::PositionLeadingFloats(
     NGExclusionSpace* exclusion_space,
     NGPositionedFloatVector* positioned_floats) {
-  const Vector<NGInlineItem>& items =
+  const HeapVector<NGInlineItem>& items =
       Node().ItemsData(/* is_first_line */ false).items;
 
   unsigned index = BreakToken() ? BreakToken()->ItemIndex() : 0;
