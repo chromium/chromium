@@ -49402,6 +49402,7 @@ from previous Chrome versions.
   <int value="6523501" label="lacros-availability-ignore"/>
   <int value="7444737" label="NTPSuggestionsStandaloneUI:disabled"/>
   <int value="7533886" label="disable-offer-store-unmasked-wallet-cards"/>
+  <int value="7642326" label="hdrnet-override"/>
   <int value="8891567" label="CaptionSettings:enabled"/>
   <int value="9609535" label="BrowsingDataLifetimeManager:disabled"/>
   <int value="10405060" label="BluetoothSessionizedMetrics:disabled"/>

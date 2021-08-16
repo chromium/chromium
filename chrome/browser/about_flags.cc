@@ -2374,6 +2374,13 @@ const FeatureEntry::Choice kForceControlFaceAeChoices[] = {
     {"Default", "", ""},
     {"Enable", media::switches::kForceControlFaceAe, "enable"},
     {"Disable", media::switches::kForceControlFaceAe, "disable"}};
+
+const FeatureEntry::Choice kHdrNetOverrideChoices[] = {
+    {"Default", "", ""},
+    {"Force enabled", media::switches::kHdrNetOverride,
+     media::switches::kHdrNetForceEnabled},
+    {"Force disabled", media::switches::kHdrNetOverride,
+     media::switches::kHdrNetForceDisabled}};
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -4138,6 +4145,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"force-control-face-ae", flag_descriptions::kForceControlFaceAeName,
      flag_descriptions::kForceControlFaceAeDescription, kOsCrOS,
      MULTI_VALUE_TYPE(kForceControlFaceAeChoices)},
+    {"hdrnet-override", flag_descriptions::kHdrNetOverrideName,
+     flag_descriptions::kHdrNetOverrideDescription, kOsCrOS,
+     MULTI_VALUE_TYPE(kHdrNetOverrideChoices)},
     {"crostini-gpu-support", flag_descriptions::kCrostiniGpuSupportName,
      flag_descriptions::kCrostiniGpuSupportDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kCrostiniGpuSupport)},

@@ -2294,6 +2294,9 @@ extern const char kPreferConstantFrameRateDescription[];
 extern const char kForceControlFaceAeName[];
 extern const char kForceControlFaceAeDescription[];
 
+extern const char kHdrNetOverrideName[];
+extern const char kHdrNetOverrideDescription[];
+
 extern const char kCategoricalSearchName[];
 extern const char kCategoricalSearchDescription[];
 

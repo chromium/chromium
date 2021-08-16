@@ -3301,6 +3301,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "hdrnet-override",
+    "owners": [ "jcliang", "chromeos-canera-eng@google.com" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "heavy-ad-privacy-mitigations",
     "owners": [ "johnidel", "jkarlin" ],
     "expiry_milestone": 97
