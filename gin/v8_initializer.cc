@@ -318,19 +318,6 @@ void V8Initializer::Initialize(IsolateHolder::ScriptMode mode) {
     SetV8Flags("--no-reclaim-unmodified-wrappers");
   }
 
-  if (!base::FeatureList::IsEnabled(features::kV8LocalHeaps)) {
-    // The --local-heaps flag is enabled by default, so we need to explicitly
-    // disable it if kV8LocalHeaps is disabled.
-    // Also disable TurboFan's direct access if local heaps are not enabled.
-    SetV8Flags("--no-local-heaps --no-turbo-direct-heap-access");
-  }
-
-  if (!base::FeatureList::IsEnabled(features::kV8TurboDirectHeapAccess)) {
-    // The --turbo-direct-heap-access flag is enabled by default, so we need to
-    // explicitly disable it if kV8TurboDirectHeapAccess is disabled.
-    SetV8Flags("--no-turbo-direct-heap-access");
-  }
-
   if (!base::FeatureList::IsEnabled(features::kV8ExperimentalRegexpEngine)) {
     // The --enable-experimental-regexp-engine-on-excessive-backtracks flag is
     // enabled by default, so we need to explicitly disable it if
@@ -353,10 +340,6 @@ void V8Initializer::Initialize(IsolateHolder::ScriptMode mode) {
   if (base::FeatureList::IsEnabled(
           features::kV8SparkplugNeedsShortBuiltinCalls)) {
     SetV8Flags("--sparkplug-needs-short-builtins");
-  }
-
-  if (base::FeatureList::IsEnabled(features::kV8UntrustedCodeMitigations)) {
-    SetV8Flags("--untrusted-code-mitigations");
   }
 
   if (base::FeatureList::IsEnabled(features::kV8ScriptAblation)) {

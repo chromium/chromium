@@ -17,7 +17,6 @@ GIN_EXPORT extern const base::Feature kV8ExperimentalRegexpEngine;
 GIN_EXPORT extern const base::Feature kV8FlushBytecode;
 GIN_EXPORT extern const base::Feature kV8FlushEmbeddedBlobICache;
 GIN_EXPORT extern const base::Feature kV8LazyFeedbackAllocation;
-GIN_EXPORT extern const base::Feature kV8LocalHeaps;
 GIN_EXPORT extern const base::Feature kV8NoReclaimUnmodifiedWrappers;
 GIN_EXPORT extern const base::Feature kV8OffThreadFinalization;
 GIN_EXPORT extern const base::Feature kV8OptimizeJavascript;
@@ -31,10 +30,8 @@ GIN_EXPORT extern const base::Feature kV8ShortBuiltinCalls;
 GIN_EXPORT extern const base::Feature kV8SlowHistograms;
 GIN_EXPORT extern const base::Feature kV8Sparkplug;
 GIN_EXPORT extern const base::Feature kV8SparkplugNeedsShortBuiltinCalls;
-GIN_EXPORT extern const base::Feature kV8TurboDirectHeapAccess;
 GIN_EXPORT extern const base::Feature kV8TurboFastApiCalls;
 GIN_EXPORT extern const base::Feature kV8Turboprop;
-GIN_EXPORT extern const base::Feature kV8UntrustedCodeMitigations;
 
 }  // namespace features
 
