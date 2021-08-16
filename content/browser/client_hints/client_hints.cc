@@ -275,6 +275,24 @@ void AddViewportWidthHeader(net::HttpRequestHeaders* headers,
   }
 }
 
+void AddViewportHeightHeader(net::HttpRequestHeaders* headers,
+                             BrowserContext* context,
+                             const GURL& url) {
+  DCHECK(headers);
+  DCHECK(context);
+
+  double viewport_height = (display::Screen::GetScreen()
+                                ->GetPrimaryDisplay()
+                                .GetSizeInPixel()
+                                .height()) /
+                           GetZoomFactor(context, url) / GetDeviceScaleFactor();
+
+  DCHECK_LT(0, viewport_height);
+
+  SetHeaderToInt(headers, network::mojom::WebClientHintsType::kViewportHeight,
+                 viewport_height);
+}
+
 void AddRttHeader(net::HttpRequestHeaders* headers,
                   network::NetworkQualityTracker* network_quality_tracker,
                   const GURL& url) {
@@ -642,6 +660,10 @@ void AddRequestClientHintsHeaders(
   if (ShouldAddClientHint(data, WebClientHintsType::kViewportWidth)) {
     AddViewportWidthHeader(headers, context, url);
   }
+  if (ShouldAddClientHint(
+          data, network::mojom::WebClientHintsType::kViewportHeight)) {
+    AddViewportHeightHeader(headers, context, url);
+  }
   network::NetworkQualityTracker* network_quality_tracker =
       delegate->GetNetworkQualityTracker();
   if (ShouldAddClientHint(data, WebClientHintsType::kRtt)) {
@@ -672,7 +694,8 @@ void AddRequestClientHintsHeaders(
   // If possible, logic should be added above so that the request headers for
   // the newly added client hint can be added to the request.
   static_assert(
-      WebClientHintsType::kUAReduced == WebClientHintsType::kMaxValue,
+      network::mojom::WebClientHintsType::kViewportHeight ==
+          network::mojom::WebClientHintsType::kMaxValue,
       "Consider adding client hint request headers from the browser process");
 
   // TODO(crbug.com/735518): If the request is redirected, the client hint

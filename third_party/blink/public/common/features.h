@@ -56,6 +56,7 @@ BLINK_COMMON_EXPORT extern const base::Feature kUserAgentClientHint;
 BLINK_COMMON_EXPORT extern const base::Feature kLangClientHintHeader;
 BLINK_COMMON_EXPORT extern const base::Feature
     kPrefersColorSchemeClientHintHeader;
+BLINK_COMMON_EXPORT extern const base::Feature kViewportHeightClientHintHeader;
 
 enum class FencedFramesImplementationType {
   kShadowDOM,

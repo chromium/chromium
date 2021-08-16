@@ -222,6 +222,17 @@ void BaseFetchContext::AddClientHintsIfNecessary(
     }
 
     if (ShouldSendClientHint(
+            ClientHintsMode::kStandard, policy, resource_origin, is_1p_origin,
+            network::mojom::blink::WebClientHintsType::kViewportHeight,
+            hints_preferences) &&
+        image_info->viewport_height) {
+      request.SetHttpHeaderField(
+          blink::kClientHintsHeaderMapping[static_cast<size_t>(
+              network::mojom::blink::WebClientHintsType::kViewportHeight)],
+          AtomicString(String::Number(image_info->viewport_height.value())));
+    }
+
+    if (ShouldSendClientHint(
             ClientHintsMode::kLegacy, policy, resource_origin, is_1p_origin,
             network::mojom::blink::WebClientHintsType::kResourceWidth,
             hints_preferences)) {

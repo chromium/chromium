@@ -36,6 +36,7 @@ enum WebClientHintsType {
   // A client hint which, if set, signifies to the origin that the User-Agent
   // header contains the reduced user agent string.
   kUAReduced = 17,
+  kViewportHeight = 18,
 
   // Warning: Before adding a new client hint, read the warning at the top.
 };

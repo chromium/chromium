@@ -477,6 +477,11 @@ TEST_F(CorsTest, SafelistedSecCHUA) {
   // https://crbug.com/924969
 }
 
+TEST_F(CorsTest, SafelistedSecCHViewportHeight) {
+  EXPECT_TRUE(
+      IsCorsSafelistedHeader("Sec-CH-Viewport-Height", "\"Viewport-Height!\""));
+}
+
 TEST_F(CorsTest, SafelistedContentLanguage) {
   EXPECT_TRUE(IsCorsSafelistedHeader("content-language", "en,ja"));
   EXPECT_TRUE(IsCorsSafelistedHeader("cONTent-LANguaGe", "en,ja"));

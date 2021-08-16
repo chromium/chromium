@@ -440,6 +440,12 @@ bool IsCorsSafelistedHeader(const std::string& name, const std::string& value) {
       "width",
       "viewport-width",
 
+      // The Sec-CH-Viewport-height header field gives a server information
+      // about the user-agent's current viewport height.
+      //
+      // https://wicg.github.io/responsive-image-client-hints/#sec-ch-viewport-height
+      "sec-ch-viewport-height",
+
       // The `Sec-CH-Lang` header field is a proposed replacement for
       // `Accept-Language`, using the Client Hints infrastructure.
       //

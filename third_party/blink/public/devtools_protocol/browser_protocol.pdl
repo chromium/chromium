@@ -6662,6 +6662,7 @@ domain Page
       ch-ua-full-version
       ch-ua-platform-version
       ch-ua-reduced
+      ch-viewport-height
       ch-viewport-width
       ch-width
       clipboard-read

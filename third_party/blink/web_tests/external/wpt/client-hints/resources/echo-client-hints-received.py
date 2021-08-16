@@ -14,6 +14,8 @@ def main(request, response):
         response.headers.set(b"dpr-received", request.headers.get(b"dpr"))
     if b"viewport-width" in request.headers:
         response.headers.set(b"viewport-width-received", request.headers.get(b"viewport-width"))
+    if b"sec-ch-viewport-height" in request.headers:
+        response.headers.set(b"viewport-height-received", request.headers.get(b"sec-ch-viewport-height"))
     if b"rtt" in request.headers:
         response.headers.set(b"rtt-received", request.headers.get(b"rtt"))
     if b"downlink" in request.headers:

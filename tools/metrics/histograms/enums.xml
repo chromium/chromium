@@ -34171,6 +34171,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3973" label="NavigatorPdfViewerEnabled"/>
   <int value="3974" label="CanvasRenderingContext2DContextLostEvent"/>
   <int value="3975" label="CanvasRenderingContext2DContextRestoredEvent"/>
+  <int value="3976" label="ClientHintsViewportHeight"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
@@ -34279,6 +34280,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="86" label="WindowPlacement"/>
   <int value="87" label="ClientHintUABitness"/>
   <int value="88" label="ClientHintUAReduced"/>
+  <int value="89" label="ClientHintViewportHeight"/>
 </enum>
 
 <enum name="FeaturePolicyImageCompressionFormat">

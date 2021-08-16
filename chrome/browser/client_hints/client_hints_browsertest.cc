@@ -71,7 +71,7 @@ namespace {
 using ::testing::Eq;
 using ::testing::Optional;
 
-constexpr unsigned expected_client_hints_number = 13u;
+constexpr unsigned expected_client_hints_number = 14u;
 constexpr int32_t uma_histogram_max_value = 1471228928;
 
 // An interceptor that records count of fetches and client hint headers for
@@ -277,7 +277,8 @@ class ClientHintsBrowserTest : public InProcessBrowserTest,
     std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
     feature_list->InitializeFromCommandLine(
         "UserAgentClientHint,LangClientHintHeader,CriticalClientHint,"
-        "AcceptCHFrame,PrefersColorSchemeClientHintHeader",
+        "AcceptCHFrame,PrefersColorSchemeClientHintHeader,"
+        "ViewportHeightClientHintHeader",
         "");
     return feature_list;
   }
@@ -615,6 +616,12 @@ class ClientHintsBrowserTest : public InProcessBrowserTest,
 #endif
         main_frame_viewport_width_observed_ = value;
 
+        EXPECT_TRUE(base::StringToDouble(
+            request.headers.find("sec-ch-viewport-height")->second, &value));
+        EXPECT_TRUE(IsSimilarToIntABNF(
+            request.headers.find("sec-ch-viewport-height")->second));
+        EXPECT_LT(0.0, value);
+
         VerifyNetworkQualityClientHints(request);
       }
     }
@@ -658,6 +665,12 @@ class ClientHintsBrowserTest : public InProcessBrowserTest,
           EXPECT_EQ(main_frame_viewport_width_observed_, value);
         }
 #endif
+        EXPECT_TRUE(base::StringToDouble(
+            request.headers.find("sec-ch-viewport-height")->second, &value));
+        EXPECT_TRUE(IsSimilarToIntABNF(
+            request.headers.find("sec-ch-viewport-height")->second));
+        EXPECT_LT(0.0, value);
+
         VerifyNetworkQualityClientHints(request);
       }
     }
@@ -847,7 +860,8 @@ class ClientHintsAllowThirdPartyBrowserTest : public ClientHintsBrowserTest {
     std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
     feature_list->InitializeFromCommandLine(
         "AllowClientHintsToThirdParty,UserAgentClientHint,"
-        "LangClientHintHeader,PrefersColorSchemeClientHintHeader",
+        "LangClientHintHeader,PrefersColorSchemeClientHintHeader,"
+        "ViewportHeightClientHintHeader",
         "");
     return feature_list;
   }
@@ -2131,7 +2145,7 @@ class ClientHintsWebHoldbackBrowserTest : public ClientHintsBrowserTest {
     std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
     feature_list->InitializeFromCommandLine(
         "UserAgentClientHint,LangClientHintHeader,"
-        "PrefersColorSchemeClientHintHeader",
+        "PrefersColorSchemeClientHintHeader,ViewportHeightClientHintHeader",
         "");
     feature_list->RegisterFieldTrialOverride(
         features::kNetworkQualityEstimatorWebHoldback.name,

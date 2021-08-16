@@ -594,6 +594,8 @@ class CORE_EXPORT LocalFrameView final
 
   int ViewportWidth() const;
 
+  int ViewportHeight() const;
+
   LayoutAnalyzer* GetLayoutAnalyzer() { return analyzer_.get(); }
 
   bool LocalFrameTreeAllowsThrottling() const;

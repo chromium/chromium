@@ -35,7 +35,8 @@ const char* const kClientHintsHeaderMapping[] = {"device-memory",
                                                  "sec-ch-ua-platform-version",
                                                  "sec-ch-prefers-color-scheme",
                                                  "sec-ch-ua-bitness",
-                                                 "sec-ch-ua-reduced"};
+                                                 "sec-ch-ua-reduced",
+                                                 "sec-ch-viewport-height"};
 
 const unsigned kClientHintsNumberOfLegacyHints = 4;
 
@@ -61,6 +62,7 @@ const mojom::PermissionsPolicyFeature kClientHintsPermissionsPolicyMapping[] = {
     mojom::PermissionsPolicyFeature::kClientHintPrefersColorScheme,
     mojom::PermissionsPolicyFeature::kClientHintUABitness,
     mojom::PermissionsPolicyFeature::kClientHintUAReduced,
+    mojom::PermissionsPolicyFeature::kClientHintViewportHeight,
 };
 
 const size_t kClientHintsMappingsCount = base::size(kClientHintsHeaderMapping);

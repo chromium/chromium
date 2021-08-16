@@ -3285,6 +3285,7 @@ enum WebFeature {
   kNavigatorPdfViewerEnabled = 3973,
   kCanvasRenderingContext2DContextLostEvent = 3974,
   kCanvasRenderingContext2DContextRestoredEvent = 3975,
+  kClientHintsViewportHeight = 3976,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

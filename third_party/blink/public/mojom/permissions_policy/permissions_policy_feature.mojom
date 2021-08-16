@@ -161,6 +161,9 @@ enum PermissionsPolicyFeature {
   // enable experimenting with the reduced user agent string.
   kClientHintUAReduced = 88,
 
+  // Client Hint for viewport height.
+  kClientHintViewportHeight = 89,
+
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.
   // Also, run update_permissions_policy_enum.py in

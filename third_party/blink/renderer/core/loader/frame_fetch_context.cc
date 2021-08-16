@@ -468,8 +468,10 @@ void FrameFetchContext::AddClientHintsIfNecessary(
     image_info = ClientHintImageInfo();
     image_info->dpr = GetDevicePixelRatio();
     image_info->resource_width = resource_width;
-    if (!GetResourceFetcherProperties().IsDetached() && GetFrame()->View())
+    if (!GetResourceFetcherProperties().IsDetached() && GetFrame()->View()) {
       image_info->viewport_width = GetFrame()->View()->ViewportWidth();
+      image_info->viewport_height = GetFrame()->View()->ViewportHeight();
+    }
 
     lang = GetFrame()
                ->DomWindow()

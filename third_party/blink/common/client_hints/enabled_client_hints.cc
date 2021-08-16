@@ -39,6 +39,11 @@ bool IsDisabledByFeature(const WebClientHintsType type) {
               features::kPrefersColorSchemeClientHintHeader))
         return true;
       break;
+    case WebClientHintsType::kViewportHeight:
+      if (!base::FeatureList::IsEnabled(
+              features::kViewportHeightClientHintHeader))
+        return true;
+      break;
     default:
       break;
   }

@@ -4300,6 +4300,11 @@ int LocalFrameView::ViewportWidth() const {
   return AdjustForAbsoluteZoom::AdjustInt(viewport_width, GetLayoutView());
 }
 
+int LocalFrameView::ViewportHeight() const {
+  int viewport_height = GetLayoutSize().Height();
+  return AdjustForAbsoluteZoom::AdjustInt(viewport_height, GetLayoutView());
+}
+
 ScrollableArea* LocalFrameView::GetScrollableArea() {
   if (viewport_scrollable_area_)
     return viewport_scrollable_area_.Get();

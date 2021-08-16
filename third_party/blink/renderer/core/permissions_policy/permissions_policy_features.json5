@@ -156,6 +156,11 @@
       depends_on: ["FeaturePolicyForClientHints"],
     },
     {
+      name: "ClientHintViewportHeight",
+      permissions_policy_name: "ch-viewport-height",
+      depends_on: ["ViewportHeightClientHintHeader"],
+    },
+    {
       name: "ClientHintViewportWidth",
       permissions_policy_name: "ch-viewport-width",
       depends_on: ["FeaturePolicyForClientHints"],

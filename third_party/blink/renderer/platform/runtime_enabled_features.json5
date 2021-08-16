@@ -2261,6 +2261,10 @@
       status: "stable",
     },
     {
+      name: "ViewportHeightClientHintHeader",
+      status: "experimental",
+    },
+    {
       name: "VirtualKeyboard",
       status: "stable",
     },

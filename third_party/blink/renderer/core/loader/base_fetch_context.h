@@ -36,6 +36,7 @@ struct ClientHintImageInfo {
   float dpr;
   FetchParameters::ResourceWidth resource_width;
   absl::optional<int> viewport_width;
+  absl::optional<int> viewport_height;
 };
 
 // A core-level implementation of FetchContext that does not depend on
