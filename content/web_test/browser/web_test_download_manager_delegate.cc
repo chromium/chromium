@@ -18,8 +18,10 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 
-#include <commdlg.h>
+// windows.h must come before commdlg.h
 #include <windows.h>
+
+#include <commdlg.h>
 #endif
 
 namespace content {

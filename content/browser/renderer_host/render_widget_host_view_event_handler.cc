@@ -38,6 +38,10 @@
 #include "ui/gfx/delegated_ink_point.h"
 #include "ui/touch_selection/touch_selection_controller.h"
 
+#if defined(OS_WIN)
+#include <windows.h>
+#endif
+
 namespace {
 
 // In mouse lock mode, we need to prevent the (invisible) cursor from hitting

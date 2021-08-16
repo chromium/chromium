@@ -55,6 +55,10 @@
 #include "ui/gfx/geometry/point_conversions.h"
 #include "v8/include/v8.h"
 
+#if defined(OS_WIN)
+#include <windows.h>
+#endif
+
 using blink::ContextMenuData;
 using blink::DragOperationsMask;
 using blink::MenuItemInfo;
