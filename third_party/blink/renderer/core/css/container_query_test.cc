@@ -7,11 +7,13 @@
 #include "third_party/blink/renderer/core/css/css_container_rule.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
@@ -346,6 +348,294 @@ TEST_F(ContainerQueryTest, ContainerUnitsViewportFallback) {
             ComputedValueString(block_target, "--fallback-min-qb-vw"));
   EXPECT_EQ(ComputedValueString(block_target, "--qmax"),
             ComputedValueString(block_target, "--fallback-max-qb-vw"));
+}
+
+TEST_F(ContainerQueryTest, OldStyleForTransitions) {
+  ScopedCSSIsolatedAnimationUpdatesForTest scoped(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #container {
+        container: inline-size;
+        width: 20px;
+      }
+      #target {
+        height: 10px;
+        transition: height steps(2, start) 100s;
+      }
+      @container (width: 120px) {
+        #target { height: 20px; }
+      }
+      @container (width: 130px) {
+        #target { height: 30px; }
+      }
+      @container (width: 140px) {
+        #target { height: 40px; }
+      }
+    </style>
+    <div id=container>
+      <div id=target>
+      </div>
+    </div>
+  )HTML");
+
+  Element* container = GetDocument().getElementById("container");
+  Element* target = GetDocument().getElementById("target");
+  ASSERT_TRUE(target);
+  ASSERT_TRUE(container);
+
+  EXPECT_EQ("10px", ComputedValueString(target, "height"));
+
+  LogicalAxes contained_axes(kLogicalAxisInline);
+
+  // Simulate multiple layout passes (intermediate):
+  GetDocument().GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
+      *container, LogicalSize(120, -1), contained_axes);
+  EXPECT_EQ("20px", ComputedValueString(target, "height"));
+
+  GetDocument().GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
+      *container, LogicalSize(130, -1), contained_axes);
+  EXPECT_EQ("30px", ComputedValueString(target, "height"));
+
+  // Simulate the final layout pass:
+  container->SetInlineStyleProperty(CSSPropertyID::kWidth, "140px");
+  UpdateAllLifecyclePhasesForTest();
+
+  // Intermediate results should not have any effect on the transition,
+  // hence we should be halfway between 10px and 40px.
+  EXPECT_EQ("25px", ComputedValueString(target, "height"));
+}
+
+TEST_F(ContainerQueryTest, TransitionAppearingInFinalPass) {
+  ScopedCSSIsolatedAnimationUpdatesForTest scoped(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #container {
+        container: inline-size;
+        width: 20px;
+      }
+      #target {
+        height: 10px;
+      }
+      @container (width: 120px) {
+        #target { height: 20px; }
+      }
+      @container (width: 130px) {
+        #target { height: 30px; }
+      }
+      @container (width: 140px) {
+        #target {
+          height: 40px;
+          transition: height steps(2, start) 100s;
+        }
+      }
+    </style>
+    <div id=container>
+      <div id=target>
+      </div>
+    </div>
+  )HTML");
+
+  Element* container = GetDocument().getElementById("container");
+  Element* target = GetDocument().getElementById("target");
+  ASSERT_TRUE(target);
+  ASSERT_TRUE(container);
+
+  EXPECT_EQ("10px", ComputedValueString(target, "height"));
+
+  LogicalAxes contained_axes(kLogicalAxisInline);
+
+  // Simulate multiple layout passes (intermediate):
+  GetDocument().GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
+      *container, LogicalSize(120, -1), contained_axes);
+  EXPECT_EQ("20px", ComputedValueString(target, "height"));
+
+  GetDocument().GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
+      *container, LogicalSize(130, -1), contained_axes);
+  EXPECT_EQ("30px", ComputedValueString(target, "height"));
+
+  // Simulate the final layout pass. This pass, the actual transition property
+  // appears.
+  container->SetInlineStyleProperty(CSSPropertyID::kWidth, "140px");
+  UpdateAllLifecyclePhasesForTest();
+
+  // Intermediate results should not have any effect on the transition,
+  // hence we should be halfway between 10px and 40px.
+  EXPECT_EQ("25px", ComputedValueString(target, "height"));
+}
+
+TEST_F(ContainerQueryTest, TransitionTemporarilyAppearing) {
+  ScopedCSSIsolatedAnimationUpdatesForTest scoped(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #container {
+        container: inline-size;
+        width: 20px;
+      }
+      #target {
+        height: 10px;
+      }
+      @container (width: 120px) {
+        #target { height: 20px; }
+      }
+      @container (width: 130px) {
+        #target {
+          height: 30px;
+          transition: height steps(2, start) 100s;
+        }
+      }
+      @container (width: 140px) {
+        #target { height: 40px; }
+      }
+    </style>
+    <div id=container>
+      <div id=target>
+      </div>
+    </div>
+  )HTML");
+
+  Element* container = GetDocument().getElementById("container");
+  Element* target = GetDocument().getElementById("target");
+  ASSERT_TRUE(target);
+  ASSERT_TRUE(container);
+
+  EXPECT_EQ("10px", ComputedValueString(target, "height"));
+
+  LogicalAxes contained_axes(kLogicalAxisInline);
+
+  // Simulate multiple layout passes (intermediate):
+  GetDocument().GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
+      *container, LogicalSize(120, -1), contained_axes);
+  EXPECT_EQ("20px", ComputedValueString(target, "height"));
+
+  GetDocument().GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
+      *container, LogicalSize(130, -1), contained_axes);
+  EXPECT_EQ("30px", ComputedValueString(target, "height"));
+
+  // Simulate the final layout pass.
+  container->SetInlineStyleProperty(CSSPropertyID::kWidth, "140px");
+  UpdateAllLifecyclePhasesForTest();
+
+  // An intermediate style recalc had a transition, but it ultimately
+  // disappeared, so we should not be transitioning.
+  EXPECT_EQ("40px", ComputedValueString(target, "height"));
+}
+
+TEST_F(ContainerQueryTest, RedefiningAnimations) {
+  ScopedCSSIsolatedAnimationUpdatesForTest scoped(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes anim {
+        from { height: 0px; }
+        to { height: 100px; }
+      }
+      #container {
+        container: inline-size;
+        width: 10px;
+      }
+      @container (width: 120px) {
+        #target {
+          animation: anim 10s -2s linear paused;
+        }
+      }
+      @container (width: 130px) {
+        #target {
+          animation: anim 10s -3s linear paused;
+        }
+      }
+      @container (width: 140px) {
+        #target {
+          animation: anim 10s -4s linear paused;
+        }
+      }
+    </style>
+    <div id=container>
+      <div id=target>
+      </div>
+    </div>
+  )HTML");
+
+  Element* container = GetDocument().getElementById("container");
+  Element* target = GetDocument().getElementById("target");
+  ASSERT_TRUE(target);
+  ASSERT_TRUE(container);
+
+  EXPECT_EQ("auto", ComputedValueString(target, "height"));
+
+  LogicalAxes contained_axes(kLogicalAxisInline);
+
+  // Simulate multiple layout passes (intermediate). Intermediate passes
+  // should not apply any animation updates.
+  GetDocument().GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
+      *container, LogicalSize(120, -1), contained_axes);
+  EXPECT_EQ("auto", ComputedValueString(target, "height"));
+
+  GetDocument().GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
+      *container, LogicalSize(130, -1), contained_axes);
+  EXPECT_EQ("auto", ComputedValueString(target, "height"));
+
+  // Only the final pass should have any effect:
+  container->SetInlineStyleProperty(CSSPropertyID::kWidth, "140px");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ("40px", ComputedValueString(target, "height"));
+}
+
+TEST_F(ContainerQueryTest, UnsetAnimation) {
+  ScopedCSSIsolatedAnimationUpdatesForTest scoped(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes anim {
+        from { height: 0px; }
+        to { height: 100px; }
+      }
+      #container {
+        container: inline-size;
+        width: 10px;
+      }
+      #target {
+        animation: anim 10s -2s linear paused;
+      }
+      @container (width: 130px) {
+        #target {
+          animation: unset;
+        }
+      }
+    </style>
+    <div id=container>
+      <div id=target>
+      </div>
+    </div>
+  )HTML");
+
+  Element* container = GetDocument().getElementById("container");
+  Element* target = GetDocument().getElementById("target");
+  ASSERT_TRUE(target);
+  ASSERT_TRUE(container);
+
+  EXPECT_EQ("20px", ComputedValueString(target, "height"));
+
+  LogicalAxes contained_axes(kLogicalAxisInline);
+
+  // Simulate an intermediate layout pass. It should not cancel the animation.
+  GetDocument().GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
+      *container, LogicalSize(130, -1), contained_axes);
+  EXPECT_EQ("20px", ComputedValueString(target, "height"));
+
+  // Non-intermediate pass. The animation should still not be canceled, since
+  // the CQ no longer matches.
+  container->SetInlineStyleProperty(CSSPropertyID::kWidth, "140px");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ("20px", ComputedValueString(target, "height"));
+
+  // Another non-intermdiate pass. Now the CQ matches, animation:unset
+  // stands, and the animation should be canceled.
+  container->SetInlineStyleProperty(CSSPropertyID::kWidth, "130px");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ("auto", ComputedValueString(target, "height"));
 }
 
 }  // namespace blink

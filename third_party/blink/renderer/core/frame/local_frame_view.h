@@ -859,6 +859,7 @@ class CORE_EXPORT LocalFrameView final
 
   void UpdateStyleAndLayoutIfNeededRecursive();
   bool UpdateStyleAndLayoutInternal();
+  bool UpdateStyleAndLayoutOnce();
   void UpdateLayout();
   void PerformLayout();
   void PerformPostLayoutTasks(bool view_size_changed);

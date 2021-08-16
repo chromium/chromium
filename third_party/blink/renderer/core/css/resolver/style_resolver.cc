@@ -114,6 +114,17 @@ namespace blink {
 namespace {
 
 void SetAnimationUpdateIfNeeded(StyleResolverState& state, Element& element) {
+  auto& document_animations = state.GetDocument().GetDocumentAnimations();
+
+  if (RuntimeEnabledFeatures::CSSIsolatedAnimationUpdatesEnabled()) {
+    if (document_animations.AnimationUpdatesAllowed()) {
+      // TODO(crbug.com/1180159): We currently do this for all elements
+      // participating in the recalc. Reduce it to only the elements that can
+      // be affected by CSS animations/transitions.
+      document_animations.AddPendingOldStyleForElement(element);
+    }
+  }
+
   // If any changes to CSS Animations were detected, stash the update away for
   // application after the layout object is updated if we're in the appropriate
   // scope.
@@ -121,7 +132,6 @@ void SetAnimationUpdateIfNeeded(StyleResolverState& state, Element& element) {
     return;
 
   auto& element_animations = element.EnsureElementAnimations();
-  auto& document_animations = state.GetDocument().GetDocumentAnimations();
 
   element_animations.CssAnimations().SetPendingUpdate(state.AnimationUpdate());
 

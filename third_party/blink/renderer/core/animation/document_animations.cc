@@ -40,10 +40,12 @@
 #include "third_party/blink/renderer/core/animation/worklet_animation_controller.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/bindings/microtask.h"
 
 namespace blink {
@@ -206,9 +208,23 @@ void DocumentAnimations::ApplyPendingElementUpdates() {
     element_animations->CssAnimations().MaybeApplyPendingUpdate(element.Get());
   }
 
+  pending_old_styles_.clear();
   DCHECK(elements_with_pending_updates_.IsEmpty())
       << "MaybeApplyPendingUpdate must not mark any elements as having a "
          "pending update";
+}
+
+void DocumentAnimations::AddPendingOldStyleForElement(Element& element) {
+  pending_old_styles_.insert(
+      &element, scoped_refptr<const ComputedStyle>(element.GetComputedStyle()));
+}
+
+absl::optional<const ComputedStyle*> DocumentAnimations::GetPendingOldStyle(
+    Element& element) const {
+  auto iter = pending_old_styles_.find(&element);
+  if (iter == pending_old_styles_.end())
+    return absl::nullopt;
+  return iter->value.get();
 }
 
 void DocumentAnimations::Trace(Visitor* visitor) const {
@@ -216,6 +232,7 @@ void DocumentAnimations::Trace(Visitor* visitor) const {
   visitor->Trace(timelines_);
   visitor->Trace(unvalidated_timelines_);
   visitor->Trace(elements_with_pending_updates_);
+  visitor->Trace(pending_old_styles_);
 }
 
 void DocumentAnimations::GetAnimationsTargetingTreeScope(

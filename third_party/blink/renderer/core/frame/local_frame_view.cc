@@ -3302,6 +3302,23 @@ void LocalFrameView::UpdateStyleAndLayout() {
 }
 
 bool LocalFrameView::UpdateStyleAndLayoutInternal() {
+  bool did_layout = UpdateStyleAndLayoutOnce();
+
+  if (RuntimeEnabledFeatures::CSSIsolatedAnimationUpdatesEnabled()) {
+    DCHECK_GE(Lifecycle().GetState(), DocumentLifecycle::kStyleClean);
+    auto& document_animations = frame_->GetDocument()->GetDocumentAnimations();
+    document_animations.ApplyPendingElementUpdates();
+    if (Lifecycle().GetState() < DocumentLifecycle::kStyleClean) {
+      DocumentAnimations::AllowAnimationUpdatesScope allow_updates(
+          document_animations, false);
+      did_layout |= UpdateStyleAndLayoutOnce();
+    }
+  }
+
+  return did_layout;
+}
+
+bool LocalFrameView::UpdateStyleAndLayoutOnce() {
   {
     frame_->GetDocument()->UpdateStyleAndLayoutTreeForThisDocument();
 

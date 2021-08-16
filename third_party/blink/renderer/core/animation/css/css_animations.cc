@@ -1313,6 +1313,14 @@ void CSSAnimations::CalculateTransitionUpdate(CSSAnimationUpdate& update,
   HashSet<PropertyHandle> listed_properties;
   bool any_transition_had_transition_all = false;
   const ComputedStyle* old_style = animating_element.GetComputedStyle();
+
+  if (RuntimeEnabledFeatures::CSSIsolatedAnimationUpdatesEnabled()) {
+    old_style = animating_element.GetDocument()
+                    .GetDocumentAnimations()
+                    .GetPendingOldStyle(animating_element)
+                    .value_or(old_style);
+  }
+
   if (!animation_style_recalc && style.Display() != EDisplay::kNone &&
       old_style && !old_style->IsEnsuredInDisplayNone()) {
     TransitionUpdateState state = {update,

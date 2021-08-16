@@ -32,6 +32,7 @@
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
+#include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/css/container_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/counter_style_map.h"
 #include "third_party/blink/renderer/core/css/css_default_style_sheets.h"
@@ -2082,6 +2083,9 @@ void StyleEngine::RecalcStyle(StyleRecalcChange change,
   HasMatchedCacheScope has_matched_cache_scope(&GetDocument());
   Element& root_element = style_recalc_root_.RootElement();
   Element* parent = FlatTreeTraversal::ParentElement(root_element);
+
+  DocumentAnimations::AllowAnimationUpdatesScope allow_updates(
+      GetDocument().GetDocumentAnimations(), true);
 
   SelectorFilterRootScope filter_scope(parent);
   root_element.RecalcStyle(change, style_recalc_context);

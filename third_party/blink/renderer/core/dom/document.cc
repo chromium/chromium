@@ -2145,7 +2145,10 @@ void Document::UpdateStyle() {
   UpdateStyleInternal();
   DCHECK_EQ(lifecycle_.GetState(), DocumentLifecycle::kStyleClean);
 
-  if (RuntimeEnabledFeatures::CSSIsolatedAnimationUpdatesEnabled()) {
+  // If we're using container queries, the second pass must be handled
+  // higher up such that style *and* layout can run twice (if needed).
+  if (RuntimeEnabledFeatures::CSSIsolatedAnimationUpdatesEnabled() &&
+      !GetStyleEngine().UsesContainerQueries()) {
     GetDocumentAnimations().ApplyPendingElementUpdates();
     if (lifecycle_.GetState() < DocumentLifecycle::kStyleClean) {
       DocumentAnimations::AllowAnimationUpdatesScope allow_updates(
@@ -2160,8 +2163,6 @@ void Document::UpdateStyleInternal() {
   TRACE_EVENT_BEGIN0("blink,blink_style", "Document::updateStyle");
   RUNTIME_CALL_TIMER_SCOPE(V8PerIsolateData::MainThreadIsolate(),
                            RuntimeCallStats::CounterId::kUpdateStyle);
-  DocumentAnimations::AllowAnimationUpdatesScope allow_updates(
-      GetDocumentAnimations(), true);
 
   unsigned initial_element_count = GetStyleEngine().StyleForElementCount();
 

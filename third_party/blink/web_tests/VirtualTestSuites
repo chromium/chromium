@@ -682,7 +682,7 @@
               "inspector-protocol/css/container-queries",
               "inspector-protocol/dom/container-queries",
               "inspector-protocol/overlay/overlay-container-query.js"],
-    "args": ["--enable-blink-features=CSSContainerQueries"]
+    "args": ["--enable-blink-features=CSSContainerQueries,CSSIsolatedAnimationUpdates"]
   },
   {
     "prefix": "isolated-animation-updates",
