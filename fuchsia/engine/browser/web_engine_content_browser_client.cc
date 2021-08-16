@@ -32,6 +32,8 @@
 #include "fuchsia/engine/common/web_engine_url_loader_throttle.h"
 #include "fuchsia/engine/switches.h"
 #include "media/base/media_switches.h"
+#include "net/cert/x509_certificate.h"
+#include "net/ssl/ssl_private_key.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/cpp/resource_request.h"

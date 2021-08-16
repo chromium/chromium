@@ -10,7 +10,9 @@
 #include "fuchsia/base/mem_buffer_util.h"
 #include "net/base/chunked_upload_data_stream.h"
 #include "net/base/net_errors.h"
+#include "net/cert/x509_certificate.h"
 #include "net/http/http_response_headers.h"
+#include "net/ssl/ssl_private_key.h"
 #include "net/url_request/redirect_info.h"
 
 namespace oldhttp = ::fuchsia::net::oldhttp;
