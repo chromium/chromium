@@ -756,13 +756,15 @@ TEST_F(CullRectTest, ClipAndCompositedScrollAndClip) {
   cull_rect.ApplyPaintProperties(
       root, root, PropertyTreeState(*scroll_translation, *c2a, e0()),
       CullRect(IntRect(0, 310, 100, 100)));
-  EXPECT_EQ(IntRect(0, 310, 100, 100), cull_rect.Rect());
+  // The new cull rect touches the left edge of the clipped expanded scrolling
+  // contents bounds, so the old cull rect is not used.
+  EXPECT_EQ(IntRect(0, 300, 100, 100), cull_rect.Rect());
   // Composited case. The cull rect should be expanded.
   cull_rect = CullRect::Infinite();
   cull_rect.ApplyPaintProperties(root, root, PropertyTreeState(*t2, *c2a, e0()),
                                  CullRect(IntRect(-3900, -3700, 8100, 8100)));
-  // The new cull rect touches the left edge of the expanded scrolling contents
-  // bounds, so the old cull rect is not used.
+  // The new cull rect touches the left edge of the clipped expanded scrolling
+  // contents bounds, so the old cull rect is not used.
   EXPECT_EQ(IntRect(-4000, -3700, 8100, 8100), cull_rect.Rect());
 
   // c2b is out of the expansion area of the composited scroll.

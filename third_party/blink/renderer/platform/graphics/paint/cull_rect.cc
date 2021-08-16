@@ -261,9 +261,18 @@ bool CullRect::ApplyPaintProperties(
     DCHECK(last_transform->ScrollNode());
     expansion_bounds.emplace(IntPoint(),
                              last_transform->ScrollNode()->ContentsSize());
-    // Map expansion_bounds into the same space as rect_.
-    GeometryMapper::SourceToDestinationRect(
-        *last_transform, destination.Transform(), *expansion_bounds);
+    if (last_transform != &destination.Transform() ||
+        last_clip != &destination.Clip()) {
+      // Map expansion_bounds in the same way as we did for rect_ in the last
+      // ApplyPaintPropertiesWithoutExpansion().
+      FloatClipRect clip_rect = GeometryMapper::LocalToAncestorClipRect(
+          destination,
+          PropertyTreeState(*last_transform, *last_clip, effect_root));
+      if (!clip_rect.IsInfinite())
+        expansion_bounds->Intersect(EnclosingIntRect(clip_rect.Rect()));
+      GeometryMapper::SourceToDestinationRect(
+          *last_transform, destination.Transform(), *expansion_bounds);
+    }
     expanded = true;
   }
 
