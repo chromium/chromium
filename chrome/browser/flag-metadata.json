@@ -826,7 +826,7 @@
   {
     "name": "continuous-search",
     "owners": [ "//chrome/browser/continuous_search/OWNERS" ],
-    "expiry_milestone": 94
+    "expiry_milestone": 98
   },
   {
     "name": "conversion-measurement-debug-mode",
