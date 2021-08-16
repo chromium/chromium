@@ -1507,37 +1507,6 @@ component("net") {
     ]
   }
 
-  if (!disable_ftp_support) {
-    sources += [
-      "ftp/ftp_auth_cache.cc",
-      "ftp/ftp_auth_cache.h",
-      "ftp/ftp_ctrl_response_buffer.cc",
-      "ftp/ftp_ctrl_response_buffer.h",
-      "ftp/ftp_directory_listing_parser.cc",
-      "ftp/ftp_directory_listing_parser.h",
-      "ftp/ftp_directory_listing_parser_ls.cc",
-      "ftp/ftp_directory_listing_parser_ls.h",
-      "ftp/ftp_directory_listing_parser_vms.cc",
-      "ftp/ftp_directory_listing_parser_vms.h",
-      "ftp/ftp_directory_listing_parser_windows.cc",
-      "ftp/ftp_directory_listing_parser_windows.h",
-      "ftp/ftp_network_layer.cc",
-      "ftp/ftp_network_layer.h",
-      "ftp/ftp_network_session.cc",
-      "ftp/ftp_network_session.h",
-      "ftp/ftp_network_transaction.cc",
-      "ftp/ftp_network_transaction.h",
-      "ftp/ftp_request_info.h",
-      "ftp/ftp_response_info.cc",
-      "ftp/ftp_response_info.h",
-      "ftp/ftp_server_type.h",
-      "ftp/ftp_transaction.h",
-      "ftp/ftp_transaction_factory.h",
-      "ftp/ftp_util.cc",
-      "ftp/ftp_util.h",
-    ]
-  }
-
   if (enable_websockets) {
     sources += [
       "websockets/websocket_basic_handshake_stream.cc",
@@ -4679,20 +4648,6 @@ test("net_unittests") {
     ]
   }
 
-  if (!disable_ftp_support) {
-    sources += [
-      "ftp/ftp_auth_cache_unittest.cc",
-      "ftp/ftp_ctrl_response_buffer_unittest.cc",
-      "ftp/ftp_directory_listing_parser_ls_unittest.cc",
-      "ftp/ftp_directory_listing_parser_unittest.cc",
-      "ftp/ftp_directory_listing_parser_unittest.h",
-      "ftp/ftp_directory_listing_parser_vms_unittest.cc",
-      "ftp/ftp_directory_listing_parser_windows_unittest.cc",
-      "ftp/ftp_network_transaction_unittest.cc",
-      "ftp/ftp_util_unittest.cc",
-    ]
-  }
-
   if (enable_built_in_dns) {
     sources += [ "url_request/http_with_dns_over_https_unittest.cc" ]
   }
@@ -5234,30 +5189,6 @@ fuzzer_test("net_crl_set_fuzzer") {
     "//net",
   ]
   seed_corpus = "data/fuzzer_data/net_crl_set_fuzzer/"
-}
-
-if (!disable_ftp_support) {
-  fuzzer_test("net_ftp_ctrl_response_fuzzer") {
-    sources = [ "ftp/ftp_ctrl_response_fuzzer.cc" ]
-    deps = [
-      ":net_fuzzer_test_support",
-      "//base",
-      "//net",
-    ]
-  }
-
-  fuzzer_test("net_ftp_directory_listing_fuzzer") {
-    sources = [ "ftp/ftp_directory_listing_fuzzer.cc" ]
-    deps = [
-      ":net_fuzzer_test_support",
-      "//base",
-      "//net",
-    ]
-
-    # TODO(https://crbug.com/921297): Re-enable once source of timeout is
-    # understood (probably just needs to restrict maximum input size).
-    additional_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
-  }
 }
 
 fuzzer_test("net_unescape_url_component_fuzzer") {
