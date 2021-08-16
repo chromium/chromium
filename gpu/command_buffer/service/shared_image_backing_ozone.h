@@ -20,6 +20,7 @@
 #include "gpu/command_buffer/service/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image_representation.h"
+#include "gpu/command_buffer/service/shared_memory_region_wrapper.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
@@ -42,7 +43,7 @@ class SharedImageBackingOzone final : public ClearTrackingSharedImageBacking {
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
       uint32_t usage,
-      SharedContextState* context_state,
+      scoped_refptr<SharedContextState> context_state,
       scoped_refptr<gfx::NativePixmap> pixmap,
       scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs);
 
@@ -56,6 +57,7 @@ class SharedImageBackingOzone final : public ClearTrackingSharedImageBacking {
                    viz::ResourceFormat format,
                    const gfx::Size& size,
                    SkAlphaType alpha_type);
+  void SetSharedMemoryWrapper(SharedMemoryRegionWrapper wrapper);
 
  protected:
   std::unique_ptr<SharedImageRepresentationDawn> ProduceDawn(
@@ -105,6 +107,9 @@ class SharedImageBackingOzone final : public ClearTrackingSharedImageBacking {
   scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs_;
   gfx::GpuFenceHandle write_fence_;
   std::vector<gfx::GpuFenceHandle> read_fences_;
+  // Set for shared memory GMB.
+  SharedMemoryRegionWrapper shared_memory_wrapper_;
+  scoped_refptr<SharedContextState> context_state_;
 
   DISALLOW_COPY_AND_ASSIGN(SharedImageBackingOzone);
 };

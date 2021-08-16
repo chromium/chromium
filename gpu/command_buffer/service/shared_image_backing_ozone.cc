@@ -22,6 +22,7 @@
 #include "gpu/command_buffer/service/shared_image_representation.h"
 #include "gpu/command_buffer/service/shared_image_representation_gl_ozone.h"
 #include "gpu/command_buffer/service/shared_image_representation_skia_gl.h"
+#include "gpu/command_buffer/service/shared_memory_region_wrapper.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
@@ -109,8 +110,22 @@ class SharedImageBackingOzone::SharedImageRepresentationOverlayOzone
 SharedImageBackingOzone::~SharedImageBackingOzone() = default;
 
 void SharedImageBackingOzone::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return;
+  if (shared_memory_wrapper_.IsValid()) {
+    DCHECK(!in_fence);
+    if (context_state_->context_lost())
+      return;
+
+    DCHECK(context_state_->IsCurrent(nullptr));
+    if (!WritePixels(shared_memory_wrapper_.GetMemoryAsSpan(),
+                     context_state_.get(), format(), size(), alpha_type())) {
+      DLOG(ERROR) << "Failed to write pixels.";
+    }
+  }
+}
+
+void SharedImageBackingOzone::SetSharedMemoryWrapper(
+    SharedMemoryRegionWrapper wrapper) {
+  shared_memory_wrapper_ = std::move(wrapper);
 }
 
 bool SharedImageBackingOzone::ProduceLegacyMailbox(
@@ -196,7 +211,7 @@ SharedImageBackingOzone::SharedImageBackingOzone(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
-    SharedContextState* context_state,
+    scoped_refptr<SharedContextState> context_state,
     scoped_refptr<gfx::NativePixmap> pixmap,
     scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs)
     : ClearTrackingSharedImageBacking(mailbox,
@@ -209,7 +224,8 @@ SharedImageBackingOzone::SharedImageBackingOzone(
                                       GetPixmapSizeInBytes(*pixmap),
                                       false),
       pixmap_(std::move(pixmap)),
-      dawn_procs_(std::move(dawn_procs)) {}
+      dawn_procs_(std::move(dawn_procs)),
+      context_state_(std::move(context_state)) {}
 
 std::unique_ptr<SharedImageRepresentationVaapi>
 SharedImageBackingOzone::ProduceVASurface(
@@ -269,6 +285,7 @@ bool SharedImageBackingOzone::WritePixels(
     DCHECK(result);
   }
 
+  DCHECK_EQ(size, representation->size());
   bool written = shared_context_state->gr_context()->updateBackendTexture(
       dest_scoped_access->promise_image_texture()->backendTexture(), &sk_pixmap,
       /*numLevels=*/1, representation->surface_origin(), nullptr, nullptr);
