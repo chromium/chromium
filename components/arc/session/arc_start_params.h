@@ -89,6 +89,9 @@ struct StartParams {
   // Flag to enable keyboard shortcut helper integration.
   bool enable_keyboard_shortcut_helper_integration = false;
 
+  // Flag to enable notification refresh.
+  bool enable_notifications_refresh = false;
+
  private:
   DISALLOW_COPY_AND_ASSIGN(StartParams);
 };

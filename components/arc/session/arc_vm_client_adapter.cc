@@ -235,6 +235,8 @@ std::vector<std::string> GenerateKernelCmdline(
       "androidboot.chromeos_channel=" + channel,
       base::StringPrintf("androidboot.iioservice_present=%d",
                          BUILDFLAG(USE_IIOSERVICE)),
+      base::StringPrintf("androidboot.enable_notifications_refresh=%d",
+                         start_params.enable_notifications_refresh),
   };
 
   const ArcVmUreadaheadMode mode =
