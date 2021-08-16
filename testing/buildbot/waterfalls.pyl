@@ -1539,7 +1539,7 @@
       'CrWinAsan': {
         'mixins': [
           'x86-64',
-          'win10',
+          'win10-20h2',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_win_gtests',
@@ -1551,7 +1551,7 @@
       'CrWinAsan(dll)': {
         'mixins': [
           'x86-64',
-          'win10',
+          'win10-20h2',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_win_gtests',
@@ -1868,7 +1868,7 @@
       'ToTWin64': {
         'mixins': [
           'x86-64',
-          'win10',
+          'win10-20h2',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_win_gtests',
@@ -1881,7 +1881,7 @@
       'ToTWin64(dbg)': {
         'mixins': [
           'x86-64',
-          'win10',
+          'win10-20h2',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_win_gtests',
@@ -1894,7 +1894,7 @@
       'ToTWin64(dll)': {
         'mixins': [
           'x86-64',
-          'win10',
+          'win10-20h2',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_win_gtests',
@@ -2027,7 +2027,7 @@
       },
       'linux-win_cross-rel': {
         'mixins': [
-          'win10',
+          'win10-20h2',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_win_gtests',
