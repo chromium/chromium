@@ -38,7 +38,7 @@ class OmniboxPopupContentsView : public views::View,
   OmniboxPopupContentsView& operator=(const OmniboxPopupContentsView&) = delete;
   ~OmniboxPopupContentsView() override;
 
-  OmniboxPopupModel* model() const { return model_.get(); }
+  OmniboxPopupModel* model() const;
 
   // Opens a match from the list specified by |index| with the type of tab or
   // window specified by |disposition|.
@@ -120,9 +120,6 @@ class OmniboxPopupContentsView : public views::View,
   // Gets the pref service for this view. May return nullptr in tests.
   PrefService* GetPrefService() const;
 
-  // Our model that contains our business logic.
-  std::unique_ptr<OmniboxPopupModel> model_;
-
   // The popup that contains this view.  We create this, but it deletes itself
   // when its window is destroyed.  This is a WeakPtr because it's possible for
   // the OS to destroy the window and thus delete this object before we're
@@ -141,6 +138,8 @@ class OmniboxPopupContentsView : public views::View,
 
   // A pref change registrar for toggling result view visibility.
   PrefChangeRegistrar pref_change_registrar_;
+
+  OmniboxEditModel* edit_model_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_CONTENTS_VIEW_H_

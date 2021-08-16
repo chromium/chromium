@@ -80,16 +80,17 @@ class OmniboxPopupModelTest : public ::testing::Test {
  public:
   OmniboxPopupModelTest()
       : view_(&controller_),
-        model_(&view_, &controller_, std::make_unique<TestOmniboxClient>()),
-        popup_model_(&popup_view_, &model_, &pref_service_) {
+        model_(&view_, &controller_, std::make_unique<TestOmniboxClient>()) {
     omnibox::RegisterProfilePrefs(pref_service_.registry());
+    model_.set_popup_model(std::make_unique<OmniboxPopupModel>(
+        &popup_view_, &model_, &pref_service_));
   }
   OmniboxPopupModelTest(const OmniboxPopupModelTest&) = delete;
   OmniboxPopupModelTest& operator=(const OmniboxPopupModelTest&) = delete;
 
   TestingPrefServiceSimple* pref_service() { return &pref_service_; }
   TestOmniboxEditModel* model() { return &model_; }
-  OmniboxPopupModel* popup_model() { return &popup_model_; }
+  OmniboxPopupModel* popup_model() { return model()->popup_model(); }
 
  private:
   base::test::TaskEnvironment task_environment_;
@@ -99,7 +100,6 @@ class OmniboxPopupModelTest : public ::testing::Test {
   TestOmniboxView view_;
   TestOmniboxEditModel model_;
   TestOmniboxPopupView popup_view_;
-  OmniboxPopupModel popup_model_;
 };
 
 // This verifies that the new treatment of the user's selected match in

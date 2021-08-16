@@ -6,6 +6,9 @@
 
 #import <QuartzCore/QuartzCore.h>
 
+#include <memory>
+#include <string>
+
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
@@ -37,31 +40,31 @@ using base::UserMetricsAction;
 OmniboxPopupViewIOS::OmniboxPopupViewIOS(
     OmniboxEditModel* edit_model,
     OmniboxPopupViewSuggestionsDelegate* delegate)
-    : model_(new OmniboxPopupModel(this, edit_model, nullptr)),
-      delegate_(delegate) {
+    : edit_model_(edit_model), delegate_(delegate) {
   DCHECK(delegate);
   DCHECK(edit_model);
+  edit_model->set_popup_model(
+      std::make_unique<OmniboxPopupModel>(this, edit_model, nullptr));
 }
 
 OmniboxPopupViewIOS::~OmniboxPopupViewIOS() {
-  // Destroy the model, in case it tries to call back into us when destroyed.
-  model_.reset();
+  edit_model_->set_popup_model(nullptr);
 }
 
 // Set left image to globe or magnifying glass depending on which autocomplete
 // option is highlighted.
 void OmniboxPopupViewIOS::UpdateEditViewIcon() {
-  const AutocompleteResult& result = model_->result();
+  const AutocompleteResult& result = model()->result();
 
   // Use default icon as a fallback
-  if (model_->selected_line() == OmniboxPopupModel::kNoMatch) {
+  if (model()->selected_line() == OmniboxPopupModel::kNoMatch) {
     delegate_->OnSelectedMatchImageChanged(/*has_match=*/false,
                                            AutocompleteMatchType::NUM_TYPES,
                                            absl::nullopt, GURL());
     return;
   }
 
-  const AutocompleteMatch& match = result.match_at(model_->selected_line());
+  const AutocompleteMatch& match = result.match_at(model()->selected_line());
 
   absl::optional<SuggestionAnswer::AnswerType> optAnswerType = absl::nullopt;
   if (match.answer && match.answer->type() > 0 &&
@@ -75,7 +78,7 @@ void OmniboxPopupViewIOS::UpdateEditViewIcon() {
 }
 
 void OmniboxPopupViewIOS::UpdatePopupAppearance() {
-  const AutocompleteResult& result = model_->result();
+  const AutocompleteResult& result = model()->result();
 
   [mediator_ updateWithResults:result];
   if ([mediator_ isOpen]) {
@@ -90,7 +93,7 @@ bool OmniboxPopupViewIOS::IsOpen() const {
 }
 
 OmniboxPopupModel* OmniboxPopupViewIOS::model() const {
-  return model_.get();
+  return edit_model_->popup_model();
 }
 
 #pragma mark - OmniboxPopupProvider
@@ -111,11 +114,11 @@ void OmniboxPopupViewIOS::SetSemanticContentAttribute(
 #pragma mark - OmniboxPopupViewControllerDelegate
 
 bool OmniboxPopupViewIOS::IsStarredMatch(const AutocompleteMatch& match) const {
-  return model_->IsStarredMatch(match);
+  return model()->IsStarredMatch(match);
 }
 
 void OmniboxPopupViewIOS::OnMatchHighlighted(size_t row) {
-  model_->SetSelection(OmniboxPopupModel::Selection(row), false, true);
+  model()->SetSelection(OmniboxPopupModel::Selection(row), false, true);
   if ([mediator_ isOpen]) {
     UpdateEditViewIcon();
   }
@@ -166,7 +169,7 @@ void OmniboxPopupViewIOS::OnMatchSelectedForAppending(
 
 void OmniboxPopupViewIOS::OnMatchSelectedForDeletion(
     const AutocompleteMatch& match) {
-  model_->autocomplete_controller()->DeleteMatch(match);
+  model()->autocomplete_controller()->DeleteMatch(match);
 }
 
 void OmniboxPopupViewIOS::OnScroll() {

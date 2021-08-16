@@ -67,7 +67,6 @@ OmniboxPopupModel::OmniboxPopupModel(OmniboxPopupView* popup_view,
       edit_model_(edit_model),
       pref_service_(pref_service),
       selection_(kNoMatch, NORMAL) {
-  edit_model->set_popup_model(this);
 }
 
 OmniboxPopupModel::~OmniboxPopupModel() = default;

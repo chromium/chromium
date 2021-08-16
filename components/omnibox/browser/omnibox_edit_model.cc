@@ -146,6 +146,11 @@ OmniboxEditModel::OmniboxEditModel(OmniboxView* view,
 OmniboxEditModel::~OmniboxEditModel() {
 }
 
+void OmniboxEditModel::set_popup_model(
+    std::unique_ptr<OmniboxPopupModel> popup_model) {
+  popup_model_ = std::move(popup_model);
+}
+
 metrics::OmniboxEventProto::PageClassification
 OmniboxEditModel::GetPageClassification() const {
   return controller()->GetLocationBarModel()->GetPageClassification(

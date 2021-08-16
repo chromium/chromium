@@ -178,7 +178,6 @@
       std::make_unique<OmniboxPopupViewIOS>(_editView->model(),
                                             _editView.get());
 
-  _editView->model()->set_popup_model(popupView->model());
   _editView->SetPopupProvider(popupView.get());
 
   OmniboxPopupCoordinator* coordinator = [[OmniboxPopupCoordinator alloc]

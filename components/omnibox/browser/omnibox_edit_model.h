@@ -73,16 +73,10 @@ class OmniboxEditModel {
     return omnibox_controller_->autocomplete_controller();
   }
 
-  void set_popup_model(OmniboxPopupModel* popup_model) {
-    omnibox_controller_->set_popup_model(popup_model);
-  }
+  void set_popup_model(std::unique_ptr<OmniboxPopupModel> popup_model);
 
-  // TODO(jdonnelly): The edit and popup should be siblings owned by the
-  // LocationBarView, making this accessor unnecessary.
   // NOTE: popup_model() can be NULL for testing.
-  OmniboxPopupModel* popup_model() const {
-    return omnibox_controller_->popup_model();
-  }
+  OmniboxPopupModel* popup_model() const { return popup_model_.get(); }
 
   OmniboxEditController* controller() const { return controller_; }
 
@@ -511,6 +505,8 @@ class OmniboxEditModel {
   // change). If the caret visibility changes, we call ApplyCaretVisibility() on
   // the view.
   void SetFocusState(OmniboxFocusState state, OmniboxFocusChangeReason reason);
+
+  std::unique_ptr<OmniboxPopupModel> popup_model_;
 
   // NOTE: |client_| must outlive |omnibox_controller_|, as the latter has a
   // reference to the former.

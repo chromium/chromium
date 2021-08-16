@@ -502,8 +502,8 @@ class OmniboxPedalManageSync : public OmniboxPedal {
             false,
             IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_SYNC_ANY_REQUIRED_GOOGLE_CHROME,
         },
-    };
 #endif
+    };
   }
 
  protected:

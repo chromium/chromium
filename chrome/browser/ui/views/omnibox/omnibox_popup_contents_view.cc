@@ -154,9 +154,12 @@ OmniboxPopupContentsView::OmniboxPopupContentsView(
     OmniboxViewViews* omnibox_view,
     OmniboxEditModel* edit_model,
     LocationBarView* location_bar_view)
-    : omnibox_view_(omnibox_view), location_bar_view_(location_bar_view) {
+    : omnibox_view_(omnibox_view),
+      location_bar_view_(location_bar_view),
+      edit_model_(edit_model) {
   PrefService* const pref_service = GetPrefService();
-  model_ = std::make_unique<OmniboxPopupModel>(this, edit_model, pref_service);
+  edit_model_->set_popup_model(
+      std::make_unique<OmniboxPopupModel>(this, edit_model, pref_service));
 
   // The contents is owned by the LocationBarView.
   set_owned_by_client();
@@ -187,6 +190,7 @@ OmniboxPopupContentsView::~OmniboxPopupContentsView() {
   if (popup_)
     popup_->RemoveObserver(this);
   CHECK(!IsInObserverList());
+  edit_model_->set_popup_model(nullptr);
 }
 
 void OmniboxPopupContentsView::OpenMatch(
@@ -195,37 +199,41 @@ void OmniboxPopupContentsView::OpenMatch(
     base::TimeTicks match_selection_timestamp) {
   DCHECK(HasMatchAt(index));
 
-  omnibox_view_->OpenMatch(model_->result().match_at(index), disposition,
+  omnibox_view_->OpenMatch(model()->result().match_at(index), disposition,
                            GURL(), std::u16string(), index,
                            match_selection_timestamp);
+}
+
+OmniboxPopupModel* OmniboxPopupContentsView::model() const {
+  return edit_model_->popup_model();
 }
 
 void OmniboxPopupContentsView::OpenMatch(
     WindowOpenDisposition disposition,
     base::TimeTicks match_selection_timestamp) {
-  OpenMatch(model_->selected_line(), disposition, match_selection_timestamp);
+  OpenMatch(model()->selected_line(), disposition, match_selection_timestamp);
 }
 
 gfx::Image OmniboxPopupContentsView::GetMatchIcon(
     const AutocompleteMatch& match,
     SkColor vector_icon_color) const {
-  return model_->GetMatchIcon(match, vector_icon_color);
+  return model()->GetMatchIcon(match, vector_icon_color);
 }
 
 void OmniboxPopupContentsView::SetSelectedIndex(size_t index) {
   DCHECK(HasMatchAt(index));
 
   OmniboxPopupModel::LineState line_state = OmniboxPopupModel::NORMAL;
-  model_->SetSelection(OmniboxPopupModel::Selection(index, line_state));
-  OnPropertyChanged(&model_, views::kPropertyEffectsNone);
+  model()->SetSelection(OmniboxPopupModel::Selection(index, line_state));
+  OnPropertyChanged(model(), views::kPropertyEffectsNone);
 }
 
 size_t OmniboxPopupContentsView::GetSelectedIndex() const {
-  return model_->selected_line();
+  return model()->selected_line();
 }
 
 void OmniboxPopupContentsView::UnselectButton() {
-  model_->SetSelectedLineState(OmniboxPopupModel::NORMAL);
+  model()->SetSelectedLineState(OmniboxPopupModel::NORMAL);
 }
 
 OmniboxResultView* OmniboxPopupContentsView::result_view_at(size_t i) {
@@ -251,14 +259,14 @@ OmniboxResultView* OmniboxPopupContentsView::GetSelectedResultView() {
   if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup))
     return nullptr;
 
-  size_t selected_line = model_->selected_line();
+  size_t selected_line = model()->selected_line();
   if (selected_line == OmniboxPopupModel::kNoMatch)
     return nullptr;
   return result_view_at(selected_line);
 }
 
 bool OmniboxPopupContentsView::InExplicitExperimentalKeywordMode() {
-  return model_->edit_model()->InExplicitExperimentalKeywordMode();
+  return edit_model_->InExplicitExperimentalKeywordMode();
 }
 
 bool OmniboxPopupContentsView::IsOpen() const {
@@ -301,7 +309,7 @@ void OmniboxPopupContentsView::OnSelectionChanged(
 }
 
 void OmniboxPopupContentsView::UpdatePopupAppearance() {
-  if (model_->result().empty() || omnibox_view_->IsImeShowingPopup()) {
+  if (model()->result().empty() || omnibox_view_->IsImeShowingPopup()) {
     // No matches or the IME is showing a popup window which may overlap
     // the omnibox popup window.  Close any existing popup.
     if (popup_) {
@@ -345,11 +353,11 @@ void OmniboxPopupContentsView::UpdatePopupAppearance() {
   }
 
   // Fix-up any matches due to tail suggestions, before display below.
-  model_->autocomplete_controller()->InlineTailPrefixes();
+  model()->autocomplete_controller()->InlineTailPrefixes();
 
   // Update the match cached by each row, in the process of doing so make sure
   // we have enough row views.
-  const size_t result_size = model_->result().size();
+  const size_t result_size = model()->result().size();
   if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup)) {
     if (!webui_view_) {
       webui_view_ = AddChildView(std::make_unique<WebUIOmniboxPopupView>(
@@ -377,7 +385,7 @@ void OmniboxPopupContentsView::UpdatePopupAppearance() {
       if (match.suggestion_group_id.has_value() &&
           match.suggestion_group_id != previous_row_group_id) {
         row_view->ShowHeader(match.suggestion_group_id.value(),
-                             model_->result().GetHeaderForGroupId(
+                             model()->result().GetHeaderForGroupId(
                                  match.suggestion_group_id.value()));
       } else {
         row_view->HideHeader();
@@ -390,11 +398,11 @@ void OmniboxPopupContentsView::UpdatePopupAppearance() {
       // Set visibility of the result view based on whether the group is hidden.
       bool match_hidden = pref_service &&
                           match.suggestion_group_id.has_value() &&
-                          model_->result().IsSuggestionGroupIdHidden(
+                          model()->result().IsSuggestionGroupIdHidden(
                               pref_service, match.suggestion_group_id.value());
       result_view->SetVisible(!match_hidden);
 
-      const SkBitmap* bitmap = model_->RichSuggestionBitmapAt(i);
+      const SkBitmap* bitmap = model()->RichSuggestionBitmapAt(i);
       if (bitmap) {
         result_view->SetRichSuggestionImage(
             gfx::ImageSkia::CreateFrom1xBitmap(*bitmap));
@@ -525,9 +533,9 @@ gfx::Rect OmniboxPopupContentsView::GetTargetBounds() const {
       popup_height += webui_view_->GetPreferredSize().height();
     }
   } else {
-    DCHECK_GE(children().size(), model_->result().size());
+    DCHECK_GE(children().size(), model()->result().size());
     popup_height = std::accumulate(
-        children().cbegin(), children().cbegin() + model_->result().size(), 0,
+        children().cbegin(), children().cbegin() + model()->result().size(), 0,
         [](int height, const auto* v) {
           return height + v->GetPreferredSize().height();
         });
@@ -555,19 +563,19 @@ gfx::Rect OmniboxPopupContentsView::GetTargetBounds() const {
 }
 
 bool OmniboxPopupContentsView::HasMatchAt(size_t index) const {
-  return index < model_->result().size();
+  return index < model()->result().size();
 }
 
 const AutocompleteMatch& OmniboxPopupContentsView::GetMatchAtIndex(
     size_t index) const {
-  return model_->result().match_at(index);
+  return model()->result().match_at(index);
 }
 
 size_t OmniboxPopupContentsView::GetIndexForPoint(const gfx::Point& point) {
   if (!HitTestPoint(point))
     return OmniboxPopupModel::kNoMatch;
 
-  size_t nb_match = model_->result().size();
+  size_t nb_match = model()->result().size();
   DCHECK_LE(nb_match, children().size());
   for (size_t i = 0; i < nb_match; ++i) {
     views::View* child = children()[i];
@@ -580,11 +588,11 @@ size_t OmniboxPopupContentsView::GetIndexForPoint(const gfx::Point& point) {
 }
 
 void OmniboxPopupContentsView::OnSuggestionGroupVisibilityUpdate() {
-  for (size_t i = 0; i < model_->result().size(); ++i) {
-    const AutocompleteMatch& match = model_->result().match_at(i);
+  for (size_t i = 0; i < model()->result().size(); ++i) {
+    const AutocompleteMatch& match = model()->result().match_at(i);
     bool match_hidden =
         match.suggestion_group_id.has_value() &&
-        model_->result().IsSuggestionGroupIdHidden(
+        model()->result().IsSuggestionGroupIdHidden(
             GetPrefService(), match.suggestion_group_id.value());
     if (OmniboxResultView* result_view = result_view_at(i))
       result_view->SetVisible(!match_hidden);
