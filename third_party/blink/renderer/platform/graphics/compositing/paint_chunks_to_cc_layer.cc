@@ -343,17 +343,16 @@ void ConversionContext::SwitchToClip(const ClipPaintPropertyNode& target_clip) {
       &target_clip.LowestCommonAncestor(*current_clip_).Unalias();
   while (current_clip_ != lca_clip) {
     if (!state_stack_.size() || state_stack_.back().type != StateEntry::kClip) {
-      // This bug is known to happen in pre-CompositeAfterPaint due to some
-      // clip-escaping corner cases that are very difficult to fix in legacy
-      // architecture. In CompositeAfterPaint this should never happen.
+      // TODO(crbug.com/803649): We still have clip hierarchy issues with
+      // fragment clips. See crbug.com/1240080 for the test case. Will change
+      // the above condition to DCHECK after both CompositeAfterPaint and
+      // LayoutNGBlockFragmentation are fully launched.
 #if DCHECK_IS_ON()
       DLOG(ERROR) << "Error: Chunk has a clip that escaped its layer's or "
                   << "effect's clip.\ntarget_clip:\n"
                   << target_clip.ToTreeString().Utf8() << "current_clip_:\n"
                   << current_clip_->ToTreeString().Utf8();
 #endif
-      if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-        NOTREACHED();
       break;
     }
     DCHECK(current_clip_->Parent());
@@ -455,25 +454,24 @@ void ConversionContext::SwitchToEffect(
       target_effect.LowestCommonAncestor(*current_effect_).Unalias();
 
 #if DCHECK_IS_ON()
-  bool has_pre_cap_effect_hierarchy_issue = false;
+  bool has_effect_hierarchy_issue = false;
 #endif
 
   while (current_effect_ != &lca_effect) {
     // This EndClips() and the later EndEffect() pop to the parent effect.
     EndClips();
-    // This bug is known to happen in pre-CompositeAfterPaint due to some
-    // effect-escaping corner cases that are very difficult to fix in legacy
-    // architecture. In CompositeAfterPaint this should never happen.
     if (!state_stack_.size()) {
+      // TODO(crbug.com/803649): We still have clip hierarchy issues with
+      // fragment clips. See crbug.com/1240080 for the test case. Will change
+      // the above condition to DCHECK after both CompositeAfterPaint and
+      // LayoutNGBlockFragmentation are fully launched.
 #if DCHECK_IS_ON()
       DLOG(ERROR) << "Error: Chunk has an effect that escapes layer's effect.\n"
                   << "target_effect:\n"
                   << target_effect.ToTreeString().Utf8() << "current_effect_:\n"
                   << current_effect_->ToTreeString().Utf8();
-      has_pre_cap_effect_hierarchy_issue = true;
+      has_effect_hierarchy_issue = true;
 #endif
-      if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-        NOTREACHED();
       // In pre-CompositeAfterPaint, we may squash one layer into another, but
       // the squashing layer may create more effect nodes not for real effects,
       // causing squashed layer's effect to escape the squashing layer's effect.
@@ -500,15 +498,15 @@ void ConversionContext::SwitchToEffect(
   for (auto i = pending_effects.size(); i--;) {
     const EffectPaintPropertyNode* sub_effect = pending_effects[i];
 #if DCHECK_IS_ON()
-    if (!has_pre_cap_effect_hierarchy_issue)
+    if (!has_effect_hierarchy_issue)
       DCHECK_EQ(current_effect_, sub_effect->UnaliasedParent());
 #endif
     StartEffect(*sub_effect);
 #if DCHECK_IS_ON()
     state_stack_.back().has_pre_cap_effect_hierarchy_issue =
-        has_pre_cap_effect_hierarchy_issue;
+        has_effect_hierarchy_issue;
     // This applies only to the first new effect.
-    has_pre_cap_effect_hierarchy_issue = false;
+    has_effect_hierarchy_issue = false;
 #endif
   }
 }

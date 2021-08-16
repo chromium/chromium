@@ -943,11 +943,10 @@ int PropertyTreeManager::SynthesizeCcEffectsForClipsIfNeeded(
         current_.clip->LowestCommonAncestor(target_clip).Unalias();
     while (current_.clip != &lca) {
       if (!IsCurrentCcEffectSynthetic()) {
-        // This happens in pre-CompositeAfterPaint due to some clip-escaping
-        // corner cases that are very difficult to fix in legacy architecture.
-        // In CompositeAfterPaint this should never happen.
-        if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-          NOTREACHED();
+        // TODO(crbug.com/803649): We still have clip hierarchy issues with
+        // fragment clips. See crbug.com/1238656 for the test case. Will change
+        // the above condition to DCHECK after both CompositeAfterPaint and
+        // LayoutNGBlockFragmentation are fully launched.
         return cc::EffectTree::kInvalidNodeId;
       }
       const auto* pre_exit_clip = current_.clip;
@@ -971,12 +970,10 @@ int PropertyTreeManager::SynthesizeCcEffectsForClipsIfNeeded(
   }
 
   if (!clip) {
-    // This means that current_.clip is not an ancestor of the target clip.
-    // which happens in pre-CompositeAfterPaint due to some clip-escaping
-    // corner cases that are very difficult to fix in legacy architecture.
-    // In CompositeAfterPaint this should never happen.
-    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-      NOTREACHED();
+    // TODO(crbug.com/803649): We still have clip hierarchy issues with
+    // fragment clips. See crbug.com/1238656 for the test case. Will change
+    // the above condition to DCHECK after both CompositeAfterPaint and
+    // LayoutNGBlockFragmentation are fully launched.
     return cc::EffectTree::kInvalidNodeId;
   }
 

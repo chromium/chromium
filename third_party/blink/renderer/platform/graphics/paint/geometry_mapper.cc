@@ -270,19 +270,12 @@ bool GeometryMapper::LocalToAncestorVisualRectInternal(
     return !rect_to_map.Rect().IsEmpty();
   }
 
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    // On SPv1 we may fail when the paint invalidation container creates an
-    // overflow clip (in ancestor_state) which is not in localState of an
-    // out-of-flow positioned descendant. See crbug.com/513108 and web test
-    // compositing/overflow/handle-non-ancestor-clip-parent.html (run with
-    // --enable-prefer-compositing-to-lcd-text) for details.
-    // Ignore it for SPv1 for now.
-    success = true;
-  } else if (!RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
-    // TODO(crbug.com/803649): We still have clip hierarchy issues with fragment
-    // clips. See crbug.com/1228364 for the tests.
-    success = true;
-  }
+  // TODO(crbug.com/803649): We still have clip hierarchy issues with fragment
+  // clips. See crbug.com/1228364 for the test cases. Will remove the following
+  // statement (leaving success==false) after both CompositeAfterPaint and
+  // LayoutNGBlockFragmentation are fully launched.
+  success = true;
+
   rect_to_map.ClearIsTight();
   return !rect_to_map.Rect().IsEmpty();
 }
@@ -427,20 +420,11 @@ FloatClipRect GeometryMapper::LocalToAncestorClipRectInternal(
     clip_node = clip_node->UnaliasedParent();
   }
   if (!clip_node) {
-    success = false;
-    if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      // On SPv1 we may fail when the paint invalidation container creates an
-      // overflow clip (in ancestor_state) which is not in localState of an
-      // out-of-flow positioned descendant. See crbug.com/513108 and layout
-      // test compositing/overflow/handle-non-ancestor-clip-parent.html (run
-      // with --enable-prefer-compositing-to-lcd-text) for details.
-      // Ignore it for SPv1 for now.
-      success = true;
-    } else if (!RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
-      // TODO(crbug.com/803649): We still have clip hierarchy issues with
-      // fragment clips. See crbug.com/1228364 for the tests.
-      success = true;
-    }
+    // TODO(crbug.com/803649): We still have clip hierarchy issues with
+    // fragment clips. See crbug.com/1228364 for the test cases. Will change
+    // the following to "success = false" after both CompositeAfterPaint and
+    // LayoutNGBlockFragmentation are fully launched.
+    success = true;
     return InfiniteLooseFloatClipRect();
   }
 
