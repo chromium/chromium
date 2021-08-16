@@ -16,6 +16,8 @@ namespace optimization_guide {
 namespace android {
 namespace {
 
+using FakeTab = std::pair<GURL, absl::optional<base::TimeTicks>>;
+
 using ::testing::ElementsAre;
 
 // FakeTabModel that can be used for testing Android tab behavior.
@@ -59,6 +61,8 @@ class FakeTabModel : public TabModel {
   std::vector<content::WebContents*> web_contents_list_;
 };
 
+}  // namespace
+
 class OptimizationGuideTabUrlProviderAndroidTest
     : public ChromeRenderViewHostTestHarness {
  public:
@@ -78,6 +82,33 @@ class OptimizationGuideTabUrlProviderAndroidTest
 
   OptimizationGuideTabUrlProviderAndroid* tab_url_provider() const {
     return tab_url_provider_.get();
+  }
+
+  std::vector<GURL> GetSortedURLsForTabs(
+      const std::vector<std::vector<FakeTab>>& fake_tabs) {
+    std::vector<OptimizationGuideTabUrlProviderAndroid::TabRepresentation> tabs;
+    for (size_t tab_model_idx = 0; tab_model_idx < fake_tabs.size();
+         tab_model_idx++) {
+      for (size_t tab_idx = 0; tab_idx < fake_tabs[tab_model_idx].size();
+           tab_idx++) {
+        OptimizationGuideTabUrlProviderAndroid::TabRepresentation tab;
+        tab.tab_model_index = tab_model_idx;
+        tab.tab_index = tab_idx;
+        std::pair<GURL, absl::optional<base::TimeTicks>> fake_tab =
+            fake_tabs[tab_model_idx][tab_idx];
+        tab.url = fake_tab.first;
+        tab.last_active_time = fake_tab.second;
+        tabs.push_back(tab);
+      }
+    }
+    tab_url_provider_->SortTabs(&tabs);
+
+    std::vector<GURL> sorted_urls;
+    sorted_urls.reserve(tabs.size());
+    for (const auto& tab : tabs) {
+      sorted_urls.push_back(tab.url);
+    }
+    return sorted_urls;
   }
 
  private:
@@ -138,6 +169,28 @@ TEST_F(OptimizationGuideTabUrlProviderAndroidTest,
                                 GURL("https://example.com/a")));
 }
 
-}  // namespace
+TEST_F(OptimizationGuideTabUrlProviderAndroidTest, SortsTabsCorrectly) {
+  std::vector<std::vector<FakeTab>> fake_tabs;
+  fake_tabs.push_back({
+      std::make_pair(GURL("https://example.com/third"),
+                     base::TimeTicks::Now() - base::TimeDelta::FromDays(3)),
+      std::make_pair(GURL("https://example.com/second"),
+                     base::TimeTicks::Now() - base::TimeDelta::FromDays(2)),
+      std::make_pair(GURL("https://example.com/0-2"), absl::nullopt),
+  });
+  fake_tabs.push_back({
+      std::make_pair(GURL("https://example.com/first"),
+                     base::TimeTicks::Now() - base::TimeDelta::FromDays(1)),
+      std::make_pair(GURL("https://example.com/1-1"), absl::nullopt),
+  });
+
+  EXPECT_THAT(GetSortedURLsForTabs(fake_tabs),
+              ElementsAre(GURL("https://example.com/first"),
+                          GURL("https://example.com/second"),
+                          GURL("https://example.com/third"),
+                          GURL("https://example.com/0-2"),
+                          GURL("https://example.com/1-1")));
+}
+
 }  // namespace android
 }  // namespace optimization_guide
