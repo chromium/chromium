@@ -12,6 +12,9 @@
 namespace blink {
 
 int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+  if (size > 4096)
+    return 0;
+
   static BlinkFuzzerTestSupport test_support = BlinkFuzzerTestSupport();
   DummyExceptionStateForTesting exception_state;
   auto* input = MakeGarbageCollected<V8URLPatternInput>(
