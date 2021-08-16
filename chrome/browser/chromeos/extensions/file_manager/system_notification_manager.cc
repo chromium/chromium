@@ -69,14 +69,23 @@ SystemNotificationManager::CreateNotification(
     const std::string& notification_id,
     const std::u16string& title,
     const std::u16string& message,
-    const base::RepeatingClosure& click_callback) {
+    const scoped_refptr<message_center::NotificationDelegate>& delegate) {
   return ash::CreateSystemNotification(
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title, message,
       std::u16string(), GURL(), message_center::NotifierId(),
-      message_center::RichNotificationData(),
-      new message_center::HandleNotificationClickDelegate(click_callback),
-      kNotificationGoogleIcon,
+      message_center::RichNotificationData(), delegate, kNotificationGoogleIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
+}
+
+std::unique_ptr<message_center::Notification>
+SystemNotificationManager::CreateNotification(
+    const std::string& notification_id,
+    const std::u16string& title,
+    const std::u16string& message,
+    const base::RepeatingClosure& click_callback) {
+  return CreateNotification(
+      notification_id, title, message,
+      new message_center::HandleNotificationClickDelegate(click_callback));
 }
 
 std::unique_ptr<message_center::Notification>
@@ -108,11 +117,7 @@ SystemNotificationManager::CreateNotification(
     const scoped_refptr<message_center::NotificationDelegate>& delegate) {
   std::u16string title = l10n_util::GetStringUTF16(title_id);
   std::u16string message = l10n_util::GetStringUTF16(message_id);
-  return ash::CreateSystemNotification(
-      message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title, message,
-      std::u16string(), GURL(), message_center::NotifierId(),
-      message_center::RichNotificationData(), delegate, kNotificationGoogleIcon,
-      message_center::SystemNotificationWarningLevel::NORMAL);
+  return CreateNotification(notification_id, title, message, delegate);
 }
 
 void SystemNotificationManager::HandleProgressClick(
@@ -464,6 +469,7 @@ void SystemNotificationManager::HandleRemovableNotificationClick(
 
 std::unique_ptr<message_center::Notification>
 SystemNotificationManager::MakeMountErrorNotification(
+    file_manager_private::MountCompletedEvent& event,
     const Volume& volume) {
   std::unique_ptr<message_center::Notification> notification;
   scoped_refptr<message_center::NotificationDelegate> delegate =
@@ -473,23 +479,51 @@ SystemNotificationManager::MakeMountErrorNotification(
   auto device_mount_status =
       mount_status_.find(volume.storage_device_path().value());
   if (device_mount_status != mount_status_.end()) {
+    std::u16string title =
+        l10n_util::GetStringUTF16(IDS_REMOVABLE_DEVICE_DETECTION_TITLE);
+    std::u16string message;
     switch (device_mount_status->second) {
       case MOUNT_STATUS_ONLY_PARENT_ERROR:
       case MOUNT_STATUS_CHILD_ERROR:
-        notification = CreateNotification(
-            kDeviceFailNotificationId, IDS_REMOVABLE_DEVICE_DETECTION_TITLE,
-            IDS_DEVICE_UNSUPPORTED_DEFAULT_MESSAGE, delegate);
+        if (event.status ==
+            file_manager_private::
+                MOUNT_COMPLETED_STATUS_ERROR_UNSUPPORTED_FILESYSTEM) {
+          if (volume.drive_label().empty()) {
+            message = l10n_util::GetStringUTF16(
+                IDS_DEVICE_UNSUPPORTED_DEFAULT_MESSAGE);
+          } else {
+            message = l10n_util::GetStringFUTF16(
+                IDS_DEVICE_UNSUPPORTED_MESSAGE,
+                base::UTF8ToUTF16(volume.drive_label()));
+          }
+        } else {
+          if (volume.drive_label().empty()) {
+            message =
+                l10n_util::GetStringUTF16(IDS_DEVICE_UNKNOWN_DEFAULT_MESSAGE);
+          } else {
+            message = l10n_util::GetStringFUTF16(
+                IDS_DEVICE_UNKNOWN_MESSAGE,
+                base::UTF8ToUTF16(volume.drive_label()));
+          }
+        }
         break;
       case MOUNT_STATUS_MULTIPART_ERROR:
-        notification = CreateNotification(
-            kDeviceFailNotificationId, IDS_REMOVABLE_DEVICE_DETECTION_TITLE,
-            IDS_MULTIPART_DEVICE_UNSUPPORTED_DEFAULT_MESSAGE, delegate);
+        if (volume.drive_label().empty()) {
+          message = l10n_util::GetStringUTF16(
+              IDS_MULTIPART_DEVICE_UNSUPPORTED_DEFAULT_MESSAGE);
+        } else {
+          message = l10n_util::GetStringFUTF16(
+              IDS_MULTIPART_DEVICE_UNSUPPORTED_MESSAGE,
+              base::UTF8ToUTF16(volume.drive_label()));
+        }
         break;
       default:
         DLOG(WARNING) << "Unhandled mount status for "
                       << device_mount_status->second;
-        break;
+        return notification;
     }
+    notification =
+        CreateNotification(kDeviceFailNotificationId, title, message, delegate);
   }
   return notification;
 }
@@ -576,7 +610,7 @@ SystemNotificationManager::MakeRemovableNotification(
   if (volume.device_type() != chromeos::DEVICE_TYPE_UNKNOWN &&
       !volume.storage_device_path().empty()) {
     if (UpdateDeviceMountStatus(event, volume) != MOUNT_STATUS_SUCCESS) {
-      notification = MakeMountErrorNotification(volume);
+      notification = MakeMountErrorNotification(event, volume);
     }
   }
 

@@ -76,6 +76,15 @@ class SystemNotificationManager {
       const scoped_refptr<message_center::NotificationDelegate>& delegate);
 
   /**
+   *  Returns an instance of an 'ash' Notification with a bound click delegate.
+   */
+  std::unique_ptr<message_center::Notification> CreateNotification(
+      const std::string& notification_id,
+      const std::u16string& title,
+      const std::u16string& message,
+      const scoped_refptr<message_center::NotificationDelegate>& delegate);
+
+  /**
    *  Returns an instance of an 'ash' Notification.
    */
   std::unique_ptr<message_center::Notification> CreateNotification(
@@ -179,6 +188,7 @@ class SystemNotificationManager {
    * Makes a notification instance for mount errors.
    */
   std::unique_ptr<message_center::Notification> MakeMountErrorNotification(
+      file_manager_private::MountCompletedEvent& event,
       const Volume& volume);
 
   /**
