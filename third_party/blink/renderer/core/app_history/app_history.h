@@ -108,6 +108,8 @@ class CORE_EXPORT AppHistory final : public EventTargetWithInlineData,
   void PopulateKeySet();
   void FinalizeWithAbortedNavigationError(ScriptState*,
                                           AppHistoryApiNavigation*);
+  void RejectPromiseAndFireNavigateErrorEvent(AppHistoryApiNavigation*,
+                                              ScriptValue);
 
   ScriptPromise PerformNonTraverseNavigation(
       ScriptState*,

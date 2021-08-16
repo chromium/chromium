@@ -6288,8 +6288,6 @@ crbug.com/943503 virtual/transform-interop-disabled/external/wpt/css/css-transfo
 crbug.com/943503 virtual/transform-interop-disabled/external/wpt/css/css-transforms/perspective-children-only-fixpos.html [ Failure ]
 crbug.com/943503 virtual/transform-interop-disabled/external/wpt/css/css-transforms/perspective-children-only-inline.html [ Failure ]
 
-crbug.com/1219750 external/wpt/app-history/navigate/goTo-detach-in-onnavigate.html [ Timeout ]
-
 # Swiftshader issue.
 crbug.com/1048149 external/wpt/html/browsers/the-window-object/apis-for-creating-and-navigating-browsing-contexts-by-name/open-features-non-integer-innerwidth.html [ Crash Timeout ]
 crbug.com/1048149 external/wpt/html/browsers/the-window-object/apis-for-creating-and-navigating-browsing-contexts-by-name/open-features-non-integer-screeny.html [ Crash Timeout ]

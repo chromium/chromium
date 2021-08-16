@@ -4,16 +4,16 @@
 <script>
 async_test(t => {
   window.onload = t.step_func(() => {
-    let target_url = location.href + "?1";
+    let start_url = location.href;
     let abort_signal;
     let onabort_called = false;
     let navigateErrorException;
     appHistory.onnavigateerror = t.step_func(e => {
       assert_equals(e.constructor, ErrorEvent);
       navigateErrorException = e.error;
-      assert_equals(e.filename, target_url);
-      assert_equals(e.lineno, 0);
-      assert_equals(e.colno, 0);
+      assert_equals(e.filename, start_url);
+      assert_greater_than(e.lineno, 0);
+      assert_greater_than(e.colno, 0);
     });
     appHistory.onnavigatesuccess = t.unreached_func("onnavigatesuccess");
     appHistory.onnavigate = t.step_func(e => {
@@ -21,7 +21,7 @@ async_test(t => {
       abort_signal.onabort = () => onabort_called = true;
       e.respondWith(new Promise(resolve => t.step_timeout(resolve, 0)));
     });
-    let navigate_promise = appHistory.navigate(target_url);
+    let navigate_promise = appHistory.navigate("?1");
     window.stop();
     assert_true(abort_signal.aborted);
     assert_true(onabort_called);

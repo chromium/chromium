@@ -41,23 +41,26 @@ class AppHistoryApiNavigation final
       : info(options->getInfoOr(
             ScriptValue(script_state->GetIsolate(),
                         v8::Undefined(script_state->GetIsolate())))),
-        returned_promise(
-            MakeGarbageCollected<ScriptPromiseResolver>(script_state)),
+        resolver(MakeGarbageCollected<ScriptPromiseResolver>(script_state)),
+        returned_promise(resolver->Promise()),
         key(key) {}
 
   ScriptValue info;
-  Member<ScriptPromiseResolver> returned_promise;
+  Member<ScriptPromiseResolver> resolver;
+  ScriptPromise returned_promise;
   String key;
+  bool had_navigateerror = false;
 
   void Trace(Visitor* visitor) const {
     visitor->Trace(info);
+    visitor->Trace(resolver);
     visitor->Trace(returned_promise);
   }
 };
 
 class NavigateReaction final : public ScriptFunction {
  public:
-  enum class ResolveType { kFulfill, kReject, kDetach };
+  enum class ResolveType { kFulfill, kReject };
   static void React(ScriptState* script_state,
                     ScriptPromise promise,
                     AppHistoryApiNavigation* navigation,
@@ -65,13 +68,6 @@ class NavigateReaction final : public ScriptFunction {
     promise.Then(
         CreateFunction(script_state, navigation, signal, ResolveType::kFulfill),
         CreateFunction(script_state, navigation, signal, ResolveType::kReject));
-  }
-
-  static void CleanupWithoutResolving(ScriptState* script_state,
-                                      AppHistoryApiNavigation* navigation) {
-    ScriptPromise::CastUndefined(script_state)
-        .Then(CreateFunction(script_state, navigation, nullptr,
-                             ResolveType::kDetach));
   }
 
   NavigateReaction(ScriptState* script_state,
@@ -102,22 +98,6 @@ class NavigateReaction final : public ScriptFunction {
         ->BindToV8Function();
   }
 
-  Event* InitEvent(ScriptValue value) const {
-    if (type_ == ResolveType::kFulfill)
-      return Event::Create(event_type_names::kNavigatesuccess);
-
-    auto* isolate = window_->GetIsolate();
-    v8::Local<v8::Message> message =
-        v8::Exception::CreateMessage(isolate, value.V8Value());
-    std::unique_ptr<SourceLocation> location =
-        SourceLocation::FromMessage(isolate, message, window_);
-    ErrorEvent* event = ErrorEvent::Create(
-        ToCoreStringWithNullCheck(message->Get()), std::move(location), value,
-        &DOMWrapperWorld::MainWorld());
-    event->SetType(event_type_names::kNavigateerror);
-    return event;
-  }
-
   ScriptValue Call(ScriptValue value) final {
     DCHECK(window_);
     if (signal_ && signal_->aborted()) {
@@ -136,18 +116,15 @@ class NavigateReaction final : public ScriptFunction {
       }
     }
 
-    if (type_ == ResolveType::kDetach) {
-      navigation_->returned_promise->Detach();
-      window_ = nullptr;
-      return ScriptValue();
+    if (type_ == ResolveType::kFulfill) {
+      if (navigation_)
+        navigation_->resolver->Resolve();
+      app_history->DispatchEvent(
+          *Event::Create(event_type_names::kNavigatesuccess));
+    } else {
+      app_history->RejectPromiseAndFireNavigateErrorEvent(navigation_, value);
     }
-    app_history->DispatchEvent(*InitEvent(value));
-    if (navigation_) {
-      if (type_ == ResolveType::kFulfill)
-        navigation_->returned_promise->Resolve();
-      else
-        navigation_->returned_promise->Reject(value);
-    }
+
     window_ = nullptr;
     return ScriptValue();
   }
@@ -373,18 +350,6 @@ ScriptPromise AppHistory::PerformNonTraverseNavigation(
   request.SetClientRedirectReason(ClientNavigationReason::kFrameNavigation);
   GetSupplementable()->GetFrame()->Navigate(request, frame_load_type);
 
-  // The spec says to handle the window-detach case in DispatchNavigateEvent()
-  // using navigation->returned_promise, but ScriptPromiseResolver
-  // clears its state on window detach, so we can't use it to return a rejected
-  // promise in the detach case (it returns undefined instead). Rather than
-  // bypassing ScriptPromiseResolver and managing our own v8::Promise::Resolver,
-  // special case detach here.
-  if (!GetSupplementable()->GetFrame()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kAbortError,
-                                      "Navigation was aborted");
-    return ScriptPromise();
-  }
-
   // DispatchNavigateEvent() will clear upcoming_non_traversal_navigation_ if we
   // get that far. If the navigation is blocked before DispatchNavigateEvent()
   // is called, reject the promise and cleanup here.
@@ -399,7 +364,7 @@ ScriptPromise AppHistory::PerformNonTraverseNavigation(
     current()->GetItem()->SetAppHistoryState(
         std::move(to_be_set_serialized_state_));
   }
-  return navigation->returned_promise->Promise();
+  return navigation->returned_promise;
 }
 
 ScriptPromise AppHistory::goTo(ScriptState* script_state,
@@ -419,9 +384,8 @@ ScriptPromise AppHistory::goTo(ScriptState* script_state,
     return ScriptPromise::CastUndefined(script_state);
 
   auto previous_navigation = ongoing_traversals_.find(key);
-  if (previous_navigation != ongoing_traversals_.end()) {
-    return previous_navigation->value->returned_promise->Promise();
-  }
+  if (previous_navigation != ongoing_traversals_.end())
+    return previous_navigation->value->returned_promise;
 
   AppHistoryApiNavigation* ongoing_navigation =
       MakeGarbageCollected<AppHistoryApiNavigation>(script_state, options, key);
@@ -450,7 +414,7 @@ ScriptPromise AppHistory::goTo(ScriptState* script_state,
       ->GetLocalFrameHostRemote()
       .NavigateToAppHistoryKey(key, LocalFrame::HasTransientUserActivation(
                                         GetSupplementable()->GetFrame()));
-  return ongoing_navigation->returned_promise->Promise();
+  return ongoing_navigation->returned_promise;
 }
 
 bool AppHistory::canGoBack() const {
@@ -551,7 +515,7 @@ AppHistory::DispatchResult AppHistory::DispatchNavigateEvent(
   if (!GetSupplementable()->GetFrame()->Loader().HasLoadedNonEmptyDocument()) {
     if (ongoing_non_traversal_navigation_ &&
         event_type != NavigateEventType::kCrossDocument) {
-      ongoing_non_traversal_navigation_->returned_promise->Resolve();
+      ongoing_non_traversal_navigation_->resolver->Resolve();
     }
     ongoing_non_traversal_navigation_ = nullptr;
     return DispatchResult::kContinue;
@@ -625,7 +589,7 @@ AppHistory::DispatchResult AppHistory::DispatchNavigateEvent(
   }
 
   auto promise_list = navigate_event->GetNavigationActionPromisesList();
-  if (!promise_list.IsEmpty()) {
+  if (!promise_list.IsEmpty() && !navigate_event->defaultPrevented()) {
     // The spec says that at this point we should either run the URL and history
     // update steps (for non-traverse cases) or we should do a same-document
     // history traversal. In our implementation it's easier for the caller to do
@@ -640,17 +604,23 @@ AppHistory::DispatchResult AppHistory::DispatchNavigateEvent(
   post_navigate_event_ongoing_navigation_signal_ = navigate_event->signal();
 
   if (navigate_event->defaultPrevented()) {
-    FinalizeWithAbortedNavigationError(script_state, navigation);
+    if (!navigation || !navigation->had_navigateerror)
+      FinalizeWithAbortedNavigationError(script_state, navigation);
     return DispatchResult::kAbort;
   }
 
   if (!promise_list.IsEmpty() ||
       event_type != NavigateEventType::kCrossDocument) {
     ScriptPromise promise;
-    if (promise_list.IsEmpty())
+    if (promise_list.IsEmpty()) {
+      // Clear |ongoing_non_traversal_navigation_| so that a new navigation
+      // that begins before the next microtask checkpoint won't "cancel" this
+      // already-completed navigation.
+      ongoing_non_traversal_navigation_ = nullptr;
       promise = ScriptPromise::CastUndefined(script_state);
-    else
+    } else {
       promise = ScriptPromise::All(script_state, promise_list);
+    }
     NavigateReaction::React(
         script_state, promise, navigation,
         promise_list.IsEmpty() ? nullptr : navigate_event->signal());
@@ -658,9 +628,8 @@ AppHistory::DispatchResult AppHistory::DispatchNavigateEvent(
     to_be_set_serialized_state_.reset();
     // The spec assumes it's ok to leave a promise permanently unresolved, but
     // ScriptPromiseResolver requires either resolution or explicit detach.
-    // Do the detach on a microtask so that we can still return the promise.
     if (navigation)
-      NavigateReaction::CleanupWithoutResolving(script_state, navigation);
+      navigation->resolver->Detach();
   }
 
   return promise_list.IsEmpty() ? DispatchResult::kContinue
@@ -676,6 +645,40 @@ void AppHistory::InformAboutCanceledNavigation() {
     FinalizeWithAbortedNavigationError(script_state,
                                        ongoing_non_traversal_navigation_);
   }
+
+  // If this function is being called as part of frame detach, also cleanup any
+  // ongoing_traversals_.
+  //
+  // This function may be called when a v8 context hasn't been initialized.
+  // ongoing_traversals_ being non-empty requires a v8 context, so check that so
+  // that we don't unnecessarily try to initialize one below.
+  if (!ongoing_traversals_.IsEmpty() && GetSupplementable()->GetFrame() &&
+      !GetSupplementable()->GetFrame()->IsAttached()) {
+    auto* script_state =
+        ToScriptStateForMainWorld(GetSupplementable()->GetFrame());
+    ScriptState::Scope scope(script_state);
+    for (auto& it : ongoing_traversals_)
+      FinalizeWithAbortedNavigationError(script_state, it.value);
+  }
+}
+
+void AppHistory::RejectPromiseAndFireNavigateErrorEvent(
+    AppHistoryApiNavigation* navigation,
+    ScriptValue value) {
+  if (navigation) {
+    navigation->resolver->Reject(value);
+    navigation->had_navigateerror = true;
+  }
+  auto* isolate = GetSupplementable()->GetIsolate();
+  v8::Local<v8::Message> message =
+      v8::Exception::CreateMessage(isolate, value.V8Value());
+  std::unique_ptr<SourceLocation> location =
+      SourceLocation::FromMessage(isolate, message, GetSupplementable());
+  ErrorEvent* event = ErrorEvent::Create(
+      ToCoreStringWithNullCheck(message->Get()), std::move(location), value,
+      &DOMWrapperWorld::MainWorld());
+  event->SetType(event_type_names::kNavigateerror);
+  DispatchEvent(*event);
 }
 
 void AppHistory::FinalizeWithAbortedNavigationError(
@@ -694,11 +697,11 @@ void AppHistory::FinalizeWithAbortedNavigationError(
 
   to_be_set_serialized_state_ = nullptr;
   if (navigation) {
-    ScriptPromise promise = ScriptPromise::RejectWithDOMException(
-        script_state,
-        MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError,
-                                           "Navigation was aborted"));
-    NavigateReaction::React(script_state, promise, navigation, nullptr);
+    RejectPromiseAndFireNavigateErrorEvent(
+        navigation,
+        ScriptValue::From(script_state, MakeGarbageCollected<DOMException>(
+                                            DOMExceptionCode::kAbortError,
+                                            "Navigation was aborted")));
   }
 }
 
