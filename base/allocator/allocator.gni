@@ -15,7 +15,7 @@ _is_using_sanitizers = is_asan || is_hwasan || is_lsan || is_tsan || is_msan
 # - Chromecast on Android: causes issues with crash reporting, see b/178423326.
 _disable_partition_alloc =
     is_component_build || (is_win && is_debug) || (is_android && is_chromecast)
-_is_partition_alloc_platform = is_android || is_win || is_linux
+_is_partition_alloc_platform = is_android || is_win || is_linux || is_chromeos
 
 # The debug CRT on Windows has some debug features that are incompatible with
 # the shim. NaCl in particular does seem to link some binaries statically
