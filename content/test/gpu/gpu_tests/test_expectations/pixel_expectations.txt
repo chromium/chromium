@@ -400,14 +400,10 @@ crbug.com/1213170 [ mac ] Pixel_WebGPUCanvas* [ Skip ]
 crbug.com/1213170 [ mac ] Pixel_WebGPUWebGL* [ Skip ]
 
 # WebGPU pixel tests fail on Linux+SkiaRenderer+Vulkan
-crbug.com/1213657 [ linux skia-renderer-vulkan ] Pixel_WebGPUImport* [ Skip ]
-crbug.com/1213657 [ linux skia-renderer-vulkan ] Pixel_WebGPUCanvas* [ Skip ]
-crbug.com/1213657 [ linux skia-renderer-vulkan ] Pixel_WebGPUWebGL* [ Skip ]
+crbug.com/1213657 [ linux skia-renderer-vulkan ] Pixel_WebGPU* [ Skip ]
 
 # WebGPU pixel tests fail on Win10+SkiaRenderer+Dawn.
-crbug.com/1213920 [ win10 skia-renderer-dawn ] Pixel_WebGPUImport* [ Failure ]
-crbug.com/1213920 [ win10 skia-renderer-dawn ] Pixel_WebGPUCanvas* [ Failure ]
-crbug.com/1213920 [ win10 skia-renderer-dawn ] Pixel_WebGPUWebGL* [ Failure ]
+crbug.com/1213920 [ win10 skia-renderer-dawn ] Pixel_WebGPU* [ Failure ]
 
 # WebGPU is only supported on Win10, Mac, and Linux+SkiaRenderer+Vulkan.
 crbug.com/976495 [ linux skia-renderer-gl ] Pixel_WebGPU* [ Skip ]
