@@ -101,16 +101,16 @@ void Parser::Parse(ExceptionState& exception_state) {
     // past any tokens that are within `{` and `}`.  Note, the tokenizer
     // handles grouping `(` and `)` and `:foo` groups for us automatically, so
     // we don't need special code for them here.
+    if (IsGroupOpen()) {
+      group_depth_ += 1;
+      continue;
+    }
+
     if (group_depth_ > 0) {
       if (IsGroupClose())
         group_depth_ -= 1;
       else
         continue;
-    }
-
-    if (IsGroupOpen()) {
-      group_depth_ += 1;
-      continue;
     }
 
     switch (state_) {
