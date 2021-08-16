@@ -1479,6 +1479,9 @@ class WizardControllerDeviceStateWithInitialEnrollmentTest
     mock_eula_screen_->ExitScreen(
         EulaScreen::Result::ACCEPTED_WITHOUT_USAGE_STATS_REPORTING);
 
+    // Wait for auto-enrollment controller to encounter the connection error.
+    WaitForAutoEnrollmentState(policy::AUTO_ENROLLMENT_STATE_CONNECTION_ERROR);
+
     // Let update screen smooth time process (time = 0ms).
     base::RunLoop().RunUntilIdle();
 
@@ -1490,9 +1493,6 @@ class WizardControllerDeviceStateWithInitialEnrollmentTest
     CheckCurrentScreen(AutoEnrollmentCheckScreenView::kScreenId);
     EXPECT_CALL(*mock_auto_enrollment_check_screen_, HideImpl()).Times(1);
     mock_auto_enrollment_check_screen_->RealShow();
-
-    // Wait for auto-enrollment controller to encounter the connection error.
-    WaitForAutoEnrollmentState(policy::AUTO_ENROLLMENT_STATE_CONNECTION_ERROR);
 
     // The error screen shows up if there's no auto-enrollment decision.
     EXPECT_FALSE(StartupUtils::IsOobeCompleted());
