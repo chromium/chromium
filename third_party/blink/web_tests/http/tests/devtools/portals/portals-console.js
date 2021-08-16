@@ -29,11 +29,11 @@
     },
 
     async function testContextSelector(next) {
-      const selector = Console.ConsoleView.instance()._consoleContextSelector;
-      TestRunner.assertEquals(selector._items.length, 2);
-      const executionContext = selector._items.at(1);
+      const selector = Console.ConsoleView.instance().consoleContextSelector;
+      TestRunner.assertEquals(selector.items.length, 2);
+      const executionContext = selector.items.at(1);
       TestRunner.assertEquals(selector.titleFor(executionContext), 'append-predecessor.html');
-      TestRunner.assertEquals(selector._depthFor(executionContext), 1);
+      TestRunner.assertEquals(selector.depthFor(executionContext), 1);
       next();
     },
 

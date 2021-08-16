@@ -5594,6 +5594,10 @@ crbug.com/1207342 http/tests/devtools/unit/list-control-non-viewport.js [ Failur
 crbug.com/1207342 http/tests/devtools/unit/list-control-various-height.js [ Failure Pass ]
 crbug.com/1207342 http/tests/devtools/unit/soft-context-menu.js [ Failure Pass ]
 crbug.com/1207342 http/tests/devtools/unit/tabbed-pane.js [ Failure Pass ]
+crbug.com/1207342 virtual/portals/http/tests/devtools/portals/portals-console.js [ Failure Pass ]
+crbug.com/1207342 virtual/portals/http/tests/devtools/portals/portals-elements-activate.js [ Failure Pass ]
+crbug.com/1207342 virtual/portals/http/tests/devtools/portals/portals-elements-nesting-after-adoption.js [ Failure Pass ]
+crbug.com/1207342 virtual/portals/http/tests/devtools/portals/portals-elements-nesting.js [ Failure Pass ]
 
 # First party DevTools issues only work in the first-party-sets virtual suite
 crbug.com/1179186 http/tests/inspector-protocol/network/blocked-cookie-same-party-issue.js [ Skip ]
