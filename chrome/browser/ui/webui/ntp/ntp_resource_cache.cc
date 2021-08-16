@@ -304,10 +304,14 @@ void NTPResourceCache::CreateNewTabIncognitoHTML() {
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
   webui::SetLoadTimeDataDefaults(app_locale, &replacements);
 
+  int incognito_tab_html_resource_id =
+      base::FeatureList::IsEnabled(features::kIncognitoNtpRevamp)
+          ? IDR_REVAMPED_INCOGNITO_TAB_HTML
+          : IDR_INCOGNITO_TAB_HTML;
   static const base::NoDestructor<scoped_refptr<base::RefCountedMemory>>
       incognito_tab_html(
           ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytes(
-              IDR_INCOGNITO_TAB_HTML));
+              incognito_tab_html_resource_id));
   CHECK(*incognito_tab_html);
 
   std::string full_html =
