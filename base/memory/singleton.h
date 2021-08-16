@@ -40,7 +40,7 @@ namespace base {
 // Default traits for Singleton<Type>. Calls operator new and operator delete on
 // the object. Registers automatic deletion at process exit.
 // Overload if you need arguments or another memory allocation function.
-template<typename Type>
+template <typename Type>
 struct DefaultSingletonTraits {
   // Allocates the object.
   static Type* New() {
@@ -66,11 +66,10 @@ struct DefaultSingletonTraits {
 #endif
 };
 
-
 // Alternate traits for use with the Singleton<Type>.  Identical to
 // DefaultSingletonTraits except that the Singleton will not be cleaned up
 // at exit.
-template<typename Type>
+template <typename Type>
 struct LeakySingletonTraits : public DefaultSingletonTraits<Type> {
   static const bool kRegisterAtExit = false;
 #if DCHECK_IS_ON()
@@ -121,7 +120,9 @@ struct StaticMemorySingletonTraits {
   static const bool kAllowedToAccessOnNonjoinableThread = true;
 #endif
 
-  static void ResurrectForTesting() { subtle::NoBarrier_Store(&dead_, 0); }
+  static void ResurrectForTesting() {
+    subtle::NoBarrier_Store(&dead_, 0);
+  }
 
  private:
   alignas(Type) static char buffer_[sizeof(Type)];
@@ -170,8 +171,7 @@ subtle::Atomic32 StaticMemorySingletonTraits<Type>::dead_ = 0;
 // Or for leaky singletons:
 //  #include "base/memory/singleton.h"
 //  FooClass* FooClass::GetInstance() {
-//    return base::Singleton<
-//        FooClass, base::LeakySingletonTraits<FooClass>>::get();
+//    return base::Singleton<FooClass, base::LeakySingletonTraits<FooClass>>::get();
 //  }
 //
 // And to call methods on FooClass:
@@ -235,8 +235,7 @@ class Singleton {
 #endif
 
     return subtle::GetOrCreateLazyPointer(
-        &instance_, &CreatorFunc, nullptr,
-        Traits::kRegisterAtExit ? OnExit : nullptr, nullptr);
+        &instance_, &CreatorFunc, nullptr, Traits::kRegisterAtExit ? OnExit : nullptr, nullptr);
   }
 
   // Returns the same result as get() if the instance exists but doesn't
@@ -257,7 +256,9 @@ class Singleton {
 
   // Internal method used as an adaptor for GetOrCreateLazyPointer(). Do not use
   // outside of that use case.
-  static Type* CreatorFunc(void* /* creator_arg*/) { return Traits::New(); }
+  static Type* CreatorFunc(void* /* creator_arg*/) {
+    return Traits::New();
+  }
 
   // Adapter function for use with AtExit().  This should be called single
   // threaded, so don't use atomic operations.
@@ -274,6 +275,6 @@ class Singleton {
 template <typename Type, typename Traits, typename DifferentiatingType>
 subtle::AtomicWord Singleton<Type, Traits, DifferentiatingType>::instance_ = 0;
 
-}  // namespace base
+} // namespace base
 
-#endif  // BASE_MEMORY_SINGLETON_H_
+#endif // BASE_MEMORY_SINGLETON_H_
