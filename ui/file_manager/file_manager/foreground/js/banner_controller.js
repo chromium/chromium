@@ -4,9 +4,11 @@
 
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {xfm} from '../../common/js/xfm.js';
 import {Banner} from '../../externs/banner.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
 
 import {DirectoryModel} from './directory_model.js';
 
@@ -31,8 +33,9 @@ const LAST_DISMISSED_SUFFIX = '_LAST_DISMISSED';
 export class BannerController extends EventTarget {
   /**
    * @param {!DirectoryModel} directoryModel
+   * @param {!VolumeManager} volumeManager
    */
-  constructor(directoryModel) {
+  constructor(directoryModel, volumeManager) {
     super();
 
     /**
@@ -48,6 +51,12 @@ export class BannerController extends EventTarget {
     this.educationalBanners_ = [];
 
     /**
+     * Keep track of banners that subscribe to volume changes.
+     * @private {!Object<!VolumeManagerCommon.VolumeType, !Array<!Banner>>}
+     */
+    this.volumeSizeObservers_ = {};
+
+    /**
      * Stores the state of each banner, such as view count or last dismissed
      * time. This is kept in sync with local storage.
      * @private {!Object<string, number>}
@@ -57,13 +66,44 @@ export class BannerController extends EventTarget {
     /**
      * Maintains the state of the current volume that has been navigated. This
      * is updated by the directory-changed event.
-     * @type {?VolumeInfo}
-     * @private
+     * @private {?VolumeInfo}
      */
     this.currentVolume_ = null;
 
+    /**
+     * Maintains a cache of the current size for all observed volumes. If a
+     * banner requests to observe a volumeType on initialization, the volume
+     * size is cached here, keyed by volumeId.
+     * @private {!Object<string,
+     *     (!chrome.fileManagerPrivate.MountPointSizeStats|undefined)>}
+     */
+    this.volumeSizeStats_ = {};
+
+    /**
+     * The directory model is maintained to get the current volume and also to
+     * listen to the directory-changed event.
+     * @private {!DirectoryModel}
+     */
     this.directoryModel_ = directoryModel;
+
+    /**
+     * The volume manager used to extract volumes from events when the
+     * underlying volume size has changed.
+     * @private {!VolumeManager}
+     */
+    this.volumeManager_ = volumeManager;
+
+    /**
+     * The container where all the banners will be appended to.
+     * @private {?Element}
+     */
     this.container_ = document.querySelector('#banners');
+
+    /**
+     * Bind the onDirectorySizeChanged_ method to this instance once.
+     * @private {!function(!chrome.fileManagerPrivate.FileWatchEvent)}
+     */
+    this.onDirectorySizeChanged_ = this.onDirectorySizeChanged_.bind(this);
 
     xfm.storage.onChanged.addListener(this.onStorageChanged_.bind(this));
     this.directoryModel_.addEventListener(
@@ -82,10 +122,14 @@ export class BannerController extends EventTarget {
     for (const banner of this.warningBanners_) {
       this.localStorageCache_[`${banner.tagName}_${VIEW_COUNTER_SUFFIX}`] = 0;
       this.localStorageCache_[`${banner.tagName}_${LAST_DISMISSED_SUFFIX}`] = 0;
+
+      this.maybeAddVolumeSizeObserver_(banner);
     }
 
     for (const banner of this.educationalBanners_) {
       this.localStorageCache_[`${banner.tagName}_${VIEW_COUNTER_SUFFIX}`] = 0;
+
+      this.maybeAddVolumeSizeObserver_(banner);
     }
 
     const cacheKeys = Object.keys(this.localStorageCache_);
@@ -152,6 +196,15 @@ export class BannerController extends EventTarget {
       return false;
     }
 
+    const diskThreshold = banner.diskThreshold();
+    if (diskThreshold) {
+      const currentVolumeSizeStats = this.currentVolume_ &&
+          this.volumeSizeStats_[this.currentVolume_.volumeId];
+      if (!isBelowThreshold(diskThreshold, currentVolumeSizeStats)) {
+        return false;
+      }
+    }
+
     return true;
   }
 
@@ -189,6 +242,25 @@ export class BannerController extends EventTarget {
 
     banner.setAttribute('hidden', true);
     banner.setAttribute('aria-hidden', true);
+  }
+
+  /**
+   * If the banner implements diskThreshold, add the banner to the observers of
+   * volume size for the specified volumeType.
+   * @param {!Banner} banner The banner to add.
+   * @private
+   */
+  maybeAddVolumeSizeObserver_(banner) {
+    if (!banner.diskThreshold()) {
+      return;
+    }
+
+    const diskThreshold = banner.diskThreshold();
+    if (!this.volumeSizeObservers_[diskThreshold.type]) {
+      this.volumeSizeObservers_[diskThreshold.type] = [];
+    }
+
+    this.volumeSizeObservers_[diskThreshold.type].push(banner);
   }
 
   /**
@@ -242,6 +314,52 @@ export class BannerController extends EventTarget {
    * @private
    */
   async onDirectoryChanged_(event) {
+    const previousVolume = this.currentVolume_;
+    await this.reconcile();
+
+    // Don't change subscriptions if the volume hasn't changed.
+    if (this.currentVolume_ === previousVolume) {
+      return;
+    }
+
+    if (!this.currentVolume_ ||
+        !this.volumeSizeObservers_[this.currentVolume_.volumeType]) {
+      chrome.fileManagerPrivate.onDirectoryChanged.removeListener(
+          this.onDirectorySizeChanged_);
+      return;
+    }
+
+    const isSubscribedByPreviousVolume =
+        previousVolume && this.volumeSizeStats_[previousVolume.volumeType];
+    if (!isSubscribedByPreviousVolume &&
+        this.volumeSizeObservers_[this.currentVolume_.volumeType]) {
+      chrome.fileManagerPrivate.onDirectoryChanged.addListener(
+          this.onDirectorySizeChanged_);
+    }
+  }
+
+  /**
+   * When a directory changes, grab the current directory size. This is useful
+   * if events are occurring on the current Files app directory (e.g. a copy
+   * operation occurs and the disk size changes). Use this event to check if
+   * the underlying disk space has changed.
+   * @param {!chrome.fileManagerPrivate.FileWatchEvent} event
+   * @private
+   */
+  async onDirectorySizeChanged_(event) {
+    if (!event.entry) {
+      return;
+    }
+    const eventVolumeInfo =
+        this.volumeManager_.getVolumeInfo(/** @type{!Entry} */ (event.entry));
+    if (!eventVolumeInfo || !eventVolumeInfo.volumeId) {
+      return;
+    }
+    const sizeStats = await getSizeStats(eventVolumeInfo.volumeId);
+    if (!sizeStats || sizeStats.totalSize === 0) {
+      return;
+    }
+    this.volumeSizeStats_[eventVolumeInfo.volumeId] = sizeStats;
     await this.reconcile();
   }
 
@@ -316,4 +434,16 @@ export function isBelowThreshold(threshold, sizeStats) {
     return false;
   }
   return true;
+}
+
+/**
+ * Wrap the chrome.fileManagerPrivate.getSizeStats function in an async/await
+ * compatible style.
+ * @param {string} volumeId The volumeId to retrieve the size stats for.
+ * @returns {!Promise<(!chrome.fileManagerPrivate.MountPointSizeStats|undefined)>}
+ */
+async function getSizeStats(volumeId) {
+  return new Promise((resolve) => {
+    chrome.fileManagerPrivate.getSizeStats(volumeId, resolve);
+  });
 }

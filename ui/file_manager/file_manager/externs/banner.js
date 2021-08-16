@@ -30,7 +30,7 @@ export class Banner extends HTMLElement {
 
   /**
    * The size threshold to trigger a banner if it goes below.
-   * @return {!Banner.DiskThresholdMinSize|!Banner.DiskThresholdMinRatio|!undefined}
+   * @return {!Banner.DiskThresholdMinSize|!Banner.DiskThresholdMinRatio|undefined}
    */
   diskThreshold() {}
 
@@ -64,6 +64,7 @@ export class Banner extends HTMLElement {
 Banner.AllowedVolumeType;
 
 /**
+ * The minSize is denoted in bytes.
  * @typedef {{
  *            type: VolumeManagerCommon.VolumeType,
  *            minSize: number,

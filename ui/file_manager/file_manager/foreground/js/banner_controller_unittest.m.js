@@ -4,12 +4,13 @@
 
 import {assertEquals} from 'chrome://test/chai_assert.js';
 
-import {MockChromeStorageAPI} from '../../common/js/mock_chrome.js';
+import {MockChromeFileManagerPrivateDirectoryChanged, MockChromeStorageAPI} from '../../common/js/mock_chrome.js';
 import {waitUntil} from '../../common/js/test_error_reporting.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {xfm} from '../../common/js/xfm.js';
 import {Banner} from '../../externs/banner.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
 
 import {BannerController} from './banner_controller.js';
 import {DirectoryModel} from './directory_model.js';
@@ -24,10 +25,18 @@ let directoryModel;
 /** @type {!Element} */
 let bannerContainer;
 
+/** @type {!MockChromeFileManagerPrivateDirectoryChanged} */
+let mockChromeFileManagerPrivate;
+
+/** @type {?VolumeInfo} */
+let volumeManagerGetVolumeInfoType;
+
 /**
  * @typedef {{
  *    setAllowedVolumeTypes: function(!Array<!Banner.AllowedVolumeType>),
  *    setShowLimit: function(number),
+ *    setDiskThreshold:
+ * function((!Banner.DiskThresholdMinSize|!Banner.DiskThresholdMinRatio|!undefined)),
  *    reset: function(),
  *    tagName: string,
  * }}
@@ -87,6 +96,11 @@ function createTestBanner(tagName) {
   /** @type {number|undefined} */
   let showLimit;
 
+  /**
+   * @type {!Banner.DiskThresholdMinSize|!Banner.DiskThresholdMinRatio|undefined}
+   */
+  let diskThreshold;
+
   class FakeBanner extends Banner {
     allowedVolumeTypes() {
       return allowedVolumeTypes;
@@ -94,6 +108,10 @@ function createTestBanner(tagName) {
 
     showLimit() {
       return showLimit;
+    }
+
+    diskThreshold() {
+      return diskThreshold;
     }
   }
 
@@ -106,9 +124,13 @@ function createTestBanner(tagName) {
     reset: () => {
       allowedVolumeTypes = [];
       showLimit = undefined;
+      diskThreshold = undefined;
     },
     setShowLimit: (limit) => {
       showLimit = limit;
+    },
+    setDiskThreshold: (threshold) => {
+      diskThreshold = threshold;
     },
     // Element.tagName returns uppercase.
     tagName: tagName.toUpperCase(),
@@ -181,6 +203,30 @@ function changeCurrentVolume(volumeType, volumeId = null) {
   directoryModel.dispatchEvent(new Event('directory-changed'));
 }
 
+/**
+ * Update the current volume size stats that are returned by
+ * chrome.fileManagerPrivate.getSizeStats.
+ * @param {(?chrome.fileManagerPrivate.MountPointSizeStats|undefined)}
+ *     newSizeStats
+ * @param {boolean=} dispatchEvent True to dispatch onDirectoryChanged event.
+ */
+function changeCurrentVolumeDiskSpace(newSizeStats, dispatchEvent = true) {
+  const currentVolume = directoryModel.getCurrentVolumeInfo();
+  if (!currentVolume.volumeId) {
+    return;
+  }
+  if (!newSizeStats) {
+    mockChromeFileManagerPrivate.unsetVolumeSizeStats(currentVolume.volumeId);
+  } else {
+    mockChromeFileManagerPrivate.setVolumeSizeStats(
+        currentVolume.volumeId, newSizeStats);
+  }
+  volumeManagerGetVolumeInfoType = currentVolume;
+  if (dispatchEvent) {
+    mockChromeFileManagerPrivate.dispatchOnDirectoryChanged();
+  }
+}
+
 export function setUpPage() {
   bannerContainer = document.createElement('div');
   bannerContainer.setAttribute('id', 'banners');
@@ -199,8 +245,17 @@ export function setUp() {
   assertEquals(bannerContainer.childElementCount, 0);
 
   new MockChromeStorageAPI();
+
+  mockChromeFileManagerPrivate =
+      new MockChromeFileManagerPrivateDirectoryChanged();
+
   directoryModel = createFakeDirectoryModel();
-  controller = new BannerController(directoryModel);
+  const volumeManager = /** @type{!VolumeManager} */ ({
+    getVolumeInfo: (entry) => {
+      return volumeManagerGetVolumeInfoType;
+    }
+  });
+  controller = new BannerController(directoryModel, volumeManager);
 
   // Ensure localStorage is cleared between each test.
   xfm.storage.local.clear();
@@ -433,4 +488,185 @@ export async function testMultipleBannersAllowedVolumeTypesAndShowLimit() {
   bannerContainer.textContent = '';
   changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS);
   await waitUntil(isAllBannersHidden);
+}
+
+/**
+ * Test that when chrome.fileManagerPrivate.getSizeStats returns null,
+ * banners relying on specific size are not shown.
+ */
+export async function testNullGetSizeStatsDoesntTriggerThreshold() {
+  controller.setWarningBannersInOrder([testWarningBanners[0].tagName]);
+  testWarningBanners[0].setAllowedVolumeTypes([downloadsAllowedVolumeType]);
+  testWarningBanners[0].setDiskThreshold({
+    type: VolumeManagerCommon.VolumeType.DOWNLOADS,
+    minSize: 1 * 1024 * 1024 * 1024,  // 1 GB
+  });
+
+  await controller.initialize();
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS, 'downloads');
+  changeCurrentVolumeDiskSpace(null);
+  await waitUntil(isAllBannersHidden);
+}
+
+/**
+ * Test that setting the remaining size coming back from getSizeStats triggers
+ * the banner to display.
+ */
+export async function testVolumeSizeChangeShowsBanner() {
+  controller.setWarningBannersInOrder([testWarningBanners[0].tagName]);
+  testWarningBanners[0].setAllowedVolumeTypes([downloadsAllowedVolumeType]);
+  testWarningBanners[0].setDiskThreshold({
+    type: VolumeManagerCommon.VolumeType.DOWNLOADS,
+    minSize: 1 * 1024 * 1024 * 1024,  // 1 GB
+  });
+
+  await controller.initialize();
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS, 'downloads');
+  await waitUntil(isAllBannersHidden);
+
+  // Change remaining size in the current volume to 512 KB (less than 1 GB)
+  changeCurrentVolumeDiskSpace({
+    totalSize: 20 * 1024 * 1024 * 1024,  // 20 GB
+    remainingSize: 512 * 1024 * 1024,    // 512 KB
+  });
+  await waitUntil(isBannerVisible(testWarningBanners[0]));
+}
+
+/**
+ * Test that when the remaining space goes below the threshold, the banner is
+ * show and if enough free space is reclaimed the banner is hidden.
+ */
+export async function testVolumeSizeBelowShowsBannerAndAboveHidesBanner() {
+  controller.setWarningBannersInOrder([testWarningBanners[0].tagName]);
+  testWarningBanners[0].setAllowedVolumeTypes([downloadsAllowedVolumeType]);
+  testWarningBanners[0].setDiskThreshold({
+    type: VolumeManagerCommon.VolumeType.DOWNLOADS,
+    minSize: 1 * 1024 * 1024 * 1024,  // 1 GB
+  });
+
+  await controller.initialize();
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS, 'downloads');
+  await waitUntil(isAllBannersHidden);
+
+  // Verify banner is shown when disk space goes below threshold.
+  changeCurrentVolumeDiskSpace({
+    totalSize: 20 * 1024 * 1024 * 1024,  // 20 GB
+    remainingSize: 512 * 1024 * 1024,    // 512 KB
+  });
+  await waitUntil(isBannerVisible(testWarningBanners[0]));
+
+  // Verify banner is hidden when free space goes above minSize.
+  changeCurrentVolumeDiskSpace({
+    totalSize: 20 * 1024 * 1024 * 1024,     // 20 GB
+    remainingSize: 2 * 1024 * 1024 * 1024,  // 2 GB
+  });
+  await waitUntil(isAllBannersHidden);
+}
+
+/**
+ * Test that multiple banners (with different volume size observers; minRatio
+ * and minSize) can co-exist and will be shown at appropriate times.
+ */
+export async function testTwoVolumeBannersShowOnWatchedVolumeTypes() {
+  controller.setWarningBannersInOrder([
+    testWarningBanners[0].tagName,
+    testWarningBanners[1].tagName,
+  ]);
+
+  // Banner should show on Downloads when volume goes below 1GB remaining size.
+  testWarningBanners[0].setAllowedVolumeTypes([downloadsAllowedVolumeType]);
+  testWarningBanners[0].setDiskThreshold({
+    type: VolumeManagerCommon.VolumeType.DOWNLOADS,
+    minSize: 1 * 1024 * 1024 * 1024,  // 1 GB
+  });
+
+  // Banner should show on Drive when volume goes below 10% remaining free
+  // space.
+  testWarningBanners[1].setAllowedVolumeTypes([driveAllowedVolumeType]);
+  testWarningBanners[1].setDiskThreshold({
+    type: VolumeManagerCommon.VolumeType.DRIVE,
+    minRatio: 0.1,
+  });
+
+  await controller.initialize();
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS, 'downloads');
+  await waitUntil(isAllBannersHidden);
+
+  // Verify well below threshold, banner is triggered for minSize.
+  changeCurrentVolumeDiskSpace({
+    totalSize: 20 * 1024 * 1024 * 1024,  // 20 GB
+    remainingSize: 512 * 1024 * 1024,    // 512 KB
+  });
+  await waitUntil(isBannerVisible(testWarningBanners[0]));
+
+  // Verify equal to threshold, banner is triggered for minSize.
+  changeCurrentVolumeDiskSpace({
+    totalSize: 20 * 1024 * 1024 * 1024,     // 20 GB
+    remainingSize: 1 * 1024 * 1024 * 1024,  // 1 GB
+  });
+  await waitUntil(isBannerVisible(testWarningBanners[0]));
+
+  // Change volume to Drive and ensure banner is not shown.
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DRIVE, 'drive-hash');
+  await waitUntil(isAllBannersHidden);
+
+  // Verify well below threshold, banner is triggered for minRatio.
+  changeCurrentVolumeDiskSpace({
+    totalSize: 20 * 1024 * 1024 * 1024,     // 20 GB
+    remainingSize: 1 * 1024 * 1024 * 1024,  // 1 GB
+  });
+  await waitUntil(isBannerVisible(testWarningBanners[1]));
+
+  // Verify equal to threshold, banner is triggered for minRatio.
+  changeCurrentVolumeDiskSpace({
+    totalSize: 20 * 1024 * 1024 * 1024,     // 20 GB
+    remainingSize: 2 * 1024 * 1024 * 1024,  // 2 GB
+  });
+  await waitUntil(isBannerVisible(testWarningBanners[1]));
+}
+
+/**
+ * Test that if a volume is changed mid way through a volume size request, the
+ * banner is not shown, but the cache is maintained such that navigating back
+ * to the volume causes the banner to show.
+ */
+export async function testChangingDirectoryMidSizeUpdateHidesBanner() {
+  controller.setWarningBannersInOrder(
+      [testWarningBanners[0].tagName, testWarningBanners[1].tagName]);
+  testWarningBanners[0].setAllowedVolumeTypes([downloadsAllowedVolumeType]);
+  testWarningBanners[0].setDiskThreshold({
+    type: VolumeManagerCommon.VolumeType.DOWNLOADS,
+    minSize: 1 * 1024 * 1024 * 1024,  // 1 GB
+  });
+  testWarningBanners[1].setAllowedVolumeTypes([driveAllowedVolumeType]);
+  testWarningBanners[1].setDiskThreshold({
+    type: VolumeManagerCommon.VolumeType.DRIVE,
+    minRatio: 0.1,
+  });
+
+  // Change volume to downloads to ensure the appropriate event listener is
+  // attached to the volume.
+  await controller.initialize();
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS, 'downloads');
+  await waitUntil(isAllBannersHidden);
+
+  // Change the underlying disk space to breach the threshold, but don't
+  // dispatch an onDirectoryChanged event.
+  changeCurrentVolumeDiskSpace(
+      {
+        totalSize: 20 * 1024 * 1024 * 1024,  // 20 GB
+        remainingSize: 512 * 1024 * 1024,    // 512 KB
+      },
+      /* dispatchEvent */ false);
+
+  // Change the current volume and dispatch an onDirectoryChanged event, this
+  // emulates a user changing the directory mid volume size request.
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DRIVE, 'drive-hash');
+  mockChromeFileManagerPrivate.dispatchOnDirectoryChanged();
+  await waitUntil(isAllBannersHidden);
+
+  // Change the volume back to the downloads directory and assert the directory
+  // size causes the banner to be shown.
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS, 'downloads');
+  await waitUntil(isBannerVisible(testWarningBanners[0]));
 }
