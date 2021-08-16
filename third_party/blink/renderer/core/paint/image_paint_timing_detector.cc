@@ -367,8 +367,11 @@ void ImageRecordsManager::OnImageLoaded(const RecordId& record_id,
   base::WeakPtr<ImageRecord> record = FindVisibleRecord(record_id);
   DCHECK(record);
   if (!style_image) {
-    record->load_time = image_finished_times_.at(record_id);
-    DCHECK(!record->load_time.is_null());
+    auto it = image_finished_times_.find(record_id);
+    if (it != image_finished_times_.end()) {
+      record->load_time = it->value;
+      DCHECK(!record->load_time.is_null());
+    }
   } else {
     Document* document = frame_view_->GetFrame().GetDocument();
     if (document && document->domWindow()) {
