@@ -23,6 +23,7 @@
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_restore.h"
+#include "chrome/browser/sessions/session_service_log.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/full_restore/full_restore_read_handler.h"
 #include "components/full_restore/full_restore_save_handler.h"
@@ -36,6 +37,8 @@ namespace {
 bool g_launch_browser_for_testing = false;
 
 constexpr char kRestoredAppLaunchHistogramPrefix[] = "Apps.RestoredAppLaunch";
+constexpr char kRestoreBrowserResultHistogramPrefix[] =
+    "Apps.RestoreBrowserResult";
 
 }  // namespace
 
@@ -230,6 +233,7 @@ void FullRestoreAppLaunchHandler::LaunchBrowser() {
       ::switches::kRestoreLastSession);
 
   UserSessionManager::GetInstance()->LaunchBrowser(profile_);
+  RecordLaunchBrowserResult();
 }
 
 void FullRestoreAppLaunchHandler::LaunchBrowserForFirstRunFullRestore() {
@@ -270,6 +274,31 @@ void FullRestoreAppLaunchHandler::RecordRestoredAppLaunch(
     apps::AppTypeName app_type_name) {
   base::UmaHistogramEnumeration(kRestoredAppLaunchHistogramPrefix,
                                 app_type_name);
+}
+
+void FullRestoreAppLaunchHandler::RecordLaunchBrowserResult() {
+  RestoreTabResult result = RestoreTabResult::kNoTabs;
+
+  int window_count = 0;
+  int tab_count = 0;
+  std::list<SessionServiceEvent> events = GetSessionServiceEvents(profile_);
+  if (!events.empty()) {
+    auto it = events.back();
+    if (it.type == SessionServiceEventLogType::kRestore) {
+      window_count = it.data.restore.window_count;
+      tab_count = it.data.exit.tab_count;
+      if (tab_count > 0)
+        result = RestoreTabResult::kHasTabs;
+    } else {
+      result = RestoreTabResult::kError;
+      window_count = -1;
+      tab_count = -1;
+    }
+  }
+
+  VLOG(1) << "Browser is restored (windows=" << window_count
+          << " tabs=" << tab_count << ").";
+  base::UmaHistogramEnumeration(kRestoreBrowserResultHistogramPrefix, result);
 }
 
 void FullRestoreAppLaunchHandler::LogRestoreData() {

@@ -183,7 +183,7 @@ void FullRestoreService::OnTransitionedToNewActiveUser(Profile* profile) {
 }
 
 void FullRestoreService::LaunchBrowserWhenReady() {
-  if (!g_restore_for_testing)
+  if (!g_restore_for_testing || !app_launch_handler_)
     return;
 
   app_launch_handler_->LaunchBrowserWhenReady(first_run_full_restore_);
@@ -268,6 +268,7 @@ void FullRestoreService::Observe(int type,
                                  const content::NotificationSource& source,
                                  const content::NotificationDetails& details) {
   DCHECK_EQ(chrome::NOTIFICATION_APP_TERMINATING, type);
+  app_launch_handler_.reset();
   ::full_restore::FullRestoreSaveHandler::GetInstance()->SetShutDown();
 }
 
@@ -347,7 +348,8 @@ void FullRestoreService::Restore() {
         user->GetAccountId(), true);
   }
 
-  app_launch_handler_->SetShouldRestore();
+  if (app_launch_handler_)
+    app_launch_handler_->SetShouldRestore();
 }
 
 void FullRestoreService::RecordRestoreAction(const std::string& notification_id,
@@ -374,7 +376,7 @@ void FullRestoreService::OnPreferenceChanged(const std::string& pref_name) {
 }
 
 bool FullRestoreService::ShouldShowNotification() {
-  return app_launch_handler_->HasRestoreData() &&
+  return app_launch_handler_ && app_launch_handler_->HasRestoreData() &&
          !::first_run::IsChromeFirstRun() && !close_notification_;
 }
 

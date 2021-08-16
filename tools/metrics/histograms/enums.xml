@@ -71695,6 +71695,12 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="3" label="Do not restore"/>
 </enum>
 
+<enum name="RestoreTabResult">
+  <int value="0" label="Tabs can be restored"/>
+  <int value="1" label="No restored tabs"/>
+  <int value="2" label="Write error"/>
+</enum>
+
 <enum name="ReusedPasswordType">
   <int value="0" label="Saved password"/>
   <int value="1" label="Primary account password"/>
