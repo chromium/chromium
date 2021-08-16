@@ -199,6 +199,8 @@ component("network_service") {
       "websocket.h",
       "websocket_factory.cc",
       "websocket_factory.h",
+      "websocket_interceptor.cc",
+      "websocket_interceptor.h",
       "websocket_throttler.cc",
       "websocket_throttler.h",
     ]
@@ -376,6 +378,7 @@ source_set("tests") {
       "test_mojo_proxy_resolver_factory.cc",
       "test_mojo_proxy_resolver_factory.h",
       "url_request_context_builder_mojo_unittest.cc",
+      "websocket_interceptor_unittest.cc",
       "websocket_throttler_unittest.cc",
     ]
 

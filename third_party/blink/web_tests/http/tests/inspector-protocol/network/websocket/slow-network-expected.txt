@@ -1,0 +1,4 @@
+Verifies that WebSocket appears slower when emulating slow network.
+websocket is slower when emulating slow download: true
+websocket is slower when emulating slow upload: true
+
