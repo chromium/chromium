@@ -76,7 +76,6 @@
 #include "net/ssl/ssl_private_key.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/network_service.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
@@ -595,13 +594,6 @@ bool ContentBrowserClientImpl::IsHandledURL(const GURL& url) {
     if (scheme == supported_protocol)
       return true;
   }
-
-#if !BUILDFLAG(DISABLE_FTP_SUPPORT)
-  if (scheme == url::kFtpScheme &&
-      base::FeatureList::IsEnabled(network::features::kFtpProtocol)) {
-    return true;
-  }
-#endif  // !BUILDFLAG(DISABLE_FTP_SUPPORT)
 
   return false;
 }

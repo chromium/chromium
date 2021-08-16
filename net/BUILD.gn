@@ -73,7 +73,6 @@ buildflag_header("buildflags") {
   flags = [
     "POSIX_AVOID_MMAP=$posix_avoid_mmap",
     "DISABLE_FILE_SUPPORT=$disable_file_support",
-    "DISABLE_FTP_SUPPORT=$disable_ftp_support",
     "ENABLE_MDNS=$enable_mdns",
     "ENABLE_REPORTING=$enable_reporting",
     "ENABLE_WEBSOCKETS=$enable_websockets",
