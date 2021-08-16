@@ -48,9 +48,11 @@ const char* LocaleOrDefault(const std::string& locale) {
 assistant_client::InternalOptions* WARN_UNUSED_RESULT CreateInternalOptions(
     assistant_client::AssistantManagerInternal* assistant_manager_internal,
     const std::string& locale,
-    bool spoken_feedback_enabled) {
+    bool spoken_feedback_enabled,
+    bool dark_mode_enabled) {
   auto* result = assistant_manager_internal->CreateDefaultInternalOptions();
-  assistant::SetAssistantOptions(result, locale, spoken_feedback_enabled);
+  assistant::SetAssistantOptions(result, locale, spoken_feedback_enabled,
+                                 dark_mode_enabled);
 
   result->SetClientControlEnabled(assistant::features::IsRoutinesEnabled());
 
@@ -232,7 +234,7 @@ void SettingsController::SetAuthenticationTokens(
 
 void SettingsController::SetLocale(const std::string& value) {
   locale_ = LocaleOrDefault(value);
-  UpdateInternalOptions(locale_, spoken_feedback_enabled_);
+  UpdateInternalOptions(locale_, spoken_feedback_enabled_, dark_mode_enabled_);
   UpdateDeviceSettings(locale_, hotword_enabled_);
 }
 
@@ -243,7 +245,12 @@ void SettingsController::SetListeningEnabled(bool value) {
 
 void SettingsController::SetSpokenFeedbackEnabled(bool value) {
   spoken_feedback_enabled_ = value;
-  UpdateInternalOptions(locale_, spoken_feedback_enabled_);
+  UpdateInternalOptions(locale_, spoken_feedback_enabled_, dark_mode_enabled_);
+}
+
+void SettingsController::SetDarkModeEnabled(bool value) {
+  dark_mode_enabled_ = value;
+  UpdateInternalOptions(locale_, spoken_feedback_enabled_, dark_mode_enabled_);
 }
 
 void SettingsController::SetHotwordEnabled(bool value) {
@@ -289,20 +296,26 @@ void SettingsController::UpdateAuthenticationTokens(
 
 void SettingsController::UpdateInternalOptions(
     const absl::optional<std::string>& locale,
-    absl::optional<bool> spoken_feedback_enabled) {
+    absl::optional<bool> spoken_feedback_enabled,
+    absl::optional<bool> dark_mode_enabled) {
   if (!assistant_manager_internal_)
     return;
+
+  // All of those bits should be ready if |assistant_manager_internal_| is not
+  // nullptr. ServiceController should set all of them before calling
+  // SettingsController::OnAssistantManagerCreated.
+  DCHECK(locale.has_value());
+  DCHECK(spoken_feedback_enabled.has_value());
+  DCHECK(dark_mode_enabled.has_value());
 
   if (locale.has_value())
     assistant_manager_internal_->SetLocaleOverride(locale.value());
 
-  if (locale.has_value() && spoken_feedback_enabled.has_value()) {
-    assistant_manager_internal_->SetOptions(
-        *CreateInternalOptions(assistant_manager_internal_, locale.value(),
-                               spoken_feedback_enabled.value()),
-        [](bool success) { DVLOG(2) << "set options: " << success; });
-  }
-  return;
+  assistant_manager_internal_->SetOptions(
+      *CreateInternalOptions(assistant_manager_internal_, locale.value(),
+                             spoken_feedback_enabled.value(),
+                             dark_mode_enabled.value()),
+      [](bool success) { DVLOG(2) << "set options: " << success; });
 }
 
 void SettingsController::UpdateDeviceSettings(
@@ -325,7 +338,7 @@ void SettingsController::OnAssistantClientCreated(
   // Note we do not enable the device settings updater here, as it requires
   // Libassistant to be started.
   UpdateAuthenticationTokens(authentication_tokens_);
-  UpdateInternalOptions(locale_, spoken_feedback_enabled_);
+  UpdateInternalOptions(locale_, spoken_feedback_enabled_, dark_mode_enabled_);
   UpdateListeningEnabled(listening_enabled_);
 }
 

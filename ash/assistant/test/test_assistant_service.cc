@@ -266,6 +266,10 @@ void TestAssistantService::DismissNotification(
 void TestAssistantService::OnAccessibilityStatusChanged(
     bool spoken_feedback_enabled) {}
 
+void TestAssistantService::OnColorModeChanged(bool dark_mode_enabled) {
+  dark_mode_enabled_ = dark_mode_enabled;
+}
+
 void TestAssistantService::SendAssistantFeedback(
     const chromeos::assistant::AssistantFeedback& feedback) {}
 

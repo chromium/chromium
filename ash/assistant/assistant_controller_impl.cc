@@ -10,11 +10,14 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/assistant/util/deep_link_util.h"
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/android_intent_helper.h"
 #include "ash/public/cpp/new_window_delegate.h"
+#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/public/mojom/assistant_volume_control.mojom.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/style/ash_color_provider.h"
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
@@ -36,6 +39,8 @@ AssistantControllerImpl::AssistantControllerImpl() {
   // and be notified of any accessibility status changes in the future to
   // provide an opportunity to turn on/off A11Y features.
   Shell::Get()->accessibility_controller()->AddObserver(this);
+
+  color_mode_observer_.Observe(AshColorProvider::Get());
 
   NotifyConstructed();
 }
@@ -73,6 +78,9 @@ void AssistantControllerImpl::SetAssistant(
   assistant_ui_controller_.SetAssistant(assistant);
 
   OnAccessibilityStatusChanged();
+
+  ScopedLightModeAsDefault scoped_light_mode_as_default;
+  OnColorModeChanged(AshColorProvider::Get()->IsDarkModeEnabled());
 
   if (assistant) {
     for (AssistantControllerObserver& observer : observers_)
@@ -267,6 +275,13 @@ void AssistantControllerImpl::OnAccessibilityStatusChanged() {
   // state so that it can turn on/off A11Y features appropriately.
   assistant_->OnAccessibilityStatusChanged(
       Shell::Get()->accessibility_controller()->spoken_feedback().enabled());
+}
+
+void AssistantControllerImpl::OnColorModeChanged(bool dark_mode_enabled) {
+  if (!assistant_)
+    return;
+
+  assistant_->OnColorModeChanged(dark_mode_enabled);
 }
 
 bool AssistantControllerImpl::IsAssistantReady() const {

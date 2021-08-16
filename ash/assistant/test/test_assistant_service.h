@@ -105,12 +105,15 @@ class TestAssistantService : public chromeos::assistant::Assistant {
   void DismissNotification(
       const chromeos::assistant::AssistantNotification& notification) override;
   void OnAccessibilityStatusChanged(bool spoken_feedback_enabled) override;
+  void OnColorModeChanged(bool dark_mode_enabled) override;
   void SendAssistantFeedback(
       const chromeos::assistant::AssistantFeedback& feedback) override;
   void AddTimeToTimer(const std::string& id, base::TimeDelta duration) override;
   void PauseTimer(const std::string& id) override;
   void RemoveAlarmOrTimer(const std::string& id) override;
   void ResumeTimer(const std::string& id) override;
+
+  absl::optional<bool> dark_mode_enabled() { return dark_mode_enabled_; }
 
  private:
   void StartInteraction(
@@ -123,6 +126,8 @@ class TestAssistantService : public chromeos::assistant::Assistant {
   std::unique_ptr<LibassistantContractChecker> libassistant_contract_checker_;
   std::unique_ptr<CurrentInteractionSubscriber> current_interaction_subscriber_;
   std::unique_ptr<InteractionResponse> interaction_response_;
+
+  absl::optional<bool> dark_mode_enabled_;
 
   base::ObserverList<chromeos::assistant::AssistantInteractionSubscriber>
       interaction_subscribers_;

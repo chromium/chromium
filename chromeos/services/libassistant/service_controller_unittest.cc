@@ -109,6 +109,7 @@ class SettingsControllerMock : public mojom::SettingsController {
   MOCK_METHOD(void, SetListeningEnabled, (bool value));
   MOCK_METHOD(void, SetLocale, (const std::string& value));
   MOCK_METHOD(void, SetSpokenFeedbackEnabled, (bool value));
+  MOCK_METHOD(void, SetDarkModeEnabled, (bool value));
   MOCK_METHOD(void, SetHotwordEnabled, (bool value));
   MOCK_METHOD(void,
               GetSettings,

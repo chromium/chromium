@@ -38,6 +38,7 @@ class SettingsController : public AssistantClientObserver,
   void SetListeningEnabled(bool value) override;
   void SetLocale(const std::string& value) override;
   void SetSpokenFeedbackEnabled(bool value) override;
+  void SetDarkModeEnabled(bool value) override;
   void SetHotwordEnabled(bool value) override;
   void GetSettings(const std::string& selector,
                    bool include_header,
@@ -59,7 +60,8 @@ class SettingsController : public AssistantClientObserver,
   void UpdateAuthenticationTokens(
       const absl::optional<std::vector<mojom::AuthenticationTokenPtr>>& tokens);
   void UpdateInternalOptions(const absl::optional<std::string>& locale,
-                             absl::optional<bool> spoken_feedback_enabled);
+                             absl::optional<bool> spoken_feedback_enabled,
+                             absl::optional<bool> dark_mode_enabled);
   void UpdateDeviceSettings(const absl::optional<std::string>& locale,
                             absl::optional<bool> hotword_enabled);
 
@@ -78,6 +80,7 @@ class SettingsController : public AssistantClientObserver,
 
   absl::optional<bool> hotword_enabled_;
   absl::optional<bool> spoken_feedback_enabled_;
+  absl::optional<bool> dark_mode_enabled_;
   absl::optional<bool> listening_enabled_;
   absl::optional<std::string> locale_;
   absl::optional<std::vector<mojom::AuthenticationTokenPtr>>

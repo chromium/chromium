@@ -161,6 +161,7 @@ void ServiceController::Initialize(
   settings_controller_->SetHotwordEnabled(config->hotword_enabled);
   settings_controller_->SetSpokenFeedbackEnabled(
       config->spoken_feedback_enabled);
+  settings_controller_->SetDarkModeEnabled(config->dark_mode_enabled);
 
   CreateAndRegisterDeviceStateListener();
   CreateAndRegisterChromiumApiDelegate(std::move(url_loader_factory));
