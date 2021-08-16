@@ -118,17 +118,6 @@ void KeyboardControllerImpl::CreateVirtualKeyboard(
   DCHECK(keyboard_ui_factory);
   virtual_keyboard_controller_ = std::make_unique<VirtualKeyboardController>();
   keyboard_ui_controller_->Initialize(std::move(keyboard_ui_factory), this);
-
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          keyboard::switches::kEnableVirtualKeyboard)) {
-    keyboard_ui_controller_->SetEnableFlag(
-        KeyboardEnableFlag::kCommandLineEnabled);
-  }
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          keyboard::switches::kDisableVirtualKeyboard)) {
-    keyboard_ui_controller_->SetEnableFlag(
-        KeyboardEnableFlag::kCommandLineDisabled);
-  }
 }
 
 void KeyboardControllerImpl::DestroyVirtualKeyboard() {
@@ -309,6 +298,19 @@ void KeyboardControllerImpl::OnSessionStateChanged(
       break;
     default:
       break;
+  }
+}
+
+void KeyboardControllerImpl::OnUserSessionAdded(const AccountId&) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          keyboard::switches::kEnableVirtualKeyboard)) {
+    keyboard_ui_controller_->SetEnableFlag(
+        KeyboardEnableFlag::kCommandLineEnabled);
+  }
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          keyboard::switches::kDisableVirtualKeyboard)) {
+    keyboard_ui_controller_->SetEnableFlag(
+        KeyboardEnableFlag::kCommandLineDisabled);
   }
 }
 
