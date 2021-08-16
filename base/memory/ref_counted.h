@@ -208,7 +208,7 @@ class BASE_EXPORT RefCountedThreadSafeBase {
         << " The first reference to such a object has to be made by AdoptRef or"
         << " MakeRefCounted.";
 #endif
-    CHECK(ref_count_.Increment() > 0);
+    CHECK_GT(ref_count_.Increment(), 0);
   }
 
   ALWAYS_INLINE bool ReleaseImpl() const {

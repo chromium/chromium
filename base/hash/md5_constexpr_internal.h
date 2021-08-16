@@ -68,7 +68,7 @@ struct MD5CE {
   // Extracts the |i|th byte of a uint64_t, where |i == 0| extracts the least
   // significant byte. It is expected that 0 <= i < 8.
   static constexpr uint8_t ExtractByte(const uint64_t value, const uint32_t i) {
-    DCHECK(i < 8);
+    DCHECK_LT(i, 8u);
     return static_cast<uint8_t>((value >> (i * 8)) & 0xff);
   }
 
@@ -77,9 +77,9 @@ struct MD5CE {
                                                 const uint32_t n,
                                                 const uint32_t m,
                                                 const uint32_t i) {
-    DCHECK(i < m);
-    DCHECK(n < m);
-    DCHECK(m % 64 == 0);
+    DCHECK_LT(i, m);
+    DCHECK_LT(n, m);
+    DCHECK_EQ(m % 64, 0u);
     if (i < n) {
       // Emit the message itself...
       return data[i];
@@ -102,10 +102,10 @@ struct MD5CE {
                                                  const uint32_t n,
                                                  const uint32_t m,
                                                  const uint32_t i) {
-    DCHECK(i % 4 == 0);
-    DCHECK(i < m);
-    DCHECK(n < m);
-    DCHECK(m % 64 == 0);
+    DCHECK_EQ(i % 4, 0u);
+    DCHECK_LT(i, m);
+    DCHECK_LT(n, m);
+    DCHECK_EQ(m % 64, 0u);
     return static_cast<uint32_t>(GetPaddedMessageByte(data, n, m, i)) |
            static_cast<uint32_t>((GetPaddedMessageByte(data, n, m, i + 1))
                                  << 8) |
@@ -121,10 +121,10 @@ struct MD5CE {
                                           const uint32_t n,
                                           const uint32_t m,
                                           const uint32_t i) {
-    DCHECK(i % 64 == 0);
-    DCHECK(i < m);
-    DCHECK(n < m);
-    DCHECK(m % 64 == 0);
+    DCHECK_EQ(i % 64, 0u);
+    DCHECK_LT(i, m);
+    DCHECK_LT(n, m);
+    DCHECK_EQ(m % 64, 0u);
     return RoundData{{GetPaddedMessageWord(data, n, m, i),
                       GetPaddedMessageWord(data, n, m, i + 4),
                       GetPaddedMessageWord(data, n, m, i + 8),
@@ -151,7 +151,7 @@ struct MD5CE {
                                   const uint32_t b,
                                   const uint32_t c,
                                   const uint32_t d) {
-    DCHECK(i < 64);
+    DCHECK_LT(i, 64u);
     if (i < 16) {
       return d ^ (b & (c ^ d));
     } else if (i < 32) {
@@ -169,7 +169,7 @@ struct MD5CE {
 
   // Calculates the indexing function at round |i|.
   static constexpr uint32_t CalcG(const uint32_t i) {
-    DCHECK(i < 64);
+    DCHECK_LT(i, 64u);
     if (i < 16) {
       return i;
     } else if (i < 32) {
@@ -183,14 +183,14 @@ struct MD5CE {
 
   // Calculates the rotation to be applied at round |i|.
   static constexpr uint32_t GetShift(const uint32_t i) {
-    DCHECK(i < 64);
+    DCHECK_LT(i, 64u);
     return kShifts[(i / 16) * 4 + (i % 4)];
   }
 
   // Rotates to the left the given |value| by the given |bits|.
   static constexpr uint32_t LeftRotate(const uint32_t value,
                                        const uint32_t bits) {
-    DCHECK(bits < 32);
+    DCHECK_LT(bits, 32u);
     return (value << bits) | (value >> (32 - bits));
   }
 
@@ -199,9 +199,9 @@ struct MD5CE {
       const uint32_t i,
       const RoundData& data,
       const IntermediateData& intermediate) {
-    DCHECK(i < 64);
+    DCHECK_LT(i, 64u);
     const uint32_t g = CalcG(i);
-    DCHECK(g < 16);
+    DCHECK_LT(g, 16u);
     const uint32_t f =
         CalcF(i, intermediate) + intermediate.a + kConstants[i] + data[g];
     const uint32_t s = GetShift(i);
