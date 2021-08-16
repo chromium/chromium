@@ -3,6 +3,8 @@
 
   await dp.Page.enable();
 
+  const results = new Map();
+
   let recordFameNavigated;
   const frameNavigatedPromise = new Promise(resolve => {
     let numberOfFrameNavigated = 0;
@@ -16,11 +18,7 @@
   async function onFrameNavigated(event) {
     const frameId = event.params.frame.id;
     const {result} = await session.protocol.Network.getSecurityIsolationStatus({frameId});
-    testRunner.log(event.params.frame.url);
-    testRunner.log(`COEP status`);
-    testRunner.log(result.status.coep);
-    testRunner.log(`COOP status`);
-    testRunner.log(result.status.coop);
+    results.set(event.params.frame.url, {coep: result.status.coep, coop: result.status.coop})
     recordFameNavigated();
   }
   dp.Page.onFrameNavigated(onFrameNavigated);
@@ -40,6 +38,15 @@
   await session.navigate(`${url}?coep-rpt=require-corp;report-to="endpoint-1"&corp=same-origin&coop-rpt=same-origin-allow-popups;report-to="endpoint-2"`);
 
   await frameNavigatedPromise;
+
+  for (const key of Array.from(results.keys()).sort()) {
+    testRunner.log(key);
+    testRunner.log(`COEP status`);
+    const {coep, coop} = results.get(key);
+    testRunner.log(coep);
+    testRunner.log(`COOP status`);
+    testRunner.log(coop);
+  }
 
   testRunner.completeTest();
 })
