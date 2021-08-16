@@ -149,6 +149,23 @@ bool IsInterpolation(CascadePriority priority) {
   }
 }
 
+#if DCHECK_IS_ON()
+
+bool HasUnresolvedReferences(CSSParserTokenRange range) {
+  while (!range.AtEnd()) {
+    switch (range.Consume().FunctionId()) {
+      case CSSValueID::kVar:
+      case CSSValueID::kEnv:
+        return true;
+      default:
+        continue;
+    }
+  }
+  return false;
+}
+
+#endif  // DCHECK_IS_ON()
+
 }  // namespace
 
 MatchResult& StyleCascade::MutableMatchResult() {
@@ -938,6 +955,9 @@ bool StyleCascade::HasFontSizeDependency(const CustomProperty& property,
 
 bool StyleCascade::ValidateFallback(const CustomProperty& property,
                                     CSSParserTokenRange range) const {
+#if DCHECK_IS_ON()
+  DCHECK(!HasUnresolvedReferences(range));
+#endif  // DCHECK_IS_ON()
   if (!property.IsRegistered())
     return true;
   auto context_mode =

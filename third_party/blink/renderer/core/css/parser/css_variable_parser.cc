@@ -167,10 +167,9 @@ CSSCustomPropertyDeclaration* CSSVariableParser::ParseDeclarationValue(
   return MakeGarbageCollected<CSSCustomPropertyDeclaration>(type);
 }
 
-CSSVariableReferenceValue* CSSVariableParser::ParseRegisteredPropertyValue(
+CSSVariableReferenceValue* CSSVariableParser::ParseVariableReferenceValue(
     CSSParserTokenRange range,
     const CSSParserContext& context,
-    bool require_var_reference,
     bool is_animation_tainted) {
   if (range.AtEnd())
     return nullptr;
@@ -180,8 +179,6 @@ CSSVariableReferenceValue* CSSVariableParser::ParseRegisteredPropertyValue(
 
   if (type != CSSValueID::kInternalVariableValue)
     return nullptr;  // Invalid or a css-wide keyword
-  if (require_var_reference && !has_references)
-    return nullptr;
   return MakeGarbageCollected<CSSVariableReferenceValue>(
       CSSVariableData::Create({range, StringView()}, is_animation_tainted,
                               has_references, context.BaseURL(),

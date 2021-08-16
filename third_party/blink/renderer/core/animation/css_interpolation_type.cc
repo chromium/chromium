@@ -264,6 +264,7 @@ InterpolationValue CSSInterpolationType::MaybeConvertCustomPropertyDeclaration(
   if (const auto* resolved_declaration =
           DynamicTo<CSSCustomPropertyDeclaration>(value)) {
     DCHECK(resolved_declaration->Value());
+    DCHECK(!resolved_declaration->Value()->NeedsVariableResolution());
     value = resolved_declaration->Value()->ParseForSyntax(
         registration_->Syntax(),
         state.GetDocument().GetExecutionContext()->GetSecureContextMode());

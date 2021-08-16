@@ -61,6 +61,17 @@ void RegisterProperty(Document& document,
                       const String& syntax,
                       const absl::optional<String>& initial_value,
                       bool is_inherited);
+void RegisterProperty(Document& document,
+                      const String& name,
+                      const String& syntax,
+                      const absl::optional<String>& initial_value,
+                      bool is_inherited,
+                      ExceptionState&);
+void DeclareProperty(Document& document,
+                     const String& name,
+                     const String& syntax,
+                     const absl::optional<String>& initial_value,
+                     bool is_inherited);
 
 scoped_refptr<CSSVariableData> CreateVariableData(String);
 const CSSValue* CreateCustomIdent(AtomicString);

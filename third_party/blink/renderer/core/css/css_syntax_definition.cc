@@ -144,8 +144,8 @@ const CSSValue* CSSSyntaxDefinition::Parse(CSSParserTokenRange range,
     // TODO(crbug.com/882285): Make 'default' invalid as <custom-ident>.
     if (CouldConsumeReservedKeyword(range))
       return nullptr;
-    return CSSVariableParser::ParseRegisteredPropertyValue(
-        range, context, false, is_animation_tainted);
+    return CSSVariableParser::ParseVariableReferenceValue(range, context,
+                                                          is_animation_tainted);
   }
   range.ConsumeWhitespace();
   for (const CSSSyntaxComponent& component : syntax_components_) {
@@ -153,8 +153,7 @@ const CSSValue* CSSSyntaxDefinition::Parse(CSSParserTokenRange range,
             ConsumeSyntaxComponent(component, range, context))
       return result;
   }
-  return CSSVariableParser::ParseRegisteredPropertyValue(range, context, true,
-                                                         is_animation_tainted);
+  return nullptr;
 }
 
 CSSSyntaxDefinition CSSSyntaxDefinition::IsolatedCopy() const {
