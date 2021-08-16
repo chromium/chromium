@@ -373,6 +373,8 @@ message BrowserDeviceIdentifier {
   optional string computer_name = 1;
   // Device serial number (definition depending on the platform).
   optional string serial_number = 2;
+  // Android-specific identifiers.
+  optional AndroidIdentifier android_identifier = 3;
 }
 
 message PolicyFetchRequest {
@@ -1978,6 +1980,13 @@ message OSReport {
 enum PartialReportType {
   UNSPECIFIED = 0;
   EXTENSION_REQUEST = 1;
+}
+
+// Android-specific IDs to be reported in addition to the Client ID. Explicit
+// approval from Chrome Privacy is required for new IDs.
+message AndroidIdentifier {
+  // Gservices Android ID, only uploaded for Android version S and older.
+  optional string gservices_android_id = 1;
 }
 
 // Report the status of a Chrome installation on non-Chrome OS platform.

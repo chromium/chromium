@@ -22,6 +22,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 public final class CloudManagementAndroidConnectionTest {
     private static final String CLIENT_ID = "client-id";
     private static final String SAVED_CLIENT_ID = "saved-client-id";
+    private static final String GSERVICES_ANDROID_ID = "gservices-android-id";
 
     /* Simple implementation of {@link CloudManagementAndroidConnection} that overrides {@link
      * generateClientIdInternal} for easier testing. */
@@ -30,6 +31,11 @@ public final class CloudManagementAndroidConnectionTest {
         @Override
         public String generateClientId() {
             return CLIENT_ID;
+        }
+
+        @Override
+        public String getGservicesAndroidId() {
+            return GSERVICES_ANDROID_ID;
         }
     }
 
@@ -58,5 +64,12 @@ public final class CloudManagementAndroidConnectionTest {
         CloudManagementAndroidConnection connection =
                 CloudManagementAndroidConnection.getInstance();
         Assert.assertEquals(connection.getClientId(), SAVED_CLIENT_ID);
+    }
+
+    @Test
+    @SmallTest
+    public void testGetGservicesAndroidId() {
+        Assert.assertEquals(CloudManagementAndroidConnection.getInstance().getGservicesAndroidId(),
+                GSERVICES_ANDROID_ID);
     }
 }

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.policy;
 
+import android.os.Build;
+
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
@@ -45,6 +47,20 @@ public class CloudManagementAndroidConnection {
         CloudManagementSharedPreferences.saveClientId(newClientId);
 
         return newClientId;
+    }
+
+    /**
+     * Returns the value of Gservices Android ID that allows joining the Chrome Browser Cloud
+     * Management data with Google Endpoint Management.
+     *
+     * Note: that ID can only be uploaded for Android versions S and older. Changes to this requires
+     * explicit approval from Chrome Privacy.
+     */
+    @CalledByNative
+    public String getGservicesAndroidId() {
+        return Build.VERSION.SDK_INT <= Build.VERSION_CODES.S
+                ? getDelegate().getGservicesAndroidId()
+                : "";
     }
 
     /** Overrides {@link mDelegate} if not null. */

@@ -8,6 +8,17 @@ package org.chromium.chrome.browser.policy;
  * Delegate for cloud management functions implemented downstream for Google Chrome.
  */
 public interface CloudManagementAndroidConnectionDelegate {
-    /* Returns the client ID to be used in the DM token generation. */
-    public String generateClientId();
+    /** Returns the client ID to be used in the DM token generation. */
+    String generateClientId();
+
+    /**
+     *  Returns the value of Gservices Android ID.
+     *
+     * TODO(http://crbug.com/1210139): Move this implementation to
+     * CloudManagementAndroidConnectionDelegateImpl and make this method abstract once the
+     * downstream implementation is landed.
+     */
+    default String getGservicesAndroidId() {
+        return "";
+    }
 }

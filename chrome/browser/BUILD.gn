@@ -3282,6 +3282,7 @@ static_library("browser") {
       "//chrome/browser/password_entry_edit/android",
       "//chrome/browser/password_manager/android:jni_headers",
       "//chrome/browser/payments/android:jni_headers",
+      "//chrome/browser/policy/android:android",
       "//chrome/browser/policy/android:jni_headers",
       "//chrome/browser/privacy:jni_headers",
       "//chrome/browser/privacy_sandbox/android:jni_headers",
