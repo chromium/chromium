@@ -7,7 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/search_box/search_box_view_delegate.h"
-#include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/view.h"
 
 namespace aura {
 class Window;
@@ -23,20 +23,22 @@ class SearchBoxView;
 enum class ShelfAlignment;
 
 // Contains the views for the bubble version of the launcher. It looks like a
-// system tray bubble. It derives from BubbleDialogDelegateView instead of
-// TrayBubbleView because it takes focus by default, uses a different
-// EventHandler for closing, and isn't tied to the system tray area.
-class ASH_EXPORT AppListBubbleView : public views::BubbleDialogDelegateView,
+// system tray bubble. It does not derive from TrayBubbleView because it takes
+// focus by default, uses a different EventHandler for closing, and isn't tied
+// to the system tray area.
+class ASH_EXPORT AppListBubbleView : public views::View,
                                      public SearchBoxViewDelegate {
  public:
-  // Creates the bubble on the display for `root_window`. Anchors the bubble to
-  // a corner of the screen based on `shelf_alignment`.
+  // Creates the bubble on the display for `root_window`.
   AppListBubbleView(AppListViewDelegate* view_delegate,
-                    aura::Window* root_window,
-                    ShelfAlignment shelf_alignment);
+                    aura::Window* root_window);
   AppListBubbleView(const AppListBubbleView&) = delete;
   AppListBubbleView& operator=(const AppListBubbleView&) = delete;
   ~AppListBubbleView() override;
+
+  // Returns the bounds for the bubble widget in root window coordinates.
+  // TODO(jamescook): Move to AppListBubblePresenter.
+  gfx::Rect GetBubbleBounds() const;
 
   // Handles back action if it we have a use for it besides dismissing.
   bool Back();
@@ -70,6 +72,7 @@ class ASH_EXPORT AppListBubbleView : public views::BubbleDialogDelegateView,
   friend class AssistantTestApiImpl;
 
   AppListViewDelegate* const view_delegate_;
+  aura::Window* const root_window_;
   SearchBoxView* search_box_view_ = nullptr;
   AppListBubbleAppsPage* apps_page_ = nullptr;
   AppListBubbleSearchPage* search_page_ = nullptr;

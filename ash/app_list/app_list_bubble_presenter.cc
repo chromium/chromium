@@ -11,12 +11,14 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/views/app_list_bubble_view.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
+#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shelf/home_button.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/i18n/rtl.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/services/assistant/public/cpp/assistant_enums.h"
@@ -24,8 +26,26 @@
 #include "ui/views/widget/widget.h"
 
 namespace ash {
+namespace {
 
 using chromeos::assistant::AssistantExitPoint;
+
+// Creates a bubble widget for the display with `root_window`. The widget is
+// owned by its native widget.
+views::Widget* CreateBubbleWidget(aura::Window* root_window) {
+  views::Widget* widget = new views::Widget();
+  views::Widget::InitParams params(
+      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  params.parent =
+      Shell::GetContainer(root_window, kShellWindowId_AppListContainer);
+  // AppListBubbleView handles round corners and blur via layers.
+  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
+  params.layer_type = ui::LAYER_NOT_DRAWN;
+  widget->Init(std::move(params));
+  return widget;
+}
+
+}  // namespace
 
 AppListBubblePresenter::AppListBubblePresenter(
     AppListControllerImpl* controller)
@@ -47,12 +67,18 @@ void AppListBubblePresenter::Show(int64_t display_id) {
   base::Time time_shown = base::Time::Now();
 
   aura::Window* root_window = Shell::GetRootWindowForDisplayId(display_id);
-  Shelf* shelf = Shelf::ForWindow(root_window);
-  auto bubble_view = std::make_unique<AppListBubbleView>(
-      controller_, root_window, shelf->alignment());
-  bubble_view_ = bubble_view.get();
-  bubble_widget_ =
-      views::BubbleDialogDelegateView::CreateBubble(std::move(bubble_view));
+  bubble_widget_ = CreateBubbleWidget(root_window);
+  bubble_view_ = bubble_widget_->SetContentsView(
+      std::make_unique<AppListBubbleView>(controller_, root_window));
+  // The widget bounds sometimes depend on the height of the apps grid, so set
+  // the bounds after creating and setting the contents.
+  // TODO(jamescook): Update bounds on display configuration change.
+  bubble_widget_->SetBounds(bubble_view_->GetBubbleBounds());
+
+  // Arrow left/right and up/down triggers the same focus movement as
+  // tab/shift+tab.
+  bubble_widget_->widget_delegate()->SetEnableArrowKeyTraversal(true);
+
   bubble_widget_->AddObserver(this);
   controller_->OnVisibilityWillChange(/*visible=*/true, display_id);
   bubble_widget_->Show();
@@ -65,6 +91,7 @@ void AppListBubblePresenter::Show(int64_t display_id) {
   // Set up event filter to close the bubble for clicks outside the bubble that
   // don't cause window activation changes (e.g. clicks on wallpaper or blank
   // areas of shelf).
+  Shelf* shelf = Shelf::ForWindow(root_window);
   HomeButton* home_button = shelf->navigation_widget()->GetHomeButton();
   bubble_event_filter_ = std::make_unique<AppListBubbleEventFilter>(
       bubble_widget_, home_button,

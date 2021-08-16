@@ -15,7 +15,6 @@
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
-#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/search_box/search_box_constants.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_widget.h"
@@ -35,16 +34,17 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
-#include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/box_layout.h"
 
 using views::BoxLayout;
-using views::BubbleBorder;
 
 namespace ash {
 namespace {
+
+// Space between the edge of the bubble and the edge of the work area.
+constexpr int kWorkAreaPadding = 8;
 
 // Space between the AppListBubbleView and the top of the screen should be at
 // least this value plus the shelf height.
@@ -63,68 +63,13 @@ gfx::Rect GetWorkAreaForBubble(aura::Window* root_window) {
   return work_area;
 }
 
-// Returns the point on the screen to which the bubble is anchored.
-gfx::Point GetAnchorPointInScreen(aura::Window* root_window,
-                                  ShelfAlignment shelf_alignment) {
-  gfx::Rect work_area = GetWorkAreaForBubble(root_window);
-
-  switch (shelf_alignment) {
-    case ShelfAlignment::kBottom:
-    case ShelfAlignment::kBottomLocked:
-      return base::i18n::IsRTL() ? work_area.bottom_right()
-                                 : work_area.bottom_left();
-    case ShelfAlignment::kLeft:
-      return work_area.origin();
-    case ShelfAlignment::kRight:
-      return work_area.top_right();
-  }
-}
-
-// Returns which corner of the bubble is anchored. The views bubble code calls
-// this "arrow" for historical reasons. No arrow is drawn.
-BubbleBorder::Arrow GetArrowCorner(ShelfAlignment shelf_alignment) {
-  switch (shelf_alignment) {
-    case ShelfAlignment::kBottom:
-    case ShelfAlignment::kBottomLocked:
-      return base::i18n::IsRTL() ? BubbleBorder::BOTTOM_RIGHT
-                                 : BubbleBorder::BOTTOM_LEFT;
-    case ShelfAlignment::kLeft:
-      return BubbleBorder::TOP_LEFT;
-    case ShelfAlignment::kRight:
-      return BubbleBorder::TOP_RIGHT;
-  }
-}
-
 }  // namespace
 
 AppListBubbleView::AppListBubbleView(AppListViewDelegate* view_delegate,
-                                     aura::Window* root_window,
-                                     ShelfAlignment shelf_alignment)
-    : BubbleDialogDelegateView(/*anchor_view=*/nullptr,
-                               GetArrowCorner(shelf_alignment),
-                               BubbleBorder::NO_SHADOW),
-      view_delegate_(view_delegate) {
+                                     aura::Window* root_window)
+    : view_delegate_(view_delegate), root_window_(root_window) {
   DCHECK(view_delegate);
   DCHECK(root_window);
-  // The bubble is anchored to a screen corner point, but the API takes a rect.
-  SetAnchorRect(gfx::Rect(GetAnchorPointInScreen(root_window, shelf_alignment),
-                          gfx::Size()));
-
-  SetButtons(ui::DIALOG_BUTTON_NONE);
-  set_parent_window(
-      Shell::GetContainer(root_window, kShellWindowId_AppListContainer));
-
-  // Remove the default margins so the content fills the bubble.
-  set_margins(gfx::Insets());
-
-  // Ensure the BubbleFrameView does not draw a background behind the bubble.
-  // set_use_custom_frame(false) does not work because BubbleDialogDelegateView
-  // requires a frame to compute its bounds.
-  set_color(SK_ColorTRANSPARENT);
-
-  // Bubbles that use transparent colors should not paint their ClientViews to a
-  // layer as doing so could result in visual artifacts.
-  SetPaintClientToLayer(false);
 
   // Set up rounded corners and background blur, similar to TrayBubbleView.
   SetPaintToLayer(ui::LAYER_SOLID_COLOR);
@@ -133,10 +78,6 @@ AppListBubbleView::AppListBubbleView(AppListViewDelegate* view_delegate,
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetIsFastRoundedCorner(true);
   layer()->SetBackgroundBlur(kUnifiedMenuBackgroundBlur);
-
-  // Arrow left/right and up/down triggers the same focus movement as
-  // tab/shift+tab.
-  SetEnableArrowKeyTraversal(true);
 
   auto* layout = SetLayoutManager(
       std::make_unique<BoxLayout>(BoxLayout::Orientation::kVertical));
@@ -171,6 +112,33 @@ AppListBubbleView::AppListBubbleView(AppListViewDelegate* view_delegate,
 }
 
 AppListBubbleView::~AppListBubbleView() = default;
+
+gfx::Rect AppListBubbleView::GetBubbleBounds() const {
+  const gfx::Rect work_area = GetWorkAreaForBubble(root_window_);
+  const gfx::Size bubble_size = CalculatePreferredSize();
+  const int padding = kWorkAreaPadding;  // Shorten name for readability.
+  int x = 0;
+  int y = 0;
+  switch (Shelf::ForWindow(root_window_)->alignment()) {
+    case ShelfAlignment::kBottom:
+    case ShelfAlignment::kBottomLocked:
+      if (base::i18n::IsRTL())
+        x = work_area.right() - padding - bubble_size.width();
+      else
+        x = work_area.x() + padding;
+      y = work_area.bottom() - padding - bubble_size.height();
+      break;
+    case ShelfAlignment::kLeft:
+      x = work_area.x() + padding;
+      y = work_area.y() + padding;
+      break;
+    case ShelfAlignment::kRight:
+      x = work_area.right() - padding - bubble_size.width();
+      y = work_area.y() + padding;
+      break;
+  }
+  return gfx::Rect(x, y, bubble_size.width(), bubble_size.height());
+}
 
 bool AppListBubbleView::Back() {
   if (search_box_view_->HasSearch()) {
@@ -226,8 +194,7 @@ gfx::Size AppListBubbleView::CalculatePreferredSize() const {
   // the cards become narrower then this could be reduced.
   const int default_width = 640;
   const int shelf_size = ShelfConfig::Get()->shelf_size();
-  const gfx::Rect work_area =
-      GetWorkAreaForBubble(GetWidget()->GetNativeWindow());
+  const gfx::Rect work_area = GetWorkAreaForBubble(root_window_);
   int height = default_height;
 
   // If the work area height is too small to fit the default size bubble, then
@@ -271,7 +238,7 @@ void AppListBubbleView::OnPaint(gfx::Canvas* canvas) {
 }
 
 void AppListBubbleView::OnThemeChanged() {
-  views::BubbleDialogDelegateView::OnThemeChanged();
+  views::View::OnThemeChanged();
 
   layer()->SetColor(AshColorProvider::Get()->GetBaseLayerColor(
       AshColorProvider::BaseLayerType::kTransparent80));
