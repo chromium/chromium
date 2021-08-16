@@ -22,6 +22,13 @@ config("tflite_flags") {
     "-Wno-comment",
     "-Wno-extern-c-compat",
 
+    # This flag is needed to enable the strip error strings flag since a handful
+    # of variables are only used in error logs, which are no-op'd in a macro
+    # when the strings are stripped. Overall, removing the error strings saves
+    # 90kb of binary size so having a few dangling variables is well worth it,
+    # in addition to keeping the updating process simple.
+    "-Wno-unused-variable",
+
     # TODO(crbug.com/1147556): Try to clean/remove no-sign-compare if possible.
     "-Wno-sign-compare",
     "-Wno-gnu-inline-cpp-without-extern",
@@ -32,6 +39,7 @@ config("tflite_flags") {
     "TFLITE_WITHOUT_XNNPACK",
     "FARMHASH_NO_CXX_STRING",
     "NEON2SSE_DISABLE_PERFORMANCE_WARNING",
+    "TF_LITE_STRIP_ERROR_STRINGS",
   ]
 
   if (is_win) {
