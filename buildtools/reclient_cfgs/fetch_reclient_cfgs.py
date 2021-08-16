@@ -6,9 +6,11 @@
 """This script is used to fetch reclient cfgs."""
 
 import argparse
+import glob
 import os
 import posixpath
 import re
+import shutil
 import subprocess
 import sys
 
@@ -64,21 +66,32 @@ def main():
 
     cipd_prefix = posixpath.join(args.cipd_prefix, args.rbe_project)
 
-    clang_revision = ClangRevision()
-    if clang_revision:
-        CipdInstall(posixpath.join(cipd_prefix, 'chromium-browser-clang'),
-                    ref='revision/' + clang_revision,
-                    directory=os.path.join(THIS_DIR, 'chromium-browser-clang'))
-    else:
-        print('failed to detect clang revision')
+    tool_revisions = {
+        'chromium-browser-clang': ClangRevision(),
+        'nacl': NaclRevision()
+    }
+    for toolchain in tool_revisions:
+      revision = tool_revisions[toolchain]
+      if not revision:
+        print('failed to detect %s revision' % toolchain)
+        continue
 
-    nacl_revision = NaclRevision()
-    if nacl_revision:
-        CipdInstall(posixpath.join(cipd_prefix, 'nacl'),
-                    ref='revision/' + nacl_revision,
-                    directory=os.path.join(THIS_DIR, 'nacl'))
-    else:
-        print('failed to detect nacl revision')
+      CipdInstall(posixpath.join(cipd_prefix, toolchain),
+                  ref='revision/' + revision,
+                  directory=os.path.join(THIS_DIR, toolchain))
+      if os.path.exists(os.path.join(THIS_DIR,
+                                     toolchain, 'win-cross-experiments')):
+        # copy in win-cross-experiments/toolchain
+        # as windows may not use symlinks.
+        wcedir = os.path.join(THIS_DIR, 'win-cross-experiments', toolchain)
+        if not os.path.exists(wcedir):
+          os.makedirs(wcedir, mode=0o755)
+        for cfg in glob.glob(os.path.join(THIS_DIR, toolchain, '*.cfg')):
+          fname = os.path.join(wcedir, os.path.basename(cfg))
+          if os.path.exists(fname):
+            os.remove(fname)
+          print('Copy from %s to %s...' % (cfg, fname))
+          shutil.copy(cfg, fname)
 
     return 0
 
