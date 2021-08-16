@@ -2094,5 +2094,19 @@
     "pattern": [ "https://foo{@example.com" ],
     "inputs": [ "https://foo@example.com" ],
     "expected_obj": "error"
+  },
+  {
+    "pattern": [ "data\\:text/javascript,let x = 100/:tens?5;" ],
+    "inputs": [ "data:text/javascript,let x = 100/5;" ],
+    "exactly_empty_components": [ "username", "password", "hostname", "port",
+                                  "search", "hash" ],
+    "expected_obj": {
+      "protocol": "data",
+      "pathname": "text/javascript,let x = 100/:tens?5;"
+    },
+    "expected_match": {
+      "protocol": { "input": "data", "groups": {} },
+      "pathname": { "input": "text/javascript,let x = 100/5;", "groups": { "tens": "" } }
+    }
   }
 ]

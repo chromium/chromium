@@ -105,6 +105,11 @@ class Component final : public GarbageCollected<Component> {
   // The names to be applied to the regular expression capture groups.  Note,
   // liburlpattern regular expressions do not use named capture groups directly.
   const Vector<String> name_list_;
+
+  // The cached result of computing if a protocol component should cause the
+  // pattern to be treated as a standard URL.  This should only be set and read
+  // by protocol components executing ShouldTreatAsStandardURL().
+  mutable absl::optional<bool> should_treat_as_standard_url_;
 };
 
 }  // namespace url_pattern

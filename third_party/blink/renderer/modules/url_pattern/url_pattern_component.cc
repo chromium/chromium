@@ -91,7 +91,8 @@ liburlpattern::EncodeCallback GetEncodeCallback(Component::Type type,
 
 // Utility method to get the correct liburlpattern parse options for a given
 // type.
-const liburlpattern::Options& GetOptions(Component::Type type) {
+const liburlpattern::Options& GetOptions(Component::Type type,
+                                         Component* protocol_component) {
   using liburlpattern::Options;
 
   // The liburlpattern::Options to use for most component patterns.  We
@@ -128,7 +129,16 @@ const liburlpattern::Options& GetOptions(Component::Type type) {
     case Component::Type::kHostname:
       return hostname_options;
     case Component::Type::kPathname:
-      return pathname_options;
+      // Just like how we select a different encoding callback based on
+      // whether we are treating the pattern string as a standard or
+      // cannot-be-a-base URL, we must also choose the right liburlppatern
+      // options as well.  We should only use use the options that treat
+      // `/` specially if we are treating this a standard URL.
+      DCHECK(protocol_component);
+      if (protocol_component->ShouldTreatAsStandardURL())
+        return pathname_options;
+      else
+        return default_options;
     case Component::Type::kProtocol:
     case Component::Type::kUsername:
     case Component::Type::kPassword:
@@ -235,7 +245,7 @@ Component* Component::Compile(const String& pattern,
     return MakeGarbageCollected<Component>(type, base::PassKey<Component>());
   }
 
-  const liburlpattern::Options& options = GetOptions(type);
+  const liburlpattern::Options& options = GetOptions(type, protocol_component);
 
   // Parse the pattern.
   StringUTF8Adaptor utf8(pattern);
@@ -371,15 +381,23 @@ Vector<std::pair<String, String>> Component::MakeGroupList(
 
 bool Component::ShouldTreatAsStandardURL() const {
   DCHECK(type_ == Type::kProtocol);
+
   if (!pattern_.has_value())
     return true;
+
+  if (should_treat_as_standard_url_.has_value())
+    return *should_treat_as_standard_url_;
+
   const auto protocol_matches = [&](const std::string& scheme) {
     DCHECK(base::IsStringASCII(scheme));
     return Match(
         StringView(scheme.data(), static_cast<unsigned>(scheme.size())),
         /*group_list=*/nullptr);
   };
-  return base::ranges::any_of(url::GetStandardSchemes(), protocol_matches);
+
+  should_treat_as_standard_url_ =
+      base::ranges::any_of(url::GetStandardSchemes(), protocol_matches);
+  return *should_treat_as_standard_url_;
 }
 
 void Component::Trace(Visitor* visitor) const {
