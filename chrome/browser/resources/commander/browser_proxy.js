@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
-
 /** @interface */
 export class BrowserProxy {
   /**
@@ -65,7 +63,17 @@ export class BrowserProxyImpl {
   promptCancelled() {
     chrome.send('compositeCommandCancelled');
   }
+
+  /** @return {!BrowserProxyImpl} */
+  static getInstance() {
+    return instance || (instance = new BrowserProxyImpl());
+  }
+
+  /** @param obj {!BrowserProxyImpl} */
+  static setInstance(obj) {
+    instance = obj;
+  }
 }
 
-
-addSingletonGetter(BrowserProxyImpl);
+/** @type {?BrowserProxyImpl}  */
+let instance = null;
