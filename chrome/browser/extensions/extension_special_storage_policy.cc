@@ -42,13 +42,6 @@ using extensions::Extension;
 using extensions::mojom::APIPermissionID;
 using storage::SpecialStoragePolicy;
 
-namespace {
-// Kill switch for default app protected storage. Enable this make
-// default-installed hosted apps have protected storage.
-const base::Feature kDefaultHostedAppsNeedProtection{
-    "DefaultHostedAppsNeedProtection", base::FEATURE_DISABLED_BY_DEFAULT};
-}  // namespace
-
 class ExtensionSpecialStoragePolicy::CookieSettingsObserver
     : public content_settings::CookieSettings::Observer {
  public:
@@ -185,11 +178,10 @@ bool ExtensionSpecialStoragePolicy::NeedsProtection(
   if (!extension->is_hosted_app() || extension->from_bookmark())
     return false;
 
-  // Normally, default-installed apps shouldn't have protected storage...
-  if (extension->was_installed_by_default()) {
-    // ... However, we have a kill-switch for this, just in case.
-    return base::FeatureList::IsEnabled(kDefaultHostedAppsNeedProtection);
-  }
+  // Default-installed apps don't have protected storage.
+  if (extension->was_installed_by_default())
+    return false;
+
   // Otherwise, this is a user-installed hosted app, and we grant it
   // special protected storage.
   return true;
