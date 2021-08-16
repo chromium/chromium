@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_SHELF_BROWSER_APPS_TRACKER_H_
-#define CHROME_BROWSER_UI_ASH_SHELF_BROWSER_APPS_TRACKER_H_
+#ifndef CHROME_BROWSER_APPS_APP_SERVICE_BROWSER_APP_INSTANCE_TRACKER_H_
+#define CHROME_BROWSER_APPS_APP_SERVICE_BROWSER_APP_INSTANCE_TRACKER_H_
 
 #include <map>
 #include <memory>
@@ -13,8 +13,8 @@
 #include "base/feature_list.h"
 #include "base/observer_list.h"
 #include "base/scoped_multi_source_observation.h"
+#include "chrome/browser/apps/app_service/browser_app_instance.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/shelf/browser_app_status_observer.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
@@ -26,24 +26,30 @@
 
 class Browser;
 
-// BrowserAppsTracker monitors changes to Browsers, TabStripModels and browsers'
-// native windows to maintain a list of running apps and notify its registered
-// observers of any changes:
+namespace apps {
+
+class BrowserAppInstanceObserver;
+
+// BrowserAppInstanceTracker monitors changes to Browsers, TabStripModels and
+// browsers' native windows to maintain a list of running apps and notify its
+// registered observers of any changes:
 // - apps running in WebContents (web apps, hosted apps, V1 packaged apps)
 // - browser instances (registered with app ID |extension_misc::kChromeAppId|).
-class BrowserAppsTracker : public TabStripModelObserver,
-                           public aura::WindowObserver,
-                           public apps::AppRegistryCache::Observer,
-                           public BrowserListObserver {
+class BrowserAppInstanceTracker : public TabStripModelObserver,
+                                  public aura::WindowObserver,
+                                  public apps::AppRegistryCache::Observer,
+                                  public BrowserListObserver {
  public:
   static const base::Feature kEnabled;
 
-  explicit BrowserAppsTracker(apps::AppRegistryCache& app_registry_cache);
-  ~BrowserAppsTracker() override;
-  BrowserAppsTracker(const BrowserAppsTracker&) = delete;
-  BrowserAppsTracker& operator=(const BrowserAppsTracker&) = delete;
+  explicit BrowserAppInstanceTracker(
+      apps::AppRegistryCache& app_registry_cache);
+  ~BrowserAppInstanceTracker() override;
+  BrowserAppInstanceTracker(const BrowserAppInstanceTracker&) = delete;
+  BrowserAppInstanceTracker& operator=(const BrowserAppInstanceTracker&) =
+      delete;
 
-  // Causes BrowserAppStatusObserver events to fire for all existing browsers.
+  // Causes BrowserAppInstanceObserver events to fire for all existing browsers.
   void Initialize();
 
   // Get all instances by app ID. Returns a set of unowned pointers.
@@ -64,11 +70,11 @@ class BrowserAppsTracker : public TabStripModelObserver,
   // Get Chrome instance running in |browser|. Returns null if not found.
   const BrowserAppInstance* GetChromeInstance(Browser* browser) const;
 
-  void AddObserver(BrowserAppStatusObserver* observer) {
+  void AddObserver(BrowserAppInstanceObserver* observer) {
     observers_.AddObserver(observer);
   }
 
-  void RemoveObserver(BrowserAppStatusObserver* observer) {
+  void RemoveObserver(BrowserAppInstanceObserver* observer) {
     observers_.RemoveObserver(observer);
   }
 
@@ -114,7 +120,7 @@ class BrowserAppsTracker : public TabStripModelObserver,
   void OnTabUpdated(Browser* browser, content::WebContents* contents);
   void OnTabClosing(Browser* browser, content::WebContents* contents);
 
-  // Called by |BrowserAppsTracker::WebContentsObserver|.
+  // Called by |BrowserAppInstanceTracker::WebContentsObserver|.
   void OnTabNavigationFinished(content::WebContents* contents);
 
   // Called on browser window changes. Sends update events for all open tabs.
@@ -189,9 +195,11 @@ class BrowserAppsTracker : public TabStripModelObserver,
   // A map of Chrome browser windows.
   std::map<Browser*, std::unique_ptr<BrowserAppInstance>> chrome_instances_;
 
-  base::ObserverList<BrowserAppStatusObserver, true>::Unchecked observers_;
+  base::ObserverList<BrowserAppInstanceObserver, true>::Unchecked observers_;
 
   WebContentsId last_web_contents_id_{0};
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_SHELF_BROWSER_APPS_TRACKER_H_
+}  // namespace apps
+
+#endif  // CHROME_BROWSER_APPS_APP_SERVICE_BROWSER_APP_INSTANCE_TRACKER_H_

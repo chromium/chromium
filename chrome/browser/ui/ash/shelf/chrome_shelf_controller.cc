@@ -36,6 +36,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/browser_app_instance_tracker.h"
 #include "chrome/browser/apps/icon_standardizer.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -62,7 +63,6 @@
 #include "chrome/browser/ui/ash/shelf/app_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/app_window_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/app_window_shelf_item_controller.h"
-#include "chrome/browser/ui/ash/shelf/browser_apps_tracker.h"
 #include "chrome/browser/ui/ash/shelf/browser_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/browser_status_monitor.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
@@ -255,11 +255,12 @@ ChromeShelfController::ChromeShelfController(Profile* profile,
   app_window_controllers_.emplace_back(std::move(app_service_controller));
   // Create the browser monitor which will inform the shelf of status changes.
   browser_status_monitor_ = std::make_unique<BrowserStatusMonitor>(this);
-  if (base::FeatureList::IsEnabled(BrowserAppsTracker::kEnabled)) {
+  if (base::FeatureList::IsEnabled(apps::BrowserAppInstanceTracker::kEnabled)) {
     apps::AppServiceProxyChromeOs* proxy =
         apps::AppServiceProxyFactory::GetForProfile(profile);
-    browser_apps_tracker_ =
-        std::make_unique<BrowserAppsTracker>(proxy->AppRegistryCache());
+    browser_app_instance_tracker_ =
+        std::make_unique<apps::BrowserAppInstanceTracker>(
+            proxy->AppRegistryCache());
   }
 }
 
@@ -307,8 +308,8 @@ void ChromeShelfController::Init() {
 
   UpdatePinnedAppsFromSync();
   browser_status_monitor_->Initialize();
-  if (base::FeatureList::IsEnabled(BrowserAppsTracker::kEnabled)) {
-    browser_apps_tracker_->Initialize();
+  if (base::FeatureList::IsEnabled(apps::BrowserAppInstanceTracker::kEnabled)) {
+    browser_app_instance_tracker_->Initialize();
   }
 }
 

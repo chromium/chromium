@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/shelf/browser_apps_tracker.h"
+#include "chrome/browser/apps/app_service/browser_app_instance_tracker.h"
 
 #include <memory>
 #include <utility>
 
 #include "base/containers/contains.h"
 #include "base/macros.h"
+#include "chrome/browser/apps/app_service/browser_app_instance_observer.h"
 #include "chrome/browser/apps/app_service/web_contents_app_id_utils.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/ui/browser.h"
@@ -16,7 +17,6 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "content/public/browser/navigation_controller.h"
@@ -28,12 +28,24 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 
+namespace apps {
+
 namespace {
 
 Browser* GetBrowserWithTabStripModel(TabStripModel* tab_strip_model) {
   for (auto* browser : *BrowserList::GetInstance()) {
     if (browser->tab_strip_model() == tab_strip_model)
       return browser;
+  }
+  return nullptr;
+}
+
+Browser* GetBrowserWithAuraWindow(aura::Window* aura_window) {
+  for (auto* browser : *BrowserList::GetInstance()) {
+    BrowserWindow* window = browser->window();
+    if (window && window->GetNativeWindow() == aura_window) {
+      return browser;
+    }
   }
   return nullptr;
 }
@@ -62,13 +74,13 @@ bool IsAppActive(Browser* browser, content::WebContents* contents) {
 
 }  // namespace
 
-// Helper class to notify BrowserAppsTracker when WebContents navigation
+// Helper class to notify BrowserAppInstanceTracker when WebContents navigation
 // finishes.
-class BrowserAppsTracker::WebContentsObserver
+class BrowserAppInstanceTracker::WebContentsObserver
     : public content::WebContentsObserver {
  public:
   explicit WebContentsObserver(content::WebContents* contents,
-                               BrowserAppsTracker* owner)
+                               BrowserAppInstanceTracker* owner)
       : content::WebContentsObserver(contents), owner_(owner) {}
   WebContentsObserver(const WebContentsObserver&) = delete;
   WebContentsObserver& operator=(const WebContentsObserver&) = delete;
@@ -84,28 +96,29 @@ class BrowserAppsTracker::WebContentsObserver
   }
 
  private:
-  BrowserAppsTracker* owner_;
+  BrowserAppInstanceTracker* owner_;
 };
 
-const base::Feature BrowserAppsTracker::kEnabled{
+const base::Feature BrowserAppInstanceTracker::kEnabled{
     "EnableBrowserAppsTracker", base::FEATURE_DISABLED_BY_DEFAULT};
 
-BrowserAppsTracker::BrowserAppsTracker(
+BrowserAppInstanceTracker::BrowserAppInstanceTracker(
     apps::AppRegistryCache& app_registry_cache)
     : apps::AppRegistryCache::Observer(&app_registry_cache),
       browser_tab_strip_tracker_(this, nullptr) {
   BrowserList::GetInstance()->AddObserver(this);
 }
 
-BrowserAppsTracker::~BrowserAppsTracker() {
+BrowserAppInstanceTracker::~BrowserAppInstanceTracker() {
   BrowserList::GetInstance()->RemoveObserver(this);
 }
 
-void BrowserAppsTracker::Initialize() {
+void BrowserAppInstanceTracker::Initialize() {
   browser_tab_strip_tracker_.Init();
 }
 
-std::set<const BrowserAppInstance*> BrowserAppsTracker::GetAppInstancesByAppId(
+std::set<const BrowserAppInstance*>
+BrowserAppInstanceTracker::GetAppInstancesByAppId(
     const std::string& app_id) const {
   std::set<const BrowserAppInstance*> result;
   for (const auto& pair : app_instances_) {
@@ -123,7 +136,7 @@ std::set<const BrowserAppInstance*> BrowserAppsTracker::GetAppInstancesByAppId(
   return result;
 }
 
-bool BrowserAppsTracker::IsAppRunning(const std::string& app_id) const {
+bool BrowserAppInstanceTracker::IsAppRunning(const std::string& app_id) const {
   for (const auto& pair : app_instances_) {
     const auto& app_instance = pair.second;
     if (app_instance->app_id == app_id) {
@@ -139,13 +152,14 @@ bool BrowserAppsTracker::IsAppRunning(const std::string& app_id) const {
   return false;
 }
 
-const BrowserAppInstance* BrowserAppsTracker::GetAppInstance(
+const BrowserAppInstance* BrowserAppInstanceTracker::GetAppInstance(
     content::WebContents* contents) const {
   auto it = app_instances_.find(contents);
   return it == app_instances_.end() ? nullptr : it->second.get();
 }
 
-const BrowserAppInstance* BrowserAppsTracker::GetAppInstanceByWebContentsId(
+const BrowserAppInstance*
+BrowserAppInstanceTracker::GetAppInstanceByWebContentsId(
     WebContentsId web_contents_id) const {
   for (const auto& pair : app_instances_) {
     const auto& app_instance = pair.second;
@@ -156,13 +170,13 @@ const BrowserAppInstance* BrowserAppsTracker::GetAppInstanceByWebContentsId(
   return nullptr;
 }
 
-const BrowserAppInstance* BrowserAppsTracker::GetChromeInstance(
+const BrowserAppInstance* BrowserAppInstanceTracker::GetChromeInstance(
     Browser* browser) const {
   auto it = chrome_instances_.find(browser);
   return it == chrome_instances_.end() ? nullptr : it->second.get();
 }
 
-void BrowserAppsTracker::OnTabStripModelChanged(
+void BrowserAppInstanceTracker::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
@@ -188,26 +202,26 @@ void BrowserAppsTracker::OnTabStripModelChanged(
   }
 }
 
-void BrowserAppsTracker::OnWindowVisibilityChanged(aura::Window* window,
-                                                   bool visible) {
+void BrowserAppInstanceTracker::OnWindowVisibilityChanged(aura::Window* window,
+                                                          bool visible) {
   DCHECK(window);
   if (!IsWindowTracked(window)) {
     return;
   }
-  if (auto* browser_view = BrowserView::GetBrowserViewForNativeWindow(window)) {
-    OnBrowserWindowUpdated(browser_view->browser());
+  if (Browser* browser = GetBrowserWithAuraWindow(window)) {
+    OnBrowserWindowUpdated(browser);
   }
 }
 
-void BrowserAppsTracker::OnBrowserSetLastActive(Browser* browser) {
+void BrowserAppInstanceTracker::OnBrowserSetLastActive(Browser* browser) {
   OnBrowserWindowUpdated(browser);
 }
 
-void BrowserAppsTracker::OnBrowserNoLongerActive(Browser* browser) {
+void BrowserAppInstanceTracker::OnBrowserNoLongerActive(Browser* browser) {
   OnBrowserWindowUpdated(browser);
 }
 
-void BrowserAppsTracker::OnAppUpdate(const apps::AppUpdate& update) {
+void BrowserAppInstanceTracker::OnAppUpdate(const apps::AppUpdate& update) {
   if (!apps_util::AppTypeUsesWebContents(update.AppType())) {
     return;
   }
@@ -224,12 +238,12 @@ void BrowserAppsTracker::OnAppUpdate(const apps::AppUpdate& update) {
   }
 }
 
-void BrowserAppsTracker::OnAppRegistryCacheWillBeDestroyed(
+void BrowserAppInstanceTracker::OnAppRegistryCacheWillBeDestroyed(
     apps::AppRegistryCache* cache) {
   Observe(nullptr);
 }
 
-void BrowserAppsTracker::OnTabStripModelChangeInsert(
+void BrowserAppInstanceTracker::OnTabStripModelChangeInsert(
     Browser* browser,
     const TabStripModelChange::Insert& insert,
     const TabStripSelectionChange& selection) {
@@ -241,7 +255,8 @@ void BrowserAppsTracker::OnTabStripModelChangeInsert(
     return;
   }
   // First tab attached.
-  if (browser->tab_strip_model()->count() == insert.contents.size()) {
+  if (browser->tab_strip_model()->count() ==
+      static_cast<int>(insert.contents.size())) {
     OnBrowserFirstTabAttached(browser);
   }
   for (const auto& inserted_tab : insert.contents) {
@@ -257,15 +272,15 @@ void BrowserAppsTracker::OnTabStripModelChangeInsert(
 #endif
     if (tab_is_new) {
       webcontents_to_observer_map_[contents] =
-          std::make_unique<BrowserAppsTracker::WebContentsObserver>(contents,
-                                                                    this);
+          std::make_unique<BrowserAppInstanceTracker::WebContentsObserver>(
+              contents, this);
       OnTabCreated(browser, contents);
     }
     OnTabAttached(browser, contents);
   }
 }
 
-void BrowserAppsTracker::OnTabStripModelChangeRemove(
+void BrowserAppInstanceTracker::OnTabStripModelChangeRemove(
     Browser* browser,
     const TabStripModelChange::Remove& remove,
     const TabStripSelectionChange& selection) {
@@ -314,7 +329,7 @@ void BrowserAppsTracker::OnTabStripModelChangeRemove(
   }
 }
 
-void BrowserAppsTracker::OnTabStripModelChangeReplace(
+void BrowserAppInstanceTracker::OnTabStripModelChangeReplace(
     Browser* browser,
     const TabStripModelChange::Replace& replace) {
   // Simulate closing the old tab and opening a new tab.
@@ -323,7 +338,7 @@ void BrowserAppsTracker::OnTabStripModelChangeReplace(
   OnTabAttached(browser, replace.new_contents);
 }
 
-void BrowserAppsTracker::OnTabStripModelChangeSelection(
+void BrowserAppInstanceTracker::OnTabStripModelChangeSelection(
     Browser* browser,
     const TabStripSelectionChange& selection) {
   if (!selection.active_tab_changed()) {
@@ -337,7 +352,7 @@ void BrowserAppsTracker::OnTabStripModelChangeSelection(
   }
 }
 
-void BrowserAppsTracker::OnBrowserFirstTabAttached(Browser* browser) {
+void BrowserAppInstanceTracker::OnBrowserFirstTabAttached(Browser* browser) {
   tracked_browsers_.insert(browser);
   BrowserWindow* window = browser->window();
   DCHECK(window && window->GetNativeWindow());
@@ -347,7 +362,7 @@ void BrowserAppsTracker::OnBrowserFirstTabAttached(Browser* browser) {
   }
 }
 
-void BrowserAppsTracker::OnBrowserLastTabDetached(Browser* browser) {
+void BrowserAppInstanceTracker::OnBrowserLastTabDetached(Browser* browser) {
   BrowserWindow* window = browser->window();
   DCHECK(window && window->GetNativeWindow());
   browser_window_observations_.RemoveObservation(window->GetNativeWindow());
@@ -355,16 +370,16 @@ void BrowserAppsTracker::OnBrowserLastTabDetached(Browser* browser) {
   tracked_browsers_.erase(browser);
 }
 
-void BrowserAppsTracker::OnTabCreated(Browser* browser,
-                                      content::WebContents* contents) {
+void BrowserAppInstanceTracker::OnTabCreated(Browser* browser,
+                                             content::WebContents* contents) {
   std::string app_id = GetAppId(contents);
   if (!app_id.empty()) {
     CreateAppInstance(std::move(app_id), browser, contents);
   }
 }
 
-void BrowserAppsTracker::OnTabAttached(Browser* browser,
-                                       content::WebContents* contents) {
+void BrowserAppInstanceTracker::OnTabAttached(Browser* browser,
+                                              content::WebContents* contents) {
   auto it = app_instances_.find(contents);
   if (it != app_instances_.end()) {
     auto& app_instance = it->second;
@@ -372,8 +387,8 @@ void BrowserAppsTracker::OnTabAttached(Browser* browser,
   }
 }
 
-void BrowserAppsTracker::OnTabUpdated(Browser* browser,
-                                      content::WebContents* contents) {
+void BrowserAppInstanceTracker::OnTabUpdated(Browser* browser,
+                                             content::WebContents* contents) {
   std::string new_app_id = GetAppId(contents);
   auto it = app_instances_.find(contents);
   if (it != app_instances_.end()) {
@@ -397,12 +412,12 @@ void BrowserAppsTracker::OnTabUpdated(Browser* browser,
   }
 }
 
-void BrowserAppsTracker::OnTabClosing(Browser* browser,
-                                      content::WebContents* contents) {
+void BrowserAppInstanceTracker::OnTabClosing(Browser* browser,
+                                             content::WebContents* contents) {
   RemoveAppInstanceIfExists(contents);
 }
 
-void BrowserAppsTracker::OnTabNavigationFinished(
+void BrowserAppInstanceTracker::OnTabNavigationFinished(
     content::WebContents* contents) {
   Browser* browser = chrome::FindBrowserWithWebContents(contents);
   if (browser) {
@@ -410,7 +425,7 @@ void BrowserAppsTracker::OnTabNavigationFinished(
   }
 }
 
-void BrowserAppsTracker::OnBrowserWindowUpdated(Browser* browser) {
+void BrowserAppInstanceTracker::OnBrowserWindowUpdated(Browser* browser) {
   // We only want to send window events for the browsers we track to avoid
   // sending window events before a "browser added" event.
   if (!IsBrowserTracked(browser)) {
@@ -428,9 +443,10 @@ void BrowserAppsTracker::OnBrowserWindowUpdated(Browser* browser) {
   }
 }
 
-void BrowserAppsTracker::CreateAppInstance(std::string app_id,
-                                           Browser* browser,
-                                           content::WebContents* contents) {
+void BrowserAppInstanceTracker::CreateAppInstance(
+    std::string app_id,
+    Browser* browser,
+    content::WebContents* contents) {
   CreateInstance(app_instances_, contents,
                  base::WrapUnique(new BrowserAppInstance{
                      std::move(app_id),
@@ -442,17 +458,18 @@ void BrowserAppsTracker::CreateAppInstance(std::string app_id,
                  }));
 }
 
-void BrowserAppsTracker::MaybeUpdateAppInstance(BrowserAppInstance& instance,
-                                                Browser* browser) {
+void BrowserAppInstanceTracker::MaybeUpdateAppInstance(
+    BrowserAppInstance& instance,
+    Browser* browser) {
   MaybeUpdateInstance(instance, browser);
 }
 
-void BrowserAppsTracker::RemoveAppInstanceIfExists(
+void BrowserAppInstanceTracker::RemoveAppInstanceIfExists(
     content::WebContents* contents) {
   RemoveInstanceIfExists(app_instances_, contents);
 }
 
-void BrowserAppsTracker::CreateChromeInstance(Browser* browser) {
+void BrowserAppInstanceTracker::CreateChromeInstance(Browser* browser) {
   CreateInstance(chrome_instances_, browser,
                  base::WrapUnique(new BrowserAppInstance{
                      extension_misc::kChromeAppId,
@@ -464,18 +481,18 @@ void BrowserAppsTracker::CreateChromeInstance(Browser* browser) {
                  }));
 }
 
-void BrowserAppsTracker::MaybeUpdateChromeInstance(
+void BrowserAppInstanceTracker::MaybeUpdateChromeInstance(
     BrowserAppInstance& instance) {
   // Browser does not change for Chrome instances.
   MaybeUpdateInstance(instance, instance.browser);
 }
 
-void BrowserAppsTracker::RemoveChromeInstanceIfExists(Browser* browser) {
+void BrowserAppInstanceTracker::RemoveChromeInstanceIfExists(Browser* browser) {
   RemoveInstanceIfExists(chrome_instances_, browser);
 }
 
 template <typename KeyT>
-void BrowserAppsTracker::CreateInstance(
+void BrowserAppInstanceTracker::CreateInstance(
     std::map<KeyT, std::unique_ptr<BrowserAppInstance>>& instances,
     const KeyT& key,
     std::unique_ptr<BrowserAppInstance> instance_ptr) {
@@ -487,8 +504,9 @@ void BrowserAppsTracker::CreateInstance(
   }
 }
 
-void BrowserAppsTracker::MaybeUpdateInstance(BrowserAppInstance& instance,
-                                             Browser* browser) {
+void BrowserAppInstanceTracker::MaybeUpdateInstance(
+    BrowserAppInstance& instance,
+    Browser* browser) {
   DCHECK(browser);
   bool visible;
   bool active;
@@ -512,16 +530,16 @@ void BrowserAppsTracker::MaybeUpdateInstance(BrowserAppInstance& instance,
   }
 }
 
-bool BrowserAppsTracker::IsBrowserTracked(Browser* browser) const {
+bool BrowserAppInstanceTracker::IsBrowserTracked(Browser* browser) const {
   return base::Contains(tracked_browsers_, browser);
 }
 
-bool BrowserAppsTracker::IsWindowTracked(aura::Window* window) const {
+bool BrowserAppInstanceTracker::IsWindowTracked(aura::Window* window) const {
   return browser_window_observations_.IsObservingSource(window);
 }
 
 template <typename KeyT>
-void BrowserAppsTracker::RemoveInstanceIfExists(
+void BrowserAppInstanceTracker::RemoveInstanceIfExists(
     std::map<KeyT, std::unique_ptr<BrowserAppInstance>>& instances,
     const KeyT& key) {
   auto it = instances.find(key);
@@ -534,3 +552,5 @@ void BrowserAppsTracker::RemoveInstanceIfExists(
     observer.OnBrowserAppRemoved(*app_instance);
   }
 }
+
+}  // namespace apps

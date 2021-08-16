@@ -2,11 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/shelf/browser_app_status_observer.h"
+#include "chrome/browser/apps/app_service/browser_app_instance_observer.h"
 
-void BrowserAppStatusObserver::OnBrowserAppAdded(
+namespace apps {
+
+void BrowserAppInstanceObserver::OnBrowserAppAdded(
     const BrowserAppInstance& instance) {}
-void BrowserAppStatusObserver::OnBrowserAppUpdated(
+void BrowserAppInstanceObserver::OnBrowserAppUpdated(
     const BrowserAppInstance& instance) {}
-void BrowserAppStatusObserver::OnBrowserAppRemoved(
+void BrowserAppInstanceObserver::OnBrowserAppRemoved(
     const BrowserAppInstance& instance) {}
+
+}  // namespace apps

@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/shell.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/browser_app_instance_observer.h"
+#include "chrome/browser/apps/app_service/browser_app_instance_tracker.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/shelf/browser_app_status_observer.h"
-#include "chrome/browser/ui/ash/shelf/browser_apps_tracker.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -37,7 +36,7 @@ constexpr char kAppBId[] = "abhkhfladdfdlfmhaokoglcllbamaili";
 
 struct TestInstance {
   static TestInstance Create(const std::string name,
-                             const BrowserAppInstance& instance) {
+                             const apps::BrowserAppInstance& instance) {
     return {
         name,
         instance.app_id,
@@ -48,7 +47,7 @@ struct TestInstance {
         instance.active,
     };
   }
-  static TestInstance Create(const BrowserAppInstance* instance) {
+  static TestInstance Create(const apps::BrowserAppInstance* instance) {
     if (instance) {
       return Create("snapshot", *instance);
     }
@@ -94,24 +93,25 @@ std::ostream& operator<<(std::ostream& os, const TestInstance& e) {
   return os << ")";
 }
 
-class Recorder : public BrowserAppStatusObserver {
+class Recorder : public apps::BrowserAppInstanceObserver {
  public:
-  explicit Recorder(BrowserAppsTracker* tracker) : tracker_(tracker) {
+  explicit Recorder(apps::BrowserAppInstanceTracker* tracker)
+      : tracker_(tracker) {
     DCHECK(tracker);
     tracker_->AddObserver(this);
   }
 
   ~Recorder() override { tracker_->RemoveObserver(this); }
 
-  void OnBrowserAppAdded(const BrowserAppInstance& instance) override {
+  void OnBrowserAppAdded(const apps::BrowserAppInstance& instance) override {
     calls_.push_back(TestInstance::Create("added", instance));
   }
 
-  void OnBrowserAppUpdated(const BrowserAppInstance& instance) override {
+  void OnBrowserAppUpdated(const apps::BrowserAppInstance& instance) override {
     calls_.push_back(TestInstance::Create("updated", instance));
   }
 
-  void OnBrowserAppRemoved(const BrowserAppInstance& instance) override {
+  void OnBrowserAppRemoved(const apps::BrowserAppInstance& instance) override {
     calls_.push_back(TestInstance::Create("removed", instance));
   }
 
@@ -130,13 +130,13 @@ class Recorder : public BrowserAppStatusObserver {
     return {};
   }
 
-  BrowserAppsTracker* tracker_;
+  apps::BrowserAppInstanceTracker* tracker_;
   std::vector<TestInstance> calls_;
 };
 
 }  // namespace
 
-class BrowserAppsTrackerTest : public InProcessBrowserTest {
+class BrowserAppInstanceTrackerTest : public InProcessBrowserTest {
  protected:
   Browser* CreateBrowser() {
     Profile* profile = ProfileManager::GetPrimaryUserProfile();
@@ -215,7 +215,8 @@ class BrowserAppsTrackerTest : public InProcessBrowserTest {
     Profile* profile = ProfileManager::GetPrimaryUserProfile();
     apps::AppServiceProxyChromeOs* proxy =
         apps::AppServiceProxyFactory::GetForProfile(profile);
-    tracker_ = std::make_unique<BrowserAppsTracker>(proxy->AppRegistryCache());
+    tracker_ = std::make_unique<apps::BrowserAppInstanceTracker>(
+        proxy->AppRegistryCache());
     tracker_->Initialize();
 
     ASSERT_EQ(kAppAId, InstallWebApp("https://a.example.org"));
@@ -233,10 +234,10 @@ class BrowserAppsTrackerTest : public InProcessBrowserTest {
   }
 
  protected:
-  std::unique_ptr<BrowserAppsTracker> tracker_;
+  std::unique_ptr<apps::BrowserAppInstanceTracker> tracker_;
 };
 
-IN_PROC_BROWSER_TEST_F(BrowserAppsTrackerTest, InsertAndCloseTabs) {
+IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, InsertAndCloseTabs) {
   Browser* browser = nullptr;
   content::WebContents* tab_app1 = nullptr;
   content::WebContents* tab_app2 = nullptr;
@@ -320,7 +321,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppsTrackerTest, InsertAndCloseTabs) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserAppsTrackerTest, ForegroundTabNavigate) {
+IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, ForegroundTabNavigate) {
   // Setup: one foreground tab with no app.
   auto* browser = CreateBrowser();
   auto* tab = InsertForegroundTab(browser, "https://c.example.org");
@@ -393,7 +394,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppsTrackerTest, ForegroundTabNavigate) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserAppsTrackerTest, WindowedWebApp) {
+IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, WindowedWebApp) {
   Browser* browser = nullptr;
   content::WebContents* tab = nullptr;
 
@@ -421,7 +422,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppsTrackerTest, WindowedWebApp) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserAppsTrackerTest, SwitchTabs) {
+IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, SwitchTabs) {
   // Setup: one foreground tab and one background tab.
   auto* browser = CreateBrowser();
   auto* tab0 = InsertForegroundTab(browser, "https://a.example.org");
@@ -463,7 +464,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppsTrackerTest, SwitchTabs) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserAppsTrackerTest, WindowVisibility) {
+IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, WindowVisibility) {
   // Setup: one foreground tab and one background tab.
   auto* browser = CreateBrowser();
   auto* bg_tab = InsertForegroundTab(browser, "https://a.example.org");
@@ -499,7 +500,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppsTrackerTest, WindowVisibility) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserAppsTrackerTest, WindowActivation) {
+IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, WindowActivation) {
   // Setup: two browsers with two tabs each.
   auto* browser1 = CreateBrowser();
   InsertForegroundTab(browser1, "https://a.example.org");
@@ -547,7 +548,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppsTrackerTest, WindowActivation) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserAppsTrackerTest, TabDrag) {
+IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, TabDrag) {
   // Setup: two browsers: one with two, another with three tabs.
   auto* browser1 = CreateBrowser();
   InsertForegroundTab(browser1, "https://a.example.org");
@@ -599,7 +600,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppsTrackerTest, TabDrag) {
   });
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserAppsTrackerTest, Accessors) {
+IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, Accessors) {
   // Setup: two regular browsers, and one app window browser.
   auto* browser1 = CreateBrowser();
   auto* b1_tab1 = InsertForegroundTab(browser1, "https://a.example.org");
@@ -654,12 +655,12 @@ IN_PROC_BROWSER_TEST_F(BrowserAppsTrackerTest, Accessors) {
                           kActive}));
 
   EXPECT_EQ(tracker_->GetAppInstancesByAppId(kAppAId),
-            std::set<const BrowserAppInstance*>{b1_tab1_app});
+            std::set<const apps::BrowserAppInstance*>{b1_tab1_app});
   EXPECT_EQ(tracker_->GetAppInstancesByAppId(kAppBId),
-            (std::set<const BrowserAppInstance*>{b1_tab3_app, b2_tab2_app,
-                                                 b3_tab1_app}));
+            (std::set<const apps::BrowserAppInstance*>{b1_tab3_app, b2_tab2_app,
+                                                       b3_tab1_app}));
   EXPECT_EQ(tracker_->GetAppInstancesByAppId(kChromeAppId),
-            (std::set<const BrowserAppInstance*>{b1_app, b2_app}));
+            (std::set<const apps::BrowserAppInstance*>{b1_app, b2_app}));
 
   EXPECT_TRUE(tracker_->IsAppRunning(kAppAId));
   EXPECT_TRUE(tracker_->IsAppRunning(kAppBId));
@@ -694,7 +695,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppsTrackerTest, Accessors) {
   EXPECT_FALSE(tracker_->IsAppRunning(kChromeAppId));
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserAppsTrackerTest, AppInstall) {
+IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, AppInstall) {
   auto* browser1 = CreateBrowser();
   auto* tab1 = InsertForegroundTab(browser1, "https://c.example.org");
   InsertForegroundTab(browser1, "https://d.example.org");
