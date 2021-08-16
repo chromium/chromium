@@ -7166,7 +7166,13 @@ others/histograms.xml -->
       label="Unload handler exists in a sub frame, and the current
              experimental config doesn't permit it to be BFCached."/>
   <int value="52" label="ServiceWorker is unregistered"/>
-  <int value="53" label="No valid HTTP response header"/>
+  <int value="53" label="CacheControlNoStore is present"/>
+  <int value="54"
+      label="CacheControlNoStore is present and cookie is modified"/>
+  <int value="55"
+      label="CacheControlNoStore is present and HTTPOnly cookie is modified"/>
+  <int value="56" label="No valid HTTP response header"/>
+  <int value="57" label="Disallow activation navigations for Bug1234857"/>
 </enum>
 
 <enum name="BackForwardCacheReloadsAfterHistoryNavigation">
