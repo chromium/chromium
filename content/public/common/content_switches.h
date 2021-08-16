@@ -175,7 +175,6 @@ CONTENT_EXPORT extern const char kMojoCoreLibraryPath[];
 CONTENT_EXPORT extern const char kMojoLocalStorage[];
 CONTENT_EXPORT extern const char kNoUnsandboxedZygote[];
 CONTENT_EXPORT extern const char kNoZygote[];
-extern const char kNoV8UntrustedCodeMitigations[];
 CONTENT_EXPORT extern const char kNumRasterThreads[];
 CONTENT_EXPORT extern const char kPpapiInProcess[];
 extern const char kPpapiPluginLauncher[];

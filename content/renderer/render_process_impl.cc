@@ -270,12 +270,6 @@ RenderProcessImpl::RenderProcessImpl()
   }
 #endif  // defined(OS_MAC) && defined(ARCH_CPU_X86_64)
 
-  if (command_line->HasSwitch(switches::kNoV8UntrustedCodeMitigations)) {
-    const char* disable_mitigations = "--no-untrusted-code-mitigations";
-    v8::V8::SetFlagsFromString(disable_mitigations,
-                               strlen(disable_mitigations));
-  }
-
   if (command_line->HasSwitch(switches::kJavaScriptFlags)) {
     std::string js_flags =
         command_line->GetSwitchValueASCII(switches::kJavaScriptFlags);

@@ -357,8 +357,6 @@ void V8Initializer::Initialize(IsolateHolder::ScriptMode mode) {
 
   if (base::FeatureList::IsEnabled(features::kV8UntrustedCodeMitigations)) {
     SetV8Flags("--untrusted-code-mitigations");
-  } else {
-    SetV8Flags("--no-untrusted-code-mitigations");
   }
 
   if (base::FeatureList::IsEnabled(features::kV8ScriptAblation)) {
