@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_BROWSER_SWITCHER_BROWSER_SWITCHER_PREFS_H_
 #define CHROME_BROWSER_BROWSER_SWITCHER_BROWSER_SWITCHER_PREFS_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -13,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/common/policy_service.h"
@@ -28,14 +30,69 @@ class Profile;
 
 namespace browser_switcher {
 
+// This type pre-computes some strings from the URL's parts, so we don't have
+// to pay the cost of constructing those strings multiple times. i.e., the same
+// NoCopyUrl can be passed to multiple calls of Rule::Matches().
+class NoCopyUrl {
+ public:
+  explicit NoCopyUrl(const GURL& original);
+  NoCopyUrl(const NoCopyUrl&) = delete;
+
+  const GURL& original() const { return original_; }
+  base::StringPiece host_and_port() const { return host_and_port_; }
+  base::StringPiece spec() const { return original_.spec(); }
+  base::StringPiece spec_without_port() const { return spec_without_port_; }
+
+ private:
+  const GURL& original_;
+  // If there is a port number, then this is "<host>:<port>". Otherwise, this is
+  // just the host.
+  std::string host_and_port_;
+  // Same as |original_.spec()|, but with the port removed.
+  std::string spec_without_port_;
+};
+
+// A single "rule" from a sitelist or greylist.
+class Rule {
+ public:
+  explicit Rule(base::StringPiece original_rule);
+  virtual ~Rule() = default;
+
+  // Returns true if |no_copy_url| matches this rule. Ignores the value of
+  // |inverted_|.
+  virtual bool Matches(const NoCopyUrl& no_copy_url) const = 0;
+
+  // Returns true if the rule is valid. If this returns false, the rule will be
+  // removed from the final list of canonicalized rules.
+  virtual bool IsValid() const = 0;
+
+  // Converts the rule to a human-readable string, for display on
+  // chrome://browser-switch/internals and serializing to cache.dat.
+  virtual std::string ToString() const = 0;
+
+  int priority() const { return priority_; }
+
+  bool inverted() const { return inverted_; }
+
+ private:
+  // The "priority" of this rule for making decisions. This should be the length
+  // of the original string this rule was parsed from. When 2 rules conflict,
+  // the one with higher priority always wins.
+  int priority_;
+
+  // Whether this rule is inverted or not. Inverted rules change the decision
+  // from "open in alternative browser" to "don't open in alternative browser".
+  bool inverted_;
+};
+
 // A named pair type.
 struct RuleSet {
   RuleSet();
-  RuleSet(const RuleSet&);
+  RuleSet(RuleSet&&);
   ~RuleSet();
 
-  std::vector<std::string> sitelist;
-  std::vector<std::string> greylist;
+  std::vector<std::unique_ptr<Rule>> sitelist;
+  std::vector<std::unique_ptr<Rule>> greylist;
 };
 
 // Values for the BrowserSwitcherParsingMode policy. Make sure they match the

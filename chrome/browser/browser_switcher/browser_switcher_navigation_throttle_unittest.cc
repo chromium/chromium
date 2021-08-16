@@ -80,15 +80,20 @@ class BrowserSwitcherNavigationThrottleTest
 
   MockBrowserSwitcherSitelist* sitelist() { return sitelist_; }
 
+  Decision stay() { return {kStay, kDefault, nullptr}; }
+
+  Decision go() { return {kGo, kSitelist, bogus_rule_.get()}; }
+
  private:
   MockBrowserSwitcherSitelist* sitelist_;
+
+  std::unique_ptr<Rule> bogus_rule_ =
+      CanonicalizeRule("//example.com/", ParsingMode::kDefault);
 };
 
-Decision STAY = {kStay, kDefault, ""};
-Decision GO = {kGo, kSitelist, "example.com"};
 
 TEST_F(BrowserSwitcherNavigationThrottleTest, ShouldIgnoreNavigation) {
-  EXPECT_CALL(*sitelist(), GetDecision(_)).WillOnce(Return(STAY));
+  EXPECT_CALL(*sitelist(), GetDecision(_)).WillOnce(Return(stay()));
   std::unique_ptr<MockNavigationHandle> handle =
       CreateMockNavigationHandle(GURL("https://example.com/"));
   std::unique_ptr<NavigationThrottle> throttle =
@@ -97,7 +102,7 @@ TEST_F(BrowserSwitcherNavigationThrottleTest, ShouldIgnoreNavigation) {
 }
 
 TEST_F(BrowserSwitcherNavigationThrottleTest, LaunchesOnStartRequest) {
-  EXPECT_CALL(*sitelist(), GetDecision(_)).WillOnce(Return(GO));
+  EXPECT_CALL(*sitelist(), GetDecision(_)).WillOnce(Return(go()));
   std::unique_ptr<MockNavigationHandle> handle =
       CreateMockNavigationHandle(GURL("https://example.com/"));
   std::unique_ptr<NavigationThrottle> throttle =
@@ -109,8 +114,8 @@ TEST_F(BrowserSwitcherNavigationThrottleTest, LaunchesOnStartRequest) {
 
 TEST_F(BrowserSwitcherNavigationThrottleTest, LaunchesOnRedirectRequest) {
   EXPECT_CALL(*sitelist(), GetDecision(_))
-      .WillOnce(Return(STAY))
-      .WillOnce(Return(GO));
+      .WillOnce(Return(stay()))
+      .WillOnce(Return(go()));
   std::unique_ptr<MockNavigationHandle> handle =
       CreateMockNavigationHandle(GURL("https://yahoo.com/"));
   std::unique_ptr<NavigationThrottle> throttle =

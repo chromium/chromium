@@ -16,9 +16,12 @@ namespace browser_switcher {
 class BrowserSwitcherPrefs;
 class ParsedXml;
 
-// Pre-processes the URL rule and modifies it in-place if needed, to avoid
-// having to convert uppercase/lowercase for every rule at every navigation.
-void CanonicalizeRule(std::string* rule);
+// Return a Rule object for |original_rule|, with the right type depending on
+// |parsing_mode|.
+//
+// Returns nullptr if |original_rule| is not a valid rule.
+std::unique_ptr<Rule> CanonicalizeRule(base::StringPiece original_rule,
+                                       ParsingMode parsing_mode);
 
 enum Action {
   kStay = 0,
@@ -39,7 +42,7 @@ enum Reason {
 };
 
 struct Decision {
-  Decision(Action, Reason, base::StringPiece matching_rule);
+  Decision(Action, Reason, const Rule* matching_rule);
 
   Decision();
   Decision(Decision&);
@@ -51,7 +54,7 @@ struct Decision {
   Reason reason;
   // If reason is kSitelist or kGreylist, this is the rule that caused the
   // decision.
-  base::StringPiece matching_rule;
+  const Rule* matching_rule;
 };
 
 // Interface that decides whether a navigation should trigger a browser
@@ -91,7 +94,7 @@ class BrowserSwitcherSitelist {
 // switch.
 class BrowserSwitcherSitelistImpl : public BrowserSwitcherSitelist {
  public:
-  explicit BrowserSwitcherSitelistImpl(const BrowserSwitcherPrefs* prefs);
+  explicit BrowserSwitcherSitelistImpl(BrowserSwitcherPrefs* prefs);
   ~BrowserSwitcherSitelistImpl() override;
 
   BrowserSwitcherSitelistImpl(const BrowserSwitcherSitelistImpl&) = delete;
@@ -112,10 +115,27 @@ class BrowserSwitcherSitelistImpl : public BrowserSwitcherSitelist {
 
   Decision GetDecisionImpl(const GURL& url) const;
 
+  // Stores the rules from |src| in |dst|, by first calling CanonicalizeRule()
+  // on them.
+  void StoreRules(std::vector<std::unique_ptr<Rule>>* dst,
+                  const std::vector<std::string>& src);
+
+  // CanonicalizeRule() has different output based on ParsingMode, so we need to
+  // re-canonicalize them if the parsing mode changes.
+  void OnPrefsChanged(BrowserSwitcherPrefs* prefs,
+                      const std::vector<std::string>& changed_prefs);
+
   RuleSet ieem_sitelist_;
   RuleSet external_sitelist_;
 
-  const BrowserSwitcherPrefs* const prefs_;
+  // Original values used for canonicalization.
+  std::vector<std::string> original_ieem_sitelist_;
+  std::vector<std::string> original_external_sitelist_;
+  std::vector<std::string> original_external_greylist_;
+
+  base::CallbackListSubscription prefs_changed_subscription_;
+
+  BrowserSwitcherPrefs* const prefs_;
 };
 
 }  // namespace browser_switcher
