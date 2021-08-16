@@ -36,7 +36,8 @@ bool FilterKeyBasedOnRange(proto::SignalType signal_type,
                            const std::string& signal_key) {
   DCHECK(start_time <= end_time);
   SignalKey key;
-  SignalKey::FromBinary(signal_key, &key);
+  if (!SignalKey::FromBinary(signal_key, &key))
+    return false;
   DCHECK(key.IsValid());
   if (key.kind() != metadata_utils::SignalTypeToSignalKind(signal_type) ||
       key.name_hash() != name_hash) {
@@ -52,10 +53,9 @@ leveldb_proto::Enums::KeyIteratorAction GetSamplesIteratorController(
     base::Time end_time,
     const std::string& key_bytes) {
   SignalKey key;
-  SignalKey::FromBinary(key_bytes, &key);
-  DCHECK(key.IsValid());
-  if (!key.IsValid())
+  if (!SignalKey::FromBinary(key_bytes, &key))
     return leveldb_proto::Enums::kSkipAndStop;
+  DCHECK(key.IsValid());
   if (start_key.kind() != key.kind() ||
       start_key.name_hash() != key.name_hash()) {
     // This key is for a different signal.
@@ -161,7 +161,8 @@ void SignalDatabaseImpl::OnGetSamples(
       entries.get()->size());
   for (const auto& pair : *entries.get()) {
     SignalKey key;
-    SignalKey::FromBinary(pair.first, &key);
+    if (!SignalKey::FromBinary(pair.first, &key))
+      continue;
     DCHECK(key.IsValid());
     // TODO(shaktisahu): Remove DCHECK and collect UMA.
     const auto& signal_data = pair.second;

@@ -10,6 +10,8 @@
 #include <string>
 #include <type_traits>
 
+#include "base/compiler_specific.h"
+
 namespace segmentation_platform {
 
 // The SignalKeyInternal is used for identifying a particular record in the
@@ -98,9 +100,9 @@ static_assert(sizeof(SignalKeyInternal) ==
 // format.
 std::string SignalKeyInternalToBinary(const SignalKeyInternal& input);
 // Parses a machine readable representation of a SignalKeyInternal into
-// a SignalKeyInternal.
-void SignalKeyInternalFromBinary(const std::string& input,
-                                 SignalKeyInternal* output);
+// a SignalKeyInternal. Returns whether the conversion succeeded.
+bool SignalKeyInternalFromBinary(const std::string& input,
+                                 SignalKeyInternal* output) WARN_UNUSED_RESULT;
 // Returns a human readable representation of the SignalKeyInternal.
 std::string SignalKeyInternalToDebugString(const SignalKeyInternal& input);
 
@@ -110,9 +112,10 @@ std::string SignalKeyInternalToDebugString(const SignalKeyInternal& input);
 std::string SignalKeyInternalPrefixToBinary(
     const SignalKeyInternal::Prefix& input);
 // Parses a machine readable representation of a SignalKeyInternal::Prefix into
-// a SignalKeyInternal::Prefix.
-void SignalKeyInternalPrefixFromBinary(const std::string& input,
-                                       SignalKeyInternal::Prefix* output);
+// a SignalKeyInternal::Prefix. Returns whether the conversion succeeded.
+bool SignalKeyInternalPrefixFromBinary(const std::string& input,
+                                       SignalKeyInternal::Prefix* output)
+    WARN_UNUSED_RESULT;
 // Returns a human readable representation of the SignalKeyInternal::Prefix.
 std::string SignalKeyInternalPrefixToDebugString(
     const SignalKeyInternal::Prefix& input);
