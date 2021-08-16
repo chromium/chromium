@@ -245,8 +245,11 @@ NGLayoutResult::NGLayoutResult(
     rare_data->early_break_appeal = builder->break_appeal_;
   }
 
-  if (builder->column_spanner_)
+  if (builder->column_spanner_) {
     EnsureRareData()->column_spanner = builder->column_spanner_;
+    EnsureRareData()->is_empty_spanner_parent =
+        builder->is_empty_spanner_parent_;
+  }
 
   if (HasRareData()) {
     rare_data_->bfc_line_offset = builder->bfc_line_offset_;

@@ -273,6 +273,11 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
     DCHECK(has_column_spanner_ || !column_spanner_);
     return has_column_spanner_;
   }
+  void SetIsEmptySpannerParent(bool is_empty_spanner_parent) {
+    DCHECK(FoundColumnSpanner());
+    is_empty_spanner_parent_ = is_empty_spanner_parent;
+  }
+  bool IsEmptySpannerParent() const { return is_empty_spanner_parent_; }
 
   // See NGLayoutResult::AnnotationOverflow().
   void SetAnnotationOverflow(LayoutUnit overflow) {
@@ -371,6 +376,7 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   bool has_block_fragmentation_ = false;
   bool is_fragmentation_context_root_ = false;
   bool has_column_spanner_ = false;
+  bool is_empty_spanner_parent_ = false;
 
   bool has_oof_candidate_that_needs_block_offset_adjustment_ = false;
 };

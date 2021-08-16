@@ -546,6 +546,10 @@ NGBreakStatus FinishFragmentationForFragmentainer(
                                   consumed_block_size);
     builder->SetConsumedBlockSize(fragments_total_block_size);
   }
+  if (builder->IsEmptySpannerParent() &&
+      builder->HasOutOfFlowFragmentainerDescendants())
+    builder->SetIsEmptySpannerParent(false);
+
   return NGBreakStatus::kContinue;
 }
 

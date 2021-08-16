@@ -658,6 +658,7 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::LayoutRow(
     }
   };
   Vector<ResultWithOffset, 16> new_columns;
+  bool is_empty_spanner_parent = false;
 
   scoped_refptr<const NGLayoutResult> result;
 
@@ -706,8 +707,10 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::LayoutRow(
       }
       actual_column_count++;
 
-      if (result->ColumnSpanner())
+      if (result->ColumnSpanner()) {
+        is_empty_spanner_parent = result->IsEmptySpannerParent();
         break;
+      }
 
       has_violating_break |= result->HasViolatingBreak();
       column_inline_offset += column_inline_progression_;
@@ -809,13 +812,16 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::LayoutRow(
   // margin from any previous column spanner, and also make sure that we don't
   // incorrectly consider this to be a class A breakpoint. A fragmentainer may
   // end up empty if there's no in-flow content at all inside the multicol
-  // container, or if the multicol container starts with a spanner.
+  // container, if the multicol container starts with a spanner, or if the
+  // only in-flow content is empty as a result of a nested OOF positioned
+  // element whose containing block lives outside this multicol.
   //
   // If the size of the fragment is non-zero, we shouldn't consider it to be
   // empty (even if there's nothing inside). This happens with contenteditable,
   // which in some cases makes room for a line box that isn't there.
-  bool is_empty = !column_size.block_size && new_columns.size() == 1 &&
-                  new_columns[0].Fragment().Children().empty();
+  bool is_empty =
+      !column_size.block_size && new_columns.size() == 1 &&
+      (new_columns[0].Fragment().Children().empty() || is_empty_spanner_parent);
 
   if (!is_empty) {
     has_processed_first_child_ = true;

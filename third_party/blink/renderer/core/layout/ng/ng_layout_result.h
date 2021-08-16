@@ -113,6 +113,10 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
     return HasRareData() ? rare_data_->column_spanner : NGBlockNode(nullptr);
   }
 
+  bool IsEmptySpannerParent() const {
+    return HasRareData() && rare_data_->is_empty_spanner_parent;
+  }
+
   scoped_refptr<const NGEarlyBreak> GetEarlyBreak() const {
     if (!HasRareData())
       return nullptr;
@@ -491,6 +495,15 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
     LayoutUnit annotation_overflow;
     LayoutUnit block_end_annotation_space;
     bool has_violating_break = false;
+    // True if this result is the parent of a column spanner and is empty (i.e.
+    // has no children). This is used to determine whether the column spanner
+    // margins should collapse. Note that |is_empty_spanner_parent| may be false
+    // even if this column spanner parent is actually empty. This can happen in
+    // the case where the spanner parent has no children but has not broken
+    // previously - in which case, we shouldn't collapse the spanner margins
+    // since we do not want to collapse margins with a column spanner outside of
+    // this parent.
+    bool is_empty_spanner_parent = false;
     int lines_until_clamp = 0;
     wtf_size_t table_column_count_ = 0;
     std::unique_ptr<const NGGridData> grid_layout_data_;
