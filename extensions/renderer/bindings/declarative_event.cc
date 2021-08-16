@@ -94,13 +94,11 @@ std::unique_ptr<APISignature> BuildAddRulesSignature(
     rules->set_list_element_type(std::move(ref));
     params.push_back(std::move(rules));
   }
-  {
-    auto callback = std::make_unique<ArgumentSpec>(ArgumentType::FUNCTION);
-    callback->set_optional(true);
-    params.push_back(std::move(callback));
-  }
+  auto returns_async = std::make_unique<APISignature::ReturnsAsync>();
+  returns_async->optional = true;
 
-  return std::make_unique<APISignature>(std::move(params));
+  return std::make_unique<APISignature>(
+      std::move(params), std::move(returns_async), nullptr /*access_checker*/);
 }
 
 }  // namespace

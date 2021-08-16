@@ -342,6 +342,8 @@ source_set("unit_tests") {
     "bindings/event_emitter_unittest.cc",
     "bindings/exception_handler_unittest.cc",
     "bindings/listener_tracker_unittest.cc",
+    "bindings/returns_async_builder.cc",
+    "bindings/returns_async_builder.h",
     "extension_throttle_simulation_unittest.cc",
     "extension_throttle_test_support.cc",
     "extension_throttle_test_support.h",
