@@ -90,6 +90,7 @@ using unified_consent::metrics::RecordSyncSetupDataTypesHistrogam;
     case SigninCoordinatorResultInterrupted:
       RecordAction(
           UserMetricsAction("Signin_Signin_AbortAdvancedSyncSettings"));
+      [self revertToSigninState:originalSigninState];
       break;
   }
 }
