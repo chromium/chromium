@@ -1000,4 +1000,4 @@ NET_ERROR(DNS_SECURE_RESOLVER_HOSTNAME_RESOLUTION_FAILED, -808)
 // DNS identified the request as disallowed for insecure connection (http/ws).
 // Error should be handled as if an HTTP redirect was received to redirect to
 // https or wss.
-NET_ERROR(DNS_NAME_HTTPS_ONLY, 809)
+NET_ERROR(DNS_NAME_HTTPS_ONLY, -809)
