@@ -102,11 +102,18 @@ WorkingSetTrimmerPolicyArcVm::~WorkingSetTrimmerPolicyArcVm() {
 }
 
 bool WorkingSetTrimmerPolicyArcVm::IsEligibleForReclaim(
-    const base::TimeDelta& arcvm_inactivity_time) {
+    const base::TimeDelta& arcvm_inactivity_time,
+    bool trim_once_after_arcvm_boot) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!is_boot_complete_)
+    return false;
+  if (!trimmed_at_boot_ && trim_once_after_arcvm_boot) {
+    trimmed_at_boot_ = true;
+    return true;
+  }
   const bool is_inactive =
       (base::TimeTicks::Now() - last_user_interaction_) > arcvm_inactivity_time;
-  return is_boot_complete_ && !is_focused_ && is_inactive;
+  return !is_focused_ && is_inactive;
 }
 
 void WorkingSetTrimmerPolicyArcVm::OnBootCompleted() {
@@ -126,10 +133,13 @@ void WorkingSetTrimmerPolicyArcVm::OnArcSessionStopped(
     arc::ArcStopReason stop_reason) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   is_boot_complete_ = false;
+  trimmed_at_boot_ = false;
 }
+
 void WorkingSetTrimmerPolicyArcVm::OnArcSessionRestarting() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   is_boot_complete_ = false;
+  trimmed_at_boot_ = false;
 }
 
 void WorkingSetTrimmerPolicyArcVm::OnWindowActivated(

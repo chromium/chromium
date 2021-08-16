@@ -54,8 +54,8 @@ class ScopedTestArcVmDelegate
   ScopedTestArcVmDelegate& operator=(const ScopedTestArcVmDelegate&) = delete;
 
   // WorkingSetTrimmerPolicyChromeOS::ArcVmDelegate overrides:
-  bool IsEligibleForReclaim(
-      const base::TimeDelta& arcvm_inactivity_time) override {
+  bool IsEligibleForReclaim(const base::TimeDelta& arcvm_inactivity_time,
+                            bool trim_once_after_arcvm_boot) override {
     return eligible_;
   }
 
@@ -85,6 +85,7 @@ class MockWorkingSetTrimmerPolicyChromeOS
     params().arcvm_inactivity_time = base::TimeDelta::Min();
     params().arcvm_trim_backoff_time = base::TimeDelta::Min();
     params().trim_arcvm_on_critical_pressure = false;
+    params().trim_arcvm_on_first_memory_pressure_after_arcvm_boot = false;
 
     // Setup some default invocations.
     ON_CALL(*this, OnMemoryPressure(_))
