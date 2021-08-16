@@ -99,25 +99,20 @@ DCOMPTextureWrapperImpl::~DCOMPTextureWrapperImpl() {
   // OnReleaseVideoFrame() callback handles cleaning up the shared image.
 }
 
-// TODO(xhwang): Remove `init_cb` and return the result synchronously.
-void DCOMPTextureWrapperImpl::Initialize(
+bool DCOMPTextureWrapperImpl::Initialize(
     const gfx::Size& natural_size,
-    CompositionParamsReceivedCB comp_params_received_cb,
-    InitCB init_cb) {
+    CompositionParamsReceivedCB comp_params_received_cb) {
   DVLOG_FUNC(1);
   DCHECK(media_task_runner_->BelongsToCurrentThread());
 
   natural_size_ = natural_size;
 
   dcomp_texture_host_ = factory_->CreateDCOMPTextureHost(this);
-  if (!dcomp_texture_host_) {
-    std::move(init_cb).Run(false);
-    return;
-  }
+  if (!dcomp_texture_host_)
+    return false;
 
   comp_params_received_cb_ = std::move(comp_params_received_cb);
-
-  std::move(init_cb).Run(true);
+  return true;
 }
 
 void DCOMPTextureWrapperImpl::UpdateTextureSize(const gfx::Size& new_size) {

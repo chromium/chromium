@@ -90,18 +90,30 @@ void MediaFoundationRendererClient::OnRemoteRendererInitialized(
     return;
   }
 
-  if (has_video_) {
-    using Self = MediaFoundationRendererClient;
-    auto weak_ptr = weak_factory_.GetWeakPtr();
-    dcomp_texture_wrapper_->Initialize(
-        gfx::Size(1, 1),
-        base::BindRepeating(&Self::OnCompositionParamsReceived, weak_ptr),
-        base::BindOnce(&Self::OnDCOMPTextureInitialized, weak_ptr));
-    // `init_cb_` will be handled in `OnDCOMPTextureInitialized()`.
+  if (!has_video_) {
+    std::move(init_cb_).Run(PipelineStatus::PIPELINE_OK);
     return;
   }
 
-  std::move(init_cb_).Run(status);
+  // For playback with video, initialize `dcomp_texture_wrapper_` for direct
+  // composition.
+  bool success = dcomp_texture_wrapper_->Initialize(
+      gfx::Size(1, 1),
+      base::BindRepeating(
+          &MediaFoundationRendererClient::OnCompositionParamsReceived,
+          weak_factory_.GetWeakPtr()));
+  if (!success) {
+    std::move(init_cb_).Run(PIPELINE_ERROR_INITIALIZATION_FAILED);
+    return;
+  }
+
+  // Initialize DCOMP texture size to {1, 1} to signify to SwapChainPresenter
+  // that the video output size is not yet known. {1, 1} is chosen as opposed
+  // to {0, 0} because VideoFrameSubmitter will not submit 0x0 video frames.
+  if (natural_size_.IsEmpty())
+    dcomp_texture_wrapper_->UpdateTextureSize(gfx::Size(1, 1));
+
+  std::move(init_cb_).Run(PIPELINE_OK);
 }
 
 void MediaFoundationRendererClient::OnDCOMPSurfaceHandleSet(bool success) {
@@ -131,26 +143,6 @@ void MediaFoundationRendererClient::OnDCOMPSurfaceReceived(
       token.value(),
       base::BindOnce(&MediaFoundationRendererClient::OnDCOMPSurfaceHandleSet,
                      weak_factory_.GetWeakPtr()));
-}
-
-void MediaFoundationRendererClient::OnDCOMPTextureInitialized(bool success) {
-  DVLOG_FUNC(1) << "success=" << success;
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
-  DCHECK(!init_cb_.is_null());
-  DCHECK(has_video_);
-
-  if (!success) {
-    std::move(init_cb_).Run(PIPELINE_ERROR_INITIALIZATION_FAILED);
-    return;
-  }
-
-  // Initialize DCOMP texture size to {1, 1} to signify to SwapChainPresenter
-  // that the video output size is not yet known. {1, 1} is chosen as opposed to
-  // {0, 0} because VideoFrameSubmitter will not submit 0x0 video frames.
-  if (natural_size_.IsEmpty())
-    dcomp_texture_wrapper_->UpdateTextureSize(gfx::Size(1, 1));
-
-  std::move(init_cb_).Run(PIPELINE_OK);
 }
 
 void MediaFoundationRendererClient::OnVideoFrameCreated(

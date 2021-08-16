@@ -72,7 +72,6 @@ class MediaFoundationRendererClient : public Renderer, public RendererClient {
 
  private:
   void OnRemoteRendererInitialized(PipelineStatus status);
-  void OnDCOMPTextureInitialized(bool success);
   void InitializeDCOMPRenderingIfNeeded();
   void OnDCOMPSurfaceReceived(
       const absl::optional<base::UnguessableToken>& token);

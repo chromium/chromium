@@ -41,11 +41,10 @@ class DCOMPTextureWrapperImpl : public media::DCOMPTextureWrapper,
 
   ~DCOMPTextureWrapperImpl() override;
 
-  // Initializes `this` and run `init_cb` with success or failure. All other
-  // methods should only be called after a successful initialization.
-  void Initialize(const gfx::Size& natural_size,
-                  CompositionParamsReceivedCB comp_params_received_cb,
-                  InitCB init_cb) override;
+  // Initializes `this` and returns success or failure. All other methods should
+  // only be called after a successful initialization.
+  bool Initialize(const gfx::Size& natural_size,
+                  CompositionParamsReceivedCB comp_params_received_cb) override;
 
   // DCOMPTextureWrapper:
   void UpdateTextureSize(const gfx::Size& natural_size) override;
