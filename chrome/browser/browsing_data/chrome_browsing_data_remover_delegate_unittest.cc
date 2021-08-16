@@ -951,6 +951,17 @@ class MockReportingService : public net::ReportingService {
     return nullptr;
   }
 
+  std::vector<const net::ReportingReport*> GetReports() const override {
+    NOTREACHED();
+    return std::vector<const net::ReportingReport*>();
+  }
+
+  void AddReportingCacheObserver(
+      net::ReportingCacheObserver* observer) override {}
+
+  void RemoveReportingCacheObserver(
+      net::ReportingCacheObserver* observer) override {}
+
   int remove_calls() const { return remove_calls_; }
   int remove_all_calls() const { return remove_all_calls_; }
   uint64_t last_data_type_mask() const { return last_data_type_mask_; }

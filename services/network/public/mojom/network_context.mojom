@@ -662,6 +662,41 @@ struct URLLoaderFactoryParams {
   string debug_tag = "";
 };
 
+// The status of a Reporting API report.
+enum ReportingApiReportStatus {
+  kQueued,
+  kPending,
+};
+
+// A Reporting API report.
+struct ReportingApiReport {
+  // The URL of the document that triggered the report.
+  url.mojom.Url url;
+  // The name of the endpoint group that should be used to deliver the report.
+  string group;
+  // The type of the report (specifies the set of data that is contained
+  // in the report body).
+  string type;
+  // When the report was generated.
+  mojo_base.mojom.TimeTicks timestamp;
+  // How many uploads deep the related request was.
+  int32 depth;
+  // The number of delivery attempts made so far, not including an active
+  // attempt.
+  int32 attempts;
+  // The body of the report.
+  mojo_base.mojom.DictionaryValue body;
+  // The status of the report.
+  ReportingApiReportStatus status;
+};
+
+// Indirectly listens to changes in the Reporting Service via
+// ReportingCacheObserver as intermediate
+interface ReportingApiObserver {
+  // Called whenever a report is added
+  OnReportsAdded(array<ReportingApiReport> reports);
+};
+
 // Callback interface for NetworkContext when routing identifiers aren't
 // available. Otherwise generally callbacks from the network service go on
 // NetworkServiceClient.
@@ -1315,4 +1350,9 @@ interface NetworkContext {
   // Set whether SCT auditing is enabled for this NetworkContext.
   [EnableIf=is_ct_supported]
   SetSCTAuditingEnabled(bool enabled);
+
+  // Adds an observer that will receive Reporting Service callbacks.
+  // Returns Reporting API reports currently stored in the reporting service.
+  AddReportingApiObserver(pending_remote<ReportingApiObserver> observer)
+      => (array<ReportingApiReport> reports);
 };

@@ -1004,6 +1004,7 @@ NetworkHandler::NetworkHandler(
       storage_partition_(nullptr),
       host_(nullptr),
       enabled_(false),
+      reporting_receiver_(this),
       bypass_service_worker_(false),
       cache_disabled_(false),
       update_loader_factories_callback_(
@@ -1248,6 +1249,44 @@ Response NetworkHandler::Disable() {
   extra_headers_.clear();
   ClearAcceptedEncodingsOverride();
   return Response::FallThrough();
+}
+
+void NetworkHandler::OnReportsAdded(
+    std::vector<network::mojom::ReportingApiReportPtr> reports) {
+  for (network::mojom::ReportingApiReportPtr& report : reports) {
+    const base::Value base_body = std::move(report->body);
+    auto protocol_report =
+        protocol::Network::ReportingApiReport::Create()
+            .SetInitiatorUrl(report->url.spec())
+            .SetDestination(report->group)
+            .SetType(report->type)
+            .SetTimestamp(
+                (report->timestamp - base::TimeTicks::UnixEpoch()).InSecondsF())
+            .SetDepth(report->depth)
+            .SetBody(protocol::DictionaryValue::cast(
+                protocol::toProtocolValue(&base_body, 1000)))
+            .Build();
+    frontend_->ReportingApiReportAdded(std::move(protocol_report));
+  }
+}
+
+Response NetworkHandler::EnableReportingApi(const bool enable) {
+  if (!storage_partition_) {
+    return Response::InternalError();
+  }
+
+  if (enable) {
+    if (!reporting_receiver_.is_bound()) {
+      mojo::PendingRemote<network::mojom::ReportingApiObserver> observer;
+      reporting_receiver_.Bind(observer.InitWithNewPipeAndPassReceiver());
+      storage_partition_->GetNetworkContext()->AddReportingApiObserver(
+          std::move(observer), base::BindOnce(&NetworkHandler::OnReportsAdded,
+                                              weak_factory_.GetWeakPtr()));
+    }
+  } else {
+    reporting_receiver_.reset();
+  }
+  return Response::Success();
 }
 
 Response NetworkHandler::SetCacheDisabled(bool cache_disabled) {

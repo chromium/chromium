@@ -8,6 +8,8 @@ namespace net {
 
 void ReportingCacheObserver::OnReportsUpdated() {}
 
+void ReportingCacheObserver::OnReportAdded(const ReportingReport* report) {}
+
 void ReportingCacheObserver::OnClientsUpdated() {}
 
 ReportingCacheObserver::ReportingCacheObserver() = default;

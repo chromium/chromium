@@ -356,4 +356,19 @@ ReportingContext* TestReportingService::GetContextForTesting() const {
   return nullptr;
 }
 
+std::vector<const ReportingReport*> TestReportingService::GetReports() const {
+  NOTREACHED();
+  return std::vector<const ReportingReport*>();
+}
+
+void TestReportingService::AddReportingCacheObserver(
+    ReportingCacheObserver* observer) {
+  NOTREACHED();
+}
+
+void TestReportingService::RemoveReportingCacheObserver(
+    ReportingCacheObserver* observer) {
+  NOTREACHED();
+}
+
 }  // namespace net
