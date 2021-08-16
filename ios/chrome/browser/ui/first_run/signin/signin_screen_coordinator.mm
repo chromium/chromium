@@ -65,6 +65,8 @@
 // to policy.
 @property(nonatomic, strong)
     UserPolicySignoutCoordinator* policySignoutPromptCoordinator;
+// Account manager service to retrieve Chrome identities.
+@property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
 
 @end
 
@@ -115,16 +117,17 @@
   self.viewController = [[SigninScreenViewController alloc] init];
   self.viewController.delegate = self;
 
-  ChromeAccountManagerService* accountManagerService =
+  self.accountManagerService =
       ChromeAccountManagerServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
 
   self.mediator = [[SigninScreenMediator alloc]
-      initWithAccountManagerService:accountManagerService
+      initWithAccountManagerService:self.accountManagerService
               authenticationService:authenticationService];
 
-  self.mediator.selectedIdentity = accountManagerService->GetDefaultIdentity();
-  self.hadIdentitiesAtStartup = accountManagerService->HasIdentities();
+  self.mediator.selectedIdentity =
+      self.accountManagerService->GetDefaultIdentity();
+  self.hadIdentitiesAtStartup = self.accountManagerService->HasIdentities();
 
   self.mediator.consumer = self.viewController;
   BOOL animated = self.baseNavigationController.topViewController != nil;
@@ -292,7 +295,9 @@
                                 (SigninCompletionInfo*)signinCompletionInfo {
   [self.addAccountSigninCoordinator stop];
   self.addAccountSigninCoordinator = nil;
-  if (signinResult == SigninCoordinatorResultSuccess) {
+  if (signinResult == SigninCoordinatorResultSuccess &&
+      self.accountManagerService->IsValidIdentity(
+          signinCompletionInfo.identity)) {
     self.mediator.selectedIdentity = signinCompletionInfo.identity;
     self.mediator.addedAccount = YES;
   }

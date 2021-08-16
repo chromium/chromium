@@ -12,6 +12,8 @@
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/consent_auditor_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
@@ -74,6 +76,8 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
 // User sign-in state when the coordinator starts. This is used as the
 // state to revert to in case the user is interrupted during sign-in.
 @property(nonatomic, assign) IdentitySigninState signinStateOnStart;
+// Account manager service to retrieve Chrome identities.
+@property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
 
 @end
 
@@ -116,9 +120,13 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
 #pragma mark - SigninCoordinator
 
 - (void)start {
+  self.accountManagerService =
+      ChromeAccountManagerServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
+
   // The user should be signed out before triggering sign-in or upgrade states.
   // Users are allowed to be signed-in during FirstRun for testing purposes.
   DCHECK(base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency) ||
@@ -662,7 +670,9 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
                                 (SigninCompletionInfo*)signinCompletionInfo {
   [self.addAccountSigninCoordinator stop];
   self.addAccountSigninCoordinator = nil;
-  if (signinResult == SigninCoordinatorResultSuccess) {
+  if (signinResult == SigninCoordinatorResultSuccess &&
+      self.accountManagerService->IsValidIdentity(
+          signinCompletionInfo.identity)) {
     self.unifiedConsentCoordinator.selectedIdentity =
         signinCompletionInfo.identity;
     self.addedAccount = YES;
