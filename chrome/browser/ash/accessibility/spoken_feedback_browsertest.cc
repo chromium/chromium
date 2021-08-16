@@ -779,6 +779,28 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, OverviewMode) {
   sm_.Replay();
 }
 
+// Verify that enable chromeVox won't end overview.
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, EnableChromeVoxOnOverviewMode) {
+  sm_.Call([this]() {
+    ui_test_utils::NavigateToURL(browser(),
+                                 GURL("data:text/html;charset=utf-8,<button "
+                                      "autofocus>Click me</button>"));
+  });
+
+  sm_.Call([this]() {
+    (PerformAcceleratorAction(AcceleratorAction::TOGGLE_OVERVIEW));
+  });
+
+  EnableChromeVox();
+
+  sm_.Call([this]() { SendKeyPress(ui::VKEY_TAB); });
+  sm_.ExpectSpeechPattern(
+      "Chrom* - data:text slash html;charset equal utf-8, less than button "
+      "autofocus greater than Click me less than slash button greater than");
+
+  sm_.Replay();
+}
+
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ChromeVoxFindInPage) {
   EnableChromeVox();
 

@@ -63,8 +63,14 @@ void FocusController::ActivateWindow(aura::Window* window) {
 }
 
 void FocusController::DeactivateWindow(aura::Window* window) {
-  if (window)
+  if (window) {
+    // FocusController implements deactivation by way of activating another
+    // window. Don't deactivate |window| if it's not active to avoid attempting
+    // to activate another window.
+    if (window != GetActiveWindow())
+      return;
     FocusWindow(rules_->GetNextActivatableWindow(window));
+  }
 }
 
 const aura::Window* FocusController::GetActiveWindow() const {

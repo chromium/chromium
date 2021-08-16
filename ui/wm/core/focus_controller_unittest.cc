@@ -58,9 +58,7 @@ class FocusNotificationObserver : public ActivationChangeObserver,
   ActivationReason last_activation_reason() const {
     return last_activation_reason_;
   }
-  int reactivation_count() const {
-    return reactivation_count_;
-  }
+  int reactivation_count() const { return reactivation_count_; }
   aura::Window* reactivation_requested_window() const {
     return reactivation_requested_window_;
   }
@@ -281,9 +279,7 @@ class DeleteOnLoseFocusChangeObserver
       public WindowDeleter {
  public:
   explicit DeleteOnLoseFocusChangeObserver(aura::Window* window)
-      : root_(window->GetRootWindow()),
-        window_(window),
-        did_delete_(false) {
+      : root_(window->GetRootWindow()), window_(window), did_delete_(false) {
     aura::client::GetFocusClient(root_)->AddObserver(this);
   }
   ~DeleteOnLoseFocusChangeObserver() override {
@@ -485,8 +481,9 @@ class TestFocusRules : public BaseFocusRules {
   aura::Window* GetNextActivatableWindow(aura::Window* ignore) const override {
     aura::Window* next_activatable =
         BaseFocusRules::GetNextActivatableWindow(ignore);
-    return CanFocusOrActivate(next_activatable) ?
-        next_activatable : GetActivatableWindow(focus_restriction_);
+    return CanFocusOrActivate(next_activatable)
+               ? next_activatable
+               : GetActivatableWindow(focus_restriction_);
   }
 
  private:
@@ -639,6 +636,12 @@ class FocusControllerDirectTestBase : public FocusControllerTestBase {
     ActivateWindowDirect(window);
   }
 
+  void DeactivateWindowById(int id) {
+    aura::Window* window = root_window()->GetChildById(id);
+    EXPECT_TRUE(window);
+    GetActivationClient(root_window())->DeactivateWindow(window);
+  }
+
   // Overridden from FocusControllerTestBase:
   void BasicFocus() override {
     EXPECT_FALSE(GetFocusedWindow());
@@ -653,12 +656,22 @@ class FocusControllerDirectTestBase : public FocusControllerTestBase {
     EXPECT_EQ(1, GetActiveWindowId());
     ActivateWindowById(2);
     EXPECT_EQ(2, GetActiveWindowId());
+    // Create a new window without activing it. Move it to the
+    // top.
+    aura::Window* window3 = root_window()->GetChildById(3);
+    root_window()->StackChildAtTop(window3);
+
+    // Verify that diactivating a non-active window won't affect the current
+    // active window.
+    DeactivateWindowById(1);
+    EXPECT_EQ(2, GetActiveWindowId());
+
     // Verify that attempting to deactivate NULL does not crash and does not
     // change activation.
     DeactivateWindow(nullptr);
     EXPECT_EQ(2, GetActiveWindowId());
     DeactivateWindow(GetActiveWindow());
-    EXPECT_EQ(1, GetActiveWindowId());
+    EXPECT_EQ(3, GetActiveWindowId());
   }
   void FocusEvents() override {
     ScopedFocusNotificationObserver root_observer(root_window());
@@ -1516,9 +1529,8 @@ class FocusControllerParentRemovalTest : public FocusControllerRemovalTest {
   DISALLOW_COPY_AND_ASSIGN(FocusControllerParentRemovalTest);
 };
 
-
 #define FOCUS_CONTROLLER_TEST(TESTCLASS, TESTNAME) \
-    TEST_F(TESTCLASS, TESTNAME) { TESTNAME(); }
+  TEST_F(TESTCLASS, TESTNAME) { TESTNAME(); }
 
 // Runs direct focus change tests (input events and API calls).
 #define DIRECT_FOCUS_CHANGE_TESTS(TESTNAME)                           \
@@ -1528,37 +1540,37 @@ class FocusControllerParentRemovalTest : public FocusControllerRemovalTest {
   FOCUS_CONTROLLER_TEST(FocusControllerGestureEventTest, TESTNAME)
 
 // Runs implicit focus change tests for disposition changes to target.
-#define IMPLICIT_FOCUS_CHANGE_TARGET_TESTS(TESTNAME) \
-    FOCUS_CONTROLLER_TEST(FocusControllerHideTest, TESTNAME) \
-    FOCUS_CONTROLLER_TEST(FocusControllerDestructionTest, TESTNAME) \
-    FOCUS_CONTROLLER_TEST(FocusControllerRemovalTest, TESTNAME)
+#define IMPLICIT_FOCUS_CHANGE_TARGET_TESTS(TESTNAME)              \
+  FOCUS_CONTROLLER_TEST(FocusControllerHideTest, TESTNAME)        \
+  FOCUS_CONTROLLER_TEST(FocusControllerDestructionTest, TESTNAME) \
+  FOCUS_CONTROLLER_TEST(FocusControllerRemovalTest, TESTNAME)
 
 // Runs implicit focus change tests for disposition changes to target's parent
 // hierarchy.
-#define IMPLICIT_FOCUS_CHANGE_PARENT_TESTS(TESTNAME) \
-    /* TODO(beng): parent destruction tests are not supported at
-       present due to workspace manager issues. \
-    FOCUS_CONTROLLER_TEST(FocusControllerParentDestructionTest, TESTNAME) */ \
-    FOCUS_CONTROLLER_TEST(FocusControllerParentHideTest, TESTNAME) \
-    FOCUS_CONTROLLER_TEST(FocusControllerParentRemovalTest, TESTNAME)
+#define IMPLICIT_FOCUS_CHANGE_PARENT_TESTS(TESTNAME)                       \
+  /* TODO(beng): parent destruction tests are not supported at             \
+     present due to workspace manager issues.                              \
+  FOCUS_CONTROLLER_TEST(FocusControllerParentDestructionTest, TESTNAME) */ \
+  FOCUS_CONTROLLER_TEST(FocusControllerParentHideTest, TESTNAME)           \
+  FOCUS_CONTROLLER_TEST(FocusControllerParentRemovalTest, TESTNAME)
 
 // Runs all implicit focus change tests (changes to the target and target's
 // parent hierarchy)
-#define IMPLICIT_FOCUS_CHANGE_TESTS(TESTNAME) \
-    IMPLICIT_FOCUS_CHANGE_TARGET_TESTS(TESTNAME) \
-    IMPLICIT_FOCUS_CHANGE_PARENT_TESTS(TESTNAME)
+#define IMPLICIT_FOCUS_CHANGE_TESTS(TESTNAME)  \
+  IMPLICIT_FOCUS_CHANGE_TARGET_TESTS(TESTNAME) \
+  IMPLICIT_FOCUS_CHANGE_PARENT_TESTS(TESTNAME)
 
 // Runs all possible focus change tests.
-#define ALL_FOCUS_TESTS(TESTNAME) \
-    DIRECT_FOCUS_CHANGE_TESTS(TESTNAME) \
-    IMPLICIT_FOCUS_CHANGE_TESTS(TESTNAME)
+#define ALL_FOCUS_TESTS(TESTNAME)     \
+  DIRECT_FOCUS_CHANGE_TESTS(TESTNAME) \
+  IMPLICIT_FOCUS_CHANGE_TESTS(TESTNAME)
 
 // Runs focus change tests that apply only to the target. For example,
 // implicit activation changes caused by window disposition changes do not
 // occur when changes to the containing hierarchy happen.
-#define TARGET_FOCUS_TESTS(TESTNAME) \
-    DIRECT_FOCUS_CHANGE_TESTS(TESTNAME) \
-    IMPLICIT_FOCUS_CHANGE_TARGET_TESTS(TESTNAME)
+#define TARGET_FOCUS_TESTS(TESTNAME)  \
+  DIRECT_FOCUS_CHANGE_TESTS(TESTNAME) \
+  IMPLICIT_FOCUS_CHANGE_TARGET_TESTS(TESTNAME)
 
 // - Focuses a window, verifies that focus changed.
 ALL_FOCUS_TESTS(BasicFocus)
