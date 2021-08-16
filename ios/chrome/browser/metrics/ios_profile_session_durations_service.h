@@ -35,10 +35,13 @@ class IOSProfileSessionDurationsService : public KeyedService {
   // application enters background).
   virtual void OnSessionStarted(base::TimeTicks session_start);
   virtual void OnSessionEnded(base::TimeDelta session_length);
+  virtual bool IsSessionActive();
 
  private:
   std::unique_ptr<syncer::SyncSessionDurationsMetricsRecorder>
       metrics_recorder_;
+
+  bool is_session_active_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(IOSProfileSessionDurationsService);
 };

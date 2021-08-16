@@ -70,6 +70,7 @@
 #include "ios/chrome/browser/metrics/chrome_browser_state_client.h"
 #import "ios/chrome/browser/metrics/ios_chrome_default_browser_metrics_provider.h"
 #include "ios/chrome/browser/metrics/ios_chrome_stability_metrics_provider.h"
+#include "ios/chrome/browser/metrics/ios_profile_session_metrics_provider.h"
 #include "ios/chrome/browser/metrics/mobile_session_shutdown_metrics_provider.h"
 #include "ios/chrome/browser/signin/ios_chrome_signin_status_metrics_provider_delegate.h"
 #include "ios/chrome/browser/sync/device_info_sync_service_factory.h"
@@ -322,6 +323,9 @@ void IOSChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
       std::make_unique<metrics::DemographicMetricsProvider>(
           std::make_unique<metrics::ChromeBrowserStateClient>(),
           metrics::MetricsLogUploader::MetricServiceType::UMA));
+
+  metrics_service_->RegisterMetricsProvider(
+      CreateIOSProfileSessionMetricsProvider());
 }
 
 void IOSChromeMetricsServiceClient::RegisterUKMProviders() {

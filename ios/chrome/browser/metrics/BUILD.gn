@@ -39,6 +39,8 @@ source_set("metrics") {
     "ios_profile_session_durations_service.mm",
     "ios_profile_session_durations_service_factory.h",
     "ios_profile_session_durations_service_factory.mm",
+    "ios_profile_session_metrics_provider.h",
+    "ios_profile_session_metrics_provider.mm",
     "mobile_session_shutdown_metrics_provider.h",
     "mobile_session_shutdown_metrics_provider.mm",
     "pageload_foreground_duration_tab_helper.h",

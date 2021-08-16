@@ -40,6 +40,10 @@ class FakeProfileSessionDurationsService
     ++session_ended_count_;
   }
 
+  bool IsSessionActive() override {
+    return session_started_count_ > session_ended_count_;
+  }
+
   // IOSProfileSessionDurationsService:
   int session_started_count() const { return session_started_count_; }
   int session_ended_count() const { return session_ended_count_; }
