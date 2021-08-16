@@ -72,8 +72,9 @@ enum class IntelGpuSeriesType {
   kJasperlake = 20,
   // Intel 12th gen
   kTigerlake = 21,
+  kAlderlake = 22,
   // Please also update |gpu_series_map| in process_json.py.
-  kMaxValue = kTigerlake,
+  kMaxValue = kAlderlake,
 };
 
 // Video profile.  This *must* match media::VideoCodecProfile.
