@@ -314,6 +314,13 @@
        Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen. <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid.
 
        Dit beleid werd in het verleden ten onrechte toegepast op Android, maar deze functionaliteit is nooit volledig ondersteund geweest op Android.</translation>
+<translation id="1435493974546396517">Dit beleid bepaalt hoe <ph name="PRODUCT_NAME" /> de optie 'Afdrukken als afbeelding' beschikbaar maakt op <ph name="MS_WIN_NAME" /> en <ph name="MAC_OS_NAME" /> bij het afdrukken van pdf's.
+
+      Bij het afdrukken van een pdf op <ph name="MS_WIN_NAME" /> of <ph name="MAC_OS_NAME" /> moeten afdruktaken op sommige printers worden gerasterd als een afbeelding om uitvoer te krijgen die er goed uitziet.
+
+      Als dit beleid op Aan staat, maakt <ph name="PRODUCT_NAME" /> de optie 'Afdrukken als afbeelding' beschikbaar in het afdrukvoorbeeld als de gebruiker een pdf afdrukt.
+
+      Als dit beleid op Uit staat of niet is ingesteld, laat <ph name="PRODUCT_NAME" /> de optie 'Afdrukken als afbeelding' niet aan gebruikers zien in het afdrukvoorbeeld. Pdf's worden dan zoals gewoonlijk afgedrukt zonder te worden gerasterd als afbeelding voordat ze naar de afdrukbestemming worden gestuurd.</translation>
 <translation id="1435659902881071157">Netwerkconfiguratie op apparaatniveau</translation>
 <translation id="1438739959477268107">Standaardinstelling voor het genereren van sleutels</translation>
 <translation id="1449083855104537880">Als je het beleid instelt op True, worden de toegankelijkheidsopties weergegeven in het systeemvakmenu. Als je het beleid instelt op False, worden de opties niet weergegeven in het menu.
@@ -552,6 +559,13 @@ Als je dit beleid niet toepast, wordt op de webpagina naar specifieke tekstfragm
       Als dit beleid is ingesteld, mislukt de installatie van <ph name="PLUGIN_VM_NAME" /> als de beschikbare vrije opslagruimte op het apparaat minder is dan de waarde die wordt vereist door het beleid.</translation>
 <translation id="1690383938831887552">Niet toestaan dat Signed HTTP Exchanges worden geladen</translation>
 <translation id="169467210981344373">HTTP-verificatiecache met wereldwijd bereik uitzetten</translation>
+<translation id="1698810555265314018">Dit beleid beheert de afbeeldingsresolutie voor afdrukken als <ph name="PRODUCT_NAME" /> gerasterde pdf's afdrukt.
+
+      Als een pdf wordt afgedrukt met de optie 'Afdrukken als afbeelding', kan het soms beter zijn om een andere afdrukresolutie te selecteren dan de printerinstelling van het apparaat of de standaardoptie voor pdf's.  Met een hoge resolutie wordt de verwerkings- en afdruktijd een stuk langer, terwijl een lage resolutie tot een slechte afbeeldingskwaliteit kan leiden.
+
+      Met dit beleid kan een bepaalde resolutie worden ingesteld voor gebruik bij rastering van pdf's voor afdrukken.
+
+      Als het beleid op nul staat of helemaal niet is ingesteld, wordt de standaardresolutie van het systeem gebruikt bij het rasteren van pagina-afbeeldingen.</translation>
 <translation id="1700458869527146675">Als je het beleid instelt, bepaal je de proxyinstellingen voor Chrome en ARC-apps, die alle proxygerelateerde opties negeren die via de opdrachtregel worden opgegeven.
 
        Als je het beleid niet instelt, kunnen gebruikers hun proxyinstellingen kiezen.
@@ -2392,6 +2406,7 @@ Als je dit beleid instelt, geef je op welke URL's moeten worden toegestaan als o
 
       Als dit beleid niet wordt ingesteld, is het SPDY-protocol beschikbaar.</translation>
 <translation id="3891357445869647828">JavaScript aanzetten</translation>
+<translation id="3891769546914233112">'Pdf afdrukken als afbeelding' beschikbaar</translation>
 <translation id="3897218615484393758">Beperken hoelang een gebruiker die via SAML is geverifieerd offline kan inloggen op het vergrendelscherm</translation>
 <translation id="3898345958122666461">NTLMv2 uitzetten</translation>
 <translation id="3898795800259311780">Screenshots toestaan of weigeren</translation>
@@ -4004,6 +4019,7 @@ Voor meer informatie over een beveiligde context ga je naar https://www.w3.org/T
 <translation id="6135398260575578389">Safe Browsing is actief in de uitgebreide modus. Deze modus biedt betere beveiliging, maar vereist dat er meer browsegegevens worden gedeeld met Google.</translation>
 <translation id="6138636318340561140">Safe Browsing-status van URL's in realtime checken</translation>
 <translation id="6141402445226505817">Altijd minder nauwkeurige tijdzonedetectie gebruiken</translation>
+<translation id="6142501278956229253">DPI voor afdrukrastering van pdf's</translation>
 <translation id="6144046700495610112">Als je het beleid toepast, worden de formuliergegevens voor automatisch invullen van de vorige standaardbrowser geïmporteerd bij de eerste uitvoering. Als je het beleid niet toepast of niet instelt, worden formuliergegevens voor automatisch invullen niet geïmporteerd bij de eerste uitvoering.
 
       Als gebruikers het dialoogvenster voor importeren openen, is het selectievakje voor formuliergegevens voor automatisch invullen aan- of uitgevinkt in overeenstemming met de waarde van dit beleid.</translation>
@@ -6092,6 +6108,7 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
       Extensieprinters staan ook bekend als afdrukproviderbestemmingen en omvatten elke bestemming die bij een <ph name="PRODUCT_NAME" />-extensie hoort.
 
       Lokale printers staan ook bekend als systeemeigen afdrukbestemmingen en omvatten bestemmingen die beschikbaar zijn voor de lokale computer en gedeelde netwerkprinters.</translation>
+<translation id="8753264624162178499">De optie 'Afdrukken als afbeelding' is beschikbaar voor gebruikers om pdf's te rasteren voordat de afdruktaak naar de bestemming wordt gestuurd.</translation>
 <translation id="8757552286070680084">Wilco DTC-configuratie</translation>
 <translation id="8758831693895931466">Inschrijving voor cloudbeheer verplichten</translation>
 <translation id="8759829385824155666">Toegestane Kerberos-versleutelingstypen</translation>
@@ -6511,6 +6528,7 @@ Als je het beleid niet instelt, zijn er geen extensies vrijgesteld van de resetp
 
       Opmerking: Als je interne URL's met chrome://* blokkeert, kan dit tot onverwachte fouten leiden.</translation>
 <translation id="957778406002650056">De URL waar de <ph name="PLUGIN_VM_NAME" />-afbeelding kan worden gedownload.</translation>
+<translation id="971677226939413180">Optie 'Afdrukken als afbeelding' niet beschikbaar voor gebruikersselectie.</translation>
 <translation id="974349541138387272">URI-template van gewenste DNS-over-HTTPS-resolver opgeven</translation>
 <translation id="979467274961593903">Het gebruik van foutopsporing op afstand niet toestaan</translation>
 <translation id="980218166381006412">Als je het beleid toepast, staat de achtergrondmodus aan. In de achtergrondmodus wordt een <ph name="PRODUCT_NAME" />-proces gestart bij het inloggen bij het OS. Dit proces blijft actief als het laatste browservenster wordt gesloten, waardoor achtergrond-apps en de browsersessie actief kunnen blijven. Voor het achtergrondproces wordt een icoon getoond in het systeemvak, waarmee het proces altijd kan worden gesloten.

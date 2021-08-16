@@ -314,6 +314,13 @@
        Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.
 
        Ten en cuenta que esta política se habilitó anteriormente en Android por error, pero la función nunca ha sido totalmente compatible con Android.</translation>
+<translation id="1435493974546396517">Controla cómo <ph name="PRODUCT_NAME" /> permite la opción Imprimir como imagen en <ph name="MS_WIN_NAME" /> y <ph name="MAC_OS_NAME" /> al imprimir PDFs.
+
+      Al imprimir un PDF en <ph name="MS_WIN_NAME" /> o <ph name="MAC_OS_NAME" />, a veces es necesario rasterizar trabajos de impresión a una imagen para que determinadas impresoras los impriman con el aspecto correcto.
+
+      Si se habilita esta política, <ph name="PRODUCT_NAME" /> hará que la opción Imprimir como imagen esté disponible en la vista previa de impresión al imprimir un PDF.
+
+      Si se inhabilita la política o no se establece, <ph name="PRODUCT_NAME" /> hará que la opción Imprimir como imagen no esté disponible para los usuarios en la vista previa de impresión. De este modo, los PDFs se imprimirán como siempre, sin rasterizarse a una imagen antes de enviarse al destino.</translation>
 <translation id="1435659902881071157">Configuración de red de dispositivos</translation>
 <translation id="1438739959477268107">Configuración predeterminada de la generación de claves</translation>
 <translation id="1449083855104537880">Si se le asigna el valor "true" a esta política, se incluyen las opciones de accesibilidad en el menú de la bandeja del sistema. Si se le asigna el valor "false", las opciones no aparecen en el menú.
@@ -550,6 +557,13 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
       Si se le asigna un valor, la instalación de <ph name="PLUGIN_VM_NAME" /> fallará si el dispositivo tiene menos espacio disponible en disco del requerido por la política.</translation>
 <translation id="1690383938831887552">Evitar que se cargue contenido Signed HTTP Exchange</translation>
 <translation id="169467210981344373">Inhabilitar la caché de autenticación de HTTP con alcance global</translation>
+<translation id="1698810555265314018">Controla la resolución de impresión de imágenes cuando <ph name="PRODUCT_NAME" /> imprime PDFs con rasterización.
+
+      Cuando imprimes un PDF con la opción Imprimir como imagen, puede ser útil especificar una resolución de impresión distinta a los ajustes de impresión del dispositivo o a la configuración predeterminada de PDF.  Una resolución alta aumentará notablemente el tiempo de procesamiento y de impresión, mientras que una resolución baja puede reducir la calidad de la imagen.
+
+      Esta política permite especificar una resolución determinada que se usará cuando se rastericen PDFs para imprimir.
+
+      Si se le asigna el valor cero a esta política o no se establece, se usará la resolución predeterminada del sistema durante la rasterización de las imágenes de la página.</translation>
 <translation id="1700458869527146675">Si se establece la política, se definirá la configuración de proxy aplicable a Chrome y a las aplicaciones ARC, que ignoran todas las opciones relacionadas con el proxy especificadas en la línea de comandos.
 
        Si no se establece la política, los usuarios podrán elegir su configuración de proxy.
@@ -2446,6 +2460,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 
       Si esta política no se configura, el protocolo SPDY estará disponible.</translation>
 <translation id="3891357445869647828">Habilitar JavaScript</translation>
+<translation id="3891769546914233112">Imprimir PDF como imagen disponible</translation>
 <translation id="3897218615484393758">Limita el tiempo durante el que un usuario autenticado mediante SAML puede iniciar sesión sin conexión en la pantalla de bloqueo</translation>
 <translation id="3898345958122666461">Desactivar NTLMv2</translation>
 <translation id="3898795800259311780">Permitir o denegar capturas de pantalla</translation>
@@ -4090,6 +4105,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="6135398260575578389">Navegación segura está activa en modo mejorado. Este modo proporciona mayor seguridad, pero requiere compartir más información de navegación con Google.</translation>
 <translation id="6138636318340561140">Comprueba en tiempo real el estado de Navegación segura de las URL</translation>
 <translation id="6141402445226505817">Utilizar siempre la detección de zona horaria común</translation>
+<translation id="6142501278956229253">Imprimir PDF rasterizado con PPP</translation>
 <translation id="6144046700495610112">Si se asigna el valor "Habilitada" a esta política, se importarán los datos de formularios para la función Autocompletar del navegador predeterminado anterior al ejecutarse por primera vez. Si se le asigna el valor "Inhabilitada" o no se le asigna ninguno, no se importarán estos datos al ejecutarse por primera vez.
 
       Los usuarios pueden abrir un cuadro de diálogo de importación y la casilla de datos de formularios para la función Autocompletar aparecerá marcada o desmarcada en función del valor de esta política.</translation>
@@ -6199,6 +6215,7 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
       Las impresoras de extensión, también llamadas "destinos de proveedor de impresión", incluyen cualquier destino que pertenezca a una extensión de <ph name="PRODUCT_NAME" />.
 
       Las impresoras locales, que también se denominan "destinos de impresión nativos", incluyen los destinos que están disponibles para los equipos locales y las impresoras compartidas de la red.</translation>
+<translation id="8753264624162178499">Opción Imprimir como imagen disponible para que el usuario permita la rasterización de PDF antes de enviar un trabajo de impresión al destino.</translation>
 <translation id="8757552286070680084">Configuración de Wilco DTC</translation>
 <translation id="8758831693895931466">Activar el registro obligatorio en la gestión en la nube</translation>
 <translation id="8759829385824155666">Tipos de cifrado Kerberos admitidos</translation>
@@ -6621,6 +6638,7 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
 
       Nota: Bloquear las URL internas chrome://* podría provocar errores inesperados.</translation>
 <translation id="957778406002650056">La URL desde la que se puede descargar la imagen de <ph name="PLUGIN_VM_NAME" />.</translation>
+<translation id="971677226939413180">Opción Imprimir como imagen no disponible para el usuario.</translation>
 <translation id="974349541138387272">Especifica la plantilla URI de resolución de DNS-over-HTTPS deseada</translation>
 <translation id="979467274961593903">No permitir el uso de la depuración remota</translation>
 <translation id="980218166381006412">Si se habilita esta política, se activará el modo de segundo plano. En el modo de segundo plano, un proceso de <ph name="PRODUCT_NAME" /> comienza al iniciar sesión en el sistema operativo y sigue ejecutándose cuando se cierra la última ventana del navegador, lo que permite que las aplicaciones en segundo plano y la sesión de navegación sigan activas. El proceso en segundo plano muestra un icono en la bandeja del sistema y se puede cerrar desde ahí en cualquier momento.

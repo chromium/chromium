@@ -181,6 +181,7 @@
 <translation id="2158408438301413340">Chrome не може да ги провери сите лозинки</translation>
 <translation id="2169830938017475061">Сега</translation>
 <translation id="2172688499998841696">Описите за слики се исклучени.</translation>
+<translation id="2172905120685242547">Да се затвори прозорецот?</translation>
 <translation id="2175927920773552910">QR-код</translation>
 <translation id="218608176142494674">Се споделува</translation>
 <translation id="2195339740518523951">Добијте ја најсилната безбедност на Chrome</translation>
@@ -280,6 +281,7 @@
 <translation id="2779651927720337254">не успеа</translation>
 <translation id="2781151931089541271">Остана 1 секунда</translation>
 <translation id="2788468313014644040">Број на групата</translation>
+<translation id="2800066122460699237">Картичката <ph name="TAB_TITLE" /> ќе се затвори</translation>
 <translation id="2801022321632964776">Ажурирајте за да го добиете вашиот јазик во најновата верзија на Chrome</translation>
 <translation id="2805756323405976993">Апликации</translation>
 <translation id="2806840421670364300">FLoC</translation>
@@ -288,6 +290,7 @@
 <translation id="2827278682606527653">Менито на картичката за активност е отворено на половина екран</translation>
 <translation id="2830783625999891985">Содржините од привремената меморија се сокриени</translation>
 <translation id="2839327205551510876">Се отследи <ph name="SITE_NAME" /></translation>
+<translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> картичка „Инкогнито“ ќе се затвори}one{<ph name="TAB_COUNT_MANY" /> картичка „Инкогнито“ ќе се затворат}other{<ph name="TAB_COUNT_MANY" /> картички „Инкогнито“ ќе се затворат}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Проверено пред 1 ден}one{Проверено пред # ден}other{Проверено пред # дена}}</translation>
 <translation id="2842985007712546952">Надредена папка</translation>
 <translation id="2856503607207334158">Неуспешно најавување</translation>
@@ -673,6 +676,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="5222676887888702881">Одјави се</translation>
 <translation id="5227554086496586518">Допрете за да ги видите резултатите од пребарувањето</translation>
 <translation id="5233638681132016545">Нова картичка</translation>
+<translation id="5235196193381275927">Нешто тргна наопаку при најавувањето</translation>
 <translation id="5246093389635966745">Изменете ја кратенката за алатникот</translation>
 <translation id="5250483651202458397">Слика од екранот. Допрете за да се затвори.</translation>
 <translation id="5262378156578470238">Ќе видите известување кога преземањево ќе започне на <ph name="DATE" />.</translation>
@@ -896,6 +900,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Проверено пред 1 час}one{Проверено пред # час}other{Проверено пред # часа}}</translation>
 <translation id="6545017243486555795">Избриши ги сите податоци</translation>
 <translation id="6546511553472444032">Датотеката може да е штетна</translation>
+<translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> и уште <ph name="TAB_COUNT_ONE" /> една картичка ќе се затворат}one{<ph name="TAB_TITLE" /> и уште <ph name="TAB_COUNT_MANY" /> картичка ќе се затворат}other{<ph name="TAB_TITLE" /> и уште <ph name="TAB_COUNT_MANY" /> картички ќе се затворат}}</translation>
 <translation id="6560414384669816528">Пребарување со Sogou</translation>
 <translation id="656065428026159829">Прикажи повеќе</translation>
 <translation id="6565959834589222080">Се користи Wi-Fi кога е достапна</translation>
@@ -936,6 +941,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="6767294960381293877">Списокот со уреди за споделување картичка е отворен на половина екран.</translation>
 <translation id="6783942555455976443">Зачувајте ја страницава за подоцна и добијте потсетник</translation>
 <translation id="6795633245022906657">Брзо отворете нова картичка. За да ја измените кратенкава, одете во „Поставки“.</translation>
+<translation id="6802555630140434547">Прозорецот ќе се затвори</translation>
 <translation id="6811034713472274749">Страницата е спремна за прикажување</translation>
 <translation id="6813446258015311409">Најавете се на Chrome, отворено.</translation>
 <translation id="6817747507826986771">Брзо споделете ја страницава. За да ја измените сликава од екранот, допрете и задржете.</translation>
@@ -1163,6 +1169,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="8109613176066109935">За да ги добиете обележувачите на сите ваши уреди, вклучете ја синхронизацијата</translation>
 <translation id="8110087112193408731">Да се прикажува вашата активност на Chrome во „Дигитална благосостојба“?</translation>
 <translation id="8127542551745560481">Изменете ја почетната страница</translation>
+<translation id="8130309322784422030">Вашите складирани податоци за најавување можеби се застарени</translation>
 <translation id="813082847718468539">Прикажи информации за локација</translation>
 <translation id="8137558756159375272">Функцијата Допри за пребарување ги испраќа избраниот збор и моменталната страница како контекст до Пребарување на Google. Може да го исклучите во <ph name="BEGIN_LINK" />Поставки<ph name="END_LINK" />.</translation>
 <translation id="8153351135626613369">„Помошникот“ ќе се појави кога ќе забележи дека може да ви помогне на поддржани веб-сајтови</translation>
@@ -1293,6 +1300,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="8945143127965743188"><ph name="LANG" /> - Овој јазик не можеше да се преземе. Обидете се повторно подоцна.</translation>
 <translation id="8951232171465285730">Chrome ви заштеди <ph name="MEGABYTES" /> MB</translation>
 <translation id="8965591936373831584">чека на ред</translation>
+<translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> картичка „Инкогнито“ и уште <ph name="TAB_COUNT_ONE" /> картичка ќе се затворат}one{<ph name="INCOGNITO_TAB_COUNT" /> картичка „Инкогнито“ и уште <ph name="TAB_COUNT_MANY" /> картичка ќе се затворат}other{<ph name="INCOGNITO_TAB_COUNT" /> картичка „Инкогнито“ и уште <ph name="TAB_COUNT_MANY" /> картички ќе се затворат}}</translation>
 <translation id="8970887620466824814">Нешто тргна наопаку.</translation>
 <translation id="8972098258593396643">Дали да се преземе во стандардната папка?</translation>
 <translation id="8987641763863173640">Управувајте со поставките за преглед на видео</translation>

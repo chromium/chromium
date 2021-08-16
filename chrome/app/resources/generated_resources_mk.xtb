@@ -161,6 +161,7 @@
 <translation id="1165039591588034296">Грешка</translation>
 <translation id="1166212789817575481">Затвори картички на десно</translation>
 <translation id="1166583374608765787">Прегледајте го ажурирањето на името</translation>
+<translation id="1166596238782048887"><ph name="TAB_TITLE" /> припаѓа на работната површина <ph name="DESK_TITLE" /></translation>
 <translation id="1168020859489941584">Ќе се отвори за <ph name="TIME_REMAINING" />...</translation>
 <translation id="1170288591054440704">Прашувај кога некој сајт сака да ги користи фонтовите инсталирани на уредот</translation>
 <translation id="1171135284592304528">Нагласи го предметот со фокус на тастатурата кога се менува</translation>
@@ -621,6 +622,7 @@
 <translation id="1640235262200048077"><ph name="IME_NAME" /> сѐ уште не функционира во апликациите на Linux</translation>
 <translation id="1640283014264083726">PKCS #1 MD4 Со шифрирање РСА</translation>
 <translation id="1641113438599504367">Безбедно прелистување</translation>
+<translation id="1642492862748815878">Поврзани сте со <ph name="DEVICE" /> и <ph name="NUMBER_OF_DEVICES" /> други уреди со Bluetooth</translation>
 <translation id="1642494467033190216">Потребно е отстранување на заштитата на rootfs и престартување пред да се овозможат другите функции за отстранување грешки.</translation>
 <translation id="1643072738649235303">X9.62 ECDSA потпис со SHA-1</translation>
 <translation id="1643921258693943800">За да користите „Споделување во близина“, вклучете Bluetooth и Wi-Fi</translation>
@@ -1836,6 +1838,7 @@
 <translation id="2885378588091291677">Управник со задачи</translation>
 <translation id="2885729872133513017">Настана проблем при декодирање на одговорот на серверот.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
+<translation id="288734198558082692"><ph name="DEVICE" /> и уште <ph name="NUMBER_OF_DEVICES" /></translation>
 <translation id="2889064240420137087">Отвори ја врската со…</translation>
 <translation id="2891922230654533301">Дали сакате да го користите вашиот уред за најавување на <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Стандарден прелистувач</translation>
@@ -2770,6 +2773,7 @@
 <translation id="3884152383786131369">Содржините од интернет што се достапни на повеќе јазици ќе го користат првиот поддржан јазик од списоков. Поставкиве се синхронизираат со поставките за прелистувачот. <ph name="BEGIN_LINK_LEARN_MORE" />Дознајте повеќе<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Вашиот администратор управува со ажурирањата</translation>
 <translation id="3886446263141354045">Вашето барање за пристап на сајтов е испратено на <ph name="NAME" />.</translation>
+<translation id="3887022758415973389">Прикажете го списокот со уреди</translation>
 <translation id="3888053818972567950">Поврзување со <ph name="WEB_DRIVE" /></translation>
 <translation id="3888550877729210209">Прибележување со <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">Овие информации ни помагаат подобро да го разбереме вашиот проблем со „Помошникот“. Се чуваат до 90 дена, а пристапот до нив е ограничен на соодветните инженерски тимови и тимови за повратни информации.</translation>
@@ -3481,6 +3485,7 @@
 <translation id="4662373422909645029">Прекарот не може да содржи броеви</translation>
 <translation id="4662788913887017617">Споделете го обележувачов со вашиот iPhone</translation>
 <translation id="4663373278480897665">Камерата е дозволена</translation>
+<translation id="4664289193573249666">Управувајте со функцијата „Безбеден DNS“ во поставките за Chrome OS</translation>
 <translation id="4664482161435122549">PKCS #12 Грешка при извезување</translation>
 <translation id="4665014895760275686">Производител</translation>
 <translation id="4665446389743427678">Сите податоци складирани од <ph name="SITE" /> ќе се избришат.</translation>
@@ -6013,6 +6018,7 @@
 <translation id="7478623944308207463">Вашите апликации и поставки ќе се синхронизираат на сите уреди со Chrome OS каде што сте најавени со сметката на Google. За да ги видите опциите за синхронизација на прелистувачот, одете во <ph name="LINK_BEGIN" />поставките за Chrome<ph name="LINK_END" />.</translation>
 <translation id="7478658909253570368">Не им дозволувај на сајтовите да се поврзуваат со сериски порти</translation>
 <translation id="7479221278376295180">Преглед на користењето на меморијата</translation>
+<translation id="747981547666531654">Поврзани сте со уреди со Bluetooth именувани <ph name="FIRST_DEVICE" /> и <ph name="SECOND_DEVICE" /></translation>
 <translation id="7481312909269577407">Напред</translation>
 <translation id="7481358317100446445">Подготвен</translation>
 <translation id="748138892655239008">Основни ограничувања на сертификат</translation>
@@ -6065,6 +6071,7 @@
 <translation id="7531771599742723865">Уредот се користи</translation>
 <translation id="7531779363494549572">Одете во „Поставки &gt; Апликации и известувања &gt; Известувања“.</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> не одговара. Изберете „Затвори присилно“ за да ја затворите.</translation>
+<translation id="7535730537657706072">Затворете ги сите картички „Инкогнито“ за да ја избришете историјата на прелистувањето во режимот „Инкогнито“ од уредот</translation>
 <translation id="7535791657097741517">Вклучи светла тема</translation>
 <translation id="7537451260744431038">Сајтовите не може да користат колачиња за да го подобрат вашето доживување со прелистувањето, на пример, да ве одржат најавени или да запомнат ставки во кошничката за купување</translation>
 <translation id="753769905878158714">Во лентата за адреси, внесете го клучниот збор за веб-сајтот што сакате да го пребарате. Потоа, користете кратенка од тастатура за да продолжите.</translation>
@@ -6681,6 +6688,7 @@
 <translation id="8138217203226449454">Дали сакавте да го смените пребарувачот?</translation>
 <translation id="8138997515734480534">Статус на <ph name="VM_NAME" /></translation>
 <translation id="8139447493436036221">Датотеки на Google Drive</translation>
+<translation id="8140070492745508800"><ph name="FIRST_DEVICE" /> <ph name="SECOND_DEVICE" /></translation>
 <translation id="8141584439523427891">Се отвора во алтернативен прелистувач сега</translation>
 <translation id="8141725884565838206">Управувај со своите лозинки</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{видео}one{# видео}other{# видеа}}</translation>
@@ -7400,6 +7408,7 @@
 <translation id="8909782404367982052">Повлечете за да пребарувате слики со Google Lens</translation>
 <translation id="8909833622202089127">Сајтот ја следи вашата локација</translation>
 <translation id="8910222113987937043">Промените во обележувачите, историјата, лозинките и другите поставки нема веќе да се синхронизираат со вашата сметка на Google. Сепак, вашите податоци ќе останат складирани во сметката на Google и со нив може да управувате во <ph name="BEGIN_LINK" />„Контролната табла на Google“<ph name="END_LINK" />.</translation>
+<translation id="8910987510378294980">Сокријте го списокот со уреди</translation>
 <translation id="8912362522468806198">Сметка на Google</translation>
 <translation id="8912793549644936705">Растегни</translation>
 <translation id="8912810933860534797">Овозможете автоматско скенирање</translation>
@@ -7517,6 +7526,7 @@
 <translation id="9033765790910064284">Сепак продолжи</translation>
 <translation id="9033857511263905942">&amp;Залепи</translation>
 <translation id="903480517321259405">Повторно напишете го PIN-бројот</translation>
+<translation id="9037054491984310631">Поврзани со уред со Bluetooth именуван <ph name="DEVICE" /></translation>
 <translation id="9037640663275993951">Уредот не е дозволен</translation>
 <translation id="9037818663270399707">Вашата врска не е приватна за целиот мрежен сообраќај</translation>
 <translation id="9037965129289936994">Прикажи го оригиналот</translation>
@@ -7597,6 +7607,7 @@
 <translation id="9112786533191410418">Датотеката <ph name="FILE_NAME" /> можеби е опасна. Да се испрати во Google за скенирање?</translation>
 <translation id="9112987648460918699">Најди...</translation>
 <translation id="9113240369465613386">Само непарни страници</translation>
+<translation id="9113469270512809735">Прикажете/сокријте ги неодамна затворените ставки</translation>
 <translation id="9114663181201435112">Најавувајте се лесно</translation>
 <translation id="9115675100829699941">&amp;Обележувачи</translation>
 <translation id="9116465289595958864">Последно изменети</translation>
