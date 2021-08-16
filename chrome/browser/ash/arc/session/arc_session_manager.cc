@@ -1565,7 +1565,7 @@ void ArcSessionManager::StopArc() {
     profile_->GetPrefs()->SetBoolean(prefs::kArcFastAppReinstallStarted, false);
     profile_->GetPrefs()->SetBoolean(prefs::kArcProvisioningInitiatedFromOobe,
                                      false);
-    profile_->GetPrefs()->SetBoolean(prefs::kArcIsManaged, false);
+    profile_->GetPrefs()->ClearPref(prefs::kArcIsManaged);
   }
 
   ShutdownSession();
