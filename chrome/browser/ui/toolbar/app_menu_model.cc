@@ -900,7 +900,7 @@ void AppMenuModel::Build() {
   // Always show this option if we're in tablet mode on Chrome OS.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           chromeos::switches::kEnableRequestTabletSite) ||
-      (ash::TabletMode::Get() && ash::TabletMode::Get()->InTabletMode())) {
+      (ash::TabletMode::IsInTabletMode())) {
     AddCheckItemWithStringId(IDC_TOGGLE_REQUEST_TABLET_SITE,
                              IDS_TOGGLE_REQUEST_TABLET_SITE);
   }

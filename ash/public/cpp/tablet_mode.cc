@@ -60,4 +60,9 @@ void TabletMode::Waiter::OnTabletModeEnded() {
     run_loop_.QuitWhenIdle();
 }
 
+bool TabletMode::IsInTabletMode() {
+  const TabletMode* singleton = TabletMode::Get();
+  return singleton && singleton->InTabletMode();
+}
+
 }  // namespace ash

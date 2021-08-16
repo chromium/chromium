@@ -132,7 +132,7 @@ bool ShouldLaunchHelpApp(Profile* profile) {
   profile->GetPrefs()->SetBoolean(prefs::kHelpAppShouldShowGetStarted,
                                   ShouldShowGetStarted(profile, user_manager));
   profile->GetPrefs()->SetBoolean(prefs::kHelpAppTabletModeDuringOobe,
-                                  ash::TabletMode::Get()->InTabletMode());
+                                  ash::TabletMode::IsInTabletMode());
 
   if (WizardController::default_controller())
     WizardController::default_controller()->PrepareFirstRunPrefs();

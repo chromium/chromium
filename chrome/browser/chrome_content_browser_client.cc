@@ -1491,7 +1491,7 @@ bool ChromeContentBrowserClient::ShouldUseMobileFlingCurve() {
 #if defined(OS_ANDROID)
   return true;
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
-  return ash::TabletMode::Get() && ash::TabletMode::Get()->InTabletMode();
+  return ash::TabletMode::IsInTabletMode();
 #else
   return false;
 #endif  // defined(OS_ANDROID)

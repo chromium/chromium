@@ -47,6 +47,9 @@ class ASH_PUBLIC_EXPORT TabletMode {
   // Returns true if the system is in tablet mode.
   virtual bool InTabletMode() const = 0;
 
+  // Returns true if TabletMode singleton exists and is in the tablet mode.
+  static bool IsInTabletMode();
+
   // Force the tablet mode state for integration tests. The meaning of |enabled|
   // are as follows:
   //   true: UI in the tablet mode

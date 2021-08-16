@@ -58,7 +58,7 @@ constexpr base::TimeDelta kTimeMetricsMax = base::TimeDelta::FromDays(7);
 constexpr int kTimeMetricsBucketCount = 100;
 
 bool IsTabletMode() {
-  return ash::TabletMode::Get() && ash::TabletMode::Get()->InTabletMode();
+  return ash::TabletMode::IsInTabletMode();
 }
 
 }  // namespace

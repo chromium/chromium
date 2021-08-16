@@ -59,7 +59,7 @@ void ScreenOrientationDelegateChromeos::Lock(
 }
 
 bool ScreenOrientationDelegateChromeos::ScreenOrientationProviderSupported() {
-  return ash::TabletMode::Get() && ash::TabletMode::Get()->InTabletMode();
+  return ash::TabletMode::IsInTabletMode();
 }
 
 void ScreenOrientationDelegateChromeos::Unlock(
