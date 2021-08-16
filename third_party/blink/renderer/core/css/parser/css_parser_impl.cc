@@ -704,12 +704,12 @@ StyleRuleImport* CSSParserImpl::ConsumeImportRule(
   if (uri.IsNull())
     return nullptr;  // Parse error, expected string or URI
 
-  absl::optional<StyleRuleBase::LayerName> layer;
+  StyleRuleBase::LayerName layer;
   if (RuntimeEnabledFeatures::CSSCascadeLayersEnabled()) {
     if (prelude.Peek().GetType() == kIdentToken &&
         prelude.Peek().Id() == CSSValueID::kLayer) {
       prelude.ConsumeIncludingWhitespace();
-      layer = StyleRuleBase::LayerName();
+      layer = StyleRuleBase::LayerName({g_empty_atom});
     } else if (prelude.Peek().GetType() == kFunctionToken &&
                prelude.Peek().FunctionId() == CSSValueID::kLayer) {
       CSSParserTokenRange original_prelude = prelude;
@@ -1119,7 +1119,9 @@ StyleRuleBase* CSSParserImpl::ConsumeLayerRule(CSSParserTokenStream& stream) {
 
   StyleRuleBase::LayerName name;
   prelude.ConsumeWhitespace();
-  if (!prelude.AtEnd()) {
+  if (prelude.AtEnd()) {
+    name.push_back(g_empty_atom);
+  } else {
     name = ConsumeCascadeLayerName(prelude);
     if (!name.size() || !prelude.AtEnd())
       return nullptr;

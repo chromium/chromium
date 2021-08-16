@@ -38,7 +38,7 @@ class StyleRuleImport : public StyleRuleBase {
 
  public:
   StyleRuleImport(const String& href,
-                  absl::optional<LayerName>&& layer,
+                  LayerName&& layer,
                   scoped_refptr<MediaQuerySet>,
                   OriginClean origin_clean);
   ~StyleRuleImport();
@@ -58,8 +58,8 @@ class StyleRuleImport : public StyleRuleBase {
 
   void RequestStyleSheet();
 
-  bool IsLayered() const { return layer_.has_value(); }
-  const LayerName& GetLayerName() const { return layer_.value(); }
+  bool IsLayered() const { return layer_.size(); }
+  const LayerName& GetLayerName() const { return layer_; }
 
   void TraceAfterDispatch(blink::Visitor*) const;
 
@@ -99,7 +99,7 @@ class StyleRuleImport : public StyleRuleBase {
 
   Member<ImportedStyleSheetClient> style_sheet_client_;
   String str_href_;
-  absl::optional<LayerName> layer_;
+  LayerName layer_;
   scoped_refptr<MediaQuerySet> media_queries_;
   Member<StyleSheetContents> style_sheet_;
   bool loading_;

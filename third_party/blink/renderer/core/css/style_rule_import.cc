@@ -35,7 +35,7 @@
 namespace blink {
 
 StyleRuleImport::StyleRuleImport(const String& href,
-                                 absl::optional<LayerName>&& layer,
+                                 LayerName&& layer,
                                  scoped_refptr<MediaQuerySet> media,
                                  OriginClean origin_clean)
     : StyleRuleBase(kImport),

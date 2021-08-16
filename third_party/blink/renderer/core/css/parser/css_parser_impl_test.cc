@@ -337,7 +337,8 @@ TEST(CSSParserImplTest, ValidLayerBlockRule) {
     String rule = "@layer { }";
     auto* parsed = DynamicTo<StyleRuleLayerBlock>(ParseRule(*document, rule));
     ASSERT_TRUE(parsed);
-    ASSERT_EQ(0u, parsed->GetName().size());
+    ASSERT_EQ(1u, parsed->GetName().size());
+    EXPECT_EQ(g_empty_atom, parsed->GetName()[0]);
   }
 
   // Sub-layer declared directly
@@ -438,7 +439,8 @@ TEST(CSSParserImplTest, NestedLayerRules) {
     String rule = "@layer { @layer foo; @layer bar { } }";
     auto* parent = DynamicTo<StyleRuleLayerBlock>(ParseRule(*document, rule));
     ASSERT_TRUE(parent);
-    ASSERT_EQ(0u, parent->GetName().size());
+    ASSERT_EQ(1u, parent->GetName().size());
+    EXPECT_EQ(g_empty_atom, parent->GetName()[0]);
     ASSERT_EQ(2u, parent->ChildRules().size());
 
     auto* foo =
@@ -501,7 +503,8 @@ TEST(CSSParserImplTest, LayeredImportRules) {
     auto* parsed = DynamicTo<StyleRuleImport>(ParseRule(*document, rule));
     ASSERT_TRUE(parsed);
     ASSERT_TRUE(parsed->IsLayered());
-    EXPECT_EQ(0u, parsed->GetLayerName().size());
+    ASSERT_EQ(1u, parsed->GetLayerName().size());
+    EXPECT_EQ(g_empty_atom, parsed->GetLayerName()[0]);
   }
 
   {
@@ -573,7 +576,8 @@ TEST(CSSParserImplTest, LayeredImportRulesMultipleLayers) {
     auto* parsed = DynamicTo<StyleRuleImport>(ParseRule(*document, rule));
     ASSERT_TRUE(parsed);
     ASSERT_TRUE(parsed->IsLayered());
-    EXPECT_EQ(0u, parsed->GetLayerName().size());
+    ASSERT_EQ(1u, parsed->GetLayerName().size());
+    EXPECT_EQ(g_empty_atom, parsed->GetLayerName()[0]);
     EXPECT_EQ("layer", parsed->MediaQueries()->MediaText());
   }
 
@@ -582,7 +586,8 @@ TEST(CSSParserImplTest, LayeredImportRulesMultipleLayers) {
     auto* parsed = DynamicTo<StyleRuleImport>(ParseRule(*document, rule));
     ASSERT_TRUE(parsed);
     ASSERT_TRUE(parsed->IsLayered());
-    EXPECT_EQ(0u, parsed->GetLayerName().size());
+    ASSERT_EQ(1u, parsed->GetLayerName().size());
+    EXPECT_EQ(g_empty_atom, parsed->GetLayerName()[0]);
     EXPECT_EQ("not all", parsed->MediaQueries()->MediaText());
   }
 
