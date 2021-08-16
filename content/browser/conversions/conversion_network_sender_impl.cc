@@ -140,9 +140,8 @@ void ConversionNetworkSenderImpl::SendReport(const ConversionReport& report,
             "When a registered conversion has become eligible for reporting."
           data:
             "A high-entropy identifier declared by the site in which the user "
-            "clicked on an impression. A noisy low entropy data value declared "
-            "on the conversion site. A browser generated value that denotes "
-            "if this was the last impression clicked prior to conversion."
+            "clicked on an impression. A noisy low-entropy data value declared "
+            "on the conversion site."
           destination:OTHER
         }
         policy {

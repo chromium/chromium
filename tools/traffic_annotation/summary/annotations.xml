@@ -63,7 +63,7 @@ Refer to README.md for content description and update process.
  <item id="content_hash_verification_job" added_in_milestone="62" hash_code="64733114" type="0" content_hash_code="127912411" os_list="linux,windows" file_path="extensions/browser/content_hash_fetcher.cc"/>
  <item id="content_resource_fetcher" added_in_milestone="63" hash_code="70796791" type="0" deprecated="2017-09-16" content_hash_code="135648626" file_path=""/>
  <item id="content_suggestion_get_favicon" added_in_milestone="62" hash_code="16653985" type="0" content_hash_code="134280933" os_list="linux,windows" file_path="components/ntp_snippets/content_suggestions_service.cc"/>
- <item id="conversion_measurement_report" added_in_milestone="84" hash_code="113422320" type="0" content_hash_code="60688877" os_list="linux,windows" file_path="content/browser/conversions/conversion_network_sender_impl.cc"/>
+ <item id="conversion_measurement_report" added_in_milestone="84" hash_code="113422320" type="0" content_hash_code="102111798" os_list="linux,windows" file_path="content/browser/conversions/conversion_network_sender_impl.cc"/>
  <item id="credenential_avatar" added_in_milestone="62" hash_code="53695122" type="0" content_hash_code="113035371" os_list="linux,windows" file_path="chrome/browser/ui/passwords/account_avatar_fetcher.cc"/>
  <item id="cros_recovery_image_download" added_in_milestone="62" hash_code="101725581" type="0" content_hash_code="10999698" os_list="linux,windows" file_path="chrome/browser/extensions/api/image_writer_private/write_from_url_operation.cc"/>
  <item id="cryptauth_device_sync_tickle" added_in_milestone="62" hash_code="96565489" type="1" second_id="29188932" deprecated="2018-03-15" content_hash_code="115714668" file_path=""/>
