@@ -13,6 +13,10 @@ namespace content {
 class RenderFrameHostImpl;
 class WebContents;
 
+// Returns an InterfaceProvider for global Java-implemented interfaces on the IO
+// thread.
+service_manager::InterfaceProvider* GetGlobalJavaInterfacesOnIOThread();
+
 void BindInterfaceRegistryForWebContents(
     mojo::PendingReceiver<service_manager::mojom::InterfaceProvider> receiver,
     WebContents* web_contents);
