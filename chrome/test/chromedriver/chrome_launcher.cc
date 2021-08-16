@@ -69,6 +69,8 @@
 #include <unistd.h>
 #elif defined(OS_WIN)
 #include "chrome/test/chromedriver/keycode_text_conversion.h"
+
+#include <windows.h>
 #endif
 
 namespace {

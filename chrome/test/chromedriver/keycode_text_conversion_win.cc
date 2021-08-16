@@ -4,10 +4,12 @@
 
 #include "chrome/test/chromedriver/keycode_text_conversion.h"
 
+// windows.h must be included before VersionHelpers.h
+#include <windows.h>
+
 #include <VersionHelpers.h>
 #include <stdlib.h>
 #include <string.h>
-#include <windows.h>
 
 #include <memory>
 

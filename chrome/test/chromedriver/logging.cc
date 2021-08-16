@@ -31,6 +31,8 @@
 #if defined(OS_POSIX)
 #include <fcntl.h>
 #include <unistd.h>
+#elif defined(OS_WIN)
+#include <windows.h>
 #endif
 
 const char* GetPortProtectionMessage() {
