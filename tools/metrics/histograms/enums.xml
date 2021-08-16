@@ -40338,6 +40338,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="-1419490329" label="ActivityTracker.Record.Event"/>
   <int value="-1390672863"
       label="DataUse.MessageSize.AllServices.Upstream.Background.NotCellular"/>
+  <int value="-1363801537" label="Crashpad.CrashUpload.Skipped"/>
   <int value="-1345388508" label="Renderer4.IdealContentsScale"/>
   <int value="-1321341911"
       label="DataUse.BackgroundToDataRecievedPerByte.User"/>
@@ -40348,6 +40349,9 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="-1267842531"
       label="PasswordManager.BulkCheck.PasswordCheckReferrer"/>
   <int value="-1189959109" label="RendererScheduler.TaskCountPerQueueType"/>
+  <int value="-1096730224" label="Crashpad.CrashReportPending"/>
+  <int value="-1026485441"
+      label="UMA.PersistentAllocator.CrashpadMetrics.Errors"/>
   <int value="-983723378" label="RendererScheduler.TaskDurationPerThreadType"/>
   <int value="-970685679"
       label="Bluetooth.MacOS.Errors.DidDiscoverDescriptors"/>
@@ -40367,6 +40371,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="-535820174"
       label="DataUse.MessageSize.AllServices.Downstream.Background.NotCellular"/>
   <int value="-453454441" label="Bluetooth.MacOS.Errors.DidWriteValue"/>
+  <int value="-445016785" label="Crashpad.ExceptionEncountered"/>
   <int value="-436781330"
       label="Net.URLLoaderThrottleExecutionTime.BeforeWillProcessResponse"/>
   <int value="-424393552" label="DirectWrite.Fonts.Gfx.InitializeLoopCount"/>
@@ -40377,8 +40382,10 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="-343220158" label="Compositing.Renderer.LayersUpdateTime"/>
   <int value="-334673303"
       label="UMA.PersistentAllocator.BrowserMetrics.Errors"/>
+  <int value="-297026085" label="Crashpad.ExceptionCode.Win"/>
   <int value="-141990989" label="DataUse.AllServices.Background"/>
   <int value="-132932440" label="DataUse.ContentType.Services"/>
+  <int value="-94832417" label="Crashpad.CrashReportSize"/>
   <int value="-48200749" label="DiskCache.0.TotalIOTime"/>
   <int value="0" label="Missing hash value"/>
   <int value="19727358" label="DataUse.BytesReceived2.Delegate"/>
@@ -40392,9 +40399,11 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="192918458"
       label="DataUse.MessageSize.AllServices.Downstream.Unknown.Cellular"/>
   <int value="294030175" label="V8.GC.Event.MainThread.Full.Incremental.Cpp"/>
+  <int value="410893025" label="Crashpad.CrashUpload.AttemptSuccessful"/>
   <int value="424952287"
       label="Network.Shill.Wifi.LinkMonitorResponseTimeSample"/>
   <int value="433324211" label="Extensions.FunctionCalls"/>
+  <int value="480662546" label="ActivityTracker.CollectCrash.Event"/>
   <int value="513321612"
       label="V8.GC.Event.MainThread.Full.Incremental.Mark.Cpp"/>
   <int value="536258327" label="Blink.UseCounter.SVGImage.Features"/>
@@ -40416,6 +40425,8 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="761823979" label="Crashpad.HandlerLifetimeMilestone"/>
   <int value="873338882"
       label="Autofill.FieldPredictionQuality.ByFieldType.Heuristic"/>
+  <int value="902803399"
+      label="UMA.PersistentAllocator.CrashpadMetrics.UsedPct"/>
   <int value="910415681" label="DevTools.ExperimentEnabledAtLaunch"/>
   <int value="1096524200" label="DevTools.IssueCreated"/>
   <int value="1126499749"
@@ -40442,6 +40453,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
       label="Compositing.Renderer.LayerUpdateSkippedDueToBackface"/>
   <int value="1632894016"
       label="Autofill.FieldPredictionQuality.ByFieldType.Heuristic.NoSubmission"/>
+  <int value="1716628481" label="ActivityTracker.CollectCrash.Status"/>
   <int value="1721222685" label="Blink.UseCounter.MainFrame.Features"/>
   <int value="1753226325"
       label="DataUse.MessageSize.AllServices.Downstream.Foreground.Cellular"/>
