@@ -9,19 +9,21 @@
 #include <string>
 #include <vector>
 
+#include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/chromeos/printing/cups_print_job_manager.h"
-#include "chrome/browser/chromeos/printing/cups_print_job_manager_factory.h"
-#include "chrome/browser/chromeos/printing/cups_printers_manager_factory.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/printing/print_job_controller.h"
 #include "chrome/browser/extensions/api/printing/print_job_submitter.h"
-#include "chrome/browser/extensions/api/printing/printer_capabilities_provider.h"
 #include "chrome/common/extensions/api/printing.h"
 #include "chrome/services/printing/public/mojom/pdf_flattener.mojom.h"
+#include "chromeos/crosapi/mojom/local_printer.mojom.h"
+#include "content/public/browser/notification_observer.h"
+#include "content/public/browser/notification_registrar.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router_factory.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"
@@ -31,7 +33,6 @@ class PrefRegistrySimple;
 namespace chromeos {
 class CupsWrapper;
 class Printer;
-class PrinterConfigurer;
 }  // namespace chromeos
 
 namespace content {
@@ -39,7 +40,6 @@ class BrowserContext;
 }  // namespace content
 
 namespace printing {
-struct PrinterSemanticCapsAndDefaults;
 struct PrinterStatus;
 }  // namespace printing
 
@@ -48,15 +48,20 @@ namespace extensions {
 class PrintJobSubmitter;
 class ExtensionRegistry;
 
-// Handles chrome.printing API functions calls, observes CupsPrintJobManager and
-// generates OnJobStatusChanged() events of chrome.printing API.
+// Handles chrome.printing API functions calls, observes NotificationService,
+// and generates OnJobStatusChanged() events of chrome.printing API.
+// The callback function is never run directly - it is posted to
+// base::SequencedTaskRunnerHandle::Get().
 class PrintingAPIHandler : public BrowserContextKeyedAPI,
-                           public chromeos::CupsPrintJobManager::Observer {
+                           public crosapi::mojom::PrintJobObserver,
+                           public content::NotificationObserver {
  public:
   using SubmitJobCallback = base::OnceCallback<void(
       absl::optional<api::printing::SubmitJobStatus> status,
       std::unique_ptr<std::string> job_id,
       absl::optional<std::string> error)>;
+  using GetPrintersCallback =
+      base::OnceCallback<void(std::vector<api::printing::Printer>)>;
   using GetPrinterInfoCallback = base::OnceCallback<void(
       absl::optional<base::Value> capabilities,
       absl::optional<api::printing::PrinterStatus> status,
@@ -66,21 +71,43 @@ class PrintingAPIHandler : public BrowserContextKeyedAPI,
       content::BrowserContext* browser_context,
       EventRouter* event_router,
       ExtensionRegistry* extension_registry,
-      chromeos::CupsPrintJobManager* print_job_manager,
-      chromeos::CupsPrintersManager* printers_manager,
       std::unique_ptr<PrintJobController> print_job_controller,
-      std::unique_ptr<chromeos::PrinterConfigurer> printer_configurer,
-      std::unique_ptr<chromeos::CupsWrapper> cups_wrapper);
+      std::unique_ptr<chromeos::CupsWrapper> cups_wrapper,
+      crosapi::mojom::LocalPrinter* local_printer);
 
   explicit PrintingAPIHandler(content::BrowserContext* browser_context);
+  PrintingAPIHandler(content::BrowserContext* browser_context,
+                     EventRouter* event_router,
+                     ExtensionRegistry* extension_registry,
+                     std::unique_ptr<PrintJobController> print_job_controller,
+                     std::unique_ptr<chromeos::CupsWrapper> cups_wrapper,
+                     crosapi::mojom::LocalPrinter* local_printer = nullptr);
+  PrintingAPIHandler(const PrintingAPIHandler&) = delete;
+  PrintingAPIHandler& operator=(const PrintingAPIHandler&) = delete;
   ~PrintingAPIHandler() override;
 
+  static std::string CreateUniqueId(const std::string& printer_id, int job_id);
+
+  // NotificationObserver:
+  void Observe(int type,
+               const content::NotificationSource& source,
+               const content::NotificationDetails& details) override;
   // BrowserContextKeyedAPI:
   static BrowserContextKeyedAPIFactory<PrintingAPIHandler>*
   GetFactoryInstance();
 
   // Returns the current instance for |browser_context|.
   static PrintingAPIHandler* Get(content::BrowserContext* browser_context);
+
+  // Print jobs should be registered before OnPrintJobUpdate() is called.
+  void RegisterPrintJob(const std::string& printer_id,
+                        int job_id,
+                        const std::string& extension_id);
+
+  // crosapi::mojom::PrintJobObserver:
+  void OnPrintJobUpdate(const std::string& printer_id,
+                        unsigned int job_id,
+                        crosapi::mojom::PrintJobStatus status) override;
 
   // Register the printing API preference with the |registry|.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -99,7 +126,7 @@ class PrintingAPIHandler : public BrowserContextKeyedAPI,
   absl::optional<std::string> CancelJob(const std::string& extension_id,
                                         const std::string& job_id);
 
-  std::vector<api::printing::Printer> GetPrinters();
+  void GetPrinters(GetPrintersCallback callback);
 
   void GetPrinterInfo(const std::string& printer_id,
                       GetPrinterInfoCallback callback);
@@ -111,15 +138,11 @@ class PrintingAPIHandler : public BrowserContextKeyedAPI,
   // Needed for BrowserContextKeyedAPI implementation.
   friend class BrowserContextKeyedAPIFactory<PrintingAPIHandler>;
 
-  PrintingAPIHandler(
-      content::BrowserContext* browser_context,
-      EventRouter* event_router,
-      ExtensionRegistry* extension_registry,
-      chromeos::CupsPrintJobManager* print_job_manager,
-      chromeos::CupsPrintersManager* printers_manager,
-      std::unique_ptr<PrintJobController> print_job_controller,
-      std::unique_ptr<chromeos::PrinterConfigurer> printer_configurer,
-      std::unique_ptr<chromeos::CupsWrapper> cups_wrapper);
+  struct PrintJobInfo {
+    std::string printer_id;
+    int job_id;
+    std::string extension_id;
+  };
 
   // This is needed to save ownership of |print_job_submitter| object which
   // could be destructed because of asynchronous work otherwise.
@@ -130,27 +153,21 @@ class PrintingAPIHandler : public BrowserContextKeyedAPI,
       std::unique_ptr<std::string> job_id,
       absl::optional<std::string> error);
 
-  void GetPrinterStatus(
+  void OnPrintersRetrieved(
+      GetPrintersCallback callback,
+      std::vector<crosapi::mojom::LocalDestinationInfoPtr> data);
+
+  // GetPrinterInfo() calls this function.
+  void OnPrinterCapabilitiesRetrieved(
       const std::string& printer_id,
       GetPrinterInfoCallback callback,
-      absl::optional<printing::PrinterSemanticCapsAndDefaults> capabilities);
+      crosapi::mojom::CapabilitiesResponsePtr caps);
 
+  // OnPrinterCapabilitiesRetrieved() calls this function.
   void OnPrinterStatusRetrieved(
       GetPrinterInfoCallback callback,
       base::Value capabilities,
       std::unique_ptr<::printing::PrinterStatus> printer_status);
-
-  // CupsPrintJobManager::Observer:
-  void OnPrintJobCreated(base::WeakPtr<chromeos::CupsPrintJob> job) override;
-  void OnPrintJobStarted(base::WeakPtr<chromeos::CupsPrintJob> job) override;
-  void OnPrintJobDone(base::WeakPtr<chromeos::CupsPrintJob> job) override;
-  void OnPrintJobError(base::WeakPtr<chromeos::CupsPrintJob> job) override;
-  void OnPrintJobCancelled(base::WeakPtr<chromeos::CupsPrintJob> job) override;
-
-  void DispatchJobStatusChangedEvent(api::printing::JobStatus job_status,
-                                     base::WeakPtr<chromeos::CupsPrintJob> job);
-
-  void FinishJob(base::WeakPtr<chromeos::CupsPrintJob> job);
 
   // BrowserContextKeyedAPI:
   static const bool kServiceIsNULLWhileTesting = true;
@@ -159,28 +176,25 @@ class PrintingAPIHandler : public BrowserContextKeyedAPI,
   content::BrowserContext* const browser_context_;
   EventRouter* const event_router_;
   ExtensionRegistry* const extension_registry_;
-
-  chromeos::CupsPrintJobManager* print_job_manager_;
-  chromeos::CupsPrintersManager* const printers_manager_;
   std::unique_ptr<PrintJobController> print_job_controller_;
-  PrinterCapabilitiesProvider printer_capabilities_provider_;
   std::unique_ptr<chromeos::CupsWrapper> cups_wrapper_;
+  content::NotificationRegistrar registrar_;
 
   // Remote interface used to flatten a PDF.
   mojo::Remote<printing::mojom::PdfFlattener> pdf_flattener_;
 
-  // Stores mapping from job id to the extension id.
-  // This is needed to disallow extensions to cancel jobs initiated by other
-  // extensions.
-  base::flat_map<std::string, std::string> print_jobs_extension_ids_;
+  // Stores mapping from job id to PrintJobInfo object.
+  // This is needed to cancel print jobs.
+  base::flat_map<std::string, PrintJobInfo> print_jobs_;
 
-  base::ScopedObservation<chromeos::CupsPrintJobManager,
-                          chromeos::CupsPrintJobManager::Observer>
-      print_job_manager_observation_{this};
+  crosapi::mojom::LocalPrinter* local_printer_;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  int local_printer_version_ = 0;
+#endif
+
+  mojo::Receiver<crosapi::mojom::PrintJobObserver> receiver_{this};
 
   base::WeakPtrFactory<PrintingAPIHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PrintingAPIHandler);
 };
 
 template <>
@@ -188,8 +202,6 @@ struct BrowserContextFactoryDependencies<PrintingAPIHandler> {
   static void DeclareFactoryDependencies(
       BrowserContextKeyedAPIFactory<PrintingAPIHandler>* factory) {
     factory->DependsOn(EventRouterFactory::GetInstance());
-    factory->DependsOn(chromeos::CupsPrintJobManagerFactory::GetInstance());
-    factory->DependsOn(chromeos::CupsPrintersManagerFactory::GetInstance());
   }
 };
 

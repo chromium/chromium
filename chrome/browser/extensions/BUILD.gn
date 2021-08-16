@@ -949,28 +949,10 @@ static_library("extensions") {
   ]
 
   if (is_chromeos_ash) {
-    sources += [
-      "api/printing/print_job_controller.cc",
-      "api/printing/print_job_controller.h",
-      "api/printing/printer_capabilities_provider.cc",
-      "api/printing/printer_capabilities_provider.h",
-    ]
     deps += [
       "//chromeos/resources:media_app_bundle_resources_grit",
       "//ui/display/manager",
     ]
-    if (use_cups) {
-      sources += [
-        "api/printing/print_job_submitter.cc",
-        "api/printing/print_job_submitter.h",
-        "api/printing/printing_api.cc",
-        "api/printing/printing_api.h",
-        "api/printing/printing_api_handler.cc",
-        "api/printing/printing_api_handler.h",
-        "api/printing/printing_api_utils.cc",
-        "api/printing/printing_api_utils.h",
-      ]
-    }
   }
 
   if (is_chromeos) {
@@ -988,11 +970,25 @@ static_library("extensions") {
       "api/platform_keys/platform_keys_api.h",
       "api/platform_keys/verify_trust_api.cc",
       "api/platform_keys/verify_trust_api.h",
+      "api/printing/print_job_controller.cc",
+      "api/printing/print_job_controller.h",
       "clipboard_extension_helper_chromeos.cc",
       "clipboard_extension_helper_chromeos.h",
       "system_display/system_display_serialization.cc",
       "system_display/system_display_serialization.h",
     ]
+    if (use_cups) {
+      sources += [
+        "api/printing/print_job_submitter.cc",
+        "api/printing/print_job_submitter.h",
+        "api/printing/printing_api.cc",
+        "api/printing/printing_api.h",
+        "api/printing/printing_api_handler.cc",
+        "api/printing/printing_api_handler.h",
+        "api/printing/printing_api_utils.cc",
+        "api/printing/printing_api_utils.h",
+      ]
+    }
     deps += [
       "//chromeos/crosapi/cpp",
       "//chromeos/crosapi/mojom",

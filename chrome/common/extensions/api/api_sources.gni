@@ -74,7 +74,7 @@ if (!is_android) {
   schema_sources_ += [ "processes.idl" ]
 }
 
-if (is_chromeos_ash || is_chromeos_lacros) {
+if (is_chromeos) {
   schema_sources_ += [
     "enterprise_device_attributes.idl",
     "enterprise_networking_attributes.idl",
@@ -83,6 +83,10 @@ if (is_chromeos_ash || is_chromeos_lacros) {
     "platform_keys_internal.idl",
     "platform_keys.idl",
   ]
+
+  if (use_cups) {
+    schema_sources_ += [ "printing.idl" ]
+  }
 }
 
 if (is_chromeos_ash) {
@@ -112,10 +116,7 @@ if (is_chromeos_ash) {
     "wm_desks_private.idl",
   ]
   if (use_cups) {
-    schema_sources_ += [
-      "printing.idl",
-      "printing_metrics.idl",
-    ]
+    schema_sources_ += [ "printing_metrics.idl" ]
   }
 } else if (is_linux || is_chromeos || is_win) {
   schema_sources_ += [ "input_ime.json" ]

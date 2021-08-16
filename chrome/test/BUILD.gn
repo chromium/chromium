@@ -3415,8 +3415,8 @@ if (!is_android && !is_fuchsia) {
         sources += [
           "../browser/chromeos/extensions/printing_metrics/print_job_finished_event_dispatcher_apitest.cc",
           "../browser/chromeos/extensions/printing_metrics/printing_metrics_apitest.cc",
-          "../browser/extensions/api/printing/fake_print_job_controller.cc",
-          "../browser/extensions/api/printing/fake_print_job_controller.h",
+          "../browser/extensions/api/printing/fake_print_job_controller_ash.cc",
+          "../browser/extensions/api/printing/fake_print_job_controller_ash.h",
           "../browser/extensions/api/printing/printing_apitest.cc",
         ]
         deps += [ "//printing:test_support" ]
@@ -4792,6 +4792,15 @@ test("unit_tests") {
       "chromeos/printing/fake_local_printer_chromeos.cc",
       "chromeos/printing/fake_local_printer_chromeos.h",
     ]
+
+    if (use_cups) {
+      sources += [
+        "../browser/chromeos/printing/test_cups_wrapper.cc",
+        "../browser/chromeos/printing/test_cups_wrapper.h",
+        "../browser/extensions/api/printing/fake_print_job_controller.cc",
+        "../browser/extensions/api/printing/fake_print_job_controller.h",
+      ]
+    }
   }
 
   if (is_chromeos_ash) {
@@ -6779,6 +6788,13 @@ test("unit_tests") {
         "../browser/extensions/external_registry_loader_win_unittest.cc",
         "../browser/media_galleries/win/mtp_device_delegate_impl_win_unittest.cc",
         "../browser/media_galleries/win/mtp_device_object_enumerator_unittest.cc",
+      ]
+    }
+
+    if (is_chromeos && use_cups) {
+      sources += [
+        "../browser/extensions/api/printing/printing_api_handler_unittest.cc",
+        "../browser/extensions/api/printing/printing_api_utils_unittest.cc",
       ]
     }
 

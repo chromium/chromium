@@ -12,9 +12,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/printing/cups_printers_manager.h"
 #include "chrome/browser/extensions/api/printing/print_job_controller.h"
-#include "chrome/browser/extensions/api/printing/printer_capabilities_provider.h"
 #include "chrome/browser/extensions/api/printing/printing_api_utils.h"
 #include "chrome/browser/printing/printing_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/native_window_tracker.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/services/printing/public/mojom/pdf_flattener.mojom.h"
+#include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
@@ -34,6 +35,12 @@
 #include "printing/print_settings.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/crosapi/local_printer_ash.h"
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_service.h"
+#endif
 
 namespace extensions {
 
@@ -80,20 +87,24 @@ bool IsUserConfirmationRequired(content::BrowserContext* browser_context,
 PrintJobSubmitter::PrintJobSubmitter(
     gfx::NativeWindow native_window,
     content::BrowserContext* browser_context,
-    chromeos::CupsPrintersManager* printers_manager,
-    PrinterCapabilitiesProvider* printer_capabilities_provider,
     PrintJobController* print_job_controller,
     mojo::Remote<printing::mojom::PdfFlattener>* pdf_flattener,
     scoped_refptr<const extensions::Extension> extension,
-    api::printing::SubmitJobRequest request)
+    api::printing::SubmitJobRequest request,
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    int local_printer_version,
+#endif
+    crosapi::mojom::LocalPrinter* local_printer)
     : native_window_(native_window),
       browser_context_(browser_context),
-      printers_manager_(printers_manager),
-      printer_capabilities_provider_(printer_capabilities_provider),
       print_job_controller_(print_job_controller),
       pdf_flattener_(pdf_flattener),
       extension_(extension),
-      request_(std::move(request)) {
+      request_(std::move(request)),
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      local_printer_version_(local_printer_version),
+#endif
+      local_printer_(local_printer) {
   DCHECK(extension);
   if (native_window)
     native_window_tracker_ = NativeWindowTracker::Create(native_window);
@@ -130,26 +141,31 @@ bool PrintJobSubmitter::CheckPrintTicket() {
 }
 
 void PrintJobSubmitter::CheckPrinter() {
-  absl::optional<chromeos::Printer> printer =
-      printers_manager_->GetPrinter(request_.job.printer_id);
-  if (!printer) {
-    FireErrorCallback(kInvalidPrinterId);
+  if (!local_printer_) {
+    LOG(ERROR)
+        << "Local printer not available (PrintJobSubmitter::CheckPrinter()";
+    CheckCapabilitiesCompatibility(nullptr);
     return;
   }
-  printer_name_ = base::UTF8ToUTF16(printer->display_name());
-  printer_capabilities_provider_->GetPrinterCapabilities(
+  local_printer_->GetCapability(
       request_.job.printer_id,
       base::BindOnce(&PrintJobSubmitter::CheckCapabilitiesCompatibility,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void PrintJobSubmitter::CheckCapabilitiesCompatibility(
-    absl::optional<printing::PrinterSemanticCapsAndDefaults> capabilities) {
-  if (!capabilities) {
+    crosapi::mojom::CapabilitiesResponsePtr caps) {
+  if (!caps) {
+    FireErrorCallback(kInvalidPrinterId);
+    return;
+  }
+  printer_name_ = base::UTF8ToUTF16(caps->basic_info->name);
+  if (!caps->capabilities) {
     FireErrorCallback(kPrinterUnavailable);
     return;
   }
-  if (!CheckSettingsAndCapabilitiesCompatibility(*settings_, *capabilities)) {
+  if (!CheckSettingsAndCapabilitiesCompatibility(*settings_,
+                                                 *caps->capabilities)) {
     FireErrorCallback(kUnsupportedTicket);
     return;
   }
