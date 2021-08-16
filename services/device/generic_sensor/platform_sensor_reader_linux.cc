@@ -82,9 +82,6 @@ class PollingSensorReader : public SensorReader {
   // Signals that an error occurred while trying to read from a platform sensor.
   void OnReadingError();
 
-  // Initializes a read timer.
-  void InitializeTimer(const PlatformSensorConfiguration& configuration);
-
   // In builds with DCHECK enabled, checks that methods of this class are
   // called on the right thread.
   SEQUENCE_CHECKER(sequence_checker_);
