@@ -713,9 +713,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NewTabPage.CustomizeChromeBackgroundAction"
-    enum="NTPCustomizeChromeBackgroundAction" expires_after="2021-08-29">
-  <owner>dbeam@chromium.org</owner>
+    enum="NTPCustomizeChromeBackgroundAction" expires_after="2022-01-01">
+  <owner>danpeng@google.com</owner>
+  <owner>tiborg@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
     Captures the actions performed when configuring a 'Chrome background' image
     on the New Tab Page. Since most actions are sequential, this may indicate
