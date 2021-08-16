@@ -888,15 +888,14 @@ void ExistingUserController::OnAuthFailure(const AuthFailure& failure) {
     // cached locally or the local admin account.
     if (!network_state_helper_->IsConnected()) {
       if (is_known_user)
-        ShowError(SigninError::kAuthenticationError, error);
+        ShowError(SigninError::kKnownUserFailedNetworkNotConnected, error);
       else
-        ShowError(SigninError::kOfflineFailedNetworkNotConnected, error);
+        ShowError(SigninError::kNewUserFailedNetworkNotConnected, error);
     } else {
-      // TODO(nkostylev): Cleanup rest of ClientLogin related code.
-      if (!is_known_user)
-        ShowError(SigninError::kAuthenticatingNew, error);
+      if (is_known_user)
+        ShowError(SigninError::kKnownUserFailedNetworkConnected, error);
       else
-        ShowError(SigninError::kAuthenticating, error);
+        ShowError(SigninError::kNewUserFailedNetworkConnected, error);
     }
     GetLoginDisplay()->ClearAndEnablePassword();
     StartAutoLoginTimer();
