@@ -8,88 +8,95 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
+#include "ui/compositor/layer_owner.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animator_test_controller.h"
 #include "ui/compositor/test/test_layer_animation_delegate.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
-#include "ui/views/test/views_test_base.h"
-#include "ui/views/view.h"
 
 namespace views {
 
-class AnimationBuilderTest : public ViewsTestBase {
+class TestAnimatibleLayerOwner : public ui::LayerOwner {
+ public:
+  TestAnimatibleLayerOwner() : ui::LayerOwner(std::make_unique<ui::Layer>()) {
+    layer()->GetAnimator()->set_disable_timer_for_test(true);
+    layer()->GetAnimator()->SetDelegate(&delegate_);
+  }
+
+  ui::LayerAnimationDelegate* delegate() { return &delegate_; }
+
+ private:
+  ui::TestLayerAnimationDelegate delegate_;
+};
+
+class AnimationBuilderTest : public testing::Test {
  public:
   AnimationBuilderTest() = default;
+  TestAnimatibleLayerOwner* CreateTestLayerOwner() {
+    layer_owners_.push_back(std::make_unique<TestAnimatibleLayerOwner>());
 
-  void SetUp() override {
-    ViewsTestBase::SetUp();
-    // Animation durations are set to zero in ViewsTestBase::SetUp. Set to
-    // normal duration so we can test animation progression.
-    animation_duration_scale_ =
-        std::make_unique<ui::ScopedAnimationDurationScaleMode>(
-            ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+    animator_controllers_.push_back(
+        std::make_unique<ui::LayerAnimatorTestController>(
+            layer_owners_.back()->layer()->GetAnimator()));
+
+    return layer_owners_.back().get();
+  }
+
+  void Step(const base::TimeDelta& duration) {
+    DCHECK_GT(duration, base::TimeDelta());
+    for (const auto& controller : animator_controllers_) {
+      if (elapsed_.is_zero()) {
+        controller->StartThreadedAnimationsIfNeeded();
+        // We need this because StartThreadedAnimationsIfNeeded() sets sequence
+        // start time to Now() but does not update animator's step time.
+        controller->animator()->set_last_step_time(base::TimeTicks::Now());
+      }
+      controller->Step(duration);
+    }
+    elapsed_ += duration;
   }
 
  private:
-  std::unique_ptr<ui::ScopedAnimationDurationScaleMode>
-      animation_duration_scale_;
+  std::vector<std::unique_ptr<TestAnimatibleLayerOwner>> layer_owners_;
+  std::vector<std::unique_ptr<ui::LayerAnimatorTestController>>
+      animator_controllers_;
+  base::TimeDelta elapsed_;
 };
 
 // This test builds two animation sequences and checks that the properties are
 // animated in the specified durations.
 
 TEST_F(AnimationBuilderTest, SimpleAnimation) {
-  auto first_delegate = std::make_unique<ui::TestLayerAnimationDelegate>();
-  auto second_delegate = std::make_unique<ui::TestLayerAnimationDelegate>();
-  auto first_animating_view = std::make_unique<View>();
-  auto second_animating_view = std::make_unique<View>();
-
-  // Animation Builder will paint to layer automatically, but since we need to
-  // access the layer, paint first.
-  first_animating_view->SetPaintToLayer();
-  second_animating_view->SetPaintToLayer();
-
-  ui::LayerAnimator* first_layer_animator =
-      first_animating_view->layer()->GetAnimator();
-  first_layer_animator->set_disable_timer_for_test(true);
-  first_layer_animator->SetDelegate(first_delegate.get());
-
-  ui::LayerAnimator* second_layer_animator =
-      second_animating_view->layer()->GetAnimator();
-  second_layer_animator->set_disable_timer_for_test(true);
-  second_layer_animator->SetDelegate(second_delegate.get());
-
-  ui::LayerAnimatorTestController first_test_controller(first_layer_animator);
-  ui::LayerAnimatorTestController second_test_controller(second_layer_animator);
+  TestAnimatibleLayerOwner* first_animating_view = CreateTestLayerOwner();
+  TestAnimatibleLayerOwner* second_animating_view = CreateTestLayerOwner();
+  ui::LayerAnimationDelegate* first_delegate = first_animating_view->delegate();
+  ui::LayerAnimationDelegate* second_delegate =
+      second_animating_view->delegate();
 
   gfx::RoundedCornersF rounded_corners(12.0f, 12.0f, 12.0f, 12.0f);
   constexpr auto kDelay = base::TimeDelta::FromSeconds(3);
 
   {
-    AnimationBuilder b;
-    b.Once()
+    AnimationBuilder()
+        .Once()
         .SetDuration(kDelay)
-        .SetOpacity(first_animating_view.get(), 0.4f)
-        .SetRoundedCorners(first_animating_view.get(), rounded_corners)
+        .SetOpacity(first_animating_view, 0.4f)
+        .SetRoundedCorners(first_animating_view, rounded_corners)
         .Offset(base::TimeDelta())
         .SetDuration(kDelay * 2)
-        .SetOpacity(second_animating_view.get(), 0.9f);
+        .SetOpacity(second_animating_view, 0.9f);
   }
 
   // Original value before the animation steps.
-  EXPECT_TRUE(first_layer_animator->is_animating());
-  EXPECT_TRUE(second_layer_animator->is_animating());
+  EXPECT_TRUE(first_animating_view->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(second_animating_view->layer()->GetAnimator()->is_animating());
   EXPECT_FLOAT_EQ(first_delegate->GetOpacityForAnimation(), 1.0);
   EXPECT_FLOAT_EQ(first_delegate->GetRoundedCornersForAnimation().upper_left(),
                   0.0);
   EXPECT_FLOAT_EQ(second_delegate->GetOpacityForAnimation(), 1.0);
 
-  first_test_controller.StartThreadedAnimationsIfNeeded();
-  second_test_controller.StartThreadedAnimationsIfNeeded();
-  first_animating_view->layer()->GetAnimator()->Step(base::TimeTicks::Now() +
-                                                     kDelay);
-  second_animating_view->layer()->GetAnimator()->Step(base::TimeTicks::Now() +
-                                                      kDelay);
+  Step(kDelay);
+
   EXPECT_FLOAT_EQ(first_delegate->GetOpacityForAnimation(), 0.4f);
   // Sanity check one of the corners.
   EXPECT_FLOAT_EQ(first_delegate->GetRoundedCornersForAnimation().upper_left(),
@@ -97,58 +104,33 @@ TEST_F(AnimationBuilderTest, SimpleAnimation) {
   // This animation should not be finished yet. The specific value can be tested
   // more extensively after tween support is added.
   EXPECT_NE(second_delegate->GetOpacityForAnimation(), 0.9f);
-  base::TimeTicks last_step_time = second_layer_animator->last_step_time();
-  second_animating_view->layer()->GetAnimator()->Step(last_step_time + kDelay);
+  Step(kDelay);
   EXPECT_FLOAT_EQ(second_delegate->GetOpacityForAnimation(), 0.9f);
 }
 
 TEST_F(AnimationBuilderTest, CheckStartEndCallbacks) {
-  auto first_animating_view = std::make_unique<View>();
-  auto second_animating_view = std::make_unique<View>();
-
-  first_animating_view->SetPaintToLayer();
-  second_animating_view->SetPaintToLayer();
-
-  ui::LayerAnimator* first_layer_animator =
-      first_animating_view->layer()->GetAnimator();
-  // TODO(kylixrd): Consider adding more test support to AnimationBuilder to
-  // avoid reaching behind the curtain for these things.
-  first_layer_animator->set_disable_timer_for_test(true);
-
-  ui::LayerAnimator* second_layer_animator =
-      second_animating_view->layer()->GetAnimator();
-  second_layer_animator->set_disable_timer_for_test(true);
-
-  ui::LayerAnimatorTestController first_test_controller(first_layer_animator);
-  ui::LayerAnimatorTestController second_test_controller(second_layer_animator);
+  TestAnimatibleLayerOwner* first_animating_view = CreateTestLayerOwner();
+  TestAnimatibleLayerOwner* second_animating_view = CreateTestLayerOwner();
 
   constexpr auto kDelay = base::TimeDelta::FromSeconds(3);
   bool started = false;
   bool ended = false;
 
   {
-    AnimationBuilder b;
-    b.OnStarted(
-         base::BindOnce([](bool* started) { *started = true; }, &started))
+    AnimationBuilder()
+        .OnStarted(
+            base::BindOnce([](bool* started) { *started = true; }, &started))
         .OnEnded(base::BindOnce([](bool* ended) { *ended = true; }, &ended))
         .Once()
         .SetDuration(kDelay)
-        .SetOpacity(first_animating_view.get(), 0.4f)
+        .SetOpacity(first_animating_view, 0.4f)
         .Offset(base::TimeDelta())
         .SetDuration(kDelay * 2)
-        .SetOpacity(second_animating_view.get(), 0.9f);
+        .SetOpacity(second_animating_view, 0.9f);
   }
 
-  first_test_controller.StartThreadedAnimationsIfNeeded();
-  second_test_controller.StartThreadedAnimationsIfNeeded();
-
   EXPECT_TRUE(started);
-
-  first_animating_view->layer()->GetAnimator()->Step(base::TimeTicks::Now() +
-                                                     kDelay * 2);
-  second_animating_view->layer()->GetAnimator()->Step(base::TimeTicks::Now() +
-                                                      kDelay * 2);
-
+  Step(kDelay * 2);
   EXPECT_TRUE(ended);
 }
 
