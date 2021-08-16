@@ -696,6 +696,11 @@ def _CollectReferencedKinds(module, all_defined_kinds):
         for referenced_kind in extract_referenced_user_kinds(param.kind):
           sanitized_kind = sanitize_kind(referenced_kind)
           referenced_user_kinds[sanitized_kind.spec] = sanitized_kind
+  # Consts can reference imported enums.
+  for const in module.constants:
+    if not const.kind in mojom.PRIMITIVES:
+      sanitized_kind = sanitize_kind(const.kind)
+      referenced_user_kinds[sanitized_kind.spec] = sanitized_kind
 
   return referenced_user_kinds
 
