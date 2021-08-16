@@ -55,6 +55,8 @@ blink_modules_sources("webcodecs") {
     "image_track_list.h",
     "parsed_copy_to_options.cc",
     "parsed_copy_to_options.h",
+    "reclaimable_codec.cc",
+    "reclaimable_codec.h",
     "video_color_space.cc",
     "video_color_space.h",
     "video_decoder.cc",

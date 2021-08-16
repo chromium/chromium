@@ -148,6 +148,8 @@ void DecoderTemplate<Traits>::configure(const ConfigType* config,
       break;
   }
 
+  MarkCodecActive();
+
   state_ = V8CodecState(V8CodecState::Enum::kConfigured);
   require_key_frame_ = true;
 
@@ -190,6 +192,8 @@ void DecoderTemplate<Traits>::decode(const InputType* chunk,
     }
   }
 
+  MarkCodecActive();
+
   requests_.push_back(request);
   ++num_pending_decodes_;
   ProcessRequests();
@@ -203,6 +207,8 @@ ScriptPromise DecoderTemplate<Traits>::flush(ExceptionState& exception_state) {
 
   if (ThrowIfCodecStateUnconfigured(state_, "flush", exception_state))
     return ScriptPromise();
+
+  MarkCodecActive();
 
   require_key_frame_ = true;
 
@@ -222,6 +228,8 @@ void DecoderTemplate<Traits>::reset(ExceptionState& exception_state) {
   DVLOG(3) << __func__;
   if (ThrowIfCodecStateClosed(state_, "reset", exception_state))
     return;
+
+  MarkCodecActive();
 
   ResetAlgorithm();
 }
@@ -701,6 +709,8 @@ void DecoderTemplate<Traits>::OnOutput(uint32_t reset_generation,
   output_cb_->InvokeAndReportException(nullptr, blink_output);
 
   TRACE_EVENT_END0(kCategory, GetTraceNames()->output.c_str());
+
+  MarkCodecActive();
 }
 
 template <typename Traits>
@@ -727,6 +737,13 @@ void DecoderTemplate<Traits>::Trace(Visitor* visitor) const {
   visitor->Trace(pending_decodes_);
   ScriptWrappable::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
+  ReclaimableCodec::Trace(visitor);
+}
+
+template <typename Traits>
+void DecoderTemplate<Traits>::OnCodecReclaimed(DOMException* exception) {
+  TRACE_EVENT0(kCategory, GetTraceNames()->reclaimed.c_str());
+  Shutdown(exception);
 }
 
 template <typename Traits>

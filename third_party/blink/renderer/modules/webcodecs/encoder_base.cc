@@ -105,6 +105,8 @@ void EncoderBase<Traits>::configure(const ConfigType* config,
     return;
   }
 
+  MarkCodecActive();
+
   Request* request = MakeGarbageCollected<Request>();
   request->reset_count = reset_count_;
   if (media_encoder_ && active_config_ &&
@@ -145,6 +147,8 @@ void EncoderBase<Traits>::encode(InputType* input,
     return;
   }
 
+  MarkCodecActive();
+
   Request* request = MakeGarbageCollected<Request>();
   request->reset_count = reset_count_;
   request->type = Request::Type::kEncode;
@@ -178,6 +182,8 @@ ScriptPromise EncoderBase<Traits>::flush(ExceptionState& exception_state) {
   if (ThrowIfCodecStateUnconfigured(state_, "flush", exception_state))
     return ScriptPromise();
 
+  MarkCodecActive();
+
   Request* request = MakeGarbageCollected<Request>();
   request->resolver =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state_);
@@ -194,6 +200,8 @@ void EncoderBase<Traits>::reset(ExceptionState& exception_state) {
     return;
 
   TRACE_EVENT0(kCategory, GetTraceNames()->reset.c_str());
+
+  MarkCodecActive();
 
   state_ = V8CodecState(V8CodecState::Enum::kUnconfigured);
   ResetInternal();
@@ -325,6 +333,12 @@ void EncoderBase<Traits>::ProcessFlush(Request* request) {
 }
 
 template <typename Traits>
+void EncoderBase<Traits>::OnCodecReclaimed(DOMException* exception) {
+  TRACE_EVENT0(kCategory, GetTraceNames()->reclaimed.c_str());
+  HandleError(exception);
+}
+
+template <typename Traits>
 void EncoderBase<Traits>::ContextDestroyed() {
   state_ = V8CodecState(V8CodecState::Enum::kClosed);
   logger_->Neuter();
@@ -352,6 +366,7 @@ void EncoderBase<Traits>::Trace(Visitor* visitor) const {
   visitor->Trace(requests_);
   ScriptWrappable::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
+  ReclaimableCodec::Trace(visitor);
 }
 
 template <typename Traits>
