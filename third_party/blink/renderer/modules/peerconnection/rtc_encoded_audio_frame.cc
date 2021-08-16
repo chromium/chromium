@@ -40,7 +40,7 @@ RTCEncodedAudioFrame::RTCEncodedAudioFrame(
     scoped_refptr<RTCEncodedAudioFrameDelegate> delegate)
     : delegate_(std::move(delegate)) {}
 
-uint64_t RTCEncodedAudioFrame::timestamp() const {
+uint32_t RTCEncodedAudioFrame::timestamp() const {
   return delegate_->Timestamp();
 }
 
@@ -77,9 +77,9 @@ Vector<uint32_t> RTCEncodedAudioFrame::contributingSources() const {
 
 String RTCEncodedAudioFrame::toString() const {
   StringBuilder sb;
-  sb.Append("RTCEncodedAudioFrame{timestamp: ");
+  sb.Append("RTCEncodedAudioFrame{rtpTimestamp: ");
   sb.AppendNumber(timestamp());
-  sb.Append("us, size: ");
+  sb.Append(", size: ");
   sb.AppendNumber(data() ? data()->ByteLength() : 0);
   sb.Append("}");
   return sb.ToString();

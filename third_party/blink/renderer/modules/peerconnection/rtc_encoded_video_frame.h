@@ -35,7 +35,7 @@ class MODULES_EXPORT RTCEncodedVideoFrame final : public ScriptWrappable {
   // rtc_encoded_video_frame.idl implementation.
   String type() const;
   // Returns the RTP Packet Timestamp for this frame.
-  uint64_t timestamp() const;
+  uint32_t timestamp() const;
   DOMArrayBuffer* data() const;
   RTCEncodedVideoFrameMetadata* getMetadata() const;
   DOMArrayBuffer* additionalData() const;

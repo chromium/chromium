@@ -27,7 +27,7 @@ String RTCEncodedVideoFrame::type() const {
   return delegate_->Type();
 }
 
-uint64_t RTCEncodedVideoFrame::timestamp() const {
+uint32_t RTCEncodedVideoFrame::timestamp() const {
   return delegate_->Timestamp();
 }
 
@@ -78,9 +78,9 @@ String RTCEncodedVideoFrame::toString() const {
     return "empty";
 
   StringBuilder sb;
-  sb.Append("RTCEncodedVideoFrame{timestamp: ");
+  sb.Append("RTCEncodedVideoFrame{rtpTimestamp: ");
   sb.AppendNumber(timestamp());
-  sb.Append("us, size: ");
+  sb.Append(", size: ");
   sb.AppendNumber(data()->ByteLength());
   sb.Append(" bytes, type: ");
   sb.Append(type());

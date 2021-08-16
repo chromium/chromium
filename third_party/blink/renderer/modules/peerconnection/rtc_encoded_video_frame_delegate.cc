@@ -25,7 +25,7 @@ String RTCEncodedVideoFrameDelegate::Type() const {
   return webrtc_frame_->IsKeyFrame() ? "key" : "delta";
 }
 
-uint64_t RTCEncodedVideoFrameDelegate::Timestamp() const {
+uint32_t RTCEncodedVideoFrameDelegate::Timestamp() const {
   MutexLocker lock(mutex_);
   return webrtc_frame_ ? webrtc_frame_->GetTimestamp() : 0;
 }
