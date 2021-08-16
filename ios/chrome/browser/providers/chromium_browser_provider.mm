@@ -36,6 +36,7 @@ ChromiumBrowserProvider::GetSigninResourcesProvider() {
 void ChromiumBrowserProvider::SetChromeIdentityServiceForTesting(
     std::unique_ptr<ios::ChromeIdentityService> service) {
   chrome_identity_service_ = std::move(service);
+  FireChromeIdentityServiceDidChange(chrome_identity_service_.get());
 }
 
 ios::ChromeIdentityService*
