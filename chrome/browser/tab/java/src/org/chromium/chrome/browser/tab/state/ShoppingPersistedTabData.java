@@ -934,7 +934,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
 
     @Override
     protected boolean needsUpdate() {
-        if (!mTab.getUrl().equals(mPriceDropData.gurl)) {
+        if (mPriceDropData.gurl != null && !mTab.getUrl().equals(mPriceDropData.gurl)) {
             return true;
         }
         return super.needsUpdate();
