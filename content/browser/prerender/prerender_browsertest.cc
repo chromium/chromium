@@ -42,7 +42,6 @@
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_document_host_user_data.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/browser/speculation_host_delegate.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -4264,122 +4263,32 @@ IN_PROC_BROWSER_TEST_P(PrerenderWithBackForwardCacheBrowserTest,
       PrerenderHost::FinalStatus::kTriggerDestroyed, 1);
 }
 
-class TestSpeculationHostDelegate final : public SpeculationHostDelegate {
- public:
-  TestSpeculationHostDelegate() = default;
-  ~TestSpeculationHostDelegate() override = default;
-
-  // Disallows copy and move operations.
-  TestSpeculationHostDelegate(const TestSpeculationHostDelegate&) = delete;
-  TestSpeculationHostDelegate& operator=(const TestSpeculationHostDelegate&) =
-      delete;
-
-  // SpeculationRulesDelegate implementation.
-  void ProcessCandidates(
-      std::vector<blink::mojom::SpeculationCandidatePtr>& candidates) override {
-    EXPECT_FALSE(processed_);
-    processed_ = true;
-    if (waiting_for_processing_) {
-      // SpeculationHostImpl processes prerender candidates right after
-      // ProcessCandidates(). Run the quit closure asynchronously so that
-      // the closure can see results of processing the candidates.
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE, std::move(waiting_for_processing_));
-    }
-  }
-
-  base::WeakPtr<TestSpeculationHostDelegate> GetWeakPtr() {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
-
-  void ResetProcessingState() {
-    processed_ = false;
-    waiting_for_processing_.Reset();
-  }
-
-  void WaitUntilCandidatesAreProcessed() {
-    if (processed_)
-      return;
-    base::RunLoop loop;
-    waiting_for_processing_ = loop.QuitClosure();
-    loop.Run();
-  }
-
- private:
-  base::OnceClosure waiting_for_processing_;
-  bool processed_ = false;
-
-  base::WeakPtrFactory<TestSpeculationHostDelegate> weak_ptr_factory_{this};
-};
-
-class ScopedSpeculationHostImplContentBrowserClient
-    : public TestContentBrowserClient {
- public:
-  ScopedSpeculationHostImplContentBrowserClient() {
-    old_browser_client_ = SetBrowserClientForTesting(this);
-  }
-
-  ~ScopedSpeculationHostImplContentBrowserClient() override {
-    EXPECT_EQ(this, SetBrowserClientForTesting(old_browser_client_));
-  }
-
-  std::unique_ptr<SpeculationHostDelegate> CreateSpeculationHostDelegate(
-      RenderFrameHost& render_frame_host) override {
-    auto delegate = std::make_unique<TestSpeculationHostDelegate>();
-    speculation_host_delegate_ = delegate->GetWeakPtr();
-    if (waiting_for_created_)
-      std::move(waiting_for_created_).Run();
-    return delegate;
-  }
-
-  void WaitForDelegateCreation() {
-    if (speculation_host_delegate_)
-      return;
-    base::RunLoop loop;
-    waiting_for_created_ = loop.QuitClosure();
-    loop.Run();
-  }
-
-  base::WeakPtr<TestSpeculationHostDelegate> speculation_host_delegate() {
-    return speculation_host_delegate_;
-  }
-
- private:
-  ContentBrowserClient* old_browser_client_;
-  base::OnceClosure waiting_for_created_;
-  base::WeakPtr<TestSpeculationHostDelegate> speculation_host_delegate_;
-};
-
-// Tests that SpeculationHostImpl only triggers prerendering for the first
+// Tests that PrerenderHostRegistry only starts prerendering for the first
 // prerender speculation rule it receives.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, AddSpeculationRulesMultipleTimes) {
-  ScopedSpeculationHostImplContentBrowserClient test_browser_client;
-
+  base::HistogramTester histogram_tester;
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kFirstPrerenderingUrl = GetUrl("/empty.html?prerender1");
   const GURL kSecondPrerenderingUrl = GetUrl("/empty.html?prerender2");
 
+  // Add the first prerender speculation rule; it should trigger prerendering
+  // successfully.
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-  int host_id = AddPrerender(kFirstPrerenderingUrl);
+  AddPrerender(kFirstPrerenderingUrl);
+  histogram_tester.ExpectBucketCount(
+      "Prerender.Experimental.PrerenderHostFinalStatus",
+      PrerenderHost::FinalStatus::kMaxNumOfRunningPrerendersExceeded, 0);
 
-  // The first prerender rule should be applied, so the prerender host for
-  // kFirstPrerenderingUrl should be registered.
-  ASSERT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
+  test::PrerenderHostRegistryObserver registry_observer(*web_contents_impl());
 
-  base::WeakPtr<TestSpeculationHostDelegate> delegate =
-      test_browser_client.speculation_host_delegate();
-  ASSERT_TRUE(delegate);
-  delegate->ResetProcessingState();
-
-  // Add a new speculation rule. Since SpeculationHostImpl limits the number of
-  // prerenders to one, this rule should not be applied.
+  // Add a new prerender speculation rule. Since PrerenderHostRegistry limits
+  // the number of running prerenders to one, this rule should not be applied.
   AddPrerenderAsync(kSecondPrerenderingUrl);
-  delegate->WaitUntilCandidatesAreProcessed();
-
-  // The kSecondPrerenderingUrl request should not be issued.
-  EXPECT_EQ(GetRequestCount(kSecondPrerenderingUrl), 0);
+  registry_observer.WaitForTrigger(kSecondPrerenderingUrl);
   EXPECT_FALSE(HasHostForUrl(kSecondPrerenderingUrl));
-  EXPECT_TRUE(HasHostForUrl(kFirstPrerenderingUrl));
+  histogram_tester.ExpectBucketCount(
+      "Prerender.Experimental.PrerenderHostFinalStatus",
+      PrerenderHost::FinalStatus::kMaxNumOfRunningPrerendersExceeded, 1);
 }
 
 // Tests that cross-origin urls cannot be prerendered.
