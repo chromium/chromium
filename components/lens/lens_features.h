@@ -27,6 +27,18 @@ extern const base::FeatureParam<bool> kRegionSearchUseMenuItemAltText2;
 // Enables alternate option 3 for the Region Search context menu item text.
 extern const base::FeatureParam<bool> kRegionSearchUseMenuItemAltText3;
 
+// Enables UKM logging for the Lens Region Search feature.
+extern const base::FeatureParam<bool> kEnableUKMLoggingForRegionSearch;
+
+// Enables UKM logging for the LensStandalone feature.
+extern const base::FeatureParam<bool> kEnableUKMLoggingForImageSearch;
+
+// Returns whether to enable UKM logging for Lens Region Search feature.
+extern bool GetEnableUKMLoggingForRegionSearch();
+
+// Returns whether to enable UKM logging for LensStandalone feature.
+extern bool GetEnableUKMLoggingForImageSearch();
+
 // Returns the max pixel width/height for the image to be sent to Lens via
 // region search. The images are sent at 1x as PNGs.
 extern int GetMaxPixelsForRegionSearch();

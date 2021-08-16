@@ -14372,6 +14372,20 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="RenderViewContextMenu.Used">
+  <owner>juanmojica@google.com</owner>
+  <owner>benwgold@google.com</owner>
+  <summary>
+    Metric recorded when a context menu item is selected. This is currently only
+    recorded for Lens context menu items.
+  </summary>
+  <metric name="SelectedMenuItem" enum="RenderViewContextMenuItem">
+    <summary>
+      The menu item selected by the user on the context menu.
+    </summary>
+  </metric>
+</event>
+
 <event name="Responsiveness.UserInteraction">
   <owner>hbsong@chromium.org</owner>
   <summary>
