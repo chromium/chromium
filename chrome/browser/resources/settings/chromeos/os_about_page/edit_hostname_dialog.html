@@ -31,6 +31,7 @@
     color: var(--google-grey-700);
     font-size: var(--cr-form-field-label-font-size);
     font-weight: 400;
+    height: 30px;
     line-height: var(--cr-form-field-label-line-height);
     padding-top: 8px;
     position: absolute;
@@ -59,11 +60,21 @@
   <div slot="body">
     <div id="inputContainer">
       <div id="deviceNameInfo">$i18n{aboutDeviceNameInfo}</div>
+      <!-- Set error-message so then it is read out by ChromeVox
+          when cr-input is invalid. Since we already display the error
+          message in #inputInfo, this is visually hidden by #inputInfo. -->
       <cr-input id="deviceName"
           value="{{deviceName_}}"
           spellcheck="false"
-          invalid="[[isInputInvalid_]]">
+          invalid="[[isInputInvalid_]]"
+          aria-label="[[i18n('aboutDeviceNameInputA11yLabel')]]"
+          aria-description=
+              "[[i18n('aboutDeviceNameConstraintsA11yDescription')]]"
+          error-message="[[i18n('aboutDeviceNameConstraintsA11yDescription')]]"
+          autofocus>
       </cr-input>
+      <!-- Visual error message is different from the one read out by
+          ChromeVox, hence the need for this #inputInfo div. -->
       <div id="inputInfo" aria-hidden="true">
         <span id="inputSubtitle">$i18n{aboutDeviceNameConstraints}</span>
         <span id="inputCount">[[inputCountString_]]</span>
@@ -77,7 +88,8 @@
     </cr-button>
     <cr-button id="done" class="action-button"
         on-click="onDoneTap_"
-        disabled="[[isInputInvalid_]]">
+        disabled="[[isInputInvalid_]]"
+        aria-label="[[i18n('aboutDeviceNameDoneBtnA11yLabel', deviceName_)]]">
       $i18n{done}
     </cr-button>
   </div>

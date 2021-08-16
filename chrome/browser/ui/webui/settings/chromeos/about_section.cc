@@ -246,8 +246,14 @@ void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
     {"aboutDeviceNameInfo", IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_INFO},
     {"aboutDeviceNameConstraints",
      IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_CONSTRAINTS},
+    {"aboutDeviceNameConstraintsA11yDescription",
+     IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_CONSTRAINTS_A11Y_DESCRIPTION},
     {"aboutDeviceNameInputCharacterCount",
      IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_INPUT_COUNT},
+    {"aboutDeviceNameInputA11yLabel",
+     IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_INPUT_A11Y_LABEL},
+    {"aboutDeviceNameDoneBtnA11yLabel",
+     IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_DONE_BTN_A11Y_LABEL},
 
     // About page, update warning dialog.
     {"aboutUpdateWarningMessage",

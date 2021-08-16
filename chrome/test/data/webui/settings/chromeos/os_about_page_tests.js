@@ -848,6 +848,16 @@ cr.define('settings_about_page', function() {
       assertTrue(!!cancelButton);
       assertEquals(invalid, doneButton.disabled);
       assertTrue(!cancelButton.disabled);
+
+      // Verify A11y labels and descriptions.
+      assertEquals(
+          inputBox.ariaLabel, dialog.i18n('aboutDeviceNameInputA11yLabel'));
+      assertEquals(
+          inputBox.ariaDescription,
+          dialog.i18n('aboutDeviceNameConstraintsA11yDescription'));
+      assertEquals(
+          doneButton.ariaLabel,
+          dialog.i18n('aboutDeviceNameDoneBtnA11yLabel', value));
     }
 
     test('CheckInputSanitizationAndValidity', async function() {
