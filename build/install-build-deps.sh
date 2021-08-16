@@ -57,12 +57,8 @@ package_exists() {
   [ ! -z "$(grep "^${escaped}$" <<< "${apt_package_list}")" ]
 }
 
-# These default to on because (some) bots need them and it keeps things
-# simple for the bot setup if all bots just run the script in its default
-# mode.  Developers who don't want stuff they don't need installed on their
-# own workstations can pass --no-arm --no-nacl when running the script.
-do_inst_arm=1
-do_inst_nacl=1
+do_inst_arm=0
+do_inst_nacl=0
 
 while [ "$1" != "" ]
 do
@@ -370,48 +366,9 @@ case $distro_codename in
 esac
 
 # arm cross toolchain packages needed to build chrome on armhf
-EM_REPO="deb http://emdebian.org/tools/debian/ jessie main"
-EM_SOURCE=$(cat <<EOF
-# Repo added by Chromium $0
-${EM_REPO}
-# deb-src http://emdebian.org/tools/debian/ jessie main
-EOF
-)
-EM_ARCHIVE_KEY_FINGER="084C6C6F39159EDB67969AA87DE089671804772E"
-GPP_ARM_PACKAGE="g++-arm-linux-gnueabihf"
-case $distro_codename in
-  jessie)
-    eval $(apt-config shell APT_SOURCESDIR 'Dir::Etc::sourceparts/d')
-    CROSSTOOLS_LIST="${APT_SOURCESDIR}/crosstools.list"
-    arm_list="libc6-dev:armhf
-              linux-libc-dev:armhf"
-    if [ "$do_inst_arm" = "1" ]; then
-      if $(dpkg-query -W ${GPP_ARM_PACKAGE} &>/dev/null); then
-        arm_list+=" ${GPP_ARM_PACKAGE}"
-      else
-        if [ "${add_cross_tool_repo}" = "1" ]; then
-          gpg --keyserver pgp.mit.edu --recv-keys ${EM_ARCHIVE_KEY_FINGER}
-          gpg -a --export ${EM_ARCHIVE_KEY_FINGER} | sudo apt-key add -
-          if ! grep "^${EM_REPO}" "${CROSSTOOLS_LIST}" &>/dev/null; then
-            echo "${EM_SOURCE}" | sudo tee -a "${CROSSTOOLS_LIST}" >/dev/null
-          fi
-          arm_list+=" ${GPP_ARM_PACKAGE}"
-        else
-          echo "The Debian Cross-toolchains repository is necessary to"
-          echo "cross-compile Chromium for arm."
-          echo "Rerun with --add-deb-cross-tool-repo to have it added for you."
-        fi
-      fi
-    fi
-    ;;
-  # All necessary ARM packages are available on the default repos on
-  # Debian 9 and later.
-  *)
-    arm_list="libc6-dev-armhf-cross
-              linux-libc-dev-armhf-cross
-              ${GPP_ARM_PACKAGE}"
-    ;;
-esac
+arm_list="libc6-dev-armhf-cross
+          linux-libc-dev-armhf-cross
+          g++-arm-linux-gnueabihf"
 
 # Work around for dependency issue Ubuntu/Trusty: http://crbug.com/435056
 case $distro_codename in
