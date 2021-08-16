@@ -164,7 +164,7 @@ class RTCVideoDecoderStreamAdapterTest : public ::testing::TestWithParam<bool> {
   bool BasicSetup() {
     if (!CreateAndInitialize())
       return false;
-    if (InitDecode() != WEBRTC_VIDEO_CODEC_OK)
+    if (!InitDecode())
       return false;
     if (RegisterDecodeCompleteCallback() != WEBRTC_VIDEO_CODEC_OK)
       return false;
@@ -197,10 +197,10 @@ class RTCVideoDecoderStreamAdapterTest : public ::testing::TestWithParam<bool> {
     return !!adapter_;
   }
 
-  int32_t InitDecode() {
-    webrtc::VideoCodec codec_settings;
-    codec_settings.codecType = webrtc::kVideoCodecVP9;
-    return adapter_->InitDecode(&codec_settings, 1);
+  bool InitDecode() {
+    webrtc::VideoDecoder::Settings settings;
+    settings.set_codec_type(webrtc::kVideoCodecVP9);
+    return adapter_->Configure(settings);
   }
 
   int32_t RegisterDecodeCompleteCallback() {
@@ -290,7 +290,7 @@ TEST_P(RTCVideoDecoderStreamAdapterTest, FailInit_InitDecodeFails) {
   // If initialization fails before InitDecode runs, then InitDecode should too.
   EXPECT_TRUE(CreateAndInitialize(false));
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(InitDecode(), WEBRTC_VIDEO_CODEC_UNINITIALIZED);
+  EXPECT_FALSE(InitDecode());
   EXPECT_FALSE(BasicTeardown());
 }
 
@@ -298,7 +298,7 @@ TEST_P(RTCVideoDecoderStreamAdapterTest, FailInit_DecodeFails) {
   // If initialization fails after InitDecode runs, then the first Decode should
   // fail instead.
   EXPECT_TRUE(CreateAndInitialize(false));
-  EXPECT_EQ(InitDecode(), WEBRTC_VIDEO_CODEC_OK);
+  EXPECT_TRUE(InitDecode());
   task_environment_.RunUntilIdle();
   EXPECT_EQ(Decode(0), WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE);
   EXPECT_FALSE(BasicTeardown());

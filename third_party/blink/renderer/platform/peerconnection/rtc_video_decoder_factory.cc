@@ -154,9 +154,8 @@ class ScopedVideoDecoder : public webrtc::VideoDecoder {
       std::unique_ptr<webrtc::VideoDecoder> decoder)
       : task_runner_(task_runner), decoder_(std::move(decoder)) {}
 
-  int32_t InitDecode(const webrtc::VideoCodec* codec_settings,
-                     int32_t number_of_cores) override {
-    return decoder_->InitDecode(codec_settings, number_of_cores);
+  bool Configure(const Settings& settings) override {
+    return decoder_->Configure(settings);
   }
   int32_t RegisterDecodeCompleteCallback(
       webrtc::DecodedImageCallback* callback) override {

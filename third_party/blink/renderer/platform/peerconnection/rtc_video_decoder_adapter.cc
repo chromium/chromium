@@ -225,20 +225,19 @@ bool RTCVideoDecoderAdapter::InitializeSync(
   return result;
 }
 
-int32_t RTCVideoDecoderAdapter::InitDecode(
-    const webrtc::VideoCodec* codec_settings,
-    int32_t number_of_cores) {
+bool RTCVideoDecoderAdapter::Configure(const Settings& settings) {
   DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoding_sequence_checker_);
 
-  video_codec_type_ = codec_settings->codecType;
+  video_codec_type_ = settings.codec_type();
   DCHECK_EQ(webrtc::PayloadStringToCodecType(format_.name), video_codec_type_);
 
   base::AutoLock auto_lock(lock_);
 
   // Save the initial resolution so that we can fall back later, if needed.
   current_resolution_ =
-      static_cast<int32_t>(codec_settings->width) * codec_settings->height;
+      static_cast<int32_t>(settings.max_render_resolution().Width()) *
+      settings.max_render_resolution().Height();
 
   base::UmaHistogramBoolean("Media.RTCVideoDecoderInitDecodeSuccess",
                             !has_error_);
@@ -248,7 +247,7 @@ int32_t RTCVideoDecoderAdapter::InitDecode(
         WebRtcVideoFormatToMediaVideoCodecProfile(format_),
         media::VIDEO_CODEC_PROFILE_MAX + 1);
   }
-  return has_error_ ? WEBRTC_VIDEO_CODEC_UNINITIALIZED : WEBRTC_VIDEO_CODEC_OK;
+  return !has_error_;
 }
 
 int32_t RTCVideoDecoderAdapter::Decode(const webrtc::EncodedImage& input_image,

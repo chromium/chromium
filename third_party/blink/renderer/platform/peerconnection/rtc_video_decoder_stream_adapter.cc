@@ -299,21 +299,19 @@ void RTCVideoDecoderStreamAdapter::InitializeSync(
           CrossThreadUnretained(this), config, std::move(init_cb)));
 }
 
-int32_t RTCVideoDecoderStreamAdapter::InitDecode(
-    const webrtc::VideoCodec* codec_settings,
-    int32_t number_of_cores) {
+bool RTCVideoDecoderStreamAdapter::Configure(const Settings& settings) {
   DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoding_sequence_checker_);
 
-  video_codec_type_ = codec_settings->codecType;
+  video_codec_type_ = settings.codec_type();
   DCHECK_EQ(webrtc::PayloadStringToCodecType(format_.name), video_codec_type_);
 
   base::AutoLock auto_lock(lock_);
   init_decode_complete_ = true;
-  current_resolution_ =
-      gfx::Size(codec_settings->width, codec_settings->height);
+  const webrtc::RenderResolution& resolution = settings.max_render_resolution();
+  current_resolution_ = gfx::Size(resolution.Width(), resolution.Height());
   AttemptLogInitializationState_Locked();
-  return has_error_ ? WEBRTC_VIDEO_CODEC_UNINITIALIZED : WEBRTC_VIDEO_CODEC_OK;
+  return !has_error_;
 }
 
 void RTCVideoDecoderStreamAdapter::AttemptLogInitializationState_Locked() {
