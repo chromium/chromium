@@ -103,7 +103,8 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
       bool premultiply_alpha,
       bool flip_y);
 
-  bool PrepareVideoFrameForWebGL(
+  // TODO(776222): Remove this function from PaintCanvasVideoRenderer.
+  static bool PrepareVideoFrameForWebGL(
       viz::RasterContextProvider* raster_context_provider,
       gpu::gles2::GLES2Interface* gl,
       scoped_refptr<VideoFrame> video_frame,

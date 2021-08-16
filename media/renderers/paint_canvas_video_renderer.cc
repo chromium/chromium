@@ -1381,13 +1381,16 @@ bool PaintCanvasVideoRenderer::UploadVideoFrameToGLTexture(
   return true;
 }
 
+// static
 bool PaintCanvasVideoRenderer::PrepareVideoFrameForWebGL(
     viz::RasterContextProvider* raster_context_provider,
     gpu::gles2::GLES2Interface* destination_gl,
     scoped_refptr<VideoFrame> video_frame,
     unsigned int target,
     unsigned int texture) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  // TODO(776222): This static function uses no common functionality in
+  // PaintCanvasVideoRenderer, and should be removed from this class.
+
   DCHECK(video_frame);
   DCHECK(video_frame->HasTextures());
   if (video_frame->NumTextures() == 1) {
@@ -1425,9 +1428,15 @@ bool PaintCanvasVideoRenderer::PrepareVideoFrameForWebGL(
   destination_gl->GenUnverifiedSyncTokenCHROMIUM(
       mailbox_holder.sync_token.GetData());
 
-  if (!PrepareVideoFrame(video_frame, raster_context_provider,
-                         mailbox_holder)) {
-    return false;
+  // Generate a new image.
+  if (video_frame->HasTextures()) {
+    if (video_frame->NumTextures() > 1) {
+      VideoFrameYUVConverter::ConvertYUVVideoFrameNoCaching(
+          video_frame.get(), raster_context_provider, mailbox_holder);
+    } else {
+      // We don't support Android now.
+      return false;
+    }
   }
 
   // Wait for mailbox creation on canvas context before consuming it and
@@ -1441,7 +1450,6 @@ bool PaintCanvasVideoRenderer::PrepareVideoFrameForWebGL(
   WaitAndReplaceSyncTokenClient client(source_ri);
   video_frame->UpdateReleaseSyncToken(&client);
 
-  DCHECK(!CacheBackingWrapsTexture());
   return true;
 }
 
@@ -1806,27 +1814,6 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
     return false;
   }
   cache_deleting_timer_.Reset();
-  return true;
-}
-
-bool PaintCanvasVideoRenderer::PrepareVideoFrame(
-    scoped_refptr<VideoFrame> video_frame,
-    viz::RasterContextProvider* raster_context_provider,
-    const gpu::MailboxHolder& dest_holder) {
-  // Generate a new image.
-  // Note: Skia will hold onto |video_frame| via |video_generator| only when
-  // |video_frame| is software.
-  // Holding |video_frame| longer than this call when using GPUVideoDecoder
-  // could cause problems since the pool of VideoFrames has a fixed size.
-  if (video_frame->HasTextures()) {
-    if (video_frame->NumTextures() > 1) {
-      VideoFrameYUVConverter::ConvertYUVVideoFrameNoCaching(
-          video_frame.get(), raster_context_provider, dest_holder);
-    } else {
-      // We don't support Android now.
-      return false;
-    }
-  }
   return true;
 }
 
