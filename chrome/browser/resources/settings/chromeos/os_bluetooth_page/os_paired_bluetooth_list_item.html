@@ -27,8 +27,8 @@
       focus-type="rowWrapper"
       role="button"
       selectable>
-    <!-- TODO(crbug.com/1010321): Add updated device type icon. -->
-    <iron-icon icon="os-settings:headset">
+    <iron-icon id="deviceTypeIcon"
+        icon="os-settings:[[getDeviceTypeIcon_(device)]]">
     </iron-icon>
     <div class="middle" aria-hidden="true">
       <div id="deviceName">[[getDeviceName_(device)]]</div>

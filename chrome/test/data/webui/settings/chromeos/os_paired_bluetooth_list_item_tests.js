@@ -50,9 +50,8 @@ suite('OsPairedBluetoothListItemTest', function() {
         'os-settings:battery-' + batteryIconRange);
   }
 
-  // TODO(crbug.com/1010321): Test device type icon here.
-  test('Device name and battery percentage', async function() {
-    // Device with no nickname or battery info.
+  test('Device name, type and battery percentage', async function() {
+    // Device with no nickname, battery info and unknown device type.
     const publicName = 'BeatsX';
     const device = createDefaultBluetoothDevice(
         /*id=*/ '123456789', /*publicName=*/ publicName, /*connected=*/ true);
@@ -66,13 +65,20 @@ suite('OsPairedBluetoothListItemTest', function() {
       return pairedBluetoothListItem.shadowRoot.querySelector(
           '#batteryPercentage');
     };
+    const getDeviceTypeIcon = () => {
+      return pairedBluetoothListItem.$.deviceTypeIcon;
+    };
     assertTrue(!!getDeviceName());
     assertEquals(getDeviceName().innerText, publicName);
     assertFalse(!!getBatteryPercentage());
+    assertTrue(!!getDeviceTypeIcon());
+    assertEquals(getDeviceTypeIcon().icon, 'os-settings:bluetooth');
 
-    // Set device nickname and battery info.
+    // Set device nickname, type and battery info.
     const nickname = 'nickname';
     device.nickname = nickname;
+    device.deviceProperties.deviceType =
+        chromeos.bluetoothConfig.mojom.DeviceType.kComputer;
     const batteryPercentage = 60;
     device.deviceProperties.batteryInfo = {
       defaultProperties: {batteryPercentage: batteryPercentage}
@@ -87,6 +93,7 @@ suite('OsPairedBluetoothListItemTest', function() {
         getBatteryPercentage().innerText.trim(),
         pairedBluetoothListItem.i18n(
             'bluetoothPairedDeviceItemBatteryPercentage', batteryPercentage));
+    assertEquals(getDeviceTypeIcon().icon, 'os-settings:bluetooth-computer');
   });
 
   test('Battery icon and color', async function() {

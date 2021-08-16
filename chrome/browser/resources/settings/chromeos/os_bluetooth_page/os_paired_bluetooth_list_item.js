@@ -89,6 +89,36 @@ class SettingsPairedBluetoothListItemElement extends
   }
 
   /**
+   * @param {!chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties}
+   *     device
+   * @return {string}
+   * @private
+   */
+  getDeviceTypeIcon_(device) {
+    const deviceType = chromeos.bluetoothConfig.mojom.DeviceType;
+    switch (device.deviceProperties.deviceType) {
+      case deviceType.kComputer:
+        return 'bluetooth-computer';
+      case deviceType.kPhone:
+        return 'bluetooth-phone';
+      case deviceType.kHeadset:
+        return 'bluetooth-headset';
+      case deviceType.kVideoCamera:
+        return 'bluetooth-video-camera';
+      case deviceType.kGameController:
+        return 'bluetooth-game-controller';
+      case deviceType.kKeyboard:
+        return 'bluetooth-keyboard';
+      case deviceType.kMouse:
+        return 'bluetooth-mouse';
+      case deviceType.kTablet:
+        return 'bluetooth-tablet';
+      default:
+        return 'bluetooth';
+    }
+  }
+
+  /**
    * Returns the battery percentage of device, or undefined if device does
    * not exist or it has no battery information. Clients that call this method
    * should explicitly check if the return value is undefined to differentiate

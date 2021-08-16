@@ -16,6 +16,8 @@ const mojom = chromeos.bluetoothConfig.mojom;
  * @param {string} publicName
  * @param {boolean} connected
  * @param {string|undefined} nickname
+ * @param {!chromeos.bluetoothConfig.mojom.AudioOutputCapability}
+ *     audioCapability
  * @return {!chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties}
  */
 export function createDefaultBluetoothDevice(
@@ -25,7 +27,7 @@ export function createDefaultBluetoothDevice(
     deviceProperties: {
       id: id,
       publicName: stringToMojoString16(publicName),
-      deviceType: mojom.DeviceType.kComputer,
+      deviceType: mojom.DeviceType.kUnknown,
       audioCapability: audioCapability,
       connectionState: connected ? mojom.DeviceConnectionState.kConnected :
                                    mojom.DeviceConnectionState.kNotConnected,
