@@ -4823,6 +4823,7 @@ static_library("browser") {
 
   if (is_chromeos) {
     sources += [
+      "apps/app_service/browser_app_instance.cc",
       "apps/app_service/browser_app_instance.h",
       "apps/app_service/browser_app_instance_observer.cc",
       "apps/app_service/browser_app_instance_observer.h",

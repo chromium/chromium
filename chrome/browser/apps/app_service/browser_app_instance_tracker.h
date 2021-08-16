@@ -197,7 +197,7 @@ class BrowserAppInstanceTracker : public TabStripModelObserver,
 
   base::ObserverList<BrowserAppInstanceObserver, true>::Unchecked observers_;
 
-  WebContentsId last_web_contents_id_{0};
+  WebContentsId::Generator web_contents_id_generator_;
 };
 
 }  // namespace apps

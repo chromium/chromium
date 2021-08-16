@@ -452,7 +452,7 @@ void BrowserAppInstanceTracker::CreateAppInstance(
                      std::move(app_id),
                      browser,
                      contents,
-                     ++last_web_contents_id_,
+                     web_contents_id_generator_.GenerateNextId(),
                      IsAppVisible(browser, contents),
                      IsAppActive(browser, contents),
                  }));
@@ -475,7 +475,7 @@ void BrowserAppInstanceTracker::CreateChromeInstance(Browser* browser) {
                      extension_misc::kChromeAppId,
                      browser,
                      nullptr /* contents */,
-                     0 /* web_contents_id */,
+                     WebContentsId(0),
                      IsBrowserVisible(browser),
                      IsBrowserActive(browser),
                  }));

@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/types/id_type.h"
+
 class Browser;
 
 namespace content {
@@ -15,13 +17,16 @@ class WebContents;
 
 namespace apps {
 
-typedef uint32_t WebContentsId;
+struct WebContentsIdTypeMarker {};
+
+typedef base::IdTypeU32<WebContentsIdTypeMarker> WebContentsId;
 
 // An instance of a browser-based app. Can represent either of:
 // - apps running inside Browser->WebContents,
 // - actual browser instances (a single browser window). In this case `contents`
 //   will be null and app ID will be set to |extension_misc::kChromeAppId|.
 struct BrowserAppInstance {
+  ~BrowserAppInstance();
   BrowserAppInstance(const BrowserAppInstance&) = delete;
   BrowserAppInstance& operator=(const BrowserAppInstance&) = delete;
 

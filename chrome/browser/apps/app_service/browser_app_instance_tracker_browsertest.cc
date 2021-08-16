@@ -42,7 +42,7 @@ struct TestInstance {
         instance.app_id,
         instance.browser,
         instance.web_contents,
-        instance.web_contents_id,
+        instance.web_contents_id.value(),
         instance.visible,
         instance.active,
     };
@@ -667,10 +667,12 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, Accessors) {
   EXPECT_TRUE(tracker_->IsAppRunning(kChromeAppId));
   EXPECT_FALSE(tracker_->IsAppRunning("non-existent-app"));
 
-  EXPECT_EQ(TestInstance::Create(tracker_->GetAppInstanceByWebContentsId(1)),
+  EXPECT_EQ(TestInstance::Create(tracker_->GetAppInstanceByWebContentsId(
+                apps::WebContentsId(1))),
             (TestInstance{"snapshot", kAppAId, browser1, b1_tab1, 1, kVisible,
                           kInactive}));
-  EXPECT_EQ(TestInstance::Create(tracker_->GetAppInstanceByWebContentsId(10)),
+  EXPECT_EQ(TestInstance::Create(tracker_->GetAppInstanceByWebContentsId(
+                apps::WebContentsId(10))),
             TestInstance{});
 
   // App A is closed, B and Chrome are still running.
