@@ -10,6 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/containers/fixed_flat_map.h"
 #include "chromeos/services/network_config/in_process_instance.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 
@@ -43,6 +44,18 @@ bool IsConnectedOrConnecting(
     case network_mojom::ConnectionStateType::kConnecting:
       return true;
     case network_mojom::ConnectionStateType::kNotConnected:
+      return false;
+  }
+}
+
+bool IsConnectedOrOnline(mojom::NetworkState state) {
+  switch (state) {
+    case mojom::NetworkState::kOnline:
+    case mojom::NetworkState::kConnected:
+      return true;
+    case mojom::NetworkState::kNotConnected:
+    case mojom::NetworkState::kPortal:
+    case mojom::NetworkState::kConnecting:
       return false;
   }
 }
@@ -233,6 +246,31 @@ void UpdateNetwork(
   }
 }
 
+// Calculate a score for a network based on its type and state.
+// Network state takes precedence over network type. In the case
+// of a tie (Ethernet Connected & WiFi Connected for ex), the network
+// type considered to have the higher priority will take precedence.
+int GetScoreForNetwork(const mojom::NetworkPtr& network) {
+  static constexpr auto kNetworkStatePriorityMap =
+      base::MakeFixedFlatMap<mojom::NetworkState, int>(
+          {{mojom::NetworkState::kOnline, 100},
+           {mojom::NetworkState::kConnected, 50}});
+
+  static constexpr auto kNetworkTypePriorityMap =
+      base::MakeFixedFlatMap<mojom::NetworkType, int>(
+          {{mojom::NetworkType::kEthernet, 3},
+           {mojom::NetworkType::kWiFi, 2},
+           {mojom::NetworkType::kCellular, 1}});
+
+  int state_priority = 0;
+  if (base::Contains(kNetworkStatePriorityMap, network->state)) {
+    state_priority += kNetworkStatePriorityMap.at(network->state);
+  }
+
+  DCHECK(base::Contains(kNetworkTypePriorityMap, network->type));
+  return kNetworkTypePriorityMap.at(network->type) + state_priority;
+}
+
 }  // namespace
 
 NetworkObserverInfo::NetworkObserverInfo() = default;
@@ -418,50 +456,33 @@ NetworkObserverInfo* NetworkHealthProvider::LookupNetwork(
   return nullptr;
 }
 
-bool NetworkHealthProvider::UpdateActiveGuid() {
-  std::string new_active_guid;
-  for (auto& pair : networks_) {
-    if (new_active_guid.empty()) {
-      if (pair.second.network->state == mojom::NetworkState::kOnline ||
-          pair.second.network->state == mojom::NetworkState::kConnected) {
-        new_active_guid = pair.first;
-      }
-    } else {
-      auto iter = networks_.find(new_active_guid);
-      if (iter == networks_.end()) {
-        continue;
-      }
-
-      // If the current network is online and ethernet and the existing one was
-      // only wifi then this is a better match.
-      // TODO(michaelcheco): Add a mechanism for ranking/ordering all networks
-      // based on connection state and type, and use that instead.
-      const bool is_better_match =
-          (pair.second.network->state == mojom::NetworkState::kOnline) &&
-          (pair.second.network->type == mojom::NetworkType::kEthernet) &&
-          (iter->second.network->type == mojom::NetworkType::kWiFi);
-
-      if (is_better_match) {
-        new_active_guid = pair.first;
-      }
-    }
-  }
-
-  if (active_guid_ != new_active_guid) {
-    active_guid_ = std::move(new_active_guid);
-    return true;
-  }
-
-  return false;
-}
-
-std::vector<std::string> NetworkHealthProvider::GetObserverGuids() {
+std::vector<std::string>
+NetworkHealthProvider::GetObserverGuidsAndUpdateActiveGuid() {
   std::vector<std::string> observer_guids;
   observer_guids.reserve(networks_.size());
   for (auto& pair : networks_) {
     observer_guids.push_back(pair.first);
   }
 
+  // Sort list of observer guids in descending order based on score.
+  sort(observer_guids.begin(), observer_guids.end(),
+       [&](const std::string& lhs, const std::string& rhs) -> bool {
+         mojom::NetworkPtr& network1 = networks_.at(lhs).network;
+         mojom::NetworkPtr& network2 = networks_.at(rhs).network;
+         return GetScoreForNetwork(network1) > GetScoreForNetwork(network2);
+       });
+
+  // Update |active_guid_| if the observer guid with the highest score
+  // corresponds to a network interface that is either online or connected.
+  std::string new_active_guid;
+  if (observer_guids.size() > 0) {
+    const std::string& guid = observer_guids[0];
+    if (IsConnectedOrOnline(GetNetworkStateForGuid(guid))) {
+      new_active_guid = guid;
+    }
+  }
+
+  active_guid_ = std::move(new_active_guid);
   return observer_guids;
 }
 
@@ -501,8 +522,8 @@ void NetworkHealthProvider::BindInterface(
 }
 
 void NetworkHealthProvider::NotifyNetworkListObservers() {
-  UpdateActiveGuid();
-  std::vector<std::string> observer_guids = GetObserverGuids();
+  std::vector<std::string> observer_guids =
+      GetObserverGuidsAndUpdateActiveGuid();
   for (auto& observer : network_list_observers_) {
     observer->OnNetworkListChanged(mojo::Clone(observer_guids), active_guid_);
   }
@@ -535,6 +556,13 @@ void NetworkHealthProvider::GetDeviceState() {
 
 bool NetworkHealthProvider::IsLoggingEnabled() const {
   return networking_log_ptr_ != nullptr;
+}
+
+mojom::NetworkState NetworkHealthProvider::GetNetworkStateForGuid(
+    const std::string& guid) {
+  auto it = networks_.find(guid);
+  DCHECK(it != networks_.end());
+  return it->second.network->state;
 }
 
 }  // namespace diagnostics

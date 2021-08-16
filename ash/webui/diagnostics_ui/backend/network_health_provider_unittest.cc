@@ -870,5 +870,56 @@ TEST_F(NetworkHealthProviderTest, IPConfig) {
   EXPECT_EQ(name_servers[1], dns_server_2);
 }
 
+// Verifies that the list of observer guids and the active guid are set
+// properly through various state transitions.
+TEST_F(NetworkHealthProviderTest, EthernetAndWifiOrderedCorrectly) {
+  // Create an ethernet device.
+  FakeNetworkListObserver list_observer;
+  SetupObserver(&list_observer);
+  CreateEthernetDevice();
+  ASSERT_EQ(1u, list_observer.observer_guids().size());
+  const std::string eth_guid = list_observer.observer_guids()[0];
+
+  // Put ethernet online and validate it is active.
+  FakeNetworkStateObserver eth_observer;
+  SetupObserver(&eth_observer, eth_guid);
+  AssociateEthernet();
+  SetEthernetOnline();
+  EXPECT_EQ(eth_observer.GetLatestState()->state, mojom::NetworkState::kOnline);
+  EXPECT_FALSE(list_observer.active_guid().empty());
+  EXPECT_EQ(eth_guid, list_observer.active_guid());
+
+  CreateWifiDevice();
+  const std::string wifi_guid = list_observer.observer_guids()[1];
+  FakeNetworkStateObserver wifi_observer;
+  SetupObserver(&wifi_observer, wifi_guid);
+  AssociateWifi();
+  // Ethernet should still be active and WiFi guid should be second in list of
+  // observer guids.
+  EXPECT_FALSE(list_observer.active_guid().empty());
+  EXPECT_EQ(eth_guid, list_observer.active_guid());
+  EXPECT_EQ(wifi_guid, list_observer.observer_guids()[1]);
+
+  // Ethernet should remain active, despite WiFi also being online.
+  EXPECT_FALSE(list_observer.active_guid().empty());
+  EXPECT_EQ(eth_guid, list_observer.active_guid());
+  EXPECT_EQ(wifi_guid, list_observer.observer_guids()[1]);
+  SetWifiOnline();
+
+  // Now that Ethernet is disconnected, WiFi should be active and Ethernet
+  // should be the second guid in the list of observer guids.
+  SetEthernetDisconnected();
+  EXPECT_FALSE(list_observer.active_guid().empty());
+  EXPECT_EQ(wifi_guid, list_observer.active_guid());
+  EXPECT_EQ(eth_guid, list_observer.observer_guids()[1]);
+
+  // With both Ethernet and WiFi disconnected, neither of them should be
+  // active and the Ethernet guid should be the first observer guid.
+  SetWifiDisconnected();
+  EXPECT_TRUE(list_observer.active_guid().empty());
+  EXPECT_EQ(eth_guid, list_observer.observer_guids()[0]);
+  EXPECT_EQ(wifi_guid, list_observer.observer_guids()[1]);
+}
+
 }  // namespace diagnostics
 }  // namespace ash

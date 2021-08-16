@@ -68,8 +68,9 @@ class NetworkHealthProvider
   void OnNetworkCertificatesChanged() override;
 
   // Returns the list of observer guids. Each guid corresponds to one network
-  // interface.
-  std::vector<std::string> GetObserverGuids();
+  // interface. Additionally, updates the currently |active_guid_| to the first
+  // active network interface, if one exists.
+  std::vector<std::string> GetObserverGuidsAndUpdateActiveGuid();
 
  private:
   // Handler for receiving a list of active networks.
@@ -126,14 +127,9 @@ class NetworkHealthProvider
       chromeos::network_config::mojom::NetworkStatePropertiesPtr network,
       bool must_match_existing_guid);
 
-  // Recalculates which network is the active/primary network. Currently a
-  // network must be connected, and ethernet takes precedence over Wifi if
-  // both are connected.
-  // TODO(michaelcheco): Change this to rank networks when cellular/other
-  // network types are handled.
-  bool UpdateActiveGuid();
-
   bool IsLoggingEnabled() const;
+
+  mojom::NetworkState GetNetworkStateForGuid(const std::string& guid);
 
   NetworkingLog* networking_log_ptr_ = nullptr;  // Not owned.
 
