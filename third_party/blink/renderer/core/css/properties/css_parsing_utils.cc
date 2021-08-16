@@ -3662,9 +3662,8 @@ String ConcatenateFamilyName(CSSParserTokenRange& range) {
     }
     builder.Append(range.ConsumeIncludingWhitespace().Value());
   }
-  if (!added_space &&
-      (IsCSSWideKeyword(first_token.Value()) ||
-       EqualIgnoringASCIICase(first_token.Value(), "default"))) {
+  if (!added_space && (IsCSSWideKeyword(first_token.Value()) ||
+                       IsDefaultKeyword(first_token.Value()))) {
     return String();
   }
   return builder.ToString();
