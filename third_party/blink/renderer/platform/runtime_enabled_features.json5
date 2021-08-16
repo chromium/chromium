@@ -521,6 +521,7 @@
     {
       // https://github.com/DevSDK/calc-infinity-and-NaN/blob/master/explainer.md
       name: "CSSCalcInfinityAndNaN",
+      status: "test",
     },
     {
       // https://drafts.csswg.org/css-cascade-5/#layering

@@ -105,11 +105,11 @@ CSSPrimitiveValue* ConsumeSVGGeometryPropertyLength(CSSParserTokenRange&,
                                                     const CSSParserContext&,
                                                     ValueRange);
 
-CSSPrimitiveValue* ConsumeAngle(
+CORE_EXPORT CSSPrimitiveValue* ConsumeAngle(
     CSSParserTokenRange&,
     const CSSParserContext&,
     absl::optional<WebFeature> unitless_zero_feature);
-CSSPrimitiveValue* ConsumeAngle(
+CORE_EXPORT CSSPrimitiveValue* ConsumeAngle(
     CSSParserTokenRange&,
     const CSSParserContext&,
     absl::optional<WebFeature> unitless_zero_feature,
