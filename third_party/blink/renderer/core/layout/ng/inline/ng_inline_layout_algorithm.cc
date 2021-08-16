@@ -379,7 +379,7 @@ void NGInlineLayoutAlgorithm::CreateLine(
   container_builder_.SetBfcLineOffset(bfc_line_offset);
 
   // Force an editable empty line to have metrics, so that is has a height.
-  if (UNLIKELY(Node().HasLineEvenIfEmpty())) {
+  if (UNLIKELY(line_info->HasLineEvenIfEmpty())) {
     box_states_->LineBoxState().EnsureTextMetrics(
         line_info->LineStyle(), *box_states_->LineBoxState().font);
   }

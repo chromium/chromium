@@ -549,13 +549,18 @@ void NGLineBreaker::NextLine(
   //
   // TODO(kojii): There are cases where we need to PlaceItems() without creating
   // line boxes. These cases need to be reviewed.
-  bool should_create_line_box = ShouldCreateLineBox(item_results) ||
-                                (has_list_marker_ && line_info->IsLastLine()) ||
-                                mode_ != NGLineBreakerMode::kContent ||
-                                node_.HasLineEvenIfEmpty();
+  const bool should_create_line_box =
+      ShouldCreateLineBox(item_results) ||
+      (has_list_marker_ && line_info->IsLastLine()) ||
+      mode_ != NGLineBreakerMode::kContent;
 
-  if (!should_create_line_box)
-    line_info->SetIsEmptyLine();
+  if (!should_create_line_box) {
+    if (To<LayoutBlockFlow>(node_.GetLayoutBox())->HasLineIfEmpty())
+      line_info->SetHasLineEvenIfEmpty();
+    else
+      line_info->SetIsEmptyLine();
+  }
+
   line_info->SetEndItemIndex(item_index_);
   DCHECK_NE(trailing_whitespace_, WhitespaceState::kUnknown);
   if (trailing_whitespace_ == WhitespaceState::kPreserved)

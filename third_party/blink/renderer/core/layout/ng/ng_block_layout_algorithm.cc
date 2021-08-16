@@ -56,8 +56,10 @@ bool HasLineEvenIfEmpty(LayoutBox* box) {
     //  - false: all children are block then remove all, <div><p></p></div>
     return block_flow->HasLineIfEmpty();
   }
-  if (AreNGBlockFlowChildrenInline(block_flow))
-    return NGInlineNode(block_flow).HasLineEvenIfEmpty();
+  if (AreNGBlockFlowChildrenInline(block_flow)) {
+    return block_flow->HasLineIfEmpty() &&
+           NGInlineNode(block_flow).IsBlockLevel();
+  }
   if (const auto* const flow_thread = block_flow->MultiColumnFlowThread()) {
     DCHECK(!flow_thread->ChildrenInline());
     for (const auto* child = flow_thread->FirstChild(); child;

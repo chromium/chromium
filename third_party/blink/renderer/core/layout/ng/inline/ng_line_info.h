@@ -65,6 +65,10 @@ class CORE_EXPORT NGLineInfo {
   bool IsEmptyLine() const { return is_empty_line_; }
   void SetIsEmptyLine() { is_empty_line_ = true; }
 
+  // If this line is empty, but still should have height as editable.
+  bool HasLineEvenIfEmpty() const { return has_line_even_if_empty_; }
+  void SetHasLineEvenIfEmpty() { has_line_even_if_empty_ = true; }
+
   // Returns true if this line is a block-in-inline.
   bool IsBlockInInline() const { return is_block_in_inline_; }
   void SetIsBlockInInline() { is_block_in_inline_ = true; }
@@ -196,6 +200,7 @@ class CORE_EXPORT NGLineInfo {
   bool is_last_line_ = false;
   bool has_forced_break_ = false;
   bool is_empty_line_ = false;
+  bool has_line_even_if_empty_ = false;
   bool is_block_in_inline_ = false;
   bool has_overflow_ = false;
   bool has_trailing_spaces_ = false;
