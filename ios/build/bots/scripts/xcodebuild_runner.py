@@ -5,12 +5,10 @@
 """Test runner for running tests using xcodebuild."""
 
 import collections
-import distutils.version
 import logging
 from multiprocessing import pool
 import os
 import subprocess
-import sys
 import time
 
 import file_util
@@ -23,20 +21,6 @@ import xcode_log_parser
 LOGGER = logging.getLogger(__name__)
 MAXIMUM_TESTS_PER_SHARD_FOR_RERUN = 20
 XTDEVICE_FOLDER = os.path.expanduser('~/Library/Developer/XCTestDevices')
-
-
-class LaunchCommandCreationError(test_runner.TestRunnerError):
-  """One of launch command parameters was not set properly."""
-
-  def __init__(self, message):
-    super(LaunchCommandCreationError, self).__init__(message)
-
-
-class LaunchCommandPoolCreationError(test_runner.TestRunnerError):
-  """Failed to create a pool of launch commands."""
-
-  def __init__(self, message):
-    super(LaunchCommandPoolCreationError, self).__init__(message)
 
 
 def _tests_decided_at_runtime(app_name):
@@ -131,7 +115,7 @@ class LaunchCommand(object):
       env: (dict) Environment variables.
 
     Raises:
-      LaunchCommandCreationError: if one of parameters was not set properly.
+      AppNotFoundError: At incorrect egtests_app parameter type.
     """
     if not isinstance(egtests_app, test_apps.EgtestsApp):
       raise test_runner.AppNotFoundError(
@@ -141,33 +125,10 @@ class LaunchCommand(object):
     self.shards = shards
     self.retries = retries
     self.out_dir = out_dir
-    self.logs = collections.OrderedDict()
     self.test_results = collections.OrderedDict()
     self.use_clang_coverage = use_clang_coverage
     self.env = env
     self._log_parser = xcode_log_parser.get_parser()
-
-  def summary_log(self):
-    """Calculates test summary - how many passed, failed and error tests.
-
-    Returns:
-      Dictionary with number of passed and failed tests.
-      Failed tests will be calculated from the last test attempt.
-      Passed tests calculated for each test attempt.
-    """
-    test_statuses = ['passed', 'failed']
-    for status in test_statuses:
-      self.logs[status] = 0
-
-    for index, test_attempt_results in enumerate(self.test_results['attempts']):
-      for test_status in test_statuses:
-        if test_status not in test_attempt_results:
-          continue
-        if (test_status == 'passed'
-            # Number of failed tests is taken only from last run.
-            or (test_status == 'failed'
-                and index == len(self.test_results['attempts']) - 1)):
-          self.logs[test_status] += len(test_attempt_results[test_status])
 
   def launch_attempt(self, cmd):
     """Launch a process and do logging simultaneously.
@@ -274,15 +235,9 @@ class LaunchCommand(object):
           # If need to re-run less than 20 tests, 1 shard should be enough.
           or (len(self.egtests_app.included_tests) <=
               MAXIMUM_TESTS_PER_SHARD_FOR_RERUN)):
-
         shards = 1
 
-    self.summary_log()
-
-    return {
-        'test_results': self.test_results,
-        'logs': self.logs
-    }
+    return self.test_results
 
 
 class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
@@ -326,7 +281,6 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
     self.host_app_path = None
     if host_app_path != 'NO_PATH':
       self.host_app_path = os.path.abspath(host_app_path)
-    self._init_sharding_data()
     self.logs = collections.OrderedDict()
     self.release = kwargs.get('release') or False
     self.test_results['path_delimiter'] = '/'
@@ -334,26 +288,6 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
     # coverage data won't be produced with parallel testing.
     if hasattr(self, 'use_clang_coverage') and self.use_clang_coverage:
       self.shards = 1
-
-  def _init_sharding_data(self):
-    """Initialize sharding data.
-
-    For common case info about sharding tests will be a list of dictionaries:
-    [
-        {
-            'app':paths to egtests_app,
-            'udid': 'UDID of Simulator'
-            'shards': N
-        }
-    ]
-    """
-    self.sharding_data = [{
-        'app': self.app_path,
-        'host': self.host_app_path,
-        'udid': self.udid,
-        'shards': self.shards,
-        'test_cases': self.test_cases
-    }]
 
   def get_launch_env(self):
     """Returns a dict of environment variables to use to launch the test app.
@@ -365,44 +299,34 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
     env['NSUnbufferedIO'] = 'YES'
     return env
 
-  def get_launch_test_app(self, params):
-    """Returns the proper test_app for the run, requiring sharding data.
-
-    Args:
-      params: A collection of sharding_data params.
+  def get_launch_test_app(self):
+    """Returns the proper test_app for the run.
 
     Returns:
-      An implementation of EgtestsApp included the sharding_data params
+      An implementation of EgtestsApp for the runner.
     """
     return test_apps.EgtestsApp(
-        params['app'],
-        included_tests=params['test_cases'],
+        self.app_path,
+        included_tests=self.test_cases,
         env_vars=self.env_vars,
         test_args=self.test_args,
         release=self.release,
-        host_app_path=params['host'])
+        host_app_path=self.host_app_path)
 
   def launch(self):
     """Launches tests using xcodebuild."""
-    launch_commands = []
-    for params in self.sharding_data:
-      test_app = self.get_launch_test_app(params)
-      launch_commands.append(
-          LaunchCommand(
-              test_app,
-              udid=params['udid'],
-              shards=params['shards'],
-              retries=self.retries,
-              out_dir=os.path.join(self.out_dir, params['udid']),
-              use_clang_coverage=(hasattr(self, 'use_clang_coverage') and
-                                  self.use_clang_coverage),
-              env=self.get_launch_env()))
+    test_app = self.get_launch_test_app()
+    launch_command = LaunchCommand(
+        test_app,
+        udid=self.udid,
+        shards=self.shards,
+        retries=self.retries,
+        out_dir=os.path.join(self.out_dir, self.udid),
+        use_clang_coverage=(hasattr(self, 'use_clang_coverage') and
+                            self.use_clang_coverage),
+        env=self.get_launch_env())
 
-    thread_pool = pool.ThreadPool(len(launch_commands))
-    attempts_results = []
-    for result in thread_pool.imap_unordered(LaunchCommand.launch,
-                                             launch_commands):
-      attempts_results.append(result['test_results']['attempts'])
+    attempts = launch_command.launch()['attempts']
 
     # Deletes simulator used in the tests after tests end.
     if iossim_util.is_device_with_udid_simulator(self.udid):
@@ -410,32 +334,28 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
 
     # Gets passed tests
     self.logs['passed tests'] = []
-    for shard_attempts in attempts_results:
-      for attempt in shard_attempts:
-        self.logs['passed tests'].extend(attempt['passed'])
+    for attempt in attempts:
+      self.logs['passed tests'].extend(attempt['passed'])
 
     # If the last attempt does not have failures, mark failed as empty
     self.logs['failed tests'] = []
-    for shard_attempts in attempts_results:
-      if shard_attempts[-1]['failed']:
-        self.logs['failed tests'].extend(shard_attempts[-1]['failed'].keys())
+    if attempts[-1]['failed']:
+      self.logs['failed tests'].extend(attempts[-1]['failed'].keys())
 
     # Gets disabled tests from test app object if any.
     self.logs['disabled tests'] = []
-    for launch_command in launch_commands:
-      self.logs['disabled tests'].extend(
-          launch_command.egtests_app.disabled_tests)
+    self.logs['disabled tests'].extend(
+        launch_command.egtests_app.disabled_tests)
 
     # Gets all failures/flakes and lists them in bot summary
     all_failures = set()
-    for shard_attempts in attempts_results:
-      for attempt, attempt_results in enumerate(shard_attempts):
-        for failure in attempt_results['failed']:
-          if failure not in self.logs:
-            self.logs[failure] = []
-          self.logs[failure].append('%s: attempt # %d' % (failure, attempt))
-          self.logs[failure].extend(attempt_results['failed'][failure])
-          all_failures.add(failure)
+    for attempt_index, attempt_results in enumerate(attempts):
+      for failure in attempt_results['failed']:
+        if failure not in self.logs:
+          self.logs[failure] = []
+        self.logs[failure].append('%s: attempt # %d' % (failure, attempt_index))
+        self.logs[failure].extend(attempt_results['failed'][failure])
+        all_failures.add(failure)
 
     # Gets only flaky(not failed) tests.
     self.logs['flaked tests'] = list(
@@ -444,10 +364,7 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
     # Gets not-started/interrupted tests.
     # all_tests_to_run takes into consideration that only a subset of tests may
     # have run due to the test sharding logic in run.py.
-    all_tests_to_run = set([
-        test_name for launch_command in launch_commands
-        for test_name in launch_command.egtests_app.get_all_tests()
-    ])
+    all_tests_to_run = set(launch_command.egtests_app.get_all_tests())
 
     aborted_tests = []
     # TODO(crbug.com/1048758): For the multitasking or any flaky test suites,
@@ -465,19 +382,18 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
     }
 
     output = sju.StdJson()
-    for shard_attempts in attempts_results:
-      for attempt, attempt_results in enumerate(shard_attempts):
+    for attempt_results in attempts:
 
-        for test in attempt_results['failed'].keys():
-          output.mark_failed(test, test_log='\n'.join(self.logs.get(test, [])))
+      for test in attempt_results['failed'].keys():
+        output.mark_failed(test, test_log='\n'.join(self.logs.get(test, [])))
 
-        # 'aborted tests' in logs is an array of strings, each string defined
-        # as "{TestCase}/{testMethod}"
-        for test in self.logs['aborted tests']:
-          output.mark_timeout(test)
+      for test in attempt_results['passed']:
+        output.mark_passed(test)
 
-        for test in attempt_results['passed']:
-          output.mark_passed(test)
+    # 'aborted tests' in logs is an array of strings, each string defined
+    # as "{TestCase}/{testMethod}"
+    for test in self.logs['aborted tests']:
+      output.mark_timeout(test)
 
     output.mark_all_disabled(self.logs['disabled tests'])
     output.finalize()
@@ -526,7 +442,6 @@ class DeviceXcodeTestRunner(SimulatorParallelTestRunner,
     self.homedir = ''
     self.release = kwargs.get('release') or False
     self.set_up()
-    self._init_sharding_data()
     self.start_time = time.strftime('%Y-%m-%d-%H%M%S', time.localtime())
     self.test_results['path_delimiter'] = '/'
 
