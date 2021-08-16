@@ -16,8 +16,8 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/inspector/exception_metadata.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
-#include "third_party/blink/renderer/core/inspector/main_thread_debugger.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/script/script_element_base.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_html.h"
@@ -223,15 +223,8 @@ bool TrustedTypeFail(TrustedTypeViolationKind kind,
 
   if (!allow) {
     exception_state.ThrowTypeError(GetMessage(kind));
-    v8::Local<v8::Value> exception = exception_state.GetException();
-    if (!exception.IsEmpty()) {
-      v8::Isolate* isolate = execution_context->GetIsolate();
-      ThreadDebugger* debugger = ThreadDebugger::From(isolate);
-      debugger->GetV8Inspector()->associateExceptionData(
-          v8::Local<v8::Context>(), exception,
-          V8AtomicString(isolate, "issueId"),
-          V8String(isolate, IdentifiersFactory::IdFromToken(issue_id)));
-    }
+    MaybeAssociateExceptionMetaData(exception_state, "issueId",
+                                    IdentifiersFactory::IdFromToken(issue_id));
   }
   return !allow;
 }

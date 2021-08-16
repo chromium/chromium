@@ -25,6 +25,8 @@ blink_core_sources_inspector = [
   "identifiers_factory.h",
   "inspect_tools.cc",
   "inspect_tools.h",
+  "exception_metadata.h",
+  "exception_metadata.cc",
   "inspected_frames.cc",
   "inspected_frames.h",
   "inspector_animation_agent.cc",
