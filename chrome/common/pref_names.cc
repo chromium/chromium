@@ -3190,10 +3190,6 @@ const char kShowCaretBrowsingDialog[] =
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// Boolean pref indicating whether the Lacros browser is allowed. This is set by
-// a policy, and the default value for managed users is false. Admins willing to
-// give rights to use Lacros can set the policy to true.
-const char kLacrosAllowed[] = "lacros_allowed";
 // Enum pref indicating how to launch the Lacros browser. It is managed by
 // LacrosAvailability policy can have one of the following values:
 // 0: User choice (default value).

@@ -25840,7 +25840,8 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'owners': ['igorcov@chromium.org', 'okalitova@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['chrome_os:88-'],
+      'supported_on': ['chrome_os:88-95'],
+      'deprecated': True,
       'features': {
         'dynamic_refresh': False,
         'per_profile': False,
@@ -25861,7 +25862,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'default_for_enterprise_users': False,
       'caption': '''Allow usage of <ph name="LACROS_NAME">Lacros</ph>''',
       'tags': [],
-      'desc': '''This setting allows users to use the <ph name="LACROS_NAME">Lacros</ph> browser.
+      'desc': '''This setting is deprecated. Use <ph name="LACROS_AVAILABILITY_POLICY_NAME">LacrosAvailability</ph> instead.
 
       If this policy is set to Disabled or unset, the user cannot use <ph name="LACROS_NAME">Lacros</ph>.
 
@@ -25955,13 +25956,13 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'tags': [],
       'desc': '''This setting provides several availability options for the <ph name="LACROS_NAME">Lacros</ph> browser.
 
-      If the policy is set to <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE">user_choice</ph>, the user can enable <ph name="LACROS_NAME">Lacros</ph> and make it primary. <ph name="LACROS_NAME">Lacros</ph> can still be disallowed with <ph name="LACROS_ALLOWED_POLICY_NAME">LacrosAllowed</ph> policy.
+      If the policy is set to <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE">user_choice</ph>, the user can enable <ph name="LACROS_NAME">Lacros</ph> and make it primary.
 
-      If the policy is set to <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE">lacros_disallowed</ph>, the user cannot use <ph name="LACROS_NAME">Lacros</ph>. <ph name="LACROS_ALLOWED_POLICY_NAME">LacrosAllowed</ph> policy is ignored.
+      If the policy is set to <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE">lacros_disallowed</ph>, the user cannot use <ph name="LACROS_NAME">Lacros</ph>.
 
-      If the policy is set to <ph name="LACROS_AVAILABILITY_SIDE_BY_SIDE_VALUE">side_by_side</ph>, <ph name="LACROS_NAME">Lacros</ph> is enabled but is not the primary browser. <ph name="LACROS_ALLOWED_POLICY_NAME">LacrosAllowed</ph> policy is ignored.
+      If the policy is set to <ph name="LACROS_AVAILABILITY_SIDE_BY_SIDE_VALUE">side_by_side</ph>, <ph name="LACROS_NAME">Lacros</ph> is enabled but is not the primary browser.
 
-      If the policy is set to <ph name="LACROS_AVAILABILITY_LACROS_PRIMARY_VALUE">lacros_primary</ph>, <ph name="LACROS_NAME">Lacros</ph> is enabled and is the primary browser. <ph name="LACROS_ALLOWED_POLICY_NAME">LacrosAllowed</ph> policy is ignored.
+      If the policy is set to <ph name="LACROS_AVAILABILITY_LACROS_PRIMARY_VALUE">lacros_primary</ph>, <ph name="LACROS_NAME">Lacros</ph> is enabled and is the primary browser.
 
       If the policy is unset, the default is <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE">lacros_disallowed</ph> for enterprise-managed users and <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE">user_choice</ph> for non-managed users.
 

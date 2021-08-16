@@ -194,7 +194,6 @@ void DeviceLocalAccountPolicyProvider::
       {key::kKerberosEnabled, false},
       {key::kUserBorealisAllowed, false},
       {key::kDeletePrintJobHistoryAllowed, true},
-      {key::kLacrosAllowed, false},
       {key::kLacrosSecondaryProfilesAllowed, false}};
   const std::pair<std::string, std::string>
       kRestrictedModeStringPolicyOverrides[] = {

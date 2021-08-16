@@ -200,18 +200,6 @@ bool IsLacrosAllowedToBeEnabledWithUser(const User* user, Channel channel) {
       return true;
   }
 
-  // Some unit tests call IsLacrosAllowedToBeEnabled but don't have local_state
-  // or use fake one without expected preferences.
-  // Only channel check above prevents crash. If chaneel check is removed, there
-  // should be check if local_state is nullptr or does not have registered
-  // preference.
-  DCHECK(g_browser_process->local_state());
-  DCHECK(
-      g_browser_process->local_state()->FindPreference(prefs::kLacrosAllowed));
-  if (!g_browser_process->local_state()->GetBoolean(prefs::kLacrosAllowed)) {
-    return false;
-  }
-
   switch (channel) {
     case Channel::UNKNOWN:
     case Channel::CANARY:

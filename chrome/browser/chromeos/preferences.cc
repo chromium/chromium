@@ -135,7 +135,6 @@ void Preferences::RegisterPrefs(PrefRegistrySimple* registry) {
       ::prefs::kSystemTimezoneAutomaticDetectionPolicy,
       enterprise_management::SystemTimezoneProto::USERS_DECIDE);
   registry->RegisterStringPref(::prefs::kMinimumAllowedChromeVersion, "");
-  registry->RegisterBooleanPref(::prefs::kLacrosAllowed, true);
   registry->RegisterIntegerPref(
       ::prefs::kLacrosLaunchSwitch,
       static_cast<int>(crosapi::browser_util::LacrosLaunchSwitch::kUserChoice));

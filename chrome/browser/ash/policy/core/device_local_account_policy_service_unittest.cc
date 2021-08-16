@@ -1160,10 +1160,6 @@ TEST_F(DeviceLocalAccountPolicyProviderTest,
       POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
       base::Value(true), nullptr);
   expected_policy_map_restricted.Set(
-      key::kLacrosAllowed, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-      POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
-      base::Value(false), nullptr);
-  expected_policy_map_restricted.Set(
       key::kLacrosSecondaryProfilesAllowed, POLICY_LEVEL_MANDATORY,
       POLICY_SCOPE_USER,
       POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
