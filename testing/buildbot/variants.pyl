@@ -76,6 +76,38 @@
       ],
     },
   },
+  'LACROS_VERSION_SKEW_BETA': {
+    'args': [
+      '--ash-chrome-path-override=../../lacros_version_skew_tests_v93.0.4577.36/test_ash_chrome',
+      '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.skew.filter',
+    ],
+    'identifier': 'Lacros version skew testing ash 93.0.4577.36',
+    'swarming': {
+      'cipd_packages': [
+        {
+          'cipd_package': 'chromium/testing/linux-ash-chromium/x86_64/ash.zip',
+          'location': 'lacros_version_skew_tests_v93.0.4577.36',
+          'revision': 'version:93.0.4577.36',
+        },
+      ],
+    },
+  },
+  'LACROS_VERSION_SKEW_STABLE': {
+    'args': [
+      '--ash-chrome-path-override=../../lacros_version_skew_tests_v92.0.4515.130/test_ash_chrome',
+      '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.skew.filter',
+    ],
+    'identifier': 'Lacros version skew testing ash 92.0.4515.130',
+    'swarming': {
+      'cipd_packages': [
+        {
+          'cipd_package': 'chromium/testing/linux-ash-chromium/x86_64/ash.zip',
+          'location': 'lacros_version_skew_tests_v92.0.4515.130',
+          'revision': 'version:92.0.4515.130',
+        },
+      ],
+    },
+  },
   'SIM_IPAD_AIR_2_14_4': {
     'args': [
       '--platform',
