@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/post_task.h"
 #include "content/browser/payments/payment_app_context_impl.h"
@@ -20,7 +21,6 @@
 #include "content/public/browser/service_worker_context_observer.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
 #include "url/gurl.h"
@@ -31,8 +31,7 @@ namespace {
 
 // Self deleting installer installs a web payment app and deletes itself.
 class SelfDeleteInstaller
-    : public WebContentsObserver,
-      public ServiceWorkerContextObserver,
+    : public ServiceWorkerContextObserver,
       public base::RefCountedThreadSafe<SelfDeleteInstaller> {
  public:
   SelfDeleteInstaller(const std::string& app_name,
@@ -60,9 +59,9 @@ class SelfDeleteInstaller
 
     AddRef();  // Balanced by Release() in FinishInstallation.
 
-    // TODO(crbug.com/782270): Listen for web contents events to terminate
-    // installation early.
-    Observe(web_contents);
+    // TODO: Switch to being a WebContentsObserver and listen for events to
+    // terminate installation early?
+    web_contents_ = web_contents->GetWeakPtr();
 
     use_cache_ = use_cache;
 
@@ -158,14 +157,14 @@ class SelfDeleteInstaller
  private:
   friend class base::RefCountedThreadSafe<SelfDeleteInstaller>;
 
-  ~SelfDeleteInstaller() override {}
+  ~SelfDeleteInstaller() override = default;
 
   // If web contents or browser context are gone, then aborts payment and
   // returns true. Should be called on UI thread.
   bool AbortInstallIfWebContentsOrBrowserContextIsGone() {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-    if (!web_contents() || !web_contents()->GetBrowserContext()) {
+    if (!web_contents_ || !web_contents_->GetBrowserContext()) {
       FinishInstallation(false);
       return true;
     }
@@ -175,11 +174,11 @@ class SelfDeleteInstaller
 
   void SetPaymentAppIntoDatabase() {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    DCHECK(web_contents());
-    DCHECK(web_contents()->GetBrowserContext());
+    DCHECK(web_contents_);
+    DCHECK(web_contents_->GetBrowserContext());
 
     StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-        web_contents()->GetBrowserContext()->GetDefaultStoragePartition());
+        web_contents_->GetBrowserContext()->GetDefaultStoragePartition());
     scoped_refptr<PaymentAppContextImpl> payment_app_context =
         partition->GetPaymentAppContext();
 
@@ -236,10 +235,10 @@ class SelfDeleteInstaller
 
     service_worker_context_->RemoveObserver(this);
 
-    Observe(nullptr);
     Release();  // Balanced by AddRef() in the constructor.
   }
 
+  base::WeakPtr<content::WebContents> web_contents_;
   std::string app_name_;
   std::string app_icon_;
   GURL sw_url_;
