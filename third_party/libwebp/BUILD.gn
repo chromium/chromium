@@ -201,6 +201,7 @@ static_library("libwebp_dsp_sse41") {
     "src/dsp/dec_sse41.c",
     "src/dsp/enc_sse41.c",
     "src/dsp/lossless_enc_sse41.c",
+    "src/dsp/lossless_sse41.c",
     "src/dsp/upsampling_sse41.c",
     "src/dsp/yuv_sse41.c",
   ]
