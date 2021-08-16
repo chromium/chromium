@@ -17,9 +17,6 @@ const base::Feature kSyncResetPollIntervalOnStart{
 const base::Feature kSyncUseScryptForNewCustomPassphrases{
     "SyncUseScryptForNewCustomPassphrases", base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kSyncTriggerFullKeystoreMigration{
-    "SyncTriggerFullKeystoreMigration", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Causes Sync to ignore updates encrypted with keys that have been missing for
 // too long from this client; Sync will proceed normally as if those updates
 // didn't exist.

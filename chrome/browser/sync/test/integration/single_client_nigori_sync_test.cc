@@ -322,20 +322,6 @@ class SingleClientNigoriSyncTestWithNotAwaitQuiescence
   DISALLOW_COPY_AND_ASSIGN(SingleClientNigoriSyncTestWithNotAwaitQuiescence);
 };
 
-class SingleClientNigoriSyncTestWithFullKeystoreMigration
-    : public SingleClientNigoriSyncTest {
- public:
-  SingleClientNigoriSyncTestWithFullKeystoreMigration() {
-    override_features_.InitAndEnableFeature(
-        switches::kSyncTriggerFullKeystoreMigration);
-  }
-
-  ~SingleClientNigoriSyncTestWithFullKeystoreMigration() override = default;
-
- private:
-  base::test::ScopedFeatureList override_features_;
-};
-
 IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTest,
                        ShouldCommitKeystoreNigoriWhenReceivedDefault) {
   // SetupSync() should make FakeServer send default NigoriSpecifics.
@@ -494,7 +480,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTest, ShouldRotateKeystoreKey) {
 }
 
 // Performs initial sync with backward compatible keystore Nigori.
-IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTestWithFullKeystoreMigration,
+IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTest,
                        PRE_ShouldCompleteKeystoreMigrationAfterRestart) {
   const std::vector<std::vector<uint8_t>>& keystore_keys =
       GetFakeServer()->GetKeystoreKeys();
@@ -517,7 +503,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTestWithFullKeystoreMigration,
 
 // After browser restart the client should commit full keystore Nigori (e.g. it
 // should use keystore key as encryption key).
-IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTestWithFullKeystoreMigration,
+IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTest,
                        ShouldCompleteKeystoreMigrationAfterRestart) {
   ASSERT_TRUE(SetupClients());
   const std::string expected_key_bag_key_name =

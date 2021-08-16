@@ -414,47 +414,6 @@ TEST_F(NigoriSyncBridgeImplTest,
   EXPECT_THAT(*cryptographer(), HasDefaultKeyDerivedFrom(kGaiaKeyParams));
 }
 
-TEST_F(NigoriSyncBridgeImplTest, ShouldExposeBackwardCompatibleKeystoreNigori) {
-  base::test::ScopedFeatureList override_features;
-  override_features.InitAndDisableFeature(
-      switches::kSyncTriggerFullKeystoreMigration);
-
-  const KeyParamsForTesting kGaiaKeyParams =
-      Pbkdf2PassphraseKeyParamsForTesting("gaia_key");
-  const KeyParamsForTesting kKeystoreKeyParams =
-      KeystoreKeyParamsForTesting(kRawKeystoreKey);
-  EntityData entity_data;
-  *entity_data.specifics.mutable_nigori() = BuildKeystoreNigoriSpecifics(
-      /*keybag_keys_params=*/{kGaiaKeyParams, kKeystoreKeyParams},
-      /*keystore_decryptor_params=*/kGaiaKeyParams,
-      /*keystore_key_params=*/kKeystoreKeyParams);
-  sync_pb::EncryptedData original_encryption_keybag =
-      entity_data.specifics.nigori().encryption_keybag();
-  sync_pb::EncryptedData original_keystore_decryptor_token =
-      entity_data.specifics.nigori().keystore_decryptor_token();
-
-  ASSERT_TRUE(bridge()->SetKeystoreKeys({kRawKeystoreKey}));
-  ASSERT_THAT(bridge()->MergeSyncData(std::move(entity_data)),
-              Eq(absl::nullopt));
-
-  std::unique_ptr<EntityData> local_entity_data = bridge()->GetData();
-  ASSERT_TRUE(local_entity_data);
-  ASSERT_TRUE(local_entity_data->specifics.has_nigori());
-  // Note: EncryptedDataEqAfterDecryption() exercises more strict requirements
-  // than bridge must support, because there is nothing wrong with reordering
-  // of the keys in encryption_keybag, which will lead to failing this
-  // expectation.
-  EXPECT_THAT(local_entity_data->specifics.nigori().encryption_keybag(),
-              EncryptedDataEqAfterDecryption(original_encryption_keybag,
-                                             kGaiaKeyParams.password,
-                                             kGaiaKeyParams.derivation_params));
-  EXPECT_THAT(
-      local_entity_data->specifics.nigori().keystore_decryptor_token(),
-      EncryptedDataEqAfterDecryption(original_keystore_decryptor_token,
-                                     kKeystoreKeyParams.password,
-                                     kKeystoreKeyParams.derivation_params));
-}
-
 // Tests that we can successfully use old keys from encryption_keybag in
 // backward compatible mode.
 TEST_F(NigoriSyncBridgeImplTest,
@@ -1667,9 +1626,6 @@ TEST_F(NigoriSyncBridgeImplTest,
 // Tests that upon startup bridge migrates the Nigori from backward compatible
 // keystore mode to full keystore mode.
 TEST_F(NigoriSyncBridgeImplPersistenceTest, ShouldCompleteKeystoreMigration) {
-  base::test::ScopedFeatureList override_features;
-  override_features.InitAndEnableFeature(
-      switches::kSyncTriggerFullKeystoreMigration);
   // Emulate storing on disc.
   auto storage1 = std::make_unique<testing::NiceMock<MockNigoriStorage>>();
   sync_pb::NigoriLocalData nigori_local_data;
