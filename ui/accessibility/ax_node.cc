@@ -1673,7 +1673,10 @@ bool AXNode::IsInListMarker() const {
   // ++StaticText
   // ++++InlineTextBox
   AXNode* parent_node = GetUnignoredParent();
-  if (parent_node && parent_node->data().role == ax::mojom::Role::kListMarker)
+  if (!parent_node)
+    return false;
+
+  if (parent_node->data().role == ax::mojom::Role::kListMarker)
     return true;
 
   AXNode* grandparent_node = parent_node->GetUnignoredParent();
