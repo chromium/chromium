@@ -16,6 +16,8 @@
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom-forward.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/arc/arc_prefs.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -584,27 +586,54 @@ SystemNotificationManager::MakeRemovableNotification(
     const Volume& volume) {
   std::unique_ptr<message_center::Notification> notification;
   if (event.status == file_manager_private::MOUNT_COMPLETED_STATUS_SUCCESS) {
-    int message_id;
+    bool show_settings_button = false;
+    std::u16string title =
+        l10n_util::GetStringUTF16(IDS_REMOVABLE_DEVICE_DETECTION_TITLE);
+    std::u16string message;
     if (volume.is_read_only() && !volume.is_read_only_removable_device()) {
-      message_id = IDS_REMOVABLE_DEVICE_NAVIGATION_MESSAGE_READONLY_POLICY;
+      message = l10n_util::GetStringUTF16(
+          IDS_REMOVABLE_DEVICE_NAVIGATION_MESSAGE_READONLY_POLICY);
     } else {
-      message_id = IDS_REMOVABLE_DEVICE_NAVIGATION_MESSAGE;
+      const PrefService* const service = profile_->GetPrefs();
+      DCHECK(service);
+      bool arc_enabled = service->GetBoolean(arc::prefs::kArcEnabled);
+      bool arc_removable_media_access_enabled =
+          service->GetBoolean(arc::prefs::kArcHasAccessToRemovableMedia);
+      if (!arc_enabled) {
+        message =
+            l10n_util::GetStringUTF16(IDS_REMOVABLE_DEVICE_NAVIGATION_MESSAGE);
+      } else if (arc_removable_media_access_enabled) {
+        message = base::StrCat(
+            {l10n_util::GetStringUTF16(IDS_REMOVABLE_DEVICE_NAVIGATION_MESSAGE),
+             u" ",
+             l10n_util::GetStringUTF16(
+                 IDS_REMOVABLE_DEVICE_PLAY_STORE_APPS_HAVE_ACCESS_MESSAGE)});
+        show_settings_button = true;
+      } else {
+        message = base::StrCat(
+            {l10n_util::GetStringUTF16(IDS_REMOVABLE_DEVICE_NAVIGATION_MESSAGE),
+             u" ",
+             l10n_util::GetStringUTF16(
+                 IDS_REMOVABLE_DEVICE_ALLOW_PLAY_STORE_ACCESS_MESSAGE)});
+        show_settings_button = true;
+      }
     }
     scoped_refptr<message_center::NotificationDelegate> delegate =
         new message_center::HandleNotificationClickDelegate(base::BindRepeating(
             &SystemNotificationManager::HandleRemovableNotificationClick,
             weak_ptr_factory_.GetWeakPtr(), volume.mount_path().value()));
-    notification = CreateNotification(kRemovableNotificationId,
-                                      IDS_REMOVABLE_DEVICE_DETECTION_TITLE,
-                                      message_id, delegate);
+    notification =
+        CreateNotification(kRemovableNotificationId, title, message, delegate);
 
     std::vector<message_center::ButtonInfo> notification_buttons;
     notification_buttons.push_back(
         message_center::ButtonInfo(l10n_util::GetStringUTF16(
             IDS_REMOVABLE_DEVICE_NAVIGATION_BUTTON_LABEL)));
-    notification_buttons.push_back(
-        message_center::ButtonInfo(l10n_util::GetStringUTF16(
-            IDS_REMOVABLE_DEVICE_OPEN_SETTTINGS_BUTTON_LABEL)));
+    if (show_settings_button) {
+      notification_buttons.push_back(
+          message_center::ButtonInfo(l10n_util::GetStringUTF16(
+              IDS_REMOVABLE_DEVICE_OPEN_SETTTINGS_BUTTON_LABEL)));
+    }
     notification->set_buttons(notification_buttons);
   }
   if (volume.device_type() != chromeos::DEVICE_TYPE_UNKNOWN &&
