@@ -92,7 +92,7 @@ struct RawPtrNoOpImpl {
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
 
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
-void CheckThatAddressIsntWithinFirstPartitionPage(void* ptr);
+BASE_EXPORT void CheckThatAddressIsntWithinFirstPartitionPage(void* ptr);
 #endif
 
 struct BackupRefPtrImpl {
