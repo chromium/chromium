@@ -165,23 +165,4 @@ content::GetServiceSandboxType<printing::mojom::PrintBackendService>() {
         //  defined(OS_CHROMEOS)) &&
         // BUILDFLAG(ENABLE_PRINTING)
 
-// proxy_resolver::mojom::ProxyResolverFactory
-#if !defined(OS_ANDROID)
-namespace proxy_resolver {
-namespace mojom {
-class ProxyResolverFactory;
-}
-}  // namespace proxy_resolver
-
-template <>
-inline sandbox::policy::SandboxType
-content::GetServiceSandboxType<proxy_resolver::mojom::ProxyResolverFactory>() {
-#if defined(OS_WIN)
-  return sandbox::policy::SandboxType::kProxyResolver;
-#else  // (!OS_WIN && !OS_ANDROID)
-  return sandbox::policy::SandboxType::kUtility;
-#endif
-}
-#endif  // !defined(OS_ANDROID)
-
 #endif  // CHROME_BROWSER_SERVICE_SANDBOX_TYPE_H_
