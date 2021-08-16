@@ -587,9 +587,10 @@ class SharedImageRepresentationOverlayVideo
     base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
     DCHECK(release_fence.is_null());
     if (gl_image_) {
-      DCHECK(scoped_hardware_buffer_);
-      scoped_hardware_buffer_->SetReadFence(gl_image_->TakeEndReadFence(),
-                                            true);
+      if (scoped_hardware_buffer_) {
+        scoped_hardware_buffer_->SetReadFence(gl_image_->TakeEndReadFence(),
+                                              true);
+      }
       gl_image_.reset();
       scoped_hardware_buffer_.reset();
     }
@@ -608,9 +609,21 @@ class SharedImageRepresentationOverlayVideo
     // GetGLImage will only be called for SurfaceControl.
     if (!gl_image_) {
       scoped_hardware_buffer_ = stream_image()->GetAHardwareBuffer();
-      gl_image_ = base::MakeRefCounted<VideoImage>(
-          scoped_hardware_buffer_->buffer(),
-          scoped_hardware_buffer_->TakeFence());
+
+      // |scoped_hardware_buffer_| could be null for cases when a buffer is
+      // not acquired in ImageReader for some reasons and there is no previously
+      // acquired image left.
+      if (scoped_hardware_buffer_) {
+        gl_image_ = base::MakeRefCounted<VideoImage>(
+            scoped_hardware_buffer_->buffer(),
+            scoped_hardware_buffer_->TakeFence());
+      } else {
+        // Caller of GetGLImage currently do not expect a null |gl_image_|.
+        // Hence creating a valid object with null buffer which results in a
+        // blank video frame and is expected. TODO(vikassoni) : Explore option
+        // of returning a null GLImage here.
+        gl_image_ = base::MakeRefCounted<VideoImage>(nullptr, base::ScopedFD());
+      }
     }
     return gl_image_.get();
   }
