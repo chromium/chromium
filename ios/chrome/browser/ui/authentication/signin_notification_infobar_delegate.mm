@@ -21,6 +21,8 @@
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
@@ -33,13 +35,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-namespace {
-
-// Avatar profile picture size.
-const CGFloat kAvatarImageDimension = 40.0f;
-
-}  // namespace
 
 // static
 bool SigninNotificationInfoBarDelegate::Create(
@@ -69,13 +64,11 @@ SigninNotificationInfoBarDelegate::SigninNotificationInfoBarDelegate(
   ChromeIdentity* identity =
       auth_service->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
 
-  UIImage* image = ios::GetChromeBrowserProvider()
-                       .GetChromeIdentityService()
-                       ->GetCachedAvatarForIdentity(identity);
-  if (!image) {
-    image = [UIImage imageNamed:@"ios_default_avatar"];
-  }
-  icon_ = gfx::Image(CircularImageFromImage(image, kAvatarImageDimension));
+  ChromeAccountManagerService* accountManagerService =
+      ChromeAccountManagerServiceFactory::GetForBrowserState(browser_state);
+  UIImage* image = accountManagerService->GetIdentityAvatarWithIdentity(
+      identity, IdentityAvatarSize::DefaultLarge);
+  icon_ = gfx::Image(CircularImageFromImage(image, image.size.width));
 
   if (base::FeatureList::IsEnabled(
           signin::kSigninNotificationInfobarUsernameInTitle)) {
