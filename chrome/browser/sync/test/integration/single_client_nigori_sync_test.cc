@@ -567,8 +567,6 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(GetSyncService(0)->GetUserSettings()->SetDecryptionPassphrase(
       "password"));
   EXPECT_TRUE(WaitForPasswordForms({password_form}));
-  // TODO(crbug.com/1042251): verify that client fixes NigoriSpecifics once
-  // such behavior is supported.
 }
 
 // Performs initial sync for Nigori, but doesn't allow initialized Nigori to be

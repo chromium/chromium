@@ -678,10 +678,6 @@ bool NigoriSyncBridgeImpl::SetKeystoreKeys(
     return false;
   }
 
-  // TODO(crbug.com/1042251): having |pending_keystore_decryptor_token| without
-  // |pending_keys| means that new |keystore_decryptor_token| could be build
-  // in order to replace the potentially corrupted remote
-  // |keystore_decryptor_token|.
   if (state_.pending_keystore_decryptor_token.has_value() &&
       state_.pending_keys.has_value()) {
     // Newly arrived keystore keys could resolve pending encryption state in
