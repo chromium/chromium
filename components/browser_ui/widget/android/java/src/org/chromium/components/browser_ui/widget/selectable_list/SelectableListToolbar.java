@@ -106,8 +106,7 @@ public class SelectableListToolbar<E>
     private boolean mUpdateStatusBarColor;
 
     protected NumberRollView mNumberRollView;
-    private Drawable mNormalMenuButton;
-    private Drawable mSelectionMenuButton;
+    private Drawable mMenuButton;
     private Drawable mNavigationIconDrawable;
 
     private int mNavigationButton;
@@ -118,10 +117,8 @@ public class SelectableListToolbar<E>
     private int mSelectedGroupResId;
 
     private int mNormalBackgroundColor;
-    private int mSelectionBackgroundColor;
     private int mSearchBackgroundColor;
-    private ColorStateList mDarkIconColorList;
-    private ColorStateList mLightIconColorList;
+    private ColorStateList mIconColorList;
 
     private UiConfig mUiConfig;
     private int mWideDisplayStartOffsetPx;
@@ -195,23 +192,15 @@ public class SelectableListToolbar<E>
                 ApiCompatibilityUtils.getColor(getResources(), R.color.default_bg_color);
         setBackgroundColor(mNormalBackgroundColor);
 
-        mSelectionBackgroundColor = ApiCompatibilityUtils.getColor(
-                getResources(), R.color.default_control_color_active);
-
-        mDarkIconColorList = AppCompatResources.getColorStateList(
+        mIconColorList = AppCompatResources.getColorStateList(
                 getContext(), R.color.default_icon_color_tint_list);
-        mLightIconColorList = AppCompatResources.getColorStateList(
-                getContext(), R.color.default_icon_color_inverse);
 
         setTitleTextAppearance(getContext(), R.style.TextAppearance_Headline_Primary);
         if (mTitleResId != 0) setTitle(mTitleResId);
 
-        // TODO(twellington): add the concept of normal & selected tint to apply to all toolbar
-        //                    buttons.
-        mNormalMenuButton = UiUtils.getTintedDrawable(
-                getContext(), R.drawable.ic_more_vert_24dp, R.color.default_icon_color_tint_list);
-        mSelectionMenuButton = UiUtils.getTintedDrawable(
-                getContext(), R.drawable.ic_more_vert_24dp, R.color.default_icon_color_inverse);
+        mMenuButton = UiUtils.getTintedDrawable(getContext(), R.drawable.ic_more_vert_24dp,
+                R.color.default_icon_color_secondary_tint_list);
+        setOverflowIcon(mMenuButton);
         mNavigationIconDrawable = UiUtils.getTintedDrawable(getContext(),
                 R.drawable.ic_arrow_back_white_24dp, R.color.default_icon_color_tint_list);
 
@@ -342,11 +331,11 @@ public class SelectableListToolbar<E>
             case NAVIGATION_BUTTON_NONE:
                 break;
             case NAVIGATION_BUTTON_BACK:
-                DrawableCompat.setTintList(mNavigationIconDrawable, mDarkIconColorList);
+                DrawableCompat.setTintList(mNavigationIconDrawable, mIconColorList);
                 contentDescriptionId = R.string.accessibility_toolbar_btn_back;
                 break;
             case NAVIGATION_BUTTON_SELECTION_BACK:
-                DrawableCompat.setTintList(mNavigationIconDrawable, mLightIconColorList);
+                DrawableCompat.setTintList(mNavigationIconDrawable, mIconColorList);
                 contentDescriptionId = R.string.accessibility_cancel_selection;
                 break;
             default:
@@ -501,7 +490,6 @@ public class SelectableListToolbar<E>
 
         setNavigationButton(NAVIGATION_BUTTON_NONE);
         setBackgroundColor(mNormalBackgroundColor);
-        setOverflowIcon(mNormalMenuButton);
         if (mTitleResId != 0) setTitle(mTitleResId);
 
         mNumberRollView.setVisibility(View.GONE);
@@ -519,8 +507,7 @@ public class SelectableListToolbar<E>
         if (mHasSearchView) mSearchView.setVisibility(View.GONE);
 
         setNavigationButton(NAVIGATION_BUTTON_SELECTION_BACK);
-        setBackgroundColor(mSelectionBackgroundColor);
-        setOverflowIcon(mSelectionMenuButton);
+        setBackgroundColor(mNormalBackgroundColor);
 
         switchToNumberRollView(selectedItems, wasSelectionEnabled);
 
@@ -586,7 +573,7 @@ public class SelectableListToolbar<E>
                 Drawable iconDrawable =
                         TintedDrawable.constructTintedDrawable(getContext(), R.drawable.btn_info,
                                 infoShowing ? R.color.blue_mode_tint
-                                            : R.color.default_icon_color_tint_list);
+                                            : R.color.default_icon_color_secondary_tint_list);
 
                 infoMenuItem.setIcon(iconDrawable);
             }
@@ -617,28 +604,6 @@ public class SelectableListToolbar<E>
         super.setBackgroundColor(color);
 
         updateStatusBarColor(color);
-    }
-
-    /**
-     * Returns whether the toolbar should be using dark icons (light icons are only used when in
-     * selection mode).
-     */
-    protected boolean useDarkIcons() {
-        return !mIsSelectionEnabled;
-    }
-
-    /**
-     * Returns the color state list to use when dark icons are showing (when not in selection mode).
-     */
-    protected ColorStateList getDarkIconColorStateList() {
-        return mDarkIconColorList;
-    }
-
-    /**
-     * Returns the color state list to use when light icons are showing (when in selection mode).
-     */
-    protected ColorStateList getLightIconColorStateList() {
-        return mLightIconColorList;
     }
 
     private void updateStatusBarColor(int color) {

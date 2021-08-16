@@ -335,6 +335,7 @@ public class SelectableListLayout<E>
         return padding;
     }
 
+    // TODO(nemco): Remove the ability to show shadows on SelectableListToolbar
     private void setToolbarShadowVisibility() {
         if (mToolbar == null || mRecyclerView == null) return;
 
