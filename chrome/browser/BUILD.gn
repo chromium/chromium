@@ -5395,7 +5395,7 @@ static_library("browser") {
     ]
   }
 
-  if (is_linux || is_win || is_mac || is_fuchsia) {
+  if (is_linux || is_win || is_mac) {
     sources += [
       "enterprise/connectors/device_trust/attestation/desktop/crypto_utility.cc",
       "enterprise/connectors/device_trust/attestation/desktop/crypto_utility.h",
