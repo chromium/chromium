@@ -15,6 +15,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_list_sorter.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "url/gurl.h"
 
 namespace {
 using password_manager::metrics_util::IsPasswordChanged;
@@ -88,6 +89,24 @@ void SavedPasswordsPresenter::RemovePassword(const PasswordForm& form) {
       GetStoreFor(current_form).RemoveLogin(current_form);
     }
   });
+}
+
+bool SavedPasswordsPresenter::AddPassword(const PasswordForm& form) {
+  // TODO(crbug.com/1236053): Clarify URL requirements.
+  if (!form.url.is_valid() || !form.url.SchemeIsHTTPOrHTTPS())
+    return false;
+  if (form.password_value.empty())
+    return false;
+
+  auto have_equal_username_and_realm = [&form](const PasswordForm& entry) {
+    return form.signon_realm == entry.signon_realm &&
+           form.username_value == entry.username_value;
+  };
+  if (base::ranges::any_of(passwords_, have_equal_username_and_realm))
+    return false;
+
+  GetStoreFor(form).AddLogin(form);
+  return true;
 }
 
 bool SavedPasswordsPresenter::EditPassword(const PasswordForm& form,

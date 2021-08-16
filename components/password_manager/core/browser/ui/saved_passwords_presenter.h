@@ -67,6 +67,12 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   // Removes the credential and all its duplicates from the store.
   void RemovePassword(const PasswordForm& form);
 
+  // Adds the credential to the store specified in the |form|. Returns true
+  // if the password was added, false if |form|'s data is not valid (invalid
+  // url/empty password), or an entry with such signon_realm and username
+  // already exists in any (profile or account) store.
+  bool AddPassword(const PasswordForm& form);
+
   // Tries to edit |password|. After checking whether |form| is present in
   // |passwords_|, this will ask the password store to change the underlying
   // password_value to |new_password| in case it was found. This will also
