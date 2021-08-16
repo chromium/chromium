@@ -9272,6 +9272,8 @@ domain Fetch
       optional Network.ErrorReason responseErrorReason
       # Response code if intercepted at response stage.
       optional integer responseStatusCode
+      # Response status text if intercepted at response stage.
+      optional string responseStatusText
       # Response headers if intercepted at the response stage.
       optional array of HeaderEntry responseHeaders
       # If the intercepted request had a corresponding Network.requestWillBeSent event fired for it,

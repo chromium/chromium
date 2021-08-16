@@ -384,9 +384,11 @@ void FetchHandler::RequestIntercepted(
     error_reason = NetworkHandler::NetErrorToString(info->response_error_code);
 
   Maybe<int> status_code;
+  Maybe<std::string> status_text;
   Maybe<Array<Fetch::HeaderEntry>> response_headers;
   if (info->response_headers) {
     status_code = info->response_headers->response_code();
+    status_text = info->response_headers->GetStatusText();
     response_headers = ToHeaderEntryArray(info->response_headers);
   }
 
@@ -411,7 +413,7 @@ void FetchHandler::RequestIntercepted(
       info->interception_id, std::move(info->network_request),
       info->frame_id.ToString(),
       NetworkHandler::ResourceTypeToString(info->resource_type),
-      std::move(error_reason), std::move(status_code),
+      std::move(error_reason), std::move(status_code), std::move(status_text),
       std::move(response_headers), std::move(info->renderer_request_id));
 }
 
