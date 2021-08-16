@@ -32,6 +32,7 @@ extern const char kDisableFetchingHintsAtNavigationStartForTesting[];
 extern const char kDisableCheckingUserPermissionsForTesting[];
 extern const char kDisableModelDownloadVerificationForTesting[];
 extern const char kModelOverride[];
+extern const char kDebugLoggingEnabled[];
 
 // Returns whether the hint component should be processed.
 // Available hint components are only processed if a proto override isn't being
@@ -87,6 +88,9 @@ absl::optional<
     std::pair<std::string, absl::optional<optimization_guide::proto::Any>>>
 GetModelOverrideForOptimizationTarget(
     optimization_guide::proto::OptimizationTarget optimization_target);
+
+// Returns true if debug logs are enabled for the optimization guide.
+bool IsDebugLogsEnabled();
 
 }  // namespace switches
 }  // namespace optimization_guide

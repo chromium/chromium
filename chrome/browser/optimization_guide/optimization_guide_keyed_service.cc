@@ -27,6 +27,7 @@
 #include "components/optimization_guide/core/optimization_guide_navigation_data.h"
 #include "components/optimization_guide/core/optimization_guide_permissions_util.h"
 #include "components/optimization_guide/core/optimization_guide_store.h"
+#include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/core/tab_url_provider.h"
 #include "components/optimization_guide/core/top_host_provider.h"
@@ -167,6 +168,9 @@ void OptimizationGuideKeyedService::Initialize() {
   // old paths. Remove this code in 04/2022 since it should be assumed that all
   // clients that had the previous path have had their previous stores deleted.
   DeleteOldStorePaths(profile_path);
+  if (optimization_guide::switches::IsDebugLogsEnabled()) {
+    DVLOG(0) << "OptimizationGuide: KeyedService is initalized";
+  }
 }
 
 optimization_guide::ChromeHintsManager*

@@ -16,6 +16,8 @@
 
 namespace optimization_guide {
 
+enum class OptimizationGuideDecision;
+
 // Returns the string than can be used to record histograms for the optimization
 // target. If adding a histogram to use the string or adding an optimization
 // target, update the OptimizationGuide.OptimizationTargets histogram suffixes
@@ -73,6 +75,10 @@ absl::optional<T> ParsedAnyMetadata(const proto::Any& any_metadata) {
     return metadata;
   return absl::nullopt;
 }
+
+// Returns a debug string for OptimizationGuideDecision.
+std::string GetStringForOptimizationGuideDecision(
+    OptimizationGuideDecision decision);
 
 }  // namespace optimization_guide
 

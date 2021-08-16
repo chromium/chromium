@@ -68,6 +68,12 @@ class OptimizationMetadata {
     loading_predictor_metadata_ = loading_predictor_metadata;
   }
 
+  // Returns true if |this| contains no metadata.
+  bool empty() const {
+    return !any_metadata_ && !performance_hints_metadata_ &&
+           !public_image_metadata_ && loading_predictor_metadata_;
+  }
+
  private:
   // Metadata applicable to the optimization type.
   //

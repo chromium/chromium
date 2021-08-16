@@ -8,6 +8,8 @@
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "components/optimization_guide/core/optimization_guide_decision.h"
+#include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/variations/active_field_trials.h"
 #include "net/base/url_util.h"
@@ -107,6 +109,20 @@ std::string FilePathToString(const base::FilePath& file_path) {
 
 base::FilePath GetBaseFileNameForModels() {
   return base::FilePath(FILE_PATH_LITERAL("model.tflite"));
+}
+
+std::string GetStringForOptimizationGuideDecision(
+    OptimizationGuideDecision decision) {
+  switch (decision) {
+    case OptimizationGuideDecision::kUnknown:
+      return "Unknown";
+    case OptimizationGuideDecision::kTrue:
+      return "True";
+    case OptimizationGuideDecision::kFalse:
+      return "False";
+  }
+  NOTREACHED();
+  return std::string();
 }
 
 }  // namespace optimization_guide

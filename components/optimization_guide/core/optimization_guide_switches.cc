@@ -71,6 +71,8 @@ const char kDisableCheckingUserPermissionsForTesting[] =
 const char kDisableModelDownloadVerificationForTesting[] =
     "disable-model-download-verification";
 
+const char kDebugLoggingEnabled[] = "enable-optimization-guide-debug-logs";
+
 // Disables the fetching of models and overrides the file path and metadata to
 // be used for the session to use what's passed via command-line instead of what
 // is already stored.
@@ -96,6 +98,11 @@ bool ShouldPurgeOptimizationGuideStoreOnStartup() {
 bool ShouldPurgeModelAndFeaturesStoreOnStartup() {
   base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
   return cmd_line->HasSwitch(kPurgeModelAndFeaturesStore);
+}
+
+bool IsDebugLogsEnabled() {
+  base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
+  return cmd_line->HasSwitch(kDebugLoggingEnabled);
 }
 
 // Parses a list of hosts to have hints fetched for. This overrides scheduling
