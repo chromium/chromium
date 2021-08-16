@@ -11064,6 +11064,9 @@
   "DeviceTargetVersionPrefix": {
     "reason_for_missing_test": "Maps into CrosSettings"
   },
+  "DeviceTargetVersionSelector": {
+    "reason_for_missing_test": "Chrome OS device policy used by update_engine only, not used in Chrome."
+  },
   "DeviceUpdateScatterFactor": {
     "reason_for_missing_test": "Chrome OS device policy used by update_engine only, not used in Chrome."
   },

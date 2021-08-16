@@ -913,6 +913,12 @@ void DecodeAutoUpdatePolicies(const em::ChromeDeviceSettingsProto& policy,
     // target_version_display_name is not actually a policy, but a display
     // string for target_version_prefix, so we ignore it.
 
+    if (container.has_target_version_selector()) {
+      policies->Set(key::kDeviceTargetVersionSelector, POLICY_LEVEL_MANDATORY,
+                    POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
+                    base::Value(container.target_version_selector()), nullptr);
+    }
+
     if (container.has_rollback_to_target_version()) {
       policies->Set(key::kDeviceRollbackToTargetVersion, POLICY_LEVEL_MANDATORY,
                     POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,

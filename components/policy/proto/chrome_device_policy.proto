@@ -357,6 +357,11 @@ message AutoUpdateSettingsProto {
   // Specifies what should happen if the device channel is downgraded.
   optional ChannelDowngradeBehavior channel_downgrade_behavior = 16
       [default = WAIT_FOR_VERSION_CATCH_UP];
+
+  // |target_version_selector| is forwarded as the "targetversionselector"
+  // attribute to Omaha and is used by it if for minor version pinning. The
+  // field is not and shall not be processed by the client.
+  optional string target_version_selector = 17;
 }
 
 message OBSOLETE_StartUpUrlsProto {

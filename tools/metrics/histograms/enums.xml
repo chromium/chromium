@@ -26032,6 +26032,7 @@ Called by update_document_policy_enum.py.-->
   <int value="888" label="EnhancedNetworkVoicesInSelectToSpeakAllowed"/>
   <int value="889" label="PrintPdfAsImageAvailability"/>
   <int value="890" label="PrintRasterizePdfDpi"/>
+  <int value="891" label="DeviceTargetVersionSelector"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">
