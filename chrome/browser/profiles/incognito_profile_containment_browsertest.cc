@@ -30,7 +30,8 @@ namespace {
 
 // List of file or directory prefixes that are known to be modified during an
 // Incognito session.
-// TODO(http://crbug.com/1234755): Audit why these files are changed.
+// TODO(http://crbug.com/1234755): Add audit message (or fix the issue) for all
+// paths that do not have a comment.
 constexpr std::array<const char*, 10> kAllowListPrefixesForAllPlatforms = {
     "/Default/data_reduction_proxy_leveldb",
     "/Default/Extension State",
@@ -48,7 +49,11 @@ constexpr std::array<const char*, 2> kAllowListPrefixesForPlatform = {
 #elif defined(OS_WIN)
 constexpr std::array<const char*, 5> kAllowListPrefixesForPlatform = {
     "/Default/heavy_ad_intervention_opt_out.db", "/Default/Shortcuts",
-    "/Default/Top Sites", "/GrShaderCache/old_GPUCache", "/Last Browser"};
+    "/Default/Top Sites", "/GrShaderCache/old_GPUCache",
+
+    // This file only contains the path to the latest executable of Chrome,
+    // therefore it's safe to be written in Incognito.
+    "/Last Browser"};
 #elif defined(OS_CHROMEOS)
 constexpr std::array<const char*, 7> kAllowListPrefixesForPlatform = {
     "/test-user/.variations-list.txt",
