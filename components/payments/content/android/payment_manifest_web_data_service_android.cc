@@ -23,7 +23,7 @@ PaymentManifestWebDataServiceAndroid::PaymentManifestWebDataServiceAndroid(
     JNIEnv* env,
     jobject obj,
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents), weak_java_obj_(env, obj) {}
+    : web_contents_(web_contents->GetWeakPtr()), weak_java_obj_(env, obj) {}
 
 PaymentManifestWebDataServiceAndroid::~PaymentManifestWebDataServiceAndroid() =
     default;
@@ -222,12 +222,12 @@ static jlong JNI_PaymentManifestWebDataService_Init(
 
 scoped_refptr<PaymentManifestWebDataService>
 PaymentManifestWebDataServiceAndroid::GetPaymentManifestWebDataService() {
-  if (!web_contents() || !web_contents()->GetBrowserContext())
+  if (!web_contents_ || !web_contents_->GetBrowserContext())
     return nullptr;
 
   return webdata_services::WebDataServiceWrapperFactory::
       GetPaymentManifestWebDataServiceForBrowserContext(
-          web_contents()->GetBrowserContext(),
+          web_contents_->GetBrowserContext(),
           ServiceAccessType::EXPLICIT_ACCESS);
 }
 
