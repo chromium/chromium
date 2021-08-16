@@ -479,6 +479,92 @@ TEST_F(ScriptRunIteratorTest, QuoteParenChineseParenLatinQuote) {
       {{"\"(萬國碼) ", USCRIPT_HAN}, {"Unicode\"", USCRIPT_LATIN}});
 }
 
+TEST_F(ScriptRunIteratorTest, CJKConsecutiveParens1) {
+  CHECK_SCRIPT_RUNS({{"「あ", USCRIPT_HIRAGANA},
+                     // The consecutive punctuation should not be split.
+                     {"国。」", USCRIPT_HAN}});
+}
+
+TEST_F(ScriptRunIteratorTest, CJKConsecutiveParens2) {
+  CHECK_SCRIPT_RUNS({{"あ「あ", USCRIPT_HIRAGANA},
+                     // The consecutive punctuation should not be split.
+                     {"国（国）」", USCRIPT_HAN}});
+}
+
+TEST_F(ScriptRunIteratorTest, CJKConsecutiveParens3) {
+  CHECK_SCRIPT_RUNS({{"国「国", USCRIPT_HAN},
+                     {"ア（", USCRIPT_HIRAGANA},
+                     {"A", USCRIPT_LATIN},
+                     // The consecutive punctuation should not be split.
+                     {"）」", USCRIPT_HIRAGANA}});
+}
+
+TEST_F(ScriptRunIteratorTest, CJKConsecutiveParens4) {
+  CHECK_SCRIPT_RUNS({{"A", USCRIPT_LATIN},
+                     // CJK puncutuation after non-CJK resolves to Bopomofo,
+                     // because it's the first script extension in the Unicode
+                     // data. It's not correct but ok because GPOS/GSUB in CJK
+                     // fonts usually include the same features for all CJK
+                     // scripts including Bopomofo, even when they are not
+                     // intended for Traditional Chinese.
+                     {"「", USCRIPT_BOPOMOFO},
+                     {"A", USCRIPT_LATIN},
+                     {"あ（", USCRIPT_HIRAGANA},
+                     // The consecutive punctuation should not be split.
+                     {"国）」", USCRIPT_HAN}});
+}
+
+TEST_F(ScriptRunIteratorTest, CJKConsecutiveParens5) {
+  CHECK_SCRIPT_RUNS({{"「あ", USCRIPT_HIRAGANA},
+                     {"国", USCRIPT_HAN},
+                     {"A", USCRIPT_LATIN},
+                     {"」", USCRIPT_HIRAGANA}});
+}
+
+TEST_F(ScriptRunIteratorTest, CJKConsecutiveParens6) {
+  CHECK_SCRIPT_RUNS({{"A", USCRIPT_LATIN},
+                     {"「", USCRIPT_BOPOMOFO},  // See CJKConsecutiveParens4
+                     {"A", USCRIPT_LATIN},
+                     {"あ（", USCRIPT_HIRAGANA},
+                     {"国）", USCRIPT_HAN},
+                     {"A", USCRIPT_LATIN},
+                     {"」", USCRIPT_BOPOMOFO}});
+}
+
+TEST_F(ScriptRunIteratorTest, CJKConsecutiveParens7) {
+  CHECK_SCRIPT_RUNS({
+      {"「あ", USCRIPT_HIRAGANA},
+      {"国1」", USCRIPT_HAN},
+  });
+}
+
+TEST_F(ScriptRunIteratorTest, CJKConsecutiveParens8) {
+  CHECK_SCRIPT_RUNS({
+      {"A", USCRIPT_LATIN},
+      {"「", USCRIPT_BOPOMOFO},  // See CJKConsecutiveParens4
+      {"A", USCRIPT_LATIN},
+      {"あ（", USCRIPT_HIRAGANA},
+      {"国）1」", USCRIPT_HAN},
+  });
+}
+
+TEST_F(ScriptRunIteratorTest, CJKConsecutiveParens9) {
+  CHECK_SCRIPT_RUNS({{"「あ", USCRIPT_HIRAGANA},
+                     {"国", USCRIPT_HAN},
+                     {"A1", USCRIPT_LATIN},
+                     {"」", USCRIPT_HIRAGANA}});
+}
+
+TEST_F(ScriptRunIteratorTest, CJKConsecutiveParens10) {
+  CHECK_SCRIPT_RUNS({{"A", USCRIPT_LATIN},
+                     {"「", USCRIPT_BOPOMOFO},  // See CJKConsecutiveParens4
+                     {"A", USCRIPT_LATIN},
+                     {"あ（", USCRIPT_HIRAGANA},
+                     {"国）", USCRIPT_HAN},
+                     {"A1", USCRIPT_LATIN},
+                     {"」", USCRIPT_BOPOMOFO}});
+}
+
 // Emojies are resolved to the leading script.
 TEST_F(ScriptRunIteratorTest, EmojiCommon) {
   CHECK_SCRIPT_RUNS({{"百家姓🌱🌲🌳🌴", USCRIPT_HAN}});
