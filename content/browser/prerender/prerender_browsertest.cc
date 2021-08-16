@@ -4382,33 +4382,26 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, AddSpeculationRulesMultipleTimes) {
   EXPECT_TRUE(HasHostForUrl(kFirstPrerenderingUrl));
 }
 
-// Tests that speculationrules cannot trigger cross-origin prerendering.
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CrossOriginSpeculationRules) {
-  ScopedSpeculationHostImplContentBrowserClient test_browser_client;
+// Tests that cross-origin urls cannot be prerendered.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SkipCrossOriginPrerender) {
+  base::HistogramTester histogram_tester;
   const GURL kInitialUrl = GetUrl("/empty.html");
-  const GURL kFirstPrerenderingUrlCrossOrigin =
-      GetCrossOriginUrl("/empty.html?crossorigin");
-  const GURL kSecondPrerenderingUrlSameOrigin =
-      GetUrl("/empty.html?sameorigin");
+  const GURL kPrerenderingUrl = GetCrossOriginUrl("/empty.html?crossorigin");
 
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  test::PrerenderHostRegistryObserver registry_observer(*web_contents_impl());
 
-  // Add a cross-origin prerender speculation rule, and it should be ignored.
-  AddPrerenderAsync(kFirstPrerenderingUrlCrossOrigin);
-  test_browser_client.WaitForDelegateCreation();
-  base::WeakPtr<TestSpeculationHostDelegate> delegate =
-      test_browser_client.speculation_host_delegate();
-  ASSERT_TRUE(delegate);
-  delegate->WaitUntilCandidatesAreProcessed();
+  // Add a cross-origin prerender.
+  AddPrerenderAsync(kPrerenderingUrl);
 
-  // Cross-origin prerender candidates should be ignored.
-  EXPECT_FALSE(HasHostForUrl(kFirstPrerenderingUrlCrossOrigin));
-  delegate->ResetProcessingState();
+  // Wait for PrerenderHostRegistry to receive the cross-origin prerender
+  // request, and it should be ignored.
+  registry_observer.WaitForTrigger(kPrerenderingUrl);
+  EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
 
-  // Since the first one was ignored, the second one should be processed by
-  // SpeculationHostImpl and trigger prerendering.
-  int host_id = AddPrerender(kSecondPrerenderingUrlSameOrigin);
-  EXPECT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus",
+      PrerenderHost::FinalStatus::kCrossOriginNavigation, 1);
 }
 
 namespace {

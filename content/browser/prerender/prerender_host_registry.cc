@@ -99,6 +99,15 @@ int PrerenderHostRegistry::CreateAndStartHost(
     return RenderFrameHost::kNoFrameTreeNodeId;
   }
 
+  // TODO(crbug.com/1176054): Support cross-origin prerendering.
+  if (!initiator_render_frame_host.GetLastCommittedOrigin().IsSameOriginWith(
+          url::Origin::Create(attributes->url))) {
+    base::UmaHistogramEnumeration(
+        "Prerender.Experimental.PrerenderHostFinalStatus",
+        PrerenderHost::FinalStatus::kCrossOriginNavigation);
+    return RenderFrameHost::kNoFrameTreeNodeId;
+  }
+
   // Ignore prerendering requests for the same URL.
   for (auto& iter : prerender_host_by_frame_tree_node_id_) {
     if (iter.second->GetInitialUrl() == attributes->url)

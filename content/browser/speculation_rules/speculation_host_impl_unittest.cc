@@ -105,28 +105,8 @@ TEST_F(SpeculationHostImplTest, StartPrerender) {
   EXPECT_TRUE(registry->FindHostByUrlForTesting(kPrerenderingUrl));
 }
 
-// Tests that SpeculationHostImpl will skip the prerender candidate if it is a
-// cross-origin url.
-TEST_F(SpeculationHostImplTest, SkipCrossOriginPrerenderCandidates) {
-  RenderFrameHostImpl* render_frame_host = GetRenderFrameHost();
-  PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
-  mojo::Remote<blink::mojom::SpeculationHost> remote;
-  SpeculationHostImpl::Bind(render_frame_host,
-                            remote.BindNewPipeAndPassReceiver());
-
-  const GURL kPrerenderingUrl = GetCrossOriginUrl("/empty.html");
-  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
-  candidates.push_back(CreatePrerenderCandidate(kPrerenderingUrl));
-
-  remote->UpdateSpeculationCandidates(std::move(candidates));
-  remote.FlushForTesting();
-  EXPECT_FALSE(registry->FindHostByUrlForTesting(kPrerenderingUrl));
-}
-
 // Tests that SpeculationHostImpl will skip a cross-origin candidate even if it
 // is the first prerender candidate in the candidate list.
-// TODO(crbug.com/1197133): After supporting selection by scores, test this case
-// by assigning the cross-origin candidate the highest score.
 TEST_F(SpeculationHostImplTest, ProcessFirstSameOriginPrerenderCandidate) {
   RenderFrameHostImpl* render_frame_host = GetRenderFrameHost();
   PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
