@@ -73,6 +73,11 @@ AppLaunchConfiguration AppConfigurationForRelaunch() {
 
 // Tests that the sign-in promo is visible at start-up.
 - (void)testStartupSigninPromoNoRestrictions {
+  if (@available(iOS 15, *)) {
+    // TODO(crbug.com/1240313): Re-enable for iOS 15.
+    EARL_GREY_TEST_DISABLED(@"Disabled on iOS 15.");
+  }
+
   // Create the config to relaunch Chrome.
   AppLaunchConfiguration config = AppConfigurationForRelaunch();
   config.features_disabled.push_back(switches::kMinorModeSupport);
