@@ -27,8 +27,9 @@
 using content::MockNavigationHandle;
 using content::NavigationThrottle;
 
-using ::testing::Return;
 using ::testing::_;
+using ::testing::NiceMock;
+using ::testing::Return;
 
 namespace browser_switcher {
 
@@ -69,7 +70,7 @@ class BrowserSwitcherNavigationThrottleTest
 
   std::unique_ptr<MockNavigationHandle> CreateMockNavigationHandle(
       const GURL& url) {
-    return std::make_unique<MockNavigationHandle>(url, main_rfh());
+    return std::make_unique<NiceMock<MockNavigationHandle>>(url, main_rfh());
   }
 
   std::unique_ptr<NavigationThrottle> CreateNavigationThrottle(
