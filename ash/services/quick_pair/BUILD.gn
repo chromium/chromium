@@ -11,6 +11,8 @@ source_set("quick_pair") {
   sources = [
     "fast_pair_data_parser.cc",
     "fast_pair_data_parser.h",
+    "quick_pair_service.cc",
+    "quick_pair_service.h",
   ]
 
   deps = [
