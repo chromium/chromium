@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/at_exit.h"
-#include "base/cxx17_backports.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mach_logging.h"
 #include "base/strings/stringprintf.h"

@@ -5,7 +5,6 @@
 #include "base/i18n/break_iterator.h"
 
 #include <stdint.h>
-#include <ostream>
 
 #include "base/check.h"
 #include "base/lazy_instance.h"

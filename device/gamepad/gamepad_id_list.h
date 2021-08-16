@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/lazy_instance.h"
-#include "base/strings/string_piece.h"
 #include "device/gamepad/gamepad_export.h"
 
 namespace device {

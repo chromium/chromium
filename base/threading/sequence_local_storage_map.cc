@@ -4,7 +4,6 @@
 
 #include "base/threading/sequence_local_storage_map.h"
 
-#include <ostream>
 #include <utility>
 
 #include "base/check_op.h"
