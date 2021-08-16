@@ -94,6 +94,7 @@ DEFAULT_DELETER(xdg_surface, xdg_surface_destroy)
 DEFAULT_DELETER(xdg_toplevel, xdg_toplevel_destroy)
 DEFAULT_DELETER(zxdg_surface_v6, zxdg_surface_v6_destroy)
 DEFAULT_DELETER(zxdg_toplevel_v6, zxdg_toplevel_v6_destroy)
+DEFAULT_DELETER(zxdg_output_manager_v1, zxdg_output_manager_v1_destroy)
 
 #if defined(USE_GBM)
 DEFAULT_DELETER(gbm_bo, gbm_bo_destroy)

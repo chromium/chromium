@@ -4,11 +4,14 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 
+#include <xdg-output-unstable-v1-client-protocol.h>
+
 #include "base/logging.h"
 #include "ui/display/display.h"
 #include "ui/gfx/color_space.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
+#include "ui/ozone/platform/wayland/host/xdg_output.h"
 
 namespace ui {
 
@@ -56,6 +59,13 @@ WaylandOutput::~WaylandOutput() {
   wl_output_set_user_data(output_.get(), nullptr);
 }
 
+void WaylandOutput::InitializeXdgOutput(
+    zxdg_output_manager_v1* xdg_output_manager) {
+  DCHECK(!xdg_output_);
+  xdg_output_ = std::make_unique<XDGOutput>(
+      zxdg_output_manager_v1_get_xdg_output(xdg_output_manager, output_.get()));
+}
+
 void WaylandOutput::Initialize(Delegate* delegate) {
   DCHECK(!delegate_);
   delegate_ = delegate;
@@ -74,8 +84,22 @@ float WaylandOutput::GetUIScaleFactor() const {
              : scale_factor();
 }
 
-void WaylandOutput::TriggerDelegateNotifications() const {
+void WaylandOutput::TriggerDelegateNotifications() {
   DCHECK(!rect_in_physical_pixels_.IsEmpty());
+  // If zxdg_output protocol is used, calculate scale factor using logical
+  // size.
+  if (xdg_output_) {
+    const gfx::Size logical_size = xdg_output_->logical_size();
+    if (!logical_size.IsEmpty()) {
+      if (logical_size.width() >= logical_size.height()) {
+        scale_factor_ = ceil(rect_in_physical_pixels_.width() /
+                             static_cast<float>(logical_size.width()));
+      } else {
+        scale_factor_ = ceil(rect_in_physical_pixels_.height() /
+                             static_cast<float>(logical_size.height()));
+      }
+    }
+  }
   delegate_->OnOutputHandleMetrics(output_id_, rect_in_physical_pixels_,
                                    scale_factor_, transform_);
 }

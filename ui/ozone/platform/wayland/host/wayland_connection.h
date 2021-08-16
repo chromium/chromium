@@ -143,6 +143,10 @@ class WaylandConnection {
     return extended_drag_v1_.get();
   }
 
+  zxdg_output_manager_v1* xdg_output_manager_v1() const {
+    return xdg_output_manager_.get();
+  }
+
   void set_serial(uint32_t serial, EventType event_type) {
     serial_ = {serial, event_type};
   }
@@ -347,6 +351,7 @@ class WaylandConnection {
       linux_explicit_synchronization_;
   wl::Object<zxdg_decoration_manager_v1> xdg_decoration_manager_;
   wl::Object<zcr_extended_drag_v1> extended_drag_v1_;
+  wl::Object<zxdg_output_manager_v1> xdg_output_manager_;
 
   // Event source instance. Must be declared before input objects so it
   // outlives them so thus being able to properly handle their destruction.

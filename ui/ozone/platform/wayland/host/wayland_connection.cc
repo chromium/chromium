@@ -25,6 +25,7 @@
 #include "ui/events/devices/input_device.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/ozone/common/features.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/gtk_primary_selection_device_manager.h"
 #include "ui/ozone/platform/wayland/host/gtk_shell1.h"
@@ -81,6 +82,7 @@ constexpr uint32_t kMaxTextInputManagerVersion = 1;
 constexpr uint32_t kMaxExplicitSyncVersion = 2;
 constexpr uint32_t kMaxXdgDecorationVersion = 1;
 constexpr uint32_t kMaxExtendedDragVersion = 1;
+constexpr uint32_t kMaxXdgOutputManagerVersion = 3;
 
 int64_t ConvertTimespecToMicros(const struct timespec& ts) {
   // On 32-bit systems, the calculation cannot overflow int64_t.
@@ -548,6 +550,18 @@ void WaylandConnection::Global(void* data,
     if (!connection->extended_drag_v1_) {
       LOG(ERROR) << "Failed to bind to zcr_extended_drag_v1 global";
       return;
+    }
+  } else if (!connection->xdg_output_manager_ &&
+             strcmp(interface, "zxdg_output_manager_v1") == 0) {
+    if (IsXdgOutputProtocolSupportEnabled()) {
+      connection->xdg_output_manager_ = wl::Bind<struct zxdg_output_manager_v1>(
+          registry, name, std::min(version, kMaxXdgOutputManagerVersion));
+      if (!connection->xdg_output_manager_) {
+        LOG(ERROR) << "Failed to bind zxdg_outout_manager_v1";
+        return;
+      }
+      if (connection->wayland_output_manager_)
+        connection->wayland_output_manager_->InitializeAllXdgOutputs();
     }
   } else if (strcmp(interface, "org_kde_plasma_shell") == 0) {
     NOTIMPLEMENTED_LOG_ONCE()

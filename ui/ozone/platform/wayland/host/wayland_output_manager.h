@@ -34,6 +34,8 @@ class WaylandOutputManager : public WaylandOutput::Delegate {
   void AddWaylandOutput(const uint32_t output_id, wl_output* output);
   void RemoveWaylandOutput(const uint32_t output_id);
 
+  void InitializeAllXdgOutputs();
+
   // Creates a platform screen.
   std::unique_ptr<WaylandScreen> CreateWaylandScreen();
 

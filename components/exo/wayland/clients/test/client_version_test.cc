@@ -86,6 +86,7 @@ struct Globals {
       zwp_relative_pointer_manager_v1;
   std::unique_ptr<zxdg_decoration_manager_v1> zxdg_decoration_manager_v1;
   std::unique_ptr<zcr_extended_drag_v1> zcr_extended_drag_v1;
+  std::unique_ptr<zxdg_output_manager_v1> zxdg_output_manager_v1;
 };
 
 typedef void (*InterfaceRegistryCallback)(Globals*,
@@ -176,6 +177,7 @@ void RegistryHandler(void* data,
           REGISTRY_CALLBACK(zxdg_decoration_manager_v1,
                             zxdg_decoration_manager_v1),
           REGISTRY_CALLBACK(zcr_extended_drag_v1, zcr_extended_drag_v1),
+          REGISTRY_CALLBACK(zxdg_output_manager_v1, zxdg_output_manager_v1),
       };
   if (interfaces_callbacks.find(interface) != interfaces_callbacks.end()) {
     interfaces_callbacks[interface](globals, registry, id, version);

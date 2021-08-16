@@ -47,6 +47,12 @@ class WaylandDisplayHandler : public display::DisplayObserver,
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics) override;
 
+  // Called when an xdg_output object is created through get_xdg_output()
+  // request by the wayland client.
+  void OnXdgOutputCreated(wl_resource* xdg_output_resource);
+  // Unset the xdg output object.
+  void UnsetXdgOutputResource();
+
  private:
   // Overridden from WaylandDisplayObserver:
   bool SendDisplayMetrics(const display::Display& display,
@@ -61,6 +67,9 @@ class WaylandDisplayHandler : public display::DisplayObserver,
 
   // The output resource associated with the display.
   wl_resource* const output_resource_;
+
+  // Resource associated with a zxdg_output_v1 object.
+  wl_resource* xdg_output_resource_ = nullptr;
 
   base::ObserverList<WaylandDisplayObserver> observers_;
 

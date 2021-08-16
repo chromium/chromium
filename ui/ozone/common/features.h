@@ -10,7 +10,10 @@
 namespace ui {
 
 extern const base::Feature kWaylandOverlayDelegation;
+extern const base::Feature kXdgOutputProtocolSupport;
+
 bool IsWaylandOverlayDelegationEnabled();
+bool IsXdgOutputProtocolSupportEnabled();
 
 }  // namespace ui
 

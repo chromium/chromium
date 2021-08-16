@@ -41,6 +41,8 @@ void WaylandOutputManager::AddWaylandOutput(uint32_t output_id,
   // initialized, which results in setting up a wl_listener and getting the
   // geometry and the scaling factor from the Wayland Compositor.
   wayland_output->Initialize(this);
+  if (connection_->xdg_output_manager_v1())
+    wayland_output->InitializeXdgOutput(connection_->xdg_output_manager_v1());
   DCHECK(!wayland_output->is_ready());
 
   output_list_.push_back(std::move(wayland_output));
@@ -64,6 +66,12 @@ void WaylandOutputManager::RemoveWaylandOutput(uint32_t output_id) {
   if (wayland_screen_)
     wayland_screen_->OnOutputRemoved(output_id);
   output_list_.erase(output_it);
+}
+
+void WaylandOutputManager::InitializeAllXdgOutputs() {
+  DCHECK(connection_->xdg_output_manager_v1());
+  for (auto& output : output_list_)
+    output->InitializeXdgOutput(connection_->xdg_output_manager_v1());
 }
 
 std::unique_ptr<WaylandScreen> WaylandOutputManager::CreateWaylandScreen() {

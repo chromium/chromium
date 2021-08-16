@@ -32,9 +32,9 @@
 #include <wayland-client-core.h>
 #include <wayland-client-protocol.h>
 #include <xdg-decoration-unstable-v1-client-protocol.h>
+#include <xdg-output-unstable-v1-client-protocol.h>
 #include <xdg-shell-client-protocol.h>
 #include <xdg-shell-unstable-v6-client-protocol.h>
-
 #include "base/scoped_generic.h"
 
 #if defined(USE_GBM)
@@ -110,6 +110,7 @@ DEFAULT_DELETER_FDECL(xdg_surface)
 DEFAULT_DELETER_FDECL(xdg_toplevel)
 DEFAULT_DELETER_FDECL(zxdg_surface_v6)
 DEFAULT_DELETER_FDECL(zxdg_toplevel_v6)
+DEFAULT_DELETER_FDECL(zxdg_output_manager_v1)
 
 #if defined(USE_GBM)
 DEFAULT_DELETER_FDECL(gbm_bo)

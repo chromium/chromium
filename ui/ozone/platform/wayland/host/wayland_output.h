@@ -14,6 +14,8 @@
 
 namespace ui {
 
+class XDGOutput;
+
 // WaylandOutput objects keep track of the current output of display
 // that are available to the application.
 class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
@@ -39,7 +41,7 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
   ~WaylandOutput();
 
   void Initialize(Delegate* delegate);
-
+  void InitializeXdgOutput(struct zxdg_output_manager_v1* manager);
   float GetUIScaleFactor() const;
 
   uint32_t output_id() const { return output_id_; }
@@ -55,7 +57,7 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
  private:
   static constexpr int32_t kDefaultScaleFactor = 1;
 
-  void TriggerDelegateNotifications() const;
+  void TriggerDelegateNotifications();
 
   // Callback functions used for setting geometric properties of the output
   // and available modes.
@@ -83,6 +85,7 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
 
   const uint32_t output_id_ = 0;
   wl::Object<wl_output> output_;
+  std::unique_ptr<XDGOutput> xdg_output_;
   int32_t scale_factor_ = kDefaultScaleFactor;
   int32_t transform_ = WL_OUTPUT_TRANSFORM_NORMAL;
   gfx::Rect rect_in_physical_pixels_;
