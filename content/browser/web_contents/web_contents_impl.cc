@@ -824,7 +824,7 @@ void WebContentsImpl::WebContentsObserverList::RemoveObserver(
 WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
     : delegate_(nullptr),
       render_view_host_delegate_view_(nullptr),
-      created_with_opener_(false),
+      opened_by_another_window_(false),
       node_(this),
       frame_tree_(browser_context,
                   this,
@@ -1038,8 +1038,8 @@ std::unique_ptr<WebContentsImpl> WebContentsImpl::CreateWithOpener(
 
   // This may be true even when opener is null, such as when opening blocked
   // popups.
-  if (params.created_with_opener)
-    new_contents->created_with_opener_ = true;
+  if (params.opened_by_another_window)
+    new_contents->opened_by_another_window_ = true;
 
   WebContentsImpl* outer_web_contents = nullptr;
   if (params.guest_delegate) {
@@ -7845,9 +7845,9 @@ bool WebContentsImpl::CreateRenderViewForRenderManager(
   const auto proxy_routing_id =
       proxy_host ? proxy_host->GetRoutingID() : MSG_ROUTING_NONE;
   // TODO(https://crbug.com/1171646): Given MPArch, should we pass
-  // created_with_opener_ for non primary FrameTrees?
+  // opened_by_another_window_ for non primary FrameTrees?
   if (!rvh_impl->CreateRenderView(opener_frame_token, proxy_routing_id,
-                                  created_with_opener_)) {
+                                  opened_by_another_window_)) {
     return false;
   }
   // Set the TextAutosizer state from the main frame's renderer on the new view,
@@ -8806,10 +8806,10 @@ void WebContentsImpl::SetOpenerForNewContents(FrameTreeNode* opener,
     // https://crbug.com/705316
     new_root->SetOriginalOpener(opener->frame_tree()->root());
     new_root->SetOpenerDevtoolsFrameToken(opener->devtools_frame_token());
+    opened_by_another_window_ = true;
 
     if (!opener_suppressed) {
       new_root->SetOpener(opener);
-      created_with_opener_ = true;
     }
   }
 }

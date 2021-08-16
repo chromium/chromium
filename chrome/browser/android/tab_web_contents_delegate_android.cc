@@ -360,7 +360,7 @@ WebContents* TabWebContentsDelegateAndroid::OpenURLFromTab(
     return WebContentsDelegateAndroid::OpenURLFromTab(source, params);
   }
 
-  popup_delegate->nav_params()->created_with_opener = true;
+  popup_delegate->nav_params()->opened_by_another_window = true;
   TabModelList::HandlePopupNavigation(popup_delegate->nav_params());
   return nullptr;
 }

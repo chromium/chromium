@@ -118,8 +118,8 @@ struct CreateViewParams {
   // for displaying graphical output.
   bool never_composited;
 
-  // Whether the window associated with this view was created with an opener.
-  bool window_was_created_with_opener;
+  // Whether the window associated with this view was created by another window.
+  bool window_was_opened_by_another_window;
 
   // Whether lookup of frames in the created RenderView (e.g. lookup via
   // window.open or via <a target=...>) should be renderer-wide (i.e. going

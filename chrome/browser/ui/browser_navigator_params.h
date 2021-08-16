@@ -262,9 +262,10 @@ struct NavigateParams {
   // navigation entry.
   bool should_replace_current_entry = false;
 
-  // Indicates whether |contents_to_insert| is being created with a
-  // window.opener.
-  bool created_with_opener = false;
+  // Indicates whether |contents_to_insert| is being created by another window,
+  // and thus can be closed via window.close(). This may be true even when
+  // "noopener" was used.
+  bool opened_by_another_window = false;
 
   // Whether or not the related navigation was started in the context menu.
   bool started_from_context_menu = false;

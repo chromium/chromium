@@ -141,11 +141,11 @@ class WebContents : public PageNavigator,
     // reference to its opener.
     bool opener_suppressed;
 
-    // Indicates whether this WebContents was created with a window.opener.
+    // Indicates whether this WebContents was created by another window.
     // This is used when determining whether the WebContents is allowed to be
     // closed via window.close(). This may be true even with a null |opener|
-    // (e.g., for blocked popups).
-    bool created_with_opener;
+    // (e.g., for blocked popups), or when the window is opened with "noopener".
+    bool opened_by_another_window;
 
     // The name of the top-level frame of the new window. It is non-empty
     // when creating a named window (e.g. <a target="foo"> or

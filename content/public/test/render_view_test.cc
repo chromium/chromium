@@ -496,7 +496,7 @@ void RenderViewTest::SetUp() {
 
   mojom::CreateViewParamsPtr view_params = mojom::CreateViewParams::New();
   view_params->opener_frame_token = absl::nullopt;
-  view_params->window_was_created_with_opener = false;
+  view_params->window_was_opened_by_another_window = false;
   view_params->renderer_preferences = blink::RendererPreferences();
   view_params->web_preferences = blink::web_pref::WebPreferences();
   view_params->view_id = render_thread_->GetNextRoutingID();

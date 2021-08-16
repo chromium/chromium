@@ -152,7 +152,7 @@ void RenderViewImpl::Initialize(
   }
 
   // TODO(davidben): Move this state from Blink into content.
-  if (params->window_was_created_with_opener)
+  if (params->window_was_opened_by_another_window)
     GetWebView()->SetOpenedByDOM();
 
   webview_->SetRendererPreferences(params->renderer_preferences);
@@ -339,7 +339,7 @@ WebView* RenderViewImpl::CreateView(
   view_params->opener_frame_token = creator->GetFrameToken();
   DCHECK_EQ(GetRoutingID(), creator_frame->render_view()->GetRoutingID());
 
-  view_params->window_was_created_with_opener = true;
+  view_params->window_was_opened_by_another_window = true;
   view_params->renderer_preferences = webview_->GetRendererPreferences();
   view_params->web_preferences = webview_->GetWebPreferences();
   view_params->view_id = reply->route_id;

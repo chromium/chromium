@@ -369,7 +369,7 @@ RenderViewHostDelegate* RenderViewHostImpl::GetDelegate() {
 bool RenderViewHostImpl::CreateRenderView(
     const absl::optional<blink::FrameToken>& opener_frame_token,
     int proxy_route_id,
-    bool window_was_created_with_opener) {
+    bool window_was_opened_by_another_window) {
   TRACE_EVENT0("renderer_host,navigation",
                "RenderViewHostImpl::CreateRenderView");
   DCHECK(!IsRenderViewLive()) << "Creating view twice";
@@ -461,7 +461,8 @@ bool RenderViewHostImpl::CreateRenderView(
       frame_tree_->controller().GetSessionStorageNamespace(site_info_)->id();
   params->hidden = frame_tree_->delegate()->IsHidden();
   params->never_composited = delegate_->IsNeverComposited();
-  params->window_was_created_with_opener = window_was_created_with_opener;
+  params->window_was_opened_by_another_window =
+      window_was_opened_by_another_window;
   params->base_background_color = delegate_->GetBaseBackgroundColor();
 
   bool is_portal = delegate_->IsPortal();

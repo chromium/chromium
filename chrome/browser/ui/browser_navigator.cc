@@ -443,7 +443,7 @@ std::unique_ptr<content::WebContents> CreateTargetContents(
         params.opener->GetProcess()->GetID();
   }
   if (params.source_contents) {
-    create_params.created_with_opener = params.created_with_opener;
+    create_params.opened_by_another_window = params.opened_by_another_window;
   }
   if (params.disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB)
     create_params.initially_hidden = true;

@@ -1833,9 +1833,9 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // the observer list then.
   WebContentsObserverList observers_;
 
-  // True if this tab was opened by another tab. This is not unset if the opener
-  // is closed.
-  bool created_with_opener_;
+  // True if this tab was opened by another window. This is true even if the tab
+  // is opened with "noopener", and won't be unset if the opener is closed.
+  bool opened_by_another_window_;
 
 #if defined(OS_ANDROID)
   std::unique_ptr<WebContentsAndroid> web_contents_android_;

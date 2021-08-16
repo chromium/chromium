@@ -193,7 +193,7 @@ void OpenTabForSyncTrustedVaultUserAction(Browser* browser, const GURL& url) {
 
   NavigateParams params(GetSingletonTabNavigateParams(browser, url));
   // Allow the window to close itself.
-  params.created_with_opener = true;
+  params.opened_by_another_window = true;
   Navigate(&params);
 }
 
