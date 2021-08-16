@@ -68,8 +68,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 43
-// Next method id: 48
+// Next version: 42
+// Next method id: 47
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -622,8 +622,8 @@ struct BrowserInitParams {
 // has accidentally become a kitchen sink for different features. This was not
 // intentional.
 //
-// Next MinVersion: 11.
-// Next ID: 9
+// Next MinVersion: 12.
+// Next ID: 10
 //
 [Stable, Uuid="4e04dc16-b34c-40fd-9e3f-3c55c2c6cf91",
  RenamedFrom="crosapi.mojom.LacrosChromeService"]
@@ -641,7 +641,8 @@ interface BrowserService {
   // window is launched. The callback is called on the command execution.
   // NOTE: This method is used by Chrome OS web Kiosk session only. The behavior
   // may change and it shouldn't be used by anybody else.
-  [MinVersion=42]
+  // Added in M96.
+  [MinVersion=11]
   NewFullscreenWindow@9(url.mojom.Url url) => (CreationResult result);
 
   // Opens a new tab in the browser with, currently, the last used profile.
