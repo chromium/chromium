@@ -482,7 +482,7 @@ const base::Feature kFastPair{"FastPair", base::FEATURE_DISABLED_BY_DEFAULT};
 // Enables mounting various archive formats in Files App.
 // https://crbug.com/1216245
 const base::Feature kFilesArchivemount{"FilesArchivemount",
-                                       base::FEATURE_ENABLED_BY_DEFAULT};
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enable the updated banner framework.
 // https://crbug.com/1228128
