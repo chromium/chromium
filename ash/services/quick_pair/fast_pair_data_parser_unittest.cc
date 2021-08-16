@@ -1,0 +1,226 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "ash/services/quick_pair/fast_pair_data_parser.h"
+
+#include <stddef.h>
+#include <iterator>
+
+#include "ash/services/quick_pair/public/cpp/decrypted_passkey.h"
+#include "ash/services/quick_pair/public/cpp/decrypted_response.h"
+#include "ash/services/quick_pair/public/cpp/fast_pair_message_type.h"
+#include "ash/services/quick_pair/public/mojom/fast_pair_data_parser.mojom.h"
+#include "base/run_loop.h"
+#include "base/test/bind.h"
+#include "base/test/task_environment.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/boringssl/src/include/openssl/aes.h"
+
+namespace {
+
+std::vector<uint8_t> aes_key_bytes = {0xA0, 0xBA, 0xF0, 0xBB, 0x95, 0x1F,
+                                      0xF7, 0xB6, 0xCF, 0x5E, 0x3F, 0x45,
+                                      0x61, 0xC3, 0x32, 0x1D};
+
+std::vector<uint8_t> EncryptBytes(const std::vector<uint8_t>& bytes) {
+  AES_KEY aes_key;
+  AES_set_encrypt_key(aes_key_bytes.data(), aes_key_bytes.size() * 8, &aes_key);
+  uint8_t encrypted_bytes[16];
+  AES_encrypt(bytes.data(), encrypted_bytes, &aes_key);
+  return std::vector<uint8_t>(std::begin(encrypted_bytes),
+                              std::end(encrypted_bytes));
+}
+
+}  // namespace
+
+namespace ash {
+namespace quick_pair {
+
+class FastPairDataParserTest : public testing::Test {
+ public:
+  void SetUp() override {
+    data_parser_ = std::make_unique<FastPairDataParser>(
+        remote_.BindNewPipeAndPassReceiver());
+  }
+
+ protected:
+  base::test::TaskEnvironment task_environment_;
+  mojo::Remote<mojom::FastPairDataParser> remote_;
+  std::unique_ptr<FastPairDataParser> data_parser_;
+};
+
+TEST_F(FastPairDataParserTest, DecryptResponseUnsuccessfully) {
+  std::vector<uint8_t> response_bytes = {/*message_type=*/0x02,
+                                         /*address_bytes=*/0x02,
+                                         0x03,
+                                         0x04,
+                                         0x05,
+                                         0x06,
+                                         0x07,
+                                         /*salt=*/0x08,
+                                         0x09,
+                                         0x0A,
+                                         0x0B,
+                                         0x0C,
+                                         0x0D,
+                                         0x0E,
+                                         0x0F,
+                                         0x00};
+  std::vector<uint8_t> encrypted_bytes = EncryptBytes(response_bytes);
+
+  base::RunLoop run_loop;
+  auto callback = base::BindLambdaForTesting(
+      [&run_loop](const absl::optional<DecryptedResponse>& response) {
+        EXPECT_FALSE(response.has_value());
+        run_loop.Quit();
+      });
+
+  data_parser_->ParseDecryptedResponse(aes_key_bytes, encrypted_bytes,
+                                       std::move(callback));
+  run_loop.Run();
+}
+
+TEST_F(FastPairDataParserTest, DecryptResponseSuccessfully) {
+  std::vector<uint8_t> response_bytes;
+
+  // Message type.
+  uint8_t message_type = 0x01;
+  response_bytes.push_back(message_type);
+
+  // Address bytes.
+  std::array<uint8_t, 6> address_bytes = {0x02, 0x03, 0x04, 0x05, 0x06, 0x07};
+  std::copy(address_bytes.begin(), address_bytes.end(),
+            std::back_inserter(response_bytes));
+
+  // Random salt
+  std::array<uint8_t, 9> salt = {0x08, 0x09, 0x0A, 0x0B, 0x0C,
+                                 0x0D, 0x0E, 0x0F, 0x00};
+  std::copy(salt.begin(), salt.end(), std::back_inserter(response_bytes));
+
+  std::vector<uint8_t> encrypted_bytes = EncryptBytes(response_bytes);
+
+  base::RunLoop run_loop;
+  auto callback = base::BindLambdaForTesting(
+      [&run_loop, &address_bytes,
+       &salt](const absl::optional<DecryptedResponse>& response) {
+        EXPECT_TRUE(response.has_value());
+        EXPECT_EQ(response->message_type,
+                  FastPairMessageType::kKeyBasedPairingResponse);
+        EXPECT_EQ(response->address_bytes, address_bytes);
+        EXPECT_EQ(response->salt, salt);
+        run_loop.Quit();
+      });
+
+  data_parser_->ParseDecryptedResponse(aes_key_bytes, encrypted_bytes,
+                                       std::move(callback));
+  run_loop.Run();
+}
+
+TEST_F(FastPairDataParserTest, DecryptPasskeyUnsuccessfully) {
+  std::vector<uint8_t> passkey_bytes = {/*message_type=*/0x04,
+                                        /*passkey=*/0x02,
+                                        0x03,
+                                        0x04,
+                                        /*salt=*/0x05,
+                                        0x06,
+                                        0x07,
+                                        0x08,
+                                        0x09,
+                                        0x0A,
+                                        0x0B,
+                                        0x0C,
+                                        0x0D,
+                                        0x0E,
+                                        0x0F,
+                                        0x0E};
+  std::vector<uint8_t> encrypted_bytes = EncryptBytes(passkey_bytes);
+
+  base::RunLoop run_loop;
+  auto callback = base::BindLambdaForTesting(
+      [&run_loop](const absl::optional<DecryptedPasskey>& passkey) {
+        EXPECT_FALSE(passkey.has_value());
+        run_loop.Quit();
+      });
+
+  data_parser_->ParseDecryptedPasskey(aes_key_bytes, encrypted_bytes,
+                                      std::move(callback));
+  run_loop.Run();
+}
+
+TEST_F(FastPairDataParserTest, DecryptSeekerPasskeySuccessfully) {
+  std::vector<uint8_t> passkey_bytes;
+  // Message type.
+  uint8_t message_type = 0x02;
+  passkey_bytes.push_back(message_type);
+
+  // Passkey bytes.
+  uint32_t passkey = 5;
+  passkey_bytes.push_back(passkey >> 16);
+  passkey_bytes.push_back(passkey >> 8);
+  passkey_bytes.push_back(passkey);
+
+  // Random salt
+  std::array<uint8_t, 12> salt = {0x08, 0x09, 0x0A, 0x08, 0x09, 0x0E,
+                                  0x0A, 0x0C, 0x0D, 0x0E, 0x05, 0x02};
+  std::copy(salt.begin(), salt.end(), std::back_inserter(passkey_bytes));
+
+  std::vector<uint8_t> encrypted_bytes = EncryptBytes(passkey_bytes);
+
+  base::RunLoop run_loop;
+  auto callback = base::BindLambdaForTesting(
+      [&run_loop, &passkey,
+       &salt](const absl::optional<DecryptedPasskey>& decrypted_passkey) {
+        EXPECT_TRUE(decrypted_passkey.has_value());
+        EXPECT_EQ(decrypted_passkey->message_type,
+                  FastPairMessageType::kSeekersPasskey);
+        EXPECT_EQ(decrypted_passkey->passkey, passkey);
+        EXPECT_EQ(decrypted_passkey->salt, salt);
+        run_loop.Quit();
+      });
+
+  data_parser_->ParseDecryptedPasskey(aes_key_bytes, encrypted_bytes,
+                                      std::move(callback));
+  run_loop.Run();
+}
+
+TEST_F(FastPairDataParserTest, DecryptProviderPasskeySuccessfully) {
+  std::vector<uint8_t> passkey_bytes;
+  // Message type.
+  uint8_t message_type = 0x03;
+  passkey_bytes.push_back(message_type);
+
+  // Passkey bytes.
+  uint32_t passkey = 5;
+  passkey_bytes.push_back(passkey >> 16);
+  passkey_bytes.push_back(passkey >> 8);
+  passkey_bytes.push_back(passkey);
+
+  // Random salt
+  std::array<uint8_t, 12> salt = {0x08, 0x09, 0x0A, 0x08, 0x09, 0x0E,
+                                  0x0A, 0x0C, 0x0D, 0x0E, 0x05, 0x02};
+  std::copy(salt.begin(), salt.end(), std::back_inserter(passkey_bytes));
+
+  std::vector<uint8_t> encrypted_bytes = EncryptBytes(passkey_bytes);
+
+  base::RunLoop run_loop;
+  auto callback = base::BindLambdaForTesting(
+      [&run_loop, &passkey,
+       &salt](const absl::optional<DecryptedPasskey>& decrypted_passkey) {
+        EXPECT_TRUE(decrypted_passkey.has_value());
+        EXPECT_EQ(decrypted_passkey->message_type,
+                  FastPairMessageType::kProvidersPasskey);
+        EXPECT_EQ(decrypted_passkey->passkey, passkey);
+        EXPECT_EQ(decrypted_passkey->salt, salt);
+        run_loop.Quit();
+      });
+
+  data_parser_->ParseDecryptedPasskey(aes_key_bytes, encrypted_bytes,
+                                      std::move(callback));
+  run_loop.Run();
+}
+
+}  // namespace quick_pair
+}  // namespace ash
