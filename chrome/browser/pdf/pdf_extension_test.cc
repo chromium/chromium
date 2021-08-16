@@ -1867,7 +1867,13 @@ class PDFExtensionLinkClickTest : public PDFExtensionTest {
   WebContents* guest_contents_;
 };
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionLinkClickTest, CtrlLeft) {
+// Flaky on Mac11 test builders. (crbug.com/1239995)
+#if defined(OS_MAC)
+#define MAYBE_CtrlLeft DISABLED_CtrlLeft
+#else
+#define MAYBE_CtrlLeft CtrlLeft
+#endif
+IN_PROC_BROWSER_TEST_P(PDFExtensionLinkClickTest, MAYBE_CtrlLeft) {
   LoadTestLinkPdfGetGuestContents();
 
   WebContents* web_contents = GetActiveWebContents();
@@ -1939,7 +1945,13 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionLinkClickTest, CtrlShiftLeft) {
   EXPECT_EQ("http://www.example.com/", url.spec());
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionLinkClickTest, ShiftMiddle) {
+// Flaky on Mac11 test builders. (crbug.com/1239995)
+#if defined(OS_MAC)
+#define MAYBE_ShiftMiddle DISABLED_ShiftMiddle
+#else
+#define MAYBE_ShiftMiddle ShiftMiddle
+#endif
+IN_PROC_BROWSER_TEST_P(PDFExtensionLinkClickTest, MAYBE_ShiftMiddle) {
   LoadTestLinkPdfGetGuestContents();
 
   WebContents* web_contents = GetActiveWebContents();
