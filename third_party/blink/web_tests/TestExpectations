@@ -7888,3 +7888,10 @@ crbug.com/1239139 virtual/prerender/wpt_internal/prerender/restriction-prompt-by
 
 # Sheriff 2021-08-13
 crbug.com/1239485 [ Mac ] fast/frames/iframe-plugin-load-remove-document-crash.html [ Failure Pass ]
+
+# Sheriff 2021-08-16
+crbug.com/1240252 [ Linux ] inspector-protocol/dom/dom-get-nodes-for-subtree-by-style-errors.js [ Pass Timeout ]
+crbug.com/1240252 [ Linux ] inspector-protocol/dom/dom-get-nodes-for-subtree-by-style-with-pierce-details.js [ Pass Timeout ]
+crbug.com/1240252 [ Linux ] inspector-protocol/dom/dom-get-nodes-for-subtree-by-style-with-pierce-unslotted-elements.js [ Pass Timeout ]
+crbug.com/1240252 [ Linux ] inspector-protocol/dom/dom-get-nodes-for-subtree-by-style-with-pierce.js [ Pass Timeout ]
+crbug.com/1240252 [ Linux ] inspector-protocol/dom/dom-get-nodes-for-subtree-by-style.js [ Pass Timeout ]
