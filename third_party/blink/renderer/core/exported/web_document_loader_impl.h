@@ -62,7 +62,6 @@ class CORE_EXPORT WebDocumentLoaderImpl final : public DocumentLoader,
   }
 
   // WebDocumentLoader methods:
-  WebURL OriginalUrl() const override;
   WebString OriginalReferrer() const override;
   WebURL GetUrl() const override;
   WebString HttpMethod() const override;

@@ -65,9 +65,6 @@ class BLINK_EXPORT WebDocumentLoader {
 
   static bool WillLoadUrlAsEmpty(const WebURL&);
 
-  // Returns the url of original request which initited this load.
-  virtual WebURL OriginalUrl() const = 0;
-
   // Returns the http referrer of original request which initited this load.
   virtual WebString OriginalReferrer() const = 0;
 

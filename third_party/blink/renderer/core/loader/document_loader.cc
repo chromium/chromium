@@ -252,7 +252,6 @@ struct SameSizeAsDocumentLoader
   Member<HistoryItem> history_item;
   Member<DocumentParser> parser;
   Member<SubresourceFilter> subresource_filter;
-  KURL original_url;
   Referrer original_referrer;
   ResourceResponse response;
   WebFrameLoadType load_type;
@@ -357,7 +356,6 @@ DocumentLoader::DocumentLoader(
       history_item_(IsBackForwardLoadType(params_->frame_load_type)
                         ? params_->history_item
                         : nullptr),
-      original_url_(params_->url),
       original_referrer_(referrer_),
       response_(params_->response.ToResourceResponse()),
       load_type_(params_->frame_load_type),
@@ -486,7 +484,6 @@ DocumentLoader::CreateWebNavigationParamsToCloneDocument() {
   // based on copying fields that are populated in the DocumentLoader
   // constructor. Some exclusions:
   // |history_item_| is set in SetHistoryItemStateForCommit().
-  // |original_url_| will use the newly committed URL.
   // |response_| will use the newly committed response.
   // |load_type_| will use default kStandard value.
   // |replaces_current_history_item_| will be false.
@@ -588,10 +585,6 @@ uint64_t DocumentLoader::MainResourceIdentifier() const {
 
 ResourceTimingInfo* DocumentLoader::GetNavigationTimingInfo() const {
   return navigation_timing_info_.get();
-}
-
-const KURL& DocumentLoader::OriginalUrl() const {
-  return original_url_;
 }
 
 const Referrer& DocumentLoader::OriginalReferrer() const {
@@ -751,7 +744,6 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
   frame_->GetDocument()->SetURL(new_url);
 
   KURL old_url = url_;
-  original_url_ = new_url;
   url_ = new_url;
   replaces_current_history_item_ = type != WebFrameLoadType::kStandard;
   bool is_history_api_or_app_history_navigation =
@@ -1147,7 +1139,6 @@ void DocumentLoader::ConsoleError(const String& message) {
 void DocumentLoader::ReplaceWithEmptyDocument() {
   DCHECK(params_);
   KURL blocked_url = SecurityOrigin::UrlWithUniqueOpaqueOrigin();
-  original_url_ = blocked_url;
   url_ = blocked_url;
   params_->url = blocked_url;
   WebNavigationParams::FillStaticResponse(params_.get(), "text/html", "UTF-8",

@@ -56,10 +56,6 @@ bool WebDocumentLoader::WillLoadUrlAsEmpty(const WebURL& url) {
   return DocumentLoader::WillLoadUrlAsEmpty(url);
 }
 
-WebURL WebDocumentLoaderImpl::OriginalUrl() const {
-  return DocumentLoader::OriginalUrl();
-}
-
 WebString WebDocumentLoaderImpl::OriginalReferrer() const {
   return DocumentLoader::OriginalReferrer().referrer;
 }
