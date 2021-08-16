@@ -2407,6 +2407,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Blink.Plugin.UpdateTime" units="ms" expires_after="2022-06-09">
+  <owner>cduvall@chromium.org</owner>
+  <owner>jam@chromium.org</owner>
+  <summary>
+    Measures the time it takes to update the plugin list. This can happen, for
+    example, during Navigator.plugins.get.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Blink.PrePaint.UpdateTime" units="microseconds"
     expires_after="2022-01-02">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
