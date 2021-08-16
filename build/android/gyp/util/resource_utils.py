@@ -45,9 +45,9 @@ _ANDROID_TO_CHROMIUM_LANGUAGE_MAP = {
 
 _ALL_RESOURCE_TYPES = {
     'anim', 'animator', 'array', 'attr', 'bool', 'color', 'dimen', 'drawable',
-    'font', 'fraction', 'id', 'integer', 'interpolator', 'layout', 'menu',
-    'mipmap', 'plurals', 'raw', 'string', 'style', 'styleable', 'transition',
-    'xml'
+    'font', 'fraction', 'id', 'integer', 'interpolator', 'layout', 'macro',
+    'menu', 'mipmap', 'plurals', 'raw', 'string', 'style', 'styleable',
+    'transition', 'xml'
 }
 
 AAPT_IGNORE_PATTERN = ':'.join([
