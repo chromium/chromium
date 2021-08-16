@@ -11,6 +11,7 @@
 
 #include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "extensions/common/extension_set.h"
 #include "services/network/public/cpp/session_cookie_delete_predicate.h"
 #include "storage/browser/quota/special_storage_policy.h"
@@ -83,13 +84,19 @@ class ExtensionSpecialStoragePolicy : public storage::SpecialStoragePolicy {
   void NotifyRevoked(const GURL& origin, int change_flags);
   void NotifyCleared();
 
-  base::Lock lock_;  // Synchronize all access to the collections.
-  SpecialCollection protected_apps_;
-  SpecialCollection unlimited_extensions_;
-  SpecialCollection file_handler_extensions_;
-  SpecialCollection isolated_extensions_;
-  SpecialCollection content_capabilities_unlimited_extensions_;
-  scoped_refptr<content_settings::CookieSettings> cookie_settings_;
+  base::Lock lock_;  // Synchronize all access to thread-unsafe data members.
+
+  SpecialCollection protected_apps_ GUARDED_BY_CONTEXT(lock_);
+  SpecialCollection unlimited_extensions_ GUARDED_BY_CONTEXT(lock_);
+  SpecialCollection file_handler_extensions_ GUARDED_BY_CONTEXT(lock_);
+  SpecialCollection isolated_extensions_ GUARDED_BY_CONTEXT(lock_);
+  SpecialCollection content_capabilities_unlimited_extensions_
+      GUARDED_BY_CONTEXT(lock_);
+
+  // GUARDED_BY_CONTEXT() not needed because the data member is thread-safe. The
+  // scoped_refptr is immutable, and the CookieSettings instance that it points
+  // to supports thread-safe reads.
+  const scoped_refptr<content_settings::CookieSettings> cookie_settings_;
 
   // We live on the IO thread but need to observe CookieSettings from the UI
   // thread. This helper does that.
