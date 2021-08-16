@@ -4,6 +4,8 @@
 
 #include "ui/base/accelerators/global_media_keys_listener_win.h"
 
+#include <windows.h>
+
 #include "base/callback.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -76,7 +78,7 @@ class GlobalMediaKeysListenerWinInteractiveTest : public testing::Test {
     input.ki.wVk = code;
     input.ki.time = time_stamp_++;
     input.ki.dwFlags = 0;
-    SendInput(1, &input, sizeof(INPUT));
+    ::SendInput(1, &input, sizeof(INPUT));
   }
 
   void SendKeyUp(KeyboardCode code) {
@@ -85,7 +87,7 @@ class GlobalMediaKeysListenerWinInteractiveTest : public testing::Test {
     input.ki.wVk = code;
     input.ki.time = time_stamp_++;
     input.ki.dwFlags = KEYEVENTF_KEYUP;
-    SendInput(1, &input, sizeof(INPUT));
+    ::SendInput(1, &input, sizeof(INPUT));
   }
 
  private:

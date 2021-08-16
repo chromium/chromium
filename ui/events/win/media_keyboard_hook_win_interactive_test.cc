@@ -4,6 +4,8 @@
 
 #include "ui/events/keyboard_hook.h"
 
+#include <windows.h>
+
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -40,7 +42,7 @@ class MediaKeyboardHookWinInteractiveTest : public testing::Test {
     input.ki.wVk = code;
     input.ki.time = time_stamp_++;
     input.ki.dwFlags = 0;
-    SendInput(1, &input, sizeof(INPUT));
+    ::SendInput(1, &input, sizeof(INPUT));
   }
 
   void SendKeyUp(KeyboardCode code) {
@@ -49,7 +51,7 @@ class MediaKeyboardHookWinInteractiveTest : public testing::Test {
     input.ki.wVk = code;
     input.ki.time = time_stamp_++;
     input.ki.dwFlags = KEYEVENTF_KEYUP;
-    SendInput(1, &input, sizeof(INPUT));
+    ::SendInput(1, &input, sizeof(INPUT));
   }
 
   // Expect that we have received the correct number of key events.
