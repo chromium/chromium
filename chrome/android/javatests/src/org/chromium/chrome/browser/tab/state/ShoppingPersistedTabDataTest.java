@@ -1028,6 +1028,24 @@ public class ShoppingPersistedTabDataTest {
         ShoppingPersistedTabDataTestUtils.acquireSemaphore(semaphore1);
     }
 
+    @SmallTest
+    @Test
+    @CommandLineFlags.
+    Add({"force-fieldtrial-params=Study.Group:price_tracking_with_optimization_guide/true"})
+    public void testCheckPriceDropUrlForUpdateWhenItExists() {
+        final Semaphore semaphore = new Semaphore(0);
+        MockTab tab = getDefaultTab();
+        mockOptimizationGuideEmptyResponse();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ShoppingPersistedTabData.from(tab, (sptdRes) -> {
+                Assert.assertNull(sptdRes.getPriceDropDataForTesting().gurl);
+                Assert.assertFalse(sptdRes.needsUpdate());
+                semaphore.release();
+            });
+        });
+        ShoppingPersistedTabDataTestUtils.acquireSemaphore(semaphore);
+    }
+
     private static MockTab getDefaultTab() {
         return (MockTab) ShoppingPersistedTabDataTestUtils.createTabOnUiThread(
                 ShoppingPersistedTabDataTestUtils.TAB_ID,
@@ -1045,6 +1063,18 @@ public class ShoppingPersistedTabDataTest {
                 HintsProto.OptimizationType.SHOPPING_PAGE_PREDICTOR.getNumber(),
                 OptimizationGuideDecision.TRUE, null);
     }
+
+    private void mockOptimizationGuideEmptyResponse() {
+        ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
+                mOptimizationGuideBridgeJniMock,
+                HintsProto.OptimizationType.PRICE_TRACKING.getNumber(),
+                ShoppingPersistedTabDataTestUtils.MockPriceTrackingResponse.BUYABLE_PRODUCT_EMPTY);
+        ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
+                mOptimizationGuideBridgeJniMock,
+                HintsProto.OptimizationType.SHOPPING_PAGE_PREDICTOR.getNumber(),
+                OptimizationGuideDecision.TRUE, null);
+    }
+
     private static void save(ShoppingPersistedTabData shoppingPersistedTabData) {
         ObservableSupplierImpl<Boolean> supplier = new ObservableSupplierImpl<>();
         supplier.set(true);
