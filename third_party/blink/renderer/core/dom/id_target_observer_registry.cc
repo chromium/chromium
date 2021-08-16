@@ -63,8 +63,9 @@ void IdTargetObserverRegistry::NotifyObserversInternal(const AtomicString& id) {
   DCHECK(!id.IsEmpty());
   DCHECK(!registry_.IsEmpty());
 
-  if (registry_.Contains(id.Impl()))
-    notifying_observers_in_set_ = registry_.at(id.Impl());
+  auto it_reg = registry_.find(id.Impl());
+  if (it_reg != registry_.end())
+    notifying_observers_in_set_ = it_reg->value;
   if (!notifying_observers_in_set_)
     return;
 
@@ -82,9 +83,10 @@ void IdTargetObserverRegistry::NotifyObserversInternal(const AtomicString& id) {
 }
 
 bool IdTargetObserverRegistry::HasObservers(const AtomicString& id) const {
-  if (id.IsEmpty() || registry_.IsEmpty() || !registry_.Contains(id.Impl()))
+  if (id.IsEmpty() || registry_.IsEmpty())
     return false;
-  return !registry_.at(id.Impl())->IsEmpty();
+  auto it = registry_.find(id.Impl());
+  return it != registry_.end() ? !it->value->IsEmpty() : false;
 }
 
 }  // namespace blink

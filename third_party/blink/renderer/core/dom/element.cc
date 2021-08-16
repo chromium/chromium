@@ -484,8 +484,8 @@ HeapLinkedHashSet<WeakMember<Element>>* GetExplicitlySetElementsForAttr(
     const QualifiedName& name) {
   ExplicitlySetAttrElementsMap* element_attribute_map =
       element->GetDocument().GetExplicitlySetAttrElementsMap(element);
-  return element_attribute_map->Contains(name) ? element_attribute_map->at(name)
-                                               : nullptr;
+  auto it = element_attribute_map->find(name);
+  return it != element_attribute_map->end() ? it->value : nullptr;
 }
 
 // Checks that the given element |candidate| is a descendant of
@@ -868,9 +868,9 @@ void Element::SetElementArrayAttribute(
   // This is needed as modifying the content attribute (|setAttribute|) will
   // run the synchronization steps which modify the map invalidating any
   // outstanding iterators.
+  auto it = element_attribute_map->find(name);
   HeapLinkedHashSet<WeakMember<Element>>* stored_elements =
-      element_attribute_map->Contains(name) ? element_attribute_map->at(name)
-                                            : nullptr;
+      it != element_attribute_map->end() ? it->value : nullptr;
   if (!stored_elements) {
     stored_elements =
         MakeGarbageCollected<HeapLinkedHashSet<WeakMember<Element>>>();
