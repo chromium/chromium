@@ -1087,7 +1087,11 @@ public class FeedSurfaceMediator
     }
 
     public void manualRefresh(Callback<Boolean> callback) {
-        mCurrentStream.triggerRefresh(callback);
+        if (mCurrentStream != null) {
+            mCurrentStream.triggerRefresh(callback);
+        } else {
+            callback.onResult(false);
+        }
     }
 
     void onOverviewShownAtLaunch(long activityCreationTimeMs, boolean isInstantStart) {
