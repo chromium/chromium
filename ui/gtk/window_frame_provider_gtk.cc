@@ -168,56 +168,57 @@ void WindowFrameProviderGtk::PaintWindowFrame(gfx::Canvas* canvas,
   auto image = gfx::ImageSkia::CreateFrom1xBitmap(focused ? focused_bitmap_
                                                           : unfocused_bitmap_);
 
+  auto draw_image = [&](int src_x, int src_y, int src_w, int src_h, int dst_x,
+                        int dst_y, int dst_w, int dst_h) {
+    if (src_w <= 0 || src_h <= 0 || dst_w <= 0 || dst_h <= 0)
+      return;
+    canvas->DrawImageInt(image, src_x, src_y, src_w, src_h, dst_x, dst_y, dst_w,
+                         dst_h, false);
+  };
+
   // Top left corner
-  canvas->DrawImageInt(image, src_rect.x(), src_rect.y(), corner_insets.left(),
-                       corner_insets.top(), 0, 0, corner_insets.left(),
-                       corner_insets.top(), false);
+  draw_image(src_rect.x(), src_rect.y(), corner_insets.left(),
+             corner_insets.top(), 0, 0, corner_insets.left(),
+             corner_insets.top());
   // Top right corner
-  canvas->DrawImageInt(image, BitmapSizePx() - frame_size_px_ - corner_w,
-                       src_rect.y(), corner_insets.right(), corner_insets.top(),
-                       client_bounds_px.right() - corner_w, 0,
-                       corner_insets.right(), corner_insets.top(), false);
+  draw_image(BitmapSizePx() - frame_size_px_ - corner_w, src_rect.y(),
+             corner_insets.right(), corner_insets.top(),
+             client_bounds_px.right() - corner_w, 0, corner_insets.right(),
+             corner_insets.top());
   // Bottom left corner
-  canvas->DrawImageInt(image, src_rect.x(),
-                       BitmapSizePx() - frame_size_px_ - corner_h,
-                       corner_insets.left(), corner_insets.bottom(), 0,
-                       client_bounds_px.bottom() - corner_h,
-                       corner_insets.left(), corner_insets.bottom(), false);
+  draw_image(src_rect.x(), BitmapSizePx() - frame_size_px_ - corner_h,
+             corner_insets.left(), corner_insets.bottom(), 0,
+             client_bounds_px.bottom() - corner_h, corner_insets.left(),
+             corner_insets.bottom());
   // Bottom right corner
-  canvas->DrawImageInt(image, BitmapSizePx() - frame_size_px_ - corner_w,
-                       BitmapSizePx() - frame_size_px_ - corner_h,
-                       corner_insets.right(), corner_insets.bottom(),
-                       client_bounds_px.right() - corner_w,
-                       client_bounds_px.bottom() - corner_h,
-                       corner_insets.right(), corner_insets.bottom(), false);
+  draw_image(BitmapSizePx() - frame_size_px_ - corner_w,
+             BitmapSizePx() - frame_size_px_ - corner_h, corner_insets.right(),
+             corner_insets.bottom(), client_bounds_px.right() - corner_w,
+             client_bounds_px.bottom() - corner_h, corner_insets.right(),
+             corner_insets.bottom());
   // Top edge
-  canvas->DrawImageInt(image, 2 * frame_size_px_, src_rect.y(), 1,
-                       frame_thickness_px_.top(), corner_insets.left(), 0,
-                       edge_w, frame_thickness_px_.top(), false);
+  draw_image(2 * frame_size_px_, src_rect.y(), 1, frame_thickness_px_.top(),
+             corner_insets.left(), 0, edge_w, frame_thickness_px_.top());
   // Left edge
-  canvas->DrawImageInt(image, src_rect.x(), 2 * frame_size_px_,
-                       frame_thickness_px_.left(), 1, 0, corner_insets.top(),
-                       frame_thickness_px_.left(), edge_h, false);
+  draw_image(src_rect.x(), 2 * frame_size_px_, frame_thickness_px_.left(), 1, 0,
+             corner_insets.top(), frame_thickness_px_.left(), edge_h);
   // Bottom edge
-  canvas->DrawImageInt(
-      image, 2 * frame_size_px_, BitmapSizePx() - frame_size_px_, 1,
-      frame_thickness_px_.bottom(), corner_insets.left(),
-      client_bounds_px.bottom(), edge_w, frame_thickness_px_.bottom(), false);
+  draw_image(2 * frame_size_px_, BitmapSizePx() - frame_size_px_, 1,
+             frame_thickness_px_.bottom(), corner_insets.left(),
+             client_bounds_px.bottom(), edge_w, frame_thickness_px_.bottom());
   // Right edge
-  canvas->DrawImageInt(image, BitmapSizePx() - frame_size_px_,
-                       2 * frame_size_px_, frame_thickness_px_.right(), 1,
-                       client_bounds_px.right(), corner_insets.top(),
-                       frame_thickness_px_.right(), edge_h, false);
+  draw_image(BitmapSizePx() - frame_size_px_, 2 * frame_size_px_,
+             frame_thickness_px_.right(), 1, client_bounds_px.right(),
+             corner_insets.top(), frame_thickness_px_.right(), edge_h);
 
   int top_area_height_px =
       top_area_height_dip * scale - frame_thickness_px_.top();
 
   auto header = PaintHeaderbar({client_bounds_px.width(), top_area_height_px},
                                HeaderContext(solid_frame_, focused), scale);
-  canvas->DrawImageInt(gfx::ImageSkia::CreateFrom1xBitmap(header), 0, 0,
-                       header.width(), header.height(), client_bounds_px.x(),
-                       client_bounds_px.y(), header.width(), header.height(),
-                       false);
+  image = gfx::ImageSkia::CreateFrom1xBitmap(header);
+  draw_image(0, 0, header.width(), header.height(), client_bounds_px.x(),
+             client_bounds_px.y(), header.width(), header.height());
 }
 
 void WindowFrameProviderGtk::MaybeUpdateBitmaps() {
