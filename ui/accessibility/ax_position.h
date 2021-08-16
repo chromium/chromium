@@ -1824,8 +1824,11 @@ class AXPosition {
         }
         break;
 
-      // TODO(nektar): Implement this paragraph boundary via a new paragraph
-      // predicate.
+      // For UI Automation, empty lines after a paragraph should be merged into
+      // the preceding paragraph.
+      //
+      // See
+      // https://docs.microsoft.com/en-us/windows/win32/winauto/uiauto-uiautomationtextunits#paragraph
       case ax::mojom::TextBoundary::kParagraphStartSkippingEmptyParagraphs:
         switch (direction) {
           case ax::mojom::MoveDirection::kNone:
@@ -1833,11 +1836,13 @@ class AXPosition {
             break;
           case ax::mojom::MoveDirection::kBackward:
             resulting_position =
-                CreatePreviousParagraphStartPosition(boundary_behavior);
+                CreatePreviousParagraphStartPositionSkippingEmptyParagraphs(
+                    boundary_behavior);
             break;
           case ax::mojom::MoveDirection::kForward:
             resulting_position =
-                CreateNextParagraphStartPosition(boundary_behavior);
+                CreateNextParagraphStartPositionSkippingEmptyParagraphs(
+                    boundary_behavior);
             break;
         }
         break;
@@ -2836,12 +2841,33 @@ class AXPosition {
         base::BindRepeating(&AtEndOfParagraphPredicate));
   }
 
+  AXPositionInstance CreateNextParagraphStartPositionSkippingEmptyParagraphs(
+      AXBoundaryBehavior boundary_behavior) const {
+    return CreateBoundaryStartPosition(
+        boundary_behavior, ax::mojom::MoveDirection::kForward,
+        base::BindRepeating(
+            &AtStartOfParagraphExcludingEmptyParagraphsPredicate),
+        base::BindRepeating(
+            &AtStartOfParagraphExcludingEmptyParagraphsPredicate));
+  }
+
   AXPositionInstance CreatePreviousParagraphStartPosition(
       AXBoundaryBehavior boundary_behavior) const {
     return CreateBoundaryStartPosition(
         boundary_behavior, ax::mojom::MoveDirection::kBackward,
         base::BindRepeating(&AtStartOfParagraphPredicate),
         base::BindRepeating(&AtEndOfParagraphPredicate));
+  }
+
+  AXPositionInstance
+  CreatePreviousParagraphStartPositionSkippingEmptyParagraphs(
+      AXBoundaryBehavior boundary_behavior) const {
+    return CreateBoundaryStartPosition(
+        boundary_behavior, ax::mojom::MoveDirection::kBackward,
+        base::BindRepeating(
+            &AtStartOfParagraphExcludingEmptyParagraphsPredicate),
+        base::BindRepeating(
+            &AtStartOfParagraphExcludingEmptyParagraphsPredicate));
   }
 
   AXPositionInstance CreateNextParagraphEndPosition(
@@ -4520,22 +4546,54 @@ class AXPosition {
   }
 
   static bool AtStartOfParagraphPredicate(const AXPositionInstance& position) {
-    // The "AtStartOfParagraph" method already excludes ignored nodes.
+    // Sometimes, nodes that are used to signify paragraph boundaries are
+    // ignored, e.g. <div aria-hidden="true"></div>". We make the design
+    // decision to expose such boundaries to assistive software. Their
+    // associated ignored nodes are still not exposed. This ensures that
+    // navigation keys in text fields, such as Ctrl+Up/Down, will behave the
+    // same way as related screen reader commands.
     return position->AtStartOfParagraph();
   }
 
+  static bool AtStartOfParagraphExcludingEmptyParagraphsPredicate(
+      const AXPositionInstance& position) {
+    // For UI Automation, empty lines after a paragraph should be merged into
+    // the preceding paragraph.
+    //
+    // See
+    // https://docs.microsoft.com/en-us/windows/win32/winauto/uiauto-uiautomationtextunits#paragraph
+    const bool is_empty_paragraph =
+        position->IsPointingToLineBreak() ||
+        (position->IsInLineBreakingObject() &&
+         (position->GetAnchor()->IsEmptyLeaf() || position->GetText().empty()));
+    return !is_empty_paragraph && AtStartOfParagraphPredicate(position);
+  }
+
   static bool AtEndOfParagraphPredicate(const AXPositionInstance& position) {
-    // The "AtEndOfParagraph" method already excludes ignored nodes.
+    // Sometimes, nodes that are used to signify paragraph boundaries are
+    // ignored, e.g. <div aria-hidden="true"></div>". We make the design
+    // decision to expose such boundaries to assistive software. Their
+    // associated ignored nodes are still not exposed. This ensures that
+    // navigation keys in text fields, such as Ctrl+Up/Down, will behave the
+    // same way as related screen reader commands.
     return position->AtEndOfParagraph();
   }
 
   static bool AtStartOfLinePredicate(const AXPositionInstance& position) {
-    // Sometimes, nodes that are used to signify line boundaries are ignored.
+    // Sometimes, nodes that are used to signify line boundaries are ignored,
+    // e.g. <span contenteditable="false"> <br role="presentation"></span> which
+    // is used to make a hard line break appear as a soft one. We make the
+    // design decision to expose such boundaries to assistive software. Their
+    // associated ignored nodes are still not exposed.
     return position->AtStartOfLine();
   }
 
   static bool AtEndOfLinePredicate(const AXPositionInstance& position) {
-    // Sometimes, nodes that are used to signify line boundaries are ignored.
+    // Sometimes, nodes that are used to signify line boundaries are ignored,
+    // e.g. <span contenteditable="false"> <br role="presentation"></span> which
+    // is used to make a hard line break appear as a soft one. We make the
+    // design decision to expose such boundaries to assistive software. Their
+    // associated ignored nodes are still not exposed.
     return position->AtEndOfLine();
   }
 
@@ -4939,23 +4997,33 @@ class AXPosition {
     }
   }
 
-  // Returns the next leaf text position in the specified direction ensuring
-  // that *AsLeafTextPosition() != *CreateAdjacentLeafTextPosition() is true;
-  // returns a null position if no adjacent position exists.
+  // Returns the next unignored leaf text position in the specified direction,
+  // also ensuring that *AsLeafTextPosition() !=
+  // *CreateAdjacentLeafTextPosition() is true; returns a null position if no
+  // adjacent position exists.
   //
   // This method is the first step for CreateBoundary[Start|End]Position to
   // guarantee that the resulting position when using a boundary behavior other
-  // than StopIfAlreadyAtBoundary is not equivalent to the initial position.
+  // than `AXBoundaryBehavior::StopIfAlreadyAtBoundary` is not equivalent to the
+  // initial position. That's why ignored positions are also skipped. Otherwise,
+  // if a boundary is present on an ignored position, the search for the next or
+  // previous boundary would stop prematurely. Note that if there are multiple
+  // adjacent ignored positions and all of them create a boundary, we'll skip
+  // them all on purpose. For example, adjacent ignored paragraph boundaries
+  // could be created by using multiple aria-hidden divs next to one another.
+  // These should not contribute more than one paragraph boundary to the tree's
+  // text representation, otherwise this will create user confusion.
   //
-  // Note that using CompareTo with text positions does not take into account
-  // position affinity or tree pre-order: two text positions are considered
-  // equivalent if their offsets in the text representation of the entire AXTree
-  // are the same. As such, using Create[Next|Previous]LeafTextPosition is not
-  // enough to create adjacent positions, e.g. the end of an anchor and the
-  // start of the next one are equivalent; furthermore, there could be nodes
-  // with no text representation between them, all of them being equivalent too.
+  // Note that using the `CompareTo` method with text positions does not take
+  // into account position affinity or the order of their anchors in the tree:
+  // two text positions are considered equivalent if their offsets in the text
+  // representation of the entire AXTree are the same. As such, using
+  // Create[Next|Previous]LeafTextPosition is not enough to create adjacent
+  // positions, e.g. the end of an anchor and the start of the next one are
+  // equivalent; furthermore, there could be nodes with no text between them,
+  // all of them being equivalent too.
   //
-  // IMPORTANT: This method basically moves the given position one character
+  // IMPORTANT! This method basically moves the given position one character
   // forward/backward, but it could end up at the middle of a grapheme cluster,
   // so it shouldn't be used to move by ax::mojom::TextBoundary::kCharacter (for
   // such a purpose use Create[Next|Previous]CharacterPosition instead).
@@ -4969,12 +5037,16 @@ class AXPosition {
         return CreateNullPosition();
       case ax::mojom::MoveDirection::kBackward:
         // If we are at a text offset greater than 0, we will simply decrease
-        // the offset by one; otherwise, create a position at the end of the
-        // previous leaf node with non-empty text and decrease its offset.
+        // the offset by one; otherwise, we will create a position at the end of
+        // the previous unignored leaf node with non-empty text and decrease its
+        // offset.
         //
-        // Same as the comment above, using AtStartOfAnchor is enough to skip
-        // empty text nodes that are equivalent to the initial position.
-        while (text_position->AtStartOfAnchor()) {
+        // Note that a position located at offset 0 of an empty text node is
+        // considered both at the start and at the end of its anchor, so the
+        // following loop skips over empty text leaf nodes, which is expected
+        // since those positions are equivalent to both the previous non-empty
+        // leaf node's end and the next non-empty leaf node's start.
+        while (text_position->AtStartOfAnchor() || text_position->IsIgnored()) {
           text_position = text_position
                               ->CreatePreviousLeafTextPosition(
                                   base::BindRepeating(&AbortMoveAtRootBoundary))
@@ -4985,15 +5057,13 @@ class AXPosition {
         break;
       case ax::mojom::MoveDirection::kForward:
         // If we are at a text offset less than MaxTextOffset, we will simply
-        // increase the offset by one; otherwise, create a position at the start
-        // of the next leaf node with non-empty text and increase its offset.
+        // increase the offset by one; otherwise, we will create a position at
+        // the start of the next unignored leaf node with non-empty text and
+        // increase its offset.
         //
-        // Note that a position located at offset 0 of an empty text node is
-        // considered both, at the start and at the end of its anchor, so the
-        // following loop skips over empty text leaf nodes, which is expected
-        // since those positions are equivalent to both, the previous non-empty
-        // leaf node's end and the next non-empty leaf node's start.
-        while (text_position->AtEndOfAnchor()) {
+        // Same as the comment above: using AtEndOfAnchor is enough to skip
+        // empty text nodes that are equivalent to the initial position.
+        while (text_position->AtEndOfAnchor() || text_position->IsIgnored()) {
           text_position = text_position->CreateNextLeafTextPosition(
               base::BindRepeating(&AbortMoveAtRootBoundary));
         }
