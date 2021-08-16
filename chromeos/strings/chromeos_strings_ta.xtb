@@ -117,7 +117,7 @@
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> சோதனை</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> மதிப்புரைகள்)</translation>
 <translation id="3748026146096797577">இணைக்கப்படவில்லை</translation>
-<translation id="3749289110408117711">கோப்பு பெயர்</translation>
+<translation id="3749289110408117711">ஃபைல் பெயர்</translation>
 <translation id="38114475217616659">அனைத்து வரலாற்றையும் அழி</translation>
 <translation id="3820172043799983114">தவறான பின்.</translation>
 <translation id="3838338534323494292">புதிய கடவுச்சொல்</translation>
@@ -234,8 +234,8 @@
 <translation id="5866840822086176774">மிக வலிமையானது</translation>
 <translation id="5895138241574237353">மறுதொடக்கம்</translation>
 <translation id="5916084858004523819">தடைசெய்யப்பட்டது</translation>
-<translation id="5921506667911082617">{COUNT,plural, =1{உங்கள் கோப்பு ஸ்கேன் செய்யப்பட்டு <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> கோப்புறையில் சேமிக்கப்பட்டது.}other{உங்கள் ஃபைல்கள்  ஸ்கேன் செய்யப்பட்டு <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> கோப்புறையில் சேமிக்கப்பட்டன.}}</translation>
-<translation id="5931523347251946569">கோப்பு இல்லை</translation>
+<translation id="5921506667911082617">{COUNT,plural, =1{உங்கள் ஃபைல் ஸ்கேன் செய்யப்பட்டு <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ஃபைல்றையில் சேமிக்கப்பட்டது.}other{உங்கள் ஃபைல்கள்  ஸ்கேன் செய்யப்பட்டு <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ஃபைல்றையில் சேமிக்கப்பட்டன.}}</translation>
+<translation id="5931523347251946569">ஃபைல் இல்லை</translation>
 <translation id="6037291330010597344">ஸ்கேனரின் டாக்குமெண்ட் ஃபீடர் காலியாக உள்ளது. ஆவணங்களைச் சேர்த்துவிட்டு மீண்டும் முயலவும்.</translation>
 <translation id="6040143037577758943">மூடு</translation>
 <translation id="6040852767465482106">அநாமதேய அடையாளம்</translation>
@@ -300,7 +300,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7343649194310845056">நெட்வொர்க் சாதனங்கள்</translation>
-<translation id="7359657277149375382">கோப்பு வகை</translation>
+<translation id="7359657277149375382">ஃபைல் வகை</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{ஸ்கேன் செய்யப்பட்டது. ஒரு பக்கம் ஸ்கேன் செய்யப்பட்டது}other{ஸ்கேன் செய்யப்பட்டது. {NUMBER_OF_PAGES} பக்கங்கள் ஸ்கேன் செய்யப்பட்டன}}</translation>
