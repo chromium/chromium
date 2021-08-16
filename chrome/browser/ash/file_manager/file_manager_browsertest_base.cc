@@ -166,10 +166,9 @@ class WebContentCapturingObserver : public content::TestNavigationObserver {
 
   content::WebContents* web_contents() { return web_contents_; }
 
-  void OnDidFinishNavigation(
+  void NavigationOfInterestDidFinish(
       content::NavigationHandle* navigation_handle) override {
     web_contents_ = navigation_handle->GetWebContents();
-    content::TestNavigationObserver::OnDidFinishNavigation(navigation_handle);
   }
 
  private:
