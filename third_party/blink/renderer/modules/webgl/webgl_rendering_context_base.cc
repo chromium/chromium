@@ -1730,10 +1730,8 @@ bool WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBuffer(
   flags.setBlendMode(SkBlendMode::kSrc);
   // We use this draw helper as we need to take into account the
   // ImageOrientation of the UnacceleratedStaticBitmapImage.
-  ImageDrawOptions draw_options;
-  draw_options.sampling_options = SkSamplingOptions();
   image->Draw(resource_provider->Canvas(), flags, FloatRect(dest_rect),
-              FloatRect(src_rect), draw_options,
+              FloatRect(src_rect), ImageDrawOptions(),
               Image::kDoNotClampImageToSourceRect, Image::kSyncDecode);
   return true;
 }
@@ -5139,10 +5137,8 @@ scoped_refptr<Image> WebGLRenderingContextBase::DrawImageIntoBuffer(
   PaintFlags flags;
   // TODO(ccameron): WebGL should produce sRGB images.
   // https://crbug.com/672299
-  ImageDrawOptions draw_options;
-  draw_options.sampling_options = SkSamplingOptions();
   image->Draw(resource_provider->Canvas(), flags, FloatRect(dest_rect),
-              FloatRect(src_rect), draw_options,
+              FloatRect(src_rect), ImageDrawOptions(),
               Image::kDoNotClampImageToSourceRect, Image::kSyncDecode);
   return resource_provider->Snapshot();
 }

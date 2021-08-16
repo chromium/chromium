@@ -249,10 +249,8 @@ PaintImage PlaceholderImage::PaintImageForCurrentFrame() {
   }
 
   PaintRecorder paint_recorder;
-  ImageDrawOptions draw_options;
-  draw_options.sampling_options = SkSamplingOptions();
   Draw(paint_recorder.beginRecording(FloatRect(dest_rect)), PaintFlags(),
-       FloatRect(dest_rect), FloatRect(dest_rect), draw_options,
+       FloatRect(dest_rect), FloatRect(dest_rect), ImageDrawOptions(),
        kClampImageToSourceRect, kSyncDecode);
 
   paint_record_for_current_frame_ = paint_recorder.finishRecordingAsPicture();

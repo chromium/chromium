@@ -76,10 +76,8 @@ void DrawImageExpectingGrayBoxOnly(PlaceholderImage& image,
   EXPECT_CALL(canvas, drawImageRect(_, _, _, _, _, _)).Times(0);
   EXPECT_CALL(canvas, drawTextBlob(_, _, _, _)).Times(0);
 
-  ImageDrawOptions draw_options;
-  draw_options.sampling_options = SkSamplingOptions();
   image.Draw(&canvas, PaintFlags(), dest_rect,
-             FloatRect(0.0f, 0.0f, 100.0f, 100.0f), draw_options,
+             FloatRect(0.0f, 0.0f, 100.0f, 100.0f), ImageDrawOptions(),
              Image::kClampImageToSourceRect, Image::kUnspecifiedDecode);
 }
 
@@ -111,7 +109,6 @@ void DrawImageExpectingIconOnly(PlaceholderImage& image,
   EXPECT_CALL(canvas, drawTextBlob(_, _, _, _)).Times(0);
 
   ImageDrawOptions draw_options;
-  draw_options.sampling_options = SkSamplingOptions();
   draw_options.respect_image_orientation = kDoNotRespectImageOrientation;
   image.Draw(&canvas, PaintFlags(), dest_rect,
              FloatRect(0.0f, 0.0f, 100.0f, 100.0f), draw_options,
@@ -203,7 +200,6 @@ void DrawImageExpectingIconAndTextLTR(PlaceholderImage& image,
       }));
 
   ImageDrawOptions draw_options;
-  draw_options.sampling_options = SkSamplingOptions();
   draw_options.respect_image_orientation = kDoNotRespectImageOrientation;
   image.Draw(&canvas, PaintFlags(), dest_rect,
              FloatRect(0.0f, 0.0f, 100.0f, 100.0f), draw_options,
@@ -296,7 +292,6 @@ TEST_F(PlaceholderImageTest, DrawNonIntersectingSrcRect) {
   EXPECT_CALL(canvas, drawTextBlob(_, _, _, _)).Times(0);
 
   ImageDrawOptions draw_options;
-  draw_options.sampling_options = SkSamplingOptions();
   draw_options.respect_image_orientation = kDoNotRespectImageOrientation;
   PlaceholderImage::Create(nullptr, IntSize(800, 600), 0)
       ->Draw(&canvas, PaintFlags(), FloatRect(0.0f, 0.0f, 800.0f, 600.0f),
@@ -460,7 +455,6 @@ TEST_F(PlaceholderImageTest, DrawWithOriginalResourceSizeRTL) {
       }));
 
   ImageDrawOptions draw_options;
-  draw_options.sampling_options = SkSamplingOptions();
   draw_options.respect_image_orientation = kDoNotRespectImageOrientation;
   image->Draw(&canvas, PaintFlags(), dest_rect,
               FloatRect(0.0f, 0.0f, 100.0f, 100.0f), draw_options,

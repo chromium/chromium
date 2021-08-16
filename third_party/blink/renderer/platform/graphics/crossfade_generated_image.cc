@@ -67,8 +67,7 @@ void CrossfadeGeneratedImage::DrawCrossfade(
   // RespectImageOrientationEnum from CrossfadeGeneratedImage::draw(). Code was
   // written this way during refactoring to avoid modifying existing behavior,
   // but this warrants further investigation. crbug.com/472634
-  ImageDrawOptions from_draw_options;
-  from_draw_options.sampling_options = draw_options.sampling_options;
+  ImageDrawOptions from_draw_options = draw_options;
   from_draw_options.respect_image_orientation = kDoNotRespectImageOrientation;
   from_image_->Draw(canvas, image_flags, dest_rect, from_image_rect,
                     from_draw_options, clamp_mode, decode_mode);
