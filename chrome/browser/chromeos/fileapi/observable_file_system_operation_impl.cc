@@ -122,9 +122,11 @@ ObservableFileSystemOperationImpl::ObservableFileSystemOperationImpl(
     const storage::FileSystemURL& url,
     storage::FileSystemContext* file_system_context,
     std::unique_ptr<storage::FileSystemOperationContext> operation_context)
-    : storage::FileSystemOperationImpl(url,
-                                       file_system_context,
-                                       std::move(operation_context)),
+    : storage::FileSystemOperationImpl(
+          url,
+          file_system_context,
+          std::move(operation_context),
+          storage::FileSystemOperation::CreatePassKey()),
       account_id_(account_id) {}
 
 ObservableFileSystemOperationImpl::~ObservableFileSystemOperationImpl() =

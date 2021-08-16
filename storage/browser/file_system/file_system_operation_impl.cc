@@ -16,6 +16,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "net/base/escape.h"
 #include "net/url_request/url_request.h"
 #include "storage/browser/blob/shareable_file_reference.h"
@@ -55,12 +56,13 @@ void DidOpenFile(scoped_refptr<FileSystemContext> context,
 
 }  // namespace
 
-FileSystemOperation* FileSystemOperation::Create(
+std::unique_ptr<FileSystemOperation> FileSystemOperation::Create(
     const FileSystemURL& url,
     FileSystemContext* file_system_context,
     std::unique_ptr<FileSystemOperationContext> operation_context) {
-  return new FileSystemOperationImpl(url, file_system_context,
-                                     std::move(operation_context));
+  return std::make_unique<FileSystemOperationImpl>(
+      url, file_system_context, std::move(operation_context),
+      base::PassKey<FileSystemOperation>());
 }
 
 FileSystemOperationImpl::~FileSystemOperationImpl() = default;
@@ -388,7 +390,8 @@ base::File::Error FileSystemOperationImpl::SyncGetPlatformPath(
 FileSystemOperationImpl::FileSystemOperationImpl(
     const FileSystemURL& url,
     FileSystemContext* file_system_context,
-    std::unique_ptr<FileSystemOperationContext> operation_context)
+    std::unique_ptr<FileSystemOperationContext> operation_context,
+    base::PassKey<FileSystemOperation>)
     : file_system_context_(file_system_context),
       operation_context_(std::move(operation_context)),
       async_file_util_(nullptr),

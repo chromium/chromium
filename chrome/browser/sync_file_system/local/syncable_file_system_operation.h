@@ -11,9 +11,9 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/pass_key.h"
 #include "storage/browser/file_system/file_system_operation.h"
 #include "storage/browser/file_system/file_system_url.h"
 
@@ -24,11 +24,24 @@ class FileSystemOperationContext;
 
 namespace sync_file_system {
 
+class SyncFileSystemBackend;
 class SyncableFileOperationRunner;
 
 // A wrapper class of FileSystemOperation for syncable file system.
 class SyncableFileSystemOperation : public storage::FileSystemOperation {
  public:
+  // Exposed for std::make_unique. Instances should be obtained from the factory
+  // method SyncFileSystemBackend::CreateFileSystemOperation().
+  SyncableFileSystemOperation(
+      const storage::FileSystemURL& url,
+      storage::FileSystemContext* file_system_context,
+      std::unique_ptr<storage::FileSystemOperationContext> operation_context,
+      base::PassKey<SyncFileSystemBackend>);
+
+  SyncableFileSystemOperation(const SyncableFileSystemOperation&) = delete;
+  SyncableFileSystemOperation& operator=(const SyncableFileSystemOperation&) =
+      delete;
+
   ~SyncableFileSystemOperation() override;
 
   // storage::FileSystemOperation overrides.
@@ -110,11 +123,6 @@ class SyncableFileSystemOperation : public storage::FileSystemOperation {
   // Only SyncFileSystemBackend can create a new operation directly.
   friend class SyncFileSystemBackend;
 
-  SyncableFileSystemOperation(
-      const storage::FileSystemURL& url,
-      storage::FileSystemContext* file_system_context,
-      std::unique_ptr<storage::FileSystemOperationContext> operation_context);
-
   void DidFinish(base::File::Error status);
   void DidWrite(const WriteCallback& callback,
                 base::File::Error result,
@@ -132,8 +140,6 @@ class SyncableFileSystemOperation : public storage::FileSystemOperation {
   StatusCallback completion_callback_;
 
   base::WeakPtrFactory<SyncableFileSystemOperation> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SyncableFileSystemOperation);
 };
 
 }  // namespace sync_file_system

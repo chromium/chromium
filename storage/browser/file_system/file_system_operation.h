@@ -15,6 +15,7 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/process/process.h"
+#include "base/types/pass_key.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
 #include "storage/browser/blob/blob_reader.h"
 #include "storage/browser/file_system/file_system_operation_context.h"
@@ -57,7 +58,7 @@ class FileWriterDelegate;
 class FileSystemOperation {
  public:
   COMPONENT_EXPORT(STORAGE_BROWSER)
-  static FileSystemOperation* Create(
+  static std::unique_ptr<FileSystemOperation> Create(
       const FileSystemURL& url,
       FileSystemContext* file_system_context,
       std::unique_ptr<FileSystemOperationContext> operation_context);
@@ -550,6 +551,11 @@ class FileSystemOperation {
   };
 
   FileSystemOperation() = default;
+
+  // Allows subclasses to call the FileSystemOperationImpl constructor.
+  static base::PassKey<FileSystemOperation> CreatePassKey() {
+    return base::PassKey<FileSystemOperation>();
+  }
 };
 
 }  // namespace storage

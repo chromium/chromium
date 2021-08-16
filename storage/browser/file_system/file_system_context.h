@@ -374,8 +374,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemContext
   // depending on the filesystem type pointed by the |url|.
   //
   // Called by FileSystemOperationRunner.
-  FileSystemOperation* CreateFileSystemOperation(const FileSystemURL& url,
-                                                 base::File::Error* error_code);
+  std::unique_ptr<FileSystemOperation> CreateFileSystemOperation(
+      const FileSystemURL& url,
+      base::File::Error* error_code);
 
   // For non-cracked isolated and external mount points, returns a FileSystemURL
   // created by cracking |url|. The url is cracked using MountPoints registered

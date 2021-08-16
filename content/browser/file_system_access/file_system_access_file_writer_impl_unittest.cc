@@ -72,7 +72,7 @@ class TestFileSystemBackend : public storage::TestFileSystemBackend {
                         const base::FilePath& base_path)
       : storage::TestFileSystemBackend(task_runner, base_path) {}
 
-  storage::FileSystemOperation* CreateFileSystemOperation(
+  std::unique_ptr<storage::FileSystemOperation> CreateFileSystemOperation(
       const storage::FileSystemURL& url,
       storage::FileSystemContext* context,
       base::File::Error* error_code) const override {

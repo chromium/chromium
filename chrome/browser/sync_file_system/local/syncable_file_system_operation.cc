@@ -372,7 +372,8 @@ base::File::Error SyncableFileSystemOperation::SyncGetPlatformPath(
 SyncableFileSystemOperation::SyncableFileSystemOperation(
     const FileSystemURL& url,
     storage::FileSystemContext* file_system_context,
-    std::unique_ptr<storage::FileSystemOperationContext> operation_context)
+    std::unique_ptr<storage::FileSystemOperationContext> operation_context,
+    base::PassKey<SyncFileSystemBackend>)
     : url_(url) {
   DCHECK(file_system_context);
   SyncFileSystemBackend* backend =
@@ -384,8 +385,8 @@ SyncableFileSystemOperation::SyncableFileSystemOperation(
     // Returning here to leave operation_runner_ as NULL.
     return;
   }
-  impl_.reset(storage::FileSystemOperation::Create(
-      url_, file_system_context, std::move(operation_context)));
+  impl_ = storage::FileSystemOperation::Create(url_, file_system_context,
+                                               std::move(operation_context));
   operation_runner_ = backend->sync_context()->operation_runner();
 }
 

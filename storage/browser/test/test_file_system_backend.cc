@@ -171,7 +171,8 @@ void TestFileSystemBackend::InitializeCopyOrMoveFileValidatorFactory(
     copy_or_move_file_validator_factory_ = std::move(factory);
 }
 
-FileSystemOperation* TestFileSystemBackend::CreateFileSystemOperation(
+std::unique_ptr<FileSystemOperation>
+TestFileSystemBackend::CreateFileSystemOperation(
     const FileSystemURL& url,
     FileSystemContext* context,
     base::File::Error* error_code) const {

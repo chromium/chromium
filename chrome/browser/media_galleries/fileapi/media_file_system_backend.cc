@@ -281,7 +281,8 @@ MediaFileSystemBackend::GetCopyOrMoveFileValidatorFactory(
   return NULL;
 }
 
-storage::FileSystemOperation* MediaFileSystemBackend::CreateFileSystemOperation(
+std::unique_ptr<storage::FileSystemOperation>
+MediaFileSystemBackend::CreateFileSystemOperation(
     const FileSystemURL& url,
     FileSystemContext* context,
     base::File::Error* error_code) const {

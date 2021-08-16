@@ -96,7 +96,8 @@ SandboxFileSystemBackend::GetCopyOrMoveFileValidatorFactory(
   return nullptr;
 }
 
-FileSystemOperation* SandboxFileSystemBackend::CreateFileSystemOperation(
+std::unique_ptr<FileSystemOperation>
+SandboxFileSystemBackend::CreateFileSystemOperation(
     const FileSystemURL& url,
     FileSystemContext* context,
     base::File::Error* error_code) const {

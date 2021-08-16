@@ -102,7 +102,8 @@ IsolatedFileSystemBackend::GetCopyOrMoveFileValidatorFactory(
   return nullptr;
 }
 
-FileSystemOperation* IsolatedFileSystemBackend::CreateFileSystemOperation(
+std::unique_ptr<FileSystemOperation>
+IsolatedFileSystemBackend::CreateFileSystemOperation(
     const FileSystemURL& url,
     FileSystemContext* context,
     base::File::Error* error_code) const {

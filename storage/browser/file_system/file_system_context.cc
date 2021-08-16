@@ -624,9 +624,9 @@ FileSystemContext::QuotaManagedStorageTypes() {
   return quota_storage_types;
 }
 
-FileSystemOperation* FileSystemContext::CreateFileSystemOperation(
-    const FileSystemURL& url,
-    base::File::Error* error_code) {
+std::unique_ptr<FileSystemOperation>
+FileSystemContext::CreateFileSystemOperation(const FileSystemURL& url,
+                                             base::File::Error* error_code) {
   if (!url.is_valid()) {
     if (error_code)
       *error_code = base::File::FILE_ERROR_INVALID_URL;
@@ -641,7 +641,7 @@ FileSystemOperation* FileSystemContext::CreateFileSystemOperation(
   }
 
   base::File::Error fs_error = base::File::FILE_OK;
-  FileSystemOperation* operation =
+  std::unique_ptr<FileSystemOperation> operation =
       backend->CreateFileSystemOperation(url, this, &fs_error);
 
   if (error_code)

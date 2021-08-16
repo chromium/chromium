@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -121,7 +122,8 @@ SyncFileSystemBackend::GetCopyOrMoveFileValidatorFactory(
   return nullptr;
 }
 
-storage::FileSystemOperation* SyncFileSystemBackend::CreateFileSystemOperation(
+std::unique_ptr<storage::FileSystemOperation>
+SyncFileSystemBackend::CreateFileSystemOperation(
     const storage::FileSystemURL& url,
     storage::FileSystemContext* context,
     base::File::Error* error_code) const {
@@ -139,8 +141,9 @@ storage::FileSystemOperation* SyncFileSystemBackend::CreateFileSystemOperation(
                                                 std::move(operation_context));
   }
 
-  return new SyncableFileSystemOperation(url, context,
-                                         std::move(operation_context));
+  return std::make_unique<SyncableFileSystemOperation>(
+      url, context, std::move(operation_context),
+      base::PassKey<SyncFileSystemBackend>());
 }
 
 bool SyncFileSystemBackend::SupportsStreaming(

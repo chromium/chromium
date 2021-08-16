@@ -180,12 +180,13 @@ PluginPrivateFileSystemBackend::GetCopyOrMoveFileValidatorFactory(
   return nullptr;
 }
 
-FileSystemOperation* PluginPrivateFileSystemBackend::CreateFileSystemOperation(
+std::unique_ptr<FileSystemOperation>
+PluginPrivateFileSystemBackend::CreateFileSystemOperation(
     const FileSystemURL& url,
     FileSystemContext* context,
     base::File::Error* error_code) const {
-  std::unique_ptr<FileSystemOperationContext> operation_context(
-      std::make_unique<FileSystemOperationContext>(context));
+  auto operation_context =
+      std::make_unique<FileSystemOperationContext>(context);
   return FileSystemOperation::Create(url, context,
                                      std::move(operation_context));
 }

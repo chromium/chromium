@@ -344,7 +344,8 @@ FileSystemBackend::GetCopyOrMoveFileValidatorFactory(
   return NULL;
 }
 
-storage::FileSystemOperation* FileSystemBackend::CreateFileSystemOperation(
+std::unique_ptr<storage::FileSystemOperation>
+FileSystemBackend::CreateFileSystemOperation(
     const storage::FileSystemURL& url,
     storage::FileSystemContext* context,
     base::File::Error* error_code) const {
@@ -357,7 +358,7 @@ storage::FileSystemOperation* FileSystemBackend::CreateFileSystemOperation(
 
   if (url.type() == storage::kFileSystemTypeDeviceMediaAsFileStorage) {
     // MTP file operations run on MediaTaskRunner.
-    return new ObservableFileSystemOperationImpl(
+    return std::make_unique<ObservableFileSystemOperationImpl>(
         account_id_, url, context,
         std::make_unique<storage::FileSystemOperationContext>(
             context, MediaFileSystemBackend::MediaTaskRunner().get()));
@@ -366,7 +367,7 @@ storage::FileSystemOperation* FileSystemBackend::CreateFileSystemOperation(
       url.type() == storage::kFileSystemTypeRestrictedLocal ||
       url.type() == storage::kFileSystemTypeDriveFs ||
       url.type() == storage::kFileSystemTypeSmbFs) {
-    return new ObservableFileSystemOperationImpl(
+    return std::make_unique<ObservableFileSystemOperationImpl>(
         account_id_, url, context,
         std::make_unique<storage::FileSystemOperationContext>(
             context, base::ThreadPool::CreateSequencedTaskRunner(
@@ -377,7 +378,7 @@ storage::FileSystemOperation* FileSystemBackend::CreateFileSystemOperation(
   DCHECK(url.type() == storage::kFileSystemTypeProvided ||
          url.type() == storage::kFileSystemTypeArcContent ||
          url.type() == storage::kFileSystemTypeArcDocumentsProvider);
-  return new ObservableFileSystemOperationImpl(
+  return std::make_unique<ObservableFileSystemOperationImpl>(
       account_id_, url, context,
       std::make_unique<storage::FileSystemOperationContext>(context));
 }
