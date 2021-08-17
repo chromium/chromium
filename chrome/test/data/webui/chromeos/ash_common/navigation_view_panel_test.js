@@ -66,12 +66,13 @@ export function navigationViewPanelTestSuite() {
    * @param {string} pageType
    * @param {string} icon
    * @param {?string} id
+   * @param {?Object} initialData
    * @param {!Array<SelectorItem>} subItems
    * @return {!Promise}
    */
   function addNavigationSection(
-      name, pageType, icon = '', id = null, subItems = []) {
-    viewElement.addSelector(name, pageType, icon, id, subItems);
+      name, pageType, icon = '', id = null, initialData = null, subItems = []) {
+    viewElement.addSelector(name, pageType, icon, id, initialData, subItems);
     return flushTasks();
   }
 
@@ -178,12 +179,14 @@ export function navigationViewPanelTestSuite() {
     const subPage = 'sub-page1';
     const subid = 'subid1';
     const id1 = 'id1';
+    const initialData = {};
 
     let subItem =
         /** @type {SelectorItem} */ (
             {'name': 'subItem', 'pageIs': subPage, 'id': subid});
 
-    await addNavigationSection('dummyPage1', dummyPage1, '', id1, [subItem]);
+    await addNavigationSection(
+        'dummyPage1', dummyPage1, '', id1, initialData, [subItem]);
     await addNavigationSection('dummyPage2', dummyPage2);
 
     // The pages are not created yet.

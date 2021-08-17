@@ -16,6 +16,7 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
  *   name: string,
  *   pageIs: string,
  *   icon: string,
+ *   initialData: ?Object,
  *   id: string,
  * }}
  */

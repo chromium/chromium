@@ -21,6 +21,10 @@ const navigationPageChanged = 'onNavigationPageChanged';
  * To send events between pages, the component that has <navigation-view-panel>
  * must call on "notifyEvent(functionName, params)". |params| is an optional
  * parameter.
+ *
+ * To provide page components with initial data, include a "initialData" object
+ * as part of the "addSelector()" function. Page components will then have an
+ * implicit property, details, with the object provided.
  */
 export class NavigationViewPanelElement extends PolymerElement {
   static get is() {
@@ -64,15 +68,18 @@ export class NavigationViewPanelElement extends PolymerElement {
    * @param {string} pageIs
    * @param {string} icon
    * @param {?string} id
+   * @param {?Object} initialData
    * @param {!Array<SelectorItem>} subItems
    */
-  addSelector(name, pageIs, icon = '', id = null, subItems = []) {
+  addSelector(name, pageIs, icon = '', id = null, initialData = null,
+              subItems = []) {
     if (!id) {
       id = pageIs;
     }
 
     let item = /** @type {SelectorItem} */ (
-        {'name': name, 'pageIs': pageIs, 'icon': icon, 'id': id});
+        {'name': name, 'pageIs': pageIs, 'icon': icon, 'id': id,
+         'initialData': initialData});
     let property = /** @type {SelectorProperties} */ ({
         'isCollapsible': subItems.length,
         'isExpanded': false,
@@ -138,6 +145,11 @@ export class NavigationViewPanelElement extends PolymerElement {
       assert(pageComponent);
       pageComponent.setAttribute('id', item.id);
       pageComponent.setAttribute('class', 'view-content');
+
+      if (item.initialData) {
+        pageComponent.initialData = item.initialData;
+      }
+
       pageComponent.hidden = true;
 
       this.$.navigationBody.appendChild(pageComponent);
