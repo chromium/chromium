@@ -57,7 +57,8 @@ class OverScrollGlow {
             if (maxX > 0) {
                 final int pulledToX = oldX + mOverScrollDeltaX;
                 if (pulledToX < 0) {
-                    mEdgeGlowLeft.onPull((float) mOverScrollDeltaX / mHostView.getWidth());
+                    // |mOverScrollDeltaX| will be negative when overscroll to the left.
+                    mEdgeGlowLeft.onPull((float) -mOverScrollDeltaX / mHostView.getWidth());
                     if (!mEdgeGlowRight.isFinished()) {
                         mEdgeGlowRight.onRelease();
                     }
@@ -73,7 +74,8 @@ class OverScrollGlow {
             if (maxY > 0 || mHostView.getOverScrollMode() == View.OVER_SCROLL_ALWAYS) {
                 final int pulledToY = oldY + mOverScrollDeltaY;
                 if (pulledToY < 0) {
-                    mEdgeGlowTop.onPull((float) mOverScrollDeltaY / mHostView.getHeight());
+                    // |mOverScrollDeltaY| will be negative when overscroll to the top.
+                    mEdgeGlowTop.onPull((float) -mOverScrollDeltaY / mHostView.getHeight());
                     if (!mEdgeGlowBottom.isFinished()) {
                         mEdgeGlowBottom.onRelease();
                     }
