@@ -279,8 +279,17 @@ tweak_info_plist("experimental_info_plist") {
   ]
 }
 
+bundle_data("settings_experimental_synctypeslist_plist") {
+  sources =
+      [ "resources/Settings.bundle/ExperimentalSyncTypesListDisabled.plist" ]
+  outputs = [ "{{bundle_resources_dir}}/Settings.bundle/{{source_file_part}}" ]
+}
+
 bundle_data("settings_resources_experimental_plist") {
-  public_deps = [ ":experimental_info_plist" ]
+  public_deps = [
+    ":experimental_info_plist",
+    ":settings_experimental_synctypeslist_plist",
+  ]
   sources = get_target_outputs(":experimental_info_plist")
   outputs = [ "{{bundle_resources_dir}}/Settings.bundle/Experimental.plist" ]
 }

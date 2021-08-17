@@ -52,6 +52,7 @@
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/base/pref_names.h"
 #include "components/sync/base/sync_base_switches.h"
 #include "components/sync/driver/sync_driver_switches.h"
 #include "components/translate/core/browser/translate_prefs.h"
@@ -881,6 +882,39 @@ void AppendSwitchesFromExperimentalSettings(base::CommandLine* command_line) {
     NSString* sync_policy_key =
         base::SysUTF8ToNSString(policy::key::kSyncDisabled);
     [allowed_experimental_policies addObject:sync_policy_key];
+  }
+
+  // SyncTypesListDisabled policy.
+  NSString* Sync_types_list_disabled_key =
+      base::SysUTF8ToNSString(policy::key::kSyncTypesListDisabled);
+  NSMutableArray* Sync_types_list_disabled_values =
+      [[NSMutableArray alloc] init];
+  if ([defaults boolForKey:@"SyncTypesListBookmarks"]) {
+    [Sync_types_list_disabled_values addObject:@"bookmarks"];
+  }
+  if ([defaults boolForKey:@"SyncTypesListReadingList"]) {
+    [Sync_types_list_disabled_values addObject:@"readingList"];
+  }
+  if ([defaults boolForKey:@"SyncTypesListPreferences"]) {
+    [Sync_types_list_disabled_values addObject:@"preferences"];
+  }
+  if ([defaults boolForKey:@"SyncTypesListPasswords"]) {
+    [Sync_types_list_disabled_values addObject:@"passwords"];
+  }
+  if ([defaults boolForKey:@"SyncTypesListAutofill"]) {
+    [Sync_types_list_disabled_values addObject:@"autofill"];
+  }
+  if ([defaults boolForKey:@"SyncTypesListTypedUrls"]) {
+    [Sync_types_list_disabled_values addObject:@"typedUrls"];
+  }
+  if ([defaults boolForKey:@"SyncTypesListTabs"]) {
+    [Sync_types_list_disabled_values addObject:@"tabs"];
+  }
+  if ([Sync_types_list_disabled_values count]) {
+    [testing_policies addEntriesFromDictionary:@{
+      Sync_types_list_disabled_key : Sync_types_list_disabled_values
+    }];
+    [allowed_experimental_policies addObject:Sync_types_list_disabled_key];
   }
 
   // If an incognito mode availability is set, add the policy key to the list of
