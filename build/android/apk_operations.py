@@ -1761,9 +1761,11 @@ class _ManifestCommand(_Command):
   need_device_args = False
 
   def Run(self):
-    bundletool.RunBundleTool([
-        'dump', 'manifest', '--bundle', self.bundle_generation_info.bundle_path
-    ])
+    sys.stdout.write(
+        bundletool.RunBundleTool([
+            'dump', 'manifest', '--bundle',
+            self.bundle_generation_info.bundle_path
+        ]))
 
 
 class _StackCommand(_Command):
