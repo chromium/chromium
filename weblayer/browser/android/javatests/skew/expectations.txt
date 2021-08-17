@@ -34,6 +34,7 @@ crbug.com/1222694 [ all ] org.chromium.weblayer.test.FullscreenCallbackTest* [ S
 crbug.com/1239032 [ all ] org.chromium.weblayer.test.TabListCallbackTest#testCallbackInvokedWhenTabClosedViaWebContents [ Skip ]
 crbug.com/1239032 [ all ] org.chromium.weblayer.test.NewTabCallbackTest#testNewTabHasFocus [ Skip ]
 crbug.com/1225662 [ all ] org.chromium.weblayer.test.NavigationTest#testDestroyTabWithModalDialog [ Skip ]
+crbug.com/1239002 [ all ] org.chromium.weblayer.test.FullscreenSizeTest#testOsk [ Skip ]
 
 # Bulk disable to get bot green.
 crbug.com/1191751 [ all ] org.chromium.weblayer.test.InputTypesTest* [ Skip ]
