@@ -98,20 +98,20 @@ class DeviceTarget(target.Target):
     if self._host and self._node_name:
       raise Exception('Only one of "--host" or "--name" can be specified.')
 
-    if fuchsia_out_dir:
-      if ssh_config:
-        raise Exception('Only one of "--fuchsia-out-dir" or "--ssh_config" can '
-                        'be specified.')
+    if ssh_config:
+      if fuchsia_out_dir:
+        print('Warning: Ignoring "--fuchsia-out-dir" because "--ssh_config" '
+              'specified.')
 
+      # Use the SSH config provided via the commandline.
+      self._ssh_config_path = os.path.expanduser(ssh_config)
+
+    elif fuchsia_out_dir:
       self._fuchsia_out_dir = os.path.expanduser(fuchsia_out_dir)
       # Use SSH keys from the Fuchsia output directory.
       self._ssh_config_path = os.path.join(self._fuchsia_out_dir, 'ssh-keys',
                                            'ssh_config')
       self._os_check = 'ignore'
-
-    elif ssh_config:
-      # Use the SSH config provided via the commandline.
-      self._ssh_config_path = os.path.expanduser(ssh_config)
 
     else:
       # Default to using an automatically generated SSH config and keys.
