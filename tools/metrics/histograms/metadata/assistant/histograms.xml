@@ -113,11 +113,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Assistant.ExitPoint" enum="AssistantExitPoint"
-    expires_after="2021-08-22">
+    expires_after="2022-08-09">
   <owner>xiaohuic@chromium.org</owner>
   <owner>meilinw@chromium.org</owner>
   <summary>
     Record the Assistant exit point where Assistant UI becomes invisible.
+    ChromeOS only.
   </summary>
 </histogram>
 
