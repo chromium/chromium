@@ -34,6 +34,7 @@
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "ui/aura/window.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
@@ -42,6 +43,7 @@
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace ash {
 
@@ -433,7 +435,9 @@ std::vector<ui::FileInfo> ChromeDataExchangeDelegate::ParseFileSystemSources(
            base::SPLIT_WANT_NONEMPTY)) {
     if (line.empty() || line[0] == '#')
       continue;
-    storage::FileSystemURL url = mount_points->CrackURL(GURL(line));
+    const GURL gurl(line);
+    storage::FileSystemURL url = mount_points->CrackURL(
+        gurl, blink::StorageKey(url::Origin::Create(gurl)));
     if (!url.is_valid()) {
       LOG(WARNING) << "Invalid clipboard FileSystemURL: " << line;
       continue;

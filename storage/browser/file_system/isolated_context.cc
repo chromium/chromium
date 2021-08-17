@@ -19,6 +19,8 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
+class GURL;
+
 namespace storage {
 
 namespace {
@@ -389,11 +391,10 @@ bool IsolatedContext::CrackVirtualPath(
   return true;
 }
 
-// TODO(https://crbug.com/1221308): creating StorageKey from url is
-// temporary; StorageKey will be added in future CL
-FileSystemURL IsolatedContext::CrackURL(const GURL& url) const {
-  FileSystemURL filesystem_url =
-      FileSystemURL(url, blink::StorageKey(url::Origin::Create(url)));
+FileSystemURL IsolatedContext::CrackURL(
+    const GURL& url,
+    const blink::StorageKey& storage_key) const {
+  FileSystemURL filesystem_url = FileSystemURL(url, storage_key);
   if (!filesystem_url.is_valid())
     return FileSystemURL();
   return CrackFileSystemURL(filesystem_url);

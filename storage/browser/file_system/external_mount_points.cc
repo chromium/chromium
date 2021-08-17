@@ -14,6 +14,8 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
+class GURL;
+
 namespace storage {
 
 namespace {
@@ -187,11 +189,10 @@ bool ExternalMountPoints::CrackVirtualPath(
   return true;
 }
 
-// TODO(https://crbug.com/1221308): conversion of the URL to origin is
-// temporary; function will have StorageKey parameter in future CL
-FileSystemURL ExternalMountPoints::CrackURL(const GURL& url) const {
-  FileSystemURL filesystem_url =
-      FileSystemURL(url, blink::StorageKey(url::Origin::Create(url)));
+FileSystemURL ExternalMountPoints::CrackURL(
+    const GURL& url,
+    const blink::StorageKey& storage_key) const {
+  FileSystemURL filesystem_url = FileSystemURL(url, storage_key);
   if (!filesystem_url.is_valid())
     return FileSystemURL();
   return CrackFileSystemURL(filesystem_url);

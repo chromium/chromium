@@ -46,7 +46,10 @@
 #include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "ui/gfx/image/image_skia.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace ash {
 namespace {
@@ -590,7 +593,8 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceKeyedServiceBrowserTest,
   const GURL url =
       holding_space_util::ResolveFileSystemUrl(browser()->profile(), file_path);
   storage::FileSystemURL file_system_url =
-      storage::ExternalMountPoints::GetSystemInstance()->CrackURL(url);
+      storage::ExternalMountPoints::GetSystemInstance()->CrackURL(
+          url, blink::StorageKey(url::Origin::Create(url)));
   ASSERT_TRUE(file_system_url.is_valid());
   ASSERT_EQ(storage::kFileSystemTypeDriveFs, file_system_url.type());
 

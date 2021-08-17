@@ -15,6 +15,8 @@
 #include "storage/browser/file_system/file_observers.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/common/file_system/file_system_util.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 using storage::ExternalMountPoints;
@@ -88,8 +90,10 @@ bool DeserializeSyncableFileSystemURL(const std::string& serialized_url,
   DCHECK(serialized_url.find('\\') == std::string::npos);
 #endif  // FILE_PATH_USES_WIN_SEPARATORS
 
+  const GURL gurl(serialized_url);
   FileSystemURL deserialized =
-      ExternalMountPoints::GetSystemInstance()->CrackURL(GURL(serialized_url));
+      ExternalMountPoints::GetSystemInstance()->CrackURL(
+          gurl, blink::StorageKey(url::Origin::Create(gurl)));
   if (!deserialized.is_valid() ||
       deserialized.type() != storage::kFileSystemTypeSyncable) {
     return false;

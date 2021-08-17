@@ -14,6 +14,8 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_mount_option.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/gurl.h"
 
 #define FPL FILE_PATH_LITERAL
 
@@ -22,6 +24,8 @@
 #else
 #define DRIVE
 #endif
+
+class GURL;
 
 namespace storage {
 
@@ -275,7 +279,9 @@ TEST(ExternalMountPointsTest, CreateCrackedFileSystemURL) {
                                    base::FilePath(DRIVE FPL("/root")));
 
   // Try cracking invalid GURL.
-  FileSystemURL invalid = mount_points->CrackURL(GURL("http://chromium.og"));
+  FileSystemURL invalid = mount_points->CrackURL(
+      GURL("http://chromium.og"),
+      blink::StorageKey::CreateFromStringForTesting("http://chromium.og"));
   EXPECT_FALSE(invalid.is_valid());
 
   // Try cracking isolated path.

@@ -19,8 +19,14 @@
 #include "storage/common/file_system/file_system_types.h"
 #include "url/origin.h"
 
+class GURL;
+
 namespace base {
 class FilePath;
+}
+
+namespace blink {
+class StorageKey;
 }
 
 namespace storage {
@@ -78,7 +84,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ExternalMountPoints
                         std::string* cracked_id,
                         base::FilePath* path,
                         FileSystemMountOption* mount_option) const override;
-  FileSystemURL CrackURL(const GURL& url) const override;
+  FileSystemURL CrackURL(const GURL& url,
+                         const blink::StorageKey& storage_key) const override;
   FileSystemURL CreateCrackedFileSystemURL(
       const url::Origin& origin,
       FileSystemType type,
