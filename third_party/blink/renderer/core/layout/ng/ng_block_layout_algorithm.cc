@@ -1601,11 +1601,8 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::HandleInflow(
   DCHECK(!child.IsOutOfFlowPositioned());
   DCHECK(!child.CreatesNewFormattingContext());
 
-  bool is_non_empty_inline = false;
   auto* child_inline_node = DynamicTo<NGInlineNode>(child);
   if (child_inline_node) {
-    is_non_empty_inline = !child_inline_node->IsEmptyInline();
-
     // Add reusable line boxes from |previous_result_| if any.
     if (!abort_when_bfc_block_offset_updated_ && !child_break_token &&
         previous_result_) {
@@ -1632,7 +1629,7 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::HandleInflow(
   //
   // Note this logic is copied to TryReuseFragmentsFromCache(), they need to
   // keep in sync.
-  if (has_clearance_past_adjoining_floats || is_non_empty_inline) {
+  if (has_clearance_past_adjoining_floats) {
     if (!ResolveBfcBlockOffset(previous_inflow_position))
       return NGLayoutResult::kBfcBlockOffsetResolved;
 
@@ -1686,8 +1683,7 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::FinishInflow(
 
   // Only non self-collapsing children (e.g. "normal children") can be pushed
   // by floats in this way.
-  bool normal_child_had_clearance =
-      layout_result->IsPushedByFloats() && child.IsBlock();
+  bool normal_child_had_clearance = layout_result->IsPushedByFloats();
   DCHECK(!normal_child_had_clearance || !is_self_collapsing);
 
   // A child may have aborted its layout if it resolved its BFC block-offset.

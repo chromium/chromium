@@ -770,7 +770,7 @@ void NGInlineLayoutAlgorithm::PlaceFloatingObjects(
 
   LayoutUnit bfc_line_offset = container_builder_.BfcLineOffset();
   LayoutUnit bfc_block_offset =
-      Node().IsEmptyInline()
+      line_info.IsEmptyLine()
           ? ConstraintSpace().ExpectedBfcBlockOffset()
           : line_info.BfcOffset().block_offset + ruby_block_start_adjust;
 
@@ -1081,35 +1081,32 @@ scoped_refptr<const NGLayoutResult> NGInlineLayoutAlgorithm::Layout() {
   container_builder_.SetAdjoiningObjectTypes(
       ConstraintSpace().AdjoiningObjectTypes());
 
-  const bool is_empty_inline = Node().IsEmptyInline();
-
-#if DCHECK_IS_ON()
-  if (!is_empty_inline) {
-    // The BFC block-offset was determined before entering this algorithm. This
-    // means that there should be no adjoining objects, or margins.
-    DCHECK(ConstraintSpace().MarginStrut().IsEmpty() ||
-           (BreakToken() && BreakToken()->IsAfterBlockInInline()));
-    DCHECK(!ConstraintSpace().AdjoiningObjectTypes());
-    // Only empty-inlines should have the "forced"/"optimistic" BFC
-    // block-offset set.
-    DCHECK(!ConstraintSpace().ForcedBfcBlockOffset());
-    DCHECK(!ConstraintSpace().OptimisticBfcBlockOffset());
-  }
-#endif
-
   // In order to get the correct list of layout opportunities, we need to
   // position any "leading" floats within the exclusion space first.
   STACK_UNINITIALIZED NGPositionedFloatVector leading_floats;
   unsigned handled_leading_floats_index =
       PositionLeadingFloats(&initial_exclusion_space, &leading_floats);
 
+  // Determine our BFC block-offset, but *don't* set it on the builder yet as
+  // we might be an empty line.
+  bool is_pushed_by_floats = false;
+  LayoutUnit bfc_block_offset =
+      ConstraintSpace().ForcedBfcBlockOffset().value_or(
+          ConstraintSpace().BfcOffset().block_offset +
+          ConstraintSpace().MarginStrut().Sum());
+
+  // Also apply clearance if necessary.
+  if (ConstraintSpace().HasClearanceOffset() &&
+      bfc_block_offset < ConstraintSpace().ClearanceOffset()) {
+    bfc_block_offset = ConstraintSpace().ClearanceOffset();
+    is_pushed_by_floats = true;
+  }
+
   // We query all the layout opportunities on the initial exclusion space up
   // front, as if the line breaker may add floats and change the opportunities.
   const LayoutOpportunityVector& opportunities =
       initial_exclusion_space.AllLayoutOpportunities(
-          {ConstraintSpace().BfcOffset().line_offset,
-           is_empty_inline ? ConstraintSpace().ExpectedBfcBlockOffset()
-                           : ConstraintSpace().BfcOffset().block_offset},
+          {ConstraintSpace().BfcOffset().line_offset, bfc_block_offset},
           ConstraintSpace().AvailableSize().inline_size);
 
   NGExclusionSpace exclusion_space;
@@ -1163,6 +1160,23 @@ scoped_refptr<const NGLayoutResult> NGInlineLayoutAlgorithm::Layout() {
     if (UNLIKELY(line_info.AbortedLayoutResult()))
       return line_info.AbortedLayoutResult();
 
+    // Set our BFC block-offset if we aren't an empty line.
+    if (!line_info.IsEmptyLine()) {
+      container_builder_.SetBfcBlockOffset(bfc_block_offset);
+      container_builder_.SetLineBoxBfcBlockOffset(
+          line_info.BfcOffset().block_offset);
+      if (is_pushed_by_floats)
+        container_builder_.SetIsPushedByFloats();
+
+      // Abort if something before needs to know the correct BFC block-offset.
+      if (container_builder_.AdjoiningObjectTypes() &&
+          bfc_block_offset != ConstraintSpace().ExpectedBfcBlockOffset()) {
+        items_builder->ReleaseCurrentLogicalLineItems();
+        return container_builder_.Abort(
+            NGLayoutResult::kBfcBlockOffsetResolved);
+      }
+    }
+
     // If this fragment will be larger than the inline-size of the opportunity,
     // *and* the opportunity is smaller than the available inline-size, and the
     // container autowraps, continue to the next opportunity.
@@ -1199,12 +1213,13 @@ scoped_refptr<const NGLayoutResult> NGInlineLayoutAlgorithm::Layout() {
                &ruby_block_start_adjust);
     is_line_created = true;
 
-    // Set our BFC block-offset. Ruby annotations may adjust this offset.
-    if (!line_info.IsEmptyLine()) {
-      const LayoutUnit bfc_block_offset =
-          line_info.BfcOffset().block_offset + ruby_block_start_adjust;
-      container_builder_.SetBfcBlockOffset(bfc_block_offset);
-      container_builder_.SetLineBoxBfcBlockOffset(bfc_block_offset);
+    // Adjust the line BFC block-offset if we have a ruby annotation.
+    if (UNLIKELY(ruby_block_start_adjust)) {
+      DCHECK(container_builder_.BfcBlockOffset());
+      DCHECK(container_builder_.LineBoxBfcBlockOffset());
+      DCHECK(!line_info.IsEmptyLine());
+      container_builder_.SetLineBoxBfcBlockOffset(
+          line_info.BfcOffset().block_offset + ruby_block_start_adjust);
     }
 
     // We now can check the block-size of the fragment, and it fits within the
@@ -1269,9 +1284,10 @@ scoped_refptr<const NGLayoutResult> NGInlineLayoutAlgorithm::Layout() {
       container_builder_.SetEndMarginStrut(ConstraintSpace().MarginStrut());
 
       // Finally respect the forced BFC block-offset if present.
-      if (auto bfc_block_offset = ConstraintSpace().ForcedBfcBlockOffset()) {
-        container_builder_.SetBfcBlockOffset(*bfc_block_offset);
-        container_builder_.SetLineBoxBfcBlockOffset(*bfc_block_offset);
+      if (auto forced_bfc_block_offset =
+              ConstraintSpace().ForcedBfcBlockOffset()) {
+        container_builder_.SetBfcBlockOffset(*forced_bfc_block_offset);
+        container_builder_.SetLineBoxBfcBlockOffset(*forced_bfc_block_offset);
       }
     } else {
       // A <br clear=both> will strech the line-box height, such that the
@@ -1284,10 +1300,6 @@ scoped_refptr<const NGLayoutResult> NGInlineLayoutAlgorithm::Layout() {
       // our adjoining objects, and shouldn't propagate this information
       // to siblings.
       container_builder_.ResetAdjoiningObjectTypes();
-
-      if (opportunity.rect.BlockStartOffset() >
-          ConstraintSpace().BfcOffset().block_offset)
-        container_builder_.SetIsPushedByFloats();
     }
     break;
   }
