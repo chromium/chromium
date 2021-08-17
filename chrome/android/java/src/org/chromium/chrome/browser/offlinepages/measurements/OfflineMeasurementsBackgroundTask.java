@@ -103,8 +103,10 @@ public class OfflineMeasurementsBackgroundTask implements BackgroundTask {
         // The HTTP probe was cancelled before it could finish, because the background task was
         // stopped.
         int CANCELLED = 5;
+        // Multiple HttpURLConnections were running at the same time causing the HTTP probe to fail.
+        int MULTIPLE_URL_CONNECTIONS_OPEN = 6;
         // Count.
-        int RESULT_COUNT = 6;
+        int RESULT_COUNT = 7;
     }
 
     // The state of the phone and how / if the user is interacting with it. Defined in
@@ -517,6 +519,10 @@ public class OfflineMeasurementsBackgroundTask implements BackgroundTask {
                     // Most likely the exception is thrown due to host name not resolved or socket
                     // timeout.
                     return ProbeResult.NO_INTERNET;
+                } catch (ArrayIndexOutOfBoundsException | NullPointerException e) {
+                    // Most likely these exceptions were thrown due to two HttpURLConnections
+                    // running at the same time.
+                    return ProbeResult.MULTIPLE_URL_CONNECTIONS_OPEN;
                 } finally {
                     if (urlConnection != null) {
                         urlConnection.disconnect();
