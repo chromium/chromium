@@ -15,7 +15,5 @@ extern NSString* const kSettingsAccountsTableViewAddAccountCellId;
 extern NSString* const kSettingsAccountsTableViewSignoutCellId;
 // The accessibility identifier of the signout and clear data cell.
 extern NSString* const kSettingsAccountsTableViewSignoutAndClearDataCellId;
-// The accessibility identifier of the sync account cell.
-extern NSString* const kSettingsAccountsTableViewSyncCellId;
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_GOOGLE_SERVICES_ACCOUNTS_TABLE_VIEW_CONTROLLER_CONSTANTS_H_

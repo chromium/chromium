@@ -584,11 +584,6 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   return grey_accessibilityID(kPrivacyTableViewId);
 }
 
-+ (id<GREYMatcher>)accountsSyncButton {
-  return grey_allOf(grey_accessibilityID(kSettingsAccountsTableViewSyncCellId),
-                    grey_sufficientlyVisible(), nil);
-}
-
 + (id<GREYMatcher>)contentSettingsButton {
   return [ChromeMatchersAppInterface
       buttonWithAccessibilityLabelID:(IDS_IOS_CONTENT_SETTINGS_TITLE)];

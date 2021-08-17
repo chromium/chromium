@@ -15,5 +15,3 @@ NSString* const kSettingsAccountsTableViewSignoutCellId =
     @"kSettingsAccountsTableViewSignoutCellId";
 NSString* const kSettingsAccountsTableViewSignoutAndClearDataCellId =
     @"kSettingsAccountsTableViewSignoutAndClearDataCellId";
-NSString* const kSettingsAccountsTableViewSyncCellId =
-    @"kSettingsAccountsTableViewSyncCellId";
