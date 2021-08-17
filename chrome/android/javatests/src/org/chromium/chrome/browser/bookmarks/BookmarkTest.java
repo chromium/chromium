@@ -425,6 +425,7 @@ public class BookmarkTest {
     @Features.EnableFeatures({ChromeFeatureList.READ_LATER + "<Study"})
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
             "force-fieldtrial-params=Study.Group:use_root_bookmark_as_default/true"})
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
     public void
     testOpenBookmarkManagerWhenDefaultToRootEnabled()
             throws InterruptedException, ExecutionException {
