@@ -122,7 +122,7 @@ class TestClipboard : public Clipboard {
     DataStore& operator=(const DataStore& other);
     ~DataStore();
     void Clear();
-    void SetDataSource(std::unique_ptr<DataTransferEndpoint> data_src);
+    void SetDataSource(std::unique_ptr<DataTransferEndpoint> new_data_src);
     DataTransferEndpoint* GetDataSource() const;
     ClipboardSequenceNumberToken sequence_number;
     base::flat_map<ClipboardFormatType, std::string> data;

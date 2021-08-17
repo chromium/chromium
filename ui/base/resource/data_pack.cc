@@ -579,8 +579,8 @@ bool DataPack::WritePack(const base::FilePath& path,
 
   // We place an extra entry after the last item that allows us to read the
   // size of the last item.
-  const uint16_t resource_id = 0;
-  file.Write(&resource_id, sizeof(resource_id));
+  const uint16_t extra_resource_id = 0;
+  file.Write(&extra_resource_id, sizeof(extra_resource_id));
   file.Write(&data_offset, sizeof(data_offset));
 
   // Write the aliases table, if any. Note: |aliases| is an std::map,

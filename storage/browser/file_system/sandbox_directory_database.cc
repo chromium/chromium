@@ -357,7 +357,6 @@ bool DatabaseCheckHelper::ScanHierarchy() {
         return false;
 
       // Check if the child knows the parent as its parent.
-      FileInfo file_info;
       if (!dir_db_->GetFileInfo(id, &file_info))
         return false;
       if (file_info.parent_id != dir_id)

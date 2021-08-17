@@ -386,8 +386,8 @@ bool FocusController::SetActiveWindow(
 
   MAYBE_ACTIVATION_INTERRUPTED();
 
-  for (auto& observer : activation_observers_) {
-    observer.OnWindowActivated(
+  for (auto& activation_observer : activation_observers_) {
+    activation_observer.OnWindowActivated(
         reason, active_window_,
         window_tracker.Contains(lost_activation) ? lost_activation : nullptr);
 

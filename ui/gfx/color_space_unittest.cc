@@ -13,8 +13,6 @@
 namespace gfx {
 namespace {
 
-const float kEpsilon = 1.0e-3f;
-
 // Returns the L-infty difference of u and v.
 float Diff(const skia::Vector4& u, const skia::Vector4& v) {
   float result = 0;
@@ -24,6 +22,7 @@ float Diff(const skia::Vector4& u, const skia::Vector4& v) {
 }
 
 TEST(ColorSpace, RGBToYUV) {
+  const float kEpsilon = 1.0e-3f;
   const size_t kNumTestRGBs = 3;
   skia::Vector4 test_rgbs[kNumTestRGBs] = {
       skia::Vector4(1.f, 0.f, 0.f, 1.f),
@@ -84,6 +83,7 @@ TEST(ColorSpace, RGBToYUV) {
 }
 
 TEST(ColorSpace, RangeAdjust) {
+  const float kEpsilon = 1.0e-3f;
   const size_t kNumTestYUVs = 2;
   skia::Vector4 test_yuvs[kNumTestYUVs] = {
       skia::Vector4(1.f, 1.f, 1.f, 1.f),
@@ -280,6 +280,7 @@ TEST(ColorSpace, HLGToSkColorSpace) {
   ColorSpace color_space;
   ColorSpace roundtrip_color_space;
   float roundtrip_sdr_white_level;
+  const float kEpsilon = 1.0e-3f;
 
   // We expect that when a white point is specified, the conversion from
   // ColorSpace -> SkColorSpace -> ColorSpace be the identity. Because of

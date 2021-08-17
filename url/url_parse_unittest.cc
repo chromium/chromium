@@ -491,7 +491,7 @@ TEST(URLParser, ExtractFileName) {
   struct FileCase {
     const char* input;
     const char* expected;
-  } file_cases[] = {
+  } extract_cases[] = {
       {"http://www.google.com", nullptr},
       {"http://www.google.com/", ""},
       {"http://www.google.com/search", "search"},
@@ -509,8 +509,8 @@ TEST(URLParser, ExtractFileName) {
       {"http://www.google.com/foo;bar;html", "foo"},
   };
 
-  for (size_t i = 0; i < base::size(file_cases); i++) {
-    const char* url = file_cases[i].input;
+  for (size_t i = 0; i < base::size(extract_cases); i++) {
+    const char* url = extract_cases[i].input;
     int len = static_cast<int>(strlen(url));
 
     Parsed parsed;
@@ -519,7 +519,7 @@ TEST(URLParser, ExtractFileName) {
     Component file_name;
     ExtractFileName(url, parsed.path, &file_name);
 
-    EXPECT_TRUE(ComponentMatches(url, file_cases[i].expected, file_name));
+    EXPECT_TRUE(ComponentMatches(url, extract_cases[i].expected, file_name));
   }
 }
 

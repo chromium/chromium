@@ -4428,27 +4428,27 @@ TEST_F(AXPositionTest, CreatePositionAtTextBoundaryContentStartEndIsIgnored) {
   //   | +-inline_box_data_3
   //   +-static_text_data_4
   //     +-inline_box_data_4 IGNORED
-  constexpr AXNodeID ROOT_ID = 1;
-  constexpr AXNodeID STATIC_TEXT1_ID = 2;
-  constexpr AXNodeID STATIC_TEXT2_ID = 3;
-  constexpr AXNodeID STATIC_TEXT3_ID = 4;
-  constexpr AXNodeID STATIC_TEXT4_ID = 5;
-  constexpr AXNodeID INLINE_BOX1_ID = 6;
-  constexpr AXNodeID INLINE_BOX2_ID = 7;
-  constexpr AXNodeID INLINE_BOX3_ID = 8;
-  constexpr AXNodeID INLINE_BOX4_ID = 9;
+  constexpr AXNodeID kRootId = 1;
+  constexpr AXNodeID kStaticText1Id = 2;
+  constexpr AXNodeID kStaticText2Id = 3;
+  constexpr AXNodeID kStaticText3Id = 4;
+  constexpr AXNodeID kStaticText4Id = 5;
+  constexpr AXNodeID kInlineBox1Id = 6;
+  constexpr AXNodeID kInlineBox2Id = 7;
+  constexpr AXNodeID kInlineBox3Id = 8;
+  constexpr AXNodeID kInlineBox4Id = 9;
 
   AXNodeData root_data;
-  root_data.id = ROOT_ID;
+  root_data.id = kRootId;
   root_data.role = ax::mojom::Role::kRootWebArea;
 
   AXNodeData static_text_data_1;
-  static_text_data_1.id = STATIC_TEXT1_ID;
+  static_text_data_1.id = kStaticText1Id;
   static_text_data_1.role = ax::mojom::Role::kStaticText;
   static_text_data_1.SetName("One");
 
   AXNodeData inline_box_data_1;
-  inline_box_data_1.id = INLINE_BOX1_ID;
+  inline_box_data_1.id = kInlineBox1Id;
   inline_box_data_1.role = ax::mojom::Role::kInlineTextBox;
   inline_box_data_1.SetName("One");
   inline_box_data_1.AddState(ax::mojom::State::kIgnored);
@@ -4457,15 +4457,15 @@ TEST_F(AXPositionTest, CreatePositionAtTextBoundaryContentStartEndIsIgnored) {
   inline_box_data_1.AddIntListAttribute(ax::mojom::IntListAttribute::kWordEnds,
                                         std::vector<int32_t>{3});
   inline_box_data_1.AddIntAttribute(ax::mojom::IntAttribute::kNextOnLineId,
-                                    INLINE_BOX2_ID);
+                                    kInlineBox2Id);
 
   AXNodeData static_text_data_2;
-  static_text_data_2.id = STATIC_TEXT2_ID;
+  static_text_data_2.id = kStaticText2Id;
   static_text_data_2.role = ax::mojom::Role::kStaticText;
   static_text_data_2.SetName("Two");
 
   AXNodeData inline_box_data_2;
-  inline_box_data_2.id = INLINE_BOX2_ID;
+  inline_box_data_2.id = kInlineBox2Id;
   inline_box_data_2.role = ax::mojom::Role::kInlineTextBox;
   inline_box_data_2.SetName("Two");
   inline_box_data_2.AddIntListAttribute(
@@ -4473,17 +4473,17 @@ TEST_F(AXPositionTest, CreatePositionAtTextBoundaryContentStartEndIsIgnored) {
   inline_box_data_2.AddIntListAttribute(ax::mojom::IntListAttribute::kWordEnds,
                                         std::vector<int32_t>{3});
   inline_box_data_2.AddIntAttribute(ax::mojom::IntAttribute::kPreviousOnLineId,
-                                    INLINE_BOX1_ID);
+                                    kInlineBox1Id);
   inline_box_data_2.AddIntAttribute(ax::mojom::IntAttribute::kNextOnLineId,
-                                    INLINE_BOX3_ID);
+                                    kInlineBox3Id);
 
   AXNodeData static_text_data_3;
-  static_text_data_3.id = STATIC_TEXT3_ID;
+  static_text_data_3.id = kStaticText3Id;
   static_text_data_3.role = ax::mojom::Role::kStaticText;
   static_text_data_3.SetName("Three");
 
   AXNodeData inline_box_data_3;
-  inline_box_data_3.id = INLINE_BOX3_ID;
+  inline_box_data_3.id = kInlineBox3Id;
   inline_box_data_3.role = ax::mojom::Role::kInlineTextBox;
   inline_box_data_3.SetName("Three");
   inline_box_data_3.AddIntListAttribute(
@@ -4491,17 +4491,17 @@ TEST_F(AXPositionTest, CreatePositionAtTextBoundaryContentStartEndIsIgnored) {
   inline_box_data_3.AddIntListAttribute(ax::mojom::IntListAttribute::kWordEnds,
                                         std::vector<int32_t>{5});
   inline_box_data_3.AddIntAttribute(ax::mojom::IntAttribute::kPreviousOnLineId,
-                                    INLINE_BOX2_ID);
+                                    kInlineBox2Id);
   inline_box_data_3.AddIntAttribute(ax::mojom::IntAttribute::kNextOnLineId,
-                                    INLINE_BOX4_ID);
+                                    kInlineBox4Id);
 
   AXNodeData static_text_data_4;
-  static_text_data_4.id = STATIC_TEXT4_ID;
+  static_text_data_4.id = kStaticText4Id;
   static_text_data_4.role = ax::mojom::Role::kStaticText;
   static_text_data_4.SetName("Four");
 
   AXNodeData inline_box_data_4;
-  inline_box_data_4.id = INLINE_BOX4_ID;
+  inline_box_data_4.id = kInlineBox4Id;
   inline_box_data_4.role = ax::mojom::Role::kInlineTextBox;
   inline_box_data_4.SetName("Four");
   inline_box_data_4.AddState(ax::mojom::State::kIgnored);
@@ -4510,7 +4510,7 @@ TEST_F(AXPositionTest, CreatePositionAtTextBoundaryContentStartEndIsIgnored) {
   inline_box_data_3.AddIntListAttribute(ax::mojom::IntListAttribute::kWordEnds,
                                         std::vector<int32_t>{4});
   inline_box_data_3.AddIntAttribute(ax::mojom::IntAttribute::kPreviousOnLineId,
-                                    INLINE_BOX3_ID);
+                                    kInlineBox3Id);
 
   root_data.child_ids = {static_text_data_1.id, static_text_data_2.id,
                          static_text_data_3.id, static_text_data_4.id};

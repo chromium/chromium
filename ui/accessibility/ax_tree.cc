@@ -858,10 +858,9 @@ gfx::RectF AXTree::RelativeToTreeBoundsInternal(const AXNode* node,
 
     if (ancestor && allow_recursion) {
       bool ignore_offscreen;
-      bool allow_recursion = false;
       ancestor_bounds = RelativeToTreeBoundsInternal(
           ancestor, gfx::RectF(), &ignore_offscreen, clip_bounds,
-          allow_recursion);
+          /* allow_recursion = */ false);
 
       gfx::RectF original_bounds = original_node->data().relative_bounds.bounds;
       if (original_bounds.x() == 0 && original_bounds.y() == 0) {

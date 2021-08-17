@@ -98,14 +98,13 @@ bool VSyncProviderWin::GetVSyncParametersIfAvailable(
     HMONITOR monitor = MonitorFromWindow(window_, MONITOR_DEFAULTTONEAREST);
     MONITORINFOEX monitor_info;
     monitor_info.cbSize = sizeof(MONITORINFOEX);
-    BOOL result = GetMonitorInfo(monitor, &monitor_info);
-    if (result) {
+    if (GetMonitorInfo(monitor, &monitor_info)) {
       DEVMODE display_info;
       display_info.dmSize = sizeof(DEVMODE);
       display_info.dmDriverExtra = 0;
-      result = EnumDisplaySettings(monitor_info.szDevice, ENUM_CURRENT_SETTINGS,
-                                   &display_info);
-      if (result && display_info.dmDisplayFrequency > 1) {
+      if (EnumDisplaySettings(monitor_info.szDevice, ENUM_CURRENT_SETTINGS,
+                              &display_info) &&
+          display_info.dmDisplayFrequency > 1) {
         interval = base::TimeDelta::FromMicroseconds(
             (1.0 / static_cast<double>(display_info.dmDisplayFrequency)) *
             base::Time::kMicrosecondsPerSecond);

@@ -3448,17 +3448,17 @@ TEST_F(GestureRecognizerTest, GestureEventTripleTap) {
       ui::PointerDetails(ui::EventPointerType::kTouch, kTouchId));
   DispatchEventUsingWindowDispatcher(&release3);
 
-  // Third, Fourth and Fifth Taps. Taps after the third should have their
+  // Fourth, Fifth, and Sixth Taps. Taps after the third should have their
   // |tap_count| wrap around back to 1.
-  for (int i = 3; i < 5; ++i) {
-    ui::TouchEvent press3(
+  for (int i = 4; i < 6; ++i) {
+    ui::TouchEvent press4(
         ui::ET_TOUCH_PRESSED, gfx::Point(102, 206), tes.LeapForward(200),
         ui::PointerDetails(ui::EventPointerType::kTouch, kTouchId));
-    DispatchEventUsingWindowDispatcher(&press3);
-    ui::TouchEvent release3(
+    DispatchEventUsingWindowDispatcher(&press4);
+    ui::TouchEvent release4(
         ui::ET_TOUCH_RELEASED, gfx::Point(102, 206), tes.LeapForward(50),
         ui::PointerDetails(ui::EventPointerType::kTouch, kTouchId));
-    DispatchEventUsingWindowDispatcher(&release3);
+    DispatchEventUsingWindowDispatcher(&release4);
 
     EXPECT_TRUE(delegate->tap());
     EXPECT_TRUE(delegate->tap_down());
@@ -3468,7 +3468,7 @@ TEST_F(GestureRecognizerTest, GestureEventTripleTap) {
     EXPECT_FALSE(delegate->scroll_begin());
     EXPECT_FALSE(delegate->scroll_update());
     EXPECT_FALSE(delegate->scroll_end());
-    EXPECT_EQ(1 + (i % 3), delegate->tap_count());
+    EXPECT_EQ(i % 3, delegate->tap_count());
   }
 }
 

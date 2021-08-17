@@ -70,9 +70,8 @@ HWND TestWin32Window::Create(DWORD style) {
   wcex.lpszClassName = class_name;
   wcex.style = CS_HREDRAW | CS_VREDRAW;
   RegisterClassEx(&wcex);
-  HWND hwnd_ =
-      CreateWindowEx(0, class_name, class_name, style, 0, 0, 100, 100, nullptr,
-                     nullptr, GetModuleHandle(nullptr), nullptr);
+  hwnd_ = CreateWindowEx(0, class_name, class_name, style, 0, 0, 100, 100,
+                         nullptr, nullptr, GetModuleHandle(nullptr), nullptr);
   ShowWindow(hwnd_, SW_SHOWNORMAL);
   EXPECT_TRUE(UpdateWindow(hwnd_));
   return hwnd_;

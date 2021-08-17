@@ -3143,7 +3143,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   Init(update);
   ComPtr<ITextRangeProvider> text_range_provider;
   base::win::ScopedSafearray rectangles;
-  int count;
+  int units_moved;
 
   // Expected bounding rects:
   // <button>Button</button><input type="checkbox">Line 1<br>Line 2
@@ -3163,8 +3163,9 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   // <button>Button</button><input type="checkbox">Line 1<br>Line 2
   // |---------------------||---------------------||----|   |----|
   ASSERT_HRESULT_SUCCEEDED(text_range_provider->MoveEndpointByUnit(
-      TextPatternRangeEndpoint_End, TextUnit_Character, /*count*/ -1, &count));
-  ASSERT_EQ(-1, count);
+      TextPatternRangeEndpoint_End, TextUnit_Character, /*count*/ -1,
+      &units_moved));
+  ASSERT_EQ(-1, units_moved);
   EXPECT_HRESULT_SUCCEEDED(
       text_range_provider->GetBoundingRectangles(rectangles.Receive()));
   expected_values = {20,  20, 200, 30, /* button */
@@ -3179,8 +3180,8 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   // <button>Button</button><input type="checkbox">Line 1<br>Line 2
   // |---------------------||---------------------||--------|
   ASSERT_HRESULT_SUCCEEDED(text_range_provider->MoveEndpointByUnit(
-      TextPatternRangeEndpoint_End, TextUnit_Line, /*count*/ -1, &count));
-  ASSERT_EQ(-1, count);
+      TextPatternRangeEndpoint_End, TextUnit_Line, /*count*/ -1, &units_moved));
+  ASSERT_EQ(-1, units_moved);
   EXPECT_HRESULT_SUCCEEDED(
       text_range_provider->GetBoundingRectangles(rectangles.Receive()));
   expected_values = {20,  20, 200, 30, /* button */
@@ -3194,8 +3195,8 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   // <button>Button</button><input type="checkbox">Line 1<br>Line 2
   // |---------------------||---------------------|
   ASSERT_HRESULT_SUCCEEDED(text_range_provider->MoveEndpointByUnit(
-      TextPatternRangeEndpoint_End, TextUnit_Word, /*count*/ -3, &count));
-  ASSERT_EQ(-3, count);
+      TextPatternRangeEndpoint_End, TextUnit_Word, /*count*/ -3, &units_moved));
+  ASSERT_EQ(-3, units_moved);
   EXPECT_HRESULT_SUCCEEDED(
       text_range_provider->GetBoundingRectangles(rectangles.Receive()));
   expected_values = {20, 20, 200, 30, /* button */

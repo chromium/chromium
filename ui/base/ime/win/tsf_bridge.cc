@@ -491,14 +491,13 @@ HRESULT TSFBridgeImpl::InitializeDocumentMapInternal() {
     DWORD* cookie_ptr = use_null_text_store ? nullptr : &cookie;
     scoped_refptr<TSFTextStore> text_store =
         use_null_text_store ? nullptr : new TSFTextStore();
-    HRESULT hr = S_OK;
     if (text_store) {
       HRESULT hr = text_store->Initialize();
       if (FAILED(hr))
         return hr;
     }
-    hr = CreateDocumentManager(text_store.get(), &document_manager, &context,
-                               cookie_ptr);
+    HRESULT hr = CreateDocumentManager(text_store.get(), &document_manager,
+                                       &context, cookie_ptr);
     if (FAILED(hr))
       return hr;
     if (input_type == TEXT_INPUT_TYPE_PASSWORD) {

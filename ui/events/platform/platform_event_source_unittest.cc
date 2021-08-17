@@ -144,7 +144,7 @@ TEST_F(PlatformEventTest, DispatcherBasic) {
   {
     TestPlatformEventDispatcher dispatcher(1, &list_dispatcher);
 
-    std::unique_ptr<PlatformEvent> event = CreatePlatformEvent();
+    event = CreatePlatformEvent();
     source()->Dispatch(*event);
     ASSERT_EQ(1u, list_dispatcher.size());
     EXPECT_EQ(1, list_dispatcher[0]);
@@ -202,7 +202,7 @@ TEST_F(PlatformEventTest, ObserverBasic) {
   {
     TestPlatformEventObserver observer(31, &list_observer);
 
-    std::unique_ptr<PlatformEvent> event = CreatePlatformEvent();
+    event = CreatePlatformEvent();
     source()->Dispatch(*event);
     ASSERT_EQ(1u, list_observer.size());
     EXPECT_EQ(31, list_observer[0]);

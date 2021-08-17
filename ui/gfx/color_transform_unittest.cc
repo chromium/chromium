@@ -17,9 +17,6 @@
 
 namespace gfx {
 
-// Allowed pixel error.
-const float kPixelEpsilon = 1.5f / 255.f;
-
 // Allowed math error.
 const float kMathEpsilon = 0.001f;
 
@@ -349,6 +346,7 @@ TEST(SimpleColorSpace, ICCProfileOnlyColorSpin) {
 }
 
 TEST(SimpleColorSpace, GetColorSpace) {
+  const float kPixelEpsilon = 1.5f / 255.f;
   ICCProfile srgb_icc = ICCProfileForTestingSRGB();
   ColorSpace sRGB = srgb_icc.GetColorSpace();
   ColorSpace sRGB2 = sRGB;
@@ -382,6 +380,7 @@ TEST(SimpleColorSpace, GetColorSpace) {
 }
 
 TEST(SimpleColorSpace, Scale) {
+  const float kPixelEpsilon = 1.5f / 255.f;
   ColorSpace srgb = ColorSpace::CreateSRGB();
   ColorSpace srgb_scaled = srgb.GetScaledColorSpace(2.0f);
   std::unique_ptr<ColorTransform> t(

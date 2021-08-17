@@ -436,12 +436,12 @@ void TestClipboard::DataStore::Clear() {
 }
 
 void TestClipboard::DataStore::SetDataSource(
-    std::unique_ptr<DataTransferEndpoint> data_src) {
-  this->data_src = std::move(data_src);
+    std::unique_ptr<DataTransferEndpoint> new_data_src) {
+  data_src = std::move(new_data_src);
 }
 
 DataTransferEndpoint* TestClipboard::DataStore::GetDataSource() const {
-  return this->data_src.get();
+  return data_src.get();
 }
 
 const TestClipboard::DataStore& TestClipboard::GetStore(

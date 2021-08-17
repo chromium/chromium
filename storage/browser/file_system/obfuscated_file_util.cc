@@ -539,9 +539,9 @@ base::File::Error ObfuscatedFileUtil::CopyOrMoveFile(
   base::File::Info dest_platform_file_info;  // overwrite case only
   base::FilePath dest_local_path;            // overwrite case only
   if (overwrite) {
-    base::File::Error error = GetFileInfoInternal(
-        db, context, dest_url, dest_file_id, &dest_file_info,
-        &dest_platform_file_info, &dest_local_path);
+    error = GetFileInfoInternal(db, context, dest_url, dest_file_id,
+                                &dest_file_info, &dest_platform_file_info,
+                                &dest_local_path);
     if (error == base::File::FILE_ERROR_NOT_FOUND)
       overwrite = false;  // fallback to non-overwrite case
     else if (error != base::File::FILE_OK)

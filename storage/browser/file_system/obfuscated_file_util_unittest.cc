@@ -2013,7 +2013,6 @@ TEST_P(ObfuscatedFileUtilTest, TestFileEnumeratorTimestamp) {
   while (!(file_path_each = file_enum->Next()).empty()) {
     context = NewContext(nullptr);
     base::File::Info file_info;
-    base::FilePath file_path;
     EXPECT_EQ(base::File::FILE_OK,
               ofu()->GetFileInfo(
                   context.get(),

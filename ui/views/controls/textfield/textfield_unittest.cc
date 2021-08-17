@@ -475,9 +475,8 @@ void TextfieldTest::PrepareTextfieldsInternal(int count,
   test_api_ = std::make_unique<TextfieldTestApi>(textfield);
 
   for (int i = 1; i < count; ++i) {
-    Textfield* textfield =
-        container->AddChildView(std::make_unique<Textfield>());
-    textfield->SetID(i + 1);
+    Textfield* child = container->AddChildView(std::make_unique<Textfield>());
+    child->SetID(i + 1);
   }
 
   model_ = test_api_->model();

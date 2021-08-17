@@ -185,11 +185,13 @@ HRESULT AXPlatformNodeTextRangeProviderWin::ExpandToEnclosingUnit(
 HRESULT AXPlatformNodeTextRangeProviderWin::ExpandToEnclosingUnitImpl(
     TextUnit unit) {
   UIA_VALIDATE_TEXTRANGEPROVIDER_CALL();
-  AXPositionInstance normalized_start = start()->Clone();
-  AXPositionInstance normalized_end = end()->Clone();
-  NormalizeTextRange(normalized_start, normalized_end);
-  SetStart(std::move(normalized_start));
-  SetEnd(std::move(normalized_end));
+  {
+    AXPositionInstance normalized_start = start()->Clone();
+    AXPositionInstance normalized_end = end()->Clone();
+    NormalizeTextRange(normalized_start, normalized_end);
+    SetStart(std::move(normalized_start));
+    SetEnd(std::move(normalized_end));
+  }
 
   // Determine if start is on a boundary of the specified TextUnit, if it is
   // not, move backwards until it is. Move the end forwards from start until it

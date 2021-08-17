@@ -142,8 +142,7 @@ void PopupTimersController::OnNotificationUpdated(const std::string& id) {
   // If a timer was paused before, pause it afterwards as well.
   // See crbug.com/710298
   if (was_paused) {
-    auto timer = popup_timers_.find(id);
-    timer->second->Pause();
+    popup_timers_.find(id)->second->Pause();
   }
 }
 

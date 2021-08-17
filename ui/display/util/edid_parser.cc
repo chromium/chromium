@@ -467,13 +467,15 @@ void EdidParser::ParseEdid(const std::vector<uint8_t>& edid) {
     if (edid[offset] == 0 && edid[offset + 1] == 0 && edid[offset + 2] == 0 &&
         edid[offset + 3] == kMonitorSerialNumberDescriptor &&
         edid[offset + 4] == 0) {
-      std::string serial_number(
+      std::string serial_number_str(
           reinterpret_cast<const char*>(&edid[offset + 5]),
           kDescriptorLength - 5);
-      base::TrimWhitespaceASCII(serial_number, base::TRIM_TRAILING,
-                                &serial_number);
-      if (!serial_number.empty())
-        descriptor_block_serial_number_hash_ = base::MD5String(serial_number);
+      base::TrimWhitespaceASCII(serial_number_str, base::TRIM_TRAILING,
+                                &serial_number_str);
+      if (!serial_number_str.empty()) {
+        descriptor_block_serial_number_hash_ =
+            base::MD5String(serial_number_str);
+      }
       continue;
     }
   }
@@ -588,9 +590,9 @@ void EdidParser::ParseEdid(const std::vector<uint8_t>& edid) {
           static_assert(
               kMaxNumColorimetryEntries == base::size(kPrimaryIDMap),
               "kPrimaryIDMap should describe all possible colorimetry entries");
-          for (size_t i = 0; i < kMaxNumColorimetryEntries; ++i) {
-            if (supported_primaries_bitfield[i])
-              supported_color_primary_ids_.insert(kPrimaryIDMap[i]);
+          for (size_t entry = 0; entry < kMaxNumColorimetryEntries; ++entry) {
+            if (supported_primaries_bitfield[entry])
+              supported_color_primary_ids_.insert(kPrimaryIDMap[entry]);
           }
           break;
         }
@@ -602,9 +604,10 @@ void EdidParser::ParseEdid(const std::vector<uint8_t>& edid) {
           static_assert(
               kMaxNumHDRStaticMedatataEntries == base::size(kTransferIDMap),
               "kTransferIDMap should describe all possible transfer entries");
-          for (size_t i = 0; i < kMaxNumHDRStaticMedatataEntries; ++i) {
-            if (supported_eotfs_bitfield[i])
-              supported_color_transfer_ids_.insert(kTransferIDMap[i]);
+          for (size_t entry = 0; entry < kMaxNumHDRStaticMedatataEntries;
+               ++entry) {
+            if (supported_eotfs_bitfield[entry])
+              supported_color_transfer_ids_.insert(kTransferIDMap[entry]);
           }
 
           // See CEA 861.3-2015, Sec.7.5.13, "HDR Static Metadata Data Block"

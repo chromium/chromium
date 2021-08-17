@@ -543,7 +543,6 @@ TEST(AXEventGeneratorTest, SelectionInTextFieldChanged) {
   ASSERT_THAT(event_generator, IsEmpty());
 
   {
-    AXTreeData tree_data;
     tree_data.sel_anchor_object_id = text_field.id;
     tree_data.sel_anchor_offset = 0;
     tree_data.sel_focus_object_id = text_field.id;
@@ -567,7 +566,6 @@ TEST(AXEventGeneratorTest, SelectionInTextFieldChanged) {
   {
     // A selection that does not include a text field in it should not raise the
     // "SELECTION_IN_TEXT_FIELD_CHANGED" event.
-    AXTreeData tree_data;
     tree_data.sel_anchor_object_id = root.id;
     tree_data.sel_anchor_offset = 0;
     tree_data.sel_focus_object_id = root.id;
@@ -588,7 +586,6 @@ TEST(AXEventGeneratorTest, SelectionInTextFieldChanged) {
     // A selection that spans more than one node but which nevertheless ends on
     // a text field should still raise the "SELECTION_IN_TEXT_FIELD_CHANGED"
     // event.
-    AXTreeData tree_data;
     tree_data.sel_anchor_object_id = root.id;
     tree_data.sel_anchor_offset = 0;
     tree_data.sel_focus_object_id = text_field.id;

@@ -363,15 +363,15 @@ TEST_F(BubbleBorderTest, GetBoundsOriginTest) {
          kAnchor.y() + (kAnchor.height() - kTotalSize.height()) / 2},
     };
 
-    for (size_t i = 0; i < base::size(cases); ++i) {
-      SCOPED_TRACE(base::StringPrintf("shadow=%d i=%d arrow=%d",
+    for (size_t j = 0; j < base::size(cases); ++j) {
+      SCOPED_TRACE(base::StringPrintf("shadow=%d j=%d arrow=%d",
                                       static_cast<int>(shadow),
-                                      static_cast<int>(i), cases[i].arrow));
-      const BubbleBorder::Arrow arrow = cases[i].arrow;
+                                      static_cast<int>(j), cases[j].arrow));
+      const BubbleBorder::Arrow arrow = cases[j].arrow;
       border.set_arrow(arrow);
       gfx::Point origin = border.GetBounds(kAnchor, kContentSize).origin();
-      EXPECT_EQ(cases[i].expected_x, origin.x());
-      EXPECT_EQ(cases[i].expected_y, origin.y());
+      EXPECT_EQ(cases[j].expected_x, origin.x());
+      EXPECT_EQ(cases[j].expected_y, origin.y());
     }
   }
 }

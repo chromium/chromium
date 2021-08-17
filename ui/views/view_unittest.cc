@@ -1236,14 +1236,16 @@ TEST_F(ViewTest, PaintInPromotedToLayer) {
   v2->SetBounds(3, 4, 6, 5);
   v1->AddChildView(v2);
 
-  // Paint everything once, since it has to build its cache. Then we can test
-  // invalidation.
-  gfx::Rect first_paint(1, 1);
-  auto list = base::MakeRefCounted<cc::DisplayItemList>();
-  v1->Paint(PaintInfo::CreateRootPaintInfo(
-      ui::PaintContext(list.get(), 1.f, first_paint, false), v1->size()));
-  v1->Reset();
-  v2->Reset();
+  {
+    // Paint everything once, since it has to build its cache. Then we can test
+    // invalidation.
+    gfx::Rect first_paint(1, 1);
+    auto list = base::MakeRefCounted<cc::DisplayItemList>();
+    v1->Paint(PaintInfo::CreateRootPaintInfo(
+        ui::PaintContext(list.get(), 1.f, first_paint, false), v1->size()));
+    v1->Reset();
+    v2->Reset();
+  }
 
   {
     gfx::Rect paint_area(25, 26);
@@ -2888,26 +2890,28 @@ TEST_F(ViewTest, ConversionsWithTransform) {
   // View used to test a rotation transform.
   TestView* child_2 = new TestView;
 
-  top_view.AddChildView(child);
-  child->AddChildView(child_child);
+  {
+    top_view.AddChildView(child);
+    child->AddChildView(child_child);
 
-  top_view.SetBoundsRect(gfx::Rect(0, 0, 1000, 1000));
+    top_view.SetBoundsRect(gfx::Rect(0, 0, 1000, 1000));
 
-  child->SetBoundsRect(gfx::Rect(7, 19, 500, 500));
-  gfx::Transform transform;
-  transform.Scale(3.0, 4.0);
-  child->SetTransform(transform);
+    child->SetBoundsRect(gfx::Rect(7, 19, 500, 500));
+    gfx::Transform transform;
+    transform.Scale(3.0, 4.0);
+    child->SetTransform(transform);
 
-  child_child->SetBoundsRect(gfx::Rect(17, 13, 100, 100));
-  transform.MakeIdentity();
-  transform.Scale(5.0, 7.0);
-  child_child->SetTransform(transform);
+    child_child->SetBoundsRect(gfx::Rect(17, 13, 100, 100));
+    transform.MakeIdentity();
+    transform.Scale(5.0, 7.0);
+    child_child->SetTransform(transform);
 
-  top_view.AddChildView(child_2);
-  child_2->SetBoundsRect(gfx::Rect(700, 725, 100, 100));
-  transform.MakeIdentity();
-  RotateClockwise(&transform);
-  child_2->SetTransform(transform);
+    top_view.AddChildView(child_2);
+    child_2->SetBoundsRect(gfx::Rect(700, 725, 100, 100));
+    transform.MakeIdentity();
+    RotateClockwise(&transform);
+    child_2->SetTransform(transform);
+  }
 
   // Sanity check to make sure basic transforms act as expected.
   {

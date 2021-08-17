@@ -1510,8 +1510,6 @@ TEST_F(ScrollViewTest, ArrowKeyScrollingDisabled) {
 
 // Test that overflow indicators turn on appropriately.
 TEST_F(ScrollViewTest, VerticalOverflowIndicators) {
-  const int kWidth = 100;
-
   ScrollViewTestApi test_api(scroll_view_.get());
 
   // Set up with vertical scrollbar.
@@ -1573,7 +1571,6 @@ TEST_F(ScrollViewTest, VerticalOverflowIndicators) {
 }
 
 TEST_F(ScrollViewTest, HorizontalOverflowIndicators) {
-  const int kWidth = 100;
   const int kHeight = 100;
 
   ScrollViewTestApi test_api(scroll_view_.get());
@@ -1637,7 +1634,6 @@ TEST_F(ScrollViewTest, HorizontalOverflowIndicators) {
 }
 
 TEST_F(ScrollViewTest, HorizontalVerticalOverflowIndicators) {
-  const int kWidth = 100;
   const int kHeight = 100;
 
   ScrollViewTestApi test_api(scroll_view_.get());
@@ -1761,8 +1757,6 @@ TEST_F(ScrollViewTest, HorizontalVerticalOverflowIndicators) {
 }
 
 TEST_F(ScrollViewTest, VerticalWithHeaderOverflowIndicators) {
-  const int kWidth = 100;
-
   ScrollViewTestApi test_api(scroll_view_.get());
 
   // Set up with vertical scrollbar and a header.
@@ -1829,7 +1823,6 @@ TEST_F(ScrollViewTest, VerticalWithHeaderOverflowIndicators) {
 }
 
 TEST_F(ScrollViewTest, CustomOverflowIndicator) {
-  const int kWidth = 100;
   const int kHeight = 100;
 
   ScrollViewTestApi test_api(scroll_view_.get());

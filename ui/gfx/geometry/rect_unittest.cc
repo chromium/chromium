@@ -1018,44 +1018,44 @@ TEST(RectTest, ManhattanInternalDistance) {
 TEST(RectTest, IntegerOverflow) {
   int limit = std::numeric_limits<int>::max();
   int min_limit = std::numeric_limits<int>::min();
-  int expected = 10;
-  int large_number = limit - expected;
+  int expected_thickness = 10;
+  int large_number = limit - expected_thickness;
 
   Rect height_overflow(0, large_number, 100, 100);
   EXPECT_EQ(large_number, height_overflow.y());
-  EXPECT_EQ(expected, height_overflow.height());
+  EXPECT_EQ(expected_thickness, height_overflow.height());
 
   Rect width_overflow(large_number, 0, 100, 100);
   EXPECT_EQ(large_number, width_overflow.x());
-  EXPECT_EQ(expected, width_overflow.width());
+  EXPECT_EQ(expected_thickness, width_overflow.width());
 
   Rect size_height_overflow(Point(0, large_number), Size(100, 100));
   EXPECT_EQ(large_number, size_height_overflow.y());
-  EXPECT_EQ(expected, size_height_overflow.height());
+  EXPECT_EQ(expected_thickness, size_height_overflow.height());
 
   Rect size_width_overflow(Point(large_number, 0), Size(100, 100));
   EXPECT_EQ(large_number, size_width_overflow.x());
-  EXPECT_EQ(expected, size_width_overflow.width());
+  EXPECT_EQ(expected_thickness, size_width_overflow.width());
 
   Rect set_height_overflow(0, large_number, 100, 5);
   EXPECT_EQ(5, set_height_overflow.height());
   set_height_overflow.set_height(100);
-  EXPECT_EQ(expected, set_height_overflow.height());
+  EXPECT_EQ(expected_thickness, set_height_overflow.height());
 
   Rect set_y_overflow(100, 100, 100, 100);
   EXPECT_EQ(100, set_y_overflow.height());
   set_y_overflow.set_y(large_number);
-  EXPECT_EQ(expected, set_y_overflow.height());
+  EXPECT_EQ(expected_thickness, set_y_overflow.height());
 
   Rect set_width_overflow(large_number, 0, 5, 100);
   EXPECT_EQ(5, set_width_overflow.width());
   set_width_overflow.set_width(100);
-  EXPECT_EQ(expected, set_width_overflow.width());
+  EXPECT_EQ(expected_thickness, set_width_overflow.width());
 
   Rect set_x_overflow(100, 100, 100, 100);
   EXPECT_EQ(100, set_x_overflow.width());
   set_x_overflow.set_x(large_number);
-  EXPECT_EQ(expected, set_x_overflow.width());
+  EXPECT_EQ(expected_thickness, set_x_overflow.width());
 
   Point large_offset(large_number, large_number);
   Size size(100, 100);
@@ -1147,8 +1147,8 @@ TEST(RectTest, IntegerOverflow) {
     // Ideally, this should be (100, 100, limit + 400, limit + 400).
     // However, width overflows and would be clamped to limit, but right
     // overflows too and so will be clamped to limit - 100.
-    Rect expected(100, 100, limit - 100, limit - 100);
-    EXPECT_EQ(UnionRects(clamped, positive_origin), expected);
+    Rect expected_rect(100, 100, limit - 100, limit - 100);
+    EXPECT_EQ(UnionRects(clamped, positive_origin), expected_rect);
   }
 
   // Unioning a left=minint rect with a right=maxint rect.
@@ -1158,7 +1158,7 @@ TEST(RectTest, IntegerOverflow) {
     int part_limit = min_limit / 3;
     Rect left_minint(min_limit, min_limit, 1, 1);
     Rect right_maxint(limit - 1, limit - 1, limit, limit);
-    Rect expected(part_limit, part_limit, 2 * part_limit, 2 * part_limit);
+    Rect expected_rect(part_limit, part_limit, 2 * part_limit, 2 * part_limit);
     Rect result = UnionRects(left_minint, right_maxint);
 
     // The result should be maximally big.
@@ -1172,7 +1172,7 @@ TEST(RectTest, IntegerOverflow) {
     EXPECT_LT(part_limit, result.bottom());
 
     // More succinctly, but harder to read in the results.
-    EXPECT_TRUE(UnionRects(left_minint, right_maxint).Contains(expected));
+    EXPECT_TRUE(UnionRects(left_minint, right_maxint).Contains(expected_rect));
   }
 }
 
