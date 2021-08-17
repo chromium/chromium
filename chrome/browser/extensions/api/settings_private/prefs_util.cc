@@ -1099,12 +1099,12 @@ settings_private::SetPrefResult PrefsUtil::SetCrosSettingsPref(
     const base::Value* value) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (pref_name == chromeos::kSystemTimezone) {
-    std::string string_value;
-    if (!value->GetAsString(&string_value))
+    const std::string* string_value = value->GetIfString();
+    if (!string_value)
       return settings_private::SetPrefResult::PREF_TYPE_MISMATCH;
     const user_manager::User* user =
         chromeos::ProfileHelper::Get()->GetUserByProfile(profile_);
-    if (user && ash::system::SetSystemTimezone(user, string_value))
+    if (user && ash::system::SetSystemTimezone(user, *string_value))
       return settings_private::SetPrefResult::SUCCESS;
     return settings_private::SetPrefResult::PREF_NOT_MODIFIABLE;
   }
