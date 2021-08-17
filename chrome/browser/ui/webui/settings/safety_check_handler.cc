@@ -661,11 +661,6 @@ std::u16string SafetyCheckHandler::GetStringForPasswords(
       return l10n_util::GetPluralStringFUTF16(
           IDS_SETTINGS_COMPROMISED_PASSWORDS_COUNT, 0);
     case PasswordsStatus::kCompromisedExist:
-      // TODO(crbug.com/1128904): Clean up the old code path.
-      if (!base::FeatureList::IsEnabled(features::kSafetyCheckWeakPasswords)) {
-        return l10n_util::GetPluralStringFUTF16(
-            IDS_SETTINGS_COMPROMISED_PASSWORDS_COUNT, compromised.value());
-      }
       if (weak.value() == 0) {
         // Only compromised passwords, no weak passwords.
         return l10n_util::GetPluralStringFUTF16(
@@ -883,10 +878,7 @@ void SafetyCheckHandler::UpdatePasswordsResultOnCheckIdle() {
   size_t num_compromised =
       passwords_delegate_->GetCompromisedCredentials().size();
   size_t num_weak = passwords_delegate_->GetWeakCredentials().size();
-  // TODO(crbug.com/1128904): Clean up the old code path.
-  if (num_compromised == 0 &&
-      (num_weak == 0 ||
-       !base::FeatureList::IsEnabled(features::kSafetyCheckWeakPasswords))) {
+  if (num_compromised == 0 && num_weak == 0) {
     // If there are no |OnCredentialDone| callbacks with is_leaked = true, no
     // need to wait for InsecureCredentialsManager callbacks any longer, since
     // there should be none for the current password check.

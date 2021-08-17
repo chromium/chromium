@@ -354,11 +354,6 @@ var CrSettingsPasswordsCheckTest = class extends CrSettingsBrowserTest {
   get browsePreload() {
     return 'chrome://settings/test_loader.html?module=settings/password_check_test.js';
   }
-
-  /** @override */
-  get featureList() {
-    return {enabled: ['features::kSafetyCheckWeakPasswords']};
-  }
 };
 
 // Flaky on Mac builds https://crbug.com/1143801

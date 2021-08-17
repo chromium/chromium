@@ -329,8 +329,6 @@ class SafetyCheckHandlerTest : public testing::Test {
 };
 
 void SafetyCheckHandlerTest::SetUp() {
-  feature_list_.InitWithFeatures({features::kSafetyCheckWeakPasswords}, {});
-
   TestingProfile::Builder builder;
   profile_ = builder.Build();
 

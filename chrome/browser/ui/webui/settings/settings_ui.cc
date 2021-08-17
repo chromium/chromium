@@ -345,10 +345,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   html_source->AddBoolean(
-      "safetyCheckWeakPasswordsEnabled",
-      base::FeatureList::IsEnabled(features::kSafetyCheckWeakPasswords));
-
-  html_source->AddBoolean(
       "privacyReviewEnabled",
       base::FeatureList::IsEnabled(features::kPrivacyReview));
 

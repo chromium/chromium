@@ -2059,10 +2059,6 @@ const char kSafeBrowsingPerProfileNetworkContextsDescription[] =
     "Keys the Safe Browsing network context by the profile initiating the "
     "request";
 
-const char kSafetyCheckWeakPasswordsName[] = "Safety check for weak passwords";
-const char kSafetyCheckWeakPasswordsDescription[] =
-    "If weak passwords were found, show them in safety check.";
-
 const char kProminentDarkModeActiveTabTitleName[] =
     "Prominent Dark Mode Active Tab Titles";
 const char kProminentDarkModeActiveTabTitleDescription[] =

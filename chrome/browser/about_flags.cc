@@ -6906,11 +6906,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kSwipeToMoveCursor)},
 #endif  // defined(OS_ANDROID)
 
-    {"safety-check-weak-passwords",
-     flag_descriptions::kSafetyCheckWeakPasswordsName,
-     flag_descriptions::kSafetyCheckWeakPasswordsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kSafetyCheckWeakPasswords)},
-
 #if !defined(OS_ANDROID)
     {"settings-landing-page-redesign",
      flag_descriptions::kSettingsLandingPageRedesignName,

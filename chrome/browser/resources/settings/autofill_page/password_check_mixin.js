@@ -152,16 +152,6 @@ export const PasswordCheckMixin = dedupingMixin(superClass => {
     }
 
     /**
-     * True if weak passwords are shown in SC, in which case the PW check UI
-     * adapts a bit to show the information in the same form as SC.
-     * @return {boolean}
-     * @private
-     */
-    safetyCheckWeakPasswordsEnabled_() {
-      return loadTimeData.getBoolean('safetyCheckWeakPasswordsEnabled');
-    }
-
-    /**
      * Helper that fetches pluralized strings corresponding to the number of
      * compromised, weak and insecure credentials.
      * @private
@@ -178,10 +168,6 @@ export const PasswordCheckMixin = dedupingMixin(superClass => {
           .then(count => this.weakPasswordsCount = count);
 
       (() => {
-        if (!this.safetyCheckWeakPasswordsEnabled_()) {
-          // Old code path: adds up compromised and weak passwords.
-          return proxy.getPluralString('insecurePasswords', compromised + weak);
-        }
         if (compromised > 0 && weak > 0) {
           return proxy.getPluralStringTupleWithComma(
               'safetyCheckPasswordsCompromised', compromised,
