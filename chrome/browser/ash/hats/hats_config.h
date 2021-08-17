@@ -46,6 +46,8 @@ struct HatsConfig {
 // CrOS HaTS configs are declared here and defined in hats_config.cc
 extern const HatsConfig kHatsGeneralSurvey;
 extern const HatsConfig kHatsOnboardingSurvey;
+extern const HatsConfig kHatsSmartLockSurvey;
+extern const HatsConfig kHatsUnlockSurvey;
 
 }  // namespace ash
 

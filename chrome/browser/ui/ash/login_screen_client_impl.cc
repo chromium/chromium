@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "chrome/browser/ash/child_accounts/parent_access_code/parent_access_service.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
+#include "chrome/browser/ash/login/hats_unlock_survey_trigger.h"
 #include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ash/login/login_auth_recorder.h"
@@ -21,7 +22,6 @@
 #include "chrome/browser/ash/login/saml/in_session_password_sync_manager_factory.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/ui/user_adding_screen.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
@@ -46,7 +46,8 @@ LoginScreenClientImpl::Delegate::~Delegate() = default;
 LoginScreenClientImpl::ParentAccessDelegate::~ParentAccessDelegate() = default;
 
 LoginScreenClientImpl::LoginScreenClientImpl()
-    : auth_recorder_(std::make_unique<chromeos::LoginAuthRecorder>()) {
+    : auth_recorder_(std::make_unique<chromeos::LoginAuthRecorder>()),
+      unlock_survey_trigger_(std::make_unique<ash::HatsUnlockSurveyTrigger>()) {
   // Register this object as the client interface implementation.
   ash::LoginScreen::Get()->SetClient(this);
 
@@ -107,10 +108,12 @@ void LoginScreenClientImpl::AuthenticateUserWithPasswordOrPin(
   if (delegate_) {
     delegate_->HandleAuthenticateUserWithPasswordOrPin(
         account_id, password, authenticated_by_pin, std::move(callback));
-    auth_recorder_->RecordAuthMethod(
+    chromeos::LoginAuthRecorder::AuthMethod auth_method =
         authenticated_by_pin
             ? chromeos::LoginAuthRecorder::AuthMethod::kPin
-            : chromeos::LoginAuthRecorder::AuthMethod::kPassword);
+            : chromeos::LoginAuthRecorder::AuthMethod::kPassword;
+    auth_recorder_->RecordAuthMethod(auth_method);
+    unlock_survey_trigger_->ShowSurveyIfSelected(account_id, auth_method);
   } else {
     LOG(ERROR) << "Failed AuthenticateUserWithPasswordOrPin; no delegate";
     std::move(callback).Run(false);
@@ -123,6 +126,8 @@ void LoginScreenClientImpl::AuthenticateUserWithEasyUnlock(
     delegate_->HandleAuthenticateUserWithEasyUnlock(account_id);
     auth_recorder_->RecordAuthMethod(
         chromeos::LoginAuthRecorder::AuthMethod::kSmartlock);
+    unlock_survey_trigger_->ShowSurveyIfSelected(
+        account_id, chromeos::LoginAuthRecorder::AuthMethod::kSmartlock);
   }
 }
 
@@ -133,6 +138,9 @@ void LoginScreenClientImpl::AuthenticateUserWithChallengeResponse(
     delegate_->HandleAuthenticateUserWithChallengeResponse(account_id,
                                                            std::move(callback));
     auth_recorder_->RecordAuthMethod(
+        chromeos::LoginAuthRecorder::AuthMethod::kChallengeResponse);
+    unlock_survey_trigger_->ShowSurveyIfSelected(
+        account_id,
         chromeos::LoginAuthRecorder::AuthMethod::kChallengeResponse);
   }
 }

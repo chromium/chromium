@@ -501,6 +501,12 @@ const base::Feature kHappinessTrackingSystem{"HappinessTrackingSystem",
 // Enables or disables the Happiness Tracking System for Onboarding Experience.
 const base::Feature kHappinessTrackingSystemOnboarding{
     "HappinessTrackingOnboardingExperience", base::FEATURE_DISABLED_BY_DEFAULT};
+// Enables or disables the Happiness Tracking System for Unlock.
+const base::Feature kHappinessTrackingSystemUnlock{
+    "HappinessTrackingUnlock", base::FEATURE_DISABLED_BY_DEFAULT};
+// Enables or disables the Happiness Tracking System for Smart Lock.
+const base::Feature kHappinessTrackingSystemSmartLock{
+    "HappinessTrackingSmartLock", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
 // Hides the origin text from showing up briefly in WebApp windows.

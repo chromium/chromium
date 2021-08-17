@@ -30,6 +30,7 @@
 #include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/ash/certificate_provider/pin_dialog_manager.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
+#include "chrome/browser/ash/login/hats_unlock_survey_trigger.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/lock/views_screen_locker.h"
 #include "chrome/browser/ash/login/login_auth_recorder.h"
@@ -793,6 +794,9 @@ void ScreenLocker::OnAuthScanDone(
   }
 
   LoginScreenClientImpl::Get()->auth_recorder()->RecordAuthMethod(
+      LoginAuthRecorder::AuthMethod::kFingerprint);
+  LoginScreenClientImpl::Get()->unlock_survey_trigger()->ShowSurveyIfSelected(
+      primary_user->GetAccountId(),
       LoginAuthRecorder::AuthMethod::kFingerprint);
 
   if (scan_result != device::mojom::ScanResult::SUCCESS) {
