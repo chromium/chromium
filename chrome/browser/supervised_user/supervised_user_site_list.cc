@@ -45,13 +45,13 @@ std::vector<std::string> ConvertListValues(const base::ListValue* list_values) {
   std::vector<std::string> converted;
   if (list_values) {
     for (const auto& entry : list_values->GetList()) {
-      std::string entry_string;
-      if (!entry.GetAsString(&entry_string)) {
+      const std::string* entry_string = entry.GetIfString();
+      if (!entry_string) {
         LOG(ERROR) << "Invalid allowlist entry";
         continue;
       }
 
-      converted.push_back(entry_string);
+      converted.push_back(*entry_string);
     }
   }
   return converted;
