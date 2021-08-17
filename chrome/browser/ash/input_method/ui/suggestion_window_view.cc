@@ -131,11 +131,6 @@ void SuggestionWindowView::SetButtonHighlighted(
   }
 }
 
-void SuggestionWindowView::Announce(const std::u16string& message) {
-  DCHECK(accessibility_label_);
-  accessibility_label_->Announce(message);
-}
-
 void SuggestionWindowView::OnThemeChanged() {
   BubbleDialogDelegateView::OnThemeChanged();
 
@@ -167,10 +162,6 @@ SuggestionWindowView::SuggestionWindowView(gfx::NativeView parent,
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
-
-  accessibility_label_ =
-      AddChildView(std::make_unique<SuggestionAccessibilityLabel>());
-  accessibility_label_->SetLineHeight(0);
 
   candidate_area_ = AddChildView(std::make_unique<views::View>());
   candidate_area_->SetLayoutManager(std::make_unique<views::BoxLayout>(

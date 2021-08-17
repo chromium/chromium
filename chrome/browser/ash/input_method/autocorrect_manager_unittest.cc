@@ -121,7 +121,7 @@ TEST(AutocorrectManagerTest, MovingCursorInsideRangeShowsAssistiveWindow) {
   AssistiveWindowProperties properties;
   properties.type = ui::ime::AssistiveWindowType::kUndoWindow;
   properties.visible = true;
-  properties.announce_string = l10n_util::GetStringFUTF8(
+  properties.announce_string = l10n_util::GetStringFUTF16(
       IDS_SUGGESTION_AUTOCORRECT_UNDO_WINDOW_SHOWN, u"teh", u"the");
   EXPECT_CALL(mock_suggestion_handler,
               SetAssistiveWindowProperties(_, properties, _));
@@ -146,7 +146,7 @@ TEST(AutocorrectManagerTest, MovingCursorOutsideRangeHidesAssistiveWindow) {
     AssistiveWindowProperties shown_properties;
     shown_properties.type = ui::ime::AssistiveWindowType::kUndoWindow;
     shown_properties.visible = true;
-    shown_properties.announce_string = l10n_util::GetStringFUTF8(
+    shown_properties.announce_string = l10n_util::GetStringFUTF16(
         IDS_SUGGESTION_AUTOCORRECT_UNDO_WINDOW_SHOWN, u"teh", u"the");
     EXPECT_CALL(mock_suggestion_handler,
                 SetAssistiveWindowProperties(_, shown_properties, _));

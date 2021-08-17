@@ -53,10 +53,11 @@ const char kPhoneNumberRegex[] =
 const char kFirstNameRegex[] = "first name";
 const char kLastNameRegex[] = "last name";
 
-const char kShowPersonalInfoSuggestionMessage[] =
-    "Personal info suggested. Press down arrow to access; escape to ignore.";
-const char kDismissPersonalInfoSuggestionMessage[] = "Suggestion dismissed.";
-const char kAcceptPersonalInfoSuggestionMessage[] = "Suggestion inserted.";
+const char16_t kShowPersonalInfoSuggestionMessage[] =
+    u"Personal info suggested. Press down arrow to access; escape to ignore.";
+const char16_t kDismissPersonalInfoSuggestionMessage[] =
+    u"Suggestion dismissed.";
+const char16_t kAcceptPersonalInfoSuggestionMessage[] = u"Suggestion inserted.";
 
 // The current personal information would only provide one suggestion, so there
 // could be only two possible UI: 1. only one suggestion, 2. one suggestion and
@@ -66,13 +67,10 @@ const char kAcceptPersonalInfoSuggestionMessage[] = "Suggestion inserted.";
 const char kSuggestionMessageTemplate[] =
     "Suggestion %s. Button. Menu item 1 of %d. Press enter to insert; escape "
     "to dismiss.";
-const char kLearnMoreMessage[] =
-    "Learn more about suggestions. Link. Menu item 2 of 2. Press enter to "
-    "activate; escape to dismiss.";
+const char16_t kLearnMoreMessage[] =
+    u"Learn more about suggestions. Link. Menu item 2 of 2. Press enter to "
+    u"activate; escape to dismiss.";
 const int kNoneHighlighted = -1;
-
-constexpr base::TimeDelta kTtsShowDelay =
-    base::TimeDelta::FromMilliseconds(1200);
 
 const std::vector<autofill::ServerFieldType>& GetHomeAddressTypes() {
   static base::NoDestructor<std::vector<autofill::ServerFieldType>>
@@ -170,16 +168,13 @@ AssistiveType ProposePersonalInfoAssistiveAction(const std::u16string& text) {
 PersonalInfoSuggester::PersonalInfoSuggester(
     SuggestionHandlerInterface* suggestion_handler,
     Profile* profile,
-    autofill::PersonalDataManager* personal_data_manager,
-    std::unique_ptr<TtsHandler> tts_handler)
+    autofill::PersonalDataManager* personal_data_manager)
     : suggestion_handler_(suggestion_handler),
       profile_(profile),
       personal_data_manager_(
           personal_data_manager
               ? personal_data_manager
               : autofill::PersonalDataManagerFactory::GetForProfile(profile)),
-      tts_handler_(tts_handler ? std::move(tts_handler)
-                               : std::make_unique<TtsHandler>(profile)),
       highlighted_index_(kNoneHighlighted) {
   suggestion_button_.id = ui::ime::ButtonId::kSuggestion;
   suggestion_button_.window_type =
@@ -374,9 +369,9 @@ void PersonalInfoSuggester::ShowSuggestion(const std::u16string& text,
     LOG(ERROR) << "Fail to show suggestion. " << error;
   }
 
-  suggestion_button_.announce_string = base::StringPrintf(
+  suggestion_button_.announce_string = base::UTF8ToUTF16(base::StringPrintf(
       kSuggestionMessageTemplate, base::UTF16ToUTF8(text).c_str(),
-      details.show_setting_link ? 2 : 1);
+      details.show_setting_link ? 2 : 1));
   buttons_.clear();
   buttons_.push_back(suggestion_button_);
   if (details.show_setting_link)
@@ -389,10 +384,9 @@ void PersonalInfoSuggester::ShowSuggestion(const std::u16string& text,
     first_shown_ = true;
     IncrementPrefValueTilCapped(kPersonalInfoSuggesterShowSettingCount,
                                 kMaxShowSettingCount);
-    tts_handler_->Announce(
-        // TODO(jiwan): Add translation to other languages when we support
-        // more than English.
-        kShowPersonalInfoSuggestionMessage, kTtsShowDelay);
+    // TODO(jiwan): Add translation to other languages when we support
+    // more than English.
+    suggestion_handler_->Announce(kShowPersonalInfoSuggestionMessage);
   }
 
   suggestion_shown_ = true;
@@ -447,7 +441,7 @@ bool PersonalInfoSuggester::AcceptSuggestion(size_t index) {
   IncrementPrefValueTilCapped(kPersonalInfoSuggesterAcceptanceCount,
                               kMaxAcceptanceCount);
   suggestion_shown_ = false;
-  tts_handler_->Announce(kAcceptPersonalInfoSuggestionMessage);
+  suggestion_handler_->Announce(kAcceptPersonalInfoSuggestionMessage);
 
   return true;
 }
@@ -461,7 +455,7 @@ void PersonalInfoSuggester::DismissSuggestion() {
   }
   suggestion_shown_ = false;
   RecordTimeToDismiss(base::TimeTicks::Now() - session_start_);
-  tts_handler_->Announce(kDismissPersonalInfoSuggestionMessage);
+  suggestion_handler_->Announce(kDismissPersonalInfoSuggestionMessage);
 }
 
 void PersonalInfoSuggester::SetButtonHighlighted(

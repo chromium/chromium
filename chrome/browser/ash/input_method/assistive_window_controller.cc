@@ -36,20 +36,13 @@ gfx::NativeView GetParentView() {
   return parent;
 }
 
-// Delay messages when window is shown until after normal ChromeVox
-// announcements are done.
-constexpr base::TimeDelta kTtsShowDelay =
-    base::TimeDelta::FromMilliseconds(1200);
-
 }  // namespace
 
 AssistiveWindowController::AssistiveWindowController(
     AssistiveWindowControllerDelegate* delegate,
     Profile* profile,
-    std::unique_ptr<TtsHandler> tts_handler)
-    : delegate_(delegate),
-      tts_handler_(tts_handler ? std::move(tts_handler)
-                               : std::make_unique<TtsHandler>(profile)) {}
+    ui::ime::AssistiveAccessibilityView* accessibility_view)
+    : delegate_(delegate), accessibility_view_(accessibility_view) {}
 
 AssistiveWindowController::~AssistiveWindowController() {
   if (suggestion_window_view_ && suggestion_window_view_->GetWidget())
@@ -58,6 +51,8 @@ AssistiveWindowController::~AssistiveWindowController() {
     undo_window_->GetWidget()->RemoveObserver(this);
   if (grammar_suggestion_window_ && grammar_suggestion_window_->GetWidget())
     grammar_suggestion_window_->GetWidget()->RemoveObserver(this);
+  if (accessibility_view_ && accessibility_view_->GetWidget())
+    accessibility_view_->GetWidget()->RemoveObserver(this);
   CHECK(!IsInObserverList());
 }
 
@@ -94,6 +89,16 @@ void AssistiveWindowController::InitGrammarSuggestionWindow() {
   widget->Show();
 }
 
+void AssistiveWindowController::InitAccessibilityView() {
+  if (accessibility_view_)
+    return;
+
+  // accessibility_view_ is deleted by DialogDelegateView::DeleteDelegate.
+  accessibility_view_ =
+      new ui::ime::AssistiveAccessibilityView(GetParentView());
+  accessibility_view_->GetWidget()->AddObserver(this);
+}
+
 void AssistiveWindowController::OnWidgetClosing(views::Widget* widget) {
   if (suggestion_window_view_ &&
       widget == suggestion_window_view_->GetWidget()) {
@@ -109,11 +114,17 @@ void AssistiveWindowController::OnWidgetClosing(views::Widget* widget) {
     widget->RemoveObserver(this);
     grammar_suggestion_window_ = nullptr;
   }
+  if (accessibility_view_ && widget == accessibility_view_->GetWidget()) {
+    widget->RemoveObserver(this);
+    accessibility_view_ = nullptr;
+  }
 }
 
 void AssistiveWindowController::Announce(const std::u16string& message) {
-  if (suggestion_window_view_)
-    suggestion_window_view_->Announce(message);
+  if (!accessibility_view_)
+    InitAccessibilityView();
+
+  accessibility_view_->Announce(message);
 }
 
 // TODO(crbug/1119570): Update AcceptSuggestion signature (either use
@@ -121,10 +132,9 @@ void AssistiveWindowController::Announce(const std::u16string& message) {
 void AssistiveWindowController::AcceptSuggestion(
     const std::u16string& suggestion) {
   if (window_.type == ui::ime::AssistiveWindowType::kEmojiSuggestion) {
-    tts_handler_->Announce(
-        l10n_util::GetStringUTF8(IDS_SUGGESTION_EMOJI_SUGGESTED));
+    Announce(l10n_util::GetStringUTF16(IDS_SUGGESTION_EMOJI_SUGGESTED));
   } else {
-    tts_handler_->Announce(l10n_util::GetStringUTF8(IDS_SUGGESTION_INSERTED));
+    Announce(l10n_util::GetStringUTF16(IDS_SUGGESTION_INSERTED));
   }
   HideSuggestion();
 }
@@ -181,14 +191,14 @@ void AssistiveWindowController::SetButtonHighlighted(
 
       suggestion_window_view_->SetButtonHighlighted(button, highlighted);
       if (highlighted)
-        tts_handler_->Announce(button.announce_string);
+        Announce(button.announce_string);
       break;
     case ui::ime::AssistiveWindowType::kUndoWindow:
       if (!undo_window_)
         return;
 
       undo_window_->SetButtonHighlighted(button, highlighted);
-      tts_handler_->Announce(button.announce_string);
+      Announce(button.announce_string);
       break;
     case ui::ime::AssistiveWindowType::kGrammarSuggestion:
       if (!grammar_suggestion_window_)
@@ -196,7 +206,7 @@ void AssistiveWindowController::SetButtonHighlighted(
 
       grammar_suggestion_window_->SetButtonHighlighted(button, highlighted);
       if (highlighted)
-        tts_handler_->Announce(button.announce_string);
+        Announce(button.announce_string);
       break;
     case ui::ime::AssistiveWindowType::kNone:
       break;
@@ -253,7 +263,7 @@ void AssistiveWindowController::SetAssistiveWindowProperties(
     case ui::ime::AssistiveWindowType::kNone:
       break;
   }
-  tts_handler_->Announce(window.announce_string, kTtsShowDelay);
+  Announce(window.announce_string);
 }
 
 void AssistiveWindowController::AssistiveWindowButtonClicked(

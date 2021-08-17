@@ -12,7 +12,6 @@
 #include "chrome/browser/ash/input_method/suggester.h"
 #include "chrome/browser/ash/input_method/suggestion_enums.h"
 #include "chrome/browser/ash/input_method/suggestion_handler_interface.h"
-#include "chrome/browser/ash/input_method/tts_handler.h"
 #include "chrome/browser/extensions/api/input_ime/input_ime_api.h"
 #include "chromeos/services/ime/public/cpp/suggestions.h"
 
@@ -43,8 +42,7 @@ class PersonalInfoSuggester : public Suggester {
   PersonalInfoSuggester(
       SuggestionHandlerInterface* suggestion_handler,
       Profile* profile,
-      autofill::PersonalDataManager* personal_data_manager = nullptr,
-      std::unique_ptr<TtsHandler> tts_handler = nullptr);
+      autofill::PersonalDataManager* personal_data_manager = nullptr);
   ~PersonalInfoSuggester() override;
 
   bool IsFirstShown() { return first_shown_; }
@@ -95,9 +93,6 @@ class PersonalInfoSuggester : public Suggester {
 
   // Personal data manager provided by autofill service.
   autofill::PersonalDataManager* const personal_data_manager_;
-
-  // The handler to handle Text-to-Speech (TTS) request.
-  std::unique_ptr<TtsHandler> const tts_handler_;
 
   // If we are showing a suggestion right now.
   bool suggestion_shown_ = false;

@@ -117,7 +117,7 @@ bool AutocorrectManager::OnKeyEvent(const ui::KeyEvent& event) {
     auto button = ui::ime::AssistiveWindowButton();
     button.id = ui::ime::ButtonId::kUndo;
     button.window_type = ui::ime::AssistiveWindowType::kUndoWindow;
-    button.announce_string = l10n_util::GetStringFUTF8(
+    button.announce_string = l10n_util::GetStringFUTF16(
         IDS_SUGGESTION_AUTOCORRECT_UNDO_BUTTON, original_text_);
     suggestion_handler_->SetButtonHighlighted(context_id_, button, true,
                                               &error);
@@ -169,7 +169,7 @@ void AutocorrectManager::OnSurroundingTextChanged(const std::u16string& text,
       AssistiveWindowProperties properties;
       properties.type = ui::ime::AssistiveWindowType::kUndoWindow;
       properties.visible = true;
-      properties.announce_string = l10n_util::GetStringFUTF8(
+      properties.announce_string = l10n_util::GetStringFUTF16(
           IDS_SUGGESTION_AUTOCORRECT_UNDO_WINDOW_SHOWN, original_text_,
           autocorrected_text);
       window_visible_ = true;

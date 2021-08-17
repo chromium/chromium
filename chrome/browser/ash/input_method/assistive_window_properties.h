@@ -23,7 +23,7 @@ struct AssistiveWindowProperties {
 
   ui::ime::AssistiveWindowType type = ui::ime::AssistiveWindowType::kNone;
   bool visible = false;
-  std::string announce_string;
+  std::u16string announce_string;
   std::vector<std::u16string> candidates;
   bool show_indices = false;
   bool show_setting_link = false;
