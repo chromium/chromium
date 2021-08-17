@@ -10,5 +10,9 @@ source_set("context_menu") {
     "link_no_preview_view_controller.h",
     "link_no_preview_view_controller.mm",
   ]
-  deps = [ "//ios/chrome/common/ui/colors" ]
+  deps = [
+    "//ios/chrome/browser/ui/elements",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/favicon",
+  ]
 }

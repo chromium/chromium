@@ -7,12 +7,17 @@
 
 #import <UIKit/UIKit.h>
 
+@class FaviconAttributes;
+
 // View showing the information for a link when a preview of the destination is
 // not displayed.
 @interface LinkNoPreviewView : UIView
 
 // Initializes the view with its |title| and |subtitle|.
 - (instancetype)initWithTitle:(NSString*)title subtitle:(NSString*)subtitle;
+
+// Sets the favicon for the preview.
+- (void)configureWithAttributes:(FaviconAttributes*)attributes;
 
 @end
 
