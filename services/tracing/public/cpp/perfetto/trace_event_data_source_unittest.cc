@@ -1128,17 +1128,26 @@ TEST_F(TraceEventDataSourceTest, EventWithCopiedStrings) {
   size_t packet_index = ExpectStandardPreamble();
 
   auto* e_packet = GetFinalizedPacket(packet_index++);
+  const auto& annotations = e_packet->track_event().debug_annotations();
+  EXPECT_EQ(annotations.size(), 2);
+
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  // Perfetto uses interning even for copied strings.
+  ExpectTraceEvent(e_packet, /*category_iid=*/1u, /*name_iid=*/1u,
+                   TRACE_EVENT_PHASE_INSTANT,
+                   TRACE_EVENT_SCOPE_THREAD | TRACE_EVENT_FLAG_COPY);
+  EXPECT_EQ(annotations[0].name_iid(), 1u);
+  EXPECT_EQ(annotations[1].name_iid(), 2u);
+#else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   ExpectTraceEvent(e_packet, /*category_iid=*/1u, /*name=*/"bar",
                    TRACE_EVENT_PHASE_INSTANT,
                    TRACE_EVENT_SCOPE_THREAD | TRACE_EVENT_FLAG_COPY);
-
   EXPECT_EQ(e_packet->track_event().name(), "bar");
-
-  const auto& annotations = e_packet->track_event().debug_annotations();
-  EXPECT_EQ(annotations.size(), 2);
   EXPECT_EQ(annotations[0].name(), "arg1_name");
-  EXPECT_EQ(annotations[0].string_value(), "arg1_val");
   EXPECT_EQ(annotations[1].name(), "arg2_name");
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+
+  EXPECT_EQ(annotations[0].string_value(), "arg1_val");
   EXPECT_EQ(annotations[1].string_value(), "arg2_val");
 
   ExpectEventCategories(e_packet, {{1u, kCategoryGroup}});
