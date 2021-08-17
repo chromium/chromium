@@ -75,14 +75,6 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
     // Whether test requires a browser to be started.
     bool browser = false;
 
-    // Whether test requires zip/unzip support.
-    // TODO(crbug.com/912236) Remove once transition to new ZIP system is done.
-    bool zip = false;
-
-    // Whether test uses the new ZIP system.
-    // TODO(crbug.com/912236) Remove once transition to new ZIP system is done.
-    bool zip_no_nacl = false;
-
     // Whether test should enable drive dss pinning.
     bool drive_dss_pin = false;
 

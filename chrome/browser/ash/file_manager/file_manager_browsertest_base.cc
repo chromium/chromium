@@ -774,8 +774,6 @@ std::ostream& operator<<(std::ostream& out,
   PRINT_IF_NOT_DEFAULT(photos_documents_provider)
   PRINT_IF_NOT_DEFAULT(single_partition_format)
   PRINT_IF_NOT_DEFAULT(tablet_mode)
-  PRINT_IF_NOT_DEFAULT(zip)
-  PRINT_IF_NOT_DEFAULT(zip_no_nacl)
 
 #undef PRINT_IF_NOT_DEFAULT
 
@@ -1705,16 +1703,6 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     arc::SetArcAvailableCommandLineForTesting(command_line);
   }
 
-  if (options.zip_no_nacl) {
-    enabled_features.push_back(chromeos::features::kFilesZipMount);
-    enabled_features.push_back(chromeos::features::kFilesZipPack);
-    enabled_features.push_back(chromeos::features::kFilesZipUnpack);
-  } else {
-    disabled_features.push_back(chromeos::features::kFilesZipMount);
-    disabled_features.push_back(chromeos::features::kFilesZipPack);
-    disabled_features.push_back(chromeos::features::kFilesZipUnpack);
-  }
-
   if (options.drive_dss_pin) {
     enabled_features.push_back(
         chromeos::features::kDriveFsBidirectionalNativeMessaging);
@@ -2141,20 +2129,8 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     return;
   }
 
+  // TODO(crbug.com/1240426) Remove that.
   if (name == "zipArchiverLoaded") {
-    if (options.zip) {
-      LOG(INFO) << "Preloading zip archiver NaCl module";
-      auto event = std::make_unique<extensions::Event>(
-          extensions::events::FOR_TEST,
-          extensions::api::test::OnMessage::kEventName,
-          base::JSONReader::Read(
-              R"([{"data": "preloadZip", "lastMessage": false}])")
-              .value()
-              .TakeList(),
-          profile());
-      extensions::EventRouter::Get(profile())->DispatchEventToExtension(
-          kZipArchiverId, std::move(event));
-    }
     return;
   }
 
