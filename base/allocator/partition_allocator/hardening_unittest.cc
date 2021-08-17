@@ -17,7 +17,9 @@
 namespace base {
 namespace internal {
 
-#if defined(GTEST_HAS_DEATH_TEST) && defined(PA_HAS_FREELIST_HARDENING)
+// Death tests misbehave on Android, crbug.com/1240184
+#if !defined(OS_ANDROID) && defined(GTEST_HAS_DEATH_TEST) && \
+    defined(PA_HAS_FREELIST_HARDENING)
 
 TEST(HardeningTest, PartialCorruption) {
   std::string important_data("very important");
@@ -84,7 +86,8 @@ TEST(HardeningTest, CorruptionStillCrashing) {
   root.Free(new_data);
 }
 #endif  // !DCHECK_IS_ON()
-#endif  // defined(GTEST_HAS_DEATH_TEST) && defined(PA_HAS_FREELIST_HARDENING)
+#endif  // !defined(OS_ANDROID) && defined(GTEST_HAS_DEATH_TEST) &&
+        // defined(PA_HAS_FREELIST_HARDENING)
 
 #if !DCHECK_IS_ON()
 TEST(HardeningTest, SuccessfulCorruption) {
