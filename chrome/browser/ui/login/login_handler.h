@@ -21,21 +21,16 @@
 #include "content/public/browser/login_delegate.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
-#include "content/public/browser/web_contents_observer.h"
+#include "content/public/browser/web_contents.h"
 #include "net/base/auth.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
-namespace content {
-class WebContents;
-}  // namespace content
-
 // This is the base implementation for the OS-specific classes that prompt for
 // authentication information.
 class LoginHandler : public content::LoginDelegate,
-                     public content::NotificationObserver,
-                     public content::WebContentsObserver {
+                     public content::NotificationObserver {
  public:
   // The purpose of this struct is to enforce that BuildViewImpl receives either
   // both the login model and the observed form, or none. That is a bit spoiled
@@ -106,6 +101,9 @@ class LoginHandler : public content::LoginDelegate,
 
   // Who/where/what asked for the authentication.
   const net::AuthChallengeInfo& auth_info() const { return auth_info_; }
+
+  // The WebContents.
+  content::WebContents* web_contents() { return web_contents_.get(); }
 
  protected:
   LoginHandler(const net::AuthChallengeInfo& auth_info,
@@ -196,6 +194,8 @@ class LoginHandler : public content::LoginDelegate,
                           const std::u16string& explanation,
                           LoginModelData* login_model_data);
 
+  base::WeakPtr<content::WebContents> web_contents_;
+
   // Who/where/what asked for the authentication.
   net::AuthChallengeInfo auth_info_;
 
@@ -228,7 +228,7 @@ class LoginNotificationDetails {
   LoginHandler* handler() const { return handler_; }
 
  private:
-  LoginNotificationDetails() {}
+  LoginNotificationDetails() = default;
 
   LoginHandler* handler_;  // Where to send the response.
 

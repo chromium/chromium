@@ -125,8 +125,8 @@ void LoginHandler::StartSubresource(
 
 void LoginHandler::ShowLoginPromptAfterCommit(const GURL& request_url) {
   // The request may have been handled while the WebRequest API was processing.
-  if (!web_contents() || !web_contents()->GetDelegate() ||
-      web_contents()->IsBeingDestroyed() || WasAuthHandled()) {
+  if (!web_contents_ || !web_contents_->GetDelegate() ||
+      web_contents_->IsBeingDestroyed() || WasAuthHandled()) {
     CancelAuth();
     return;
   }
@@ -216,7 +216,7 @@ void LoginHandler::Observe(int type,
          type == chrome::NOTIFICATION_AUTH_CANCELLED);
 
   // Break out early if we aren't interested in the notification.
-  if (!web_contents() || WasAuthHandled())
+  if (!web_contents_ || WasAuthHandled())
     return;
 
   LoginNotificationDetails* login_details =
@@ -236,7 +236,7 @@ void LoginHandler::Observe(int type,
   NavigationController* controller =
       content::Source<NavigationController>(source).ptr();
   if (!controller ||
-      controller->GetBrowserContext() != web_contents()->GetBrowserContext()) {
+      controller->GetBrowserContext() != web_contents_->GetBrowserContext()) {
     return;
   }
 
@@ -255,12 +255,10 @@ void LoginHandler::Observe(int type,
 LoginHandler::LoginHandler(const net::AuthChallengeInfo& auth_info,
                            content::WebContents* web_contents,
                            LoginAuthRequiredCallback auth_required_callback)
-    : WebContentsObserver(web_contents),
+    : web_contents_(web_contents->GetWeakPtr()),
       auth_info_(auth_info),
       auth_required_callback_(std::move(auth_required_callback)),
-      prompt_started_(false) {
-  DCHECK(web_contents);
-}
+      prompt_started_(false) {}
 
 void LoginHandler::StartInternal(
     const content::GlobalRequestID& request_id,
@@ -268,7 +266,7 @@ void LoginHandler::StartInternal(
     const GURL& request_url,
     scoped_refptr<net::HttpResponseHeaders> response_headers) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(web_contents());
+  DCHECK(web_contents_);
   DCHECK(!WasAuthHandled());
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -277,14 +275,13 @@ void LoginHandler::StartInternal(
   // request isn't cancelled.
   auto* api =
       extensions::BrowserContextKeyedAPIFactory<extensions::WebRequestAPI>::Get(
-          web_contents()->GetBrowserContext());
+          web_contents_->GetBrowserContext());
   auto continuation = base::BindOnce(
       &LoginHandler::MaybeSetUpLoginPromptBeforeCommit,
       weak_factory_.GetWeakPtr(), request_url, request_id, is_main_frame);
-  if (api->MaybeProxyAuthRequest(web_contents()->GetBrowserContext(),
-                                 auth_info_, std::move(response_headers),
-                                 request_id, is_main_frame,
-                                 std::move(continuation))) {
+  if (api->MaybeProxyAuthRequest(web_contents_->GetBrowserContext(), auth_info_,
+                                 std::move(response_headers), request_id,
+                                 is_main_frame, std::move(continuation))) {
     return;
   }
 #endif
@@ -307,7 +304,7 @@ void LoginHandler::NotifyAuthNeeded() {
   content::NotificationService* service =
       content::NotificationService::current();
   NavigationController* controller =
-      web_contents() ? &web_contents()->GetController() : nullptr;
+      web_contents_ ? &web_contents_->GetController() : nullptr;
   LoginNotificationDetails details(this);
 
   service->Notify(chrome::NOTIFICATION_AUTH_NEEDED,
@@ -320,12 +317,12 @@ void LoginHandler::NotifyAuthSupplied(const std::u16string& username,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(WasAuthHandled());
 
-  if (!web_contents() || !prompt_started_)
+  if (!web_contents_ || !prompt_started_)
     return;
 
   content::NotificationService* service =
       content::NotificationService::current();
-  NavigationController* controller = &web_contents()->GetController();
+  NavigationController* controller = &web_contents_->GetController();
   AuthSuppliedLoginNotificationDetails details(this, username, password);
 
   service->Notify(
@@ -344,7 +341,7 @@ void LoginHandler::NotifyAuthCancelled() {
   content::NotificationService* service =
       content::NotificationService::current();
   NavigationController* controller =
-      web_contents() ? &web_contents()->GetController() : nullptr;
+      web_contents_ ? &web_contents_->GetController() : nullptr;
   LoginNotificationDetails details(this);
   service->Notify(chrome::NOTIFICATION_AUTH_CANCELLED,
                   content::Source<NavigationController>(controller),
@@ -353,10 +350,10 @@ void LoginHandler::NotifyAuthCancelled() {
 
 password_manager::PasswordManagerClient*
 LoginHandler::GetPasswordManagerClientFromWebContent() {
-  if (!web_contents())
+  if (!web_contents_)
     return nullptr;
   password_manager::PasswordManagerClient* client =
-      ChromePasswordManagerClient::FromWebContents(web_contents());
+      ChromePasswordManagerClient::FromWebContents(web_contents_.get());
   return client;
 }
 
@@ -459,7 +456,7 @@ void LoginHandler::MaybeSetUpLoginPromptBeforeCommit(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // The request may have been handled while the WebRequest API was processing.
-  if (!web_contents() || !web_contents()->GetDelegate() || WasAuthHandled() ||
+  if (!web_contents_ || !web_contents_->GetDelegate() || WasAuthHandled() ||
       cancelled_by_extension) {
     if (cancelled_by_extension && is_request_for_main_frame &&
         !extension_main_frame_cancellation_callback_.is_null()) {
@@ -508,7 +505,7 @@ void LoginHandler::MaybeSetUpLoginPromptBeforeCommit(
   }
 
   prompt_started_ = true;
-  RecordHttpAuthPromptType(web_contents()->GetLastCommittedURL().GetOrigin() !=
+  RecordHttpAuthPromptType(web_contents_->GetLastCommittedURL().GetOrigin() !=
                                    request_url.GetOrigin()
                                ? AUTH_PROMPT_TYPE_SUBRESOURCE_CROSS_ORIGIN
                                : AUTH_PROMPT_TYPE_SUBRESOURCE_SAME_ORIGIN);
@@ -517,13 +514,13 @@ void LoginHandler::MaybeSetUpLoginPromptBeforeCommit(
 
 void LoginHandler::ShowLoginPrompt(const GURL& request_url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!web_contents() || WasAuthHandled()) {
+  if (!web_contents_ || WasAuthHandled()) {
     CancelAuth();
     return;
   }
   prerender::NoStatePrefetchContents* no_state_prefetch_contents =
       prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
-          web_contents());
+          web_contents_.get());
   if (no_state_prefetch_contents) {
     no_state_prefetch_contents->Destroy(prerender::FINAL_STATUS_AUTH_NEEDED);
     CancelAuth();
@@ -542,7 +539,7 @@ void LoginHandler::ShowLoginPrompt(const GURL& request_url) {
     // A WebContents in a <webview> (a GuestView type) does not have a password
     // manager, but still needs to be able to show login prompts.
     const auto* guest =
-        guest_view::GuestViewBase::FromWebContents(web_contents());
+        guest_view::GuestViewBase::FromWebContents(web_contents_.get());
     if (guest && extensions::GetViewType(guest->owner_web_contents()) !=
                      extensions::mojom::ViewType::kExtensionBackgroundPage) {
       BuildViewAndNotify(authority, explanation, nullptr);
