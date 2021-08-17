@@ -32,7 +32,7 @@ const CGFloat kButtonSpacing = 8;
 
 }  // namespace
 
-@interface NewPasswordTableCell ()
+@interface NewPasswordTableCell () <UITextFieldDelegate>
 
 // Label for the row title.
 @property(nonatomic, strong) UILabel* titleLabel;
@@ -86,6 +86,7 @@ const CGFloat kButtonSpacing = 8;
     _textField.hidden = YES;
     _textField.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
     _textField.textColor = [UIColor colorNamed:kTextPrimaryColor];
+    _textField.delegate = self;
     [_textField addTarget:self
                    action:@selector(textFieldDidChange:)
          forControlEvents:UIControlEventEditingChanged];
@@ -189,6 +190,12 @@ const CGFloat kButtonSpacing = 8;
   [self.delegate textFieldDidChangeInCell:self];
 }
 
+#pragma mark - UITextFieldDelegate
+
+- (BOOL)textFieldShouldReturn:(UITextField*)textField {
+  return [self.delegate textFieldShouldReturnInCell:self];
+}
+
 #pragma mark - Accessors
 
 - (UIImage*)hidePasswordImage {
@@ -221,6 +228,7 @@ const CGFloat kButtonSpacing = 8;
           @"IDS_IOS_CREDENTIAL_PROVIDER_NEW_PASSWORD_USERNAME", @"Username");
 
       self.textField.hidden = NO;
+      self.textField.returnKeyType = UIReturnKeyNext;
       self.textField.placeholder = NSLocalizedString(
           @"IDS_IOS_CREDENTIAL_PROVIDER_NEW_PASSWORD_USERNAME_PLACEHOLDER",
           @"Placeholder marking username field as optional");
@@ -230,6 +238,7 @@ const CGFloat kButtonSpacing = 8;
           @"IDS_IOS_CREDENTIAL_PROVIDER_NEW_PASSWORD_PASSWORD", @"Password");
 
       self.textField.hidden = NO;
+      self.textField.returnKeyType = UIReturnKeyDone;
       self.textField.placeholder = NSLocalizedString(
           @"IDS_IOS_CREDENTIAL_PROVIDER_NEW_PASSWORD_PASSWORD_PLACEHOLDER",
           @"Placeholder for password field");

@@ -135,6 +135,16 @@
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
+- (NewPasswordTableCell*)usernameCell {
+  NSIndexPath* usernameIndexPath =
+      [NSIndexPath indexPathForRow:NewPasswordTableCellTypeUsername
+                         inSection:0];
+  NewPasswordTableCell* usernameCell =
+      [self.tableView cellForRowAtIndexPath:usernameIndexPath];
+
+  return usernameCell;
+}
+
 - (NewPasswordTableCell*)passwordCell {
   NSIndexPath* passwordIndexPath =
       [NSIndexPath indexPathForRow:NewPasswordTableCellTypePassword
@@ -151,6 +161,15 @@
   if (cell == [self passwordCell]) {
     [self updateSaveButtonState];
   }
+}
+
+- (BOOL)textFieldShouldReturnInCell:(NewPasswordTableCell*)cell {
+  if (cell == [self usernameCell]) {
+    [[self passwordCell].textField becomeFirstResponder];
+  } else if (cell == [self passwordCell]) {
+    [[self passwordCell].textField resignFirstResponder];
+  }
+  return NO;
 }
 
 // Updates the save button state based on whether there is text in the password

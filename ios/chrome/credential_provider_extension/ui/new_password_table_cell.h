@@ -21,6 +21,11 @@ typedef NS_ENUM(NSInteger, NewPasswordTableCellType) {
 // Alerts the delegate every time the text field changes in this cell.
 - (void)textFieldDidChangeInCell:(NewPasswordTableCell*)cell;
 
+// Allows the delegate to handle any behavior that should be triggered on
+// pressing the return button. Returns YES if the text field should use the
+// default return button behavior, and NO otherwise.
+- (BOOL)textFieldShouldReturnInCell:(NewPasswordTableCell*)cell;
+
 @end
 
 @interface NewPasswordTableCell : UITableViewCell
