@@ -8,6 +8,8 @@
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/site_instance.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 
 namespace page_load_metrics {
 
@@ -62,6 +64,16 @@ void Reset(ContentfulPaintTimingInfo& timing) {
   timing.Reset(absl::nullopt, 0u);
 }
 
+bool IsSameSite(const GURL& url1, const GURL& url2) {
+  // We can't use SiteInstance::IsSameSiteWithURL() because both mainframe and
+  // subframe are under default SiteInstance on low-end Android environment, and
+  // it treats them as same-site even though the passed url is actually not a
+  // same-site.
+  return url1.SchemeIs(url2.scheme()) &&
+         net::registry_controlled_domains::SameDomainOrHost(
+             url1, url2,
+             net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+}
 }  // namespace
 
 ContentfulPaintTimingInfo::ContentfulPaintTimingInfo(LargestContentType type,
@@ -160,7 +172,8 @@ bool LargestContentfulPaintHandler::AssignTimeAndSizeForLargestContentfulPaint(
 
 LargestContentfulPaintHandler::LargestContentfulPaintHandler()
     : main_frame_contentful_paint_(true /*in_main_frame*/),
-      subframe_contentful_paint_(false /*in_main_frame*/) {}
+      subframe_contentful_paint_(false /*in_main_frame*/),
+      cross_site_subframe_contentful_paint_(false /*in_main_frame*/) {}
 
 LargestContentfulPaintHandler::~LargestContentfulPaintHandler() = default;
 
@@ -184,6 +197,10 @@ void LargestContentfulPaintHandler::RecordTiming(
   }
   RecordSubframeTiming(largest_contentful_paint,
                        first_input_or_scroll_notified_timestamp, it->second);
+  if (!IsSameSite(subframe_rfh->GetLastCommittedURL(),
+                  subframe_rfh->GetMainFrame()->GetLastCommittedURL())) {
+    RecordCrossSiteSubframeTiming(largest_contentful_paint, it->second);
+  }
 }
 
 const ContentfulPaintTimingInfo&
@@ -216,6 +233,20 @@ void LargestContentfulPaintHandler::RecordSubframeTiming(
                     largest_contentful_paint.largest_text_paint_size,
                     navigation_start_offset);
   MergeForSubframes(&subframe_contentful_paint_.Image(),
+                    largest_contentful_paint.largest_image_paint,
+                    largest_contentful_paint.largest_image_paint_size,
+                    navigation_start_offset);
+}
+
+void LargestContentfulPaintHandler::RecordCrossSiteSubframeTiming(
+    const page_load_metrics::mojom::LargestContentfulPaintTiming&
+        largest_contentful_paint,
+    const base::TimeDelta& navigation_start_offset) {
+  MergeForSubframes(&cross_site_subframe_contentful_paint_.Text(),
+                    largest_contentful_paint.largest_text_paint,
+                    largest_contentful_paint.largest_text_paint_size,
+                    navigation_start_offset);
+  MergeForSubframes(&cross_site_subframe_contentful_paint_.Image(),
                     largest_contentful_paint.largest_image_paint,
                     largest_contentful_paint.largest_image_paint_size,
                     navigation_start_offset);
@@ -263,6 +294,10 @@ void LargestContentfulPaintHandler::UpdateFirstInputOrScrollNotified(
       Reset(subframe_contentful_paint_.Text());
     if (!IsValid(subframe_contentful_paint_.Image().Time()))
       Reset(subframe_contentful_paint_.Image());
+    if (!IsValid(cross_site_subframe_contentful_paint_.Text().Time()))
+      Reset(cross_site_subframe_contentful_paint_.Text());
+    if (!IsValid(cross_site_subframe_contentful_paint_.Image().Time()))
+      Reset(cross_site_subframe_contentful_paint_.Image());
   }
 }
 

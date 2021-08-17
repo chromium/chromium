@@ -100,6 +100,13 @@ class UmaPageLoadMetricsObserverTest
             base::Bucket(static_cast<base::HistogramBase::Sample>(type), 1)));
   }
 
+  void TestCrossSiteSubFrameLCP(int value) {
+    EXPECT_THAT(
+        tester()->histogram_tester().GetAllSamples(
+            internal::kHistogramLargestContentfulPaintCrossSiteSubFrame),
+        testing::ElementsAre((base::Bucket(value, 1))));
+  }
+
   void TestMainFrameLCP(int value, LargestContentType type) {
     EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
                     internal::kHistogramLargestContentfulPaintMainFrame),
@@ -1509,4 +1516,157 @@ TEST_F(UmaPageLoadMetricsObserverTest, MultiSubFrames_MaxMemoryBytesRecorded) {
       internal::kHistogramMemoryTotal, 500 + 10 + 20 + 30 + 100 + 5 - 2 + 5, 1);
   histogram_tester().ExpectUniqueSample(
       internal::kHistogramMemoryUpdateReceived, true, 1);
+}
+
+TEST_F(UmaPageLoadMetricsObserverTest,
+       CrossSiteSubframeLargestContentfulPaint_SubframeLarger) {
+  // Use the page having no subframes to record the passed LCP candidate.
+  const char kNoSubFramesTestUrl[] = "https://example.com";
+  const char kSubframeTestUrl[] = "https://google.com/subframe.html";
+  // Create a main frame.
+  page_load_metrics::mojom::PageLoadTiming timing;
+  page_load_metrics::InitPageLoadTimingForTest(&timing);
+  timing.navigation_start = base::Time::FromDoubleT(1);
+  timing.paint_timing->largest_contentful_paint->largest_image_paint =
+      base::TimeDelta::FromMilliseconds(9382);
+  timing.paint_timing->largest_contentful_paint->largest_image_paint_size = 50u;
+  PopulateExperimentalLCP(timing.paint_timing);
+  PopulateRequiredTimingFields(&timing);
+
+  // Create a candidate in subframe with a larger size.
+  page_load_metrics::mojom::PageLoadTiming subframe_timing;
+  page_load_metrics::InitPageLoadTimingForTest(&subframe_timing);
+  subframe_timing.navigation_start = base::Time::FromDoubleT(2);
+  subframe_timing.paint_timing->largest_contentful_paint->largest_image_paint =
+      base::TimeDelta::FromMilliseconds(4780);
+  subframe_timing.paint_timing->largest_contentful_paint
+      ->largest_image_paint_size = 100u;
+  PopulateExperimentalLCP(subframe_timing.paint_timing);
+  PopulateRequiredTimingFields(&subframe_timing);
+
+  // Commit the main frame and a subframe.
+  NavigateAndCommit(GURL(kNoSubFramesTestUrl));
+  RenderFrameHost* subframe =
+      NavigationSimulator::NavigateAndCommitFromDocument(
+          GURL(kSubframeTestUrl),
+          RenderFrameHostTester::For(web_contents()->GetMainFrame())
+              ->AppendChild("subframe"));
+
+  // Simulate timing updates in the main frame and the subframe.
+  tester()->SimulateTimingUpdate(timing);
+  tester()->SimulateTimingUpdate(subframe_timing, subframe);
+
+  // Navigate again to force histogram recording in the main frame.
+  NavigateAndCommit(GURL(kDefaultTestUrl2));
+
+  TestCrossSiteSubFrameLCP(4780);
+}
+
+TEST_F(UmaPageLoadMetricsObserverTest,
+       CrossSiteSubframeLargestContentfulPaint_SubframeSmaller) {
+  // Use the page having no subframes to record the passed LCP candidate.
+  const char kNoSubFramesTestUrl[] = "https://example.com";
+  const char kSubframeTestUrl[] = "https://google.com/subframe.html";
+  // Create a main frame.
+  page_load_metrics::mojom::PageLoadTiming timing;
+  page_load_metrics::InitPageLoadTimingForTest(&timing);
+  timing.navigation_start = base::Time::FromDoubleT(1);
+  // Pick a value that lines up with a histogram bucket.
+  timing.paint_timing->largest_contentful_paint->largest_image_paint =
+      base::TimeDelta::FromMilliseconds(900);
+  timing.paint_timing->largest_contentful_paint->largest_image_paint_size = 50u;
+  PopulateExperimentalLCP(timing.paint_timing);
+  PopulateRequiredTimingFields(&timing);
+
+  // Create a candidate in subframe with a smaller size.
+  page_load_metrics::mojom::PageLoadTiming subframe_timing;
+  page_load_metrics::InitPageLoadTimingForTest(&subframe_timing);
+  subframe_timing.navigation_start = base::Time::FromDoubleT(2);
+  subframe_timing.paint_timing->largest_contentful_paint->largest_image_paint =
+      base::TimeDelta::FromMilliseconds(4780);
+  subframe_timing.paint_timing->largest_contentful_paint
+      ->largest_image_paint_size = 30u;
+  PopulateExperimentalLCP(subframe_timing.paint_timing);
+  PopulateRequiredTimingFields(&subframe_timing);
+
+  // Commit the main frame and a subframe.
+  NavigateAndCommit(GURL(kNoSubFramesTestUrl));
+  RenderFrameHost* subframe =
+      NavigationSimulator::NavigateAndCommitFromDocument(
+          GURL(kSubframeTestUrl),
+          RenderFrameHostTester::For(web_contents()->GetMainFrame())
+              ->AppendChild("subframe"));
+
+  // Simulate timing updates in the main frame and the subframe.
+  tester()->SimulateTimingUpdate(timing);
+  tester()->SimulateTimingUpdate(subframe_timing, subframe);
+
+  // Navigate again to force histogram recording in the main frame.
+  NavigateAndCommit(GURL(kDefaultTestUrl2));
+
+  TestCrossSiteSubFrameLCP(4780);
+}
+
+TEST_F(UmaPageLoadMetricsObserverTest,
+       CrossSiteSubframeLargestContentfulPaint_MultiSubframes) {
+  // Use the page having no subframes to record the passed LCP candidate.
+  const char kNoSubFramesTestUrl[] = "https://example.com";
+  const char kSameSiteSubFrameTestUrl[] =
+      "https://same-site.example.com/subframe.html";
+  const char kCrossSiteSubFrameTestUrl[] = "https://google.com/subframe.html";
+  // Create a main frame.
+  page_load_metrics::mojom::PageLoadTiming timing;
+  page_load_metrics::InitPageLoadTimingForTest(&timing);
+  timing.navigation_start = base::Time::FromDoubleT(1);
+  // Pick a value that lines up with a histogram bucket.
+  timing.paint_timing->largest_contentful_paint->largest_image_paint =
+      base::TimeDelta::FromMilliseconds(900);
+  timing.paint_timing->largest_contentful_paint->largest_image_paint_size = 50u;
+  PopulateExperimentalLCP(timing.paint_timing);
+  PopulateRequiredTimingFields(&timing);
+
+  // Create a candidates in subframes from same-site and cross-site
+  page_load_metrics::mojom::PageLoadTiming subframe_timing;
+  page_load_metrics::InitPageLoadTimingForTest(&subframe_timing);
+  subframe_timing.navigation_start = base::Time::FromDoubleT(2);
+  subframe_timing.paint_timing->largest_contentful_paint->largest_image_paint =
+      base::TimeDelta::FromMilliseconds(3000);
+  subframe_timing.paint_timing->largest_contentful_paint
+      ->largest_image_paint_size = 100u;
+  PopulateExperimentalLCP(subframe_timing.paint_timing);
+  PopulateRequiredTimingFields(&subframe_timing);
+
+  page_load_metrics::mojom::PageLoadTiming subframe_timing2;
+  page_load_metrics::InitPageLoadTimingForTest(&subframe_timing2);
+  subframe_timing2.navigation_start = base::Time::FromDoubleT(2);
+  subframe_timing2.paint_timing->largest_contentful_paint->largest_image_paint =
+      base::TimeDelta::FromMilliseconds(4780);
+  subframe_timing2.paint_timing->largest_contentful_paint
+      ->largest_image_paint_size = 30u;
+  PopulateExperimentalLCP(subframe_timing2.paint_timing);
+  PopulateRequiredTimingFields(&subframe_timing2);
+
+  // Commit the main frame and a subframe.
+  NavigateAndCommit(GURL(kNoSubFramesTestUrl));
+  RenderFrameHost* first_party_subframe =
+      NavigationSimulator::NavigateAndCommitFromDocument(
+          GURL(kSameSiteSubFrameTestUrl),
+          RenderFrameHostTester::For(web_contents()->GetMainFrame())
+              ->AppendChild("subframe1"));
+  RenderFrameHost* cross_site_subframe =
+      NavigationSimulator::NavigateAndCommitFromDocument(
+          GURL(kCrossSiteSubFrameTestUrl),
+          RenderFrameHostTester::For(web_contents()->GetMainFrame())
+              ->AppendChild("subframe2"));
+
+  // Simulate timing updates in the main frame and the subframe.
+  tester()->SimulateTimingUpdate(timing);
+  tester()->SimulateTimingUpdate(subframe_timing, first_party_subframe);
+  tester()->SimulateTimingUpdate(subframe_timing2, cross_site_subframe);
+
+  // Navigate again to force histogram recording in the main frame.
+  NavigateAndCommit(GURL(kDefaultTestUrl2));
+
+  // Make sure subframe LCP from same-site is ignored
+  TestCrossSiteSubFrameLCP(4780);
 }

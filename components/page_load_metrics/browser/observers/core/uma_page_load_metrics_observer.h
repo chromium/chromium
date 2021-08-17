@@ -31,6 +31,7 @@ extern const char kHistogramLargestContentfulPaint[];
 extern const char kHistogramLargestContentfulPaintContentType[];
 extern const char kHistogramLargestContentfulPaintMainFrame[];
 extern const char kHistogramLargestContentfulPaintMainFrameContentType[];
+extern const char kHistogramLargestContentfulPaintCrossSiteSubFrame[];
 extern const char kDeprecatedHistogramLargestContentfulPaint[];
 extern const char kHistogramExperimentalLargestContentfulPaintContentType[];
 extern const char kDeprecatedHistogramLargestContentfulPaintMainFrame[];

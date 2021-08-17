@@ -143,6 +143,9 @@ const char kHistogramLargestContentfulPaintMainFrame[] =
 const char kHistogramLargestContentfulPaintMainFrameContentType[] =
     "PageLoad.Internal.PaintTiming.LargestContentfulPaint.MainFrame."
     "ContentType";
+const char kHistogramLargestContentfulPaintCrossSiteSubFrame[] =
+    "PageLoad.PaintTiming.NavigationToLargestContentfulPaint2."
+    "CrossSiteSubFrame";
 // TODO(crbug.com/1045640): Stop reporting these obsolete versions after some
 // time.
 const char kDeprecatedHistogramLargestContentfulPaint[] =
@@ -1065,6 +1068,19 @@ void UmaPageLoadMetricsObserver::RecordTimingHistograms(
     UMA_HISTOGRAM_ENUMERATION(
         internal::kHistogramLargestContentfulPaintMainFrameContentType,
         main_frame_largest_contentful_paint.Type());
+  }
+
+  const page_load_metrics::ContentfulPaintTimingInfo&
+      cross_site_sub_frame_contentful_paint =
+          GetDelegate()
+              .GetLargestContentfulPaintHandler()
+              .CrossSiteSubframesLargestContentfulPaint();
+  if (cross_site_sub_frame_contentful_paint.ContainsValidTime() &&
+      WasStartedInForegroundOptionalEventInForeground(
+          cross_site_sub_frame_contentful_paint.Time(), GetDelegate())) {
+    PAGE_LOAD_HISTOGRAM(
+        internal::kHistogramLargestContentfulPaintCrossSiteSubFrame,
+        cross_site_sub_frame_contentful_paint.Time().value());
   }
 
   const page_load_metrics::ContentfulPaintTimingInfo&
