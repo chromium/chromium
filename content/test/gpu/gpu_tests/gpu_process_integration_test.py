@@ -392,8 +392,8 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
     sdk_version = \
         self.browser.platform._platform_backend.device.build_version_sdk
-    if sdk_version <= version_codes.MARSHMALLOW:
-      logging.info('Skipping test because not running on Android N+')
+    if sdk_version < version_codes.PIE:
+      logging.info('Skipping test because not running on Android P+')
       return
 
     has_gpu_process = self.tab.EvaluateJavaScript(

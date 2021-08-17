@@ -93,9 +93,6 @@ crbug.com/1099576 [ mac intel ] GpuProcess_mac_webgl_backgrounded_high_performan
 # Flakily hits a DCHECK during shared image creation.
 crbug.com/1188437 [ linux intel display-server-wayland ] GpuProcess_webgl [ RetryOnFailure ]
 
-# Consistently failing on Android FYI Release (NVIDIA Shield TV).
-crbug.com/1238954 [ android android-shield-android-tv ] GpuProcess_visibility [ Skip ]
-
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
