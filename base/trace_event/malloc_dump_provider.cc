@@ -135,7 +135,7 @@ void ReportPartitionAllocStats(ProcessMemoryDump* pmd,
     root->DumpStats("nonscannable", is_light_dump, &partition_stats_dumper);
 
   *total_virtual_size += partition_stats_dumper.total_resident_bytes();
-  *resident_size += partition_stats_dumper.total_active_bytes();
+  *resident_size += partition_stats_dumper.total_resident_bytes();
   *allocated_objects_size += partition_stats_dumper.total_active_bytes();
 }
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
