@@ -4,6 +4,7 @@
 
 #include "components/viz/service/display/skia_renderer.h"
 
+#include <limits>
 #include <string>
 #include <utility>
 
@@ -87,6 +88,15 @@ namespace {
 // when an exterior edge (with AA) has been clipped (no AA). The specific value
 // was chosen to match that used by gl_renderer.
 static const float kAAEpsilon = 1.0f / 1024.0f;
+
+#if defined(OS_APPLE) || defined(USE_OZONE)
+SkScalar remove_epsilon(SkScalar v) {
+  return v < std::numeric_limits<SkScalar>::epsilon() &&
+                 v > -std::numeric_limits<SkScalar>::epsilon()
+             ? 0
+             : v;
+}
+#endif  // defined(OS_APPLE) || defined(USE_OZONE)
 
 // The gfx::QuadF draw_region passed to DoDrawQuad, converted to Skia types
 struct SkDrawRegion {
@@ -2871,6 +2881,17 @@ void SkiaRenderer::PrepareRenderPassOverlay(
   if (!shared_quad_state->mask_filter_info.IsEmpty()) {
     auto result = shared_quad_state->mask_filter_info.Transform(
         *quad_to_target_transform_inverse);
+    if (!result) {
+      // Skia cannot transform a SkRRect with a matrix which contains epsilons,
+      // workaround the problem by removing epsilons in the matrix.
+      auto matrix = quad_to_target_transform_inverse->matrix();
+      matrix.set(0, 0, remove_epsilon(matrix.get(0, 0)));
+      matrix.set(0, 1, remove_epsilon(matrix.get(0, 1)));
+      matrix.set(1, 0, remove_epsilon(matrix.get(1, 0)));
+      matrix.set(1, 1, remove_epsilon(matrix.get(1, 1)));
+      result =
+          shared_quad_state->mask_filter_info.Transform(gfx::Transform(matrix));
+    }
     DCHECK(result) << "shared_quad_state->mask_filter_info.Transform() failed.";
   }
 
