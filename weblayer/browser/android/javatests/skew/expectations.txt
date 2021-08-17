@@ -5,36 +5,25 @@
 # with versions less than or equal to $VERSION of the implementation.
 #
 # These lines are not comments! They define the set of known tags and other information.
-# tags: [ client_lte_87 client_lte_88 client_lte_89 client_lte_91 ]
-# tags: [ impl_lte_91 ]
+# tags: [ client_lte_94 ]
 # 'all' disables the test from any skew test.
 # tags: [ all ]
 # results: [ Skip ]
 # conflicts_allowed: True
-
-# The test was fixed for tip of tree tests in crrev.com/c/2691313, however the change will not be merged into M89
-crbug.com/1172938 [ client_lte_89 ] org.chromium.weblayer.test.NavigationTest#testServedFromBackForwardCache [ Skip ]
-
-# Changes were landed in crrev.com/c/2683084 which modified the test. The CL was not cherry picked into M87.
-crbug.com/1174169 [ client_lte_87 ] org.chromium.weblayer.test.NavigationTest#testLoadError [ Skip ]
-
-# The test was changed in the main branch in crrev.com/c/2377987 and the changes won't be merged into M88
-crbug.com/1155565 [ client_lte_88 ] org.chromium.weblayer.test.CookieManagerTest#testSetCookieNotSet [ Skip ]
-
-# No real changes to weblayer APIs, changes should only affect chrome-internal behavior around
-# navigation which the test depends on.
-crbug.com/1196803 [ client_lte_91 ] org.chromium.weblayer.test.ExternalNavigationTest#testExternalIntentWithNoRedirectInBrowserStartupInIncognitoBlockedWhenBackgroundLaunchesAllowedAndUserForbids [ Skip ]
 
 crbug.com/1238481 [ all ] org.chromium.weblayer.test.TabTest#testRotationDoesntChangeVisibility [ Skip ]
 crbug.com/1239026 [ all ] org.chromium.weblayer.test.TabCallbackTest#testDismissTransientUi [ Skip ]
 crbug.com/1239028 [ all ] org.chromium.weblayer.test.MediaSessionTest#basic [ Skip ]
 crbug.com/1239032 [ all ] org.chromium.weblayer.test.NewTabCallbackTest#testNewBrowser [ Skip ]
 crbug.com/1239034 [ all ] org.chromium.weblayer.test.TabCallbackTest#testTabModalOverlay [ Skip ]
-crbug.com/1222694 [ all ] org.chromium.weblayer.test.FullscreenCallbackTest* [ Skip ]
 crbug.com/1239032 [ all ] org.chromium.weblayer.test.TabListCallbackTest#testCallbackInvokedWhenTabClosedViaWebContents [ Skip ]
 crbug.com/1239032 [ all ] org.chromium.weblayer.test.NewTabCallbackTest#testNewTabHasFocus [ Skip ]
 crbug.com/1225662 [ all ] org.chromium.weblayer.test.NavigationTest#testDestroyTabWithModalDialog [ Skip ]
 crbug.com/1239002 [ all ] org.chromium.weblayer.test.FullscreenSizeTest#testOsk [ Skip ]
+
+# This test was flaky, the fix was in the associated html file which landed in
+# 94.
+crbug.com/1222694 [ client_lte_94 ] org.chromium.weblayer.test.FullscreenCallbackTest* [ Skip ]
 
 # Bulk disable to get bot green.
 crbug.com/1191751 [ all ] org.chromium.weblayer.test.InputTypesTest* [ Skip ]

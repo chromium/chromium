@@ -15,7 +15,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.weblayer.Browser;
 import org.chromium.weblayer.BrowserControlsOffsetCallback;
@@ -48,7 +47,6 @@ public class FullscreenCallbackTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "crbug.com/1222694")
     public void testFullscreen() {
         enterFullscreen();
         // Second touch exits.
@@ -59,7 +57,6 @@ public class FullscreenCallbackTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "crbug.com/1222694")
     public void testExitFullscreenWhenDelegateCleared() {
         enterFullscreen();
         // Clearing the FullscreenCallback should exit fullscreen.
@@ -71,7 +68,6 @@ public class FullscreenCallbackTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "crbug.com/1222694")
     public void testExitFullscreenUsingRunnable() {
         enterFullscreen();
         // Running the runnable supplied to the delegate should exit fullscreen.
@@ -82,7 +78,6 @@ public class FullscreenCallbackTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "crbug.com/1222694")
     public void testExitFullscreenWhenTabDestroyed() {
         enterFullscreen();
         // Destroying the tab should exit fullscreen.
@@ -97,7 +92,6 @@ public class FullscreenCallbackTest {
      */
     @Test
     @SmallTest
-    @DisabledTest(message = "crbug.com/1222694")
     public void testDestroyFragmentWhileFullscreen() {
         enterFullscreen();
         TestThreadUtils.runOnUiThreadBlocking(() -> { mActivity.destroyFragment(); });
@@ -123,7 +117,6 @@ public class FullscreenCallbackTest {
     @MinWebLayerVersion(88)
     @DisableIf.
     Build(sdk_is_less_than = Build.VERSION_CODES.M, message = "https://crbug.com/1159781")
-    @DisabledTest(message = "crbug.com/1222694")
     public void testTopViewRemainsHiddenOnFullscreenRotation() throws Exception {
         String url = mActivityTestRule.getTestDataURL("rotation2.html");
         mActivity = mActivityTestRule.launchShellWithUrl(url);
