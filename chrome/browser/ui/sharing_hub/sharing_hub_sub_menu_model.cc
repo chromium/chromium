@@ -81,7 +81,8 @@ void SharingHubSubMenuModel::Build(content::WebContents* web_contents) {
   for (auto action : third_party_actions) {
     if (action.third_party_icon.isNull()) {
       AddItemWithIcon(action.command_id, action.title,
-                      ui::ImageModel::FromVectorIcon(*action.icon));
+                      ui::ImageModel::FromVectorIcon(*action.icon, /*color*/ -1,
+                                                     /*icon_size*/ 16));
     } else {
       AddItemWithIcon(action.command_id, action.title,
                       ui::ImageModel::FromImageSkia(action.third_party_icon));
