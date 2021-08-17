@@ -1,0 +1,23 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("common") {
+  public = [ "signals_decorator.h" ]
+
+  public_deps = [ "//chrome/browser/enterprise/connectors/device_trust/attestation/common/proto:attestation_ca_proto" ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_signals_decorator.cc",
+    "mock_signals_decorator.h",
+  ]
+
+  public_deps = [
+    ":common",
+    "//chrome/browser/enterprise/connectors/device_trust/attestation/common/proto:attestation_ca_proto",
+    "//testing/gmock",
+  ]
+}

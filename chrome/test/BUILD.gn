@@ -7031,11 +7031,15 @@ test("unit_tests") {
       "../browser/enterprise/connectors/device_trust/mock_signal_reporter.h",
       "../browser/enterprise/connectors/device_trust/navigation_throttle_unittest.cc",
       "../browser/enterprise/connectors/device_trust/signal_reporter_unittest.cc",
+      "../browser/enterprise/connectors/device_trust/signals/signals_service_impl_unittest.cc",
     ]
 
     deps += [
       "../browser/enterprise/connectors/device_trust/attestation/common",
       "../browser/enterprise/connectors/device_trust/attestation/common:test_support",
+      "../browser/enterprise/connectors/device_trust/signals:test_support",
+      "../browser/enterprise/connectors/device_trust/signals/decorators/common",
+      "../browser/enterprise/connectors/device_trust/signals/decorators/common:test_support",
     ]
   }
 

@@ -5387,9 +5387,15 @@ static_library("browser") {
       "enterprise/connectors/device_trust/navigation_throttle.h",
       "enterprise/connectors/device_trust/signal_reporter.cc",
       "enterprise/connectors/device_trust/signal_reporter.h",
+      "enterprise/connectors/device_trust/signals/signals_service_factory.cc",
+      "enterprise/connectors/device_trust/signals/signals_service_factory.h",
+      "enterprise/connectors/device_trust/signals/signals_service_impl.cc",
+      "enterprise/connectors/device_trust/signals/signals_service_impl.h",
     ]
     deps += [
       "//chrome/browser/enterprise/connectors/device_trust/attestation/common",
+      "//chrome/browser/enterprise/connectors/device_trust/signals",
+      "//chrome/browser/enterprise/connectors/device_trust/signals/decorators/common",
       "//components/enterprise/common/proto:device_trust_report_event_proto",
       "//components/policy/proto:proto",
     ]

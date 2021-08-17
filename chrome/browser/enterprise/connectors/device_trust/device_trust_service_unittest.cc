@@ -9,6 +9,7 @@
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/mock_attestation_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/mock_signal_reporter.h"
+#include "chrome/browser/enterprise/connectors/device_trust/signals/mock_signals_service.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
@@ -35,6 +36,7 @@ const base::Value more_origins[]{base::Value("example1.example.com"),
 namespace enterprise_connectors {
 
 using test::MockAttestationService;
+using test::MockSignalsService;
 
 class DeviceTrustServiceTest : public testing::Test {
  public:
@@ -83,10 +85,15 @@ class DeviceTrustServiceTest : public testing::Test {
         std::make_unique<MockDeviceTrustSignalReporter>();
     mock_reporter_ = mock_reporter.get();
 
+    std::unique_ptr<MockSignalsService> mock_signals_service =
+        std::make_unique<MockSignalsService>();
+    mock_signals_service_ = mock_signals_service.get();
+
     run_loop_ = std::make_unique<base::RunLoop>();
 
     return std::make_unique<DeviceTrustService>(
         prefs(), std::move(mock_attestation_service), std::move(mock_reporter),
+        std::move(mock_signals_service),
         base::BindOnce(&DeviceTrustServiceTest::ReportCallback,
                        base::Unretained(this)));
   }
@@ -151,6 +158,7 @@ class DeviceTrustServiceTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_ = std::make_unique<TestingProfile>();
   MockAttestationService* mock_attestation_service_;
   MockDeviceTrustSignalReporter* mock_reporter_;
+  MockSignalsService* mock_signals_service_;
   absl::optional<bool> signal_report_callback_value_;
   ScopedTestingLocalState local_state_;
 };

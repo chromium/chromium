@@ -53,7 +53,7 @@ class DeviceTrustNavigationThrottle : public content::NavigationThrottle {
  private:
   ThrottleCheckResult GetUrlThrottleResult(const GURL& url);
 
-  void OnTrustedUrlPatternsChanged(const base::ListValue*);
+  void OnTrustedUrlPatternsChanged(const base::ListValue& origins);
 
   content::NavigationThrottle::ThrottleCheckResult AddHeadersIfNeeded();
 

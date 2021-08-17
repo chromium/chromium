@@ -64,10 +64,10 @@ DeviceTrustNavigationThrottle::DeviceTrustNavigationThrottle(
 DeviceTrustNavigationThrottle::~DeviceTrustNavigationThrottle() = default;
 
 void DeviceTrustNavigationThrottle::OnTrustedUrlPatternsChanged(
-    const base::ListValue* origins) {
+    const base::ListValue& origins) {
   DVLOG(1)
       << "DeviceTrustNavigationThrottle::OnTrustedUrlPatternsChanged count="
-      << origins->GetSize();
+      << origins.GetSize();
 
   url_matcher::URLMatcherConditionSet::ID id(0);
   if (!matcher_->IsEmpty()) {
@@ -78,7 +78,7 @@ void DeviceTrustNavigationThrottle::OnTrustedUrlPatternsChanged(
   if (device_trust_service_ && device_trust_service_->IsEnabled()) {
     // Add the new endpoints to the conditions.
     policy::url_util::AddFilters(matcher_.get(), true /* allowed */, &id,
-                                 origins);
+                                 &origins);
   }
 }
 
