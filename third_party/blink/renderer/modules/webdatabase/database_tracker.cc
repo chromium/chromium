@@ -247,7 +247,6 @@ void DatabaseTracker::CloseOneDatabaseImmediately(const String& origin_string,
     DatabaseNameMap* name_map = open_database_map_it->value;
     DCHECK(name_map);
 
-    String name = database->StringIdentifier();
     auto name_map_it = name_map->find(name);
     if (name_map_it == name_map->end())
       return;

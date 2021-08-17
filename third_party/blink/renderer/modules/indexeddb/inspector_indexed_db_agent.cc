@@ -483,8 +483,8 @@ static std::unique_ptr<IDBKey> IdbKeyFromInspectorObject(
     IDBKey::KeyArray key_array;
     auto* array = key->getArray(nullptr);
     if (array) {
-      for (const std::unique_ptr<protocol::IndexedDB::Key>& key : *array)
-        key_array.emplace_back(IdbKeyFromInspectorObject(key.get()));
+      for (const std::unique_ptr<protocol::IndexedDB::Key>& elem : *array)
+        key_array.emplace_back(IdbKeyFromInspectorObject(elem.get()));
     }
     idb_key = IDBKey::CreateArray(std::move(key_array));
   } else {

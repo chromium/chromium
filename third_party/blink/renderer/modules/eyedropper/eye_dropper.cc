@@ -49,7 +49,7 @@ ScriptPromise EyeDropper::open(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  auto* resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver_->Promise();
 
   auto* frame = window->GetFrame();
@@ -60,7 +60,7 @@ ScriptPromise EyeDropper::open(ScriptState* script_state,
       WTF::Bind(&EyeDropper::EndChooser, WrapWeakPersistent(this)));
   eye_dropper_chooser_->Choose(WTF::Bind(&EyeDropper::EyeDropperResponseHandler,
                                          WrapPersistent(this),
-                                         WrapPersistent(resolver_)));
+                                         WrapPersistent(resolver_.Get())));
 
   return promise;
 }

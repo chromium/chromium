@@ -218,12 +218,12 @@ bool KeyUsagesFromWireFormat(uint32_t raw_usages,
 
 CryptoKey* V8ScriptValueDeserializerForModules::ReadCryptoKey() {
   // Read params.
-  uint8_t raw_key_type;
-  if (!ReadOneByte(&raw_key_type))
+  uint8_t raw_key_byte;
+  if (!ReadOneByte(&raw_key_byte))
     return nullptr;
   WebCryptoKeyAlgorithm algorithm;
   WebCryptoKeyType key_type = kWebCryptoKeyTypeSecret;
-  switch (raw_key_type) {
+  switch (raw_key_byte) {
     case kAesKeyTag: {
       uint32_t raw_id;
       WebCryptoAlgorithmId id;

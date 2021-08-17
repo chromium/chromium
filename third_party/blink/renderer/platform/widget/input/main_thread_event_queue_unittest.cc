@@ -470,15 +470,17 @@ TEST_F(MainThreadEventQueueTest, NonBlockingTouch) {
     EXPECT_TRUE(Equal(kEvents[1], *coalesced_touch_event));
   }
 
-  EXPECT_EQ(kEvents[2].GetType(),
-            handled_tasks_.at(2)->taskAsEvent()->Event().GetType());
-  last_touch_event = static_cast<const WebTouchEvent*>(
-      handled_tasks_.at(2)->taskAsEvent()->EventPointer());
-  WebTouchEvent coalesced_event = kEvents[2];
-  coalesced_event.Coalesce(kEvents[3]);
-  coalesced_event.dispatch_type =
-      WebInputEvent::DispatchType::kListenersNonBlockingPassive;
-  EXPECT_TRUE(Equal(coalesced_event, *last_touch_event));
+  {
+    EXPECT_EQ(kEvents[2].GetType(),
+              handled_tasks_.at(2)->taskAsEvent()->Event().GetType());
+    last_touch_event = static_cast<const WebTouchEvent*>(
+        handled_tasks_.at(2)->taskAsEvent()->EventPointer());
+    WebTouchEvent coalesced_event = kEvents[2];
+    coalesced_event.Coalesce(kEvents[3]);
+    coalesced_event.dispatch_type =
+        WebInputEvent::DispatchType::kListenersNonBlockingPassive;
+    EXPECT_TRUE(Equal(coalesced_event, *last_touch_event));
+  }
 
   {
     EXPECT_EQ(2u, handled_tasks_[2]->taskAsEvent()->CoalescedEventSize());

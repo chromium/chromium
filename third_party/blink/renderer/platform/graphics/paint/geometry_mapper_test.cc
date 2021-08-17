@@ -30,14 +30,14 @@ class GeometryMapperTest : public testing::Test,
   }
 
   void LocalToAncestorVisualRectInternal(
-      const PropertyTreeState& local_state,
-      const PropertyTreeState& ancestor_state,
+      const PropertyTreeState& internal_local_state,
+      const PropertyTreeState& internal_ancestor_state,
       FloatClipRect& mapping_rect,
       bool& success) {
     GeometryMapper::LocalToAncestorVisualRectInternal(
-        local_state, ancestor_state, mapping_rect, kIgnoreOverlayScrollbarSize,
-        kNonInclusiveIntersect, kDontExpandVisualRectForCompositingOverlap,
-        success);
+        internal_local_state, internal_ancestor_state, mapping_rect,
+        kIgnoreOverlayScrollbarSize, kNonInclusiveIntersect,
+        kDontExpandVisualRectForCompositingOverlap, success);
   }
 
   void CheckMappings();

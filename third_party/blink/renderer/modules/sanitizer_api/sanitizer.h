@@ -22,12 +22,6 @@ class ExecutionContext;
 class SanitizerConfig;
 class ScriptState;
 
-enum ElementKind {
-  kCustom,
-  kUnknown,
-  kRegular,
-};
-
 class MODULES_EXPORT Sanitizer final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 

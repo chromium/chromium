@@ -3221,10 +3221,10 @@ if (does_exist) {
         TextNode("""\
 if (${return_value} == NamedPropertyDeleterResult::kDidNotDelete) {
   if (${info}.ShouldThrowOnError()) {
-    ExceptionState exception_state(${info}.GetIsolate(),
-                                   ExceptionState::kNamedDeletionContext,
-                                   "${interface.identifier}");
-    exception_state.ThrowTypeError("Failed to delete a property.");
+    ExceptionState deletion_exception_state(
+        ${info}.GetIsolate(), ExceptionState::kNamedDeletionContext,
+        "${interface.identifier}");
+    deletion_exception_state.ThrowTypeError("Failed to delete a property.");
   }
   return;
 }"""),

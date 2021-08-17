@@ -114,12 +114,12 @@ TEST_F(AudioDataTest, ConstructFromMediaBuffer) {
   const int channels = ChannelLayoutToChannelCount(channel_layout);
   constexpr base::TimeDelta timestamp =
       base::TimeDelta::FromMicroseconds(kTimestampInMicroSeconds);
-  constexpr int kStart = 1;
-  constexpr int kIncrement = 1;
+  constexpr int kValueStart = 1;
+  constexpr int kValueIncrement = 1;
   scoped_refptr<media::AudioBuffer> media_buffer =
-      media::MakeAudioBuffer<int16_t>(media::SampleFormat::kSampleFormatS16,
-                                      channel_layout, channels, kSampleRate,
-                                      kStart, kIncrement, kFrames, timestamp);
+      media::MakeAudioBuffer<int16_t>(
+          media::SampleFormat::kSampleFormatS16, channel_layout, channels,
+          kSampleRate, kValueStart, kValueIncrement, kFrames, timestamp);
 
   auto* frame = MakeGarbageCollected<AudioData>(media_buffer);
 

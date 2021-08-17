@@ -33,7 +33,7 @@ TEST(CascadePriorityTest, EncodeOriginImportance) {
 }
 
 TEST(CascadePriorityTest, OriginOperators) {
-  std::vector<CascadePriority> priority = {
+  std::vector<CascadePriority> priorities = {
       CascadePriority(CascadeOrigin::kTransition, false, 0, 0),
       CascadePriority(CascadeOrigin::kAnimation, false, 0, 0),
       CascadePriority(CascadeOrigin::kAuthor, false, 0, 0),
@@ -41,34 +41,34 @@ TEST(CascadePriorityTest, OriginOperators) {
       CascadePriority(CascadeOrigin::kUserAgent, false, 0, 0),
       CascadePriority(CascadeOrigin::kNone, false, 0, 0)};
 
-  for (size_t i = 0; i < priority.size(); ++i) {
-    for (size_t j = i; j < priority.size(); ++j) {
-      EXPECT_GE(priority[i], priority[j]);
-      EXPECT_FALSE(priority[i] < priority[j]);
+  for (size_t i = 0; i < priorities.size(); ++i) {
+    for (size_t j = i; j < priorities.size(); ++j) {
+      EXPECT_GE(priorities[i], priorities[j]);
+      EXPECT_FALSE(priorities[i] < priorities[j]);
     }
   }
 
-  for (size_t i = 0; i < priority.size(); ++i) {
-    for (size_t j = i + 1; j < priority.size(); ++j) {
-      EXPECT_LT(priority[j], priority[i]);
-      EXPECT_FALSE(priority[j] >= priority[i]);
+  for (size_t i = 0; i < priorities.size(); ++i) {
+    for (size_t j = i + 1; j < priorities.size(); ++j) {
+      EXPECT_LT(priorities[j], priorities[i]);
+      EXPECT_FALSE(priorities[j] >= priorities[i]);
     }
   }
 
-  for (CascadePriority priority : priority)
+  for (CascadePriority priority : priorities)
     EXPECT_EQ(priority, priority);
 
-  for (size_t i = 0; i < priority.size(); ++i) {
-    for (size_t j = 0; j < priority.size(); ++j) {
+  for (size_t i = 0; i < priorities.size(); ++i) {
+    for (size_t j = 0; j < priorities.size(); ++j) {
       if (i == j)
         continue;
-      EXPECT_NE(priority[i], priority[j]);
+      EXPECT_NE(priorities[i], priorities[j]);
     }
   }
 }
 
 TEST(CascadePriorityTest, OriginImportance) {
-  std::vector<CascadePriority> priority = {
+  std::vector<CascadePriority> priorities = {
       CascadePriority(CascadeOrigin::kTransition, false, 0, 0),
       CascadePriority(CascadeOrigin::kUserAgent, true, 0, 0),
       CascadePriority(CascadeOrigin::kUser, true, 0, 0),
@@ -79,9 +79,9 @@ TEST(CascadePriorityTest, OriginImportance) {
       CascadePriority(CascadeOrigin::kUserAgent, false, 0, 0),
       CascadePriority(CascadeOrigin::kNone, false, 0, 0)};
 
-  for (size_t i = 0; i < priority.size(); ++i) {
-    for (size_t j = i; j < priority.size(); ++j)
-      EXPECT_GE(priority[i], priority[j]);
+  for (size_t i = 0; i < priorities.size(); ++i) {
+    for (size_t j = i; j < priorities.size(); ++j)
+      EXPECT_GE(priorities[i], priorities[j]);
   }
 }
 

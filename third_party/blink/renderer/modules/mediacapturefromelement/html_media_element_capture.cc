@@ -314,9 +314,9 @@ MediaStream* HTMLMediaElementCapture::captureStream(
 
   // If |element| is actually playing a MediaStream, just clone it.
   if (element.GetLoadType() == WebMediaPlayer::kLoadTypeMediaStream) {
-    MediaStreamDescriptor* const descriptor = element.GetSrcObject();
-    DCHECK(descriptor);
-    return MediaStream::Create(context, descriptor);
+    MediaStreamDescriptor* const element_descriptor = element.GetSrcObject();
+    DCHECK(element_descriptor);
+    return MediaStream::Create(context, element_descriptor);
   }
 
   LocalFrame* frame = ToLocalFrameIfNotDetached(script_state->GetContext());

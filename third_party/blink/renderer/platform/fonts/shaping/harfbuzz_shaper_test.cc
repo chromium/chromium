@@ -1653,10 +1653,10 @@ TEST_P(ShapeParameterTest, CopyRangeNoRuns) {
   result->CopyRanges(ranges.data(), ranges.size());
   for (unsigned i = 0; i < ranges.size(); i++) {
     const ShapeResult::ShapeRange& range = ranges[i];
-    const ShapeResult& result = *range_results[i];
-    EXPECT_EQ(result.StartIndex(), range.start);
-    EXPECT_EQ(result.EndIndex(), range.end);
-    EXPECT_EQ(result.NumCharacters(), range.end - range.start);
+    const ShapeResult& range_result = *range_results[i];
+    EXPECT_EQ(range_result.StartIndex(), range.start);
+    EXPECT_EQ(range_result.EndIndex(), range.end);
+    EXPECT_EQ(range_result.NumCharacters(), range.end - range.start);
   }
 }
 

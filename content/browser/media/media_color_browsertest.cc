@@ -31,8 +31,8 @@ class MediaColorTest : public MediaBrowserTest {
     replacements.SetQueryStr(video_file);
     GURL test_url = base_url.ReplaceComponents(replacements);
 
-    std::string final_title = RunTest(test_url, media::kEnded);
-    EXPECT_EQ(media::kEnded, final_title);
+    std::string final_title = RunTest(test_url, media::kEndedTitle);
+    EXPECT_EQ(media::kEndedTitle, final_title);
   }
   void SetUp() override {
     EnablePixelOutput();

@@ -321,14 +321,12 @@ TEST_F(SourceListDirectiveTest, AllowAllInline) {
       CSPSourceListAllowAllInline(CSPDirectiveName::StyleSrc, *style_src));
 
   for (const auto& test : cases) {
-    network::mojom::blink::CSPSourceListPtr script_src =
-        ParseSourceList("script-src", test.sources);
+    script_src = ParseSourceList("script-src", test.sources);
     EXPECT_EQ(
         CSPSourceListAllowAllInline(CSPDirectiveName::ScriptSrc, *script_src),
         test.expected);
 
-    network::mojom::blink::CSPSourceListPtr style_src =
-        ParseSourceList("style-src", test.sources);
+    style_src = ParseSourceList("style-src", test.sources);
     EXPECT_EQ(
         CSPSourceListAllowAllInline(CSPDirectiveName::StyleSrc, *style_src),
         test.expected);

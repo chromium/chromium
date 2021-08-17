@@ -268,9 +268,11 @@ TEST_F(ImageBitmapTest, AvoidGPUReadback) {
   EXPECT_TRUE(image_bitmap->BitmapImage()->IsTextureBacked());
 
   IntRect image_bitmap_rect(25, 25, 50, 50);
-  ImageBitmapOptions* image_bitmap_options = ImageBitmapOptions::Create();
-  TestImageBitmapTextureBacked(bitmap, image_bitmap_rect, image_bitmap_options,
-                               true);
+  {
+    ImageBitmapOptions* image_bitmap_options = ImageBitmapOptions::Create();
+    TestImageBitmapTextureBacked(bitmap, image_bitmap_rect,
+                                 image_bitmap_options, true);
+  }
 
   std::list<String> image_orientations = {"none", "flipY"};
   std::list<String> premultiply_alphas = {"none", "premultiply", "default"};

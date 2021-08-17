@@ -530,11 +530,11 @@ TEST(StrongConnectorTest, Math) {
   {
     MathCalculatorUI calculator_ui(std::move(calc));
 
-    base::RunLoop run_loop, run_loop2;
-    calculator_ui.Add(2.0, run_loop.QuitClosure());
-    calculator_ui.Multiply(5.0, run_loop2.QuitClosure());
-    run_loop.Run();
+    base::RunLoop run_loop2, run_loop3;
+    calculator_ui.Add(2.0, run_loop2.QuitClosure());
+    calculator_ui.Multiply(5.0, run_loop3.QuitClosure());
     run_loop2.Run();
+    run_loop3.Run();
 
     EXPECT_EQ(10.0, calculator_ui.GetOutput());
     EXPECT_FALSE(disconnected);
@@ -602,11 +602,11 @@ TEST(WeakConnectorTest, Math) {
     MathCalculatorUI calculator_ui(
         PendingRemote<math::Calculator>(std::move(pipe.handle1), 0u));
 
-    base::RunLoop run_loop, run_loop2;
-    calculator_ui.Add(2.0, run_loop.QuitClosure());
-    calculator_ui.Multiply(5.0, run_loop2.QuitClosure());
-    run_loop.Run();
+    base::RunLoop run_loop2, run_loop3;
+    calculator_ui.Add(2.0, run_loop2.QuitClosure());
+    calculator_ui.Multiply(5.0, run_loop3.QuitClosure());
     run_loop2.Run();
+    run_loop3.Run();
 
     EXPECT_EQ(10.0, calculator_ui.GetOutput());
     EXPECT_FALSE(disconnected);

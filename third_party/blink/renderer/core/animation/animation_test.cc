@@ -224,20 +224,20 @@ class AnimationAnimationTestNoCompositing : public PaintTestConfigurations,
     GetPage().Animator().ServiceScriptedAnimations(new_time);
   }
 
-  bool StartTimeIsSet(Animation* animation) {
-    return animation->startTime();
+  bool StartTimeIsSet(Animation* for_animation) {
+    return for_animation->startTime();
   }
 
-  bool CurrentTimeIsSet(Animation* animation) {
-    return animation->currentTime();
+  bool CurrentTimeIsSet(Animation* for_animation) {
+    return for_animation->currentTime();
   }
 
-  double GetStartTimeMs(Animation* animation) {
-    return animation->startTime()->GetAsDouble();
+  double GetStartTimeMs(Animation* for_animation) {
+    return for_animation->startTime()->GetAsDouble();
   }
 
-  double GetCurrentTimeMs(Animation* animation) {
-    return animation->currentTime()->GetAsDouble();
+  double GetCurrentTimeMs(Animation* for_animation) {
+    return for_animation->currentTime()->GetAsDouble();
   }
 
 #define EXPECT_TIME(expected, observed) \

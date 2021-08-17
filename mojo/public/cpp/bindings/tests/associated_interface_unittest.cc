@@ -394,22 +394,22 @@ TEST_F(AssociatedInterfaceTest, MultiThreadAccess) {
   run_loop.Run();
 
   for (size_t i = 0; i < 4; ++i) {
-    base::RunLoop run_loop;
+    base::RunLoop run_loop2;
     senders[i].task_runner()->PostTaskAndReply(
         FROM_HERE,
         base::BindOnce(&TestSender::TearDown, base::Unretained(&senders[i])),
-        run_loop.QuitClosure());
-    run_loop.Run();
+        run_loop2.QuitClosure());
+    run_loop2.Run();
   }
 
   for (size_t i = 0; i < 2; ++i) {
-    base::RunLoop run_loop;
+    base::RunLoop run_loop2;
     receivers[i].task_runner()->PostTaskAndReply(
         FROM_HERE,
         base::BindOnce(&TestReceiver::TearDown,
                        base::Unretained(&receivers[i])),
-        run_loop.QuitClosure());
-    run_loop.Run();
+        run_loop2.QuitClosure());
+    run_loop2.Run();
   }
 
   EXPECT_EQ(static_cast<size_t>(kMaxValue / 2), receivers[0].values().size());
@@ -475,22 +475,22 @@ TEST_F(AssociatedInterfaceTest, FIFO) {
   run_loop.Run();
 
   for (size_t i = 0; i < 4; ++i) {
-    base::RunLoop run_loop;
+    base::RunLoop run_loop2;
     senders[i].task_runner()->PostTaskAndReply(
         FROM_HERE,
         base::BindOnce(&TestSender::TearDown, base::Unretained(&senders[i])),
-        run_loop.QuitClosure());
-    run_loop.Run();
+        run_loop2.QuitClosure());
+    run_loop2.Run();
   }
 
   for (size_t i = 0; i < 2; ++i) {
-    base::RunLoop run_loop;
+    base::RunLoop run_loop2;
     receivers[i].task_runner()->PostTaskAndReply(
         FROM_HERE,
         base::BindOnce(&TestReceiver::TearDown,
                        base::Unretained(&receivers[i])),
-        run_loop.QuitClosure());
-    run_loop.Run();
+        run_loop2.QuitClosure());
+    run_loop2.Run();
   }
 
   EXPECT_EQ(static_cast<size_t>(kMaxValue / 2), receivers[0].values().size());

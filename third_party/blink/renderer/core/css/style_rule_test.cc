@@ -18,12 +18,12 @@ class StyleRuleTest : public PageTestBase {};
 // Note that this test can be removed when the CSSScrollTimeline flag is
 // removed.
 TEST_F(StyleRuleTest, StyleRuleScrollTimelineGettersWithoutFeature) {
-  ScopedCSSScrollTimelineForTest scoped_feature(false);
+  ScopedCSSScrollTimelineForTest scoped_disable_feature(false);
 
   StyleRuleBase* base_rule = nullptr;
 
   {
-    ScopedCSSScrollTimelineForTest scoped_feature(true);
+    ScopedCSSScrollTimelineForTest scoped_enable_feature(true);
     base_rule = css_test_helpers::ParseRule(GetDocument(), R"CSS(
         @scroll-timeline timeline {
           source: selector(#foo);

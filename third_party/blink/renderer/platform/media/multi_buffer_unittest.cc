@@ -560,10 +560,10 @@ TEST_F(MultiBufferTest, RandomTest) {
         if (!writers.empty())
           Advance();
       } else {
-        size_t j = rnd_.Rand() % read_helpers.size();
+        size_t k = rnd_.Rand() % read_helpers.size();
         if (rnd_.Rand() % 100 < 3)
-          read_helpers[j]->Seek();
-        read_helpers[j]->StartRead();
+          read_helpers[k]->Seek();
+        read_helpers[k]->StartRead();
       }
     }
     multibuffer_.CheckLRUState();
@@ -591,10 +591,10 @@ TEST_F(MultiBufferTest, RandomTest_RangeSupported) {
         if (!writers.empty())
           Advance();
       } else {
-        size_t j = rnd_.Rand() % read_helpers.size();
+        size_t k = rnd_.Rand() % read_helpers.size();
         if (rnd_.Rand() % 100 < 3)
-          read_helpers[j]->Seek();
-        read_helpers[j]->StartRead();
+          read_helpers[k]->Seek();
+        read_helpers[k]->StartRead();
       }
     }
     multibuffer_.CheckLRUState();

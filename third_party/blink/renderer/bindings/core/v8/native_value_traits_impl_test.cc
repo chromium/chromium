@@ -87,7 +87,7 @@ TEST(NativeValueTraitsImplTest, IDLRecord) {
   }
   {
     // Exceptions are being thrown in this test, so we need another scope.
-    V8TestingScope scope;
+    V8TestingScope scope2;
     v8::Local<v8::Object> original_object = EvaluateScriptForObject(
         scope, "(self.originalObject = {foo: 34, bar: 42})");
 

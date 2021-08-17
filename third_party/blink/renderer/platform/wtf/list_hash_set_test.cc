@@ -556,9 +556,9 @@ TEST(ListHashSetTest, WithOwnPtr) {
   deleted1 = false;
   deleted2 = false;
   {
-    OwnPtrSet set;
-    set.insert(std::make_unique<Dummy>(deleted1));
-    set.insert(std::make_unique<Dummy>(deleted2));
+    OwnPtrSet inner_set;
+    inner_set.insert(std::make_unique<Dummy>(deleted1));
+    inner_set.insert(std::make_unique<Dummy>(deleted2));
   }
   EXPECT_TRUE(deleted1);
   EXPECT_TRUE(deleted2);
@@ -570,13 +570,13 @@ TEST(ListHashSetTest, WithOwnPtr) {
   ptr1 = new Dummy(deleted1);
   ptr2 = new Dummy(deleted2);
   {
-    OwnPtrSet set;
-    set.insert(base::WrapUnique(ptr1));
-    set.insert(base::WrapUnique(ptr2));
-    own_ptr1 = set.TakeFirst();
-    EXPECT_EQ(1UL, set.size());
-    own_ptr2 = set.Take(ptr2);
-    EXPECT_TRUE(set.IsEmpty());
+    OwnPtrSet inner_set;
+    inner_set.insert(base::WrapUnique(ptr1));
+    inner_set.insert(base::WrapUnique(ptr2));
+    own_ptr1 = inner_set.TakeFirst();
+    EXPECT_EQ(1UL, inner_set.size());
+    own_ptr2 = inner_set.Take(ptr2);
+    EXPECT_TRUE(inner_set.IsEmpty());
   }
   EXPECT_FALSE(deleted1);
   EXPECT_FALSE(deleted2);

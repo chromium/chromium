@@ -223,32 +223,32 @@ TEST_F(ParkableStringTest, Simple) {
 
 TEST_F(ParkableStringTest, Park) {
   {
-    ParkableString parkable(MakeLargeString('a').ReleaseImpl());
-    EXPECT_TRUE(parkable.may_be_parked());
-    EXPECT_FALSE(parkable.Impl()->is_parked());
-    EXPECT_TRUE(ParkAndWait(parkable));
-    EXPECT_TRUE(parkable.Impl()->is_parked());
+    ParkableString parkable_a(MakeLargeString('a').ReleaseImpl());
+    EXPECT_TRUE(parkable_a.may_be_parked());
+    EXPECT_FALSE(parkable_a.Impl()->is_parked());
+    EXPECT_TRUE(ParkAndWait(parkable_a));
+    EXPECT_TRUE(parkable_a.Impl()->is_parked());
   }
 
   String large_string = MakeLargeString('b');
-  ParkableString parkable(large_string.Impl());
-  EXPECT_TRUE(parkable.may_be_parked());
+  ParkableString parkable_b(large_string.Impl());
+  EXPECT_TRUE(parkable_b.may_be_parked());
   // Not the only one to have a reference to the string.
-  EXPECT_FALSE(ParkAndWait(parkable));
+  EXPECT_FALSE(ParkAndWait(parkable_b));
   large_string = String();
-  EXPECT_TRUE(ParkAndWait(parkable));
+  EXPECT_TRUE(ParkAndWait(parkable_b));
 
   {
-    ParkableString parkable(MakeLargeString('c').ReleaseImpl());
-    EXPECT_TRUE(parkable.may_be_parked());
-    EXPECT_FALSE(parkable.Impl()->is_parked());
+    ParkableString parkable_c(MakeLargeString('c').ReleaseImpl());
+    EXPECT_TRUE(parkable_c.may_be_parked());
+    EXPECT_FALSE(parkable_c.Impl()->is_parked());
     EXPECT_TRUE(
-        parkable.Impl()->Park(ParkableStringImpl::ParkingMode::kCompress));
+        parkable_c.Impl()->Park(ParkableStringImpl::ParkingMode::kCompress));
     // Should not crash, it is allowed to call |Park()| twice in a row.
     EXPECT_TRUE(
-        parkable.Impl()->Park(ParkableStringImpl::ParkingMode::kCompress));
-    parkable = ParkableString();  // Release the reference.
-    RunPostedTasks();             // Should not crash.
+        parkable_c.Impl()->Park(ParkableStringImpl::ParkingMode::kCompress));
+    parkable_c = ParkableString();  // Release the reference.
+    RunPostedTasks();               // Should not crash.
   }
 }
 

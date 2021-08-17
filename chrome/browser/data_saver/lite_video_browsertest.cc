@@ -138,7 +138,7 @@ class LiteVideoBrowserTest : public InProcessBrowserTest {
                               segment_fetch_delay_before_end);
     RunMediaTestPage(
         has_subframe_video ? "multi_frame_mse_player.html" : "mse_player.html",
-        query_params, base::ASCIIToUTF16(media::kEnded));
+        query_params, base::ASCIIToUTF16(media::kEndedTitle));
   }
 
   // Runs a html page with a list of URL query parameters.

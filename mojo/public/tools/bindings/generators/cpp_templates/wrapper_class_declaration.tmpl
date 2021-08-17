@@ -135,7 +135,7 @@ class {{export_attribute}} {{struct.name}} {
 {%- endfor %}
 
   // Serialise this struct into a trace.
-  void WriteIntoTrace(perfetto::TracedValue context) const;
+  void WriteIntoTrace(perfetto::TracedValue traced_context) const;
 
  private:
   static bool Validate(const void* data,

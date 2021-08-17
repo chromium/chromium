@@ -155,22 +155,22 @@ TEST_F(DocumentAnimationsTest, AllowAnimationUpdatesScope) {
   EXPECT_FALSE(allowed());
 
   {
-    AllowAnimationUpdatesScope scope(document_animations, true);
+    AllowAnimationUpdatesScope scope_on(document_animations, true);
     EXPECT_TRUE(allowed());
 
     {
-      AllowAnimationUpdatesScope scope(document_animations, true);
+      AllowAnimationUpdatesScope scope_on2(document_animations, true);
       EXPECT_TRUE(allowed());
     }
 
     {
       // Disallow explicitly:
-      AllowAnimationUpdatesScope scope(document_animations, false);
+      AllowAnimationUpdatesScope scope_off(document_animations, false);
       EXPECT_FALSE(allowed());
 
       {
         // Allowing while explicitly disallowed has no effect:
-        AllowAnimationUpdatesScope scope(document_animations, true);
+        AllowAnimationUpdatesScope scope_on2(document_animations, true);
         EXPECT_FALSE(allowed());
       }
 

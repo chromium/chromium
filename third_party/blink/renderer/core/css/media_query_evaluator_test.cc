@@ -472,12 +472,14 @@ TEST(MediaQueryEvaluatorTest, CachedForcedColors) {
   ScopedForcedColorsForTest scoped_feature(true);
 
   MediaValuesCached::MediaValuesCachedData data;
-  data.forced_colors = ForcedColors::kNone;
-  MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
 
   // Forced colors - none.
-  MediaQueryEvaluator media_query_evaluator(*media_values);
-  TestMQEvaluator(g_forcedcolors_none_cases, media_query_evaluator);
+  {
+    data.forced_colors = ForcedColors::kNone;
+    MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
+    MediaQueryEvaluator media_query_evaluator(*media_values);
+    TestMQEvaluator(g_forcedcolors_none_cases, media_query_evaluator);
+  }
 
   // Forced colors - active.
   {
@@ -494,12 +496,15 @@ TEST(MediaQueryEvaluatorTest, CachedPrefersContrast) {
 
   MediaValuesCached::MediaValuesCachedData data;
   data.forced_colors = ForcedColors::kNone;
-  data.preferred_contrast = mojom::blink::PreferredContrast::kNoPreference;
-  MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
 
   // Prefers-contrast - no-preference.
-  MediaQueryEvaluator media_query_evaluator(*media_values);
-  TestMQEvaluator(g_preferscontrast_nopreference_cases, media_query_evaluator);
+  {
+    data.preferred_contrast = mojom::blink::PreferredContrast::kNoPreference;
+    MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
+    MediaQueryEvaluator media_query_evaluator(*media_values);
+    TestMQEvaluator(g_preferscontrast_nopreference_cases,
+                    media_query_evaluator);
+  }
 
   // Prefers-contrast - more.
   {

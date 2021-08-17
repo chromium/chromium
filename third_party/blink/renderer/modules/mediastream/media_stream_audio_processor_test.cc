@@ -123,9 +123,10 @@ class MediaStreamAudioProcessorTest : public ::testing::Test {
       const bool is_aec_enabled = ap && ap->GetConfig().echo_canceller.enabled;
       if (is_aec_enabled) {
         if (has_keyboard_mic) {
-          for (int i = 0; i < data_bus_playout->channels(); ++i) {
+          for (int channel = 0; channel < data_bus_playout->channels();
+               ++channel) {
             data_bus_playout->SetChannelData(
-                i, const_cast<float*>(data_bus->channel(i)));
+                channel, const_cast<float*>(data_bus->channel(channel)));
           }
         }
         audio_processor->OnPlayoutData(data_bus_playout_to_use,

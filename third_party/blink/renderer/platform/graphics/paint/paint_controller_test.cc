@@ -1209,7 +1209,7 @@ TEST_P(PaintControllerTest, CachedNestedSubsequenceUpdate) {
                IntRect(100, 100, 100, 100));
 
       {
-        SubsequenceRecorder r(context, content1);
+        SubsequenceRecorder inner_r(context, content1);
         GetPaintController().UpdateCurrentPaintChunkProperties(
             &content1_id, content1_properties);
         DrawRect(context, content1, kBackgroundType,
@@ -1229,7 +1229,7 @@ TEST_P(PaintControllerTest, CachedNestedSubsequenceUpdate) {
       DrawRect(context, container2, kBackgroundType,
                IntRect(100, 200, 100, 100));
       {
-        SubsequenceRecorder r(context, content2);
+        SubsequenceRecorder inner_r(context, content2);
         GetPaintController().UpdateCurrentPaintChunkProperties(
             &content2_id, content2_properties);
         DrawRect(context, content2, kBackgroundType,
@@ -1293,7 +1293,7 @@ TEST_P(PaintControllerTest, CachedNestedSubsequenceUpdate) {
         // expected to create the same painting as in the previous paint.
         EXPECT_FALSE(SubsequenceRecorder::UseCachedSubsequenceIfPossible(
             context, content1));
-        SubsequenceRecorder r(context, content1);
+        SubsequenceRecorder inner_r(context, content1);
         GetPaintController().UpdateCurrentPaintChunkProperties(
             &content1_id, content1_properties);
         DrawRect(context, content1, kBackgroundType,
@@ -1368,12 +1368,12 @@ TEST_P(PaintControllerTest, CachedNestedSubsequenceKeepingDescendants) {
       DrawRect(context, container1, kBackgroundType,
                IntRect(100, 100, 100, 100));
       {
-        SubsequenceRecorder r(context, content1a);
+        SubsequenceRecorder inner_r(context, content1a);
         DrawRect(context, content1a, kBackgroundType,
                  IntRect(100, 100, 50, 200));
       }
       {
-        SubsequenceRecorder r(context, content1b);
+        SubsequenceRecorder inner_r(context, content1b);
         DrawRect(context, content1b, kForegroundType,
                  IntRect(100, 100, 50, 200));
       }
@@ -1385,12 +1385,12 @@ TEST_P(PaintControllerTest, CachedNestedSubsequenceKeepingDescendants) {
       DrawRect(context, container2, kBackgroundType,
                IntRect(100, 200, 100, 100));
       {
-        SubsequenceRecorder r(context, content2a);
+        SubsequenceRecorder inner_r(context, content2a);
         DrawRect(context, content2a, kBackgroundType,
                  IntRect(100, 200, 50, 200));
       }
       {
-        SubsequenceRecorder r(context, content2b);
+        SubsequenceRecorder inner_r(context, content2b);
         DrawRect(context, content2b, kForegroundType,
                  IntRect(100, 200, 50, 200));
       }

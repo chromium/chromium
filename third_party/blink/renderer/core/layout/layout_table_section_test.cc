@@ -30,7 +30,7 @@ class LayoutTableSectionTest : public RenderingTest {
     for (unsigned i = 0; i < rows; ++i) {
       auto* row = GetDocument().CreateRawElement(html_names::kTrTag);
       section->appendChild(row);
-      for (unsigned i = 0; i < columns; ++i)
+      for (unsigned column = 0; column < columns; ++column)
         row->appendChild(GetDocument().CreateRawElement(html_names::kTdTag));
     }
     UpdateAllLifecyclePhasesForTest();

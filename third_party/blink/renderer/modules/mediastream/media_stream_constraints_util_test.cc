@@ -535,11 +535,11 @@ TEST_F(MediaStreamConstraintsUtilTest, VideoTrackAdapterSettingsConstrained) {
 
   // Source frame rate.
   {
-    DoubleRangeSet frame_rate_set(kMinFrameRate, kSourceFrameRate);
+    DoubleRangeSet source_frame_rate_set(kMinFrameRate, kSourceFrameRate);
     MockConstraintFactory constraint_factory;
     auto result =
         SelectTrackSettings(constraint_factory.CreateMediaConstraints().Basic(),
-                            resolution_set, frame_rate_set);
+                            resolution_set, source_frame_rate_set);
     EXPECT_EQ(kSourceHeight, result.target_height());
     EXPECT_EQ(kSourceWidth, result.target_width());
     EXPECT_EQ(kMinAspectRatio, result.min_aspect_ratio());
@@ -550,13 +550,13 @@ TEST_F(MediaStreamConstraintsUtilTest, VideoTrackAdapterSettingsConstrained) {
   // High frame rate.
   {
     constexpr double kHighFrameRate = 400.0;  // Greater than source.
-    DoubleRangeSet frame_rate_set(kMinFrameRate, kHighFrameRate);
+    DoubleRangeSet high_frame_rate_set(kMinFrameRate, kHighFrameRate);
     static_assert(kHighFrameRate > kSourceFrameRate,
                   "kIdealFrameRate must be greater than kSourceFrameRate");
     MockConstraintFactory constraint_factory;
     auto result =
         SelectTrackSettings(constraint_factory.CreateMediaConstraints().Basic(),
-                            resolution_set, frame_rate_set);
+                            resolution_set, high_frame_rate_set);
     EXPECT_EQ(kSourceHeight, result.target_height());
     EXPECT_EQ(kSourceWidth, result.target_width());
     EXPECT_EQ(kMinAspectRatio, result.min_aspect_ratio());

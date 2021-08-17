@@ -1957,7 +1957,7 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, SourceWithAudioProcessing) {
       constraint_factory_.Reset();
       (constraint_factory_.basic().*kAudioBrowserConstraints[i])
           .SetExact(use_defaults);
-      auto result = SelectSettingsAudioCapture(
+      result = SelectSettingsAudioCapture(
           source.get(), constraint_factory_.CreateMediaConstraints());
       EXPECT_TRUE(result.HasValue());
 

@@ -5121,8 +5121,8 @@ String AXNodeObject::Description(
     description = TextFromElements(true, visited, elements_from_attribute,
                                    related_objects);
 
-    for (auto& element : elements_from_attribute)
-      ids.push_back(element->GetIdAttribute());
+    for (auto& member_element : elements_from_attribute)
+      ids.push_back(member_element->GetIdAttribute());
 
     TokenVectorFromAttribute(element, ids, html_names::kAriaDescribedbyAttr);
     AXObjectCache().UpdateReverseRelations(this, ids);

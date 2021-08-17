@@ -64,8 +64,8 @@ namespace {
     for (int y = 0; y < bitmap.height(); ++y)                 \
       for (int x = 0; x < bitmap.width(); ++x) {              \
         int alpha = *bitmap.getAddr32(x, y) >> 24;            \
-        bool opaque = opaqueRect.Contains(x, y);              \
-        EXPECT_EQ(opaque, alpha == 255);                      \
+        bool is_opaque = opaqueRect.Contains(x, y);           \
+        EXPECT_EQ(is_opaque, alpha == 255);                   \
       }                                                       \
   }
 

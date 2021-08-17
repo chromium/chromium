@@ -39,7 +39,7 @@ TEST(ScopedAllowFullscreenTest, DestructResetsState) {
 
 TEST(ScopedAllowFullscreenTest, DestructResetsStateToPrevious) {
   ScopedAllowFullscreen scope(ScopedAllowFullscreen::kOrientationChange);
-  { ScopedAllowFullscreen scope(ScopedAllowFullscreen::kOrientationChange); }
+  { ScopedAllowFullscreen scope2(ScopedAllowFullscreen::kOrientationChange); }
 
   EXPECT_EQ(ScopedAllowFullscreen::kOrientationChange,
             ScopedAllowFullscreen::FullscreenAllowedReason().value());
