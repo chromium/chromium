@@ -282,12 +282,9 @@ used when committed.
     Java related issues at compile time with the 'lint' tool.
 *   [Java Code Coverage](../build/android/docs/coverage.md) - Collecting code
     coverage data with the EMMA tool.
-*   [Android BuildConfig files](../build/android/docs/build_config.md) -
-    What are .build_config files and how they are used.
-*   [Android App Bundles](../build/android/docs/android_app_bundles.md) -
-    How to build Android app bundles for Chrome.
-*   [Dynamic Feature Modules (DFMs)](android_dynamic_feature_modules.md) - How
-    to create dynamic feature modules.
+*   [Dynamic Feature Modules (DFMs)](android_dynamic_feature_modules.md) - What
+    are they and how to create new ones.
+*   [Other build-related Android docs](../build/android/docs/index.md)
 *   [Chrome for Android UI](ui/android/overview.md) - Resources and best practices for
     developing UI
 

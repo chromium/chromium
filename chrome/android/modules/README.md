@@ -1,7 +1,6 @@
 # Chrome on Android App Bundles and Dynamic Feature Modules
 
 This directory contains GN templates and code for Chrome-specific
-[Android app bundles](/build/android/docs/android_app_bundles.md) and
 [dynamic feature modules](/docs/android_dynamic_feature_modules.md).
 Among others, it offers the following:
 

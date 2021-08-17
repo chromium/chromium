@@ -12,6 +12,8 @@ Bundles provide three main advantages over monolithic `.apk` files:
 1. Language resources are split into language-specific `.apk` files, known as
    "resource splits". Delivering only the active languages reduces the overhead
    of UI strings.
+   * Resource splits can also be made on a per-screen-density basis (for drawables),
+     but Chrome has not taken advantage of this (yet).
 2. Features can be packaged into lazily loaded `.apk` files, known as
    "feature splits". Feature splits have no performance overhead until used.
    * Except on versions prior to Android O, where support for
@@ -38,24 +40,57 @@ Adding new features vis feature splits is highly encouraged when it makes sense
 to do so:
  * Has a non-trivial amount of Dex (>50kb)
  * Not needed on startup
- * Has a small integration surface (calls into it must be done with reflection).
+ * Has a small integration surface (calls into it must be done with reflection)
+ * Not used by WebView (WebView does not support DFMs)
 ***
-
-The remainder of this doc focuses on DFMs.
 
 [android_build_instructions.md#multiple-chrome-targets]: android_build_instructions.md#multiple-chrome-targets
 [Android App Bundles]: https://developer.android.com/guide/app-bundle
 [android:isolatedSplits]: https://developer.android.com/reference/android/R.attr#isolatedSplits
 [go/isolated-splits-dev-guide]: http://go/isolated-splits-dev-guide
 
-## Limitations
+### Declaring App Bundles with GN Templates
 
-DFMs have the following limitations:
+Here's an example that shows how to declare a simple bundle that contains a
+single base module, which enables language-based splits:
 
-* **WebView:** We don't support DFMs for WebView. If your feature is used by
-  WebView you cannot put it into a DFM.
+```gn
+  android_app_bundle_module("foo_base_module") {
+    # Declaration are similar to android_apk here.
+    ...
+  }
 
-## Getting started
+  android_app_bundle("foo_bundle") {
+    base_module_target = ":foo_base_module"
+
+    # The name of our bundle file (without any suffix).
+    bundle_name = "FooBundle"
+
+    # Enable language-based splits for this bundle. Which means that
+    # resources and assets specific to a given language will be placed
+    # into their own split APK in the final .apks archive.
+    enable_language_splits = true
+
+    # Proguard settings must be passed at the bundle, not module, target.
+    proguard_enabled = !is_java_debug
+  }
+```
+
+When generating the `foo_bundle` target with Ninja, you will end up with
+the following:
+
+  * The bundle file under `out/Release/apks/FooBundle.aab`
+
+  * A helper script called `out/Release/bin/foo_bundle`, which can be used
+    to install / launch / uninstall the bundle on local devices.
+
+    This works like an APK wrapper script (e.g. `foo_apk`). Use `--help`
+    to see all possible commands supported by the script.
+
+
+The remainder of this doc focuses on DFMs.
+
+## Declaring Dynamic Feature Modules (DFMs)
 
 This guide walks you through the steps to create a DFM called _Foo_ and add it
 to the Chrome bundles.
@@ -207,6 +242,15 @@ $ adb shell dumpsys package org.chromium.chrome | grep splits
 >   splits=[base, config.en]
 ```
 
+*** note
+The wrapper script's `install` command does approximately:
+```sh
+java -jar third_party/android_build_tools/bundletool/bundletool-all-$VERSION.jar build-apks --output tmp.apks ...
+java -jar third_party/android_build_tools/bundletool/bundletool-all-$VERSION.jar install-apks --apks tmp.apks
+```
+
+The `install-apks` command uses `adb install-multiple` under-the-hood.
+***
 
 ### Adding Java code
 

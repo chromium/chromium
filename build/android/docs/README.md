@@ -1,7 +1,7 @@
 # Android Build Docs
 
 * [//docs/android_build_instructions.md](/docs/android_build_instructions.md)
-* [android_app_bundles.md](android_app_bundles.md)
+* [//docs/android_dynamic_feature_modules.md](/docs/android_dynamic_feature_modules.md)
 * [build_config.md](build_config.md)
 * [coverage.md](coverage.md)
 * [java_toolchain.md](java_toolchain.md)

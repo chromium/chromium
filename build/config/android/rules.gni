@@ -2884,8 +2884,7 @@ if (enable_java_templates) {
       }
     } else {
       # Dex generation for app bundle modules with proguarding enabled takes
-      # place later due to synchronized proguarding. For more details,
-      # read build/android/docs/android_app_bundles.md
+      # place later due to synchronized proguarding.
       _final_dex_target_name = "${_template_name}__final_dex"
       dex(_final_dex_target_name) {
         forward_variables_from(invoker,
