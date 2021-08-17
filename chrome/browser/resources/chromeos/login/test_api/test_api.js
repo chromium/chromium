@@ -164,6 +164,12 @@ class UpdateScreen extends ScreenElementApi {
   }
 }
 
+class EnrollmentScreen extends ScreenElementApi {
+  constructor() {
+    super('enterprise-enrollment');
+  }
+}
+
 class UserCreationScreen extends ScreenElementApi {
   constructor() {
     super('user-creation');
@@ -242,6 +248,7 @@ class OobeApiProvider {
       NetworkScreen: new NetworkScreen(),
       EulaScreen: new EulaScreen(),
       UpdateScreen: new UpdateScreen(),
+      EnrollmentScreen: new EnrollmentScreen(),
       UserCreationScreen: new UserCreationScreen(),
       GaiaScreen: new GaiaScreen(),
       ConfirmSamlPasswordScreen: new ConfirmSamlPasswordScreen(),
