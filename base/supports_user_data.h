@@ -11,6 +11,7 @@
 #include "base/base_export.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 
 namespace base {
 
@@ -64,10 +65,10 @@ class BASE_EXPORT SupportsUserData {
  private:
   using DataMap = std::map<const void*, std::unique_ptr<Data>>;
 
+  SEQUENCE_CHECKER(sequence_checker_);
+
   // Externally-defined data accessible by key.
-  DataMap user_data_;
-  // Guards usage of |user_data_|
-  SequenceChecker sequence_checker_;
+  DataMap user_data_ GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 // Adapter class that releases a refcounted object when the
