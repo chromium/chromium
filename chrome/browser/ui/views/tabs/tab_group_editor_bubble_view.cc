@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/views/bubble_menu_item_factory.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
+#include "chrome/browser/ui/views/hover_button.h"
 #include "chrome/browser/ui/views/tabs/color_picker_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/grit/generated_resources.h"
@@ -46,7 +47,6 @@
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
@@ -196,7 +196,7 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
   layout_manager_->SetOrientation(views::LayoutOrientation::kVertical)
       .SetIgnoreDefaultMainAxisMargins(true);
 
-  std::unique_ptr<views::LabelButton> new_tab_menu_item = CreateBubbleMenuItem(
+  std::unique_ptr<HoverButton> new_tab_menu_item = CreateBubbleMenuItem(
       TAB_GROUP_HEADER_CXMENU_NEW_TAB_IN_GROUP,
       l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_NEW_TAB_IN_GROUP),
       base::BindRepeating(&TabGroupEditorBubbleView::NewTabInGroupPressed,
@@ -204,7 +204,7 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
   new_tab_menu_item->SetBorder(views::CreateEmptyBorder(control_insets));
   menu_items_container->AddChildView(std::move(new_tab_menu_item));
 
-  std::unique_ptr<views::LabelButton> ungroup_menu_item = CreateBubbleMenuItem(
+  std::unique_ptr<HoverButton> ungroup_menu_item = CreateBubbleMenuItem(
       TAB_GROUP_HEADER_CXMENU_UNGROUP,
       l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_UNGROUP),
       base::BindRepeating(&TabGroupEditorBubbleView::UngroupPressed,
@@ -212,7 +212,7 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
   ungroup_menu_item->SetBorder(views::CreateEmptyBorder(control_insets));
   menu_items_container->AddChildView(std::move(ungroup_menu_item));
 
-  std::unique_ptr<views::LabelButton> close_menu_item = CreateBubbleMenuItem(
+  std::unique_ptr<HoverButton> close_menu_item = CreateBubbleMenuItem(
       TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP,
       l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP),
       base::BindRepeating(&TabGroupEditorBubbleView::CloseGroupPressed,
@@ -220,7 +220,7 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
   close_menu_item->SetBorder(views::CreateEmptyBorder(control_insets));
   menu_items_container->AddChildView(std::move(close_menu_item));
 
-  std::unique_ptr<views::LabelButton> move_to_new_window_menu_item =
+  std::unique_ptr<HoverButton> move_to_new_window_menu_item =
       CreateBubbleMenuItem(
           TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW,
           l10n_util::GetStringUTF16(
@@ -238,13 +238,11 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
   menu_items_container->AddChildView(std::move(move_to_new_window_menu_item));
 
   if (base::FeatureList::IsEnabled(features::kTabGroupsFeedback)) {
-    std::unique_ptr<views::LabelButton> feedback_menu_item =
-        CreateBubbleMenuItem(
-            TAB_GROUP_HEADER_CXMENU_FEEDBACK,
-            l10n_util::GetStringUTF16(
-                IDS_TAB_GROUP_HEADER_CXMENU_SEND_FEEDBACK),
-            base::BindRepeating(&TabGroupEditorBubbleView::SendFeedbackPressed,
-                                base::Unretained(this)));
+    std::unique_ptr<HoverButton> feedback_menu_item = CreateBubbleMenuItem(
+        TAB_GROUP_HEADER_CXMENU_FEEDBACK,
+        l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_SEND_FEEDBACK),
+        base::BindRepeating(&TabGroupEditorBubbleView::SendFeedbackPressed,
+                            base::Unretained(this)));
     feedback_menu_item->SetBorder(views::CreateEmptyBorder(control_insets));
     menu_items_container->AddChildView(std::move(feedback_menu_item));
   }

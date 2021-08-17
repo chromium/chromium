@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/bubble_menu_item_factory.h"
 
 #include "chrome/browser/ui/views/hover_button.h"
-#include "chrome/browser/ui/views/hover_button_controller.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/animation/ink_drop.h"
@@ -19,24 +18,23 @@ namespace {
 
 constexpr gfx::Insets kDefaultBorderInsets = gfx::Insets(12);
 
-class BubbleMenuItem : public views::LabelButton {
+class BubbleMenuItem : public HoverButton {
  public:
   METADATA_HEADER(BubbleMenuItem);
   BubbleMenuItem(PressedCallback callback,
                  const std::u16string& text,
-                 int button_context,
                  int button_id)
-      : LabelButton(callback, text, button_context) {
+      : HoverButton(callback, text) {
     ConfigureBubbleMenuItem(this, button_id);
   }
 
   void OnThemeChanged() override {
-    LabelButton::OnThemeChanged();
+    HoverButton::OnThemeChanged();
     views::InkDrop::Get(this)->SetBaseColor(HoverButton::GetInkDropColor(this));
   }
 };
 
-BEGIN_METADATA(BubbleMenuItem, views::LabelButton)
+BEGIN_METADATA(BubbleMenuItem, HoverButton)
 END_METADATA
 
 }  // namespace
@@ -53,17 +51,11 @@ void ConfigureBubbleMenuItem(views::Button* button, int button_id) {
   button->SetID(button_id);
 }
 
-std::unique_ptr<views::LabelButton> CreateBubbleMenuItem(
+std::unique_ptr<HoverButton> CreateBubbleMenuItem(
     int button_id,
     const std::u16string& name,
     views::Button::PressedCallback callback) {
-  auto button = std::make_unique<BubbleMenuItem>(
-      callback, name, views::style::CONTEXT_BUTTON, button_id);
-
-  button->SetButtonController(std::make_unique<HoverButtonController>(
-      button.get(), std::move(callback),
-      std::make_unique<views::Button::DefaultButtonControllerDelegate>(
-          button.get())));
+  auto button = std::make_unique<BubbleMenuItem>(callback, name, button_id);
   button->SetBorder(views::CreateEmptyBorder(kDefaultBorderInsets));
 
   return button;

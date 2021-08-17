@@ -10,15 +10,13 @@
 
 #include "ui/views/controls/button/button.h"
 
-namespace views {
-class LabelButton;
-}  // namespace views
+class HoverButton;
 
 void ConfigureBubbleMenuItem(views::Button* button, int button_id);
 
-// Convience method for creating a menu item used inside a bubble that can then
-// be futher configured to hold an image and text.
-std::unique_ptr<views::LabelButton> CreateBubbleMenuItem(
+// Convenience method for creating a menu item used inside a bubble that can
+// then be further configured to hold an image and text.
+std::unique_ptr<HoverButton> CreateBubbleMenuItem(
     int button_id,
     const std::u16string& name,
     views::Button::PressedCallback callback);
