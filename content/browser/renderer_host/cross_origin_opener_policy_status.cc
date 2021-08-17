@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/time/time.h"
+#include "content/browser/renderer_host/cross_origin_embedder_policy.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
@@ -288,6 +289,9 @@ void CrossOriginOpenerPolicyStatus::SanitizeCoopHeaders(
     network::mojom::URLResponseHead* response_head) const {
   network::CrossOriginOpenerPolicy& coop =
       response_head->parsed_headers->cross_origin_opener_policy;
+  network::AugmentCoopWithCoep(
+      &coop, CoepFromMainResponse(response_url, response_head));
+
   if (coop == network::CrossOriginOpenerPolicy())
     return;
 

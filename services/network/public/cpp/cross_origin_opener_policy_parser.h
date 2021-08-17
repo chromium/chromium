@@ -13,7 +13,6 @@ class HttpResponseHeaders;
 
 namespace network {
 
-struct CrossOriginEmbedderPolicy;
 struct CrossOriginOpenerPolicy;
 
 // Parsing is done following the COOP spec draft:
@@ -22,8 +21,7 @@ struct CrossOriginOpenerPolicy;
 // services/network/content_security_policy_fuzzer.cc for an example.
 COMPONENT_EXPORT(NETWORK_CPP)
 CrossOriginOpenerPolicy ParseCrossOriginOpenerPolicy(
-    const net::HttpResponseHeaders& headers,
-    const CrossOriginEmbedderPolicy& coep);
+    const net::HttpResponseHeaders& headers);
 
 }  // namespace network
 

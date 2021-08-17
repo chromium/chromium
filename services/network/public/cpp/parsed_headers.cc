@@ -35,8 +35,8 @@ mojom::ParsedHeadersPtr PopulateParsedHeaders(
 
   parsed_headers->cross_origin_embedder_policy =
       ParseCrossOriginEmbedderPolicy(*headers);
-  parsed_headers->cross_origin_opener_policy = ParseCrossOriginOpenerPolicy(
-      *headers, parsed_headers->cross_origin_embedder_policy);
+  parsed_headers->cross_origin_opener_policy =
+      ParseCrossOriginOpenerPolicy(*headers);
 
   std::string origin_agent_cluster;
   if (headers->GetNormalizedHeader("Origin-Agent-Cluster",
