@@ -288,8 +288,10 @@ class PersonalDataManager : public KeyedService,
   // Returns autofill offer data, including card-linked and promo code offers.
   virtual std::vector<AutofillOfferData*> GetAutofillOffers() const;
 
-  // Returns autofill offer data, but only for promo code offers.
-  std::vector<const AutofillOfferData*> GetAutofillPromoCodeOffers() const;
+  // Returns autofill offer data, but only promo code offers that are not
+  // expired and that are for the given |origin|.
+  std::vector<const AutofillOfferData*>
+  GetActiveAutofillPromoCodeOffersForOrigin(GURL origin) const;
 
   // Returns the customized credit card art image for the |card_art_url|.
   virtual gfx::Image* GetCreditCardArtImageForUrl(

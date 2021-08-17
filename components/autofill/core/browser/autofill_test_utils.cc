@@ -649,13 +649,15 @@ AutofillOfferData GetCardLinkedOfferData2() {
   return data;
 }
 
-AutofillOfferData GetPromoCodeOfferData() {
+AutofillOfferData GetPromoCodeOfferData(GURL origin, bool is_expired) {
   AutofillOfferData data;
   data.offer_id = 333;
-  // Sets the expiry to be 35 days later.
-  data.expiry = AutofillClock::Now() + base::TimeDelta::FromDays(35);
+  // Sets the expiry to be later if not expired, or earlier if expired.
+  data.expiry = is_expired
+                    ? AutofillClock::Now() - base::TimeDelta::FromDays(1)
+                    : AutofillClock::Now() + base::TimeDelta::FromDays(35);
   data.offer_details_url = GURL("http://www.example.com");
-  data.merchant_origins.emplace_back("http://www.example.com");
+  data.merchant_origins.emplace_back(origin);
   data.display_strings.value_prop_text = "5% off on shoes. Up to $50.";
   data.display_strings.see_details_text = "See details";
   data.display_strings.usage_instructions_text =

@@ -2043,24 +2043,36 @@ TEST_F(PersonalDataManagerMockTest, GetAutofillOffers_WalletImportDisabled) {
   EXPECT_EQ(0U, personal_data_->GetAutofillOffers().size());
 }
 
-// Tests that GetAutofillPromoCodeOffers returns available promo code offers
-// only.
-TEST_F(PersonalDataManagerTest, GetAutofillPromoCodeOffers) {
-  // Add two card-linked offers and one promo code offer.
+// Tests that GetActiveAutofillPromoCodeOffersForOrigin returns only active and
+// site-relevant promo code offers.
+TEST_F(PersonalDataManagerTest, GetActiveAutofillPromoCodeOffersForOrigin) {
+  // Card-linked offers should not be returned.
   AddOfferDataForTest(test::GetCardLinkedOfferData1());
-  AddOfferDataForTest(test::GetCardLinkedOfferData2());
-  AddOfferDataForTest(test::GetPromoCodeOfferData());
+  // Expired promo code offers should not be returned.
+  AddOfferDataForTest(test::GetPromoCodeOfferData(
+      /*origin=*/GURL("http://www.example.com"), /*is_expired=*/true));
+  // Active promo code offers should be returned.
+  AddOfferDataForTest(test::GetPromoCodeOfferData(
+      /*origin=*/GURL("http://www.example.com"), /*is_expired=*/false));
+  // Active promo code offers for a different site should not be returned.
+  AddOfferDataForTest(test::GetPromoCodeOfferData(
+      /*origin=*/GURL("http://www.some-other-merchant.com"),
+      /*is_expired=*/false));
 
-  // Only the promo code offer should be returned.
-  EXPECT_EQ(1U, personal_data_->GetAutofillPromoCodeOffers().size());
+  // Only the active offer for example.com should be returned.
+  EXPECT_EQ(1U, personal_data_
+                    ->GetActiveAutofillPromoCodeOffersForOrigin(
+                        GURL("http://www.example.com"))
+                    .size());
 }
 
-// Tests that GetAutofillPromoCodeOffers does not return any promo code offers
-// if |IsAutofillWalletImportEnabled()| returns |false|.
+// Tests that GetActiveAutofillPromoCodeOffersForOrigin does not return any
+// promo code offers if |IsAutofillWalletImportEnabled()| returns |false|.
 TEST_F(PersonalDataManagerMockTest,
-       GetAutofillPromoCodeOffers_WalletImportDisabled) {
-  // Add a promo code offer.
-  AddOfferDataForTest(test::GetPromoCodeOfferData());
+       GetActiveAutofillPromoCodeOffersForOrigin_WalletImportDisabled) {
+  // Add an active promo code offer.
+  AddOfferDataForTest(test::GetPromoCodeOfferData(
+      /*origin=*/GURL("http://www.example.com")));
 
   base::RunLoop run_loop;
   EXPECT_CALL(personal_data_observer_, OnPersonalDataFinishedProfileTasks())
@@ -2068,7 +2080,10 @@ TEST_F(PersonalDataManagerMockTest,
   prefs::SetPaymentsIntegrationEnabled(prefs_.get(), false);
 
   // Should not return the offer as the wallet import pref is disabled.
-  EXPECT_EQ(0U, personal_data_->GetAutofillOffers().size());
+  EXPECT_EQ(0U, personal_data_
+                    ->GetActiveAutofillPromoCodeOffersForOrigin(
+                        GURL("http://www.example.com"))
+                    .size());
 }
 
 TEST_F(PersonalDataManagerTest, DefaultCountryCodeIsCached) {
