@@ -197,6 +197,9 @@ IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewTest, StaticTitleBarHeight) {
 // shows and then hides both when the window is first opened and any time the
 // titlebar's appearance changes.
 IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewTest, OriginTextVisibility) {
+  ui_test_utils::UrlLoadObserver url_observer(
+      GetAppURL(), content::NotificationService::AllSources());
+
   if (!InstallAndLaunchWebApp())
     return;
 
@@ -240,6 +243,8 @@ IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewTest, OriginTextVisibility) {
         });
     auto subscription =
         web_app_origin_text->AddVisibleChangedCallback(quit_runloop);
+    // Make sure the navigation has finished before proceeding.
+    url_observer.Wait();
     ASSERT_TRUE(ExecJs(
         browser_view_->GetActiveWebContents()->GetMainFrame(),
         "var meta = document.head.appendChild(document.createElement('meta'));"
