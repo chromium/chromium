@@ -138,6 +138,8 @@ component("events_base") {
     sources += [
       "keycodes/keyboard_code_conversion_win.cc",
       "keycodes/keyboard_code_conversion_win.h",
+      "keycodes/keyboard_codes_win.h",
+      "keycodes/keyboard_defines_win.h",
     ]
   }
 
