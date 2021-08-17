@@ -686,7 +686,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Sync.ModelTypeBlockedDueToUndecryptableUpdate.SomeKeysAvailable"
-    enum="SyncModelTypes" expires_after="M92">
+    enum="SyncModelTypes" expires_after="2021-08-17">
+  <obsolete>
+    Removed on 08/2021.
+  </obsolete>
   <owner>mastiz@chromium.org</owner>
   <owner>mmoskvitin@google.com</owner>
   <owner>victorvianna@google.com</owner>
