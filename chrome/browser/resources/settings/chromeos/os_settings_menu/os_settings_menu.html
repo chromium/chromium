@@ -16,8 +16,6 @@
   <template>
     <style include="settings-shared">
       :host {
-        --menu-link-color: var(--cros-tab-label-color-prominent);
-        --menu-text-color: var(--cros-tab-label-color);
         /* The tap target extends slightly above each visible menu item. */
         --tap-target-padding: 3px;
         /* Width of the keyboard focus border. */
@@ -58,7 +56,7 @@
         border-inline-start-width: 0;
         border-radius: 0 20px 20px 0;
         border-style: solid;
-        color: var(--menu-text-color);
+        color: var(--cros-text-color-primary);
         display: flex;
         font-weight: 500;
         margin-bottom: 8px;
@@ -73,8 +71,8 @@
       }
 
       a.iron-selected.item {
-        background-color: var(--cros-tab-bg-color-active);
-        color: var(--menu-link-color);
+        background-color: var(--cros-highlight-color);
+        color: var(--cros-text-color-selection);
       }
 
       :host-context(.focus-outline-visible) a:focus.item {
@@ -82,7 +80,7 @@
       }
 
       a:hover:not(.iron-selected).item {
-        background-color: var(--cros-tab-bg-color-hover);
+        background-color: var(--cros-ink-ripple-color);
       }
 
       iron-icon {
@@ -92,17 +90,17 @@
       }
 
       a.iron-selected.item > iron-icon {
-        fill: var(--menu-link-color);
+        fill: var(--cros-icon-color-selection);
       }
 
       #advancedButton {
-        --ink-color: var(--menu-text-color);
+        --ink-color: var(--cros-text-color-primary);
         align-items: center;
         background: none;
         border: none;
         border-radius: initial;
         box-shadow: none;
-        color: var(--menu-text-color);
+        color: var(--cros-text-color-primary);
         display: flex;
         font-weight: 500;
         height: unset;

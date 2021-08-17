@@ -69,6 +69,11 @@
       light: "$google_green_600",
       dark: "$google_green_300",
     },
+    text_color_selection: {
+      light: "$google_blue_700",
+      dark: "$google_blue_200",
+      debug: "$google_red_700",
+    },
 
     icon_color_primary: {
       light: "$google_grey_900",
@@ -97,6 +102,11 @@
       dark: "$google_blue_300",
       debug: "$google_red_600",
     },
+    icon_color_selection: {
+      light: "$google_blue_700",
+      dark: "$google_blue_200",
+      debug: "$google_yellow_500",
+    },
 
     highlight_color: {
       light: "$google_blue_50",
@@ -119,14 +129,6 @@
     toolbar_search_bg_color: {
       light: "$google_grey_100",
       dark: "rgba($white_rgb, 0.1)",
-    },
-
-    tab_bg_color_active: "$highlight_color",
-    tab_bg_color_hover: "$ink_ripple_color",
-    tab_label_color_prominent: "$icon_color_prominent",
-    tab_label_color: {
-      light: "$text_color_secondary",
-      dark: "$text_color_primary",
     },
 
     menu_item_bg_color_focus: {
