@@ -117,15 +117,6 @@
       },
     },
   },
-  'angle_gles1_conformance_tests': {
-    'replacements': {
-      'Win10 FYI x64 Debug (NVIDIA)': {
-        'args': {
-          '--test-timeout': '60',
-        },
-      },
-    },
-  },
   'angle_unittests': {
     'remove_from': [
       # On Android, these are already run on the main waterfall.

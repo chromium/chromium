@@ -2502,23 +2502,6 @@
       },
     },
 
-    'gpu_angle_gles1_conformance_gtests': {
-      'angle_gles1_conformance_tests': {
-        'android_args': [
-          '--shard-timeout=180',
-          '-v',
-        ],
-        'args': [
-          'angle_gles1_conformance_tests',
-          '--test-timeout=40',
-        ],
-        'desktop_args': [
-          '--bot-mode',
-        ],
-        'use_isolated_scripts_api': True,
-      },
-    },
-
     'gpu_angle_unit_gtests': {
       'angle_unittests': {
         'args': [
@@ -6252,7 +6235,6 @@
 
     'gpu_angle_win7_nvidia_gtests': [
       'gpu_angle_end2end_gtests',
-      'gpu_angle_gles1_conformance_gtests',
       'gpu_angle_unit_gtests',
       'gpu_angle_white_box_gtests',
       'gpu_angle_deqp_egl_d3d11_gtests',
@@ -6271,7 +6253,6 @@
     'gpu_angle_win_intel_gtests': [
       'gpu_angle_deqp_gles2_d3d11_gtests',
       'gpu_angle_end2end_gtests',
-      'gpu_angle_gles1_conformance_gtests',
       'gpu_angle_unit_gtests',
       'gpu_angle_white_box_gtests',
     ],
@@ -6309,7 +6290,6 @@
       'gpu_angle_deqp_khr_gles32_vulkan_gtests',
       'gpu_angle_deqp_khr_gles3_vulkan_gtests',
       'gpu_angle_end2end_gtests',
-      'gpu_angle_gles1_conformance_gtests',
       'gpu_angle_unit_gtests',
       'gpu_angle_white_box_gtests',
     ],
@@ -6602,7 +6582,6 @@
 
     'gpu_fyi_win7_amd_gtests': [
       'gpu_angle_end2end_with_retry_gtests',
-      'gpu_angle_gles1_conformance_gtests',
       'gpu_angle_unit_gtests',
       'gpu_angle_white_box_gtests',
       'gpu_common_gtests_passthrough',
@@ -6615,7 +6594,6 @@
 
     'gpu_fyi_win7_gtests': [
       'gpu_angle_end2end_gtests',
-      'gpu_angle_gles1_conformance_gtests',
       'gpu_angle_unit_gtests',
       'gpu_angle_white_box_gtests',
       'gpu_common_gtests_passthrough',
@@ -6648,7 +6626,6 @@
 
     'gpu_fyi_win_gtests': [
       'gpu_angle_end2end_gtests',
-      'gpu_angle_gles1_conformance_gtests',
       'gpu_angle_unit_gtests',
       'gpu_angle_white_box_gtests',
       'gpu_common_gtests_passthrough',

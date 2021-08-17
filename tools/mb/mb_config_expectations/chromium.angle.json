@@ -2,7 +2,6 @@
   "android-angle-arm64-builder": {
     "gn_args": {
       "build_angle_deqp_tests": true,
-      "build_angle_gles1_conform_tests": true,
       "dcheck_always_on": true,
       "is_component_build": true,
       "is_debug": false,
@@ -32,7 +31,6 @@
   "fuchsia-angle-builder": {
     "gn_args": {
       "build_angle_deqp_tests": true,
-      "build_angle_gles1_conform_tests": true,
       "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
       "enable_nacl": false,
@@ -47,7 +45,6 @@
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
       "build_angle_deqp_tests": true,
-      "build_angle_gles1_conform_tests": true,
       "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
       "enable_nacl": false,
@@ -65,7 +62,6 @@
   "linux-angle-builder": {
     "gn_args": {
       "build_angle_deqp_tests": true,
-      "build_angle_gles1_conform_tests": true,
       "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
       "enable_nacl": false,
@@ -90,7 +86,6 @@
   "mac-angle-builder": {
     "gn_args": {
       "build_angle_deqp_tests": true,
-      "build_angle_gles1_conform_tests": true,
       "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
       "enable_nacl": false,
@@ -140,7 +135,6 @@
   "win-angle-x64-builder": {
     "gn_args": {
       "build_angle_deqp_tests": true,
-      "build_angle_gles1_conform_tests": true,
       "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
       "enable_nacl": false,
@@ -153,7 +147,6 @@
   "win-angle-x86-builder": {
     "gn_args": {
       "build_angle_deqp_tests": true,
-      "build_angle_gles1_conform_tests": true,
       "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
       "enable_nacl": false,
