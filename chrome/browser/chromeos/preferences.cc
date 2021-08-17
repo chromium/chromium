@@ -399,19 +399,24 @@ void Preferences::RegisterProfilePrefs(
 
   registry->RegisterBooleanPref(::prefs::kLanguageImeMenuActivated, false);
 
-  registry->RegisterInt64Pref(::prefs::kHatsLastInteractionTimestamp,
-                              base::Time().ToInternalValue());
+  registry->RegisterInt64Pref(::prefs::kHatsLastInteractionTimestamp, 0);
 
-  registry->RegisterInt64Pref(::prefs::kHatsSurveyCycleEndTimestamp,
-                              base::Time().ToInternalValue());
+  registry->RegisterInt64Pref(::prefs::kHatsSurveyCycleEndTimestamp, 0);
 
   registry->RegisterBooleanPref(::prefs::kHatsDeviceIsSelected, false);
 
-  registry->RegisterInt64Pref(::prefs::kHatsOnboardingSurveyCycleEndTs,
-                              base::Time().ToInternalValue());
+  registry->RegisterInt64Pref(::prefs::kHatsOnboardingSurveyCycleEndTs, 0);
 
   registry->RegisterBooleanPref(::prefs::kHatsOnboardingDeviceIsSelected,
                                 false);
+
+  registry->RegisterInt64Pref(::prefs::kHatsSmartLockSurveyCycleEndTs, 0);
+
+  registry->RegisterBooleanPref(::prefs::kHatsSmartLockDeviceIsSelected, false);
+
+  registry->RegisterInt64Pref(::prefs::kHatsUnlockSurveyCycleEndTs, 0);
+
+  registry->RegisterBooleanPref(::prefs::kHatsUnlockDeviceIsSelected, false);
 
   registry->RegisterBooleanPref(::prefs::kPinUnlockFeatureNotificationShown,
                                 false);

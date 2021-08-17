@@ -16,6 +16,7 @@
 
 namespace ash {
 enum class ParentCodeValidationResult;
+class HatsUnlockSurveyTrigger;
 }  // namespace ash
 
 namespace base {
@@ -24,7 +25,7 @@ class ListValue;
 
 namespace chromeos {
 class LoginAuthRecorder;
-}
+}  // namespace chromeos
 
 // Handles method calls sent from ash to chrome. Also sends messages from chrome
 // to ash.
@@ -78,6 +79,10 @@ class LoginScreenClientImpl : public ash::LoginScreenClient {
   void SetDelegate(Delegate* delegate);
 
   chromeos::LoginAuthRecorder* auth_recorder();
+
+  ash::HatsUnlockSurveyTrigger* unlock_survey_trigger() {
+    return unlock_survey_trigger_.get();
+  }
 
   void AddSystemTrayObserver(ash::SystemTrayObserver* observer);
   void RemoveSystemTrayObserver(ash::SystemTrayObserver* observer);
@@ -144,6 +149,9 @@ class LoginScreenClientImpl : public ash::LoginScreenClient {
 
   // Captures authentication related user metrics for login screen.
   std::unique_ptr<chromeos::LoginAuthRecorder> auth_recorder_;
+
+  // Entry point for showing a post-unlock user experience survey.
+  std::unique_ptr<ash::HatsUnlockSurveyTrigger> unlock_survey_trigger_;
 
   base::ObserverList<ash::SystemTrayObserver>::Unchecked system_tray_observers_;
 

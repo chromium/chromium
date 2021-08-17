@@ -44,4 +44,24 @@ const HatsConfig kHatsOnboardingSurvey = {
     prefs::kHatsOnboardingSurveyCycleEndTs,  // cycle_end_timestamp_pref_name
 };
 
+// Unlock Experience Survey -- shown after successfully unlocking with Smart
+// Lock
+const HatsConfig kHatsSmartLockSurvey = {
+    ::features::kHappinessTrackingSystemSmartLock,  // feature
+    "Browser.ChromeOS.HatsSatisfaction.SmartLock",  // histogram_name
+    base::TimeDelta::FromDays(7),                   // hatsNewDeviceThreshold
+    prefs::kHatsSmartLockDeviceIsSelected,          // hatsIsSelectedPrefName
+    prefs::kHatsSmartLockSurveyCycleEndTs,  // hatsCycleEndTimestampPrefName
+};
+
+// Unlock Experience Survey -- shown after successfully unlocking with any auth
+// method execpt Smart Lock
+const HatsConfig kHatsUnlockSurvey = {
+    ::features::kHappinessTrackingSystemUnlock,  // feature
+    "Browser.ChromeOS.HatsSatisfaction.Unlock",  // histogram_name
+    base::TimeDelta::FromDays(7),                // hatsNewDeviceThreshold
+    prefs::kHatsUnlockDeviceIsSelected,          // hatsIsSelectedPrefName
+    prefs::kHatsUnlockSurveyCycleEndTs,  // hatsCycleEndTimestampPrefName
+};
+
 }  // namespace ash

@@ -780,6 +780,24 @@ const char kHatsOnboardingSurveyCycleEndTs[] =
 const char kHatsOnboardingDeviceIsSelected[] =
     "hats_onboarding_device_is_selected";
 
+// An int64 pref. This is the timestamp that indicates the end of the most
+// recent Unlock Experience survey cycle.
+const char kHatsUnlockSurveyCycleEndTs[] = "hats_unlock_cycle_end_timestamp";
+
+// A boolean pref. Indicates if the device is selected for the HaTS Unlock
+// Experience survey
+const char kHatsUnlockDeviceIsSelected[] = "hats_unlock_device_is_selected";
+
+// An int64 pref. This is the timestamp that indicates the end of the most
+// recent Smart Lock Experience survey cycle.
+const char kHatsSmartLockSurveyCycleEndTs[] =
+    "hats_smartlock_cycle_end_timestamp";
+
+// A boolean pref. Indicates if the device is selected for the HaTS Smart Lock
+// Experience survey
+const char kHatsSmartLockDeviceIsSelected[] =
+    "hats_smartlock_device_is_selected";
+
 // A boolean pref. Indicates if we've already shown a notification to inform the
 // current user about the quick unlock feature.
 const char kPinUnlockFeatureNotificationShown[] =
