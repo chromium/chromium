@@ -2212,6 +2212,7 @@
 <translation id="3305661444342691068">PDF ကို အစမ်းကြည့်ထဲ ဖွင့်ရန်</translation>
 <translation id="3308116878371095290">ကူကီးသတ်မှတ်ခြင်းကို ဤစာမျက်နှာတွင် ခွင့်မပြုပါ။</translation>
 <translation id="3308134619352333507">ခလုတ်ကို ဝှက်ထားရန်</translation>
+<translation id="3308681281309926497">Chrome ကို မပိတ်မချင်း သင်ဝင်ကြည့်ထားသော ဝဘ်ဆိုက်များက သင့်အချက်အလက်များကို မှတ်သားထားနိုင်သေးသည်</translation>
 <translation id="3308738399950580893">ကြော်ငြာများ</translation>
 <translation id="3308852433423051161">Google Assistant ကို ဖွင့်နေသည်...</translation>
 <translation id="3309330461362844500">အသိအမှတ်ပြုလက်မှတ်ရ ပရိုဖိုင် ID</translation>
@@ -2765,6 +2766,7 @@
 <translation id="3873423927483480833">ပင်နံပါတ်များ ပြရန်</translation>
 <translation id="3873915545594852654">ARC++ နှင့်ပက်သတ်၍ ပြဿနာရှိနေသည်။</translation>
 <translation id="3874164307099183178">Google Assistant ဖွင့်ရန်</translation>
+<translation id="3875815154304214043"><ph name="APP_NAME" /> ကို ဘရောင်ဇာတဘ်အသစ်တွင် ဖွင့်ရန် သတ်မှတ်ထားသည်။ ပံ့ပိုးထားသည့်လင့်ခ်များကိုလည်း ဘရောင်ဇာတွင် ဖွင့်ပါမည်။ <ph name="BEGIN_LINK_LEARN_MORE" />ပိုမိုလေ့လာရန်<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" /> ၏ စက်အတွက် 'အနီးတစ်ဝိုက် မျှဝေခြင်း' ဆက်တင်များ၊ <ph name="USER_EMAIL" /> အကောင့်အောက်တွင် မျှဝေထားသည်။</translation>
 <translation id="3879748587602334249">ဒေါင်းလုဒ်မန်နေဂျာ</translation>
 <translation id="3882165008614329320">ကင်မရာ သို့မဟုတ် ဖိုင်မှ လက်ရှိဗီဒီယို</translation>
@@ -3912,6 +3914,7 @@
 <translation id="5157635116769074044">မျက်နှာပြင်ကို စတင်ရန် ဒီစာမျက်နှာကို ပင်ထိုးရန်...</translation>
 <translation id="5159094275429367735">Crostini စနစ် ထည့်သွင်းရန်</translation>
 <translation id="5159419673777902220">နောက်ဆက်တွဲခွင့်ပြုချက်များကို သင့်မိဘက ပိတ်ထားသည်</translation>
+<translation id="5159643365935452998">အလိုအလျောက် ဒေတာရှင်းလင်းခြင်းကို သုံးသပ်ခြင်း</translation>
 <translation id="5160634252433617617">စက်၏ ကီးဘုတ်</translation>
 <translation id="5160857336552977725">သင့်<ph name="DEVICE_TYPE" /> သို့ လက်မှတ်ထိုးဝင်ရန်</translation>
 <translation id="5161251470972801814"><ph name="VENDOR_NAME" /> မှ USB ကိရိယာများ</translation>
@@ -4476,6 +4479,7 @@
 <translation id="5790651917470750848">ပို့တ်ထပ်ဆင့်ပို့ခြင်း ရှိပြီးဖြစ်သည်</translation>
 <translation id="5792728279623964091">သင့်ဖွင့်ပိတ်ခလုတ်ကို တို့ပါ</translation>
 <translation id="5793339252089865437">အပ်ဒိတ်ကို သင့်မိုဘိုင်းကွန်ရက်မှတစ်ဆင့် ဒေါင်းလုဒ်လုပ်လျှင် ကျသင့်ငွေများ အများအပြားပေးရနိုင်ပါသည်။</translation>
+<translation id="5794034487966529952">မျက်နှာပြင်နေရာ ‘<ph name="DESK_TITLE" />’ တွင် ဘရောင်ဇာဝင်းဒိုး <ph name="NUM_BROWSERS" /> ခု ဖွင့်ထားသည်</translation>
 <translation id="5794414402486823030">အမြဲတမ်း စနစ် ကြည့်ရှုသူဖြင့် ဖွင့်ပါ</translation>
 <translation id="5794700615121138172">Linux မျှဝေထားသော ဖိုင်တွဲများ</translation>
 <translation id="5794786537412027208">Chrome အက်ပ်များ အားလုံး ရပ်တန့်ရန်</translation>

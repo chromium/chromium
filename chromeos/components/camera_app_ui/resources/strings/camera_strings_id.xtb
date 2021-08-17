@@ -43,6 +43,7 @@
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3240426699337459095">Tautan disalin</translation>
 <translation id="3259149966178251584">Resolusi kamera</translation>
+<translation id="3260401663013584785">Tidak dapat mendeteksi dokumen</translation>
 <translation id="3448774564454087943">Video tidak disimpan karena terlalu pendek</translation>
 <translation id="3517926952904427380">Tidak dapat mengambil foto potret</translation>
 <translation id="3569311554794739032">Yakin ingin menghapus <ph name="FILE" />?</translation>
@@ -50,6 +51,7 @@
 <translation id="3838931309141338733">Pindai kode batang</translation>
 <translation id="3892148308691398805">Salin teks</translation>
 <translation id="4118525110028899586">Jeda rekaman</translation>
+<translation id="4121305183798804752">Dokumen terdeteksi</translation>
 <translation id="4269820728363426813">Salin URL</translation>
 <translation id="4279490309300973883">Mencerminkan</translation>
 <translation id="4329152592498422850">Beralih ke mode mengambil foto persegi</translation>

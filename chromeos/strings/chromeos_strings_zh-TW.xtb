@@ -37,6 +37,7 @@
 <translation id="1621067168122174824">執行充電測試</translation>
 <translation id="1639239467298939599">載入中</translation>
 <translation id="1641857168437328880">文件送紙器 (單面)</translation>
+<translation id="1643449475550628585">每天變更桌布圖片</translation>
 <translation id="1644574205037202324">歷史記錄</translation>
 <translation id="1662989795263954667">已停止 - 墨水已用盡</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -76,6 +77,7 @@
 <translation id="2448312741937722512">類型</translation>
 <translation id="2461822463642141190">電流</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
+<translation id="2505327257735685095">重新整理目前的桌布圖片</translation>
 <translation id="2517472476991765520">掃描</translation>
 <translation id="2570743873672969996">正在執行<ph name="TEST_NAME" />測試...</translation>
 <translation id="2585245331261708204">Chrome 作業系統的新功能</translation>

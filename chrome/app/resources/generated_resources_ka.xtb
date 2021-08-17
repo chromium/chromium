@@ -2199,6 +2199,7 @@
 <translation id="3305661444342691068">PDF-ის გახსნა წინასწარ ხედში</translation>
 <translation id="3308116878371095290">ამ გვერდზე აიკრძალა ქუქი-ფაილების დაყენება.</translation>
 <translation id="3308134619352333507">დამალვის ღილაკი</translation>
+<translation id="3308681281309926497">თქვენ მიერ მონახულებული საიტები შეძლებს თქვენი ინფორმაციის დამახსოვრებას, სანამ Chrome-ს არ დახურავთ</translation>
 <translation id="3308738399950580893">რეკლამა</translation>
 <translation id="3308852433423051161">იტვირთება Google ასისტენტი...</translation>
 <translation id="3309330461362844500">სერტიფიკატის პროფილის ID</translation>
@@ -2752,6 +2753,7 @@
 <translation id="3873423927483480833">PIN-კოდების ჩვენება</translation>
 <translation id="3873915545594852654">წარმოიქმნა ARC++-თან დაკავშირებული პრობლემა.</translation>
 <translation id="3874164307099183178">Google ასისტენტის ჩართვა</translation>
+<translation id="3875815154304214043"><ph name="APP_NAME" /> გაიხსნება ბრაუზერის ახალ ჩანართში. ბრაუზერშივე გაიხსნება სხვა მხარდაჭერილი ბმულები. <ph name="BEGIN_LINK_LEARN_MORE" />შეიტყვეთ მეტი<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256">მახლობლად გაზიარების პარამეტრები <ph name="USER_NAME" />-ის მოწყობილობისთვის, ზიარდება <ph name="USER_EMAIL" />-ის სახელით.</translation>
 <translation id="3879748587602334249">ჩამოტვირთვის მენეჯერი</translation>
 <translation id="3882165008614329320">არსებული ვიდეო კამერიდან ან ფაილიდან</translation>
@@ -3899,6 +3901,7 @@
 <translation id="5157635116769074044">გვერდის ჩამაგრება საწყის ეკრანზე…</translation>
 <translation id="5159094275429367735">Crostini-ს დაყენება</translation>
 <translation id="5159419673777902220">თქვენმა მშობელმა გათიშა გაფართოებების ნებართვები</translation>
+<translation id="5159643365935452998">გადახედეთ მონაცემთა ავტომატურ გასუფთავებას</translation>
 <translation id="5160634252433617617">ფიზიკური კლავიატურა</translation>
 <translation id="5160857336552977725">შედით თქვენს <ph name="DEVICE_TYPE" />-ში</translation>
 <translation id="5161251470972801814"><ph name="VENDOR_NAME" />-ის USB მოწყობილობები</translation>
@@ -4462,6 +4465,7 @@
 <translation id="5790651917470750848">პორტის გადამისამართება უკვე არსებობს</translation>
 <translation id="5792728279623964091">შეეხეთ ელკვების ღილაკს</translation>
 <translation id="5793339252089865437">განახლების მობილური ქსელის მეშვეობით ჩამოტვირთვამ შეიძლება გამოიწვიოს ლიმიტის გადახარჯვასთან დაკავშირებული ხარჯები.</translation>
+<translation id="5794034487966529952">სამუშაო დაფაზე <ph name="DESK_TITLE" /> გახსნილია ბრაუზერის <ph name="NUM_BROWSERS" /> ფანჯარა</translation>
 <translation id="5794414402486823030">ყოველთვის გახსნა სისტემის დამთვალიერებლით</translation>
 <translation id="5794700615121138172">Linux-ის გაზიარებული საქაღალდეები</translation>
 <translation id="5794786537412027208">Chrome-ის ყველა პროგრამის დახურვა</translation>

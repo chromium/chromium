@@ -420,7 +420,7 @@
 <translation id="1444628761356461360">இந்த அமைப்பானது சாதனத்தின் உரிமையாளரால் <ph name="OWNER_EMAIL" /> நிர்வகிக்கப்படுகிறது.</translation>
 <translation id="144518587530125858">தீமிற்காக '<ph name="IMAGE_PATH" />' ஐ ஏற்ற முடியவில்லை.</translation>
 <translation id="1449191289887455076">ஒதுக்கீட்டை உறுதிப்படுத்திவிட்டு <ph name="RESPONSE" /> “<ph name="CURRENTKEY" />” பட்டனை மீண்டும் அழுத்தவும்</translation>
-<translation id="1451375123200651445">இணையப்பக்கம், ஒற்றைக் ஃபைல்</translation>
+<translation id="1451375123200651445">இணையப்பக்கம், ஒற்றை ஃபைல்</translation>
 <translation id="1453561711872398978"><ph name="BEGIN_LINK" />
     பிழைதிருத்தப் பதிவுகளை<ph name="END_LINK" /> அனுப்பு (பரிந்துரைக்கப்படுகிறது)</translation>
 <translation id="1454223536435069390">ஸ்கிரீன் ஷாட்டை எடு</translation>
@@ -2974,7 +2974,7 @@
 <translation id="4090103403438682346">சரிபார்க்கப்பட்ட அணுகலை இயக்கு</translation>
 <translation id="4090947011087001172"><ph name="SITE" />க்கான தள அனுமதிகளை மீட்டமைக்கவா?</translation>
 <translation id="4093865285251893588">சுயவிவரப் படம்</translation>
-<translation id="4093955363990068916">அகக் ஃபைல்:</translation>
+<translation id="4093955363990068916">அக ஃபைல்:</translation>
 <translation id="4094647278880271855">ஆதரிக்காத மாறியை பயன்படுத்துகிறீர்கள்: <ph name="BAD_VAR" />. நிலைப்புத்தன்மையும் பாதுகாப்பும் பாதிக்கப்படும்.</translation>
 <translation id="4095264805865317199">செல்லுலார் செயல்படுத்தலுக்கான UIயைத் திற</translation>
 <translation id="4095507791297118304">முதன்மைத் திரை</translation>
@@ -4810,7 +4810,7 @@
 <translation id="6150278227694566734">சில தொடர்புகள்</translation>
 <translation id="6150961653851236686">பக்கங்களை மொழிபெயர்க்கும் போது, இந்த மொழி பயன்படுத்தப்படும்</translation>
 <translation id="6151323131516309312"><ph name="SITE_NAME" /> ஐத் தேட <ph name="SEARCH_KEY" /> ஐ அழுத்துக</translation>
-<translation id="6151771661215463137">ஃபைல் ஏற்கனவே பதிவிறக்கக் ஃபைல்றையில் உள்ளது.</translation>
+<translation id="6151771661215463137">ஃபைல் ஏற்கனவே பதிவிறக்க ஃபோல்டரில் உள்ளது.</translation>
 <translation id="6154240335466762404">அனைத்துப் போர்ட்டுகளையும் அகற்று</translation>
 <translation id="615436196126345398">நெறிமுறை</translation>
 <translation id="6154697846084421647">தற்போது உள்நுழைந்துள்ளீர்கள்</translation>

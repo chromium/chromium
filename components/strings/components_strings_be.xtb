@@ -272,6 +272,7 @@
 <translation id="1838374766361614909">Ачысціць поле пошуку</translation>
 <translation id="1839551713262164453">Пра праверцы значэнняў палітыкі адбыліся памылкі</translation>
 <translation id="1842969606798536927">Аплаціць</translation>
+<translation id="1856713167556118146">Чаго рэжым інкогніта не дае</translation>
 <translation id="1871208020102129563">Канфігурацыяй проксі зададзена выкарыстоўваць фіксаваныя проксі-серверы, а не URL-адрас сцэнарыя .pac.</translation>
 <translation id="1871284979644508959">Абавязковае поле</translation>
 <translation id="1875512691959384712">Формы Google</translation>
@@ -1018,6 +1019,7 @@
 <translation id="4465818729556336129">Гэты дакумент канфідэнцыяльны. Адміністратар не рэкамендуе яго друкаваць.</translation>
 <translation id="4476953670630786061">Гэта форма не з'яўляецца бяспечнай. Аўтазапаўненне было выключана.</translation>
 <translation id="4477350412780666475">Наступны трэк</translation>
+<translation id="4481251927743463293">Што дае рэжым інкогніта</translation>
 <translation id="4481394504112738036">Канфідэнцыяльны файл</translation>
 <translation id="4482953324121162758">Гэты сайт не будзе перакладацца.</translation>
 <translation id="4490717597759821841">A7</translation>
@@ -1118,10 +1120,17 @@
 <translation id="4819347708020428563">Збіраецеся змяняць анатацыі ў стандартным выглядзе?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб хутка стварыць новую табліцу Google, націсніце Tab, затым Enter</translation>
 <translation id="4825507807291741242">Моцны</translation>
+<translation id="4827402517081186284">Рэжым інкогніта не робіць нябачнай вашу прысутнасць у інтэрнэце:
+<ph name="BEGIN_LIST" />
+<ph name="LIST_ITEM" />сайты бачаць, калі вы іх наведваеце;<ph name="END_LIST_ITEM" />
+<ph name="LIST_ITEM" />работадаўцы і навучальныя ўстановы могуць адсочваць дзеянні ў браўзеры;<ph name="END_LIST_ITEM" />
+<ph name="LIST_ITEM" />інтэрнэт-правайдары могуць адсочваць інтэрнэт-трафік.<ph name="END_LIST_ITEM" />
+<ph name="END_LIST" /></translation>
 <translation id="4838327282952368871">Летуценны</translation>
 <translation id="484462545196658690">Аўтаматычна</translation>
 <translation id="4850886885716139402">Праглядзець</translation>
 <translation id="485316830061041779">Нямецкая</translation>
+<translation id="4853901935952445031">З лютага 2022 года гэты сайт не зможа выкарыстоўваць U2F API. Калі вы з'яўляецеся ўладальнікам сайта, вам трэба адаптаваць яго да выкарыстання Web Authentication API.</translation>
 <translation id="4854362297993841467">Гэты спосаб дастаўкі недаступны. Выберыце іншы.</translation>
 <translation id="4854853140771946034">Хутка стварыць новую нататку ў Google Keep</translation>
 <translation id="4876188919622883022">Спрошчаны выгляд</translation>
@@ -1644,6 +1653,7 @@
 <translation id="6757797048963528358">Прылада перайшла ў рэжым сну.</translation>
 <translation id="6767985426384634228">Абнавіць адрас?</translation>
 <translation id="6768213884286397650">Hagaki (паштоўка)</translation>
+<translation id="6774185088257932239"><ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /> пра рэжым інкогніта</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Фіялетавы</translation>
 <translation id="6786747875388722282">Пашырэнні</translation>
@@ -1691,6 +1701,7 @@
 <translation id="6965382102122355670">ОК</translation>
 <translation id="6965978654500191972">Прылада</translation>
 <translation id="696703987787944103">Перцэпцыйны</translation>
+<translation id="6968269510885595029">Выкарыстайце свой ключ бяспекі</translation>
 <translation id="6970216967273061347">Раён</translation>
 <translation id="6971439137020188025">Хутка стварыць новую прэзентацыю Google у праграме "Прэзентацыі"</translation>
 <translation id="6972629891077993081">Прылады HID</translation>
@@ -1756,6 +1767,7 @@
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> не адпавядае стандартам бяспекі.</translation>
 <translation id="7210993021468939304">Дзеянні Linux у кантэйнеры, а таксама ўсталёўка і запуск праграм Linux у кантэйнеры</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /> пра гэту праблему.</translation>
+<translation id="7215025035562547931">Знайдзіце хвілінку, каб упэўніцца ў дакладнасці інфармацыі</translation>
 <translation id="7217745192097460130">Пацвердзіць і завяршыць куплю з дапамогай Touch ID?</translation>
 <translation id="7219179957768738017">На падключэнні выкарыстоўваецца <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Ідзе апрацоўка</translation>
@@ -2092,6 +2104,12 @@
 <translation id="8307888238279532626">Усталяваныя праграмы, і як часта яны выкарыстоўваліся</translation>
 <translation id="831207732689920588">Гэта старонка падазроная (адзначана браўзерам Chrome).</translation>
 <translation id="831997045666694187">Вечар</translation>
+<translation id="8328484624016508118">Пасля закрыцця ўсіх укладак у рэжыме інкогніта, Chrome выдаліць:
+<ph name="BEGIN_LIST" />
+<ph name="LIST_ITEM" />даныя пра дзеянні ў браўзеры, ажыццёўленыя на гэтай прыладзе;<ph name="END_LIST_ITEM" />
+<ph name="LIST_ITEM" />гісторыю пошуку з гэтай прылады;<ph name="END_LIST_ITEM" />
+<ph name="LIST_ITEM" />звесткі, уведзеныя ў формах.<ph name="END_LIST_ITEM" />
+<ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">Доступ да хоста <ph name="HOST_NAME" /> забаронены</translation>
 <translation id="833262891116910667">Вылучэнне</translation>
 <translation id="8339163506404995330">Старонкі на мове <ph name="LANGUAGE" /> не будуць перакладацца</translation>

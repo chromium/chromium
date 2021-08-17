@@ -4430,6 +4430,7 @@ Als je ervoor kiest het volgende te gebruiken:
           Als dit is ingesteld op False of niet is ingesteld, is het maken en inloggen van bewaakte gebruikers uitgezet. Alle bestaande bewaakte gebruikers worden verborgen.
 
           OPMERKING: het standaardgedrag voor zakelijke en consumentenapparaten verschilt: op consumentenapparaten zijn bewaakte gebruikers standaard aangezet, maar op zakelijke apparaten zijn ze standaard uitgezet.</translation>
+<translation id="665023848306499203">Toestaan dat apparaten een specifieke versie selecteren waar ze naar worden geüpdatet</translation>
 <translation id="6652197835259177259">Instellingen voor lokaal beheerde gebruikers</translation>
 <translation id="6653897159826215341">Als je dit beleid toepast, opent <ph name="PRODUCT_NAME" /> het dialoogvenster voor afdrukken van het systeem in plaats van het geïntegreerde afdrukvoorbeeld als gebruikers iets willen afdrukken.
 
@@ -5160,6 +5161,20 @@ Als je dit beleid instelt op False, wordt de functionaliteit uitgezet.</translat
 <translation id="7477231245051133709">Toegankelijkheidsfunctie voor monogeluid aanzetten</translation>
 <translation id="7477239290070847560">Op zeroconf gebaseerde (mDNS + DNS-SD) protocolbestemmingen</translation>
 <translation id="7485481791539008776">Regels voor selectie van standaardprinter</translation>
+<translation id="7493995861907758679">Met deze instelling kunnen apparaten een specifieke doelversie van <ph name="PRODUCT_OS_NAME" /> selecteren waar ze naar worden geüpdatet.
+
+      Als je dit beleid niet instelt, worden apparaten geüpdatet op basis van andere instellingen of naar de nieuwste beschikbare versie.
+
+      Als je dit beleid instelt, worden apparaten geüpdatet naar een geselecteerde versie.
+
+      De exacte indeling van deze beleidswaarde is een implementatie van de updateservice en kan veranderen. De beleidswaarde wordt niet verwerkt op het apparaat.
+
+      Indien samen met <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> gebruikt, wordt dit beleid als eerste gecheckt door de updateservice.
+      In tegenstelling tot bij <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> (waarmee kleine updates kunnen worden toegestaan) behouden apparaten de geselecteerde versie totdat de waarde van dit beleid wordt gewijzigd.
+
+      Indien samen met <ph name="DEVICE_ROLLBACK_TO_TARGET_VERSION_POLICY_NAME" /> gebruikt, kan de apparaatversie worden teruggezet naar een specifieke eerdere versie.
+
+      Waarschuwing: Het wordt niet aanbevolen om versiebeperkingen in te stellen omdat deze kunnen voorkomen dat gebruikers software-updates en essentiële beveiligingsoplossingen krijgen. Als je updates beperkt tot een specifieke versie, kan dit een risico opleveren voor gebruikers.</translation>
 <translation id="7506745375479451616">Met dit beleid wordt bepaald welke opdracht wordt gebruikt om URL's te openen in <ph name="PRODUCT_NAME" /> bij overschakeling vanuit <ph name="IE_PRODUCT_NAME" />. Dit beleid kan worden ingesteld op een pad naar een uitvoerbaar bestand of op <ph name="PRODUCT_NAME_PLACEHOLDER" /> om de locatie van <ph name="PRODUCT_NAME" /> automatisch te detecteren.
 
       Als je het beleid niet instelt, detecteert <ph name="IE_PRODUCT_NAME" /> het eigen pad van <ph name="PRODUCT_NAME" /> naar een uitvoerbaar bestand als <ph name="PRODUCT_NAME" /> wordt gestart vanuit Internet Explorer.

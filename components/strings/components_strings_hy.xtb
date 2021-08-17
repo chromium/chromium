@@ -272,6 +272,7 @@
 <translation id="1838374766361614909">Մաքրել որոնումը</translation>
 <translation id="1839551713262164453">Չհաջողվեց ստուգել կանոնի արժեքները</translation>
 <translation id="1842969606798536927">Վճարել</translation>
+<translation id="1856713167556118146">Ինչ չի տալիս ինկոգնիտո ռեժիմը</translation>
 <translation id="1871208020102129563">Ընտրված է ֆիքսված պրոքսի-սերվերների, այլ ոչ PAC սկրիպտի URL-ի օգտագործումը:</translation>
 <translation id="1871284979644508959">Պարտադիր դաշտ</translation>
 <translation id="1875512691959384712">Google Ձևաթղթեր</translation>
@@ -1019,6 +1020,7 @@
 <translation id="4465818729556336129">Սա գաղտնի փաստաթուղթ է, այդ իսկ պատճառով ձեր ադմինիստրատորը խորհուրդ չի տալիս այն տպել։</translation>
 <translation id="4476953670630786061">Այս ձևն ապահով չէ։ Ինքնալրացումն անջատվել է։</translation>
 <translation id="4477350412780666475">Հաջորդ կատարումը</translation>
+<translation id="4481251927743463293">Ինչ է տալիս ինկոգնիտո ռեժիմը</translation>
 <translation id="4481394504112738036">Գաղտնի ֆայլ</translation>
 <translation id="4482953324121162758">Այս կայքը չի թարգմանվի:</translation>
 <translation id="4490717597759821841">A7</translation>
@@ -1119,10 +1121,17 @@
 <translation id="4819347708020428563">Խմբագրե՞լ ծանոթագրությունները կանխադրված դիտակերպում</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Արագ Google աղյուսակ ստեղծելու համար սեղմեք Tab, ապա՝ Enter։</translation>
 <translation id="4825507807291741242">Հզոր</translation>
+<translation id="4827402517081186284">Ինկոգնիտո ռեժիմը չի կարող ձեզ լիովին անտեսանելի դարձնել համացանցում․
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Կայքերը տեղեկանում են ձեր այցելության մասին<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Գործատուները և ուսումնական հաստատությունները կարող են հետագծել գործողությունները դիտարկիչում<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Ինտերնետ պրովայդերները կարող են հետևել վեբ թրաֆիկին<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="4838327282952368871">Երազային</translation>
 <translation id="484462545196658690">Ավտոմատ</translation>
 <translation id="4850886885716139402">Տեսք</translation>
 <translation id="485316830061041779">Գերմանական</translation>
+<translation id="4853901935952445031">Այս կայքը 2022 թ․ փետրվար ամսից չի աջակցելու U2F API-ը։ Եթե կայքը ձեզ է պատկանում, անցեք Web Authentication API-ին։</translation>
 <translation id="4854362297993841467">Առաքման տվյալ եղանակը հասանելի չէ: Ընտրեք այլ եղանակ:</translation>
 <translation id="4854853140771946034">Արագ ստեղծել նշում Google Keep-ում</translation>
 <translation id="4876188919622883022">Պարզեցված դիտակերպ</translation>
@@ -1645,6 +1654,7 @@
 <translation id="6757797048963528358">Ձեր սարքը մտել է քնի ռեժիմ:</translation>
 <translation id="6767985426384634228">Թարմացնե՞լ հասցեն</translation>
 <translation id="6768213884286397650">Hagaki (բացիկ)</translation>
+<translation id="6774185088257932239"><ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /> ինկոգնիտո ռեժիմի մասին</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Բաց մանուշակագույն</translation>
 <translation id="6786747875388722282">Ընդլայնումներ</translation>
@@ -1692,6 +1702,7 @@
 <translation id="6965382102122355670">Եղավ</translation>
 <translation id="6965978654500191972">Սարք</translation>
 <translation id="696703987787944103">Ընկալիչ</translation>
+<translation id="6968269510885595029">Օգտագործեք անվտանգության բանալին</translation>
 <translation id="6970216967273061347">Շրջան</translation>
 <translation id="6971439137020188025">Արագ ստեղծել Google ներկայացում Սլայդներում</translation>
 <translation id="6972629891077993081">HID սարքեր</translation>
@@ -1757,6 +1768,7 @@
 <translation id="7210863904660874423"><ph name="HOST_NAME" />-ը չի հետևում անվտանգության չափորոշիչներին:</translation>
 <translation id="7210993021468939304">Տեսնում է Լինուքսի գործողությունները կոնտեյներում և կարող է տեղադրել ու գործարկել Լինուքսի հավելվածներ կոնտեյներից</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /> այս խնդրի մասին:</translation>
+<translation id="7215025035562547931">Գնահատեք տվյալների ճշգրտությունը</translation>
 <translation id="7217745192097460130">Հաստատե՞լ և ավարտել ձեր գնումը Touch ID-ի միջոցով</translation>
 <translation id="7219179957768738017">Կապակցումն օգտագործում է <ph name="SSL_VERSION" />:</translation>
 <translation id="7220786058474068424">Մշակվում է</translation>
@@ -2092,6 +2104,12 @@
 <translation id="8307888238279532626">Տեղադրված հավելվածները և դրանց օգտագործման հաճախականությունը</translation>
 <translation id="831207732689920588">Այս էջը կասկածելի է (նշվել է Chrome-ի կողմից)։</translation>
 <translation id="831997045666694187">Մինչև երեկո</translation>
+<translation id="8328484624016508118">Երբ դուք փակեք բոլոր ինկոգնիտո ներդիրները, Chrome-ում կջնջվեն՝
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Այս սարքի դիտարկիչում ձեր կատարած գործողությունները<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Այս սարքում ձեր կատարած որոնումների պամությունը<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Ձևերում մուտքագրված տեղեկությունները<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489"><ph name="HOST_NAME" /> մուտքը մերժվել է</translation>
 <translation id="833262891116910667">Նշել</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> էջերը չեն թարգմանվի</translation>

@@ -268,6 +268,7 @@
 <translation id="1838374766361614909">清除搜尋</translation>
 <translation id="1839551713262164453">發生錯誤，政策值驗證失敗</translation>
 <translation id="1842969606798536927">支付</translation>
+<translation id="1856713167556118146">無痕模式不支援的功能</translation>
 <translation id="1871208020102129563">Proxy 設定為使用固定的 Proxy 伺服器，而非 .pac 指令碼網址。</translation>
 <translation id="1871284979644508959">必填欄位</translation>
 <translation id="1875512691959384712">Google 表格</translation>
@@ -983,6 +984,7 @@
 <translation id="4358461427845829800">管理付款方法…</translation>
 <translation id="4359160567981085931">您剛才在欺詐網站上輸入了密碼。Chrome 可以就此提供協助。如需變更密碼或通知 Google 您的帳戶可能面臨風險，請按 [保護帳戶]。</translation>
 <translation id="4367563149485757821">Number-12 (信封)</translation>
+<translation id="437040971055499437">發生安全性事件</translation>
 <translation id="437058704415269440">帳戶餘額</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">預期的「<ph name="VALUE_TYPE" />」值。</translation>
@@ -1009,6 +1011,7 @@
 <translation id="4465818729556336129">這是機密文件，管理員不建議列印。</translation>
 <translation id="4476953670630786061">此表格不安全，自動填入功能已關閉。</translation>
 <translation id="4477350412780666475">下一首曲目</translation>
+<translation id="4481251927743463293">無痕模式的作用</translation>
 <translation id="4481394504112738036">機密檔案</translation>
 <translation id="4482953324121162758">系統不會翻譯此網站。</translation>
 <translation id="4490717597759821841">A7</translation>
@@ -1109,10 +1112,17 @@
 <translation id="4819347708020428563">要在預設檢視模式中編輯註解嗎？</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以快速建立新嘅 Google 試算表</translation>
 <translation id="4825507807291741242">強大</translation>
+<translation id="4827402517081186284">無痕模式無法讓您在網絡上不留痕跡：
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />網站會知道您在瀏覽<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />僱主或學校可以追蹤瀏覽活動<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />互聯網服務供應商可能會監察網絡流量<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="4838327282952368871">夢幻</translation>
 <translation id="484462545196658690">自動</translation>
 <translation id="4850886885716139402">檢視</translation>
 <translation id="485316830061041779">德文</translation>
+<translation id="4853901935952445031">2022 年 2 月後，此網站將不能使用 U2F API。如果您是網站擁有者，請為該網站改用 Web Authentication API。</translation>
 <translation id="4854362297993841467">不支援此送貨方式，請選擇其他方式。</translation>
 <translation id="4854853140771946034">在 Google Keep 中快速建立新筆記</translation>
 <translation id="4876188919622883022">簡化檢視</translation>
@@ -1384,6 +1394,7 @@
 <translation id="5803412860119678065">要填寫 <ph name="CARD_DETAIL" /> 的資料嗎？</translation>
 <translation id="5804241973901381774">權限</translation>
 <translation id="5810442152076338065">您與 <ph name="DOMAIN" /> 之間的連線透過過時的加密套件加密處理。</translation>
+<translation id="5812947184178430888">當 Chrome 標示安全性事件時，系統會向您的管理員發送該事件的相關資料。這些資料可包括您在 Chrome 瀏覽的網址、檔案名稱或元數據，以及用於登入網絡應用程式、裝置和 Chrome 的使用者名稱。</translation>
 <translation id="5813119285467412249">重做新增(&amp;R)</translation>
 <translation id="5817918615728894473">配對</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{付帳時，系統會從此付款卡扣款，但其號碼並不會與此網站分享。為提高安全性，系統會產生一組臨時 CVC。}other{付帳時，系統會從所選的付款卡扣款，但其號碼並不會與此網站分享。為提高安全性，系統會產生一組臨時 CVC。}}</translation>
@@ -1635,6 +1646,7 @@
 <translation id="6757797048963528358">您的裝置已進入休眠狀態。</translation>
 <translation id="6767985426384634228">要更新地址嗎？</translation>
 <translation id="6768213884286397650">Hagaki (明信片)</translation>
+<translation id="6774185088257932239"><ph name="BEGIN_LINK" />進一步瞭解<ph name="END_LINK" />「無痕模式」</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">紫羅蘭色</translation>
 <translation id="6786747875388722282">擴充功能</translation>
@@ -1682,6 +1694,7 @@
 <translation id="6965382102122355670">確定</translation>
 <translation id="6965978654500191972">裝置</translation>
 <translation id="696703987787944103">感知</translation>
+<translation id="6968269510885595029">使用您的安全密鑰</translation>
 <translation id="6970216967273061347">區</translation>
 <translation id="6971439137020188025">在「簡報」中快速建立新的 Google 簡報</translation>
 <translation id="6972629891077993081">HID 裝置</translation>
@@ -1747,6 +1760,7 @@
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> 沒有依循安全標準。</translation>
 <translation id="7210993021468939304">可查看容器中的 Linux 活動，並可在容器內安裝及執行 Linux 應用程式</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />進一步瞭解<ph name="END_LINK" />這個問題。</translation>
+<translation id="7215025035562547931">請抽空思考內容的正確性</translation>
 <translation id="7217745192097460130">要使用 Touch ID 驗證並完成購買嗎？</translation>
 <translation id="7219179957768738017">這個連線使用 <ph name="SSL_VERSION" />。</translation>
 <translation id="7220786058474068424">正在處理</translation>
@@ -2082,6 +2096,12 @@
 <translation id="8307888238279532626">已安裝的應用程式及使用頻率</translation>
 <translation id="831207732689920588">此網頁包含 Chrome 標示的可疑內容。</translation>
 <translation id="831997045666694187">傍晚</translation>
+<translation id="8328484624016508118">關閉所有無痕式分頁後，Chrome 就會清除以下資料：
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />您的瀏覽活動<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />您的搜尋記錄<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />您在表格中輸入的資料<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489"><ph name="HOST_NAME" /> 的存取被拒</translation>
 <translation id="833262891116910667">突顯嘅內容</translation>
 <translation id="8339163506404995330">系統將不會自動翻譯來源語言為<ph name="LANGUAGE" />的網頁</translation>

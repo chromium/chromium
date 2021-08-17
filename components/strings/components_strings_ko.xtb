@@ -268,6 +268,7 @@
 <translation id="1838374766361614909">검색어 지우기</translation>
 <translation id="1839551713262164453">오류가 발생하여 정책 값의 유효성을 검사하지 못했습니다.</translation>
 <translation id="1842969606798536927">결제</translation>
+<translation id="1856713167556118146">시크릿 모드에서 제공되지 않는 기능</translation>
 <translation id="1871208020102129563">프록시가 .pac 스크립트 URL이 아닌 고정 프록시 서버를 사용하도록 설정됩니다.</translation>
 <translation id="1871284979644508959">필수 입력란</translation>
 <translation id="1875512691959384712">Google Forms</translation>
@@ -1010,6 +1011,7 @@
 <translation id="4465818729556336129">기밀 문서이므로 관리자가 문서 인쇄를 권장하지 않습니다.</translation>
 <translation id="4476953670630786061">안전하지 않은 양식입니다. 자동 완성이 사용 중지되었습니다.</translation>
 <translation id="4477350412780666475">다음 트랙</translation>
+<translation id="4481251927743463293">시크릿 모드에서 제공되는 기능</translation>
 <translation id="4481394504112738036">기밀 파일</translation>
 <translation id="4482953324121162758">이 사이트는 번역되지 않습니다.</translation>
 <translation id="4490717597759821841">A7</translation>
@@ -1110,10 +1112,17 @@
 <translation id="4819347708020428563">기본 뷰에서 주석을 수정할까요?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 빠르게 새 Google 시트 만들기</translation>
 <translation id="4825507807291741242">강력함</translation>
+<translation id="4827402517081186284">시크릿 모드를 사용해도 나의 온라인 활동이 완전히 비공개로 유지되지는 않습니다.
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />사이트에서 내가 언제 방문하는지 알 수 있습니다.<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />직장 또는 학교에서 탐색 활동을 추적할 수 있습니다.<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />인터넷 서비스 제공업체에서 웹 트래픽을 모니터링할 수 있습니다.<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="4838327282952368871">꿈</translation>
 <translation id="484462545196658690">자동</translation>
 <translation id="4850886885716139402">보기</translation>
 <translation id="485316830061041779">독일어</translation>
+<translation id="4853901935952445031">2022년 2월부터 이 사이트에서 U2F API를 사용할 수 없게 됩니다. 사이트 소유자인 경우 Web Authentication API를 사용하도록 변경해야 합니다.</translation>
 <translation id="4854362297993841467">사용할 수 없는 배달 방법입니다. 다른 방법을 선택하세요.</translation>
 <translation id="4854853140771946034">Google Keep에서 빠르게 새 메모 만들기</translation>
 <translation id="4876188919622883022">간단히 보기</translation>
@@ -1636,6 +1645,7 @@
 <translation id="6757797048963528358">기기가 절전 모드 상태입니다.</translation>
 <translation id="6767985426384634228">주소를 업데이트하시겠습니까?</translation>
 <translation id="6768213884286397650">Hagaki(엽서)</translation>
+<translation id="6774185088257932239">시크릿 모드에 관해 <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">보라색</translation>
 <translation id="6786747875388722282">확장 프로그램</translation>
@@ -1683,6 +1693,7 @@
 <translation id="6965382102122355670">확인</translation>
 <translation id="6965978654500191972">기기</translation>
 <translation id="696703987787944103">가시 범위</translation>
+<translation id="6968269510885595029">보안 키 사용</translation>
 <translation id="6970216967273061347">주소</translation>
 <translation id="6971439137020188025">Slides에서 빠르게 새 Google 프레젠테이션 만들기</translation>
 <translation id="6972629891077993081">HID 기기</translation>
@@ -1748,6 +1759,7 @@
 <translation id="7210863904660874423"><ph name="HOST_NAME" />에서 보안 기준을 준수하지 않습니다.</translation>
 <translation id="7210993021468939304">컨테이너 내 Linux 활동 및 컨테이너 내에서 Linux 앱 설치 및 실행 가능</translation>
 <translation id="721197778055552897">이 문제에 대해 <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
+<translation id="7215025035562547931">잠시 정보의 정확성에 관해 생각해 보세요.</translation>
 <translation id="7217745192097460130">Touch ID를 사용해 구매를 확인하고 완료하시겠습니까?</translation>
 <translation id="7219179957768738017"><ph name="SSL_VERSION" /> 연결입니다.</translation>
 <translation id="7220786058474068424">처리 중</translation>
@@ -2082,6 +2094,12 @@
 <translation id="8307888238279532626">설치된 앱 및 앱의 사용 빈도</translation>
 <translation id="831207732689920588">의심스러운 페이지(Chrome에서 보고함)</translation>
 <translation id="831997045666694187">저녁</translation>
+<translation id="8328484624016508118">모든 시크릿 탭을 종료하면 Chrome에서 다음 항목을 삭제합니다.
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />기기의 탐색 활동<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />기기의 검색 기록<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />양식에 입력된 정보<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489"><ph name="HOST_NAME" />에 대한 액세스가 거부됨</translation>
 <translation id="833262891116910667">강조표시</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" />로 된 페이지를 번역하지 않습니다.</translation>

@@ -43,6 +43,7 @@
 <translation id="3227137524299004712">麥克風</translation>
 <translation id="3240426699337459095">連結已複製</translation>
 <translation id="3259149966178251584">相機解析度</translation>
+<translation id="3260401663013584785">無法偵測文件</translation>
 <translation id="3448774564454087943">無法儲存長度太短的影片</translation>
 <translation id="3517926952904427380">無法拍攝肖像相片</translation>
 <translation id="3569311554794739032">確定要移除「<ph name="FILE" />」嗎？</translation>
@@ -50,6 +51,7 @@
 <translation id="3838931309141338733">掃描條碼</translation>
 <translation id="3892148308691398805">複製文字</translation>
 <translation id="4118525110028899586">暫停錄影</translation>
+<translation id="4121305183798804752">偵測到文件</translation>
 <translation id="4269820728363426813">複製連結網址</translation>
 <translation id="4279490309300973883">鏡像</translation>
 <translation id="4329152592498422850">切換為正方形相片拍攝模式</translation>
