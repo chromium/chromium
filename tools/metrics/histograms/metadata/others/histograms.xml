@@ -3206,10 +3206,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ConfigureDisplays.External.Modeset.AttemptSucceeded"
-    enum="BooleanSuccess" expires_after="2021-09-19">
-  <owner>dcastagna@chromium.org</owner>
-  <owner>marcheu@chromium.org</owner>
-  <owner>chromeos-gfx@chromium.org</owner>
+    enum="BooleanSuccess" expires_after="2022-09-01">
+  <owner>gildekel@chromium.org</owner>
+  <owner>seanpaul@chromium.org</owner>
+  <owner>chromeos-gfx-display@chromium.org</owner>
   <summary>
     Modeset attempt result of an external display. Every time an external
     display is connected/disconnected, or when the display mode of the external
@@ -3220,10 +3220,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ConfigureDisplays.External.Modeset.FinalStatus"
-    enum="BooleanSuccess" expires_after="2021-09-19">
-  <owner>dcastagna@chromium.org</owner>
-  <owner>marcheu@chromium.org</owner>
-  <owner>chromeos-gfx@chromium.org</owner>
+    enum="BooleanSuccess" expires_after="2022-09-01">
+  <owner>gildekel@chromium.org</owner>
+  <owner>seanpaul@chromium.org</owner>
+  <owner>chromeos-gfx-display@chromium.org</owner>
   <summary>
     Modeset attempt result of an internal display. This is recorded after Chrome
     attempted all the available modes and finally modeset the display. All the
@@ -3233,10 +3233,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ConfigureDisplays.External.Modeset.RefreshRate" units="Hz"
-    expires_after="2021-10-25">
-  <owner>dcastagna@chromium.org</owner>
-  <owner>marcheu@chromium.org</owner>
-  <owner>chromeos-gfx@chromium.org</owner>
+    expires_after="2022-09-01">
+  <owner>gildekel@chromium.org</owner>
+  <owner>seanpaul@chromium.org</owner>
+  <owner>chromeos-gfx-display@chromium.org</owner>
   <summary>
     Refresh rate of the mode for the display we're about to modeset. This is
     recorded every time an external display is connected/disconnected, or when
@@ -3245,10 +3245,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ConfigureDisplays.External.Modeset.Resolution"
-    enum="DisplayResolution" expires_after="2021-10-30">
-  <owner>dcastagna@chromium.org</owner>
-  <owner>marcheu@chromium.org</owner>
-  <owner>chromeos-gfx@chromium.org</owner>
+    enum="DisplayResolution" expires_after="2022-09-01">
+  <owner>gildekel@chromium.org</owner>
+  <owner>seanpaul@chromium.org</owner>
+  <owner>chromeos-gfx-display@chromium.org</owner>
   <summary>
     DisplayResolution of the mode for the external display we're about to
     modeset. 0 means the display was powered off. This is recorded every time an
@@ -3258,10 +3258,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ConfigureDisplays.Internal.Modeset.AttemptSucceeded"
-    enum="BooleanSuccess" expires_after="2021-10-04">
-  <owner>dcastagna@chromium.org</owner>
-  <owner>marcheu@chromium.org</owner>
-  <owner>chromeos-gfx@chromium.org</owner>
+    enum="BooleanSuccess" expires_after="2022-09-01">
+  <owner>gildekel@chromium.org</owner>
+  <owner>seanpaul@chromium.org</owner>
+  <owner>chromeos-gfx-display@chromium.org</owner>
   <summary>
     Modeset attempt result of an internal display. Chrome might try additional
     modes after a failed attempt. Every time an external display is
@@ -3273,10 +3273,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ConfigureDisplays.Internal.Modeset.FinalStatus"
-    enum="BooleanSuccess" expires_after="2021-10-04">
-  <owner>dcastagna@chromium.org</owner>
-  <owner>marcheu@chromium.org</owner>
-  <owner>chromeos-gfx@chromium.org</owner>
+    enum="BooleanSuccess" expires_after="2022-09-01">
+  <owner>gildekel@chromium.org</owner>
+  <owner>seanpaul@chromium.org</owner>
+  <owner>chromeos-gfx-display@chromium.org</owner>
   <summary>
     Modeset attempt result of an internal display. This is recorded after Chrome
     attempted all the available modes and finally modeset the display. All the
@@ -3286,10 +3286,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ConfigureDisplays.Internal.Modeset.RefreshRate" units="Hz"
-    expires_after="2021-10-04">
-  <owner>dcastagna@chromium.org</owner>
-  <owner>marcheu@chromium.org</owner>
-  <owner>chromeos-gfx@chromium.org</owner>
+    expires_after="2022-09-01">
+  <owner>gildekel@chromium.org</owner>
+  <owner>seanpaul@chromium.org</owner>
+  <owner>chromeos-gfx-display@chromium.org</owner>
   <summary>
     Refresh rate of the mode for the display we're about to modeset. This is
     recorded every time the internal display is powered on/off, or when an
@@ -3298,10 +3298,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ConfigureDisplays.Internal.Modeset.Resolution"
-    enum="DisplayResolution" expires_after="2022-01-23">
-  <owner>dcastagna@chromium.org</owner>
-  <owner>marcheu@chromium.org</owner>
-  <owner>chromeos-gfx@chromium.org</owner>
+    enum="DisplayResolution" expires_after="2022-09-01">
+  <owner>gildekel@chromium.org</owner>
+  <owner>seanpaul@chromium.org</owner>
+  <owner>chromeos-gfx-display@chromium.org</owner>
   <summary>
     DisplayResolution of the mode for the internal display we're about to
     modeset. 0 means the display was powered off. This is recorded every time
@@ -3311,10 +3311,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ConfigureDisplays.Modeset.MstExternalDisplaysCount"
-    units="count" expires_after="2022-01-23">
+    units="count" expires_after="2022-09-01">
   <owner>gildekel@chromium.org</owner>
-  <owner>dcastagna@chromium.org</owner>
-  <owner>chromeos-gfx@chromium.org</owner>
+  <owner>seanpaul@chromium.org</owner>
+  <owner>chromeos-gfx-display@chromium.org</owner>
   <summary>
     Total number of external displays connected via MST and being configured.
     This is recorded every time an external display is connected/disconnected,
@@ -3323,10 +3323,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ConfigureDisplays.Modeset.MstExternalDisplaysPercentage"
-    units="%" expires_after="2022-01-23">
+    units="%" expires_after="2022-09-01">
   <owner>gildekel@chromium.org</owner>
-  <owner>dcastagna@chromium.org</owner>
-  <owner>chromeos-gfx@chromium.org</owner>
+  <owner>seanpaul@chromium.org</owner>
+  <owner>chromeos-gfx-display@chromium.org</owner>
   <summary>
     Percentage of external displays connected via MST and being configured. This
     is recorded every time an external display is connected/disconnected, or
@@ -3335,10 +3335,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ConfigureDisplays.Modeset.TotalExternalDisplaysCount"
-    units="count" expires_after="2022-01-23">
+    units="count" expires_after="2022-09-01">
   <owner>gildekel@chromium.org</owner>
-  <owner>dcastagna@chromium.org</owner>
-  <owner>chromeos-gfx@chromium.org</owner>
+  <owner>seanpaul@chromium.org</owner>
+  <owner>chromeos-gfx-display@chromium.org</owner>
   <summary>
     Total number of external displays being configured. This is recorded every
     time an external display is connected/disconnected, or when the display mode
@@ -4832,20 +4832,44 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Display.BlockZeroSerialNumberType"
-    enum="BlockZeroSerialNumberType" expires_after="2022-07-01">
+<histogram name="Display.External.BlockZeroSerialNumberType"
+    enum="BlockZeroSerialNumberType" expires_after="2022-09-01">
   <owner>gildekel@chromium.org</owner>
-  <owner>chromeos-gfx@google.com</owner>
+  <owner>seanpaul@chromium.org</owner>
+  <owner>chromeos-gfx-display@google.com</owner>
   <summary>
-    The type of serial number retrived from block zero of a display's EDID
+    The type of serial number retrieved from block zero of a display's EDID
     during EDID parsing.
   </summary>
 </histogram>
 
+<histogram name="Display.External.NumOfSerialNumbersProvided" units="count"
+    expires_after="2022-09-01">
+  <owner>gildekel@chromium.org</owner>
+  <owner>seanpaul@chromium.org</owner>
+  <owner>chromeos-gfx-display@google.com</owner>
+  <summary>
+    The number of serial numbers provided in an EDID (i.e. via block zero and/or
+    the serial number descriptor block). Values should be in the range of 0-2.
+  </summary>
+</histogram>
+
+<histogram name="Display.External.ParseEdidOptionals" enum="ParseEdidOptionals"
+    expires_after="2022-09-01">
+  <owner>gildekel@chromium.org</owner>
+  <owner>seanpaul@chromium.org</owner>
+  <owner>chromeos-gfx-display@google.com</owner>
+  <summary>
+    The availability (or lack thereof) of tracked optional fields during EDID
+    parsing of external.
+  </summary>
+</histogram>
+
 <histogram name="Display.GenerateDisplayId.CollisionDetection"
-    enum="BooleanDisplayIdCollision" expires_after="2022-08-01">
+    enum="BooleanDisplayIdCollision" expires_after="2022-09-01">
   <owner>gildekel@google.com</owner>
-  <owner>chromeos-gfx@google.com</owner>
+  <owner>seanpaul@chromium.org</owner>
+  <owner>chromeos-gfx-display@google.com</owner>
   <summary>
     Whether or not two (or more) connected displays produced identical display
     IDs due to insufficient EDIDs. This may occur when identical displays (same
@@ -4856,24 +4880,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Display.ParseEdidFailure" enum="ParseEdidFailure"
-    expires_after="2021-11-14">
-  <owner>sashamcintosh@chromium.org</owner>
+    expires_after="2022-09-01">
   <owner>gildekel@chromium.org</owner>
-  <owner>chromeos-gfx@google.com</owner>
+  <owner>sashamcintosh@chromium.org</owner>
+  <owner>seanpaul@chromium.org</owner>
+  <owner>chromeos-gfx-display@google.com</owner>
   <summary>
     Type of failure that occurs during EDID parsing. Typically the failure is
     caused by a mismatch between the EDID size and the expected offset of the
     data component.
-  </summary>
-</histogram>
-
-<histogram name="Display.ParseEdidOptionals" enum="ParseEdidOptionals"
-    expires_after="2022-07-01">
-  <owner>gildekel@chromium.org</owner>
-  <owner>chromeos-gfx@google.com</owner>
-  <summary>
-    The availability (or lack thereof) of tracked optional fields during EDID
-    parsing of external.
   </summary>
 </histogram>
 
