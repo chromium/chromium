@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -17,12 +18,35 @@
 #include "components/user_manager/user_type.h"
 
 namespace ash {
+namespace {
+
+BrowserContextKeyedServiceFactory::TestingFactory* GetTestingFactory() {
+  static base::NoDestructor<BrowserContextKeyedServiceFactory::TestingFactory>
+      testing_factory_;
+  return testing_factory_.get();
+}
+
+}  // namespace
 
 // static
 HoldingSpaceKeyedServiceFactory*
 HoldingSpaceKeyedServiceFactory::GetInstance() {
   static base::NoDestructor<HoldingSpaceKeyedServiceFactory> factory;
   return factory.get();
+}
+
+// static
+BrowserContextKeyedServiceFactory::TestingFactory
+HoldingSpaceKeyedServiceFactory::GetDefaultTestingFactory() {
+  return base::BindRepeating([](content::BrowserContext* context) {
+    return base::WrapUnique(BuildServiceInstanceForInternal(context));
+  });
+}
+
+// static
+void HoldingSpaceKeyedServiceFactory::SetTestingFactory(
+    BrowserContextKeyedServiceFactory::TestingFactory testing_factory) {
+  *GetTestingFactory() = std::move(testing_factory);
 }
 
 HoldingSpaceKeyedServiceFactory::HoldingSpaceKeyedServiceFactory()
@@ -57,6 +81,14 @@ HoldingSpaceKeyedServiceFactory::GetBrowserContextToUse(
 
 KeyedService* HoldingSpaceKeyedServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
+  TestingFactory* testing_factory = GetTestingFactory();
+  return testing_factory->is_null() ? BuildServiceInstanceForInternal(context)
+                                    : testing_factory->Run(context).release();
+}
+
+// static
+KeyedService* HoldingSpaceKeyedServiceFactory::BuildServiceInstanceForInternal(
+    content::BrowserContext* context) {
   Profile* const profile = Profile::FromBrowserContext(context);
   DCHECK_EQ(profile->IsGuestSession(), profile->IsOffTheRecord());
 

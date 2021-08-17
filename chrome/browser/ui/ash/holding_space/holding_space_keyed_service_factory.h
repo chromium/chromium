@@ -22,6 +22,9 @@ class HoldingSpaceKeyedServiceFactory
  public:
   static HoldingSpaceKeyedServiceFactory* GetInstance();
 
+  static TestingFactory GetDefaultTestingFactory();
+  static void SetTestingFactory(TestingFactory testing_factory);
+
   HoldingSpaceKeyedService* GetService(content::BrowserContext* context);
 
  protected:
@@ -41,6 +44,9 @@ class HoldingSpaceKeyedServiceFactory
       const HoldingSpaceKeyedServiceFactory& other) = delete;
   HoldingSpaceKeyedServiceFactory& operator=(
       const HoldingSpaceKeyedServiceFactory& other) = delete;
+
+  static KeyedService* BuildServiceInstanceForInternal(
+      content::BrowserContext* context);
 };
 
 }  // namespace ash
