@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/timer/elapsed_timer.h"
 #include "chromeos/components/camera_app_ui/document_scanner_service_client.h"
 #include "media/base/video_transformation.h"
 #include "media/capture/capture_export.h"
@@ -156,6 +157,8 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
 
   void OnMojoConnectionError();
 
+  bool IsCloseToPreviousDetectionRequest();
+
   void DetectDocumentCornersOnMojoThread(
       std::unique_ptr<gpu::GpuMemoryBufferImpl> image,
       VideoRotation rotation);
@@ -218,6 +221,7 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
   mojo::RemoteSet<cros::mojom::DocumentCornersObserver>
       document_corners_observers_;
   bool has_ongoing_document_detection_task_ = false;
+  std::unique_ptr<base::ElapsedTimer> document_detection_timer_ = nullptr;
 
   // Client to connect to document detection service. It should only be
   // used/destructed on the Mojo thread.
