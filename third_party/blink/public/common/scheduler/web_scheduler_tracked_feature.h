@@ -86,7 +86,8 @@ enum class WebSchedulerTrackedFeature : uint32_t {
 
   kRequestedStorageAccessGrant = 37,
   kWebNfc = 38,
-  kWebFileSystem = 39,
+  // kWebFileSystem = 39. Removed after implementing WebFilesystem support in
+  // back/forward cache.
 
   kOutstandingNetworkRequestFetch = 40,
   kOutstandingNetworkRequestXHR = 41,

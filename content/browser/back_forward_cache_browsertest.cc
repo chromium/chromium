@@ -2576,28 +2576,61 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   ExpectRestored(FROM_HERE);
 }
 
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       DoesNotCacheIfWebFileSystem) {
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, CacheWithWebFileSystem) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // 1) Navigate to a page with WebFileSystem usage.
-  GURL url(embedded_test_server()->GetURL("/fileapi/request_test.html"));
+  GURL url(embedded_test_server()->GetURL("a.test", "/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
   RenderFrameHostImpl* rfh_a = current_frame_host();
-  RenderFrameDeletedObserver deleted(rfh_a);
+  // Writer a file 'file.txt' with a content 'foo'.
+  EXPECT_EQ("success", EvalJs(rfh_a, R"(
+      new Promise((resolve, reject) => {
+        window.webkitRequestFileSystem(
+          window.TEMPORARY,
+          1024 * 1024,
+          (fs) => {
+            fs.root.getFile('file.txt', {create: true}, (entry) => {
+              entry.createWriter((writer) => {
+                writer.onwriteend = () => {
+                  resolve('success');
+                };
+                writer.onerror = reject;
+                var blob = new Blob(['foo'], {type: 'text/plain'});
+                writer.write(blob);
+              }, reject);
+            }, reject);
+          }, reject);
+        });
+    )"));
 
   // 2) Navigate away.
-  shell()->LoadURL(embedded_test_server()->GetURL("b.com", "/title1.html"));
-  // The page uses WebFilesystem so it should be deleted.
-  deleted.WaitUntilDeleted();
+  shell()->LoadURL(embedded_test_server()->GetURL("b.test", "/title1.html"));
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
   // 3) Go back to the page with WebFileSystem.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  ExpectNotRestored(
-      {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
-      {blink::scheduler::WebSchedulerTrackedFeature::kWebFileSystem}, {}, {},
-      FROM_HERE);
+  ExpectRestored(FROM_HERE);
+  // Check the file content is reserved.
+  EXPECT_EQ("foo", EvalJs(rfh_a, R"(
+      new Promise((resolve, reject) => {
+        window.webkitRequestFileSystem(
+          window.TEMPORARY,
+          1024 * 1024,
+          (fs) => {
+            fs.root.getFile('file.txt', {}, (entry) => {
+              entry.file((file) => {
+                const reader = new FileReader();
+                reader.onloadend = (e) => {
+                  resolve(e.target.result);
+                };
+                reader.readAsText(file);
+              }, reject);
+            }, reject);
+          }, reject);
+        });
+    )"));
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, DoesNotCacheIfHttpError) {
@@ -10739,39 +10772,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // The reason why the frame is not cached in a subframe navigation is not
   // recorded.
   ExpectOutcomeDidNotChange(FROM_HERE);
-}
-
-class BackForwardCacheBrowserTestWithFileSystemAPISupported
-    : public BackForwardCacheBrowserTest {
- protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    EnableFeatureAndSetParams(features::kBackForwardCache,
-                              "file_system_api_supported", "true");
-    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithFileSystemAPISupported,
-                       DISABLED_CacheWithFileSystemAPI) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url_a(embedded_test_server()->GetURL("/fileapi/request_test.html"));
-  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
-
-  // 1) Navigate to a page with WebFileSystem usage.
-  EXPECT_TRUE(NavigateToURL(shell(), url_a));
-  RenderFrameHostImpl* rfh_a = current_frame_host();
-  RenderFrameDeletedObserver deleted(rfh_a);
-
-  // 2) Navigate away.
-  EXPECT_TRUE(NavigateToURL(shell(), url_b));
-  EXPECT_FALSE(deleted.deleted());
-  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
-
-  // 3) Go back to the page with WebFileSystem.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  EXPECT_EQ(rfh_a, current_frame_host());
-  ExpectRestored(FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,

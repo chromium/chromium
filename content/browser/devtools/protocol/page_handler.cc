@@ -1499,8 +1499,6 @@ Page::BackForwardCacheNotRestoredReason BlocklistedFeatureToProtocol(
           RequestedStorageAccessGrant;
     case WebSchedulerTrackedFeature::kWebNfc:
       return Page::BackForwardCacheNotRestoredReasonEnum::WebNfc;
-    case WebSchedulerTrackedFeature::kWebFileSystem:
-      return Page::BackForwardCacheNotRestoredReasonEnum::WebFileSystem;
     case WebSchedulerTrackedFeature::kOutstandingNetworkRequestFetch:
       return Page::BackForwardCacheNotRestoredReasonEnum::
           OutstandingNetworkRequestFetch;
@@ -1664,7 +1662,6 @@ Page::BackForwardCacheNotRestoredReasonType MapBlocklistedFeatureToType(
     case WebSchedulerTrackedFeature::kWebShare:
     case WebSchedulerTrackedFeature::kRequestedStorageAccessGrant:
     case WebSchedulerTrackedFeature::kWebNfc:
-    case WebSchedulerTrackedFeature::kWebFileSystem:
     case WebSchedulerTrackedFeature::kOutstandingNetworkRequestFetch:
     case WebSchedulerTrackedFeature::kOutstandingNetworkRequestXHR:
     case WebSchedulerTrackedFeature::kPrinting:

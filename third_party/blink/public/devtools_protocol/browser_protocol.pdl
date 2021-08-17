@@ -7840,7 +7840,6 @@ domain Page
       WebShare
       RequestedStorageAccessGrant
       WebNfc
-      WebFileSystem
       OutstandingNetworkRequestFetch
       OutstandingNetworkRequestXHR
       AppBanner

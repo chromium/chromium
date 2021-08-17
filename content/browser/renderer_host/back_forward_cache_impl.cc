@@ -98,14 +98,6 @@ bool IsContentInjectionSupported() {
   return content_injection_supported.Get();
 }
 
-bool IsFileSystemSupported() {
-  if (!IsBackForwardCacheEnabled())
-    return false;
-  static constexpr base::FeatureParam<bool> file_system_api_supported(
-      &features::kBackForwardCache, "file_system_api_supported", false);
-  return file_system_api_supported.Get();
-}
-
 bool IsOptInHeaderRequired() {
   if (!IsBackForwardCacheEnabled())
     return false;
@@ -260,10 +252,6 @@ BlockListedFeatures GetDisallowedFeatures(
     result.Put(WebSchedulerTrackedFeature::kOutstandingNetworkRequestOthers);
     result.Put(WebSchedulerTrackedFeature::kOutstandingNetworkRequestFetch);
     result.Put(WebSchedulerTrackedFeature::kOutstandingNetworkRequestXHR);
-  }
-
-  if (!IsFileSystemSupported()) {
-    result.Put(WebSchedulerTrackedFeature::kWebFileSystem);
   }
 
   if (requested_features == RequestedFeatures::kOnlySticky) {
