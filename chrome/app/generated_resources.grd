@@ -6344,6 +6344,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_BOOKMARK_PROMO_2" desc="Text shown on promotional UI appearing next to the Bookmarks button, which encourages users to use it.">
         Get back here fast by bookmarking this tab
       </message>
+      <message name="IDS_CLOSE_TUTORIAL" desc="Accessible name used by a screen reader for the in-product-help bubble close button." is_accessibility_with_no_ui="true">
+        Close tutorial
+      </message>
       <message name="IDS_GLOBAL_MEDIA_CONTROLS_PROMO" desc="Text shown on promotional UI appearing next to the global media controls toolbar button.">
         New! Control your music, videos, and more.
       </message>

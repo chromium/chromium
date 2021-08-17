@@ -144,6 +144,30 @@ class MdIPHBubbleButton : public views::MdTextButton {
 BEGIN_METADATA(MdIPHBubbleButton, views::MdTextButton)
 END_METADATA
 
+class CloseTutorialButton : public views::ImageButton {
+ public:
+  METADATA_HEADER(CloseTutorialButton);
+  explicit CloseTutorialButton(PressedCallback callback) {
+    SetCallback(callback);
+    SetImage(
+        views::ImageButton::STATE_NORMAL,
+        gfx::CreateVectorIcon(views::kIcCloseIcon, 16, kBubbleButtonTextColor));
+    views::ConfigureVectorImageButton(this);
+    views::HighlightPathGenerator::Install(
+        this,
+        std::make_unique<views::CircleHighlightPathGenerator>(gfx::Insets()));
+    views::InkDrop::Get(this)->SetBaseColor(kBubbleButtonHighlightColor);
+    SetProperty(views::kFlexBehaviorKey,
+                views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+                                         views::MaximumFlexSizeRule::kUnbounded)
+                    .WithAlignment(views::LayoutAlignment::kEnd));
+    SetAccessibleName(l10n_util::GetStringUTF16(IDS_CLOSE_TUTORIAL));
+  }
+};
+
+BEGIN_METADATA(CloseTutorialButton, views::ImageButton)
+END_METADATA
+
 class DotView : public views::View {
  public:
   METADATA_HEADER(DotView);
@@ -274,27 +298,14 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(CreateParams params)
 
   // Add close button.
   if (params.has_close_button) {
-    auto* close_button = top_row_container->AddChildView(
-        std::make_unique<views::ImageButton>(base::BindRepeating(
+    // Close button should only be used for tutorial use cases.
+    DCHECK(params.tutorial_progress_current);
+    top_row_container->AddChildView(
+        std::make_unique<CloseTutorialButton>(base::BindRepeating(
             close_bubble_and_run_callback, base::Unretained(this),
             params.dismiss_callback.has_value()
                 ? std::move(params.dismiss_callback.value())
                 : base::DoNothing())));
-    close_button->SetImage(
-        views::ImageButton::STATE_NORMAL,
-        gfx::CreateVectorIcon(views::kIcCloseIcon, 16, kBubbleButtonTextColor));
-    views::ConfigureVectorImageButton(close_button);
-    views::HighlightPathGenerator::Install(
-        close_button,
-        std::make_unique<views::CircleHighlightPathGenerator>(gfx::Insets()));
-    views::InkDrop::Get(close_button)
-        ->SetBaseColor(kBubbleButtonHighlightColor);
-    close_button->SetProperty(
-        views::kFlexBehaviorKey,
-        views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
-                                 views::MaximumFlexSizeRule::kUnbounded)
-            .WithAlignment(views::LayoutAlignment::kEnd));
-    close_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_CLOSE));
   }
 
   // Add title label.
