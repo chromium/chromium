@@ -49,7 +49,8 @@ class CORE_EXPORT NGInlineLayoutAlgorithm final
   void CreateLine(const NGLineLayoutOpportunity&,
                   NGLineInfo*,
                   NGLogicalLineItems* line_box,
-                  NGExclusionSpace*);
+                  NGExclusionSpace*,
+                  LayoutUnit* ruby_block_start_adjust);
 
   scoped_refptr<const NGLayoutResult> Layout() override;
 
@@ -111,6 +112,7 @@ class CORE_EXPORT NGInlineLayoutAlgorithm final
   void PlaceFloatingObjects(const NGLineInfo&,
                             const FontHeight&,
                             const NGLineLayoutOpportunity&,
+                            LayoutUnit ruby_block_start_adjust,
                             NGLogicalLineItems* line_box,
                             NGExclusionSpace*);
   void PlaceRelativePositionedItems(NGLogicalLineItems* line_box);
@@ -121,9 +123,7 @@ class CORE_EXPORT NGInlineLayoutAlgorithm final
   LayoutUnit ApplyTextAlign(NGLineInfo*);
   absl::optional<LayoutUnit> ApplyJustify(LayoutUnit space, NGLineInfo*);
 
-  LayoutUnit ComputeContentSize(const NGLineInfo&,
-                                const NGExclusionSpace&,
-                                LayoutUnit line_height);
+  LayoutUnit ComputeContentSize(const NGLineInfo&, const NGExclusionSpace&);
 
   LayoutUnit SetAnnotationOverflow(const NGLineInfo& line_info,
                                    const NGLogicalLineItems& line_box,

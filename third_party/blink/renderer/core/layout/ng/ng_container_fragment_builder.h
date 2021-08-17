@@ -283,6 +283,7 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   void SetAnnotationOverflow(LayoutUnit overflow) {
     annotation_overflow_ = overflow;
   }
+  LayoutUnit AnnotationOverflow() const { return annotation_overflow_; }
 
   // See NGLayoutRsult::BlockEndAnnotatioSpace().
   void SetBlockEndAnnotationSpace(LayoutUnit space) {

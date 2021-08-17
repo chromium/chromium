@@ -190,7 +190,8 @@ void NGInlineLayoutAlgorithm::CreateLine(
     const NGLineLayoutOpportunity& opportunity,
     NGLineInfo* line_info,
     NGLogicalLineItems* line_box,
-    NGExclusionSpace* exclusion_space) {
+    NGExclusionSpace* exclusion_space,
+    LayoutUnit* ruby_block_start_adjust) {
   // Needs MutableResults to move ShapeResult out of the NGLineInfo.
   NGInlineItemResults* line_items = line_info->MutableResults();
   // Clear the current line without releasing the buffer.
@@ -386,6 +387,11 @@ void NGInlineLayoutAlgorithm::CreateLine(
 
   const FontHeight& line_box_metrics = box_states_->LineBoxState().metrics;
 
+  if (UNLIKELY(Node().HasRuby() && !line_info->IsEmptyLine())) {
+    *ruby_block_start_adjust =
+        SetAnnotationOverflow(*line_info, *line_box, line_box_metrics);
+  }
+
   // Place out-of-flow positioned objects.
   // This adjusts the NGLogicalLineItem::offset member to contain
   // the static position of the OOF positioned children relative to the linebox.
@@ -398,8 +404,8 @@ void NGInlineLayoutAlgorithm::CreateLine(
   // Additionally it will perform layout on any unpositioned floats which
   // needed the line height to correctly determine their final position.
   if (has_floating_items) {
-    PlaceFloatingObjects(*line_info, line_box_metrics, opportunity, line_box,
-                         exclusion_space);
+    PlaceFloatingObjects(*line_info, line_box_metrics, opportunity,
+                         *ruby_block_start_adjust, line_box, exclusion_space);
   }
 
   // Apply any relative positioned offsets to *items* which have relative
@@ -454,12 +460,6 @@ void NGInlineLayoutAlgorithm::CreateLine(
   if (LIKELY(!Node().IsSvgText() && !Node().IsTextCombine()))
     line_box->MoveInBlockDirection(line_box_metrics.ascent);
 
-  LayoutUnit block_offset = line_info->BfcOffset().block_offset;
-  if (Node().HasRuby()) {
-    block_offset +=
-        SetAnnotationOverflow(*line_info, *line_box, line_box_metrics);
-  }
-
   if (line_info->UseFirstLineStyle())
     container_builder_.SetStyleVariant(NGStyleVariant::kFirstLine);
   if (UNLIKELY(Node().IsTextCombine())) {
@@ -470,8 +470,6 @@ void NGInlineLayoutAlgorithm::CreateLine(
   }
   container_builder_.SetInlineSize(inline_size);
   container_builder_.SetMetrics(line_box_metrics);
-  container_builder_.SetBfcBlockOffset(block_offset);
-  container_builder_.SetLineBoxBfcBlockOffset(block_offset);
 }
 
 void NGInlineLayoutAlgorithm::PlaceControlItem(const NGInlineItem& item,
@@ -751,6 +749,7 @@ void NGInlineLayoutAlgorithm::PlaceFloatingObjects(
     const NGLineInfo& line_info,
     const FontHeight& line_box_metrics,
     const NGLineLayoutOpportunity& opportunity,
+    LayoutUnit ruby_block_start_adjust,
     NGLogicalLineItems* line_box,
     NGExclusionSpace* exclusion_space) {
   DCHECK(line_info.IsEmptyLine() || !line_box_metrics.IsEmpty())
@@ -770,9 +769,10 @@ void NGInlineLayoutAlgorithm::PlaceFloatingObjects(
       opportunity.bfc_block_offset + line_height;
 
   LayoutUnit bfc_line_offset = container_builder_.BfcLineOffset();
-  LayoutUnit bfc_block_offset = Node().IsEmptyInline()
-                                    ? ConstraintSpace().ExpectedBfcBlockOffset()
-                                    : line_info.BfcOffset().block_offset;
+  LayoutUnit bfc_block_offset =
+      Node().IsEmptyInline()
+          ? ConstraintSpace().ExpectedBfcBlockOffset()
+          : line_info.BfcOffset().block_offset + ruby_block_start_adjust;
 
   for (NGLogicalLineItem& child : *line_box) {
     // We need to position any floats which should be on the "next" line now.
@@ -999,7 +999,7 @@ LayoutUnit NGInlineLayoutAlgorithm::SetAnnotationOverflow(
     const NGLogicalLineItems& line_box,
     const FontHeight& line_box_metrics) {
   NGAnnotationMetrics annotation_metrics = ComputeAnnotationOverflow(
-      line_box, line_box_metrics, LayoutUnit(), line_info.LineStyle());
+      line_box, line_box_metrics, line_info.LineStyle());
   LayoutUnit annotation_overflow_block_start;
   LayoutUnit annotation_overflow_block_end;
   LayoutUnit annotation_space_block_start;
@@ -1045,9 +1045,8 @@ LayoutUnit NGInlineLayoutAlgorithm::SetAnnotationOverflow(
 
 LayoutUnit NGInlineLayoutAlgorithm::ComputeContentSize(
     const NGLineInfo& line_info,
-    const NGExclusionSpace& exclusion_space,
-    LayoutUnit line_height) {
-  LayoutUnit content_size = line_height;
+    const NGExclusionSpace& exclusion_space) {
+  LayoutUnit content_size = container_builder_.LineHeight();
 
   const NGInlineItemResults& line_items = line_info.Results();
   if (line_items.IsEmpty())
@@ -1194,12 +1193,26 @@ scoped_refptr<const NGLayoutResult> NGInlineLayoutAlgorithm::Layout() {
     }
 
     PrepareBoxStates(line_info, break_token);
-    CreateLine(line_opportunity, &line_info, line_box, &exclusion_space);
+
+    LayoutUnit ruby_block_start_adjust;
+    CreateLine(line_opportunity, &line_info, line_box, &exclusion_space,
+               &ruby_block_start_adjust);
     is_line_created = true;
 
+    // Set our BFC block-offset. Ruby annotations may adjust this offset.
+    if (!line_info.IsEmptyLine()) {
+      const LayoutUnit bfc_block_offset =
+          line_info.BfcOffset().block_offset + ruby_block_start_adjust;
+      container_builder_.SetBfcBlockOffset(bfc_block_offset);
+      container_builder_.SetLineBoxBfcBlockOffset(bfc_block_offset);
+    }
+
     // We now can check the block-size of the fragment, and it fits within the
-    // opportunity.
-    LayoutUnit line_height = container_builder_.LineHeight();
+    // opportunity. Also include the ruby annotations so that they don't
+    // intersect with any floats.
+    const LayoutUnit total_block_size =
+        container_builder_.LineHeight() + ruby_block_start_adjust +
+        container_builder_.AnnotationOverflow().ClampNegativeToZero();
 
     // Now that we have the block-size of the line, we can re-test the layout
     // opportunity to see if we fit into the (potentially) non-rectangular
@@ -1216,18 +1229,18 @@ scoped_refptr<const NGLayoutResult> NGInlineLayoutAlgorithm::Layout() {
     if (UNLIKELY(opportunity.HasShapeExclusions() &&
                  !line_info.IsEmptyLine())) {
       NGLineLayoutOpportunity line_opportunity_with_height =
-          opportunity.ComputeLineLayoutOpportunity(ConstraintSpace(),
-                                                   line_height, block_delta);
+          opportunity.ComputeLineLayoutOpportunity(
+              ConstraintSpace(), total_block_size, block_delta);
 
       if (line_opportunity_with_height.AvailableInlineSize() !=
           line_opportunity.AvailableInlineSize()) {
-        line_block_size = line_height;
+        line_block_size = total_block_size;
         continue;
       }
     }
 
     // Check if the line will fit in the current opportunity.
-    if (line_height + block_delta > opportunity.rect.BlockSize()) {
+    if (total_block_size + block_delta > opportunity.rect.BlockSize()) {
       block_delta = LayoutUnit();
       line_block_size = LayoutUnit();
       ++opportunities_it;
@@ -1265,7 +1278,7 @@ scoped_refptr<const NGLayoutResult> NGInlineLayoutAlgorithm::Layout() {
       // block-end edge will clear any floats.
       // TODO(ikilpatrick): Move this into ng_block_layout_algorithm.
       container_builder_.SetBlockSize(
-          ComputeContentSize(line_info, exclusion_space, line_height));
+          ComputeContentSize(line_info, exclusion_space));
 
       // As we aren't an empty inline we should have correctly placed all
       // our adjoining objects, and shouldn't propagate this information

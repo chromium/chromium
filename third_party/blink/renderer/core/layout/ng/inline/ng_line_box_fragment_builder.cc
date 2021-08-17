@@ -25,6 +25,7 @@ void NGLineBoxFragmentBuilder::Reset() {
   oof_positioned_candidates_.Shrink(0);
   unpositioned_list_marker_ = NGUnpositionedListMarker();
 
+  annotation_overflow_ = LayoutUnit();
   bfc_block_offset_.reset();
   line_box_bfc_block_offset_.reset();
 

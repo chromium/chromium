@@ -250,6 +250,8 @@ crbug.com/1012289 external/wpt/css/css-pseudo/marker-unicode-bidi-normal.html [ 
 
 ### external/wpt/css/css-ruby/
 crbug.com/591099 external/wpt/css/css-ruby/ruby-line-breaking-002.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-ruby/ruby-with-floats-002.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-ruby/ruby-with-floats-003.html [ Failure ]
 
 ### external/wpt/css/css-shapes/shape-outside/shape-box/
 crbug.com/591099 external/wpt/css/css-shapes/shape-outside/shape-box/shape-outside-border-box-border-radius-003.html [ Failure ]

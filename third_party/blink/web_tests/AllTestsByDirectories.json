@@ -24021,7 +24021,10 @@
     "external/wpt/css/css-ruby/ruby-span-001.html",
     "external/wpt/css/css-ruby/ruby-text-collapse.html",
     "external/wpt/css/css-ruby/ruby-whitespace-001.html",
-    "external/wpt/css/css-ruby/ruby-whitespace-002.html"
+    "external/wpt/css/css-ruby/ruby-whitespace-002.html",
+    "external/wpt/css/css-ruby/ruby-with-floats-001.html",
+    "external/wpt/css/css-ruby/ruby-with-floats-002.html",
+    "external/wpt/css/css-ruby/ruby-with-floats-003.html"
   ],
   "external/wpt/css/css-ruby/parsing/": [
     "external/wpt/css/css-ruby/parsing/ruby-align-invalid.html",
