@@ -692,7 +692,7 @@ TEST(VariationsStudyFilteringTest, FilterAndValidateStudies) {
   AddExperiment("A", 10, study3);
   AddExperiment("Default", 25, study3);
 
-  ClientFilterableState client_state({});
+  ClientFilterableState client_state(base::BindOnce([] { return false; }));
   client_state.locale = "en-CA";
   client_state.reference_date = base::Time::Now();
   client_state.version = base::Version("20.0.0.0");
@@ -752,7 +752,7 @@ TEST(VariationsStudyFilteringTest, FilterAndValidateStudiesWithCountry) {
     if (test.filter_exclude_country)
       study->mutable_filter()->add_exclude_country(test.filter_exclude_country);
 
-    ClientFilterableState client_state({});
+    ClientFilterableState client_state(base::BindOnce([] { return false; }));
     client_state.locale = "en-CA";
     client_state.reference_date = base::Time::Now();
     client_state.version = base::Version("20.0.0.0");
@@ -771,7 +771,7 @@ TEST(VariationsStudyFilteringTest, FilterAndValidateStudiesWithCountry) {
 }
 
 TEST(VariationsStudyFilteringTest, GetClientCountryForStudy_Session) {
-  ClientFilterableState client_state({});
+  ClientFilterableState client_state(base::BindOnce([] { return false; }));
   client_state.session_consistency_country = "session_country";
   client_state.permanent_consistency_country = "permanent_country";
 
@@ -782,7 +782,7 @@ TEST(VariationsStudyFilteringTest, GetClientCountryForStudy_Session) {
 }
 
 TEST(VariationsStudyFilteringTest, GetClientCountryForStudy_Permanent) {
-  ClientFilterableState client_state({});
+  ClientFilterableState client_state(base::BindOnce([] { return false; }));
   client_state.session_consistency_country = "session_country";
   client_state.permanent_consistency_country = "permanent_country";
 

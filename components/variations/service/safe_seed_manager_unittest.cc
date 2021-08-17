@@ -82,7 +82,8 @@ class FakeSeedStore : public VariationsSeedStore {
 // |safe_seed_manager|.
 void SetDefaultActiveState(SafeSeedManager* safe_seed_manager) {
   std::unique_ptr<ClientFilterableState> client_state =
-      std::make_unique<ClientFilterableState>(base::OnceCallback<bool()>());
+      std::make_unique<ClientFilterableState>(
+          base::BindOnce([] { return false; }));
   client_state->locale = kTestLocale;
   client_state->permanent_consistency_country =
       kTestPermanentConsistencyCountry;
