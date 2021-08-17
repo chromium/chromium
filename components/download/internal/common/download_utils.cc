@@ -272,6 +272,7 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
   request->url = params->url();
   request->request_initiator = params->initiator();
   request->trusted_params = network::ResourceRequest::TrustedParams();
+  request->has_user_gesture = params->has_user_gesture();
 
   if (params->isolation_info().has_value()) {
     request->trusted_params->isolation_info = params->isolation_info().value();

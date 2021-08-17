@@ -32,7 +32,8 @@ DownloadUrlParameters::DownloadUrlParameters(
       transient_(false),
       traffic_annotation_(traffic_annotation),
       download_source_(DownloadSource::UNKNOWN),
-      require_safety_checks_(true) {}
+      require_safety_checks_(true),
+      has_user_gesture_(false) {}
 
 DownloadUrlParameters::~DownloadUrlParameters() = default;
 
