@@ -829,9 +829,6 @@ extern const char kIncognitoClearBrowsingDataDialogForDesktopDescription[];
 extern const char kUpdateHistoryEntryPointsInIncognitoName[];
 extern const char kUpdateHistoryEntryPointsInIncognitoDescription[];
 
-extern const char kIncognitoNtpRealBoxName[];
-extern const char kIncognitoNtpRealBoxDescription[];
-
 extern const char kIncognitoNtpRevampName[];
 extern const char kIncognitoNtpRevampDescription[];
 
