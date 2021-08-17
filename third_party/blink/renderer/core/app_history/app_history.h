@@ -123,6 +123,8 @@ class CORE_EXPORT AppHistory final : public EventTargetWithInlineData,
       ExceptionState&,
       const String& method_name_for_error_message);
 
+  void CleanupApiNavigation(AppHistoryApiNavigation&);
+
   scoped_refptr<SerializedScriptValue> SerializeState(const ScriptValue&,
                                                       ExceptionState&);
 
