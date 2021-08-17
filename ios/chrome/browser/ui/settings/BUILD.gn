@@ -275,7 +275,6 @@ source_set("unit_tests") {
     "search_engine_table_view_controller_unittest.mm",
     "settings_navigation_controller_unittest.mm",
     "settings_root_table_view_controller_unittest.mm",
-    "settings_table_view_controller_mice_unittest.mm",
     "settings_table_view_controller_unittest.mm",
     "translate_table_view_controller_unittest.mm",
     "voice_search_table_view_controller_unittest.mm",

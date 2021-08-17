@@ -84,12 +84,10 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "privacy_table_view_controller_unittest.mm" ]
   deps = [
-    "//base/test:test_support",
     "//components/handoff",
     "//components/prefs",
     "//components/prefs/ios",
     "//components/signin/ios/browser:features",
-    "//components/signin/public/base",
     "//components/strings",
     "//components/sync/driver:test_support",
     "//components/sync_preferences",

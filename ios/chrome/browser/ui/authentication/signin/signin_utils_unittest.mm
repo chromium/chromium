@@ -247,12 +247,8 @@ TEST_F(SigninUtilsTest, TestWillNotShowIfDisabledByPolicy) {
       chrome_browser_state_.get(), version_1_0));
 }
 
-// signin::IsSigninAllowed should respect the kSigninAllowed pref with MICE
-// enabled.
+// signin::IsSigninAllowed should respect the kSigninAllowed pref.
 TEST_F(SigninUtilsTest, TestSigninAllowedPref) {
-  base::test::ScopedFeatureList scoped_feature;
-  scoped_feature.InitAndEnableFeature(signin::kMobileIdentityConsistency);
-
   ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
       ->AddIdentities(@[ @"foo", @"bar" ]);
   // Sign-in is allowed by default.
@@ -303,18 +299,6 @@ TEST_F(SigninUtilsTest, TestWillNotShowWhenPromosDisabled) {
 
   EXPECT_FALSE(signin::ShouldPresentUserSigninUpgrade(
       chrome_browser_state_.get(), version_1_0));
-}
-
-// signin::IsSigninAllowed should not use kSigninAllowed pref when MICE is
-// disabled.
-TEST_F(SigninUtilsTest, TestSigninAllowedPrefPreMICE) {
-  base::test::ScopedFeatureList scoped_feature;
-  scoped_feature.InitAndDisableFeature(signin::kMobileIdentityConsistency);
-
-  ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
-      ->AddIdentities(@[ @"foo", @"bar" ]);
-  // Sign-in is allowed by default.
-  EXPECT_TRUE(signin::IsSigninAllowed(chrome_browser_state_.get()->GetPrefs()));
 }
 
 }  // namespace

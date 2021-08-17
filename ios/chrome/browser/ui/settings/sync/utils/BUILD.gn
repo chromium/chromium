@@ -40,8 +40,6 @@ source_set("unit_tests") {
   deps = [
     ":utils",
     "//base",
-    "//base/test:test_support",
-    "//components/signin/public/base",
     "//components/sync/driver",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/infobars",

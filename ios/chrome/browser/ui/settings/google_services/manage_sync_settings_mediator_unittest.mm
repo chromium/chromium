@@ -7,11 +7,9 @@
 #import <UIKit/UIKit.h>
 
 #import "base/mac/foundation_util.h"
-#include "base/test/scoped_feature_list.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/signin/public/base/account_consistency_method.h"
 #import "components/sync/driver/mock_sync_service.h"
 #include "components/sync/driver/sync_service.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
@@ -164,9 +162,6 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
 // Tests that encryption is not accessible when Sync settings have not been
 // confirmed.
 TEST_F(ManageSyncSettingsMediatorTest, SyncServiceSetupNotCommitted) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(signin::kMobileIdentityConsistency);
-
   FirstSetupSyncOff();
   ON_CALL(*sync_setup_service_mock_, GetSyncServiceState())
       .WillByDefault(Return(SyncSetupService::kSyncSettingsNotConfirmed));
@@ -191,9 +186,6 @@ TEST_F(ManageSyncSettingsMediatorTest, SyncServiceSetupNotCommitted) {
 // Tests that encryption is not accessible when Sync is disabled by the
 // administrator.
 TEST_F(ManageSyncSettingsMediatorTest, SyncServiceDisabledByAdministrator) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(signin::kMobileIdentityConsistency);
-
   FirstSetupSyncOff();
   ON_CALL(*sync_service_mock_, GetDisableReasons())
       .WillByDefault(
@@ -258,9 +250,6 @@ TEST_F(ManageSyncSettingsMediatorTest, SyncServiceEnabledWithEncryption) {
 
 // Tests that "Turn off Sync" is hidden when Sync is disabled.
 TEST_F(ManageSyncSettingsMediatorTest, SyncServiceDisabledWithTurnOffSync) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(signin::kMobileIdentityConsistency);
-
   FirstSetupSyncOff();
   ON_CALL(*sync_setup_service_mock_, GetSyncServiceState())
       .WillByDefault(Return(SyncSetupService::kNoSyncServiceError));
@@ -276,9 +265,6 @@ TEST_F(ManageSyncSettingsMediatorTest, SyncServiceDisabledWithTurnOffSync) {
 
 // Tests that "Turn off Sync" is accessible when Sync is enabled.
 TEST_F(ManageSyncSettingsMediatorTest, SyncServiceEnabledWithTurnOffSync) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(signin::kMobileIdentityConsistency);
-
   FirstSetupSyncOnWithConsentEnabled();
   ON_CALL(*sync_setup_service_mock_, GetSyncServiceState())
       .WillByDefault(Return(SyncSetupService::kNoSyncServiceError));
@@ -295,9 +281,6 @@ TEST_F(ManageSyncSettingsMediatorTest, SyncServiceEnabledWithTurnOffSync) {
 // Tests that a Sync error that occurs after the user has loaded the Settings
 // page once will update the full page.
 TEST_F(ManageSyncSettingsMediatorTest, SyncServiceSuccessThenDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(signin::kMobileIdentityConsistency);
-
   FirstSetupSyncOnWithConsentEnabled();
   EXPECT_CALL(*sync_service_mock_, GetDisableReasons())
       .WillOnce(Return(syncer::MockSyncService::DisableReasonSet()))
@@ -320,9 +303,6 @@ TEST_F(ManageSyncSettingsMediatorTest, SyncServiceSuccessThenDisabled) {
 // Tests that Sync errors display a single error message when loaded one after
 // the other.
 TEST_F(ManageSyncSettingsMediatorTest, SyncServiceMultipleErrors) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(signin::kMobileIdentityConsistency);
-
   FirstSetupSyncOnWithConsentEnabled();
   ON_CALL(*sync_setup_service_mock_, GetSyncServiceState())
       .WillByDefault(Return(SyncSetupService::kSyncServiceNeedsPassphrase));
@@ -354,9 +334,6 @@ TEST_F(ManageSyncSettingsMediatorTest, SyncServiceMultipleErrors) {
 // hiding to showing the item.
 TEST_F(ManageSyncSettingsMediatorTest,
        SyncServiceSetupTransitionForTurnOffSync) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(signin::kMobileIdentityConsistency);
-
   // Set Sync disabled expectations.
   FirstSetupSyncOff();
   ON_CALL(*sync_setup_service_mock_, GetSyncServiceState())
@@ -387,9 +364,6 @@ TEST_F(ManageSyncSettingsMediatorTest,
 
 // Tests Signout is shown when first setup is complete and sync engine is off.
 TEST_F(ManageSyncSettingsMediatorTest, SyncEngineOffSignOutVisible) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(signin::kMobileIdentityConsistency);
-
   // Set Sync disabled expectations.
   FirstSetupSyncOnWithConsentDisabled();
   ON_CALL(*sync_setup_service_mock_, GetSyncServiceState())
@@ -408,9 +382,6 @@ TEST_F(ManageSyncSettingsMediatorTest, SyncEngineOffSignOutVisible) {
 // is off.
 TEST_F(ManageSyncSettingsMediatorTest,
        SyncEngineOffSyncEverythingAndDataTypeEditable) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(signin::kMobileIdentityConsistency);
-
   // Set Sync disabled expectations.
   FirstSetupSyncOnWithConsentDisabled();
   ON_CALL(*sync_setup_service_mock_, GetSyncServiceState())

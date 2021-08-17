@@ -8,12 +8,10 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/handoff/pref_names_ios.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/ios/browser/features.h"
-#include "components/signin/public/base/account_consistency_method.h"
 #include "components/strings/grit/components_strings.h"
 #import "components/sync/driver/mock_sync_service.h"
 #include "components/sync_preferences/pref_service_mock_factory.h"
@@ -107,9 +105,6 @@ class PrivacyTableViewControllerTest : public ChromeTableViewControllerTest {
 // Tests PrivacyTableViewController is set up with all appropriate items
 // and sections.
 TEST_F(PrivacyTableViewControllerTest, TestModel) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(signin::kMobileIdentityConsistency);
-
   CreateController();
   CheckController();
   EXPECT_EQ(2, NumberOfSections());
@@ -134,11 +129,9 @@ TEST_F(PrivacyTableViewControllerTest, TestModel) {
       /* section= */ 0);
 }
 
-// Tests PrivacyTableViewController sets the correct privacy footer when the
-// MICE experimental feature is enabled for a non-syncing user.
-TEST_F(PrivacyTableViewControllerTest, TestMICEModelFooterWithSyncDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(signin::kMobileIdentityConsistency);
+// Tests PrivacyTableViewController sets the correct privacy footer for a
+// non-syncing user.
+TEST_F(PrivacyTableViewControllerTest, TestModelFooterWithSyncDisabled) {
   ON_CALL(*mock_sync_service()->GetMockUserSettings(), IsFirstSetupComplete())
       .WillByDefault(Return(false));
 
@@ -151,11 +144,9 @@ TEST_F(PrivacyTableViewControllerTest, TestMICEModelFooterWithSyncDisabled) {
       /* section= */ 0);
 }
 
-// Tests PrivacyTableViewController sets the correct privacy footer when the
-// MICE experimental feature is enabled for a syncing user.
-TEST_F(PrivacyTableViewControllerTest, TestMICEModelFooterWithSyncEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(signin::kMobileIdentityConsistency);
+// Tests PrivacyTableViewController sets the correct privacy footer for a
+// syncing user.
+TEST_F(PrivacyTableViewControllerTest, TestModelFooterWithSyncEnabled) {
   ON_CALL(*mock_sync_service()->GetMockUserSettings(), IsFirstSetupComplete())
       .WillByDefault(Return(true));
   ON_CALL(*mock_sync_service(), IsAuthenticatedAccountPrimary())

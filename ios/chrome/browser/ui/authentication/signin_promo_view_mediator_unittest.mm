@@ -7,7 +7,6 @@
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#import "base/test/scoped_feature_list.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -74,8 +73,6 @@ class SigninPromoViewMediatorTest : public PlatformTest {
         base::BindRepeating(
             &AuthenticationServiceFake::CreateAuthenticationService));
     chrome_browser_state_ = builder.Build();
-
-    feature_list_.InitAndEnableFeature(signin::kMobileIdentityConsistency);
   }
 
   void TearDown() override {
@@ -299,8 +296,6 @@ class SigninPromoViewMediatorTest : public PlatformTest {
   UIImage* image_view_profile_image_;
   // Value set by -[close_button_ setHidden:].
   BOOL close_button_hidden_;
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests signin promo view and its configurator with no accounts on the device.
@@ -481,9 +476,6 @@ TEST_F(SigninPromoViewMediatorTest,
 // Tests that the default identity is the primary account, when the user is
 // signed in.
 TEST_F(SigninPromoViewMediatorTest, SigninPromoWhileSignedIn) {
-  base::test::ScopedFeatureList consistency_feature_list;
-  consistency_feature_list.InitAndEnableFeature(
-      signin::kMobileIdentityConsistency);
   AddDefaultIdentity();
   expected_default_identity_ =
       [FakeChromeIdentity identityWithEmail:@"johndoe2@example.com"

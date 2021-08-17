@@ -458,9 +458,6 @@ TEST_F(AccountConsistencyServiceTest, ChromeManageAccountsDefault) {
 // Tests that the ManageAccountsDelegate is notified when a navigation on Gaia
 // signon realm returns with a X-Auto-Login header.
 TEST_F(AccountConsistencyServiceTest, ChromeShowConsistencyPromo) {
-  base::test::ScopedFeatureList consistency_feature_list;
-  consistency_feature_list.InitAndEnableFeature(
-      signin::kMobileIdentityConsistency);
   base::test::ScopedFeatureList websignin_feature_list;
   websignin_feature_list.InitAndEnableFeature(signin::kMICEWebSignIn);
 
@@ -485,8 +482,6 @@ TEST_F(AccountConsistencyServiceTest, ChromeShowConsistencyPromo) {
 // Tests that the consistency promo is not displayed when a page fails to load.
 TEST_F(AccountConsistencyServiceTest,
        ChromeNotShowConsistencyPromoOnPageLoadFailure) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(signin::kMobileIdentityConsistency);
   id delegate =
       [OCMockObject mockForProtocol:@protocol(ManageAccountsDelegate)];
   [[[delegate reject] ignoringNonObjectArgs] onShowConsistencyPromo:GURL()
@@ -509,9 +504,6 @@ TEST_F(AccountConsistencyServiceTest,
 // and user chooses another action.
 TEST_F(AccountConsistencyServiceTest,
        ChromeNotShowConsistencyPromoOnPageLoadFailureRedirect) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(signin::kMobileIdentityConsistency);
-
   id delegate =
       [OCMockObject mockForProtocol:@protocol(ManageAccountsDelegate)];
   [[delegate expect] onAddAccount];
@@ -726,12 +718,9 @@ TEST_F(AccountConsistencyServiceTest, SetChromeConnectedCookiesAfterDelete) {
 }
 
 // Ensures that CHROME_CONNECTED cookies are not set on google.com when the user
-// is signed out and navigating to google.com for |kMobileIdentityConsistency|
-// experiment.
+// is signed out and navigating to google.com.
 TEST_F(AccountConsistencyServiceTest,
        SetChromeConnectedCookiesSignedOutGoogleVisitor) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(signin::kMobileIdentityConsistency);
   id delegate =
       [OCMockObject mockForProtocol:@protocol(ManageAccountsDelegate)];
 
@@ -756,9 +745,6 @@ TEST_F(AccountConsistencyServiceTest,
 // after the sign-in promo is shown.
 TEST_F(AccountConsistencyServiceTest,
        SetChromeConnectedCookiesSignedOutGaiaVisitor) {
-  base::test::ScopedFeatureList consistency_feature_list;
-  consistency_feature_list.InitAndEnableFeature(
-      signin::kMobileIdentityConsistency);
   base::test::ScopedFeatureList websignin_feature_list;
   websignin_feature_list.InitAndEnableFeature(signin::kMICEWebSignIn);
   id delegate =
