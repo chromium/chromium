@@ -81,13 +81,13 @@ bool GetOpenWithLinksFromDictionaryValue(
   result->reserve(dictionary_value->DictSize());
   for (base::DictionaryValue::Iterator iter(*dictionary_value); !iter.IsAtEnd();
        iter.Advance()) {
-    std::string string_value;
-    if (!iter.value().GetAsString(&string_value))
+    const std::string* string_value = iter.value().GetIfString();
+    if (!string_value)
       return false;
 
     FileResource::OpenWithLink open_with_link;
     open_with_link.app_id = iter.key();
-    open_with_link.open_url = GURL(string_value);
+    open_with_link.open_url = GURL(*string_value);
     result->push_back(open_with_link);
   }
 
