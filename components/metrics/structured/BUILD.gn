@@ -10,25 +10,22 @@ import("//third_party/protobuf/proto_library.gni")
 # events with several attached metrics.
 static_library("structured") {
   sources = [
-    "event_base.cc",
-    "event_base.h",
     "external_metrics.cc",
     "external_metrics.h",
-    "histogram_util.cc",
-    "histogram_util.h",
     "key_data.cc",
     "key_data.h",
     "persistent_proto.cc",
     "persistent_proto.h",
-    "recorder.cc",
-    "recorder.h",
     "structured_metrics_features.cc",
     "structured_metrics_features.h",
     "structured_metrics_provider.cc",
     "structured_metrics_provider.h",
   ]
 
-  public_deps = [ "//third_party/metrics_proto" ]
+  public_deps = [
+    ":common",
+    "//third_party/metrics_proto",
+  ]
 
   deps = [
     ":storage",
@@ -55,6 +52,25 @@ proto_library("storage") {
   import_dirs = [ "//third_party/metrics_proto" ]
   proto_deps = [ "//third_party/metrics_proto" ]
   link_deps = [ "//third_party/metrics_proto" ]
+}
+
+# Sources used by all static libraries in this BUILD file.
+source_set("common") {
+  sources = [
+    "event_base.cc",
+    "event_base.h",
+    "histogram_util.cc",
+    "histogram_util.h",
+    "recorder.cc",
+    "recorder.h",
+  ]
+
+  deps = [
+    ":storage",
+    "//base",
+    "//components/prefs",
+    "//third_party/metrics_proto",
+  ]
 }
 
 action("gen_structured_events") {
@@ -89,6 +105,7 @@ static_library("structured_events") {
   sources = get_target_outputs(":gen_structured_events")
 
   deps = [
+    ":common",
     ":gen_structured_events",
     "//base",
   ]
@@ -131,6 +148,7 @@ static_library("structured_metrics_validator") {
             ]
 
   deps = [
+    ":common",
     ":gen_structured_metrics_validator",
     "//base",
   ]
