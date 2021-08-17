@@ -3452,7 +3452,15 @@
       },
       'mac11.0-blink-rel-dummy': {
         'mixins': [
-            'mac_11_x64',
+          'mac_11_x64',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'chromium_webkit_isolated_scripts',
+        },
+      },
+      'mac11.0.arm64-blink-rel-dummy': {
+        'mixins': [
+          'mac_11_arm64',
         ],
         'test_suites': {
           'isolated_scripts': 'chromium_webkit_isolated_scripts',
