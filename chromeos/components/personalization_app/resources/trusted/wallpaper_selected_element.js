@@ -408,6 +408,9 @@ export class WallpaperSelected extends WithPersonalizationStore {
   }
 
   /**
+   * Determine whether there is an error in showing selected image. An error
+   * happens when there is no previously loaded image and either no new image
+   * is being loaded or there is an error from upstream.
    * @param {?chromeos.personalizationApp.mojom.CurrentWallpaper} image
    * @param {boolean} loading
    * @param {?string} error
