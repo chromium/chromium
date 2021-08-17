@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/scrolling/scrolling_coordinator.h"
+#include "third_party/blink/renderer/platform/heap/thread_state_scopes.h"
 
 namespace blink {
 
@@ -360,22 +361,28 @@ void EventHandlerRegistry::DocumentDetached(Document& document) {
     EventHandlerClass handler_class =
         static_cast<EventHandlerClass>(handler_class_index);
     HeapVector<Member<EventTarget>> targets_to_remove;
-    const EventTargetSet* targets = &targets_[handler_class];
-    for (const auto& event_target : *targets) {
-      if (Node* node = event_target.key->ToNode()) {
-        for (Document* doc = &node->GetDocument(); doc;
-             doc = doc->LocalOwner() ? &doc->LocalOwner()->GetDocument()
-                                     : nullptr) {
-          if (doc == &document) {
-            targets_to_remove.push_back(event_target.key);
-            break;
+    {
+      // TODO(keishi): If a GC happens while iterating a EventTargetSet, the
+      // custom weak processing may remove elements from it. Remove this scope
+      // when we get rid of the custom weak processing. crbug.com/123531
+      ThreadState::GCForbiddenScope gc_forbidden(ThreadState::Current());
+      const EventTargetSet* targets = &targets_[handler_class];
+      for (const auto& event_target : *targets) {
+        if (Node* node = event_target.key->ToNode()) {
+          for (Document* doc = &node->GetDocument(); doc;
+               doc = doc->LocalOwner() ? &doc->LocalOwner()->GetDocument()
+                                       : nullptr) {
+            if (doc == &document) {
+              targets_to_remove.push_back(event_target.key);
+              break;
+            }
           }
+        } else if (event_target.key->ToLocalDOMWindow()) {
+          // DOMWindows may outlive their documents, so we shouldn't remove
+          // their handlers here.
+        } else {
+          NOTREACHED();
         }
-      } else if (event_target.key->ToLocalDOMWindow()) {
-        // DOMWindows may outlive their documents, so we shouldn't remove their
-        // handlers here.
-      } else {
-        NOTREACHED();
       }
     }
     for (wtf_size_t i = 0; i < targets_to_remove.size(); ++i)
@@ -387,6 +394,10 @@ void EventHandlerRegistry::DocumentDetached(Document& document) {
 void EventHandlerRegistry::CheckConsistency(
     EventHandlerClass handler_class) const {
 #if DCHECK_IS_ON()
+  // TODO(keishi): If a GC happens while iterating a EventTargetSet, the
+  // custom weak processing may remove elements from it. Remove this scope
+  // when we get rid of the custom weak processing. crbug.com/123531
+  ThreadState::GCForbiddenScope gc_forbidden(ThreadState::Current());
   const EventTargetSet* targets = &targets_[handler_class];
   for (const auto& event_target : *targets) {
     if (Node* node = event_target.key->ToNode()) {
