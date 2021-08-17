@@ -939,11 +939,6 @@ def ResourceArgsParser():
                          'libraries.')
 
   input_opts.add_argument(
-      '--r-text-in',
-       help='Path to pre-existing R.txt. Its resource IDs override those found '
-            'in the aapt-generated R.txt when generating R.java.')
-
-  input_opts.add_argument(
       '--extra-res-packages',
       help='Additional package names to generate R.java files for.')
 

@@ -770,6 +770,8 @@ def _PackageApk(options, build):
       options.min_sdk_version,
       '--target-sdk-version',
       options.target_sdk_version,
+      '--output-text-symbols',
+      build.r_txt_path,
   ]
 
   for j in options.include_resources:
@@ -785,10 +787,6 @@ def _PackageApk(options, build):
     link_command += ['--proguard-main-dex', build.proguard_main_dex_path]
   if options.emit_ids_out:
     link_command += ['--emit-ids', build.emit_ids_path]
-  if options.r_text_in:
-    shutil.copyfile(options.r_text_in, build.r_txt_path)
-  else:
-    link_command += ['--output-text-symbols', build.r_txt_path]
 
   # Note: only one of --proto-format, --shared-lib or --app-as-shared-lib
   #       can be used with recent versions of aapt2.
