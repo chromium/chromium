@@ -67,6 +67,8 @@ int main(int argc, char** argv) {
       *base::CommandLine::ForCurrentProcess()))
       << "Failed to initialize logging.";
 
+  cr_fuchsia::LogComponentStartWithVersion("web_runner");
+
   cr_fuchsia::RegisterFuchsiaDirScheme();
 
   WebContentRunner::GetContextParamsCallback get_context_params_callback =

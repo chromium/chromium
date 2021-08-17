@@ -6,6 +6,9 @@
 
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/strings/string_piece.h"
+#include "base/strings/stringprintf.h"
+#include "components/version_info/version_info.h"
 
 namespace cr_fuchsia {
 
@@ -40,6 +43,17 @@ bool InitLoggingFromCommandLineDefaultingToStderrForTest(
   }
 
   return InitLoggingFromCommandLine(*command_line);
+}
+
+void LogComponentStartWithVersion(base::StringPiece component_name) {
+  std::string version_string =
+      base::StringPrintf("Starting %s %s", component_name.data(),
+                         version_info::GetVersionNumber().c_str());
+#if !defined(OFFICIAL_BUILD)
+  version_string += " (built at " + version_info::GetLastChange() + ")";
+#endif  // !defined(OFFICIAL_BUILD)
+
+  LOG(INFO) << version_string;
 }
 
 }  // namespace cr_fuchsia

@@ -21,6 +21,7 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/common/content_switches.h"
 #include "fuchsia/base/fuchsia_dir_scheme.h"
+#include "fuchsia/base/init_logging.h"
 #include "fuchsia/engine/browser/frame_impl.h"
 #include "fuchsia/engine/browser/navigation_policy_throttle.h"
 #include "fuchsia/engine/browser/url_request_rewrite_rules_manager.h"
@@ -84,7 +85,10 @@ std::vector<std::string> GetCorsExemptHeaders() {
 WebEngineContentBrowserClient::WebEngineContentBrowserClient()
     : cors_exempt_headers_(GetCorsExemptHeaders()),
       allow_insecure_content_(base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kAllowRunningInsecureContent)) {}
+          switches::kAllowRunningInsecureContent)) {
+  // Logging in this class ensures this is logged once per web_instance.
+  cr_fuchsia::LogComponentStartWithVersion("WebEngine web_instance");
+}
 
 WebEngineContentBrowserClient::~WebEngineContentBrowserClient() = default;
 

@@ -15,7 +15,6 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
-#include "components/version_info/version_info.h"
 #include "fuchsia/base/feedback_registration.h"
 #include "fuchsia/base/init_logging.h"
 #include "fuchsia/base/inspect.h"
@@ -30,14 +29,6 @@ constexpr char kCrashProductName[] = "FuchsiaWebEngine";
 constexpr char kComponentUrl[] =
     "fuchsia-pkg://fuchsia.com/web_engine#meta/context_provider.cmx";
 
-std::string GetVersionString() {
-  std::string version_string = version_info::GetVersionNumber();
-#if !defined(OFFICIAL_BUILD)
-  version_string += " (built at " + version_info::GetLastChange() + ")";
-#endif  // !defined(OFFICIAL_BUILD)
-  return version_string;
-}
-
 }  // namespace
 
 int ContextProviderMain() {
@@ -51,7 +42,7 @@ int ContextProviderMain() {
     return 1;
   }
 
-  LOG(INFO) << "Starting WebEngine " << GetVersionString();
+  cr_fuchsia::LogComponentStartWithVersion("WebEngine context_provider");
 
   ContextProviderImpl context_provider;
 
