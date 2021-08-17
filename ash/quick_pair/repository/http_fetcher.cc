@@ -48,6 +48,13 @@ void HttpFetcher::ExecuteGetRequest(const GURL& url,
 
   auto loader = network::SimpleURLLoader::Create(std::move(resource_request),
                                                  traffic_annotation_);
+
+  // Enable an immediate retry for client-side transient failures:
+  // DNS resolution errors and network configuration changes.
+  // Server HTTP 5xx errors are not retried.
+  int retry_mode = network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE |
+                   network::SimpleURLLoader::RETRY_ON_NAME_NOT_RESOLVED;
+  loader->SetRetryOptions(/*max_retries=*/1, retry_mode);
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
       QuickPairBrowserDelegate::Get()->GetURLLoaderFactory();
   if (!url_loader_factory) {
