@@ -1540,7 +1540,8 @@ Polymer({
     if (this.managedProperties_ &&
         this.managedProperties_.type ===
             chromeos.networkConfig.mojom.NetworkType.kVPN &&
-        this.prefs.vpn_config_allowed && !this.prefs.vpn_config_allowed.value) {
+        this.prefs && this.prefs.vpn_config_allowed &&
+        !this.prefs.vpn_config_allowed.value) {
       fakeAlwaysOnVpnEnforcementPref.enforcement =
           chrome.settingsPrivate.Enforcement.ENFORCED;
       fakeAlwaysOnVpnEnforcementPref.controlledBy =
