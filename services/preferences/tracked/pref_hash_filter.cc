@@ -300,12 +300,12 @@ void PrefHashFilter::FlushToExternalStore(
     if (it.value().GetAsDictionary(&split_values)) {
       for (base::DictionaryValue::Iterator inner_it(*split_values);
            !inner_it.IsAtEnd(); inner_it.Advance()) {
-        std::string mac;
-        bool is_string = inner_it.value().GetAsString(&mac);
+        const std::string* mac = inner_it.value().GetIfString();
+        bool is_string = !!mac;
         DCHECK(is_string);
 
         external_validation_hash_store_contents->SetSplitMac(
-            changed_path, inner_it.key(), mac);
+            changed_path, inner_it.key(), *mac);
       }
     } else {
       DCHECK(it.value().is_string());
