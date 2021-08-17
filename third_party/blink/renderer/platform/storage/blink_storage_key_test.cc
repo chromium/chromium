@@ -132,4 +132,20 @@ TEST(BlinkStorageKey, StorageKeyRoundTripConversion) {
   }
 }
 
+// Test that string -> StorageKey test function performs as expected.
+TEST(BlinkStorageKey, CreateFromStringForTesting) {
+  WTF::String example = "https://example.com/";
+  WTF::String wrong = "I'm not a valid URL.";
+
+  BlinkStorageKey key1 = BlinkStorageKey::CreateFromStringForTesting(example);
+  BlinkStorageKey key2 = BlinkStorageKey::CreateFromStringForTesting(wrong);
+  BlinkStorageKey key3 =
+      BlinkStorageKey::CreateFromStringForTesting(WTF::String());
+
+  EXPECT_FALSE(key1.GetSecurityOrigin()->IsOpaque());
+  EXPECT_EQ(key1, BlinkStorageKey(SecurityOrigin::CreateFromString(example)));
+  EXPECT_TRUE(key2.GetSecurityOrigin()->IsOpaque());
+  EXPECT_TRUE(key3.GetSecurityOrigin()->IsOpaque());
+}
+
 }  // namespace blink

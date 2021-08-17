@@ -49,6 +49,8 @@ class PLATFORM_EXPORT BlinkStorageKey {
       scoped_refptr<const SecurityOrigin> origin,
       const base::UnguessableToken& nonce);
 
+  static BlinkStorageKey CreateFromStringForTesting(const WTF::String& origin);
+
   const scoped_refptr<const SecurityOrigin>& GetSecurityOrigin() const {
     return origin_;
   }

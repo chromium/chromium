@@ -31,6 +31,12 @@ BlinkStorageKey BlinkStorageKey::CreateWithNonce(
   return BlinkStorageKey(std::move(origin), &nonce);
 }
 
+// static
+BlinkStorageKey BlinkStorageKey::CreateFromStringForTesting(
+    const WTF::String& origin) {
+  return BlinkStorageKey(SecurityOrigin::CreateFromString(origin));
+}
+
 BlinkStorageKey::BlinkStorageKey(const StorageKey& storage_key)
     : BlinkStorageKey(
           SecurityOrigin::CreateFromUrlOrigin(storage_key.origin()),
