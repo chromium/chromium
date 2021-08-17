@@ -6229,11 +6229,53 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="DesktopReadingList.MarkAsRead">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    The user marked an item as read from the reading list (Desktop only).
+  </description>
+</action>
+
+<action name="DesktopReadingList.MarkAsUnread">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    The user marked an item as unread from the reading list (Desktop only).
+  </description>
+</action>
+
+<action name="DesktopReadingList.Navigation.FromReadList">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    The user opened an item from the read section of the reading list (Desktop
+    only).
+  </description>
+</action>
+
+<action name="DesktopReadingList.Navigation.FromUnreadList">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    The user opened an item from the unread section of the reading list (Desktop
+    only).
+  </description>
+</action>
+
 <action name="DesktopReadingList.OpenReadingList">
   <owner>corising@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <description>
     The user clicked the Desktop reading list button to open the reading list.
+  </description>
+</action>
+
+<action name="DesktopReadingList.RemoveItem">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    The user removed an item from the reading list (Desktop only)
   </description>
 </action>
 
