@@ -109,9 +109,7 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
                   const cc::PaintFlags&,
                   const FloatRect&,
                   const FloatRect&,
-                  const SkSamplingOptions&,
-                  ImageClampingMode,
-                  RespectImageOrientationEnum,
+                  const ImageDrawOptions&,
                   const PaintImage&);
 
   virtual IntSize SizeInternal() const = 0;

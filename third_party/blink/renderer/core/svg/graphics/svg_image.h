@@ -167,9 +167,7 @@ class CORE_EXPORT SVGImage final : public Image {
             const cc::PaintFlags&,
             const FloatRect& dst_rect,
             const FloatRect& src_rect,
-            const ImageDrawOptions& draw_options,
-            ImageClampingMode,
-            ImageDecodingMode) override;
+            const ImageDrawOptions&) override;
   void DrawForContainer(const DrawInfo&,
                         cc::PaintCanvas*,
                         const cc::PaintFlags&,

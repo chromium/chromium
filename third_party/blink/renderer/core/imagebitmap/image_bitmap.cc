@@ -947,9 +947,7 @@ ScriptPromise ImageBitmap::CreateAsync(ImageElementBase* image,
   SVGImageForContainer::Create(To<SVGImage>(input.get()),
                                FloatSize(input_rect.Size()), 1, NullURL())
       ->Draw(canvas, cc::PaintFlags(), FloatRect(draw_dst_rect),
-             FloatRect(draw_src_rect), ImageDrawOptions(),
-             // The following will all be ignored.
-             Image::kDoNotClampImageToSourceRect, Image::kSyncDecode);
+             FloatRect(draw_src_rect), ImageDrawOptions());
   sk_sp<PaintRecord> paint_record = recorder.finishRecordingAsPicture();
 
   std::unique_ptr<ParsedOptions> passed_parsed_options =

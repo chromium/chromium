@@ -721,11 +721,11 @@ void GraphicsContext::DrawImage(
   }
   ImageDrawOptions draw_options;
   draw_options.sampling_options = ComputeSamplingOptions(image, dest, src);
-  draw_options.respect_image_orientation = should_respect_image_orientation;
+  draw_options.respect_orientation = should_respect_image_orientation;
+  draw_options.decode_mode = decode_mode;
   draw_options.apply_dark_mode =
       !has_disable_dark_mode_style && IsDarkModeEnabled();
-  image->Draw(canvas_, image_flags, dest, src, draw_options,
-              Image::kClampImageToSourceRect, decode_mode);
+  image->Draw(canvas_, image_flags, dest, src, draw_options);
   paint_controller_.SetImagePainted();
 }
 
@@ -785,10 +785,10 @@ void GraphicsContext::DrawImageRRect(
     canvas_->clipRRect(dest, image_flags.isAntiAlias());
     ImageDrawOptions draw_options;
     draw_options.sampling_options = sampling;
-    draw_options.respect_image_orientation = respect_orientation;
+    draw_options.respect_orientation = respect_orientation;
+    draw_options.decode_mode = decode_mode;
     draw_options.apply_dark_mode = IsDarkModeEnabled();
-    image->Draw(canvas_, image_flags, dest.Rect(), src_rect, draw_options,
-                Image::kClampImageToSourceRect, decode_mode);
+    image->Draw(canvas_, image_flags, dest.Rect(), src_rect, draw_options);
   }
 
   paint_controller_.SetImagePainted();
@@ -840,7 +840,7 @@ void GraphicsContext::DrawImageTiled(
 
   ImageDrawOptions draw_options;
   draw_options.sampling_options = ImageSamplingOptions();
-  draw_options.respect_image_orientation = respect_orientation;
+  draw_options.respect_orientation = respect_orientation;
   draw_options.apply_dark_mode =
       !has_disable_dark_mode_style && IsDarkModeEnabled();
   image->DrawPattern(*this, image_flags, dest_rect, tiling_info, draw_options);

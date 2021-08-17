@@ -1770,9 +1770,9 @@ void BaseRenderingContext2D::DrawImageInternal(
     image_flags.setAntiAlias(ShouldDrawImageAntialiased(dst_rect));
     ImageDrawOptions draw_options;
     draw_options.sampling_options = sampling;
-    draw_options.respect_image_orientation = respect_orientation;
-    image->Draw(c, image_flags, dst_rect, corrected_src_rect, draw_options,
-                Image::kDoNotClampImageToSourceRect, Image::kSyncDecode);
+    draw_options.respect_orientation = respect_orientation;
+    draw_options.clamping_mode = Image::kDoNotClampImageToSourceRect;
+    image->Draw(c, image_flags, dst_rect, corrected_src_rect, draw_options);
   } else {
     c->save();
     c->clipRect(dst_rect);

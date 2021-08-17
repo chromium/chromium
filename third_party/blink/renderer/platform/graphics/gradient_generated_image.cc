@@ -35,9 +35,7 @@ void GradientGeneratedImage::Draw(cc::PaintCanvas* canvas,
                                   const PaintFlags& flags,
                                   const FloatRect& dest_rect,
                                   const FloatRect& src_rect,
-                                  const ImageDrawOptions& draw_options,
-                                  ImageClampingMode,
-                                  ImageDecodingMode) {
+                                  const ImageDrawOptions& draw_options) {
   SkRect visible_src_rect = src_rect;
   if (!visible_src_rect.intersect(
           SkRect::MakeWH(size_.Width(), size_.Height())))

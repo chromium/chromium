@@ -86,8 +86,9 @@ struct ImageTilingInfo {
 
 struct ImageDrawOptions {
   SkSamplingOptions sampling_options;
-  RespectImageOrientationEnum respect_image_orientation =
-      kRespectImageOrientation;
+  RespectImageOrientationEnum respect_orientation = kRespectImageOrientation;
+  Image::ImageClampingMode clamping_mode = Image::kClampImageToSourceRect;
+  Image::ImageDecodingMode decode_mode = Image::kSyncDecode;
   bool apply_dark_mode = false;
 };
 

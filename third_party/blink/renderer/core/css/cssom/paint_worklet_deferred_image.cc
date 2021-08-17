@@ -16,14 +16,14 @@ namespace blink {
 
 namespace {
 void DrawInternal(cc::PaintCanvas* canvas,
+                  const PaintFlags& flags,
                   const FloatRect& dest_rect,
                   const FloatRect& src_rect,
-                  const SkSamplingOptions& sampling,
-                  const PaintFlags& flags,
-                  Image::ImageClampingMode clamping_mode,
+                  const ImageDrawOptions& draw_options,
                   const PaintImage& image) {
-  canvas->drawImageRect(image, src_rect, dest_rect, sampling, &flags,
-                        WebCoreClampingModeToSkiaRectConstraint(clamping_mode));
+  canvas->drawImageRect(
+      image, src_rect, dest_rect, draw_options.sampling_options, &flags,
+      WebCoreClampingModeToSkiaRectConstraint(draw_options.clamping_mode));
 }
 }  // namespace
 
@@ -31,19 +31,17 @@ void PaintWorkletDeferredImage::Draw(cc::PaintCanvas* canvas,
                                      const PaintFlags& flags,
                                      const FloatRect& dest_rect,
                                      const FloatRect& src_rect,
-                                     const ImageDrawOptions& draw_options,
-                                     ImageClampingMode clamping_mode,
-                                     ImageDecodingMode) {
-  DrawInternal(canvas, dest_rect, src_rect, draw_options.sampling_options,
-               flags, clamping_mode, image_);
+                                     const ImageDrawOptions& draw_options) {
+  DrawInternal(canvas, flags, dest_rect, src_rect, draw_options, image_);
 }
 
 void PaintWorkletDeferredImage::DrawTile(GraphicsContext& context,
                                          const FloatRect& src_rect,
                                          RespectImageOrientationEnum) {
-  DrawInternal(context.Canvas(), FloatRect(), src_rect,
-               context.ImageSamplingOptions(), context.FillFlags(),
-               kClampImageToSourceRect, image_);
+  ImageDrawOptions draw_options;
+  draw_options.sampling_options = context.ImageSamplingOptions();
+  DrawInternal(context.Canvas(), context.FillFlags(), FloatRect(), src_rect,
+               draw_options, image_);
 }
 
 sk_sp<PaintShader> PaintWorkletDeferredImage::CreateShader(

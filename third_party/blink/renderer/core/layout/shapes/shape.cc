@@ -278,10 +278,10 @@ static bool ExtractImageData(Image* image,
   SkiaPaintCanvas canvas(surface->getCanvas());
   canvas.clear(SK_ColorTRANSPARENT);
   ImageDrawOptions draw_options;
-  draw_options.respect_image_orientation = respect_orientation;
+  draw_options.respect_orientation = respect_orientation;
+  draw_options.clamping_mode = Image::kDoNotClampImageToSourceRect;
   image->Draw(&canvas, flags, FloatRect(image_dest_rect), image_source_rect,
-              draw_options, Image::kDoNotClampImageToSourceRect,
-              Image::kSyncDecode);
+              draw_options);
   return true;
 }
 

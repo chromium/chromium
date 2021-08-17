@@ -54,7 +54,7 @@ void GeneratedImage::DrawPattern(GraphicsContext& dest_context,
 
   sk_sp<PaintShader> tile_shader =
       CreateShader(tile_rect, &pattern_matrix, tiling_info.image_rect,
-                   draw_options.respect_image_orientation);
+                   draw_options.respect_orientation);
 
   PaintFlags fill_flags(base_flags);
   fill_flags.setShader(std::move(tile_shader));

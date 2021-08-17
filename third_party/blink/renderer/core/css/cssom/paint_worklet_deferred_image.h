@@ -33,11 +33,9 @@ class CORE_EXPORT PaintWorkletDeferredImage : public GeneratedImage {
  protected:
   void Draw(cc::PaintCanvas*,
             const cc::PaintFlags&,
-            const FloatRect&,
-            const FloatRect&,
-            const ImageDrawOptions& draw_options,
-            ImageClampingMode,
-            ImageDecodingMode) override;
+            const FloatRect& dest_rect,
+            const FloatRect& src_rect,
+            const ImageDrawOptions&) override;
   void DrawTile(GraphicsContext&,
                 const FloatRect&,
                 RespectImageOrientationEnum) override;

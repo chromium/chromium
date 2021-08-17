@@ -25,9 +25,7 @@ class PLATFORM_EXPORT PaintGeneratedImage : public GeneratedImage {
             const cc::PaintFlags&,
             const FloatRect&,
             const FloatRect&,
-            const ImageDrawOptions& draw_options,
-            ImageClampingMode,
-            ImageDecodingMode) override;
+            const ImageDrawOptions& draw_options) override;
   void DrawTile(GraphicsContext&,
                 const FloatRect&,
                 RespectImageOrientationEnum) final;

@@ -511,9 +511,7 @@ void SVGImage::Draw(cc::PaintCanvas* canvas,
                     const PaintFlags& flags,
                     const FloatRect& dst_rect,
                     const FloatRect& src_rect,
-                    const ImageDrawOptions& draw_options,
-                    ImageClampingMode,
-                    ImageDecodingMode) {
+                    const ImageDrawOptions& draw_options) {
   const DrawInfo draw_info(FloatSize(intrinsic_size_), 1, NullURL(),
                            draw_options.apply_dark_mode);
   DrawInternal(draw_info, canvas, flags, dst_rect, src_rect);

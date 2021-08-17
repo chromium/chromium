@@ -15,9 +15,7 @@ void PaintGeneratedImage::Draw(cc::PaintCanvas* canvas,
                                const PaintFlags& flags,
                                const FloatRect& dest_rect,
                                const FloatRect& src_rect,
-                               const ImageDrawOptions& draw_options,
-                               ImageClampingMode,
-                               ImageDecodingMode) {
+                               const ImageDrawOptions&) {
   PaintCanvasAutoRestore ar(canvas, true);
   canvas->clipRect(dest_rect);
   canvas->concat(SkMatrix::RectToRect(src_rect, dest_rect));

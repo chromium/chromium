@@ -34,9 +34,7 @@ void SVGImageForContainer::Draw(cc::PaintCanvas* canvas,
                                 const cc::PaintFlags& flags,
                                 const FloatRect& dst_rect,
                                 const FloatRect& src_rect,
-                                const ImageDrawOptions& draw_options,
-                                ImageClampingMode,
-                                ImageDecodingMode) {
+                                const ImageDrawOptions& draw_options) {
   const SVGImage::DrawInfo draw_info(container_size_, zoom_, url_,
                                      draw_options.apply_dark_mode);
   image_->DrawForContainer(draw_info, canvas, flags, dst_rect, src_rect);

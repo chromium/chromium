@@ -254,16 +254,15 @@ void BitmapImage::Draw(cc::PaintCanvas* canvas,
                        const PaintFlags& flags,
                        const FloatRect& dst_rect,
                        const FloatRect& src_rect,
-                       const ImageDrawOptions& draw_options,
-                       ImageClampingMode clamp_mode,
-                       ImageDecodingMode decode_mode) {
+                       const ImageDrawOptions& draw_options) {
   TRACE_EVENT0("skia", "BitmapImage::draw");
 
   PaintImage image = PaintImageForCurrentFrame();
   if (!image)
     return;  // It's too early and we don't have an image yet.
 
-  auto paint_image_decoding_mode = ToPaintImageDecodingMode(decode_mode);
+  auto paint_image_decoding_mode =
+      ToPaintImageDecodingMode(draw_options.decode_mode);
   if (image.decoding_mode() != paint_image_decoding_mode) {
     image = PaintImageBuilder::WithCopy(std::move(image))
                 .set_decoding_mode(paint_image_decoding_mode)
@@ -284,7 +283,7 @@ void BitmapImage::Draw(cc::PaintCanvas* canvas,
     return;  // Nothing to draw.
 
   ImageOrientation orientation = ImageOrientationEnum::kDefault;
-  if (draw_options.respect_image_orientation == kRespectImageOrientation)
+  if (draw_options.respect_orientation == kRespectImageOrientation)
     orientation = CurrentFrameOrientation();
 
   PaintCanvasAutoRestore auto_restore(canvas, false);
@@ -311,9 +310,10 @@ void BitmapImage::Draw(cc::PaintCanvas* canvas,
 
   uint32_t stable_id = image.stable_id();
   bool is_lazy_generated = image.IsLazyGenerated();
-  canvas->drawImageRect(std::move(image), adjusted_src_rect, adjusted_dst_rect,
-                        draw_options.sampling_options, &flags,
-                        WebCoreClampingModeToSkiaRectConstraint(clamp_mode));
+  canvas->drawImageRect(
+      std::move(image), adjusted_src_rect, adjusted_dst_rect,
+      draw_options.sampling_options, &flags,
+      WebCoreClampingModeToSkiaRectConstraint(draw_options.clamping_mode));
 
   if (is_lazy_generated) {
     TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),

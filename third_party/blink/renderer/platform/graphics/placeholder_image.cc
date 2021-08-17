@@ -250,8 +250,7 @@ PaintImage PlaceholderImage::PaintImageForCurrentFrame() {
 
   PaintRecorder paint_recorder;
   Draw(paint_recorder.beginRecording(FloatRect(dest_rect)), PaintFlags(),
-       FloatRect(dest_rect), FloatRect(dest_rect), ImageDrawOptions(),
-       kClampImageToSourceRect, kSyncDecode);
+       FloatRect(dest_rect), FloatRect(dest_rect), ImageDrawOptions());
 
   paint_record_for_current_frame_ = paint_recorder.finishRecordingAsPicture();
   paint_record_content_id_ = PaintImage::GetNextContentId();
@@ -274,9 +273,7 @@ void PlaceholderImage::Draw(cc::PaintCanvas* canvas,
                             const PaintFlags& base_flags,
                             const FloatRect& dest_rect,
                             const FloatRect& src_rect,
-                            const ImageDrawOptions& draw_options,
-                            ImageClampingMode image_clamping_mode,
-                            ImageDecodingMode decode_mode) {
+                            const ImageDrawOptions& draw_options) {
   if (!src_rect.Intersects(FloatRect(0.0f, 0.0f,
                                      static_cast<float>(size_.Width()),
                                      static_cast<float>(size_.Height())))) {
@@ -365,7 +362,7 @@ void PlaceholderImage::DrawPattern(GraphicsContext& context,
   // over the whole |dest_rect|. This is done in order to prevent repeated icons
   // from cluttering tiled background images.
   Draw(context.Canvas(), base_flags, dest_rect, tiling_info.image_rect,
-       draw_options, kClampImageToSourceRect, kUnspecifiedDecode);
+       draw_options);
 }
 
 void PlaceholderImage::DestroyDecodedData() {

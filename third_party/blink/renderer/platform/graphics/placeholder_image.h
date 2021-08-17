@@ -44,9 +44,7 @@ class PLATFORM_EXPORT PlaceholderImage final : public Image {
             const cc::PaintFlags&,
             const FloatRect& dest_rect,
             const FloatRect& src_rect,
-            const ImageDrawOptions& draw_options,
-            ImageClampingMode,
-            ImageDecodingMode) override;
+            const ImageDrawOptions&) override;
 
   void DestroyDecodedData() override;
 

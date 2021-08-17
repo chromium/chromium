@@ -296,9 +296,7 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
                     const cc::PaintFlags&,
                     const FloatRect& dst_rect,
                     const FloatRect& src_rect,
-                    const ImageDrawOptions& draw_options,
-                    ImageClampingMode,
-                    ImageDecodingMode) = 0;
+                    const ImageDrawOptions& draw_options) = 0;
 
   // Apply this Image as a shader to the passed PaintFlags. This is currently
   // only used by GraphicsContext::DrawImageRRect() and to match the semantics
