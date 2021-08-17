@@ -11,10 +11,16 @@
 #include "components/image_fetcher/core/request_metadata.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/data_decoder/public/cpp/decode_image.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_operations.h"
 
 namespace {
 
 constexpr char kImageFetcherUmaClientName[] = "FastPair";
+
+// Needs to stay in sync with |kLargeImageMaxHeight| declared in
+// ui/message_center/views/notification_view_md.cc.
+const int kMaxNotificationHeight = 218;
 
 // TODO(crbug.com/1226117) Update policy from Nearby to Fast Pair.
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
@@ -44,6 +50,10 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
           }
         })");
 
+int CalculateScaledWidth(int width, int height) {
+  return (kMaxNotificationHeight * width) / height;
+}
+
 void ToImage(DecodeImageCallback on_image_decoded_callback,
              const SkBitmap& bitmap) {
   if (bitmap.empty()) {
@@ -51,8 +61,16 @@ void ToImage(DecodeImageCallback on_image_decoded_callback,
     std::move(on_image_decoded_callback).Run(gfx::Image());
     return;
   }
-  gfx::Image image = gfx::Image::CreateFrom1xBitmap(bitmap);
-  std::move(on_image_decoded_callback).Run(image);
+  gfx::ImageSkia image = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
+
+  if (image.height() > kMaxNotificationHeight) {
+    image = gfx::ImageSkiaOperations::CreateResizedImage(
+        image, skia::ImageOperations::RESIZE_BEST,
+        gfx::Size(CalculateScaledWidth(image.width(), image.height()),
+                  kMaxNotificationHeight));
+  }
+
+  std::move(on_image_decoded_callback).Run(gfx::Image(image));
 }
 
 }  // namespace
