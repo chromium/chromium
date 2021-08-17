@@ -32,7 +32,7 @@
     TestRunner.addResult(
         '    Sidebar size = ' + sidebarSize + ', showMode = ' + splitWidget.showMode() + ', ' + orientation);
     TestRunner.addResult(
-        '    Setting value: ' + JSON.stringify(Common.settings.settingForTest(splitWidget._setting.name).get()));
+        '    Setting value: ' + JSON.stringify(Common.settings.settingForTest(splitWidget.setting.name).get()));
   }
 
   function testSplitWidgetSizes(useFraction, shouldSaveShowMode) {

@@ -32,7 +32,7 @@
   TestRunner.completeTest();
 
   function dumpIconResult() {
-    var hasIcon = !!UI.inspectorView._tabbedPane._tabsElement.getElementsByClassName('smallicon-warning').length;
+    var hasIcon = !!UI.inspectorView.tabbedPane.tabsElement.getElementsByClassName('smallicon-warning').length;
     TestRunner.addResult('Is blocking: ' + SDK.multitargetNetworkManager.isBlocking());
     TestRunner.addResult(hasIcon ? 'Has Icon' : 'Does Not Have Icon');
     TestRunner.addResult('');

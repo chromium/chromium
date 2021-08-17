@@ -46,7 +46,7 @@
       var visible = (offsetBottom <= 0 || offsetTop >= height) ? ' ' :
           (offsetTop >= 0 && offsetBottom <= height ? '*' : '+');
       var selected = child.classList.contains('selected') ? ' (selected)' : '';
-      var text = child === list._topElement ? 'top' : (child === list._bottomElement ? 'bottom' : child.textContent);
+      var text = child === list.topElement ? 'top' : (child === list.bottomElement ? 'bottom' : child.textContent);
       TestRunner.addResult(`${visible}[${offsetTop}] ${text}${selected}`);
     }
     TestRunner.addResult('');

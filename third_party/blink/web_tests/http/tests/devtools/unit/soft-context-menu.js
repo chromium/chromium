@@ -76,17 +76,17 @@
     do {
       if (selection)
         selection += ' -> ';
-      const focused = (subMenu._highlightedMenuItemElement || subMenu._contextMenuElement) === activeElement;
+      const focused = (subMenu.highlightedMenuItemElement || subMenu.contextMenuElement) === activeElement;
       if (focused)
         selection += '[';
-      if (subMenu._highlightedMenuItemElement)
-        selection += subMenu._highlightedMenuItemElement.textContent.replace(/[^A-z0-9 ]/g, '');
+      if (subMenu.highlightedMenuItemElement)
+        selection += subMenu.highlightedMenuItemElement.textContent.replace(/[^A-z0-9 ]/g, '');
       else
         selection += 'null'
       if (focused)
         selection += ']';
     }
-    while (subMenu = subMenu._subMenu)
+    while (subMenu = subMenu.subMenu)
     TestRunner.addResult(selection);
   }
 })();

@@ -12,12 +12,12 @@
 
   var tabbedPane = new UI.TabbedPane();
   tabbedPane.show(UI.inspectorView.element);
-  TestRunner.addSnifferPromise(tabbedPane, '_innerUpdateTabElements').then(tabsAdded);
+  TestRunner.addSnifferPromise(tabbedPane, 'innerUpdateTabElements').then(tabsAdded);
   for (var i = 0; i < 10; i++)
     tabbedPane.appendTab(i.toString(), 'Tab ' + i, new FocusableWidget('Widget ' + i));
 
   function tabsAdded() {
-    tabbedPane._currentTab.tabElement.focus();
+    tabbedPane.currentTab.tabElement.focus();
     dumpFocus();
     TestRunner.addResult('Moving right and wrapping around');
     for (var i = 0; i < 20; i++)
@@ -26,7 +26,7 @@
     for (var i = 0; i < 10; i++) {
       left();
       enter();
-      tabbedPane._currentTab.tabElement.focus();
+      tabbedPane.currentTab.tabElement.focus();
     }
     TestRunner.completeTest();
   }
