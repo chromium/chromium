@@ -42,20 +42,22 @@ promise_test(async t => {
     openee.document.close();
   `);
 
-  // Check the openee is loaded and has access to its opener.
+  // Check the openee is loaded without access to the opener.
   send(openee_token, `
-    send("${this_window_token}", opener != null)
-    send("${this_window_token}", opener.closed);
+    send("${this_window_token}", opener == null)
   `);
-  assert_equals(await receive(this_window_token), "true", "opener exists");
-  assert_equals(await receive(this_window_token), "false", "opener not closed");
+  assert_equals(await receive(this_window_token), "true", "opener == null");
 
-  // Check the opener has still access to its openee.
+  // To get the state of the openee reflected into the opener's process, waiting
+  // for the openee' document to load and the various fetch() with the
+  // dispatcher should be largely enough. However these aren't causal guarantee.
+  // So wait a bit to be sure:
+  await new Promise(r => test.step_timeout(r, 1000));
+
+  // Check the opener see the openee as 'closed' after the navigation.
   send(opener_token, `
-    send("${this_window_token}", openee != null)
-    send("${this_window_token}", openee.closed);
+    send("${this_window_token}", openee.closed)
   `);
-  assert_equals(await receive(this_window_token), "true", "openee exists");
-  assert_equals(await receive(this_window_token), "false", "openee not closed");
+  assert_equals(await receive(this_window_token), "true", "openee.closed");
 });
 </script>
