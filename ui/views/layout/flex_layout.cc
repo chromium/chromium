@@ -784,14 +784,7 @@ void FlexLayout::UpdateLayoutFromChildren(
   const Span cross_span(0, data.total_size.cross());
   for (size_t i = 0; i < data.num_children(); ++i) {
     FlexChildData& flex_child = data.child_data[i];
-
-    // Start with a size appropriate for the child view. For child views which
-    // can become larger than the preferred size, start with the preferred size
-    // and let the alignment operation (specifically, if the alignment is set to
-    // kStretch) grow the child view.
-    const int starting_cross_size = std::min(flex_child.current_size.cross(),
-                                             flex_child.preferred_size.cross());
-    flex_child.actual_bounds.set_size_cross(starting_cross_size);
+    flex_child.actual_bounds.set_size_cross(flex_child.current_size.cross());
     const LayoutAlignment cross_align =
         GetViewProperty(data.layout.child_layouts[i].child_view,
                         layout_defaults_, kCrossAxisAlignmentKey);
@@ -914,10 +907,8 @@ void FlexLayout::AllocateFlexShortageAtOrder(
     // remaining for it.
     const NormalizedSizeBounds available(
         new_main, GetCrossAxis(orientation(), child_layout.available_size));
-    const NormalizedSize new_size = Normalize(
-        orientation(),
-        flex_child.flex.rule().Run(child_layout.child_view,
-                                   Denormalize(orientation(), available)));
+    const NormalizedSize new_size = GetCurrentSizeForRule(
+        flex_child.flex.rule(), child_layout.child_view, available);
 
     if (new_size.main() < new_main) {
       // Views that cap out below the allotted space can get their size set
@@ -1037,10 +1028,8 @@ void FlexLayout::AllocateFlexExcessAtOrder(
 
     const NormalizedSizeBounds available(
         new_main, GetCrossAxis(orientation(), child_layout.available_size));
-    const NormalizedSize new_size = Normalize(
-        orientation(),
-        flex_child.flex.rule().Run(child_layout.child_view,
-                                   Denormalize(orientation(), available)));
+    const NormalizedSize new_size = GetCurrentSizeForRule(
+        flex_child.flex.rule(), child_layout.child_view, available);
 
     // In cases where a view does not take up its entire available size, we
     // need to set aside the space it does want and bail out (if there are other
@@ -1135,10 +1124,8 @@ void FlexLayout::AllocateZeroWeightFlex(
     const SizeBound available_main =
         child_spacing.GetMaxSize(child_index, old_size, remaining);
     const NormalizedSizeBounds available(available_main, available_cross);
-    NormalizedSize new_size = Normalize(
-        orientation(),
-        flex_child.flex.rule().Run(child_layout.child_view,
-                                   Denormalize(orientation(), available)));
+    NormalizedSize new_size = GetCurrentSizeForRule(
+        flex_child.flex.rule(), child_layout.child_view, available);
 
     if (is_first_pass && new_size.main() > flex_child.preferred_size.main()) {
       new_size.set_main(flex_child.preferred_size.main());
@@ -1192,7 +1179,17 @@ SizeBound FlexLayout::TryAllocateAll(
     for (size_t child_index : child_list) {
       FlexChildData& flex_child = data.child_data[child_index];
       if (flex_child.current_size.main() != flex_child.preferred_size.main()) {
-        flex_child.current_size = flex_child.preferred_size;
+        // Need to recalculate the ideal size in the given bounds, which might
+        // not always be the preferred size.
+        const ChildLayout& child_layout =
+            data.layout.child_layouts[child_index];
+        const NormalizedSize new_size = GetCurrentSizeForRule(
+            flex_child.flex.rule(), child_layout.child_view,
+            NormalizedSizeBounds(
+                flex_child.preferred_size.main(),
+                GetCrossAxis(orientation(), child_layout.available_size)));
+        flex_child.current_size =
+            NormalizedSize(flex_child.preferred_size.main(), new_size.cross());
         data.layout.child_layouts[child_index].visible = true;
       }
     }
