@@ -583,8 +583,10 @@ void WallpaperControllerClientImpl::OpenWallpaperPicker() {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   DCHECK(profile);
   if (ash::features::IsWallpaperWebUIEnabled()) {
-    web_app::LaunchSystemWebAppAsync(profile,
-                                     web_app::SystemAppType::PERSONALIZATION);
+    web_app::SystemAppLaunchParams params;
+    params.launch_source = apps::mojom::LaunchSource::kFromShelf;
+    web_app::LaunchSystemWebAppAsync(
+        profile, web_app::SystemAppType::PERSONALIZATION, params);
     return;
   }
 
@@ -594,12 +596,13 @@ void WallpaperControllerClientImpl::OpenWallpaperPicker() {
       apps::mojom::AppType::kUnknown) {
     return;
   }
+
   proxy->Launch(
       kWallpaperManagerId,
       apps::GetEventFlags(apps::mojom::LaunchContainer::kLaunchContainerWindow,
                           WindowOpenDisposition::NEW_WINDOW,
                           false /* preferred_containner */),
-      apps::mojom::LaunchSource::kFromChromeInternal);
+      apps::mojom::LaunchSource::kFromShelf);
 }
 
 void WallpaperControllerClientImpl::MaybeClosePreviewWallpaper() {
