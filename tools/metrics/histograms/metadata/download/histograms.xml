@@ -531,6 +531,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Download.Mobile.DangerousDownloadInfobarEvent"
+    enum="DangerousDownloadInfobarEvent" expires_after="2022-03-31">
+  <owner>qinmin@chromium.org</owner>
+  <owner>dtrainor@chromium.org</owner>
+  <summary>
+    Records user interactions with the dangerous download infobar on Android.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Download.NetworkConnectionType.Complete"
     enum="NetworkConnectionType" expires_after="2022-04-30">
 <!-- Name completed by histogram_suffixes name="DownloadSource" -->
