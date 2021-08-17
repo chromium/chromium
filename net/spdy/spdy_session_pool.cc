@@ -558,47 +558,18 @@ void SpdySessionPool::RemoveRequestForSpdySession(SpdySessionRequest* request) {
   RemoveRequestInternal(iter, iter->second.request_set.find(request));
 }
 
+// TODO(crbug.com/1239513): Consider removing this method.
 void SpdySessionPool::DumpMemoryStats(
     base::trace_event::ProcessMemoryDump* pmd,
     const std::string& parent_dump_absolute_name) const {
   if (sessions_.empty())
     return;
-  size_t total_size = 0;
-  size_t buffer_size = 0;
-  size_t cert_count = 0;
-  size_t cert_size = 0;
-  size_t num_active_sessions = 0;
-  for (auto* session : sessions_) {
-    StreamSocket::SocketMemoryStats stats;
-    bool is_session_active = false;
-    total_size += session->DumpMemoryStats(&stats, &is_session_active);
-    buffer_size += stats.buffer_size;
-    cert_count += stats.cert_count;
-    cert_size += stats.cert_size;
-    if (is_session_active)
-      num_active_sessions++;
-  }
   base::trace_event::MemoryAllocatorDump* dump =
       pmd->CreateAllocatorDump(base::StringPrintf(
           "%s/spdy_session_pool", parent_dump_absolute_name.c_str()));
-  dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
-                  base::trace_event::MemoryAllocatorDump::kUnitsBytes,
-                  total_size);
   dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameObjectCount,
                   base::trace_event::MemoryAllocatorDump::kUnitsObjects,
                   sessions_.size());
-  dump->AddScalar("active_session_count",
-                  base::trace_event::MemoryAllocatorDump::kUnitsObjects,
-                  num_active_sessions);
-  dump->AddScalar("buffer_size",
-                  base::trace_event::MemoryAllocatorDump::kUnitsBytes,
-                  buffer_size);
-  dump->AddScalar("cert_count",
-                  base::trace_event::MemoryAllocatorDump::kUnitsObjects,
-                  cert_count);
-  dump->AddScalar("cert_size",
-                  base::trace_event::MemoryAllocatorDump::kUnitsBytes,
-                  cert_size);
 }
 
 SpdySessionPool::RequestInfoForKey::RequestInfoForKey() = default;

@@ -144,11 +144,6 @@ class NET_EXPORT ClientSocketHandle {
   bool GetLoadTimingInfo(bool is_reused,
                          LoadTimingInfo* load_timing_info) const;
 
-  // Dumps memory allocation stats into |stats|. |stats| can be assumed as being
-  // default initialized upon entry. Implementation overrides fields in
-  // |stats|.
-  void DumpMemoryStats(StreamSocket::SocketMemoryStats* stats) const;
-
   // Used by ClientSocketPool to initialize the ClientSocketHandle.
   //
   // SetSocket() may also be used if this handle is used as simply for

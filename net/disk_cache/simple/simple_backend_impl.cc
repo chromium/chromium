@@ -31,8 +31,6 @@
 #include "base/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
-#include "base/trace_event/memory_usage_estimator.h"
-#include "base/trace_event/process_memory_dump.h"
 #include "build/build_config.h"
 #include "net/base/net_errors.h"
 #include "net/base/prioritized_task_runner.h"
@@ -637,13 +635,6 @@ void SimpleBackendImpl::GetStats(base::StringPairs* stats) {
 
 void SimpleBackendImpl::OnExternalCacheHit(const std::string& key) {
   index_->UseIfExists(simple_util::GetEntryHashKey(key));
-}
-
-// TODO(crbug.com/1239513): Remove this method.
-size_t SimpleBackendImpl::DumpMemoryStats(
-    base::trace_event::ProcessMemoryDump* pmd,
-    const std::string& parent_absolute_name) const {
-  return 0;
 }
 
 uint8_t SimpleBackendImpl::GetEntryInMemoryData(const std::string& key) {

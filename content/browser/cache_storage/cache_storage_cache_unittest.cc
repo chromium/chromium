@@ -163,13 +163,6 @@ class DelayableBackend : public disk_cache::Backend {
     return backend_->OnExternalCacheHit(key);
   }
 
-  size_t DumpMemoryStats(
-      base::trace_event::ProcessMemoryDump* pmd,
-      const std::string& parent_absolute_name) const override {
-    NOTREACHED();
-    return 0u;
-  }
-
   int64_t MaxFileSize() const override { return backend_->MaxFileSize(); }
 
   // Call to continue a delayed call to OpenEntry.
@@ -342,12 +335,6 @@ class FailableBackend : public disk_cache::Backend {
   }
   void OnExternalCacheHit(const std::string& key) override {
     return backend_->OnExternalCacheHit(key);
-  }
-  size_t DumpMemoryStats(
-      base::trace_event::ProcessMemoryDump* pmd,
-      const std::string& parent_absolute_name) const override {
-    NOTREACHED();
-    return 0u;
   }
   int64_t MaxFileSize() const override { return backend_->MaxFileSize(); }
 

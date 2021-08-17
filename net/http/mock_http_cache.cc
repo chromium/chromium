@@ -636,12 +636,6 @@ void MockDiskCache::OnExternalCacheHit(const std::string& key) {
   external_cache_hits_.push_back(key);
 }
 
-size_t MockDiskCache::DumpMemoryStats(
-    base::trace_event::ProcessMemoryDump* pmd,
-    const std::string& parent_absolute_name) const {
-  return 0u;
-}
-
 uint8_t MockDiskCache::GetEntryInMemoryData(const std::string& key) {
   if (!support_in_memory_entry_data_)
     return 0;

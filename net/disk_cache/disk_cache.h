@@ -27,10 +27,6 @@
 namespace base {
 class FilePath;
 
-namespace trace_event {
-class ProcessMemoryDump;
-}
-
 namespace android {
 class ApplicationStatusListener;
 }  // namespace android
@@ -266,11 +262,6 @@ class NET_EXPORT Backend {
   // Called whenever an external cache in the system reuses the resource
   // referred to by |key|.
   virtual void OnExternalCacheHit(const std::string& key) = 0;
-
-  // Returns the estimate of dynamically allocated memory in bytes.
-  virtual size_t DumpMemoryStats(
-      base::trace_event::ProcessMemoryDump* pmd,
-      const std::string& parent_absolute_name) const = 0;
 
   // Backends can optionally permit one to store, probabilistically, up to a
   // byte associated with a key of an existing entry in memory.

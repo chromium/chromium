@@ -817,20 +817,6 @@ TEST_F(DiskCacheBackendTest, CreateBackend_MissingFile) {
   DisableIntegrityCheck();
 }
 
-TEST_F(DiskCacheBackendTest, BlockFileCacheMemoryDump) {
-  // TODO(jkarlin): If the blockfile cache gets memory dump support, update
-  // this test.
-  BackendBasics();
-  base::trace_event::MemoryDumpArgs args = {
-      base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND};
-  base::trace_event::ProcessMemoryDump pmd(args);
-  base::trace_event::MemoryAllocatorDump* parent =
-      pmd.CreateAllocatorDump("net/url_request_context/main/0x123/http_cache");
-
-  ASSERT_EQ(0u, cache_->DumpMemoryStats(&pmd, parent->absolute_name()));
-  EXPECT_EQ(1u, pmd.allocator_dumps().size());
-}
-
 TEST_F(DiskCacheBackendTest, MemoryListensToMemoryPressure) {
   const int kLimit = 16 * 1024;
   const int kEntrySize = 256;

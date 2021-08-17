@@ -15,8 +15,6 @@
 #include "base/task/post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/clock.h"
-#include "base/trace_event/memory_usage_estimator.h"
-#include "base/trace_event/process_memory_dump.h"
 #include "net/base/net_errors.h"
 #include "net/disk_cache/cache_util.h"
 #include "net/disk_cache/memory/mem_entry_impl.h"
@@ -322,13 +320,6 @@ void MemBackendImpl::OnExternalCacheHit(const std::string& key) {
   auto it = entries_.find(key);
   if (it != entries_.end())
     it->second->UpdateStateOnUse(MemEntryImpl::ENTRY_WAS_NOT_MODIFIED);
-}
-
-// TODO(crbug.com/1239513): Remove this method.
-size_t MemBackendImpl::DumpMemoryStats(
-    base::trace_event::ProcessMemoryDump* pmd,
-    const std::string& parent_absolute_name) const {
-  return 0;
 }
 
 void MemBackendImpl::EvictIfNeeded() {
