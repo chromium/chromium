@@ -8,6 +8,7 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.TraceEvent;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -96,6 +97,7 @@ public class SearchResultExtractorProducer extends SearchResultProducer {
         mState = State.READY;
         if (oldState == State.CANCELLED) return;
 
+        TraceEvent.begin("SearchResultExtractorProducer#onResultsAvailable");
         int groupOffset = 0;
         int urlCount = 0;
         List<PageGroup> groups = new ArrayList<PageGroup>();
@@ -123,6 +125,7 @@ public class SearchResultExtractorProducer extends SearchResultProducer {
 
         if (urlCount < mMinimumUrlCount) {
             mListener.onError(SearchResultExtractorClientStatus.NOT_ENOUGH_RESULTS);
+            TraceEvent.end("SearchResultExtractorProducer#onResultsAvailable");
             return;
         }
 
@@ -134,6 +137,7 @@ public class SearchResultExtractorProducer extends SearchResultProducer {
         ContinuousNavigationMetadata metadata =
                 new ContinuousNavigationMetadata(url, query, provider, groups);
         mListener.onResult(metadata);
+        TraceEvent.end("SearchResultExtractorProducer#onResultsAvailable");
     }
 
     @Override
@@ -157,9 +161,11 @@ public class SearchResultExtractorProducer extends SearchResultProducer {
             return;
         }
 
+        TraceEvent.begin("SearchResultExtractorProducer#fetchResults");
         mState = State.CAPTURING;
         SearchResultExtractorProducerJni.get().fetchResults(
                 mNativeSearchResultExtractorProducer, mTab.getWebContents(), query);
+        TraceEvent.end("SearchResultExtractorProducer#fetchResults");
     }
 
     @Override

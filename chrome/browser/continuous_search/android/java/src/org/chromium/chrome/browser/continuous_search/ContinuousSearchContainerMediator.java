@@ -9,6 +9,7 @@ import android.view.View;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.continuous_search.ContinuousSearchContainerCoordinator.HeightObserver;
@@ -105,12 +106,14 @@ class ContinuousSearchContainerMediator implements BrowserControlsStateProvider.
      * is controlled by cc and displays the container.
      */
     void show(Runnable onFinishedShow) {
+        TraceEvent.begin("ContinuousSearchContainerMediator#show");
         mOnFinishedHide = null;
         mOnFinishedShow = onFinishedShow;
         mWantVisible = true;
 
         if (mIsVisible) {
             runOnFinishedShow();
+            TraceEvent.end("ContinuousSearchContainerMediator#show");
             return;
         }
 
@@ -121,6 +124,7 @@ class ContinuousSearchContainerMediator implements BrowserControlsStateProvider.
         } else {
             updateVisibility(true, true);
         }
+        TraceEvent.end("ContinuousSearchContainerMediator#show");
     }
 
     /**
@@ -128,16 +132,19 @@ class ContinuousSearchContainerMediator implements BrowserControlsStateProvider.
      * is controlled by cc and hides the container.
      */
     void hide(Runnable onFinishedHide) {
+        TraceEvent.begin("ContinuousSearchContainerMediator#hide");
         mOnFinishedHide = onFinishedHide;
         mOnFinishedShow = null;
         mWantVisible = false;
 
         if (!mInitialized || !mIsVisible) {
             runOnFinishedHide();
+            TraceEvent.end("ContinuousSearchContainerMediator#hide");
             return;
         }
 
         updateVisibility(false, true);
+        TraceEvent.end("ContinuousSearchContainerMediator#hide");
     }
 
     void setJavaHeight(int javaHeight) {
@@ -148,6 +155,7 @@ class ContinuousSearchContainerMediator implements BrowserControlsStateProvider.
     }
 
     private void updateVisibility(boolean isVisible, boolean forceNoAnimation) {
+        TraceEvent.begin("ContinuousSearchContainerMediator#updateVisibility");
         mIsVisible = isVisible;
         mListenForContentOffset = true;
         if (isVisible) {
@@ -158,6 +166,7 @@ class ContinuousSearchContainerMediator implements BrowserControlsStateProvider.
             observer.onHeightChange(isVisible ? mJavaLayoutHeight : 0,
                     !forceNoAnimation && mLayoutStateProvider.isLayoutVisible(LayoutType.BROWSING));
         }
+        TraceEvent.end("ContinuousSearchContainerMediator#updateVisibility");
     }
 
     void addHeightObserver(HeightObserver observer) {
@@ -192,6 +201,7 @@ class ContinuousSearchContainerMediator implements BrowserControlsStateProvider.
 
     private void updateState() {
         if (!mListenForContentOffset) return;
+        TraceEvent.begin("ContinuousSearchContainerMediator#updateState");
 
         final int topControlsHeight = mBrowserControlsStateProvider.getTopControlsHeight();
         final int topControlsMinHeight = mBrowserControlsStateProvider.getTopControlsMinHeight();
@@ -237,6 +247,7 @@ class ContinuousSearchContainerMediator implements BrowserControlsStateProvider.
             runOnFinishedHide();
             mListenForContentOffset = false;
         }
+        TraceEvent.end("ContinuousSearchContainerMediator#updateState");
     }
 
     /**

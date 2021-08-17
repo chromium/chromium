@@ -13,6 +13,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
+import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
@@ -102,11 +103,13 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
     }
 
     private void dismissOnUserRequest() {
+        TraceEvent.begin("ContinuousSearchListMediator#dismissOnUserRequest");
         // To avoid showing for duration of the current SRP session don't delete the data, instead
         // hide the UI permamently. Data will be deleted as soon as the SRP session is over.
         mDismissed = true;
         ContinuousSearchConfiguration.recordDismissed();
         setVisibility(false, null);
+        TraceEvent.end("ContinuousSearchListMediator#dismissOnUserRequest");
     }
 
     private void reset() {
@@ -130,6 +133,7 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
      */
     @Override
     public void onResult(Tab tab) {
+        TraceEvent.begin("ContinuousSearchListMediator#onResult");
         if (mCurrentUserData != null) {
             mCurrentUserData.removeObserver(this);
             mCurrentUserData = null;
@@ -142,13 +146,17 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
         setVisibility(false, null);
         reset();
         mCurrentTab = tab;
-        if (mCurrentTab == null) return;
+        if (mCurrentTab == null) {
+            TraceEvent.end("ContinuousSearchListMediator#onResult");
+            return;
+        }
 
         if (mScrollObserver != null) {
             mBrowserControlsStateProvider.addObserver(mScrollObserver);
         }
         mCurrentUserData = ContinuousNavigationUserDataImpl.getOrCreateForTab(mCurrentTab);
         mCurrentUserData.addObserver(this);
+        TraceEvent.end("ContinuousSearchListMediator#onResult");
     }
 
     @Override
@@ -158,6 +166,7 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
 
     @Override
     public void onUpdate(ContinuousNavigationMetadata metadata) {
+        TraceEvent.begin("ContinuousSearchListMediator#onUpdate");
         reset();
 
         ContinuousNavigationMetadata.Provider provider = metadata.getProvider();
@@ -183,10 +192,12 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
                         generateListItem(result.getTitle(), result.getUrl(), resultCount++)));
             }
         }
+        TraceEvent.end("ContinuousSearchListMediator#onUpdate");
     }
 
     @Override
     public void onUrlChanged(GURL currentUrl, boolean onSrp) {
+        TraceEvent.begin("ContinuousSearchListMediator#onUrlChanged");
         mOnSrp = onSrp;
         if (mOnSrp) mSrpVisits++;
 
@@ -222,6 +233,7 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
                             finalSelectedItemPosition);
         }
         setVisibility(shouldBeVisible, onFinishShowRunnable);
+        TraceEvent.end("ContinuousSearchListMediator#onUrlChanged");
     }
 
     private @TriggerMode int getTriggerMode() {
@@ -290,6 +302,7 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
     }
 
     private void handleItemClick(@Nullable GURL url, int resultPosition, boolean isProviderLabel) {
+        TraceEvent.begin("ContinuousSearchListMediator#handleItemClick");
         // When the provider label is clicked, we should go back to the page where CSN started on.
         if (isProviderLabel) {
             if (mStartNavigationIndex >= 0 && mCurrentTab != null
@@ -313,12 +326,15 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
                             + SearchUrlHelper.getHistogramSuffixForPageCategory(mPageCategory),
                     resultPosition);
         }
+        TraceEvent.end("ContinuousSearchListMediator#handleItemClick");
     }
 
     private void setVisibility(boolean visibility, Runnable onFinished) {
+        TraceEvent.begin("ContinuousSearchListMediator#setVisibility");
         mVisible = visibility;
         if (mVisible) mUiShown = true;
         mSetLayoutVisibility.onResult(new VisibilitySettings(mVisible, onFinished));
+        TraceEvent.end("ContinuousSearchListMediator#setVisibility");
     }
 
     void onScrolled() {

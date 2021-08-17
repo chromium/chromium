@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.continuous_search;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -41,6 +42,7 @@ public class ContinuousSearchTabObserver extends EmptyTabObserver implements Sea
                 ContinuousNavigationUserDataImpl.getOrCreateForTab(tab);
         if (!continuousNavigationUserData.isValid()) return;
 
+        TraceEvent.begin("ContinuousSearchTabObserver#onDidFinishNavigation");
         GURL originalUrl = null;
         if (tab.getWebContents() != null) {
             originalUrl = SearchUrlHelper.getOriginalUrlFromWebContents(tab.getWebContents());
@@ -50,6 +52,7 @@ public class ContinuousSearchTabObserver extends EmptyTabObserver implements Sea
         GURL currentUrl = currentUrl(originalUrl, navigation.getUrl());
 
         continuousNavigationUserData.updateCurrentUrl(currentUrl);
+        TraceEvent.end("ContinuousSearchTabObserver#onDidFinishNavigation");
     }
 
     @Override
@@ -104,11 +107,13 @@ public class ContinuousSearchTabObserver extends EmptyTabObserver implements Sea
 
         if (mProducer == null) return;
 
+        TraceEvent.begin("ContinuousSearchTabObserver#onResult");
         reportStatus(mProducer.getSuccessStatus(), mProducer.getClass());
         mProducer = null;
 
         ContinuousNavigationUserDataImpl.getOrCreateForTab(mTab).updateData(
                 metadata, mTab.getUrl());
+        TraceEvent.end("ContinuousSearchTabObserver#onResult");
     }
 
     @Override

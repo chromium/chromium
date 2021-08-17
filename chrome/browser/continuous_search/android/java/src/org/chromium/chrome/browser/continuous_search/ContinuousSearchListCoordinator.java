@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 import androidx.recyclerview.widget.RecyclerView.State;
 
 import org.chromium.base.Callback;
+import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.continuous_search.ContinuousSearchContainerCoordinator.VisibilitySettings;
@@ -114,6 +115,8 @@ public class ContinuousSearchListCoordinator {
             @Override
             public void smoothScrollToPosition(
                     RecyclerView recyclerView, State state, int position) {
+                TraceEvent.startAsync("ContinuousSearchListCoordinator#smoothScrollToPosition",
+                        userInputScrollListener.hashCode());
                 LinearSmoothScroller scroller =
                         new LinearSmoothScroller(recyclerView.getContext()) {
                             @Override
@@ -135,6 +138,9 @@ public class ContinuousSearchListCoordinator {
                         if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                             recyclerView.removeOnScrollListener(this);
                             recyclerView.addOnScrollListener(userInputScrollListener);
+                            TraceEvent.finishAsync(
+                                    "ContinuousSearchListCoordinator#smoothScrollToPosition",
+                                    userInputScrollListener.hashCode());
                         }
                     }
                 });

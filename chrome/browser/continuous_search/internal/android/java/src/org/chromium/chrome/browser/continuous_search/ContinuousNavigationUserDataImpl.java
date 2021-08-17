@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.continuous_search;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.url.GURL;
 
@@ -63,6 +64,7 @@ public class ContinuousNavigationUserDataImpl extends ContinuousNavigationUserDa
 
     @Override
     public void updateData(ContinuousNavigationMetadata metadata, GURL currentUrl) {
+        TraceEvent.begin("ContinuousNavigationUserDataImpl#updateData");
         mData = metadata;
         mValidUrls = new HashSet<>();
         for (int i = 0; i < mData.getGroups().size(); i++) {
@@ -72,21 +74,27 @@ public class ContinuousNavigationUserDataImpl extends ContinuousNavigationUserDa
             }
         }
         updateCurrentUrlInternal(currentUrl, false);
-        if (mData == null) return;
+        if (mData == null) {
+            TraceEvent.end("ContinuousNavigationUserDataImpl#updateData");
+            return;
+        }
 
         for (ContinuousNavigationUserDataObserver observer : mObservers) {
             observer.onUpdate(mData);
             observer.onUrlChanged(mCurrentUrl, isMatchingSrp(mCurrentUrl));
         }
+        TraceEvent.end("ContinuousNavigationUserDataImpl#updateData");
     }
 
     void invalidateData() {
+        TraceEvent.begin("ContinuousNavigationUserDataImpl#invalidateData");
         mData = null;
         mValidUrls = null;
         mCurrentUrl = null;
         for (ContinuousNavigationUserDataObserver observer : mObservers) {
             observer.onInvalidate();
         }
+        TraceEvent.end("ContinuousNavigationUserDataImpl#invalidateData");
     }
 
     @Nullable
@@ -118,6 +126,7 @@ public class ContinuousNavigationUserDataImpl extends ContinuousNavigationUserDa
 
     private void updateCurrentUrlInternal(GURL url, boolean notify) {
         if (!isValid()) return;
+        TraceEvent.begin("ContinuousNavigationUserDataImpl#updateCurrentUrlInternal");
 
         GURL urlFromResults = maybeGetUrlInResults(url);
         if (urlFromResults == null) {
@@ -128,14 +137,19 @@ public class ContinuousNavigationUserDataImpl extends ContinuousNavigationUserDa
         boolean onSrp = isMatchingSrp(url);
         if (urlFromResults == null && !onSrp) {
             invalidateData();
+            TraceEvent.end("ContinuousNavigationUserDataImpl#updateCurrentUrlInternal");
             return;
         }
 
-        if (!notify) return;
+        if (!notify) {
+            TraceEvent.end("ContinuousNavigationUserDataImpl#updateCurrentUrlInternal");
+            return;
+        }
 
         for (ContinuousNavigationUserDataObserver observer : mObservers) {
             observer.onUrlChanged(url, onSrp);
         }
+        TraceEvent.end("ContinuousNavigationUserDataImpl#updateCurrentUrlInternal");
     }
 
     private boolean equalsValidUrl(GURL validUrl, GURL url) {
