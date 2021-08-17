@@ -283,7 +283,7 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
       blink::mojom::CommonFilePickerOptionsPtr common_options,
       base::FilePath default_directory,
       ChooseEntriesCallback callback,
-      base::File::Error result);
+      bool default_directory_exists);
   void DidOpenSandboxedFileSystem(const BindingContext& binding_context,
                                   GetSandboxedFileSystemCallback callback,
                                   const GURL& root,

@@ -14,11 +14,13 @@
 #include "base/command_line.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "content/browser/file_system_access/file_system_access.pb.h"
@@ -247,6 +249,28 @@ blink::mojom::AcceptsTypesInfoPtr GetAndMoveAcceptsTypesInfo(
   }
 }
 
+void DidCheckIfDefaultDirectoryExists(
+    const storage::FileSystemURL& default_directory_url,
+    base::OnceCallback<void(bool)> callback,
+    base::File::Error result) {
+  if (result == base::File::Error::FILE_OK) {
+    std::move(callback).Run(/*default_directory_exists=*/true);
+    return;
+  }
+
+  if (default_directory_url.type() == storage::kFileSystemTypeLocal) {
+    // Symlinks don't "exist" according to the FileSystemOperationRunner, but
+    // they do to the user. If directory is a symlink, allow it to be set as the
+    // default starting directory.
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock()},
+        base::BindOnce(&base::IsLink, default_directory_url.path()),
+        std::move(callback));
+  } else {
+    std::move(callback).Run(/*default_directory_exists=*/false);
+  }
+}
+
 }  // namespace
 
 FileSystemAccessManagerImpl::SharedHandleState::SharedHandleState(
@@ -440,18 +464,20 @@ void FileSystemAccessManagerImpl::ResolveDefaultDirectory(
   }
 
   auto fs_url = CreateFileSystemURLFromPath(path_info.type, path_info.path);
+  base::FilePath default_directory = fs_url.path();
+
+  auto wrapped_callback = base::BindOnce(
+      &FileSystemAccessManagerImpl::SetDefaultPathAndShowPicker,
+      weak_factory_.GetWeakPtr(), context, std::move(options),
+      std::move(common_options), default_directory, std::move(callback));
   operation_runner()
       .AsyncCall(base::IgnoreResult(
           &storage::FileSystemOperationRunner::DirectoryExists))
-      .WithArgs(
-          std::move(fs_url),
-          base::BindPostTask(
-              base::SequencedTaskRunnerHandle::Get(),
-              base::BindOnce(
-                  &FileSystemAccessManagerImpl::SetDefaultPathAndShowPicker,
-                  weak_factory_.GetWeakPtr(), context, std::move(options),
-                  std::move(common_options), fs_url.path(),
-                  std::move(callback))));
+      .WithArgs(fs_url,
+                base::BindPostTask(
+                    base::SequencedTaskRunnerHandle::Get(),
+                    base::BindOnce(&DidCheckIfDefaultDirectoryExists, fs_url,
+                                   std::move(wrapped_callback))));
 }
 
 void FileSystemAccessManagerImpl::SetDefaultPathAndShowPicker(
@@ -460,14 +486,12 @@ void FileSystemAccessManagerImpl::SetDefaultPathAndShowPicker(
     blink::mojom::CommonFilePickerOptionsPtr common_options,
     base::FilePath default_directory,
     ChooseEntriesCallback callback,
-    base::File::Error result) {
+    bool default_directory_exists) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (result != base::File::Error::FILE_OK) {
-    // |default_directory| does not exist. Resort to the default.
-    if (permission_context_)
-      default_directory = permission_context_->GetWellKnownDirectoryPath(
-          blink::mojom::WellKnownDirectory::kDefault);
+  if (!default_directory_exists && permission_context_) {
+    default_directory = permission_context_->GetWellKnownDirectoryPath(
+        blink::mojom::WellKnownDirectory::kDefault);
   }
 
   auto request_directory_write_access =

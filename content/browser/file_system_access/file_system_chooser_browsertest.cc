@@ -1474,6 +1474,48 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   EXPECT_EQ(temp_dir_.GetPath(), dialog_params.default_path);
 }
 
+// Correctly saving a symlink as the starting directory should work on all OSes,
+// but `base::CreateSymbolicLink` is only available on Posix.
+#if defined(OS_POSIX)
+IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, StartIn_Symlink) {
+  // Ensure test directory exists and could not be a default.
+  base::FilePath test_dir;
+  base::FilePath symlink = temp_dir_.GetPath().AppendASCII("symbolic");
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_TRUE(base::CreateTemporaryDirInDir(
+        temp_dir_.GetPath(), FILE_PATH_LITERAL("handles"), &test_dir));
+    base::CreateSymbolicLink(test_dir, symlink);
+  }
+
+  SelectFileDialogParams dialog_params;
+  ui::SelectFileDialog::SetFactory(
+      new FakeSelectFileDialogFactory({symlink}, &dialog_params));
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+  // Acquire a FileSystemHandle to the symlink.
+  EXPECT_EQ(symlink.BaseName().AsUTF8Unsafe(),
+            EvalJs(shell(),
+                   "(async () => {"
+                   "  let e = await self.showDirectoryPicker();"
+                   "  self.selected_entry = e;"
+                   "  return e.name; })()"));
+  EXPECT_EQ(ui::SelectFileDialog::SELECT_FOLDER, dialog_params.type);
+  EXPECT_EQ(shell()->web_contents()->GetTopLevelNativeWindow(),
+            dialog_params.owning_window);
+
+  EXPECT_EQ(symlink.BaseName().AsUTF8Unsafe(),
+            EvalJs(shell(),
+                   "(async () => {"
+                   "  let e = await self.showDirectoryPicker({ startIn: "
+                   "              self.selected_entry });"
+                   "  self.selected_entry = e;"
+                   "  return e.name; })()"));
+  EXPECT_EQ(ui::SelectFileDialog::SELECT_FOLDER, dialog_params.type);
+  EXPECT_EQ(symlink, dialog_params.default_path);
+}
+#endif  // defined(OS_POSIX)
+
 IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, SuggestedName) {
   const base::FilePath test_file = CreateTestFile("");
   SelectFileDialogParams dialog_params;
