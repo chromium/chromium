@@ -5,6 +5,7 @@
 import logging
 from collections import OrderedDict
 import os
+import shard_util
 
 import result_sink_util
 
@@ -21,7 +22,7 @@ class StdJson():
 
     self.tests = OrderedDict()
     self.result_sink = result_sink_util.ResultSinkClient()
-    self._shard_index = os.getenv('GTEST_SHARD_INDEX', 0)
+    self._shard_index = shard_util.shard_index()
 
     if 'passed' in kwargs:
       self.mark_all_passed(kwargs['passed'])

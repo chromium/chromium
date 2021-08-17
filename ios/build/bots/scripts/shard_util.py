@@ -49,6 +49,16 @@ class ShardingError(test_runner_errors.Error):
   pass
 
 
+def shard_index():
+  """Returns shard index in environment, or 0 if not in sharding environment."""
+  return int(os.getenv('GTEST_SHARD_INDEX', 0))
+
+
+def total_shards():
+  """Returns total shard count in environment, or 1 if not in environment."""
+  return int(os.getenv('GTEST_TOTAL_SHARDS', 1))
+
+
 def determine_app_path(app, host_app=None, release=False):
   """String manipulate args.app and args.host to determine what path to use
     for otools

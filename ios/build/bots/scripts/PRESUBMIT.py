@@ -23,6 +23,7 @@ def _RunTestRunnerUnitTests(input_api, output_api):
       'shard_util_test.py',
       'standard_json_util_test.py',
       'test_apps_test.py',
+      'test_result_util_test.py',
       # 'test_runner_test.py',
       'wpr_runner_test.py',
       'xcode_log_parser_test.py',

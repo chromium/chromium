@@ -6,6 +6,7 @@
 import collections
 import mock
 import os
+import shard_util
 import unittest
 
 import standard_json_util as sju
@@ -112,8 +113,7 @@ class UnitTest(unittest.TestCase):
     test = 'f'
     output = sju.StdJson()
     output.mark_passed(test)
-    self.assertEqual(output.tests['f']['shard'],
-                     os.getenv('GTEST_SHARD_INDEX', 0))
+    self.assertEqual(output.tests['f']['shard'], shard_util.shard_index())
 
   @mock.patch('result_sink_util.ResultSinkClient')
   def test_post_to_result_sink(self, mock_result_sink_class):
