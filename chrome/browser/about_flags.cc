@@ -2585,14 +2585,6 @@ const FeatureEntry::FeatureVariation kContinuousSearchFeatureVariations[] = {
      base::size(kContinuousSearchPermanentDismissal), nullptr},
     {"with double-row chips", kContinuousSearchDoubleRowChip,
      base::size(kContinuousSearchDoubleRowChip), nullptr}};
-
-const FeatureEntry::FeatureParam kReadLaterUseRootBookmarkAsDefault[] = {
-    {"use_root_bookmark_as_default", "true"}};
-
-const FeatureEntry::FeatureVariation kReadLaterVariations[] = {
-    {"(use root bookmark as default)", kReadLaterUseRootBookmarkAsDefault,
-     base::size(kReadLaterUseRootBookmarkAsDefault), nullptr}};
-
 #endif  // defined(OS_ANDROID)
 
 // RECORDING USER METRICS FOR FLAGS:
@@ -4593,17 +4585,9 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kQuickSettingsPWANotifications)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#ifdef OS_ANDROID
     {flag_descriptions::kReadLaterFlagId, flag_descriptions::kReadLaterName,
-     flag_descriptions::kReadLaterDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(reading_list::switches::kReadLater,
-                                    kReadLaterVariations,
-                                    flag_descriptions::kReadLaterName)},
-#else
-    {flag_descriptions::kReadLaterFlagId, flag_descriptions::kReadLaterName,
-     flag_descriptions::kReadLaterDescription, kOsDesktop,
+     flag_descriptions::kReadLaterDescription, kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(reading_list::switches::kReadLater)},
-#endif
 
     {"read-later-new-badge-promo",
      flag_descriptions::kReadLaterNewBadgePromoName,

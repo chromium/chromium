@@ -422,45 +422,6 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.READ_LATER + "<Study"})
-    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
-            "force-fieldtrial-params=Study.Group:use_root_bookmark_as_default/true"})
-    public void
-    testOpenBookmarkManagerWhenDefaultToRootEnabled()
-            throws InterruptedException, ExecutionException {
-        openBookmarkManager();
-        BookmarkTestUtil.waitForBookmarkModelLoaded();
-        BookmarkDelegate delegate = getBookmarkManager();
-        BookmarkActionBar toolbar = ((BookmarkManager) delegate).getToolbarForTests();
-
-        // We should default to the root bookmark.
-        Assert.assertTrue(BookmarkUtils.shouldUseRootFolderAsDefaultForReadLater());
-        Assert.assertEquals(BookmarkUIState.STATE_FOLDER, delegate.getCurrentState());
-        Assert.assertEquals("chrome-native://bookmarks/folder/0",
-                BookmarkUtils.getLastUsedUrl(mActivityTestRule.getActivity()));
-        Assert.assertEquals("Bookmarks", toolbar.getTitle());
-
-        // When opening "Mobile bookmarks", we should come back to it when within the same session.
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> delegate.openFolder(mBookmarkModel.getMobileFolderId()));
-        Assert.assertEquals("Mobile bookmarks", toolbar.getTitle());
-        Assert.assertEquals(SelectableListToolbar.NAVIGATION_BUTTON_BACK,
-                toolbar.getNavigationButtonForTests());
-        Assert.assertFalse(toolbar.getMenu().findItem(R.id.edit_menu_id).isVisible());
-
-        // Close bookmarks.
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> toolbar.onMenuItemClick(toolbar.getMenu().findItem(R.id.close_menu_id)));
-        ApplicationTestUtils.waitForActivityState(mBookmarkActivity, Stage.DESTROYED);
-
-        // Reopen and make sure we're back in "Mobile bookmarks".
-        Assert.assertEquals(BookmarkUIState.STATE_FOLDER, delegate.getCurrentState());
-        Assert.assertEquals("chrome-native://bookmarks/folder/3",
-                BookmarkUtils.getLastUsedUrl(mActivityTestRule.getActivity()));
-    }
-
-    @Test
-    @MediumTest
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
     public void testFolderNavigation_Phone() throws InterruptedException, ExecutionException {
         BookmarkId testFolder = addFolder(TEST_FOLDER_TITLE);

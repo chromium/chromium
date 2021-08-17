@@ -988,8 +988,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         resetSavedInstanceState();
         StartSurfaceConfiguration.addFeedVisibilityObserver();
-        BookmarkUtils.maybeExpireLastBookmarkLocationForReadLater(
-                mInactivityTracker.getTimeSinceLastBackgroundedMs());
     }
 
     @Override
