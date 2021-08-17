@@ -51,8 +51,8 @@ class VIEWS_EXPORT PenEventProcessor {
 
   ui::SequentialIDGenerator* id_generator_;
   bool direct_manipulation_enabled_;
-  bool pen_in_contact_ = false;
-  bool send_touch_for_pen_ = false;
+  base::flat_map<UINT32, bool> pen_in_contact_;
+  base::flat_map<UINT32, bool> send_touch_for_pen_;
 
   // There may be more than one pen used at the same time.
   base::flat_map<UINT32, bool> sent_mouse_down_;
