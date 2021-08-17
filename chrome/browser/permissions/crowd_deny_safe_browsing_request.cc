@@ -50,8 +50,8 @@ class CrowdDenySafeBrowsingRequest::SafeBrowsingClient
   void CheckOrigin(const url::Origin& origin) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
-    // Start the timer before the call to CheckApiBlacklistUrl(), as it may
-    // call back into OnCheckApiBlacklistUrlResult() synchronously.
+    // Start the timer before the call to CheckApiBlocklistUrl(), as it may
+    // call back into OnCheckApiBlocklistUrlResult() synchronously.
     timeout_.Start(FROM_HERE, kSafeBrowsingCheckTimeout, this,
                    &SafeBrowsingClient::OnTimeout);
 
