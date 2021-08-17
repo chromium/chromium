@@ -540,14 +540,14 @@ bool HttpServerPropertiesManager::ParseAlternativeServiceInfoDictOfServer(
     }
     quic::ParsedQuicVersionVector advertised_versions;
     for (const auto& value : versions_list->GetList()) {
-      std::string version_string;
-      if (!value.GetAsString(&version_string)) {
+      const std::string* version_string = value.GetIfString();
+      if (!version_string) {
         DVLOG(1) << "Malformed alternative service version for server: "
                  << server_str;
         return false;
       }
       quic::ParsedQuicVersion version =
-          quic::ParseQuicVersionString(version_string);
+          quic::ParseQuicVersionString(*version_string);
       if (version != quic::ParsedQuicVersion::Unsupported()) {
         advertised_versions.push_back(version);
       }
