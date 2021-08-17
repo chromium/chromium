@@ -5,10 +5,10 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_OOM_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_OOM_H_
 
+#include <stddef.h>
+
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
-
-#include <stddef.h>
 
 // The crash is generated in a NOINLINE function so that we can classify the
 // crash as an OOM solely by analyzing the stack trace. It is tagged as

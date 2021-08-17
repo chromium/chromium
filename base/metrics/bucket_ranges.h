@@ -17,13 +17,12 @@
 #ifndef BASE_METRICS_BUCKET_RANGES_H_
 #define BASE_METRICS_BUCKET_RANGES_H_
 
+#include <limits.h>
 #include <stddef.h>
 #include <stdint.h>
 
 #include <atomic>
 #include <vector>
-
-#include <limits.h>
 
 #include "base/base_export.h"
 #include "base/macros.h"

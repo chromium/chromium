@@ -5,8 +5,6 @@
 #ifndef BASE_WIN_SCOPED_HANDLE_VERIFIER_H_
 #define BASE_WIN_SCOPED_HANDLE_VERIFIER_H_
 
-#include "base/win/windows_types.h"
-
 #include <memory>
 #include <unordered_map>
 
@@ -15,6 +13,7 @@
 #include "base/hash/hash.h"
 #include "base/synchronization/lock_impl.h"
 #include "base/threading/thread_local.h"
+#include "base/win/windows_types.h"
 
 namespace base {
 namespace win {

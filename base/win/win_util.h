@@ -23,7 +23,6 @@
 #define BASE_WIN_WIN_UTIL_H_
 
 #include <stdint.h>
-#include "base/win/windows_types.h"
 
 #include <string>
 #include <vector>
@@ -31,6 +30,7 @@
 #include "base/base_export.h"
 #include "base/macros.h"
 #include "base/strings/string_piece.h"
+#include "base/win/windows_types.h"
 
 struct IPropertyStore;
 struct _tagpropertykey;
