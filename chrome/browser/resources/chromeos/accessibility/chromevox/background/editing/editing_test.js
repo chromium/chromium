@@ -1758,7 +1758,7 @@ TEST_F('ChromeVoxEditingTest', 'Separator', function() {
     <div contenteditable="true" role="textbox">
       <p>Start</p>
       <p><span>Hello</span></p>
-      <p><span role="separator">Separator content should be read</span></p>
+      <p><span role="separator">-</span></p>
       <p><span>World</span></p>
     </div>
   `;
@@ -1768,12 +1768,23 @@ TEST_F('ChromeVoxEditingTest', 'Separator', function() {
       mockFeedback.call(this.press(KeyCode.DOWN))
           .expectSpeech('Hello')
           .call(this.press(KeyCode.DOWN))
-          .expectSpeech('Separator content should be read', 'Separator')
+          .expectSpeech('-', 'Separator')
           .call(this.press(KeyCode.DOWN))
           .expectSpeech('World', 'Exited Separator.')
+
           .call(this.press(KeyCode.LEFT))
           .expectNextSpeechUtteranceIsNot('\n')
-          .expectSpeech('Separator content should be read', 'Separator')
+          // This reads the entire line (just one character).
+          .expectSpeech('-', 'Separator')
+
+          .call(this.press(KeyCode.LEFT))
+          // This reads the single character.
+          .expectSpeech('-')
+
+          .call(this.press(KeyCode.LEFT))
+          // Notice this reads the entire line which is generally undesirable
+          // except for special cases like this.
+          .expectSpeech('Hello', 'Exited Separator.')
 
           .replay();
     });

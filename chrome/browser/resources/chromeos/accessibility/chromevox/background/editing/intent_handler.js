@@ -91,15 +91,16 @@ IntentHandler = class {
 
         // First, handle the case where there is no text to the right of the
         // cursor.
-        if (!text) {
+        if (!text && prev) {
           // Detect cases where |cur| is immediately before an abstractSpan.
-          const nextCursor =
-              cur.end.move(Unit.CHARACTER, Movement.DIRECTIONAL, Dir.FORWARD);
-          const ancestors =
-              AutomationUtil.getUniqueAncestors(nextCursor.node, cur.end.node);
+          const enteredAncestors =
+              AutomationUtil.getUniqueAncestors(prev.end.node, cur.end.node);
+          const exitedAncestors =
+              AutomationUtil.getUniqueAncestors(cur.end.node, prev.end.node);
 
           // Scan up only to a root or the editable root.
           let ancestor;
+          const ancestors = enteredAncestors.concat(exitedAncestors);
           while ((ancestor = ancestors.pop()) &&
                  !AutomationPredicate.rootOrEditableRoot(ancestor)) {
             const roleInfo = Output.ROLE_INFO[ancestor.role];
