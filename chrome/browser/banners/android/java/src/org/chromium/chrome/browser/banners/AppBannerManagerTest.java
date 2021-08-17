@@ -931,22 +931,20 @@ public class AppBannerManagerTest {
         waitUntilBottomSheetStatus(
                 mTabbedActivityTestRule, BottomSheetController.SheetState.HIDDEN);
 
-        Tab tab = mTabbedActivityTestRule.getActivity().getActivityTab();
-
         // Waiting two months shouldn't be long enough.
         AppBannerManager.setTimeDeltaForTesting(61);
-        new TabLoadObserver(tab).fullyLoadUrl(url);
+        navigateToUrlAndWaitForBannerManager(mTabbedActivityTestRule, url);
         waitUntilBottomSheetStatus(
                 mTabbedActivityTestRule, BottomSheetController.SheetState.HIDDEN);
 
         AppBannerManager.setTimeDeltaForTesting(62);
-        new TabLoadObserver(tab).fullyLoadUrl(url);
+        navigateToUrlAndWaitForBannerManager(mTabbedActivityTestRule, url);
         waitUntilBottomSheetStatus(
                 mTabbedActivityTestRule, BottomSheetController.SheetState.HIDDEN);
 
         // Waiting three months should allow the bottom sheet to reappear.
         AppBannerManager.setTimeDeltaForTesting(91);
-        new TabLoadObserver(tab).fullyLoadUrl(url);
+        navigateToUrlAndWaitForBannerManager(mTabbedActivityTestRule, url);
         waitUntilBottomSheetStatus(mTabbedActivityTestRule, BottomSheetController.SheetState.PEEK);
     }
 
