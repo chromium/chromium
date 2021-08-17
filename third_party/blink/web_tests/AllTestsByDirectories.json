@@ -68605,6 +68605,7 @@
     "http/tests/inspector-protocol/network/redirect-interception-modified.js",
     "http/tests/inspector-protocol/network/redirect-interception.js",
     "http/tests/inspector-protocol/network/redirect-resource-type.js",
+    "http/tests/inspector-protocol/network/reporting-api-report-added.js",
     "http/tests/inspector-protocol/network/request-interception-frame-id.js",
     "http/tests/inspector-protocol/network/request-interception-mock302.js",
     "http/tests/inspector-protocol/network/request-interception-mock404.js",

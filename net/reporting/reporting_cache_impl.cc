@@ -51,7 +51,12 @@ void ReportingCacheImpl::AddReport(
     // The newly-added report isn't pending, so even if all other reports are
     // pending, the cache should have a report to evict.
     DCHECK(!to_evict->get()->IsUploadPending());
+    if (to_evict != inserted.first) {
+      context_->NotifyReportAdded(inserted.first->get());
+    }
     reports_.erase(to_evict);
+  } else {
+    context_->NotifyReportAdded(inserted.first->get());
   }
 
   context_->NotifyCachedReportsUpdated();
