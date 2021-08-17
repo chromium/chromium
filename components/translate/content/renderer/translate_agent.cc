@@ -102,9 +102,8 @@ TranslateAgent::TranslateAgent(content::RenderFrame* render_frame,
     return;
   }
 
-  LOCAL_HISTOGRAM_BOOLEAN(
-      "LanguageDetection.TFLiteModel.WasModelRequestDeferred",
-      waiting_for_first_foreground_);
+  UMA_HISTOGRAM_BOOLEAN("LanguageDetection.TFLiteModel.WasModelRequestDeferred",
+                        waiting_for_first_foreground_);
 
   // Ensure the render frame is visible, otherwise the browser-side
   // translate driver may not exist yet (https://crbug.com/1199397).
@@ -204,6 +203,9 @@ void TranslateAgent::PageCaptured(const std::u16string& contents) {
     UMA_HISTOGRAM_BOOLEAN(
         "LanguageDetection.TFLiteModel.WasModelAvailableForDetection",
         is_available);
+    UMA_HISTOGRAM_BOOLEAN(
+        "LanguageDetection.TFLiteModel.WasModelUnavailableDueToDeferredLoad",
+        !is_available && waiting_for_first_foreground_);
     detection_model_version = language_detection_model.GetModelVersion();
   } else {
     language = DeterminePageLanguage(
