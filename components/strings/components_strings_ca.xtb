@@ -268,6 +268,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1838374766361614909">Esborra la cerca</translation>
 <translation id="1839551713262164453">S'han produït errors a la validació dels valors de la política</translation>
 <translation id="1842969606798536927">Paga</translation>
+<translation id="1856713167556118146">Què no fa el mode d'incògnit</translation>
 <translation id="1871208020102129563">El servidor intermediari està configurat perquè utilitzi servidors intermediaris fixos, en lloc d'un URL de script .pac.</translation>
 <translation id="1871284979644508959">Camp obligatori</translation>
 <translation id="1875512691959384712">Formularis de Google</translation>
@@ -1010,6 +1011,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4465818729556336129">Aquest document és confidencial i el teu administrador recomana no imprimir-lo.</translation>
 <translation id="4476953670630786061">Aquest formulari no és segur. S'ha desactivat l'emplenament automàtic.</translation>
 <translation id="4477350412780666475">Pista següent</translation>
+<translation id="4481251927743463293">Què fa el mode d'incògnit</translation>
 <translation id="4481394504112738036">Fitxer confidencial</translation>
 <translation id="4482953324121162758">Aquest lloc web no es traduirà.</translation>
 <translation id="4490717597759821841">A7</translation>
@@ -1110,10 +1112,17 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4819347708020428563">Vols editar les anotacions en la visualització predeterminada?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />: prem Tab i després Retorn per crear un full de càlcul de Google ràpidament</translation>
 <translation id="4825507807291741242">Potent</translation>
+<translation id="4827402517081186284">Em mode l'incògnit no t'invisibilitza en línia:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Els llocs web saben quan els visites.<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Les empreses o els centres educatius poden fer el seguiment de l'activitat de navegació.<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Els proveïdors d'Internet poden monitorar el trànsit web.<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="4838327282952368871">Somiadora</translation>
 <translation id="484462545196658690">Automàtic</translation>
 <translation id="4850886885716139402">Mostra</translation>
 <translation id="485316830061041779">Alemany</translation>
+<translation id="4853901935952445031">Aquest lloc web no podrà fer servir l'API U2F a partir del febrer de 2022. Si ets el propietari d'aquest lloc, l'hauries de canviar i fer servir l'API Web Authentication.</translation>
 <translation id="4854362297993841467">Aquest mètode d'entrega no està disponible. Prova'n un altre.</translation>
 <translation id="4854853140771946034">Crea una nota nova a Google Keep ràpidament</translation>
 <translation id="4876188919622883022">Visualització simplificada</translation>
@@ -1636,6 +1645,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6757797048963528358">El dispositiu ha entrat en mode de repòs.</translation>
 <translation id="6767985426384634228">Vols actualitzar l'adreça?</translation>
 <translation id="6768213884286397650">Hagaki (postal)</translation>
+<translation id="6774185088257932239"><ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /> sobre el mode d'incògnit</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Violeta</translation>
 <translation id="6786747875388722282">Extensions</translation>
@@ -1683,6 +1693,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6965382102122355670">D'acord</translation>
 <translation id="6965978654500191972">Dispositiu</translation>
 <translation id="696703987787944103">Perceptiu</translation>
+<translation id="6968269510885595029">Fes servir la clau de seguretat</translation>
 <translation id="6970216967273061347">Districte</translation>
 <translation id="6971439137020188025">Crea una presentació ràpidament a Presentacions de Google</translation>
 <translation id="6972629891077993081">Dispositius d'interfície humana</translation>
@@ -1748,6 +1759,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> no compleix la normativa de seguretat.</translation>
 <translation id="7210993021468939304">L'activitat de Linux al contenidor; i també pot instal·lar-hi i executar-hi aplicacions de Linux</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /> sobre aquest problema.</translation>
+<translation id="7215025035562547931">Dedica un moment a valorar la precisió</translation>
 <translation id="7217745192097460130">Vols fer servir Touch ID per verificar la teva identitat i completar la compra?</translation>
 <translation id="7219179957768738017">La connexió utilitza <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">S'està processant</translation>
@@ -2083,6 +2095,12 @@ Detalls addicionals:
 <translation id="8307888238279532626">Aplicacions instal·lades i freqüència d'utilització</translation>
 <translation id="831207732689920588">Aquesta pàgina és sospitosa (marcada per Chrome).</translation>
 <translation id="831997045666694187">Tarda</translation>
+<translation id="8328484624016508118">Quan s'han tancat totes les pestanyes d'incògnit, Chrome esborra:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />L'activitat de navegació d'aquest dispositiu.<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />L'historial de cerques d'aquest dispositiu.<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />La informació introduïda en formularis.<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">S'ha rebutjat l'accés a <ph name="HOST_NAME" /></translation>
 <translation id="833262891116910667">Destacat</translation>
 <translation id="8339163506404995330">Les pàgines en <ph name="LANGUAGE" /> no es traduiran</translation>

@@ -161,6 +161,7 @@
 <translation id="1165039591588034296">ত্রুটি</translation>
 <translation id="1166212789817575481">ডানদিকের ট্যাবগুলি বন্ধ করুন</translation>
 <translation id="1166583374608765787">নামের আপডেট দেখে নিন</translation>
+<translation id="1166596238782048887"><ph name="TAB_TITLE" />, <ph name="DESK_TITLE" />-এ আছে</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" />-এর মধ্যে খুলছে...</translation>
 <translation id="1170288591054440704">কোনও সাইট আপনার ডিভাইসে ইনস্টল করা ফন্ট ব্যবহার করতে চাইলে তাকে অনুমতি নিতে বলুন</translation>
 <translation id="1171135284592304528">বস্তুটি যখন পরিবর্তিত হয় তখন কীবোর্ড ফোকাসের মাধ্যমে একে হাইলাইট করুন</translation>
@@ -621,6 +622,7 @@
 <translation id="1640235262200048077">এখনও Linux অ্যাপে <ph name="IME_NAME" /> কাজ করে না</translation>
 <translation id="1640283014264083726">RSA এনক্রিপশানের সাথে PKCS #1 MD4</translation>
 <translation id="1641113438599504367">নিরাপদ ব্রাউজিং</translation>
+<translation id="1642492862748815878"><ph name="DEVICE" /> এবং <ph name="NUMBER_OF_DEVICES" />টি অন্য ব্লুটুথ ডিভাইসের সাথে কানেক্ট করা আছে</translation>
 <translation id="1642494467033190216">অন্যান্য ডিবাগিং বৈশিষ্ট্যগুলি চালু করার আগে rootfs সুরক্ষা সরানোর এবং আবার চালু করার প্রয়োজন৷</translation>
 <translation id="1643072738649235303">SHA-1 সহ X9.62 ECDSA স্বাক্ষর</translation>
 <translation id="1643921258693943800">'নিয়ারবাই শেয়ার' ফিচার ব্যবহার করতে, ব্লুটুথ এবং ওয়াই-ফাই চালু করুন</translation>
@@ -1835,6 +1837,7 @@
 <translation id="2885378588091291677">কার্য পরিচালক</translation>
 <translation id="2885729872133513017">সার্ভারের উত্তর ডিকোড করার সময় সমস্যা হয়েছে।</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
+<translation id="288734198558082692"><ph name="DEVICE" /> এবং আরও <ph name="NUMBER_OF_DEVICES" />টি</translation>
 <translation id="2889064240420137087">এর সাথে লিঙ্ক খুলুন...</translation>
 <translation id="2891922230654533301">আপনি কি <ph name="APP_NAME" />-এ সাইন-ইন করার জন্য আপনার ডিভাইস ব্যবহার করতে চান?</translation>
 <translation id="2893168226686371498">ডিফল্ট ব্রাউজার</translation>
@@ -2770,6 +2773,7 @@
 <translation id="3884152383786131369">যেসকল ওয়েব কন্টেন্ট একাধিক ভাষায় উপলভ্য সেগুলি এই তালিকা থেকে উপযুক্ত প্রথম ভাষাটি ব্যবহার করবে। আপনার ব্রাউজার সেটিংসের সাথে এই পছন্দ সিঙ্ক করা আছে। <ph name="BEGIN_LINK_LEARN_MORE" />আরও জানুন<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">আপনার অ্যাডমিনিস্ট্রেটর আপডেটগুলি ম্যানেজ করে।</translation>
 <translation id="3886446263141354045">এই সাইটটি অ্যাক্সেস করার জন্য আপনার অনুরোধ <ph name="NAME" />কে পাঠানো হয়েছে</translation>
+<translation id="3887022758415973389">ডিভাইসের তালিকা দেখুন</translation>
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" /> কানেকশন</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> ব্যবহার করে নোট নেওয়া হচ্ছে</translation>
 <translation id="3888586133700543064">এই তথ্য আপনার Assistant সংক্রান্ত সমস্যা আমাদের আরও ভালভাবে বুঝতে সাহায্য করে। এটি ৯০ দিন পর্যন্ত সেভ করা থাকে এবং অ্যাক্সেস যথাযথ ইঞ্জিনিয়ারিং এবং মতামত টিমের মধ্যে সীমাবদ্ধ থাকে।</translation>
@@ -3480,6 +3484,7 @@
 <translation id="4662373422909645029">ডাকনামে সংখ্যা থাকবে না</translation>
 <translation id="4662788913887017617">এই বুকমার্কটি আপনার iPhone এর সাথে শেয়ার করুন</translation>
 <translation id="4663373278480897665">ক্যামেরা ব্যবহারের অনুমতি দেওয়া হয়েছে</translation>
+<translation id="4664289193573249666">Chrome OS সেটিংসে নিরাপদ ডিএনএস ম্যানেজ করুন</translation>
 <translation id="4664482161435122549">PKCS #12 রপ্তানি  ত্রুটি</translation>
 <translation id="4665014895760275686">প্রস্তুতকর্তা</translation>
 <translation id="4665446389743427678"><ph name="SITE" /> সাইটে স্টোর করা সমস্ত ডেটা মুছে ফেলা হবে।</translation>
@@ -6013,6 +6018,7 @@
 <translation id="7478623944308207463">আপনার Google অ্যাকাউন্ট দিয়ে সাইন-ইন করা সব Chrome OS ডিভাইসে আপনার অ্যাপ এবং সেটিংস সিঙ্ক হয়ে যাবে। ব্রাউজারে উপলভ্য সিঙ্ক করার বিকল্পের জন্য, <ph name="LINK_BEGIN" />Chrome সেটিংসে যান<ph name="LINK_END" />।</translation>
 <translation id="7478658909253570368">সাইটগুলিকে সিরিয়াল পোর্টে কানেক্ট করার অনুমতি দেয় না</translation>
 <translation id="7479221278376295180">এক নজরে স্টোরেজের ব্যবহার</translation>
+<translation id="747981547666531654"><ph name="FIRST_DEVICE" /> এবং <ph name="SECOND_DEVICE" /> নামের ব্লুটুথ ডিভাইসের সাথে কানেক্ট করা আছে</translation>
 <translation id="7481312909269577407">ফরওয়ার্ড</translation>
 <translation id="7481358317100446445">প্রস্তুত</translation>
 <translation id="748138892655239008">সার্টিফিকেট প্রাথমিক বাধ্যবাধকতা</translation>
@@ -6065,6 +6071,7 @@
 <translation id="7531771599742723865">ডিভাইসটি ব্যবহার করা হচ্ছে</translation>
 <translation id="7531779363494549572">সেটিংস &gt; অ্যাপ এবং বিজ্ঞপ্তি &gt; বিজ্ঞপ্তিতে যান।</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> উত্তর দিচ্ছে না। অ্যাপটি বন্ধ করতে "জোর করে বন্ধ করুন" বিকল্পটি বেছে নিন।</translation>
+<translation id="7535730537657706072">আপনার ডিভাইস থেকে ছদ্মবেশী ট্যাবে করা ব্রাউজিং-এর ইতিহাস মুছে ফেলতে, সব ছদ্মবেশী ট্যাব বন্ধ করুন</translation>
 <translation id="7535791657097741517">হালকা থিম চালু করুন</translation>
 <translation id="7537451260744431038">আপনার শপিং কার্টে বেছে নেওয়া আইটেমগুলি মনে রাখা বা সাইন-ইন সংক্রান্ত তথ্য সেভ করার মতো ব্রাউজিং অভিজ্ঞতা আরও ভাল করার জন্য সাইটগুলি কুকি ব্যবহার করতে পারবে না</translation>
 <translation id="753769905878158714">অ্যাড্রেস বারে আপনি যে ওয়েবসাইট সার্চ করতে চান সেটির জন্য কীওয়ার্ড লিখুন। এর পরে, চালিয়ে যেতে একটি কীবোর্ড শর্টকাট ব্যবহার করুন।</translation>
@@ -6682,6 +6689,7 @@
 <translation id="8138217203226449454">আপনি কি আপনার সার্চ প্রদানকারী পরিবর্তন করতে চাইছেন?</translation>
 <translation id="8138997515734480534"><ph name="VM_NAME" /> স্ট্যাটাস</translation>
 <translation id="8139447493436036221">Google Drive ফাইল</translation>
+<translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
 <translation id="8141584439523427891">এখন অন্য ব্রাউজারে খোলা হচ্ছে</translation>
 <translation id="8141725884565838206">আপনার পাসওয়ার্ডগুলি পরিচালনা করুন</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{একটি ভিডিও}one{#টি ভিডিও}other{#টি ভিডিও}}</translation>
@@ -7397,6 +7405,7 @@
 <translation id="8909782404367982052">Google Lens ব্যবহার করে ছবি সার্চ করতে টেনে আনুন</translation>
 <translation id="8909833622202089127">সাইটটি আপনার লোকেশন ট্র্যাক করছে</translation>
 <translation id="8910222113987937043">আপনার বুকমার্ক, ইতিহাস, পাসওয়ার্ড এবং অন্যান্য সেটিংসের পরিবর্তনগুলি এখন আর আপনার Google অ্যাকাউন্টের সাথে সিঙ্ক করা হবে না। তবে, আপনার বর্তমান ডেটা আপনার Google অ্যাকাউন্টে সঞ্চিত থাকবে এবং <ph name="BEGIN_LINK" />Google ড্যাশবোর্ড<ph name="END_LINK" /> থেকে ম্যানেজ করা যাবে।</translation>
+<translation id="8910987510378294980">ডিভাইসের তালিকা লুকান</translation>
 <translation id="8912362522468806198">Google অ্যাকাউন্ট</translation>
 <translation id="8912793549644936705">বিস্তার</translation>
 <translation id="8912810933860534797">অটো-স্ক্যান চালু করুন</translation>
@@ -7514,6 +7523,7 @@
 <translation id="9033765790910064284">যাই হোক, চালিয়ে যান</translation>
 <translation id="9033857511263905942">&amp;প্রতিলেপন</translation>
 <translation id="903480517321259405">পিন আবার টাইপ করুন</translation>
+<translation id="9037054491984310631"><ph name="DEVICE" /> নামের ব্লুটুথ ডিভাইসের সাথে কানেক্ট করা আছে</translation>
 <translation id="9037640663275993951">ডিভাইস ব্যবহার করা যাবে না</translation>
 <translation id="9037818663270399707">সব নেটওয়ার্ক ট্রাফিকের ক্ষেত্রে আপনার কানেকশন নিরাপদ নয়</translation>
 <translation id="9037965129289936994">প্রকৃত রূপ দেখান</translation>
@@ -7594,6 +7604,7 @@
 <translation id="9112786533191410418"><ph name="FILE_NAME" /> বিপজ্জনক হতে পারে। স্ক্যান করার জন্য Google-এ পাঠাবেন?</translation>
 <translation id="9112987648460918699">খুঁজুন...</translation>
 <translation id="9113240369465613386">শুধুমাত্র বিজোড় সংখ্যার পৃষ্ঠা</translation>
+<translation id="9113469270512809735">সম্প্রতি বন্ধ করা আইটেম টগল করুন</translation>
 <translation id="9114663181201435112">সহজেই সাইন-ইন করুন</translation>
 <translation id="9115675100829699941">&amp;বুকমার্ক</translation>
 <translation id="9116465289595958864">শেষবার সংশোধন করা হয়েছে</translation>

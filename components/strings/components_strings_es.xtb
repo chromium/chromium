@@ -272,6 +272,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1838374766361614909">Borrar búsqueda</translation>
 <translation id="1839551713262164453">No se ha podido hacer la validación de los valores de la política porque se han producido errores</translation>
 <translation id="1842969606798536927">Pagar</translation>
+<translation id="1856713167556118146">Lo que no hace incógnito</translation>
 <translation id="1871208020102129563">Se ha configurado el proxy de forma que use servidores proxy fijos, en lugar de una URL de secuencia de comandos .pac.</translation>
 <translation id="1871284979644508959">Campo obligatorio</translation>
 <translation id="1875512691959384712">Formularios de Google</translation>
@@ -1019,6 +1020,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4465818729556336129">Este documento es confidencial. Tu administrador recomienda no imprimirlo.</translation>
 <translation id="4476953670630786061">Este formulario no es seguro. Autocompletar se ha desactivado.</translation>
 <translation id="4477350412780666475">Pista siguiente</translation>
+<translation id="4481251927743463293">Lo que hace incógnito</translation>
 <translation id="4481394504112738036">Archivo confidencial</translation>
 <translation id="4482953324121162758">Este sitio web no se traducirá.</translation>
 <translation id="4490717597759821841">A7</translation>
@@ -1119,10 +1121,17 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4819347708020428563">¿Editar anotaciones en la vista predeterminada?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y luego Intro para crear una nueva Hoja de cálculo de Google rápidamente</translation>
 <translation id="4825507807291741242">Potente</translation>
+<translation id="4827402517081186284">Incógnito no te hace invisible online:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Los sitios saben que los visitas<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Las empresas o los centros educativos pueden monitorizar la actividad de navegación<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Los proveedores de Internet pueden monitorizar el tráfico web<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="4838327282952368871">De ensueño</translation>
 <translation id="484462545196658690">Automático</translation>
 <translation id="4850886885716139402">Ver</translation>
 <translation id="485316830061041779">Alemán</translation>
+<translation id="4853901935952445031">Este sitio no podrá usar la API U2F después de febrero del 2022. Si eres el propietario de este sitio, debes cambiarlo para que use la API Web Authentication.</translation>
 <translation id="4854362297993841467">Este método de entrega no está disponible. Selecciona otro.</translation>
 <translation id="4854853140771946034">Crear una nueva nota en Google Keep rápidamente</translation>
 <translation id="4876188919622883022">Vista simplificada</translation>
@@ -1645,6 +1654,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6757797048963528358">El dispositivo se ha suspendido.</translation>
 <translation id="6767985426384634228">¿Actualizar dirección?</translation>
 <translation id="6768213884286397650">Hagaki (Postcard)</translation>
+<translation id="6774185088257932239"><ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /> sobre incógnito</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Violeta</translation>
 <translation id="6786747875388722282">Extensiones</translation>
@@ -1692,6 +1702,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="6965978654500191972">Dispositivo</translation>
 <translation id="696703987787944103">Perceptual</translation>
+<translation id="6968269510885595029">Usar tu llave de seguridad</translation>
 <translation id="6970216967273061347">Distrito</translation>
 <translation id="6971439137020188025">Crear una nueva Presentación de Google rápidamente</translation>
 <translation id="6972629891077993081">Dispositivos HID</translation>
@@ -1757,6 +1768,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="7210863904660874423">La página <ph name="HOST_NAME" /> no cumple los estándares de seguridad.</translation>
 <translation id="7210993021468939304">Los administradores pueden ver la actividad de Linux en el contenedor, y también pueden instalar y ejecutar aplicaciones de Linux en el contenedor</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /> sobre este problema.</translation>
+<translation id="7215025035562547931">Piensa un momento en la veracidad</translation>
 <translation id="7217745192097460130">¿Usar Touch ID para verificar y completar la compra?</translation>
 <translation id="7219179957768738017">La conexión utiliza <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Procesando pago</translation>
@@ -2092,6 +2104,12 @@ Más información:
 <translation id="8307888238279532626">Las aplicaciones instaladas y la frecuencia con la que se usan</translation>
 <translation id="831207732689920588">Esta página es sospechosa (marcada por Chrome).</translation>
 <translation id="831997045666694187">Tarde</translation>
+<translation id="8328484624016508118">Al cerrar todas las pestañas de incógnito, Chrome borra lo siguiente:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Tu actividad de navegación en este dispositivo<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Tu historial de búsqueda en este dispositivo<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />La información que hayas introducido en formularios<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">Se ha denegado el acceso a <ph name="HOST_NAME" /></translation>
 <translation id="833262891116910667">Resaltar</translation>
 <translation id="8339163506404995330">No se traducirán las páginas en <ph name="LANGUAGE" /></translation>

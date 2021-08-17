@@ -268,6 +268,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1838374766361614909">Limpar pesquisa</translation>
 <translation id="1839551713262164453">Falha com erros na validação dos valores da política</translation>
 <translation id="1842969606798536927">Pagar</translation>
+<translation id="1856713167556118146">O que a navegação anônima não faz</translation>
 <translation id="1871208020102129563">O proxy foi configurado para utilizar servidores de proxy fixo e não um URL de script .pac.</translation>
 <translation id="1871284979644508959">Campo obrigatório</translation>
 <translation id="1875512691959384712">Formulários Google</translation>
@@ -1010,6 +1011,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4465818729556336129">Esse documento é confidencial, e o administrador recomenda que ele não seja impresso.</translation>
 <translation id="4476953670630786061">Este formulário não é seguro. O preenchimento automático foi desativado.</translation>
 <translation id="4477350412780666475">Próxima faixa</translation>
+<translation id="4481251927743463293">O que a navegação anônima faz</translation>
 <translation id="4481394504112738036">Arquivo confidencial</translation>
 <translation id="4482953324121162758">Este site não será traduzido.</translation>
 <translation id="4490717597759821841">A7</translation>
@@ -1110,10 +1112,17 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4819347708020428563">Editar anotações na visualização padrão?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para criar rapidamente um novo arquivo do Planilhas Google</translation>
 <translation id="4825507807291741242">Intenso</translation>
+<translation id="4827402517081186284">A navegação anônima não torna você invisível na Web:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Os sites sabem quando você os acessa.<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Empregadores ou escolas podem monitorar a atividade de navegação.<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Provedores de acesso à Internet podem monitorar o tráfego da Web.<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="4838327282952368871">Sonho</translation>
 <translation id="484462545196658690">Automática</translation>
 <translation id="4850886885716139402">Visualizar</translation>
 <translation id="485316830061041779">Alemão</translation>
+<translation id="4853901935952445031">Este site não poderá usar a API U2F depois de fevereiro de 2022. Se o site for seu, faça mudanças para que ele use a API Web Authentication.</translation>
 <translation id="4854362297993841467">Esse método de entrega não está disponível. Tente um método diferente.</translation>
 <translation id="4854853140771946034">Criar rapidamente uma nova nota no Google Keep</translation>
 <translation id="4876188919622883022">Visualização simplificada</translation>
@@ -1636,6 +1645,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6757797048963528358">O dispositivo entrou em modo de suspensão.</translation>
 <translation id="6767985426384634228">Atualizar endereço?</translation>
 <translation id="6768213884286397650">Hagaki (Postal)</translation>
+<translation id="6774185088257932239"><ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /> sobre a navegação anônima</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Violeta</translation>
 <translation id="6786747875388722282">Extensões</translation>
@@ -1683,6 +1693,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965978654500191972">Dispositivo</translation>
 <translation id="696703987787944103">Perceptivo</translation>
+<translation id="6968269510885595029">Usar sua chave de segurança</translation>
 <translation id="6970216967273061347">Distrito</translation>
 <translation id="6971439137020188025">Criar rapidamente um novo arquivo no Apresentações Google</translation>
 <translation id="6972629891077993081">Dispositivos HID</translation>
@@ -1748,6 +1759,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> não adere aos padrões de segurança.</translation>
 <translation id="7210993021468939304">A atividade do Linux no contêiner, bem como instalar e executar apps do Linux no contêiner</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /> sobre este problema.</translation>
+<translation id="7215025035562547931">Confirme se essa informação está correta</translation>
 <translation id="7217745192097460130">Usar o Touch ID para verificar e concluir a compra?</translation>
 <translation id="7219179957768738017">A conexão usa a <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Processando</translation>
@@ -2083,6 +2095,12 @@ Mais detalhes:
 <translation id="8307888238279532626">Os apps instalados e a frequência de uso deles</translation>
 <translation id="831207732689920588">Esta página é suspeita e foi sinalizada pelo Chrome.</translation>
 <translation id="831997045666694187">Noite</translation>
+<translation id="8328484624016508118">Após o fechamento de todas as guias anônimas, o Chrome apaga:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />sua atividade de navegação no dispositivo;<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />seu histórico de pesquisa no dispositivo;<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />as informações digitadas em formulários.<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">O acesso a <ph name="HOST_NAME" /> foi negado</translation>
 <translation id="833262891116910667">Destacar</translation>
 <translation id="8339163506404995330">Páginas em <ph name="LANGUAGE" /> não serão traduzidas</translation>

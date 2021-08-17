@@ -93,6 +93,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1615402009686901181">Il criterio dell'amministratore disattiva l'acquisizione schermo se sono visibili contenuti riservati</translation>
 <translation id="1632985212731562677">È possibile disattivare Switch Access in Impostazioni &gt; Accessibilità.</translation>
 <translation id="1654477262762802994">Avvia una query vocale</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; premi Tasto per la ricerca e Barra spaziatrice per vedere il risultato nell'assistente.</translation>
 <translation id="1667964833127753507">La modalità colore Neutra non usa i colori estratti dallo sfondo, che sostituisce con un insieme di tonalità neutre chiare o scure.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> rimanenti</translation>
 <translation id="1677507110654891115">La funzionalità <ph name="FEATURE_NAME" /> non è connessa.</translation>
@@ -140,6 +141,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2016340657076538683">Digita un messaggio</translation>
 <translation id="2018630726571919839">Raccontami una barzelletta</translation>
 <translation id="2021864487439853900">Fai clic per sbloccare</translation>
+<translation id="2023558322300866873">Puoi interrompere l'acquisizione del pacchetto in qualsiasi momento</translation>
 <translation id="2047639699071423250">Aggiungi idea chiave</translation>
 <translation id="2049240716062114887">Il nome della scrivania è stato modificato in <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Verticale</translation>
@@ -543,6 +545,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="5083553833479578423">Sblocca altre funzioni dell'assistente.</translation>
 <translation id="5136175204352732067">Tastiera diversa collegata</translation>
 <translation id="5155897006997040331">Velocità di lettura</translation>
+<translation id="5166918508782100047">Impostazioni Risposte rapide</translation>
 <translation id="5168181903108465623">Dispositivi di trasmissione disponibili</translation>
 <translation id="5170568018924773124">Mostra nella cartella</translation>
 <translation id="5176318573511391780">Registra schermo parziale</translation>
@@ -797,6 +800,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="7302889331339392448">La funzionalità Sottotitoli in tempo reale è disattivata.</translation>
 <translation id="7303365578352795231">Risposta su un altro dispositivo.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; premi Tasto per la ricerca e Barra spaziatrice per vedere il risultato nella Ricerca Google.</translation>
 <translation id="7346909386216857016">OK</translation>
 <translation id="7348093485538360975">Tastiera sullo schermo</translation>
 <translation id="735745346212279324">VPN scollegata</translation>

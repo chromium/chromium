@@ -504,6 +504,7 @@
 
       如果此政策已停用或未设置，不受支持的系统中将会显示警告。</translation>
 <translation id="1634989431648355062">允许这些网站运行 <ph name="FLASH_PLUGIN_NAME" /> 插件</translation>
+<translation id="1639468541408865385">启用全局范围的 HTTP 身份验证缓存</translation>
 <translation id="1641394008743444477">让您能够以列表形式设置要停用的 <ph name="PRODUCT_OS_NAME" />功能。
 
       如果您停用了此列表中的任一功能，用户便无法从界面中使用该功能，而且该功能的状态会显示为“已被管理员停用”。已停用功能的用户体验由 <ph name="SYSTEM_FEATURES_DISABLE_MODE" /> 决定
@@ -542,6 +543,7 @@
       如果此政策未设置，当设备上的可用磁盘空间少于 20 GB（默认值）时，<ph name="PLUGIN_VM_NAME" /> 安装会失败。
       如果您设置了此政策，当设备上的可用磁盘空间少于此政策规定的数值时，<ph name="PLUGIN_VM_NAME" /> 安装会失败。</translation>
 <translation id="1690383938831887552">阻止加载通过 Signed HTTP Exchange (SXG) 提供的内容</translation>
+<translation id="169467210981344373">停用全局范围的 HTTP 身份验证缓存</translation>
 <translation id="1700458869527146675">通过设置此政策，您可为 Chrome 和 ARC 应用配置代理设置，它们会忽略从命令行中指定的所有与代理有关的选项。
 
        如果您未设置此政策，用户便可自行选择代理设置。
@@ -566,6 +568,7 @@
       注意：如需查看更详细的示例，请访问 Chromium 项目 ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett )。</translation>
 <translation id="1700811900332333712">允许设备请求 Powerwash</translation>
 <translation id="1708496595873025510">对变体种子的提取设置限制条件</translation>
+<translation id="1709154322133526432">允许在启动浏览器时检查是否为默认浏览器</translation>
 <translation id="1713829924716792485">如果此政策已启用或未设置，用户便能连接到远程访问主机以在客户端和主机之间传输文件。此政策不适用于远程协助连接，因为这类连接不支持文件传输。
 
       如果此政策已停用，系统将禁止传输文件。</translation>
@@ -820,6 +823,7 @@
 <translation id="2037214548071298156">如果此政策已启用或未设置，已注册的设备将会报告硬件统计信息（例如 CPU/RAM 使用情况）。
 
       如果此政策已停用，已注册的设备将不会报告硬件统计信息。</translation>
+<translation id="2039801473506609891">停用对非默认端口的 HTTP/0.9 支持</translation>
 <translation id="2040479044912658454">打印光栅化模式</translation>
 <translation id="2042513383871755994">通过设置此政策，您可以罗列一些网址格式，从而指定哪些网站无法通过 File System API 请求用户向其授予对主机操作系统的文件系统中的文件或目录的读取权限。
 
@@ -1122,6 +1126,7 @@
       如果将此政策设置为 <ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" />（值为 1），则只有被视为重要安全性或稳定性修复程序的变体可以应用于 <ph name="PRODUCT_NAME" />。
 
       如果将此政策设置为 <ph name="VARIATIONS_DISABLED_OPTION_NAME" />（值为 2），则任何变体都不会应用于浏览器。请注意，我们不建议您使用此模式，因为它可能会妨碍 <ph name="PRODUCT_NAME" /> 开发者及时提供重要的安全性修复程序。</translation>
+<translation id="2402547085566757554">不使用“新标签页”页面作为主页</translation>
 <translation id="2411629345938804022">如果此政策设为 3，系统会允许网站请求访问附近的蓝牙设备。如果此政策设为 2，系统会禁止网站访问附近的蓝牙设备。
 
       如果此政策未设置，系统会允许网站请求访问，但用户可以更改此设置。</translation>
@@ -1405,6 +1410,7 @@
 <translation id="2716623398185506073">如果此政策已启用，已注册的设备将会报告与电源相关的硬件统计信息和标识符。
 
       如果此政策已停用或未设置，已注册的设备将不会报告电源统计信息。</translation>
+<translation id="2721185634942265347">停用搜索建议</translation>
 <translation id="2723692978495226412">如果此政策已启用，系统便会推荐用户曾在其他设备上安装的应用。如果用户未输入任何搜索文字，系统将在启动器中显示推荐应用（位于推荐的本地应用后面）。
 
       如果此政策已停用或未设置，系统便不会显示推荐应用。
@@ -1665,6 +1671,7 @@
         此政策不会影响已发布的政策。</translation>
 <translation id="3016255526521614822">允许在 <ph name="PRODUCT_OS_NAME" />锁定屏幕启用加入白名单的备注应用</translation>
 <translation id="3017578958356048910">PDF 查看器能在 PDF 文件中添加注释</translation>
+<translation id="3020623128585817424">禁止在启动浏览器时检查是否为默认浏览器</translation>
 <translation id="3020953534071988875">通过配置此政策，您可以允许/禁止对 <ph name="PRODUCT_NAME" /> 中的无痕模式和访客个人资料进行静默身份验证。
 
       静默身份验证是指在未通过 NTLM/Kerberos/Negotiate 质询-响应方案提供明确凭据的情况下，采用默认凭据进行的 HTTP 身份验证。
@@ -3443,6 +3450,11 @@
 
       如果此政策设为一个输入法标识符列表，登录屏幕上将会提供所有已指定的输入法以供选用。系统将会预先选择所指定的第一种输入法。当登录屏幕上显示已激活的用户操作大图标时，屏幕上除了会提供通过此政策指定的各种输入法外，还会提供相应用户最近一次用过的输入法。如果此政策未设置，系统则会根据显示登录屏幕时使用的语言区域提供登录屏幕上的输入法。系统将会忽略无效的输入法标识符。</translation>
 <translation id="5407008856008996384">允许访问 CUPS 打印机</translation>
+<translation id="5417597818300833094">通过设置此政策，您可允许用户从您为 <ph name="PRODUCT_OS_NAME" />会话指定的输入法中选择其一。
+
+       如果此政策设为一个空列表或未设置，用户将可以选择所有受支持的输入法。
+
+      注意：如果当前输入法不受支持，它会切换为硬件键盘布局（如果允许）或此列表中的第一个有效条目。无效输入法或不受支持的输入法将被忽略。</translation>
 <translation id="5417906792459853336">此政策旨在报告与设备的应用清单及使用情况有关的信息。
 
       如果此政策设为 false 或未设置，系统将不会报告这些信息。
@@ -3762,6 +3774,7 @@
       重要产品数据 (VPD) 是指一系列与设备相关的配置数据和信息类数据，例如部件号和序列号。</translation>
 <translation id="5765780083710877561">说明：</translation>
 <translation id="5766438888216077649">不为那些定位到“<ph name="BLANK_PAGE_NAME" />”页面的链接设置 <ph name="WINDOW_OPENER_PROPERTY" /></translation>
+<translation id="5767776869128458023">停用备用的错误页面</translation>
 <translation id="5770738360657678870">开发者版（可能不稳定）</translation>
 <translation id="5774856474228476867">默认搜索服务提供商的搜索网址</translation>
 <translation id="5775235485119094648">在电池电量位于指定范围内时为电池充电。</translation>

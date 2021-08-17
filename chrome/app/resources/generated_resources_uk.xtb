@@ -2217,6 +2217,7 @@
 <translation id="3305661444342691068">Відкрити файл PDF у вікні попереднього перегляду</translation>
 <translation id="3308116878371095290">Цій сторінці було відмовлено в збереженні файлів cookie.</translation>
 <translation id="3308134619352333507">Кнопка "Сховати"</translation>
+<translation id="3308681281309926497">Ваші дані можуть зберігатися на відвіданих сайтах, доки ви не закриєте Chrome</translation>
 <translation id="3308738399950580893">оголошення</translation>
 <translation id="3308852433423051161">Завантажується Google Асистент…</translation>
 <translation id="3309330461362844500">Ідентифікатор профілю сертифіката</translation>
@@ -2770,6 +2771,7 @@
 <translation id="3873423927483480833">Показати PIN-коди</translation>
 <translation id="3873915545594852654">Виникла проблема з ARC++.</translation>
 <translation id="3874164307099183178">Увімкнути Google Асистента</translation>
+<translation id="3875815154304214043">Відповідно до налаштувань, додаток <ph name="APP_NAME" /> має відкриватися в новій вкладці веб-переглядача. Підтримувані посилання також відкриватимуться у веб-переглядачі. <ph name="BEGIN_LINK_LEARN_MORE" />Докладніше<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256">Налаштування функції "Передавання поблизу" для пристрою користувача <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />).</translation>
 <translation id="3879748587602334249">Менеджер завантажень</translation>
 <translation id="3882165008614329320">Наявні відео з камери або файлу</translation>
@@ -3918,6 +3920,7 @@
 <translation id="5157635116769074044">Закріпити цю сторінку на екрані запуску…</translation>
 <translation id="5159094275429367735">Налаштувати Crostini</translation>
 <translation id="5159419673777902220">Хтось із батьків вимкнув дозволи розширення</translation>
+<translation id="5159643365935452998">Перегляньте параметри автоматичного видалення даних</translation>
 <translation id="5160634252433617617">Фізична клавіатура</translation>
 <translation id="5160857336552977725">Увійдіть в обліковий запис на пристрої <ph name="DEVICE_TYPE" /></translation>
 <translation id="5161251470972801814">Пристрої USB від постачальника "<ph name="VENDOR_NAME" />"</translation>
@@ -4481,6 +4484,7 @@
 <translation id="5790651917470750848">Така переадресація порту вже існує</translation>
 <translation id="5792728279623964091">Натисніть кнопку живлення</translation>
 <translation id="5793339252089865437">Завантаження оновлень через мобільну мережу може призвести до стягнення значно вищої плати.</translation>
+<translation id="5794034487966529952">На робочому столі "<ph name="DESK_TITLE" />" відкрито стільки вікон веб-переглядача: <ph name="NUM_BROWSERS" /></translation>
 <translation id="5794414402486823030">Завжди відкривати за допомогою системного переглядача</translation>
 <translation id="5794700615121138172">Спільні папки Linux</translation>
 <translation id="5794786537412027208">Вийти з усіх додатків Chrome</translation>

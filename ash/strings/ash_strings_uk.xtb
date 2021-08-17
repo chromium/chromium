@@ -93,6 +93,7 @@
 <translation id="1615402009686901181">Адміністратор заборонив запис екрана, якщо видно конфіденційний контент</translation>
 <translation id="1632985212731562677">Щоб вимкнути кнопковий доступ, відкрийте "Налаштування" &gt; "Спеціальні можливості".</translation>
 <translation id="1654477262762802994">Ввести голосовий запит</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />. Щоб переглянути результат в Асистенті, натисніть клавішу пошуку та пробіл.</translation>
 <translation id="1667964833127753507">У цьому режимі не використовуються кольори фонового малюнка, а підбираються нейтральні світлі або темні відтінки.</translation>
 <translation id="1677472565718498478">Залишилося <ph name="TIME" /></translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> не підключено.</translation>
@@ -140,6 +141,7 @@
 <translation id="2016340657076538683">Введіть повідомлення</translation>
 <translation id="2018630726571919839">Розкажи жарт</translation>
 <translation id="2021864487439853900">Натисніть, щоб розблокувати</translation>
+<translation id="2023558322300866873">Ви можете будь-коли зупинити захоплення пакетів</translation>
 <translation id="2047639699071423250">Додати ключову ідею</translation>
 <translation id="2049240716062114887">Назву робочого столу змінено на "<ph name="DESK_NAME" />"</translation>
 <translation id="2050339315714019657">Портретна</translation>
@@ -542,6 +544,7 @@
 <translation id="5083553833479578423">Розблокуйте інші функції Асистента.</translation>
 <translation id="5136175204352732067">Під’єднано іншу клавіатуру</translation>
 <translation id="5155897006997040331">Швидкість читання</translation>
+<translation id="5166918508782100047">Налаштування швидких відповідей</translation>
 <translation id="5168181903108465623">Доступні пристрої для трансляції</translation>
 <translation id="5170568018924773124">Показати в папці</translation>
 <translation id="5176318573511391780">Записувати частину екрана</translation>
@@ -796,6 +799,7 @@
 <translation id="7302889331339392448">Живі субтитри вимкнено.</translation>
 <translation id="7303365578352795231">Відповідь на іншому пристрої.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />. Щоб переглянути результат у Пошуку Google, натисніть клавішу пошуку та пробіл.</translation>
 <translation id="7346909386216857016">OK</translation>
 <translation id="7348093485538360975">Екранна клавіатура</translation>
 <translation id="735745346212279324">VPN від’єднано</translation>

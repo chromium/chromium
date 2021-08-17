@@ -2196,6 +2196,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3305661444342691068">Otwieraj podgląd plików PDF</translation>
 <translation id="3308116878371095290">Umieszczanie na komputerze plików cookie z tej strony jest niedozwolone.</translation>
 <translation id="3308134619352333507">Ukryj przycisk</translation>
+<translation id="3308681281309926497">Witryny, które odwiedzasz, przechowują Twoje dane do zamknięcia Chrome</translation>
 <translation id="3308738399950580893">reklamy</translation>
 <translation id="3308852433423051161">Ładuję Asystenta Google...</translation>
 <translation id="3309330461362844500">Identyfikator certyfikowanego profilu</translation>
@@ -2749,6 +2750,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3873423927483480833">Pokaż kody PIN</translation>
 <translation id="3873915545594852654">Wystąpił problem z ARC++.</translation>
 <translation id="3874164307099183178">Włącz Asystenta Google</translation>
+<translation id="3875815154304214043">Aplikacja <ph name="APP_NAME" /> jest skonfigurowana do otwierania się w nowej karcie przeglądarki. W przeglądarce będą się też otwierać obsługiwane linki. <ph name="BEGIN_LINK_LEARN_MORE" />Więcej informacji<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256">Ustawienia Udostępniania w pobliżu dotyczące urządzenia, którego używa <ph name="USER_NAME" />, przypisane do konta <ph name="USER_EMAIL" />.</translation>
 <translation id="3879748587602334249">Menedżer pobierania</translation>
 <translation id="3882165008614329320">Istniejący film z aparatu lub pliku</translation>
@@ -3896,6 +3898,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5157635116769074044">Przypnij tę stronę do ekranu startowego...</translation>
 <translation id="5159094275429367735">Skonfiguruj Crostini</translation>
 <translation id="5159419673777902220">Uprawnienia rozszerzenia wyłączył rodzic</translation>
+<translation id="5159643365935452998">Sprawdź ustawienia automatycznego usuwania danych</translation>
 <translation id="5160634252433617617">Klawiatura fizyczna</translation>
 <translation id="5160857336552977725">Zaloguj się na urządzeniu <ph name="DEVICE_TYPE" /></translation>
 <translation id="5161251470972801814">Urządzenia USB firmy <ph name="VENDOR_NAME" /></translation>
@@ -4459,6 +4462,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5790651917470750848">Przekierowanie portu już istnieje</translation>
 <translation id="5792728279623964091">Naciśnij przycisk zasilania</translation>
 <translation id="5793339252089865437">Jeśli pobierzesz aktualizację przez sieć komórkową, może zostać naliczona opłata za przekroczenie limitu danych.</translation>
+<translation id="5794034487966529952">Biurko „<ph name="DESK_TITLE" />” ma otwarte okna przeglądarki (<ph name="NUM_BROWSERS" />)</translation>
 <translation id="5794414402486823030">Zawsze otwieraj w przeglądarce systemowej</translation>
 <translation id="5794700615121138172">Foldery udostępnione Linuksa</translation>
 <translation id="5794786537412027208">Zamknij wszystkie aplikacje Chrome</translation>

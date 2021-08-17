@@ -43,6 +43,7 @@
 <translation id="3227137524299004712">Microfone</translation>
 <translation id="3240426699337459095">Link copiado</translation>
 <translation id="3259149966178251584">Resolução da câmera</translation>
+<translation id="3260401663013584785">Não foi possível detectar um documento</translation>
 <translation id="3448774564454087943">O vídeo não foi salvo porque é curto demais</translation>
 <translation id="3517926952904427380">Não foi possível capturar o retrato</translation>
 <translation id="3569311554794739032">Tem certeza de que quer remover <ph name="FILE" />?</translation>
@@ -50,6 +51,7 @@
 <translation id="3838931309141338733">Ler código de barras</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
 <translation id="4118525110028899586">Pausar gravação</translation>
+<translation id="4121305183798804752">Documento detectado</translation>
 <translation id="4269820728363426813">Copiar endereço do link</translation>
 <translation id="4279490309300973883">Espelhamento</translation>
 <translation id="4329152592498422850">Alternar para tirar foto quadrada</translation>

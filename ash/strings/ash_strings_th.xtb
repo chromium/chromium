@@ -93,6 +93,7 @@
 <translation id="1615402009686901181">นโยบายของผู้ดูแลระบบปิดใช้การจับภาพหน้าจอเมื่อมีเนื้อหาที่เป็นความลับแสดงอยู่</translation>
 <translation id="1632985212731562677">ปิดใช้ "การเข้าถึงด้วยสวิตช์" ได้ในการตั้งค่า &gt; การช่วยเหลือพิเศษ</translation>
 <translation id="1654477262762802994">เริ่มการค้นหาด้วยเสียง</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" /> <ph name="RESULT_TEXT" /> กดแป้นค้นหากับแป้นเว้นวรรคเพื่อดูผลการค้นหาใน Assistant</translation>
 <translation id="1667964833127753507">โหมดสีปานกลางไม่ได้ใช้สีที่ดึงมาจากวอลเปเปอร์ แต่จะใช้ชุดโทนสีที่สว่างหรือเข้มปานกลางแทนสีเหล่านั้น</translation>
 <translation id="1677472565718498478">ใช้ได้อีก <ph name="TIME" /></translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> ไม่เชื่อมต่อ</translation>
@@ -140,6 +141,7 @@
 <translation id="2016340657076538683">พิมพ์ข้อความ</translation>
 <translation id="2018630726571919839">เล่าเรื่องตลกให้ฟังหน่อย</translation>
 <translation id="2021864487439853900">คลิกเพื่อปลดล็อก</translation>
+<translation id="2023558322300866873">คุณหยุดการบันทึกแพ็กเก็ตได้ทุกเมื่อ</translation>
 <translation id="2047639699071423250">เพิ่มแนวคิดหลัก</translation>
 <translation id="2049240716062114887">เปลี่ยนชื่อเดสก์ท็อปเป็น <ph name="DESK_NAME" /> แล้ว</translation>
 <translation id="2050339315714019657">แนวตั้ง</translation>
@@ -542,6 +544,7 @@
 <translation id="5083553833479578423">ใช้ฟีเจอร์จาก Assistant ได้มากขึ้น</translation>
 <translation id="5136175204352732067">เชื่อมต่อกับแป้นพิมพ์อื่นแล้ว</translation>
 <translation id="5155897006997040331">ความเร็วในการอ่าน</translation>
+<translation id="5166918508782100047">การตั้งค่าคำตอบด่วน</translation>
 <translation id="5168181903108465623">เครื่องส่งพร้อมใช้งาน</translation>
 <translation id="5170568018924773124">แสดงในโฟลเดอร์</translation>
 <translation id="5176318573511391780">บันทึกหน้าจอบางส่วน</translation>
@@ -796,6 +799,7 @@
 <translation id="7302889331339392448">คำบรรยายสดปิดอยู่</translation>
 <translation id="7303365578352795231">กำลังรับสายในอุปกรณ์อื่น</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" /> <ph name="RESULT_TEXT" /> กดแป้นค้นหากับแป้นเว้นวรรคเพื่อดูผลการค้นหาใน Google Search</translation>
 <translation id="7346909386216857016">รับทราบ</translation>
 <translation id="7348093485538360975">แป้นพิมพ์บนหน้าจอ</translation>
 <translation id="735745346212279324">ยกเลิกการเชื่อมต่อ VPN แล้ว</translation>

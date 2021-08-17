@@ -272,6 +272,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1838374766361614909">Keresett kifejezés törlése</translation>
 <translation id="1839551713262164453">A házirendértékek ellenőrzése hibák miatt sikertelen</translation>
 <translation id="1842969606798536927">Fizetés</translation>
+<translation id="1856713167556118146">Mire nem képes az inkognitó mód?</translation>
 <translation id="1871208020102129563">A proxy fix proxyszerverek használatára van beállítva, nem pedig .pac típusú szkript URL címének használatára.</translation>
 <translation id="1871284979644508959">Kötelező mező</translation>
 <translation id="1875512691959384712">Google Űrlapok</translation>
@@ -1017,6 +1018,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4465818729556336129">Ez a dokumentum bizalmas, és a nyomtatását nem ajánlja a rendszergazda.</translation>
 <translation id="4476953670630786061">Ez az űrlap nem biztonságos. Az automatikus kitöltés funkciót a rendszer kikapcsolta.</translation>
 <translation id="4477350412780666475">Következő szám</translation>
+<translation id="4481251927743463293">Mire képes az inkognitó mód?</translation>
 <translation id="4481394504112738036">Bizalmas fájl</translation>
 <translation id="4482953324121162758">Nem fordítjuk le ezt a webhelyet.</translation>
 <translation id="4490717597759821841">A7</translation>
@@ -1117,10 +1119,17 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4819347708020428563">Szeretné a jelöléseket az alapértelmezett nézetben szerkeszteni?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, tartsa lenyomva a Tab billentyűt, majd nyomja meg az Enter billentyűt új Google-táblázat gyors létrehozásához</translation>
 <translation id="4825507807291741242">Erőteljes</translation>
+<translation id="4827402517081186284">Az inkognitó mód nem teszi Önt láthatatlanná az interneten:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />A webhelyek tudják, amikor Ön felkeresi őket<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />A munkáltatók vagy az iskolák nyomon követhetik a böngészési tevékenységeket<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Az internetszolgáltatók figyelhetik az internetes forgalmat<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="4838327282952368871">Álmodozó</translation>
 <translation id="484462545196658690">Automatikus</translation>
 <translation id="4850886885716139402">Nézet</translation>
 <translation id="485316830061041779">német</translation>
+<translation id="4853901935952445031">Ez a webhely nem tudja majd használni az U2F API-t 2022 áprilisa után. Ha Ön a webhely tulajdonosa, be kell állítania a Web Authentication API használatára.</translation>
 <translation id="4854362297993841467">Ez a kézbesítési mód nem áll rendelkezésre. Próbálkozzon másik móddal.</translation>
 <translation id="4854853140771946034">Új jegyzet gyors létrehozása a Google Keep szolgáltatással</translation>
 <translation id="4876188919622883022">Egyszerűsített nézet</translation>
@@ -1643,6 +1652,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6757797048963528358">Eszköze alvó üzemmódba váltott.</translation>
 <translation id="6767985426384634228">Frissíti a címet?</translation>
 <translation id="6768213884286397650">Hagaki (képeslap)</translation>
+<translation id="6774185088257932239"><ph name="BEGIN_LINK" />További információ<ph name="END_LINK" /> az inkognitó módról.</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Ibolyaszín</translation>
 <translation id="6786747875388722282">Bővítmények</translation>
@@ -1690,6 +1700,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965978654500191972">Készülék</translation>
 <translation id="696703987787944103">Állandó</translation>
+<translation id="6968269510885595029">Biztonsági hardverkulcs használata</translation>
 <translation id="6970216967273061347">Körzet</translation>
 <translation id="6971439137020188025">Új Google-prezentáció gyors létrehozása a Diák szolgáltatással</translation>
 <translation id="6972629891077993081">HID-eszközök</translation>
@@ -1755,6 +1766,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="7210863904660874423">A(z) <ph name="HOST_NAME" /> nem felel meg a biztonsági szabványoknak.</translation>
 <translation id="7210993021468939304">A tárolóban végzett linuxos tevékenység megtekintése, valamint Linux-alkalmazások telepítése és futtatása a tárolóban</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />További információ<ph name="END_LINK" /> erről a hibáról.</translation>
+<translation id="7215025035562547931">Szánjon kis időt az információk helyességének megállapítására</translation>
 <translation id="7217745192097460130">Szeretné Touch ID használatával igazolni és befejezni vásárlását?</translation>
 <translation id="7219179957768738017">A kapcsolat a következőt használja: <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Feldolgozás alatt</translation>
@@ -2090,6 +2102,12 @@ További részletek:
 <translation id="8307888238279532626">Telepített alkalmazások és a használatuk gyakorisága</translation>
 <translation id="831207732689920588">Ez az oldal gyanús (megjelölte a Chrome).</translation>
 <translation id="831997045666694187">Este</translation>
+<translation id="8328484624016508118">Az összes inkognitó lap bezárása után a Chrome törli a következőket:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Az Ön ezen az eszközön végzett böngészési tevékenységeit<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Az Ön ezen az eszközön található keresési előzményeit<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Az űrlapokon megadott adatokat<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">A hozzáférés megtagadva a következőhöz: <ph name="HOST_NAME" /></translation>
 <translation id="833262891116910667">Kiemelés</translation>
 <translation id="8339163506404995330">A(z) <ph name="LANGUAGE" /> nyelvű oldalak nem lesznek lefordítva</translation>

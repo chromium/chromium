@@ -243,6 +243,7 @@
 <translation id="2946119680249604491">সংযোগ জুড়ুন</translation>
 <translation id="2961963223658824723">কিছু সমস্যা হয়েছে। কয়েক সেকেন্ডের মধ্যে আবার চেষ্টা করুন।</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="296762781903199866"><ph name="LANGUAGE" /> স্পিচ ফাইল ডাউনলোড করা যায়নি</translation>
 <translation id="2970920913501714344">অ্যাপ, এক্সটেনশন এবং থিম ইনস্টল করুন</translation>
 <translation id="2977598380246111477">পরবর্তী নম্বর</translation>
 <translation id="2992327365391326550">ডিভাইসের মাইক্রোফোন বোতাম বন্ধ আছে।</translation>
@@ -484,6 +485,7 @@
 <translation id="4696813013609194136">অভিভাবকীয় কোড দিয়ে ডিভাইস আনলক করুন</translation>
 <translation id="4702647871202761252">গোপনীয়তা স্ক্রিন বন্ধ করা আছে</translation>
 <translation id="4705716602320768426">ফাইলের ব্যাপারে নিজের মতামত জানান</translation>
+<translation id="4706121060329443414">পরে ডাউনলোডের চেষ্টা করা হবে। এখন প্রসেস করার জন্য Google-এর কাছে স্পিচ পাঠানো হবে।</translation>
 <translation id="4731797938093519117">অভিভাবকীয় অ্যাক্সেস</translation>
 <translation id="4734965478015604180">অনুভূমিক</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + Number কীবোর্ড শর্ককার্ট পরিবর্তন করা হয়েছে। ফাংশান কী ব্যবহার করতে, <ph name="LAUNCHER_KEY_NAME" /> কী + কীবোর্ডের উপরের সারির যেকোনও একটি কী প্রেস করুন।</translation>
@@ -589,6 +591,7 @@
 <translation id="5600837773213129531">কথ্য প্রতিবার্তা বন্ধ করতে Ctrl + Alt + Z টিপুন।</translation>
 <translation id="5601503069213153581">পিন</translation>
 <translation id="5619862035903135339">অ্যাডমিনিস্ট্রেটরের সেট করা নীতি অনুযায়ী স্ক্রিন ক্যাপচার করার সুবিধা বন্ধ করে দেওয়া হয়েছে</translation>
+<translation id="5620281292257375798">শুধুমাত্র ইন্টার্নাল</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">মাইক জ্যাক</translation>
 <translation id="5649768706273821470">শুনুন</translation>
@@ -657,6 +660,7 @@
 <translation id="6073451960410192870">রেকর্ডিং বন্ধ করুন</translation>
 <translation id="607652042414456612">আপনার কম্পিউটার কাছাকাছি ব্লুটুথ ডিভাইসে খুঁজে পাওয়া সম্ভব এবং ঠিকানা <ph name="ADDRESS" /> সমেত "<ph name="NAME" />" হিসাবে প্রদর্শিত হবে</translation>
 <translation id="6094290315941448991">কোনও গোপনীয় কন্টেন্ট দেখা গেলে অ্যাডমিনিস্ট্রেটরের সেট করা নীতি অনুযায়ী স্ক্রিন রেকর্ড করার সুবিধা বন্ধ করে দেওয়া হয়</translation>
+<translation id="6114505516289286752"><ph name="LANGUAGE" /> স্পিচ ফাইল ডাউনলোড করা হয়েছে</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />। <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google অ্যাসিস্ট্যান্ট কোনও গেস্ট সেশনে উপলভ্য নয়।</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" />-এর জন্য, 'অ্যাকাউন্ট সরিয়ে দিন' ডায়ালগ খুলুন</translation>
@@ -738,6 +742,7 @@
 <translation id="6816797338148849397">আপনার বেছে নেওয়া কন্টেন্টের ব্যাপারে তথ্য উপলভ্য আছে। এটি অ্যাক্সেস করতে, 'উর্ধমুখী তীরচিহ্ন' বোতাম ব্যবহার করুন।</translation>
 <translation id="6818242057446442178">শব্দ অনুযায়ী পেছনে যান</translation>
 <translation id="6820676911989879663">বিরতি নিন!</translation>
+<translation id="6836499262298959512">বিপজ্জনক ফাইল</translation>
 <translation id="6837064795450991317">ডেস্কবার লুকান</translation>
 <translation id="6850010208275816200">আপনার বর্তমান অ্যাপ ফুল স্ক্রিনে দেখছেন। অ্যাপটি পাসওয়ার্ড চাইলে, আগে ফুল স্ক্রিন থেকে বেরিয়ে আসুন।</translation>
 <translation id="6852052252232534364">চালু করতে ক্লিক করুন</translation>
@@ -878,6 +883,7 @@
 <translation id="7901405293566323524">ফোন হাব</translation>
 <translation id="7902625623987030061">আঙুলের ছাপের সেন্সর টাচ করুন</translation>
 <translation id="7904094684485781019">এই অ্যাকাউন্টের অ্যাডমিনিস্ট্রেটর একাধিক সাইন-ইন অননুমোদিত করেছেন৷</translation>
+<translation id="7930731167419639574">স্পিচ এখন স্থানীয়ভাবে প্রসেস করা হয় এবং ডিকটেশন অফলাইনে কাজ করে</translation>
 <translation id="7933084174919150729">Google অ্যাসিস্ট্যান্ট শুধুমাত্র প্রাথমিক প্রোফাইলেই ব্যবহার করা যায়।</translation>
 <translation id="79341161159229895">অ্যাকাউন্টটি <ph name="FIRST_PARENT_EMAIL" /> এবং <ph name="SECOND_PARENT_EMAIL" /> ম্যানেজ করছেন</translation>
 <translation id="793716872548410480">আপনার ক্লিপবোর্ড দেখতে <ph name="SHORTCUT_KEY_NAME" /> + V প্রেস করুন। আপনার কপি করা শেষ ৫টি আইটেম ক্লিপবোর্ডে সেভ করা হয়েছে।</translation>

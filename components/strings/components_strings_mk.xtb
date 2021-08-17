@@ -272,6 +272,7 @@
 <translation id="1838374766361614909">Исчисти го пребарувањето</translation>
 <translation id="1839551713262164453">Проверката на вредностите на правилото не успеа поради грешки</translation>
 <translation id="1842969606798536927">Плати</translation>
+<translation id="1856713167556118146">Што не прави „Инкогнито“</translation>
 <translation id="1871208020102129563">Прокси е поставен да користи фиксни прокси-сервери, а не ПАК-скрипта на URL.</translation>
 <translation id="1871284979644508959">Задолжително поле</translation>
 <translation id="1875512691959384712">Формулари на Google</translation>
@@ -1019,6 +1020,7 @@
 <translation id="4465818729556336129">Документов е доверлив и вашиот администратор не препорачува да се печати.</translation>
 <translation id="4476953670630786061">Формуларов не е безбеден. Автоматското пополнување е исклучено.</translation>
 <translation id="4477350412780666475">Следна песна</translation>
+<translation id="4481251927743463293">Што прави „Инкогнито“</translation>
 <translation id="4481394504112738036">Доверлива датотека</translation>
 <translation id="4482953324121162758">Сајтов нема да се преведе.</translation>
 <translation id="4490717597759821841">A7</translation>
@@ -1119,10 +1121,17 @@
 <translation id="4819347708020428563">Сакате ли да ги измените прибелешките во стандарден приказ?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете го копчето Tab, а потоа копчето Enter за да набрзина создадете нова табела на Google</translation>
 <translation id="4825507807291741242">Моќен</translation>
+<translation id="4827402517081186284">Со „Инкогнито“ не станувате невидливи онлајн:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />сајтовите знаат кога ги посетувате<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />работодавачите или училиштата може да ја следат вашата активност од прелистувањето<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />интернет-операторите можеби го следат интернет-сообраќајот<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="4838327282952368871">Нереален</translation>
 <translation id="484462545196658690">Автоматски</translation>
 <translation id="4850886885716139402">Приказ</translation>
 <translation id="485316830061041779">германски</translation>
+<translation id="4853901935952445031">Сајтов нема да може да користи API за U2F по февруари 2022 година. Ако сајтов е во ваша сопственост, треба да извршите промена за да користи API за проверка на интернет.</translation>
 <translation id="4854362297993841467">Овој метод за доставување не е достапен. Изберете друг.</translation>
 <translation id="4854853140771946034">Набрзина создајте нова белешка во Google Keep</translation>
 <translation id="4876188919622883022">Поедноставен приказ</translation>
@@ -1645,6 +1654,7 @@
 <translation id="6757797048963528358">Уредот е во режим на спиење.</translation>
 <translation id="6767985426384634228">Да се ажурира адресата?</translation>
 <translation id="6768213884286397650">Hagaki (разгледница)</translation>
+<translation id="6774185088257932239"><ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /> за „Инкогнито“</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Виолетова</translation>
 <translation id="6786747875388722282">Наставки</translation>
@@ -1692,6 +1702,7 @@
 <translation id="6965382102122355670">Во ред</translation>
 <translation id="6965978654500191972">Уред</translation>
 <translation id="696703987787944103">Перцептивна</translation>
+<translation id="6968269510885595029">Користете го безбедносниот клуч</translation>
 <translation id="6970216967273061347">Област</translation>
 <translation id="6971439137020188025">Набрзина создајте нова презентација во Google Slides</translation>
 <translation id="6972629891077993081">HID-уреди</translation>
@@ -1757,6 +1768,7 @@
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> не се придржува до стандардите за безбедност.</translation>
 <translation id="7210993021468939304">Активноста на Linux во рамките на контејнерот и може да инсталира и извршува апликации на Linux во рамките на контејнерот</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Дознај повеќе<ph name="END_LINK" /> за овој проблем.</translation>
+<translation id="7215025035562547931">Одвојте момент за да размислите околу точноста</translation>
 <translation id="7217745192097460130">Да се користи ID на допир за потврда и завршување на купувањето?</translation>
 <translation id="7219179957768738017">Оваа врска користи <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Се обработува</translation>
@@ -2092,6 +2104,12 @@
 <translation id="8307888238279532626">Инсталирани апликации и колку често се користат</translation>
 <translation id="831207732689920588">Страницава е сомнителна (пријавено од Chrome).</translation>
 <translation id="831997045666694187">Приквечер</translation>
+<translation id="8328484624016508118">Откако ќе ги затворите сите картички „Инкогнито“, Chrome ги брише:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />активноста од прелистувањето од уредов<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />историјата на пребарување од уредов<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />податоците внесени во формулари<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">Пристапот до <ph name="HOST_NAME" /> беше одбиен</translation>
 <translation id="833262891116910667">Нагласување</translation>
 <translation id="8339163506404995330">Страниците на <ph name="LANGUAGE" /> нема да се преведуваат</translation>

@@ -159,6 +159,7 @@
 <translation id="1165039591588034296">错误</translation>
 <translation id="1166212789817575481">关闭右侧标签页</translation>
 <translation id="1166583374608765787">查看名称更新</translation>
+<translation id="1166596238782048887">标签页“<ph name="TAB_TITLE" />”属于桌面“<ph name="DESK_TITLE" />”</translation>
 <translation id="1168020859489941584">即将在 <ph name="TIME_REMAINING" />后打开...</translation>
 <translation id="1170288591054440704">在网站想使用您设备上安装的字体时询问您</translation>
 <translation id="1171135284592304528">键盘焦点所在对象有变更时突出显示</translation>
@@ -614,6 +615,7 @@
 <translation id="1640235262200048077">Linux 应用目前不支持<ph name="IME_NAME" /></translation>
 <translation id="1640283014264083726">PKCS #1，带有 RSA 加密的 MD4</translation>
 <translation id="1641113438599504367">安全浏览</translation>
+<translation id="1642492862748815878">已连接到设备“<ph name="DEVICE" />”以及另外 <ph name="NUMBER_OF_DEVICES" /> 部蓝牙设备</translation>
 <translation id="1642494467033190216">要启用其他调试功能，必须先取消根文件系统保护并重启设备。</translation>
 <translation id="1643072738649235303">采用 SHA-1 算法的 X9.62 ECDSA 签名</translation>
 <translation id="1643921258693943800">若要使用“附近分享”功能，请开启蓝牙和 Wi-Fi</translation>
@@ -1816,6 +1818,7 @@
 <translation id="2885378588091291677">任务管理器</translation>
 <translation id="2885729872133513017">对服务器响应进行解码时出问题了。</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
+<translation id="288734198558082692">设备“<ph name="DEVICE" />”以及另外 <ph name="NUMBER_OF_DEVICES" /> 部</translation>
 <translation id="2889064240420137087">链接打开方式...</translation>
 <translation id="2891922230654533301">使用您的设备登录 <ph name="APP_NAME" />？</translation>
 <translation id="2893168226686371498">默认浏览器</translation>
@@ -2751,6 +2754,7 @@
 <translation id="3884152383786131369">能以多种语言显示的网页内容将会使用此列表中第一项受支持的语言。这些偏好设置会与您的浏览器设置同步。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">更新是由您的管理员管理</translation>
 <translation id="3886446263141354045">系统已将您想访问此网站的请求发送给<ph name="NAME" /></translation>
+<translation id="3887022758415973389">显示设备列表</translation>
 <translation id="3888053818972567950">“<ph name="WEB_DRIVE" />”连接</translation>
 <translation id="3888550877729210209">使用“<ph name="LOCK_SCREEN_APP_NAME" />”创建记事</translation>
 <translation id="3888586133700543064">这些信息有助于我们更好地了解您所遇到的 Google 助理问题。这些信息最多会存储 90 天，且仅限相关的工程团队和反馈团队访问。</translation>
@@ -3460,6 +3464,7 @@
 <translation id="4662373422909645029">昵称不能包含数字</translation>
 <translation id="4662788913887017617">将此书签共享给您的 iPhone</translation>
 <translation id="4663373278480897665">已允许使用摄像头</translation>
+<translation id="4664289193573249666">在 Chrome 操作系统设置中管理安全 DNS</translation>
 <translation id="4664482161435122549">PKCS #12 导出错误</translation>
 <translation id="4665014895760275686">制造商</translation>
 <translation id="4665446389743427678">即将删除 <ph name="SITE" /> 存储的所有数据。</translation>
@@ -5992,6 +5997,7 @@
 <translation id="7478623944308207463">您的应用和设置会在您使用自己的 Google 帐号登录的所有 Chrome 操作系统设备上保持同步。如需了解浏览器同步选项，请转到 <ph name="LINK_BEGIN" />Chrome 设置<ph name="LINK_END" />。</translation>
 <translation id="7478658909253570368">不允许网站连接到串行端口</translation>
 <translation id="7479221278376295180">存储空间使用情况概览</translation>
+<translation id="747981547666531654">已连接到名为“<ph name="FIRST_DEVICE" />”和“<ph name="SECOND_DEVICE" />”的蓝牙设备</translation>
 <translation id="7481312909269577407">前进</translation>
 <translation id="7481358317100446445">准备就绪</translation>
 <translation id="748138892655239008">证书基本约束</translation>
@@ -6044,6 +6050,7 @@
 <translation id="7531771599742723865">设备正在使用中</translation>
 <translation id="7531779363494549572">依次转到“设置”&gt;“应用和通知”&gt;“通知”。</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> 无响应。请选择“强制关闭”以关闭此应用。</translation>
+<translation id="7535730537657706072">若要清除您设备中的无痕浏览记录，请关闭所有无痕式标签页</translation>
 <translation id="7535791657097741517">开启浅色主题</translation>
 <translation id="7537451260744431038">网站无法使用 Cookie 来提升您的浏览体验，例如让您保持登录状态或记住您购物车中的商品</translation>
 <translation id="753769905878158714">在地址栏中，输入您要搜索的网站的关键字，然后使用键盘快捷键继续操作。</translation>
@@ -6661,6 +6668,7 @@
 <translation id="8138217203226449454">更改搜索服务提供商是您的本意吗？</translation>
 <translation id="8138997515734480534"><ph name="VM_NAME" /> 的状态</translation>
 <translation id="8139447493436036221">Google 云端硬盘文件</translation>
+<translation id="8140070492745508800"><ph name="FIRST_DEVICE" />、<ph name="SECOND_DEVICE" /></translation>
 <translation id="8141584439523427891">目前正在替代浏览器中打开</translation>
 <translation id="8141725884565838206">管理您的密码</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{1 个视频}other{# 个视频}}</translation>
@@ -7375,6 +7383,7 @@
 <translation id="8909782404367982052">拖动即可使用 Google 智能镜头搜索图片</translation>
 <translation id="8909833622202089127">该网站正在跟踪您的位置</translation>
 <translation id="8910222113987937043">对您的书签、历史记录、密码及其他设置所做的更改将不再同步到您的 Google 帐号。但是，您的现有数据依然会存储在您的 Google 帐号中，而且您可以通过 <ph name="BEGIN_LINK" />Google 信息中心<ph name="END_LINK" />管理这些数据。</translation>
+<translation id="8910987510378294980">隐藏设备列表</translation>
 <translation id="8912362522468806198">Google 帐号</translation>
 <translation id="8912793549644936705">拉伸</translation>
 <translation id="8912810933860534797">启用自动扫描</translation>
@@ -7492,6 +7501,7 @@
 <translation id="9033765790910064284">仍然继续</translation>
 <translation id="9033857511263905942">粘贴(&amp;P)</translation>
 <translation id="903480517321259405">重新输入 PIN 码</translation>
+<translation id="9037054491984310631">已连接到名为“<ph name="DEVICE" />”的蓝牙设备</translation>
 <translation id="9037640663275993951">不允许此设备运行虚拟机</translation>
 <translation id="9037818663270399707">您的连接在部分网络流量中不是私密连接</translation>
 <translation id="9037965129289936994">显示原始网页</translation>
@@ -7572,6 +7582,7 @@
 <translation id="9112786533191410418"><ph name="FILE_NAME" /> 可能含有危险内容。发送给 Google 进行扫描？</translation>
 <translation id="9112987648460918699">查找...</translation>
 <translation id="9113240369465613386">仅限页码为奇数的页面</translation>
+<translation id="9113469270512809735">显示/隐藏最近关闭的项</translation>
 <translation id="9114663181201435112">轻松登录</translation>
 <translation id="9115675100829699941">书签(&amp;B)</translation>
 <translation id="9116465289595958864">上次修改时间</translation>

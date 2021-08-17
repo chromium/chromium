@@ -280,6 +280,7 @@
 
       Si esta política se establece en false, <ph name="PRODUCT_NAME" /> no permitirá que se inicien perfiles de invitado.</translation>
 <translation id="1363275621236827384">Habilitar las consultas a Quirks Server para perfiles de hardware</translation>
+<translation id="1372618949173323717">Inhabilitar JavaScript</translation>
 <translation id="1376119291123231789">Habilitar el modo avanzado de carga de la batería</translation>
 <translation id="1384459581748403878">Referencia: <ph name="REFERENCE_URL" /></translation>
 <translation id="138847842893090358">Informa el estado de la actualización del SO</translation>
@@ -314,6 +315,13 @@
        Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.
 
        Ten en cuenta que esta política estaba habilitada en Android por error, pero esta funcionalidad nunca fue totalmente compatible en ese SO.</translation>
+<translation id="1435493974546396517">Controla cómo <ph name="PRODUCT_NAME" /> muestra la opción Imprimir como imagen en <ph name="MS_WIN_NAME" /> y <ph name="MAC_OS_NAME" /> cuando el usuario imprime archivos PDF.
+
+      Cuando el usuario imprime un archivo PDF en <ph name="MS_WIN_NAME" /> o <ph name="MAC_OS_NAME" />, a veces, es necesario que los trabajos de impresión se rastericen en una imagen a fin de que determinadas impresoras logren un resultado preciso.
+
+      Si habilitas esta política, <ph name="PRODUCT_NAME" /> hará que la opción Imprimir como imagen esté disponible en el menú Vista previa de impresión cuando el usuario imprima un archivo PDF.
+
+      Si no habilitas o no estableces la política, <ph name="PRODUCT_NAME" /> hará que la opción Imprimir como imagen no esté disponible para los usuarios en el menú Vista previa de impresión. Además, los archivos PDF se imprimirán de forma normal, sin ser rasterizados en una imagen antes de enviarse a destino.</translation>
 <translation id="1435659902881071157">Configuración de red de dispositivo</translation>
 <translation id="1438739959477268107">Configuración predeterminada de generación de claves</translation>
 <translation id="1449083855104537880">Si estableces el valor "True" para la política, se mostrarán las opciones de accesibilidad en el menú de la bandeja del sistema. Si estableces el valor "False", no se mostrarán las opciones en el menú.
@@ -551,6 +559,13 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
       Si la estableces, fallará la instalación de <ph name="PLUGIN_VM_NAME" /> cuando el espacio libre en disco disponible en el dispositivo sea inferior al espacio que requiere la política.</translation>
 <translation id="1690383938831887552">No permitir que se carguen los intercambios HTTP firmados</translation>
 <translation id="169467210981344373">Inhabilitar la caché de autenticación de HTTP con alcance global</translation>
+<translation id="1698810555265314018">Controla la resolución de las imágenes de impresión cuando <ph name="PRODUCT_NAME" /> imprime archivos PDF con rasterización.
+
+      Cuando el usuario imprime archivos PDF con la opción Imprimir como imagen, puede ser útil especificar una resolución de impresión diferente a la configuración de la impresora del dispositivo o el valor predeterminado para archivos PDF.  Una resolución alta aumentará enormemente el tiempo de procesamiento y de impresión, mientras que una resolución baja puede generar una calidad de la imagen pobre.
+
+      Esta política permite especificar una resolución para usarla cuando se rasterizan archivos PDF para la impresión.
+
+      Si la política se establece con el valor cero o no se establece, se usará la resolución predeterminada del sistema durante la rasterización de imágenes de páginas</translation>
 <translation id="1700458869527146675">Si estableces la política, se especificará la configuración del proxy para Chrome y las apps de ARC, por lo que se ignorarán todas las opciones relacionadas con el proxy que se especificaron en la línea de comandos.
 
        Si no la estableces, los usuarios podrán elegir su configuración de proxy.
@@ -2104,6 +2119,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="348495353354674884">Habilitar el teclado virtual</translation>
 <translation id="3485200437120267231">Inhabilita la intercepción de acceso</translation>
 <translation id="3487651201232258606">Mensajería nativa</translation>
+<translation id="3492351353716550742">No usar una política de referente predeterminado con el valor "sin referente cuando cambia a una versión inferior"</translation>
 <translation id="3492834335089638487">Esta política controla la forma en que un dispositivo usa las apps para Android de fuentes no confiables (que no provienen de Google Play Store).
 
       Si no se establece el valor para esta política, no se permitirá la funcionalidad.
@@ -2120,6 +2136,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="350443680860256679">Configurar ARC</translation>
 <translation id="350797926066071931">Habilitar Traductor de Google</translation>
 <translation id="3508047333410537654">Habilita la función de audio mono en la pantalla de acceso</translation>
+<translation id="3513265258454735822">Habilitar el almacenamiento del historial del navegador</translation>
 <translation id="3513655665999652754">Quirks Server proporciona archivos de configuración específicos de hardware, como perfiles de visualización de ICC, para ajustar la calibración del monitor.
 
       Si esta política se configura como falsa, el dispositivo no intentará comunicarse con Quirks Server para descargar archivos de configuración.
@@ -2431,6 +2448,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 
       Si esta política se deja sin configurar, SPDY estará disponible.</translation>
 <translation id="3891357445869647828">Habilitar JavaScript</translation>
+<translation id="3891769546914233112">Imprimir PDF como imagen disponible</translation>
 <translation id="3897218615484393758">Limita el tiempo durante el cual un usuario que se autenticó mediante SAML puede acceder sin conexión a través de la pantalla de bloqueo</translation>
 <translation id="3898345958122666461">Desactivar NTLMv2</translation>
 <translation id="3898795800259311780">Permite o rechaza la captura de pantalla</translation>
@@ -2741,6 +2759,7 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
 <translation id="4372704773119750918">No permitir que el usuario de empresa forme parte de la función de varios perfiles (usuario principal o secundario)</translation>
 <translation id="4377599627073874279">Permitir a todos los sitios que muestren todas las imágenes</translation>
 <translation id="437791893267799639">No se estableció la política; no permitir la migración de datos y ARC</translation>
+<translation id="4381227367939912539">Inhabilitar el juego de huevo de pascua del dinosaurio</translation>
 <translation id="4382413175336720282">Inhabilita la verificación de URL en tiempo real</translation>
 <translation id="4387741272680827493">Si estableces la política, se especifica una lista de nombres de host que evitan las actualizaciones de HSTS precargadas de http a https.
 
@@ -2799,6 +2818,7 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
       Si bien la política se admite en plataformas posteriores, es posible que la función que habilita no esté disponible en todas ellas. No todas las funciones de Web Platform que dejaron de estar disponibles se pueden volver a habilitar; solo las que se indican explícitamente a continuación y durante un período limitado que varía según cada función. El formato general de la etiqueta de cadena será [NombreDeFunciónNoDisponible]_EffectiveUntil[aaaammdd]. Como referencia, se puede encontrar el propósito de los cambios de la función de Web Platform en https://bit.ly/blinkintents.
       </translation>
 <translation id="4442582539341804154">Habilitar el bloqueo cuando el dispositivo esté inactivo o suspendido</translation>
+<translation id="4443711908766051441">Habilitar el juego de huevo de pascua del dinosaurio</translation>
 <translation id="4447668084338250480">Comportamiento de la redirección de intranet</translation>
 <translation id="4449469846627734399">Establecer la configuración diurna para el cambio de pico de consumo de energía</translation>
 <translation id="4449545651113180484">Rotar la pantalla hacia la derecha 270 grados</translation>
@@ -4073,6 +4093,7 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 <translation id="6135398260575578389">Se activó la Navegación segura en el modo mejorado. Este modo es más seguro, pero requiere que compartas con Google más datos sobre la navegación.</translation>
 <translation id="6138636318340561140">Verifica en tiempo real el estado de la Navegación segura de las URL</translation>
 <translation id="6141402445226505817">Usar siempre la detección amplia de la zona horaria</translation>
+<translation id="6142501278956229253">Valor de DPI en la rasterización de archivos PDF para la impresión</translation>
 <translation id="6144046700495610112">Si habilitas la política, se importarán los datos para autocompletar formularios del navegador predeterminado anterior en la primera ejecución. Si la inhabilitas o no la estableces, no se importará ningún dato para autocompletar formularios en la primera ejecución.
 
       Los usuarios podrán activar un diálogo de importación; la casilla de verificación correspondiente a los datos para autocompletar formularios estará marcada o desmarcada en función del valor de esta política.</translation>
@@ -4267,6 +4288,7 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 <translation id="6401669939808766804">Salir de la cuenta de usuario</translation>
 <translation id="640244877779556713">Habilita la sugerencia de emojis</translation>
 <translation id="6407093060083181305">Configura la lista de extensiones que se permiten instalar</translation>
+<translation id="640827304541402854">Inhabilitar el cruce seguro de firewall desde hosts de acceso remoto</translation>
 <translation id="6417265370957905582">Asistente de Google</translation>
 <translation id="6422575351619065453">En el modo kiosko, esta política controla si se muestra el menú de accesibilidad flotante.
 
@@ -5754,6 +5776,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="8244171102276095471">Habilitar los paquetes de encriptación RC4 en TLS</translation>
 <translation id="8244525275280476362">Demora de recuperación máxima después de invalidar una política</translation>
 <translation id="8245574649143980200">Si no estableces la política o la habilitas, los usuarios podrán ver y usar el elemento del menú de la búsqueda parcial de <ph name="GOOGLE_LENS_PRODUCT_NAME" /> en el menú contextual. Si la inhabilitas, los usuarios no verán el elemento del menú de la búsqueda parcial de <ph name="GOOGLE_LENS_PRODUCT_NAME" /> (si la búsqueda parcial de <ph name="GOOGLE_LENS_PRODUCT_NAME" /> es compatible).</translation>
+<translation id="824818544897669723">Inhabilitar la eliminación del historial de descargas y del navegador</translation>
 <translation id="82530263956734297">Identificadores de extensión para excluir de la lista de elementos bloqueados</translation>
 <translation id="8256688113167012935">Controla el nombre de cuenta <ph name="PRODUCT_OS_NAME" /> que aparece en la pantalla de acceso de la cuenta local del dispositivo que corresponda.
 
@@ -6189,6 +6212,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       Las impresoras de extensiones, también conocidas como destinos del proveedor de impresión, incluyen los destinos que pertenecen a las extensiones de <ph name="PRODUCT_NAME" />.
 
       Las impresoras locales, también conocidas como destinos nativos de impresión, incluyen los destinos disponibles en la máquina local y las impresoras de redes compartidas.</translation>
+<translation id="8753264624162178499">El usuario puede seleccionar la opción Imprimir como imagen para permitir la rasterización de archivos PDF antes de enviar el trabajo de impresión a destino</translation>
 <translation id="8757552286070680084">Configuración de DTC wilco</translation>
 <translation id="8758831693895931466">Habilitar la inscripción obligatoria en la administración de la nube</translation>
 <translation id="8759829385824155666">Se permiten los tipos de encriptación de Kerberos</translation>
@@ -6222,6 +6246,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
           Si no la estableces, esta política no tendrá efecto. En este caso, las conexiones de acceso remoto no tendrán duración máxima en esta máquina.</translation>
 <translation id="8800453707696044281">Establecer el porcentaje del nivel de la batería en el que se debe detener la carga</translation>
 <translation id="8801680448782904838">Notificar a un usuario que se recomienda o es obligatorio reiniciar el navegador o el dispositivo</translation>
+<translation id="8804685015028424497">Inhabilitar el modo Incógnito</translation>
 <translation id="8807313206348471682">Mostrar el diálogo de confirmación de salida</translation>
 <translation id="8817960019535659860">No permitir que los usuarios canjeen ofertas a través del Registro de Chrome OS</translation>
 <translation id="8818173863808665831">Informa la ubicación geográfica del dispositivo.
@@ -6575,6 +6600,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="9207596996305971030">No informar eventos de acceso y salida</translation>
 <translation id="9213751049772256263">Inhabilitar todas las variaciones</translation>
 <translation id="9217154963008402249">Frecuencia de envío de paquetes de red de control</translation>
+<translation id="9220314833408124365">Usar una política de referente predeterminado con el valor "sin referente cuando cambia a una versión inferior"</translation>
 <translation id="922540222991413931">Configurar fuentes de instalación de secuencias de comandos de usuario, aplicaciones y extensiones</translation>
 <translation id="924557436754151212">Importar las contraseñas guardadas del navegador predeterminado en la primera ejecución</translation>
 <translation id="927384371566552478">Si habilitas la política o no la estableces, los usuarios podrán usar la IU de importación y exportación. Si inhabilitas la política, los usuarios no podrán usar la IU de importación y exportación.</translation>
@@ -6604,6 +6630,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 
       Nota: Si bloqueas las URL internas de chrome://*, se pueden generar errores inesperados.</translation>
 <translation id="957778406002650056">La URL desde la cual se puede descargar la imagen de <ph name="PLUGIN_VM_NAME" />.</translation>
+<translation id="971677226939413180">El usuario no puede seleccionar la opción Imprimir como imagen</translation>
 <translation id="974349541138387272">Especifica la plantilla de URI del agente de resolución de DNS sobre HTTPS</translation>
 <translation id="979467274961593903">No permitir el uso de la depuración remota</translation>
 <translation id="980218166381006412">Si habilitas la política, se activará el modo en segundo plano. En este modo, se inicia un proceso de <ph name="PRODUCT_NAME" /> durante el acceso al SO y se mantiene en ejecución cuando se cierra la última ventana del navegador, lo que permite mantener activas las apps en segundo plano y la sesión de navegación, incluidas las cookies de sesión. En la bandeja del sistema, aparece un ícono correspondiente al proceso en segundo plano. Puedes cerrar el proceso desde allí en cualquier momento.

@@ -161,6 +161,7 @@
 <translation id="1165039591588034296">பிழை</translation>
 <translation id="1166212789817575481">வலப்பக்கத்தில் உள்ள தாவல்களை மூடுக</translation>
 <translation id="1166583374608765787">பெயர் மாற்றப்பட்டுள்ளது</translation>
+<translation id="1166596238782048887"><ph name="TAB_TITLE" /> பக்கம் <ph name="DESK_TITLE" /> டெஸ்க்கில் உள்ளது</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> இல் திறக்கிறது…</translation>
 <translation id="1170288591054440704">எனது சாதனத்தில் நிறுவப்பட்டுள்ள எழுத்துருக்களைப் பயன்படுத்த ஒரு தளம் விரும்பினால் அனுமதி கேள்</translation>
 <translation id="1171135284592304528">கீபோர்டு ஃபோகஸ் மாறும் போது, ஃபோகஸைக் கொண்டுள்ள பொருளைத்  தனிப்படுத்து.</translation>
@@ -620,6 +621,7 @@
 <translation id="1640235262200048077">Linux ஆப்ஸிற்கு <ph name="IME_NAME" /> இதுவரை இல்லை</translation>
 <translation id="1640283014264083726">RSA என்க்ரிப்ஷனுடன் PKCS #1 MD4</translation>
 <translation id="1641113438599504367">பாதுகாப்பாக உலாவுதல்</translation>
+<translation id="1642492862748815878"><ph name="DEVICE" />, மேலும் <ph name="NUMBER_OF_DEVICES" /> புளூடூத் சாதனங்களுடன் இணைக்கப்பட்டுள்ளது</translation>
 <translation id="1642494467033190216">வேறு பிழைத் திருத்த அம்சங்களை இயக்கும் முன், rootfs பாதுகாப்பை அகற்றி, மீண்டும் தொடங்க வேண்டும்.</translation>
 <translation id="1643072738649235303">SHA-1 உடனான X9.62 ECDSA கையொப்பம்</translation>
 <translation id="1643921258693943800">’அருகிலுள்ளவற்றுடன் பகிர்தல்’ அம்சத்தைப் பயன்படுத்த புளூடூத், வைஃபை ஆகியவற்றை இயக்கவும்</translation>
@@ -1835,6 +1837,7 @@
 <translation id="2885378588091291677">செயல் நிர்வாகி</translation>
 <translation id="2885729872133513017">சேவையகத்தின் பதிலை டிகோட் செய்யும்போது சிக்கல் ஏற்பட்டது.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
+<translation id="288734198558082692"><ph name="DEVICE" />, மேலும் <ph name="NUMBER_OF_DEVICES" /> சாதனங்கள்</translation>
 <translation id="2889064240420137087">இதைக் கொண்டு இணைப்பைத் திற...</translation>
 <translation id="2891922230654533301"><ph name="APP_NAME" /> தளத்தில் உள்நுழைய உங்கள் சாதனத்தைப் பயன்படுத்த விரும்புகிறீர்களா?</translation>
 <translation id="2893168226686371498">இயல்புநிலை உலாவி</translation>
@@ -2770,6 +2773,7 @@
 <translation id="3884152383786131369">பல மொழிகளில் கிடைக்கும் இணைய உள்ளடக்கம், இந்தப் பட்டியலில் முதலில் உள்ள ஆதரிக்கப்படும் மொழியைப் பயன்படுத்தும். இந்த விருப்பத்தேர்வுகள் உங்கள் உலாவி அமைப்புகளுடன் ஒத்திசைக்கப்படும். <ph name="BEGIN_LINK_LEARN_MORE" />மேலும் அறிக<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">புதுப்பிப்புகளை உங்கள் நிர்வாகி நிர்வகிக்கிறார்</translation>
 <translation id="3886446263141354045">இந்தத் தளத்தை அணுகுவதற்கான உங்கள் கோரிக்கை <ph name="NAME" />க்கு அனுப்பப்பட்டது</translation>
+<translation id="3887022758415973389">சாதனப் பட்டியலைக் காட்டும்</translation>
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" /> இணைப்பு</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> மூலம் குறிப்புகளை எடுத்தல்</translation>
 <translation id="3888586133700543064">நீங்கள் எதிர்கொள்ளும் Assistant சிக்கலை நாங்கள் நன்றாகப் புரிந்துகொள்ள இந்தத் தகவல்கள் உதவும். இவை 90 நாட்கள் வரை சேமித்து வைக்கப்படுவதுடன் தகுந்த பொறியியல் மற்றும் கருத்துக் குழுக்களுக்கு மட்டுமே இவற்றுக்கான அணுகல் வழங்கப்படும்.</translation>
@@ -3481,6 +3485,7 @@
 <translation id="4662373422909645029">புனைப்பெயரில் எண்கள் இருக்கக்கூடாது</translation>
 <translation id="4662788913887017617">இந்தப் புத்தகக்குறியை உங்கள் iPhone உடன் பகிருங்கள்</translation>
 <translation id="4663373278480897665">கேமரா அனுமதிக்கப்பட்டது</translation>
+<translation id="4664289193573249666">Chrome OS அமைப்புகளில் பாதுகாப்பான DNSஸை நிர்வகியுங்கள்</translation>
 <translation id="4664482161435122549">PKCS #12 ஏற்றுமதி பிழை</translation>
 <translation id="4665014895760275686">உற்பத்தியாளர்</translation>
 <translation id="4665446389743427678"><ph name="SITE" /> சேகரித்த தரவு அனைத்தும் நீக்கப்படும்.</translation>
@@ -6014,6 +6019,7 @@
 <translation id="7478623944308207463">நீங்கள் Google கணக்கின் மூலம் உள்நுழைந்துள்ள Chrome OS சாதனங்கள் அனைத்திலும் உங்கள் ஆப்ஸும் அமைப்புகளும் ஒத்திசைக்கப்படும். உலாவி ஒத்திசைவு விருப்பங்களுக்கு, <ph name="LINK_BEGIN" />Chrome அமைப்புகளுக்குச்<ph name="LINK_END" /> செல்லவும்.</translation>
 <translation id="7478658909253570368">சீரியல் போர்ட்டுகளுடன் இணைவதற்குத் தளங்களை அனுமதிக்காதே</translation>
 <translation id="7479221278376295180">சேமிப்பக உபயோகம் குறித்த கண்ணோட்டம்</translation>
+<translation id="747981547666531654"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /> ஆகிய புளூடூத் சாதனங்களுடன் இணைக்கப்பட்டது</translation>
 <translation id="7481312909269577407">அடுத்த பக்கம்</translation>
 <translation id="7481358317100446445">தயார்</translation>
 <translation id="748138892655239008">சான்றிதழ் அடிப்படை கட்டுப்பாடுகள்</translation>
@@ -6066,6 +6072,7 @@
 <translation id="7531771599742723865">சாதனம் பயன்பாட்டில் உள்ளது</translation>
 <translation id="7531779363494549572">அமைப்புகள் &gt; ஆப்ஸ் &amp; அறிவிப்புகள் &gt; அறிவிப்புகள் என்பதற்குச் செல்லவும்.</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> செயல்படவில்லை. ஆப்ஸை மூட "உடனே மூடு" என்பதைத் தேர்ந்தெடுங்கள்.</translation>
+<translation id="7535730537657706072">மறைநிலையில் இதுவரை இணையத்தில் பார்த்தவற்றைச் சாதனத்தில் இருந்து அழிக்க மறைநிலைப் பக்கங்கள் அனைத்தையும் மூடவும்</translation>
 <translation id="7535791657097741517">லைட் தீமினை இயக்குதல்</translation>
 <translation id="7537451260744431038">உங்கள் உலாவல் அனுபவத்தை மேம்படுத்துவதற்காக (எ.கா., உங்களை உள்நுழைந்தபடியே வைத்திருப்பது, உங்கள் ஷாப்பிங் கார்ட்டில் உள்ளவற்றை நினைவில் கொள்வது போன்றவை) குக்கீகளைத் தளங்கள் பயன்படுத்த முடியாது</translation>
 <translation id="753769905878158714">முகவரிப் பட்டியில், தேட விரும்பும் இணையதளத்திற்கான தேடல் சொல்லை உள்ளிடவும். அதன்பிறகு கீபோர்டு ஷார்ட்கட்டைப் பயன்படுத்தித் தொடரவும்.</translation>
@@ -6684,6 +6691,7 @@
 <translation id="8138217203226449454">உங்கள் தேடல் வழங்குநரை மாற்ற விரும்புகிறீர்களா?</translation>
 <translation id="8138997515734480534"><ph name="VM_NAME" /> நிலை</translation>
 <translation id="8139447493436036221">Google Drive ஃபைல்கள் </translation>
+<translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
 <translation id="8141584439523427891">மாற்று உலாவியில் இப்போது திறக்கிறது</translation>
 <translation id="8141725884565838206">உங்கள் கடவுச்சொற்களை நிர்வகிக்கவும்</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{ஒரு வீடியோவை}other{# வீடியோக்களை}}</translation>
@@ -7398,6 +7406,7 @@
 <translation id="8909782404367982052">Google Lens மூலம் படங்களைத் தேட, கிளிக் செய்து இழுக்கவும்</translation>
 <translation id="8909833622202089127">தளமானது உங்கள் இருப்பிடத்தைக் கண்காணிக்கிறது</translation>
 <translation id="8910222113987937043">புத்தகக்குறிகள், வரலாறு, கடவுச்சொற்கள் மற்றும் பிற அமைப்புகள் உங்கள் Google கணக்கிற்கு இனி ஒத்திசைக்கப்படாது. இருப்பினும், ஏற்கனவே உங்களிடம் உள்ள தரவு தொடர்ந்து Google கணக்கில் சேமிக்கப்படும். அவற்றை <ph name="BEGIN_LINK" />Google டாஷ்போர்டில்<ph name="END_LINK" /> நிர்வகிக்கலாம்.</translation>
+<translation id="8910987510378294980">சாதனப் பட்டியலை மறைக்கும்</translation>
 <translation id="8912362522468806198">Google கணக்கு</translation>
 <translation id="8912793549644936705">விரிவாக்கு</translation>
 <translation id="8912810933860534797">தானியங்கு ஸ்கேனை இயக்கு</translation>
@@ -7515,6 +7524,7 @@
 <translation id="9033765790910064284">பரவாயில்லை, தொடரவும்</translation>
 <translation id="9033857511263905942">&amp;ஒட்டு</translation>
 <translation id="903480517321259405">பின்னை (PIN) மீண்டும் டைப் செய்யுங்கள்</translation>
+<translation id="9037054491984310631"><ph name="DEVICE" /> என்ற புளூடூத் சாதனத்துடன் இணைக்கப்பட்டது</translation>
 <translation id="9037640663275993951">சாதனம் அனுமதிக்கப்படவில்லை</translation>
 <translation id="9037818663270399707">சில நெட்வொர்க் டிராஃபிக்கிற்கு மட்டுமே உங்கள் இணைப்பு தனிப்பட்டது</translation>
 <translation id="9037965129289936994">அசல் மொழியில் காட்டு</translation>
@@ -7595,6 +7605,7 @@
 <translation id="9112786533191410418"><ph name="FILE_NAME" /> ஆபத்தானதாக இருக்கக்கூடும். ஸ்கேன் செய்ய இதை Googleளுக்கு அனுப்பவா?</translation>
 <translation id="9112987648460918699">கண்டுபிடி...</translation>
 <translation id="9113240369465613386">ஒற்றை எண் பக்கங்கள் மட்டும்</translation>
+<translation id="9113469270512809735">சமீபத்தில் மூடியவற்றைக் காட்டு</translation>
 <translation id="9114663181201435112">எளிதாக உள்நுழையலாம்</translation>
 <translation id="9115675100829699941">&amp;புக்மார்க்குகள்</translation>
 <translation id="9116465289595958864">கடைசியாக மாற்றியது</translation>

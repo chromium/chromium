@@ -243,6 +243,7 @@
 <translation id="2946119680249604491">કનેક્શન ઉમેરો</translation>
 <translation id="2961963223658824723">કંઈક ખોટું થયું. થોડીવારમાં ફરીથી પ્રયાસ કરો.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="296762781903199866"><ph name="LANGUAGE" /> સ્પીચ ફાઇલો ડાઉનલોડ કરી શક્યા નથી</translation>
 <translation id="2970920913501714344">ઍપ, એક્સ્ટેન્શન અને થીમ ઇન્સ્ટૉલ કરો</translation>
 <translation id="2977598380246111477">આગલો નંબર</translation>
 <translation id="2992327365391326550">ડિવાઇસનું માઇક્રોફોન બટન બંધ છે.</translation>
@@ -484,6 +485,7 @@
 <translation id="4696813013609194136">માતાપિતાના કોડ વડે ડિવાઇસને અનલૉક કરો</translation>
 <translation id="4702647871202761252">પ્રાઇવસી સ્ક્રીન બંધ છે</translation>
 <translation id="4705716602320768426">પ્રતિસાદ ફાઇલ કરો</translation>
+<translation id="4706121060329443414">થોડા સમય પછી ડાઉનલોડ કરવાનો પ્રયાસ કરવામાં આવશે. હાલ પૂરતું સ્પીચ પ્રક્રિયા કરવા માટે Googleને મોકલવામાં આવશે.</translation>
 <translation id="4731797938093519117">માતાપિતા માટે ઍક્સેસ</translation>
 <translation id="4734965478015604180">હોરિઝોન્ટલ</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + Number કીબોર્ડ શૉર્ટકટ બદલવામાં આવ્યો છે. ફંક્શન કીનો ઉપયોગ કરવા માટે, <ph name="LAUNCHER_KEY_NAME" /> કી + ઉપરની પંક્તિ પરની કોઈ એક કી દબાવો.</translation>
@@ -589,6 +591,7 @@
 <translation id="5600837773213129531">બોલાયેલ પ્રતિસાદને બંધ કરવા માટે Ctrl + Alt + Z દબાવો.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5619862035903135339">વ્યવસ્થાપક પૉલિસીને કારણે સ્ક્રીન કૅપ્ચરની સુવિધા બંધ કરવામાં આવે છે</translation>
+<translation id="5620281292257375798">માત્ર આંતરિક</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">માઇક જેક</translation>
 <translation id="5649768706273821470">સાંભળો</translation>
@@ -657,6 +660,7 @@
 <translation id="6073451960410192870">રેકોર્ડિંગ બંધ કરો</translation>
 <translation id="607652042414456612">નજીકનાં Bluetooth ડિવાઇસ માટે તમારું કમ્પ્યુટર શોધવાયોગ્ય છે અને તે સરનામાં <ph name="ADDRESS" /> સાથે "<ph name="NAME" />" તરીકે દેખાશે</translation>
 <translation id="6094290315941448991">ગોપનીય કન્ટેન્ટ દેખાય ત્યારે વ્યવસ્થાપક પૉલિસીને કારણે સ્ક્રીન રેકોર્ડિંગ બંધ કરવામાં આવે છે</translation>
+<translation id="6114505516289286752"><ph name="LANGUAGE" /> સ્પીચ ફાઇલ ડાઉનલોડ કરી</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">અતિથિ સત્રમાં Google આસિસ્ટંટ ઉપલબ્ધ હોતું નથી.</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> માટે કાઢી નાખવાનો સંવાદ ખોલો</translation>
@@ -738,6 +742,7 @@
 <translation id="6816797338148849397">તમારી પસંદગી સંબંધિત માહિતી ઉપલબ્ધ છે. તેને ઍક્સેસ કરવા માટે ઉપર એરો કીનો ઉપયોગ કરો.</translation>
 <translation id="6818242057446442178">એક શબ્દ પાછળ જાઓ</translation>
 <translation id="6820676911989879663">વિરામ લો!</translation>
+<translation id="6836499262298959512">જોખમી ફાઇલ</translation>
 <translation id="6837064795450991317">ડેસ્કબાર છુપાવો</translation>
 <translation id="6850010208275816200">તમારી વર્તમાન ઍપ પૂર્ણ સ્ક્રીન મોડમાં છે. જો ઍપ તમારો પાસવર્ડ પૂછે, તો પહેલાં પૂર્ણ સ્ક્રીન મોડમાંથી બહાર નીકળો.</translation>
 <translation id="6852052252232534364">ક્લિકથી સક્રિય</translation>
@@ -878,6 +883,7 @@
 <translation id="7901405293566323524">ફોન હબ</translation>
 <translation id="7902625623987030061">ફિંગરપ્રિન્ટ સેન્સરને ટચ કરો</translation>
 <translation id="7904094684485781019">આ એકાઉન્ટ માટે વ્યસ્થાપકે એકથી વધુ સાઇન ઇનને નામંજૂર કર્યું છે.</translation>
+<translation id="7930731167419639574">સ્પીચ પર હવે ડિવાઇસમાં જ પ્રક્રિયા કરવામાં આવે છે અને ડિક્ટેશનની સુવિધા ઑફલાઇન કામ કરે છે</translation>
 <translation id="7933084174919150729">Google સહાયક માત્ર પ્રાથમિક પ્રોફાઇલ માટે જ ઉપલબ્ધ છે.</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> અને <ph name="SECOND_PARENT_EMAIL" /> દ્વારા મેનેજ કરાતું એકાઉન્ટ</translation>
 <translation id="793716872548410480">તમારું ક્લિપબોર્ડ જોવા માટે <ph name="SHORTCUT_KEY_NAME" /> + V દબાવો. તમે કૉપિ કરેલી છેલ્લી 5 આઇટમ તમારા ક્લિપબોર્ડ પર સાચવવામાં આવી છે.</translation>

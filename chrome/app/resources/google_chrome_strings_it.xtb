@@ -68,6 +68,7 @@
 <translation id="2429317896000329049">Impossibile sincronizzare i dati in Google Chrome perché la sincronizzazione non è disponibile per il tuo dominio.</translation>
 <translation id="2467438592969358367">Google Chrome vuole esportare le password. Per consentire l'esportazione, digita la tua password Windows.</translation>
 <translation id="2485422356828889247">Disinstalla</translation>
+<translation id="2518751521812750372">Quando chiudi Chrome, vengono cancellati automaticamente i dati dei siti e i cookie delle pagine visitate</translation>
 <translation id="2534507159460261402">Google Pay (copiata in Chrome)</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> ha già eseguito l'accesso a questo profilo Chrome. Per tenere separata la tua navigazione, Chrome può creare per te il tuo profilo personale.</translation>
 <translation id="2580411288591421699">Impossibile installare la stessa versione di Google Chrome attualmente in esecuzione. Chiudi Google Chrome e riprova.</translation>
@@ -268,7 +269,7 @@
 <translation id="8008534537613507642">Reinstalla Chrome</translation>
 <translation id="8013993649590906847">Se un'immagine è senza descrizione utile, Chrome proverà a fornirne una. Per la creazione delle descrizioni, le immagini vengono inviate a Google.</translation>
 <translation id="8129812357326543296">Informazioni su &amp;Google Chrome</translation>
-<translation id="822971176939352383">I seguenti account non hanno effettuato l'accesso e nessun profilo Chrome. Se vuoi usare un account in un altro profilo, rimuovi per prima cosa questo profilo.</translation>
+<translation id="822971176939352383">I seguenti account non hanno effettuato l'accesso a nessun profilo Chrome. Se vuoi usare un account in un altro profilo, rimuovi per prima cosa questo profilo.</translation>
 <translation id="8255190535488645436">Google Chrome sta utilizzando videocamera e microfono.</translation>
 <translation id="8286862437124483331">Google Chrome sta cercando di visualizzare le password. Per consentire la visualizzazione, digita la tua password Windows.</translation>
 <translation id="828798499196665338">Uno dei tuoi genitori ha disattivato "Autorizzazioni per siti, app ed estensioni" per Chrome. L'attivazione di <ph name="EXTENSION_TYPE_PARAMETER" /> non è consentita.</translation>

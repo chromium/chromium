@@ -271,6 +271,7 @@
 <translation id="1838374766361614909">തിരയൽ മായ്ക്കുക</translation>
 <translation id="1839551713262164453">നയ മൂല്യങ്ങളുടെ സാധൂകരണം പിശകുകളോടെ പരാജയപ്പെട്ടു</translation>
 <translation id="1842969606798536927">പണമടയ്‌ക്കുക</translation>
+<translation id="1856713167556118146">അദൃശ്യ മോഡ് ചെയ്യാത്ത കാര്യങ്ങൾ</translation>
 <translation id="1871208020102129563">സ്ഥിരമായ പ്രോക്‌സി സെർവറുകൾ ഉപയോഗിക്കുന്നതിനായി പ്രോക്‌സി സജ്ജീകരിച്ചിരിക്കുന്നു, ഒരു .pac സ്‌ക്രിപ്റ്റ് URL ഉപയോഗിക്കുന്നതിനല്ല.</translation>
 <translation id="1871284979644508959">ഇത് പൂരിപ്പിക്കേണ്ടതുണ്ട്</translation>
 <translation id="1875512691959384712">Google Forms</translation>
@@ -1015,6 +1016,7 @@
 <translation id="4465818729556336129">ഈ ഡോക്യുമെന്റ് രഹസ്യാത്മകമായതിനാൽ ഇത് അച്ചടിക്കുന്നത് നിങ്ങളുടെ അഡ്‌മിനിസ്ട്രേറ്റർ ശുപാർശ ചെയ്യുന്നില്ല.</translation>
 <translation id="4476953670630786061">ഈ ഫോം സുരക്ഷിതമല്ല. സ്വയമേവ പൂരിപ്പിക്കൽ ഓഫാക്കിയിരിക്കുന്നു.</translation>
 <translation id="4477350412780666475">അടുത്ത ട്രാക്ക്</translation>
+<translation id="4481251927743463293">അദൃശ്യ മോഡ് ചെയ്യുന്ന കാര്യങ്ങൾ</translation>
 <translation id="4481394504112738036">രഹസ്യാത്മക ഫയൽ</translation>
 <translation id="4482953324121162758">ഈ സൈറ്റ് വിവർത്തനം ചെയ്യപ്പെടില്ല.</translation>
 <translation id="4490717597759821841">A7</translation>
@@ -1115,10 +1117,17 @@
 <translation id="4819347708020428563">ഡിഫോൾട്ട് കാഴ്‌ചയിൽ കുറിപ്പുകൾ എഡിറ്റ് ചെയ്യണോ?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, പുതിയൊരു Google ഷീറ്റ് വേഗത്തിൽ സൃഷ്ടിക്കാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
 <translation id="4825507807291741242">ശക്തമായത്</translation>
+<translation id="4827402517081186284">അദൃശ്യ മോഡ് നിങ്ങളെ ഓൺലൈനിൽ അദൃശ്യമാക്കുന്നില്ല:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />നിങ്ങൾ സന്ദർശിക്കുമ്പോൾ സൈറ്റുകൾക്ക് അത് അറിയാനാകും<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />തൊഴിലുടമകൾക്കോ സ്കൂളുകൾക്കോ ബ്രൗസിംഗ് ആക്റ്റിവിറ്റി ട്രാക്ക് ചെയ്യാനാകും<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />ഇന്റർനെറ്റ് സേവന ദാതാക്കൾ വെബ് ട്രാഫിക് നിരീക്ഷിച്ചേക്കാം<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="4838327282952368871">മനോരാജ്യത്തിൽ മുഴുകിയത്</translation>
 <translation id="484462545196658690">സ്വയമേവ</translation>
 <translation id="4850886885716139402">കാണുക</translation>
 <translation id="485316830061041779">ജര്‍മ്മന്‍</translation>
+<translation id="4853901935952445031">2022 ഫെബ്രുവരിക്ക് ശേഷം ഈ സൈറ്റിന് U2F API ഉപയോഗിക്കാനാകില്ല. ഈ സൈറ്റ് നിങ്ങളുടേതാണെങ്കിൽ, വെബ് ഓതന്റിക്കേഷൻ API ഉപയോഗിക്കുന്നതിന് നിങ്ങൾ അത് മാറ്റണം.</translation>
 <translation id="4854362297993841467">ഈ ഡെലിവറി രീതി ലഭ്യമല്ല. മറ്റൊരു രീതി പരീക്ഷിക്കുക.</translation>
 <translation id="4854853140771946034">Google Keep-ൽ പുതിയൊരു കുറിപ്പ് വേഗത്തിൽ സൃഷ്ടിക്കുക</translation>
 <translation id="4876188919622883022">ലളിതവൽക്കരിച്ച കാഴ്ച്ച</translation>
@@ -1641,6 +1650,7 @@
 <translation id="6757797048963528358">നിങ്ങളുടെ ഉപകരണം സ്ലീപ്പ് മോഡിലായി</translation>
 <translation id="6767985426384634228">വിലാസം അപ്ഡേറ്റ് ചെയ്യണോ?</translation>
 <translation id="6768213884286397650">ഹഗാക്കി (പോസ്‌റ്റ്‌കാർഡ്)</translation>
+<translation id="6774185088257932239">അദൃശ്യ മോഡിനെ കുറിച്ച് <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">വയലറ്റ്</translation>
 <translation id="6786747875388722282">വിപുലീകരണങ്ങള്‍</translation>
@@ -1688,6 +1698,7 @@
 <translation id="6965382102122355670">ശരി</translation>
 <translation id="6965978654500191972">ഉപകരണം</translation>
 <translation id="696703987787944103">പെർസെപ്ച്വൽ</translation>
+<translation id="6968269510885595029">നിങ്ങളുടെ സുരക്ഷ കീ ഉപയോഗിക്കുക</translation>
 <translation id="6970216967273061347">ജില്ല</translation>
 <translation id="6971439137020188025">Slides-ൽ പുതിയൊരു Google അവതരണം വേഗത്തിൽ സൃഷ്ടിക്കുക</translation>
 <translation id="6972629891077993081">HID ഉപകരണങ്ങൾ</translation>
@@ -1753,6 +1764,7 @@
 <translation id="7210863904660874423"><ph name="HOST_NAME" />, സുരക്ഷാ മാനദണ്ഡങ്ങൾ പാലിക്കുന്നില്ല.</translation>
 <translation id="7210993021468939304">കണ്ടെയ്‌നറിനുള്ളിലെ Linux ആക്‌റ്റിവിറ്റി, കൂടാതെ കണ്ടെയ്‌നറിനുള്ളിൽ Linux ആപ്പുകൾ ഇൻസ്‌റ്റാൾ ചെയ്യാനും റൺ ചെയ്യാനും കഴിയും</translation>
 <translation id="721197778055552897">ഈ പ്രശ്‌നത്തെക്കുറിച്ച് <ph name="BEGIN_LINK" />കൂടുതൽ‍ മനസിലാക്കുക<ph name="END_LINK" />.</translation>
+<translation id="7215025035562547931">കൃത്യത പരിശോധിക്കാൻ അൽപ്പസമയം ചെലവഴിക്കുക</translation>
 <translation id="7217745192097460130">പരിശോധിച്ചുറപ്പിക്കുന്നതിനും വാങ്ങൽ പൂർത്തിയാക്കുന്നതിനും ടച്ച് ഐഡി ഉപയോഗിക്കണോ?</translation>
 <translation id="7219179957768738017">കണക്ഷന്‍ <ph name="SSL_VERSION" /> ഉപയോഗിക്കുന്നു.</translation>
 <translation id="7220786058474068424">പ്രോസസ്സുചെയ്യുന്നു</translation>
@@ -2086,6 +2098,12 @@
 <translation id="8307888238279532626">ആപ്പുകൾ ഇൻസ്‌റ്റാൾ ചെയ്തിരിക്കുന്നു, അവ എത്ര തവണ ഉപയോഗിക്കുന്നു</translation>
 <translation id="831207732689920588">ഈ പേജ് സംശയാസ്പദമാണ് (Chrome ഫ്ലാഗ് ചെയ്തത്).</translation>
 <translation id="831997045666694187">വൈകുന്നേരം</translation>
+<translation id="8328484624016508118">എല്ലാ അദൃശ്യ ടാബുകളും അടച്ചതിനുശേഷം, Chrome ഇവ മായ്ക്കുന്നു:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />ഈ ഉപകരണത്തിൽ നിന്നുള്ള നിങ്ങളുടെ ബ്രൗസിംഗ് ആക്റ്റിവിറ്റി<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />ഈ ഉപകരണത്തിൽ നിന്നുള്ള നിങ്ങളുടെ തിരയൽ ചരിത്രം<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />ഫോമുകളിൽ നൽകിയ വിവരങ്ങൾ<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489"><ph name="HOST_NAME" /> ഹോസ്‌റ്റിലേക്കുള്ള ആക്‌സസ് നിരസിച്ചു</translation>
 <translation id="833262891116910667">ഹൈലൈറ്റ് ചെയ്യുക</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> ഭാഷയിലുള്ള പേജുകൾ വിവർത്തനം ചെയ്യില്ല</translation>

@@ -2215,6 +2215,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="3305661444342691068">Abrir visualização do PDF</translation>
 <translation id="3308116878371095290">Esta página foi impedida de configurar cookies.</translation>
 <translation id="3308134619352333507">Ocultar botão</translation>
+<translation id="3308681281309926497">Os sites acessados ainda terão acesso às suas informações até você fechar o Chrome</translation>
 <translation id="3308738399950580893">anúncios</translation>
 <translation id="3308852433423051161">Carregando o Google Assistente…</translation>
 <translation id="3309330461362844500">ID do perfil de certificado</translation>
@@ -2769,6 +2770,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="3873423927483480833">Mostrar PINs</translation>
 <translation id="3873915545594852654">Ocorreu um problema com o ARC++.</translation>
 <translation id="3874164307099183178">Ativar o Google Assistente</translation>
+<translation id="3875815154304214043">O app <ph name="APP_NAME" /> está configurado para ser aberto em uma nova guia do navegador. Links compatíveis também serão abertos dessa forma. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256">Configurações do "Compartilhar por proximidade" para o dispositivo de <ph name="USER_NAME" />, compartilhando com a conta <ph name="USER_EMAIL" />.</translation>
 <translation id="3879748587602334249">Gerenciador de downloads</translation>
 <translation id="3882165008614329320">Vídeo existente de uma câmera ou de um arquivo</translation>
@@ -3917,6 +3919,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="5157635116769074044">Fixar guia dessa página na tela inicial.</translation>
 <translation id="5159094275429367735">Configurar o Crostini</translation>
 <translation id="5159419673777902220">Seu pai/mãe desativou as permissões da extensão</translation>
+<translation id="5159643365935452998">Revisar a limpeza de dados automática</translation>
 <translation id="5160634252433617617">Teclado físico</translation>
 <translation id="5160857336552977725">Faça login no seu <ph name="DEVICE_TYPE" /></translation>
 <translation id="5161251470972801814">Dispositivos USB do <ph name="VENDOR_NAME" /></translation>
@@ -4481,6 +4484,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5790651917470750848">O encaminhamento de portas já existe</translation>
 <translation id="5792728279623964091">Toque no botão liga/desliga</translation>
 <translation id="5793339252089865437">Se você fizer o download da atualização pela rede móvel, poderá receber cobranças adicionais.</translation>
+<translation id="5794034487966529952">O espaço de trabalho <ph name="DESK_TITLE" /> tem <ph name="NUM_BROWSERS" /> janelas do navegador abertas</translation>
 <translation id="5794414402486823030">Sempre abrir com visualizador do sistema</translation>
 <translation id="5794700615121138172">Pastas compartilhadas do Linux</translation>
 <translation id="5794786537412027208">Sair de todos os aplicativos do Google Chrome</translation>

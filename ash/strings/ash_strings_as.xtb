@@ -243,6 +243,7 @@
 <translation id="2946119680249604491">সংযোগ যোগ কৰক</translation>
 <translation id="2961963223658824723">কিবা এটা ভুল হৈছে। কেই ছেকেণ্ডমানৰ পাছত পুনৰ চেষ্টা কৰক।</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="296762781903199866"><ph name="LANGUAGE" />ৰ কথনৰ ফাইল ডাউনল’ড কৰিব পৰা নগ’ল</translation>
 <translation id="2970920913501714344">এপ্‌, এক্সটেনশ্বন আৰু থীম ইনষ্টল কৰক</translation>
 <translation id="2977598380246111477">পৰৱৰ্তী সংখ্যা</translation>
 <translation id="2992327365391326550">ডিভাইচটোৰ মাইক্ৰ’ফ’নৰ বুটামটো অফ কৰা হ’ল।</translation>
@@ -483,6 +484,7 @@
 <translation id="4696813013609194136">অভিভাৱকৰ প্ৰৱেশ ক'ডৰ সহায়ত ডিভাইচ আনলক কৰক</translation>
 <translation id="4702647871202761252">গোপনীয়তাৰ স্ক্ৰীনখন অফ আছে</translation>
 <translation id="4705716602320768426">মতামত ফাইল কৰক</translation>
+<translation id="4706121060329443414">পাছত ডাউনল’ড কৰিবলৈ প্ৰয়াস কৰা হ’ব। এতিয়াৰ বাবে প্ৰক্ৰিয়াকৰণৰ বাবে Googleলৈ কথন পঠিওৱা হ’ব।</translation>
 <translation id="4731797938093519117">অভিভাৱকৰ এক্সেছ</translation>
 <translation id="4734965478015604180">আনুভূমিক</translation>
 <translation id="4735498845456076464">কীব’ৰ্ডৰ শ্বৰ্টকাট <ph name="LAUNCHER_KEY_NAME" /> + নাম্বাৰটো সলনি হৈছে। ফাংশ্বন কীসমূহ ব্যৱহাৰ কৰিবলৈ, <ph name="LAUNCHER_KEY_NAME" /> কীটো + ওপৰৰ শাৰীৰ এটা কী টিপক।</translation>
@@ -588,6 +590,7 @@
 <translation id="5600837773213129531">কথিত প্ৰতিক্ৰিয়া অক্ষম কৰিবলৈ Ctrl + Alt + Z দবাওক।</translation>
 <translation id="5601503069213153581">পিন</translation>
 <translation id="5619862035903135339">স্ক্ৰীন কেপচাৰ কৰাটো প্ৰশাসকৰ নীতিয়ে অক্ষম কৰে</translation>
+<translation id="5620281292257375798">কেৱল অভ্যন্তৰীণ</translation>
 <translation id="5625955975703555628">এলটিই+</translation>
 <translation id="5648021990716966815">মাইকৰ জেক</translation>
 <translation id="5649768706273821470">শুনক</translation>
@@ -656,6 +659,7 @@
 <translation id="6073451960410192870">ৰেকৰ্ডিং কৰা বন্ধ কৰক</translation>
 <translation id="607652042414456612">আপোনাৰ কম্পিউটাৰটো নিকটৱৰ্তী ডিভাইচসমূহে পাব পৰা অৱস্থাত আছে আৰু এইটো <ph name="ADDRESS" /> ঠিকনাৰ সৈতে "<ph name="NAME" />" হিচাপে প্ৰদর্শিত হ’ব</translation>
 <translation id="6094290315941448991">প্ৰশাসকৰ নীতিয়ে গোপনীয় সমল দৃশ্যমান হৈ থাকোঁতে স্ক্ৰীন ৰেকৰ্ডিং অক্ষম কৰে</translation>
+<translation id="6114505516289286752"><ph name="LANGUAGE" /> কথনৰ ফাইল ডাউনল’ড কৰা হৈছে</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />। <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">অতিথিৰ ছেশ্বনত Google Assistant উপলব্ধ নহয়।</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" />ৰ বাবে আঁতৰোৱাৰ ডায়লগ খোলক</translation>
@@ -737,6 +741,7 @@
 <translation id="6816797338148849397">আপুনি কৰা বাছনি সম্পৰ্কীয় তথ্য উপলব্ধ। এক্সেছ কৰিবলৈ উপৰমুৱা কাঁড়চিহ্নৰ কী ব্যৱহাৰ কৰক।</translation>
 <translation id="6818242057446442178">এটা শব্দ পিছলৈ যাওক</translation>
 <translation id="6820676911989879663">বিৰতি লওক!</translation>
+<translation id="6836499262298959512">বিপজ্জনক ফাইল</translation>
 <translation id="6837064795450991317">ডেস্কবাৰ লুকুৱাওক</translation>
 <translation id="6850010208275816200">আপোনাৰ বৰ্তমান এপ্‌টো পূৰ্ণ স্ক্ৰীনৰ ম’ডত আছে। যদি এপ্‌টোৱে আপোনাৰ পাছৱৰ্ড বিচাৰে তেন্তে প্ৰথমে পূৰ্ণ স্ক্ৰীনৰ পৰা বাহিৰ হওক।</translation>
 <translation id="6852052252232534364">সক্ৰিয় কৰিব টিপক</translation>
@@ -874,6 +879,7 @@
 <translation id="7901405293566323524">ফ’ন হাব</translation>
 <translation id="7902625623987030061">ফিংগাৰপ্ৰিণ্ট ছেন্সৰটো স্পৰ্শ কৰক</translation>
 <translation id="7904094684485781019">এই একাউণ্টটোৰ প্ৰশাসককে একাধিক ছাইন ইন কৰাৰ অনুমতি দিয়া নাই।</translation>
+<translation id="7930731167419639574">এতিয়া কথন স্থানীয়ভাৱে প্ৰক্ৰিয়াকৰণ কৰা হৈছে আৰু শ্ৰুতলিপিৰ সুবিধাটোৱে অফলাইনত কাম কৰে</translation>
 <translation id="7933084174919150729">Google Assistant কেৱল প্ৰাথমিক প্ৰ’ফাইলৰ বাবে উপলব্ধ।</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> আৰু <ph name="SECOND_PARENT_EMAIL" />এ একাউণ্ট পৰিচালনা কৰে</translation>
 <translation id="793716872548410480">আপোনাৰ ক্লিপব’ৰ্ড চাবলৈ <ph name="SHORTCUT_KEY_NAME" /> + ভি টিপক। আপুনি প্ৰতিলিপি কৰা অন্তিম ৫ টা বস্তু আপোনাৰ ক্লিপব’ৰ্ডত ছেভ কৰা হৈছে।</translation>

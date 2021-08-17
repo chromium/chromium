@@ -93,6 +93,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1615402009686901181">La política de l'administrador desactiva la captura de pantalla quan es mostra contingut confidencial</translation>
 <translation id="1632985212731562677">L'accés amb interruptors es pot desactivar a Configuració &gt; Accessibilitat.</translation>
 <translation id="1654477262762802994">Inicia una consulta per veu</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Prem Cerca+Espai per veure el resultat a l'Assistent.</translation>
 <translation id="1667964833127753507">El mode de color neutre no utilitza colors extrets del fons de pantalla, sinó que els substitueix per un conjunt de tons neutres clars o foscos.</translation>
 <translation id="1677472565718498478">Temps restant: <ph name="TIME" /></translation>
 <translation id="1677507110654891115">La funció <ph name="FEATURE_NAME" /> no està connectada.</translation>
@@ -140,6 +141,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2016340657076538683">Escriu un missatge</translation>
 <translation id="2018630726571919839">Explica'm un acudit</translation>
 <translation id="2021864487439853900">Fes clic per desbloquejar</translation>
+<translation id="2023558322300866873">Pots aturar la captura de paquets en qualsevol moment</translation>
 <translation id="2047639699071423250">Afegeix una idea clau</translation>
 <translation id="2049240716062114887">El nom de l'escriptori s'ha canviat a <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Vertical</translation>
@@ -542,6 +544,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="5083553833479578423">Desbloqueja més funcions de l'Assistent.</translation>
 <translation id="5136175204352732067">S'ha connectat un altre teclat</translation>
 <translation id="5155897006997040331">Velocitat de lectura</translation>
+<translation id="5166918508782100047">Configuració de Respostes ràpides</translation>
 <translation id="5168181903108465623">Dispositius d'emissió disponibles</translation>
 <translation id="5170568018924773124">Mostra a la carpeta</translation>
 <translation id="5176318573511391780">Grava una part de la pantalla</translation>
@@ -796,6 +799,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="7302889331339392448">La funció Subtítols instantanis està desactivada.</translation>
 <translation id="7303365578352795231">S'està responent en un altre dispositiu.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Prem Cerca+Espai per veure el resultat a la Cerca de Google.</translation>
 <translation id="7346909386216857016">D'acord</translation>
 <translation id="7348093485538360975">Teclat en pantalla</translation>
 <translation id="735745346212279324">VPN desconnectada</translation>

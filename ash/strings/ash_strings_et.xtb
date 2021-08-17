@@ -93,6 +93,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1615402009686901181">Administraatori eeskirjad keelavad ekraanikuva jäädvustamise, kui konfidentsiaalne sisu on nähtaval</translation>
 <translation id="1632985212731562677">Lülitiga juurdepääsu saab keelata menüüs Seaded &gt; Juurdepääsetavus.</translation>
 <translation id="1654477262762802994">Häälpäringu alustamine</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Assistendis tulemuste nägemiseks vajutage korraga otsingu- ja tühikuklahvi.</translation>
 <translation id="1667964833127753507">Neutraalne värvirežiim ei kasuta taustapildist tuletatud värve, vaid asendab need neutraalsete heledate või tumedate toonidega.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> tühjenemiseni</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> pole ühendatud.</translation>
@@ -140,6 +141,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2016340657076538683">Sisestage sõnum</translation>
 <translation id="2018630726571919839">Räägi mõni nali</translation>
 <translation id="2021864487439853900">Klõpsake avamiseks</translation>
+<translation id="2023558322300866873">Võite pakettide jäädvustamise igal ajal peatada</translation>
 <translation id="2047639699071423250">Lisa oluline idee</translation>
 <translation id="2049240716062114887">Töölaua nimeks määrati <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Vertikaalpaigutus</translation>
@@ -543,6 +545,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5083553833479578423">Avage rohkem assistendi funktsioone.</translation>
 <translation id="5136175204352732067">Ühendatud on teine klaviatuur</translation>
 <translation id="5155897006997040331">Lugemiskiirus</translation>
+<translation id="5166918508782100047">Kiirvastuste seaded</translation>
 <translation id="5168181903108465623">Ülekandeseadmed on saadaval</translation>
 <translation id="5170568018924773124">Kuva kaustas</translation>
 <translation id="5176318573511391780">Ekraani osa salvestamine</translation>
@@ -797,6 +800,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="7302889331339392448">Reaalajas subtiitrid on välja lülitatud.</translation>
 <translation id="7303365578352795231">Vastamine muus seadmes.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google'i otsingus tulemuste nägemiseks vajutage korraga otsingu- ja tühikuklahvi.</translation>
 <translation id="7346909386216857016">Selge, sain aru</translation>
 <translation id="7348093485538360975">Ekraanil kuvatav klaviatuur</translation>
 <translation id="735745346212279324">VPN-i ühendus on katkestatud</translation>

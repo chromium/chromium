@@ -161,6 +161,7 @@
 <translation id="1165039591588034296">আসোঁৱাহ</translation>
 <translation id="1166212789817575481">সোঁফালৰ টেববোৰ বন্ধ কৰক</translation>
 <translation id="1166583374608765787">নামৰ আপডে’ট পৰ্যালোচনা কৰক</translation>
+<translation id="1166596238782048887">ডেস্ক <ph name="DESK_TITLE" />ত <ph name="TAB_TITLE" /> আছে</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" />ত খুলি থকা হৈছে...</translation>
 <translation id="1170288591054440704">কোনো ছাইটে আপোনাৰ ডিভাইচত ইনষ্টল হৈ থকা ফণ্ট ব্যৱহাৰ কৰিবলৈ বিচাৰিলে সোধক</translation>
 <translation id="1171135284592304528">অবজেক্ট সলনি হ’লে কীব’র্ড ফ’কাছৰ জৰিয়তে হাইলাইট কৰক</translation>
@@ -618,6 +619,7 @@
 <translation id="1640235262200048077"><ph name="IME_NAME" />এ এতিয়ালৈকৈ Linux এপ্‌সমূহত কাম কৰা হোৱা নাই</translation>
 <translation id="1640283014264083726">RSA এনক্ৰিপশ্বনৰ সৈতে PKCS #1 MD4</translation>
 <translation id="1641113438599504367">সুৰক্ষিত ব্ৰাউজিং</translation>
+<translation id="1642492862748815878"><ph name="DEVICE" /> আৰু <ph name="NUMBER_OF_DEVICES" /> টা ব্লুটুথ ডিভাইচৰ সৈতে সংযোগ কৰা হৈছে</translation>
 <translation id="1642494467033190216">অন্য ডিবাগিঙৰ সুবিধা সক্ষম কৰাৰ আগতে এটা rootfs সুৰক্ষা আঁতৰাই ডিভাইচটো ৰিষ্টাৰ্ট কৰিব লাগিব।</translation>
 <translation id="1643072738649235303">SHA-1ৰ সৈতে X9.62 ECDSA স্বাক্ষৰ</translation>
 <translation id="1643921258693943800">Nearby Share ব্যৱহাৰ কৰিবলৈ ব্লুটুথ আৰু ৱাই-ফাই অন কৰক</translation>
@@ -1832,6 +1834,7 @@
 <translation id="2885378588091291677">কাৰ্য পৰিচালক</translation>
 <translation id="2885729872133513017">ছার্ভাৰৰ সঁহাৰি ডিক'ড কৰোঁতে সমস্যাৰ সৃষ্টি হৈছিল।</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
+<translation id="288734198558082692"><ph name="DEVICE" /> আৰু অন্য <ph name="NUMBER_OF_DEVICES" /> টা</translation>
 <translation id="2889064240420137087">ইয়াৰ এটাৰ জৰিয়তে লিংকটো খোলক...</translation>
 <translation id="2891922230654533301"><ph name="APP_NAME" />ত ছাইন ইন কৰিবলৈ আপোনাৰ ডিভাইচটো ব্যৱহাৰ কৰিবনে?</translation>
 <translation id="2893168226686371498">ডিফ’ল্ট ব্ৰাউজাৰ</translation>
@@ -2767,6 +2770,7 @@
 <translation id="3884152383786131369">একাধিক ভাষাত উপলব্ধ ৱেবৰ সমলে এই সূচীখনৰ পৰা সমৰ্থিত প্ৰথম ভাষাটো ব্যৱহাৰ কৰিব। এই অগ্ৰাধিকাৰসমূহ আপোনাৰ ব্ৰাউজাৰৰ ছেটিঙৰ সৈতে ছিংক কৰা আছে। <ph name="BEGIN_LINK_LEARN_MORE" />অধিক জানক<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">আপোনাৰ প্ৰশাসকে আপডে’টসমূহ পৰিচালনা কৰে</translation>
 <translation id="3886446263141354045">এই ছাইটটো এক্সেছ কৰিবলৈ আপুনি কৰা অনুৰোধ <ph name="NAME" />লৈ পঠিওৱা হৈছে</translation>
+<translation id="3887022758415973389">ডিভাইচৰ সূচী দেখুৱাওক</translation>
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" /> সংযোগ</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" />ৰ জৰিয়তে টোকা লৈ থকা হৈছে</translation>
 <translation id="3888586133700543064">এই তথ্যখিনিয়ে আমাক আপোনাৰ Assistantৰ সমস্যা ভালকৈ বুজি পোৱাত সহায় কৰে। ইয়াক ৯০ দিন পৰ্যন্ত ষ্ট’ৰ কৰি ৰখা হয় আৰু ইয়াৰ এক্সেছ সঠিক অভিযান্ত্রিক আৰু মতামতৰ সৈতে জড়িত দলতে সীমিত।</translation>
@@ -3474,6 +3478,7 @@
 <translation id="4662373422909645029">উপনামত সংখ্যা থাকিব নোৱাৰে</translation>
 <translation id="4662788913887017617">এই বুকমাৰ্কটো আপোনাৰ iPhoneৰ সৈতে শ্বেয়াৰ কৰক</translation>
 <translation id="4663373278480897665">কেমেৰা ব্যৱহাৰৰ অনুমতি দিয়া হৈছে</translation>
+<translation id="4664289193573249666">Chrome OSৰ ছেটিঙত সুৰক্ষিত DNS পৰিচালনা কৰক</translation>
 <translation id="4664482161435122549">PKCS #12 আমদানি সম্পর্কীয় আসোঁৱাহ</translation>
 <translation id="4665014895760275686">উৎপাদনকাৰী</translation>
 <translation id="4665446389743427678"><ph name="SITE" />এ ষ্ট’ৰ কৰা সকলো ডেটা মচা যাব।</translation>
@@ -6000,6 +6005,7 @@
 <translation id="7478623944308207463">আপোনাৰ এপ্‌ আৰু ছেটিং আপুনি নিজৰ Google একাউণ্টেৰে ছাইন ইন কৰি থোৱা আটাইবোৰ Chrome OS ডিভাইচত ছিংক হ’ব। ব্ৰাউজাৰ ছিংক কৰাৰ বিকল্পসমূহৰ বাবে <ph name="LINK_BEGIN" />Chromeৰ ছেটিঙ<ph name="LINK_END" />লৈ যাওক।</translation>
 <translation id="7478658909253570368">ছাইটক ছিৰিয়েল প’ৰ্টৰ সৈতে সংযোগ কৰাৰ অনুমতি নিদিব</translation>
 <translation id="7479221278376295180">ষ্ট’ৰেজ ব্যৱহাৰৰ অৱলোকন</translation>
+<translation id="747981547666531654"><ph name="FIRST_DEVICE" /> আৰু <ph name="SECOND_DEVICE" /> নামৰ ব্লুটুথ ডিভাইচকেইটাৰ সৈতে সংযোগ হৈ আছে</translation>
 <translation id="7481312909269577407">ফৰৱাৰ্ড কৰক</translation>
 <translation id="7481358317100446445">সাজু</translation>
 <translation id="748138892655239008">প্ৰমাণপত্ৰৰ মৌলিক সীমাবদ্ধতা</translation>
@@ -6052,6 +6058,7 @@
 <translation id="7531771599742723865">ডিভাইচটো ব্যৱহাৰ হৈ আছে</translation>
 <translation id="7531779363494549572">ছেটিংসমূহ &gt; এপ্ আৰু জাননী &gt; জাননী-লৈ যাওক</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" />এ সঁহাৰি দিয়া নাই। এপ্‌টো বন্ধ কৰিবলৈ "জোৰকৈ বন্ধ কৰক" সুবিধাটো বাছনি কৰক।</translation>
+<translation id="7535730537657706072">আপোনাৰ ডিভাইচৰ পৰা ইনক’গনিট’ত কৰা ব্ৰাউজিঙৰ ইতিহাস মচিবলৈ, আটাইবোৰ ইনক’গ্নিট’ টেব বন্ধ কৰক</translation>
 <translation id="7535791657097741517">পাতল ৰঙৰ থীম অন কৰক</translation>
 <translation id="7537451260744431038">ছাইটসমূহে আপোনাৰ ব্ৰাউজিঙৰ অভিজ্ঞতা উন্নত কৰিবলৈ কুকিসমূহ ব্যৱহাৰ কৰিব নোৱাৰে, যেনে, আপোনাক ছাইন ইন কৰি ৰাখিবলৈ অথবা আপোনাৰ শ্বপিং কার্টত থকা বস্তুবোৰ মনত ৰাখিবলৈ</translation>
 <translation id="753769905878158714">ঠিকনাৰ বাৰডালত, আপুনি সন্ধান কৰিব বিচৰা ৱেবছাইটটোৰ বাবে মূল শব্দটো দিয়ক। তাৰ পাছত, অব্যাহত ৰাখিবলৈ এটা কীব’ৰ্ডৰ শ্বৰ্টকাট ব্যৱহাৰ কৰক।</translation>
@@ -6666,6 +6673,7 @@
 <translation id="8138217203226449454">আপুনি আপোনাৰ সন্ধানৰ সুবিধাটো প্ৰদানকাৰীক সলনি কৰাৰ কথা বুজাইছিল নেকি?</translation>
 <translation id="8138997515734480534"><ph name="VM_NAME" />ৰ স্থিতি</translation>
 <translation id="8139447493436036221">Google Driveৰ ফাইল</translation>
+<translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
 <translation id="8141584439523427891">এতিয়া বিকল্প ব্ৰাউজাৰত খুলি আছে</translation>
 <translation id="8141725884565838206">আপোনাৰ পাছৱর্ডসমূহ পৰিচালনা কৰক</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{এটা ভিডিঅ’}one{# টা ভিডিঅ’}other{# টা ভিডিঅ’}}</translation>
@@ -7380,6 +7388,7 @@
 <translation id="8909782404367982052">Google Lensৰে প্ৰতিচ্ছবি সন্ধান কৰিবলৈ ওপৰৰে আনক</translation>
 <translation id="8909833622202089127">ছাইটটোৱে আপোনাৰ অৱস্থান ট্ৰেক কৰি আছে</translation>
 <translation id="8910222113987937043">আপোনাৰ বুকমাৰ্ক, ব্ৰাউজিঙৰ ইতিহাস, পাছৱর্ড আৰু অন্য ছেটিঙত কৰা সালসলনিসমূহ এতিয়া আৰু আপোনাৰ Google একাউণ্টত ছিংক কৰা নহ'ব। তথাপিও, আপোনাৰ ইতিমধ্যে থকা ডেটাখিনি আপোনাৰ Google একাউণ্টত ষ্ট'ৰ হৈ থাকিব আৰু সেইখিনি <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />ত পৰিচালনা কৰিব পাৰি।</translation>
+<translation id="8910987510378294980">ডিভাইচৰ সূচী লুকুৱাওক</translation>
 <translation id="8912362522468806198">Google একাউণ্ট</translation>
 <translation id="8912793549644936705">সম্প্ৰসাৰণ কৰক</translation>
 <translation id="8912810933860534797">স্বয়ং-স্কেন সক্ষম কৰক</translation>
@@ -7497,6 +7506,7 @@
 <translation id="9033765790910064284">যি হ’লেও অব্যাহত ৰাখক</translation>
 <translation id="9033857511263905942">&amp;পেষ্ট কৰক</translation>
 <translation id="903480517321259405">পিনটো পুনৰ টাইপ কৰক</translation>
+<translation id="9037054491984310631"><ph name="DEVICE" /> নামৰ ব্লুটুথ ডিভাইচটোৰ সৈতে সংযোগ হৈ আছে</translation>
 <translation id="9037640663275993951">ডিভাইচটোৰ অনুমতি নাই</translation>
 <translation id="9037818663270399707">সকলো নেটৱৰ্কৰ ট্ৰেফিকৰ বাবে আপোনাৰ সংযোগটো ব্যক্তিগত নহয়</translation>
 <translation id="9037965129289936994">প্ৰকৃত সমল দেখুৱাওক</translation>
@@ -7577,6 +7587,7 @@
 <translation id="9112786533191410418"><ph name="FILE_NAME" /> বিপজ্জনক হ’ব পাৰে। স্কেন কৰিবৰ বাবে Googleলৈ পঠিয়াবনে?</translation>
 <translation id="9112987648460918699">বিচাৰক...</translation>
 <translation id="9113240369465613386">কেৱল অযুগ্ম সংখ্যাৰ পৃষ্ঠা</translation>
+<translation id="9113469270512809735">শেহতীয়াকৈ বন্ধ কৰা বস্তুবোৰ ট’গল কৰক</translation>
 <translation id="9114663181201435112">সহজে ছাইন ইন কৰক</translation>
 <translation id="9115675100829699941">&amp;বুকমার্কসমূহ</translation>
 <translation id="9116465289595958864">অন্তিমবাৰ সংশোধিত</translation>

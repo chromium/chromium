@@ -93,6 +93,7 @@
 <translation id="1615402009686901181">Администраторското правило оневозможува снимање на екранот кога се видливи доверливи содржини</translation>
 <translation id="1632985212731562677">Пристапот со прекинувачи може да се оневозможи во „Поставки &gt; Пристапност“.</translation>
 <translation id="1654477262762802994">Започнете гласовно барање</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; притиснете „Пребарување“ и Space за да видите резултат во „Помошникот“.</translation>
 <translation id="1667964833127753507">Режимот во неутрални бои не користи бои од тапетот, туку ги заменува со збир од неутрални светли или темни нијанси.</translation>
 <translation id="1677472565718498478">Уште <ph name="TIME" /></translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> не е поврзана.</translation>
@@ -140,6 +141,7 @@
 <translation id="2016340657076538683">Напишете порака</translation>
 <translation id="2018630726571919839">Кажи ми шега</translation>
 <translation id="2021864487439853900">Кликнете за да отклучите</translation>
+<translation id="2023558322300866873">Може да го прекинете евидентирањето на пресретнатиот пакет во секое време</translation>
 <translation id="2047639699071423250">Додај клучна идеја</translation>
 <translation id="2049240716062114887">Името на работната површина е променето во <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Портрет</translation>
@@ -543,6 +545,7 @@
 <translation id="5083553833479578423">Отклучете повеќе функции на „Помошникот“.</translation>
 <translation id="5136175204352732067">Поврзана е друга тастатура</translation>
 <translation id="5155897006997040331">Брзина на читање</translation>
+<translation id="5166918508782100047">Поставки за „Брзи одговори“</translation>
 <translation id="5168181903108465623">Достапни се уреди за емитување</translation>
 <translation id="5170568018924773124">Прикажи во папка</translation>
 <translation id="5176318573511391780">Делумно снимање екран</translation>
@@ -797,6 +800,7 @@
 <translation id="7302889331339392448">„Автоматските титлови“ се исклучени.</translation>
 <translation id="7303365578352795231">Се одговара на друг уред.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; притиснете „Пребарување“ и Space за да видите резултат во „Пребарување на Google“.</translation>
 <translation id="7346909386216857016">Добро, сфатив</translation>
 <translation id="7348093485538360975">Тастатура на екран</translation>
 <translation id="735745346212279324">VPN е исклучен</translation>

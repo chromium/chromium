@@ -2198,6 +2198,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3305661444342691068">Obre la previsualització en PDF</translation>
 <translation id="3308116878371095290">S'ha impedit que aquesta pàgina estableixi galetes.</translation>
 <translation id="3308134619352333507">Amaga el botó</translation>
+<translation id="3308681281309926497">Els llocs que visites segueixen recordant la teva informació fins que tanques Chrome</translation>
 <translation id="3308738399950580893">anuncis</translation>
 <translation id="3308852433423051161">S'està carregant l'Assistent de Google...</translation>
 <translation id="3309330461362844500">Identificador del perfil del certificat</translation>
@@ -2751,6 +2752,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3873423927483480833">Mostra els PIN</translation>
 <translation id="3873915545594852654">S'ha produït un problema amb ARC++.</translation>
 <translation id="3874164307099183178">Activa l'Assistent de Google</translation>
+<translation id="3875815154304214043"><ph name="APP_NAME" /> s'ha configurat per obrir-se en una pestanya nova del navegador. Els enllaços compatibles també s'obriran al navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Més informació<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256">Configuració de Compartició Nearby per al dispositiu de <ph name="USER_NAME" />, amb el compte <ph name="USER_EMAIL" />.</translation>
 <translation id="3879748587602334249">Gestor de baixades</translation>
 <translation id="3882165008614329320">Vídeo existent de la càmera o d'un fitxer</translation>
@@ -3897,6 +3899,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5157635116769074044">Fixa aquesta pàgina a la pantalla d'inici...</translation>
 <translation id="5159094275429367735">Configura Crostini</translation>
 <translation id="5159419673777902220">El teu pare o mare han desactivat els permisos d'extensions</translation>
+<translation id="5159643365935452998">Revisa l'eliminació automàtica de dades</translation>
 <translation id="5160634252433617617">Teclat físic</translation>
 <translation id="5160857336552977725">Inicieu la sessió al vostre dispositiu (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="5161251470972801814">Dispositius USB fabricats per <ph name="VENDOR_NAME" /></translation>
@@ -4462,6 +4465,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5790651917470750848">La redirecció de ports ja existeix</translation>
 <translation id="5792728279623964091">Toca el botó d'engegada</translation>
 <translation id="5793339252089865437">Si baixes l'actualització a través de la xarxa mòbil, se't podrien cobrar càrrecs per excés d'ús.</translation>
+<translation id="5794034487966529952">L'escriptori <ph name="DESK_TITLE" /> té <ph name="NUM_BROWSERS" /> finestres del navegador obertes</translation>
 <translation id="5794414402486823030">Obre sempre amb el visualitzador del sistema</translation>
 <translation id="5794700615121138172">Carpetes compartides de Linux</translation>
 <translation id="5794786537412027208">Surt de totes les aplicacions de Chrome</translation>

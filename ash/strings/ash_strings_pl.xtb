@@ -93,6 +93,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1615402009686901181">Zasada administratora wyłącza zrzut ekranu, gdy widoczne są treści poufne</translation>
 <translation id="1632985212731562677">Funkcję Switch Access możesz wyłączyć, otwierając Ustawienia &gt; Ułatwienia dostępu.</translation>
 <translation id="1654477262762802994">Rozpocznij zapytanie głosowe</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />. Naciśnij Wyszukaj i spację, aby zobaczyć wynik w Asystencie.</translation>
 <translation id="1667964833127753507">Tryb koloru neutralnego nie wyświetla kolorów wyodrębnionych z tapety. Zamiast nich używa jasnych i ciemnych odcieni stonowanych neutralnie.</translation>
 <translation id="1677472565718498478">Pozostało <ph name="TIME" /></translation>
 <translation id="1677507110654891115">Funkcja <ph name="FEATURE_NAME" /> nie ma połączenia.</translation>
@@ -140,6 +141,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2016340657076538683">Wpisz wiadomość</translation>
 <translation id="2018630726571919839">Opowiedz mi kawał</translation>
 <translation id="2021864487439853900">Kliknij, aby odblokować</translation>
+<translation id="2023558322300866873">Przechwytywanie pakietów możesz zatrzymać w dowolnym momencie</translation>
 <translation id="2047639699071423250">Dodaj kluczowy pomysł</translation>
 <translation id="2049240716062114887">Nazwa biurka została zmieniona na <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Pionowo</translation>
@@ -542,6 +544,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="5083553833479578423">Poznaj więcej funkcji Asystenta.</translation>
 <translation id="5136175204352732067">Podłączono inną klawiaturę</translation>
 <translation id="5155897006997040331">Szybkość czytania</translation>
+<translation id="5166918508782100047">Ustawienia szybkich podpowiedzi</translation>
 <translation id="5168181903108465623">Dostępne są urządzenia przesyłające</translation>
 <translation id="5170568018924773124">Pokaż w folderze</translation>
 <translation id="5176318573511391780">Nagraj fragment ekranu</translation>
@@ -796,6 +799,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7302889331339392448">Napisy na żywo są wyłączone.</translation>
 <translation id="7303365578352795231">Odpowiem na innym urządzeniu.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />. Naciśnij Wyszukaj i spację, aby zobaczyć wynik w wyszukiwarce Google.</translation>
 <translation id="7346909386216857016">Rozumiem</translation>
 <translation id="7348093485538360975">Klawiatura ekranowa</translation>
 <translation id="735745346212279324">VPN odłączona</translation>

@@ -2205,6 +2205,7 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="3305661444342691068">Ava PDF-i eelvaade</translation>
 <translation id="3308116878371095290">Sellel lehel takistati küpsiste seadistamine.</translation>
 <translation id="3308134619352333507">Nupp Peida</translation>
+<translation id="3308681281309926497">Saidid, mida külastate, jätavad teie teabe meelde, kuni Chrome'i sulgete</translation>
 <translation id="3308738399950580893">reklaamid</translation>
 <translation id="3308852433423051161">Google'i assistendi laadimine …</translation>
 <translation id="3309330461362844500">Sertifikaadi profiili ID</translation>
@@ -2758,6 +2759,7 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="3873423927483480833">PIN-koodide kuvamine</translation>
 <translation id="3873915545594852654">Ilmnes ARC++ probleem.</translation>
 <translation id="3874164307099183178">Google'i assistendi sisselülitamine</translation>
+<translation id="3875815154304214043"><ph name="APP_NAME" /> on seadistatud avanema brauseri uuel vahelehel. Toetatud lingid avanevad samuti brauseris. <ph name="BEGIN_LINK_LEARN_MORE" />Lisateave<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256">Läheduses jagamise seaded kasutaja <ph name="USER_NAME" /> seadme jaoks. Jagamine toimub kontol <ph name="USER_EMAIL" />.</translation>
 <translation id="3879748587602334249">Allalaadimishaldur</translation>
 <translation id="3882165008614329320">Olemasolev video kaamerast või failist</translation>
@@ -3905,6 +3907,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="5157635116769074044">Kinnita leht avakuvale ...</translation>
 <translation id="5159094275429367735">Crostini seadistamine</translation>
 <translation id="5159419673777902220">Sinu vanem on laienduste load keelanud</translation>
+<translation id="5159643365935452998">Vaadake üle andmete automaatse kustutamise seaded</translation>
 <translation id="5160634252433617617">Füüsiline klaviatuur</translation>
 <translation id="5160857336552977725">Logige sisse seadmesse <ph name="DEVICE_TYPE" /></translation>
 <translation id="5161251470972801814">Ettevõtte <ph name="VENDOR_NAME" /> USB-seadmed</translation>
@@ -4468,6 +4471,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="5790651917470750848">Pordisiire on juba olemas</translation>
 <translation id="5792728279623964091">Puudutage toitenuppu.</translation>
 <translation id="5793339252089865437">Kui laadite värskenduse alla mobiilsidevõrgu kaudu, võivad sellega kaasneda lisatasud.</translation>
+<translation id="5794034487966529952">Töölaual <ph name="DESK_TITLE" /> on avatud <ph name="NUM_BROWSERS" /> brauseriakent</translation>
 <translation id="5794414402486823030">Ava alati süsteemivaaturiga</translation>
 <translation id="5794700615121138172">Linuxi jagatud kaustad</translation>
 <translation id="5794786537412027208">Sule kõik Chrome'i rakendused</translation>

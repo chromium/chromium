@@ -272,6 +272,7 @@
 <translation id="1838374766361614909">Διαγραφή αναζητήσεων</translation>
 <translation id="1839551713262164453">Η επικύρωση των τιμών πολιτικής απέτυχε αφού παρουσίασε σφάλματα</translation>
 <translation id="1842969606798536927">Πληρωμή</translation>
+<translation id="1856713167556118146">Τι δεν κάνει η Ανώνυμη περιήγηση</translation>
 <translation id="1871208020102129563">Ο διακομιστής μεσολάβησης έχει ρυθμιστεί να χρησιμοποιεί διακομιστές μεσολάβησης και όχι μια διεύθυνση URL σεναρίου .pac.</translation>
 <translation id="1871284979644508959">Απαιτούμενο πεδίο</translation>
 <translation id="1875512691959384712">Φόρμες Google</translation>
@@ -1021,6 +1022,7 @@
 <translation id="4465818729556336129">Αυτό το έγγραφο είναι εμπιστευτικό και η εκτύπωσή του δεν συνιστάται από τον διαχειριστή σας.</translation>
 <translation id="4476953670630786061">Αυτή η φόρμα δεν είναι ασφαλής. Η αυτόματη συμπλήρωση έχει απενεργοποιηθεί.</translation>
 <translation id="4477350412780666475">Επόμενο κομμάτι</translation>
+<translation id="4481251927743463293">Τι κάνει η Ανώνυμη περιήγηση</translation>
 <translation id="4481394504112738036">Εμπιστευτικό αρχείο</translation>
 <translation id="4482953324121162758">Αυτός ο ιστότοπος δεν θα μεταφραστεί.</translation>
 <translation id="4490717597759821841">A7</translation>
@@ -1121,11 +1123,18 @@
 <translation id="4819347708020428563">Επεξεργασία σχολιασμών στην προεπιλεγμένη προβολή;</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για να δημιουργήσετε γρήγορα ένα νέο Φύλλο Google</translation>
 <translation id="4825507807291741242">Ισχυρό</translation>
+<translation id="4827402517081186284">Η Ανώνυμη περιήγηση δεν σας κάνει αόρατους στο διαδίκτυο:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Οι ιστότοποι γνωρίζουν πότε τους επισκέπτεστε.<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Οι εργοδότες ή τα εκπαιδευτικά ιδρύματα μπορούν να παρακολουθούν τη δραστηριότητα περιήγησης.<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Οι πάροχοι υπηρεσιών διαδικτύου μπορούν να παρακολουθούν την επισκεψιμότητα στον ιστό.<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="4838327282952368871">Ονειρικό</translation>
 <translation id="484462545196658690">Αυτόματα</translation>
 <translation id="4850886885716139402">Προβολή</translation>
 <translation id="485316830061041779">Γερμανικά
 </translation>
+<translation id="4853901935952445031">Αυτός ο ιστότοπος δεν θα μπορεί να χρησιμοποιήσει το API U2F μετά τον Φεβρουάριο του 2022. Αν είστε ο κάτοχος αυτού του ιστοτόπου, πρέπει να κάνετε αλλαγές σε αυτόν, ώστε να χρησιμοποιεί το API ελέγχου ταυτότητας ιστού.</translation>
 <translation id="4854362297993841467">Αυτός ο τρόπος παράδοσης δεν είναι διαθέσιμος. Δοκιμάστε έναν άλλο τρόπο.</translation>
 <translation id="4854853140771946034">Γρήγορη δημιουργία νέας σημείωσης στο Google Keep</translation>
 <translation id="4876188919622883022">Απλοποιημένη προβολή</translation>
@@ -1649,6 +1658,7 @@
 <translation id="6757797048963528358">Η συσκευή σας τέθηκε σε αδράνεια.</translation>
 <translation id="6767985426384634228">Ενημέρωση διεύθυνσης;</translation>
 <translation id="6768213884286397650">Hagaki (Ταχυδρομική κάρτα)</translation>
+<translation id="6774185088257932239"><ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /> σχετικά με την Ανώνυμη περιήγηση</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Βιολετί</translation>
 <translation id="6786747875388722282">Επεκτάσεις</translation>
@@ -1696,6 +1706,7 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965978654500191972">Συσκευή</translation>
 <translation id="696703987787944103">Αντιληπτική</translation>
+<translation id="6968269510885595029">Χρήση του κλειδιού ασφαλείας σας</translation>
 <translation id="6970216967273061347">Περιφέρεια</translation>
 <translation id="6971439137020188025">Γρήγορη δημιουργία νέας παρουσίασης Google στις Παρουσιάσεις</translation>
 <translation id="6972629891077993081">Συσκευές HID</translation>
@@ -1761,6 +1772,7 @@
 <translation id="7210863904660874423">Ο κεντρικός υπολογιστής <ph name="HOST_NAME" /> δεν συμμορφώνεται με τα πρότυπα ασφάλειας.</translation>
 <translation id="7210993021468939304">Δραστηριότητα Linux εντός του κοντέινερ καθώς και δυνατότητα εγκατάστασης και εκτέλεσης εφαρμογών Linux εντός του κοντέινερ.</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /> σχετικά με αυτό το πρόβλημα.</translation>
+<translation id="7215025035562547931">Αφιερώστε ένα λεπτό για να εξετάσετε την ακρίβεια</translation>
 <translation id="7217745192097460130">Χρήση του Touch ID για επαλήθευση και ολοκλήρωση της αγοράς σας;</translation>
 <translation id="7219179957768738017">Στη σύνδεση χρησιμοποιείται <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Επεξεργασία</translation>
@@ -2097,6 +2109,12 @@
 <translation id="8307888238279532626">Εγκατεστημένες εφαρμογές και η συχνότητα χρήσης τους</translation>
 <translation id="831207732689920588">Αυτή η σελίδα είναι ύποπτη (έχει επισημανθεί από το Chrome).</translation>
 <translation id="831997045666694187">Βράδυ</translation>
+<translation id="8328484624016508118">Μετά το κλείσιμο όλων των καρτελών ανώνυμης περιήγησης, το Chrome διαγράφει:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Τη δραστηριότητα περιήγησής σας από αυτήν τη συσκευή<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Το ιστορικό αναζήτησής σας από αυτήν τη συσκευή<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Τις πληροφορίες που είχαν καταχωριστεί σε φόρμες<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">Απορρίφθηκε η πρόσβαση στο κεντρικό υπολογιστή <ph name="HOST_NAME" /></translation>
 <translation id="833262891116910667">Επισήμανση</translation>
 <translation id="8339163506404995330">Οι σελίδες στα <ph name="LANGUAGE" /> δεν θα μεταφράζονται</translation>

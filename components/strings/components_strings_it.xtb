@@ -272,6 +272,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1838374766361614909">Cancella ricerca</translation>
 <translation id="1839551713262164453">Convalida dei valori della norma non riuscita con errori</translation>
 <translation id="1842969606798536927">Paga</translation>
+<translation id="1856713167556118146">Cosa non fa la modalità di navigazione in incognito</translation>
 <translation id="1871208020102129563">L'impostazione del proxy prevede l'utilizzo di server proxy fissi, non di un URL script .pac.</translation>
 <translation id="1871284979644508959">Campo obbligatorio</translation>
 <translation id="1875512691959384712">Moduli Google</translation>
@@ -1016,6 +1017,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4465818729556336129">Questo documento è riservato e il tuo amministratore ne sconsiglia la stampa.</translation>
 <translation id="4476953670630786061">Questo modulo non è sicuro. La compilazione automatica è stata disattivata.</translation>
 <translation id="4477350412780666475">Traccia successiva</translation>
+<translation id="4481251927743463293">Cosa fa la modalità di navigazione in incognito</translation>
 <translation id="4481394504112738036">File riservato</translation>
 <translation id="4482953324121162758">Questo sito non verrà tradotto.</translation>
 <translation id="4490717597759821841">A7</translation>
@@ -1116,10 +1118,17 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4819347708020428563">Vuoi modificare le annotazioni nella visualizzazione predefinita?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab e poi Invio per creare rapidamente un nuovo foglio Google</translation>
 <translation id="4825507807291741242">Potente</translation>
+<translation id="4827402517081186284">La modalità di navigazione in incognito non ti rende invisibile online:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />I siti rilevano la tua visita<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Datori di lavoro o scuole possono monitorare l'attività di navigazione<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />I provider di servizi Internet possono monitorare il traffico web<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="4838327282952368871">Surreale</translation>
 <translation id="484462545196658690">Automatico</translation>
 <translation id="4850886885716139402">Visualizza</translation>
 <translation id="485316830061041779">Tedesco</translation>
+<translation id="4853901935952445031">Questo sito non potrà usare l'API U2F dopo febbraio 2022. Se sei proprietario del sito, dovresti cambiarlo per usare l'API Web Authentication.</translation>
 <translation id="4854362297993841467">Questo metodo di consegna non è disponibile. Prova un metodo diverso.</translation>
 <translation id="4854853140771946034">Crea rapidamente una nuova nota in Google Keep</translation>
 <translation id="4876188919622883022">Visualizzazione semplificata</translation>
@@ -1641,6 +1650,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6757797048963528358">Il dispositivo è entrato in modalità sospensione.</translation>
 <translation id="6767985426384634228">Vuoi aggiornare l'indirizzo?</translation>
 <translation id="6768213884286397650">Hagaki (Postcard)</translation>
+<translation id="6774185088257932239"><ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /> sulla modalità di navigazione in incognito</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Lilla</translation>
 <translation id="6786747875388722282">Estensioni</translation>
@@ -1688,6 +1698,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965978654500191972">Dispositivo</translation>
 <translation id="696703987787944103">Percettivo</translation>
+<translation id="6968269510885595029">Utilizzo del tuo token di sicurezza</translation>
 <translation id="6970216967273061347">District</translation>
 <translation id="6971439137020188025">Crea rapidamente una nuova presentazione Google in Presentazioni</translation>
 <translation id="6972629891077993081">Dispositivi HID</translation>
@@ -1753,6 +1764,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> non è conforme agli standard di sicurezza.</translation>
 <translation id="7210993021468939304">Attività Linux all'interno del container; possono installare ed eseguire app Linux all'interno del container</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /> su questo problema.</translation>
+<translation id="7215025035562547931">Dedica un istante alla valutazione della precisione</translation>
 <translation id="7217745192097460130">Vuoi usare Touch ID per verificare e completare l'acquisto?</translation>
 <translation id="7219179957768738017">La connessione utilizza <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Elaborazione in corso</translation>
@@ -2088,6 +2100,12 @@ Ulteriori dettagli:
 <translation id="8307888238279532626">App installate e frequenza di utilizzo</translation>
 <translation id="831207732689920588">Questa pagina è sospetta (segnalata da Chrome).</translation>
 <translation id="831997045666694187">Sera</translation>
+<translation id="8328484624016508118">Dopo aver chiuso tutte le schede di navigazione in incognito, Chrome cancella:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />L'attività di navigazione da questo dispositivo<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />La cronologia delle ricerche da questo dispositivo<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Le informazioni inserite nei moduli<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">Accesso a <ph name="HOST_NAME" /> negato</translation>
 <translation id="833262891116910667">Evidenzia</translation>
 <translation id="8339163506404995330">Le pagine in <ph name="LANGUAGE" /> non verranno tradotte</translation>
