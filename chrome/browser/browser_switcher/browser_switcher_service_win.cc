@@ -69,6 +69,21 @@ MergedRuleSet GetRules(const BrowserSwitcherPrefs& prefs,
   return rules;
 }
 
+// Convert a ParsingMode enum value to a string, for writing to cache.dat.
+std::string ParsingModeToString(ParsingMode parsing_mode) {
+  switch (parsing_mode) {
+    case ParsingMode::kDefault:
+      return "default";
+      break;
+    case ParsingMode::kIESiteListMode:
+      return "ie_sitelist";
+      break;
+    default:
+      // BrowserSwitcherPrefs should've sanitized the value for us.
+      NOTREACHED();
+  }
+}
+
 // Serialize prefs to a string for writing to cache.dat.
 std::string SerializeCacheFile(const BrowserSwitcherPrefs& prefs,
                                const BrowserSwitcherSitelist* sitelist) {
@@ -85,9 +100,6 @@ std::string SerializeCacheFile(const BrowserSwitcherPrefs& prefs,
 
   const auto rules = GetRules(prefs, sitelist);
 
-  // TODO(crbug.com/1229297): Write the value of BrowserSwitcherParsingMode to
-  // cache.dat. Update the Edge/IE extensions to handle rules appropriately.
-  // This will prevent redirect loops.
   buffer << rules.sitelist.size() << std::endl;
   for (const Rule* rule : rules.sitelist)
     buffer << rule->ToString() << std::endl;
@@ -95,6 +107,8 @@ std::string SerializeCacheFile(const BrowserSwitcherPrefs& prefs,
   buffer << rules.greylist.size() << std::endl;
   for (const Rule* rule : rules.greylist)
     buffer << rule->ToString() << std::endl;
+
+  buffer << ParsingModeToString(prefs.GetParsingMode()) << std::endl;
 
   return buffer.str();
 }
