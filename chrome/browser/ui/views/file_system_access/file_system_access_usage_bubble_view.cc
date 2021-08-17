@@ -255,8 +255,9 @@ std::u16string FileSystemAccessUsageBubbleView::FilePathListModel::GetText(
     int row,
     int column_id) {
   if (static_cast<size_t>(row) < files_.size())
-    return files_[row].BaseName().LossyDisplayName();
-  return directories_[row - files_.size()].BaseName().LossyDisplayName();
+    return file_system_access_ui_helper::GetPathForDisplay(files_[row]);
+  return file_system_access_ui_helper::GetPathForDisplay(
+      directories_[row - files_.size()]);
 }
 
 ui::ImageModel FileSystemAccessUsageBubbleView::FilePathListModel::GetIcon(

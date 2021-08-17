@@ -4,9 +4,12 @@
 
 #include "chrome/browser/ui/views/file_system_access/file_system_access_ui_helpers.h"
 
+#include <string>
+
 #include "base/files/file_path.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "components/url_formatter/elide_url.h"
+#include "storage/common/file_system/file_system_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/styled_label.h"
 
@@ -45,7 +48,7 @@ std::unique_ptr<views::View> CreateOriginPathLabel(int message_id,
   std::u16string formatted_origin =
       url_formatter::FormatOriginForSecurityDisplay(
           origin, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
-  std::u16string formatted_path = path.BaseName().LossyDisplayName();
+  std::u16string formatted_path = GetPathForDisplay(path);
   std::vector<size_t> offsets;
   auto label = std::make_unique<views::StyledLabel>();
   label->SetText(l10n_util::GetStringFUTF16(message_id, formatted_origin,
@@ -77,6 +80,15 @@ std::unique_ptr<views::View> CreateOriginPathLabel(int message_id,
       path_style);
 
   return label;
+}
+
+std::u16string GetPathForDisplay(const base::FilePath& path) {
+  // Display the drive letter if the path is the root of the filesystem.
+  auto dir_name = path.DirName();
+  if (!path.empty() && (dir_name.empty() || path == dir_name))
+    return path.LossyDisplayName();
+
+  return path.BaseName().LossyDisplayName();
 }
 
 }  // namespace file_system_access_ui_helper
