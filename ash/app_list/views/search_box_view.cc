@@ -235,6 +235,18 @@ void SearchBoxView::UpdateSearchBoxBorder() {
 }
 
 void SearchBoxView::OnPaintBackground(gfx::Canvas* canvas) {
+  if (is_app_list_bubble_) {
+    // When the search box is focused, paint a vertical focus bar along the left
+    // edge, vertically aligned with the search icon.
+    if (search_box()->HasFocus() && search_box()->GetText().empty()) {
+      gfx::Point icon_origin;
+      views::View::ConvertPointToTarget(search_icon(), this, &icon_origin);
+      PaintFocusBar(canvas, gfx::Point(0, icon_origin.y()),
+                    /*height=*/kSearchBoxIconSize);
+    }
+    return;
+  }
+
   // Paints the focus ring if the search box is focused.
   if (search_box()->HasFocus() && !is_search_box_active() &&
       view_delegate_->KeyboardTraversalEngaged()) {

@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <memory>
 
-#include "ash/app_list/app_list_util.h"
 #include "ash/app_list/views/app_list_bubble_apps_page.h"
 #include "ash/app_list/views/app_list_bubble_search_page.h"
 #include "ash/app_list/views/assistant/app_list_bubble_assistant_page.h"
@@ -221,20 +220,6 @@ gfx::Size AppListBubbleView::CalculatePreferredSize() const {
   }
 
   return gfx::Size(default_width, height);
-}
-
-void AppListBubbleView::OnPaint(gfx::Canvas* canvas) {
-  // Used to draw/hide the focus bar for the search box view.
-  if (search_box_view_->search_box()->HasFocus() &&
-      search_box_view_->search_box()->GetText().empty()) {
-    PaintFocusBar(
-        canvas,
-        GetContentsBounds().origin() +
-            gfx::Vector2d(0,
-                          kUnifiedTrayCornerRadius /*downshift the focus bar*/),
-        /*height=*/kSearchBoxIconSize);
-  }
-  views::View::OnPaint(canvas);
 }
 
 void AppListBubbleView::OnThemeChanged() {

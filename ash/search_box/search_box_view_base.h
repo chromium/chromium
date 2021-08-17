@@ -134,6 +134,7 @@ class SearchBoxViewBase : public views::View,
 
   SearchBoxViewDelegate* delegate() { return delegate_; }
   views::BoxLayout* box_layout() { return box_layout_; }
+  views::ImageView* search_icon() { return search_icon_; }
 
   void SetSearchBoxBackgroundCornerRadius(int corner_radius);
 

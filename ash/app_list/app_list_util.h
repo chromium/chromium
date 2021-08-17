@@ -60,7 +60,8 @@ ASH_EXPORT gfx::ImageSkia CreateIconWithCircleBackground(
     const gfx::ImageSkia& icon,
     SkColor background_color);
 
-// Paints a rounded focus bar on the left edge of |canvas|.
+// Paints a rounded focus bar on |canvas| starting at |content_origin| extending
+// |height| dips vertically.
 ASH_EXPORT void PaintFocusBar(gfx::Canvas* canvas,
                               const gfx::Point content_origin,
                               const int height);

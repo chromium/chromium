@@ -55,7 +55,6 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   // views::View:
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   gfx::Size CalculatePreferredSize() const override;
-  void OnPaint(gfx::Canvas* canvas) override;
   void OnThemeChanged() override;
 
   // SearchBoxViewDelegate:
