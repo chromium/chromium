@@ -48,7 +48,7 @@
   var consoleView = Console.ConsoleView.instance();
   consoleView.setImmediatelyFilterMessagesForTest();
   if (consoleView.isSidebarOpen)
-    consoleView.splitWidget._showHideSidebarButton.element.click();
+    consoleView.splitWidget.showHideSidebarButton.element.click();
 
   // Add Violation-source message.
   var violationMessage = new SDK.ConsoleMessage(
