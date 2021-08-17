@@ -62,7 +62,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </variants>
 
 <histogram name="Browser.AnyWindowHasName" enum="Boolean"
-    expires_after="2021-09-30">
+    expires_after="2022-09-30">
   <owner>ellyjones@chromium.org</owner>
   <owner>lgrey@chromium.org</owner>
   <summary>
