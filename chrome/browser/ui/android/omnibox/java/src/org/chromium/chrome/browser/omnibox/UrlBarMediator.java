@@ -235,6 +235,15 @@ class UrlBarMediator
     }
 
     /**
+     * Sets whether to use incognito colors.
+     *
+     * @param incognitoColorsEnabled Whether to use incognito colors.
+     */
+    public void setIncognitoColorsEnabled(boolean incognitoColorsEnabled) {
+        mModel.set(UrlBarProperties.INCOGNITO_COLORS_ENABLED, incognitoColorsEnabled);
+    }
+
+    /**
      * Sets whether the view allows user focus.
      */
     public void setAllowFocus(boolean allowFocus) {
