@@ -38,6 +38,7 @@ using chrome_test_util::BookmarksNavigationBarDoneButton;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::ClearBrowsingDataButton;
 using chrome_test_util::ConfirmClearBrowsingDataButton;
+using chrome_test_util::GoogleServicesSettingsButton;
 using chrome_test_util::GoogleServicesSettingsView;
 using chrome_test_util::IdentityCellMatcherForEmail;
 using chrome_test_util::PrimarySignInButton;
@@ -842,6 +843,10 @@ void ChooseImportOrKeepDataSepareteDialog(id<GREYMatcher> choiceButtonMatcher) {
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:PrimarySignInButton()];
   [SigninEarlGreyUI tapSigninConfirmationDialog];
+
+  // Give the Sync state a chance to finish UI updates.
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      GoogleServicesSettingsButton()];
 
   [[EarlGrey
       selectElementWithMatcher:
