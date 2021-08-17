@@ -75,11 +75,9 @@ ChromeIdentity* AuthenticationServiceFake::GetPrimaryIdentity(
   switch (consent_level) {
     case signin::ConsentLevel::kSignin:
       return primary_identity_;
-      break;
     case signin::ConsentLevel::kSync:
       return (consent_level_ == signin::ConsentLevel::kSync) ? primary_identity_
                                                              : nil;
-      break;
   }
   return nil;
 }

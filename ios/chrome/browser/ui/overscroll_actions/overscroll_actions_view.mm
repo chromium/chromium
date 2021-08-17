@@ -965,7 +965,6 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
       break;
     case OverscrollAction::NONE:
       return;
-      break;
   }
 }
 

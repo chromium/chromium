@@ -105,8 +105,8 @@ bool PathProviderMac(int key, base::FilePath* result) {
         // src/xcodebuild/{Debug|Release}/base_unittests
         *result = result->DirName().DirName();
       }
-#endif  // !defined(OS_IOS)
       return true;
+#endif  // !defined(OS_IOS)
     case base::DIR_USER_DESKTOP:
 #if defined(OS_IOS)
       // iOS does not have desktop directories.

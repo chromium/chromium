@@ -175,13 +175,10 @@ content_suggestions::StatusCode ConvertStatusCode(ntp_snippets::Status status) {
   switch (status.code) {
     case ntp_snippets::StatusCode::SUCCESS:
       return content_suggestions::StatusCodeSuccess;
-      break;
     case ntp_snippets::StatusCode::TEMPORARY_ERROR:
       return content_suggestions::StatusCodeError;
-      break;
     case ntp_snippets::StatusCode::PERMANENT_ERROR:
       return content_suggestions::StatusCodePermanentError;
-      break;
     case ntp_snippets::StatusCode::STATUS_CODE_COUNT:
       NOTREACHED();
       return content_suggestions::StatusCodeError;

@@ -244,8 +244,6 @@ int HostService::RunHost() {
     HOST_LOG << "Host returned non-permanent exit code " << exit_code_string
              << " at " << base::Time::Now();
   }
-
-  return 0;
 }
 
 bool HostService::Disable() {

@@ -451,11 +451,9 @@ int main(int argc, char* const argv[]) {
       case 'l':
         PrintSupportedDevices(simctl_list);
         exit(kExitSuccess);
-        break;
       case 'h':
         PrintUsage();
         exit(kExitSuccess);
-        break;
       default:
         PrintUsage();
         exit(kExitInvalidArguments);

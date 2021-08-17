@@ -55,16 +55,12 @@ NonModalPromoTriggerType MetricTypeForPromoReason(PromoReason reason) {
   switch (reason) {
     case PromoReasonNone:
       return NonModalPromoTriggerType::kUnknown;
-      break;
     case PromoReasonOmniboxPaste:
       return NonModalPromoTriggerType::kPastedLink;
-      break;
     case PromoReasonExternalLink:
       return NonModalPromoTriggerType::kGrowthKitOpen;
-      break;
     case PromoReasonShare:
       return NonModalPromoTriggerType::kShare;
-      break;
 
     default:
       NOTREACHED();

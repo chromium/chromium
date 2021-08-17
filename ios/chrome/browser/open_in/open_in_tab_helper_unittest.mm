@@ -70,41 +70,29 @@ std::string ContentTypeForMimeType(OpenInMimeType parameter) {
   switch (parameter) {
     case OpenInMimeType::kMimeTypeMicrosoftPowerPointOpenXML:
       return content_type::kMimeTypeMicrosoftPowerPointOpenXML;
-      break;
     case OpenInMimeType::kMimeTypeMicrosoftWordOpenXML:
       return content_type::kMimeTypeMicrosoftWordOpenXML;
-      break;
     case OpenInMimeType::kMimeTypeMicrosoftExcelOpenXML:
       return content_type::kMimeTypeMicrosoftExcelOpenXML;
-      break;
     case OpenInMimeType::kMimeTypePDF:
       return content_type::kMimeTypePDF;
-      break;
     case OpenInMimeType::kMimeTypeMicrosoftWord:
       return content_type::kMimeTypeMicrosoftWord;
-      break;
     case OpenInMimeType::kMimeTypeJPEG:
       return content_type::kMimeTypeJPEG;
-      break;
     case OpenInMimeType::kMimeTypePNG:
       return content_type::kMimeTypePNG;
-      break;
     case OpenInMimeType::kMimeTypeMicrosoftPowerPoint:
       return content_type::kMimeTypeMicrosoftPowerPoint;
-      break;
     case OpenInMimeType::kMimeTypeRTF:
       return content_type::kMimeTypeRTF;
-      break;
     case OpenInMimeType::kMimeTypeSVG:
       return content_type::kMimeTypeSVG;
-      break;
     case OpenInMimeType::kMimeTypeMicrosoftExcel:
       return content_type::kMimeTypeMicrosoftExcel;
-      break;
     // Should not be reached.
     case OpenInMimeType::kMimeTypeNotHandled:
       return "";
-      break;
   }
 }
 
@@ -113,41 +101,29 @@ std::string ExtensionForMimeType(OpenInMimeType parameter) {
   switch (parameter) {
     case OpenInMimeType::kMimeTypeMicrosoftPowerPointOpenXML:
       return ".pptx";
-      break;
     case OpenInMimeType::kMimeTypeMicrosoftWordOpenXML:
       return ".docx";
-      break;
     case OpenInMimeType::kMimeTypeMicrosoftExcelOpenXML:
       return ".xlsx";
-      break;
     case OpenInMimeType::kMimeTypePDF:
       return ".pdf";
-      break;
     case OpenInMimeType::kMimeTypeMicrosoftWord:
       return ".doc";
-      break;
     case OpenInMimeType::kMimeTypeJPEG:
       return ".jpeg";
-      break;
     case OpenInMimeType::kMimeTypePNG:
       return ".png";
-      break;
     case OpenInMimeType::kMimeTypeMicrosoftPowerPoint:
       return ".ppt";
-      break;
     case OpenInMimeType::kMimeTypeRTF:
       return ".rtf";
-      break;
     case OpenInMimeType::kMimeTypeSVG:
       return ".svg";
-      break;
     case OpenInMimeType::kMimeTypeMicrosoftExcel:
       return ".xls";
-      break;
     // Should not be reached.
     case OpenInMimeType::kMimeTypeNotHandled:
       return "";
-      break;
   }
 }
 

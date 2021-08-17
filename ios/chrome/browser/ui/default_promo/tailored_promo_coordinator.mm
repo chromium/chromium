@@ -43,17 +43,13 @@ DefaultPromoTypeForUMA DefaultPromoTypeForUMA(DefaultPromoType type) {
   switch (type) {
     case DefaultPromoTypeMadeForIOS:
       return DefaultPromoTypeForUMA::kMadeForIOS;
-      break;
     case DefaultPromoTypeStaySafe:
       return DefaultPromoTypeForUMA::kStaySafe;
-      break;
     case DefaultPromoTypeAllTabs:
       return DefaultPromoTypeForUMA::kAllTabs;
-      break;
     default:
       DCHECK(type == DefaultPromoTypeGeneral);
       return DefaultPromoTypeForUMA::kOther;
-      break;
   }
 }
 }  // namespace

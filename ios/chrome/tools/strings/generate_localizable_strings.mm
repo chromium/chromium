@@ -273,11 +273,9 @@ int main(int argc, char* const argv[]) {
                 "for all specified locales in output_dir from packed data\n"
                 "packs in data_pack_dir.\n");
         exit(0);
-        break;
       default:
         fprintf(stderr, "ERROR: bad command line arg: %c.n\n", ch);
         exit(1);
-        break;
     }
   }
 
