@@ -17,6 +17,7 @@
 #include "chrome/browser/apps/app_service/app_icon_source.h"
 #include "chrome/browser/apps/app_service/app_service_metrics.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/browser_app_instance_tracker.h"
 #include "chrome/browser/apps/app_service/fake_lacros_web_apps_host.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/publishers/extension_apps.h"
@@ -95,7 +96,10 @@ AppServiceProxyLacros::AppServiceProxyLacros(Profile* profile)
       icon_coalescer_(&inner_icon_loader_),
       outer_icon_loader_(&icon_coalescer_,
                          apps::IconCache::GarbageCollectionPolicy::kEager),
-      profile_(profile) {
+      profile_(profile),
+      browser_app_instance_tracker_(
+          apps::BrowserAppInstanceTracker::Create(profile_,
+                                                  app_registry_cache_)) {
   Initialize();
 }
 
@@ -207,6 +211,11 @@ BrowserAppLauncher* AppServiceProxyLacros::BrowserAppLauncher() {
 
 apps::PreferredAppsList& AppServiceProxyLacros::PreferredApps() {
   return preferred_apps_;
+}
+
+apps::BrowserAppInstanceTracker*
+AppServiceProxyLacros::BrowserAppInstanceTracker() {
+  return browser_app_instance_tracker_.get();
 }
 
 apps::mojom::IconKeyPtr AppServiceProxyLacros::GetIconKey(

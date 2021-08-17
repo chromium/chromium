@@ -256,11 +256,9 @@ ChromeShelfController::ChromeShelfController(Profile* profile,
   // Create the browser monitor which will inform the shelf of status changes.
   browser_status_monitor_ = std::make_unique<BrowserStatusMonitor>(this);
   if (base::FeatureList::IsEnabled(apps::BrowserAppInstanceTracker::kEnabled)) {
-    apps::AppServiceProxyChromeOs* proxy =
-        apps::AppServiceProxyFactory::GetForProfile(profile);
     browser_app_instance_tracker_ =
-        std::make_unique<apps::BrowserAppInstanceTracker>(
-            proxy->AppRegistryCache());
+        apps::AppServiceProxyFactory::GetForProfile(profile)
+            ->BrowserAppInstanceTracker();
   }
 }
 
@@ -308,9 +306,6 @@ void ChromeShelfController::Init() {
 
   UpdatePinnedAppsFromSync();
   browser_status_monitor_->Initialize();
-  if (base::FeatureList::IsEnabled(apps::BrowserAppInstanceTracker::kEnabled)) {
-    browser_app_instance_tracker_->Initialize();
-  }
 }
 
 ash::ShelfID ChromeShelfController::CreateAppItem(
@@ -586,6 +581,12 @@ void ChromeShelfController::ActiveUserChanged(const AccountId& account_id) {
   AttachProfile(ProfileManager::GetActiveUserProfile());
   // Update the V1 applications.
   browser_status_monitor_->ActiveUserChanged(account_id.GetUserEmail());
+  // Switch app tracker instance.
+  if (base::FeatureList::IsEnabled(apps::BrowserAppInstanceTracker::kEnabled)) {
+    browser_app_instance_tracker_ = apps::AppServiceProxyFactory::GetForProfile(
+                                        ProfileManager::GetActiveUserProfile())
+                                        ->BrowserAppInstanceTracker();
+  }
   // Save/restore spinners belonging to the old/new user. Must be called before
   // notifying the AppWindowControllers, as some of them assume spinners owned
   // by the new user have already been added to the shelf.

@@ -4,10 +4,10 @@
 
 #include "chrome/browser/apps/app_service/browser_app_instance_tracker.h"
 
-#include <memory>
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/macros.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_observer.h"
 #include "chrome/browser/apps/app_service/web_contents_app_id_utils.h"
@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "components/services/app_service/public/cpp/types_util.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -72,6 +73,13 @@ bool IsAppActive(Browser* browser, content::WebContents* contents) {
          browser->tab_strip_model()->GetActiveWebContents() == contents;
 }
 
+WebContentsId::Generator& GetWebContentsIdGenerator() {
+  // ID generator shared between all |BrowserAppInstanceTracker| instances as
+  // IDs need to be unique within the scope of the process.
+  static WebContentsId::Generator instance;
+  return instance;
+}
+
 }  // namespace
 
 // Helper class to notify BrowserAppInstanceTracker when WebContents navigation
@@ -103,18 +111,28 @@ const base::Feature BrowserAppInstanceTracker::kEnabled{
     "EnableBrowserAppsTracker", base::FEATURE_DISABLED_BY_DEFAULT};
 
 BrowserAppInstanceTracker::BrowserAppInstanceTracker(
-    apps::AppRegistryCache& app_registry_cache)
+    Profile* profile,
+    AppRegistryCache& app_registry_cache)
     : apps::AppRegistryCache::Observer(&app_registry_cache),
-      browser_tab_strip_tracker_(this, nullptr) {
+      profile_(profile),
+      browser_tab_strip_tracker_(this, this) {
   BrowserList::GetInstance()->AddObserver(this);
+  browser_tab_strip_tracker_.Init();
 }
 
 BrowserAppInstanceTracker::~BrowserAppInstanceTracker() {
   BrowserList::GetInstance()->RemoveObserver(this);
 }
 
-void BrowserAppInstanceTracker::Initialize() {
-  browser_tab_strip_tracker_.Init();
+std::unique_ptr<BrowserAppInstanceTracker> BrowserAppInstanceTracker::Create(
+    Profile* profile,
+    AppRegistryCache& app_registry_cache) {
+  if (!base::FeatureList::IsEnabled(
+          apps::BrowserAppInstanceTracker::kEnabled)) {
+    return nullptr;
+  }
+  return std::make_unique<BrowserAppInstanceTracker>(profile,
+                                                     app_registry_cache);
 }
 
 std::set<const BrowserAppInstance*>
@@ -200,6 +218,10 @@ void BrowserAppInstanceTracker::OnTabStripModelChanged(
       OnTabStripModelChangeSelection(browser, selection);
       break;
   }
+}
+
+bool BrowserAppInstanceTracker::ShouldTrackBrowser(Browser* browser) {
+  return profile_->IsSameOrParent(browser->profile());
 }
 
 void BrowserAppInstanceTracker::OnWindowVisibilityChanged(aura::Window* window,
@@ -452,7 +474,7 @@ void BrowserAppInstanceTracker::CreateAppInstance(
                      std::move(app_id),
                      browser,
                      contents,
-                     web_contents_id_generator_.GenerateNextId(),
+                     GetWebContentsIdGenerator().GenerateNextId(),
                      IsAppVisible(browser, contents),
                      IsAppActive(browser, contents),
                  }));

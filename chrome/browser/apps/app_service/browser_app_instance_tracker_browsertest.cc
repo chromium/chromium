@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/browser_app_instance.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_observer.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_tracker.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -137,6 +139,12 @@ class Recorder : public apps::BrowserAppInstanceObserver {
 }  // namespace
 
 class BrowserAppInstanceTrackerTest : public InProcessBrowserTest {
+ public:
+  BrowserAppInstanceTrackerTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        apps::BrowserAppInstanceTracker::kEnabled);
+  }
+
  protected:
   Browser* CreateBrowser() {
     Profile* profile = ProfileManager::GetPrimaryUserProfile();
@@ -213,18 +221,15 @@ class BrowserAppInstanceTrackerTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     Profile* profile = ProfileManager::GetPrimaryUserProfile();
-    apps::AppServiceProxyChromeOs* proxy =
-        apps::AppServiceProxyFactory::GetForProfile(profile);
-    tracker_ = std::make_unique<apps::BrowserAppInstanceTracker>(
-        proxy->AppRegistryCache());
-    tracker_->Initialize();
+
+    tracker_ = apps::AppServiceProxyFactory::GetForProfile(profile)
+                   ->BrowserAppInstanceTracker();
 
     ASSERT_EQ(kAppAId, InstallWebApp("https://a.example.org"));
     ASSERT_EQ(kAppBId, InstallWebApp("https://b.example.org"));
   }
 
   void TearDownOnMainThread() override {
-    tracker_.reset();
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
@@ -234,7 +239,8 @@ class BrowserAppInstanceTrackerTest : public InProcessBrowserTest {
   }
 
  protected:
-  std::unique_ptr<apps::BrowserAppInstanceTracker> tracker_;
+  apps::BrowserAppInstanceTracker* tracker_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, InsertAndCloseTabs) {
@@ -245,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, InsertAndCloseTabs) {
   // Open a foreground tab with a website.
   {
     SCOPED_TRACE("insert an initial foreground tab");
-    Recorder recorder(tracker_.get());
+    Recorder recorder(tracker_);
 
     browser = CreateBrowser();
     tab_app1 = InsertForegroundTab(browser, "https://a.example.org");
@@ -258,7 +264,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, InsertAndCloseTabs) {
   // Open a second tab in foreground.
   {
     SCOPED_TRACE("insert a second foreground tab");
-    Recorder recorder(tracker_.get());
+    Recorder recorder(tracker_);
 
     tab_app2 = InsertForegroundTab(browser, "https://b.example.org");
     recorder.Verify({
@@ -270,7 +276,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, InsertAndCloseTabs) {
   // Open a third tab in foreground with no app.
   {
     SCOPED_TRACE("insert a third foreground tab without app");
-    Recorder recorder(tracker_.get());
+    Recorder recorder(tracker_);
 
     InsertForegroundTab(browser, "https://c.example.org");
     recorder.Verify({
@@ -281,7 +287,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, InsertAndCloseTabs) {
   // Open two more tabs in foreground and close them.
   {
     SCOPED_TRACE("insert and close two more tabs");
-    Recorder recorder(tracker_.get());
+    Recorder recorder(tracker_);
 
     auto* tab_app4 = InsertForegroundTab(browser, "https://a.example.org");
     auto* tab_app5 = InsertForegroundTab(browser, "https://b.example.org");
@@ -310,7 +316,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, InsertAndCloseTabs) {
   // Close the browser.
   {
     SCOPED_TRACE("close browser");
-    Recorder recorder(tracker_.get());
+    Recorder recorder(tracker_);
 
     browser->tab_strip_model()->CloseAllTabs();
     recorder.Verify({
@@ -329,7 +335,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, ForegroundTabNavigate) {
   // Navigate the foreground tab to app A.
   {
     SCOPED_TRACE("navigate tab to app A");
-    Recorder recorder(tracker_.get());
+    Recorder recorder(tracker_);
 
     NavigateActiveTab(browser, "https://a.example.org");
     recorder.Verify({
@@ -340,7 +346,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, ForegroundTabNavigate) {
   // Navigate the foreground tab to app B.
   {
     SCOPED_TRACE("navigate tab to app B");
-    Recorder recorder(tracker_.get());
+    Recorder recorder(tracker_);
 
     NavigateActiveTab(browser, "https://b.example.org");
     recorder.Verify({
@@ -352,7 +358,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, ForegroundTabNavigate) {
   // Navigate the foreground tab to a different subdomain with no app.
   {
     SCOPED_TRACE("navigate tab from app B to a non-app subdomain");
-    Recorder recorder(tracker_.get());
+    Recorder recorder(tracker_);
 
     NavigateActiveTab(browser, "https://c.example.org");
     recorder.Verify({
@@ -363,7 +369,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, ForegroundTabNavigate) {
   // Navigate the foreground tab from a non-app subdomain to app B.
   {
     SCOPED_TRACE("navigate tab from a non-app subdomain to app B");
-    Recorder recorder(tracker_.get());
+    Recorder recorder(tracker_);
 
     NavigateActiveTab(browser, "https://b.example.org");
     recorder.Verify({
@@ -374,7 +380,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, ForegroundTabNavigate) {
   // Navigate the foreground tab to a different domain with no app.
   {
     SCOPED_TRACE("navigate tab from app B to a non-app domain");
-    Recorder recorder(tracker_.get());
+    Recorder recorder(tracker_);
 
     NavigateActiveTab(browser, "https://example.com");
     recorder.Verify({
@@ -385,7 +391,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, ForegroundTabNavigate) {
   // Navigate the foreground tab from a non-app domain to app B.
   {
     SCOPED_TRACE("navigate tab from a non-app domain to app B");
-    Recorder recorder(tracker_.get());
+    Recorder recorder(tracker_);
 
     NavigateActiveTab(browser, "https://b.example.org");
     recorder.Verify({
@@ -401,7 +407,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, WindowedWebApp) {
   // Open app A in a window.
   {
     SCOPED_TRACE("create a windowed app");
-    Recorder recorder(tracker_.get());
+    Recorder recorder(tracker_);
 
     browser = CreateAppBrowser(kAppAId);
     tab = InsertForegroundTab(browser, "https://a.example.org");
@@ -413,7 +419,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, WindowedWebApp) {
   // Close the browser.
   {
     SCOPED_TRACE("close browser");
-    Recorder recorder(tracker_.get());
+    Recorder recorder(tracker_);
 
     browser->tab_strip_model()->CloseAllTabs();
     recorder.Verify({
@@ -432,7 +438,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, SwitchTabs) {
   // Switch tabs: no app -> app A
   {
     SCOPED_TRACE("switch tabs to app A");
-    Recorder recorder(tracker_.get());
+    Recorder recorder(tracker_);
 
     browser->tab_strip_model()->ActivateTabAt(0);
     recorder.Verify({
@@ -443,7 +449,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, SwitchTabs) {
   // Switch tabs: app A -> app B
   {
     SCOPED_TRACE("switch tabs to app B");
-    Recorder recorder(tracker_.get());
+    Recorder recorder(tracker_);
 
     browser->tab_strip_model()->ActivateTabAt(1);
     recorder.Verify({
@@ -455,7 +461,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, SwitchTabs) {
   // Switch tabs: app B -> no app
   {
     SCOPED_TRACE("switch tabs to no app");
-    Recorder recorder(tracker_.get());
+    Recorder recorder(tracker_);
 
     browser->tab_strip_model()->ActivateTabAt(2);
     recorder.Verify({
@@ -476,7 +482,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, WindowVisibility) {
   // Hide the window.
   {
     SCOPED_TRACE("hide window");
-    Recorder recorder(tracker_.get());
+    Recorder recorder(tracker_);
 
     browser->window()->GetNativeWindow()->Hide();
     recorder.Verify({
@@ -489,7 +495,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, WindowVisibility) {
   // Show the window.
   {
     SCOPED_TRACE("show window");
-    Recorder recorder(tracker_.get());
+    Recorder recorder(tracker_);
 
     browser->window()->GetNativeWindow()->Show();
     recorder.Verify({
@@ -518,7 +524,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, WindowActivation) {
   // Activate window 1.
   {
     SCOPED_TRACE("activate window 1");
-    Recorder recorder(tracker_.get());
+    Recorder recorder(tracker_);
 
     browser1->window()->Activate();
     recorder.Verify({
@@ -534,7 +540,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, WindowActivation) {
   // Activate window 2.
   {
     SCOPED_TRACE("activate window 2");
-    Recorder recorder(tracker_.get());
+    Recorder recorder(tracker_);
 
     browser2->window()->Activate();
     recorder.Verify({
@@ -565,7 +571,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, TabDrag) {
   // Drag the active tab of browser 2 and rop it into the last position in
   // browser 1.
   SCOPED_TRACE("tab drag and drop");
-  Recorder recorder(tracker_.get());
+  Recorder recorder(tracker_);
 
   // We skip a step where a detached tab gets inserted into a temporary browser
   // but the sequence there is identical.
@@ -706,7 +712,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, AppInstall) {
   std::string app_id;
   {
     SCOPED_TRACE("install app");
-    Recorder recorder(tracker_.get());
+    Recorder recorder(tracker_);
 
     app_id = InstallWebApp("https://c.example.org");
     recorder.Verify({
@@ -717,7 +723,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, AppInstall) {
 
   {
     SCOPED_TRACE("uninstall app");
-    Recorder recorder(tracker_.get());
+    Recorder recorder(tracker_);
 
     UninstallWebApp(app_id);
     recorder.Verify({

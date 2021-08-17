@@ -446,9 +446,8 @@ class ChromeShelfController
   // The owned browser status monitor.
   std::unique_ptr<BrowserStatusMonitor> browser_status_monitor_;
 
-  // The owned browser app instance tracker.
-  std::unique_ptr<apps::BrowserAppInstanceTracker>
-      browser_app_instance_tracker_;
+  // The browser app instance tracker for the current profile.
+  apps::BrowserAppInstanceTracker* browser_app_instance_tracker_{nullptr};
 
   // A special observer class to detect user switches.
   std::unique_ptr<ChromeShelfControllerUserSwitchObserver>

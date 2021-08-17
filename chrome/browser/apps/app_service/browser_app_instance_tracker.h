@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
+#include "chrome/browser/ui/browser_tab_strip_tracker_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "content/public/browser/web_contents.h"
@@ -25,6 +26,7 @@
 #include "ui/aura/window_observer.h"
 
 class Browser;
+class Profile;
 
 namespace apps {
 
@@ -36,21 +38,27 @@ class BrowserAppInstanceObserver;
 // - apps running in WebContents (web apps, hosted apps, V1 packaged apps)
 // - browser instances (registered with app ID |extension_misc::kChromeAppId|).
 class BrowserAppInstanceTracker : public TabStripModelObserver,
+                                  public BrowserTabStripTrackerDelegate,
                                   public aura::WindowObserver,
                                   public apps::AppRegistryCache::Observer,
                                   public BrowserListObserver {
  public:
   static const base::Feature kEnabled;
 
-  explicit BrowserAppInstanceTracker(
-      apps::AppRegistryCache& app_registry_cache);
+  BrowserAppInstanceTracker(Profile* profile,
+                            AppRegistryCache& app_registry_cache);
   ~BrowserAppInstanceTracker() override;
   BrowserAppInstanceTracker(const BrowserAppInstanceTracker&) = delete;
   BrowserAppInstanceTracker& operator=(const BrowserAppInstanceTracker&) =
       delete;
 
-  // Causes BrowserAppInstanceObserver events to fire for all existing browsers.
-  void Initialize();
+  // A factory method to make the creation of the tracker optional to keep it
+  // behind a flag.
+  // TODO(crbug.com/1203992): Remove this when the
+  // |BrowserAppInstanceTracker::kEnabled| flag is removed.
+  static std::unique_ptr<BrowserAppInstanceTracker> Create(
+      Profile* profile,
+      AppRegistryCache& app_registry_cache);
 
   // Get all instances by app ID. Returns a set of unowned pointers.
   std::set<const BrowserAppInstance*> GetAppInstancesByAppId(
@@ -83,6 +91,8 @@ class BrowserAppInstanceTracker : public TabStripModelObserver,
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
+
+  bool ShouldTrackBrowser(Browser* browser) override;
 
   // aura::WindowObserver overrides:
   void OnWindowVisibilityChanged(aura::Window* window, bool visible) override;
@@ -169,6 +179,8 @@ class BrowserAppInstanceTracker : public TabStripModelObserver,
       std::map<KeyT, std::unique_ptr<BrowserAppInstance>>& instances,
       const KeyT& key);
 
+  Profile* profile_;
+
   std::map<content::WebContents*, std::unique_ptr<WebContentsObserver>>
       webcontents_to_observer_map_;
 
@@ -196,8 +208,6 @@ class BrowserAppInstanceTracker : public TabStripModelObserver,
   std::map<Browser*, std::unique_ptr<BrowserAppInstance>> chrome_instances_;
 
   base::ObserverList<BrowserAppInstanceObserver, true>::Unchecked observers_;
-
-  WebContentsId::Generator web_contents_id_generator_;
 };
 
 }  // namespace apps

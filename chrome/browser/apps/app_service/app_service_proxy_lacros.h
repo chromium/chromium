@@ -37,6 +37,7 @@ class WebAppsPublisherHost;
 namespace apps {
 
 class AppServiceImpl;
+class BrowserAppInstanceTracker;
 class ExtensionApps;
 class FakeLacrosWebAppsHost;
 
@@ -77,6 +78,8 @@ class AppServiceProxyLacros : public KeyedService,
   apps::BrowserAppLauncher* BrowserAppLauncher();
 
   apps::PreferredAppsList& PreferredApps();
+
+  apps::BrowserAppInstanceTracker* BrowserAppInstanceTracker();
 
   // apps::IconLoader overrides.
   apps::mojom::IconKeyPtr GetIconKey(const std::string& app_id) override;
@@ -356,6 +359,9 @@ class AppServiceProxyLacros : public KeyedService,
   // to AppServiceProxyLacros when publishers(ExtensionApps and WebApps) can run
   // on Chrome.
   std::unique_ptr<apps::BrowserAppLauncher> browser_app_launcher_;
+
+  std::unique_ptr<apps::BrowserAppInstanceTracker>
+      browser_app_instance_tracker_;
 
   bool is_using_testing_profile_ = false;
   base::OnceClosure dialog_created_callback_;
