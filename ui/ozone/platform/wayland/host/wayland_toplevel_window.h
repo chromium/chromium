@@ -7,6 +7,7 @@
 
 #include "base/containers/circular_deque.h"
 #include "build/chromeos_buildflags.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/platform_window/extensions/desk_extension.h"
@@ -64,13 +65,20 @@ class WaylandToplevelWindow : public WaylandWindow,
   bool ShouldUseNativeFrame() const override;
   bool ShouldUpdateWindowShape() const override;
   bool CanSetDecorationInsets() const override;
-  void SetDecorationInsets(gfx::Insets insets_px) override;
   void SetOpaqueRegion(std::vector<gfx::Rect> region_px) override;
   void SetInputRegion(gfx::Rect region_px) override;
   void SetAspectRatio(const gfx::SizeF& aspect_ratio) override;
 
   // WaylandWindow overrides:
   absl::optional<std::vector<gfx::Rect>> GetWindowShape() const override;
+
+  // Client-side decorations on Wayland take some portion of the window surface,
+  // and when they are turned on or off, the window geometry is changed.  That
+  // happens only once at the moment of switching the decoration mode, and has
+  // no further impact on the user experience, but the initial geometry of a
+  // top-level window is different on Wayland if compared to other platforms,
+  // which affects certain tests.
+  static void AllowSettingDecorationInsetsForTest(bool allow);
 
  private:
   // WaylandWindow overrides:
@@ -85,6 +93,7 @@ class WaylandToplevelWindow : public WaylandWindow,
   bool OnInitialize(PlatformWindowInitProperties properties) override;
   bool IsActive() const override;
   bool IsSurfaceConfigured() override;
+  void SetWindowGeometry(gfx::Rect bounds) override;
 
   // zaura_surface listeners
   static void OcclusionChanged(void* data,
@@ -142,6 +151,9 @@ class WaylandToplevelWindow : public WaylandWindow,
   // Propagates the |min_size_| and |max_size_| to the ShellToplevel.
   void SetSizeConstraints();
 
+  // If current state is not PlatformWindowState::kNormal, stores the current
+  // bounds into restored_bounds_px_ so that they can be restored when the
+  // window gets back to normal state.  Otherwise, resets the restored bounds.
   void SetOrResetRestoredBounds();
 
   // Initializes additional shell integration, if the appropriate interfaces are
@@ -215,6 +227,8 @@ class WaylandToplevelWindow : public WaylandWindow,
   bool use_native_frame_ = false;
 
   absl::optional<std::vector<gfx::Rect>> window_shape_in_dips_;
+
+  absl::optional<gfx::Rect> input_region_px_;
 
   // Pending xdg-shell configures, once this window is drawn to |bounds_dip|,
   // ack_configure with |serial| will be sent to the Wayland compositor.

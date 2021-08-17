@@ -198,6 +198,12 @@ bool ZXDGPopupV6WrapperImpl::SetBounds(const gfx::Rect& new_bounds) {
   return false;
 }
 
+void ZXDGPopupV6WrapperImpl::SetWindowGeometry(const gfx::Rect& bounds) {
+  zxdg_surface_v6_set_window_geometry(zxdg_surface_v6_wrapper_->zxdg_surface(),
+                                      bounds.x(), bounds.y(), bounds.width(),
+                                      bounds.height());
+}
+
 zxdg_positioner_v6* ZXDGPopupV6WrapperImpl::CreatePositioner(
     WaylandWindow* parent_window) {
   struct zxdg_positioner_v6* positioner;

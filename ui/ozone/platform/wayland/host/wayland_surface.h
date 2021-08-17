@@ -93,9 +93,9 @@ class WaylandSurface {
 
   // Sets the region that is opaque on this surface in physical pixels. This is
   // expected to be called whenever the region that the surface span changes or
-  // the opacity changes. |region_px| is specified surface-local, in physical
-  // pixels.
-  void SetOpaqueRegion(const gfx::Rect& region_px);
+  // the opacity changes. Rects in |region_px| are specified surface-local, in
+  // physical pixels.
+  void SetOpaqueRegion(const std::vector<gfx::Rect>& region_px);
 
   // Sets the input region on this surface in physical pixels.
   // The input region indicates which parts of the surface accept pointer and
@@ -145,7 +145,8 @@ class WaylandSurface {
     wl_buffer* buffer;
   };
 
-  wl::Object<wl_region> CreateAndAddRegion(const gfx::Rect& region_px);
+  wl::Object<wl_region> CreateAndAddRegion(
+      const std::vector<gfx::Rect>& region_px);
 
   // Creates (if not created) the synchronization surface and returns a pointer
   // to it.

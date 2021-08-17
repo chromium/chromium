@@ -26,4 +26,9 @@ std::string X11Utils::GetWmWindowClass(const std::string& desktop_base_name) {
   return window_class;
 }
 
+std::unique_ptr<PlatformUtils::ScopedDisableClientSideDecorationsForTest>
+X11Utils::DisableClientSideDecorationsForTest() {
+  return {};
+}
+
 }  // namespace ui

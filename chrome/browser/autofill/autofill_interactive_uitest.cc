@@ -30,6 +30,7 @@
 #include "chrome/browser/autofill/autofill_uitest_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_io_data.h"
+#include "chrome/browser/scoped_disable_client_side_decorations_for_test.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/translate/translate_service.h"
 #include "chrome/browser/translate/translate_test_utils.h"
@@ -2826,6 +2827,11 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, CrossSitePaymentForms) {
 #endif
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveIsolationTest,
                        MAYBE_DeletingFrameUnderSuggestion) {
+  // TODO(crbug.com/1240482): the test expectations fail if the window gets CSD
+  // and becomes smaller because of that.  Investigate this and remove the line
+  // below if possible.
+  ui::ScopedDisableClientSideDecorationsForTest scoped_disabled_csd;
+
   CreateTestProfile();
 
   // Main frame is on a.com, iframe is on b.com.

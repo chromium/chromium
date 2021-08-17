@@ -6,6 +6,7 @@
 
 #include <linux-explicit-synchronization-unstable-v1-client-protocol.h>
 #include <viewporter-client-protocol.h>
+#include <algorithm>
 
 #include "base/logging.h"
 #include "ui/gfx/geometry/rect.h"
@@ -216,7 +217,7 @@ void WaylandSurface::SetSurfaceBufferScale(int32_t scale) {
   connection_->ScheduleFlush();
 }
 
-void WaylandSurface::SetOpaqueRegion(const gfx::Rect& region_px) {
+void WaylandSurface::SetOpaqueRegion(const std::vector<gfx::Rect>& region_px) {
   // It's important to set opaque region for opaque windows (provides
   // optimization hint for the Wayland compositor).
   if (!root_window_ || !root_window_->IsOpaqueWindow())
@@ -237,13 +238,13 @@ void WaylandSurface::SetInputRegion(const gfx::Rect& region_px) {
   // for the compositor to ignore the parts of the input region that fall
   // outside of the surface.
   wl_surface_set_input_region(surface_.get(),
-                              CreateAndAddRegion(region_px).get());
+                              CreateAndAddRegion({region_px}).get());
 
   connection_->ScheduleFlush();
 }
 
 wl::Object<wl_region> WaylandSurface::CreateAndAddRegion(
-    const gfx::Rect& region_px) {
+    const std::vector<gfx::Rect>& region_px) {
   DCHECK(root_window_);
 
   wl::Object<wl_region> region(
@@ -258,16 +259,20 @@ wl::Object<wl_region> WaylandSurface::CreateAndAddRegion(
       root_window_->root_surface() == this ||
       (root_window()->primary_subsurface() &&
        root_window()->primary_subsurface()->wayland_surface() == this);
-  if (window_shape_in_dips.has_value() && !region_px.IsEmpty() &&
-      is_primary_or_root) {
+  bool is_empty =
+      std::all_of(region_px.begin(), region_px.end(),
+                  [](const gfx::Rect& rect) { return rect.IsEmpty(); });
+  if (window_shape_in_dips.has_value() && !is_empty && is_primary_or_root) {
     for (const auto& rect : window_shape_in_dips.value())
       wl_region_add(region.get(), rect.x(), rect.y(), rect.width(),
                     rect.height());
   } else {
-    gfx::Rect region_dip = gfx::ScaleToEnclosingRect(
-        region_px, 1.f / root_window_->window_scale());
-    wl_region_add(region.get(), region_dip.x(), region_dip.y(),
-                  region_dip.width(), region_dip.height());
+    for (const auto& rect : region_px) {
+      gfx::Rect region_dip =
+          gfx::ScaleToEnclosingRect(rect, 1.f / root_window_->window_scale());
+      wl_region_add(region.get(), region_dip.x(), region_dip.y(),
+                    region_dip.width(), region_dip.height());
+    }
   }
   return region;
 }

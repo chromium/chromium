@@ -47,6 +47,9 @@ class ShellPopupWrapper {
   // if it still wants to reposition the popup.
   virtual bool SetBounds(const gfx::Rect& new_bounds) = 0;
 
+  // Sets and gets the window geometry.
+  virtual void SetWindowGeometry(const gfx::Rect& bounds) = 0;
+
   bool CanGrabPopup(WaylandConnection* connection) const;
 
   // Fills anchor data either from params.anchor or with default anchor

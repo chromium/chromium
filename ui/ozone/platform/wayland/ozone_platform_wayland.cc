@@ -37,6 +37,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_menu_utils.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
+#include "ui/ozone/platform/wayland/wayland_utils.h"
 #include "ui/ozone/public/gpu_platform_support_host.h"
 #include "ui/ozone/public/input_controller.h"
 #include "ui/ozone/public/ozone_platform.h"
@@ -174,6 +175,8 @@ class OzonePlatformWayland : public OzonePlatform {
     return menu_utils_.get();
   }
 
+  WaylandUtils* GetPlatformUtils() override { return wayland_utils_.get(); }
+
   bool IsNativePixmapConfigSupported(gfx::BufferFormat format,
                                      gfx::BufferUsage usage) const override {
     // If there is no drm render node device available, native pixmaps are not
@@ -228,6 +231,7 @@ class OzonePlatformWayland : public OzonePlatform {
 #endif
 
     menu_utils_ = std::make_unique<WaylandMenuUtils>(connection_.get());
+    wayland_utils_ = std::make_unique<WaylandUtils>();
   }
 
   void InitializeGPU(const InitParams& args) override {
@@ -257,12 +261,11 @@ class OzonePlatformWayland : public OzonePlatform {
     static base::NoDestructor<OzonePlatform::PlatformProperties> properties;
     static bool initialised = false;
     if (!initialised) {
-      // Supporting server-side decorations requires a support of
-      // xdg-decorations. But this protocol has been accepted into the upstream
-      // recently, and it will take time before it is taken by compositors. For
-      // now, always use custom frames and disallow switching to server-side
-      // frames.
-      // https://github.com/wayland-project/wayland-protocols/commit/76d1ae8c65739eff3434ef219c58a913ad34e988
+      // Server-side decorations on Wayland require support of xdg-decoration or
+      // some other protocol extensions specific for the particular environment.
+      // Whether the environment has any support only gets known at run time, so
+      // we use the custom frame by default.  If there is support, the user will
+      // be able to enable the system frame.
       properties->custom_frame_pref_default = true;
 
       properties->uses_external_vulkan_image_factory = true;
@@ -354,6 +357,7 @@ class OzonePlatformWayland : public OzonePlatform {
       input_method_context_factory_;
   std::unique_ptr<WaylandBufferManagerConnector> buffer_manager_connector_;
   std::unique_ptr<WaylandMenuUtils> menu_utils_;
+  std::unique_ptr<WaylandUtils> wayland_utils_;
 
   // Objects, which solely live in the GPU process.
   std::unique_ptr<WaylandBufferManagerGpu> buffer_manager_;

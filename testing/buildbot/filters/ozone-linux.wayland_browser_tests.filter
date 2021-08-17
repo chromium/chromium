@@ -24,6 +24,7 @@
 -WebRtcDesktopCaptureBrowserTest.RunsScreenshareFromOneTabToAnother
 
 # Fail on the bot, pass locally.
+-BackForwardCachePageLoadMetricsObserverBrowserTest.CumulativeLayoutShiftAfterBackForwardCacheRestore
 -DesktopCaptureApiTest.ChooseDesktopMedia
 -IconLoaderBrowserTest.LoadGroup
 

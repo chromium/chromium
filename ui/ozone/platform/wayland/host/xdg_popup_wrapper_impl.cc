@@ -213,6 +213,12 @@ bool XDGPopupWrapperImpl::SetBounds(const gfx::Rect& new_bounds) {
   return true;
 }
 
+void XDGPopupWrapperImpl::SetWindowGeometry(const gfx::Rect& bounds) {
+  xdg_surface_set_window_geometry(xdg_surface_wrapper_->xdg_surface(),
+                                  bounds.x(), bounds.y(), bounds.width(),
+                                  bounds.height());
+}
+
 struct xdg_positioner* XDGPopupWrapperImpl::CreatePositioner(
     WaylandWindow* parent_window) {
   struct xdg_positioner* positioner;

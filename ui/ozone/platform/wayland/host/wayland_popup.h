@@ -35,6 +35,7 @@ class WaylandPopup : public WaylandWindow {
   bool OnInitialize(PlatformWindowInitProperties properties) override;
   WaylandPopup* AsWaylandPopup() override;
   bool IsSurfaceConfigured() override;
+  void SetWindowGeometry(gfx::Rect bounds) override;
 
   // Creates a popup window, which is visible as a menu window.
   bool CreateShellPopup();

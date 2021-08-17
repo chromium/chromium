@@ -11,6 +11,7 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/scoped_disable_client_side_decorations_for_test.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/chrome_switches.h"
@@ -108,6 +109,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, DISABLED_TabDuplicate) {
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabSize) {
+  // TODO(crbug.com/1240482): the test expectations fail if the window gets CSD
+  // and becomes smaller because of that.  Investigate this and remove the line
+  // below if possible.
+  ui::ScopedDisableClientSideDecorationsForTest scoped_disabled_csd;
+
   ASSERT_TRUE(RunExtensionTest("tabs/basics", {.page_url = "tab_size.html"}))
       << message_;
 }

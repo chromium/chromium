@@ -16,6 +16,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/single_thread_task_runner.h"
 #include "ui/events/platform/platform_event_dispatcher.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
@@ -122,6 +123,11 @@ class WaylandWindow : public PlatformWindow,
 
   gfx::Size visual_size_px() const { return visual_size_px_; }
 
+  absl::optional<gfx::Insets> frame_insets_px() const {
+    return frame_insets_px_;
+  }
+  void set_frame_insets_px(gfx::Insets insets) { frame_insets_px_ = insets; }
+
   // This is never intended to be used except in unit tests.
   void set_update_visual_size_immediately(bool update_immediately) {
     update_visual_size_immediately_ = update_immediately;
@@ -166,10 +172,11 @@ class WaylandWindow : public PlatformWindow,
   gfx::Rect GetRestoredBoundsInPixels() const override;
   bool ShouldWindowContentsBeTransparent() const override;
   void SetAspectRatio(const gfx::SizeF& aspect_ratio) override;
+  bool IsTranslucentWindowOpacitySupported() const override;
+  void SetDecorationInsets(gfx::Insets insets_px) override;
   void SetWindowIcons(const gfx::ImageSkia& window_icon,
                       const gfx::ImageSkia& app_icon) override;
   void SizeConstraintsChanged() override;
-  bool IsTranslucentWindowOpacitySupported() const override;
   bool ShouldUpdateWindowShape() const override;
 
   // PlatformEventDispatcher
@@ -204,6 +211,9 @@ class WaylandWindow : public PlatformWindow,
 
   // Tells if the surface has already been configured.
   virtual bool IsSurfaceConfigured() = 0;
+
+  // Sets the window geometry.
+  virtual void SetWindowGeometry(gfx::Rect bounds);
 
   // Returns a root parent window within the same hierarchy.
   WaylandWindow* GetRootParentWindow();
@@ -325,6 +335,10 @@ class WaylandWindow : public PlatformWindow,
   //   -> OutputSurface::SwapBuffers() -> WaylandWindow::UpdateVisualSize()
   //   -> xdg_surface.ack_configure() -> Wayland compositor.
   gfx::Size visual_size_px_;
+  // Margins between edges of the surface and the window geometry (i.e., the
+  // area of the window that is visible to the user as the actual window).  The
+  // areas outside the geometry are used to draw client-side window decorations.
+  absl::optional<gfx::Insets> frame_insets_px_;
 
   bool has_pointer_focus_ = false;
   bool has_keyboard_focus_ = false;

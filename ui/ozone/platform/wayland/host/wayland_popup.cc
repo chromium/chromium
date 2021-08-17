@@ -71,6 +71,16 @@ bool WaylandPopup::CreateShellPopup() {
     return false;
   }
 
+  const auto parent_insets = parent_window()->frame_insets_px();
+  if (parent_insets && !parent_insets->IsEmpty()) {
+    set_frame_insets_px(*parent_insets);
+    // Popups should have the same offset for their geometry as their parents
+    // have, otherwise Wayland draws them incorrectly.
+    shell_popup_->SetWindowGeometry(
+        {parent_insets->left(), parent_insets->top(), params.bounds.width(),
+         params.bounds.height()});
+  }
+
   parent_window()->set_child_window(this);
   InitializeAuraShellSurface();
   return true;
@@ -246,6 +256,11 @@ WaylandPopup* WaylandPopup::AsWaylandPopup() {
 
 bool WaylandPopup::IsSurfaceConfigured() {
   return shell_popup() ? shell_popup()->IsConfigured() : false;
+}
+
+void WaylandPopup::SetWindowGeometry(gfx::Rect bounds_dip) {
+  DCHECK(shell_popup_);
+  shell_popup_->SetWindowGeometry(bounds_dip);
 }
 
 }  // namespace ui

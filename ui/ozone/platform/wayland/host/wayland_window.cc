@@ -366,17 +366,25 @@ void WaylandWindow::SetAspectRatio(const gfx::SizeF& aspect_ratio) {
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
+bool WaylandWindow::IsTranslucentWindowOpacitySupported() const {
+  // Wayland compositors always support translucency.
+  return true;
+}
+
+void WaylandWindow::SetDecorationInsets(gfx::Insets insets_px) {
+  if (frame_insets_px_ == insets_px)
+    return;
+  frame_insets_px_ = insets_px;
+  SetWindowGeometry(gfx::ScaleToRoundedRect(GetBounds(), 1.f / window_scale()));
+  connection()->ScheduleFlush();
+}
+
 void WaylandWindow::SetWindowIcons(const gfx::ImageSkia& window_icon,
                                    const gfx::ImageSkia& app_icon) {
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void WaylandWindow::SizeConstraintsChanged() {}
-
-bool WaylandWindow::IsTranslucentWindowOpacitySupported() const {
-  // Wayland compositors always support translucency.
-  return true;
-}
 
 bool WaylandWindow::ShouldUpdateWindowShape() const {
   return false;
@@ -469,7 +477,7 @@ absl::optional<std::vector<gfx::Rect>> WaylandWindow::GetWindowShape() const {
 
 void WaylandWindow::UpdateWindowMask() {
   UpdateWindowShape();
-  root_surface_->SetOpaqueRegion(gfx::Rect(visual_size_px()));
+  root_surface_->SetOpaqueRegion({gfx::Rect(visual_size_px())});
 }
 
 void WaylandWindow::UpdateWindowShape() {}
@@ -570,10 +578,12 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
   PlatformEventSource::GetInstance()->AddPlatformEventDispatcher(this);
   delegate_->OnAcceleratedWidgetAvailable(GetWidget());
 
-  root_surface_->SetOpaqueRegion(gfx::Rect(bounds_px_.size()));
+  root_surface_->SetOpaqueRegion({gfx::Rect(bounds_px_.size())});
 
   return true;
 }
+
+void WaylandWindow::SetWindowGeometry(gfx::Rect bounds) {}
 
 WaylandWindow* WaylandWindow::GetRootParentWindow() {
   return parent_window_ ? parent_window_->GetRootParentWindow() : this;

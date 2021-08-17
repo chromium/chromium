@@ -70,7 +70,7 @@ bool WaylandSubsurface::IsVisible() const {
 void WaylandSubsurface::UpdateOpaqueRegion() {
   gfx::Rect region_px =
       enable_blend_ ? gfx::Rect() : gfx::Rect(bounds_px_.size());
-  wayland_surface()->SetOpaqueRegion(region_px);
+  wayland_surface()->SetOpaqueRegion({region_px});
 }
 
 void WaylandSubsurface::SetBounds(const gfx::Rect& bounds) {

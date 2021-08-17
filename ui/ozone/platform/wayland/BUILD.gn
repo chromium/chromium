@@ -175,6 +175,8 @@ source_set("wayland") {
     "host/zxdg_toplevel_v6_wrapper_impl.h",
     "ozone_platform_wayland.cc",
     "ozone_platform_wayland.h",
+    "wayland_utils.cc",
+    "wayland_utils.h",
   ]
 
   import("//ui/base/ui_features.gni")
