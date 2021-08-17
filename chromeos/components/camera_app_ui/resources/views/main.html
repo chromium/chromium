@@ -313,7 +313,8 @@
     </div>
     <div id="view-document-mode-dialog">
       <div id="dim-preview"></div>
-      <div class="dialog-popup" role="dialog" aria-labelledby="dialog-msg">
+      <div class="dialog-popup" role="dialog" aria-labelledby="dialog-msg"
+           aria-live="polite">
         <div id="icon-scan-area">
           <div class="scan-line"></div>
           <div class="scan-corner top left"></div>
@@ -324,8 +325,8 @@
             <div id="icon-document-g"></div>
           </div>
         </div>
-        <div class="dialog-title" i18n-text="document_mode_dialog_title"></div>
-        <div class="dialog-msg-holder" i18n-text="document_mode_dialog_msg">
+        <div class="dialog-title dialog-msg-holder"></div>
+        <div class="dialog-description" i18n-text="document_mode_dialog_msg">
         </div>
         <button class="dialog-positive-button" tabindex="0"
                 i18n-text="document_mode_dialog_got_it"></button>

@@ -496,8 +496,11 @@ If your feedback is about image or video quality, please attach a sample photo o
       <message desc="Error message shown when users capture a video which is too short." name="IDS_ERROR_MSG_VIDEO_TOO_SHORT">
         Video isn't saved since it's too short
       </message>
-      <message desc="Title of dialog introducing document mode." name="IDS_DOCUMENT_MODE_DIALOG_TITLE">
+      <message desc="Title of dialog introducing document mode." name="IDS_DOCUMENT_MODE_DIALOG_INTRO_TITLE">
         Scan your document
+      </message>
+      <message desc="Title of dialog notify user no document is detected from camera and reintroducing document mode." name="IDS_DOCUMENT_MODE_DIALOG_NOT_DETECTED_TITLE">
+        Couldn't detect a document
       </message>
       <message desc="Detail description introducing document mode." name="IDS_DOCUMENT_MODE_DIALOG_MSG">
         Place all edges of the document within the frame. Scanning works best if the document and background are different colors.
