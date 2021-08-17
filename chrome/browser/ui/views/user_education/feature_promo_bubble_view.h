@@ -15,13 +15,17 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
+namespace gfx {
+struct VectorIcon;
+}  // namespace gfx
+
 namespace ui {
 class MouseEvent;
 }  // namespace ui
 
 namespace views {
 class MdTextButton;
-}
+}  // namespace views
 
 // NOTE: Avoid using this class directly. FeaturePromoController should
 // be used in almost all cases.
@@ -58,6 +62,7 @@ class FeaturePromoBubbleView : public views::BubbleDialogDelegateView {
     views::View* anchor_view = nullptr;
     views::BubbleBorder::Arrow arrow = views::BubbleBorder::TOP_LEFT;
 
+    const gfx::VectorIcon* body_icon = nullptr;
     std::u16string body_text;
     absl::optional<std::u16string> title_text;
     absl::optional<std::u16string> screenreader_text;
