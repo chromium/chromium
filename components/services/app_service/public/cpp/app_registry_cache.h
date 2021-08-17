@@ -13,7 +13,7 @@
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/sequence_checker.h"
+#include "base/sequence_checker_impl.h"
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 
@@ -212,7 +212,9 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
 
   AccountId account_id_;
 
-  SEQUENCE_CHECKER(my_sequence_checker_);
+  // Use a SequenceCheckerImpl which will provide checks for prod code to rule
+  // out any threading issues triggering https://crbug.com/1237267.
+  base::SequenceCheckerImpl my_sequence_checker_;
 
   DISALLOW_COPY_AND_ASSIGN(AppRegistryCache);
 };
