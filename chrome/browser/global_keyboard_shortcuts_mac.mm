@@ -85,7 +85,7 @@ int MenuCommandForKeyEvent(NSEvent* event) {
 
   // "Close window" doesn't use the |commandDispatch:| mechanism. Menu items
   // that do not correspond to IDC_ constants need no special treatment however,
-  // as they can't be blacklisted in
+  // as they can't be reserved in
   // |BrowserCommandController::IsReservedCommandOrKey()| anyhow.
   if ([item action] == @selector(performClose:))
     return IDC_CLOSE_WINDOW;
