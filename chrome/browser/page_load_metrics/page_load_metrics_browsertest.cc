@@ -3746,6 +3746,30 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsBrowserTest, PrerenderEvent) {
       page_load_metrics::internal::kPageLoadStartedInForeground, false, 1);
 }
 
+IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsBrowserTest,
+                       PrerenderingDoNotRecordUKM) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Navigate to an initial page.
+  auto initial_url = embedded_test_server()->GetURL("/empty.html");
+  ui_test_utils::NavigateToURL(browser(), initial_url);
+
+  // Load a page in the prerender.
+  GURL prerender_url = embedded_test_server()->GetURL("/title2.html");
+  int host_id = prerender_helper_.AddPrerender(prerender_url);
+  content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
+  EXPECT_FALSE(host_observer.was_activated());
+  auto entries =
+      test_ukm_recorder_->GetMergedEntriesByName(PageLoad::kEntryName);
+  EXPECT_EQ(0u, entries.size());
+
+  // Activate.
+  prerender_helper_.NavigatePrimaryPage(prerender_url);
+  EXPECT_TRUE(host_observer.was_activated());
+  entries = test_ukm_recorder_->GetMergedEntriesByName(PageLoad::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+}
+
 enum BackForwardCacheStatus { kDisabled = 0, kEnabled = 1 };
 
 class PageLoadMetricsBackForwardCacheBrowserTest
