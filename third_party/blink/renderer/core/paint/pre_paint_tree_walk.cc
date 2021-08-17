@@ -84,7 +84,7 @@ void PrePaintTreeWalk::WalkTree(LocalFrameView& root_frame_view) {
 
   if (root_frame_view.GetFrame().IsMainFrame()) {
     auto property_changed = VisualViewportPaintPropertyTreeBuilder::Update(
-        root_frame_view.GetPage()->GetVisualViewport(),
+        root_frame_view, root_frame_view.GetPage()->GetVisualViewport(),
         *context.tree_builder_context);
 
     if (property_changed >

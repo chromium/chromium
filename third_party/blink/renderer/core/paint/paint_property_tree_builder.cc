@@ -111,6 +111,7 @@ PaintPropertyTreeBuilderContext::PaintPropertyTreeBuilderContext()
       was_main_thread_scrolling(false) {}
 
 PaintPropertyChangeType VisualViewportPaintPropertyTreeBuilder::Update(
+    LocalFrameView& main_frame_view,
     VisualViewport& visual_viewport,
     PaintPropertyTreeBuilderContext& full_context) {
   if (full_context.fragments.IsEmpty())
@@ -140,6 +141,10 @@ PaintPropertyChangeType VisualViewportPaintPropertyTreeBuilder::Update(
     // removed). Not a big deal for performance because this is rare.
     full_context.force_subtree_update_reasons |=
         PaintPropertyTreeBuilderContext::kSubtreeUpdateIsolationPiercing;
+    // The main frame's paint chunks (e.g. scrollbars) may reference paint
+    // properties of the visual viewport.
+    if (auto* layout_view = main_frame_view.GetLayoutView())
+      layout_view->Layer()->SetNeedsRepaint();
   }
 
 #if DCHECK_IS_ON()
@@ -2844,8 +2849,11 @@ static bool IsLayoutShiftRoot(const LayoutObject& object,
 
 void FragmentPaintPropertyTreeBuilder::UpdateForSelf() {
 #if DCHECK_IS_ON()
-  FindPaintOffsetNeedingUpdateScope check_paint_offset(
-      object_, fragment_data_, full_context_.is_actually_needed);
+  absl::optional<FindPaintOffsetNeedingUpdateScope> check_paint_offset;
+  if (RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled()) {
+    check_paint_offset.emplace(object_, fragment_data_,
+                               full_context_.is_actually_needed);
+  }
 #endif
 
   // This is not in FindObjectPropertiesNeedingUpdateScope because paint offset
@@ -2859,8 +2867,12 @@ void FragmentPaintPropertyTreeBuilder::UpdateForSelf() {
   if (properties_) {
     {
 #if DCHECK_IS_ON()
-      FindPropertiesNeedingUpdateScope check_fragment_clip(
-          object_, fragment_data_, full_context_.force_subtree_update_reasons);
+      absl::optional<FindPropertiesNeedingUpdateScope> check_fragment_clip;
+      if (RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled()) {
+        bool force_subtree_update = full_context_.force_subtree_update_reasons;
+        check_fragment_clip.emplace(object_, fragment_data_,
+                                    force_subtree_update);
+      }
 #endif
       UpdateFragmentClip();
     }
@@ -2870,8 +2882,12 @@ void FragmentPaintPropertyTreeBuilder::UpdateForSelf() {
   }
 
 #if DCHECK_IS_ON()
-  FindPropertiesNeedingUpdateScope check_paint_properties(
-      object_, fragment_data_, full_context_.force_subtree_update_reasons);
+  absl::optional<FindPropertiesNeedingUpdateScope> check_paint_properties;
+  if (RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled()) {
+    bool force_subtree_update = full_context_.force_subtree_update_reasons;
+    check_paint_properties.emplace(object_, fragment_data_,
+                                   force_subtree_update);
+  }
 #endif
 
   if (properties_) {
@@ -2908,13 +2924,19 @@ void FragmentPaintPropertyTreeBuilder::UpdateForSelf() {
 
 void FragmentPaintPropertyTreeBuilder::UpdateForChildren() {
 #if DCHECK_IS_ON()
-  // Paint offset should not change during this function.
+  // Will be used though a reference by check_paint_offset, so it's declared
+  // here to out-live check_paint_offset. It's false because paint offset
+  // should not change during this function.
   const bool needs_paint_offset_update = false;
-  FindPaintOffsetNeedingUpdateScope check_paint_offset(
-      object_, fragment_data_, needs_paint_offset_update);
-
-  FindPropertiesNeedingUpdateScope check_paint_properties(
-      object_, fragment_data_, full_context_.force_subtree_update_reasons);
+  absl::optional<FindPaintOffsetNeedingUpdateScope> check_paint_offset;
+  absl::optional<FindPropertiesNeedingUpdateScope> check_paint_properties;
+  if (RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled()) {
+    check_paint_offset.emplace(object_, fragment_data_,
+                               needs_paint_offset_update);
+    bool force_subtree_update = full_context_.force_subtree_update_reasons;
+    check_paint_properties.emplace(object_, fragment_data_,
+                                   force_subtree_update);
+  }
 #endif
 
   if (properties_) {

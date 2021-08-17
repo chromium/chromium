@@ -125,7 +125,13 @@ void PaintPropertyTreeBuilderTest::SetUp() {
 #define CHECK_EXACT_VISUAL_RECT(expected, source_object, ancestor) \
   CHECK_VISUAL_RECT(expected, source_object, ancestor, 0)
 
-INSTANTIATE_PAINT_TEST_SUITE_P(PaintPropertyTreeBuilderTest);
+INSTANTIATE_TEST_SUITE_P(All,
+                         PaintPropertyTreeBuilderTest,
+                         ::testing::Values(0,
+                                           kCompositeAfterPaint,
+                                           kUnderInvalidationChecking,
+                                           kCompositeAfterPaint |
+                                               kUnderInvalidationChecking));
 
 TEST_P(PaintPropertyTreeBuilderTest, FixedPosition) {
   LoadTestData("fixed-position.html");
@@ -4319,6 +4325,12 @@ TEST_P(PaintPropertyTreeBuilderTest, SpanFragmentsLimitedToSize) {
 
 TEST_P(PaintPropertyTreeBuilderTest,
        PaintOffsetUnderMulticolumnScrollFixedPos) {
+  // Raster under-invalidation will fail to allocate bitmap when checking a huge
+  // layer created without LayoutNGBlockFragmentation.
+  if (RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled() &&
+      !RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled())
+    return;
+
   SetBodyInnerHTML(R"HTML(
     <div id=fixed style='position: fixed; columns: 2'>
       <div style='width: 50px; height: 20px; background: lightblue'></div>

@@ -261,7 +261,8 @@ class VisualViewportPaintPropertyTreeBuilder {
   // Update the paint properties for the visual viewport and ensure the context
   // is up to date. Returns the maximum paint property change type for any of
   // the viewport nodes.
-  static PaintPropertyChangeType Update(VisualViewport&,
+  static PaintPropertyChangeType Update(LocalFrameView& main_frame_view,
+                                        VisualViewport&,
                                         PaintPropertyTreeBuilderContext&);
 };
 
