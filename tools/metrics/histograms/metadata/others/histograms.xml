@@ -913,7 +913,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="appcache.UpdateJob.ExistingResourceOnlyCorrupt"
-    units="resources" expires_after="2021-12-12">
+    units="resources" expires_after="2022-02-13">
   <owner>cmp@chromium.org</owner>
   <owner>enne@chromium.org</owner>
   <summary>
@@ -3128,7 +3128,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="CompositorLatency.CompositorOnlyFrame"
-    units="microseconds" expires_after="2021-12-12">
+    units="microseconds" expires_after="2022-02-13">
   <owner>sadrul@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -13650,7 +13650,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ReadingList.WindowDisplayedDuration" units="ms"
-    expires_after="2021-12-12">
+    expires_after="2022-02-13">
   <owner>corising@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
@@ -13837,7 +13837,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="RenderViewContextMenu.Shown" enum="RenderViewContextMenuItem"
-    expires_after="2021-12-12">
+    expires_after="2022-02-13">
   <owner>avi@chromium.org</owner>
   <owner>edwardjung@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
@@ -19105,7 +19105,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebApp.Preinstalled.DisabledCount" units="apps"
-    expires_after="2021-12-12">
+    expires_after="2022-02-13">
   <owner>alancutter@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -19125,7 +19125,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebApp.Preinstalled.UninstallAndReplaceCount" units="apps"
-    expires_after="2021-12-12">
+    expires_after="2022-02-13">
   <owner>alancutter@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>

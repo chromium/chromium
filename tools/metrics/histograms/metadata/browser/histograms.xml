@@ -156,7 +156,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Browser.ContinuousSearch.NumberOfSearchResultsExtracted"
-    units="count" expires_after="2021-12-12">
+    units="count" expires_after="2022-02-13">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>yashard@chromium.org</owner>

@@ -432,7 +432,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="History.DomainCount1Day" units="domains"
-    expires_after="2021-12-12">
+    expires_after="2022-02-13">
   <owner>mpearson@chromium.org</owner>
   <owner>mjzhang@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
@@ -467,7 +467,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="History.DomainCount28Day" units="domains"
-    expires_after="2021-12-12">
+    expires_after="2022-02-13">
   <owner>mpearson@chromium.org</owner>
   <owner>mjzhang@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
@@ -503,7 +503,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="History.DomainCount7Day" units="domains"
-    expires_after="2021-12-12">
+    expires_after="2022-02-13">
   <owner>mpearson@chromium.org</owner>
   <owner>mjzhang@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>

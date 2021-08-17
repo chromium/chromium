@@ -3672,7 +3672,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BlinkGC.TimeForIncrementalMarking" units="ms"
-    expires_after="2021-12-12">
+    expires_after="2022-02-13">
   <owner>mlippautz@chromium.org</owner>
   <owner>oilpan-reviews@chromium.org</owner>
   <summary>

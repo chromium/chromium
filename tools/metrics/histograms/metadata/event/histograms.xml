@@ -27,7 +27,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </variants>
 
 <histogram name="Event.AggregatedLatency.Renderer2" units="microseconds"
-    expires_after="2021-12-12">
+    expires_after="2022-02-13">
   <owner>flackr@chromium.org</owner>
   <summary>
     Time between initiation of any input event and the renderer receiving and

@@ -150,7 +150,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.CompileScriptMicroSeconds" units="microseconds"
-    expires_after="2021-12-12">
+    expires_after="2022-02-13">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -310,7 +310,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.CompileScriptMicroSeconds.StreamingFinalization"
-    units="microseconds" expires_after="2021-12-12">
+    units="microseconds" expires_after="2022-02-13">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -664,7 +664,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="V8.GCBackgroundMarking" units="ms" expires_after="2021-12-12">
+<histogram name="V8.GCBackgroundMarking" units="ms" expires_after="2022-02-13">
   <owner>ulan@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -692,7 +692,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="V8.GCCompactor" units="ms" expires_after="2021-12-12">
+<histogram name="V8.GCCompactor" units="ms" expires_after="2022-02-13">
   <owner>hpayer@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>Time spent in mark-sweep phase of GC.</summary>
@@ -716,7 +716,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="V8.GCFinalizeMC" units="ms" expires_after="2021-12-12">
+<histogram name="V8.GCFinalizeMC" units="ms" expires_after="2022-02-13">
   <owner>ulan@chromium.org</owner>
   <owner>hpayer@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
@@ -866,7 +866,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.GCIncrementalMarkingReason" enum="GarbageCollectionReason"
-    expires_after="2021-12-12">
+    expires_after="2022-02-13">
   <owner>ulan@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>Reason an incremental marking was started in V8.</summary>
@@ -880,7 +880,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.GCIncrementalMarkingSum" units="ms"
-    expires_after="2021-12-12">
+    expires_after="2022-02-13">
   <owner>ulan@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -918,7 +918,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Reason a mark-compact garbage collection was started in V8.</summary>
 </histogram>
 
-<histogram name="V8.GCMarkingSum" units="ms" expires_after="2021-12-12">
+<histogram name="V8.GCMarkingSum" units="ms" expires_after="2022-02-13">
   <owner>mlippautz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>

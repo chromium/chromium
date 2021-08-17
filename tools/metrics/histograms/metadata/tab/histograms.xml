@@ -277,7 +277,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Tab.Preview.TimeToFirstUsableFrameAfterStartCapture"
-    units="ms" expires_after="2021-12-12">
+    units="ms" expires_after="2022-02-13">
   <owner>dfried@chromium.org</owner>
   <owner>collinbaker@chromium.org</owner>
   <summary>
@@ -287,7 +287,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Tab.Preview.TimeToNotifyObserversAfterCaptureReceived"
-    units="microseconds" expires_after="2021-12-12">
+    units="microseconds" expires_after="2022-02-13">
   <owner>dfried@chromium.org</owner>
   <owner>collinbaker@chromium.org</owner>
   <summary>
@@ -301,7 +301,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Tab.Preview.TimeToStoreAfterFrameReceived"
-    units="microseconds" expires_after="2021-12-12">
+    units="microseconds" expires_after="2022-02-13">
   <owner>dfried@chromium.org</owner>
   <owner>collinbaker@chromium.org</owner>
   <summary>
@@ -313,7 +313,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Tab.Preview.TimeToStoreAfterTabSwitch" units="ms"
-    expires_after="2021-12-12">
+    expires_after="2022-02-13">
   <owner>dfried@chromium.org</owner>
   <owner>collinbaker@chromium.org</owner>
   <summary>

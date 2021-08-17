@@ -1124,7 +1124,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.Call.TimeReceivingVideoRtpPacketsInSeconds" units="s"
-    expires_after="2021-12-12">
+    expires_after="2022-02-13">
   <owner>saza@chromium.org</owner>
   <summary>
     The amount of time between the arrival of the first and last video RTP

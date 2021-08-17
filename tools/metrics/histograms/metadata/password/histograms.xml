@@ -166,7 +166,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordGeneration.Event" enum="PasswordGenerationEvent"
-    expires_after="2021-12-12">
+    expires_after="2022-02-13">
   <owner>kazinova@google.com</owner>
   <owner>kolos@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
@@ -385,7 +385,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.AccountStorage.NumOptedInAccountsAfterOptIn"
-    units="accounts" expires_after="2021-12-12">
+    units="accounts" expires_after="2022-02-13">
   <owner>mamir@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -423,7 +423,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="PasswordManager.AccountStorage.UnsyncedPasswordsFoundDuringSignOut"
-    units="passwords" expires_after="2021-12-12">
+    units="passwords" expires_after="2022-02-13">
   <owner>treib@chromium.org</owner>
   <owner>victorvianna@google.com</owner>
   <summary>
@@ -842,7 +842,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.AutomaticChange.AcceptanceWithoutAutoButton"
-    enum="PasswordCheckResolutionAction" expires_after="2021-12-12">
+    enum="PasswordCheckResolutionAction" expires_after="2022-02-13">
   <owner>kolos@chromium.org</owner>
   <owner>battre@chromium.org</owner>
   <summary>
@@ -1291,7 +1291,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.FillingAssistance"
-    enum="PasswordManagerFillingAssistance" expires_after="2021-12-12">
+    enum="PasswordManagerFillingAssistance" expires_after="2022-02-13">
   <owner>kazinova@google.com</owner>
   <owner>battre@chromium.org</owner>
   <summary>
@@ -1528,7 +1528,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.IsSyncPasswordHashSaved"
-    enum="IsSyncPasswordHashSaved" expires_after="2021-12-12">
+    enum="IsSyncPasswordHashSaved" expires_after="2022-02-13">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -1879,7 +1879,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.NewlySavedPasswordIsGenerated"
-    enum="BooleanNewlySavedPasswordIsGenerated" expires_after="2021-12-12">
+    enum="BooleanNewlySavedPasswordIsGenerated" expires_after="2022-02-13">
   <owner>nepper@chromium.org</owner>
   <owner>battre@chromium.org</owner>
   <owner>kolos@chromium.org</owner>
@@ -2050,7 +2050,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.PasswordScriptsFetcher.CacheState"
-    enum="PasswordScriptsFetcherCacheState" expires_after="2021-12-12">
+    enum="PasswordScriptsFetcherCacheState" expires_after="2022-02-13">
   <owner>kolos@chromium.org</owner>
   <owner>battre@chromium.org</owner>
   <summary>
@@ -2061,7 +2061,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="PasswordManager.PasswordScriptsFetcher.HttpResponseAndNetErrorCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2021-12-12">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2022-02-13">
   <owner>kolos@chromium.org</owner>
   <owner>battre@chromium.org</owner>
   <summary>
@@ -2071,14 +2071,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.PasswordScriptsFetcher.ParsingResult"
-    enum="PasswordScriptsFetcherParsingResult" expires_after="2021-12-12">
+    enum="PasswordScriptsFetcherParsingResult" expires_after="2022-02-13">
   <owner>kolos@chromium.org</owner>
   <owner>battre@chromium.org</owner>
   <summary>Result of parsing of a list of available password scripts.</summary>
 </histogram>
 
 <histogram name="PasswordManager.PasswordScriptsFetcher.ResponseTime"
-    units="ms" expires_after="2021-12-12">
+    units="ms" expires_after="2022-02-13">
   <owner>kolos@chromium.org</owner>
   <owner>battre@chromium.org</owner>
   <summary>
@@ -2250,7 +2250,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.SaveUIDismissalReason"
-    enum="PasswordManagerUIDismissalReason" expires_after="2021-12-12">
+    enum="PasswordManagerUIDismissalReason" expires_after="2022-02-13">
 <!-- Name completed by histogram_suffixes name="PasswordAccountStorageUserState" -->
 
   <owner>vasilii@chromium.org</owner>
@@ -2829,7 +2829,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="PasswordProtection.RequestOutcome"
-    enum="PasswordProtectionRequestOutcome" expires_after="2021-12-12">
+    enum="PasswordProtectionRequestOutcome" expires_after="2022-02-13">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -2874,7 +2874,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordProtection.Verdict" enum="PasswordProtectionVerdict"
-    expires_after="2021-12-12">
+    expires_after="2022-02-13">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>

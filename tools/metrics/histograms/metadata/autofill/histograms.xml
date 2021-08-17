@@ -2195,7 +2195,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.ScanCreditCard.Completed" enum="BooleanCompleted"
-    expires_after="2021-12-12">
+    expires_after="2022-02-13">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>Whether a credit card scan was completed or cancelled.</summary>
@@ -2216,7 +2216,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.ScanCreditCardPrompt"
-    enum="AutofillScanCreditCardPrompt" expires_after="2021-12-12">
+    enum="AutofillScanCreditCardPrompt" expires_after="2022-02-13">
   <owner>battre@chromium.org</owner>
   <owner>jsaul@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>

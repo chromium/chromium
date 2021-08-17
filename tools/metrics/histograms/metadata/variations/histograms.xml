@@ -267,7 +267,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Variations.SafeMode.FellBackToSafeMode2"
-    enum="BooleanSafeMode" expires_after="2021-12-07">
+    enum="BooleanSafeMode" expires_after="2022-02-13">
   <owner>isherman@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>

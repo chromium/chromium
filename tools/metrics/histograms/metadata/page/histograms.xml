@@ -1003,7 +1003,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.DocumentTiming.NavigationToLoadEventFired" units="ms"
-    expires_after="2021-12-12">
+    expires_after="2022-02-13">
   <owner>bmcquade@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <summary>
@@ -1108,7 +1108,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.Experimental.Bytes.NetworkIncludingHeaders"
-    units="KB" expires_after="2021-12-12">
+    units="KB" expires_after="2022-02-13">
   <owner>jkarlin@chromium.org</owner>
   <summary>
     The number of prefiltered (e.g., compressed) KiloBytes loaded over the
@@ -1605,7 +1605,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="PageLoad.Experimental.PaintTiming.NavigationToFirstMeaningfulPaint"
-    units="ms" expires_after="2021-12-12">
+    units="ms" expires_after="2022-02-13">
   <owner>ksakamoto@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -1942,7 +1942,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.Internal.ErrorCode" enum="InternalErrorLoadEvent"
-    expires_after="2021-12-12">
+    expires_after="2022-02-13">
   <owner>csharrison@chromium.org</owner>
   <owner>bmcquade@chromium.org</owner>
   <summary>
@@ -2231,7 +2231,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.LayoutInstability.CumulativeShiftScore.MainFrame"
-    units="scorex10" expires_after="2021-12-12">
+    units="scorex10" expires_after="2022-02-13">
   <owner>bmcquade@chromium.org</owner>
   <owner>skobes@chromium.org</owner>
   <summary>
@@ -2472,7 +2472,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.PaintTiming.NavigationToFirstPaint" units="ms"
-    expires_after="2021-12-12">
+    expires_after="2022-02-13">
   <owner>ksakamoto@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -2525,7 +2525,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint"
-    units="ms" expires_after="2021-12-12">
+    units="ms" expires_after="2022-02-13">
   <owner>npm@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
@@ -2549,7 +2549,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint.MainFrame"
-    units="ms" expires_after="2021-12-12">
+    units="ms" expires_after="2022-02-13">
   <owner>npm@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -2601,7 +2601,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.ParseTiming.NavigationToParseStart" units="ms"
-    expires_after="2021-12-12">
+    expires_after="2022-02-13">
   <owner>bmcquade@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <summary>
