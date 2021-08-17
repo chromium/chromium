@@ -241,7 +241,6 @@ SupportedCodecs GetSupportedCodecs(const media::CdmCapability& capability) {
       case media::VideoCodec::kVP9:
         supported_codecs |= GetVP9Codecs(codec.second);
         break;
-        break;
       case media::VideoCodec::kAV1:
         supported_codecs |= media::EME_CODEC_AV1;
         break;

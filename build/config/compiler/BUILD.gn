@@ -1714,7 +1714,7 @@ config("chromium_code") {
     # use_libfuzzer: https://crbug.com/1063180
     if (!is_nacl && !use_libfuzzer) {
       # TODO(1066980): Use -Wunreachable-code-aggressive on all platforms.
-      if (is_win && !is_chrome_branded) {
+      if (is_win) {
         cflags += [ "-Wunreachable-code-aggressive" ]
       } else {
         cflags += [ "-Wunreachable-code" ]

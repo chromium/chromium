@@ -78,9 +78,9 @@ std::vector<ExternalInstallOptions> GetPreinstalledWebApps() {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       // clang-format on
   };
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
+#else
   return {};
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
 ScopedTestingPreinstalledAppData::ScopedTestingPreinstalledAppData() {
