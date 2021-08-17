@@ -92,7 +92,7 @@ class ServiceWorkerDevToolsAgentHost : public DevToolsAgentHostImpl,
   base::Time version_doomed_time() const { return version_doomed_time_; }
 
   int64_t version_id() const { return version_id_; }
-  const ServiceWorkerContextWrapper* context_wrapper() const {
+  ServiceWorkerContextWrapper* context_wrapper() {
     return context_wrapper_.get();
   }
 

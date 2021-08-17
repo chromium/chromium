@@ -713,6 +713,10 @@ bool TargetHandler::AutoAttach(TargetAutoAttacher* source,
                                bool waiting_for_debugger) {
   if (auto_attached_sessions_.find(host) != auto_attached_sessions_.end())
     return false;
+  if (!auto_attach_service_workers_ &&
+      host->GetType() == DevToolsAgentHost::kTypeServiceWorker) {
+    return false;
+  }
   std::string session_id =
       Session::Attach(this, host, waiting_for_debugger, flatten_auto_attach_);
   Session* session = attached_sessions_[session_id].get();
@@ -776,6 +780,10 @@ bool TargetHandler::ShouldWaitForDebuggerOnStart(
 
 bool TargetHandler::ShouldThrottlePopups() const {
   return auto_attach_;
+}
+
+void TargetHandler::DisableAutoAttachOfServiceWorkers() {
+  auto_attach_service_workers_ = false;
 }
 
 Response TargetHandler::FindSession(Maybe<std::string> session_id,

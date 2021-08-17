@@ -57,6 +57,11 @@ class TargetHandler : public DevToolsDomainHandler,
   void UpdatePortals();
   bool ShouldThrottlePopups() const;
 
+  // This is to support legacy protocol, where an autoattacher on service worker
+  // targets would not auto-attach service workers.
+  // TODO(caseq): update front-end logic and get rid of this.
+  void DisableAutoAttachOfServiceWorkers();
+
   // Domain implementation.
   Response SetDiscoverTargets(bool discover) override;
   void SetAutoAttach(bool auto_attach,
@@ -170,6 +175,7 @@ class TargetHandler : public DevToolsDomainHandler,
   std::map<DevToolsAgentHost*, Session*> auto_attached_sessions_;
   base::flat_map<TargetAutoAttacher*, bool /* wait_for_debugger_on_start */>
       auto_attach_related_targets_;
+  bool auto_attach_service_workers_ = true;
 
   bool discover_;
   bool observing_agent_hosts_ = false;
