@@ -185,10 +185,8 @@ void EduAccountLoginHandler::HandleParentSignin(const base::ListValue* args) {
   DCHECK(obfuscated_gaia_id_value);
   std::string obfuscated_gaia_id = obfuscated_gaia_id_value->GetString();
 
-  std::string password;
-  args_list[2].GetAsString(&password);
-
-  FetchAccessToken(obfuscated_gaia_id, password);
+  const std::string* password = args_list[2].GetIfString();
+  FetchAccessToken(obfuscated_gaia_id, password ? *password : std::string());
 }
 
 void EduAccountLoginHandler::FetchFamilyMembers() {
