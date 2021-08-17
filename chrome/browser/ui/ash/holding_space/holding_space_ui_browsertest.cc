@@ -1469,6 +1469,24 @@ class HoldingSpaceUiInProgressDownloadsBrowserTestBase
     }
   }
 
+  // Pauses the specified `in_progress_download` of the appropriate type for
+  // Ash or Lacros given test parameterization.
+  void PauseInProgressDownload(AshOrLacrosDownload* in_progress_download) {
+    switch (GetDownloadTypeToUse()) {
+      case DownloadTypeToUse::kAsh: {
+        auto& in_progress_ash_download = absl::get<0>(*in_progress_download);
+        in_progress_ash_download->Pause();
+        return;
+      }
+      case DownloadTypeToUse::kLacros: {
+        auto& in_progress_lacros_download = absl::get<1>(*in_progress_download);
+        in_progress_lacros_download->is_paused = true;
+        NotifyObserversLacrosDownloadUpdated(in_progress_lacros_download.get());
+        return;
+      }
+    }
+  }
+
   // Updates the byte counts for the specified `in_progress_download` of the
   // appropriate type for Ash or Lacros given test parameterization.
   void UpdateInProgressDownloadByteCounts(
@@ -2193,6 +2211,14 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiInProgressDownloadsBrowserTest,
   // to reflect that the underlying download will be opened when complete.
   EXPECT_TRUE(secondary_label->GetVisible());
   WaitForText(secondary_label, u"Open when complete");
+
+  // Pause the download.
+  PauseInProgressDownload(in_progress_download.get());
+
+  // The `secondary_label` should still be visible but should have been updated
+  // to reflect that the underlying download is paused.
+  EXPECT_TRUE(secondary_label->GetVisible());
+  WaitForText(secondary_label, u"Paused, 0/100 B");
 
   // Complete the download.
   CompleteInProgressDownload(in_progress_download.get());
