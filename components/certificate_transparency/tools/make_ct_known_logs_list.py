@@ -180,7 +180,7 @@ def generate_cpp_file(input_file, f):
         logs.append(log)
 
   # Write the timestamp value.
-  f.write(_generate_log_list_timestamp(json_log_list["logListTimestamp"]))
+  f.write(_generate_log_list_timestamp(json_log_list["log_list_timestamp"]))
 
   # Write the list of currently-qualifying logs.
   qualifying_logs = [log for log in logs if not _is_log_disqualified(log)]
