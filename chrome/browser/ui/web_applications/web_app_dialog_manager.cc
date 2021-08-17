@@ -23,7 +23,7 @@ WebAppDialogManager::WebAppDialogManager(Profile* profile)
 WebAppDialogManager::~WebAppDialogManager() = default;
 
 bool WebAppDialogManager::CanUserUninstallWebApp(const AppId& app_id) const {
-  auto* provider = WebAppProvider::Get(profile_);
+  auto* provider = WebAppProvider::GetForWebApps(profile_);
   if (!provider)
     return false;
 
