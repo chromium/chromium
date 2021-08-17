@@ -5,7 +5,6 @@
 #ifndef BASE_MEMORY_UNSAFE_SHARED_MEMORY_REGION_H_
 #define BASE_MEMORY_UNSAFE_SHARED_MEMORY_REGION_H_
 
-#include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
