@@ -204,7 +204,9 @@ void PresentationRequestNotificationProducer::OnMediaRoutesChanged(
     const std::vector<media_router::MediaRoute>& routes) {
   if (!routes.empty()) {
     notification_service_->HideMediaDialog();
-    item_->Dismiss();
+    if (item_) {
+      item_->Dismiss();
+    }
   }
 }
 
