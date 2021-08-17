@@ -236,6 +236,10 @@ void PhoneHubTray::CloseBubble() {
   if (!bubble_)
     return;
 
+  auto* bubble_view = bubble_->GetBubbleView();
+  if (bubble_view)
+    bubble_view->ResetDelegate();
+
   DCHECK(content_view_);
   phone_hub_metrics::LogScreenOnBubbleClose(
       content_view_->GetScreenForMetrics());
