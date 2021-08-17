@@ -23,11 +23,13 @@
 #include "net/base/net_errors.h"
 #include "net/base/network_delegate.h"
 #include "net/base/proxy_server.h"
+#include "net/cert/x509_certificate.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_with_source.h"
 #include "net/nqe/network_quality_estimator.h"
+#include "net/ssl/ssl_private_key.h"
 #include "net/url_request/redirect_util.h"
 #include "net/url_request/url_request_context.h"
 

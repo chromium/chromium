@@ -24,6 +24,7 @@ namespace net {
 class ClientSocketFactory;
 class SSLClientContext;
 class SSLClientSocket;
+struct SSLConfig;
 class StreamSocket;
 }  // namespace net
 

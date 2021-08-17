@@ -26,6 +26,10 @@ struct RedirectInfo;
 class URLRequest;
 }  // namespace net
 
+namespace url {
+class Origin;
+}
+
 namespace network {
 
 namespace internal {

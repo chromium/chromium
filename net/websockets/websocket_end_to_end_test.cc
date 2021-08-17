@@ -38,6 +38,7 @@
 #include "net/base/url_util.h"
 #include "net/cert/ct_policy_status.h"
 #include "net/http/http_request_headers.h"
+#include "net/http/transport_security_state.h"
 #include "net/log/net_log.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/proxy_resolution/proxy_config.h"

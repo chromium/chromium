@@ -17,7 +17,6 @@
 #include "net/cert/sct_status_flags.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
 #include "net/cert/x509_cert_types.h"
-#include "net/ssl/ssl_config.h"
 
 namespace net {
 

@@ -4,6 +4,8 @@
 
 #include "net/http/transport_security_state.h"
 
+#include <stdint.h>
+
 #include <algorithm>
 #include <memory>
 #include <string>
@@ -11,6 +13,7 @@
 
 #include "base/base64.h"
 #include "base/callback_helpers.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/field_trial.h"
@@ -42,6 +45,7 @@
 #include "net/extras/preload_data/decoder.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
+#include "net/http/transport_security_state_source.h"
 #include "net/net_buildflags.h"
 #include "net/ssl/ssl_info.h"
 #include "net/test/cert_test_util.h"

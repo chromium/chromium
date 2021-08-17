@@ -72,6 +72,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/timer.h"
+#include "net/base/io_buffer.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
 #include "net/cert/cert_net_fetcher.h"

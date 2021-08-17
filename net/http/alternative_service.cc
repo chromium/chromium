@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_macros_local.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
+#include "net/base/port_util.h"
 
 namespace net {
 

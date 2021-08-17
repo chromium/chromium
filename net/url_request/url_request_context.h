@@ -21,8 +21,6 @@
 #include "build/chromeos_buildflags.h"
 #include "net/base/net_export.h"
 #include "net/base/request_priority.h"
-#include "net/http/http_server_properties.h"
-#include "net/http/transport_security_state.h"
 #include "net/net_buildflags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/url_request.h"
@@ -41,6 +39,7 @@ class HostResolver;
 class HttpAuthHandlerFactory;
 struct HttpNetworkSessionContext;
 struct HttpNetworkSessionParams;
+class HttpServerProperties;
 class HttpTransactionFactory;
 class HttpUserAgentSettings;
 class NetLog;
@@ -51,6 +50,7 @@ class ProxyResolutionService;
 class QuicContext;
 class SCTAuditingDelegate;
 class SSLConfigService;
+class TransportSecurityState;
 class URLRequest;
 class URLRequestJobFactory;
 class URLRequestThrottlerManager;

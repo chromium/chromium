@@ -12,6 +12,7 @@
 #include "components/url_formatter/url_formatter.h"
 #include "net/base/net_errors.h"
 #include "net/cert/ct_sct_to_string.h"
+#include "net/cert/x509_certificate.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace security_interstitials {
