@@ -461,6 +461,9 @@ void HoldingSpaceItemChipView::OnSecondaryActionPressed() {
   DCHECK_NE(secondary_action_pause_->GetVisible(),
             secondary_action_resume_->GetVisible());
 
+  if (delegate())
+    delegate()->OnHoldingSpaceItemViewSecondaryActionPressed(this);
+
   // Pause.
   if (secondary_action_pause_->GetVisible()) {
     HoldingSpaceController::Get()->client()->PauseItems({item()});

@@ -28,6 +28,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
+#include "ash/test/view_drawn_waiter.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_item_view.h"
@@ -104,6 +105,12 @@ void LongPress(const views::View* view) {
   ui::GestureEvent gesture_end =
       BuildGestureEvent(press_location, ui::ET_GESTURE_END);
   event_generator.Dispatch(&gesture_end);
+}
+
+void MoveMouseTo(const views::View* view) {
+  auto* root_window = view->GetWidget()->GetNativeWindow()->GetRootWindow();
+  ui::test::EventGenerator event_generator(root_window);
+  event_generator.MoveMouseTo(view->GetBoundsInScreen().CenterPoint(), 10);
 }
 
 bool PressTabUntilFocused(const views::View* view, int max_count = 10) {
@@ -321,19 +328,23 @@ class HoldingSpaceTrayTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
-  HoldingSpaceItem* AddItem(HoldingSpaceItem::Type type,
-                            const base::FilePath& path) {
-    return AddItemToModel(model(), type, path);
+  HoldingSpaceItem* AddItem(
+      HoldingSpaceItem::Type type,
+      const base::FilePath& path,
+      const HoldingSpaceProgress& progress = HoldingSpaceProgress()) {
+    return AddItemToModel(model(), type, path, progress);
   }
 
-  HoldingSpaceItem* AddItemToModel(HoldingSpaceModel* target_model,
-                                   HoldingSpaceItem::Type type,
-                                   const base::FilePath& path) {
+  HoldingSpaceItem* AddItemToModel(
+      HoldingSpaceModel* target_model,
+      HoldingSpaceItem::Type type,
+      const base::FilePath& path,
+      const HoldingSpaceProgress& progress = HoldingSpaceProgress()) {
     GURL file_system_url(
         base::StrCat({"filesystem:", path.BaseName().value()}));
     std::unique_ptr<HoldingSpaceItem> item =
         HoldingSpaceItem::CreateFileBackedItem(
-            type, path, file_system_url,
+            type, path, file_system_url, progress,
             base::BindOnce(&CreateStubHoldingSpaceImage));
     HoldingSpaceItem* item_ptr = item.get();
     target_model->AddItem(std::move(item));
@@ -2456,6 +2467,108 @@ TEST_F(HoldingSpaceTrayTest, SelectionUi) {
   EXPECT_TRUE(item_views[0]->selected());
   expect_checkmark_visible(item_views[0], false);
   expect_image_visible(item_views[0], true);
+}
+
+// Verifies selection state after pressing primary/secondary actions.
+TEST_F(HoldingSpaceTrayTest, SelectionWithPrimaryAndSecondaryActions) {
+  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  StartSession();
+
+  // Add multiple in-progress holding space items.
+  AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake1"),
+          HoldingSpaceProgress(0, 100));
+  AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake2"),
+          HoldingSpaceProgress(0, 100));
+
+  // Show UI.
+  test_api()->Show();
+  ASSERT_TRUE(test_api()->IsShowing());
+
+  // Cache views.
+  const std::vector<views::View*> views = test_api()->GetDownloadChips();
+  ASSERT_EQ(views.size(), 2u);
+  const std::vector<HoldingSpaceItemView*> item_views = {
+      HoldingSpaceItemView::Cast(views[0]),
+      HoldingSpaceItemView::Cast(views[1])};
+
+  // Verify initial selection state.
+  EXPECT_FALSE(item_views[0]->selected());
+  EXPECT_FALSE(item_views[1]->selected());
+
+  // Move mouse to the 1st item.
+  MoveMouseTo(item_views[0]);
+  EXPECT_FALSE(item_views[0]->selected());
+  EXPECT_FALSE(item_views[1]->selected());
+
+  // Select the 1st item.
+  Click(item_views[0]);
+  EXPECT_TRUE(item_views[0]->selected());
+  EXPECT_FALSE(item_views[1]->selected());
+
+  {
+    auto* primary_action =
+        item_views[0]->GetViewByID(kHoldingSpaceItemPrimaryActionContainerId);
+    ViewDrawnWaiter().Wait(primary_action);
+
+    // Click the 1st item's primary action. Selection state shouldn't change.
+    EXPECT_CALL(*client(), CancelItems(ElementsAre(item_views[0]->item())));
+    Click(primary_action);
+    EXPECT_TRUE(item_views[0]->selected());
+    EXPECT_FALSE(item_views[1]->selected());
+  }
+
+  // Move mouse to the 2nd item.
+  MoveMouseTo(item_views[1]);
+  EXPECT_TRUE(item_views[0]->selected());
+  EXPECT_FALSE(item_views[1]->selected());
+
+  {
+    auto* primary_action =
+        item_views[1]->GetViewByID(kHoldingSpaceItemPrimaryActionContainerId);
+    ViewDrawnWaiter().Wait(primary_action);
+
+    // Click the 2nd item's primary action. Selection state should change.
+    EXPECT_CALL(*client(), CancelItems(ElementsAre(item_views[1]->item())));
+    Click(primary_action);
+    EXPECT_FALSE(item_views[0]->selected());
+    EXPECT_FALSE(item_views[1]->selected());
+  }
+
+  // Select the 2nd item.
+  Click(item_views[1]);
+  EXPECT_FALSE(item_views[0]->selected());
+  EXPECT_TRUE(item_views[1]->selected());
+
+  {
+    auto* secondary_action =
+        item_views[1]->GetViewByID(kHoldingSpaceItemSecondaryActionContainerId);
+    ViewDrawnWaiter().Wait(secondary_action);
+
+    // Click the 2nd item's secondary action. Selection state shouldn't change.
+    EXPECT_CALL(*client(), PauseItems(ElementsAre(item_views[1]->item())));
+    Click(secondary_action);
+    EXPECT_FALSE(item_views[0]->selected());
+    EXPECT_TRUE(item_views[1]->selected());
+  }
+
+  // Move mouse to the 1st item.
+  MoveMouseTo(item_views[0]);
+  EXPECT_FALSE(item_views[0]->selected());
+  EXPECT_TRUE(item_views[1]->selected());
+
+  {
+    auto* secondary_action =
+        item_views[0]->GetViewByID(kHoldingSpaceItemSecondaryActionContainerId);
+    ViewDrawnWaiter().Wait(secondary_action);
+
+    // Click the 1st item's secondary action. Selection state should change.
+    EXPECT_CALL(*client(), PauseItems(ElementsAre(item_views[0]->item())));
+    Click(secondary_action);
+    EXPECT_FALSE(item_views[0]->selected());
+    EXPECT_FALSE(item_views[1]->selected());
+  }
 }
 
 // Verifies that attempting to open holding space items via double click works
