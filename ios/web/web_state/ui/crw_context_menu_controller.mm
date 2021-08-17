@@ -71,9 +71,9 @@ const CGFloat kJavaScriptTimeout = 1;
 - (UIView*)highlightView {
   if (!_highlightView) {
     // If the views have a CGRectZero size, it is not taken into account.
-    CGRect rectSizedOne = CGRectMake(0, 0, 1, 1);
+    CGRect rectSizedOne = CGRectMake(0, 0, 300, 300);
     _highlightView = [[UIView alloc] initWithFrame:rectSizedOne];
-    _highlightView.backgroundColor = UIColor.clearColor;
+    _highlightView.backgroundColor = UIColor.greenColor;
   }
   return _highlightView;
 }
