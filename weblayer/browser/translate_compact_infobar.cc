@@ -143,11 +143,13 @@ void TranslateCompactInfoBar::ApplyBoolTranslateOption(
   } else if (option == translate::TranslateUtils::OPTION_NEVER_TRANSLATE) {
     bool language_blocklisted = !delegate->IsTranslatableLanguageByPrefs();
     if (language_blocklisted != value) {
+      delegate->RevertWithoutClosingInfobar();
       action_flags_ |= FLAG_NEVER_LANGUAGE;
       delegate->ToggleTranslatableLanguageByPrefs();
     }
   } else if (option == translate::TranslateUtils::OPTION_NEVER_TRANSLATE_SITE) {
     if (delegate->IsSiteOnNeverPromptList() != value) {
+      delegate->RevertWithoutClosingInfobar();
       action_flags_ |= FLAG_NEVER_SITE;
       delegate->ToggleNeverPromptSite();
     }
