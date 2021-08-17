@@ -2920,6 +2920,11 @@ const char kThirdPartyBlockingEnabled[] = "third_party_blocking_enabled";
 // A boolean value, controlling whether Chrome renderer processes have the CIG
 // mitigation enabled.
 const char kRendererCodeIntegrityEnabled[] = "renderer_code_integrity_enabled";
+
+// A boolean that controls whether the Browser process has
+// ProcessExtensionPointDisablePolicy enabled.
+const char kBlockBrowserLegacyExtensionPoints[] =
+    "block_browser_legacy_extension_points";
 #endif  // defined(OS_WIN)
 
 // An integer that keeps track of prompt waves for the settings reset

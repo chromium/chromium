@@ -26034,6 +26034,7 @@ Called by update_document_policy_enum.py.-->
   <int value="890" label="PrintRasterizePdfDpi"/>
   <int value="891" label="DeviceTargetVersionSelector"/>
   <int value="892" label="ChromeAppsEnabled"/>
+  <int value="893" label="BrowserLegacyExtensionPointsBlocked"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

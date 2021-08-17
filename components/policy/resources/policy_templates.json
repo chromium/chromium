@@ -23448,6 +23448,37 @@
       Note: Read more about Process mitigation policies ( https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies ).''',
     },
     {
+      'name': 'BrowserLegacyExtensionPointsBlocked',
+      'owners': ['wfh@chromium.org', 'ssmole@microsoft.com'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Block legacy extension points in the Browser process',
+        },
+        {
+          'value': False,
+          'caption': 'Do not block legacy extension points in the Browser process',
+        },
+      ],
+      'supported_on': ['chrome.win:94-'],
+      'features': {
+        'dynamic_refresh': False,
+        'per_profile': False,
+      },
+      'default': True,
+      'example_value': False,
+      'id': 893,
+      'caption': '''Block Browser Legacy Extension Points''',
+      'tags': ['system-security'],
+      'desc': '''Setting the policy to Enabled or leaving it unset will enable <ph name="LEGACY_EXTENSION_DISABLE_API">ProcessExtensionPointDisablePolicy</ph> to block legacy extension points in the Browser process.
+
+      Setting the policy to Disabled has a detrimental effect on <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>'s security and stability as unknown and potentially hostile code can load inside <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>'s browser process. Only turn off the policy if there are compatibility issues with third-party software that must run inside <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>'s browser process.
+
+      Note: Read more about Process mitigation policies ( https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies ).''',
+    },
+    {
       'name': 'HSTSPolicyBypassList',
       'owners': ['asymmetric@chromium.org', 'rsleevi@chromium.org'],
       'type': 'list',
@@ -28237,6 +28268,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 892,
+  'highest_id_currently_used': 893,
   'highest_atomic_group_id_currently_used': 41
 }

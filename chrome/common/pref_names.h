@@ -1006,6 +1006,7 @@ extern const char kThirdPartyBlockingEnabled[];
 // Windows mitigation policies.
 #if defined(OS_WIN)
 extern const char kRendererCodeIntegrityEnabled[];
+extern const char kBlockBrowserLegacyExtensionPoints[];
 #endif  // defined(OS_WIN)
 
 extern const char kSettingsResetPromptPromptWave[];

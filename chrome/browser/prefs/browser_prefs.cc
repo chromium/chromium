@@ -1030,6 +1030,8 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
 #if defined(OS_WIN)
   OSCrypt::RegisterLocalPrefs(registry);
   registry->RegisterBooleanPref(prefs::kRendererCodeIntegrityEnabled, true);
+  registry->RegisterBooleanPref(prefs::kBlockBrowserLegacyExtensionPoints,
+                                true);
   registry->RegisterBooleanPref(
       policy::policy_prefs::kNativeWindowOcclusionEnabled, true);
   component_updater::RegisterPrefsForSwReporter(registry);
