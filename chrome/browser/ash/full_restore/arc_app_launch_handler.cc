@@ -75,6 +75,8 @@ constexpr char kArcGhostWindowLaunchHistogram[] = "Apps.ArcGhostWindowLaunch";
 
 constexpr char kRestoreArcAppStates[] = "Apps.RestoreArcAppStates";
 
+constexpr char kGhostWindowPopToArcHistogram[] = "Arc.LaunchedWithGhostWindow";
+
 }  // namespace
 
 namespace ash {
@@ -793,6 +795,13 @@ void ArcAppLaunchHandler::RecordRestoreResult() {
   }
 
   base::UmaHistogramEnumeration(kRestoreArcAppStates, restore_state);
+
+#if BUILDFLAG(ENABLE_WAYLAND_SERVER)
+  if (window_handler_) {
+    base::UmaHistogramCounts100(kGhostWindowPopToArcHistogram,
+                                window_handler_->ghost_window_pop_count());
+  }
+#endif
 }
 
 }  // namespace full_restore

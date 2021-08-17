@@ -18,16 +18,17 @@ namespace ash {
 namespace full_restore {
 
 ArcWindowHandler::WindowSessionResolver::WindowSessionResolver(
-    ShellSurfaceMap* session_id_map)
-    : session_id_map_(session_id_map) {}
+    ArcWindowHandler* handler)
+    : handler_(handler) {}
 
 void ArcWindowHandler::WindowSessionResolver::PopulateProperties(
     const Params& params,
     ui::PropertyHandler& out_properties_container) {
   if (params.window_session_id <= 0)
     return;
-  auto it = session_id_map_->find(params.window_session_id);
-  if (it != session_id_map_->end()) {
+  auto it =
+      handler_->session_id_to_shell_surface_.find(params.window_session_id);
+  if (it != handler_->session_id_to_shell_surface_.end()) {
     // Reuse the ghost window instance for real ARC app window.
     if (it->second->HasOverlay())
       it->second->RemoveOverlay();
@@ -38,7 +39,8 @@ void ArcWindowHandler::WindowSessionResolver::PopulateProperties(
     }
     SetShellClientControlledShellSurface(&out_properties_container,
                                          it->second.release());
-    session_id_map_->erase(it);
+    handler_->session_id_to_shell_surface_.erase(it);
+    handler_->ghost_window_pop_count_++;
   } else {
     // ARC ghost window instance.
     out_properties_container.SetProperty(::full_restore::kRealArcTaskWindow,
@@ -48,7 +50,7 @@ void ArcWindowHandler::WindowSessionResolver::PopulateProperties(
 
 ArcWindowHandler::ArcWindowHandler() {
   exo::WMHelper::GetInstance()->RegisterAppPropertyResolver(
-      std::make_unique<WindowSessionResolver>(&session_id_to_shell_surface_));
+      std::make_unique<WindowSessionResolver>(this));
   auto* lifetime_manager = exo::WMHelper::GetInstance()->GetLifetimeManager();
   if (lifetime_manager)
     lifetime_manager->AddObserver(this);
