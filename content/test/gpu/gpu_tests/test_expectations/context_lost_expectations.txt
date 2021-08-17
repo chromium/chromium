@@ -153,6 +153,9 @@ crbug.com/1161570 [ mac nvidia debug ] GpuCrash_InfoForDualHardwareGpus [ Skip ]
 # Flaky tab crash on Win10 x64 Debug (NVIDIA)
 crbug.com/1238162 [ win10 nvidia-0x1cb3 debug ] GpuCrash_InfoForHardwareGpu [ RetryOnFailure ]
 
+# Flaky timeout awaiting crash Win10 FYI x64 Exp Release (Intel HD 630)
+crbug.com/1238162 [ win10 intel-0x5912 release ] GpuCrash_InfoForHardwareGpu [ RetryOnFailure ]
+
 # Flaky for LaCrOS
 crbug.com/1205899 [ linux display-server-wayland ] ContextLost_WebGLBlockedAfterJSNavigation [ RetryOnFailure ]
 
