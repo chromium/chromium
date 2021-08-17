@@ -18645,6 +18645,7 @@
     "external/wpt/css/css-contain/content-visibility/contentvisibility-nestedslot-crash.html",
     "external/wpt/css/css-contain/content-visibility/element-reassigned-to-skipped-slot.html",
     "external/wpt/css/css-contain/content-visibility/element-reassigned-to-slot-in-skipped-subtree.html",
+    "external/wpt/css/css-contain/content-visibility/hidden-pseudo-element-removed-crash.html",
     "external/wpt/css/css-contain/content-visibility/inheritance.html",
     "external/wpt/css/css-contain/content-visibility/slot-content-visibility-1-crash.html",
     "external/wpt/css/css-contain/content-visibility/slot-content-visibility-2-crash.html",
