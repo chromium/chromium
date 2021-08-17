@@ -69,10 +69,11 @@ bool PopulateItem(const base::Value& from, T* out, std::u16string* error) {
 // Populates |out| with |list|. Returns false if there is no list at the
 // specified key or if the list has anything other than |T|.
 template <class T>
-bool PopulateArrayFromList(const base::ListValue& list, std::vector<T>* out) {
+bool PopulateArrayFromList(const base::Value::ConstListView& list,
+                           std::vector<T>* out) {
   out->clear();
   T item;
-  for (const auto& value : list.GetList()) {
+  for (const auto& value : list) {
     if (!PopulateItem(value, &item))
       return false;
     // T might not be movable, but in that case it should be copyable, and this
@@ -86,13 +87,12 @@ bool PopulateArrayFromList(const base::ListValue& list, std::vector<T>* out) {
 // Populates |out| with |list|. Returns false and sets |error| if there is no
 // list at the specified key or if the list has anything other than |T|.
 template <class T>
-bool PopulateArrayFromList(const base::ListValue& list_value,
+bool PopulateArrayFromList(const base::Value::ConstListView& list,
                            std::vector<T>* out,
                            std::u16string* error) {
   out->clear();
   T item;
   std::u16string item_error;
-  const auto& list = list_value.GetList();
   for (size_t i = 0; i < list.size(); ++i) {
     if (!PopulateItem(list[i], &item, &item_error)) {
       DCHECK(error->empty());
@@ -111,7 +111,7 @@ bool PopulateArrayFromList(const base::ListValue& list_value,
 // true on success or if there is nothing at the specified key. Returns false
 // if anything other than a list of |T| is at the specified key.
 template <class T>
-bool PopulateOptionalArrayFromList(const base::ListValue& list,
+bool PopulateOptionalArrayFromList(const base::Value::ConstListView& list,
                                    std::unique_ptr<std::vector<T>>* out) {
   out->reset(new std::vector<T>());
   if (!PopulateArrayFromList(list, out->get())) {
@@ -122,7 +122,7 @@ bool PopulateOptionalArrayFromList(const base::ListValue& list,
 }
 
 template <class T>
-bool PopulateOptionalArrayFromList(const base::ListValue& list,
+bool PopulateOptionalArrayFromList(const base::Value::ConstListView& list,
                                    std::unique_ptr<std::vector<T>>* out,
                                    std::u16string* error) {
   out->reset(new std::vector<T>());

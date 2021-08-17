@@ -49,9 +49,8 @@ void CreateRequestValueFromJSON(const std::string& json,
       base::JSONReader::ReadAndReturnValueWithError(json);
   ASSERT_TRUE(parsed_json.value) << parsed_json.error_message;
 
-  base::ListValue* value_as_list;
-  ASSERT_TRUE(parsed_json.value->GetAsList(&value_as_list));
-  std::unique_ptr<Params> params(Params::Create(*value_as_list));
+  ASSERT_TRUE(parsed_json.value->is_list());
+  std::unique_ptr<Params> params(Params::Create(parsed_json.value->GetList()));
   ASSERT_TRUE(params.get());
   *result = RequestValue::CreateForGetMetadataSuccess(std::move(params));
   ASSERT_TRUE(result->get());

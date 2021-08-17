@@ -60,18 +60,18 @@ def GetAsFundamentalValue(type_, src):
   """Returns the C++ code for retrieving a fundamental type from a
   Value into a variable.
 
-  src: Value*
+  src: Value
   """
   if type_.property_type == PropertyType.BOOLEAN:
-    s = '%s->GetIfBool()'
+    s = '%s.GetIfBool()'
   elif type_.property_type == PropertyType.DOUBLE:
-    s = '%s->GetIfDouble()'
+    s = '%s.GetIfDouble()'
   elif type_.property_type == PropertyType.INTEGER:
-    s = '%s->GetIfInt()'
+    s = '%s.GetIfInt()'
   elif (type_.property_type == PropertyType.STRING or
       (type_.property_type == PropertyType.FUNCTION and
            type_.is_serializable_function)):
-    s = '%s->GetIfString()'
+    s = '%s.GetIfString()'
   else:
     raise ValueError('Type %s is not a fundamental value' % type_.name)
 
