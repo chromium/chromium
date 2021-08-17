@@ -10,6 +10,7 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/web_contents.h"
 #include "storage/common/file_system/file_system_types.h"
 
 namespace content {
@@ -37,7 +38,11 @@ FileSystemAccessHandleBase::FileSystemAccessHandleBase(
            url_.mount_type() == storage::kFileSystemTypeExternal)
         << url_.mount_type();
 
-    Observe(WebContentsImpl::FromRenderFrameHostID(context_.frame_id));
+    WebContents* web_contents =
+        WebContentsImpl::FromRenderFrameHostID(context_.frame_id);
+    if (web_contents) {
+      web_contents_ = web_contents->GetWeakPtr();
+    }
 
     // Disable back-forward cache as File System Access's usage of
     // RenderFrameHost::IsActive at the moment is not compatible with bfcache.
@@ -45,16 +50,19 @@ FileSystemAccessHandleBase::FileSystemAccessHandleBase(
         context_.frame_id,
         BackForwardCacheDisable::DisabledReason(
             BackForwardCacheDisable::DisabledReasonId::kFileSystemAccess));
-    if (web_contents())
-      web_contents()->IncrementFileSystemAccessHandleCount();
+    if (web_contents_) {
+      static_cast<WebContentsImpl*>(web_contents_.get())
+          ->IncrementFileSystemAccessHandleCount();
+    }
   }
 }
 
 FileSystemAccessHandleBase::~FileSystemAccessHandleBase() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (ShouldTrackUsage() && web_contents()) {
-    web_contents()->DecrementFileSystemAccessHandleCount();
+  if (ShouldTrackUsage() && web_contents_) {
+    static_cast<WebContentsImpl*>(web_contents_.get())
+        ->DecrementFileSystemAccessHandleCount();
   }
 }
 
@@ -191,10 +199,6 @@ void FileSystemAccessHandleBase::DoRemove(
           },
           std::move(callback)),
       url, recurse);
-}
-
-WebContentsImpl* FileSystemAccessHandleBase::web_contents() const {
-  return static_cast<WebContentsImpl*>(WebContentsObserver::web_contents());
 }
 
 }  // namespace content

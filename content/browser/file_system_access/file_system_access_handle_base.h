@@ -12,7 +12,6 @@
 #include "base/threading/sequence_bound.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/file_system/isolated_context.h"
@@ -26,7 +25,7 @@ class FileSystemOperationRunner;
 
 namespace content {
 
-class WebContentsImpl;
+class WebContents;
 
 // Base class for File and Directory handle implementations. Holds data that is
 // common to both and (will) deal with functionality that is common as well,
@@ -37,7 +36,7 @@ class WebContentsImpl;
 // sequence. That sequence also has to be the same sequence on which the
 // FileSystemAccessPermissionContext expects to be interacted with, which
 // is the UI thread.
-class CONTENT_EXPORT FileSystemAccessHandleBase : public WebContentsObserver {
+class CONTENT_EXPORT FileSystemAccessHandleBase {
  public:
   using BindingContext = FileSystemAccessManagerImpl::BindingContext;
   using SharedHandleState = FileSystemAccessManagerImpl::SharedHandleState;
@@ -50,7 +49,7 @@ class CONTENT_EXPORT FileSystemAccessHandleBase : public WebContentsObserver {
   FileSystemAccessHandleBase(const FileSystemAccessHandleBase&) = delete;
   FileSystemAccessHandleBase& operator=(const FileSystemAccessHandleBase&) =
       delete;
-  ~FileSystemAccessHandleBase() override;
+  ~FileSystemAccessHandleBase();
 
   const storage::FileSystemURL& url() const { return url_; }
   const SharedHandleState& handle_state() const { return handle_state_; }
@@ -93,8 +92,6 @@ class CONTENT_EXPORT FileSystemAccessHandleBase : public WebContentsObserver {
   storage::FileSystemContext* file_system_context() {
     return manager()->context();
   }
-
-  WebContentsImpl* web_contents() const;
 
   virtual base::WeakPtr<FileSystemAccessHandleBase> AsWeakPtr() = 0;
 
@@ -190,6 +187,7 @@ class CONTENT_EXPORT FileSystemAccessHandleBase : public WebContentsObserver {
 
   // The FileSystemAccessManagerImpl that owns this instance.
   FileSystemAccessManagerImpl* const manager_;
+  base::WeakPtr<WebContents> web_contents_;
   const BindingContext context_;
   const storage::FileSystemURL url_;
   const SharedHandleState handle_state_;
