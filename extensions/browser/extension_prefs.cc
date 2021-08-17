@@ -80,9 +80,6 @@ constexpr const char kPrefManifest[] = "manifest";
 // The version number.
 constexpr const char kPrefManifestVersion[] = "manifest.version";
 
-// Indicates whether an extension is blocklisted.
-constexpr const char kPrefBlocklist[] = "blacklist";
-
 // The count of how many times we prompted the user to acknowledge an
 // extension.
 constexpr const char kPrefAcknowledgePromptCount[] = "ack_prompt_count";
@@ -1073,10 +1070,6 @@ void ExtensionPrefs::ModifyBitMapPrefBits(const std::string& extension_id,
 
 base::StringPiece ExtensionPrefs::GetPrefBlocklistAcknowledgedKey() {
   return kPrefBlocklistAcknowledged;
-}
-
-base::StringPiece ExtensionPrefs::GetPrefBlocklistKey() {
-  return kPrefBlocklist;
 }
 
 namespace {
@@ -2236,6 +2229,8 @@ ExtensionPrefs::ExtensionPrefs(
   MigrateYoutubeOffBookmarkApps();
 
   MigrateDeprecatedDisableReasons();
+
+  MigrateOldBlocklistPrefs();
 }
 
 AppSorting* ExtensionPrefs::app_sorting() const {
@@ -2331,7 +2326,7 @@ void ExtensionPrefs::PopulateExtensionInfoPrefs(
     int install_flags,
     const std::string& install_parameter,
     const declarative_net_request::RulesetInstallPrefs& ruleset_install_prefs,
-    prefs::DictionaryValueUpdate* extension_dict) const {
+    prefs::DictionaryValueUpdate* extension_dict) {
   extension_dict->SetInteger(kPrefState, initial_state);
   extension_dict->SetInteger(kPrefLocation,
                              static_cast<int>(extension->location()));
@@ -2344,8 +2339,13 @@ void ExtensionPrefs::PopulateExtensionInfoPrefs(
                              extension->was_installed_by_oem());
   extension_dict->SetString(
       kPrefInstallTime, base::NumberToString(install_time.ToInternalValue()));
-  if (install_flags & kInstallFlagIsBlocklistedForMalware)
-    extension_dict->SetBoolean(kPrefBlocklist, true);
+  if (install_flags & kInstallFlagIsBlocklistedForMalware) {
+    // Keep the acknowledged state during an update, because we wouldn't want to
+    // reset the acknowledged state if the extension was already on the
+    // blocklist.
+    blocklist_prefs::SetSafeBrowsingExtensionBlocklistStateKeepAcknowledged(
+        extension->id(), BitMapBlocklistState::BLOCKLISTED_MALWARE, this);
+  }
 
   // If |ruleset_install_prefs| is empty, explicitly remove
   // the |kDNRStaticRulesetPref| entry to ensure any remaining old entries from
@@ -2672,6 +2672,26 @@ void ExtensionPrefs::MigrateToNewExternalUninstallPref() {
       current_ids->Append(id);
 
     DeleteExtensionPrefs(id);
+  }
+}
+
+void ExtensionPrefs::MigrateOldBlocklistPrefs() {
+  static constexpr char kLegacyBlocklistPref[] = "blacklist";
+  std::unique_ptr<ExtensionsInfo> extensions_info(GetInstalledExtensionsInfo());
+
+  for (const auto& info : *extensions_info) {
+    const ExtensionId& extension_id = info->extension_id;
+    bool was_blocklisted = false;
+    if (!ReadPrefAsBoolean(extension_id, kLegacyBlocklistPref,
+                           &was_blocklisted))
+      continue;  // Pref wasn't present.
+    // Migrate the old value.
+    if (was_blocklisted) {
+      blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+          extension_id, BitMapBlocklistState::BLOCKLISTED_MALWARE, this);
+    }
+    UpdateExtensionPref(extension_id, kLegacyBlocklistPref, nullptr);
+    DeleteExtensionPrefsIfPrefEmpty(extension_id);
   }
 }
 

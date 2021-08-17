@@ -208,7 +208,11 @@ const char updates_from_webstore2[] = "oolblhbomdbcpmafphaodhjfcgbihcdg";
 const char updates_from_webstore3[] = "bmfoocgfinpmkmlbjhcbofejhkhlbchk";
 const char permissions_blocklist[] = "noffkehfcaggllbcojjbopcmlhcnhcdn";
 const char video_player_app[] = "jcgeabjmjgoblfofpppfkcoakmfobdko";
-const char kPrefBlocklist[] = "blacklist";
+const char kPrefBlocklistState[] = "blacklist_state";
+
+// A helper value to cast the malware blocklist state to an integer.
+static constexpr int kBlocklistedMalwareInteger =
+    static_cast<int>(BitMapBlocklistState::BLOCKLISTED_MALWARE);
 
 struct BubbleErrorsTestData {
   BubbleErrorsTestData(const std::string& id,
@@ -648,21 +652,43 @@ class ExtensionServiceTest : public ExtensionServiceTestWithInstall {
     ASSERT_FALSE(IsBlocked(extension_id));
   }
 
-  bool IsPrefExist(const std::string& extension_id,
-                   const std::string& pref_path) {
+  const base::DictionaryValue* GetExtensionPref(const std::string& extension_id,
+                                                const std::string& pref_path) {
     const base::DictionaryValue* dict =
         profile()->GetPrefs()->GetDictionary(pref_names::kExtensions);
-    if (!dict)
-      return false;
+    if (!dict) {
+      return nullptr;
+    }
     const base::DictionaryValue* pref = nullptr;
     if (!dict->GetDictionary(extension_id, &pref)) {
-      return false;
+      return nullptr;
     }
+    return pref;
+  }
+
+  bool IsPrefExist(const std::string& extension_id,
+                   const std::string& pref_path) {
+    const base::DictionaryValue* pref =
+        GetExtensionPref(extension_id, pref_path);
     if (!pref) {
       return false;
     }
     bool val;
     if (!pref->GetBoolean(pref_path, &val)) {
+      return false;
+    }
+    return true;
+  }
+
+  bool DoesIntegerPrefExist(const std::string& extension_id,
+                            const std::string& pref_path) {
+    const base::DictionaryValue* pref =
+        GetExtensionPref(extension_id, pref_path);
+    if (!pref) {
+      return false;
+    }
+    int val;
+    if (!pref->GetInteger(pref_path, &val)) {
       return false;
     }
     return true;
@@ -3395,10 +3421,10 @@ TEST_F(ExtensionServiceTest, SetUnsetBlocklistInPrefs) {
   EXPECT_TRUE(enabled_extensions.Contains(good2) &&
               !blocklisted_extensions.Contains(good2));
 
-  EXPECT_FALSE(IsPrefExist(good0, kPrefBlocklist));
-  EXPECT_FALSE(IsPrefExist(good1, kPrefBlocklist));
-  EXPECT_FALSE(IsPrefExist(good2, kPrefBlocklist));
-  EXPECT_FALSE(IsPrefExist("invalid_id", kPrefBlocklist));
+  EXPECT_FALSE(DoesIntegerPrefExist(good0, kPrefBlocklistState));
+  EXPECT_FALSE(DoesIntegerPrefExist(good1, kPrefBlocklistState));
+  EXPECT_FALSE(DoesIntegerPrefExist(good2, kPrefBlocklistState));
+  EXPECT_FALSE(DoesIntegerPrefExist("invalid_id", kPrefBlocklistState));
 
   // Blocklist good0 and good1 (and an invalid extension ID).
   test_blocklist.SetBlocklistState(good0, BLOCKLISTED_MALWARE, true);
@@ -3413,10 +3439,10 @@ TEST_F(ExtensionServiceTest, SetUnsetBlocklistInPrefs) {
   EXPECT_TRUE(enabled_extensions.Contains(good2) &&
               !blocklisted_extensions.Contains(good2));
 
-  EXPECT_TRUE(ValidateBooleanPref(good0, kPrefBlocklist, true));
-  EXPECT_TRUE(ValidateBooleanPref(good1, kPrefBlocklist, true));
-  EXPECT_FALSE(IsPrefExist(good2, kPrefBlocklist));
-  EXPECT_FALSE(IsPrefExist("invalid_id", kPrefBlocklist));
+  ValidateIntegerPref(good0, kPrefBlocklistState, kBlocklistedMalwareInteger);
+  ValidateIntegerPref(good1, kPrefBlocklistState, kBlocklistedMalwareInteger);
+  EXPECT_FALSE(DoesIntegerPrefExist(good2, kPrefBlocklistState));
+  EXPECT_FALSE(DoesIntegerPrefExist("invalid_id", kPrefBlocklistState));
 
   // Un-blocklist good1 and blocklist good2.
   test_blocklist.Clear(false);
@@ -3432,10 +3458,10 @@ TEST_F(ExtensionServiceTest, SetUnsetBlocklistInPrefs) {
   EXPECT_TRUE(!enabled_extensions.Contains(good2) &&
               blocklisted_extensions.Contains(good2));
 
-  EXPECT_TRUE(ValidateBooleanPref(good0, kPrefBlocklist, true));
-  EXPECT_FALSE(IsPrefExist(good1, kPrefBlocklist));
-  EXPECT_TRUE(ValidateBooleanPref(good2, kPrefBlocklist, true));
-  EXPECT_FALSE(IsPrefExist("invalid_id", kPrefBlocklist));
+  ValidateIntegerPref(good0, kPrefBlocklistState, kBlocklistedMalwareInteger);
+  EXPECT_FALSE(DoesIntegerPrefExist(good1, kPrefBlocklistState));
+  ValidateIntegerPref(good2, kPrefBlocklistState, kBlocklistedMalwareInteger);
+  EXPECT_FALSE(DoesIntegerPrefExist("invalid_id", kPrefBlocklistState));
 }
 
 // Tests that an extension that was disabled through Omaha won't be
@@ -3460,7 +3486,7 @@ TEST_F(ExtensionServiceTest, NoUnsetBlocklistInPrefs) {
   service()->PerformActionBasedOnOmahaAttributes(good0, attributes);
   EXPECT_EQ(disable_reason::DISABLE_REMOTELY_FOR_MALWARE,
             prefs->GetDisableReasons(good0));
-  EXPECT_TRUE(IsPrefExist(good0, kPrefBlocklist));
+  EXPECT_TRUE(DoesIntegerPrefExist(good0, kPrefBlocklistState));
   EXPECT_FALSE(registry()->enabled_extensions().Contains(good0));
   EXPECT_TRUE(registry()->blocklisted_extensions().Contains(good0));
 
@@ -3474,8 +3500,8 @@ TEST_F(ExtensionServiceTest, NoUnsetBlocklistInPrefs) {
   // unblocklisting/re-enabling.
   EXPECT_FALSE(registry()->enabled_extensions().Contains(good0));
   EXPECT_TRUE(registry()->blocklisted_extensions().Contains(good0));
-  EXPECT_TRUE(ValidateBooleanPref(good0, kPrefBlocklist, true));
-  EXPECT_FALSE(IsPrefExist(good1, kPrefBlocklist));
+  ValidateIntegerPref(good0, kPrefBlocklistState, kBlocklistedMalwareInteger);
+  EXPECT_FALSE(DoesIntegerPrefExist(good1, kPrefBlocklistState));
 }
 #endif  // defined(ENABLE_BLOCKLIST_TESTS)
 
@@ -3569,7 +3595,8 @@ TEST_F(ExtensionServiceTest, UnloadBlocklistedExtensionPolicy) {
   task_environment()->RunUntilIdle();
 
   // The good_crx is blocklisted and the allowlist doesn't negate it.
-  ASSERT_TRUE(ValidateBooleanPref(good_crx, kPrefBlocklist, true));
+  ValidateIntegerPref(good_crx, kPrefBlocklistState,
+                      kBlocklistedMalwareInteger);
   EXPECT_EQ(0u, registry()->enabled_extensions().size());
 }
 #endif  // defined(ENABLE_BLOCKLIST_TESTS)

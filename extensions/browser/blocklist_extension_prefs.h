@@ -73,7 +73,19 @@ void UpdateCurrentGreylistStatesAsAcknowledged(const std::string& extension_id,
                                                ExtensionPrefs* extension_prefs);
 
 // Sets the `bitmap_blocklist_state` to the Safe Browsing blocklist state pref.
+// If the BLOCKLISTED_MALWARE state has changed, also clears the "acknowledged"
+// bit.
 void SetSafeBrowsingExtensionBlocklistState(
+    const std::string& extension_id,
+    BitMapBlocklistState bitmap_blocklist_state,
+    ExtensionPrefs* extension_prefs);
+
+// Similar to SetSafeBrowsingExtensionBlocklistState, but not clearing the
+// "acknowledged" bit.
+// Warning: This function was created to accommodate legacy code. It should not
+// be used in new code. Please call SetSafeBrowsingExtensionBlocklistState
+// instead.
+void SetSafeBrowsingExtensionBlocklistStateKeepAcknowledged(
     const std::string& extension_id,
     BitMapBlocklistState bitmap_blocklist_state,
     ExtensionPrefs* extension_prefs);
@@ -86,11 +98,12 @@ BitMapBlocklistState GetSafeBrowsingExtensionBlocklistState(
     const std::string& extension_id,
     ExtensionPrefs* extension_prefs);
 
-// Returns whether the extension with |extension_id| has its blocklist bit set.
+// Returns whether the extension with |extension_id| is blocklisted by the Safe
+// Browsing blocklist.
 //
 // WARNING: this only checks the extension's entry in prefs, so by definition
 // can only check extensions that prefs knows about. There may be other
-// sources of blocklist information, such as safebrowsing. You probably want
+// sources of blocklist information, such as Omaha attributes. You probably want
 // to use GetExtensionBlocklistState rather than this method.
 // TODO(crbug.com/1232243): Call GetExtensionBlocklistState to take both Safe
 // Browsing and Omaha attribute blocklist states into account, since most

@@ -377,11 +377,6 @@ class ExtensionPrefs : public KeyedService {
   // is removed.
   base::StringPiece GetPrefBlocklistAcknowledgedKey();
 
-  // Gets the key of blocklist pref.
-  // TODO(crbug.com/1193695): Remove this method once kPrefBlocklist
-  // is removed.
-  base::StringPiece GetPrefBlocklistKey();
-
   // Returns the version string for the currently installed extension, or
   // the empty string if not found.
   std::string GetVersionString(const std::string& extension_id) const;
@@ -732,6 +727,11 @@ class ExtensionPrefs : public KeyedService {
   // TODO(devlin): Remove this once clients are migrated over, around M84.
   void MigrateToNewExternalUninstallPref();
 
+  // Migrates kPrefBlocklist with kPrefBlocklistState.
+  // TODO(crbug.com/1232243): Remove this once clients are migrated over, around
+  // M97.
+  void MigrateOldBlocklistPrefs();
+
   // Returns true if the given component extension should be installed, even
   // though it has been obsoleted. Installing it allows us to ensure it is
   // cleaned/deleted up properly. After that cleanup is done, this will return
@@ -887,7 +887,7 @@ class ExtensionPrefs : public KeyedService {
       int install_flags,
       const std::string& install_parameter,
       const declarative_net_request::RulesetInstallPrefs& ruleset_install_prefs,
-      prefs::DictionaryValueUpdate* extension_dict) const;
+      prefs::DictionaryValueUpdate* extension_dict);
 
   void InitExtensionControlledPrefs(const ExtensionsInfo& extensions_info);
 

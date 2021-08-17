@@ -1092,6 +1092,51 @@ class ExtensionPrefsMigratedPref : public ExtensionPrefsTest {
 
 TEST_F(ExtensionPrefsMigratedPref, ExtensionPrefsMigratedPref) {}
 
+// Tests the migration of old blocklist prefs from extension pref entries.
+class ExtensionPrefsMigrateOldBlocklistPrefs : public ExtensionPrefsTest {
+ public:
+  static constexpr char kLegacyBlocklistPref[] = "blacklist";
+
+  ExtensionPrefsMigrateOldBlocklistPrefs() = default;
+  ~ExtensionPrefsMigrateOldBlocklistPrefs() override = default;
+
+  void Initialize() override {
+    extension_ = prefs_.AddExtension("a");
+    prefs()->UpdateExtensionPref(extension_->id(), kLegacyBlocklistPref,
+                                 std::make_unique<base::Value>(true));
+    bool is_blocklisted_pref = false;
+    prefs()->ReadPrefAsBoolean(extension_->id(), kLegacyBlocklistPref,
+                               &is_blocklisted_pref);
+    EXPECT_TRUE(is_blocklisted_pref);
+    // The pref is not migrated to the new pref yet.
+    EXPECT_FALSE(
+        blocklist_prefs::IsExtensionBlocklisted(extension_->id(), prefs()));
+
+    prefs()->MigrateOldBlocklistPrefs();
+  }
+
+  void Verify() override {
+    bool is_blocklisted_pref = false;
+    prefs()->ReadPrefAsBoolean(extension_->id(), kLegacyBlocklistPref,
+                               &is_blocklisted_pref);
+    // The old pref should be cleared.
+    EXPECT_FALSE(is_blocklisted_pref);
+    EXPECT_TRUE(
+        blocklist_prefs::IsExtensionBlocklisted(extension_->id(), prefs()));
+  }
+
+ private:
+  scoped_refptr<const Extension> extension_;
+
+  DISALLOW_COPY_AND_ASSIGN(ExtensionPrefsMigrateOldBlocklistPrefs);
+};
+
+// static
+constexpr char ExtensionPrefsMigrateOldBlocklistPrefs::kLegacyBlocklistPref[];
+
+TEST_F(ExtensionPrefsMigrateOldBlocklistPrefs,
+       ExtensionPrefsMigrateOldBlocklistPrefs) {}
+
 // Tests the removal of obsolete keys from extension pref entries.
 class ExtensionPrefsIsExternalExtensionUninstalled : public ExtensionPrefsTest {
  public:
