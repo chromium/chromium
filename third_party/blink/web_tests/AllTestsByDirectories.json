@@ -68485,6 +68485,7 @@
     "http/tests/inspector-protocol/issues/content-security-policy-issue-report-only.js",
     "http/tests/inspector-protocol/issues/content-security-policy-issue-src-location-added.js",
     "http/tests/inspector-protocol/issues/content-security-policy-issue-trusted-types-exception.js",
+    "http/tests/inspector-protocol/issues/content-security-policy-issue-trusted-types-policy-exception.js",
     "http/tests/inspector-protocol/issues/content-security-policy-issue-trusted-types-policy.js",
     "http/tests/inspector-protocol/issues/content-security-policy-issue-trusted-types-sink.js",
     "http/tests/inspector-protocol/issues/cors-issues.js",

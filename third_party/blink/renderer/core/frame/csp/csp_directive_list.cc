@@ -800,7 +800,8 @@ bool CSPDirectiveListAllowTrustedTypePolicy(
     ContentSecurityPolicy* policy,
     const String& policy_name,
     bool is_duplicate,
-    ContentSecurityPolicy::AllowTrustedTypePolicyDetails& violation_details) {
+    ContentSecurityPolicy::AllowTrustedTypePolicyDetails& violation_details,
+    absl::optional<base::UnguessableToken> issue_id) {
   if (!csp.trusted_types ||
       CSPTrustedTypesAllows(*csp.trusted_types, policy_name, is_duplicate,
                             violation_details)) {
@@ -823,7 +824,7 @@ bool CSPDirectiveListAllowTrustedTypePolicy(
                                  raw_directive.Utf8().c_str()),
                   KURL(), RedirectStatus::kNoRedirect,
                   ContentSecurityPolicy::kTrustedTypesPolicyViolation,
-                  policy_name);
+                  policy_name, String(), issue_id);
 
   return CSPDirectiveListIsReportOnly(csp);
 }

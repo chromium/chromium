@@ -54,7 +54,8 @@ bool CSPDirectiveListAllowTrustedTypePolicy(
     ContentSecurityPolicy* policy,
     const String& policy_name,
     bool is_duplicate,
-    ContentSecurityPolicy::AllowTrustedTypePolicyDetails& violation_details);
+    ContentSecurityPolicy::AllowTrustedTypePolicyDetails& violation_details,
+    absl::optional<base::UnguessableToken> issue_id);
 
 CORE_EXPORT
 bool CSPDirectiveListRequiresTrustedTypes(

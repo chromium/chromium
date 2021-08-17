@@ -738,7 +738,8 @@ bool ContentSecurityPolicy::AllowWorkerContextFromSource(const KURL& url) {
 bool ContentSecurityPolicy::AllowTrustedTypePolicy(
     const String& policy_name,
     bool is_duplicate,
-    AllowTrustedTypePolicyDetails& violation_details) {
+    AllowTrustedTypePolicyDetails& violation_details,
+    absl::optional<base::UnguessableToken> issue_id) {
   bool is_allowed = true;
   violation_details = AllowTrustedTypePolicyDetails::kAllowed;
   for (const auto& policy : policies_) {
@@ -748,7 +749,8 @@ bool ContentSecurityPolicy::AllowTrustedTypePolicy(
     }
     auto new_violation_details = AllowTrustedTypePolicyDetails::kAllowed;
     bool new_allowed = CSPDirectiveListAllowTrustedTypePolicy(
-        *policy, this, policy_name, is_duplicate, new_violation_details);
+        *policy, this, policy_name, is_duplicate, new_violation_details,
+        issue_id);
     // Report the first violation that is enforced.
     // If there is none, report the first violation that is report-only.
     if ((is_allowed && !new_allowed) ||
