@@ -212,12 +212,11 @@ void DeviceLocalAccountPolicyBroker::UpdateRefreshDelay() {
 }
 
 std::string DeviceLocalAccountPolicyBroker::GetDisplayName() const {
-  std::string display_name;
   const base::Value* display_name_value =
       store_->policy_map().GetValue(policy::key::kUserDisplayName);
-  if (display_name_value)
-    display_name_value->GetAsString(&display_name);
-  return display_name;
+  if (display_name_value && display_name_value->is_string())
+    return display_name_value->GetString();
+  return std::string();
 }
 
 void DeviceLocalAccountPolicyBroker::OnStoreLoaded(CloudPolicyStore* store) {
