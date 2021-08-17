@@ -90,8 +90,8 @@ class MarkupAccumulator::NamespaceContext final {
   }
 
   AtomicString LookupNamespaceURI(const AtomicString& prefix) const {
-    return prefix_ns_map_.DeprecatedAtOrEmptyValue(prefix ? prefix
-                                                          : g_empty_atom);
+    auto it = prefix_ns_map_.find(prefix ? prefix : g_empty_atom);
+    return it != prefix_ns_map_.end() ? it->value : g_null_atom;
   }
 
   const AtomicString& ContextNamespace() const { return context_namespace_; }
@@ -109,7 +109,8 @@ class MarkupAccumulator::NamespaceContext final {
   }
 
   const Vector<AtomicString> PrefixList(const AtomicString& ns) const {
-    return ns_prefixes_map_.DeprecatedAtOrEmptyValue(ns ? ns : g_empty_atom);
+    auto it = ns_prefixes_map_.find(ns ? ns : g_empty_atom);
+    return it != ns_prefixes_map_.end() ? it->value : Vector<AtomicString>();
   }
 
  private:
@@ -499,8 +500,8 @@ AtomicString MarkupAccumulator::RetrievePreferredPrefixString(
   for (auto it = candidate_list.rbegin(); it != candidate_list.rend(); ++it) {
     AtomicString candidate_prefix = *it;
     DCHECK(!candidate_prefix.IsEmpty());
-    AtomicString ns_for_candaite = LookupNamespaceURI(candidate_prefix);
-    if (EqualIgnoringNullity(ns_for_candaite, ns))
+    AtomicString ns_for_candidate = LookupNamespaceURI(candidate_prefix);
+    if (EqualIgnoringNullity(ns_for_candidate, ns))
       return candidate_prefix;
   }
 

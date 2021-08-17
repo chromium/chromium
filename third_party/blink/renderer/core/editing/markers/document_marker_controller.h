@@ -206,6 +206,9 @@ class CORE_EXPORT DocumentMarkerController final
                              unsigned start_offset,
                              int length,
                              DocumentMarker::MarkerTypes);
+  // Searches `markers_` for `key`. Returns the mapped value if it is present,
+  // otherwise nullptr. Crashes if the value is present and it is nullptr.
+  MarkerLists* FindMarkers(const Text* key) const;
 
   // Called after weak processing of |markers_| is done.
   void DidProcessMarkerMap(const LivenessBroker&);
