@@ -362,9 +362,11 @@ void NetworkHealth::AnalyzeSignalStrength() {
 
   // Remove all entries that are not actively being analyzed.
   for (auto it = signal_strength_trackers_.begin();
-       it != signal_strength_trackers_.end(); it++) {
+       it != signal_strength_trackers_.end();) {
     if (!analyzed_networks.count(it->first)) {
       it = signal_strength_trackers_.erase(it);
+    } else {
+      it++;
     }
   }
 }
