@@ -119,6 +119,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Variations.FirstRunPrefsDebug"
     enum="VariationsFirstRunPrefEvents" expires_after="2021-08-29">
+  <obsolete>
+    Removed 2021/08.
+  </obsolete>
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
