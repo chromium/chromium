@@ -22,6 +22,7 @@
 #include "chrome/browser/sharesheet/sharesheet_service_factory.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/browser/webshare/prepare_directory_task.h"
+#include "chrome/common/chrome_paths_internal.h"
 #include "components/arc/arc_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/browser/browser_thread.h"
@@ -142,9 +143,10 @@ void NearbyShareSessionImpl::OnArcWindowFound(aura::Window* const arc_window) {
 
   if (share_info_->files.has_value()) {
     // File sharing.
+    base::FilePath cache_base_path;
+    chrome::GetUserCacheDirectory(profile_->GetPath(), &cache_base_path);
     base::FilePath arc_nearby_share_directory =
-        file_manager::util::GetMyFilesFolderForProfile(profile_).Append(
-            kArcNearbyShareDirname);
+        cache_base_path.Append(kArcNearbyShareDirname);
 
     file_handler_ = base::MakeRefCounted<ShareInfoFileHandler>(
         profile_, share_info_.get(), arc_nearby_share_directory,
@@ -187,9 +189,9 @@ apps::mojom::IntentPtr NearbyShareSessionImpl::ConvertShareIntentInfoToIntent()
           << expected_total_files;
       return nullptr;
     }
-    return apps_util::CreateShareIntentFromFiles(profile_, share_file_paths,
-                                                 share_file_mime_types, text,
-                                                 share_info_->title);
+    return apps_util::CreateShareIntentFromFiles(
+        absl::nullopt, share_file_paths, share_file_mime_types, text,
+        share_info_->title);
   }
 
   // Sharing only text
