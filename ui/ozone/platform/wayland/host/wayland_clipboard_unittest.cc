@@ -32,6 +32,8 @@
 #include "ui/ozone/public/platform_clipboard.h"
 
 using testing::_;
+using testing::IsEmpty;
+using testing::IsNull;
 using testing::Mock;
 using testing::Values;
 
@@ -114,6 +116,29 @@ class WaylandClipboardTest : public WaylandTest {
 
  private:
   DISALLOW_COPY_AND_ASSIGN(WaylandClipboardTest);
+};
+
+class CopyPasteOnlyClipboardTest : public WaylandTest {
+ public:
+  void SetUp() override {
+    WaylandTest::SetUp();
+
+    clipboard_ = connection_->clipboard();
+    ASSERT_FALSE(clipboard_->IsSelectionBufferAvailable());
+
+    ASSERT_EQ(wl::PrimarySelectionProtocol::kNone,
+              GetParam().primary_selection_protocol);
+    ASSERT_TRUE(server_.data_device_manager());
+    ASSERT_FALSE(server_.primary_selection_device_manager());
+  }
+
+  void TearDown() override {
+    WaylandTest::TearDown();
+    clipboard_ = nullptr;
+  }
+
+ protected:
+  WaylandClipboard* clipboard_ = nullptr;
 };
 
 TEST_P(WaylandClipboardTest, WriteToClipboard) {
@@ -278,6 +303,25 @@ TEST_P(WaylandClipboardTest, ClipboardChangeNotifications) {
   EXPECT_TRUE(clipboard_->IsSelectionOwner(buffer));
 }
 
+// Verifies clipboard calls targeting primary selection buffer no-op and run
+// gracefully when no primary selection protocol is available.
+TEST_P(CopyPasteOnlyClipboardTest, PrimarySelectionRequestsNoop) {
+  const auto buffer = ClipboardBuffer::kSelection;
+
+  base::MockCallback<PlatformClipboard::OfferDataClosure> offer_done;
+  EXPECT_CALL(offer_done, Run()).Times(1);
+  clipboard_->OfferClipboardData(buffer, {}, offer_done.Get());
+  EXPECT_FALSE(clipboard_->IsSelectionOwner(buffer));
+
+  base::MockCallback<PlatformClipboard::RequestDataClosure> got_data;
+  EXPECT_CALL(got_data, Run(IsNull())).Times(1);
+  clipboard_->RequestClipboardData(buffer, kMimeTypeTextUtf8, got_data.Get());
+
+  base::MockCallback<PlatformClipboard::GetMimeTypesClosure> got_mime_types;
+  EXPECT_CALL(got_mime_types, Run(IsEmpty())).Times(1);
+  clipboard_->GetAvailableMimeTypes(buffer, got_mime_types.Get());
+}
+
 INSTANTIATE_TEST_SUITE_P(
     WithZwpPrimarySelection,
     WaylandClipboardTest,
@@ -296,7 +340,10 @@ INSTANTIATE_TEST_SUITE_P(
     Values(wl::ServerConfig{
         .primary_selection_protocol = wl::PrimarySelectionProtocol::kNone}));
 
-// TODO(crbug.com/1204670): Add test cases specific for CopyPaste-only
-// clipboards, i.e.: No primary selection protocol available.
+INSTANTIATE_TEST_SUITE_P(
+    WithoutPrimarySelection,
+    CopyPasteOnlyClipboardTest,
+    Values(wl::ServerConfig{
+        .primary_selection_protocol = wl::PrimarySelectionProtocol::kNone}));
 
 }  // namespace ui
