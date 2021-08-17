@@ -223,16 +223,17 @@ SettingsResetPromptConfig::ParseDomainHashes(
       return CONFIG_ERROR_BAD_DOMAIN_HASH;
 
     // Convert the ID string to an integer.
-    std::string domain_id_string;
+    const std::string* domain_id_string = iter.value().GetIfString();
     int domain_id = -1;
-    if (!iter.value().GetAsString(&domain_id_string) ||
-        !base::StringToInt(domain_id_string, &domain_id) || domain_id < 0) {
+    if (!domain_id_string ||
+        !base::StringToInt(*domain_id_string, &domain_id) || domain_id < 0) {
       return CONFIG_ERROR_BAD_DOMAIN_ID;
     }
 
     if (!domain_hashes_.insert(std::make_pair(std::move(hash), domain_id))
-             .second)
+             .second) {
       return CONFIG_ERROR_DUPLICATE_DOMAIN_HASH;
+    }
   }
 
   return CONFIG_ERROR_OK;
