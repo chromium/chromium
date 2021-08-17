@@ -9,6 +9,8 @@
 #include "ash/quick_pair/common/constants.h"
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/common/pair_failure.h"
+#include "ash/quick_pair/pairing/fast_pair/fast_pair_data_encryptor.h"
+#include "ash/quick_pair/pairing/fast_pair/fast_pair_data_encryptor_impl.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -25,6 +27,7 @@
 #include "device/bluetooth/test/mock_bluetooth_gatt_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/boringssl/src/include/openssl/rand.h"
 
 namespace {
 
@@ -54,6 +57,8 @@ const device::BluetoothUUID kAccountKeyCharacteristicUuid1("1236");
 const device::BluetoothUUID kAccountKeyCharacteristicUuid2(
     "FE2C1236-8366-4814-8EB0-01DE32100BEA");
 
+const uint8_t kMessageType = 0x00;
+const uint8_t kFlags = 0x00;
 const std::string kProviderAddress = "abcde";
 const std::string kSeekersAddress = "abcde";
 const std::vector<uint8_t>& kTestWriteResponse{0x01, 0x03, 0x02, 0x01, 0x02};
@@ -244,6 +249,24 @@ std::unique_ptr<FakeBluetoothDevice> CreateTestBluetoothDevice(
 namespace ash {
 namespace quick_pair {
 
+class FakeFastPairDataEncryptor : public FastPairDataEncryptor {
+ public:
+  const std::array<uint8_t, kBlockSizeBytes> EncryptBytes(
+      const std::array<uint8_t, kBlockSizeBytes>& bytes_to_encrypt) override {
+    return encrypted_bytes_;
+  }
+
+  void SetEncryptedBytes(std::array<uint8_t, kBlockSizeBytes> encrypted_bytes) {
+    encrypted_bytes_ = std::move(encrypted_bytes);
+  }
+
+  FakeFastPairDataEncryptor() = default;
+  ~FakeFastPairDataEncryptor() override = default;
+
+ private:
+  std::array<uint8_t, kBlockSizeBytes> encrypted_bytes_ = {};
+};
+
 class FastPairGattServiceClientTest : public testing::Test {
  public:
   void SuccessfulGattConnectionSetUp() {
@@ -412,6 +435,13 @@ class FastPairGattServiceClientTest : public testing::Test {
   }
 
   void WriteRequestToKeyBased() {
+    fast_pair_data_encryptor_ = std::make_unique<FakeFastPairDataEncryptor>();
+    gatt_service_client_->WriteRequestAsync(
+        kMessageType, kFlags, kProviderAddress, kSeekersAddress,
+        fast_pair_data_encryptor_.get(),
+        base::BindRepeating(&::ash::quick_pair::FastPairGattServiceClientTest::
+                                WriteTestCallback,
+                            weak_ptr_factory_.GetWeakPtr()));
   }
 
   void WriteRequestToPasskey() {
@@ -466,6 +496,7 @@ class FastPairGattServiceClientTest : public testing::Test {
   std::unique_ptr<FakeBluetoothDevice> device_;
   std::unique_ptr<FakeBluetoothGattCharacteristic>
       fake_key_based_characteristic_;
+  std::unique_ptr<FastPairDataEncryptor> fast_pair_data_encryptor_;
   std::unique_ptr<FakeBluetoothGattCharacteristic> fake_passkey_characteristic_;
   std::unique_ptr<testing::NiceMock<device::MockBluetoothGattService>>
       gatt_service_;
@@ -558,14 +589,39 @@ TEST_F(FastPairGattServiceClientTest, KeyBasedStartNotifyTimeout) {
 }
 
 TEST_F(FastPairGattServiceClientTest, WriteKeyBasedRequest) {
+  SuccessfulGattConnectionSetUp();
+  NotifyGattDiscoveryCompleteForService();
+  EXPECT_EQ(GetInitializedCallbackResult(), absl::nullopt);
+  EXPECT_TRUE(ServiceIsSet());
+  WriteRequestToKeyBased();
+  TriggerKeyBasedGattChanged();
+  EXPECT_EQ(GetWriteCallbackResult(), absl::nullopt);
 }
 
 TEST_F(FastPairGattServiceClientTest, WriteKeyBasedRequestError) {
+  SetKeyBasedWriteError();
+  SuccessfulGattConnectionSetUp();
+  NotifyGattDiscoveryCompleteForService();
+  EXPECT_EQ(GetInitializedCallbackResult(), absl::nullopt);
+  EXPECT_TRUE(ServiceIsSet());
+  WriteRequestToKeyBased();
+  TriggerKeyBasedGattChanged();
+  EXPECT_EQ(GetWriteCallbackResult(),
+            PairFailure::kKeyBasedPairingCharacteristicWrite);
 }
 
 TEST_F(FastPairGattServiceClientTest, WriteKeyBasedRequestTimeout) {
+  SetWriteRequestTimeout();
+  SuccessfulGattConnectionSetUp();
+  NotifyGattDiscoveryCompleteForService();
+  EXPECT_EQ(GetInitializedCallbackResult(), absl::nullopt);
+  EXPECT_TRUE(ServiceIsSet());
+  WriteRequestToKeyBased();
+  TriggerKeyBasedGattChanged();
+  EXPECT_TRUE(ServiceIsSet());
+  EXPECT_EQ(GetWriteCallbackResult(),
+            PairFailure::kKeyBasedPairingResponseTimeout);
 }
-
 TEST_F(FastPairGattServiceClientTest, WritePasskeyRequest) {
   SuccessfulGattConnectionSetUp();
   NotifyGattDiscoveryCompleteForService();

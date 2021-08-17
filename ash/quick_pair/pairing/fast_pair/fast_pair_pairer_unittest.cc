@@ -22,7 +22,6 @@
 #include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/boringssl/src/include/openssl/rand.h"
 
 namespace {
 
@@ -65,18 +64,18 @@ class FakeFastPairDataEncryptor : public FastPairDataEncryptor {
  public:
   const std::array<uint8_t, kBlockSizeBytes> EncryptBytes(
       const std::array<uint8_t, kBlockSizeBytes>& bytes_to_encrypt) override {
-    // Return random bytes for testing since we are just testing the retrieval
-    // of the encryptor.
-    uint8_t data_to_write[kBlockByteSize];
-    RAND_bytes(data_to_write, kBlockByteSize);
-    std::array<uint8_t, kBlockByteSize> std_data_to_write;
-    std::move(std::begin(data_to_write), std::end(data_to_write),
-              std_data_to_write.begin());
-    return std_data_to_write;
+    return encrypted_bytes_;
   }
 
   FakeFastPairDataEncryptor() = default;
   ~FakeFastPairDataEncryptor() override = default;
+
+  void SetEncryptedBytes(std::array<uint8_t, kBlockSizeBytes> encrypted_bytes) {
+    encrypted_bytes_ = std::move(encrypted_bytes);
+  }
+
+ private:
+  std::array<uint8_t, kBlockSizeBytes> encrypted_bytes_ = {};
 };
 
 class FakeFastPairDataEncryptorImplFactory
