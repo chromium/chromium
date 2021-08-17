@@ -3070,6 +3070,8 @@ static_library("ui") {
     sources += [
       "webui/app_launcher_page_ui.cc",
       "webui/app_launcher_page_ui.h",
+      "webui/browser_switch/browser_switch_ui.cc",
+      "webui/browser_switch/browser_switch_ui.h",
     ]
   }
 
@@ -3096,8 +3098,6 @@ static_library("ui") {
       "views/profiles/profile_picker_view.cc",
       "views/profiles/profile_picker_view.h",
       "views/profiles/profile_picker_web_contents_host.h",
-      "webui/browser_switch/browser_switch_ui.cc",
-      "webui/browser_switch/browser_switch_ui.h",
       "webui/profile_helper.cc",
       "webui/profile_helper.h",
       "webui/settings/settings_default_browser_handler.cc",

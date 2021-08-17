@@ -271,9 +271,12 @@
 #include "chrome/browser/ui/webui/webui_js_error/webui_js_error_ui.h"
 #endif
 
+#if !defined(OS_CHROMEOS) && !defined(OS_ANDROID)
+#include "chrome/browser/ui/webui/browser_switch/browser_switch_ui.h"
+#endif
+
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
 #include "chrome/browser/ui/sync/sync_promo_ui.h"
-#include "chrome/browser/ui/webui/browser_switch/browser_switch_ui.h"
 #include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
 #include "chrome/browser/ui/webui/signin/profile_customization_ui.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_ui.h"
@@ -1057,10 +1060,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   if (url.host_piece() == chrome::kChromeUIDiscardsHost)
     return &NewWebUI<DiscardsUI>;
 #endif
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
   if (url.host_piece() == chrome::kChromeUIBrowserSwitchHost)
     return &NewWebUI<BrowserSwitchUI>;
 #endif

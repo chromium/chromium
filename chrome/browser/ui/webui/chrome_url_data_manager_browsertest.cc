@@ -328,9 +328,9 @@ static constexpr const char* const kChromeUrls[] = {
 #endif
 #if !defined(OS_CHROMEOS)
     "chrome://apps",
+    "chrome://browser-switch",
 #endif
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-    "chrome://browser-switch",
     "chrome://signin-email-confirmation",
     "chrome://welcome",
 #endif
