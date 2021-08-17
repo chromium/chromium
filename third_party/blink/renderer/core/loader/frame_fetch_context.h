@@ -182,6 +182,7 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
   WebContentSettingsClient* GetContentSettingsClient() const;
   Settings* GetSettings() const;
   String GetUserAgent() const;
+  String GetReducedUserAgent() const;
   absl::optional<UserAgentMetadata> GetUserAgentMetadata() const;
   const PermissionsPolicy* GetPermissionsPolicy() const override;
   const ClientHintsPreferences GetClientHintsPreferences() const;

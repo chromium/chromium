@@ -39,6 +39,7 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "net/http/structured_headers.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-blink.h"
+#include "services/network/public/mojom/web_client_hints_types.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
@@ -112,6 +113,7 @@
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
 #include "third_party/blink/renderer/platform/network/network_utils.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -367,7 +369,11 @@ void FrameFetchContext::PrepareRequest(
     request.SetTopFrameOrigin(GetTopFrameOrigin());
   }
 
-  String user_agent = GetUserAgent();
+  const AtomicString& ch_ua_reduced_value = request.HttpHeaderField(
+      blink::kClientHintsHeaderMapping[static_cast<size_t>(
+          network::mojom::blink::WebClientHintsType::kUAReduced)]);
+  String user_agent =
+      (ch_ua_reduced_value == "?1") ? GetReducedUserAgent() : GetUserAgent();
   request.SetHTTPUserAgent(AtomicString(user_agent));
 
   if (GetResourceFetcherProperties().IsDetached())
@@ -731,6 +737,12 @@ String FrameFetchContext::GetUserAgent() const {
   return GetFrame()->Loader().UserAgent();
 }
 
+String FrameFetchContext::GetReducedUserAgent() const {
+  if (GetResourceFetcherProperties().IsDetached())
+    return frozen_state_->user_agent;
+  return GetFrame()->Loader().ReducedUserAgent();
+}
+
 absl::optional<UserAgentMetadata> FrameFetchContext::GetUserAgentMetadata()
     const {
   if (GetResourceFetcherProperties().IsDetached())
@@ -764,10 +776,20 @@ FetchContext* FrameFetchContext::Detach() {
   if (GetResourceFetcherProperties().IsDetached())
     return this;
 
+  // If the Sec-CH-UA-Reduced client hint header is set on the request, then the
+  // reduced User-Agent string should also be set on the User-Agent request
+  // header.
+  const ClientHintsPreferences& client_hints_prefs =
+      GetClientHintsPreferences();
+  String user_agent = client_hints_prefs.ShouldSend(
+                          network::mojom::WebClientHintsType::kUAReduced)
+                          ? GetReducedUserAgent()
+                          : GetUserAgent();
+
   frozen_state_ = MakeGarbageCollected<FrozenState>(
       Url(), GetParentSecurityOrigin(), GetContentSecurityPolicy(),
-      GetSiteForCookies(), GetTopFrameOrigin(), GetClientHintsPreferences(),
-      GetDevicePixelRatio(), GetUserAgent(), GetUserAgentMetadata(),
+      GetSiteForCookies(), GetTopFrameOrigin(), client_hints_prefs,
+      GetDevicePixelRatio(), user_agent, GetUserAgentMetadata(),
       IsSVGImageChromeClient(), IsPrerendering());
   document_loader_ = nullptr;
   document_ = nullptr;

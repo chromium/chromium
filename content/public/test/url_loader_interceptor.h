@@ -159,6 +159,14 @@ class URLLoaderInterceptor {
       net::Error error,
       base::OnceClosure ready_callback = {});
 
+  // Returns the URL of the last request processed by this interceptor.
+  //
+  // Use this function instead of creating a WebContentsObserver to observe
+  // request headers, if you need the last request url sent in the event of
+  // resends or redirects, as the NavigationHandle::GetRequestHeaders() function
+  // only returns the initial request's request headers.
+  const GURL& GetLastRequestURL();
+
   // Returns the request headers of the last request processed by this
   // interceptor.
   //
@@ -201,6 +209,9 @@ class URLLoaderInterceptor {
   // Called on IO thread at initialization and shutdown.
   void InitializeOnIOThread(base::OnceClosure closure);
 
+  // Sets the request URL of the last request processed by this interceptor.
+  void SetLastRequestURL(const GURL& url);
+
   // Sets the request headers of the last request processed by this interceptor.
   void SetLastRequestHeaders(const net::HttpRequestHeaders& headers);
 
@@ -217,6 +228,7 @@ class URLLoaderInterceptor {
       navigation_wrappers_;
 
   base::Lock last_request_lock_;
+  GURL last_request_url_ GUARDED_BY(last_request_lock_);
   net::HttpRequestHeaders last_request_headers_ GUARDED_BY(last_request_lock_);
 
   DISALLOW_COPY_AND_ASSIGN(URLLoaderInterceptor);

@@ -27,6 +27,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
+#include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "url/origin.h"
@@ -83,6 +84,19 @@ class CheckForCancelledOrPausedDelegate
  private:
   bool cancelled_or_paused_ = false;
 };
+
+// Computes the user agent value that should set for the User-Agent header.
+std::string GetUserAgentValue(const net::HttpRequestHeaders& headers) {
+  // If Sec-CH-UA-Reduced is set on the headers, it means that the token for the
+  // UserAgentReduction Origin Trial has been validated and we should send a
+  // reduced UA string on the request.
+  std::string header = blink::kClientHintsHeaderMapping[static_cast<int>(
+      network::mojom::WebClientHintsType::kUAReduced)];
+  std::string value;
+  return headers.GetHeader(header, &value) && value == "?1"
+             ? embedder_support::GetReducedUserAgent()
+             : embedder_support::GetUserAgent();
+}
 
 }  // namespace
 
@@ -160,18 +174,6 @@ bool BaseSearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
       resource_request->site_for_cookies);
   resource_request->referrer_policy = net::ReferrerPolicy::NO_REFERRER;
 
-  // Tack an 'Upgrade-Insecure-Requests' header to outgoing navigational
-  // requests, as described in
-  // https://w3c.github.io/webappsec/specs/upgrade/#feature-detect
-  resource_request->headers.SetHeader("Upgrade-Insecure-Requests", "1");
-  resource_request->headers.SetHeader(net::HttpRequestHeaders::kUserAgent,
-                                      embedder_support::GetUserAgent());
-  resource_request->headers.SetHeader(content::kCorsExemptPurposeHeaderName,
-                                      "prefetch");
-  resource_request->headers.SetHeader(
-      net::HttpRequestHeaders::kAccept,
-      content::FrameAcceptHeaderValue(/*allow_sxg_responses=*/true, profile));
-
   bool js_enabled = profile->GetPrefs() && profile->GetPrefs()->GetBoolean(
                                                prefs::kWebKitJavascriptEnabled);
 
@@ -179,6 +181,20 @@ bool BaseSearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
       resource_request->url, &(resource_request->headers), profile,
       profile->GetClientHintsControllerDelegate(),
       /*is_ua_override_on=*/false, js_enabled);
+
+  // Tack an 'Upgrade-Insecure-Requests' header to outgoing navigational
+  // requests, as described in
+  // https://w3c.github.io/webappsec/specs/upgrade/#feature-detect
+  resource_request->headers.SetHeader("Upgrade-Insecure-Requests", "1");
+
+  resource_request->headers.SetHeader(
+      net::HttpRequestHeaders::kUserAgent,
+      GetUserAgentValue(resource_request->headers));
+  resource_request->headers.SetHeader(content::kCorsExemptPurposeHeaderName,
+                                      "prefetch");
+  resource_request->headers.SetHeader(
+      net::HttpRequestHeaders::kAccept,
+      content::FrameAcceptHeaderValue(/*allow_sxg_responses=*/true, profile));
 
 #if defined(OS_ANDROID)
   absl::optional<std::string> geo_header =

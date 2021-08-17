@@ -122,6 +122,8 @@
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "services/network/public/mojom/web_client_hints_types.mojom-shared.h"
+#include "services/network/public/mojom/web_client_hints_types.mojom.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
@@ -285,6 +287,26 @@ bool NeedsHTTPOrigin(net::HttpRequestHeaders* headers,
   return true;
 }
 
+// Computes the value that should be set for the User-Agent header, based on the
+// values of relevant headers like Sec-CH-UA-Reduced.  If `user_agent_override`
+// is non-empty, `user_agent_override` is returned as the header value.
+std::string ComputeUserAgentValue(const net::HttpRequestHeaders& headers,
+                                  const std::string& user_agent_override) {
+  if (!user_agent_override.empty()) {
+    return user_agent_override;
+  }
+
+  // If Sec-CH-UA-Reduced is set on the headers, it means that the token for the
+  // UserAgentReduction Origin Trial has been validated and we should send a
+  // reduced UA string on the request.
+  std::string header = blink::kClientHintsHeaderMapping[static_cast<int>(
+      network::mojom::WebClientHintsType::kUAReduced)];
+  std::string value;
+  return headers.GetHeader(header, &value) && value == "?1"
+             ? GetContentClient()->browser()->GetReducedUserAgent()
+             : GetContentClient()->browser()->GetUserAgent();
+}
+
 // TODO(clamy): This should match what's happening in
 // blink::FrameFetchContext::addAdditionalRequestHeaders.
 void AddAdditionalRequestHeaders(
@@ -317,9 +339,7 @@ void AddAdditionalRequestHeaders(
 
   headers->SetHeaderIfMissing(
       net::HttpRequestHeaders::kUserAgent,
-      user_agent_override.empty()
-          ? GetContentClient()->browser()->GetUserAgent()
-          : user_agent_override);
+      ComputeUserAgentValue(*headers, user_agent_override));
 
   if (!render_prefs.enable_referrers) {
     *referrer =
@@ -3802,6 +3822,11 @@ void NavigationRequest::OnRedirectChecksComplete(
         client_hints_delegate, is_overriding_user_agent(), frame_tree_node_,
         commit_params_->frame_policy.container_policy);
     modified_headers.MergeFrom(client_hints_extra_headers);
+    // On a redirect, if the Critical-CH header has Sec-CH-UA-Reduced, then we
+    // should send the reduced User-Agent string.
+    modified_headers.SetHeader(
+        net::HttpRequestHeaders::kUserAgent,
+        ComputeUserAgentValue(modified_headers, GetUserAgentOverride()));
   }
 
   net::HttpRequestHeaders cors_exempt_headers;
@@ -6314,11 +6339,6 @@ void NavigationRequest::SetIsOverridingUserAgent(bool override_ua) {
 
   net::HttpRequestHeaders headers;
   headers.AddHeadersFromString(begin_params_->headers);
-  auto user_agent_override = GetUserAgentOverride();
-  headers.SetHeader(net::HttpRequestHeaders::kUserAgent,
-                    user_agent_override.empty()
-                        ? GetContentClient()->browser()->GetUserAgent()
-                        : user_agent_override);
   BrowserContext* browser_context =
       frame_tree_node_->navigator().controller().GetBrowserContext();
   ClientHintsControllerDelegate* client_hints_delegate =
@@ -6328,6 +6348,8 @@ void NavigationRequest::SetIsOverridingUserAgent(bool override_ua) {
         common_params_->url, client_hints_delegate, is_overriding_user_agent(),
         frame_tree_node_, &headers);
   }
+  headers.SetHeader(net::HttpRequestHeaders::kUserAgent,
+                    ComputeUserAgentValue(headers, GetUserAgentOverride()));
   begin_params_->headers = headers.ToString();
   // |request_headers_| comes from |begin_params_|. Clear |request_headers_| now
   // so that if |request_headers_| are needed, they will be updated.

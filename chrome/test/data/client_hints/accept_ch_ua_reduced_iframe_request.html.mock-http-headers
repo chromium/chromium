@@ -1,0 +1,4 @@
+HTTP/1.1 200 OK
+Content-Type: text/html
+Accept-CH: sec-ch-ua-reduced
+Origin-Trial: A93QtcQ0CRKf5ioPasUwNbweXQWgbI4ZEshiz+YS7dkQEWVfW9Ua2pTnA866sZwRzuElkPwsUdGdIaW0fRUP8AwAAABceyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6NDQ0NDQiLCAiZmVhdHVyZSI6ICJVc2VyQWdlbnRSZWR1Y3Rpb24iLCAiZXhwaXJ5IjogMjAwMDAwMDAwMH0=

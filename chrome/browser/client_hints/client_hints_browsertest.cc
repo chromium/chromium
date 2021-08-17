@@ -65,6 +65,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "third_party/re2/src/re2/re2.h"
 
 namespace {
 
@@ -2334,6 +2335,8 @@ class CriticalClientHintsBrowserTest : public InProcessBrowserTest {
   }
 
   void SetUp() override {
+    InProcessBrowserTest::SetUp();
+
     std::unique_ptr<base::FeatureList> feature_list =
         std::make_unique<base::FeatureList>();
     // Don't include LangClientHintHeader in the enabled features; we will
@@ -2343,10 +2346,11 @@ class CriticalClientHintsBrowserTest : public InProcessBrowserTest {
         "PrefersColorSchemeClientHintHeader",
         "");
     scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
-    InProcessBrowserTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+
     host_resolver()->AddRule("*", "127.0.0.1");
   }
 
@@ -2530,12 +2534,12 @@ class UaReducedOriginTrialBrowserTest : public InProcessBrowserTest {
   }
 
   void SetUp() override {
+    InProcessBrowserTest::SetUp();
+
     std::unique_ptr<base::FeatureList> feature_list =
         std::make_unique<base::FeatureList>();
     feature_list->InitializeFromCommandLine("CriticalClientHint", "");
     scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
-
-    InProcessBrowserTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
@@ -2585,19 +2589,82 @@ class UaReducedOriginTrialBrowserTest : public InProcessBrowserTest {
          "/critical_ch_ua_reduced_with_invalid_origin_trial.html"}));
   }
 
-  void NavigateAndCheckHeader(const GURL& url,
-                              const bool ch_ua_reduced_expected) {
-    ui_test_utils::NavigateToURL(browser(), url);
-    base::RunLoop().RunUntilIdle();
+  GURL accept_ch_ua_reduced_subresource_request_url() const {
+    return GURL(base::StrCat(
+        {kOriginUrl, "/accept_ch_ua_reduced_subresource_request.html"}));
+  }
 
-    std::string header_value;
+  GURL accept_ch_ua_reduced_iframe_request_url() const {
+    return GURL(base::StrCat(
+        {kOriginUrl, "/accept_ch_ua_reduced_iframe_request.html"}));
+  }
+
+  GURL critical_ch_ua_reduced_subresource_request_url() const {
+    return GURL(base::StrCat(
+        {kOriginUrl, "/critical_ch_ua_reduced_subresource_request.html"}));
+  }
+
+  GURL critical_ch_ua_reduced_iframe_request_url() const {
+    return GURL(base::StrCat(
+        {kOriginUrl, "/critical_ch_ua_reduced_iframe_request.html"}));
+  }
+
+  GURL last_request_url() const {
+    return url_loader_interceptor_->GetLastRequestURL();
+  }
+
+  void SetUserAgentOverride(const std::string& ua_override) {
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    web_contents->SetUserAgentOverride(
+        blink::UserAgentOverride::UserAgentOnly(ua_override), false);
+    web_contents->GetController()
+        .GetLastCommittedEntry()
+        ->SetIsOverridingUserAgent(true);
+  }
+
+  void CheckUaReducedClientHint(const bool ch_ua_reduced_expected) {
+    std::string ch_ua_reduced_header_value;
     const bool ch_ua_reduced =
         url_loader_interceptor_->GetLastRequestHeaders().GetHeader(
-            "sec-ch-ua-reduced", &header_value);
+            "sec-ch-ua-reduced", &ch_ua_reduced_header_value);
 
     EXPECT_EQ(ch_ua_reduced, ch_ua_reduced_expected);
     if (ch_ua_reduced_expected) {
-      EXPECT_EQ(header_value, "?1");
+      EXPECT_EQ(ch_ua_reduced_header_value, "?1");
+    }
+  }
+
+  void CheckUserAgentString(const std::string& expected_ua_header_value) {
+    std::string user_agent_header_value;
+    EXPECT_TRUE(url_loader_interceptor_->GetLastRequestHeaders().GetHeader(
+        "user-agent", &user_agent_header_value));
+    EXPECT_EQ(user_agent_header_value, expected_ua_header_value);
+  }
+
+  void NavigateAndCheckHeaders(const GURL& url,
+                               const bool ch_ua_reduced_expected) {
+    ui_test_utils::NavigateToURL(browser(), url);
+
+    CheckUaReducedClientHint(ch_ua_reduced_expected);
+
+    // A regular expression that matches Chrome/{major_version}.{minor_version}
+    // in the User-Agent string, where the {minor_version} is captured.
+    static constexpr char kChromeVersionRegex[] =
+        "Chrome/[0-9]+\\.([0-9]+\\.[0-9]+\\.[0-9]+)";
+    // The minor version in the reduced UA string is always "0.0.0".
+    static constexpr char kReducedMinorVersion[] = "0.0.0";
+
+    std::string user_agent_header_value;
+    EXPECT_TRUE(url_loader_interceptor_->GetLastRequestHeaders().GetHeader(
+        "user-agent", &user_agent_header_value));
+    std::string minor_version;
+    EXPECT_TRUE(re2::RE2::PartialMatch(user_agent_header_value,
+                                       kChromeVersionRegex, &minor_version));
+    if (ch_ua_reduced_expected) {
+      EXPECT_EQ(minor_version, kReducedMinorVersion);
+    } else {
+      EXPECT_NE(minor_version, kReducedMinorVersion);
     }
   }
 
@@ -2607,13 +2674,13 @@ class UaReducedOriginTrialBrowserTest : public InProcessBrowserTest {
     // If Critical-CH is set, we expect Sec-CH-UA-Reduced in the first
     // navigation request header.  If Critical-CH is not set, we don't expect
     // Sec-CH-UA-Reduced in the first navigation request.
-    NavigateAndCheckHeader(
+    NavigateAndCheckHeaders(
         url, critical_ch_ua_reduced_expected && ch_ua_reduced_expected);
 
     // Regardless of the Critical-CH setting, we expect the Sec-CH-UA-Reduced
     // client hint sent on the second request, if Sec-CH-UA-Reduced is set and
     // the Origin Trial token is valid.
-    NavigateAndCheckHeader(url, ch_ua_reduced_expected);
+    NavigateAndCheckHeaders(url, ch_ua_reduced_expected);
   }
 
  private:
@@ -2676,6 +2743,119 @@ IN_PROC_BROWSER_TEST_F(UaReducedOriginTrialBrowserTest,
       critical_ch_ua_reduced_with_invalid_origin_trial_token_url(),
       /*ch_ua_reduced_expected=*/false,
       /*critical_ch_ua_reduced_expected=*/false);
+}
+
+IN_PROC_BROWSER_TEST_F(UaReducedOriginTrialBrowserTest,
+                       IframeRequestUaReducedWithValidOriginTrialToken) {
+  // The last resource request processed for this navigation will be an embedded
+  // iframe request.  Since Accept-CH has Sec-CH-UA-Reduced set on the top-level
+  // level frame's response header, along with a valid origin trial token, the
+  // iframe request should send Sec-CH-UA-Reduced and the reduced UA string in
+  // the request header.
+  NavigateAndCheckHeaders(accept_ch_ua_reduced_iframe_request_url(),
+                          /*ch_ua_reduced_expected=*/true);
+  // Make sure the last intercepted URL was the request for the embedded iframe.
+  EXPECT_EQ(last_request_url().path(), "/simple.html");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    UaReducedOriginTrialBrowserTest,
+    IframeRequestUaReducedWithValidOriginTrialTokenAndCriticalCH) {
+  // The last resource request processed for this navigation will be an embedded
+  // iframe request.  Since Accept-CH has Sec-CH-UA-Reduced set on the top-level
+  // level frame's response header, along with a valid origin trial token, the
+  // iframe request should send Sec-CH-UA-Reduced and the reduced UA string in
+  // the request header.
+  NavigateAndCheckHeaders(critical_ch_ua_reduced_iframe_request_url(),
+                          /*ch_ua_reduced_expected=*/true);
+  // Make sure the last intercepted URL was the request for the embedded iframe.
+  EXPECT_EQ(last_request_url().path(), "/simple.html");
+}
+
+IN_PROC_BROWSER_TEST_F(UaReducedOriginTrialBrowserTest,
+                       SubresourceRequestUaReducedWithValidOriginTrialToken) {
+  // The last resource request processed for this navigation will be a
+  // subresource request for the stylesheet.  Since Accept-CH has
+  // Sec-CH-UA-Reduced set on the top-level level frame's response header, along
+  // with a valid origin trial token, the subresource request should send
+  // Sec-CH-UA-Reduced and the reduced UA string in the request header.
+  NavigateAndCheckHeaders(accept_ch_ua_reduced_subresource_request_url(),
+                          /*ch_ua_reduced_expected=*/true);
+  // Make sure the last intercepted URL was the subresource request for the
+  // embedded stylesheet.
+  EXPECT_EQ(last_request_url().path(), "/style.css");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    UaReducedOriginTrialBrowserTest,
+    SubresourceRequestUaReducedWithValidOriginTrialTokenAndCriticalCH) {
+  // The last resource request processed for this navigation will be a
+  // subresource request for the stylesheet.  Since Accept-CH has
+  // Sec-CH-UA-Reduced set on the top-level level frame's response header, along
+  // with a valid origin trial token, the subresource request should send
+  // Sec-CH-UA-Reduced and the reduced UA string in the request header.
+  NavigateAndCheckHeaders(critical_ch_ua_reduced_subresource_request_url(),
+                          /*ch_ua_reduced_expected=*/true);
+  // Make sure the last intercepted URL was the subresource request for the
+  // embedded stylesheet.
+  EXPECT_EQ(last_request_url().path(), "/style.css");
+}
+
+IN_PROC_BROWSER_TEST_F(UaReducedOriginTrialBrowserTest,
+                       UserAgentOverrideAcceptChUaReduced) {
+  const std::string user_agent_override = "foo";
+  SetUserAgentOverride(user_agent_override);
+
+  const GURL url = ua_reduced_with_valid_origin_trial_token_url();
+  // First navigation to set the client hints in the response.
+  ui_test_utils::NavigateToURL(browser(), url);
+  // Second navigation has the Sec-CH-UA-Reduced client hint stored from the
+  // first navigation's response.
+  ui_test_utils::NavigateToURL(browser(), url);
+
+  // Since the UA override was set, the UA client hints are *not* added to the
+  // request.
+  CheckUaReducedClientHint(/*ch_ua_reduced_expected=*/false);
+  // Make sure the overridden UA string is the one sent.
+  CheckUserAgentString(user_agent_override);
+}
+
+IN_PROC_BROWSER_TEST_F(UaReducedOriginTrialBrowserTest,
+                       UserAgentOverrideSubresourceRequest) {
+  const std::string user_agent_override = "foo";
+  SetUserAgentOverride(user_agent_override);
+
+  const GURL url = accept_ch_ua_reduced_subresource_request_url();
+  // First navigation to set the client hints in the response.
+  ui_test_utils::NavigateToURL(browser(), url);
+  // Second navigation has the Sec-CH-UA-Reduced client hint stored from the
+  // first navigation's response.
+  ui_test_utils::NavigateToURL(browser(), url);
+
+  // Since the UA override was set, the UA client hints are *not* added to the
+  // request.
+  CheckUaReducedClientHint(/*ch_ua_reduced_expected=*/false);
+  // Make sure the overridden UA string is the one sent.
+  CheckUserAgentString(user_agent_override);
+}
+
+IN_PROC_BROWSER_TEST_F(UaReducedOriginTrialBrowserTest,
+                       UserAgentOverrideIframeRequest) {
+  const std::string user_agent_override = "foo";
+  SetUserAgentOverride(user_agent_override);
+
+  const GURL url = accept_ch_ua_reduced_iframe_request_url();
+  // First navigation to set the client hints in the response.
+  ui_test_utils::NavigateToURL(browser(), url);
+  // Second navigation has the Sec-CH-UA-Reduced client hint stored from the
+  // first navigation's response.
+  ui_test_utils::NavigateToURL(browser(), url);
+
+  // Since the UA override was set, the UA client hints are *not* added to the
+  // request.
+  CheckUaReducedClientHint(/*ch_ua_reduced_expected=*/false);
+  // Make sure the overridden UA string is the one sent.
+  CheckUserAgentString(user_agent_override);
 }
 
 IN_PROC_BROWSER_TEST_F(UaReducedOriginTrialBrowserTest,

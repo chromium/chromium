@@ -512,9 +512,19 @@ URLLoaderInterceptor::~URLLoaderInterceptor() {
   }
 }
 
+const GURL& URLLoaderInterceptor::GetLastRequestURL() {
+  base::AutoLock lock(last_request_lock_);
+  return last_request_url_;
+}
+
 const net::HttpRequestHeaders& URLLoaderInterceptor::GetLastRequestHeaders() {
   base::AutoLock lock(last_request_lock_);
   return last_request_headers_;
+}
+
+void URLLoaderInterceptor::SetLastRequestURL(const GURL& url) {
+  base::AutoLock lock(last_request_lock_);
+  last_request_url_ = url;
 }
 
 void URLLoaderInterceptor::SetLastRequestHeaders(
@@ -692,8 +702,9 @@ void URLLoaderInterceptor::InterceptNavigationRequestCallback(
 
 bool URLLoaderInterceptor::Intercept(RequestParams* params) {
   if (callback_.Run(params)) {
-    // Only set the last request headers if the request was actually processed
-    // by the interceptor.
+    // Only set the last request url and headers if the request was actually
+    // processed by the interceptor.
+    SetLastRequestURL(params->url_request.url);
     SetLastRequestHeaders(params->url_request.headers);
     return true;
   }
