@@ -10,7 +10,7 @@
 // This value is generated during Pedal concept data processing, and written
 // to all data files as well as the source code here to ensure synchrony.
 // The runtime loaded data must match this version exactly or it won't load.
-constexpr int OMNIBOX_PEDAL_CONCEPTS_DATA_VERSION = 15979485;
+constexpr int OMNIBOX_PEDAL_CONCEPTS_DATA_VERSION = 15996517;
 
 // Unique identifiers for Pedals, used to bind loaded data to implementations.
 // Also used in the Omnibox.SuggestionUsed.Pedal histogram. Do not remove or
@@ -46,6 +46,17 @@ enum class OmniboxPedalId {
   INCOGNITO_CLEAR_BROWSING_DATA = 25,
   CLOSE_INCOGNITO_WINDOWS = 26,
   PLAY_CHROME_DINO_GAME = 27,
+  FIND_MY_PHONE = 28,
+  MANAGE_GOOGLE_PRIVACY = 29,
+  MANAGE_GOOGLE_AD_SETTINGS = 30,
+  MANAGE_CHROME_SETTINGS = 31,
+  MANAGE_CHROME_DOWNLOADS = 32,
+  VIEW_CHROME_HISTORY = 33,
+  SHARE_THIS_PAGE = 34,
+  MANAGE_CHROME_ACCESSIBILITY = 35,
+  CUSTOMIZE_CHROME_FONTS = 36,
+  MANAGE_CHROME_THEMES = 37,
+  CUSTOMIZE_SEARCH_ENGINES = 38,
   // DO NOT EDIT. See comment at top.
 
   // Last value, used to track the upper bounds when recording type histograms.

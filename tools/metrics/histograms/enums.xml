@@ -79043,6 +79043,17 @@ would be helpful to identify which type is being sent.
   <int value="25" label="Incognito-mode clear browsing data"/>
   <int value="26" label="Close Incognito windows"/>
   <int value="27" label="Play Chrome Dino game"/>
+  <int value="28" label="Find my phone"/>
+  <int value="29" label="Manage Google privacy"/>
+  <int value="30" label="Manage Google ad settings"/>
+  <int value="31" label="Manage Chrome settings"/>
+  <int value="32" label="Manage Chrome downloads"/>
+  <int value="33" label="View Chrome history"/>
+  <int value="34" label="Share this page"/>
+  <int value="35" label="Manage Chrome accessibility"/>
+  <int value="36" label="Customize Chrome fonts"/>
+  <int value="37" label="Manage Chrome themes"/>
+  <int value="38" label="Customize search engines"/>
 </enum>
 
 <enum name="SuggestionsResponseState">
