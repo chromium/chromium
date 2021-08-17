@@ -16,6 +16,12 @@
         height: 100%;
       }
 
+      /* pageContainer has tabindex="-1" but is focused with JS for ChromeVox
+      accessibility */
+      #pageContainer:focus {
+        outline: none;
+      }
+
       #header {
         margin-inline-end:  var(--nearby-page-space-inline);
         margin-inline-start: var(--nearby-page-space-inline);
