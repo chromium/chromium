@@ -30,6 +30,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
@@ -106,6 +107,9 @@ public final class WebFeedFollowIntroControllerTest {
 
     @Before
     public void setUp() {
+        // Print logs to stdout.
+        ShadowLog.stream = System.out;
+
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(WebFeedBridge.getTestHooksForTesting(), mWebFeedBridgeJniMock);
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
@@ -129,6 +133,7 @@ public final class WebFeedFollowIntroControllerTest {
 
         when(mTab.getUrl()).thenReturn(sTestUrl);
         when(mTab.isIncognito()).thenReturn(false);
+        when(mTabSupplier.get()).thenReturn(mTab);
         TrackerFactory.setTrackerForTests(mTracker);
 
         // Calling setTestFeatures is needed (even if empty) to enable field trial param calls.
@@ -214,6 +219,29 @@ public final class WebFeedFollowIntroControllerTest {
 
         assertFalse("Intro should not be shown.",
                 mWebFeedFollowIntroController.getIntroShownForTesting());
+    }
+
+    @Test
+    @SmallTest
+    public void secondPageLoad_cancelsPreviousIntro() {
+        setWebFeedIntroLastShownTimeMsPref(0);
+        setWebFeedIntroWebFeedIdShownTimeMsPref(0);
+        setVisitCounts(3, 3);
+
+        // This page load would trigger the intro, but a second page load is fired before that can
+        // happen.
+        invokePageLoad(WebFeedSubscriptionStatus.NOT_SUBSCRIBED, /*isRecommended=*/true);
+        advanceClockByMs(SAFE_INTRO_WAIT_TIME_MILLIS / 2);
+
+        invokePageLoad(WebFeedSubscriptionStatus.NOT_SUBSCRIBED, /*isRecommended=*/true);
+        advanceClockByMs(SAFE_INTRO_WAIT_TIME_MILLIS - 500);
+        assertFalse("Intro should not be shown yet.",
+                mWebFeedFollowIntroController.getIntroShownForTesting());
+
+        advanceClockByMs(500);
+
+        assertTrue(
+                "Intro should be shown.", mWebFeedFollowIntroController.getIntroShownForTesting());
     }
 
     @Test
@@ -433,7 +461,6 @@ public final class WebFeedFollowIntroControllerTest {
         mEmptyTabObserver.onPageLoadStarted(mTab, sTestUrl);
         mEmptyTabObserver.didFirstVisuallyNonEmptyPaint(mTab);
         mEmptyTabObserver.onPageLoadFinished(mTab, sTestUrl);
-        assertEquals(sTestUrl, mPageInformationCaptor.getValue().mUrl);
     }
 
     private void advanceClockByMs(long timeMs) {

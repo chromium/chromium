@@ -43,8 +43,6 @@ class WebFeedFollowIntroView {
     private final PrefService mPrefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
     private final View mMenuButtonAnchorView;
     private final Tracker mFeatureEngagementTracker;
-    private final Runnable mIntroShownCallback;
-    private final Runnable mIntroNotShownCallback;
     private final Runnable mIntroDismissedCallback;
 
     private ClickableTextBubble mFollowBubble;
@@ -59,24 +57,22 @@ class WebFeedFollowIntroView {
      */
     WebFeedFollowIntroView(Activity activity, AppMenuHandler appMenuHandler,
             View menuButtonAnchorView, Tracker featureEngagementTracker,
-            Runnable introShownCallback, Runnable introNotShownCallback,
             Runnable introDismissedCallback) {
         mActivity = activity;
         mAppMenuHandler = appMenuHandler;
         mMenuButtonAnchorView = menuButtonAnchorView;
         mFeatureEngagementTracker = featureEngagementTracker;
-        mIntroShownCallback = introShownCallback;
-        mIntroNotShownCallback = introNotShownCallback;
         mIntroDismissedCallback = introDismissedCallback;
 
         mShowTimeoutMillis = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                 ChromeFeatureList.WEB_FEED, PARAM_SHOW_TIMEOUT_MILLIS, DEFAULT_SHOW_TIMEOUT_MILLIS);
     }
 
-    void showAccelerator(View.OnTouchListener onTouchListener) {
+    void showAccelerator(View.OnTouchListener onTouchListener, Runnable introShownCallback,
+            Runnable introNotShownCallback) {
         if (!mFeatureEngagementTracker.shouldTriggerHelpUI(
                     FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE)) {
-            mIntroNotShownCallback.run();
+            introNotShownCallback.run();
             return;
         }
 
@@ -89,10 +85,11 @@ class WebFeedFollowIntroView {
         turnOnHighlightForFollowMenuItem();
 
         mFollowBubble.show();
-        mIntroShownCallback.run();
+        introShownCallback.run();
     }
 
-    void showIPH(UserEducationHelper helper) {
+    void showIPH(UserEducationHelper helper, Runnable introShownCallback,
+            Runnable introNotShownCallback) {
         int iphStringResource = R.string.follow_accelerator;
         int iphAccessibilityStringResource = R.string.accessibility_follow_accelerator_iph;
 
@@ -106,9 +103,9 @@ class WebFeedFollowIntroView {
                         .setAutoDismissTimeout(mShowTimeoutMillis)
                         .setOnShowCallback(() -> {
                             turnOnHighlightForFollowMenuItem();
-                            mIntroShownCallback.run();
+                            introShownCallback.run();
                         })
-                        .setOnNotShownCallback(mIntroNotShownCallback)
+                        .setOnNotShownCallback(introNotShownCallback)
                         .setOnDismissCallback(this::introDismissed)
                         .build());
     }

@@ -72,9 +72,9 @@ public final class WebFeedFollowIntroViewTest {
 
         // Build the class under test.
         Runnable noOp = () -> {};
-        mWebFeedFollowIntroView = new WebFeedFollowIntroView(mActivity, null, mMenuButtonAnchorView,
-                mTracker, /*introShownCallback=*/noOp, /*introNotShownCallback=*/noOp,
-                /*introDismissedCallback=*/noOp);
+        mWebFeedFollowIntroView =
+                new WebFeedFollowIntroView(mActivity, null, mMenuButtonAnchorView, mTracker,
+                        /*introDismissedCallback=*/noOp);
     }
 
     @After
@@ -85,7 +85,7 @@ public final class WebFeedFollowIntroViewTest {
     @Test
     @SmallTest
     public void showIPHTest() {
-        mWebFeedFollowIntroView.showIPH(mHelper);
+        mWebFeedFollowIntroView.showIPH(mHelper, () -> {}, () -> {});
         verify(mHelper, times(1)).requestShowIPH(any());
     }
 }
