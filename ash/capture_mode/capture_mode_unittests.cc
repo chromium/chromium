@@ -23,11 +23,15 @@
 #include "ash/capture_mode/stop_recording_button_tray.h"
 #include "ash/capture_mode/test_capture_mode_delegate.h"
 #include "ash/capture_mode/video_recording_watcher.h"
+#include "ash/constants/ash_features.h"
 #include "ash/display/cursor_window_controller.h"
 #include "ash/display/output_protection_delegate.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/display/window_tree_host_manager.h"
+#include "ash/projector/test/mock_projector_client.h"
 #include "ash/public/cpp/capture_mode_test_api.h"
+#include "ash/public/cpp/projector/projector_controller.h"
+#include "ash/public/cpp/projector/projector_session.h"
 #include "ash/root_window_controller.h"
 #include "ash/services/recording/recording_service_test_api.h"
 #include "ash/shell.h"
@@ -49,6 +53,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
 #include "components/account_id/account_id.h"
@@ -4221,5 +4226,89 @@ TEST_F(CaptureModeCursorOverlayTest, OverlayBoundsAccountForCursorScaleFactor) {
 }
 
 // TODO(afakhry): Add more cursor overlay tests.
+
+// Test fixture to verify capture mode + projector integration.
+class ProjectorCaptureModeIntegrationTests : public CaptureModeTest {
+ public:
+  ProjectorCaptureModeIntegrationTests() = default;
+  ~ProjectorCaptureModeIntegrationTests() override = default;
+
+  // CaptureModeTest:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(features::kProjector);
+    CaptureModeTest::SetUp();
+    auto* projector_controller = ProjectorController::Get();
+    projector_controller->SetClient(&projector_client_);
+    // Simulate the availability of speech recognition.
+    projector_controller->OnSpeechRecognitionAvailable(true);
+  }
+
+  void StartProjectorModeSession() {
+    auto* projector_session = ProjectorSession::Get();
+    EXPECT_FALSE(projector_session->is_active());
+    projector_session->Start(SourceType::kUnset);
+    auto* projector_controller = ProjectorController::Get();
+    projector_controller->StartProjectorSession();
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  MockProjectorClient projector_client_;
+};
+
+TEST_F(ProjectorCaptureModeIntegrationTests, EntryPoint) {
+  // With the most recent source type set to kImage, starting capture mode for
+  // the projector workflow will still force it to kVideo.
+  auto* controller = CaptureModeController::Get();
+  controller->SetType(CaptureModeType::kImage);
+  // Also, audio recording is initially disabled. However, the projector flow
+  // forces it enabled.
+  EXPECT_FALSE(controller->enable_audio_recording());
+
+  base::HistogramTester histogram_tester;
+  StartProjectorModeSession();
+  EXPECT_TRUE(controller->IsActive());
+  auto* session = controller->capture_mode_session();
+  EXPECT_TRUE(session->is_in_projector_mode());
+  EXPECT_TRUE(controller->enable_audio_recording());
+
+  constexpr char kEntryPointHistogram[] =
+      "Ash.CaptureModeController.EntryPoint.ClamshellMode";
+  histogram_tester.ExpectBucketCount(kEntryPointHistogram,
+                                     CaptureModeEntryType::kProjector, 1);
+}
+
+TEST_F(ProjectorCaptureModeIntegrationTests, BarButtonsState) {
+  auto* controller = CaptureModeController::Get();
+  StartProjectorModeSession();
+  EXPECT_TRUE(controller->IsActive());
+
+  // The image toggle button should be disabled, whereas the video toggle button
+  // should be enabled and active.
+  EXPECT_FALSE(GetImageToggleButton()->GetEnabled());
+  EXPECT_FALSE(GetImageToggleButton()->GetToggled());
+  EXPECT_TRUE(GetVideoToggleButton()->GetEnabled());
+  EXPECT_TRUE(GetVideoToggleButton()->GetToggled());
+}
+
+TEST_F(ProjectorCaptureModeIntegrationTests, StartEndRecording) {
+  auto* controller = CaptureModeController::Get();
+  controller->SetSource(CaptureModeSource::kFullscreen);
+  StartProjectorModeSession();
+  EXPECT_TRUE(controller->IsActive());
+
+  // Hit Enter to begin recording. The recording session should be marked for
+  // projector.
+  SendKey(ui::VKEY_RETURN, GetEventGenerator());
+  EXPECT_CALL(projector_client_, StartSpeechRecognition());
+  WaitForCountDownToFinish();
+  EXPECT_FALSE(controller->IsActive());
+  EXPECT_TRUE(controller->is_recording_in_progress());
+  EXPECT_TRUE(controller->video_recording_watcher_for_testing()
+                  ->is_in_projector_mode());
+
+  EXPECT_CALL(projector_client_, StopSpeechRecognition());
+  controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
+}
 
 }  // namespace ash

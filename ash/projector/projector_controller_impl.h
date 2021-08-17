@@ -31,8 +31,11 @@ class ASH_EXPORT ProjectorControllerImpl : public ProjectorController {
   ProjectorControllerImpl& operator=(const ProjectorControllerImpl&) = delete;
   ~ProjectorControllerImpl() override;
 
+  static ProjectorControllerImpl* Get();
+
   // ProjectorController:
-  void SetClient(ash::ProjectorClient* client) override;
+  void StartProjectorSession() override;
+  void SetClient(ProjectorClient* client) override;
   void OnSpeechRecognitionAvailable(bool available) override;
   void OnTranscription(const media::SpeechRecognitionResult& result) override;
   void OnTranscriptionError() override;
@@ -48,9 +51,8 @@ class ASH_EXPORT ProjectorControllerImpl : public ProjectorController {
   // Mark a key idea.
   void MarkKeyIdea();
 
-  // TODO(crbug.com/1165435): Consider updating to be delegate of recording
-  // service after finalizing on the integration plan with recording mode.
-  // Invoked when recording is started to start a screencast session.
+  // Called by Capture Mode to notify with the state of a projector-initiated
+  // video recording.
   void OnRecordingStarted();
   void OnRecordingEnded();
 

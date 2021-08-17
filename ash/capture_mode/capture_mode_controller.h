@@ -60,7 +60,7 @@ class ASH_EXPORT CaptureModeController
   }
   gfx::Rect user_capture_region() const { return user_capture_region_; }
   bool enable_audio_recording() const { return enable_audio_recording_; }
-  bool is_recording_in_progress() const { return is_recording_in_progress_; }
+  bool is_recording_in_progress() const { return !!video_recording_watcher_; }
 
   // Returns true if a capture mode session is currently active. If you only
   // need to call this method, but don't need the rest of the controller, use
@@ -150,7 +150,7 @@ class ASH_EXPORT CaptureModeController
                                          float device_scale_factor);
 
   // Called by |video_recording_watcher_| to inform us that the |window| being
-  // recorded (i.e. |is_recording_in_progress_| is true) is about to move to a
+  // recorded (i.e. |is_recording_in_progress()| is true) is about to move to a
   // |new_root|. This is needed so we can inform the recording service of this
   // change so that it can switch its capture target to the new root's frame
   // sink.
@@ -209,8 +209,8 @@ class ASH_EXPORT CaptureModeController
   // file notification with the given |thumbnail|.
   void FinalizeRecording(bool success, const gfx::ImageSkia& thumbnail);
 
-  // Called to terminate |is_recording_in_progress_|, the stop-recording shelf
-  // pod button, and the |video_recording_watcher_| when recording ends.
+  // Called to terminate the stop-recording shelf pod button, and the
+  // |video_recording_watcher_| when recording ends.
   void TerminateRecordingUiElements();
 
   // The below functions start the actual image/video capture. They expect that
@@ -310,9 +310,6 @@ class ASH_EXPORT CaptureModeController
   // not for a video, between sessions. Initially, this value is set to false,
   // ensuring that this is an opt-in feature.
   bool enable_audio_recording_ = false;
-
-  // True when video recording is in progress.
-  bool is_recording_in_progress_ = false;
 
   // If true, the 3-second countdown UI will be skipped, and video recording
   // will start immediately.

@@ -36,7 +36,10 @@ class ASH_EXPORT CaptureModeSettingsView : public views::View {
  public:
   METADATA_HEADER(CaptureModeSettingsView);
 
-  CaptureModeSettingsView();
+  // |projector_mode| specifies whether the current capture mode session was
+  // started for the projector workflow. In this mode, only a limited set of
+  // capture mode settings are exposed to the user.
+  explicit CaptureModeSettingsView(bool projector_mode);
   CaptureModeSettingsView(const CaptureModeSettingsView&) = delete;
   CaptureModeSettingsView& operator=(const CaptureModeSettingsView&) = delete;
   ~CaptureModeSettingsView() override;

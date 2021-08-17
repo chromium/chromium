@@ -32,7 +32,8 @@ enum class EndRecordingReason {
   kVideoEncoderInitializationFailure,
   kAudioEncodingError,
   kVideoEncodingError,
-  kMaxValue = kVideoEncodingError,
+  kProjectorTranscriptionError,
+  kMaxValue = kProjectorTranscriptionError,
 };
 
 // Enumeration of capture bar buttons that can be pressed while in capture mode.
@@ -72,7 +73,8 @@ enum class CaptureModeEntryType {
   kPowerMenu,
   kSnipKey,
   kCaptureAllDisplays,
-  kMaxValue = kCaptureAllDisplays,
+  kProjector,
+  kMaxValue = kProjector,
 };
 
 // Enumeration of quick actions on screenshot notification. Note that these

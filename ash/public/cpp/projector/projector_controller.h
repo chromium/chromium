@@ -36,6 +36,10 @@ class ASH_PUBLIC_EXPORT ProjectorController {
 
   static ProjectorController* Get();
 
+  // Starts a capture mode session for the projector workflow if no video
+  // recording is currently in progress.
+  virtual void StartProjectorSession() = 0;
+
   // Make sure the client is set before attempting to use to the
   // ProjectorController.
   virtual void SetClient(ProjectorClient* client) = 0;

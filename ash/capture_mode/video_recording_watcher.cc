@@ -9,6 +9,8 @@
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
+#include "ash/constants/ash_features.h"
+#include "ash/projector/projector_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/wm/desks/desks_util.h"
@@ -163,17 +165,19 @@ VideoRecordingWatcher::VideoRecordingWatcher(
     CaptureModeController* controller,
     aura::Window* window_being_recorded,
     mojo::PendingRemote<viz::mojom::FrameSinkVideoCaptureOverlay>
-        cursor_capture_overlay)
+        cursor_capture_overlay,
+    bool projector_mode)
     : controller_(controller),
       cursor_manager_(Shell::Get()->cursor_manager()),
       window_being_recorded_(window_being_recorded),
       current_root_(window_being_recorded->GetRootWindow()),
       recording_source_(controller_->source()),
-      cursor_capture_overlay_remote_(std::move(cursor_capture_overlay)) {
+      cursor_capture_overlay_remote_(std::move(cursor_capture_overlay)),
+      is_in_projector_mode_(projector_mode) {
   DCHECK(controller_);
   DCHECK(window_being_recorded_);
   DCHECK(current_root_);
-  DCHECK(controller_->is_recording_in_progress());
+  DCHECK(!is_in_projector_mode_ || features::IsProjectorEnabled());
 
   if (!window_being_recorded_->IsRootWindow()) {
     DCHECK_EQ(recording_source_, CaptureModeSource::kWindow);
@@ -217,10 +221,16 @@ VideoRecordingWatcher::VideoRecordingWatcher(
   //    capture mode session to take a screenshot while recording a video).
   window_being_recorded_->AddPreTargetHandler(
       this, ui::EventTarget::Priority::kAccessibility);
+
+  if (is_in_projector_mode_)
+    ProjectorControllerImpl::Get()->OnRecordingStarted();
 }
 
 VideoRecordingWatcher::~VideoRecordingWatcher() {
   DCHECK(window_being_recorded_);
+
+  if (is_in_projector_mode_)
+    ProjectorControllerImpl::Get()->OnRecordingEnded();
 
   window_being_recorded_->RemovePreTargetHandler(this);
   TabletModeController::Get()->RemoveObserver(this);
@@ -238,7 +248,6 @@ VideoRecordingWatcher::~VideoRecordingWatcher() {
 void VideoRecordingWatcher::OnWindowParentChanged(aura::Window* window,
                                                   aura::Window* parent) {
   DCHECK_EQ(window, window_being_recorded_);
-  DCHECK(controller_->is_recording_in_progress());
   DCHECK_EQ(recording_source_, CaptureModeSource::kWindow);
 
   UpdateLayerStackingAndDimmers();
@@ -255,7 +264,6 @@ void VideoRecordingWatcher::OnWindowBoundsChanged(
     const gfx::Rect& old_bounds,
     const gfx::Rect& new_bounds,
     ui::PropertyChangeReason reason) {
-  DCHECK(controller_->is_recording_in_progress());
 
   if (recording_source_ != CaptureModeSource::kWindow)
     return;
@@ -280,7 +288,6 @@ void VideoRecordingWatcher::OnWindowOpacitySet(
 
 void VideoRecordingWatcher::OnWindowStackingChanged(aura::Window* window) {
   DCHECK_EQ(window, window_being_recorded_);
-  DCHECK(controller_->is_recording_in_progress());
   DCHECK_EQ(recording_source_, CaptureModeSource::kWindow);
 
   UpdateLayerStackingAndDimmers();
@@ -288,7 +295,6 @@ void VideoRecordingWatcher::OnWindowStackingChanged(aura::Window* window) {
 
 void VideoRecordingWatcher::OnWindowDestroying(aura::Window* window) {
   DCHECK_EQ(window, window_being_recorded_);
-  DCHECK(controller_->is_recording_in_progress());
 
   // EndVideoRecording() destroys |this|. No need to remove observer here, since
   // it will be done in the destructor.
@@ -307,7 +313,6 @@ void VideoRecordingWatcher::OnWindowRemovingFromRootWindow(
     aura::Window* window,
     aura::Window* new_root) {
   DCHECK_EQ(window, window_being_recorded_);
-  DCHECK(controller_->is_recording_in_progress());
   DCHECK_EQ(recording_source_, CaptureModeSource::kWindow);
 
   root_observer_.reset();
@@ -471,7 +476,6 @@ void VideoRecordingWatcher::SetLayer(std::unique_ptr<ui::Layer> layer) {
 }
 
 void VideoRecordingWatcher::OnRootHierarchyChanged(aura::Window* target) {
-  DCHECK(controller_->is_recording_in_progress());
   DCHECK_EQ(recording_source_, CaptureModeSource::kWindow);
 
   if (target != window_being_recorded_ && !dimmers_.contains(target) &&
@@ -693,7 +697,6 @@ void VideoRecordingWatcher::OnCursorThrottleTimerFiring() {
 }
 
 void VideoRecordingWatcher::OnWindowSizeChangeThrottleTimerFiring() {
-  DCHECK(controller_->is_recording_in_progress());
   DCHECK_EQ(recording_source_, CaptureModeSource::kWindow);
 
   controller_->OnRecordedWindowSizeChanged(

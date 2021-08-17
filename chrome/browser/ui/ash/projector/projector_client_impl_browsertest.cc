@@ -45,6 +45,7 @@ class ASH_PUBLIC_EXPORT MockProjectorController : public ProjectorController {
   ~MockProjectorController() override = default;
 
   // ProjectorController:
+  MOCK_METHOD0(StartProjectorSession, void());
   MOCK_METHOD1(SetClient, void(ProjectorClient* client));
   MOCK_METHOD1(OnSpeechRecognitionAvailable, void(bool available));
   MOCK_METHOD1(OnTranscription,

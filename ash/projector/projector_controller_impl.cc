@@ -4,6 +4,8 @@
 
 #include "ash/projector/projector_controller_impl.h"
 
+#include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/projector/projector_metadata_controller.h"
 #include "ash/projector/projector_ui_controller.h"
 #include "ash/public/cpp/projector/projector_client.h"
@@ -21,6 +23,17 @@ ProjectorControllerImpl::ProjectorControllerImpl()
           std::make_unique<ash::ProjectorMetadataController>()) {}
 
 ProjectorControllerImpl::~ProjectorControllerImpl() = default;
+
+// static
+ProjectorControllerImpl* ProjectorControllerImpl::Get() {
+  return static_cast<ProjectorControllerImpl*>(ProjectorController::Get());
+}
+
+void ProjectorControllerImpl::StartProjectorSession() {
+  auto* controller = CaptureModeController::Get();
+  if (!controller->is_recording_in_progress())
+    controller->Start(CaptureModeEntryType::kProjector);
+}
 
 void ProjectorControllerImpl::SetClient(ProjectorClient* client) {
   client_ = client;
@@ -47,16 +60,17 @@ void ProjectorControllerImpl::OnTranscription(
 }
 
 void ProjectorControllerImpl::OnTranscriptionError() {
-  // TODO(http://1206720): Stop recording if there is an error that occurred
-  // during transcription.
-  OnRecordingEnded();
+  CaptureModeController::Get()->EndVideoRecording(
+      EndRecordingReason::kProjectorTranscriptionError);
 }
 
 void ProjectorControllerImpl::SetProjectorToolsVisible(bool is_visible) {
+  // TODO(llin): This function should probably be removed or renamed. Kept for
+  // now so as not to break existing unit tests.
+
   // TODO(yilkal): Projector toolbar shouldn't be shown if soda is not
   // available.
   if (is_visible) {
-    ui_controller_->ShowToolbar();
     // TODO(crbug/1206720): Move elsewhere once screen capture integration
     // finalized.
     OnRecordingStarted();
@@ -66,9 +80,6 @@ void ProjectorControllerImpl::SetProjectorToolsVisible(bool is_visible) {
   // TODO(crbug/1206720): Move elsewhere once screen capture integration
   // finalized.
   OnRecordingEnded();
-  if (client_->IsSelfieCamVisible())
-    client_->CloseSelfieCam();
-  ui_controller_->CloseToolbar();
 }
 
 bool ProjectorControllerImpl::IsEligible() const {
@@ -89,16 +100,20 @@ void ProjectorControllerImpl::MarkKeyIdea() {
 }
 
 void ProjectorControllerImpl::OnRecordingStarted() {
+  ui_controller_->ShowToolbar();
   StartSpeechRecognition();
   ui_controller_->OnRecordingStateChanged(true /* started */);
   metadata_controller_->OnRecordingStarted();
 }
 
 void ProjectorControllerImpl::OnRecordingEnded() {
-  if (!projector_session_->is_active())
-    return;
-  StopSpeechRecognition();
-  ui_controller_->OnRecordingStateChanged(false /* started */);
+  if (projector_session_->is_active()) {
+    StopSpeechRecognition();
+    ui_controller_->OnRecordingStateChanged(false /* started */);
+  }
+  if (client_->IsSelfieCamVisible())
+    client_->CloseSelfieCam();
+  ui_controller_->CloseToolbar();
 
   // TODO(crbug.com/1165439): Call on to SaveScreencast when the metadata file
   // saving format is finalized.

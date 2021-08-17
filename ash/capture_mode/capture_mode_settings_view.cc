@@ -34,13 +34,17 @@ constexpr gfx::RoundedCornersF kBorderRadius{10.f};
 
 }  // namespace
 
-CaptureModeSettingsView::CaptureModeSettingsView()
+CaptureModeSettingsView::CaptureModeSettingsView(bool projector_mode)
     : microphone_view_(
           AddChildView(std::make_unique<CaptureModeSettingsEntryView>(
               base::BindRepeating(&CaptureModeSettingsView::OnMicrophoneToggled,
                                   base::Unretained(this)),
               kCaptureModeMicOffIcon,
               IDS_ASH_SCREEN_CAPTURE_LABEL_MICROPHONE))) {
+  // Users are not allowed to disable audio recording when in a projector mode
+  // session.
+  microphone_view_->toggle_button_view()->SetEnabled(!projector_mode);
+
   SetPaintToLayer();
   auto* color_provider = AshColorProvider::Get();
   SkColor background_color = color_provider->GetBaseLayerColor(

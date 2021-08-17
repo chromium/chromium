@@ -504,10 +504,12 @@ class CaptureModeSession::ScopedA11yOverrideWindowSetter
 // -----------------------------------------------------------------------------
 // CaptureModeSession:
 
-CaptureModeSession::CaptureModeSession(CaptureModeController* controller)
+CaptureModeSession::CaptureModeSession(CaptureModeController* controller,
+                                       bool projector_mode)
     : controller_(controller),
       current_root_(GetPreferredRootWindow()),
       magnifier_glass_(kMagnifierParams),
+      is_in_projector_mode_(projector_mode),
       cursor_setter_(std::make_unique<CursorSetter>()),
       focus_cycler_(std::make_unique<CaptureModeSessionFocusCycler>(this)) {}
 
@@ -559,7 +561,7 @@ void CaptureModeSession::Initialize() {
       CreateWidgetParams(parent, CaptureModeBarView::GetBounds(current_root_),
                          "CaptureModeBarWidget"));
   capture_mode_bar_view_ = capture_mode_bar_widget_->SetContentsView(
-      std::make_unique<CaptureModeBarView>());
+      std::make_unique<CaptureModeBarView>(is_in_projector_mode_));
   capture_mode_bar_widget_->Show();
 
   scoped_a11y_overrider_ = std::make_unique<ScopedA11yOverrideWindowSetter>(
@@ -685,7 +687,7 @@ void CaptureModeSession::SetSettingsMenuShown(bool shown) {
         "CaptureModeSettingsWidget"));
     capture_mode_settings_view_ =
         capture_mode_settings_widget_->SetContentsView(
-            std::make_unique<CaptureModeSettingsView>());
+            std::make_unique<CaptureModeSettingsView>(is_in_projector_mode_));
     parent->layer()->StackAtTop(capture_mode_settings_widget_->GetLayer());
     focus_cycler_->OnSettingsMenuWidgetCreated();
     capture_mode_settings_widget_->Show();

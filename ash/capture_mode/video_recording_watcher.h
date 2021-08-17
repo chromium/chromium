@@ -61,10 +61,12 @@ class ASH_EXPORT VideoRecordingWatcher
       CaptureModeController* controller,
       aura::Window* window_being_recorded,
       mojo::PendingRemote<viz::mojom::FrameSinkVideoCaptureOverlay>
-          cursor_capture_overlay);
+          cursor_capture_overlay,
+      bool projector_mode);
   ~VideoRecordingWatcher() override;
 
   aura::Window* window_being_recorded() const { return window_being_recorded_; }
+  bool is_in_projector_mode() const { return is_in_projector_mode_; }
   bool should_paint_layer() const { return should_paint_layer_; }
 
   // aura::WindowObserver:
@@ -223,6 +225,9 @@ class ASH_EXPORT VideoRecordingWatcher
   // repeated reconfiguration of the video encoder. This timer is used to
   // throttle such events.
   base::OneShotTimer window_size_change_throttle_timer_;
+
+  // True if the current in progress recording is for a projector mode session.
+  const bool is_in_projector_mode_;
 
   // True if we force hiding the cursor overlay. This happens when we record a
   // fullscreen, or a partial screen region, and the software-composited cursor

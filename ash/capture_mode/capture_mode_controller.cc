@@ -11,6 +11,7 @@
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/video_recording_watcher.h"
+#include "ash/constants/ash_features.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/capture_mode_delegate.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
@@ -393,7 +394,7 @@ void CaptureModeController::SetSource(CaptureModeSource source) {
 }
 
 void CaptureModeController::SetType(CaptureModeType type) {
-  if (is_recording_in_progress_ && type == CaptureModeType::kVideo) {
+  if (is_recording_in_progress() && type == CaptureModeType::kVideo) {
     // Overwrite video capture types to image, as we can't have more than one
     // recording at a time.
     type = CaptureModeType::kImage;
@@ -429,11 +430,23 @@ void CaptureModeController::Start(CaptureModeEntryType entry_type) {
     return;
   }
 
+  // Starting capture mode from the projector app will put it in a special mode
+  // where only video recording is allowed, with audio recording enabled.
+  bool for_projector = false;
+
   // Before we start the session, if video recording is in progress, we need to
   // set the current type to image, as we can't have more than one recording at
   // a time. The video toggle button in the capture mode bar will be disabled.
-  if (is_recording_in_progress_)
+  if (is_recording_in_progress()) {
     SetType(CaptureModeType::kImage);
+  } else if (entry_type == CaptureModeEntryType::kProjector) {
+    DCHECK(features::IsProjectorEnabled());
+    for_projector = true;
+    // TODO(afakhry): Discuss with PM whether we want this to affect the audio
+    // settings of future generic capture mode sessions.
+    enable_audio_recording_ = true;
+    SetType(CaptureModeType::kVideo);
+  }
 
   RecordCaptureModeEntryType(entry_type);
   // Reset the user capture region if enough time has passed as it can be
@@ -447,7 +460,8 @@ void CaptureModeController::Start(CaptureModeEntryType entry_type) {
 
   delegate_->OnSessionStateChanged(/*started=*/true);
 
-  capture_mode_session_ = std::make_unique<CaptureModeSession>(this);
+  capture_mode_session_ =
+      std::make_unique<CaptureModeSession>(this, for_projector);
   capture_mode_session_->Initialize();
 }
 
@@ -544,7 +558,7 @@ void CaptureModeController::SetWindowProtectionMask(aura::Window* window,
 }
 
 void CaptureModeController::RefreshContentProtection() {
-  if (!is_recording_in_progress_)
+  if (!is_recording_in_progress())
     return;
 
   DCHECK(video_recording_watcher_);
@@ -602,7 +616,7 @@ void CaptureModeController::StartVideoRecordingImmediatelyForTesting() {
 void CaptureModeController::PushNewRootSizeToRecordingService(
     const gfx::Size& root_size,
     float device_scale_factor) {
-  DCHECK(is_recording_in_progress_);
+  DCHECK(is_recording_in_progress());
   DCHECK(video_recording_watcher_);
   DCHECK(recording_service_remote_);
 
@@ -613,7 +627,7 @@ void CaptureModeController::PushNewRootSizeToRecordingService(
 void CaptureModeController::OnRecordedWindowChangingRoot(
     aura::Window* window,
     aura::Window* new_root) {
-  DCHECK(is_recording_in_progress_);
+  DCHECK(is_recording_in_progress());
   DCHECK(video_recording_watcher_);
   DCHECK_EQ(window, video_recording_watcher_->window_being_recorded());
   DCHECK(recording_service_remote_);
@@ -633,7 +647,7 @@ void CaptureModeController::OnRecordedWindowChangingRoot(
 
 void CaptureModeController::OnRecordedWindowSizeChanged(
     const gfx::Size& new_size) {
-  DCHECK(is_recording_in_progress_);
+  DCHECK(is_recording_in_progress());
   DCHECK(video_recording_watcher_);
   DCHECK(recording_service_remote_);
 
@@ -670,7 +684,7 @@ void CaptureModeController::EndSessionOrRecording(EndRecordingReason reason) {
     return;
   }
 
-  if (!is_recording_in_progress_)
+  if (!is_recording_in_progress())
     return;
 
   if (reason == EndRecordingReason::kImminentSuspend) {
@@ -858,10 +872,9 @@ void CaptureModeController::FinalizeRecording(bool success,
 }
 
 void CaptureModeController::TerminateRecordingUiElements() {
-  if (!is_recording_in_progress_)
+  if (!is_recording_in_progress())
     return;
 
-  is_recording_in_progress_ = false;
   capture_mode_util::SetStopRecordingButtonVisibility(
       video_recording_watcher_->window_being_recorded()->GetRootWindow(),
       false);
@@ -1139,6 +1152,8 @@ void CaptureModeController::OnVideoRecordCountDownFinished() {
       capture_mode_session_->ReleaseLayer();
   session_layer->set_delegate(nullptr);
 
+  const bool projector_mode = capture_mode_session_->is_in_projector_mode();
+
   // Stop the capture session now, so the bar doesn't show up in the captured
   // video.
   Stop();
@@ -1160,13 +1175,13 @@ void CaptureModeController::OnVideoRecordCountDownFinished() {
     return;
   }
 
-  is_recording_in_progress_ = true;
   mojo::PendingRemote<viz::mojom::FrameSinkVideoCaptureOverlay>
       cursor_capture_overlay;
   auto cursor_overlay_receiver =
       cursor_capture_overlay.InitWithNewPipeAndPassReceiver();
   video_recording_watcher_ = std::make_unique<VideoRecordingWatcher>(
-      this, capture_params->window, std::move(cursor_capture_overlay));
+      this, capture_params->window, std::move(cursor_capture_overlay),
+      projector_mode);
 
   // We only paint the recorded area highlight for window and region captures.
   if (source_ != CaptureModeSource::kFullscreen)
@@ -1174,6 +1189,8 @@ void CaptureModeController::OnVideoRecordCountDownFinished() {
 
   DCHECK(current_video_file_path_.empty());
   recording_start_time_ = base::TimeTicks::Now();
+  // TODO(crbug.com/1240430): Get the correct video file path from projector
+  // when in |projector_mode|.
   current_video_file_path_ = BuildVideoPath();
 
   LaunchRecordingServiceAndStartRecording(*capture_params,

@@ -50,8 +50,9 @@ constexpr int kDistanceFromShelfOrHotseatTopDp = 16;
 
 }  // namespace
 
-CaptureModeBarView::CaptureModeBarView()
-    : capture_type_view_(AddChildView(std::make_unique<CaptureModeTypeView>())),
+CaptureModeBarView::CaptureModeBarView(bool projector_mode)
+    : capture_type_view_(
+          AddChildView(std::make_unique<CaptureModeTypeView>(projector_mode))),
       separator_1_(AddChildView(std::make_unique<views::Separator>())),
       capture_source_view_(
           AddChildView(std::make_unique<CaptureModeSourceView>())),
