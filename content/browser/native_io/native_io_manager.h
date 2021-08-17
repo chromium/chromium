@@ -134,6 +134,13 @@ class CONTENT_EXPORT NativeIOManager {
   }
 
  private:
+  // Adds and binds receiver on default bucket retrieval to ensure that a bucket
+  // always exists for the storage key.
+  void BindReceiverWithBucketInfo(
+      const blink::StorageKey& storage_key,
+      mojo::PendingReceiver<blink::mojom::NativeIOHost> receiver,
+      storage::QuotaErrorOr<storage::BucketInfo> result);
+
   // Deletes the NativeIOHost if it serves no further purpose.
   //
   // `host` must be owned by this manager.
@@ -167,6 +174,8 @@ class CONTENT_EXPORT NativeIOManager {
   // possible during the NativeIOManager destruction process.
   mojo::Receiver<storage::mojom::QuotaClient> quota_client_receiver_
       GUARDED_BY_CONTEXT(sequence_checker_);
+
+  base::WeakPtrFactory<NativeIOManager> weak_factory_{this};
 };
 
 }  // namespace content

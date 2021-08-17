@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/bind.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -16,6 +17,9 @@
 #include "base/threading/thread_checker.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
+#include "components/services/storage/public/cpp/buckets/bucket_info.h"
+#include "components/services/storage/public/cpp/buckets/constants.h"
+#include "components/services/storage/public/cpp/quota_error_or.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "content/browser/native_io/native_io_host.h"
 #include "content/browser/native_io/native_io_quota_client.h"
@@ -135,17 +139,55 @@ void NativeIOManager::BindReceiver(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto it = hosts_.find(storage_key);
-  if (it == hosts_.end()) {
-    // This feature should only be exposed to potentially trustworthy origins
-    // (https://w3c.github.io/webappsec-secure-contexts/#is-origin-trustworthy).
-    // Notably this includes the https and chrome-extension schemes, among
-    // others.
-    if (!network::IsOriginPotentiallyTrustworthy(storage_key.origin())) {
-      std::move(bad_message_callback)
-          .Run("Called NativeIO from an insecure context");
-      return;
-    }
+  if (it != hosts_.end()) {
+    it->second->BindReceiver(std::move(receiver));
+    return;
+  }
 
+  // This feature should only be exposed to potentially trustworthy origins
+  // (https://w3c.github.io/webappsec-secure-contexts/#is-origin-trustworthy).
+  // Notably this includes the https and chrome-extension schemes, among
+  // others.
+  if (!network::IsOriginPotentiallyTrustworthy(storage_key.origin())) {
+    std::move(bad_message_callback)
+        .Run("Called NativeIO from an insecure context");
+    return;
+  }
+
+  // Ensure that the default bucket for the storage key exists on access and
+  // bind receiver on retrieval.
+  quota_manager_proxy_->GetOrCreateBucket(
+      storage_key, storage::kDefaultBucketName,
+      base::SequencedTaskRunnerHandle::Get(),
+      base::BindOnce(&NativeIOManager::BindReceiverWithBucketInfo,
+                     weak_factory_.GetWeakPtr(), storage_key,
+                     std::move(receiver)));
+}
+
+void NativeIOManager::OnHostReceiverDisconnect(NativeIOHost* host,
+                                               base::PassKey<NativeIOHost>) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  MaybeDeleteHost(host);
+}
+
+void NativeIOManager::DidDeleteHostData(NativeIOHost* host,
+                                        base::PassKey<NativeIOHost>) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(host != nullptr);
+  DCHECK(!host->delete_all_data_in_progress());
+
+  MaybeDeleteHost(host);
+}
+
+void NativeIOManager::BindReceiverWithBucketInfo(
+    const blink::StorageKey& storage_key,
+    mojo::PendingReceiver<blink::mojom::NativeIOHost> receiver,
+    storage::QuotaErrorOr<storage::BucketInfo> result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(result.ok());
+
+  auto it = hosts_.find(storage_key);
+  if (it == hosts_.end()) {
     base::FilePath storage_key_root_path = RootPathForStorageKey(storage_key);
     DCHECK(storage_key_root_path.empty() ||
            root_path_.IsParent(storage_key_root_path))
@@ -164,21 +206,6 @@ void NativeIOManager::BindReceiver(
   }
 
   it->second->BindReceiver(std::move(receiver));
-}
-
-void NativeIOManager::OnHostReceiverDisconnect(NativeIOHost* host,
-                                               base::PassKey<NativeIOHost>) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  MaybeDeleteHost(host);
-}
-
-void NativeIOManager::DidDeleteHostData(NativeIOHost* host,
-                                        base::PassKey<NativeIOHost>) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(host != nullptr);
-  DCHECK(!host->delete_all_data_in_progress());
-
-  MaybeDeleteHost(host);
 }
 
 void NativeIOManager::MaybeDeleteHost(NativeIOHost* host) {
