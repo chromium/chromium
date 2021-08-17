@@ -37,6 +37,7 @@
 #import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
+#import "ios/public/provider/chrome/browser/signin/signin_resources_provider.h"
 #include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -507,11 +508,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
   signinPromo.text = @"Signin promo text example";
   [model addItem:signinPromo toSectionWithIdentifier:SectionIdentifierAccount];
 
+  UIImage* defaultAvatar = ios::GetChromeBrowserProvider()
+                               .GetSigninResourcesProvider()
+                               ->GetDefaultAvatar();
   TableViewAccountItem* accountItemDetailWithError =
       [[TableViewAccountItem alloc] initWithType:ItemTypeAccount];
-  // TODO(crbug.com/754032): ios_default_avatar image is from a downstream iOS
-  // internal repository. It should be used through a provider API instead.
-  accountItemDetailWithError.image = [UIImage imageNamed:@"ios_default_avatar"];
+  accountItemDetailWithError.image = defaultAvatar;
   accountItemDetailWithError.text = @"Account User Name";
   accountItemDetailWithError.detailText =
       @"Syncing to AccountUserNameAccount@example.com";
@@ -523,9 +525,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   TableViewAccountItem* accountItemCheckMark =
       [[TableViewAccountItem alloc] initWithType:ItemTypeAccount];
-  // TODO(crbug.com/754032): ios_default_avatar image is from a downstream iOS
-  // internal repository. It should be used through a provider API instead.
-  accountItemCheckMark.image = [UIImage imageNamed:@"ios_default_avatar"];
+  accountItemCheckMark.image = defaultAvatar;
   accountItemCheckMark.text = @"Lorem ipsum dolor sit amet, consectetur "
                               @"adipiscing elit, sed do eiusmod tempor "
                               @"incididunt ut labore et dolore magna aliqua.";
