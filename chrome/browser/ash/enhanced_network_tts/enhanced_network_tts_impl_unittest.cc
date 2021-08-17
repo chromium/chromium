@@ -113,7 +113,7 @@ class TestServerURLLoaderFactory {
 
 // Receives the result of a request and writes the result data into the given
 // variables.
-void ReportResult(absl::optional<mojom::TtsRequestError>* const error,
+void UnpackResult(absl::optional<mojom::TtsRequestError>* const error,
                   std::vector<uint8_t>* const audio_data,
                   std::vector<mojom::TimingInfo>* const timing_data,
                   mojom::TtsResponsePtr result) {
@@ -129,6 +129,37 @@ void ReportResult(absl::optional<mojom::TtsRequestError>* const error,
       timing_data->push_back(*timing_ptr);
   }
 }
+
+class TestAudioDataObserverImpl : public mojom::AudioDataObserver {
+ public:
+  TestAudioDataObserverImpl() = default;
+  TestAudioDataObserverImpl(const TestAudioDataObserverImpl&) = delete;
+  void operator=(const TestAudioDataObserverImpl&) = delete;
+  ~TestAudioDataObserverImpl() override = default;
+
+  // Binds a pending receiver.
+  void BindReceiver(mojo::PendingReceiver<mojom::AudioDataObserver> receiver) {
+    receiver_.reset();
+    receiver_.Bind(std::move(receiver));
+  }
+
+  // ash::enhanced_network_tts::mojom::AudioDataObserver:
+  void OnAudioDataReceived(mojom::TtsResponsePtr response) override {
+    received_responses_.push_back(std::move(response));
+  }
+
+  mojom::TtsResponsePtr GetNexResponse() {
+    mojom::TtsResponsePtr next_response =
+        std::move(received_responses_.front());
+    received_responses_.pop_front();
+    return next_response;
+  }
+
+ private:
+  std::list<mojom::TtsResponsePtr> received_responses_;
+
+  mojo::Receiver<mojom::AudioDataObserver> receiver_{this};
+};
 
 }  // namespace
 
@@ -147,23 +178,28 @@ class EnhancedNetworkTtsImplTest : public testing::Test {
     return *enhanced_network_tts_impl_;
   }
 
+  TestAudioDataObserverImpl* GetTestingObserverPtr() { return &observer_; }
+
   EnhancedNetworkTtsImpl* enhanced_network_tts_impl_;
   std::unique_ptr<data_decoder::test::InProcessDataDecoder>
       in_process_data_decoder_;
   base::test::TaskEnvironment test_task_env_;
   TestServerURLLoaderFactory test_url_factory_;
   mojo::Remote<mojom::EnhancedNetworkTts> remote_;
+  TestAudioDataObserverImpl observer_;
 };
 
 TEST_F(EnhancedNetworkTtsImplTest, GetAudioDataSucceeds) {
   const std::string input_text = "Hi.";
   const float rate = 1.0;
-  absl::optional<mojom::TtsRequestError> error;
-  std::vector<uint8_t> audio_data;
-  std::vector<mojom::TimingInfo> timing_data;
   GetTestingInstance().GetAudioData(
       mojom::TtsRequest::New(input_text, rate, absl::nullopt, absl::nullopt),
-      base::BindOnce(&ReportResult, &error, &audio_data, &timing_data));
+      base::BindOnce(
+          [](TestAudioDataObserverImpl* observer,
+             mojo::PendingReceiver<mojom::AudioDataObserver> pending_receiver) {
+            observer->BindReceiver(std::move(pending_receiver));
+          },
+          GetTestingObserverPtr()));
   test_task_env_.RunUntilIdle();
 
   const std::map<std::string, absl::optional<std::string>> expected_headers = {
@@ -181,6 +217,11 @@ TEST_F(EnhancedNetworkTtsImplTest, GetAudioDataSucceeds) {
 
   // We only get the data after the server's response. We simulate the response
   // in the code above.
+  absl::optional<mojom::TtsRequestError> error;
+  std::vector<uint8_t> audio_data;
+  std::vector<mojom::TimingInfo> timing_data;
+  UnpackResult(&error, &audio_data, &timing_data,
+               GetTestingObserverPtr()->GetNexResponse());
   EXPECT_EQ(audio_data, expected_output);
   // The timing data is hardcoded in |kTemplateResponse|.
   EXPECT_EQ(timing_data.size(), 2);
@@ -197,12 +238,14 @@ TEST_F(EnhancedNetworkTtsImplTest, GetAudioDataSucceeds) {
 TEST_F(EnhancedNetworkTtsImplTest, GetAudioDataSucceedsWithFasterRate) {
   const std::string input_text = "Rate will be capped to kMaxRate";
   const float rate = kMaxRate + 1.0f;
-  absl::optional<mojom::TtsRequestError> error;
-  std::vector<uint8_t> audio_data;
-  std::vector<mojom::TimingInfo> timing_data;
   GetTestingInstance().GetAudioData(
       mojom::TtsRequest::New(input_text, rate, absl::nullopt, absl::nullopt),
-      base::BindOnce(&ReportResult, &error, &audio_data, &timing_data));
+      base::BindOnce(
+          [](TestAudioDataObserverImpl* observer,
+             mojo::PendingReceiver<mojom::AudioDataObserver> pending_receiver) {
+            observer->BindReceiver(std::move(pending_receiver));
+          },
+          GetTestingObserverPtr()));
   test_task_env_.RunUntilIdle();
 
   const std::map<std::string, absl::optional<std::string>> expected_headers = {
@@ -218,6 +261,11 @@ TEST_F(EnhancedNetworkTtsImplTest, GetAudioDataSucceedsWithFasterRate) {
       CreateServerResponse(expected_output), net::HTTP_OK);
   test_task_env_.RunUntilIdle();
 
+  absl::optional<mojom::TtsRequestError> error;
+  std::vector<uint8_t> audio_data;
+  std::vector<mojom::TimingInfo> timing_data;
+  UnpackResult(&error, &audio_data, &timing_data,
+               GetTestingObserverPtr()->GetNexResponse());
   // We only get the data after the server's response. We simulate the response
   // in the code above.
   EXPECT_EQ(audio_data, expected_output);
@@ -226,12 +274,14 @@ TEST_F(EnhancedNetworkTtsImplTest, GetAudioDataSucceedsWithFasterRate) {
 TEST_F(EnhancedNetworkTtsImplTest, GetAudioDataSucceedsWithSlowerRate) {
   const std::string input_text = "Rate will be floored to kMinRate";
   const float rate = kMinRate - 0.1f;
-  absl::optional<mojom::TtsRequestError> error;
-  std::vector<uint8_t> audio_data;
-  std::vector<mojom::TimingInfo> timing_data;
   GetTestingInstance().GetAudioData(
       mojom::TtsRequest::New(input_text, rate, absl::nullopt, absl::nullopt),
-      base::BindOnce(&ReportResult, &error, &audio_data, &timing_data));
+      base::BindOnce(
+          [](TestAudioDataObserverImpl* observer,
+             mojo::PendingReceiver<mojom::AudioDataObserver> pending_receiver) {
+            observer->BindReceiver(std::move(pending_receiver));
+          },
+          GetTestingObserverPtr()));
   test_task_env_.RunUntilIdle();
 
   const std::map<std::string, absl::optional<std::string>> expected_headers = {
@@ -249,43 +299,59 @@ TEST_F(EnhancedNetworkTtsImplTest, GetAudioDataSucceedsWithSlowerRate) {
 
   // We only get the data after the server's response. We simulate the response
   // in the code above.
+  absl::optional<mojom::TtsRequestError> error;
+  std::vector<uint8_t> audio_data;
+  std::vector<mojom::TimingInfo> timing_data;
+  UnpackResult(&error, &audio_data, &timing_data,
+               GetTestingObserverPtr()->GetNexResponse());
   EXPECT_EQ(audio_data, expected_output);
 }
 
 TEST_F(EnhancedNetworkTtsImplTest, EmptyUtteranceError) {
   const std::string input_text("");
   const float rate = 1.0;
-  absl::optional<mojom::TtsRequestError> error;
-  std::vector<uint8_t> audio_data;
-  std::vector<mojom::TimingInfo> timing_data;
   GetTestingInstance().GetAudioData(
       mojom::TtsRequest::New(input_text, rate, absl::nullopt, absl::nullopt),
-      base::BindOnce(&ReportResult, &error, &audio_data, &timing_data));
+      base::BindOnce(
+          [](TestAudioDataObserverImpl* observer,
+             mojo::PendingReceiver<mojom::AudioDataObserver> pending_receiver) {
+            observer->BindReceiver(std::move(pending_receiver));
+          },
+          GetTestingObserverPtr()));
   test_task_env_.RunUntilIdle();
 
   // Over length request will be terminated before sending to server.
+  absl::optional<mojom::TtsRequestError> error;
+  std::vector<uint8_t> audio_data;
+  std::vector<mojom::TimingInfo> timing_data;
+  UnpackResult(&error, &audio_data, &timing_data,
+               GetTestingObserverPtr()->GetNexResponse());
   EXPECT_EQ(error, mojom::TtsRequestError::kEmptyUtterance);
 }
 
 TEST_F(EnhancedNetworkTtsImplTest, OverrideRequest) {
   const std::string input_text("request");
   const float rate = 1.0;
-  absl::optional<mojom::TtsRequestError> error_first_request;
-  std::vector<uint8_t> audio_data_first_request;
-  std::vector<mojom::TimingInfo> timing_data_first_request;
   GetTestingInstance().GetAudioData(
       mojom::TtsRequest::New(input_text, rate, absl::nullopt, absl::nullopt),
-      base::BindOnce(&ReportResult, &error_first_request,
-                     &audio_data_first_request, &timing_data_first_request));
+      base::BindOnce(
+          [](TestAudioDataObserverImpl* observer,
+             mojo::PendingReceiver<mojom::AudioDataObserver> pending_receiver) {
+            observer->BindReceiver(std::move(pending_receiver));
+          },
+          GetTestingObserverPtr()));
   test_task_env_.RunUntilIdle();
-  // The second request comes in before the server replies to the first one.
-  absl::optional<mojom::TtsRequestError> error_second_request;
-  std::vector<uint8_t> audio_data_second_request;
-  std::vector<mojom::TimingInfo> timing_data_second_request;
+  // The second request, which has a new observer, comes in before the server
+  // replies to the first one.
+  TestAudioDataObserverImpl second_observer;
   GetTestingInstance().GetAudioData(
       mojom::TtsRequest::New(input_text, rate, absl::nullopt, absl::nullopt),
-      base::BindOnce(&ReportResult, &error_second_request,
-                     &audio_data_second_request, &timing_data_second_request));
+      base::BindOnce(
+          [](TestAudioDataObserverImpl* observer,
+             mojo::PendingReceiver<mojom::AudioDataObserver> pending_receiver) {
+            observer->BindReceiver(std::move(pending_receiver));
+          },
+          &second_observer));
   test_task_env_.RunUntilIdle();
 
   // Assume the server replies to the requests in sequence.
@@ -303,23 +369,37 @@ TEST_F(EnhancedNetworkTtsImplTest, OverrideRequest) {
       CreateServerResponse(expected_output), net::HTTP_OK);
   test_task_env_.RunUntilIdle();
 
-  // The first request gets an error message while the second request gets the
-  // data.
+  // The first request gets an error message.
+  absl::optional<mojom::TtsRequestError> error_first_request;
+  std::vector<uint8_t> audio_data_first_request;
+  std::vector<mojom::TimingInfo> timing_data_first_request;
+  UnpackResult(&error_first_request, &audio_data_first_request,
+               &timing_data_first_request,
+               GetTestingObserverPtr()->GetNexResponse());
   EXPECT_EQ(error_first_request, mojom::TtsRequestError::kRequestOverride);
   EXPECT_EQ(timing_data_first_request.size(), 0);
   EXPECT_EQ(audio_data_first_request.size(), 0);
+
+  // The second request gets the data.
+  absl::optional<mojom::TtsRequestError> error_second_request;
+  std::vector<uint8_t> audio_data_second_request;
+  std::vector<mojom::TimingInfo> timing_data_second_request;
+  UnpackResult(&error_second_request, &audio_data_second_request,
+               &timing_data_second_request, second_observer.GetNexResponse());
   EXPECT_EQ(audio_data_second_request, expected_output);
 }
 
 TEST_F(EnhancedNetworkTtsImplTest, ServerError) {
   const std::string input_text = "Hi.";
   const float rate = 1.0;
-  absl::optional<mojom::TtsRequestError> error;
-  std::vector<uint8_t> audio_data;
-  std::vector<mojom::TimingInfo> timing_data;
   GetTestingInstance().GetAudioData(
       mojom::TtsRequest::New(input_text, rate, absl::nullopt, absl::nullopt),
-      base::BindOnce(&ReportResult, &error, &audio_data, &timing_data));
+      base::BindOnce(
+          [](TestAudioDataObserverImpl* observer,
+             mojo::PendingReceiver<mojom::AudioDataObserver> pending_receiver) {
+            observer->BindReceiver(std::move(pending_receiver));
+          },
+          GetTestingObserverPtr()));
   test_task_env_.RunUntilIdle();
 
   const std::map<std::string, absl::optional<std::string>> expected_headers = {
@@ -332,18 +412,25 @@ TEST_F(EnhancedNetworkTtsImplTest, ServerError) {
 
   // We only get the data after the server's response. We simulate the response
   // in the code above.
+  absl::optional<mojom::TtsRequestError> error;
+  std::vector<uint8_t> audio_data;
+  std::vector<mojom::TimingInfo> timing_data;
+  UnpackResult(&error, &audio_data, &timing_data,
+               GetTestingObserverPtr()->GetNexResponse());
   EXPECT_EQ(error, mojom::TtsRequestError::kServerError);
 }
 
 TEST_F(EnhancedNetworkTtsImplTest, JsonDecodingError) {
   const std::string input_text = "Hi.";
   const float rate = 1.0;
-  absl::optional<mojom::TtsRequestError> error;
-  std::vector<uint8_t> audio_data;
-  std::vector<mojom::TimingInfo> timing_data;
   GetTestingInstance().GetAudioData(
       mojom::TtsRequest::New(input_text, rate, absl::nullopt, absl::nullopt),
-      base::BindOnce(&ReportResult, &error, &audio_data, &timing_data));
+      base::BindOnce(
+          [](TestAudioDataObserverImpl* observer,
+             mojo::PendingReceiver<mojom::AudioDataObserver> pending_receiver) {
+            observer->BindReceiver(std::move(pending_receiver));
+          },
+          GetTestingObserverPtr()));
   test_task_env_.RunUntilIdle();
 
   const std::map<std::string, absl::optional<std::string>> expected_headers = {
@@ -357,6 +444,11 @@ TEST_F(EnhancedNetworkTtsImplTest, JsonDecodingError) {
 
   // We only get the data after the server's response. We simulate the response
   // in the code above.
+  absl::optional<mojom::TtsRequestError> error;
+  std::vector<uint8_t> audio_data;
+  std::vector<mojom::TimingInfo> timing_data;
+  UnpackResult(&error, &audio_data, &timing_data,
+               GetTestingObserverPtr()->GetNexResponse());
   EXPECT_EQ(error, mojom::TtsRequestError::kReceivedUnexpectedData);
 }
 

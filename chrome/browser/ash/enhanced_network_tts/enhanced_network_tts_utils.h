@@ -34,8 +34,12 @@ std::vector<uint16_t> FindTextBreaks(const std::string& utterance,
 // data).
 mojom::TtsResponsePtr GetResultOnError(const mojom::TtsRequestError error_code);
 
-// Unpack the JSON audio data from the server response.
-mojom::TtsResponsePtr UnpackJsonResponse(const base::Value& json_data);
+// Unpack the JSON audio data from the server response. The data corresponds to
+// the text piece that has the |start_index| in the original input utterance.
+// |last_request| indicates if this is the last JSON data we expect.
+mojom::TtsResponsePtr UnpackJsonResponse(const base::Value& json_data,
+                                         const int start_index,
+                                         const bool last_request);
 
 }  // namespace enhanced_network_tts
 }  // namespace ash

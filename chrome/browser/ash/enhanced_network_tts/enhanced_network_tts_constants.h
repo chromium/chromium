@@ -10,8 +10,9 @@
 namespace ash {
 namespace enhanced_network_tts {
 
-// The max size for a response. Set to 1MB.
-constexpr size_t kEnhancedNetworkTtsMaxResponseSize = 1024 * 1024;
+// The max size for a response. Set to 5MB to provide more buffer. The mp3 file
+// has 32Kbps bitrate. One minute of audio is about 240KB.
+constexpr size_t kEnhancedNetworkTtsMaxResponseSize = 5 * 1024 * 1024;
 
 // The max speech rate.
 constexpr float kMaxRate = 4.0f;

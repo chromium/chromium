@@ -185,7 +185,9 @@ mojom::TtsResponsePtr GetResultOnError(
   return mojom::TtsResponse::NewErrorCode(error_code);
 }
 
-mojom::TtsResponsePtr UnpackJsonResponse(const base::Value& json_data) {
+mojom::TtsResponsePtr UnpackJsonResponse(const base::Value& json_data,
+                                         const int start_index,
+                                         const bool is_last_request) {
   base::Value::ConstListView list_data = json_data.GetList();
 
   // Depending on the size of input text (n), the list size should be 1 + 2n.
@@ -238,8 +240,10 @@ mojom::TtsResponsePtr UnpackJsonResponse(const base::Value& json_data) {
         !timing_info_timeoffset_ptr || !timing_info_duration_ptr) {
       continue;
     }
+    // The text offset needs to be compensated with the start index of this
+    // TtsData.
     timing_infos.push_back(mojom::TimingInfo::New(
-        *timing_info_text_ptr, timing_info_text_offset.value(),
+        *timing_info_text_ptr, timing_info_text_offset.value() + start_index,
         *timing_info_timeoffset_ptr, *timing_info_duration_ptr));
   }
 
@@ -259,8 +263,8 @@ mojom::TtsResponsePtr UnpackJsonResponse(const base::Value& json_data) {
 
   std::vector<uint8_t> audio =
       std::vector<uint8_t>(audio_bytes.begin(), audio_bytes.end());
-  mojom::TtsDataPtr tts_data =
-      mojom::TtsData::New(std::move(audio), std::move(timing_infos));
+  mojom::TtsDataPtr tts_data = mojom::TtsData::New(
+      std::move(audio), std::move(timing_infos), is_last_request);
   // Send the decoded data to the caller.
   return mojom::TtsResponse::NewData(std::move(tts_data));
 }

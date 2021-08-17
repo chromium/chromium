@@ -90,6 +90,7 @@ js_library("enhanced_network_tts") {
     "//ash/components/enhanced_network_tts/mojom:mojom_js_library_for_compile",
   ]
   externs_list = [
+    "mojo_bindings_externs.js",
     "$externs_path/tts.js",
     "$externs_path/ttsEngine.js",
     "$externs_path/mojo_private.js",

@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/data_decoder/public/mojom/json_parser.mojom.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -40,8 +41,7 @@ class EnhancedNetworkTtsImpl : public mojom::EnhancedNetworkTts {
 
   // Binds a pending receiver and a url factory.
   void BindReceiverAndURLFactory(
-      mojo::PendingReceiver<enhanced_network_tts::mojom::EnhancedNetworkTts>
-          receiver,
+      mojo::PendingReceiver<mojom::EnhancedNetworkTts> receiver,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   // ash::enhanced_network_tts::mojom::EnhancedNetworkTts:
@@ -53,6 +53,25 @@ class EnhancedNetworkTtsImpl : public mojom::EnhancedNetworkTts {
       "EnhancedNetworkTtsOverride", base::FEATURE_DISABLED_BY_DEFAULT};
 
  private:
+  // An input utterance may be chopped into several text pieces, which will be
+  // sent over several |ServerRequest|. A |ServerRequest| contains three
+  // elements: |url_loader| holding one text piece, |start_index| indicating the
+  // text piece's start in the original input utterance, and a bool
+  // |is_last_request| indicating whether it is the last request.
+  struct ServerRequest {
+    ServerRequest(std::unique_ptr<network::SimpleURLLoader> url_loader,
+                  int start_index,
+                  bool is_last_request);
+    ~ServerRequest();
+
+    const std::unique_ptr<network::SimpleURLLoader> url_loader;
+    const int start_index;
+    const bool is_last_request;
+  };
+
+  // List of ServerRequest.
+  using ServerRequestList = std::list<ServerRequest>;
+
   // Create or reuse a connection to the data decoder service for safe JSON
   // parsing.
   data_decoder::mojom::JsonParser* GetJsonParser();
@@ -60,27 +79,44 @@ class EnhancedNetworkTtsImpl : public mojom::EnhancedNetworkTts {
   // Create a URL loader for a network request with an attached API key.
   std::unique_ptr<network::SimpleURLLoader> MakeRequestLoader();
 
+  // Process the next |ServerRequest| in the |server_requests_|. Resets
+  // |server_requests_| and |on_data_received_observer_| if there is no more
+  // request.
+  void ProcessNextServerRequest();
+
   // Called when the ReadAloud server responds with audio data, which is
   // encoded as a JSON string.
   void OnServerResponseReceived(
+      const ServerRequestList::iterator server_request_it,
       const std::unique_ptr<std::string> json_response);
 
   // Called when the data decoder service provides parsed JSON data for a
-  // server response.
-  void OnResponseJsonParsed(absl::optional<base::Value> json_data,
+  // server response. The server response corresponds to the text piece that
+  // has the |start_index| in the original input utterance. |is_last_request|
+  // indicates if this is the last response we expect.
+  void OnResponseJsonParsed(const int start_index,
+                            const bool is_last_request,
+                            absl::optional<base::Value> json_data,
                             const absl::optional<std::string>& error);
 
-  // Sends the response to the |ongoing_audio_callback_|. Returns true if the
-  // callback exists and proceeded with the |response|. False if the callback
-  // has been resolved before this method.
-  bool ProcessOngoingAudioCallback(mojom::TtsResponsePtr response);
+  // Sends the response to the |mojom::AudioDataObserver|.
+  void SendResponse(mojom::TtsResponsePtr response);
 
-  // The currently-ongoing HTTP request to the ReadAloud server. This helps us
-  // to better track the network request.
-  std::unique_ptr<network::SimpleURLLoader> ongoing_server_request_;
+  void ResetServerRequestsAndObserver();
 
-  // The GetAudioDataCallback for the currently-ongoing HTTP request.
-  GetAudioDataCallback ongoing_audio_callback_;
+  void ResetAndSendErrorResponse(mojom::TtsRequestError error_code);
+
+  // A list of HTTP requests to the ReadAloud server. The requests are
+  // processed one by one from the front of the list. Any new request should be
+  // pushed into the back of the list.
+  ServerRequestList server_requests_;
+
+  // The observer waiting for |TtsResponse|. This will be reset after we send
+  // out the last response to it. It will also be reset if the receiver
+  // (JS extension) is disconnected. For examples, the JS extension actively
+  // stops the request by calling |Reset()|. Or the JS extension accidentally
+  // gets shut down and closes the pipe passively.
+  mojo::Remote<mojom::AudioDataObserver> on_data_received_observer_;
 
   // Decoder for data decoding service.
   data_decoder::DataDecoder data_decoder_;

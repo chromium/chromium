@@ -22,4 +22,6 @@ chrome.ttsEngine.onSpeakWithAudioStream.addListener(
 // The onStop listener is needed for the |tts_engine_events::kOnStop| check in
 // tts_engine_extension_api.cc
 // TODO(crbug.com/1231318): Clear or cancel the current network request.
-chrome.ttsEngine.onStop.addListener(() => {});
+chrome.ttsEngine.onStop.addListener(async () => {
+  await EnhancedNetworkTts.clearMojoRequests();
+});

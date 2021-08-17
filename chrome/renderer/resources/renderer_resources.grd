@@ -84,7 +84,7 @@
           <include name="IDR_GOOGLE_TTS_STREAM_MOJOM_JS" file="${mojom_root}\chromeos\services\tts\public\mojom\tts_service.mojom.js" use_base_dir="false" type="BINDATA" />
 
           <!-- Enhanced Network Tts bindings. -->
-          <include name="IDR_ENHANCED_NETWORK_TTS_BINDINGS_JS" file="extensions\enhanced_network_tts_custom_bindings.js" type="BINDATA" />
+          <include name="IDR_ENHANCED_NETWORK_TTS_BINDINGS_JS" file="extensions\enhanced_network_tts\enhanced_network_tts_custom_bindings.js" type="BINDATA" />
           <include name="IDR_ENHANCED_NETWORK_TTS_MOJOM_LITE_JS" file="${mojom_root}\ash\components\enhanced_network_tts\mojom\enhanced_network_tts.mojom-lite.js" use_base_dir="false" type="BINDATA" />
         </if>
       </if>

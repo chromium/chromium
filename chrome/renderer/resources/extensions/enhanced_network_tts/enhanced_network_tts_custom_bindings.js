@@ -32,12 +32,26 @@ class EnhancedNetworkTtsAdapter {
    * Gets the Text-to-Speech data for the |request|. The data is generated from
    * a Google API that uses enhanced voices.
    * @param {!ash.enhancedNetworkTts.mojom.TtsRequest} request
-   * @return {!Promise<{response: !ash.enhancedNetworkTts.mojom.TtsResponse}>}
-   *     the response containing the Text-to-Speech data if the request proceeds
-   *     successfully, or an error code if the request fails.
+   * @param {function(!ash.enhancedNetworkTts.mojom.TtsResponse): void} callback
+   *   a function that receives TtsResponse.
+   * @return {!Promise<void>}
    */
-  getAudioData(request) {
-    return this.enhancedNetworkTts_.getAudioData(request);
+  async getAudioDataWithCallback(request, callback) {
+    const pending_receiver =
+        (await this.enhancedNetworkTts_.getAudioData(request)).observer;
+    this.callbackRouter_ =
+        new ash.enhancedNetworkTts.mojom.AudioDataObserverCallbackRouter();
+    this.callbackRouter_.$.bindHandle(pending_receiver.handle);
+    return this.callbackRouter_.onAudioDataReceived.addListener(callback);
+  }
+
+  /**
+   * Removes prior established binding and reset the receiver.
+   */
+  resetApi() {
+    if (this.callbackRouter_ && this.callbackRouter_.$) {
+      this.callbackRouter_.$.close();
+    }
   }
 }
 

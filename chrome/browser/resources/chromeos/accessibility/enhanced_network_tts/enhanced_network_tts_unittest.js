@@ -23,7 +23,8 @@ SYNC_TEST_F(
       // 0.2135s playback containing "Hello world".
       const mockTtsApi = MockTtsApi;
       mockTtsApi.enqueueAudioData(
-          generateTestBufferData(), generateTestTimeInfoData());
+          generateTestBufferData(), generateTestTimeInfoData(),
+          true /* lastData */);
       chrome.mojoPrivate.registerMockedModuleForTesting(
           'ash.enhanced_network_tts', mockTtsApi);
 
@@ -236,13 +237,27 @@ SYNC_TEST_F(
           isLastBuffer: true
         },
       ];
-      const mockSendTtsAudio = (receivedBuffer) => {
+      // Copy the expectedBuffers but modify |isLastBuffer|.
+      const expectedBuffersWithoutLastBuffer =
+          expectedBuffers.map(buffer => Object.assign({}, buffer));
+      expectedBuffersWithoutLastBuffer[5].isLastBuffer = false;
+
+      let mockSendTtsAudio = (receivedBuffer) => {
         const expectedBuffer = expectedBuffers.shift();
         assertEqualsJSON(expectedBuffer, receivedBuffer);
       };
-
       EnhancedNetworkTts.sendAudioDataInBuffers(
-          decodedAudioData, sampleRate, bufferSize, timeInfo, mockSendTtsAudio);
+          decodedAudioData, sampleRate, bufferSize, timeInfo, mockSendTtsAudio,
+          /* lastData= */ true);
+
+      mockSendTtsAudio = (receivedBuffer) => {
+        const expectedBuffer = expectedBuffersWithoutLastBuffer.shift();
+        assertEqualsJSON(expectedBuffer, receivedBuffer);
+      };
+      // Will not signal the last buffer if |lastData| is false.
+      EnhancedNetworkTts.sendAudioDataInBuffers(
+          decodedAudioData, sampleRate, bufferSize, timeInfo, mockSendTtsAudio,
+          /* lastData= */ false);
     });
 
 /**

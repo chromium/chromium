@@ -67,9 +67,11 @@ const MockTtsApi = {
   /**
    * Gets the audio data for the input request.
    * @param {!ash.enhancedNetworkTts.mojom.TtsRequest} request
-   * @return {!Promise<{response: !ash.enhancedNetworkTts.mojom.TtsResponse}>}
+   * @param {function(!ash.enhancedNetworkTts.mojom.TtsResponse)} callback a
+   *     function that receives TtsResponse.
+   * @return {!Promise<void>}
    */
-  getAudioData(request) {
+  getAudioDataWithCallback(request, callback) {
     if (this.queuedResults_.length === 0) {
       // This should never happen but in case future developers accidentally
       // trigger it.
@@ -77,37 +79,29 @@ const MockTtsApi = {
           'Should not call a mocked API without specifying expected data.');
       return Promise.reject(new Error('Empty data.'));
     }
-    return this.queuedResults_.shift();
+    callback(this.queuedResults_.shift());
+    return new Promise(resolve => resolve());
   },
 
   // Methods for testing. //
-  /**
-   * Enqueues a failed promise to the |queuedResults_|.
-   * @param {string} errorMessage
-   */
-  enqueueFailedPromise(errorMessage) {
-    this.queuedResults_.push(Promise.reject(new Error(errorMessage)));
-  },
-
   /**
    * Enqueues a response with an error code to the |queuedResults_|.
    * @param {number} errorCode
    */
   enqueueErrorCode(errorCode) {
     const response = {errorCode};
-    const result = new Promise(resolve => resolve({response}));
-    this.queuedResults_.push(result);
+    this.queuedResults_.push(response);
   },
 
   /**
    * Enqueues a response with audio data to the |queuedResults_|.
    * @param {!Array<number>} audio
    * @param {!Array<!ash.enhancedNetworkTts.mojom.TimingInfo>} timeInfo
+   * @param {boolean} lastData
    */
-  enqueueAudioData(audio, timeInfo) {
-    const response = {'data': {audio, timeInfo}};
-    const result = new Promise(resolve => resolve({response}));
-    this.queuedResults_.push(result);
+  enqueueAudioData(audio, timeInfo, lastData) {
+    const response = {'data': {audio, timeInfo, lastData}};
+    this.queuedResults_.push(response);
   }
 };
 
