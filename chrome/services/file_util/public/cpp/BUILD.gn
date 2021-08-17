@@ -87,13 +87,5 @@ if (is_chromeos_ash) {
       "//testing/gtest",
       "//third_party/zlib",
     ]
-
-    if (enable_basic_printing) {
-      # Needed by files which include //chrome/browser/service_sandbox_type.h.
-      # Inclusion of print_backend_service_manager.h depends on this.
-      # TODO(crbug.com/1213762)  Replace this with more accurate dependency
-      # once //chrome/browser/printing build is able to be cleanly targeted.
-      deps += [ "//chrome/services/printing/public/mojom" ]
-    }
   }
 }

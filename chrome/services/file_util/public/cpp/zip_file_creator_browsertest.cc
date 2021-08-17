@@ -16,7 +16,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
-#include "chrome/browser/service_sandbox_type.h"
+#include "chrome/services/file_util/public/mojom/file_util_service.mojom.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/test/browser_test.h"
