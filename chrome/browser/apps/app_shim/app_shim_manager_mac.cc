@@ -717,7 +717,7 @@ void AppShimManager::LoadProfileAsync(
 void AppShimManager::WaitForAppRegistryReadyAsync(
     Profile* profile,
     base::OnceCallback<void()> callback) {
-  auto* provider = web_app::WebAppProvider::Get(profile);
+  auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
   DCHECK(provider);
   if (provider->on_registry_ready().is_signaled())
     std::move(callback).Run();
