@@ -3887,6 +3887,11 @@
     "expiry_milestone": 95
   },
   {
+    "name": "nearby-sharing-arc",
+    "owners": [ "phshah", "alanding", "cros-sharesheet@google.com", "arc-app-dev@google.com" ],
+    "expiry_milestone": 98
+  },
+  {
     "name": "nearby-sharing-background-scanning",
     "owners": [ "hansenmichael@google.com", "cvandermerwe@google.com", "chromeos-cross-device-eng@google.com" ],
     "expiry_milestone": 98

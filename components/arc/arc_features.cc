@@ -8,9 +8,8 @@ namespace arc {
 
 // Controls ACTION_BOOT_COMPLETED broadcast for third party applications on ARC.
 // When disabled, third party apps will not receive this broadcast.
-const base::Feature kBootCompletedBroadcastFeature {
-    "ArcBootCompletedBroadcast", base::FEATURE_ENABLED_BY_DEFAULT
-};
+const base::Feature kBootCompletedBroadcastFeature{
+    "ArcBootCompletedBroadcast", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls experimental Custom Tabs feature for ARC.
 const base::Feature kCustomTabsExperimentFeature{
@@ -19,6 +18,12 @@ const base::Feature kCustomTabsExperimentFeature{
 // Controls whether to handle files with unknown size.
 const base::Feature kDocumentsProviderUnknownSizeFeature{
     "ArcDocumentsProviderUnknownSize", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Controls ARC Nearby Share support.
+// When enabled, Android apps will show the Nearby Share as a share target in
+// its sharesheet.
+const base::Feature kEnableArcNearbyShare{"ArcNearbySharing",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Controls whether to pass throttling notifications to Android side.
 const base::Feature kEnableThrottlingNotification{

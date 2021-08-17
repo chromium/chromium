@@ -2065,6 +2065,49 @@ TEST_F(ArcVmClientAdapterTest, OnConnectionReady_MakeRtVcpuFailureNullReply) {
   EXPECT_EQ(1, GetTestConciergeClient()->make_rt_vcpu_call_count());
 }
 
+TEST_F(ArcVmClientAdapterTest, UpgradeArc_EnableArcNearbyShare_Default) {
+  SetValidUserInfo();
+  StartMiniArc();
+  EXPECT_EQ(boot_notification_server()->connection_count(), 1);
+  EXPECT_TRUE(boot_notification_server()->received_data().empty());
+
+  UpgradeArcWithParams(/*expect_success=*/true, GetPopulatedUpgradeParams());
+  EXPECT_EQ(boot_notification_server()->connection_count(), 2);
+  EXPECT_FALSE(boot_notification_server()->received_data().empty());
+  EXPECT_TRUE(base::Contains(boot_notification_server()->received_data(),
+                             "ro.boot.enable_arc_nearby_share=0"));
+}
+
+TEST_F(ArcVmClientAdapterTest, UpgradeArc_EnableArcNearbyShare_Enabled) {
+  SetValidUserInfo();
+  StartMiniArc();
+  EXPECT_EQ(boot_notification_server()->connection_count(), 1);
+  EXPECT_TRUE(boot_notification_server()->received_data().empty());
+
+  UpgradeParams upgrade_params = GetPopulatedUpgradeParams();
+  upgrade_params.enable_arc_nearby_share = true;
+  UpgradeArcWithParams(/*expect_success=*/true, upgrade_params);
+  EXPECT_EQ(boot_notification_server()->connection_count(), 2);
+  EXPECT_FALSE(boot_notification_server()->received_data().empty());
+  EXPECT_TRUE(base::Contains(boot_notification_server()->received_data(),
+                             "ro.boot.enable_arc_nearby_share=1"));
+}
+
+TEST_F(ArcVmClientAdapterTest, UpgradeArc_EnableArcNearbyShare_Disabled) {
+  SetValidUserInfo();
+  StartMiniArc();
+  EXPECT_EQ(boot_notification_server()->connection_count(), 1);
+  EXPECT_TRUE(boot_notification_server()->received_data().empty());
+
+  UpgradeParams upgrade_params = GetPopulatedUpgradeParams();
+  upgrade_params.enable_arc_nearby_share = false;
+  UpgradeArcWithParams(/*expect_success=*/true, upgrade_params);
+  EXPECT_EQ(boot_notification_server()->connection_count(), 2);
+  EXPECT_FALSE(boot_notification_server()->received_data().empty());
+  EXPECT_TRUE(base::Contains(boot_notification_server()->received_data(),
+                             "ro.boot.enable_arc_nearby_share=0"));
+}
+
 struct DalvikMemoryProfileTestParam {
   // Requested profile.
   StartParams::DalvikMemoryProfile profile;

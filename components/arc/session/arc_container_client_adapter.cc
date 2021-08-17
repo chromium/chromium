@@ -160,6 +160,7 @@ class ArcContainerClientAdapter
     request.set_is_demo_session(params.is_demo_session);
     request.set_demo_session_apps_path(params.demo_session_apps_path.value());
     request.set_locale(params.locale);
+    request.set_enable_arc_nearby_share(params.enable_arc_nearby_share);
     for (const auto& language : params.preferred_languages)
       request.add_preferred_languages(language);
     request.set_management_transition(

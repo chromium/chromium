@@ -166,6 +166,8 @@ std::vector<std::string> GenerateUpgradeProps(
                          upgrade_params.skip_gms_core_cache),
       base::StringPrintf("%s.arc_demo_mode=%d", prefix.c_str(),
                          upgrade_params.is_demo_session),
+      base::StringPrintf("%s.enable_arc_nearby_share=%d", prefix.c_str(),
+                         upgrade_params.enable_arc_nearby_share),
       base::StringPrintf(
           "%s.supervision.transition=%d", prefix.c_str(),
           static_cast<int>(upgrade_params.management_transition)),

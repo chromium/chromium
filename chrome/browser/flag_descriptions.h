@@ -2742,6 +2742,9 @@ extern const char kNearbyKeepAliveFixDescription[];
 extern const char kNearbySharingName[];
 extern const char kNearbySharingDescription[];
 
+extern const char kNearbySharingArcName[];
+extern const char kNearbySharingArcDescription[];
+
 extern const char kNearbySharingBackgroundScanningName[];
 extern const char kNearbySharingBackgroundScanningDescription[];
 

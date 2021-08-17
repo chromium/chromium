@@ -4756,6 +4756,10 @@ const char kNearbySharingName[] = "Nearby Sharing";
 const char kNearbySharingDescription[] =
     "Enables Nearby Sharing for sharing content between devices.";
 
+const char kNearbySharingArcName[] = "ARC Nearby Sharing";
+const char kNearbySharingArcDescription[] =
+    "Enables Nearby Sharing from ARC apps.";
+
 const char kNearbySharingBackgroundScanningName[] =
     "Nearby Sharing Background Scanning";
 const char kNearbySharingBackgroundScanningDescription[] =

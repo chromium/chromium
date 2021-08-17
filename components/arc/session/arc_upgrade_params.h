@@ -88,6 +88,9 @@ struct UpgradeParams {
   // pre-installed.
   // Should be empty if |is_demo_session| is not set.
   base::FilePath demo_session_apps_path;
+
+  // Flag to enable ARC Nearby Share support.
+  bool enable_arc_nearby_share = false;
 };
 
 }  // namespace arc
