@@ -659,8 +659,9 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             mModalDialogManagerSupplier = modalDialogManagerSupplier;
             mUrlCoordinator =
                     new UrlBarCoordinator(urlBar, /*windowDelegate=*/null, actionModeCallback,
-                            /*focusChangeCallback=*/
-                            (unused) -> {}, this, new NoOpkeyboardVisibilityDelegate());
+                            /*focusChangeCallback=*/ (unused) -> {}, this,
+                            new NoOpkeyboardVisibilityDelegate(),
+                            locationBarDataProvider.isIncognito());
             updateUseDarkColors();
             updateSecurityIcon();
             updateProgressBarColors();

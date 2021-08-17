@@ -66,11 +66,13 @@ public class UrlBarCoordinator implements UrlBarEditingTextStateProvider, UrlFoc
      * @param delegate The primary delegate for the UrlBar view.
      * @param keyboardVisibilityDelegate Delegate that allows querying and changing the keyboard's
      *         visibility.
+     * @param isIncognito Whether incognito mode is initially enabled. This can later be changed
+     *         using {@link #setIncognitoColorsEnabled(boolean)}.
      */
     public UrlBarCoordinator(@NonNull UrlBar urlBar, @Nullable WindowDelegate windowDelegate,
             @NonNull ActionMode.Callback actionModeCallback,
             @NonNull Callback<Boolean> focusChangeCallback, @NonNull UrlBarDelegate delegate,
-            @NonNull KeyboardVisibilityDelegate keyboardVisibilityDelegate) {
+            @NonNull KeyboardVisibilityDelegate keyboardVisibilityDelegate, boolean isIncognito) {
         mUrlBar = urlBar;
         mKeyboardVisibilityDelegate = keyboardVisibilityDelegate;
         mWindowDelegate = windowDelegate;
@@ -81,6 +83,7 @@ public class UrlBarCoordinator implements UrlBarEditingTextStateProvider, UrlFoc
                         .with(UrlBarProperties.ACTION_MODE_CALLBACK, actionModeCallback)
                         .with(UrlBarProperties.WINDOW_DELEGATE, windowDelegate)
                         .with(UrlBarProperties.DELEGATE, delegate)
+                        .with(UrlBarProperties.INCOGNITO_COLORS_ENABLED, isIncognito)
                         .build();
         PropertyModelChangeProcessor.create(model, urlBar, UrlBarViewBinder::bind);
 
