@@ -409,12 +409,12 @@ void LoadExternalDisplayMirrorInfo(PrefService* local_state) {
       local_state->Get(prefs::kExternalDisplayMirrorInfo);
   std::set<int64_t> external_display_mirror_info;
   for (const auto& it : pref_data->GetList()) {
-    std::string display_id_str;
-    if (!it.GetAsString(&display_id_str))
+    const std::string* display_id_str = it.GetIfString();
+    if (!display_id_str)
       continue;
 
     int64_t display_id;
-    if (!base::StringToInt64(display_id_str, &display_id))
+    if (!base::StringToInt64(*display_id_str, &display_id))
       continue;
 
     external_display_mirror_info.emplace(display_id);
