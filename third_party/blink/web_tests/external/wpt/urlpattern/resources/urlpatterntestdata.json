@@ -2112,5 +2112,14 @@
   {
     "pattern": [{ "pathname": "/:id/:id" }],
     "expected_obj": "error"
+  },
+  {
+    "pattern": [{ "pathname": "/foo", "baseURL": "" }],
+    "expected_obj": "error"
+  },
+  {
+    "pattern": [ "/foo", "" ],
+    "expected_obj": "error"
   }
+
 ]
