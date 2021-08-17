@@ -19,6 +19,7 @@ namespace cc {
 
 namespace {
 
+constexpr uint64_t kMaxNoUpdateFrameQueueLength = 100;
 constexpr int kBuiltinSequenceNum =
     static_cast<int>(FrameSequenceTrackerType::kMaxType) + 1;
 constexpr int kMaximumJankHistogramIndex = 2 * kBuiltinSequenceNum;
@@ -101,10 +102,17 @@ void JankMetrics::AddSubmitFrame(uint32_t frame_token,
 
 void JankMetrics::AddFrameWithNoUpdate(uint32_t sequence_number,
                                        base::TimeDelta frame_interval) {
+  DCHECK_LE(queue_frame_id_and_interval_.size(), kMaxNoUpdateFrameQueueLength);
+
   // If a frame does not cause an increase in expected frames, it will be
   // recorded here and later subtracted from the presentation interval that
   // includes this frame.
   queue_frame_id_and_interval_.push({sequence_number, frame_interval});
+
+  // This prevents the no-update frame queue from growing infinitely on an idle
+  // page.
+  if (queue_frame_id_and_interval_.size() > kMaxNoUpdateFrameQueueLength)
+    queue_frame_id_and_interval_.pop();
 }
 
 void JankMetrics::AddPresentedFrame(
@@ -141,9 +149,18 @@ void JankMetrics::AddPresentedFrame(
   base::TimeDelta no_update_time;  // The frame time spanned by the frames that
                                    // have no updates
 
-  // Compute the presentation delay contributed by no-update frames that began
-  // BEFORE (i.e. have smaller sequence number than) the current presented
-  // frame.
+  // If |queue_frame_id_and_interval_| contains an excessive amount of no-update
+  // frames, it indicates that the current presented frame is most likely the
+  // first presentation after a long idle period. Such frames are excluded from
+  // jank/stale calculation because they usually have little impact on
+  // smoothness perception, and |queue_frame_id_and_interval_| does not hold
+  // enough data to accurately estimate the effective frame delta.
+  bool will_ignore_current_frame =
+      queue_frame_id_and_interval_.size() == kMaxNoUpdateFrameQueueLength;
+
+  // Compute the presentation delay contributed by no-update frames that
+  // began BEFORE (i.e. have smaller sequence number than) the current
+  // presented frame.
   while (!queue_frame_id_and_interval_.empty() &&
          queue_frame_id_and_interval_.front().first < presented_frame_id) {
     auto id_and_interval = queue_frame_id_and_interval_.front();
@@ -160,10 +177,15 @@ void JankMetrics::AddPresentedFrame(
 
   // Exclude the presentation delay introduced by no-update frames. If this
   // exclusion results in negative frame delta, treat the frame delta as 0.
-  base::TimeDelta current_frame_delta = current_presentation_timestamp -
-                                        last_presentation_timestamp_ -
-                                        no_update_time;
   const base::TimeDelta zero_delta = base::TimeDelta::FromMilliseconds(0);
+
+  // Setting the current_frame_delta to zero conveniently excludes the current
+  // frame to be ignored from jank/stale calculation.
+  base::TimeDelta current_frame_delta = (will_ignore_current_frame)
+                                            ? zero_delta
+                                            : current_presentation_timestamp -
+                                                  last_presentation_timestamp_ -
+                                                  no_update_time;
 
   // Guard against the situation when the physical presentation interval is
   // shorter than |no_update_time|. For example, consider two BeginFrames A and
