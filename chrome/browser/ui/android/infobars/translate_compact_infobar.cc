@@ -160,6 +160,7 @@ void TranslateCompactInfoBar::ApplyBoolTranslateOption(
       delegate->ToggleTranslatableLanguageByPrefs();
       if (value) {
         RemoveSelf();
+        delegate->RevertTranslation();
         delegate->OnInfoBarClosedByUser();
       }
       delegate->ReportUIInteraction(
@@ -170,6 +171,7 @@ void TranslateCompactInfoBar::ApplyBoolTranslateOption(
       action_flags_ |= FLAG_NEVER_SITE;
       delegate->ToggleNeverPromptSite();
       if (value) {
+        delegate->RevertTranslation();
         RemoveSelf();
         delegate->OnInfoBarClosedByUser();
       }
