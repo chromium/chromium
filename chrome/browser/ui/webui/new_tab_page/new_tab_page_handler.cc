@@ -57,6 +57,7 @@
 #include "ui/base/theme_provider.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/native_theme/native_theme.h"
 
 namespace {
 
@@ -366,6 +367,7 @@ NewTabPageHandler::NewTabPageHandler(
   CHECK(promo_service_);
   CHECK(web_contents_);
   ntp_background_service_->AddObserver(this);
+  native_theme_observation_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
   theme_service_observation_.Observe(theme_service_);
   ntp_custom_background_service_observation_.Observe(
       ntp_custom_background_service_);
@@ -809,6 +811,11 @@ void NewTabPageHandler::OnDoodleShared(
 
 void NewTabPageHandler::OnPromoLinkClicked() {
   LogEvent(NTP_MIDDLE_SLOT_PROMO_LINK_CLICKED);
+}
+
+void NewTabPageHandler::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
+  page_->SetTheme(MakeTheme(theme_provider_, theme_service_,
+                            ntp_custom_background_service_));
 }
 
 void NewTabPageHandler::OnThemeChanged() {

@@ -29,6 +29,8 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/native_theme/native_theme.h"
+#include "ui/native_theme/native_theme_observer.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
 class GURL;
@@ -49,6 +51,7 @@ class ThemeProvider;
 }  // namespace ui
 
 class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
+                          public ui::NativeThemeObserver,
                           public ThemeServiceObserver,
                           public NtpCustomBackgroundServiceObserver,
                           public NtpBackgroundServiceObserver,
@@ -116,6 +119,9 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   void OnPromoLinkClicked() override;
 
  private:
+  // ui::NativeThemeObserver:
+  void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
+
   // ThemeServiceObserver:
   void OnThemeChanged() override;
 
@@ -183,6 +189,8 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
       loader_map_;
   std::vector<GetPromoCallback> promo_callbacks_;
   PromoService* promo_service_;
+  base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
+      native_theme_observation_{this};
   base::ScopedObservation<ThemeService, ThemeServiceObserver>
       theme_service_observation_{this};
   base::ScopedObservation<NtpCustomBackgroundService,
