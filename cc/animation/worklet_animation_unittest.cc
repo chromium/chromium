@@ -60,7 +60,6 @@ class MockScrollTimeline : public ScrollTimeline {
       : ScrollTimeline(ElementId(),
                        ScrollTimeline::ScrollDown,
                        std::vector<double>(),
-                       0,
                        AnimationIdProvider::NextTimelineId()) {}
   MOCK_CONST_METHOD2(CurrentTime,
                      absl::optional<base::TimeTicks>(const ScrollTree&, bool));

@@ -1,8 +1,8 @@
 <html class="reftest-wait">
-<title>Setting current time before play should not timeout</title>
+<title>Animation effect delays should be accounted for when using a progress based timeline</title>
 <link rel="help" href="https://drafts.csswg.org/scroll-animations/">
-<meta name="assert" content="Regression test to make sure the ready promise is correctly resolved">
-<link rel="match" href="animation-ref.html">
+<meta name="assert" content="Effect delay should be accounted for by progress based animations">
+<link rel="match" href="progress-based-effect-delay-ref.html">
 
 <script src="/web-animations/testcommon.js"></script>
 <script src="/common/reftest-wait.js"></script>
@@ -36,9 +36,8 @@
 <div id="box"></div>
 <div id="covered"></div>
 <div id="scroller">
-  <div id="contents"></div>
+  <div id="contents"><p>Scrolling Contents</p></div>
 </div>
-
 <script>
   const box = document.getElementById('box');
   const effect = new KeyframeEffect(box,
@@ -46,7 +45,8 @@
     { transform: 'translateY(0)', opacity: 1},
     { transform: 'translateY(200px)', opacity: 0}
     ], {
-      duration: 1000,
+      delay: 1000,
+      duration: 1000
     }
   );
 
@@ -54,16 +54,16 @@
   const timeline = new ScrollTimeline(
       { scrollSource: scroller, orientation: 'block' });
   const animation = new Animation(effect, timeline);
-  animation.currentTime = CSS.percent(0);
+
   animation.play();
 
   animation.ready.then(() => {
     // Move the scroller to the halfway point.
     const maxScroll = scroller.scrollHeight - scroller.clientHeight;
-    scroller.scrollTop = 0.5 * maxScroll;
+    scroller.scrollTop = 0.75 * maxScroll;
 
     waitForAnimationFrames(2).then(_ => {
-      takeScreenshot();
+        takeScreenshot();
     });
   });
 </script>

@@ -32,8 +32,7 @@ scoped_refptr<CompositorScrollTimeline> ToCompositorScrollTimeline(
       scroll_timeline->GetOrientation(), box ? box->Style() : nullptr);
 
   return CompositorScrollTimeline::Create(
-      element_id, orientation, scroll_timeline->GetResolvedScrollOffsets(),
-      scroll_timeline->GetTimeRange());
+      element_id, orientation, scroll_timeline->GetResolvedScrollOffsets());
 }
 
 absl::optional<CompositorElementId> GetCompositorScrollElementId(

@@ -260,7 +260,8 @@ bool Animation1TimeEquals20(MutatorInputState* input) {
   return in && in->added_and_updated_animations.size() == 1 &&
          in->added_and_updated_animations[0]
                  .worklet_animation_id.animation_id == 22 &&
-         in->added_and_updated_animations[0].current_time == 20;
+         in->added_and_updated_animations[0].current_time ==
+             0.2 * ScrollTimeline::kScrollTimelineDurationMs;
 }
 
 void CreateScrollingNodeForElement(ElementId element_id,
@@ -331,12 +332,12 @@ TEST_F(AnimationHostTest, LayerTreeMutatorUpdateReflectsScrollAnimations) {
   host_impl_->AddToTicking(mock_scroll_animation);
 
   // Create scroll timeline that links scroll animation and worklet animation
-  // together. Use timerange so that we have 1:1 time & scroll mapping.
+  // together.
   std::vector<double> scroll_offsets;
   scroll_offsets.push_back(0);
   scroll_offsets.push_back(100);
   auto scroll_timeline = ScrollTimeline::Create(
-      element_id, ScrollTimeline::ScrollDown, scroll_offsets, 100);
+      element_id, ScrollTimeline::ScrollDown, scroll_offsets);
 
   // Create a worklet animation that is bound to the scroll timeline.
   scoped_refptr<WorkletAnimation> worklet_animation(
@@ -379,7 +380,7 @@ TEST_F(AnimationHostTest, TickScrollLinkedAnimation) {
   scroll_offsets.push_back(0);
   scroll_offsets.push_back(100);
   auto scroll_timeline = ScrollTimeline::Create(
-      element_id_, ScrollTimeline::ScrollDown, scroll_offsets, 1000);
+      element_id_, ScrollTimeline::ScrollDown, scroll_offsets);
 
   int animation_id = 11;
   // Create an animation that is bound to the scroll timeline.
@@ -404,8 +405,8 @@ TEST_F(AnimationHostTest, TickScrollLinkedAnimation) {
   EXPECT_EQ(keyframe_model->run_state(), KeyframeModel::STARTING);
   double tick_time = (scroll_timeline->CurrentTime(scroll_tree, false).value() -
                       base::TimeTicks())
-                         .InSecondsF();
-  EXPECT_EQ(tick_time, 0.2);
+                         .InMillisecondsF();
+  EXPECT_EQ(tick_time, 0.2 * ScrollTimeline::kScrollTimelineDurationMs);
 
   scroll_timeline->DetachAnimation(animation);
   EXPECT_FALSE(host_impl_->TickAnimations(base::TimeTicks(),
@@ -458,7 +459,7 @@ TEST_F(AnimationHostTest, ScrollTimelineOffsetUpdatedByScrollAnimation) {
   scroll_offsets.push_back(100);
 
   auto scroll_timeline = ScrollTimeline::Create(
-      element_id_, ScrollTimeline::ScrollDown, scroll_offsets, 1000);
+      element_id_, ScrollTimeline::ScrollDown, scroll_offsets);
 
   host_impl_->TickAnimations(base::TimeTicks(), property_trees.scroll_tree,
                              false);
@@ -466,8 +467,8 @@ TEST_F(AnimationHostTest, ScrollTimelineOffsetUpdatedByScrollAnimation) {
   double tick_time =
       (scroll_timeline->CurrentTime(property_trees.scroll_tree, false).value() -
        base::TimeTicks())
-          .InSecondsF();
-  EXPECT_EQ(tick_time, 0.2);
+          .InMillisecondsF();
+  EXPECT_EQ(tick_time, 0.2 * ScrollTimeline::kScrollTimelineDurationMs);
 }
 
 }  // namespace

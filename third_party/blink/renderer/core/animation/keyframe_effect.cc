@@ -341,8 +341,8 @@ KeyframeEffect::CheckCanStartAnimationOnCompositor(
       reasons |= CompositorAnimations::kTargetHasMultipleTransformProperties;
 
     reasons |= CompositorAnimations::CheckCanStartAnimationOnCompositor(
-        SpecifiedTiming(), *effect_target_, GetAnimation(), *Model(),
-        paint_artifact_compositor, animation_playback_rate,
+        SpecifiedTiming(), NormalizedTiming(), *effect_target_, GetAnimation(),
+        *Model(), paint_artifact_compositor, animation_playback_rate,
         unsupported_properties);
   }
 
@@ -368,7 +368,7 @@ void KeyframeEffect::StartAnimationOnCompositor(
 
   CompositorAnimations::StartAnimationOnCompositor(
       *effect_target_, group, start_time, time_offset, SpecifiedTiming(),
-      GetAnimation(), *compositor_animation, *Model(),
+      NormalizedTiming(), GetAnimation(), *compositor_animation, *Model(),
       compositor_keyframe_model_ids_, animation_playback_rate);
   DCHECK(!compositor_keyframe_model_ids_.IsEmpty());
 }

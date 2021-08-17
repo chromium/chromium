@@ -40,13 +40,11 @@ template double ComputeProgress<std::vector<double>>(
 ScrollTimeline::ScrollTimeline(absl::optional<ElementId> scroller_id,
                                ScrollDirection direction,
                                const std::vector<double> scroll_offsets,
-                               double time_range,
                                int animation_timeline_id)
     : AnimationTimeline(animation_timeline_id),
       pending_id_(scroller_id),
       direction_(direction),
-      scroll_offsets_(scroll_offsets),
-      time_range_(time_range) {
+      scroll_offsets_(scroll_offsets) {
   DCHECK(ValidateScrollOffsets(scroll_offsets_));
 }
 
@@ -55,16 +53,15 @@ ScrollTimeline::~ScrollTimeline() = default;
 scoped_refptr<ScrollTimeline> ScrollTimeline::Create(
     absl::optional<ElementId> scroller_id,
     ScrollTimeline::ScrollDirection direction,
-    const std::vector<double> scroll_offsets,
-    double time_range) {
+    const std::vector<double> scroll_offsets) {
   return base::WrapRefCounted(
-      new ScrollTimeline(scroller_id, direction, scroll_offsets, time_range,
+      new ScrollTimeline(scroller_id, direction, scroll_offsets,
                          AnimationIdProvider::NextTimelineId()));
 }
 
 scoped_refptr<AnimationTimeline> ScrollTimeline::CreateImplInstance() const {
-  return base::WrapRefCounted(new ScrollTimeline(
-      pending_id_, direction_, scroll_offsets_, time_range_, id()));
+  return base::WrapRefCounted(
+      new ScrollTimeline(pending_id_, direction_, scroll_offsets_, id()));
 }
 
 bool ScrollTimeline::IsActive(const ScrollTree& scroll_tree,
@@ -135,18 +132,19 @@ absl::optional<base::TimeTicks> ScrollTimeline::CurrentTime(
 
   // 4. If current scroll offset is greater than or equal to endScrollOffset:
   if (current_offset >= resolved_end_scroll_offset) {
-    return base::TimeTicks() + base::TimeDelta::FromMillisecondsD(time_range_);
+    return base::TimeTicks() +
+           base::TimeDelta::FromMillisecondsD(kScrollTimelineDurationMs);
   }
 
   // Otherwise,
   // 5.1 Let progress be a result of applying calculate scroll timeline progress
   // procedure for current scroll offset.
   // 5.2 The current time is the result of evaluating the following expression:
-  //                progress × effective time range
+  //                progress × timeline duration to get the percentage
   return base::TimeTicks() + base::TimeDelta::FromMillisecondsD(
                                  ComputeProgress<std::vector<double>>(
                                      current_offset, scroll_offsets_) *
-                                 time_range_);
+                                 kScrollTimelineDurationMs);
 }
 
 void ScrollTimeline::PushPropertiesTo(AnimationTimeline* impl_timeline) {

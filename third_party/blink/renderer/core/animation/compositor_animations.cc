@@ -238,6 +238,7 @@ CompositorAnimations::CompositorElementNamespaceForProperty(
 CompositorAnimations::FailureReasons
 CompositorAnimations::CheckCanStartEffectOnCompositor(
     const Timing& timing,
+    const Timing::NormalizedTiming& normalized_timing,
     const Element& target_element,
     const Animation* animation_to_add,
     const EffectModel& effect,
@@ -441,7 +442,7 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
   base::TimeDelta time_offset =
       animation_to_add ? animation_to_add->ComputeCompositorTimeOffset()
                        : base::TimeDelta();
-  if (!ConvertTimingForCompositor(timing, time_offset, out,
+  if (!ConvertTimingForCompositor(timing, normalized_timing, time_offset, out,
                                   animation_playback_rate)) {
     reasons |= kEffectHasUnsupportedTimingParameters;
   }
@@ -551,6 +552,7 @@ CompositorAnimations::CheckCanStartElementOnCompositor(
 CompositorAnimations::FailureReasons
 CompositorAnimations::CheckCanStartAnimationOnCompositor(
     const Timing& timing,
+    const Timing::NormalizedTiming& normalized_timing,
     const Element& target_element,
     const Animation* animation_to_add,
     const EffectModel& effect,
@@ -558,7 +560,7 @@ CompositorAnimations::CheckCanStartAnimationOnCompositor(
     double animation_playback_rate,
     PropertyHandleSet* unsupported_properties) {
   FailureReasons reasons = CheckCanStartEffectOnCompositor(
-      timing, target_element, animation_to_add, effect,
+      timing, normalized_timing, target_element, animation_to_add, effect,
       paint_artifact_compositor, animation_playback_rate,
       unsupported_properties);
   return reasons | CheckCanStartElementOnCompositor(target_element, effect);
@@ -609,6 +611,7 @@ void CompositorAnimations::StartAnimationOnCompositor(
     absl::optional<double> start_time,
     base::TimeDelta time_offset,
     const Timing& timing,
+    const Timing::NormalizedTiming& normalized_timing,
     const Animation* animation,
     CompositorAnimation& compositor_animation,
     const EffectModel& effect,
@@ -617,17 +620,17 @@ void CompositorAnimations::StartAnimationOnCompositor(
   DCHECK(started_keyframe_model_ids.IsEmpty());
   // TODO(petermayo): Pass the PaintArtifactCompositor before
   // BlinkGenPropertyTrees is always on.
-  DCHECK_EQ(
-      CheckCanStartAnimationOnCompositor(timing, element, animation, effect,
-                                         nullptr, animation_playback_rate),
-      kNoFailure);
+  DCHECK_EQ(CheckCanStartAnimationOnCompositor(
+                timing, normalized_timing, element, animation, effect, nullptr,
+                animation_playback_rate),
+            kNoFailure);
 
   const auto& keyframe_effect = To<KeyframeEffectModelBase>(effect);
 
   Vector<std::unique_ptr<CompositorKeyframeModel>> keyframe_models;
-  GetAnimationOnCompositor(element, timing, group, start_time, time_offset,
-                           keyframe_effect, keyframe_models,
-                           animation_playback_rate);
+  GetAnimationOnCompositor(element, timing, normalized_timing, group,
+                           start_time, time_offset, keyframe_effect,
+                           keyframe_models, animation_playback_rate);
   DCHECK(!keyframe_models.IsEmpty());
   for (auto& compositor_keyframe_model : keyframe_models) {
     int id = compositor_keyframe_model->Id();
@@ -687,6 +690,7 @@ void CompositorAnimations::AttachCompositedLayers(
 
 bool CompositorAnimations::ConvertTimingForCompositor(
     const Timing& timing,
+    const Timing::NormalizedTiming& normalized_timing,
     base::TimeDelta time_offset,
     CompositorTiming& out,
     double animation_playback_rate) {
@@ -696,18 +700,19 @@ bool CompositorAnimations::ConvertTimingForCompositor(
     return false;
 
   // FIXME: Compositor does not know anything about endDelay.
-  if (!timing.end_delay.is_zero())
+  if (!normalized_timing.end_delay.is_zero())
     return false;
 
-  if (!timing.iteration_duration || !timing.iteration_count ||
-      timing.iteration_duration->is_zero() ||
-      timing.iteration_duration->is_max())
+  if (!timing.iteration_count ||
+      normalized_timing.iteration_duration.is_zero() ||
+      normalized_timing.iteration_duration.is_max())
     return false;
 
   // Compositor's time offset is positive for seeking into the animation.
   DCHECK(animation_playback_rate);
-  double delay =
-      animation_playback_rate > 0 ? timing.start_delay.InSecondsF() : 0;
+  double delay = animation_playback_rate > 0
+                     ? normalized_timing.start_delay.InSecondsF()
+                     : 0;
 
   base::TimeDelta scaled_delay =
       base::TimeDelta::FromSecondsD(delay / animation_playback_rate);
@@ -729,7 +734,7 @@ bool CompositorAnimations::ConvertTimingForCompositor(
   out.adjusted_iteration_count = std::isfinite(timing.iteration_count)
                                      ? timing.iteration_count
                                      : std::numeric_limits<double>::infinity();
-  out.scaled_duration = timing.iteration_duration.value();
+  out.scaled_duration = normalized_timing.iteration_duration;
   out.direction = timing.direction;
 
   out.playback_rate = animation_playback_rate;
@@ -823,6 +828,7 @@ void AddKeyframesToCurve(PlatformAnimationCurveType& curve,
 void CompositorAnimations::GetAnimationOnCompositor(
     const Element& target_element,
     const Timing& timing,
+    const Timing::NormalizedTiming& normalized_timing,
     int group,
     absl::optional<double> start_time,
     base::TimeDelta time_offset,
@@ -831,8 +837,9 @@ void CompositorAnimations::GetAnimationOnCompositor(
     double animation_playback_rate) {
   DCHECK(keyframe_models.IsEmpty());
   CompositorTiming compositor_timing;
-  bool timing_valid = ConvertTimingForCompositor(
-      timing, time_offset, compositor_timing, animation_playback_rate);
+  bool timing_valid =
+      ConvertTimingForCompositor(timing, normalized_timing, time_offset,
+                                 compositor_timing, animation_playback_rate);
   ALLOW_UNUSED_LOCAL(timing_valid);
 
   PropertyHandleSet properties = effect.Properties();

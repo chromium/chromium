@@ -62,10 +62,6 @@ TEST_F(ScrollTimelineUtilTest, ToCompositorScrollTimeline) {
 
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
   options->setScrollSource(scroller);
-  const double time_range = 100;
-  options->setTimeRange(
-      MakeGarbageCollected<V8UnionDoubleOrScrollTimelineAutoKeyword>(
-          time_range));
   options->setOrientation("block");
   options->setScrollOffsets({OffsetFromString(GetDocument(), "50px"),
                              OffsetFromString(GetDocument(), "auto")});
@@ -76,7 +72,6 @@ TEST_F(ScrollTimelineUtilTest, ToCompositorScrollTimeline) {
       ToCompositorScrollTimeline(timeline);
   EXPECT_EQ(compositor_timeline->GetActiveIdForTest(), absl::nullopt);
   EXPECT_EQ(compositor_timeline->GetPendingIdForTest(), element_id);
-  EXPECT_EQ(compositor_timeline->GetTimeRangeForTest(), time_range);
   EXPECT_EQ(compositor_timeline->GetDirectionForTest(),
             CompositorScrollTimeline::ScrollDown);
   EXPECT_EQ(compositor_timeline->GetStartScrollOffsetForTest(), 50);
