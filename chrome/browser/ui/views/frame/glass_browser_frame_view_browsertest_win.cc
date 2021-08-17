@@ -128,6 +128,21 @@ IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewTest, RTLTopRightHitTest) {
             HTCAPTION);
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewTest, Fullscreen) {
+  if (!InstallAndLaunchWebApp())
+    return;
+
+  glass_frame_view_->frame()->SetFullscreen(true);
+  browser_view_->GetWidget()->LayoutRootViewIfNecessary();
+
+  // Verify that all children except the ClientView are hidden when the window
+  // is fullscreened.
+  for (views::View* child : glass_frame_view_->children()) {
+    EXPECT_EQ(views::IsViewClass<views::ClientView>(child),
+              child->GetVisible());
+  }
+}
+
 class WebAppGlassBrowserFrameViewWindowControlsOverlayTest
     : public InProcessBrowserTest {
  public:

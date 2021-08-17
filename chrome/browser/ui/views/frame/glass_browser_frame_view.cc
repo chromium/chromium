@@ -738,7 +738,7 @@ void GlassBrowserFrameView::LayoutCaptionButtons() {
     return;
   }
 
-  caption_button_container_->SetVisible(true);
+  caption_button_container_->SetVisible(!frame()->IsFullscreen());
 
   const gfx::Size preferred_size =
       caption_button_container_->GetPreferredSize();

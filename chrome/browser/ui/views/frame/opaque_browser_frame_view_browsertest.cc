@@ -258,6 +258,21 @@ IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewTest, OriginTextVisibility) {
   }
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewTest, Fullscreen) {
+  if (!InstallAndLaunchWebApp())
+    return;
+
+  opaque_browser_frame_view_->frame()->SetFullscreen(true);
+  browser_view_->GetWidget()->LayoutRootViewIfNecessary();
+
+  // Verify that all children except the ClientView are hidden when the window
+  // is fullscreened.
+  for (views::View* child : opaque_browser_frame_view_->children()) {
+    EXPECT_EQ(views::IsViewClass<views::ClientView>(child),
+              child->GetVisible());
+  }
+}
+
 class WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest
     : public InProcessBrowserTest {
  public:
