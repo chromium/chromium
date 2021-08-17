@@ -1,7 +1,3 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 /**
  * This file co-works with a html file and utils.js to test a promise that
  * should be deferred during prerendering.
