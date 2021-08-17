@@ -205,7 +205,6 @@ bool FindRegionInOpenFile(int fd, uintptr_t* out_address, size_t* out_size) {
     pos = kMaxLineLength;
     bytes_requested = kReadSize;
   }
-  return false;
 }
 
 }  // namespace

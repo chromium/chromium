@@ -40,8 +40,9 @@ bool CanShowAndroidLowMemoryDevicePromo() {
          base::FeatureList::IsEnabled(
              data_reduction_proxy::features::
                  kDataReductionProxyLowMemoryDevicePromo);
-#endif
+#else
   return false;
+#endif
 }
 
 }  // namespace

@@ -336,7 +336,6 @@ TEST(MediaCodecBridgeTest, DoNormal) {
     switch (status) {
       case MEDIA_CODEC_TRY_AGAIN_LATER:
         FAIL();
-        return;
 
       case MEDIA_CODEC_OUTPUT_FORMAT_CHANGED:
         continue;

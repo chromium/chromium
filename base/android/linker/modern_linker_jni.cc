@@ -302,7 +302,6 @@ bool NativeLibInfo::LoadWithDlopenExt(const String& path, void** handle) {
     // build misconfiguration.
     LOG_ERROR("Could not find RELRO in the loaded library: %s", path.c_str());
     abort();
-    return false;
   }
 
   // Release the unused parts of the memory reservation.
