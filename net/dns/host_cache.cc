@@ -71,9 +71,8 @@ bool AddressListFromListValue(const base::Value* value,
   out_list->emplace();
   for (const auto& it : value->GetList()) {
     IPAddress address;
-    std::string addr_string;
-    if (!it.GetAsString(&addr_string) ||
-        !address.AssignFromIPLiteral(addr_string)) {
+    const std::string* addr_string = it.GetIfString();
+    if (!addr_string || !address.AssignFromIPLiteral(*addr_string)) {
       return false;
     }
     out_list->value().push_back(IPEndPoint(address, 0));
