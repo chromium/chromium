@@ -10376,6 +10376,7 @@ void RenderFrameHostImpl::SendCommitNavigation(
   IncreaseCommitNavigationCounter();
   mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host;
   mojom::CookieManagerInfoPtr cookie_manager_info;
+  mojom::StorageInfoPtr storage_info;
   if (base::FeatureList::IsEnabled(
           features::kNavigationThreadingOptimizations)) {
     CreateCodeCacheHost(code_cache_host.InitWithNewPipeAndPassReceiver());
@@ -10396,6 +10397,32 @@ void RenderFrameHostImpl::SendCommitNavigation(
           cookie_manager_info->cookie_manager.InitWithNewPipeAndPassReceiver(),
           navigation_request->isolation_info_for_subresources(),
           origin_to_commit);
+
+      // Some tests need the StorageArea interfaces to come through DomStorage,
+      // so ignore the optimizations in those cases.
+      if (!navigation_request->anonymous() &&
+          !RenderProcessHostImpl::HasDomStorageBinderForTesting()) {
+        storage_info = mojom::StorageInfo::New();
+        storage_info->storage_key = blink::StorageKey(origin_to_commit);
+        // Bind local storage and session storage areas.
+        auto* partition =
+            static_cast<StoragePartitionImpl*>(GetStoragePartition());
+        int process_id = GetProcess()->GetID();
+        partition->OpenLocalStorageForProcess(
+            process_id, storage_info->storage_key,
+            storage_info->local_storage_area.InitWithNewPipeAndPassReceiver());
+
+        // Session storage must match the default namespace.
+        const std::string& namespace_id =
+            frame_tree()
+                ->controller()
+                .GetSessionStorageNamespace(GetSiteInstance()->GetSiteInfo())
+                ->id();
+        partition->BindSessionStorageAreaForProcess(
+            process_id, storage_info->storage_key, namespace_id,
+            storage_info->session_storage_area
+                .InitWithNewPipeAndPassReceiver());
+      }
     }
   }
   navigation_client->CommitNavigation(
@@ -10406,7 +10433,7 @@ void RenderFrameHostImpl::SendCommitNavigation(
       std::move(controller), std::move(container_info),
       std::move(prefetch_loader_factory), devtools_navigation_token,
       std::move(policy_container), std::move(code_cache_host),
-      std::move(cookie_manager_info),
+      std::move(cookie_manager_info), std::move(storage_info),
       BuildCommitNavigationCallback(navigation_request));
 }
 

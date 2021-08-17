@@ -332,6 +332,12 @@ class CORE_EXPORT WebLocalFrameImpl final
   void UpdateCurrentHistoryItem() override;
   PageState CurrentHistoryItemToPageState() override;
   const WebHistoryItem& GetCurrentHistoryItem() const override;
+  void SetLocalStorageArea(
+      CrossVariantMojoRemote<mojom::StorageAreaInterfaceBase>
+          local_storage_area) override;
+  void SetSessionStorageArea(
+      CrossVariantMojoRemote<mojom::StorageAreaInterfaceBase>
+          session_storage_area) override;
 
   // WebNavigationControl overrides:
   bool DispatchBeforeUnloadEvent(bool) override;

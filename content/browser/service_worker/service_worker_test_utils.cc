@@ -88,6 +88,7 @@ class FakeNavigationClient : public mojom::NavigationClient {
       blink::mojom::PolicyContainerPtr policy_container,
       mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
       mojom::CookieManagerInfoPtr cookie_manager_info,
+      mojom::StorageInfoPtr storage_info,
       CommitNavigationCallback callback) override {
     std::move(on_received_callback_).Run(std::move(container_info));
     std::move(callback).Run(MinimalDidCommitNavigationLoadParams(), nullptr);
@@ -248,7 +249,7 @@ void ServiceWorkerRemoteContainerEndpoint::BindForWindow(
       mojo::ScopedDataPipeConsumerHandle(), nullptr, nullptr, absl::nullopt,
       nullptr, std::move(info), mojo::NullRemote(),
       base::UnguessableToken::Create(), CreateStubPolicyContainer(),
-      mojo::NullRemote(), nullptr,
+      mojo::NullRemote(), nullptr, nullptr,
       base::BindOnce(
           [](mojom::DidCommitProvisionalLoadParamsPtr validated_params,
              mojom::DidCommitProvisionalLoadInterfaceParamsPtr

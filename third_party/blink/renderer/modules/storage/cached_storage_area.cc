@@ -190,14 +190,15 @@ CachedStorageArea::CachedStorageArea(
     scoped_refptr<const SecurityOrigin> origin,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     StorageNamespace* storage_namespace,
-    bool is_session_storage_for_prerendering)
+    bool is_session_storage_for_prerendering,
+    mojo::PendingRemote<mojom::blink::StorageArea> storage_area)
     : type_(type),
       origin_(std::move(origin)),
       storage_namespace_(storage_namespace),
       is_session_storage_for_prerendering_(is_session_storage_for_prerendering),
       task_runner_(std::move(task_runner)),
       areas_(MakeGarbageCollected<HeapHashMap<WeakMember<Source>, String>>()) {
-  BindStorageArea();
+  BindStorageArea(std::move(storage_area));
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       this, "DOMStorage",
       ThreadScheduler::Current()->DeprecatedDefaultTaskRunner());

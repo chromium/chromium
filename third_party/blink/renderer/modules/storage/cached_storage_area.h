@@ -60,11 +60,13 @@ class MODULES_EXPORT CachedStorageArea
     kLocalStorage,
   };
 
-  CachedStorageArea(AreaType type,
-                    scoped_refptr<const SecurityOrigin> origin,
-                    scoped_refptr<base::SingleThreadTaskRunner> ipc_runner,
-                    StorageNamespace* storage_namespace,
-                    bool is_session_storage_for_prerendering);
+  CachedStorageArea(
+      AreaType type,
+      scoped_refptr<const SecurityOrigin> origin,
+      scoped_refptr<base::SingleThreadTaskRunner> ipc_runner,
+      StorageNamespace* storage_namespace,
+      bool is_session_storage_for_prerendering,
+      mojo::PendingRemote<mojom::blink::StorageArea> storage_area = {});
 
   // These correspond to blink::Storage.
   unsigned GetLength();

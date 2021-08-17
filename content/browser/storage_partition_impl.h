@@ -386,6 +386,16 @@ class CONTENT_EXPORT StoragePartitionImpl
   // each callback a suitable error response.
   void OnLocalTrustTokenFulfillerConnectionError();
 
+  void OpenLocalStorageForProcess(
+      int process_id,
+      const blink::StorageKey& storage_key,
+      mojo::PendingReceiver<blink::mojom::StorageArea> receiver);
+  void BindSessionStorageAreaForProcess(
+      int process_id,
+      const blink::StorageKey& storage_key,
+      const std::string& namespace_id,
+      mojo::PendingReceiver<blink::mojom::StorageArea> receiver);
+
  private:
   class DataDeletionHelper;
   class QuotaManagedDataDeletionHelper;

@@ -151,6 +151,7 @@
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
+#include "third_party/blink/public/mojom/dom_storage/storage_area.mojom.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom.h"
@@ -2631,6 +2632,7 @@ void RenderFrameImpl::CommitNavigation(
     blink::mojom::PolicyContainerPtr policy_container,
     mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
     mojom::CookieManagerInfoPtr cookie_manager_info,
+    mojom::StorageInfoPtr storage_info,
     mojom::NavigationClient::CommitNavigationCallback commit_callback) {
   DCHECK(navigation_client_impl_);
   DCHECK(!blink::IsRendererDebugURL(common_params->url));
@@ -2674,7 +2676,8 @@ void RenderFrameImpl::CommitNavigation(
       std::move(subresource_loader_factories), std::move(subresource_overrides),
       std::move(controller_service_worker_info), std::move(container_info),
       std::move(prefetch_loader_factory), std::move(code_cache_host),
-      std::move(cookie_manager_info), std::move(document_state));
+      std::move(cookie_manager_info), std::move(storage_info),
+      std::move(document_state));
 
   // Perform a "loadDataWithBaseURL" navigation. This is different from a normal
   // data: URL navigation in various ways:
@@ -2811,6 +2814,7 @@ void RenderFrameImpl::CommitNavigationWithParams(
         prefetch_loader_factory,
     mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
     mojom::CookieManagerInfoPtr cookie_manager_info,
+    mojom::StorageInfoPtr storage_info,
     std::unique_ptr<DocumentState> document_state,
     std::unique_ptr<WebNavigationParams> navigation_params) {
   // Here, creator means either the parent frame or the window opener.
@@ -2931,6 +2935,7 @@ void RenderFrameImpl::CommitNavigationWithParams(
   pending_loader_factories_ = std::move(new_loader_factories);
   pending_code_cache_host_ = std::move(code_cache_host);
   pending_cookie_manager_info_ = std::move(cookie_manager_info);
+  pending_storage_info_ = std::move(storage_info);
 
   base::WeakPtr<RenderFrameImpl> weak_self = weak_factory_.GetWeakPtr();
   frame_->CommitNavigation(std::move(navigation_params),
@@ -2942,6 +2947,7 @@ void RenderFrameImpl::CommitNavigationWithParams(
   pending_loader_factories_ = nullptr;
   pending_code_cache_host_.reset();
   pending_cookie_manager_info_.reset();
+  pending_storage_info_.reset();
 }
 
 void RenderFrameImpl::CommitFailedNavigation(
@@ -3888,6 +3894,21 @@ void RenderFrameImpl::DidCommitNavigation(
           frame_->GetDocument().GetSecurityOrigin()) {
     frame_->GetDocument().SetCookieManager(
         std::move(pending_cookie_manager_info_->cookie_manager));
+  }
+
+  // TODO(crbug.com/888079): Turn this into a DCHECK for origin equality when
+  // the linked bug is fixed. Currently sometimes the browser and renderer
+  // disagree on the origin during commit navigation.
+  if (pending_storage_info_ && pending_storage_info_->storage_key.origin() ==
+                                   frame_->GetDocument().GetSecurityOrigin()) {
+    if (pending_storage_info_->local_storage_area) {
+      frame_->SetLocalStorageArea(
+          std::move(pending_storage_info_->local_storage_area));
+    }
+    if (pending_storage_info_->session_storage_area) {
+      frame_->SetSessionStorageArea(
+          std::move(pending_storage_info_->session_storage_area));
+    }
   }
 
   DidCommitNavigationInternal(

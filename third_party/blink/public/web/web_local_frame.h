@@ -27,6 +27,7 @@
 #include "third_party/blink/public/mojom/commit_result/commit_result.mojom-shared.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-shared.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-shared.h"
+#include "third_party/blink/public/mojom/dom_storage/storage_area.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/media_player_action.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-shared.h"
@@ -844,6 +845,20 @@ class WebLocalFrame : public WebFrame {
   virtual const WebHistoryItem& GetCurrentHistoryItem() const = 0;
   // Reset TextFinder state for the web test runner in between two tests.
   virtual void ClearActiveFindMatchForTesting() = 0;
+
+  // Sets a local storage area which can be used for this frame. This storage
+  // area is ignored if a cached storage area already exists for the storage
+  // key.
+  virtual void SetLocalStorageArea(
+      CrossVariantMojoRemote<mojom::StorageAreaInterfaceBase>
+          local_storage_area) = 0;
+
+  // Sets a session storage area which can be used for this frame. This storage
+  // area is ignored if a cached storage area already exists for the storage
+  // key and namespace.
+  virtual void SetSessionStorageArea(
+      CrossVariantMojoRemote<mojom::StorageAreaInterfaceBase>
+          session_storage_area) = 0;
 
  protected:
   explicit WebLocalFrame(mojom::TreeScopeType scope,

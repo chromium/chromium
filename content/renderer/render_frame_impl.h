@@ -73,6 +73,7 @@
 #include "third_party/blink/public/common/permissions_policy/document_policy.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/unique_name/unique_name_helper.h"
 #include "third_party/blink/public/mojom/autoplay/autoplay.mojom.h"
@@ -442,6 +443,7 @@ class CONTENT_EXPORT RenderFrameImpl
       blink::mojom::PolicyContainerPtr policy_container,
       mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
       mojom::CookieManagerInfoPtr cookie_manager_info,
+      mojom::StorageInfoPtr storage_info,
       mojom::NavigationClient::CommitNavigationCallback commit_callback);
   void CommitFailedNavigation(
       blink::mojom::CommonNavigationParamsPtr common_params,
@@ -949,6 +951,7 @@ class CONTENT_EXPORT RenderFrameImpl
           prefetch_loader_factory,
       mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
       mojom::CookieManagerInfoPtr cookie_manager_info,
+      mojom::StorageInfoPtr storage_info,
       std::unique_ptr<DocumentState> document_state,
       std::unique_ptr<blink::WebNavigationParams> navigation_params);
 
@@ -1350,6 +1353,7 @@ class CONTENT_EXPORT RenderFrameImpl
 
   mojo::PendingRemote<blink::mojom::CodeCacheHost> pending_code_cache_host_;
   mojom::CookieManagerInfoPtr pending_cookie_manager_info_;
+  mojom::StorageInfoPtr pending_storage_info_;
 
   scoped_refptr<blink::WebFrameRequestBlocker> frame_request_blocker_;
 

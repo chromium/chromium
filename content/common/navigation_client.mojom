@@ -8,24 +8,26 @@ import "content/common/frame_messages.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/network/public/mojom/host_resolver.mojom";
+import "services/network/public/mojom/restricted_cookie_manager.mojom";
 import "services/network/public/mojom/url_loader.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
-import "services/network/public/mojom/restricted_cookie_manager.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
 import "third_party/blink/public/mojom/commit_result/commit_result.mojom";
+import "third_party/blink/public/mojom/dom_storage/storage_area.mojom";
+import "third_party/blink/public/mojom/frame/policy_container.mojom";
+import "third_party/blink/public/mojom/loader/code_cache.mojom";
+import "third_party/blink/public/mojom/loader/referrer.mojom";
+import "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom";
+import "third_party/blink/public/mojom/loader/url_loader_factory_bundle.mojom";
 import "third_party/blink/public/mojom/navigation/navigation_params.mojom";
 import "third_party/blink/public/mojom/permissions_policy/document_policy_feature.mojom";
 import "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom";
 import "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom";
 import "third_party/blink/public/mojom/permissions_policy/policy_value.mojom";
-import "third_party/blink/public/mojom/frame/policy_container.mojom";
-import "third_party/blink/public/mojom/loader/referrer.mojom";
-import "third_party/blink/public/mojom/loader/code_cache.mojom";
-import "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom";
-import "third_party/blink/public/mojom/loader/url_loader_factory_bundle.mojom";
 import "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom";
 import "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_container.mojom";
+import "third_party/blink/public/mojom/storage_key/storage_key.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
@@ -191,6 +193,17 @@ struct CookieManagerInfo {
   pending_remote<network.mojom.RestrictedCookieManager> cookie_manager;
 };
 
+struct StorageInfo {
+  // The storage key the storage areas are associated with.
+  blink.mojom.StorageKey storage_key;
+
+  // A storage area which can be used for local storage.
+  pending_remote<blink.mojom.StorageArea>? local_storage_area;
+
+  // A storage area which can be used for session storage.
+  pending_remote<blink.mojom.StorageArea>? session_storage_area;
+};
+
 interface NavigationClient {
   // Tells the renderer that a navigation is ready to commit.
   //
@@ -228,11 +241,11 @@ interface NavigationClient {
   // TODO(crbug.com/783506): Replace devtools navigation token with the generic
   // navigation token that can be passed from renderer to the browser.
   //
-  // |code_cache_host| and |cookie_manager_info| are sent as optimizations so
-  // the renderer doesn't need to request them from the browser. These may be
-  // null if the NavigationThreadingOptimizations feature is disabled.
-  // |cookie_manager_info| may also be null for non HTTP/HTTPS navigations, or
-  // if the origin is opaque.
+  // |code_cache_host|, |cookie_manager_info|, and |storage_info| are sent as
+  // optimizations so the renderer doesn't need to request them from the
+  // browser. These may be null if the NavigationThreadingOptimizations feature
+  // is disabled. |cookie_manager_info| may also be null for non HTTP/HTTPS
+  // navigations, or if the origin is opaque.
   CommitNavigation(
       blink.mojom.CommonNavigationParams common_params,
       blink.mojom.CommitNavigationParams request_params,
@@ -247,7 +260,8 @@ interface NavigationClient {
       mojo_base.mojom.UnguessableToken devtools_navigation_token,
       blink.mojom.PolicyContainer policy_container,
       pending_remote<blink.mojom.CodeCacheHost>? code_cache_host,
-      CookieManagerInfo? cookie_manager_info)
+      CookieManagerInfo? cookie_manager_info,
+      StorageInfo? storage_info)
       => (DidCommitProvisionalLoadParams params,
           DidCommitProvisionalLoadInterfaceParams? interface_params);
 

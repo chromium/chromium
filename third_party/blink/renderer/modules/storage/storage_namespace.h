@@ -82,10 +82,14 @@ class MODULES_EXPORT StorageNamespace final
   // Creates a namespace for SessionStorage.
   StorageNamespace(StorageController*, const String& namespace_id);
 
-  scoped_refptr<CachedStorageArea> GetCachedArea(const SecurityOrigin* origin);
+  // |storage_area| is ignored here if a cached namespace already exists.
+  scoped_refptr<CachedStorageArea> GetCachedArea(
+      const SecurityOrigin* origin,
+      mojo::PendingRemote<mojom::blink::StorageArea> storage_area = {});
 
   scoped_refptr<CachedStorageArea> CreateCachedAreaForPrerender(
-      const SecurityOrigin* origin);
+      const SecurityOrigin* origin,
+      mojo::PendingRemote<mojom::blink::StorageArea> storage_area = {});
 
   void EvictSessionStorageCachedData();
 

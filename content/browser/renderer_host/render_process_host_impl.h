@@ -462,6 +462,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
       RenderProcessHostImpl* rph,
       mojo::PendingReceiver<blink::mojom::DomStorage> receiver)>;
   static void SetDomStorageBinderForTesting(DomStorageBinder binder);
+  static bool HasDomStorageBinderForTesting();
 
   using BadMojoMessageCallbackForTesting =
       base::RepeatingCallback<void(int render_process_host_id,
