@@ -93,6 +93,11 @@ void ObjectManager::UnregisterInterface(const std::string& interface_name) {
     interface_map_.erase(iter);
 }
 
+bool ObjectManager::IsInterfaceRegisteredForTesting(
+    const std::string& interface_name) const {
+  return interface_map_.count(interface_name);
+}
+
 std::vector<ObjectPath> ObjectManager::GetObjects() {
   std::vector<ObjectPath> object_paths;
 

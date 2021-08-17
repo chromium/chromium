@@ -200,6 +200,9 @@ class CHROME_DBUS_EXPORT ObjectManager final
   // ignored.
   void UnregisterInterface(const std::string& interface_name);
 
+  // Checks whether an interface is registered.
+  bool IsInterfaceRegisteredForTesting(const std::string& interface_name) const;
+
   // Returns a list of object paths, in an undefined order, of objects known
   // to this manager.
   std::vector<ObjectPath> GetObjects();
