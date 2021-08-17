@@ -15,6 +15,7 @@
 #include "chromeos/components/phonehub/fake_notification_manager.h"
 #include "chromeos/components/phonehub/fake_onboarding_ui_tracker.h"
 #include "chromeos/components/phonehub/fake_recent_apps_interaction_handler.h"
+#include "chromeos/components/phonehub/fake_screen_lock_manager.h"
 #include "chromeos/components/phonehub/fake_tether_controller.h"
 #include "chromeos/components/phonehub/fake_user_action_recorder.h"
 #include "chromeos/components/phonehub/mutable_phone_model.h"
@@ -61,6 +62,10 @@ class FakePhoneHubManager : public PhoneHubManager {
     return &fake_recent_apps_interaction_handler_;
   }
 
+  FakeScreenLockManager* fake_screen_lock_manager() {
+    return &fake_screen_lock_manager_;
+  }
+
   MutablePhoneModel* mutable_phone_model() { return &mutable_phone_model_; }
 
   FakeTetherController* fake_tether_controller() {
@@ -91,6 +96,7 @@ class FakePhoneHubManager : public PhoneHubManager {
   OnboardingUiTracker* GetOnboardingUiTracker() override;
   PhoneModel* GetPhoneModel() override;
   RecentAppsInteractionHandler* GetRecentAppsInteractionHandler() override;
+  ScreenLockManager* GetScreenLockManager() override;
   TetherController* GetTetherController() override;
   ConnectionScheduler* GetConnectionScheduler() override;
   UserActionRecorder* GetUserActionRecorder() override;
@@ -104,6 +110,7 @@ class FakePhoneHubManager : public PhoneHubManager {
   FakeOnboardingUiTracker fake_onboarding_ui_tracker_;
   MutablePhoneModel mutable_phone_model_;
   FakeRecentAppsInteractionHandler fake_recent_apps_interaction_handler_;
+  FakeScreenLockManager fake_screen_lock_manager_;
   FakeTetherController fake_tether_controller_;
   FakeConnectionScheduler fake_connection_scheduler_;
   FakeUserActionRecorder fake_user_action_recorder_;

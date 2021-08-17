@@ -44,6 +44,10 @@ const char kHasDismissedSetupRequiredUi[] =
 const char kNeedsOneTimeNotificationAccessUpdate[] =
     "cros.phonehub.needs_one_time_notification_access_update";
 
+// The last provided screen lock status provided by the phone. This pref stores
+// the numerical value associated with the ScreenLockManager::LockStatus enum.
+const char kScreenLockStatus[] = "cros.phonehub.screen_lock_status";
+
 }  // namespace prefs
 }  // namespace phonehub
 }  // namespace chromeos

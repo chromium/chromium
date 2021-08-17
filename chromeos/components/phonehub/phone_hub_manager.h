@@ -20,6 +20,7 @@ class NotificationInteractionHandler;
 class OnboardingUiTracker;
 class PhoneModel;
 class RecentAppsInteractionHandler;
+class ScreenLockManager;
 class TetherController;
 class UserActionRecorder;
 class BrowserTabsModelProvider;
@@ -46,6 +47,7 @@ class PhoneHubManager {
   virtual OnboardingUiTracker* GetOnboardingUiTracker() = 0;
   virtual PhoneModel* GetPhoneModel() = 0;
   virtual RecentAppsInteractionHandler* GetRecentAppsInteractionHandler() = 0;
+  virtual ScreenLockManager* GetScreenLockManager() = 0;
   virtual TetherController* GetTetherController() = 0;
   virtual UserActionRecorder* GetUserActionRecorder() = 0;
 

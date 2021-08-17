@@ -14,6 +14,7 @@ extern const char kHideOnboardingUi[];
 extern const char kIsAwaitingVerifiedHost[];
 extern const char kHasDismissedSetupRequiredUi[];
 extern const char kNeedsOneTimeNotificationAccessUpdate[];
+extern const char kScreenLockStatus[];
 
 }  // namespace prefs
 }  // namespace phonehub

@@ -23,6 +23,7 @@ class FindMyDeviceController;
 class NotificationAccessManager;
 class NotificationProcessor;
 class MutablePhoneModel;
+class ScreenLockManager;
 
 // Responsible for receiving incoming protos and calling on clients to update
 // their models.
@@ -37,6 +38,7 @@ class PhoneStatusProcessor
       MessageReceiver* message_receiver,
       FindMyDeviceController* find_my_device_controller,
       NotificationAccessManager* notification_access_manager,
+      ScreenLockManager* screen_lock_manager,
       NotificationProcessor* notification_processor_,
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
       MutablePhoneModel* phone_model);
@@ -78,6 +80,7 @@ class PhoneStatusProcessor
   MessageReceiver* message_receiver_;
   FindMyDeviceController* find_my_device_controller_;
   NotificationAccessManager* notification_access_manager_;
+  ScreenLockManager* screen_lock_manager_;
   NotificationProcessor* notification_processor_;
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
   MutablePhoneModel* phone_model_;

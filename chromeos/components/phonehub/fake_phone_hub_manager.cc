@@ -58,6 +58,10 @@ FakePhoneHubManager::GetRecentAppsInteractionHandler() {
              : nullptr;
 }
 
+ScreenLockManager* FakePhoneHubManager::GetScreenLockManager() {
+  return features::IsEcheSWAEnabled() ? &fake_screen_lock_manager_ : nullptr;
+}
+
 TetherController* FakePhoneHubManager::GetTetherController() {
   return &fake_tether_controller_;
 }

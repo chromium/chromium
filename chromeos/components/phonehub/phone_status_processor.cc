@@ -12,6 +12,7 @@
 #include "chromeos/components/phonehub/mutable_phone_model.h"
 #include "chromeos/components/phonehub/notification_access_manager.h"
 #include "chromeos/components/phonehub/notification_processor.h"
+#include "chromeos/components/phonehub/screen_lock_manager_impl.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 
 #include <algorithm>
@@ -96,6 +97,20 @@ NotificationAccessManager::AccessStatus ComputeNotificationAccessState(
   return NotificationAccessManager::AccessStatus::kAvailableButNotGranted;
 }
 
+ScreenLockManager::LockStatus ComputeScreenLockState(
+    const proto::PhoneProperties& phone_properties) {
+  switch (phone_properties.screen_lock_state()) {
+    case proto::ScreenLockState::SCREEN_LOCK_UNKNOWN:
+      return ScreenLockManager::LockStatus::kUnknown;
+    case proto::ScreenLockState::SCREEN_LOCK_OFF:
+      return ScreenLockManager::LockStatus::kLockedOff;
+    case proto::ScreenLockState::SCREEN_LOCK_ON:
+      return ScreenLockManager::LockStatus::kLockedOn;
+    default:
+      return ScreenLockManager::LockStatus::kUnknown;
+  }
+}
+
 FindMyDeviceController::Status ComputeFindMyDeviceStatus(
     const proto::PhoneProperties& phone_properties) {
   if (phone_properties.find_my_device_capability() ==
@@ -129,6 +144,7 @@ PhoneStatusProcessor::PhoneStatusProcessor(
     MessageReceiver* message_receiver,
     FindMyDeviceController* find_my_device_controller,
     NotificationAccessManager* notification_access_manager,
+    ScreenLockManager* screen_lock_manager,
     NotificationProcessor* notification_processor_,
     MultiDeviceSetupClient* multidevice_setup_client,
     MutablePhoneModel* phone_model)
@@ -137,6 +153,7 @@ PhoneStatusProcessor::PhoneStatusProcessor(
       message_receiver_(message_receiver),
       find_my_device_controller_(find_my_device_controller),
       notification_access_manager_(notification_access_manager),
+      screen_lock_manager_(screen_lock_manager),
       notification_processor_(notification_processor_),
       multidevice_setup_client_(multidevice_setup_client),
       phone_model_(phone_model) {
@@ -192,6 +209,11 @@ void PhoneStatusProcessor::SetReceivedPhoneStatusModelStates(
 
   notification_access_manager_->SetAccessStatusInternal(
       ComputeNotificationAccessState(phone_properties));
+
+  if (screen_lock_manager_) {
+    screen_lock_manager_->SetLockStatusInternal(
+        ComputeScreenLockState(phone_properties));
+  }
 
   find_my_device_controller_->SetPhoneRingingStatusInternal(
       ComputeFindMyDeviceStatus(phone_properties));

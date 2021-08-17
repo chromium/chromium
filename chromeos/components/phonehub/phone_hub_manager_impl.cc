@@ -27,6 +27,7 @@
 #include "chromeos/components/phonehub/phone_model.h"
 #include "chromeos/components/phonehub/phone_status_processor.h"
 #include "chromeos/components/phonehub/recent_apps_interaction_handler.h"
+#include "chromeos/components/phonehub/screen_lock_manager_impl.h"
 #include "chromeos/components/phonehub/tether_controller_impl.h"
 #include "chromeos/components/phonehub/user_action_recorder_impl.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -91,6 +92,10 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
               feature_status_provider_.get(),
               message_sender_.get(),
               connection_scheduler_.get())),
+      screen_lock_manager_(
+          features::IsEcheSWAEnabled()
+              ? std::make_unique<ScreenLockManagerImpl>(pref_service)
+              : nullptr),
       notification_interaction_handler_(
           features::IsEcheSWAEnabled()
               ? std::make_unique<NotificationInteractionHandlerImpl>()
@@ -112,6 +117,7 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
           message_receiver_.get(),
           find_my_device_controller_.get(),
           notification_access_manager_.get(),
+          screen_lock_manager_.get(),
           notification_processor_.get(),
           multidevice_setup_client,
           phone_model_.get())),
@@ -192,6 +198,10 @@ PhoneHubManagerImpl::GetRecentAppsInteractionHandler() {
   return recent_apps_interaction_handler_.get();
 }
 
+ScreenLockManager* PhoneHubManagerImpl::GetScreenLockManager() {
+  return screen_lock_manager_.get();
+}
+
 TetherController* PhoneHubManagerImpl::GetTetherController() {
   return tether_controller_.get();
 }
@@ -215,6 +225,7 @@ void PhoneHubManagerImpl::Shutdown() {
   onboarding_ui_tracker_.reset();
   notification_manager_.reset();
   notification_interaction_handler_.reset();
+  screen_lock_manager_.reset();
   notification_access_manager_.reset();
   find_my_device_controller_.reset();
   connection_scheduler_.reset();

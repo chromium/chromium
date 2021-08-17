@@ -102,6 +102,14 @@ enum FindMyDeviceCapability {
   NOT_ALLOWED = 1;
 }
 
+// Information about the phone whether is secured with a PIN, pattern or
+// password.
+enum ScreenLockState {
+  SCREEN_LOCK_UNKNOWN = 0;
+  SCREEN_LOCK_OFF = 1;
+  SCREEN_LOCK_ON = 2;
+}
+
 // Information about access to the camera roll feature on a connected Android
 // device
 message CameraRollAccessState {
@@ -138,6 +146,9 @@ message PhoneProperties {
   int64 gmscore_version = 14;
 
   CameraRollAccessState camera_roll_access_state = 15;
+  // Note: This is whether the phone uses a lock screen(and not whether the
+  // phone is currently locked).
+  ScreenLockState screen_lock_state = 16;
 }
 
 message App {
