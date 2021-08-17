@@ -259,7 +259,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Assistant.VoiceSearch.UserEligibility.FailureReason{Timing}"
-    enum="EligibilityFailureReason" expires_after="2021-08-22">
+    enum="EligibilityFailureReason" expires_after="2022-08-22">
   <owner>wylieb@chromium.org</owner>
   <owner>fgorski@chromium.org</owner>
   <owner>jds@google.com</owner>
@@ -280,7 +280,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Assistant.VoiceSearch.UserEligibility{Timing}"
-    enum="BooleanEligible" expires_after="2021-08-22">
+    enum="BooleanEligible" expires_after="2022-08-22">
   <owner>wylieb@chromium.org</owner>
   <owner>fgorski@chromium.org</owner>
   <owner>jds@google.com</owner>
