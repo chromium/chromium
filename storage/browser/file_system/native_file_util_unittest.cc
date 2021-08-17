@@ -16,6 +16,10 @@
 #include "storage/browser/file_system/native_file_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if defined(OS_WIN)
+#include "windows.h"
+#endif  // defined(OS_WIN)
+
 namespace storage {
 
 class NativeFileUtilTest : public testing::Test {
@@ -40,6 +44,30 @@ class NativeFileUtilTest : public testing::Test {
     base::GetFileInfo(path, &info);
     return info.size;
   }
+
+#if defined(OS_POSIX)
+  void ExpectFileHasPermissionsPosix(base::FilePath file, int expected_mode) {
+    base::File::Info file_info;
+    int mode;
+    ASSERT_TRUE(FileExists(file));
+
+    EXPECT_TRUE(base::GetPosixFilePermissions(file, &mode));
+    EXPECT_EQ(mode, expected_mode);
+  }
+#endif  // defined(OS_POSIX)
+
+#if defined(OS_WIN)
+  void ExpectFileHasPermissionsWin(base::FilePath file,
+                                   DWORD expected_attributes) {
+    base::File::Info file_info;
+    DWORD attributes;
+    ASSERT_TRUE(FileExists(file));
+
+    attributes = ::GetFileAttributes(file.value().c_str());
+    EXPECT_NE(attributes, INVALID_FILE_ATTRIBUTES);
+    EXPECT_EQ(attributes, expected_attributes);
+  }
+#endif  // defined(OS_WIN)
 
  private:
   base::ScopedTempDir data_dir_;
@@ -463,5 +491,79 @@ TEST_F(NativeFileUtilTest, PreserveLastModified) {
             NativeFileUtil::GetFileInfo(to_file2, &file_info2));
   EXPECT_EQ(file_info1.last_modified, file_info2.last_modified);
 }
+
+#if defined(OS_POSIX) || defined(OS_WIN)
+TEST_F(NativeFileUtilTest, PreserveDestinationPermissions) {
+  // Ensure both the src and dest files exist.
+  base::FilePath to_file = Path("to-file");
+  base::FilePath from_file = Path("from-file1");
+  bool created = false;
+  ASSERT_EQ(base::File::FILE_OK,
+            NativeFileUtil::EnsureFileExists(to_file, &created));
+  ASSERT_TRUE(created);
+  EXPECT_TRUE(FileExists(to_file));
+
+  ASSERT_EQ(base::File::FILE_OK,
+            NativeFileUtil::EnsureFileExists(from_file, &created));
+  ASSERT_TRUE(created);
+  EXPECT_TRUE(FileExists(from_file));
+
+#if defined(OS_POSIX)
+  int dest_initial_mode;
+  ASSERT_TRUE(base::GetPosixFilePermissions(to_file, &dest_initial_mode));
+#elif defined(OS_WIN)
+  DWORD dest_initial_attributes = ::GetFileAttributes(to_file.value().c_str());
+  ASSERT_NE(dest_initial_attributes, INVALID_FILE_ATTRIBUTES);
+#endif  // defined(OS_POSIX)
+
+  // Give dest file some distinct permissions it didn't have before.
+#if defined(OS_POSIX)
+  int old_dest_mode = dest_initial_mode | S_IRGRP | S_IXOTH;
+  EXPECT_NE(old_dest_mode, dest_initial_mode);
+  EXPECT_TRUE(base::SetPosixFilePermissions(to_file, old_dest_mode));
+#elif defined(OS_WIN)
+  DWORD old_dest_attributes = FILE_ATTRIBUTE_NORMAL;
+  EXPECT_NE(old_dest_attributes, dest_initial_attributes);
+  EXPECT_TRUE(
+      ::SetFileAttributes(to_file.value().c_str(), old_dest_attributes));
+#endif  // defined(OS_POSIX)
+
+  // Test for copy (nosync).
+  ASSERT_EQ(base::File::FILE_OK,
+            NativeFileUtil::CopyOrMoveFile(
+                from_file, to_file,
+                FileSystemOperation::OPTION_PRESERVE_DESTINATION_PERMISSIONS,
+                NativeFileUtil::COPY_NOSYNC));
+#if defined(OS_POSIX)
+  ExpectFileHasPermissionsPosix(to_file, old_dest_mode);
+#elif defined(OS_WIN)
+  ExpectFileHasPermissionsWin(to_file, old_dest_attributes);
+#endif  // defined(OS_POSIX)
+
+  // Test for copy (sync).
+  ASSERT_EQ(base::File::FILE_OK,
+            NativeFileUtil::CopyOrMoveFile(
+                from_file, to_file,
+                FileSystemOperation::OPTION_PRESERVE_DESTINATION_PERMISSIONS,
+                NativeFileUtil::COPY_SYNC));
+#if defined(OS_POSIX)
+  ExpectFileHasPermissionsPosix(to_file, old_dest_mode);
+#elif defined(OS_WIN)
+  ExpectFileHasPermissionsWin(to_file, old_dest_attributes);
+#endif  // defined(OS_POSIX)
+
+  // Test for move.
+  ASSERT_EQ(base::File::FILE_OK,
+            NativeFileUtil::CopyOrMoveFile(
+                from_file, to_file,
+                FileSystemOperation::OPTION_PRESERVE_DESTINATION_PERMISSIONS,
+                NativeFileUtil::MOVE));
+#if defined(OS_POSIX)
+  ExpectFileHasPermissionsPosix(to_file, old_dest_mode);
+#elif defined(OS_WIN)
+  ExpectFileHasPermissionsWin(to_file, old_dest_attributes);
+#endif  // defined(OS_POSIX)
+}
+#endif  // defined(OS_POSIX) || defined(OS_WIN)
 
 }  // namespace storage

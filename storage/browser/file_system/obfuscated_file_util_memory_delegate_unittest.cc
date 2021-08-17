@@ -616,9 +616,9 @@ TEST_F(ObfuscatedFileUtilMemoryDelegateTest, PreserveLastModified_NoSync) {
             file_util()->CopyOrMoveFile(
                 from_file, to_file,
                 FileSystemOperation::OPTION_PRESERVE_LAST_MODIFIED, nosync));
+  ASSERT_TRUE(FileExists(to_file));
 
   base::File::Info file_info2;
-  ASSERT_TRUE(FileExists(to_file));
   ASSERT_EQ(base::File::FILE_OK,
             file_util()->GetFileInfo(to_file, &file_info2));
   EXPECT_EQ(file_info1.last_modified, file_info2.last_modified);

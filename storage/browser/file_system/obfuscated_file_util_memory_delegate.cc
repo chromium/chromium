@@ -409,8 +409,12 @@ base::File::Error ObfuscatedFileUtilMemoryDelegate::CopyOrMoveFile(
       break;
   }
 
-  if (option == FileSystemOperation::OPTION_PRESERVE_LAST_MODIFIED)
+  if (option == FileSystemOperation::OPTION_PRESERVE_LAST_MODIFIED) {
     Touch(dest_path, last_modified, last_modified);
+  }
+
+  // Don't bother with the OPTION_PRESERVE_DESTINATION_PERMISSIONS option, since
+  // this is not relevant to in-memory files.
 
   return base::File::FILE_OK;
 }

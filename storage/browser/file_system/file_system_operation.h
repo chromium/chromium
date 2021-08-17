@@ -252,6 +252,12 @@ class FileSystemOperation {
     // destination file, this option would be simply ignored (i.e. Copy would
     // be successfully done without preserving last modified time).
     OPTION_PRESERVE_LAST_MODIFIED,
+
+    // Preserve permissions of the destination file. If the operation to update
+    // permissions is not supported on the file system for the destination file,
+    // this option will simply be ignored (i.e. Copy would be successfully done
+    // without preserving permissions of the destination file).
+    OPTION_PRESERVE_DESTINATION_PERMISSIONS,
   };
 
   // Fields requested for the GetMetadata method. Used as a bitmask.

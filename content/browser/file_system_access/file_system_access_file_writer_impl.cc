@@ -433,7 +433,7 @@ void FileSystemAccessFileWriterImpl::DidAfterWriteCheck(
   DoFileSystemOperation(
       FROM_HERE, &FileSystemOperationRunner::MoveFileLocal,
       std::move(result_callback), swap_url(), url(),
-      storage::FileSystemOperation::OPTION_PRESERVE_LAST_MODIFIED);
+      storage::FileSystemOperation::OPTION_PRESERVE_DESTINATION_PERMISSIONS);
 }
 
 void FileSystemAccessFileWriterImpl::DidSwapFileSkipQuarantine(
