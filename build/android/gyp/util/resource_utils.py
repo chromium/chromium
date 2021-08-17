@@ -662,14 +662,6 @@ def _RenderRootRJavaSource(package, all_resources_by_type, rjava_build_options,
       else:
         non_final_resources_by_type[res_type].append(entry)
 
-  # Keep these assignments all on one line to make diffing against regular
-  # aapt-generated files easier.
-  create_id = ('{{ e.resource_type }}.{{ e.name }} ^= packageIdTransform;')
-  create_id_arr = ('{{ e.resource_type }}.{{ e.name }}[i] ^='
-                   ' packageIdTransform;')
-  for_loop_condition = ('int i = {{ startIndex(e) }}; i < '
-                        '{{ e.resource_type }}.{{ e.name }}.length; ++i')
-
   # Here we diverge from what aapt does. Because we have so many
   # resources, the onResourcesLoaded method was exceeding the 64KB limit that
   # Java imposes. For this reason we split onResourcesLoaded into different
@@ -705,23 +697,31 @@ public final class R {
     }
       {% else %}
     private static boolean sResourcesDidLoad;
+
+    private static void patchArray(
+            int[] arr, int startIndex, int packageIdTransform) {
+        for (int i = startIndex; i < arr.length; ++i) {
+            arr[i] ^= packageIdTransform;
+        }
+    }
+
     public static void onResourcesLoaded(int packageId) {
         if (sResourcesDidLoad) {
             return;
         }
         sResourcesDidLoad = true;
         int packageIdTransform = (packageId ^ 0x7f) << 24;
-        // The new aapt2 makes int[] resources refer to other non-android
-        // resources by reference rather than by value. Thus we explicitly
-        // transform the int[] resources first, before the referenced resources
-        // are transformed in order to ensure the transform applies exactly
-        // once. See https://crbug.com/1237059 for context.
+        {#  aapt2 makes int[] resources refer to other resources by reference
+            rather than by value. Thus, need to transform the int[] resources
+            first, before the referenced resources are transformed in order to
+            ensure the transform applies exactly once.
+            See https://crbug.com/1237059 for context.
+        #}
         {% for resource_type in resource_types %}
         {% for e in non_final_resources[resource_type] %}
         {% if e.java_type == 'int[]' %}
-        for(""" + for_loop_condition + """) {
-            """ + create_id_arr + """
-        }
+        patchArray({{ e.resource_type }}.{{ e.name }}, {{ startIndex(e) }}, \
+packageIdTransform);
         {% endif %}
         {% endfor %}
         {% endfor %}
@@ -734,7 +734,7 @@ public final class R {
             int packageIdTransform) {
         {% for e in non_final_resources[res_type] %}
         {% if res_type != 'styleable' and e.java_type != 'int[]' %}
-        """ + create_id + """
+        {{ e.resource_type }}.{{ e.name }} ^= packageIdTransform;
         {% endif %}
         {% endfor %}
     }
