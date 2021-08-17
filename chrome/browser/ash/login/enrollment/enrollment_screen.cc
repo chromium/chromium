@@ -169,6 +169,10 @@ void EnrollmentScreen::SetConfig() {
                        ? policy::EnrollmentConfig::MODE_ATTESTATION_LOCAL_FORCED
                        : policy::EnrollmentConfig::MODE_ATTESTATION;
   }
+  VLOG(1) << "EnrollmentScreen::SetConfig()"
+          << " config_.mode = " << static_cast<int>(config_.mode)
+          << ", config_.auth_mechanism = "
+          << static_cast<int>(config_.auth_mechanism);
   view_->SetEnrollmentConfig(config_);
   enrollment_helper_ = nullptr;
 }
@@ -209,7 +213,7 @@ void EnrollmentScreen::OnAuthCleared(base::OnceClosure callback) {
 bool EnrollmentScreen::MaybeSkip(WizardContext* context) {
   VLOG(1) << "EnrollmentScreen::MaybeSkip("
           << "config_.is_forced = " << config_.is_forced()
-          << "skip_to_login_for_tests = " << context->skip_to_login_for_tests
+          << ", skip_to_login_for_tests = " << context->skip_to_login_for_tests
           << ").";
   if (context->skip_to_login_for_tests && !config_.is_forced()) {
     exit_callback_.Run(Result::SKIPPED_FOR_TESTS);
