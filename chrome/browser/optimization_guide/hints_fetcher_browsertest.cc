@@ -55,6 +55,7 @@
 #include "content/public/test/browser_test_base.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/network_connection_change_simulator.h"
+#include "content/public/test/prerender_test_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -1322,6 +1323,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 class HintsFetcherSearchPageBrowserTest : public HintsFetcherBrowserTest {
+ public:
   void SetUpCommandLine(base::CommandLine* cmd) override {
     cmd->AppendSwitch(optimization_guide::switches::
                           kDisableFetchingHintsAtNavigationStartForTesting);
@@ -1389,6 +1391,93 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherSearchPageBrowserTest,
 
   WaitUntilHintsFetcherRequestReceived();
   EXPECT_EQ(1u, count_hints_requests_received());
+  histogram_tester->ExpectBucketCount(
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 3, 1);
+  histogram_tester->ExpectBucketCount(
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount", 7, 1);
+}
+
+class HintsFetcherSearchPagePrerenderingBrowserTest
+    : public HintsFetcherSearchPageBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    HintsFetcherSearchPageBrowserTest::SetUpCommandLine(command_line);
+    // |prerender_helper_| has a ScopedFeatureList so we needed to delay its
+    // creation until now because HintsFetcherDisabledBrowserTest also uses a
+    // ScopedFeatureList and initialization order matters.
+    prerender_helper_ = std::make_unique<content::test::PrerenderTestHelper>(
+        base::BindRepeating(
+            &HintsFetcherSearchPagePrerenderingBrowserTest::web_contents,
+            base::Unretained(this)));
+  }
+
+ protected:
+  content::test::PrerenderTestHelper* prerender_helper() {
+    return prerender_helper_.get();
+  }
+
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ private:
+  std::unique_ptr<content::test::PrerenderTestHelper> prerender_helper_;
+};
+
+// Tests that fetching the hints for a prerendered page is deferred until the
+// page gets activated.
+IN_PROC_BROWSER_TEST_F(HintsFetcherSearchPagePrerenderingBrowserTest,
+                       HintsFetcherFetchedHintsLoadedAfterActivate) {
+  const base::HistogramTester* histogram_tester = GetHistogramTester();
+
+  // Allowlist NoScript for https_url()'s' host.
+  SetUpComponentUpdateHints(https_url());
+
+  // Expect that the browser initialization will record at least one sample
+  // in each of the following histograms as One Platform Hints are enabled.
+  EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
+                histogram_tester,
+                "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 1),
+            1);
+
+  EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
+                histogram_tester,
+                "OptimizationGuide.HintsFetcher.GetHintsRequest.Status", 1),
+            1);
+  GURL initial_url =
+      GetURLWithGoogleHost(origin_server_.get(), "/iframe_blank.html");
+  ui_test_utils::NavigateToURL(browser(), initial_url);
+
+  histogram_tester->ExpectUniqueSample(
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.Status", net::HTTP_OK, 1);
+  histogram_tester->ExpectUniqueSample(
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.NetErrorCode", net::OK,
+      1);
+  histogram_tester->ExpectUniqueSample(
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.HintCount", 1, 1);
+
+  histogram_tester->ExpectUniqueSample(
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.HintCount", 1, 1);
+  histogram_tester->ExpectTotalCount(
+      optimization_guide::kLoadedHintLocalHistogramString, 1);
+
+  // Load a page in the prerender.
+  GURL prerender_url = search_results_page_url();
+  ResetCountHintsRequestsReceived();
+  prerender_helper()->AddPrerender(prerender_url);
+  EXPECT_EQ(0u, count_hints_requests_received());
+  histogram_tester->ExpectBucketCount(
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 0, 0);
+  histogram_tester->ExpectTotalCount(
+      optimization_guide::kLoadedHintLocalHistogramString, 1);
+
+  // Activate the page from the prerendering.
+  prerender_helper()->NavigatePrimaryPage(prerender_url);
+  WaitUntilHintsFetcherRequestReceived();
+  EXPECT_EQ(1u, count_hints_requests_received());
+  optimization_guide::RetryForHistogramUntilCountReached(
+      histogram_tester, optimization_guide::kLoadedHintLocalHistogramString, 2);
+
   histogram_tester->ExpectBucketCount(
       "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 3, 1);
   histogram_tester->ExpectBucketCount(
