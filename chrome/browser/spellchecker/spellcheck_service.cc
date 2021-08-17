@@ -192,9 +192,9 @@ void SpellcheckService::GetDictionaries(
   std::set<std::string> spellcheck_dictionaries;
   for (const auto& value :
        prefs->GetList(spellcheck::prefs::kSpellCheckDictionaries)->GetList()) {
-    std::string dictionary;
-    if (value.GetAsString(&dictionary))
-      spellcheck_dictionaries.insert(dictionary);
+    const std::string* dictionary = value.GetIfString();
+    if (dictionary)
+      spellcheck_dictionaries.insert(*dictionary);
   }
 
   dictionaries->clear();
