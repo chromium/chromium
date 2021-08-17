@@ -307,8 +307,8 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
     }
 
     // In-progress download items which are marked to be opened when complete
-    // have a special secondary text treatment.
-    if (mojo_download_item_->open_when_complete) {
+    // and are not paused have a special secondary text treatment.
+    if (mojo_download_item_->open_when_complete && !IsPaused()) {
       return l10n_util::GetStringUTF16(
           IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_OPEN_WHEN_COMPLETE);
     }
@@ -333,7 +333,7 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
       secondary_text = ui::FormatBytes(received_bytes);
     }
 
-    if (mojo_download_item_->is_paused) {
+    if (IsPaused()) {
       // If the `item` is paused, prepend "Paused, " to the `secondary_text`
       // such that the string is of the form "Paused, 10/100 MB" or "Paused, 10
       // MB", depending on whether or not `total_bytes` is known.
