@@ -275,6 +275,28 @@ TEST_F(BoxUploaderTest, CreateFolder_TerminateTask) {
   EXPECT_EQ(uploader_->GetFolderIdForTesting(), "");
 }
 
+TEST_F(BoxUploaderTest, CreateFolder_Conflict_DueToIndexingLatency) {
+  // Check that a conflict response for create folder step will continue using
+  // the provided conflicting folder.
+  AddFetchResult(kFileSystemBoxFindFolderUrl, net::HTTP_OK,
+                 kFileSystemBoxFindFolderResponseEmptyEntriesList);
+  AddFetchResult(kFileSystemBoxCreateFolderUrl, net::HTTP_CONFLICT,
+                 kFileSystemBoxCreateFolderConflictResponseBody);
+  AddFetchResult(kFileSystemBoxPreflightCheckUrl, net::HTTP_OK);
+
+  InitQuitClosure();
+  uploader_->TryTask(url_factory_, "test_token");
+  RunWithQuitClosure();
+
+  EXPECT_EQ(authentication_retry_, 0);
+  EXPECT_EQ(uploader_->GetFolderIdForTesting(),
+            kFileSystemBoxCreateFolderResponseFolderId);
+  EXPECT_EQ(uploader_->GetUploadFileName().value(), kUploadFileName);
+  ASSERT_TRUE(upload_initiated_);
+  EXPECT_FALSE(download_thread_cb_called_);  // InterceptedPreUpload() above.
+  EXPECT_FALSE(upload_success_);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // BoxUploader: Preflight Check Test
 ////////////////////////////////////////////////////////////////////////////////
