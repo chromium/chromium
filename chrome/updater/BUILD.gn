@@ -617,6 +617,9 @@ if (is_win || is_mac) {
         "//chrome/updater/test/test_app",
       ]
     }
+    if (is_win) {
+      data_deps += [ ":test_service_files" ]
+    }
   }
 
   executable("updater_integration_tests_helper") {
