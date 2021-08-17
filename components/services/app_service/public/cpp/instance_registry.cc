@@ -91,13 +91,13 @@ void InstanceRegistry::OnInstances(const Instances& deltas) {
   }
 }
 
-std::set<aura::Window*> InstanceRegistry::GetWindows(
+std::set<aura::Window*> InstanceRegistry::GetEnclosingAppWindows(
     const std::string& app_id) {
   auto it = app_id_to_app_instance_key_.find(app_id);
   auto windows = std::set<aura::Window*>{};
   if (it != app_id_to_app_instance_key_.end()) {
     for (auto instance_key : it->second) {
-      windows.insert(instance_key.Window());
+      windows.insert(instance_key.GetEnclosingAppWindow());
     }
   }
   return windows;

@@ -57,7 +57,8 @@ void AppServiceInstanceRegistryHelper::OnActiveTabChanged(
     content::WebContents* old_contents,
     content::WebContents* new_contents) {
   if (old_contents) {
-    apps::Instance::InstanceKey instance_key(old_contents->GetNativeView());
+    auto instance_key = apps::Instance::InstanceKey::ForWebBasedApp(
+        old_contents->GetNativeView());
 
     // Get the app_id from the existed instance first. If there is no record for
     // the window, get the app_id from contents. Because when Chrome app open
@@ -77,14 +78,16 @@ void AppServiceInstanceRegistryHelper::OnActiveTabChanged(
           apps::InstanceState::kUnknown) {
         state = static_cast<apps::InstanceState>(state &
                                                  ~apps::InstanceState::kActive);
-        OnInstances(apps::Instance::InstanceKey(GetWindow(old_contents)),
+        OnInstances(apps::Instance::InstanceKey::ForWebBasedApp(
+                        GetWindow(old_contents)),
                     app_id, std::string(), state);
       }
     }
   }
 
   if (new_contents) {
-    apps::Instance::InstanceKey instance_key(GetWindow(new_contents));
+    auto instance_key =
+        apps::Instance::InstanceKey::ForWebBasedApp(GetWindow(new_contents));
 
     // Get the app_id from the existed instance first. If there is no record for
     // the window, get the app_id from contents. Because when Chrome app open
@@ -118,7 +121,8 @@ void AppServiceInstanceRegistryHelper::OnTabReplaced(
 void AppServiceInstanceRegistryHelper::OnTabInserted(
     content::WebContents* contents) {
   std::string app_id = GetAppId(contents);
-  apps::Instance::InstanceKey instance_key(GetWindow(contents));
+  auto instance_key =
+      apps::Instance::InstanceKey::ForWebBasedApp(GetWindow(contents));
 
   // When the user drags a tab to a new browser, or to an other browser, it
   // could generate a temp instance for this window with the Chrome application
@@ -142,7 +146,8 @@ void AppServiceInstanceRegistryHelper::OnTabInserted(
 
 void AppServiceInstanceRegistryHelper::OnTabClosing(
     content::WebContents* contents) {
-  apps::Instance::InstanceKey instance_key(GetWindow(contents));
+  auto instance_key =
+      apps::Instance::InstanceKey::ForWebBasedApp(GetWindow(contents));
 
   // When the tab is closed, if the window does not exists in the AppService
   // InstanceRegistry, we don't need to update the status.
@@ -219,7 +224,7 @@ void AppServiceInstanceRegistryHelper::OnSetShelfIDForBrowserWindowContents(
   // If the app id is changed, call OnTabInserted to remove the old app id in
   // AppService InstanceRegistry, and insert the new app id.
   std::string app_id = GetAppId(contents);
-  apps::Instance::InstanceKey instance_key(window);
+  auto instance_key = apps::Instance::InstanceKey::ForWebBasedApp(window);
   const std::string old_app_id = GetAppId(instance_key);
   if (app_id != old_app_id)
     OnTabInserted(contents);
@@ -339,7 +344,8 @@ void AppServiceInstanceRegistryHelper::SetWindowActivated(
     apps::InstanceState state = static_cast<apps::InstanceState>(
         apps::InstanceState::kStarted | apps::InstanceState::kRunning |
         apps::InstanceState::kActive | apps::InstanceState::kVisible);
-    apps::Instance::InstanceKey contents_instance_key(GetWindow(contents));
+    auto contents_instance_key =
+        apps::Instance::InstanceKey::ForWebBasedApp(GetWindow(contents));
 
     // Get the app_id from the existed instance first. The app_id for PWAs could
     // be changed based on the URL, e.g. google photos, which might cause

@@ -31,12 +31,20 @@ class Instance {
   // InstanceKey is the unique key for the instance.
   class InstanceKey {
    public:
+    // Create an InstanceKey for an app instance backed by a WebContents.
+    static InstanceKey ForWebBasedApp(aura::Window* window);
+
+    // TODO(raymes): Replace this constructor with a factory function analogous
+    // to the above.
     explicit InstanceKey(aura::Window* window);
     InstanceKey(const InstanceKey& instance_key) = default;
     InstanceKey(InstanceKey&& instance_key) = default;
     ~InstanceKey() = default;
 
     aura::Window* Window() const { return window_; }
+    // Return enclosing app windows for the |app_id|. If the app is in a browser
+    // tab, the window returned will be the window of the browser.
+    aura::Window* GetEnclosingAppWindow();
     bool IsValid() const { return window_ != nullptr; }
     bool operator<(const InstanceKey& other) const;
     bool operator==(const InstanceKey& other) const;
@@ -44,11 +52,17 @@ class Instance {
     InstanceKey& operator=(InstanceKey&&) = default;
 
    private:
+    explicit InstanceKey(aura::Window* window, bool is_web_contents_backed);
+
     // window_ is owned by ash and will be deleted when the user closes the
     // window. Instance itself doesn't observe the window. The window's observer
     // is responsible to delete Instance from InstanceRegistry when the window
     // is destroyed.
     aura::Window* window_;
+
+    // Whether the app is a WebContents backed app. Will eventually be replaced
+    // by an ID representing the WebContents which may live remotely.
+    bool is_web_contents_backed_;
   };
 
   Instance(const std::string& app_id, InstanceKey&& instance_key);

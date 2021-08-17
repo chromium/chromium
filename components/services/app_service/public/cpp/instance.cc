@@ -9,7 +9,25 @@
 
 namespace apps {
 
-Instance::InstanceKey::InstanceKey(aura::Window* window) : window_(window) {}
+// static
+Instance::InstanceKey Instance::InstanceKey::ForWebBasedApp(
+    aura::Window* window) {
+  return InstanceKey(window,
+                     /*is_web_contents_backed=*/true);
+}
+
+Instance::InstanceKey::InstanceKey(aura::Window* window)
+    : InstanceKey(window, /*is_web_contents_backed=*/false) {}
+
+Instance::InstanceKey::InstanceKey(aura::Window* window,
+                                   bool is_web_contents_backed)
+    : window_(window), is_web_contents_backed_(is_web_contents_backed) {}
+
+aura::Window* Instance::InstanceKey::GetEnclosingAppWindow() {
+  if (is_web_contents_backed_)
+    return window_->GetToplevelWindow();
+  return window_;
+}
 
 bool Instance::InstanceKey::operator<(const InstanceKey& other) const {
   return Window() < other.Window();
@@ -32,7 +50,7 @@ Instance::~Instance() = default;
 
 std::unique_ptr<Instance> Instance::Clone() {
   auto instance = std::make_unique<Instance>(
-      this->AppId(), apps::Instance::InstanceKey(this->Window()));
+      this->AppId(), apps::Instance::InstanceKey(this->GetInstanceKey()));
   instance->SetLaunchId(this->LaunchId());
   instance->UpdateState(this->State(), this->LastUpdatedTime());
   instance->SetBrowserContext(this->BrowserContext());
