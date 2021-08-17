@@ -2695,9 +2695,9 @@ crbug.com/626703 external/wpt/service-workers/service-worker/worker-interception
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 [ Mac10.15 ] external/wpt/css/css-fonts/generic-family-keywords-002.html [ Failure Timeout ]
-crbug.com/626703 virtual/dialogfocus-old-behavior/external/wpt/html/semantics/interactive-elements/the-dialog-element/modal-dialog-display-contents.html [ Failure ]
-crbug.com/626703 external/wpt/html/semantics/interactive-elements/the-dialog-element/modal-dialog-display-contents.html [ Failure ]
-crbug.com/626703 virtual/synchronous_html_parser/external/wpt/html/semantics/interactive-elements/the-dialog-element/modal-dialog-display-contents.html [ Failure ]
+crbug.com/1240701 virtual/dialogfocus-old-behavior/external/wpt/html/semantics/interactive-elements/the-dialog-element/modal-dialog-display-contents.html [ Failure ]
+crbug.com/1240701 external/wpt/html/semantics/interactive-elements/the-dialog-element/modal-dialog-display-contents.html [ Failure ]
+crbug.com/1240701 virtual/synchronous_html_parser/external/wpt/html/semantics/interactive-elements/the-dialog-element/modal-dialog-display-contents.html [ Failure ]
 crbug.com/626703 external/wpt/css/selectors/nesting.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/resize-observer/iframe-same-origin.html [ Crash ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/resize-observer/iframe-same-origin.html [ Crash ]
