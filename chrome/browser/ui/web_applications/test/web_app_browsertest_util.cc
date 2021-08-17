@@ -135,7 +135,8 @@ SkColor GetIconTopLeftColor(const base::FilePath& shortcut_path) {
       CGImageSourceCreateImageAtIndex(source, 0, empty_dict));
   SkBitmap bitmap = skia::CGImageToSkBitmap(cg_image);
   return bitmap.getColor(0, 0);
-#elif defined(OS_WIN)
+#else
+#if defined(OS_WIN)
   SHFILEINFO file_info = {0};
   if (SHGetFileInfo(shortcut_path.value().c_str(), FILE_ATTRIBUTE_NORMAL,
                     &file_info, sizeof(file_info),
@@ -145,6 +146,7 @@ SkColor GetIconTopLeftColor(const base::FilePath& shortcut_path) {
   }
 #endif
   return 0;
+#endif
 }
 
 AppId InstallWebAppFromPage(Browser* browser, const GURL& app_url) {
