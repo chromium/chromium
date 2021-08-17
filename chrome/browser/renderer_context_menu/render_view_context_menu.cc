@@ -1483,6 +1483,10 @@ void RenderViewContextMenu::AppendOpenInWebAppLinkItems() {
   if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile))
     return;
 
+  auto* const provider = web_app::WebAppProvider::GetForLocalApps(profile);
+  if (!provider)
+    return;
+
   absl::optional<web_app::AppId> link_app_id =
       web_app::FindInstalledAppWithUrlInScope(profile, params_.link_url);
   if (!link_app_id)
@@ -1508,7 +1512,6 @@ void RenderViewContextMenu::AppendOpenInWebAppLinkItems() {
     open_in_app_string_id = IDS_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP;
   }
 
-  auto* const provider = web_app::WebAppProvider::Get(profile);
   menu_model_.AddItem(
       IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP,
       l10n_util::GetStringFUTF16(
