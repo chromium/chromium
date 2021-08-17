@@ -21,6 +21,7 @@ static_library("desks_storage") {
     "//components/sync",
     "//components/sync/model",
     "//components/sync/protocol",
+    "//third_party/re2",
   ]
 
   defines = [ "IS_DESKS_STORAGE_IMPL" ]

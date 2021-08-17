@@ -10,6 +10,7 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/json/values_util.h"
 #include "base/logging.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -19,6 +20,8 @@
 #include "components/full_restore/restore_data.h"
 #include "components/sync/protocol/workspace_desk_specifics.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/re2/src/re2/re2.h"
+#include "third_party/re2/src/re2/stringpiece.h"
 #include "url/gurl.h"
 
 namespace desks_storage {
@@ -35,8 +38,14 @@ constexpr char kDeskTemplateUuidKey[] = "uuid";
 constexpr char kDeskTemplateTimeCreatedKey[] = "time_created";
 // Key used in base::Value generation for the restore data field.
 constexpr char kDeskTemplateRestoreDataKey[] = "restore_data";
+// Duplicate value format
+constexpr char kDuplicateNumberFormat[] = "(%d)";
+// Initial duplicate number value
+constexpr char kInitialDuplicateNumberValue[] = " (1)";
 // The maximum number of templates the local storage can hold.
 constexpr std::size_t kMaxTemplateCount = 6u;
+// Regex used in determining if duplicate name should be incremented.
+constexpr char kDuplicateNumberRegex[] = "\\(([0-9])+\\)$";
 
 // Converts ash::DeskTemplates to base::Value for serialization.
 base::Value ConvertDeskTemplateToValue(ash::DeskTemplate* desk_template) {
@@ -155,6 +164,27 @@ base::FilePath GetFullyQualifiedPath(base::FilePath file_path,
   std::string filename(uuid);
   filename.append(kFileExtension);
   return base::FilePath(file_path.Append(base::FilePath(filename)));
+}
+
+// Returns a copy of a duplicated name to be stored.  This function works by
+// taking the name to be duplicated and adding a "(1)" to it.  If the name
+// already has "(1)" then the number inside of the parenthesis will be
+// incremented.
+std::u16string AppendDuplicateNumberToDuplicateName(
+    const std::u16string& duplicate_name_u16) {
+  std::string duplicate_name = base::UTF16ToUTF8(duplicate_name_u16);
+  int found_duplicate_number;
+
+  if (RE2::PartialMatch(duplicate_name, kDuplicateNumberRegex,
+                        &found_duplicate_number)) {
+    RE2::Replace(
+        &duplicate_name, kDuplicateNumberRegex,
+        base::StringPrintf(kDuplicateNumberFormat, found_duplicate_number + 1));
+  } else {
+    duplicate_name.append(kInitialDuplicateNumberValue);
+  }
+
+  return base::UTF8ToUTF16(duplicate_name);
 }
 
 }  // namespace
@@ -367,7 +397,16 @@ void LocalDeskDataManager::AddOrUpdateEntryTask(
     return;
   }
 
-  const base::GUID uuid = new_entry->uuid();
+  base::GUID uuid = new_entry->uuid();
+
+  // While we still find duplicate names iterate the duplicate number.  i.e.
+  // if there are 4 duplicates of some template name then this iterates until
+  // the current template will be named 5.
+  while (HasTemplateWithName(new_entry->template_name())) {
+    new_entry->set_template_name(
+        AppendDuplicateNumberToDuplicateName(new_entry->template_name()));
+  }
+
   templates_[uuid] = std::move(new_entry);
 
   const base::FilePath fully_qualified_path =
@@ -456,6 +495,15 @@ void LocalDeskDataManager::OnDeleteEntry(
     std::unique_ptr<DeskModel::DeleteEntryStatus> status_ptr,
     DeskModel::DeleteEntryCallback callback) {
   std::move(callback).Run(*status_ptr);
+}
+
+bool LocalDeskDataManager::HasTemplateWithName(const std::u16string& name) {
+  return std::find_if(
+             templates_.begin(), templates_.end(),
+             [&name](std::pair<const base::GUID,
+                               std::unique_ptr<ash::DeskTemplate>>& entry) {
+               return entry.second->template_name() == name;
+             }) != templates_.end();
 }
 
 }  // namespace desks_storage
