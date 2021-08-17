@@ -91,8 +91,15 @@
         <item name="colorControlNormal">@color/control_normal_color</item>
         <item name="colorControlHighlight">@color/control_highlight_color</item>
         <item name="colorPrimary">@color/default_control_color_active</item>
-        <item name="buttonBarButtonStyle">@style/AlertDialogButtonStyle</item>
         <item name="spinnerStyle">@style/SpinnerStyle</item>
+
+        <!-- Depending on if the support library or framework is inflating the
+             dialog, a different layout is used, that names this style slightly
+             differently. WebView will use the framework version for the
+             foreseeable future, so both of these need to be specified. See
+             https://crbug.com/1234129. -->
+        <item name="android:buttonBarButtonStyle">@style/AlertDialogButtonStyle</item>
+        <item name="buttonBarButtonStyle">@style/AlertDialogButtonStyle</item>
     </style>
 
     <style name="Theme.Chromium.AlertDialog" parent="Base.Theme.Chromium.AlertDialog" />
