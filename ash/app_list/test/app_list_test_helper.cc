@@ -9,6 +9,7 @@
 #include "ash/app_list/app_list_bubble_presenter.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_presenter_impl.h"
+#include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/views/app_list_bubble_apps_page.h"
 #include "ash/app_list/views/app_list_bubble_view.h"
 #include "ash/app_list/views/app_list_view.h"
@@ -81,6 +82,15 @@ void AppListTestHelper::CheckVisibility(bool visible) {
 
 void AppListTestHelper::CheckState(AppListViewState state) {
   EXPECT_EQ(state, app_list_controller_->GetAppListViewState());
+}
+
+void AppListTestHelper::AddAppItems(int num_apps) {
+  int num_apps_already_added =
+      app_list_controller_->GetModel()->top_level_item_list()->item_count();
+  for (int i = 0; i < num_apps; i++) {
+    app_list_controller_->GetModel()->AddItem(std::make_unique<AppListItem>(
+        /*app_id=*/base::NumberToString(i + num_apps_already_added)));
+  }
 }
 
 AppListView* AppListTestHelper::GetAppListView() {

@@ -10,7 +10,6 @@
 
 #include "ash/app_list/app_list_bubble_presenter.h"
 #include "ash/app_list/app_list_controller_impl.h"
-#include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/search/test_search_result.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/test_app_list_client.h"
@@ -26,15 +25,12 @@
 #include "ash/test/ash_test_base.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/test/icu_test_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer.h"
-#include "ui/display/display.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/widget/widget.h"
 
@@ -42,33 +38,6 @@ using views::Widget;
 
 namespace ash {
 namespace {
-
-// Distance under which two points are considered "near" each other.
-constexpr int kNearDistanceDips = 20;
-
-// The exact position of a bubble relative to its anchor is an implementation
-// detail, so tests assert that points are "near" each other. This also makes
-// the tests less fragile if padding changes.
-testing::AssertionResult IsNear(const gfx::Point& a, const gfx::Point& b) {
-  gfx::Vector2d delta = a - b;
-  float distance = delta.Length();
-  if (distance < float{kNearDistanceDips})
-    return testing::AssertionSuccess();
-
-  return testing::AssertionFailure()
-         << a.ToString() << " is more than " << kNearDistanceDips
-         << " dips away from " << b.ToString();
-}
-
-void AddAppItems(int num_apps) {
-  auto* controller = Shell::Get()->app_list_controller();
-  int num_apps_already_added =
-      controller->GetModel()->top_level_item_list()->item_count();
-  for (int i = 0; i < num_apps; i++) {
-    controller->GetModel()->AddItem(std::make_unique<AppListItem>(
-        /*app_id=*/base::NumberToString(i + num_apps_already_added)));
-  }
-}
 
 void AddSearchResult(const std::string& id, const std::u16string& title) {
   auto search_result = std::make_unique<TestSearchResult>();
@@ -96,12 +65,6 @@ AppListBubblePresenter* GetBubblePresenter() {
   return Shell::Get()->app_list_controller()->bubble_presenter_for_test();
 }
 
-gfx::Rect GetShelfBounds() {
-  return AshTestBase::GetPrimaryShelf()
-      ->shelf_widget()
-      ->GetWindowBoundsInScreen();
-}
-
 // Simulates the Assistant being enabled.
 void SimulateAssistantEnabled() {
   Shell::Get()
@@ -119,7 +82,11 @@ class AppListBubbleViewTest : public AshTestBase {
   ~AppListBubbleViewTest() override = default;
 
   // Shows the app list on the primary display.
-  void ShowAppList() { GetBubblePresenter()->Show(GetPrimaryDisplay().id()); }
+  void ShowAppList() { GetAppListTestHelper()->ShowAppList(); }
+
+  void AddAppItems(int num_items) {
+    GetAppListTestHelper()->AddAppItems(num_items);
+  }
 
   void ClickButton(views::Button* button) {
     GetEventGenerator()->MoveMouseTo(button->GetBoundsInScreen().CenterPoint());
@@ -157,51 +124,6 @@ TEST_F(AppListBubbleViewTest, LayerConfiguration) {
   EXPECT_EQ(layer->background_color(),
             AshColorProvider::Get()->GetBaseLayerColor(
                 AshColorProvider::BaseLayerType::kTransparent80));
-}
-
-TEST_F(AppListBubbleViewTest, BubbleOpensInBottomLeftForBottomShelf) {
-  GetPrimaryShelf()->SetAlignment(ShelfAlignment::kBottom);
-
-  AppListBubblePresenter* presenter = GetBubblePresenter();
-  presenter->Show(GetPrimaryDisplay().id());
-
-  Widget* widget = presenter->bubble_widget_for_test();
-  EXPECT_TRUE(IsNear(widget->GetWindowBoundsInScreen().bottom_left(),
-                     GetPrimaryDisplay().work_area().bottom_left()));
-}
-
-TEST_F(AppListBubbleViewTest, BubbleOpensInTopLeftForLeftShelf) {
-  GetPrimaryShelf()->SetAlignment(ShelfAlignment::kLeft);
-
-  AppListBubblePresenter* presenter = GetBubblePresenter();
-  presenter->Show(GetPrimaryDisplay().id());
-
-  Widget* widget = presenter->bubble_widget_for_test();
-  EXPECT_TRUE(IsNear(widget->GetWindowBoundsInScreen().origin(),
-                     GetPrimaryDisplay().work_area().origin()));
-}
-
-TEST_F(AppListBubbleViewTest, BubbleOpensInTopRightForRightShelf) {
-  GetPrimaryShelf()->SetAlignment(ShelfAlignment::kRight);
-
-  AppListBubblePresenter* presenter = GetBubblePresenter();
-  presenter->Show(GetPrimaryDisplay().id());
-
-  Widget* widget = presenter->bubble_widget_for_test();
-  EXPECT_TRUE(IsNear(widget->GetWindowBoundsInScreen().top_right(),
-                     GetPrimaryDisplay().work_area().top_right()));
-}
-
-TEST_F(AppListBubbleViewTest, BubbleOpensInBottomRightForBottomShelfRTL) {
-  base::test::ScopedRestoreICUDefaultLocale locale("he");
-  GetPrimaryShelf()->SetAlignment(ShelfAlignment::kBottom);
-
-  AppListBubblePresenter* presenter = GetBubblePresenter();
-  presenter->Show(GetPrimaryDisplay().id());
-
-  Widget* widget = presenter->bubble_widget_for_test();
-  EXPECT_TRUE(IsNear(widget->GetWindowBoundsInScreen().bottom_right(),
-                     GetPrimaryDisplay().work_area().bottom_right()));
 }
 
 TEST_F(AppListBubbleViewTest, OpeningBubbleFocusesSearchBox) {
@@ -400,158 +322,6 @@ TEST_F(AppListBubbleViewTest, DownArrowSelectsRecentsThenApps) {
   PressAndReleaseKey(ui::VKEY_DOWN);
   auto* apps_grid = GetAppListTestHelper()->GetScrollableAppsGridView();
   EXPECT_TRUE(apps_grid->Contains(focus_manager->GetFocusedView()));
-}
-
-TEST_F(AppListBubbleViewTest, BubbleSizedForDisplay) {
-  const int default_bubble_height = 688;
-  UpdateDisplay("800x900");
-  AppListBubblePresenter* presenter = GetBubblePresenter();
-  presenter->Show(GetPrimaryDisplay().id());
-
-  views::View* client_view = presenter->bubble_view_for_test()->parent();
-
-  // Check that the AppListBubble has the initial default bounds.
-  EXPECT_EQ(640, client_view->bounds().width());
-  EXPECT_EQ(default_bubble_height, client_view->bounds().height());
-
-  // Check that the space between the top of the AppListBubble and the top of
-  // the screen is greater than the shelf size.
-  EXPECT_GE(client_view->GetBoundsInScreen().y(),
-            ShelfConfig::Get()->shelf_size());
-
-  // Change the display height to be smaller than 800.
-  UpdateDisplay("800x600");
-  presenter->Dismiss();
-  presenter->Show(GetPrimaryDisplay().id());
-  client_view = presenter->bubble_view_for_test()->parent();
-
-  // With a smaller display, check that the space between the top of the
-  // AppListBubble and the top of the screen is greater than the shelf size.
-  EXPECT_GE(client_view->GetBoundsInScreen().y(),
-            ShelfConfig::Get()->shelf_size());
-  // The bubble height should be smaller than the default bubble height.
-  EXPECT_LT(client_view->bounds().height(), default_bubble_height);
-
-  // Change the display height so that the work area is slightly smaller than
-  // twice the default bubble height.
-  UpdateDisplay("800x1470");
-  presenter->Dismiss();
-  presenter->Show(GetPrimaryDisplay().id());
-  client_view = presenter->bubble_view_for_test()->parent();
-
-  // The bubble height should still be the default.
-  EXPECT_EQ(client_view->bounds().height(), default_bubble_height);
-
-  // Change the display height so that the work area is slightly bigger than
-  // twice the default bubble height. Add apps so the bubble height grows to its
-  // maximum possible height.
-  UpdateDisplay("800x1490");
-  presenter->Dismiss();
-  AddAppItems(50);
-  presenter->Show(GetPrimaryDisplay().id());
-  client_view = presenter->bubble_view_for_test()->parent();
-
-  // The bubble height should be slightly larger than the default bubble height,
-  // but less than half the display height.
-  EXPECT_GT(client_view->bounds().height(), default_bubble_height);
-  EXPECT_LT(client_view->bounds().height(), 1490 / 2);
-}
-
-// Test that the AppListBubbleView scales up with more apps on a larger display.
-TEST_F(AppListBubbleViewTest, BubbleSizedForLargeDisplay) {
-  UpdateDisplay("2000x2000");
-  AppListBubblePresenter* presenter = GetBubblePresenter();
-  presenter->Show(GetPrimaryDisplay().id());
-
-  int no_apps_bubble_view_height = presenter->bubble_view_for_test()->height();
-
-  // Add 30 apps to the AppListBubble and reopen.
-  presenter->Dismiss();
-  AddAppItems(30);
-  presenter->Show(GetPrimaryDisplay().id());
-
-  int thirty_apps_bubble_view_height =
-      presenter->bubble_view_for_test()->height();
-
-  // The AppListBubbleView should be larger after apps have neen added to it.
-  EXPECT_GT(thirty_apps_bubble_view_height, no_apps_bubble_view_height);
-
-  // Add 50 more apps to the AppListBubble and reopen.
-  presenter->Dismiss();
-  AddAppItems(50);
-  presenter->Show(GetPrimaryDisplay().id());
-
-  int eighty_apps_bubble_view_height =
-      presenter->bubble_view_for_test()->height();
-
-  // With more apps added, the height of the AppListBubble should increase.
-  EXPECT_GT(eighty_apps_bubble_view_height, thirty_apps_bubble_view_height);
-
-  // The AppListBubble height should not be larger than half the display height.
-  EXPECT_LE(eighty_apps_bubble_view_height, 1000);
-
-  // The AppListBubble should be contained within the display bounds.
-  EXPECT_TRUE(GetPrimaryDisplay().work_area().Contains(
-      presenter->bubble_view_for_test()->bounds()));
-}
-
-// Tests that the AppListBubbleView is positioned correctly when
-// shown with bottom auto-hidden shelf.
-TEST_F(AppListBubbleViewTest, BubblePositionWithBottomAutoHideShelf) {
-  GetPrimaryShelf()->SetAlignment(ShelfAlignment::kBottom);
-  GetPrimaryShelf()->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
-
-  AppListBubblePresenter* presenter = GetBubblePresenter();
-  presenter->Show(GetPrimaryDisplay().id());
-
-  gfx::Point bubble_view_bottom_left = presenter->bubble_widget_for_test()
-                                           ->GetWindowBoundsInScreen()
-                                           .bottom_left();
-
-  // The bottom of the AppListBubbleView should be near the top of the shelf and
-  // not near the bottom side of the display.
-  EXPECT_FALSE(IsNear(bubble_view_bottom_left,
-                      GetPrimaryDisplay().bounds().bottom_left()));
-  EXPECT_TRUE(IsNear(bubble_view_bottom_left, GetShelfBounds().origin()));
-}
-
-// Tests that the AppListBubbleView is positioned correctly when shown with left
-// auto-hidden shelf.
-TEST_F(AppListBubbleViewTest, BubblePositionWithLeftAutoHideShelf) {
-  GetPrimaryShelf()->SetAlignment(ShelfAlignment::kLeft);
-  GetPrimaryShelf()->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
-
-  AppListBubblePresenter* presenter = GetBubblePresenter();
-  presenter->Show(GetPrimaryDisplay().id());
-
-  gfx::Point bubble_view_origin =
-      presenter->bubble_widget_for_test()->GetWindowBoundsInScreen().origin();
-
-  // The left of the AppListBubbleView should be near the right of the shelf and
-  // not near the left side of the display.
-  EXPECT_FALSE(
-      IsNear(bubble_view_origin, GetPrimaryDisplay().bounds().origin()));
-  EXPECT_TRUE(IsNear(bubble_view_origin, GetShelfBounds().top_right()));
-}
-
-// Tests that the AppListBubbleView is positioned correctly when shown with
-// right auto-hidden shelf.
-TEST_F(AppListBubbleViewTest, BubblePositionWithRightAutoHideShelf) {
-  GetPrimaryShelf()->SetAlignment(ShelfAlignment::kRight);
-  GetPrimaryShelf()->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
-
-  AppListBubblePresenter* presenter = GetBubblePresenter();
-  presenter->Show(GetPrimaryDisplay().id());
-
-  gfx::Point bubble_view_top_right = presenter->bubble_widget_for_test()
-                                         ->GetWindowBoundsInScreen()
-                                         .top_right();
-
-  // The right of the AppListBubbleView should be near the left of the shelf and
-  // not near the right side of the display.
-  EXPECT_FALSE(
-      IsNear(bubble_view_top_right, GetPrimaryDisplay().bounds().top_right()));
-  EXPECT_TRUE(IsNear(bubble_view_top_right, GetShelfBounds().origin()));
 }
 
 }  // namespace

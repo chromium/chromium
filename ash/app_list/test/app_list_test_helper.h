@@ -69,6 +69,9 @@ class AppListTestHelper {
   // Run all pending in message loop to wait for animation to finish.
   void WaitUntilIdle();
 
+  // Adds `num_apps` to the app list model.
+  void AddAppItems(int num_apps);
+
   // Fullscreen/peeking launcher helpers.
   AppListView* GetAppListView();
 

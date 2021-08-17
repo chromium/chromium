@@ -20,8 +20,8 @@ class AppListBubbleView;
 class AppListControllerImpl;
 
 // Manages the UI for the bubble launcher used in clamshell mode. Handles
-// showing and hiding the UI. Only one bubble can be visible at a time, across
-// all displays.
+// showing and hiding the UI, as well as bounds computations. Only one bubble
+// can be visible at a time, across all displays.
 class ASH_EXPORT AppListBubblePresenter : public views::WidgetObserver {
  public:
   explicit AppListBubblePresenter(AppListControllerImpl* controller);

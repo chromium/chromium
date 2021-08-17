@@ -9,18 +9,14 @@
 #include "ash/search_box/search_box_view_delegate.h"
 #include "ui/views/view.h"
 
-namespace aura {
-class Window;
-}  // namespace aura
-
 namespace ash {
 
+class ApplicationDragAndDropHost;
 class AppListBubbleAppsPage;
 class AppListBubbleAssistantPage;
 class AppListBubbleSearchPage;
 class AppListViewDelegate;
 class SearchBoxView;
-enum class ShelfAlignment;
 
 // Contains the views for the bubble version of the launcher. It looks like a
 // system tray bubble. It does not derive from TrayBubbleView because it takes
@@ -29,16 +25,11 @@ enum class ShelfAlignment;
 class ASH_EXPORT AppListBubbleView : public views::View,
                                      public SearchBoxViewDelegate {
  public:
-  // Creates the bubble on the display for `root_window`.
   AppListBubbleView(AppListViewDelegate* view_delegate,
-                    aura::Window* root_window);
+                    ApplicationDragAndDropHost* drag_and_drop_host);
   AppListBubbleView(const AppListBubbleView&) = delete;
   AppListBubbleView& operator=(const AppListBubbleView&) = delete;
   ~AppListBubbleView() override;
-
-  // Returns the bounds for the bubble widget in root window coordinates.
-  // TODO(jamescook): Move to AppListBubblePresenter.
-  gfx::Rect GetBubbleBounds() const;
 
   // Handles back action if it we have a use for it besides dismissing.
   bool Back();
@@ -52,9 +43,12 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   // Shows the assistant page.
   void ShowEmbeddedAssistantUI();
 
+  // Returns the required height for this view in DIPs to show all apps in the
+  // apps grid. Used for computing the bubble height on large screens.
+  int GetHeightToFitAllApps() const;
+
   // views::View:
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
-  gfx::Size CalculatePreferredSize() const override;
   void OnThemeChanged() override;
 
   // SearchBoxViewDelegate:
@@ -71,7 +65,6 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   friend class AssistantTestApiImpl;
 
   AppListViewDelegate* const view_delegate_;
-  aura::Window* const root_window_;
   SearchBoxView* search_box_view_ = nullptr;
   AppListBubbleAppsPage* apps_page_ = nullptr;
   AppListBubbleSearchPage* search_page_ = nullptr;

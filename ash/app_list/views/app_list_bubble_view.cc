@@ -15,9 +15,6 @@
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/search_box/search_box_constants.h"
-#include "ash/shelf/shelf.h"
-#include "ash/shelf/shelf_widget.h"
-#include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/check.h"
@@ -28,8 +25,6 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
-#include "ui/display/display.h"
-#include "ui/display/screen.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -40,35 +35,13 @@
 using views::BoxLayout;
 
 namespace ash {
-namespace {
 
-// Space between the edge of the bubble and the edge of the work area.
-constexpr int kWorkAreaPadding = 8;
-
-// Space between the AppListBubbleView and the top of the screen should be at
-// least this value plus the shelf height.
-constexpr int kExtraTopOfScreenSpacing = 16;
-
-gfx::Rect GetWorkAreaForBubble(aura::Window* root_window) {
-  display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(root_window);
-  gfx::Rect work_area = display.work_area();
-
-  // Subtract the shelf's bounds from the work area, since the shelf should
-  // always be shown with the app list bubble. This is done because the work
-  // area includes the area under the shelf when the shelf is set to auto-hide.
-  work_area.Subtract(Shelf::ForWindow(root_window)->GetIdealBounds());
-
-  return work_area;
-}
-
-}  // namespace
-
-AppListBubbleView::AppListBubbleView(AppListViewDelegate* view_delegate,
-                                     aura::Window* root_window)
-    : view_delegate_(view_delegate), root_window_(root_window) {
+AppListBubbleView::AppListBubbleView(
+    AppListViewDelegate* view_delegate,
+    ApplicationDragAndDropHost* drag_and_drop_host)
+    : view_delegate_(view_delegate) {
   DCHECK(view_delegate);
-  DCHECK(root_window);
+  DCHECK(drag_and_drop_host);
 
   // Set up rounded corners and background blur, similar to TrayBubbleView.
   SetPaintToLayer(ui::LAYER_SOLID_COLOR);
@@ -97,9 +70,7 @@ AppListBubbleView::AppListBubbleView(AppListViewDelegate* view_delegate,
   // that the `apps_page_` will not get reused for showing the app list in
   // another root window.
   apps_page_ = AddChildView(std::make_unique<AppListBubbleAppsPage>(
-      view_delegate, Shelf::ForWindow(root_window)
-                         ->shelf_widget()
-                         ->GetDragAndDropHostForAppList()));
+      view_delegate, drag_and_drop_host));
 
   search_page_ = AddChildView(std::make_unique<AppListBubbleSearchPage>(
       view_delegate, search_box_view_));
@@ -111,33 +82,6 @@ AppListBubbleView::AppListBubbleView(AppListViewDelegate* view_delegate,
 }
 
 AppListBubbleView::~AppListBubbleView() = default;
-
-gfx::Rect AppListBubbleView::GetBubbleBounds() const {
-  const gfx::Rect work_area = GetWorkAreaForBubble(root_window_);
-  const gfx::Size bubble_size = CalculatePreferredSize();
-  const int padding = kWorkAreaPadding;  // Shorten name for readability.
-  int x = 0;
-  int y = 0;
-  switch (Shelf::ForWindow(root_window_)->alignment()) {
-    case ShelfAlignment::kBottom:
-    case ShelfAlignment::kBottomLocked:
-      if (base::i18n::IsRTL())
-        x = work_area.right() - padding - bubble_size.width();
-      else
-        x = work_area.x() + padding;
-      y = work_area.bottom() - padding - bubble_size.height();
-      break;
-    case ShelfAlignment::kLeft:
-      x = work_area.x() + padding;
-      y = work_area.y() + padding;
-      break;
-    case ShelfAlignment::kRight:
-      x = work_area.right() - padding - bubble_size.width();
-      y = work_area.y() + padding;
-      break;
-  }
-  return gfx::Rect(x, y, bubble_size.width(), bubble_size.height());
-}
 
 bool AppListBubbleView::Back() {
   if (search_box_view_->HasSearch()) {
@@ -169,6 +113,11 @@ void AppListBubbleView::ShowEmbeddedAssistantUI() {
   assistant_page_->RequestFocus();
 }
 
+int AppListBubbleView::GetHeightToFitAllApps() const {
+  return apps_page_->scroll_view()->contents()->bounds().height() +
+         search_box_view_->GetPreferredSize().height();
+}
+
 bool AppListBubbleView::AcceleratorPressed(const ui::Accelerator& accelerator) {
   switch (accelerator.key_code()) {
     case ui::VKEY_ESCAPE:
@@ -185,41 +134,6 @@ bool AppListBubbleView::AcceleratorPressed(const ui::Accelerator& accelerator) {
 
   // Don't let the accelerator propagate any further.
   return true;
-}
-
-gfx::Size AppListBubbleView::CalculatePreferredSize() const {
-  const int default_height = 688;
-  // As of August 2021 the assistant cards require a minimum width of 640. If
-  // the cards become narrower then this could be reduced.
-  const int default_width = 640;
-  const int shelf_size = ShelfConfig::Get()->shelf_size();
-  const gfx::Rect work_area = GetWorkAreaForBubble(root_window_);
-  int height = default_height;
-
-  // If the work area height is too small to fit the default size bubble, then
-  // calculate a smaller height to fit in the work area. Otherwise, if the work
-  // area height is tall enough to fit at least two default sized bubbles, then
-  // calculate a taller bubble with height taking no more than half the work
-  // area.
-  if (work_area.height() <
-      default_height + shelf_size + kExtraTopOfScreenSpacing) {
-    height = work_area.height() - shelf_size - kExtraTopOfScreenSpacing;
-  } else if (work_area.height() >
-             default_height * 2 + shelf_size + kExtraTopOfScreenSpacing) {
-    // Calculate the height required to fit the contents of the AppListBubble
-    // with no scrolling.
-    int height_to_fit_all_apps =
-        apps_page_->scroll_view()->contents()->bounds().height() +
-        search_box_view_->GetPreferredSize().height();
-
-    int max_height =
-        (work_area.height() - shelf_size - kExtraTopOfScreenSpacing) / 2;
-
-    DCHECK_GE(max_height, default_height);
-    height = base::clamp(height_to_fit_all_apps, default_height, max_height);
-  }
-
-  return gfx::Size(default_width, height);
 }
 
 void AppListBubbleView::OnThemeChanged() {
