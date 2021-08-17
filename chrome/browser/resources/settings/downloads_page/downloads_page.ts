@@ -14,9 +14,11 @@ import '../controls/controlled_button.js';
 import '../controls/settings_toggle_button.js';
 import '../settings_shared_css.js';
 
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {listenOnce} from 'chrome://resources/js/util.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PrefsBehavior} from '../prefs/prefs_behavior.js';
 import {PrefsBehaviorInterface} from '../prefs/prefs_behavior_ts.js';
@@ -133,6 +135,14 @@ class SettingsDownloadsPageElement extends SettingsDownloadsPageElementBase {
         'downloads-connection-link-changed', (accountInfo: AccountInfo) => {
           this.connectionAccountInfo_ = accountInfo;
           this.connectionSetupInProgress_ = false;
+          // Focus on the link/unlink button so that the updated linked account
+          // status gets announced by screen reader.
+          afterNextRender(this, () => {
+            const button = this.connectionAccountInfo_.linked ?
+                this.shadowRoot!.querySelector('#unlinkAccountButton') :
+                this.shadowRoot!.querySelector('#linkAccountButton');
+            focusWithoutInk(button!);
+          });
         });
 
     this.browserProxy_.initializeDownloads();
