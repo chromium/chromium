@@ -2337,7 +2337,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.PartitionAlloc.ThreadCache.BatchFillRate{ThreadType}"
-    units="%" expires_after="M92">
+    units="%" expires_after="M97">
   <owner>lizeb@chromium.org</owner>
   <owner>bartekn@chromium.org</owner>
   <summary>
@@ -2353,7 +2353,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.PartitionAlloc.ThreadCache.HitRate{ThreadType}"
-    units="%" expires_after="M92">
+    units="%" expires_after="M97">
   <owner>lizeb@chromium.org</owner>
   <owner>bartekn@chromium.org</owner>
   <summary>
