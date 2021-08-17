@@ -29,11 +29,13 @@
 import base64
 import json
 import time
+from collections import defaultdict
 
 from blinkpy.common import exit_codes
 from blinkpy.common.system.crash_logs import CrashLogs
 from blinkpy.web_tests.models.test_configuration import TestConfiguration
-from blinkpy.web_tests.port.base import Port, VirtualTestSuite
+from blinkpy.web_tests.port.base import (Port, VirtualTestSuite,
+                                         ALL_TESTS_BY_DIRECTORIES)
 from blinkpy.web_tests.port.driver import DeviceFailure, Driver, DriverOutput
 from blinkpy.w3c.wpt_manifest import BASE_MANIFEST_NAME
 
@@ -491,16 +493,24 @@ passes/slow.html [ Slow ]
         filesystem.write_binary_file(
             filesystem.join(dirname, base + suffix), contents)
 
+    tests_by_dir = defaultdict(list)
+
     # Add each test and the expected output, if any.
     test_list = unit_test_list()
     for test in test_list.tests.values():
         add_file(test, test.name[test.name.rfind('.'):], b'')
+        tests_by_dir[test.name[0:test.name.rfind('/') + 1]].append(test.name)
         if test.expected_audio:
             add_file(test, '-expected.wav', test.expected_audio)
         if test.expected_text:
             add_file(test, '-expected.txt', test.expected_text.encode('utf-8'))
         if test.expected_image:
             add_file(test, '-expected.png', test.expected_image)
+
+    all_tests_by_dir_path = filesystem.join(WEB_TEST_DIR,
+                                            ALL_TESTS_BY_DIRECTORIES)
+    filesystem.write_text_file(all_tests_by_dir_path,
+                               json.dumps(tests_by_dir, indent=2, sort_keys=True))
 
     filesystem.write_text_file(
         filesystem.join(WEB_TEST_DIR, 'virtual', 'virtual_passes', 'passes',
@@ -613,6 +623,16 @@ def add_manifest_to_mock_filesystem(port):
         }))
     filesystem.write_text_file(WEB_TEST_DIR + '/wpt_internal/dom/bar.html',
                                'baz')
+
+    all_tests_by_dir_path = filesystem.join(WEB_TEST_DIR, ALL_TESTS_BY_DIRECTORIES)
+    tests_by_dir = json.loads(filesystem.read_text_file(all_tests_by_dir_path))
+    tests_by_dir['external/wpt/dom/ranges/'] = ['external/wpt/dom/ranges/Range-attributes.html',
+                                               'external/wpt/dom/ranges/Range-attributes-slow.html']
+    tests_by_dir['external/wpt/console/'] = ['external/wpt/console/console-is-a-namespace.any.html',
+                                            'external/wpt/console/console-is-a-namespace.any.worker.html']
+    tests_by_dir['wpt_internal/dom/'] = ['wpt_internal/dom/bar.html']
+    filesystem.write_text_file(all_tests_by_dir_path, json.dumps(tests_by_dir, indent=2, sort_keys=True))
+
 
 
 class TestPort(Port):

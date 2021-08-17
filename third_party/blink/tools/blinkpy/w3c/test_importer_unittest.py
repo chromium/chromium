@@ -25,11 +25,16 @@ from blinkpy.w3c.wpt_github_mock import MockWPTGitHub
 from blinkpy.w3c.wpt_manifest import BASE_MANIFEST_NAME
 from blinkpy.web_tests.port.android import PRODUCTS_TO_EXPECTATION_FILE_PATHS
 from blinkpy.web_tests.port.android import ANDROID_DISABLED_TESTS
+from blinkpy.web_tests.port.base import ALL_TESTS_BY_DIRECTORIES
 
 MOCK_WEB_TESTS = '/mock-checkout/' + RELATIVE_WEB_TESTS
 MANIFEST_INSTALL_CMD = [
     'python3', '/mock-checkout/third_party/wpt_tools/wpt/wpt', 'manifest',
     '-v', '--no-download', '--tests-root', MOCK_WEB_TESTS + 'external/wpt'
+]
+UPDATE_TEST_LIST_CMD = [
+    'python3', '/mock-checkout/third_party/blink/tools/collect_web_tests.py',
+    'external/wpt'
 ]
 
 
@@ -519,6 +524,15 @@ class TestImporterTest(LoggingTestCase):
         self.assertEqual('current-sheriff@chromium.org',
                          importer.sheriff_email())
         self.assertLog([])
+
+    def test_update_all_tests_list(self):
+        host = self.mock_host()
+        importer = self._get_test_importer(host)
+        importer._update_all_tests_list()
+        self.assertEqual(host.executive.calls, [MANIFEST_INSTALL_CMD,
+                                                UPDATE_TEST_LIST_CMD])
+        self.assertEqual(importer.chromium_git.added_paths,
+                         {MOCK_WEB_TESTS + ALL_TESTS_BY_DIRECTORIES})
 
     def test_generate_manifest_successful_run(self):
         # This test doesn't test any aspect of the real manifest script, it just

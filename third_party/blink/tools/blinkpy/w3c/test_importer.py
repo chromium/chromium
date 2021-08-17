@@ -30,8 +30,8 @@ from blinkpy.w3c.local_wpt import LocalWPT
 from blinkpy.w3c.test_copier import TestCopier
 from blinkpy.w3c.wpt_expectations_updater import WPTExpectationsUpdater
 from blinkpy.w3c.wpt_github import WPTGitHub
-from blinkpy.w3c.wpt_manifest import WPTManifest, BASE_MANIFEST_NAME
-from blinkpy.web_tests.port.base import Port
+from blinkpy.w3c.wpt_manifest import WPTManifest, BASE_MANIFEST_NAME, MANIFEST_NAME
+from blinkpy.web_tests.port.base import Port, ALL_TESTS_BY_DIRECTORIES
 from blinkpy.web_tests.models.test_expectations import TestExpectations
 
 # Settings for how often to check try job results and how long to wait.
@@ -185,6 +185,8 @@ class TestImporter(object):
         if self._only_wpt_manifest_changed():
             _log.info('Only manifest was updated; skipping the import.')
             return 0
+
+        self._update_all_tests_list()
 
         with self._expectations_updater.prepare_smoke_tests(self.chromium_git):
             self._commit_changes(commit_message)
@@ -432,6 +434,26 @@ class TestImporter(object):
             verify_merged_pr=True)
         return commits
 
+    def _update_all_tests_list(self):
+        """Update AllTestsByDirectories.json for imported tests.
+
+        Run collect_web_tests.py, then stages the updated json file
+        in the git index, ready to commit.
+        """
+        _log.info('Updating AllTestsByDirectories.json')
+        all_tests_by_dirs_path = self.fs.normpath(
+            self.fs.join(self.dest_path, '..', '..',
+                         ALL_TESTS_BY_DIRECTORIES))
+        script_path = self.fs.normpath(
+            self.fs.join(self.dest_path, '..', '..', '..',
+                         'tools', 'collect_web_tests.py'))
+        command = [
+            self.host.port_factory.get().python3_command(),
+            script_path, 'external/wpt'
+        ]
+        self.host.executive.run_command(command)
+        self.chromium_git.add_list([all_tests_by_dirs_path])
+
     def _generate_manifest(self):
         """Generates MANIFEST.json for imported tests.
 
@@ -441,7 +463,7 @@ class TestImporter(object):
         _log.info('Generating MANIFEST.json')
         WPTManifest.generate_manifest(self.host.port_factory.get(),
                                       self.dest_path)
-        manifest_path = self.fs.join(self.dest_path, 'MANIFEST.json')
+        manifest_path = self.fs.join(self.dest_path, MANIFEST_NAME)
         assert self.fs.exists(manifest_path)
         manifest_base_path = self.fs.normpath(
             self.fs.join(self.dest_path, '..', BASE_MANIFEST_NAME))

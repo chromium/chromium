@@ -175,6 +175,18 @@ to see a full list of options. A few of the most useful options are below:
 | `--fully-parallel`          | Run tests in parallel using as many child processes as the system has cores. |
 | `--driver-logging`          | Print C++ logs (LOG(WARNING), etc).  |
 
+### Collecting Tests
+
+The test runner collects legacy tests by walking through the folders under
+web_tests and WPT tests from WPT Manifest. This takes around 40 seconds on a
+machine with SSD. The file AllTestsByDirectories.json now collects all the
+test cases before hand. When `--use-checkedin-list` is set, the test runner
+loads tests from this file. The flag defaults to False, but is set to True for
+all swarming bots. When the flag is set, it takes less than 2 seconds to load
+test cases. When uploading or committing a CL, a presubmit check is run to
+ensure the json file is always up-to-date. And if it is not, the developer will
+be prompted to update it by running `collect_web_tests.py`.
+
 ## Success and Failure
 
 A test succeeds when its output matches the pre-defined expected results. If any

@@ -69,6 +69,8 @@ _log = logging.getLogger(__name__)
 # Path relative to the build directory.
 CONTENT_SHELL_FONTS_DIR = "test_fonts"
 
+ALL_TESTS_BY_DIRECTORIES = "AllTestsByDirectories.json"
+
 FONT_FILES = [
     [[CONTENT_SHELL_FONTS_DIR], 'Ahem.ttf', None],
     [[CONTENT_SHELL_FONTS_DIR], 'Arimo-Bold.ttf', None],
@@ -897,6 +899,14 @@ class Port(object):
             reftest_list.append((expectation, ref_absolute_path))
         return reftest_list
 
+    def read_all_tests_by_directories(self):
+        """Load directory->tests mapping from AllTestsByDirectories.json.
+        """
+        path = self._filesystem.join(self.web_tests_dir(), ALL_TESTS_BY_DIRECTORIES)
+        content = self._filesystem.read_text_file(path)
+        tests_by_dir = json.loads(content)
+        return tests_by_dir
+
     def tests(self, paths=None):
         """Returns all tests or tests matching supplied paths.
 
@@ -910,9 +920,10 @@ class Port(object):
             for instance a file path test.any.js could correspond to two test
             names: test.any.html and test.any.worker.html.
         """
-        tests = self.real_tests(paths)
 
         if paths:
+            tests = self.real_tests(paths)
+
             tests.extend(self._virtual_tests_matching_paths(paths))
             if (any(wpt_path in path for wpt_path in self.WPT_DIRS
                     for path in paths)
@@ -920,35 +931,45 @@ class Port(object):
                     or any('external' in path for path in paths)):
                 tests.extend(self._wpt_test_urls_matching_paths(paths))
         else:
-            # '/' is used instead of filesystem.sep as the WPT manifest always
-            # uses '/' for paths (it is not OS dependent).
-            wpt_tests = [
-                wpt_path + '/' + test for wpt_path in self.WPT_DIRS
-                for test in self.wpt_manifest(wpt_path).all_urls()
-            ]
-            tests_by_dir = defaultdict(list)
-            for test in tests + wpt_tests:
-                dirname = os.path.dirname(test) + '/'
-                tests_by_dir[dirname].append(test)
+            if self.get_option('use_checkedin_list', False):
+                tests_by_dir = self.read_all_tests_by_directories()
+                tests = self.real_tests_from_dict(tests_by_dir)
+            else:
+                tests = self.real_tests(paths)
+                # '/' is used instead of filesystem.sep as the WPT manifest always
+                # uses '/' for paths (it is not OS dependent).
+                wpt_tests = [
+                    wpt_path + '/' + test for wpt_path in self.WPT_DIRS
+                    for test in self.wpt_manifest(wpt_path).all_urls()
+                ]
+                tests_by_dir = defaultdict(list)
+                for test in tests + wpt_tests:
+                    dirname = os.path.dirname(test) + '/'
+                    tests_by_dir[dirname].append(test)
+                tests.extend(wpt_tests)
 
             tests.extend(self._all_virtual_tests(tests_by_dir))
-            tests.extend(wpt_tests)
         return tests
 
-    def real_tests_from_dict(self, paths, tests_by_dir):
+    def real_tests_from_dict(self, tests_by_dir, paths=None):
         """Find all real tests in paths, using results saved in dict."""
-        files = []
-        for path in paths:
-            if self._has_supported_extension_for_all(path):
-                files.append(path)
-                continue
-            path = path + '/' if path[-1] != '/' else path
-            for key, value in tests_by_dir.items():
-                if key.startswith(path):
-                    files.extend(value)
-        return files
+        tests = []
+        if paths:
+            for path in paths:
+                if self._has_supported_extension_for_all(path):
+                    tests.append(path)
+                    continue
+                path = path + '/' if path[-1] != '/' else path
+                for key, value in tests_by_dir.items():
+                    if key.startswith(path):
+                        tests.extend(value)
+            return tests
+        else:
+            for _, v in tests_by_dir.items():
+                tests.extend(v)
+            return tests
 
-    def real_tests(self, paths):
+    def real_tests(self, paths=None):
         """Find all real tests in paths except WPT."""
         # When collecting test cases, skip these directories.
         skipped_directories = set([
@@ -1981,7 +2002,7 @@ class Port(object):
         for suite in self.virtual_test_suites():
             if suite.bases:
                 tests.extend(map(lambda x: suite.full_prefix + x,
-                             self.real_tests_from_dict(suite.bases, tests_by_dir)))
+                             self.real_tests_from_dict(tests_by_dir, suite.bases)))
         return tests
 
     def _get_bases_for_suite_with_paths(self, suite, paths):
