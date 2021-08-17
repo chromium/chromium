@@ -62,6 +62,12 @@ network::CrossOriginOpenerPolicy CoopUnsafeNone() {
   return coop;
 }
 
+network::CrossOriginEmbedderPolicy CoepUnsafeNone() {
+  network::CrossOriginEmbedderPolicy coep;
+  // Using the default value.
+  return coep;
+}
+
 std::unique_ptr<net::test_server::HttpResponse>
 CrossOriginIsolatedCrossOriginRedirectHandler(
     const net::test_server::HttpRequest& request) {
@@ -163,6 +169,18 @@ class NoSharedArrayBufferByDefault : public CrossOriginOpenerPolicyBrowserTest {
         {
             features::kSharedArrayBuffer,
         });
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Same as CrossOriginOpenerPolicyBrowserTest, but disable COEP credentialless.
+class NoCoepCredentialless : public CrossOriginOpenerPolicyBrowserTest {
+ public:
+  NoCoepCredentialless() {
+    feature_list_.InitWithFeatures(
+        {}, {network::features::kCrossOriginEmbedderPolicyCredentialless});
   }
 
  private:
@@ -2800,6 +2818,7 @@ static auto kTestParams =
 INSTANTIATE_TEST_SUITE_P(All, CrossOriginOpenerPolicyBrowserTest, kTestParams);
 INSTANTIATE_TEST_SUITE_P(All, VirtualBrowsingContextGroupTest, kTestParams);
 INSTANTIATE_TEST_SUITE_P(All, NoSharedArrayBufferByDefault, kTestParams);
+INSTANTIATE_TEST_SUITE_P(All, NoCoepCredentialless, kTestParams);
 
 namespace {
 
@@ -3517,4 +3536,23 @@ IN_PROC_BROWSER_TEST_P(SharedArrayBufferOnDesktopBrowserTest,
   )"));
 #endif  // defined(OS_ANDROID)
 }
+
+// Regression test for https://crbug.com/1238282#c16
+// Disable COEP:credentialless feature and navigate to a document with:
+// COOP:same-origin, COEP:credentialless. The navigation used to be suspended,
+// instead of proceeding with COEP:unsafe-none.
+IN_PROC_BROWSER_TEST_P(NoCoepCredentialless, Regression1238282) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(),
+      https_server()->GetURL("a.com",
+                             "/set-header?"
+                             "Cross-Origin-Opener-Policy: same-origin&"
+                             "Cross-Origin-Embedder-Policy: credentialless")));
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  EXPECT_EQ(current_frame_host()->cross_origin_opener_policy(),
+            CoopSameOrigin());
+  EXPECT_EQ(current_frame_host()->cross_origin_embedder_policy(),
+            CoepUnsafeNone());
+}
+
 }  // namespace content

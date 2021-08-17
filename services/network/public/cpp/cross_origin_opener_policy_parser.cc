@@ -8,7 +8,6 @@
 #include "base/strings/string_util.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/structured_headers.h"
-#include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/cross_origin_opener_policy.h"
 #include "services/network/public/cpp/features.h"
 
@@ -52,8 +51,7 @@ ParseHeader(base::StringPiece header_value) {
 }  // namespace
 
 CrossOriginOpenerPolicy ParseCrossOriginOpenerPolicy(
-    const net::HttpResponseHeaders& headers,
-    const CrossOriginEmbedderPolicy& coep) {
+    const net::HttpResponseHeaders& headers) {
   CrossOriginOpenerPolicy coop;
 
   // This is the single line of code disabling COOP globally.
@@ -66,10 +64,6 @@ CrossOriginOpenerPolicy ParseCrossOriginOpenerPolicy(
   if (headers.GetNormalizedHeader(kCrossOriginOpenerPolicyHeader,
                                   &header_value)) {
     std::tie(coop.value, coop.reporting_endpoint) = ParseHeader(header_value);
-    if (coop.value == mojom::CrossOriginOpenerPolicyValue::kSameOrigin &&
-        CompatibleWithCrossOriginIsolated(coep.value)) {
-      coop.value = mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep;
-    }
   } else if (base::FeatureList::IsEnabled(
                  features::kCrossOriginOpenerPolicyByDefault)) {
     coop.value = mojom::CrossOriginOpenerPolicyValue::kSameOriginAllowPopups;
@@ -80,13 +74,6 @@ CrossOriginOpenerPolicy ParseCrossOriginOpenerPolicy(
                                   &header_value)) {
     std::tie(coop.report_only_value, coop.report_only_reporting_endpoint) =
         ParseHeader(header_value);
-    if (coop.report_only_value ==
-            mojom::CrossOriginOpenerPolicyValue::kSameOrigin &&
-        (CompatibleWithCrossOriginIsolated(coep.value) ||
-         CompatibleWithCrossOriginIsolated(coep.report_only_value))) {
-      coop.report_only_value =
-          mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep;
-    }
   }
 
   return coop;
