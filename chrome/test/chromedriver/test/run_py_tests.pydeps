@@ -83,6 +83,7 @@
 ../client/chromedriver.py
 ../client/command_executor.py
 ../client/webelement.py
+../client/webshadowroot.py
 ../client/websocket_connection.py
 ../server/server.py
 ../util.py

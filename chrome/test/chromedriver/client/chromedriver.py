@@ -11,10 +11,12 @@ import psutil
 import command_executor
 from command_executor import Command
 from webelement import WebElement
+from webshadowroot import WebShadowRoot
 from websocket_connection import WebSocketConnection
 
 ELEMENT_KEY_W3C = "element-6066-11e4-a52e-4f735466cecf"
 ELEMENT_KEY = "ELEMENT"
+SHADOW_KEY = "shadow-6066-11e4-a52e-4f735466cecf"
 MAX_RETRY_COUNT = 5
 
 class ChromeDriverException(Exception):
@@ -62,6 +64,10 @@ class InvalidArgument(ChromeDriverException):
 class ElementNotInteractable(ChromeDriverException):
   pass
 class UnsupportedOperation(ChromeDriverException):
+  pass
+class NoSuchShadowRoot(ChromeDriverException):
+  pass
+class DetachedShadowRoot(ChromeDriverException):
   pass
 
 def _ExceptionForLegacyResponse(response):
@@ -117,6 +123,8 @@ def _ExceptionForStandardResponse(response):
     'invalid argument': InvalidArgument,
     'element not interactable': ElementNotInteractable,
     'unsupported operation': UnsupportedOperation,
+    'no such shadow root': NoSuchShadowRoot,
+    'detached shadow root': DetachedShadowRoot,
   }
 
   error = response['value']['error']
@@ -324,6 +332,8 @@ class ChromeDriver(object):
         return {ELEMENT_KEY_W3C: value._id}
       else:
         return {ELEMENT_KEY: value._id}
+    elif isinstance(value, WebShadowRoot):
+        return {SHADOW_KEY: value._id}
     elif isinstance(value, list):
       return list(self._WrapValue(item) for item in value)
     else:
@@ -336,6 +346,9 @@ class ChromeDriver(object):
           and isinstance(
             value[ELEMENT_KEY_W3C], basestring)):
         return WebElement(self, value[ELEMENT_KEY_W3C])
+      elif (len(value) == 1 and SHADOW_KEY in value
+            and isinstance(value[SHADOW_KEY], basestring)):
+        return WebShadowRoot(self, value[SHADOW_KEY])
       elif (len(value) == 1 and ELEMENT_KEY in value
             and isinstance(value[ELEMENT_KEY], basestring)):
         return WebElement(self, value[ELEMENT_KEY])

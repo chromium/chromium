@@ -52,6 +52,7 @@ sys.path.insert(1, _CLIENT_DIR)
 import chromedriver
 import websocket_connection
 import webelement
+import webshadowroot
 sys.path.remove(_CLIENT_DIR)
 
 sys.path.insert(1, _SERVER_DIR)
@@ -846,6 +847,70 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
   def testGetPageSource(self):
     self._driver.Load(self.GetHttpUrlForFile('/chromedriver/page_test.html'))
     self.assertTrue('Link to empty.html' in self._driver.GetPageSource())
+
+  def testGetElementShadowRoot(self):
+    self._driver.Load(
+      self.GetHttpUrlForFile('/chromedriver/get_element_shadow_root.html'))
+    element = self._driver.FindElement('tag name', 'custom-checkbox-element')
+    shadow = element.GetElementShadowRoot()
+    self.assertTrue(isinstance(shadow, webshadowroot.WebShadowRoot))
+
+  def testGetElementShadowRootNotExists(self):
+    self._driver.Load(
+      self.GetHttpUrlForFile('/chromedriver/get_element_shadow_root.html'))
+    element = self._driver.FindElement('tag name', 'div')
+    with self.assertRaises(chromedriver.NoSuchShadowRoot):
+      element.GetElementShadowRoot()
+
+  def testFindElementFromShadowRoot(self):
+    self._driver.Load(
+      self.GetHttpUrlForFile('/chromedriver/get_element_shadow_root.html'))
+    element = self._driver.FindElement('tag name', 'custom-checkbox-element')
+    shadow = element.GetElementShadowRoot()
+    self.assertTrue(isinstance(shadow, webshadowroot.WebShadowRoot))
+    elementInShadow = shadow.FindElement('css selector', 'input')
+    self.assertTrue(isinstance(elementInShadow, webelement.WebElement))
+
+  def testFindElementFromShadowRootInvalidArgs(self):
+    self._driver.Load(
+      self.GetHttpUrlForFile('/chromedriver/get_element_shadow_root.html'))
+    element = self._driver.FindElement('tag name', 'custom-checkbox-element')
+    shadow = element.GetElementShadowRoot()
+    self.assertTrue(isinstance(shadow, webshadowroot.WebShadowRoot))
+    with self.assertRaises(chromedriver.InvalidArgument):
+      shadow.FindElement('tag name', 'input')
+    with self.assertRaises(chromedriver.InvalidArgument):
+      shadow.FindElement('xpath', '//')
+
+  def testDetachedShadowRootError(self):
+    self._driver.Load(
+      self.GetHttpUrlForFile('/chromedriver/get_element_shadow_root.html'))
+    element = self._driver.FindElement('tag name', 'custom-checkbox-element')
+    shadow = element.GetElementShadowRoot()
+    self._driver.Refresh()
+    with self.assertRaises(chromedriver.DetachedShadowRoot):
+      shadow.FindElement('css selector', 'input')
+
+  def testFindElementsFromShadowRoot(self):
+    self._driver.Load(
+      self.GetHttpUrlForFile('/chromedriver/get_element_shadow_root.html'))
+    element = self._driver.FindElement('tag name', 'custom-checkbox-element')
+    shadow = element.GetElementShadowRoot()
+    self.assertTrue(isinstance(shadow, webshadowroot.WebShadowRoot))
+    elementsInShadow = shadow.FindElements('css selector', 'input')
+    self.assertTrue(isinstance(elementsInShadow, list))
+    self.assertTrue(2, len(elementsInShadow))
+
+  def testFindElementsFromShadowRootInvalidArgs(self):
+    self._driver.Load(
+      self.GetHttpUrlForFile('/chromedriver/get_element_shadow_root.html'))
+    element = self._driver.FindElement('tag name', 'custom-checkbox-element')
+    shadow = element.GetElementShadowRoot()
+    self.assertTrue(isinstance(shadow, webshadowroot.WebShadowRoot))
+    with self.assertRaises(chromedriver.InvalidArgument):
+      shadow.FindElements('tag name', 'input')
+    with self.assertRaises(chromedriver.InvalidArgument):
+      shadow.FindElements('xpath', '//')
 
   def testFindElement(self):
     self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))

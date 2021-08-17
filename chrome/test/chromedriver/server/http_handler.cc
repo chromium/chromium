@@ -264,6 +264,20 @@ HttpHandler::HttpHandler(
           WrapToCommand("GetActiveElement",
                         base::BindRepeating(&ExecuteGetActiveElement))),
       CommandMapping(
+          kGet, "session/:sessionId/element/:id/shadow",
+          WrapToCommand("GetElementShadowRoot",
+                        base::BindRepeating(&ExecuteGetElementShadowRoot))),
+      CommandMapping(
+          kPost, "session/:sessionId/shadow/:id/element",
+          WrapToCommand(
+              "FindChildElementFromShadowRoot",
+              base::BindRepeating(&ExecuteFindChildElementFromShadowRoot, 50))),
+      CommandMapping(
+          kPost, "session/:sessionId/shadow/:id/elements",
+          WrapToCommand("FindChildElementsFromShadowRoot",
+                        base::BindRepeating(
+                            &ExecuteFindChildElementsFromShadowRoot, 50))),
+      CommandMapping(
           kPost, "session/:sessionId/element",
           WrapToCommand("FindElement",
                         base::BindRepeating(&ExecuteFindElement, 50))),
@@ -1281,6 +1295,14 @@ HttpHandler::PrepareStandardResponse(
     case kTabCrashed:
       response = std::make_unique<net::HttpServerResponseInfo>(
           net::HTTP_INTERNAL_SERVER_ERROR);
+      break;
+    case kNoSuchShadowRoot:
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_NOT_FOUND);
+      break;
+    case kDetachedShadowRoot:
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_NOT_FOUND);
       break;
 
     default:
