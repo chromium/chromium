@@ -5685,6 +5685,11 @@
     "expiry_milestone": 99
   },
   {
+    "name" : "webui-tab-strip-context-menu-after-tap",
+    "owners": [ "romanarora", "tluk", "yuhengh" ],
+    "expiry_milestone" : 99
+  },
+  {
     "name": "webui-tab-strip-ntb-in-tab-strip",
     "owners": [ "yuhengh", "tluk", "romanarora" ],
     "expiry_milestone": 99

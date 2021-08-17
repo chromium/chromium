@@ -167,6 +167,10 @@ extern const base::Feature kWebUIDownloadShelf;
 
 extern const base::Feature kWebUITabStrip;
 
+// Controls whether the context menu is shown on a touch press or a touch
+// tap gesture on the WebUI Tab Strip.
+extern const base::Feature kWebUITabStripContextMenuAfterTap;
+
 extern const base::Feature kWebUIFeedback;
 
 #if defined(OS_CHROMEOS)

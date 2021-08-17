@@ -133,6 +133,9 @@ class TabStripPageHandler : public tab_strip::mojom::PageHandler,
   // streams intended to trigger a drag (See crbug.com/1204572).
   bool should_drag_on_gesture_scroll_ = false;
 
+  // Determines whether to show the context menu after a tap gesture.
+  const bool context_menu_after_tap_;
+
   // The point at which the initial gesture tap event occurred and at which the
   // drag will start.
   gfx::Point touch_drag_start_point_;

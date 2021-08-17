@@ -836,11 +836,14 @@ void WebUITabStripContainerView::ShowContextMenuAtPoint(
     return;
   ConvertPointToScreen(this, &point);
   context_menu_model_ = std::move(menu_model);
+  int menu_runner_flags =
+      views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU;
+  if (!base::FeatureList::IsEnabled(
+          features::kWebUITabStripContextMenuAfterTap)) {
+    menu_runner_flags |= views::MenuRunner::SEND_GESTURE_EVENTS_TO_OWNER;
+  }
   context_menu_runner_ = std::make_unique<views::MenuRunner>(
-      context_menu_model_.get(),
-      views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU |
-          views::MenuRunner::SEND_GESTURE_EVENTS_TO_OWNER,
-      on_menu_closed_callback);
+      context_menu_model_.get(), menu_runner_flags, on_menu_closed_callback);
   context_menu_runner_->RunMenuAt(
       GetWidget(), nullptr, gfx::Rect(point, gfx::Size()),
       views::MenuAnchorPosition::kTopLeft, ui::MENU_SOURCE_MOUSE,
