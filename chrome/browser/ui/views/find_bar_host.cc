@@ -31,6 +31,10 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
+#if defined(OS_WIN)
+#include <windows.h>
+#endif
+
 using content::NativeWebKeyboardEvent;
 
 namespace {

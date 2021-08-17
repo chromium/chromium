@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/startup/credential_provider_signin_dialog_win.h"
 
+#include <windows.h>
+
 #include <memory>
 #include <string>
 #include <utility>

@@ -245,8 +245,10 @@
 #include "url/scheme_host_port.h"
 
 #if defined(OS_WIN)
-#include <shellapi.h>
+// windows.h must be included before shellapi.h
 #include <windows.h>
+
+#include <shellapi.h>
 
 #include "chrome/browser/ui/view_ids.h"
 #include "components/autofill/core/browser/autofill_ie_toolbar_import_win.h"

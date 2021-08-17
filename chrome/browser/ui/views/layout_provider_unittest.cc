@@ -26,6 +26,8 @@
 #endif
 
 #if defined(OS_WIN)
+#include <windows.h>
+
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "ui/display/win/dpi.h"
