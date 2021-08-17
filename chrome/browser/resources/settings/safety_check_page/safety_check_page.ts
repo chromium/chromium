@@ -124,8 +124,8 @@ export class SettingsSafetyCheckPageElement extends
         this.parentDisplayString_ =
             await this.safetyCheckBrowserProxy_.getParentRanDisplayString();
       };
-      clearInterval(this.updateTimerId_);
-      this.updateTimerId_ = setInterval(update, 60000);
+      window.clearInterval(this.updateTimerId_);
+      this.updateTimerId_ = window.setInterval(update, 60000);
       // Run initial safety check parent ran string update now.
       update();
       // Readout new safety check status via accessibility.
