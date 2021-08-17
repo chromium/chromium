@@ -2117,14 +2117,14 @@ void HTMLInputElement::MaybeReportPiiMetrics() {
   // Report the PII types derived from autofill field semantic type prediction.
   if (GetFormElementPiiType() != FormElementPiiType::kUnknown) {
     UseCounter::Count(GetDocument(),
-                      WebFeature::kAnyPiiFieldDetected_PredictedTypeMatch);
+                      WebFeature::kUserDataFieldFilled_PredictedTypeMatch);
 
     if (GetFormElementPiiType() == FormElementPiiType::kEmail) {
       UseCounter::Count(GetDocument(),
-                        WebFeature::kEmailFieldDetected_PredictedTypeMatch);
+                        WebFeature::kEmailFieldFilled_PredictedTypeMatch);
     } else if (GetFormElementPiiType() == FormElementPiiType::kPhone) {
       UseCounter::Count(GetDocument(),
-                        WebFeature::kPhoneFieldDetected_PredictedTypeMatch);
+                        WebFeature::kPhoneFieldFilled_PredictedTypeMatch);
     }
   }
 
@@ -2137,7 +2137,7 @@ void HTMLInputElement::MaybeReportPiiMetrics() {
       EmailInputType::IsValidEmailAddress(GetDocument().EnsureEmailRegexp(),
                                           value())) {
     UseCounter::Count(GetDocument(),
-                      WebFeature::kEmailFieldDetected_PatternMatch);
+                      WebFeature::kEmailFieldFilled_PatternMatch);
   }
 }
 

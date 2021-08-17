@@ -273,6 +273,10 @@ enum class ContentSettingsType : int32_t {
   // separately allowlisted.
   HTTP_ALLOWED,
 
+  // Stores metadata related to form fill, such as e.g. whether user data was
+  // autofilled on a specific website.
+  FORMFILL_METADATA,
+
   NUM_TYPES,
 };
 

@@ -14029,6 +14029,7 @@ Called by update_net_error_codes.py.-->
   <int value="77" label="Federated identity sharing"/>
   <int value="78" label="Federated identity request"/>
   <int value="79" label="Javascript JIT"/>
+  <int value="80" label="Formfill metadata"/>
 </enum>
 
 <enum name="ContentTypeParseableResult">
@@ -33552,10 +33553,10 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3376" label="SecurePaymentConfirmation"/>
   <int value="3377" label="OBSOLETE_CSSInvalidVariableUnset"/>
   <int value="3378" label="ElementInternalsShadowRoot"/>
-  <int value="3379" label="AnyPiiFieldDetected_PredictedTypeMatch"/>
-  <int value="3380" label="EmailFieldDetected_PredictedTypeMatch"/>
-  <int value="3381" label="PhoneFieldDetected_PredictedTypeMatch"/>
-  <int value="3382" label="EmailFieldDetected_PatternMatch"/>
+  <int value="3379" label="AnyUserDataFieldFilled_PredictedTypeMatch"/>
+  <int value="3380" label="EmailFieldFilled_PredictedTypeMatch"/>
+  <int value="3381" label="PhoneFieldFilled_PredictedTypeMatch"/>
+  <int value="3382" label="EmailFieldFilled_PatternMatch"/>
   <int value="3383" label="LastLetterSpacingAffectsRendering"/>
   <int value="3384" label="V8FontMetadata_GetTables_Method"/>
   <int value="3385" label="V8FontMetadata_Blob_Method"/>
@@ -34178,6 +34179,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3979" label="V8NavigatorManagedData_GetSerialNumber_Method"/>
   <int value="3980" label="V8NavigatorManagedData_GetAnnotatedAssetId_Method"/>
   <int value="3981" label="V8NavigatorManagedData_GetAnnotatedLocation_Method"/>
+  <int value="3982" label="UserDataFieldFilledPreviously"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

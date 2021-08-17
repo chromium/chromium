@@ -2682,10 +2682,10 @@ enum WebFeature {
   kSecurePaymentConfirmation = 3376,
   kOBSOLETE_CSSInvalidVariableUnset = 3377,
   kElementInternalsShadowRoot = 3378,
-  kAnyPiiFieldDetected_PredictedTypeMatch = 3379,
-  kEmailFieldDetected_PredictedTypeMatch = 3380,
-  kPhoneFieldDetected_PredictedTypeMatch = 3381,
-  kEmailFieldDetected_PatternMatch = 3382,
+  kUserDataFieldFilled_PredictedTypeMatch = 3379,
+  kEmailFieldFilled_PredictedTypeMatch = 3380,
+  kPhoneFieldFilled_PredictedTypeMatch = 3381,
+  kEmailFieldFilled_PatternMatch = 3382,
   kLastLetterSpacingAffectsRendering = 3383,
   kV8FontMetadata_GetTables_Method = 3384,
   kV8FontMetadata_Blob_Method = 3385,
@@ -3291,6 +3291,7 @@ enum WebFeature {
   kV8NavigatorManagedData_GetSerialNumber_Method = 3979,
   kV8NavigatorManagedData_GetAnnotatedAssetId_Method = 3980,
   kV8NavigatorManagedData_GetAnnotatedLocation_Method = 3981,
+  kUserDataFieldFilledPreviously = 3982,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

@@ -803,6 +803,10 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
   if ((remove_mask & constants::DATA_TYPE_SITE_USAGE_DATA) ||
       (remove_mask & constants::DATA_TYPE_HISTORY)) {
     host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(
+        ContentSettingsType::FORMFILL_METADATA, delete_begin_, delete_end_,
+        website_settings_filter);
+
+    host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(
         ContentSettingsType::APP_BANNER, base::Time(), base::Time::Max(),
         website_settings_filter);
 
