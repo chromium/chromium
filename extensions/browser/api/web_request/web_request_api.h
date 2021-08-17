@@ -49,19 +49,20 @@ class GURL;
 
 namespace base {
 class DictionaryValue;
-}
+}  // namespace base
 
 namespace content {
 class BrowserContext;
 class RenderFrameHost;
-}
+}  // namespace content
 
 namespace net {
 class AuthChallengeInfo;
 class AuthCredentials;
 class HttpRequestHeaders;
 class HttpResponseHeaders;
-}
+class SiteForCookies;
+}  // namespace net
 
 namespace extensions {
 
@@ -222,7 +223,7 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
       content::RenderFrameHost* frame,
       content::ContentBrowserClient::WebSocketFactory factory,
       const GURL& url,
-      const GURL& site_for_cookies,
+      const net::SiteForCookies& site_for_cookies,
       const absl::optional<std::string>& user_agent,
       mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
           handshake_client);

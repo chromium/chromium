@@ -29,6 +29,7 @@
 
 namespace net {
 class IPEndPoint;
+class SiteForCookies;
 }  // namespace net
 
 namespace extensions {
@@ -86,7 +87,7 @@ class WebRequestProxyingWebSocket
   static void StartProxying(
       WebSocketFactory factory,
       const GURL& url,
-      const GURL& site_for_cookies,
+      const net::SiteForCookies& site_for_cookies,
       const absl::optional<std::string>& user_agent,
       mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
           handshake_client,
