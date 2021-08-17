@@ -111,6 +111,7 @@ class BluetoothAdapterWinTest : public testing::Test {
 
   void CallStartDiscoverySession() {
     adapter_win_->StartDiscoverySession(
+        /*client_name=*/std::string(),
         base::BindOnce(
             &BluetoothAdapterWinTest::DiscoverySessionCallbackPassthrough,
             base::Unretained(this),

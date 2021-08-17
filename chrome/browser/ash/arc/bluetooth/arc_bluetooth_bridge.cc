@@ -181,6 +181,9 @@ constexpr uint32_t kBluetoothComputerClass = 0x100;
 // Chrome and Android, but as a result, Bluetooth will be off.
 constexpr base::TimeDelta kPowerIntentTimeout = base::TimeDelta::FromSeconds(8);
 
+// Client name for logging in BLE scanning.
+constexpr char kScanClientName[] = "ARC";
+
 using GattReadCallback =
     base::OnceCallback<void(arc::mojom::BluetoothGattValuePtr)>;
 using CreateSdpRecordCallback =
@@ -1202,6 +1205,7 @@ void ArcBluetoothBridge::StartDiscoveryImpl() {
   }
 
   bluetooth_adapter_->StartDiscoverySession(
+      kScanClientName,
       base::BindOnce(&ArcBluetoothBridge::OnDiscoveryStarted,
                      weak_factory_.GetWeakPtr()),
       base::BindOnce(&ArcBluetoothBridge::OnDiscoveryError,
@@ -1233,6 +1237,7 @@ void ArcBluetoothBridge::StartLEScanImpl() {
   bluetooth_adapter_->StartDiscoverySessionWithFilter(
       std::make_unique<BluetoothDiscoveryFilter>(
           device::BLUETOOTH_TRANSPORT_LE),
+      kScanClientName,
       base::BindOnce(&ArcBluetoothBridge::OnLEScanStarted,
                      weak_factory_.GetWeakPtr()),
       base::BindOnce(&ArcBluetoothBridge::OnLEScanError,

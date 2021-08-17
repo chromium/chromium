@@ -215,6 +215,7 @@ class TestBluetoothAdapter final : public BluetoothAdapter {
         base::BarrierClosure(num_requests, std::move(run_loop_quit));
     for (int i = 0; i < num_requests; ++i) {
       StartDiscoverySession(
+          /*client_name=*/std::string(),
           base::BindLambdaForTesting(
               [closure, this](std::unique_ptr<device::BluetoothDiscoverySession>
                                   discovery_session) {
@@ -231,6 +232,7 @@ class TestBluetoothAdapter final : public BluetoothAdapter {
       base::OnceClosure run_loop_quit) {
     StartDiscoverySessionWithFilter(
         std::move(discovery_filter),
+        /*client_name=*/std::string(),
         base::BindOnce(&TestBluetoothAdapter::OnStartDiscoverySessionQuitLoop,
                        this, std::move(run_loop_quit)),
         base::DoNothing());
@@ -678,6 +680,7 @@ TEST_F(BluetoothAdapterTest, GetMergedDiscoveryFilterAllFields) {
 TEST_F(BluetoothAdapterTest, StartDiscoverySession_Destroy) {
   base::RunLoop loop;
   adapter_->StartDiscoverySession(
+      /*client_name=*/std::string(),
       base::BindLambdaForTesting(
           [&](std::unique_ptr<BluetoothDiscoverySession> session) {
             adapter_.reset();
@@ -691,7 +694,8 @@ TEST_F(BluetoothAdapterTest, StartDiscoverySessionError_Destroy) {
   base::RunLoop loop;
   adapter_->set_discovery_session_outcome(
       UMABluetoothDiscoverySessionOutcome::FAILED);
-  adapter_->StartDiscoverySession(base::DoNothing(),
+  adapter_->StartDiscoverySession(/*client_name=*/std::string(),
+                                  base::DoNothing(),
                                   base::BindLambdaForTesting([&]() {
                                     adapter_.reset();
                                     loop.Quit();

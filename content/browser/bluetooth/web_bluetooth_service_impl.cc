@@ -72,6 +72,11 @@ namespace content {
 
 namespace {
 
+// Client names for logging in BLE scanning.
+constexpr char kScanClientNameWatchAdvertisements[] =
+    "Web Bluetooth watchAdvertisements()";
+constexpr char kScanClientNameRequestLeScan[] = "Web Bluetooth requestLeScan()";
+
 blink::mojom::WebBluetoothResult TranslateGATTErrorAndRecord(
     device::BluetoothRemoteGattService::GattErrorCode error_code,
     UMAGATTOperation operation) {
@@ -1588,6 +1593,7 @@ void WebBluetoothServiceImpl::RequestScanningStartImpl(
   // resources, we need use StartDiscoverySessionWithFilter() instead of
   // StartDiscoverySession() here.
   adapter->StartDiscoverySession(
+      kScanClientNameRequestLeScan,
       base::BindOnce(
           &WebBluetoothServiceImpl::OnStartDiscoverySessionForScanning,
           weak_ptr_factory_.GetWeakPtr(), std::move(client_info),
@@ -1735,6 +1741,7 @@ void WebBluetoothServiceImpl::WatchAdvertisementsForDeviceImpl(
   // TODO(https://crbug.com/969109): Use StartDiscoverySessionWithFilter() to
   // filter out by MAC address when platforms provide this capability.
   adapter->StartDiscoverySession(
+      kScanClientNameWatchAdvertisements,
       base::BindOnce(&WebBluetoothServiceImpl::
                          OnStartDiscoverySessionForWatchAdvertisements,
                      weak_ptr_factory_.GetWeakPtr()),

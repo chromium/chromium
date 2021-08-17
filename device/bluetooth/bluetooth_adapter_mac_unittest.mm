@@ -278,6 +278,7 @@ TEST_F(BluetoothAdapterMacTest, AddDiscoverySessionWithLowEnergyFilter) {
 
   adapter_mac_->StartDiscoverySessionWithFilter(
       std::move(discovery_filter),
+      /*client_name=*/std::string(),
       base::BindOnce(&BluetoothAdapterMacTest::OnStartDiscoverySessionSuccess,
                      base::Unretained(this)),
       base::BindOnce(&BluetoothAdapterMacTest::ErrorCallback,
@@ -309,6 +310,7 @@ TEST_F(BluetoothAdapterMacTest, AddSecondDiscoverySessionWithLowEnergyFilter) {
   discovery_filter->AddDeviceFilter(device_filter);
   adapter_mac_->StartDiscoverySessionWithFilter(
       std::move(discovery_filter),
+      /*client_name=*/std::string(),
       base::BindOnce(&BluetoothAdapterMacTest::OnStartDiscoverySessionSuccess,
                      base::Unretained(this)),
       base::BindOnce(&BluetoothAdapterMacTest::ErrorCallback,
@@ -325,6 +327,7 @@ TEST_F(BluetoothAdapterMacTest, AddSecondDiscoverySessionWithLowEnergyFilter) {
 
   adapter_mac_->StartDiscoverySessionWithFilter(
       std::move(discovery_filter2),
+      /*client_name=*/std::string(),
       base::BindOnce(&BluetoothAdapterMacTest::OnStartDiscoverySessionSuccess,
                      base::Unretained(this)),
       base::BindOnce(&BluetoothAdapterMacTest::ErrorCallback,
@@ -346,6 +349,7 @@ TEST_F(BluetoothAdapterMacTest, RemoveDiscoverySessionWithLowEnergyFilter) {
       new BluetoothDiscoveryFilter(BLUETOOTH_TRANSPORT_LE));
   adapter_mac_->StartDiscoverySessionWithFilter(
       std::move(discovery_filter),
+      /*client_name=*/std::string(),
       base::BindOnce(&BluetoothAdapterMacTest::OnStartDiscoverySessionSuccess,
                      base::Unretained(this)),
       base::BindOnce(&BluetoothAdapterMacTest::ErrorCallback,

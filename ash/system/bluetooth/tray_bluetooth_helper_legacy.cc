@@ -39,6 +39,9 @@ namespace {
 // System tray shows a limited number of bluetooth devices.
 const int kMaximumDevicesShown = 50;
 
+// Client name for logging in BLE scanning.
+constexpr char kScanClientName[] = "Ash System Tray";
+
 device::ConnectionFailureReason GetConnectionFailureReason(
     device::BluetoothDevice::ConnectErrorCode error_code) {
   switch (error_code) {
@@ -212,6 +215,7 @@ void TrayBluetoothHelperLegacy::StartBluetoothDiscovering() {
   VLOG(1) << "Requesting new Bluetooth device discovery session.";
   should_run_discovery_ = true;
   adapter_->StartDiscoverySession(
+      kScanClientName,
       base::BindOnce(&TrayBluetoothHelperLegacy::OnStartDiscoverySession,
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&BluetoothSetDiscoveringError));

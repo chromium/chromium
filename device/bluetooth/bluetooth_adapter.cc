@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/single_thread_task_runner.h"
 #include "build/build_config.h"
+#include "components/device_event_log/device_event_log.h"
 #include "device/bluetooth/bluetooth_common.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_discovery_session.h"
@@ -116,16 +117,26 @@ BluetoothAdapter::RetrieveGattConnectedDevicesWithDiscoveryFilter(
   return std::unordered_map<BluetoothDevice*, BluetoothDevice::UUIDSet>();
 }
 
-void BluetoothAdapter::StartDiscoverySession(DiscoverySessionCallback callback,
+void BluetoothAdapter::StartDiscoverySession(const std::string& client_name,
+                                             DiscoverySessionCallback callback,
                                              ErrorCallback error_callback) {
-  StartDiscoverySessionWithFilter(nullptr, std::move(callback),
+  StartDiscoverySessionWithFilter(nullptr, client_name, std::move(callback),
                                   std::move(error_callback));
 }
 
 void BluetoothAdapter::StartDiscoverySessionWithFilter(
     std::unique_ptr<BluetoothDiscoveryFilter> discovery_filter,
+    const std::string& client_name,
     DiscoverySessionCallback callback,
     ErrorCallback error_callback) {
+  if (!client_name.empty()) {
+    BLUETOOTH_LOG(EVENT) << client_name
+                         << " initiating Bluetooth discovery session";
+  } else {
+    BLUETOOTH_LOG(EVENT)
+        << "Unknown client initiating Bluetooth discovery session";
+  }
+
   std::unique_ptr<BluetoothDiscoverySession> new_session(
       new BluetoothDiscoverySession(this, std::move(discovery_filter)));
   discovery_sessions_.insert(new_session.get());

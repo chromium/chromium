@@ -37,6 +37,8 @@ namespace extensions {
 
 namespace {
 
+constexpr char kScanClientName[] = "Chrome Extension";
+
 void IgnoreAdapterResult(scoped_refptr<device::BluetoothAdapter> adapter) {}
 
 void IgnoreAdapterResultAndThen(
@@ -146,6 +148,7 @@ void BluetoothEventRouter::StartDiscoverySessionImpl(
   if (pre_set_iter != pre_set_filter_map_.end()) {
     adapter->StartDiscoverySessionWithFilter(
         std::unique_ptr<device::BluetoothDiscoveryFilter>(pre_set_iter->second),
+        kScanClientName,
         base::BindOnce(&BluetoothEventRouter::OnStartDiscoverySession,
                        weak_ptr_factory_.GetWeakPtr(), extension_id,
                        std::move(callback)),
@@ -154,6 +157,7 @@ void BluetoothEventRouter::StartDiscoverySessionImpl(
     return;
   }
   adapter->StartDiscoverySession(
+      kScanClientName,
       base::BindOnce(&BluetoothEventRouter::OnStartDiscoverySession,
                      weak_ptr_factory_.GetWeakPtr(), extension_id,
                      std::move(callback)),
@@ -212,7 +216,7 @@ void BluetoothEventRouter::SetDiscoveryFilter(
   // will automatically delete the old session and put the new session (with its
   // new filter) in as this extension's session
   adapter->StartDiscoverySessionWithFilter(
-      std::move(discovery_filter),
+      std::move(discovery_filter), kScanClientName,
       base::BindOnce(&BluetoothEventRouter::OnStartDiscoverySession,
                      weak_ptr_factory_.GetWeakPtr(), extension_id,
                      std::move(callback)),

@@ -507,10 +507,16 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
   // that have been discovered so far. Otherwise, clients can be notified of all
   // new and lost devices by implementing the Observer methods "DeviceAdded" and
   // "DeviceRemoved".
-  void StartDiscoverySession(DiscoverySessionCallback callback,
+  //
+  // |client_name|: The name of the application using this scan session. This
+  // field is for logging purposes and does not affect any scanning logic, so
+  // the value can be freely defined by the caller.
+  void StartDiscoverySession(const std::string& client_name,
+                             DiscoverySessionCallback callback,
                              ErrorCallback error_callback);
   void StartDiscoverySessionWithFilter(
       std::unique_ptr<BluetoothDiscoveryFilter> discovery_filter,
+      const std::string& client_name,
       DiscoverySessionCallback callback,
       ErrorCallback error_callback);
 

@@ -19,6 +19,9 @@ namespace secure_channel {
 
 namespace {
 
+// Client name for logging in BLE scanning.
+constexpr char kScanClientName[] = "Secure Channel";
+
 const int64_t kTimeBetweenEachCommandMs = 200;
 
 }  // namespace
@@ -110,6 +113,7 @@ void BleSynchronizer::ProcessQueue() {
       bluetooth_adapter_->StartDiscoverySessionWithFilter(
           std::make_unique<device::BluetoothDiscoveryFilter>(
               device::BLUETOOTH_TRANSPORT_LE),
+          kScanClientName,
           base::BindOnce(&BleSynchronizer::OnDiscoverySessionStarted,
                          weak_ptr_factory_.GetWeakPtr()),
           base::BindOnce(&BleSynchronizer::OnErrorStartingDiscoverySession,

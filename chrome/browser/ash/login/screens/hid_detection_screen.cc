@@ -40,6 +40,9 @@ constexpr char kUserActionContinue[] = "HIDDetectionOnContinue";
 // Standard length of pincode for pairing BT keyboards.
 constexpr int kPincodeLength = 6;
 
+// Client name for logging in BLE scanning.
+constexpr char kScanClientName[] = "HID Detection Screen";
+
 bool DeviceIsPointing(device::BluetoothDeviceType device_type) {
   return device_type == device::BluetoothDeviceType::MOUSE ||
          device_type == device::BluetoothDeviceType::KEYBOARD_MOUSE_COMBO ||
@@ -502,6 +505,7 @@ void HIDDetectionScreen::InitializeAdapter(
 
 void HIDDetectionScreen::StartBTDiscoverySession() {
   adapter_->StartDiscoverySession(
+      kScanClientName,
       base::BindOnce(&HIDDetectionScreen::OnStartDiscoverySession,
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&HIDDetectionScreen::FindDevicesError,

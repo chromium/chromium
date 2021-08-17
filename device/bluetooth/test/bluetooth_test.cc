@@ -86,6 +86,7 @@ BluetoothTestBase::~BluetoothTestBase() = default;
 void BluetoothTestBase::StartLowEnergyDiscoverySession() {
   adapter_->StartDiscoverySessionWithFilter(
       std::make_unique<BluetoothDiscoveryFilter>(BLUETOOTH_TRANSPORT_LE),
+      /*client_name=*/std::string(),
       GetDiscoverySessionCallback(Call::EXPECTED),
       GetErrorCallback(Call::NOT_EXPECTED));
   base::RunLoop().RunUntilIdle();
@@ -94,6 +95,7 @@ void BluetoothTestBase::StartLowEnergyDiscoverySession() {
 void BluetoothTestBase::StartLowEnergyDiscoverySessionExpectedToFail() {
   adapter_->StartDiscoverySessionWithFilter(
       std::make_unique<BluetoothDiscoveryFilter>(BLUETOOTH_TRANSPORT_LE),
+      /*client_name=*/std::string(),
       GetDiscoverySessionCallback(Call::NOT_EXPECTED),
       GetErrorCallback(Call::EXPECTED));
   base::RunLoop().RunUntilIdle();

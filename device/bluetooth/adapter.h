@@ -47,7 +47,8 @@ class Adapter : public mojom::Adapter,
   void SetDiscoverable(bool discoverable,
                        SetDiscoverableCallback callback) override;
   void SetName(const std::string& name, SetNameCallback callback) override;
-  void StartDiscoverySession(StartDiscoverySessionCallback callback) override;
+  void StartDiscoverySession(const std::string& client_name,
+                             StartDiscoverySessionCallback callback) override;
   void ConnectToServiceInsecurely(
       const std::string& address,
       const device::BluetoothUUID& service_uuid,

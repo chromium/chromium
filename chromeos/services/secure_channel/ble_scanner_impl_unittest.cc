@@ -141,6 +141,7 @@ class SecureChannelBleScannerImplTest : public testing::Test {
   // creating a DiscoverySession.
   void StartDiscoverySession() {
     mock_adapter_->StartDiscoverySession(
+        /*client_name=*/std::string(),
         base::BindLambdaForTesting(
             [&](std::unique_ptr<device::BluetoothDiscoverySession>
                     discovery_session) {
