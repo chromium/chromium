@@ -40,7 +40,7 @@ class SignalKeyTest : public testing::Test {
   void VerifyConversion(const SignalKey& key) {
     std::string binary_key = key.ToBinary();
     SignalKey result;
-    SignalKey::FromBinary(binary_key, &result);
+    EXPECT_TRUE(SignalKey::FromBinary(binary_key, &result));
     EXPECT_TRUE(Equal(key, result));
   }
 
@@ -99,7 +99,7 @@ TEST_F(SignalKeyTest, TestUsesSafeBinaryFormat) {
 
   std::string binary_key = key.ToBinary();
   SignalKeyInternal internal_key;
-  SignalKeyInternalFromBinary(binary_key, &internal_key);
+  EXPECT_TRUE(SignalKeyInternalFromBinary(binary_key, &internal_key));
   EXPECT_EQ('u', internal_key.prefix.kind);
   EXPECT_EQ(42UL, internal_key.prefix.name_hash);
   EXPECT_EQ(11644502400, internal_key.time_range_start_sec);
@@ -112,7 +112,7 @@ TEST_F(SignalKeyTest, TestGetPrefixInBinary) {
 
   std::string binary_prefix = key.GetPrefixInBinary();
   SignalKeyInternal::Prefix prefix;
-  SignalKeyInternalPrefixFromBinary(binary_prefix, &prefix);
+  EXPECT_TRUE(SignalKeyInternalPrefixFromBinary(binary_prefix, &prefix));
   EXPECT_EQ('u', prefix.kind);
   EXPECT_EQ(42UL, prefix.name_hash);
 }

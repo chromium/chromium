@@ -83,9 +83,10 @@ std::string SignalKey::GetPrefixInBinary() const {
 }
 
 // static
-void SignalKey::FromBinary(const std::string& input, SignalKey* output) {
+bool SignalKey::FromBinary(const std::string& input, SignalKey* output) {
   SignalKeyInternal internal_key;
-  SignalKeyInternalFromBinary(input, &internal_key);
+  if (!SignalKeyInternalFromBinary(input, &internal_key))
+    return false;
   output->kind_ =
       FromInternalSignalKindRepresentation(internal_key.prefix.kind);
   output->name_hash_ = internal_key.prefix.name_hash;
@@ -93,6 +94,7 @@ void SignalKey::FromBinary(const std::string& input, SignalKey* output) {
       base::TimeDelta::FromSeconds(internal_key.time_range_start_sec));
   output->range_end_ = base::Time::FromDeltaSinceWindowsEpoch(
       base::TimeDelta::FromSeconds(internal_key.time_range_end_sec));
+  return true;
 }
 
 std::string SignalKey::ToDebugString() const {
