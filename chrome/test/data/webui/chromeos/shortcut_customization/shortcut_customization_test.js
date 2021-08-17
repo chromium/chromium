@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {AcceleratorLookupManager} from 'chrome://shortcut-customization/accelerator_lookup_manager.js';
+import {AcceleratorSubsectionElement} from 'chrome://shortcut-customization/accelerator_subsection.js';
+import {fakeAcceleratorConfig, fakeLayoutInfo, fakeSubCategories} from 'chrome://shortcut-customization/fake_data.js';
 import {getShortcutProvider, setShortcutProviderForTesting} from 'chrome://shortcut-customization/mojo_interface_provider.js';
 import {ShortcutCustomizationAppElement} from 'chrome://shortcut-customization/shortcut_customization_app.js';
 import {AcceleratorInfo, Modifier, ShortcutProviderInterface} from 'chrome://shortcut-customization/shortcut_types.js';
@@ -15,7 +18,14 @@ export function shortcutCustomizationAppTest() {
   /** @type {?ShortcutCustomizationAppElement} */
   let page = null;
 
+  /** @type {?AcceleratorLookupManager} */
+  let manager = null;
+
   setup(() => {
+    manager = AcceleratorLookupManager.getInstance();
+    manager.setAcceleratorLookup(fakeAcceleratorConfig);
+    manager.setAcceleratorLayoutLookup(fakeLayoutInfo);
+
     page = /** @type {!ShortcutCustomizationAppElement} */ (
         document.createElement('shortcut-customization-app'));
     document.body.appendChild(page);
@@ -26,10 +36,94 @@ export function shortcutCustomizationAppTest() {
     page = null;
   });
 
-  test('LandingPageLoaded', () => {
-    // TODO(jimmyxgong): Remove this stub test once the page has more
-    // capabilities to test.
-    assertTrue(!!page.shadowRoot.querySelector('navigation-view-panel'));
+  /**
+   * @param {string} subpageId
+   * @return {!Array<!AcceleratorSubsectionElement>}
+   */
+  function getSubsections_(subpageId) {
+    const navPanel = page.shadowRoot.querySelector('navigation-view-panel');
+    const navBody = navPanel.shadowRoot.querySelector('#navigationBody');
+    const subPage = navBody.querySelector(`#${subpageId}`);
+    return subPage.shadowRoot.querySelectorAll('accelerator-subsection');
+  }
+
+  test('LoadFakeChromeOSPage', async () => {
+    await flushTasks();
+
+    const subSections = getSubsections_('chromeos-page-id');
+    const expectedLayouts =
+        manager.acceleratorLayoutLookup.get(/**ChromeOS*/ 0);
+    // Two subsections for ChromeOS (Window Management + Virtual Desks).
+    assertEquals(expectedLayouts.size, subSections.length);
+
+    let keyIterator = expectedLayouts.keys();
+    // Assert subsection title (Window management) matches expected value from
+    // fake lookup.
+    const windowManagementValue = keyIterator.next().value;
+    assertEquals(
+        fakeSubCategories.get(windowManagementValue), subSections[0].title);
+    // Asert 2 accelerators are loaded for Window Management.
+    assertEquals(
+        expectedLayouts.get(windowManagementValue).size,
+        subSections[0].acceleratorContainer.length);
+
+    // Assert subsection title (Virtual Desks) matches expected value from
+    // fake lookup.
+    const virtualDesksValue = keyIterator.next().value;
+    assertEquals(
+        fakeSubCategories.get(virtualDesksValue), subSections[1].title);
+    // Asert 2 accelerators are loaded for Virtual Desks.
+    assertEquals(
+        expectedLayouts.get(virtualDesksValue).size,
+        subSections[1].acceleratorContainer.length);
+  });
+
+  test('LoadFakeBrowserPage', async () => {
+    await flushTasks();
+
+    const navPanel = page.shadowRoot.querySelector('navigation-view-panel');
+    const navSelector = navPanel.shadowRoot.querySelector('#navigationSelector')
+                            .querySelector('navigation-selector');
+    const navMenuItems =
+        navSelector.shadowRoot.querySelector('#navigationSelectorMenu')
+            .querySelectorAll('.navigation-item');
+    // Index[1] represents the Browser subpage.
+    navMenuItems[1].click();
+
+    await flushTasks();
+
+    const subSections = getSubsections_('browser-page-id');
+    const expectedLayouts = manager.acceleratorLayoutLookup.get(/**Browser*/ 1);
+    // One subsection for the Browser (Tabs).
+    assertEquals(expectedLayouts.size, subSections.length);
+
+    const keyIterator = expectedLayouts.keys().next();
+    // Assert subsection names match name lookup (Tabs).
+    assertEquals(
+        fakeSubCategories.get(keyIterator.value), subSections[0].title);
+    // Assert only 1 accelerator is within Tabs.
+    assertEquals(
+        expectedLayouts.get(keyIterator.value).size,
+        subSections[0].acceleratorContainer.length);
+  });
+
+  test('OpenDialogFromAccelerator', async () => {
+    await flushTasks();
+
+    // The edit dialog should not be stamped and visible.
+    let editDialog = page.shadowRoot.querySelector('#editDialog');
+    assertFalse(!!editDialog);
+
+    const subSections = getSubsections_('chromeos-page-id');
+    const accelerators =
+        subSections[0].shadowRoot.querySelectorAll('accelerator-row');
+    // Only two accelerators rows for "Window Management".
+    assertEquals(2, accelerators.length);
+    // Click on the first accelerator, expect the edit dialog to open.
+    accelerators[0].click();
+    await flushTasks();
+    editDialog = page.shadowRoot.querySelector('#editDialog');
+    assertTrue(!!editDialog);
   });
 
   test('DialogOpensOnEvent', async () => {

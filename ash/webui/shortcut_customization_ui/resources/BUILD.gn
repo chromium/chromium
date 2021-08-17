@@ -51,6 +51,7 @@ js_type_check("closure_compile") {
     ":accelerator_edit_view",
     ":accelerator_lookup_manager",
     ":accelerator_row",
+    ":accelerator_subsection",
     ":accelerator_view",
     ":fake_shortcut_provider",
     ":icons",
@@ -107,7 +108,10 @@ js_library("accelerator_view") {
 
 js_library("accelerator_subsection") {
   deps = [
+    ":accelerator_lookup_manager",
     ":accelerator_row",
+    ":fake_data",
+    ":shortcut_types",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
@@ -147,6 +151,8 @@ js_library("mojo_interface_provider") {
 js_library("shortcut_customization_app") {
   deps = [
     ":accelerator_edit_dialog",
+    ":accelerator_lookup_manager",
+    ":mojo_interface_provider",
     ":shortcut_customization_fonts_css",
     ":shortcut_input",
     ":shortcut_types",
@@ -180,6 +186,7 @@ preprocess_if_expr("preprocess_generated") {
 
 js_library("shortcuts_page") {
   deps = [
+    ":accelerator_lookup_manager",
     ":shortcut_input",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]

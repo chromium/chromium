@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {fakeAcceleratorConfig} from './fake_data.js'
+import {fakeAcceleratorConfig, fakeLayoutInfo} from './fake_data.js'
 import {FakeShortcutProvider} from './fake_shortcut_provider.js'
 import {ShortcutProviderInterface} from './shortcut_types.js'
 
@@ -35,6 +35,9 @@ function setupFakeShortcutProvider() {
 
   // Setup accelerator config.
   provider.setFakeAcceleratorConfig(fakeAcceleratorConfig);
+
+  // Setup accelerator layout info.
+  provider.setFakeLayoutInfo(fakeLayoutInfo);
 
   // Set the fake provider.
   setShortcutProviderForTesting(provider);

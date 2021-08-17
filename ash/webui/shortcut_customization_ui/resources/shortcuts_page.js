@@ -2,9 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './accelerator_subsection.js';
 import './shortcut_input.js';
 
+import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 
 /**
  * @fileoverview
@@ -20,6 +24,59 @@ export class ShortcutsPageElement extends PolymerElement {
 
   static get template() {
     return html`{__html_template__}`;
+  }
+
+  static get properties() {
+    return {
+      /**
+       * Implicit property from NavigationSelector. Contains one Number field,
+       * |category|, that holds the category type of this shortcut page.
+       */
+      initialData: {
+        type: Object,
+        value: () => {},
+      },
+
+      /**
+       * @type {!Array<number>}
+       * @private
+       */
+      subcategories_: {
+        type: Array,
+        value: [],
+      },
+    }
+  }
+
+  /** @override */
+  constructor() {
+    super();
+
+    /** @private {!AcceleratorLookupManager} */
+    this.lookupManager_ = AcceleratorLookupManager.getInstance();
+  }
+
+  /** @override */
+  connectedCallback() {
+    super.connectedCallback();
+    this.updateAccelerators();
+  }
+
+  updateAccelerators() {
+    if (!this.lookupManager_.acceleratorLayoutLookup.has(
+            this.initialData.category)) {
+      return;
+    }
+
+    const subcatMap = this.lookupManager_.acceleratorLayoutLookup.get(
+        this.initialData.category);
+    assert(!!subcatMap);
+
+    let subcategories = [];
+    for (const key of subcatMap.keys()) {
+      subcategories.push(key);
+    }
+    this.subcategories_ = subcategories;
   }
 }
 

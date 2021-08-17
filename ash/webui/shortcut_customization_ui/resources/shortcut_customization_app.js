@@ -10,7 +10,11 @@ import 'chrome://resources/ash/common/navigation_view_panel.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
+import {getShortcutProvider} from './mojo_interface_provider.js';
+import {AcceleratorConfig, LayoutInfoList, ShortcutProviderInterface} from './shortcut_types.js';
 import {AcceleratorInfo} from './shortcut_types.js';
+
 /**
  * @fileoverview
  * 'shortcut-customization-app' is the main landing page for the shortcut
@@ -50,25 +54,24 @@ export class ShortcutCustomizationAppElement extends PolymerElement {
     }
   }
 
-  ready() {
-    super.ready();
-    this.$.navigationPanel.addSelector(
-        'Chrome OS', 'shortcuts-page', 'navigation-selector:laptop-chromebook',
-        'chromeos-page-id');
-    this.$.navigationPanel.addSelector(
-        'Browser', 'shortcuts-page', 'navigation-selector:laptop-chromebook',
-        'browser-page-id');
-    this.$.navigationPanel.addSelector(
-        'Android', 'shortcuts-page', 'navigation-selector:laptop-chromebook',
-        'android-page-id');
-    this.$.navigationPanel.addSelector(
-        'Accessibility', 'shortcuts-page',
-        'navigation-selector:laptop-chromebook', 'a11y-page-id');
+  /** @override */
+  constructor() {
+    super();
+
+    /** @private {!ShortcutProviderInterface} */
+    this.shortcutProvider_ = getShortcutProvider();
+
+    /** @private {!AcceleratorLookupManager} */
+    this.acceleratorLookupManager_ = AcceleratorLookupManager.getInstance();
   }
 
   /** @override */
   connectedCallback() {
     super.connectedCallback();
+
+    this.addNavigationSelectors_();
+    this.fetchAccelerators_();
+
     window.addEventListener('show-edit-dialog',
         (e) => this.showDialog_(e.detail));
     window.addEventListener('edit-dialog-closed', () => this.onDialogClosed_());
@@ -81,6 +84,53 @@ export class ShortcutCustomizationAppElement extends PolymerElement {
         (e) => this.showDialog_(e.detail));
     window.removeEventListener('edit-dialog-closed',
         () => this.onDialogClosed_());
+  }
+
+  /** @private */
+  fetchAccelerators_() {
+    // Kickoff fetching accelerators by first fetching the accelerator configs.
+    this.shortcutProvider_.getAllAcceleratorConfig().then(
+        (/** @type {!AcceleratorConfig}*/ result) =>
+            this.onAcceleratorConfigFetched_(result));
+  }
+
+  /**
+   * @param {!AcceleratorConfig} config
+   * @private
+   */
+  onAcceleratorConfigFetched_(config) {
+    this.acceleratorLookupManager_.setAcceleratorLookup(config);
+    // After fetching the config infos, fetch the layout infos next.
+    this.shortcutProvider_.getLayoutInfo().then(
+        (/** @type {!LayoutInfoList} */ result) =>
+            this.onLayoutInfosFetched_(result));
+  }
+
+  /**
+   * @param {!LayoutInfoList} layoutInfos
+   * @private
+   */
+  onLayoutInfosFetched_(layoutInfos) {
+    this.acceleratorLookupManager_.setAcceleratorLayoutLookup(layoutInfos);
+    // Notify pages to update their accelerators.
+    this.$.navigationPanel.notifyEvent('updateAccelerators');
+  }
+
+  /** @private */
+  addNavigationSelectors_() {
+    this.$.navigationPanel.addSelector(
+        'Chrome OS', 'shortcuts-page', 'navigation-selector:laptop-chromebook',
+        'chromeos-page-id', {category: /**ChromeOS*/ 0});
+    this.$.navigationPanel.addSelector(
+        'Browser', 'shortcuts-page', 'navigation-selector:laptop-chromebook',
+        'browser-page-id', {category: /**Browser*/ 1});
+    this.$.navigationPanel.addSelector(
+        'Android', 'shortcuts-page', 'navigation-selector:laptop-chromebook',
+        'android-page-id', {category: /**Android*/ 2});
+    this.$.navigationPanel.addSelector(
+        'Accessibility', 'shortcuts-page',
+        'navigation-selector:laptop-chromebook', 'a11y-page-id',
+        {category: /**Accessbility*/ 3});
   }
 
   /**

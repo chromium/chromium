@@ -92,6 +92,7 @@ js_library("fake_shortcut_provider_test") {
 js_library("shortcut_customization_test") {
   deps = [
     "../..:chai_assert",
+    "//ash/webui/shortcut_customization_ui/resources:accelerator_subsection",
     "//ash/webui/shortcut_customization_ui/resources:mojo_interface_provider",
     "//ash/webui/shortcut_customization_ui/resources:shortcut_customization_app",
     "//ash/webui/shortcut_customization_ui/resources:shortcut_types",

@@ -4,7 +4,12 @@
 
 import './accelerator_row.js'
 
+import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
+import {fakeActionNames, fakeSubCategories} from './fake_data.js';
+import {AcceleratorInfo} from './shortcut_types.js';
 
 /**
  * @fileoverview
@@ -27,17 +32,75 @@ export class AcceleratorSubsectionElement extends PolymerElement {
         value: '',
       },
 
+      category: {
+        type: Number,
+        value: '',
+      },
+
+      subcategory: {
+        type: Number,
+        value: null,
+        observer: 'onCategoryUpdated_',
+      },
+
       /**
        * TODO(jimmyxgong): Fetch the shortcuts and it accelerators with the
-       * mojom::source_id and mojom::subsection_id. This serves as a temporary
-       * way to populate a subsection.
-       * @type {!Array<!{string, !Array<!AcceleratorInfo>}>}
+       * mojom::source_id and mojom::subsection_id. This serves as a
+       * temporary way to populate a subsection.
+       * @type {Array<!Object<string, number, Array<!AcceleratorInfo>>>}
        */
       acceleratorContainer: {
         type: Array,
-        value: () => {},
+        value: [],
       }
     }
+  }
+
+  /** @override */
+  constructor() {
+    super();
+
+    /** @private {!AcceleratorLookupManager} */
+    this.lookupManager_ = AcceleratorLookupManager.getInstance();
+  }
+
+  /** @protected */
+  onCategoryUpdated_() {
+    if (this.subcategory === null) {
+      return;
+    }
+
+    // Fetch the layout infos based off of the subsection's category and
+    // subcategory.
+    const layoutInfos =
+        this.lookupManager_.acceleratorLayoutLookup.get(this.category)
+            .get(this.subcategory);
+    assert(!!layoutInfos);
+
+    // TODO(jimmyxgong): Fetch real string for title once available.
+    this.title = fakeSubCategories.get(this.subcategory);
+
+    // Use an atomic replacement instead of using Polymer's array manipulation
+    // functions. Polymer's array manipulation functions batch all slices
+    // updates as one which results in strange behaviors with updating
+    // individual subsections. An atomic replacement makes ensures each
+    // subsection's accelerators are kept distinct from each other.
+    let tempAccelContainer = [];
+    layoutInfos.forEach((value) => {
+      const accelId = `${value.source}-${value.action}`;
+      const acceleratorInfos =
+          this.lookupManager_.acceleratorLookup.get(accelId);
+
+      // TODO(jimmyxgong): Fetch real string for description once available.
+      const accel =
+          /**@type {!Object<string, number, Array<!AcceleratorInfo>>}*/ ({
+            description: fakeActionNames.get(value.action),
+            source: value.source,
+            acceleratorInfos: Array.from(acceleratorInfos),
+          });
+      tempAccelContainer.push(accel);
+    });
+    this.acceleratorContainer = tempAccelContainer;
   }
 }
 
