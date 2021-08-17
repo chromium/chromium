@@ -217,10 +217,10 @@ bool ThemeHandler::Validate(const Extension* extension,
     if (images_value) {
       for (base::DictionaryValue::Iterator iter(*images_value); !iter.IsAtEnd();
            iter.Advance()) {
-        std::string val;
-        if (iter.value().GetAsString(&val)) {
-          base::FilePath image_path = extension->path().Append(
-              base::FilePath::FromUTF8Unsafe(val));
+        const std::string* val = iter.value().GetIfString();
+        if (val) {
+          base::FilePath image_path =
+              extension->path().Append(base::FilePath::FromUTF8Unsafe(*val));
           if (!base::PathExists(image_path)) {
             *error =
                 l10n_util::GetStringFUTF8(IDS_EXTENSION_INVALID_IMAGE_PATH,
