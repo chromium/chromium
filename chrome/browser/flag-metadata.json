@@ -484,7 +484,7 @@
   },
   {
     "name": "bluetooth-advertisement-monitoring",
-    "owners": [ "cvandermerwe@google.com", "hansenmichael@google.com", "cros-system-services@google.com" ],
+    "owners": [ "cvandermerwe@google.com", "hansenmichael@google.com", "chromeos-cross-device-eng@google.com" ],
     "expiry_milestone": 97
   },
   {
@@ -3439,7 +3439,7 @@
   },
   {
     "name": "instant-tethering",
-    "owners": [ "hansberry", "khorimoto", "cros-system-services@google.com" ],
+    "owners": [ "hansberry", "khorimoto", "chromeos-cross-device-eng@google.com" ],
     // Though Instant Tethering is now a launched feature, it is only marked enabled on select,
     // approved boards which have passed hardware verification and received server config seeds
     // marking it as enabled. This means it is actually disabled-by-default, and since test machines
@@ -3878,27 +3878,27 @@
   },
   {
     "name": "nearby-keep-alive-fix",
-    "owners": [ "danlee@google.com", "cros-system-services@google.com", "cross-device-team@google.com" ],
+    "owners": [ "danlee@google.com", "chromeos-cross-device-eng@google.com" ],
     "expiry_milestone": 98
   },
   {
     "name": "nearby-sharing",
-    "owners": [ "danlee@google.com", "cros-system-services@google.com", "cross-device-team@google.com" ],
+    "owners": [ "danlee@google.com", "chromeos-cross-device-eng@google.com" ],
     "expiry_milestone": 95
   },
   {
     "name": "nearby-sharing-background-scanning",
-    "owners": [ "hansenmichael@google.com", "cvandermerwe@google.com", "cros-system-services@google.com", "cross-device-team@google.com" ],
+    "owners": [ "hansenmichael@google.com", "cvandermerwe@google.com", "chromeos-cross-device-eng@google.com" ],
     "expiry_milestone": 98
   },
   {
     "name": "nearby-sharing-device-contacts",
-    "owners": [ "danlee@google.com", "cros-system-services@google.com", "cross-device-team@google.com" ],
+    "owners": [ "danlee@google.com", "chromeos-cross-device-eng@google.com" ],
     "expiry_milestone": 95
   },
   {
     "name": "nearby-sharing-webrtc",
-    "owners": [ "danlee@google.com", "cros-system-services@google.com", "cross-device-team@google.com" ],
+    "owners": [ "danlee@google.com", "chromeos-cross-device-eng@google.com" ],
     "expiry_milestone": 95
   },
   {
@@ -5696,12 +5696,12 @@
   },
   {
     "name": "wifi-sync-allow-deletes",
-    "owners": [ "jonmann", "cros-system-services@google.com" ],
+    "owners": [ "jonmann", "chromeos-cross-device-eng@google.com" ],
     "expiry_milestone": 97
   },
   {
     "name": "wifi-sync-android",
-    "owners": [ "jonmann", "cvandermerwe@google.com", "cros-system-services@google.com" ],
+    "owners": [ "jonmann", "cvandermerwe@google.com", "chromeos-cross-device-eng@google.com" ],
     "expiry_milestone": 97
   },
   {
