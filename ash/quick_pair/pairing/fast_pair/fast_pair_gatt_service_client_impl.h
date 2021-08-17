@@ -30,8 +30,16 @@ class BluetoothRemoteGattService;
 
 }  // namespace device
 
+namespace {
+
+constexpr int kBlockByteSize = 16;
+
+}  // namespace
+
 namespace ash {
 namespace quick_pair {
+
+class FastPairDataEncryptor;
 
 // This class is responsible for connecting to the Fast Pair GATT service for a
 // device and invoking a callback when ready, or when an error is discovered
@@ -67,6 +75,7 @@ class FastPairGattServiceClientImpl : public FastPairGattServiceClient {
                          uint8_t flags,
                          const std::string& provider_address,
                          const std::string& seekers_address,
+                         FastPairDataEncryptor* fast_pair_data_encryptor,
                          base::OnceCallback<void(std::vector<uint8_t>,
                                                  absl::optional<PairFailure>)>
                              write_response_callback) override;
@@ -88,10 +97,11 @@ class FastPairGattServiceClientImpl : public FastPairGattServiceClient {
       const FastPairGattServiceClientImpl&) = delete;
 
   // Creates a data vector based on parameter information.
-  std::vector<uint8_t> CreateRequest(uint8_t message_type,
-                                     uint8_t flags,
-                                     const std::string& provider_address,
-                                     const std::string& seekers_address);
+  const std::array<uint8_t, kBlockByteSize> CreateRequest(
+      uint8_t message_type,
+      uint8_t flags,
+      const std::string& provider_address,
+      const std::string& seekers_address);
   std::vector<uint8_t> CreatePasskeyBlock(uint8_t message_type,
                                           uint32_t passkey);
 

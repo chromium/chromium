@@ -8,9 +8,17 @@
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/common/pair_failure.h"
+#include "ash/quick_pair/pairing/fast_pair/fast_pair_data_encryptor.h"
+#include "ash/quick_pair/pairing/fast_pair/fast_pair_data_encryptor_impl.h"
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_gatt_service_client_impl.h"
 #include "base/callback.h"
 #include "device/bluetooth/bluetooth_adapter.h"
+
+namespace {
+
+constexpr int kProviderAddressSize = 6;
+
+}  // namespace
 
 namespace ash {
 namespace quick_pair {
@@ -46,8 +54,35 @@ void FastPairPairer::OnGattClientInitializedCallback(
     return;
   }
 
-  QP_LOG(VERBOSE) << "Fast Pair GATT service client initialization successful.";
+  FastPairDataEncryptorImpl::Factory::CreateAsync(
+      device_, base::BindOnce(&FastPairPairer::OnDataEncryptorCreateAsync,
+                              weak_ptr_factory_.GetWeakPtr()));
 }
+
+void FastPairPairer::OnDataEncryptorCreateAsync(
+    std::unique_ptr<FastPairDataEncryptor> fast_pair_data_encryptor) {
+  if (!fast_pair_data_encryptor) {
+    QP_LOG(WARNING) << "Fast Pair Data Encryptor failed to be created.";
+    std::move(pair_failed_callback_)
+        .Run(device_, PairFailure::kDataEncryptorRetrieval);
+    return;
+  }
+  fast_pair_data_encryptor_ = std::move(fast_pair_data_encryptor);
+  QP_LOG(VERBOSE) << "Fast Pair GATT service client initialization successful.";
+
+  DCHECK(!device_->address.empty());
+  DCHECK(device_->address.size() == kProviderAddressSize);
+  fast_pair_gatt_service_client_->WriteRequestAsync(
+      /*message_type=*/0x00,
+      /*flags=*/0x00,
+      /*provider_address=*/device_->address,
+      /*seekers_address=*/"", fast_pair_data_encryptor_.get(),
+      base::BindOnce(&FastPairPairer::OnWriteResponse,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void FastPairPairer::OnWriteResponse(std::vector<uint8_t> response_bytes,
+                                     absl::optional<PairFailure> failure) {}
 
 }  // namespace quick_pair
 }  // namespace ash

@@ -6,6 +6,7 @@
 
 #include "ash/quick_pair/common/constants.h"
 #include "ash/quick_pair/common/logging.h"
+#include "ash/quick_pair/pairing/fast_pair/fast_pair_data_encryptor.h"
 #include "base/time/time.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_gatt_connection.h"
@@ -28,11 +29,8 @@ const device::BluetoothUUID kAccountKeyCharacteristicUuidV1("1236");
 const device::BluetoothUUID kAccountKeyCharacteristicUuidV2(
     "FE2C1236-8366-4814-8EB0-01DE32100BEA");
 
-constexpr uint8_t kBlockByteSize = 16;
-constexpr uint8_t kRequestSaltByteSize = 3;
 constexpr uint8_t kProviderAddressStartIndex = 2;
 constexpr uint8_t kSeekerAddressStartIndex = 8;
-constexpr uint8_t kRequestSaltStartIndex = 13;
 constexpr uint8_t kSeekerPasskey = 0x02;
 
 constexpr base::TimeDelta kGattOperationTimeout =
@@ -306,27 +304,32 @@ FastPairGattServiceClientImpl::gatt_service() {
   return gatt_service_;
 }
 
-std::vector<uint8_t> FastPairGattServiceClientImpl::CreateRequest(
+const std::array<uint8_t, kBlockByteSize>
+FastPairGattServiceClientImpl::CreateRequest(
     uint8_t message_type,
     uint8_t flags,
     const std::string& provider_address,
     const std::string& seekers_address) {
-  std::vector<uint8_t> data_to_write(kBlockByteSize);
+  // We can't use a std::array to start with because RAND_bytes only takes in
+  // C-style arrays, so we will convert at the end.
+  uint8_t data_to_write[kBlockByteSize];
+  RAND_bytes(data_to_write, kBlockByteSize);
 
   data_to_write[0] = message_type;
   data_to_write[1] = flags;
 
   std::copy(provider_address.begin(), provider_address.end(),
-            data_to_write.begin() + kProviderAddressStartIndex);
+            std::begin(data_to_write) + kProviderAddressStartIndex);
+
+  // Seekers address can be empty, in which we would just have the bytes be
+  // the salt.
   std::copy(seekers_address.begin(), seekers_address.end(),
-            data_to_write.begin() + kSeekerAddressStartIndex);
+            std::begin(data_to_write) + kSeekerAddressStartIndex);
 
-  uint8_t salt[kRequestSaltByteSize];
-  RAND_bytes(salt, kRequestSaltByteSize);
-  std::copy(std::begin(salt), std::end(salt),
-            data_to_write.begin() + kRequestSaltStartIndex);
-
-  return data_to_write;
+  std::array<uint8_t, kBlockByteSize> std_data_to_write;
+  std::move(std::begin(data_to_write), std::end(data_to_write),
+            std_data_to_write.begin());
+  return std_data_to_write;
 }
 
 std::vector<uint8_t> FastPairGattServiceClientImpl::CreatePasskeyBlock(
@@ -351,10 +354,12 @@ void FastPairGattServiceClientImpl::WriteRequestAsync(
     uint8_t flags,
     const std::string& provider_address,
     const std::string& seekers_address,
+    FastPairDataEncryptor* fast_pair_data_encryptor,
     base::OnceCallback<void(std::vector<uint8_t>, absl::optional<PairFailure>)>
         write_response_callback) {
   DCHECK(is_initialized_);
   DCHECK(!key_based_write_response_callback_);
+  DCHECK(fast_pair_data_encryptor);
 
   key_based_write_response_callback_ = std::move(write_response_callback);
 
@@ -369,8 +374,12 @@ void FastPairGattServiceClientImpl::WriteRequestAsync(
                      weak_ptr_factory_.GetWeakPtr(),
                      PairFailure::kKeyBasedPairingResponseTimeout));
 
+  const std::array<uint8_t, kBlockSizeBytes> data_to_write =
+      fast_pair_data_encryptor->EncryptBytes(CreateRequest(
+          message_type, flags, provider_address, seekers_address));
+
   key_based_characteristic_->WriteRemoteCharacteristic(
-      CreateRequest(message_type, flags, provider_address, seekers_address),
+      std::vector<uint8_t>(data_to_write.begin(), data_to_write.end()),
       device::BluetoothRemoteGattCharacteristic::WriteType::kWithResponse,
       base::BindOnce(&FastPairGattServiceClientImpl::OnWriteRequest,
                      weak_ptr_factory_.GetWeakPtr()),

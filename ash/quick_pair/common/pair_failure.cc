@@ -18,6 +18,9 @@ std::ostream& operator<<(std::ostream& stream, PairFailure failure) {
     case PairFailure::kGattServiceDiscoveryTimeout:
       stream << "[Timed out while starting discovery of GATT service]";
       break;
+    case PairFailure::kDataEncryptorRetrieval:
+      stream << "[Failed to retrieve the data encryptor]";
+      break;
     case PairFailure::kKeyBasedPairingCharacteristicDiscovery:
       stream << "[Failed to find the Key-based pairing GATT characteristic]";
       break;

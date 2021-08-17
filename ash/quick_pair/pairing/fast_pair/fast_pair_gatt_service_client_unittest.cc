@@ -54,8 +54,6 @@ const device::BluetoothUUID kAccountKeyCharacteristicUuid1("1236");
 const device::BluetoothUUID kAccountKeyCharacteristicUuid2(
     "FE2C1236-8366-4814-8EB0-01DE32100BEA");
 
-const uint8_t kMessageType = 0x00;
-const uint8_t kFlags = 0x00;
 const std::string kProviderAddress = "abcde";
 const std::string kSeekersAddress = "abcde";
 const std::vector<uint8_t>& kTestWriteResponse{0x01, 0x03, 0x02, 0x01, 0x02};
@@ -414,11 +412,6 @@ class FastPairGattServiceClientTest : public testing::Test {
   }
 
   void WriteRequestToKeyBased() {
-    gatt_service_client_->WriteRequestAsync(
-        kMessageType, kFlags, kProviderAddress, kSeekersAddress,
-        base::BindRepeating(&::ash::quick_pair::FastPairGattServiceClientTest::
-                                WriteTestCallback,
-                            weak_ptr_factory_.GetWeakPtr()));
   }
 
   void WriteRequestToPasskey() {
@@ -565,38 +558,12 @@ TEST_F(FastPairGattServiceClientTest, KeyBasedStartNotifyTimeout) {
 }
 
 TEST_F(FastPairGattServiceClientTest, WriteKeyBasedRequest) {
-  SuccessfulGattConnectionSetUp();
-  NotifyGattDiscoveryCompleteForService();
-  EXPECT_EQ(GetInitializedCallbackResult(), absl::nullopt);
-  EXPECT_TRUE(ServiceIsSet());
-  WriteRequestToKeyBased();
-  TriggerKeyBasedGattChanged();
-  EXPECT_EQ(GetWriteCallbackResult(), absl::nullopt);
 }
 
 TEST_F(FastPairGattServiceClientTest, WriteKeyBasedRequestError) {
-  SetKeyBasedWriteError();
-  SuccessfulGattConnectionSetUp();
-  NotifyGattDiscoveryCompleteForService();
-  EXPECT_EQ(GetInitializedCallbackResult(), absl::nullopt);
-  EXPECT_TRUE(ServiceIsSet());
-  WriteRequestToKeyBased();
-  TriggerKeyBasedGattChanged();
-  EXPECT_EQ(GetWriteCallbackResult(),
-            PairFailure::kKeyBasedPairingCharacteristicWrite);
 }
 
 TEST_F(FastPairGattServiceClientTest, WriteKeyBasedRequestTimeout) {
-  SetWriteRequestTimeout();
-  SuccessfulGattConnectionSetUp();
-  NotifyGattDiscoveryCompleteForService();
-  EXPECT_EQ(GetInitializedCallbackResult(), absl::nullopt);
-  EXPECT_TRUE(ServiceIsSet());
-  WriteRequestToKeyBased();
-  TriggerKeyBasedGattChanged();
-  EXPECT_TRUE(ServiceIsSet());
-  EXPECT_EQ(GetWriteCallbackResult(),
-            PairFailure::kKeyBasedPairingResponseTimeout);
 }
 
 TEST_F(FastPairGattServiceClientTest, WritePasskeyRequest) {

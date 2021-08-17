@@ -11,8 +11,9 @@ source_set("pairing") {
   sources = [
     "fast_pair/fake_fast_pair_gatt_service_client.cc",
     "fast_pair/fake_fast_pair_gatt_service_client.h",
-    "fast_pair/fast_pair_data_encryptor.cc",
     "fast_pair/fast_pair_data_encryptor.h",
+    "fast_pair/fast_pair_data_encryptor_impl.cc",
+    "fast_pair/fast_pair_data_encryptor_impl.h",
     "fast_pair/fast_pair_encryption.cc",
     "fast_pair/fast_pair_encryption.h",
     "fast_pair/fast_pair_gatt_service_client.h",

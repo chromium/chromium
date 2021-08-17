@@ -11,14 +11,18 @@
 #include "ash/quick_pair/common/pair_failure.h"
 #include "ash/quick_pair/common/protocol.h"
 #include "ash/quick_pair/pairing/fast_pair/fake_fast_pair_gatt_service_client.h"
+#include "ash/quick_pair/pairing/fast_pair/fast_pair_data_encryptor.h"
+#include "ash/quick_pair/pairing/fast_pair/fast_pair_data_encryptor_impl.h"
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_gatt_service_client.h"
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_gatt_service_client_impl.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/mock_callback.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/boringssl/src/include/openssl/rand.h"
 
 namespace {
 
@@ -57,10 +61,51 @@ class FakeBluetoothAdapter
 namespace ash {
 namespace quick_pair {
 
+class FakeFastPairDataEncryptor : public FastPairDataEncryptor {
+ public:
+  const std::array<uint8_t, kBlockSizeBytes> EncryptBytes(
+      const std::array<uint8_t, kBlockSizeBytes>& bytes_to_encrypt) override {
+    // Return random bytes for testing since we are just testing the retrieval
+    // of the encryptor.
+    uint8_t data_to_write[kBlockByteSize];
+    RAND_bytes(data_to_write, kBlockByteSize);
+    std::array<uint8_t, kBlockByteSize> std_data_to_write;
+    std::move(std::begin(data_to_write), std::end(data_to_write),
+              std_data_to_write.begin());
+    return std_data_to_write;
+  }
+
+  FakeFastPairDataEncryptor() = default;
+  ~FakeFastPairDataEncryptor() override = default;
+};
+
+class FakeFastPairDataEncryptorImplFactory
+    : public FastPairDataEncryptorImpl::Factory {
+ public:
+  void CreateInstance(
+      scoped_refptr<Device> device,
+      base::OnceCallback<void(std::unique_ptr<FastPairDataEncryptor>)>
+          on_get_instance_callback) override {
+    if (!successful_retrieval_) {
+      std::move(on_get_instance_callback).Run(nullptr);
+      return;
+    }
+
+    std::unique_ptr<FastPairDataEncryptor> data_encryptor =
+        base::WrapUnique(new FakeFastPairDataEncryptor());
+  }
+
+  ~FakeFastPairDataEncryptorImplFactory() override = default;
+
+  void SetFailedRetrieval() { successful_retrieval_ = false; }
+
+ private:
+  bool successful_retrieval_ = true;
+};
+
 class FakeFastPairGattServiceClientImplFactory
     : public FastPairGattServiceClientImpl::Factory {
  public:
-  FakeFastPairGattServiceClientImplFactory() = default;
   ~FakeFastPairGattServiceClientImplFactory() override = default;
 
   FakeFastPairGattServiceClient* fake_fast_pair_gatt_service_client() {
@@ -87,7 +132,7 @@ class FakeFastPairGattServiceClientImplFactory
 
 class FastPairPairerTest : public testing::Test {
  public:
-  void SetUp() override {
+  void SuccessfulDataEncryptorSetUp() {
     device_ = base::MakeRefCounted<Device>(kMetadataId, kAddress,
                                            Protocol::kFastPair);
     adapter_ = base::MakeRefCounted<FakeBluetoothAdapter>();
@@ -103,6 +148,32 @@ class FastPairPairerTest : public testing::Test {
 
     FastPairGattServiceClientImpl::Factory::SetFactoryForTesting(
         &fast_pair_gatt_service_factory_);
+
+    FastPairDataEncryptorImpl::Factory::SetFactoryForTesting(
+        &fast_pair_data_encryptor_factory);
+  }
+
+  void FailedDataEncryptorSetUp() {
+    device_ = base::MakeRefCounted<Device>(kMetadataId, kAddress,
+                                           Protocol::kFastPair);
+    adapter_ = base::MakeRefCounted<FakeBluetoothAdapter>();
+
+    // Need to add a matching mock device to the bluetooth adapter with the
+    // same address to mock the relationship between Device and
+    // device::BluetoothDevice.
+    mock_device_ =
+        std::make_unique<testing::NiceMock<device::MockBluetoothDevice>>(
+            adapter_.get(), 0, kDeviceName, kAddress, /*paired=*/true,
+            /*connected*/ false);
+    adapter_->AddMockDevice(std::move(mock_device_));
+
+    FastPairGattServiceClientImpl::Factory::SetFactoryForTesting(
+        &fast_pair_gatt_service_factory_);
+
+    fast_pair_data_encryptor_factory.SetFailedRetrieval();
+
+    FastPairDataEncryptorImpl::Factory::SetFactoryForTesting(
+        &fast_pair_data_encryptor_factory);
   }
 
   void RunOnGattClientInitializedCallback(
@@ -133,19 +204,30 @@ class FastPairPairerTest : public testing::Test {
   base::MockCallback<base::OnceCallback<void(scoped_refptr<Device>)>>
       pairing_procedure_complete_;
   FakeFastPairGattServiceClientImplFactory fast_pair_gatt_service_factory_;
+  FakeFastPairDataEncryptorImplFactory fast_pair_data_encryptor_factory;
   std::unique_ptr<FastPairPairer> pairer_;
 };
 
 TEST_F(FastPairPairerTest, NoCallbackIsInvokedOnGattSuccess) {
+  SuccessfulDataEncryptorSetUp();
   EXPECT_CALL(pair_failed_callback_, Run).Times(0);
   CreatePairer();
   RunOnGattClientInitializedCallback();
 }
 
 TEST_F(FastPairPairerTest, PairFailedCallbackIsInvokedOnGattFailure) {
+  SuccessfulDataEncryptorSetUp();
   EXPECT_CALL(pair_failed_callback_, Run);
   CreatePairer();
   RunOnGattClientInitializedCallback(PairFailure::kCreateGattConnection);
+}
+
+TEST_F(FastPairPairerTest,
+       PairFailedCallbackIsInvokedOnEncryptorRetrievalFailure) {
+  FailedDataEncryptorSetUp();
+  EXPECT_CALL(pair_failed_callback_, Run);
+  CreatePairer();
+  RunOnGattClientInitializedCallback();
 }
 
 }  // namespace quick_pair

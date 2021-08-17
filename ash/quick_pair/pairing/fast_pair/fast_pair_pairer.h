@@ -24,6 +24,7 @@ namespace quick_pair {
 struct Device;
 enum class AccountKeyFailure;
 enum class PairFailure;
+class FastPairDataEncryptor;
 
 // A FastPairPairer instance is responsible for the pairing procedure to a
 // single device.  Pairing begins on instantiation.
@@ -46,7 +47,18 @@ class FastPairPairer {
   ~FastPairPairer();
 
  private:
+  // FastPairGattServiceClientImpl::Factory::Create callback
   void OnGattClientInitializedCallback(absl::optional<PairFailure> failure);
+
+  // FastPairDataEncryptor::Factory::CreateAsync callback
+  // Once the data encryptor is created, triggers a WriteRequestAsync in the
+  // client to be encrypted with the DataEncryptor and written to the device.
+  void OnDataEncryptorCreateAsync(
+      std::unique_ptr<FastPairDataEncryptor> fast_pair_data_encryptor);
+
+  // FastPairGattServiceClient::WriteRequest callback
+  void OnWriteResponse(std::vector<uint8_t> response_bytes,
+                       absl::optional<PairFailure> failure);
 
   scoped_refptr<device::BluetoothAdapter> adapter_;
   scoped_refptr<Device> device_;
@@ -56,6 +68,7 @@ class FastPairPairer {
   base::OnceCallback<void(scoped_refptr<Device>, AccountKeyFailure)>
       account_key_failure_callback_;
   base::OnceCallback<void(scoped_refptr<Device>)> pairing_procedure_complete_;
+  std::unique_ptr<FastPairDataEncryptor> fast_pair_data_encryptor_;
   std::unique_ptr<FastPairGattServiceClient> fast_pair_gatt_service_client_;
   base::WeakPtrFactory<FastPairPairer> weak_ptr_factory_{this};
 };

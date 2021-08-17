@@ -10,6 +10,8 @@
 namespace ash {
 namespace quick_pair {
 
+class FastPairDataEncryptor;
+
 // This class is responsible for connecting to the Fast Pair GATT service for a
 // device and invoking a callback when ready, or when an error is discovered
 // during initialization.
@@ -27,6 +29,7 @@ class FastPairGattServiceClient : public device::BluetoothAdapter::Observer {
       uint8_t flags,
       const std::string& provider_address,
       const std::string& seekers_address,
+      FastPairDataEncryptor* fast_pair_data_encryptor,
       base::OnceCallback<void(std::vector<uint8_t>,
                               absl::optional<PairFailure>)>
           write_response_callback) = 0;
