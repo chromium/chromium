@@ -361,7 +361,6 @@ Polymer({
 
   /**
    * Event handler that is invoked just before the screen is hidden.
-   * @suppress {missingProperties} setOobeUIState() exists
    */
   onBeforeHide() {
     this.enableWifiScans_ = false;
@@ -373,7 +372,6 @@ Polymer({
   /**
    * Event handler for guest session launch.
    * @private
-   * @suppress {missingProperties} isOobeUI() exists
    */
   launchGuestSession_() {
     if (Oobe.getInstance().isOobeUI()) {

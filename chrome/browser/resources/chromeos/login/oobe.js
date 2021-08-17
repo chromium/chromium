@@ -38,48 +38,5 @@ disableTextSelectAndDrag(function(e) {
 HTMLImports.whenReady(() => {
   i18nTemplate.process(document, loadTimeData);
 
-  cr.define('cr.ui.Oobe', function() {
-    return {
-      /**
-       * Initializes the OOBE flow.  This will cause all C++ handlers to
-       * be invoked to do final setup.
-       */
-      initialize() {
-        cr.ui.login.DisplayManager.initialize();
-
-        chrome.send('screenStateInitialize');
-      },
-
-      /**
-       * Reloads content of the page (localized strings, options of the select
-       * controls).
-       * @param {!Object} data New dictionary with i18n values.
-       */
-      reloadContent(data) {
-        // Reload global local strings, process DOM tree again.
-        loadTimeData.overrideValues(data);
-        i18nTemplate.process(document, loadTimeData);
-
-        // Update localized content of the screens.
-        Oobe.getInstance().updateLocalizedContent_();
-      },
-
-      /**
-       * Updates "device in tablet mode" state when tablet mode is changed.
-       * @param {Boolean} isInTabletMode True when in tablet mode.
-       */
-      setTabletModeState(isInTabletMode) {
-        Oobe.getInstance().setTabletModeState_(isInTabletMode);
-      },
-
-      /**
-       * Updates OOBE configuration when it is loaded.
-       * @param {!OobeTypes.OobeConfiguration} configuration OOBE configuration.
-       */
-      updateOobeConfiguration(configuration) {
-        Oobe.getInstance().updateOobeConfiguration_(configuration);
-      },
-    };
-  });
   // <include src="oobe_initialization.js">
 });

@@ -517,7 +517,7 @@ cr.define('cr.ui.login', function() {
       if (this.displayType_ == DISPLAY_TYPE.OOBE) {
         this.demoModeStartListener_ =
             new MultiTapDetector($('outer-container'), 10, () => {
-              let currentScreen = Oobe.getInstance().currentScreen;
+              let currentScreen = this.currentScreen;
               if (currentScreen.id === SCREEN_WELCOME) {
                 currentScreen.onSetupDemoModeGesture();
               }
@@ -568,7 +568,7 @@ cr.define('cr.ui.login', function() {
     /**
      * Initializes display manager.
      */
-    static initialize() {
+    initialize() {
       let givenDisplayType = DISPLAY_TYPE.UNKNOWN;
       if (document.documentElement.hasAttribute('screen')) {
         // Display type set in HTML property.
@@ -577,36 +577,34 @@ cr.define('cr.ui.login', function() {
         // Extracting display type from URL.
         givenDisplayType = window.location.pathname.substr(1);
       }
-      let instance = Oobe.getInstance();
-      Object.getOwnPropertyNames(DISPLAY_TYPE).forEach(function(type) {
+      Object.getOwnPropertyNames(DISPLAY_TYPE).forEach( type => {
         if (DISPLAY_TYPE[type] == givenDisplayType) {
-          instance.displayType = givenDisplayType;
+          this.displayType = givenDisplayType;
         }
       });
-      if (instance.displayType == DISPLAY_TYPE.UNKNOWN) {
+      if (this.displayType == DISPLAY_TYPE.UNKNOWN) {
         console.error(
             'Unknown display type "' + givenDisplayType +
             '". Setting default.');
-        instance.displayType = DISPLAY_TYPE.LOGIN;
+        this.displayType = DISPLAY_TYPE.LOGIN;
       }
 
-      instance.initializeDemoModeMultiTapListener();
+      this.initializeDemoModeMultiTapListener();
 
       // TODO(crbug.com/1202135): Whole windowResize code is only used to switch
       // horizontal/vertical animations on welcome screen. Remove it during
       // OOBE redesign cleanup.
-      window.addEventListener(
-          'resize', instance.onWindowResize_.bind(instance));
+      window.addEventListener('resize', this.onWindowResize_.bind(this));
     }
 
     /**
      * Shows signin UI.
      * @param {string} opt_email An optional email for signin UI.
      */
-    static showSigninUI(opt_email) {
-      var currentScreenId = Oobe.getInstance().currentScreen.id;
-      if (currentScreenId == SCREEN_GAIA_SIGNIN)
-        Oobe.getInstance().setOobeUIState(OOBE_UI_STATE.GAIA_SIGNIN);
+    showSigninUI(opt_email) {
+      if (this.currentScreen.id == SCREEN_GAIA_SIGNIN) {
+        this.setOobeUIState(OOBE_UI_STATE.GAIA_SIGNIN);
+      }
       chrome.send('showAddUser', [opt_email]);
     }
 
@@ -615,12 +613,10 @@ cr.define('cr.ui.login', function() {
      * @param {boolean} forceOnline Whether online sign-in should be forced.
      *     If |forceOnline| is false previously used sign-in type will be used.
      */
-    static resetSigninUI(forceOnline) {
-      let currentScreenId = Oobe.getInstance().currentScreen.id;
-
+    resetSigninUI(forceOnline) {
       if ($(SCREEN_GAIA_SIGNIN)) {
         $(SCREEN_GAIA_SIGNIN)
-            .reset(currentScreenId == SCREEN_GAIA_SIGNIN, forceOnline);
+            .reset(this.currentScreen.id == SCREEN_GAIA_SIGNIN, forceOnline);
       }
     }
 
