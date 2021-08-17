@@ -2685,7 +2685,6 @@ def _GetOwnersFilesToCheckForIpcOwners(input_api):
       'third_party/blink/renderer/platform/bindings/*',
       'third_party/protobuf/benchmarks/python/*',
       'third_party/win_build_output/*',
-      'third_party/feed_library/*',
       # These files are just used to communicate between class loaders running
       # in the same process.
       'weblayer/browser/java/org/chromium/weblayer_private/interfaces/*',
