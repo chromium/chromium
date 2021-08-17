@@ -77,6 +77,9 @@ struct StartParams {
   // flakiness in tests.
   bool disable_download_provider = false;
 
+  // Flag to disable ureadahead completely, including host and guest parts.
+  bool disable_ureadahead = false;
+
   // The number of logical CPU cores that are currently disabled on the host.
   uint32_t num_cores_disabled = 0;
 

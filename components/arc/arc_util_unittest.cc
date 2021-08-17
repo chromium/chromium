@@ -327,9 +327,15 @@ TEST_F(ArcUtilTest, GetArcVmUreadaheadMode) {
   auto callback_readahead = base::BindRepeating(&GetSystemMemoryInfoForTesting,
                                                 kArcMemProfile8GbName);
   auto* command_line = base::CommandLine::ForCurrentProcess();
+
   command_line->InitFromArgv({""});
   EXPECT_EQ(ArcVmUreadaheadMode::READAHEAD,
             GetArcVmUreadaheadMode(callback_readahead));
+
+  command_line->InitFromArgv({"", "--arc-disable-ureadahead"});
+  EXPECT_EQ(ArcVmUreadaheadMode::DISABLED,
+            GetArcVmUreadaheadMode(callback_readahead));
+
   EXPECT_EQ(ArcVmUreadaheadMode::DISABLED,
             GetArcVmUreadaheadMode(callback_disabled));
 
@@ -340,6 +346,16 @@ TEST_F(ArcUtilTest, GetArcVmUreadaheadMode) {
   command_line->InitFromArgv({"", "--arcvm-ureadahead-mode=disabled"});
   EXPECT_EQ(ArcVmUreadaheadMode::DISABLED,
             GetArcVmUreadaheadMode(callback_readahead));
+}
+
+TEST_F(ArcUtilTest, UreadaheadDefault) {
+  EXPECT_FALSE(IsUreadaheadDisabled());
+}
+
+TEST_F(ArcUtilTest, UreadaheadDisabled) {
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  command_line->InitFromArgv({"", "--arc-disable-ureadahead"});
+  EXPECT_TRUE(IsUreadaheadDisabled());
 }
 
 // TODO(hidehiko): Add test for IsArcKioskMode().

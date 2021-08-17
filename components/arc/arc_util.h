@@ -106,6 +106,10 @@ bool IsArcVmUseHugePages();
 // vm_tools/init/arcvm_dev.conf file are ignored during ARCVM start.
 bool IsArcVmDevConfIgnored();
 
+// Returns true if ureadahead is disabled completely, including host and guest
+// parts. See also |GetArcVmUreadaheadMode|.
+bool IsUreadaheadDisabled();
+
 // Returns mode of operation for ureadahead during the ARCVM boot flow.
 // Valid modes are readahead, generate, or disabled.
 ArcVmUreadaheadMode GetArcVmUreadaheadMode(SystemMemoryInfoCallback callback);

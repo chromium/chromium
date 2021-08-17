@@ -205,6 +205,11 @@ bool IsArcVmDevConfIgnored() {
       chromeos::switches::kIgnoreArcVmDevConf);
 }
 
+bool IsUreadaheadDisabled() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      chromeos::switches::kArcDisableUreadahead);
+}
+
 ArcVmUreadaheadMode GetArcVmUreadaheadMode(SystemMemoryInfoCallback callback) {
   base::SystemMemoryInfoKB mem_info;
   DCHECK(callback);
@@ -213,7 +218,9 @@ ArcVmUreadaheadMode GetArcVmUreadaheadMode(SystemMemoryInfoCallback callback) {
     return ArcVmUreadaheadMode::DISABLED;
   }
   ArcVmUreadaheadMode mode = (mem_info.total > kReadaheadTotalMinMemoryInKb)
-                                 ? ArcVmUreadaheadMode::READAHEAD
+                                 ? IsUreadaheadDisabled()
+                                       ? ArcVmUreadaheadMode::DISABLED
+                                       : ArcVmUreadaheadMode::READAHEAD
                                  : ArcVmUreadaheadMode::DISABLED;
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           chromeos::switches::kArcVmUreadaheadMode)) {

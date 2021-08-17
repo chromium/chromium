@@ -42,6 +42,7 @@ extern const char kArcDisableMediaStoreMaintenance[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcDisablePlayAutoInstall[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kArcDisableSystemDefaultApps[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcDisableUreadahead[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kArcEnableNativeBridge64BitSupportExperiment[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcForceShowOptInUi[];

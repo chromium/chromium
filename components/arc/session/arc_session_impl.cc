@@ -162,6 +162,10 @@ void ApplyDisableDownloadProvider(StartParams* params) {
           chromeos::switches::kArcDisableDownloadProvider);
 }
 
+void ApplyDisableUreadahed(StartParams* params) {
+  params->disable_ureadahead = IsUreadaheadDisabled();
+}
+
 // Real Delegate implementation to connect Mojo.
 class ArcSessionDelegateImpl : public ArcSessionImpl::Delegate {
  public:
@@ -505,6 +509,7 @@ void ArcSessionImpl::DoStartMiniInstance(size_t num_cores_disabled) {
   ApplyDalvikMemoryProfile(system_memory_info_callback_, &params);
   ApplyUsapProfile(system_memory_info_callback_, &params);
   ApplyDisableDownloadProvider(&params);
+  ApplyDisableUreadahed(&params);
 
   client_->StartMiniArc(std::move(params),
                         base::BindOnce(&ArcSessionImpl::OnMiniInstanceStarted,

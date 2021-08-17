@@ -110,6 +110,10 @@ const char kArcDisablePlayAutoInstall[] = "arc-disable-play-auto-install";
 // default apps in order to be able to install them via adb.
 const char kArcDisableSystemDefaultApps[] = "arc-disable-system-default-apps";
 
+// Flag that disables ureadahead completely, including host and guest parts.
+// See also |kArcVmUreadaheadMode|.
+const char kArcDisableUreadahead[] = "arc-disable-ureadahead";
+
 // Flag to enables an experiment to allow users to turn on 64-bit support in
 // native bridge on systems that have such support available but not yet enabled
 // by default.
@@ -160,6 +164,8 @@ const char kArcTosHostForTests[] = "arc-tos-host-for-tests";
 // generate - used during Android PFQ data collector to pre-generate pack file
 //            and upload to Google Cloud as build artifact for CrOS build image.
 // disabled - used for test purpose to disable ureadahead during ARCVM boot.
+//            note, |kArcDisableUreadahead| also disables both, guest and host
+//            parts of ureadahead.
 const char kArcVmUreadaheadMode[] = "arcvm-ureadahead-mode";
 
 // Madvises the kernel to use Huge Pages for guest memory.
