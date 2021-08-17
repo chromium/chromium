@@ -30,7 +30,6 @@ class AppServiceImpl : public apps::mojom::AppService {
  public:
   AppServiceImpl(
       const base::FilePath& profile_dir,
-      bool is_share_intents_supported,
       base::OnceClosure read_completed_for_testing = base::OnceClosure(),
       base::OnceClosure write_completed_for_testing = base::OnceClosure());
   ~AppServiceImpl() override;
@@ -147,13 +146,6 @@ class AppServiceImpl : public apps::mojom::AppService {
   PreferredAppsList preferred_apps_;
 
   base::FilePath profile_dir_;
-
-  // True if the kIntentHandlingSharing flag is on. This is used to see if
-  // we need to convert the stored preferred app to the new version that
-  // supports sharing.
-  // TODO(crbug.com/1092784): remove when the kIntentHandlingSharing flag is
-  // removed.
-  bool is_share_intents_supported_;
 
   // True if need to write preferred apps to file after the current write is
   // completed.

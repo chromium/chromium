@@ -24,10 +24,17 @@ apps::mojom::IntentFilterPtr CreateIntentFilterForSend(
     const std::string& mime_types,
     const std::string& activity_label = "");
 // Create intent filter for send multiple action.
-
 apps::mojom::IntentFilterPtr CreateIntentFilterForSendMultiple(
     const std::string& mime_types,
     const std::string& activity_label = "");
+
+// Add a condition value to the |intent_filter|. If the |condition_type|
+// exists, add the condition value to the existing condition, otherwise
+// create new condition.
+void AddConditionValue(apps::mojom::ConditionType condition_type,
+                       const std::string& value,
+                       apps::mojom::PatternMatchType pattern_match_type,
+                       apps::mojom::IntentFilterPtr& intent_filter);
 
 }  // namespace apps_util
 

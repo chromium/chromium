@@ -102,11 +102,9 @@ std::string ReadDataBlocking(const base::FilePath& preferred_apps_file) {
 namespace apps {
 
 AppServiceImpl::AppServiceImpl(const base::FilePath& profile_dir,
-                               bool is_share_intents_supported,
                                base::OnceClosure read_completed_for_testing,
                                base::OnceClosure write_completed_for_testing)
     : profile_dir_(profile_dir),
-      is_share_intents_supported_(is_share_intents_supported),
       should_write_preferred_apps_to_file_(false),
       writing_preferred_apps_(false),
       task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
@@ -452,8 +450,8 @@ void AppServiceImpl::WriteToJSON(
 
   writing_preferred_apps_ = true;
 
-  auto preferred_apps_value = apps::ConvertPreferredAppsToValue(
-      preferred_apps.GetReference(), is_share_intents_supported_);
+  auto preferred_apps_value =
+      apps::ConvertPreferredAppsToValue(preferred_apps.GetReference());
 
   std::string json_string;
   JSONStringValueSerializer serializer(&json_string);
@@ -514,13 +512,13 @@ void AppServiceImpl::ReadCompleted(std::string preferred_apps_string) {
       preferred_apps_upgraded = IsUpgradedForSharing(*preferred_apps_value);
       auto preferred_apps =
           apps::ParseValueToPreferredApps(*preferred_apps_value);
-      if (is_share_intents_supported_ && !preferred_apps_upgraded) {
+      if (!preferred_apps_upgraded) {
         UpgradePreferredApps(preferred_apps);
       }
       preferred_apps_.Init(preferred_apps);
     }
   }
-  if (is_share_intents_supported_ && !preferred_apps_upgraded) {
+  if (!preferred_apps_upgraded) {
     LogPreferredAppUpdateAction(PreferredAppsUpdateAction::kUpgraded);
     WriteToJSON(profile_dir_, preferred_apps_);
   }

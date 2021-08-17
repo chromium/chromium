@@ -240,8 +240,7 @@ TEST_F(AppServiceImplTest, PubSub) {
   const int size_hint_in_dip = 64;
 
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-  AppServiceImpl impl(temp_dir_.GetPath(),
-                      /*is_share_intents_supported=*/false);
+  AppServiceImpl impl(temp_dir_.GetPath());
 
   // Start with one subscriber.
   FakeSubscriber sub0(&impl);
@@ -374,8 +373,7 @@ TEST_F(AppServiceImplTest, PubSub) {
 TEST_F(AppServiceImplTest, PreferredApps) {
   // Test Initialize.
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-  AppServiceImpl impl(temp_dir_.GetPath(),
-                      /*is_share_intents_supported=*/false);
+  AppServiceImpl impl(temp_dir_.GetPath());
   impl.GetPreferredAppsForTesting().Init();
 
   const char kAppId1[] = "abcdefg";
@@ -485,7 +483,6 @@ TEST_F(AppServiceImplTest, PreferredAppsPersistency) {
     base::RunLoop run_loop_read;
     base::RunLoop run_loop_write;
     AppServiceImpl impl(temp_dir_.GetPath(),
-                        /*is_share_intents_supported=*/false,
                         run_loop_read.QuitClosure(),
                         run_loop_write.QuitClosure());
     impl.FlushMojoCallsForTesting();
@@ -501,97 +498,11 @@ TEST_F(AppServiceImplTest, PreferredAppsPersistency) {
   {
     base::RunLoop run_loop_read;
     AppServiceImpl impl(temp_dir_.GetPath(),
-                        /*is_share_intents_supported=*/false,
                         run_loop_read.QuitClosure());
     impl.FlushMojoCallsForTesting();
     run_loop_read.Run();
     EXPECT_EQ(kAppId1, impl.GetPreferredAppsForTesting().FindPreferredAppForUrl(
                            filter_url));
-  }
-}
-
-TEST_F(AppServiceImplTest, PreferredAppsUpgrade) {
-  ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-
-  const char kAppId1[] = "abcdefg";
-  const char kAppId2[] = "gfedcba";
-  GURL filter_url1 = GURL("https://www.google.com/abc");
-  GURL filter_url2 = GURL("https://www.abc.com");
-  auto intent_filter1 = apps_util::CreateIntentFilterForUrlScope(filter_url1);
-  auto intent_filter1_with_action = apps_util::CreateIntentFilterForUrlScope(
-      filter_url1, /*with_action_view=*/true);
-  auto intent_filter2_with_action = apps_util::CreateIntentFilterForUrlScope(
-      filter_url2, /*with_action_view=*/true);
-  {
-    base::RunLoop run_loop_read;
-    base::RunLoop run_loop_write;
-    AppServiceImpl impl(temp_dir_.GetPath(),
-                        /*is_share_intents_supported=*/false,
-                        run_loop_read.QuitClosure(),
-                        run_loop_write.QuitClosure());
-    impl.FlushMojoCallsForTesting();
-    run_loop_read.Run();
-    impl.AddPreferredApp(apps::mojom::AppType::kUnknown, kAppId1,
-                         intent_filter1->Clone(),
-                         apps_util::CreateIntentFromUrl(filter_url1),
-                         /*from_publisher=*/false);
-    impl.AddPreferredApp(apps::mojom::AppType::kUnknown, kAppId2,
-                         intent_filter2_with_action->Clone(),
-                         apps_util::CreateIntentFromUrl(filter_url2),
-                         /*from_publisher=*/false);
-    run_loop_write.Run();
-    impl.FlushMojoCallsForTesting();
-
-    // If try to remove old intent filter with filter with action, it wouldn't
-    // work.
-    impl.RemovePreferredAppForFilter(apps::mojom::AppType::kUnknown, kAppId1,
-                                     intent_filter1_with_action->Clone());
-    task_environment_.RunUntilIdle();
-    EXPECT_EQ(kAppId1, impl.GetPreferredAppsForTesting().FindPreferredAppForUrl(
-                           filter_url1));
-    EXPECT_EQ(kAppId2, impl.GetPreferredAppsForTesting().FindPreferredAppForUrl(
-                           filter_url2));
-  }
-
-  // Create a new impl with sharing flag on to initialize preferred apps from
-  // the disk.
-  {
-    base::RunLoop run_loop_read;
-    base::RunLoop run_loop_write;
-    AppServiceImpl impl(temp_dir_.GetPath(),
-                        /*is_share_intents_supported=*/true,
-                        run_loop_read.QuitClosure(),
-                        run_loop_write.QuitClosure());
-    impl.FlushMojoCallsForTesting();
-    run_loop_read.Run();
-    EXPECT_EQ(kAppId1, impl.GetPreferredAppsForTesting().FindPreferredAppForUrl(
-                           filter_url1));
-    EXPECT_EQ(kAppId2, impl.GetPreferredAppsForTesting().FindPreferredAppForUrl(
-                           filter_url2));
-    run_loop_write.Run();
-    impl.FlushMojoCallsForTesting();
-  }
-
-  // Create another new impl to read from disk and see if the filter is upgraded
-  // by trying to delete the entry using new filter.
-  {
-    base::RunLoop run_loop_read;
-    AppServiceImpl impl(temp_dir_.GetPath(),
-                        /*is_share_intents_supported=*/false,
-                        run_loop_read.QuitClosure());
-    impl.FlushMojoCallsForTesting();
-    run_loop_read.Run();
-    impl.RemovePreferredAppForFilter(apps::mojom::AppType::kUnknown, kAppId1,
-                                     intent_filter1_with_action->Clone());
-    impl.RemovePreferredAppForFilter(apps::mojom::AppType::kUnknown, kAppId2,
-                                     intent_filter2_with_action->Clone());
-    task_environment_.RunUntilIdle();
-    EXPECT_EQ(
-        absl::nullopt,
-        impl.GetPreferredAppsForTesting().FindPreferredAppForUrl(filter_url1));
-    EXPECT_EQ(
-        absl::nullopt,
-        impl.GetPreferredAppsForTesting().FindPreferredAppForUrl(filter_url2));
   }
 }
 

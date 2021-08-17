@@ -239,9 +239,8 @@ void ExecuteByArcAfterMimeTypesCollected(
     FileTaskFinishedCallback done,
     extensions::app_file_handler_util::MimeTypeCollector* mime_collector,
     std::unique_ptr<std::vector<std::string>> mime_types) {
-  if (base::FeatureList::IsEnabled(features::kIntentHandlingSharing) &&
-      (task.action_id == kActionIdSend ||
-       task.action_id == kActionIdSendMultiple)) {
+  if (task.action_id == kActionIdSend ||
+      task.action_id == kActionIdSendMultiple) {
     ExecuteAppServiceTask(profile, task, file_urls, *mime_types,
                           std::move(done));
     return;
@@ -813,9 +812,8 @@ void FindExtensionAndAppTasks(
 
   // TODO(crbug/1092784): Link app service task finder here to test the intent
   // handling backend. This is not fully completed and only support sharing for
-  // now. When the unified sharesheet UI is completed, this might be called from
-  // a different place.
-  if (base::FeatureList::IsEnabled(features::kIntentHandlingSharing)) {
+  // now. When the unified sharesheet UI is completed, this should be removed.
+  if (!base::FeatureList::IsEnabled(features::kSharesheet)) {
     FindAppServiceTasks(profile, entries, file_urls, result_list_ptr);
   }
 

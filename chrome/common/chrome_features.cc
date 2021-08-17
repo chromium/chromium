@@ -574,9 +574,6 @@ const base::Feature kUpdateHistoryEntryPointsInIncognito{
     "UpdateHistoryEntryPointsInIncognito", base::FEATURE_DISABLED_BY_DEFAULT};
 
 #if !defined(OS_ANDROID)
-// Support sharing in Chrome OS intent handling.
-const base::Feature kIntentHandlingSharing{"IntentHandlingSharing",
-                                           base::FEATURE_ENABLED_BY_DEFAULT};
 // Allow user to have preference for PWA in the intent picker.
 const base::Feature kIntentPickerPWAPersistence{
     "IntentPickerPWAPersistence", base::FEATURE_DISABLED_BY_DEFAULT};

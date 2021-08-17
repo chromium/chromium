@@ -222,8 +222,7 @@ TEST_F(IntentUtilTest, ActionMatch) {
   GURL test_url = GURL("https://www.google.com/");
   auto intent = apps_util::CreateIntentFromUrl(test_url);
   auto intent_filter =
-      apps_util::CreateIntentFilterForUrlScope(GURL(kFilterUrl),
-                                               /*with_action_view=*/true);
+      apps_util::CreateIntentFilterForUrlScope(GURL(kFilterUrl));
   EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, intent_filter));
 
   auto send_intent = apps_util::CreateIntentFromUrl(test_url);
@@ -231,8 +230,7 @@ TEST_F(IntentUtilTest, ActionMatch) {
   EXPECT_FALSE(apps_util::IntentMatchesFilter(send_intent, intent_filter));
 
   auto send_intent_filter =
-      apps_util::CreateIntentFilterForUrlScope(GURL(kFilterUrl),
-                                               /*with_action_view=*/true);
+      apps_util::CreateIntentFilterForUrlScope(GURL(kFilterUrl));
   send_intent_filter->conditions[0]->condition_values[0]->value =
       apps_util::kIntentActionSend;
   EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, send_intent_filter));
@@ -476,7 +474,7 @@ TEST_F(IntentUtilTest, Convert) {
   base::Value value = apps_util::ConvertIntentToValue(src_intent);
   auto dst_intent = apps_util::ConvertValueToIntent(std::move(value));
 
-  EXPECT_EQ(action, dst_intent->action.value());
+  EXPECT_EQ(action, dst_intent->action);
   EXPECT_EQ(test_url1, dst_intent->url.value());
   EXPECT_EQ(mime_type, dst_intent->mime_type.value());
   EXPECT_EQ(2u, dst_intent->files->size());
@@ -501,7 +499,6 @@ TEST_F(IntentUtilTest, ConvertEmptyIntent) {
   base::Value value = apps_util::ConvertIntentToValue(intent);
   auto dst_intent = apps_util::ConvertValueToIntent(std::move(value));
 
-  EXPECT_FALSE(dst_intent->action.has_value());
   EXPECT_FALSE(dst_intent->url.has_value());
   EXPECT_FALSE(dst_intent->mime_type.has_value());
   EXPECT_FALSE(dst_intent->files.has_value());

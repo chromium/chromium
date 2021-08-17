@@ -13,7 +13,6 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/apps/app_service/file_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
-#include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -64,8 +63,7 @@ apps::mojom::IntentFilterPtr CreateShareFileFilter(
 
 std::vector<apps::mojom::IntentFilterPtr> CreateWebAppShareIntentFilters(
     const web_app::WebApp& web_app) {
-  if (!base::FeatureList::IsEnabled(features::kIntentHandlingSharing) ||
-      !web_app.share_target().has_value()) {
+  if (!web_app.share_target().has_value()) {
     return {};
   }
 
@@ -156,9 +154,7 @@ std::vector<apps::mojom::IntentFilterPtr> CreateWebAppIntentFilters(
     return {};
 
   std::vector<apps::mojom::IntentFilterPtr> filters;
-  filters.push_back(apps_util::CreateIntentFilterForUrlScope(
-      web_app.scope(),
-      base::FeatureList::IsEnabled(features::kIntentHandlingSharing)));
+  filters.push_back(apps_util::CreateIntentFilterForUrlScope(web_app.scope()));
 
   base::Extend(filters, CreateWebAppShareIntentFilters(web_app));
 
@@ -241,18 +237,13 @@ base::flat_map<std::string, std::string> CreateArcIntentExtras(
 arc::mojom::IntentInfoPtr ConvertAppServiceToArcIntent(
     const apps::mojom::IntentPtr& intent) {
   arc::mojom::IntentInfoPtr arc_intent;
-  if (!intent->action.has_value() && !intent->url.has_value() &&
-      !intent->share_text.has_value() && !intent->activity_name.has_value()) {
+  if (!intent->url.has_value() && !intent->share_text.has_value() &&
+      !intent->activity_name.has_value()) {
     return arc_intent;
   }
 
   arc_intent = arc::mojom::IntentInfo::New();
-  if (intent->action.has_value()) {
-    arc_intent->action =
-        ConvertAppServiceToArcIntentAction(intent->action.value());
-  } else {
-    arc_intent->action = arc::kIntentActionView;
-  }
+  arc_intent->action = ConvertAppServiceToArcIntentAction(intent->action);
   if (intent->url.has_value()) {
     arc_intent->data = intent->url->spec();
   }
@@ -305,13 +296,9 @@ std::string CreateLaunchIntent(const std::string& package_name,
   std::string ret = base::StringPrintf("%s;", arc::kIntentPrefix);
 
   // Convert action.
-  std::string action;
-  if (intent->action.has_value()) {
-    action = ConvertAppServiceToArcIntentAction(intent->action.value());
-  }
-  ret += base::StringPrintf(
-      "%s=%s;", arc::kAction,
-      ConvertAppServiceToArcIntentAction(intent->action.value()));
+  std::string action = ConvertAppServiceToArcIntentAction(intent->action);
+  ret += base::StringPrintf("%s=%s;", arc::kAction,
+                            ConvertAppServiceToArcIntentAction(intent->action));
 
   // Convert categories.
   if (intent->categories.has_value()) {
@@ -437,24 +424,22 @@ apps::mojom::IntentFilterPtr ConvertArcToAppServiceIntentFilter(
     const arc::IntentFilter& arc_intent_filter) {
   auto intent_filter = apps::mojom::IntentFilter::New();
 
-  if (base::FeatureList::IsEnabled(features::kIntentHandlingSharing)) {
-    std::vector<apps::mojom::ConditionValuePtr> action_condition_values;
-    for (auto& arc_action : arc_intent_filter.actions()) {
-      const char* action = ConvertArcToAppServiceIntentAction(arc_action);
+  std::vector<apps::mojom::ConditionValuePtr> action_condition_values;
+  for (auto& arc_action : arc_intent_filter.actions()) {
+    const char* action = ConvertArcToAppServiceIntentAction(arc_action);
 
-      if (!action) {
-        continue;
-      }
+    if (!action) {
+      continue;
+    }
 
-      action_condition_values.push_back(apps_util::MakeConditionValue(
-          action, apps::mojom::PatternMatchType::kNone));
-    }
-    if (!action_condition_values.empty()) {
-      auto action_condition =
-          apps_util::MakeCondition(apps::mojom::ConditionType::kAction,
-                                   std::move(action_condition_values));
-      intent_filter->conditions.push_back(std::move(action_condition));
-    }
+    action_condition_values.push_back(apps_util::MakeConditionValue(
+        action, apps::mojom::PatternMatchType::kNone));
+  }
+  if (!action_condition_values.empty()) {
+    auto action_condition =
+        apps_util::MakeCondition(apps::mojom::ConditionType::kAction,
+                                 std::move(action_condition_values));
+    intent_filter->conditions.push_back(std::move(action_condition));
   }
 
   std::vector<apps::mojom::ConditionValuePtr> scheme_condition_values;
@@ -503,24 +488,22 @@ apps::mojom::IntentFilterPtr ConvertArcToAppServiceIntentFilter(
     intent_filter->conditions.push_back(std::move(path_condition));
   }
 
-  if (base::FeatureList::IsEnabled(features::kIntentHandlingSharing)) {
-    std::vector<apps::mojom::ConditionValuePtr> mime_type_condition_values;
-    for (auto& mime_type : arc_intent_filter.mime_types()) {
-      mime_type_condition_values.push_back(apps_util::MakeConditionValue(
-          mime_type, apps::mojom::PatternMatchType::kMimeType));
-    }
-    if (!mime_type_condition_values.empty()) {
-      auto mime_type_condition =
-          apps_util::MakeCondition(apps::mojom::ConditionType::kMimeType,
-                                   std::move(mime_type_condition_values));
-      intent_filter->conditions.push_back(std::move(mime_type_condition));
-    }
-    if (!arc_intent_filter.activity_name().empty()) {
-      intent_filter->activity_name = arc_intent_filter.activity_name();
-    }
-    if (!arc_intent_filter.activity_label().empty()) {
-      intent_filter->activity_label = arc_intent_filter.activity_label();
-    }
+  std::vector<apps::mojom::ConditionValuePtr> mime_type_condition_values;
+  for (auto& mime_type : arc_intent_filter.mime_types()) {
+    mime_type_condition_values.push_back(apps_util::MakeConditionValue(
+        mime_type, apps::mojom::PatternMatchType::kMimeType));
+  }
+  if (!mime_type_condition_values.empty()) {
+    auto mime_type_condition =
+        apps_util::MakeCondition(apps::mojom::ConditionType::kMimeType,
+                                 std::move(mime_type_condition_values));
+    intent_filter->conditions.push_back(std::move(mime_type_condition));
+  }
+  if (!arc_intent_filter.activity_name().empty()) {
+    intent_filter->activity_name = arc_intent_filter.activity_name();
+  }
+  if (!arc_intent_filter.activity_label().empty()) {
+    intent_filter->activity_label = arc_intent_filter.activity_label();
   }
 
   return intent_filter;

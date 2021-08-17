@@ -11,7 +11,6 @@
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "base/callback.h"
-#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
@@ -36,7 +35,6 @@
 #include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow_delegate.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/extensions/extension_metrics.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
@@ -665,9 +663,8 @@ void ExtensionAppsBase::PopulateIntentFilters(
     const absl::optional<GURL>& app_scope,
     std::vector<mojom::IntentFilterPtr>* target) {
   if (app_scope != absl::nullopt) {
-    target->push_back(apps_util::CreateIntentFilterForUrlScope(
-        app_scope.value(),
-        base::FeatureList::IsEnabled(features::kIntentHandlingSharing)));
+    target->push_back(
+        apps_util::CreateIntentFilterForUrlScope(app_scope.value()));
   }
 }
 

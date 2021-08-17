@@ -361,8 +361,7 @@ bool IsIntentValid(const apps::mojom::IntentPtr& intent) {
 
 base::Value ConvertIntentToValue(const apps::mojom::IntentPtr& intent) {
   base::Value intent_value(base::Value::Type::DICTIONARY);
-  if (intent->action.has_value() && !intent->action.value().empty())
-    intent_value.SetStringKey(kActionKey, intent->action.value());
+  intent_value.SetStringKey(kActionKey, intent->action);
 
   if (intent->url.has_value()) {
     DCHECK(intent->url.value().is_valid());
@@ -537,7 +536,10 @@ apps::mojom::IntentPtr ConvertValueToIntent(base::Value&& value) {
   if (!value.is_dict() || !value.GetAsDictionary(&dict))
     return intent;
 
-  intent->action = GetStringValueFromDict(*dict, kActionKey);
+  auto action = GetStringValueFromDict(*dict, kActionKey);
+  if (!action.has_value())
+    return intent;
+  intent->action = action.value();
   intent->url = GetGurlValueFromDict(*dict, kUrlKey);
   intent->mime_type = GetStringValueFromDict(*dict, kMimeTypeKey);
   intent->files = GetFilesFromDict(*dict, kFileUrlsKey);

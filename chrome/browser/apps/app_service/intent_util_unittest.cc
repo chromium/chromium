@@ -180,7 +180,6 @@ TEST_F(IntentUtilsTest, CreateWebAppIntentFilters_ShortcutApp_NoUrlFilter) {
 }
 
 TEST_F(IntentUtilsTest, CreateWebAppIntentFilters_WebApp_HasUrlFilter) {
-  base::test::ScopedFeatureList features{features::kIntentHandlingSharing};
   auto web_app = web_app::test::CreateMinimalWebApp();
   DCHECK(web_app->start_url().is_valid());
   GURL scope = web_app->start_url().GetWithoutFilename();

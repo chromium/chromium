@@ -9,7 +9,6 @@
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
@@ -21,7 +20,6 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/dbus/cros_disks/cros_disks_client.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
@@ -36,13 +34,8 @@ namespace web_app {
 
 class WebAppsBaseBrowserTest : public InProcessBrowserTest {
  public:
-  WebAppsBaseBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kIntentHandlingSharing);
-  }
+  WebAppsBaseBrowserTest() {}
   ~WebAppsBaseBrowserTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppsBaseBrowserTest, LaunchWithIntent) {
@@ -56,7 +49,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsBaseBrowserTest, LaunchWithIntent) {
   WebAppLaunchManager::SetOpenApplicationCallbackForTesting(
       base::BindLambdaForTesting(
           [&run_loop](apps::AppLaunchParams&& params) -> content::WebContents* {
-            EXPECT_EQ(*params.intent->action, apps_util::kIntentActionSend);
+            EXPECT_EQ(params.intent->action, apps_util::kIntentActionSend);
             EXPECT_EQ(*params.intent->mime_type, "text/csv");
             EXPECT_EQ(params.intent->files->size(), 1U);
             run_loop.Quit();
@@ -91,7 +84,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsBaseBrowserTest, IntentWithoutFiles) {
   WebAppLaunchManager::SetOpenApplicationCallbackForTesting(
       base::BindLambdaForTesting(
           [&run_loop](apps::AppLaunchParams&& params) -> content::WebContents* {
-            EXPECT_EQ(*params.intent->action,
+            EXPECT_EQ(params.intent->action,
                       apps_util::kIntentActionSendMultiple);
             EXPECT_EQ(*params.intent->mime_type, "*/*");
             EXPECT_EQ(params.intent->files->size(), 0U);

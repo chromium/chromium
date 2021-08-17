@@ -83,4 +83,20 @@ apps::mojom::IntentFilterPtr CreateIntentFilterForSendMultiple(
   return CreateIntentFilterForShare(kIntentActionSendMultiple, mime_type,
                                     activity_label);
 }
+
+void AddConditionValue(apps::mojom::ConditionType condition_type,
+                       const std::string& value,
+                       apps::mojom::PatternMatchType pattern_match_type,
+                       apps::mojom::IntentFilterPtr& intent_filter) {
+  for (auto& condition : intent_filter->conditions) {
+    if (condition->condition_type == condition_type) {
+      condition->condition_values.push_back(
+          MakeConditionValue(value, pattern_match_type));
+      return;
+    }
+  }
+  AddSingleValueCondition(condition_type, value, pattern_match_type,
+                          intent_filter);
+}
+
 }  // namespace apps_util

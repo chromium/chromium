@@ -367,7 +367,7 @@ struct IntentFile {
 // be kept in sync with ConvertIntentToValue and ConvertValueToIntent in
 // components/services/app_service/public/cpp/intent_util.*
 struct Intent {
-  string? action; // Intent action. e.g. view, send.
+  string action; // Intent action. e.g. view, send.
   url.mojom.Url? url; // The URL of the intent. e.g. https://www.google.com/.
   string? mime_type; // MIME type. e.g. text/plain, image/*.
   array<IntentFile>? files; // The files to share.

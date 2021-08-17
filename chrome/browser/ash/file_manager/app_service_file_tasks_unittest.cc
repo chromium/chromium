@@ -8,13 +8,11 @@
 #include <string>
 #include <vector>
 
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/services/app_service/public/cpp/intent_test_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -42,9 +40,7 @@ namespace file_tasks {
 
 class AppServiceFileTasksTest : public testing::Test {
  protected:
-  AppServiceFileTasksTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kIntentHandlingSharing);
-  }
+  AppServiceFileTasksTest() {}
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();
     app_service_test_.SetUp(profile_.get());
@@ -88,7 +84,6 @@ class AppServiceFileTasksTest : public testing::Test {
                                /*is_send_multiple=*/true);
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   apps::AppServiceProxyChromeOs* app_service_proxy_ = nullptr;
