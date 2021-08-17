@@ -152,7 +152,7 @@ promise_test(t => {
 var validAudioCodecs = (() => {
   // Some codecs that are returned by getCapabilities() are not real codecs,
   // exclude these from the test.
-  var excludeList = [ 'audio/CN', 'audio/telephone-event' ];
+  var excludeList = [ 'audio/CN', 'audio/telephone-event', 'audio/red' ];
   var audioCodecs = [];
   RTCRtpReceiver.getCapabilities("audio")['codecs'].forEach(codec => {
     if (excludeList.indexOf(codec.mimeType) < 0 &&
