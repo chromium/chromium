@@ -53,59 +53,74 @@ AnimationSequenceBlock& AnimationSequenceBlock::SetDuration(
 
 AnimationSequenceBlock& AnimationSequenceBlock::SetBounds(
     ui::LayerOwner* target,
-    const gfx::Rect& bounds) {
-  return AddAnimation({target, ui::LayerAnimationElement::BOUNDS}, bounds);
+    const gfx::Rect& bounds,
+    gfx::Tween::Type tween_type) {
+  return AddAnimation({target, ui::LayerAnimationElement::BOUNDS},
+                      Element(bounds, tween_type));
 }
 
 AnimationSequenceBlock& AnimationSequenceBlock::SetBrightness(
     ui::LayerOwner* target,
-    float brightness) {
+    float brightness,
+    gfx::Tween::Type tween_type) {
   return AddAnimation({target, ui::LayerAnimationElement::BRIGHTNESS},
-                      brightness);
+                      Element(brightness, tween_type));
 }
 
 AnimationSequenceBlock& AnimationSequenceBlock::SetClipRect(
     ui::LayerOwner* target,
-    const gfx::Rect& clip_rect) {
-  return AddAnimation({target, ui::LayerAnimationElement::CLIP}, clip_rect);
+    const gfx::Rect& clip_rect,
+    gfx::Tween::Type tween_type) {
+  return AddAnimation({target, ui::LayerAnimationElement::CLIP},
+                      Element(clip_rect, tween_type));
 }
 
-AnimationSequenceBlock& AnimationSequenceBlock::SetColor(ui::LayerOwner* target,
-                                                         SkColor color) {
-  return AddAnimation({target, ui::LayerAnimationElement::COLOR}, color);
+AnimationSequenceBlock& AnimationSequenceBlock::SetColor(
+    ui::LayerOwner* target,
+    SkColor color,
+    gfx::Tween::Type tween_type) {
+  return AddAnimation({target, ui::LayerAnimationElement::COLOR},
+                      Element(color, tween_type));
 }
 
 AnimationSequenceBlock& AnimationSequenceBlock::SetGrayscale(
     ui::LayerOwner* target,
-    float grayscale) {
+    float grayscale,
+    gfx::Tween::Type tween_type) {
   return AddAnimation({target, ui::LayerAnimationElement::GRAYSCALE},
-                      grayscale);
+                      Element(grayscale, tween_type));
 }
 
 AnimationSequenceBlock& AnimationSequenceBlock::SetOpacity(
     ui::LayerOwner* target,
-    float opacity) {
-  return AddAnimation({target, ui::LayerAnimationElement::OPACITY}, opacity);
+    float opacity,
+    gfx::Tween::Type tween_type) {
+  return AddAnimation({target, ui::LayerAnimationElement::OPACITY},
+                      Element(opacity, tween_type));
 }
 
 AnimationSequenceBlock& AnimationSequenceBlock::SetInterpolatedTransform(
     ui::LayerOwner* target,
-    std::unique_ptr<ui::InterpolatedTransform> interpolated_transform) {
+    std::unique_ptr<ui::InterpolatedTransform> interpolated_transform,
+    gfx::Tween::Type tween_type) {
   return AddAnimation({target, ui::LayerAnimationElement::TRANSFORM},
-                      std::move(interpolated_transform));
+                      Element(std::move(interpolated_transform), tween_type));
 }
 
 AnimationSequenceBlock& AnimationSequenceBlock::SetRoundedCorners(
     ui::LayerOwner* target,
-    const gfx::RoundedCornersF& rounded_corners) {
+    const gfx::RoundedCornersF& rounded_corners,
+    gfx::Tween::Type tween_type) {
   return AddAnimation({target, ui::LayerAnimationElement::ROUNDED_CORNERS},
-                      rounded_corners);
+                      Element(rounded_corners, tween_type));
 }
 
 AnimationSequenceBlock& AnimationSequenceBlock::SetVisibility(
     ui::LayerOwner* target,
-    bool visible) {
-  return AddAnimation({target, ui::LayerAnimationElement::VISIBILITY}, visible);
+    bool visible,
+    gfx::Tween::Type tween_type) {
+  return AddAnimation({target, ui::LayerAnimationElement::VISIBILITY},
+                      Element(visible, tween_type));
 }
 
 AnimationSequenceBlock AnimationSequenceBlock::At(
@@ -124,6 +139,14 @@ AnimationSequenceBlock AnimationSequenceBlock::Then() {
   return Offset(duration_.value_or(base::TimeDelta()));
 }
 
+AnimationSequenceBlock::Element::Element(AnimationValue animation_value,
+                                         gfx::Tween::Type tween_type)
+    : animation_value_(std::move(animation_value)), tween_type_(tween_type) {}
+AnimationSequenceBlock::Element::~Element() = default;
+AnimationSequenceBlock::Element::Element(Element&&) = default;
+AnimationSequenceBlock::Element& AnimationSequenceBlock::Element::operator=(
+    Element&&) = default;
+
 AnimationSequenceBlock& AnimationSequenceBlock::AddAnimation(AnimationKey key,
                                                              Element element) {
   const auto result =
@@ -140,44 +163,46 @@ void AnimationSequenceBlock::TerminateBlock() {
       case ui::LayerAnimationElement::TRANSFORM:
         element = ui::LayerAnimationElement::CreateInterpolatedTransformElement(
             absl::get<std::unique_ptr<ui::InterpolatedTransform>>(
-                std::move(pair.second)),
+                std::move(pair.second.animation_value_)),
             duration);
         break;
       case ui::LayerAnimationElement::BOUNDS:
         element = ui::LayerAnimationElement::CreateBoundsElement(
-            absl::get<gfx::Rect>(pair.second), duration);
+            absl::get<gfx::Rect>(pair.second.animation_value_), duration);
         break;
       case ui::LayerAnimationElement::OPACITY:
         element = ui::LayerAnimationElement::CreateOpacityElement(
-            absl::get<float>(pair.second), duration);
+            absl::get<float>(pair.second.animation_value_), duration);
         break;
       case ui::LayerAnimationElement::VISIBILITY:
         element = ui::LayerAnimationElement::CreateVisibilityElement(
-            absl::get<bool>(pair.second), duration);
+            absl::get<bool>(pair.second.animation_value_), duration);
         break;
       case ui::LayerAnimationElement::BRIGHTNESS:
         element = ui::LayerAnimationElement::CreateBrightnessElement(
-            absl::get<float>(pair.second), duration);
+            absl::get<float>(pair.second.animation_value_), duration);
         break;
       case ui::LayerAnimationElement::GRAYSCALE:
         element = ui::LayerAnimationElement::CreateGrayscaleElement(
-            absl::get<float>(pair.second), duration);
+            absl::get<float>(pair.second.animation_value_), duration);
         break;
       case ui::LayerAnimationElement::COLOR:
         element = ui::LayerAnimationElement::CreateColorElement(
-            absl::get<SkColor>(pair.second), duration);
+            absl::get<SkColor>(pair.second.animation_value_), duration);
         break;
       case ui::LayerAnimationElement::CLIP:
         element = ui::LayerAnimationElement::CreateClipRectElement(
-            absl::get<gfx::Rect>(pair.second), duration);
+            absl::get<gfx::Rect>(pair.second.animation_value_), duration);
         break;
       case ui::LayerAnimationElement::ROUNDED_CORNERS:
         element = ui::LayerAnimationElement::CreateRoundedCornersElement(
-            absl::get<gfx::RoundedCornersF>(pair.second), duration);
+            absl::get<gfx::RoundedCornersF>(pair.second.animation_value_),
+            duration);
         break;
       default:
         NOTREACHED();
     }
+    element->set_tween_type(pair.second.tween_type_);
     owner_->AddLayerAnimationElement(PassKey(), pair.first, start_,
                                      std::move(element));
   }

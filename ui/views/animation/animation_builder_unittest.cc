@@ -9,6 +9,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/layer_owner.h"
+#include "ui/compositor/property_change_reason.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animator_test_controller.h"
 #include "ui/compositor/test/test_layer_animation_delegate.h"
@@ -101,11 +102,33 @@ TEST_F(AnimationBuilderTest, SimpleAnimation) {
   // Sanity check one of the corners.
   EXPECT_FLOAT_EQ(first_delegate->GetRoundedCornersForAnimation().upper_left(),
                   12.0f);
-  // This animation should not be finished yet. The specific value can be tested
-  // more extensively after tween support is added.
+  // This animation should not be finished yet.
   EXPECT_NE(second_delegate->GetOpacityForAnimation(), 0.9f);
   Step(kDelay);
   EXPECT_FLOAT_EQ(second_delegate->GetOpacityForAnimation(), 0.9f);
+}
+
+TEST_F(AnimationBuilderTest, CheckTweenType) {
+  TestAnimatibleLayerOwner* first_animating_view = CreateTestLayerOwner();
+  gfx::Tween::Type tween_type = gfx::Tween::EASE_IN;
+  constexpr auto kDelay = base::TimeDelta::FromSeconds(4);
+  // Set initial opacity.
+  first_animating_view->delegate()->SetOpacityFromAnimation(
+      0.0f, ui::PropertyChangeReason::NOT_FROM_ANIMATION);
+
+  constexpr float opacity_end_val = 0.5f;
+  {
+    AnimationBuilder().Once().SetDuration(kDelay).SetOpacity(
+        first_animating_view, opacity_end_val, tween_type);
+  }
+  EXPECT_TRUE(first_animating_view->layer()->GetAnimator()->is_animating());
+  Step(kDelay / 2);
+  // Force an update to the delegate by aborting the animation.
+  first_animating_view->layer()->GetAnimator()->AbortAllAnimations();
+  // Values at intermediate steps may not be exact.
+  EXPECT_NEAR(gfx::Tween::CalculateValue(tween_type, 0.5) * opacity_end_val,
+              first_animating_view->delegate()->GetOpacityForAnimation(),
+              0.001f);
 }
 
 TEST_F(AnimationBuilderTest, CheckStartEndCallbacks) {

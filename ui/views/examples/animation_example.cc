@@ -174,10 +174,10 @@ void AnimationExample::CreateExampleView(View* container) {
           .SetRoundedCorners(view, rounded_corners);
       b.Repeatedly()
           .SetDuration(base::TimeDelta::FromSeconds(2))
-          .SetOpacity(view, 0.4f)
+          .SetOpacity(view, 0.4f, gfx::Tween::LINEAR_OUT_SLOW_IN)
           .Then()
           .SetDuration(base::TimeDelta::FromSeconds(2))
-          .SetOpacity(view, 0.9f);
+          .SetOpacity(view, 0.9f, gfx::Tween::EASE_OUT_3);
     }
   }
 }
