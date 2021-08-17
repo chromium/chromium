@@ -75,9 +75,8 @@ class CORE_EXPORT ScriptRunner final
 
   void PostTask(const base::Location&);
 
-  // Execute the first task in in_order_scripts_to_execute_soon_.
-  // Returns true if task was run, and false otherwise.
-  bool ExecuteInOrderTask();
+  // Execute the given pending script. The script must be an in-order script.
+  void ExecuteInOrderPendingScript(PendingScript*);
 
   // Execute any task in async_scripts_to_execute_soon_.
   // Returns true if task was run, and false otherwise.
@@ -93,7 +92,6 @@ class CORE_EXPORT ScriptRunner final
   HeapHashSet<Member<PendingScript>> pending_async_scripts_;
 
   HeapDeque<Member<PendingScript>> async_scripts_to_execute_soon_;
-  HeapDeque<Member<PendingScript>> in_order_scripts_to_execute_soon_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 

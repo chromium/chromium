@@ -176,9 +176,7 @@ TEST_F(ScriptRunnerTest, QueueMixedScripts) {
   QueueScriptForExecution(pending_script5);
 
   NotifyScriptReady(pending_script1);
-  NotifyScriptReady(pending_script2);
   NotifyScriptReady(pending_script3);
-  NotifyScriptReady(pending_script4);
   NotifyScriptReady(pending_script5);
 
   EXPECT_CALL(*pending_script1, ExecuteScriptBlock(_))
@@ -199,8 +197,18 @@ TEST_F(ScriptRunnerTest, QueueMixedScripts) {
       mojom::FrameLifecycleState::kRunning);
   platform_->RunUntilIdle();
 
-  // Async tasks are expected to run first.
-  EXPECT_THAT(order_, ElementsAre(4, 5, 1, 2, 3));
+  // In-order script 3 cannot run, since in-order script 2 just scheduled before
+  // is not yet ready.
+  // Async scripts that are ready can skip the previously queued other async
+  // scripts, so 5 runs.
+  EXPECT_THAT(order_, ElementsAre(1, 5));
+
+  NotifyScriptReady(pending_script2);
+  NotifyScriptReady(pending_script4);
+  platform_->RunUntilIdle();
+
+  // In-order script 3 can now run.
+  EXPECT_THAT(order_, ElementsAre(1, 5, 2, 3, 4));
 }
 
 TEST_F(ScriptRunnerTest, QueueReentrantScript_Async) {

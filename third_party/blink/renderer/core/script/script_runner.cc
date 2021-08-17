@@ -28,6 +28,7 @@
 #include <algorithm>
 
 #include "base/feature_list.h"
+#include "base/trace_event/typed_macros.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -80,9 +81,11 @@ void ScriptRunner::ScheduleReadyInOrderScripts() {
   while (!pending_in_order_scripts_.IsEmpty() &&
          pending_in_order_scripts_.front()
              ->IsReady()) {
-    in_order_scripts_to_execute_soon_.push_back(
-        pending_in_order_scripts_.TakeFirst());
-    PostTask(FROM_HERE);
+    PendingScript* pending_script = pending_in_order_scripts_.TakeFirst();
+    task_runner_->PostTask(
+        FROM_HERE,
+        WTF::Bind(&ScriptRunner::ExecuteInOrderPendingScript,
+                  WrapWeakPersistent(this), WrapPersistent(pending_script)));
   }
 }
 
@@ -171,12 +174,10 @@ void ScriptRunner::MovePendingScript(ScriptRunner* new_runner,
   }
 }
 
-bool ScriptRunner::ExecuteInOrderTask() {
-  TRACE_EVENT0("blink", "ScriptRunner::ExecuteInOrderTask");
-  if (in_order_scripts_to_execute_soon_.IsEmpty())
-    return false;
+void ScriptRunner::ExecuteInOrderPendingScript(PendingScript* pending_script) {
+  TRACE_EVENT("blink", "ScriptRunner::ExecuteInOrderPendingScript");
 
-  PendingScript* pending_script = in_order_scripts_to_execute_soon_.TakeFirst();
+  DCHECK(!document_->domWindow() || !document_->domWindow()->IsContextPaused());
   DCHECK(pending_script);
   DCHECK_EQ(pending_script->GetSchedulingType(), ScriptSchedulingType::kInOrder)
       << "In-order scripts queue should not contain any async script.";
@@ -184,7 +185,6 @@ bool ScriptRunner::ExecuteInOrderTask() {
   pending_script->ExecuteScriptBlock(NullURL());
 
   document_->DecrementLoadEventDelayCount();
-  return true;
 }
 
 bool ScriptRunner::ExecuteAsyncTask() {
@@ -204,13 +204,12 @@ bool ScriptRunner::ExecuteAsyncTask() {
   return true;
 }
 
+// TODO(crbug.com/1239245): Deprecate and migrate async pending scripts to
+// directly invoke ExecuteAsyncTask.
 void ScriptRunner::ExecuteTask() {
   DCHECK(!document_->domWindow() || !document_->domWindow()->IsContextPaused());
 
   if (ExecuteAsyncTask())
-    return;
-
-  if (ExecuteInOrderTask())
     return;
 }
 
@@ -219,7 +218,6 @@ void ScriptRunner::Trace(Visitor* visitor) const {
   visitor->Trace(pending_in_order_scripts_);
   visitor->Trace(pending_async_scripts_);
   visitor->Trace(async_scripts_to_execute_soon_);
-  visitor->Trace(in_order_scripts_to_execute_soon_);
 }
 
 }  // namespace blink
