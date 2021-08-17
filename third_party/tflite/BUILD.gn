@@ -33,6 +33,11 @@ config("tflite_flags") {
     "-Wno-sign-compare",
     "-Wno-gnu-inline-cpp-without-extern",
     "-Wno-loop-analysis",
+
+    # TODO(thakis): Remove once
+    # https://github.com/tensorflow/tensorflow/pull/50528 is rolled in.
+    "-Wno-unreachable-code-break",
+    "-Wno-unreachable-code-return",
   ]
 
   defines = [

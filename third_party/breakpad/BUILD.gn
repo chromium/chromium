@@ -850,12 +850,18 @@ if (is_win) {
   }
   if (current_toolchain == host_toolchain ||
       current_toolchain == symupload_toolchain) {
+    # TODO(thakis): Remove once
+    # https://chromium-review.googlesource.com/c/breakpad/breakpad/+/2995406
+    # is rolled in.
+    config("common_windows_internal_config") {
+      cflags = [ "-Wno-unreachable-code-return" ]
+    }
     static_library("common_windows") {
       include_dirs = [
         "$visual_studio_path/DIA SDK/include",
         "breakpad/src",
       ]
-
+      configs += [ ":common_windows_internal_config" ]
       sources = [
         "breakpad/src/common/windows/dia_util.cc",
         "breakpad/src/common/windows/dia_util.h",
