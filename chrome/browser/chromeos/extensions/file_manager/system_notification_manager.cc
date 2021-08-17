@@ -197,6 +197,7 @@ void SystemNotificationManager::HandleDeviceEvent(
       break;
     case file_manager_private::DEVICE_EVENT_TYPE_FORMAT_SUCCESS:
     case file_manager_private::DEVICE_EVENT_TYPE_FORMAT_FAIL:
+    case file_manager_private::DEVICE_EVENT_TYPE_PARTITION_FAIL:
       // Hide the formatting notification.
       GetNotificationDisplayService()->Close(
           NotificationHandler::Type::TRANSIENT,
@@ -216,25 +217,14 @@ void SystemNotificationManager::HandleDeviceEvent(
       }
       notification = CreateNotification(id, title, message);
       break;
+    case file_manager_private::DEVICE_EVENT_TYPE_PARTITION_START:
+    case file_manager_private::DEVICE_EVENT_TYPE_PARTITION_SUCCESS:
+      // No-op.
+      break;
     case file_manager_private::DEVICE_EVENT_TYPE_RENAME_FAIL:
       notification =
           CreateNotification(id, IDS_RENAMING_OF_DEVICE_FAILED_TITLE,
                              IDS_RENAMING_OF_DEVICE_FINISHED_FAILURE_MESSAGE);
-      break;
-    case file_manager_private::DEVICE_EVENT_TYPE_PARTITION_START:
-      notification =
-          CreateNotification(id, IDS_FILE_BROWSER_FORMAT_DIALOG_TITLE,
-                             IDS_FILE_BROWSER_FORMAT_PROGRESS_MESSAGE);
-      break;
-    case file_manager_private::DEVICE_EVENT_TYPE_PARTITION_SUCCESS:
-      notification =
-          CreateNotification(id, IDS_FILE_BROWSER_FORMAT_DIALOG_TITLE,
-                             IDS_FILE_BROWSER_FORMAT_SUCCESS_MESSAGE);
-      break;
-    case file_manager_private::DEVICE_EVENT_TYPE_PARTITION_FAIL:
-      notification =
-          CreateNotification(id, IDS_FILE_BROWSER_FORMAT_DIALOG_TITLE,
-                             IDS_FILE_BROWSER_FORMAT_FAILURE_MESSAGE);
       break;
     default:
       DLOG(WARNING) << "Unable to generate notification for " << id;
