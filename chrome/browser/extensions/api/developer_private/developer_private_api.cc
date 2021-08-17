@@ -1400,13 +1400,14 @@ DeveloperPrivateLoadUnpackedFunction::~DeveloperPrivateLoadUnpackedFunction() {}
 
 ExtensionFunction::ResponseAction DeveloperPrivateLoadDirectoryFunction::Run() {
   // TODO(grv) : add unittests.
-  std::string directory_url_str;
-  std::string filesystem_name;
-  std::string filesystem_path;
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 3);
+  EXTENSION_FUNCTION_VALIDATE(args()[0].is_string());
+  EXTENSION_FUNCTION_VALIDATE(args()[1].is_string());
+  EXTENSION_FUNCTION_VALIDATE(args()[2].is_string());
 
-  EXTENSION_FUNCTION_VALIDATE(args_->GetString(0, &filesystem_name));
-  EXTENSION_FUNCTION_VALIDATE(args_->GetString(1, &filesystem_path));
-  EXTENSION_FUNCTION_VALIDATE(args_->GetString(2, &directory_url_str));
+  const std::string& filesystem_name = args()[0].GetString();
+  const std::string& filesystem_path = args()[1].GetString();
+  const std::string& directory_url_str = args()[2].GetString();
 
   context_ = browser_context()
                  ->GetStoragePartition(render_frame_host()->GetSiteInstance())

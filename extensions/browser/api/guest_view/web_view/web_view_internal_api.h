@@ -16,6 +16,7 @@
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 
 namespace base {
+class DictionaryValue;
 class TaskRunner;
 }
 

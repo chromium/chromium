@@ -464,9 +464,9 @@ ExtensionFunction::ResponseAction FileWatchFunctionBase::Run() {
     return RespondNow(Error("Invalid state"));
 
   // First param is url of a file to watch.
-  std::string url;
-  if (!args_->GetString(0, &url) || url.empty())
+  if (args().empty() || !args()[0].is_string() || args()[0].GetString().empty())
     return RespondNow(Error("Empty watch URL"));
+  const std::string& url = args()[0].GetString();
 
   Profile* const profile = Profile::FromBrowserContext(browser_context());
   scoped_refptr<storage::FileSystemContext> file_system_context =

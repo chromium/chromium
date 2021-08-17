@@ -156,17 +156,18 @@ void TtsExtensionEventHandler::OnTtsEvent(content::TtsUtterance* utterance,
 }
 
 ExtensionFunction::ResponseAction TtsSpeakFunction::Run() {
-  std::string text;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetString(0, &text));
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
+  EXTENSION_FUNCTION_VALIDATE(args()[0].is_string());
+  const std::string& text = args()[0].GetString();
   if (text.size() > 32768) {
     return RespondNow(Error(constants::kErrorUtteranceTooLong));
   }
 
   std::unique_ptr<base::DictionaryValue> options(new base::DictionaryValue());
-  if (args_->GetSize() >= 2) {
-    base::DictionaryValue* temp_options = NULL;
-    if (args_->GetDictionary(1, &temp_options))
-      options.reset(temp_options->DeepCopy());
+  if (args().size() >= 2 && args()[1].is_dict()) {
+    const base::DictionaryValue& temp_options =
+        base::Value::AsDictionaryValue(args()[1]);
+    options.reset(temp_options.DeepCopy());
   }
 
   std::string voice_name;

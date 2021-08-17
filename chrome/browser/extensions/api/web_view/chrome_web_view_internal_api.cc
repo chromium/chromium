@@ -37,10 +37,13 @@ ChromeWebViewInternalContextMenusCreateFunction::Run() {
     id.string_uid = *params->create_properties.id;
   } else {
     // The Generated Id is added by web_view_internal_custom_bindings.js.
-    base::DictionaryValue* properties = NULL;
-    EXTENSION_FUNCTION_VALIDATE(args_->GetDictionary(1, &properties));
-    EXTENSION_FUNCTION_VALIDATE(properties->GetInteger(
-        extensions::context_menus_api_helpers::kGeneratedIdKey, &id.uid));
+    EXTENSION_FUNCTION_VALIDATE(args().size() >= 2);
+    EXTENSION_FUNCTION_VALIDATE(args()[1].is_dict());
+    const base::Value& properties = args()[1];
+    absl::optional<int> result = properties.FindIntKey(
+        extensions::context_menus_api_helpers::kGeneratedIdKey);
+    EXTENSION_FUNCTION_VALIDATE(result);
+    id.uid = *result;
   }
 
   std::string error;

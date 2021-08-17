@@ -290,17 +290,17 @@ ExtensionFunction::ResponseAction BrowsingDataRemoverFunction::Run() {
   DCHECK(profile);
 
   // Grab the initial |options| parameter, and parse out the arguments.
-  base::DictionaryValue* options;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetDictionary(0, &options));
-  DCHECK(options);
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
+  EXTENSION_FUNCTION_VALIDATE(args()[0].is_dict());
+  const base::DictionaryValue& options =
+      base::Value::AsDictionaryValue(args()[0]);
 
-  EXTENSION_FUNCTION_VALIDATE(
-      ParseOriginTypeMask(*options, &origin_type_mask_));
+  EXTENSION_FUNCTION_VALIDATE(ParseOriginTypeMask(options, &origin_type_mask_));
 
   // If |ms_since_epoch| isn't set, default it to 0.
   double ms_since_epoch;
-  if (!options->GetDouble(extension_browsing_data_api_constants::kSinceKey,
-                          &ms_since_epoch)) {
+  if (!options.GetDouble(extension_browsing_data_api_constants::kSinceKey,
+                         &ms_since_epoch)) {
     ms_since_epoch = 0;
   }
   // base::Time takes a double that represents seconds since epoch. JavaScript
@@ -310,10 +310,10 @@ ExtensionFunction::ResponseAction BrowsingDataRemoverFunction::Run() {
 
   EXTENSION_FUNCTION_VALIDATE(GetRemovalMask(&removal_mask_));
 
-  base::Value* origins =
-      options->FindKeyOfType(extension_browsing_data_api_constants::kOriginsKey,
-                             base::Value::Type::LIST);
-  base::Value* exclude_origins = options->FindKeyOfType(
+  const base::Value* origins =
+      options.FindKeyOfType(extension_browsing_data_api_constants::kOriginsKey,
+                            base::Value::Type::LIST);
+  const base::Value* exclude_origins = options.FindKeyOfType(
       extension_browsing_data_api_constants::kExcludeOriginsKey,
       base::Value::Type::LIST);
 
@@ -495,18 +495,15 @@ bool BrowsingDataRemoverFunction::ParseOrigins(const base::Value& list_value,
 // Returns false if parse was not successful, i.e. if 'dataToRemove' is not
 // present or any data-type keys don't have supported (boolean) values.
 bool BrowsingDataRemoveFunction::GetRemovalMask(uint64_t* removal_mask) {
-  base::DictionaryValue* data_to_remove;
-  if (!args_->GetDictionary(1, &data_to_remove))
+  if (args().size() <= 1 || !args()[1].is_dict())
     return false;
 
   *removal_mask = 0;
-  for (base::DictionaryValue::Iterator i(*data_to_remove);
-       !i.IsAtEnd();
-       i.Advance()) {
-    if (!i.value().is_bool())
+  for (const auto kv : args()[1].DictItems()) {
+    if (!kv.second.is_bool())
       return false;
-    if (i.value().GetBool())
-      *removal_mask |= MaskForKey(i.key().c_str());
+    if (kv.second.GetBool())
+      *removal_mask |= MaskForKey(kv.first.c_str());
   }
 
   return true;

@@ -183,8 +183,9 @@ BrailleDisplayPrivateUpdateBluetoothBrailleDisplayAddressFunction::Run() {
   NOTREACHED();
   return RespondNow(Error("Unsupported on this platform."));
 #else
-  std::string address;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetString(0, &address));
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
+  EXTENSION_FUNCTION_VALIDATE(args()[0].is_string());
+  const std::string& address = args()[0].GetString();
   ash::AccessibilityManager::Get()->UpdateBluetoothBrailleDisplayAddress(
       address);
   return RespondNow(NoArguments());

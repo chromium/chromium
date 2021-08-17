@@ -386,9 +386,9 @@ std::unique_ptr<base::ListValue> TtsExtensionEngine::BuildSpeakArgs(
 
 ExtensionFunction::ResponseAction
 ExtensionTtsEngineUpdateVoicesFunction::Run() {
-  base::Value::ConstListView args_list = args_->GetList();
-  EXTENSION_FUNCTION_VALIDATE(!args_list.empty() && args_list[0].is_list());
-  const base::Value& voices_data = args_list[0];
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
+  EXTENSION_FUNCTION_VALIDATE(args()[0].is_list());
+  const base::Value& voices_data = args()[0];
 
   // Validate the voices and return an error if there's a problem.
   const char* error = nullptr;
@@ -412,15 +412,14 @@ ExtensionTtsEngineUpdateVoicesFunction::Run() {
 
 ExtensionFunction::ResponseAction
 ExtensionTtsEngineSendTtsEventFunction::Run() {
-  const auto& list = args_->GetList();
-  EXTENSION_FUNCTION_VALIDATE(list.size() >= 2);
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 2);
 
-  const auto& utterance_id_value = list[0];
+  const auto& utterance_id_value = args()[0];
   EXTENSION_FUNCTION_VALIDATE(utterance_id_value.is_int());
   int utterance_id = utterance_id_value.GetInt();
 
-  base::DictionaryValue* event;
-  EXTENSION_FUNCTION_VALIDATE(list[1].GetAsDictionary(&event));
+  const base::DictionaryValue* event;
+  EXTENSION_FUNCTION_VALIDATE(args()[1].GetAsDictionary(&event));
 
   std::string event_type;
   EXTENSION_FUNCTION_VALIDATE(
@@ -492,15 +491,14 @@ ExtensionTtsEngineSendTtsEventFunction::Run() {
 ExtensionFunction::ResponseAction
 ExtensionTtsEngineSendTtsAudioFunction::Run() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  const auto& list = args_->GetList();
-  EXTENSION_FUNCTION_VALIDATE(list.size() >= 2);
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 2);
 
-  const auto& utterance_id_value = list[0];
+  const auto& utterance_id_value = args()[0];
   EXTENSION_FUNCTION_VALIDATE(utterance_id_value.is_int());
   int utterance_id = utterance_id_value.GetInt();
 
-  base::DictionaryValue* audio = nullptr;
-  EXTENSION_FUNCTION_VALIDATE(list[1].GetAsDictionary(&audio));
+  const base::DictionaryValue* audio = nullptr;
+  EXTENSION_FUNCTION_VALIDATE(args()[1].GetAsDictionary(&audio));
 
   const std::vector<uint8_t>* audio_buffer_blob =
       audio->FindBlobPath(tts_extension_api_constants::kAudioBufferKey);

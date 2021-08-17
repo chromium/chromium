@@ -17,6 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/values.h"
 #include "components/crash/core/common/crash_key.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
@@ -285,9 +286,8 @@ bool WebViewInternalExtensionFunction::PreRunValidation(std::string* error) {
   if (!ExtensionFunction::PreRunValidation(error))
     return false;
 
-  const auto& list = args_->GetList();
-  EXTENSION_FUNCTION_PRERUN_VALIDATE(list.size() >= 1);
-  const auto& instance_id_value = list[0];
+  EXTENSION_FUNCTION_PRERUN_VALIDATE(args().size() >= 1);
+  const auto& instance_id_value = args()[0];
   EXTENSION_FUNCTION_PRERUN_VALIDATE(instance_id_value.is_int());
   int instance_id = instance_id_value.GetInt();
   // TODO(780728): Remove crash key once the cause of the kill is known.
@@ -314,10 +314,8 @@ WebViewInternalCaptureVisibleRegionFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   std::unique_ptr<ImageDetails> image_details;
-  if (args_->GetSize() > 1) {
-    base::Value* spec = NULL;
-    EXTENSION_FUNCTION_VALIDATE(args_->Get(1, &spec) && spec);
-    image_details = ImageDetails::FromValue(*spec);
+  if (args().size() > 1) {
+    image_details = ImageDetails::FromValue(args()[1]);
   }
 
   is_guest_transparent_ = guest_->allow_transparency();
@@ -439,15 +437,14 @@ ExecuteCodeFunction::InitResult WebViewInternalExecuteCodeFunction::Init() {
   if (init_result_)
     return init_result_.value();
 
-  const auto& list = args_->GetList();
-  if (list.size() < 3)
+  if (args().size() < 3)
     return set_init_result(VALIDATION_FAILURE);
 
-  guest_instance_id_ = list[0].GetIfInt().value_or(0);
+  guest_instance_id_ = args()[0].GetIfInt().value_or(0);
   if (guest_instance_id_ == 0)
     return set_init_result(VALIDATION_FAILURE);
 
-  const std::string* src = list[1].GetIfString();
+  const std::string* src = args()[1].GetIfString();
   if (!src)
     return set_init_result(VALIDATION_FAILURE);
 
@@ -457,11 +454,10 @@ ExecuteCodeFunction::InitResult WebViewInternalExecuteCodeFunction::Init() {
   // the URL is invalid.
   guest_src_ = GURL(*src);
 
-  base::DictionaryValue* details_value = NULL;
-  if (!args_->GetDictionary(2, &details_value))
+  if (args().size() <= 2 || !args()[2].is_dict())
     return set_init_result(VALIDATION_FAILURE);
   std::unique_ptr<InjectDetails> details(new InjectDetails());
-  if (!InjectDetails::Populate(*details_value, details.get()))
+  if (!InjectDetails::Populate(args()[2], details.get()))
     return set_init_result(VALIDATION_FAILURE);
 
   details_ = std::move(details);
@@ -1072,21 +1068,19 @@ WebViewInternalIsSpatialNavigationEnabledFunction::Run() {
 // |bad_message_| (like EXTENSION_FUNCTION_VALIDATE would if this were a bool
 // method) if 'dataToRemove' is not present.
 uint32_t WebViewInternalClearDataFunction::GetRemovalMask() {
-  base::DictionaryValue* data_to_remove;
-  if (!args_->GetDictionary(2, &data_to_remove)) {
+  if (args().size() <= 2 || !args()[2].is_dict()) {
     bad_message_ = true;
     return 0;
   }
 
   uint32_t remove_mask = 0;
-  for (base::DictionaryValue::Iterator i(*data_to_remove); !i.IsAtEnd();
-       i.Advance()) {
-    if (!i.value().is_bool()) {
+  for (const auto kv : args()[2].DictItems()) {
+    if (!kv.second.is_bool()) {
       bad_message_ = true;
       return 0;
     }
-    if (i.value().GetBool())
-      remove_mask |= MaskForKey(i.key().c_str());
+    if (kv.second.GetBool())
+      remove_mask |= MaskForKey(kv.first.c_str());
   }
 
   return remove_mask;
@@ -1096,15 +1090,12 @@ uint32_t WebViewInternalClearDataFunction::GetRemovalMask() {
 // sub-set) to BrowsingDataRemoverFunction. How can we share this code?
 ExtensionFunction::ResponseAction WebViewInternalClearDataFunction::Run() {
   // Grab the initial |options| parameter, and parse out the arguments.
-  base::DictionaryValue* options;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetDictionary(1, &options));
-  DCHECK(options);
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 2);
+  const base::Value& options = args()[1];
+  EXTENSION_FUNCTION_VALIDATE(options.is_dict());
 
   // If |ms_since_epoch| isn't set, default it to 0.
-  double ms_since_epoch;
-  if (!options->GetDouble(kSinceKey, &ms_since_epoch)) {
-    ms_since_epoch = 0;
-  }
+  double ms_since_epoch = options.FindDoubleKey(kSinceKey).value_or(0);
 
   // base::Time takes a double that represents seconds since epoch. JavaScript
   // gives developers milliseconds, so do a quick conversion before populating

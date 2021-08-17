@@ -364,11 +364,11 @@ ExtensionFunction::ResponseAction SetFontPrefExtensionFunction::Run() {
   if (profile->IsOffTheRecord())
     return RespondNow(Error(kSetFromIncognitoError));
 
-  base::DictionaryValue* details = NULL;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetDictionary(0, &details));
-
-  base::Value* value;
-  EXTENSION_FUNCTION_VALIDATE(details->Get(GetKey(), &value));
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
+  EXTENSION_FUNCTION_VALIDATE(args()[0].is_dict());
+  const base::Value& details = args()[0];
+  const base::Value* value = details.FindKey(GetKey());
+  EXTENSION_FUNCTION_VALIDATE(value);
 
   PreferenceAPI::Get(profile)->SetExtensionControlledPref(
       extension_id(), GetPrefName(), kExtensionPrefsScopeRegular,

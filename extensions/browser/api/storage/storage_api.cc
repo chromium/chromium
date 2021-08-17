@@ -136,21 +136,24 @@ SettingsFunction::~SettingsFunction() = default;
 
 bool SettingsFunction::ShouldSkipQuotaLimiting() const {
   // Only apply quota if this is for sync storage.
-  std::string storage_area_string;
-  if (!args_->GetString(0, &storage_area_string)) {
+  if (args().empty() || !args()[0].is_string()) {
     // This should be EXTENSION_FUNCTION_VALIDATE(false) but there is no way
     // to signify that from this function. It will be caught in Run().
     return false;
   }
+  const std::string& storage_area_string = args()[0].GetString();
   return StorageAreaFromString(storage_area_string) !=
          StorageAreaNamespace::kSync;
 }
 
 ExtensionFunction::ResponseAction SettingsFunction::Run() {
-  std::string storage_area_string;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetString(0, &storage_area_string));
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
+  EXTENSION_FUNCTION_VALIDATE(args()[0].is_string());
 
-  args_->EraseListIter(args_->GetList().begin());
+  // Not a ref since we remove the underlying value after.
+  std::string storage_area_string = args()[0].GetString();
+
+  mutable_args().erase(args().begin());
   storage_area_ = StorageAreaFromString(storage_area_string);
   EXTENSION_FUNCTION_VALIDATE(storage_area_ != StorageAreaNamespace::kInvalid);
 
@@ -262,27 +265,27 @@ ExtensionFunction::ResponseValue StorageStorageAreaGetFunction::RunWithStorage(
     ValueStore* storage) {
   TRACE_EVENT1("browser", "StorageStorageAreaGetFunction::RunWithStorage",
                "extension_id", extension_id());
-  base::Value* input = nullptr;
-  if (!args_->Get(0, &input))
+  if (args().empty())
     return BadMessage();
+  const base::Value& input = args()[0];
 
-  switch (input->type()) {
+  switch (input.type()) {
     case base::Value::Type::NONE:
       return UseReadResult(storage->Get());
 
     case base::Value::Type::STRING:
-      return UseReadResult(storage->Get(input->GetString()));
+      return UseReadResult(storage->Get(input.GetString()));
 
     case base::Value::Type::LIST:
-      return UseReadResult(storage->Get(GetKeysFromList(*input)));
+      return UseReadResult(storage->Get(GetKeysFromList(input)));
 
     case base::Value::Type::DICTIONARY: {
-      ValueStore::ReadResult result = storage->Get(GetKeysFromDict(*input));
+      ValueStore::ReadResult result = storage->Get(GetKeysFromDict(input));
       if (!result.status().ok()) {
         return UseReadResult(std::move(result));
       }
       std::unique_ptr<base::DictionaryValue> with_default_values =
-          static_cast<base::DictionaryValue*>(input)->CreateDeepCopy();
+          base::Value::AsDictionaryValue(input).CreateDeepCopy();
       with_default_values->MergeDictionary(&result.settings());
       return UseReadResult(ValueStore::ReadResult(
           std::move(with_default_values), result.PassStatus()));
@@ -294,34 +297,34 @@ ExtensionFunction::ResponseValue StorageStorageAreaGetFunction::RunWithStorage(
 }
 
 ExtensionFunction::ResponseValue StorageStorageAreaGetFunction::RunInSession() {
-  base::Value* input = nullptr;
-  if (!args_->Get(0, &input))
+  if (args().empty())
     return BadMessage();
+  base::Value& input = mutable_args()[0];
 
   base::Value value_dict(base::Value::Type::DICTIONARY);
   SessionStorageManager* session_manager =
       GetOrCreateSessionStorage(browser_context());
 
-  switch (input->type()) {
+  switch (input.type()) {
     case base::Value::Type::NONE:
       value_dict = MapAsValueDict(session_manager->GetAll(extension_id()));
       break;
 
     case base::Value::Type::STRING:
       value_dict = MapAsValueDict(session_manager->Get(
-          extension_id(), std::vector<std::string>(1, input->GetString())));
+          extension_id(), std::vector<std::string>(1, input.GetString())));
       break;
 
     case base::Value::Type::LIST:
       value_dict = MapAsValueDict(
-          session_manager->Get(extension_id(), GetKeysFromList(*input)));
+          session_manager->Get(extension_id(), GetKeysFromList(input)));
       break;
 
     case base::Value::Type::DICTIONARY: {
       std::map<std::string, const base::Value*> values =
-          session_manager->Get(extension_id(), GetKeysFromDict(*input));
+          session_manager->Get(extension_id(), GetKeysFromDict(input));
 
-      for (auto default_value : input->DictItems()) {
+      for (auto default_value : input.DictItems()) {
         auto value_it = values.find(default_value.first);
         value_dict.SetKey(default_value.first,
                           value_it != values.end()
@@ -343,23 +346,23 @@ StorageStorageAreaGetBytesInUseFunction::RunWithStorage(ValueStore* storage) {
                "StorageStorageAreaGetBytesInUseFunction::RunWithStorage",
                "extension_id", extension_id());
 
-  base::Value* input = nullptr;
-  if (!args_->Get(0, &input))
+  if (args().empty())
     return BadMessage();
+  const base::Value& input = args()[0];
 
   size_t bytes_in_use = 0;
 
-  switch (input->type()) {
+  switch (input.type()) {
     case base::Value::Type::NONE:
       bytes_in_use = storage->GetBytesInUse();
       break;
 
     case base::Value::Type::STRING:
-      bytes_in_use = storage->GetBytesInUse(input->GetString());
+      bytes_in_use = storage->GetBytesInUse(input.GetString());
       break;
 
     case base::Value::Type::LIST:
-      bytes_in_use = storage->GetBytesInUse(GetKeysFromList(*input));
+      bytes_in_use = storage->GetBytesInUse(GetKeysFromList(input));
       break;
 
     default:
@@ -371,27 +374,27 @@ StorageStorageAreaGetBytesInUseFunction::RunWithStorage(ValueStore* storage) {
 
 ExtensionFunction::ResponseValue
 StorageStorageAreaGetBytesInUseFunction::RunInSession() {
-  base::Value* input = nullptr;
-  if (!args_->Get(0, &input))
+  if (args().empty())
     return BadMessage();
+  const base::Value& input = args()[0];
 
   size_t bytes_in_use = 0;
   SessionStorageManager* session_manager =
       GetOrCreateSessionStorage(browser_context());
 
-  switch (input->type()) {
+  switch (input.type()) {
     case base::Value::Type::NONE:
       bytes_in_use = session_manager->GetTotalBytesInUse(extension_id());
       break;
 
     case base::Value::Type::STRING:
       bytes_in_use = session_manager->GetBytesInUse(
-          extension_id(), std::vector<std::string>(1, input->GetString()));
+          extension_id(), std::vector<std::string>(1, input.GetString()));
       break;
 
     case base::Value::Type::LIST:
       bytes_in_use = session_manager->GetBytesInUse(extension_id(),
-                                                    GetKeysFromList(*input));
+                                                    GetKeysFromList(input));
       break;
 
     default:
@@ -408,19 +411,19 @@ ExtensionFunction::ResponseValue StorageStorageAreaSetFunction::RunWithStorage(
     ValueStore* storage) {
   TRACE_EVENT1("browser", "StorageStorageAreaSetFunction::RunWithStorage",
                "extension_id", extension_id());
-  base::DictionaryValue* input = nullptr;
-  if (!args_->GetDictionary(0, &input))
+  if (args().empty() || !args()[0].is_dict())
     return BadMessage();
-  return UseWriteResult(storage->Set(ValueStore::DEFAULTS, *input));
+  const base::DictionaryValue& input =
+      base::Value::AsDictionaryValue(args()[0]);
+  return UseWriteResult(storage->Set(ValueStore::DEFAULTS, input));
 }
 
 ExtensionFunction::ResponseValue StorageStorageAreaSetFunction::RunInSession() {
   // Retrieve and delete input from `args_` since they will be moved to storage.
-  auto list = args_->GetList();
-  if (list.empty() || !list[0].is_dict())
+  if (args().empty() || !args()[0].is_dict())
     return BadMessage();
-  base::Value input = std::move(list[0]);
-  args_->EraseListIter(list.begin());
+  base::Value input = std::move(mutable_args()[0]);
+  mutable_args().erase(args().begin());
 
   std::map<std::string, base::Value> values;
   for (auto item : input.DictItems()) {
@@ -450,16 +453,16 @@ ExtensionFunction::ResponseValue
 StorageStorageAreaRemoveFunction::RunWithStorage(ValueStore* storage) {
   TRACE_EVENT1("browser", "StorageStorageAreaRemoveFunction::RunWithStorage",
                "extension_id", extension_id());
-  base::Value* input = nullptr;
-  if (!args_->Get(0, &input))
+  if (args().empty())
     return BadMessage();
+  const base::Value& input = args()[0];
 
-  switch (input->type()) {
+  switch (input.type()) {
     case base::Value::Type::STRING:
-      return UseWriteResult(storage->Remove(input->GetString()));
+      return UseWriteResult(storage->Remove(input.GetString()));
 
     case base::Value::Type::LIST:
-      return UseWriteResult(storage->Remove(GetKeysFromList(*input)));
+      return UseWriteResult(storage->Remove(GetKeysFromList(input)));
 
     default:
       return BadMessage();
@@ -468,21 +471,21 @@ StorageStorageAreaRemoveFunction::RunWithStorage(ValueStore* storage) {
 
 ExtensionFunction::ResponseValue
 StorageStorageAreaRemoveFunction::RunInSession() {
-  base::Value* input = nullptr;
-  if (!args_->Get(0, &input))
+  if (args().empty())
     return BadMessage();
+  const base::Value& input = args()[0];
 
   SessionStorageManager* session_manager =
       GetOrCreateSessionStorage(browser_context());
   std::vector<SessionStorageManager::ValueChange> changes;
 
-  switch (input->type()) {
+  switch (input.type()) {
     case base::Value::Type::STRING:
-      session_manager->Remove(extension_id(), input->GetString(), changes);
+      session_manager->Remove(extension_id(), input.GetString(), changes);
       break;
 
     case base::Value::Type::LIST:
-      session_manager->Remove(extension_id(), GetKeysFromList(*input), changes);
+      session_manager->Remove(extension_id(), GetKeysFromList(input), changes);
       break;
 
     default:

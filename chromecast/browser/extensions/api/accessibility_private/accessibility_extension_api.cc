@@ -32,8 +32,9 @@ namespace api {
 
 ExtensionFunction::ResponseAction
 AccessibilityPrivateSetNativeAccessibilityEnabledFunction::Run() {
-  bool enabled = false;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetBoolean(0, &enabled));
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
+  EXTENSION_FUNCTION_VALIDATE(args()[0].is_bool());
+  bool enabled = args()[0].GetBool();
   if (enabled) {
     content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
   } else {

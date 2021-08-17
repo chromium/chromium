@@ -39,8 +39,9 @@ std::string GetUpdateURLData(const ExtensionPrefs* prefs,
 }  // namespace extension
 
 ExtensionFunction::ResponseAction ExtensionSetUpdateUrlDataFunction::Run() {
-  std::string data;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetString(0, &data));
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
+  EXTENSION_FUNCTION_VALIDATE(args()[0].is_string());
+  const std::string& data = args()[0].GetString();
 
   ExtensionManagement* extension_management =
       ExtensionManagementFactory::GetForBrowserContext(browser_context());

@@ -248,9 +248,8 @@ ExtensionFunction::ResponseAction SocketCreateFunction::Work() {
 }
 
 ExtensionFunction::ResponseAction SocketDestroyFunction::Work() {
-  const auto& list = args_->GetList();
-  EXTENSION_FUNCTION_VALIDATE(list.size() >= 1);
-  const auto& socket_id_value = list[0];
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
+  const auto& socket_id_value = args()[0];
   EXTENSION_FUNCTION_VALIDATE(socket_id_value.is_int());
   RemoveSocket(socket_id_value.GetInt());
   return RespondNow(NoArguments());
@@ -261,11 +260,10 @@ SocketConnectFunction::SocketConnectFunction() = default;
 SocketConnectFunction::~SocketConnectFunction() = default;
 
 ExtensionFunction::ResponseAction SocketConnectFunction::Work() {
-  const auto& list = args_->GetList();
-  EXTENSION_FUNCTION_VALIDATE(list.size() >= 3);
-  const auto& socket_id_value = list[0];
-  const auto& hostname_value = list[1];
-  const auto& port_value = list[2];
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 3);
+  const auto& socket_id_value = args()[0];
+  const auto& hostname_value = args()[1];
+  const auto& port_value = args()[2];
   EXTENSION_FUNCTION_VALIDATE(socket_id_value.is_int());
   EXTENSION_FUNCTION_VALIDATE(hostname_value.is_string());
   EXTENSION_FUNCTION_VALIDATE(port_value.is_int());
@@ -333,9 +331,8 @@ void SocketConnectFunction::OnConnect(int result) {
 }
 
 ExtensionFunction::ResponseAction SocketDisconnectFunction::Work() {
-  const auto& list = args_->GetList();
-  EXTENSION_FUNCTION_VALIDATE(list.size() >= 1);
-  const auto& socket_id_value = list[0];
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
+  const auto& socket_id_value = args()[0];
   EXTENSION_FUNCTION_VALIDATE(socket_id_value.is_int());
   int socket_id = socket_id_value.GetInt();
 
@@ -352,11 +349,10 @@ ExtensionFunction::ResponseAction SocketDisconnectFunction::Work() {
 }
 
 ExtensionFunction::ResponseAction SocketBindFunction::Work() {
-  const auto& list = args_->GetList();
-  EXTENSION_FUNCTION_VALIDATE(list.size() >= 3);
-  const auto& socket_id_value = list[0];
-  const auto& address_value = list[1];
-  const auto& port_value = list[2];
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 3);
+  const auto& socket_id_value = args()[0];
+  const auto& address_value = args()[1];
+  const auto& port_value = args()[2];
   EXTENSION_FUNCTION_VALIDATE(socket_id_value.is_int());
   EXTENSION_FUNCTION_VALIDATE(address_value.is_string());
   EXTENSION_FUNCTION_VALIDATE(port_value.is_int());
@@ -532,10 +528,9 @@ SocketWriteFunction::SocketWriteFunction() = default;
 SocketWriteFunction::~SocketWriteFunction() = default;
 
 ExtensionFunction::ResponseAction SocketWriteFunction::Work() {
-  const auto& list = args_->GetList();
-  EXTENSION_FUNCTION_VALIDATE(list.size() >= 2);
-  const auto& socket_id_value = list[0];
-  const auto& data_value = list[1];
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 2);
+  const auto& socket_id_value = args()[0];
+  const auto& data_value = args()[1];
   EXTENSION_FUNCTION_VALIDATE(socket_id_value.is_int());
   EXTENSION_FUNCTION_VALIDATE(data_value.is_blob());
 
@@ -609,12 +604,11 @@ SocketSendToFunction::SocketSendToFunction() = default;
 SocketSendToFunction::~SocketSendToFunction() = default;
 
 ExtensionFunction::ResponseAction SocketSendToFunction::Work() {
-  const auto& list = args_->GetList();
-  EXTENSION_FUNCTION_VALIDATE(list.size() >= 4);
-  const auto& socket_id_value = list[0];
-  const auto& data_value = list[1];
-  const auto& hostname_value = list[2];
-  const auto& port_value = list[3];
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 4);
+  const auto& socket_id_value = args()[0];
+  const auto& data_value = args()[1];
+  const auto& hostname_value = args()[2];
+  const auto& port_value = args()[3];
   EXTENSION_FUNCTION_VALIDATE(socket_id_value.is_int());
   EXTENSION_FUNCTION_VALIDATE(data_value.is_blob());
   EXTENSION_FUNCTION_VALIDATE(hostname_value.is_string());

@@ -2023,16 +2023,15 @@ WebContents* TabsCaptureVisibleTabFunction::GetWebContentsForID(
 ExtensionFunction::ResponseAction TabsCaptureVisibleTabFunction::Run() {
   using api::extension_types::ImageDetails;
 
-  EXTENSION_FUNCTION_VALIDATE(args_);
-  const auto& list = args_->GetList();
+  EXTENSION_FUNCTION_VALIDATE(has_args());
   int context_id = extension_misc::kCurrentWindowId;
 
-  if (list.size() > 0 && list[0].is_int())
-    context_id = list[0].GetInt();
+  if (args().size() > 0 && args()[0].is_int())
+    context_id = args()[0].GetInt();
 
   std::unique_ptr<ImageDetails> image_details;
-  if (list.size() > 1) {
-    image_details = ImageDetails::FromValue(list[1]);
+  if (args().size() > 1) {
+    image_details = ImageDetails::FromValue(args()[1]);
   }
 
   std::string error;
@@ -2243,11 +2242,10 @@ ExecuteCodeFunction::InitResult ExecuteCodeInTabFunction::Init() {
   if (init_result_)
     return init_result_.value();
 
-  const auto& list = args_->GetList();
-  if (list.size() < 2)
+  if (args().size() < 2)
     return set_init_result(VALIDATION_FAILURE);
 
-  const auto& tab_id_value = list[0];
+  const auto& tab_id_value = args()[0];
   // |tab_id| is optional so it's ok if it's not there.
   int tab_id = -1;
   if (tab_id_value.is_int()) {
@@ -2259,7 +2257,7 @@ ExecuteCodeFunction::InitResult ExecuteCodeInTabFunction::Init() {
   }
 
   // |details| are not optional.
-  const base::Value& details_value = list[1];
+  const base::Value& details_value = args()[1];
   if (!details_value.is_dict())
     return set_init_result(VALIDATION_FAILURE);
   std::unique_ptr<InjectDetails> details(new InjectDetails());

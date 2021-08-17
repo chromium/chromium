@@ -523,8 +523,8 @@ void ExtensionFunction::OnQuotaExceeded(std::string violation_error) {
 
 void ExtensionFunction::SetArgs(base::Value args) {
   DCHECK(args.is_list());
-  DCHECK(!args_.get());  // Should only be called once.
-  args_ = base::ListValue::From(base::Value::ToUniquePtrValue(std::move(args)));
+  DCHECK(!args_.has_value());
+  args_ = std::move(args).TakeList();
 }
 
 const base::ListValue* ExtensionFunction::GetResultList() const {
@@ -750,8 +750,8 @@ void ExtensionFunction::OnResponded() {
 }
 
 bool ExtensionFunction::HasOptionalArgument(size_t index) {
-  base::Value* value;
-  return args_->Get(index, &value) && !value->is_none();
+  DCHECK(args_);
+  return index < args_->size() && !(*args_)[index].is_none();
 }
 
 void ExtensionFunction::WriteToConsole(blink::mojom::ConsoleMessageLevel level,

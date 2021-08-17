@@ -34,9 +34,8 @@ int ClampThreshold(int threshold) {
 IdleQueryStateFunction::~IdleQueryStateFunction() = default;
 
 ExtensionFunction::ResponseAction IdleQueryStateFunction::Run() {
-  const auto& list = args_->GetList();
-  EXTENSION_FUNCTION_VALIDATE(list.size() >= 1);
-  const auto& threshold_value = list[0];
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
+  const auto& threshold_value = args()[0];
   EXTENSION_FUNCTION_VALIDATE(threshold_value.is_int());
   int threshold = ClampThreshold(threshold_value.GetInt());
 
@@ -54,9 +53,8 @@ void IdleQueryStateFunction::IdleStateCallback(ui::IdleState state) {
 IdleSetDetectionIntervalFunction::~IdleSetDetectionIntervalFunction() = default;
 
 ExtensionFunction::ResponseAction IdleSetDetectionIntervalFunction::Run() {
-  const auto& list = args_->GetList();
-  EXTENSION_FUNCTION_VALIDATE(list.size() >= 1);
-  const auto& threshold_value = list[0];
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
+  const auto& threshold_value = args()[0];
   EXTENSION_FUNCTION_VALIDATE(threshold_value.is_int());
   int threshold = ClampThreshold(threshold_value.GetInt());
 

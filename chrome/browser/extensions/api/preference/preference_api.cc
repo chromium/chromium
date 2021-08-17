@@ -663,15 +663,18 @@ PreferenceFunction::~PreferenceFunction() = default;
 GetPreferenceFunction::~GetPreferenceFunction() = default;
 
 ExtensionFunction::ResponseAction GetPreferenceFunction::Run() {
-  std::string pref_key;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetString(0, &pref_key));
-  base::DictionaryValue* details = nullptr;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetDictionary(1, &details));
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 2);
+  EXTENSION_FUNCTION_VALIDATE(args()[0].is_string());
+  EXTENSION_FUNCTION_VALIDATE(args()[1].is_dict());
+
+  const std::string& pref_key = args()[0].GetString();
+  const base::Value& details = args()[1];
 
   bool incognito = false;
-  if (details->HasKey(extensions::preference_api_constants::kIncognitoKey))
-    EXTENSION_FUNCTION_VALIDATE(details->GetBoolean(
-        extensions::preference_api_constants::kIncognitoKey, &incognito));
+  if (absl::optional<bool> result = details.FindBoolKey(
+          extensions::preference_api_constants::kIncognitoKey)) {
+    incognito = *result;
+  }
 
   // Check incognito access.
   if (incognito) {
@@ -744,23 +747,22 @@ ExtensionFunction::ResponseAction GetPreferenceFunction::Run() {
 SetPreferenceFunction::~SetPreferenceFunction() = default;
 
 ExtensionFunction::ResponseAction SetPreferenceFunction::Run() {
-  std::string pref_key;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetString(0, &pref_key));
-  base::DictionaryValue* details = nullptr;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetDictionary(1, &details));
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 2);
+  EXTENSION_FUNCTION_VALIDATE(args()[0].is_string());
+  EXTENSION_FUNCTION_VALIDATE(args()[1].is_dict());
 
-  base::Value* value = nullptr;
-  EXTENSION_FUNCTION_VALIDATE(
-      details->Get(extensions::preference_api_constants::kValue, &value));
+  std::string pref_key = args()[0].GetString();
+  const base::Value& details = args()[1];
+
+  const base::Value* value =
+      details.FindKey(extensions::preference_api_constants::kValue);
+  EXTENSION_FUNCTION_VALIDATE(value);
 
   ExtensionPrefsScope scope = kExtensionPrefsScopeRegular;
-  if (details->HasKey(extensions::preference_api_constants::kScopeKey)) {
-    std::string scope_str;
-    EXTENSION_FUNCTION_VALIDATE(details->GetString(
-        extensions::preference_api_constants::kScopeKey, &scope_str));
-
+  if (const std::string* scope_str = details.FindStringKey(
+          extensions::preference_api_constants::kScopeKey)) {
     EXTENSION_FUNCTION_VALIDATE(
-        extensions::preference_helpers::StringToScope(scope_str, &scope));
+        extensions::preference_helpers::StringToScope(*scope_str, &scope));
   }
 
   // Check incognito scope.
@@ -864,19 +866,18 @@ ExtensionFunction::ResponseAction SetPreferenceFunction::Run() {
 ClearPreferenceFunction::~ClearPreferenceFunction() = default;
 
 ExtensionFunction::ResponseAction ClearPreferenceFunction::Run() {
-  std::string pref_key;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetString(0, &pref_key));
-  base::DictionaryValue* details = nullptr;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetDictionary(1, &details));
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 2);
+  EXTENSION_FUNCTION_VALIDATE(args()[0].is_string());
+  EXTENSION_FUNCTION_VALIDATE(args()[1].is_dict());
+
+  std::string pref_key = args()[0].GetString();
+  const base::Value& details = args()[1];
 
   ExtensionPrefsScope scope = kExtensionPrefsScopeRegular;
-  if (details->HasKey(extensions::preference_api_constants::kScopeKey)) {
-    std::string scope_str;
-    EXTENSION_FUNCTION_VALIDATE(details->GetString(
-        extensions::preference_api_constants::kScopeKey, &scope_str));
-
+  if (const std::string* scope_str = details.FindStringKey(
+          extensions::preference_api_constants::kScopeKey)) {
     EXTENSION_FUNCTION_VALIDATE(
-        extensions::preference_helpers::StringToScope(scope_str, &scope));
+        extensions::preference_helpers::StringToScope(*scope_str, &scope));
   }
 
   // Check incognito scope.

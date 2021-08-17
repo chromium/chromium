@@ -66,8 +66,9 @@ using ::ash::AccessibilityManager;
 
 ExtensionFunction::ResponseAction
 AccessibilityPrivateSetNativeAccessibilityEnabledFunction::Run() {
-  bool enabled = false;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetBoolean(0, &enabled));
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
+  EXTENSION_FUNCTION_VALIDATE(args()[0].is_bool());
+  bool enabled = args()[0].GetBool();
   if (enabled) {
     content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
   } else {
@@ -208,10 +209,11 @@ ExtensionFunction::ResponseAction
 AccessibilityPrivateSetKeyboardListenerFunction::Run() {
   CHECK(extension());
 
-  bool enabled;
-  bool capture;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetBoolean(0, &enabled));
-  EXTENSION_FUNCTION_VALIDATE(args_->GetBoolean(1, &capture));
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 2);
+  EXTENSION_FUNCTION_VALIDATE(args()[0].is_bool());
+  EXTENSION_FUNCTION_VALIDATE(args()[1].is_bool());
+  bool enabled = args()[0].GetBool();
+  bool capture = args()[1].GetBool();
 
   AccessibilityManager* manager = AccessibilityManager::Get();
 
@@ -230,8 +232,9 @@ AccessibilityPrivateSetKeyboardListenerFunction::Run() {
 
 ExtensionFunction::ResponseAction
 AccessibilityPrivateDarkenScreenFunction::Run() {
-  bool darken = false;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetBoolean(0, &darken));
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
+  EXTENSION_FUNCTION_VALIDATE(args()[0].is_bool());
+  bool darken = args()[0].GetBool();
   AccessibilityManager::Get()->SetDarkenScreen(darken);
   return RespondNow(NoArguments());
 }
@@ -248,8 +251,9 @@ AccessibilityPrivateSetNativeChromeVoxArcSupportForCurrentAppFunction::Run() {
       arc::ArcAccessibilityHelperBridge::GetForBrowserContext(
           browser_context());
   if (bridge) {
-    bool enabled;
-    EXTENSION_FUNCTION_VALIDATE(args_->GetBoolean(0, &enabled));
+    EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
+    EXTENSION_FUNCTION_VALIDATE(args()[0].is_bool());
+    bool enabled = args()[0].GetBool();
     bridge->SetNativeChromeVoxArcSupport(enabled);
   }
   return RespondNow(NoArguments());
@@ -293,8 +297,9 @@ AccessibilityPrivateSendSyntheticKeyEventFunction::Run() {
 
 ExtensionFunction::ResponseAction
 AccessibilityPrivateEnableMouseEventsFunction::Run() {
-  bool enabled = false;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetBoolean(0, &enabled));
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
+  EXTENSION_FUNCTION_VALIDATE(args()[0].is_bool());
+  bool enabled = args()[0].GetBool();
   ash::EventRewriterController::Get()->SetSendMouseEvents(enabled);
   return RespondNow(NoArguments());
 }

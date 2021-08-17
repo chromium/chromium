@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/lazy_instance.h"
+#include "base/strings/utf_string_conversions.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/api/virtual_keyboard_private/virtual_keyboard_delegate.h"
 #include "extensions/browser/extension_function_registry.h"
@@ -62,8 +63,9 @@ VirtualKeyboardPrivateFunction::~VirtualKeyboardPrivateFunction() {}
 
 ExtensionFunction::ResponseAction
 VirtualKeyboardPrivateInsertTextFunction::Run() {
-  std::u16string text;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetString(0, &text));
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
+  EXTENSION_FUNCTION_VALIDATE(args()[0].is_string());
+  std::u16string text = base::UTF8ToUTF16(args()[0].GetString());
   if (!delegate()->InsertText(text))
     return RespondNow(Error(kUnknownError));
   return RespondNow(NoArguments());
@@ -93,16 +95,18 @@ VirtualKeyboardPrivateHideKeyboardFunction::Run() {
 
 ExtensionFunction::ResponseAction
 VirtualKeyboardPrivateSetHotrodKeyboardFunction::Run() {
-  bool enable = false;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetBoolean(0, &enable));
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
+  EXTENSION_FUNCTION_VALIDATE(args()[0].is_bool());
+  bool enable = args()[0].GetBool();
   delegate()->SetHotrodKeyboard(enable);
   return RespondNow(NoArguments());
 }
 
 ExtensionFunction::ResponseAction
 VirtualKeyboardPrivateLockKeyboardFunction::Run() {
-  bool lock = false;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetBoolean(0, &lock));
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
+  EXTENSION_FUNCTION_VALIDATE(args()[0].is_bool());
+  bool lock = args()[0].GetBool();
   if (!delegate()->LockKeyboard(lock))
     return RespondNow(Error(kUnknownError));
   return RespondNow(NoArguments());

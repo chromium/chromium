@@ -63,8 +63,9 @@ MetricsPrivateGetIsCrashReportingEnabledFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction MetricsPrivateGetFieldTrialFunction::Run() {
-  std::string name;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetString(0, &name));
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
+  EXTENSION_FUNCTION_VALIDATE(args()[0].is_string());
+  const std::string& name = args()[0].GetString();
 
   return RespondNow(
       OneArgument(base::Value(base::FieldTrialList::FindFullName(name))));

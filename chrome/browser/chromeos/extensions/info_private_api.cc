@@ -266,9 +266,8 @@ ChromeosInfoPrivateGetFunction::~ChromeosInfoPrivateGetFunction() {
 }
 
 ExtensionFunction::ResponseAction ChromeosInfoPrivateGetFunction::Run() {
-  base::Value::ConstListView args_list = args_->GetList();
-  EXTENSION_FUNCTION_VALIDATE(!args_list.empty() && args_list[0].is_list());
-  base::Value::ConstListView list = args_list[0].GetList();
+  EXTENSION_FUNCTION_VALIDATE(!args().empty() && args()[0].is_list());
+  base::Value::ConstListView list = args()[0].GetList();
 
   base::Value result(base::Value::Type::DICTIONARY);
   for (size_t i = 0; i < list.size(); ++i) {
@@ -437,11 +436,14 @@ ChromeosInfoPrivateSetFunction::~ChromeosInfoPrivateSetFunction() {
 }
 
 ExtensionFunction::ResponseAction ChromeosInfoPrivateSetFunction::Run() {
-  std::string param_name;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetString(0, &param_name));
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
+  EXTENSION_FUNCTION_VALIDATE(args()[0].is_string());
+  const std::string& param_name = args()[0].GetString();
+
   if (param_name == kPropertyTimezone) {
-    std::string param_value;
-    EXTENSION_FUNCTION_VALIDATE(args_->GetString(1, &param_value));
+    EXTENSION_FUNCTION_VALIDATE(args().size() >= 2);
+    EXTENSION_FUNCTION_VALIDATE(args()[1].is_string());
+    const std::string& param_value = args()[1].GetString();
     if (ash::system::PerUserTimezoneEnabled()) {
       Profile::FromBrowserContext(browser_context())
           ->GetPrefs()
@@ -457,8 +459,9 @@ ExtensionFunction::ResponseAction ChromeosInfoPrivateSetFunction::Run() {
   } else {
     const char* pref_name = GetBoolPrefNameForApiProperty(param_name.c_str());
     if (pref_name) {
-      bool param_value;
-      EXTENSION_FUNCTION_VALIDATE(args_->GetBoolean(1, &param_value));
+      EXTENSION_FUNCTION_VALIDATE(args().size() >= 2);
+      EXTENSION_FUNCTION_VALIDATE(args()[1].is_bool());
+      bool param_value = args()[1].GetBool();
       Profile::FromBrowserContext(browser_context())
           ->GetPrefs()
           ->SetBoolean(pref_name, param_value);

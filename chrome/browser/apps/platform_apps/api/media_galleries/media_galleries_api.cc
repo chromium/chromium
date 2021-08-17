@@ -624,14 +624,15 @@ MediaGalleriesGetMetadataFunction::~MediaGalleriesGetMetadataFunction() {}
 
 ExtensionFunction::ResponseAction MediaGalleriesGetMetadataFunction::Run() {
   ::media_galleries::UsageCount(::media_galleries::GET_METADATA);
-  std::string blob_uuid;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetString(0, &blob_uuid));
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
+  EXTENSION_FUNCTION_VALIDATE(args()[0].is_string());
+  const std::string& blob_uuid = args()[0].GetString();
 
-  const base::Value* options_value = NULL;
-  if (!args_->Get(1, &options_value))
+  if (args().size() < 2)
     return RespondNow(Error("options parameter not specified."));
+
   std::unique_ptr<MediaGalleries::MediaMetadataOptions> options =
-      MediaGalleries::MediaMetadataOptions::FromValue(*options_value);
+      MediaGalleries::MediaMetadataOptions::FromValue(args()[1]);
   if (!options)
     return RespondNow(Error("Invalid value for options parameter."));
 

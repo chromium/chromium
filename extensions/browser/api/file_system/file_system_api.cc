@@ -247,10 +247,12 @@ void SetLastChooseEntryDirectory(ExtensionPrefs* prefs,
 }  // namespace file_system_api
 
 ExtensionFunction::ResponseAction FileSystemGetDisplayPathFunction::Run() {
-  std::string filesystem_name;
-  std::string filesystem_path;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetString(0, &filesystem_name));
-  EXTENSION_FUNCTION_VALIDATE(args_->GetString(1, &filesystem_path));
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 2);
+  EXTENSION_FUNCTION_VALIDATE(args()[0].is_string());
+  EXTENSION_FUNCTION_VALIDATE(args()[1].is_string());
+
+  const std::string& filesystem_name = args()[0].GetString();
+  const std::string& filesystem_path = args()[1].GetString();
 
   base::FilePath file_path;
   std::string error;
@@ -332,10 +334,12 @@ void FileSystemEntryFunction::HandleWritableFileError(
 }
 
 ExtensionFunction::ResponseAction FileSystemGetWritableEntryFunction::Run() {
-  std::string filesystem_name;
-  std::string filesystem_path;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetString(0, &filesystem_name));
-  EXTENSION_FUNCTION_VALIDATE(args_->GetString(1, &filesystem_path));
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 2);
+  EXTENSION_FUNCTION_VALIDATE(args()[0].is_string());
+  EXTENSION_FUNCTION_VALIDATE(args()[1].is_string());
+
+  const std::string& filesystem_name = args()[0].GetString();
+  const std::string& filesystem_path = args()[1].GetString();
 
   if (!app_file_handler_util::HasFileSystemWritePermission(extension_.get())) {
     return RespondNow(Error(kRequiresFileSystemWriteError));
@@ -377,10 +381,10 @@ void FileSystemGetWritableEntryFunction::SetIsDirectoryAsync() {
 }
 
 ExtensionFunction::ResponseAction FileSystemIsWritableEntryFunction::Run() {
-  std::string filesystem_name;
-  std::string filesystem_path;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetString(0, &filesystem_name));
-  EXTENSION_FUNCTION_VALIDATE(args_->GetString(1, &filesystem_path));
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
+  EXTENSION_FUNCTION_VALIDATE(args()[0].is_string());
+
+  const std::string& filesystem_name = args()[0].GetString();
 
   std::string filesystem_id;
   if (!storage::CrackIsolatedFileSystemName(filesystem_name, &filesystem_id))
@@ -795,8 +799,10 @@ ExtensionFunction::ResponseAction FileSystemChooseEntryFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction FileSystemRetainEntryFunction::Run() {
-  std::string entry_id;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetString(0, &entry_id));
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
+  EXTENSION_FUNCTION_VALIDATE(args()[0].is_string());
+
+  std::string entry_id = args()[0].GetString();
 
   FileSystemDelegate* delegate =
       ExtensionsAPIClient::Get()->GetFileSystemDelegate();
@@ -813,11 +819,13 @@ ExtensionFunction::ResponseAction FileSystemRetainEntryFunction::Run() {
 
   // Add the file to the retain list if it is not already on there.
   if (!saved_files_service->IsRegistered(extension_->id(), entry_id)) {
-    std::string filesystem_name;
-    std::string filesystem_path;
+    EXTENSION_FUNCTION_VALIDATE(args().size() >= 3);
+    EXTENSION_FUNCTION_VALIDATE(args()[1].is_string());
+    EXTENSION_FUNCTION_VALIDATE(args()[2].is_string());
+    std::string filesystem_name = args()[1].GetString();
+    std::string filesystem_path = args()[2].GetString();
+
     base::FilePath path;
-    EXTENSION_FUNCTION_VALIDATE(args_->GetString(1, &filesystem_name));
-    EXTENSION_FUNCTION_VALIDATE(args_->GetString(2, &filesystem_path));
     std::string error;
     if (!app_file_handler_util::ValidateFileEntryAndGetPath(
             filesystem_name, filesystem_path, source_process_id(), &path,
@@ -884,8 +892,9 @@ void FileSystemRetainEntryFunction::RetainFileEntry(
 }
 
 ExtensionFunction::ResponseAction FileSystemIsRestorableFunction::Run() {
-  std::string entry_id;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetString(0, &entry_id));
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
+  EXTENSION_FUNCTION_VALIDATE(args()[0].is_string());
+  const std::string& entry_id = args()[0].GetString();
 
   FileSystemDelegate* delegate =
       ExtensionsAPIClient::Get()->GetFileSystemDelegate();
@@ -900,10 +909,12 @@ ExtensionFunction::ResponseAction FileSystemIsRestorableFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction FileSystemRestoreEntryFunction::Run() {
-  std::string entry_id;
-  bool needs_new_entry;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetString(0, &entry_id));
-  EXTENSION_FUNCTION_VALIDATE(args_->GetBoolean(1, &needs_new_entry));
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 2);
+  EXTENSION_FUNCTION_VALIDATE(args()[0].is_string());
+  EXTENSION_FUNCTION_VALIDATE(args()[1].is_bool());
+  const std::string& entry_id = args()[0].GetString();
+  bool needs_new_entry = args()[1].GetBool();
+
   FileSystemDelegate* delegate =
       ExtensionsAPIClient::Get()->GetFileSystemDelegate();
   DCHECK(delegate);

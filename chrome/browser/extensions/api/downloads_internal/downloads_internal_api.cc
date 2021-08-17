@@ -24,8 +24,9 @@ DownloadsInternalDetermineFilenameFunction::Run() {
   std::unique_ptr<DetermineFilenameParams> params(
       DetermineFilenameParams::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params.get());
-  std::string filename;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetString(1, &filename));
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 2);
+  EXTENSION_FUNCTION_VALIDATE(args()[1].is_string());
+  const std::string& filename = args()[1].GetString();
   std::string error;
   bool result = ExtensionDownloadsEventRouter::DetermineFilename(
       browser_context(), include_incognito_information(), extension()->id(),

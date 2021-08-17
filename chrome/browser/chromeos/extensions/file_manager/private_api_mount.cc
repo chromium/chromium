@@ -155,7 +155,7 @@ ExtensionFunction::ResponseAction FileManagerPrivateRemoveMountFunction::Run() {
 
 ExtensionFunction::ResponseAction
 FileManagerPrivateGetVolumeMetadataListFunction::Run() {
-  if (args_->GetSize())
+  if (!args().empty())
     return RespondNow(Error("Invalid arguments"));
 
   Profile* const profile = Profile::FromBrowserContext(browser_context());

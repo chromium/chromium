@@ -43,10 +43,14 @@ ExtensionFunction::ResponseAction ContextMenusCreateFunction::Run() {
       return RespondNow(Error(kIdRequiredError));
 
     // The Generated Id is added by context_menus_custom_bindings.js.
-    base::DictionaryValue* properties = NULL;
-    EXTENSION_FUNCTION_VALIDATE(args_->GetDictionary(0, &properties));
-    EXTENSION_FUNCTION_VALIDATE(properties->GetInteger(
-        extensions::context_menus_api_helpers::kGeneratedIdKey, &id.uid));
+    EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
+    EXTENSION_FUNCTION_VALIDATE(args()[0].is_dict());
+
+    const base::Value& properties = args()[0];
+    absl::optional<int> result = properties.FindIntKey(
+        extensions::context_menus_api_helpers::kGeneratedIdKey);
+    EXTENSION_FUNCTION_VALIDATE(result);
+    id.uid = *result;
   }
 
   std::string error;
