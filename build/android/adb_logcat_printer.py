@@ -108,7 +108,7 @@ def GetDeviceLogs(log_filenames, logger):
   """
   device_logs = []
 
-  for device, device_files in log_filenames.iteritems():
+  for device, device_files in log_filenames.items():
     logger.debug('%s: %s', device, str(device_files))
     device_file_lines = []
     for cur_file in device_files:

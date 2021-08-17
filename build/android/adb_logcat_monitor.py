@@ -141,7 +141,7 @@ def main(base_dir, adb_cmd='adb'):
   except: # pylint: disable=bare-except
     logging.exception('Unexpected exception in main.')
   finally:
-    for process, _ in devices.itervalues():
+    for process, _ in devices.values():
       if process:
         try:
           process.terminate()
