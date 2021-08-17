@@ -55,7 +55,7 @@ class SodaInstallerImplChromeOSTest : public testing::Test {
   }
 
   bool IsSodaInstalled() {
-    return soda_installer_impl_->IsSodaInstalled(LanguageCode::kEnUs);
+    return soda_installer_impl_->IsSodaInstalled(kEnglishLocale);
   }
 
   bool IsLanguageInstalled(LanguageCode language) {
@@ -67,7 +67,7 @@ class SodaInstallerImplChromeOSTest : public testing::Test {
   }
 
   bool IsSodaDownloading() {
-    return soda_installer_impl_->IsSodaDownloading(LanguageCode::kEnUs);
+    return soda_installer_impl_->IsSodaDownloading(kEnglishLocale);
   }
 
   void Init() {
@@ -160,6 +160,45 @@ TEST_F(SodaInstallerImplChromeOSTest, UninstallSodaForTesting) {
   GetInstance()->UninstallSodaForTesting();
   ASSERT_FALSE(IsSodaInstalled());
   ASSERT_FALSE(IsLanguageInstalled(kEnglishLocale));
+}
+
+TEST_F(SodaInstallerImplChromeOSTest, SodaProgressForTesting) {
+  ASSERT_FALSE(IsSodaInstalled());
+  ASSERT_FALSE(IsSodaDownloading());
+  ASSERT_FALSE(IsLanguageInstalled(kEnglishLocale));
+  Init();
+  GetInstance()->NotifySodaDownloadProgressForTesting(50);
+  ASSERT_FALSE(IsSodaInstalled());
+  ASSERT_FALSE(IsAnyLanguagePackInstalled());
+  ASSERT_TRUE(IsSodaDownloading());
+  RunUntilIdle();
+}
+
+TEST_F(SodaInstallerImplChromeOSTest, LanguagePackForTesting) {
+  LanguageCode fr_fr = LanguageCode::kFrFr;
+  ASSERT_FALSE(IsLanguageInstalled(fr_fr));
+  Init();
+  RunUntilIdle();
+  ASSERT_FALSE(IsLanguageInstalled(fr_fr));
+  GetInstance()->NotifyOnSodaLanguagePackProgressForTesting(50, fr_fr);
+  ASSERT_TRUE(GetInstance()->IsSodaDownloading(fr_fr));
+  ASSERT_FALSE(IsLanguageInstalled(fr_fr));
+  GetInstance()->NotifyOnSodaLanguagePackInstalledForTesting(fr_fr);
+  ASSERT_TRUE(IsLanguageInstalled(fr_fr));
+}
+
+TEST_F(SodaInstallerImplChromeOSTest, LanguagePackErrorForTesting) {
+  LanguageCode fr_fr = LanguageCode::kFrFr;
+  ASSERT_FALSE(IsLanguageInstalled(fr_fr));
+  Init();
+  RunUntilIdle();
+  ASSERT_FALSE(IsLanguageInstalled(fr_fr));
+  GetInstance()->NotifyOnSodaLanguagePackProgressForTesting(50, fr_fr);
+  ASSERT_TRUE(GetInstance()->IsSodaDownloading(fr_fr));
+  ASSERT_FALSE(IsLanguageInstalled(fr_fr));
+  GetInstance()->NotifyOnSodaLanguagePackErrorForTesting(fr_fr);
+  ASSERT_FALSE(IsLanguageInstalled(fr_fr));
+  ASSERT_FALSE(GetInstance()->IsSodaDownloading(fr_fr));
 }
 
 }  // namespace speech
