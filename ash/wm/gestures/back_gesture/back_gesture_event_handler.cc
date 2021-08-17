@@ -414,7 +414,7 @@ bool BackGestureEventHandler::MaybeHandleBackGesture(
       dragged_from_splitview_divider_ = false;
 
       return true;
-    } break;
+    }
     default:
       break;
   }

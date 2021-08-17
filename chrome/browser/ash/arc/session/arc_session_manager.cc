@@ -923,8 +923,6 @@ void ArcSessionManager::ShutdownSession() {
       // immediately.
       state_ = State::STOPPED;
       break;
-
-      break;
     case State::ACTIVE:
       // Request to stop the ARC. |state_| will be set to STOPPED eventually.
       // Set state before requesting the runner to stop in order to prevent the

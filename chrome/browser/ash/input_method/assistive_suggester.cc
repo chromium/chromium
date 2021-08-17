@@ -407,7 +407,6 @@ bool AssistiveSuggester::IsActionEnabled(AssistiveType action) {
     case AssistiveType::kPersonalLastName:
       // TODO: Use value from settings when crbug/1068457 is done.
       return IsAssistPersonalInfoEnabled();
-      break;
     case AssistiveType::kEmoji:
       return IsEmojiSuggestAdditionEnabled();
     case AssistiveType::kMultiWordCompletion:

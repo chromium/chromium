@@ -37,8 +37,9 @@ std::vector<uint32_t> GetSpatialLayerFrameSize(
     return {};
   }
   return std::vector<uint32_t>(cue_data, cue_data + num_of_layers);
-#endif  // defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
+#else
   return {};
+#endif  // defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 VideoCodecProfile VP9ProfileToVideoCodecProfile(uint8_t profile) {

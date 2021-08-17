@@ -1085,7 +1085,6 @@ bool NearbySharingServiceImpl::ShouldRestartNearbyProcess(
   switch (shutdown_reason) {
     case NearbyProcessShutdownReason::kNormal:
       return false;
-      break;
     case NearbyProcessShutdownReason::kCrash:
     case NearbyProcessShutdownReason::kConnectionsMojoPipeDisconnection:
     case NearbyProcessShutdownReason::kDecoderMojoPipeDisconnection:

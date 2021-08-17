@@ -187,8 +187,9 @@ base::TimeDelta IdleManager::GetAutoLockDelay() const {
       ->GetMaxPolicyAutoScreenLockDelay();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   return chromeos::LacrosService::Get()->system_idle_cache()->auto_lock_delay();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#else
   return base::TimeDelta();
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 // static

@@ -335,13 +335,11 @@ std::u16string SigninErrorNotifier::GetMessageBody(
     case GoogleServiceAuthError::SERVICE_ERROR:
       return l10n_util::GetStringUTF16(
           IDS_SYNC_SIGN_IN_ERROR_BUBBLE_VIEW_MESSAGE);
-      break;
 
     // Sync service is not available for this account's domain.
     case GoogleServiceAuthError::SERVICE_UNAVAILABLE:
       return l10n_util::GetStringUTF16(
           IDS_SYNC_UNAVAILABLE_ERROR_BUBBLE_VIEW_MESSAGE);
-      break;
 
     // Generic message for "other" errors.
     default:

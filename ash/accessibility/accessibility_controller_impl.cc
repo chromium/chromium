@@ -1106,8 +1106,6 @@ bool AccessibilityControllerImpl::IsSwitchAccessSettingVisibleInTray() {
     return false;
   }
   return switch_access().IsVisibleInTray();
-  return IsEnterpriseIconVisibleInTrayMenu(
-      prefs::kAccessibilitySwitchAccessEnabled);
 }
 
 bool AccessibilityControllerImpl::IsEnterpriseIconVisibleForSwitchAccess() {

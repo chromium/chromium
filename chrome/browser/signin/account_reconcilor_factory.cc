@@ -230,9 +230,10 @@ AccountReconcilorFactory::CreateAccountReconcilorDelegate(Profile* profile) {
       return std::make_unique<ChromeOSAccountReconcilorDelegate>(
           IdentityManagerFactory::GetForProfile(profile),
           ash::AccountManagerMigratorFactory::GetForBrowserContext(profile));
-#endif
+#else
       return std::make_unique<signin::MirrorAccountReconcilorDelegate>(
           IdentityManagerFactory::GetForProfile(profile));
+#endif
 
     case signin::AccountConsistencyMethod::kDisabled:
       return std::make_unique<signin::AccountReconcilorDelegate>();

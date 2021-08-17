@@ -870,7 +870,6 @@ void CrosDisplayConfig::OverscanCalibration(
       std::move(callback).Run(
           mojom::DisplayConfigResult::kInvalidOperationError);
       return;
-      return;
   }
   std::move(callback).Run(mojom::DisplayConfigResult::kSuccess);
 }

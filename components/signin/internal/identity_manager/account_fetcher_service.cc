@@ -239,8 +239,9 @@ bool AccountFetcherService::IsAccountCapabilitiesFetcherEnabled() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return base::FeatureList::IsEnabled(switches::kMinorModeSupport);
-#endif
+#else
   return false;
+#endif
 }
 
 void AccountFetcherService::StartFetchingAccountCapabilities(

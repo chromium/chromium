@@ -303,8 +303,9 @@ bool ChromeExtensionsBrowserClient::IsScreensaverInDemoMode(
     const std::string& app_id) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return app_id == ash::DemoSession::GetScreensaverAppId() && IsInDemoMode();
-#endif
+#else
   return false;
+#endif
 }
 
 bool ChromeExtensionsBrowserClient::IsRunningInForcedAppMode() {

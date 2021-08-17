@@ -535,8 +535,9 @@ ui::ImageModel AppBrowserController::GetFallbackAppIcon() const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     return ui::ImageModel::FromImageSkia(
         apps::CreateStandardIconImage(page_icon));
-#endif
+#else
     return ui::ImageModel::FromImageSkia(page_icon);
+#endif
   }
 
   // The icon may be loading still. Return a transparent icon rather

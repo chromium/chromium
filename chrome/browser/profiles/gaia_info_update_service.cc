@@ -103,8 +103,9 @@ void GAIAInfoUpdateService::UpdatePrimaryAccount(const AccountInfo& info) {
 bool GAIAInfoUpdateService::ShouldUseGAIAProfileInfo(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return base::FeatureList::IsEnabled(chromeos::features::kAvatarToolbarButton);
-#endif
+#else
   return true;
+#endif
 }
 
 void GAIAInfoUpdateService::UpdateAnyAccount(const AccountInfo& info) {

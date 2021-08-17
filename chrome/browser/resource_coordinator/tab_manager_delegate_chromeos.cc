@@ -106,7 +106,6 @@ std::ostream& operator<<(std::ostream& os, const ProcessType& type) {
     default:
       return os << "NOT_IMPLEMENTED_ERROR";
   }
-  return os;
 }
 
 // TabManagerDelegate::Candidate implementation.

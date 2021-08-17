@@ -474,13 +474,10 @@ ScreenTimeController::ConvertPolicyType(
   switch (policy_type) {
     case usage_time_limit::PolicyType::kFixedLimit:
       return absl::make_optional(TimeLimitNotifier::LimitType::kBedTime);
-      break;
     case usage_time_limit::PolicyType::kUsageLimit:
       return absl::make_optional(TimeLimitNotifier::LimitType::kScreenTime);
-      break;
     case usage_time_limit::PolicyType::kOverride:
       return absl::make_optional(TimeLimitNotifier::LimitType::kOverride);
-      break;
     case usage_time_limit::PolicyType::kNoPolicy:
       return absl::nullopt;
   }

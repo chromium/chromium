@@ -356,9 +356,9 @@ bool IsSilentLaunchEnabled(const base::CommandLine& command_line,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return profile->GetPrefs()->GetBoolean(
       prefs::kStartupBrowserWindowLaunchSuppressed);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
+#else
   return false;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void FinalizeWebAppLaunch(

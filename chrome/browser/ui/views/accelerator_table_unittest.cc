@@ -127,7 +127,6 @@ TEST(AcceleratorTableTest, DontUseKeysWithUnstablePositions) {
         FAIL() << "Accelerator command " << entry.command_id
                << " is using a disallowed punctuation key " << entry.keycode
                << ". Prefer to use alphanumeric keys for new shortcuts.";
-        break;
       default:
         break;
     }

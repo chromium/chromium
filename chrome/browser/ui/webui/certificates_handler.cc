@@ -1224,8 +1224,9 @@ bool CertificatesHandler::CanEditCertificate(
                                  ? CertificateSource::kImported
                                  : CertificateSource::kBuiltIn;
   return IsCACertificateManagementAllowedPolicy(source);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#else
   return true;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

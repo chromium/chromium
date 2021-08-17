@@ -256,8 +256,9 @@ bool UserfaultFD::DispatchMessage(const uffd_msg& msg) {
   }
 
   return DrainPendingFaults();
-#endif
+#else
   return true;
+#endif
 }
 
 bool UserfaultFD::DrainPendingFaults() {

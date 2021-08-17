@@ -95,14 +95,13 @@ bool IsMetricsReportingEnabled() {
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && defined(OFFICIAL_BUILD)
   PrefService* local_state = g_browser_process->local_state();
-  if (!local_state->GetBoolean(metrics::prefs::kMetricsReportingEnabled)) {
-    return false;
-  }
+  return local_state->GetBoolean(metrics::prefs::kMetricsReportingEnabled);
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(chinglinyu): Fix if JSON traces are needed for ChromeOS-ASH.
   return false;
-#endif
+#else
   return true;
+#endif
 }
 
 // Removes any version numbers from the scenario name.

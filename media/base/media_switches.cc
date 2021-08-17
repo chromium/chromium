@@ -924,8 +924,9 @@ bool IsVideoCaptureAcceleratedJpegDecodingEnabled() {
   }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return true;
-#endif
+#else
   return false;
+#endif
 }
 
 bool IsLiveCaptionFeatureEnabled() {

@@ -751,11 +751,9 @@ bool ScreenOrientationController::IsRotationAllowedInLockedState(
   if (natural_orientation_ == rotation_locked_orientation_) {
     return rotation == display::Display::ROTATE_0 ||
            rotation == display::Display::ROTATE_180;
-  } else {
-    return rotation == display::Display::ROTATE_90 ||
-           rotation == display::Display::ROTATE_270;
   }
-  return false;
+  return rotation == display::Display::ROTATE_90 ||
+         rotation == display::Display::ROTATE_270;
 }
 
 bool ScreenOrientationController::CanRotateInLockedState() {

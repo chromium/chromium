@@ -925,8 +925,9 @@ bool ExtensionPlatformKeysService::IsUsingSigninProfile() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return ProfileHelper::IsSigninProfile(
       Profile::FromBrowserContext(browser_context_));
-#endif
+#else
   return false;
+#endif
 }
 
 void ExtensionPlatformKeysService::SignDigest(

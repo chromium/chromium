@@ -58,8 +58,9 @@ bool ShouldShowMoveToDesksMenu(gfx::NativeWindow window) {
   return ash::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   return MoveToDesksMenuDelegateLacros::ShouldShowMoveToDesksMenu(window);
-#endif
+#else
   return false;
+#endif
 }
 
 std::unique_ptr<chromeos::MoveToDesksMenuModel> CreateMoveToDesksMenuModel(
@@ -72,8 +73,9 @@ std::unique_ptr<chromeos::MoveToDesksMenuModel> CreateMoveToDesksMenuModel(
   return std::make_unique<chromeos::MoveToDesksMenuModel>(
       std::make_unique<MoveToDesksMenuDelegateLacros>(
           views::Widget::GetWidgetForNativeWindow(window)));
-#endif
+#else
   return nullptr;
+#endif
 }
 #endif
 

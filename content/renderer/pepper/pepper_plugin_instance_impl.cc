@@ -337,8 +337,9 @@ bool IsReservedSystemInputEvent(const blink::WebInputEvent& event) {
     default:
       return false;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#else
   return false;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void PrintPDFOutput(PP_Resource print_output,

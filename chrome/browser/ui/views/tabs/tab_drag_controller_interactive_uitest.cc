@@ -333,8 +333,9 @@ bool GetIsDragged(Browser* browser) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return ash::WindowState::Get(browser->window()->GetNativeWindow())
       ->is_dragged();
-#endif
+#else
   return false;
+#endif
 }
 
 }  // namespace

@@ -717,7 +717,6 @@ TEST_P(DoesProfileDefaultToLoggingEnabledForUserTypeParametrizedTest,
       break;
     default:
       FAIL() << "Invalid test setup. Unexpected user type.";
-      break;
   }
 
   fake_user_manager_->LoginUser(account_id);

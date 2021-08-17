@@ -1646,9 +1646,10 @@ bool RTCVideoEncoder::H264HwSupportForTemporalLayers() {
 bool RTCVideoEncoder::Vp9HwSupportForSpatialLayers() {
 #if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
   return base::FeatureList::IsEnabled(media::kVaapiVp9kSVCHWEncoding);
-#endif
+#else
   // Spatial layers are not supported by hardware encoders.
   return false;
+#endif
 }
 
 }  // namespace blink
