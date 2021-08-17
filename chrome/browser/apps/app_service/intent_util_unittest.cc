@@ -7,6 +7,9 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
@@ -263,4 +266,41 @@ TEST_F(IntentUtilsTest, CreateWebAppIntentFilters_NoteTakingApp) {
             apps_util::kIntentActionCreateNote);
   EXPECT_TRUE(apps_util::IntentMatchesFilter(
       apps_util::CreateCreateNoteIntent(), filters[1]));
+}
+
+TEST_F(IntentUtilsTest, CreateShareIntentFromFiles_GetFileUrls) {
+  base::ScopedTempDir scoped_temp_dir;
+  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+  constexpr char kTestData[] = "testing1234";
+  constexpr char kTestText[] = "text1234";
+  constexpr char kShareTitle[] = "title1234";
+  std::vector<base::FilePath> file_paths;
+  std::vector<std::string> mime_types;
+
+  base::FilePath test_file_path =
+      scoped_temp_dir.GetPath().AppendASCII("test.txt");
+  ASSERT_EQ(static_cast<int>(base::size(kTestData)),
+            base::WriteFile(test_file_path, kTestData, base::size(kTestData)));
+  file_paths.push_back(test_file_path);
+  mime_types.push_back(".txt");
+
+  apps::mojom::IntentPtr intent = apps_util::CreateShareIntentFromFiles(
+      absl::nullopt, file_paths, mime_types, kTestText, kShareTitle);
+  const std::string intent_str =
+      "#Intent;action=android.intent.action.SEND;launchFlags=0x10200000;"
+      "component=com.android.vending/;type=*/*;"
+      "S.android.intent.extra.TEXT=text1234;"
+      "S.android.intent.extra.SUBJECT=title1234;end";
+  EXPECT_EQ(intent_str,
+            apps_util::CreateLaunchIntent("com.android.vending", intent));
+
+  apps::mojom::IntentPtr intent_with_text_and_title =
+      apps_util::CreateShareIntentFromFiles(absl::nullopt, file_paths,
+                                            mime_types);
+  const std::string intent_with_text_and_title_str =
+      "#Intent;action=android.intent.action.SEND;launchFlags=0x10200000;"
+      "component=com.android.vending/;type=*/*;end";
+  EXPECT_EQ(intent_with_text_and_title_str,
+            apps_util::CreateLaunchIntent("com.android.vending",
+                                          intent_with_text_and_title));
 }

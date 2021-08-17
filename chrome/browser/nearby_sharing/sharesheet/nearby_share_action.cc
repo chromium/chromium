@@ -26,6 +26,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
+#include "net/base/filename_util.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -33,8 +34,35 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/webview/webview.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 
 namespace {
+
+base::FilePath GetFilePathFromGurl(
+    const GURL& gurl,
+    const storage::FileSystemContext* fs_context) {
+  // For filesystem:// type URL. Path managed by file_manager (e.g. MyFiles).
+  if (gurl.SchemeIs(url::kFileSystemScheme)) {
+    if (!fs_context) {
+      return base::FilePath();
+    }
+
+    const storage::FileSystemURL fs_url =
+        fs_context->CrackURLInFirstPartyContext(gurl);
+    if (fs_url.is_valid()) {
+      return fs_url.path();
+    }
+  }
+
+  // For file:// type URL. Path is not managed by file_manager (used by ARC).
+  if (gurl.SchemeIs(url::kFileScheme)) {
+    base::FilePath file_path;
+    if (net::FileURLToFilePath(gurl, &file_path)) {
+      return file_path;
+    }
+  }
+  return base::FilePath();
+}
 
 std::vector<base::FilePath> ResolveFileUrls(
     Profile* profile,
@@ -43,9 +71,10 @@ std::vector<base::FilePath> ResolveFileUrls(
   storage::FileSystemContext* fs_context =
       file_manager::util::GetFileManagerFileSystemContext(profile);
   for (const auto& file : files) {
-    storage::FileSystemURL fs_url =
-        fs_context->CrackURLInFirstPartyContext(file->url);
-    file_paths.push_back(fs_url.path());
+    const base::FilePath file_path = GetFilePathFromGurl(file->url, fs_context);
+    if (!file_path.empty()) {
+      file_paths.push_back(file_path);
+    }
   }
   return file_paths;
 }

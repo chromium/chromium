@@ -24,8 +24,12 @@ std::vector<storage::FileSystemURL> GetFileSystemURL(
     const std::vector<GURL>& file_urls);
 
 // Convert absolute file path to filesystem: scheme url.
-std::vector<GURL> GetFileUrls(Profile* profile,
-                              const std::vector<base::FilePath>& file_paths);
+std::vector<GURL> GetFileSystemUrls(
+    Profile* profile,
+    const std::vector<base::FilePath>& file_paths);
+
+// Convert absolute file path to file: scheme url.
+std::vector<GURL> GetFileUrls(const std::vector<base::FilePath>& file_paths);
 }  // namespace apps
 
 #endif  // CHROME_BROWSER_APPS_APP_SERVICE_FILE_UTILS_H_

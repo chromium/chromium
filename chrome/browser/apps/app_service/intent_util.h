@@ -36,21 +36,25 @@ std::vector<apps::mojom::IntentFilterPtr> CreateWebAppIntentFilters(
     const web_app::WebApp& web_app);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// Create an intent struct from the file paths and mime types
-// of a list of files.
+// Create an intent struct with filesystem:// or file:// type URLs from the
+// file paths and mime types of a list of files.
 // This util has to live under chrome/ because it uses fileapis
 // and cannot be included in components/.
+// |profile| is required for generating filesystem:// type URLs, otherwise
+// default to generating file:// type URLs.
 apps::mojom::IntentPtr CreateShareIntentFromFiles(
-    Profile* profile,
+    absl::optional<Profile*> profile,
     const std::vector<base::FilePath>& file_paths,
     const std::vector<std::string>& mime_types);
 
-// Create an intent struct from the file paths, mime types
-// of a list of files, and the share text and title.
+// Create an intent struct with filesystem:// or file:// type URLs from the
+// file paths, mime types of a list of files, and the share text and title.
 // This util has to live under chrome/ because it uses fileapis
 // and cannot be included in components/.
+// |profile| is required for generating filesystem:// type URLs, otherwise
+// default to generating file:// type URLs.
 apps::mojom::IntentPtr CreateShareIntentFromFiles(
-    Profile* profile,
+    absl::optional<Profile*> profile,
     const std::vector<base::FilePath>& file_paths,
     const std::vector<std::string>& mime_types,
     const std::string& share_text,
