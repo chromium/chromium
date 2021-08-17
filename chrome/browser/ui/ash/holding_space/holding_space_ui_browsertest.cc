@@ -36,6 +36,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_downloads_delegate.h"
+#include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "components/download/public/common/mock_download_item.h"
@@ -1317,27 +1318,45 @@ class HoldingSpaceUiInProgressDownloadsBrowserTestBase
     scoped_feature_list_.InitAndEnableFeature(
         features::kHoldingSpaceInProgressDownloadsIntegration);
 
-    // Mock `content::DownloadManager::IsManagerInitialized()`.
-    ON_CALL(download_manager_, IsManagerInitialized())
-        .WillByDefault(testing::Return(true));
+    // Use a testing factory to give us a chance to swap out the production
+    // download manager for a given browser `context` with a mock prior to
+    // holding space keyed service creation.
+    HoldingSpaceKeyedServiceFactory::SetTestingFactory(
+        base::BindLambdaForTesting([&](content::BrowserContext* context) {
+          DCHECK(!download_manager_);
 
-    // Mock `content::DownloadManager::AddObserver()`.
-    ON_CALL(download_manager_, AddObserver)
-        .WillByDefault(testing::Invoke(
-            &download_manager_observers_,
-            &base::ObserverList<
-                content::DownloadManager::Observer>::Unchecked::AddObserver));
+          // Swap out production download manager for a mock.
+          download_manager_ =
+              new testing::NiceMock<content::MockDownloadManager>();
+          context->SetDownloadManagerForTesting(
+              base::WrapUnique(download_manager_));
 
-    // Mock `content::DownloadManager::RemoveObserver()`.
-    ON_CALL(download_manager_, RemoveObserver)
-        .WillByDefault(testing::Invoke(
-            &download_manager_observers_,
-            &base::ObserverList<content::DownloadManager::Observer>::Unchecked::
-                RemoveObserver));
+          // Mock `content::DownloadManager::IsManagerInitialized()`.
+          ON_CALL(*download_manager_, IsManagerInitialized())
+              .WillByDefault(testing::Return(true));
 
-    // Swap out the production download manager with the mock.
-    HoldingSpaceDownloadsDelegate::SetDownloadManagerForTesting(
-        &download_manager_);
+          // Mock `content::DownloadManager::AddObserver()`.
+          ON_CALL(*download_manager_, AddObserver)
+              .WillByDefault(testing::Invoke(
+                  &download_manager_observers_,
+                  &base::ObserverList<content::DownloadManager::Observer>::
+                      Unchecked::AddObserver));
+
+          // Mock `content::DownloadManager::RemoveObserver()`.
+          ON_CALL(*download_manager_, RemoveObserver)
+              .WillByDefault(testing::Invoke(
+                  &download_manager_observers_,
+                  &base::ObserverList<content::DownloadManager::Observer>::
+                      Unchecked::RemoveObserver));
+
+          // Resume default construction sequence.
+          return HoldingSpaceKeyedServiceFactory::GetDefaultTestingFactory()
+              .Run(context);
+        }));
+  }
+
+  ~HoldingSpaceUiInProgressDownloadsBrowserTestBase() override {
+    HoldingSpaceKeyedServiceFactory::SetTestingFactory(base::NullCallback());
   }
 
   void SetUpOnMainThread() override {
@@ -1355,9 +1374,7 @@ class HoldingSpaceUiInProgressDownloadsBrowserTestBase
     HoldingSpaceUiBrowserTest::TearDownOnMainThread();
 
     for (auto& observer : download_manager_observers_)
-      observer.ManagerGoingDown(&download_manager_);
-
-    HoldingSpaceDownloadsDelegate::SetDownloadManagerForTesting(nullptr);
+      observer.ManagerGoingDown(download_manager_);
   }
 
   // Returns whether to use Ash or Lacros downloads.
@@ -1672,7 +1689,7 @@ class HoldingSpaceUiInProgressDownloadsBrowserTestBase
 
     // Notify observers of the created download.
     for (auto& observer : download_manager_observers_)
-      observer.OnDownloadCreated(&download_manager_, ash_download_item.get());
+      observer.OnDownloadCreated(download_manager_, ash_download_item.get());
 
     return ash_download_item;
   }
@@ -1787,7 +1804,7 @@ class HoldingSpaceUiInProgressDownloadsBrowserTestBase
 
   const DownloadTypeToUse download_type_to_use_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  testing::NiceMock<content::MockDownloadManager> download_manager_;
+  testing::NiceMock<content::MockDownloadManager>* download_manager_ = nullptr;
   base::ObserverList<content::DownloadManager::Observer>::Unchecked
       download_manager_observers_;
   testing::NiceMock<MockDownloadControllerClient> download_controller_client_;
