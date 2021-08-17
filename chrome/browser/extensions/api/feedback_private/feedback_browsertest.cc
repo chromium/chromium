@@ -205,7 +205,8 @@ IN_PROC_BROWSER_TEST_F(FeedbackTest, ExtraDiagnostics) {
 
 // Ensures that when triggered from Assistant with Google account, Assistant
 // checkbox are not hidden.
-IN_PROC_BROWSER_TEST_F(FeedbackTest, ShowFeedbackFromAssistant) {
+// Disabled due to flake: https://crbug.com/1240591
+IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_ShowFeedbackFromAssistant) {
   WaitForExtensionViewsToLoad();
 
   ASSERT_TRUE(IsFeedbackAppAvailable());
