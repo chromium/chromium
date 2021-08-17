@@ -30,15 +30,13 @@ BluetoothRemoteGattCharacteristic::CommandStatus::CommandStatus(
 BluetoothRemoteGattCharacteristic::BluetoothRemoteGattCharacteristic() {}
 
 BluetoothRemoteGattCharacteristic::~BluetoothRemoteGattCharacteristic() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   while (!pending_notify_commands_.empty()) {
-    pending_notify_commands_.front().Cancel();
+    pending_notify_commands_.front()->Cancel();
   }
 }
 
 std::vector<BluetoothRemoteGattDescriptor*>
 BluetoothRemoteGattCharacteristic::GetDescriptors() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<BluetoothRemoteGattDescriptor*> descriptors;
   descriptors.reserve(descriptors_.size());
   for (const auto& pair : descriptors_)
@@ -48,7 +46,6 @@ BluetoothRemoteGattCharacteristic::GetDescriptors() const {
 
 BluetoothRemoteGattDescriptor* BluetoothRemoteGattCharacteristic::GetDescriptor(
     const std::string& identifier) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto iter = descriptors_.find(identifier);
   return iter != descriptors_.end() ? iter->second.get() : nullptr;
 }
@@ -56,7 +53,6 @@ BluetoothRemoteGattDescriptor* BluetoothRemoteGattCharacteristic::GetDescriptor(
 std::vector<BluetoothRemoteGattDescriptor*>
 BluetoothRemoteGattCharacteristic::GetDescriptorsByUUID(
     const BluetoothUUID& uuid) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<BluetoothRemoteGattDescriptor*> descriptors;
   for (const auto& pair : descriptors_) {
     if (pair.second->GetUUID() == uuid)
@@ -68,7 +64,6 @@ BluetoothRemoteGattCharacteristic::GetDescriptorsByUUID(
 
 base::WeakPtr<device::BluetoothRemoteGattCharacteristic>
 BluetoothRemoteGattCharacteristic::GetWeakPtr() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return weak_ptr_factory_.GetWeakPtr();
 }
 
@@ -81,9 +76,6 @@ BluetoothRemoteGattCharacteristic::NotifySessionCommand::NotifySessionCommand(
     base::OnceClosure cancel_callback)
     : execute_callback_(std::move(execute_callback)),
       cancel_callback_(std::move(cancel_callback)) {}
-
-BluetoothRemoteGattCharacteristic::NotifySessionCommand::NotifySessionCommand(
-    NotifySessionCommand&& other) = default;
 
 BluetoothRemoteGattCharacteristic::NotifySessionCommand::
     ~NotifySessionCommand() = default;
@@ -110,7 +102,6 @@ void BluetoothRemoteGattCharacteristic::NotifySessionCommand::Cancel() {
 void BluetoothRemoteGattCharacteristic::StartNotifySession(
     NotifySessionCallback callback,
     ErrorCallback error_callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   StartNotifySessionInternal(absl::nullopt, std::move(callback),
                              std::move(error_callback));
 }
@@ -127,8 +118,6 @@ void BluetoothRemoteGattCharacteristic::StartNotifySession(
 
 bool BluetoothRemoteGattCharacteristic::AddDescriptor(
     std::unique_ptr<BluetoothRemoteGattDescriptor> descriptor) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   if (!descriptor)
     return false;
 
@@ -142,10 +131,9 @@ void BluetoothRemoteGattCharacteristic::StartNotifySessionInternal(
     const absl::optional<NotificationType>& notification_type,
     NotifySessionCallback callback,
     ErrorCallback error_callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto split_error_callback =
       base::SplitOnceCallback(std::move(error_callback));
-  pending_notify_commands_.emplace(
+  NotifySessionCommand* command = new NotifySessionCommand(
       base::BindOnce(
           &BluetoothRemoteGattCharacteristic::ExecuteStartNotifySession,
           GetWeakPtr(), notification_type, std::move(callback),
@@ -156,9 +144,9 @@ void BluetoothRemoteGattCharacteristic::StartNotifySessionInternal(
           base::BindOnce(std::move(split_error_callback.second),
                          BluetoothGattService::GATT_ERROR_FAILED)));
 
-  if (!notify_command_running_ && pending_notify_commands_.size() == 1) {
-    notify_command_running_ = true;
-    pending_notify_commands_.front().Execute();
+  pending_notify_commands_.push(base::WrapUnique(command));
+  if (pending_notify_commands_.size() == 1) {
+    command->Execute();
   }
 }
 
@@ -167,7 +155,6 @@ void BluetoothRemoteGattCharacteristic::ExecuteStartNotifySession(
     NotifySessionCallback callback,
     ErrorCallback error_callback,
     CommandStatus previous_command) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // If the command that was resolved immediately before this command was run,
   // this command should be resolved with the same result.
   if (previous_command.type == CommandType::kStart) {
@@ -255,28 +242,25 @@ void BluetoothRemoteGattCharacteristic::ExecuteStartNotifySession(
 
 void BluetoothRemoteGattCharacteristic::CancelStartNotifySession(
     base::OnceClosure callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(notify_command_running_);
+  std::unique_ptr<NotifySessionCommand> command =
+      std::move(pending_notify_commands_.front());
   pending_notify_commands_.pop();
   std::move(callback).Run();
-  notify_command_running_ = false;
 }
 
 void BluetoothRemoteGattCharacteristic::OnStartNotifySessionSuccess(
     NotifySessionCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(notify_command_running_);
-  pending_notify_commands_.pop();
+  std::unique_ptr<NotifySessionCommand> command =
+      std::move(pending_notify_commands_.front());
 
   std::unique_ptr<device::BluetoothGattNotifySession> notify_session(
       new BluetoothGattNotifySession(weak_ptr_factory_.GetWeakPtr()));
   notify_sessions_.insert(notify_session.get());
   std::move(callback).Run(std::move(notify_session));
 
-  notify_command_running_ = false;
+  pending_notify_commands_.pop();
   if (!pending_notify_commands_.empty()) {
-    notify_command_running_ = true;
-    pending_notify_commands_.front().Execute(
+    pending_notify_commands_.front()->Execute(
         CommandStatus(CommandType::kStart));
   }
 }
@@ -284,15 +268,14 @@ void BluetoothRemoteGattCharacteristic::OnStartNotifySessionSuccess(
 void BluetoothRemoteGattCharacteristic::OnStartNotifySessionError(
     ErrorCallback error_callback,
     BluetoothGattService::GattErrorCode error) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(notify_command_running_);
-  pending_notify_commands_.pop();
+  std::unique_ptr<NotifySessionCommand> command =
+      std::move(pending_notify_commands_.front());
+
   std::move(error_callback).Run(error);
 
-  notify_command_running_ = false;
+  pending_notify_commands_.pop();
   if (!pending_notify_commands_.empty()) {
-    notify_command_running_ = true;
-    pending_notify_commands_.front().Execute(
+    pending_notify_commands_.front()->Execute(
         CommandStatus(CommandType::kStart, error));
   }
 }
@@ -300,18 +283,18 @@ void BluetoothRemoteGattCharacteristic::OnStartNotifySessionError(
 void BluetoothRemoteGattCharacteristic::StopNotifySession(
     BluetoothGattNotifySession* session,
     base::OnceClosure callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto split_callback = base::SplitOnceCallback(std::move(callback));
-  pending_notify_commands_.emplace(
+  NotifySessionCommand* command = new NotifySessionCommand(
       base::BindOnce(
           &BluetoothRemoteGattCharacteristic::ExecuteStopNotifySession,
           GetWeakPtr(), session, std::move(split_callback.first)),
       base::BindOnce(
           &BluetoothRemoteGattCharacteristic::CancelStopNotifySession,
           GetWeakPtr(), std::move(split_callback.second)));
-  if (!notify_command_running_ && pending_notify_commands_.size() == 1) {
-    notify_command_running_ = true;
-    pending_notify_commands_.front().Execute();
+
+  pending_notify_commands_.push(std::unique_ptr<NotifySessionCommand>(command));
+  if (pending_notify_commands_.size() == 1) {
+    command->Execute();
   }
 }
 
@@ -319,7 +302,6 @@ void BluetoothRemoteGattCharacteristic::ExecuteStopNotifySession(
     BluetoothGattNotifySession* session,
     base::OnceClosure callback,
     CommandStatus previous_command) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto session_iterator = notify_sessions_.find(session);
 
   // If the session does not even belong to this characteristic, we return an
@@ -374,7 +356,8 @@ void BluetoothRemoteGattCharacteristic::ExecuteStopNotifySession(
 
 void BluetoothRemoteGattCharacteristic::CancelStopNotifySession(
     base::OnceClosure callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::unique_ptr<NotifySessionCommand> command =
+      std::move(pending_notify_commands_.front());
   pending_notify_commands_.pop();
   std::move(callback).Run();
 }
@@ -382,18 +365,17 @@ void BluetoothRemoteGattCharacteristic::CancelStopNotifySession(
 void BluetoothRemoteGattCharacteristic::OnStopNotifySessionSuccess(
     BluetoothGattNotifySession* session,
     base::OnceClosure callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(notify_command_running_);
-  pending_notify_commands_.pop();
+  std::unique_ptr<NotifySessionCommand> command =
+      std::move(pending_notify_commands_.front());
 
   notify_sessions_.erase(session);
 
   std::move(callback).Run();
 
-  notify_command_running_ = false;
+  pending_notify_commands_.pop();
   if (!pending_notify_commands_.empty()) {
-    notify_command_running_ = true;
-    pending_notify_commands_.front().Execute(CommandStatus(CommandType::kStop));
+    pending_notify_commands_.front()->Execute(
+        CommandStatus(CommandType::kStop));
   }
 }
 
@@ -401,25 +383,22 @@ void BluetoothRemoteGattCharacteristic::OnStopNotifySessionError(
     BluetoothGattNotifySession* session,
     base::OnceClosure callback,
     BluetoothGattService::GattErrorCode error) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(notify_command_running_);
-  pending_notify_commands_.pop();
+  std::unique_ptr<NotifySessionCommand> command =
+      std::move(pending_notify_commands_.front());
 
   notify_sessions_.erase(session);
 
   std::move(callback).Run();
-  notify_command_running_ = false;
 
+  pending_notify_commands_.pop();
   if (!pending_notify_commands_.empty()) {
-    notify_command_running_ = true;
-    pending_notify_commands_.front().Execute(
+    pending_notify_commands_.front()->Execute(
         CommandStatus(CommandType::kStop, error));
   }
 }
 
 bool BluetoothRemoteGattCharacteristic::IsNotificationTypeSupported(
     const absl::optional<NotificationType>& notification_type) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Properties properties = GetProperties();
   bool hasNotify = (properties & PROPERTY_NOTIFY) != 0;
   bool hasIndicate = (properties & PROPERTY_INDICATE) != 0;
