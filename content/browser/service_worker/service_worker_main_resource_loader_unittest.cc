@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/time/time.h"
 #include "content/browser/loader/navigation_loader_interceptor.h"
 #include "content/browser/loader/single_request_url_loader_factory.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
@@ -99,6 +100,13 @@ blink::mojom::FetchAPIResponsePtr HeadersResponse(
   response->status_text = "OK";
   response->headers.insert(headers.begin(), headers.end());
   return response;
+}
+
+// ServiceWorkerMainResourceLoader::RecordTimingMetrics() records the metrics
+// only when the consistent high-resolution timer is used among processes.
+bool LoaderRecordsTimingMetrics() {
+  return base::TimeTicks::IsHighResolution() &&
+         base::TimeTicks::IsConsistentAcrossProcesses();
 }
 
 // Simulates a service worker handling fetch events. The response can be
@@ -608,10 +616,13 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, Basic) {
 
   histogram_tester.ExpectUniqueSample(kHistogramMainResourceFetchEvent,
                                       blink::ServiceWorkerStatusCode::kOk, 1);
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LoadTiming.MainFrame.MainResource."
-      "ResponseReceivedToCompleted2",
-      1);
+
+  if (LoaderRecordsTimingMetrics()) {
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.MainFrame.MainResource."
+        "ResponseReceivedToCompleted2",
+        1);
+  }
 }
 
 TEST_F(ServiceWorkerMainResourceLoaderTest, NoActiveWorker) {
@@ -633,10 +644,12 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, NoActiveWorker) {
 
   // No fetch event was dispatched.
   histogram_tester.ExpectTotalCount(kHistogramMainResourceFetchEvent, 0);
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LoadTiming.MainFrame.MainResource."
-      "StartToForwardServiceWorker",
-      0);
+  if (LoaderRecordsTimingMetrics()) {
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.MainFrame.MainResource."
+        "StartToForwardServiceWorker",
+        0);
+  }
 }
 
 // Test that the request body is passed to the fetch event.
@@ -706,11 +719,13 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, BlobResponse) {
   EXPECT_EQ(kResponseBody, body);
   EXPECT_EQ(net::OK, client_.completion_status().error_code);
 
-  // Test histogram of reading body.
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LoadTiming.MainFrame.MainResource."
-      "ResponseReceivedToCompleted2",
-      1);
+  if (LoaderRecordsTimingMetrics()) {
+    // Test histogram of reading body.
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.MainFrame.MainResource."
+        "ResponseReceivedToCompleted2",
+        1);
+  }
 }
 
 // Tell the helper to respond with a non-existent Blob.
@@ -743,15 +758,17 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, BrokenBlobResponse) {
   client_.RunUntilComplete();
   EXPECT_EQ(net::ERR_OUT_OF_MEMORY, client_.completion_status().error_code);
 
-  // Timing histograms shouldn't be recorded on broken response.
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LoadTiming.MainFrame.MainResource."
-      "StartToForwardServiceWorker",
-      0);
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LoadTiming.MainFrame.MainResource."
-      "ResponseReceivedToCompleted2",
-      0);
+  if (LoaderRecordsTimingMetrics()) {
+    // Timing histograms shouldn't be recorded on broken response.
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.MainFrame.MainResource."
+        "StartToForwardServiceWorker",
+        0);
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.MainFrame.MainResource."
+        "ResponseReceivedToCompleted2",
+        0);
+  }
 }
 
 TEST_F(ServiceWorkerMainResourceLoaderTest, StreamResponse) {
@@ -796,11 +813,13 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, StreamResponse) {
       mojo::BlockingCopyToString(client_.response_body_release(), &response));
   EXPECT_EQ(kResponseBody, response);
 
-  // Test histogram of reading body.
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LoadTiming.MainFrame.MainResource."
-      "ResponseReceivedToCompleted2",
-      1);
+  if (LoaderRecordsTimingMetrics()) {
+    // Test histogram of reading body.
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.MainFrame.MainResource."
+        "ResponseReceivedToCompleted2",
+        1);
+  }
 }
 
 // Test when a stream response body is aborted.
@@ -844,15 +863,17 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, StreamResponse_Abort) {
       mojo::BlockingCopyToString(client_.response_body_release(), &response));
   EXPECT_EQ(kResponseBody, response);
 
-  // Timing histograms shouldn't be recorded on abort.
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LoadTiming.MainFrame.MainResource."
-      "StartToForwardServiceWorker",
-      0);
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LoadTiming.MainFrame.MainResource."
-      "ResponseReceivedToCompleted2",
-      0);
+  if (LoaderRecordsTimingMetrics()) {
+    // Timing histograms shouldn't be recorded on abort.
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.MainFrame.MainResource."
+        "StartToForwardServiceWorker",
+        0);
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.MainFrame.MainResource."
+        "ResponseReceivedToCompleted2",
+        0);
+  }
 }
 
 // Test when the loader is cancelled while a stream response is being written.
@@ -900,15 +921,17 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, StreamResponseAndCancel) {
   client_.RunUntilComplete();
   EXPECT_EQ(net::ERR_ABORTED, client_.completion_status().error_code);
 
-  // Timing histograms shouldn't be recorded on cancel.
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LoadTiming.MainFrame.MainResource."
-      "StartToForwardServiceWorker",
-      0);
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LoadTiming.MainFrame.MainResource."
-      "ResponseReceivedToCompleted2",
-      0);
+  if (LoaderRecordsTimingMetrics()) {
+    // Timing histograms shouldn't be recorded on cancel.
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.MainFrame.MainResource."
+        "StartToForwardServiceWorker",
+        0);
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.MainFrame.MainResource."
+        "ResponseReceivedToCompleted2",
+        0);
+  }
 }
 
 // Test when the service worker responds with network fallback.
@@ -929,12 +952,13 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, FallbackResponse) {
   EXPECT_TRUE(container_host_->controller());
   histogram_tester.ExpectUniqueSample(kHistogramMainResourceFetchEvent,
                                       blink::ServiceWorkerStatusCode::kOk, 1);
-
-  // Test histogram of network fallback.
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LoadTiming.MainFrame.MainResource."
-      "FetchHandlerEndToFallbackNetwork",
-      1);
+  if (LoaderRecordsTimingMetrics()) {
+    // Test histogram of network fallback.
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.MainFrame.MainResource."
+        "FetchHandlerEndToFallbackNetwork",
+        1);
+  }
 }
 
 // Test when the service worker rejects the FetchEvent.
@@ -950,11 +974,13 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, ErrorResponse) {
   // Event dispatch still succeeded.
   histogram_tester.ExpectUniqueSample(kHistogramMainResourceFetchEvent,
                                       blink::ServiceWorkerStatusCode::kOk, 1);
-  // Timing UMAs shouldn't be recorded when we receive an error response.
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LoadTiming.MainFrame.MainResource."
-      "StartToForwardServiceWorker",
-      0);
+  if (LoaderRecordsTimingMetrics()) {
+    // Timing UMAs shouldn't be recorded when we receive an error response.
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.MainFrame.MainResource."
+        "StartToForwardServiceWorker",
+        0);
+  }
 }
 
 // Test when dispatching the fetch event to the service worker failed.
@@ -973,11 +999,13 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, FailFetchDispatch) {
   histogram_tester.ExpectUniqueSample(
       kHistogramMainResourceFetchEvent,
       blink::ServiceWorkerStatusCode::kErrorFailed, 1);
-  // Timing UMAs shouldn't be recorded when failed to dispatch an event.
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LoadTiming.MainFrame.MainResource."
-      "StartToForwardServiceWorker",
-      0);
+  if (LoaderRecordsTimingMetrics()) {
+    // Timing UMAs shouldn't be recorded when failed to dispatch an event.
+    histogram_tester.ExpectTotalCount(
+        "ServiceWorker.LoadTiming.MainFrame.MainResource."
+        "StartToForwardServiceWorker",
+        0);
+  }
 }
 
 // Test when the respondWith() promise resolves before the waitUntil() promise
