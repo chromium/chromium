@@ -78,6 +78,16 @@ class ModeConfig {
   isSupportPTZ(captureResolution, previewResolution) {}
 
   /**
+   * Makes video capture device prepared for capturing in this mode.
+   * @param {!StreamConstraints} constraints Constraints for preview
+   *     stream.
+   * @param {!Resolution} captureResolution
+   * @return {!Promise}
+   * @abstract
+   */
+  async prepareDevice(constraints, captureResolution) {}
+
+  /**
    * Get general stream constraints of this mode for fake cameras.
    * @param {?string} deviceId
    * @return {!Array<!StreamConstraints>}
@@ -92,7 +102,7 @@ class ModeConfig {
    * @return {!ModeFactory}
    * @abstract
    */
-  get captureFactory() {}
+  getCaptureFactory() {}
 
   /**
    * HALv3 constraints preferrer for this mode.
@@ -148,6 +158,18 @@ export class Modes {
     this.modesGroup_ = dom.get('#modes-group', HTMLElement);
 
     /**
+     * @type {?StreamConstraints}
+     * @private
+     */
+    this.constraints_ = null;
+
+    /**
+     * @type {?Resolution}
+     * @private
+     */
+    this.captureResolution_ = null;
+
+    /**
      * Returns a set of general constraints for fake cameras.
      * @param {boolean} videoMode Is getting constraints for video mode.
      * @param {string} deviceId Id of video device.
@@ -177,11 +199,30 @@ export class Modes {
       ];
     };
 
+    const getNonNullConstraints = () => {
+      assert(this.constraints_ !== null);
+      return this.constraints_;
+    };
+
     // Workaround for b/184089334 on PTZ camera to use preview frame as photo
     // result.
     const checkSupportPTZForPhotoMode =
         (captureResolution, previewResolution) =>
             captureResolution.equals(previewResolution);
+
+    /**
+     * @param {!StreamConstraints} constraints
+     * @param {!Resolution} resolution
+     * @param {cros.mojom.CaptureIntent} captureIntent
+     * @return {!Promise}
+     */
+    const prepareDeviceForPhoto =
+        async (constraints, resolution, captureIntent) => {
+      const deviceOperator = await DeviceOperator.getInstance();
+      const deviceId = constraints.deviceId;
+      await deviceOperator.setCaptureIntent(deviceId, captureIntent);
+      await deviceOperator.setStillCaptureResolution(deviceId, resolution);
+    };
 
     /**
      * Mode classname and related functions and attributes.
@@ -190,34 +231,69 @@ export class Modes {
      */
     this.allModes_ = {
       [Mode.VIDEO]: {
-        captureFactory: new VideoFactory(videoHandler),
+        getCaptureFactory: () => new VideoFactory(
+            getNonNullConstraints(), this.captureResolution_, videoHandler),
         isSupported: async () => true,
         isSupportPTZ: () => true,
+        prepareDevice: async (constraints, resolution) => {
+          const deviceOperator = await DeviceOperator.getInstance();
+          if (deviceOperator === null) {
+            return;
+          }
+          const deviceId = constraints.deviceId;
+          await deviceOperator.setCaptureIntent(
+              deviceId, cros.mojom.CaptureIntent.VIDEO_RECORD);
+
+          let /** number */ minFrameRate = 0;
+          let /** number */ maxFrameRate = 0;
+          if (constraints.video && constraints.video.frameRate) {
+            const frameRate = constraints.video.frameRate;
+            if (frameRate.exact) {
+              minFrameRate = frameRate.exact;
+              maxFrameRate = frameRate.exact;
+            } else if (frameRate.min && frameRate.max) {
+              minFrameRate = frameRate.min;
+              maxFrameRate = frameRate.max;
+            }
+            // TODO(wtlee): To set the fps range to the default value, we should
+            // remove the frameRate from constraints instead of using incomplete
+            // range.
+          }
+          await deviceOperator.setFpsRange(
+              deviceId, minFrameRate, maxFrameRate);
+        },
         constraintsPreferrer: videoPreferrer,
         getConstraintsForFakeCamera:
             getConstraintsForFakeCamera.bind(this, true),
         fallbackMode: Mode.PHOTO,
       },
       [Mode.PHOTO]: {
-        captureFactory: new PhotoFactory(photoHandler),
+        getCaptureFactory: () => new PhotoFactory(
+            getNonNullConstraints(), this.captureResolution_, photoHandler),
         isSupported: async () => true,
         isSupportPTZ: checkSupportPTZForPhotoMode,
+        prepareDevice: async (constraints, resolution) => prepareDeviceForPhoto(
+            constraints, resolution, cros.mojom.CaptureIntent.STILL_CAPTURE),
         constraintsPreferrer: photoPreferrer,
         getConstraintsForFakeCamera:
             getConstraintsForFakeCamera.bind(this, false),
         fallbackMode: Mode.SQUARE,
       },
       [Mode.SQUARE]: {
-        captureFactory: new SquareFactory(photoHandler),
+        getCaptureFactory: () => new SquareFactory(
+            getNonNullConstraints(), this.captureResolution_, photoHandler),
         isSupported: async () => true,
         isSupportPTZ: checkSupportPTZForPhotoMode,
+        prepareDevice: async (constraints, resolution) => prepareDeviceForPhoto(
+            constraints, resolution, cros.mojom.CaptureIntent.STILL_CAPTURE),
         constraintsPreferrer: photoPreferrer,
         getConstraintsForFakeCamera:
             getConstraintsForFakeCamera.bind(this, false),
         fallbackMode: Mode.PHOTO,
       },
       [Mode.PORTRAIT]: {
-        captureFactory: new PortraitFactory(photoHandler),
+        getCaptureFactory: () => new PortraitFactory(
+            getNonNullConstraints(), this.captureResolution_, photoHandler),
         isSupported: async (deviceId) => {
           if (deviceId === null) {
             return false;
@@ -229,16 +305,21 @@ export class Modes {
           return await deviceOperator.isPortraitModeSupported(deviceId);
         },
         isSupportPTZ: checkSupportPTZForPhotoMode,
+        prepareDevice: async (constraints, resolution) => prepareDeviceForPhoto(
+            constraints, resolution, cros.mojom.CaptureIntent.STILL_CAPTURE),
         constraintsPreferrer: photoPreferrer,
         getConstraintsForFakeCamera:
             getConstraintsForFakeCamera.bind(this, false),
         fallbackMode: Mode.PHOTO,
       },
       [Mode.SCANNER]: {
-        captureFactory: new ScannerFactory(scannerHandler),
+        getCaptureFactory: () => new ScannerFactory(
+            getNonNullConstraints(), this.captureResolution_, scannerHandler),
         isSupported: async (deviceId) =>
             state.get(state.State.SHOW_SCANNER_MODE),
         isSupportPTZ: checkSupportPTZForPhotoMode,
+        prepareDevice: async (constraints, resolution) => prepareDeviceForPhoto(
+            constraints, resolution, cros.mojom.CaptureIntent.DOCUMENT),
         constraintsPreferrer: photoPreferrer,
         getConstraintsForFakeCamera:
             getConstraintsForFakeCamera.bind(this, false),
@@ -352,7 +433,32 @@ export class Modes {
    * @return {!ModeFactory}
    */
   getModeFactory(mode) {
-    return this.allModes_[mode].captureFactory;
+    return this.allModes_[mode].getCaptureFactory();
+  }
+
+  /**
+   * @param {!StreamConstraints} constraints Constraints for preview
+   *     stream.
+   * @param {?Resolution} captureResolution
+   */
+  setCaptureOption(constraints, captureResolution) {
+    this.constraints_ = constraints;
+    this.captureResolution_ = captureResolution;
+  }
+
+  /**
+   * Makes video capture device prepared for capturing in this mode.
+   * @param {!Mode} mode
+   * @return {!Promise}
+   */
+  async prepareDevice(mode) {
+    if (state.get(state.State.USE_FAKE_CAMERA)) {
+      return;
+    }
+    assert(this.constraints_ !== null);
+    return this.allModes_[mode].prepareDevice(
+        this.constraints_,
+        assertInstanceof(this.captureResolution_, Resolution));
   }
 
   /**

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {AsyncJobQueue} from '../../../async_job_queue.js';
-import {assert} from '../../../chrome_util.js';
+import {assert, assertInstanceof} from '../../../chrome_util.js';
 // eslint-disable-next-line no-unused-vars
 import {StreamConstraints} from '../../../device/stream_constraints.js';
 import {
@@ -20,7 +20,6 @@ import * as loadTimeData from '../../../models/load_time_data.js';
 import {
   VideoSaver,  // eslint-disable-line no-unused-vars
 } from '../../../models/video_saver.js';
-import {DeviceOperator} from '../../../mojo/device_operator.js';
 import {CrosImageCapture} from '../../../mojo/image_capture.js';
 import * as sound from '../../../sound.js';
 import * as state from '../../../state.js';
@@ -538,75 +537,41 @@ export class Video extends ModeBase {
  */
 export class VideoFactory extends ModeFactory {
   /**
+   * @param {!StreamConstraints} constraints Constraints for preview
+   *     stream.
+   * @param {?Resolution} captureResolution
    * @param {!VideoHandler} handler
    */
-  constructor(handler) {
-    super();
+  constructor(constraints, captureResolution, handler) {
+    super(constraints, captureResolution);
 
     /**
      * @const {!VideoHandler}
      * @private
      */
     this.handler_ = handler;
-
-    /**
-     * @type {?StreamConstraints}
-     * @private
-     */
-    this.captureConstraints_ = null;
   }
 
   /**
    * @override
    */
-  async prepareDevice(constraints, resolution) {
-    this.captureResolution_ = resolution;
+  produce() {
+    let captureConstraints = null;
     if (state.get(state.State.ENABLE_MULTISTREAM_RECORDING)) {
-      this.captureConstraints_ = {
-        deviceId: constraints.deviceId,
-        audio: constraints.audio,
+      const {width, height} =
+          assertInstanceof(this.captureResolution_, Resolution);
+      captureConstraints = {
+        deviceId: this.constraints_.deviceId,
+        audio: this.constraints_.audio,
         video: {
-          frameRate: constraints.video.frameRate,
+          frameRate: this.constraints_.video.frameRate,
+          width,
+          height,
         },
       };
-      if (resolution !== null) {
-        this.captureConstraints_.video.width = resolution.width;
-        this.captureConstraints_.video.height = resolution.height;
-      }
     }
-
-    const deviceOperator = await DeviceOperator.getInstance();
-    if (deviceOperator === null) {
-      return;
-    }
-    const deviceId = constraints.deviceId;
-    await deviceOperator.setCaptureIntent(
-        deviceId, cros.mojom.CaptureIntent.VIDEO_RECORD);
-
-    let /** number */ minFrameRate = 0;
-    let /** number */ maxFrameRate = 0;
-    if (constraints.video && constraints.video.frameRate) {
-      const frameRate = constraints.video.frameRate;
-      if (frameRate.exact) {
-        minFrameRate = frameRate.exact;
-        maxFrameRate = frameRate.exact;
-      } else if (frameRate.min && frameRate.max) {
-        minFrameRate = frameRate.min;
-        maxFrameRate = frameRate.max;
-      }
-      // TODO(wtlee): To set the fps range to the default value, we should
-      // remove the frameRate from constraints instead of using incomplete
-      // range.
-    }
-    await deviceOperator.setFpsRange(deviceId, minFrameRate, maxFrameRate);
-  }
-
-  /**
-   * @override
-   */
-  produce_() {
     return new Video(
-        this.previewStream_, this.captureConstraints_, this.captureResolution_,
+        this.previewStream_, captureConstraints, this.captureResolution_,
         this.facing_, this.handler_);
   }
 }
