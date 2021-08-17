@@ -32,6 +32,10 @@
     margin-left: 8px;
   }
 
+  #wallpaperLabel {
+    cursor: pointer;
+  }
+
   iron-icon {
     height: 20px;
     width: 20px;
@@ -44,7 +48,7 @@
     </cr-icon-button>
   </template>
   <div id="textContainer" aria-hidden="true">
-    <p id="wallpaperLabel">[[i18n('title')]]</p>
+    <p on-click="onBackClick_" id="wallpaperLabel">[[i18n('title')]]</p>
     <template is="dom-if" if="[[pageLabel_]]">
       <iron-icon icon="cr:chevron-right"></iron-icon>
       <p id="pageLabel">[[pageLabel_]]</span>
