@@ -882,6 +882,22 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, AcceptsOptions) {
   EXPECT_EQ(u"", dialog_params.file_types->extension_description_overrides[1]);
 }
 
+IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, UndefinedAccepts) {
+  SelectFileDialogParams dialog_params;
+  ui::SelectFileDialog::SetFactory(
+      new CancellingSelectFileDialogFactory(&dialog_params));
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+  auto result =
+      EvalJs(shell(), "self.showOpenFilePicker({types: [undefined]})");
+  EXPECT_TRUE(result.error.find("aborted") != std::string::npos)
+      << result.error;
+
+  ASSERT_TRUE(dialog_params.file_types);
+  EXPECT_TRUE(dialog_params.file_types->include_all_files);
+  ASSERT_EQ(0u, dialog_params.file_types->extensions.size());
+}
+
 IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
                        FileSystemAccessUsageDisablesBackForwardCache) {
   BackForwardCacheDisabledTester tester;
