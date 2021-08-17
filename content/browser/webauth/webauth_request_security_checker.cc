@@ -137,18 +137,24 @@ WebAuthRequestSecurityChecker::ValidateAncestorOrigins(
     RequestType type,
     bool* is_cross_origin) {
   *is_cross_origin = !IsSameOriginWithAncestors(origin);
-  if ((type != RequestType::kGetAssertion ||
-       !render_frame_host_->IsFeatureEnabled(
-           blink::mojom::PermissionsPolicyFeature::kPublicKeyCredentialsGet)) &&
-      ((type != RequestType::kMakePaymentCredential &&
-        type != RequestType::kGetPaymentCredentialAssertion) ||
-       !base::FeatureList::IsEnabled(features::kSecurePaymentConfirmation) ||
-       !render_frame_host_->IsFeatureEnabled(
-           blink::mojom::PermissionsPolicyFeature::kPayment)) &&
-      *is_cross_origin) {
-    return blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR;
+  if (!*is_cross_origin)
+    return blink::mojom::AuthenticatorStatus::SUCCESS;
+
+  // Requests in cross-origin iframes are permitted if enabled via feature
+  // policy and for SPC requests.
+  if (type == RequestType::kGetAssertion &&
+      render_frame_host_->IsFeatureEnabled(
+          blink::mojom::PermissionsPolicyFeature::kPublicKeyCredentialsGet)) {
+    return blink::mojom::AuthenticatorStatus::SUCCESS;
   }
-  return blink::mojom::AuthenticatorStatus::SUCCESS;
+  if ((type == RequestType::kMakePaymentCredential ||
+       type == RequestType::kGetPaymentCredentialAssertion) &&
+      base::FeatureList::IsEnabled(features::kSecurePaymentConfirmation) &&
+      render_frame_host_->IsFeatureEnabled(
+          blink::mojom::PermissionsPolicyFeature::kPayment)) {
+    return blink::mojom::AuthenticatorStatus::SUCCESS;
+  }
+  return blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR;
 }
 
 blink::mojom::AuthenticatorStatus
