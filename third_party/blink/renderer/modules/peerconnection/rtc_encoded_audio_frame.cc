@@ -59,20 +59,8 @@ RTCEncodedAudioFrameMetadata* RTCEncodedAudioFrame::getMetadata() const {
   return metadata;
 }
 
-DOMArrayBuffer* RTCEncodedAudioFrame::additionalData() const {
-  return nullptr;
-}
-
 void RTCEncodedAudioFrame::setData(DOMArrayBuffer* data) {
   frame_data_ = data;
-}
-
-uint32_t RTCEncodedAudioFrame::synchronizationSource() const {
-  return delegate_->Ssrc();
-}
-
-Vector<uint32_t> RTCEncodedAudioFrame::contributingSources() const {
-  return delegate_->ContributingSources();
 }
 
 String RTCEncodedAudioFrame::toString() const {

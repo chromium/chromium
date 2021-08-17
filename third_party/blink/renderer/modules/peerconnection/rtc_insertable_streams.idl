@@ -7,8 +7,4 @@
 dictionary RTCInsertableStreams {
     ReadableStream readable;
     WritableStream writable;
-
-    // Deprecated
-    [RuntimeEnabled=RTCInsertableStreams] ReadableStream readableStream;
-    [RuntimeEnabled=RTCInsertableStreams] WritableStream writableStream;
 };

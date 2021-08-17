@@ -59,16 +59,6 @@ RTCEncodedVideoFrameMetadata* RTCEncodedVideoFrame::getMetadata() const {
   return metadata;
 }
 
-DOMArrayBuffer* RTCEncodedVideoFrame::additionalData() const {
-  if (!additional_data_)
-    additional_data_ = delegate_->CreateAdditionalDataBuffer();
-  return additional_data_;
-}
-
-uint32_t RTCEncodedVideoFrame::synchronizationSource() const {
-  return delegate_->Ssrc();
-}
-
 void RTCEncodedVideoFrame::setData(DOMArrayBuffer* data) {
   frame_data_ = data;
 }
@@ -107,7 +97,6 @@ RTCEncodedVideoFrame::PassWebRtcFrame() {
 void RTCEncodedVideoFrame::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   visitor->Trace(frame_data_);
-  visitor->Trace(additional_data_);
 }
 
 }  // namespace blink

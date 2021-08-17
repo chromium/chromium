@@ -868,7 +868,6 @@ void RTCRtpSender::InitializeEncodedAudioStreams(ScriptState* script_state) {
       ReadableStream::CreateWithCountQueueingStrategy(
           script_state, audio_from_encoder_underlying_source_,
           /*high_water_mark=*/0);
-  encoded_audio_streams_->setReadableStream(readable_stream);
   encoded_audio_streams_->setReadable(readable_stream);
 
   // Set up writable stream.
@@ -882,7 +881,6 @@ void RTCRtpSender::InitializeEncodedAudioStreams(ScriptState* script_state) {
       WritableStream::CreateWithCountQueueingStrategy(
           script_state, audio_to_packetizer_underlying_sink_,
           /*high_water_mark=*/1);
-  encoded_audio_streams_->setWritableStream(writable_stream);
   encoded_audio_streams_->setWritable(writable_stream);
 }
 
@@ -931,7 +929,6 @@ void RTCRtpSender::InitializeEncodedVideoStreams(ScriptState* script_state) {
       ReadableStream::CreateWithCountQueueingStrategy(
           script_state, video_from_encoder_underlying_source_,
           /*high_water_mark=*/0);
-  encoded_video_streams_->setReadableStream(readable_stream);
   encoded_video_streams_->setReadable(readable_stream);
 
   // Set up writable stream.
@@ -951,7 +948,6 @@ void RTCRtpSender::InitializeEncodedVideoStreams(ScriptState* script_state) {
       WritableStream::CreateWithCountQueueingStrategy(
           script_state, video_to_packetizer_underlying_sink_,
           /*high_water_mark=*/1);
-  encoded_video_streams_->setWritableStream(writable_stream);
   encoded_video_streams_->setWritable(writable_stream);
 }
 

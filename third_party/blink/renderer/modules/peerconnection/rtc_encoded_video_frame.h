@@ -38,9 +38,7 @@ class MODULES_EXPORT RTCEncodedVideoFrame final : public ScriptWrappable {
   uint32_t timestamp() const;
   DOMArrayBuffer* data() const;
   RTCEncodedVideoFrameMetadata* getMetadata() const;
-  DOMArrayBuffer* additionalData() const;
   void setData(DOMArrayBuffer*);
-  uint32_t synchronizationSource() const;
   String toString() const;
 
   scoped_refptr<RTCEncodedVideoFrameDelegate> Delegate() const;
@@ -58,8 +56,6 @@ class MODULES_EXPORT RTCEncodedVideoFrame final : public ScriptWrappable {
 
   // Exposes encoded frame data from |delegate_|.
   mutable Member<DOMArrayBuffer> frame_data_;
-  // Exposes additional data from |delegate_|.
-  mutable Member<DOMArrayBuffer> additional_data_;
 };
 
 }  // namespace blink

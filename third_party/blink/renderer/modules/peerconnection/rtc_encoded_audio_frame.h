@@ -39,10 +39,7 @@ class MODULES_EXPORT RTCEncodedAudioFrame final : public ScriptWrappable {
   uint32_t timestamp() const;
   DOMArrayBuffer* data() const;
   RTCEncodedAudioFrameMetadata* getMetadata() const;
-  DOMArrayBuffer* additionalData() const;
   void setData(DOMArrayBuffer*);
-  uint32_t synchronizationSource() const;
-  Vector<uint32_t> contributingSources() const;
   String toString() const;
 
   scoped_refptr<RTCEncodedAudioFrameDelegate> Delegate() const;

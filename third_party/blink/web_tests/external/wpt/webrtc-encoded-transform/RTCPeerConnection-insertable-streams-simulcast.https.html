@@ -55,8 +55,8 @@ promise_test(async t => {
   let senderSSRCs = [];
   const senderTransformer = new TransformStream({
     async transform(chunk, controller) {
-      if (senderSSRCs.indexOf(chunk.synchronizationSource) == -1)
-        senderSSRCs.push(chunk.synchronizationSource);
+      if (senderSSRCs.indexOf(chunk.getMetadata().synchronizationSource) == -1)
+        senderSSRCs.push(chunk.getMetadata().synchronizationSource);
       controller.enqueue(chunk);
     }
   });

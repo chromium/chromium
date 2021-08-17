@@ -499,7 +499,6 @@ void RTCRtpReceiver::InitializeEncodedAudioStreams(ScriptState* script_state) {
             absl::make_unique<RtcEncodedAudioReceiverSourceOptimizer>(
                 std::move(set_underlying_source),
                 std::move(disconnect_callback)));
-    encoded_audio_streams_->setReadableStream(readable_stream);
     encoded_audio_streams_->setReadable(readable_stream);
   }
 
@@ -526,7 +525,6 @@ void RTCRtpReceiver::InitializeEncodedAudioStreams(ScriptState* script_state) {
             std::move(set_underlying_sink), encoded_audio_transformer_));
   }
 
-  encoded_audio_streams_->setWritableStream(writable_stream);
   encoded_audio_streams_->setWritable(writable_stream);
 }
 
@@ -581,7 +579,6 @@ void RTCRtpReceiver::InitializeEncodedVideoStreams(ScriptState* script_state) {
       ReadableStream::CreateWithCountQueueingStrategy(
           script_state, video_from_depacketizer_underlying_source_,
           /*high_water_mark=*/0);
-  encoded_video_streams_->setReadableStream(readable_stream);
   encoded_video_streams_->setReadable(readable_stream);
 
   // Set up writable.
@@ -602,7 +599,6 @@ void RTCRtpReceiver::InitializeEncodedVideoStreams(ScriptState* script_state) {
       WritableStream::CreateWithCountQueueingStrategy(
           script_state, video_to_decoder_underlying_sink_,
           /*high_water_mark=*/1);
-  encoded_video_streams_->setWritableStream(writable_stream);
   encoded_video_streams_->setWritable(writable_stream);
 }
 
