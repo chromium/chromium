@@ -68,6 +68,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin:test_support",
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/unified_consent",
+    "//ios/chrome/test:test_support",
     "//ios/public/provider/chrome/browser:test_support",
     "//ios/public/provider/chrome/browser/signin:fake_chrome_identity",
     "//ios/public/provider/chrome/browser/signin:test_support",
