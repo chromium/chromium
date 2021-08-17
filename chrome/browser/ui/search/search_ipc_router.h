@@ -74,23 +74,6 @@ class SearchIPCRouter : public content::WebContentsObserver,
     virtual void OnLogMostVisitedNavigation(
         const ntp_tiles::NTPTileImpression& impression) = 0;
 
-    // Called when a custom background is configured on the NTP.
-    // background_url: Url of the background image.
-    // attribution_line_1: First attribution line for the image.
-    // attribution_line_2: Second attribution line for the image.
-    // action_url: Url to learn more about the backgrounds image.
-    // collection_id: Id of the collection that was selected.
-    virtual void OnSetCustomBackgroundInfo(
-        const GURL& background_url,
-        const std::string& attribution_line_1,
-        const std::string& attribution_line_2,
-        const GURL& action_url,
-        const std::string& collection_id) = 0;
-
-    // Called to open the file select dialog for selecting a
-    // NTP background image.
-    virtual void OnSelectLocalBackgroundImage() = 0;
-
     // Called when a search suggestion is blocklisted on the local NTP.
     virtual void OnBlocklistSearchSuggestion(int task_version,
                                              long task_id) = 0;
@@ -142,9 +125,6 @@ class SearchIPCRouter : public content::WebContentsObserver,
     virtual bool ShouldSendOmniboxFocusChanged() = 0;
     virtual bool ShouldSendMostVisitedInfo() = 0;
     virtual bool ShouldSendNtpTheme() = 0;
-    virtual bool ShouldSendLocalBackgroundSelected() = 0;
-    virtual bool ShouldProcessSetCustomBackgroundInfo() = 0;
-    virtual bool ShouldProcessSelectLocalBackgroundImage() = 0;
     virtual bool ShouldProcessBlocklistSearchSuggestion() = 0;
     virtual bool ShouldProcessBlocklistSearchSuggestionWithHash() = 0;
     virtual bool ShouldProcessSearchSuggestionSelected() = 0;
@@ -196,10 +176,6 @@ class SearchIPCRouter : public content::WebContentsObserver,
   // Tells the renderer about the current theme background.
   void SendNtpTheme(const NtpTheme& theme);
 
-  // Tells the renderer that "Done" was clicked on the file selection dialog for
-  // uploading a image to use as the NTP background.
-  void SendLocalBackgroundSelected();
-
   // Called when the tab corresponding to |this| instance is activated.
   void OnTabActivated();
 
@@ -224,12 +200,6 @@ class SearchIPCRouter : public content::WebContentsObserver,
   void LogMostVisitedNavigation(
       int page_seq_no,
       const ntp_tiles::NTPTileImpression& impression) override;
-  void SetCustomBackgroundInfo(const GURL& background_url,
-                               const std::string& attribution_line_1,
-                               const std::string& attribution_line_2,
-                               const GURL& action_url,
-                               const std::string& collection_id) override;
-  void SelectLocalBackgroundImage() override;
   void BlocklistSearchSuggestion(int32_t task_version,
                                  int64_t task_id) override;
   void BlocklistSearchSuggestionWithHash(

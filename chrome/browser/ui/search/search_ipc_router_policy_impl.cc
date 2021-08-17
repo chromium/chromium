@@ -62,18 +62,6 @@ bool SearchIPCRouterPolicyImpl::ShouldSendNtpTheme() {
   return !is_incognito_ && search::IsInstantNTP(web_contents_);
 }
 
-bool SearchIPCRouterPolicyImpl::ShouldSendLocalBackgroundSelected() {
-  return !is_incognito_ && search::IsInstantNTP(web_contents_);
-}
-
-bool SearchIPCRouterPolicyImpl::ShouldProcessSelectLocalBackgroundImage() {
-  return !is_incognito_ && search::IsInstantNTP(web_contents_);
-}
-
-bool SearchIPCRouterPolicyImpl::ShouldProcessSetCustomBackgroundInfo() {
-  return !is_incognito_ && search::IsInstantNTP(web_contents_);
-}
-
 bool SearchIPCRouterPolicyImpl::ShouldProcessBlocklistSearchSuggestion() {
   return !is_incognito_ && search::IsInstantNTP(web_contents_);
 }

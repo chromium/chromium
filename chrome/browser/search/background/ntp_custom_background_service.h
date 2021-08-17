@@ -28,6 +28,7 @@ class NtpCustomBackgroundService : public KeyedService,
                                    public NtpBackgroundServiceObserver {
  public:
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+  static void ResetProfilePrefs(Profile* profile);
 
   explicit NtpCustomBackgroundService(Profile* profile);
   ~NtpCustomBackgroundService() override;
@@ -58,9 +59,6 @@ class NtpCustomBackgroundService : public KeyedService,
   // Invoked when a user selected the "Upload an image" option on the NTP.
   void SelectLocalBackgroundImage(const base::FilePath& path);
 
-  // Marked virtual for mocking in tests.
-  virtual void ResetCustomBackgroundNtpTheme();
-
   void RefreshBackgroundIfNeeded();
 
   // Virtual for testing.
@@ -83,7 +81,6 @@ class NtpCustomBackgroundService : public KeyedService,
   void SetClockForTesting(base::Clock* clock);
 
  private:
-  void RemoveLocalBackgroundImageCopy();
   void SetBackgroundToLocalResource();
   // Returns false if the custom background pref cannot be parsed, otherwise
   // returns true.

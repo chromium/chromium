@@ -37,9 +37,6 @@ class SearchIPCRouterPolicyImpl : public SearchIPCRouter::Policy {
   bool ShouldSendOmniboxFocusChanged() override;
   bool ShouldSendMostVisitedInfo() override;
   bool ShouldSendNtpTheme() override;
-  bool ShouldSendLocalBackgroundSelected() override;
-  bool ShouldProcessSetCustomBackgroundInfo() override;
-  bool ShouldProcessSelectLocalBackgroundImage() override;
   bool ShouldProcessBlocklistSearchSuggestion() override;
   bool ShouldProcessBlocklistSearchSuggestionWithHash() override;
   bool ShouldProcessSearchSuggestionSelected() override;

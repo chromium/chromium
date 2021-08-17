@@ -17,8 +17,6 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
-#include "chrome/browser/search/background/ntp_custom_background_service.h"
-#include "chrome/browser/search/background/ntp_custom_background_service_observer.h"
 #include "chrome/browser/themes/theme_service_observer.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -56,7 +54,6 @@ class RenderProcessHost;
 // necessary information (most visited tiles and theme info) updated in those
 // renderer processes.
 class InstantService : public KeyedService,
-                       public NtpCustomBackgroundServiceObserver,
                        public content::NotificationObserver,
                        public ntp_tiles::MostVisitedSites::Observer,
                        public ui::NativeThemeObserver,
@@ -73,9 +70,6 @@ class InstantService : public KeyedService,
   // Adds/Removes InstantService observers.
   virtual void AddObserver(InstantServiceObserver* observer);
   void RemoveObserver(InstantServiceObserver* observer);
-
-  // Register prefs associated with the NTP.
-  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // Determine if this chrome-search: request is coming from an Instant render
   // process.
@@ -112,65 +106,22 @@ class InstantService : public KeyedService,
   // NTP.
   void UpdateMostVisitedInfo();
 
-  // Invoked when the background is reset on the NTP.
-  void ResetCustomBackgroundInfo();
-
-  // Invoked when a custom background is configured on the NTP.
-  void SetCustomBackgroundInfo(const GURL& background_url,
-                               const std::string& attribution_line_1,
-                               const std::string& attribution_line_2,
-                               const GURL& action_url,
-                               const std::string& collection_id);
-
-  // Invoked when a user selected the "Upload an image" option on the NTP.
-  void SelectLocalBackgroundImage(const base::FilePath& path);
-
   // Getter for |theme_| that will also initialize it if necessary.
   NtpTheme* GetInitializedNtpTheme();
 
   // Used for testing.
   void SetNativeThemeForTesting(ui::NativeTheme* theme);
 
-  // Used for testing.
-  void AddValidBackdropUrlForTesting(const GURL& url) const;
-
-  // Used for testing.
-  void AddValidBackdropCollectionForTesting(
-      const std::string& collection_id) const;
-
-  // Used for testing.
-  void SetNextCollectionImageForTesting(const CollectionImage& image) const;
-
-  // Returns whether having a custom background is disabled by policy.
-  bool IsCustomBackgroundDisabledByPolicy();
-
-  // Returns whether a custom background has been set by the user.
-  bool IsCustomBackgroundSet();
-
-  // Reset all NTP customizations to default. Marked virtual for mocking in
-  // tests.
-  virtual void ResetToDefault();
-
  private:
   friend class InstantExtendedTest;
   friend class InstantUnitTestBase;
   friend class TestInstantService;
 
-  FRIEND_TEST_ALL_PREFIXES(InstantExtendedTest, ProcessIsolation);
   FRIEND_TEST_ALL_PREFIXES(InstantServiceTest, GetNTPTileSuggestion);
-  FRIEND_TEST_ALL_PREFIXES(InstantServiceTest, DoesToggleShortcutsVisibility);
   FRIEND_TEST_ALL_PREFIXES(InstantServiceTest, TestNoNtpTheme);
-  FRIEND_TEST_ALL_PREFIXES(InstantServiceTest, TestUpdateCustomBackgroundColor);
-  FRIEND_TEST_ALL_PREFIXES(InstantServiceTest,
-                           LocalImageDoesNotUpdateCustomBackgroundColor);
-  FRIEND_TEST_ALL_PREFIXES(InstantServiceTest, RefreshesBackgroundAfter24Hours);
 
   // KeyedService:
   void Shutdown() override;
-
-  // NtpCustomBackgroundServiceObserver:
-  void OnCustomBackgroundImageUpdated() override;
-  void OnNtpCustomBackgroundServiceShuttingDown() override;
 
   // content::NotificationObserver:
   void Observe(int type,
@@ -193,15 +144,6 @@ class InstantService : public KeyedService,
   void NotifyAboutNtpTheme();
 
   void BuildNtpTheme();
-
-  void ApplyOrResetCustomBackgroundNtpTheme();
-
-  // Marked virtual for mocking in tests.
-  virtual void ResetCustomBackgroundNtpTheme();
-
-  void FallbackToDefaultNtpTheme();
-
-  void SetClockForTesting(base::Clock* clock);
 
   base::TimeTicks GetBackgroundUpdatedTimestampForTesting() {
     return background_updated_timestamp_;
@@ -237,13 +179,7 @@ class InstantService : public KeyedService,
   base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
       theme_observation_{this};
 
-  base::ScopedObservation<NtpCustomBackgroundService,
-                          NtpCustomBackgroundServiceObserver>
-      custom_background_service_observation_{this};
-
   ui::NativeTheme* native_theme_;
-
-  NtpCustomBackgroundService* custom_background_service_;
 
   base::TimeTicks background_updated_timestamp_;
 

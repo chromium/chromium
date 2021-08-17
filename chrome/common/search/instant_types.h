@@ -54,21 +54,6 @@ struct NtpTheme {
   // True if the default theme is selected.
   bool using_default_theme = true;
 
-  // Url of the custom background selected by the user.
-  GURL custom_background_url;
-
-  // First attribution string for custom background.
-  std::string custom_background_attribution_line_1;
-
-  // Second attribution string for custom background.
-  std::string custom_background_attribution_line_2;
-
-  // Url to learn more info about the custom background.
-  GURL custom_background_attribution_action_url;
-
-  // Id of the collection being used for "daily refresh".
-  std::string collection_id;
-
   // The theme background color. Always valid.
   SkColor background_color = gfx::kPlaceholderColor;
 

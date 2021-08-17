@@ -242,7 +242,7 @@
 #include "chrome/browser/new_tab_page/modules/drive/drive_service.h"
 #include "chrome/browser/new_tab_page/modules/task_module/task_module_service.h"
 #include "chrome/browser/new_tab_page/promos/promo_service.h"
-#include "chrome/browser/search/instant_service.h"
+#include "chrome/browser/search/background/ntp_custom_background_service.h"
 #include "chrome/browser/search/search_suggest/search_suggest_service.h"
 #include "chrome/browser/serial/serial_policy_allowed_ports.h"
 #include "chrome/browser/signin/signin_promo.h"
@@ -1222,7 +1222,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   first_run::RegisterProfilePrefs(registry);
   gcm::RegisterProfilePrefs(registry);
   HatsService::RegisterProfilePrefs(registry);
-  InstantService::RegisterProfilePrefs(registry);
+  NtpCustomBackgroundService::RegisterProfilePrefs(registry);
   media_router::RegisterProfilePrefs(registry);
   NewTabPageHandler::RegisterProfilePrefs(registry);
   NewTabPageUI::RegisterProfilePrefs(registry);

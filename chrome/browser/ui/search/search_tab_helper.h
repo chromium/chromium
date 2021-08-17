@@ -25,7 +25,6 @@
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "ui/shell_dialogs/select_file_dialog.h"
 
 #if defined(OS_ANDROID)
 #error "Instant is only used on desktop";
@@ -54,7 +53,6 @@ class SearchTabHelper : public content::WebContentsObserver,
                         public content::WebContentsUserData<SearchTabHelper>,
                         public InstantServiceObserver,
                         public SearchIPCRouter::Delegate,
-                        public ui::SelectFileDialog::Listener,
                         public OmniboxTabHelper::Observer {
  public:
   ~SearchTabHelper() override;
@@ -78,9 +76,6 @@ class SearchTabHelper : public content::WebContentsObserver,
  private:
   friend class content::WebContentsUserData<SearchTabHelper>;
   friend class SearchIPCRouterTest;
-
-  FRIEND_TEST_ALL_PREFIXES(SearchTabHelperTest,
-                           FileSelectedUpdatesLastSelectedDirectory);
 
   explicit SearchTabHelper(content::WebContents* web_contents);
 
@@ -108,12 +103,6 @@ class SearchTabHelper : public content::WebContentsObserver,
       const ntp_tiles::NTPTileImpression& impression) override;
   void OnLogMostVisitedNavigation(
       const ntp_tiles::NTPTileImpression& impression) override;
-  void OnSetCustomBackgroundInfo(const GURL& background_url,
-                                 const std::string& attribution_line_1,
-                                 const std::string& attribution_line_2,
-                                 const GURL& action_url,
-                                 const std::string& collection_id) override;
-  void OnSelectLocalBackgroundImage() override;
   void OnBlocklistSearchSuggestion(int task_version, long task_id) override;
   void OnBlocklistSearchSuggestionWithHash(int task_version,
                                            long task_id,
@@ -131,12 +120,6 @@ class SearchTabHelper : public content::WebContentsObserver,
   void NtpThemeChanged(const NtpTheme& theme) override;
   void MostVisitedInfoChanged(
       const InstantMostVisitedInfo& most_visited_info) override;
-
-  // Overridden from SelectFileDialog::Listener:
-  void FileSelected(const base::FilePath& path,
-                    int index,
-                    void* params) override;
-  void FileSelectionCanceled(void* params) override;
 
   // Overridden from OmniboxTabHelper::Observer:
   void OnOmniboxInputStateChanged() override;
@@ -173,8 +156,6 @@ class SearchTabHelper : public content::WebContentsObserver,
   SearchSuggestService* search_suggest_service_;
 
   bool is_setting_title_ = false;
-
-  scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
 
   chrome_colors::ChromeColorsService* chrome_colors_service_;
 

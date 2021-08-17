@@ -72,13 +72,6 @@ class MockSearchIPCRouterDelegate : public SearchIPCRouter::Delegate {
   MOCK_METHOD1(OnLogMostVisitedNavigation,
                void(const ntp_tiles::NTPTileImpression& impression));
   MOCK_METHOD1(OnSetCustomBackgroundURL, void(const GURL& url));
-  MOCK_METHOD5(OnSetCustomBackgroundInfo,
-               void(const GURL& background_url,
-                    const std::string& attribution1,
-                    const std::string& attribution2,
-                    const GURL& attributionActionUrl,
-                    const std::string& collection_id));
-  MOCK_METHOD0(OnSelectLocalBackgroundImage, void());
   MOCK_METHOD2(OnBlocklistSearchSuggestion,
                void(int task_version, long task_id));
   MOCK_METHOD3(OnBlocklistSearchSuggestionWithHash,
@@ -102,9 +95,6 @@ class MockSearchIPCRouterPolicy : public SearchIPCRouter::Policy {
   MOCK_METHOD0(ShouldProcessUndoAllMostVisitedDeletions, bool());
   MOCK_METHOD0(ShouldProcessLogEvent, bool());
   MOCK_METHOD0(ShouldProcessLogSuggestionEventWithValue, bool());
-  MOCK_METHOD0(ShouldProcessSetCustomBackgroundURL, bool());
-  MOCK_METHOD0(ShouldProcessSetCustomBackgroundInfo, bool());
-  MOCK_METHOD0(ShouldProcessSelectLocalBackgroundImage, bool());
   MOCK_METHOD0(ShouldProcessBlocklistSearchSuggestion, bool());
   MOCK_METHOD0(ShouldProcessBlocklistSearchSuggestionWithHash, bool());
   MOCK_METHOD0(ShouldProcessSearchSuggestionSelected, bool());
@@ -113,7 +103,6 @@ class MockSearchIPCRouterPolicy : public SearchIPCRouter::Policy {
   MOCK_METHOD0(ShouldSendOmniboxFocusChanged, bool());
   MOCK_METHOD0(ShouldSendMostVisitedInfo, bool());
   MOCK_METHOD0(ShouldSendNtpTheme, bool());
-  MOCK_METHOD0(ShouldSendLocalBackgroundSelected, bool());
   MOCK_METHOD0(ShouldProcessThemeChangeMessages, bool());
 };
 
@@ -550,99 +539,6 @@ TEST_F(SearchIPCRouterTest, DoNotSendNtpThemeMsg) {
 
   EXPECT_CALL(*mock_embedded_search_client(), ThemeChanged(_)).Times(0);
   GetSearchIPCRouter().SendNtpTheme(NtpTheme());
-}
-
-TEST_F(SearchIPCRouterTest, SendLocalBackgroundSelectedMsg) {
-  NavigateAndCommitActiveTab(GURL("chrome-search://foo/baz"));
-  SetupMockDelegateAndPolicy();
-  MockSearchIPCRouterPolicy* policy = GetSearchIPCRouterPolicy();
-  EXPECT_CALL(*policy, ShouldSendLocalBackgroundSelected())
-      .Times(1)
-      .WillOnce(Return(true));
-
-  EXPECT_CALL(*mock_embedded_search_client(), LocalBackgroundSelected());
-  GetSearchIPCRouter().SendLocalBackgroundSelected();
-}
-
-TEST_F(SearchIPCRouterTest, DoNotSendLocalBackgroundSelectedMsg) {
-  NavigateAndCommitActiveTab(GURL("chrome-search://foo/baz"));
-  SetupMockDelegateAndPolicy();
-  MockSearchIPCRouterPolicy* policy = GetSearchIPCRouterPolicy();
-  EXPECT_CALL(*policy, ShouldSendLocalBackgroundSelected())
-      .Times(1)
-      .WillOnce(Return(false));
-
-  EXPECT_CALL(*mock_embedded_search_client(), LocalBackgroundSelected())
-      .Times(0);
-  GetSearchIPCRouter().SendLocalBackgroundSelected();
-}
-
-TEST_F(SearchIPCRouterTest, ProcessSetCustomBackgroundInfoMsg) {
-  NavigateAndCommitActiveTab(GURL("chrome-search://foo/bar"));
-  SetupMockDelegateAndPolicy();
-  MockSearchIPCRouterPolicy* policy = GetSearchIPCRouterPolicy();
-  GURL bg_url("www.foo.com");
-  std::string attr1("foo");
-  std::string attr2("bar");
-  GURL action_url("www.bar.com");
-  std::string collection_id("Art");
-  EXPECT_CALL(*mock_delegate(),
-              OnSetCustomBackgroundInfo(bg_url, attr1, attr2, action_url,
-                                        collection_id))
-      .Times(1);
-  EXPECT_CALL(*policy, ShouldProcessSetCustomBackgroundInfo())
-      .Times(1)
-      .WillOnce(Return(true));
-
-  GetSearchIPCRouter().SetCustomBackgroundInfo(bg_url, attr1, attr2, action_url,
-                                               collection_id);
-}
-
-TEST_F(SearchIPCRouterTest, IgnoreSetCustomBackgroundInfoMsg) {
-  NavigateAndCommitActiveTab(GURL("chrome-search://foo/bar"));
-  SetupMockDelegateAndPolicy();
-  MockSearchIPCRouterPolicy* policy = GetSearchIPCRouterPolicy();
-  GURL bg_url("www.foo.com");
-  std::string attr1("foo");
-  std::string attr2("bar");
-  GURL action_url("www.bar.com");
-  std::string collection_id("Art");
-  EXPECT_CALL(*mock_delegate(),
-              OnSetCustomBackgroundInfo(bg_url, attr1, attr2, action_url,
-                                        collection_id))
-      .Times(0);
-  EXPECT_CALL(*policy, ShouldProcessSetCustomBackgroundInfo())
-      .Times(1)
-      .WillOnce(Return(false));
-
-  GetSearchIPCRouter().SetCustomBackgroundInfo(bg_url, attr1, attr2, action_url,
-                                               collection_id);
-}
-
-TEST_F(SearchIPCRouterTest, ProcessSelectLocalBackgroundImageMsg) {
-  NavigateAndCommitActiveTab(GURL("chrome-search://foo/bar"));
-  SetupMockDelegateAndPolicy();
-  MockSearchIPCRouterPolicy* policy = GetSearchIPCRouterPolicy();
-  GURL bg_url("www.foo.com");
-  EXPECT_CALL(*mock_delegate(), OnSelectLocalBackgroundImage()).Times(1);
-  EXPECT_CALL(*policy, ShouldProcessSelectLocalBackgroundImage())
-      .Times(1)
-      .WillOnce(Return(true));
-
-  GetSearchIPCRouter().SelectLocalBackgroundImage();
-}
-
-TEST_F(SearchIPCRouterTest, IgnoreSelectLocalBackgroundImageMsg) {
-  NavigateAndCommitActiveTab(GURL("chrome-search://foo/bar"));
-  SetupMockDelegateAndPolicy();
-  MockSearchIPCRouterPolicy* policy = GetSearchIPCRouterPolicy();
-  GURL bg_url("www.foo.com");
-  EXPECT_CALL(*mock_delegate(), OnSelectLocalBackgroundImage()).Times(0);
-  EXPECT_CALL(*policy, ShouldProcessSelectLocalBackgroundImage())
-      .Times(1)
-      .WillOnce(Return(false));
-
-  GetSearchIPCRouter().SelectLocalBackgroundImage();
 }
 
 TEST_F(SearchIPCRouterTest, ProcessBlocklistSearchSuggestion) {

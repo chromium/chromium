@@ -92,6 +92,14 @@ void CopyFileToProfilePath(const base::FilePath& from_path,
                      chrome::kChromeUIUntrustedNewTabPageBackgroundFilename));
 }
 
+void RemoveLocalBackgroundImageCopy(Profile* profile) {
+  base::FilePath path = profile->GetPath().AppendASCII(
+      chrome::kChromeUIUntrustedNewTabPageBackgroundFilename);
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+      base::BindOnce(base::GetDeleteFileCallback(), path));
+}
+
 }  // namespace
 
 // static
@@ -102,6 +110,14 @@ void NtpCustomBackgroundService::RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(prefs::kNtpCustomBackgroundLocalToDevice,
                                 false);
+}
+
+// static
+void NtpCustomBackgroundService::ResetProfilePrefs(Profile* profile) {
+  profile->GetPrefs()->ClearPref(prefs::kNtpCustomBackgroundDict);
+  profile->GetPrefs()->SetBoolean(prefs::kNtpCustomBackgroundLocalToDevice,
+                                  false);
+  RemoveLocalBackgroundImageCopy(profile);
 }
 
 NtpCustomBackgroundService::NtpCustomBackgroundService(Profile* profile)
@@ -161,7 +177,7 @@ void NtpCustomBackgroundService::OnNtpBackgroundServiceShuttingDown() {
 void NtpCustomBackgroundService::UpdateBackgroundFromSync() {
   // Any incoming change to synced background data should clear the local image.
   pref_service_->SetBoolean(prefs::kNtpCustomBackgroundLocalToDevice, false);
-  RemoveLocalBackgroundImageCopy();
+  RemoveLocalBackgroundImageCopy(profile_);
   NotifyAboutBackgrounds();
 }
 
@@ -192,7 +208,7 @@ void NtpCustomBackgroundService::SetCustomBackgroundInfo(
       pref_service_->FindPreference(prefs::kNtpCustomBackgroundDict)
           ->IsDefaultValue();
   pref_service_->SetBoolean(prefs::kNtpCustomBackgroundLocalToDevice, false);
-  RemoveLocalBackgroundImageCopy();
+  RemoveLocalBackgroundImageCopy(profile_);
 
   background_updated_timestamp_ = base::TimeTicks::Now();
 
@@ -225,13 +241,6 @@ void NtpCustomBackgroundService::SelectLocalBackgroundImage(
       base::BindOnce(&CopyFileToProfilePath, path, profile_->GetPath()),
       base::BindOnce(&NtpCustomBackgroundService::SetBackgroundToLocalResource,
                      weak_ptr_factory_.GetWeakPtr()));
-}
-
-void NtpCustomBackgroundService::ResetCustomBackgroundNtpTheme() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  pref_service_->ClearPref(prefs::kNtpCustomBackgroundDict);
-  pref_service_->SetBoolean(prefs::kNtpCustomBackgroundLocalToDevice, false);
-  RemoveLocalBackgroundImageCopy();
 }
 
 void NtpCustomBackgroundService::RefreshBackgroundIfNeeded() {
@@ -371,14 +380,6 @@ void NtpCustomBackgroundService::SetNextCollectionImageForTesting(
 
 void NtpCustomBackgroundService::SetClockForTesting(base::Clock* clock) {
   clock_ = clock;
-}
-
-void NtpCustomBackgroundService::RemoveLocalBackgroundImageCopy() {
-  base::FilePath path = profile_->GetPath().AppendASCII(
-      chrome::kChromeUIUntrustedNewTabPageBackgroundFilename);
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
-      base::BindOnce(base::GetDeleteFileCallback(), path));
 }
 
 void NtpCustomBackgroundService::SetBackgroundToLocalResource() {

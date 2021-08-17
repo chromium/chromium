@@ -109,17 +109,6 @@ class SearchBox : public content::RenderFrameObserver,
   // Sends ToggleShortcutsVisibility to the browser.
   void ToggleShortcutsVisibility(bool do_notify);
 
-  // Updates the NTP custom background preferences, sometimes this includes
-  // image attributions.
-  void SetCustomBackgroundInfo(const GURL& background_url,
-                               const std::string& attribution_line_1,
-                               const std::string& attribution_line_2,
-                               const GURL& action_url,
-                               const std::string& collection_id);
-
-  // Let the user select a local file for the NTP background.
-  void SelectLocalBackgroundImage();
-
   // Add a search suggestion task id to the blocklist.
   void BlocklistSearchSuggestion(int task_version, long task_id);
 
@@ -166,7 +155,6 @@ class SearchBox : public content::RenderFrameObserver,
       const InstantMostVisitedInfo& most_visited_info) override;
   void SetInputInProgress(bool input_in_progress) override;
   void ThemeChanged(const NtpTheme& theme) override;
-  void LocalBackgroundSelected() override;
 
   void AddCustomLinkResult(bool success);
   void UpdateCustomLinkResult(bool success);

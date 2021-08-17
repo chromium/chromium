@@ -35,7 +35,6 @@ class SearchBoxExtension {
   static void DispatchKeyCaptureChange(blink::WebLocalFrame* frame);
   static void DispatchMostVisitedChanged(blink::WebLocalFrame* frame);
   static void DispatchThemeChange(blink::WebLocalFrame* frame);
-  static void DispatchLocalBackgroundSelected(blink::WebLocalFrame* frame);
 
  private:
   DISALLOW_IMPLICIT_CONSTRUCTORS(SearchBoxExtension);

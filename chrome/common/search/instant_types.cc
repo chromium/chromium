@@ -12,14 +12,6 @@ NtpTheme::~NtpTheme() = default;
 
 bool NtpTheme::operator==(const NtpTheme& rhs) const {
   return using_default_theme == rhs.using_default_theme &&
-         custom_background_url == rhs.custom_background_url &&
-         custom_background_attribution_line_1 ==
-             rhs.custom_background_attribution_line_1 &&
-         custom_background_attribution_line_2 ==
-             rhs.custom_background_attribution_line_2 &&
-         custom_background_attribution_action_url ==
-             rhs.custom_background_attribution_action_url &&
-         collection_id == rhs.collection_id &&
          background_color == rhs.background_color &&
          text_color == rhs.text_color &&
          text_color_light == rhs.text_color_light && theme_id == rhs.theme_id &&

@@ -140,8 +140,6 @@ SearchTabHelper::~SearchTabHelper() {
     instant_service_->RemoveObserver(this);
   if (auto* helper = OmniboxTabHelper::FromWebContents(web_contents_))
     helper->RemoveObserver(this);
-  if (select_file_dialog_)
-    select_file_dialog_->ListenerDestroyed();
 }
 
 void SearchTabHelper::BindEmbeddedSearchConnecter(
@@ -311,52 +309,6 @@ void SearchTabHelper::OnLogMostVisitedNavigation(
     logger_->LogMostVisitedNavigation(impression);
 }
 
-void SearchTabHelper::OnSetCustomBackgroundInfo(
-    const GURL& background_url,
-    const std::string& attribution_line_1,
-    const std::string& attribution_line_2,
-    const GURL& action_url,
-    const std::string& collection_id) {
-  if (instant_service_) {
-    instant_service_->SetCustomBackgroundInfo(
-        background_url, attribution_line_1, attribution_line_2, action_url,
-        collection_id);
-  }
-}
-
-void SearchTabHelper::FileSelected(const base::FilePath& path,
-                                   int index,
-                                   void* params) {
-  if (instant_service_) {
-    profile()->set_last_selected_directory(path.DirName());
-    instant_service_->SelectLocalBackgroundImage(path);
-  }
-
-  select_file_dialog_ = nullptr;
-  // File selection can happen at any time after NTP load, and is not logged
-  // with the event.
-  if (logger_) {
-    logger_->LogEvent(NTP_CUSTOMIZE_LOCAL_IMAGE_DONE,
-                      base::TimeDelta::FromSeconds(0));
-    logger_->LogEvent(NTP_BACKGROUND_UPLOAD_DONE,
-                      base::TimeDelta::FromSeconds(0));
-  }
-
-  ipc_router_.SendLocalBackgroundSelected();
-}
-
-void SearchTabHelper::FileSelectionCanceled(void* params) {
-  select_file_dialog_ = nullptr;
-  // File selection can happen at any time after NTP load, and is not logged
-  // with the event.
-  if (logger_) {
-    logger_->LogEvent(NTP_CUSTOMIZE_LOCAL_IMAGE_CANCEL,
-                      base::TimeDelta::FromSeconds(0));
-    logger_->LogEvent(NTP_BACKGROUND_UPLOAD_CANCEL,
-                      base::TimeDelta::FromSeconds(0));
-  }
-}
-
 void SearchTabHelper::OnOmniboxInputStateChanged() {
   ipc_router_.SetInputInProgress(IsInputInProgress());
 }
@@ -370,31 +322,6 @@ void SearchTabHelper::OnOmniboxFocusChanged(OmniboxFocusState state,
   // a spurious oninputend when the user accepts a match in the omnibox.
   if (web_contents_->GetController().GetPendingEntry() == nullptr)
     ipc_router_.SetInputInProgress(IsInputInProgress());
-}
-
-void SearchTabHelper::OnSelectLocalBackgroundImage() {
-  if (select_file_dialog_)
-    return;
-
-  select_file_dialog_ = ui::SelectFileDialog::Create(
-      this, std::make_unique<ChromeSelectFilePolicy>(web_contents_));
-
-  const base::FilePath directory = profile()->last_selected_directory();
-
-  gfx::NativeWindow parent_window = web_contents_->GetTopLevelNativeWindow();
-
-  ui::SelectFileDialog::FileTypeInfo file_types;
-  file_types.allowed_paths = ui::SelectFileDialog::FileTypeInfo::NATIVE_PATH;
-  file_types.extensions.resize(1);
-  file_types.extensions[0].push_back(FILE_PATH_LITERAL("jpg"));
-  file_types.extensions[0].push_back(FILE_PATH_LITERAL("jpeg"));
-  file_types.extensions[0].push_back(FILE_PATH_LITERAL("png"));
-  file_types.extension_description_overrides.push_back(
-      l10n_util::GetStringUTF16(IDS_UPLOAD_IMAGE_FORMAT));
-
-  select_file_dialog_->SelectFile(
-      ui::SelectFileDialog::SELECT_OPEN_FILE, std::u16string(), directory,
-      &file_types, 0, base::FilePath::StringType(), parent_window, nullptr);
 }
 
 void SearchTabHelper::OnBlocklistSearchSuggestion(int task_version,

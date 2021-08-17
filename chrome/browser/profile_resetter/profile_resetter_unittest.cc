@@ -29,7 +29,8 @@
 #include "chrome/browser/profile_resetter/profile_reset_report.pb.h"
 #include "chrome/browser/profile_resetter/profile_resetter_test_base.h"
 #include "chrome/browser/profile_resetter/resettable_settings_snapshot.h"
-#include "chrome/browser/search/instant_service.h"
+#include "chrome/browser/search/background/ntp_custom_background_service.h"
+#include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/themes/test/theme_service_changed_waiter.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -337,15 +338,6 @@ bool ShortcutHandler::IsFileHidden() const {
   return false;
 }
 #endif  // defined(OS_WIN)
-
-// MockInstantService
-class MockInstantService : public InstantService {
- public:
-  explicit MockInstantService(Profile* profile) : InstantService(profile) {}
-  ~MockInstantService() override = default;
-
-  MOCK_METHOD0(ResetToDefault, void());
-};
 
 // helper functions -----------------------------------------------------------
 
@@ -1026,11 +1018,20 @@ TEST_F(ProfileResetterTest, DestroySnapshotFast) {
 }
 
 TEST_F(ProfileResetterTest, ResetNTPCustomizationsTest) {
-  MockInstantService mock_ntp_service(profile());
-  resetter_->ntp_service_ = &mock_ntp_service;
-
-  EXPECT_CALL(mock_ntp_service, ResetToDefault());
+  auto* ntp_custom_background_service =
+      NtpCustomBackgroundServiceFactory::GetForProfile(profile());
+  ntp_custom_background_service->AddValidBackdropUrlForTesting(
+      GURL("https://background.com"));
+  ntp_custom_background_service->SetCustomBackgroundInfo(
+      /*background_url=*/GURL("https://background.com"),
+      /*attribution_line_1=*/"line 1",
+      /*attribution_line_2=*/"line 2",
+      /*action_url=*/GURL("https://action.com"),
+      /*collection_id=*/"");
+  EXPECT_TRUE(ntp_custom_background_service->GetCustomBackground().has_value());
   ResetAndWait(ProfileResetter::NTP_CUSTOMIZATIONS);
+  EXPECT_FALSE(
+      ntp_custom_background_service->GetCustomBackground().has_value());
 }
 
 }  // namespace

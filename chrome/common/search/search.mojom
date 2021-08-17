@@ -70,16 +70,6 @@ interface EmbeddedSearch {
   // New Tab Page.
   LogMostVisitedNavigation(int32 page_seq_no, NTPTileImpression impression);
 
-  // Updates the NTP custom background preferences.
-  SetCustomBackgroundInfo(url.mojom.Url background_url,
-                                         string attribution_line_1,
-                                         string attribution_line_2,
-                                         url.mojom.Url action_url,
-                                         string collection_id);
-
-  // Let the user select a local file for the NTP background.
-  SelectLocalBackgroundImage();
-
   // Add a search suggestion task id to the blocklist.
   BlocklistSearchSuggestion(int32 task_version, int64 task_id);
 
@@ -137,7 +127,4 @@ interface EmbeddedSearchClient {
 
   // The NTP theme has changed; update accordingly.
   ThemeChanged(NtpTheme theme);
-
-  // A background image was selected from the file upload dialog.
-  LocalBackgroundSelected();
 };

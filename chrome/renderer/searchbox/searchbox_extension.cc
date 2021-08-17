@@ -318,23 +318,6 @@ v8::Local<v8::Object> GenerateNtpTheme(v8::Isolate* isolate,
     }
   }
 
-  builder.Set("customBackgroundConfigured",
-              !theme.custom_background_url.is_empty());
-
-  // If a custom background has been set provide the relevant information to the
-  // page.
-  if (!theme.custom_background_url.is_empty()) {
-    builder.Set("imageUrl", theme.custom_background_url.spec());
-    builder.Set("attributionActionUrl",
-                theme.custom_background_attribution_action_url.spec());
-    builder.Set("attribution1", theme.custom_background_attribution_line_1);
-    builder.Set("attribution2", theme.custom_background_attribution_line_2);
-    builder.Set("collectionId", theme.collection_id);
-    // Clear the theme attribution url, as it shouldn't be shown when
-    // a custom background is set.
-    builder.Set("attributionUrl", std::string());
-  }
-
   return builder.Build();
 }
 
@@ -419,20 +402,6 @@ static const char kDispatchThemeChangeEventScript[] =
     "    typeof window.chrome.embeddedSearch.newTabPage.onthemechange =="
     "        'function') {"
     "  window.chrome.embeddedSearch.newTabPage.onthemechange();"
-    "  true;"
-    "}";
-
-static const char kDispatchLocalBackgroundSelectedScript[] =
-    "if (window.chrome &&"
-    "    window.chrome.embeddedSearch &&"
-    "    window.chrome.embeddedSearch.newTabPage &&"
-    "    window.chrome.embeddedSearch.newTabPage.onlocalbackgroundselected &&"
-    "    typeof "
-    "window.chrome.embeddedSearch.newTabPage.onlocalbackgroundselected =="
-    "        'function') {"
-    "  "
-    "window.chrome.embeddedSearch.newTabPage."
-    "onlocalbackgroundselected();"
     "  true;"
     "}";
 
@@ -553,13 +522,6 @@ class NewTabPageBindings : public gin::Wrappable<NewTabPageBindings> {
                                        int tile_title_source,
                                        int tile_source,
                                        int tile_type);
-  static void ResetCustomBackgroundInfo();
-  static void SetCustomBackgroundInfo(const std::string& background_url,
-                                      const std::string& attribution_line_1,
-                                      const std::string& attribution_line_2,
-                                      const std::string& attributionActionUrl,
-                                      const std::string& collection_id);
-  static void SelectLocalBackgroundImage();
   static void BlocklistSearchSuggestion(int task_version, int task_id);
   static void BlocklistSearchSuggestionWithHash(int task_version,
                                                 int task_id,
@@ -612,12 +574,6 @@ gin::ObjectTemplateBuilder NewTabPageBindings::GetObjectTemplateBuilder(
                  &NewTabPageBindings::LogMostVisitedImpression)
       .SetMethod("logMostVisitedNavigation",
                  &NewTabPageBindings::LogMostVisitedNavigation)
-      .SetMethod("resetBackgroundInfo",
-                 &NewTabPageBindings::ResetCustomBackgroundInfo)
-      .SetMethod("setBackgroundInfo",
-                 &NewTabPageBindings::SetCustomBackgroundInfo)
-      .SetMethod("selectLocalBackgroundImage",
-                 &NewTabPageBindings::SelectLocalBackgroundImage)
       // These methods have been renamed to match BlocklistSearchSuggestion*
       // below, but are kept until JavaScript calls can be migrated.
       // TODO: Remove the following two additions per guidance in b/179534247
@@ -832,45 +788,6 @@ void NewTabPageBindings::LogMostVisitedNavigation(int position,
 }
 
 // static
-void NewTabPageBindings::ResetCustomBackgroundInfo() {
-  SetCustomBackgroundInfo(std::string(), std::string(), std::string(),
-                          std::string(), std::string());
-}
-
-// static
-void NewTabPageBindings::SetCustomBackgroundInfo(
-    const std::string& background_url,
-    const std::string& attribution_line_1,
-    const std::string& attribution_line_2,
-    const std::string& attribution_action_url,
-    const std::string& collection_id) {
-  SearchBox* search_box = GetSearchBoxForCurrentContext();
-  search_box->SetCustomBackgroundInfo(
-      GURL(background_url), attribution_line_1, attribution_line_2,
-      GURL(attribution_action_url), collection_id);
-  // Captures different events that occur when a background selection is made
-  // and 'Done' is clicked on the dialog.
-  if (!collection_id.empty()) {
-    search_box->LogEvent(
-        NTPLoggingEventType::NTP_BACKGROUND_DAILY_REFRESH_ENABLED);
-  } else if (background_url.empty()) {
-    search_box->LogEvent(
-        NTPLoggingEventType::NTP_CUSTOMIZE_RESTORE_BACKGROUND_CLICKED);
-    search_box->LogEvent(NTPLoggingEventType::NTP_BACKGROUND_IMAGE_RESET);
-  } else {
-    search_box->LogEvent(
-        NTPLoggingEventType::NTP_CUSTOMIZE_CHROME_BACKGROUND_DONE);
-    search_box->LogEvent(NTPLoggingEventType::NTP_BACKGROUND_IMAGE_SET);
-  }
-}
-
-// static
-void NewTabPageBindings::SelectLocalBackgroundImage() {
-  SearchBox* search_box = GetSearchBoxForCurrentContext();
-  search_box->SelectLocalBackgroundImage();
-}
-
-// static
 void NewTabPageBindings::BlocklistSearchSuggestion(const int task_version,
                                                    const int task_id) {
   SearchBox* search_box = GetSearchBoxForCurrentContext();
@@ -1051,10 +968,4 @@ void SearchBoxExtension::DispatchMostVisitedChanged(
 // static
 void SearchBoxExtension::DispatchThemeChange(blink::WebLocalFrame* frame) {
   Dispatch(frame, kDispatchThemeChangeEventScript);
-}
-
-// static
-void SearchBoxExtension::DispatchLocalBackgroundSelected(
-    blink::WebLocalFrame* frame) {
-  Dispatch(frame, kDispatchLocalBackgroundSelectedScript);
 }

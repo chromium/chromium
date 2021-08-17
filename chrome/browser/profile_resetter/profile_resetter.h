@@ -19,7 +19,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/profile_resetter/brandcoded_default_settings.h"
-#include "chrome/browser/search/instant_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/browsing_data_remover.h"
 
@@ -117,9 +116,6 @@ class ProfileResetter : public content::BrowsingDataRemover::Observer {
   base::CallbackListSubscription template_url_service_subscription_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  // Used for resetting NTP customizations.
-  InstantService* ntp_service_;
 
   base::WeakPtrFactory<ProfileResetter> weak_ptr_factory_{this};
 

@@ -11,8 +11,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/after_startup_task_utils.h"
-#include "chrome/browser/search/instant_service.h"
-#include "chrome/browser/search/instant_service_factory.h"
+#include "chrome/browser/search/background/ntp_custom_background_service.h"
+#include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/search/ntp_user_data_types.h"
 #include "chrome/common/pref_names.h"
@@ -448,9 +448,8 @@ bool NTPUserDataLogger::DefaultSearchProviderIsGoogle() const {
 }
 
 bool NTPUserDataLogger::CustomBackgroundIsConfigured() const {
-  InstantService* instant_service =
-      InstantServiceFactory::GetForProfile(profile_);
-  return instant_service->IsCustomBackgroundSet();
+  return NtpCustomBackgroundServiceFactory::GetForProfile(profile_)
+      ->IsCustomBackgroundSet();
 }
 
 void NTPUserDataLogger::EmitNtpStatistics(base::TimeDelta load_time,

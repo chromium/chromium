@@ -163,15 +163,6 @@ void SearchIPCRouter::SendNtpTheme(const NtpTheme& theme) {
   embedded_search_client()->ThemeChanged(theme);
 }
 
-void SearchIPCRouter::SendLocalBackgroundSelected() {
-  if (!policy_->ShouldSendLocalBackgroundSelected() ||
-      !embedded_search_client()) {
-    return;
-  }
-
-  embedded_search_client()->LocalBackgroundSelected();
-}
-
 void SearchIPCRouter::OnTabActivated() {
   is_active_tab_ = true;
 }
@@ -271,27 +262,6 @@ void SearchIPCRouter::LogMostVisitedNavigation(
     return;
 
   delegate_->OnLogMostVisitedNavigation(impression);
-}
-
-void SearchIPCRouter::SetCustomBackgroundInfo(
-    const GURL& background_url,
-    const std::string& attribution_line_1,
-    const std::string& attribution_line_2,
-    const GURL& action_url,
-    const std::string& collection_id) {
-  if (!policy_->ShouldProcessSetCustomBackgroundInfo())
-    return;
-
-  delegate_->OnSetCustomBackgroundInfo(background_url, attribution_line_1,
-                                       attribution_line_2, action_url,
-                                       collection_id);
-}
-
-void SearchIPCRouter::SelectLocalBackgroundImage() {
-  if (!policy_->ShouldProcessSelectLocalBackgroundImage())
-    return;
-
-  delegate_->OnSelectLocalBackgroundImage();
 }
 
 void SearchIPCRouter::BlocklistSearchSuggestion(int32_t task_version,
