@@ -143,74 +143,6 @@ def _CheckRunAfterLayoutAndPaintJS(input_api, output_api):
             break
     return []
 
-def _check(input_api, dirs_changed):
-    with input_api.CreateTemporaryFile() as f:
-        f.close()
-        script_path = input_api.os_path.join(
-            input_api.change.RepositoryRoot(), 'third_party',
-            'blink', 'tools', 'collect_web_tests.py')
-        command = ['vpython3', script_path,
-                   '--out', f.name]
-        match = True
-        try:
-            input_api.subprocess.check_output(command + dirs_changed)
-        except input_api.subprocess.CalledProcessError:
-            match = False
-        return match
-
-def _EnsureAllTestsByDirectories(input_api, output_api):
-    this_dir = input_api.PresubmitLocalPath()
-    all_tests_by_dir_path = input_api.os_path.join(
-        this_dir, 'AllTestsByDirectories.json')
-
-    '''
-    if input_api.is_committing and all_tests_by_dir_path in input_api.AbsoluteLocalPaths():
-        # always do a full check in this case
-        if not _check(input_api, []):
-            error_message = (
-                'This CL changes AllTestsByDirectories.json or web test cases, but\n'
-                'AllTestsByDirectories.json is not up-to-date. Please run:\n'
-                '  third_party/blink/tools/collect_web_tests.py\nto update it.\n')
-            return [output_api.PresubmitError(error_message)]
-        else:
-            return []
-    '''
-
-    skipped_dirs = set(['FlagExpectations', 'platform', 'resources'])
-    dirs_to_check = []
-    for f in input_api.os_listdir(this_dir):
-        if f in skipped_dirs:
-            continue
-        if input_api.os_path.isdir(
-                input_api.os_path.join(this_dir, f)):
-            dirs_to_check.append(f)
-
-    dirs_changed = []
-    for af in input_api.AffectedFiles():
-        for d in set(dirs_to_check)-set(dirs_changed):
-            path = input_api.os_path.join(this_dir, d)
-            if af.AbsoluteLocalPath().startswith(path):
-                dirs_changed.append(d)
-                break
-    if 'external' in dirs_changed:
-        dirs_changed.remove('external')
-        dirs_changed.append('external/wpt')
-
-    if dirs_changed:
-        match = _check(input_api, dirs_changed)
-        if not match:
-            error_message = (
-                'This CL changes web test cases, but '
-                'AllTestsByDirectories.json is not updated.\n'
-                'Please run:\n  third_party/blink/tools/'
-                'collect_web_tests.py %s\nto update it.\n' %
-                ' '.join(dirs_changed))
-            if input_api.is_committing:
-                return [output_api.PresubmitError(error_message)]
-            else:
-                return [output_api.PresubmitPromptWarning(error_message)]
-    return []
-
 def CheckChangeOnUpload(input_api, output_api):
     results = []
     results.extend(_CheckTestharnessResults(input_api, output_api))
@@ -219,7 +151,6 @@ def CheckChangeOnUpload(input_api, output_api):
     results.extend(_CheckForJSTest(input_api, output_api))
     results.extend(_CheckForInvalidPreferenceError(input_api, output_api))
     results.extend(_CheckRunAfterLayoutAndPaintJS(input_api, output_api))
-    results.extend(_EnsureAllTestsByDirectories(input_api, output_api))
     return results
 
 
@@ -228,5 +159,4 @@ def CheckChangeOnCommit(input_api, output_api):
     results.extend(_CheckTestharnessResults(input_api, output_api))
     results.extend(_CheckFilesUsingEventSender(input_api, output_api))
     results.extend(_CheckTestExpectations(input_api, output_api))
-    results.extend(_EnsureAllTestsByDirectories(input_api, output_api))
     return results

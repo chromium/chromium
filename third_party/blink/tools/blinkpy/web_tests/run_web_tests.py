@@ -535,14 +535,6 @@ def parse_args(args):
                 'read list of tests to run from file, as if they were specified on the command line'
             ),
             optparse.make_option(
-                '--use-checkedin-list',
-                action='store_true',
-                default=False,
-                help=
-                ("Load tests from AllTestsByDirectories.json. Use it if you don't have"
-                 " any unchecked in tests. This can save about 30 seconds by not"
-                 " searching the file system.")),
-            optparse.make_option(
                 '--isolated-script-test-filter',
                 action='append',
                 type='string',
