@@ -85,8 +85,9 @@ void OnWebAppSystemReadyMaybeLaunchProtocolHandler(
          web_app::startup::FinalizeWebAppLaunchCallback callback,
          bool accepted) {
         if (accepted) {
-          web_app::WebAppProvider* provider =
-              web_app::WebAppProvider::Get(profile);
+          web_app::WebAppProvider* const provider =
+              web_app::WebAppProvider::GetForWebApps(profile);
+          DCHECK(provider);
           {
             web_app::ScopedRegistryUpdate update(
                 provider->registry_controller().AsWebAppSyncBridge());
@@ -162,7 +163,8 @@ bool MaybeLaunchProtocolHandlerWebApp(
   if (protocol_url.is_empty())
     return false;
 
-  auto* provider = web_app::WebAppProvider::Get(profile);
+  web_app::WebAppProvider* const provider =
+      web_app::WebAppProvider::GetForWebApps(profile);
   DCHECK(provider);
   // Create the keep_alives so the profiles and the browser stays alive as we
   // wait for the provider() to be ready.
