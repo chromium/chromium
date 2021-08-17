@@ -42,6 +42,8 @@ source_set("video") {
     "video_encode_accelerator.h",
     "video_encode_accelerator_adapter.cc",
     "video_encode_accelerator_adapter.h",
+    "video_encoder_fallback.cc",
+    "video_encoder_fallback.h",
     "video_encoder_info.cc",
     "video_encoder_info.h",
   ]
@@ -71,9 +73,7 @@ source_set("video") {
     "//ui/gl",
   ]
 
-  configs += [
-    "//media:subcomponent_config",
-  ]
+  configs += [ "//media:subcomponent_config" ]
 
   if (media_use_libvpx) {
     sources += [
@@ -134,6 +134,7 @@ source_set("unit_tests") {
     "renderable_gpu_memory_buffer_video_frame_pool_unittest.cc",
     "software_video_encoder_test.cc",
     "video_encode_accelerator_adapter_test.cc",
+    "video_encoder_fallback_test.cc",
   ]
   if (enable_platform_hevc) {
     sources += [ "h265_nalu_parser_unittest.cc" ]

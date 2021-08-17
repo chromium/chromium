@@ -77,6 +77,15 @@ class MEDIA_EXPORT VideoEncoder {
   // Callback to report success and errors in encoder calls.
   using StatusCB = base::OnceCallback<void(Status error)>;
 
+  struct PendingEncode {
+    PendingEncode();
+    PendingEncode(PendingEncode&&);
+    ~PendingEncode();
+    StatusCB done_callback;
+    scoped_refptr<VideoFrame> frame;
+    bool key_frame;
+  };
+
   VideoEncoder();
   VideoEncoder(const VideoEncoder&) = delete;
   VideoEncoder& operator=(const VideoEncoder&) = delete;

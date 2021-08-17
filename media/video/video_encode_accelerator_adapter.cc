@@ -90,8 +90,6 @@ VideoEncodeAccelerator::Config SetUpVeaConfig(
 
 VideoEncodeAcceleratorAdapter::PendingOp::PendingOp() = default;
 VideoEncodeAcceleratorAdapter::PendingOp::~PendingOp() = default;
-VideoEncodeAcceleratorAdapter::PendingEncode::PendingEncode() = default;
-VideoEncodeAcceleratorAdapter::PendingEncode::~PendingEncode() = default;
 
 VideoEncodeAcceleratorAdapter::VideoEncodeAcceleratorAdapter(
     GpuVideoAcceleratorFactories* gpu_factories,

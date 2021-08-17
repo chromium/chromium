@@ -30,6 +30,7 @@
 #include "media/base/video_util.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "media/video/video_encode_accelerator_adapter.h"
+#include "media/video/video_encoder_fallback.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -145,36 +146,6 @@ bool IsAcceleratedConfigurationSupported(
   return found_supported_profile;
 }
 
-std::unique_ptr<media::VideoEncoder> CreateAcceleratedVideoEncoder(
-    media::VideoCodecProfile profile,
-    const media::VideoEncoder::Options& options,
-    media::GpuVideoAcceleratorFactories* gpu_factories) {
-  if (!IsAcceleratedConfigurationSupported(profile, options, gpu_factories))
-    return nullptr;
-
-  auto task_runner = Thread::Current()->GetTaskRunner();
-  return std::make_unique<
-      media::AsyncDestroyVideoEncoder<media::VideoEncodeAcceleratorAdapter>>(
-      std::make_unique<media::VideoEncodeAcceleratorAdapter>(
-          gpu_factories, std::move(task_runner)));
-}
-
-std::unique_ptr<media::VideoEncoder> CreateVpxVideoEncoder() {
-#if BUILDFLAG(ENABLE_LIBVPX)
-  return std::make_unique<media::VpxVideoEncoder>();
-#else
-  return nullptr;
-#endif  // BUILDFLAG(ENABLE_LIBVPX)
-}
-
-std::unique_ptr<media::VideoEncoder> CreateOpenH264VideoEncoder() {
-#if BUILDFLAG(ENABLE_OPENH264)
-  return std::make_unique<media::OpenH264VideoEncoder>();
-#else
-  return nullptr;
-#endif  // BUILDFLAG(ENABLE_OPENH264)
-}
-
 VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
     const VideoEncoderConfig* config,
     ExceptionState& exception_state) {
@@ -216,8 +187,8 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
     } else {
       // VBR in media:Bitrate supports both target and peak bitrate.
       // Currently webcodecs doesn't expose peak bitrate
-      // (assuming unconstrained VBR), here we just set peak as 10 times target
-      // as a good enough way of expressing unconstrained VBR.
+      // (assuming unconstrained VBR), here we just set peak as 10 times
+      // target as a good enough way of expressing unconstrained VBR.
       result->options.bitrate = media::Bitrate::VariableBitrate(bps, 10 * bps);
     }
   }
@@ -253,7 +224,7 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
     }
   }
 
-  // The IDL defines a default value of "allow".
+  // The IDL defines a default value of "no-preference".
   DCHECK(config->hasHardwareAcceleration());
 
   result->hw_pref = StringToHardwarePreference(
@@ -453,6 +424,62 @@ void VideoEncoder::UpdateEncoderLog(std::string encoder_name,
       is_hw_accelerated);
 }
 
+std::unique_ptr<media::VideoEncoder> CreateAcceleratedVideoEncoder(
+    media::VideoCodecProfile profile,
+    const media::VideoEncoder::Options& options,
+    media::GpuVideoAcceleratorFactories* gpu_factories) {
+  if (!IsAcceleratedConfigurationSupported(profile, options, gpu_factories))
+    return nullptr;
+
+  auto task_runner = Thread::Current()->GetTaskRunner();
+  return std::make_unique<
+      media::AsyncDestroyVideoEncoder<media::VideoEncodeAcceleratorAdapter>>(
+      std::make_unique<media::VideoEncodeAcceleratorAdapter>(
+          gpu_factories, std::move(task_runner)));
+}
+
+std::unique_ptr<media::VideoEncoder> CreateVpxVideoEncoder() {
+#if BUILDFLAG(ENABLE_LIBVPX)
+  return std::make_unique<media::VpxVideoEncoder>();
+#else
+  return nullptr;
+#endif  // BUILDFLAG(ENABLE_LIBVPX)
+}
+
+std::unique_ptr<media::VideoEncoder> CreateOpenH264VideoEncoder() {
+#if BUILDFLAG(ENABLE_OPENH264)
+  return std::make_unique<media::OpenH264VideoEncoder>();
+#else
+  return nullptr;
+#endif  // BUILDFLAG(ENABLE_OPENH264)
+}
+
+// This method is static and takes |self| in order to make it possible to use it
+// with a weak |this|. It's needed in to avoid a persistent reference cycle.
+std::unique_ptr<media::VideoEncoder> VideoEncoder::CreateSoftwareVideoEncoder(
+    VideoEncoder* self,
+    media::VideoCodec codec) {
+  if (!self)
+    return nullptr;
+  std::unique_ptr<media::VideoEncoder> result;
+  switch (codec) {
+    case media::VideoCodec::kVP8:
+    case media::VideoCodec::kVP9:
+      result = CreateVpxVideoEncoder();
+      self->UpdateEncoderLog("VpxVideoEncoder", false);
+      break;
+    case media::VideoCodec::kH264:
+      result = CreateOpenH264VideoEncoder();
+      self->UpdateEncoderLog("OpenH264VideoEncoder", false);
+      break;
+    default:
+      break;
+  }
+  if (!result)
+    return nullptr;
+  return std::make_unique<media::OffloadingVideoEncoder>(std::move(result));
+}
+
 std::unique_ptr<media::VideoEncoder> VideoEncoder::CreateMediaVideoEncoder(
     const ParsedConfig& config,
     media::GpuVideoAcceleratorFactories* gpu_factories) {
@@ -468,28 +495,15 @@ std::unique_ptr<media::VideoEncoder> VideoEncoder::CreateMediaVideoEncoder(
       if (auto result = CreateAcceleratedVideoEncoder(
               config.profile, config.options, gpu_factories)) {
         UpdateEncoderLog("AcceleratedVideoEncoder", true);
-        return result;
+        return std::make_unique<media::VideoEncoderFallback>(
+            std::move(result),
+            ConvertToBaseOnceCallback(CrossThreadBindOnce(
+                &VideoEncoder::CreateSoftwareVideoEncoder,
+                WrapCrossThreadWeakPersistent(this), config.codec)));
       }
       FALLTHROUGH;
-    case HardwarePreference::kPreferSoftware: {
-      std::unique_ptr<media::VideoEncoder> result;
-      switch (config.codec) {
-        case media::VideoCodec::kVP8:
-        case media::VideoCodec::kVP9:
-          result = CreateVpxVideoEncoder();
-          UpdateEncoderLog("VpxVideoEncoder", false);
-          break;
-        case media::VideoCodec::kH264:
-          result = CreateOpenH264VideoEncoder();
-          UpdateEncoderLog("OpenH264VideoEncoder", false);
-          break;
-        default:
-          return nullptr;
-      }
-      if (!result)
-        return nullptr;
-      return std::make_unique<media::OffloadingVideoEncoder>(std::move(result));
-    }
+    case HardwarePreference::kPreferSoftware:
+      return CreateSoftwareVideoEncoder(this, config.codec);
 
     default:
       NOTREACHED();
