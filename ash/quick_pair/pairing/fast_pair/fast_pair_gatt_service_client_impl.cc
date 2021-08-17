@@ -28,13 +28,15 @@ const device::BluetoothUUID kAccountKeyCharacteristicUuidV1("1236");
 const device::BluetoothUUID kAccountKeyCharacteristicUuidV2(
     "FE2C1236-8366-4814-8EB0-01DE32100BEA");
 
-constexpr uint8_t kRequestByteSize = 16;
-constexpr uint8_t kSaltByteSize = 3;
+constexpr uint8_t kBlockByteSize = 16;
+constexpr uint8_t kRequestSaltByteSize = 3;
 constexpr uint8_t kProviderAddressStartIndex = 2;
 constexpr uint8_t kSeekerAddressStartIndex = 8;
-constexpr uint8_t kSaltStartIndex = 13;
+constexpr uint8_t kRequestSaltStartIndex = 13;
+constexpr uint8_t kSeekerPasskey = 0x02;
 
-constexpr base::TimeDelta kConnectingTimeout = base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kGattOperationTimeout =
+    base::TimeDelta::FromSeconds(5);
 
 constexpr const char* ToString(
     device::BluetoothGattService::GattErrorCode error_code) {
@@ -110,7 +112,7 @@ FastPairGattServiceClientImpl::FastPairGattServiceClientImpl(
                      weak_ptr_factory_.GetWeakPtr()),
       kFastPairBluetoothUuid);
   gatt_service_discovery_timer_.Start(
-      FROM_HERE, kConnectingTimeout,
+      FROM_HERE, kGattOperationTimeout,
       base::BindOnce(&FastPairGattServiceClientImpl::NotifyInitializedError,
                      weak_ptr_factory_.GetWeakPtr(),
                      PairFailure::kGattServiceDiscoveryTimeout));
@@ -144,7 +146,8 @@ void FastPairGattServiceClientImpl::ClearCurrentState() {
   gatt_service_discovery_timer_.Stop();
   passkey_notify_session_timer_.Stop();
   keybased_notify_session_timer_.Stop();
-  write_request_timer_.Stop();
+  passkey_write_request_timer_.Stop();
+  key_based_write_request_timer_.Stop();
   bluetooth_gatt_notify_sessions_.clear();
 }
 
@@ -155,9 +158,19 @@ void FastPairGattServiceClientImpl::NotifyInitializedError(
   std::move(on_initialized_callback_).Run(failure);
 }
 
-void FastPairGattServiceClientImpl::NotifyWriteError(PairFailure failure) {
+void FastPairGattServiceClientImpl::NotifyWriteRequestError(
+    PairFailure failure) {
+  key_based_write_request_timer_.Stop();
   DCHECK(key_based_write_response_callback_);
   std::move(key_based_write_response_callback_)
+      .Run(/*response_data=*/{}, failure);
+}
+
+void FastPairGattServiceClientImpl::NotifyWritePasskeyError(
+    PairFailure failure) {
+  passkey_write_request_timer_.Stop();
+  DCHECK(passkey_write_response_callback_);
+  std::move(passkey_write_response_callback_)
       .Run(/*response_data=*/{}, failure);
 }
 
@@ -221,13 +234,13 @@ void FastPairGattServiceClientImpl::
   account_key_characteristic_ = account_key_characteristics[0];
 
   keybased_notify_session_timer_.Start(
-      FROM_HERE, kConnectingTimeout,
+      FROM_HERE, kGattOperationTimeout,
       base::BindOnce(
           &FastPairGattServiceClientImpl::NotifyInitializedError,
           weak_ptr_factory_.GetWeakPtr(),
           PairFailure::kKeyBasedPairingCharacteristicNotifySessionTimeout));
   passkey_notify_session_timer_.Start(
-      FROM_HERE, kConnectingTimeout,
+      FROM_HERE, kGattOperationTimeout,
       base::BindOnce(&FastPairGattServiceClientImpl::NotifyInitializedError,
                      weak_ptr_factory_.GetWeakPtr(),
                      PairFailure::kPasskeyCharacteristicNotifySessionTimeout));
@@ -298,7 +311,7 @@ std::vector<uint8_t> FastPairGattServiceClientImpl::CreateRequest(
     uint8_t flags,
     const std::string& provider_address,
     const std::string& seekers_address) {
-  std::vector<uint8_t> data_to_write(kRequestByteSize);
+  std::vector<uint8_t> data_to_write(kBlockByteSize);
 
   data_to_write[0] = message_type;
   data_to_write[1] = flags;
@@ -308,12 +321,29 @@ std::vector<uint8_t> FastPairGattServiceClientImpl::CreateRequest(
   std::copy(seekers_address.begin(), seekers_address.end(),
             data_to_write.begin() + kSeekerAddressStartIndex);
 
-  uint8_t salt[kSaltByteSize];
-  RAND_bytes(salt, kSaltByteSize);
+  uint8_t salt[kRequestSaltByteSize];
+  RAND_bytes(salt, kRequestSaltByteSize);
   std::copy(std::begin(salt), std::end(salt),
-            data_to_write.begin() + kSaltStartIndex);
+            data_to_write.begin() + kRequestSaltStartIndex);
 
   return data_to_write;
+}
+
+std::vector<uint8_t> FastPairGattServiceClientImpl::CreatePasskeyBlock(
+    uint8_t message_type,
+    uint32_t passkey) {
+  uint8_t data_to_write[kBlockByteSize];
+  RAND_bytes(data_to_write, kBlockByteSize);
+
+  data_to_write[0] = message_type;
+
+  // Need to convert the uint_32 to uint_8 to use in our data vector.
+  data_to_write[1] = (passkey & 0x00ff0000) >> 16;
+  data_to_write[2] = (passkey & 0x0000ff00) >> 8;
+  data_to_write[3] = passkey & 0x000000ff;
+
+  return std::vector<uint8_t>(std::begin(data_to_write),
+                              std::end(data_to_write));
 }
 
 void FastPairGattServiceClientImpl::WriteRequestAsync(
@@ -328,12 +358,16 @@ void FastPairGattServiceClientImpl::WriteRequestAsync(
 
   key_based_write_response_callback_ = std::move(write_response_callback);
 
-  write_request_timer_.Start(
-      FROM_HERE, kConnectingTimeout,
-      base::BindOnce(&FastPairGattServiceClientImpl::OnWriteTimeout,
+  // We don't need to check that the write response callback exists still before
+  // we run the  callback with the timeout PairFailure if the timer fires a call
+  // to |NotifyWriteRequestError|. If the callback is used to notify error
+  // before the timer expires, |NotifyWriteRequestError| will stop the
+  // corresponding timer before it fires here.
+  key_based_write_request_timer_.Start(
+      FROM_HERE, kGattOperationTimeout,
+      base::BindOnce(&FastPairGattServiceClientImpl::NotifyWriteRequestError,
                      weak_ptr_factory_.GetWeakPtr(),
-                     PairFailure::kKeyBasedPairingResponseTimeout,
-                     key_based_characteristic_));
+                     PairFailure::kKeyBasedPairingResponseTimeout));
 
   key_based_characteristic_->WriteRemoteCharacteristic(
       CreateRequest(message_type, flags, provider_address, seekers_address),
@@ -341,8 +375,36 @@ void FastPairGattServiceClientImpl::WriteRequestAsync(
       base::BindOnce(&FastPairGattServiceClientImpl::OnWriteRequest,
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&FastPairGattServiceClientImpl::OnWriteRequestError,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void FastPairGattServiceClientImpl::WritePasskeyAsync(
+    uint8_t message_type,
+    uint32_t passkey,
+    base::OnceCallback<void(std::vector<uint8_t>, absl::optional<PairFailure>)>
+        write_response_callback) {
+  DCHECK(message_type == kSeekerPasskey);
+  DCHECK(is_initialized_);
+  passkey_write_response_callback_ = std::move(write_response_callback);
+
+  // We don't need to check that the write response callback exists still before
+  // we run the  callback with the timeout PairFailure if the timer fires a call
+  // to |NotifyWritePasskeyError|. If the callback is used to notify error
+  // before the timer expires, |NotifyWritePasskeyError| will stop the
+  // corresponding timer before it fires here.
+  passkey_write_request_timer_.Start(
+      FROM_HERE, kGattOperationTimeout,
+      base::BindOnce(&FastPairGattServiceClientImpl::NotifyWritePasskeyError,
                      weak_ptr_factory_.GetWeakPtr(),
-                     PairFailure::kKeyBasedPairingCharacteristicWrite));
+                     PairFailure::kPasskeyResponseTimeout));
+
+  passkey_characteristic_->WriteRemoteCharacteristic(
+      CreatePasskeyBlock(message_type, passkey),
+      device::BluetoothRemoteGattCharacteristic::WriteType::kWithResponse,
+      base::BindOnce(&FastPairGattServiceClientImpl::OnWritePasskey,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&FastPairGattServiceClientImpl::OnWritePasskeyError,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void FastPairGattServiceClientImpl::GattCharacteristicValueChanged(
@@ -351,14 +413,20 @@ void FastPairGattServiceClientImpl::GattCharacteristicValueChanged(
     const std::vector<uint8_t>& value) {
   DCHECK_EQ(adapter, adapter_.get());
 
-  // We check that the write response callback exists still before we run the
-  // callback with the response bytes to handle the case where the callback
+  // We check that the callbacks still exists still before we run the
+  // it with the response bytes to handle the case where the callback
   // has already been used to notify error. This can happen if the timer for
-  // the write request fires with an error, and then the write request
-  // completes afterwards.
+  // fires with an error, and then the write completes successfully after and
+  // we get response bytes here.
   if (characteristic == key_based_characteristic_ &&
       key_based_write_response_callback_) {
+    key_based_write_request_timer_.Stop();
     std::move(key_based_write_response_callback_)
+        .Run(value, /*failure=*/absl::nullopt);
+  } else if (characteristic == passkey_characteristic_ &&
+             passkey_write_response_callback_) {
+    passkey_write_request_timer_.Stop();
+    std::move(passkey_write_response_callback_)
         .Run(value, /*failure=*/absl::nullopt);
   }
 }
@@ -368,26 +436,25 @@ void FastPairGattServiceClientImpl::OnWriteRequest() {
                      "characteristic successful.";
 }
 
-void FastPairGattServiceClientImpl::OnWriteTimeout(
-    PairFailure failure,
-    device::BluetoothRemoteGattCharacteristic* characteristic) {
-  // We don't need to check that the write response callback exists still before
-  // we run the  callback with the timeout PairFailure. If the callback is used
-  // to notify error before the timer expires, |NotifyWriteRequestError|
-  // will stop the timer before it fires here.
-  if (characteristic == key_based_characteristic_) {
-    NotifyWriteError(failure);
-  }
+void FastPairGattServiceClientImpl::OnWritePasskey() {
+  QP_LOG(VERBOSE) << "WriteRemoteCharacteristic to passkey pairing "
+                     "characteristic successful.";
 }
 
 void FastPairGattServiceClientImpl::OnWriteRequestError(
-    PairFailure failure,
     device::BluetoothGattService::GattErrorCode error) {
   QP_LOG(WARNING) << "WriteRemoteCharacteristic to key-based pairing "
                      "characteristic failed due to GATT error: "
                   << ToString(error);
+  NotifyWriteRequestError(PairFailure::kKeyBasedPairingCharacteristicWrite);
+}
 
-  NotifyWriteError(failure);
+void FastPairGattServiceClientImpl::OnWritePasskeyError(
+    device::BluetoothGattService::GattErrorCode error) {
+  QP_LOG(WARNING) << "WriteRemoteCharacteristic to passkey pairing "
+                     "characteristic failed due to GATT error: "
+                  << ToString(error);
+  NotifyWritePasskeyError(PairFailure::kPasskeyPairingCharacteristicWrite);
 }
 
 }  // namespace quick_pair

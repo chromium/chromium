@@ -30,6 +30,16 @@ class FastPairGattServiceClient : public device::BluetoothAdapter::Observer {
       base::OnceCallback<void(std::vector<uint8_t>,
                               absl::optional<PairFailure>)>
           write_response_callback) = 0;
+
+  // Constructs a data vector based on the message type and passkey. Writes
+  // data to the passkey characteristic and calls the callback with response
+  // data on success, or with a PairFailure on failure.
+  virtual void WritePasskeyAsync(
+      uint8_t message_type,
+      uint32_t passkey,
+      base::OnceCallback<void(std::vector<uint8_t>,
+                              absl::optional<PairFailure>)>
+          write_response_callback) = 0;
 };
 
 }  // namespace quick_pair

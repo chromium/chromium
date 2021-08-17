@@ -40,5 +40,13 @@ void FakeFastPairGattServiceClient::WriteRequestAsync(
   key_based_write_response_callback_ = std::move(write_response_callback);
 }
 
+void FakeFastPairGattServiceClient::WritePasskeyAsync(
+    uint8_t message_type,
+    uint32_t passkey,
+    base::OnceCallback<void(std::vector<uint8_t>, absl::optional<PairFailure>)>
+        write_response_callback) {
+  passkey_write_response_callback_ = std::move(write_response_callback);
+}
+
 }  // namespace quick_pair
 }  // namespace ash
