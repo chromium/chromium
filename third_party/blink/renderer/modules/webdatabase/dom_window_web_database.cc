@@ -26,6 +26,8 @@
 
 #include "third_party/blink/renderer/modules/webdatabase/dom_window_web_database.h"
 
+#include "base/feature_list.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_database_callback.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -83,6 +85,11 @@ Database* DOMWindowWebDatabase::openDatabase(
   }
 
   return database;
+}
+
+bool DOMWindowWebDatabase::IsThirdPartyContextWebSQLDeprecated() {
+  return base::FeatureList::IsEnabled(
+      features::kDeprecateThirdPartyContextWebSQL);
 }
 
 }  // namespace blink

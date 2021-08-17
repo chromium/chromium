@@ -440,6 +440,9 @@ BLINK_COMMON_EXPORT extern const base::Feature kReportAllJavascriptFrameworks;
 // inspector issue anyway.
 BLINK_COMMON_EXPORT extern const base::Feature kCORSErrorsIssueOnly;
 
+BLINK_COMMON_EXPORT extern const base::Feature
+    kDeprecateThirdPartyContextWebSQL;
+
 }  // namespace features
 }  // namespace blink
 

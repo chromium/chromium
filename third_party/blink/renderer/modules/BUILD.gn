@@ -586,6 +586,7 @@ source_set("unit_tests") {
     "webaudio/dynamics_compressor_node_test.cc",
     "webaudio/script_processor_node_test.cc",
     "webaudio/stereo_panner_node_test.cc",
+    "webdatabase/dom_window_web_database_test.cc",
     "webdatabase/quota_tracker_test.cc",
     "webshare/navigator_share_test.cc",
     "websockets/dom_websocket_test.cc",
