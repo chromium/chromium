@@ -154,10 +154,9 @@ std::map<std::string, std::string> Clipboard::ExtractCustomPlatformNames(
           base::JSONReader::Read(custom_format_json);
       if (json_val.has_value()) {
         for (const auto it : json_val->DictItems()) {
-          std::string custom_format_name;
-          if (it.second.GetAsString(&custom_format_name)) {
-            custom_format_names.emplace(it.first, custom_format_name);
-          }
+          const std::string* custom_format_name = it.second.GetIfString();
+          if (custom_format_name)
+            custom_format_names.emplace(it.first, *custom_format_name);
         }
       }
     }
