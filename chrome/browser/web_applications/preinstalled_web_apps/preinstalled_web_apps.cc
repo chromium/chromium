@@ -11,6 +11,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/components/preinstalled_app_install_features.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -45,6 +46,12 @@ std::vector<ExternalInstallOptions> GetPreinstalledWebApps() {
           ::switches::kDisablePreinstalledApps)) {
     return {};
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // With Lacros, web apps are not installed using the Ash browser.
+  if (base::FeatureList::IsEnabled(features::kWebAppsCrosapi))
+    return {};
+#endif
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // TODO(crbug.com/1104692): Replace these C++ configs with JSON configs like

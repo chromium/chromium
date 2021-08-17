@@ -12,14 +12,19 @@
 #include "chrome/browser/web_applications/components/web_app_id_constants.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/test/test_os_integration_manager.h"
+#include "chrome/browser/web_applications/test/with_crosapi_param.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 
+using web_app::test::CrosapiParam;
+using web_app::test::WithCrosapiParam;
+
 namespace web_app {
 
-class PreinstalledWebAppsBrowserTest : public InProcessBrowserTest {
+class PreinstalledWebAppsBrowserTest : public InProcessBrowserTest,
+                                       public WithCrosapiParam {
  public:
   PreinstalledWebAppsBrowserTest() {
     PreinstalledWebAppManager::SkipStartupForTesting();
@@ -43,7 +48,7 @@ class PreinstalledWebAppsBrowserTest : public InProcessBrowserTest {
   base::FilePath empty_path_;
 };
 
-IN_PROC_BROWSER_TEST_F(PreinstalledWebAppsBrowserTest, CheckInstalledFields) {
+IN_PROC_BROWSER_TEST_P(PreinstalledWebAppsBrowserTest, CheckInstalledFields) {
   base::AutoReset<bool> scope =
       SetPreinstalledAppInstallFeatureAlwaysEnabledForTesting();
 
@@ -120,17 +125,21 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppsBrowserTest, CheckInstalledFields) {
           [&](std::map<GURL, ExternallyManagedAppManager::InstallResult>
                   install_results,
               std::map<GURL, bool> uninstall_results) {
-            EXPECT_EQ(install_results.size(),
-                      kOfflineOnlyExpectedCount + kOnlineOnlyExpectedCount);
+            if (GetParam() == test::CrosapiParam::kDisabled) {
+              EXPECT_EQ(install_results.size(),
+                        kOfflineOnlyExpectedCount + kOnlineOnlyExpectedCount);
 
-            for (const auto& expectation : kOfflineOnlyExpectations) {
-              EXPECT_EQ(install_results[GURL(expectation.install_url)].code,
-                        InstallResultCode::kSuccessOfflineOnlyInstall);
-            }
+              for (const auto& expectation : kOfflineOnlyExpectations) {
+                EXPECT_EQ(install_results[GURL(expectation.install_url)].code,
+                          InstallResultCode::kSuccessOfflineOnlyInstall);
+              }
 
-            for (const auto& expectation : kOnlineOnlyExpectations) {
-              EXPECT_EQ(install_results[GURL(expectation.install_url)].code,
-                        InstallResultCode::kInstallURLLoadFailed);
+              for (const auto& expectation : kOnlineOnlyExpectations) {
+                EXPECT_EQ(install_results[GURL(expectation.install_url)].code,
+                          InstallResultCode::kInstallURLLoadFailed);
+              }
+            } else {
+              EXPECT_EQ(install_results.size(), 0u);
             }
 
             EXPECT_EQ(uninstall_results.size(), 0u);
@@ -140,8 +149,12 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppsBrowserTest, CheckInstalledFields) {
   run_loop.Run();
 
   for (const auto& expectation : kOfflineOnlyExpectations) {
-    EXPECT_EQ(provider.registrar().GetAppLaunchUrl(expectation.app_id),
-              GURL(expectation.launch_url));
+    if (GetParam() == test::CrosapiParam::kDisabled) {
+      EXPECT_EQ(provider.registrar().GetAppLaunchUrl(expectation.app_id),
+                GURL(expectation.launch_url));
+    } else {
+      EXPECT_FALSE(provider.registrar().GetAppById(expectation.app_id));
+    }
   }
 
   // Note that default web apps *DO* show app icons on Chrome OS however it
@@ -158,5 +171,14 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppsBrowserTest, CheckInstalledFields) {
       test_os_integration_manager->num_add_app_to_quick_launch_bar_calls(), 0u);
   EXPECT_FALSE(test_os_integration_manager->did_add_to_desktop());
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PreinstalledWebAppsBrowserTest,
+                         ::testing::Values(
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+                             CrosapiParam::kEnabled,
+#endif
+                             CrosapiParam::kDisabled),
+                         WithCrosapiParam::ParamToString);
 
 }  // namespace web_app

@@ -365,6 +365,8 @@ source_set("web_applications_test_support_minimal") {
     "test/web_app_install_observer.h",
     "test/web_app_install_test_utils.cc",
     "test/web_app_install_test_utils.h",
+    "test/with_crosapi_param.cc",
+    "test/with_crosapi_param.h",
   ]
   deps = [
     "//base",
@@ -382,10 +384,6 @@ source_set("web_applications_test_support_minimal") {
     "//url",
   ]
   if (is_chromeos_ash) {
-    sources += [
-      "test/with_crosapi_param.cc",
-      "test/with_crosapi_param.h",
-    ]
     deps += [ "//ash/constants" ]
   }
 }

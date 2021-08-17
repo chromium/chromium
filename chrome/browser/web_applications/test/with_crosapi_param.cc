@@ -4,19 +4,25 @@
 
 #include "chrome/browser/web_applications/test/with_crosapi_param.h"
 
+#include "build/chromeos_buildflags.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "chrome/common/chrome_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace web_app {
 namespace test {
 
 WithCrosapiParam::WithCrosapiParam() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (GetParam() == CrosapiParam::kEnabled) {
     scoped_feature_list_.InitWithFeatures(
         {chromeos::features::kLacrosSupport, features::kWebAppsCrosapi}, {});
   } else {
     scoped_feature_list_.InitWithFeatures({}, {features::kWebAppsCrosapi});
   }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 WithCrosapiParam::~WithCrosapiParam() = default;
