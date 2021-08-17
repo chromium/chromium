@@ -6688,8 +6688,6 @@ static_library("browser") {
       "supervised_user/supervised_user_settings_service.h",
       "supervised_user/supervised_user_settings_service_factory.cc",
       "supervised_user/supervised_user_settings_service_factory.h",
-      "supervised_user/supervised_user_site_list.cc",
-      "supervised_user/supervised_user_site_list.h",
       "supervised_user/supervised_user_sync_model_type_controller.cc",
       "supervised_user/supervised_user_sync_model_type_controller.h",
       "supervised_user/supervised_user_url_filter.cc",

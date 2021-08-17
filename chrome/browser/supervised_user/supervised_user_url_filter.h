@@ -16,7 +16,6 @@
 #include "base/sequence_checker.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/supervised_user/supervised_user_error_page/supervised_user_error_page.h"
-#include "chrome/browser/supervised_user/supervised_user_site_list.h"
 #include "chrome/browser/supervised_user/supervised_users.h"
 #include "components/safe_search_api/url_checker.h"
 
@@ -39,8 +38,6 @@ class SharedURLLoaderFactory;
 // if a URL should be allowed, blocked or warned about. It uses information
 // from multiple sources:
 //   * A default setting (allow, block or warn).
-//   * The set of installed and enabled allowlists which contain URL patterns
-//     and hostname hashes that should be allowed.
 //   * User-specified manual overrides (allow or block) for either sites
 //     (hostnames) or exact URLs, which take precedence over the previous
 //     sources.
@@ -123,8 +120,6 @@ class SupervisedUserURLFilter {
         bool uncertain) {}
   };
 
-  struct Contents;
-
   SupervisedUserURLFilter();
   ~SupervisedUserURLFilter();
 
@@ -204,11 +199,6 @@ class SupervisedUserURLFilter {
 
   FilteringBehavior GetDefaultFilteringBehavior() const;
 
-  // Asynchronously loads the specified site lists and updates the
-  // filter to recognize each site on them.
-  void LoadAllowlists(
-      const std::vector<scoped_refptr<SupervisedUserSiteList>>& site_lists);
-
   // Sets the static denylist of blocked hosts.
   void SetDenylist(const SupervisedUserDenylist* denylist);
   // Returns whether the static denylist is set up.
@@ -216,10 +206,6 @@ class SupervisedUserURLFilter {
 
   // Set the list of matched patterns to the passed in list, for testing.
   void SetFromPatternsForTesting(const std::vector<std::string>& patterns);
-
-  // Sets the site lists to the passed list, for testing.
-  void SetFromSiteListsForTesting(
-      const std::vector<scoped_refptr<SupervisedUserSiteList>>& site_lists);
 
   // Sets the set of manually allowed or blocked hosts.
   void SetManualHosts(std::map<std::string, bool> host_map);
@@ -269,8 +255,6 @@ class SupervisedUserURLFilter {
   bool RunAsyncChecker(const GURL& url,
                        FilteringBehaviorCallback callback) const;
 
-  void SetContents(std::unique_ptr<Contents> url_matcher);
-
   FilteringBehavior GetFilteringBehaviorForURL(
       const GURL& url,
       bool manual_only,
@@ -285,7 +269,6 @@ class SupervisedUserURLFilter {
   base::ObserverList<Observer>::Unchecked observers_;
 
   FilteringBehavior default_behavior_;
-  std::unique_ptr<Contents> contents_;
 
   // Maps from a URL to whether it is manually allowed (true) or blocked
   // (false).

@@ -10,9 +10,6 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
@@ -200,12 +197,10 @@ void FamilyLinkUserInternalsMessageHandler::HandleTryURL(
             web_contents->GetOutermostWebContents());
   }
 
-  std::map<std::string, std::u16string> allowlists =
-      filter->GetMatchingAllowlistTitles(url);
   filter->GetFilteringBehaviorForURLWithAsyncChecks(
       url,
       base::BindOnce(&FamilyLinkUserInternalsMessageHandler::OnTryURLResult,
-                     weak_factory_.GetWeakPtr(), allowlists, callback_id),
+                     weak_factory_.GetWeakPtr(), callback_id),
       skip_manual_parent_filter);
 }
 
@@ -275,24 +270,15 @@ void FamilyLinkUserInternalsMessageHandler::SendFamilyLinkUserSettings(
 }
 
 void FamilyLinkUserInternalsMessageHandler::OnTryURLResult(
-    const std::map<std::string, std::u16string>& allowlists,
     const std::string& callback_id,
     SupervisedUserURLFilter::FilteringBehavior behavior,
     supervised_user_error_page::FilteringBehaviorReason reason,
     bool uncertain) {
-  std::vector<std::string> allowlists_list;
-  for (const auto& allowlist : allowlists) {
-    allowlists_list.push_back(
-        base::StringPrintf("%s: %s", allowlist.first.c_str(),
-                           base::UTF16ToUTF8(allowlist.second).c_str()));
-  }
-  std::string allowlists_str = base::JoinString(allowlists_list, "; ");
   base::DictionaryValue result;
   result.SetString("allowResult",
                    FilteringBehaviorToString(behavior, uncertain));
   result.SetBoolean("manual", reason == supervised_user_error_page::MANUAL &&
                                   behavior == SupervisedUserURLFilter::ALLOW);
-  result.SetString("allowlists", allowlists_str);
   ResolveJavascriptCallback(base::Value(callback_id), result);
 }
 
