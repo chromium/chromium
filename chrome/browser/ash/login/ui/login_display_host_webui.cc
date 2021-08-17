@@ -833,6 +833,10 @@ void LoginDisplayHostWebUI::OnUserSwitchAnimationFinished() {
   ShutdownDisplayHost();
 }
 
+bool LoginDisplayHostWebUI::IsOobeUIDialogVisible() const {
+  return true;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // LoginDisplayHostWebUI, private
 

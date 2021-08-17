@@ -143,6 +143,8 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   // MultiUserWindowManagerObserver:
   void OnUserSwitchAnimationFinished() override;
 
+  bool IsOobeUIDialogVisible() const override;
+
  private:
   // Way to restore if renderer have crashed.
   enum RestorePath {
