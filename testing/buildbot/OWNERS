@@ -26,6 +26,10 @@ per-file chromium.fyi.json=lacros-version-skew-roller@chops-service-accounts.iam
 per-file chromium.fyi.json=chrome-weblayer-builder@chops-service-accounts.iam.gserviceaccount.com
 per-file chromium.chromiumos.json=chrome-weblayer-builder@chops-service-accounts.iam.gserviceaccount.com
 
+# For Lacros skylab tests cros image roller related reviews
+per-file variants.pyl=skylab-test-cros-roller@chops-service-accounts.iam.gserviceaccount.com
+per-file internal.chromeos.fyi.json=skylab-test-cros-roller@chops-service-accounts.iam.gserviceaccount.com
+
 # For V8 and DevTools related reviews.
 machenbach@chromium.org
 
