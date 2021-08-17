@@ -12,7 +12,7 @@
   `);
 
   TestRunner.addSniffer(
-      Console.ConsoleViewMessage.prototype, '_formattedParameterAsNodeForTest', formattedParameter, true);
+      Console.ConsoleViewMessage.prototype, 'formattedParameterAsNodeForTest', formattedParameter, true);
   ConsoleTestRunner.addConsoleViewSniffer(messageSniffer, true);
 
   await ConsoleTestRunner.evaluateInConsolePromise('$x(\'42\')');                           // number

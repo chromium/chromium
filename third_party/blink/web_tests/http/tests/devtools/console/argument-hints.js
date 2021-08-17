@@ -104,7 +104,7 @@
         x => TestRunner.addSniffer(
             ObjectUI.javaScriptAutocomplete, 'argumentsHint',
             (text, retVal) => x(retVal)));
-    consoleEditor._autocompleteController._onCursorActivity();
+    consoleEditor.autocompleteController.onCursorActivity();
     var message = 'Checking \'' + +'\'';
 
     const signatures = await signaturesPromise;

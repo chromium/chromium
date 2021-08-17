@@ -22,15 +22,15 @@
     console.warn("def warn");
   `);
   var consoleView = Console.ConsoleView.instance();
-  consoleView._setImmediatelyFilterMessagesForTest();
-  if (consoleView._isSidebarOpen)
-    consoleView._splitWidget._showHideSidebarButton.element.click();
+  consoleView.setImmediatelyFilterMessagesForTest();
+  if (consoleView.isSidebarOpen)
+    consoleView.splitWidget.showHideSidebarButton.element.click();
 
   async function dumpVisibleMessages() {
-    var menuText = Console.ConsoleView.instance()._filter._levelMenuButton._text;
+    var menuText = Console.ConsoleView.instance().filter.levelMenuButton.text;
     TestRunner.addResult('Level menu: ' + menuText);
 
-    var messages = Console.ConsoleView.instance()._visibleViewMessages;
+    var messages = Console.ConsoleView.instance().visibleViewMessages;
     for (var i = 0; i < messages.length; i++) {
       // Ordering is important here, as accessing the element the first time around
       // triggers live location creation and updates which we need to await properly.
@@ -81,14 +81,14 @@
 
     function abcMessagePlain(next) {
       Console.ConsoleViewFilter.levelFilterSetting().set({ verbose: true });
-      Console.ConsoleView.instance()._filter._textFilterUI.setValue('abc');
-      Console.ConsoleView.instance()._filter._onFilterChanged();
+      Console.ConsoleView.instance().filter.textFilterUI.setValue('abc');
+      Console.ConsoleView.instance().filter.onFilterChanged();
       dumpVisibleMessages().then(next);
     },
 
     function abcMessageRegex(next) {
-      Console.ConsoleView.instance()._filter._textFilterUI.setValue('/ab[a-z]/');
-      Console.ConsoleView.instance()._filter._onFilterChanged();
+      Console.ConsoleView.instance().filter.textFilterUI.setValue('/ab[a-z]/');
+      Console.ConsoleView.instance().filter.onFilterChanged();
       dumpVisibleMessages().then(next);
     },
 

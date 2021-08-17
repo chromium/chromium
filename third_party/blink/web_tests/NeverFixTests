@@ -1753,6 +1753,9 @@ virtual/weakrefs/js/weakrefs/* [ Pass ]
 # virtual test should be run.
 http/tests/devtools/wasm-isolated-code-cache/wasm-cache-test.js [ Skip ]
 virtual/wasm-site-isolated-code-cache/http/tests/devtools/wasm-isolated-code-cache/wasm-cache-test.js [ Pass ]
+virtual/site-isolated-code-cache/http/tests/devtools/isolated-code-cache/cross-origin-test.js [ Pass ]
+virtual/not-split-http-cache-not-site-per-process/http/tests/devtools/isolated-code-cache/cross-origin-test.js [ Pass ]
+virtual/split-http-cache-not-site-per-process/http/tests/devtools/isolated-code-cache/cross-origin-test.js [ Pass ]
 
 # This test run under virtual suites only.
 crbug.com/981970 external/wpt/fetch/http-cache/split-cache.html [ Skip ]

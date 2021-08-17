@@ -25,7 +25,7 @@
   SDK.consoleModel.addEventListener(
       SDK.ConsoleModel.Events.MessageUpdated, ConsoleTestRunner.wrapListener(messageUpdated));
 
-  Console.ConsoleView.instance()._setImmediatelyFilterMessagesForTest();
+  Console.ConsoleView.instance().setImmediatelyFilterMessagesForTest();
   TestRunner.addResult('Creating worker with promise');
   TestRunner.evaluateInPageWithTimeout('createPromise()');
 

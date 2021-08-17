@@ -23,7 +23,7 @@
   TestRunner.evaluateInPage('doOverflow()', step2.bind(this));
 
   function step2() {
-    if (Console.ConsoleView.instance()._visibleViewMessages.length < 1) ConsoleTestRunner.addConsoleSniffer(step2);
+    if (Console.ConsoleView.instance().visibleViewMessages.length < 1) ConsoleTestRunner.addConsoleSniffer(step2);
     else step3();
   }
 

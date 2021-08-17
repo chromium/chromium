@@ -80,6 +80,6 @@ console.error(null)`)
   }
 
   function runSelectedSnippet() {
-    Sources.SourcesPanel.instance()._runSnippet();
+    Sources.SourcesPanel.instance().runSnippet();
   }
 })();

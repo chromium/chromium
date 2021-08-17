@@ -20,7 +20,7 @@
   `);
 
   var consoleView = Console.ConsoleView.instance();
-  var viewMessages = consoleView._visibleViewMessages;
+  var viewMessages = consoleView.visibleViewMessages;
   for (var i = 0; i < viewMessages.length; ++i) {
     var messageElement = viewMessages[i].element();
     // Console messages contain live locations.

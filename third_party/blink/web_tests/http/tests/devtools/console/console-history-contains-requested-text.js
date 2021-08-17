@@ -13,7 +13,7 @@
 
   function step2() {
     var consoleView = Console.ConsoleView.instance();
-    TestRunner.addResult(consoleView._prompt.history().previous());
+    TestRunner.addResult(consoleView.prompt.history().previous());
     TestRunner.completeTest();
   }
 })();

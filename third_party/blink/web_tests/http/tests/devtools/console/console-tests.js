@@ -40,7 +40,7 @@
     console.count("title");
   `);
 
-  Console.ConsoleView.instance()._setImmediatelyFilterMessagesForTest();
+  Console.ConsoleView.instance().setImmediatelyFilterMessagesForTest();
   Console.ConsoleViewFilter.levelFilterSetting().set(Console.ConsoleFilter.allLevelsFilterValue());
   await ConsoleTestRunner.dumpConsoleMessagesWithClasses();
   TestRunner.completeTest();

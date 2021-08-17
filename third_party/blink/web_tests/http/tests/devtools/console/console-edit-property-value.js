@@ -52,7 +52,7 @@
   }
 
   function getValueElements() {
-    var messageElement = Console.ConsoleView.instance()._visibleViewMessages[1].element();
+    var messageElement = Console.ConsoleView.instance().visibleViewMessages[1].element();
     return messageElement.querySelector('.console-message-text *').shadowRoot.querySelectorAll('.value');
   }
 
@@ -61,7 +61,7 @@
     event.initMouseEvent('dblclick', true, true, null, 2);
     node.dispatchEvent(event);
     TestRunner.addResult('Node was hidden after dblclick: ' + node.classList.contains('hidden'));
-    var messageElement = Console.ConsoleView.instance()._visibleViewMessages[1].element();
+    var messageElement = Console.ConsoleView.instance().visibleViewMessages[1].element();
     var editPrompt = messageElement.querySelector('.console-message-text *').shadowRoot.querySelector('.text-prompt');
     editPrompt.textContent = text;
     editPrompt.dispatchEvent(TestRunner.createKeyEvent('Enter'));

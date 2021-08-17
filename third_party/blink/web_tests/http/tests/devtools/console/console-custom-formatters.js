@@ -133,10 +133,10 @@
   function expandVariablesInConsole() {
     var consoleView = Console.ConsoleView.instance();
 
-    if (consoleView._needsFullUpdate)
-      consoleView._updateMessageList();
+    if (consoleView.needsFullUpdate)
+      consoleView.updateMessageList();
 
-    var viewMessages = consoleView._visibleViewMessages;
+    var viewMessages = consoleView.visibleViewMessages;
 
     for (var i = 0; i < viewMessages.length; ++i) {
       var uiMessage = viewMessages[i];

@@ -22,7 +22,7 @@
 
   async function afterEvaluate() {
     await ConsoleTestRunner.dumpConsoleMessages();
-    var viewMessages = Console.ConsoleView.instance()._visibleViewMessages;
+    var viewMessages = Console.ConsoleView.instance().visibleViewMessages;
     var uiMessage = viewMessages[viewMessages.length - 1];
     var message = uiMessage.consoleMessage();
     var stackTrace = message.stackTrace;

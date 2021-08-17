@@ -44,7 +44,7 @@
   }
 
   function step3() {
-    if (Console.ConsoleView.instance()._visibleViewMessages.length < 2)
+    if (Console.ConsoleView.instance().visibleViewMessages.length < 2)
       ConsoleTestRunner.addConsoleSniffer(step3);
     else
       step4();

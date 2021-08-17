@@ -13,7 +13,7 @@
     console.log("Message inside group");
     console.groupEnd();
   `);
-  const messagesElement = Console.ConsoleView.instance()._messagesElement;
+  const messagesElement = Console.ConsoleView.instance().messagesElement;
 
   TestRunner.addResult(`\nBefore`);
   await ConsoleTestRunner.dumpConsoleMessages();

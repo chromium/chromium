@@ -16,7 +16,7 @@
   await TestRunner.showPanel('console');
   await ConsoleTestRunner.waitUntilConsoleEditorLoaded();
 
-  var viewport = Console.ConsoleView.instance()._viewport;
+  var viewport = Console.ConsoleView.instance().viewport;
   ConsoleTestRunner.waitForConsoleMessagesPromise(150);
   await ConsoleTestRunner.waitForPendingViewportUpdates();
 

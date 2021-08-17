@@ -35,7 +35,7 @@
   dumpMessageLengths();
 
   TestRunner.addResult('\nExpanding hidden texts');
-  consoleView._visibleViewMessages.forEach(message => {
+  consoleView.visibleViewMessages.forEach(message => {
     message.element().querySelectorAll('.expandable-inline-button').forEach(button => button.click());
   });
 
@@ -43,13 +43,13 @@
   TestRunner.completeTest();
 
   function dumpMessageLengths() {
-    consoleView._visibleViewMessages.forEach((message, index) => {
+    consoleView.visibleViewMessages.forEach((message, index) => {
       const text = consoleMessageText(index);
       TestRunner.addResult(`Message: ${index}, length: ${text.length}, ${text}`);
     });
 
     function consoleMessageText(index) {
-      const messageElement = consoleView._visibleViewMessages[index].element();
+      const messageElement = consoleView.visibleViewMessages[index].element();
       const anchor = messageElement.querySelector('.console-message-anchor');
       if (anchor)
         anchor.remove();

@@ -15,7 +15,7 @@
     document.body.appendChild(el);
     undefined;
   `);
-  const nodePromise = TestRunner.addSnifferPromise(Console.ConsoleViewMessage.prototype, '_formattedParameterAsNodeForTest');
+  const nodePromise = TestRunner.addSnifferPromise(Console.ConsoleViewMessage.prototype, 'formattedParameterAsNodeForTest');
   TestRunner.evaluateInPagePromise(`console.log(el)`);
   await nodePromise;
   await ConsoleTestRunner.waitForPendingViewportUpdates();

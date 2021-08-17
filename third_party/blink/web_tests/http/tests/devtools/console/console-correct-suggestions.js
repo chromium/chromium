@@ -59,7 +59,7 @@
 
     consoleEditor.setText(text.replace('|', ''));
     consoleEditor.setSelection(TextUtils.TextRange.createFromLocation(0, cursorPosition));
-    consoleEditor._autocompleteController.autocomplete(force);
+    consoleEditor.autocompleteController.autocomplete(force);
     var message =
         'Checking \'' + text.replace('\n', '\\n').replace('\r', '\\r') + '\'';
 
@@ -68,7 +68,7 @@
 
     TestRunner.addResult(message);
     const suggestions = await TestRunner.addSnifferPromise(
-        consoleEditor._autocompleteController, '_onSuggestionsShownForTest');
+        consoleEditor.autocompleteController, '_onSuggestionsShownForTest');
     var completions =
         new Map(suggestions.map(suggestion => [suggestion, suggestion.text]))
             .inverse();

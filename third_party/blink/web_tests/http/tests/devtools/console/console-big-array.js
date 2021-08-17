@@ -62,8 +62,8 @@
     })();
   `);
 
-  ObjectUI.ArrayGroupingTreeElement._bucketThreshold = 20;
-  var messages = Console.ConsoleView.instance()._visibleViewMessages;
+  ObjectUI.ArrayGroupingTreeElement.bucketThreshold = 20;
+  var messages = Console.ConsoleView.instance().visibleViewMessages;
   var sections = [];
 
   for (var i = 0; i < messages.length; ++i) {

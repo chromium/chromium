@@ -20,7 +20,7 @@
   var viewportHeight = 200;
   ConsoleTestRunner.fixConsoleViewportDimensions(600, viewportHeight);
   var consoleView = Console.ConsoleView.instance();
-  var viewport = consoleView._viewport;
+  var viewport = consoleView.viewport;
   const messagesCount = 150;
 
   logMessagesToConsole(messagesCount, async () => {
@@ -30,7 +30,7 @@
 
   var testSuite = [
     function testScrollViewportToBottom(next) {
-      consoleView._immediatelyScrollToBottom();
+      consoleView.immediatelyScrollToBottom();
       dumpAndContinue(next);
     },
 
@@ -47,7 +47,7 @@
       viewport.setStickToBottom(false);
       viewport.element.scrollTop -= 10;
       var keyEvent = TestRunner.createKeyEvent('Escape');
-      viewport._contentElement.dispatchEvent(keyEvent);
+      viewport.contentElement.dispatchEvent(keyEvent);
       dumpAndContinue(next);
     },
 
@@ -55,8 +55,8 @@
       TestRunner.addSniffer(Console.ConsoleView.prototype, '_promptTextChangedForTest', onContentChanged);
       // Since eventSender.keyDown() does not scroll prompt into view, simulate
       // behavior by setting a large scrollTop.
-      consoleView._viewport.element.scrollTop = 1000000;
-      var editorElement = consoleView._prompt.setText('a');
+      consoleView.viewport.element.scrollTop = 1000000;
+      var editorElement = consoleView.prompt.setText('a');
 
       function onContentChanged() {
         dumpAndContinue(next);
@@ -64,18 +64,18 @@
     },
 
     function testViewportMutationsShouldPreserveStickToBottom(next) {
-      viewport._contentElement.lastChild.innerText = 'More than 2 lines: foo\n\nbar';
+      viewport.contentElement.lastChild.innerText = 'More than 2 lines: foo\n\nbar';
       dumpAndContinue(onMessagesDumped);
 
       function onMessagesDumped() {
         viewport.setStickToBottom(false);
-        viewport._contentElement.lastChild.innerText = 'More than 3 lines: foo\n\n\nbar';
+        viewport.contentElement.lastChild.innerText = 'More than 3 lines: foo\n\n\nbar';
         dumpAndContinue(next);
       }
     },
 
     function testMuteUpdatesWhileScrolling(next) {
-      consoleView._updateStickToBottomOnPointerDown();
+      consoleView.updateStickToBottomOnPointerDown();
       viewport.element.scrollTop -= 10;
 
       TestRunner.addSniffer(Console.ConsoleView.prototype, '_scheduleViewportRefreshForTest', onMessageAdded);
@@ -89,7 +89,7 @@
         TestRunner.addSniffer(
             Console.ConsoleView.prototype, '_scheduleViewportRefreshForTest', onMouseUpScheduledRefresh);
         TestRunner.addSniffer(Console.ConsoleView.prototype, '_updateViewportStickinessForTest', onUpdateStickiness);
-        consoleView._updateStickToBottomOnPointerUp();
+        consoleView.updateStickToBottomOnPointerUp();
       }
 
       /**
@@ -106,27 +106,27 @@
 
     function testShouldNotJumpToBottomWhenMultilinePromptIsBelowMessages(next) {
       // Set scrollTop above the bottom.
-      viewport.element.scrollTop = viewport.element.scrollHeight - viewport.element.clientHeight - consoleView._prompt.belowEditorElement().offsetHeight - 3;
-      consoleView._prompt.setText('Foo\n\nbar');
+      viewport.element.scrollTop = viewport.element.scrollHeight - viewport.element.clientHeight - consoleView.prompt.belowEditorElement().offsetHeight - 3;
+      consoleView.prompt.setText('Foo\n\nbar');
 
       dumpAndContinue(next);
     },
 
     function testShouldNotJumpToBottomWhenPromptFillsEntireViewport(next) {
-      consoleView._prompt.setText('Foo' + '\n'.repeat(viewportHeight));
+      consoleView.prompt.setText('Foo' + '\n'.repeat(viewportHeight));
 
       // Set scrollTop above the bottom.
-      viewport.element.scrollTop = viewport.element.scrollHeight - viewport.element.clientHeight - consoleView._prompt.belowEditorElement().offsetHeight - 3;
+      viewport.element.scrollTop = viewport.element.scrollHeight - viewport.element.clientHeight - consoleView.prompt.belowEditorElement().offsetHeight - 3;
 
       // Trigger prompt text change.
-      consoleView._prompt.setText('Bar' + '\n'.repeat(viewportHeight));
+      consoleView.prompt.setText('Bar' + '\n'.repeat(viewportHeight));
 
       dumpAndContinue(next);
     },
 
     async function testShouldStickWhenEnteringCommandAndPromptIsOutOfView(next) {
-      consoleView._prompt.focus();
-      consoleView._prompt.setText('1');
+      consoleView.prompt.focus();
+      consoleView.prompt.setText('1');
 
       // Set scrollTop such that prompt is not in visible area.
       viewport.setStickToBottom(false);

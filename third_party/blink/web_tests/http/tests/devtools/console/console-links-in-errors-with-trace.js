@@ -9,7 +9,7 @@
   await TestRunner.showPanel('console');
   await TestRunner.addScriptTag('../resources/source3.js');
   await TestRunner.evaluateInPagePromise('foo()');
-  var messages = Console.ConsoleView.instance()._visibleViewMessages;
+  var messages = Console.ConsoleView.instance().visibleViewMessages;
 
   TestRunner.runTestSuite([
     async function testClickRelativeLink(next) {
@@ -19,20 +19,20 @@
       await TestRunner.waitForPendingLiveLocationUpdates();
       const clickTarget = element.querySelectorAll('.console-message-text .devtools-link')[1];
       TestRunner.addResult('Clicking link ' + clickTarget.textContent);
-      UI.inspectorView._tabbedPane.once(UI.TabbedPane.Events.TabSelected).then(() => {
-        TestRunner.addResult('Panel ' + UI.inspectorView._tabbedPane._currentTab.id + ' was opened.');
+      UI.inspectorView.tabbedPane.once(UI.TabbedPane.Events.TabSelected).then(() => {
+        TestRunner.addResult('Panel ' + UI.inspectorView.tabbedPane.currentTab.id + ' was opened.');
         next();
       });
       clickTarget.click();
     },
 
     function testClickURLWithHash(next) {
-      UI.inspectorView._tabbedPane.once(UI.TabbedPane.Events.TabSelected).then(() => {
-        TestRunner.addResult('Panel ' + UI.inspectorView._tabbedPane._currentTab.id + ' was opened.');
+      UI.inspectorView.tabbedPane.once(UI.TabbedPane.Events.TabSelected).then(() => {
+        TestRunner.addResult('Panel ' + UI.inspectorView.tabbedPane.currentTab.id + ' was opened.');
         var clickTarget = messages[1].element().querySelectorAll('.console-message-text .devtools-link')[0];
         TestRunner.addResult('Clicking link ' + clickTarget.textContent);
-        UI.inspectorView._tabbedPane.once(UI.TabbedPane.Events.TabSelected).then(() => {
-          TestRunner.addResult('Panel ' + UI.inspectorView._tabbedPane._currentTab.id + ' was opened.');
+        UI.inspectorView.tabbedPane.once(UI.TabbedPane.Events.TabSelected).then(() => {
+          TestRunner.addResult('Panel ' + UI.inspectorView.tabbedPane.currentTab.id + ' was opened.');
           next();
         });
         clickTarget.click();

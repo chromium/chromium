@@ -8,7 +8,7 @@
   await TestRunner.showPanel('console');
   await ConsoleTestRunner.waitForPendingViewportUpdates();
   const consoleView = Console.ConsoleView.instance();
-  const prompt = consoleView._prompt;
+  const prompt = consoleView.prompt;
   const editor = await ConsoleTestRunner.waitUntilConsoleEditorLoaded();
   Common.settings.moduleSetting('consoleEagerEval').set(true);
 
@@ -44,13 +44,13 @@
       const expression = `1 + 2`;
       TestRunner.addResult(`Prompt text set to \`${expression}\``);
       prompt.setText(expression);
-      await prompt._previewRequestForTest;
+      await prompt.previewRequestForTest;
 
       editor.setSelection(TextUtils.TextRange.createFromLocation(0, 0));
       TestRunner.addResult('Selection before: ' + editor.selection().toString());
 
       TestRunner.addResult(`Clicking preview element`);
-      prompt._eagerPreviewElement.click();
+      prompt.eagerPreviewElement.click();
 
       TestRunner.addResult('Selection after: ' + editor.selection().toString());
       TestRunner.addResult(`Editor has focus: ${editor.element.hasFocus()}`);
@@ -62,7 +62,7 @@
       const expression = `1 + 2`;
       TestRunner.addResult(`Prompt text set to \`${expression}\``);
       prompt.setText(expression);
-      await prompt._previewRequestForTest;
+      await prompt.previewRequestForTest;
       document.activeElement.blur();
 
       var firstTextNode = prompt.belowEditorElement().traverseNextTextNode();
@@ -70,7 +70,7 @@
       TestRunner.addResult('Selection before: ' + window.getSelection().toString());
 
       TestRunner.addResult(`Clicking preview element`);
-      prompt._eagerPreviewElement.click();
+      prompt.eagerPreviewElement.click();
 
       TestRunner.addResult('Selection after: ' + window.getSelection().toString());
       TestRunner.addResult(`Editor has focus: ${editor.element.hasFocus()}`);
@@ -81,8 +81,8 @@
 
   async function checkExpression(expression) {
     prompt.setText(expression);
-    await prompt._previewRequestForTest;
-    const previewText = prompt._innerPreviewElement.deepTextContent();
+    await prompt.previewRequestForTest;
+    const previewText = prompt.innerPreviewElement.deepTextContent();
     TestRunner.addResult(`Expression: "${expression}" yielded preview: "${previewText}"`);
   }
 

@@ -10,8 +10,8 @@
   await ConsoleTestRunner.waitUntilConsoleEditorLoaded();
 
   const consoleView = Console.ConsoleView.instance();
-  const viewport = consoleView._viewport;
-  const prompt = consoleView._prompt;
+  const viewport = consoleView.viewport;
+  const prompt = consoleView.prompt;
 
   await TestRunner.evaluateInPagePromise(`
     function fn1() {
@@ -120,7 +120,7 @@
 
   // Utilities.
   async function clearAndLog(expression, expectedCount = 1) {
-    consoleView._consoleCleared();
+    consoleView.consoleCleared();
     TestRunner.addResult(`Evaluating: ${expression}`);
     await TestRunner.evaluateInPagePromise(expression);
     await ConsoleTestRunner.waitForConsoleMessagesPromise(expectedCount);
@@ -138,13 +138,13 @@
   }
 
   function dumpFocus(activeElement, messageIndex = 0, skipObjectCheck) {
-    const firstMessage = consoleView._visibleViewMessages[messageIndex];
+    const firstMessage = consoleView.visibleViewMessages[messageIndex];
     const hasTrace = !!firstMessage.element().querySelector('.console-message-stack-trace-toggle');
     const hasHiddenStackTrace = firstMessage.element().querySelector('.console-message-stack-trace-wrapper > div.hidden');
     const hasCollapsedObject = firstMessage.element().querySelector('.console-view-object-properties-section:not(.expanded)');
     const hasExpandedObject = firstMessage.element().querySelector('.console-view-object-properties-section.expanded');
 
-    TestRunner.addResult(`Viewport virtual selection: ${viewport._virtualSelectedIndex}`);
+    TestRunner.addResult(`Viewport virtual selection: ${viewport.virtualSelectedIndex}`);
 
     if (!skipObjectCheck) {
       if (hasCollapsedObject) {

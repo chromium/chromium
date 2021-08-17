@@ -46,9 +46,9 @@
     console.log("end");
   `);
   var consoleView = Console.ConsoleView.instance();
-  consoleView._setImmediatelyFilterMessagesForTest();
-  if (consoleView._isSidebarOpen)
-    consoleView._splitWidget._showHideSidebarButton.element.click();
+  consoleView.setImmediatelyFilterMessagesForTest();
+  if (consoleView.isSidebarOpen)
+    consoleView.splitWidget._showHideSidebarButton.element.click();
 
   // Add Violation-source message.
   var violationMessage = new SDK.ConsoleMessage(
@@ -57,10 +57,10 @@
       Protocol.Runtime.ConsoleAPICalledEventType.Log);
   SDK.consoleModel.addMessage(violationMessage);
 
-  var messages = Console.ConsoleView.instance()._visibleViewMessages;
+  var messages = Console.ConsoleView.instance().visibleViewMessages;
 
   async function dumpVisibleMessages() {
-    var messages = Console.ConsoleView.instance()._visibleViewMessages;
+    var messages = Console.ConsoleView.instance().visibleViewMessages;
     for (var i = 0; i < messages.length; ++i) {
       var viewMessage = messages[i];
       var delimeter = viewMessage.consoleMessage().isGroupStartMessage() ? '>' : '';
@@ -89,61 +89,61 @@
     },
     function addURL1Filter(next) {
       TestRunner.addResult('Blocking messages from ' + url1);
-      Console.ConsoleView.instance()._filter.addMessageURLFilter(url1);
+      Console.ConsoleView.instance().filter.addMessageURLFilter(url1);
       dumpVisibleMessages().then(next);
     },
     function addURL2Filter(next) {
       TestRunner.addResult('Blocking messages from ' + url2);
-      Console.ConsoleView.instance()._filter.addMessageURLFilter(url2);
+      Console.ConsoleView.instance().filter.addMessageURLFilter(url2);
       dumpVisibleMessages().then(next);
     },
     function removeAllFilters(next) {
-      Console.ConsoleView.instance()._filter._textFilterUI.setValue('');
-      Console.ConsoleView.instance()._filter._onFilterChanged();
+      Console.ConsoleView.instance().filter.textFilterUI.setValue('');
+      Console.ConsoleView.instance().filter.onFilterChanged();
       dumpVisibleMessages().then(next);
     },
     function checkTextFilter(next) {
-      Console.ConsoleView.instance()._filter._textFilterUI.setValue('outer');
-      Console.ConsoleView.instance()._filter._onFilterChanged();
+      Console.ConsoleView.instance().filter.textFilterUI.setValue('outer');
+      Console.ConsoleView.instance().filter.onFilterChanged();
       dumpVisibleMessages().then(next);
     },
     function checkMultiTextFilter(next) {
-      Console.ConsoleView.instance()._filter._textFilterUI.setValue("Group /[2-3]top/");
-      Console.ConsoleView.instance()._filter._onFilterChanged();
+      Console.ConsoleView.instance().filter.textFilterUI.setValue("Group /[2-3]top/");
+      Console.ConsoleView.instance().filter.onFilterChanged();
       dumpVisibleMessages().then(next);
     },
     function checkTextUrlFilter(next) {
-      Console.ConsoleView.instance()._filter._textFilterUI.setValue("url:log-source");
-      Console.ConsoleView.instance()._filter._onFilterChanged();
+      Console.ConsoleView.instance().filter.textFilterUI.setValue("url:log-source");
+      Console.ConsoleView.instance().filter.onFilterChanged();
       dumpVisibleMessages().then(next);
     },
     function checkNegativeTextUrlFilter(next) {
-      Console.ConsoleView.instance()._filter._textFilterUI.setValue("-url:log-source");
-      Console.ConsoleView.instance()._filter._onFilterChanged();
+      Console.ConsoleView.instance().filter.textFilterUI.setValue("-url:log-source");
+      Console.ConsoleView.instance().filter.onFilterChanged();
       dumpVisibleMessages().then(next);
     },
     function checkSourceFilter(next) {
-      Console.ConsoleView.instance()._filter._textFilterUI.setValue("source:violation");
-      Console.ConsoleView.instance()._filter._onFilterChanged();
+      Console.ConsoleView.instance().filter.textFilterUI.setValue("source:violation");
+      Console.ConsoleView.instance().filter.onFilterChanged();
       dumpVisibleMessages().then(next);
     },
     function checkContextTextFilter(next) {
-      Console.ConsoleView.instance()._filter._textFilterUI.setValue("context:context");
-      Console.ConsoleView.instance()._filter._onFilterChanged();
+      Console.ConsoleView.instance().filter.textFilterUI.setValue("context:context");
+      Console.ConsoleView.instance().filter.onFilterChanged();
       dumpVisibleMessages().then(next);
     },
     function checkStartEndLineRegex(next) {
-      Console.ConsoleView.instance()._filter._textFilterUI.setValue("/^Hello\\s\\d$/");
-      Console.ConsoleView.instance()._filter._onFilterChanged();
+      Console.ConsoleView.instance().filter.textFilterUI.setValue("/^Hello\\s\\d$/");
+      Console.ConsoleView.instance().filter.onFilterChanged();
       dumpVisibleMessages().then(next);
     },
     function checkStartEndLineRegexForAnchor(next) {
-      Console.ConsoleView.instance()._filter._textFilterUI.setValue("/^log-source\\.js:\\d+$/");
-      Console.ConsoleView.instance()._filter._onFilterChanged();
+      Console.ConsoleView.instance().filter.textFilterUI.setValue("/^log-source\\.js:\\d+$/");
+      Console.ConsoleView.instance().filter.onFilterChanged();
       dumpVisibleMessages().then(next);
     },
     function checkResetFilter(next) {
-      Console.ConsoleView.instance()._filter.reset();
+      Console.ConsoleView.instance().filter.reset();
       dumpVisibleMessages().then(next);
     }
   ]);

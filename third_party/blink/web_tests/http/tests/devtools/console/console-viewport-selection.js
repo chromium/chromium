@@ -18,7 +18,7 @@
 
   ConsoleTestRunner.fixConsoleViewportDimensions(600, 200);
   var consoleView = Console.ConsoleView.instance();
-  var viewport = consoleView._viewport;
+  var viewport = consoleView.viewport;
   const minimumViewportMessagesCount = 10;
   const messagesCount = 150;
   const middleMessage = messagesCount / 2;
@@ -71,7 +71,7 @@
     },
 
     function testScrollSelectionAwayDown(next) {
-      consoleView._immediatelyScrollToBottom();
+      consoleView.immediatelyScrollToBottom();
       viewport.refresh();
       dumpSelectionModel();
       next();
@@ -123,7 +123,7 @@
         blueSpan = blueSpan.traverseNextNode();
 
       window.getSelection().setBaseAndExtent(blueSpan, 0, blueSpan, blueSpan.childNodes.length);
-      TestRunner.addResult('Selected text: ' + viewport._selectedText());
+      TestRunner.addResult('Selected text: ' + viewport.selectedText());
       next();
     },
 
@@ -138,7 +138,7 @@
       // Try to select all messages.
       document.execCommand('selectAll');
 
-      var text = viewport._selectedText();
+      var text = viewport.selectedText();
       var count = text ? text.split('\n').length : 0;
       TestRunner.addResult(
           count === messagesCount ? 'Selected all ' + count + ' messages.' :
@@ -155,13 +155,13 @@
       var textNodeExtent = consoleView.itemElement(2).element().traverseNextTextNode();
 
       window.getSelection().setBaseAndExtent(nonTextNodeBase, 0, nonTextNodeExtent, 0);
-      TestRunner.addResult('Selected text: ' + viewport._selectedText());
+      TestRunner.addResult('Selected text: ' + viewport.selectedText());
 
       window.getSelection().setBaseAndExtent(textNodeBase, 0, nonTextNodeExtent, 0);
-      TestRunner.addResult('Selected text: ' + viewport._selectedText());
+      TestRunner.addResult('Selected text: ' + viewport.selectedText());
 
       window.getSelection().setBaseAndExtent(nonTextNodeBase, 0, textNodeExtent, 0);
-      TestRunner.addResult('Selected text: ' + viewport._selectedText());
+      TestRunner.addResult('Selected text: ' + viewport.selectedText());
 
       next();
     }
@@ -185,14 +185,14 @@
   function dumpSelectionModel() {
     viewport.refresh();
     var text = String.sprintf(
-        'anchor = %s, head = %s', dumpSelectionModelElement(viewport._anchorSelection),
-        dumpSelectionModelElement(viewport._headSelection));
+        'anchor = %s, head = %s', dumpSelectionModelElement(viewport.anchorSelection),
+        dumpSelectionModelElement(viewport.headSelection));
     TestRunner.addResult(text);
   }
 
   function dumpSelectionText() {
     viewport.refresh();
-    var text = viewport._selectedText();
+    var text = viewport.selectedText();
     TestRunner.addResult('Selected text:<<<EOL\n' + text + '\nEOL');
   }
 

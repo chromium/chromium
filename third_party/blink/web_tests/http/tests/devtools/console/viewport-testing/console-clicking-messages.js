@@ -10,13 +10,13 @@
   await ConsoleTestRunner.waitUntilConsoleEditorLoaded();
 
   const consoleView = Console.ConsoleView.instance();
-  const viewport = consoleView._viewport;
+  const viewport = consoleView.viewport;
 
   TestRunner.runTestSuite([
     async function testClickOnLog(next) {
       await clearAndLog(`console.log(1)`);
       TestRunner.addResult(`Click on message`);
-      clickAndFocus(consoleView._visibleViewMessages[0].element());
+      clickAndFocus(consoleView.visibleViewMessages[0].element());
 
       dumpFocus();
 
@@ -26,7 +26,7 @@
     async function testClickOnGroup(next) {
       await clearAndLog(`console.group('group1')`);
       TestRunner.addResult(`Click on message`);
-      clickAndFocus(consoleView._visibleViewMessages[0].element().querySelector('.console-message'));
+      clickAndFocus(consoleView.visibleViewMessages[0].element().querySelector('.console-message'));
 
       dumpFocus();
 
@@ -36,7 +36,7 @@
     async function testClickOnTrace(next) {
       await clearAndLog(`console.warn('warning1')`);
       TestRunner.addResult(`Click on message`);
-      clickAndFocus(consoleView._visibleViewMessages[0].element().querySelector('.console-message-stack-trace-wrapper > div'));
+      clickAndFocus(consoleView.visibleViewMessages[0].element().querySelector('.console-message-stack-trace-wrapper > div'));
 
       dumpFocus();
 
@@ -46,7 +46,7 @@
     async function testClickOnObject(next) {
       await clearAndLog(`console.log({x: 1})`);
       TestRunner.addResult(`Click on object`);
-      clickAndFocus(consoleView._visibleViewMessages[0].element().querySelector('.console-object'));
+      clickAndFocus(consoleView.visibleViewMessages[0].element().querySelector('.console-object'));
 
 
       dumpFocus();
@@ -57,12 +57,12 @@
     async function testClickOnTraceWithObject(next) {
       await clearAndLog(`console.warn('warn', {x: 1})`);
       TestRunner.addResult(`Click on object`);
-      clickAndFocus(consoleView._visibleViewMessages[0].element().querySelector('.console-object'));
+      clickAndFocus(consoleView.visibleViewMessages[0].element().querySelector('.console-object'));
       dumpFocus();
 
       resetFocusAndSelection();
       TestRunner.addResult(`Click on trace`);
-      clickAndFocus(consoleView._visibleViewMessages[0].element().querySelector('.console-message-stack-trace-wrapper > div'));
+      clickAndFocus(consoleView.visibleViewMessages[0].element().querySelector('.console-message-stack-trace-wrapper > div'));
 
       dumpFocus();
 
@@ -72,12 +72,12 @@
     async function testClickOnGroupWithObject(next) {
       await clearAndLog(`console.group('group', {x: 1})`);
       TestRunner.addResult(`Click on object`);
-      clickAndFocus(consoleView._visibleViewMessages[0].element().querySelector('.console-object'));
+      clickAndFocus(consoleView.visibleViewMessages[0].element().querySelector('.console-object'));
       dumpFocus();
 
       resetFocusAndSelection();
       TestRunner.addResult(`Click on group`);
-      clickAndFocus(consoleView._visibleViewMessages[0].element().querySelector('.console-message'));
+      clickAndFocus(consoleView.visibleViewMessages[0].element().querySelector('.console-message'));
 
       dumpFocus();
 
@@ -91,12 +91,12 @@
   }
 
   function resetFocusAndSelection() {
-    viewport._virtualSelectedIndex = -1;
-    consoleView._prompt.focus();
+    viewport.virtualSelectedIndex = -1;
+    consoleView.prompt.focus();
   }
 
   async function clearAndLog(expression) {
-    consoleView._consoleCleared();
+    consoleView.consoleCleared();
     TestRunner.addResult(`Evaluating: ${expression}`);
     await TestRunner.evaluateInPagePromise(expression);
     await ConsoleTestRunner.waitForConsoleMessagesPromise(1);
@@ -104,13 +104,13 @@
   }
 
   function dumpFocus() {
-    const firstMessage = consoleView._visibleViewMessages[0];
+    const firstMessage = consoleView.visibleViewMessages[0];
     const hasTrace = !!firstMessage.element().querySelector('.console-message-stack-trace-toggle');
     const hasHiddenStackTrace = firstMessage.element().querySelector('.console-message-stack-trace-wrapper > div.hidden');
     const hasCollapsedObject = firstMessage.element().querySelector('.console-view-object-properties-section.hidden');
     const hasExpandedObject = firstMessage.element().querySelector('.console-view-object-properties-section:not(.hidden)');
 
-    TestRunner.addResult(`Viewport virtual selection: ${viewport._virtualSelectedIndex}`);
+    TestRunner.addResult(`Viewport virtual selection: ${viewport.virtualSelectedIndex}`);
 
     if (hasCollapsedObject) {
       TestRunner.addResult(`Has object: collapsed`);

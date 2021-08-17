@@ -10,8 +10,8 @@
   await ConsoleTestRunner.waitUntilConsoleEditorLoaded();
 
   const consoleView = Console.ConsoleView.instance();
-  const viewport = consoleView._viewport;
-  const prompt = consoleView._prompt;
+  const viewport = consoleView.viewport;
+  const prompt = consoleView.prompt;
 
   await TestRunner.evaluateInPagePromise(`
     var obj1 = Object.create(null);
@@ -163,7 +163,7 @@
         var child = document.createElement('span');
         el.appendChild(child); undefined;
       `);
-      const nodePromise = TestRunner.addSnifferPromise(Console.ConsoleViewMessage.prototype, '_formattedParameterAsNodeForTest');
+      const nodePromise = TestRunner.addSnifferPromise(Console.ConsoleViewMessage.prototype, 'formattedParameterAsNodeForTest');
       await clearAndLog(`console.log("before");console.log(el);console.log("after");`, 3);
       await nodePromise;
       forceSelect(1);
@@ -248,7 +248,7 @@
 
   // Utilities.
   async function clearAndLog(expression, expectedCount = 1) {
-    consoleView._consoleCleared();
+    consoleView.consoleCleared();
     TestRunner.addResult(`Evaluating: ${expression}`);
     await TestRunner.evaluateInPagePromise(expression);
     await ConsoleTestRunner.waitForConsoleMessagesPromise(expectedCount);
@@ -257,9 +257,9 @@
 
   function forceSelect(index) {
     TestRunner.addResult(`\nForce selecting index ${index}`);
-    viewport._virtualSelectedIndex = index;
-    viewport._contentElement.focus();
-    viewport._updateFocusedItem();
+    viewport.virtualSelectedIndex = index;
+    viewport.contentElement().focus();
+    viewport.updateFocusedItem();
   }
 
   function press(key) {
@@ -280,7 +280,7 @@
   }
 
   async function dumpFocus(activeElement, messageIndex = 0, skipObjectCheck) {
-    const firstMessage = consoleView._visibleViewMessages[messageIndex]
+    const firstMessage = consoleView.visibleViewMessages[messageIndex]
     // Ordering here is important. Retrieving the element triggers the creation of a LiveLocation.
     // Wait for pending updates to settle as updates usually cause more rendering.
     const firstMessageElement = firstMessage.element();
@@ -291,7 +291,7 @@
     const hasCollapsedObject = firstMessageElement.querySelector('.console-view-object-properties-section:not(.expanded)');
     const hasExpandedObject = firstMessageElement.querySelector('.console-view-object-properties-section.expanded');
 
-    TestRunner.addResult(`Viewport virtual selection: ${viewport._virtualSelectedIndex}`);
+    TestRunner.addResult(`Viewport virtual selection: ${viewport.virtualSelectedIndex}`);
 
     if (!skipObjectCheck) {
       if (hasCollapsedObject) {

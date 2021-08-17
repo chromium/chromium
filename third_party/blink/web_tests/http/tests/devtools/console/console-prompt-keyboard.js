@@ -18,54 +18,54 @@
 
   var secondCommand = 'x'.repeat(singleLineCharCount) + '\n' + 'y'.repeat(singleLineCharCount);
   TestRunner.addResult('Setting prompt text: ' + secondCommand);
-  var prompt = Console.ConsoleView.instance()._prompt;
+  var prompt = Console.ConsoleView.instance().prompt;
   prompt.setText(secondCommand);
 
   TestRunner.addResult('\nTest that arrow Up stays in the same command');
-  prompt._editor.setSelection(TextUtils.TextRange.createFromLocation(1, 0));
+  prompt.editor.setSelection(TextUtils.TextRange.createFromLocation(1, 0));
   dumpSelection();
   sendKeyUpToPrompt();
   printSelectedCommand();
 
   TestRunner.addResult('\nTest that ArrowUp+shift stays in the same command');
-  prompt._editor.setSelection(new TextUtils.TextRange(0, 0, 0, 1));
+  prompt.editor.setSelection(new TextUtils.TextRange(0, 0, 0, 1));
   dumpSelection();
   sendKeyUpToPrompt(true);
   printSelectedCommand();
 
   TestRunner.addResult('\nTest that arrow Up on the first line, second visual row stays in the same command');
-  prompt._editor.setSelection(TextUtils.TextRange.createFromLocation(0, singleLineCharCount));
+  prompt.editor.setSelection(TextUtils.TextRange.createFromLocation(0, singleLineCharCount));
   dumpSelection();
   sendKeyUpToPrompt();
   printSelectedCommand();
 
   TestRunner.addResult('\nTest that arrow Up from the first line loads previous command');
-  prompt._editor.setSelection(TextUtils.TextRange.createFromLocation(0, 0));
+  prompt.editor.setSelection(TextUtils.TextRange.createFromLocation(0, 0));
   dumpSelection();
   sendKeyUpToPrompt();
   printSelectedCommand();
 
 
   TestRunner.addResult('\nTest that arrow Down stays in the same command');
-  prompt._editor.setSelection(TextUtils.TextRange.createFromLocation(0, 0));
+  prompt.editor.setSelection(TextUtils.TextRange.createFromLocation(0, 0));
   dumpSelection();
   sendKeyDownToPrompt();
   printSelectedCommand();
 
   TestRunner.addResult('\nTest that ArrowDown+shift stays in the same command');
-  prompt._editor.setSelection(new TextUtils.TextRange(1, 0, 1, 1));
+  prompt.editor.setSelection(new TextUtils.TextRange(1, 0, 1, 1));
   dumpSelection();
   sendKeyDownToPrompt(true);
   printSelectedCommand();
 
   TestRunner.addResult('\nTest that arrow Down on the last line, first visual row stays in the same command');
-  prompt._editor.setSelection(TextUtils.TextRange.createFromLocation(1, 0));
+  prompt.editor.setSelection(TextUtils.TextRange.createFromLocation(1, 0));
   dumpSelection();
   sendKeyDownToPrompt();
   printSelectedCommand();
 
   TestRunner.addResult('\nTest that arrow Down from the first line loads next command');
-  prompt._editor.setSelection(TextUtils.TextRange.createFromLocation(1, singleLineCharCount));
+  prompt.editor.setSelection(TextUtils.TextRange.createFromLocation(1, singleLineCharCount));
   dumpSelection();
   sendKeyDownToPrompt();
   printSelectedCommand();
@@ -85,7 +85,7 @@
    * @param {boolean} shiftKey
    */
   function sendKeyUpToPrompt(shiftKey) {
-    prompt._editor.element.focus();
+    prompt.editor.element.focus();
     if (shiftKey)
       eventSender.keyDown('ArrowUp', ['shiftKey']);
     else
@@ -96,7 +96,7 @@
    * @param {boolean} shiftKey
    */
   function sendKeyDownToPrompt(shiftKey) {
-    prompt._editor.element.focus();
+    prompt.editor.element.focus();
     if (shiftKey)
       eventSender.keyDown('ArrowDown', ['shiftKey']);
     else
@@ -104,6 +104,6 @@
   }
 
   function dumpSelection() {
-    TestRunner.addResult(JSON.stringify(prompt._editor.selection()));
+    TestRunner.addResult(JSON.stringify(prompt.editor.selection()));
   }
 })();

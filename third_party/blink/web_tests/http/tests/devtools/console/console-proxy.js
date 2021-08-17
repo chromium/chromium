@@ -33,8 +33,8 @@
 
   async function dumpMessages() {
     var consoleView = Console.ConsoleView.instance();
-    consoleView._viewport.invalidate();
-    var element = consoleView._visibleViewMessages[0].contentElement();
+    consoleView.viewport.invalidate();
+    var element = consoleView.visibleViewMessages[0].contentElement();
 
     await ConsoleTestRunner.dumpConsoleMessages();
     TestRunner.evaluateInPage('window.accessedGet', dumpAccessedGetAndExpand);
@@ -46,7 +46,7 @@
   }
 
   async function dumpExpandedConsoleMessages() {
-    var element = Console.ConsoleView.instance()._visibleViewMessages[0].contentElement();
+    var element = Console.ConsoleView.instance().visibleViewMessages[0].contentElement();
     dumpNoteVisible(element, 'info-note');
 
     await ConsoleTestRunner.dumpConsoleMessages();

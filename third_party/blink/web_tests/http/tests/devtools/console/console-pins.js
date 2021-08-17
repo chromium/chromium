@@ -16,7 +16,7 @@
   `);
   await TestRunner.evaluateInPagePromise(`div1.focus()`);
   const consoleView = Console.ConsoleView.instance();
-  const pinPane = consoleView._pinPane;
+  const pinPane = consoleView.pinPane;
 
   TestRunner.runTestSuite([
     async function testBeforeAdding(next) {
@@ -46,14 +46,14 @@
 
       const sideEffectExpression = `window.flag = true`;
       TestRunner.addResult(`Setting text to: "${sideEffectExpression}".`);
-      pinAt(0)._editor.setText(sideEffectExpression);
+      pinAt(0).editor.setText(sideEffectExpression);
 
       await waitForPinUpdate();
       await dumpPinPaneContents();
       const flagResult = await TestRunner.evaluateInPagePromise(`window.flag`);
       TestRunner.addResult(`window.flag is now: ${flagResult}`);
 
-      pinAt(0)._editor.setText(`document.activeElement`);
+      pinAt(0).editor.setText(`document.activeElement`);
       next();
     },
 
@@ -64,37 +64,37 @@
       await dumpPinPaneContents();
 
       TestRunner.addResult(`\nRemoving second pin\n`);
-      pinPane._removePin(pinAt(1));
+      pinPane.removePin(pinAt(1));
       await dumpPinPaneContents();
       next();
     },
 
     async function testRemoveAllPins(next) {
-      pinPane._removeAllPins();
+      pinPane.removeAllPins();
       await dumpPinPaneContents();
       next();
     }
   ]);
 
   async function dumpPinPaneContents() {
-    if (!pinPane._pins.size) {
+    if (!pinPane.pins.size) {
       TestRunner.addResult(`No pins`);
       return;
     }
-    for (const pin of pinPane._pins)
-      TestRunner.addResult(`Name: ${pin._editor.text()}\nValue: ${pin._pinPreview.deepTextContent()}`);
+    for (const pin of pinPane.pins)
+      TestRunner.addResult(`Name: ${pin.editor.text()}\nValue: ${pin.pinPreview.deepTextContent()}`);
   }
 
   async function waitForEditors() {
-    for (const pin of pinPane._pins)
-      await pin._editorPromise;
+    for (const pin of pinPane.pins)
+      await pin.editorPromise;
   }
 
   async function waitForPinUpdate(index) {
-    await TestRunner.addSnifferPromise(pinPane, '_updatedForTest');
+    await TestRunner.addSnifferPromise(pinPane, 'updatedForTest');
   }
 
   function pinAt(index) {
-    return Array.from(pinPane._pins)[index];
+    return Array.from(pinPane.pins)[index];
   }
 })();

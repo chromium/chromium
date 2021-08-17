@@ -119,12 +119,12 @@
 
   function dump() {
     var consoleView = Console.ConsoleView.instance();
-    var selector = consoleView._consoleContextSelector;
+    var selector = consoleView.consoleContextSelector;
     TestRunner.addResult('Console context selector:');
 
     for (var executionContext of selector._items) {
       var selected = UI.context.flavor(SDK.ExecutionContext) === executionContext;
-      var text = '____'.repeat(selector._depthFor(executionContext)) + selector.titleFor(executionContext);
+      var text = '____'.repeat(selector.depthFor(executionContext)) + selector.titleFor(executionContext);
       var disabled = !selector.isItemSelectable(executionContext);
       TestRunner.addResult(`${selected ? '*' : ' '} ${text} ${disabled ? '[disabled]' : ''}`);
     }

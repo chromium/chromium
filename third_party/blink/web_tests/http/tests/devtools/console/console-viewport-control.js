@@ -24,7 +24,7 @@
 
   ConsoleTestRunner.fixConsoleViewportDimensions(600, 200);
   var consoleView = Console.ConsoleView.instance();
-  var viewport = consoleView._viewport;
+  var viewport = consoleView.viewport;
   const smallCount = 3;
 
   // Measure visible/active ranges.
@@ -32,12 +32,12 @@
   viewport.forceScrollItemToBeFirst(50);
   var {first, last, count} = ConsoleTestRunner.visibleIndices();
   var visibleCount = count;
-  var maxActiveCount = viewport._lastActiveIndex - viewport._firstActiveIndex + 1;
+  var maxActiveCount = viewport.lastActiveIndex - viewport.firstActiveIndex + 1;
   // Use this because # of active messages below visible area may be different
   // # of active messages above visible area.
-  var minActiveCount = 2 * (first - viewport._firstActiveIndex - 1) + visibleCount;
-  var activeCountAbove = first - viewport._firstActiveIndex;
-  var activeCountBelow = viewport._lastActiveIndex - last;
+  var minActiveCount = 2 * (first - viewport.firstActiveIndex - 1) + visibleCount;
+  var activeCountAbove = first - viewport.firstActiveIndex;
+  var activeCountBelow = viewport.lastActiveIndex - last;
 
   var wasAddedToDOM = new Set();
   var wasRemovedFromDOM = new Set();
@@ -82,8 +82,8 @@
 
   function assertDOMCount(expectMessage, count) {
     var actual = 0;
-    for (var message of consoleView._visibleViewMessages) {
-      if (message._element && message._element.isConnected)
+    for (var message of consoleView.visibleViewMessages) {
+      if (message.elementInternal && message.elementInternal.isConnected)
         actual++;
     }
     var result = `Are there ${expectMessage} items in DOM? `;
@@ -165,7 +165,7 @@
       viewport.forceScrollItemToBeFirst(0);
       resetShowHideCounts();
       // Set scrollTop above the bottom.
-      const abovePrompt = viewport.element.scrollHeight - viewport.element.clientHeight - consoleView._prompt.belowEditorElement().offsetHeight - 3;
+      const abovePrompt = viewport.element.scrollHeight - viewport.element.clientHeight - consoleView.prompt.belowEditorElement().offsetHeight - 3;
       viewport.element.scrollTop = abovePrompt;
       viewport.refresh();
       assertSomeAddedRemoved(false, false);
@@ -179,7 +179,7 @@
       viewport.forceScrollItemToBeFirst(0);
       resetShowHideCounts();
       // Set scrollTop above the bottom.
-      const abovePrompt = viewport.element.scrollHeight - viewport.element.clientHeight - consoleView._prompt.belowEditorElement().offsetHeight - 3;
+      const abovePrompt = viewport.element.scrollHeight - viewport.element.clientHeight - consoleView.prompt.belowEditorElement().offsetHeight - 3;
       viewport.element.scrollTop = abovePrompt;
       viewport.refresh();
       assertSomeAddedRemoved(true, true);
@@ -208,9 +208,9 @@
       await logMessages(smallCount, false, 'smallCount');
       resetShowHideCounts();
       TestRunner.addResult('Swapping messages 0 and 1');
-      var temp = consoleView._visibleViewMessages[0];
-      consoleView._visibleViewMessages[0] = consoleView._visibleViewMessages[1];
-      consoleView._visibleViewMessages[1] = temp;
+      var temp = consoleView.visibleViewMessages[0];
+      consoleView.visibleViewMessages[0] = consoleView.visibleViewMessages[1];
+      consoleView.visibleViewMessages[1] = temp;
       viewport.invalidate();
       assertSomeAddedRemoved(false, false);
       next();

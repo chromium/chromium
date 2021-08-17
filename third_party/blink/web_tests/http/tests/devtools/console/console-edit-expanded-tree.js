@@ -22,7 +22,7 @@
   ConsoleTestRunner.expandConsoleMessages(onConsoleMessageExpanded);
 
   function onConsoleMessageExpanded() {
-    var messages = Console.ConsoleView.instance()._visibleViewMessages;
+    var messages = Console.ConsoleView.instance().visibleViewMessages;
 
     for (var i = 0; i < messages.length; ++i) {
       var message = messages[i];
@@ -39,9 +39,9 @@
   }
 
   function onTreeElement(treeElement) {
-    treeElement._startEditing();
-    Console.ConsoleView.instance()._viewport.refresh();
-    TestRunner.addResult('After viewport refresh tree element remains in editing mode: ' + !!treeElement._prompt);
+    treeElement.startEditing();
+    Console.ConsoleView.instance().viewport.refresh();
+    TestRunner.addResult('After viewport refresh tree element remains in editing mode: ' + !!treeElement.prompt);
     TestRunner.completeTest();
   }
 })();

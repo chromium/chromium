@@ -30,7 +30,7 @@
 
     ConsoleTestRunner.fixConsoleViewportDimensions(600, 200);
     var consoleView = Console.ConsoleView.instance();
-    var viewport = consoleView._viewport;
+    var viewport = consoleView.viewport;
 
     function logMessages(count, type) {
       TestRunner.addResult(`Logging ${count} ${type} messages`);
@@ -51,7 +51,7 @@
 
     function dumpVisibleIndices() {
       var {first, last, count} = ConsoleTestRunner.visibleIndices();
-      var activeTotal = viewport._firstActiveIndex === -1 ? 0 : (viewport._lastActiveIndex - viewport._firstActiveIndex + 1);
+      var activeTotal = viewport.firstActiveIndex === -1 ? 0 : (viewport.lastActiveIndex - viewport.firstActiveIndex + 1);
       var calculatedFirst = viewport.firstVisibleIndex();
       var calculatedLast = viewport.lastVisibleIndex();
       var calculatedTotal = calculatedFirst === -1 ? 0 : (calculatedLast - calculatedFirst + 1);

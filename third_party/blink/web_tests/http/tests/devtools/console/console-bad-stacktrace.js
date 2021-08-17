@@ -9,7 +9,7 @@
   await TestRunner.showPanel('console');
 
   var consoleView = Console.ConsoleView.instance();
-  consoleView._setImmediatelyFilterMessagesForTest();
+  consoleView.setImmediatelyFilterMessagesForTest();
 
   // Add invalid message.
   var badStackTrace = {

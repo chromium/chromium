@@ -59,7 +59,7 @@
   function countTextNodes(textContent) {
     ConsoleTestRunner.disableConsoleViewport();
     var count = 0;
-    var viewMessages = Console.ConsoleView.instance()._visibleViewMessages;
+    var viewMessages = Console.ConsoleView.instance().visibleViewMessages;
 
     for (var i = 0; i < viewMessages.length; ++i) {
       var node = viewMessages[i].contentElement();

@@ -29,6 +29,6 @@
   await ConsoleTestRunner.dumpConsoleMessages();
   TestRunner.addResult('\nDumping export strings');
   var consoleView = Console.ConsoleView.instance();
-  consoleView._visibleViewMessages.forEach(message => TestRunner.addResult(message.toExportString()));
+  consoleView.visibleViewMessages.forEach(message => TestRunner.addResult(message.toExportString()));
   TestRunner.completeTest();
 })();

@@ -52,7 +52,7 @@
   }
 
   async function dumpConsoleMessageURLs() {
-    var messages = Console.ConsoleView.instance()._visibleViewMessages;
+    var messages = Console.ConsoleView.instance().visibleViewMessages;
     for (var i = 0; i < messages.length; ++i) {
       // Ordering is important here. Retrieveing the message element the first time triggers
       // live location creation and updates, which we need to await for correct locations.
