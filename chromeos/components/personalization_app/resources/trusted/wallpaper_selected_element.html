@@ -9,6 +9,8 @@
     padding-bottom: 20px;
   }
 
+  #imageErrorContainer,
+  #imageLoadingContainer,
   #imageContainer {
     border-radius: 12px;
     flex: 0 0 auto;
@@ -42,6 +44,16 @@
     max-width: 100%;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  #infoErrorContainer,
+  #infoLoadingContainer {
+    width: 100%;
+  }
+
+  #infoErrorContainer > * + *,
+  #infoLoadingContainer > * + * {
+    margin-top: 8px;
   }
 
   #textContainer > * + * {
@@ -94,59 +106,74 @@
 </style>
 <header id="container" tabindex="0" aria-label="[[getAriaLabel_(image_)]]"
     role="heading" aria-level="1">
-  <div id="imageContainer">
-    <img hidden$="[[!showImage_]]" aria-labelledby="imageLabel"
-        src="[[getImageSrc_(image_)]]">
-    <div hidden$="[[isLoadingPlaceholderHidden_(isLoading_, showImage_)]]"
-        class="photo-loading-placeholder"></div>
-  </div>
-  <template is="dom-if" if="[[showImage_]]">
-    <div id="textContainer" class$="[[textContainerClass_]]">
-      <p id="currentlySet">[[i18n('currentlySet')]]</p>
-      <p id="imageTitle" title="[[imageTitle_]]">[[imageTitle_]]</p>
-      <dom-repeat items="[[imageOtherAttribution_]]">
-        <template>
-          <p title="[[item]]">[[item]]</p>
-        </template>
-      </dom-repeat>
-      <template is="dom-if" if="[[showWallpaperOptions_]]">
-        <div id="wallpaperOptions">
-        <cr-button id="fill" data-layout="FILL" on-click="onClickLayoutIcon_"
-            aria-selected$=[[getFillAriaSelected_(image_)]]>
-          <iron-icon icon="[[fillIcon_]]"></iron-icon>
-          <div class="text">[[i18n('fill')]]</div>
-        </cr-button>
-        <cr-button id="center" data-layout="CENTER"
-            on-click="onClickLayoutIcon_"
-            aria-selected$="[[getCenterAriaSelected_(image_)]]">
-          <iron-icon icon="[[centerIcon_]]"></iron-icon>
-          <div class="text">[[i18n('center')]]</div>
-        </cr-button>
-      </div>
-      </template>
-      <template is="dom-if" if="[[showCollectionOptions_]]">
-        <div id="collectionOptions">
-        <cr-button id="dailyRefresh" data-collection-id$="[[collectionId]]"
-            aria-label$="[[i18n('ariaLabelChangeDaily')]]"
-            data-daily-refresh-collection-id$="[[dailyRefreshCollectionId_]]"
-            aria-pressed="[[ariaPressed_]]"
-            on-click="onClickDailyRefreshToggle_">
-          <iron-icon icon="[[dailyRefreshIcon_]]"></iron-icon>
-          <div class="text">[[i18n('changeDaily')]]</div>
-        </cr-button>
-        <cr-button id="refreshWallpaper"
-            aria-label$="[[i18n('ariaLabelRefresh')]]"
-            on-click="onClickUpdateDailyRefreshWallpaper_"
-            hidden=[[!showRefreshButton_]]>
-          <iron-icon icon="personalization:refresh"></iron-icon>
-          <div class="text">[[i18n('refresh')]]</div>
-        </cr-button>
-        </div>
-      </template>
+  <template is="dom-if" if=[[hasError_]]>
+    <div id="imageErrorContainer">
+      <div class="photo-error-placeholder"></div>
+    </div>
+    <div id="infoErrorContainer" class="text-container">
+      <div class="attribution-error-placeholder"></div>
+      <div class="attribution-error-placeholder"></div>
+      <div class="attribution-error-placeholder"></div>
     </div>
   </template>
-  <template is="dom-if" if="[[hasError_]]">
-    <!-- TODO(b/186668250) real error state -->
-    <p id="error">There was an error</p>
+  <template is="dom-if" if=[[!hasError_]]>
+    <div id="imageContainer">
+      <img hidden$="[[!showImage_]]" aria-labelledby="imageLabel"
+          src="[[getImageSrc_(image_)]]">
+      <div hidden$="[[isLoadingPlaceholderHidden_(isLoading_, showImage_)]]"
+          class="photo-loading-placeholder"></div>
+    </div>
+    <template is="dom-if" if="[[!isLoadingPlaceholderHidden_(isLoading_, showImage_)]]">
+      <div id="infoLoadingContainer" class="text-container">
+        <div class="attribution-loading-placeholder"></div>
+        <div class="attribution-loading-placeholder"></div>
+        <div class="attribution-loading-placeholder"></div>
+      </div>
+    </template>
+    <template is="dom-if" if="[[showImage_]]">
+      <div id="textContainer" class$="[[textContainerClass_]]">
+        <p id="currentlySet">[[i18n('currentlySet')]]</p>
+        <p id="imageTitle" title="[[imageTitle_]]">[[imageTitle_]]</p>
+        <dom-repeat items="[[imageOtherAttribution_]]">
+          <template>
+            <p title="[[item]]">[[item]]</p>
+          </template>
+        </dom-repeat>
+        <template is="dom-if" if="[[showWallpaperOptions_]]">
+          <div id="wallpaperOptions">
+          <cr-button id="fill" data-layout="FILL" on-click="onClickLayoutIcon_"
+              aria-selected$=[[getFillAriaSelected_(image_)]]>
+            <iron-icon icon="[[fillIcon_]]"></iron-icon>
+            <div class="text">[[i18n('fill')]]</div>
+          </cr-button>
+          <cr-button id="center" data-layout="CENTER"
+              on-click="onClickLayoutIcon_"
+              aria-selected$="[[getCenterAriaSelected_(image_)]]">
+            <iron-icon icon="[[centerIcon_]]"></iron-icon>
+            <div class="text">[[i18n('center')]]</div>
+          </cr-button>
+        </div>
+        </template>
+        <template is="dom-if" if="[[showCollectionOptions_]]">
+          <div id="collectionOptions">
+          <cr-button id="dailyRefresh" data-collection-id$="[[collectionId]]"
+              aria-label$="[[i18n('ariaLabelChangeDaily')]]"
+              data-daily-refresh-collection-id$="[[dailyRefreshCollectionId_]]"
+              aria-pressed="[[ariaPressed_]]"
+              on-click="onClickDailyRefreshToggle_">
+            <iron-icon icon="[[dailyRefreshIcon_]]"></iron-icon>
+            <div class="text">[[i18n('changeDaily')]]</div>
+          </cr-button>
+          <cr-button id="refreshWallpaper"
+              aria-label$="[[i18n('ariaLabelRefresh')]]"
+              on-click="onClickUpdateDailyRefreshWallpaper_"
+              hidden=[[!showRefreshButton_]]>
+            <iron-icon icon="personalization:refresh"></iron-icon>
+            <div class="text">[[i18n('refresh')]]</div>
+          </cr-button>
+          </div>
+        </template>
+      </div>
+    </template>
   </template>
 </header>

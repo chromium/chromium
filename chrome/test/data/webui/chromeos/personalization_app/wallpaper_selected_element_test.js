@@ -8,7 +8,7 @@ import {ActionName} from 'chrome://personalization/trusted/personalization_actio
 import {emptyState} from 'chrome://personalization/trusted/personalization_reducers.js';
 import {Paths} from 'chrome://personalization/trusted/personalization_router_element.js';
 import {WallpaperSelected} from 'chrome://personalization/trusted/wallpaper_selected_element.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
 import {flushTasks, waitAfterNextRender} from '../../test_util.m.js';
 import {baseSetup, initElement} from './personalization_app_test_utils.js';
 import {TestWallpaperProvider} from './test_mojo_interface_provider.js';
@@ -68,6 +68,8 @@ export function WallpaperSelectedTest() {
           selected: 0,
           setImage: 0,
         };
+        personalizationStore.data.currentSelected =
+            wallpaperProvider.currentWallpaper;
         personalizationStore.notifyObservers();
         waitAfterNextRender(wallpaperSelectedElement);
 
@@ -183,7 +185,7 @@ export function WallpaperSelectedTest() {
     assertEquals('chrome://image/?https://testing', img.src);
   });
 
-  test('shows error text when image fails to load', async () => {
+  test('shows grey boxes when image fails to load', async () => {
     wallpaperSelectedElement = initElement(WallpaperSelected.is);
     await waitAfterNextRender(wallpaperSelectedElement);
 
@@ -197,19 +199,23 @@ export function WallpaperSelectedTest() {
         '.photo-loading-placeholder');
     assertTrue(!!placeholder);
     assertFalse(placeholder.hidden);
+    const imageErrorContainer =
+        wallpaperSelectedElement.shadowRoot.getElementById(
+            'imageErrorContainer');
+    assertEquals('none', imageErrorContainer.style.display);
+    const infoErrorContainer =
+        wallpaperSelectedElement.shadowRoot.getElementById(
+            'infoErrorContainer');
+    assertEquals('none', infoErrorContainer.style.display);
 
     // Loading finished and still no current wallpaper.
     personalizationStore.data.loading.selected = false;
     personalizationStore.notifyObservers();
     await waitAfterNextRender(wallpaperSelectedElement);
 
-    assertTrue(placeholder.hidden);
-
+    assertNotEquals('none', imageErrorContainer.style.display);
+    assertNotEquals('none', infoErrorContainer.style.display);
     assertTrue(wallpaperSelectedElement.shadowRoot.querySelector('img').hidden);
-
-    assertEquals(
-        'There was an error',
-        wallpaperSelectedElement.shadowRoot.getElementById('error').innerText);
   });
 
   test('sets selected wallpaper data in store', async () => {
