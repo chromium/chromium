@@ -7,6 +7,7 @@
 #include <vector>
 #include "ash/quick_pair/common/constants.h"
 #include "ash/quick_pair/common/device.h"
+#include "ash/quick_pair/repository/fake_fast_pair_repository.h"
 #include "ash/quick_pair/scanning/fast_pair/fake_fast_pair_scanner.h"
 #include "ash/quick_pair/scanning/range_tracker.h"
 #include "base/memory/ptr_util.h"
@@ -29,6 +30,12 @@ namespace quick_pair {
 class FastPairDiscoverableScannerTest : public testing::Test {
  public:
   void SetUp() override {
+    repository_ = std::make_unique<FakeFastPairRepository>();
+
+    nearby::fastpair::Device metadata;
+    metadata.set_trigger_distance(2);
+    repository_->SetFakeMetadata(kValidModelId, metadata);
+
     scanner_ = base::MakeRefCounted<FakeFastPairScanner>();
 
     adapter_ = base::MakeRefCounted<device::MockBluetoothAdapter>();
@@ -66,6 +73,7 @@ class FastPairDiscoverableScannerTest : public testing::Test {
   }
 
   scoped_refptr<FakeFastPairScanner> scanner_;
+  std::unique_ptr<FakeFastPairRepository> repository_;
   std::unique_ptr<FastPairDiscoverableScanner> discoverable_scanner_;
   scoped_refptr<device::MockBluetoothAdapter> adapter_;
   base::MockCallback<DeviceCallback> found_device_callback_;

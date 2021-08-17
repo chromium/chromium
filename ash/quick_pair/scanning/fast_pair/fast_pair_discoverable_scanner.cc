@@ -12,6 +12,7 @@
 #include "ash/quick_pair/common/fast_pair/fast_pair_decoder.h"
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/common/protocol.h"
+#include "ash/quick_pair/repository/fast_pair_repository.h"
 #include "ash/quick_pair/scanning/range_tracker.h"
 #include "base/bind.h"
 #include "base/check.h"
@@ -61,11 +62,30 @@ void FastPairDiscoverableScanner::OnDeviceFound(
   if (base::EqualsCaseInsensitiveASCII(model_id.value(), kNearbyShareModelId))
     return;
 
+  FastPairRepository::Get()->GetDeviceMetadata(
+      *model_id,
+      base::BindOnce(&FastPairDiscoverableScanner::OnDeviceMetadataRetrieved,
+                     weak_pointer_factory_.GetWeakPtr(), device));
+}
+
+void FastPairDiscoverableScanner::OnDeviceMetadataRetrieved(
+    device::BluetoothDevice* device,
+    DeviceMetadata* device_metadata) {
+  double trigger_distance;
+  if (device_metadata && device_metadata->device.trigger_distance() > 0) {
+    trigger_distance = device_metadata->device.trigger_distance();
+  } else {
+    NOTREACHED();
+    trigger_distance = kDefaultRangeInMeters;
+  }
+
   QP_LOG(INFO) << __func__
-               << ": Checking if device is in range, and waiting if not.";
+               << ": Checking if device is in range, and waiting if not.  "
+                  "trigger_distance="
+               << trigger_distance;
 
   range_tracker_->Track(
-      device, kDefaultRangeInMeters,
+      device, trigger_distance,
       base::BindRepeating(&FastPairDiscoverableScanner::NotifyDeviceFound,
                           weak_pointer_factory_.GetWeakPtr()));
 }

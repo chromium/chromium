@@ -24,6 +24,7 @@ namespace ash {
 namespace quick_pair {
 
 struct Device;
+struct DeviceMetadata;
 
 using DeviceCallback = base::RepeatingCallback<void(scoped_refptr<Device>)>;
 
@@ -51,6 +52,8 @@ class FastPairDiscoverableScanner final : public FastPairScanner::Observer {
   absl::optional<std::string> GetModelIdForDevice(
       device::BluetoothDevice* device);
   void NotifyDeviceFound(device::BluetoothDevice* device);
+  void OnDeviceMetadataRetrieved(device::BluetoothDevice* device,
+                                 DeviceMetadata* device_metadata);
 
   scoped_refptr<FastPairScanner> scanner_;
   std::unique_ptr<RangeTracker> range_tracker_;
