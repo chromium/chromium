@@ -14,6 +14,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/threading/hang_watcher.h"
 #include "build/build_config.h"
 
 // -----------------------------------------------------------------------------
