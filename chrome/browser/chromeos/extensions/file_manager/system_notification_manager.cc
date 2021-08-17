@@ -171,6 +171,8 @@ void SystemNotificationManager::HandleDeviceEvent(
   }
   std::unique_ptr<message_center::Notification> notification;
 
+  std::u16string title;
+  std::u16string message;
   const char* id = file_manager_private::ToString(event.type);
   switch (event.type) {
     case file_manager_private::DEVICE_EVENT_TYPE_DISABLED:
@@ -186,19 +188,33 @@ void SystemNotificationManager::HandleDeviceEvent(
                                         IDS_DEVICE_HARD_UNPLUGGED_MESSAGE);
       break;
     case file_manager_private::DEVICE_EVENT_TYPE_FORMAT_START:
-      notification =
-          CreateNotification(id, IDS_FILE_BROWSER_FORMAT_DIALOG_TITLE,
-                             IDS_FILE_BROWSER_FORMAT_PROGRESS_MESSAGE);
+      title = l10n_util::GetStringFUTF16(IDS_FILE_BROWSER_FORMAT_DIALOG_TITLE,
+                                         base::UTF8ToUTF16(event.device_label));
+      message =
+          l10n_util::GetStringFUTF16(IDS_FILE_BROWSER_FORMAT_PROGRESS_MESSAGE,
+                                     base::UTF8ToUTF16(event.device_label));
+      notification = CreateNotification(id, title, message);
       break;
     case file_manager_private::DEVICE_EVENT_TYPE_FORMAT_SUCCESS:
-      notification =
-          CreateNotification(id, IDS_FILE_BROWSER_FORMAT_DIALOG_TITLE,
-                             IDS_FILE_BROWSER_FORMAT_SUCCESS_MESSAGE);
-      break;
     case file_manager_private::DEVICE_EVENT_TYPE_FORMAT_FAIL:
-      notification =
-          CreateNotification(id, IDS_FILE_BROWSER_FORMAT_DIALOG_TITLE,
-                             IDS_FILE_BROWSER_FORMAT_FAILURE_MESSAGE);
+      // Hide the formatting notification.
+      GetNotificationDisplayService()->Close(
+          NotificationHandler::Type::TRANSIENT,
+          file_manager_private::ToString(
+              file_manager_private::DEVICE_EVENT_TYPE_FORMAT_START));
+      title = l10n_util::GetStringFUTF16(IDS_FILE_BROWSER_FORMAT_DIALOG_TITLE,
+                                         base::UTF8ToUTF16(event.device_label));
+      if (event.type ==
+          file_manager_private::DEVICE_EVENT_TYPE_FORMAT_SUCCESS) {
+        message =
+            l10n_util::GetStringFUTF16(IDS_FILE_BROWSER_FORMAT_SUCCESS_MESSAGE,
+                                       base::UTF8ToUTF16(event.device_label));
+      } else {
+        message =
+            l10n_util::GetStringFUTF16(IDS_FILE_BROWSER_FORMAT_FAILURE_MESSAGE,
+                                       base::UTF8ToUTF16(event.device_label));
+      }
+      notification = CreateNotification(id, title, message);
       break;
     case file_manager_private::DEVICE_EVENT_TYPE_RENAME_FAIL:
       notification =
