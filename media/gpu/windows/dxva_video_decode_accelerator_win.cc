@@ -2346,7 +2346,7 @@ void DXVAVideoDecodeAccelerator::DecodeInternal(
   RETURN_AND_NOTIFY_ON_HR_FAILURE(hr, "Failed to check video stream config",
                                   PLATFORM_FAILURE, );
 
-  if (disallow_vp9_resilient_dxva_decoding_ &&
+  if (disallow_vp9_resilient_dxva_decoding_ && config_change_detector_ &&
       config_change_detector_->is_vp9_resilient_mode()) {
     RETURN_AND_NOTIFY_ON_HR_FAILURE(
         E_FAIL, "Incompatible GPU for VP9 resilient mode", PLATFORM_FAILURE, );
