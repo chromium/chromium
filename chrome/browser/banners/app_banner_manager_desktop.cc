@@ -25,6 +25,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
@@ -148,6 +149,11 @@ bool AppBannerManagerDesktop::IsWebAppConsideredInstalled() const {
              Profile::FromBrowserContext(web_contents()->GetBrowserContext()),
              manifest().start_url)
       .has_value();
+}
+
+std::string AppBannerManagerDesktop::GetAppIdentifier() {
+  DCHECK(!blink::IsEmptyManifest(manifest()));
+  return web_app::GenerateAppIdUnhashedFromManifest(manifest());
 }
 
 web_app::WebAppRegistrar& AppBannerManagerDesktop::registrar() {

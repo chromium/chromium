@@ -68,12 +68,18 @@ AppId GenerateAppId(const absl::optional<std::string>& manifest_id,
       crypto::SHA256HashString(GenerateAppIdUnhashed(manifest_id, start_url)));
 }
 
-AppId GenerateAppIdFromManifest(const blink::mojom::Manifest& manifest) {
-  return GenerateAppId(
+std::string GenerateAppIdUnhashedFromManifest(
+    const blink::mojom::Manifest& manifest) {
+  return GenerateAppIdUnhashed(
       manifest.id.has_value()
           ? absl::optional<std::string>(base::UTF16ToUTF8(manifest.id.value()))
           : absl::nullopt,
       manifest.start_url);
+}
+
+AppId GenerateAppIdFromManifest(const blink::mojom::Manifest& manifest) {
+  return crx_file::id_util::GenerateId(
+      crypto::SHA256HashString(GenerateAppIdUnhashedFromManifest(manifest)));
 }
 
 bool IsValidWebAppUrl(const GURL& app_url) {

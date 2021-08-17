@@ -49,6 +49,9 @@ std::string GenerateAppIdUnhashed(
     const absl::optional<std::string>& manifest_id,
     const GURL& start_url);
 
+std::string GenerateAppIdUnhashedFromManifest(
+    const blink::mojom::Manifest& manifest);
+
 AppId GenerateAppIdFromManifest(const blink::mojom::Manifest& manifest);
 
 // Returns whether the given |app_url| is a valid web app url.
