@@ -10,7 +10,11 @@
 
 #include <array>
 
+#include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_key_pair.h"
+#include "ash/quick_pair/repository/fast_pair/device_metadata.h"
+#include "base/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
@@ -27,13 +31,30 @@ namespace fast_pair_encryption {
 // response and decrypt passkey.
 class FastPairDataEncryptor {
  public:
-  FastPairDataEncryptor(const KeyPair& key_pair);
-  ~FastPairDataEncryptor();
-  FastPairDataEncryptor(const FastPairDataEncryptor&) = delete;
-  FastPairDataEncryptor& operator=(const FastPairDataEncryptor&) = delete;
+  class Factory {
+   public:
+    static void CreateAsync(
+        scoped_refptr<Device> device,
+        base::OnceCallback<void(std::unique_ptr<FastPairDataEncryptor>)>
+            on_get_instance_callback);
+
+   private:
+    static void DeviceMetadataRetrieved(
+        scoped_refptr<Device> device,
+        base::OnceCallback<void(std::unique_ptr<FastPairDataEncryptor>)>
+            on_get_instance_callback,
+        DeviceMetadata* device_metadata);
+  };
 
   const std::array<uint8_t, kBlockSizeBytes> EncryptBytes(
       const std::array<uint8_t, kBlockSizeBytes>& bytes_to_encrypt);
+
+  ~FastPairDataEncryptor();
+
+ protected:
+  FastPairDataEncryptor(const KeyPair& key_pair);
+  FastPairDataEncryptor(const FastPairDataEncryptor&) = delete;
+  FastPairDataEncryptor& operator=(const FastPairDataEncryptor&) = delete;
 
  private:
   std::array<uint8_t, kPrivateKeyByteSize> secret_key_;

@@ -43,12 +43,9 @@ class FastPairDataEncryptorTest : public testing::Test {
     KeyPair key_pair = GetTestKeyPair();
     private_key_ = key_pair.private_key;
     public_key_ = key_pair.public_key;
-    data_encryptor_ = std::make_unique<FastPairDataEncryptor>(key_pair);
   }
 
   void TearDown() override {}
-
-  FastPairDataEncryptor& data_encryptor() { return *(data_encryptor_.get()); }
 
   const std::array<uint8_t, kBlockByteSize> EncryptBytesWithPrivateKey() {
     return EncryptBytes(private_key_, bytes_to_encrypt);
@@ -59,11 +56,6 @@ class FastPairDataEncryptorTest : public testing::Test {
   std::array<uint8_t, kPublicKeyByteSize> public_key_;
   std::unique_ptr<FastPairDataEncryptor> data_encryptor_;
 };
-
-TEST_F(FastPairDataEncryptorTest, EncryptBytesUnsuccessfully) {
-  EXPECT_EQ(data_encryptor().EncryptBytes(bytes_to_encrypt),
-            EncryptBytesWithPrivateKey());
-}
 
 }  // namespace fast_pair_encryption
 }  // namespace quick_pair
