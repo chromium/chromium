@@ -181,6 +181,9 @@ class SyncConsentScreen : public BaseScreen,
   base::OneShotTimer timeout_waiter_;
   bool is_timed_out_ = false;
 
+  // The time when sync consent screen starts loading.
+  base::TimeTicks start_time_;
+
   absl::optional<bool> test_sync_disabled_by_policy_;
   absl::optional<bool> test_sync_engine_initialized_;
 

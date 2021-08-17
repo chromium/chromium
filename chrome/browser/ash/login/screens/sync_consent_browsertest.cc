@@ -182,10 +182,7 @@ class SyncConsentTest : public OobeBaseTest {
     }
 
     ReplaceExitCallback();
-
-    // Set up screen to be shown.
     GetSyncConsentScreen()->SetProfileSyncDisabledByPolicyForTesting(false);
-    GetSyncConsentScreen()->SetProfileSyncEngineInitializedForTesting(true);
   }
 
   void TearDownOnMainThread() override {
@@ -199,12 +196,6 @@ class SyncConsentTest : public OobeBaseTest {
     OobeBaseTest::TearDownOnMainThread();
   }
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(
-        ::chromeos::switches::kOobeTriggerSyncTimeoutForTests);
-    OobeBaseTest::SetUpCommandLine(command_line);
-  }
-
   void SwitchLanguage(const std::string& language) {
     WelcomeScreen* welcome_screen =
         WizardController::default_controller()->GetScreen<WelcomeScreen>();
@@ -216,8 +207,6 @@ class SyncConsentTest : public OobeBaseTest {
 
   void WaitForScreenShown() {
     OobeScreenWaiter(SyncConsentScreenView::kScreenId).Wait();
-    // This is needed to refresh the screen based on minor mode signal.
-    GetSyncConsentScreen()->Show(/*wizard_context*/ nullptr);
   }
 
   void ReplaceExitCallback() {
@@ -227,17 +216,23 @@ class SyncConsentTest : public OobeBaseTest {
         &SyncConsentTest::HandleScreenExit, base::Unretained(this)));
   }
 
-  void LoginToSyncConsentScreen() {
+  void LoginAsNewRegularUser() {
     login_manager_mixin_.LoginAsNewRegularUser();
     OobeScreenExitWaiter(GetFirstSigninScreen()).Wait();
     // No need to explicitly show the screen as it is the first one after login.
+  }
+
+  void LoginToSyncConsentScreen() {
+    LoginAsNewRegularUser();
     SetIsMinorUser(is_minor_user_);
+    GetSyncConsentScreen()->SetProfileSyncEngineInitializedForTesting(true);
+    GetSyncConsentScreen()->OnStateChanged(nullptr);
   }
 
   void LoginToSyncConsentScreenWithUnknownCapability() {
-    login_manager_mixin_.LoginAsNewRegularUser();
-    OobeScreenExitWaiter(GetFirstSigninScreen()).Wait();
-    // No need to explicitly show the screen as it is the first one after login.
+    LoginAsNewRegularUser();
+    GetSyncConsentScreen()->SetProfileSyncEngineInitializedForTesting(true);
+    GetSyncConsentScreen()->OnStateChanged(nullptr);
   }
 
  protected:
@@ -343,16 +338,6 @@ IN_PROC_BROWSER_TEST_F(SyncConsentTest, AbortedSetup) {
   // user action.
   syncer::SyncUserSettings* settings = GetSyncUserSettings();
   EXPECT_TRUE(settings->IsSyncEverythingEnabled());
-}
-
-IN_PROC_BROWSER_TEST_F(SyncConsentTest, SyncEngineInitializationTimeout) {
-  GetSyncConsentScreen()->SetProfileSyncEngineInitializedForTesting(false);
-  auto syncWaiter = test::OobeJS().CreateVisibilityWaiter(true, {kSyncConsent});
-  auto overviewDialogWaiter =
-      test::OobeJS().CreateVisibilityWaiter(true, {kOverviewDialog});
-  LoginToSyncConsentScreen();
-  syncWaiter->Wait();
-  overviewDialogWaiter->Wait();
 }
 
 // Tests of the consent recorder with SplitSettingsSync disabled. The
@@ -840,6 +825,13 @@ IN_PROC_BROWSER_TEST_F(SyncConsentMinorModeTest, Accept) {
   histogram_tester_.ExpectUniqueSample(
       "OOBE.SyncConsentScreen.Behavior",
       SyncConsentScreen::SyncScreenBehavior::kShow, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "OOBE.SyncConsentScreen.IsCapabilityKnown", true, 1);
+  histogram_tester_.ExpectUniqueSample("OOBE.SyncConsentScreen.IsMinorUser",
+                                       true, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "OOBE.SyncConsentScreen.UserChoice",
+      SyncConsentScreenHandler::UserChoice::kAccepted, 1);
   histogram_tester_.ExpectUniqueSample("OOBE.SyncConsentScreen.SyncEnabled",
                                        true, 1);
 }
@@ -891,6 +883,13 @@ IN_PROC_BROWSER_TEST_F(SyncConsentMinorModeTest, Decline) {
   histogram_tester_.ExpectUniqueSample(
       "OOBE.SyncConsentScreen.Behavior",
       SyncConsentScreen::SyncScreenBehavior::kShow, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "OOBE.SyncConsentScreen.IsCapabilityKnown", true, 1);
+  histogram_tester_.ExpectUniqueSample("OOBE.SyncConsentScreen.IsMinorUser",
+                                       true, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "OOBE.SyncConsentScreen.UserChoice",
+      SyncConsentScreenHandler::UserChoice::kDeclined, 1);
   histogram_tester_.ExpectUniqueSample("OOBE.SyncConsentScreen.SyncEnabled",
                                        false, 1);
 }
@@ -925,6 +924,31 @@ IN_PROC_BROWSER_TEST_F(SyncConsentMinorModeTest,
   test::OobeJS().ExpectVisiblePath(kOverviewDialog);
   test::OobeJS().ExpectVisiblePath(kNonSplitSettingsDeclineButton);
   test::OobeJS().ExpectHiddenPath(kReviewSettingsCheckBox);
+
+  histogram_tester_.ExpectUniqueSample(
+      "OOBE.SyncConsentScreen.IsCapabilityKnown", false, 1);
+  histogram_tester_.ExpectUniqueSample("OOBE.SyncConsentScreen.IsMinorUser",
+                                       true, 1);
+}
+
+class SyncConsentTimeoutTest : public SyncConsentTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(
+        ::chromeos::switches::kOobeTriggerSyncTimeoutForTests);
+    SyncConsentTest::SetUpCommandLine(command_line);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(SyncConsentTimeoutTest,
+                       SyncEngineInitializationTimeout) {
+  auto syncWaiter = test::OobeJS().CreateVisibilityWaiter(true, {kSyncConsent});
+  auto overviewDialogWaiter =
+      test::OobeJS().CreateVisibilityWaiter(true, {kOverviewDialog});
+  LoginAsNewRegularUser();
+  WaitForScreenShown();
+  syncWaiter->Wait();
+  overviewDialogWaiter->Wait();
 }
 
 }  // namespace

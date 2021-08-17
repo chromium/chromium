@@ -69,8 +69,11 @@ bool IsMinorMode(Profile* profile, const user_manager::User* user) {
   std::string gaia_id = user->GetAccountId().GetGaiaId();
   const AccountInfo account_info =
       identity_manager->FindExtendedAccountInfoByGaiaId(gaia_id);
-  return account_info.capabilities.can_offer_extended_chrome_sync_promos() !=
-         signin::Tribool::kTrue;
+  auto capability =
+      account_info.capabilities.can_offer_extended_chrome_sync_promos();
+  base::UmaHistogramBoolean("OOBE.SyncConsentScreen.IsCapabilityKnown",
+                            capability != signin::Tribool::kUnknown);
+  return capability != signin::Tribool::kTrue;
 }
 
 base::TimeDelta GetWaitTimeout() {
@@ -182,8 +185,10 @@ void SyncConsentScreen::ShowImpl() {
     timeout_waiter_.Start(FROM_HERE, GetWaitTimeout(),
                           base::BindOnce(&SyncConsentScreen::OnTimeout,
                                          weak_factory_.GetWeakPtr()));
+    start_time_ = base::TimeTicks::Now();
+  } else {
+    PrepareScreenBasedOnCapability();
   }
-  PrepareScreenBasedOnCapability();
   // Show the entire screen.
   // If SyncScreenBehavior is show, this should show the sync consent screen.
   // If SyncScreenBehavior is unknown, this should show the loading throbber.
@@ -210,6 +215,10 @@ void SyncConsentScreen::OnNonSplitSettingsContinue(
   RecordUmaReviewFollowingSetup(review_sync);
   RecordConsent(opted_in ? CONSENT_GIVEN : CONSENT_NOT_GIVEN,
                 consent_description, consent_confirmation);
+  base::UmaHistogramEnumeration(
+      "OOBE.SyncConsentScreen.UserChoice",
+      opted_in ? SyncConsentScreenHandler::UserChoice::kAccepted
+               : SyncConsentScreenHandler::UserChoice::kDeclined);
   profile_->GetPrefs()->SetBoolean(::prefs::kShowSyncSettingsOnSessionStart,
                                    review_sync);
   SetSyncEverythingEnabled(opted_in);
@@ -370,6 +379,10 @@ void SyncConsentScreen::UpdateScreen() {
     view_->SetThrobberVisible(false /*visible*/);
     GetSyncService(profile_)->RemoveObserver(this);
     timeout_waiter_.AbandonAndStop();
+    base::UmaHistogramCustomTimes("OOBE.SyncConsentScreen.LoadingTime",
+                                  base::TimeTicks::Now() - start_time_,
+                                  base::TimeDelta::FromMilliseconds(1),
+                                  base::TimeDelta::FromSeconds(10), 50);
   } else {
     MaybeEnableSyncForSkip();
     Finish(Result::NEXT);
@@ -420,6 +433,8 @@ bool SyncConsentScreen::IsProfileSyncEngineInitialized() const {
 
 void SyncConsentScreen::PrepareScreenBasedOnCapability() {
   bool is_minor_mode = IsMinorMode(profile_, user_);
+  base::UmaHistogramBoolean("OOBE.SyncConsentScreen.IsMinorUser",
+                            is_minor_mode);
   // Turn on "sync everything" toggle for non-minor users; turn off all data
   // types for minor users.
   SetSyncEverythingEnabled(!is_minor_mode);

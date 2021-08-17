@@ -343,6 +343,37 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="OOBE.SyncConsentScreen.IsCapabilityKnown" enum="BooleanKnown"
+    expires_after="2022-02-06">
+  <owner>yunkez@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Indicates whether account capability information is fetched for user when
+    SyncConsent screen is shown.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.SyncConsentScreen.IsMinorUser" enum="Boolean"
+    expires_after="2022-02-06">
+  <owner>yunkez@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Indicates whether the current user is a minor user (impacted by AADC
+    regulations). We cannot use nudge techniques on UI if the user is a minor
+    user.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.SyncConsentScreen.LoadingTime" units="ms"
+    expires_after="2022-02-06">
+  <owner>yunkez@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Records the amount of time while waiting for sync engine to be initialized,
+    before the SyncConsent screen is shown.
+  </summary>
+</histogram>
+
 <histogram name="OOBE.SyncConsentScreen.ReviewFollowingSetup"
     enum="BooleanChecked" expires_after="2021-08-09">
   <owner>raleksandrov@google.com</owner>
