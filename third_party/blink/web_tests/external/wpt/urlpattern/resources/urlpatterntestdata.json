@@ -2108,5 +2108,9 @@
       "protocol": { "input": "data", "groups": {} },
       "pathname": { "input": "text/javascript,let x = 100/5;", "groups": { "tens": "" } }
     }
+  },
+  {
+    "pattern": [{ "pathname": "/:id/:id" }],
+    "expected_obj": "error"
   }
 ]

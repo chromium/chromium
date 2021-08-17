@@ -368,4 +368,8 @@ TEST(ParseTest, NameWithModifierStarAndModifierPlus) {
                absl::InvalidArgumentError("expected end of pattern"));
 }
 
+TEST(ParseTest, DuplicateName) {
+  RunParseTest("/:foo/:foo", absl::InvalidArgumentError("Duplicate"));
+}
+
 }  // namespace liburlpattern

@@ -5,6 +5,8 @@
 
 #include "third_party/liburlpattern/parse.h"
 
+#include <unordered_set>
+
 #include "third_party/abseil-cpp/absl/base/macros.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/liburlpattern/pattern.h"
@@ -205,6 +207,13 @@ class State {
     else if (regex_or_wildcard_token)
       name = GenerateKey();
 
+    auto name_set_result = name_set_.insert(name);
+    if (!name_set_result.second) {
+      return absl::InvalidArgumentError(
+          absl::StrFormat("Duplicate group name '%s' at index %d.", name,
+                          token_list_[index_].index));
+    }
+
     auto prefix_result = encode_callback_(std::move(prefix));
     if (!prefix_result.ok())
       return prefix_result.status();
@@ -247,6 +256,9 @@ class State {
 
   // The output list of Pattern Part objects.
   std::vector<Part> part_list_;
+
+  // Tracks which names have been seen before so we can error on duplicates.
+  std::unordered_set<std::string> name_set_;
 
   // A buffer of kChar and kEscapedChar values that are pending the creation
   // of a kFixed Part.
