@@ -433,11 +433,6 @@ BookmarkManagerPrivateStartDragFunction::RunOnReady() {
     return Error(bookmark_keys::kEditBookmarksDisabled);
 
   content::WebContents* web_contents = GetSenderWebContents();
-  if (GetViewType(web_contents) != mojom::ViewType::kTabContents) {
-    NOTREACHED();
-    return Error(kUnknownErrorDoNotUse);
-  }
-
   std::unique_ptr<StartDrag::Params> params(StartDrag::Params::Create(*args_));
   if (!params)
     return BadMessage();
@@ -479,8 +474,6 @@ BookmarkManagerPrivateDropFunction::RunOnReady() {
     return Error(error);
 
   content::WebContents* web_contents = GetSenderWebContents();
-  DCHECK_EQ(mojom::ViewType::kTabContents, GetViewType(web_contents));
-
   size_t drop_index;
   if (params->index)
     drop_index = static_cast<size_t>(*params->index);
