@@ -33,9 +33,9 @@
   function dumpCurrentState(label) {
     var view = UI.panels.resources;
     TestRunner.addResult(label);
-    dump(view._sidebar._sidebarTree.rootElement(), '');
+    dump(view.sidebar.sidebarTree.rootElement(), '');
     var path = [];
-    for (var selected = view._sidebar._sidebarTree.selectedTreeElement; selected; selected = selected.parent) {
+    for (var selected = view.sidebar.sidebarTree.selectedTreeElement; selected; selected = selected.parent) {
       if (selected.itemURL)
         path.push(selected.itemURL);
     }
@@ -46,7 +46,7 @@
   await new Promise(createIndexedDB);
   await ApplicationTestRunner.createWebSQLDatabase('database-for-test');
   await UI.viewManager.showView('resources');
-  UI.panels.resources._sidebar.cookieListTreeElement.firstChild().select(false, true);
+  UI.panels.resources.sidebar.cookieListTreeElement.firstChild().select(false, true);
   dumpCurrentState('Initial state:');
   await TestRunner.reloadPagePromise();
   dumpCurrentState('After navigation:');

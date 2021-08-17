@@ -35,7 +35,7 @@
 
     var view = UI.panels.resources;
     TestRunner.addResult(label);
-    dump(view._sidebar._sidebarTree.rootElement(), '');
+    dump(view.sidebar.sidebarTree.rootElement(), '');
     var visibleView = view.visibleView;
     if (visibleView instanceof UI.SearchableView)
       visibleView = visibleView.children()[0];
