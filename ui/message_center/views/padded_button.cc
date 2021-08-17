@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "build/chromeos_buildflags.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
@@ -18,6 +19,10 @@
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#endif
 
 namespace message_center {
 
@@ -39,6 +44,8 @@ void PaddedButton::OnThemeChanged() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   SkColor background_color = theme->GetSystemColor(
       ui::NativeTheme::kColorId_NotificationButtonBackground);
+  if (ash::features::IsDarkLightModeEnabled())
+    background_color = SK_ColorTRANSPARENT;
   SetBackground(views::CreateSolidBackground(background_color));
 #else
   SkColor background_color =
