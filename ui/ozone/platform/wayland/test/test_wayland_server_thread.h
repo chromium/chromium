@@ -116,6 +116,7 @@ class TestWaylandServerThread : public base::Thread,
 
  private:
   void SetupOutputs();
+  bool SetupPrimarySelectionManager(PrimarySelectionProtocol protocol);
   void DoPause();
 
   std::unique_ptr<base::MessagePump> CreateMessagePump();

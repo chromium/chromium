@@ -6,6 +6,7 @@
 #define UI_OZONE_PLATFORM_WAYLAND_TEST_TEST_ZWP_PRIMARY_SELECTION_H_
 
 #include "ui/ozone/platform/wayland/test/test_selection_device_manager.h"
+
 namespace wl {
 
 TestSelectionDeviceManager* CreateTestSelectionManagerZwp();
