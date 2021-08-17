@@ -10,14 +10,18 @@ import android.graphics.Rect;
 import android.view.View;
 
 import org.chromium.base.Log;
+import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feed.v2.FeedProcessScopeDependencyProvider;
+import org.chromium.chrome.browser.ntp.ScrollListener;
+import org.chromium.chrome.browser.ntp.ScrollListener.ScrollState;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.xsurface.SurfaceHeaderOffsetObserver;
 import org.chromium.chrome.browser.xsurface.SurfaceScopeDependencyProvider;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -26,12 +30,13 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
  * Provides activity, darkmode and logging context for a single surface.
  */
 @JNINamespace("feed::android")
-class FeedSurfaceScopeDependencyProvider implements SurfaceScopeDependencyProvider {
+class FeedSurfaceScopeDependencyProvider implements SurfaceScopeDependencyProvider, ScrollListener {
     private static final String TAG = "Feed";
     private final Activity mActivity;
     private final Context mActivityContext;
     private final boolean mDarkMode;
     private final LoggingEnabledDelegate mLoggingEnabledDelegate;
+    private final ObserverList<SurfaceHeaderOffsetObserver> mObserverList = new ObserverList<>();
 
     public interface LoggingEnabledDelegate {
         boolean isLoggingEnabledForCurrentStream();
@@ -171,6 +176,29 @@ class FeedSurfaceScopeDependencyProvider implements SurfaceScopeDependencyProvid
         }
         toolbarView.getGlobalVisibleRect(bounds);
         return bounds;
+    }
+
+    @Override
+    public void onScrollStateChanged(@ScrollState int state) {}
+
+    @Override
+    public void onScrolled(int dx, int dy) {}
+
+    @Override
+    public void onHeaderOffsetChanged(int verticalOffset) {
+        for (SurfaceHeaderOffsetObserver observer : mObserverList) {
+            observer.onHeaderOffsetChanged(verticalOffset);
+        }
+    }
+
+    @Override
+    public void addHeaderOffsetObserver(SurfaceHeaderOffsetObserver observer) {
+        mObserverList.addObserver(observer);
+    }
+
+    @Override
+    public void removeHeaderOffsetObserver(SurfaceHeaderOffsetObserver observer) {
+        mObserverList.removeObserver(observer);
     }
 
     private static String getVideoHistogramName(boolean isMutedAutoplay, String partName) {

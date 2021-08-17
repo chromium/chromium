@@ -20,6 +20,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/xsurface/ProcessScopeDependencyProvider.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/ReliabilityLoggingTestUtil.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/SurfaceActionsHandler.java",
+    "android/java/src/org/chromium/chrome/browser/xsurface/SurfaceHeaderOffsetObserver.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/SurfaceRenderer.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/SurfaceScope.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/SurfaceScopeDependencyProvider.java",
