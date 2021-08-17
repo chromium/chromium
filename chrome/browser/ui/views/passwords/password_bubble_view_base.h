@@ -97,10 +97,6 @@ class PasswordBubbleViewBase : public LocationBarBubbleDelegateView {
   // Bubble and will be deleted when the bubble closes.
   static PasswordBubbleViewBase* g_manage_passwords_bubble_;
 
-  // Listens for WebContentsView events and closes the bubble so the bubble gets
-  // dismissed when users keep using the web page.
-  std::unique_ptr<WebContentMouseHandler> mouse_handler_;
-
   DISALLOW_COPY_AND_ASSIGN(PasswordBubbleViewBase);
 };
 

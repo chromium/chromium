@@ -201,7 +201,6 @@ void PasswordBubbleViewBase::OnWidgetClosing(views::Widget* widget) {
   LocationBarBubbleDelegateView::OnWidgetClosing(widget);
   if (widget != GetWidget())
     return;
-  mouse_handler_.reset();
   // It can be the case that a password bubble is being closed while another
   // password bubble is being opened. The metrics recorder can be shared
   // between them and it doesn't understand the sequence [open1, open2,
