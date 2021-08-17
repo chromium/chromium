@@ -631,6 +631,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Sync.LocalDeviceInfoDeletionReuploaded" enum="Boolean"
+    expires_after="M96">
+  <owner>rushans@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Recorded after receiving an incoming deletion of local DeviceInfo during
+    incremental update. Counts whether the local DeviceInfo is marked to be
+    reuploaded.
+  </summary>
+</histogram>
+
 <histogram name="Sync.LocalSyncTransportDataStartupState"
     enum="LocalSyncTransportDataStartupState" expires_after="2021-11-21">
   <owner>rushans@google.com</owner>
