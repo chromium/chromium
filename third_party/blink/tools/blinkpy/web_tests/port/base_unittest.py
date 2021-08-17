@@ -459,8 +459,10 @@ class PortTest(LoggingTestCase):
 
     def test_nonexistant_expectations(self):
         port = self.make_port(port_name='foo')
-        port.expectations_files = lambda: [MOCK_WEB_TESTS + 'platform/exists/TestExpectations',
-                                           MOCK_WEB_TESTS + 'platform/nonexistant/TestExpectations']
+        port.default_expectations_files = lambda: [
+            MOCK_WEB_TESTS + 'platform/exists/TestExpectations', MOCK_WEB_TESTS
+            + 'platform/nonexistant/TestExpectations'
+        ]
         port.host.filesystem.write_text_file(
             MOCK_WEB_TESTS + 'platform/exists/TestExpectations', '')
         self.assertEqual('\n'.join(port.expectations_dict().keys()),

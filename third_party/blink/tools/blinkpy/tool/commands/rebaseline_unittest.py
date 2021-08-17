@@ -129,7 +129,7 @@ class BaseTestCase(unittest.TestCase):
     def _zero_out_test_expectations(self):
         for port_name in self.tool.port_factory.all_port_names():
             port = self.tool.port_factory.get(port_name)
-            for path in port.expectations_files():
+            for path in port.default_expectations_files():
                 self._write(path, '')
         self.tool.filesystem.written_files = {}
 
