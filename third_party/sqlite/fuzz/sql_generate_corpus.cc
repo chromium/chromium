@@ -47,7 +47,7 @@ constexpr int kMaxNumOthers = 10;
 }  // namespace
 
 fuzzer::Random& GetRandom() {
-  static base::NoDestructor<fuzzer::Random> rand([] {
+  static fuzzer::Random rand([] {
     unsigned seed = base::DefaultClock::GetInstance()
                         ->Now()
                         .ToDeltaSinceWindowsEpoch()
@@ -55,7 +55,7 @@ fuzzer::Random& GetRandom() {
                     getpid();
     return fuzzer::Random(seed);
   }());
-  return *rand;
+  return rand;
 }
 
 // Inclusive range.
