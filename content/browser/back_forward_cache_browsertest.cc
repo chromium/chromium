@@ -126,6 +126,34 @@ struct FeatureEqualOperator {
   }
 };
 
+class DOMContentLoadedObserver : public WebContentsObserver {
+ public:
+  explicit DOMContentLoadedObserver(RenderFrameHostImpl* render_frame_host)
+      : WebContentsObserver(
+            WebContents::FromRenderFrameHost(render_frame_host)),
+        render_frame_host_(render_frame_host) {}
+
+  void DOMContentLoaded(RenderFrameHost* render_frame_host) override {
+    if (render_frame_host_ == render_frame_host)
+      run_loop_.Quit();
+  }
+
+  void Wait() {
+    if (render_frame_host_->IsDOMContentLoaded())
+      run_loop_.Quit();
+    run_loop_.Run();
+  }
+
+ private:
+  RenderFrameHostImpl* render_frame_host_;
+  base::RunLoop run_loop_;
+};
+
+void WaitForDOMContentLoaded(RenderFrameHostImpl* rfh) {
+  DOMContentLoadedObserver observer(rfh);
+  observer.Wait();
+}
+
 // Test about the BackForwardCache.
 class BackForwardCacheBrowserTest : public ContentBrowserTest,
                                     public WebContentsObserver {
@@ -178,6 +206,17 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
     EnableFeatureAndSetParams(
         blink::features::kLogUnexpectedIPCPostedToBackForwardCachedDocuments,
         "delay_before_tracking_ms", "0");
+    EnableFeatureAndSetParams(
+        blink::features::kLoadingTasksUnfreezable, "max_buffered_bytes",
+        base::NumberToString(kMaxBufferedBytesPerRequest));
+    EnableFeatureAndSetParams(
+        blink::features::kLoadingTasksUnfreezable,
+        "max_buffered_bytes_per_process",
+        base::NumberToString(kMaxBufferedBytesPerProcess));
+    EnableFeatureAndSetParams(
+        blink::features::kLoadingTasksUnfreezable,
+        "grace_period_to_finish_loading_in_seconds",
+        base::NumberToString(kGracePeriodToFinishLoading.InSeconds()));
 #if defined(OS_ANDROID)
     EnableFeatureAndSetParams(features::kBackForwardCache,
                               "process_binding_strength", "NORMAL");
@@ -459,13 +498,39 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
     fail_for_unexpected_messages_while_cached_ = false;
   }
 
+  // Navigates to a page at |page_url| with an img element with src set to
+  // "image.png".
+  RenderFrameHostImpl* NavigateToPageWithImage(const GURL& page_url) {
+    EXPECT_TRUE(NavigateToURL(shell(), page_url));
+    RenderFrameHostImpl* rfh = current_frame_host();
+    // Wait for the document to load DOM to ensure that kLoading is not
+    // one of the reasons why the document wasn't cached.
+    WaitForDOMContentLoaded(rfh);
+
+    EXPECT_TRUE(ExecJs(rfh, R"(
+      var image = document.createElement("img");
+      image.src = "image.png";
+      document.body.appendChild(image);
+
+      var image_load_status = new Promise((resolve, reject) => {
+        image.onload = () => { resolve("loaded"); }
+        image.onerror = () => { resolve("error"); }
+      });
+    )"));
+    return rfh;
+  }
+
   base::HistogramTester histogram_tester_;
 
- protected:
   bool same_site_back_forward_cache_enabled_ = true;
   bool skip_same_site_if_unload_exists_ = false;
   bool check_eligibility_after_pagehide_ = false;
   std::string unload_support_ = "always";
+
+  const int kMaxBufferedBytesPerRequest = 7000;
+  const int kMaxBufferedBytesPerProcess = 10000;
+  const base::TimeDelta kGracePeriodToFinishLoading =
+      base::TimeDelta::FromSeconds(5);
 
  private:
   void AddSampleToBuckets(std::vector<base::Bucket>* buckets,
@@ -749,34 +814,6 @@ class ThemeColorObserver : public WebContentsObserver {
  private:
   bool observed_ = false;
 };
-
-class DOMContentLoadedObserver : public WebContentsObserver {
- public:
-  explicit DOMContentLoadedObserver(RenderFrameHostImpl* render_frame_host)
-      : WebContentsObserver(
-            WebContents::FromRenderFrameHost(render_frame_host)),
-        render_frame_host_(render_frame_host) {}
-
-  void DOMContentLoaded(RenderFrameHost* render_frame_host) override {
-    if (render_frame_host_ == render_frame_host)
-      run_loop_.Quit();
-  }
-
-  void Wait() {
-    if (render_frame_host_->IsDOMContentLoaded())
-      run_loop_.Quit();
-    run_loop_.Run();
-  }
-
- private:
-  RenderFrameHostImpl* render_frame_host_;
-  base::RunLoop run_loop_;
-};
-
-void WaitForDOMContentLoaded(RenderFrameHostImpl* rfh) {
-  DOMContentLoadedObserver observer(rfh);
-  observer.Wait();
-}
 
 class PageLifecycleStateManagerTestDelegate
     : public PageLifecycleStateManager::TestDelegate {
@@ -2367,42 +2404,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_FALSE(WaitForLoadStop(shell()->web_contents()));
   ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::kLoading}, {},
                     {}, {}, FROM_HERE);
-}
-
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       DoesNotCacheIfImageStillLoading) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  // 1) Navigate to a page with an image that loads forever.
-  GURL url(embedded_test_server()->GetURL("a.com",
-                                          "/infinitely_loading_image.html"));
-  TestNavigationManager navigation_manager(shell()->web_contents(), url);
-  shell()->LoadURL(url);
-
-  // The navigation finishes while the image is still loading.
-  navigation_manager.WaitForNavigationFinished();
-  // Wait for the document to load DOM to ensure that kLoading is not
-  // one of the reasons why the document wasn't cached.
-  WaitForDOMContentLoaded(current_frame_host());
-
-  RenderFrameDeletedObserver delete_observer_rfh_a(current_frame_host());
-
-  // 2) Navigate away.
-  shell()->LoadURL(embedded_test_server()->GetURL("b.com", "/title1.html"));
-
-  // The page was still loading when we navigated away, so it shouldn't have
-  // been cached.
-  delete_observer_rfh_a.WaitUntilDeleted();
-
-  // 3) Go back.
-  TestNavigationManager navigation_manager_back(shell()->web_contents(), url);
-  web_contents()->GetController().GoBack();
-  navigation_manager_back.WaitForNavigationFinished();
-  ExpectNotRestored(
-      {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
-      {blink::scheduler::WebSchedulerTrackedFeature::
-           kOutstandingNetworkRequestOthers},
-      {}, {}, FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
@@ -4085,110 +4086,10 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   delete_observer_rfh_a.WaitUntilDeleted();
 }
 
-// A fetch request starts during the "freeze" event. The current behavior is to
-// send the request anyway. However evicting the page from the BackForwardCache
-// might be a better behavior.
-//
-// ┌───────┐┌────────┐       ┌───────────────┐
-// │browser││renderer│       │network service│
-// └───┬───┘└───┬────┘       └───────┬───────┘
-//     │Freeze()│                    │
-//     │───────>│                    │
-//     │     (onfreeze)              │
-//     │        │CreateLoaderAndStart│
-//     │        │───────────────────>│
-//     │      (frozen)               │
-// ┌───┴───┐┌───┴────┐       ┌───────┴───────┐
-// │browser││renderer│       │network service│
-// └───────┘└────────┘       └───────────────┘
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, FetchWhileStoring) {
-  net::test_server::ControllableHttpResponse fetch_response(
-      embedded_test_server(), "/fetch");
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
-
-  // 1) Navigate to A.
-  EXPECT_TRUE(NavigateToURL(shell(), url_a));
-  RenderFrameHostImpl* rfh_a = current_frame_host();
-  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
-
-  // Use "fetch" immediately before being frozen.
-  EXPECT_TRUE(ExecJs(rfh_a, R"(
-    document.addEventListener('freeze', event => {
-      my_fetch = fetch('/fetch', { keepalive: true});
-    });
-  )"));
-
-  // 2) Navigate to B.
-  EXPECT_TRUE(NavigateToURL(shell(), url_b));
-
-  fetch_response.WaitForRequest();
-  fetch_response.Send(net::HTTP_OK, "text/html", "TheResponse");
-  fetch_response.Done();
-
-  // 3) Go back to A.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  delete_observer_rfh_a.WaitUntilDeleted();
-}
-
-class BackForwardCacheBrowserTestWithUnfreezableLoading
-    : public BackForwardCacheBrowserTest {
- public:
-  BackForwardCacheBrowserTestWithUnfreezableLoading() = default;
-  ~BackForwardCacheBrowserTestWithUnfreezableLoading() override = default;
-
- protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    EnableFeatureAndSetParams(
-        blink::features::kLoadingTasksUnfreezable, "max_buffered_bytes",
-        base::NumberToString(kMaxBufferedBytesPerRequest));
-    EnableFeatureAndSetParams(
-        blink::features::kLoadingTasksUnfreezable,
-        "max_buffered_bytes_per_process",
-        base::NumberToString(kMaxBufferedBytesPerProcess));
-    EnableFeatureAndSetParams(
-        blink::features::kLoadingTasksUnfreezable,
-        "grace_period_to_finish_loading_in_seconds",
-        base::NumberToString(kGracePeriodToFinishLoading.InSeconds()));
-    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
-  }
-
-  // Navigates to a page at |page_url| with an img element with src set to
-  // "image.png".
-  RenderFrameHostImpl* NavigateToPageWithImage(const GURL& page_url) {
-    EXPECT_TRUE(NavigateToURL(shell(), page_url));
-    RenderFrameHostImpl* rfh = current_frame_host();
-    // Wait for the document to load DOM to ensure that kLoading is not
-    // one of the reasons why the document wasn't cached.
-    WaitForDOMContentLoaded(rfh);
-
-    EXPECT_TRUE(ExecJs(rfh, R"(
-      var image = document.createElement("img");
-      image.src = "image.png";
-      document.body.appendChild(image);
-
-      var image_load_status = new Promise((resolve, reject) => {
-        image.onload = () => { resolve("loaded"); }
-        image.onerror = () => { resolve("error"); }
-      });
-    )"));
-    return rfh;
-  }
-
-  const int kMaxBufferedBytesPerRequest = 7000;
-  const int kMaxBufferedBytesPerProcess = 10000;
-  const base::TimeDelta kGracePeriodToFinishLoading =
-      base::TimeDelta::FromSeconds(5);
-};
-
 // When loading task is unfreezable with the feature flag
 // kLoadingTaskUnfreezable, a page will keep processing the in-flight network
 // requests while the page is frozen in BackForwardCache.
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithUnfreezableLoading,
-                       FetchWhileStoring) {
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, FetchWhileStoring) {
   net::test_server::ControllableHttpResponse fetch_response(
       embedded_test_server(), "/fetch");
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -4225,7 +4126,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithUnfreezableLoading,
 
 // Eviction is triggered when a normal fetch request gets redirected while the
 // page is in back-forward cache.
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithUnfreezableLoading,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        FetchRedirectedWhileStoring) {
   net::test_server::ControllableHttpResponse fetch_response(
       embedded_test_server(), "/fetch");
@@ -4280,7 +4181,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithUnfreezableLoading,
 // the page is in back-forward cache.
 // TODO(https://crbug.com/1137682): We should not trigger eviction on redirects
 // of keepalive fetches.
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithUnfreezableLoading,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        KeepAliveFetchRedirectedWhileStoring) {
   net::test_server::ControllableHttpResponse fetch_response(
       embedded_test_server(), "/fetch");
@@ -4335,7 +4236,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithUnfreezableLoading,
 
 // Tests the case when the header was received before the page is frozen,
 // but parts of the response body is received when the page is frozen.
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithUnfreezableLoading,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        PageWithDrainedDatapipeRequestsForFetchShouldBeEvicted) {
   net::test_server::ControllableHttpResponse fetch_response(
       embedded_test_server(), "/fetch");
@@ -4374,7 +4275,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithUnfreezableLoading,
 }
 
 IN_PROC_BROWSER_TEST_F(
-    BackForwardCacheBrowserTestWithUnfreezableLoading,
+    BackForwardCacheBrowserTest,
     PageWithDrainedDatapipeRequestsForScriptStreamerShouldNotBeEvicted) {
   net::test_server::ControllableHttpResponse response(embedded_test_server(),
                                                       "/small_script.js");
@@ -4416,7 +4317,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // TODO(crbug.com/1236190) Disabled for flaky failures on various configs.
 IN_PROC_BROWSER_TEST_F(
-    BackForwardCacheBrowserTestWithUnfreezableLoading,
+    BackForwardCacheBrowserTest,
     DISABLED_PageWithDrainedDatapipeRequestsForScriptStreamerShouldBeEvictedIfStreamedTooMuch) {
   net::test_server::ControllableHttpResponse response(embedded_test_server(),
                                                       "/small_script.js");
@@ -4460,7 +4361,7 @@ IN_PROC_BROWSER_TEST_F(
       {}, {}, {}, FROM_HERE);
 }
 
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithUnfreezableLoading,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        ImageStillLoading_ResponseStartedWhileFrozen) {
   net::test_server::ControllableHttpResponse image_response(
       embedded_test_server(), "/image.png");
@@ -4495,7 +4396,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithUnfreezableLoading,
 }
 
 IN_PROC_BROWSER_TEST_F(
-    BackForwardCacheBrowserTestWithUnfreezableLoading,
+    BackForwardCacheBrowserTest,
     ImageStillLoading_ResponseStartedWhileFrozen_ExceedsPerRequestBytesLimit) {
   net::test_server::ControllableHttpResponse image_response(
       embedded_test_server(), "/image.png");
@@ -4533,7 +4434,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    BackForwardCacheBrowserTestWithUnfreezableLoading,
+    BackForwardCacheBrowserTest,
     ImageStillLoading_ResponseStartedWhileRestoring_DoNotTriggerEviction) {
   net::test_server::ControllableHttpResponse image_response(
       embedded_test_server(), "/image.png");
@@ -4580,7 +4481,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    BackForwardCacheBrowserTestWithUnfreezableLoading,
+    BackForwardCacheBrowserTest,
     ImageStillLoading_ResponseStartedWhileFrozen_ExceedsPerProcessBytesLimit) {
   net::test_server::ControllableHttpResponse image1_response(
       embedded_test_server(), "/image1.png");
@@ -4651,7 +4552,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    BackForwardCacheBrowserTestWithUnfreezableLoading,
+    BackForwardCacheBrowserTest,
     ImageStillLoading_ResponseStartedWhileFrozen_ExceedsPerProcessBytesLimit_SameSiteSubframe) {
   net::test_server::ControllableHttpResponse image1_response(
       embedded_test_server(), "/image1.png");
@@ -4736,7 +4637,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    BackForwardCacheBrowserTestWithUnfreezableLoading,
+    BackForwardCacheBrowserTest,
     ImageStillLoading_ResponseStartedWhileFrozen_ExceedsPerProcessBytesLimit_ResetOnRestore) {
   net::test_server::ControllableHttpResponse image1_response(
       embedded_test_server(), "/image.png");
@@ -4813,7 +4714,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    BackForwardCacheBrowserTestWithUnfreezableLoading,
+    BackForwardCacheBrowserTest,
     ImageStillLoading_ResponseStartedWhileFrozen_ExceedsPerProcessBytesLimit_ResetOnDetach) {
   net::test_server::ControllableHttpResponse image1_response(
       embedded_test_server(), "/image.png");
@@ -4893,7 +4794,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ("error", EvalJs(rfh_2, "image2_load_status"));
 }
 
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithUnfreezableLoading,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        ImageStillLoading_ResponseStartedWhileFrozen_Timeout) {
   net::test_server::ControllableHttpResponse image_response(
       embedded_test_server(), "/image.png");
@@ -4931,7 +4832,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithUnfreezableLoading,
 }
 
 IN_PROC_BROWSER_TEST_F(
-    BackForwardCacheBrowserTestWithUnfreezableLoading,
+    BackForwardCacheBrowserTest,
     ImageStillLoading_ResponseStartedBeforeFreezing_ExceedsPerRequestBytesLimit) {
   net::test_server::ControllableHttpResponse image_response(
       embedded_test_server(), "/image.png");
@@ -4972,7 +4873,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    BackForwardCacheBrowserTestWithUnfreezableLoading,
+    BackForwardCacheBrowserTest,
     ImageStillLoading_ResponseStartedBeforeFreezing_ExceedsPerProcessBytesLimit) {
   net::test_server::ControllableHttpResponse image1_response(
       embedded_test_server(), "/image1.png");
@@ -5048,7 +4949,7 @@ IN_PROC_BROWSER_TEST_F(
       {}, {}, {}, FROM_HERE);
 }
 
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithUnfreezableLoading,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        TimeoutNotTriggeredAfterDone) {
   net::test_server::ControllableHttpResponse image_response(
       embedded_test_server(), "/image.png");
@@ -5094,7 +4995,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithUnfreezableLoading,
 }
 
 IN_PROC_BROWSER_TEST_F(
-    BackForwardCacheBrowserTestWithUnfreezableLoading,
+    BackForwardCacheBrowserTest,
     TimeoutNotTriggeredAfterDone_ResponseStartedBeforeFreezing) {
   net::test_server::ControllableHttpResponse image_response(
       embedded_test_server(), "/image.png");
@@ -5138,7 +5039,7 @@ IN_PROC_BROWSER_TEST_F(
   ExpectRestored(FROM_HERE);
 }
 
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithUnfreezableLoading,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        ImageStillLoading_ResponseStartedBeforeFreezing) {
   net::test_server::ControllableHttpResponse image_response(
       embedded_test_server(), "/image.png");
@@ -9031,117 +8932,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // Reset |presentation_service|'s controller delegate so that it won't try to
   // call Reset() on it on destruction time.
   presentation_service.OnDelegateDestroyed();
-}
-
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, OutstandingFetchNotCached) {
-  net::test_server::ControllableHttpResponse response(embedded_test_server(),
-                                                      "/fetch");
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
-
-  // 1) Navigate to A.
-  EXPECT_TRUE(NavigateToURL(shell(), url_a));
-  RenderFrameHostImpl* rfh_a = current_frame_host();
-  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
-  // Ensure that there are no lingering requests from page load itself.
-  EXPECT_FALSE(rfh_a->scheduler_tracked_features().Has(
-      blink::scheduler::WebSchedulerTrackedFeature::
-          kOutstandingNetworkRequestFetch));
-
-  // 2) Create a fetch() request.
-  ExecuteScriptAsync(rfh_a, "fetch('/fetch');");
-  response.WaitForRequest();
-
-  // 3) Navigate to B.
-  ASSERT_TRUE(NavigateToURL(shell(), url_b));
-
-  // 4) Go back.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-
-  ExpectNotRestored(
-      {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
-      {blink::scheduler::WebSchedulerTrackedFeature::
-           kOutstandingNetworkRequestFetch},
-      {}, {}, FROM_HERE);
-}
-
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, OutstandingXHRNotCached) {
-  net::test_server::ControllableHttpResponse response(embedded_test_server(),
-                                                      "/xhr");
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
-
-  // 1) Navigate to A.
-  EXPECT_TRUE(NavigateToURL(shell(), url_a));
-  RenderFrameHostImpl* rfh_a = current_frame_host();
-  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
-  // Ensure that there are no lingering requests from page load itself.
-  EXPECT_FALSE(rfh_a->scheduler_tracked_features().Has(
-      blink::scheduler::WebSchedulerTrackedFeature::
-          kOutstandingNetworkRequestXHR));
-
-  // 2) Create a XMLHttpRequest.
-  EXPECT_TRUE(ExecJs(rfh_a, R"(
-    var req = new XMLHttpRequest();
-    req.open("GET", "/xhr");
-    req.send();
-  )"));
-  response.WaitForRequest();
-
-  // 3) Navigate to B.
-  ASSERT_TRUE(NavigateToURL(shell(), url_b));
-
-  // 4) Go back.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-
-  ExpectNotRestored(
-      {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
-      {blink::scheduler::WebSchedulerTrackedFeature::
-           kOutstandingNetworkRequestXHR},
-      {}, {}, FROM_HERE);
-}
-
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, NotFetchedScriptNotCached) {
-  net::test_server::ControllableHttpResponse response(
-      embedded_test_server(),
-      "/back_forward_cache/script-which-does-not-exist.js");
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  GURL url_a(embedded_test_server()->GetURL(
-      "a.com", "/back_forward_cache/page_with_nonexistent_script.html"));
-  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
-
-  // 1) Navigate to A.
-  TestNavigationObserver navigation_observer1(web_contents());
-  shell()->LoadURL(url_a);
-  navigation_observer1.WaitForNavigationFinished();
-  response.WaitForRequest();
-
-  RenderFrameHostImpl* rfh_a = current_frame_host();
-  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
-
-  // 2) Navigate to B.
-  TestNavigationObserver navigation_observer2(web_contents());
-  shell()->LoadURL(url_b);
-  navigation_observer2.WaitForNavigationFinished();
-
-  delete_observer_rfh_a.WaitUntilDeleted();
-
-  // 3) Go back.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-
-  ExpectNotRestored(
-      {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
-      {blink::scheduler::WebSchedulerTrackedFeature::
-           kOutstandingNetworkRequestOthers},
-      {}, {}, FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, PageshowMetrics) {
