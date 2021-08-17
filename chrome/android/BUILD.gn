@@ -331,6 +331,7 @@ android_library("chrome_java") {
     "//chrome/browser/android/browserservices/verification:java",
     "//chrome/browser/android/crypto:java",
     "//chrome/browser/android/lifecycle:java",
+    "//chrome/browser/android/messages:java",
     "//chrome/browser/android/webapps/launchpad:java",
     "//chrome/browser/attribution_reporting/android:factory_java",
     "//chrome/browser/attribution_reporting/android:java",

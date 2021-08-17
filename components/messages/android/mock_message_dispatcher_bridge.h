@@ -28,6 +28,7 @@ class MockMessageDispatcherBridge : public MessageDispatcherBridge {
                content::WebContents* web_contents,
                DismissReason dismiss_reason),
               (override));
+  int MapToJavaDrawableId(int resource_id) override;
 };
 
 }  // namespace messages

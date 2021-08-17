@@ -34,6 +34,9 @@ void MessageDispatcherBridge::SetInstanceForTesting(
   g_message_dospatcher_bridge_for_testing = instance;
 }
 
+MessageDispatcherBridge::MessageDispatcherBridge() = default;
+MessageDispatcherBridge::~MessageDispatcherBridge() = default;
+
 bool MessageDispatcherBridge::EnqueueMessage(MessageWrapper* message,
                                              content::WebContents* web_contents,
                                              MessageScopeType scope_type,
@@ -79,6 +82,16 @@ void MessageDispatcherBridge::DismissMessage(MessageWrapper* message,
         env, jmessage, web_contents->GetJavaWebContents(),
         static_cast<int>(dismiss_reason));
   }
+}
+
+int MessageDispatcherBridge::MapToJavaDrawableId(int resource_id) {
+  DCHECK(resource_id_mapper_);
+  return resource_id_mapper_.Run(resource_id);
+}
+
+void MessageDispatcherBridge::SetResourceIdMapper(
+    ResourceIdMapper resource_id_mapper) {
+  resource_id_mapper_ = std::move(resource_id_mapper);
 }
 
 }  // namespace messages

@@ -38,10 +38,6 @@ class PopupBlockedMessageDelegateTest
 
   HostContentSettingsMap* settings_map() { return settings_map_.get(); }
 
-  base::RepeatingCallback<int(int)> GetResourceIdMapper() {
-    return base::BindRepeating(ResourceMap);
-  }
-
   bool EnqueueMessage(int num_pops,
                       base::OnceClosure on_accept_callback,
                       bool success);
@@ -53,8 +49,6 @@ class PopupBlockedMessageDelegateTest
   PopupBlockedMessageDelegate* GetDelegate() {
     return popup_blocked_message_delegate_;
   }
-
-  static int ResourceMap(int id) { return -1; }
 
  private:
   PopupBlockerTabHelper* helper_ = nullptr;
@@ -107,7 +101,6 @@ bool PopupBlockedMessageDelegateTest::EnqueueMessage(
   EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage)
       .WillOnce(testing::Return(success));
   return GetDelegate()->ShowMessage(num_pops, settings_map(),
-                                    GetResourceIdMapper(),
                                     std::move(on_accept_callback));
 }
 
@@ -135,7 +128,7 @@ TEST_F(PopupBlockedMessageDelegateTest, MessagePropertyValues) {
 
   // Should update title; #EnqueueMessage ensure message is enqueued only once.
   GetDelegate()->ShowMessage(num_popups + 1, settings_map(),
-                             GetResourceIdMapper(), base::NullCallback());
+                             base::NullCallback());
   EXPECT_EQ(l10n_util::GetPluralStringFUTF16(IDS_POPUPS_BLOCKED_INFOBAR_TEXT,
                                              num_popups + 1),
             GetMessageWrapper()->GetTitle());
