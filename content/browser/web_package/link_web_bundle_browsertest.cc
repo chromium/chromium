@@ -128,6 +128,9 @@ class LinkWebBundleBrowserTest : public ContentBrowserTest {
     https_server_.RegisterRequestHandler(base::BindRepeating(
         &LinkWebBundleBrowserTest::HandleHugeWebBundleRequest,
         base::Unretained(this)));
+    https_server_.RegisterRequestHandler(
+        base::BindRepeating(&LinkWebBundleBrowserTest::InvalidResponseHandler,
+                            base::Unretained(this)));
     https_server_.ServeFilesFromSourceDirectory(GetTestDataFilePath());
     ASSERT_TRUE(https_server_.Start());
   }
@@ -186,6 +189,14 @@ class LinkWebBundleBrowserTest : public ContentBrowserTest {
     http_response->set_content_type("application/webbundle");
     http_response->AddCustomHeader("X-Content-Type-Options", "nosniff");
     return http_response;
+  }
+
+  std::unique_ptr<net::test_server::HttpResponse> InvalidResponseHandler(
+      const net::test_server::HttpRequest& request) {
+    if (request.relative_url != "/web_bundle/invalid-response")
+      return nullptr;
+    return std::make_unique<net::test_server::RawHttpResponse>(
+        "", "Not a valid HTTP response.");
   }
 
   GURL GetObservedUnknownSchemeUrl() { return browser_client_.observed_url(); }
@@ -285,6 +296,35 @@ IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, SubframeLoadError) {
   run_loop.Run();
   EXPECT_EQ(net::ERR_INVALID_WEB_BUNDLE,
             *finish_navigation_observer.error_code());
+}
+
+IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, BundleFetchError) {
+  base::HistogramTester histogram_tester;
+
+  GURL url(https_server()->GetURL("/web_bundle/empty.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // "/web_bundle/invalid-response" returns an invalid HTTP response which
+  // causes ERR_INVALID_HTTP_RESPONSE network error.
+  DOMMessageQueue dom_message_queue(shell()->web_contents());
+  ExecuteScriptAsync(shell(),
+                     R"HTML(
+        const link = document.createElement('link');
+        link.rel = 'webbundle';
+        link.href = '/web_bundle/invalid-response';
+        link.onload = () => window.domAutomationController.send('loaded');
+        link.onerror = () => window.domAutomationController.send('failed');
+        document.body.appendChild(link);
+      )HTML");
+  std::string message;
+  EXPECT_TRUE(dom_message_queue.WaitForMessage(&message));
+  EXPECT_EQ("\"failed\"", message);
+
+  // Check the metrics recorded in the network process.
+  FetchHistogramsFromChildProcesses();
+  histogram_tester.ExpectUniqueSample(
+      "SubresourceWebBundles.BundleFetchErrorCode",
+      -net::ERR_INVALID_HTTP_RESPONSE, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, FollowLink) {
