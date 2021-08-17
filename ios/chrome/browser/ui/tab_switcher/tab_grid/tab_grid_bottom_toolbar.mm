@@ -33,6 +33,7 @@
   UIBarButtonItem* _addToButton;
   UIBarButtonItem* _closeTabsButton;
   UIBarButtonItem* _shareButton;
+  BOOL _undoActive;
 }
 
 #pragma mark - UIView
@@ -163,6 +164,10 @@
       _closeAllOrUndoButton.accessibilityIdentifier =
           kTabGridCloseAllButtonIdentifier;
     }
+  }
+  if (_undoActive != useUndo) {
+    _undoActive = useUndo;
+    [self updateLayout];
   }
 }
 
@@ -344,7 +349,7 @@
     return;
   }
   UIBarButtonItem* leadingButton = _closeAllOrUndoButton;
-  if (IsTabsBulkActionsEnabled())
+  if (IsTabsBulkActionsEnabled() && !_undoActive)
     leadingButton = _editButton;
   UIBarButtonItem* trailingButton = _doneButton;
 
