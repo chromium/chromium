@@ -832,7 +832,7 @@ class ViewFocusTracker : public FocusTracker, public views::ViewObserver {
 
 }  // namespace
 
-#if defined(OS_MAC)
+#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_WIN)
 // https://crbug.com/1029882
 #define MAYBE_FocusReturnsToContentOnClose DISABLED_FocusReturnsToContentOnClose
 #else
