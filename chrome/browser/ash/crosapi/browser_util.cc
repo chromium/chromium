@@ -184,11 +184,6 @@ bool IsLacrosAllowedToBeEnabledWithUser(const User* user, Channel channel) {
     return false;
   }
 
-  // TODO(https://crbug.com/1135494): Remove the free ticket for
-  // Channel::UNKNOWN after the policy is set on server side for developers.
-  if (channel == Channel::UNKNOWN)
-    return true;
-
   switch (GetLaunchSwitch()) {
     case LacrosLaunchSwitch::kUserChoice:
       break;
