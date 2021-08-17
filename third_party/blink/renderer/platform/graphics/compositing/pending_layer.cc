@@ -53,6 +53,20 @@ bool IsCompositedScrollbar(const DisplayItem& item) {
   return false;
 }
 
+// Snap |bounds| if within floating-point numeric limits of an integral rect.
+void PreserveNearIntegralBounds(FloatRect& bounds) {
+  if (std::abs(std::round(bounds.X()) - bounds.X()) <=
+          std::numeric_limits<float>::epsilon() &&
+      std::abs(std::round(bounds.Y()) - bounds.Y()) <=
+          std::numeric_limits<float>::epsilon() &&
+      std::abs(std::round(bounds.MaxX()) - bounds.MaxX()) <=
+          std::numeric_limits<float>::epsilon() &&
+      std::abs(std::round(bounds.MaxY()) - bounds.MaxY()) <=
+          std::numeric_limits<float>::epsilon()) {
+    bounds = FloatRect(RoundedIntRect(bounds));
+  }
+}
+
 }  // anonymous namespace
 
 PendingLayer::PendingLayer(const PaintChunkSubset& chunks,
@@ -291,6 +305,11 @@ bool PendingLayer::MergeInternal(const PendingLayer& guest,
     change_of_decomposited_transforms_ =
         std::max(ChangeOfDecompositedTransforms(),
                  guest.ChangeOfDecompositedTransforms());
+    // GeometryMapper::LocalToAncestorVisualRect can introduce floating-point
+    // error to the bounds. Integral bounds are important for reducing
+    // blurriness (see: PendingLayer::LayerOffset) so preserve that here.
+    PreserveNearIntegralBounds(bounds_);
+    PreserveNearIntegralBounds(rect_known_to_be_opaque_);
   }
   return true;
 }
