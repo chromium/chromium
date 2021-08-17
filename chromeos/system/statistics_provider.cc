@@ -124,8 +124,8 @@ bool JoinListValuesToString(const base::Value& dictionary,
   std::string buffer;
   bool first = true;
   for (const auto& v : list_value->GetList()) {
-    std::string value;
-    if (!v.GetAsString(&value))
+    const std::string* value = v.GetIfString();
+    if (!value)
       return false;
 
     if (first)
@@ -133,7 +133,7 @@ bool JoinListValuesToString(const base::Value& dictionary,
     else
       buffer += ',';
 
-    buffer += value;
+    buffer += *value;
   }
   if (result != nullptr)
     *result = buffer;
