@@ -59,6 +59,7 @@ include_rules = [
   "+components/bookmarks/common",
   "+components/bookmarks/managed",
   "+components/bookmarks/test",
+  "+components/breadcrumbs/core",
   "+components/browser_sync",
   "+components/browser_ui/bottomsheet",
   "+components/browser_ui/modaldialog",

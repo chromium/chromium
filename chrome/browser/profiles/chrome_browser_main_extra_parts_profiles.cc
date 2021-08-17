@@ -17,6 +17,7 @@
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/background/background_contents_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
 #include "chrome/browser/browsing_data/access_context_audit_service_factory.h"
 #include "chrome/browser/browsing_data/browsing_data_history_observer_service.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate_factory.h"
@@ -106,6 +107,7 @@
 #include "chrome/browser/web_data_service_factory.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
+#include "components/breadcrumbs/core/features.h"
 #include "components/captive_portal/core/buildflags.h"
 #include "components/permissions/features.h"
 #include "components/reading_list/features/reading_list_switches.h"
@@ -221,9 +223,11 @@ void AddProfilesExtraParts(ChromeBrowserMainParts* main_parts) {
 
 }  // namespace chrome
 
-ChromeBrowserMainExtraPartsProfiles::ChromeBrowserMainExtraPartsProfiles() {}
+ChromeBrowserMainExtraPartsProfiles::ChromeBrowserMainExtraPartsProfiles() =
+    default;
 
-ChromeBrowserMainExtraPartsProfiles::~ChromeBrowserMainExtraPartsProfiles() {}
+ChromeBrowserMainExtraPartsProfiles::~ChromeBrowserMainExtraPartsProfiles() =
+    default;
 
 // This method gets the instance of each ServiceFactory. We do this so that
 // each ServiceFactory initializes itself and registers its dependencies with
@@ -273,6 +277,8 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
   BookmarkModelFactory::GetInstance();
   BookmarkUndoServiceFactory::GetInstance();
+  if (base::FeatureList::IsEnabled(breadcrumbs::kLogBreadcrumbs))
+    BreadcrumbManagerKeyedServiceFactory::GetInstance();
   browser_sync::UserEventServiceFactory::GetInstance();
   BrowsingDataHistoryObserverService::Factory::GetInstance();
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)

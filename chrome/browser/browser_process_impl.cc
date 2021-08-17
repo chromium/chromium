@@ -89,6 +89,10 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/installer/util/google_update_settings.h"
+#include "components/breadcrumbs/core/application_breadcrumbs_logger.h"
+#include "components/breadcrumbs/core/breadcrumb_manager.h"
+#include "components/breadcrumbs/core/breadcrumb_persistent_storage_manager.h"
+#include "components/breadcrumbs/core/features.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/component_updater/timer_update_scheduler.h"
 #include "components/crash/core/common/crash_key.h"
@@ -481,6 +485,11 @@ void BrowserProcessImpl::StartTearDown() {
 
   // This expects to be destroyed before the task scheduler is torn down.
   SystemNetworkContextManager::DeleteInstance();
+
+  // The ApplicationBreadcrumbsLogger logs a shutdown event via a task when it
+  // is destroyed, so it should be destroyed before the task scheduler is torn
+  // down.
+  application_breadcrumbs_logger_.reset();
 }
 
 void BrowserProcessImpl::PostDestroyThreads() {
@@ -943,6 +952,14 @@ BuildState* BrowserProcessImpl::GetBuildState() {
 #endif
 }
 
+breadcrumbs::BreadcrumbPersistentStorageManager*
+BrowserProcessImpl::GetBreadcrumbPersistentStorageManager() {
+  DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
+  return application_breadcrumbs_logger_
+             ? application_breadcrumbs_logger_->GetPersistentStorageManager()
+             : nullptr;
+}
+
 // static
 void BrowserProcessImpl::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kDefaultBrowserSettingEnabled,
@@ -1203,6 +1220,23 @@ void BrowserProcessImpl::PreMainMessageLoopRun() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   soda_installer_impl_ = std::make_unique<speech::SodaInstallerImplChromeOS>();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  if (base::FeatureList::IsEnabled(breadcrumbs::kLogBreadcrumbs)) {
+    breadcrumb_manager_ = std::make_unique<breadcrumbs::BreadcrumbManager>();
+    application_breadcrumbs_logger_ =
+        std::make_unique<breadcrumbs::ApplicationBreadcrumbsLogger>(
+            breadcrumb_manager_.get());
+
+    base::FilePath storage_dir;
+    bool result = base::PathService::Get(chrome::DIR_USER_DATA, &storage_dir);
+    DCHECK(result);
+
+    auto breadcrumb_persistent_storage_manager =
+        std::make_unique<breadcrumbs::BreadcrumbPersistentStorageManager>(
+            storage_dir);
+    application_breadcrumbs_logger_->SetPersistentStorageManager(
+        std::move(breadcrumb_persistent_storage_manager));
+  }
 }
 
 void BrowserProcessImpl::CreateIconManager() {
