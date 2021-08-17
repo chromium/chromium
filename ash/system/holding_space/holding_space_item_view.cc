@@ -438,6 +438,9 @@ void HoldingSpaceItemView::OnPrimaryActionPressed() {
   DCHECK_NE(primary_action_cancel_->GetVisible(),
             primary_action_pin_->GetVisible());
 
+  if (delegate())
+    delegate()->OnHoldingSpaceItemViewPrimaryActionPressed(this);
+
   // Cancel.
   if (primary_action_cancel_->GetVisible()) {
     HoldingSpaceController::Get()->client()->CancelItems({item()});

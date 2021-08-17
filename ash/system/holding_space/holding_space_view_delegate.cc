@@ -369,6 +369,18 @@ void HoldingSpaceViewDelegate::OnHoldingSpaceItemViewMouseReleased(
   SetSelection(view);
 }
 
+void HoldingSpaceViewDelegate::OnHoldingSpaceItemViewPrimaryActionPressed(
+    HoldingSpaceItemView* view) {
+  if (!view->selected())
+    ClearSelection();
+}
+
+void HoldingSpaceViewDelegate::OnHoldingSpaceItemViewSecondaryActionPressed(
+    HoldingSpaceItemView* view) {
+  if (!view->selected())
+    ClearSelection();
+}
+
 void HoldingSpaceViewDelegate::OnHoldingSpaceItemViewSelectedChanged(
     HoldingSpaceItemView* view) {
   selection_size_ += view->selected() ? 1 : -1;
