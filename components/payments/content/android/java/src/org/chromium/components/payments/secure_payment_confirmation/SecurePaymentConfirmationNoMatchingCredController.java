@@ -12,6 +12,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvi
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.payments.R;
+import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
@@ -152,7 +153,8 @@ public class SecurePaymentConfirmationNoMatchingCredController {
         bottomSheet.addObserver(mBottomSheetObserver);
 
         String origin = UrlFormatter.formatUrlForSecurityDisplay(
-                mWebContents.getVisibleUrl().getOrigin().getSpec());
+                mWebContents.getVisibleUrl().getOrigin().getSpec(),
+                SchemeDisplay.OMIT_CRYPTOGRAPHIC);
 
         mView = new SecurePaymentConfirmationNoMatchingCredView(context, origin, this::hide);
 
