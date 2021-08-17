@@ -25,19 +25,22 @@ DiskCacheDirPolicyHandler::~DiskCacheDirPolicyHandler() {}
 void DiskCacheDirPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
                                                     PrefValueMap* prefs) {
   const base::Value* value = policies.GetValue(policy_name());
-  std::string string_value;
-  if (value && value->GetAsString(&string_value)) {
-    base::FilePath::StringType expanded_value =
+  if (!value)
+    return;
+
+  const std::string* string_value = value->GetIfString();
+  if (!string_value)
+    return;
+
+  base::FilePath::StringType expanded_value =
 #if defined(OS_WIN)
-        policy::path_parser::ExpandPathVariables(
-            base::UTF8ToWide(string_value));
+      policy::path_parser::ExpandPathVariables(base::UTF8ToWide(*string_value));
 #else
-        policy::path_parser::ExpandPathVariables(string_value);
+      policy::path_parser::ExpandPathVariables(*string_value);
 #endif
-    base::FilePath expanded_path(expanded_value);
-    prefs->SetValue(prefs::kDiskCacheDir,
-                    base::Value(expanded_path.AsUTF8Unsafe()));
-  }
+  base::FilePath expanded_path(expanded_value);
+  prefs->SetValue(prefs::kDiskCacheDir,
+                  base::Value(expanded_path.AsUTF8Unsafe()));
 }
 
 }  // namespace policy

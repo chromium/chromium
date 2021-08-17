@@ -729,11 +729,10 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
   const base::ListValue* hsts_policy_bypass_list =
       g_browser_process->local_state()->GetList(prefs::kHSTSPolicyBypassList);
   for (const auto& value : hsts_policy_bypass_list->GetList()) {
-    std::string string_value;
-    if (!value.GetAsString(&string_value)) {
+    const std::string* string_value = value.GetIfString();
+    if (!string_value)
       continue;
-    }
-    network_context_params->hsts_policy_bypass_list.push_back(string_value);
+    network_context_params->hsts_policy_bypass_list.push_back(*string_value);
   }
 
   proxy_config_monitor_.AddToNetworkContextParams(network_context_params);
