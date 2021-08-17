@@ -403,7 +403,6 @@ NGPhysicalFragment::NGPhysicalFragment(const NGPhysicalFragment& other,
       is_opaque_(other.is_opaque_),
       is_math_fraction_(other.is_math_fraction_),
       is_math_operator_(other.is_math_operator_),
-      base_or_resolved_direction_(other.base_or_resolved_direction_),
       may_have_descendant_above_block_start_(
           other.may_have_descendant_above_block_start_),
       is_fieldset_container_(other.is_fieldset_container_),
@@ -413,6 +412,7 @@ NGPhysicalFragment::NGPhysicalFragment(const NGPhysicalFragment& other,
       has_collapsed_borders_(other.has_collapsed_borders_),
       has_baseline_(other.has_baseline_),
       has_last_baseline_(other.has_last_baseline_),
+      base_direction_(other.base_direction_),
       break_token_(other.break_token_),
       oof_positioned_descendants_(
           other.oof_positioned_descendants_
@@ -602,30 +602,6 @@ TouchAction NGPhysicalFragment::EffectiveAllowedTouchAction() const {
 bool NGPhysicalFragment::InsideBlockingWheelEventHandler() const {
   DCHECK(layout_object_);
   return layout_object_->InsideBlockingWheelEventHandler();
-}
-
-UBiDiLevel NGPhysicalFragment::BidiLevel() const {
-  switch (Type()) {
-    case kFragmentBox:
-      return To<NGPhysicalBoxFragment>(*this).BidiLevel();
-    case kFragmentLineBox:
-      break;
-  }
-  NOTREACHED();
-  return 0;
-}
-
-TextDirection NGPhysicalFragment::ResolvedDirection() const {
-  switch (Type()) {
-    case kFragmentBox:
-      DCHECK(IsInline() && IsAtomicInline());
-      // TODO(xiaochengh): Store direction in |base_direction_| flag.
-      return DirectionFromLevel(BidiLevel());
-    case kFragmentLineBox:
-      break;
-  }
-  NOTREACHED();
-  return TextDirection::kLtr;
 }
 
 LogicalRect NGPhysicalFragment::ConvertChildToLogical(

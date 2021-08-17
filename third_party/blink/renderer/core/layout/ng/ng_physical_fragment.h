@@ -439,13 +439,6 @@ class CORE_EXPORT NGPhysicalFragment
   // Returns if this fragment is inside a non-passive wheel event handler.
   bool InsideBlockingWheelEventHandler() const;
 
-  // Returns the bidi level of a text or atomic inline fragment.
-  UBiDiLevel BidiLevel() const;
-
-  // Returns the resolved direction of a text or atomic inline fragment. Not to
-  // be confused with the CSS 'direction' property.
-  TextDirection ResolvedDirection() const;
-
   // Helper functions to convert between |PhysicalRect| and |LogicalRect| of a
   // child.
   LogicalRect ConvertChildToLogical(const PhysicalRect& physical_rect) const;
@@ -660,8 +653,6 @@ class CORE_EXPORT NGPhysicalFragment
   unsigned is_opaque_ : 1;
   unsigned is_math_fraction_ : 1;
   unsigned is_math_operator_ : 1;
-  // base (line box) or resolve (text) direction
-  unsigned base_or_resolved_direction_ : 1;  // TextDirection
   unsigned may_have_descendant_above_block_start_ : 1;
 
   // The following are only used by NGPhysicalBoxFragment but are initialized
@@ -673,6 +664,9 @@ class CORE_EXPORT NGPhysicalFragment
   unsigned has_collapsed_borders_ : 1;
   unsigned has_baseline_ : 1;
   unsigned has_last_baseline_ : 1;
+
+  // The following are only used by NGPhysicalLineBoxFragment.
+  unsigned base_direction_ : 1;  // TextDirection
 
   scoped_refptr<const NGBreakToken> break_token_;
   const std::unique_ptr<Vector<NGPhysicalOutOfFlowPositionedNode>>
