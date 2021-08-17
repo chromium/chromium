@@ -98,7 +98,8 @@ class BackgroundFetchDelegateBase : public content::BackgroundFetchDelegate {
   // Called in response to UI interactions.
   void PauseDownload(const std::string& job_id);
   void ResumeDownload(const std::string& job_id);
-  void CancelDownload(const std::string& job_id);
+  // |job_id| is passed as a copy since the Abort workflow may invalidate it.
+  void CancelDownload(std::string job_id);
 
   // Called when the UI has finished showing. If `activated` is true, it was
   // tapped, otherwise it was dismissed.
