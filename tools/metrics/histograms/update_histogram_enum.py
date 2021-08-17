@@ -26,8 +26,6 @@ ENUMS_PATH = histogram_paths.ENUMS_XML
 
 
 class UserError(Exception):
-  def __init__(self, message):
-    Exception.__init__(self, message)
 
   @property
   def message(self):
@@ -61,7 +59,7 @@ def ReadHistogramValues(filename, start_marker, end_marker, strip_k_prefix):
           'k' should be stripped.
 
   Returns:
-      A boolean indicating wheather the histograms.xml file would be changed.
+      A dictionary from enum value to enum label.
 
   Raises:
       DuplicatedValue: An error when two enum labels share the same value.
