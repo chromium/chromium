@@ -8,6 +8,9 @@
 
 namespace apps {
 
+// Debug information for https://crbug.com/1237267.
+int g_instance_count = 0;
+
 AppRegistryCache::Observer::Observer(AppRegistryCache* cache) {
   Observe(cache);
 }
@@ -34,13 +37,16 @@ void AppRegistryCache::Observer::Observe(AppRegistryCache* cache) {
   }
 }
 
-AppRegistryCache::AppRegistryCache() : account_id_(EmptyAccountId()) {}
+AppRegistryCache::AppRegistryCache() : account_id_(EmptyAccountId()) {
+  ++g_instance_count;
+}
 
 AppRegistryCache::~AppRegistryCache() {
   for (auto& obs : observers_) {
     obs.OnAppRegistryCacheWillBeDestroyed(this);
   }
   DCHECK(observers_.empty());
+  --g_instance_count;
 }
 
 void AppRegistryCache::AddObserver(Observer* observer) {
@@ -166,6 +172,10 @@ bool AppRegistryCache::IsAppTypeInitialized(apps::mojom::AppType app_type) {
 }
 
 void AppRegistryCache::OnAppTypeInitialized() {
+  // https://crbug.com/1237267 is a crash in this function, possibly a
+  // use-after-free on `this`.
+  CHECK_GT(g_instance_count, 0);
+
   if (in_progress_initialized_app_types_.empty()) {
     return;
   }

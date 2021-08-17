@@ -8,6 +8,7 @@
 #include <map>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
@@ -174,7 +175,9 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
  private:
   void DoOnApps(std::vector<apps::mojom::AppPtr> deltas);
 
-  void OnAppTypeInitialized();
+  // NOT_TAIL_CALLED forces the calling function to appear on the stack in
+  // crash dumps. https://crbug.com/1237267.
+  void NOT_TAIL_CALLED OnAppTypeInitialized();
 
   base::ObserverList<Observer> observers_;
 
