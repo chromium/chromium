@@ -159,8 +159,14 @@ void BackgroundDownloadServiceImpl::PruneDbRecords() {
   for (Entry* entry : model_->PeekEntries()) {
     download::Client* client = clients_->GetClient(entry->client);
     // TODO(xingliu): Ask client whether we can delete the file?
-    if (!client || base::Time::Now() - entry->create_time >
-                       config_->file_keep_alive_time) {
+    if (!client ||
+        clock_->Now() - entry->create_time > config_->file_keep_alive_time) {
+      entries_to_remove.insert(entry->guid);
+    }
+
+    // On iOS, we don't implement any resumption mechanism, so unfinished
+    // downloads should be deleted.
+    if (entry->state != Entry::State::COMPLETE) {
       entries_to_remove.insert(entry->guid);
     }
   }

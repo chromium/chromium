@@ -34,6 +34,9 @@ using StartResult = download::DownloadParams::StartResult;
 
 const char kURL[] = "https://www.example.com/test";
 const char kGuid[] = "1234";
+const char kGuid1[] = "5678";
+const char kGuid2[] = "aabb";
+const char kGuid3[] = "yyds";
 const base::FilePath::CharType kFilePath[] =
     FILE_PATH_LITERAL("downloaded_file.zip");
 const char kCompletionHistogram[] = "Download.Service.Finish.Type";
@@ -74,6 +77,7 @@ class BackgroundDownloadServiceImplTest : public PlatformTest {
     auto store = std::make_unique<test::TestStore>();
     store_ = store.get();
     auto model = std::make_unique<ModelImpl>(std::move(store));
+    model_ = model.get();
     auto client = std::make_unique<NiceMock<test::MockClient>>();
     client_ = client.get();
     auto clients = std::make_unique<DownloadClientMap>();
@@ -106,8 +110,11 @@ class BackgroundDownloadServiceImplTest : public PlatformTest {
     return download_params;
   }
 
-  void Init() {
-    store_->TriggerInit(/*success=*/true, empty_entries());
+  void Init() { InitWithData(empty_entries()); }
+
+  // Initializes with preloaded |entries| from the database.
+  void InitWithData(std::unique_ptr<std::vector<Entry>> entries) {
+    store_->TriggerInit(/*success=*/true, std::move(entries));
     file_monitor_->TriggerInit(/*success=*/true);
   }
 
@@ -116,6 +123,7 @@ class BackgroundDownloadServiceImplTest : public PlatformTest {
   base::SimpleTestClock clock_;
   MockBackgroundDownloadTaskHelper* download_helper_;
   test::TestStore* store_;
+  Model* model_;
   test::MockClient* client_;
   base::MockCallback<DownloadParams::StartCallback> start_callback_;
   MockFileMonitor* file_monitor_;
@@ -156,6 +164,54 @@ TEST_F(BackgroundDownloadServiceImplTest, InitFileMonitorFailure) {
   histogram_tester_.ExpectBucketCount(
       kServiceStartUpResultHistogram,
       stats::StartUpResult::FAILURE_REASON_FILE_MONITOR, 1);
+}
+
+// Db records that are not associated with any registered clients or unfinished
+// downloads should be pruned.
+TEST_F(BackgroundDownloadServiceImplTest, InitDbPruned) {
+  EXPECT_EQ(ServiceStatus::STARTING_UP, service()->GetStatus());
+  EXPECT_CALL(*client_, OnServiceInitialized(false, _));
+  std::unique_ptr<std::vector<Entry>> entries =
+      std::make_unique<std::vector<Entry>>();
+
+  // Build an entry without a valid client.
+  Entry entry_invalid_client;
+  entry_invalid_client.state = Entry::State::COMPLETE;
+  entry_invalid_client.guid = kGuid;
+  entry_invalid_client.create_time = clock_.Now();
+  entries->emplace_back(std::move(entry_invalid_client));
+
+  // Build unfinished entry.
+  Entry entry_unfinished;
+  entry_unfinished.client = DownloadClient::TEST;
+  entry_unfinished.state = Entry::State::ACTIVE;
+  entry_unfinished.guid = kGuid1;
+  entry_unfinished.create_time = clock_.Now();
+  entries->emplace_back(std::move(entry_unfinished));
+
+  // Build an expired entry.
+  Entry entry_expired;
+  entry_expired.client = DownloadClient::TEST;
+  entry_expired.state = Entry::State::COMPLETE;
+  entry_expired.guid = kGuid2;
+  entry_expired.create_time = clock_.Now() - base::TimeDelta::FromDays(300);
+  entries->emplace_back(std::move(entry_expired));
+
+  // Build a completed entry that should be kept.
+  Entry entry;
+  entry.client = DownloadClient::TEST;
+  entry.state = Entry::State::COMPLETE;
+  entry.guid = kGuid3;
+  entry.create_time = clock_.Now();
+  entries->emplace_back(std::move(entry));
+
+  InitWithData(std::move(entries));
+  EXPECT_EQ(ServiceStatus::READY, service()->GetStatus());
+  EXPECT_FALSE(model_->Get(kGuid))
+      << "Entry with invalid client should be pruned.";
+  EXPECT_FALSE(model_->Get(kGuid1)) << "Unfinished entry should be pruned.";
+  EXPECT_FALSE(model_->Get(kGuid2)) << "Expired entry should be pruned.";
+  EXPECT_TRUE(model_->Get(kGuid3)) << "This entry should be kept.";
 }
 
 TEST_F(BackgroundDownloadServiceImplTest, StartDownloadDbFailure) {
