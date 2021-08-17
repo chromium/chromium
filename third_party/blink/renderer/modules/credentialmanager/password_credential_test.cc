@@ -124,4 +124,27 @@ TEST_F(PasswordCredentialTest, CreateFromFormNoId) {
       exception_state.Message());
 }
 
+TEST_F(PasswordCredentialTest, CreateFromFormElementWithoutName) {
+  HTMLFormElement* form =
+      PopulateForm("multipart/form-data",
+                   "<input type='text' name='theId' value='musterman' "
+                   "autocomplete='username'>"
+                   "<input type='text' name='thePassword' value='sekrit' "
+                   "autocomplete='current-password'>"
+                   "<input type='text' "
+                   "value='https://example.com/photo' autocomplete='photo'>"
+                   "<input type='text' value='extra'>"
+                   "<input type='text' value='friendly name' "
+                   "autocomplete='name'>");
+  PasswordCredential* credential =
+      PasswordCredential::Create(form, ASSERT_NO_EXCEPTION);
+  ASSERT_NE(nullptr, credential);
+
+  EXPECT_EQ("musterman", credential->id());
+  EXPECT_EQ("sekrit", credential->password());
+  EXPECT_EQ(KURL(), credential->iconURL());
+  EXPECT_EQ(String(), credential->name());
+  EXPECT_EQ("password", credential->type());
+}
+
 }  // namespace blink

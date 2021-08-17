@@ -63,7 +63,8 @@ PasswordCredential* PasswordCredential::Create(
     // The "form data set" contains an entry for a |submittable_element| only if
     // it has a non-empty `name` attribute.
     // https://html.spec.whatwg.org/C/#constructing-the-form-data-set
-    DCHECK(!submittable_element->GetName().IsEmpty());
+    if (submittable_element->GetName().IsEmpty())
+      continue;
 
     V8FormDataEntryValue* value =
         form_data->get(submittable_element->GetName());
