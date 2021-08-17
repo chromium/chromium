@@ -56,6 +56,7 @@
 #include "url/gurl.h"
 
 using backdrop_wallpaper_handlers::SurpriseMeImageFetcher;
+using chromeos::ProfileHelper;
 using extension_misc::kWallpaperManagerId;
 
 namespace {
@@ -469,8 +470,7 @@ bool WallpaperControllerClientImpl::ShouldShowWallpaperSetting() {
 bool WallpaperControllerClientImpl::SaveWallpaperToDriveFs(
     const AccountId& account_id,
     const base::FilePath& origin) {
-  Profile* profile =
-      chromeos::ProfileHelper::Get()->GetProfileByAccountId(account_id);
+  Profile* profile = ProfileHelper::Get()->GetProfileByAccountId(account_id);
   base::FilePath destination_directory = GetDriveFsWallpaperDir(profile);
   if (destination_directory.empty())
     return false;
@@ -499,8 +499,7 @@ bool WallpaperControllerClientImpl::SaveWallpaperToDriveFs(
 
 base::FilePath WallpaperControllerClientImpl::GetWallpaperPathFromDriveFs(
     const AccountId& account_id) {
-  Profile* profile =
-      chromeos::ProfileHelper::Get()->GetProfileByAccountId(account_id);
+  Profile* profile = ProfileHelper::Get()->GetProfileByAccountId(account_id);
   base::FilePath wallpaper_directory = GetDriveFsWallpaperDir(profile);
   if (wallpaper_directory.empty())
     return wallpaper_directory;
@@ -516,16 +515,21 @@ void WallpaperControllerClientImpl::GetFilesId(
 
 void WallpaperControllerClientImpl::ActiveUserChanged(
     user_manager::User* active_user) {
+  volume_manager_observation_.Reset();
   active_user->AddProfileCreatedObserver(base::BindOnce(
       &WallpaperControllerClientImpl::ObserveVolumeManagerForActiveUser,
-      weak_factory_.GetWeakPtr()));
+      weak_factory_.GetWeakPtr(), active_user));
 }
 
 void WallpaperControllerClientImpl::OnVolumeMounted(
     chromeos::MountError error_code,
     const file_manager::Volume& volume) {
-  if (volume.type() == file_manager::VolumeType::VOLUME_TYPE_GOOGLE_DRIVE) {
-    wallpaper_controller_->OnGoogleDriveMounted();
+  if (volume.type() != file_manager::VolumeType::VOLUME_TYPE_GOOGLE_DRIVE) {
+    return;
+  }
+  user_manager::User* user = user_manager::UserManager::Get()->GetActiveUser();
+  if (user) {
+    wallpaper_controller_->OnGoogleDriveMounted(user->GetAccountId());
   }
 }
 
@@ -700,11 +704,14 @@ void WallpaperControllerClientImpl::OnDailyImageInfoFetched(
   surprise_me_image_fetcher_.reset();
 }
 
-void WallpaperControllerClientImpl::ObserveVolumeManagerForActiveUser() {
-  Profile* profile = ProfileManager::GetActiveUserProfile();
+void WallpaperControllerClientImpl::ObserveVolumeManagerForActiveUser(
+    user_manager::User* user) {
+  if (!user->is_active())
+    return;
+
+  Profile* profile = ProfileHelper::Get()->GetProfileByUser(user);
   DCHECK(profile);
 
-  volume_manager_observation_.Reset();
   volume_manager_observation_.Observe(
       file_manager::VolumeManager::Get(profile));
 }

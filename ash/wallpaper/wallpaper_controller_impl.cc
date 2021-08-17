@@ -2386,9 +2386,14 @@ bool WallpaperControllerImpl::GetLocalWallpaperInfo(const AccountId& account_id,
 }
 
 void WallpaperControllerImpl::OnPrefChanged() {
+  AccountId account_id = GetActiveAccountId();
+  OnPrefChangedForAccountId(account_id);
+}
+
+void WallpaperControllerImpl::OnPrefChangedForAccountId(
+    const AccountId& account_id) {
   // Check if the synced info was set by another device, and if we have already
   // handled it locally.
-  AccountId account_id = GetActiveAccountId();
   WallpaperInfo synced_info;
   WallpaperInfo local_info;
   if (!GetSyncedWallpaperInfo(account_id, &synced_info))
@@ -2477,8 +2482,8 @@ std::string WallpaperControllerImpl::GetDailyRefreshCollectionId() const {
   return GetCollectionId();
 }
 
-void WallpaperControllerImpl::OnGoogleDriveMounted() {
-  AccountId account_id = GetActiveAccountId();
+void WallpaperControllerImpl::OnGoogleDriveMounted(
+    const AccountId& account_id) {
   WallpaperInfo local_info;
   if (!GetLocalWallpaperInfo(account_id, &local_info))
     return;
@@ -2491,7 +2496,7 @@ void WallpaperControllerImpl::OnGoogleDriveMounted() {
     return;
   }
   if (synced_info.date >= local_info.date) {
-    OnPrefChanged();
+    OnPrefChangedForAccountId(account_id);
   } else {
     base::FilePath source = GetCustomWallpaperDir(kOriginalWallpaperSubDir)
                                 .Append(local_info.location);

@@ -3418,7 +3418,7 @@ TEST_F(WallpaperControllerTest, OnGoogleDriveMounted) {
                           prefs::kUserWallpaperInfo);
 
   SimulateUserLogin(kUser1);
-  controller_->OnGoogleDriveMounted();
+  controller_->OnGoogleDriveMounted(account_id_1);
   EXPECT_EQ(account_id_1, client_.get_save_wallpaper_to_drive_fs_account_id());
 }
 
@@ -3430,7 +3430,7 @@ TEST_F(WallpaperControllerTest, OnGoogleDriveMounted_WallpaperIsntCustom) {
   PutWallpaperInfoInPrefs(account_id_1, local_info, GetLocalPrefService(),
                           prefs::kUserWallpaperInfo);
 
-  controller_->OnGoogleDriveMounted();
+  controller_->OnGoogleDriveMounted(account_id_1);
   EXPECT_TRUE(client_.get_save_wallpaper_to_drive_fs_account_id().empty());
 }
 
@@ -3454,7 +3454,7 @@ TEST_F(WallpaperControllerTest, OnGoogleDriveMounted_AlreadySynced) {
   client_.ResetCounts();
 
   // Should not reupload image if it has already been synced.
-  controller_->OnGoogleDriveMounted();
+  controller_->OnGoogleDriveMounted(account_id_1);
   EXPECT_FALSE(client_.get_save_wallpaper_to_drive_fs_account_id().is_valid());
 }
 
@@ -3477,7 +3477,7 @@ TEST_F(WallpaperControllerTest, OnGoogleDriveMounted_OldLocalInfo) {
 
   SimulateUserLogin(kUser1);
 
-  controller_->OnGoogleDriveMounted();
+  controller_->OnGoogleDriveMounted(account_id_1);
   EXPECT_FALSE(client_.get_save_wallpaper_to_drive_fs_account_id().is_valid());
 }
 
@@ -3500,7 +3500,7 @@ TEST_F(WallpaperControllerTest, OnGoogleDriveMounted_NewLocalInfo) {
 
   SimulateUserLogin(kUser1);
 
-  controller_->OnGoogleDriveMounted();
+  controller_->OnGoogleDriveMounted(account_id_1);
   EXPECT_EQ(account_id_1, client_.get_save_wallpaper_to_drive_fs_account_id());
 }
 

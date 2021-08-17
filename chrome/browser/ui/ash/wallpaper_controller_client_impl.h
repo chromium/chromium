@@ -156,7 +156,7 @@ class WallpaperControllerClientImpl
                                const backdrop::Image& image,
                                const std::string& next_resume_token);
 
-  void ObserveVolumeManagerForActiveUser();
+  void ObserveVolumeManagerForActiveUser(user_manager::User* user);
 
   // WallpaperController interface in ash.
   ash::WallpaperController* wallpaper_controller_;
