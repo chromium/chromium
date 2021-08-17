@@ -94,13 +94,17 @@ cc::PaintCanvas* PaintRenderingContext2D::GetPaintCanvas() const {
   return paint_recorder_->getRecordingCanvas();
 }
 
-cc::PaintCanvas* PaintRenderingContext2D::GetPaintCanvasForDraw(
-    const SkIRect&,
-    CanvasPerformanceMonitor::DrawType) {
+cc::PaintCanvas* PaintRenderingContext2D::GetDrawingPaintCanvas() {
   DCHECK(paint_recorder_);
   DCHECK(paint_recorder_->getRecordingCanvas());
   did_record_draw_commands_in_paint_recorder_ = true;
   return paint_recorder_->getRecordingCanvas();
+}
+
+cc::PaintCanvas* PaintRenderingContext2D::GetPaintCanvasForDraw(
+    const SkIRect&,
+    CanvasPerformanceMonitor::DrawType) {
+  return GetDrawingPaintCanvas();
 }
 
 void PaintRenderingContext2D::ValidateStateStackWithCanvas(

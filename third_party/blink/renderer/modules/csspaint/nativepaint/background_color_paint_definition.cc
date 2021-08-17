@@ -301,12 +301,18 @@ sk_sp<PaintRecord> BackgroundColorPaintDefinition::Paint(
   Color rgba = CSSColorInterpolationType::GetRGBA(*(result.get()));
   SkColor current_color = static_cast<SkColor>(rgba);
 
-  PaintRenderingContext2DSettings* context_settings =
-      PaintRenderingContext2DSettings::Create();
-  auto* rendering_context = MakeGarbageCollected<PaintRenderingContext2D>(
-      RoundedIntSize(container_size), context_settings, 1, 1);
-  rendering_context->GetPaintCanvas()->drawColor(current_color);
-  return rendering_context->GetRecord();
+  // When render this element, we always do pixel snapping to its nearest pixel,
+  // therefore we use rounded |container_size| to create the rendering context.
+  IntSize rounded_size = RoundedIntSize(container_size);
+  if (!context_ || context_->Width() != rounded_size.Width() ||
+      context_->Height() != rounded_size.Height()) {
+    PaintRenderingContext2DSettings* context_settings =
+        PaintRenderingContext2DSettings::Create();
+    context_ = MakeGarbageCollected<PaintRenderingContext2D>(
+        rounded_size, context_settings, 1, 1);
+  }
+  context_->GetDrawingPaintCanvas()->drawColor(current_color);
+  return context_->GetRecord();
 }
 
 scoped_refptr<Image> BackgroundColorPaintDefinition::Paint(
