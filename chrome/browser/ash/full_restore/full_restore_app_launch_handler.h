@@ -22,6 +22,17 @@ class Profile;
 namespace ash {
 namespace full_restore {
 
+// This is used for logging, so do not remove or reorder existing entries.
+enum class RestoreTabResult {
+  kHasTabs = 0,
+  kNoTabs = 1,
+  kError = 2,
+
+  // Add any new values above this one, and update kMaxValue to the highest
+  // enumerator value.
+  kMaxValue = kError,
+};
+
 // The FullRestoreAppLaunchHandler class calls FullRestoreReadHandler to read
 // the full restore data from the full restore data file on a background task
 // runner, and restore apps and web pages based on the user preference or the
@@ -91,10 +102,12 @@ class FullRestoreAppLaunchHandler : public AppLaunchHandler {
   // AppLaunchHandler:
   void RecordRestoredAppLaunch(apps::AppTypeName app_type_name) override;
 
-  // If the restore process finish, start the save timer.
-  void MaybeStartSaveTimer();
+  void RecordLaunchBrowserResult();
 
   void LogRestoreData();
+
+  // If the restore process finish, start the save timer.
+  void MaybeStartSaveTimer();
 
   bool should_restore_ = false;
 
