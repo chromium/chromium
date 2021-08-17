@@ -715,9 +715,12 @@ void InspectorCSSAgent::UpdateActiveStyleSheets(Document* document) {
 void InspectorCSSAgent::SetActiveStyleSheets(
     Document* document,
     const HeapVector<Member<CSSStyleSheet>>& all_sheets_vector) {
-  HeapHashSet<Member<CSSStyleSheet>>* document_css_style_sheets =
-      document_to_css_style_sheets_.DeprecatedAtOrEmptyValue(document);
-  if (!document_css_style_sheets) {
+  auto it = document_to_css_style_sheets_.find(document);
+  HeapHashSet<Member<CSSStyleSheet>>* document_css_style_sheets = nullptr;
+
+  if (it != document_to_css_style_sheets_.end()) {
+    document_css_style_sheets = it->value;
+  } else {
     document_css_style_sheets =
         MakeGarbageCollected<HeapHashSet<Member<CSSStyleSheet>>>();
     document_to_css_style_sheets_.Set(document, document_css_style_sheets);
@@ -745,10 +748,7 @@ void InspectorCSSAgent::SetActiveStyleSheets(
 
   for (CSSStyleSheet* css_style_sheet : removed_sheets) {
     InspectorStyleSheet* inspector_style_sheet =
-        css_style_sheet_to_inspector_style_sheet_.DeprecatedAtOrEmptyValue(
-            css_style_sheet);
-    DCHECK(inspector_style_sheet);
-
+        css_style_sheet_to_inspector_style_sheet_.at(css_style_sheet);
     document_css_style_sheets->erase(css_style_sheet);
     if (id_to_inspector_style_sheet_.Contains(inspector_style_sheet->Id())) {
       String id = UnbindStyleSheet(inspector_style_sheet);
@@ -1693,11 +1693,14 @@ std::unique_ptr<protocol::CSS::CSSMedia> InspectorCSSAgent::BuildMediaObject(
   MediaQueryEvaluator* media_evaluator =
       MakeGarbageCollected<MediaQueryEvaluator>(frame);
 
-  InspectorStyleSheet* inspector_style_sheet =
-      parent_style_sheet
-          ? css_style_sheet_to_inspector_style_sheet_.DeprecatedAtOrEmptyValue(
-                parent_style_sheet)
-          : nullptr;
+  InspectorStyleSheet* inspector_style_sheet = nullptr;
+  if (parent_style_sheet) {
+    auto it =
+        css_style_sheet_to_inspector_style_sheet_.find(parent_style_sheet);
+    if (it != css_style_sheet_to_inspector_style_sheet_.end())
+      inspector_style_sheet = it->value;
+  }
+
   auto media_list_array =
       std::make_unique<protocol::Array<protocol::CSS::MediaQuery>>();
   MediaValues* media_values = MediaValues::CreateDynamicIfFrameExists(frame);
@@ -1723,10 +1726,11 @@ std::unique_ptr<protocol::CSS::CSSMedia> InspectorCSSAgent::BuildMediaObject(
                   .setFeature(media_query_exp.MediaFeature())
                   .build();
 
-      if (inspector_style_sheet && media->ParentRule())
+      if (inspector_style_sheet && media->ParentRule()) {
         media_query_expression->setValueRange(
             inspector_style_sheet->MediaQueryExpValueSourceRange(
                 media->ParentRule(), i, j));
+      }
 
       int computed_length;
       if (media_values->ComputeLength(exp_value.value, exp_value.unit,
@@ -1864,19 +1868,18 @@ InspectorCSSAgent::BuildContainerQueryObject(const MediaList* media,
           .setText(media->mediaText(/*execution_context=*/nullptr))
           .build();
 
-  InspectorStyleSheet* inspector_style_sheet =
-      parent_style_sheet
-          ? css_style_sheet_to_inspector_style_sheet_.DeprecatedAtOrEmptyValue(
-                parent_style_sheet)
-          : nullptr;
-  if (inspector_style_sheet)
+  auto it = css_style_sheet_to_inspector_style_sheet_.find(parent_style_sheet);
+  if (it != css_style_sheet_to_inspector_style_sheet_.end()) {
+    InspectorStyleSheet* inspector_style_sheet = it->value;
     container_query_object->setStyleSheetId(inspector_style_sheet->Id());
+  }
 
   CSSRule* parent_rule = media->ParentRule();
   if (!parent_rule)
     return container_query_object;
 
-  inspector_style_sheet = BindStyleSheet(parent_rule->parentStyleSheet());
+  InspectorStyleSheet* inspector_style_sheet =
+      BindStyleSheet(parent_rule->parentStyleSheet());
   container_query_object->setRange(
       inspector_style_sheet->RuleHeaderSourceRange(parent_rule));
 
@@ -1959,20 +1962,20 @@ void InspectorCSSAgent::CollectStyleSheets(
 
 InspectorStyleSheet* InspectorCSSAgent::BindStyleSheet(
     CSSStyleSheet* style_sheet) {
+  auto it = css_style_sheet_to_inspector_style_sheet_.find(style_sheet);
+  if (it != css_style_sheet_to_inspector_style_sheet_.end())
+    return it->value;
+
+  Document* document = style_sheet->OwnerDocument();
   InspectorStyleSheet* inspector_style_sheet =
-      css_style_sheet_to_inspector_style_sheet_.DeprecatedAtOrEmptyValue(
-          style_sheet);
-  if (!inspector_style_sheet) {
-    Document* document = style_sheet->OwnerDocument();
-    inspector_style_sheet = MakeGarbageCollected<InspectorStyleSheet>(
-        network_agent_, style_sheet, DetectOrigin(style_sheet, document),
-        InspectorDOMAgent::DocumentURLString(document), this,
-        resource_container_);
-    id_to_inspector_style_sheet_.Set(inspector_style_sheet->Id(),
-                                     inspector_style_sheet);
-    css_style_sheet_to_inspector_style_sheet_.Set(style_sheet,
-                                                  inspector_style_sheet);
-  }
+      MakeGarbageCollected<InspectorStyleSheet>(
+          network_agent_, style_sheet, DetectOrigin(style_sheet, document),
+          InspectorDOMAgent::DocumentURLString(document), this,
+          resource_container_);
+  id_to_inspector_style_sheet_.Set(inspector_style_sheet->Id(),
+                                   inspector_style_sheet);
+  css_style_sheet_to_inspector_style_sheet_.Set(style_sheet,
+                                                inspector_style_sheet);
   return inspector_style_sheet;
 }
 
@@ -2020,8 +2023,9 @@ InspectorStyleSheet* InspectorCSSAgent::ViaInspectorStyleSheet(
 
   FlushPendingProtocolNotifications();
 
-  return css_style_sheet_to_inspector_style_sheet_.DeprecatedAtOrEmptyValue(
-      &inspector_sheet);
+  auto it = css_style_sheet_to_inspector_style_sheet_.find(&inspector_sheet);
+  return it != css_style_sheet_to_inspector_style_sheet_.end() ? it->value
+                                                               : nullptr;
 }
 
 Response InspectorCSSAgent::AssertEnabled() {
@@ -2219,11 +2223,10 @@ void InspectorCSSAgent::DidModifyDOMAttr(Element* element) {
 }
 
 void InspectorCSSAgent::DidMutateStyleSheet(CSSStyleSheet* css_style_sheet) {
-  InspectorStyleSheet* style_sheet =
-      css_style_sheet_to_inspector_style_sheet_.DeprecatedAtOrEmptyValue(
-          css_style_sheet);
-  if (!style_sheet)
+  auto it = css_style_sheet_to_inspector_style_sheet_.find(css_style_sheet);
+  if (it == css_style_sheet_to_inspector_style_sheet_.end())
     return;
+  InspectorStyleSheet* style_sheet = it->value;
   style_sheet->MarkForSync();
   StyleSheetChanged(style_sheet);
 }
@@ -2508,12 +2511,11 @@ void InspectorCSSAgent::BuildRulesMap(
     }
     if (css_rule->GetType() == CSSRule::kImportRule) {
       CSSImportRule* css_import_rule = DynamicTo<CSSImportRule>(css_rule.Get());
-      InspectorStyleSheet* imported_style_sheet =
-          css_style_sheet_to_inspector_style_sheet_.DeprecatedAtOrEmptyValue(
-              const_cast<CSSStyleSheet*>(css_import_rule->styleSheet()));
-      if (!imported_style_sheet)
+      auto it = css_style_sheet_to_inspector_style_sheet_.find(
+          const_cast<CSSStyleSheet*>(css_import_rule->styleSheet()));
+      if (it == css_style_sheet_to_inspector_style_sheet_.end())
         continue;
-
+      InspectorStyleSheet* imported_style_sheet = it->value;
       BuildRulesMap(imported_style_sheet, rule_to_css_rule);
     }
   }
@@ -2534,11 +2536,12 @@ Response InspectorCSSAgent::takeCoverageDelta(
 
   for (const auto& entry : coverage_delta) {
     const CSSStyleSheet* css_style_sheet = entry.key.Get();
-    InspectorStyleSheet* style_sheet =
-        css_style_sheet_to_inspector_style_sheet_.DeprecatedAtOrEmptyValue(
-            const_cast<CSSStyleSheet*>(css_style_sheet));
-    if (!style_sheet)
+
+    auto style_sheet_it = css_style_sheet_to_inspector_style_sheet_.find(
+        const_cast<CSSStyleSheet*>(css_style_sheet));
+    if (style_sheet_it == css_style_sheet_to_inspector_style_sheet_.end())
       continue;
+    InspectorStyleSheet* style_sheet = style_sheet_it->value;
 
     HeapHashMap<Member<const StyleRule>, Member<CSSStyleRule>> rule_to_css_rule;
     BuildRulesMap(style_sheet, &rule_to_css_rule);
@@ -2547,13 +2550,13 @@ Response InspectorCSSAgent::takeCoverageDelta(
       CSSStyleRule* css_style_rule = rule_to_css_rule.at(used_rule);
       if (!css_style_rule)
         continue;
+      auto it = css_style_sheet_to_inspector_style_sheet_.find(
+          const_cast<CSSStyleSheet*>(css_style_rule->parentStyleSheet()));
+      if (it == css_style_sheet_to_inspector_style_sheet_.end())
+        continue;
       // If the rule comes from an @import'ed file, the `rule_style_sheet` is
       // different from `style_sheet`.
-      InspectorStyleSheet* rule_style_sheet =
-          css_style_sheet_to_inspector_style_sheet_.DeprecatedAtOrEmptyValue(
-              const_cast<CSSStyleSheet*>(css_style_rule->parentStyleSheet()));
-      if (!rule_style_sheet)
-        continue;
+      InspectorStyleSheet* rule_style_sheet = it->value;
       if (std::unique_ptr<protocol::CSS::RuleUsage> rule_usage_object =
               rule_style_sheet->BuildObjectForRuleUsage(css_style_rule, true)) {
         (*result)->emplace_back(std::move(rule_usage_object));
