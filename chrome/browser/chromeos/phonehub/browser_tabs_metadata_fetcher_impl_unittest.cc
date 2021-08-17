@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chromeos/phonehub/browser_tabs_metadata_fetcher_impl.h"
 
+#include <deque>
+
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/favicon/core/history_ui_favicon_request_handler.h"

@@ -11,6 +11,7 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/un.h>
+#include <unistd.h>
 
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
