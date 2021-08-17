@@ -4610,6 +4610,14 @@ interface MediaStreamTrackEvent : Event
     attribute @@toStringTag
     getter track
     method constructor
+interface MediaStreamTrackGenerator : MediaStreamTrack
+    attribute @@toStringTag
+    getter writable
+    method constructor
+interface MediaStreamTrackProcessor
+    attribute @@toStringTag
+    getter readable
+    method constructor
 interface MessageChannel
     attribute @@toStringTag
     getter port1
