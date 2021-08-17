@@ -360,8 +360,7 @@ void UkmRecorderImpl::StoreRecordingsInReport(Report* report) {
     // Don't keep sources of these types after current report because their
     // entries are logged only at source creation time.
     SourceIdType type = GetSourceIdType(kv.first);
-    if (type == ukm::SourceIdObj::Type::APP_ID ||
-        type == ukm::SourceIdObj::Type::HISTORY_ID ||
+    if (type == ukm::SourceIdObj::Type::HISTORY_ID ||
         type == ukm::SourceIdObj::Type::WEBAPK_ID ||
         type == SourceIdType::PAYMENT_APP_ID ||
         type == SourceIdType::NO_URL_ID) {
