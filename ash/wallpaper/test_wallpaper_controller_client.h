@@ -35,7 +35,10 @@ class TestWallpaperControllerClient : public WallpaperControllerClient {
     return fetch_daily_refresh_wallpaper_param_;
   }
   AccountId get_save_wallpaper_to_drive_fs_account_id() const {
-    return save_wallpaper_to_drive_fs_account_id;
+    return save_wallpaper_to_drive_fs_account_id_;
+  }
+  AccountId get_wallpaper_path_from_drive_fs_account_id() const {
+    return get_wallpaper_path_from_drive_fs_account_id_;
   }
 
   void set_fetch_daily_refresh_info_fails(bool fails) {
@@ -73,7 +76,8 @@ class TestWallpaperControllerClient : public WallpaperControllerClient {
   size_t migrate_collection_id_from_chrome_app_count_ = 0;
   std::string fetch_daily_refresh_wallpaper_param_;
   bool fetch_daily_refresh_info_fails_ = false;
-  AccountId save_wallpaper_to_drive_fs_account_id;
+  AccountId get_wallpaper_path_from_drive_fs_account_id_;
+  AccountId save_wallpaper_to_drive_fs_account_id_;
   std::unordered_map<AccountId, std::string> fake_files_ids_;
 };
 

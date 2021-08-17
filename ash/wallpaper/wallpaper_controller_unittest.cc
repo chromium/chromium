@@ -308,7 +308,7 @@ void AssertWallpaperInfoInPrefs(const PrefService* pref_service,
 
 WallpaperInfo InfoWithType(WallpaperType type) {
   return WallpaperInfo(std::string(), WALLPAPER_LAYOUT_CENTER_CROPPED, type,
-                       base::Time::Now().LocalMidnight());
+                       base::Time::Now());
 }
 
 base::Time DayBeforeYesterdayish() {
@@ -3106,8 +3106,10 @@ TEST_F(WallpaperControllerTest,
                           GetProfilePrefService(account_id_1),
                           prefs::kSyncableWallpaperInfo);
 
-  PutWallpaperInfoInPrefs(account_id_1, InfoWithType(THIRDPARTY),
-                          GetLocalPrefService(), prefs::kUserWallpaperInfo);
+  WallpaperInfo local_info = InfoWithType(THIRDPARTY);
+  local_info.date = DayBeforeYesterdayish();
+  PutWallpaperInfoInPrefs(account_id_1, local_info, GetLocalPrefService(),
+                          prefs::kUserWallpaperInfo);
 
   client_.ResetCounts();
 
@@ -3147,12 +3149,15 @@ TEST_F(WallpaperControllerTest, HandleWallpaperInfoSyncedLocalIsPolicy) {
   EXPECT_NE(DEFAULT, actual_info.type);
 }
 
-TEST_F(WallpaperControllerTest, HandleWallpaperInfoSyncedLocalIsThirdParty) {
+TEST_F(WallpaperControllerTest,
+       HandleWallpaperInfoSyncedLocalIsThirdPartyAndOlder) {
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitAndEnableFeature(features::kWallpaperWebUI);
 
-  PutWallpaperInfoInPrefs(account_id_1, InfoWithType(THIRDPARTY),
-                          GetLocalPrefService(), prefs::kUserWallpaperInfo);
+  WallpaperInfo local_info = InfoWithType(THIRDPARTY);
+  local_info.date = DayBeforeYesterdayish();
+  PutWallpaperInfoInPrefs(account_id_1, local_info, GetLocalPrefService(),
+                          prefs::kUserWallpaperInfo);
 
   SimulateUserLogin(kUser1);
   PutWallpaperInfoInPrefs(account_id_1, InfoWithType(DEFAULT),
@@ -3161,6 +3166,25 @@ TEST_F(WallpaperControllerTest, HandleWallpaperInfoSyncedLocalIsThirdParty) {
   WallpaperInfo actual_info;
   EXPECT_TRUE(controller_->GetUserWallpaperInfo(account_id_1, &actual_info));
   EXPECT_EQ(DEFAULT, actual_info.type);
+}
+
+TEST_F(WallpaperControllerTest,
+       HandleWallpaperInfoSyncedLocalIsThirdPartyAndNewer) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(features::kWallpaperWebUI);
+
+  PutWallpaperInfoInPrefs(account_id_1, InfoWithType(THIRDPARTY),
+                          GetLocalPrefService(), prefs::kUserWallpaperInfo);
+
+  WallpaperInfo synced_info = InfoWithType(DEFAULT);
+  synced_info.date = DayBeforeYesterdayish();
+  SimulateUserLogin(kUser1);
+  PutWallpaperInfoInPrefs(account_id_1, synced_info,
+                          GetProfilePrefService(account_id_1),
+                          prefs::kSyncableWallpaperInfo);
+  WallpaperInfo actual_info;
+  EXPECT_TRUE(controller_->GetUserWallpaperInfo(account_id_1, &actual_info));
+  EXPECT_EQ(THIRDPARTY, actual_info.type);
 }
 
 TEST_F(WallpaperControllerTest, HandleWallpaperInfoSyncedOnline) {
@@ -3195,8 +3219,6 @@ TEST_F(WallpaperControllerTest, HandleWallpaperInfoSyncedOnline) {
   // it succeeds this time because |SetOnlineWallpaperFromData| has saved the
   // file.
   ClearWallpaperCount();
-  WallpaperInfo expected_info(kDummyUrl, WALLPAPER_LAYOUT_CENTER_CROPPED,
-                              ONLINE, base::Time::Now().LocalMidnight());
   PutWallpaperInfoInPrefs(account_id_1, InfoWithType(ONLINE),
                           GetProfilePrefService(account_id_1),
                           prefs::kSyncableWallpaperInfo);
@@ -3479,6 +3501,9 @@ TEST_F(WallpaperControllerTest, OnGoogleDriveMounted_OldLocalInfo) {
 
   controller_->OnGoogleDriveMounted(account_id_1);
   EXPECT_FALSE(client_.get_save_wallpaper_to_drive_fs_account_id().is_valid());
+  // This is called by WallpaperController::HandleCustomWallpaperSyncedIn.
+  EXPECT_EQ(client_.get_wallpaper_path_from_drive_fs_account_id(),
+            account_id_1);
 }
 
 TEST_F(WallpaperControllerTest, OnGoogleDriveMounted_NewLocalInfo) {
