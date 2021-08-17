@@ -9,6 +9,8 @@ from unittest.mock import patch, mock_open, call
 
 import generate_policy_source
 
+from generate_policy_source import PolicyDetails
+
 
 class CppGenerationTest(unittest.TestCase):
 
@@ -26,9 +28,48 @@ class CppGenerationTest(unittest.TestCase):
           },
           "supported_on": ["chrome_os:1-"],
           "id": 1,
-          "caption": "caption",
           "tags": [],
-          "desc": "desc"
+          "caption": "ExampleStringPolicy caption",
+          "desc": "ExampleStringPolicy desc"
+      }, {
+          "name": "ExampleBoolPolicy",
+          "type": "main",
+          "schema": {
+              "type": "boolean"
+          },
+          "supported_on": ["chrome_os:1-"],
+          "id": 2,
+          "tags": [],
+          "caption": "ExampleBoolPolicy caption",
+          "desc": "ExampleBoolPolicy desc",
+      }, {
+          "name": "ExampleBoolMergeMetapolicy",
+          "type": "main",
+          "schema": {
+              "type": "boolean"
+          },
+          "supported_on": ["chrome_os:1-"],
+          "features": {
+              "metapolicy_type": "merge",
+          },
+          "id": 3,
+          "tags": [],
+          "caption": "ExampleBoolMergeMetapolicy caption",
+          "desc": "ExampleBoolMergeMetapolicy desc",
+      }, {
+          "name": "ExampleBoolPrecedenceMetapolicy",
+          "type": "main",
+          "schema": {
+              "type": "boolean"
+          },
+          "supported_on": ["chrome_os:1-"],
+          "features": {
+              "metapolicy_type": "precedence",
+          },
+          "id": 4,
+          "tags": [],
+          "caption": "ExampleBoolPrecedenceMetapolicy caption",
+          "desc": "ExampleBoolPrecedenceMetapolicy desc",
       }],
       "policy_atomic_group_definitions": []
   }
@@ -123,6 +164,11 @@ import "policy_common_definitions{}.proto";
                                          full_runtime_suffix)),
             call('message CloudPolicySettings {\n'),
             call('  optional StringPolicyProto ExampleStringPolicy = 3;\n'),
+            call('  optional BooleanPolicyProto ExampleBoolPolicy = 4;\n'),
+            call('  optional BooleanPolicyProto '
+                 'ExampleBoolMergeMetapolicy = 5;\n'),
+            call('  optional BooleanPolicyProto '
+                 'ExampleBoolPrecedenceMetapolicy = 6;\n'),
             call('}\n\n'),
         ])
 
@@ -161,11 +207,11 @@ import "policy_common_definitions{}.proto";
                 header_write_call.format(full_runtime_comment,
                                          full_runtime_suffix)),
             call('// PBs for individual settings.\n\n'),
-            call('// caption'),
+            call('// ExampleStringPolicy caption'),
             call('\n'),
             call('//'),
             call('\n'),
-            call('// desc'),
+            call('// ExampleStringPolicy desc'),
             call('\n'),
             call('//'),
             call('\n'),
@@ -175,6 +221,48 @@ import "policy_common_definitions{}.proto";
             call('  optional PolicyOptions policy_options = 1;\n'),
             call('  optional string ExampleStringPolicy = 2;\n'),
             call('}\n\n'),
+            call('// ExampleBoolPolicy caption'),
+            call('\n'),
+            call('//'),
+            call('\n'),
+            call('// ExampleBoolPolicy desc'),
+            call('\n'),
+            call('//'),
+            call('\n'),
+            call('// Supported on: chrome_os'),
+            call('\n'),
+            call('message ExampleBoolPolicyProto {\n'),
+            call('  optional PolicyOptions policy_options = 1;\n'),
+            call('  optional bool ExampleBoolPolicy = 2;\n'),
+            call('}\n\n'),
+            call('// ExampleBoolMergeMetapolicy caption'),
+            call('\n'),
+            call('//'),
+            call('\n'),
+            call('// ExampleBoolMergeMetapolicy desc'),
+            call('\n'),
+            call('//'),
+            call('\n'),
+            call('// Supported on: chrome_os'),
+            call('\n'),
+            call('message ExampleBoolMergeMetapolicyProto {\n'),
+            call('  optional PolicyOptions policy_options = 1;\n'),
+            call('  optional bool ExampleBoolMergeMetapolicy = 2;\n'),
+            call('}\n\n'),
+            call('// ExampleBoolPrecedenceMetapolicy caption'),
+            call('\n'),
+            call('//'),
+            call('\n'),
+            call('// ExampleBoolPrecedenceMetapolicy desc'),
+            call('\n'),
+            call('//'),
+            call('\n'),
+            call('// Supported on: chrome_os'),
+            call('\n'),
+            call('message ExampleBoolPrecedenceMetapolicyProto {\n'),
+            call('  optional PolicyOptions policy_options = 1;\n'),
+            call('  optional bool ExampleBoolPrecedenceMetapolicy = 2;\n'),
+            call('}\n\n'),
             call('''// --------------------------------------------------
 // Big wrapper PB containing the above groups.
 
@@ -182,9 +270,30 @@ message ChromeSettingsProto {
 '''),
             call(
                 '  optional ExampleStringPolicyProto ExampleStringPolicy = 3;\n'
-            ),
+                '  optional ExampleBoolPolicyProto ExampleBoolPolicy = 4;\n'
+                '  optional ExampleBoolMergeMetapolicyProto '
+                'ExampleBoolMergeMetapolicy = 5;\n'
+                '  optional ExampleBoolPrecedenceMetapolicyProto '
+                'ExampleBoolPrecedenceMetapolicy = 6;\n'),
             call('}\n\n'),
         ])
+
+  def testGetMetapoliciesOfType(self):
+    merge_metapolicies = generate_policy_source._GetMetapoliciesOfType(
+        self.policies, "merge")
+    self.assertListEqual(["ExampleBoolMergeMetapolicy"], merge_metapolicies)
+    self.assertEqual(1, len(merge_metapolicies))
+
+    precedence_metapolicies = generate_policy_source._GetMetapoliciesOfType(
+        self.policies, "precedence")
+    self.assertListEqual(["ExampleBoolPrecedenceMetapolicy"],
+                         precedence_metapolicies)
+    self.assertEqual(1, len(precedence_metapolicies))
+
+    invalid_metapolicies = generate_policy_source._GetMetapoliciesOfType(
+        self.policies, "invalid")
+    self.assertListEqual([], invalid_metapolicies)
+    self.assertEqual(0, len(invalid_metapolicies))
 
 
 if __name__ == '__main__':

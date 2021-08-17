@@ -148,6 +148,9 @@ ALL_SUPPORTED_PLATFORMS = [
 # The list of platforms that chrome.* represents.
 CHROME_STAR_PLATFORMS = ['chrome.win', 'chrome.mac', 'chrome.linux']
 
+# List of supported metapolicy types.
+METAPOLICY_TYPES = ['merge', 'precedence']
+
 
 # Helper function to determine if a given type defines a key in a dictionary
 # that is used to condition certain backwards compatibility checks.
@@ -1029,6 +1032,18 @@ class PolicyTemplateChecker(object):
                                         bool,
                                         optional=True,
                                         container_name='features')
+
+      # 'metapolicy_type' feature must be one of the supported types.
+      metapolicy_type = self._CheckContains(features,
+                                            'metapolicy_type',
+                                            str,
+                                            optional=True,
+                                            container_name='features')
+      if metapolicy_type and metapolicy_type not in METAPOLICY_TYPES:
+        self._Error(
+            'The value entered for metapolicy_type is not supported. '
+            'Please use one of [%s].' % ", ".join(METAPOLICY_TYPES), 'policy',
+            policy.get('name'), metapolicy_type)
 
       if cloud_only and platform_only:
         self._Error(

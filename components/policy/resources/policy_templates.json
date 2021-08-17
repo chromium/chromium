@@ -173,6 +173,15 @@
 #   without any user interface for administrator. It can only be used for
 #   policies with the 'cloud_only' tag. Policy with the 'unlisted' tag will be
 #   hidden from all documentations, policy templates and Admin Console UI.
+#   'metapolicy_type' determines the type of metapolicy a policy is. A
+#   metapolicy is a policy which affects how other policies are applied.
+#   Precedence metapolicies affect how policies are prioritized depending on
+#   their scope, source, and other factors. Merging metapolicies determine which
+#   list or dictionary policies can have their values combined into a single
+#   policy. If the setting is missing, it is assumed that the policy is not a
+#   metapolicy. The supported types are 'merge' (example policy is
+#   PolicyListMultipleSourceMergeList) and 'precedence' (example policy is
+#   CloudPolicyOverridesPlatformPolicy).
 #
 #   The 'max_size' key is used to specify the maximal size of the external data
 #   that a policy can reference, in bytes. This annotation is compulsory for
@@ -285,11 +294,12 @@
 #   handling must be manually implemented.
 #
 # Atomic Policy Group:
-#   An atomic policy group is a group of policies that logically belong together and influence
-#   a certain aspect of the browser only when considered together and should be treated as a single policy
-#   when merging policies from multiple sources. They all have to be set in the same
-#   source to take effect. In case members of a policy group are set at different sources,
-#   only the policies from the source with the highest priority will be used.
+#   An atomic policy group is a group of policies that logically belong together
+#   and influence a certain aspect of the browser only when considered together
+#   and should be treated as a single policy when merging policies from multiple
+#   sources. They all have to be set in the same source to take effect. In case
+#   members of a policy group are set at different sources, only the policies
+#   from the source with the highest priority will be used.
 #
 
   'risk_tag_definitions' : [
@@ -8874,6 +8884,7 @@
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
+        'metapolicy_type': 'merge',
       },
       'example_value': ['ExtensionInstallAllowlist', 'ExtensionInstallBlocklist'],
       'id': 554,
@@ -8942,6 +8953,7 @@
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
+        'metapolicy_type': 'merge',
       },
       'example_value': ['ExtensionSettings'],
       'id': 565,
@@ -8967,6 +8979,7 @@
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
+        'metapolicy_type': 'merge',
       },
       'items': [
         {
@@ -18277,6 +18290,7 @@
         'dynamic_refresh': False,
         'per_profile': False,
         'platform_only': True,
+        'metapolicy_type': 'precedence',
       },
       'example_value': False,
       'id': 381,
@@ -27429,6 +27443,10 @@ The recommended way to configure policy on Windows is via GPO, although provisio
     'doc_feature_unlisted': {
       'desc': '''The name of the feature that indicates whether a policy is set from cloud without any user interface.''',
       'text': '''Unlisted'''
+    },
+    'doc_feature_metapolicy_type': {
+      'desc': '''The name of the feature that indicates the type of metapolicy a policy is, if any.''',
+      'text': '''Metapolicy Type'''
     },
     'doc_deprecated': {
       'desc': '''Text appended in parentheses to the policy name to indicate that it has been deprecated''',

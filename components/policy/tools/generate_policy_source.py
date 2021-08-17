@@ -97,6 +97,7 @@ class PolicyDetails:
     self.can_be_recommended = features.get('can_be_recommended', False)
     self.can_be_mandatory = features.get('can_be_mandatory', True)
     self.internal_only = features.get('internal_only', False)
+    self.metapolicy_type = features.get('metapolicy_type', '')
     self.is_deprecated = policy.get('deprecated', False)
     self.is_device_only = policy.get('device_only', False)
     self.is_future = policy.get('future', False)
@@ -477,6 +478,14 @@ def _LoadJSONFile(json_file):
 #------------------ policy constants header ------------------------#
 
 
+# Return a list of all policies of type |metapolicy_type|.
+def _GetMetapoliciesOfType(policies, metapolicy_type):
+  return [
+      policy.name for policy in policies
+      if policy.metapolicy_type == metapolicy_type
+  ]
+
+
 def _WritePolicyConstantHeader(policies, policy_atomic_groups, target_platform,
                                f, risk_tags):
   f.write('''#ifndef COMPONENTS_POLICY_POLICY_CONSTANTS_H_
@@ -543,6 +552,14 @@ const internal::SchemaData* GetChromeSchemaData();
   f.write('extern const AtomicGroup kPolicyAtomicGroupMappings[];\n\n')
   f.write('extern const size_t kPolicyAtomicGroupMappingsLength;\n\n')
 
+  # Declare arrays of metapolicies.
+  f.write('// Arrays of metapolicies.\n' 'namespace metapolicy {\n\n')
+  f.write('extern const char* kMerge[%s];\n' %
+          len(_GetMetapoliciesOfType(policies, METAPOLICY_TYPE['merge'])))
+  f.write('extern const char* kPrecedence[%s];\n\n' %
+          len(_GetMetapoliciesOfType(policies, METAPOLICY_TYPE['precedence'])))
+  f.write('}  // namespace metapolicy\n\n')
+
   f.write('enum class StringPolicyType {\n'
           '  STRING,\n'
           '  JSON,\n'
@@ -550,7 +567,7 @@ const internal::SchemaData* GetChromeSchemaData();
           '};\n\n')
 
   # User policy proto pointers, one struct for each protobuf type.
-  protobuf_types = _GetProtobufTypes(policies)
+  protobuf_types = _GetProtobufTypes()
   for protobuf_type in protobuf_types:
     _WriteChromePolicyAccessHeader(f, protobuf_type)
 
@@ -607,6 +624,11 @@ SIMPLE_SCHEMA_NAME_MAP = {
     'null': 'Type::NONE',
     'number': 'Type::DOUBLE',
     'string': 'Type::STRING',
+}
+
+METAPOLICY_TYPE = {
+    'merge': 'merge',
+    'precedence': 'precedence',
 }
 
 INVALID_INDEX = -1
@@ -1266,10 +1288,28 @@ void SetEnterpriseUsersDefaults(PolicyMap* policy_map) {
   f.write('const size_t kPolicyAtomicGroupMappingsLength = %s;\n\n' %
           (atomic_groups_length))
 
+  f.write('namespace metapolicy {\n\n')
+  # Populate merge metapolicy array.
+  merge_metapolicies = _GetMetapoliciesOfType(policies,
+                                              METAPOLICY_TYPE['merge'])
+  f.write('const char* kMerge[%s] = {\n' % len(merge_metapolicies))
+  for metapolicy in merge_metapolicies:
+    f.write('  key::k%s,\n' % metapolicy)
+  f.write('};\n\n')
+
+  # Populate precedence metapolicy array.
+  precedence_metapolicies = _GetMetapoliciesOfType(
+      policies, METAPOLICY_TYPE['precedence'])
+  f.write('const char* kPrecedence[%s] = {\n' % len(precedence_metapolicies))
+  for metapolicy in precedence_metapolicies:
+    f.write('  key::k%s,\n' % metapolicy)
+  f.write('};\n\n')
+  f.write('}  // namespace metapolicy\n\n')
+
   supported_user_policies = [
       p for p in policies if p.is_supported and not p.is_device_only
   ]
-  protobuf_types = _GetProtobufTypes(supported_user_policies)
+  protobuf_types = _GetProtobufTypes()
   for protobuf_type in protobuf_types:
     _WriteChromePolicyAccessSource(supported_user_policies, f, protobuf_type)
 
@@ -1545,7 +1585,7 @@ def _GetSupportedChromeOSPolicies(policies, type):
 
 
 # Returns the list of all policy.policy_protobuf_type strings from |policies|.
-def _GetProtobufTypes(policies):
+def _GetProtobufTypes():
   return sorted(['Integer', 'Boolean', 'String', 'StringList'])
 
 
@@ -1573,7 +1613,7 @@ def _WriteChromeOSPolicyConstantsHeader(policies, policy_atomic_groups,
 
   # Forward declarations.
   supported_user_policies = _GetSupportedChromeOSPolicies(policies, 'user')
-  protobuf_types = _GetProtobufTypes(supported_user_policies)
+  protobuf_types = _GetProtobufTypes()
   f.write('namespace enterprise_management {\n' 'class CloudPolicySettings;\n')
   for protobuf_type in protobuf_types:
     f.write('class %sPolicyProto;\n' % protobuf_type)
@@ -1644,7 +1684,7 @@ def _WriteChromeOSPolicyConstantsSource(policies, policy_atomic_groups,
 
   # User policy proto pointers, one struct for each protobuf type.
   supported_user_policies = _GetSupportedChromeOSPolicies(policies, 'user')
-  protobuf_types = _GetProtobufTypes(supported_user_policies)
+  protobuf_types = _GetProtobufTypes()
   for protobuf_type in protobuf_types:
     _WriteChromeOSPolicyAccessSource(supported_user_policies, f, protobuf_type)
 
