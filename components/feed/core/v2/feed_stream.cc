@@ -89,6 +89,21 @@ void PopulateDebugStreamData(
   ::feed::prefs::SetDebugStreamData(debug_data, profile_prefs);
 }
 
+// Will check all sources of ordering setting and always return a valid result.
+ContentOrder GetValidWebFeedContentOrder(const PrefService& pref_service) {
+  // First priority is the prefs stored order choice.
+  ContentOrder pref_order = prefs::GetWebFeedContentOrder(pref_service);
+  if (pref_order != ContentOrder::kUnspecified)
+    return pref_order;
+  // Fallback to Finch determined order.
+  std::string finch_order = base::GetFieldTrialParamValueByFeature(
+      kWebFeed, "following_feed_content_order");
+  if (finch_order == "reverse_chron")
+    return ContentOrder::kReverseChron;
+  // Defaults to grouped, encompassing finch_order == "grouped".
+  return ContentOrder::kGrouped;
+}
+
 }  // namespace
 
 FeedStream::Stream::Stream() = default;
@@ -875,7 +890,7 @@ RequestMetadata FeedStream::GetRequestMetadata(const StreamType& stream_type,
       notice_card_tracker_.HasAcknowledgedNoticeCard();
   result.autoplay_enabled = delegate_->IsAutoplayEnabled();
   if (stream_type.IsWebFeed()) {
-    result.content_order = prefs::GetWebFeedContentOrder(*profile_prefs_);
+    result.content_order = GetValidWebFeedContentOrder(*profile_prefs_);
   }
 
   if (is_for_next_page) {
@@ -1258,10 +1273,12 @@ void FeedStream::SetContentOrder(const StreamType& stream_type,
                 << stream_type;
     return;
   }
-  if (prefs::GetWebFeedContentOrder(*profile_prefs_) == content_order)
+
+  ContentOrder current_order = GetValidWebFeedContentOrder(*profile_prefs_);
+  prefs::SetWebFeedContentOrder(*profile_prefs_, content_order);
+  if (current_order == content_order)
     return;
 
-  prefs::SetWebFeedContentOrder(*profile_prefs_, content_order);
   // Note that ForceRefreshTask clears stored content and forces a network
   // refresh. It is possible to instead cache each ordering of the Feed
   // separately, so that users who switch back and forth can do so more quickly
@@ -1275,6 +1292,17 @@ void FeedStream::SetContentOrder(const StreamType& stream_type,
   task_queue_.AddTask(
       std::make_unique<offline_pages::ClosureTask>(base::BindOnce(
           &FeedStream::ForceRefreshTask, base::Unretained(this), stream_type)));
+}
+
+ContentOrder FeedStream::GetContentOrderFromPrefs(
+    const StreamType& stream_type) {
+  if (!stream_type.IsWebFeed()) {
+    NOTREACHED()
+        << "GetContentOrderFromPrefs is not supported for this stream_type "
+        << stream_type;
+    return ContentOrder::kUnspecified;
+  }
+  return prefs::GetWebFeedContentOrder(*profile_prefs_);
 }
 
 }  // namespace feed

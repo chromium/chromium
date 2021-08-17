@@ -120,10 +120,12 @@ enum class FeedUserActionType {
 // The requested order of the Feed content.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.feed.v2
 enum class ContentOrder : int {
+  // Content order is not specified.
+  kUnspecified = 0,
   // Content is grouped by provider.
-  kGrouped,
+  kGrouped = 1,
   // Content is ungrouped, and arranged in reverse chronological order.
-  kReverseChron,
+  kReverseChron = 2,
 };
 
 }  // namespace feed

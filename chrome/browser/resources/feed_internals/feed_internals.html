@@ -31,16 +31,33 @@ found in the LICENSE file.
   <p>
     <label>
       <input type="checkbox" id="enable-webfeed-follow-intro-debug"
-            name="enable-webfeed-follow-intro-debug">
+             name="enable-webfeed-follow-intro-debug">
       Enable IPH debug mode
     </label>
   </p>
-
   <p>
     <label>
       <input type="checkbox" id="use-feed-query-requests-for-web-feeds"
-            name="use-feed-query-requests-for-web-feeds">
+             name="use-feed-query-requests-for-web-feeds">
       Use legacy endpoint for Web Feed content fetches
+    </label>
+  </p>
+  <p>
+    Following feed order:
+    <label>
+      <input type="radio" id="following-feed-order-unset"
+             name="following-feed-order">
+      Unset
+    </label>
+    <label>
+      <input type="radio" id="following-feed-order-grouped"
+             name="following-feed-order">
+      Grouped
+    </label>
+    <label>
+      <input type="radio" id="following-feed-order-reverse-chron"
+             name="following-feed-order">
+      Reverse-Chron
     </label>
   </p>
 

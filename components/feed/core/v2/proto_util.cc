@@ -149,8 +149,11 @@ feedwire::Request CreateFeedQueryRequest(
   query.set_reason(request_reason);
   switch (request_metadata.content_order) {
     case ContentOrder::kReverseChron:
+      query.set_order_by(
+          feedwire::FeedQuery::ContentOrder::FeedQuery_ContentOrder_RECENT);
       break;
     case ContentOrder::kGrouped:
+    default:
       query.set_order_by(
           feedwire::FeedQuery::ContentOrder::FeedQuery_ContentOrder_GROUPED);
       break;
