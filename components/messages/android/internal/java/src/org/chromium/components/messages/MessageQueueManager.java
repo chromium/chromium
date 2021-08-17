@@ -114,11 +114,9 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
             mScopeChangeController.lastMessageDismissed(scopeKey);
         }
 
+        message.dismiss(dismissReason);
         if (mCurrentDisplayedMessage == messageState) {
-            hideMessage(updateCurrentMessage,
-                    () -> message.dismiss(dismissReason), updateCurrentMessage);
-        } else {
-            message.dismiss(dismissReason);
+            hideMessage(updateCurrentMessage, updateCurrentMessage);
         }
         MessagesMetrics.recordDismissReason(message.getMessageIdentifier(), dismissReason);
     }
@@ -180,7 +178,7 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
             MessageState candidate = getNextMessage();
             // Another higher priority message has been enqueued.
             if (candidate != mCurrentDisplayedMessage || isQueueSuspended()) {
-                hideMessage(!isQueueSuspended() && animateTransition, null, !isQueueSuspended());
+                hideMessage(!isQueueSuspended() && animateTransition, !isQueueSuspended());
             }
         }
     }
@@ -200,12 +198,10 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
         return mMessages;
     }
 
-    private void hideMessage(
-            boolean animate, Runnable dismissAfterHiding, boolean updateCurrentMessage) {
+    private void hideMessage(boolean animate, boolean updateCurrentMessage) {
         mCurrentDisplayedMessage.handler.hide(animate, () -> {
             mMessageQueueDelegate.onFinishHiding();
             mCurrentDisplayedMessage = null;
-            if (dismissAfterHiding != null) dismissAfterHiding.run();
             if (updateCurrentMessage) updateCurrentDisplayedMessage(true);
         });
     }

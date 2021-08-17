@@ -119,7 +119,6 @@ public class SingleActionMessage implements MessageStateHandler {
      */
     @Override
     public void dismiss(@DismissReason int dismissReason) {
-        if (mMessageBanner != null) mMessageBanner.dismiss();
         Callback<Integer> onDismissed = mModel.get(MessageBannerProperties.ON_DISMISSED);
         if (onDismissed != null) onDismissed.onResult(dismissReason);
         if (dismissReason == DismissReason.PRIMARY_ACTION
