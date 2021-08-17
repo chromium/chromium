@@ -4,7 +4,17 @@
 
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
+import("//tools/grit/preprocess_if_expr.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
+
+# preprocess for <if expr>.
+preprocess_if_expr("preprocess") {
+  in_folder = "./"
+  out_folder = "$target_gen_dir/preprocess"
+  out_manifest = "$target_gen_dir/manifest.json"
+  in_files = [ "download_internals.js" ]
+}
+
 generate_grd("build_grd") {
   grd_prefix = "download_internals"
   out_grd = "$target_gen_dir/resources.grd"
@@ -12,10 +22,11 @@ generate_grd("build_grd") {
     "download_internals_browser_proxy.js",
     "download_internals.css",
     "download_internals.html",
-    "download_internals.js",
     "download_internals_visuals.js",
   ]
   input_files_base_dir = rebase_path(".", "//")
+  deps = [ ":preprocess" ]
+  manifest_files = [ "$target_gen_dir/manifest.json" ]
 }
 
 grit("resources") {
