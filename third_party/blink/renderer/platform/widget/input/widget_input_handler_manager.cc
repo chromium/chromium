@@ -939,7 +939,11 @@ void WidgetInputHandlerManager::ObserveGestureEventOnInputHandlingThread(
     const cc::InputHandlerScrollResult& scroll_result) {
   if (!input_handler_proxy_)
     return;
-  DCHECK(input_handler_proxy_->elastic_overscroll_controller());
+  // The elastic overscroll controller on android can be dynamically created or
+  // removed by changing prefers-reduced-motion. When removed, we do not need to
+  // observe the event.
+  if (!input_handler_proxy_->elastic_overscroll_controller())
+    return;
   input_handler_proxy_->elastic_overscroll_controller()
       ->ObserveGestureEventAndResult(gesture_event, scroll_result);
 }
