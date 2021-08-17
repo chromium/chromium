@@ -36,6 +36,10 @@ namespace version_info {
 enum class Channel;
 }  // namespace version_info
 
+namespace policy {
+class PolicyMap;
+}  // namespace policy
+
 namespace user_manager {
 class User;
 }  // namespace user_manager
@@ -219,9 +223,16 @@ bool IsDataWipeRequiredForTesting(base::Version data_version,
 base::Version GetRootfsLacrosVersionMayBlock(
     const base::FilePath& version_file_path);
 
+// To be called at primary user login, to cache the policy value for launch
+// switch.
+void CacheLacrosLaunchSwitch(const policy::PolicyMap& map);
+
 // Exposed for testing. Returns the lacros integration suggested by the policy
 // lacros-availability, modified by Finch flags and user flags as appropriate.
 LacrosLaunchSwitch GetLaunchSwitchForTesting();
+
+// Clears the cached values for policy data.
+void ClearLacrosLaunchSwitchCacheForTest();
 
 }  // namespace browser_util
 }  // namespace crosapi
