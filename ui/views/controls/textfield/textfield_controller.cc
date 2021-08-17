@@ -33,7 +33,7 @@ ui::mojom::DragOperation TextfieldController::OnDrop(
 
 views::View::DropCallback TextfieldController::GetDropCallback(
     const ui::DropTargetEvent& event) {
-  return base::NullCallback();
+  return base::DoNothing();
 }
 
 }  // namespace views

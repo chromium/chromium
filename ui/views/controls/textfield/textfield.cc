@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/auto_reset.h"
-#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -941,29 +940,43 @@ void Textfield::OnDragExited() {
 }
 
 DragOperation Textfield::OnPerformDrop(const ui::DropTargetEvent& event) {
-  auto cb = GetDropCallback(event);
-  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
-  std::move(cb).Run(event, output_drag_op);
-  return output_drag_op;
-}
-
-views::View::DropCallback Textfield::GetDropCallback(
-    const ui::DropTargetEvent& event) {
   DCHECK(CanDrop(event.data()));
-
   drop_cursor_visible_ = false;
 
   if (controller_) {
-    auto cb = controller_->GetDropCallback(event);
-    if (!cb.is_null())
-      return cb;
+    DragOperation drag_operation = controller_->OnDrop(event);
+    if (drag_operation != DragOperation::kNone)
+      return drag_operation;
   }
 
+  gfx::RenderText* render_text = GetRenderText();
   DCHECK(!initiating_drag_ ||
-         !GetRenderText()->IsPointInSelection(event.location()));
+         !render_text->IsPointInSelection(event.location()));
+  OnBeforeUserAction();
+  skip_input_method_cancel_composition_ = true;
 
-  return base::BindOnce(&Textfield::DropDraggedText,
-                        drop_weak_ptr_factory_.GetWeakPtr());
+  gfx::SelectionModel drop_destination_model =
+      render_text->FindCursorPosition(event.location());
+  std::u16string new_text;
+  event.data().GetString(&new_text);
+
+  // Delete the current selection for a drag and drop within this view.
+  const bool move = initiating_drag_ && !event.IsControlDown() &&
+                    event.source_operations() & ui::DragDropTypes::DRAG_MOVE;
+  if (move) {
+    // Adjust the drop destination if it is on or after the current selection.
+    size_t pos = drop_destination_model.caret_pos();
+    pos -= render_text->selection().Intersect(gfx::Range(0, pos)).length();
+    model_->DeletePrimarySelectionAndInsertTextAt(new_text, pos);
+  } else {
+    model_->MoveCursorTo(drop_destination_model);
+    // Drop always inserts text even if the textfield is not in insert mode.
+    model_->InsertText(new_text);
+  }
+  skip_input_method_cancel_composition_ = false;
+  UpdateAfterChange(TextChangeType::kUserTriggered, true);
+  OnAfterUserAction();
+  return move ? DragOperation::kMove : DragOperation::kCopy;
 }
 
 void Textfield::OnDragDone() {
@@ -1112,7 +1125,6 @@ void Textfield::OnCompositionTextConfirmedOrCleared() {
 
 void Textfield::OnTextChanged() {
   OnPropertyChanged(&model_ + kTextfieldText, kPropertyEffectsPaint);
-  drop_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -2624,39 +2636,6 @@ void Textfield::OnCursorBlinkTimerFired() {
 void Textfield::OnEnabledChanged() {
   if (GetInputMethod())
     GetInputMethod()->OnTextInputTypeChanged(this);
-}
-
-void Textfield::DropDraggedText(const ui::DropTargetEvent& event,
-                                ui::mojom::DragOperation& output_drag_op) {
-  DCHECK(CanDrop(event.data()));
-
-  gfx::RenderText* render_text = GetRenderText();
-
-  OnBeforeUserAction();
-  skip_input_method_cancel_composition_ = true;
-
-  gfx::SelectionModel drop_destination_model =
-      render_text->FindCursorPosition(event.location());
-  std::u16string new_text;
-  event.data().GetString(&new_text);
-
-  // Delete the current selection for a drag and drop within this view.
-  const bool move = initiating_drag_ && !event.IsControlDown() &&
-                    event.source_operations() & ui::DragDropTypes::DRAG_MOVE;
-  if (move) {
-    // Adjust the drop destination if it is on or after the current selection.
-    size_t pos = drop_destination_model.caret_pos();
-    pos -= render_text->selection().Intersect(gfx::Range(0, pos)).length();
-    model_->DeletePrimarySelectionAndInsertTextAt(new_text, pos);
-  } else {
-    model_->MoveCursorTo(drop_destination_model);
-    // Drop always inserts text even if the textfield is not in insert mode.
-    model_->InsertText(new_text);
-  }
-  skip_input_method_cancel_composition_ = false;
-  UpdateAfterChange(TextChangeType::kUserTriggered, true);
-  OnAfterUserAction();
-  output_drag_op = move ? DragOperation::kMove : DragOperation::kCopy;
 }
 
 BEGIN_METADATA(Textfield, View)
