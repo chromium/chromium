@@ -84,6 +84,7 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
 @implementation UserSigninCoordinator
 
 @synthesize baseNavigationController = _baseNavigationController;
+@synthesize signinStateOnStart = _signinStateOnStart;
 
 #pragma mark - Public
 
@@ -177,14 +178,65 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
   [self.logger logSigninStarted];
 }
 
+// Interrupts the sign-in flow.
+// |signinCompletion(SigninCoordinatorResultInterrupted, nil)| is guaranteed to
+// be called before |completion()|.
+// |action| action describing how to interrupt the sign-in.
+// |completion| called once the sign-in is fully interrupted.
 - (void)interruptWithAction:(SigninCoordinatorInterruptAction)action
                  completion:(ProceduralBlock)completion {
+  if (self.mediator.isAuthenticationInProgress) {
+    [self.logger
+        logSigninCompletedWithResult:SigninCoordinatorResultInterrupted
+                        addedAccount:self.addAccountSigninCoordinator != nil
+               advancedSettingsShown:self.advancedSettingsSigninCoordinator !=
+                                     nil];
+  }
+
   SigninCompletionInfo* completionInfo =
       [SigninCompletionInfo signinCompletionInfoWithIdentity:nil];
-
-  [self interruptWithAction:action
-       signinCompletionInfo:completionInfo
-                 completion:completion];
+  __weak UserSigninCoordinator* weakSelf = self;
+  if (self.addAccountSigninCoordinator) {
+    // |self.addAccountSigninCoordinator| needs to be interupted before
+    // interrupting |self.viewController|.
+    // The add account view should not be dismissed since the
+    // |self.viewController| will take care of that according to |action|.
+    [self.addAccountSigninCoordinator
+        interruptWithAction:SigninCoordinatorInterruptActionNoDismiss
+                 completion:^{
+                   // |self.addAccountSigninCoordinator.signinCompletion|
+                   // is expected to be called before this block.
+                   // Therefore |weakSelf.addAccountSigninCoordinator| is
+                   // expected to be nil.
+                   DCHECK(!weakSelf.addAccountSigninCoordinator);
+                   [weakSelf interruptUserSigninUIWithAction:action
+                                        signinCompletionInfo:completionInfo
+                                                  completion:completion];
+                 }];
+    return;
+  } else if (self.advancedSettingsSigninCoordinator) {
+    // |self.viewController| has already been dismissed. The interruption should
+    // be sent to |self.advancedSettingsSigninCoordinator|.
+    DCHECK(!self.viewController);
+    DCHECK(!self.mediator);
+    DCHECK(!self.unifiedConsentCoordinator);
+    [self.advancedSettingsSigninCoordinator
+        interruptWithAction:action
+                 completion:^{
+                   // |self.advancedSettingsSigninCoordinator.signinCompletion|
+                   // is expected to be called before this block.
+                   // Therefore |weakSelf.advancedSettingsSigninCoordinator| is
+                   // expected to be nil.
+                   DCHECK(!weakSelf.advancedSettingsSigninCoordinator);
+                   if (completion) {
+                     completion();
+                   }
+                 }];
+    return;
+  }
+  [self interruptUserSigninUIWithAction:action
+                   signinCompletionInfo:completionInfo
+                             completion:completion];
 }
 
 - (void)stop {
@@ -485,68 +537,6 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
   [self.baseViewController presentViewController:self.viewController
                                         animated:YES
                                       completion:completion];
-}
-
-// Interrupts the sign-in flow.
-// |signinCompletion(SigninCoordinatorResultInterrupted, nil)| is guaranteed to
-// be called before |completion()|.
-// |action| action describing how to interrupt the sign-in.
-// |signinCompletionInfo| describes the completion info.
-// |completion| called once the sign-in is fully interrupted.
-- (void)interruptWithAction:(SigninCoordinatorInterruptAction)action
-       signinCompletionInfo:(SigninCompletionInfo*)signinCompletionInfo
-                 completion:(ProceduralBlock)completion {
-  if (self.mediator.isAuthenticationInProgress) {
-    [self.logger
-        logSigninCompletedWithResult:SigninCoordinatorResultInterrupted
-                        addedAccount:self.addAccountSigninCoordinator != nil
-               advancedSettingsShown:self.advancedSettingsSigninCoordinator !=
-                                     nil];
-  }
-
-  __weak UserSigninCoordinator* weakSelf = self;
-  if (self.addAccountSigninCoordinator) {
-    // |self.addAccountSigninCoordinator| needs to be interupted before
-    // interrupting |self.viewController|.
-    // The add account view should not be dismissed since the
-    // |self.viewController| will take care of that according to |action|.
-    [self.addAccountSigninCoordinator
-        interruptWithAction:SigninCoordinatorInterruptActionNoDismiss
-                 completion:^{
-                   // |self.addAccountSigninCoordinator.signinCompletion|
-                   // is expected to be called before this block.
-                   // Therefore |weakSelf.addAccountSigninCoordinator| is
-                   // expected to be nil.
-                   DCHECK(!weakSelf.addAccountSigninCoordinator);
-                   [weakSelf
-                       interruptUserSigninUIWithAction:action
-                                  signinCompletionInfo:signinCompletionInfo
-                                            completion:completion];
-                 }];
-    return;
-  } else if (self.advancedSettingsSigninCoordinator) {
-    // |self.viewController| has already been dismissed. The interruption should
-    // be sent to |self.advancedSettingsSigninCoordinator|.
-    DCHECK(!self.viewController);
-    DCHECK(!self.mediator);
-    DCHECK(!self.unifiedConsentCoordinator);
-    [self.advancedSettingsSigninCoordinator
-        interruptWithAction:action
-                 completion:^{
-                   // |self.advancedSettingsSigninCoordinator.signinCompletion|
-                   // is expected to be called before this block.
-                   // Therefore |weakSelf.advancedSettingsSigninCoordinator| is
-                   // expected to be nil.
-                   DCHECK(!weakSelf.advancedSettingsSigninCoordinator);
-                   if (completion) {
-                     completion();
-                   }
-                 }];
-    return;
-  }
-  [self interruptUserSigninUIWithAction:action
-                   signinCompletionInfo:signinCompletionInfo
-                             completion:completion];
 }
 
 // Interrupts the sign-in when |self.viewController| is presented, by dismissing

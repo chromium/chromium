@@ -341,6 +341,7 @@ TEST_F(UserSigninMediatorTest, CancelWithAuthenticationInProgress) {
 
   // Unsuccessful sign-in completion updates the primary button.
   OCMExpect([mediator_delegate_mock_ userSigninMediatorSigninFailed]);
+  OCMExpect([mediator_delegate_mock_ signinStateOnStart]);
 
   [mediator_ authenticateWithIdentity:identity_
                    authenticationFlow:authentication_flow_];
@@ -363,6 +364,7 @@ TEST_F(UserSigninMediatorTest,
 
   // Unsuccessful sign-in completion updates the primary button.
   OCMExpect([mediator_delegate_mock_ userSigninMediatorSigninFailed]);
+  OCMExpect([mediator_delegate_mock_ signinStateOnStart]);
 
   [mediator_ authenticateWithIdentity:identity_
                    authenticationFlow:authentication_flow_];
@@ -378,6 +380,7 @@ TEST_F(UserSigninMediatorTest,
 
   // Unsuccessful sign-in completion updates the primary button.
   OCMExpect([mediator_delegate_mock_ userSigninMediatorSigninFailed]);
+  OCMExpect([mediator_delegate_mock_ signinStateOnStart]);
 
   [mediator_ authenticateWithIdentity:identity_
                    authenticationFlow:authentication_flow_];

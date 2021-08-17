@@ -47,6 +47,9 @@ class UnifiedConsentService;
 // Called when the user fails.
 - (void)userSigninMediatorSigninFailed;
 
+// User's sign-in state before starting the coordinator.
+@property(nonatomic, assign, readonly) IdentitySigninState signinStateOnStart;
+
 @end
 
 // Mediator that handles the sign-in operation.
