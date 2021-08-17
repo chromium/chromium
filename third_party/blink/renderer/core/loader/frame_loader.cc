@@ -893,6 +893,11 @@ static void FillStaticResponseIfNeeded(WebNavigationParams* params,
   //
   // Similar to the missing archive resource case above, synthesise a resource
   // to commit.
+  //
+  // WebNavigationParams::FillStaticResponse() fills the response of |params|
+  // using |params|'s |url| which is the initial URL even after redirections. So
+  // updates the URL to the current URL before calling FillStaticResponse().
+  params->url = params->response.CurrentRequestUrl();
   WebNavigationParams::FillStaticResponse(
       params, "text/html", "UTF-8",
       "<html><body>"

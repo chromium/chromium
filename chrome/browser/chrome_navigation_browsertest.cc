@@ -1194,6 +1194,39 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTestWithMobileEmulation,
           .ExtractString());
 }
 
+// Tests the behavior of cross origin redirection to a PDF with mobile emulation
+// is enabled.
+IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTestWithMobileEmulation,
+                       CrossSiteRedirectionToPDFWithMobileEmulation) {
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.AddDefaultHandlers(GetChromeTestDataDir());
+  ASSERT_TRUE(https_server.Start());
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL initial_url = embedded_test_server()->GetURL("/title1.html");
+  ui_test_utils::NavigateToURL(browser(), initial_url);
+
+  Attach();
+  base::Value params(base::Value::Type::DICTIONARY);
+  params.SetIntKey("width", 400);
+  params.SetIntKey("height", 800);
+  params.SetDoubleKey("deviceScaleFactor", 1.0);
+  params.SetBoolKey("mobile", true);
+  SendCommandSync("Emulation.setDeviceMetricsOverride", std::move(params));
+
+  GURL pdf_url = embedded_test_server()->GetURL("/pdf/test.pdf");
+  GURL cross_site_redirecting_url =
+      https_server.GetURL("/server-redirect?" + pdf_url.spec());
+  ui_test_utils::NavigateToURL(browser(), cross_site_redirecting_url);
+
+  EXPECT_EQ(pdf_url, web_contents()->GetLastCommittedURL());
+  EXPECT_EQ(
+      "<head></head>"
+      "<body><!-- no enabled plugin supports this MIME type --></body>",
+      content::EvalJs(web_contents(), "document.documentElement.innerHTML")
+          .ExtractString());
+}
+
 // Check that clicking on a link doesn't carry the transient user activation
 // from the original page to the navigated page (crbug.com/865243).
 IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
