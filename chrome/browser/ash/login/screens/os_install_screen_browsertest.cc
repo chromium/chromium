@@ -22,6 +22,8 @@ const test::UIPath kOsInstallIntroNextButton = {"os-install",
                                                 "osInstallIntroNextButton"};
 const test::UIPath kOsInstallConfirmNextButton = {"os-install",
                                                   "osInstallConfirmNextButton"};
+const test::UIPath kOsInstallConfirmCloseButton = {"os-install",
+                                                   "closeConfirmDialogButton"};
 const test::UIPath kOsInstallErrorShutdownButton = {
     "os-install", "osInstallErrorShutdownButton"};
 const test::UIPath kOsInstallSuccessShutdownButton = {
@@ -70,13 +72,24 @@ class OsInstallScreenTest : public OobeBaseTest, OsInstallClient::Observer {
     test::OobeJS().ExpectVisiblePath(kOsInstallDialogIntro);
 
     test::OobeJS().TapOnPath(kOsInstallIntroNextButton);
-    test::OobeJS().ExpectVisiblePath(kOsInstallDialogConfirm);
+    test::OobeJS()
+        .CreateWaiter(test::GetOobeElementPath(kOsInstallDialogConfirm) +
+                      ".open")
+        ->Wait();
+    test::OobeJS().ExpectFocused(kOsInstallConfirmCloseButton);
   }
 
   void ConfirmInstallation() {
-    test::OobeJS().ExpectVisiblePath(kOsInstallDialogConfirm);
-
+    test::OobeJS()
+        .CreateWaiter(test::GetOobeElementPath(kOsInstallDialogConfirm) +
+                      ".open")
+        ->Wait();
     test::OobeJS().TapOnPath(kOsInstallConfirmNextButton);
+
+    test::OobeJS()
+        .CreateWaiter(test::GetOobeElementPath(kOsInstallDialogConfirm) +
+                      ".open === false")
+        ->Wait();
     test::OobeJS().ExpectVisiblePath(kOsInstallDialogInProgress);
   }
 
@@ -117,10 +130,22 @@ IN_PROC_BROWSER_TEST_F(OsInstallScreenTest, StartOsInstall) {
 
   EXPECT_EQ(GetStatus(), absl::nullopt);
 
-  test::OobeJS().TapOnPath(kOsInstallConfirmNextButton);
-  test::OobeJS().ExpectVisiblePath(kOsInstallDialogInProgress);
+  ConfirmInstallation();
 
   EXPECT_EQ(GetStatus(), OsInstallClient::Status::InProgress);
+}
+
+// Check close button for ConfirmDialog.
+IN_PROC_BROWSER_TEST_F(OsInstallScreenTest, OsInstallBackNavigation) {
+  AdvanceToOsInstallScreen();
+  AdvanceThroughIntroStep();
+  test::OobeJS().TapOnPath(kOsInstallConfirmCloseButton);
+  test::OobeJS()
+      .CreateWaiter(test::GetOobeElementPath(kOsInstallDialogConfirm) +
+                    ".open === false")
+      ->Wait();
+  test::OobeJS().ExpectFocused(kOsInstallIntroNextButton);
+  test::OobeJS().ExpectVisiblePath(kOsInstallDialogIntro);
 }
 
 // Check that if no destination device is found, the error step is shown.

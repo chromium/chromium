@@ -17,7 +17,6 @@
 namespace chromeos {
 
 namespace {
-constexpr const char kConfirmStep[] = "confirm";
 constexpr const char kInProgressStep[] = "in-progress";
 constexpr const char kFailedStep[] = "failed";
 constexpr const char kNoDestinationDeviceFoundStep[] =
@@ -99,10 +98,6 @@ void OsInstallScreenHandler::Unbind() {
 
 void OsInstallScreenHandler::ShowStep(const char* step) {
   CallJS("login.OsInstallScreen.showStep", std::string(step));
-}
-
-void OsInstallScreenHandler::ShowConfirmStep() {
-  ShowStep(kConfirmStep);
 }
 
 void OsInstallScreenHandler::StartInstall() {

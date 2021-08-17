@@ -1120,22 +1120,15 @@ Chromium is unable to recover your settings.
         <message name="IDS_OS_INSTALL_SCREEN_INTRO_NEXT_BUTTON" desc="Text of the next button on the introduction page of the OS install screen">
           Install Chromium OS
         </message>
-        <message name="IDS_OS_INSTALL_SCREEN_CONFIRM_TITLE" desc="Title of the confirmation page of the OS install screen">
-          Ready to install Chromium OS
+        <message name="IDS_OS_INSTALL_SCREEN_CONFIRM_TITLE" desc="Title of the confirmation dialog of the OS install screen">
+          Install Chromium OS
         </message>
-        <message name="IDS_OS_INSTALL_SCREEN_CONFIRM_BODY" desc="Body text of the OS install screen's confirmation step">
-          <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>We’re ready to install Chromium OS! Once you proceed:
-          <ph name="BEGIN_LIST">&lt;ul&gt;</ph>
-          <ph name="LIST_ITEM">&lt;li&gt;</ph>Files, data, and your current operating system will be erased.
-          <ph name="LIST_ITEM">&lt;li&gt;</ph>Chromium OS will be installed.
-          <ph name="LIST_ITEM">&lt;li&gt;</ph>Your device will shut down once the installation is complete.
-          <ph name="END_LIST">&lt;/ul&gt;</ph>
-          <ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
-          <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>One last reminder: installation will erase your entire hard drive. Please make sure you have any data you care about backed up.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
-          <ph name="BEGIN_PARAGRAPH3">&lt;p&gt;</ph>Once installation starts it cannot be canceled.<ph name="END_PARAGRAPH3">&lt;/p&gt;</ph>
+        <message name="IDS_OS_INSTALL_SCREEN_CONFIRM_BODY" desc="Body text of the OS install screen's confirmation dialog">
+          <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>One last reminder: installation <ph name="BEGIN_BOLD">&lt;b&gt;</ph>will erase your entire hard drive<ph name="END_BOLD">&lt;/b&gt;</ph>. Please make sure you have any data you care about backed up.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
+          <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>Once installation starts it cannot be canceled.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
         </message>
-        <message name="IDS_OS_INSTALL_SCREEN_CONFIRM_NEXT_BUTTON" desc="Text of the next button on the confirmation page of the OS install screen">
-          Erase Hard Drive &amp; Install Chromium OS
+        <message name="IDS_OS_INSTALL_SCREEN_CONFIRM_NEXT_BUTTON" desc="Text of the next button on the confirmation dialog of the OS install screen">
+          Install Chromium OS
         </message>
         <message name="IDS_OS_INSTALL_SCREEN_IN_PROGRESS_TITLE" desc="Title of the in-progress page of the OS install screen">
           Chromium OS installation in progress

@@ -65,21 +65,23 @@ found in the LICENSE file. -->
       </div>
     </oobe-adaptive-dialog>
 
-    <oobe-adaptive-dialog id="osInstallDialogConfirm"
-        role="dialog" for-step="confirm"
-        aria-label$="[[i18nDynamic(locale, 'osInstallDialogConfirmTitle')]]">
-      <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
-      <h1 slot="title">[[i18nDynamic(locale, 'osInstallDialogConfirmTitle')]]
-      </h1>
-      <html-echo slot="subtitle" content="[[getConfirmBodyHtml_(locale)]]">
+    <oobe-modal-dialog id="osInstallDialogConfirm" ignore-popstate>
+      <div slot="title">
+        [[i18nDynamic(locale, 'osInstallDialogConfirmTitle')]]
+      </div>
+      <html-echo slot="content" content="[[getConfirmBodyHtml_(locale)]]">
       </html-echo>
-      <div slot="bottom-buttons">
+      <div slot="buttons">
+        <oobe-text-button id="closeConfirmDialogButton"
+            on-click="onCloseConfirmDialogButtonPressed_"
+            text-key="oobeModalDialogClose">
+        </oobe-text-button>
         <oobe-next-button
-            text-key="osInstallDialogConfirmNextButton" class="focus-on-show"
+            text-key="osInstallDialogConfirmNextButton"
             id="osInstallConfirmNextButton"
             inverse on-click="onConfirmNextButtonPressed_"></oobe-next-button>
       </div>
-    </oobe-adaptive-dialog>
+    </oobe-modal-dialog>
 
     <oobe-loading-dialog id="osInstallDialogInProgress"
         role="dialog" for-step="in-progress"

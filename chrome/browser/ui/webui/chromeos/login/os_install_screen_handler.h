@@ -38,7 +38,6 @@ class OsInstallScreenView {
   virtual void Unbind() = 0;
 
   virtual void ShowStep(const char* step) = 0;
-  virtual void ShowConfirmStep() = 0;
   virtual void StartInstall() = 0;
 };
 
@@ -64,7 +63,6 @@ class OsInstallScreenHandler : public BaseScreenHandler,
   void Bind(ash::OsInstallScreen* screen) override;
   void Unbind() override;
   void ShowStep(const char* step) override;
-  void ShowConfirmStep() override;
   void StartInstall() override;
 
   // OsInstallClient::Observer:

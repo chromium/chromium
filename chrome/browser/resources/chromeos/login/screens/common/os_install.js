@@ -9,7 +9,6 @@
 (function() {
 const UIState = {
   INTRO: 'intro',
-  CONFIRM: 'confirm',
   IN_PROGRESS: 'in-progress',
   FAILED: 'failed',
   NO_DESTINATION_DEVICE_FOUND: 'no-destination-device-found',
@@ -55,10 +54,12 @@ Polymer({
   },
 
   onIntroNextButtonPressed_() {
-    this.userActed('os-install-intro-next');
+    this.$.osInstallDialogConfirm.showDialog();
+    this.$.closeConfirmDialogButton.focus();
   },
 
   onConfirmNextButtonPressed_() {
+    this.$.osInstallDialogConfirm.hideDialog();
     this.userActed('os-install-confirm-next');
   },
 
@@ -72,6 +73,10 @@ Polymer({
 
   onSuccessShutdownButtonPressed_() {
     this.userActed('os-install-success-shutdown');
+  },
+
+  onCloseConfirmDialogButtonPressed_() {
+    this.$.osInstallDialogConfirm.hideDialog();
   },
 
   /**
@@ -89,8 +94,7 @@ Polymer({
    * @private
    */
   getConfirmBodyHtml_(locale) {
-    return this.i18nAdvanced(
-        'osInstallDialogConfirmBody', {tags: ['p', 'ul', 'li']});
+    return this.i18nAdvanced('osInstallDialogConfirmBody');
   },
 
   /**

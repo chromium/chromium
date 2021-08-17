@@ -12,7 +12,6 @@
 namespace ash {
 namespace {
 
-constexpr const char kUserActionIntroNextClicked[] = "os-install-intro-next";
 constexpr const char kUserActionConfirmNextClicked[] =
     "os-install-confirm-next";
 constexpr const char kUserActionErrorSendFeedbackClicked[] =
@@ -51,9 +50,7 @@ void OsInstallScreen::ShowImpl() {
 void OsInstallScreen::HideImpl() {}
 
 void OsInstallScreen::OnUserAction(const std::string& action_id) {
-  if (action_id == kUserActionIntroNextClicked) {
-    view_->ShowConfirmStep();
-  } else if (action_id == kUserActionConfirmNextClicked) {
+  if (action_id == kUserActionConfirmNextClicked) {
     view_->StartInstall();
   } else if (action_id == kUserActionErrorSendFeedbackClicked) {
     LoginDisplayHost::default_host()->HandleAccelerator(
