@@ -21,6 +21,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<histogram name="Cras.A2dp100msFailureOverStream" units="units"
+    expires_after="2022-02-01">
+  <owner>hychao@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    For each of bluetooth A2DP stream period, track the sum of all period
+    lengths of consecutive packet write failures observerd by CRAS that is
+    longer than 100ms.
+  </summary>
+</histogram>
+
+<histogram name="Cras.A2dp20msFailureOverStream" units="units"
+    expires_after="2022-02-01">
+  <owner>hychao@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    For each of bluetooth A2DP stream period, track the sum of all period
+    lengths of consecutive packet write failures observerd by CRAS that is
+    longer than 20ms.
+  </summary>
+</histogram>
+
 <histogram name="Cras.Busyloop" units="units" expires_after="2021-12-01">
 <!-- Name completed by histogram_suffixes
      name="Cras.TimePeriod" -->
