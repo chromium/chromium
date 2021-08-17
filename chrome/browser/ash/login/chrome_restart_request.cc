@@ -72,6 +72,13 @@ namespace {
 // Increase logging level for Guest mode to avoid INFO messages in logs.
 const char kGuestModeLoggingLevel[] = "1";
 
+bool IsRunningTest() {
+  const base::CommandLine* current_command_line =
+      base::CommandLine::ForCurrentProcess();
+  return current_command_line->HasSwitch(::switches::kTestName) ||
+         current_command_line->HasSwitch(::switches::kTestType);
+}
+
 // Derives the new command line from `base_command_line` by doing the following:
 // - Forward a given switches list to new command;
 // - Set start url if given;
@@ -238,13 +245,18 @@ void DeriveCommandLine(const GURL& start_url,
 // Adds allowlisted features to `out_command_line` if they are enabled in the
 // current session.
 void DeriveEnabledFeatures(base::CommandLine* out_command_line) {
-  static const base::Feature* kForwardEnabledFeatures[] = {
+  std::vector<const base::Feature*> kForwardEnabledFeatures{
       &ash::features::kAutoNightLight,
-      &chromeos::features::kCellularUseAttachApn,
       &chromeos::features::kLacrosPrimary,
       &chromeos::features::kLacrosSupport,
       &::features::kPluginVm,
   };
+
+  if (!IsRunningTest()) {
+    // TODO(b/192007213): Remove once kCellularUseAttachApn defaults to true.
+    kForwardEnabledFeatures.push_back(
+        &chromeos::features::kCellularUseAttachApn);
+  }
 
   std::vector<std::string> enabled_features;
   for (const auto* feature : kForwardEnabledFeatures) {
@@ -389,12 +401,7 @@ void RestartChrome(const base::CommandLine& command_line,
 
   if (!SessionManagerClient::Get()->SupportsBrowserRestart()) {
     // Do nothing when running as test on bots or a dev box.
-    const base::CommandLine* current_command_line =
-        base::CommandLine::ForCurrentProcess();
-    const bool is_running_test =
-        current_command_line->HasSwitch(::switches::kTestName) ||
-        current_command_line->HasSwitch(::switches::kTestType);
-    if (is_running_test) {
+    if (IsRunningTest()) {
       DLOG(WARNING) << "Ignoring chrome restart for test.";
       return;
     }
