@@ -128,7 +128,7 @@ CreditCardAccessoryControllerImpl::GetSheetData() const {
   }
   // Only add cards that are not present in the cache. Otherwise, we might
   // show duplicates.
-  for (auto* card : cards_cache_) {
+  for (auto* card : GetCardsFromManager()) {
     if (cached_server_cards_.empty() ||
         !GetManager()
              ->credit_card_access_manager()
@@ -379,6 +379,16 @@ CreditCardAccessoryControllerImpl::GetManualFillingController() {
     mf_controller_ = ManualFillingController::GetOrCreate(web_contents_);
   DCHECK(mf_controller_);
   return mf_controller_;
+}
+
+std::vector<CreditCard*>
+CreditCardAccessoryControllerImpl::GetCardsFromManager() const {
+  std::vector<CreditCard*> cards_cache;
+  if (!personal_data_manager_)
+    return std::vector<CreditCard*>();
+
+  return personal_data_manager_->GetCreditCardsToSuggest(
+      /*include_server_cards=*/true);
 }
 
 autofill::AutofillDriver* CreditCardAccessoryControllerImpl::GetDriver() {

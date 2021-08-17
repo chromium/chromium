@@ -66,6 +66,7 @@ class CreditCardAccessoryControllerImpl
 
   void FetchSuggestions();
   base::WeakPtr<ManualFillingController> GetManualFillingController();
+  std::vector<CreditCard*> GetCardsFromManager() const;
   autofill::AutofillDriver* GetDriver();
   autofill::BrowserAutofillManager* GetManager() const;
 

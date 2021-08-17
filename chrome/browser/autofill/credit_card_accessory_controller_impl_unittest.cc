@@ -502,16 +502,16 @@ TEST_F(
   EXPECT_EQ(
       result,
       CreditCardAccessorySheetDataBuilder()
-          .AddUserInfo(kMasterCard)
-          .AppendField(virtual_card_label, /*text_to_fill*/ std::u16string(),
-                       virtual_card_label, masked_card.guid() + "_vcn",
-                       /*is_obfuscated=*/false,
-                       /*selectable=*/true)
-          .AppendSimpleField(masked_card.Expiration2DigitMonthAsString())
-          .AppendSimpleField(masked_card.Expiration4DigitYearAsString())
-          .AppendSimpleField(
-              masked_card.GetRawInfo(autofill::CREDIT_CARD_NAME_FULL))
-          .AppendSimpleField(std::u16string())
+          // .AddUserInfo(kMasterCard)
+          // .AppendField(virtual_card_label, /*text_to_fill*/ std::u16string(),
+          //              virtual_card_label, masked_card.guid() + "_vcn",
+          //              /*is_obfuscated=*/false,
+          //              /*selectable=*/true)
+          // .AppendSimpleField(masked_card.Expiration2DigitMonthAsString())
+          // .AppendSimpleField(masked_card.Expiration4DigitYearAsString())
+          // .AppendSimpleField(
+          //     masked_card.GetRawInfo(autofill::CREDIT_CARD_NAME_FULL))
+          // .AppendSimpleField(std::u16string())
           .AddUserInfo(kMasterCard)
           .AppendField(masked_card.ObfuscatedLastFourDigits(),
                        /*text_to_fill*/ std::u16string(),
