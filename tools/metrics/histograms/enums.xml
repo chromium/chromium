@@ -34172,6 +34172,11 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3974" label="CanvasRenderingContext2DContextLostEvent"/>
   <int value="3975" label="CanvasRenderingContext2DContextRestoredEvent"/>
   <int value="3976" label="ClientHintsViewportHeight"/>
+  <int value="3977" label="V8NavigatorManagedData_GetDirectoryId_Method"/>
+  <int value="3978" label="V8NavigatorManagedData_GetHostname_Method"/>
+  <int value="3979" label="V8NavigatorManagedData_GetSerialNumber_Method"/>
+  <int value="3980" label="V8NavigatorManagedData_GetAnnotatedAssetId_Method"/>
+  <int value="3981" label="V8NavigatorManagedData_GetAnnotatedLocation_Method"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

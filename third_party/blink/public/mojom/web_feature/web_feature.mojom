@@ -3286,6 +3286,11 @@ enum WebFeature {
   kCanvasRenderingContext2DContextLostEvent = 3974,
   kCanvasRenderingContext2DContextRestoredEvent = 3975,
   kClientHintsViewportHeight = 3976,
+  kV8NavigatorManagedData_GetDirectoryId_Method = 3977,
+  kV8NavigatorManagedData_GetHostname_Method = 3978,
+  kV8NavigatorManagedData_GetSerialNumber_Method = 3979,
+  kV8NavigatorManagedData_GetAnnotatedAssetId_Method = 3980,
+  kV8NavigatorManagedData_GetAnnotatedLocation_Method = 3981,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
