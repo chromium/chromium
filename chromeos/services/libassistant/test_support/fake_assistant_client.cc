@@ -48,5 +48,11 @@ void FakeAssistantClient::GetSpeakerIdEnrollmentInfo(
 
 void FakeAssistantClient::ResetAllDataAndShutdown() {}
 
+void FakeAssistantClient::OnDisplayRequest(
+    const OnDisplayRequestRequest& request) {}
+
+void FakeAssistantClient::AddDisplayEventObserver(
+    GrpcServicesObserver<OnAssistantDisplayEventRequest>* observer) {}
+
 }  // namespace libassistant
 }  // namespace chromeos

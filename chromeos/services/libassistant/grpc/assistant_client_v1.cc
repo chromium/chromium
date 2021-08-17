@@ -4,13 +4,20 @@
 
 #include "chromeos/services/libassistant/grpc/assistant_client_v1.h"
 
+#include <string>
+
 #include "base/callback.h"
+#include "base/logging.h"
+#include "base/synchronization/lock.h"
 #include "chromeos/assistant/internal/grpc_transport/request_utils.h"
 #include "chromeos/assistant/internal/proto/shared/proto/conversation.pb.h"
+#include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/event_handler_interface.pb.h"
+#include "chromeos/assistant/internal/proto/shared/proto/v2/display_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/speaker_id_enrollment_event.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/speaker_id_enrollment_interface.pb.h"
 #include "chromeos/services/libassistant/callback_utils.h"
 #include "libassistant/shared/internal_api/assistant_manager_internal.h"
+#include "libassistant/shared/internal_api/display_connection.h"
 #include "libassistant/shared/internal_api/fuchsia_api_helper.h"
 #include "libassistant/shared/internal_api/speaker_id_enrollment.h"
 
@@ -65,11 +72,66 @@ SpeakerIdEnrollmentEvent ConvertToGrpcEvent(
 
 }  // namespace
 
+class AssistantClientV1::DisplayConnectionImpl
+    : public assistant_client::DisplayConnection {
+ public:
+  DisplayConnectionImpl() = default;
+  DisplayConnectionImpl(const DisplayConnectionImpl&) = delete;
+  DisplayConnectionImpl& operator=(const DisplayConnectionImpl&) = delete;
+  ~DisplayConnectionImpl() override = default;
+
+  // assistant_client::DisplayConnection overrides:
+  void SetDelegate(Delegate* delegate) override {
+    base::AutoLock lock(lock_);
+    delegate_ = delegate;
+  }
+
+  void OnAssistantEvent(const std::string& assistant_event_bytes) override {
+    base::AutoLock lock(lock_);
+    if (!observer_)
+      return;
+
+    OnAssistantDisplayEventRequest request;
+    auto* assistant_display_event = request.mutable_event();
+    auto* on_assistant_event =
+        assistant_display_event->mutable_on_assistant_event();
+    on_assistant_event->set_assistant_event_bytes(assistant_event_bytes);
+    observer_->OnGrpcMessage(request);
+  }
+
+  void SetObserver(
+      GrpcServicesObserver<OnAssistantDisplayEventRequest>* observer) {
+    base::AutoLock lock(lock_);
+    DCHECK(!observer_);
+    observer_ = observer;
+  }
+
+  void OnDisplayRequest(const std::string& display_request_bytes) {
+    base::AutoLock lock(lock_);
+    if (!delegate_) {
+      LOG(ERROR) << "Can't send DisplayRequest before delegate is set.";
+      return;
+    }
+
+    delegate_->OnDisplayRequest(display_request_bytes);
+  }
+
+ private:
+  Delegate* delegate_ GUARDED_BY(lock_) = nullptr;
+
+  GrpcServicesObserver<OnAssistantDisplayEventRequest>* observer_
+      GUARDED_BY(lock_) = nullptr;
+
+  // Both LibAssistant and Chrome threads can access |delegate_| and
+  // |observer_|.
+  base::Lock lock_;
+};
+
 AssistantClientV1::AssistantClientV1(
     std::unique_ptr<assistant_client::AssistantManager> assistant_manager,
     assistant_client::AssistantManagerInternal* assistant_manager_internal)
-    : AssistantClient(std::move(assistant_manager),
-                      assistant_manager_internal) {}
+    : AssistantClient(std::move(assistant_manager), assistant_manager_internal),
+      display_connection_(std::make_unique<DisplayConnectionImpl>()) {}
 
 AssistantClientV1::~AssistantClientV1() = default;
 
@@ -149,6 +211,17 @@ void AssistantClientV1::GetSpeakerIdEnrollmentInfo(
 
 void AssistantClientV1::ResetAllDataAndShutdown() {
   assistant_manager()->ResetAllDataAndShutdown();
+}
+
+void AssistantClientV1::OnDisplayRequest(
+    const OnDisplayRequestRequest& request) {
+  display_connection_->OnDisplayRequest(request.display_request_bytes());
+}
+
+void AssistantClientV1::AddDisplayEventObserver(
+    GrpcServicesObserver<OnAssistantDisplayEventRequest>* observer) {
+  display_connection_->SetObserver(observer);
+  assistant_manager_internal()->SetDisplayConnection(display_connection_.get());
 }
 
 }  // namespace libassistant

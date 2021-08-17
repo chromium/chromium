@@ -6,6 +6,7 @@ source_set("grpc_services_initializer") {
   sources = [
     "grpc_services_initializer.cc",
     "grpc_services_initializer.h",
+    "grpc_services_observer.h",
   ]
 
   deps = [

@@ -39,6 +39,14 @@ class AssistantClientV1 : public AssistantClient {
       const GetSpeakerIdEnrollmentInfoRequest& request,
       base::OnceCallback<void(bool user_model_exists)> on_done) override;
   void ResetAllDataAndShutdown() override;
+  void OnDisplayRequest(const OnDisplayRequestRequest& request) override;
+  void AddDisplayEventObserver(
+      GrpcServicesObserver<OnAssistantDisplayEventRequest>* observer) override;
+
+ private:
+  class DisplayConnectionImpl;
+
+  std::unique_ptr<DisplayConnectionImpl> display_connection_;
 };
 
 }  // namespace libassistant

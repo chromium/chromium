@@ -2,38 +2,42 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/libassistant/display_connection_impl.h"
+#include "chromeos/services/libassistant/display_connection.h"
 
 #include <sstream>
 
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "chromeos/assistant/internal/proto/shared/proto/v2/display_interface.pb.h"
+#include "chromeos/services/libassistant/grpc/assistant_client.h"
 
 namespace chromeos {
 namespace libassistant {
 
-DisplayConnectionImpl::DisplayConnectionImpl(
-    DisplayConnectionObserver* observer,
-    bool feedback_ui_enabled)
+DisplayConnection::DisplayConnection(DisplayConnectionObserver* observer,
+                                     bool feedback_ui_enabled)
     : observer_(observer),
       feedback_ui_enabled_(feedback_ui_enabled),
       task_runner_(base::SequencedTaskRunnerHandle::Get()) {
   DCHECK(observer_);
 }
 
-DisplayConnectionImpl::~DisplayConnectionImpl() = default;
+DisplayConnection::~DisplayConnection() = default;
 
-void DisplayConnectionImpl::SetDelegate(Delegate* delegate) {
-  base::AutoLock lock(update_display_request_mutex_);
-  delegate_ = delegate;
-  SendDisplayRequestLocked();
-}
+void DisplayConnection::OnGrpcMessage(
+    const ::assistant::api::OnAssistantDisplayEventRequest& request) {
+  auto& assistant_display_event = request.event();
 
-void DisplayConnectionImpl::OnAssistantEvent(
-    const std::string& assistant_event_bytes) {
+  DCHECK(assistant_display_event.has_on_assistant_event());
+  DCHECK(
+      assistant_display_event.on_assistant_event().has_assistant_event_bytes());
+  DVLOG(1) << "AssistantDisplayEventObserver received GrpcMessage.";
+
+  const std::string& assistant_event_bytes =
+      assistant_display_event.on_assistant_event().assistant_event_bytes();
+
   ::assistant::display::AssistantEvent event;
-
   if (!event.ParseFromString(assistant_event_bytes)) {
     LOG(ERROR) << "Unable to parse assistant event";
     return;
@@ -48,14 +52,16 @@ void DisplayConnectionImpl::OnAssistantEvent(
   }
 }
 
-void DisplayConnectionImpl::SetArcPlayStoreEnabled(bool enabled) {
-  base::AutoLock lock(update_display_request_mutex_);
-  arc_play_store_enabled_ = enabled;
-  SendDisplayRequestLocked();
+void DisplayConnection::SetAssistantClient(AssistantClient* assistant_client) {
+  assistant_client_ = assistant_client;
 }
 
-void DisplayConnectionImpl::SetDeviceAppsEnabled(bool enabled) {
-  base::AutoLock lock(update_display_request_mutex_);
+void DisplayConnection::SetArcPlayStoreEnabled(bool enabled) {
+  arc_play_store_enabled_ = enabled;
+  SendDisplayRequest();
+}
+
+void DisplayConnection::SetDeviceAppsEnabled(bool enabled) {
   // For now we don't handle disabling the device apps bit, since we do not have
   // a way to get the bit changes. We only sync the bit at Service start post
   // login.
@@ -65,43 +71,40 @@ void DisplayConnectionImpl::SetDeviceAppsEnabled(bool enabled) {
   if (device_apps_enabled_ == enabled)
     return;
   device_apps_enabled_ = enabled;
-  SendDisplayRequestLocked();
+  SendDisplayRequest();
 }
 
-void DisplayConnectionImpl::SetAssistantContextEnabled(bool enabled) {
-  base::AutoLock lock(update_display_request_mutex_);
-
+void DisplayConnection::SetAssistantContextEnabled(bool enabled) {
   if (related_info_enabled_ == enabled)
     return;
   related_info_enabled_ = enabled;
-  SendDisplayRequestLocked();
+  SendDisplayRequest();
 }
 
-void DisplayConnectionImpl::OnAndroidAppListRefreshed(
+void DisplayConnection::OnAndroidAppListRefreshed(
     const std::vector<assistant::AndroidAppInfo>& apps_info) {
-  base::AutoLock lock(update_display_request_mutex_);
   apps_info_ = apps_info;
-  SendDisplayRequestLocked();
+  SendDisplayRequest();
 }
 
-void DisplayConnectionImpl::SendDisplayRequestLocked() {
-  ::assistant::display::DisplayRequest display_request;
-  update_display_request_mutex_.AssertAcquired();
-  FillDisplayRequestLocked(display_request);
-
-  if (!delegate_) {
-    LOG(ERROR) << "Can't send DisplayRequest before delegate is set.";
+void DisplayConnection::SendDisplayRequest() {
+  if (!assistant_client_) {
+    LOG(ERROR) << "Can't send DisplayRequest before assistant client is set.";
     return;
   }
+
+  ::assistant::display::DisplayRequest display_request;
+  FillDisplayRequest(display_request);
+
   std::string s;
   display_request.SerializeToString(&s);
-  delegate_->OnDisplayRequest(s);
+  ::assistant::api::OnDisplayRequestRequest request;
+  request.set_display_request_bytes(s);
+  assistant_client_->OnDisplayRequest(request);
 }
 
-void DisplayConnectionImpl::FillDisplayRequestLocked(
+void DisplayConnection::FillDisplayRequest(
     ::assistant::display::DisplayRequest& dr) {
-  update_display_request_mutex_.AssertAcquired();
-
   auto* set_capabilities_request = dr.mutable_set_capabilities_request();
   auto* screen_capabilities =
       set_capabilities_request->mutable_screen_capabilities_to_merge();

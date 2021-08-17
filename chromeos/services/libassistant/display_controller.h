@@ -31,7 +31,7 @@ class CrosActionModule;
 namespace chromeos {
 namespace libassistant {
 
-class DisplayConnectionImpl;
+class DisplayConnection;
 
 class DisplayController
     : public mojom::DisplayController,
@@ -75,7 +75,7 @@ class DisplayController
 
   mojo::Receiver<mojom::DisplayController> receiver_{this};
   std::unique_ptr<EventObserver> event_observer_;
-  std::unique_ptr<DisplayConnectionImpl> display_connection_;
+  std::unique_ptr<DisplayConnection> display_connection_;
 
   // Owned by |LibassistantService|.
   mojo::RemoteSet<mojom::SpeechRecognitionObserver>&

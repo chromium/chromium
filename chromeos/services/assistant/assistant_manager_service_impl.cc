@@ -462,9 +462,6 @@ void AssistantManagerServiceImpl::OnServiceStarted() {
   UMA_HISTOGRAM_TIMES("Assistant.ServiceStartTime", time_since_started);
 
   SetStateAndInformObservers(State::STARTED);
-
-  if (base::FeatureList::IsEnabled(assistant::features::kAssistantAppSupport))
-    scoped_app_list_event_subscriber_.Observe(device_actions());
 }
 
 bool AssistantManagerServiceImpl::IsServiceStarted() const {
@@ -509,10 +506,15 @@ void AssistantManagerServiceImpl::OnServiceRunning() {
 
   if (assistant_state()->arc_play_store_enabled().has_value())
     SetArcPlayStoreEnabled(assistant_state()->arc_play_store_enabled().value());
+
+  if (base::FeatureList::IsEnabled(assistant::features::kAssistantAppSupport))
+    scoped_app_list_event_subscriber_.Observe(device_actions());
 }
 
 void AssistantManagerServiceImpl::OnAndroidAppListRefreshed(
     const std::vector<AndroidAppInfo>& apps_info) {
+  DCHECK(GetState() == State::RUNNING);
+
   std::vector<AndroidAppInfo> filtered_apps_info;
   for (const auto& app_info : apps_info) {
     // TODO(b/146355799): Remove the special handling for Android settings app.

@@ -2,19 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_LIBASSISTANT_DISPLAY_CONNECTION_IMPL_H_
-#define CHROMEOS_SERVICES_LIBASSISTANT_DISPLAY_CONNECTION_IMPL_H_
+#ifndef CHROMEOS_SERVICES_LIBASSISTANT_DISPLAY_CONNECTION_H_
+#define CHROMEOS_SERVICES_LIBASSISTANT_DISPLAY_CONNECTION_H_
 
 #include <string>
 
 #include "base/sequenced_task_runner.h"
-#include "base/synchronization/lock.h"
 #include "chromeos/assistant/internal/proto/assistant/display_connection.pb.h"
+#include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/event_handler_interface.pb.h"
+#include "chromeos/services/libassistant/grpc/external_services/grpc_services_observer.h"
 #include "chromeos/services/libassistant/public/cpp/android_app_info.h"
 #include "libassistant/shared/internal_api/display_connection.h"
 
 namespace chromeos {
 namespace libassistant {
+
+class AssistantClient;
 
 class DisplayConnectionObserver {
  public:
@@ -24,18 +27,22 @@ class DisplayConnectionObserver {
 
 // Implements |asssistant_client::DisplayConnection| to initialize surface
 // configuration and listen assistant event.
-class DisplayConnectionImpl : public assistant_client::DisplayConnection {
+class DisplayConnection
+    : public GrpcServicesObserver<
+          ::assistant::api::OnAssistantDisplayEventRequest> {
  public:
-  DisplayConnectionImpl(DisplayConnectionObserver* observer,
-                        bool feedback_ui_enabled);
-  DisplayConnectionImpl(const DisplayConnectionImpl&) = delete;
-  DisplayConnectionImpl& operator=(const DisplayConnectionImpl&) = delete;
-  ~DisplayConnectionImpl() override;
+  DisplayConnection(DisplayConnectionObserver* observer,
+                    bool feedback_ui_enabled);
+  DisplayConnection(const DisplayConnection&) = delete;
+  DisplayConnection& operator=(const DisplayConnection&) = delete;
+  ~DisplayConnection() override;
 
-  // assistant_client::DisplayConnection overrides:
-  void SetDelegate(Delegate* delegate) override;
-  void OnAssistantEvent(const std::string& assistant_event_bytes) override;
+  // GrpcServicesObserver:
+  // Invoked when an Assistant display event has been received.
+  void OnGrpcMessage(
+      const ::assistant::api::OnAssistantDisplayEventRequest& request) override;
 
+  void SetAssistantClient(AssistantClient* assistant_client);
   void SetArcPlayStoreEnabled(bool enabled);
   void SetDeviceAppsEnabled(bool enabled);
   void SetAssistantContextEnabled(bool enabled);
@@ -47,11 +54,11 @@ class DisplayConnectionImpl : public assistant_client::DisplayConnection {
   }
 
  private:
-  void SendDisplayRequestLocked();
+  void SendDisplayRequest();
 
-  void FillDisplayRequestLocked(::assistant::display::DisplayRequest& dr);
+  void FillDisplayRequest(::assistant::display::DisplayRequest& dr);
 
-  Delegate* delegate_ GUARDED_BY(update_display_request_mutex_) = nullptr;
+  AssistantClient* assistant_client_ = nullptr;
 
   // Owned by the parent which also owns `this`.
   DisplayConnectionObserver* const observer_;
@@ -60,22 +67,16 @@ class DisplayConnectionImpl : public assistant_client::DisplayConnection {
   const bool feedback_ui_enabled_;
 
   // Whether ARC++ is enabled.
-  bool arc_play_store_enabled_ GUARDED_BY(update_display_request_mutex_) =
-      false;
+  bool arc_play_store_enabled_ = false;
 
   // Whether device apps user data consent is granted.
-  bool device_apps_enabled_ GUARDED_BY(update_display_request_mutex_) = false;
+  bool device_apps_enabled_ = false;
 
   // Whether related info setting is on.
-  bool related_info_enabled_ GUARDED_BY(update_display_request_mutex_) = false;
+  bool related_info_enabled_ = false;
 
   // Supported Android apps information.
-  std::vector<assistant::AndroidAppInfo> GUARDED_BY(
-      update_display_request_mutex_) apps_info_;
-
-  // Both LibAssistant and Chrome threads may update and send display request so
-  // we always guard access with |update_display_request_mutex_|.
-  base::Lock update_display_request_mutex_;
+  std::vector<assistant::AndroidAppInfo> apps_info_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
@@ -83,4 +84,4 @@ class DisplayConnectionImpl : public assistant_client::DisplayConnection {
 }  // namespace libassistant
 }  // namespace chromeos
 
-#endif  // CHROMEOS_SERVICES_LIBASSISTANT_DISPLAY_CONNECTION_IMPL_H_
+#endif  // CHROMEOS_SERVICES_LIBASSISTANT_DISPLAY_CONNECTION_H_

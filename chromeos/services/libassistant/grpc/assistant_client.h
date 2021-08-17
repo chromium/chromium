@@ -8,14 +8,17 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "chromeos/services/libassistant/grpc/external_services/grpc_services_observer.h"
 
 namespace assistant {
 namespace api {
-class Interaction;
-class VoicelessOptions;
-class StartSpeakerIdEnrollmentRequest;
 class CancelSpeakerIdEnrollmentRequest;
 class GetSpeakerIdEnrollmentInfoRequest;
+class Interaction;
+class OnAssistantDisplayEventRequest;
+class OnDisplayRequestRequest;
+class StartSpeakerIdEnrollmentRequest;
+class VoicelessOptions;
 
 namespace events {
 class SpeakerIdEnrollmentEvent;
@@ -38,14 +41,20 @@ namespace libassistant {
 // specific method below and call the appropriate gRPC (IPC) client method.
 class AssistantClient {
  public:
-  using StartSpeakerIdEnrollmentRequest =
-      ::assistant::api::StartSpeakerIdEnrollmentRequest;
+  // Speaker Id Enrollment:
   using CancelSpeakerIdEnrollmentRequest =
       ::assistant::api::CancelSpeakerIdEnrollmentRequest;
   using GetSpeakerIdEnrollmentInfoRequest =
       ::assistant::api::GetSpeakerIdEnrollmentInfoRequest;
+  using StartSpeakerIdEnrollmentRequest =
+      ::assistant::api::StartSpeakerIdEnrollmentRequest;
   using SpeakerIdEnrollmentEvent =
       ::assistant::api::events::SpeakerIdEnrollmentEvent;
+
+  // Display:
+  using OnAssistantDisplayEventRequest =
+      ::assistant::api::OnAssistantDisplayEventRequest;
+  using OnDisplayRequestRequest = ::assistant::api::OnDisplayRequestRequest;
 
   AssistantClient(
       std::unique_ptr<assistant_client::AssistantManager> assistant_manager,
@@ -86,6 +95,11 @@ class AssistantClient {
       base::OnceCallback<void(bool user_model_exists)> on_done) = 0;
 
   virtual void ResetAllDataAndShutdown() = 0;
+
+  // Display methods.
+  virtual void OnDisplayRequest(const OnDisplayRequestRequest& request) = 0;
+  virtual void AddDisplayEventObserver(
+      GrpcServicesObserver<OnAssistantDisplayEventRequest>* observer) = 0;
 
   // Will not return nullptr.
   assistant_client::AssistantManager* assistant_manager() {

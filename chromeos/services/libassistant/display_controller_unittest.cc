@@ -5,7 +5,6 @@
 #include "chromeos/services/libassistant/display_controller.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "chromeos/assistant/internal/test_support/fake_assistant_manager_internal.h"
 #include "chromeos/assistant/test_support/expect_utils.h"
 #include "chromeos/services/libassistant/grpc/assistant_client.h"
 #include "chromeos/services/libassistant/public/mojom/speech_recognition_observer.mojom.h"
@@ -35,37 +34,17 @@ class AssistantClientMock : public FakeAssistantClient {
   ~AssistantClientMock() override = default;
 
   // AssistantClient:
-  MOCK_METHOD(bool, StartGrpcServices, ());
-  MOCK_METHOD(void,
-              AddExperimentIds,
-              (const std::vector<std::string>& exp_ids));
   MOCK_METHOD(void,
               SendVoicelessInteraction,
               (const ::assistant::api::Interaction& interaction,
                const std::string& description,
                const ::assistant::api::VoicelessOptions& options,
                base::OnceCallback<void(bool)> on_done));
-};
 
-class AssistantManagerInternalMock
-    : public assistant::FakeAssistantManagerInternal {
- public:
-  AssistantManagerInternalMock() = default;
-  AssistantManagerInternalMock(const AssistantManagerInternalMock&) = delete;
-  AssistantManagerInternalMock& operator=(const AssistantManagerInternalMock&) =
-      delete;
-  ~AssistantManagerInternalMock() override = default;
-
-  // assistant::FakeAssistantManagerInternal implementation:
   MOCK_METHOD(void,
-              SetDisplayConnection,
-              (assistant_client::DisplayConnection * connection));
-  MOCK_METHOD(void,
-              SendVoicelessInteraction,
-              (const std::string& interaction_proto,
-               const std::string& description,
-               const assistant_client::VoicelessOptions& options,
-               assistant_client::SuccessCallbackInternal on_done));
+              AddDisplayEventObserver,
+              (GrpcServicesObserver<OnAssistantDisplayEventRequest> *
+               observer));
 };
 
 }  // namespace
@@ -88,10 +67,6 @@ class DisplayControllerTest : public ::testing::Test {
 
   DisplayController* controller() { return controller_.get(); }
 
-  AssistantManagerInternalMock& assistant_manager_internal_mock() {
-    return assistant_manager_internal_;
-  }
-
   AssistantClientMock& assistant_client_mock() { return assistant_client_; }
 
  private:
@@ -99,19 +74,18 @@ class DisplayControllerTest : public ::testing::Test {
   mojo::RemoteSet<mojom::SpeechRecognitionObserver>
       speech_recognition_observers_;
   std::unique_ptr<DisplayController> controller_;
-  AssistantManagerInternalMock assistant_manager_internal_;
-  AssistantClientMock assistant_client_{nullptr, &assistant_manager_internal_};
+  AssistantClientMock assistant_client_{nullptr, nullptr};
 };
 
-TEST_F(DisplayControllerTest, ShouldSetDisplayConnection) {
-  EXPECT_CALL(assistant_manager_internal_mock(), SetDisplayConnection);
+TEST_F(DisplayControllerTest, ShouldSetDisplayEventObserver) {
+  EXPECT_CALL(assistant_client_mock(), AddDisplayEventObserver);
 
   StartLibassistant();
 }
 
 TEST_F(DisplayControllerTest,
        ShouldSendVoicelessInteractionOnVerifyAndroidApp) {
-  EXPECT_CALL(assistant_manager_internal_mock(), SetDisplayConnection);
+  EXPECT_CALL(assistant_client_mock(), AddDisplayEventObserver);
   StartLibassistant();
 
   AndroidAppInfo app_info;
