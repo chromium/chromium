@@ -33,11 +33,14 @@ content::WebUIDataSource* CreateProjectorHTMLSource() {
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src 'self' "
-      "'sha256-qKlSL9KXNlE6zne/QlylwkixHJxfnjPQRzSOUiN+zOw=';");
+      // Mock gallery_view.html.
+      "'sha256-qKlSL9KXNlE6zne/QlylwkixHJxfnjPQRzSOUiN+zOw=' "
+      // Prod gallery_view.html.
+      "'sha256-vmbEvTe8n51+32ssYgxneFQpyYbiWl1V5V/2LE8e+H0=';");
 
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
-      "trusted-types gallery_view_bin-js-static;");
+      "trusted-types gallery_view_bin-js-static lit-html;");
 
   // TODO(b/193579885): Add ink WASM.
   // TODO(b/193579885): Override content security policy to support loading wasm
