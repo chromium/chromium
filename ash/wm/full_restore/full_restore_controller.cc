@@ -165,6 +165,10 @@ bool FullRestoreController::CanActivateFullRestoredWindow(
   if (!window->GetProperty(full_restore::kLaunchedFromFullRestoreKey))
     return true;
 
+  // Only windows on the active desk should be activatable.
+  if (!desks_util::BelongsToActiveDesk(const_cast<aura::Window*>(window)))
+    return false;
+
   // Ghost windows can be activated.
   const AppType app_type =
       static_cast<AppType>(window->GetProperty(aura::client::kAppType));

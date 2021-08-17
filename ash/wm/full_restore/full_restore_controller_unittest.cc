@@ -1294,4 +1294,31 @@ TEST_F(FullRestoreControllerTest, NextTopmostWindowIsActivatable) {
   EXPECT_TRUE(wm::IsActiveWindow(restored_window4));
 }
 
+// Tests that when a window is restored to an inactive desk it is not
+// activatable. See crbug.com/1237158.
+TEST_F(FullRestoreControllerTest, WindowsOnInactiveDeskAreNotActivatable) {
+  // Create two desks and switch to the first desk. There should now be three in
+  // total.
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  const auto& desks = desks_controller->desks();
+  desks_controller->ActivateDesk(desks[0].get(),
+                                 DesksSwitchSource::kUserSwitch);
+  ASSERT_EQ(3u, desks.size());
+
+  // Create a Full Restore'd browser in the third desk. It should not be
+  // activatable.
+  AddEntryToFakeFile(
+      /*restore_id=*/2, gfx::Rect(200, 200),
+      chromeos::WindowStateType::kMinimized,
+      /*activation_index=*/2, WindowTreeHostManager::GetPrimaryDisplayId(),
+      /*desk_id=*/2);
+  auto* restored_window2 = CreateTestFullRestoredWidgetFromRestoreId(
+                               /*restore_id=*/2, AppType::BROWSER,
+                               /*is_taskless_arc_app=*/false)
+                               ->GetNativeWindow();
+  EXPECT_FALSE(wm::CanActivateWindow(restored_window2));
+}
+
 }  // namespace ash
