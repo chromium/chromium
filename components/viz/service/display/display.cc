@@ -1113,6 +1113,11 @@ void Display::DidFinishFrame(const BeginFrameAck& ack) {
   frame_sequence_number_ = ack.frame_id.sequence_number;
 }
 
+void Display::OnObservingBeginFrameSourceChanged(bool observing) {
+  if (skia_output_surface_)
+    skia_output_surface_->OnObservingBeginFrameSourceChanged(observing);
+}
+
 const SurfaceId& Display::CurrentSurfaceId() {
   return current_surface_id_;
 }

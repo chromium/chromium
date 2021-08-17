@@ -22,6 +22,7 @@ class VIZ_SERVICE_EXPORT DisplaySchedulerClient {
   // sinks. DisplayScheduler passes the end of current VSync interval.
   virtual bool DrawAndSwap(base::TimeTicks expected_display_time) = 0;
   virtual void DidFinishFrame(const BeginFrameAck& ack) = 0;
+  virtual void OnObservingBeginFrameSourceChanged(bool observing) = 0;
 };
 
 class VIZ_SERVICE_EXPORT DisplaySchedulerBase

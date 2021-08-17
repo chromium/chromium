@@ -485,6 +485,7 @@ void SkiaOutputSurfaceImpl::SwapBuffers(OutputSurfaceFrame frame) {
   // If current_buffer_modified_ is false, it means SkiaRenderer doesn't draw
   // anything for current frame. So this SwapBuffer() must be a empty swap, so
   // the previous buffer will be used for this frame.
+  idle_drop_frame_buffer_timer_.Stop();
   if (frame_buffer_damage_tracker_ && current_buffer_modified_) {
     gfx::Rect damage_rect =
         frame.sub_buffer_rect ? *frame.sub_buffer_rect : gfx::Rect(size_);
@@ -1193,6 +1194,37 @@ base::ScopedClosureRunner SkiaOutputSurfaceImpl::GetCacheBackBufferCb() {
 
 gpu::SharedImageInterface* SkiaOutputSurfaceImpl::GetSharedImageInterface() {
   return display_compositor_controller_->shared_image_interface();
+}
+
+void SkiaOutputSurfaceImpl::OnObservingBeginFrameSourceChanged(bool observing) {
+  if (!capabilities_.use_dynamic_frame_buffer_allocation)
+    return;
+  idle_drop_frame_buffer_timer_.Stop();
+  if (observing)
+    return;
+
+  if (num_allocated_buffers_ <= 1)
+    return;
+
+  constexpr base::TimeDelta kDropFrameBufferDelay =
+      base::TimeDelta::FromSeconds(5);
+  idle_drop_frame_buffer_timer_.Start(
+      FROM_HERE, kDropFrameBufferDelay,
+      base::BindOnce(
+          [](SkiaOutputSurfaceImpl* self) {
+            int available_buffers_lower_bound =
+                self->AvailableBuffersLowerBound();
+            if (available_buffers_lower_bound > 0) {
+              self->num_allocated_buffers_ -= available_buffers_lower_bound;
+              self->gpu_task_scheduler_->ScheduleOrRetainGpuTask(
+                  base::BindOnce(
+                      &SkiaOutputSurfaceImplOnGpu::ReleaseFrameBuffers,
+                      base::Unretained(self->impl_on_gpu_.get()),
+                      available_buffers_lower_bound),
+                  {});
+            }
+          },
+          base::Unretained(this)));
 }
 
 void SkiaOutputSurfaceImpl::AddContextLostObserver(

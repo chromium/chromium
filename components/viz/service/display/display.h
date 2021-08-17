@@ -147,6 +147,7 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   // DisplaySchedulerClient implementation.
   bool DrawAndSwap(base::TimeTicks expected_display_time) override;
   void DidFinishFrame(const BeginFrameAck& ack) override;
+  void OnObservingBeginFrameSourceChanged(bool observing) override;
 
   // OutputSurfaceClient implementation.
   void SetNeedsRedrawRect(const gfx::Rect& damage_rect) override;

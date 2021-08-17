@@ -13,6 +13,7 @@
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
+#include "base/timer/timer.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "components/viz/common/display/renderer_settings.h"
@@ -143,6 +144,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   void PreserveChildSurfaceControls() override;
   gpu::SharedImageInterface* GetSharedImageInterface() override;
   gpu::SyncToken Flush() override;
+  void OnObservingBeginFrameSourceChanged(bool observing) override;
 
 #if defined(OS_APPLE) || defined(USE_OZONE)
   SkCanvas* BeginPaintRenderPassOverlay(
@@ -386,8 +388,11 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   // the number of available buffers on the GPU thread.
   base::circular_deque<bool> pending_swaps_;
   // Consecutive number of swaps where there is an extra buffer allocated. Used
-  // as part of heuristic to decide when to release extra frame buffers.
+  // as part of heuristic to decide when to release extra frame buffers when
+  // active.
   int consecutive_frames_with_extra_buffer_ = 0;
+  // Delayed task to drop frame buffers when idle.
+  base::OneShotTimer idle_drop_frame_buffer_timer_;
 
   base::WeakPtr<SkiaOutputSurfaceImpl> weak_ptr_;
   base::WeakPtrFactory<SkiaOutputSurfaceImpl> weak_ptr_factory_{this};

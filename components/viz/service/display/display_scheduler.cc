@@ -229,6 +229,10 @@ void DisplayScheduler::StartObservingBeginFrames() {
   if (!observing_begin_frame_source_) {
     begin_frame_source_->AddObserver(begin_frame_observer_.get());
     observing_begin_frame_source_ = true;
+    if (client_) {
+      client_->OnObservingBeginFrameSourceChanged(
+          observing_begin_frame_source_);
+    }
     if (gpu_pipeline_)
       gpu_pipeline_active_.emplace(gpu_pipeline_);
   }
@@ -238,6 +242,10 @@ void DisplayScheduler::StopObservingBeginFrames() {
   if (observing_begin_frame_source_) {
     begin_frame_source_->RemoveObserver(begin_frame_observer_.get());
     observing_begin_frame_source_ = false;
+    if (client_) {
+      client_->OnObservingBeginFrameSourceChanged(
+          observing_begin_frame_source_);
+    }
     gpu_pipeline_active_.reset();
 
     // A missed BeginFrame may be queued, so drop that too if we're going to

@@ -742,6 +742,13 @@ void SkiaOutputSurfaceImplOnGpu::SwapBuffers(OutputSurfaceFrame frame,
   SwapBuffersInternal(std::move(frame));
 }
 
+void SkiaOutputSurfaceImplOnGpu::ReleaseFrameBuffers(int n) {
+  MakeCurrent(/*need_framebuffer=*/false);
+  for (int i = 0; i < n; ++i) {
+    output_device_->ReleaseOneFrameBuffer();
+  }
+}
+
 void SkiaOutputSurfaceImplOnGpu::SetDependenciesResolvedTimings(
     base::TimeTicks task_ready) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);

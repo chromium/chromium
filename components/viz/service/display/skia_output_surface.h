@@ -185,6 +185,10 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
   // Only used for creating and destroying shared images for render passes
   virtual gpu::SharedImageInterface* GetSharedImageInterface() = 0;
 
+  // Notify OutputSurface that Display has started and stopped observing
+  // begin frames. Used to estimate when rendering becomes idle.
+  virtual void OnObservingBeginFrameSourceChanged(bool observing) = 0;
+
 #if defined(OS_APPLE) || defined(USE_OZONE)
   virtual SkCanvas* BeginPaintRenderPassOverlay(
       const gfx::Size& size,
