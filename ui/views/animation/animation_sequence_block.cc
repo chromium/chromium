@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/callback.h"
 #include "base/check.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
@@ -137,6 +138,36 @@ AnimationSequenceBlock AnimationSequenceBlock::Offset(
 
 AnimationSequenceBlock AnimationSequenceBlock::Then() {
   return Offset(duration_.value_or(base::TimeDelta()));
+}
+
+AnimationSequenceBlock& AnimationSequenceBlock::OnStarted(
+    base::OnceClosure callback) {
+  owner_->SetOnStarted(std::move(callback));
+  return *this;
+}
+
+AnimationSequenceBlock& AnimationSequenceBlock::OnEnded(
+    base::OnceClosure callback) {
+  owner_->SetOnEnded(std::move(callback));
+  return *this;
+}
+
+AnimationSequenceBlock& AnimationSequenceBlock::OnWillRepeat(
+    base::RepeatingClosure callback) {
+  owner_->SetOnWillRepeat(std::move(callback));
+  return *this;
+}
+
+AnimationSequenceBlock& AnimationSequenceBlock::OnAborted(
+    base::OnceClosure callback) {
+  owner_->SetOnAborted(std::move(callback));
+  return *this;
+}
+
+AnimationSequenceBlock& AnimationSequenceBlock::OnScheduled(
+    base::OnceClosure callback) {
+  owner_->SetOnScheduled(std::move(callback));
+  return *this;
 }
 
 AnimationSequenceBlock::Element::Element(AnimationValue animation_value,

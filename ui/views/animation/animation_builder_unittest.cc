@@ -141,16 +141,18 @@ TEST_F(AnimationBuilderTest, CheckStartEndCallbacks) {
 
   {
     AnimationBuilder()
+        .Once()
         .OnStarted(
             base::BindOnce([](bool* started) { *started = true; }, &started))
         .OnEnded(base::BindOnce([](bool* ended) { *ended = true; }, &ended))
-        .Once()
         .SetDuration(kDelay)
         .SetOpacity(first_animating_view, 0.4f)
         .Offset(base::TimeDelta())
         .SetDuration(kDelay * 2)
         .SetOpacity(second_animating_view, 0.9f);
   }
+
+  EXPECT_TRUE(first_animating_view->layer()->GetAnimator()->is_animating());
 
   EXPECT_TRUE(started);
   Step(kDelay * 2);

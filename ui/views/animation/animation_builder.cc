@@ -47,6 +47,8 @@ class AnimationBuilder::Observer : public ui::LayerAnimationObserver {
   void OnLayerAnimationScheduled(ui::LayerAnimationSequence* sequence) override;
 
  private:
+  using RepeatMap = base::flat_map<ui::LayerAnimationSequence*, int>;
+  RepeatMap repeat_map_;
   base::OnceClosure on_started_;
   base::OnceClosure on_ended_;
   base::RepeatingClosure on_will_repeat_;
@@ -101,16 +103,27 @@ void AnimationBuilder::Observer::OnLayerAnimationEnded(
 
 void AnimationBuilder::Observer::OnLayerAnimationWillRepeat(
     ui::LayerAnimationSequence* sequence) {
-  // TODO(kylixrd): This should only be called once for each repeat sequence.
-  // Figure out how to limit this to one invocation.
+  if (!on_will_repeat_)
+    return;
+  // First time through, initialize the repeat_map_ with the sequences.
+  if (repeat_map_.empty()) {
+    for (auto* seq : attached_sequences())
+      repeat_map_[seq] = 0;
+  }
+  // Only trigger the repeat callback on the last LayerAnimationSequence on
+  // which this observer is attached.
+  const int next_cycle = ++repeat_map_[sequence];
+  if (base::ranges::none_of(
+          repeat_map_, [next_cycle](int count) { return count < next_cycle; },
+          &RepeatMap::value_type::second)) {
+    on_will_repeat_.Run();
+  }
 }
 
 void AnimationBuilder::Observer::OnLayerAnimationAborted(
     ui::LayerAnimationSequence* sequence) {
   if (on_aborted_)
     std::move(on_aborted_).Run();
-  // TODO(kylixrd): Probably should propagate the abort to the other
-  // LayerAnimationSequences.
 }
 
 void AnimationBuilder::Observer::OnLayerAnimationScheduled(
@@ -136,17 +149,12 @@ AnimationBuilder::~AnimationBuilder() {
     auto* const target = it->first;
     auto end_it = layer_animation_sequences_.upper_bound(target);
     std::vector<ui::LayerAnimationSequence*> sequences;
-    std::transform(it, end_it, std::back_inserter(sequences), [this](auto& it) {
-      if (animation_observer_)
-        it.second->AddObserver(animation_observer_.get());
-      return it.second.release();
-    });
+    std::transform(it, end_it, std::back_inserter(sequences),
+                   [](auto& it) { return it.second.release(); });
     DCHECK(target->layer()) << "Animation targets must paint to a layer.";
     target->layer()->GetAnimator()->StartTogether(std::move(sequences));
     it = end_it;
   }
-  if (animation_observer_)
-    animation_observer_.release();
 }
 
 AnimationSequenceBlock AnimationBuilder::Once() {
@@ -159,30 +167,24 @@ AnimationSequenceBlock AnimationBuilder::Repeatedly() {
   return NewSequence();
 }
 
-AnimationBuilder& AnimationBuilder::OnStarted(base::OnceClosure callback) {
+void AnimationBuilder::SetOnStarted(base::OnceClosure callback) {
   GetObserver()->SetOnStarted(std::move(callback));
-  return *this;
 }
 
-AnimationBuilder& AnimationBuilder::OnEnded(base::OnceClosure callback) {
+void AnimationBuilder::SetOnEnded(base::OnceClosure callback) {
   GetObserver()->SetOnEnded(std::move(callback));
-  return *this;
 }
 
-AnimationBuilder& AnimationBuilder::OnWillRepeat(
-    base::RepeatingClosure callback) {
+void AnimationBuilder::SetOnWillRepeat(base::RepeatingClosure callback) {
   GetObserver()->SetOnWillRepeat(std::move(callback));
-  return *this;
 }
 
-AnimationBuilder& AnimationBuilder::OnAborted(base::OnceClosure callback) {
+void AnimationBuilder::SetOnAborted(base::OnceClosure callback) {
   GetObserver()->SetOnAborted(std::move(callback));
-  return *this;
 }
 
-AnimationBuilder& AnimationBuilder::OnScheduled(base::OnceClosure callback) {
+void AnimationBuilder::SetOnScheduled(base::OnceClosure callback) {
   GetObserver()->SetOnScheduled(std::move(callback));
-  return *this;
 }
 
 void AnimationBuilder::AddLayerAnimationElement(
@@ -206,6 +208,8 @@ void AnimationBuilder::TerminateSequence(
   for (auto& pair : values_) {
     auto sequence = std::make_unique<ui::LayerAnimationSequence>();
     sequence->set_is_repeating(repeating_);
+    if (animation_observer_)
+      sequence->AddObserver(animation_observer_.get());
 
     base::TimeDelta start;
     ui::LayerAnimationElement::AnimatableProperties properties =
@@ -232,6 +236,7 @@ void AnimationBuilder::TerminateSequence(
   }
 
   values_.clear();
+  animation_observer_.release();
 }
 
 AnimationBuilder::Observer* AnimationBuilder::GetObserver() {

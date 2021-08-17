@@ -35,19 +35,6 @@ class VIEWS_EXPORT AnimationBuilder {
   AnimationSequenceBlock Once();
   AnimationSequenceBlock Repeatedly();
 
-  // Called when the animation starts.
-  AnimationBuilder& OnStarted(base::OnceClosure callback);
-  // Called when the animation ends. Not called if animation is aborted.
-  AnimationBuilder& OnEnded(base::OnceClosure callback);
-  // Called when a sequence repetition ends and will repeat. Not called if
-  // sequence is aborted.
-  AnimationBuilder& OnWillRepeat(base::RepeatingClosure callback);
-  // Called if animation is aborted for any reason. Should never do anything
-  // that may cause another animation to be started.
-  AnimationBuilder& OnAborted(base::OnceClosure callback);
-  // Called when the animation is scheduled.
-  AnimationBuilder& OnScheduled(base::OnceClosure callback);
-
   // Adds an animation element `element` for `key` at `start` to `values`.
   void AddLayerAnimationElement(
       base::PassKey<AnimationSequenceBlock>,
@@ -62,6 +49,13 @@ class VIEWS_EXPORT AnimationBuilder {
   // Called when the sequence is ended. Converts `values_` to
   // `layer_animation_sequences_`.
   void TerminateSequence(base::PassKey<AnimationSequenceBlock>);
+
+  // Called through the corresponding functions on AnimationSequenceBlock.
+  void SetOnStarted(base::OnceClosure callback);
+  void SetOnEnded(base::OnceClosure callback);
+  void SetOnWillRepeat(base::RepeatingClosure callback);
+  void SetOnAborted(base::OnceClosure callback);
+  void SetOnScheduled(base::OnceClosure callback);
 
  private:
   class Observer;
@@ -84,6 +78,7 @@ class VIEWS_EXPORT AnimationBuilder {
   // Each vector is kept in sorted order.
   std::map<AnimationKey, std::vector<Value>> values_;
 };
+
 }  // namespace views
 
 #endif  // UI_VIEWS_ANIMATION_ANIMATION_BUILDER_H_
