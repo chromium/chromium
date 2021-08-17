@@ -46,7 +46,12 @@
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-  [self updateLayout];
+  if ((self.traitCollection.verticalSizeClass !=
+       previousTraitCollection.verticalSizeClass) ||
+      (self.traitCollection.horizontalSizeClass !=
+       previousTraitCollection.horizontalSizeClass)) {
+    [self updateLayout];
+  }
 }
 
 // Controls hit testing of the bottom toolbar. When the toolbar is transparent,
@@ -92,6 +97,7 @@
 - (void)setMode:(TabGridMode)mode {
   if (_mode == mode)
     return;
+  DCHECK(IsTabsBulkActionsEnabled() || mode == TabGridModeNormal);
   _mode = mode;
   // Reset selected tabs count when mode changes.
   self.selectedTabsCount = 0;
@@ -327,6 +333,7 @@
       -kTabGridFloatingButtonVerticalInset;
 
   if (self.mode == TabGridModeSelection) {
+    DCHECK(IsTabsBulkActionsEnabled());
     [_toolbar setItems:@[
       _closeTabsButton, _spaceItem, _shareButton, _spaceItem, _addToButton
     ]];
