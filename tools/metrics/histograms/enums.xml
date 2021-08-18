@@ -73051,6 +73051,13 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="8" label="Succeeded"/>
 </enum>
 
+<enum name="SBClientDownloadUserGestureFileTypeAttributes">
+  <int value="0" label="Total type checked"/>
+  <int value="1" label="Has user gesture"/>
+  <int value="2" label="Has referrer visit"/>
+  <int value="3" label="Has both user gesture and referrer visit"/>
+</enum>
+
 <enum name="SBClientMalwareSentReports">
   <int value="0" label="Sent"/>
   <int value="1" label="Hit limit"/>

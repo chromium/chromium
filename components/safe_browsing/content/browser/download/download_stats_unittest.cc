@@ -6,6 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "components/safe_browsing/content/common/file_type_policies.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -101,6 +102,42 @@ TEST(SafeBrowsingDownloadStatsTest, RecordDownloadOpened) {
       "SBClientDownload.SafeDownloadOpenedLatency.ShowInFolder",
       /*sample=*/base::TimeDelta::FromHours(5),
       /*count=*/1);
+}
+
+TEST(SafeBrowsingDownloadStatsTest, RecordDownloadFileTypeAttributes) {
+  {
+    base::HistogramTester histogram_tester;
+    RecordDownloadFileTypeAttributes(DownloadFileType::ALLOW_ON_USER_GESTURE,
+                                     /*has_user_gesture=*/false,
+                                     /*visited_referrer_before=*/false);
+    histogram_tester.ExpectUniqueSample(
+        "SBClientDownload.UserGestureFileType.Attributes",
+        /*sample=*/UserGestureFileTypeAttributes::TOTAL_TYPE_CHECKED,
+        /*expected_bucket_count=*/1);
+  }
+  {
+    base::HistogramTester histogram_tester;
+    RecordDownloadFileTypeAttributes(DownloadFileType::ALLOW_ON_USER_GESTURE,
+                                     /*has_user_gesture=*/true,
+                                     /*visited_referrer_before=*/true);
+    histogram_tester.ExpectBucketCount(
+        "SBClientDownload.UserGestureFileType.Attributes",
+        /*sample=*/UserGestureFileTypeAttributes::TOTAL_TYPE_CHECKED,
+        /*expected_count=*/1);
+    histogram_tester.ExpectBucketCount(
+        "SBClientDownload.UserGestureFileType.Attributes",
+        /*sample=*/UserGestureFileTypeAttributes::HAS_USER_GESTURE,
+        /*expected_count=*/1);
+    histogram_tester.ExpectBucketCount(
+        "SBClientDownload.UserGestureFileType.Attributes",
+        /*sample=*/UserGestureFileTypeAttributes::HAS_REFERRER_VISIT,
+        /*expected_count=*/1);
+    histogram_tester.ExpectBucketCount(
+        "SBClientDownload.UserGestureFileType.Attributes",
+        /*sample=*/
+        UserGestureFileTypeAttributes::HAS_BOTH_USER_GESTURE_AND_REFERRER_VISIT,
+        /*expected_count=*/1);
+  }
 }
 
 }  // namespace safe_browsing
