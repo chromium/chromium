@@ -620,8 +620,14 @@ void AppHistory::InformAboutCanceledNavigation() {
     auto* script_state =
         ToScriptStateForMainWorld(GetSupplementable()->GetFrame());
     ScriptState::Scope scope(script_state);
-    FinalizeWithAbortedNavigationError(script_state,
-                                       ongoing_non_traversal_navigation_);
+    AppHistoryApiNavigation* navigation = ongoing_non_traversal_navigation_;
+    if (!navigation && ongoing_navigate_event_) {
+      auto it = ongoing_traversals_.find(
+          ongoing_navigate_event_->destination()->key());
+      if (it != ongoing_traversals_.end())
+        navigation = it->value;
+    }
+    FinalizeWithAbortedNavigationError(script_state, navigation);
   }
 
   // If this function is being called as part of frame detach, also cleanup any

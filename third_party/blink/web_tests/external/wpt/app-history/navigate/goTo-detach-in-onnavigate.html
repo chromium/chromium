@@ -15,6 +15,7 @@ promise_test(async t => {
   let onnavigateerror_error;
   i.contentWindow.appHistory.onnavigate = t.step_func(() => i.remove());
   i.contentWindow.appHistory.onnavigateerror = t.step_func(e => {
+    assert_false(onnavigateerror_called);
     onnavigateerror_called = true;
     onnavigateerror_error = e.error;
     assert_equals(e.filename, location.href);
