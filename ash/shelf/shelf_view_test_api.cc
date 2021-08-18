@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
+#include "ash/public/cpp/test/test_shelf_item_delegate.h"
 #include "ash/shelf/shelf_app_button.h"
 #include "ash/shelf/shelf_menu_model_adapter.h"
 #include "ash/shelf/shelf_navigation_widget.h"
@@ -38,19 +39,6 @@ class TestAPIAnimationObserver : public views::BoundsAnimatorObserver {
 }  // namespace
 
 namespace ash {
-
-namespace {
-class TestShelfItemDelegate : public ShelfItemDelegate {
- public:
-  explicit TestShelfItemDelegate(const ShelfID& shelf_id)
-      : ShelfItemDelegate(shelf_id) {}
-  void ExecuteCommand(bool from_context_menu,
-                      int64_t command_id,
-                      int32_t event_flags,
-                      int64_t display_id) override {}
-  void Close() override {}
-};
-}  // namespace
 
 ShelfViewTestAPI::ShelfViewTestAPI(ShelfView* shelf_view)
     : shelf_view_(shelf_view) {}

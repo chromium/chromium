@@ -8,8 +8,8 @@
 
 #include "ash/login_status.h"
 #include "ash/metrics/user_metrics_recorder_test_api.h"
-#include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
+#include "ash/public/cpp/test/test_shelf_item_delegate.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
@@ -20,17 +20,6 @@ using session_manager::SessionState;
 
 namespace ash {
 namespace {
-
-class TestShelfItemDelegate : public ShelfItemDelegate {
- public:
-  explicit TestShelfItemDelegate(const ShelfID& shelf_id)
-      : ShelfItemDelegate(shelf_id) {}
-  void ExecuteCommand(bool from_context_menu,
-                      int64_t command_id,
-                      int32_t event_flags,
-                      int64_t display_id) override {}
-  void Close() override {}
-};
 
 const char kAsh_NumberOfVisibleWindowsInPrimaryDisplay[] =
     "Ash.NumberOfVisibleWindowsInPrimaryDisplay";

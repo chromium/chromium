@@ -418,6 +418,7 @@ source_set("unit_tests") {
 
   deps = [
     ":cpp",
+    ":test_support",
     "//base",
     "//base/test:test_support",
     "//chromeos/ui/vector_icons",
@@ -444,6 +445,8 @@ source_set("test_support") {
     "test/test_nearby_share_delegate.h",
     "test/test_new_window_delegate.cc",
     "test/test_new_window_delegate.h",
+    "test/test_shelf_item_delegate.cc",
+    "test/test_shelf_item_delegate.h",
     "test/test_system_tray_client.cc",
     "test/test_system_tray_client.h",
   ]

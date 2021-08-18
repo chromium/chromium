@@ -494,6 +494,7 @@ static_library("test_support") {
       "//ash:test_support",
       "//ash/components/account_manager",
       "//ash/constants",
+      "//ash/public/cpp:test_support",
       "//chrome/browser/chromeos",
       "//chromeos/dbus/session_manager",
       "//chromeos/dbus/tpm_manager",

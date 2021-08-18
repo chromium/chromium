@@ -10,6 +10,7 @@
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_prefs.h"
+#include "ash/public/cpp/test/test_shelf_item_delegate.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
@@ -32,24 +33,10 @@
 #include "ui/message_center/public/cpp/notifier_id.h"
 
 namespace ash {
-namespace {
-
-class TestShelfItemDelegate : public ShelfItemDelegate {
- public:
-  explicit TestShelfItemDelegate(const ShelfID& shelf_id)
-      : ShelfItemDelegate(shelf_id) {}
-  void ExecuteCommand(bool from_context_menu,
-                      int64_t command_id,
-                      int32_t event_flags,
-                      int64_t display_id) override {}
-  void Close() override {}
-};
 
 Shelf* GetShelfForDisplay(int64_t display_id) {
   return Shell::GetRootWindowControllerWithDisplayId(display_id)->shelf();
 }
-
-}  // namespace
 
 using ShelfControllerTest = AshTestBase;
 

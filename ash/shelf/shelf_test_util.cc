@@ -5,25 +5,12 @@
 #include "ash/shelf/shelf_test_util.h"
 
 #include "ash/public/cpp/overview_test_api.h"
-#include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/test/shell_test_api.h"
+#include "ash/public/cpp/test/test_shelf_item_delegate.h"
 #include "ash/shelf/shelf_controller.h"
 #include "ash/shell.h"
 
 namespace ash {
-
-namespace {
-class TestShelfItemDelegate : public ShelfItemDelegate {
- public:
-  explicit TestShelfItemDelegate(const ShelfID& shelf_id)
-      : ShelfItemDelegate(shelf_id) {}
-  void ExecuteCommand(bool from_context_menu,
-                      int64_t command_id,
-                      int32_t event_flags,
-                      int64_t display_id) override {}
-  void Close() override {}
-};
-}  // namespace
 
 // static
 ShelfItem ShelfTestUtil::AddAppShortcut(const std::string& id,
