@@ -201,8 +201,9 @@ void DevToolsProtocolTest::ProcessNavigationsAnyOrder(
     std::string interception_id;
     ASSERT_TRUE(params->GetString("interceptionId", &interception_id));
     bool is_redirect = params->HasKey("redirectUrl");
-    bool is_navigation;
-    ASSERT_TRUE(params->GetBoolean("isNavigationRequest", &is_navigation));
+    absl::optional<bool> is_navigation =
+        params->FindBoolPath("isNavigationRequest");
+    ASSERT_TRUE(is_navigation);
     std::string resource_type;
     ASSERT_TRUE(params->GetString("resourceType", &resource_type));
     std::string url;
@@ -212,7 +213,7 @@ void DevToolsProtocolTest::ProcessNavigationsAnyOrder(
     // The url will typically have a random port which we want to remove.
     url = RemovePort(GURL(url));
 
-    if (!is_navigation) {
+    if (*is_navigation) {
       params = std::make_unique<base::DictionaryValue>();
       params->SetString("interceptionId", interception_id);
       SendCommand("Network.continueInterceptedRequest", std::move(params),

@@ -120,14 +120,15 @@ void BackgroundTracingRule::GenerateMetadataProto(
 void BackgroundTracingRule::Setup(const base::DictionaryValue* dict) {
   dict->GetDouble(kConfigRuleTriggerChance, &trigger_chance_);
   dict->GetInteger(kConfigRuleTriggerDelay, &trigger_delay_);
-  dict->GetBoolean(kConfigRuleStopTracingOnRepeatedReactive,
-                   &stop_tracing_on_repeated_reactive_);
+  stop_tracing_on_repeated_reactive_ =
+      dict->FindBoolPath(kConfigRuleStopTracingOnRepeatedReactive)
+          .value_or(stop_tracing_on_repeated_reactive_);
   if (dict->HasKey(kConfigRuleIdKey)) {
     dict->GetString(kConfigRuleIdKey, &rule_id_);
   } else {
     rule_id_ = GetDefaultRuleId();
   }
-  dict->GetBoolean(kConfigIsCrashKey, &is_crash_);
+  is_crash_ = dict->FindBoolPath(kConfigIsCrashKey).value_or(is_crash_);
 }
 
 namespace {
@@ -212,8 +213,8 @@ class HistogramRule : public BackgroundTracingRule,
       return nullptr;
 
     // Optional parameter, so we don't need to check if the key exists.
-    bool repeat = true;
-    dict->GetBoolean(kConfigRuleHistogramRepeatKey, &repeat);
+    bool repeat =
+        dict->FindBoolPath(kConfigRuleHistogramRepeatKey).value_or(true);
 
     int histogram_lower_value;
     int histogram_upper_value = std::numeric_limits<int>::max();

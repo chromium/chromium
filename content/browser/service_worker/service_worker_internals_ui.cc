@@ -492,14 +492,23 @@ void ServiceWorkerInternalsHandler::HandleGetOptions(const ListValue* args) {
 }
 
 void ServiceWorkerInternalsHandler::HandleSetOption(const ListValue* args) {
-  std::string option_name;
-  bool option_boolean;
-  if (!args->GetString(0, &option_name) || option_name != "debug_on_start" ||
-      !args->GetBoolean(1, &option_boolean)) {
+  auto args_list = args->GetList();
+  if (args_list.size() < 2) {
+    return;
+  }
+
+  if (!args_list[0].is_string()) {
+    return;
+  }
+  if (args_list[0].GetString() != "debug_on_start") {
+    return;
+  }
+
+  if (!args_list[1].is_bool()) {
     return;
   }
   ServiceWorkerDevToolsManager::GetInstance()
-      ->set_debug_service_worker_on_start(option_boolean);
+      ->set_debug_service_worker_on_start(args_list[1].GetBool());
 }
 
 void ServiceWorkerInternalsHandler::HandleGetAllRegistrations(

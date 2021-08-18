@@ -224,10 +224,9 @@ BackgroundTracingConfigImpl::FromDict(const base::DictionaryValue* dict) {
   if (config) {
     dict->GetString(kConfigScenarioName, &config->scenario_name_);
     config->SetBufferSizeLimits(dict);
-    bool value = false;
-    if (dict->GetBoolean(kConfigTraceBrowserProcessOnly, &value)) {
-      config->trace_browser_process_only_ = value;
-    }
+    config->trace_browser_process_only_ =
+        dict->FindBoolPath(kConfigTraceBrowserProcessOnly)
+            .value_or(config->trace_browser_process_only_);
   }
 
   return config;

@@ -635,13 +635,9 @@ std::string AccessibilityTreeFormatterBlink::ProcessTreeForOutput(
   }
 
   // Offscreen and Focused states are not in the state list.
-  bool offscreen = false;
-  dict.GetBoolean(STATE_OFFSCREEN, &offscreen);
-  if (offscreen)
+  if (dict.FindBoolPath(STATE_OFFSCREEN).value_or(false))
     WriteAttribute(false, STATE_OFFSCREEN, &line);
-  bool focused = false;
-  dict.GetBoolean(STATE_FOCUSED, &focused);
-  if (focused)
+  if (dict.FindBoolPath(STATE_FOCUSED).value_or(false))
     WriteAttribute(false, STATE_FOCUSED, &line);
 
   if (dict.FindKey("boundsX") && dict.FindKey("boundsY")) {
@@ -656,9 +652,7 @@ std::string AccessibilityTreeFormatterBlink::ProcessTreeForOutput(
         &line);
   }
 
-  bool ignored = false;
-  dict.GetBoolean("ignored", &ignored);
-  if (!ignored) {
+  if (!dict.FindBoolPath("ignored").value_or(false)) {
     if (dict.FindKey("pageBoundsX") && dict.FindKey("pageBoundsY")) {
       WriteAttribute(
           false,
@@ -687,8 +681,7 @@ std::string AccessibilityTreeFormatterBlink::ProcessTreeForOutput(
     }
   }
 
-  bool transform;
-  if (dict.GetBoolean("transform", &transform) && transform)
+  if (dict.FindBoolPath("transform").value_or(false))
     WriteAttribute(false, "transform", &line);
 
   for (int attr_index = static_cast<int32_t>(ax::mojom::StringAttribute::kNone);
@@ -722,12 +715,12 @@ std::string AccessibilityTreeFormatterBlink::ProcessTreeForOutput(
        attr_index <= static_cast<int32_t>(ax::mojom::BoolAttribute::kMaxValue);
        ++attr_index) {
     auto attr = static_cast<ax::mojom::BoolAttribute>(attr_index);
-    bool bool_value;
-    if (!dict.GetBoolean(ui::ToString(attr), &bool_value))
+    absl::optional<bool> bool_value = dict.FindBoolPath(ui::ToString(attr));
+    if (!bool_value)
       continue;
     WriteAttribute(false,
                    base::StringPrintf("%s=%s", ui::ToString(attr),
-                                      bool_value ? "true" : "false"),
+                                      *bool_value ? "true" : "false"),
                    &line);
   }
 

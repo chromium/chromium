@@ -26,13 +26,12 @@ class WebTestRuntimeFlags {
 
   TrackedDictionary& tracked_dictionary() { return dict_; }
 
-#define DEFINE_BOOL_WEB_TEST_RUNTIME_FLAG(name)                     \
-  bool name() const {                                               \
-    bool result;                                                    \
-    bool found = dict_.current_values().GetBoolean(#name, &result); \
-    DCHECK(found);                                                  \
-    return result;                                                  \
-  }                                                                 \
+#define DEFINE_BOOL_WEB_TEST_RUNTIME_FLAG(name)                               \
+  bool name() const {                                                         \
+    absl::optional<bool> result = dict_.current_values().FindBoolPath(#name); \
+    DCHECK(result);                                                           \
+    return *result;                                                           \
+  }                                                                           \
   void set_##name(bool new_value) { dict_.SetBoolean(#name, new_value); }
 
 #define DEFINE_STRING_WEB_TEST_RUNTIME_FLAG(name)                  \

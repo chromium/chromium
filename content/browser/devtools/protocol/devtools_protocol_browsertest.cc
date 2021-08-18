@@ -1367,9 +1367,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, JavaScriptDialogNotifications) {
   SendCommand("Page.handleJavaScriptDialog", std::move(params), false);
 
   params = WaitForNotification("Page.javascriptDialogClosed", true);
-  bool result = false;
-  EXPECT_TRUE(params->GetBoolean("result", &result));
+  absl::optional<bool> result = params->FindBoolPath("result");
   EXPECT_TRUE(result);
+  EXPECT_TRUE(*result);
 
   EXPECT_TRUE(dialog_manager.is_handled());
 
@@ -1500,12 +1500,13 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, BrowserCreateAndCloseTarget) {
 
   // TODO(eseckler): Since the RenderView is closed asynchronously, we currently
   // don't verify that the command actually closes the shell.
-  bool success;
   params = std::make_unique<base::DictionaryValue>();
   params->SetString("targetId", target_id);
   SendCommand("Target.closeTarget", std::move(params), true);
-  EXPECT_TRUE(result_->GetBoolean("success", &success));
+
+  absl::optional<bool> success = result_->FindBoolPath("success");
   EXPECT_TRUE(success);
+  EXPECT_TRUE(*success);
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, BrowserGetTargets) {
@@ -1788,7 +1789,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, TargetDiscovery) {
   std::set<std::string> ids;
   std::unique_ptr<base::DictionaryValue> command_params;
   std::unique_ptr<base::DictionaryValue> params;
-  bool is_attached;
+  absl::optional<bool> is_attached;
 
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL first_url = embedded_test_server()->GetURL("/devtools/navigation.html");
@@ -1806,16 +1807,18 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, TargetDiscovery) {
   params = WaitForNotification("Target.targetCreated", true);
   EXPECT_TRUE(params->GetString("targetInfo.type", &temp));
   EXPECT_EQ("page", temp);
-  EXPECT_TRUE(params->GetBoolean("targetInfo.attached", &is_attached));
-  attached_count += is_attached ? 1 : 0;
+  is_attached = params->FindBoolPath("targetInfo.attached");
+  EXPECT_TRUE(is_attached);
+  attached_count += *is_attached ? 1 : 0;
   EXPECT_TRUE(params->GetString("targetInfo.targetId", &temp));
   EXPECT_TRUE(ids.find(temp) == ids.end());
   ids.insert(temp);
   params = WaitForNotification("Target.targetCreated", true);
   EXPECT_TRUE(params->GetString("targetInfo.type", &temp));
   EXPECT_EQ("page", temp);
-  EXPECT_TRUE(params->GetBoolean("targetInfo.attached", &is_attached));
-  attached_count += is_attached ? 1 : 0;
+  is_attached = params->FindBoolPath("targetInfo.attached");
+  EXPECT_TRUE(is_attached);
+  attached_count += *is_attached ? 1 : 0;
   EXPECT_TRUE(params->GetString("targetInfo.targetId", &temp));
   EXPECT_TRUE(ids.find(temp) == ids.end());
   ids.insert(temp);
@@ -1831,8 +1834,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, TargetDiscovery) {
   EXPECT_EQ("page", temp);
   EXPECT_TRUE(params->GetString("targetInfo.targetId", &temp));
   EXPECT_TRUE(ids.find(temp) == ids.end());
-  EXPECT_TRUE(params->GetBoolean("targetInfo.attached", &is_attached));
-  EXPECT_FALSE(is_attached);
+  is_attached = params->FindBoolPath("targetInfo.attached");
+  EXPECT_TRUE(is_attached);
+  EXPECT_FALSE(*is_attached);
   std::string attached_id = temp;
   ids.insert(temp);
 
@@ -1859,8 +1863,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, TargetDiscovery) {
   params = WaitForNotification("Target.targetInfoChanged", true);
   EXPECT_TRUE(params->GetString("targetInfo.targetId", &temp));
   EXPECT_EQ(attached_id, temp);
-  EXPECT_TRUE(params->GetBoolean("targetInfo.attached", &is_attached));
+  is_attached = params->FindBoolPath("targetInfo.attached");
   EXPECT_TRUE(is_attached);
+  EXPECT_TRUE(*is_attached);
   params = WaitForNotification("Target.attachedToTarget", true);
   std::string session_id;
   EXPECT_TRUE(params->GetString("sessionId", &session_id));
