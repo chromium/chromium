@@ -52,6 +52,11 @@ class EnhancedNetworkTtsImpl : public mojom::EnhancedNetworkTts {
   static constexpr base::Feature kOverrideParams{
       "EnhancedNetworkTtsOverride", base::FEATURE_DISABLED_BY_DEFAULT};
 
+  // Set the character limit of text piece in each |ServerRequest|. Unit tests
+  // can use this method to modify the limit. Otherwise, the limit is set to
+  // |mojom::kEnhancedNetworkTtsMaxCharacterSize|.
+  void SetCharLimitPerRequestForTesting(int limit);
+
  private:
   // An input utterance may be chopped into several text pieces, which will be
   // sent over several |ServerRequest|. A |ServerRequest| contains three
@@ -130,6 +135,11 @@ class EnhancedNetworkTtsImpl : public mojom::EnhancedNetworkTts {
   mojo::Receiver<mojom::EnhancedNetworkTts> receiver_{this};
 
   const std::string api_key_;
+
+  // The character limit of text piece in each |ServerRequest|. The limit is set
+  // to |mojom::kEnhancedNetworkTtsMaxCharacterSize| but can be overridden by
+  // |SetCharLimitPerRequestForTesting|.
+  int char_limit_per_request_;
 
   // Used for all callbacks.
   base::WeakPtrFactory<EnhancedNetworkTtsImpl> weak_factory_{this};
