@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/dom/range.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_font_face_descriptors.h"
@@ -32,6 +33,8 @@
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
+
+using ::testing::ElementsAre;
 
 class RangeTest : public EditingTestBase {};
 
@@ -344,6 +347,44 @@ static Vector<IntSize> ComputeSizesOfQuads(const Vector<FloatQuad>& quads) {
   for (const auto& quad : quads)
     sizes.push_back(quad.EnclosingBoundingBox().Size());
   return sizes;
+}
+
+// http://crbug.com/1240510
+TEST_F(RangeTest, GetBorderAndTextQuadsWithCombinedText) {
+  ScopedLayoutNGTextCombineForTest enable_layout_ng_text_combine(true);
+
+  LoadAhem();
+  InsertStyleElement(
+      "body { font: 20px/25px Ahem; margin: 0px; }"
+      "#sample { writing-mode: vertical-rl; }"
+      "c { text-combine-upright: all; }");
+  SetBodyInnerHTML(
+      "<div id=sample>"
+      "<c id=c1>M</c><c id=c2>MM</c><c id=c3>MMM</c><c id=c4>MMMM</c>"
+      "</div>");
+  const Text& text1 = *To<Text>(GetElementById("c1")->firstChild());
+  const Text& text2 = *To<Text>(GetElementById("c2")->firstChild());
+  const Text& text3 = *To<Text>(GetElementById("c3")->firstChild());
+  const Text& text4 = *To<Text>(GetElementById("c4")->firstChild());
+
+  EXPECT_THAT(GetBorderAndTextQuads(Position(text1, 0), Position(text1, 1)),
+              ElementsAre(FloatRect(3, 0, 20, 20)));
+
+  if (RuntimeEnabledFeatures::LayoutNGTextCombineEnabled()) {
+    EXPECT_THAT(GetBorderAndTextQuads(Position(text2, 0), Position(text2, 2)),
+                ElementsAre(FloatRect(2, 20, 22, 20)));
+    EXPECT_THAT(GetBorderAndTextQuads(Position(text3, 0), Position(text3, 3)),
+                ElementsAre(FloatRect(2, 40, 22, 20)));
+    EXPECT_THAT(GetBorderAndTextQuads(Position(text4, 0), Position(text4, 4)),
+                ElementsAre(FloatRect(2, 60, 22, 20)));
+  } else {
+    EXPECT_THAT(GetBorderAndTextQuads(Position(text2, 0), Position(text2, 2)),
+                ElementsAre(FloatRect(3, 20, 20, 20)));
+    EXPECT_THAT(GetBorderAndTextQuads(Position(text3, 0), Position(text3, 3)),
+                ElementsAre(FloatRect(3, 40, 20, 20)));
+    EXPECT_THAT(GetBorderAndTextQuads(Position(text4, 0), Position(text4, 4)),
+                ElementsAre(FloatRect(3, 60, 20, 20)));
+  }
 }
 
 TEST_F(RangeTest, GetBorderAndTextQuadsWithFirstLetterOne) {
