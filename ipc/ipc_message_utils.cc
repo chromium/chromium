@@ -111,10 +111,10 @@ void WriteValue(base::Pickle* m, const base::Value* value, int recursion) {
       break;
     }
     case base::Value::Type::STRING: {
-      std::string val;
-      result = value->GetAsString(&val);
+      const std::string* val = value->GetIfString();
+      result = !!val;
       DCHECK(result);
-      WriteParam(m, val);
+      WriteParam(m, *val);
       break;
     }
     case base::Value::Type::BINARY: {
