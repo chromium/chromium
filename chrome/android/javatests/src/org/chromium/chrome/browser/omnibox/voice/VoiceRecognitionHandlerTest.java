@@ -473,6 +473,9 @@ public class VoiceRecognitionHandlerTest {
         public String getUrl() {
             return mUrl;
         }
+
+        @Override
+        public void notifyVoiceRecognitionCanceled() {}
     }
 
     /**

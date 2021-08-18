@@ -272,6 +272,9 @@ public class VoiceRecognitionHandler {
 
         /** Clears omnibox focus, used to display the dialog when the keyboard is shown. */
         void clearOmniboxFocus();
+
+        /** Notifies the delegate that voice recognition could not complete. */
+        void notifyVoiceRecognitionCanceled();
     }
 
     /** Interface for observers interested in updates to the voice state. */
@@ -466,10 +469,12 @@ public class VoiceRecognitionHandler {
             mCallbackComplete = true;
             if (resultCode == Activity.RESULT_CANCELED) {
                 recordVoiceSearchDismissedEvent(mSource, mTarget);
+                mDelegate.notifyVoiceRecognitionCanceled();
                 return;
             }
             if (resultCode != Activity.RESULT_OK || data.getExtras() == null) {
                 recordVoiceSearchFailureEvent(mSource, mTarget);
+                mDelegate.notifyVoiceRecognitionCanceled();
                 return;
             }
 
@@ -730,9 +735,16 @@ public class VoiceRecognitionHandler {
         startTrackingQueryDuration();
 
         WindowAndroid windowAndroid = mDelegate.getWindowAndroid();
-        if (windowAndroid == null) return;
+        if (windowAndroid == null) {
+            mDelegate.notifyVoiceRecognitionCanceled();
+            return;
+        }
+
         Activity activity = windowAndroid.getActivity().get();
-        if (activity == null) return;
+        if (activity == null) {
+            mDelegate.notifyVoiceRecognitionCanceled();
+            return;
+        }
 
         if (FeatureList.isInitialized()
                 && ChromeFeatureList.isEnabled(
@@ -744,6 +756,7 @@ public class VoiceRecognitionHandler {
             @Nullable
             PrefService prefService = getPrefService();
             if (prefService == null || !prefService.getBoolean(Pref.AUDIO_CAPTURE_ALLOWED)) {
+                mDelegate.notifyVoiceRecognitionCanceled();
                 return;
             }
         }
@@ -789,6 +802,7 @@ public class VoiceRecognitionHandler {
         PermissionCallback callback = (permissions, grantResults) -> {
             if (grantResults.length != 1) {
                 recordAudioPermissionStateEvent(AudioPermissionState.DENIED_CAN_ASK_AGAIN);
+                mDelegate.notifyVoiceRecognitionCanceled();
                 return;
             }
 
@@ -799,8 +813,10 @@ public class VoiceRecognitionHandler {
             } else if (!windowAndroid.canRequestPermission(Manifest.permission.RECORD_AUDIO)) {
                 recordAudioPermissionStateEvent(AudioPermissionState.DENIED_CANNOT_ASK_AGAIN);
                 notifyVoiceAvailabilityImpacted();
+                mDelegate.notifyVoiceRecognitionCanceled();
             } else {
                 recordAudioPermissionStateEvent(AudioPermissionState.DENIED_CAN_ASK_AGAIN);
+                mDelegate.notifyVoiceRecognitionCanceled();
             }
         };
         windowAndroid.requestPermissions(new String[] {Manifest.permission.RECORD_AUDIO}, callback);
@@ -813,7 +829,10 @@ public class VoiceRecognitionHandler {
             Activity activity, WindowAndroid windowAndroid, @VoiceInteractionSource int source) {
         // Check if we need to request audio permissions. If we don't, then trigger a permissions
         // prompt will appear and startVoiceRecognition will be called again.
-        if (!ensureAudioPermissionGranted(activity, windowAndroid, source)) return false;
+        if (!ensureAudioPermissionGranted(activity, windowAndroid, source)) {
+            mDelegate.notifyVoiceRecognitionCanceled();
+            return false;
+        }
 
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(

@@ -1253,6 +1253,11 @@ class LocationBarMediator
         setUrlBarFocus(/*shouldBeFocused=*/false, /*pastedText=*/null, OmniboxFocusReason.UNFOCUS);
     }
 
+    @Override
+    public void notifyVoiceRecognitionCanceled() {
+        mLocationBarLayout.notifyVoiceRecognitionCanceled();
+    }
+
     // AssistantVoiceSearchService.Observer implementation.
 
     @Override

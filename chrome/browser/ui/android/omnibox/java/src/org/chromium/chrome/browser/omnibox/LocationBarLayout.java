@@ -295,4 +295,6 @@ public class LocationBarLayout extends FrameLayout {
     /* package */ void setUrlActionContainerVisibility(int visibility) {
         mUrlActionContainer.setVisibility(visibility);
     }
+
+    public void notifyVoiceRecognitionCanceled() {}
 }

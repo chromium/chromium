@@ -114,7 +114,7 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
         assert !mPendingSearchPromoDecision;
         assert !isVoiceSearchIntent || mNativeInitialized;
 
-        if (voiceRecognitionHandler.isVoiceSearchEnabled() && isVoiceSearchIntent) {
+        if (isVoiceSearchIntent && voiceRecognitionHandler.isVoiceSearchEnabled()) {
             voiceRecognitionHandler.startVoiceRecognition(
                     VoiceRecognitionHandler.VoiceInteractionSource.SEARCH_WIDGET);
         } else {
@@ -158,5 +158,10 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
             });
             mUrlBarFocusRequested = false;
         }
+    }
+
+    @Override
+    public void notifyVoiceRecognitionCanceled() {
+        focusTextBox();
     }
 }
