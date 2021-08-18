@@ -87,7 +87,7 @@ void BluetoothFeaturePodControllerLegacy::UpdateButton() {
   button_->SetToggled(is_enabled);
 
   if (!is_enabled) {
-    button_->SetVectorIcon(kUnifiedMenuBluetoothIcon);
+    button_->SetVectorIcon(kUnifiedMenuBluetoothLegacyIcon);
     button_->SetLabel(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_BLUETOOTH));
     button_->SetSubLabel(l10n_util::GetStringUTF16(
         IDS_ASH_STATUS_TRAY_BLUETOOTH_DISABLED_SHORT));
@@ -107,7 +107,7 @@ void BluetoothFeaturePodControllerLegacy::UpdateButton() {
 
   if (connected_devices.size() > 1) {
     const size_t device_count = connected_devices.size();
-    button_->SetVectorIcon(kUnifiedMenuBluetoothConnectedIcon);
+    button_->SetVectorIcon(kUnifiedMenuBluetoothConnectedLegacyIcon);
     button_->SetLabel(l10n_util::GetStringUTF16(
         IDS_ASH_STATUS_TRAY_BLUETOOTH_MULTIPLE_DEVICES_CONNECTED_LABEL));
     button_->SetSubLabel(base::FormatNumber(device_count));
@@ -119,7 +119,7 @@ void BluetoothFeaturePodControllerLegacy::UpdateButton() {
         connected_devices.back();
     const std::u16string device_name =
         device::GetBluetoothDeviceNameForDisplay(device);
-    button_->SetVectorIcon(kUnifiedMenuBluetoothConnectedIcon);
+    button_->SetVectorIcon(kUnifiedMenuBluetoothConnectedLegacyIcon);
     button_->SetLabel(device_name);
 
     if (device->battery_info) {
@@ -133,7 +133,7 @@ void BluetoothFeaturePodControllerLegacy::UpdateButton() {
     SetTooltipState(l10n_util::GetStringFUTF16(
         IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_CONNECTED_TOOLTIP, device_name));
   } else {
-    button_->SetVectorIcon(kUnifiedMenuBluetoothIcon);
+    button_->SetVectorIcon(kUnifiedMenuBluetoothLegacyIcon);
     button_->SetLabel(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_BLUETOOTH));
     button_->SetSubLabel(
         l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_BLUETOOTH_ENABLED_SHORT));
