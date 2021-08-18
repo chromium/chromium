@@ -13,6 +13,7 @@
 #include "chrome/browser/android/feed/v2/feed_service_bridge.h"
 #include "chrome/browser/android/feed/v2/refresh_task_scheduler_impl.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
@@ -120,6 +121,8 @@ KeyedService* FeedServiceFactory::BuildServiceInstanceFor(
   feed::ChromeInfo chrome_info;
   chrome_info.version = base::Version({CHROME_VERSION});
   chrome_info.channel = chrome::GetChannel();
+  chrome_info.start_surface =
+      base::FeatureList::IsEnabled(chrome::android::kStartSurfaceAndroid);
 
   return new FeedService(
       std::make_unique<FeedServiceDelegateImpl>(),

@@ -10,4 +10,5 @@ option optimize_for = LITE_RUNTIME;
 
 message ChromeClientInfo {
   optional string session_id = 3;
+  optional bool start_surface = 4;
 }
