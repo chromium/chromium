@@ -520,6 +520,17 @@ void AMPPageLoadMetricsObserver::MaybeRecordAmpDocumentMetrics() {
   builder.Record(ukm::UkmRecorder::Get());
 }
 
+static constexpr int ViewportStatusToInt(blink::mojom::ViewportStatus status) {
+  switch (status) {
+    case blink::mojom::ViewportStatus::kYes:
+      return 1;
+    case blink::mojom::ViewportStatus::kNo:
+      return 0;
+    case blink::mojom::ViewportStatus::kUnknown:
+      return -1;
+  }
+}
+
 void AMPPageLoadMetricsObserver::RecordMobileFriendliness(
     ukm::builders::AmpPageLoad& builder) {
   auto it = amp_subframe_info_.find(current_main_frame_nav_info_->subframe_rfh);
@@ -540,9 +551,9 @@ void AMPPageLoadMetricsObserver::RecordMobileFriendliness(
     return;
 
   builder.SetSubFrame_MobileFriendliness_ViewportDeviceWidth(
-      mf.viewport_device_width == blink::mojom::ViewportStatus::kYes);
+      ViewportStatusToInt(mf.viewport_device_width));
   builder.SetSubFrame_MobileFriendliness_AllowUserZoom(
-      mf.allow_user_zoom == blink::mojom::ViewportStatus::kYes);
+      ViewportStatusToInt(mf.allow_user_zoom));
   builder.SetSubFrame_MobileFriendliness_SmallTextRatio(mf.small_text_ratio);
   builder.SetSubFrame_MobileFriendliness_ViewportInitialScaleX10(
       page_load_metrics::GetBucketedViewportInitialScale(mf));
