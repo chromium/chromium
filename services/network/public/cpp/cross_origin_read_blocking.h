@@ -151,7 +151,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
     }
 
     // Allows ResponseAnalyzer to sniff the response body.
-    void SniffResponseBody(base::StringPiece data, size_t new_data_offset);
+    void SniffResponseBody(base::StringPiece data);
 
     class ConfirmationSniffer;
     class SimpleConfirmationSniffer;

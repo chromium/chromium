@@ -551,11 +551,8 @@ class CrossOriginReadBlocking::ResponseAnalyzer::ConfirmationSniffer {
   virtual ~ConfirmationSniffer() = default;
 
   // Called after data is read from the network. |sniffing_buffer| contains the
-  // entire response body delivered thus far. To support streaming,
-  // |new_data_offset| gives the offset into |sniffing_buffer| at which new data
-  // was appended since the last read.
-  virtual void OnDataAvailable(base::StringPiece sniffing_buffer,
-                               size_t new_data_offset) = 0;
+  // entire response body delivered thus far.
+  virtual void OnDataAvailable(base::StringPiece sniffing_buffer) = 0;
 
   // Returns true if the return value of IsConfirmedContentType() might change
   // with the addition of more data. Returns false if a final decision is
@@ -581,13 +578,7 @@ class CrossOriginReadBlocking::ResponseAnalyzer::SimpleConfirmationSniffer
       : sniffer_function_(sniffer_function) {}
   ~SimpleConfirmationSniffer() override = default;
 
-  void OnDataAvailable(base::StringPiece sniffing_buffer,
-                       size_t new_data_offset) final {
-    DCHECK_LE(new_data_offset, sniffing_buffer.length());
-    if (new_data_offset == sniffing_buffer.length()) {
-      // No new data -- do nothing. This happens at end-of-stream.
-      return;
-    }
+  void OnDataAvailable(base::StringPiece sniffing_buffer) final {
     // The sniffing functions don't support streaming, so with each new chunk of
     // data, call the sniffer on the whole buffer.
     last_sniff_result_ = (*sniffer_function_)(sniffing_buffer);
@@ -964,19 +955,15 @@ void CrossOriginReadBlocking::ResponseAnalyzer::CreateSniffers() {
 }
 
 void CrossOriginReadBlocking::ResponseAnalyzer::SniffResponseBody(
-    base::StringPiece data,
-    size_t new_data_offset) {
+    base::StringPiece data) {
   DCHECK(needs_sniffing());
   DCHECK(!sniffers_.empty());
   DCHECK(!found_blockable_content_);
 
   DCHECK_LE(data.size(), static_cast<size_t>(net::kMaxBytesToSniff));
-  DCHECK_LE(new_data_offset, data.size());
-  bool has_new_data = (new_data_offset < data.size());
 
   for (size_t i = 0; i < sniffers_.size();) {
-    if (has_new_data)
-      sniffers_[i]->OnDataAvailable(data, new_data_offset);
+    sniffers_[i]->OnDataAvailable(data);
 
     if (sniffers_[i]->WantsMoreData()) {
       i++;

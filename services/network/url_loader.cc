@@ -1531,8 +1531,10 @@ void URLLoader::DidRead(int num_bytes, bool completed_synchronously) {
         response_->did_mime_sniff = true;
       }
 
-      if (is_more_corb_sniffing_needed_) {
-        corb_analyzer_->SniffResponseBody(data, new_data_offset);
+      // `has_new_data_to_sniff` can be false at the end-of-stream.
+      bool has_new_data_to_sniff = new_data_offset < data.length();
+      if (is_more_corb_sniffing_needed_ && has_new_data_to_sniff) {
+        corb_analyzer_->SniffResponseBody(data);
         if (corb_analyzer_->ShouldBlock()) {
           corb_analyzer_->LogBlockedResponse();
           is_more_corb_sniffing_needed_ = false;

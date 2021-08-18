@@ -1953,9 +1953,8 @@ class ResponseAnalyzerTest : public testing::Test,
         bytes_to_append = net::kMaxBytesToSniff - data_offset;
       data_buffer.append(packets_vector[packet_index], bytes_to_append);
 
-      // Hand |analyzer_| the data and an offset indicating what point it last
-      // read to.
-      analyzer_->SniffResponseBody(data_buffer, data_offset);
+      // Hand |analyzer_| the data to sniff.
+      analyzer_->SniffResponseBody(data_buffer);
       data_offset += bytes_to_append;
 
       // If the latest packet was empty, or we reached net::kMaxBytesToSniff

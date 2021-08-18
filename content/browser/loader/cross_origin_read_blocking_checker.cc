@@ -159,7 +159,7 @@ void CrossOriginReadBlockingChecker::OnReadComplete(
     return;
   }
   base::StringPiece data(buffer->data(), bytes_read);
-  corb_analyzer_->SniffResponseBody(data, 0);
+  corb_analyzer_->SniffResponseBody(data);
   if (corb_analyzer_->ShouldBlock()) {
     OnBlocked();
     return;
