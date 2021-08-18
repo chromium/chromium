@@ -23,7 +23,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.weblayer.shell.InstrumentationActivity;
 
@@ -42,7 +41,6 @@ public final class MediaSessionTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)
-    @DisabledTest(message = "crbug.com/1239028")
     public void basic() throws Throwable {
         mActivity = mActivityTestRule.launchShellWithUrl(
                 mActivityTestRule.getTestDataURL("media_session.html"));

@@ -20,7 +20,6 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.weblayer.ContextMenuParams;
@@ -154,7 +153,6 @@ public class TabCallbackTest {
         file.delete();
     }
 
-    @MinWebLayerVersion(88)
     @Test
     @SmallTest
     @DisableIf.
@@ -174,7 +172,6 @@ public class TabCallbackTest {
         waitForFileExist(tempDownloadDirectory, "lorem_ipsum.txt");
     }
 
-    @MinWebLayerVersion(88)
     @Test
     @SmallTest
     @DisableIf.
@@ -196,7 +193,6 @@ public class TabCallbackTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "crbug.com/1239034")
     public void testTabModalOverlay() throws TimeoutException {
         String pageUrl = mActivityTestRule.getTestDataURL("alert.html");
         InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(pageUrl);
@@ -230,7 +226,6 @@ public class TabCallbackTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "crbug.com/1239026")
     public void testDismissTransientUi() throws TimeoutException {
         String pageUrl = mActivityTestRule.getTestDataURL("alert.html");
         InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(pageUrl);

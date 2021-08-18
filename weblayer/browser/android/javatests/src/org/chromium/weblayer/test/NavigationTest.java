@@ -1169,7 +1169,6 @@ public class NavigationTest {
     // This is a regression test for https://crbug.com/1121388.
     @Test
     @SmallTest
-    @DisabledTest(message = "crbug.com/1225662")
     public void testDestroyTabWithModalDialog() throws Exception {
         // Load a page with a form.
         InstrumentationActivity activity =
