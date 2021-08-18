@@ -25,7 +25,6 @@
 #include "content/browser/handwriting/handwriting_recognition_service_factory.h"
 #include "content/browser/image_capture/image_capture_impl.h"
 #include "content/browser/interest_group/ad_auction_service_impl.h"
-#include "content/browser/interest_group/restricted_interest_group_store_impl.h"
 #include "content/browser/keyboard_lock/keyboard_lock_service_impl.h"
 #include "content/browser/loader/content_security_notifier.h"
 #include "content/browser/media/midi_host.h"
@@ -977,8 +976,6 @@ void PopulateBinderMapWithContext(
   if (base::FeatureList::IsEnabled(blink::features::kFledgeInterestGroups)) {
     map->Add<blink::mojom::AdAuctionService>(
         base::BindRepeating(&AdAuctionServiceImpl::CreateMojoService));
-    map->Add<blink::mojom::RestrictedInterestGroupStore>(base::BindRepeating(
-        &RestrictedInterestGroupStoreImpl::CreateMojoService));
   }
   map->Add<blink::mojom::MediaSessionService>(
       base::BindRepeating(&MediaSessionServiceImpl::Create));

@@ -10,7 +10,6 @@
 
 #include "base/containers/unique_ptr_adapters.h"
 #include "content/browser/interest_group/auction_runner.h"
-#include "content/browser/interest_group/interest_group_manager.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_service_base.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -24,6 +23,7 @@
 namespace content {
 
 class AuctionRunner;
+class InterestGroupManager;
 class RenderFrameHost;
 class RenderFrameHostImpl;
 
@@ -39,6 +39,10 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
       mojo::PendingReceiver<blink::mojom::AdAuctionService> receiver);
 
   // blink::mojom::AdAuctionService.
+  void JoinInterestGroup(const blink::InterestGroup& group) override;
+  void LeaveInterestGroup(const url::Origin& owner,
+                          const std::string& name) override;
+  void UpdateAdInterestGroups() override;
   void RunAdAuction(blink::mojom::AuctionAdConfigPtr config,
                     RunAdAuctionCallback callback) override;
 
@@ -67,6 +71,8 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
                          absl::optional<GURL> bidder_report_url,
                          absl::optional<GURL> seller_report_url,
                          std::vector<std::string> errors);
+
+  InterestGroupManager& GetInterestGroupManager() const;
 
   // This must be above `auction_worklet_service_`, since auctions may own
   // callbacks over the AuctionWorkletService pipe, and mojo pipes must be

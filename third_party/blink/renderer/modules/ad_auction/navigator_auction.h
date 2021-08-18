@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_AD_AUCTION_NAVIGATOR_AUCTION_H_
 
 #include "third_party/blink/public/mojom/interest_group/ad_auction_service.mojom-blink.h"
-#include "third_party/blink/public/mojom/interest_group/restricted_interest_group_store.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -58,7 +57,6 @@ class MODULES_EXPORT NavigatorAuction final
                                     ExceptionState&);
 
   void Trace(Visitor* visitor) const override {
-    visitor->Trace(interest_group_store_);
     visitor->Trace(ad_auction_service_);
     Supplement<Navigator>::Trace(visitor);
   }
@@ -68,8 +66,6 @@ class MODULES_EXPORT NavigatorAuction final
   void AuctionComplete(ScriptPromiseResolver*, const absl::optional<KURL>&);
 
   HeapMojoRemote<mojom::blink::AdAuctionService> ad_auction_service_;
-  HeapMojoRemote<mojom::blink::RestrictedInterestGroupStore>
-      interest_group_store_;
 };
 
 }  // namespace blink

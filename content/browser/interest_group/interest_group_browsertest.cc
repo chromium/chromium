@@ -21,7 +21,6 @@
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/browser/interest_group/ad_auction_service_impl.h"
 #include "content/browser/interest_group/interest_group_manager.h"
-#include "content/browser/interest_group/restricted_interest_group_store_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -51,7 +50,6 @@
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/mojom/interest_group/ad_auction_service.mojom.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
-#include "third_party/blink/public/mojom/interest_group/restricted_interest_group_store.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -1646,6 +1644,74 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionMultipleAuctions) {
   EXPECT_EQ(bidding_interest_groups2.front().group->signals->bid_count, 3);
 }
 
+// Adding an interest group and then immediately running the ad acution, without
+// waiting in between, should always work because although adding the interest
+// group is async (and intentionally without completion notification), it should
+// complete before the auction runs.
+//
+// On regression, this test will likely only fail with very low frequency.
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       AddInterestGroupRunAuctionWithWinnerWithoutWaiting) {
+  GURL test_url = https_server_->GetURL("a.test", "/echo");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  std::string ads =
+      "[{renderUrl : 'https://example.com/render',"
+      "metadata : {ad:'metadata', here : [ 1, 2 ]}}]";
+
+  // Use JoinInterestGroupInJS() instead of JoinInterestGroupAndWaitInJs().
+
+  EXPECT_TRUE(JoinInterestGroupInJS(
+      blink::InterestGroup(
+          /*expiry=*/base::Time(),
+          /*owner=*/url::Origin::Create(test_url.GetOrigin()),
+          /*name=*/"cars",
+          /*bidding_url=*/
+          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
+          /*update_url=*/absl::nullopt,
+          /*trusted_bidding_signals_url=*/
+          https_server_->GetURL("a.test",
+                                "/interest_group/trusted_bidding_signals.json"),
+          /*trusted_bidding_signals_keys=*/absl::nullopt,
+          /*user_bidding_signals=*/"{some: 'json', data: {here: [1, 2]}}",
+          /*ads=*/absl::nullopt),
+      ads, "['key1']"));
+
+  EXPECT_EQ(
+      "https://example.com/render",
+      RunAuctionAndWait(JsReplace(
+          R"({
+    seller: $1,
+    decisionLogicUrl: $2,
+    interestGroupBuyers: [$1],
+    auctionSignals: {x: 1},
+    sellerSignals: {yet: 'more', info: 1},
+    perBuyerSignals: {$1: {even: 'more', x: 4.5}}
+  })",
+          test_url.GetOrigin().spec(),
+          https_server_->GetURL("a.test", "/interest_group/decision_logic.js")
+              .spec())));
+
+  // Leave the interest group, then re-run the auction. We shouldn't get a
+  // result.
+  LeaveInterestGroupInJS(/*owner=*/url::Origin::Create(test_url.GetOrigin()),
+                         /*name=*/"cars");
+  EXPECT_EQ(
+      nullptr,
+      RunAuctionAndWait(JsReplace(
+          R"({
+    seller: $1,
+    decisionLogicUrl: $2,
+    interestGroupBuyers: [$1],
+    auctionSignals: {x: 1},
+    sellerSignals: {yet: 'more', info: 1},
+    perBuyerSignals: {$1: {even: 'more', x: 4.5}}
+  })",
+          test_url.GetOrigin().spec(),
+          https_server_->GetURL("a.test", "/interest_group/decision_logic.js")
+              .spec())));
+}
+
 // The winning ad's render url is invalid (invalid url or has http scheme).
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithInvalidAdUrl) {
   GURL test_url = https_server_->GetURL("a.test", "/echo");
@@ -2114,8 +2180,8 @@ class InterestGroupBrowserTestRunAdAuctionBypassBlink
     ASSERT_TRUE(test_url_a.SchemeIs(url::kHttpsScheme));
     ASSERT_TRUE(NavigateToURL(shell(), test_url_a));
 
-    mojo::Remote<blink::mojom::RestrictedInterestGroupStore> interest_service;
-    RestrictedInterestGroupStoreImpl::CreateMojoService(
+    mojo::Remote<blink::mojom::AdAuctionService> interest_service;
+    AdAuctionServiceImpl::CreateMojoService(
         shell()->web_contents()->GetMainFrame(),
         interest_service.BindNewPipeAndPassReceiver());
 

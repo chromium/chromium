@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/interest_group/restricted_interest_group_store_impl.h"
+#include "content/browser/interest_group/ad_auction_service_impl.h"
 
 #include <memory>
 #include <string>
@@ -29,8 +29,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
+#include "third_party/blink/public/mojom/interest_group/ad_auction_service.mojom.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
-#include "third_party/blink/public/mojom/interest_group/restricted_interest_group_store.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -144,6 +144,10 @@ class UpdateResponder {
 
 }  // namespace
 
+// Tests the interest group management functionality of AdAuctionService -- this
+// particular functionality used to be in a separate interface called
+// RestrictedInterestStore. The interfaces were combined so so that they'd share
+// a Mojo pipe (for message ordering consistency).
 class RestrictedInterestGroupStoreImplTest : public RenderViewHostTestHarness {
  public:
   RestrictedInterestGroupStoreImplTest()
@@ -199,18 +203,18 @@ class RestrictedInterestGroupStoreImplTest : public RenderViewHostTestHarness {
     return 0;
   }
 
-  // Create a new RestrictedInterestGroupStoreImpl and use it to try and join
+  // Create a new AdAuctionServiceImpl and use it to try and join
   // `interest_group`. Flushes the Mojo pipe to force the Mojo message to be
   // handled before returning.
   //
-  // Creates a new RestrictedInterestGroupStoreImpl with each call so the RFH
+  // Creates a new AdAuctionServiceImpl with each call so the RFH
   // can be navigated between different sites. And
-  // RestrictedInterestGroupStoreImpl only handles one site (cross site navs use
+  // AdAuctionServiceImpl only handles one site (cross site navs use
   // different RestrictedInterestGroupStoreImpls, and generally use different
   // RFHs as well).
   void JoinInterestGroupAndFlush(const blink::InterestGroup& interest_group) {
-    mojo::Remote<blink::mojom::RestrictedInterestGroupStore> interest_service;
-    RestrictedInterestGroupStoreImpl::CreateMojoService(
+    mojo::Remote<blink::mojom::AdAuctionService> interest_service;
+    AdAuctionServiceImpl::CreateMojoService(
         web_contents()->GetMainFrame(),
         interest_service.BindNewPipeAndPassReceiver());
 
@@ -222,8 +226,8 @@ class RestrictedInterestGroupStoreImplTest : public RenderViewHostTestHarness {
   // instead of joining one.
   void LeaveInterestGroupAndFlush(const url::Origin& owner,
                                   const std::string& name) {
-    mojo::Remote<blink::mojom::RestrictedInterestGroupStore> interest_service;
-    RestrictedInterestGroupStoreImpl::CreateMojoService(
+    mojo::Remote<blink::mojom::AdAuctionService> interest_service;
+    AdAuctionServiceImpl::CreateMojoService(
         web_contents()->GetMainFrame(),
         interest_service.BindNewPipeAndPassReceiver());
 
@@ -235,8 +239,8 @@ class RestrictedInterestGroupStoreImplTest : public RenderViewHostTestHarness {
   // URL. Doesn't flush since the update operation requires a sequence of
   // asynchronous operations.
   void UpdateInterestGroupNoFlush() {
-    mojo::Remote<blink::mojom::RestrictedInterestGroupStore> interest_service;
-    RestrictedInterestGroupStoreImpl::CreateMojoService(
+    mojo::Remote<blink::mojom::AdAuctionService> interest_service;
+    AdAuctionServiceImpl::CreateMojoService(
         web_contents()->GetMainFrame(),
         interest_service.BindNewPipeAndPassReceiver());
 

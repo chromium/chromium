@@ -373,14 +373,9 @@ bool CopyPerBuyerSignalsFromIdlToMojo(const ScriptState& script_state,
 
 NavigatorAuction::NavigatorAuction(Navigator& navigator)
     : Supplement(navigator),
-      ad_auction_service_(navigator.GetExecutionContext()),
-      interest_group_store_(navigator.GetExecutionContext()) {
+      ad_auction_service_(navigator.GetExecutionContext()) {
   navigator.GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(
       ad_auction_service_.BindNewPipeAndPassReceiver(
-          navigator.GetExecutionContext()->GetTaskRunner(
-              TaskType::kMiscPlatformAPI)));
-  navigator.GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(
-      interest_group_store_.BindNewPipeAndPassReceiver(
           navigator.GetExecutionContext()->GetTaskRunner(
               TaskType::kMiscPlatformAPI)));
 }
@@ -442,7 +437,7 @@ void NavigatorAuction::joinAdInterestGroup(ScriptState* script_state,
     return;
   }
 
-  interest_group_store_->JoinInterestGroup(std::move(mojo_group));
+  ad_auction_service_->JoinInterestGroup(std::move(mojo_group));
 }
 
 /* static */
@@ -467,7 +462,7 @@ void NavigatorAuction::leaveAdInterestGroup(ScriptState* script_state,
                                    "' must be a valid https origin.");
     return;
   }
-  interest_group_store_->LeaveInterestGroup(owner, group->name());
+  ad_auction_service_->LeaveInterestGroup(owner, group->name());
 }
 
 /* static */
@@ -480,7 +475,7 @@ void NavigatorAuction::leaveAdInterestGroup(ScriptState* script_state,
 }
 
 void NavigatorAuction::updateAdInterestGroups() {
-  interest_group_store_->UpdateAdInterestGroups();
+  ad_auction_service_->UpdateAdInterestGroups();
 }
 
 /* static */
