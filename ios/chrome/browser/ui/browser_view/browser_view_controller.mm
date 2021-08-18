@@ -3909,12 +3909,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
             web::features::kWebViewNativeContextMenuPhase2)) {
       return nil;
     }
-    UIViewController* vc = [[UIViewController alloc] init];
-    vc.view.backgroundColor = UIColor.blueColor;
-    return vc;
-    //    if (isLink)
-    //      return [[LinkNoPreviewViewController alloc] init];
-    //    return nil;
+    if (isLink)
+      return [[LinkNoPreviewViewController alloc] init];
+    return nil;
   };
   UIContextMenuConfiguration* configuration =
       [UIContextMenuConfiguration configurationWithIdentifier:nil
