@@ -994,6 +994,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4358461427845829800">Quản lý phương thức thanh toán...</translation>
 <translation id="4359160567981085931">Bạn vừa nhập mật khẩu vào một trang web lừa đảo. Chrome có thể trợ giúp bạn. Để đổi mật khẩu và thông báo cho Google biết rằng tài khoản của bạn có thể gặp nguy hiểm, hãy nhấp vào Bảo vệ tài khoản.</translation>
 <translation id="4367563149485757821">Number-12 (Phong bì)</translation>
+<translation id="437040971055499437">Xảy ra sự kiện bảo mật</translation>
 <translation id="437058704415269440">Số dư tài khoản</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Giá trị <ph name="VALUE_TYPE" /> mong đợi.</translation>
@@ -1403,6 +1404,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5803412860119678065">Bạn có muốn điền <ph name="CARD_DETAIL" /> của mình không?</translation>
 <translation id="5804241973901381774">Quyền</translation>
 <translation id="5810442152076338065">Kết nối của bạn tới <ph name="DOMAIN" /> được mã hóa bằng bộ số 0 đã lỗi thời.</translation>
+<translation id="5812947184178430888">Khi Chrome gắn cờ các sự kiện bảo mật, quản trị viên của bạn sẽ nhận được dữ liệu liên quan đến các sự kiện đó. Dữ liệu này có thể bao gồm URL của những trang bạn truy cập trong Chrome, tên tệp hoặc siêu dữ liệu, cũng như tên người dùng mà bạn sử dụng để đăng nhập vào các ứng dụng dựa trên nền tảng web, thiết bị của bạn và Chrome.</translation>
 <translation id="5813119285467412249">&amp;Làm lại thêm</translation>
 <translation id="5817918615728894473">Ghép nối</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Thẻ này sẽ bị trừ tiền khi bạn thanh toán, nhưng số thẻ thật sẽ không được chia sẻ với trang web này. Để tăng cường tính bảo mật, hệ thống sẽ tạo một Mã xác minh thẻ (CVC) tạm thời.}other{Thẻ bạn chọn sẽ bị trừ tiền khi bạn thanh toán, nhưng số thẻ thật sẽ không được chia sẻ với trang web này. Để tăng cường tính bảo mật, hệ thống sẽ tạo một Mã xác minh thẻ (CVC) tạm thời.}}</translation>

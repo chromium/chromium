@@ -496,6 +496,7 @@
 <translation id="4108998448622696017">危険なイベントの発生を検出して警告します。</translation>
 <translation id="4116038641877404294">ページをダウンロードするとオフラインで使用できるようになります</translation>
 <translation id="4135200667068010335">タブを共有するデバイスのリストが閉じられました。</translation>
+<translation id="4137746084635924146">現在のデバイスの言語</translation>
 <translation id="4141536112466364990">Chrome について学ぶ</translation>
 <translation id="4149994727733219643">ウェブページの簡易表示</translation>
 <translation id="4165986682804962316">サイトの設定</translation>
@@ -1228,6 +1229,7 @@
 <translation id="8497726226069778601">表示するものがまだありません</translation>
 <translation id="8503559462189395349">Chrome パスワード</translation>
 <translation id="8503813439785031346">ユーザー名</translation>
+<translation id="8505766168025405649">ダウンロード ステータスの通知を表示</translation>
 <translation id="8514477925623180633">Chrome に保存されたパスワードをエクスポートします</translation>
 <translation id="8516012719330875537">画像エディタ</translation>
 <translation id="8523928698583292556">保存したパスワードを削除</translation>

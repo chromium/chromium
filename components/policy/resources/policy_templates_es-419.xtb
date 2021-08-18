@@ -4482,6 +4482,7 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
           Si está configurada en falso o si no está configurada, la creación y el acceso de usuarios supervisados estarán inhabilitados. Todos los usuarios supervisados existentes estarán ocultos.
 
           NOTA: El comportamiento predeterminado en dispositivos para consumidores y empresas difiere: en los dispositivos para consumidores, los usuarios supervisados están habilitados de forma predeterminada; en cambio, en los dispositivos para empresas, los usuarios supervisados están inhabilitados de forma predeterminada.</translation>
+<translation id="665023848306499203">Permitir que los dispositivos seleccionen una versión específica para realizar la actualización</translation>
 <translation id="6652197835259177259">Configuración de los usuarios administrados localmente</translation>
 <translation id="6653897159826215341">Si habilitas la política, <ph name="PRODUCT_NAME" /> abrirá el diálogo de impresión del sistema en lugar de la vista previa de impresión integrada cuando los usuarios soliciten realizar una impresión.
 
@@ -5198,6 +5199,20 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="7477231245051133709">Habilita la función de accesibilidad de audio mono</translation>
 <translation id="7477239290070847560">Destinos de los protocolos basados en la no configuración (mDNS y DNS-SD)</translation>
 <translation id="7485481791539008776">Normas de selección de la impresora predeterminada</translation>
+<translation id="7493995861907758679">Esta configuración permite que los dispositivos seleccionen una versión de destino específica de <ph name="PRODUCT_OS_NAME" /> para realizar la actualización.
+
+      Si no estableces esta configuración, los dispositivos se actualizarán según otros parámetros de configuración o a la última versión disponible.
+
+      Si la estableces, los dispositivos se actualizarán a la versión seleccionada.
+
+      El formato exacto del valor de esta política es la información de una implementación del servicio de actualización. Este formato puede cambiar. El valor de la política no se procesa en el dispositivo.
+
+      El servicio de actualización verificará primero esta política si la utilizas junto con <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" />.
+      A diferencia de <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> (que es posible que admita actualizaciones menores), los dispositivos seguirán teniendo la versión seleccionada hasta que se cambie el valor de esta política.
+
+      Si la utilizas junto a <ph name="DEVICE_ROLLBACK_TO_TARGET_VERSION_POLICY_NAME" />, podrá revertirse la versión del dispositivo a una versión anterior específica.
+
+      Advertencia: No se recomienda configurar restricciones a una versión, dado que es posible que esta acción impida que los usuarios reciban actualizaciones de software y correcciones críticas de seguridad. Si restringes las actualizaciones a una versión específica, es posible que los usuarios queden expuestos a riesgos.</translation>
 <translation id="7506745375479451616">Esta política controla el comando que se usará en las URL abiertas en <ph name="PRODUCT_NAME" /> cuando te cambias de <ph name="IE_PRODUCT_NAME" />. Puedes establecer esta política como una ruta de archivos ejecutable o <ph name="PRODUCT_NAME_PLACEHOLDER" /> para que detecte la ubicación de <ph name="PRODUCT_NAME" /> de forma automática.
 
       Si no estableces la política, <ph name="IE_PRODUCT_NAME" /> detectará la propia ruta ejecutable de <ph name="PRODUCT_NAME" /> de forma automática cuando se ejecuta <ph name="PRODUCT_NAME" /> desde Internet Explorer.

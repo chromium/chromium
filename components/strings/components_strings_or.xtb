@@ -268,6 +268,7 @@
 <translation id="1838374766361614909">ସନ୍ଧାନ ଖାଲି କରନ୍ତୁ</translation>
 <translation id="1839551713262164453">ତ୍ରୁଟିଗୁଡ଼ିକ ସହିତ ନୀତିଗତ ମୂଲ୍ୟଗୁଡ଼ିକର ବୈଧକରଣ ବିଫଳ ହୋଇଛି</translation>
 <translation id="1842969606798536927">ପେମେଣ୍ଟ କରନ୍ତୁ</translation>
+<translation id="1856713167556118146">ଇନକଗ୍ନିଟୋ କଣ କରେ ନାହିଁ</translation>
 <translation id="1871208020102129563">ପ୍ରକ୍ସି ନିର୍ଦ୍ଦିଷ୍ଟ କରାଯାଇଥିବା ପ୍ରକ୍ସି ସର୍ଭର୍‌ଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବାକୁ ସେଟ୍ କରାଯାଇଛି, ଏକ .pac ସ୍କ୍ରିପ୍ଟ URLକୁ ନୁହେଁ।</translation>
 <translation id="1871284979644508959">ଆବଶ୍ୟକୀୟ ଫିଲ୍ଡ</translation>
 <translation id="1875512691959384712">Google Forms</translation>
@@ -1007,6 +1008,7 @@
 <translation id="4465818729556336129">ଏହି ଡକ୍ୟୁମେଣ୍ଟ ଗୋପନୀୟ ଅଟେ ଏବଂ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର୍ ଏହାକୁ ପ୍ରିଣ୍ଟ କରିବା ପାଇଁ ପରାମର୍ଶ ଦିଅନ୍ତି ନାହିଁ।</translation>
 <translation id="4476953670630786061">ଏହି ଫର୍ମ ସୁରକ୍ଷିତ ନୁହେଁ। ସ୍ୱତଃପୂରଣକୁ ବନ୍ଦ କରାଯାଇଛି।</translation>
 <translation id="4477350412780666475">ପରବର୍ତ୍ତୀ ଟ୍ରାକ୍</translation>
+<translation id="4481251927743463293">ଇନକଗ୍ନିଟୋ କଣ କରେ</translation>
 <translation id="4481394504112738036">ଗୋପନୀୟ ଫାଇଲ୍</translation>
 <translation id="4482953324121162758">ଏହି ସାଇଟ୍‌କୁ ଅନୁବାଦ କରାଯିବ ନାହିଁ।</translation>
 <translation id="4490717597759821841">A7</translation>
@@ -1107,10 +1109,17 @@
 <translation id="4819347708020428563">ଡିଫଲ୍ଟ ଭ୍ୟୁରେ ଏନୋଟେସନଗୁଡ଼ିକୁ ଏଡିଟ୍ କରିବେ?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, ଶୀଘ୍ର ଏକ ନୂଆ Google Sheet ତିଆରି କରିବାକୁ Tab କରି Enter ଦବାନ୍ତୁ</translation>
 <translation id="4825507807291741242">ଶକ୍ତିଶାଳୀ</translation>
+<translation id="4827402517081186284">ଇନକଗ୍ନିଟୋ ଆପଣଙ୍କୁ ଅନଲାଇନରେ ଅଦୃଶ୍ୟ କରେ ନାହିଁ:
+<ph name="BEGIN_LIST" />
+<ph name="LIST_ITEM" />ଆପଣ ସାଇଟଗୁଡ଼ିକୁ ଭିଜିଟ୍ କଲେ ସେଗୁଡ଼ିକ ଏହା ବିଷୟରେ ଜାଣିପାରେ<ph name="END_LIST_ITEM" />
+<ph name="LIST_ITEM" />ନିଯୁକ୍ତିଦାତା କିମ୍ବା ସ୍କୁଲ୍, ବ୍ରାଉଜିଂ କାର୍ଯ୍ୟକଳାପକୁ ଟ୍ରାକ୍ କରିପାରିବେ<ph name="END_LIST_ITEM" />
+<ph name="LIST_ITEM" />ଇଣ୍ଟରନେଟ୍ ସେବା ପ୍ରଦାନକାରୀଗୁଡ଼ିକ ୱେବ୍ ଟ୍ରାଫିକକୁ ମନିଟର୍ କରିପାରନ୍ତି<ph name="END_LIST_ITEM" />
+<ph name="END_LIST" /></translation>
 <translation id="4838327282952368871">ଡ୍ରିମି</translation>
 <translation id="484462545196658690">ସ୍ୱତଃ</translation>
 <translation id="4850886885716139402">ଦେଖନ୍ତୁ</translation>
 <translation id="485316830061041779">ଜର୍ମାନ୍</translation>
+<translation id="4853901935952445031">ଫେବୃଆରୀ 2022 ପରେ ଏହି ସାଇଟ୍ U2F API ବ୍ୟବହାର କରିବାକୁ ସକ୍ଷମ ହେବ ନାହିଁ। ଯଦି ଏହି ସାଇଟ୍ ଆପଣଙ୍କ ମାଲିକାନାରେ ଅଛି, ତେବେ ୱେବ୍ ପ୍ରମାଣୀକରଣ API ବ୍ୟବହାର କରିବା ପାଇଁ ଆପଣ ଏହାକୁ ପରିବର୍ତ୍ତନ କରିବା ଉଚିତ।</translation>
 <translation id="4854362297993841467">ଏହି ବିତରଣ ପଦ୍ଧତି ଉପଲବ୍ଧ ନାହିଁ। ଏକ ଭିନ୍ନ ପଦ୍ଧତି ଚେଷ୍ଠା କରନ୍ତୁ।</translation>
 <translation id="4854853140771946034">Google Keepରେ ଶୀଘ୍ର ଏକ ନୂଆ ନୋଟ୍ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="4876188919622883022">ସରଳିକୃତ ଭ୍ୟୁ</translation>
@@ -1632,6 +1641,7 @@
 <translation id="6757797048963528358">ଆପଣଙ୍କର ଡିଭାଇସ୍ ନିଷ୍କ୍ରିୟ ହୋ‍ଇଯାଇଛି।</translation>
 <translation id="6767985426384634228">ଠିକଣା ଅପଡ଼େଟ୍ କରିବେ?</translation>
 <translation id="6768213884286397650">ହାଗାକି (ପୋଷ୍ଟକାର୍ଡ)</translation>
+<translation id="6774185088257932239">ଇନକଗ୍ନିଟୋ ବିଷୟରେ <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">ବାଇଗଣୀ</translation>
 <translation id="6786747875388722282">ପରିବର୍ଦ୍ଧନ</translation>
@@ -1679,6 +1689,7 @@
 <translation id="6965382102122355670">ଓକେ ବଟନ୍</translation>
 <translation id="6965978654500191972">ଡିଭାଇସ୍</translation>
 <translation id="696703987787944103">ପରସେପଚୁଆଲ୍</translation>
+<translation id="6968269510885595029">ଆପଣଙ୍କ ସୁରକ୍ଷା କୀ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="6970216967273061347">ଜିଲ୍ଲା</translation>
 <translation id="6971439137020188025">Slidesରେ ଶୀଘ୍ର ଏକ ନୂଆ Google ପ୍ରେଜେଣ୍ଟେସନ୍ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="6972629891077993081">HID ଡିଭାଇସଗୁଡ଼ିକ</translation>
@@ -1744,6 +1755,7 @@
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> ସୁରକ୍ଷା ମାନାଙ୍କର ପାଳନ କରୁନାହିଁ।</translation>
 <translation id="7210993021468939304">କଣ୍ଟେନର୍ ମଧ୍ୟରେ Linux କାର୍ଯ୍ୟକଳାପ ଏବଂ କଣ୍ଟେନର୍ ମଧ୍ୟରେ Linux ଆପ୍ସ ଇନଷ୍ଟଲ୍ କରି ଚଲାଇପାରେ</translation>
 <translation id="721197778055552897">ଏହି ଅସୁବିଧା ସମ୍ଵନ୍ଧରେ <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /> ।</translation>
+<translation id="7215025035562547931">ସଠିକତାର ବିଚାର କରିବାକୁ କିଛି ସମୟ ନିଅନ୍ତୁ</translation>
 <translation id="7217745192097460130">ଆପଣଙ୍କର କ୍ରୟକୁ ଯାଞ୍ଚ କରି ସମ୍ପୂର୍ଣ୍ଣ କରିବାକୁ Touch ID ବ୍ୟବହାର କରିବେ?</translation>
 <translation id="7219179957768738017">ସଂଯୋଗ <ph name="SSL_VERSION" />ର ବ୍ୟବହାର କରିଥାଏ।</translation>
 <translation id="7220786058474068424">ପ୍ରକ୍ରିୟାକରଣ ହେଉଛି</translation>
@@ -2079,6 +2091,12 @@
 <translation id="8307888238279532626">ଇନଷ୍ଟଲ୍ କରାଯାଇଥିବା ଆପଗୁଡ଼ିକ ଏବଂ ସେଗୁଡ଼ିକ କେତେ ଥର ବ୍ୟବହାର କରାଯାଇଛି</translation>
 <translation id="831207732689920588">ଏହି ପୃଷ୍ଠାଟି ସନ୍ଦେହଜନକ ଅଟେ (Chrome ଦ୍ୱାରା ଫ୍ଲାଗ୍ କରାଯାଇଛି)।</translation>
 <translation id="831997045666694187">ସନ୍ଧ୍ୟା</translation>
+<translation id="8328484624016508118">ସମସ୍ତ ଇନକଗ୍ନିଟୋ ଟାବକୁ ବନ୍ଦ କରିବା ପରେ, Chrome ଏସବୁ ଖାଲି କରେ:
+<ph name="BEGIN_LIST" />
+<ph name="LIST_ITEM" />ଏହି ଡିଭାଇସରୁ ଆପଣଙ୍କ ବ୍ରାଉଜିଂ କାର୍ଯ୍ୟକଳାପ<ph name="END_LIST_ITEM" />
+<ph name="LIST_ITEM" />ଏହି ଡିଭାଇସରୁ ଆପଣଙ୍କ ସନ୍ଧାନ ଇତିହାସ<ph name="END_LIST_ITEM" />
+<ph name="LIST_ITEM" />ଫର୍ମଗୁଡ଼ିକରେ ଲେଖାଯାଇଥିବା ସୂଚନା<ph name="END_LIST_ITEM" />
+<ph name="END_LIST" /></translation>
 <translation id="8332188693563227489"><ph name="HOST_NAME" />କୁ ଆକ୍ସେସ୍‌ ପ୍ରତ୍ୟାଖ୍ୟାନ କରାଯାଇଥିଲା</translation>
 <translation id="833262891116910667">ହାଇଲାଇଟ୍</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> ରେ ପୃଷ୍ଠାଗୁଡ଼ିକ ଅନୁବାଦ କରାଯିବନାହିଁ</translation>

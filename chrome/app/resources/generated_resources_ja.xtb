@@ -2198,6 +2198,7 @@
 <translation id="3305661444342691068">PDF をプレビュー</translation>
 <translation id="3308116878371095290">このページの Cookie は設定されませんでした。</translation>
 <translation id="3308134619352333507">ボタンを非表示にする</translation>
+<translation id="3308681281309926497">Chrome を終了するまでの間は、アクセスしたサイトにお客様の情報が保存されている可能性があります</translation>
 <translation id="3308738399950580893">広告</translation>
 <translation id="3308852433423051161">Google アシスタントを読み込んでいます...</translation>
 <translation id="3309330461362844500">証明書プロファイル ID</translation>
@@ -2751,6 +2752,7 @@
 <translation id="3873423927483480833">PIN を表示</translation>
 <translation id="3873915545594852654">ARC++ で問題が発生しました。</translation>
 <translation id="3874164307099183178">Google アシスタントをオンにする</translation>
+<translation id="3875815154304214043"><ph name="APP_NAME" /> は新しいブラウザタブで開くよう設定されています。サポートされているリンクもブラウザで開かれます。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" /> さんのデバイスのニアバイシェア設定（<ph name="USER_EMAIL" /> アカウントでの共有）</translation>
 <translation id="3879748587602334249">ダウンロード マネージャ</translation>
 <translation id="3882165008614329320">カメラやファイルに保存されている動画</translation>
@@ -3898,6 +3900,7 @@
 <translation id="5157635116769074044">このページを起動画面に固定...</translation>
 <translation id="5159094275429367735">Crostini のセットアップ</translation>
 <translation id="5159419673777902220">保護者が拡張機能の許可設定を無効にしました</translation>
+<translation id="5159643365935452998">自動データ削除の確認</translation>
 <translation id="5160634252433617617">物理キーボード</translation>
 <translation id="5160857336552977725"><ph name="DEVICE_TYPE" /> にログインしてください</translation>
 <translation id="5161251470972801814"><ph name="VENDOR_NAME" /> の USB デバイス</translation>
@@ -4461,6 +4464,7 @@
 <translation id="5790651917470750848">ポート転送はすでに設定されています</translation>
 <translation id="5792728279623964091">電源ボタンをタップしてください</translation>
 <translation id="5793339252089865437">モバイル ネットワーク経由でアップデートをダウンロードすると、追加料金が発生する可能性があります。</translation>
+<translation id="5794034487966529952">デスク「<ph name="DESK_TITLE" />」には <ph name="NUM_BROWSERS" /> 個のブラウザ ウィンドウが開いています</translation>
 <translation id="5794414402486823030">常にシステム ビューアで開く</translation>
 <translation id="5794700615121138172">Linux の共有フォルダ</translation>
 <translation id="5794786537412027208">すべての Chrome アプリを終了</translation>

@@ -985,6 +985,7 @@
 <translation id="4358461427845829800">결제 수단 관리...</translation>
 <translation id="4359160567981085931">사기성 사이트에 비밀번호를 입력했습니다. Chrome이 계정 보호를 도와드립니다. 비밀번호를 변경하고 계정 보안 위험에 관해 Google에 알리려면 계정 보호를 클릭하세요.</translation>
 <translation id="4367563149485757821">Number-12(봉투)</translation>
+<translation id="437040971055499437">보안 관련 활동 발생</translation>
 <translation id="437058704415269440">계정 잔액</translation>
 <translation id="4372516964750095882">Fanfold-미국</translation>
 <translation id="4372948949327679948">예상 <ph name="VALUE_TYPE" /> 값입니다.</translation>
@@ -1394,6 +1395,7 @@
 <translation id="5803412860119678065"><ph name="CARD_DETAIL" />을(를) 입력하시겠습니까?</translation>
 <translation id="5804241973901381774">권한</translation>
 <translation id="5810442152076338065"><ph name="DOMAIN" />에 대한 연결이 더 이상 사용되지 않는 암호화 기술을 사용하여 암호화됩니다.</translation>
+<translation id="5812947184178430888">Chrome에서 보안 관련 활동을 신고한 경우 활동에 관한 데이터가 관리자에게 전송됩니다. 여기에는 Chrome에서 방문한 페이지 URL, 파일 이름 또는 메타데이터와 더불어 웹 기반 애플리케이션, 기기, Chrome에 로그인할 때 사용한 사용자 이름이 포함될 수 있습니다.</translation>
 <translation id="5813119285467412249">추가 다시 실행(&amp;R)</translation>
 <translation id="5817918615728894473">페어링</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{결제하면 이 카드로 청구되지만 실제 카드 번호는 사이트와 공유되지 않습니다. 보안 강화를 위해 임시 CVC가 생성됩니다.}other{결제하면 선택한 카드로 청구되지만 실제 카드 번호는 사이트와 공유되지 않습니다. 보안 강화를 위해 임시 CVC가 생성됩니다.}}</translation>
