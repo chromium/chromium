@@ -126,10 +126,9 @@ class CORE_EXPORT NGPhysicalFragment
   bool IsAtomicInline() const {
     return IsBox() && BoxType() == NGBoxType::kAtomicInline;
   }
-  bool IsBlockInInline() const {
-    return IsBox() && BoxType() == NGBoxType::kNormalBox && GetLayoutObject() &&
-           IsA<LayoutInline>(GetLayoutObject()->Parent());
-  }
+  // True if this box is a block-in-inline, or if this line contains a
+  // block-in-inline.
+  bool IsBlockInInline() const { return is_block_in_inline_; }
   // True if this fragment is in-flow in an inline formatting context.
   bool IsInline() const { return IsInlineBox() || IsAtomicInline(); }
   bool IsFloating() const {
@@ -651,6 +650,7 @@ class CORE_EXPORT NGPhysicalFragment
   const unsigned style_variant_ : 2;  // NGStyleVariant
   const unsigned is_hidden_for_paint_ : 1;
   unsigned is_opaque_ : 1;
+  unsigned is_block_in_inline_ : 1;
   unsigned is_math_fraction_ : 1;
   unsigned is_math_operator_ : 1;
   unsigned may_have_descendant_above_block_start_ : 1;

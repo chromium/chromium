@@ -1473,6 +1473,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return bitfields_.IsAtomicInlineLevel();
   }
+  bool IsBlockInInline() const {
+    return IsAnonymous() && !IsInline() && !IsFloatingOrOutOfFlowPositioned() &&
+           Parent() && Parent()->IsLayoutInline();
+  }
   bool IsHorizontalWritingMode() const {
     NOT_DESTROYED();
     return bitfields_.HorizontalWritingMode();

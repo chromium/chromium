@@ -386,6 +386,10 @@ scoped_refptr<const NGLayoutResult> NGBoxFragmentBuilder::ToBoxFragment(
   }
 #endif
 
+  if (UNLIKELY(box_type_ == NGPhysicalFragment::kNormalBox && node_ &&
+               node_.IsBlockInInline()))
+    SetIsBlockInInline();
+
   if (UNLIKELY(has_block_fragmentation_ && !break_token_ && node_)) {
     if (last_inline_break_token_)
       child_break_tokens_.push_back(std::move(last_inline_break_token_));

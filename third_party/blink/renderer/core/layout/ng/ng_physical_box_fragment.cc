@@ -1592,6 +1592,8 @@ void NGPhysicalBoxFragment::CheckSameForSimplifiedLayout(
   DCHECK_EQ(sub_type_, other.sub_type_);
   DCHECK_EQ(style_variant_, other.style_variant_);
   DCHECK_EQ(is_hidden_for_paint_, other.is_hidden_for_paint_);
+  DCHECK_EQ(is_opaque_, other.is_opaque_);
+  DCHECK_EQ(is_block_in_inline_, other.is_block_in_inline_);
   DCHECK_EQ(is_math_fraction_, other.is_math_fraction_);
   DCHECK_EQ(is_math_operator_, other.is_math_operator_);
 

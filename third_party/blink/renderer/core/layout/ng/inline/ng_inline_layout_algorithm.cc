@@ -612,6 +612,7 @@ void NGInlineLayoutAlgorithm::PlaceBlockInInline(
   // Setup |container_builder_|. Set it up here instead of in |CreateLine|,
   // because there should be only one block-in-inline, and we need data from the
   // |NGLayoutResult|.
+  container_builder_.SetIsBlockInInline();
   container_builder_.SetBaseDirection(line_info.BaseDirection());
   if (absl::optional<LayoutUnit> block_offset = result.BfcBlockOffset()) {
     container_builder_.SetBfcBlockOffset(*block_offset);

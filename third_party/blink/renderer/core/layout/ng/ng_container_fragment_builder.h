@@ -245,6 +245,8 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
     return adjoining_object_types_;
   }
 
+  void SetIsBlockInInline() { is_block_in_inline_ = true; }
+
   void SetHasBlockFragmentation() { has_block_fragmentation_ = true; }
 
   // Set for any node that establishes a fragmentation context, such as multicol
@@ -371,6 +373,7 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   bool is_self_collapsing_ = false;
   bool is_pushed_by_floats_ = false;
   bool is_legacy_layout_root_ = false;
+  bool is_block_in_inline_ = false;
 
   bool has_floating_descendants_for_paint_ = false;
   bool has_descendant_that_depends_on_percentage_block_size_ = false;

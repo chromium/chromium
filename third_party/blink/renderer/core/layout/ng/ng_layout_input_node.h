@@ -77,6 +77,7 @@ class CORE_EXPORT NGLayoutInputNode {
   bool IsBlock() const { return type_ == kBlock; }
 
   bool IsBlockFlow() const { return IsBlock() && box_->IsLayoutBlockFlow(); }
+  bool IsBlockInInline() const { return box_->IsBlockInInline(); }
   bool IsLayoutNGCustom() const {
     return IsBlock() && box_->IsLayoutNGCustom();
   }
