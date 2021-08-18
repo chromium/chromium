@@ -6494,6 +6494,18 @@
           'isolated_scripts': 'variations_smoke_tests',
         },
       },
+      'win-chrome-finch-fyi': {
+        'additional_compile_targets': [
+          'chrome',
+        ],
+        'mixins': [
+          'chrome-swarming-pool',
+          'win10-1703',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'variations_smoke_tests',
+        },
+      },
     },
   },
   {

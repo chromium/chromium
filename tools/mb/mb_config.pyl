@@ -738,6 +738,7 @@
       'mac-autofill-captured-sites-rel': 'release_bot',
       'win-autofill-captured-sites-rel': 'release_bot',
       'win-celab-rel': 'official_celab_release_bot',
+      'win-chrome-finch-fyi': 'official_goma',
       'win-password-manager-captured-sites-rel': 'release_bot',
     },
 
@@ -913,6 +914,7 @@
       'win-celab-try-rel': 'official_celab_release_bot',
       'win-chrome': 'official_goma_x86',
       'win-chrome-beta': 'official_goma_x86',
+      'win-chrome-finch-fyi': 'official_goma',
       'win-chrome-stable': 'official_goma_x86',
       'win64-chrome': 'official_goma_x64',
       'win64-chrome-beta': 'official_goma_x64',

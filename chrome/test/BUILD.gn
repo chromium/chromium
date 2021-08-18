@@ -9546,7 +9546,7 @@ if (is_chromeos_ash) {
   }
 }
 
-if (is_linux) {
+if (is_linux || is_win) {
   script_test("variations_smoke_tests") {
     run_under_python2 = true
 
