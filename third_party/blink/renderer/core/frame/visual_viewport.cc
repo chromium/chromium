@@ -298,18 +298,10 @@ PaintPropertyChangeType VisualViewport::UpdatePaintPropertyNodesIfNeeded(
   }
 
 #if defined(OS_ANDROID)
-  // TODO(https://crbug.com/1226115): Remove this forced effect node creation
-  // once we have completed the experiment to measure additional memory usage.
-  bool force_overscroll_effect_node =
+  if (Platform::Current()->IsElasticOverscrollEnabled() &&
       base::GetFieldTrialParamValueByFeature(
-          ::features::kElasticOverscroll, ::features::kElasticOverscrollType) ==
-      ::features::kElasticOverscrollTypeFilter;
-  if (force_overscroll_effect_node ||
-      (Platform::Current()->IsElasticOverscrollEnabled() &&
-       base::GetFieldTrialParamValueByFeature(
-           ::features::kElasticOverscroll,
-           ::features::kElasticOverscrollType) !=
-           ::features::kElasticOverscrollTypeTransform)) {
+          ::features::kElasticOverscroll, ::features::kElasticOverscrollType) !=
+          ::features::kElasticOverscrollTypeTransform) {
     bool needs_overscroll_effect_node = !MaximumScrollOffset().IsZero();
     if (needs_overscroll_effect_node && !overscroll_elasticity_effect_node_) {
       EffectPaintPropertyNode::State state;
