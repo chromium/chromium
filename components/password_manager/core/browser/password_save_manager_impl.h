@@ -31,7 +31,7 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
 
   const PasswordForm& GetPendingCredentials() const override;
   const std::u16string& GetGeneratedPassword() const override;
-  FormSaver* GetFormSaver() const override;
+  FormSaver* GetProfileStoreFormSaverForTesting() const override;
 
   // |metrics_recorder| and |votes_uploader| can both be nullptr.
   void Init(PasswordManagerClient* client,
@@ -81,10 +81,6 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
   bool HasGeneratedPassword() const override;
 
   std::unique_ptr<PasswordSaveManager> Clone() override;
-
-#if defined(UNIT_TEST)
-  FormSaver* GetFormSaver() { return form_saver_.get(); }
-#endif
 
  protected:
   static PendingCredentialsState ComputePendingCredentialsState(

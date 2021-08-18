@@ -237,8 +237,8 @@ class PasswordFormManager : public PasswordFormManagerForUI,
     wait_for_server_predictions_for_filling_ = value;
   }
 
-  FormSaver* form_saver() const {
-    return password_save_manager_->GetFormSaver();
+  FormSaver* profile_store_form_saver() const {
+    return password_save_manager_->GetProfileStoreFormSaverForTesting();
   }
 
   const VotesUploader& votes_uploader() const { return votes_uploader_; }

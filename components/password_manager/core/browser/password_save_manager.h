@@ -48,7 +48,7 @@ class PasswordSaveManager {
 
   virtual const std::u16string& GetGeneratedPassword() const = 0;
 
-  virtual FormSaver* GetFormSaver() const = 0;
+  virtual FormSaver* GetProfileStoreFormSaverForTesting() const = 0;
 
   // Create pending credentials from |parsed_submitted_form| and |observed_form|
   // and |submitted_form|. In the case of HTTP or proxy auth no |observed_form|

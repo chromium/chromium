@@ -139,7 +139,7 @@ const std::u16string& PasswordSaveManagerImpl::GetGeneratedPassword() const {
   return generation_manager_->generated_password();
 }
 
-FormSaver* PasswordSaveManagerImpl::GetFormSaver() const {
+FormSaver* PasswordSaveManagerImpl::GetProfileStoreFormSaverForTesting() const {
   return form_saver_.get();
 }
 

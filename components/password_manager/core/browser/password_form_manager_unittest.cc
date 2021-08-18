@@ -290,7 +290,8 @@ class MockFormSaver : public StubFormSaver {
 
   // Convenience downcasting method.
   static MockFormSaver& Get(PasswordFormManager* form_manager) {
-    return *static_cast<MockFormSaver*>(form_manager->form_saver());
+    return *static_cast<MockFormSaver*>(
+        form_manager->profile_store_form_saver());
   }
 };
 
@@ -469,7 +470,7 @@ class PasswordFormManagerTest : public testing::Test,
   virtual void CreateFormManager(const FormData& observed_form) {
     auto password_save_manager =
         GetParam() ? std::make_unique<MultiStorePasswordSaveManager>(
-                         /*account_form_saver=*/std::make_unique<
+                         /*profile_form_saver=*/std::make_unique<
                              NiceMock<MockFormSaver>>(),
                          /*account_form_saver=*/std::make_unique<
                              NiceMock<MockFormSaver>>())
@@ -487,7 +488,7 @@ class PasswordFormManagerTest : public testing::Test,
       const PasswordForm& base_auth_observed_form) {
     auto password_save_manager =
         GetParam() ? std::make_unique<MultiStorePasswordSaveManager>(
-                         /*account_form_saver=*/std::make_unique<
+                         /*profile_form_saver=*/std::make_unique<
                              NiceMock<MockFormSaver>>(),
                          /*account_form_saver=*/std::make_unique<
                              NiceMock<MockFormSaver>>())
@@ -2630,7 +2631,7 @@ class MockPasswordSaveManager : public PasswordSaveManager {
                     VotesUploader*));
   MOCK_CONST_METHOD0(GetPendingCredentials, const PasswordForm&());
   MOCK_CONST_METHOD0(GetGeneratedPassword, const std::u16string&());
-  MOCK_CONST_METHOD0(GetFormSaver, FormSaver*());
+  MOCK_CONST_METHOD0(GetProfileStoreFormSaverForTesting, FormSaver*());
   MOCK_METHOD5(CreatePendingCredentials,
                void(const PasswordForm&,
                     const autofill::FormData*,

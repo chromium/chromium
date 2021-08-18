@@ -48,7 +48,8 @@ class MockFormSaver : public password_manager::StubFormSaver {
   // Convenience downcasting method.
   static MockFormSaver& Get(
       password_manager::PasswordFormManager* form_manager) {
-    return *static_cast<MockFormSaver*>(form_manager->form_saver());
+    return *static_cast<MockFormSaver*>(
+        form_manager->profile_store_form_saver());
   }
 
  private:
