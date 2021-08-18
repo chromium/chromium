@@ -97,7 +97,6 @@ class ASH_EXPORT KeyboardControllerImpl
   void TransferGestureEventToShelf(const ui::GestureEvent& e) override;
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
-  void OnUserSessionAdded(const AccountId& id) override;
   void OnSigninScreenPrefServiceInitialized(PrefService* prefs) override;
   void OnActiveUserPrefServiceChanged(PrefService* prefs) override;
 
@@ -128,6 +127,8 @@ class ASH_EXPORT KeyboardControllerImpl
   void ObservePrefs(PrefService* prefs);
   void SendKeyRepeatUpdate();
   void SendKeyboardConfigUpdate();
+
+  void SetEnableFlagFromCommandLine();
 
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   SessionControllerImpl* session_controller_;  // unowned
