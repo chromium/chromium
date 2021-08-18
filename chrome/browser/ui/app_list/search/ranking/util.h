@@ -7,7 +7,15 @@
 
 #include <string>
 
+#include "base/files/file_path.h"
+
+class Profile;
+
 namespace app_list {
+
+// Returns the absolute path of the directory rankers should serialize their
+// state into.
+base::FilePath RankerStateDirectory(Profile* profile);
 
 // TODO(crbug.com/1199206): Once the UI has support for categories this can be
 // removed.

@@ -112,8 +112,9 @@ CategoryRanker::CategoryRanker(Profile* profile) {
   config.mutable_predictor()->mutable_default_predictor();
 
   category_ranker_ = std::make_unique<RecurrenceRanker>(
-      "CategoryRanker", profile->GetPath().AppendASCII("category_ranker.pb"),
-      config, chromeos::ProfileHelper::IsEphemeralUserProfile(profile));
+      "CategoryRanker",
+      RankerStateDirectory(profile).AppendASCII("category_ranker.pb"), config,
+      chromeos::ProfileHelper::IsEphemeralUserProfile(profile));
 }
 
 void CategoryRanker::InitializeCategoryScores() {

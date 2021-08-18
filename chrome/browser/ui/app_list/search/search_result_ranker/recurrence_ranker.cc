@@ -41,6 +41,12 @@ constexpr float kMinValidTargetProportionBeforeCleanup = 0.5f;
 void SaveProtoToDisk(const base::FilePath& filepath,
                      const std::string& model_identifier,
                      const RecurrenceRankerProto& proto) {
+  // CreateDirectory returns true if the directory was created successfully, or
+  // the path is already a directory.
+  if (!base::CreateDirectory(filepath.DirName())) {
+    return;
+  }
+
   std::string proto_str;
   if (!proto.SerializeToString(&proto_str)) {
     return;

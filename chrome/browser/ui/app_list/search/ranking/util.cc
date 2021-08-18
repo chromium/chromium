@@ -7,9 +7,20 @@
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/ranking/constants.h"
 
 namespace app_list {
+namespace {
+
+// The directory within the cryptohome to save ranking state into.
+constexpr char kRankerStateDirectory[] = "launcher_ranking/";
+
+}  // namespace
+
+base::FilePath RankerStateDirectory(Profile* profile) {
+  return profile->GetPath().AppendASCII(kRankerStateDirectory);
+}
 
 std::u16string RemoveDebugPrefix(const std::u16string str) {
   std::string result = base::UTF16ToUTF8(str);
