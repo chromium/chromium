@@ -28,7 +28,7 @@ namespace cert_verifier {
 
 // Wrapper around TrialComparisonCertVerifier that does trial configuration and
 // reporting over Mojo pipes.
-class COMPONENT_EXPORT(NETWORK_SERVICE) TrialComparisonCertVerifierMojo
+class TrialComparisonCertVerifierMojo
     : public net::CertVerifier,
       public mojom::TrialComparisonCertVerifierConfigClient {
  public:
