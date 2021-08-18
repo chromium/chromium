@@ -33,7 +33,7 @@ class WebContentsImpl;
 // that triggered prerendering and starts prerendering. Then NavigationRequest
 // is expected to find this host from PrerenderHostRegistry and activate the
 // prerendered page upon navigation. This is created per request from a renderer
-// process via PrerenderProcessor or will directly be created for
+// process via SpeculationHostImpl or will directly be created for
 // browser-initiated prerendering (this code path is not implemented yet). This
 // is owned by PrerenderHostRegistry.
 class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {

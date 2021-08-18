@@ -30,7 +30,7 @@ class RenderFrameHostImpl;
 // The APIs of this class are categorized into two: APIs for triggers and APIs
 // for activators.
 //
-// - Triggers (e.g., PrerenderProcessor) start prerendering by
+// - Triggers (e.g., SpeculationHostImpl) start prerendering by
 //   CreateAndStartHost() and notify the registry of destruction of the trigger
 //   by OnTriggerDestroyed().
 // - Activators (i.e., NavigationRequest) can reserve the prerender host on
@@ -115,7 +115,7 @@ class CONTENT_EXPORT PrerenderHostRegistry {
       int frame_tree_node_id);
 
   // For triggers.
-  // Called from the triggers (e.g., PrerenderProcessor) when they are
+  // Called from the triggers (e.g., SpeculationHostImpl) when they are
   // destroyed. `frame_tree_node_id` should be the id returned by
   // CreateAndStartHost().
   void OnTriggerDestroyed(int frame_tree_node_id);
