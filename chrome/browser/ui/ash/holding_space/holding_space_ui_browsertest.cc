@@ -1359,6 +1359,7 @@ class HoldingSpaceUiInProgressDownloadsBrowserTestBase
     HoldingSpaceKeyedServiceFactory::SetTestingFactory(base::NullCallback());
   }
 
+  // HoldingSpaceUiBrowserTest:
   void SetUpOnMainThread() override {
     HoldingSpaceUiBrowserTest::SetUpOnMainThread();
 

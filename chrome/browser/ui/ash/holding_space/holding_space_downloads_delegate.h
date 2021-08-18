@@ -8,19 +8,24 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <vector>
 
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/crosapi/download_controller_ash.h"
+#include "chrome/browser/download/notification/multi_profile_download_notifier.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_delegate.h"
 #include "chromeos/crosapi/mojom/download_controller.mojom-forward.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/arc/intent_helper/arc_intent_helper_observer.h"
-#include "content/public/browser/download_manager.h"
 
 namespace base {
 class FilePath;
 }  // namespace base
+
+namespace content {
+class DownloadManager;
+}  // namespace content
 
 namespace ash {
 
@@ -28,8 +33,8 @@ namespace ash {
 // of downloads on its behalf.
 class HoldingSpaceDownloadsDelegate
     : public HoldingSpaceKeyedServiceDelegate,
+      public MultiProfileDownloadNotifier::Client,
       public arc::ArcIntentHelperObserver,
-      public content::DownloadManager::Observer,
       public crosapi::DownloadControllerAsh::DownloadControllerObserver {
  public:
   HoldingSpaceDownloadsDelegate(HoldingSpaceKeyedService* service,
@@ -38,11 +43,6 @@ class HoldingSpaceDownloadsDelegate
   HoldingSpaceDownloadsDelegate& operator=(
       const HoldingSpaceDownloadsDelegate&) = delete;
   ~HoldingSpaceDownloadsDelegate() override;
-
-  // Sets the `content::DownloadManager` to be used for testing.
-  // NOTE: This method must be called prior to delegate initialization.
-  static void SetDownloadManagerForTesting(
-      content::DownloadManager* download_manager);
 
   // Attempts to cancel/pause/resume the download underlying the given `item`.
   void Cancel(const HoldingSpaceItem* item);
@@ -63,15 +63,18 @@ class HoldingSpaceDownloadsDelegate
   void OnHoldingSpaceItemsRemoved(
       const std::vector<const HoldingSpaceItem*>& items) override;
 
+  // MultiProfileDownloadNotifier::Client:
+  void OnManagerInitialized(content::DownloadManager* manager) override;
+  void OnManagerGoingDown(content::DownloadManager* manager) override;
+  void OnDownloadCreated(content::DownloadManager* manager,
+                         download::DownloadItem* item) override;
+  void OnDownloadUpdated(content::DownloadManager* manager,
+                         download::DownloadItem* item) override;
+  bool ShouldObserveProfile(Profile* profile) override;
+
   // arc::ArcIntentHelperObserver:
   void OnArcDownloadAdded(const base::FilePath& relative_path,
                           const std::string& owner_package_name) override;
-
-  // content::DownloadManager::Observer:
-  void OnManagerInitialized() override;
-  void ManagerGoingDown(content::DownloadManager* manager) override;
-  void OnDownloadCreated(content::DownloadManager* manager,
-                         download::DownloadItem* download_item) override;
 
   // crosapi::DownloadControllerAsh::DownloadControllerObserver:
   void OnLacrosDownloadCreated(
@@ -124,9 +127,13 @@ class HoldingSpaceDownloadsDelegate
                           arc::ArcIntentHelperObserver>
       arc_intent_helper_observation_{this};
 
-  base::ScopedObservation<content::DownloadManager,
-                          content::DownloadManager::Observer>
-      download_manager_observation_{this};
+  // Notifies this delegate of download events created for the profile
+  // associated with this delegate's service. If the incognito profile
+  // integration feature is enabled, the delegate is also notified of download
+  // events created for incognito profiles spawned from the service's main
+  // profile.
+  MultiProfileDownloadNotifier download_notifier_{
+      this, /*wait_for_manager_initialization=*/true};
 
   base::WeakPtrFactory<HoldingSpaceDownloadsDelegate> weak_factory_{this};
 };

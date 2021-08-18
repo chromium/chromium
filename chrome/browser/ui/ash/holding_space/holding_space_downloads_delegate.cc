@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ui/ash/holding_space/holding_space_downloads_delegate.h"
 
-#include <vector>
-
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
@@ -19,9 +17,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
 #include "components/download/public/common/download_item.h"
+#include "components/download/public/common/simple_download_manager.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_item_utils.h"
+#include "content/public/browser/download_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/text/bytes_formatting.h"
@@ -31,8 +31,6 @@
 namespace ash {
 
 namespace {
-
-content::DownloadManager* download_manager_for_testing = nullptr;
 
 // Helpers ---------------------------------------------------------------------
 
@@ -75,7 +73,9 @@ crosapi::mojom::DownloadItemPtr ConvertToMojoDownloadItem(
   mojo_download_item->is_mixed_content = item->IsMixedContent();
   mojo_download_item->has_is_mixed_content = true;
 
-  // NOTE: `browser_context` may be `nullptr` in tests.
+  // NOTE: `browser_context` may be `nullptr` in tests. We assume in this case
+  // that the item is not from an incognito profile; tests exercising incognito
+  // behavior should make sure `browser_context` is not `nullptr`.
   auto* browser_context = content::DownloadItemUtils::GetBrowserContext(item);
   mojo_download_item->is_from_incognito_profile =
       browser_context
@@ -108,12 +108,6 @@ crosapi::DownloadControllerAsh* GetDownloadControllerAsh() {
                    ->crosapi_ash()
                    ->download_controller_ash()
              : nullptr;
-}
-
-// Returns the download manager to use for the given `profile`.
-content::DownloadManager* GetDownloadManager(Profile* profile) {
-  return download_manager_for_testing ? download_manager_for_testing
-                                      : profile->GetDownloadManager();
 }
 
 // Returns whether the specified `mojo_download_item` is complete.
@@ -163,9 +157,11 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
 
   InProgressDownload(Type type,
                      HoldingSpaceDownloadsDelegate* delegate,
+                     content::DownloadManager* manager,
                      crosapi::mojom::DownloadItemPtr mojo_download_item)
       : type_(type),
         delegate_(delegate),
+        manager_(manager),
         mojo_download_item_(std::move(mojo_download_item)) {
     DCHECK(IsInProgress(mojo_download_item_.get()));
   }
@@ -345,6 +341,10 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
     return secondary_text;
   }
 
+  // Returns the download manager that originated this download. NOTE: This will
+  // be `nullptr` for Lacros downloads.
+  const content::DownloadManager* manager() const { return manager_; }
+
  protected:
   // Updates the `mojo_download_item_` associated with this in-progress
   // download, notifying `delegate_` of the change in state. Note that invoking
@@ -387,6 +387,7 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
  private:
   const Type type_;
   HoldingSpaceDownloadsDelegate* const delegate_;  // NOTE: Owns `this`.
+  content::DownloadManager* const manager_;
   crosapi::mojom::DownloadItemPtr mojo_download_item_;
 
   // The in-progress holding space item associated with this in-progress
@@ -409,9 +410,11 @@ class HoldingSpaceDownloadsDelegate::InProgressAshDownload
       public download::DownloadItem::Observer {
  public:
   InProgressAshDownload(HoldingSpaceDownloadsDelegate* delegate,
+                        content::DownloadManager* manager,
                         download::DownloadItem* download_item)
       : InProgressDownload(Type::kAsh,
                            delegate,
+                           manager,
                            ConvertToMojoDownloadItem(download_item)),
         download_item_(download_item) {
     download_item_observation_.Observe(download_item);
@@ -463,6 +466,7 @@ class HoldingSpaceDownloadsDelegate::InProgressLacrosDownload
                            crosapi::mojom::DownloadItemPtr mojo_download_item)
       : InProgressDownload(Type::kLacros,
                            delegate,
+                           /*manager=*/nullptr,
                            std::move(mojo_download_item)) {
     auto* const download_controller_ash = GetDownloadControllerAsh();
     if (download_controller_ash)
@@ -535,12 +539,6 @@ HoldingSpaceDownloadsDelegate::~HoldingSpaceDownloadsDelegate() {
     download_controller_ash->RemoveObserver(this);
 }
 
-// static
-void HoldingSpaceDownloadsDelegate::SetDownloadManagerForTesting(
-    content::DownloadManager* download_manager) {
-  download_manager_for_testing = download_manager;
-}
-
 void HoldingSpaceDownloadsDelegate::Cancel(const HoldingSpaceItem* item) {
   DCHECK(HoldingSpaceItem::IsDownload(item->type()));
   for (const auto& in_progress_download : in_progress_downloads_) {
@@ -595,10 +593,7 @@ void HoldingSpaceDownloadsDelegate::OnPersistenceRestored() {
   }
 
   // Ash Chrome downloads.
-  auto* const download_manager = GetDownloadManager(profile());
-  download_manager_observation_.Observe(download_manager);
-  if (download_manager->IsManagerInitialized())
-    OnManagerInitialized();
+  download_notifier_.AddProfile(profile());
 
   // Lacros Chrome downloads.
   auto* const download_controller_ash = GetDownloadControllerAsh();
@@ -617,6 +612,54 @@ void HoldingSpaceDownloadsDelegate::OnHoldingSpaceItemsRemoved(
   base::EraseIf(in_progress_downloads_, [&](const auto& in_progress_download) {
     return base::Contains(items, in_progress_download->GetHoldingSpaceItem());
   });
+}
+
+void HoldingSpaceDownloadsDelegate::OnManagerInitialized(
+    content::DownloadManager* manager) {
+  DCHECK(!is_restoring_persistence());
+  download::SimpleDownloadManager::DownloadVector downloads;
+  manager->GetAllDownloads(&downloads);
+  for (auto* download : downloads)
+    OnDownloadCreated(manager, download);
+}
+
+void HoldingSpaceDownloadsDelegate::OnManagerGoingDown(
+    content::DownloadManager* manager) {
+  // Collect all downloads associated with `manager`. These downloads will be
+  // removed from `in_progress_downloads_` on failure, so they cannot be failed
+  // in a loop that iterates over `in_progress_downloads_`.
+  std::set<InProgressDownload*> downloads_to_remove;
+  for (const auto& in_progress_download : in_progress_downloads_) {
+    if (in_progress_download->manager() == manager)
+      downloads_to_remove.insert(in_progress_download.get());
+  }
+
+  // Fail all of `manager`'s downloads.
+  for (InProgressDownload* in_progress_download : downloads_to_remove)
+    OnDownloadFailed(in_progress_download);
+}
+
+void HoldingSpaceDownloadsDelegate::OnDownloadCreated(
+    content::DownloadManager* manager,
+    download::DownloadItem* download_item) {
+  DCHECK(!is_restoring_persistence());
+  if (IsInProgress(download_item)) {
+    in_progress_downloads_.emplace(
+        std::make_unique<InProgressAshDownload>(this, manager, download_item));
+  }
+}
+
+// Override to avoid hiding `OnDownloadUpdated(InProgressDownload*, bool)`.
+void HoldingSpaceDownloadsDelegate::OnDownloadUpdated(
+    content::DownloadManager* manager,
+    download::DownloadItem* download_item) {
+  // TODO(crbug.com/1240644): Create an `InProgressDownload` here if one does
+  // not already exist, e.g., because the download was interrupted and resumed.
+}
+
+bool HoldingSpaceDownloadsDelegate::ShouldObserveProfile(Profile* profile) {
+  return !profile->IsIncognitoProfile() ||
+         features::IsHoldingSpaceIncognitoProfileIntegrationEnabled();
 }
 
 void HoldingSpaceDownloadsDelegate::OnArcDownloadAdded(
@@ -644,46 +687,6 @@ void HoldingSpaceDownloadsDelegate::OnArcDownloadAdded(
   }
 
   service()->AddDownload(HoldingSpaceItem::Type::kArcDownload, path);
-}
-
-void HoldingSpaceDownloadsDelegate::OnManagerInitialized() {
-  if (is_restoring_persistence())
-    return;
-
-  content::DownloadManager* download_manager = GetDownloadManager(profile());
-  DCHECK(download_manager->IsManagerInitialized());
-
-  download::SimpleDownloadManager::DownloadVector downloads;
-  download_manager->GetAllDownloads(&downloads);
-
-  for (download::DownloadItem* download_item : downloads) {
-    if (IsInProgress(download_item)) {
-      in_progress_downloads_.emplace(
-          std::make_unique<InProgressAshDownload>(this, download_item));
-    }
-  }
-}
-
-void HoldingSpaceDownloadsDelegate::ManagerGoingDown(
-    content::DownloadManager* manager) {
-  download_manager_observation_.Reset();
-  base::EraseIf(in_progress_downloads_, [](const auto& in_progress_download) {
-    return in_progress_download->GetType() == InProgressDownload::Type::kAsh;
-  });
-}
-
-void HoldingSpaceDownloadsDelegate::OnDownloadCreated(
-    content::DownloadManager* manager,
-    download::DownloadItem* download_item) {
-  // Ignore `OnDownloadCreated()` events prior to `manager` initialization. For
-  // those events we create any objects necessary in `OnManagerInitialized()`.
-  if (is_restoring_persistence() || !manager->IsManagerInitialized())
-    return;
-
-  if (IsInProgress(download_item)) {
-    in_progress_downloads_.emplace(
-        std::make_unique<InProgressAshDownload>(this, download_item));
-  }
 }
 
 void HoldingSpaceDownloadsDelegate::OnLacrosDownloadCreated(
