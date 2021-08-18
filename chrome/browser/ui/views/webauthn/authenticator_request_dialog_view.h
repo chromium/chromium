@@ -80,6 +80,7 @@ class AuthenticatorRequestDialogView
   void OnStepTransition() override;
   void OnSheetModelChanged() override;
 
+  // content::WebContentsObserver:
   void OnVisibilityChanged(content::Visibility visibility) override;
 
  private:

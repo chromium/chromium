@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_UI_VIEWS_PAYMENTS_PAYMENT_HANDLER_MODAL_DIALOG_MANAGER_DELEGATE_H_
 
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
-#include "content/public/browser/web_contents_observer.h"
 
 namespace content {
 class WebContents;
@@ -25,13 +25,12 @@ namespace payments {
 // spawned the payment sheet. Observes the WebContents that spawned the payment
 // handler.
 class PaymentHandlerModalDialogManagerDelegate
-    : public web_modal::WebContentsModalDialogManagerDelegate,
-      public content::WebContentsObserver {
+    : public web_modal::WebContentsModalDialogManagerDelegate {
  public:
   // |host| must not be null.
   explicit PaymentHandlerModalDialogManagerDelegate(
       content::WebContents* host_web_contents);
-  ~PaymentHandlerModalDialogManagerDelegate() override = default;
+  ~PaymentHandlerModalDialogManagerDelegate() override;
 
   // Sets the |web_contents| that is behind the modal dialogs managed by this
   // modal dialog manager. |web_contents| must not be null.
@@ -47,8 +46,11 @@ class PaymentHandlerModalDialogManagerDelegate
   bool IsWebContentsVisible(content::WebContents* web_contents) override;
 
  private:
+  // The WebContents hosting the dialog.
+  base::WeakPtr<content::WebContents> host_web_contents_;
+
   // A not-owned pointer to the WebContents behind the modal dialogs.
-  content::WebContents* web_contents_;
+  content::WebContents* web_contents_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(PaymentHandlerModalDialogManagerDelegate);
 };
