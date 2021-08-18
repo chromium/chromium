@@ -62,6 +62,7 @@
 using base::ASCIIToUTF16;
 using testing::_;
 using testing::AtLeast;
+using testing::NiceMock;
 using testing::Return;
 using testing::SaveArg;
 using testing::UnorderedElementsAre;
@@ -345,7 +346,7 @@ class CreditCardSaveManagerTest : public testing::Test {
   std::unique_ptr<TestBrowserAutofillManager> browser_autofill_manager_;
   scoped_refptr<AutofillWebDataService> database_;
   MockPersonalDataManager personal_data_;
-  MockAutocompleteHistoryManager autocomplete_history_manager_;
+  NiceMock<MockAutocompleteHistoryManager> autocomplete_history_manager_;
   syncer::TestSyncService sync_service_;
   // Ends up getting owned (and destroyed) by TestFormDataImporter:
   TestCreditCardSaveManager* credit_card_save_manager_;

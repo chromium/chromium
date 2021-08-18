@@ -75,6 +75,7 @@
 #endif
 
 using base::ASCIIToUTF16;
+using testing::NiceMock;
 
 namespace autofill {
 namespace {
@@ -174,7 +175,7 @@ class CreditCardAccessManagerTest : public testing::Test {
                                 /*is_off_the_record=*/false);
     personal_data_manager_.SetPrefService(autofill_client_.GetPrefs());
     autocomplete_history_manager_ =
-        std::make_unique<MockAutocompleteHistoryManager>();
+        std::make_unique<NiceMock<MockAutocompleteHistoryManager>>();
 
     accessor_ = std::make_unique<TestAccessor>();
     autofill_driver_ = std::make_unique<TestAutofillDriver>();
@@ -1035,11 +1036,11 @@ TEST_F(CreditCardAccessManagerTest,
       histogram_tester.ExpectTotalCount(
           "Autofill.BetterAuth.UserPerceivedLatencyOnCardSelection.OptedIn."
           "Duration",
-          int(user_is_opted_in));
+          static_cast<int>(user_is_opted_in));
       histogram_tester.ExpectTotalCount(
           "Autofill.BetterAuth.UserPerceivedLatencyOnCardSelection.OptedIn."
           "TimedOutCvcFallback",
-          int(user_is_opted_in));
+          static_cast<int>(user_is_opted_in));
     }
 
     {

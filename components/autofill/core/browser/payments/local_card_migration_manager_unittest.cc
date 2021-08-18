@@ -58,6 +58,7 @@
 
 using base::ASCIIToUTF16;
 using testing::_;
+using testing::NiceMock;
 
 namespace autofill {
 
@@ -320,7 +321,7 @@ class LocalCardMigrationManagerTest : public testing::Test {
   std::unique_ptr<TestAutofillDriver> autofill_driver_;
   std::unique_ptr<TestBrowserAutofillManager> browser_autofill_manager_;
   TestPersonalDataManager personal_data_;
-  MockAutocompleteHistoryManager autocomplete_history_manager_;
+  NiceMock<MockAutocompleteHistoryManager> autocomplete_history_manager_;
   syncer::TestSyncService sync_service_;
   base::test::ScopedFeatureList scoped_feature_list_;
   // Ends up getting owned (and destroyed) by TestAutofillClient:

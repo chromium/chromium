@@ -5,7 +5,6 @@
 #include "components/autofill/core/browser/payments/full_card_request.h"
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
@@ -34,6 +33,7 @@ namespace autofill {
 namespace payments {
 
 using testing::_;
+using testing::NiceMock;
 
 // The consumer of the full card request API.
 class MockResultDelegate : public FullCardRequest::ResultDelegate,
@@ -114,7 +114,10 @@ class FullCardRequestTest : public testing::Test {
         "sync-url", "https://google.com");
   }
 
-  ~FullCardRequestTest() override {}
+  FullCardRequestTest(const FullCardRequestTest&) = delete;
+  FullCardRequestTest& operator=(const FullCardRequestTest&) = delete;
+
+  ~FullCardRequestTest() override = default;
 
   MockPersonalDataManager* personal_data() { return &personal_data_; }
 
@@ -155,7 +158,7 @@ class FullCardRequestTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
-  MockPersonalDataManager personal_data_;
+  NiceMock<MockPersonalDataManager> personal_data_;
   MockResultDelegate result_delegate_;
   MockUIDelegate ui_delegate_;
   TestAutofillClient autofill_client_;
@@ -164,8 +167,6 @@ class FullCardRequestTest : public testing::Test {
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   std::unique_ptr<PaymentsClient> payments_client_;
   std::unique_ptr<FullCardRequest> request_;
-
-  DISALLOW_COPY_AND_ASSIGN(FullCardRequestTest);
 };
 
 // Matches the |arg| credit card to the given |record_type| and |card_number|.
