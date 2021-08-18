@@ -11,9 +11,11 @@
 #include "ios/chrome/browser/chrome_switches.h"
 #import "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/new_tab_page_app_interface.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
@@ -128,6 +130,8 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
   AppLaunchConfiguration config;
   config.additional_args.push_back(std::string("--") +
                                    switches::kEnableDiscoverFeed);
+  config.features_enabled.push_back(kDiscoverFeedInNtp);
+  config.features_enabled.push_back(kRefactoredNTP);
   config.features_disabled.push_back(kStartSurface);
   return config;
 }
