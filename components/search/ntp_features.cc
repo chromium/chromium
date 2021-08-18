@@ -123,6 +123,7 @@ const char NtpChromeCartModuleAbandonedCartDiscountUseUtmParam[] =
     "NtpChromeCartModuleAbandonedCartDiscountUseUtmParam";
 const char kNtpChromeCartModuleHeuristicsImprovementParam[] =
     "NtpChromeCartModuleHeuristicsImprovementParam";
+const char kNtpChromeCartModuleCouponParam[] = "NtpChromeCartModuleCouponParam";
 const char kNtpDriveModuleDataParam[] = "NtpDriveModuleDataParam";
 const char kNtpDriveModuleManagedUsersOnlyParam[] =
     "NtpDriveModuleManagedUsersOnlyParam";

@@ -62,6 +62,8 @@ extern const char kNtpChromeCartModuleAbandonedCartDiscountParam[];
 extern const char NtpChromeCartModuleAbandonedCartDiscountUseUtmParam[];
 // Parameter for enabling the cart heuristics improvement.
 extern const char kNtpChromeCartModuleHeuristicsImprovementParam[];
+// Parameter for enabling coupons on the Cart module.
+extern const char kNtpChromeCartModuleCouponParam[];
 // Parameter determining the type of Drive data to render.
 extern const char kNtpDriveModuleDataParam[];
 // Parameter for enabling the Drive module for managed users only.
