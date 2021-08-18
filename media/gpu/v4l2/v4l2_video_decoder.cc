@@ -461,12 +461,18 @@ void V4L2VideoDecoder::Reset(base::OnceClosure closure) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DVLOGF(3);
 
+  // In order to preserve the order of the callbacks between Decode() and
+  // Reset(), we also trampoline the callback of Reset().
+  auto trampoline_reset_cb = base::BindOnce(
+      &base::SequencedTaskRunner::PostTask,
+      base::SequencedTaskRunnerHandle::Get(), FROM_HERE, std::move(closure));
+
   // Reset callback for resolution change, because the pipeline won't notify
   // flushed after reset.
   continue_change_resolution_cb_.Reset();
 
   if (state_ == State::kInitialized) {
-    std::move(closure).Run();
+    std::move(trampoline_reset_cb).Run();
     return;
   }
 
@@ -490,7 +496,7 @@ void V4L2VideoDecoder::Reset(base::OnceClosure closure) {
   // Now we are ready to decode new buffer. Go back to decoding state.
   SetState(State::kDecoding);
 
-  std::move(closure).Run();
+  std::move(trampoline_reset_cb).Run();
 }
 
 void V4L2VideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
