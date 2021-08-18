@@ -261,6 +261,13 @@
         {}
        ]
       ],
+      "hidden-pseudo-element-removed-crash.html": [
+       "62e38f214be715299f59bfc5f85697d28dfe4e92",
+       [
+        null,
+        {}
+       ]
+      ],
       "slot-content-visibility-1-crash.html": [
        "7fd4ba7bbafae79309408d4aeb7ae99325de37a3",
        [
@@ -12671,7 +12678,7 @@
      ]
     ],
     "share-simple-manual.https.html": [
-     "d88beda83c621fb78888557a97b1ff5a2bc08ed0",
+     "d4a1f9b1c8262328eef4741788d75b885e551260",
      [
       null,
       {}
@@ -122671,13 +122678,26 @@
        {}
       ]
      ],
-     "column-balancing-with-span-and-oof.html": [
-      "523a354e8b9b5a5fb7332e229574e33e92670829",
+     "column-balancing-with-span-and-oof-001.html": [
+      "7ecd9ee873843db33c7457c974b5fd87ac893a21",
       [
        null,
        [
         [
-         "/css/reference/ref-filled-green-100px-square.xht",
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "column-balancing-with-span-and-oof-002.html": [
+      "71df0e222957f298d6ad6a46fdf0586a8f1d7088",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
          "=="
         ]
        ],
@@ -134031,6 +134051,45 @@
        [
         [
          "/css/css-ruby/ruby-whitespace-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "ruby-with-floats-001.html": [
+      "a49c1b255ff6afc6227d2ad603a68f7eeae0656a",
+      [
+       null,
+       [
+        [
+         "/css/css-ruby/ruby-with-floats-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "ruby-with-floats-002.html": [
+      "190089d3340394e0aa82d17979b6efdad0f961f4",
+      [
+       null,
+       [
+        [
+         "/css/css-ruby/ruby-with-floats-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "ruby-with-floats-003.html": [
+      "4fd7524315ed2b745788c07191c417fea07b3344",
+      [
+       null,
+       [
+        [
+         "/css/css-ruby/ruby-with-floats-003-ref.html",
          "=="
         ]
        ],
@@ -204229,7 +204288,7 @@
      ]
     ],
     "animation-with-display-none.html": [
-     "560b6e663c1f475d5420245bce21ad5eea95a9b0",
+     "85cebad50be37a6b856e72d424b84b0d6d57cc9d",
      [
       null,
       [
@@ -204255,7 +204314,7 @@
      ]
     ],
     "animation-with-root-scroller.html": [
-     "094867e6a0f15d68a774cb42e6477ca63e80f294",
+     "21225146fb44001aec892c10029c83b05a8bd25d",
      [
       null,
       [
@@ -204268,7 +204327,7 @@
      ]
     ],
     "animation-with-transform.html": [
-     "104b3b02ca53a6e5d6fed35ec1888dd8aca97b70",
+     "e6472cac1261965d4cbdc87852fb4cb40a6ade29",
      [
       null,
       [
@@ -204281,7 +204340,7 @@
      ]
     ],
     "layout-changes-on-percentage-based-timeline.html": [
-     "8a8766424ab2a9ad1ab866978fa3222f44059689",
+     "f97358144b0c199e7c08252cb96162ca3502f7a9",
      [
       null,
       [
@@ -204293,8 +204352,21 @@
       {}
      ]
     ],
+    "progress-based-effect-delay.tentative.html": [
+     "f92a3c6c99a74770016c23961c2c267c3fd4a209",
+     [
+      null,
+      [
+       [
+        "/scroll-animations/progress-based-effect-delay-ref.html",
+        "=="
+       ]
+      ],
+      {}
+     ]
+    ],
     "set-current-time-before-play.html": [
-     "194de216d38580ec5f1fc187b99c225ca5c95b6d",
+     "0d7e08d3320c8c29904a798546138ca8db9f2398",
      [
       null,
       [
@@ -204307,7 +204379,7 @@
      ]
     ],
     "two-animations-attach-to-same-scroll-timeline-cancel-one.html": [
-     "6e070134185720827bb8f504bbe44e848bc0bdfc",
+     "9071df4f7315f1d960c28dbcec68bc30d6871bf8",
      [
       null,
       [
@@ -204320,7 +204392,7 @@
      ]
     ],
     "two-animations-attach-to-same-scroll-timeline.html": [
-     "a0ba204b0847d05eec65d1b22ddbf6ab4795b709",
+     "885898d26f39c6c691146dbe46e73d202ec1ed97",
      [
       null,
       [
@@ -210886,7 +210958,7 @@
     []
    ],
    "README.md": [
-    "5de4d23359e65f1b3dabafd20558df982f09d75f",
+    "7e8e9948091e95b9850ce50e2e341e053e80f75f",
     []
    ],
    "WebCryptoAPI": {
@@ -212495,7 +212567,7 @@
      []
     ],
     "accept-ch-cache-revalidation.https.html.headers": [
-     "ed61fa27203ade74e305ee4d1dbf41a626c0d42c",
+     "f910b4a3104546bb1bd88bded548b152a860ef7e",
      []
     ],
     "accept-ch-feature-policy-navigation.https.html.headers": [
@@ -212503,7 +212575,7 @@
      []
     ],
     "accept-ch-feature-policy.sub.https.html.headers": [
-     "d620a5b8253f4b8283945949ea512f9af23311d4",
+     "7e44880b95ecb0b6589f44335c64016c80905272",
      []
     ],
     "accept-ch-malformed-header.https.html.headers": [
@@ -212672,7 +212744,7 @@
       []
      ],
      "echo-client-hints-received.py": [
-      "ef750bddf7d39329b67025cdec56858f65429bd2",
+      "c353f43de022afe434c741ece5e871e185b3e459",
       []
      ],
      "echo-ua-client-hints-received.py": [
@@ -212712,7 +212784,7 @@
       []
      ],
      "stale-echo-client-hints.py": [
-      "51e09b887a2b6df1abde21a9012a616c9814942c",
+      "6fc8e76d377d4ba7147e8eb34833d5d62dd93809",
       []
      ]
     },
@@ -243653,6 +243725,18 @@
       "2b22891738cb1a776e411857b33a7a993c120363",
       []
      ],
+     "ruby-with-floats-001-ref.html": [
+      "c041e3f9930219379bd32cebe3281e427061a954",
+      []
+     ],
+     "ruby-with-floats-002-ref.html": [
+      "aa07f344e468e8eafa03ccd43f143c68d0270cc8",
+      []
+     ],
+     "ruby-with-floats-003-ref.html": [
+      "110e16eeec44d740c673bcf21cd3f97d962c9014",
+      []
+     ],
      "support": {
       "ruby-common.css": [
        "cf83123281dfa8896339138faab3c6196943832c",
@@ -269453,6 +269537,10 @@
       "d83ed86fb9b5d159b9f380424887402edc96cb75",
       []
      ],
+     "coop-same-origin-allow-popups-document-write-expected.txt": [
+      "07689797499dfb851056d3a5e94cbf4a5c2434a2",
+      []
+     ],
      "coop-sandbox.https.html.headers": [
       "46ad58d83bf6e98913ca4c564b7acb8f19fa0093",
       []
@@ -288842,6 +288930,10 @@
      "130fdb6c1b681ccf9b172eebc705737ab8bbea13",
      []
     ],
+    "progress-based-effect-delay-ref.html": [
+     "59366a88dde86d0deedce5eeea58b9d6c98e0913",
+     []
+    ],
     "testcommon.js": [
      "f038a3b8be459f563d7b1e029fc3cdebbc5607a2",
      []
@@ -289041,6 +289133,10 @@
     "contenteditable": {
      "collapse-expected.txt": [
       "2f7034f88aac646de903dab05041106e1efde09e",
+      []
+     ],
+     "initial-selection-on-focus.tentative-expected.txt": [
+      "9d7c828a8f8c66a00d87ef0203fdb0bce76ebba5",
       []
      ],
      "modifying-selection-with-middle-mouse-button.tentative-expected.txt": [
@@ -294740,7 +294836,7 @@
       []
      ],
      "urlpatterntestdata.json": [
-      "8715b60bd85401eea104abe952a55d20fc63aa43",
+      "07efa6b712dbefb8d8ced986d28f22f8c9f8989e",
       []
      ],
      "urlpatterntests.js": [
@@ -315648,7 +315744,7 @@
       ]
      ],
      "goTo-detach-in-onnavigate.html": [
-      "b8f12c2978ebc2589e398deb932fa6c38609bf1b",
+      "34bebca88ab1d1f858e9fc2f8acc8336bae46f12",
       [
        null,
        {}
@@ -315719,6 +315815,13 @@
      ],
      "navigate-detach.html": [
       "a3d5f35c7d79e2c8149da5528794502fb7921878",
+      [
+       null,
+       {}
+      ]
+     ],
+     "navigate-file-url-blocked.html": [
+      "31c1bd71193b06299949030933a1e944d304666c",
       [
        null,
        {}
@@ -316336,6 +316439,41 @@
        {}
       ]
      ],
+     "navigateerror-ordering-cross-document.html": [
+      "ce888eda647e2e3c09a63cc6f955d1bbe12fd746",
+      [
+       null,
+       {}
+      ]
+     ],
+     "navigateerror-ordering-location-api-reentrant.html": [
+      "f81a901fb6b749a6069aa0995cccd19d7b5a7155",
+      [
+       null,
+       {}
+      ]
+     ],
+     "navigateerror-ordering-location-api.html": [
+      "bb9a63ea4048a9ad2bb05d5c9621fca33281bff1",
+      [
+       null,
+       {}
+      ]
+     ],
+     "navigateerror-ordering-respondWith-reentrant.html": [
+      "ba488475ef3567376e019a0de4eee8c4e5491a12",
+      [
+       null,
+       {}
+      ]
+     ],
+     "navigateerror-ordering-respondWith.html": [
+      "745de8590225138e95d9cd3643ba3d6281bace33",
+      [
+       null,
+       {}
+      ]
+     ],
      "navigatesuccess-cross-document.html": [
       "aacaf3bc49f3fe3e9b4ffa174fefcedc936fd560",
       [
@@ -316456,7 +316594,7 @@
       ]
      ],
      "signal-abort-window-stop-after-respondWith.html": [
-      "00769f5fd08250a526e3ef7373c705b2ce594200",
+      "83b7254957716cbf1d0a17fdda64b68b77683e66",
       [
        null,
        {}
@@ -321354,7 +321492,7 @@
      ]
     ],
     "accept-ch-cache-revalidation.https.html": [
-     "84555a02852a05d9fdd4ef4579f3273852baf207",
+     "26d02ca3fb963a28d40dc3611d00c80aabe2c5a1",
      [
       null,
       {}
@@ -321375,7 +321513,7 @@
      ]
     ],
     "accept-ch-feature-policy.sub.https.html": [
-     "f9e5db8acc4717ce11b2419dd04c07b728bd871c",
+     "0b826f1e1af51fb0953c119c9cc654da97024448",
      [
       null,
       {}
@@ -392936,7 +393074,7 @@
         ]
        ],
        "location-protocol-setter-non-broken-weird.html": [
-        "78ba5f6e401dadf43034c772118bba466e678131",
+        "544eb4ad9a65a3251da312696a7ebcb7601e637a",
         [
          null,
          {}
@@ -414917,7 +415055,7 @@
       ]
      ],
      "coop-same-origin-allow-popups-document-write.html": [
-      "c577972216691c09702f0a84c3b82a9cf881ac8f",
+      "6b6b4e0857671386cb62b20fd3723d623bae05a5",
       [
        null,
        {}
@@ -438930,7 +439068,7 @@
      ]
     ],
     "decodingInfo.webrtc.html": [
-     "91f03bd692ba70510e3e77704c85d8395d4c1d92",
+     "d5399d751397dd9c66cb2312d297ce8513818265",
      [
       null,
       {}
@@ -438960,7 +439098,7 @@
      ]
     ],
     "encodingInfo.webrtc.html": [
-     "63edc0641059ecf63d1d8e0676b9f43c81fb711d",
+     "3f29919ea18f37e8c9c87806236fd627f17446ea",
      [
       null,
       {}
@@ -465523,6 +465661,13 @@
        {}
       ]
      ],
+     "initial-selection-on-focus.tentative.html": [
+      "b2bf422b4953a88e610fb9a8cdc0fb95ba5a122d",
+      [
+       null,
+       {}
+      ]
+     ],
      "modify.tentative.html": [
       "a3afd52ea2ebe54cb2c296b953573813392f6bbe",
       [
@@ -489193,7 +489338,7 @@
      ]
     ],
     "share-empty.https.html": [
-     "23c2ddbf7782f6d87935ae15db87a50a14043d05",
+     "0bca2f29607f03e14243a9088f69efaf9809b365",
      [
       null,
       {
@@ -495420,7 +495565,7 @@
      ]
     ],
     "RTCPeerConnection-insertable-streams-simulcast.https.html": [
-     "a34f4da5a94704ae02b5329cca87a7773af81ae3",
+     "1a568d089549a40c36f8e8d2c94f2d0d81790aa5",
      [
       null,
       {}
