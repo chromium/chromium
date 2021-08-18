@@ -205,12 +205,31 @@ def GenerateTestResults(result_code, result_bundle, statuses, duration_ms,
 
 def _MaybeSetLog(bundle, current_result, symbolizer, device_abi):
   if _BUNDLE_STACK_ID in bundle:
+    stack = bundle[_BUNDLE_STACK_ID]
     if symbolizer and device_abi:
-      current_result.SetLog('%s\n%s' % (bundle[_BUNDLE_STACK_ID], '\n'.join(
-          symbolizer.ExtractAndResolveNativeStackTraces(
-              bundle[_BUNDLE_STACK_ID], device_abi))))
+      current_result.SetLog('%s\n%s' % (stack, '\n'.join(
+          symbolizer.ExtractAndResolveNativeStackTraces(stack, device_abi))))
     else:
-      current_result.SetLog(bundle[_BUNDLE_STACK_ID])
+      current_result.SetLog(stack)
+
+    current_result.SetFailureReason(_ParseExceptionMessage(stack))
+
+
+def _ParseExceptionMessage(stack):
+  """Extracts the exception message from the given stack trace.
+  """
+  # This interprets stack traces reported via InstrumentationResultPrinter:
+  # https://source.chromium.org/chromium/chromium/src/+/main:third_party/android_support_test_runner/runner/src/main/java/android/support/test/internal/runner/listener/InstrumentationResultPrinter.java;l=181?q=InstrumentationResultPrinter&type=cs
+  # This is a standard Java stack trace, of the form:
+  # <Result of Exception.toString()>
+  #     at SomeClass.SomeMethod(...)
+  #     at ...
+  lines = stack.split('\n')
+  for i, line in enumerate(lines):
+    if line.startswith('\tat'):
+      return '\n'.join(lines[0:i])
+  # No call stack found, so assume everything is the exception message.
+  return stack
 
 
 def FilterTests(tests, filter_str=None, annotations=None,

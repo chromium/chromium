@@ -103,7 +103,11 @@ class BaseTestResult(object):
     return self._log
 
   def SetFailureReason(self, failure_reason):
-    """Set the reason the test failed."""
+    """Set the reason the test failed.
+
+    This should be the first failure the test encounters and exclude any stack
+    trace.
+    """
     self._failure_reason = failure_reason
 
   def GetFailureReason(self):
