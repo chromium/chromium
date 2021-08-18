@@ -71,6 +71,8 @@ const char kFileSystemBoxFindFolderResponseFolderId[] = "12345";
 // intentionally distinct from kFileSystemBoxFindFolderResponseFolderId above
 // to identify where the test flow gets the folder_id from.
 const char kFileSystemBoxFolderIdInPref[] = "1337";
+const char kFileSystemBoxFolderIdInPrefUrl[] =
+    "https://app.box.com/folder/1337";
 
 const char kFileSystemBoxFindFolderResponseEmptyEntriesList[] = R"({
     "entries": [
@@ -293,8 +295,5 @@ const char kFileSystemBoxUploadResponseBody[] = R"({
 const char kFileSystemBoxUploadResponseFileId[] = "314159";
 const char kFileSystemBoxUploadResponseFileUrl[] =
     "https://app.box.com/file/314159";
-
-const char kFileSystemBoxUploadResponseFolderUrl[] =
-    "https://app.box.com/folder/1337";
 
 }  // namespace enterprise_connectors

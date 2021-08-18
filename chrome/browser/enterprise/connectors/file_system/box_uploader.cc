@@ -145,6 +145,7 @@ void BoxUploader::Init(
   authentication_retry_callback_ = std::move(authen_retry_callback);
   progress_update_cb_ = std::move(progress_update_cb);
   upload_complete_cb_ = std::move(upload_complete_cb);
+  SendProgressUpdate();
   SetCurrentApiCall(GetFolderId().empty() ? MakeFindUpstreamFolderApiCall()
                                           : MakePreflightCheckApiCall());
 }

@@ -48,6 +48,8 @@ extern const char kFileSystemBoxCreateFolderResponseFolderId[];
 
 // Saved folder id extracted from the kFileSystemUploadFolderIdPref pref.
 extern const char kFileSystemBoxFolderIdInPref[];
+// Expected folder url for the uploaded file with kFileSystemBoxFolderIdInPref.
+extern const char kFileSystemBoxFolderIdInPrefUrl[];
 
 // For Box Chunked Uploads /////////////////////////////////////////////////////
 
@@ -79,8 +81,7 @@ extern const char kFileSystemBoxUploadResponseBody[];
 // Expected file id/url extracted from above.
 extern const char kFileSystemBoxUploadResponseFileId[];
 extern const char kFileSystemBoxUploadResponseFileUrl[];
-// Expected folder url for the uploaded file with kFileSystemBoxFolderIdInPref.
-extern const char kFileSystemBoxUploadResponseFolderUrl[];
+
 }  // namespace enterprise_connectors
 
 #endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_FILE_SYSTEM_BOX_API_CALL_TEST_HELPER_H_

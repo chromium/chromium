@@ -156,6 +156,7 @@ void BoxUploaderTestBase::OnProgressUpdate(
     const download::DownloadItemRenameProgressUpdate& update) {
   ++progress_update_cb_called_;
   file_name_reported_back_ = update.target_file_name;
+  reroute_info_reported_back_ = update.reroute_info;
 }
 
 void BoxUploaderTestBase::OnUploaderFinished(
