@@ -16,11 +16,6 @@ declare_args() {
   # Mimicking how Xcode handles it, the production builds (is_debug = false)
   # get real bitcode sections added, while the debug builds (is_debug = true)
   # only get bitcode-section "markers" added in them.
-  # NOTE: This option is ignored when building versions for the iOS simulator,
-  # where a part of libvpx is compiled from the assembly code written using
-  # Intel assembly syntax; Yasm / Nasm do not support emitting bitcode parts.
-  # That is not a limitation for now as Xcode mandates the presence of bitcode
-  # only when building bitcode-enabled projects for real devices (ARM CPUs).
   enable_ios_bitcode = false
 }
 
