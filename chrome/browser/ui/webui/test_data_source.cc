@@ -101,6 +101,10 @@ std::string TestDataSource::GetContentSecurityPolicy(
     return std::string();
   } else if (directive == network::mojom::CSPDirectiveName::FrameAncestors) {
     return "frame-ancestors chrome://* 'self';";
+  } else if (directive == network::mojom::CSPDirectiveName::FrameSrc) {
+    return "frame-src chrome://test/;";
+  } else if (directive == network::mojom::CSPDirectiveName::ChildSrc) {
+    return "child-src chrome://test/;";
   }
 
   return content::URLDataSource::GetContentSecurityPolicy(directive);

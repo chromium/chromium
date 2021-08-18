@@ -41,6 +41,8 @@ if (include_js_tests) {
     deps = [
       ":modulize",
       "//chrome/browser/ui",
+      "//ui/webui/resources/js:post_message_api_client.m",
+      "//ui/webui/resources/js:post_message_api_server.m",
     ]
     data = [
       "$root_gen_dir/chrome/test/data/webui/fake_chrome_event.m.js",
@@ -164,6 +166,7 @@ if (include_js_tests) {
         "chromeos/gaia_action_buttons/gaia_action_buttons_browsertest.js",
         "chromeos/internet_detail_dialog_browsertest.js",
         "cr_components/chromeos/cr_components_chromeos_v3_browsertest.js",
+        "post_message_api/post_message_api_browsertest.js",
         "set_time_dialog_browsertest.js",
         "settings/chromeos/a11y/v3_os_a11y_browsertest.js",
         "settings/chromeos/os_settings_v3_browsertest.js",

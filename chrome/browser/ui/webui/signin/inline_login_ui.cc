@@ -158,8 +158,6 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
     {"edu_coexistence_ui.js", IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_UI_JS},
     {"edu_coexistence_controller.js",
      IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_CONTROLLER_JS},
-    {"chromeos/add_supervision/post_message_api.js",
-     IDR_ADD_SUPERVISION_POST_MESSAGE_API_JS},
     {"edu_coexistence_browser_proxy.js",
      IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_BROWSER_PROXY_JS},
     {"edu_coexistence_button.js",
@@ -237,6 +235,9 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
                     chrome::GetOSSettingsUrl(
                         chromeos::settings::mojom::kMyAccountsSubpagePath)
                         .spec());
+
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::FrameSrc, "frame-src chrome://test/;");
 #endif
 
   return source;

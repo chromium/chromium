@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PostMessageAPIServer} from '../../chromeos/add_supervision/post_message_api.js';
+import {PostMessageAPIServer} from 'chrome://resources/js/post_message_api_server.m.js';
 import {AuthCompletedCredentials, Authenticator, AuthParams} from '../../gaia_auth_host/authenticator.m.js';
 import {EduCoexistenceBrowserProxyImpl} from './edu_coexistence_browser_proxy.js';
 

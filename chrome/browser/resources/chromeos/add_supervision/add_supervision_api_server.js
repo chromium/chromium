@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PostMessageAPIServer} from './post_message_api.js';
+import {PostMessageAPIServer} from 'chrome://resources/js/post_message_api_server.m.js';
 
 /**
  * The methods to expose to the client.

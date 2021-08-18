@@ -1,0 +1,76 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {PostMessageAPIClient} from 'chrome://resources/js/post_message_api_client.m.js';
+
+const METHODS = ['setX', 'increment', 'decrement', 'finalize'];
+const ServerOriginURLFilter = 'chrome://chrome-signin/';
+
+class TestPostMessageAPIClient extends PostMessageAPIClient {
+  constructor() {
+    super(METHODS, ServerOriginURLFilter);
+  }
+
+  setX(x) {
+    return this.callApiFn('setX', x);
+  }
+
+  increment(y) {
+    return this.callApiFn('increment', y);
+  }
+
+  decrement(z) {
+    return this.callApiFn('decrement', z);
+  }
+
+  finalize(success) {
+    return this.callApiFn('finalize', success);
+  }
+
+  /**
+   * Exercise the methods in the METHOD list above, which are defined in the
+   * TestPostMessageAPIServer class.
+   * @override
+   */
+  onInitialized() {
+    // Iinitializes the "x" value in the test PostMessageAPIServer and ensures
+    // that it has been set via the callback.
+    this.setX(1).then((result) => {
+      if (result !== 1) {
+        this.finalize(false);
+        return;
+      }
+
+      // Increments the "x" value in the test PostMessageAPIServer and ensures
+      // that the value has been updated.
+      this.increment(5).then((result) => {
+        if (result !== 6) {
+          this.finalize(false);
+          return;
+        }
+
+        // Decrements the "x" value in the test PostMessageAPIServer and ensures
+        // that the value has been updated.
+        this.decrement(1).then((result) => {
+          if (result !== 5) {
+            this.finalize(false);
+            return;
+          }
+
+          // By this time, multiple requests have been successfully sent and
+          // received between the test PostMessageAPIServer and
+          // PostMessageAPIClient. Notify the server that the test is
+          // successfully completed.
+          this.finalize(true);
+        });
+      });
+    });
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Construct the PostMessageAPIClient so that it can run the tests.
+  const post_message_listener =
+      new TestPostMessageAPIClient(METHODS, ServerOriginURLFilter);
+});

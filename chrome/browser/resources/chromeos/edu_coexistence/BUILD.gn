@@ -88,8 +88,8 @@ js_library("edu_coexistence_template") {
 js_library("edu_coexistence_controller") {
   deps = [
     ":edu_coexistence_browser_proxy",
-    "//chrome/browser/resources/chromeos/add_supervision:post_message_api",
     "//chrome/browser/resources/gaia_auth_host:authenticator.m",
+    "//ui/webui/resources/js:post_message_api_server.m",
   ]
   externs_list = [
     "$externs_path/chrome_extensions.js",

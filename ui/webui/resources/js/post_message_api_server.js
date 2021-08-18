@@ -72,13 +72,12 @@ export class PostMessageAPIServer {
      */
     this.isInitialized_ = false;
 
-    // Wait for content to load before attempting to initializing the
-    // message listener.
-    this.clientElement_.addEventListener('contentload', () => {
-      this.numInitializationAttempts_ = 0;
-      this.isInitialized_ = false;
-      this.initialize();
-    });
+    if (this.clientElement_.tagName === 'IFRAME') {
+      this.clientElement_.onload = this.onLoad_.bind(this);
+    } else {
+      this.clientElement_.addEventListener(
+          'contentload', this.onLoad_.bind(this));
+    }
 
     // Listen for events.
     window.addEventListener('message', (event) => {
@@ -156,8 +155,8 @@ export class PostMessageAPIServer {
 
     // We allow the pathname portion of the URL to be a prefix filter,
     // to permit for different paths communicating with this server.
-    return originURL.protocol == this.messageOriginURLFilter_.protocol &&
-        originURL.host == this.messageOriginURLFilter_.host &&
+    return originURL.protocol === this.messageOriginURLFilter_.protocol &&
+        originURL.host === this.messageOriginURLFilter_.host &&
         originURL.pathname.startsWith(this.messageOriginURLFilter_.pathname);
   }
 
@@ -218,152 +217,15 @@ export class PostMessageAPIServer {
       sendMessage(methodId, result);
     }
   }
-}
 
-/**
- * Class that provides the functionality for talking to a PostMessageAPIServer
- * over the postMessage API.  This should be subclassed and the methods in the
- * server that the client needs to access should be provided in methodList.
- */
-export class PostMessageAPIClient {
   /**
-   * @param {!Array<string>} methodList The list of methods accessible via the
-   *     client.
-   * @param {!string} serverOriginURLFilter  Only messages from this origin
-   *     will be accepted.
-   */
-  constructor(methodList, serverOriginURLFilter) {
-    /**
-     * @private @const {!string} Filter to use to validate
-     * the origin of received messages.  The origin of messages
-     * must exactly match this value.
-     */
-    this.serverOriginURLFilter_ = serverOriginURLFilter;
-
-    /**
-     * The parent window.
-     * @private {Window}
-     */
-    this.parentWindow_ = null;
-    /*
-     * @private {number}
-     */
-    this.nextMethodId_ = 0;
-    /**
-     * Map of methods awaiting a response.
-     * @private {!Map}
-     */
-    this.methodsAwaitingResponse_ = new Map;
-    /**
-     * Function property that tracks whether client has
-     * been initialized by the server.
-     * @private {Function}
-     */
-    this.boundOnInitialize_ = null;
-
-    // Generate the client-callable methods.
-    this.generateAPIMethods_(methodList);
-  }
-
-  /*
-   * Generates methods for the specified method names.
+   * Reinitiates the connection when the content inside the clientElement
+   * reloads.
    * @private
-   * @param {!Array<string>} methods  The names of the methods.
    */
-  generateAPIMethods_(methods) {
-    methods.forEach((method) => {
-      Object.getPrototypeOf(this)[method] = function(args) {
-        return this.callApiFn_(method, args);
-      };
-    });
-  }
-
-  initialize() {
-    this.boundOnInitialize_ = this.onInitialize_.bind(this);
-    // Wait for an init message from the server.
-    window.addEventListener('message', this.boundOnInitialize_);
-  }
-
-  //
-  // Private implementation:
-  //
-
-  /**
-   * Handles initialization event sent from the server to establish
-   * communication.
-   * @private
-   * @param {!Event} event  An event received when the initialization message is
-   *     sent from the server.
-   */
-  onInitialize_(event) {
-    if (!this.originMatchesFilter(event.origin)) {
-      console.error(
-          'Initialization event received from non-authorized origin: ' +
-          event.origin);
-      return;
-    }
-    this.parentWindow_ = event.source;
-    window.removeEventListener('message', this.boundOnInitialize_);
-    this.boundOnInitialize_ = null;
-    window.addEventListener('message', this.onMessage_.bind(this));
-  }
-
-  /**
-   * Determine if the specified server origin URL matches the origin filter.
-   * @param {!string} origin The origin URL to match with the filter.
-   * @return {boolean}  whether the specified origin matches the filter.
-   */
-  originMatchesFilter(origin) {
-    return origin == this.serverOriginURLFilter_;
-  }
-
-  /**
-   * Handles postMessage events sent from the server.
-   * @param {Event} event  An event received from the server via the postMessage
-   *     API.
-   */
-  onMessage_(event) {
-    if (!this.originMatchesFilter(event.origin)) {
-      console.error(
-          'Message received from non-authorized origin: ' + event.origin);
-      return;
-    }
-    if (event.source != this.parentWindow_) {
-      console.error('discarding event whose source is not the parent window');
-      return;
-    }
-    if (!this.methodsAwaitingResponse_.has(event.data.methodId)) {
-      console.error('discarding event method is not waiting for a response');
-      return;
-    }
-    let method = this.methodsAwaitingResponse_.get(event.data.methodId);
-    this.methodsAwaitingResponse_.delete(event.data.methodId);
-    method(event.data.result);
-  }
-
-  /**
-   * Converts a function call with arguments into a postMessage event
-   * and sends it to the server via the postMessage API.
-   * @param {string} fn  The function to call.
-   * @param {!Array<Object>} args The arguments to pass to the function.
-   * @return {!Promise} A promise capturing the executing of the function.
-   */
-  callApiFn_(fn, args) {
-    let newMethodId = this.nextMethodId_++;
-    let promise = new Promise((resolve, reject) => {
-      if (!this.parentWindow_) {
-        reject('No parent window defined');
-      }
-      this.parentWindow_.postMessage(
-          {
-            methodId: newMethodId,
-            fn: fn,
-            args: args,
-          },
-          '*');
-
-      this.methodsAwaitingResponse_.set(newMethodId, resolve);
-    });
-    return promise;
+  onLoad_() {
+    this.numInitializationAttempts_ = 0;
+    this.isInitialized_ = false;
+    this.initialize();
   }
 }
