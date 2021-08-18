@@ -118,6 +118,10 @@ void SilentSinkSuspender::OnRenderError() {
 void SilentSinkSuspender::OnPaused() {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
+  // This is a no-op if the sink isn't running, but must be executed without the
+  // |transition_lock_| being held to avoid possible deadlock.
+  fake_sink_.Stop();
+
   base::AutoLock al(transition_lock_);
 
   // Nothing to do if we haven't touched the sink.
@@ -128,12 +132,7 @@ void SilentSinkSuspender::OnPaused() {
 
   // If we've moved over to the fake sink, we just need to stop it and cancel
   // any pending transitions.
-  if (is_using_fake_sink_) {
-    is_using_fake_sink_ = false;
-    fake_sink_.Stop();
-  }
-
-  // Cancel any pending transitions.
+  is_using_fake_sink_ = false;
   is_transition_pending_ = false;
   first_silence_time_ = base::TimeTicks();
   sink_transition_callback_.Reset(base::BindRepeating(
