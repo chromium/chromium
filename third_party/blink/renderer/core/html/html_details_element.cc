@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -183,6 +184,41 @@ void HTMLDetailsElement::ToggleOpen() {
 
 bool HTMLDetailsElement::IsInteractiveContent() const {
   return true;
+}
+
+// static
+bool HTMLDetailsElement::ExpandDetailsAncestors(const Node& node) {
+  // Since setting the open attribute fires mutation events which could mess
+  // with the FlatTreeTraversal iterator, we should first iterate details
+  // elements to open and then open them all.
+  VectorOf<HTMLDetailsElement> details_to_open;
+
+  for (Node& parent : FlatTreeTraversal::AncestorsOf(node)) {
+    if (HTMLDetailsElement* details = DynamicTo<HTMLDetailsElement>(parent)) {
+      // If the active match is inside the <summary> of a <details>, then we
+      // shouldn't expand the <details> because the active match is already
+      // visible.
+      bool inside_summary = false;
+      Element& summary = *details->FindMainSummary();
+      for (Node& ancestor : FlatTreeTraversal::AncestorsOf(node)) {
+        if (&ancestor == &summary) {
+          inside_summary = true;
+          break;
+        }
+      }
+
+      if (!inside_summary &&
+          !details->FastHasAttribute(html_names::kOpenAttr)) {
+        details_to_open.push_back(details);
+      }
+    }
+  }
+
+  for (HTMLDetailsElement* details : details_to_open) {
+    details->setAttribute(html_names::kOpenAttr, g_empty_atom);
+  }
+
+  return details_to_open.size();
 }
 
 }  // namespace blink

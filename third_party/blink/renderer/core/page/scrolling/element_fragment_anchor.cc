@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html/html_details_element.h"
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -102,11 +103,22 @@ bool ElementFragmentAnchor::Invoke() {
     boundary_local_frame->View()->SetSafeToPropagateScrollToParent(false);
   }
 
-  auto* element_to_scroll = DynamicTo<Element>(anchor_node_.Get());
+  Member<Element> element_to_scroll = DynamicTo<Element>(anchor_node_.Get());
   if (!element_to_scroll)
     element_to_scroll = doc.documentElement();
 
   if (element_to_scroll) {
+    // Expand <details> elements so we can make |element_to_scroll| visible.
+    if (RuntimeEnabledFeatures::AutoExpandDetailsElementEnabled() &&
+        HTMLDetailsElement::ExpandDetailsAncestors(*element_to_scroll)) {
+      // If we opened any details elements, we need to update style and layout
+      // to account for the new content to render inside the now-expanded
+      // details element before we scroll to it. The added open attribute may
+      // also affect style.
+      doc.UpdateStyleAndLayoutForNode(element_to_scroll,
+                                      DocumentUpdateReason::kFindInPage);
+    }
+
     ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
     options->setBlock("start");
     options->setInlinePosition("nearest");
