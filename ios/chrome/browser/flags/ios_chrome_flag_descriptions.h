@@ -213,10 +213,6 @@ extern const char kForceDisableExtendedSyncPromosDescription[];
 extern const char kForceStartupSigninPromoName[];
 extern const char kForceStartupSigninPromoDescription[];
 
-// Title and description for the flag to force an unstacked tabstrip.
-extern const char kForceUnstackedTabstripName[];
-extern const char kForceUnstackedTabstripDescription[];
-
 // Title and description for the command line switch used to determine the
 // active fullscreen viewport adjustment mode.
 extern const char kFullscreenSmoothScrollingName[];

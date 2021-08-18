@@ -488,9 +488,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillSaveCardDismissOnNavigation)},
-    {"force-unstacked-tabstrip", flag_descriptions::kForceUnstackedTabstripName,
-     flag_descriptions::kForceUnstackedTabstripDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kForceUnstackedTabstrip)},
     {"desktop-version-default", flag_descriptions::kDefaultToDesktopOnIPadName,
      flag_descriptions::kDefaultToDesktopOnIPadDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(web::features::kUseDefaultUserAgentInWebClient)},

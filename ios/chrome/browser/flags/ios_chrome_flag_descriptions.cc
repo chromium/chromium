@@ -243,10 +243,6 @@ const char kForceStartupSigninPromoDescription[] =
     "When enabled, the startup sign-in promo is always displayed when starting "
     "Chrome.";
 
-const char kForceUnstackedTabstripName[] = "Force unstacked tabstrip.";
-const char kForceUnstackedTabstripDescription[] =
-    "When enabled, the tabstrip will draw unstacked, without tab collapsing.";
-
 const char kFullscreenSmoothScrollingName[] = "Fullscreen Smooth Scrolling";
 const char kFullscreenSmoothScrollingDescription[] =
     "When enabled, the web view's insets are updated for scoll events. If "

@@ -14,12 +14,6 @@ extern const base::Feature kExpandedTabStrip;
 // Feature to apply UI Refresh theme to the settings.
 extern const base::Feature kSettingsRefresh;
 
-// Feature flag to use the unstacked tabstrip when voiceover is enabled.
-extern const base::Feature kVoiceOverUnstackedTabstrip;
-
-// Feature flag to always force an unstacked tabstrip.
-extern const base::Feature kForceUnstackedTabstrip;
-
 // Test-only: Feature flag used to verify that EG2 can trigger flags. Must be
 // always disabled by default, because it is used to verify that enabling
 // features in tests works.

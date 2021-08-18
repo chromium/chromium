@@ -3180,11 +3180,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "force-unstacked-tabstrip",
-    "owners": [ "//ios/chrome/browser/ui/tabs/OWNERS", "bling-flags@google.com" ],
-    "expiry_milestone": 86
-  },
-  {
     "name": "force-update-menu-type",
     "owners": [ "//chrome/android/java/src/org/chromium/chrome/browser/omaha/OWNERS" ],
     // This is required by test teams to verify functionality on devices which

@@ -10,12 +10,6 @@ const base::Feature kExpandedTabStrip{"ExpandedTabStrip",
 const base::Feature kSettingsRefresh{"SettingsRefresh",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kVoiceOverUnstackedTabstrip{
-    "VoiceOverUnstackedTabstrip", base::FEATURE_ENABLED_BY_DEFAULT};
-
-const base::Feature kForceUnstackedTabstrip{"ForceUnstackedTabstrip",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kTestFeature{"TestFeature",
                                  base::FEATURE_DISABLED_BY_DEFAULT};
 
