@@ -10,9 +10,9 @@
 #include <map>
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "base/callback_forward.h"
+#include "base/containers/span.h"
 #include "base/memory/ref_counted.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
 
@@ -54,7 +54,7 @@ void ReadUsbDescriptors(
     scoped_refptr<UsbDeviceHandle> device_handle,
     base::OnceCallback<void(std::unique_ptr<UsbDeviceDescriptor>)> callback);
 
-bool ParseUsbStringDescriptor(const std::vector<uint8_t>& descriptor,
+bool ParseUsbStringDescriptor(base::span<const uint8_t> descriptor,
                               std::u16string* output);
 
 void ReadUsbStringDescriptors(
