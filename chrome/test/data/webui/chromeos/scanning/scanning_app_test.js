@@ -220,6 +220,15 @@ class FakeScanService {
     return flushTasks();
   }
 
+  /**
+   * @param {!ash.scanning.mojom.ScanResult} scanResult
+   * @return {!Promise}
+   */
+  simulateMultiPageScanFail(scanResult) {
+    this.scanJobObserverRemote_.onMultiPageScanFail(scanResult);
+    return flushTasks();
+  }
+
   // scanService methods:
 
   /** @return {!Promise<{scanners: !ScannerArr}>} */
@@ -861,6 +870,93 @@ export function scanningAppTest() {
           assertArrayEquals(
               scannedFilePaths,
               scanningApp.$$('scan-done-section').scannedFilePaths);
+        });
+  });
+
+  // Verify a multi-page scan job can fail scanning a page then scan another
+  // page successfully.
+  test('MultiPageScanPageFailed', () => {
+    return initializeScanningApp(expectedScanners, capabilities)
+        .then(() => {
+          return getScannerCapabilities();
+        })
+        .then(() => {
+          scanningApp.selectedSource = PLATEN;
+          scanningApp.selectedFileType = FileType.PDF.toString();
+          return waitAfterNextRender(/** @type {!HTMLElement} */ (scanningApp));
+        })
+        .then(() => {
+          scanningApp.multiPageScanChecked = true;
+        })
+        .then(() => {
+          scanningApp.$$('#scanButton').click();
+          return fakeScanService_.whenCalled('startMultiPageScan');
+        })
+        .then(() => {
+          assertEquals(
+              'Scanning page 1',
+              scanningApp.$$('#scanPreview')
+                  .$$('#progressText')
+                  .textContent.trim());
+          return fakeScanService_.simulatePageComplete(1);
+        })
+        .then(() => {
+          scanningApp.$$('multi-page-scan').$$('#scanButton').click();
+          return fakeMultiPageScanController_.whenCalled('scanNextPage');
+        })
+        .then(() => {
+          assertEquals(
+              'Scanning page 2',
+              scanningApp.$$('#scanPreview')
+                  .$$('#progressText')
+                  .textContent.trim());
+          return fakeScanService_.simulateMultiPageScanFail(
+              ash.scanning.mojom.ScanResult.kFlatbedOpen);
+        })
+        .then(() => {
+          // The scan failed dialog should open.
+          assertTrue(scanningApp.$$('#scanFailedDialog').open);
+          assertEquals(
+              loadTimeData.getString('scanFailedDialogFlatbedOpenText'),
+              scanningApp.$$('#scanFailedDialogText').textContent.trim());
+
+          // Click the dialog's Ok button to return to MULTI_PAGE_NEXT_ACTION
+          // state.
+          return clickScanFailedDialogOkButton();
+        })
+        .then(() => {
+          // After the dialog closes, the scan next page button should still
+          // say 'Scan Page 2'.
+          const scanNextPageButton =
+              scanningApp.$$('multi-page-scan').$$('#scanButton');
+          assertEquals('Scan page 2', scanNextPageButton.textContent.trim());
+          scanNextPageButton.click();
+          return fakeMultiPageScanController_.whenCalled('scanNextPage');
+        })
+        .then(() => {
+          assertEquals(
+              'Scanning page 2',
+              scanningApp.$$('#scanPreview')
+                  .$$('#progressText')
+                  .textContent.trim());
+          return fakeScanService_.simulatePageComplete(1);
+        })
+        .then(() => {
+          scanningApp.$$('multi-page-scan').$$('#saveButton').click();
+          return fakeMultiPageScanController_.whenCalled(
+              'completeMultiPageScan');
+        })
+        .then(() => {
+          return fakeScanService_.simulateScanComplete(
+              ash.scanning.mojom.ScanResult.kSuccess,
+              [{'path': '/test/path/scan1.pdf'}]);
+        })
+        .then(() => {
+          scannedImages = scanningApp.$$('#scanPreview').$$('#scannedImages');
+
+          // There should be 2 images from scanning once, failing once, then
+          // scanning again successfully.
+          assertEquals(2, scannedImages.querySelectorAll('img').length);
         });
   });
 

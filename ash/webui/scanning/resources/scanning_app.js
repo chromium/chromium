@@ -269,24 +269,11 @@ Polymer({
     },
 
     /**
-     * Indicates the result of the scan job. Set to kSuccess when the scan job
-     * succeeds.
-     * @private {!ash.scanning.mojom.ScanResult}
-     */
-    scanResult_: {
-      type: Number,
-      value: ash.scanning.mojom.ScanResult.kSuccess,
-    },
-
-    /**
      * The key to retrieve the appropriate string to display in an error dialog
      * when a scan job fails.
      * @private {string}
      */
-    scanFailedDialogTextKey_: {
-      type: String,
-      computed: 'computeScanFailedDialogTextKey_(scanResult_)',
-    },
+    scanFailedDialogTextKey_: String,
 
     /** @private {boolean} */
     scanAppStickySettingsEnabled_: {
@@ -455,9 +442,9 @@ Polymer({
    * @param {!Array<!mojoBase.mojom.FilePath>} scannedFilePaths
    */
   onScanComplete(result, scannedFilePaths) {
-    this.scanResult_ = result;
-    if (this.scanResult_ !== ash.scanning.mojom.ScanResult.kSuccess ||
+    if (result !== ash.scanning.mojom.ScanResult.kSuccess ||
         this.objectUrls_.length == 0) {
+      this.setScanFailedDialogTextKey_(result);
       this.$.scanFailedDialog.showModal();
       return;
     }
@@ -487,7 +474,12 @@ Polymer({
    * Overrides ash.scanning.mojom.ScanJobObserverInterface.
    * @param {!ash.scanning.mojom.ScanResult} result
    */
-  onMultiPageScanFail(result) {},
+  onMultiPageScanFail(result) {
+    assert(result !== ash.scanning.mojom.ScanResult.kSuccess);
+
+    this.setScanFailedDialogTextKey_(result);
+    this.$.scanFailedDialog.showModal();
+  },
 
   /**
    * @param {string} selectedSource
@@ -845,6 +837,15 @@ Polymer({
   /** @private */
   onScanFailedDialogOkClick_() {
     this.$.scanFailedDialog.close();
+    if (this.appState_ === AppState.MULTI_PAGE_SCANNING) {
+      // |pageNumber_| gets set to the number of existing scanned images so
+      // when the next scan is started, |pageNumber_| gets incremented and
+      // the preview area shows 'Scanning length+1'.
+      this.pageNumber_ = this.objectUrls_.length;
+      this.setAppState_(AppState.MULTI_PAGE_NEXT_ACTION);
+      return;
+    }
+
     this.setAppState_(AppState.READY);
   },
 
@@ -897,23 +898,29 @@ Polymer({
   },
 
   /**
-   * @return {string}
+   * @param {!ash.scanning.mojom.ScanResult} scanResult Indicates the result of
+   *   the scan job.
    * @private
    */
-  computeScanFailedDialogTextKey_() {
-    switch (this.scanResult_) {
-      case (ash.scanning.mojom.ScanResult.kDeviceBusy):
-        return 'scanFailedDialogDeviceBusyText';
-      case (ash.scanning.mojom.ScanResult.kAdfJammed):
-        return 'scanFailedDialogAdfJammedText';
-      case (ash.scanning.mojom.ScanResult.kAdfEmpty):
-        return 'scanFailedDialogAdfEmptyText';
-      case (ash.scanning.mojom.ScanResult.kFlatbedOpen):
-        return 'scanFailedDialogFlatbedOpenText';
-      case (ash.scanning.mojom.ScanResult.kIoError):
-        return 'scanFailedDialogIoErrorText';
+  setScanFailedDialogTextKey_(scanResult) {
+    switch (scanResult) {
+      case ash.scanning.mojom.ScanResult.kDeviceBusy:
+        this.scanFailedDialogTextKey_ = 'scanFailedDialogDeviceBusyText';
+        break;
+      case ash.scanning.mojom.ScanResult.kAdfJammed:
+        this.scanFailedDialogTextKey_ = 'scanFailedDialogAdfJammedText';
+        break;
+      case ash.scanning.mojom.ScanResult.kAdfEmpty:
+        this.scanFailedDialogTextKey_ = 'scanFailedDialogAdfEmptyText';
+        break;
+      case ash.scanning.mojom.ScanResult.kFlatbedOpen:
+        this.scanFailedDialogTextKey_ = 'scanFailedDialogFlatbedOpenText';
+        break;
+      case ash.scanning.mojom.ScanResult.kIoError:
+        this.scanFailedDialogTextKey_ = 'scanFailedDialogIoErrorText';
+        break;
       default:
-        return 'scanFailedDialogUnknownErrorText';
+        this.scanFailedDialogTextKey_ = 'scanFailedDialogUnknownErrorText';
     }
   },
 
