@@ -72,10 +72,8 @@ std::unique_ptr<Picture> ParsePictureStr(v8::Isolate* isolate,
   if (!picture_value)
     return nullptr;
   // Decode the picture from base64.
-  std::string encoded;
-  if (!picture_value->GetAsString(&encoded))
-    return nullptr;
-  return CreatePictureFromEncodedString(encoded);
+  const std::string* encoded = picture_value->GetIfString();
+  return encoded ? CreatePictureFromEncodedString(*encoded) : nullptr;
 }
 
 std::unique_ptr<Picture> ParsePictureHash(v8::Isolate* isolate,

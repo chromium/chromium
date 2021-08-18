@@ -246,10 +246,10 @@ v8::Local<v8::Value> V8ValueConverterImpl::ToV8ValueImpl(
     }
 
     case base::Value::Type::STRING: {
-      std::string val;
-      CHECK(value->GetAsString(&val));
-      return v8::String::NewFromUtf8(isolate, val.c_str(),
-                                     v8::NewStringType::kNormal, val.length())
+      const std::string* val = value->GetIfString();
+      CHECK(val);
+      return v8::String::NewFromUtf8(isolate, val->c_str(),
+                                     v8::NewStringType::kNormal, val->length())
           .ToLocalChecked();
     }
 
