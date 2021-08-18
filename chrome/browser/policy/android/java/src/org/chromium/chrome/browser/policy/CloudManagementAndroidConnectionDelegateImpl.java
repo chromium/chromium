@@ -22,4 +22,9 @@ public class CloudManagementAndroidConnectionDelegateImpl
     public String generateClientId() {
         return UUID.randomUUID().toString();
     }
+
+    @Override
+    public String getGservicesAndroidId() {
+        return "";
+    }
 }
