@@ -80,7 +80,7 @@ config("grpc_config_private") {
     "-Wno-sign-compare",
     "-Wno-sometimes-uninitialized",
     "-Wno-string-concatenation",
-    "-Wno-unreachable-code",
+    "-Wno-unreachable-code-aggressive",
     "-Wno-unused-variable",
   ]
 }
