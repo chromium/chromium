@@ -7,7 +7,7 @@
   Exposed=Window,
   RuntimeEnabled=AppHistory
 ] interface AppHistoryNavigateEvent : Event {
-  [CallWith=ExecutionContext] constructor(DOMString type, optional AppHistoryNavigateEventInit eventInit = {});
+  [CallWith=ExecutionContext] constructor(DOMString type, AppHistoryNavigateEventInit eventInit);
 
   readonly attribute AppHistoryNavigationType navigationType;
   readonly attribute AppHistoryDestination destination;

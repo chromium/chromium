@@ -4,6 +4,12 @@
 <script>
 test(() => {
   assert_throws_js(TypeError, () => {
+    new AppHistoryNavigateEvent("navigate");
+  });
+}, "can't bypass required members by omitting the dictionary entirely");
+
+test(() => {
+  assert_throws_js(TypeError, () => {
     new AppHistoryNavigateEvent("navigate", {
       navigationType: "push",
       canTransition: false,
