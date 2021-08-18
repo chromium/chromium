@@ -1297,6 +1297,13 @@ const std::vector<ash::KeyboardShortcutItem>& GetKeyboardShortcutItemList() {
        {{ui::VKEY_BROWSER_BACK, ui::EF_CONTROL_DOWN}}},
 
       {// |categories|
+       {ShortcutCategory::kPageAndBrowser},
+       IDS_KSV_DESCRIPTION_FOCUS_WEB_CONTENTS_PANE,
+       {},
+       // |accelerator_ids|
+       {{ui::VKEY_F6, ui::EF_CONTROL_DOWN}}},
+
+      {// |categories|
        {ShortcutCategory::kTabAndWindow},
        IDS_KSV_DESCRIPTION_MOVE_ACTIVE_WINDOW_BETWEEN_DISPLAYS,
        {},

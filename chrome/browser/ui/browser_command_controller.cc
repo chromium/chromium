@@ -651,6 +651,9 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_FOCUS_PREVIOUS_PANE:
       FocusPreviousPane(browser_);
       break;
+    case IDC_FOCUS_WEB_CONTENTS_PANE:
+      FocusWebContentsPane(browser_);
+      break;
 
     // Show various bits of UI
     case IDC_OPEN_FILE:
@@ -1385,6 +1388,8 @@ void BrowserCommandController::UpdateCommandsForFullscreenMode() {
   command_updater_.UpdateCommandEnabled(IDC_FOCUS_NEXT_PANE,
                                         main_not_fullscreen);
   command_updater_.UpdateCommandEnabled(IDC_FOCUS_PREVIOUS_PANE,
+                                        main_not_fullscreen);
+  command_updater_.UpdateCommandEnabled(IDC_FOCUS_WEB_CONTENTS_PANE,
                                         main_not_fullscreen);
   command_updater_.UpdateCommandEnabled(IDC_FOCUS_BOOKMARKS,
                                         main_not_fullscreen);

@@ -434,6 +434,7 @@ class BrowserView : public BrowserWindow,
   void FocusInactivePopupForAccessibility() override;
   void FocusHelpBubble() override;
   void RotatePaneFocus(bool forwards) override;
+  void FocusWebContentsPane() override;
   void DestroyBrowser() override;
   bool IsBookmarkBarVisible() const override;
   bool IsBookmarkBarAnimating() const override;

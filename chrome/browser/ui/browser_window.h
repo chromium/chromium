@@ -342,6 +342,9 @@ class BrowserWindow : public ui::BaseWindow {
   // Moves keyboard focus to the next pane.
   virtual void RotatePaneFocus(bool forwards) = 0;
 
+  // Moves keyboard focus directly to the web contents pane.
+  virtual void FocusWebContentsPane() = 0;
+
   // Returns whether the bookmark bar is visible or not.
   virtual bool IsBookmarkBarVisible() const = 0;
 

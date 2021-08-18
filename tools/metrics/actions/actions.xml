@@ -7472,6 +7472,14 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="FocusWebContentsPane">
+  <owner>pbos@chromium.org</owner>
+  <description>
+    Called when a keyboard shortcut is used to put keyboard focus directly on
+    browser web contents.
+  </description>
+</action>
+
 <action name="FontName">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>

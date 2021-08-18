@@ -1490,6 +1490,11 @@ void FocusPreviousPane(Browser* browser) {
   browser->window()->RotatePaneFocus(false);
 }
 
+void FocusWebContentsPane(Browser* browser) {
+  base::RecordAction(UserMetricsAction("FocusWebContentsPane"));
+  browser->window()->FocusWebContentsPane();
+}
+
 void ToggleDevToolsWindow(Browser* browser,
                           DevToolsToggleAction action,
                           DevToolsOpenedByAction opened_by) {

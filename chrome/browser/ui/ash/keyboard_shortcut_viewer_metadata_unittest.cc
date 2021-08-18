@@ -29,14 +29,14 @@ constexpr char kAshAcceleratorsHash[] = "2eb0030cecca7fdf9ea2ec181f02ce43";
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Internal builds add an extra accelerator for the Feedback app.
 // The total number of Chrome accelerators (available on Chrome OS).
-constexpr int kChromeAcceleratorsTotalNum = 98;
+constexpr int kChromeAcceleratorsTotalNum = 99;
 // The hash of Chrome accelerators (available on Chrome OS).
-constexpr char kChromeAcceleratorsHash[] = "ae0381db45f4d0fde37ff78948963369";
+constexpr char kChromeAcceleratorsHash[] = "52367fa960a90c00613936377d7aa157";
 #else
 // The total number of Chrome accelerators (available on Chrome OS).
-constexpr int kChromeAcceleratorsTotalNum = 97;
+constexpr int kChromeAcceleratorsTotalNum = 98;
 // The hash of Chrome accelerators (available on Chrome OS).
-constexpr char kChromeAcceleratorsHash[] = "aeb70dfa2e53c0aba34fc3bc6228e9a5";
+constexpr char kChromeAcceleratorsHash[] = "27211c45a1b8cddadec3a2a880c43453";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 const char* BooleanToString(bool value) {

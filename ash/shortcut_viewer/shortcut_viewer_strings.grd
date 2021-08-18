@@ -728,6 +728,9 @@
   <message name="IDS_KSV_DESCRIPTION_FOCUS_PREVIOUS_PANE" desc="Description of the command in keyboard shortcut viewer.">
     Previous pane
   </message>
+  <message name="IDS_KSV_DESCRIPTION_FOCUS_WEB_CONTENTS_PANE" desc="Description of the command in keyboard shortcut viewer.">
+    Focus web content in the browser
+  </message>
   <message name="IDS_KSV_DESCRIPTION_FOCUS_HELP_BUBBLE" desc="Description of the command in keyboard shortcut viewer.">
     Move focus to a help dialog
   </message>

@@ -1691,6 +1691,10 @@ void BrowserView::RotatePaneFocus(bool forwards) {
       views::FocusManager::FocusCycleWrapping::kEnabled);
 }
 
+void BrowserView::FocusWebContentsPane() {
+  contents_web_view_->RequestFocus();
+}
+
 bool BrowserView::ActivateFirstInactiveBubbleForAccessibility() {
   if (GetLocationBarView()->ActivateFirstInactiveBubbleForAccessibility())
     return true;

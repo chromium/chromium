@@ -163,7 +163,8 @@
 #define IDC_FOCUS_PREVIOUS_PANE         39005
 #define IDC_FOCUS_BOOKMARKS             39006
 #define IDC_FOCUS_INACTIVE_POPUP_FOR_ACCESSIBILITY 39007
-#define IDC_FOCUS_HELP_BUBBLE 39008
+#define IDC_FOCUS_HELP_BUBBLE           39008
+#define IDC_FOCUS_WEB_CONTENTS_PANE     39009
 
 // Show various bits of UI
 #define IDC_OPEN_FILE                   40000

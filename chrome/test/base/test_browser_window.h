@@ -123,6 +123,7 @@ class TestBrowserWindow : public BrowserWindow {
   void FocusInactivePopupForAccessibility() override {}
   void FocusHelpBubble() override {}
   void RotatePaneFocus(bool forwards) override {}
+  void FocusWebContentsPane() override {}
   void ShowAppMenu() override {}
   content::KeyboardEventProcessingResult PreHandleKeyboardEvent(
       const content::NativeWebKeyboardEvent& event) override;
