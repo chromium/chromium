@@ -1492,15 +1492,6 @@ util.isSwaEnabled = () => {
 };
 
 /**
- * Returns true when FilesZipMount feature is enabled.
- * TODO(crbug.com/912236) Remove once transition to new ZIP system is finished.
- * @return {boolean}
- */
-util.isZipMountEnabled = () => {
-  return loadTimeData.getBoolean('ZIP_MOUNT');
-};
-
-/**
  * Returns true when FilesZipPack feature is enabled.
  * TODO(crbug.com/912236) Remove once transition to new ZIP system is finished.
  * @return {boolean}

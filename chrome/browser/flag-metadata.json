@@ -3059,11 +3059,6 @@
     "expiry_milestone": 95
   },
   {
-    "name": "files-zip-mount",
-    "owners": [ "fdegros", "jboulic"],
-    "expiry_milestone": 95
-  },
-  {
     "name": "files-zip-pack",
     "owners": [ "fdegros", "jboulic"],
     "expiry_milestone": 100

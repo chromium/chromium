@@ -192,7 +192,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kFilesSWA;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kFilesSinglePartitionFormat;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kFilesTrash;
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kFilesZipMount;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kFilesZipPack;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kFilesZipUnpack;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kFiltersInRecents;

@@ -68,11 +68,7 @@
         "tar",
         "tbz",
         "tbz2",
-        "tgz"
-      ]
-    },
-    "open-zip": {
-      "extensions": [
+        "tgz",
         "zip"
       ]
     },

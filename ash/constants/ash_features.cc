@@ -495,11 +495,7 @@ const base::Feature kFilesSinglePartitionFormat{
 const base::Feature kFilesTrash{"FilesTrash",
                                 base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables new ZIP archive handling in Files App.
-// https://crbug.com/912236
-const base::Feature kFilesZipMount{"FilesZipMount",
-                                   base::FEATURE_ENABLED_BY_DEFAULT};
-
+// TODO(crbug.com/1201052) Remove these lines when removing ZipArchiver.
 // Enables new ZIP creation system in Files App.
 // https://crbug.com/1200187
 const base::Feature kFilesZipPack{"FilesZipPack",

@@ -506,6 +506,7 @@ export class TaskController {
         this.ui_.defaultTaskMenuItem.style.marginInlineEnd = '';
       }
 
+      // TODO(crbug.com/1201052) Remove these lines when removing ZipArchiver.
       if (util.descriptorEqual(
               defaultTask.descriptor,
               FileTasks.ZIP_ARCHIVER_UNZIP_TASK_DESCRIPTOR)) {

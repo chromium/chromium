@@ -4516,10 +4516,7 @@ const char kFilesTrashName[] = "Enable Files Trash.";
 const char kFilesTrashDescription[] =
     "Enable trash for My files volume in Files App.";
 
-const char kFilesZipMountName[] = "New ZIP mounting in Files App";
-const char kFilesZipMountDescription[] =
-    "Enable new ZIP archive mounting system in File Manager.";
-
+// TODO(crbug.com/1201052) Remove these lines when removing ZipArchiver.
 const char kFilesZipPackName[] = "New ZIP packing in Files App";
 const char kFilesZipPackDescription[] =
     "Enable new ZIP archive creation system in File Manager.";

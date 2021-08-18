@@ -266,17 +266,18 @@ void PostProcessFoundTasks(
 
   // kFilesArchivemount is whether we allow "mount-archive" for every filename
   // extension listed in ui/file_manager/file_manager/manifest.json (when the
-  // feature flag is true) or only for ".rar" (when the feature flag is false).
-  // False corresponds to the status quo as of milestone M92. This feature flag
-  // will be introduced in M93 (https://crrev.com/c/3017636), false by default.
-  // "True by default" is scheduled for M94.
+  // feature flag is true) or only for ".rar" and ".zip" (when the feature flag
+  // is false). False corresponds to the status quo as of milestone M92. This
+  // feature flag will be introduced in M93 (https://crrev.com/c/3017636), false
+  // by default.
   //
   // TODO(nigeltao): some time after M94, remove the kFilesArchivemount feature
   // flag (scheduled to expire in M100) by hard-coding it to true, so that this
   // if-block is never taken and can be deleted.
   if (!base::FeatureList::IsEnabled(ash::features::kFilesArchivemount)) {
     for (const auto& entry : entries) {
-      if (!entry.path.MatchesExtension(".rar")) {
+      if (!entry.path.MatchesExtension(".rar") &&
+          !entry.path.MatchesExtension(".zip")) {
         disabled_actions.emplace("mount-archive");
         break;
       }

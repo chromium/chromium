@@ -1002,8 +1002,6 @@ void AddFileManagerFeatureStrings(const std::string& locale,
                    base::FeatureList::IsEnabled(chromeos::features::kFilesSWA));
   dict->SetBoolKey("FILES_TRASH_ENABLED", base::FeatureList::IsEnabled(
                                               chromeos::features::kFilesTrash));
-  dict->SetBoolKey("ZIP_MOUNT", base::FeatureList::IsEnabled(
-                                    chromeos::features::kFilesZipMount));
   dict->SetBoolKey("ZIP_PACK", base::FeatureList::IsEnabled(
                                    chromeos::features::kFilesZipPack));
   dict->SetBoolKey("ZIP_UNPACK", base::FeatureList::IsEnabled(

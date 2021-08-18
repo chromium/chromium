@@ -171,12 +171,8 @@ export class FileTasks {
                 task.descriptor,
                 FileTasks.ZIP_ARCHIVER_ZIP_USING_TMP_TASK_DESCRIPTOR));
 
-    // The Files App and the Zip Archiver are two extensions that can handle ZIP
-    // files. Depending on the state of the FilesZipMount feature, we want to
-    // filter out one of these extensions.
-    const toExclude = util.isZipMountEnabled() ?
-        FileTasks.ZIP_ARCHIVER_UNZIP_TASK_DESCRIPTOR :
-        FileTasks.FILES_OPEN_ZIP_TASK_DESCRIPTOR;
+    // TODO(crbug.com/1201052) Remove these lines when removing ZipArchiver.
+    const toExclude = FileTasks.ZIP_ARCHIVER_UNZIP_TASK_DESCRIPTOR;
     tasks =
         tasks.filter(task => !util.descriptorEqual(task.descriptor, toExclude));
 
@@ -334,7 +330,6 @@ export class FileTasks {
     }
     switch (actionId) {
       case 'mount-archive':
-      case 'open-zip':
       case 'install-linux-package':
       case 'import-crostini-image':
         return true;
@@ -832,7 +827,7 @@ export class FileTasks {
    */
   executeInternalTask_(descriptor) {
     const {actionId} = descriptor;
-    if (actionId === 'mount-archive' || actionId === 'open-zip') {
+    if (actionId === 'mount-archive') {
       this.mountArchives_();
       return;
     }
@@ -1324,16 +1319,6 @@ FileTasks.INSTALL_LINUX_PACKAGE_TASK_DESCRIPTOR = {
 };
 
 /**
- * The task descriptor of Files App's 'Open ZIP'.
- * @const {!chrome.fileManagerPrivate.FileTaskDescriptor}
- */
-FileTasks.FILES_OPEN_ZIP_TASK_DESCRIPTOR = {
-  appId: LEGACY_FILES_EXTENSION_ID,
-  taskType: 'app',
-  actionId: 'open-zip'
-};
-
-/**
  * The app ID of the video player app.
  * @const {string}
  */
@@ -1349,6 +1334,7 @@ FileTasks.ZIP_UNPACKER_TASK_DESCRIPTOR = {
   actionId: 'zip'
 };
 
+// TODO(crbug.com/1201052) Remove these lines when removing ZipArchiver.
 /**
  * The task descriptor of unzip action of Zip Archiver app.
  * @const {!chrome.fileManagerPrivate.FileTaskDescriptor}
@@ -1439,6 +1425,7 @@ FileTasks.UMA_INDEX_KNOWN_EXTENSIONS = Object.freeze([
   '.tini'
 ]);
 
+// TODO(crbug.com/1201052) Remove these lines when removing ZipArchiver.
 /**
  * Task IDs of the zip file handlers to be recorded.
  * The indexes of the IDs must match with the values of
