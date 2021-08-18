@@ -157,6 +157,7 @@ js_library("shortcut_customization_app") {
     ":shortcut_input",
     ":shortcut_types",
     "//ash/webui/common/resources:navigation_view_panel",
+    "//ash/webui/common/resources:page_toolbar",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }

@@ -7,6 +7,7 @@ import './shortcut_input.js';
 import './shortcuts_page.js'
 import './shortcut_customization_fonts_css.js'
 import 'chrome://resources/ash/common/navigation_view_panel.js';
+import 'chrome://resources/ash/common/page_toolbar.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
