@@ -886,6 +886,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInForFirstTimeUser) {
       test_case.inputs.client_id, test_case.inputs.nonce, test_case.inputs.mode,
       test_case.inputs.prefer_auto_sign_in);
 
+  ASSERT_FALSE(displayed_accounts.empty());
   EXPECT_EQ(displayed_accounts[0].login_state, LoginState::kSignUp);
   EXPECT_EQ(auth_response.second.value(), kToken);
 }
