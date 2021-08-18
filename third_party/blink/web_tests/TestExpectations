@@ -7152,11 +7152,8 @@ crbug.com/1208173 [ Mac ] virtual/synchronous_html_parser/svg/filters/feDisplace
 crbug.com/1208173 [ Mac10.14 ] wpt_internal/bluetooth/requestDevice/filter-does-not-match.https.html [ Timeout ]
 
 # Fix to unblock wpt-importer
-crbug.com/1209223 external/wpt/url/failure.html [ Failure ]
-crbug.com/1209223 external/wpt/url/a-element-xhtml.xhtml [ Failure ]
-crbug.com/1209223 [ Mac ] external/wpt/url/a-element.html [ Failure Timeout ]
-crbug.com/1209223 external/wpt/url/url-constructor.any.html [ Failure ]
-crbug.com/1209223 external/wpt/url/url-constructor.any.worker.html [ Failure Pass Timeout ]
+crbug.com/1209223 [ Mac ] external/wpt/url/a-element.html [ Pass Timeout ]
+crbug.com/1209223 external/wpt/url/url-constructor.any.worker.html [ Pass Timeout ]
 
 # Sheriff 2021-05-17
 crbug.com/1193920 virtual/scroll-unification/fast/scrolling/events/overscroll-event-fired-to-scrolled-element.html [ Pass Timeout ]
