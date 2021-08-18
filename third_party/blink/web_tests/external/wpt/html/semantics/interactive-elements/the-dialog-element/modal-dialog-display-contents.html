@@ -3,11 +3,13 @@
 <title>Test that display: contents; on modal dialog & ::backdrop acts like display: block</title>
 <meta charset="utf-8">
 <link rel="author" title="Tim Nguyen" href="https://github.com/nt1m">
+<link rel="help" href="https://fullscreen.spec.whatwg.org/#new-stacking-layer">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/interactive-elements.html#the-dialog-element">
 <link rel="match" href="modal-dialog-display-contents-expected.html">
 <p>Test passes if there is a green dialog</p>
-<p id="computed-value"></p>
-<p id="computed-value-backdrop"></p>
-<dialog></dialog>
+<p>Dialog is display:<span id="computed-value"></span></p>
+<p>Dialog::backdrop is display:<span id="computed-value-backdrop"></span></p>
+<dialog>Dialog Contents</dialog>
 <style>
 dialog {
     display: contents;
