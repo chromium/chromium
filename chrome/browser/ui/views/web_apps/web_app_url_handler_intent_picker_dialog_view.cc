@@ -248,7 +248,6 @@ void WebAppUrlHandlerIntentPickerView::Initialize() {
   scrollable_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
 
-  web_app::WebAppProvider* provider;
   // size+1 for the browser entry.
   size_t total_buttons = launch_params_list_.size() + 1;
   hover_buttons_.reserve(total_buttons);
@@ -265,7 +264,9 @@ void WebAppUrlHandlerIntentPickerView::Initialize() {
   for (const auto& launch_params : launch_params_list_) {
     Profile* profile = g_browser_process->profile_manager()->GetProfileByPath(
         launch_params.profile_path);
-    provider = web_app::WebAppProvider::Get(profile);
+    web_app::WebAppProvider* const provider =
+        web_app::WebAppProvider::GetForWebApps(profile);
+    DCHECK(provider);
     web_app::WebAppRegistrar& registrar = provider->registrar();
 
     const std::u16string& profile_name =
@@ -453,7 +454,8 @@ void ShowWebAppUrlHandlerIntentPickerDialog(
       base::BarrierClosure(profiles.size(), std::move(show_dialog_callback));
 
   for (Profile* profile : profiles) {
-    auto* provider = web_app::WebAppProvider::Get(profile);
+    web_app::WebAppProvider* const provider =
+        web_app::WebAppProvider::GetForWebApps(profile);
     DCHECK(provider);
 
     provider->on_registry_ready().Post(FROM_HERE, on_registrar_ready_callback);
