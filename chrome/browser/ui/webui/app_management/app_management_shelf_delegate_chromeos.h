@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_APP_MANAGEMENT_APP_MANAGEMENT_SHELF_DELEGATE_CHROMEOS_H_
 #define CHROME_BROWSER_UI_WEBUI_APP_MANAGEMENT_APP_MANAGEMENT_SHELF_DELEGATE_CHROMEOS_H_
 
+#include <memory>
+
 #include "ash/public/cpp/shelf_model_observer.h"
 #include "base/macros.h"
 #include "chrome/browser/ui/webui/app_management/app_management.mojom.h"
@@ -35,7 +37,7 @@ class AppManagementShelfDelegate : public ash::ShelfModelObserver {
   void ShelfItemChanged(int index, const ash::ShelfItem& old_item) override;
 
   AppManagementPageHandler* page_handler_;
-  ShelfControllerHelper* shelf_controller_helper_;
+  std::unique_ptr<ShelfControllerHelper> shelf_controller_helper_;
 
   DISALLOW_COPY_AND_ASSIGN(AppManagementShelfDelegate);
 };

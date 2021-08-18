@@ -22,7 +22,9 @@ using apps::mojom::OptionalBool;
 AppManagementShelfDelegate::AppManagementShelfDelegate(
     AppManagementPageHandler* page_handler,
     Profile* profile)
-    : page_handler_(page_handler) {
+    : page_handler_(page_handler),
+      shelf_controller_helper_(
+          std::make_unique<ShelfControllerHelper>(profile)) {
   auto* shelf_controller = ChromeShelfController::instance();
   if (!shelf_controller) {
     return;
@@ -32,7 +34,6 @@ AppManagementShelfDelegate::AppManagementShelfDelegate(
   if (!shelf_model) {
     return;
   }
-  shelf_controller_helper_ = new ShelfControllerHelper(profile);
 
   shelf_model->AddObserver(this);
 }
@@ -73,7 +74,7 @@ bool AppManagementShelfDelegate::IsPolicyPinned(
   }
   // The app doesn't exist on the shelf - check launcher prefs instead.
   std::vector<std::string> policy_pinned_apps =
-      GetAppsPinnedByPolicy(shelf_controller_helper_);
+      GetAppsPinnedByPolicy(shelf_controller_helper_.get());
   return std::any_of(policy_pinned_apps.begin(), policy_pinned_apps.end(),
                      [app_id](std::string app) { return app_id == app; });
 }

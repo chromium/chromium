@@ -99,11 +99,10 @@ AppManagementPageHandler::AppManagementPageHandler(
       ,
       preferred_apps_list_(apps::AppServiceProxyFactory::GetForProfile(profile)
                                ->PreferredApps()) {
-  apps::AppRegistryCache::Observer::Observe(
+  app_registry_cache_observer_.Observe(
       &apps::AppServiceProxyFactory::GetForProfile(profile_)
            ->AppRegistryCache());
-  apps::PreferredAppsList::Observer::Observe(
-      &apps::AppServiceProxyFactory::GetForProfile(profile_)->PreferredApps());
+  preferred_apps_list_observer_.Observe(&preferred_apps_list_);
 }
 
 AppManagementPageHandler::~AppManagementPageHandler() {}
