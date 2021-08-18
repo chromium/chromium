@@ -16,7 +16,6 @@
 #include "chromeos/dbus/dbus_method_call_status.h"
 #include "chromeos/dbus/login_manager/arc.pb.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
-#include "components/arc/arc_util.h"
 #include "components/arc/session/arc_session.h"
 
 namespace arc {
@@ -125,6 +124,7 @@ class ArcContainerClientAdapter
     request.set_disable_media_store_maintenance(
         params.disable_media_store_maintenance);
     request.set_disable_download_provider(params.disable_download_provider);
+    request.set_disable_ureadahead(params.disable_ureadahead);
     request.set_arc_generate_pai(params.arc_generate_play_auto_install);
 
     switch (params.usap_profile) {
@@ -136,10 +136,6 @@ class ArcContainerClientAdapter
         VLOG(1) << "USAP profile is not supported for container.";
         break;
     }
-
-    // TODO(b:196390269): Enable handling after arc.proto is uprev-ed.
-    if (IsUreadaheadDisabled())
-      LOG(ERROR) << "Disabling ureadahead is not supported in container yet.";
 
     chromeos::SessionManagerClient::Get()->StartArcMiniContainer(
         request, std::move(callback));
