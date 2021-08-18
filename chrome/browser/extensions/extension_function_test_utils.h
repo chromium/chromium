@@ -8,8 +8,10 @@
 #include <string>
 
 #include "base/memory/ref_counted.h"
+#include "base/values.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/common/manifest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Browser;
 class ExtensionFunction;
@@ -26,8 +28,8 @@ class ListValue;
 // extensions/browser/api_test_utils.h.
 namespace extension_function_test_utils {
 
-// Parse JSON and return as a ListValue, or null if invalid.
-base::ListValue* ParseList(const std::string& data);
+// Parse JSON and return as a list Value, or nullopt if invalid.
+absl::optional<base::Value> ParseList(const std::string& data);
 
 // If |val| is a dictionary, return it as one, otherwise NULL.
 base::DictionaryValue* ToDictionary(base::Value* val);

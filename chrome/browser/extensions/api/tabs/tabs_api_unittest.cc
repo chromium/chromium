@@ -431,10 +431,10 @@ TEST_F(TabsApiUnitTest, PDFExtensionNavigation) {
 
   scoped_refptr<TabsUpdateFunction> function = new TabsUpdateFunction();
   function->set_extension(extension.get());
-  std::unique_ptr<base::ListValue> args(
+  function->SetArgs(
       extension_function_test_utils::ParseList(
-          base::StringPrintf(R"([%d, {"url":"http://example.com"}])", tab_id)));
-  function->SetArgs(base::Value::FromUniquePtrValue(std::move(args)));
+          base::StringPrintf(R"([%d, {"url":"http://example.com"}])", tab_id))
+          .value());
   api_test_utils::SendResponseHelper response_helper(function.get());
   function->RunWithValidation()->Execute();
 

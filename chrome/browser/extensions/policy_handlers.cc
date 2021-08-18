@@ -108,15 +108,14 @@ bool ExtensionInstallForceListPolicyHandler::ParseList(
   if (!policy_value)
     return true;
 
-  const base::ListValue* policy_list_value = nullptr;
-  if (!policy_value->GetAsList(&policy_list_value)) {
+  if (!policy_value->is_list()) {
     // This should have been caught in CheckPolicySettings.
     NOTREACHED();
     return false;
   }
 
   int index = -1;
-  for (const auto& entry : policy_list_value->GetList()) {
+  for (const auto& entry : policy_value->GetList()) {
     ++index;
     if (!entry.is_string()) {
       if (errors) {
@@ -179,15 +178,14 @@ bool ExtensionURLPatternListPolicyHandler::CheckPolicySettings(
   if (!value)
     return true;
 
-  const base::ListValue* list_value = NULL;
-  if (!value->GetAsList(&list_value)) {
+  if (!value->is_list()) {
     NOTREACHED();
     return false;
   }
 
   // Check that the list contains valid URLPattern strings only.
   int index = 0;
-  for (const auto& entry : list_value->GetList()) {
+  for (const auto& entry : value->GetList()) {
     if (!entry.is_string()) {
       errors->AddError(policy_name(), index, IDS_POLICY_TYPE_ERROR,
                        base::Value::GetTypeName(base::Value::Type::STRING));

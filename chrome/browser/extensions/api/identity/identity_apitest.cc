@@ -79,6 +79,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -139,10 +140,10 @@ class AsyncFunctionRunner {
                         content::BrowserContext* browser_context) {
     response_delegate_ =
         std::make_unique<api_test_utils::SendResponseHelper>(function);
-    std::unique_ptr<base::ListValue> parsed_args(utils::ParseList(args));
-    ASSERT_TRUE(parsed_args.get())
+    absl::optional<base::Value> parsed_args(utils::ParseList(args));
+    ASSERT_TRUE(parsed_args)
         << "Could not parse extension function arguments: " << args;
-    function->SetArgs(base::Value::FromUniquePtrValue(std::move(parsed_args)));
+    function->SetArgs(std::move(*parsed_args));
 
     if (!function->extension()) {
       scoped_refptr<const Extension> empty_extension(

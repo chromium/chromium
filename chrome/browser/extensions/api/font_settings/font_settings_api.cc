@@ -298,23 +298,23 @@ ExtensionFunction::ResponseValue
 FontSettingsGetFontListFunction::CopyFontsToResult(base::ListValue* fonts) {
   std::unique_ptr<base::ListValue> result(new base::ListValue());
   for (const auto& entry : fonts->GetList()) {
-    const base::ListValue* font_list_value;
-    if (!entry.GetAsList(&font_list_value)) {
+    if (!entry.is_list()) {
       NOTREACHED();
       return Error("");
     }
+    const base::Value::ConstListView font_list_value = entry.GetList();
 
-    std::string name;
-    if (!font_list_value->GetString(0, &name)) {
+    if (font_list_value.size() < 2 || !font_list_value[0].is_string()) {
       NOTREACHED();
       return Error("");
     }
+    const std::string& name = font_list_value[0].GetString();
 
-    std::string localized_name;
-    if (!font_list_value->GetString(1, &localized_name)) {
+    if (!font_list_value[1].is_string()) {
       NOTREACHED();
       return Error("");
     }
+    const std::string& localized_name = font_list_value[1].GetString();
 
     std::unique_ptr<base::DictionaryValue> font_name(
         new base::DictionaryValue());

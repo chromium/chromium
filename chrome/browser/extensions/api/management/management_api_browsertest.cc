@@ -268,9 +268,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiBrowserTest,
   std::unique_ptr<base::Value> result(
       test_utils::RunFunctionAndReturnSingleResult(function.get(), "[]",
                                                    browser()));
-  base::ListValue* list;
-  ASSERT_TRUE(result->GetAsList(&list));
-  EXPECT_EQ(1U, list->GetSize());
+  ASSERT_TRUE(result->is_list());
+  EXPECT_EQ(1U, result->GetList().size());
 
   // And it should continue to do so even after it crashes.
   ASSERT_TRUE(CrashEnabledExtension(extension->id()));
@@ -278,8 +277,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiBrowserTest,
   function = new ManagementGetAllFunction();
   result.reset(test_utils::RunFunctionAndReturnSingleResult(function.get(),
                                                             "[]", browser()));
-  ASSERT_TRUE(result->GetAsList(&list));
-  EXPECT_EQ(1U, list->GetSize());
+  ASSERT_TRUE(result->is_list());
+  EXPECT_EQ(1U, result->GetList().size());
 }
 
 class ExtensionManagementApiEscalationTest :

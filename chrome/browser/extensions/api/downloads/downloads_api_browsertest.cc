@@ -71,6 +71,7 @@
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 #include "url/origin.h"
 
@@ -1181,9 +1182,8 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   std::unique_ptr<base::Value> result(
       RunFunctionAndReturnResult(new DownloadsSearchFunction(), "[{}]"));
   ASSERT_TRUE(result.get());
-  base::ListValue* result_list = NULL;
-  ASSERT_TRUE(result->GetAsList(&result_list));
-  ASSERT_EQ(1UL, result_list->GetSize());
+  ASSERT_TRUE(result->is_list());
+  ASSERT_EQ(1UL, result->GetList().size());
 }
 
 // Test that file existence check should be performed after search.
@@ -1201,9 +1201,9 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest, FileExistenceCheckAfterSearch) {
   std::unique_ptr<base::Value> result(
       RunFunctionAndReturnResult(new DownloadsSearchFunction(), "[{}]"));
   ASSERT_TRUE(result.get());
-  base::ListValue* result_list = nullptr;
-  ASSERT_TRUE(result->GetAsList(&result_list));
-  ASSERT_EQ(1UL, result_list->GetSize());
+  ASSERT_TRUE(result->is_list());
+  ASSERT_EQ(1UL, result->GetList().size());
+
   // Check file removal update will eventually come. WaitForEvent() will
   // immediately return if the file is already removed.
   content::DownloadUpdatedObserver(
@@ -1248,14 +1248,13 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
       new DownloadsSearchFunction(), "[{\"filenameRegex\": \"foobar\"}]"));
   ASSERT_TRUE(result.get());
-  base::ListValue* result_list = NULL;
-  ASSERT_TRUE(result->GetAsList(&result_list));
-  ASSERT_EQ(1UL, result_list->GetSize());
-  base::DictionaryValue* item_value = NULL;
-  ASSERT_TRUE(result_list->GetDictionary(0, &item_value));
-  int item_id = -1;
-  ASSERT_TRUE(item_value->GetInteger("id", &item_id));
-  ASSERT_EQ(all_downloads[0]->GetId(), static_cast<uint32_t>(item_id));
+  ASSERT_TRUE(result->is_list());
+  ASSERT_EQ(1UL, result->GetList().size());
+  const base::Value& item_value = result->GetList()[0];
+  ASSERT_TRUE(item_value.is_dict());
+  absl::optional<int> item_id = item_value.FindIntKey("id");
+  ASSERT_TRUE(item_id);
+  ASSERT_EQ(all_downloads[0]->GetId(), static_cast<uint32_t>(*item_id));
 }
 
 // Test the |id| parameter for search().
@@ -1269,14 +1268,13 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest, DownloadExtensionTest_SearchId) {
       new DownloadsSearchFunction(),
       base::StringPrintf("[{\"id\": %u}]", items[0]->GetId())));
   ASSERT_TRUE(result.get());
-  base::ListValue* result_list = NULL;
-  ASSERT_TRUE(result->GetAsList(&result_list));
-  ASSERT_EQ(1UL, result_list->GetSize());
-  base::DictionaryValue* item_value = NULL;
-  ASSERT_TRUE(result_list->GetDictionary(0, &item_value));
-  int item_id = -1;
-  ASSERT_TRUE(item_value->GetInteger("id", &item_id));
-  ASSERT_EQ(items[0]->GetId(), static_cast<uint32_t>(item_id));
+  ASSERT_TRUE(result->is_list());
+  ASSERT_EQ(1UL, result->GetList().size());
+  const base::Value& item_value = result->GetList()[0];
+  ASSERT_TRUE(item_value.is_dict());
+  absl::optional<int> item_id = item_value.FindIntKey("id");
+  ASSERT_TRUE(item_id);
+  ASSERT_EQ(items[0]->GetId(), static_cast<uint32_t>(*item_id));
 }
 
 // Test specifying both the |id| and |filename| parameters for search().
@@ -1291,9 +1289,8 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
       RunFunctionAndReturnResult(new DownloadsSearchFunction(),
                                  "[{\"id\": 0, \"filename\": \"foobar\"}]"));
   ASSERT_TRUE(result.get());
-  base::ListValue* result_list = NULL;
-  ASSERT_TRUE(result->GetAsList(&result_list));
-  ASSERT_EQ(0UL, result_list->GetSize());
+  ASSERT_TRUE(result->is_list());
+  ASSERT_EQ(0UL, result->GetList().size());
 }
 
 // Test a single |orderBy| parameter for search().
@@ -1311,19 +1308,19 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
       new DownloadsSearchFunction(), "[{\"orderBy\": [\"filename\"]}]"));
   ASSERT_TRUE(result.get());
-  base::ListValue* result_list = NULL;
-  ASSERT_TRUE(result->GetAsList(&result_list));
-  ASSERT_EQ(2UL, result_list->GetSize());
-  base::DictionaryValue* item0_value = NULL;
-  base::DictionaryValue* item1_value = NULL;
-  ASSERT_TRUE(result_list->GetDictionary(0, &item0_value));
-  ASSERT_TRUE(result_list->GetDictionary(1, &item1_value));
-  std::string item0_name, item1_name;
-  ASSERT_TRUE(item0_value->GetString("filename", &item0_name));
-  ASSERT_TRUE(item1_value->GetString("filename", &item1_name));
+  ASSERT_TRUE(result->is_list());
+  ASSERT_EQ(2UL, result->GetList().size());
+  const base::Value& item0_value = result->GetList()[0];
+  const base::Value& item1_value = result->GetList()[1];
+  ASSERT_TRUE(item0_value.is_dict());
+  ASSERT_TRUE(item1_value.is_dict());
+  const std::string* item0_name = item0_value.FindStringKey("filename");
+  const std::string* item1_name = item1_value.FindStringKey("filename");
+  ASSERT_TRUE(item0_name);
+  ASSERT_TRUE(item1_name);
   ASSERT_GT(items[0]->GetTargetFilePath().value(),
             items[1]->GetTargetFilePath().value());
-  ASSERT_LT(item0_name, item1_name);
+  ASSERT_LT(*item0_name, *item1_name);
 }
 
 // Test specifying an empty |orderBy| parameter for search().
@@ -1341,16 +1338,16 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
       new DownloadsSearchFunction(), "[{\"orderBy\": []}]"));
   ASSERT_TRUE(result.get());
-  base::ListValue* result_list = NULL;
-  ASSERT_TRUE(result->GetAsList(&result_list));
-  ASSERT_EQ(2UL, result_list->GetSize());
-  base::DictionaryValue* item0_value = NULL;
-  base::DictionaryValue* item1_value = NULL;
-  ASSERT_TRUE(result_list->GetDictionary(0, &item0_value));
-  ASSERT_TRUE(result_list->GetDictionary(1, &item1_value));
-  std::string item0_name, item1_name;
-  ASSERT_TRUE(item0_value->GetString("filename", &item0_name));
-  ASSERT_TRUE(item1_value->GetString("filename", &item1_name));
+  ASSERT_TRUE(result->is_list());
+  ASSERT_EQ(2UL, result->GetList().size());
+  const base::Value& item0_value = result->GetList()[0];
+  const base::Value& item1_value = result->GetList()[1];
+  ASSERT_TRUE(item0_value.is_dict());
+  ASSERT_TRUE(item1_value.is_dict());
+  const std::string* item0_name = item0_value.FindStringKey("filename");
+  const std::string* item1_name = item1_value.FindStringKey("filename");
+  ASSERT_TRUE(item0_name);
+  ASSERT_TRUE(item1_name);
   ASSERT_GT(items[0]->GetTargetFilePath().value(),
             items[1]->GetTargetFilePath().value());
   // The order of results when orderBy is empty is unspecified. When there are
@@ -1375,9 +1372,8 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
       new DownloadsSearchFunction(), "[{\"danger\": \"content\"}]"));
   ASSERT_TRUE(result.get());
-  base::ListValue* result_list = NULL;
-  ASSERT_TRUE(result->GetAsList(&result_list));
-  ASSERT_EQ(1UL, result_list->GetSize());
+  ASSERT_TRUE(result->is_list());
+  ASSERT_EQ(1UL, result->GetList().size());
 }
 
 // Test the |state| option for search().
@@ -1392,9 +1388,8 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
       new DownloadsSearchFunction(), "[{\"state\": \"in_progress\"}]"));
   ASSERT_TRUE(result.get());
-  base::ListValue* result_list = NULL;
-  ASSERT_TRUE(result->GetAsList(&result_list));
-  ASSERT_EQ(1UL, result_list->GetSize());
+  ASSERT_TRUE(result->is_list());
+  ASSERT_EQ(1UL, result->GetList().size());
 }
 
 // Test the |limit| option for search().
@@ -1407,9 +1402,8 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   std::unique_ptr<base::Value> result(RunFunctionAndReturnResult(
       new DownloadsSearchFunction(), "[{\"limit\": 1}]"));
   ASSERT_TRUE(result.get());
-  base::ListValue* result_list = NULL;
-  ASSERT_TRUE(result->GetAsList(&result_list));
-  ASSERT_EQ(1UL, result_list->GetSize());
+  ASSERT_TRUE(result->is_list());
+  ASSERT_EQ(1UL, result->GetList().size());
 }
 
 // Test invalid search parameters.
@@ -1452,14 +1446,13 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                                  "\"orderBy\": [\"filename\"], "
                                  "\"limit\": 1}]"));
   ASSERT_TRUE(result.get());
-  base::ListValue* result_list = NULL;
-  ASSERT_TRUE(result->GetAsList(&result_list));
-  ASSERT_EQ(1UL, result_list->GetSize());
-  base::DictionaryValue* item_value = NULL;
-  ASSERT_TRUE(result_list->GetDictionary(0, &item_value));
-  std::string item_name;
-  ASSERT_TRUE(item_value->GetString("filename", &item_name));
-  ASSERT_EQ(items[2]->GetTargetFilePath().AsUTF8Unsafe(), item_name);
+  ASSERT_TRUE(result->is_list());
+  ASSERT_EQ(1UL, result->GetList().size());
+  const base::Value& item_value = result->GetList()[0];
+  ASSERT_TRUE(item_value.is_dict());
+  const std::string* item_name = item_value.FindStringKey("filename");
+  ASSERT_TRUE(item_name);
+  ASSERT_EQ(items[2]->GetTargetFilePath().AsUTF8Unsafe(), *item_name);
 }
 
 // Test that incognito downloads are only visible in incognito contexts, and
@@ -1470,13 +1463,7 @@ IN_PROC_BROWSER_TEST_F(
     DownloadExtensionTest,
     DownloadExtensionTest_SearchPauseResumeCancelGetFileIconIncognito) {
   std::unique_ptr<base::Value> result_value;
-  base::ListValue* result_list = NULL;
-  base::DictionaryValue* result_dict = NULL;
-  std::string filename;
-  bool is_incognito = false;
   std::string error;
-  std::string on_item_arg;
-  std::string off_item_arg;
   std::string result_string;
 
   // Set up one on-record item and one off-record item.
@@ -1486,12 +1473,12 @@ IN_PROC_BROWSER_TEST_F(
   GoOffTheRecord();
   DownloadItem* off_item = CreateFirstSlowTestDownload();
   ASSERT_TRUE(off_item);
-  off_item_arg = DownloadItemIdAsArgList(off_item);
+  const std::string off_item_arg = DownloadItemIdAsArgList(off_item);
 
   GoOnTheRecord();
   DownloadItem* on_item = CreateSecondSlowTestDownload();
   ASSERT_TRUE(on_item);
-  on_item_arg = DownloadItemIdAsArgList(on_item);
+  const std::string on_item_arg = DownloadItemIdAsArgList(on_item);
   ASSERT_TRUE(on_item->GetTargetFilePath() != off_item->GetTargetFilePath());
 
   // Extensions running in the incognito window should have access to both
@@ -1500,20 +1487,30 @@ IN_PROC_BROWSER_TEST_F(
   result_value.reset(RunFunctionAndReturnResult(
       new DownloadsSearchFunction(), "[{}]"));
   ASSERT_TRUE(result_value.get());
-  ASSERT_TRUE(result_value->GetAsList(&result_list));
-  ASSERT_EQ(2UL, result_list->GetSize());
-  ASSERT_TRUE(result_list->GetDictionary(0, &result_dict));
-  ASSERT_TRUE(result_dict->GetString("filename", &filename));
-  ASSERT_TRUE(result_dict->GetBoolean("incognito", &is_incognito));
-  EXPECT_TRUE(on_item->GetTargetFilePath() ==
-              base::FilePath::FromUTF8Unsafe(filename));
-  EXPECT_FALSE(is_incognito);
-  ASSERT_TRUE(result_list->GetDictionary(1, &result_dict));
-  ASSERT_TRUE(result_dict->GetString("filename", &filename));
-  ASSERT_TRUE(result_dict->GetBoolean("incognito", &is_incognito));
-  EXPECT_TRUE(off_item->GetTargetFilePath() ==
-              base::FilePath::FromUTF8Unsafe(filename));
-  EXPECT_TRUE(is_incognito);
+  ASSERT_TRUE(result_value->is_list());
+  ASSERT_EQ(2UL, result_value->GetList().size());
+  {
+    const base::Value& result_dict = result_value->GetList()[0];
+    ASSERT_TRUE(result_dict.is_dict());
+    const std::string* filename = result_dict.FindStringKey("filename");
+    ASSERT_TRUE(filename);
+    absl::optional<bool> is_incognito = result_dict.FindBoolKey("incognito");
+    ASSERT_TRUE(is_incognito.has_value());
+    EXPECT_TRUE(on_item->GetTargetFilePath() ==
+                base::FilePath::FromUTF8Unsafe(*filename));
+    EXPECT_FALSE(is_incognito.value());
+  }
+  {
+    const base::Value& result_dict = result_value->GetList()[1];
+    ASSERT_TRUE(result_dict.is_dict());
+    const std::string* filename = result_dict.FindStringKey("filename");
+    ASSERT_TRUE(filename);
+    absl::optional<bool> is_incognito = result_dict.FindBoolKey("incognito");
+    ASSERT_TRUE(is_incognito.has_value());
+    EXPECT_TRUE(off_item->GetTargetFilePath() ==
+                base::FilePath::FromUTF8Unsafe(*filename));
+    EXPECT_TRUE(is_incognito.value());
+  }
 
   // Extensions running in the on-record window should have access only to the
   // on-record item.
@@ -1521,14 +1518,19 @@ IN_PROC_BROWSER_TEST_F(
   result_value.reset(RunFunctionAndReturnResult(
       new DownloadsSearchFunction(), "[{}]"));
   ASSERT_TRUE(result_value.get());
-  ASSERT_TRUE(result_value->GetAsList(&result_list));
-  ASSERT_EQ(1UL, result_list->GetSize());
-  ASSERT_TRUE(result_list->GetDictionary(0, &result_dict));
-  ASSERT_TRUE(result_dict->GetString("filename", &filename));
-  EXPECT_TRUE(on_item->GetTargetFilePath() ==
-              base::FilePath::FromUTF8Unsafe(filename));
-  ASSERT_TRUE(result_dict->GetBoolean("incognito", &is_incognito));
-  EXPECT_FALSE(is_incognito);
+  ASSERT_TRUE(result_value->is_list());
+  ASSERT_EQ(1UL, result_value->GetList().size());
+  {
+    const base::Value& result_dict = result_value->GetList()[0];
+    ASSERT_TRUE(result_dict.is_dict());
+    const std::string* filename = result_dict.FindStringKey("filename");
+    ASSERT_TRUE(filename);
+    EXPECT_TRUE(on_item->GetTargetFilePath() ==
+                base::FilePath::FromUTF8Unsafe(*filename));
+    absl::optional<bool> is_incognito = result_dict.FindBoolKey("incognito");
+    ASSERT_TRUE(is_incognito.has_value());
+    EXPECT_FALSE(is_incognito.value());
+  }
 
   // Pausing/Resuming the off-record item while on the record should return an
   // error. Cancelling "non-existent" downloads is not an error.

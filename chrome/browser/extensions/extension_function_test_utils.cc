@@ -21,6 +21,7 @@
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/common/extension.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using content::WebContents;
 using extensions::Extension;
@@ -50,16 +51,15 @@ class TestFunctionDispatcherDelegate
 
 namespace extension_function_test_utils {
 
-base::ListValue* ParseList(const std::string& data) {
-  std::unique_ptr<base::Value> result = base::JSONReader::ReadDeprecated(data);
+absl::optional<base::Value> ParseList(const std::string& data) {
+  absl::optional<base::Value> result = base::JSONReader::Read(data);
   if (!result) {
     ADD_FAILURE() << "Failed to parse: " << data;
-    return nullptr;
+    return absl::nullopt;
   }
-  base::ListValue* list = NULL;
-  result->GetAsList(&list);
-  ignore_result(result.release());
-  return list;
+  if (!result->is_list())
+    return absl::nullopt;
+  return result;
 }
 
 base::DictionaryValue* ToDictionary(base::Value* val) {
@@ -134,9 +134,12 @@ bool RunFunction(ExtensionFunction* function,
                  const std::string& args,
                  Browser* browser,
                  extensions::api_test_utils::RunFunctionFlags flags) {
-  std::unique_ptr<base::ListValue> parsed_args(ParseList(args));
-  EXPECT_TRUE(parsed_args.get())
+  absl::optional<base::Value> maybe_parsed_args(ParseList(args));
+  EXPECT_TRUE(maybe_parsed_args)
       << "Could not parse extension function arguments: " << args;
+  std::unique_ptr<base::ListValue> parsed_args(base::ListValue::From(
+      base::Value::ToUniquePtrValue(std::move(*maybe_parsed_args))));
+
   return RunFunction(function, std::move(parsed_args), browser, flags);
 }
 

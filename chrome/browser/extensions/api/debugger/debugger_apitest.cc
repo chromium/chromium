@@ -117,13 +117,13 @@ testing::AssertionResult DebuggerApiTest::RunAttachFunction(
   std::unique_ptr<base::Value> value(
       extension_function_test_utils::RunFunctionAndReturnSingleResult(
           get_targets_function.get(), "[]", browser()));
-  base::ListValue* targets = nullptr;
-  EXPECT_TRUE(value->GetAsList(&targets));
+  EXPECT_TRUE(value->is_list());
+  const base::ListValue& targets = base::Value::AsListValue(*value);
 
   std::string debugger_target_id;
-  for (size_t i = 0; i < targets->GetSize(); ++i) {
-    base::DictionaryValue* target_dict = nullptr;
-    EXPECT_TRUE(targets->GetDictionary(i, &target_dict));
+  for (size_t i = 0; i < targets.GetSize(); ++i) {
+    const base::DictionaryValue* target_dict = nullptr;
+    EXPECT_TRUE(targets.GetDictionary(i, &target_dict));
     int id = -1;
     if (target_dict->GetInteger("tabId", &id) && id == tab_id) {
       EXPECT_TRUE(target_dict->GetString("id", &debugger_target_id));

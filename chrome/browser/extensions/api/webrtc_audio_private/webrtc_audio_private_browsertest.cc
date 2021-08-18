@@ -123,14 +123,13 @@ class WebrtcAudioPrivateTest : public AudioWaitingExtensionTest {
     params->Append(std::move(request_info));
   }
 
-  std::unique_ptr<base::Value> InvokeGetSinks(base::ListValue** sink_list) {
+  std::unique_ptr<base::Value> InvokeGetSinks() {
     scoped_refptr<WebrtcAudioPrivateGetSinksFunction> function =
         new WebrtcAudioPrivateGetSinksFunction();
     function->set_source_url(source_url_);
 
     std::unique_ptr<base::Value> result(
         RunFunctionAndReturnSingleResult(function.get(), "[]", browser()));
-    result->GetAsList(sink_list);
     return result;
   }
 
@@ -143,23 +142,22 @@ IN_PROC_BROWSER_TEST_F(WebrtcAudioPrivateTest, GetSinks) {
   AudioDeviceDescriptions devices;
   GetAudioDeviceDescriptions(false, &devices);
 
-  base::ListValue* sink_list = NULL;
-  std::unique_ptr<base::Value> result = InvokeGetSinks(&sink_list);
+  std::unique_ptr<base::Value> result = InvokeGetSinks();
+  const base::ListValue& sink_list = base::Value::AsListValue(*result);
 
   std::string result_string;
   JSONWriter::Write(*result, &result_string);
   VLOG(2) << result_string;
 
-  EXPECT_EQ(devices.size(), sink_list->GetSize());
+  EXPECT_EQ(devices.size(), sink_list.GetSize());
 
   // Iterate through both lists in lockstep and compare. The order
   // should be identical.
   size_t ix = 0;
   AudioDeviceDescriptions::const_iterator it = devices.begin();
-  for (; ix < sink_list->GetSize() && it != devices.end();
-       ++ix, ++it) {
-    base::DictionaryValue* dict = NULL;
-    sink_list->GetDictionary(ix, &dict);
+  for (; ix < sink_list.GetSize() && it != devices.end(); ++ix, ++it) {
+    const base::DictionaryValue* dict = NULL;
+    sink_list.GetDictionary(ix, &dict);
     std::string sink_id;
     dict->GetString("sinkId", &sink_id);
 

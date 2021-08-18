@@ -73,16 +73,15 @@ MenuItem::OwnedList MenuItemsFromValue(const std::string& extension_id,
                                        base::Value* value) {
   MenuItem::OwnedList items;
 
-  base::ListValue* list = nullptr;
-  if (!value || !value->GetAsList(&list))
+  if (!value || !value->is_list())
     return items;
 
-  for (size_t i = 0; i < list->GetSize(); ++i) {
-    base::DictionaryValue* dict = nullptr;
-    if (!list->GetDictionary(i, &dict))
+  for (const base::Value& elem : value->GetList()) {
+    if (!elem.is_dict())
       continue;
+    const base::DictionaryValue& dict = base::Value::AsDictionaryValue(elem);
     std::unique_ptr<MenuItem> item =
-        MenuItem::Populate(extension_id, *dict, nullptr);
+        MenuItem::Populate(extension_id, dict, nullptr);
     if (!item)
       continue;
     items.push_back(std::move(item));

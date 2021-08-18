@@ -43,16 +43,14 @@ DeclarativeContentCssPredicate::Create(ContentPredicateEvaluator* evaluator,
                                        const base::Value& value,
                                        std::string* error) {
   std::vector<std::string> css_rules;
-  const base::ListValue* css_rules_value = nullptr;
-  if (value.GetAsList(&css_rules_value)) {
-    for (size_t i = 0; i < css_rules_value->GetSize(); ++i) {
-      std::string css_rule;
-      if (!css_rules_value->GetString(i, &css_rule)) {
+  if (value.is_list()) {
+    for (const base::Value& css_rule_value : value.GetList()) {
+      if (!css_rule_value.is_string()) {
         *error = base::StringPrintf(kCssInvalidTypeOfParameter,
                                     declarative_content_constants::kCss);
         return nullptr;
       }
-      css_rules.push_back(css_rule);
+      css_rules.push_back(css_rule_value.GetString());
     }
   } else {
     *error = base::StringPrintf(kCssInvalidTypeOfParameter,
