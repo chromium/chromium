@@ -467,7 +467,8 @@ void TriggerScriptCoordinator::CheckDynamicTriggerConditions() {
       base::BindOnce(
           &TriggerScriptCoordinator::OnDynamicTriggerConditionsEvaluated,
           weak_ptr_factory_.GetWeakPtr(),
-          /* is_out_of_schedule = */ false));
+          /* is_out_of_schedule = */ false,
+          /* start_time = */ base::TimeTicks::Now()));
 }
 
 void TriggerScriptCoordinator::StopCheckingTriggerConditions() {
@@ -510,7 +511,8 @@ void TriggerScriptCoordinator::HideTriggerScript() {
 }
 
 void TriggerScriptCoordinator::OnDynamicTriggerConditionsEvaluated(
-    bool is_out_of_schedule) {
+    bool is_out_of_schedule,
+    absl::optional<base::TimeTicks> start_time) {
   if (!web_contents_visible_ || !is_checking_trigger_conditions_) {
     return;
   }
@@ -518,6 +520,11 @@ void TriggerScriptCoordinator::OnDynamicTriggerConditionsEvaluated(
       !dynamic_trigger_conditions_->HasResults()) {
     DCHECK(is_out_of_schedule);
     return;
+  }
+
+  if (start_time.has_value()) {
+    Metrics::RecordTriggerConditionEvaluationTime(
+        ukm_recorder_, ukm_source_id_, base::TimeTicks::Now() - *start_time);
   }
 
   VLOG(3) << "Evaluating trigger conditions...";
@@ -593,7 +600,8 @@ void TriggerScriptCoordinator::OnDynamicTriggerConditionsEvaluated(
 }
 
 void TriggerScriptCoordinator::RunOutOfScheduleTriggerConditionCheck() {
-  OnDynamicTriggerConditionsEvaluated(/* is_out_of_schedule = */ true);
+  OnDynamicTriggerConditionsEvaluated(/* is_out_of_schedule = */ true,
+                                      /* start_time = */ absl::nullopt);
 }
 
 void TriggerScriptCoordinator::RunCallback(

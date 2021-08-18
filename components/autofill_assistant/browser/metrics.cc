@@ -223,4 +223,14 @@ void Metrics::RecordFeatureModuleInstallation(FeatureModuleInstallation event) {
   base::UmaHistogramEnumeration(kFeatureModuleInstallationEnumName, event);
 }
 
+// static
+void Metrics::RecordTriggerConditionEvaluationTime(
+    ukm::UkmRecorder* ukm_recorder,
+    ukm::SourceId source_id,
+    base::TimeDelta evaluation_time) {
+  ukm::builders::AutofillAssistant_Timing(source_id)
+      .SetTriggerConditionEvaluationMs(evaluation_time.InMilliseconds())
+      .Record(ukm_recorder);
+}
+
 }  // namespace autofill_assistant

@@ -42,6 +42,7 @@ using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::UnorderedElementsAre;
 using ::testing::UnorderedElementsAreArray;
+using ::testing::WithArg;
 
 std::unique_ptr<base::test::ScopedFeatureList> CreateScopedFeatureList(
     bool dialog_onboarding) {
@@ -1413,6 +1414,45 @@ TEST_F(TriggerScriptCoordinatorTest, StoppingTwiceDoesNotCrash) {
                   {{navigation_ids_[0],
                     {Metrics::TriggerScriptFinishedState::GET_ACTIONS_FAILED,
                      TriggerScriptProto::UNSPECIFIED_TRIGGER_UI_TYPE}}})));
+}
+
+TEST_F(TriggerScriptCoordinatorTest, RecordTriggerConditionEvaluationTime) {
+  GetTriggerScriptsResponseProto response;
+  response.set_trigger_condition_check_interval_ms(1000);
+  response.add_trigger_scripts();
+  std::string serialized_response;
+  response.SerializeToString(&serialized_response);
+
+  EXPECT_CALL(*mock_request_sender_, OnSendRequest(GURL(kFakeServerUrl), _, _))
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+
+  EXPECT_CALL(*mock_dynamic_trigger_conditions_, OnUpdate)
+      .WillOnce(WithArg<1>([&](auto& callback) {
+        task_environment()->FastForwardBy(
+            base::TimeDelta::FromMilliseconds(700));
+        std::move(callback).Run();
+      }))
+      .WillOnce(WithArg<1>([&](auto& callback) {
+        task_environment()->FastForwardBy(
+            base::TimeDelta::FromMilliseconds(300));
+        std::move(callback).Run();
+      }));
+
+  // Start will immediately run the first trigger condition evaluation.
+  coordinator_->Start(GURL(kFakeDeepLink), std::make_unique<TriggerContext>(),
+                      mock_callback_.Get());
+
+  // Run the second scheduled trigger condition evaluation.
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+
+  // Run out-of-schedule trigger condition evaluation (should not be recorded).
+  coordinator_->OnKeyboardVisibilityChanged(true);
+
+  EXPECT_THAT(
+      GetUkmTriggerConditionEvaluationTime(ukm_recorder_),
+      ElementsAreArray(std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>{
+          {navigation_ids_[0], {{kTriggerConditionTimingMs, 700}}},
+          {navigation_ids_[0], {{kTriggerConditionTimingMs, 300}}}}));
 }
 
 }  // namespace autofill_assistant

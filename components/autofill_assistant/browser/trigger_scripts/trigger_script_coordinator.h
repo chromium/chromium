@@ -136,7 +136,9 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   void ShowTriggerScript(int index);
   void HideTriggerScript();
   void CheckDynamicTriggerConditions();
-  void OnDynamicTriggerConditionsEvaluated(bool is_out_of_schedule);
+  void OnDynamicTriggerConditionsEvaluated(
+      bool is_out_of_schedule,
+      absl::optional<base::TimeTicks> start_time);
   void OnGetTriggerScripts(int http_status, const std::string& response);
   GURL GetCurrentURL() const;
   void OnEffectiveVisibilityChanged();

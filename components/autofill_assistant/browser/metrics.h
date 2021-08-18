@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_METRICS_H_
 
 #include <ostream>
+#include "base/time/time.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/startup_util.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -402,8 +403,13 @@ class Metrics {
                                           InChromeTriggerAction event);
   static void RecordOnboardingResult(OnBoarding event);
   static void RecordFeatureModuleInstallation(FeatureModuleInstallation event);
+  static void RecordTriggerConditionEvaluationTime(
+      ukm::UkmRecorder* ukm_recorder,
+      ukm::SourceId source_id,
+      base::TimeDelta evaluation_time);
 
-  // Intended for debugging: writes string representation of |reason| to |out|.
+  // Intended for debugging: writes string representation of |reason| to
+  // |out|.
   friend std::ostream& operator<<(std::ostream& out,
                                   const DropOutReason& reason) {
 #ifdef NDEBUG
