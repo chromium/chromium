@@ -213,12 +213,14 @@ To build and install the Monochrome bundle to your connected device, run:
 
 ```shell
 $ autoninja -C $OUTDIR monochrome_public_bundle
-$ $OUTDIR/bin/monochrome_public_bundle install -m base -m foo
+$ $OUTDIR/bin/monochrome_public_bundle install -m foo
 ```
 
-This will install Foo alongside the rest of Chrome. The rest of Chrome is called
-_base_ module in the bundle world. The base module will always be put on the
-device when initially installing Chrome.
+This will install the `Foo` module, the `base` module, and all modules with an
+`AndroidManifest.xml` that:
+ * Sets `<module dist:onDemand="false">`, or
+ * Has `<dist:delivery>` conditions that are satisfied by the device being
+   installed to.
 
 *** note
 **Note:** The install script may install more modules than you specify, e.g.
@@ -237,7 +239,7 @@ Then try installing the Monochrome bundle without your module and print the
 installed modules:
 
 ```shell
-$ $OUTDIR/bin/monochrome_public_bundle install -m base
+$ $OUTDIR/bin/monochrome_public_bundle install
 $ adb shell dumpsys package org.chromium.chrome | grep splits
 >   splits=[base, config.en]
 ```
@@ -871,7 +873,7 @@ core's `--local-testing` [mode][play-core-local-testing].
 Fake-install and launch Chrome with the following command:
 
 ```shell
-$ $OUTDIR/bin/monochrome_public_bundle install -m base -f foo
+$ $OUTDIR/bin/monochrome_public_bundle install -f foo
 $ $OUTDIR/bin/monochrome_public_bundle launch
 ```
 
