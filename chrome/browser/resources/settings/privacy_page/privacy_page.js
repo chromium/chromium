@@ -116,14 +116,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
       },
 
       /** @private */
-      enableContentSettingsRedesign_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('enableContentSettingsRedesign');
-        }
-      },
-
-      /** @private */
       enablePaymentHandlerContentSetting_: {
         type: Boolean,
         value() {

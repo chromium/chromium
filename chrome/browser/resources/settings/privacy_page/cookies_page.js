@@ -105,14 +105,6 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
         value: CookiePrimarySetting,
       },
 
-      /** @private */
-      enableContentSettingsRedesign_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('enableContentSettingsRedesign');
-        }
-      },
-
       /**
        * Used for HTML bindings. This is defined as a property rather than
        * within the ready callback, because the value needs to be available

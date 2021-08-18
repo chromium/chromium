@@ -6629,11 +6629,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kConsolidatedSiteStorageControlsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kConsolidatedSiteStorageControls)},
 
-    {"content-settings-redesign",
-     flag_descriptions::kContentSettingsRedesignName,
-     flag_descriptions::kContentSettingsRedesignDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kContentSettingsRedesign)},
-
 #if defined(OS_ANDROID)
     {"cpu-affinity-restrict-to-little-cores",
      flag_descriptions::kCpuAffinityRestrictToLittleCoresName,

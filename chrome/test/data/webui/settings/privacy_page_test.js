@@ -28,6 +28,9 @@ const redesignedPages = [
   routes.SITE_SETTINGS_BACKGROUND_SYNC,
   routes.SITE_SETTINGS_CAMERA,
   routes.SITE_SETTINGS_CLIPBOARD,
+  routes.SITE_SETTINGS_FONT_ACCESS,
+  routes.SITE_SETTINGS_FILE_HANDLING,
+  routes.SITE_SETTINGS_FILE_SYSTEM_WRITE,
   routes.SITE_SETTINGS_HANDLERS,
   routes.SITE_SETTINGS_HID_DEVICES,
   routes.SITE_SETTINGS_IDLE_DETECTION,
@@ -37,6 +40,7 @@ const redesignedPages = [
   routes.SITE_SETTINGS_MICROPHONE,
   routes.SITE_SETTINGS_MIDI_DEVICES,
   routes.SITE_SETTINGS_NOTIFICATIONS,
+  routes.SITE_SETTINGS_PAYMENT_HANDLER,
   routes.SITE_SETTINGS_PDF_DOCUMENTS,
   routes.SITE_SETTINGS_POPUPS,
   routes.SITE_SETTINGS_PROTECTED_CONTENT,
@@ -48,21 +52,13 @@ const redesignedPages = [
 
   // TODO(crbug.com/1128902) After restructure add coverage for elements on
   // routes which depend on flags being enabled.
-  // routes.SITE_SETTINGS_FILE_SYSTEM_WRITE,
-  // routes.SITE_SETTINGS_PAYMENT_HANDLER,
-
-  // Doesn't contain toggle or radio buttons
-  // routes.SITE_SETTINGS_ZOOM_LEVELS,
-];
-
-/** @type {!Array<!Route>} */
-const notRedesignedPages = [
-  // Content settings that depend on flags being enabled.
   // routes.SITE_SETTINGS_BLUETOOTH_SCANNING,
   // routes.SITE_SETTINGS_BLUETOOTH_DEVICES,
   // routes.SITE_SETTINGS_WINDOW_PLACEMENT,
-  // routes.SITE_SETTINGS_FONT_ACCESS,
-  // routes.SITE_SETTINGS_FILE_HANDLING,
+
+  // Doesn't contain toggle or radio buttons
+  // routes.SITE_SETTINGS_INSECURE_CONTENT,
+  // routes.SITE_SETTINGS_ZOOM_LEVELS,
 ];
 
 suite('PrivacyPage', function() {
@@ -82,7 +78,6 @@ suite('PrivacyPage', function() {
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
-      enableContentSettingsRedesign: false,
       privacyReviewEnabled: false,
     });
   });
@@ -152,33 +147,6 @@ suite('PrivacyPage', function() {
         testLabels[1]);
   });
 
-  test('ContentSettingsRedesignVisibility', async function() {
-    // Ensure pages are visited so that HTML components are stamped.
-    redesignedPages.forEach(route => Router.getInstance().navigateTo(route));
-    notRedesignedPages.forEach(route => Router.getInstance().navigateTo(route));
-    await flushTasks();
-
-    assertFalse(loadTimeData.getBoolean('enableContentSettingsRedesign'));
-    // protocol handlers, pdf documents and protected content (except chromeos
-    // and win) do not use category-default-setting, resulting in the -3 (or -2)
-    // below.
-    // <if expr="chromeos or is_win">
-    assertEquals(
-        page.root.querySelectorAll('category-default-setting').length,
-        redesignedPages.length + notRedesignedPages.length - 2);
-    // </if>
-    // <if expr="not chromeos and not is_win">
-    assertEquals(
-        page.root.querySelectorAll('category-default-setting').length,
-        redesignedPages.length + notRedesignedPages.length - 3);
-    // </if>
-    assertEquals(
-        page.root.querySelectorAll('settings-category-default-radio-group')
-            .length,
-        0);
-    assertFalse(isChildVisible(page, '#notficationRadioGroup'));
-  });
-
   test('privacyReviewRowNotVisible', function() {
     assertFalse(isChildVisible(page, '#privacyReviewLinkRow'));
   });
@@ -186,6 +154,42 @@ suite('PrivacyPage', function() {
   test('clearBrowsingDataClass', function() {
     assertFalse(!!page.shadowRoot.querySelector('#clearBrowsingData')
                       .classList.contains('hr'));
+  });
+
+  test('ContentSettingsVisibility', async function() {
+    // Ensure pages are visited so that HTML components are stamped.
+    redesignedPages.forEach(route => Router.getInstance().navigateTo(route));
+    await flushTasks();
+
+    // All redesigned pages, except notifications, protocol handlers, pdf
+    // documents and protected content (except chromeos and win), will use a
+    // settings-category-default-radio-group.
+    // <if expr="chromeos or is_win">
+    assertEquals(
+        page.root.querySelectorAll('settings-category-default-radio-group')
+            .length,
+        redesignedPages.length - 3);
+    // </if>
+    // <if expr="not chromeos and not is_win">
+    assertEquals(
+        page.root.querySelectorAll('settings-category-default-radio-group')
+            .length,
+        redesignedPages.length - 4);
+    // </if>
+  });
+
+  test('NotificationPage', async function() {
+    Router.getInstance().navigateTo(routes.SITE_SETTINGS_NOTIFICATIONS);
+    await flushTasks();
+
+    assertTrue(isChildVisible(page, '#notificationRadioGroup'));
+    const categorySettingExceptions =
+        /** @type {!CategorySettingExceptionsElement} */
+        (page.shadowRoot.querySelector('category-setting-exceptions'));
+    assertTrue(isVisible(categorySettingExceptions));
+    assertEquals(
+        ContentSettingsTypes.NOTIFICATIONS, categorySettingExceptions.category);
+    assertFalse(isChildVisible(page, 'category-default-setting'));
   });
 
   test('privacySandboxRowSublabel', async function() {
@@ -236,71 +240,6 @@ suite('PrivacyReviewEnabled', function() {
   test('clearBrowsingDataClass', function() {
     assertTrue(!!page.shadowRoot.querySelector('#clearBrowsingData')
                      .classList.contains('hr'));
-  });
-});
-
-suite('ContentSettingsRedesign', function() {
-  /** @type {!SettingsPrivacyPageElement} */
-  let page;
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      enableContentSettingsRedesign: true,
-    });
-  });
-
-  setup(async function() {
-    document.body.innerHTML = '';
-    page = /** @type {!SettingsPrivacyPageElement} */
-        (document.createElement('settings-privacy-page'));
-    document.body.appendChild(page);
-    flush();
-  });
-
-  teardown(function() {
-    page.remove();
-    Router.getInstance().navigateTo(routes.BASIC);
-  });
-
-  test('ContentSettingsRedesignVisibility', async function() {
-    // Ensure pages are visited so that HTML components are stamped.
-    redesignedPages.forEach(route => Router.getInstance().navigateTo(route));
-    notRedesignedPages.forEach(route => Router.getInstance().navigateTo(route));
-    await flushTasks();
-
-    assertTrue(loadTimeData.getBoolean('enableContentSettingsRedesign'));
-    assertEquals(
-        page.root.querySelectorAll('category-default-setting').length,
-        notRedesignedPages.length);
-    // All redesigned pages, except notifications, protocol handlers, pdf
-    // documents and protected content (except chromeos and win), will use a
-    // settings-category-default-radio-group.
-    // <if expr="chromeos or is_win">
-    assertEquals(
-        page.root.querySelectorAll('settings-category-default-radio-group')
-            .length,
-        redesignedPages.length - 3);
-    // </if>
-    // <if expr="not chromeos and not is_win">
-    assertEquals(
-        page.root.querySelectorAll('settings-category-default-radio-group')
-            .length,
-        redesignedPages.length - 4);
-    // </if>
-  });
-
-  test('NotificationPageRedesign', async function() {
-    Router.getInstance().navigateTo(routes.SITE_SETTINGS_NOTIFICATIONS);
-    await flushTasks();
-
-    assertTrue(isChildVisible(page, '#notificationRadioGroup'));
-    const categorySettingExceptions =
-        /** @type {!CategorySettingExceptionsElement} */
-        (page.shadowRoot.querySelector('category-setting-exceptions'));
-    assertTrue(isVisible(categorySettingExceptions));
-    assertEquals(
-        ContentSettingsTypes.NOTIFICATIONS, categorySettingExceptions.category);
-    assertFalse(isChildVisible(page, 'category-default-setting'));
   });
 });
 

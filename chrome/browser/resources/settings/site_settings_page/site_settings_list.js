@@ -245,9 +245,6 @@ class SettingsSiteSettingsListElement extends
    * @private
    */
   updateNotificationsLabel_() {
-    const redesignEnabled =
-        loadTimeData.getBoolean('enableContentSettingsRedesign');
-
     const state = this.getPref('generated.notification').value;
     const index = this.categoryList.map(e => e.id).indexOf(
         ContentSettingsTypes.NOTIFICATIONS);
@@ -256,14 +253,11 @@ class SettingsSiteSettingsListElement extends
     // site-settings-list instance which contains notifications.
     assert(index !== -1);
 
-    let label = redesignEnabled ? 'siteSettingsNotificationsBlocked' :
-                                  'siteSettingsBlocked';
+    let label = 'siteSettingsNotificationsBlocked';
     if (state === NotificationSetting.ASK) {
-      label = redesignEnabled ? 'siteSettingsNotificationsAllowed' :
-                                'siteSettingsAskBeforeSending';
+      label = 'siteSettingsNotificationsAllowed';
     } else if (state === NotificationSetting.QUIETER_MESSAGING) {
-      label = redesignEnabled ? 'siteSettingsNotificationsPartial' :
-                                'siteSettingsAskBeforeSending';
+      label = 'siteSettingsNotificationsPartial';
     }
     this.set(`categoryList.${index}.subLabel`, this.i18n(label));
   }

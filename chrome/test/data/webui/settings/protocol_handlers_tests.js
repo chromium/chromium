@@ -93,73 +93,11 @@ suite('ProtocolHandlers', function() {
     });
   }
 
-  test('redesign, radio visible', function() {
-    loadTimeData.overrideValues({
-      enableContentSettingsRedesign: true,
-    });
-    return initPage().then(function() {
-      assertTrue(isChildVisible(testElement, '#protcolHandlersRadio'));
-    });
-  });
-
-  test('redesign, set protocol handlers default called', () => {
-    loadTimeData.overrideValues({
-      enableContentSettingsRedesign: true,
-    });
+  test('set protocol handlers default called', () => {
     return initPage().then(() => {
       testElement.$$('#protcolHandlersRadioBlock').click();
       return browserProxy.whenCalled('setProtocolHandlerDefault');
     });
-  });
-
-  test('no redesign, radio invisible', function() {
-    loadTimeData.overrideValues({
-      enableContentSettingsRedesign: false,
-    });
-    return initPage().then(function() {
-      assertFalse(isChildVisible(testElement, '#protcolHandlersRadio'));
-    });
-  });
-
-  test('no redesign, set protocol handlers default called', () => {
-    loadTimeData.overrideValues({
-      enableContentSettingsRedesign: false,
-    });
-    return initPage().then(() => {
-      testElement.$$('#protocolHandlersToggle').click();
-      return browserProxy.whenCalled('setProtocolHandlerDefault');
-    });
-  });
-
-  test('toggle button', async function() {
-    loadTimeData.overrideValues({
-      enableContentSettingsRedesign: false,
-    });
-    await initPage();
-    testElement.toggleOnLabel = 'on';
-    testElement.toggleOffLabel = 'off';
-    const toggle_button = /** @type {!SettingsToggleButton} */ (
-        testElement.$$('#protocolHandlersToggle'));
-
-    webUIListenerCallback('setHandlersEnabled', false);
-    await flushTasks();
-    assertEquals('off', toggle_button.label);
-    assertFalse(toggle_button.checked);
-
-    toggle_button.click();
-    let updatedValue =
-        await browserProxy.whenCalled('setProtocolHandlerDefault');
-    assertTrue(updatedValue);
-    assertEquals('on', toggle_button.label);
-    assertTrue(toggle_button.checked);
-
-    browserProxy.reset();
-
-    toggle_button.click();
-    updatedValue = await browserProxy.whenCalled('setProtocolHandlerDefault');
-    assertFalse(updatedValue);
-    assertEquals('off', toggle_button.label);
-    assertFalse(toggle_button.checked);
   });
 
   test('empty list', function() {

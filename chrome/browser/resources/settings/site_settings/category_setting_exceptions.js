@@ -79,14 +79,6 @@ export class CategorySettingExceptionsElement extends
        */
       blockHeader: String,
 
-      /** @private */
-      enableContentSettingsRedesign_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('enableContentSettingsRedesign');
-        }
-      },
-
       /**
        * The heading text for the allowed exception list.
        */

@@ -1206,9 +1206,6 @@ extern const char kSettingsAppNotificationSettingsDescription[];
 extern const char kAbusiveNotificationPermissionRevocationName[];
 extern const char kAbusiveNotificationPermissionRevocationDescription[];
 
-extern const char kContentSettingsRedesignName[];
-extern const char kContentSettingsRedesignDescription[];
-
 extern const char kReadLaterFlagId[];
 extern const char kReadLaterName[];
 extern const char kReadLaterDescription[];

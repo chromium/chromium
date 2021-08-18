@@ -73,14 +73,6 @@ export class SiteListElement extends SiteListElementBase {
 
       categoryHeader: String,
 
-      /** @private */
-      enableContentSettingsRedesign_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('enableContentSettingsRedesign');
-        }
-      },
-
       /**
        * The site serving as the model for the currently open action menu.
        * @private {?SiteException}
@@ -551,14 +543,6 @@ export class SiteListElement extends SiteListElementBase {
     return this.sites.filter(
         site => propNames.some(
             propName => site[propName].toLowerCase().includes(searchFilter)));
-  }
-
-  /**
-   * @return {string}
-   * @private
-   */
-  getCssClass_() {
-    return this.enableContentSettingsRedesign_ ? 'secondary' : '';
   }
 }
 

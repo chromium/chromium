@@ -2121,10 +2121,6 @@ const char kAbusiveNotificationPermissionRevocationDescription[] =
     "permission requests or content will have the notification permission "
     "revoked.";
 
-const char kContentSettingsRedesignName[] = "Content settings page redesign";
-const char kContentSettingsRedesignDescription[] =
-    "Enables a new content settings page UI.";
-
 const char kReadLaterNewBadgePromoName[] = "Reading list 'New' badge promo";
 const char kReadLaterNewBadgePromoDescription[] =
     "Causes a 'New' badge to appear on the entry point for adding to the "

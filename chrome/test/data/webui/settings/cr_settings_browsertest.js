@@ -487,10 +487,6 @@ TEST_F('CrSettingsPrivacyPageTest', 'PrivacyPageTests', function() {
   runMochaSuite('PrivacyPage');
 });
 
-TEST_F('CrSettingsPrivacyPageTest', 'ContentSettingsRedesign', function() {
-  runMochaSuite('ContentSettingsRedesign');
-});
-
 TEST_F('CrSettingsPrivacyPageTest', 'PrivacyReviewEnabled', function() {
   runMochaSuite('PrivacyReviewEnabled');
 });

@@ -99,14 +99,6 @@ class ProtocolHandlersElement extends ProtocolHandlersElementBase {
        */
       ignoredProtocols: Array,
 
-      /** @private */
-      enableContentSettingsRedesign_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('enableContentSettingsRedesign');
-        }
-      },
-
       /** @private {chrome.settingsPrivate.PrefObject} */
       handlersEnabledPref_: {
         type: Object,

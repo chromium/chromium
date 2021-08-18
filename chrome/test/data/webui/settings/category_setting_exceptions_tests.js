@@ -25,12 +25,6 @@ suite('CategorySettingExceptions', function() {
    */
   let browserProxy = null;
 
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      enableContentSettingsRedesign: false,
-    });
-  });
-
   // Initialize a category-setting-exceptions before each test.
   setup(function() {
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();
@@ -44,10 +38,6 @@ suite('CategorySettingExceptions', function() {
     // The category-setting-exceptions is mainly a container for site-lists.
     // There's not much that merits testing.
     assertTrue(!!testElement);
-  });
-
-  test('header visibility', function() {
-    assertFalse(isChildVisible(testElement, '#exceptionHeader'));
   });
 
   test(
@@ -193,29 +183,4 @@ suite('CategorySettingExceptions', function() {
                 });
         return Promise.all([initializationTest, updateTest]);
       });
-});
-
-suite('ContentSettingsRedesign', function() {
-  /**
-   * A site settings exceptions created before each test.
-   * @type {SiteSettingsExceptionsElement}
-   */
-  let testElement;
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      enableContentSettingsRedesign: true,
-    });
-  });
-
-  // Initialize a category-setting-exceptions before each test.
-  setup(function() {
-    PolymerTest.clearBody();
-    testElement = document.createElement('category-setting-exceptions');
-    document.body.appendChild(testElement);
-  });
-
-  test('header visibility', function() {
-    assertTrue(isChildVisible(testElement, '#exceptionHeader'));
-  });
 });

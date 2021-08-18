@@ -81,41 +81,7 @@ suite('SiteSettingsPage', function() {
     assertEquals(testLabels[1], cookiesLinkRow.subLabel);
   });
 
-  test('NotificationsLinkRowSublabel_RedesignDisabled', async function() {
-    loadTimeData.overrideValues({
-      enableContentSettingsRedesign: false,
-    });
-
-    const notificationsLinkRow = /** @type {!CrLinkRowElement} */ (
-        page.shadowRoot.querySelector('#basicPermissionsList')
-            .shadowRoot.querySelector('#notifications'));
-
-    page.set('prefs.generated.notification.value', NotificationSetting.BLOCK);
-    await flushTasks();
-    assertEquals(
-        loadTimeData.getString('siteSettingsBlocked'),
-        notificationsLinkRow.subLabel);
-
-    page.set(
-        'prefs.generated.notification.value',
-        NotificationSetting.QUIETER_MESSAGING);
-    await flushTasks();
-    assertEquals(
-        loadTimeData.getString('siteSettingsAskBeforeSending'),
-        notificationsLinkRow.subLabel);
-
-    page.set('prefs.generated.notification.value', NotificationSetting.ASK);
-    await flushTasks();
-    assertEquals(
-        loadTimeData.getString('siteSettingsAskBeforeSending'),
-        notificationsLinkRow.subLabel);
-  });
-
-  test('NotificationsLinkRowSublabel_RedesignEnabled', async function() {
-    loadTimeData.overrideValues({
-      enableContentSettingsRedesign: true,
-    });
-
+  test('NotificationsLinkRowSublabel', async function() {
     const notificationsLinkRow = /** @type {!CrLinkRowElement} */ (
         page.shadowRoot.querySelector('#basicPermissionsList')
             .shadowRoot.querySelector('#notifications'));
