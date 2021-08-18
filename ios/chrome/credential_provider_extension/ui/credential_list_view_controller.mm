@@ -198,6 +198,7 @@ UIColor* BackgroundColor() {
       cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
                                     reuseIdentifier:kNewPasswordCellIdentifier];
     }
+    cell.backgroundColor = [UIColor colorNamed:kBackgroundColor];
     cell.textLabel.text =
         NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_CREATE_PASSWORD_ROW",
                           @"Add New Password");
