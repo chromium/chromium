@@ -167,7 +167,6 @@ class MockSensorDeviceManager : public SensorDeviceManager {
 // error and data changes notifications.
 class LinuxMockPlatformSensorClient : public PlatformSensor::Client {
  public:
-  LinuxMockPlatformSensorClient() = default;
   explicit LinuxMockPlatformSensorClient(scoped_refptr<PlatformSensor> sensor)
       : sensor_(sensor) {
     if (sensor_)
