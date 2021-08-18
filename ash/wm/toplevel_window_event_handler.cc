@@ -322,7 +322,8 @@ void ToplevelWindowEventHandler::OnGestureEvent(ui::GestureEvent* event) {
   if (window_resizer_ && !in_gesture_drag_)
     return;
 
-  if (window_resizer_ && window_resizer_->resizer()->GetTarget() != target)
+  if (window_resizer_ && window_resizer_->resizer()->GetTarget() != target &&
+      !target->bounds().IsEmpty())
     return;
 
   if (event->details().touch_points() > 2) {

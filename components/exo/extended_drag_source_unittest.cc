@@ -23,16 +23,31 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/client/drag_drop_delegate.h"
+#include "ui/aura/window_tree_host.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
+#include "ui/events/event_utils.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/events/test/events_test_utils.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
 
 namespace exo {
 namespace {
+
+void DispatchGesture(ui::EventType gesture_type, gfx::Point location) {
+  ui::GestureEventDetails event_details(gesture_type);
+  ui::GestureEvent gesture_event(location.x(), location.y(), 0,
+                                 ui::EventTimeForNow(), event_details);
+  ui::EventSource* event_source =
+      ash::Shell::GetPrimaryRootWindow()->GetHost()->GetEventSource();
+  ui::EventSourceTestApi event_source_test(event_source);
+  ui::EventDispatchDetails details =
+      event_source_test.SendEventToSink(&gesture_event);
+  CHECK(!details.dispatcher_destroyed);
+}
 
 class TestDataSourceDelegate : public DataSourceDelegate {
  public:
@@ -253,6 +268,57 @@ TEST_F(ExtendedDragSourceTest, DragSurfaceNotMappedYet) {
   ui::test::EventGenerator generator(GetContext());
   generator.set_current_screen_location(gfx::Point(100, 100));
   generator.DragMouseBy(50, 50);
+  EXPECT_EQ(gfx::Point(140, 140), window->GetBoundsInScreen().origin());
+}
+
+TEST_F(ExtendedDragSourceTest, DragSurfaceNotMappedYetWithTouch) {
+  // Create and Map the drag origin surface
+  auto surface = std::make_unique<Surface>();
+  auto shell_surface = std::make_unique<ShellSurface>(surface.get());
+  auto buffer = CreateBuffer({32, 32});
+  surface->Attach(buffer.get());
+  surface->Commit();
+
+  // Start the DND + extended-drag session.
+  StartExtendedDragSession(shell_surface->GetWidget()->GetNativeWindow(),
+                           gfx::Point(0, 0), ui::DragDropTypes::DRAG_MOVE,
+                           ui::mojom::DragEventSource::kTouch);
+
+  // Create a new surface to emulate a "detachment" process.
+  auto detached_surface = std::make_unique<Surface>();
+  auto detached_shell_surface =
+      std::make_unique<ShellSurface>(detached_surface.get());
+
+  // Set |surface| as the dragged surface while it's still unmapped/invisible.
+  // This can be used to implement tab detaching in Chrome's tab drag use case,
+  // for example. Extended drag source will monitor surface mapping and it's
+  // expected to position it correctly using the provided drag offset here
+  // relative to the current pointer location.
+  extended_drag_source_->Drag(detached_surface.get(), gfx::Vector2d(10, 10));
+  EXPECT_FALSE(extended_drag_source_->GetDraggedWindowForTesting());
+  EXPECT_TRUE(extended_drag_source_->GetDragOffsetForTesting().has_value());
+  EXPECT_EQ(gfx::Vector2d(10, 10),
+            *extended_drag_source_->GetDragOffsetForTesting());
+
+  // Initiate the gesture sequence.
+  DispatchGesture(ui::ET_GESTURE_BEGIN, gfx::Point(10, 10));
+
+  // Map the |detached_surface|.
+  auto detached_buffer = CreateBuffer({50, 50});
+  detached_surface->Attach(detached_buffer.get());
+  detached_surface->Commit();
+
+  // Ensure the toplevel window for the dragged surface set above, is correctly
+  // detected, after it's mapped.
+  aura::Window* window = detached_shell_surface->GetWidget()->GetNativeWindow();
+  EXPECT_TRUE(extended_drag_source_->GetDraggedWindowForTesting());
+  EXPECT_EQ(window, extended_drag_source_->GetDraggedWindowForTesting());
+
+  // Verify that dragging it by 100,100, with drag offset 10,10 and current
+  // pointer location 50,50 will set the dragged window bounds as expected.
+  ui::test::EventGenerator generator(GetContext());
+  generator.set_current_screen_location(gfx::Point(100, 100));
+  generator.PressMoveAndReleaseTouchBy(50, 50);
   EXPECT_EQ(gfx::Point(140, 140), window->GetBoundsInScreen().origin());
 }
 
