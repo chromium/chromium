@@ -55,6 +55,14 @@ _OWNERS_FILENAME = 'OWNERS'
 _OWNERS_COMPONENT_REGEX = re.compile(r'^\s*#\s*COMPONENT:\s*(\S+)',
                                      re.MULTILINE)
 _OWNERS_FILE_PATH_REGEX = re.compile(r'^\s*file://(\S+)', re.MULTILINE)
+# Paths that are missing metadata, and where it's hard to add (e.g. code in
+# other repositories.
+_COMPONENT_DEFAULTS = {
+    os.path.join('third_party', 'webrtc'): 'Blink>WebRTC',
+    os.path.join('logging', 'rtc_event_log'): 'Blink>WebRTC',
+    os.path.join('modules', 'audio_codec'): 'Blink>WebRTC',
+    os.path.join('modules', 'audio_processing'): 'Blink>WebRTC',
+}
 
 _UNCOMPRESSED_COMPRESSION_RATIO_THRESHOLD = 0.9
 
@@ -647,7 +655,7 @@ def _PopulateComponents(raw_symbols, source_directory):
     raw_symbols: list of Symbol objects.
     source_directory: Directory to use as the root.
   """
-  seen_paths = {}
+  seen_paths = _COMPONENT_DEFAULTS.copy()
   for symbol in raw_symbols:
     if symbol.source_path:
       folder_path = os.path.dirname(symbol.source_path)
