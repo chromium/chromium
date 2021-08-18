@@ -152,7 +152,8 @@ void WebAppProtocolHandlerIntentPickerView::Initialize() {
   scrollable_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
 
-  web_app::WebAppProvider* provider = web_app::WebAppProvider::Get(profile_);
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForWebApps(profile_);
   web_app::WebAppRegistrar& registrar = provider->registrar();
   auto app_button = std::make_unique<WebAppHoverButton>(
       views::Button::PressedCallback(), app_id_, provider,
