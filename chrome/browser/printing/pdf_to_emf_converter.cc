@@ -27,6 +27,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/printing/printing_service.h"
 #include "chrome/services/printing/public/mojom/pdf_to_emf_converter.mojom.h"
+#include "chrome/services/printing/public/mojom/printing_service.mojom.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_data.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

@@ -18,6 +18,7 @@
 #include "base/notreached.h"
 #include "chrome/browser/printing/printing_service.h"
 #include "chrome/services/printing/public/mojom/pdf_to_pwg_raster_converter.mojom.h"
+#include "chrome/services/printing/public/mojom/printing_service.mojom.h"
 #include "components/cloud_devices/common/cloud_device_description.h"
 #include "components/cloud_devices/common/printer_description.h"
 #include "content/public/browser/browser_thread.h"

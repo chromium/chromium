@@ -55,6 +55,10 @@ enum Sandbox {
   [EnableIf=is_win]
   kNoSandboxAndElevatedPrivileges,
 
+  // Like kUtility, but patches GDI during child startup in pdf_child_init.
+  [EnableIf=is_win]
+  kPdfConversion,
+
   // Like kUtility but also disables dynamic code.
   [EnableIf=is_win]
   kProxyResolver,

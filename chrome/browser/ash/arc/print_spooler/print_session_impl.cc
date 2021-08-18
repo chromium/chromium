@@ -24,6 +24,7 @@
 #include "chrome/browser/ash/arc/print_spooler/arc_print_spooler_util.h"
 #include "chrome/browser/printing/print_view_manager_common.h"
 #include "chrome/browser/printing/printing_service.h"
+#include "chrome/services/printing/public/mojom/printing_service.mojom.h"
 #include "components/arc/intent_helper/custom_tab.h"
 #include "components/arc/mojom/print_common.mojom.h"
 #include "content/public/browser/web_contents.h"

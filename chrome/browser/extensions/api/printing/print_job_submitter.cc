@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/native_window_tracker.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/services/printing/public/mojom/pdf_flattener.mojom.h"
+#include "chrome/services/printing/public/mojom/printing_service.mojom.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "components/prefs/pref_service.h"

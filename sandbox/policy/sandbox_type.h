@@ -142,6 +142,8 @@ inline constexpr sandbox::policy::SandboxType MapToSandboxType(
       return sandbox::policy::SandboxType::kMediaFoundationCdm;
     case sandbox::mojom::Sandbox::kNoSandboxAndElevatedPrivileges:
       return sandbox::policy::SandboxType::kNoSandboxAndElevatedPrivileges;
+    case sandbox::mojom::Sandbox::kPdfConversion:
+      return sandbox::policy::SandboxType::kPdfConversion;
     case sandbox::mojom::Sandbox::kProxyResolver:
       return sandbox::policy::SandboxType::kProxyResolver;
     case sandbox::mojom::Sandbox::kXrCompositing:

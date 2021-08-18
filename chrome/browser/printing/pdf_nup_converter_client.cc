@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "chrome/browser/printing/printing_service.h"
 #include "chrome/services/printing/public/mojom/pdf_nup_converter.mojom.h"
+#include "chrome/services/printing/public/mojom/printing_service.mojom.h"
 
 namespace printing {
 

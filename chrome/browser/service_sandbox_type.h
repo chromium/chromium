@@ -124,25 +124,6 @@ content::GetServiceSandboxType<mirroring::mojom::MirroringService>() {
 #endif  // OS_MAC
 }
 
-// printing::mojom::PrintingService
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-namespace printing {
-namespace mojom {
-class PrintingService;
-}
-}  // namespace printing
-
-template <>
-inline sandbox::policy::SandboxType
-content::GetServiceSandboxType<printing::mojom::PrintingService>() {
-#if defined(OS_WIN)
-  return sandbox::policy::SandboxType::kPdfConversion;
-#else
-  return sandbox::policy::SandboxType::kUtility;
-#endif
-}
-#endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
-
 // printing::mojom::PrintBackendService
 #if (defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
      defined(OS_CHROMEOS)) &&                                   \
