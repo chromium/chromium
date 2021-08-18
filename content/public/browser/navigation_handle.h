@@ -147,8 +147,14 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
 
   // Returns the FrameTreeNode ID for the frame in which the navigation is
   // performed. This ID is browser-global and uniquely identifies a frame that
-  // hosts content. The identifier is fixed at the creation of the frame and
-  // stays constant for the lifetime of the frame.
+  // hosts content. The return value remains constant over the navigation
+  // lifetime.
+  //
+  // However, because of prerender activations, the RenderFrameHost that this
+  // navigation is committed into may later transfer to another FrameTreeNode,
+  // so this value is not necessarily constant over the lifetime of the frame.
+  // See documentation for RenderFrameHost::GetFrameTreeNodeId() for more
+  // details.
   virtual int GetFrameTreeNodeId() = 0;
 
   // Returns the RenderFrameHost for the parent frame, or nullptr if this
