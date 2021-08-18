@@ -279,6 +279,9 @@ class MediaSessionImpl : public MediaSession,
   // Brings the associated tab into focus.
   void Raise() override;
 
+  // Mute or unmute the media player.
+  void SetMute(bool mute) override;
+
   // Downloads the bitmap version of a MediaImage at least |minimum_size_px|
   // and closest to |desired_size_px|. If the download failed, was too small or
   // the image did not come from the media session then returns a null image.
@@ -291,6 +294,8 @@ class MediaSessionImpl : public MediaSession,
   const base::UnguessableToken& audio_focus_group_id() const {
     return audio_focus_group_id_;
   }
+
+  void OnMediaMutedStatusChanged(bool mute);
 
   void OnPictureInPictureAvailabilityChanged();
 
@@ -480,6 +485,8 @@ class MediaSessionImpl : public MediaSession,
 
   // True if the WebContents associated with this MediaSessionImpl is focused.
   bool focused_ = false;
+
+  bool is_muted_ = false;
 
   // Used to persist audio device selection between navigations on the same
   // origin.

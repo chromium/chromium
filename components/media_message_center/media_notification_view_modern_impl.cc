@@ -111,6 +111,7 @@ const gfx::VectorIcon* GetVectorIconForMediaAction(MediaSessionAction action) {
     case MediaSessionAction::kToggleCamera:
     case MediaSessionAction::kHangUp:
     case MediaSessionAction::kRaise:
+    case MediaSessionAction::kSetMute:
       NOTREACHED();
       break;
   }
@@ -154,6 +155,7 @@ const std::u16string GetAccessibleNameForMediaAction(
     case MediaSessionAction::kToggleCamera:
     case MediaSessionAction::kHangUp:
     case MediaSessionAction::kRaise:
+    case MediaSessionAction::kSetMute:
       NOTREACHED();
       break;
   }
@@ -439,19 +441,18 @@ MediaNotificationViewModernImpl::MediaNotificationViewModernImpl(
       volume_slider->SetPreferredSize(kVolumeSliderSize);
       volume_slider_ =
           util_buttons_container->AddChildView(std::move(volume_slider));
-
-      auto mute_button =
-          std::make_unique<views::ToggleImageButton>(base::BindRepeating(
-              &MediaNotificationViewModernImpl::OnMuteButtonClicked,
-              base::Unretained(this)));
-      mute_button->SetPreferredSize(kMuteButtonSize);
-      mute_button->SetImageHorizontalAlignment(
-          views::ImageButton::HorizontalAlignment::ALIGN_CENTER);
-      mute_button->SetImageVerticalAlignment(
-          views::ImageButton::VerticalAlignment::ALIGN_MIDDLE);
-      mute_button_ =
-          util_buttons_container->AddChildView(std::move(mute_button));
     }
+
+    auto mute_button =
+        std::make_unique<views::ToggleImageButton>(base::BindRepeating(
+            &MediaNotificationViewModernImpl::OnMuteButtonClicked,
+            base::Unretained(this)));
+    mute_button->SetPreferredSize(kMuteButtonSize);
+    mute_button->SetImageHorizontalAlignment(
+        views::ImageButton::HorizontalAlignment::ALIGN_CENTER);
+    mute_button->SetImageVerticalAlignment(
+        views::ImageButton::VerticalAlignment::ALIGN_MIDDLE);
+    mute_button_ = util_buttons_container->AddChildView(std::move(mute_button));
 
     AddChildView(std::move(util_buttons_container));
   }

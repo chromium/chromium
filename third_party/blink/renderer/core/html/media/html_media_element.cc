@@ -4644,6 +4644,10 @@ void HTMLMediaElement::RequestSeekTo(base::TimeDelta seek_time) {
   setCurrentTime(seek_time.InSecondsF());
 }
 
+void HTMLMediaElement::RequestMute(bool mute) {
+  setMuted(mute);
+}
+
 void HTMLMediaElement::SetVolumeMultiplier(double multiplier) {
   if (web_media_player_)
     web_media_player_->SetVolumeMultiplier(multiplier);

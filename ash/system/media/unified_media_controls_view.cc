@@ -90,6 +90,7 @@ const gfx::VectorIcon& GetVectorIconForMediaAction(MediaSessionAction action) {
     case MediaSessionAction::kToggleCamera:
     case MediaSessionAction::kHangUp:
     case MediaSessionAction::kRaise:
+    case MediaSessionAction::kSetMute:
       NOTREACHED();
       break;
   }

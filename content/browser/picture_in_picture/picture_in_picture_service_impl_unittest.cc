@@ -130,6 +130,7 @@ class PictureInPictureMediaPlayerReceiver : public media::mojom::MediaPlayer {
   void RequestSeekTo(base::TimeDelta seek_time) override {}
   void RequestEnterPictureInPicture() override {}
   void RequestExitPictureInPicture() override {}
+  void RequestMute(bool mute) override {}
   void SetVolumeMultiplier(double multiplier) override {}
   void SetPersistentState(bool persistent) override {}
   void SetPowerExperimentState(bool enabled) override {}

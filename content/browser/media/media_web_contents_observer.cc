@@ -337,6 +337,9 @@ void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
   media_web_contents_observer_->web_contents_impl()->MediaMutedStatusChanged(
       media_player_id_, muted);
 
+  media_web_contents_observer_->session_controllers_manager()
+      ->OnMediaMutedStatusChanged(media_player_id_, muted);
+
   PlayerInfo* player_info = GetPlayerInfo();
   if (!player_info)
     return;

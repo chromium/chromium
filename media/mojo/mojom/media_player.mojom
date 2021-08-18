@@ -9,7 +9,8 @@ import "mojo/public/mojom/base/time.mojom";
 import "services/media_session/public/mojom/media_session.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
-// Implemented by HTMLMediaElement in the renderer process.
+// Implemented by HTMLMediaElement in the renderer process to allow the
+// browser to control media playback.
 interface MediaPlayer {
   // Requests the media player to start or resume media playback.
   RequestPlay();
@@ -31,6 +32,9 @@ interface MediaPlayer {
 
   // Requests the media player to exit the Picture-in-Picture mode.
   RequestExitPictureInPicture();
+
+  // Requests the media player to mute or unmute.
+  RequestMute(bool mute);
 
   // Set the volume multiplier to control audio ducking.
   // Output volume should be set to |player_volume| * |multiplier|. The range

@@ -44,6 +44,7 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
   void OnExitPictureInPicture(int player_id) override {}
   void OnSetAudioSinkId(int player_id,
                         const std::string& raw_device_id) override {}
+  void OnSetMute(int player_id, bool mute) override {}
 
   absl::optional<media_session::MediaPosition> GetPosition(
       int player_id) const override {

@@ -92,7 +92,7 @@ class MediaSessionNotificationItem
   void Dismiss() override;
   media_message_center::SourceType SourceType() override;
   void SetVolume(float volume) override {}
-  void SetMute(bool mute) override {}
+  void SetMute(bool mute) override;
 
   // Calls |Raise()| on the underlying MediaSession, which will focus the
   // WebContents if the MediaSession is associated with one.

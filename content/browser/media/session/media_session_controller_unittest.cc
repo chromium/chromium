@@ -138,6 +138,8 @@ class TestMediaPlayer : public media::mojom::MediaPlayer {
 
   void RequestExitPictureInPicture() override {}
 
+  void RequestMute(bool mute) override {}
+
   void SetVolumeMultiplier(double multiplier) override {
     received_volume_multiplier_ = multiplier;
     if (run_loop_for_volume_)

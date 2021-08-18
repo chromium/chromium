@@ -60,6 +60,7 @@ class CONTENT_EXPORT MediaSessionController
   void OnExitPictureInPicture(int player_id) override;
   void OnSetAudioSinkId(int player_id,
                         const std::string& raw_device_id) override;
+  void OnSetMute(int player_id, bool mute) override;
   RenderFrameHost* render_frame_host() const override;
   absl::optional<media_session::MediaPosition> GetPosition(
       int player_id) const override;
@@ -81,6 +82,8 @@ class CONTENT_EXPORT MediaSessionController
   // Called when the media position state of the player has changed.
   void OnMediaPositionStateChanged(
       const media_session::MediaPosition& position);
+
+  void OnMediaMutedStatusChanged(bool mute);
 
   // Called when the media picture-in-picture availability has changed.
   void OnPictureInPictureAvailabilityChanged(bool available);

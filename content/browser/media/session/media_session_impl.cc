@@ -149,6 +149,8 @@ MediaSessionUserAction MediaSessionActionToUserAction(
       return MediaSessionUserAction::kHangUp;
     case media_session::mojom::MediaSessionAction::kRaise:
       return MediaSessionUserAction::kRaise;
+    case media_session::mojom::MediaSessionAction::kSetMute:
+      return MediaSessionUserAction::kSetMute;
   }
   NOTREACHED();
   return MediaSessionUserAction::kPlay;
@@ -1013,6 +1015,8 @@ MediaSessionImpl::GetMediaSessionInfoSync() {
     info->camera_state = media_session::mojom::CameraState::kUnknown;
   }
 
+  info->muted = is_muted_;
+
   return info;
 }
 
@@ -1171,6 +1175,12 @@ void MediaSessionImpl::Raise() {
     return;
 
   delegate->ActivateContents(web_contents());
+}
+
+void MediaSessionImpl::SetMute(bool mute) {
+  DCHECK_EQ(normal_players_.size(), 1u);
+  normal_players_.begin()->first.observer->OnSetMute(
+      normal_players_.begin()->first.player_id, mute);
 }
 
 void MediaSessionImpl::GetMediaImageBitmap(
@@ -1479,6 +1489,11 @@ MediaSessionServiceImpl* MediaSessionImpl::ComputeServiceForRouting() {
   }
 
   return best_frame ? services_[best_frame->GetGlobalId()] : nullptr;
+}
+
+void MediaSessionImpl::OnMediaMutedStatusChanged(bool mute) {
+  is_muted_ = mute;
+  RebuildAndNotifyMediaSessionInfoChanged();
 }
 
 void MediaSessionImpl::OnPictureInPictureAvailabilityChanged() {

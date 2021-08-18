@@ -141,6 +141,14 @@ void MediaSessionController::OnSetAudioSinkId(
       ->SetAudioSinkId(hashed_sink_id);
 }
 
+void MediaSessionController::OnSetMute(int player_id, bool mute) {
+  DCHECK_EQ(player_id_, player_id);
+
+  web_contents_->media_web_contents_observer()
+      ->GetMediaPlayerRemote(id_)
+      ->RequestMute(mute);
+}
+
 RenderFrameHost* MediaSessionController::render_frame_host() const {
   return RenderFrameHost::FromID(id_.frame_routing_id);
 }
@@ -183,6 +191,10 @@ void MediaSessionController::OnMediaPositionStateChanged(
     const media_session::MediaPosition& position) {
   position_ = position;
   media_session_->RebuildAndNotifyMediaPositionChanged();
+}
+
+void MediaSessionController::OnMediaMutedStatusChanged(bool mute) {
+  media_session_->OnMediaMutedStatusChanged(mute);
 }
 
 void MediaSessionController::OnPictureInPictureAvailabilityChanged(

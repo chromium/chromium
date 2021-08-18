@@ -57,6 +57,7 @@ class MediaController : public mojom::MediaController,
   void ToggleCamera() override;
   void HangUp() override;
   void Raise() override;
+  void SetMute(bool mute) override;
 
   // mojom::MediaSessionObserver overrides.
   void MediaSessionInfoChanged(

@@ -52,6 +52,9 @@ class MediaSessionPlayerObserver {
   virtual void OnSetAudioSinkId(int player_id,
                                 const std::string& raw_device_id) = 0;
 
+  // The given |player_id| has been requested to mute or unmute.
+  virtual void OnSetMute(int player_id, bool mute) = 0;
+
   // Returns the position for |player_id|.
   virtual absl::optional<media_session::MediaPosition> GetPosition(
       int player_id) const = 0;

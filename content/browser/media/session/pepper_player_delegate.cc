@@ -80,6 +80,8 @@ void PepperPlayerDelegate::OnSetAudioSinkId(int player_id,
   NOTREACHED();
 }
 
+void PepperPlayerDelegate::OnSetMute(int player_id, bool mute) {}
+
 absl::optional<media_session::MediaPosition> PepperPlayerDelegate::GetPosition(
     int player_id) const {
   // Pepper does not support position data.

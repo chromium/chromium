@@ -67,6 +67,9 @@ class CONTENT_EXPORT MediaSessionControllersManager {
   // Called when the WebContents was muted or unmuted.
   void WebContentsMutedStateChanged(bool muted);
 
+  // Called when the player's mute status changed.
+  void OnMediaMutedStatusChanged(const MediaPlayerId& id, bool mute);
+
   // Called when picture-in-picture availability for the player |id| has
   // changed.
   void OnPictureInPictureAvailabilityChanged(const MediaPlayerId& id,
