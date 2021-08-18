@@ -96,10 +96,13 @@ class BrowserAppInstanceTracker : public TabStripModelObserver,
 
   // aura::WindowObserver overrides:
   void OnWindowVisibilityChanged(aura::Window* window, bool visible) override;
+  void OnWindowDestroying(aura::Window* window) override;
 
   // BrowserListObserver overrides:
+  void OnBrowserAdded(Browser* browser) override;
   void OnBrowserSetLastActive(Browser* browser) override;
   void OnBrowserNoLongerActive(Browser* browser) override;
+  void OnBrowserRemoved(Browser* browser) override;
 
   // apps::AppRegistryCache::Observer:
   void OnAppUpdate(const apps::AppUpdate& update) override;

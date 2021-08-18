@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/macros.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_observer.h"
@@ -122,6 +123,14 @@ BrowserAppInstanceTracker::BrowserAppInstanceTracker(
 
 BrowserAppInstanceTracker::~BrowserAppInstanceTracker() {
   BrowserList::GetInstance()->RemoveObserver(this);
+  if (browser_window_observations_.GetSourcesCount() > 0) {
+    // TODO(crbug.com/1236273): Remove when confident it does not happen.
+    base::debug::DumpWithoutCrashing();
+  }
+  if (!tracked_browsers_.empty()) {
+    // TODO(crbug.com/1236273): Remove when confident it does not happen.
+    base::debug::DumpWithoutCrashing();
+  }
 }
 
 std::unique_ptr<BrowserAppInstanceTracker> BrowserAppInstanceTracker::Create(
@@ -235,12 +244,31 @@ void BrowserAppInstanceTracker::OnWindowVisibilityChanged(aura::Window* window,
   }
 }
 
+void BrowserAppInstanceTracker::OnWindowDestroying(aura::Window* window) {
+  // TODO(crbug.com/1236273): Remove when confident it does not happen.
+  base::debug::DumpWithoutCrashing();
+}
+
+void BrowserAppInstanceTracker::OnBrowserAdded(Browser* browser) {
+  // TODO(crbug.com/1236273): Remove when confident it does not happen.
+  if (!tracked_browsers_.empty()) {
+    base::debug::DumpWithoutCrashing();
+  }
+}
+
 void BrowserAppInstanceTracker::OnBrowserSetLastActive(Browser* browser) {
   OnBrowserWindowUpdated(browser);
 }
 
 void BrowserAppInstanceTracker::OnBrowserNoLongerActive(Browser* browser) {
   OnBrowserWindowUpdated(browser);
+}
+
+void BrowserAppInstanceTracker::OnBrowserRemoved(Browser* browser) {
+  // TODO(crbug.com/1236273): Remove when confident it does not happen.
+  if (!tracked_browsers_.empty()) {
+    base::debug::DumpWithoutCrashing();
+  }
 }
 
 void BrowserAppInstanceTracker::OnAppUpdate(const apps::AppUpdate& update) {
