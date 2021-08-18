@@ -325,6 +325,14 @@ void AcceleratorController::PlayVolumeAdjustmentSound() {
     GetVolumeAdjustmentCallback()->Run();
 }
 
+void AcceleratorController::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void AcceleratorController::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 AcceleratorController::AcceleratorController() {
   DCHECK_EQ(nullptr, g_instance);
   g_instance = this;
@@ -333,6 +341,11 @@ AcceleratorController::AcceleratorController() {
 AcceleratorController::~AcceleratorController() {
   DCHECK_EQ(this, g_instance);
   g_instance = nullptr;
+}
+
+void AcceleratorController::NotifyActionPerformed(AcceleratorAction action) {
+  for (Observer& observer : observers_)
+    observer.OnActionPerformed(action);
 }
 
 }  // namespace ash
