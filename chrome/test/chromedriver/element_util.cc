@@ -28,7 +28,6 @@ namespace {
 
 const char kElementKey[] = "ELEMENT";
 const char kElementKeyW3C[] = "element-6066-11e4-a52e-4f735466cecf";
-const char kShadowRootKey[] = "shadow-6066-11e4-a52e-4f735466cecf";
 
 bool ParseFromValue(base::Value* value, WebPoint* point) {
   if (!value->is_dict())
@@ -313,22 +312,11 @@ Status CheckElement(const std::string& element_id) {
   return Status(kOk);
 }
 
-std::unique_ptr<base::DictionaryValue> CreateElementCommon(
-    const std::string& key,
-    const std::string& value) {
-  std::unique_ptr<base::DictionaryValue> element(new base::DictionaryValue());
-  element->SetString(key, value);
-  return element;
-}
-
 std::unique_ptr<base::DictionaryValue> CreateElement(
     const std::string& element_id) {
-  return CreateElementCommon(GetElementKey(), element_id);
-}
-
-std::unique_ptr<base::DictionaryValue> CreateShadowRoot(
-    const std::string& shadow_root_id) {
-  return CreateElementCommon(kShadowRootKey, shadow_root_id);
+  std::unique_ptr<base::DictionaryValue> element(new base::DictionaryValue());
+  element->SetString(GetElementKey(), element_id);
+  return element;
 }
 
 std::unique_ptr<base::DictionaryValue> CreateValueFrom(const WebPoint& point) {
@@ -338,14 +326,13 @@ std::unique_ptr<base::DictionaryValue> CreateValueFrom(const WebPoint& point) {
   return dict;
 }
 
-Status FindElementCommon(int interval_ms,
-                         bool only_one,
-                         const std::string* root_element_id,
-                         Session* session,
-                         WebView* web_view,
-                         const base::DictionaryValue& params,
-                         std::unique_ptr<base::Value>* value,
-                         bool isShadowRoot) {
+Status FindElement(int interval_ms,
+                   bool only_one,
+                   const std::string* root_element_id,
+                   Session* session,
+                   WebView* web_view,
+                   const base::DictionaryValue& params,
+                   std::unique_ptr<base::Value>* value) {
   std::string strategy;
   if (!params.GetString("using", &strategy))
     return Status(kInvalidArgument, "'using' must be a string");
@@ -356,17 +343,6 @@ Status FindElementCommon(int interval_ms,
       strategy != "tag name" &&
       strategy != "xpath")
     return Status(kInvalidArgument, "invalid locator");
-
-  /*
-   * Currently there is an opened discussion about if the
-   * following values has to be supported for a Shadow Root
-   * because the current implementation doesn't support them.
-   * We have them disabled for now.
-   * https://github.com/w3c/webdriver/issues/1610
-   */
-  if (isShadowRoot && (strategy == "tag name" || strategy == "xpath")) {
-    return Status(kInvalidArgument, "invalid locator");
-  }
 
   std::string target;
   if (!params.GetString("value", &target))
@@ -381,12 +357,8 @@ Status FindElementCommon(int interval_ms,
   locator->SetString(strategy, target);
   base::ListValue arguments;
   arguments.Append(std::move(locator));
-  if (root_element_id) {
-    if (isShadowRoot)
-      arguments.Append(CreateShadowRoot(*root_element_id));
-    else
-      arguments.Append(CreateElement(*root_element_id));
-  }
+  if (root_element_id)
+    arguments.Append(CreateElement(*root_element_id));
 
   base::TimeTicks start_time = base::TimeTicks::Now();
   int context_retry = 0;
@@ -394,7 +366,6 @@ Status FindElementCommon(int interval_ms,
     std::unique_ptr<base::Value> temp;
     Status status = web_view->CallFunction(
         session->GetCurrentFrameId(), script, arguments, &temp);
-
     // A "Cannot find context" error can occur due to transition from in-process
     // iFrame to OOPIF. Retry a couple of times.
     if (status.IsError() &&
@@ -428,28 +399,6 @@ Status FindElementCommon(int interval_ms,
 
     base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(interval_ms));
   }
-}
-
-Status FindElement(int interval_ms,
-                   bool only_one,
-                   const std::string* root_element_id,
-                   Session* session,
-                   WebView* web_view,
-                   const base::DictionaryValue& params,
-                   std::unique_ptr<base::Value>* value) {
-  return FindElementCommon(interval_ms, only_one, root_element_id, session,
-                           web_view, params, value, false);
-}
-
-Status FindShadowElement(int interval_ms,
-                         bool only_one,
-                         const std::string* shadow_root_id,
-                         Session* session,
-                         WebView* web_view,
-                         const base::DictionaryValue& params,
-                         std::unique_ptr<base::Value>* value) {
-  return FindElementCommon(interval_ms, only_one, shadow_root_id, session,
-                           web_view, params, value, true);
 }
 
 Status GetActiveElement(Session* session,

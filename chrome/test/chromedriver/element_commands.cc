@@ -201,62 +201,6 @@ Status ExecuteFindChildElement(int interval_ms,
       interval_ms, true, &element_id, session, web_view, params, value);
 }
 
-Status ExecuteFindChildElementFromShadowRoot(
-    int interval_ms,
-    Session* session,
-    WebView* web_view,
-    const std::string& shadow_root_id,
-    const base::DictionaryValue& params,
-    std::unique_ptr<base::Value>* value) {
-  return FindShadowElement(interval_ms, true, &shadow_root_id, session,
-                           web_view, params, value);
-}
-
-Status ExecuteFindChildElementsFromShadowRoot(
-    int interval_ms,
-    Session* session,
-    WebView* web_view,
-    const std::string& shadow_root_id,
-    const base::DictionaryValue& params,
-    std::unique_ptr<base::Value>* value) {
-  return FindShadowElement(interval_ms, false, &shadow_root_id, session,
-                           web_view, params, value);
-}
-
-Status ExecuteGetElementShadowRoot(Session* session,
-                                   WebView* web_view,
-                                   const std::string& element_id,
-                                   const base::DictionaryValue& params,
-                                   std::unique_ptr<base::Value>* value) {
-  Status status = CheckElement(element_id);
-
-  if (status.IsError())
-    return status;
-
-  base::ListValue args;
-  args.Append(CreateElement(element_id));
-
-  std::string currentFrameId = session->GetCurrentFrameId();
-
-  status = web_view->CallFunction(session->GetCurrentFrameId(),
-                                  "function(elem) { return elem.shadowRoot; }",
-                                  args, value);
-
-  if (status.IsError()) {
-    if (status.message().find("no such shadow root") != std::string::npos) {
-      return Status(kNoSuchShadowRoot);
-    }
-
-    return status;
-  }
-
-  if (value->get()->is_none()) {
-    return Status(kNoSuchShadowRoot);
-  }
-
-  return status;
-}
-
 Status ExecuteFindChildElements(int interval_ms,
                                 Session* session,
                                 WebView* web_view,

@@ -74,10 +74,6 @@ const char* StatusCodeToString(StatusCode code) {
       return "target frame detached";
     case kElementClickIntercepted:
       return "element click intercepted";
-    case kNoSuchShadowRoot:
-      return "no such shadow root";
-    case kDetachedShadowRoot:
-      return "detached shadow root";
     default:
       return "<unknown>";
   }
