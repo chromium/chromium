@@ -71,6 +71,8 @@ class CORE_EXPORT NGFragmentItemsBuilder {
   // them alive until |AddLine|.
   NGLogicalLineItems* AcquireLogicalLineItems();
   void ReleaseCurrentLogicalLineItems();
+  const NGLogicalLineItems& LogicalLineItems(
+      const NGPhysicalLineBoxFragment&) const;
   void AssociateLogicalLineItems(NGLogicalLineItems* line_items,
                                  const NGPhysicalFragment& line_fragment);
   void AddLine(const NGPhysicalLineBoxFragment& line,

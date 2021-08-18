@@ -97,9 +97,21 @@ void NGBoxFragmentBuilder::AddResult(
     absl::optional<LogicalOffset> relative_offset,
     bool propagate_oof_descendants) {
   const auto& fragment = child_layout_result.PhysicalFragment();
-  if (items_builder_) {
+  const NGLayoutResult* child_box_layout_result = nullptr;
+  if (fragment.IsBox()) {
+    child_box_layout_result = &child_layout_result;
+  } else if (items_builder_) {
     if (const NGPhysicalLineBoxFragment* line =
             DynamicTo<NGPhysicalLineBoxFragment>(&fragment)) {
+      if (UNLIKELY(line->IsBlockInInline() && has_block_fragmentation_)) {
+        // If this line box contains a block-in-inline, propagate break data
+        // from the block-in-inline.
+        const NGLogicalLineItems& line_items =
+            items_builder_->LogicalLineItems(*line);
+        child_box_layout_result = line_items.BlockInInlineLayoutResult();
+        DCHECK(child_box_layout_result);
+      }
+
       items_builder_->AddLine(*line, offset);
       // TODO(kojii): We probably don't need to AddChild this line, but there
       // maybe OOF objects. Investigate how to handle them.
@@ -117,8 +129,9 @@ void NGBoxFragmentBuilder::AddResult(
   AddChild(fragment, offset, /* inline_container */ nullptr, &end_margin_strut,
            child_layout_result.IsSelfCollapsing(), relative_offset,
            adjustment_for_oof_propagation);
-  if (fragment.IsBox())
-    PropagateBreak(child_layout_result);
+
+  if (child_box_layout_result)
+    PropagateBreak(*child_box_layout_result);
 }
 
 void NGBoxFragmentBuilder::AddChild(

@@ -89,6 +89,17 @@ NGLogicalLineItems* NGFragmentItemsBuilder::AcquireLogicalLineItems() {
   return current_line_items_;
 }
 
+const NGLogicalLineItems& NGFragmentItemsBuilder::LogicalLineItems(
+    const NGPhysicalLineBoxFragment& line_fragment) const {
+  if (&line_fragment == current_line_fragment_) {
+    DCHECK(current_line_items_);
+    return *current_line_items_;
+  }
+  const NGLogicalLineItems* items = line_items_map_.at(&line_fragment);
+  DCHECK(items);
+  return *items;
+}
+
 void NGFragmentItemsBuilder::AssociateLogicalLineItems(
     NGLogicalLineItems* line_items,
     const NGPhysicalFragment& line_fragment) {

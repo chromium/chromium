@@ -16,6 +16,7 @@
 namespace blink {
 
 class LayoutObject;
+class NGLayoutResult;
 
 // This class represents an item in a line, after line break, but still mutable
 // and in the logical coordinate system.
@@ -286,6 +287,8 @@ class NGLogicalLineItems {
 
   NGLogicalLineItem* FirstInFlowChild();
   NGLogicalLineItem* LastInFlowChild();
+
+  const NGLayoutResult* BlockInInlineLayoutResult() const;
 
   // Add a child. Accepts all constructor arguments for |NGLogicalLineItem|.
   template <class... Args>
