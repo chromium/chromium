@@ -2167,15 +2167,19 @@ bool NGBoxFragmentPainter::HitTestChildBoxItem(
     const NGInlineBackwardCursor& cursor) {
   DCHECK_EQ(&item, cursor.Current().Item());
 
-  if (const NGPhysicalBoxFragment* child_fragment = item.BoxFragment()) {
-    const PhysicalOffset child_offset =
-        hit_test.inline_root_offset + item.OffsetInContainerFragment();
-    return HitTestChildBoxFragment(hit_test, *child_fragment, cursor,
-                                   child_offset);
+  // Box fragments for SVG's inline boxes don't have correct geometries.
+  if (!item.GetLayoutObject()->IsSVGInline()) {
+    if (const NGPhysicalBoxFragment* child_fragment = item.BoxFragment()) {
+      const PhysicalOffset child_offset =
+          hit_test.inline_root_offset + item.OffsetInContainerFragment();
+      return HitTestChildBoxFragment(hit_test, *child_fragment, cursor,
+                                     child_offset);
+    }
+    DCHECK(
+        !To<LayoutInline>(item.GetLayoutObject())->ShouldCreateBoxFragment());
   }
 
   DCHECK(item.GetLayoutObject()->IsLayoutInline());
-  DCHECK(!To<LayoutInline>(item.GetLayoutObject())->ShouldCreateBoxFragment());
   if (NGInlineCursor descendants = cursor.CursorForDescendants()) {
     if (HitTestItemsChildren(hit_test, container, descendants))
       return true;

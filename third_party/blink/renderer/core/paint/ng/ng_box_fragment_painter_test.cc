@@ -222,4 +222,25 @@ TEST_P(NGBoxFragmentPainterTest, ClippedText) {
   EXPECT_EQ(num_all_display_items - 3, ContentDisplayItems().size());
 }
 
+TEST_P(NGBoxFragmentPainterTest, NodeAtPointWithSvgInline) {
+  ScopedSVGTextNGForTest enable_svg_text_ng(true);
+  SetBodyInnerHTML(R"HTML(
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="900"
+     viewBox="0 0 100 100" id="svg">
+ <g font-size="13">
+  <text x="10%" y="25%" id="pass">Expected paragraph.</text>
+  <text x="10%" y="54%">
+  <tspan id="fail">Should not be selected.</tspan>
+  </text>
+ </g>
+</svg>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* root = GetDocument().getElementById("svg")->GetLayoutBox();
+  HitTestResult result;
+  root->NodeAtPoint(result, HitTestLocation(FloatPoint(256, 192)),
+                    PhysicalOffset(0, 0), kHitTestForeground);
+  EXPECT_EQ(GetDocument().getElementById("pass"), result.InnerElement());
+}
+
 }  // namespace blink
