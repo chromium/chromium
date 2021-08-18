@@ -32,7 +32,7 @@
   `, 'Tests Accessibility.getChildAXNodes');
   await dp.Accessibility.enable();
 
-  let {result} = await dp.Accessibility.getFullAXTree({max_depth: 2});
+  let {result} = await dp.Accessibility.getFullAXTree({depth: 2});
   let iframeNode;
   for (const node of result.nodes) {
     if (node.role?.value === 'Iframe') {

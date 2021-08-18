@@ -751,6 +751,7 @@ LocalFrame* InspectorAccessibilityAgent::FrameFromIdOrRoot(
 }
 
 Response InspectorAccessibilityAgent::getFullAXTree(
+    protocol::Maybe<int> depth,
     protocol::Maybe<int> max_depth,
     Maybe<String> frame_id,
     std::unique_ptr<protocol::Array<AXNode>>* nodes) {
@@ -766,7 +767,9 @@ Response InspectorAccessibilityAgent::getFullAXTree(
   if (document->View()->NeedsLayout() || document->NeedsLayoutTreeUpdate())
     document->UpdateStyleAndLayout(DocumentUpdateReason::kInspector);
 
-  *nodes = WalkAXNodesToDepth(document, max_depth.fromMaybe(-1));
+  // Once max_depth has been removed, we should just use depth.fromMaybe(-1).
+  int depth_or_default(depth.fromMaybe(max_depth.fromMaybe(-1)));
+  *nodes = WalkAXNodesToDepth(document, depth_or_default);
 
   return Response::Success();
 }

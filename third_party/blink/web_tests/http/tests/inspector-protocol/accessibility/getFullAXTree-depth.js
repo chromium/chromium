@@ -25,7 +25,7 @@
     <div>Some text in a div, also a <a href='https://www.example.com'>link</a></div>
     <button>Hello Button</button>
   `, 'Tests Accessibility.getRootAXNode');
-  const {result} = await dp.Accessibility.getFullAXTree({max_depth: 2});
+  const {result} = await dp.Accessibility.getFullAXTree({depth: 2});
 
   const nodeMap = new Map();
   for (const node of result.nodes)
