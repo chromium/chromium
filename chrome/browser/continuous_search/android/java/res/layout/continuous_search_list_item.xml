@@ -8,5 +8,4 @@
     android:id="@+id/csn_chip"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:gravity="center"
-    app:extendLateralPadding="true" />
+    android:gravity="center" />

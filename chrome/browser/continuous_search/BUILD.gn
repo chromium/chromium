@@ -39,6 +39,7 @@ android_library("java") {
     "//services/network/public/mojom:url_loader_base_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_coordinatorlayout_coordinatorlayout_java",
+    "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//ui/android:ui_full_java",
     "//url:gurl_java",
