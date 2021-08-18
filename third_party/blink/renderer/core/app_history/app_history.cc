@@ -108,7 +108,7 @@ class NavigateReaction final : public ScriptFunction {
     }
 
     AppHistory* app_history = AppHistory::appHistory(*window_);
-    app_history->post_navigate_event_ongoing_navigation_signal_ = nullptr;
+    app_history->ongoing_navigation_signal_ = nullptr;
     if (type_ == ResolveType::kFulfill) {
       if (navigation_) {
         navigation_->resolver->Resolve();
@@ -572,15 +572,15 @@ AppHistory::DispatchResult AppHistory::DispatchNavigateEvent(
   navigate_event->SetUrl(url);
 
   DCHECK(!ongoing_navigate_event_);
+  DCHECK(!ongoing_navigation_signal_);
   ongoing_navigate_event_ = navigate_event;
+  ongoing_navigation_signal_ = navigate_event->signal();
   DispatchEvent(*navigate_event);
   ongoing_navigate_event_ = nullptr;
-  if (navigate_event->signal()->aborted())
-    return DispatchResult::kAbort;
 
-  post_navigate_event_ongoing_navigation_signal_ = navigate_event->signal();
   if (navigate_event->defaultPrevented()) {
-    FinalizeWithAbortedNavigationError(script_state, navigation);
+    if (!navigate_event->signal()->aborted())
+      FinalizeWithAbortedNavigationError(script_state, navigation);
     return DispatchResult::kAbort;
   }
 
@@ -616,8 +616,7 @@ AppHistory::DispatchResult AppHistory::DispatchNavigateEvent(
 }
 
 void AppHistory::InformAboutCanceledNavigation() {
-  if (ongoing_navigate_event_ ||
-      post_navigate_event_ongoing_navigation_signal_) {
+  if (ongoing_navigation_signal_) {
     auto* script_state =
         ToScriptStateForMainWorld(GetSupplementable()->GetFrame());
     ScriptState::Scope scope(script_state);
@@ -677,15 +676,13 @@ void AppHistory::CleanupApiNavigation(AppHistoryApiNavigation& navigation) {
 void AppHistory::FinalizeWithAbortedNavigationError(
     ScriptState* script_state,
     AppHistoryApiNavigation* navigation) {
-  DCHECK(!ongoing_navigate_event_ ||
-         !post_navigate_event_ongoing_navigation_signal_);
   if (ongoing_navigate_event_) {
     ongoing_navigate_event_->preventDefault();
-    ongoing_navigate_event_->signal()->SignalAbort();
     ongoing_navigate_event_ = nullptr;
-  } else if (post_navigate_event_ongoing_navigation_signal_) {
-    post_navigate_event_ongoing_navigation_signal_->SignalAbort();
-    post_navigate_event_ongoing_navigation_signal_ = nullptr;
+  }
+  if (ongoing_navigation_signal_) {
+    ongoing_navigation_signal_->SignalAbort();
+    ongoing_navigation_signal_ = nullptr;
   }
 
   if (navigation)
@@ -716,7 +713,7 @@ void AppHistory::Trace(Visitor* visitor) const {
   visitor->Trace(ongoing_traversals_);
   visitor->Trace(upcoming_non_traversal_navigation_);
   visitor->Trace(ongoing_navigate_event_);
-  visitor->Trace(post_navigate_event_ongoing_navigation_signal_);
+  visitor->Trace(ongoing_navigation_signal_);
 }
 
 }  // namespace blink

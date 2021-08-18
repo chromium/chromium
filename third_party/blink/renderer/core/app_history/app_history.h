@@ -137,7 +137,7 @@ class CORE_EXPORT AppHistory final : public EventTargetWithInlineData,
   Member<AppHistoryApiNavigation> upcoming_non_traversal_navigation_;
 
   Member<AppHistoryNavigateEvent> ongoing_navigate_event_;
-  Member<AbortSignal> post_navigate_event_ongoing_navigation_signal_;
+  Member<AbortSignal> ongoing_navigation_signal_;
 };
 
 }  // namespace blink
