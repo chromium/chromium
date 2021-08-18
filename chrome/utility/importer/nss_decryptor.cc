@@ -155,10 +155,10 @@ bool NSSDecryptor::ReadAndParseLogins(
   if (!parsed_json || !parsed_json->is_dict())
     return false;
 
-  const base::Value* blacklist_domains =
+  const base::Value* disabled_hosts =
       parsed_json->FindListKey("disabledHosts");
-  if (blacklist_domains) {
-    for (const auto& value : blacklist_domains->GetList()) {
+  if (disabled_hosts) {
+    for (const auto& value : disabled_hosts->GetList()) {
       if (!value.is_string())
         continue;
       forms->push_back(CreateBlockedPasswordForm(value.GetString()));
