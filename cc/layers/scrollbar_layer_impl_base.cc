@@ -211,7 +211,9 @@ gfx::Rect ScrollbarLayerImplBase::ComputeThumbQuadRectWithThumbThicknessScale(
   float track_length = TrackLength();
   int thumb_length = ThumbLength();
   int thumb_thickness = ThumbThickness();
-  float maximum = scroll_layer_length() - clip_layer_length();
+  // TODO(crbug.com/1239770): This is a speculative fix.
+  float maximum = std::max(scroll_layer_length() - clip_layer_length(), 0.0f);
+  DCHECK(scroll_layer_length() >= clip_layer_length());
 
   // With the length known, we can compute the thumb's position.
   float clamped_current_pos = base::clamp(current_pos(), 0.0f, maximum);
