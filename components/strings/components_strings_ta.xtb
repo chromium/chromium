@@ -272,6 +272,7 @@
 <translation id="1838374766361614909">தேடலை அழி</translation>
 <translation id="1839551713262164453">கொள்கை மதிப்புகளின் சரிபார்ப்பு பிழைகளுடன் தோல்வியில் முடிந்தது.</translation>
 <translation id="1842969606798536927">பணம் செலுத்துக</translation>
+<translation id="1856713167556118146">மறைநிலையில் செய்யப்படாதவை:</translation>
 <translation id="1871208020102129563">நிலையான ப்ராக்ஸி சேவையகங்களைப் பயன்படுத்த ப்ராக்ஸி அமைக்கப்பட்டுள்ளது, .pac ஸ்கிரிப்ட் URL அல்ல.</translation>
 <translation id="1871284979644508959">அவசியமானவை</translation>
 <translation id="1875512691959384712">Google Forms</translation>
@@ -1015,6 +1016,7 @@
 <translation id="4465818729556336129">இந்த ஆவணம் ரகசியமானது, இதைப் பிரிண்ட் செய்வதை நிர்வாகி பரிந்துரைக்கவில்லை.</translation>
 <translation id="4476953670630786061">இந்தப் படிவம் பாதுகாப்பானதல்ல. ’தன்னிரப்பி’ அம்சம் முடக்கப்பட்டுள்ளது.</translation>
 <translation id="4477350412780666475">அடுத்த டிராக்</translation>
+<translation id="4481251927743463293">மறைநிலையில் செய்யப்படுவை</translation>
 <translation id="4481394504112738036">ரகசியமான ஃபைல்</translation>
 <translation id="4482953324121162758">இந்தத் தளம் மொழிபெயர்க்கப்படாது.</translation>
 <translation id="4490717597759821841">A7</translation>
@@ -1115,10 +1117,17 @@
 <translation id="4819347708020428563">இயல்புக் காட்சியில் விரிவுரைகளைத் திருத்தவா?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google விரிதாளை விரைவாக உருவாக்க Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்</translation>
 <translation id="4825507807291741242">பவர்ஃபுல்</translation>
+<translation id="4827402517081186284">மறைநிலையில் உலாவும்போது ஆன்லைனில் உங்கள் அடையாளம் மறைக்கப்படாது:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />நீங்கள்தான் பார்வையிடுகிறீர்கள் என்பதைத் தளங்களால் அறிய முடியும்<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />நிறுவனங்கள் அல்லது பள்ளிகளால் உங்கள் உலாவல் செயல்பாட்டைக் கண்காணிக்க முடியும்<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />இணைய டிராஃபிக்கை இணையச் சேவை வழங்குநர்கள் கண்காணிக்கக்கூடும்<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="4838327282952368871">ட்ரீமி</translation>
 <translation id="484462545196658690">தானியங்கு</translation>
 <translation id="4850886885716139402">காட்சி</translation>
 <translation id="485316830061041779">ஜெர்மன்</translation>
+<translation id="4853901935952445031">பிப்ரவரி 2022க்குப் பிறகு U2F APIயை இந்தத் தளத்தால் பயன்படுத்த முடியாது. இது உங்களுடைய தளமாக இருந்தால் Web Authentication APIயைப் பயன்படுத்தும் வகையில் இதை மாற்ற வேண்டும்.</translation>
 <translation id="4854362297993841467">இந்த டெலிவரி முறை இல்லை. வேறு முறையைப் பயன்படுத்திப் பார்க்கவும்.</translation>
 <translation id="4854853140771946034">Google Keepபில் புதிய குறிப்பை விரைவாக உருவாக்கும்</translation>
 <translation id="4876188919622883022">எளிதாக்கப்பட்ட காட்சி</translation>
@@ -1170,7 +1179,7 @@
 <translation id="503069730517007720">"<ph name="SOFTWARE_NAME" />" மென்பொருளுக்கு மூலச் சான்றிதழ் தேவை, ஆனால் நிறுவப்படவில்லை. இந்தச் சிக்கலைச் சரிசெய்ய, "<ph name="SOFTWARE_NAME" />" மென்பொருளின் உள்ளமைவு வழிமுறைகளை ஐடி நிர்வாகி பின்பற்ற வேண்டும். <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Google மொழியாக்கம் ஓர் அறிமுகம்</translation>
 <translation id="503498442187459473"><ph name="HOST" /> உங்கள் கேமராவையும் மைக்ரோஃபோனையும் பயன்படுத்த விரும்புகிறது</translation>
-<translation id="5039762155821394373">எழுத்துரு அளவு</translation>
+<translation id="5039762155821394373">எழுத்து வடிவ அளவு</translation>
 <translation id="5039804452771397117">அனுமதி</translation>
 <translation id="5040262127954254034">தனியுரிமை</translation>
 <translation id="5043480802608081735">நீங்கள் நகலெடுத்த இணைப்பு</translation>
@@ -1619,7 +1628,7 @@
 <translation id="6665553082534466207">டிரிப்பில் பஞ்ச் ரைட்</translation>
 <translation id="6671697161687535275">Chromium இலிருந்து படிவப் பரிந்துரையை அகற்றவா?</translation>
 <translation id="6685834062052613830">வெளியேறி, அமைப்பை முடிக்கவும்</translation>
-<translation id="6687335167692595844">கோரப்பட்ட எழுத்துரு அளவு</translation>
+<translation id="6687335167692595844">கோரப்பட்ட எழுத்து வடிவ அளவு</translation>
 <translation id="6688743156324860098">மாற்று…</translation>
 <translation id="6688775486821967877">விர்ச்சுவல் கார்டு தற்போது கிடைக்கவில்லை, பிறகு முயலவும்</translation>
 <translation id="6689249931105087298">கறுப்புப் புள்ளிச் சுருக்கத்துடன் சார்புடையது</translation>
@@ -1640,6 +1649,7 @@
 <translation id="6757797048963528358">உங்கள் சாதனம் உறக்கநிலைக்குச் சென்றது.</translation>
 <translation id="6767985426384634228">முகவரியை மாற்றவா?</translation>
 <translation id="6768213884286397650">Hagaki (போஸ்ட்கார்டு)</translation>
+<translation id="6774185088257932239">மறைநிலை குறித்து <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">ஊதா</translation>
 <translation id="6786747875388722282">நீட்டிப்புகள்</translation>
@@ -1687,6 +1697,7 @@
 <translation id="6965382102122355670">சரி</translation>
 <translation id="6965978654500191972">சாதனம்</translation>
 <translation id="696703987787944103">பெர்செப்ச்சுவல்</translation>
+<translation id="6968269510885595029">உங்கள் பாதுகாப்பு விசையைப் பயன்படுத்துங்கள்</translation>
 <translation id="6970216967273061347">மாவட்டம்</translation>
 <translation id="6971439137020188025">Slidesஸில் புதிய Google விளக்கக்காட்சியை விரைவாக உருவாக்கும்</translation>
 <translation id="6972629891077993081">HID சாதனங்கள்</translation>
@@ -1752,6 +1763,7 @@
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> பாதுகாப்புத் தரநிலைகளுக்கு இணங்கவில்லை.</translation>
 <translation id="7210993021468939304">கண்டெய்னருக்குள் நடக்கும் Linux செயல்பாட்டினைப் பார்க்க முடியும், மற்றும் கண்டெய்னருக்குள் Linux ஆப்ஸை நிறுவி இயக்க முடியும்</translation>
 <translation id="721197778055552897">இந்த சிக்கல் குறித்து <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" />.</translation>
+<translation id="7215025035562547931">தகவல்கள் துல்லியமாக உள்ளனவா எனப் பாருங்கள்</translation>
 <translation id="7217745192097460130">பேமெண்ட் விவரங்களைச் சரிபார்த்து, வாங்குவதை நிறைவுசெய்வதற்கு Touch IDயைப் பயன்படுத்தவா?</translation>
 <translation id="7219179957768738017">இணைப்பு <ph name="SSL_VERSION" /> ஐப் பயன்படுத்துகிறது.</translation>
 <translation id="7220786058474068424">செயல்படுத்துகிறது</translation>
@@ -2087,6 +2099,12 @@
 <translation id="8307888238279532626">நிறுவியுள்ள ஆப்ஸும் அவை எப்போதெல்லாம் பயன்படுத்தப்படுகின்றன என்ற தகவலும்</translation>
 <translation id="831207732689920588">இந்தப் பக்கம் சந்தேகத்திற்குரியதாக உள்ளது (Chrome கொடியிட்டுள்ளது).</translation>
 <translation id="831997045666694187">மாலை</translation>
+<translation id="8328484624016508118">அனைத்து மறைநிலைப் பக்கங்களையும் மூடியதும் Chrome இவற்றை அழிக்கும்:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />இந்தச் சாதனத்தில் உள்ள உங்களின் உலாவல் செயல்பாடு<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />இந்தச் சாதனத்தில் உள்ள உங்களின் தேடல் விவரங்கள்<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />படிவங்களில் டைப் செய்த தகவல்கள்<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489"><ph name="HOST_NAME" /> க்கான அணுகல் மறுக்கப்பட்டது</translation>
 <translation id="833262891116910667">தனிப்படுத்தும்</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> மொழியில் உள்ள பக்கங்கள் மொழிபெயர்க்கப்படாது</translation>
@@ -2174,7 +2192,7 @@
 <translation id="8703575177326907206"><ph name="DOMAIN" /> க்கான உங்கள் இணைப்பு என்க்ரிப்ட் செய்யப்படவில்லை.</translation>
 <translation id="8705331520020532516">வரிசை எண்</translation>
 <translation id="8708134712139312373">புளூடூத் சாதனங்களுடன் இணைய முயலும்போது அனுமதி கேட்க வேண்டும்</translation>
-<translation id="8710842507289500830">எழுத்துரு நடை</translation>
+<translation id="8710842507289500830">எழுத்து வடிவ நடை</translation>
 <translation id="8712637175834984815">புரிந்தது</translation>
 <translation id="8718314106902482036">பேமெண்ட் முடியவில்லை</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, தேடல் பரிந்துரை</translation>

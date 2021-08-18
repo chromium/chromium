@@ -994,6 +994,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4358461427845829800">Upravljajte načinima plaćanja…</translation>
 <translation id="4359160567981085931">Upravo ste unijeli lozinku na obmanjujućoj web lokaciji. Chrome vam može pomoći. Da promijenite lozinku i obavijestite Google da vam je račun možda ugrožen, kliknite Zaštiti račun.</translation>
 <translation id="4367563149485757821">Broj 12 (koverta)</translation>
+<translation id="437040971055499437">Sigurnosni događaj se javlja</translation>
 <translation id="437058704415269440">Stanje računa</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Očekivana vrijednost vrste <ph name="VALUE_TYPE" />.</translation>
@@ -1403,6 +1404,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5803412860119678065">Želite li popuniti svoju karticu <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Odobrenja</translation>
 <translation id="5810442152076338065">Veza s domenom <ph name="DOMAIN" /> je šifrirana pomoću zastarjelog paketa šifriranja.</translation>
+<translation id="5812947184178430888">Kada Chrome označi sigurnosne događaje, relevantni podaci o događajima se šalju vašem administratoru. To može obuhvatati URL-ove stranica koje posjetite na Chromeu, nazive fajlova ili metapodatke te korisničko ime koje koristite da se prijavite u aplikacije zasnovane na webu, na uređaj i Chrome.</translation>
 <translation id="5813119285467412249">&amp;Ponovi dodavanje</translation>
 <translation id="5817918615728894473">Upari</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Ova kartica će se teretiti prilikom plaćanja, ali se njen stvarni broj neće dijeliti s ovom web lokacijom. Za dodatnu sigurnost će se generirati privremeni CVC.}one{Kartica koju odaberete će se teretiti prilikom plaćanja, ali se njen stvarni broj neće dijeliti s ovom web lokacijom. Za dodatnu sigurnost će se generirati privremeni CVC.}few{Kartica koju odaberete će se teretiti prilikom plaćanja, ali se njen stvarni broj neće dijeliti s ovom web lokacijom. Za dodatnu sigurnost će se generirati privremeni CVC.}other{Kartica koju odaberete će se teretiti prilikom plaćanja, ali se njen stvarni broj neće dijeliti s ovom web lokacijom. Za dodatnu sigurnost će se generirati privremeni CVC.}}</translation>

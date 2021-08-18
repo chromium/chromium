@@ -1660,26 +1660,6 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       Os URLs precisam ter um esquema HTTPS, como "https://example.com".
 
       Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
-<translation id="2972531017545674240">Se a política for definida, será especificada uma lista de apps da Web com instalação silenciosa (sem interação do usuário) e que não podem ser desinstalados ou desativados.
-
-      Cada item da lista da política é um objeto com um elemento obrigatório:
-      <ph name="URL_LABEL" />, o URL do app da Web que será instalado
-
-      E três elementos opcionais:
-      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />,
-      para a forma como o app da Web é aberto (uma nova guia é o padrão).
-
-      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />,
-      com valor "verdadeiro" se você quiser criar atalhos na área de trabalho do <ph name="LINUX_OS_NAME" /> e do <ph name="MS_WIN_NAME" />.
-
-      - <ph name="FALLBACK_APP_NAME_LABEL" />
-      (a partir da versão 90 do <ph name="PRODUCT_NAME" />),
-      permite que você substitua o nome do app se ele não for um
-      Progressive Web App (PWA) ou o nome do app instalado
-      temporariamente se ele for um PWA, mas a autenticação for exigida antes da
-      conclusão da instalação.
-
-      Consulte a política <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> para fixar apps na estante do <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="2976429807269247880">Configurações de comportamento de cookie <ph name="ATTRIBUTE_SAMESITE_NAME" /> legado</translation>
 <translation id="2985927503455169394">Usa o modo padrão da experiência de integração do Assistente</translation>
 <translation id="2987155890997901449">Ativar ARC</translation>
@@ -2689,11 +2669,6 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
           Se esta política não for definida, o clique automático ficará desativado inicialmente, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
 <translation id="4212181786686887763">O URL no qual o download da imagem do plano de fundo pode ser feito.</translation>
 <translation id="4224610387358583899">Tempo de espera para bloqueio de tela</translation>
-<translation id="4225260426043444650">Esta configuração permite que os usuários usem o navegador <ph name="LACROS_NAME" />.
-
-      Se esta política for definida como "Desativada" ou não for definida, o usuário não poderá usar o <ph name="LACROS_NAME" />.
-
-      Se esta política for definida como "Ativada", o usuário poderá usar o navegador <ph name="LACROS_NAME" />.</translation>
 <translation id="4228745249339680042">A definição da política especifica os URLs e domínios para os quais nenhuma solicitação será exibida quando os certificados de atestado das chaves de segurança forem solicitados. Além disso, um sinal será enviado para a chave de segurança indicando que o atestado individual pode ser usado. Se a política não for definida, os usuários receberão uma solicitação no <ph name="PRODUCT_NAME" /> 65 ou versões mais recentes quando os sites solicitarem o atestado das chaves de segurança.
 
       Os URLs serão interpretados apenas como U2F appIDs. Os domínios serão interpretados apenas como webauthn RP IDs. Sendo assim, para abranger as APIs U2F e webauthn, tanto o domínio quanto o URL do appID precisam ser listados para um site.</translation>
@@ -4497,6 +4472,7 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
           Se definida como falsa ou não configurada, a criação e o login de usuários supervisionados serão desativados. Todos os usuários supervisionados existentes serão ocultos.
 
           OBSERVAÇÃO: há uma diferença entre o comportamento padrão em dispositivos corporativos e de consumidores: em dispositivos de consumidores, os usuários supervisionados são ativados por padrão. Já em dispositivos corporativos, o padrão é os usuários supervisionados estarem desativados.</translation>
+<translation id="665023848306499203">Permitir que dispositivos selecionem uma versão de atualização específica</translation>
 <translation id="6652197835259177259">Configurações de usuários gerenciados localmente</translation>
 <translation id="6653897159826215341">Se a política for definida como "Ativada", o <ph name="PRODUCT_NAME" /> abrirá a caixa de diálogo de impressão do sistema em vez da integrada quando os usuários solicitarem uma impressão.
 
@@ -4666,19 +4642,6 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 <translation id="6857240169209507953">Evitar que a <ph name="BOREALIS_NAME" /> seja executada em um dispositivo</translation>
 <translation id="685769593149966548">Aplicar o Modo restrito rigoroso para o YouTube</translation>
 <translation id="686079137349561371">Microsoft Windows 7 ou versão posterior</translation>
-<translation id="6864283226733000548">Essa configuração apresenta várias opções de disponibilidade para o navegador <ph name="LACROS_NAME" />.
-
-      Se a política for definida como <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" />, o usuário poderá ativar o <ph name="LACROS_NAME" /> e torná-lo o navegador principal. O <ph name="LACROS_NAME" /> ainda pode ser proibido com o uso da política <ph name="LACROS_ALLOWED_POLICY_NAME" />.
-
-      Se a política for configurada como <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" />, o usuário não poderá usar o <ph name="LACROS_NAME" />. A <ph name="LACROS_ALLOWED_POLICY_NAME" /> será ignorada.
-
-      Se a política for configurada como<ph name="LACROS_AVAILABILITY_SIDE_BY_SIDE_VALUE" />, o <ph name="LACROS_NAME" /> será ativado, mas não será o navegador principal. A <ph name="LACROS_ALLOWED_POLICY_NAME" /> será ignorada.
-
-      Se a política for configurada como<ph name="LACROS_AVAILABILITY_LACROS_PRIMARY_VALUE" />, o <ph name="LACROS_NAME" /> será ativado e definido como o navegador principal. A <ph name="LACROS_ALLOWED_POLICY_NAME" /> será ignorada.
-
-      Se a política for deixada sem definição, o padrão será <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" /> para usuários gerenciados por empresas e <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" /> para usuários não gerenciados.
-
-      No futuro, será possível fazer com que o <ph name="LACROS_NAME" /> seja o único navegador disponível no <ph name="PRODUCT_OS_NAME" /> com o valor <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" />.</translation>
 <translation id="6865392932254477045">Se a política for definida, você poderá listar sites com permissão automática para acessar dispositivos seriais USB com IDs de produto e fornecedor correspondentes aos campos <ph name="VENDOR_ID_FIELD_NAME" /> e <ph name="PRODUCT_ID_FIELD_NAME" />. A omissão do campo <ph name="PRODUCT_ID_FIELD_NAME" /> concede aos sites permissão para acessar dispositivos com um ID de fornecedor correspondente ao campo <ph name="VENDOR_ID_FIELD_NAME" /> e a qualquer ID de produto.
 
       Os URLs precisam ser válidos. Caso contrário, a política será ignorada. Apenas a origem (esquema, host e porta) do URL é considerada.
@@ -5226,6 +5189,20 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
 <translation id="7477231245051133709">Ativar o recurso de acessibilidade de áudio mono</translation>
 <translation id="7477239290070847560">Destinos de protocolos baseados em Zeroconf (mDNS + DNS-SD)</translation>
 <translation id="7485481791539008776">Regras de seleção de impressora padrão</translation>
+<translation id="7493995861907758679">Esta configuração permite que dispositivos selecionem uma versão de atualização específica do <ph name="PRODUCT_OS_NAME" />.
+
+      Se ela não for definida, os dispositivos serão atualizados de acordo com outras configurações ou para a versão mais recente disponível.
+
+      Se ela for definida, os dispositivos serão atualizados para a versão selecionada.
+
+      O formato exato do valor desta política é uma implementação do serviço de atualização e pode mudar no futuro. O valor da política não é processado no dispositivo.
+
+      Se usada com <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" />, esta política será priorizada pelo serviço de atualização.
+      Ao contrário de <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" />, que permite atualizações menores, os dispositivos serão mantidos na versão selecionada até que o valor desta política seja mudado.
+
+      Se usada com <ph name="DEVICE_ROLLBACK_TO_TARGET_VERSION_POLICY_NAME" />, o dispositivo poderá ser revertida para uma versão anterior.
+
+      Aviso: não recomendamos configurar as restrições de versão, já que elas podem impedir atualizações de software e correções importantes de segurança. Restringir as atualizações para uma versão específica pode colocar os usuários em risco.</translation>
 <translation id="7506745375479451616">Esta política controla o comando usado para abrir URLs no <ph name="PRODUCT_NAME" /> ao alternar do <ph name="IE_PRODUCT_NAME" />. Ela pode ser definida como um caminho de arquivo executável ou <ph name="PRODUCT_NAME_PLACEHOLDER" /> para detectar automaticamente o local do <ph name="PRODUCT_NAME" />.
 
       Se ela não for definida, o <ph name="IE_PRODUCT_NAME" /> detectará automaticamente o caminho executável do <ph name="PRODUCT_NAME" /> ao abrir o <ph name="PRODUCT_NAME" /> com o Internet Explorer.

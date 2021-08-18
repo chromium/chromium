@@ -2200,6 +2200,7 @@
 <translation id="3305661444342691068">Открыть PDF для просмотра</translation>
 <translation id="3308116878371095290">Попытка сохранить файл cookie заблокирована.</translation>
 <translation id="3308134619352333507">Скрыть кнопку</translation>
+<translation id="3308681281309926497">Ваши данные сохраняются на посещенных сайтах, пока вы не закроете Chrome.</translation>
 <translation id="3308738399950580893">Реклама</translation>
 <translation id="3308852433423051161">Загрузка Google Ассистента…</translation>
 <translation id="3309330461362844500">Идентификатор сертификата</translation>
@@ -2753,6 +2754,7 @@
 <translation id="3873423927483480833">Показать PIN-коды</translation>
 <translation id="3873915545594852654">Не удалось запустить ARC++.</translation>
 <translation id="3874164307099183178">Включить Google Ассистента</translation>
+<translation id="3875815154304214043">Приложение "<ph name="APP_NAME" />" и поддерживаемые ссылки будут открываться в новой вкладке браузера. <ph name="BEGIN_LINK_LEARN_MORE" />Подробнее…<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256">Настройки функции "Обмен с окружением" для устройства пользователя <ph name="USER_NAME" /> с аккаунтом <ph name="USER_EMAIL" />.</translation>
 <translation id="3879748587602334249">Диспетчер загрузки</translation>
 <translation id="3882165008614329320">Видео с камеры или из файла</translation>
@@ -3900,6 +3902,7 @@
 <translation id="5157635116769074044">Прикрепить эту страницу к экрану запуска…</translation>
 <translation id="5159094275429367735">Настроить Crostini</translation>
 <translation id="5159419673777902220">Кто-то из твоих родителей отключил разрешения для этого расширения</translation>
+<translation id="5159643365935452998">Автоматическое удаление данных</translation>
 <translation id="5160634252433617617">Физическая клавиатура</translation>
 <translation id="5160857336552977725">Войдите в аккаунт на устройстве <ph name="DEVICE_TYPE" /></translation>
 <translation id="5161251470972801814">USB-устройства от поставщика "<ph name="VENDOR_NAME" />"</translation>
@@ -4463,6 +4466,7 @@
 <translation id="5790651917470750848">Такой порт уже существует.</translation>
 <translation id="5792728279623964091">Нажмите кнопку питания.</translation>
 <translation id="5793339252089865437">Скачивание обновлений по мобильной сети может привести к дополнительным расходам.</translation>
+<translation id="5794034487966529952">На рабочем столе "<ph name="DESK_TITLE" />" открыто несколько окон браузера (<ph name="NUM_BROWSERS" />)</translation>
 <translation id="5794414402486823030">Всегда открывать в программе просмотра по умолчанию</translation>
 <translation id="5794700615121138172">Общие папки Linux</translation>
 <translation id="5794786537412027208">Закрыть все приложения Chrome</translation>

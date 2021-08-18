@@ -995,6 +995,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4358461427845829800">Urus kaedah pembayaran...</translation>
 <translation id="4359160567981085931">Anda baru sahaja memasukkan kata laluan anda pada tapak yang menipu. Chrome boleh membantu. Untuk menukar kata laluan anda dan memaklumi Google bahawa akaun anda mungkin berisiko, klik Lindungi Akaun.</translation>
 <translation id="4367563149485757821">Number-12 (Sampul Surat)</translation>
+<translation id="437040971055499437">Peristiwa keselamatan berlaku</translation>
 <translation id="437058704415269440">Baki Akaun</translation>
 <translation id="4372516964750095882">Fanfold-AS</translation>
 <translation id="4372948949327679948">Nilai <ph name="VALUE_TYPE" /> yang dijangka.</translation>
@@ -1404,6 +1405,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5803412860119678065">Adakah anda ingin mengisi <ph name="CARD_DETAIL" /> anda?</translation>
 <translation id="5804241973901381774">Kebenaran</translation>
 <translation id="5810442152076338065">Sambungan anda ke <ph name="DOMAIN" /> disulitkan menggunakan suit sifer yang sudah usang.</translation>
+<translation id="5812947184178430888">Apabila peristiwa keselamatan dibenderakan oleh Chrome, data yang berkaitan tentang peristiwa tersebut akan dihantar kepada pentadbir anda. Data ini boleh termasuk URL halaman yang anda lawati dalam Chrome, nama fail atau metadata dan nama pengguna yang anda gunakan untuk log masuk ke aplikasi berasaskan web, peranti dan Chrome anda.</translation>
 <translation id="5813119285467412249">&amp;Buat Semula Tambahkan</translation>
 <translation id="5817918615728894473">Gandingkan</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Kad ini akan dikenakan bayaran apabila anda membuat pembayaran, tetapi nombor sebenar kad tidak akan dikongsi dengan tapak ini. Untuk mendapatkan keselamatan tambahan, CVC sementara akan dijana.}other{Kad yang anda pilih akan dikenakan bayaran apabila anda membuat pembayaran, tetapi nombor sebenar kad tidak akan dikongsi dengan tapak ini. Untuk mendapatkan keselamatan tambahan, CVC sementara akan dijana.}}</translation>

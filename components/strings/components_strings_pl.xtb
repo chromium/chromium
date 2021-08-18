@@ -985,6 +985,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="4358461427845829800">Zarządzaj formami płatności…</translation>
 <translation id="4359160567981085931">Przed chwilą wpisano hasło na stronie wprowadzającej w błąd. Chrome może pomóc. Aby zmienić hasło i powiadomić Google, że Twoje konto może być zagrożone, kliknij Chroń konto.</translation>
 <translation id="4367563149485757821">Number-12 (koperta)</translation>
+<translation id="437040971055499437">Wystąpiło zdarzenie związane z bezpieczeństwem</translation>
 <translation id="437058704415269440">Saldo konta</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Oczekiwano wartości typu <ph name="VALUE_TYPE" />.</translation>
@@ -1394,6 +1395,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="5803412860119678065">Chcesz wpisać dane swojej karty (<ph name="CARD_DETAIL" />)?</translation>
 <translation id="5804241973901381774">Uprawnienia</translation>
 <translation id="5810442152076338065">Połączenie z <ph name="DOMAIN" /> jest szyfrowane przy użyciu przestarzałego zestawu szyfrów.</translation>
+<translation id="5812947184178430888">Gdy Chrome oznacza zdarzenia związane z bezpieczeństwem, odpowiednie dane o nich są wysyłane do administratora. Mogą one obejmować adresy URL stron odwiedzanych w Chrome, nazwy plików lub metadane oraz nazwę użytkownika, pod którą logujesz się w aplikacjach internetowych, na swoim urządzeniu i w Chrome.</translation>
 <translation id="5813119285467412249">&amp;Ponów dodanie</translation>
 <translation id="5817918615728894473">Sparuj</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Gdy zapłacisz, karta zostanie obciążona, ale dana strona nie pozna jej rzeczywistego numeru. Jako dodatkowe zabezpieczenie zostanie wygenerowany tymczasowy kod CVC.}few{Gdy zapłacisz, wybrana karta zostanie obciążona, ale dana strona nie pozna jej rzeczywistego numeru. Jako dodatkowe zabezpieczenie zostanie wygenerowany tymczasowy kod CVC.}many{Gdy zapłacisz, wybrana karta zostanie obciążona, ale dana strona nie pozna jej rzeczywistego numeru. Jako dodatkowe zabezpieczenie zostanie wygenerowany tymczasowy kod CVC.}other{Gdy zapłacisz, wybrana karta zostanie obciążona, ale dana strona nie pozna jej rzeczywistego numeru. Jako dodatkowe zabezpieczenie zostanie wygenerowany tymczasowy kod CVC.}}</translation>

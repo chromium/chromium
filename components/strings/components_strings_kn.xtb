@@ -270,6 +270,7 @@
 <translation id="1838374766361614909">ಹುಡುಕಾಟ ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="1839551713262164453">ದೋಷಗಳಿರುವ ಕಾರಣ ಕಾರ್ಯನೀತಿಯ ಮೌಲ್ಯಗಳ ಮೌಲ್ಯೀಕರಣವು ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="1842969606798536927">ಪಾವತಿಸಿ</translation>
+<translation id="1856713167556118146">ಅಜ್ಞಾತ ಮೋಡ್ ಏನನ್ನು ಮಾಡುವುದಿಲ್ಲ</translation>
 <translation id="1871208020102129563">.pac ಸ್ಕ್ರಿಪ್ಟ್ URL ಅಲ್ಲದೆ, ನಿಗಧಿತ ಪ್ರಾಕ್ಸಿ ಸರ್ವರ್‌ಗಳನ್ನು ಬಳಸಲು ಪ್ರಾಕ್ಸಿಯನ್ನು ಹೊಂದಿಸಲಾಗಿದೆ.</translation>
 <translation id="1871284979644508959">ಅಗತ್ಯವಿರುವ ಕ್ಷೇತ್ರ</translation>
 <translation id="1875512691959384712">Google Forms</translation>
@@ -1009,6 +1010,7 @@
 <translation id="4465818729556336129">ಈ ಡಾಕ್ಯುಮೆಂಟ್ ಗೌಪ್ಯವಾದುದ್ದು ಹಾಗೂ ಇದನ್ನು ಪ್ರಿಂಟ್ ಮಾಡಲು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಸಲಹೆ ನೀಡುವುದಿಲ್ಲ.</translation>
 <translation id="4476953670630786061">ಈ ಫಾರ್ಮ್ ಸುರಕ್ಷಿತವಾಗಿಲ್ಲ. ಸ್ವಯಂ ಭರ್ತಿಯನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="4477350412780666475">ಮುಂದಿನ ಟ್ರ್ಯಾಕ್</translation>
+<translation id="4481251927743463293">ಅಜ್ಞಾತ ಮೋಡ್ ಏನನ್ನು ಮಾಡುತ್ತದೆ</translation>
 <translation id="4481394504112738036">ಗೌಪ್ಯ ಫೈಲ್‌</translation>
 <translation id="4482953324121162758">ಈ ಸೈಟ್ ಅನುವಾದಕ್ಕೆ ಒಳಪಡುವುದಿಲ್ಲ.</translation>
 <translation id="4490717597759821841">A7</translation>
@@ -1109,10 +1111,17 @@
 <translation id="4819347708020428563">ಡೀಫಾಲ್ಟ್ ವೀಕ್ಷಣೆಯಲ್ಲಿ ಟಿಪ್ಪಣಿಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, ಹೊಸ Google Sheet ಅನ್ನು ತ್ವರಿತವಾಗಿ ರಚಿಸಲು Tab ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿ</translation>
 <translation id="4825507807291741242">ಪ್ರಬಲ</translation>
+<translation id="4827402517081186284">ಅಜ್ಞಾತ ಮೋಡ್, ನೀವು ಆನ್‌ಲೈನ್‌ನಲ್ಲಿ ಇಲ್ಲ ಎಂಬಂತೆ ಮಾಡುವುದಿಲ್ಲ:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />ನೀವು ಸೈಟ್‌ಗಳಿಗೆ ಭೇಟಿ ನೀಡಿದಾಗ ಅವುಗಳಿಗೆ ತಿಳಿಯುತ್ತದೆ<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />ಉದ್ಯೋಗದಾತರು ಅಥವಾ ಶಾಲೆಗಳು ಬ್ರೌಸಿಂಗ್ ಚಟುವಟಿಕೆಯನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಬಹುದು<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />ಇಂಟರ್ನೆಟ್ ಸೇವೆ ಒದಗಿಸುವವರು ವೆಬ್ ಟ್ರಾಫಿಕ್ ಅನ್ನು ಮೇಲ್ವಿಚಾರಣೆ ಮಾಡಬಹುದು<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="4838327282952368871">ಕನಸು</translation>
 <translation id="484462545196658690">ಆಟೋ</translation>
 <translation id="4850886885716139402">ವೀಕ್ಷಣೆ</translation>
 <translation id="485316830061041779">ಜರ್ಮನ್</translation>
+<translation id="4853901935952445031">ಫೆಬ್ರವರಿ 2022 ರ ನಂತರ ಈ ಸೈಟ್‌ಗೆ U2F API ಅನ್ನು ಬಳಸಲು ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ. ನೀವು ಈ ಸೈಟ್ ಅನ್ನು ಹೊಂದಿದ್ದರೆ, Web Authentication API ಅನ್ನು ಬಳಸಲು ನೀವು ಅದನ್ನು ಬದಲಾಯಿಸಬೇಕು.</translation>
 <translation id="4854362297993841467">ಈ ವಿತರಣೆಯ ವಿಧಾನ ಲಭ್ಯವಿಲ್ಲ. ಬೇರೊಂದು ವಿಧಾನವನ್ನು ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="4854853140771946034">Google Keep ನಲ್ಲಿ ಹೊಸ ಟಿಪ್ಪಣಿಯನ್ನು ತ್ವರಿತವಾಗಿ ರಚಿಸಿ</translation>
 <translation id="4876188919622883022">ಸರಳೀಕೃತ ವೀಕ್ಷಣೆ</translation>
@@ -1634,6 +1643,7 @@
 <translation id="6757797048963528358">ನಿಮ್ಮ ಸಾಧನವು ನಿದ್ರಾವಸ್ಥೆಗೆ ಹೋಗಿದೆ.</translation>
 <translation id="6767985426384634228">ವಿಳಾಸ ಅಪ್‌ಡೇಟ್ ಮಾಡಬೇಕೇ?</translation>
 <translation id="6768213884286397650">Hagaki (Postcard)</translation>
+<translation id="6774185088257932239">ಅಜ್ಞಾತ ಮೋಡ್ ಕುರಿತು <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">ನೇರಳೆ</translation>
 <translation id="6786747875388722282">ವಿಸ್ತರಣೆಗಳು</translation>
@@ -1681,6 +1691,7 @@
 <translation id="6965382102122355670">ಸರಿ</translation>
 <translation id="6965978654500191972">ಸಾಧನ</translation>
 <translation id="696703987787944103">ಗ್ರಹಿಕೆ</translation>
+<translation id="6968269510885595029">ನಿಮ್ಮ ಭದ್ರತೆ ಕೀ ಬಳಸಿ</translation>
 <translation id="6970216967273061347">ಜಿಲ್ಲೆ</translation>
 <translation id="6971439137020188025">Slides ನಲ್ಲಿ ಹೊಸ Google ಪ್ರಸ್ತುತಿಯನ್ನು ತ್ವರಿತವಾಗಿ ರಚಿಸಿ</translation>
 <translation id="6972629891077993081">HID ಸಾಧನಗಳು</translation>
@@ -1746,6 +1757,7 @@
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> ಭದ್ರತೆ ಮಾನದಂಡಗಳನ್ನು ಅನುಸರಿಸುತ್ತಿಲ್ಲ.</translation>
 <translation id="7210993021468939304">ಕಂಟೇನರ್‌ನಲ್ಲಿ Linux ಚಟುವಟಿಕೆ ಮತ್ತು ಕಂಟೇನರ್‌ನಲ್ಲಿ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಬಹುದಾದ ಮತ್ತು ರನ್ ಮಾಡಬಹುದಾದ Linux ಆ್ಯಪ್‌ಗಳು</translation>
 <translation id="721197778055552897">ಈ ತೊಂದರೆಯ ಬಗ್ಗೆ <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" />.</translation>
+<translation id="7215025035562547931">ನಿಖರತೆಯನ್ನು ಪರಿಗಣಿಸಲು ಸ್ವಲ್ಪ ಸಮಯ ತೆಗೆದುಕೊಳ್ಳಿ</translation>
 <translation id="7217745192097460130">ನಿಮ್ಮ ಖರೀದಿಯನ್ನು ದೃಢೀಕರಿಸಲು ಮತ್ತು ಪೂರ್ಣಗೊಳಿಸಲು ಟಚ್ ID ಬಳಸಿ?</translation>
 <translation id="7219179957768738017">ಸಂಪರ್ಕವು <ph name="SSL_VERSION" /> ಅನ್ನು ಬಳಸುತ್ತದೆ.</translation>
 <translation id="7220786058474068424">ಪ್ರಕ್ರಿಯೆಗೊಳಿಸಲಾಗುತ್ತಿದೆ</translation>
@@ -2080,6 +2092,12 @@
 <translation id="8307888238279532626">ಇನ್‍‍ಸ್ಟಾಲ್ ಮಾಡಿರುವ ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ಅವುಗಳನ್ನು ಎಷ್ಟು ಬಾರಿ ಬಳಸಿರುವುದು</translation>
 <translation id="831207732689920588">ಈ ಪುಟವು ಅನುಮಾನಾಸ್ಪದವಾಗಿದೆ (Chrome ನಿಂದ ಫ್ಲ್ಯಾಗ್ ಮಾಡಲಾಗಿದೆ).</translation>
 <translation id="831997045666694187">ಸಂಜೆ</translation>
+<translation id="8328484624016508118">ಎಲ್ಲಾ ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿದ ನಂತರ, Chrome ಇವುಗಳನ್ನು ತೆರವುಗೊಳಿಸುತ್ತದೆ:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />ಈ ಸಾಧನದಲ್ಲಿನ ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಚಟುವಟಿಕೆ<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />ಈ ಸಾಧನದಲ್ಲಿನ ನಿಮ್ಮ ಹುಡುಕಾಟದ ಇತಿಹಾಸ<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />ಫಾರ್ಮ್‌ಗಳಲ್ಲಿ ನಮೂದಿಸಿದ ಮಾಹಿತಿ<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489"><ph name="HOST_NAME" /> ಗೆ ಪ್ರವೇಶವನ್ನು ನಿರಾಕರಿಸಲಾಗಿದೆ</translation>
 <translation id="833262891116910667">ಹೈಲೈಟ್ ಮಾಡಿ</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> ನಲ್ಲಿನ ಪುಟಗಳನ್ನು ಅನುವಾದ ಮಾಡಲಾಗುವುದಿಲ್ಲ</translation>

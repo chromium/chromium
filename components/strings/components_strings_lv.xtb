@@ -993,6 +993,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4358461427845829800">Pārvaldīt maksājumu veidus...</translation>
 <translation id="4359160567981085931">Jūs tikko ievadījāt savu paroli maldinošā vietnē. Chrome var palīdzēt. Lai mainītu paroli un paziņotu uzņēmumam Google, ka jūsu konts, iespējams, ir apdraudēts, noklikšķiniet uz pogas Aizsargāt kontu.</translation>
 <translation id="4367563149485757821">Number-12 (aploksne)</translation>
+<translation id="437040971055499437">Rodas ar drošību saistīts notikums</translation>
 <translation id="437058704415269440">Konta atlikums</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Tika gaidīta vērtība <ph name="VALUE_TYPE" />.</translation>
@@ -1402,6 +1403,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5803412860119678065">Vai vēlaties aizpildīt lauku ar informāciju “<ph name="CARD_DETAIL" />”?</translation>
 <translation id="5804241973901381774">Atļaujas</translation>
 <translation id="5810442152076338065">Savienojums ar domēnu <ph name="DOMAIN" /> ir šifrēts, izmantojot novecojušu šifra komplektu.</translation>
+<translation id="5812947184178430888">Ja pārlūkā Chrome tiek atzīmēti ar drošību saistīti notikumi, atbilstošie dati par notikumiem tiek nosūtīti administratoram. Šie dati var būt, piemēram, pārlūkā Chrome apmeklēto lapu vietrāži URL, failu nosaukumi vai metadati un lietotājvārds, ar kuru pierakstāties tīmekļa lietojumprogrammās, savā ierīcē un pārlūkā Chrome.</translation>
 <translation id="5813119285467412249">&amp;Pievienošanas atsaukuma atcelšana</translation>
 <translation id="5817918615728894473">Savienot pārī</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Kad veiksiet maksājumus, no šīs kartes tiks iekasēta maksa, taču kartes īstais numurs netiks kopīgots ar šo vietni. Papildu drošībai tiks ģenerēts pagaidu CVC.}zero{Kad veiksiet maksājumus, no atlasītās kartes tiks iekasēta maksa, taču kartes īstais numurs netiks kopīgots ar šo vietni. Papildu drošībai tiks ģenerēts pagaidu CVC.}one{Kad veiksiet maksājumus, no atlasītās kartes tiks iekasēta maksa, taču kartes īstais numurs netiks kopīgots ar šo vietni. Papildu drošībai tiks ģenerēts pagaidu CVC.}other{Kad veiksiet maksājumus, no atlasītās kartes tiks iekasēta maksa, taču kartes īstais numurs netiks kopīgots ar šo vietni. Papildu drošībai tiks ģenerēts pagaidu CVC.}}</translation>

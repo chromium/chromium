@@ -93,6 +93,7 @@
 <translation id="1615402009686901181">تحظر سياسة المشرف إمكانية تصوير الشاشة عند عرض محتوى سري.</translation>
 <translation id="1632985212731562677">يمكن إيقاف ميزة "الوصول عبر مفتاح التحويل" في "الإعدادات" &gt; "أدوات تمكين الوصول".</translation>
 <translation id="1654477262762802994">بدء طلب بحث صوتي</translation>
+<translation id="1655967159878494613">‏<ph name="QUERY_TEXT" />، <ph name="RESULT_TEXT" />، اضغط على مفتاحَي البحث والمسافة لعرض النتائج في خدمة "مساعد Google".</translation>
 <translation id="1667964833127753507">لا يستخدم وضع "الألوان المحايدة" ألوانًا مُستخرَجة من الخلفية، ويستخدم بدلاً منها مجموعة من إضاءة معتدلة أو ألوان داكنة.</translation>
 <translation id="1677472565718498478">الوقت المتبقي <ph name="TIME" /></translation>
 <translation id="1677507110654891115">ميزة <ph name="FEATURE_NAME" /> غير متصلة.</translation>
@@ -140,6 +141,7 @@
 <translation id="2016340657076538683">كتابة رسالة</translation>
 <translation id="2018630726571919839">أريد سماع نكتة</translation>
 <translation id="2021864487439853900">انقر لفتح قفل الشبكة.</translation>
+<translation id="2023558322300866873">يمكنك متى شئت إيقاف ميزة التقاط حِزم الشبكة.</translation>
 <translation id="2047639699071423250">إضافة الفكرة الرئيسية</translation>
 <translation id="2049240716062114887">تم تغيير اسم سطح المكتب إلى <ph name="DESK_NAME" />.</translation>
 <translation id="2050339315714019657">رأسي</translation>
@@ -542,6 +544,7 @@
 <translation id="5083553833479578423">‏الاستفادة من المزيد من ميزات "مساعد Google"</translation>
 <translation id="5136175204352732067">تم توصيل لوحة مفاتيح مختلفة</translation>
 <translation id="5155897006997040331">سرعة القراءة</translation>
+<translation id="5166918508782100047">إعدادات ميزة "معلومات سريعة"</translation>
 <translation id="5168181903108465623">أجهزة البث متاحة</translation>
 <translation id="5170568018924773124">العرض في المجلد</translation>
 <translation id="5176318573511391780">تسجيل جزء من الشاشة</translation>
@@ -796,6 +799,7 @@
 <translation id="7302889331339392448">ميزة "النسخ النصي التلقائي" غير مفعَّلة.</translation>
 <translation id="7303365578352795231">جارٍ الرد على جهاز آخر.</translation>
 <translation id="7305884605064981971">‏شبكة EDGE</translation>
+<translation id="7343581795491695942">‏<ph name="QUERY_TEXT" />، <ph name="RESULT_TEXT" />، اضغط على مفتاحَي البحث والمسافة لعرض النتائج في "بحث Google".</translation>
 <translation id="7346909386216857016">حسنًا</translation>
 <translation id="7348093485538360975">لوحة المفاتيح على الشاشة</translation>
 <translation id="735745346212279324">تم قطع اتصال الشبكة الافتراضية الخاصة</translation>

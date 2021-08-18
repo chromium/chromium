@@ -2752,7 +2752,7 @@
 <translation id="3873423927483480833">แสดง PIN</translation>
 <translation id="3873915545594852654">เกิดปัญหาเกี่ยวกับ ARC++</translation>
 <translation id="3874164307099183178">เปิด Google Assistant</translation>
-<translation id="3875815154304214043"><ph name="APP_NAME" /> ตั้งค่าให้เปิดในแท็บเบราว์เซอร์ใหม่ ลิงก์ที่รองรับก็จะเปิดในเบราว์เซอร์เช่นกัน <ph name="BEGIN_LINK_LEARN_MORE" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="3875815154304214043"><ph name="APP_NAME" /> ได้รับการตั้งค่าให้เปิดในแท็บเบราว์เซอร์ใหม่ ลิงก์ที่รองรับจะเปิดในเบราว์เซอร์นี้เช่นกัน <ph name="BEGIN_LINK_LEARN_MORE" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256">การตั้งค่าการแชร์ใกล้เคียงสำหรับอุปกรณ์ของ <ph name="USER_NAME" /> ที่แชร์โดยใช้บัญชี <ph name="USER_EMAIL" /></translation>
 <translation id="3879748587602334249">Download Manager</translation>
 <translation id="3882165008614329320">วิดีโอที่มีอยู่จากกล้องหรือไฟล์</translation>
@@ -4464,7 +4464,7 @@
 <translation id="5790651917470750848">มีการส่งต่อพอร์ตอยู่แล้ว</translation>
 <translation id="5792728279623964091">โปรดแตะปุ่มเปิด/ปิด</translation>
 <translation id="5793339252089865437">หากดาวน์โหลดอัปเดตผ่านเครือข่ายมือถือ อาจทำให้มีค่าบริการเน็ตมือถือเพิ่มเติม</translation>
-<translation id="5794034487966529952">เดสก์ <ph name="DESK_TITLE" /> มีหน้าต่างเบราว์เซอร์ <ph name="NUM_BROWSERS" /> หน้าต่างเปิดอยู่</translation>
+<translation id="5794034487966529952">เดสก์ <ph name="DESK_TITLE" /> มีเบราว์เซอร์เปิดอยู่ <ph name="NUM_BROWSERS" /> หน้าต่าง</translation>
 <translation id="5794414402486823030">เปิดด้วยโปรแกรมดูของระบบทุกครั้ง</translation>
 <translation id="5794700615121138172">โฟลเดอร์ที่แชร์ใน Linux</translation>
 <translation id="5794786537412027208">ปิดแอป Chrome ทั้งหมด</translation>

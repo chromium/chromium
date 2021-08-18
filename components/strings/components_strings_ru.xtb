@@ -268,6 +268,7 @@
 <translation id="1838374766361614909">Удалить условия поиска</translation>
 <translation id="1839551713262164453">При проверке значений политик обнаружены ошибки</translation>
 <translation id="1842969606798536927">Оплатить</translation>
+<translation id="1856713167556118146">Что сохраняется в режиме инкогнито</translation>
 <translation id="1871208020102129563">Выбрано использование фиксированных прокси-серверов, а не URL PAC-скрипта.</translation>
 <translation id="1871284979644508959">Поле, обязательное для заполнения</translation>
 <translation id="1875512691959384712">Google Формы</translation>
@@ -983,6 +984,7 @@
 <translation id="4358461427845829800">Управление способами оплаты…</translation>
 <translation id="4359160567981085931">Вы только что ввели пароль на поддельном сайте. Чтобы изменить пароль и сообщить Google о возможной угрозе безопасности, нажмите "Защитить аккаунт".</translation>
 <translation id="4367563149485757821">Number-12 (конверт)</translation>
+<translation id="437040971055499437">Зарегистрировано событие безопасности</translation>
 <translation id="437058704415269440">Баланс</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Ожидаемое значение: <ph name="VALUE_TYPE" />.</translation>
@@ -1009,6 +1011,7 @@
 <translation id="4465818729556336129">Это конфиденциальный документ, поэтому ваш администратор не рекомендует его печатать.</translation>
 <translation id="4476953670630786061">Это незащищенная форма. Автозаполнение отключено.</translation>
 <translation id="4477350412780666475">Следующий трек</translation>
+<translation id="4481251927743463293">Что не сохраняется в режиме инкогнито</translation>
 <translation id="4481394504112738036">Конфиденциальный файл</translation>
 <translation id="4482953324121162758">Этот сайт не будет переводиться автоматически.</translation>
 <translation id="4490717597759821841">A7</translation>
@@ -1109,10 +1112,17 @@
 <translation id="4819347708020428563">Изменить заметки в режиме по умолчанию?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />. Чтобы быстро создать таблицу Google, нажмите Tab, а затем Ввод.</translation>
 <translation id="4825507807291741242">Мощный</translation>
+<translation id="4827402517081186284">В режиме инкогнито доступна информация о некоторых действиях:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Сайты узнают, когда вы на них заходите.<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Работодатели и образовательные учреждения могут отслеживать действия пользователей в браузере.<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Интернет-провайдеры могут отслеживать трафик.<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="4838327282952368871">Сказочный</translation>
 <translation id="484462545196658690">Выбрать автоматически</translation>
 <translation id="4850886885716139402">Посмотреть</translation>
 <translation id="485316830061041779">Немецкий</translation>
+<translation id="4853901935952445031">После февраля 2022 года поддержка U2F API на этом сайте будет прекращена. Если сайт принадлежит вам, перейдите на Web Authentication API.</translation>
 <translation id="4854362297993841467">Этот способ доставки недоступен. Выберите другой.</translation>
 <translation id="4854853140771946034">Быстро создать заметку в Google Keep</translation>
 <translation id="4876188919622883022">Упрощенный просмотр</translation>
@@ -1384,6 +1394,7 @@
 <translation id="5803412860119678065">Заполнить данные банковской карты <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Разрешения</translation>
 <translation id="5810442152076338065">Соединение с <ph name="DOMAIN" /> зашифровано с помощью устаревшего набора шифров.</translation>
+<translation id="5812947184178430888">Когда Chrome сообщает о событиях безопасности, вашему администратору отправляется информация о них, в частности URL страниц, которые вы открывали в браузере Chrome, названия файлов или метаданные, а также ваше имя пользователя для входа в веб-приложения, систему на устройстве и в Chrome.</translation>
 <translation id="5813119285467412249">&amp;Повторить добавление</translation>
 <translation id="5817918615728894473">Подключить</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{При оплате средства будут списаны с этой карты, но ее настоящий номер не станет известен этому сайту. Для обеспечения дополнительной безопасности будет создан временный CVC-код.}one{При оплате средства будут списаны с выбранной карты, но ее настоящий номер не станет известен этому сайту. Для обеспечения дополнительной безопасности будет создан временный CVC-код.}few{При оплате средства будут списаны с выбранной карты, но ее настоящий номер не станет известен этому сайту. Для обеспечения дополнительной безопасности будет создан временный CVC-код.}many{При оплате средства будут списаны с выбранной карты, но ее настоящий номер не станет известен этому сайту. Для обеспечения дополнительной безопасности будет создан временный CVC-код.}other{При оплате средства будут списаны с выбранной карты, но ее настоящий номер не станет известен этому сайту. Для обеспечения дополнительной безопасности будет создан временный CVC-код.}}</translation>
@@ -1635,6 +1646,7 @@
 <translation id="6757797048963528358">Устройство находится в спящем режиме.</translation>
 <translation id="6767985426384634228">Изменить адрес?</translation>
 <translation id="6768213884286397650">Hagaki (открытка)</translation>
+<translation id="6774185088257932239">Подробнее <ph name="BEGIN_LINK" />о режиме инкогнито<ph name="END_LINK" />…</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Фиолетовый</translation>
 <translation id="6786747875388722282">Расширения</translation>
@@ -1682,6 +1694,7 @@
 <translation id="6965382102122355670">ОК</translation>
 <translation id="6965978654500191972">Устройство</translation>
 <translation id="696703987787944103">Перцепционный</translation>
+<translation id="6968269510885595029">Используйте электронный ключ.</translation>
 <translation id="6970216967273061347">Округ</translation>
 <translation id="6971439137020188025">Быстро создать презентацию Google</translation>
 <translation id="6972629891077993081">Устройства HID</translation>
@@ -1747,6 +1760,7 @@
 <translation id="7210863904660874423">Сайт <ph name="HOST_NAME" /> не соответствует стандартам безопасности.</translation>
 <translation id="7210993021468939304">Действия Linux в контейнере (также он может устанавливать и запускать приложения Linux из контейнера).</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Подробнее <ph name="END_LINK" /> об этой неполадке.</translation>
+<translation id="7215025035562547931">Оцените точность сведений</translation>
 <translation id="7217745192097460130">Использовать Touch ID для подтверждения покупки?</translation>
 <translation id="7219179957768738017">В этом подключении используется протокол <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Подождите…</translation>
@@ -2082,6 +2096,11 @@
 <translation id="8307888238279532626">установленные приложения и частоту их использования.</translation>
 <translation id="831207732689920588">Эта страница выглядит подозрительно (пометка добавлена браузером Chrome).</translation>
 <translation id="831997045666694187">До вечера</translation>
+<translation id="8328484624016508118">После закрытия всех вкладок инкогнито Chrome удаляет:<ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />ваши действия в браузере на этом устройстве;<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />историю поиска на этом устройстве;<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />данные, которые вы указали в формах.<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">Доступ к <ph name="HOST_NAME" /> запрещен</translation>
 <translation id="833262891116910667">Выделить</translation>
 <translation id="8339163506404995330">Страницы на этом языке (<ph name="LANGUAGE" />) не будут переводиться автоматически</translation>

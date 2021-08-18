@@ -985,6 +985,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4358461427845829800">Gestiona les formes de pagament...</translation>
 <translation id="4359160567981085931">Acabes d'introduir la contrasenya en un lloc web enganyós. Chrome pot ajudar-te. Per canviar la contrasenya i notificar a Google que el compte pot estar en perill, fes clic a Protegeix el compte.</translation>
 <translation id="4367563149485757821">Number-12 (sobre)</translation>
+<translation id="437040971055499437">Es produeix un esdeveniment de seguretat</translation>
 <translation id="437058704415269440">Saldo del compte</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Valor <ph name="VALUE_TYPE" /> esperat.</translation>
@@ -1394,6 +1395,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5803412860119678065">Vols emplenar la informació de la teva targeta <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Permisos</translation>
 <translation id="5810442152076338065">La connexió a <ph name="DOMAIN" /> s'ha encriptat amb un sistema de xifratge obsolet.</translation>
+<translation id="5812947184178430888">Quan Chrome marca esdeveniments de seguretat, se n'envien les dades rellevants a l'administrador. Per exemple, URL de pàgines que visites a Chrome, noms o metadades de fitxers i el nom d'usuari que fas servir per iniciar la sessió en aplicacions web, al dispositiu i a Chrome.</translation>
 <translation id="5813119285467412249">&amp;Refés l'addició</translation>
 <translation id="5817918615728894473">Vincula</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Es farà un càrrec a aquesta targeta quan paguis, però el número real de la targeta no es compartirà amb aquest lloc web. Per a més seguretat, es generarà un CVC temporal.}other{Es farà un càrrec a la targeta que hagis seleccionat quan paguis, però el número real de la targeta no es compartirà amb aquest lloc web. Per a més seguretat, es generarà un CVC temporal.}}</translation>

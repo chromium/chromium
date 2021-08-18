@@ -2195,6 +2195,7 @@
 <translation id="3305661444342691068">PDF файлын алдын ала қарау қолданбасында ашу</translation>
 <translation id="3308116878371095290">Бұл бетке cookie файлдарын орнатуға тыйым салынды.</translation>
 <translation id="3308134619352333507">Түймені жасыру</translation>
+<translation id="3308681281309926497">Сіз кіретін сайттар Chrome жабылмағанша ақпараттарыңызды есте сақтауы мүмкін.</translation>
 <translation id="3308738399950580893">жарнамалар</translation>
 <translation id="3308852433423051161">Google Assistant жүктелуде…</translation>
 <translation id="3309330461362844500">Сертификат профилінің идентификаторы</translation>
@@ -2748,6 +2749,7 @@
 <translation id="3873423927483480833">PIN кодтарын көрсету</translation>
 <translation id="3873915545594852654">ARC++ ақауы орын алды.</translation>
 <translation id="3874164307099183178">Google Assistant қолданбасын қосу</translation>
+<translation id="3875815154304214043"><ph name="APP_NAME" /> жаңа браузер қойындысында ашылуға орнатылған, қолдау көрсету сілтемелері де браузерде ашылады. <ph name="BEGIN_LINK_LEARN_MORE" />Толығырақ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" /> құрылғысына арналған Nearby Share параметрлері (<ph name="USER_EMAIL" /> есептік жазбасының атынан бөлісуде).</translation>
 <translation id="3879748587602334249">Жүктеп алу менеджері</translation>
 <translation id="3882165008614329320">Камерадан немесе файлдан алынған бейне</translation>
@@ -3895,6 +3897,7 @@
 <translation id="5157635116769074044">Бұл бетті бастау экранына бекіту…</translation>
 <translation id="5159094275429367735">Crostini жүйесін реттеу</translation>
 <translation id="5159419673777902220">Ата-анаңыз кеңейтім рұқсаттарын өшірді.</translation>
+<translation id="5159643365935452998">Деректерді автоматты түрде тазартуды тексеру</translation>
 <translation id="5160634252433617617">Пернетақта</translation>
 <translation id="5160857336552977725"><ph name="DEVICE_TYPE" /> құрылғыңызға кіріңіз</translation>
 <translation id="5161251470972801814"><ph name="VENDOR_NAME" /> ұсынған USB құрылғылары</translation>
@@ -4458,6 +4461,7 @@
 <translation id="5790651917470750848">Ондай порт бұрыннан бар.</translation>
 <translation id="5792728279623964091">Қуат түймесін түртіңіз.</translation>
 <translation id="5793339252089865437">Жаңартылған нұсқаны мобильді желі арқылы жүктеп алатын болсаңыз, қосымша ақы алынуы мүмкін.</translation>
+<translation id="5794034487966529952"><ph name="DESK_TITLE" /> жұмыс үстелінде <ph name="NUM_BROWSERS" /> браузер терезесі ашық</translation>
 <translation id="5794414402486823030">Әрқашан жүйе көру құралымен ашу</translation>
 <translation id="5794700615121138172">Linux ортақ қалталары</translation>
 <translation id="5794786537412027208">Барлық Chrome қолданбаларынан шығу</translation>

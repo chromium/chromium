@@ -93,6 +93,7 @@
 <translation id="1615402009686901181">Администратор запретил запись экрана, когда видны конфиденциальные данные.</translation>
 <translation id="1632985212731562677">Функцию Switch Access можно отключить в разделе "Настройки &gt; Специальные возможности".</translation>
 <translation id="1654477262762802994">Произнесите запрос</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Чтобы посмотреть результат в Ассистенте, нажмите "Поиск + Пробел".</translation>
 <translation id="1667964833127753507">В режиме нейтральных цветов не используются оттенки ваших обоев. Вместо них интерфейс будет окрашен в нейтральные светлые или темные цвета.</translation>
 <translation id="1677472565718498478">Ещё <ph name="TIME" /></translation>
 <translation id="1677507110654891115">Функция "<ph name="FEATURE_NAME" />" не подключена.</translation>
@@ -140,6 +141,7 @@
 <translation id="2016340657076538683">Введите сообщение</translation>
 <translation id="2018630726571919839">Расскажи анекдот</translation>
 <translation id="2021864487439853900">Нажать, чтобы разблокировать</translation>
+<translation id="2023558322300866873">Операцию можно прервать в любой момент.</translation>
 <translation id="2047639699071423250">Добавить основную идею</translation>
 <translation id="2049240716062114887">Название рабочего стола изменилось на "<ph name="DESK_NAME" />"</translation>
 <translation id="2050339315714019657">Книжная</translation>
@@ -542,6 +544,7 @@
 <translation id="5083553833479578423">Получите доступ к другим возможностям Ассистента.</translation>
 <translation id="5136175204352732067">Подключена другая клавиатура</translation>
 <translation id="5155897006997040331">Скорость чтения</translation>
+<translation id="5166918508782100047">Настройка функции "Быстрые ответы"</translation>
 <translation id="5168181903108465623">Доступны устройства для трансляции</translation>
 <translation id="5170568018924773124">Показать в папке</translation>
 <translation id="5176318573511391780">Запись видео с части экрана</translation>
@@ -796,6 +799,7 @@
 <translation id="7302889331339392448">Автоматические субтитры отключены</translation>
 <translation id="7303365578352795231">Ассистент отвечает на другом устройстве.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Чтобы посмотреть результат в Google Поиске, нажмите "Поиск + Пробел".</translation>
 <translation id="7346909386216857016">ОК</translation>
 <translation id="7348093485538360975">Экранная клавиатура</translation>
 <translation id="735745346212279324">VPN-соединение прервано</translation>

@@ -272,6 +272,7 @@
 <translation id="1838374766361614909">Іздеуді тазарту</translation>
 <translation id="1839551713262164453">Қателерге байланысты саясат мәндері тексерілмеді</translation>
 <translation id="1842969606798536927">Төлем</translation>
+<translation id="1856713167556118146">Инкогнито режимінде орындалмайтындар:</translation>
 <translation id="1871208020102129563">Прокси .pac сценарий URL мекенжайын емес, бекітілген прокси серверлерін пайдалануға орнатылған.</translation>
 <translation id="1871284979644508959">Міндетті өріс</translation>
 <translation id="1875512691959384712">Google Forms</translation>
@@ -992,6 +993,7 @@
 <translation id="4358461427845829800">Төлем әдістерін басқару...</translation>
 <translation id="4359160567981085931">Жаңа ғана құпия сөзіңізді алаяқтық сайтқа енгіздіңіз. Chrome көмектесе алады. Құпия сөзді өзгертіп, Google-ға есептік жазбаға төніп тұрған қауіп туралы хабарлау үшін "Есептік жазбаны қорғау" түймесін басыңыз.</translation>
 <translation id="4367563149485757821">Number-12 (Envelope)</translation>
+<translation id="437040971055499437">Қауіпсіздік іс-шарасы анықталды</translation>
 <translation id="437058704415269440">Есептік жазба балансы</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948"><ph name="VALUE_TYPE" /> мәні қажет.</translation>
@@ -1018,6 +1020,7 @@
 <translation id="4465818729556336129">Бұл құжат құпия және әкімші оны басып шығармауға кеңес береді.</translation>
 <translation id="4476953670630786061">Бұл үлгі қорғалмаған. Автотолтыру өшірілді.</translation>
 <translation id="4477350412780666475">Келесі аудиотрек</translation>
+<translation id="4481251927743463293">Инкогнито режимінде орындалатындар:</translation>
 <translation id="4481394504112738036">Құпия файл</translation>
 <translation id="4482953324121162758">Бұл сайт аударылмайды.</translation>
 <translation id="4490717597759821841">A7</translation>
@@ -1118,10 +1121,17 @@
 <translation id="4819347708020428563">Аннотацияларды әдепкі көріністе өзгерту керек пе?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, жаңа Google парағын жылдам жасау үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
 <translation id="4825507807291741242">Қуатты</translation>
+<translation id="4827402517081186284">Инкогнито режимі сізді интернетте көрінбейтін етпейді:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />сайттар қашан кіргеніңізді біледі;<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />қызметкерлер немесе мектептер браузерді қолдану мәліметін қарай алады;<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />интернет провайдерлері интернет трафигін бақылай алады.<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="4838327282952368871">Арманшыл</translation>
 <translation id="484462545196658690">Авто</translation>
 <translation id="4850886885716139402">Көрініс</translation>
 <translation id="485316830061041779">неміс</translation>
+<translation id="4853901935952445031">2022 жылдың ақпанынан кейін бұл сайтта U2F API қолдауы тоқтатылады. Егер сіз осы сайттың иесі болсаңыз, Web Authentication API-ды пайдалану үшін оны ауыстыруыңыз тиіс.</translation>
 <translation id="4854362297993841467">Бұл жеткізу әдісі қолжетімді емес. Басқа әдісті қолданып көріңіз.</translation>
 <translation id="4854853140771946034">Google Keep-те жылдам жаңа ескертпе жасау</translation>
 <translation id="4876188919622883022">Қарапайым көрініс</translation>
@@ -1393,6 +1403,7 @@
 <translation id="5803412860119678065"><ph name="CARD_DETAIL" /> картасының мәліметтерін толтырғыңыз келе ме?</translation>
 <translation id="5804241973901381774">Рұқсаттар</translation>
 <translation id="5810442152076338065">Сіздің <ph name="DOMAIN" /> доменіне қосылуыңыз ескірген шифр жиынтығы арқылы шифрланған.</translation>
+<translation id="5812947184178430888">Chrome браузерінде қауіпсіздік іс-шараларына жалауша қойылған кезде, іс-шараларға қатысты деректер әкімшіңізге жіберіледі. Мұндай деректерге Chrome браузерінде кірген беттердің URL мекенжайлары, файл атаулары немесе метадеректер, сондай-ақ веб-қолданбаларға, құрылғыңызға және Chrome браузеріне кіру үшін қолданылатын пайдаланушы аты жатуы мүмкін.</translation>
 <translation id="5813119285467412249">&amp;Қосуды қайта орындау</translation>
 <translation id="5817918615728894473">Жұптау</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Төлем осы картадан алынады, бірақ оның нөмірі сайтқа белгісіз болады. Қосымша қауіпсіздік үшін уақытша CVC коды жасалады.}other{Төлем сіз таңдаған картадан алынады, бірақ оның нөмірі сайтқа белгісіз болады. Қосымша қауіпсіздік үшін уақытша CVC коды жасалады.}}</translation>
@@ -1644,6 +1655,7 @@
 <translation id="6757797048963528358">Құрылғы ұйқы күйіне өтті.</translation>
 <translation id="6767985426384634228">Мекенжайды жаңарту керек пе?</translation>
 <translation id="6768213884286397650">Hagaki (Postcard)</translation>
+<translation id="6774185088257932239">Инкогнито туралы <ph name="BEGIN_LINK" />толығырақ<ph name="END_LINK" /></translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Ақшыл күлгін</translation>
 <translation id="6786747875388722282">Кеңейтімдер</translation>
@@ -1691,6 +1703,7 @@
 <translation id="6965382102122355670">Жарайды</translation>
 <translation id="6965978654500191972">Құрылғы</translation>
 <translation id="696703987787944103">Перцепциялық</translation>
+<translation id="6968269510885595029">Қауіпсіздік кілтін пайдаланыңыз</translation>
 <translation id="6970216967273061347">Аудан</translation>
 <translation id="6971439137020188025">Slides-да жаңа Google презентациясын жылдам жасау</translation>
 <translation id="6972629891077993081">HID құрылғылары</translation>
@@ -1756,6 +1769,7 @@
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> қауіпсіздік стандарттарына сай емес.</translation>
 <translation id="7210993021468939304">Linux-тің контейнердегі әрекетін көреді, сондай-ақ контейнерден Linux қолданбаларын орната және іске қоса алады.</translation>
 <translation id="721197778055552897">Бұл ақау туралы <ph name="BEGIN_LINK" />толығырақ<ph name="END_LINK" />.</translation>
+<translation id="7215025035562547931">Деректердің дұрыстығын тексеріңіз</translation>
 <translation id="7217745192097460130">Сатып алуды растау және процесті аяқтау үшін Touch ID пайдаланылсын ба?</translation>
 <translation id="7219179957768738017">Байланыс <ph name="SSL_VERSION" /> пайдаланады.</translation>
 <translation id="7220786058474068424">Өңделуде</translation>
@@ -2091,6 +2105,12 @@
 <translation id="8307888238279532626">Орнатылған қолданбалар және олардың пайдаланылу жиілігі</translation>
 <translation id="831207732689920588">Бұл бет күдікті (Chrome белгілеген).</translation>
 <translation id="831997045666694187">Кеш</translation>
+<translation id="8328484624016508118">Барлық инкогнито қойындылары жабылғанда, Chrome келесілерді жояды:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />осы құрылғыдағы браузерді қолдану мәліметі;<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />осы құрылғыдағы іздеу тарихы;<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />үлгілерге енгізілген ақпараттар.<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489"><ph name="HOST_NAME" /> сайтына кіруге тыйым салынған</translation>
 <translation id="833262891116910667">Бөлектеу</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> тіліндегі беттер аударылмайды</translation>

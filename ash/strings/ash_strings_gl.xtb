@@ -93,6 +93,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1615402009686901181">A política do administrador desactiva o modo de captura de pantalla cando nela se mostra contido confidencial</translation>
 <translation id="1632985212731562677">A función Acceso con interruptores pódese desactivar en Configuración &gt; Accesibilidade.</translation>
 <translation id="1654477262762802994">Iniciar unha consulta de voz</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; preme Buscar e Espazo para ver o resultado no Asistente.</translation>
 <translation id="1667964833127753507">O modo de cor neutra non usa as cores extraídas dun fondo de pantalla, senón que as substitúe por un conxunto de cores claras ou escuras cun ton neutro.</translation>
 <translation id="1677472565718498478">Tempo restante: <ph name="TIME" /></translation>
 <translation id="1677507110654891115">A función <ph name="FEATURE_NAME" /> non está conectada.</translation>
@@ -140,6 +141,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2016340657076538683">Escribe unha mensaxe</translation>
 <translation id="2018630726571919839">Cóntame un chiste</translation>
 <translation id="2021864487439853900">Para desbloqueala, fai clic</translation>
+<translation id="2023558322300866873">Podes deter a captura de paquetes cando queiras</translation>
 <translation id="2047639699071423250">Engadir idea clave</translation>
 <translation id="2049240716062114887">Cambiouse o nome do escritorio por <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Vertical</translation>
@@ -543,6 +545,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5083553833479578423">Desbloquea máis funcións do Asistente.</translation>
 <translation id="5136175204352732067">Conectouse un teclado diferente</translation>
 <translation id="5155897006997040331">Velocidade de lectura</translation>
+<translation id="5166918508782100047">Configuración de Respostas rápidas</translation>
 <translation id="5168181903108465623">Dispositivos de emisión dispoñibles</translation>
 <translation id="5170568018924773124">Mostrar no cartafol</translation>
 <translation id="5176318573511391780">Gravar pantalla parcial</translation>
@@ -797,6 +800,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="7302889331339392448">A función Subtítulos instantáneos está desactivada.</translation>
 <translation id="7303365578352795231">Respondendo consulta noutro dispositivo.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; preme Buscar e Espazo para ver o resultado na Busca de Google.</translation>
 <translation id="7346909386216857016">Entendido</translation>
 <translation id="7348093485538360975">Teclado en pantalla</translation>
 <translation id="735745346212279324">VPN desconectada</translation>

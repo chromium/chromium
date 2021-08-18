@@ -93,6 +93,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1615402009686901181">Theo chính sách của quản trị viên, tính năng chụp ảnh màn hình bị tắt khi có nội dung bí mật</translation>
 <translation id="1632985212731562677">Bạn có thể tắt tính năng Tiếp cận bằng công tắc trong phần Cài đặt &gt; Hỗ trợ tiếp cận.</translation>
 <translation id="1654477262762802994">Bắt đầu đặt câu hỏi bằng giọng nói</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Hãy nhấn phím Tìm kiếm + Phím cách để xem kết quả trong Trợ lý.</translation>
 <translation id="1667964833127753507">Chế độ màu trung tính không dùng màu được trích xuất từ hình nền mà thay các màu này bằng bộ màu sáng hoặc tối có sắc trung tính.</translation>
 <translation id="1677472565718498478">Còn <ph name="TIME" /></translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> chưa kết nối.</translation>
@@ -140,6 +141,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2016340657076538683">Nhập tin nhắn</translation>
 <translation id="2018630726571919839">Kể truyện cười cho tôi</translation>
 <translation id="2021864487439853900">Nhấp để mở khóa</translation>
+<translation id="2023558322300866873">Bạn có thể dừng quá trình thu thập gói dữ liệu bất kỳ lúc nào</translation>
 <translation id="2047639699071423250">Thêm ý tưởng chính</translation>
 <translation id="2049240716062114887">Đã đổi tên không gian làm việc thành <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Khổ dọc</translation>
@@ -542,6 +544,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="5083553833479578423">Mở khóa các tính năng khác của Trợ lý.</translation>
 <translation id="5136175204352732067">Đã kết nối bàn phím khác</translation>
 <translation id="5155897006997040331">Tốc độ đọc</translation>
+<translation id="5166918508782100047">Chế độ cài đặt tính năng Thông tin nhanh</translation>
 <translation id="5168181903108465623">Có thiết bị truyền</translation>
 <translation id="5170568018924773124">Hiển thị trong thư mục</translation>
 <translation id="5176318573511391780">Ghi một phần màn hình</translation>
@@ -796,6 +799,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="7302889331339392448">Tính năng Phụ đề trực tiếp đang tắt.</translation>
 <translation id="7303365578352795231">Đang trả lời trên thiết bị khác.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Hãy nhấn phím Tìm kiếm + Phím cách để xem kết quả trong Google Tìm kiếm.</translation>
 <translation id="7346909386216857016">Ok</translation>
 <translation id="7348093485538360975">Bàn phím ảo</translation>
 <translation id="735745346212279324">Đã ngắt kết nối VPN</translation>

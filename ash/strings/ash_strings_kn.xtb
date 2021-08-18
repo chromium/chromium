@@ -93,6 +93,7 @@
 <translation id="1615402009686901181">ನಿರ್ವಾಹಕರ ನೀತಿಯ ಪ್ರಕಾರ ಗೌಪ್ಯ ವಿಷಯ ಗೋಚರಿಸುತ್ತಿರುವಾಗ ಸ್ಕ್ರೀನ್ ಕ್ಯಾಪ್ಚರ್ ಮಾಡುವುದನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="1632985212731562677">ಪ್ರವೇಶ ಬದಲಾಯಿಸಿ ಅನ್ನು ಸೆಟ್ಟಿಂಗ್‌ಗಳು &gt; ಆ್ಯಕ್ಸೆಸಿಬಿಲಿಟಿಯಲ್ಲಿ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಬಹುದು.</translation>
 <translation id="1654477262762802994">ಧ್ವನಿ ಪ್ರಶ್ನೆಯನ್ನು ಕೇಳಲು ಪ್ರಾರಂಭಿಸಿ</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Assistant ನಲ್ಲಿ ಫಲಿತಾಂಶವನ್ನು ನೋಡಲು, Search ಜೊತೆಗೆ Space ಅನ್ನು ಒತ್ತಿರಿ.</translation>
 <translation id="1667964833127753507">ತಟಸ್ಥ ಬಣ್ಣ ಮೋಡ್, ವಾಲ್‌ಪೇಪರ್‌ನಿಂದ ಆಯ್ದು ತೆಗೆದ ಬಣ್ಣಗಳನ್ನು ಬಳಸುವುದಿಲ್ಲ, ಅವುಗಳನ್ನು ತಟಸ್ಥ ಛಾಯೆಯ ಬೆಳಕು ಅಥವಾ ಗಾಢ ವರ್ಣಗಳಿಂದ ಬದಲಾಯಿಸುತ್ತದೆ.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> ಬಾಕಿ ಉಳಿದಿದೆ</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> ಅನ್ನು ಕನೆಕ್ಟ್ ಮಾಡಲಾಗಿಲ್ಲ.</translation>
@@ -140,6 +141,7 @@
 <translation id="2016340657076538683">ಸಂದೇಶವನ್ನು ಟೈಪ್‌ ಮಾಡಿ</translation>
 <translation id="2018630726571919839">ನನಗೊಂದು ಜೋಕ್ ಹೇಳಿ</translation>
 <translation id="2021864487439853900">ಅನ್‌ಲಾಕ್ ಮಾಡಲು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
+<translation id="2023558322300866873">ನೀವು ಯಾವಾಗ ಬೇಕಾದರೂ ಪ್ಯಾಕೆಟ್ ಕ್ಯಾಪ್ಚರ್ ಅನ್ನು ನಿಲ್ಲಸಬಹುದು</translation>
 <translation id="2047639699071423250">ಕೀ ಐಡಿಯಾ ಬಟನ್ ಸೇರಿಸಿ</translation>
 <translation id="2049240716062114887">ಡೆಸ್ಕ್ ಹೆಸರನ್ನು <ph name="DESK_NAME" /> ಗೆ ಬದಲಿಸಲಾಗಿದೆ</translation>
 <translation id="2050339315714019657">ಪೋರ್ಟ್ರೇಟ್</translation>
@@ -542,6 +544,7 @@
 <translation id="5083553833479578423">ಇನ್ನಷ್ಟು ಅಸಿಸ್ಟೆಂಟ್ ವೈಶಿಷ್ಟ್ಯಗಳನ್ನು ಅನ್‌ಲಾಕ್‌ ಮಾಡಿ.</translation>
 <translation id="5136175204352732067">ವಿವಿಧ ಕೀಬೋರ್ಡ್ ಸಂಪರ್ಕಗೊಂಡಿದೆ</translation>
 <translation id="5155897006997040331">ರೀಡಿಂಗ್ ಸ್ಪೀಡ್</translation>
+<translation id="5166918508782100047">ತ್ವರಿತ ಉತ್ತರಗಳ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="5168181903108465623">ಬಿತ್ತರಿಸುವಿಕೆಯ ಸಾಧನಗಳು ಲಭ್ಯವಿದೆ</translation>
 <translation id="5170568018924773124">ಫೋಲ್ಡರ್‌ನಲ್ಲಿ ತೋರಿಸಿ</translation>
 <translation id="5176318573511391780">ಭಾಗಶಃ ಸ್ಕ್ರೀನ್ ಅನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡಿ</translation>
@@ -797,6 +800,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="7302889331339392448">ಲೈವ್ ಕ್ಯಾಪ್ಶನ್ ಆಫ್ ಆಗಿದೆ.</translation>
 <translation id="7303365578352795231">ಮತ್ತೊಂದು ಸಾಧನದಲ್ಲಿ ಉತ್ತರಿಸಲಾಗುತ್ತಿದೆ.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Search ನಲ್ಲಿ ಫಲಿತಾಂಶವನ್ನು ನೋಡಲು, Search ಜೊತೆಗೆ Space ಅನ್ನು ಒತ್ತಿರಿ.</translation>
 <translation id="7346909386216857016">ಸರಿ, ಅರ್ಥವಾಯಿತು</translation>
 <translation id="7348093485538360975">ಆನ್ ಸ್ಕ್ರೀನ್ ಕೀಬೋರ್ಡ್</translation>
 <translation id="735745346212279324">VPN ಸಂಪರ್ಕ ಕಡಿತಗೊಳಿಸಲಾಗಿದೆ</translation>

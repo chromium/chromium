@@ -271,6 +271,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1838374766361614909">Borrar busca</translation>
 <translation id="1839551713262164453">Producíronse erros na validación dos valores da política</translation>
 <translation id="1842969606798536927">Pagar</translation>
+<translation id="1856713167556118146">Que non fai o modo de incógnito?</translation>
 <translation id="1871208020102129563">O proxy está configurado para utilizar servidores proxy fixos, non un URL de script .pac.</translation>
 <translation id="1871284979644508959">O campo é obrigatorio</translation>
 <translation id="1875512691959384712">Formularios de Google</translation>
@@ -992,6 +993,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4358461427845829800">Xestiona os métodos de pago…</translation>
 <translation id="4359160567981085931">Acabas de escribir o teu contrasinal nun sitio enganoso. Chrome pode axudarche. Para cambiar o teu contrasinal e notificarlle a Google que a túa conta pode estar en risco, fai clic en Protexer conta.</translation>
 <translation id="4367563149485757821">Number-12 (Envelope)</translation>
+<translation id="437040971055499437">Prodúcese un evento de seguranza</translation>
 <translation id="437058704415269440">Saldo da conta</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Valor <ph name="VALUE_TYPE" /> esperado.</translation>
@@ -1018,6 +1020,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4465818729556336129">Este documento é confidencial e o teu administrador non recomenda imprimilo.</translation>
 <translation id="4476953670630786061">Este formulario non é seguro, polo que se desactivou a función de autocompletar.</translation>
 <translation id="4477350412780666475">Pista seguinte</translation>
+<translation id="4481251927743463293">Que fai o modo de incógnito?</translation>
 <translation id="4481394504112738036">Ficheiro confidencial</translation>
 <translation id="4482953324121162758">Non se traducirá este sitio.</translation>
 <translation id="4490717597759821841">A7</translation>
@@ -1118,10 +1121,17 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4819347708020428563">Queres editar as anotacións na vista predeterminada?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />. Preme Tabulador e, a continuación, Introducir para crear rapidamente unha nova folla de cálculo de Google</translation>
 <translation id="4825507807291741242">Potente</translation>
+<translation id="4827402517081186284">O modo de incógnito non te converte en invisible en Internet:
+<ph name="BEGIN_LIST" />
+<ph name="LIST_ITEM" />Os sitios saben cando os visitas.<ph name="END_LIST_ITEM" />
+<ph name="LIST_ITEM" />A túa empresa ou centro educativo pode facer un seguimento da actividade de navegación.<ph name="END_LIST_ITEM" />
+<ph name="LIST_ITEM" />Os fornecedores de servizos de Internet poden supervisar o tráfico web.<ph name="END_LIST_ITEM" />
+<ph name="END_LIST" /></translation>
 <translation id="4838327282952368871">Onírico</translation>
 <translation id="484462545196658690">Automático</translation>
 <translation id="4850886885716139402">Vista</translation>
 <translation id="485316830061041779">Alemán</translation>
+<translation id="4853901935952445031">O sitio non poderá usar a API U2F a partir de febreiro de 2022. Se este sitio é da túa propiedade, debes cambiar a API e usar a de Web Authentication.</translation>
 <translation id="4854362297993841467">Este método de entrega non está dispoñible. Proba cun diferente.</translation>
 <translation id="4854853140771946034">Crear rapidamente unha nota nova en Google Keep</translation>
 <translation id="4876188919622883022">Vista simplificada</translation>
@@ -1393,6 +1403,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5803412860119678065">Queres completar a información da tarxeta de crédito <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Permisos</translation>
 <translation id="5810442152076338065">A túa conexión a <ph name="DOMAIN" /> está encriptada cun paquete de cifraxe obsoleto.</translation>
+<translation id="5812947184178430888">Cando Chrome marca un evento de seguranza, envíanselle datos relevantes sobre este ao teu administrador. Entre eles poden incluírse os URL das páxinas que visitas en Chrome, metadatos ou nomes de ficheiros e o nome de usuario que utilizas para iniciar sesión nas aplicacións baseadas na Web, no teu dispositivo e en Chrome.</translation>
 <translation id="5813119285467412249">&amp;Refacer adición</translation>
 <translation id="5817918615728894473">Sincronizar</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Cando pagues, cobrarase o importe correspondente utilizando esta tarxeta, pero o seu número real non se compartirá con este sitio. Para máis seguranza, xerarase un CVC temporal.}other{Cando pagues, cobrarase o importe correspondente utilizando a tarxeta que selecciones, pero o seu número real non se compartirá con este sitio. Para máis seguranza, xerarase un CVC temporal.}}</translation>
@@ -1644,6 +1655,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6757797048963528358">O teu dispositivo entrou no modo de suspensión.</translation>
 <translation id="6767985426384634228">Queres actualizar este enderezo?</translation>
 <translation id="6768213884286397650">Hagaki (postal)</translation>
+<translation id="6774185088257932239"><ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /> sobre o modo de incógnito</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Violeta</translation>
 <translation id="6786747875388722282">Extensións</translation>
@@ -1691,6 +1703,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="6965978654500191972">Dispositivo</translation>
 <translation id="696703987787944103">Percepción</translation>
+<translation id="6968269510885595029">Usa a túa chave de seguranza</translation>
 <translation id="6970216967273061347">Distrito</translation>
 <translation id="6971439137020188025">Crear rapidamente unha presentación nova en Presentacións</translation>
 <translation id="6972629891077993081">Dispositivos de interface humana</translation>
@@ -1756,6 +1769,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> non cumpre cos estándares de seguranza.</translation>
 <translation id="7210993021468939304">Actividade de Linux no contedor, e pode instalar e executar aplicacións de Linux no contedor.</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /> acerca deste problema.</translation>
+<translation id="7215025035562547931">Dedica un momento a pensar na precisión da información</translation>
 <translation id="7217745192097460130">Queres usar Touch ID para verificar e completar a compra?</translation>
 <translation id="7219179957768738017">A conexión utiliza <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Procesando</translation>
@@ -2091,6 +2105,12 @@ Detalles adicionais:
 <translation id="8307888238279532626">Aplicacións instaladas e frecuencia de uso</translation>
 <translation id="831207732689920588">Esta páxina é sospeitosa (foi detectada por Chrome).</translation>
 <translation id="831997045666694187">Serán</translation>
+<translation id="8328484624016508118">Despois de pechar todas as pestanas do modo de incógnito, Chrome borra:
+<ph name="BEGIN_LIST" />
+<ph name="LIST_ITEM" />A túa actividade de navegación deste dispositivo.<ph name="END_LIST_ITEM" />
+<ph name="LIST_ITEM" />O teu historial de busca deste dispositivo.<ph name="END_LIST_ITEM" />
+<ph name="LIST_ITEM" />Os datos que escribises en formularios.<ph name="END_LIST_ITEM" />
+<ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">Denegouse o acceso a <ph name="HOST_NAME" /></translation>
 <translation id="833262891116910667">Destacar</translation>
 <translation id="8339163506404995330">Non se traducirán as páxinas en <ph name="LANGUAGE" /></translation>

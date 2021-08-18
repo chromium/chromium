@@ -991,6 +991,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4358461427845829800">Gestisci metodi di pagamento…</translation>
 <translation id="4359160567981085931">Hai appena inserito la tua password su un sito ingannevole. Chrome può aiutarti. Per cambiare la password e informare Google che il tuo account potrebbe essere a rischio, fai clic su Proteggi account.</translation>
 <translation id="4367563149485757821">Number-12 (Envelope)</translation>
+<translation id="437040971055499437">Si è verificato un evento di sicurezza</translation>
 <translation id="437058704415269440">Saldo dell'account</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">È previsto il valore <ph name="VALUE_TYPE" />.</translation>
@@ -1400,6 +1401,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5803412860119678065">Vuoi inserire automaticamente <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Autorizzazioni</translation>
 <translation id="5810442152076338065">La connessione a <ph name="DOMAIN" /> è criptata tramite un pacchetto di crittografia obsoleto.</translation>
+<translation id="5812947184178430888">Quando Chrome segnala eventi di sicurezza, i dati corrispondenti agli eventi vengono inviati al tuo amministratore. Tali dati possono includere URL delle pagine visitate in Chrome, metadati o nomi dei file e il nome utente che usi per accedere alle applicazioni basate sul Web, al tuo dispositivo e a Chrome.</translation>
 <translation id="5813119285467412249">&amp;Ripeti aggiunta</translation>
 <translation id="5817918615728894473">Accoppia</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Gli importi dei pagamenti che effettuerai verranno addebitati su questa carta, ma il numero effettivo della carta non verrà condiviso con questo sito. Per maggiore sicurezza verrà generato un codice CVC temporaneo.}other{Gli importi dei pagamenti che effettuerai verranno addebitati sulla carta selezionata, ma il numero effettivo della carta non verrà condiviso con questo sito. Per maggiore sicurezza verrà generato un codice CVC temporaneo.}}</translation>

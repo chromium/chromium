@@ -268,6 +268,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="1838374766361614909">Suche löschen</translation>
 <translation id="1839551713262164453">Die Validierung der Richtlinienwerte hat Fehler ergeben und ist fehlgeschlagen</translation>
 <translation id="1842969606798536927">Bezahlen</translation>
+<translation id="1856713167556118146">Was der Inkognitomodus nicht bewirkt</translation>
 <translation id="1871208020102129563">Der Proxy ist zur Verwendung von festen Proxyservern konfiguriert, nicht zur Verwendung einer PAC-Skript-URL.</translation>
 <translation id="1871284979644508959">Pflichtfeld</translation>
 <translation id="1875512691959384712">Google Formulare</translation>
@@ -1008,6 +1009,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="4465818729556336129">Dieses Dokument ist vertraulich und das Ausdrucken wird von Ihrem Administrator nicht empfohlen.</translation>
 <translation id="4476953670630786061">Dieses Formular ist nicht sicher. Die Funktion „Automatisches Ausfüllen“ wurde deaktiviert.</translation>
 <translation id="4477350412780666475">Nächster Titel</translation>
+<translation id="4481251927743463293">Was der Inkognitomodus bewirkt</translation>
 <translation id="4481394504112738036">Vertrauliche Datei</translation>
 <translation id="4482953324121162758">Diese Website wird nicht übersetzt.</translation>
 <translation id="4490717597759821841">A7</translation>
@@ -1108,10 +1110,17 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="4819347708020428563">Anmerkungen in der Standardansicht bearbeiten?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücken Sie die Tabulatortaste und dann die Eingabetaste, um schnell eine neue Google-Tabelle zu erstellen</translation>
 <translation id="4825507807291741242">Beeindruckend</translation>
+<translation id="4827402517081186284">Der Inkognitomodus macht Sie online nicht unsichtbar:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Websites erkennen, dass Sie sie besuchen<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Arbeitgeber und Bildungseinrichtungen können Browseraktivitäten erfassen<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Internetanbieter behalten ggf. den Web-Traffic im Blick<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="4838327282952368871">Träumerisch</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4850886885716139402">Anzeigen</translation>
 <translation id="485316830061041779">Deutsch</translation>
+<translation id="4853901935952445031">Diese Website kann die U2F API nach Februar 2022 nicht mehr nutzen. Wenn Sie Inhaber dieser Website sind, sollten Sie sie auf die Nutzung der Web Authentication API umstellen.</translation>
 <translation id="4854362297993841467">Diese Lieferoption ist nicht verfügbar. Bitte wählen Sie eine andere Option aus.</translation>
 <translation id="4854853140771946034">Schnell eine neue Notiz in Google Notizen erstellen</translation>
 <translation id="4876188919622883022">Vereinfachte Ansicht</translation>
@@ -1634,6 +1643,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="6757797048963528358">Ihr Gerät ist im Ruhemodus.</translation>
 <translation id="6767985426384634228">Adresse aktualisieren?</translation>
 <translation id="6768213884286397650">Hagaki (Postkarte)</translation>
+<translation id="6774185088257932239"><ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /> zum Inkognitomodus</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Violett</translation>
 <translation id="6786747875388722282">Erweiterungen</translation>
@@ -1681,6 +1691,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="6965382102122355670">Ok</translation>
 <translation id="6965978654500191972">Gerät</translation>
 <translation id="696703987787944103">Perzeptiv</translation>
+<translation id="6968269510885595029">Sicherheitsschlüssel verwenden</translation>
 <translation id="6970216967273061347">Bezirk</translation>
 <translation id="6971439137020188025">Schnell eine neue Präsentation in Google Präsentationen erstellen</translation>
 <translation id="6972629891077993081">HID-Geräte</translation>
@@ -1746,6 +1757,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> erfüllt die Sicherheitsstandards nicht.</translation>
 <translation id="7210993021468939304">Linux-Aktivität innerhalb des Containers, kann Linux-Anwendungen innerhalb des Containers installieren und ausführen</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /> zu diesem Problem.</translation>
+<translation id="7215025035562547931">Überprüfen Sie die Richtigkeit</translation>
 <translation id="7217745192097460130">Möchten Sie zum Bestätigen und Abschließen Ihres Kaufs Touch ID verwenden?</translation>
 <translation id="7219179957768738017">Die Verbindung verwendet <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Verarbeitung läuft</translation>
@@ -2081,6 +2093,12 @@ Weitere Details:
 <translation id="8307888238279532626">Installierte Apps und Häufigkeit ihrer Verwendung</translation>
 <translation id="831207732689920588">Diese Seite ist verdächtig (von Chrome gemeldet).</translation>
 <translation id="831997045666694187">Abends</translation>
+<translation id="8328484624016508118">Nach dem Schließen aller Inkognitotabs löscht Chrome Folgendes:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Ihre Browseraktivitäten auf diesem Gerät<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Ihren Suchverlauf auf diesem Gerät<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Formulareingaben<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">Der Zugriff auf <ph name="HOST_NAME" /> wurde verweigert</translation>
 <translation id="833262891116910667">Markieren</translation>
 <translation id="8339163506404995330">Seiten auf <ph name="LANGUAGE" /> werden nicht übersetzt</translation>

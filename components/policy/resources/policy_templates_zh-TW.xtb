@@ -1638,22 +1638,6 @@
       網址必須採用 HTTPS 架構，例如「https://example.com」。
 
       如果想進一步瞭解有效的網址模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。</translation>
-<translation id="2972531017545674240">你可以透過這項政策指定要以無訊息方式 (使用者無需操作) 安裝的網頁應用程式清單；使用者無法解除安裝或停用這些網頁應用程式。
-
-      這項政策的每個清單項目都是一個物件，由下列必要元素組成：
-      <ph name="URL_LABEL" /> (要安裝的網頁應用程式網址)
-
-      3 個選擇性元素：
-      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />
-      (設定網頁應用程式的開啟方式，預設值是在新分頁中開啟)
-
-      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />
-      (如要建立 <ph name="LINUX_OS_NAME" /> 和 <ph name="MS_WIN_NAME" /> 桌面捷徑，請設為 True)
-
-      - <ph name="FALLBACK_APP_NAME_LABEL" />
-      (適用於 <ph name="PRODUCT_NAME" /> 90 以上版本，可用於針對不是漸進式網頁應用程式 (PWA) 的應用程式覆寫名稱，或是針對暫時性安裝，而且需經過驗證才能完成安裝的 PWA 應用程式覆寫名稱)
-
-      如需將應用程式固定到 <ph name="PRODUCT_OS_NAME" />檔案櫃，請參閱 <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> 政策。</translation>
 <translation id="2976429807269247880">舊版 <ph name="ATTRIBUTE_SAMESITE_NAME" /> Cookie 行為設定</translation>
 <translation id="2985927503455169394">使用 Google 助理入門使用體驗的預設模式</translation>
 <translation id="2987155890997901449">啟用 ARC</translation>
@@ -2641,11 +2625,6 @@
           如果不設定這項政策，系統預設會停用自動點擊功能，但使用者隨時可以啟用這項功能。</translation>
 <translation id="4212181786686887763">可下載桌布圖片的網址。</translation>
 <translation id="4224610387358583899">螢幕鎖定延遲</translation>
-<translation id="4225260426043444650">你可以透過這項設定，允許使用者使用 <ph name="LACROS_NAME" /> 瀏覽器。
-
-      如果將這項政策設為停用或不設定，使用者將無法使用 <ph name="LACROS_NAME" />。
-
-          如果將這項政策設為啟用，使用者可以使用 <ph name="LACROS_NAME" /> 瀏覽器。</translation>
 <translation id="4228745249339680042">你可以透過這項政策指定網址和網域，當網站要求安全金鑰的認證憑證時，這些網址和網域不會顯示提示。系統也會傳送可能會使用個別認證的信號給安全金鑰。如果未設定這項政策，當網站要求安全金鑰的認證時，系統會向 <ph name="PRODUCT_NAME" /> 65 以上版本的使用者顯示提示。
 
       網址只會以 U2F appID 進行比對。網域只會以 webauthn RP ID 進行比對。因此，如要涵蓋 U2F API 和 webauthn API，請列出指定網站的 appID 網址和網域。</translation>
@@ -4409,6 +4388,7 @@
           如果設為 False 或不予設定，則無法建立及登入受監督的使用者帳戶。系統將全面隱藏現有的受監督使用者。
 
           注意：一般使用者和企業客戶的裝置對於這項設定的預設值有所不同。在預設狀態下，一般使用者的裝置會啟用建立受監督使用者的功能，但企業戶的裝置則會停用這項功能。</translation>
+<translation id="665023848306499203">讓裝置選取要更新的特定版本</translation>
 <translation id="6652197835259177259">本機管理化環境下的使用者設定</translation>
 <translation id="6653897159826215341">如果將這項政策設為啟用，<ph name="PRODUCT_NAME" /> 在使用者提出列印要求時會開啟系統列印對話方塊，而不是內建的列印預覽。
 
@@ -4578,19 +4558,6 @@
 <translation id="6857240169209507953">禁止在裝置上執行 <ph name="BOREALIS_NAME" /></translation>
 <translation id="685769593149966548">強制執行 YouTube 高度嚴格篩選模式</translation>
 <translation id="686079137349561371">Microsoft Windows 7 以上版本</translation>
-<translation id="6864283226733000548">這項設定針對 <ph name="LACROS_NAME" /> 瀏覽器提供了多個可用性選項。
-
-      如果將這項政策設為 <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" />，使用者就可以啟用 <ph name="LACROS_NAME" />，並將其設為主要瀏覽器。<ph name="LACROS_NAME" /> 仍可能受到 <ph name="LACROS_ALLOWED_POLICY_NAME" /> 政策禁止使用。
-
-      如果將這項政策設為 <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" />，使用者就無法使用 <ph name="LACROS_NAME" />。系統會忽略 <ph name="LACROS_ALLOWED_POLICY_NAME" /> 政策。
-
-      如果將這項政策設為 <ph name="LACROS_AVAILABILITY_SIDE_BY_SIDE_VALUE" />，<ph name="LACROS_NAME" /> 就會啟用，但不是主要瀏覽器。系統會忽略 <ph name="LACROS_ALLOWED_POLICY_NAME" /> 政策。
-
-      如果將這項政策設為 <ph name="LACROS_AVAILABILITY_LACROS_PRIMARY_VALUE" />，<ph name="LACROS_NAME" /> 就會啟用並成為主要瀏覽器。系統會忽略 <ph name="LACROS_ALLOWED_POLICY_NAME" /> 政策。
-
-      如果不設定這項政策，受企業管理使用者的預設值為 <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" />；其他一般使用者的預設值則為 <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" />。
-
-      日後也可以使用 <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" /> 一值，將 <ph name="LACROS_NAME" /> 設為 <ph name="PRODUCT_OS_NAME" />中唯一可用的瀏覽器。</translation>
 <translation id="6865392932254477045">你可以透過這項政策設定網站清單，指定哪些網站會自動取得權限，能夠存取廠商 ID 和產品 ID 分別與 <ph name="VENDOR_ID_FIELD_NAME" /> 和 <ph name="PRODUCT_ID_FIELD_NAME" /> 欄位相符的 USB 序列裝置。如果省略 <ph name="PRODUCT_ID_FIELD_NAME" /> 欄位，系統就會授權指定網站存取廠商 ID 與 <ph name="VENDOR_ID_FIELD_NAME" /> 欄位相符的裝置，裝置的產品 ID 則沒有限制。
 
       網址必須是有效網址，否則系統會忽略這項政策。系統只會檢視網址的來源 (配置、主機和埠)。
@@ -5141,6 +5108,20 @@
 <translation id="7477231245051133709">啟用單聲道音訊無障礙功能</translation>
 <translation id="7477239290070847560">可支援無須調整設定 (mDNS 和 DNS-SD) 的通訊協定目的地</translation>
 <translation id="7485481791539008776">預設印表機選取規則</translation>
+<translation id="7493995861907758679">設定這項政策可讓裝置選取要更新的特定 <ph name="PRODUCT_OS_NAME" /> 目標版本。
+
+      如果不設定這項政策，裝置會根據其他設定進行更新，或更新至最新的可用版本。
+
+      如果設定這項政策，裝置則會更新至所選版本。
+
+      此政策值的確切格式代表更新服務的詳細執行情況，可能會有所變更。系統不會在裝置上處理政策值。
+
+      搭配 <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> 使用時，更新服務會先檢查本政策。
+      有別於 <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> 可能允許小幅更新，裝置會保持在所選版本，直到這項政策的值改變為止。
+
+      搭配 <ph name="DEVICE_ROLLBACK_TO_TARGET_VERSION_POLICY_NAME" /> 使用時，裝置版本可還原為較舊的特定版本。
+
+      警告：我們不建議設定版本限制，因為這可能導致使用者無法接收軟體更新和重大安全性修正項目。限制裝置升級至特定版本可能會讓使用者面臨風險。</translation>
 <translation id="7506745375479451616">這項政策可控管從 <ph name="IE_PRODUCT_NAME" /> 切換到 Chrome 時，在 <ph name="PRODUCT_NAME" /> 中開啟網址時使用的指令。你可以將這項政策設為執行檔路徑，或是設為 <ph name="PRODUCT_NAME_PLACEHOLDER" />，讓系統自動偵測 <ph name="PRODUCT_NAME" /> 的位置。
 
       如果未設定這項政策，從 Internet Explorer 啟動 <ph name="PRODUCT_NAME" /> 時，<ph name="IE_PRODUCT_NAME" /> 會自動偵測 <ph name="PRODUCT_NAME" /> 自己的可執行路徑。

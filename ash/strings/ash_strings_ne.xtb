@@ -93,6 +93,7 @@
 <translation id="1615402009686901181">तपाईंको स्क्रिनमा गोप्य सामग्री देखिएका बेला एड्मिनले तोक्नुभएको नीतिअनुसार स्क्रिन क्याप्चर गर्ने सुविधा अफ गरिन्छ</translation>
 <translation id="1632985212731562677">सेटिङ &gt; पहुँचमा गएर स्विचमार्फत पहुँच राख्ने सुविधा असक्षम पार्न सकिन्छ।</translation>
 <translation id="1654477262762802994">आवाजमार्फत गरिने क्वेरी सुरु गर्नुहोस्</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; सहायकमा परिणाम हेर्न Search र Space बटन एकै चोटि थिच्नुहोस्।</translation>
 <translation id="1667964833127753507">'तटस्थ रङ' मोडमा वालपेपरबाट निकालिएका रङ्गहरू प्रयोग गरिँदैन। बरु यो मोडमा तटस्थ रङ्गहरू मिसाएर बनाइएको हल्का वा गाढा प्रकारको रङ प्रयोग गरिन्छ।</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> बाँकी छ</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> कनेक्ट गरिएको छैन।</translation>
@@ -140,6 +141,7 @@
 <translation id="2016340657076538683">एउटा सन्देश टाइप गर्नुहोस्</translation>
 <translation id="2018630726571919839">मलाई एउटा चुट्किला सुनाउनुहोस्</translation>
 <translation id="2021864487439853900">अनलक गर्न क्लिक गर्नुहोस्</translation>
+<translation id="2023558322300866873">तपाईं जुनसुकै बेला प्याकेट क्याप्चर गर्ने कार्य बन्द गर्न सक्नुहुन्छ</translation>
 <translation id="2047639699071423250">मुख्य विचार हाल्नुहोस्</translation>
 <translation id="2049240716062114887">डेस्कको नाम बदलेर <ph name="DESK_NAME" /> बनाइयो</translation>
 <translation id="2050339315714019657">पोर्ट्रेट</translation>
@@ -542,6 +544,7 @@
 <translation id="5083553833479578423">सहायकका थप सुविधाहरू अनलक गर्नुहोस्।</translation>
 <translation id="5136175204352732067">भिन्न किबोर्ड जडान गरियो</translation>
 <translation id="5155897006997040331">पढ्ने गति</translation>
+<translation id="5166918508782100047">द्रुत जवाफसम्बन्धी सेटिङ</translation>
 <translation id="5168181903108465623">Cast यन्त्रहरू उपलब्ध</translation>
 <translation id="5170568018924773124">फोल्डरमा देखाउनुहोस्</translation>
 <translation id="5176318573511391780">स्क्रिनको केही भागको भिडियो रेकर्ड गर्नुहोस्</translation>
@@ -796,6 +799,7 @@
 <translation id="7302889331339392448">लाइभ क्याप्सन अफ छ।</translation>
 <translation id="7303365578352795231">अर्को यन्त्रमा जवाफ दिँदै।</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Search मा परिणाम हेर्न Search र Space बटन एकै चोटि थिच्नुहोस्।</translation>
 <translation id="7346909386216857016">ठिक छ, बुझेँ</translation>
 <translation id="7348093485538360975">अन्-स्क्रिन कुञ्जीपाटी</translation>
 <translation id="735745346212279324">VPN को जडान विच्छेद भयो</translation>

@@ -16,6 +16,7 @@
 <translation id="1524282610922162960">Compartir unha pestana de Chromium</translation>
 <translation id="1553461853655228091">Chromium necesita permiso para acceder á cámara co fin de crear un mapa 3D do que te rodea</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{O teu administrador require que reinicies Chromium para aplicar unha actualización}=1{O teu administrador require que reinicies Chromium para aplicar unha actualización. A ventá do modo de incógnito non se volverá abrir.}other{O teu administrador require que reinicies Chromium para aplicar unha actualización. As # ventás do modo de incógnito non se volverán abrir.}}</translation>
+<translation id="1667812772085710766">Cando pechas Chromium, bórranse automaticamente as cookies e os datos dos sitios correspondentes ás páxinas que visitases</translation>
 <translation id="1708666629004767631">Hai unha versión nova e máis segura de Chromium dispoñible.</translation>
 <translation id="1774152462503052664">Deixar que Chromium se execute en segundo plano</translation>
 <translation id="1779356040007214683">Para conseguir que Chromium resulte máis seguro, desactivamos algunhas extensións que non aparecen en <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> e que é posible que se engadisen sen o teu coñecemento.</translation>

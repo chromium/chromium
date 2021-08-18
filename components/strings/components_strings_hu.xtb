@@ -992,6 +992,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4358461427845829800">Fizetési módok kezelése…</translation>
 <translation id="4359160567981085931">Megtévesztő webhelyen adta meg jelszavát. A Chrome segíthet. Ha módosítani szeretné jelszavát, és értesíteni szeretné a Google-t arról, hogy fiókja veszélyben lehet, kattintson a Fiók védelme gombra.</translation>
 <translation id="4367563149485757821">Number-12 (boríték)</translation>
+<translation id="437040971055499437">Biztonsági esemény történik</translation>
 <translation id="437058704415269440">Számlaegyenleg</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Várt <ph name="VALUE_TYPE" /> érték.</translation>
@@ -1401,6 +1402,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5803412860119678065">Ki szeretné tölteni <ph name="CARD_DETAIL" /> kártyájának adataival?</translation>
 <translation id="5804241973901381774">Engedélyek</translation>
 <translation id="5810442152076338065">A(z) <ph name="DOMAIN" /> domainnel való kapcsolata elavult kriptográfiával van titkosítva.</translation>
+<translation id="5812947184178430888">Amikor a Chrome biztonsági eseményeket észlel, a böngésző elküldi az eseménnyel kapcsolatos releváns adatokat a rendszergazdának. Az ilyen adatok közé tartozhatnak a Chrome-ban felkeresett oldalak URL-jei, a fájlnevek és metaadatok, valamint a webalapú alkalmazásokba, az eszközre és a Chrome-ba való bejelentkezéshez használt felhasználónév.</translation>
 <translation id="5813119285467412249">&amp;Hozzáadás újra</translation>
 <translation id="5817918615728894473">Párosítás</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{A rendszer fizetéskor ezt a kártyát terheli meg, de a kártya valódi számát nem osztja meg ezzel a webhellyel. A további védelem érdekében ideiglenes CVC-t is generál.}other{A rendszer fizetéskor az Ön által kiválasztott kártyát terheli meg, de a kártya valódi számát nem osztja meg ezzel a webhellyel. A további védelem érdekében ideiglenes CVC-t is generál.}}</translation>

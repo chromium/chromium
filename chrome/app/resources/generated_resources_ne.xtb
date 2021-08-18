@@ -2197,6 +2197,7 @@
 <translation id="3305661444342691068">पिडिएफलाई पूर्वावलोकनमा खोल्नुहोस्</translation>
 <translation id="3308116878371095290">यो पृष्ठ कुकीहरू सेट गर्नबाट रोकिएको थियो।</translation>
 <translation id="3308134619352333507">बटन लुकाउनुहोस्</translation>
+<translation id="3308681281309926497">तपाईंले Chrome बन्द नगरुन्जेल तपाईंले खोल्ने साइटहरूले तपाईंसँग सम्बन्धित जानकारी याद राख्न सक्छन्</translation>
 <translation id="3308738399950580893">विज्ञापनहरू</translation>
 <translation id="3308852433423051161">Google सहायक लोड गर्दै...</translation>
 <translation id="3309330461362844500">सर्टिफिकेट प्रोफाइलको ID</translation>
@@ -2750,6 +2751,7 @@
 <translation id="3873423927483480833">PIN हरू देखाउनुहोस्</translation>
 <translation id="3873915545594852654">ARC++ सम्बन्धी कुनै समस्या भयो।</translation>
 <translation id="3874164307099183178">Google सहायक सक्रिय गर्नुहोस्</translation>
+<translation id="3875815154304214043"><ph name="APP_NAME" /> ब्राउजरको नयाँ ट्याबमा खुल्ने बनाइएको छ। खोल्न मिल्ने लिंकहरू पनि ब्राउजरमा नै खुल्ने छन्। <ph name="BEGIN_LINK_LEARN_MORE" />थप जान्नुहोस्<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" /> को यन्त्रमा <ph name="USER_EMAIL" /> खाता प्रयोग गरी नजिकैका डिभाइससँग सेयर गर्ने सुविधाका सेटिङ।</translation>
 <translation id="3879748587602334249">डाउनलोड म्यानेजर</translation>
 <translation id="3882165008614329320">क्यामेरा वा फाइलको विद्यमान भिडियो</translation>
@@ -3896,6 +3898,7 @@
 <translation id="5157635116769074044">यस पृष्ठलाई सुरुवात स्क्रिनमा पिन गर्नुहोस्...</translation>
 <translation id="5159094275429367735">Crostini सेटअप गर्नुहोस्</translation>
 <translation id="5159419673777902220">तपाईंका अभिभावकले तपाईंलाई एक्स्टेन्सन प्रयोग गर्ने अनुमति दिनुभएको छैन</translation>
+<translation id="5159643365935452998">डेटा स्वतः मेटाउने सुविधाको समीक्षा गर्नुहोस्</translation>
 <translation id="5160634252433617617">भौतिक किबोर्ड</translation>
 <translation id="5160857336552977725">तपाईँको <ph name="DEVICE_TYPE" /> मा साइन इन गर्नुहोस्</translation>
 <translation id="5161251470972801814"><ph name="VENDOR_NAME" /> का USB डिभाइसहरू</translation>
@@ -4459,6 +4462,7 @@
 <translation id="5790651917470750848">यो पोर्टमा पहिलेदेखि नै फरवार्ड गरिँदै छ</translation>
 <translation id="5792728279623964091">कृपया आफ्नो पावर बटनमा ट्याप गर्नुहोस्</translation>
 <translation id="5793339252089865437">तपाईंले अद्यावधिक डाउनलोड गर्दा आफ्नो मोबाइल नेटवर्कमार्फत गर्नुभयो भने अधिक शुल्क लाग्न सक्छ।</translation>
+<translation id="5794034487966529952"><ph name="DESK_TITLE" /> नामक डेस्कमा ब्राउजरका <ph name="NUM_BROWSERS" /> वटा विन्डो खोलिएका छन्</translation>
 <translation id="5794414402486823030">प्रणाली दर्शकमार्फत सधैं खोल्नुहोस्</translation>
 <translation id="5794700615121138172">Linux बाट सेयर गरिएका फोल्डरहरू</translation>
 <translation id="5794786537412027208">सबै Chrome एप्स छोड्नुहोस्</translation>

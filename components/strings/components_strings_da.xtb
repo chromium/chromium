@@ -994,6 +994,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4358461427845829800">Administrer betalingsmetoder...</translation>
 <translation id="4359160567981085931">Du har lige angivet din adgangskode på et vildledende website. Chrome kan hjælpe. Klik på Beskyt konto for at ændre din adgangskode og underrette Google om, at din konto muligvis er kompromitteret.</translation>
 <translation id="4367563149485757821">Number-12 (Envelope)</translation>
+<translation id="437040971055499437">Forekomst af sikkerhedshændelse</translation>
 <translation id="437058704415269440">Kontosaldo</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Forventet <ph name="VALUE_TYPE" />-værdi.</translation>
@@ -1403,6 +1404,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5803412860119678065">Skal <ph name="CARD_DETAIL" /> udfyldes?</translation>
 <translation id="5804241973901381774">Tilladelser</translation>
 <translation id="5810442152076338065">Din forbindelse til <ph name="DOMAIN" /> er krypteret ved hjælp af en forældet krypteringspakke.</translation>
+<translation id="5812947184178430888">Når sikkerhedshændelser rapporteres af Chrome, sendes der relevante data om hændelserne til din administrator. Disse data kan omfatte webadresserne på de sider, du besøger i Chrome, filnavne eller metadata samt det brugernavn, du bruger til at logge ind på webbaserede apps, på din enhed og i Chrome.</translation>
 <translation id="5813119285467412249">&amp;Annuller fortryd tilføjelse</translation>
 <translation id="5817918615728894473">Start parring</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Dette kort debiteres, når du betaler, men kortets faktiske nummer deles ikke med dette website. Som ekstra beskyttelse genereres der en midlertidig kontrolkode.}one{Det kort, du vælger, debiteres, når du betaler, men kortets faktiske nummer deles ikke med dette website. Som ekstra beskyttelse genereres der en midlertidig kontrolkode.}other{De kort, du vælger, debiteres, når du betaler, men kortenes faktiske numre deles ikke med dette website. Som ekstra beskyttelse genereres der en midlertidig kontrolkode.}}</translation>

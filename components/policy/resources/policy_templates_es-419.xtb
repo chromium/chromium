@@ -1660,23 +1660,6 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       Las URL deben tener el esquema HTTPS, p. ej., "https://example.com".
 
       Para obtener información detallada sobre los patrones de URL válidos, consulta: https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
-<translation id="2972531017545674240">Si estableces la política, se especificará una lista de aplicaciones web que se instalan de manera discreta, sin la interacción del usuario, y que este no puede desinstalar ni desactivar.
-
-      Cada elemento de la lista de la política es un objeto con un miembro obligatorio, <ph name="URL_LABEL" /> (la URL de la aplicación web que se instalará), y 3 miembros opcionales:
-      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />
-      (establece la manera en la que se abrirá la aplicación web; la opción predeterminada es una nueva pestaña)
-
-      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />
-      (verdadero, si se crean accesos directos de escritorio para <ph name="LINUX_OS_NAME" /> y <ph name="MS_WIN_NAME" />)
-
-      - <ph name="FALLBACK_APP_NAME_LABEL" />
-      (A partir de la versión 90 de <ph name="PRODUCT_NAME" />,
-      te permite anular el nombre de la app si no es una
-      app web progresiva (AWP), o el nombre de la app instalada
-      temporalmente si es una AWP, pero se requiere autenticación para que la
-      instalación pueda completarse)
-
-      Para fijar apps a la barra de <ph name="PRODUCT_OS_NAME" />, consulta <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" />.</translation>
 <translation id="2976429807269247880">Configuración del comportamiento de las cookies <ph name="ATTRIBUTE_SAMESITE_NAME" /> heredadas</translation>
 <translation id="2985927503455169394">Usa el modo predeterminado de la experiencia de integración del Asistente</translation>
 <translation id="2987155890997901449">Habilitar ARC</translation>
@@ -2690,11 +2673,6 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
           Si no la estableces, el clic automático estará inicialmente inhabilitado, pero el usuario podrá habilitarlo en cualquier momento.</translation>
 <translation id="4212181786686887763">La URL desde la cual se puede descargar la imagen de fondo de pantalla.</translation>
 <translation id="4224610387358583899">Demoras de bloqueo de pantalla</translation>
-<translation id="4225260426043444650">Esta configuración permite a los usuarios acceder al navegador <ph name="LACROS_NAME" />.
-
-      Si inhabilitas esta política o no la estableces, el usuario no podrá usar <ph name="LACROS_NAME" />.
-
-      Si habilitas esta política, el usuario podrá usar el navegador <ph name="LACROS_NAME" />.</translation>
 <translation id="4228745249339680042">Si estableces la política, se especificarán las URL y los dominios para los cuales no se mostrarán mensajes cuando se soliciten confirmaciones de certificaciones de las llaves de seguridad. Además, se enviará una señal a la llave de seguridad para indicar que se puede usar la certificación individual. Sin esto, se mostrará un mensaje a los usuarios que tengan <ph name="PRODUCT_NAME" /> 65 y versiones posteriores cuando los sitios soliciten certificaciones de llaves de seguridad.
 
       Las URL solo coincidirán como appID de U2F. Los dominios solo coincidirán como RP ID de webauthn. Por lo tanto, para abarcar las API de U2F y webauthn, deben incluirse el dominio y la URL de appID para un sitio determinado.</translation>
@@ -2739,7 +2717,7 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
 <translation id="4330372709562934569">Permite que los sitios de la lista envíen solicitudes a extremos de red más privados desde contextos no seguros</translation>
 <translation id="4331357743227845302">Esta política permite que los administradores establezcan los servicios de Bluetooth a los que <ph name="PRODUCT_OS_NAME" /> puede conectarse.
 
-Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que los usuarios se conecten a servicios de Bluetooth específicos, a menos que la lista esté vacía. En ese caso, permitirá que se use cualquier servicio. Los UUID reservados por Bluetooth SIG pueden estar representados como <ph name="BLUETOOTH_RESERVED_UUID_WITH_0X" /> o <ph name="BLUETOOTH_RESERVED_UUID_WITHOUT_0X" />. Los UUID personalizados pueden estar representados como <ph name="BLUETOOTH_CUSTOM_UUID" />. Los UUID distinguen entre mayúsculas y minúsculas. Si no estableces la política, los usuarios podrán conectarse a cualquier servicio de Bluetooth.</translation>
+Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que los usuarios se conecten a servicios de Bluetooth específicos, a menos que la lista esté vacía. En ese caso, permitirá que se use cualquier servicio. Los UUID reservados por Bluetooth SIG pueden estar representados como <ph name="BLUETOOTH_RESERVED_UUID_WITH_0X" /> o <ph name="BLUETOOTH_RESERVED_UUID_WITHOUT_0X" />. Los UUID personalizados pueden estar representados como <ph name="BLUETOOTH_CUSTOM_UUID" />. Los UUID no distinguen entre mayúsculas y minúsculas. Si no estableces la política, los usuarios podrán conectarse a cualquier servicio de Bluetooth.</translation>
 <translation id="4332177773549877617">Registrar eventos de instalaciones de apps de Android</translation>
 <translation id="4341199399451274159">Si activas <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />, establecer <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> especificará la codificación de caracteres que admite el proveedor de búsqueda. Las codificaciones son nombres de página de código como UTF-8, GB2312 y ISO-8859-1. Estos se prueban en el orden establecido.
 
@@ -4673,19 +4651,6 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 <translation id="6857240169209507953">Impide que se ejecute <ph name="BOREALIS_NAME" /> en un dispositivo</translation>
 <translation id="685769593149966548">Aplicar el modo restringido estricto para YouTube</translation>
 <translation id="686079137349561371">Microsoft Windows 7 o versiones posteriores</translation>
-<translation id="6864283226733000548">Esta configuración brinda diferentes opciones de disponibilidad para el navegador <ph name="LACROS_NAME" />.
-
-      Si estableces la política como <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" />, el usuario podrá habilitar <ph name="LACROS_NAME" /> y seleccionarlo como navegador principal. <ph name="LACROS_NAME" /> puede inhabilitarse mediante la política <ph name="LACROS_ALLOWED_POLICY_NAME" />.
-
-      Si estableces la política como <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" />, el usuario no podrá usar <ph name="LACROS_NAME" />. Se ignorará la política <ph name="LACROS_ALLOWED_POLICY_NAME" />.
-
-      Si estableces la política como <ph name="LACROS_AVAILABILITY_SIDE_BY_SIDE_VALUE" />, se habilitará <ph name="LACROS_NAME" />, pero no será el navegador principal. Se ignorará la política <ph name="LACROS_ALLOWED_POLICY_NAME" />.
-
-      Si estableces la política como <ph name="LACROS_AVAILABILITY_LACROS_PRIMARY_VALUE" />, se habilitará <ph name="LACROS_NAME" /> y será el navegador principal. Se ignorará la política <ph name="LACROS_ALLOWED_POLICY_NAME" />.
-
-      Si no estableces la política, la configuración predeterminada es <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" /> para los usuarios administrados por empresas y <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" /> para los usuarios no administrados.
-
-      En el futuro, se podrá seleccionar <ph name="LACROS_NAME" /> como el único navegador disponible en <ph name="PRODUCT_OS_NAME" /> a través del valor <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" />.</translation>
 <translation id="6865392932254477045">Si estableces la política, podrás crear una lista de los sitios que reciben automáticamente permiso para acceder a los dispositivos seriales USB cuyos ID del producto y del proveedor coinciden con los campos <ph name="VENDOR_ID_FIELD_NAME" /> y <ph name="PRODUCT_ID_FIELD_NAME" />. Si omites el campo <ph name="PRODUCT_ID_FIELD_NAME" />, los sitios determinados tendrán acceso a los dispositivos cuyo ID de proveedor coincida con el campo <ph name="VENDOR_ID_FIELD_NAME" /> y cualquier ID del producto.
 
       Las URL deben ser válidas; de lo contrario, se ignorará la política. Solo se considera el origen (esquema, host y puerto) de la URL.

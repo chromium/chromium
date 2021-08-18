@@ -1651,16 +1651,6 @@ Tuttavia, se questo criterio è Disattivato, questo requisito non viene applicat
       Gli URL devono avere uno schema HTTPS, ad esempio "https://example.com".
 
       Per informazioni dettagliate sui pattern URL validi, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
-<translation id="2972531017545674240">La configurazione di questo criterio consente di specificare un elenco di app web installate automaticamente, senza interazione dell'utente, e che non possono essere disinstallate o disattivate dagli utenti.
-
-      Ogni voce del criterio è un oggetto con un componente obbligatorio:
-      <ph name="URL_LABEL" /> (l'URL dell'app web da installare) e 3 componenti facoltativi:
-      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" /> (che indica la modalità di apertura dell'app web, ovvero una nuova scheda per impostazione predefinita).
-      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" /> (Vero, se vuoi creare collegamenti sul desktop <ph name="LINUX_OS_NAME" /> e <ph name="MS_WIN_NAME" />).
-
-      - <ph name="FALLBACK_APP_NAME_LABEL" /> (a partire dalla versione 90 di <ph name="PRODUCT_NAME" />, consente di sostituire il nome dell'app se non si tratta di un'app web progressiva [PWA] o il nome dell'app installata temporaneamente se si tratta di un'app web progressiva, ma è necessaria l'autenticazione per poter completare l'installazione).
-
-      Vedi il criterio <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> per bloccare app sulla barra delle app di <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="2976429807269247880">Impostazioni del comportamento per i cookie <ph name="ATTRIBUTE_SAMESITE_NAME" /> precedenti</translation>
 <translation id="2985927503455169394">Usa la modalità predefinita dell'esperienza di onboarding dell'assistente</translation>
 <translation id="2987155890997901449">Attiva ARC</translation>
@@ -2668,11 +2658,6 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
           Se questo criterio non viene impostato, inizialmente il clic automatico è disattivato, ma l'utente può attivarlo in qualsiasi momento.</translation>
 <translation id="4212181786686887763">L'URL da cui è possibile scaricare l'immagine di sfondo.</translation>
 <translation id="4224610387358583899">Ritardi del blocco schermo</translation>
-<translation id="4225260426043444650">Questa impostazione consente agli utenti di usare il browser <ph name="LACROS_NAME" />.
-
-      Se questo criterio viene impostato su Disattivato o se non viene configurato, l'utente non può usare <ph name="LACROS_NAME" />.
-
-      Se questo criterio viene impostato su Attivato, l'utente può usare il browser <ph name="LACROS_NAME" />.</translation>
 <translation id="4228745249339680042">La configurazione del criterio consente di specificare gli URL e i domini per i quali non vengono visualizzati messaggi quando vengono richiesti certificati di attestazione dei token di sicurezza. Viene inoltre inviato un segnale al token di sicurezza per indicare che potrebbe essere utilizzata la singola attestazione. Senza questo segnale, gli utenti di <ph name="PRODUCT_NAME" /> 65 e versioni successive ricevono un messaggio quando i siti richiedono l'attestazione dei token di sicurezza.
 
       Gli URL corrispondono soltanto ad appID U2F. I domini corrispondono soltanto a ID RP webauthn. Di conseguenza, per includere entrambe le API U2F e webauthn per un determinato sito, devono essere elencati sia il dominio sia l'URL appID.</translation>
@@ -4463,6 +4448,7 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
           Se questa norma è impostata su false o non è configurata, la creazione di utenti supervisionati e il relativo accesso saranno disattivati. Tutti gli utenti supervisionati esistenti saranno nascosti.
 
           NOTA. Il comportamento predefinito per dispositivi consumer ed enterprise è diverso: sui dispositivi consumer, gli utenti supervisionati sono abilitati per impostazione predefinita, mentre sui dispositivi enterprise sono disabilitati per impostazione predefinita.</translation>
+<translation id="665023848306499203">Consenti ai dispositivi di selezionare una versione specifica per l'aggiornamento</translation>
 <translation id="6652197835259177259">Impostazioni degli utenti gestiti localmente</translation>
 <translation id="6653897159826215341">Se il criterio viene impostato su Attivato, in <ph name="PRODUCT_NAME" /> viene aperta la finestra di dialogo di stampa di sistema anziché l'anteprima di stampa integrata quando un utente richiede una stampa.
 
@@ -4632,19 +4618,6 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
 <translation id="6857240169209507953">È vietata l'esecuzione di <ph name="BOREALIS_NAME" /> su un dispositivo</translation>
 <translation id="685769593149966548">Imponi il livello massimo della Modalità con restrizioni per YouTube</translation>
 <translation id="686079137349561371">Microsoft Windows 7 o versioni successive</translation>
-<translation id="6864283226733000548">Questa impostazione offre diverse opzioni relative alla disponibilità del browser <ph name="LACROS_NAME" />.
-
-      Se il criterio viene impostato su <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" />, l'utente può attivare <ph name="LACROS_NAME" /> e impostarlo come browser principale. È comunque possibile non consentire <ph name="LACROS_NAME" /> con il criterio <ph name="LACROS_ALLOWED_POLICY_NAME" />.
-
-      Se il criterio viene impostato su <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" />, l'utente non potrà usare <ph name="LACROS_NAME" />. Il criterio <ph name="LACROS_ALLOWED_POLICY_NAME" /> viene ignorato.
-
-      Se il criterio viene impostato su <ph name="LACROS_AVAILABILITY_SIDE_BY_SIDE_VALUE" />, <ph name="LACROS_NAME" /> viene attivato, ma non è il browser principale. Il criterio <ph name="LACROS_ALLOWED_POLICY_NAME" /> viene ignorato.
-
-      Se il criterio viene impostato su <ph name="LACROS_AVAILABILITY_LACROS_PRIMARY_VALUE" />, <ph name="LACROS_NAME" /> viene attivato ed è il browser principale. Il criterio <ph name="LACROS_ALLOWED_POLICY_NAME" /> viene ignorato.
-
-      Se il criterio non viene configurato, il valore predefinito è <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" /> per gli utenti gestiti a livello aziendale e <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" /> per gli utenti non gestiti.
-
-      In futuro sarà possibile impostare <ph name="LACROS_NAME" /> come unico browser disponibile in <ph name="PRODUCT_OS_NAME" /> impostando il valore <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" />.</translation>
 <translation id="6865392932254477045">La configurazione del criterio consente di elencare i siti a cui viene concessa automaticamente l'autorizzazione ad accedere ai dispositivi seriali USB con ID fornitore e prodotto corrispondenti ai valori dei campi <ph name="VENDOR_ID_FIELD_NAME" /> e <ph name="PRODUCT_ID_FIELD_NAME" />. Se il campo <ph name="PRODUCT_ID_FIELD_NAME" /> non viene specificato, i siti indicati sono autorizzati ad accedere ai dispositivi con ID fornitore corrispondente al valore del campo <ph name="VENDOR_ID_FIELD_NAME" /> e con qualsiasi ID prodotto.
 
       Se gli URL non sono validi, il criterio viene ignorato. Viene considerata soltanto l'origine (schema, host e porta) dell'URL.
@@ -5195,6 +5168,20 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="7477231245051133709">Attiva la funzione di accessibilità di audio in formato mono</translation>
 <translation id="7477239290070847560">Destinazioni protocolli (mDNS e DNS-SD) basate su configurazione automatica</translation>
 <translation id="7485481791539008776">Regole di selezione della stampante predefinita</translation>
+<translation id="7493995861907758679">Questa impostazione consente ai dispositivi di selezionare una versione di destinazione specifica di <ph name="PRODUCT_OS_NAME" /> per l'aggiornamento.
+
+      Se non viene configurata, i dispositivi eseguiranno l'aggiornamento in base ad altre impostazioni o all'ultima versione disponibile.
+
+      Se viene configurata, l'aggiornamento verrà eseguito a una versione selezionata.
+
+      Il formato esatto di questo valore del criterio corrisponde ai dettagli di implementazione del servizio di aggiornamento e potrebbe variare. Il valore del criterio non viene elaborato sul dispositivo.
+
+      Se utilizzato insieme a <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" />, questo criterio verrà prima esaminato da un servizio di aggiornamento.
+      A differenza di<ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> (che potrebbe consentire aggiornamenti minori), i dispositivi manterranno la versione selezionata finché il valore di questo criterio non verrà modificato.
+
+      Se utilizzato insieme a <ph name="DEVICE_ROLLBACK_TO_TARGET_VERSION_POLICY_NAME" />, la versione del dispositivo può essere ripristinata a una versione precedente specifica.
+
+      Avviso: è sconsigliato configurare delle limitazioni della versione, poiché potrebbero impedire agli utenti di ricevere aggiornamenti software e correzioni critiche per la sicurezza. Gli aggiornamenti con limitazioni a una versione specifica potrebbero esporre gli utenti a dei rischi.</translation>
 <translation id="7506745375479451616">Questo criterio consente di stabilire il comando da usare per aprire gli URL in <ph name="PRODUCT_NAME" /> anziché in <ph name="IE_PRODUCT_NAME" />. Per questo criterio è possibile impostare un percorso file eseguibile o un valore <ph name="PRODUCT_NAME_PLACEHOLDER" /> per rilevare automaticamente la posizione di <ph name="PRODUCT_NAME" />.
 
       Se il criterio non viene impostato, <ph name="IE_PRODUCT_NAME" /> rileva automaticamente il percorso eseguibile di <ph name="PRODUCT_NAME" /> all'avvio di <ph name="PRODUCT_NAME" /> da Internet Explorer.

@@ -1667,27 +1667,6 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
       URL harus berisi skema HTTPS, misalnya "https://example.com".
 
       Untuk informasi mendetail tentang pola URL yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
-<translation id="2972531017545674240">Menyetel kebijakan akan menentukan daftar aplikasi web yang diinstal otomatis, tanpa interaksi pengguna, dan yang tidak dapat di-uninstal atau dinonaktifkan pengguna.
-
-      Setiap item daftar kebijakan adalah objek yang berisi satu elemen wajib:
-      <ph name="URL_LABEL" /> (URL aplikasi web yang akan diinstal)
-
-      dan 3 elemen opsional:
-      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />
-      (untuk cara aplikasi web terbuka—tab baru adalah default)
-
-      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />
-      (Berlaku jika Anda ingin membuat pintasan desktop <ph name="LINUX_OS_NAME" /> dan
-      <ph name="MS_WIN_NAME" />).
-
-      - <ph name="FALLBACK_APP_NAME_LABEL" />
-      (Mulai dari <ph name="PRODUCT_NAME" /> versi 90,
-      memungkinkan Anda mengganti nama aplikasi jika aplikasi bukan
-      Progressive Web App (PWA), atau mengganti nama aplikasi yang diinstal
-      sementara jika aplikasi adalah PWA tetapi perlu autentikasi sebelum
-      penginstalan dapat diselesaikan.)
-
-      Lihat <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> untuk menyematkan aplikasi ke rak <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="2976429807269247880">Setelan perilaku cookie <ph name="ATTRIBUTE_SAMESITE_NAME" /> lama</translation>
 <translation id="2985927503455169394">Gunakan mode default pengalaman aktivasi Asisten</translation>
 <translation id="2987155890997901449">Aktifkan ARC</translation>
@@ -2704,11 +2683,6 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
           Jika kebijakan ini tidak ditetapkan, klik otomatis mula-mula akan dinonaktifkan, tetapi dapat diaktifkan oleh pengguna kapan saja.</translation>
 <translation id="4212181786686887763">URL tempat gambar wallpaper dapat didownload.</translation>
 <translation id="4224610387358583899">Penundaan kunci layar</translation>
-<translation id="4225260426043444650">Setelan ini memungkinkan pengguna menggunakan browser <ph name="LACROS_NAME" />.
-
-      Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, pengguna tidak dapat menggunakan <ph name="LACROS_NAME" />.
-
-      Jika kebijakan ini disetel ke Aktif, pengguna dapat menggunakan browser <ph name="LACROS_NAME" />.</translation>
 <translation id="4228745249339680042">Menyetel kebijakan ini akan menentukan URL dan domain yang tidak menampilkan perintah saat sertifikat pengesahan dari Kunci Keamanan diminta. Sinyal juga dikirimkan ke Kunci Keamanan yang menunjukkan bahwa pengesahan individu dapat digunakan. Jika tidak disetel, pengguna akan dimintai pengesahan Kunci Keamanan di <ph name="PRODUCT_NAME" /> versi 65 dan yang lebih baru saat situs memintanya.
 
       URL hanya akan cocok sebagai appID U2F. Domain hanya cocok sebagai ID webauthn RP. Oleh karena itu, untuk mencakup API U2F dan webauthn, cantumkan domain dan URL appID untuk situs tertentu.</translation>
@@ -4524,6 +4498,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
           Jika disetel ke false atau tidak dikonfigurasi, pembuatan dan proses masuk pengguna yang dilindungi akan dinonaktifkan. Semua pengguna diawasi yang sudah ada akan tersembunyi.
 
           CATATAN: Perilaku default untuk perangkat pelanggan dan perusahaan berbeda: pada perangkat pelanggan, pengguna yang dilindungi diaktifkan secara default, namun pada perangkat perusahaan, pengguna yang dilindungi dinonaktifkan secara default.</translation>
+<translation id="665023848306499203">Mengizinkan perangkat memilih untuk mengupdate ke versi tertentu</translation>
 <translation id="6652197835259177259">Setelan pengguna yang dikelola secara lokal</translation>
 <translation id="6653897159826215341">Jika kebijakan disetel ke Aktif, <ph name="PRODUCT_NAME" /> akan membuka dialog cetak sistem, bukan pratinjau cetak bawaan saat pengguna meminta hasil cetak.
 
@@ -4693,19 +4668,6 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="6857240169209507953">Cegah <ph name="BOREALIS_NAME" /> berjalan di perangkat</translation>
 <translation id="685769593149966548">Terapkan Mode Terbatas Ketat untuk YouTube</translation>
 <translation id="686079137349561371">Microsoft Windows 7 atau lebih baru</translation>
-<translation id="6864283226733000548">Setelan ini memberikan beberapa opsi ketersediaan untuk browser <ph name="LACROS_NAME" />.
-
-      Jika kebijakan disetel ke <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" />, pengguna dapat mengaktifkan <ph name="LACROS_NAME" /> dan menjadikannya sebagai browser utama. <ph name="LACROS_NAME" /> bisa tetap tidak diizinkan dengan kebijakan <ph name="LACROS_ALLOWED_POLICY_NAME" />.
-
-      Jika kebijakan disetel ke <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" />, pengguna tidak dapat menggunakan <ph name="LACROS_NAME" />. Kebijakan <ph name="LACROS_ALLOWED_POLICY_NAME" /> akan diabaikan.
-
-      Jika kebijakan disetel ke <ph name="LACROS_AVAILABILITY_SIDE_BY_SIDE_VALUE" />, <ph name="LACROS_NAME" /> akan diaktifkan tetapi bukan sebagai browser utama. Kebijakan <ph name="LACROS_ALLOWED_POLICY_NAME" /> akan diabaikan.
-
-      Jika kebijakan disetel ke <ph name="LACROS_AVAILABILITY_LACROS_PRIMARY_VALUE" />, <ph name="LACROS_NAME" /> akan diaktifkan dan menjadi browser utama. Kebijakan <ph name="LACROS_ALLOWED_POLICY_NAME" /> akan diabaikan.
-
-      Jika kebijakan tidak disetel, setelan default adalah <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" /> untuk pengguna yang dikelola perusahaan dan <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" /> untuk pengguna yang tidak dikelola perusahaan.
-
-      Di masa mendatang, <ph name="LACROS_NAME" /> mungkin bisa menjadi satu-satunya browser yang tersedia di <ph name="PRODUCT_OS_NAME" /> dengan nilai <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" />.</translation>
 <translation id="6865392932254477045">Menyetel kebijakan ini memungkinkan Anda menetapkan daftar situs yang otomatis diizinkan untuk mengakses perangkat serial USB dengan ID vendor dan produk yang cocok dengan kolom <ph name="VENDOR_ID_FIELD_NAME" /> dan <ph name="PRODUCT_ID_FIELD_NAME" />. Jika kolom <ph name="PRODUCT_ID_FIELD_NAME" /> tidak ada, situs tertentu akan diizinkan untuk mengakses perangkat dengan ID vendor yang cocok dengan kolom <ph name="VENDOR_ID_FIELD_NAME" /> dan ID produk apa pun.
 
       URL harus valid. Jika tidak, kebijakan akan diabaikan. Hanya asal (skema, host, dan port) URL yang dipertimbangkan.
@@ -5255,6 +5217,20 @@ Jika kebijakan ini tidak disetel atau kosong, pengguna dapat menyetel akun Googl
 <translation id="7477231245051133709">Mengaktifkan fitur aksesibilitas audio mono</translation>
 <translation id="7477239290070847560">Tujuan protokol berbasis Zeroconf (mDNS + DNS-SD)</translation>
 <translation id="7485481791539008776">Aturan pemilihan printer default</translation>
+<translation id="7493995861907758679">Setelan ini memungkinkan perangkat memilih untuk mengupdate <ph name="PRODUCT_OS_NAME" /> ke versi target tertentu.
+
+      Jika kebijakan tidak disetel, perangkat akan diupdate sesuai dengan setelan lain atau ke versi terbaru yang tersedia.
+
+      Jika kebijakan disetel, perangkat akan diupdate ke versi yang dipilih.
+
+      Format yang tepat dari nilai kebijakan ini adalah detail implementasi layanan update dan dapat berubah. Nilai kebijakan ini tidak diproses di perangkat.
+
+      Jika digunakan bersama dengan <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" />, kebijakan ini akan diperiksa terlebih dahulu oleh layanan update.
+      Tidak seperti <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> (yang memungkinkan update minor), perangkat akan tetap menggunakan versi yang dipilih hingga nilai kebijakan ini diubah.
+
+      Jika digunakan bersama dengan <ph name="DEVICE_ROLLBACK_TO_TARGET_VERSION_POLICY_NAME" />, versi perangkat dapat dikembalikan ke versi tertentu yang sebelumnya.
+
+      Peringatan: Sebaiknya jangan mengonfigurasi batasan versi karena dapat mencegah pengguna menerima update software dan perbaikan keamanan penting. Membatasi update ke versi tertentu dapat membahayakan pengguna.</translation>
 <translation id="7506745375479451616">Kebijakan ini mengontrol perintah yang akan digunakan untuk membuka URL di <ph name="PRODUCT_NAME" /> saat beralih dari <ph name="IE_PRODUCT_NAME" />. Kebijakan ini dapat disetel ke jalur file yang dapat dijalankan atau <ph name="PRODUCT_NAME_PLACEHOLDER" /> untuk otomatis mendeteksi lokasi dari <ph name="PRODUCT_NAME" />.
 
       Tidak menyetel kebijakan berarti <ph name="IE_PRODUCT_NAME" /> otomatis mendeteksi jalur yang dapat dijalankan milik <ph name="PRODUCT_NAME" /> saat meluncurkan <ph name="PRODUCT_NAME" /> dari Internet Explorer.

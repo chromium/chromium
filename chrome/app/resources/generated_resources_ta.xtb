@@ -2214,6 +2214,7 @@
 <translation id="3305661444342691068">PDF ஐ மாதிரிக்காட்சியில் திறக்கவும்</translation>
 <translation id="3308116878371095290">இந்தப் பக்கம் குக்கீகளை அமைப்பதிலிருந்து தடுக்கப்பட்டது.</translation>
 <translation id="3308134619352333507">பொத்தானை மறை</translation>
+<translation id="3308681281309926497">நீங்கள் பார்வையிடும் தளங்கள், Chromeமை மூடும் வரை உங்கள் தகவல்களை அழிக்காமல் அப்படியே வைத்திருக்கும்</translation>
 <translation id="3308738399950580893">விளம்பரங்கள்</translation>
 <translation id="3308852433423051161">Google அசிஸ்டண்ட்டை ஏற்றுகிறது...</translation>
 <translation id="3309330461362844500">சான்றிதழின் சுயவிவர ஐடி</translation>
@@ -2767,6 +2768,7 @@
 <translation id="3873423927483480833">பின்களைக் காட்டும்</translation>
 <translation id="3873915545594852654">ARC++ல் ஒரு சிக்கல் ஏற்பட்டது.</translation>
 <translation id="3874164307099183178">Google Assistantடை இயக்கு</translation>
+<translation id="3875815154304214043"><ph name="APP_NAME" /> புதிய உலாவிப் பிரிவில் திறக்கும்படி அமைத்துள்ளீர்கள், ஆதரிக்கப்படும் இணைப்புகளும் உலாவியில் திறக்கப்படும். <ph name="BEGIN_LINK_LEARN_MORE" />மேலும் அறிக<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" /> இன் சாதனத்திற்கான அருகிலுள்ளவற்றுடன் பகிர்தல் அமைப்புகள், <ph name="USER_EMAIL" /> ஆகப் பகிர்கிறது.</translation>
 <translation id="3879748587602334249">பதிவிறக்க நிர்வாகி</translation>
 <translation id="3882165008614329320">கேமரா அல்லது கோப்பிலிருக்கும் வீடியோ</translation>
@@ -3731,7 +3733,7 @@
 <translation id="4940845626435830013">டிஸ்க் அளவை ரிசர்வ் செய்</translation>
 <translation id="4941074198479265146">வழக்கமாக இசையை உருவாக்குதல், எடிட்டிங் ஆகிய அம்சங்களுக்காக MIDI சாதனங்களுடன் தளங்கள் இணையும்</translation>
 <translation id="4941246025622441835">நிறுவன மேலாண்மைக்காக சாதனத்தைச் சேர்க்கும்போது இந்தச் சாதனக் கோரிக்கையைப் பயன்படுத்தவும்:</translation>
-<translation id="4941627891654116707">எழுத்துரு அளவு</translation>
+<translation id="4941627891654116707">எழுத்து வடிவ அளவு</translation>
 <translation id="494286511941020793">பதிலி உள்ளமைவு உதவி</translation>
 <translation id="4943368462779413526">கால்பந்து</translation>
 <translation id="4943691134276646401">"<ph name="CHROME_EXTENSION_NAME" />" ஒரு சீரியல் போர்ட்டுடன் இணைக்க விரும்புகிறது</translation>
@@ -3915,6 +3917,7 @@
 <translation id="5157635116769074044">தொடக்கத் திரையில் இந்தப் பக்கத்தைப் பொருத்து...</translation>
 <translation id="5159094275429367735">Crostiniயை அமைத்திடுங்கள்</translation>
 <translation id="5159419673777902220">நீட்டிப்புக்கான அனுமதிகளை உங்கள் பெற்றோர் முடக்கியுள்ளார்</translation>
+<translation id="5159643365935452998">தரவைத் தானாக அழிப்பதற்கான அமைப்பைச் சரிபாருங்கள்</translation>
 <translation id="5160634252433617617">கையால் பயன்படுத்தப்படும் கீபோர்டு</translation>
 <translation id="5160857336552977725"><ph name="DEVICE_TYPE" /> இல் உள்நுழையவும்</translation>
 <translation id="5161251470972801814"><ph name="VENDOR_NAME" /> வழங்கும் USB சாதனங்கள்</translation>
@@ -4479,6 +4482,7 @@
 <translation id="5790651917470750848">போர்ட் அனுப்புதல் ஏற்கெனவே உள்ளது</translation>
 <translation id="5792728279623964091">பவர் பட்டனைத் தட்டவும்</translation>
 <translation id="5793339252089865437">புதுப்பிப்பை மொபைல் நெர்ட்வொர்க் மூலம் பதிவிறக்கினால் கூடுதல் கட்டணங்கள் வசூலிக்கப்படலாம்.</translation>
+<translation id="5794034487966529952"><ph name="DESK_TITLE" /> டெஸ்க்கில் <ph name="NUM_BROWSERS" /> உலாவிச் சாளரங்கள் திறந்துள்ளன</translation>
 <translation id="5794414402486823030">எப்போதும் சிஸ்டம் வியூவரைக் கொண்டு திற</translation>
 <translation id="5794700615121138172">Linux பகிர்ந்த கோப்புறைகள்</translation>
 <translation id="5794786537412027208">எல்லா Chrome பயன்பாடுகளையும் நிறுத்து</translation>
@@ -5732,7 +5736,7 @@
 <translation id="716640248772308851">தேர்வுசெய்யப்பட்ட இடங்களில் உள்ள படங்கள், வீடியோ மற்றும் ஒலி ஃபைல்கள்  ஆகியவற்றை "<ph name="EXTENSION" />" ஆல் படிக்க முடியும்.</translation>
 <translation id="7167486101654761064">&amp;எப்போதும் இந்த வகை ஃபைல்களைத் திற</translation>
 <translation id="716810439572026343"><ph name="FILE_NAME" />ஐப் பதிவிறக்குகிறது</translation>
-<translation id="7168109975831002660">குறைந்தபட்ச எழுத்துரு அளவு</translation>
+<translation id="7168109975831002660">குறைந்தபட்ச எழுத்து வடிவ அளவு</translation>
 <translation id="7170236477717446850">சுயவிவரப் படம்</translation>
 <translation id="7171000599584840888">சுயவிவரத்தைச் சேர்...</translation>
 <translation id="7171259390164035663">பதிவுசெய்ய வேண்டாம்</translation>

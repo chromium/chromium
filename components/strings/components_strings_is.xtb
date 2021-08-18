@@ -994,6 +994,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4358461427845829800">Stjórna greiðslumátum...</translation>
 <translation id="4359160567981085931">Þú varst að slá aðgangsorðið þitt inn á villandi vefsvæði. Chrome getur aðstoðað. Smelltu á „Vernda reikning“ til að breyta lykilorðinu þínu og láta Google vita að reikningurinn þinn sé hugsanlega í hættu.</translation>
 <translation id="4367563149485757821">Number-12 (umslag)</translation>
+<translation id="437040971055499437">Öryggisatvik á sér stað</translation>
 <translation id="437058704415269440">Reikningsstaða</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Búist var við <ph name="VALUE_TYPE" /> gildi.</translation>
@@ -1403,6 +1404,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5803412860119678065">Viltu fylla út <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Heimildir</translation>
 <translation id="5810442152076338065">Tengingin við <ph name="DOMAIN" /> er dulkóðuð með úreltu dulkóðunarsafni.</translation>
+<translation id="5812947184178430888">Þegar Chrome flaggar öryggisatvik eru viðeigandi gögn um atvikin send til kerfisstjórans. Þetta getur innihaldið vefslóðir síðna sem þú opnar í Chrome, skráaheiti eða lýsigögn og notandanafnið sem þú notar til að skrá þig inn í forrit á vefnum, í tækinu þínu og í Chrome.</translation>
 <translation id="5813119285467412249">Endu&amp;rtaka nýtt bókamerki</translation>
 <translation id="5817918615728894473">Para</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Skuldfært verður á þetta kort við greiðslu en kortanúmerinu verður ekki deilt með vefsvæðinu. Til að auka enn á öryggið myndast tímabundið CVC-númer.}one{Skuldfært verður á kortið sem þú velur við greiðslu en kortanúmerinu verður ekki deilt með vefsvæðinu. Til að auka enn á öryggið myndast tímabundið CVC-númer.}other{Skuldfært verður á kortið sem þú velur við greiðslu en kortanúmerinu verður ekki deilt með vefsvæðinu. Til að auka enn á öryggið myndast tímabundið CVC-númer.}}</translation>

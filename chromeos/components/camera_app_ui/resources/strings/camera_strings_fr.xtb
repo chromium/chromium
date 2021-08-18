@@ -43,6 +43,7 @@
 <translation id="3227137524299004712">Micro</translation>
 <translation id="3240426699337459095">Le lien a bien été copié.</translation>
 <translation id="3259149966178251584">Résolution de la caméra</translation>
+<translation id="3260401663013584785">Impossible de détecter un document</translation>
 <translation id="3448774564454087943">Impossible d'enregistrer la vidéo, car elle est trop courte</translation>
 <translation id="3517926952904427380">Impossible de prendre une photo en mode portrait</translation>
 <translation id="3569311554794739032">Voulez-vous vraiment supprimer <ph name="FILE" /> ?</translation>
@@ -50,6 +51,7 @@
 <translation id="3838931309141338733">Lire le code-barres</translation>
 <translation id="3892148308691398805">Copier le texte</translation>
 <translation id="4118525110028899586">Suspendre l'enregistrement</translation>
+<translation id="4121305183798804752">Document détecté</translation>
 <translation id="4269820728363426813">Copier l'adresse du lien</translation>
 <translation id="4279490309300973883">Mise en miroir</translation>
 <translation id="4329152592498422850">Bouton permettant de prendre une photo carrée</translation>

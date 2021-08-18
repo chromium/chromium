@@ -1667,27 +1667,6 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       Las URL deben tener una estructura de HTTPS (por ejemplo, https://example.com).
 
       Para obtener información detallada sobre los patrones de URL válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
-<translation id="2972531017545674240">Si se establece esta política, se especifica una lista de aplicaciones web que se instalan de forma silenciosa y sin intervención del usuario, quien no puede desinstalarlas ni desactivarlas.
-
-      Cada elemento de la lista es un objeto con un elemento obligatorio:
-      <ph name="URL_LABEL" /> (la URL de la aplicación web que se va a instalar)
-
-      y 3 elementos opcionales:
-      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />
-      (define cómo se abre la aplicación web; la opción predeterminada es que lo haga en una ventana nueva)
-
-      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />
-      (True si quieres crear accesos directos del escritorio
-      de <ph name="LINUX_OS_NAME" /> y <ph name="MS_WIN_NAME" />)
-
-      - <ph name="FALLBACK_APP_NAME_LABEL" />
-      (A partir de la versión 90 de <ph name="PRODUCT_NAME" />,
-      te permite anular el nombre de la aplicación si no es una
-      aplicación web progresiva (PWA), o el nombre de la aplicación instalado
-      temporalmente si es una PWA, pero se requiere autenticación para que la
-      instalación pueda completarse)
-
-      Consulta <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> para fijar aplicaciones en la estantería de <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="2976429807269247880">Configuración antigua de comportamiento de cookies de <ph name="ATTRIBUTE_SAMESITE_NAME" /></translation>
 <translation id="2985927503455169394">Usa el modo predeterminado de la experiencia de incorporación del Asistente</translation>
 <translation id="2987155890997901449">Habilitar ARC</translation>
@@ -2705,11 +2684,6 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
           Si no le asignas ningún valor, el clic automático se inhabilitará al inicio, pero los usuarios podrán habilitarlo en cualquier momento.</translation>
 <translation id="4212181786686887763">La URL desde la que se puede descargar la imagen del fondo de pantalla.</translation>
 <translation id="4224610387358583899">Retrasos de bloqueo de pantalla</translation>
-<translation id="4225260426043444650">Esta opción permite que los usuarios usen el navegador <ph name="LACROS_NAME" />.
-
-      Si esta política se inhabilita o no se establece, el usuario no podrá usar <ph name="LACROS_NAME" />.
-
-      Si esta política se habilita, el usuario podrá usar el navegador <ph name="LACROS_NAME" />.</translation>
 <translation id="4228745249339680042">Si se define esta política, se especificarán las URL y los dominios para los que no se muestra ningún mensaje cuando se solicitan certificados de atestación de las llaves de seguridad. Asimismo, se envía una señal a la llave de seguridad para indicar que es posible que se utilice esa atestación individual. Sin esta política, se muestra un mensaje a los usuarios de <ph name="PRODUCT_NAME" /> versión 65 y versiones posteriores cuando los sitios web solicitan la atestación de las llaves de seguridad.
 
       Las URL solo se identifican como appIDs U2F. Los dominios se identifican únicamente como IDs RP de WebAuthn. Por ello, para incluir tanto las API WebAuthn como U2F, se deben indicar la URL appID y el dominio de un determinado sitio web.</translation>
@@ -4110,7 +4084,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="6135398260575578389">Navegación segura está activa en modo mejorado. Este modo proporciona mayor seguridad, pero requiere compartir más información de navegación con Google.</translation>
 <translation id="6138636318340561140">Comprueba en tiempo real el estado de Navegación segura de las URL</translation>
 <translation id="6141402445226505817">Utilizar siempre la detección de zona horaria común</translation>
-<translation id="6142501278956229253">Imprimir PDF rasterizado con PPP</translation>
+<translation id="6142501278956229253">PPP al rasterizar PDF para imprimir</translation>
 <translation id="6144046700495610112">Si se asigna el valor "Habilitada" a esta política, se importarán los datos de formularios para la función Autocompletar del navegador predeterminado anterior al ejecutarse por primera vez. Si se le asigna el valor "Inhabilitada" o no se le asigna ninguno, no se importarán estos datos al ejecutarse por primera vez.
 
       Los usuarios pueden abrir un cuadro de diálogo de importación y la casilla de datos de formularios para la función Autocompletar aparecerá marcada o desmarcada en función del valor de esta política.</translation>
@@ -4521,6 +4495,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
           Si se establece el valor "false" o no se configura la política, se inhabilitarán el inicio de sesión y la creación de usuarios supervisados y se ocultarán todos los usuarios supervisados creados anteriormente.
 
           NOTA: El comportamiento predeterminado es diferente según el dispositivo: en los dispositivos de clientes particulares, los usuarios supervisados están habilitados de forma predeterminada, mientras que en los dispositivos de empresa, están inhabilitados de forma predeterminada.</translation>
+<translation id="665023848306499203">Permitir que los dispositivos seleccionen una versión concreta a la que actualizarse</translation>
 <translation id="6652197835259177259">Configuración de usuarios administrados de forma local</translation>
 <translation id="6653897159826215341">Si se habilita la política, <ph name="PRODUCT_NAME" /> abre el cuadro de diálogo de impresión del sistema en lugar de la vista previa de impresión integrada cuando los usuarios solicitan que se imprima.
 
@@ -4690,19 +4665,6 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="6857240169209507953">Impedir que <ph name="BOREALIS_NAME" /> se ejecute en un dispositivo</translation>
 <translation id="685769593149966548">Aplicar el modo restringido estricto en YouTube</translation>
 <translation id="686079137349561371">Microsoft Windows 7 o versiones posteriores</translation>
-<translation id="6864283226733000548">Este ajuste proporciona varias opciones de disponibilidad que se aplican al navegador <ph name="LACROS_NAME" />.
-
-      Si se le asigna el valor <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" /> a la política, el usuario podrá habilitar <ph name="LACROS_NAME" /> y establecer que sea el navegador principal. Sin embargo, <ph name="LACROS_NAME" /> se podrá deshabilitar con la política <ph name="LACROS_ALLOWED_POLICY_NAME" />.
-
-      Si se le asigna el valor <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" /> a la política, el usuario no podrá usar <ph name="LACROS_NAME" />. La política <ph name="LACROS_ALLOWED_POLICY_NAME" /> se ignorará.
-
-      Si se le asigna el valor <ph name="LACROS_AVAILABILITY_SIDE_BY_SIDE_VALUE" /> a la política, se habilitará <ph name="LACROS_NAME" />, pero no será el navegador principal. La política <ph name="LACROS_ALLOWED_POLICY_NAME" /> se ignorará.
-
-      Si se le asigna el valor <ph name="LACROS_AVAILABILITY_LACROS_PRIMARY_VALUE" /> a la política, se habilitará <ph name="LACROS_NAME" /> y será el navegador principal. La política <ph name="LACROS_ALLOWED_POLICY_NAME" /> se ignorará.
-
-      Si esta política no se establece, la opción predeterminada será <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" /> en el caso de los usuarios administrados por empresas y, en el caso de los usuarios no administrados, será <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" />.
-
-      En el futuro, con el valor <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" />, <ph name="LACROS_NAME" /> se podrá establecer como único navegador disponible en <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="6865392932254477045">Establecer esta política permite definir una lista de sitios a los que se les concederá permiso automáticamente para acceder a dispositivos serie USB que tengan IDs de proveedor y de producto coincidentes con los campos <ph name="VENDOR_ID_FIELD_NAME" /> y <ph name="PRODUCT_ID_FIELD_NAME" />. Si se omite el campo <ph name="PRODUCT_ID_FIELD_NAME" />, los sitios establecidos obtendrán permiso para acceder a los dispositivos que tengan un ID de proveedor que coincida con el campo <ph name="VENDOR_ID_FIELD_NAME" /> y con cualquier ID de producto.
 
       Las URLs deben ser válidas; si no, se ignorará la política. Solo se tiene en cuenta el origen de la URL (esquema, host y puerto).
@@ -5255,6 +5217,20 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="7477231245051133709">Habilita la función de accesibilidad de audio en mono</translation>
 <translation id="7477239290070847560">Destinos de protocolo zeroconf (mDNS y DNS‑SD)</translation>
 <translation id="7485481791539008776">Reglas para la selección de la impresora predeterminada</translation>
+<translation id="7493995861907758679">Este ajuste permite que los dispositivos seleccionen una versión concreta de <ph name="PRODUCT_OS_NAME" /> como objetivo de actualización.
+
+      Si no se le asigna ningún valor, los dispositivos se actualizarán en función de otros ajustes o instalarán la última versión.
+
+      Si se le asigna un valor, los dispositivos se actualizarán a la versión seleccionada.
+
+      El formato exacto del valor de esta política se corresponde con la información de implementación del servicio de actualizaciones y podría cambiar. El valor de la política no se procesa en el dispositivo.
+
+      Si se combina con <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" />, el servicio de actualizaciones comprobará esta política primero.
+      A diferencia de <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> (que podría permitir pequeñas actualizaciones), los dispositivos permanecerán en la versión seleccionada hasta que se modifique el valor de esta política.
+
+      Si se combina con <ph name="DEVICE_ROLLBACK_TO_TARGET_VERSION_POLICY_NAME" />, podrá restablecerse una versión anterior concreta del dispositivo.
+
+      Advertencia: No se recomienda configurar las restricciones de versiones, ya que podrían impedir que los usuarios reciban actualizaciones de software y mejoras de seguridad. Limitar las actualizaciones a una versión concreta puede poner en riesgo a los usuarios.</translation>
 <translation id="7506745375479451616">Esta política controla el comando que se utilizará para abrir las URL al cambiar de <ph name="IE_PRODUCT_NAME" /> a <ph name="PRODUCT_NAME" />. A esta política se le puede asignar la ruta de un archivo ejecutable o el valor <ph name="PRODUCT_NAME_PLACEHOLDER" /> para detectar automáticamente la ubicación de <ph name="PRODUCT_NAME" />.
 
       Si no se asigna ningún valor a esta política, <ph name="IE_PRODUCT_NAME" /> detectará automáticamente la ruta ejecutable de <ph name="PRODUCT_NAME" /> al iniciar <ph name="PRODUCT_NAME" /> desde Internet Explorer.

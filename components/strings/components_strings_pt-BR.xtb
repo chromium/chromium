@@ -985,6 +985,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4358461427845829800">Gerenciar formas de pagamento…</translation>
 <translation id="4359160567981085931">Você acabou de digitar sua senha em um site suspeito. O Chrome pode ajudar. Para mudar a senha e notificar o Google de que sua conta pode estar em risco, clique em "Proteger conta".</translation>
 <translation id="4367563149485757821">Nº 12 (Envelope)</translation>
+<translation id="437040971055499437">Acontece uma ocorrência de segurança</translation>
 <translation id="437058704415269440">Saldo da conta</translation>
 <translation id="4372516964750095882">216 mm x 304 mm</translation>
 <translation id="4372948949327679948">Valor <ph name="VALUE_TYPE" /> esperado.</translation>
@@ -1394,6 +1395,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5803412860119678065">Quer preencher as informações do seu cartão <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Permissões</translation>
 <translation id="5810442152076338065">Sua conexão com <ph name="DOMAIN" /> está criptografada com um pacote de criptografia obsoleto.</translation>
+<translation id="5812947184178430888">Quando ocorrências de segurança são sinalizadas pelo Chrome, dados relevantes sobre elas são enviados ao administrador. Isso pode incluir URLs de páginas visitadas no Chrome, metadados ou nomes de arquivos e o nome de usuário usado para fazer login no dispositivo, no Chrome e em aplicativos baseados na Web.</translation>
 <translation id="5813119285467412249">&amp;Refazer adicionar</translation>
 <translation id="5817918615728894473">Parear</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Ao fazer o pagamento, a cobrança é feita neste cartão sem compartilhar o número dele com o site. Para mais segurança, um CVC temporário será gerado.}one{Ao fazer o pagamento, a cobrança é feita no cartão selecionado sem compartilhar o número dele com o site. Para mais segurança, um CVC temporário será gerado.}other{Ao fazer o pagamento, a cobrança é feita nos cartões selecionados sem compartilhar os números deles com o site. Para mais segurança, um CVC temporário será gerado.}}</translation>

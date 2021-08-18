@@ -14,6 +14,7 @@
 <translation id="1524282610922162960">Chia sẻ một thẻ Chromium</translation>
 <translation id="1553461853655228091">Chromium cần có quyền sử dụng máy ảnh của bạn để tạo bản đồ 3D về các khu vực xung quanh bạn</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Quản trị viên của bạn yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật}=1{Quản trị viên của bạn yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật. Cửa sổ ẩn danh của bạn sẽ không mở lại.}other{Quản trị viên của bạn yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật. # cửa sổ ẩn danh của bạn sẽ không mở lại.}}</translation>
+<translation id="1667812772085710766">Khi bạn đóng Chromium, trình duyệt sẽ tự động xóa cookie và dữ liệu trang web khỏi các trang bạn đã truy cập</translation>
 <translation id="1708666629004767631">Hiện đã có phiên bản Chromium mới an toàn hơn.</translation>
 <translation id="1774152462503052664">Cho phép Chromium chạy dưới nền</translation>
 <translation id="1779356040007214683">Để làm cho Chromium an toàn hơn, chúng tôi đã vô hiệu hóa một số tiện ích không được liệt kê trong <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> và có thể đã được thêm mà bạn không biết.</translation>

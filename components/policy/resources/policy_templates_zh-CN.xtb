@@ -1619,22 +1619,6 @@
       网址必须采用 HTTPS 架构，例如：“https://example.com”。
 
       要详细了解有效网址格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。</translation>
-<translation id="2972531017545674240">通过设置此政策，您能以列表形式指定哪些 Web 应用无需用户互动即可静默安装且无法由用户卸载或停用。
-
-      此政策的每个列表项都是一个对象，其中会包含 1 个必要成员：
-      <ph name="URL_LABEL" />（要安装的 Web 应用的网址）
-
-      以及 3 个可选成员：
-      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />
-      （用于指明 Web 应用的打开方式，默认为在新标签页中打开）
-
-      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />
-      （如果您想创建 <ph name="LINUX_OS_NAME" /> 和 <ph name="MS_WIN_NAME" /> 桌面快捷方式，请设为 True。）
-
-      - <ph name="FALLBACK_APP_NAME_LABEL" />
-      （自 <ph name="PRODUCT_NAME" /> 90 版起，可用于替换非渐进式 Web 应用 [PWA] 的应用名称，或临时安装但在安装完成之前需进行身份验证的 PWA 应用的应用名称。）
-
-      如需了解如何将应用固定到 <ph name="PRODUCT_OS_NAME" />任务栏中，请参阅 <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" />。</translation>
 <translation id="2976429807269247880">旧版 <ph name="ATTRIBUTE_SAMESITE_NAME" /> Cookie 行为设置</translation>
 <translation id="2985927503455169394">使用 Google 助理新手入门体验的默认模式</translation>
 <translation id="2987155890997901449">启用 ARC</translation>
@@ -2625,11 +2609,6 @@
           如果未设置此政策，则“自动点击”最初会处于停用状态，但用户可以随时启用该功能。</translation>
 <translation id="4212181786686887763">可供下载相应壁纸图片的网址。</translation>
 <translation id="4224610387358583899">屏幕锁定延迟时间</translation>
-<translation id="4225260426043444650">此设置允许用户使用 <ph name="LACROS_NAME" /> 浏览器。
-
-      如果此政策已停用或未设置，用户将无法使用 <ph name="LACROS_NAME" />。
-
-      如果此政策已启用，用户便能够使用 <ph name="LACROS_NAME" /> 浏览器。</translation>
 <translation id="4228745249339680042">通过设置此政策，您可以指定，当哪些网址和网域所对应的网站请求安全密钥认证证书时，系统将不会显示任何提示。此外，系统还会向安全密钥发送信号，表明可使用特定的单项认证。如果您未设置此政策，在网站请求安全密钥的认证时，<ph name="PRODUCT_NAME" /> 65 版及更高版本将向用户显示提示。
 
       网址将仅匹配为 U2F appID。网域将仅匹配为 webauthn RP ID。因此，如需全面涵盖 U2F API 和 webauthn API，请务必将相应网站的 appID 网址和网域都罗列出来。</translation>
@@ -4574,19 +4553,6 @@
 <translation id="6857240169209507953">禁止 <ph name="BOREALIS_NAME" /> 在设备上运行</translation>
 <translation id="685769593149966548">强制启用 YouTube“严格”受限模式</translation>
 <translation id="686079137349561371">Microsoft Windows 7 或更高版本</translation>
-<translation id="6864283226733000548">此设置旨在为 <ph name="LACROS_NAME" /> 浏览器提供多个可用性选项。
-
-      如果此政策设为“<ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" />”，用户便可以启用 <ph name="LACROS_NAME" /> 并将其设为主要浏览器。仍可使用 <ph name="LACROS_ALLOWED_POLICY_NAME" /> 政策禁用 <ph name="LACROS_NAME" />。
-
-      如果此政策设为“<ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" />”，用户便无法使用 <ph name="LACROS_NAME" />。<ph name="LACROS_ALLOWED_POLICY_NAME" /> 政策会被忽略。
-
-      如果此政策设为“<ph name="LACROS_AVAILABILITY_SIDE_BY_SIDE_VALUE" />”，系统将会启用 <ph name="LACROS_NAME" />，但不会将其设为主要浏览器。<ph name="LACROS_ALLOWED_POLICY_NAME" /> 政策会被忽略。
-
-      如果此政策设为“<ph name="LACROS_AVAILABILITY_LACROS_PRIMARY_VALUE" />”，系统将会启用 <ph name="LACROS_NAME" />，并将其设为主要浏览器。<ph name="LACROS_ALLOWED_POLICY_NAME" /> 政策会被忽略。
-
-      如果您未设置此政策，受企业管理的用户将使用默认值“<ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" />”，不受企业管理的用户将使用默认值“<ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" />”。
-
-      将来可以使用“<ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" />”值将 <ph name="LACROS_NAME" /> 设为 <ph name="PRODUCT_OS_NAME" />中唯一可用的浏览器。</translation>
 <translation id="6865392932254477045">通过设置此政策，您可以罗列自动授权哪些网站访问符合以下条件的 USB 串行设备：供应商 ID 和产品 ID 分别与 <ph name="VENDOR_ID_FIELD_NAME" /> 和 <ph name="PRODUCT_ID_FIELD_NAME" /> 字段相符。如果您省略 <ph name="PRODUCT_ID_FIELD_NAME" /> 字段，系统会授权指定网站访问符合以下条件的设备：供应商 ID 与 <ph name="VENDOR_ID_FIELD_NAME" /> 字段相符，产品 ID 不限。
 
       这些网址必须有效，否则系统会忽略此政策。系统将仅考虑相应网址的源（架构、主机和端口）。

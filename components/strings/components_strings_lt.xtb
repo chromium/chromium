@@ -995,6 +995,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4358461427845829800">Tvarkyti mokėjimo metodus...</translation>
 <translation id="4359160567981085931">Ką tik savo slaptažodį įvedėte apgaulingoje svetainėje. „Chrome“ gali padėti. Norėdami pakeisti slaptažodį ir pranešti „Google“, kad jūsų paskyrai gali grėsti pavojus, spustelėkite „Apsaugoti paskyrą“.</translation>
 <translation id="4367563149485757821">„Number-12“ (vokas)</translation>
+<translation id="437040971055499437">Įvyksta saugos įvykis</translation>
 <translation id="437058704415269440">Sąskaitos balansas</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Numatyta „<ph name="VALUE_TYPE" />“ vertė.</translation>
@@ -1404,6 +1405,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5803412860119678065">Ar norite, kad būtų įvesta <ph name="CARD_DETAIL" /> informacija?</translation>
 <translation id="5804241973901381774">Leidimai</translation>
 <translation id="5810442152076338065">Ryšys su <ph name="DOMAIN" /> užšifruotas naudojant pasenusį šifravimo paketą.</translation>
+<translation id="5812947184178430888">Kai saugos įvykius pažymi „Chrome“, atitinkami įvykių duomenys išsiunčiami administratoriui. Tai gali būti naršyklėje „Chrome“ lankomų puslapių URL, failų pavadinimai ar metaduomenys ir naudotojo vardas, kurį naudodami prisijungiate prie žiniatinklio programų, įrenginio ir „Chrome“.</translation>
 <translation id="5813119285467412249">&amp;Pridėti dar kartą</translation>
 <translation id="5817918615728894473">Susieti</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Ši kortelė bus apmokestinama mokant, bet jos tikrasis numeris nebus bendrinamas su šia svetaine. Siekiant užtikrinti papildomą apsaugą, bus sugeneruotas laikinas kortelės saugos kodas (CVC).}one{Jūsų pasirinktos kortelės bus apmokestinamos mokant, bet jų tikrieji numeriai nebus bendrinami su šia svetaine. Siekiant užtikrinti papildomą apsaugą, bus sugeneruotas laikinas kortelės saugos kodas (CVC).}few{Jūsų pasirinktos kortelės bus apmokestinamos mokant, bet jų tikrieji numeriai nebus bendrinami su šia svetaine. Siekiant užtikrinti papildomą apsaugą, bus sugeneruotas laikinas kortelės saugos kodas (CVC).}many{Jūsų pasirinktos kortelės bus apmokestinamos mokant, bet jų tikrieji numeriai nebus bendrinami su šia svetaine. Siekiant užtikrinti papildomą apsaugą, bus sugeneruotas laikinas kortelės saugos kodas (CVC).}other{Jūsų pasirinktos kortelės bus apmokestinamos mokant, bet jų tikrieji numeriai nebus bendrinami su šia svetaine. Siekiant užtikrinti papildomą apsaugą, bus sugeneruotas laikinas kortelės saugos kodas (CVC).}}</translation>

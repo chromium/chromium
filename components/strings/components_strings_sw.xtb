@@ -993,6 +993,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="4358461427845829800">Dhibiti njia za kulipa...</translation>
 <translation id="4359160567981085931">Umeweka nenosiri lako kwenye tovuti inayotiliwa shaka. Chrome inaweza kukusaidia. Ili ubadilishe nenosiri lako na uarifu Google kwamba huenda akaunti yako imo hatarini, bofya Linda Akaunti.</translation>
 <translation id="4367563149485757821">Number-12 (Bahasha)</translation>
+<translation id="437040971055499437">Tukio la usalama linatokea</translation>
 <translation id="437058704415269440">Salio la Akaunti</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Thamani <ph name="VALUE_TYPE" /> inayotarajiwa.</translation>
@@ -1402,6 +1403,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="5803412860119678065">Ungependa kujaza maelezo ya <ph name="CARD_DETAIL" /> yako?</translation>
 <translation id="5804241973901381774">Idhini</translation>
 <translation id="5810442152076338065">Muunganisho wako kwenye <ph name="DOMAIN" /> umesimbwa kwa njia fiche kwa kutumia mipangilio ya kriptografia ya zamani.</translation>
+<translation id="5812947184178430888">Matukio ya usalama yanaporipotiwa na Chrome, data inayohusiana na matukio hayo hutumwa kwa msimamizi wako. Data hii inaweza kuwa ni pamoja na URL za kurasa unazotembelea kwenye Chrome, metadata au majina ya faili na jina la mtumiaji unalotumia kuingia katika akaunti kwenye programu zilizo kwenye wavuti, kifaa chako na Chrome.</translation>
 <translation id="5813119285467412249">Rudia Kuongeza</translation>
 <translation id="5817918615728894473">Oanisha</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Kadi hii itatozwa utakapolipa, lakini nambari yake halisi haitashirikiwa na tovuti hii. Kwa usalama zaidi, tutatengeneza CVC ya muda mfupi.}other{Kadi unayochagua itatozwa utakapolipa lakini, nambari yake halisi haitashirikiwa na tovuti hii. Kwa usalama zaidi, tutatengeneza CVC ya muda mfupi.}}</translation>

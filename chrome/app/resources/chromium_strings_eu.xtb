@@ -16,6 +16,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="1524282610922162960">Partekatu Chromium-eko fitxa bat</translation>
 <translation id="1553461853655228091">Chromium-ek kamera atzitzeko baimena behar du, ingurunearen hiru dimentsioko mapa bat sortzeko</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Chromium berrabiaraz dezazun behar du administratzaileak, eguneratzea aplikatzeko}=1{Chromium berrabiaraz dezazun behar du administratzaileak, eguneratzea aplikatzeko. Ezkutuko moduko leihoa ez da berriro irekiko.}other{Chromium berrabiaraz dezazun behar du administratzaileak, eguneratzea aplikatzeko. Ezkutuko moduko # leihoak ez dira berriro irekiko.}}</translation>
+<translation id="1667812772085710766">Chromium ixten duzunean, automatikoki garbitzen ditu bisitatu dituzun orrietan dauden cookieak eta webguneetako datuak</translation>
 <translation id="1708666629004767631">Chromium-en bertsio berriagoa eta seguruagoa erabilgarri dago.</translation>
 <translation id="1774152462503052664">Onartu Chromium atzeko planoan abiaraztea</translation>
 <translation id="1779356040007214683">Chromium seguruagoa izan dadin, zuk jakin gabe gehitu izan dituzten eta <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dendan zerrendatu gabe dauden luzapen batzuk desgaitu ditugu.</translation>

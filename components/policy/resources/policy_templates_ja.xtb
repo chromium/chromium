@@ -1604,11 +1604,6 @@
       指定する URL は HTTPS スキームを使用したものでなければなりません（例: 「https://example.com」）。
 
       有効な URL パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。</translation>
-<translation id="2972531017545674240">このポリシーでは、ユーザーに操作を求めずにサイレント インストールするウェブアプリのリストを指定します。ユーザーはこれらのウェブアプリをアンインストールすることもオフにすることもできません。
-
-      このポリシーで指定するリストの個々の項目は、必須の <ph name="URL_LABEL" />（インストールするウェブアプリの URL）と 3 つの省略可能な <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />（ウェブアプリを開く方法、デフォルトは新しいタブ）、<ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />（<ph name="LINUX_OS_NAME" /> と <ph name="MS_WIN_NAME" /> のデスクトップ ショートカットを作成する場合は True）、<ph name="FALLBACK_APP_NAME_LABEL" />（<ph name="PRODUCT_NAME" /> バージョン 90 以降では、プログレッシブ ウェブアプリ（PWA）以外のアプリ名をオーバーライドできます。また、PWA であってもインストールの完了に認証が必要な場合は、一時的にインストールされたアプリ名をオーバーライドできます）で構成されるオブジェクトとなります。
-
-      <ph name="PRODUCT_OS_NAME" /> シェルフへのアプリの固定については、<ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> ポリシーをご覧ください。</translation>
 <translation id="2976429807269247880">Cookie に関する以前の <ph name="ATTRIBUTE_SAMESITE_NAME" /> 動作の設定</translation>
 <translation id="2985927503455169394">アシスタントのオンボーディング エクスペリエンスでデフォルトのモードを使用する</translation>
 <translation id="2987155890997901449">ARC を有効にする</translation>
@@ -2601,11 +2596,6 @@
           このポリシーを未設定のままにした場合、自動クリックが無効（初期設定）になりますが、ユーザーはいつでも有効にできます。</translation>
 <translation id="4212181786686887763">壁紙画像をダウンロードすることのできる URL です。</translation>
 <translation id="4224610387358583899">画面ロック遅延時間</translation>
-<translation id="4225260426043444650">ユーザーに <ph name="LACROS_NAME" /> ブラウザの使用を許可します。
-
-      このポリシーを無効に設定するか未設定のままにした場合、ユーザーは <ph name="LACROS_NAME" /> を使用できません。
-
-      このポリシーを有効に設定した場合、ユーザーは <ph name="LACROS_NAME" /> ブラウザを使用できます。</translation>
 <translation id="4228745249339680042">このポリシーでは、セキュリティ キーの構成証明がリクエストされたときにメッセージを表示しない URL とドメインを指定できます。このとき、セキュリティ キーには、個別の構成が使用されることを示すシグナルも送られます。このポリシーで指定しないサイトからセキュリティ キーの構成がリクエストされた場合、<ph name="PRODUCT_NAME" /> バージョン 65 以降では、ユーザーにメッセージが表示されます。
 
       URL は U2F の appID が一致するもののみが対象となります。ドメインは WebAuthn の RP ID が一致するもののみが対象となります。U2F と WebAuthn API の両方に対応するには、サイトの appID URL とドメインを指定してください。</translation>
@@ -4493,19 +4483,6 @@
 <translation id="6857240169209507953">デバイスでの <ph name="BOREALIS_NAME" /> の実行をブロックする</translation>
 <translation id="685769593149966548">YouTube で制限付きモード「強」を強制する</translation>
 <translation id="686079137349561371">Microsoft Windows 7 以降</translation>
-<translation id="6864283226733000548"><ph name="LACROS_NAME" /> ブラウザの使用に関するオプションを設定します。
-
-      このポリシーを <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" /> に設定した場合、ユーザーは <ph name="LACROS_NAME" /> を有効にして、メインのブラウザとして設定できます。この場合も、<ph name="LACROS_NAME" /> は <ph name="LACROS_ALLOWED_POLICY_NAME" /> ポリシーで無効にできます。
-
-      このポリシーを <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" /> に設定した場合、ユーザーは <ph name="LACROS_NAME" /> を使用できません。<ph name="LACROS_ALLOWED_POLICY_NAME" /> ポリシーは無視されます。
-
-      このポリシーを <ph name="LACROS_AVAILABILITY_SIDE_BY_SIDE_VALUE" /> に設定した場合、<ph name="LACROS_NAME" /> は有効になりますが、メインのブラウザとしては設定されません。<ph name="LACROS_ALLOWED_POLICY_NAME" /> ポリシーは無視されます。
-
-      このポリシーを <ph name="LACROS_AVAILABILITY_LACROS_PRIMARY_VALUE" /> に設定した場合、<ph name="LACROS_NAME" /> は有効になり、メインのブラウザとして設定されます。<ph name="LACROS_ALLOWED_POLICY_NAME" /> ポリシーは無視されます。
-
-      このポリシーが未設定の場合、デフォルトで、企業の管理対象ユーザーは <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" />、管理対象外のユーザーは <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" /> に設定されます。
-
-      今後、<ph name="PRODUCT_OS_NAME" /> で <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" /> 値を使用して、<ph name="LACROS_NAME" /> を唯一の使用可能なブラウザとして設定できるようになる予定です。</translation>
 <translation id="6865392932254477045">このポリシーでは、ベンダー ID と製品 ID が <ph name="VENDOR_ID_FIELD_NAME" /> および <ph name="PRODUCT_ID_FIELD_NAME" /> フィールドに一致する USB シリアル デバイスへのアクセスを自動的に許可するサイトのリストを指定できます。<ph name="PRODUCT_ID_FIELD_NAME" /> フィールドを省略すると、<ph name="VENDOR_ID_FIELD_NAME" /> フィールドに一致するベンダー ID と任意の製品 ID を持つデバイスへのアクセスをサイトに許可することになります。必ず有効な URL を指定してください。無効な URL を指定した場合、このポリシーは無視されます。URL のオリジン（スキーム、ホストとポート）のみが考慮されます。Chrome OS では、このポリシーは関連付けられたユーザーにのみ適用されます。
 
       このポリシーは、<ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />、<ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />、<ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" />、ユーザーの設定をオーバーライドします。このポリシーは、Web Serial API 経由での USB デバイスへのアクセスのみに影響を与えます。WebUSB API 経由での USB デバイスへのアクセスを許可するには、<ph name="WEB_USB_ALLOW_DEVICES_FOR_URLS_POLICY_NAME" /> ポリシーを参照してください。</translation>

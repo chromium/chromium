@@ -2214,6 +2214,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3305661444342691068">Mở PDF ở chế độ xem trước</translation>
 <translation id="3308116878371095290">Trang này đã bị chặn cài đặt cookie.</translation>
 <translation id="3308134619352333507">Nút ẩn</translation>
+<translation id="3308681281309926497">Các trang web bạn truy cập vẫn có thể ghi nhớ thông tin của bạn cho đến khi bạn đóng Chrome</translation>
 <translation id="3308738399950580893">quảng cáo</translation>
 <translation id="3308852433423051161">Đang tải Trợ lý Google...</translation>
 <translation id="3309330461362844500">Mã hồ sơ chứng chỉ</translation>
@@ -2767,6 +2768,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3873423927483480833">Hiển thị mã PIN</translation>
 <translation id="3873915545594852654">Đã xảy ra lỗi với ARC++.</translation>
 <translation id="3874164307099183178">Bật Trợ lý Google</translation>
+<translation id="3875815154304214043"><ph name="APP_NAME" /> được thiết lập để mở trong một thẻ trình duyệt mới. Các đường liên kết được hỗ trợ cũng sẽ mở ra trong trình duyệt đó. <ph name="BEGIN_LINK_LEARN_MORE" />Tìm hiểu thêm<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256">Các tùy chọn cài đặt Chia sẻ lân cận cho thiết bị của <ph name="USER_NAME" />, chia sẻ bằng tài khoản <ph name="USER_EMAIL" />.</translation>
 <translation id="3879748587602334249">Trình quản lý tải xuống</translation>
 <translation id="3882165008614329320">Video hiện có từ camera hoặc tệp</translation>
@@ -3915,6 +3917,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="5157635116769074044">Ghim trang này vào màn hình bắt đầu...</translation>
 <translation id="5159094275429367735">Thiết lập Crostini</translation>
 <translation id="5159419673777902220">Cha mẹ của bạn đã tắt quyền sử dụng tiện ích</translation>
+<translation id="5159643365935452998">Xem xét tính năng xóa dữ liệu tự động</translation>
 <translation id="5160634252433617617">Bàn phím vật lý</translation>
 <translation id="5160857336552977725">Đăng nhập vào <ph name="DEVICE_TYPE" /> của bạn</translation>
 <translation id="5161251470972801814">Các thiết bị USB của <ph name="VENDOR_NAME" /></translation>
@@ -4478,6 +4481,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="5790651917470750848">Đã chuyển tiếp cổng này</translation>
 <translation id="5792728279623964091">Vui lòng nhấn vào nút nguồn</translation>
 <translation id="5793339252089865437">Nếu tải bản cập nhật này xuống qua mạng di động, thì bạn có thể phải trả phí phát sinh.</translation>
+<translation id="5794034487966529952">Không gian làm việc <ph name="DESK_TITLE" /> có <ph name="NUM_BROWSERS" /> cửa sổ trình duyệt đang mở</translation>
 <translation id="5794414402486823030">Luôn mở bằng trình xem hệ thống</translation>
 <translation id="5794700615121138172">Thư mục do Linux chia sẻ</translation>
 <translation id="5794786537412027208">Thoát khỏi tất cả các ứng dụng Chrome</translation>

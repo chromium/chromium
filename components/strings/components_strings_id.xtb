@@ -984,6 +984,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="4358461427845829800">Kelola metode pembayaran...</translation>
 <translation id="4359160567981085931">Anda baru saja memasukkan sandi ke situs penipuan. Chrome dapat membantu. Untuk mengubah sandi dan memberi tahu Google bahwa akun Anda mungkin berisiko, klik Lindungi Akun.</translation>
 <translation id="4367563149485757821">Number-12 (Envelope)</translation>
+<translation id="437040971055499437">Terjadi peristiwa keamanan</translation>
 <translation id="437058704415269440">Saldo Rekening</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Nilai <ph name="VALUE_TYPE" /> yang diharapkan.</translation>
@@ -1393,6 +1394,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="5803412860119678065">Ingin mengisi <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Izin</translation>
 <translation id="5810442152076338065">Sambungan Anda ke <ph name="DOMAIN" /> dienkripsi menggunakan cipher suite yang sudah usang.</translation>
+<translation id="5812947184178430888">Saat peristiwa keamanan ditandai oleh Chrome, data yang relevan dengan peristiwa tersebut akan dikirimkan ke administrator Anda. Data ini dapat mencakup URL halaman yang Anda buka di Chrome, metadata atau nama file, serta nama pengguna yang Anda gunakan untuk login ke aplikasi berbasis web, perangkat Anda, dan Chrome.</translation>
 <translation id="5813119285467412249">&amp;Ulangi Penambahan</translation>
 <translation id="5817918615728894473">Sandingkan</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Kartu ini akan ditagih saat Anda membayar, tetapi nomor yang sebenarnya tidak akan dibagikan ke situs ini. Sebagai keamanan tambahan, CVC sementara akan diberikan.}other{Kartu yang Anda pilih akan ditagih saat Anda membayar, tetapi nomor yang sebenarnya tidak akan dibagikan ke situs ini. Sebagai keamanan tambahan, CVC sementara akan diberikan.}}</translation>

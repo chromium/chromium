@@ -990,6 +990,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4358461427845829800">Menaxho mënyrat e pagesës...</translation>
 <translation id="4359160567981085931">Sapo fute fjalëkalimin tënd në një sajt mashtrues. Chrome mund të të ndihmojë. Për të ndryshuar fjalëkalimin dhe për të njoftuar Google se llogaria jote mund të jetë në rrezik, kliko te "Mbroje llogarinë".</translation>
 <translation id="4367563149485757821">Number-12 (Zarf)</translation>
+<translation id="437040971055499437">Ndodh ngjarje sigurie</translation>
 <translation id="437058704415269440">Balanca e llogarisë</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Pritet një vlerë <ph name="VALUE_TYPE" />.</translation>
@@ -1391,6 +1392,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5803412860119678065">Dëshiron që të plotësosh informacionet për <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Lejet</translation>
 <translation id="5810442152076338065">Lidhja jote me <ph name="DOMAIN" /> është enkriptuar duke përdorur një paketë të vjetër shifrimi.</translation>
+<translation id="5812947184178430888">Kur sinjalizohen ngjarje sigurie nga Chrome, të dhënat përkatëse rreth ngjarjeve i dërgohen administratorit tënd. Kjo mund të përfshijë URL-të e faqeve që viziton në Chrome, emrat e skedarëve ose të dhënat meta dhe emrin e përdoruesit që përdor për t'u identifikuar në aplikacionet me bazë uebi, pajisjen tënde dhe Chrome.</translation>
 <translation id="5813119285467412249">&amp;Ribëje shtimin</translation>
 <translation id="5817918615728894473">Çifto</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Kjo kartë do të tarifohet kur të paguash, por numri i saj i vërtetë nuk do të ndahet me këtë sajt. Për më shumë siguri, do të krijohet një kod CVC i përkohshëm.}other{Karta që zgjedh do të tarifohet kur të paguash, por numri i saj i vërtetë nuk do të ndahet me këtë sajt. Për më shumë siguri, do të krijohet një kod CVC i përkohshëm.}}</translation>

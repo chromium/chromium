@@ -994,6 +994,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4358461427845829800">Administrer betalingsmåter…</translation>
 <translation id="4359160567981085931">Du har nettopp skrevet inn passordet ditt på et villedende nettsted. Chrome kan hjelpe deg. For å bytte passord og varsle Google om at kontoen din kanskje er i fare, klikk på Beskytt konto.</translation>
 <translation id="4367563149485757821">Number-12 (konvolutt)</translation>
+<translation id="437040971055499437">Forekomster av sikkerhetshendelse</translation>
 <translation id="437058704415269440">Kontosaldo</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Forventet <ph name="VALUE_TYPE" />-verdi.</translation>
@@ -1403,6 +1404,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5803412860119678065">Vil du fylle ut informasjonen knyttet til <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Tillatelser</translation>
 <translation id="5810442152076338065">Tilkoblingen til <ph name="DOMAIN" /> er kryptert med en foreldet chifferserie.</translation>
+<translation id="5812947184178430888">Når Chrome flagger sikkerhetshendelser, sendes relevante data om hendelsen til administratoren din. Dette kan omfatte nettadressene til sider du besøker i Chrome, filnavn, metadata og brukernavnet du bruker når du logger på nettbaserte programmer, enheten din og Chrome.</translation>
 <translation id="5813119285467412249">&amp;Legg til likevel</translation>
 <translation id="5817918615728894473">Koble sammen</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Dette kortet blir belastet når du betaler, men det egentlige kortnummeret deles ikke med dette nettstedet. En midlertidig CVC-kode blir generert for ekstra sikkerhet.}other{Kortet du velger, blir belastet når du betaler, men det egentlige kortnummeret deles ikke med dette nettstedet. En midlertidig CVC-kode blir generert for ekstra sikkerhet.}}</translation>

@@ -272,7 +272,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1838374766361614909">Borrar búsqueda</translation>
 <translation id="1839551713262164453">No se ha podido hacer la validación de los valores de la política porque se han producido errores</translation>
 <translation id="1842969606798536927">Pagar</translation>
-<translation id="1856713167556118146">Lo que no hace incógnito</translation>
+<translation id="1856713167556118146">Lo que no hace el modo de incógnito</translation>
 <translation id="1871208020102129563">Se ha configurado el proxy de forma que use servidores proxy fijos, en lugar de una URL de secuencia de comandos .pac.</translation>
 <translation id="1871284979644508959">Campo obligatorio</translation>
 <translation id="1875512691959384712">Formularios de Google</translation>
@@ -994,6 +994,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4358461427845829800">Gestiona tus métodos de pago...</translation>
 <translation id="4359160567981085931">Acabas de introducir tu contraseña en un sitio web engañoso. Chrome puede ayudarte. Para cambiar tu contraseña y notificar a Google de que tu cuenta podría estar en peligro, haz clic en Proteger cuenta.</translation>
 <translation id="4367563149485757821">Number-12 (sobre)</translation>
+<translation id="437040971055499437">Se ha producido una actividad relacionada con la seguridad</translation>
 <translation id="437058704415269440">Saldo de cuenta</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Se esperaba un valor <ph name="VALUE_TYPE" />.</translation>
@@ -1020,7 +1021,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4465818729556336129">Este documento es confidencial. Tu administrador recomienda no imprimirlo.</translation>
 <translation id="4476953670630786061">Este formulario no es seguro. Autocompletar se ha desactivado.</translation>
 <translation id="4477350412780666475">Pista siguiente</translation>
-<translation id="4481251927743463293">Lo que hace incógnito</translation>
+<translation id="4481251927743463293">Lo que hace el modo de incógnito</translation>
 <translation id="4481394504112738036">Archivo confidencial</translation>
 <translation id="4482953324121162758">Este sitio web no se traducirá.</translation>
 <translation id="4490717597759821841">A7</translation>
@@ -1121,7 +1122,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4819347708020428563">¿Editar anotaciones en la vista predeterminada?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y luego Intro para crear una nueva Hoja de cálculo de Google rápidamente</translation>
 <translation id="4825507807291741242">Potente</translation>
-<translation id="4827402517081186284">Incógnito no te hace invisible online:
+<translation id="4827402517081186284">El modo de incógnito no te hace invisible online:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />Los sitios saben que los visitas<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />Las empresas o los centros educativos pueden monitorizar la actividad de navegación<ph name="END_LIST_ITEM" />
@@ -1131,7 +1132,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="484462545196658690">Automático</translation>
 <translation id="4850886885716139402">Ver</translation>
 <translation id="485316830061041779">Alemán</translation>
-<translation id="4853901935952445031">Este sitio no podrá usar la API U2F después de febrero del 2022. Si eres el propietario de este sitio, debes cambiarlo para que use la API Web Authentication.</translation>
+<translation id="4853901935952445031">Este sitio no podrá usar la API U2F después de febrero del 2022. Si este sitio es de tu propiedad, debes cambiarlo para que use la API Web Authentication.</translation>
 <translation id="4854362297993841467">Este método de entrega no está disponible. Selecciona otro.</translation>
 <translation id="4854853140771946034">Crear una nueva nota en Google Keep rápidamente</translation>
 <translation id="4876188919622883022">Vista simplificada</translation>
@@ -1403,6 +1404,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5803412860119678065">¿Quieres rellenar la información de <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Permisos</translation>
 <translation id="5810442152076338065">Tu conexión con <ph name="DOMAIN" /> está cifrada con un conjunto de cifrado obsoleto.</translation>
+<translation id="5812947184178430888">Cuando Chrome detecte actividades relacionadas con la seguridad, tu administrador recibirá los datos pertinentes. Entre estos datos se pueden encontrar las URLs de las páginas que visitas en Chrome, los nombres o los metadatos de los archivos y el nombre de usuario que utilizas para iniciar sesión en aplicaciones web, en tu dispositivo y en Chrome.</translation>
 <translation id="5813119285467412249">&amp;Rehacer acción de añadir</translation>
 <translation id="5817918615728894473">Emparejar</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Cuando pagues, se aplicarán cargos en esta tarjeta, pero el número real no se compartirá con este sitio web. Para una mayor seguridad, se generará un CVC temporal.}other{Cuando pagues, se aplicarán cargos en la tarjeta que selecciones, pero el número real no se compartirá con este sitio web. Para una mayor seguridad, se generará un CVC temporal.}}</translation>
@@ -1654,7 +1656,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6757797048963528358">El dispositivo se ha suspendido.</translation>
 <translation id="6767985426384634228">¿Actualizar dirección?</translation>
 <translation id="6768213884286397650">Hagaki (Postcard)</translation>
-<translation id="6774185088257932239"><ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /> sobre incógnito</translation>
+<translation id="6774185088257932239"><ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /> sobre el modo de incógnito</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Violeta</translation>
 <translation id="6786747875388722282">Extensiones</translation>

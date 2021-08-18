@@ -272,6 +272,7 @@
 <translation id="1838374766361614909">खोजी खाली गर्नुहोस्</translation>
 <translation id="1839551713262164453">त्रुटिले गर्दा नीतिका मानहरू प्रमाणीकरण गर्न सकिएन</translation>
 <translation id="1842969606798536927">भुक्तानी गर्नुहोस्</translation>
+<translation id="1856713167556118146">इन्कोग्निटो मोडले के गर्दैन</translation>
 <translation id="1871208020102129563">प्रोक्सी निश्चित प्रोक्सी सर्भर प्रयोग गर्न सेट गरिएको छ, .pac स्क्रिप्ट युआरएल होइन।</translation>
 <translation id="1871284979644508959">आवश्यक क्षेत्र</translation>
 <translation id="1875512691959384712">Google फारम</translation>
@@ -1015,6 +1016,7 @@
 <translation id="4465818729556336129">यो डकुमेन्ट गोप्य डकुमेन्ट हो र तपाईंका एड्मिनले यो डकुमेन्ट प्रिन्ट नगर्न सल्लाह दिएका छन्।</translation>
 <translation id="4476953670630786061">यो फारम सुरक्षित छैन। अटोफिल सुविधा अफ गरिएको छ।</translation>
 <translation id="4477350412780666475">अर्को ट्र्याक</translation>
+<translation id="4481251927743463293">इन्कोग्निटो मोडले के गर्छ</translation>
 <translation id="4481394504112738036">गोप्य फाइल</translation>
 <translation id="4482953324121162758">यो साइटको अनुवाद गरिने छैन।</translation>
 <translation id="4490717597759821841">A7</translation>
@@ -1115,10 +1117,17 @@
 <translation id="4819347708020428563">एनोटेसनहरू डिफल्ट भ्यूमा सम्पादन गर्ने हो?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Sheets प्रयोग गरी तुरुन्तै नयाँ पाना बनाउन Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="4825507807291741242">शक्तिशाली</translation>
+<translation id="4827402517081186284">इन्कोग्निटो मोडले तपाईंलाई अनलाइन दुनियाँमा अदृश्य बनाउँदैन:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />तपाईंले कुनै साइट खोल्दा सो साइटले थाहा पाउँछ<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />रोजगारदाता वा विद्यालयले ब्राउजर प्रयोग गरी गरिएको क्रियाकलापसम्बन्धी विवरण हेर्न सक्छन्<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />इन्टरनेट सेवा प्रदायकहरूले वेब ट्राफिकको निरीक्षण गर्न सक्छन्<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="4838327282952368871">स्वप्निल</translation>
 <translation id="484462545196658690">स्वतः</translation>
 <translation id="4850886885716139402">हेर्नुहोस्</translation>
 <translation id="485316830061041779">जर्मन</translation>
+<translation id="4853901935952445031">यो साइटले फेब्रुअरी २०२२ पछि U2F API प्रयोग गर्न सक्ने छैन। तपाईं यो साइटको मालिक हुनुहुन्छ भने तपाईंले यो साइटको सेटिङ परिवर्तन गरी यसले Web Authentication API प्रयोग गर्ने सेटिङ लागू गर्नु पर्छ।</translation>
 <translation id="4854362297993841467">डेलिभरीको यो विधि उपलब्ध छैन। फरक विधि चयन गर्ने प्रयास गर्नुहोस्।</translation>
 <translation id="4854853140771946034">Google Keep प्रयोग गरी तुरुन्तै नयाँ टिपोट बनाउनुहोस्</translation>
 <translation id="4876188919622883022">सरलीकृत हेराइको सुविधा</translation>
@@ -1641,6 +1650,7 @@
 <translation id="6757797048963528358">तपाईंको यन्त्र शयन अवस्थामा गयो।</translation>
 <translation id="6767985426384634228">ठेगाना बदल्ने हो?</translation>
 <translation id="6768213884286397650">Hagaki (Postcard)</translation>
+<translation id="6774185088257932239">इन्कोग्निटो मोडका बारेमा <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">हल्का निलो</translation>
 <translation id="6786747875388722282">विस्तारहरू</translation>
@@ -1688,6 +1698,7 @@
 <translation id="6965382102122355670">ठिक छ</translation>
 <translation id="6965978654500191972">यन्त्र</translation>
 <translation id="696703987787944103">बोधात्मक</translation>
+<translation id="6968269510885595029">आफ्नो सुरक्षा साँचो प्रयोग गर्नुहोस्</translation>
 <translation id="6970216967273061347">जिल्ला</translation>
 <translation id="6971439137020188025">Google Slides प्रयोग गरी तुरुन्तै नयाँ प्रेजेन्टेसन बनाउनुहोस्</translation>
 <translation id="6972629891077993081">HID यन्त्रहरू</translation>
@@ -1753,6 +1764,7 @@
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> ले सुरक्षा मानहरूको पालना गर्दैन।</translation>
 <translation id="7210993021468939304">कन्टेनर भित्र Linux का क्रियाकलाप हेर्न र कन्टेनरभित्र Linux एपहरू इन्स्टल गर्न र चलाउन सक्छ</translation>
 <translation id="721197778055552897">यो समस्याको बारे <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" />।</translation>
+<translation id="7215025035562547931">केही समय निकालेर यो जानकारीको सत्यता जाँच्नुहोस्</translation>
 <translation id="7217745192097460130">आफ्नो खरिद पुष्टि तथा पूरा गर्न Touch ID प्रयोग गर्ने हो?</translation>
 <translation id="7219179957768738017">जडानले <ph name="SSL_VERSION" /> प्रयोग गर्छ।</translation>
 <translation id="7220786058474068424">प्रशोधन गर्दै</translation>
@@ -2088,6 +2100,12 @@
 <translation id="8307888238279532626">इन्स्टल गरिएका एप र ती एप प्रयोग गरिने अन्तराल</translation>
 <translation id="831207732689920588">यो पृष्ठ शङ्कास्पद छ (Chrome ले फ्ल्याग गरेको)।</translation>
 <translation id="831997045666694187">साँझ</translation>
+<translation id="8328484624016508118">तपाईंले सबै इन्कोग्निटो ट्याब बन्द गरेपछि Chrome ले:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />तपाईंले यो डिभाइसमा भएको ब्राउजरमार्फत गर्नुभएको क्रियाकलापसम्बन्धी विवरण मेटाउँछ <ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />यो डिभाइसबाट तपाईंको खोजसम्बन्धी इतिहास मेटाउँछ<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />तपाईंले फारममा हाल्नुभएको जानकारी मेटाउँछ<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489"><ph name="HOST_NAME" /> मा पहुँच गर्न अस्वीकृत भयो</translation>
 <translation id="833262891116910667">हाइलाइट गर्नुहोस्</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> मा रहेका पृष्ठहरूलाई अनुवाद गरिने छैन</translation>

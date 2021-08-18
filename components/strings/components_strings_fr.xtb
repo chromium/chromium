@@ -272,6 +272,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1838374766361614909">Effacer la recherche</translation>
 <translation id="1839551713262164453">Échec de la validation des valeurs de règle avec des erreurs</translation>
 <translation id="1842969606798536927">Paiement</translation>
+<translation id="1856713167556118146">Ce que la navigation privée ne permet pas</translation>
 <translation id="1871208020102129563">Le proxy est configuré pour utiliser des serveurs proxy déterminés, pas une URL de script .pac.</translation>
 <translation id="1871284979644508959">Veuillez compléter ce champ.</translation>
 <translation id="1875512691959384712">Google Forms</translation>
@@ -993,6 +994,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4358461427845829800">Gérer les modes de paiement…</translation>
 <translation id="4359160567981085931">Vous venez de saisir votre mot de passe sur un site trompeur. Chrome peut vous aider. Pour modifier votre mot de passe et informer Google que votre compte a peut-être été piraté, cliquez sur "Protéger le compte".</translation>
 <translation id="4367563149485757821">Number-12 (enveloppe)</translation>
+<translation id="437040971055499437">Un événement lié à la sécurité se produit</translation>
 <translation id="437058704415269440">Solde du compte</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Valeur attendue : <ph name="VALUE_TYPE" />.</translation>
@@ -1019,6 +1021,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4465818729556336129">Ce document est confidentiel. Votre administrateur vous déconseille de l'imprimer.</translation>
 <translation id="4476953670630786061">Ce formulaire n'est pas sécurisé. La saisie automatique a été désactivée.</translation>
 <translation id="4477350412780666475">Titre suivant</translation>
+<translation id="4481251927743463293">Ce que permet la navigation privée</translation>
 <translation id="4481394504112738036">Fichier confidentiel</translation>
 <translation id="4482953324121162758">Ce site ne sera pas traduit.</translation>
 <translation id="4490717597759821841">A7</translation>
@@ -1119,10 +1122,17 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4819347708020428563">Modifier les annotations dans la vue par défaut ?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour créer rapidement une feuille de calcul Google Sheets</translation>
 <translation id="4825507807291741242">Puissant</translation>
+<translation id="4827402517081186284">La navigation privée ne vous rend pas invisible sur Internet :
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Les sites savent que vous les consultez.<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Votre employeur ou votre établissement scolaire peuvent connaître votre activité de navigation.<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Les fournisseurs d'accès à Internet peuvent surveiller le trafic Web.<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="4838327282952368871">Rêveur</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4850886885716139402">Afficher</translation>
 <translation id="485316830061041779">Allemand</translation>
+<translation id="4853901935952445031">Ce site ne pourra plus utiliser l'API U2F après février 2022. S'il vous appartient, vous devriez changer l'API et utiliser Web Authentication.</translation>
 <translation id="4854362297993841467">Mode de livraison non disponible. Choisissez-en un autre.</translation>
 <translation id="4854853140771946034">Créer rapidement une note dans Google Keep</translation>
 <translation id="4876188919622883022">Vue simplifiée</translation>
@@ -1394,6 +1404,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5803412860119678065">Souhaitez-vous indiquer les informations "<ph name="CARD_DETAIL" />" ?</translation>
 <translation id="5804241973901381774">Autorisations</translation>
 <translation id="5810442152076338065">Votre connexion à <ph name="DOMAIN" /> est chiffrée à l'aide d'une méthode de chiffrement obsolète.</translation>
+<translation id="5812947184178430888">Lorsque Chrome signale des événements liés à la sécurité, votre administrateur reçoit des données sur ces événements (par exemple, les URL des pages que vous consultez dans Chrome, les métadonnées ou les noms des fichiers concernés, ainsi que le nom d'utilisateur avec lequel vous vous connectez à des applications Web, à votre appareil et à Chrome).</translation>
 <translation id="5813119285467412249">&amp;Rétablir l'ajout</translation>
 <translation id="5817918615728894473">Associer</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Cette carte sera débitée lorsque vous effectuerez un paiement, mais son vrai numéro ne sera pas communiqué à ce site. Pour plus de sécurité, un code CVC provisoire sera généré.}one{La carte que vous aurez sélectionnée sera débitée lorsque vous effectuerez un paiement, mais son vrai numéro ne sera pas communiqué à ce site. Pour plus de sécurité, un code CVC provisoire sera généré.}other{Les cartes que vous aurez sélectionnées seront débitées lorsque vous effectuerez des paiements, mais leur vrai numéro ne sera pas communiqué à ce site. Pour plus de sécurité, un code CVC provisoire sera généré.}}</translation>
@@ -1645,6 +1656,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6757797048963528358">Votre appareil s'est mis en veille.</translation>
 <translation id="6767985426384634228">Modifier l'adresse ?</translation>
 <translation id="6768213884286397650">Hagaki (carte postale)</translation>
+<translation id="6774185088257932239"><ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /> sur la navigation privée</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Mauve</translation>
 <translation id="6786747875388722282">Extensions</translation>
@@ -1692,6 +1704,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965978654500191972">Périphérique</translation>
 <translation id="696703987787944103">Perceptuel</translation>
+<translation id="6968269510885595029">Utiliser votre clé de sécurité</translation>
 <translation id="6970216967273061347">District</translation>
 <translation id="6971439137020188025">Créer rapidement une présentation Google dans Slides</translation>
 <translation id="6972629891077993081">Appareils HID</translation>
@@ -1757,6 +1770,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> ne respecte pas les normes de sécurité.</translation>
 <translation id="7210993021468939304">Activité Linux dans le conteneur, et peut installer et exécuter des applications Linux dans le conteneur</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /> sur ce problème.</translation>
+<translation id="7215025035562547931">Prenez un instant pour réfléchir à la fiabilité de ces informations</translation>
 <translation id="7217745192097460130">Utiliser Touch ID pour valider et terminer votre achat ?</translation>
 <translation id="7219179957768738017">La connexion utilise <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Traitement en cours</translation>
@@ -2093,6 +2107,12 @@ Informations supplémentaires :
 <translation id="8307888238279532626">Applications installées et leur fréquence d'utilisation</translation>
 <translation id="831207732689920588">Cette page est suspecte (signalée par Chrome)</translation>
 <translation id="831997045666694187">Soirée</translation>
+<translation id="8328484624016508118">Lorsque vous fermez tous les onglets de navigation privée, Chrome efface :
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />votre activité de navigation sur cet appareil ;<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />l'historique de vos recherches sur cet appareil ;<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />les informations saisies dans des formulaires.<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">L'accès à <ph name="HOST_NAME" /> a été refusé</translation>
 <translation id="833262891116910667">Mettre en surbrillance</translation>
 <translation id="8339163506404995330">Les pages en <ph name="LANGUAGE" /> ne seront pas traduites</translation>

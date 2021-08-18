@@ -280,6 +280,7 @@
 
       Si cette règle est définie sur "False", <ph name="PRODUCT_NAME" /> n'autorisera pas la création de profils d'invités.</translation>
 <translation id="1363275621236827384">Activer l'envoi de requêtes de profils matériels à Quirks Server</translation>
+<translation id="1372618949173323717">Désactiver JavaScript</translation>
 <translation id="1376119291123231789">Activer le mode avancé de recharge de la batterie</translation>
 <translation id="1384459581748403878">Référence : <ph name="REFERENCE_URL" /></translation>
 <translation id="138847842893090358">Indiquer l'état de la mise à jour du système</translation>
@@ -314,6 +315,13 @@
        Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter la page https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.
 
        Notez que cette règle était auparavant activée par erreur pour Android. Toutefois, cette fonctionnalité n'a jamais été parfaitement compatible avec Android.</translation>
+<translation id="1435493974546396517">Contrôle comment <ph name="PRODUCT_NAME" /> propose l'option "Imprimer en tant qu'image" sur <ph name="MS_WIN_NAME" /> et <ph name="MAC_OS_NAME" /> lors de l'impression de PDF.
+
+      Lors de l'impression de PDF sur <ph name="MS_WIN_NAME" /> ou <ph name="MAC_OS_NAME" />, les tâches d'impression doivent parfois être rastérisées sous forme d'image pour obtenir le rendu souhaité sur certaines imprimantes.
+
+      Lorsque cette règle est activée, <ph name="PRODUCT_NAME" /> propose l'option "Imprimer en tant qu'image" dans l'aperçu avant impression d'un PDF.
+
+      Lorsque cette règle est désactivée ou n'est pas configurée, <ph name="PRODUCT_NAME" /> ne propose pas l'option "Imprimer en tant qu'image" dans l'aperçu avant impression et les PDF sont imprimés normalement, sans être rastérisés sous forme d'image avant d'être envoyés à destination.</translation>
 <translation id="1435659902881071157">Configuration réseau au niveau de l'appareil</translation>
 <translation id="1438739959477268107">Paramètre de génération de clé par défaut</translation>
 <translation id="1449083855104537880">Définissez cette règle sur "True" pour afficher les options d'accessibilité dans le menu de la barre d'état système. Si vous définissez cette règle sur "False", ces options ne s'affichent pas dans le menu.
@@ -552,6 +560,13 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
       Si cette règle est configurée, mais que l'espace disque libre sur l'appareil est inférieur à celui requis, le plug-in <ph name="PLUGIN_VM_NAME" /> ne peut pas non plus être installé.</translation>
 <translation id="1690383938831887552">Empêcher le chargement de Signed HTTP Exchange</translation>
 <translation id="169467210981344373">Désactiver le cache d'authentification HTTP à portée globale</translation>
+<translation id="1698810555265314018">Contrôle la résolution des images imprimées lorsque <ph name="PRODUCT_NAME" /> imprime les PDF après rastérisation.
+
+      Lors de l'impression d'un PDF à l'aide de l'option "Imprimer en tant qu'image", il peut être opportun d'indiquer une résolution d'impression différente des paramètres d'un appareil ou par défaut d'un PDF.  Une résolution plus élevée allonge de manière significative le délai de traitement et d'impression, mais une résolution moins élevée peut affecter la qualité de l'impression.
+
+      Cette règle permet d'indiquer une résolution spécifique à utiliser en cas de rastérisation de PDF avant impression.
+
+      Si la règle est définie sur zéro ou si elle n'est pas configurée, la résolution par défaut du système est utilisée lors de la rastérisation des images de la page.</translation>
 <translation id="1700458869527146675">Cette règle permet de configurer les paramètres de proxy pour Chrome et les applications ARC, qui ignorent toutes les options liées au proxy spécifiées à partir de la ligne de commande.
 
        Si cette règle n'est pas configurée, les utilisateurs peuvent sélectionner les paramètres de proxy.
@@ -1649,11 +1664,6 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
       Les URL doivent être au format HTTPS, comme "https://example.com".
 
       Pour en savoir plus sur les formats d'URL valides, consultez cette page : https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
-<translation id="2972531017545674240">Permet d'établir la liste des applications Web qui s'installent de manière autonome (sans intervention de l'utilisateur) et de spécifier les utilisateurs qui ne peuvent pas les désinstaller ni les désactiver.
-
-      Chaque élément de la liste de cette règle est un objet constitué d'un membre obligatoire tel que <ph name="URL_LABEL" /> (qui correspond à l'URL de l'application Web à installer) et de trois membres facultatifs tels que <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" /> (qui indique où s'ouvre l'application Web ; par défaut, elle s'ouvre dans un nouvel onglet), <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" /> ("True" si vous voulez créer des raccourcis sur le bureau <ph name="LINUX_OS_NAME" /> ou <ph name="MS_WIN_NAME" />) et <ph name="FALLBACK_APP_NAME_LABEL" /> (disponible depuis la version 90 de <ph name="PRODUCT_NAME" /> ; permet de remplacer le nom de l'application, sauf pour les progressive web apps (PWA) – dans le cas d'une PWA avec authentification requise pour l'installation, le nom de l'application temporaire peut être remplacé).
-
-      Consultez la règle <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> pour épingler des applications à l'étagère <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="2976429807269247880">Paramètres du comportement vis-à-vis des anciens cookies <ph name="ATTRIBUTE_SAMESITE_NAME" /></translation>
 <translation id="2985927503455169394">Utiliser le mode par défaut du processus de prise en main de l'Assistant</translation>
 <translation id="2987155890997901449">Activer ARC</translation>
@@ -2093,6 +2103,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="348495353354674884">Activer le clavier virtuel</translation>
 <translation id="3485200437120267231">Désactiver l'interception de connexion</translation>
 <translation id="3487651201232258606">Messagerie native</translation>
+<translation id="3492351353716550742">Ne pas utiliser de règle par défaut en matière d'URL de provenance (no-referrer-when-downgrade)</translation>
 <translation id="3492834335089638487">Cette règle permet de contrôler l'utilisation des applications Android provenant de sources non approuvées (autres que le Google Play Store) pour un appareil.
 
       Si la valeur de cette règle n'est pas définie, la règle est considérée comme non autorisée.
@@ -2109,6 +2120,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="350443680860256679">Configurer ARC</translation>
 <translation id="350797926066071931">Activer Google Traduction</translation>
 <translation id="3508047333410537654">Activer l'audio mono sur l'écran de connexion</translation>
+<translation id="3513265258454735822">Activer l'enregistrement de l'historique du navigateur</translation>
 <translation id="3513655665999652754">Quirks Server fournit les fichiers de configuration propres au matériel tels que les profils d'affichage ICC pour régler le calibrage du moniteur.
 
       Si cette règle est définie sur "False", l'appareil n'essaiera pas de contacter Quirks Server pour télécharger les fichiers de configuration.
@@ -2421,6 +2433,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 
       Si cette règle n'est pas définie, le protocole SPDY est disponible.</translation>
 <translation id="3891357445869647828">Activer JavaScript</translation>
+<translation id="3891769546914233112">Possibilité d'imprimer le PDF en tant qu'image</translation>
 <translation id="3897218615484393758">Limiter la durée pendant laquelle un utilisateur authentifié via SAML peut se connecter hors connexion sur l'écran de verrouillage</translation>
 <translation id="3898345958122666461">Désactiver NTLMv2</translation>
 <translation id="3898795800259311780">Autoriser ou interdire la capture d'écran</translation>
@@ -2660,11 +2673,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
           Si elle n'est pas définie, le clic automatique est désactivé au départ, mais les utilisateurs peuvent l'activer à tout moment.</translation>
 <translation id="4212181786686887763">URL depuis laquelle l'image de fond d'écran peut être téléchargée.</translation>
 <translation id="4224610387358583899">Délais de verrouillage de l'écran</translation>
-<translation id="4225260426043444650">Ce paramètre permet aux utilisateurs d'avoir recours au navigateur <ph name="LACROS_NAME" />.
-
-      Si cette règle est désactivée ou n'est pas définie, l'utilisateur ne peut pas se servir de <ph name="LACROS_NAME" />.
-
-      Si elle est activée, l'utilisateur peut se servir du navigateur <ph name="LACROS_NAME" />.</translation>
 <translation id="4228745249339680042">Lorsqu'elle est configurée, cette règle permet de spécifier les URL et les domaines pour lesquels aucune boîte de dialogue ne s'affiche lorsque les certificats d'attestation de la clé de sécurité sont demandés. Un signal est également envoyé à la clé de sécurité pour indiquer qu'une attestation individuelle peut être utilisée. Sans cela, dans <ph name="PRODUCT_NAME" /> 65 et versions ultérieures, les utilisateurs sont avertis lorsque des sites demandent une attestation des clés de sécurité.
 
       Les URL ne sont reconnues que comme des identifiants d'application U2F. Les domaines ne sont reconnus que comme des identifiants RP WebAuthn. Ainsi, pour couvrir à la fois les API U2F et WebAuthn d'un site donné, vous devez préciser l'URL et le domaine de l'identifiant d'application.</translation>
@@ -2729,6 +2737,7 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
 <translation id="4372704773119750918">Ne pas autoriser l'utilisateur d'entreprise à participer aux sessions à plusieurs profils, que ce soit en tant qu'utilisateur principal ou secondaire</translation>
 <translation id="4377599627073874279">Autoriser tous les sites à afficher toutes les images</translation>
 <translation id="437791893267799639">Règle non définie, interdire la migration de données et ARC</translation>
+<translation id="4381227367939912539">Désactiver le jeu Easter Egg du dinosaure</translation>
 <translation id="4382413175336720282">La vérification en temps réel des URL est désactivée.</translation>
 <translation id="4387741272680827493">Cette règle permet de dresser une liste de noms d'hôte qui ignorent les mises à niveau HSTS préchargées entre http et https.
 
@@ -2787,6 +2796,7 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
       Bien que la règle elle-même soit compatible avec les plates-formes citées, la fonctionnalité qu'elle active peut n'être disponible que sur un nombre plus restreint de plates-formes. Les fonctionnalités abandonnées de la plate-forme en ligne ne peuvent pas toutes être réactivées. Seules celles qui sont énumérées ci-dessous peuvent l'être pendant une durée limitée, qui varie selon la fonctionnalité. Le format général de la balise de chaîne est [FonctionnalitéAbandonnée]_EffectiveUntil[aaaammjj]. Pour information, vous pouvez découvrir les raisons pour lesquelles des motivations ont été apportées aux fonctionnalités des plates-formes en ligne en consultant la page https://bit.ly/blinkintents.
       </translation>
 <translation id="4442582539341804154">Activer le verrouillage lorsque l'appareil est inactif ou en veille</translation>
+<translation id="4443711908766051441">Activer le jeu Easter Egg du dinosaure</translation>
 <translation id="4447668084338250480">Comportement de redirection vers un intranet</translation>
 <translation id="4449469846627734399">Définir la configuration quotidienne de l'alimentation alternée en heures pleines</translation>
 <translation id="4449545651113180484">Faire pivoter l'écran vers la droite de 270 degrés</translation>
@@ -4062,6 +4072,7 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="6135398260575578389">La navigation sécurisée est active et en mode de protection renforcée. Ce mode offre une meilleure sécurité, mais nécessite de partager plus d'informations de navigation avec Google.</translation>
 <translation id="6138636318340561140">Vérifier en temps réel l'état de la navigation sécurisée pour les URL</translation>
 <translation id="6141402445226505817">Toujours utiliser une détection de fuseau horaire standard</translation>
+<translation id="6142501278956229253">Résolution d'impression de PDF rastérisés</translation>
 <translation id="6144046700495610112">Si cette règle est activée, les données de saisie automatique enregistrées dans le précédent navigateur par défaut sont importées lors de la première exécution. Si cette règle est désactivée ou qu'elle n'est pas configurée, les données de saisie automatique ne sont pas importées lors de la première exécution.
 
       Les utilisateurs peuvent ouvrir une boîte de dialogue d'importation. La case correspondant aux données de saisie automatique sera ou ne sera pas cochée, suivant la configuration de cette règle.</translation>
@@ -4253,6 +4264,7 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="6401669939808766804">Déconnecter l'utilisateur</translation>
 <translation id="640244877779556713">Activer la suggestion d'emoji</translation>
 <translation id="6407093060083181305">Configurer la liste de blocage concernant l'installation des extensions</translation>
+<translation id="640827304541402854">Désactiver la traversée de pare-feu depuis l'hôte d'accès à distance</translation>
 <translation id="6417265370957905582">Assistant Google</translation>
 <translation id="6422575351619065453">En mode Kiosque, cette règle permet de déterminer si le menu d'accessibilité flottant est affiché.
 
@@ -4468,6 +4480,7 @@ Si vous sélectionnez les options suivantes :
           Si elle est associée à la valeur "false" ou si elle n'est pas configurée, la création et la connexion des comptes utilisateur supervisés sont désactivées. Tous les utilisateurs supervisés existants sont alors masqués.
 
           REMARQUE : Le comportement par défaut des appareils grand public diffère de celui des appareils professionnels : sur les appareils grand public, les comptes utilisateur supervisés sont autorisés par défaut, contrairement aux appareils professionnels.</translation>
+<translation id="665023848306499203">Autorisez les appareils à sélectionner une version de mise à jour spécifique</translation>
 <translation id="6652197835259177259">Paramètres des utilisateurs gérés en local</translation>
 <translation id="6653897159826215341">Lorsque cette règle est activée, <ph name="PRODUCT_NAME" /> ouvre la boîte de dialogue d'impression du système au lieu de l'aperçu avant impression intégré lorsqu'un utilisateur souhaite imprimer une page.
 
@@ -4637,19 +4650,6 @@ Si vous sélectionnez les options suivantes :
 <translation id="6857240169209507953">Empêcher <ph name="BOREALIS_NAME" /> de fonctionner sur un appareil</translation>
 <translation id="685769593149966548">Appliquer le mode restreint strict sur YouTube</translation>
 <translation id="686079137349561371">Microsoft Windows 7 ou version ultérieure</translation>
-<translation id="6864283226733000548">Ce paramètre offre plusieurs options de disponibilité pour le navigateur <ph name="LACROS_NAME" />.
-
-      Si la règle est définie sur "<ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" />", l'utilisateur peut activer <ph name="LACROS_NAME" /> et en faire le navigateur principal. <ph name="LACROS_NAME" /> peut quand même être non autorisé avec la règle "<ph name="LACROS_ALLOWED_POLICY_NAME" />".
-
-      Si la règle est définie sur "<ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" />", l'utilisateur ne peut pas se servir de <ph name="LACROS_NAME" />. La règle "<ph name="LACROS_ALLOWED_POLICY_NAME" />" est ignorée.
-
-      Si la règle est définie sur "<ph name="LACROS_AVAILABILITY_SIDE_BY_SIDE_VALUE" />", <ph name="LACROS_NAME" /> est activé, mais n'est pas le navigateur principal. La règle "<ph name="LACROS_ALLOWED_POLICY_NAME" />" est ignorée.
-
-      Si la règle est définie sur "<ph name="LACROS_AVAILABILITY_LACROS_PRIMARY_VALUE" />", <ph name="LACROS_NAME" /> est activé et c'est le navigateur principal. La règle "<ph name="LACROS_ALLOWED_POLICY_NAME" />" est ignorée.
-
-      Si la règle n'est pas configurée, "<ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" />" est défini par défaut pour les utilisateurs gérés par l'entreprise et "<ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" />" pour les utilisateurs non gérés.
-
-      À l'avenir, la valeur "<ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" />" permettra de faire de <ph name="LACROS_NAME" /> le seul navigateur disponible dans <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="6865392932254477045">Cette règle vous permet de lister les sites automatiquement autorisés à accéder aux appareils série USB avec les ID produit et de fournisseur correspondant aux champs <ph name="PRODUCT_ID_FIELD_NAME" /> et <ph name="VENDOR_ID_FIELD_NAME" />. Si vous ne renseignez pas le champ <ph name="PRODUCT_ID_FIELD_NAME" />, cela autorise ces sites à accéder aux appareils à l'aide d'un ID de fournisseur correspondant au champ <ph name="VENDOR_ID_FIELD_NAME" /> et de n'importe quel ID produit.
 
       Si les URL ne sont pas valides, la règle est ignorée. Seule l'origine (schéma, hôte et port) de l'URL est prise en compte.
@@ -5201,6 +5201,20 @@ Si elle est définie sur "False" ou si elle n'est pas configurée, ces publicit�
 <translation id="7477231245051133709">Activer la fonctionnalité d'accessibilité d'audio mono</translation>
 <translation id="7477239290070847560">Destinations des protocoles basés sur Zeroconf (mDNS + DNS-SD)</translation>
 <translation id="7485481791539008776">Instructions de sélection de l'imprimante par défaut</translation>
+<translation id="7493995861907758679">Ce paramètre permet aux appareils de sélectionner une version cible spécifique de <ph name="PRODUCT_OS_NAME" /> vers laquelle ils seront mis à jour.
+
+      S'il n'est pas défini, les appareils se mettront à jour en fonction d'autres paramètres ou de la dernière version disponible.
+
+      S'il est défini, les appareils seront mis à jour vers la version sélectionnée.
+
+      Le format exact de la valeur de cette règle est un détail d'implémentation du service de mise à jour et peut être différent. La valeur de la règle n'est pas traitée sur l'appareil.
+
+      Utilisée avec <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" />, cette règle sera d'abord vérifiée par le service de mise à jour.
+      Contrairement à <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> (qui peut autoriser des mises à jour mineures), les appareils conserveront la version sélectionnée tant que la valeur de cette règle n'aura pas été modifiée.
+
+      Utilisée avec <ph name="DEVICE_ROLLBACK_TO_TARGET_VERSION_POLICY_NAME" />, la version de l'appareil peut être rétablie sur une version antérieure spécifique.
+
+      Avertissement : Il est déconseillé de configurer des restrictions de version, car cela pourrait empêcher les utilisateurs de recevoir des mises à jour logicielles et des correctifs de sécurité essentiels. Limiter les mises à jour à une version spécifique pourrait constituer un risque pour les utilisateurs.</translation>
 <translation id="7506745375479451616">Permet de spécifier la commande à utiliser pour ouvrir les URL dans <ph name="PRODUCT_NAME" /> lors du changement de navigateur depuis <ph name="IE_PRODUCT_NAME" />. Cette règle peut être définie sur le chemin d'accès à un fichier exécutable ou sur <ph name="PRODUCT_NAME_PLACEHOLDER" /> pour détecter automatiquement l'emplacement d'installation de <ph name="PRODUCT_NAME" />.
 
       Si cette règle n'est pas configurée, <ph name="IE_PRODUCT_NAME" /> détecte automatiquement le chemin d'accès au fichier exécutable de <ph name="PRODUCT_NAME" /> lors du lancement de <ph name="PRODUCT_NAME" /> depuis Internet Explorer.
@@ -5751,6 +5765,7 @@ Si cette règle n'est pas définie, l'écran de confidentialité est désactivé
 <translation id="8244171102276095471">Activer des suites de chiffrement RC4 dans TLS</translation>
 <translation id="8244525275280476362">Délai maximal de récupération après le rejet d'une règle</translation>
 <translation id="8245574649143980200">Si cette règle est activée ou qu'elle n'est pas configurée, les utilisateurs peuvent voir et utiliser la recherche par zone <ph name="GOOGLE_LENS_PRODUCT_NAME" /> via le menu contextuel. Si cette règle est désactivée, les utilisateurs ne peuvent pas voir la recherche par zone <ph name="GOOGLE_LENS_PRODUCT_NAME" /> dans le menu contextuel lorsque la recherche par zone <ph name="GOOGLE_LENS_PRODUCT_NAME" /> est disponible.</translation>
+<translation id="824818544897669723">Désactiver la suppression de l'historique du navigateur et de l'historique des téléchargements</translation>
 <translation id="82530263956734297">Identifiants d'extension à exclure de la liste de blocage</translation>
 <translation id="8256688113167012935">Définit quel nom de compte s'affiche sur l'écran de connexion de <ph name="PRODUCT_OS_NAME" /> pour le compte local de l'appareil correspondant.
 
@@ -6160,6 +6175,7 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
       Les extensions permettant d'imprimer depuis un navigateur, ou destinations des fournisseurs d'impression, englobent toutes les destinations appartenant à une extension <ph name="PRODUCT_NAME" />.
 
       Les imprimantes locales, ou destinations d'impression native, englobent les destinations disponibles sur l'ordinateur local et les imprimantes réseau partagées.</translation>
+<translation id="8753264624162178499">L'option "Imprimer en tant qu'image" est proposée à l'utilisateur pour permettre la rastérisation des PDF avant l'envoi de la tâche d'impression à sa destination.</translation>
 <translation id="8757552286070680084">Configuration d'un dispositif DTC de Wilco</translation>
 <translation id="8758831693895931466">Activer l'inscription obligatoire à la gestion cloud</translation>
 <translation id="8759829385824155666">Types de chiffrement Kerberos autorisés</translation>
@@ -6193,6 +6209,7 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
           Elle n'a aucun effet si elle n'est pas définie. Dans ce cas, les connexions d'accès à distance n'auront pas de limite de durée sur cet ordinateur.</translation>
 <translation id="8800453707696044281">Personnaliser le pourcentage auquel la recharge de la batterie doit s'arrêter</translation>
 <translation id="8801680448782904838">Avertir un utilisateur qu'un redémarrage du navigateur ou de l'appareil est recommandé ou exigé</translation>
+<translation id="8804685015028424497">Désactiver le mode navigation privée</translation>
 <translation id="8807313206348471682">Afficher la boîte de dialogue de confirmation de déconnexion</translation>
 <translation id="8817960019535659860">Empêcher les utilisateurs de profiter des offres via le service d'enregistrement Chrome OS</translation>
 <translation id="8818173863808665831">Permet d'indiquer l'emplacement géographique de l'appareil.
@@ -6550,6 +6567,7 @@ Si cette règle n'est pas configurée, ce paramètre est activé et l'utilisateu
 <translation id="9207596996305971030">Ne pas signaler les événements de connexion/déconnexion</translation>
 <translation id="9213751049772256263">Désactiver toutes les variantes</translation>
 <translation id="9217154963008402249">Fréquence des paquets réseau de contrôle</translation>
+<translation id="9220314833408124365">Utiliser une règle par défaut en matière d'URL de provenance (no-referrer-when-downgrade)</translation>
 <translation id="922540222991413931">Configurer les sources d'installation des extensions, des applications et des scripts d'utilisateur</translation>
 <translation id="924557436754151212">Importer les mots de passe enregistrés du navigateur par défaut à la première exécution</translation>
 <translation id="927384371566552478">Si cette règle est activée ou qu'elle n'est pas configurée, les utilisateurs ont accès à l'interface utilisateur d'importation/exportation. Si elle est désactivée, ils n'y ont pas accès.</translation>
@@ -6579,6 +6597,7 @@ Si cette règle n'est pas configurée, ce paramètre est activé et l'utilisateu
 
       Remarque : le blocage des URL internes chrome://* peut provoquer des erreurs inattendues.</translation>
 <translation id="957778406002650056">URL depuis laquelle l'image de <ph name="PLUGIN_VM_NAME" /> peut être téléchargée.</translation>
+<translation id="971677226939413180">L'option "Imprimer en tant qu'image" n'est pas proposée à l'utilisateur.</translation>
 <translation id="974349541138387272">Permet de définir le modèle URI du résolveur DNS-over-HTTPS souhaité</translation>
 <translation id="979467274961593903">Ne pas autoriser l'utilisation du débogage à distance</translation>
 <translation id="980218166381006412">Activer cette règle active le mode arrière-plan. Dans ce mode, un processus <ph name="PRODUCT_NAME" /> est lancé lors de la connexion à l'OS. Il ne se termine que lorsque la dernière fenêtre du navigateur est fermée, ce qui permet aux applis en arrière-plan et à la session de navigation de rester actives. Le processus en arrière-plan affiche une icône dans la barre d'état système, d'où il est peut être arrêté à tout moment.

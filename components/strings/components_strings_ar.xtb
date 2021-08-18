@@ -272,6 +272,7 @@
 <translation id="1838374766361614909">محو البحث</translation>
 <translation id="1839551713262164453">لقد تعذّر التحقق من قيم السياسة مع ظهور أخطاء.</translation>
 <translation id="1842969606798536927">الدفع</translation>
+<translation id="1856713167556118146">إجراءات لا ينفّذها وضع التصفُّح المتخفي</translation>
 <translation id="1871208020102129563">‏تم ضبط الخادم الوكيل لاستخدام الخوادم الوكيلة الثابتة وليس عنوان URL لنص برمجي pac.</translation>
 <translation id="1871284979644508959">حقل مطلوب</translation>
 <translation id="1875512691959384712">‏نماذج Google</translation>
@@ -993,6 +994,7 @@
 <translation id="4358461427845829800">إدارة طرق الدفع...</translation>
 <translation id="4359160567981085931">‏لقد أدخلت للتو كلمة مرورك في موقع إلكتروني مريب. يمكن لـ Chrome مساعدتك. لتغيير كلمة مرورك وإشعار Google أن حسابك قد يكون معرّضًا للخطر، انقر على "حماية الحساب".</translation>
 <translation id="4367563149485757821">‏Number-12 (مغلف)</translation>
+<translation id="437040971055499437">وقوع حدث أمني</translation>
 <translation id="437058704415269440">رصيد الحساب</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">القيمة <ph name="VALUE_TYPE" /> المتوقعة.</translation>
@@ -1019,6 +1021,7 @@
 <translation id="4465818729556336129">هذا المستند سرّي ولا ينصح المشرف بطباعته.</translation>
 <translation id="4476953670630786061">هذا النموذج غير آمن. تمّ إيقاف ميزة "الملء التلقائي".</translation>
 <translation id="4477350412780666475">المقطع الصوتي التالي</translation>
+<translation id="4481251927743463293">إجراءات ينفّذها وضع التصفُّح المتخفي</translation>
 <translation id="4481394504112738036">ملف سرّي</translation>
 <translation id="4482953324121162758">لن تتم ترجمة هذا الموقع.</translation>
 <translation id="4490717597759821841">A7</translation>
@@ -1119,10 +1122,17 @@
 <translation id="4819347708020428563">هل تريد تعديل التعليقات التوضيحية في العرض التلقائي؟</translation>
 <translation id="4825496307559726072">‏<ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />: اضغط على مفتاح التبويب (Tab) ثم Enter لإنشاء "جدول بيانات Google" جديد بسرعة.</translation>
 <translation id="4825507807291741242">قوي</translation>
+<translation id="4827402517081186284">لا يخفي وضع التصفُّح المتخفي هويتك عند زيارتك للمواقع الإلكترونية:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />ترصد المواقع الإلكترونية بيانات زيارتك لها.<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />بإمكان أصحاب العمل أو المؤسسات التعليمية تتبّع نشاط التصفُّح.<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />قد يراقب مزوّدو خدمة الإنترنت زيارات المستخدمين للمواقع الإلكترونية.<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="4838327282952368871">جذّاب</translation>
 <translation id="484462545196658690">تلقائي</translation>
 <translation id="4850886885716139402">عرض</translation>
 <translation id="485316830061041779">الألمانية</translation>
+<translation id="4853901935952445031">‏لن يتمكّن هذا الموقع الإلكتروني من استخدام U2F API بعد شباط (فبراير) 2022. وإذا كنت تمتلك هذا الموقع الإلكتروني، عليك تغييره بحيث يستخدم Web Authentication API.</translation>
 <translation id="4854362297993841467">طريقة التسليم هذه غير متاحة. جرِّب طريقة أخرى.</translation>
 <translation id="4854853140771946034">‏إنشاء ملاحظة جديدة في Google Keep بسرعة</translation>
 <translation id="4876188919622883022">العرض المبسَّط</translation>
@@ -1394,6 +1404,7 @@
 <translation id="5803412860119678065">هل تريد ملء <ph name="CARD_DETAIL" />؟</translation>
 <translation id="5804241973901381774">الأذونات</translation>
 <translation id="5810442152076338065">يتم ترميز اتصالك بالنطاق <ph name="DOMAIN" /> باستخدام مجموعة ترميز قديمة.</translation>
+<translation id="5812947184178430888">‏عند الإبلاغ عن أي أحداث أمنية من خلال متصفِّح Chrome، يتم إرسال البيانات المتعلّقة بالأحداث إلى مشرفك. ويمكن أن تتضمن هذه البيانات عناوين URL لصفحات تزورها في Chrome، وأسماء ملفات أو بيانات وصفية، واسم المستخدم الذي تستخدمه لتسجيل الدخول إلى جهازك ومتصفِّح Chrome والتطبيقات المستندة إلى الويب.</translation>
 <translation id="5813119285467412249">إعا&amp;دة الإضافة</translation>
 <translation id="5817918615728894473">إقران</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{‏سيتم تحصيل الرسوم من هذه البطاقة عند إجراء عملية الدفع، ولن تتم مشاركة رقم البطاقة الحقيقي مع هذا الموقع. لمزيد من الأمان، سيتم إنشاء رمز التحقق من البطاقة (CVC) بشكل مؤقت.}zero{‏لم تختر أي بطاقة لتحصيل الرسوم منها عند إجراء عملية الدفع، ولن تتم مشاركة رقم البطاقة الحقيقي مع هذا الموقع. لمزيد من الأمان، سيتم إنشاء رمز التحقق من البطاقة (CVC) بشكل مؤقت.}two{‏عند إجراء عملية الدفع، سيتم تحصيل الرسوم من البطاقتين اللتين تختارهما، ولن تتم مشاركة رقمَي البطاقتين الحقيقيَين مع هذا الموقع. لمزيد من الأمان، سيتم إنشاء رمز التحقق من البطاقة (CVC) بشكل مؤقت.}few{‏عند إجراء عملية الدفع، سيتم تحصيل الرسوم من البطاقات التي تختارها، ولن تتم مشاركة أرقام البطاقات الحقيقية مع هذا الموقع. لمزيد من الأمان، سيتم إنشاء رمز التحقق من البطاقة (CVC) بشكل مؤقت.}many{‏عند إجراء عملية الدفع، سيتم تحصيل الرسوم من البطاقات التي تختارها، ولن تتم مشاركة أرقام البطاقات الحقيقية مع هذا الموقع. لمزيد من الأمان، سيتم إنشاء رمز التحقق من البطاقة (CVC) بشكل مؤقت.}other{‏عند إجراء عملية الدفع، سيتم تحصيل الرسوم من البطاقات التي تختارها، ولن تتم مشاركة أرقام البطاقات الحقيقية مع هذا الموقع. لمزيد من الأمان، سيتم إنشاء رمز التحقق من البطاقة (CVC) بشكل مؤقت.}}</translation>
@@ -1645,6 +1656,7 @@
 <translation id="6757797048963528358">خضع جهازك إلى وضع السكون.</translation>
 <translation id="6767985426384634228">هل تريد تعديل العنوان؟</translation>
 <translation id="6768213884286397650">‏Hagaki (بطاقة بريدية)</translation>
+<translation id="6774185088257932239"><ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /> حول وضع التصفُّح المتخفي</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">بنفسجي</translation>
 <translation id="6786747875388722282">الإضافات</translation>
@@ -1692,6 +1704,7 @@
 <translation id="6965382102122355670">حسنًا</translation>
 <translation id="6965978654500191972">جهاز</translation>
 <translation id="696703987787944103">حِسّي</translation>
+<translation id="6968269510885595029">استخدام مفتاح الأمان</translation>
 <translation id="6970216967273061347">حي</translation>
 <translation id="6971439137020188025">‏إنشاء عرض تقديمي جديد من Google في "العروض التقديمية من Google" بسرعة</translation>
 <translation id="6972629891077993081">‏أجهزة HID</translation>
@@ -1757,6 +1770,7 @@
 <translation id="7210863904660874423">لا يلتزم <ph name="HOST_NAME" /> بمعايير الأمان.</translation>
 <translation id="7210993021468939304">‏نشاط نظام التشغيل Linux في الحاوية ويمكن تثبيت تطبيقات نظام التشغيل Linux وتشغيلها في الحاوية.</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /> حول هذه المشكلة.</translation>
+<translation id="7215025035562547931">الاطّلاع على مصدر المعلومات وموثوقيتها</translation>
 <translation id="7217745192097460130">‏هل تريد استخدام ميزة Touch ID لإكمال عملية الشراء؟</translation>
 <translation id="7219179957768738017">الاتصال يستخدم <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">جارٍ المعالجة</translation>
@@ -2092,6 +2106,12 @@
 <translation id="8307888238279532626">التطبيقات المثبَّتة وعدد مرات استخدامها</translation>
 <translation id="831207732689920588">‏هذه الصفحة مريبة (تم وضع علامة عليها من خلال Chrome).</translation>
 <translation id="831997045666694187">مساءً</translation>
+<translation id="8328484624016508118">‏بعد إغلاق جميع علامات التبويب في وضع التصفُّح المتخفي، يمحو Chrome:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />نشاط التصفُّح على هذا الجهاز<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />سجلّ البحث على هذا الجهاز<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />المعلومات التي تم إدخالها في النماذج<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">تم رفض الدخول إلى <ph name="HOST_NAME" />.</translation>
 <translation id="833262891116910667">تمييز</translation>
 <translation id="8339163506404995330">لن تتم ترجمة الصفحات باللغة <ph name="LANGUAGE" /></translation>

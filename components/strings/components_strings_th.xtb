@@ -1122,7 +1122,7 @@
 <translation id="484462545196658690">อัตโนมัติ</translation>
 <translation id="4850886885716139402">มุมมอง</translation>
 <translation id="485316830061041779">เยอรมัน</translation>
-<translation id="4853901935952445031">เว็บไซต์นี้จะใช้ U2F API ไม่ได้อีกหลังเดือนกุมภาพันธ์ 2022 หากคุณเป็นเจ้าของเว็บไซต์นี้ ก็ควรเปลี่ยนไปใช้ Web Authentication API</translation>
+<translation id="4853901935952445031">เว็บไซต์นี้จะใช้ U2F API ไม่ได้อีกหลังเดือนกุมภาพันธ์ 2022 หากเป็นเจ้าของเว็บไซต์นี้ คุณควรเปลี่ยนไปใช้ Web Authentication API</translation>
 <translation id="4854362297993841467">วิธีการนำส่งสินค้านี้ไม่พร้อมให้บริการ โปรดลองใช้วิธีการอื่น</translation>
 <translation id="4854853140771946034">สร้างโน้ตใหม่ใน Google Keep อย่างรวดเร็ว</translation>
 <translation id="4876188919622883022">มุมมองอย่างง่าย</translation>
