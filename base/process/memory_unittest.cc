@@ -179,8 +179,9 @@ class OutOfMemoryDeathTest : public OutOfMemoryTest {
 #if defined(OS_ANDROID) && defined(ARCH_CPU_X86)
     return base::android::BuildInfo::GetInstance()->sdk_int() <
            base::android::SDK_VERSION_NOUGAT;
-#endif
+#else
     return false;
+#endif
   }
 };
 
