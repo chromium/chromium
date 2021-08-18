@@ -17,6 +17,7 @@ extern const char kMirroringNamespace[];
 extern const char kRemotingNamespace[];
 extern const char kSystemNamespace[];
 extern const char kInjectNamespace[];
+extern const char kMediaNamespace[];
 
 extern const char kKeySenderId[];
 extern const char kKeyNamespace[];
@@ -24,10 +25,16 @@ extern const char kKeyData[];
 extern const char kKeyType[];
 extern const char kKeyRequestId[];
 extern const char kKeyCode[];
+extern const char kKeyStatus[];
 
 extern const char kValueSystemSenderId[];
 extern const char kValueWrapped[];
 extern const char kValueError[];
+extern const char kValueMediaPlay[];
+extern const char kValueMediaPause[];
+extern const char kValueMediaGetStatus[];
+extern const char kValueMediaStatus[];
+
 extern const char kValueWrappedError[];
 extern const char kValueInjectNotSupportedError[];
 
