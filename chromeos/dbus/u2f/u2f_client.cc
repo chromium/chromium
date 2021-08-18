@@ -104,7 +104,10 @@ void U2FClientImpl::HandleResponse(DBusMethodCallback<ResponseProto> callback,
 
 void U2FClientImpl::WaitForServiceToBeAvailable(
     WaitForServiceToBeAvailableCallback callback) {
-  proxy_->WaitForServiceToBeAvailable(std::move(callback));
+  // TODO(crbug/1240785): Evaluate whether Chrome should wait for u2fd
+  // availability and either reinstate the WaitForServiceToBeAvailable() call or
+  // eliminate this method.
+  std::move(callback).Run(true);
 }
 
 void U2FClientImpl::IsUvpaa(const u2f::IsUvpaaRequest& request,
