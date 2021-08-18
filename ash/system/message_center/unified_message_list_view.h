@@ -91,6 +91,9 @@ class ASH_EXPORT UnifiedMessageListView
   void ConvertNotificationViewToGroupedNotificationView(
       const std::string& ungrouped_notification_id,
       const std::string& new_grouped_notification_id) override;
+  void ConvertGroupedNotificationViewToNotificationView(
+      const std::string& grouped_notification_id,
+      const std::string& new_single_notification_id) override;
   void OnNotificationAdded(const std::string& id) override;
   void OnNotificationRemoved(const std::string& id, bool by_user) override;
   void OnNotificationUpdated(const std::string& id) override;

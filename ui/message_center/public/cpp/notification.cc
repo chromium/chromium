@@ -139,6 +139,16 @@ void Notification::SetGroupParent() {
   group_parent_ = true;
 }
 
+void Notification::ClearGroupChild() {
+  DCHECK(!group_parent_);
+  group_child_ = false;
+}
+
+void Notification::ClearGroupParent() {
+  DCHECK(!group_child_);
+  group_parent_ = false;
+}
+
 bool Notification::UseOriginAsContextMessage() const {
   return optional_fields_.context_message.empty() && origin_url_.is_valid() &&
          origin_url_.SchemeIsHTTPOrHTTPS();

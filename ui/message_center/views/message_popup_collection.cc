@@ -129,8 +129,8 @@ void MessagePopupCollection::NotifyPopupClosed(MessagePopupView* popup) {
 
 MessageView* MessagePopupCollection::GetMessageViewForNotificationId(
     const std::string& notification_id) {
-  auto it =
-      std::find_if(popup_items_.begin(), popup_items_.end(), [&](auto child) {
+  auto it = std::find_if(
+      popup_items_.begin(), popup_items_.end(), [&](const auto& child) {
         return child.popup->message_view()->notification_id() ==
                notification_id;
       });
@@ -146,7 +146,7 @@ void MessagePopupCollection::ConvertNotificationViewToGroupedNotificationView(
     const std::string& new_grouped_notification_id) {
   auto it = std::find_if(
       popup_items_.begin(), popup_items_.end(),
-      [&](auto popup) { return popup.id == ungrouped_notification_id; });
+      [&](const auto& popup) { return popup.id == ungrouped_notification_id; });
   if (it == popup_items_.end())
     return;
 
@@ -154,11 +154,26 @@ void MessagePopupCollection::ConvertNotificationViewToGroupedNotificationView(
   it->popup->message_view()->set_notification_id(new_grouped_notification_id);
 }
 
+void MessagePopupCollection::ConvertGroupedNotificationViewToNotificationView(
+    const std::string& grouped_notification_id,
+    const std::string& new_single_notification_id) {
+  auto it = std::find_if(
+      popup_items_.begin(), popup_items_.end(),
+      [&](const auto& popup) { return popup.id == grouped_notification_id; });
+  if (it == popup_items_.end())
+    return;
+
+  it->id = new_single_notification_id;
+  it->popup->message_view()->set_notification_id(new_single_notification_id);
+}
+
 void MessagePopupCollection::OnNotificationAdded(
     const std::string& notification_id) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (ash::features::IsNotificationsRefreshEnabled())
+  if (ash::features::IsNotificationsRefreshEnabled() &&
+      !MessageCenter::Get()->IsMessageCenterVisible()) {
     NotificationViewController::OnNotificationAdded(notification_id);
+  }
 #endif
   // Should not call MessagePopupCollection::Update here. Because notification
   // may be removed before animation which is triggered by the previous
@@ -173,8 +188,10 @@ void MessagePopupCollection::OnNotificationRemoved(
     const std::string& notification_id,
     bool by_user) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (ash::features::IsNotificationsRefreshEnabled())
+  if (ash::features::IsNotificationsRefreshEnabled() &&
+      !MessageCenter::Get()->IsMessageCenterVisible()) {
     NotificationViewController::OnNotificationRemoved(notification_id, by_user);
+  }
 #endif
 
   if (by_user) {

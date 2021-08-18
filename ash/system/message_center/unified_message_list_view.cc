@@ -415,6 +415,13 @@ void UnifiedMessageListView::ConvertNotificationViewToGroupedNotificationView(
       ->set_notification_id(new_grouped_notification_id);
 }
 
+void UnifiedMessageListView::ConvertGroupedNotificationViewToNotificationView(
+    const std::string& grouped_notification_id,
+    const std::string& new_single_notification_id) {
+  GetMessageViewForNotificationId(grouped_notification_id)
+      ->set_notification_id(new_single_notification_id);
+}
+
 void UnifiedMessageListView::OnNotificationAdded(const std::string& id) {
   if (ash::features::IsNotificationsRefreshEnabled())
     message_center::NotificationViewController::OnNotificationAdded(id);

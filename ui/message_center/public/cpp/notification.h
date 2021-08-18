@@ -475,6 +475,14 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
   // notifications that are part of its group.
   void SetGroupParent();
 
+  // Set `group_child_` to false so it's back to it's
+  // default state.
+  void ClearGroupChild();
+
+  // Set `group_parent_` to false so it's back to it's
+  // default state.
+  void ClearGroupParent();
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void set_system_notification_warning_level(
       SystemNotificationWarningLevel warning_level) {
