@@ -792,7 +792,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Radio.PossibleWakeupTrigger.ResolveHostPurpose"
-    units="ResolveHostPurpose" expires_after="2022-02-01">
+    enum="ResolveHostPurpose" expires_after="2022-02-01">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -803,7 +803,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Radio.PossibleWakeupTrigger.URLLoaderAnnotationId"
-    units="TrafficAnnotationUniqueIdHash" expires_after="2022-02-01">
+    enum="TrafficAnnotationUniqueIdHash" expires_after="2022-02-01">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
