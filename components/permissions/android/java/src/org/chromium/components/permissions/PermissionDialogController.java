@@ -232,8 +232,9 @@ public class PermissionDialogController
                         .with(ModalDialogProperties.TITLE,
                                 context.getString(R.string.overlay_detected_dialog_title,
                                         BuildInfo.getInstance().hostPackageLabel))
-                        .with(ModalDialogProperties.MESSAGE, context.getResources(),
-                                R.string.overlay_detected_dialog_message)
+                        .with(ModalDialogProperties.MESSAGE,
+                                context.getResources().getString(
+                                        R.string.overlay_detected_dialog_message))
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, context.getResources(),
                                 R.string.cancel)
                         .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, context.getResources(),

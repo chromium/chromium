@@ -71,7 +71,7 @@ public class ModalDialogProperties {
             new WritableObjectPropertyKey<>();
 
     /** The message of the dialog. */
-    public static final WritableObjectPropertyKey<String> MESSAGE =
+    public static final WritableObjectPropertyKey<CharSequence> MESSAGE =
             new WritableObjectPropertyKey<>();
 
     /** The customized content view of the dialog. */
