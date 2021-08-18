@@ -7,8 +7,13 @@
 namespace base {
 namespace internal {
 
+#if defined(PA_HAS_64_BITS_POINTERS)
+ReservationOffsetTable::_ReservationOffsetTable
+    ReservationOffsetTable::reservation_offset_tables_[];
+#else
 ReservationOffsetTable::_ReservationOffsetTable
     ReservationOffsetTable::reservation_offset_table_;
+#endif
 
 }  // namespace internal
 }  // namespace base

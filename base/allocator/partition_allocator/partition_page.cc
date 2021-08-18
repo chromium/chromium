@@ -261,7 +261,7 @@ void UnmapNow(void* reservation_start,
   // condition.
   uint16_t i = 0;
   while (ptr_as_uintptr < ptr_end) {
-    PA_DCHECK(offset_ptr < GetReservationOffsetTableEnd());
+    PA_DCHECK(offset_ptr < GetReservationOffsetTableEnd(ptr_as_uintptr));
     PA_DCHECK(*offset_ptr == i++);
     *offset_ptr++ = kOffsetTagNotAllocated;
     ptr_as_uintptr += kSuperPageSize;

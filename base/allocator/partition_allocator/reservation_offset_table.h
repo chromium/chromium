@@ -26,7 +26,7 @@ static constexpr uint16_t kOffsetTagNormalBuckets =
 
 // The main purpose of the reservation offset table is to easily locate the
 // direct map reservation start address for any given address. There is one
-// entry if the table for each super page.
+// entry in the table for each super page.
 //
 // When PartitionAlloc reserves an address region it is always aligned to
 // super page boundary. However, in 32-bit mode, the size may not be aligned
@@ -62,10 +62,8 @@ static constexpr uint16_t kOffsetTagNormalBuckets =
 class BASE_EXPORT ReservationOffsetTable {
  public:
 #if defined(PA_HAS_64_BITS_POINTERS)
-  // The size of the reservation offset table should cover the entire GigaCage
-  // (kBRPPoolSize + kNonBRPPoolSize), one element per super page.
-  static constexpr size_t kReservationOffsetTableCoverage =
-      PartitionAddressSpace::kTotalSize;
+  // There is one reservation offset table per Pool in 64-bit mode.
+  static constexpr size_t kReservationOffsetTableCoverage = kPoolMaxSize;
   static constexpr size_t kReservationOffsetTableLength =
       kReservationOffsetTableCoverage >> kSuperPageShift;
 #else
@@ -79,38 +77,71 @@ class BASE_EXPORT ReservationOffsetTable {
                 "Offsets should be smaller than kOffsetTagNormalBuckets.");
 
   static struct _ReservationOffsetTable {
-    // Thenumber of table elements is less than MAX_UINT16, so the element type
+    // The number of table elements is less than MAX_UINT16, so the element type
     // can be uint16_t.
+    static_assert(
+        kReservationOffsetTableLength <= std::numeric_limits<uint16_t>::max(),
+        "Length of the reservation offset table must be less than MAX_UINT16");
     uint16_t offsets[kReservationOffsetTableLength] = {};
 
     constexpr _ReservationOffsetTable() {
       for (uint16_t& offset : offsets)
         offset = kOffsetTagNotAllocated;
     }
+#if defined(PA_HAS_64_BITS_POINTERS)
+    // One table per Pool.
+  } reservation_offset_tables_[kNumPools];
+#else
+    // A single table for the entire 32-bit address space.
   } reservation_offset_table_;
+#endif
 };
 
-ALWAYS_INLINE uint16_t* GetReservationOffsetTable() {
+#if defined(PA_HAS_64_BITS_POINTERS)
+ALWAYS_INLINE uint16_t* GetReservationOffsetTable(pool_handle handle) {
+  PA_DCHECK(0 < handle && handle <= kNumPools);
+  return ReservationOffsetTable::reservation_offset_tables_[handle - 1].offsets;
+}
+
+ALWAYS_INLINE const uint16_t* GetReservationOffsetTableEnd(pool_handle handle) {
+  return GetReservationOffsetTable(handle) +
+         ReservationOffsetTable::kReservationOffsetTableLength;
+}
+ALWAYS_INLINE uint16_t* GetReservationOffsetTable(uintptr_t address) {
+  pool_handle handle = GetPool(reinterpret_cast<void*>(address));
+  return GetReservationOffsetTable(handle);
+}
+
+ALWAYS_INLINE const uint16_t* GetReservationOffsetTableEnd(uintptr_t address) {
+  pool_handle handle = GetPool(reinterpret_cast<void*>(address));
+  return GetReservationOffsetTableEnd(handle);
+}
+#else
+ALWAYS_INLINE uint16_t* GetReservationOffsetTable(uintptr_t address) {
   return ReservationOffsetTable::reservation_offset_table_.offsets;
 }
 
-ALWAYS_INLINE const uint16_t* GetReservationOffsetTableEnd() {
+ALWAYS_INLINE const uint16_t* GetReservationOffsetTableEnd(uintptr_t address) {
   return ReservationOffsetTable::reservation_offset_table_.offsets +
          ReservationOffsetTable::kReservationOffsetTableLength;
 }
+#endif
 
 ALWAYS_INLINE uint16_t* ReservationOffsetPointer(uintptr_t address) {
 #if defined(PA_HAS_64_BITS_POINTERS)
-  // In 64-bit mode, use the offset from the beginning of GigaCage, since
-  // that's what the reservation offset table covers.
-  size_t table_index =
-      PartitionAddressSpace::GigaCageOffset(address) >> kSuperPageShift;
+  // In 64-bit mode, find the owning Pool and compute the offset from its base.
+  pool_handle handle;
+  uintptr_t offset;
+  std::tie(handle, offset) = GetPoolAndOffset(reinterpret_cast<void*>(address));
+  size_t table_index = offset >> kSuperPageShift;
+  uint16_t* table = GetReservationOffsetTable(handle);
 #else
   size_t table_index = address >> kSuperPageShift;
+  uint16_t* table = GetReservationOffsetTable(address);
 #endif
   PA_DCHECK(table_index <
             ReservationOffsetTable::kReservationOffsetTableLength);
-  return GetReservationOffsetTable() + table_index;
+  return table + table_index;
 }
 
 // If the given address doesn't point to direct-map allocated memory,

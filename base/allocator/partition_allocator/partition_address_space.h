@@ -84,6 +84,23 @@ class BASE_EXPORT PartitionAddressSpace {
     return kBRPPoolBaseMask;
   }
 
+  static ALWAYS_INLINE std::pair<pool_handle, uintptr_t> GetPoolAndOffset(
+      const void* address) {
+    pool_handle pool = 0;
+    uintptr_t base = 0;
+    if (IsInNonBRPPool(address)) {
+      pool = GetNonBRPPool();
+      base = non_brp_pool_base_address_;
+    } else if (IsInBRPPool(address)) {
+      pool = GetBRPPool();
+      base = brp_pool_base_address_;
+    } else {
+      NOTREACHED();
+    }
+    uintptr_t address_as_uintptr = reinterpret_cast<uintptr_t>(address);
+    return std::make_pair(pool, address_as_uintptr - base);
+  }
+
   static void Init();
   static void UninitForTesting();
 
@@ -116,12 +133,6 @@ class BASE_EXPORT PartitionAddressSpace {
 
   static ALWAYS_INLINE uintptr_t BRPPoolEnd() {
     return brp_pool_base_address_ + kBRPPoolSize;
-  }
-
-  static ALWAYS_INLINE uintptr_t GigaCageOffset(uintptr_t address) {
-    PA_DCHECK(address >= reserved_base_address_);
-    PA_DCHECK(address < reserved_base_address_ + kTotalSize);
-    return address - reserved_base_address_;
   }
 
   // PartitionAddressSpace is static_only class.
@@ -158,13 +169,10 @@ class BASE_EXPORT PartitionAddressSpace {
   // Pool sizes have to be the power of two. Each pool will be aligned at its
   // own size boundary.
   //
-  // There are a couple reasons why pools ought to be allocated next to each
-  // other:
-  //  1. Due to the above restriction, BRP pool has to be preceded by another
-  //     pool. Alternatively it could be any region that guarantess to not have
-  //     allocations extending to its very end, but it's just easier to have
-  //     non-BRP pool there.
-  //  2. The ReservationOffsetTable covers the entire GigaCage.
+  // Due to the above restriction, the BRP pool has to be preceded by another
+  // pool. Alternatively it could be any region that guarantess to not have
+  // allocations extending to its very end, but it's just easier to have non-BRP
+  // pool there.
   //
   // Care has to be taken when choosing sizes, if more than 2 pools are needed.
   // For example, with sizes [8GiB,4GiB,8GiB], it'd be impossible to align each
@@ -194,8 +202,6 @@ class BASE_EXPORT PartitionAddressSpace {
 
   static pool_handle non_brp_pool_;
   static pool_handle brp_pool_;
-
-  friend class ReservationOffsetTable;
 };
 
 ALWAYS_INLINE pool_handle GetNonBRPPool() {
@@ -204,6 +210,15 @@ ALWAYS_INLINE pool_handle GetNonBRPPool() {
 
 ALWAYS_INLINE pool_handle GetBRPPool() {
   return PartitionAddressSpace::GetBRPPool();
+}
+
+ALWAYS_INLINE std::pair<pool_handle, uintptr_t> GetPoolAndOffset(
+    const void* address) {
+  return PartitionAddressSpace::GetPoolAndOffset(address);
+}
+
+ALWAYS_INLINE pool_handle GetPool(const void* address) {
+  return std::get<0>(GetPoolAndOffset(address));
 }
 
 #endif  // defined(PA_HAS_64_BITS_POINTERS)

@@ -273,7 +273,7 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
     auto* offset_ptr = ReservationOffsetPointer(ptr_start);
     int offset = 0;
     while (ptr_start < ptr_end) {
-      PA_DCHECK(offset_ptr < GetReservationOffsetTableEnd());
+      PA_DCHECK(offset_ptr < GetReservationOffsetTableEnd(ptr_start));
       PA_DCHECK(offset < kOffsetTagNormalBuckets);
       *offset_ptr++ = offset++;
       ptr_start += kSuperPageSize;

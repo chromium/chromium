@@ -124,7 +124,6 @@ class BASE_EXPORT AddressPoolManager {
     return &pools_[handle - 1];
   }
 
-  static constexpr size_t kNumPools = 2;
   Pool pools_[kNumPools];
 
 #else  // defined(PA_HAS_64_BITS_POINTERS)
