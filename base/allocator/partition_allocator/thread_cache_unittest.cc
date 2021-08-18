@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/extended_api.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/bind.h"
@@ -20,15 +21,11 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-// Only a single partition can have a thread cache at a time. When
-// PartitionAlloc is malloc(), it is already in use.
-//
 // With *SAN, PartitionAlloc is replaced in partition_alloc.h by ASAN, so we
 // cannot test the thread cache.
 //
 // Finally, the thread cache is not supported on all platforms.
-#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
-    !defined(MEMORY_TOOL_REPLACES_ALLOCATOR) &&  \
+#if !defined(MEMORY_TOOL_REPLACES_ALLOCATOR) && \
     defined(PA_THREAD_CACHE_SUPPORTED)
 
 namespace base {
@@ -77,7 +74,11 @@ class DeltaCounter {
 // Forbid extras, since they make finding out which bucket is used harder.
 NoDestructor<ThreadSafePartitionRoot> g_root{
     PartitionOptions{PartitionOptions::AlignedAlloc::kAllowed,
+#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
                      PartitionOptions::ThreadCache::kEnabled,
+#else
+                     PartitionOptions::ThreadCache::kDisabled,
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
                      PartitionOptions::Quarantine::kAllowed,
                      PartitionOptions::Cookies::kDisallowed,
                      PartitionOptions::RefCount::kDisallowed}};
@@ -120,10 +121,11 @@ class PartitionAllocThreadCacheTest : public ::testing::Test {
     // Another test can uninitialize the pools, so make sure they are
     // initialized.
     PartitionAddressSpace::Init();
-#endif
+#endif  // defined(PA_HAS_64_BITS_POINTERS)
     ThreadCacheRegistry::Instance().SetThreadCacheMultiplier(
         ThreadCache::kDefaultMultiplier);
     ThreadCache::SetLargestCachedSize(ThreadCache::kLargeSizeThreshold);
+
     // Make sure that enough slot spans have been touched, otherwise cache fill
     // becomes unpredictable (because it doesn't take slow paths in the
     // allocator), which is an issue for tests.
@@ -142,6 +144,24 @@ class PartitionAllocThreadCacheTest : public ::testing::Test {
     task_env_.FastForwardBy(interval);
     ASSERT_EQ(0u, task_env_.GetPendingMainThreadTaskCount());
   }
+
+  // Used to disable the thread cache for the lifetime of a scope (in this case
+  // the lifetime of the PartitionAllocThreadCacheTest).
+  class ScopedThreadCacheDisabler {
+   public:
+    ScopedThreadCacheDisabler() {
+      SwapOutProcessThreadCacheForTesting(g_root.get());
+    }
+    ~ScopedThreadCacheDisabler() {
+      ThreadCache::SetLargestCachedSize(ThreadCache::kDefaultSizeThreshold);
+      SwapInProcessThreadCacheForTesting(g_root.get());
+    }
+  };
+
+  // We do this here instead of in SetUp()/TearDown() because we need this to
+  // run before the task environment (which creates threads and hence is racy
+  // with attempting to disable the thread cache).
+  ScopedThreadCacheDisabler scoped_thread_cache_disabler_{};
 
   base::test::TaskEnvironment task_env_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -324,9 +344,23 @@ TEST_F(PartitionAllocThreadCacheTest, ThreadCacheReclaimedWhenThreadExits) {
     g_root->Free(ptr);
 }
 
-TEST_F(PartitionAllocThreadCacheTest, ThreadCacheRegistry) {
+// On Android with PartitionAlloc as malloc, we have extra thread caches being
+// created, causing this test to fail.
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(OS_ANDROID)
+#define MAYBE_ThreadCacheRegistry DISABLED_ThreadCacheRegistry
+#else
+#define MAYBE_ThreadCacheRegistry ThreadCacheRegistry
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(OS_ANDROID)
+
+TEST_F(PartitionAllocThreadCacheTest, MAYBE_ThreadCacheRegistry) {
   auto* parent_thread_tcache = g_root->thread_cache_for_testing();
   ASSERT_TRUE(parent_thread_tcache);
+
+  {
+    PartitionAutoLock lock(ThreadCacheRegistry::GetLock());
+    EXPECT_EQ(parent_thread_tcache->prev_, nullptr);
+    EXPECT_EQ(parent_thread_tcache->next_, nullptr);
+  }
 
   LambdaThreadDelegate delegate{BindLambdaForTesting([&]() {
     EXPECT_FALSE(g_root->thread_cache_for_testing());  // No allocations yet.
@@ -855,6 +889,5 @@ TEST_F(PartitionAllocThreadCacheTest, Bookkeeping) {
 }  // namespace internal
 }  // namespace base
 
-#endif  // !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
-        // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR) &&
+#endif  // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR) &&
         // defined(PA_THREAD_CACHE_SUPPORTED)

@@ -6,14 +6,11 @@
 
 #include "base/allocator/allocator_shim_default_dispatch_to_partition_alloc.h"
 #include "base/allocator/buildflags.h"
-#include "base/allocator/partition_allocator/partition_root.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
 
 namespace base {
 
 namespace internal {
-
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 void DisableThreadCacheForRootIfEnabled(ThreadSafePartitionRoot* root) {
   // Some platforms don't have a thread cache, or it could already have been
   // disabled.
@@ -26,9 +23,39 @@ void DisableThreadCacheForRootIfEnabled(ThreadSafePartitionRoot* root) {
   // will be collected (and free cached memory) at thread destruction
   // time. For the main thread, we leak it.
 }
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
+void EnablePartitionAllocThreadCacheForRootIfDisabled(
+    ThreadSafePartitionRoot* root) {
+  if (!root)
+    return;
+  root->with_thread_cache = true;
+}
 
 }  // namespace internal
+
+void SwapOutProcessThreadCacheForTesting(ThreadSafePartitionRoot* root) {
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+    defined(PA_THREAD_CACHE_SUPPORTED)
+  DisablePartitionAllocThreadCacheForProcess();
+  internal::ThreadCache::SwapForTesting(root);
+  internal::EnablePartitionAllocThreadCacheForRootIfDisabled(root);
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
+        // defined(PA_THREAD_CACHE_SUPPORTED)
+}
+
+void SwapInProcessThreadCacheForTesting(ThreadSafePartitionRoot* root) {
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+    defined(PA_THREAD_CACHE_SUPPORTED)
+  // First, disable the test thread cache we have.
+  internal::DisableThreadCacheForRootIfEnabled(root);
+
+  auto* regular_allocator = base::internal::PartitionAllocMalloc::Allocator();
+  internal::EnablePartitionAllocThreadCacheForRootIfDisabled(regular_allocator);
+
+  internal::ThreadCache::SwapForTesting(regular_allocator);
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
+        // defined(PA_THREAD_CACHE_SUPPORTED)
+}
 
 void DisablePartitionAllocThreadCacheForProcess() {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)

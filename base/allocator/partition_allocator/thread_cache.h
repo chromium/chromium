@@ -178,6 +178,11 @@ class BASE_EXPORT ThreadCache {
   static void Init(PartitionRoot<ThreadSafe>* root);
   static void Init(PartitionRoot<NotThreadSafe>* root) { IMMEDIATE_CRASH(); }
 
+  static void DeleteForTesting(ThreadCache* tcache);
+
+  // Deletes existing thread cache and creates a new one for |root|.
+  static void SwapForTesting(PartitionRoot<ThreadSafe>* root);
+
   // Can be called several times, must be called before any ThreadCache
   // interactions.
   static void EnsureThreadSpecificDataInitialized();

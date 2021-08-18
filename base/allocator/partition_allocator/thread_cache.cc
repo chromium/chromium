@@ -303,6 +303,21 @@ void ThreadCache::EnsureThreadSpecificDataInitialized() {
 }
 
 // static
+void ThreadCache::DeleteForTesting(ThreadCache* tcache) {
+  ThreadCache::Delete(tcache);
+}
+
+// static
+void ThreadCache::SwapForTesting(PartitionRoot<ThreadSafe>* root) {
+  auto* old_tcache = ThreadCache::Get();
+  g_thread_cache_root.store(nullptr, std::memory_order_relaxed);
+  if (old_tcache)
+    ThreadCache::DeleteForTesting(old_tcache);
+  Init(root);
+  Create(root);
+}
+
+// static
 void ThreadCache::Init(PartitionRoot<ThreadSafe>* root) {
 #if defined(OS_NACL)
   IMMEDIATE_CRASH();
