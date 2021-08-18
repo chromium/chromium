@@ -304,7 +304,8 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, LoadsInkForImageAnnotation) {
 
 // Tests that clicking on the 'Info' button in the app bar toggles the
 // information panel.
-IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, InformationPanel) {
+// Disabled. Flakily crashes. See b/197150230.
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, DISABLED_InformationPanel) {
   WaitForTestSystemAppInstall();
   content::WebContents* app = LaunchAppWithFile(web_app::SystemAppType::MEDIA,
                                                 TestFile(kFileJpeg640x480));
