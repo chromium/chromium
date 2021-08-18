@@ -93,6 +93,9 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   virtual void OnCancelPasswordChangedFlow() = 0;
   virtual void ShowEnableConsumerKioskScreen() = 0;
 
+  // This function needed to isolate error messages on the Views and WebUI side.
+  virtual bool IsOobeUIDialogVisible() const = 0;
+
   // Marks display host for deletion.
   void ShutdownDisplayHost();
 

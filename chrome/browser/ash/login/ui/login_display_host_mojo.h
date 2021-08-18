@@ -134,9 +134,7 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
   void OnViewBoundsChanged(views::View* observed_view) override;
   void OnViewIsDeleting(views::View* observed_view) override;
 
-  // TODO(https://crbug.com/1103564) This function needed to isolate error
-  // messages on the Views and WebUI side. Consider removing.
-  bool IsOobeUIDialogVisible() const;
+  bool IsOobeUIDialogVisible() const override;
 
   OobeUIDialogDelegate* dialog_for_test() { return dialog_; }
 

@@ -13,6 +13,7 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/run_loop.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/login_wizard.h"
@@ -156,6 +157,18 @@ IN_PROC_BROWSER_TEST_F(LoginOfflineTest, FatalScreenShown) {
                                           /*check_if_submittable=*/false);
   OobeScreenWaiter(SignInFatalErrorView::kScreenId).Wait();
   EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(LoginOfflineTest, FatalScreenNotShown) {
+  EXPECT_FALSE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+  chromeos::FakeUserDataAuthClient::Get()->set_cryptohome_error(
+      user_data_auth::CRYPTOHOME_ERROR_AUTHORIZATION_KEY_FAILED);
+  ash::LoginScreenTestApi::SubmitPassword(test_account_id_, "password",
+                                          /*check_if_submittable=*/false);
+  // Inserted RunUntilIdle here to give maximum chances for the dialog to show
+  // up in case of a bug.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(ash::LoginScreenTestApi::IsOobeDialogVisible());
 }
 
 class LoginOfflineManagedTest : public LoginManagerTest {

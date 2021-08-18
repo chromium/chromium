@@ -130,13 +130,13 @@ int ErrorToMessageId(SigninError error) {
       return IDS_LOGIN_ERROR_OWNER_REQUIRED;
     case SigninError::kTpmUpdateRequired:
       return IDS_LOGIN_ERROR_TPM_UPDATE_REQUIRED;
-    case SigninError::kAuthenticationError:
+    case SigninError::kKnownUserFailedNetworkNotConnected:
       return IDS_LOGIN_ERROR_AUTHENTICATING;
-    case SigninError::kOfflineFailedNetworkNotConnected:
+    case SigninError::kNewUserFailedNetworkNotConnected:
       return IDS_LOGIN_ERROR_OFFLINE_FAILED_NETWORK_NOT_CONNECTED;
-    case SigninError::kAuthenticatingNew:
+    case SigninError::kNewUserFailedNetworkConnected:
       return IDS_LOGIN_ERROR_AUTHENTICATING_NEW;
-    case SigninError::kAuthenticating:
+    case SigninError::kKnownUserFailedNetworkConnected:
       return IDS_LOGIN_ERROR_AUTHENTICATING;
     case SigninError::kOwnerKeyLost:
       return IDS_LOGIN_ERROR_OWNER_KEY_LOST;
@@ -159,10 +159,10 @@ int ErrorToMessageId(SigninError error) {
 
 bool IsAuthError(SigninError error) {
   return error == SigninError::kCaptivePortalError ||
-         error == SigninError::kAuthenticationError ||
-         error == SigninError::kOfflineFailedNetworkNotConnected ||
-         error == SigninError::kAuthenticatingNew ||
-         error == SigninError::kAuthenticating;
+         error == SigninError::kKnownUserFailedNetworkNotConnected ||
+         error == SigninError::kNewUserFailedNetworkNotConnected ||
+         error == SigninError::kNewUserFailedNetworkConnected ||
+         error == SigninError::kKnownUserFailedNetworkConnected;
 }
 
 }  // namespace
@@ -449,6 +449,13 @@ void LoginDisplayHostCommon::StartEncryptionMigration(
 void LoginDisplayHostCommon::ShowSigninError(SigninError error,
                                              const std::string& details) {
   VLOG(1) << "Show error, error_id: " << static_cast<int>(error);
+
+  if (error == SigninError::kKnownUserFailedNetworkNotConnected ||
+      error == SigninError::kKnownUserFailedNetworkConnected) {
+    if (!IsOobeUIDialogVisible())
+      // Handled by Views UI.
+      return;
+  }
 
   std::string error_text;
   switch (error) {
