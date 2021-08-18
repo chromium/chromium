@@ -1,4 +1,5 @@
 <!doctype html>
+<meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/get-host-info.sub.js"></script>
@@ -52,7 +53,7 @@ promise_test(async t => {
 // anonymous iframe and work for normal iframe.
 promise_test(async t => {
   const control_token = token();
-  const control_src = REMOTE_ORIGIN + executor_path + `&uuid=${control_token}`;
+  const control_src = ORIGIN + executor_path + `&uuid=${control_token}`;
   const control_popup = control_iframe.contentWindow.open(control_src);
   add_completion_callback(() => send(control_token, "close();"));
   assert_equals(
@@ -61,7 +62,7 @@ promise_test(async t => {
 
   const anonymous_token = token();
   const anonymous_src =
-    REMOTE_ORIGIN + executor_path + `&uuid=${anonymous_token}`;
+    ORIGIN + executor_path + `&uuid=${anonymous_token}`;
   const anonymous_popup = anonymous_iframe.contentWindow.open(anonymous_src);
   add_completion_callback(() => send(anonymous_token, "close();"));
   assert_equals(
