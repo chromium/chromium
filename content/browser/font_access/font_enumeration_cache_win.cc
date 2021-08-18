@@ -17,7 +17,6 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "base/timer/elapsed_timer.h"
 #include "content/browser/font_access/font_enumeration_cache.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
@@ -26,14 +25,6 @@
 namespace content {
 
 namespace {
-
-// The following HRESULT code is also used in local font src matching.
-constexpr HRESULT kErrorNoFullNameOrPostScriptName =
-    MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xD103);
-// Additional local custom interface specific HRESULT code to log font
-// enumeration errors when reporting them in a UMA metric.
-constexpr HRESULT kErrorNoFamilyName =
-    MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xD104);
 
 absl::optional<std::string> GetNativeString(
     Microsoft::WRL::ComPtr<IDWriteLocalizedStrings> names) {
@@ -106,28 +97,22 @@ ExtractNamesFromFamily(Microsoft::WRL::ComPtr<IDWriteFontCollection> collection,
       std::make_unique<content::FontEnumerationCacheWin::FamilyDataResult>();
   family_result->fonts =
       std::vector<blink::FontEnumerationTable_FontMetadata>();
-  family_result->exit_hresult = S_OK;
 
   Microsoft::WRL::ComPtr<IDWriteFontFamily> family;
   Microsoft::WRL::ComPtr<IDWriteLocalizedStrings> family_names;
 
   HRESULT hr = collection->GetFontFamily(family_index, &family);
-  if (FAILED(hr)) {
-    family_result->exit_hresult = hr;
+  if (FAILED(hr))
     return family_result;
-  }
 
   hr = family->GetFamilyNames(&family_names);
-  if (FAILED(hr)) {
-    family_result->exit_hresult = hr;
+  if (FAILED(hr))
     return family_result;
-  }
+
   absl::optional<std::string> native_family_name =
       GetNativeString(family_names);
-  if (!native_family_name) {
-    family_result->exit_hresult = kErrorNoFamilyName;
+  if (!native_family_name)
     return family_result;
-  }
 
   UINT32 font_count = family->GetFontCount();
   for (UINT32 font_index = 0; font_index < font_count; ++font_index) {
@@ -141,10 +126,8 @@ ExtractNamesFromFamily(Microsoft::WRL::ComPtr<IDWriteFontCollection> collection,
       hr = family->GetFont(font_index, &font);
     }
 
-    if (FAILED(hr)) {
-      family_result->exit_hresult = hr;
+    if (FAILED(hr))
       return family_result;
-    }
 
     // Skip this font if it's a simulation.
     if (font->GetSimulations() != DWRITE_FONT_SIMULATIONS_NONE)
@@ -169,19 +152,15 @@ ExtractNamesFromFamily(Microsoft::WRL::ComPtr<IDWriteFontCollection> collection,
           DWRITE_INFORMATIONAL_STRING_POSTSCRIPT_NAME, &postscript_name,
           &exists);
     }
-    if (FAILED(hr)) {
-      family_result->exit_hresult = hr;
+    if (FAILED(hr))
       return family_result;
-    }
-    if (!exists) {
-      family_result->exit_hresult = kErrorNoFullNameOrPostScriptName;
+
+    if (!exists)
       return family_result;
-    }
 
     absl::optional<std::string> native_postscript_name =
         GetNativeString(postscript_name);
     if (!native_postscript_name) {
-      family_result->exit_hresult = kErrorNoFullNameOrPostScriptName;
       return family_result;
     }
 
@@ -192,14 +171,11 @@ ExtractNamesFromFamily(Microsoft::WRL::ComPtr<IDWriteFontCollection> collection,
       hr = font->GetInformationalStrings(DWRITE_INFORMATIONAL_STRING_FULL_NAME,
                                          &full_name, &exists);
     }
-    if (FAILED(hr)) {
-      family_result->exit_hresult = hr;
+    if (FAILED(hr))
       return family_result;
-    }
-    if (!exists) {
-      family_result->exit_hresult = kErrorNoFullNameOrPostScriptName;
+
+    if (!exists)
       return family_result;
-    }
 
     absl::optional<std::string> localized_full_name =
         GetLocalizedString(full_name, locale);
@@ -216,10 +192,9 @@ ExtractNamesFromFamily(Microsoft::WRL::ComPtr<IDWriteFontCollection> collection,
           DWRITE_INFORMATIONAL_STRING_PREFERRED_SUBFAMILY_NAMES, &style_name,
           &exists);
     }
-    if (FAILED(hr)) {
-      family_result->exit_hresult = hr;
+    if (FAILED(hr))
       return family_result;
-    }
+
     if (!exists) {
       {
         base::ScopedBlockingCall scoped_blocking_call(
@@ -228,10 +203,8 @@ ExtractNamesFromFamily(Microsoft::WRL::ComPtr<IDWriteFontCollection> collection,
             DWRITE_INFORMATIONAL_STRING_WIN32_SUBFAMILY_NAMES, &style_name,
             &exists);
       }
-      if (FAILED(hr)) {
-        family_result->exit_hresult = hr;
+      if (FAILED(hr))
         return family_result;
-      }
     }
     absl::optional<std::string> native_style_name;
     if (exists) {
@@ -297,9 +270,6 @@ void FontEnumerationCacheWin::InitializeDirectWrite() {
   DCHECK(SUCCEEDED(hr));
 
   if (!collection_) {
-    base::UmaHistogramSparse(
-        "Fonts.AccessAPI.EnumerationCache.Dwrite.GetSystemFontCollectionResult",
-        hr);
     status_ = blink::mojom::FontEnumerationStatus::kUnexpectedError;
     return;
   }
@@ -314,8 +284,6 @@ void FontEnumerationCacheWin::SchedulePrepareFontEnumerationCache() {
     InitializeDirectWrite();
   }
 
-  enumeration_errors_.clear();
-
   scoped_refptr<base::SequencedTaskRunner> results_task_runner =
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
@@ -329,9 +297,6 @@ void FontEnumerationCacheWin::SchedulePrepareFontEnumerationCache() {
 
 void FontEnumerationCacheWin::PrepareFontEnumerationCache() {
   DCHECK(!enumeration_cache_built_->IsSet());
-  DCHECK(!enumeration_timer_);
-
-  enumeration_timer_ = std::make_unique<base::ElapsedTimer>();
 
   font_enumeration_table_ = std::make_unique<blink::FontEnumerationTable>();
 
@@ -340,10 +305,6 @@ void FontEnumerationCacheWin::PrepareFontEnumerationCache() {
         FROM_HERE, base::BlockingType::MAY_BLOCK);
 
     outstanding_family_results_ = collection_->GetFontFamilyCount();
-
-    base::UmaHistogramCustomCounts(
-        "Fonts.AccessAPI.EnumerationCache.Dwrite.FamilyCount",
-        outstanding_family_results_, 1, 5000, 50);
   }
 
   std::string locale =
@@ -376,22 +337,16 @@ void FontEnumerationCacheWin::AppendFontDataAndFinalizeIfNeeded(
   if (enumeration_cache_built_->IsSet())
     return;
 
-  if (FAILED(family_data_result->exit_hresult))
-    enumeration_errors_[family_data_result->exit_hresult]++;
-
   // Used to filter duplicates.
   std::set<std::string> fonts_seen;
-  int duplicate_count = 0;
-
   for (const auto& font_meta : family_data_result->fonts) {
     const std::string& postscript_name = font_meta.postscript_name();
 
-    if (fonts_seen.count(postscript_name) != 0) {
-      ++duplicate_count;
+    auto it_and_success = fonts_seen.emplace(postscript_name);
+    if (!it_and_success.second) {
       // Skip duplicates.
       continue;
     }
-    fonts_seen.insert(postscript_name);
 
     blink::FontEnumerationTable_FontMetadata* added_font_meta =
         font_enumeration_table_->add_fonts();
@@ -401,37 +356,16 @@ void FontEnumerationCacheWin::AppendFontDataAndFinalizeIfNeeded(
   if (!outstanding_family_results_) {
     FinalizeEnumerationCache();
   }
-
-  base::UmaHistogramCounts100(
-      "Fonts.AccessAPI.EnumerationCache.DuplicateFontCount", duplicate_count);
 }
 
 void FontEnumerationCacheWin::FinalizeEnumerationCache() {
   DCHECK(!enumeration_cache_built_->IsSet());
-  DCHECK(enumeration_timer_);
-
-  if (enumeration_errors_.size() > 0) {
-    auto most_frequent_hresult = std::max_element(
-        std::begin(enumeration_errors_), std::end(enumeration_errors_),
-        [](const decltype(enumeration_errors_)::value_type& a,
-           decltype(enumeration_errors_)::value_type& b) {
-          return a.second < b.second;
-        });
-    base::UmaHistogramSparse(
-        "Fonts.AccessAPI.EnumerationCache.Dwrite."
-        "MostFrequentEnumerationFailure",
-        most_frequent_hresult->first);
-  }
 
   // Ensures that the FontEnumerationTable gets released when this function goes
   // out of scope.
   std::unique_ptr<blink::FontEnumerationTable> enumeration_table(
       std::move(font_enumeration_table_));
   BuildEnumerationCache(std::move(enumeration_table));
-
-  base::UmaHistogramMediumTimes("Fonts.AccessAPI.EnumerationTime",
-                                enumeration_timer_->Elapsed());
-  enumeration_timer_.reset();
 
   // Respond to pending and future requests.
   StartCallbacksTaskQueue();

@@ -19,7 +19,6 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "base/timer/elapsed_timer.h"
 #include "base/types/pass_key.h"
 #include "content/browser/font_access/font_enumeration_cache.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -158,7 +157,6 @@ void FontEnumerationCacheMac::PrepareFontEnumerationCache() {
 
   @autoreleasepool {
     // Metrics.
-    const base::ElapsedTimer start_timer;
     auto font_enumeration_table =
         std::make_unique<blink::FontEnumerationTable>();
 
@@ -177,7 +175,6 @@ void FontEnumerationCacheMac::PrepareFontEnumerationCache() {
 
     // Used to filter duplicates.
     std::set<std::string> fonts_seen;
-    int duplicate_count = 0;
 
     for (CFIndex i = 0; i < CFArrayGetCount(font_descs); ++i) {
       CTFontDescriptorRef fd = base::mac::CFCast<CTFontDescriptorRef>(
@@ -194,12 +191,11 @@ void FontEnumerationCacheMac::PrepareFontEnumerationCache() {
       std::string postscript_name =
           base::SysCFStringRefToUTF8(cf_postscript_name.get());
 
-      if (fonts_seen.count(postscript_name) != 0) {
-        ++duplicate_count;
-        // Skip duplicates.
+      auto it_and_success = fonts_seen.emplace(postscript_name);
+      if (!it_and_success.second) {
+        // Skip duplicate.
         continue;
       }
-      fonts_seen.insert(postscript_name);
 
       // These defaults should map to the default web values when passed to the
       // CTXXXToWebYYY functions.
@@ -232,10 +228,6 @@ void FontEnumerationCacheMac::PrepareFontEnumerationCache() {
 
     BuildEnumerationCache(std::move(font_enumeration_table));
 
-    base::UmaHistogramCounts100(
-        "Fonts.AccessAPI.EnumerationCache.DuplicateFontCount", duplicate_count);
-    base::UmaHistogramMediumTimes("Fonts.AccessAPI.EnumerationTime",
-                                  start_timer.Elapsed());
     // Respond to pending and future requests.
     StartCallbacksTaskQueue();
   }

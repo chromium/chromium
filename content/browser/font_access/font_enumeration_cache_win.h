@@ -22,10 +22,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/font_access/font_enumeration_table.pb.h"
 
-namespace base {
-class ElapsedTimer;
-}
-
 namespace content {
 
 // Windows implementation of FontEnumerationCache.
@@ -47,7 +43,6 @@ class CONTENT_EXPORT FontEnumerationCacheWin : public FontEnumerationCache {
   // A data structure to hold font family results from DirectWrite.
   struct FamilyDataResult {
     std::vector<blink::FontEnumerationTable_FontMetadata> fonts;
-    HRESULT exit_hresult{S_OK};
     FamilyDataResult();
     FamilyDataResult(const FamilyDataResult&) = delete;
     FamilyDataResult& operator=(const FamilyDataResult&) = delete;
@@ -71,9 +66,6 @@ class CONTENT_EXPORT FontEnumerationCacheWin : public FontEnumerationCache {
 
   // Protobuf structure temporarily used during cache construction and shared.
   std::unique_ptr<blink::FontEnumerationTable> font_enumeration_table_;
-
-  std::map<HRESULT, unsigned> enumeration_errors_;
-  std::unique_ptr<base::ElapsedTimer> enumeration_timer_;
 };
 
 }  // namespace content

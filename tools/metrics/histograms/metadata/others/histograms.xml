@@ -6621,6 +6621,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Fonts.AccessAPI.EnumerationCache.DuplicateFontCount"
     units="count" expires_after="M90">
+  <obsolete>
+    Removed in M95
+  </obsolete>
   <owner>oyiptong@chromium.org</owner>
   <owner>storage-dev@chromium.org</owner>
   <summary>
@@ -6632,6 +6635,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Fonts.AccessAPI.EnumerationCache.Dwrite.FamilyCount"
     units="families" expires_after="M90">
+  <obsolete>
+    Removed in M95
+  </obsolete>
   <owner>oyiptong@chromium.org</owner>
   <owner>storage-dev@chromium.org</owner>
   <summary>
@@ -6643,6 +6649,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="Fonts.AccessAPI.EnumerationCache.Dwrite.GetSystemFontCollectionResult"
     enum="Hresult" expires_after="M90">
+  <obsolete>
+    Removed in M95
+  </obsolete>
   <owner>oyiptong@chromium.org</owner>
   <owner>storage-dev@chromium.org</owner>
   <summary>
@@ -6654,6 +6663,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="Fonts.AccessAPI.EnumerationCache.Dwrite.MostFrequentEnumerationFailure"
     enum="Hresult" expires_after="M90">
+  <obsolete>
+    Removed in M95
+  </obsolete>
   <owner>oyiptong@chromium.org</owner>
   <owner>storage-dev@chromium.org</owner>
   <summary>
@@ -6679,6 +6691,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Fonts.AccessAPI.EnumerationCache.Fontconfig.FontCount"
     units="count" expires_after="M90">
+  <obsolete>
+    Removed in M95
+  </obsolete>
   <owner>oyiptong@chromium.org</owner>
   <owner>storage-dev@chromium.org</owner>
   <summary>The number of fonts returned by fontconfig.</summary>
@@ -6687,6 +6702,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="Fonts.AccessAPI.EnumerationCache.Fontconfig.IncompleteFontCount"
     units="count" expires_after="M90">
+  <obsolete>
+    Removed in M95
+  </obsolete>
   <owner>oyiptong@chromium.org</owner>
   <owner>storage-dev@chromium.org</owner>
   <summary>
@@ -6696,6 +6714,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Fonts.AccessAPI.EnumerationTime" units="ms"
     expires_after="2021-06-20">
+  <obsolete>
+    Removed in M95
+  </obsolete>
   <owner>oyiptong@chromium.org</owner>
   <owner>storage-dev@chromium.org</owner>
   <summary>Time spent enumerating fonts.</summary>
