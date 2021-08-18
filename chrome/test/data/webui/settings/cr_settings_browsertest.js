@@ -598,7 +598,6 @@ TEST_F('CrSettingsAdvancedPageTest', 'MAYBE_Load', function() {
  ['CollapseRadioButton', 'collapse_radio_button_tests.js'],
  ['ControlledButton', 'controlled_button_tests.js'],
  ['ControlledRadioButton', 'controlled_radio_button_tests.js'],
- ['CookiesPage', 'cookies_page_test.js'],
  ['DoNotTrackToggle', 'do_not_track_toggle_test.js'],
  ['DownloadsPage', 'downloads_page_test.js'],
  ['DropdownMenu', 'dropdown_menu_tests.js'],
@@ -642,6 +641,13 @@ TEST_F('CrSettingsAdvancedPageTest', 'MAYBE_Load', function() {
 GEN('#if (!defined(OS_LINUX) && !defined(OS_MAC)) || ' +
     '(defined(NDEBUG) && !defined(ARCH_CPU_ARM64))');
 [['SecurityPage', 'security_page_test.js'],
+].forEach(test => registerTest(...test));
+GEN('#endif');
+
+
+// Flaky on MacOS bots and times out on Linux Dbg: https://crbug.com/1240747
+GEN('#if (!defined(OS_MAC)) && (!defined(OS_LINUX) || defined(NDEBUG))');
+[['CookiesPage', 'cookies_page_test.js'],
 ].forEach(test => registerTest(...test));
 GEN('#endif');
 
