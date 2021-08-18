@@ -5,11 +5,15 @@
 # with versions less than or equal to $VERSION of the implementation.
 #
 # These lines are not comments! They define the set of known tags and other information.
-# tags: [ client_lte_94 ]
+# tags: [ client_lte_91 client_lte_94 ]
 # 'all' disables the test from any skew test.
 # tags: [ all ]
 # results: [ Skip ]
 # conflicts_allowed: True
+
+# No real changes to weblayer APIs, changes should only affect chrome-internal behavior around
+# navigation which the test depends on.
+crbug.com/1196803 [ client_lte_91 ] org.chromium.weblayer.test.ExternalNavigationTest#testExternalIntentWithNoRedirectInBrowserStartupInIncognitoBlockedWhenBackgroundLaunchesAllowedAndUserForbids [ Skip ]
 
 crbug.com/1238481 [ all ] org.chromium.weblayer.test.TabTest#testRotationDoesntChangeVisibility [ Skip ]
 crbug.com/1239026 [ all ] org.chromium.weblayer.test.TabCallbackTest#testDismissTransientUi [ Skip ]
