@@ -3814,14 +3814,13 @@
       'id': 20,
       'caption': '''Disable synchronization of data with Google''',
       'tags': ['filtering', 'google-sharing'],
-      'desc': '''Disables data synchronization in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> using Google-hosted synchronization services and prevents users from changing this setting.
+      'desc': '''"Setting the policy to Enabled turns off data synchronization in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> using Google-hosted synchronization services.
+      To fully turn off <ph name="CHROME_SYNC_NAME">Chrome Sync</ph> services, we recommend that you turn off the service in the <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME">Google Admin console</ph>.
 
-      If you enable this setting, users cannot change or override this setting in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
+      If the policy is set to Disabled or not set, users are allowed to choose whether to use <ph name="CHROME_SYNC_NAME">Chrome Sync</ph>.
 
-      If this policy is left not set Google Sync will be available for the user to choose whether to use it or not.
-
-      To fully disable Google Sync, it is recommended that you disable the Google Sync service in the Google Admin console.''',
-      'arc_support': 'Disabling Google Sync will cause Android Backup and Restore to not function properly.',
+      Note: Do not turn on this policy when <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME">RoamingProfileSupportEnabled</ph> is Enabled, because that feature shares the same client-side functionality. The Google-hosted synchronization is off completely in this case."''',
+      'arc_support': 'Disabling <ph name="CHROME_SYNC_NAME">Chrome Sync</ph> will cause Android Backup and Restore to not function properly.',
     },
     {
       'name': 'SyncTypesListDisabled',
@@ -3841,7 +3840,7 @@
       'id': 649,
       'caption': '''List of types that should be excluded from synchronization''',
       'tags': ['system-security'],
-      'desc': '''If this policy is set all specified data types will be excluded from synchronization both for Google Sync as well as for roaming profile synchronization. This can be beneficial to reduce the size of the roaming profile or limit the type of data uploaded to the Google Sync Servers.
+      'desc': '''If this policy is set all specified data types will be excluded from synchronization both for <ph name="CHROME_SYNC_NAME">Chrome Sync</ph> as well as for roaming profile synchronization. This can be beneficial to reduce the size of the roaming profile or limit the type of data uploaded to the <ph name="CHROME_SYNC_NAME">Chrome Sync</ph> Servers.
 
       The current data types for this policy are: "bookmarks", "readingList", "preferences", "passwords", "autofill", "themes", "typedUrls", "extensions", "apps", "tabs", "wifiConfigurations". Those names are case sensitive!''',
     },
@@ -3908,7 +3907,7 @@
 
       Allows the user to sign in to <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
 
-      If you set this policy, you can configure whether a user is allowed to sign in to <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>. Setting this policy to 'False' will prevent apps and extensions that use the chrome.identity API from functioning, so you may want to use SyncDisabled instead.''',
+      If you set this policy, you can configure whether a user is allowed to sign in to <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>. Setting this policy to 'False' will prevent apps and extensions that use the chrome.identity API from functioning, so you may want to use <ph name="SYNC_DISABLED_POLICY_NAME">SyncDisabled</ph>t  instead.''',
     },
     {
       'name': 'EnableDeprecatedWebBasedSignin',
@@ -17695,7 +17694,7 @@
 
       If this setting is disabled, users will not be allowed to sync Wi-Fi network configurations.
 
-      This feature depends on the <ph name="WIFI_CONFIGURATIONS_DATATYPE_NAME">wifiConfigurations</ph> datatype in Chrome Sync being enabled. If <ph name="WIFI_CONFIGURATIONS_DATATYPE_NAME">wifiConfigurations</ph> is disabled in the <ph name="SYNC_TYPES_LIST_DISABLED_POLICY_NAME">SyncTypesListDisabled</ph> policy, or Chrome Sync is disabled in the <ph name="SYNC_DISABLED_POLICY_NAME">SyncDisabled</ph> policy this feature will not be enabled.
+      This feature depends on the <ph name="WIFI_CONFIGURATIONS_DATATYPE_NAME">wifiConfigurations</ph> datatype in <ph name="CHROME_SYNC_NAME">Chrome Sync</ph> being enabled. If <ph name="WIFI_CONFIGURATIONS_DATATYPE_NAME">wifiConfigurations</ph> is disabled in the <ph name="SYNC_TYPES_LIST_DISABLED_POLICY_NAME">SyncTypesListDisabled</ph> policy, or <ph name="CHROME_SYNC_NAME">Chrome Sync</ph> is disabled in the <ph name="SYNC_DISABLED_POLICY_NAME">SyncDisabled</ph> policy this feature will not be enabled.
 
       If this policy is left not set, the default is not allowed for managed users.''',
     },
