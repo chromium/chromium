@@ -402,6 +402,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"WebAppWindowControlsOverlay",
            features::kWebAppWindowControlsOverlay},
           {"WebAuthenticationConditionalUI", features::kWebAuthConditionalUI},
+          {"SyncLoadDataUrlFonts", blink::features::kSyncLoadDataUrlFonts},
       };
   for (const auto& mapping : runtimeFeatureNameToChromiumFeatureMapping) {
     SetRuntimeFeatureFromChromiumFeature(

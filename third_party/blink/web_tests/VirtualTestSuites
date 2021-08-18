@@ -1101,6 +1101,16 @@
     "prefix": "virtual-keyboard",
     "bases": ["external/wpt/virtual-keyboard"],
     "args": ["--enable-blink-features=VirtualKeyboard"]
+  },
+  {
+    "prefix": "async-load-data-url-fonts",
+    "bases": [
+      "fast/css/fontface-methods.html",
+      "fast/css/fontfaceset-download-error.html",
+      "fast/css/fontfaceset-multiple-families.html",
+      "fast/css/unused-data-url-fontface.html"
+    ],
+    "args": ["--disable-features=SyncLoadDataUrlFonts"]
   }
 ]
 

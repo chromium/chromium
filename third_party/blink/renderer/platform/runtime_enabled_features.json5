@@ -2092,6 +2092,11 @@
       name: "SVGTextNG",
     },
     {
+      // Synchronously load web fonts inlined as data urls (crbug.com/1236283)
+      name: "SyncLoadDataUrlFonts",
+      status: "test",
+    },
+    {
       name: "SystemWakeLock",
       status: "experimental",
     },

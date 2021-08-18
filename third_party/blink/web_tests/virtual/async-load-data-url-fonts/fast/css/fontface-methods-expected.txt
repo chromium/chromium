@@ -1,4 +1,4 @@
-CONSOLE WARNING: line 66: Failed to decode downloaded font: data:font/truetype;base64,
+CONSOLE WARNING: Failed to decode downloaded font: data:font/truetype;base64,
 This is a testharness.js-based test.
 PASS face1.load() should be fulfilled
 PASS face2.load() should be rejected

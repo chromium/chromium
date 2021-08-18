@@ -548,6 +548,19 @@ ResourceFetcher::IsControlledByServiceWorker() const {
   return properties_->GetControllerServiceWorkerMode();
 }
 
+namespace {
+
+bool ShouldDeferFontLoad(const FetchParameters& params) {
+  if (params.IsLinkPreload())
+    return false;
+  if (RuntimeEnabledFeatures::SyncLoadDataUrlFontsEnabled() &&
+      params.Url().ProtocolIsData())
+    return false;
+  return true;
+}
+
+}  // namespace
+
 bool ResourceFetcher::ResourceNeedsLoad(Resource* resource,
                                         const FetchParameters& params,
                                         RevalidationPolicy policy) {
@@ -557,8 +570,8 @@ bool ResourceFetcher::ResourceNeedsLoad(Resource* resource,
     return false;
 
   // Defer a font load until it is actually needed unless this is a link
-  // preload.
-  if (resource->GetType() == ResourceType::kFont && !params.IsLinkPreload())
+  // preload or a data url font (that doesn't consume network resources).
+  if (resource->GetType() == ResourceType::kFont && ShouldDeferFontLoad(params))
     return false;
 
   // Defer loading images either when:
@@ -777,7 +790,10 @@ absl::optional<ResourceRequestBlockedReason> ResourceFetcher::PrepareRequest(
 
   DCHECK(options.synchronous_policy == kRequestAsynchronously ||
          resource_type == ResourceType::kRaw ||
-         resource_type == ResourceType::kXSLStyleSheet);
+         resource_type == ResourceType::kXSLStyleSheet ||
+         (RuntimeEnabledFeatures::SyncLoadDataUrlFontsEnabled() &&
+          resource_type == ResourceType::kFont &&
+          params.Url().ProtocolIsData()));
 
   KURL bundle_url_for_urn_resources;
   if (resource_request.GetWebBundleTokenParams()) {

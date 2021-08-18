@@ -443,6 +443,9 @@ BLINK_COMMON_EXPORT extern const base::Feature kCORSErrorsIssueOnly;
 BLINK_COMMON_EXPORT extern const base::Feature
     kDeprecateThirdPartyContextWebSQL;
 
+// Synchronously load web fonts inlined as data urls. See crbug.com/1236283
+BLINK_COMMON_EXPORT extern const base::Feature kSyncLoadDataUrlFonts;
+
 }  // namespace features
 }  // namespace blink
 

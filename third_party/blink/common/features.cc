@@ -1025,5 +1025,8 @@ const base::Feature kCORSErrorsIssueOnly{"CORSErrorsIssueOnly",
 const base::Feature kDeprecateThirdPartyContextWebSQL{
     "DeprecateThirdPartyContextWebSQL", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kSyncLoadDataUrlFonts{"SyncLoadDataUrlFonts",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink
