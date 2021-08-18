@@ -1109,7 +1109,7 @@
 <translation id="503069730517007720">"<ph name="SOFTWARE_NAME" />" மென்பொருளுக்கு மூலச் சான்றிதழ் தேவை, ஆனால் நிறுவப்படவில்லை. இந்தச் சிக்கலைச் சரிசெய்ய, "<ph name="SOFTWARE_NAME" />" மென்பொருளின் உள்ளமைவு வழிமுறைகளை ஐடி நிர்வாகி பின்பற்ற வேண்டும். <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Google மொழியாக்கம் ஓர் அறிமுகம்</translation>
 <translation id="503498442187459473"><ph name="HOST" /> உங்கள் கேமராவையும் மைக்ரோஃபோனையும் பயன்படுத்த விரும்புகிறது</translation>
-<translation id="5039762155821394373">எழுத்துரு அளவு</translation>
+<translation id="5039762155821394373">எழுத்து வடிவ அளவு</translation>
 <translation id="5039804452771397117">அனுமதி</translation>
 <translation id="5040262127954254034">தனியுரிமை</translation>
 <translation id="5043480802608081735">நீங்கள் நகலெடுத்த இணைப்பு</translation>
@@ -1539,7 +1539,7 @@
 <translation id="6665553082534466207">டிரிப்பில் பஞ்ச் ரைட்</translation>
 <translation id="6671697161687535275">Chromium இலிருந்து படிவப் பரிந்துரையை அகற்றவா?</translation>
 <translation id="6685834062052613830">வெளியேறி, அமைப்பை முடிக்கவும்</translation>
-<translation id="6687335167692595844">கோரப்பட்ட எழுத்துரு அளவு</translation>
+<translation id="6687335167692595844">கோரப்பட்ட எழுத்து வடிவ அளவு</translation>
 <translation id="6688743156324860098">மாற்று…</translation>
 <translation id="6689249931105087298">கறுப்புப் புள்ளிச் சுருக்கத்துடன் சார்புடையது</translation>
 <translation id="6689271823431384964">நீங்கள் உள்நுழைந்துள்ளதால் Google கணக்கில் உங்கள் கார்டு விவரங்களைச் சேமிக்கும் விருப்பத்தை Chrome வழங்குகிறது. இதை நீங்கள் அமைப்புகளில் மாற்றலாம். கார்டு உரிமையாளரின் பெயர் உங்கள் கணக்கிலிருந்து பெறப்படுகிறது.</translation>
@@ -2074,7 +2074,7 @@
 <translation id="8699041776323235191">HID சாதனம்</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> க்கான உங்கள் இணைப்பு என்க்ரிப்ட் செய்யப்படவில்லை.</translation>
 <translation id="8705331520020532516">வரிசை எண்</translation>
-<translation id="8710842507289500830">எழுத்துரு நடை</translation>
+<translation id="8710842507289500830">எழுத்து வடிவ நடை</translation>
 <translation id="8712637175834984815">புரிந்தது</translation>
 <translation id="8718314106902482036">பேமெண்ட் முடியவில்லை</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, தேடல் பரிந்துரை</translation>
