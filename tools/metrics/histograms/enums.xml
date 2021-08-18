@@ -49116,6 +49116,7 @@ from previous Chrome versions.
   <int value="-270261701" label="WebRtcEnableCaptureMultiChannelApm:disabled"/>
   <int value="-269440655"
       label="AutofillDownstreamCvcPromptUseGooglePayLogo:disabled"/>
+  <int value="-269227049" label="PersistentQuotaIsTemporaryQuota:enabled"/>
   <int value="-268897347" label="DisableCameraFrameRotationAtSource:disabled"/>
   <int value="-268549184"
       label="AutofillSaveCreditCardUsesStrikeSystemV2:enabled"/>
@@ -49726,6 +49727,7 @@ from previous Chrome versions.
   <int value="246106068" label="HandwritingLegacyRecognition:disabled"/>
   <int value="247200195" label="EnhancedProtectionPromoCard:enabled"/>
   <int value="250855010" label="WebAssemblyBaseline:disabled"/>
+  <int value="251367892" label="PersistentQuotaIsTemporaryQuota:disabled"/>
   <int value="254497185" label="VideoPlayerJsModules:enabled"/>
   <int value="255375615" label="stop-non-timers-in-background:enabled"/>
   <int value="258621334"

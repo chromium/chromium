@@ -55,14 +55,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemQuotaClient
   void PerformStorageCleanup(blink::mojom::StorageType type,
                              PerformStorageCleanupCallback callback) override;
 
-  // Converts FileSystemType `type` to/from the StorageType `storage_type` that
-  // is used for the unified quota system.
-  // (Basically this naively maps TEMPORARY storage type to TEMPORARY filesystem
-  // type, PERSISTENT storage type to PERSISTENT filesystem type and vice
-  // versa.)
-  static FileSystemType QuotaStorageTypeToFileSystemType(
-      blink::mojom::StorageType storage_type);
-
  private:
   base::SequencedTaskRunner* file_task_runner() const;
 

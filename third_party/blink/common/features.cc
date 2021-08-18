@@ -1028,5 +1028,8 @@ const base::Feature kDeprecateThirdPartyContextWebSQL{
 const base::Feature kSyncLoadDataUrlFonts{"SyncLoadDataUrlFonts",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kPersistentQuotaIsTemporaryQuota{
+    "PersistentQuotaIsTemporaryQuota", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink

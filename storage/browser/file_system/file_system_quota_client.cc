@@ -4,12 +4,17 @@
 
 #include "storage/browser/file_system/file_system_quota_client.h"
 
+#include <numeric>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "base/barrier_callback.h"
+#include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/location.h"
 #include "base/sequence_checker.h"
@@ -18,6 +23,7 @@
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "url/origin.h"
@@ -25,6 +31,14 @@
 namespace storage {
 
 namespace {
+
+static const FileSystemType kTemporaryAndPersistent[] = {
+    kFileSystemTypeTemporary,
+    kFileSystemTypePersistent,
+};
+static const FileSystemType kTemporary[] = {kFileSystemTypeTemporary};
+static const FileSystemType kPersistent[] = {kFileSystemTypePersistent};
+static const FileSystemType kSyncable[] = {kFileSystemTypeSyncable};
 
 std::vector<blink::StorageKey> ToStorageKeys(
     const std::vector<url::Origin>& origins) {
@@ -35,13 +49,53 @@ std::vector<blink::StorageKey> ToStorageKeys(
   return storage_keys;
 }
 
+template <typename T>
+std::vector<T> MergeWithoutDuplicates(const std::vector<std::vector<T>>& tss) {
+  if (tss.size() == 1) {
+    // We assume that each vector contains no duplicates, already.
+    return tss[0];
+  }
+  std::vector<T> merged;
+  merged.reserve(std::accumulate(
+      tss.begin(), tss.end(), 0U,
+      [](size_t acc, const std::vector<T>& ts) { return acc + ts.size(); }));
+  for (const auto& ts : tss) {
+    merged.insert(merged.end(), ts.begin(), ts.end());
+  }
+  base::ranges::sort(merged);
+  merged.erase(base::ranges::unique(merged), merged.end());
+  return merged;
+}
+
+// Converts StorageType to the FileSystemTypes that are used for that quota
+// type.
+base::span<const FileSystemType> QuotaStorageTypeToFileSystemTypes(
+    blink::mojom::StorageType storage_type) {
+  using StorageType = blink::mojom::StorageType;
+
+  if (base::FeatureList::IsEnabled(
+          blink::features::kPersistentQuotaIsTemporaryQuota)) {
+    DCHECK_NE(storage_type, StorageType::kPersistent);
+    if (storage_type == StorageType::kTemporary)
+      return kTemporaryAndPersistent;
+  }
+  switch (storage_type) {
+    case StorageType::kTemporary:
+      return kTemporary;
+    case StorageType::kPersistent:
+      return kPersistent;
+    case StorageType::kSyncable:
+      return kSyncable;
+    case StorageType::kQuotaNotManaged:
+    case StorageType::kUnknown:
+      NOTREACHED();
+      return {};
+  }
+}
+
 std::vector<blink::StorageKey> GetStorageKeysForTypeOnFileTaskRunner(
     FileSystemContext* context,
-    blink::mojom::StorageType storage_type) {
-  FileSystemType type =
-      FileSystemQuotaClient::QuotaStorageTypeToFileSystemType(storage_type);
-  DCHECK(type != kFileSystemTypeUnknown);
-
+    FileSystemType type) {
   FileSystemQuotaUtil* quota_util = context->GetQuotaUtil(type);
   if (!quota_util)
     return {};
@@ -50,12 +104,8 @@ std::vector<blink::StorageKey> GetStorageKeysForTypeOnFileTaskRunner(
 
 std::vector<blink::StorageKey> GetStorageKeysForHostOnFileTaskRunner(
     FileSystemContext* context,
-    blink::mojom::StorageType storage_type,
+    FileSystemType type,
     const std::string& host) {
-  FileSystemType type =
-      FileSystemQuotaClient::QuotaStorageTypeToFileSystemType(storage_type);
-  DCHECK(type != kFileSystemTypeUnknown);
-
   FileSystemQuotaUtil* quota_util = context->GetQuotaUtil(type);
   if (!quota_util)
     return {};
@@ -107,24 +157,31 @@ void FileSystemQuotaClient::GetStorageKeyUsage(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback.is_null());
 
-  FileSystemType type =
-      FileSystemQuotaClient::QuotaStorageTypeToFileSystemType(storage_type);
-  DCHECK(type != kFileSystemTypeUnknown);
+  base::span<const FileSystemType> types =
+      QuotaStorageTypeToFileSystemTypes(storage_type);
 
-  FileSystemQuotaUtil* quota_util = file_system_context_->GetQuotaUtil(type);
-  if (!quota_util) {
-    std::move(callback).Run(0);
-    return;
+  base::RepeatingCallback<void(int64_t)> barrier =
+      base::BarrierCallback<int64_t>(
+          types.size(), base::BindOnce([](std::vector<int64_t> usages) {
+                          return std::accumulate(usages.begin(), usages.end(),
+                                                 0U);
+                        }).Then(std::move(callback)));
+
+  for (auto type : types) {
+    FileSystemQuotaUtil* quota_util = file_system_context_->GetQuotaUtil(type);
+    if (quota_util) {
+      file_task_runner()->PostTaskAndReplyWithResult(
+          FROM_HERE,
+          // It is safe to pass Unretained(quota_util) since context owns it.
+          base::BindOnce(&FileSystemQuotaUtil::GetOriginUsageOnFileTaskRunner,
+                         base::Unretained(quota_util),
+                         base::RetainedRef(file_system_context_),
+                         storage_key.origin(), type),
+          barrier);
+    } else {
+      barrier.Run(0);
+    }
   }
-
-  file_task_runner()->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      // It is safe to pass Unretained(quota_util) since context owns it.
-      base::BindOnce(&FileSystemQuotaUtil::GetOriginUsageOnFileTaskRunner,
-                     base::Unretained(quota_util),
-                     base::RetainedRef(file_system_context_),
-                     storage_key.origin(), type),
-      std::move(callback));
 }
 
 void FileSystemQuotaClient::GetStorageKeysForType(
@@ -133,11 +190,22 @@ void FileSystemQuotaClient::GetStorageKeysForType(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback.is_null());
 
-  file_task_runner()->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&GetStorageKeysForTypeOnFileTaskRunner,
-                     base::RetainedRef(file_system_context_), storage_type),
-      std::move(callback));
+  base::span<const FileSystemType> types =
+      QuotaStorageTypeToFileSystemTypes(storage_type);
+
+  base::RepeatingCallback<void(std::vector<blink::StorageKey>)> barrier =
+      base::BarrierCallback<std::vector<blink::StorageKey>>(
+          types.size(),
+          base::BindOnce(&MergeWithoutDuplicates<blink::StorageKey>)
+              .Then(std::move(callback)));
+
+  for (auto type : types) {
+    file_task_runner()->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&GetStorageKeysForTypeOnFileTaskRunner,
+                       base::RetainedRef(file_system_context_), type),
+        barrier);
+  }
 }
 
 void FileSystemQuotaClient::GetStorageKeysForHost(
@@ -147,12 +215,22 @@ void FileSystemQuotaClient::GetStorageKeysForHost(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback.is_null());
 
-  file_task_runner()->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&GetStorageKeysForHostOnFileTaskRunner,
-                     base::RetainedRef(file_system_context_), storage_type,
-                     host),
-      std::move(callback));
+  base::span<const FileSystemType> types =
+      QuotaStorageTypeToFileSystemTypes(storage_type);
+
+  base::RepeatingCallback<void(std::vector<blink::StorageKey>)> barrier =
+      base::BarrierCallback<std::vector<blink::StorageKey>>(
+          types.size(),
+          base::BindOnce(&MergeWithoutDuplicates<blink::StorageKey>)
+              .Then(std::move(callback)));
+
+  for (auto type : types) {
+    file_task_runner()->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&GetStorageKeysForHostOnFileTaskRunner,
+                       base::RetainedRef(file_system_context_), type, host),
+        barrier);
+  }
 }
 
 void FileSystemQuotaClient::DeleteStorageKeyData(
@@ -162,15 +240,29 @@ void FileSystemQuotaClient::DeleteStorageKeyData(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback.is_null());
 
-  FileSystemType fs_type = QuotaStorageTypeToFileSystemType(type);
-  DCHECK(fs_type != kFileSystemTypeUnknown);
+  base::span<const FileSystemType> fs_types =
+      QuotaStorageTypeToFileSystemTypes(type);
 
-  file_task_runner()->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&DeleteStorageKeyOnFileTaskRunner,
-                     base::RetainedRef(file_system_context_), storage_key,
-                     fs_type),
-      std::move(callback));
+  base::RepeatingCallback<void(blink::mojom::QuotaStatusCode)> barrier =
+      base::BarrierCallback<blink::mojom::QuotaStatusCode>(
+          fs_types.size(),
+          base::BindOnce([](const std::vector<blink::mojom::QuotaStatusCode>&
+                                statuses) {
+            for (auto status : statuses) {
+              if (status != blink::mojom::QuotaStatusCode::kOk)
+                return status;
+            }
+            return blink::mojom::QuotaStatusCode::kOk;
+          }).Then(std::move(callback)));
+
+  for (const auto fs_type : fs_types) {
+    file_task_runner()->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&DeleteStorageKeyOnFileTaskRunner,
+                       base::RetainedRef(file_system_context_), storage_key,
+                       fs_type),
+        barrier);
+  }
 }
 
 void FileSystemQuotaClient::PerformStorageCleanup(
@@ -179,30 +271,19 @@ void FileSystemQuotaClient::PerformStorageCleanup(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback.is_null());
 
-  FileSystemType fs_type = QuotaStorageTypeToFileSystemType(type);
-  DCHECK(fs_type != kFileSystemTypeUnknown);
-  file_task_runner()->PostTaskAndReply(
-      FROM_HERE,
-      base::BindOnce(&PerformStorageCleanupOnFileTaskRunner,
-                     base::RetainedRef(file_system_context_), fs_type),
-      std::move(callback));
-}
+  base::span<const FileSystemType> fs_types =
+      QuotaStorageTypeToFileSystemTypes(type);
 
-// static
-FileSystemType FileSystemQuotaClient::QuotaStorageTypeToFileSystemType(
-    blink::mojom::StorageType storage_type) {
-  switch (storage_type) {
-    case blink::mojom::StorageType::kTemporary:
-      return kFileSystemTypeTemporary;
-    case blink::mojom::StorageType::kPersistent:
-      return kFileSystemTypePersistent;
-    case blink::mojom::StorageType::kSyncable:
-      return kFileSystemTypeSyncable;
-    case blink::mojom::StorageType::kQuotaNotManaged:
-    case blink::mojom::StorageType::kUnknown:
-      return kFileSystemTypeUnknown;
+  base::RepeatingClosure barrier =
+      base::BarrierClosure(fs_types.size(), std::move(callback));
+
+  for (auto fs_type : fs_types) {
+    file_task_runner()->PostTaskAndReply(
+        FROM_HERE,
+        base::BindOnce(&PerformStorageCleanupOnFileTaskRunner,
+                       base::RetainedRef(file_system_context_), fs_type),
+        barrier);
   }
-  return kFileSystemTypeUnknown;
 }
 
 base::SequencedTaskRunner* FileSystemQuotaClient::file_task_runner() const {

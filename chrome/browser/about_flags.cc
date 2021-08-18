@@ -7480,6 +7480,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kExtensionsMenuAccessControlDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kExtensionsMenuAccessControl)},
 
+    {"persistent-quota-is-temporary-quota",
+     flag_descriptions::kPersistentQuotaIsTemporaryQuotaName,
+     flag_descriptions::kPersistentQuotaIsTemporaryQuotaDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kPersistentQuotaIsTemporaryQuota)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
