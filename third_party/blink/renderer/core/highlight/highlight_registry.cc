@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
@@ -76,6 +77,8 @@ HighlightRegistry* HighlightRegistry::setForBinding(
     AtomicString highlight_name,
     Member<Highlight> highlight,
     ExceptionState& exception_state) {
+  UseCounter::Count(ExecutionContext::From(script_state),
+                    WebFeature::kHighlightAPIRegisterHighlight);
   auto highlights_iterator = GetMapIterator(highlight_name);
   if (highlights_iterator != highlights_.end()) {
     highlights_iterator->Get()->highlight->DeregisterFrom(this);

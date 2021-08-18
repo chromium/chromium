@@ -3293,6 +3293,7 @@ enum WebFeature {
   kV8NavigatorManagedData_GetAnnotatedLocation_Method = 3981,
   kUserDataFieldFilledPreviously = 3982,
   kTableCollapsedBorderDifferentToVisual = 3983,
+  kHighlightAPIRegisterHighlight = 3984,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

@@ -34203,6 +34203,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3981" label="V8NavigatorManagedData_GetAnnotatedLocation_Method"/>
   <int value="3982" label="UserDataFieldFilledPreviously"/>
   <int value="3983" label="TableCollapsedBorderDifferentToVisual"/>
+  <int value="3984" label="HighlightAPIRegisterHighlight"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
