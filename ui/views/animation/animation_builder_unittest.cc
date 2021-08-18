@@ -9,8 +9,6 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/layer_owner.h"
-#include "ui/compositor/property_change_reason.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animator_test_controller.h"
 #include "ui/compositor/test/test_layer_animation_delegate.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -46,12 +44,8 @@ class AnimationBuilderTest : public testing::Test {
   void Step(const base::TimeDelta& duration) {
     DCHECK_GT(duration, base::TimeDelta());
     for (const auto& controller : animator_controllers_) {
-      if (elapsed_.is_zero()) {
-        controller->StartThreadedAnimationsIfNeeded();
-        // We need this because StartThreadedAnimationsIfNeeded() sets sequence
-        // start time to Now() but does not update animator's step time.
-        controller->animator()->set_last_step_time(base::TimeTicks::Now());
-      }
+      controller->StartThreadedAnimationsIfNeeded(
+          controller->animator()->last_step_time());
       controller->Step(duration);
     }
     elapsed_ += duration;
@@ -157,6 +151,56 @@ TEST_F(AnimationBuilderTest, CheckStartEndCallbacks) {
   EXPECT_TRUE(started);
   Step(kDelay * 2);
   EXPECT_TRUE(ended);
+}
+
+TEST_F(AnimationBuilderTest, DelayedStart) {
+  TestAnimatibleLayerOwner* view = CreateTestLayerOwner();
+  ui::LayerAnimationDelegate* delegate = view->delegate();
+
+  constexpr auto kDelay = base::TimeDelta::FromSeconds(1);
+  constexpr auto kDuration = base::TimeDelta::FromSeconds(1);
+
+  {
+    // clang-format off
+    AnimationBuilder()
+      .Once()
+      .At(kDelay)
+      .SetDuration(kDuration)
+      .SetOpacity(view, 0.4f);
+    // clang-format on
+  }
+
+  // Original value before the animation steps.
+  EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 1.0);
+  Step(kDelay);
+  // The animation on opacity is not yet started.
+  EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 1.0);
+  Step(kDuration);
+  EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.4f);
+}
+
+TEST_F(AnimationBuilderTest, TwoKeyFrame) {
+  TestAnimatibleLayerOwner* view = CreateTestLayerOwner();
+  ui::LayerAnimationDelegate* delegate = view->delegate();
+
+  constexpr auto kDuration = base::TimeDelta::FromSeconds(1);
+
+  {
+    AnimationBuilder()
+        .Once()
+        .SetDuration(kDuration)
+        .SetOpacity(view, 0.4f)
+        .Then()
+        .SetDuration(kDuration)
+        .SetOpacity(view, 0.9f);
+  }
+
+  // The animation on opacity is not yet started.
+  EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 1.0);
+  Step(kDuration);
+  EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.4f);
+  Step(kDuration);
+  EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.9f);
 }
 
 }  // namespace views
