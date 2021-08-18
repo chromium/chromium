@@ -39,7 +39,6 @@
 #include "chromeos/network/portal_detector/network_portal_detector_strategy.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
-#include "content/public/browser/notification_service.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -192,10 +191,7 @@ void ErrorScreen::MaybeInitCaptivePortalWindowProxy(
 
 void ErrorScreen::DoShow() {
   LOG(WARNING) << "Network error screen message is shown";
-  content::NotificationService::current()->Notify(
-      chrome::NOTIFICATION_LOGIN_NETWORK_ERROR_SHOWN,
-      content::NotificationService::AllSources(),
-      content::NotificationService::NoDetails());
+  session_manager::SessionManager::Get()->NotifyNetworkErrorScreenShown();
   network_portal_detector::GetInstance()->SetStrategy(
       PortalDetectorStrategy::STRATEGY_ID_ERROR_SCREEN);
 }

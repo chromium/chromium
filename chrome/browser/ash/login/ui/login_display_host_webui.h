@@ -15,6 +15,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/oobe_configuration.h"
@@ -23,6 +24,8 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/core/session_manager_observer.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -46,6 +49,7 @@ class WebUILoginView;
 // WebUI signals ready (via NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE) or there
 // is a network error (via NOTIFICATION_LOGIN_NETWORK_ERROR_SHOWN).
 class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
+                              public session_manager::SessionManagerObserver,
                               public content::WebContentsObserver,
                               public chromeos::SessionManagerClient::Observer,
                               public CrasAudioHandler::AudioObserver,
@@ -92,6 +96,9 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   void StartBrowserDataMigration() override;
   void AddObserver(LoginDisplayHost::Observer* observer) override;
   void RemoveObserver(LoginDisplayHost::Observer* observer) override;
+
+  // session_manager::SessionManagerObserver:
+  void OnNetworkErrorScreenShown() override;
 
   // Trace id for ShowLoginWebUI event (since there exists at most one login
   // WebUI at a time).
@@ -269,6 +276,10 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
 
   // Measures OOBE WebUI load time.
   absl::optional<base::ElapsedTimer> oobe_load_timer_;
+
+  base::ScopedObservation<session_manager::SessionManager,
+                          session_manager::SessionManagerObserver>
+      session_observation_{this};
 
   display::ScopedDisplayObserver display_observer_{this};
 

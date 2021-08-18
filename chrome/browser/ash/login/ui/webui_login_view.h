@@ -13,8 +13,11 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/core/session_manager_observer.h"
 // TODO(https://crbug.com/1164001): use forward declaration.
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
@@ -46,6 +49,7 @@ class WebUILoginView : public views::View,
                        public ChromeKeyboardControllerClient::Observer,
                        public content::WebContentsDelegate,
                        public content::NotificationObserver,
+                       public session_manager::SessionManagerObserver,
                        public ChromeWebModalDialogManagerDelegate,
                        public web_modal::WebContentsModalDialogHost,
                        public SystemTrayObserver {
@@ -133,6 +137,9 @@ class WebUILoginView : public views::View,
                const content::NotificationSource& source,
                const content::NotificationDetails& details) override;
 
+  // session_manager::SessionManagerObserver:
+  void OnNetworkErrorScreenShown() override;
+
  private:
   // Map type for the accelerator-to-identifier map.
   typedef std::map<ui::Accelerator, LoginAcceleratorAction> AccelMap;
@@ -169,6 +176,9 @@ class WebUILoginView : public views::View,
 
   content::NotificationRegistrar registrar_;
 
+  base::ScopedObservation<session_manager::SessionManager,
+                          session_manager::SessionManagerObserver>
+      session_observation_{this};
   // WebView configuration options.
   const WebViewSettings settings_;
 

@@ -94,11 +94,6 @@ enum NotificationType {
   // Misc --------------------------------------------------------------------
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Sent when a network error message is displayed on the WebUI login screen.
-  // First paint event of this fires NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE.
-  // TODO(https://crbug.com/1174791): Remove.
-  NOTIFICATION_LOGIN_NETWORK_ERROR_SHOWN,
-
   // Sent when the specific part of login/lock WebUI is considered to be
   // visible. That moment is tracked as the first paint event after one of the:
   // NOTIFICATION_LOGIN_NETWORK_ERROR_SHOWN

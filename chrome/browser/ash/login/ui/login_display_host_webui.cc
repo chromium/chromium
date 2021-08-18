@@ -454,8 +454,8 @@ LoginDisplayHostWebUI::LoginDisplayHostWebUI()
   // these notifications.
   registrar_.Add(this, chrome::NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE,
                  content::NotificationService::AllSources());
-  registrar_.Add(this, chrome::NOTIFICATION_LOGIN_NETWORK_ERROR_SHOWN,
-                 content::NotificationService::AllSources());
+
+  session_observation_.Observe(session_manager::SessionManager::Get());
 
   audio::SoundsManager* manager = audio::SoundsManager::Get();
   ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
@@ -694,14 +694,12 @@ void LoginDisplayHostWebUI::Observe(
     const content::NotificationDetails& details) {
   LoginDisplayHostCommon::Observe(type, source, details);
 
-  if (chrome::NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE == type ||
-      chrome::NOTIFICATION_LOGIN_NETWORK_ERROR_SHOWN == type) {
+  if (chrome::NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE == type) {
     VLOG(1) << "Login WebUI >> WEBUI_VISIBLE";
     ShowWebUI();
     registrar_.Remove(this, chrome::NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE,
                       content::NotificationService::AllSources());
-    registrar_.Remove(this, chrome::NOTIFICATION_LOGIN_NETWORK_ERROR_SHOWN,
-                      content::NotificationService::AllSources());
+    session_observation_.Reset();
   }
 }
 
@@ -1074,6 +1072,14 @@ void LoginDisplayHostWebUI::AddObserver(LoginDisplayHost::Observer* observer) {
 void LoginDisplayHostWebUI::RemoveObserver(
     LoginDisplayHost::Observer* observer) {
   observers_.RemoveObserver(observer);
+}
+
+void LoginDisplayHostWebUI::OnNetworkErrorScreenShown() {
+  VLOG(1) << "Login WebUI >> WEBUI_VISIBLE";
+  ShowWebUI();
+  registrar_.Remove(this, chrome::NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE,
+                    content::NotificationService::AllSources());
+  session_observation_.Reset();
 }
 
 void LoginDisplayHostWebUI::PlayStartupSoundIfPossible() {

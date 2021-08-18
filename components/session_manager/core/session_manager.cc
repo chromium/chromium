@@ -107,6 +107,11 @@ void SessionManager::NotifyUserProfileLoaded(const AccountId& account_id) {
     observer.OnUserProfileLoaded(account_id);
 }
 
+void SessionManager::NotifyNetworkErrorScreenShown() {
+  for (auto& observer : observers_)
+    observer.OnNetworkErrorScreenShown();
+}
+
 void SessionManager::NotifyUserLoggedIn(const AccountId& user_account_id,
                                         const std::string& user_id_hash,
                                         bool browser_restart,

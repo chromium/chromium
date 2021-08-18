@@ -28,6 +28,10 @@ class SessionManagerObserver : public base::CheckedObserver {
   // UserSessionStateObserver::OnActiveUserChanged() is invoked immediately
   // after the user has logged in.
   virtual void OnUserSessionStarted(bool is_primary_user) {}
+
+  // Invoked when a network error message is displayed on the WebUI login
+  // screen.
+  virtual void OnNetworkErrorScreenShown() {}
 };
 
 }  // namespace session_manager
