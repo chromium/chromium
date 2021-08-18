@@ -54,7 +54,7 @@ bool WaitForOpenInButton() {
   return base::test::ios::WaitUntilConditionOrTimeout(kLongDownloadTimeout, ^{
     NSError* error = nil;
     [[EarlGrey selectElementWithMatcher:chrome_test_util::OpenInButton()]
-        assertWithMatcher:grey_notNil()
+        assertWithMatcher:grey_interactable()
                     error:&error];
     return (error == nil);
   });
@@ -67,7 +67,7 @@ bool WaitForDownloadButton() {
       base::test::ios::kWaitForPageLoadTimeout, ^{
         NSError* error = nil;
         [[EarlGrey selectElementWithMatcher:DownloadButton()]
-            assertWithMatcher:grey_notNil()
+            assertWithMatcher:grey_interactable()
                         error:&error];
         return (error == nil);
       });
@@ -81,7 +81,7 @@ bool WaitForOpenInDownloadsButton() {
         NSError* error = nil;
         [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
                                                 IDS_IOS_OPEN_IN_DOWNLOADS))]
-            assertWithMatcher:grey_notNil()
+            assertWithMatcher:grey_interactable()
                         error:&error];
         return (error == nil);
       });
