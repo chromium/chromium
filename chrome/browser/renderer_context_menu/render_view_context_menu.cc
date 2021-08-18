@@ -2896,12 +2896,15 @@ bool RenderViewContextMenu::IsTranslateEnabled() const {
           source_web_contents_)) {
     return false;
   }
+  std::string source_lang =
+      chrome_translate_client->GetLanguageState().source_language();
   // Note that we intentionally enable the menu even if the source and
   // target languages are identical.  This is to give a way to user to
   // translate a page that might contains text fragments in a different
   // language.
   return ((params_.edit_flags & ContextMenuDataEditFlags::kCanTranslate) !=
           0) &&
+         !source_lang.empty() &&  // Did we receive the page language yet?
          // Disable on the Instant Extended NTP.
          !search::IsInstantNTP(embedder_web_contents_);
 }
@@ -3438,7 +3441,11 @@ void RenderViewContextMenu::ExecTranslate() {
   if (!chrome_translate_client)
     return;
 
-  chrome_translate_client->ManualTranslateWhenReady();
+  translate::TranslateManager* manager =
+      chrome_translate_client->GetTranslateManager();
+  DCHECK(manager);
+  manager->ShowTranslateUI(/*auto_translate=*/true,
+                           /*triggered_from_menu=*/true);
 }
 
 void RenderViewContextMenu::ExecLanguageSettings(int event_flags) {
