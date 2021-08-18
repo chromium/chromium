@@ -184,10 +184,10 @@ class OsIntegrationManagerTest : public testing::Test {
 TEST_F(OsIntegrationManagerTest, InstallOsHooksOnlyShortcuts) {
   base::RunLoop run_loop;
 
-  OsHooksResults install_results;
+  OsHooksErrors install_errors;
   InstallOsHooksCallback callback =
-      base::BindLambdaForTesting([&](OsHooksResults results) {
-        install_results = results;
+      base::BindLambdaForTesting([&](OsHooksErrors errors) {
+        install_errors = errors;
         run_loop.Quit();
       });
 
@@ -199,20 +199,19 @@ TEST_F(OsIntegrationManagerTest, InstallOsHooksOnlyShortcuts) {
       .WillOnce(base::test::RunOnceCallback<2>(true));
 
   InstallOsHooksOptions options;
-  options.os_hooks = OsHooksResults{false};
   options.os_hooks[OsHookType::kShortcuts] = true;
   manager.InstallOsHooks(app_id, std::move(callback), nullptr, options);
   run_loop.Run();
-  EXPECT_TRUE(install_results[OsHookType::kShortcuts]);
+  EXPECT_FALSE(install_errors[OsHookType::kShortcuts]);
 }
 
 TEST_F(OsIntegrationManagerTest, InstallOsHooksEverything) {
   base::RunLoop run_loop;
 
-  OsHooksResults install_results;
+  OsHooksErrors install_errors;
   InstallOsHooksCallback callback =
-      base::BindLambdaForTesting([&](OsHooksResults results) {
-        install_results = results;
+      base::BindLambdaForTesting([&](OsHooksErrors errors) {
+        install_errors = errors;
         run_loop.Quit();
       });
 
@@ -240,25 +239,25 @@ TEST_F(OsIntegrationManagerTest, InstallOsHooksEverything) {
   options.os_hooks.set();
   manager.InstallOsHooks(app_id, std::move(callback), nullptr, options);
   run_loop.Run();
-  EXPECT_TRUE(install_results[OsHookType::kShortcuts]);
-  EXPECT_TRUE(install_results[OsHookType::kFileHandlers]);
-  EXPECT_TRUE(install_results[OsHookType::kProtocolHandlers]);
-  EXPECT_TRUE(install_results[OsHookType::kUrlHandlers]);
-  EXPECT_TRUE(install_results[OsHookType::kRunOnOsLogin]);
+  EXPECT_FALSE(install_errors[OsHookType::kShortcuts]);
+  EXPECT_FALSE(install_errors[OsHookType::kFileHandlers]);
+  EXPECT_FALSE(install_errors[OsHookType::kProtocolHandlers]);
+  EXPECT_FALSE(install_errors[OsHookType::kUrlHandlers]);
+  EXPECT_FALSE(install_errors[OsHookType::kRunOnOsLogin]);
   // Note: We asked for these to be installed, but their methods were not
   // called. This is because the features are turned off. We only set these
-  // results to false if there is an unexpected error, so they remain true.
-  EXPECT_TRUE(install_results[OsHookType::kShortcutsMenu]);
-  EXPECT_TRUE(install_results[OsHookType::kUninstallationViaOsSettings]);
+  // results to true if there is an unexpected error, so they remain false.
+  EXPECT_FALSE(install_errors[OsHookType::kShortcutsMenu]);
+  EXPECT_FALSE(install_errors[OsHookType::kUninstallationViaOsSettings]);
 }
 
 TEST_F(OsIntegrationManagerTest, UninstallOsHooksEverything) {
   base::RunLoop run_loop;
 
-  OsHooksResults uninstall_results;
+  OsHooksErrors uninstall_errors;
   UninstallOsHooksCallback callback =
-      base::BindLambdaForTesting([&](OsHooksResults results) {
-        uninstall_results = results;
+      base::BindLambdaForTesting([&](OsHooksErrors errors) {
+        uninstall_errors = errors;
         run_loop.Quit();
       });
 
@@ -289,13 +288,13 @@ TEST_F(OsIntegrationManagerTest, UninstallOsHooksEverything) {
 
   manager.UninstallAllOsHooks(app_id, std::move(callback));
   run_loop.Run();
-  EXPECT_TRUE(uninstall_results[OsHookType::kShortcuts]);
-  EXPECT_TRUE(uninstall_results[OsHookType::kFileHandlers]);
-  EXPECT_TRUE(uninstall_results[OsHookType::kProtocolHandlers]);
-  EXPECT_TRUE(uninstall_results[OsHookType::kUrlHandlers]);
-  EXPECT_TRUE(uninstall_results[OsHookType::kRunOnOsLogin]);
-  EXPECT_TRUE(uninstall_results[OsHookType::kShortcutsMenu]);
-  EXPECT_TRUE(uninstall_results[OsHookType::kUninstallationViaOsSettings]);
+  EXPECT_FALSE(uninstall_errors[OsHookType::kShortcuts]);
+  EXPECT_FALSE(uninstall_errors[OsHookType::kFileHandlers]);
+  EXPECT_FALSE(uninstall_errors[OsHookType::kProtocolHandlers]);
+  EXPECT_FALSE(uninstall_errors[OsHookType::kUrlHandlers]);
+  EXPECT_FALSE(uninstall_errors[OsHookType::kRunOnOsLogin]);
+  EXPECT_FALSE(uninstall_errors[OsHookType::kShortcutsMenu]);
+  EXPECT_FALSE(uninstall_errors[OsHookType::kUninstallationViaOsSettings]);
 }
 
 TEST_F(OsIntegrationManagerTest, UpdateOsHooksEverything) {

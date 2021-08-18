@@ -161,7 +161,7 @@ class WebAppInstallFinalizer {
                                              Source::Type source,
                                              UninstallWebAppCallback callback);
 
-  void OnSyncUninstallOsHooksUninstall(AppId app_id, OsHooksResults);
+  void OnSyncUninstallOsHooksUninstall(AppId app_id, OsHooksErrors);
   void OnSyncUninstallAppDataDeleted(AppId app_id, bool success);
   // Sync uninstall only finishes once both the hooks are uninstalled
   // (OnSyncUninstallOsHooksUninstall) and app data is deleted
@@ -201,7 +201,7 @@ class WebAppInstallFinalizer {
   void OnUninstallOsHooks(const AppId& app_id,
                           webapps::WebappUninstallSource uninstall_source,
                           UninstallWebAppCallback callback,
-                          OsHooksResults os_hooks_info);
+                          OsHooksErrors errors);
 
   WebAppRegistrar* registrar_ = nullptr;
   AppRegistryController* registry_controller_ = nullptr;

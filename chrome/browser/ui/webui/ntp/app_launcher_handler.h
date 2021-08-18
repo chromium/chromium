@@ -187,7 +187,7 @@ class AppLauncherHandler
 
   // Records result to UMA after OS Hooks are installed.
   void OnOsHooksInstalled(const web_app::AppId& app_id,
-                          const web_app::OsHooksResults os_hooks_results);
+                          const web_app::OsHooksErrors os_hooks_errors);
 
   // ExtensionUninstallDialog::Delegate:
   void OnExtensionUninstallDialogClosed(bool did_start_uninstall,

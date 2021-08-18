@@ -339,7 +339,7 @@ void ExternallyManagedAppInstallTask::OnWebAppInstalled(
 void ExternallyManagedAppInstallTask::OnOsHooksCreated(
     const AppId& app_id,
     base::ScopedClosureRunner scoped_closure,
-    const OsHooksResults os_hooks_results) {
+    const OsHooksErrors os_hooks_errors) {
   registrar_->NotifyWebAppInstalledWithOsHooks(app_id);
   scoped_closure.RunAndReset();
 }

@@ -885,22 +885,21 @@ void WebAppInstallTask::OnInstallFinalizedCreateShortcuts(
                                           std::move(web_app_info), options);
 }
 
-void WebAppInstallTask::OnOsHooksCreated(
-    bool open_as_window,
-    const AppId& app_id,
-    const OsHooksResults os_hooks_results) {
+void WebAppInstallTask::OnOsHooksCreated(bool open_as_window,
+                                         const AppId& app_id,
+                                         const OsHooksErrors os_hook_errors) {
   if (ShouldStopInstall())
     return;
 
   DCHECK(registrar_);
   registrar_->NotifyWebAppInstalledWithOsHooks(app_id);
   if (!background_installation_) {
-    const bool can_reparent_tab = install_finalizer_->CanReparentTab(
-        app_id, os_hooks_results[OsHookType::kShortcuts]);
+    bool error = os_hook_errors[OsHookType::kShortcuts];
+    const bool can_reparent_tab =
+        install_finalizer_->CanReparentTab(app_id, !error);
 
     if (can_reparent_tab && open_as_window) {
-      install_finalizer_->ReparentTab(
-          app_id, os_hooks_results[OsHookType::kShortcuts], web_contents());
+      install_finalizer_->ReparentTab(app_id, !error, web_contents());
     }
   }
   CallInstallCallback(app_id, InstallResultCode::kSuccessNewInstall);

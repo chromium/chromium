@@ -474,11 +474,11 @@ void WebAppInstallFinalizer::UninstallWebAppInternal(
 
 void WebAppInstallFinalizer::OnSyncUninstallOsHooksUninstall(
     AppId app_id,
-    OsHooksResults results) {
+    OsHooksErrors errors) {
   DCHECK(base::Contains(pending_sync_uninstalls_, app_id));
   auto& uninstall_state = pending_sync_uninstalls_[app_id];
   uninstall_state->hooks_uninstalled = true;
-  uninstall_state->success = uninstall_state->success && results.all();
+  uninstall_state->success = uninstall_state->success && errors.none();
   MaybeFinishSyncUninstall(app_id);
 }
 
@@ -509,7 +509,7 @@ void WebAppInstallFinalizer::OnUninstallOsHooks(
     const AppId& app_id,
     webapps::WebappUninstallSource uninstall_source,
     UninstallWebAppCallback callback,
-    OsHooksResults os_hooks_info) {
+    OsHooksErrors errors) {
   const WebApp* web_app = registrar().GetAppById(app_id);
   DCHECK(web_app);
   RemoveAppIsolationState(profile_->GetPrefs(),

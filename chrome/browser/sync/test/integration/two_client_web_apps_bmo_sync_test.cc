@@ -640,7 +640,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, NoShortcutsCreatedOnSync) {
   auto last_options =
       GetOsIntegrationManager(GetProfile(1)).get_last_install_options();
   EXPECT_TRUE(last_options.has_value());
-  OsHooksResults expected_os_hook_requests;
+  OsHooksOptions expected_os_hook_requests;
   expected_os_hook_requests[OsHookType::kShortcuts] = true;
   expected_os_hook_requests[OsHookType::kRunOnOsLogin] = false;
   expected_os_hook_requests[OsHookType::kShortcutsMenu] = true;

@@ -56,12 +56,12 @@ void TestOsIntegrationManager::InstallOsHooks(
     InstallOsHooksCallback callback,
     std::unique_ptr<WebApplicationInfo> web_app_info,
     InstallOsHooksOptions options) {
-  OsHooksResults os_hooks_results{false};
+  OsHooksErrors os_hooks_errors;
+
   last_options_ = options;
 
   if (options.os_hooks[OsHookType::kFileHandlers]) {
     ++num_create_file_handlers_calls_;
-    os_hooks_results[OsHookType::kFileHandlers] = true;
   }
 
   did_add_to_desktop_ = options.add_to_desktop;
@@ -74,13 +74,12 @@ void TestOsIntegrationManager::InstallOsHooks(
       success = it->second;
       next_create_shortcut_results_.erase(app_id);
     }
-    if (success)
-      os_hooks_results[OsHookType::kShortcutsMenu] = true;
+    if (!success)
+      os_hooks_errors[OsHookType::kShortcutsMenu] = true;
   }
 
   if (options.os_hooks[OsHookType::kRunOnOsLogin]) {
     ++num_register_run_on_os_login_calls_;
-    os_hooks_results[OsHookType::kRunOnOsLogin] = true;
   }
 
   if (options.add_to_quick_launch_bar)
@@ -88,28 +87,28 @@ void TestOsIntegrationManager::InstallOsHooks(
 
   if (options.os_hooks[OsHookType::kUrlHandlers]) {
     ++num_register_url_handlers_calls_;
-    os_hooks_results[OsHookType::kUrlHandlers] = true;
   }
 
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
-      base::BindOnce(std::move(callback), std::move(os_hooks_results)));
+      base::BindOnce(std::move(callback), std::move(os_hooks_errors)));
 }
 
 void TestOsIntegrationManager::UninstallOsHooks(
     const AppId& app_id,
-    const OsHooksResults& os_hooks,
+    const OsHooksOptions& os_hooks,
     UninstallOsHooksCallback callback) {
+  OsHooksErrors os_hooks_errors;
   base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), os_hooks));
+      FROM_HERE, base::BindOnce(std::move(callback), os_hooks_errors));
 }
 
 void TestOsIntegrationManager::UninstallAllOsHooks(
     const AppId& app_id,
     UninstallOsHooksCallback callback) {
-  OsHooksResults os_hooks_results;
-  os_hooks_results.set();
-  UninstallOsHooks(app_id, os_hooks_results, std::move(callback));
+  OsHooksOptions os_hooks;
+  os_hooks.set();
+  UninstallOsHooks(app_id, os_hooks, std::move(callback));
 }
 
 void TestOsIntegrationManager::UpdateOsHooks(

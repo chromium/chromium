@@ -1168,7 +1168,7 @@ void AppLauncherHandler::HandleRunOnOsLogin(const base::ListValue* args) {
   web_app_provider_->registry_controller().SetAppRunOnOsLoginMode(app_id, mode);
 
   if (mode == web_app::RunOnOsLoginMode::kNotRun) {
-    web_app::OsHooksResults os_hooks;
+    web_app::OsHooksOptions os_hooks;
     os_hooks[web_app::OsHookType::kRunOnOsLogin] = true;
     web_app_provider_->os_integration_manager().UninstallOsHooks(
         app_id, os_hooks, base::DoNothing());
@@ -1251,12 +1251,13 @@ void AppLauncherHandler::PromptToEnableApp(const std::string& extension_id) {
 
 void AppLauncherHandler::OnOsHooksInstalled(
     const web_app::AppId& app_id,
-    const web_app::OsHooksResults os_hooks_results) {
-  // TODO(dmurph): Once installation takes the OSHookResults bitfield, then
+    const web_app::OsHooksErrors os_hooks_errors) {
+  // TODO(dmurph): Once installation takes the OsHooksErrors bitfield, then
   // use that to compare with the results, and record if they all were
   // successful, instead of just shortcuts.
+  bool error = os_hooks_errors[web_app::OsHookType::kShortcuts];
   base::UmaHistogramBoolean("Apps.Launcher.InstallLocallyShortcutsCreated",
-                            os_hooks_results[web_app::OsHookType::kShortcuts]);
+                            !error);
 
   web_app_provider_->registrar().NotifyWebAppInstalledWithOsHooks(app_id);
 }

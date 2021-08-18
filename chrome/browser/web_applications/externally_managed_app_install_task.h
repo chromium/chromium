@@ -106,7 +106,7 @@ class ExternallyManagedAppInstallTask {
       ExternallyManagedAppManager::InstallResult result);
   void OnOsHooksCreated(const AppId& app_id,
                         base::ScopedClosureRunner scoped_closure,
-                        const OsHooksResults os_hooks_results);
+                        const OsHooksErrors os_hooks_errors);
 
   Profile* const profile_;
   WebAppUrlLoader* const url_loader_;

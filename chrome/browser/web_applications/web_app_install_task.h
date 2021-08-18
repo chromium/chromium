@@ -242,7 +242,7 @@ class WebAppInstallTask : content::WebContentsObserver {
       InstallResultCode code);
   void OnOsHooksCreated(bool open_as_window,
                         const AppId& app_id,
-                        const OsHooksResults os_hooks_results);
+                        const OsHooksErrors os_hook_errors);
 
   // Whether the install task has been 'initiated' by calling one of the public
   // methods.

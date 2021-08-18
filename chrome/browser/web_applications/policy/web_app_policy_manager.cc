@@ -314,7 +314,7 @@ void WebAppPolicyManager::ApplyPolicySettings() {
     if (policy == RunOnOsLoginPolicy::kBlocked) {
       app_registry_controller_->SetAppRunOnOsLoginMode(
           app_id, RunOnOsLoginMode::kNotRun);
-      OsHooksResults os_hooks;
+      OsHooksOptions os_hooks;
       os_hooks[OsHookType::kRunOnOsLogin] = true;
       os_integration_manager_->UninstallOsHooks(app_id, os_hooks,
                                                 base::DoNothing());

@@ -41,7 +41,7 @@ std::ostream& operator<<(std::ostream& os, Source::Type type);
 //
 // This enum should be zero based. It is not strongly typed enum class to
 // support implicit conversion to int. Values are also used as index in
-// OsHooksResults.
+// OsHooksErrors and OsHooksOptions.
 namespace OsHookType {
 enum Type {
   kShortcuts = 0,

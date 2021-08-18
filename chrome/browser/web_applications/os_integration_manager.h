@@ -37,9 +37,13 @@ class WebAppIconManager;
 class TestOsIntegrationManager;
 class WebAppUiManager;
 
-// OsHooksResults contains the result of all Os hook deployments.
-// If a bit is set to `true`, then an error did not occur.
-using OsHooksResults = std::bitset<OsHookType::kMaxValue + 1>;
+// OsHooksErrors contains the result of all Os hook deployments.
+// If a bit is set to `true`, then an error did occur.
+using OsHooksErrors = std::bitset<OsHookType::kMaxValue + 1>;
+
+// OsHooksOptions contains the (install/uninstall) options of all Os hook
+// deployments.
+using OsHooksOptions = std::bitset<OsHookType::kMaxValue + 1>;
 
 // Used to pass install options configured from upstream caller.
 // All options are disabled by default.
@@ -48,18 +52,18 @@ struct InstallOsHooksOptions {
   InstallOsHooksOptions(const InstallOsHooksOptions& other);
   InstallOsHooksOptions& operator=(const InstallOsHooksOptions& other);
 
-  OsHooksResults os_hooks;
+  OsHooksOptions os_hooks;
   bool add_to_desktop = false;
   bool add_to_quick_launch_bar = false;
 };
 
 // Callback made after InstallOsHooks is finished.
 using InstallOsHooksCallback =
-    base::OnceCallback<void(OsHooksResults os_hooks_info)>;
+    base::OnceCallback<void(OsHooksErrors os_hooks_errors)>;
 
 // Callback made after UninstallOsHooks is finished.
 using UninstallOsHooksCallback =
-    base::OnceCallback<void(OsHooksResults os_hooks_info)>;
+    base::OnceCallback<void(OsHooksErrors os_hooks_errors)>;
 
 // Used to suppress OS hooks within this object's lifetime.
 using ScopedOsHooksSuppress = std::unique_ptr<base::AutoReset<bool>>;
@@ -102,7 +106,7 @@ class OsIntegrationManager {
   // TODO(https://crbug.com/1108109) we should record uninstall result and allow
   // callback. virtual for testing
   virtual void UninstallOsHooks(const AppId& app_id,
-                                const OsHooksResults& os_hooks,
+                                const OsHooksOptions& os_hooks,
                                 UninstallOsHooksCallback callback);
 
   // Uninstall all OS hooks for the web app.
