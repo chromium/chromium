@@ -126,14 +126,26 @@ InitResult InitWithMappedFile(const base::FilePath& metrics_dir,
     // "active" filename is supposed to be unique so this shouldn't happen.
     result = kMappedFileExists;
   } else {
+#if defined(OS_WIN)
+    // Disallow multiple writers on Windows. Needed to ensure multiple instances
+    // of Chrome aren't writing to the same file, which could happen in some
+    // rare circumstances observed in the wild (e.g. on FAT FS where the file
+    // name ends up not being unique due to truncation and two processes racing
+    // on base::PathExists(active_file) above).
+    // TODO(crbug.com/1176977): If this resolves the bug, consider making
+    // consistent on all platforms.
+    bool exclusive_write = true;
+#else
+    bool exclusive_write = false;
+#endif
     // Move any spare file into the active position.
-    // TODO(crbug.com/1183166): Don't do this if |kSpareFileRequired| = false.
     base::ReplaceFile(spare_file, active_file, nullptr);
     // Create global allocator using the |active_file|.
     if (kSpareFileRequired && !base::PathExists(active_file)) {
       result = kNoSpareFile;
     } else if (base::GlobalHistogramAllocator::CreateWithFile(
-                   active_file, kAllocSize, kAllocId, kBrowserMetricsName)) {
+                   active_file, kAllocSize, kAllocId, kBrowserMetricsName,
+                   exclusive_write)) {
       // TODO(crbug.com/1176977): Remove this instrumentation when bug is fixed.
       // Log the drive type on Windows.
 #if defined(OS_WIN)

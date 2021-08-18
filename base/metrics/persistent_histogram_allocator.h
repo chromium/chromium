@@ -356,11 +356,13 @@ class BASE_EXPORT GlobalHistogramAllocator
   // not exist, it will be created with the specified |size|. If the file does
   // exist, the allocator will use and add to its contents, ignoring the passed
   // size in favor of the existing size. Returns whether the global allocator
-  // was set.
+  // was set. If |exclusive_write| is true, the file will be opened in a mode
+  // that disallows multiple concurrent writers.
   static bool CreateWithFile(const FilePath& file_path,
                              size_t size,
                              uint64_t id,
-                             StringPiece name);
+                             StringPiece name,
+                             bool exclusive_write = false);
 
   // Creates a new file at |active_path|. If it already exists, it will first be
   // moved to |base_path|. In all cases, any old file at |base_path| will be

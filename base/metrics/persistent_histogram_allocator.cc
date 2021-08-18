@@ -680,14 +680,18 @@ void GlobalHistogramAllocator::CreateWithLocalMemory(
 
 #if !defined(OS_NACL)
 // static
-bool GlobalHistogramAllocator::CreateWithFile(
-    const FilePath& file_path,
-    size_t size,
-    uint64_t id,
-    StringPiece name) {
-  File file(
-      file_path, File::FLAG_OPEN_ALWAYS | File::FLAG_SHARE_DELETE |
-                 File::FLAG_READ | File::FLAG_WRITE);
+bool GlobalHistogramAllocator::CreateWithFile(const FilePath& file_path,
+                                              size_t size,
+                                              uint64_t id,
+                                              StringPiece name,
+                                              bool exclusive_write) {
+  uint32_t flags = File::FLAG_OPEN_ALWAYS | File::FLAG_SHARE_DELETE |
+                   File::FLAG_READ | File::FLAG_WRITE;
+  if (exclusive_write)
+    flags |= File::FLAG_EXCLUSIVE_WRITE;
+  File file(file_path, flags);
+  if (!file.IsValid())
+    return false;
 
   std::unique_ptr<MemoryMappedFile> mmfile(new MemoryMappedFile());
   bool success = false;

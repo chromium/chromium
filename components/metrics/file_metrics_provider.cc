@@ -61,27 +61,29 @@ enum : int {
 };
 
 constexpr SourceOptions kSourceOptions[] = {
-  // SOURCE_HISTOGRAMS_ATOMIC_FILE
-  {
-    // Ensure that no other process reads this at the same time.
-    STD_OPEN | base::File::FLAG_EXCLUSIVE_READ,
-    base::MemoryMappedFile::READ_ONLY,
-    true
-  },
-  // SOURCE_HISTOGRAMS_ATOMIC_DIR
-  {
-    // Ensure that no other process reads this at the same time.
-    STD_OPEN | base::File::FLAG_EXCLUSIVE_READ,
-    base::MemoryMappedFile::READ_ONLY,
-    true
-  },
-  // SOURCE_HISTOGRAMS_ACTIVE_FILE
-  {
-    // Allow writing (updated "logged" values) to the file.
-    STD_OPEN | base::File::FLAG_WRITE,
-    base::MemoryMappedFile::READ_WRITE,
-    false
-  }
+    // SOURCE_HISTOGRAMS_ATOMIC_FILE
+    {
+        // Ensure that no other process reads this at the same time.
+        STD_OPEN | base::File::FLAG_EXCLUSIVE_READ,
+        base::MemoryMappedFile::READ_ONLY,
+        true,
+    },
+    // SOURCE_HISTOGRAMS_ATOMIC_DIR
+    {
+        // Ensure that no other process reads this at the same time.
+        STD_OPEN | base::File::FLAG_EXCLUSIVE_READ,
+        base::MemoryMappedFile::READ_ONLY,
+        true,
+    },
+    // SOURCE_HISTOGRAMS_ACTIVE_FILE
+    {
+        // Allow writing to the file. This is needed so we can keep track of
+        // deltas that have been uploaded (by modifying the file), while the
+        // file may still be open by an external process (e.g. Crashpad).
+        STD_OPEN | base::File::FLAG_WRITE,
+        base::MemoryMappedFile::READ_WRITE,
+        false,
+    },
 };
 
 void DeleteFileWhenPossible(const base::FilePath& path) {
