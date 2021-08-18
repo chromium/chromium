@@ -34,4 +34,7 @@ tast_disabled_tests_from_chrome_all = [
   "policy.URLCheck.allowlist",
   "policy.URLCheck.blocklist",
   "policy.URLCheck.whitelist",  # nocheck
+
+  # b/196705842
+  "apps.LaunchGalleryLanguage",
 ]
