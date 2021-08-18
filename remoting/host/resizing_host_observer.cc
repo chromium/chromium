@@ -166,9 +166,9 @@ void ResizingHostObserver::SetScreenResolution(
     return;
   } else {
     LOG(INFO) << "Found host resolutions:";
-    for (const auto& resolution : resolutions) {
-      LOG(INFO) << "  " << resolution.dimensions().width() << "x"
-                << resolution.dimensions().height();
+    for (const auto& host_resolution : resolutions) {
+      LOG(INFO) << "  " << host_resolution.dimensions().width() << "x"
+                << host_resolution.dimensions().height();
     }
   }
   CandidateResolution best_candidate(resolutions.front(), resolution);

@@ -107,10 +107,10 @@ TEST(CSPSourceList, AllowStar) {
 
   {
     // With a protocol of 'file', '*' allow 'file:'
-    auto self = network::mojom::CSPSource::New(
+    auto file = network::mojom::CSPSource::New(
         "file", "example.com", url::PORT_UNSPECIFIED, "", false, false);
-    EXPECT_TRUE(Allow(source_list, GURL("file://not-example.com"), *self));
-    EXPECT_FALSE(Allow(source_list, GURL("applewebdata://a.test"), *self));
+    EXPECT_TRUE(Allow(source_list, GURL("file://not-example.com"), *file));
+    EXPECT_FALSE(Allow(source_list, GURL("applewebdata://a.test"), *file));
   }
 }
 

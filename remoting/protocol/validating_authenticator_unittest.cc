@@ -299,13 +299,13 @@ TEST_F(ValidatingAuthenticatorTest, InvalidConnection_InvalidAccount) {
       .WillByDefault(Return(Authenticator::REJECTED));
 
   ON_CALL(*mock_authenticator_, rejection_reason())
-      .WillByDefault(Return(Authenticator::INVALID_ACCOUNT));
+      .WillByDefault(Return(Authenticator::INVALID_ACCOUNT_ID));
 
   // Verify validation callback is not called for invalid connections.
   SendMessageAndWaitForCallback();
   ASSERT_FALSE(validate_complete_called_);
   ASSERT_EQ(Authenticator::REJECTED, validating_authenticator_->state());
-  ASSERT_EQ(Authenticator::INVALID_ACCOUNT,
+  ASSERT_EQ(Authenticator::INVALID_ACCOUNT_ID,
             validating_authenticator_->rejection_reason());
 }
 

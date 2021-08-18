@@ -577,7 +577,7 @@ TEST_P(SnooperNodeTest, SuggestsRenderTimes) {
   const absl::optional<base::TimeTicks> first_suggestion =
       node()->SuggestLatestRenderTime(output_params().frames_per_buffer());
   ASSERT_TRUE(first_suggestion);
-  const base::TimeTicks time_at_end_of_input =
+  base::TimeTicks time_at_end_of_input =
       first_input_time + input_params().GetBufferDuration();
   const base::TimeDelta required_duration_buffered =
       output_params().GetBufferDuration() * 3 / 2;
@@ -606,8 +606,7 @@ TEST_P(SnooperNodeTest, SuggestsRenderTimes) {
     const absl::optional<base::TimeTicks> next_suggestion =
         node()->SuggestLatestRenderTime(output_params().frames_per_buffer());
     ASSERT_TRUE(next_suggestion);
-    const base::TimeTicks time_at_end_of_input =
-        next_input_time + input_params().GetBufferDuration();
+    time_at_end_of_input = next_input_time + input_params().GetBufferDuration();
     EXPECT_GT(time_at_end_of_input - required_duration_buffered,
               *next_suggestion);
     EXPECT_LT(

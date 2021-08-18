@@ -70,8 +70,8 @@ bool JingleSessionManager::OnSignalStrategyIncomingStanza(
 
   std::unique_ptr<jingle_xmpp::XmlElement> stanza_copy(new jingle_xmpp::XmlElement(*stanza));
   std::unique_ptr<JingleMessage> message(new JingleMessage());
-  std::string error;
-  if (!message->ParseXml(stanza, &error)) {
+  std::string error_msg;
+  if (!message->ParseXml(stanza, &error_msg)) {
     SendReply(std::move(stanza_copy), JingleMessageReply::BAD_REQUEST);
     return true;
   }

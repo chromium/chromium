@@ -350,7 +350,6 @@ TEST_F(ChunkedDataPipeUploadDataStreamTest, GetSizeSucceedsBeforeInit) {
 
   std::string read_data;
   while (read_data.size() < kData.size()) {
-    net::TestCompletionCallback callback;
     int read_size = kData.size() - read_data.size();
     auto io_buffer = base::MakeRefCounted<net::IOBufferWithSize>(read_size);
     int result = chunked_upload_stream_->Read(
@@ -399,7 +398,6 @@ TEST_F(ChunkedDataPipeUploadDataStreamTest, GetSizeSucceedsAfterReset) {
   read_data.erase();
   mojo::BlockingCopyFromString(kData, write_pipe_);
   while (read_data.size() < kData.size()) {
-    net::TestCompletionCallback callback;
     int read_size = kData.size() - read_data.size();
     auto io_buffer = base::MakeRefCounted<net::IOBufferWithSize>(read_size);
     int result = chunked_upload_stream_->Read(
@@ -801,24 +799,24 @@ TEST_F(ChunkedDataPipeUploadDataStreamTest,
                                          net::NetLogWithSource()));
 }
 
-#define EXPECT_READ(chunked_upload_stream, io_buffer, expected)                \
-  {                                                                            \
-    int result = chunked_upload_stream->Read(io_buffer.get(),                  \
-                                             io_buffer->size(), NoCallback()); \
-    EXPECT_GT(result, 0);                                                      \
-    EXPECT_EQ(std::string(io_buffer->data(), result), expected);               \
+#define EXPECT_READ(chunked_upload_stream, io_buffer, expected)       \
+  {                                                                   \
+    int read_result = chunked_upload_stream->Read(                    \
+        io_buffer.get(), io_buffer->size(), NoCallback());            \
+    EXPECT_GT(read_result, 0);                                        \
+    EXPECT_EQ(std::string(io_buffer->data(), read_result), expected); \
   }
 
-#define EXPECT_EOF(chunked_upload_stream, size)                                \
-  {                                                                            \
-    net::TestCompletionCallback callback;                                      \
-    auto io_buffer = base::MakeRefCounted<net::IOBufferWithSize>(1);           \
-    int result =                                                               \
-        chunked_upload_stream->Read(io_buffer.get(), 1u, callback.callback()); \
-    EXPECT_EQ(net::ERR_IO_PENDING, result);                                    \
-    std::move(get_size_callback_).Run(net::OK, size);                          \
-    EXPECT_EQ(net::OK, callback.GetResult(result));                            \
-    EXPECT_TRUE(chunked_upload_stream->IsEOF());                               \
+#define EXPECT_EOF(chunked_upload_stream, size)                               \
+  {                                                                           \
+    net::TestCompletionCallback test_callback;                                \
+    auto one_byte_io_buffer = base::MakeRefCounted<net::IOBufferWithSize>(1); \
+    int read_result = chunked_upload_stream->Read(                            \
+        one_byte_io_buffer.get(), 1u, test_callback.callback());              \
+    EXPECT_EQ(net::ERR_IO_PENDING, read_result);                              \
+    std::move(get_size_callback_).Run(net::OK, size);                         \
+    EXPECT_EQ(net::OK, test_callback.GetResult(read_result));                 \
+    EXPECT_TRUE(chunked_upload_stream->IsEOF());                              \
   }
 
 #define WRITE_DATA_SYNC(write_pipe, str)                            \

@@ -260,12 +260,12 @@ void CoordinatorImpl::UnregisterClientProcess(base::ProcessId process_id) {
   }
 
   for (auto& pair : in_progress_vm_region_requests_) {
-    QueuedVmRegionRequest* request = pair.second.get();
-    auto it = request->pending_responses.begin();
-    while (it != request->pending_responses.end()) {
+    QueuedVmRegionRequest* in_progress_request = pair.second.get();
+    auto it = in_progress_request->pending_responses.begin();
+    while (it != in_progress_request->pending_responses.end()) {
       auto current = it++;
       if (*current == process_id) {
-        request->pending_responses.erase(current);
+        in_progress_request->pending_responses.erase(current);
       }
     }
   }

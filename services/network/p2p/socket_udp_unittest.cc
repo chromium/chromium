@@ -582,9 +582,10 @@ TEST_F(P2PSocketUdpTest, PortRangeImplicitPort) {
                              ParseAddress(kTestIpAddress1, kTestPort1)),
         net::NetworkIsolationKey());
 
-    FakeDatagramServerSocket* socket = GetSocketFromHost(socket_impl.get());
+    FakeDatagramServerSocket* datagram_socket =
+        GetSocketFromHost(socket_impl.get());
     net::IPEndPoint bound_address;
-    socket->GetLocalAddress(&bound_address);
+    datagram_socket->GetLocalAddress(&bound_address);
     EXPECT_EQ(port, bound_address.port());
 
     base::RunLoop().RunUntilIdle();

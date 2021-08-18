@@ -112,10 +112,10 @@ void MockMediaSessionMojoObserver::MediaSessionImagesChanged(
 
   if (expected_images_of_type_.has_value()) {
     auto type = expected_images_of_type_->first;
-    auto images = expected_images_of_type_->second;
+    auto expected_images = expected_images_of_type_->second;
     auto it = session_images_->find(type);
 
-    if (it != session_images_->end() && it->second == images) {
+    if (it != session_images_->end() && it->second == expected_images) {
       run_loop_->Quit();
       expected_images_of_type_.reset();
     }

@@ -251,7 +251,7 @@ void AudioCapturerWin::DoCapture() {
   HRESULT hr = S_OK;
   while (true) {
     UINT32 next_packet_size;
-    HRESULT hr = audio_capture_client_->GetNextPacketSize(&next_packet_size);
+    hr = audio_capture_client_->GetNextPacketSize(&next_packet_size);
     if (FAILED(hr))
       break;
 

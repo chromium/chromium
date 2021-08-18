@@ -552,9 +552,10 @@ bool WebrtcTransport::ProcessTransportInfo(XmlElement* transport_info) {
     UpdateCodecParameters(&sdp_message, /*incoming=*/true);
 
     webrtc::SdpParseError error;
-    std::unique_ptr<webrtc::SessionDescriptionInterface> session_description(
-        webrtc::CreateSessionDescription(type, sdp_message.ToString(), &error));
-    if (!session_description) {
+    std::unique_ptr<webrtc::SessionDescriptionInterface>
+        webrtc_session_description(webrtc::CreateSessionDescription(
+            type, sdp_message.ToString(), &error));
+    if (!webrtc_session_description) {
       LOG(ERROR) << "Failed to parse the session description: "
                  << error.description << " line: " << error.line;
       return false;
@@ -565,7 +566,7 @@ bool WebrtcTransport::ProcessTransportInfo(XmlElement* transport_info) {
             &WebrtcTransport::OnRemoteDescriptionSet,
             weak_factory_.GetWeakPtr(),
             type == webrtc::SessionDescriptionInterface::kOffer)),
-        session_description.release());
+        webrtc_session_description.release());
 
     // SetRemoteDescription() might overwrite any bitrate caps previously set,
     // so (re)apply them here. This might happen if ICE state were already

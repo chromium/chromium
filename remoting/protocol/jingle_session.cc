@@ -69,13 +69,13 @@ ErrorCode AuthRejectionReasonToErrorCode(
       return AUTHENTICATION_FAILED;
     case Authenticator::PROTOCOL_ERROR:
       return INCOMPATIBLE_PROTOCOL;
-    case Authenticator::INVALID_ACCOUNT:
+    case Authenticator::INVALID_ACCOUNT_ID:
       return INVALID_ACCOUNT;
     case Authenticator::TOO_MANY_CONNECTIONS:
       return SESSION_REJECTED;
     case Authenticator::REJECTED_BY_USER:
       return SESSION_REJECTED;
-    case Authenticator::AUTHZ_POLICY_CHECK_FAILED:
+    case Authenticator::AUTHORIZATION_POLICY_CHECK_FAILED:
       return AUTHZ_POLICY_CHECK_FAILED;
   }
   NOTREACHED();
@@ -524,9 +524,9 @@ void JingleSession::OnIncomingMessage(const std::string& id,
   std::vector<PendingMessage> ordered = message_queue_->OnIncomingMessage(
       id, PendingMessage{std::move(message), std::move(reply_callback)});
   base::WeakPtr<JingleSession> self = weak_factory_.GetWeakPtr();
-  for (auto& message : ordered) {
-    ProcessIncomingMessage(std::move(message.message),
-                           std::move(message.reply_callback));
+  for (auto& pending_message : ordered) {
+    ProcessIncomingMessage(std::move(pending_message.message),
+                           std::move(pending_message.reply_callback));
     if (!self)
       return;
   }

@@ -96,8 +96,8 @@ bool AllowsInterface(const Manifest::RequiredCapabilityMap& source_requirements,
   for (const auto& capability : required_capabilities) {
     auto it = target_capabilities.find(capability);
     if (it != target_capabilities.end()) {
-      for (const auto& interface_name : it->second)
-        allowed_interfaces.insert(interface_name);
+      for (const auto& interface : it->second)
+        allowed_interfaces.insert(interface);
     }
   }
 

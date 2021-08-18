@@ -834,8 +834,7 @@ void ClientSession::OnDesktopDisplayChanged(
     protocol::VideoTrackLayout display = displays->video_track(display_id);
     desktop_display_info_.AddDisplayFrom(display);
 
-    protocol::VideoTrackLayout* video_track = layout.add_video_track();
-    video_track->CopyFrom(display);
+    layout.add_video_track()->CopyFrom(display);
     LOG(INFO) << "  Display " << display_id << " = " << display.position_x()
               << "," << display.position_y() << " " << display.width() << "x"
               << display.height() << " [" << display.x_dpi() << ","

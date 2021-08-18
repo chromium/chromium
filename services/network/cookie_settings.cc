@@ -162,23 +162,25 @@ CookieSettings::GetCookieSettingWithMetadata(
       block_third_party_cookies_ && is_third_party_request &&
       !base::Contains(third_party_cookies_allowed_schemes_,
                       first_party_url.scheme());
-  // `content_settings_` is sorted in order of precedence, so we use the first
-  // matching rule we find.
-  const auto& entry = base::ranges::find_if(
-      content_settings_, [&](const ContentSettingPatternSource& entry) {
-        // The primary pattern is for the request URL; the secondary pattern is
-        // for the first-party URL (which is the top-frame origin [if available]
-        // or the site-for-cookies).
-        return entry.primary_pattern.Matches(url) &&
-               entry.secondary_pattern.Matches(first_party_url);
-      });
-  if (entry != content_settings_.end()) {
-    cookie_setting = entry->GetContentSetting();
-    // Site-specific settings override the global "block third-party cookies"
-    // setting.
-    // Note: global settings are implemented as a catch-all (*, *) pattern.
-    if (IsExplicitSetting(*entry))
-      blocked_by_third_party_setting = false;
+  {
+    // `content_settings_` is sorted in order of precedence, so we use the first
+    // matching rule we find.
+    const auto& entry = base::ranges::find_if(
+        content_settings_, [&](const ContentSettingPatternSource& entry) {
+          // The primary pattern is for the request URL; the secondary pattern
+          // is for the first-party URL (which is the top-frame origin [if
+          // available] or the site-for-cookies).
+          return entry.primary_pattern.Matches(url) &&
+                 entry.secondary_pattern.Matches(first_party_url);
+        });
+    if (entry != content_settings_.end()) {
+      cookie_setting = entry->GetContentSetting();
+      // Site-specific settings override the global "block third-party cookies"
+      // setting.
+      // Note: global settings are implemented as a catch-all (*, *) pattern.
+      if (IsExplicitSetting(*entry))
+        blocked_by_third_party_setting = false;
+    }
   }
 
   if (blocked_by_third_party_setting) {

@@ -147,7 +147,7 @@ TEST_P(ProxyResolvingClientSocketTest, NetworkIsolationKeyDirect) {
             kDestinationHostPortPair, other_nik, net::NetLogWithSource(),
             params);
     net::TestCompletionCallback callback3;
-    int result = request2->Start(callback3.callback());
+    result = request2->Start(callback3.callback());
     EXPECT_EQ(net::ERR_NAME_NOT_RESOLVED, callback3.GetResult(result));
   }
 }

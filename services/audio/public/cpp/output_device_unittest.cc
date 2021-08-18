@@ -244,9 +244,9 @@ TEST_F(AudioServiceOutputDeviceTest, MAYBE_VerifyDataFlow) {
     env.reader->Read(test_bus.get());
 
     Mock::VerifyAndClear(&env.render_callback);
-    for (int i = 0; i < kFrames; ++i) {
-      EXPECT_EQ(kAudioData, test_bus->channel(0)[i]);
-      EXPECT_EQ(kAudioData, test_bus->channel(1)[i]);
+    for (int frame = 0; frame < kFrames; ++frame) {
+      EXPECT_EQ(kAudioData, test_bus->channel(0)[frame]);
+      EXPECT_EQ(kAudioData, test_bus->channel(1)[frame]);
     }
   }
 }
@@ -306,10 +306,11 @@ TEST_F(AudioServiceOutputDeviceTest, CreateBitStreamStream) {
     EXPECT_TRUE(test_bus->is_bitstream_format());
     EXPECT_EQ(kBitstreamFrames, test_bus->GetBitstreamFrames());
     EXPECT_EQ(kBitstreamDataSize, test_bus->GetBitstreamDataSize());
-    for (size_t i = 0; i < kBitstreamDataSize / sizeof(float); ++i) {
+    for (size_t datum = 0; datum < kBitstreamDataSize / sizeof(float);
+         ++datum) {
       // Note: if all of these fail, the bots will behave strangely due to the
       // large amount of text output. Assert is used to avoid this.
-      ASSERT_EQ(kAudioData, test_bus->channel(0)[i]);
+      ASSERT_EQ(kAudioData, test_bus->channel(0)[datum]);
     }
   }
 

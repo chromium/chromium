@@ -128,11 +128,11 @@ ResourceRequest::TrustedParams& ResourceRequest::TrustedParams::operator=(
 }
 
 bool ResourceRequest::TrustedParams::EqualsForTesting(
-    const TrustedParams& trusted_params) const {
-  return isolation_info.IsEqualForTesting(trusted_params.isolation_info) &&
-         disable_secure_dns == trusted_params.disable_secure_dns &&
-         has_user_activation == trusted_params.has_user_activation &&
-         client_security_state == trusted_params.client_security_state;
+    const TrustedParams& other) const {
+  return isolation_info.IsEqualForTesting(other.isolation_info) &&
+         disable_secure_dns == other.disable_secure_dns &&
+         has_user_activation == other.has_user_activation &&
+         client_security_state == other.client_security_state;
 }
 
 ResourceRequest::WebBundleTokenParams::WebBundleTokenParams() = default;

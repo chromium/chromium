@@ -99,10 +99,10 @@ class ProxyConfigServiceMojoTest : public testing::Test {
 // changes when the ProxyConfig changes, and is not informed of them in the case
 // of "changes" that result in the same ProxyConfig as before.
 TEST_F(ProxyConfigServiceMojoTest, ObserveProxyChanges) {
-  net::ProxyConfigWithAnnotation proxy_config;
+  net::ProxyConfigWithAnnotation temp;
   // The service should start without a config.
   EXPECT_EQ(net::ProxyConfigService::CONFIG_PENDING,
-            proxy_config_service_.GetLatestProxyConfig(&proxy_config));
+            proxy_config_service_.GetLatestProxyConfig(&temp));
 
   net::ProxyConfig proxy_configs[3];
   proxy_configs[0].proxy_rules().ParseFromString("http=foopy:80");

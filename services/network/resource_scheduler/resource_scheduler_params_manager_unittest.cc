@@ -58,11 +58,11 @@ class ResourceSchedulerParamsManagerTest : public testing::Test {
     while (effective_connection_type < net::EFFECTIVE_CONNECTION_TYPE_LAST) {
       if (effective_connection_type <
           net::EFFECTIVE_CONNECTION_TYPE_SLOW_2G + num_ranges) {
-        int index = static_cast<int>(effective_connection_type) - 1;
-        EXPECT_EQ(index * 10u, resource_scheduler_params_manager
-                                   .GetParamsForEffectiveConnectionType(
-                                       effective_connection_type)
-                                   .max_delayable_requests);
+        int type = static_cast<int>(effective_connection_type) - 1;
+        EXPECT_EQ(type * 10u, resource_scheduler_params_manager
+                                  .GetParamsForEffectiveConnectionType(
+                                      effective_connection_type)
+                                  .max_delayable_requests);
         EXPECT_EQ(0, resource_scheduler_params_manager
                          .GetParamsForEffectiveConnectionType(
                              effective_connection_type)

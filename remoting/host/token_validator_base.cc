@@ -305,7 +305,7 @@ protocol::TokenValidator::ValidationResult TokenValidatorBase::ProcessResponse(
       size_t start_pos = data_.find(kForbiddenExceptionToken);
       if (start_pos != std::string::npos) {
         if (data_.find(kAuthzDeniedErrorCode, start_pos) != std::string::npos) {
-          return RejectionReason::AUTHZ_POLICY_CHECK_FAILED;
+          return RejectionReason::AUTHORIZATION_POLICY_CHECK_FAILED;
         }
       }
     }

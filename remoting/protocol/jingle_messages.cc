@@ -446,29 +446,29 @@ std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageReply::ToXml(
       new jingle_xmpp::XmlElement(QName(kJabberNamespace, "error"));
   iq->AddElement(error);
 
-  std::string type;
+  std::string type_attr;
   std::string error_text;
   QName name;
   switch (error_type) {
     case BAD_REQUEST:
-      type = "modify";
+      type_attr = "modify";
       name = QName(kJabberNamespace, "bad-request");
       break;
     case NOT_IMPLEMENTED:
-      type = "cancel";
+      type_attr = "cancel";
       name = QName(kJabberNamespace, "feature-bad-request");
       break;
     case INVALID_SID:
-      type = "modify";
+      type_attr = "modify";
       name = QName(kJabberNamespace, "item-not-found");
       error_text = "Invalid SID";
       break;
     case UNEXPECTED_REQUEST:
-      type = "modify";
+      type_attr = "modify";
       name = QName(kJabberNamespace, "unexpected-request");
       break;
     case UNSUPPORTED_INFO:
-      type = "modify";
+      type_attr = "modify";
       name = QName(kJabberNamespace, "feature-not-implemented");
       break;
     default:
@@ -479,7 +479,7 @@ std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageReply::ToXml(
     error_text = text;
   }
 
-  error->SetAttr(QName(kEmptyNamespace, "type"), type);
+  error->SetAttr(QName(kEmptyNamespace, "type"), type_attr);
 
   // If the error name is not in the standard namespace, we have
   // to first add some error from that namespace.

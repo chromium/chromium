@@ -473,8 +473,8 @@ TEST_F(TCPSocketTest, ServerReceivesMultipleAccept) {
                   &client_socket_send_handle));
     client_sockets.push_back(std::move(client_socket));
   }
-  for (const auto& callback : accept_callbacks) {
-    EXPECT_EQ(net::OK, callback->WaitForResult());
+  for (const auto& accept_callback : accept_callbacks) {
+    EXPECT_EQ(net::OK, accept_callback->WaitForResult());
   }
 }
 

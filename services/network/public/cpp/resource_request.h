@@ -55,7 +55,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
     TrustedParams(const TrustedParams& params);
     TrustedParams& operator=(const TrustedParams& other);
 
-    bool EqualsForTesting(const TrustedParams& trusted_params) const;
+    bool EqualsForTesting(const TrustedParams& other) const;
 
     net::IsolationInfo isolation_info;
     bool disable_secure_dns = false;

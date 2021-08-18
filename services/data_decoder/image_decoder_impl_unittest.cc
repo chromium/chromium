@@ -145,9 +145,9 @@ TEST_F(ImageDecoderImplTest, DecodeImageSizeLimit) {
     // Check that if resize not requested and image exceeds IPC size limit,
     // an empty image is returned
     if (heights[i] > max_height_for_msg) {
-      Request request(decoder());
-      request.DecodeImage(jpg, false);
-      EXPECT_TRUE(request.bitmap().isNull());
+      Request request2(decoder());
+      request2.DecodeImage(jpg, false);
+      EXPECT_TRUE(request2.bitmap().isNull());
     }
 #endif
   }
