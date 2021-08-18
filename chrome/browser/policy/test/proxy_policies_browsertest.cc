@@ -15,9 +15,59 @@
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
+#include "components/prefs/pref_service.h"
+#include "components/proxy_config/proxy_config_dictionary.h"
+#include "components/proxy_config/proxy_config_pref_names.h"
+#include "components/proxy_config/proxy_prefs.h"
 #include "content/public/test/browser_test.h"
 
 namespace policy {
+
+namespace {
+
+// Verify that all the proxy prefs are set to the specified expected values.
+void VerifyProxyPrefs(PrefService* prefs,
+                      const std::string& expected_proxy_server,
+                      const std::string& expected_proxy_pac_url,
+                      absl::optional<bool> expected_proxy_pac_mandatory,
+                      const std::string& expected_proxy_bypass_list,
+                      const ProxyPrefs::ProxyMode& expected_proxy_mode) {
+  const base::Value* value = prefs->Get(proxy_config::prefs::kProxy);
+  ASSERT_TRUE(value);
+  ASSERT_TRUE(value->is_dict());
+  ProxyConfigDictionary dict(value->Clone());
+  std::string s;
+  bool b;
+  if (expected_proxy_server.empty()) {
+    EXPECT_FALSE(dict.GetProxyServer(&s));
+  } else {
+    ASSERT_TRUE(dict.GetProxyServer(&s));
+    EXPECT_EQ(expected_proxy_server, s);
+  }
+  if (expected_proxy_pac_url.empty()) {
+    EXPECT_FALSE(dict.GetPacUrl(&s));
+  } else {
+    ASSERT_TRUE(dict.GetPacUrl(&s));
+    EXPECT_EQ(expected_proxy_pac_url, s);
+  }
+  if (!expected_proxy_pac_mandatory) {
+    EXPECT_FALSE(dict.GetPacMandatory(&b));
+  } else {
+    ASSERT_TRUE(dict.GetPacMandatory(&b));
+    EXPECT_EQ(*expected_proxy_pac_mandatory, b);
+  }
+  if (expected_proxy_bypass_list.empty()) {
+    EXPECT_FALSE(dict.GetBypassList(&s));
+  } else {
+    ASSERT_TRUE(dict.GetBypassList(&s));
+    EXPECT_EQ(expected_proxy_bypass_list, s);
+  }
+  ProxyPrefs::ProxyMode mode;
+  ASSERT_TRUE(dict.GetMode(&mode));
+  EXPECT_EQ(expected_proxy_mode, mode);
+}
+
+}  // namespace
 
 IN_PROC_BROWSER_TEST_F(PolicyTest, SeparateProxyPoliciesMerging) {
   // Add an individual proxy policy value.
@@ -26,30 +76,12 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, SeparateProxyPoliciesMerging) {
                POLICY_SOURCE_CLOUD, base::Value(3), nullptr);
   UpdateProviderPolicy(policies);
 
-  // It should be removed and replaced with a dictionary.
-  PolicyMap expected;
-  base::Value expected_value(base::Value::Type::DICTIONARY);
-  expected_value.SetIntKey(key::kProxyServerMode, 3);
-  expected.Set(key::kProxySettings, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-               POLICY_SOURCE_CLOUD, std::move(expected_value), nullptr);
-#if defined(OS_CHROMEOS)
-  SetEnterpriseUsersDefaults(&expected);
-#endif
-
-  // Check both the browser and the profile.
-  const PolicyMap& actual_from_browser =
-      g_browser_process->browser_policy_connector()
-          ->GetPolicyService()
-          ->GetPolicies(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()));
-
-  EXPECT_TRUE(expected.Equals(actual_from_browser));
-  const PolicyMap& actual_from_profile =
-      browser()
-          ->profile()
-          ->GetProfilePolicyConnector()
-          ->policy_service()
-          ->GetPolicies(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()));
-  EXPECT_TRUE(expected.Equals(actual_from_profile));
+  VerifyProxyPrefs(g_browser_process->local_state(), std::string(),
+                   std::string(), absl::nullopt, std::string(),
+                   ProxyPrefs::MODE_SYSTEM);
+  VerifyProxyPrefs(browser()->profile()->GetPrefs(), std::string(),
+                   std::string(), absl::nullopt, std::string(),
+                   ProxyPrefs::MODE_SYSTEM);
 }
 
 }  // namespace policy

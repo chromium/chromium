@@ -1,7 +1,6 @@
 include_rules = [
   "+components/google/core",
   "+components/pref_registry",
-  "+components/proxy_config",
   "+components/reporting",
   "+components/strings/grit/components_strings.h",
   "+components/url_formatter",

@@ -15,6 +15,8 @@ component("proxy_config") {
     "proxy_config_export.h",
     "proxy_config_pref_names.cc",
     "proxy_config_pref_names.h",
+    "proxy_policy_handler.cc",
+    "proxy_policy_handler.h",
     "proxy_prefs.cc",
     "proxy_prefs.h",
   ]
@@ -23,7 +25,11 @@ component("proxy_config") {
 
   deps = [
     "//base",
+    "//components/policy:generated",
+    "//components/policy/core/browser",
+    "//components/policy/core/common",
     "//components/prefs",
+    "//components/strings",
     "//net",
     "//url",
   ]
@@ -44,16 +50,22 @@ source_set("unit_tests") {
   sources = [
     "pref_proxy_config_tracker_impl_unittest.cc",
     "proxy_config_dictionary_unittest.cc",
+    "proxy_policy_handler_unittest.cc",
     "proxy_prefs_unittest.cc",
   ]
   deps = [
     ":proxy_config",
     "//base",
     "//base/test:test_support",
+    "//components/policy:generated",
+    "//components/policy/core/browser",
+    "//components/policy/core/browser:test_support",
+    "//components/policy/core/common",
     "//components/prefs:test_support",
     "//net",
     "//net:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
   ]
 }

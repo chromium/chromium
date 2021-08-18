@@ -34,8 +34,6 @@ source_set("internal") {
     "policy_conversions_client.h",
     "policy_error_map.cc",
     "policy_error_map.h",
-    "proxy_policy_handler.cc",
-    "proxy_policy_handler.h",
     "url_allowlist_policy_handler.cc",
     "url_allowlist_policy_handler.h",
     "url_blocklist_manager.cc",
@@ -86,7 +84,6 @@ source_set("internal") {
 
   public_deps += [ "//components/policy/core/common:internal" ]
   deps += [
-    "//components/proxy_config",
     "//google_apis",
     "//net",
     "//third_party/icu",
@@ -138,7 +135,6 @@ source_set("unit_tests") {
     "configuration_policy_handler_unittest.cc",
     "configuration_policy_pref_store_unittest.cc",
     "policy_error_map_unittest.cc",
-    "proxy_policy_handler_unittest.cc",
     "url_allowlist_policy_handler_unittest.cc",
     "url_blocklist_manager_unittest.cc",
     "url_blocklist_policy_handler_unittest.cc",
@@ -150,7 +146,6 @@ source_set("unit_tests") {
     "//base",
     "//components/policy:generated",
     "//components/prefs:test_support",
-    "//components/proxy_config",
     "//components/url_formatter",
     "//google_apis",
     "//net",

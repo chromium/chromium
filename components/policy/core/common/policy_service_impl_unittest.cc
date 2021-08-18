@@ -1212,54 +1212,6 @@ TEST_F(PolicyServiceTest, IsFirstPolicyLoadComplete) {
   policy_service_->RemoveObserver(POLICY_DOMAIN_SIGNIN_EXTENSIONS, &observer);
 }
 
-TEST_F(PolicyServiceTest, SeparateProxyPoliciesMerging) {
-  const PolicyNamespace chrome_namespace(POLICY_DOMAIN_CHROME, std::string());
-  const PolicyNamespace extension_namespace(POLICY_DOMAIN_EXTENSIONS, "xyz");
-
-  std::unique_ptr<PolicyBundle> policy_bundle(new PolicyBundle());
-  PolicyMap& policy_map = policy_bundle->Get(chrome_namespace);
-  // Individual proxy policy values in the Chrome namespace should be collected
-  // into a dictionary.
-  policy_map.Set(key::kProxyServerMode, POLICY_LEVEL_MANDATORY,
-                 POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(3),
-                 nullptr);
-
-  // Both these policies should be ignored, since there's a higher priority
-  // policy available.
-  policy_map.Set(key::kProxyMode, POLICY_LEVEL_RECOMMENDED, POLICY_SCOPE_USER,
-                 POLICY_SOURCE_CLOUD, base::Value("pac_script"), nullptr);
-  policy_map.Set(key::kProxyPacUrl, POLICY_LEVEL_RECOMMENDED, POLICY_SCOPE_USER,
-                 POLICY_SOURCE_CLOUD,
-                 base::Value("http://example.com/wpad.dat"), nullptr);
-
-  // Add a value to a non-Chrome namespace.
-  policy_bundle->Get(extension_namespace)
-      .Set(key::kProxyServerMode, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-           POLICY_SOURCE_CLOUD, base::Value(3), nullptr);
-
-  // The resulting Chrome namespace map should have the collected policy.
-  PolicyMap expected_chrome;
-  base::Value expected_value(base::Value::Type::DICTIONARY);
-  expected_value.SetIntKey(key::kProxyServerMode, 3);
-  expected_chrome.Set(key::kProxySettings, POLICY_LEVEL_MANDATORY,
-                      POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-                      std::move(expected_value), nullptr);
-  expected_chrome.Set("migrated", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-                      POLICY_SOURCE_PLATFORM, base::Value(15), nullptr);
-
-  // The resulting Extensions namespace map shouldn't have been modified.
-  PolicyMap expected_extension;
-  expected_extension.Set(key::kProxyServerMode, POLICY_LEVEL_MANDATORY,
-                         POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(3),
-                         nullptr);
-
-  provider0_.UpdatePolicy(std::move(policy_bundle));
-  RunUntilIdle();
-
-  EXPECT_TRUE(VerifyPolicies(chrome_namespace, expected_chrome));
-  EXPECT_TRUE(VerifyPolicies(extension_namespace, expected_extension));
-}
-
 TEST_F(PolicyServiceTest, DictionaryPoliciesMerging) {
   const PolicyNamespace chrome_namespace(POLICY_DOMAIN_CHROME, std::string());
 

@@ -2,17 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_POLICY_CORE_BROWSER_PROXY_POLICY_HANDLER_H_
-#define COMPONENTS_POLICY_CORE_BROWSER_PROXY_POLICY_HANDLER_H_
+#ifndef COMPONENTS_PROXY_CONFIG_PROXY_POLICY_HANDLER_H_
+#define COMPONENTS_PROXY_CONFIG_PROXY_POLICY_HANDLER_H_
 
 #include <string>
 
 #include "components/policy/core/browser/configuration_policy_handler.h"
+#include "components/proxy_config/proxy_config_export.h"
 
-namespace policy {
+namespace proxy_config {
 
 // ConfigurationPolicyHandler for the proxy policies.
-class POLICY_EXPORT ProxyPolicyHandler : public ConfigurationPolicyHandler {
+class PROXY_CONFIG_EXPORT ProxyPolicyHandler
+    : public policy::ConfigurationPolicyHandler {
  public:
   // Constants for the "Proxy Server Mode" defined in the policies.
   // Note that these diverge from internal presentation defined in
@@ -38,23 +40,23 @@ class POLICY_EXPORT ProxyPolicyHandler : public ConfigurationPolicyHandler {
   ~ProxyPolicyHandler() override;
 
   // ConfigurationPolicyHandler methods:
-  bool CheckPolicySettings(const PolicyMap& policies,
-                           PolicyErrorMap* errors) override;
-  void ApplyPolicySettings(const PolicyMap& policies,
+  bool CheckPolicySettings(const policy::PolicyMap& policies,
+                           policy::PolicyErrorMap* errors) override;
+  void ApplyPolicySettings(const policy::PolicyMap& policies,
                            PrefValueMap* prefs) override;
 
  private:
-  const base::Value* GetProxyPolicyValue(const PolicyMap& policies,
+  const base::Value* GetProxyPolicyValue(const base::Value* value,
                                          const char* policy_name);
 
   // Converts the deprecated ProxyServerMode policy value to a ProxyMode value
   // and places the result in |mode_value|. Returns whether the conversion
   // succeeded.
-  bool CheckProxyModeAndServerMode(const PolicyMap& policies,
-                                   PolicyErrorMap* errors,
+  bool CheckProxyModeAndServerMode(const base::Value* proxy_settings,
+                                   policy::PolicyErrorMap* errors,
                                    std::string* mode_value);
 };
 
-}  // namespace policy
+}  // namespace proxy_config
 
-#endif  // COMPONENTS_POLICY_CORE_BROWSER_PROXY_POLICY_HANDLER_H_
+#endif  // COMPONENTS_PROXY_CONFIG_PROXY_POLICY_HANDLER_H_
