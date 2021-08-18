@@ -94,6 +94,11 @@ crbug.com/dawn/1047 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,
 crbug.com/dawn/1047 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,copyTextureToTexture:color_textures,non_compressed,non_array:format="rg8snorm";* [ Failure ]
 crbug.com/dawn/1047 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,copyTextureToTexture:color_textures,non_compressed,non_array:format="rgba8snorm";* [ Failure ]
 
+# Incorrect results, only on Mac Intel.
+crbug.com/dawn/1083 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,copyTextureToTexture:copy_depth_stencil:format="depth32float";* [ Failure ]
+crbug.com/dawn/1083 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,copyTextureToTexture:copy_depth_stencil:format="depth24plus";* [ Failure ]
+crbug.com/dawn/1083 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,copyTextureToTexture:copy_depth_stencil:format="depth24plus-stencil8";* [ Failure ]
+
 # Limits that should be updated.
 # maxStorageTexturePerShaderStage 8 -> 4
 crbug.com/dawn/796 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroupLayout:max_resources_per_stage,in_pipeline_layout:* [ Failure ]
@@ -162,6 +167,8 @@ crbug.com/dawn/690 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_b
 crbug.com/dawn/690 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,image_copy:rowsPerImage_and_bytesPerRow_depth_stencil:format="stencil8";* [ Failure ]
 crbug.com/dawn/690 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,image_copy:rowsPerImage_and_bytesPerRow_depth_stencil:format="depth16unorm";* [ Failure ]
 crbug.com/dawn/690 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,copyTextureToTexture:copy_stencil_aspect:format="stencil8";* [ Failure ]
+crbug.com/dawn/690 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,copyTextureToTexture:copy_depth_stencil:format="depth16unorm";* [ Failure ]
+crbug.com/dawn/690 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,copyTextureToTexture:copy_depth_stencil:format="stencil8";* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:zero_size:dimension="1d";* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:mipLevelCount,bound_check:dimension="1d";* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:mipLevelCount,format:format="depth16unorm";* [ Failure ]

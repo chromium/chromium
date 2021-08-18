@@ -175,7 +175,7 @@
 <meta name=variant content='?q=webgpu:api,operation,command_buffer,copyTextureToTexture:color_textures,compressed,array:format="bc7-rgba-unorm";*'>
 <meta name=variant content='?q=webgpu:api,operation,command_buffer,copyTextureToTexture:color_textures,compressed,array:format="bc7-rgba-unorm-srgb";*'>
 <meta name=variant content='?q=webgpu:api,operation,command_buffer,copyTextureToTexture:zero_sized:*'>
-<meta name=variant content='?q=webgpu:api,operation,command_buffer,copyTextureToTexture:copy_stencil_aspect:*'>
+<meta name=variant content='?q=webgpu:api,operation,command_buffer,copyTextureToTexture:copy_depth_stencil:*'>
 <meta name=variant content='?q=webgpu:api,operation,command_buffer,image_copy:rowsPerImage_and_bytesPerRow:initMethod="WriteTexture";checkMethod="FullCopyT2B";format="r8unorm";*'>
 <meta name=variant content='?q=webgpu:api,operation,command_buffer,image_copy:rowsPerImage_and_bytesPerRow:initMethod="WriteTexture";checkMethod="FullCopyT2B";format="r8uint";*'>
 <meta name=variant content='?q=webgpu:api,operation,command_buffer,image_copy:rowsPerImage_and_bytesPerRow:initMethod="WriteTexture";checkMethod="FullCopyT2B";format="r8sint";*'>
@@ -1460,7 +1460,11 @@
 <meta name=variant content='?q=webgpu:api,validation,encoding,cmds,setBindGroup:dynamic_offsets_passed_but_not_expected:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,cmds,setBindGroup:dynamic_offsets_match_expectations_in_pass_encoder:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,cmds,setBindGroup:u32array_start_and_length:*'>
+<meta name=variant content='?q=webgpu:api,validation,encoding,programmable,pipeline_bind_group_compat:bind_groups_and_pipeline_layout_mismatch:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,programmable,pipeline_bind_group_compat:it_is_invalid_to_draw_in_a_render_pass_with_missing_bind_groups:*'>
+<meta name=variant content='?q=webgpu:api,validation,encoding,programmable,pipeline_bind_group_compat:bgl_binding_mismatch:*'>
+<meta name=variant content='?q=webgpu:api,validation,encoding,programmable,pipeline_bind_group_compat:bgl_visibility_mismatch:*'>
+<meta name=variant content='?q=webgpu:api,validation,encoding,programmable,pipeline_bind_group_compat:bgl_resource_type_mismatch:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,queries,begin_end:occlusion_query,begin_end_balance:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,queries,begin_end:occlusion_query,begin_end_invalid_nesting:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,queries,begin_end:occlusion_query,disjoint_queries_with_same_query_index:*'>
