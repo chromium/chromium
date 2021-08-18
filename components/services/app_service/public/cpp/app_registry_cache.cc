@@ -8,8 +8,11 @@
 
 namespace apps {
 
-// Debug information for https://crbug.com/1237267.
-int g_instance_count = 0;
+namespace {
+
+constexpr uint32_t kUAFSentinelInitial = 0xabcd1234;
+
+}  // namespace
 
 AppRegistryCache::Observer::Observer(AppRegistryCache* cache) {
   Observe(cache);
@@ -37,16 +40,15 @@ void AppRegistryCache::Observer::Observe(AppRegistryCache* cache) {
   }
 }
 
-AppRegistryCache::AppRegistryCache() : account_id_(EmptyAccountId()) {
-  ++g_instance_count;
-}
+AppRegistryCache::AppRegistryCache()
+    : account_id_(EmptyAccountId()), uaf_sentinel_(kUAFSentinelInitial) {}
 
 AppRegistryCache::~AppRegistryCache() {
   for (auto& obs : observers_) {
     obs.OnAppRegistryCacheWillBeDestroyed(this);
   }
   DCHECK(observers_.empty());
-  --g_instance_count;
+  uaf_sentinel_ = 0;
 }
 
 void AppRegistryCache::AddObserver(Observer* observer) {
@@ -174,10 +176,7 @@ bool AppRegistryCache::IsAppTypeInitialized(apps::mojom::AppType app_type) {
 }
 
 void AppRegistryCache::OnAppTypeInitialized() {
-  // https://crbug.com/1237267 is a crash in this function, possibly a
-  // use-after-free on `this`.
-  CHECK_GT(g_instance_count, 0);
-
+  CHECK_EQ(kUAFSentinelInitial, uaf_sentinel_);
   if (in_progress_initialized_app_types_.empty()) {
     return;
   }
@@ -186,6 +185,7 @@ void AppRegistryCache::OnAppTypeInitialized() {
     for (auto& obs : observers_) {
       obs.OnAppTypeInitialized(app_type);
     }
+    CHECK_EQ(kUAFSentinelInitial, uaf_sentinel_);
     initialized_app_types_.insert(app_type);
   }
 
