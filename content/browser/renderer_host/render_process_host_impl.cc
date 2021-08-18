@@ -142,6 +142,7 @@
 #include "content/common/content_constants_internal.h"
 #include "content/common/content_switches_internal.h"
 #include "content/common/in_process_child_thread_params.h"
+#include "content/common/pseudonymization_salt.h"
 #include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_or_resource_context.h"
@@ -2415,6 +2416,9 @@ void RenderProcessHostImpl::DumpProfilingData(base::OnceClosure callback) {
 #endif
 
 void RenderProcessHostImpl::WriteIntoTrace(perfetto::TracedValue context) {
+  // TODO(https://crbug.com/1116471): Add support for writing typed events into
+  // untyped event contexts and merge the two overloaded methods (the one taking
+  // perfetto::TracedValue` and the one taking `perfetto::TracedProto<...>`).
   auto dict = std::move(context).WriteDictionary();
   dict.Add("id", GetID());
   dict.Add("process_lock", ChildProcessSecurityPolicyImpl::GetInstance()
@@ -2436,8 +2440,11 @@ void RenderProcessHostImpl::WriteIntoTrace(
   }
 
   // TODO(ssid): Consider moving this to ChildProcessLauncher proto field.
-  if (child_process_launcher_)
-    proto->set_child_process_id(child_process_launcher_->GetProcess().Pid());
+  if (child_process_launcher_) {
+    const base::Process& process = child_process_launcher_->GetProcess();
+    if (process.IsValid())
+      proto->set_child_process_id(process.Pid());
+  }
 }
 
 void RenderProcessHostImpl::RegisterMojoInterfaces() {
@@ -3795,6 +3802,14 @@ void RenderProcessHostImpl::OnChannelConnected(int32_t peer_pid) {
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
   child_process_->SetProfilingFile(OpenProfilingFile());
 #endif
+
+  // Propagate the pseudonymization salt to all the child processes.
+  //
+  // TODO(dullweber, lukasza): Figure out if it is possible to reset the salt
+  // at a regular interval (on the order of hours?).  The browser would need to
+  // be responsible for 1) deciding when the refresh happens and 2) pushing the
+  // updated salt to all the child processes.
+  child_process_->SetPseudonymizationSalt(GetPseudonymizationSalt());
 }
 
 void RenderProcessHostImpl::OnChannelError() {

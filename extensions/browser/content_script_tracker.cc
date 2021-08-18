@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/ranges/algorithm.h"
+#include "base/trace_event/typed_macros.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
@@ -28,7 +29,10 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "extensions/common/trace_util.h"
 #include "extensions/common/user_script.h"
+
+using perfetto::protos::pbzero::ChromeTrackEvent;
 
 namespace extensions {
 
@@ -67,7 +71,8 @@ class RenderProcessHostUserData : public base::SupportsUserData::Data {
       // passed to the `process` (i.e. the new RenderProcessHostUserData will be
       // destroyed at the same time as the `process` - this is why we don't need
       // to purge or destroy the set from within ContentScriptTracker).
-      auto owned_self = base::WrapUnique(new RenderProcessHostUserData);
+      auto owned_self =
+          base::WrapUnique(new RenderProcessHostUserData(process));
       self = owned_self.get();
       process.SetUserData(kUserDataKey, std::move(owned_self));
     }
@@ -77,13 +82,22 @@ class RenderProcessHostUserData : public base::SupportsUserData::Data {
   }
 
   // base::SupportsUserData::Data override:
-  ~RenderProcessHostUserData() override = default;
+  ~RenderProcessHostUserData() override {
+    TRACE_EVENT_END("extensions", perfetto::Track::FromPointer(this),
+                    ChromeTrackEvent::kRenderProcessHost, process_);
+  }
 
   bool HasContentScript(const ExtensionId& extension_id) const {
     return base::Contains(content_scripts_, extension_id);
   }
 
   void AddContentScript(const ExtensionId& extension_id) {
+    TRACE_EVENT_INSTANT(
+        "extensions",
+        "ContentScriptTracker::RenderProcessHostUserData::AddContentScript",
+        ChromeTrackEvent::kRenderProcessHost, process_,
+        ChromeTrackEvent::kChromeExtensionId,
+        ExtensionIdForTracing(extension_id));
     content_scripts_.insert(extension_id);
   }
 
@@ -92,7 +106,13 @@ class RenderProcessHostUserData : public base::SupportsUserData::Data {
   const std::set<content::RenderFrameHost*>& frames() const { return frames_; }
 
  private:
-  RenderProcessHostUserData() = default;
+  explicit RenderProcessHostUserData(content::RenderProcessHost& process)
+      : process_(process) {
+    TRACE_EVENT_BEGIN("extensions",
+                      "ContentScriptTracker::RenderProcessHostUserData",
+                      perfetto::Track::FromPointer(this),
+                      ChromeTrackEvent::kRenderProcessHost, process_);
+  }
 
   static const char* kUserDataKey;
 
@@ -106,6 +126,9 @@ class RenderProcessHostUserData : public base::SupportsUserData::Data {
   // frames so that when a new extension is loaded, then ContentScriptTracker
   // can know where content scripts may be injected.
   std::set<content::RenderFrameHost*> frames_;
+
+  // Only used for tracing.
+  content::RenderProcessHost& process_;
 };
 
 const char* RenderProcessHostUserData::kUserDataKey =
@@ -374,6 +397,11 @@ void ContentScriptTracker::ReadyToCommitNavigation(
     content::NavigationHandle* navigation) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  content::RenderProcessHost* process =
+      navigation->GetRenderFrameHost()->GetProcess();
+  TRACE_EVENT("extensions", "ContentScriptTracker::ReadyToCommitNavigation",
+              ChromeTrackEvent::kRenderProcessHost, *process);
+
   // Store `extensions_injecting_content_scripts` in
   // `process_data`.  ContentScriptTracker never removes entries
   // from this set - once a renderer process gains an ability to talk on behalf
@@ -383,8 +411,7 @@ void ContentScriptTracker::ReadyToCommitNavigation(
   // inside RenderProcessHostUserData::GetOrCreate).
   std::vector<const Extension*> extensions_injecting_content_scripts =
       GetExtensionsInjectingContentScripts(navigation);
-  auto& process_data = RenderProcessHostUserData::GetOrCreate(
-      *navigation->GetRenderFrameHost()->GetProcess());
+  auto& process_data = RenderProcessHostUserData::GetOrCreate(*process);
   for (const Extension* extension : extensions_injecting_content_scripts)
     process_data.AddContentScript(extension->id());
 
@@ -418,8 +445,14 @@ void ContentScriptTracker::WillExecuteCode(
     const mojom::HostID& host_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  content::RenderProcessHost& process = *frame->GetProcess();
+  TRACE_EVENT("extensions", "ContentScriptTracker::WillExecuteCode/1",
+              ChromeTrackEvent::kRenderProcessHost, process,
+              ChromeTrackEvent::kChromeExtensionId,
+              ExtensionIdForTracing(host_id.id));
+
   const Extension* extension =
-      FindExtensionByHostId(frame->GetProcess()->GetBrowserContext(), host_id);
+      FindExtensionByHostId(process.GetBrowserContext(), host_id);
   if (!extension)
     return;
 
@@ -431,6 +464,12 @@ void ContentScriptTracker::WillExecuteCode(
     base::PassKey<RequestContentScript> pass_key,
     content::RenderFrameHost* frame,
     const Extension& extension) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  TRACE_EVENT("extensions", "ContentScriptTracker::WillExecuteCode/2",
+              ChromeTrackEvent::kRenderProcessHost, *frame->GetProcess(),
+              ChromeTrackEvent::kChromeExtensionId,
+              ExtensionIdForTracing(extension.id()));
+
   HandleProgrammaticContentScriptInjection(PassKey(), frame, extension);
 }
 
@@ -439,6 +478,12 @@ void ContentScriptTracker::WillUpdateContentScriptsInRenderer(
     base::PassKey<UserScriptLoader> pass_key,
     const mojom::HostID& host_id,
     content::RenderProcessHost& process) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  TRACE_EVENT(
+      "extensions", "ContentScriptTracker::WillUpdateContentScriptsInRenderer",
+      ChromeTrackEvent::kRenderProcessHost, process,
+      ChromeTrackEvent::kChromeExtensionId, ExtensionIdForTracing(host_id.id));
+
   const Extension* extension =
       FindExtensionByHostId(process.GetBrowserContext(), host_id);
   if (!extension)

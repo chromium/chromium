@@ -7,7 +7,9 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/memory/singleton.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/stl_util.h"
+#include "base/trace_event/typed_macros.h"
 #include "components/crx_file/id_util.h"
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
 #include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
@@ -30,10 +32,12 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/manifest_handlers/background_info.h"
+#include "extensions/common/trace_util.h"
 #include "ipc/ipc_message_macros.h"
 
 using content::BrowserThread;
 using content::RenderProcessHost;
+using perfetto::protos::pbzero::ChromeTrackEvent;
 
 namespace extensions {
 
@@ -101,13 +105,31 @@ bool IsValidMessagingSource(RenderProcessHost& process,
       return true;
 
     case MessagingEndpoint::Type::kTab:
-      if (source_endpoint.extension_id.has_value() &&
-          !ContentScriptTracker::DidProcessRunContentScriptFromExtension(
-              process, source_endpoint.extension_id.value())) {
-        // TODO(https://crbug.com/1212918: Re-enable the enforcement after
-        // investigating and fixing the root cause of bad message reports coming
-        // from the end users.
-        LOG(ERROR) << "EMF_INVALID_EXTENSION_ID_FOR_CONTENT_SCRIPT";
+      if (source_endpoint.extension_id.has_value()) {
+        const std::string& extension_id = source_endpoint.extension_id.value();
+        bool is_content_script_expected =
+            ContentScriptTracker::DidProcessRunContentScriptFromExtension(
+                process, extension_id);
+        if (!is_content_script_expected) {
+          // TODO(https://crbug.com/1212918): Re-enable the enforcement (i.e.
+          // replace the UmaHistogramSparse call with a call to
+          // ReceivedBadMessage and returning false) after investigating and
+          // fixing the root cause of incorrect behavior reports coming from the
+          // end users.
+          TRACE_EVENT_INSTANT("extensions",
+                              "IsValidMessagingSource: kTab: bad message",
+                              ChromeTrackEvent::kRenderProcessHost, process,
+                              ChromeTrackEvent::kChromeExtensionId,
+                              ExtensionIdForTracing(extension_id));
+          base::UmaHistogramSparse(
+              "Stability.BadMessageTerminated.Extensions",
+              bad_message::EMF_INVALID_EXTENSION_ID_FOR_CONTENT_SCRIPT);
+        } else {
+          TRACE_EVENT_INSTANT("extensions", "IsValidMessagingSource: kTab: ok",
+                              ChromeTrackEvent::kRenderProcessHost, process,
+                              ChromeTrackEvent::kChromeExtensionId,
+                              ExtensionIdForTracing(extension_id));
+        }
       }
       return true;
   }
@@ -315,6 +337,8 @@ void ExtensionMessageFilter::OnOpenChannelToExtension(
   auto* process = content::RenderProcessHost::FromID(render_process_id_);
   if (!process)
     return;
+  TRACE_EVENT("extensions", "ExtensionMessageFilter::OnOpenChannelToExtension",
+              ChromeTrackEvent::kRenderProcessHost, *process);
 
   ScopedExternalConnectionInfoCrashKeys info_crash_keys(info);
   if (!IsValidMessagingSource(*process, info.source_endpoint) ||

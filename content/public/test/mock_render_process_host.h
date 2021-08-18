@@ -233,6 +233,9 @@ class MockRenderProcessHost : public RenderProcessHost {
   void CleanupNetworkServicePluginExceptionsUponDestruction() override;
   std::string GetInfoForBrowserContextDestructionCrashReporting() override;
   void WriteIntoTrace(perfetto::TracedValue context) override;
+  void WriteIntoTrace(
+      perfetto::TracedProto<perfetto::protos::pbzero::RenderProcessHost> proto)
+      override;
 
   // IPC::Sender via RenderProcessHost.
   bool Send(IPC::Message* msg) override;

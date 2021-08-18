@@ -87,6 +87,7 @@
 #include "extensions/renderer/static_v8_external_one_byte_string_resource.h"
 #include "extensions/renderer/test_features_native_handler.h"
 #include "extensions/renderer/test_native_handler.h"
+#include "extensions/renderer/trace_util.h"
 #include "extensions/renderer/user_gestures_native_handler.h"
 #include "extensions/renderer/utils_native_handler.h"
 #include "extensions/renderer/v8_context_native_handler.h"
@@ -774,6 +775,8 @@ void Dispatcher::ExecuteDeclarativeScript(content::RenderFrame* render_frame,
                                           const ExtensionId& extension_id,
                                           const std::string& script_id,
                                           const GURL& url) {
+  TRACE_RENDERER_EXTENSION_EVENT("Dispatcher::ExecuteDeclarativeScript",
+                                 extension_id);
   script_injection_manager_->ExecuteDeclarativeScript(
       render_frame, tab_id, extension_id, script_id, url);
 }
@@ -781,6 +784,7 @@ void Dispatcher::ExecuteDeclarativeScript(content::RenderFrame* render_frame,
 void Dispatcher::ExecuteCode(mojom::ExecuteCodeParamsPtr param,
                              mojom::LocalFrame::ExecuteCodeCallback callback,
                              content::RenderFrame* render_frame) {
+  TRACE_RENDERER_EXTENSION_EVENT("Dispatcher::ExecuteCode", param->host_id->id);
   script_injection_manager_->HandleExecuteCode(
       std::move(param), std::move(callback), render_frame);
 }
@@ -974,6 +978,8 @@ void Dispatcher::OnRendererAssociatedRequest(
 }
 
 void Dispatcher::ActivateExtension(const std::string& extension_id) {
+  TRACE_RENDERER_EXTENSION_EVENT("Dispatcher::ActivateExtension", extension_id);
+
   const Extension* extension =
       RendererExtensionRegistry::Get()->GetByID(extension_id);
   if (!extension) {
@@ -1076,6 +1082,8 @@ void Dispatcher::LoadExtensions(
 }
 
 void Dispatcher::UnloadExtension(const std::string& extension_id) {
+  TRACE_RENDERER_EXTENSION_EVENT("Dispatcher::UnloadExtension", extension_id);
+
   // See comment in OnLoaded for why it would be nice, but perhaps incorrect,
   // to CHECK here rather than guarding.
   // TODO(devlin): This may be fixed by crbug.com/528026. Monitor, and
@@ -1132,6 +1140,8 @@ void Dispatcher::UnloadExtension(const std::string& extension_id) {
 void Dispatcher::SuspendExtension(
     const std::string& extension_id,
     mojom::Renderer::SuspendExtensionCallback callback) {
+  TRACE_RENDERER_EXTENSION_EVENT("Dispatcher::SuspendExtension", extension_id);
+
   // Dispatch the suspend event. This doesn't go through the standard event
   // dispatch machinery because it requires special handling. We need to let
   // the browser know when we are starting and stopping the event dispatch, so
@@ -1203,6 +1213,7 @@ void Dispatcher::UpdateTabSpecificPermissions(const std::string& extension_id,
 void Dispatcher::UpdateUserScripts(
     base::ReadOnlySharedMemoryRegion shared_memory,
     mojom::HostIDPtr host_id) {
+  TRACE_RENDERER_EXTENSION_EVENT("Dispatcher::UpdateUserScripts", host_id->id);
   user_script_set_manager_->OnUpdateUserScripts(std::move(shared_memory),
                                                 *host_id);
 }

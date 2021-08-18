@@ -492,6 +492,11 @@ void MockRenderProcessHost::WriteIntoTrace(perfetto::TracedValue context) {
   dict.Add("id", GetID());
 }
 
+void MockRenderProcessHost::WriteIntoTrace(
+    perfetto::TracedProto<perfetto::protos::pbzero::RenderProcessHost> proto) {
+  proto->set_id(GetID());
+}
+
 void MockRenderProcessHost::FilterURL(bool empty_allowed, GURL* url) {
   RenderProcessHostImpl::FilterURL(this, empty_allowed, url);
 }

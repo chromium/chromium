@@ -18,12 +18,14 @@
 #include "extensions/common/features/feature.h"
 #include "extensions/common/mojom/event_router.mojom.h"
 #include "extensions/common/mojom/frame.mojom.h"
+#include "extensions/common/trace_util.h"
 #include "extensions/renderer/dispatcher.h"
 #include "extensions/renderer/extension_frame_helper.h"
 #include "extensions/renderer/extensions_renderer_client.h"
 #include "extensions/renderer/message_target.h"
 #include "extensions/renderer/native_extension_bindings_system.h"
 #include "extensions/renderer/script_context.h"
+#include "extensions/renderer/trace_util.h"
 #include "extensions/renderer/worker_thread_dispatcher.h"
 #include "ipc/ipc_sync_channel.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -155,6 +157,9 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
         info.target_id = *target.extension_id;
         info.source_url = script_context->url();
 
+        TRACE_RENDERER_EXTENSION_EVENT(
+            "MainThreadIPCMessageSender::SendOpenMessageChannel/extension",
+            *target.extension_id);
         render_thread_->Send(new ExtensionHostMsg_OpenChannelToExtension(
             frame_context, info, channel_name, port_id));
         break;
@@ -370,6 +375,9 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
         }
         info.target_id = *target.extension_id;
         info.source_url = script_context->url();
+        TRACE_RENDERER_EXTENSION_EVENT(
+            "WorkerThreadIPCMessageSender::SendOpenMessageChannel/extension",
+            *target.extension_id);
         dispatcher_->Send(new ExtensionHostMsg_OpenChannelToExtension(
             PortContextForCurrentWorker(), info, channel_name, port_id));
         break;

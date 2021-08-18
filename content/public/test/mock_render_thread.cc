@@ -242,6 +242,12 @@ void MockRenderThread::SetUseZoomForDSFEnabled(bool zoom_for_dsf) {
   zoom_for_dsf_ = zoom_for_dsf;
 }
 
+void MockRenderThread::WriteIntoTrace(
+    perfetto::TracedProto<perfetto::protos::pbzero::RenderProcessHost> proto) {
+  // Unlike RenderThreadImpl, MockRenderThread is not aware of its render
+  // process ID.
+}
+
 int32_t MockRenderThread::GetNextRoutingID() {
   return next_routing_id_++;
 }

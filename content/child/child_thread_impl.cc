@@ -52,6 +52,7 @@
 #include "content/common/field_trial_recorder.mojom.h"
 #include "content/common/in_process_child_thread_params.h"
 #include "content/common/mojo_core_library_support.h"
+#include "content/common/pseudonymization_salt.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -395,6 +396,10 @@ class ChildThreadImpl::IOThreadState
     std::move(callback).Run();
   }
 #endif
+
+  void SetPseudonymizationSalt(uint32_t salt) override {
+    content::SetPseudonymizationSalt(salt);
+  }
 
   const scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner_;
   const base::WeakPtr<ChildThreadImpl> weak_main_thread_;

@@ -210,6 +210,7 @@ source_set("renderer") {
     "test_features_native_handler.h",
     "test_native_handler.cc",
     "test_native_handler.h",
+    "trace_util.h",
     "user_gestures_native_handler.cc",
     "user_gestures_native_handler.h",
     "user_script_injector.cc",

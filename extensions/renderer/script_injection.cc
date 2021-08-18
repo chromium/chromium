@@ -13,8 +13,11 @@
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/trace_event/typed_macros.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "base/values.h"
 #include "content/public/renderer/render_frame.h"
+#include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_messages.h"
@@ -26,6 +29,7 @@
 #include "extensions/renderer/extensions_renderer_client.h"
 #include "extensions/renderer/script_injection_callback.h"
 #include "extensions/renderer/scripts_run_info.h"
+#include "extensions/renderer/trace_util.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/platform/web_isolated_world_info.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
@@ -34,6 +38,8 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_script_source.h"
 #include "url/gurl.h"
+
+using perfetto::protos::pbzero::ChromeTrackEvent;
 
 namespace extensions {
 
@@ -174,11 +180,22 @@ ScriptInjection::ScriptInjection(
       log_activity_(log_activity),
       frame_watcher_(new FrameWatcher(render_frame, this)) {
   CHECK(injection_host_.get());
+  TRACE_EVENT_BEGIN(
+      "extensions", "ScriptInjection", perfetto::Track::FromPointer(this),
+      ChromeTrackEvent::kRenderProcessHost, *content::RenderThread::Get(),
+      ChromeTrackEvent::kChromeExtensionId,
+      ExtensionIdForTracing(host_id().id));
 }
 
 ScriptInjection::~ScriptInjection() {
   if (!complete_)
     NotifyWillNotInject(ScriptInjector::WONT_INJECT);
+
+  TRACE_EVENT_END("extensions", perfetto::Track::FromPointer(this),
+                  ChromeTrackEvent::kRenderProcessHost,
+                  *content::RenderThread::Get(),
+                  ChromeTrackEvent::kChromeExtensionId,
+                  ExtensionIdForTracing(host_id().id));
 }
 
 ScriptInjection::InjectionResult ScriptInjection::TryToInject(
@@ -302,6 +319,8 @@ ScriptInjection::InjectionResult ScriptInjection::Inject(
 
 void ScriptInjection::InjectJs(std::set<std::string>* executing_scripts,
                                size_t* num_injected_js_scripts) {
+  TRACE_RENDERER_EXTENSION_EVENT("ScriptInjection::InjectJs", host_id().id);
+
   DCHECK(!did_inject_js_);
   std::vector<blink::WebScriptSource> sources = injector_->GetJsSources(
       run_location_, executing_scripts, num_injected_js_scripts);

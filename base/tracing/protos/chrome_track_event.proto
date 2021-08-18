@@ -218,9 +218,19 @@ message ChildProcessLauncherPriority {
   optional Importance importance = 3;
 }
 
+// Information that identifies a Chrome Extension.
+message ChromeExtensionId {
+  // Unique id that identifies a Chrome Extension.
+  optional string extension_id = 1;
+
+  // Pseudonymized `extension_id` field (see also
+  // content::PseudonymizationUtil::PseudonymizeString method).
+  optional uint32 pseudonymized_extension_id = 2;
+}
+
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1018
+  // Next ID: 1019
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -259,5 +269,7 @@ message ChromeTrackEvent {
     optional ResourceBundle resource_bundle = 1016;
 
     optional ChromeWebAppBadNavigate chrome_web_app_bad_navigate = 1017;
+
+    optional ChromeExtensionId chrome_extension_id = 1018;
   }
 }

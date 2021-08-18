@@ -67,6 +67,7 @@
 #include "content/common/content_constants_internal.h"
 #include "content/common/partition_alloc_support.h"
 #include "content/common/process_visibility_tracker.h"
+#include "content/common/pseudonymization_salt.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_paths.h"
@@ -1269,6 +1270,12 @@ const blink::UserAgentMetadata& RenderThreadImpl::GetUserAgentMetadata() {
 
 bool RenderThreadImpl::IsUseZoomForDSF() {
   return is_zoom_for_dsf_enabled_;
+}
+
+void RenderThreadImpl::WriteIntoTrace(
+    perfetto::TracedProto<perfetto::protos::pbzero::RenderProcessHost> proto) {
+  int id = GetClientId();
+  proto->set_id(id);
 }
 
 void RenderThreadImpl::OnAssociatedInterfaceRequest(

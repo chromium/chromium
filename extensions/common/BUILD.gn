@@ -26,9 +26,7 @@ source_set("common_constants") {
 
   deps = [ "//build:chromecast_buildflags" ]
 
-  configs += [
-    "//build/config/compiler:wexit_time_destructors",
-  ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 if (enable_extensions) {
@@ -394,6 +392,8 @@ if (enable_extensions) {
       "stack_frame.h",
       "switches.cc",
       "switches.h",
+      "trace_util.cc",
+      "trace_util.h",
       "url_pattern.cc",
       "url_pattern.h",
       "url_pattern_set.cc",
