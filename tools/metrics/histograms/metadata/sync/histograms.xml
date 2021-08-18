@@ -554,7 +554,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="never">
 <!-- expires-never: For monitoring FCM based invalidations. -->
 
-  <owner>mmoskvitin@chromium.org</owner>
+  <owner>mmoskvitin@google.com</owner>
   <owner>treib@chromium.org</owner>
   <component>Services&gt;Sync</component>
   <summary>
@@ -1186,8 +1186,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sync.RecordedUserEventType" enum="SyncUserEventType"
-    expires_after="2021-09-30">
-  <owner>mmoskvitin@chromium.org</owner>
+    expires_after="2022-03-01">
+  <owner>mmoskvitin@google.com</owner>
   <owner>treib@chromium.org</owner>
   <component>Services&gt;Sync</component>
   <summary>
@@ -1215,7 +1215,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Sync.RedundantInvalidationPerModelType2" enum="SyncModelTypes"
     expires_after="2021-12-16">
-  <owner>mmoskvitin@chromium.org</owner>
+  <owner>mmoskvitin@google.com</owner>
   <owner>treib@chromium.org</owner>
   <component>Services&gt;Sync</component>
   <summary>
