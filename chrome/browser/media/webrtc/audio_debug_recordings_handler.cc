@@ -40,10 +40,10 @@ base::FilePath GetAudioDebugRecordingsPrefixPath(
 }
 
 base::FilePath GetLogDirectoryAndEnsureExists(
-    content::BrowserContext* browser_context) {
+    const base::FilePath& browser_context_path) {
   base::FilePath log_dir_path =
       webrtc_logging::TextLogList::GetWebRtcLogDirectoryForBrowserContextPath(
-          browser_context->GetPath());
+          browser_context_path);
   base::File::Error error;
   if (!base::CreateDirectoryAndGetError(log_dir_path, &error)) {
     DLOG(ERROR) << "Could not create WebRTC log directory, error: " << error;
@@ -72,7 +72,8 @@ void AudioDebugRecordingsHandler::StartAudioDebugRecordings(
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&GetLogDirectoryAndEnsureExists, browser_context_),
+      base::BindOnce(&GetLogDirectoryAndEnsureExists,
+                     browser_context_->GetPath()),
       base::BindOnce(&AudioDebugRecordingsHandler::DoStartAudioDebugRecordings,
                      this, host, delay, std::move(callback),
                      std::move(error_callback)));
@@ -86,7 +87,8 @@ void AudioDebugRecordingsHandler::StopAudioDebugRecordings(
   const bool is_manual_stop = true;
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&GetLogDirectoryAndEnsureExists, browser_context_),
+      base::BindOnce(&GetLogDirectoryAndEnsureExists,
+                     browser_context_->GetPath()),
       base::BindOnce(&AudioDebugRecordingsHandler::DoStopAudioDebugRecordings,
                      this, host, is_manual_stop,
                      current_audio_debug_recordings_id_, std::move(callback),
