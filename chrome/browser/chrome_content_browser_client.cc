@@ -495,6 +495,7 @@
 #include "chrome/browser/extensions/user_script_listener.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_api.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/web_applications/isolation_prefs_utils.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/extension_navigation_throttle.h"
 #include "extensions/browser/extension_protocols.h"
@@ -985,6 +986,21 @@ bool URLHasExtensionPermission(extensions::ProcessMap* process_map,
          process_map->Contains(extension->id(), render_process_id);
 }
 
+// Returns the partition domain that should be used when loading content for an
+// app with isolated storage whose scope includes |site|, or nullptr if no such
+// app is installed.
+const std::string* GetStoragePartitionDomainForApp(
+    content::BrowserContext* browser_context,
+    const GURL& site) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kWebAppEnableIsolatedStorage))
+    return nullptr;
+
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  PrefService* prefs = profile->GetPrefs();
+  return web_app::GetStorageIsolationKey(prefs, url::Origin::Create(site));
+}
+
 #endif
 
 mojo::PendingRemote<prerender::mojom::PrerenderCanceler> GetPrerenderCanceler(
@@ -1366,6 +1382,22 @@ ChromeContentBrowserClient::GetStoragePartitionConfigForSite(
       content::StoragePartitionConfig::CreateDefault(browser_context);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+  // TODO(crbug.com/1212263): Isolated PWAs are tracked by origin, but this
+  // function takes a site, so it will only work correctly when the site equals
+  // the full origin. This should be removed once we plumb the
+  // StoragePartitionConfig through the navigation system.
+  const std::string* partition_domain =
+      GetStoragePartitionDomainForApp(browser_context, site);
+  if (partition_domain) {
+    DCHECK(!partition_domain->empty());
+    // |in_memory| and |partition_name| are only used in guest schemes, so they
+    // are cleared here.
+    return content::StoragePartitionConfig::Create(
+        browser_context, *partition_domain,
+        /*partition_name=*/std::string(),
+        /*in_memory=*/false);
+  }
+
   // The partition ID for webview guest processes is the string value of its
   // SiteInstance URL - "chrome-guest://app_id/persist?partition".
   if (extensions::WebViewGuest::GetGuestPartitionConfigForSite(
