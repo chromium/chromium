@@ -78,7 +78,7 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
                                      animated:YES];
 
   // Update edit button.
-  if (self.tableView.editing) {
+  if ([self shouldShowEditDoneButton] && self.tableView.editing) {
     self.navigationItem.rightBarButtonItem = [self createEditModeDoneButton];
   } else if (self.shouldShowEditButton) {
     self.navigationItem.rightBarButtonItem = [self createEditButton];
@@ -231,7 +231,11 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
   SettingsNavigationController* navigationController =
       base::mac::ObjCCast<SettingsNavigationController>(
           self.navigationController);
-  return [navigationController doneButton];
+  UIBarButtonItem* doneButton = [navigationController doneButton];
+  if (_shouldDisableDoneButtonOnEdit) {
+    doneButton.enabled = !self.tableView.editing;
+  }
+  return doneButton;
 }
 
 - (UIBarButtonItem*)createEditButton {
@@ -287,6 +291,10 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
 
 - (BOOL)showCancelDuringEditing {
   return NO;
+}
+
+- (BOOL)shouldShowEditDoneButton {
+  return YES;
 }
 
 - (void)editButtonPressed {

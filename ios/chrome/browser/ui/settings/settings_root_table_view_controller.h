@@ -26,6 +26,10 @@
 // navigation bar button). Default is NO.
 @property(nonatomic, assign) BOOL shouldHideDoneButton;
 
+// Whether this table view controller should hide the "Done" button (the right
+// navigation bar button) on edit. Default is NO.
+@property(nonatomic, assign) BOOL shouldDisableDoneButtonOnEdit;
+
 // Updates the edit or done button to reflect editing state.  If the
 // tableView is not in edit mode (and thus showing the 'Done' button) it is
 // using shouldHideDoneButton to know if it should display the edit button.
@@ -52,6 +56,10 @@
 // Returns NO.  Subclasses should overload this if the edit button should be
 // enabled.
 - (BOOL)editButtonEnabled;
+
+// Returns YES by default. Subclasses should overload this if the edit done
+// button should be shown.
+- (BOOL)shouldShowEditDoneButton;
 
 // Notifies the view controller that the edit button has been tapped. If you
 // override this method, you must call -[super editButtonPressed] at some point
