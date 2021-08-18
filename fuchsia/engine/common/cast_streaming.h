@@ -18,6 +18,10 @@ bool IsCastStreamingEnabled();
 // Returns true if |origin| is the Cast Streaming MessagePort origin.
 bool IsCastStreamingAppOrigin(base::StringPiece origin);
 
+// Returns true if |origin| is the Cast Streaming MessagePort origin for a
+// video-only receiver.
+bool IsCastStreamingVideoOnlyAppOrigin(base::StringPiece origin);
+
 // Returns true if |message| contains a valid Cast Streaming Message.
 bool IsValidCastStreamingMessage(const fuchsia::web::WebMessage& message);
 
