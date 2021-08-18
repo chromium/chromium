@@ -50,6 +50,10 @@
 #include "chromeos/dbus/constants/dbus_switches.h"  // nogncheck
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/crosapi_pref_observer.h"
+#endif
+
 namespace {
 
 constexpr char kTracingStateKey[] = "state";
@@ -110,6 +114,39 @@ std::string StripScenarioName(const std::string& scenario_name) {
   base::RemoveChars(scenario_name, "1234567890", &stripped_scenario_name);
   return stripped_scenario_name;
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// Helper for reading the value of device policy from ash-chrome.
+class DevicePolicyObserver {
+ public:
+  DevicePolicyObserver()
+      : pref_observer_(
+            crosapi::mojom::PrefPath::kDeviceSystemWideTracingEnabled,
+            base::BindRepeating(&DevicePolicyObserver::OnPrefChanged,
+                                base::Unretained(this))) {}
+
+  bool system_wide_tracing_enabled() const {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    return system_wide_tracing_enabled_;
+  }
+
+  static const DevicePolicyObserver& GetInstance() {
+    static base::NoDestructor<DevicePolicyObserver> instance;
+    return *instance;
+  }
+
+ private:
+  void OnPrefChanged(base::Value value) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    system_wide_tracing_enabled_ = value.GetBool();
+  }
+
+  ~DevicePolicyObserver() = default;
+
+  CrosapiPrefObserver pref_observer_;
+  bool system_wide_tracing_enabled_ = false;
+};
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace
 
@@ -287,6 +324,11 @@ ChromeTracingDelegate::ChromeTracingDelegate() {
 #else
   TabModelList::AddObserver(this);
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // This sets up the pref observer.
+  DevicePolicyObserver::GetInstance();
+#endif
 }
 
 ChromeTracingDelegate::~ChromeTracingDelegate() {
@@ -432,8 +474,12 @@ bool ChromeTracingDelegate::IsSystemWideTracingEnabled() {
   return local_state->GetBoolean(
       chromeos::prefs::kDeviceSystemWideTracingEnabled);
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(crbug.com/1173395): Enable for Lacros-Chrome.
-  return false;
+  // This is a temporary solution that observes the ash pref
+  // chromeos::prefs::kDeviceSystemWideTracingEnabled via mojo IPC provided by
+  // CrosapiPrefObserver.
+  // crbug.com/1201582 is a long term solution for this which assumes that
+  // device flags will be available to Lacros.
+  return DevicePolicyObserver::GetInstance().system_wide_tracing_enabled();
 #else
   return false;
 #endif

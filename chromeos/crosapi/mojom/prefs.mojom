@@ -14,6 +14,8 @@ enum PrefPath {
   kMetricsReportingEnabled = 1,
   // M89: ash::prefs::kAccessibilitySpokenFeedbackEnabled (profile).
   kAccessibilitySpokenFeedbackEnabled = 2,
+  // M90: ash::prefs::kDeviceSystemWideTracingEnabled (local state).
+  [MinVersion=1] kDeviceSystemWideTracingEnabled = 3,
 };
 
 // Interface for pref observers. Implemented by lacros-chrome. Used by

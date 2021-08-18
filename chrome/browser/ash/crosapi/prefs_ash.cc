@@ -123,6 +123,9 @@ absl::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
       }
       return State{profile_prefs_, &profile_prefs_registrar_,
                    ash::prefs::kAccessibilitySpokenFeedbackEnabled};
+    case mojom::PrefPath::kDeviceSystemWideTracingEnabled:
+      return State{local_state_, &local_state_registrar_,
+                   ash::prefs::kDeviceSystemWideTracingEnabled};
     default:
       LOG(WARNING) << "Unknown pref path: " << path;
       return absl::nullopt;
