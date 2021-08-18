@@ -39,7 +39,6 @@ using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::ClearBrowsingDataButton;
 using chrome_test_util::ConfirmClearBrowsingDataButton;
 using chrome_test_util::GoogleServicesSettingsButton;
-using chrome_test_util::GoogleServicesSettingsView;
 using chrome_test_util::IdentityCellMatcherForEmail;
 using chrome_test_util::PrimarySignInButton;
 using chrome_test_util::SecondarySignInButton;
@@ -50,10 +49,8 @@ using chrome_test_util::SettingsImportDataContinueButton;
 using chrome_test_util::SettingsImportDataImportButton;
 using chrome_test_util::SettingsImportDataKeepSeparateButton;
 using chrome_test_util::SettingsLink;
-using chrome_test_util::SettingsMenuBackButton;
 using chrome_test_util::SettingsMenuPrivacyButton;
 using chrome_test_util::StaticTextWithAccessibilityLabelId;
-using chrome_test_util::SyncSettingsConfirmButton;
 using l10n_util::GetNSString;
 using testing::ButtonWithAccessibilityLabel;
 
@@ -67,13 +64,6 @@ typedef NS_ENUM(NSInteger, OpenSigninMethod) {
 namespace {
 
 NSString* const kPassphrase = @"hello";
-
-// Returns a matcher for |userEmail| in IdentityChooserViewController.
-id<GREYMatcher> identityChooserButtonMatcherWithEmail(NSString* userEmail) {
-  return grey_allOf(grey_accessibilityID(userEmail),
-                    grey_kindOfClassName(@"TableViewIdentityCell"),
-                    grey_sufficientlyVisible(), nil);
-}
 
 void ChooseImportOrKeepDataSepareteDialog(id<GREYMatcher> choiceButtonMatcher) {
   // Set up the fake identities.
@@ -552,14 +542,14 @@ void ChooseImportOrKeepDataSepareteDialog(id<GREYMatcher> choiceButtonMatcher) {
   // Open the identity chooser.
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:SecondarySignInButton()];
-  [ChromeEarlGrey waitForMatcher:identityChooserButtonMatcherWithEmail(
-                                     fakeIdentity.userEmail)];
+  [ChromeEarlGrey
+      waitForMatcher:IdentityCellMatcherForEmail(fakeIdentity.userEmail)];
 
   // Remove the fake identity.
   [SigninEarlGrey forgetFakeIdentity:fakeIdentity];
 
   // Check that the identity has been removed.
-  [[EarlGrey selectElementWithMatcher:identityChooserButtonMatcherWithEmail(
+  [[EarlGrey selectElementWithMatcher:IdentityCellMatcherForEmail(
                                           fakeIdentity.userEmail)]
       assertWithMatcher:grey_notVisible()];
 }
@@ -626,7 +616,7 @@ void ChooseImportOrKeepDataSepareteDialog(id<GREYMatcher> choiceButtonMatcher) {
   // progress this test will likely be flaky.
   [SigninEarlGrey forgetFakeIdentity:fakeIdentity];
   // Check that the identity has been removed.
-  [[EarlGrey selectElementWithMatcher:identityChooserButtonMatcherWithEmail(
+  [[EarlGrey selectElementWithMatcher:IdentityCellMatcherForEmail(
                                           fakeIdentity.userEmail)]
       assertWithMatcher:grey_notVisible()];
 }

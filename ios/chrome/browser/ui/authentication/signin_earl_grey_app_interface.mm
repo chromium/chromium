@@ -142,10 +142,4 @@
                                                       URL:gURL];
 }
 
-+ (id<GREYMatcher>)identityCellMatcherForEmail:(NSString*)email {
-  return grey_allOf(grey_accessibilityID(email),
-                    grey_kindOfClass([TableViewIdentityCell class]),
-                    grey_sufficientlyVisible(), nil);
-}
-
 @end

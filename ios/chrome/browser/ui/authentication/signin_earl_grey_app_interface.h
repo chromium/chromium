@@ -61,11 +61,6 @@
 // directly the current SceneController.
 + (void)triggerConsistencyPromoSigninDialog;
 
-// Sign-in matchers
-
-// Returns a matcher for an identity picker cell for |email|.
-+ (id<GREYMatcher>)identityCellMatcherForEmail:(NSString*)email;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_EARL_GREY_APP_INTERFACE_H_
