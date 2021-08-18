@@ -21,7 +21,8 @@ PresentationConnectionCloseEvent::PresentationConnectionCloseEvent(
     const PresentationConnectionCloseEventInit* initializer)
     : Event(event_type, initializer),
       reason_(initializer->reason()),
-      message_(initializer->message()) {}
+      message_(initializer->hasMessage() ? initializer->message()
+                                         : g_empty_string) {}
 
 const AtomicString& PresentationConnectionCloseEvent::InterfaceName() const {
   return event_interface_names::kPresentationConnectionCloseEvent;
