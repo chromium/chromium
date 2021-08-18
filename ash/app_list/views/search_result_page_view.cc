@@ -17,7 +17,6 @@
 #include "ash/app_list/views/search_result_list_view.h"
 #include "ash/app_list/views/search_result_page_anchored_dialog.h"
 #include "ash/app_list/views/search_result_tile_item_list_view.h"
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
@@ -297,12 +296,6 @@ void SearchResultPageView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 }
 
 void SearchResultPageView::UpdateResultContainersVisibility() {
-  if (!ShouldShowSearchResultView()) {
-    SetVisible(false);
-    return;
-  }
-  SetVisible(true);
-
   for (auto* container : result_container_views_) {
     // Containers are wrapped by a `SearchCardView`, so update the parent
     // visibility.
@@ -482,14 +475,6 @@ SearchResultListView* SearchResultPageView::GetSearchResultListViewForTest() {
 
 void SearchResultPageView::OnWillBeHidden() {
   anchored_dialog_.reset();
-}
-
-bool SearchResultPageView::ShouldShowSearchResultView() const {
-  // TODO: crbug.com/1234969 Remove after we cease zero state result queries.
-  return !features::IsAppListBubbleEnabled() ||
-         !base::TrimWhitespace(search_model_->search_box()->text(),
-                               base::TrimPositions::TRIM_ALL)
-              .empty();
 }
 
 void SearchResultPageView::OnHidden() {
