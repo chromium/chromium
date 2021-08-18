@@ -6,6 +6,7 @@ import("//build/config/android/rules.gni")
 
 generate_jni("jni_headers") {
   sources = [
+    "java/src/org/chromium/chrome/browser/signin/services/FREMobileIdentityConsistencyFieldTrial.java",
     "java/src/org/chromium/chrome/browser/signin/services/IdentityServicesProvider.java",
     "java/src/org/chromium/chrome/browser/signin/services/SigninMetricsUtils.java",
     "java/src/org/chromium/chrome/browser/signin/services/UnifiedConsentServiceBridge.java",
@@ -16,6 +17,7 @@ generate_jni("jni_headers") {
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/signin/services/DisplayableProfileData.java",
+    "java/src/org/chromium/chrome/browser/signin/services/FREMobileIdentityConsistencyFieldTrial.java",
     "java/src/org/chromium/chrome/browser/signin/services/IdentityServicesProvider.java",
     "java/src/org/chromium/chrome/browser/signin/services/ProfileDataCache.java",
     "java/src/org/chromium/chrome/browser/signin/services/SigninManager.java",

@@ -26,10 +26,10 @@ import androidx.fragment.app.Fragment;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.consent_auditor.ConsentAuditorFeature;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
+import org.chromium.chrome.browser.signin.services.FREMobileIdentityConsistencyFieldTrial;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
@@ -283,7 +283,7 @@ public abstract class SyncConsentFragmentBase
                 IdentityServicesProvider.get()
                         .getIdentityManager(Profile.getLastUsedRegularProfile())
                         .getPrimaryAccountInfo(ConsentLevel.SIGNIN);
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY_M2)
+        if (FREMobileIdentityConsistencyFieldTrial.isEnabled()
                 && mSigninAccessPoint == SigninAccessPoint.START_PAGE && primaryAccount != null) {
             mIsSignedInWithoutSync = true;
             mSelectedAccountName = primaryAccount.getEmail();

@@ -406,6 +406,13 @@ public final class ChromePreferenceKeys {
             "Chrome.NTPExploreOfflineCard.HasExploreOfflineContent";
 
     /**
+     * Indicates whether First run field trial was enabled during FRE. This experiment is configured
+     * by client side code in {@link
+     * org.chromium.chrome.browser.signin.services.FREMobileIdentityConsistencyFieldTrial}.
+     */
+    public static final String FIRST_RUN_FIELD_TRIAL_GROUP = "Chrome.FirstRun.FieldTrialEnabled";
+
+    /**
      * The Feed articles visibility. This value is used as a pre-native cache and should be kept
      * consistent with {@link Pref.ARTICLES_LIST_VISIBLE}.
      */
@@ -1068,6 +1075,7 @@ public final class ChromePreferenceKeys {
                 DEFAULT_BROWSER_PROMO_SESSION_COUNT,
                 EXPLORE_OFFLINE_CONTENT_AVAILABILITY_STATUS,
                 FEED_ARTICLES_LIST_VISIBLE,
+                FIRST_RUN_FIELD_TRIAL_GROUP,
                 FIRST_RUN_SKIPPED_BY_POLICY,
                 FLAGS_CACHED.pattern(),
                 FLAGS_CACHED_SAFE_VALUES_BOOL.pattern(),

@@ -30,6 +30,7 @@
 #include "base/android/build_info.h"
 #include "base/android/bundle_utils.h"
 #include "base/task/thread_pool/environment_config.h"
+#include "chrome/browser/android/signin/fre_mobile_identity_consistency_field_trial.h"
 #include "chrome/browser/chrome_browser_field_trials_mobile.h"
 #include "chrome/browser/flags/android/cached_feature_flags.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
@@ -175,6 +176,16 @@ void ChromeBrowserFieldTrials::RegisterSyntheticTrials() {
         "BackgroundThreadPoolSynthetic";
     ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
         kBackgroundThreadPoolTrial, group_name);
+  }
+
+  {
+    // MobileIdentityConsistencyFRESynthetic field trial.
+    static constexpr char kMobileIdentityConsistencyFRETrial[] =
+        "MobileIdentityConsistencyFRESynthetic";
+    const std::string group =
+        fre_mobile_identity_consistency_field_trial::GetFREFieldTrialGroup();
+    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+        kMobileIdentityConsistencyFRETrial, group);
   }
 #endif  // defined(OS_ANDROID)
 }

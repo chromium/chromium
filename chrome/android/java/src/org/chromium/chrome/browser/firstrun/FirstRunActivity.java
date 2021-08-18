@@ -34,6 +34,8 @@ import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.metrics.UmaUtils;
 import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.signin.SigninFirstRunFragment;
+import org.chromium.chrome.browser.signin.services.FREMobileIdentityConsistencyFieldTrial;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -151,9 +153,14 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
      * Defines a sequence of pages to be shown (depending on parameters etc).
      */
     private void createPageSequence() {
-        mPages.add(shouldCreateEnterpriseCctTosPage()
-                        ? new TosAndUmaFirstRunFragmentWithEnterpriseSupport.Page()
-                        : new ToSAndUMAFirstRunFragment.Page());
+        FREMobileIdentityConsistencyFieldTrial.createFirstRunTrial();
+        if (FREMobileIdentityConsistencyFieldTrial.isEnabled()) {
+            mPages.add(SigninFirstRunFragment::new);
+        } else {
+            mPages.add(shouldCreateEnterpriseCctTosPage()
+                            ? new TosAndUmaFirstRunFragmentWithEnterpriseSupport.Page()
+                            : new ToSAndUMAFirstRunFragment.Page());
+        }
         mFreProgressStates.add(FRE_PROGRESS_WELCOME_SHOWN);
         mPagerAdapter = new FirstRunPagerAdapter(FirstRunActivity.this, mPages);
         mPager.setAdapter(mPagerAdapter);
