@@ -47,12 +47,12 @@
       viewport.setStickToBottom(false);
       viewport.element.scrollTop -= 10;
       var keyEvent = TestRunner.createKeyEvent('Escape');
-      viewport.contentElement.dispatchEvent(keyEvent);
+      viewport.contentElement().dispatchEvent(keyEvent);
       dumpAndContinue(next);
     },
 
     function testChangingPromptTextShouldRestickAtBottom(next) {
-      TestRunner.addSniffer(Console.ConsoleView.prototype, '_promptTextChangedForTest', onContentChanged);
+      TestRunner.addSniffer(Console.ConsoleView.prototype, 'promptTextChangedForTest', onContentChanged);
       // Since eventSender.keyDown() does not scroll prompt into view, simulate
       // behavior by setting a large scrollTop.
       consoleView.viewport.element.scrollTop = 1000000;
@@ -64,12 +64,12 @@
     },
 
     function testViewportMutationsShouldPreserveStickToBottom(next) {
-      viewport.contentElement.lastChild.innerText = 'More than 2 lines: foo\n\nbar';
+      viewport.contentElement().lastChild.innerText = 'More than 2 lines: foo\n\nbar';
       dumpAndContinue(onMessagesDumped);
 
       function onMessagesDumped() {
         viewport.setStickToBottom(false);
-        viewport.contentElement.lastChild.innerText = 'More than 3 lines: foo\n\n\nbar';
+        viewport.contentElement().lastChild.innerText = 'More than 3 lines: foo\n\n\nbar';
         dumpAndContinue(next);
       }
     },
@@ -78,7 +78,7 @@
       consoleView.updateStickToBottomOnPointerDown();
       viewport.element.scrollTop -= 10;
 
-      TestRunner.addSniffer(Console.ConsoleView.prototype, '_scheduleViewportRefreshForTest', onMessageAdded);
+      TestRunner.addSniffer(Console.ConsoleView.prototype, 'scheduleViewportRefreshForTest', onMessageAdded);
       ConsoleTestRunner.evaluateInConsole('1 + 1');
 
       /**
@@ -87,8 +87,8 @@
       function onMessageAdded(muted) {
         TestRunner.addResult('New messages were muted: ' + muted);
         TestRunner.addSniffer(
-            Console.ConsoleView.prototype, '_scheduleViewportRefreshForTest', onMouseUpScheduledRefresh);
-        TestRunner.addSniffer(Console.ConsoleView.prototype, '_updateViewportStickinessForTest', onUpdateStickiness);
+            Console.ConsoleView.prototype, 'scheduleViewportRefreshForTest', onMouseUpScheduledRefresh);
+        TestRunner.addSniffer(Console.ConsoleView.prototype, 'updateViewportStickinessForTest', onUpdateStickiness);
         consoleView.updateStickToBottomOnPointerUp();
       }
 
