@@ -59,7 +59,7 @@ class ContentViewRenderView : public content::CompositorClient {
                       jint width,
                       jint height,
                       jboolean transparent_background,
-                      const base::android::JavaParamRef<jobject>& surface);
+                      const base::android::JavaParamRef<jobject>& new_surface);
   void SetNeedsRedraw(JNIEnv* env);
   void EvictCachedSurface(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobject> GetResourceManager(JNIEnv* env);

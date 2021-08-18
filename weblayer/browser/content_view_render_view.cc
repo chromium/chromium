@@ -143,11 +143,14 @@ void ContentViewRenderView::SurfaceChanged(
     jint width,
     jint height,
     jboolean transparent_background,
-    const JavaParamRef<jobject>& surface) {
+    const JavaParamRef<jobject>& new_surface) {
   use_transparent_background_ = transparent_background;
   UpdateWebContentsBaseBackgroundColor();
   compositor_->SetRequiresAlphaChannel(use_transparent_background_);
-  compositor_->SetSurface(surface, can_be_used_with_surface_control);
+  // Java side will pass a null `new_surface` if the surface did not change.
+  if (new_surface) {
+    compositor_->SetSurface(new_surface, can_be_used_with_surface_control);
+  }
   compositor_->SetWindowBounds(gfx::Size(width, height));
 }
 

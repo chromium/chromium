@@ -64,6 +64,9 @@ public class ContentViewRenderView
     // The native side of this object.
     private long mNativeContentViewRenderView;
 
+    private Surface mLastSurface;
+    private boolean mLastCanBeUsedWithSurfaceControl;
+
     private int mMinimumSurfaceWidth;
     private int mMinimumSurfaceHeight;
 
@@ -164,6 +167,13 @@ public class ContentViewRenderView
                 int height, boolean transparentBackground) {
             assert mNativeContentViewRenderView != 0;
             assert mSurfaceData == ContentViewRenderView.this.mCurrent;
+            if (mLastSurface == surface
+                    && mLastCanBeUsedWithSurfaceControl == canBeUsedWithSurfaceControl) {
+                surface = null;
+            } else {
+                mLastSurface = surface;
+                mLastCanBeUsedWithSurfaceControl = canBeUsedWithSurfaceControl;
+            }
             ContentViewRenderViewJni.get().surfaceChanged(mNativeContentViewRenderView,
                     canBeUsedWithSurfaceControl, width, height, transparentBackground, surface);
             mCompositorHasSurface = surface != null;
@@ -178,6 +188,8 @@ public class ContentViewRenderView
             ContentViewRenderViewJni.get().surfaceDestroyed(
                     mNativeContentViewRenderView, cacheBackBuffer);
             mCompositorHasSurface = false;
+            mLastSurface = null;
+            mLastCanBeUsedWithSurfaceControl = false;
         }
 
         @Override
@@ -1023,7 +1035,7 @@ public class ContentViewRenderView
         void surfaceCreated(long nativeContentViewRenderView);
         void surfaceDestroyed(long nativeContentViewRenderView, boolean cacheBackBuffer);
         void surfaceChanged(long nativeContentViewRenderView, boolean canBeUsedWithSurfaceControl,
-                int width, int height, boolean transparentBackground, Surface surface);
+                int width, int height, boolean transparentBackground, Surface newSurface);
         void setNeedsRedraw(long nativeContentViewRenderView);
         void evictCachedSurface(long nativeContentViewRenderView);
         ResourceManager getResourceManager(long nativeContentViewRenderView);
