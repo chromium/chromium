@@ -33,7 +33,7 @@ bool TestTaskRunner::PostDelayedTask(const base::Location& from_here,
   EXPECT_GE(delay, base::TimeDelta());
   tasks_.push_back(PostedTask(from_here, std::move(task), NowInTicks(*clock_),
                               delay, base::TestPendingTask::NESTABLE));
-  return false;
+  return true;
 }
 
 bool TestTaskRunner::PostNonNestableDelayedTask(const base::Location& from_here,
