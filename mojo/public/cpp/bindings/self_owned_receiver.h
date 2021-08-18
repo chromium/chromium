@@ -92,30 +92,12 @@ class SelfOwnedReceiver {
                     PendingReceiver<Interface> receiver,
                     scoped_refptr<base::SequencedTaskRunner> task_runner)
       : impl_(std::move(impl)),
-        receiver_(impl_.get(), std::move(receiver), task_runner) {
-    auto on_disconnect_cb = base::BindOnce(&SelfOwnedReceiver::OnDisconnect,
-                                           base::Unretained(this));
-    if (task_runner && !task_runner->RunsTasksInCurrentSequence()) {
-      // `this` will be deleted on `task_runner`. It cannot be
-      // reentrantly-destroyed here so `base::Unretained` is safe.
-      task_runner->PostTask(
-          FROM_HERE,
-          base::BindOnce(&SelfOwnedReceiver::SetDisconnectWithReasonHandler,
-                         base::Unretained(this), std::move(on_disconnect_cb)));
-    } else {
-      SetDisconnectWithReasonHandler(std::move(on_disconnect_cb));
-    }
+        receiver_(impl_.get(), std::move(receiver), std::move(task_runner)) {
+    receiver_.set_disconnect_with_reason_handler(base::BindOnce(
+        &SelfOwnedReceiver::OnDisconnect, base::Unretained(this)));
   }
 
-  // Will be destroyed on `task_runner` argument passed to constructor if
-  // non-null; otherwise, will be destroyed on the sequence the `this` was
-  // originally constructed on.
   ~SelfOwnedReceiver() = default;
-
-  void SetDisconnectWithReasonHandler(
-      ConnectionErrorWithReasonCallback on_disconnect_cb) {
-    receiver_.set_disconnect_with_reason_handler(std::move(on_disconnect_cb));
-  }
 
   void OnDisconnect(uint32_t custom_reason, const std::string& description) {
     if (connection_error_handler_) {
