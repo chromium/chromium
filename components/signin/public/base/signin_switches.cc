@@ -37,8 +37,10 @@ const base::Feature kForceStartupSigninPromo{"ForceStartupSigninPromo",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 const base::Feature kMinorModeSupport{"MinorModeSupport",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
 
 const base::Feature kForceDisableExtendedSyncPromos{
     "ForceDisableExtendedSyncPromos", base::FEATURE_DISABLED_BY_DEFAULT};
