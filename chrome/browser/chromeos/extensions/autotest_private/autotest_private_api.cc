@@ -516,6 +516,8 @@ std::string SetWhitelistedPref(Profile* profile,
     DCHECK(value.is_bool());
   } else if (pref_name == plugin_vm::prefs::kPluginVmDataCollectionAllowed) {
     DCHECK(value.is_bool());
+  } else if (pref_name == prefs::kPrintingAPIExtensionsAllowlist) {
+    DCHECK(value.is_list());
   } else {
     return "The pref " + pref_name + " is not whitelisted.";
   }
