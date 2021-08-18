@@ -1298,6 +1298,99 @@ INSTANTIATE_TEST_SUITE_P(
       return cases;
     }()));
 
+// Tests that if the number of iframes exceeds |kMaxParseableFrames|, neither
+// fields nor child frames of that form are extracted.
+TEST_F(FormAutofillUtilsTest, ExtractNoFieldsOrFramesIfTooManyIframes) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kAutofillAcrossIframes);
+
+  auto CreateFormElement = [this](const char* element) {
+    std::string js = base::StringPrintf(
+        "document.forms[0].appendChild(document.createElement('%s'))", element);
+    ExecuteJavaScriptForTests(js.c_str());
+  };
+
+  LoadHTML(R"(<html><body><form id='f'></form>)");
+  for (size_t i = 0; i < kMaxParseableFields - 1; ++i)
+    CreateFormElement("input");
+  for (size_t i = 0; i < kMaxParseableFrames - 1; ++i)
+    CreateFormElement("iframe");
+
+  // Ensure that Android runs at default page scale.
+  web_view_->SetPageScaleFactor(1.0);
+
+  WebDocument doc = GetMainFrame()->GetDocument();
+  WebFormElement form =
+      doc.GetElementById(blink::WebString::FromASCII("f")).To<WebFormElement>();
+  {
+    FormData form_data;
+    ASSERT_TRUE(WebFormElementToFormData(form, WebFormControlElement(), nullptr,
+                                         EXTRACT_NONE, &form_data, nullptr));
+    EXPECT_EQ(form_data.fields.size(), kMaxParseableFields - 1);
+    EXPECT_EQ(form_data.child_frames.size(), kMaxParseableFrames - 1);
+  }
+
+  // There may be multiple checks (e.g., == kMaxParseableFrames, <=
+  // kMaxParseableFrames, < kMaxParseableFrames), so we test different numbers
+  // of <iframe> elements.
+  for (int i = 0; i < 3; ++i) {
+    CreateFormElement("iframe");
+    FormData form_data;
+    ASSERT_FALSE(WebFormElementToFormData(form, WebFormControlElement(),
+                                          nullptr, EXTRACT_NONE, &form_data,
+                                          nullptr));
+    EXPECT_TRUE(form_data.fields.empty());
+    EXPECT_TRUE(form_data.child_frames.empty());
+  }
+}
+
+// Tests that if the number of fields exceeds |kMaxParseableFields|, neither
+// fields nor child frames of that form are extracted.
+TEST_F(FormAutofillUtilsTest, ExtractNoFieldsOrFramesIfTooManyFields) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kAutofillAcrossIframes);
+
+  auto CreateFormElement = [this](const char* element) {
+    std::string js = base::StringPrintf(
+        "document.forms[0].appendChild(document.createElement('%s'))", element);
+    ExecuteJavaScriptForTests(js.c_str());
+  };
+
+  LoadHTML(R"(<html><body><form id='f'></form>)");
+  for (size_t i = 0; i < kMaxParseableFields - 1; ++i)
+    CreateFormElement("input");
+  for (size_t i = 0; i < kMaxParseableFrames - 1; ++i)
+    CreateFormElement("iframe");
+
+  // Ensure that Android runs at default page scale.
+  web_view_->SetPageScaleFactor(1.0);
+
+  WebDocument doc = GetMainFrame()->GetDocument();
+  WebFormElement form =
+      doc.GetElementById(blink::WebString::FromASCII("f")).To<WebFormElement>();
+  {
+    FormData form_data;
+    ASSERT_TRUE(WebFormElementToFormData(form, WebFormControlElement(), nullptr,
+                                         EXTRACT_NONE, &form_data, nullptr));
+    EXPECT_EQ(form_data.fields.size(), kMaxParseableFields - 1);
+    EXPECT_EQ(form_data.child_frames.size(), kMaxParseableFrames - 1);
+  }
+
+  // There may be multiple checks (e.g., == kMaxParseableFields, <=
+  // kMaxParseableFields, < kMaxParseableFields), so we test different numbers
+  // of <input> elements.
+  for (int i = 0; i < 3; ++i) {
+    SCOPED_TRACE(base::NumberToString(i));
+    CreateFormElement("input");
+    FormData form_data;
+    ASSERT_FALSE(WebFormElementToFormData(form, WebFormControlElement(),
+                                          nullptr, EXTRACT_NONE, &form_data,
+                                          nullptr));
+    EXPECT_TRUE(form_data.fields.empty());
+    EXPECT_TRUE(form_data.child_frames.empty());
+  }
+}
+
 }  // namespace
 }  // namespace form_util
 }  // namespace autofill
