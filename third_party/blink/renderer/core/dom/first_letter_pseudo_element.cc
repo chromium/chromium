@@ -138,14 +138,20 @@ LayoutText* FirstLetterPseudoElement::FirstLetterTextLayoutObject(
             kPseudoIdFirstLetter) {
       first_letter_text_layout_object =
           first_letter_text_layout_object->NextSibling();
-    } else if (first_letter_text_layout_object->IsText()) {
+    } else if (auto* layout_text =
+                   DynamicTo<LayoutText>(first_letter_text_layout_object)) {
+      // Don't apply first letter styling to passwords and other elements
+      // obfuscated by -webkit-text-security. Also, see
+      // ShouldUpdateLayoutByReattaching() in text.cc.
+      if (layout_text->IsSecure())
+        return nullptr;
       // FIXME: If there is leading punctuation in a different LayoutText than
       // the first letter, we'll not apply the correct style to it.
       scoped_refptr<StringImpl> str =
-          To<LayoutText>(first_letter_text_layout_object)->IsTextFragment()
+          layout_text->IsTextFragment()
               ? To<LayoutTextFragment>(first_letter_text_layout_object)
                     ->CompleteText()
-              : To<LayoutText>(first_letter_text_layout_object)->OriginalText();
+              : layout_text->OriginalText();
       if (FirstLetterLength(str.get()) ||
           IsInvalidFirstLetterLayoutObject(first_letter_text_layout_object))
         break;
