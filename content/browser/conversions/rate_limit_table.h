@@ -53,11 +53,18 @@ class CONTENT_EXPORT RateLimitTable {
   bool AddRateLimit(sql::Database* db,
                     const ConversionReport& report) WARN_UNUSED_RESULT;
 
+  enum class AttributionAllowedStatus {
+    kAllowed,
+    kNotAllowed,
+    kError,
+  };
+
   // Checks if the given attribution is allowed according to the data in the
   // table and policy as specified by the delegate.
-  bool IsAttributionAllowed(sql::Database* db,
-                            const ConversionReport& report,
-                            base::Time now) WARN_UNUSED_RESULT;
+  AttributionAllowedStatus AttributionAllowed(sql::Database* db,
+                                              const ConversionReport& report,
+                                              base::Time now)
+      WARN_UNUSED_RESULT;
 
   // These should be 1:1 with |ConversionStorageSql|'s |ClearData| functions.
   // Returns false on failure.

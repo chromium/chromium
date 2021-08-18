@@ -22,6 +22,8 @@ namespace content {
 
 namespace {
 
+using CreateReportStatus = ::content::ConversionStorage::CreateReportStatus;
+
 const char kDefaultImpressionOrigin[] = "https://impression.test/";
 const char kDefaultConversionOrigin[] = "https://sub.conversion.test/";
 const char kDefaultConversionDestination[] = "https://conversion.test/";
@@ -370,6 +372,39 @@ bool operator==(const SentReportInfo& a, const SentReportInfo& b) {
                            info.conversion_id);
   };
   return tie(a) == tie(b);
+}
+
+std::ostream& operator<<(std::ostream& out, CreateReportStatus result) {
+  switch (result) {
+    case CreateReportStatus::kSuccess:
+      out << "kSuccess";
+      break;
+    case CreateReportStatus::kSuccessDroppedLowerPriority:
+      out << "kSuccessDroppedLowerPriority";
+      break;
+    case CreateReportStatus::kInternalError:
+      out << "kInternalError";
+      break;
+    case CreateReportStatus::kNoCapacityForConversionDestination:
+      out << "kNoCapacityForConversionDestination";
+      break;
+    case CreateReportStatus::kNoMatchingImpressions:
+      out << "kNoMatchingImpressions";
+      break;
+    case CreateReportStatus::kDeduplicated:
+      out << "kDeduplicated";
+      break;
+    case CreateReportStatus::kRateLimited:
+      out << "kRateLimited";
+      break;
+    case CreateReportStatus::kPriorityTooLow:
+      out << "kPriorityTooLow";
+      break;
+    case CreateReportStatus::kDroppedForNoise:
+      out << "kDroppedForNoise";
+      break;
+  }
+  return out;
 }
 
 std::vector<ConversionReport> GetConversionsToReportForTesting(

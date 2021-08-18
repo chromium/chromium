@@ -82,7 +82,7 @@ class CONTENT_EXPORT ConversionStorageSql : public ConversionStorage {
 
   // ConversionStorage
   void StoreImpression(const StorableImpression& impression) override;
-  bool MaybeCreateAndStoreConversionReport(
+  CreateReportStatus MaybeCreateAndStoreConversionReport(
       const StorableConversion& conversion) override;
   std::vector<ConversionReport> GetConversionsToReport(base::Time expiry_time,
                                                        int limit = -1) override;
@@ -115,10 +115,26 @@ class CONTENT_EXPORT ConversionStorageSql : public ConversionStorage {
 
   bool HasCapacityForStoringImpression(const std::string& serialized_origin)
       VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
-  bool IsReportAlreadyStored(int64_t impression_id,
-                             absl::optional<int64_t> dedup_key)
+
+  enum class ReportAlreadyStoredStatus {
+    kNotStored,
+    kStored,
+    kError,
+  };
+
+  ReportAlreadyStoredStatus ReportAlreadyStored(
+      int64_t impression_id,
+      absl::optional<int64_t> dedup_key)
       VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
-  bool HasCapacityForStoringConversion(const std::string& serialized_origin)
+
+  enum class ConversionCapacityStatus {
+    kHasCapacity,
+    kNoCapacity,
+    kError,
+  };
+
+  ConversionCapacityStatus CapacityForStoringConversion(
+      const std::string& serialized_origin)
       VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
 
   enum class MaybeReplaceLowerPriorityReportResult {

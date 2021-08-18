@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <iosfwd>
 #include <vector>
 
 #include "base/containers/circular_deque.h"
@@ -328,6 +329,9 @@ bool operator==(const StorableImpression& a, const StorableImpression& b);
 bool operator==(const ConversionReport& a, const ConversionReport& b);
 
 bool operator==(const SentReportInfo& a, const SentReportInfo& b);
+
+std::ostream& operator<<(std::ostream& out,
+                         ConversionStorage::CreateReportStatus result);
 
 std::vector<ConversionReport> GetConversionsToReportForTesting(
     ConversionManagerImpl* manager,

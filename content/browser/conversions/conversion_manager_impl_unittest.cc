@@ -17,6 +17,7 @@
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -662,6 +663,15 @@ TEST_F(ConversionManagerImplTest, ConversionPrioritization_OneReportSent) {
       ConversionBuilder().SetPriority(2).Build());
   task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
   EXPECT_EQ(3u, test_reporter_->num_reports());
+}
+
+TEST_F(ConversionManagerImplTest, HandleConversion_RecordsMetric) {
+  base::HistogramTester histograms;
+  conversion_manager_->HandleConversion(DefaultConversion());
+  ExpectNumStoredReports(0);
+  histograms.ExpectUniqueSample(
+      "Conversions.CreateReportStatus",
+      ConversionStorage::CreateReportStatus::kNoMatchingImpressions, 1);
 }
 
 }  // namespace content

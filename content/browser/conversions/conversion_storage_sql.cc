@@ -35,6 +35,8 @@ namespace content {
 
 namespace {
 
+using CreateReportStatus = ::content::ConversionStorage::CreateReportStatus;
+
 const base::FilePath::CharType kInMemoryPath[] = FILE_PATH_LITERAL(":memory");
 
 const base::FilePath::CharType kDatabasePath[] =
@@ -440,19 +442,19 @@ ConversionStorageSql::MaybeReplaceLowerPriorityReport(
                    kError;
 }
 
-bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
+CreateReportStatus ConversionStorageSql::MaybeCreateAndStoreConversionReport(
     const StorableConversion& conversion) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent))
-    return false;
+  // We don't bother creating the DB here if it doesn't exist, because it's not
+  // possible for there to be a matching impression if there's no DB.
+  if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent)) {
+    return CreateReportStatus::kNoMatchingImpressions;
+  }
 
   const net::SchemefulSite& conversion_destination =
       conversion.conversion_destination();
   const std::string serialized_conversion_destination =
       conversion_destination.Serialize();
-
-  if (!HasCapacityForStoringConversion(serialized_conversion_destination))
-    return false;
 
   const url::Origin& reporting_origin = conversion.reporting_origin();
   DCHECK(!conversion_destination.opaque());
@@ -480,8 +482,12 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
   matching_impressions_statement.BindTime(2, current_time);
 
   // If there are no matching impressions, return early.
-  if (!matching_impressions_statement.Step())
-    return false;
+  if (!matching_impressions_statement.Step()) {
+    return matching_impressions_statement.Succeeded()
+               ? CreateReportStatus::kNoMatchingImpressions
+               : CreateReportStatus::kInternalError;
+  }
+
   // The first one returned will be attributed; it has the highest priority.
   int64_t impression_id_to_attribute =
       matching_impressions_statement.ColumnInt64(0);
@@ -494,17 +500,33 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
   }
   // Exit early if the last statement wasn't valid.
   if (!matching_impressions_statement.Succeeded())
-    return false;
+    return CreateReportStatus::kInternalError;
 
-  if (IsReportAlreadyStored(impression_id_to_attribute, conversion.dedup_key()))
-    return false;
+  switch (
+      ReportAlreadyStored(impression_id_to_attribute, conversion.dedup_key())) {
+    case ReportAlreadyStoredStatus::kNotStored:
+      break;
+    case ReportAlreadyStoredStatus::kStored:
+      return CreateReportStatus::kDeduplicated;
+    case ReportAlreadyStoredStatus::kError:
+      return CreateReportStatus::kInternalError;
+  }
+
+  switch (CapacityForStoringConversion(serialized_conversion_destination)) {
+    case ConversionCapacityStatus::kHasCapacity:
+      break;
+    case ConversionCapacityStatus::kNoCapacity:
+      return CreateReportStatus::kNoCapacityForConversionDestination;
+    case ConversionCapacityStatus::kError:
+      return CreateReportStatus::kInternalError;
+  }
 
   absl::optional<ImpressionToAttribute> impression_to_attribute =
       ReadImpressionToAttribute(db_.get(), impression_id_to_attribute,
                                 reporting_origin);
   // This is only possible if there is a corrupt DB.
   if (!impression_to_attribute.has_value())
-    return false;
+    return CreateReportStatus::kInternalError;
 
   const uint64_t conversion_data =
       impression_to_attribute->impression.source_type() ==
@@ -520,12 +542,19 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
 
   report.report_time = delegate_->GetReportTime(report);
 
-  if (!rate_limit_table_.IsAttributionAllowed(db_.get(), report, current_time))
-    return false;
+  switch (
+      rate_limit_table_.AttributionAllowed(db_.get(), report, current_time)) {
+    case RateLimitTable::AttributionAllowedStatus::kAllowed:
+      break;
+    case RateLimitTable::AttributionAllowedStatus::kNotAllowed:
+      return CreateReportStatus::kRateLimited;
+    case RateLimitTable::AttributionAllowedStatus::kError:
+      return CreateReportStatus::kInternalError;
+  }
 
   sql::Transaction transaction(db_.get());
   if (!transaction.Begin())
-    return false;
+    return CreateReportStatus::kInternalError;
 
   const auto maybe_replace_lower_priority_report_result =
       MaybeReplaceLowerPriorityReport(report,
@@ -533,14 +562,14 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
                                       conversion.priority());
   if (maybe_replace_lower_priority_report_result ==
       ConversionStorageSql::MaybeReplaceLowerPriorityReportResult::kError) {
-    return false;
+    return CreateReportStatus::kInternalError;
   }
 
   if (maybe_replace_lower_priority_report_result ==
       ConversionStorageSql::MaybeReplaceLowerPriorityReportResult::
           kDropNewReport) {
-    transaction.Commit();
-    return false;
+    return transaction.Commit() ? CreateReportStatus::kPriorityTooLow
+                                : CreateReportStatus::kInternalError;
   }
 
   // Reports with `AttributionLogic::kNever` should be included in all
@@ -553,7 +582,7 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
     DCHECK(report.impression.impression_id().has_value());
     if (!StoreConversionReport(report, *report.impression.impression_id(),
                                conversion.priority())) {
-      return false;
+      return CreateReportStatus::kInternalError;
     }
   }
 
@@ -568,7 +597,7 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
     insert_dedup_key_statement.BindInt64(0, *report.impression.impression_id());
     insert_dedup_key_statement.BindInt64(1, *conversion.dedup_key());
     if (!insert_dedup_key_statement.Run())
-      return false;
+      return CreateReportStatus::kInternalError;
   }
 
   // Only increment the number of conversions associated with the impression if
@@ -586,12 +615,12 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
     impression_update_statement.BindInt64(0,
                                           *report.impression.impression_id());
     if (!impression_update_statement.Run())
-      return false;
+      return CreateReportStatus::kInternalError;
   }
 
   // Delete all unattributed impressions.
   if (!DeleteImpressions(impression_ids_to_delete))
-    return false;
+    return CreateReportStatus::kInternalError;
 
   // Based on the deletion logic here and the fact that we delete impressions
   // with |num_conversions > 1| when there is a new matching impression in
@@ -601,12 +630,19 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
   // |RateLimitTable::ClearDataForImpressionIds()| here.
 
   if (create_report && !rate_limit_table_.AddRateLimit(db_.get(), report))
-    return false;
+    return CreateReportStatus::kInternalError;
 
   if (!transaction.Commit())
-    return false;
+    return CreateReportStatus::kInternalError;
 
-  return create_report;
+  if (!create_report)
+    return CreateReportStatus::kDroppedForNoise;
+
+  return maybe_replace_lower_priority_report_result ==
+                 ConversionStorageSql::MaybeReplaceLowerPriorityReportResult::
+                     kReplaceOldReport
+             ? CreateReportStatus::kSuccessDroppedLowerPriority
+             : CreateReportStatus::kSuccess;
 }
 
 bool ConversionStorageSql::StoreConversionReport(const ConversionReport& report,
@@ -1016,11 +1052,11 @@ bool ConversionStorageSql::HasCapacityForStoringImpression(
   return count < delegate_->GetMaxImpressionsPerOrigin();
 }
 
-bool ConversionStorageSql::IsReportAlreadyStored(
-    int64_t impression_id,
-    absl::optional<int64_t> dedup_key) {
+ConversionStorageSql::ReportAlreadyStoredStatus
+ConversionStorageSql::ReportAlreadyStored(int64_t impression_id,
+                                          absl::optional<int64_t> dedup_key) {
   if (!dedup_key.has_value())
-    return false;
+    return ReportAlreadyStoredStatus::kNotStored;
 
   static constexpr char kCountConversionsSql[] =
       "SELECT COUNT(*)FROM dedup_keys "
@@ -1033,13 +1069,15 @@ bool ConversionStorageSql::IsReportAlreadyStored(
   // If there's an error, return true so `MaybeCreateAndStoreConversionReport()`
   // returns early.
   if (!statement.Step())
-    return true;
+    return ReportAlreadyStoredStatus::kError;
 
   int64_t count = statement.ColumnInt64(0);
-  return count > 0;
+  return count > 0 ? ReportAlreadyStoredStatus::kStored
+                   : ReportAlreadyStoredStatus::kNotStored;
 }
 
-bool ConversionStorageSql::HasCapacityForStoringConversion(
+ConversionStorageSql::ConversionCapacityStatus
+ConversionStorageSql::CapacityForStoringConversion(
     const std::string& serialized_origin) {
   // This query should be reasonably optimized via
   // `kConversionDestinationIndexSql`. The conversion origin is the second
@@ -1058,9 +1096,11 @@ bool ConversionStorageSql::HasCapacityForStoringConversion(
       db_->GetCachedStatement(SQL_FROM_HERE, kCountConversionsSql));
   statement.BindString(0, serialized_origin);
   if (!statement.Step())
-    return false;
+    return ConversionCapacityStatus::kError;
   int64_t count = statement.ColumnInt64(0);
-  return count < delegate_->GetMaxConversionsPerOrigin();
+  return count < delegate_->GetMaxConversionsPerOrigin()
+             ? ConversionCapacityStatus::kHasCapacity
+             : ConversionCapacityStatus::kNoCapacity;
 }
 
 std::vector<StorableImpression> ConversionStorageSql::GetActiveImpressions(

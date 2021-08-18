@@ -24,6 +24,8 @@ namespace content {
 
 namespace {
 
+using AttributionAllowedStatus =
+    ::content::RateLimitTable::AttributionAllowedStatus;
 using ::testing::ElementsAre;
 
 class RateLimitTableTest : public testing::Test {
@@ -133,7 +135,7 @@ TEST_F(RateLimitTableTest, AddRateLimit) {
   EXPECT_EQ(1u, GetRateLimitRows(&db));
 }
 
-TEST_F(RateLimitTableTest, IsAttributionAllowed) {
+TEST_F(RateLimitTableTest, AttributionAllowed) {
   sql::Database db;
   EXPECT_TRUE(db.Open(db_path()));
   EXPECT_TRUE(table()->CreateTable(&db));
@@ -175,25 +177,35 @@ TEST_F(RateLimitTableTest, IsAttributionAllowed) {
   const auto report_b_a = NewConversionReport(example_b, example_a);
 
   base::Time now = clock()->Now();
-  EXPECT_FALSE(table()->IsAttributionAllowed(&db, report_a_c, now));
-  EXPECT_TRUE(table()->IsAttributionAllowed(&db, report_a_d, now));
-  EXPECT_TRUE(table()->IsAttributionAllowed(&db, report_b_c, now));
-  EXPECT_TRUE(table()->IsAttributionAllowed(&db, report_a_b, now));
-  EXPECT_TRUE(table()->IsAttributionAllowed(&db, report_b_a, now));
+  EXPECT_EQ(AttributionAllowedStatus::kNotAllowed,
+            table()->AttributionAllowed(&db, report_a_c, now));
+  EXPECT_EQ(AttributionAllowedStatus::kAllowed,
+            table()->AttributionAllowed(&db, report_a_d, now));
+  EXPECT_EQ(AttributionAllowedStatus::kAllowed,
+            table()->AttributionAllowed(&db, report_b_c, now));
+  EXPECT_EQ(AttributionAllowedStatus::kAllowed,
+            table()->AttributionAllowed(&db, report_a_b, now));
+  EXPECT_EQ(AttributionAllowedStatus::kAllowed,
+            table()->AttributionAllowed(&db, report_b_a, now));
 
   // Expire the first row above by advancing to +10d.
   clock()->Advance(base::TimeDelta::FromDays(4));
   now = clock()->Now();
-  EXPECT_TRUE(table()->IsAttributionAllowed(&db, report_a_c, now));
-  EXPECT_TRUE(table()->IsAttributionAllowed(&db, report_a_d, now));
-  EXPECT_TRUE(table()->IsAttributionAllowed(&db, report_b_c, now));
-  EXPECT_TRUE(table()->IsAttributionAllowed(&db, report_a_b, now));
-  EXPECT_TRUE(table()->IsAttributionAllowed(&db, report_b_a, now));
+  EXPECT_EQ(AttributionAllowedStatus::kAllowed,
+            table()->AttributionAllowed(&db, report_a_c, now));
+  EXPECT_EQ(AttributionAllowedStatus::kAllowed,
+            table()->AttributionAllowed(&db, report_a_d, now));
+  EXPECT_EQ(AttributionAllowedStatus::kAllowed,
+            table()->AttributionAllowed(&db, report_b_c, now));
+  EXPECT_EQ(AttributionAllowedStatus::kAllowed,
+            table()->AttributionAllowed(&db, report_a_b, now));
+  EXPECT_EQ(AttributionAllowedStatus::kAllowed,
+            table()->AttributionAllowed(&db, report_b_a, now));
 
   EXPECT_EQ(3u, GetRateLimitRows(&db));
 }
 
-TEST_F(RateLimitTableTest, IsAttributionAllowed_SourceTypesIndependent) {
+TEST_F(RateLimitTableTest, CheckAttributionAllowed_SourceTypesIndependent) {
   // Tests that limits are calculated independently for each
   // `StorableImpression::SourceType`. In the future, we may change this so that
   // there is a combined calculation but each source type is weighted
@@ -224,22 +236,28 @@ TEST_F(RateLimitTableTest, IsAttributionAllowed_SourceTypesIndependent) {
   EXPECT_EQ(2u, GetRateLimitRows(&db));
 
   base::Time now = clock()->Now();
-  EXPECT_TRUE(table()->IsAttributionAllowed(&db, report_navigation, now));
-  EXPECT_TRUE(table()->IsAttributionAllowed(&db, report_event, now));
+  EXPECT_EQ(AttributionAllowedStatus::kAllowed,
+            table()->AttributionAllowed(&db, report_navigation, now));
+  EXPECT_EQ(AttributionAllowedStatus::kAllowed,
+            table()->AttributionAllowed(&db, report_event, now));
 
   EXPECT_TRUE(table()->AddRateLimit(&db, report_navigation));
   EXPECT_EQ(3u, GetRateLimitRows(&db));
-  EXPECT_FALSE(table()->IsAttributionAllowed(&db, report_navigation, now));
-  EXPECT_TRUE(table()->IsAttributionAllowed(&db, report_event, now));
+  EXPECT_EQ(AttributionAllowedStatus::kNotAllowed,
+            table()->AttributionAllowed(&db, report_navigation, now));
+  EXPECT_EQ(AttributionAllowedStatus::kAllowed,
+            table()->AttributionAllowed(&db, report_event, now));
 
   EXPECT_TRUE(table()->AddRateLimit(&db, report_event));
   EXPECT_EQ(4u, GetRateLimitRows(&db));
-  EXPECT_FALSE(table()->IsAttributionAllowed(&db, report_navigation, now));
-  EXPECT_FALSE(table()->IsAttributionAllowed(&db, report_event, now));
+  EXPECT_EQ(AttributionAllowedStatus::kNotAllowed,
+            table()->AttributionAllowed(&db, report_navigation, now));
+  EXPECT_EQ(AttributionAllowedStatus::kNotAllowed,
+            table()->AttributionAllowed(&db, report_event, now));
 }
 
 TEST_F(RateLimitTableTest,
-       IsAttributionAllowed_ConversionDestinationSubdomains) {
+       CheckAttributionAllowed_ConversionDestinationSubdomains) {
   sql::Database db;
   EXPECT_TRUE(db.Open(db_path()));
   EXPECT_TRUE(table()->CreateTable(&db));
@@ -265,15 +283,18 @@ TEST_F(RateLimitTableTest,
       &db, NewConversionReport(example_a, example_c_sub_b)));
 
   base::Time now = clock()->Now();
-  EXPECT_FALSE(table()->IsAttributionAllowed(
-      &db, NewConversionReport(example_a, example_c_sub_a), now));
-  EXPECT_FALSE(table()->IsAttributionAllowed(
-      &db, NewConversionReport(example_a, example_c_sub_b), now));
-  EXPECT_FALSE(table()->IsAttributionAllowed(
-      &db, NewConversionReport(example_a, example_c), now));
+  EXPECT_EQ(AttributionAllowedStatus::kNotAllowed,
+            table()->AttributionAllowed(
+                &db, NewConversionReport(example_a, example_c_sub_a), now));
+  EXPECT_EQ(AttributionAllowedStatus::kNotAllowed,
+            table()->AttributionAllowed(
+                &db, NewConversionReport(example_a, example_c_sub_b), now));
+  EXPECT_EQ(AttributionAllowedStatus::kNotAllowed,
+            table()->AttributionAllowed(
+                &db, NewConversionReport(example_a, example_c), now));
 }
 
-TEST_F(RateLimitTableTest, IsAttributionAllowed_ImpressionSiteSubdomains) {
+TEST_F(RateLimitTableTest, CheckAttributionAllowed_ImpressionSiteSubdomains) {
   sql::Database db;
   EXPECT_TRUE(db.Open(db_path()));
   EXPECT_TRUE(table()->CreateTable(&db));
@@ -299,12 +320,15 @@ TEST_F(RateLimitTableTest, IsAttributionAllowed_ImpressionSiteSubdomains) {
       &db, NewConversionReport(example_c_sub_b, example_a)));
 
   base::Time now = clock()->Now();
-  EXPECT_FALSE(table()->IsAttributionAllowed(
-      &db, NewConversionReport(example_c_sub_a, example_a), now));
-  EXPECT_FALSE(table()->IsAttributionAllowed(
-      &db, NewConversionReport(example_c_sub_b, example_a), now));
-  EXPECT_FALSE(table()->IsAttributionAllowed(
-      &db, NewConversionReport(example_c, example_a), now));
+  EXPECT_EQ(AttributionAllowedStatus::kNotAllowed,
+            table()->AttributionAllowed(
+                &db, NewConversionReport(example_c_sub_a, example_a), now));
+  EXPECT_EQ(AttributionAllowedStatus::kNotAllowed,
+            table()->AttributionAllowed(
+                &db, NewConversionReport(example_c_sub_b, example_a), now));
+  EXPECT_EQ(AttributionAllowedStatus::kNotAllowed,
+            table()->AttributionAllowed(
+                &db, NewConversionReport(example_c, example_a), now));
 }
 
 TEST_F(RateLimitTableTest, ClearAllDataAllTime) {
@@ -354,10 +378,12 @@ TEST_F(RateLimitTableTest, ClearAllDataInRange) {
 
   base::Time now = clock()->Now();
 
-  EXPECT_FALSE(table()->IsAttributionAllowed(
-      &db, NewConversionReport(example_a, example_b), now));
-  EXPECT_FALSE(table()->IsAttributionAllowed(
-      &db, NewConversionReport(example_b, example_c), now));
+  EXPECT_EQ(AttributionAllowedStatus::kNotAllowed,
+            table()->AttributionAllowed(
+                &db, NewConversionReport(example_a, example_b), now));
+  EXPECT_EQ(AttributionAllowedStatus::kNotAllowed,
+            table()->AttributionAllowed(
+                &db, NewConversionReport(example_b, example_c), now));
 
   // Delete the first row: attribution should now be allowed for the site,
   // but the other rows should not be deleted.
@@ -365,10 +391,12 @@ TEST_F(RateLimitTableTest, ClearAllDataInRange) {
                                            now - base::TimeDelta::FromDays(7),
                                            now - base::TimeDelta::FromDays(6)));
   EXPECT_EQ(3u, GetRateLimitRows(&db));
-  EXPECT_TRUE(table()->IsAttributionAllowed(
-      &db, NewConversionReport(example_a, example_b), now));
-  EXPECT_FALSE(table()->IsAttributionAllowed(
-      &db, NewConversionReport(example_b, example_c), now));
+  EXPECT_EQ(AttributionAllowedStatus::kAllowed,
+            table()->AttributionAllowed(
+                &db, NewConversionReport(example_a, example_b), now));
+  EXPECT_EQ(AttributionAllowedStatus::kNotAllowed,
+            table()->AttributionAllowed(
+                &db, NewConversionReport(example_b, example_c), now));
 }
 
 TEST_F(RateLimitTableTest, ClearDataForOriginsInRange) {
@@ -402,24 +430,27 @@ TEST_F(RateLimitTableTest, ClearDataForOriginsInRange) {
   EXPECT_EQ(3u, GetRateLimitRows(&db));
 
   base::Time now = clock()->Now();
-  EXPECT_FALSE(table()->IsAttributionAllowed(
-      &db, NewConversionReport(example_a, example_b), now));
+  EXPECT_EQ(AttributionAllowedStatus::kNotAllowed,
+            table()->AttributionAllowed(
+                &db, NewConversionReport(example_a, example_b), now));
 
   // Should delete nothing, because (example_d, example_c) is at now.
   EXPECT_TRUE(table()->ClearDataForOriginsInRange(
       &db, base::Time(), now - base::TimeDelta::FromDays(1),
       base::BindRepeating(std::equal_to<url::Origin>(), example_c)));
   EXPECT_EQ(3u, GetRateLimitRows(&db));
-  EXPECT_FALSE(table()->IsAttributionAllowed(
-      &db, NewConversionReport(example_a, example_b), now));
+  EXPECT_EQ(AttributionAllowedStatus::kNotAllowed,
+            table()->AttributionAllowed(
+                &db, NewConversionReport(example_a, example_b), now));
 
   // Should delete (example_a, example_ba).
   EXPECT_TRUE(table()->ClearDataForOriginsInRange(
       &db, base::Time(), base::Time::Max(),
       base::BindRepeating(std::equal_to<url::Origin>(), example_ba)));
   EXPECT_EQ(2u, GetRateLimitRows(&db));
-  EXPECT_TRUE(table()->IsAttributionAllowed(
-      &db, NewConversionReport(example_a, example_b), now));
+  EXPECT_EQ(AttributionAllowedStatus::kAllowed,
+            table()->AttributionAllowed(
+                &db, NewConversionReport(example_a, example_b), now));
 
   // Should delete (example_d, example_c), the only report >= now.
   EXPECT_TRUE(table()->ClearDataForOriginsInRange(
@@ -511,17 +542,21 @@ TEST_F(RateLimitTableTest, ClearDataForImpressionIds) {
   EXPECT_TRUE(table()->AddRateLimit(
       &db, NewConversionReport(example_c, example_d, /*impression_id=*/4)));
   EXPECT_EQ(4u, GetRateLimitRows(&db));
-  EXPECT_FALSE(table()->IsAttributionAllowed(
-      &db, NewConversionReport(example_a, example_b), now));
-  EXPECT_FALSE(table()->IsAttributionAllowed(
-      &db, NewConversionReport(example_c, example_d), now));
+  EXPECT_EQ(AttributionAllowedStatus::kNotAllowed,
+            table()->AttributionAllowed(
+                &db, NewConversionReport(example_a, example_b), now));
+  EXPECT_EQ(AttributionAllowedStatus::kNotAllowed,
+            table()->AttributionAllowed(
+                &db, NewConversionReport(example_c, example_d), now));
 
   EXPECT_TRUE(table()->ClearDataForImpressionIds(&db, {1, 4}));
   EXPECT_EQ(2u, GetRateLimitRows(&db));
-  EXPECT_TRUE(table()->IsAttributionAllowed(
-      &db, NewConversionReport(example_a, example_b), now));
-  EXPECT_TRUE(table()->IsAttributionAllowed(
-      &db, NewConversionReport(example_c, example_d), now));
+  EXPECT_EQ(AttributionAllowedStatus::kAllowed,
+            table()->AttributionAllowed(
+                &db, NewConversionReport(example_a, example_b), now));
+  EXPECT_EQ(AttributionAllowedStatus::kAllowed,
+            table()->AttributionAllowed(
+                &db, NewConversionReport(example_c, example_d), now));
 }
 
 }  // namespace content

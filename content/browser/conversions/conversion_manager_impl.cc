@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/default_clock.h"
@@ -66,6 +67,10 @@ bool ShouldRetryReport(const ConversionPolicy& policy,
   bool past_max_allowed_age =
       (now - info.original_report_time) > policy.GetMaxReportAge();
   return info.should_retry && !past_max_allowed_age;
+}
+
+void RecordCreateReportStatus(ConversionStorage::CreateReportStatus result) {
+  base::UmaHistogramEnumeration("Conversions.CreateReportStatus", result);
 }
 
 }  // namespace
@@ -172,12 +177,10 @@ void ConversionManagerImpl::HandleImpression(StorableImpression impression) {
 }
 
 void ConversionManagerImpl::HandleConversion(StorableConversion conversion) {
-  // TODO(https://crbug.com/1043345): Add UMA for the number of conversions we
-  // are logging to storage, and the number of new reports logged to storage.
   conversion_storage_
       .AsyncCall(&ConversionStorage::MaybeCreateAndStoreConversionReport)
       .WithArgs(std::move(conversion))
-      .Then(base::DoNothing::Once<bool>());
+      .Then(base::BindOnce(&RecordCreateReportStatus));
 
   // If we are running in debug mode, we should also schedule a task to
   // gather and send any new reports.

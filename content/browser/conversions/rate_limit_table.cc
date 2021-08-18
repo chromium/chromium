@@ -53,7 +53,7 @@ bool RateLimitTable::CreateTable(sql::Database* db) {
   if (!db->Execute(kRateLimitTableSql))
     return false;
 
-  // Optimizes calls to |IsAttributionAllowed()|.
+  // Optimizes calls to |AttributionAllowed()|.
   static constexpr char kRateLimitImpressionSiteTypeIndexSql[] =
       "CREATE INDEX IF NOT EXISTS rate_limit_impression_site_type_idx "
       "ON rate_limits(attribution_type,conversion_destination,"
@@ -111,9 +111,10 @@ bool RateLimitTable::AddRateLimit(sql::Database* db,
   return statement.Run();
 }
 
-bool RateLimitTable::IsAttributionAllowed(sql::Database* db,
-                                          const ConversionReport& report,
-                                          base::Time now) {
+RateLimitTable::AttributionAllowedStatus RateLimitTable::AttributionAllowed(
+    sql::Database* db,
+    const ConversionReport& report,
+    base::Time now) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ConversionStorage::Delegate::RateLimitConfig rate_limits =
@@ -136,10 +137,12 @@ bool RateLimitTable::IsAttributionAllowed(sql::Database* db,
                        report.impression.ConversionDestination().Serialize());
   statement.BindTime(3, min_timestamp);
   if (!statement.Step())
-    return false;
+    return AttributionAllowedStatus::kError;
 
   int64_t count = statement.ColumnInt64(0);
-  return count < rate_limits.max_attributions_per_window;
+  return count < rate_limits.max_attributions_per_window
+             ? AttributionAllowedStatus::kAllowed
+             : AttributionAllowedStatus::kNotAllowed;
 }
 
 bool RateLimitTable::ClearAllDataInRange(sql::Database* db,
