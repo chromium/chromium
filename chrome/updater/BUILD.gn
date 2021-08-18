@@ -610,12 +610,15 @@ if (is_win || is_mac) {
       deps += [ ":base" ]
     }
 
-    data_deps = [ ":updater_integration_tests_helper" ]
+    data_deps = [
+      ":updater_integration_tests_helper",
+      "//chrome/updater/test/test_app",
+    ]
     if (is_mac) {
-      data_deps += [
-        "//chrome/updater/mac:updater_bundle_test",
-        "//chrome/updater/test/test_app",
-      ]
+      data_deps += [ "//chrome/updater/mac:updater_bundle_test" ]
+    }
+    if (is_win) {
+      data_deps += [ ":test_service_files" ]
     }
     if (is_win) {
       data_deps += [ ":test_service_files" ]
