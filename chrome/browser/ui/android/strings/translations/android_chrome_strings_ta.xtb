@@ -181,6 +181,7 @@
 <translation id="2158408438301413340">Chrome உலாவியால் கடவுச்சொற்கள் அனைத்தையும் சரிபார்க்க முடியவில்லை</translation>
 <translation id="2169830938017475061">இப்போது</translation>
 <translation id="2172688499998841696">'பட விளக்கங்கள்' முடக்கப்பட்டது</translation>
+<translation id="2172905120685242547">சாளரத்தை மூட வேண்டுமா?</translation>
 <translation id="2175927920773552910">QR குறியீடு</translation>
 <translation id="218608176142494674">பகிர்தல்</translation>
 <translation id="2195339740518523951">Chromeமின் வலிமையான பாதுகாப்பைப் பெறுங்கள்</translation>
@@ -280,6 +281,7 @@
 <translation id="2779651927720337254">தோல்வியுற்றது</translation>
 <translation id="2781151931089541271">1 வினாடி மீதமுள்ளது</translation>
 <translation id="2788468313014644040">குழு எண்</translation>
+<translation id="2800066122460699237"><ph name="TAB_TITLE" /> பக்கம் மூடப்படும்</translation>
 <translation id="2801022321632964776">Chromeமில் உங்கள் மொழியைப் பெற சமீபத்திய பதிப்பிற்குப் புதுப்பிக்கவும்</translation>
 <translation id="2805756323405976993">ஆப்ஸ்</translation>
 <translation id="2806840421670364300">FLoC</translation>
@@ -288,6 +290,7 @@
 <translation id="2827278682606527653">ஃபீட் கார்டு மெனு பாதி அளவிற்குத் திறக்கப்பட்டுள்ளது</translation>
 <translation id="2830783625999891985">கிளிப்போர்டில் உள்ளவை மறைக்கப்பட்டது</translation>
 <translation id="2839327205551510876"><ph name="SITE_NAME" /> தளத்தைப் பின்தொடர்வதை நிறுத்திவிட்டீர்கள்</translation>
+<translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> மறைநிலைப் பக்கம் மூடப்படும்}other{<ph name="TAB_COUNT_MANY" /> மறைநிலைப் பக்கங்கள் மூடப்படும்}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{சரிபார்த்தது: 1 நாளுக்கு முன்பு}other{சரிபார்த்தது: # நாட்களுக்கு முன்பு}}</translation>
 <translation id="2842985007712546952">மூலக் கோப்புறை</translation>
 <translation id="2856503607207334158">உள்நுழைய முடியவில்லை</translation>
@@ -673,6 +676,7 @@
 <translation id="5222676887888702881">வெளியேறு</translation>
 <translation id="5227554086496586518">தேடல் முடிவுகளைப் பார்க்க தட்டுக</translation>
 <translation id="5233638681132016545">புதிய தாவல்</translation>
+<translation id="5235196193381275927">உள்நுழையும்போது ஏதோ தவறாகிவிட்டது</translation>
 <translation id="5246093389635966745">கருவிப்பட்டியின் ஷார்ட்கட்டை மாற்றும்</translation>
 <translation id="5250483651202458397">ஸ்கிரீன்ஷாட். மூடுவதற்குத் தட்டவும்.</translation>
 <translation id="5262378156578470238">இந்தப் பதிவிறக்கம் <ph name="DATE" /> அன்று தொடங்கும்போது அறிவிப்பைப் பெறுவீர்கள்.</translation>
@@ -896,6 +900,7 @@
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{சரிபார்த்தது: 1 மணிநேரத்திற்கு முன்பு}other{சரிபார்த்தது: # மணிநேரத்திற்கு முன்பு}}</translation>
 <translation id="6545017243486555795">எல்லா தரவையும் அழி</translation>
 <translation id="6546511553472444032">ஃபைல் தீங்கிழைப்பதாக இருக்கக்கூடும்</translation>
+<translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" />, மேலும் <ph name="TAB_COUNT_ONE" /> பக்கம் மூடப்படும்}other{<ph name="TAB_TITLE" />, மேலும் <ph name="TAB_COUNT_MANY" /> பக்கங்கள் மூடப்படும்}}</translation>
 <translation id="6560414384669816528">Sogou மூலம் தேடுக</translation>
 <translation id="656065428026159829">மேலும் காட்டு</translation>
 <translation id="6565959834589222080">வைஃபை இணைப்பு கிடைக்கும்போது பயன்படுத்தப்படும்</translation>
@@ -936,6 +941,7 @@
 <translation id="6767294960381293877">தாவலைப் பகிர்வதற்கான சாதனங்களின் பட்டியல் திரையின் பாதி அளவிற்குத் திறக்கப்பட்டுள்ளது.</translation>
 <translation id="6783942555455976443">இதைப் பின்னர் பார்ப்பதற்குச் சேமித்து அதற்கான நினைவூட்டலைப் பெறலாம்</translation>
 <translation id="6795633245022906657">புதிய தாவலை உடனடியாகத் திறக்கலாம். இந்த ஷார்ட்கட்டை மாற்ற அமைப்புகளுக்குச் செல்லவும்.</translation>
+<translation id="6802555630140434547">சாளரம் மூடப்படும்</translation>
 <translation id="6811034713472274749">பக்கத்தைப் பார்க்கலாம்</translation>
 <translation id="6813446258015311409">Chromeமில் உள்நுழைக, திறக்கப்பட்டுள்ளது.</translation>
 <translation id="6817747507826986771">இந்தப் பக்கத்தை உடனடியாகப் பகிரலாம். இந்த ஷார்ட்கட்டை மாற்ற தொட்டுப் பிடித்திருக்கவும்.</translation>
@@ -1163,6 +1169,7 @@
 <translation id="8109613176066109935">உங்கள் அனைத்துச் சாதனங்களிலும் புத்தகக்குறிகளைப் பெற, ஒத்திசைவை இயக்கவும்</translation>
 <translation id="8110087112193408731">உங்கள் Chrome செயல்பாட்டை டிஜிட்டல் வெல்பீயிங்கில் காட்டவா?</translation>
 <translation id="8127542551745560481">முகப்புப்பக்கத்தைத் திருத்து</translation>
+<translation id="8130309322784422030">சேமிக்கப்பட்ட உங்களின் உள்நுழைவுத் தகவல் பழையதாக இருக்கக்கூடும்</translation>
 <translation id="813082847718468539">தள விவரங்களைக் காண்க</translation>
 <translation id="8137558756159375272">தேடுவதற்கு தொடு எனும் அம்சமானது தேர்ந்தெடுத்த சொல்லையும், நடப்புப் பக்கத்தையும் சூழலுக்கு ஏற்றதாக Google தேடலுக்கு அனுப்பும். இதை <ph name="BEGIN_LINK" />அமைப்புகள்<ph name="END_LINK" /> என்பதில் முடக்கலாம்.</translation>
 <translation id="8153351135626613369">ஆதரிக்கப்படும் இணையதளங்களில் உதவி வழங்கக்கூடிய சூழல் இருந்தால் Assistant தோன்றும்</translation>
@@ -1293,6 +1300,7 @@
 <translation id="8945143127965743188"><ph name="LANG" /> - இந்த மொழித் தொகுப்பைப் பதிவிறக்க முடியவில்லை. பிறகு முயலவும்.</translation>
 <translation id="8951232171465285730">Chrome உங்கள் <ph name="MEGABYTES" /> மெ.பை. அளவைச் சேமித்தது</translation>
 <translation id="8965591936373831584">நிலுவையிலுள்ளது</translation>
+<translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> மறைநிலைப் பக்கமும் மேலும் <ph name="TAB_COUNT_ONE" /> பக்கமும் மூடப்படும்}other{<ph name="INCOGNITO_TAB_COUNT" /> மறைநிலைப் பக்கமும் மேலும் <ph name="TAB_COUNT_MANY" /> பக்கங்களும் மூடப்படும்}}</translation>
 <translation id="8970887620466824814">ஏதோ தவறாகிவிட்டது.</translation>
 <translation id="8972098258593396643">இயல்புக் கோப்புறைக்குப் பதிவிறக்கவா?</translation>
 <translation id="8987641763863173640">வீடியோ மாதிரிக்காட்சிக்கான அமைப்புகளை நிர்வகிக்கலாம்</translation>

@@ -3272,7 +3272,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4474155171896946103">Añadir todas las pestañas a marcadores...</translation>
 <translation id="4475552974751346499">Buscar descargas</translation>
 <translation id="4475830133618397783">Elige qué contraseñas quieres transferir. Puedes acceder a ellas siempre que hayas iniciado sesión.</translation>
-<translation id="4476590490540813026">Atleta</translation>
+<translation id="4476590490540813026">Deportista</translation>
 <translation id="4476659815936224889">Para escanear este código, puedes usar una aplicación de escaneo de QR de tu teléfono o algunas aplicaciones de cámara.</translation>
 <translation id="4477015793815781985">Incluye Ctrl, Alt o ⌘</translation>
 <translation id="4478664379124702289">Guardar enlac&amp;e como...</translation>
@@ -4460,6 +4460,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5790651917470750848">Esa redirección de puertos ya existe</translation>
 <translation id="5792728279623964091">Toca el botón de encendido</translation>
 <translation id="5793339252089865437">Descargar la actualización a través de la red móvil podría generar cargos adicionales.</translation>
+<translation id="5794034487966529952">En el escritorio <ph name="DESK_TITLE" /> hay <ph name="NUM_BROWSERS" /> ventanas de navegador abiertas</translation>
 <translation id="5794414402486823030">Abrir siempre con el visor del sistema</translation>
 <translation id="5794700615121138172">Carpetas compartidas de Linux</translation>
 <translation id="5794786537412027208">Salir de todas las aplicaciones de Chrome</translation>

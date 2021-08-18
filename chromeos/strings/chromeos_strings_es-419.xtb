@@ -37,6 +37,7 @@
 <translation id="1621067168122174824">Ejecutar prueba de carga</translation>
 <translation id="1639239467298939599">Cargando</translation>
 <translation id="1641857168437328880">Alimentador de documentos (una cara)</translation>
+<translation id="1643449475550628585">Cambiar la imagen del fondo de pantalla cada día</translation>
 <translation id="1644574205037202324">Historial</translation>
 <translation id="1662989795263954667">Se detuvo: sin tinta</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -76,6 +77,7 @@
 <translation id="2448312741937722512">Tipo</translation>
 <translation id="2461822463642141190">Actual</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
+<translation id="2505327257735685095">Actualiza la imagen del fondo de pantalla actual</translation>
 <translation id="2517472476991765520">Buscar</translation>
 <translation id="2570743873672969996">Ejecutando la prueba <ph name="TEST_NAME" />…</translation>
 <translation id="2585245331261708204">Novedades de Chrome OS</translation>
