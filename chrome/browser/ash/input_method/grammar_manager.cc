@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/input_method/assistive_window_properties.h"
@@ -22,6 +23,17 @@ namespace {
 
 constexpr base::TimeDelta kCheckDelay = base::TimeDelta::FromSeconds(2);
 const int HashMultiplier = 1024;
+
+const char16_t kShowGrammarSuggestionMessage[] =
+    u"Grammar correction suggested. Press tab to access; escape to dismiss.";
+const char16_t kDismissGrammarSuggestionMessage[] = u"Suggestion dismissed.";
+const char16_t kAcceptGrammarSuggestionMessage[] = u"Suggestion accepted.";
+const char16_t kIgnoreGrammarSuggestionMessage[] = u"Suggestion ignored.";
+const char kSuggestionButtonMessageTemplate[] =
+    "Suggestion %s. Button. Press enter to accept; escape to dismiss.";
+const char16_t kIgnoreButtonMessage[] =
+    u"Ignore suggestion. Button. Press enter to ignore the suggestion; escape "
+    u"to dismiss.";
 
 void RecordGrammarAction(GrammarActions action) {
   base::UmaHistogramEnumeration("InputMethod.Assistive.Grammar.Actions",
@@ -54,10 +66,12 @@ GrammarManager::GrammarManager(
       suggestion_button_(ui::ime::AssistiveWindowButton{
           .id = ui::ime::ButtonId::kSuggestion,
           .window_type = ui::ime::AssistiveWindowType::kGrammarSuggestion,
+          .announce_string = u"",
       }),
       ignore_button_(ui::ime::AssistiveWindowButton{
           .id = ui::ime::ButtonId::kIgnoreSuggestion,
           .window_type = ui::ime::AssistiveWindowType::kGrammarSuggestion,
+          .announce_string = kIgnoreButtonMessage,
       }) {}
 
 GrammarManager::~GrammarManager() = default;
@@ -83,6 +97,7 @@ bool GrammarManager::OnKeyEvent(const ui::KeyEvent& event) {
 
   if (event.code() == ui::DomCode::ESCAPE) {
     DismissSuggestion();
+    suggestion_handler_->Announce(kDismissGrammarSuggestionMessage);
     return true;
   }
 
@@ -194,8 +209,12 @@ void GrammarManager::OnSurroundingTextChanged(const std::u16string& text,
     properties.type = ui::ime::AssistiveWindowType::kGrammarSuggestion;
     properties.candidates = {base::UTF8ToUTF16(current_fragment_.suggestion)};
     properties.visible = true;
+    suggestion_button_.announce_string = base::UTF8ToUTF16(
+        base::StringPrintf(kSuggestionButtonMessageTemplate,
+                           current_fragment_.suggestion.c_str()));
     suggestion_handler_->SetAssistiveWindowProperties(context_id_, properties,
                                                       &error);
+    suggestion_handler_->Announce(kShowGrammarSuggestionMessage);
     if (!error.empty()) {
       LOG(ERROR) << "Fail to show suggestion. " << error;
     }
@@ -291,6 +310,7 @@ void GrammarManager::AcceptSuggestion() {
         ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   }
 
+  suggestion_handler_->Announce(kAcceptGrammarSuggestionMessage);
   RecordGrammarAction(GrammarActions::kAccepted);
 }
 
@@ -315,6 +335,7 @@ void GrammarManager::IgnoreSuggestion() {
                            current_fragment_.range.end() -
                                current_sentence_.original_range.start())));
 
+  suggestion_handler_->Announce(kIgnoreGrammarSuggestionMessage);
   RecordGrammarAction(GrammarActions::kIgnored);
 }
 
