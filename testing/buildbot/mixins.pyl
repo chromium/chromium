@@ -1309,18 +1309,18 @@
       ],
     },
   },
-  # Default Xcode 13 on main (Xcode 13.0 beta 4).
+  # Default Xcode 13 on main (Xcode 13.0 beta 5).
   'xcode_13_main': {
     '$mixin_append': {
       'args': [
         '--xcode-build-version',
-        '13a5201ixc'
+        '13a5212g'
       ],
     },
     'swarming': {
       'named_caches': [
         {
-          'name': 'xcode_ios_13a5201ixc',
+          'name': 'xcode_ios_13a5212g',
           'path': 'Xcode.app',
         },
       ],

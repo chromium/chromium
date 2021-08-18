@@ -184,8 +184,8 @@ xcode = struct(
     x12e262 = xcode_enum("12e262"),
     # in use by ios-webkit-tot
     x12e262wk = xcode_enum("12e262wk"),
-    # Default Xcode 13 for chromium iOS (Xcode 13.0 beta 4).
-    x13main = xcode_enum("13a5201ixc"),
+    # Default Xcode 13 for chromium iOS (Xcode 13.0 beta 5).
+    x13main = xcode_enum("13a5212g"),
     # Xcode 13.0 latest beta (beta 5).
     x13latestbeta = xcode_enum("13a5212g"),
 )
