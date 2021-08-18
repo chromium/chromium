@@ -40,7 +40,7 @@ class ScopedKeepAlive;
 
 namespace base {
 class CommandLine;
-}
+}  // namespace base
 
 namespace blink {
 namespace mojom {
@@ -62,9 +62,14 @@ enum class SmsFetchFailureType;
 struct ServiceWorkerVersionBaseInfo;
 }  // namespace content
 
+namespace net {
+class IsolationInfo;
+class SiteForCookies;
+}  // namespace net
+
 namespace permissions {
 class BluetoothDelegateImpl;
-}
+}  // namespace permissions
 
 namespace safe_browsing {
 class RealTimeUrlLookupServiceBase;
@@ -78,23 +83,19 @@ class SeatbeltExecClient;
 
 namespace ui {
 class NativeTheme;
-}
+}  // namespace ui
 
 namespace url {
 class Origin;
-}
+}  // namespace url
 
 namespace user_prefs {
 class PrefRegistrySyncable;
-}
+}  // namespace user_prefs
 
 namespace version_info {
 enum class Channel;
-}
-
-namespace net {
-class IsolationInfo;
-}
+}  // namespace version_info
 
 class ChromeFontAccessDelegate;
 class ChromeHidDelegate;
