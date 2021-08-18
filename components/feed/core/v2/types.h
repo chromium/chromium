@@ -49,7 +49,7 @@ struct RequestMetadata {
   std::string client_instance_id;
   std::string session_id;
   DisplayMetrics display_metrics;
-  ContentOrder content_order = ContentOrder::kGrouped;
+  ContentOrder content_order = ContentOrder::kUnspecified;
   bool notice_card_acknowledged = false;
   bool autoplay_enabled = false;
 };

@@ -829,6 +829,7 @@ static_library("ui") {
       "//components/feed/core/common:feed_core_common",
       "//components/feed/core/shared_prefs:feed_shared_prefs",
       "//components/feed/core/v2:feed_core_v2",
+      "//components/feed/core/v2/public:common",
       "//components/infobars/android",
       "//components/infobars/content",
       "//components/javascript_dialogs/android:jni_headers",

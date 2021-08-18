@@ -77,6 +77,10 @@ class FeedApi {
   virtual void SetContentOrder(const StreamType& stream_type,
                                ContentOrder content_order) = 0;
 
+  // Gets the "raw" content order value stored in prefs.
+  virtual ContentOrder GetContentOrderFromPrefs(
+      const StreamType& stream_type) = 0;
+
   // Invoked by RefreshTaskScheduler's scheduled task.
   virtual void ExecuteRefreshTask(RefreshTaskId task_id) = 0;
 

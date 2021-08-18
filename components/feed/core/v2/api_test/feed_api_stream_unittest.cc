@@ -17,6 +17,7 @@
 #include "components/feed/core/v2/feed_network.h"
 #include "components/feed/core/v2/feed_stream.h"
 #include "components/feed/core/v2/feedstore_util.h"
+#include "components/feed/core/v2/prefs.h"
 #include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/feed_service.h"
 #include "components/feed/core/v2/public/stream_type.h"
@@ -2559,12 +2560,15 @@ TEST_F(FeedStreamTestForAllStreamTypes, SetContentOrderReloadsContent) {
   EXPECT_EQ("loading -> 2 slices -> loading -> 2 slices",
             surface.DescribeUpdates());
   EXPECT_EQ(
-      feedwire::FeedQuery::ContentOrder::
-          FeedQuery_ContentOrder_CONTENT_ORDER_UNSPECIFIED,
+      feedwire::FeedQuery::ContentOrder::FeedQuery_ContentOrder_RECENT,
       network_.query_request_sent->feed_request().feed_query().order_by());
 }
 
-TEST_F(FeedStreamTestForAllStreamTypes, SetContentOrderIsIgnoredIfUnchanged) {
+TEST_F(FeedStreamTestForAllStreamTypes,
+       SetContentOrderIsSavedeNotRefreshedIfUnchanged) {
+  // "Raw prefs" order value should start as unspecified.
+  EXPECT_EQ(ContentOrder::kUnspecified,
+            feed::prefs::GetWebFeedContentOrder(profile_prefs_));
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestWebFeedSurface surface(stream_.get());
   WaitForIdleTaskQueue();
@@ -2573,6 +2577,45 @@ TEST_F(FeedStreamTestForAllStreamTypes, SetContentOrderIsIgnoredIfUnchanged) {
   WaitForIdleTaskQueue();
 
   EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
+  // "Raw prefs" order value should have been updated.
+  EXPECT_EQ(ContentOrder::kGrouped,
+            feed::prefs::GetWebFeedContentOrder(profile_prefs_));
+}
+
+TEST_F(FeedStreamTestForAllStreamTypes, ContentOrderIsFinchControllable) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  base::FieldTrialParams params;
+  params["following_feed_content_order"] = "reverse_chron";
+  scoped_feature_list.InitAndEnableFeatureWithParameters(kWebFeed, params);
+  CreateStream();
+
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestWebFeedSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
+  EXPECT_EQ(
+      feedwire::FeedQuery::ContentOrder::FeedQuery_ContentOrder_RECENT,
+      network_.query_request_sent->feed_request().feed_query().order_by());
+}
+
+TEST_F(FeedStreamTestForAllStreamTypes, ContentOrderPrefOverridesFinch) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  // Sets the "raw prefs" order value
+  feed::prefs::SetWebFeedContentOrder(profile_prefs_, ContentOrder::kGrouped);
+  base::FieldTrialParams params;
+  params["following_feed_content_order"] = "reverse_chron";
+  scoped_feature_list.InitAndEnableFeatureWithParameters(kWebFeed, params);
+  CreateStream();
+
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestWebFeedSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
+  EXPECT_EQ(
+      feedwire::FeedQuery::ContentOrder::FeedQuery_ContentOrder_GROUPED,
+      network_.query_request_sent->feed_request().feed_query().order_by());
 }
 
 // Keep instantiations at the bottom.

@@ -135,7 +135,8 @@ ContentOrder GetWebFeedContentOrder(const PrefService& pref_service) {
     case static_cast<int>(ContentOrder::kGrouped):
       return ContentOrder::kGrouped;
     default:
-      return ContentOrder::kGrouped;
+      // Note: we need to handle invalid values gracefully.
+      return ContentOrder::kUnspecified;
   }
 }
 
