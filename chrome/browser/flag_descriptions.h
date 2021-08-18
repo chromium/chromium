@@ -2120,9 +2120,6 @@ extern const char kSCTAuditingDescription[];
 extern const char kCalculateNativeWinOcclusionName[];
 extern const char kCalculateNativeWinOcclusionDescription[];
 
-extern const char kChromeCleanupScanCompletedNotificationName[];
-extern const char kChromeCleanupScanCompletedNotificationDescription[];
-
 extern const char kD3D11VideoDecoderName[];
 extern const char kD3D11VideoDecoderDescription[];
 
@@ -2137,9 +2134,6 @@ extern const char kRawAudioCaptureDescription[];
 
 extern const char kRunVideoCaptureServiceInBrowserProcessName[];
 extern const char kRunVideoCaptureServiceInBrowserProcessDescription[];
-
-extern const char kSafetyCheckChromeCleanerChildName[];
-extern const char kSafetyCheckChromeCleanerChildDescription[];
 
 extern const char kUseAngleName[];
 extern const char kUseAngleDescription[];

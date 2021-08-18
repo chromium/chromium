@@ -387,15 +387,6 @@ var CrSettingsSafetyCheckChromeCleanerTest =
   get browsePreload() {
     return 'chrome://settings/test_loader.html?module=settings/safety_check_chrome_cleaner_test.js';
   }
-
-  /** @override */
-  get featureListInternal() {
-    return {
-      enabled: [
-        'features::kSafetyCheckChromeCleanerChild',
-      ],
-    };
-  }
 };
 
 TEST_F('CrSettingsSafetyCheckChromeCleanerTest', 'All', function() {
