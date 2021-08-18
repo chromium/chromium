@@ -46,7 +46,7 @@ extern DEVICE_BLUETOOTH_EXPORT const char kStop[];
 extern DEVICE_BLUETOOTH_EXPORT const char kGetFlossEnabled[];
 extern DEVICE_BLUETOOTH_EXPORT const char kSetFlossEnabled[];
 extern DEVICE_BLUETOOTH_EXPORT const char kGetState[];
-extern DEVICE_BLUETOOTH_EXPORT const char kListHciDevices[];
+extern DEVICE_BLUETOOTH_EXPORT const char kGetAvailableAdapters[];
 extern DEVICE_BLUETOOTH_EXPORT const char kRegisterCallback[];
 extern DEVICE_BLUETOOTH_EXPORT const char kCallbackInterface[];
 

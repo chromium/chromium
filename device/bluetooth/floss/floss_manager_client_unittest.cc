@@ -4,6 +4,9 @@
 
 #include "device/bluetooth/floss/floss_manager_client.h"
 
+#include <utility>
+#include <vector>
+
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -21,7 +24,8 @@
 
 namespace floss {
 namespace {
-constexpr int kMockAdaptersPresent[] = {0, 5};
+const std::vector<std::pair<int, bool>> kMockAdaptersAvailable = {{0, false},
+                                                                  {5, true}};
 
 class TestManagerObserver : public FlossManagerClient::Observer {
  public:
@@ -100,8 +104,8 @@ class FlossManagerClientTest : public testing::Test {
         .WillByDefault(
             [this](::dbus::MethodCall* method_call, int timeout_ms,
                    ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
-              if (method_call->GetMember() == manager::kListHciDevices) {
-                HandleListHciDevices(method_call, timeout_ms, cb);
+              if (method_call->GetMember() == manager::kGetAvailableAdapters) {
+                HandleGetAvailableAdapters(method_call, timeout_ms, cb);
               }
 
               method_called_[method_call->GetMember()]++;
@@ -164,14 +168,34 @@ class FlossManagerClientTest : public testing::Test {
     method_called_.clear();
   }
 
-  void HandleListHciDevices(::dbus::MethodCall* method_call,
-                            int timeout_ms,
-                            ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+  void HandleGetAvailableAdapters(
+      ::dbus::MethodCall* method_call,
+      int timeout_ms,
+      ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
     // Return that there are 2 adapter objects
     auto response = ::dbus::Response::CreateEmpty();
 
     ::dbus::MessageWriter msg(response.get());
-    msg.AppendArrayOfInt32s(kMockAdaptersPresent, 2);
+    ::dbus::MessageWriter outer(nullptr);
+    msg.OpenArray("a{sv}", &outer);
+    for (auto kv : kMockAdaptersAvailable) {
+      ::dbus::MessageWriter inner(nullptr);
+      ::dbus::MessageWriter dict(nullptr);
+      outer.OpenArray("{sv}", &inner);
+
+      inner.OpenDictEntry(&dict);
+      dict.AppendString("hci_interface");
+      dict.AppendVariantOfInt32(kv.first);
+      inner.CloseContainer(&dict);
+
+      inner.OpenDictEntry(&dict);
+      dict.AppendString("enabled");
+      dict.AppendVariantOfBool(kv.second);
+      inner.CloseContainer(&dict);
+
+      outer.CloseContainer(&inner);
+    }
+    msg.CloseContainer(&outer);
 
     std::move(*cb).Run(response.get(), nullptr);
   }
@@ -238,6 +262,7 @@ TEST_F(FlossManagerClientTest, VerifyAdapterPresent) {
   TestManagerObserver observer(client_.get());
   client_->Init(bus_.get(), kManagerInterface, /*adapter_path=*/std::string());
   EXPECT_EQ(observer.adapter_present_count_, 2);
+  EXPECT_EQ(observer.adapter_enabled_changed_count_, 2);
   EXPECT_TRUE(observer.adapter_present_[0]);
 
   SendInvalidHciDeviceCallback(
@@ -260,7 +285,7 @@ TEST_F(FlossManagerClientTest, VerifyAdapterPresent) {
 
   // On present = false, the client may not be sent an additional enabled
   // = false. It is implied and the client must act accordingly.
-  EXPECT_EQ(observer.adapter_enabled_changed_count_, 0);
+  EXPECT_EQ(observer.adapter_enabled_changed_count_, 2);
 }
 
 // Make sure adapter powered is plumbed through callbacks
@@ -269,7 +294,8 @@ TEST_F(FlossManagerClientTest, VerifyAdapterEnabled) {
   client_->Init(bus_.get(), kManagerInterface, /*adapter_path=*/std::string());
   // Pre-conditions
   EXPECT_FALSE(client_->GetAdapterEnabled(0));
-  EXPECT_FALSE(client_->GetAdapterEnabled(5));
+  EXPECT_TRUE(client_->GetAdapterEnabled(5));
+  EXPECT_EQ(observer.adapter_enabled_changed_count_, 2);
 
   // Adapter 1 is not present at the beginning
   EXPECT_FALSE(client_->GetAdapterEnabled(1));
@@ -285,7 +311,7 @@ TEST_F(FlossManagerClientTest, VerifyAdapterEnabled) {
                      weak_ptr_factory_.GetWeakPtr()));
 
   EXPECT_TRUE(client_->GetAdapterEnabled(0));
-  EXPECT_EQ(observer.adapter_enabled_changed_count_, 1);
+  EXPECT_EQ(observer.adapter_enabled_changed_count_, 3);
   EXPECT_TRUE(observer.adapter_enabled_[0]);
 
   // Enabled implies presence too
@@ -296,15 +322,15 @@ TEST_F(FlossManagerClientTest, VerifyAdapterEnabled) {
   EXPECT_TRUE(client_->GetAdapterPresent(1));
   EXPECT_TRUE(client_->GetAdapterEnabled(1));
 
-  EXPECT_EQ(observer.adapter_enabled_changed_count_, 2);
+  EXPECT_EQ(observer.adapter_enabled_changed_count_, 4);
   EXPECT_TRUE(observer.adapter_enabled_[1]);
   // On enabled = true, present = true is implied. The platform should emit both
   // but the client shouldn't depend on it.
   EXPECT_FALSE(observer.adapter_present_[1]);
 
   // 5 was unchanged
-  EXPECT_FALSE(client_->GetAdapterEnabled(5));
-  EXPECT_FALSE(observer.adapter_enabled_[5]);
+  EXPECT_TRUE(client_->GetAdapterEnabled(5));
+  EXPECT_TRUE(observer.adapter_enabled_[5]);
 }
 
 // Make sure manager presence is correctly detected
@@ -334,7 +360,7 @@ TEST_F(FlossManagerClientTest, HandleManagerPresence) {
   // Triggering ObjectAdded should refill available hci devices and register
   // callbacks
   TriggerObjectAdded(opath, kManagerInterface);
-  EXPECT_TRUE(method_called_[manager::kListHciDevices] > 0);
+  EXPECT_TRUE(method_called_[manager::kGetAvailableAdapters] > 0);
   EXPECT_TRUE(method_called_[manager::kRegisterCallback] > 0);
   EXPECT_TRUE(observer.manager_present_);
 
@@ -353,7 +379,7 @@ TEST_F(FlossManagerClientTest, HandleManagerPresence) {
   // ManagerPresent should be called once for remove and once for register.
   EXPECT_EQ(observer.manager_present_count_, 2);
   EXPECT_FALSE(client_->GetAdapterPresent(1));  // Cleared previous adapter list
-  EXPECT_TRUE(method_called_[manager::kListHciDevices] > 0);
+  EXPECT_TRUE(method_called_[manager::kGetAvailableAdapters] > 0);
   EXPECT_TRUE(method_called_[manager::kRegisterCallback] > 0);
 }
 }  // namespace floss

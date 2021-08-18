@@ -25,6 +25,29 @@ namespace floss {
 
 namespace {
 constexpr char kUnknownManagerError[] = "org.chromium.Error.UnknownManager";
+constexpr char kHciInterfaceKey[] = "hci_interface";
+constexpr char kEnabledKey[] = "enabled";
+
+bool ParseAdapterWithEnabled(dbus::MessageReader& array,
+                             int* adapter,
+                             bool* enabled) {
+  dbus::MessageReader dict(nullptr);
+  bool found_adapter = false;
+  bool found_enabled = false;
+
+  while (array.PopDictEntry(&dict)) {
+    std::string key;
+    dict.PopString(&key);
+
+    if (key == kHciInterfaceKey) {
+      found_adapter = dict.PopVariantOfInt32(adapter);
+    } else if (key == kEnabledKey) {
+      found_enabled = dict.PopVariantOfBool(enabled);
+    }
+  }
+
+  return found_adapter && found_enabled;
+}
 
 void HandleExported(const std::string& method_name,
                     const std::string& interface_name,
@@ -142,10 +165,11 @@ void FlossManagerClient::RegisterWithManager() {
       bus_->GetObjectProxy(service_name_, dbus::ObjectPath(kManagerObject));
 
   // Get all hci devices available.
-  dbus::MethodCall method_call(kManagerInterface, manager::kListHciDevices);
+  dbus::MethodCall method_call(kManagerInterface,
+                               manager::kGetAvailableAdapters);
   object_proxy->CallMethodWithErrorResponse(
       &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-      base::BindOnce(&FlossManagerClient::HandleListHciDevices,
+      base::BindOnce(&FlossManagerClient::HandleGetAvailableAdapters,
                      weak_ptr_factory_.GetWeakPtr()));
 
   // Register for callbacks.
@@ -236,12 +260,12 @@ void FlossManagerClient::Init(dbus::Bus* bus,
   RegisterWithManager();
 }
 
-void FlossManagerClient::HandleListHciDevices(
+void FlossManagerClient::HandleGetAvailableAdapters(
     dbus::Response* response,
     dbus::ErrorResponse* error_response) {
   if (!response) {
     FlossDBusClient::LogErrorResponse(
-        "FlossManagerClient::HandleListHciDevices", error_response);
+        "FlossManagerClient::HandleGetAvailableAdapters", error_response);
     return;
   }
 
@@ -254,21 +278,31 @@ void FlossManagerClient::HandleListHciDevices(
     // Clear existing adapters.
     adapter_to_powered_.clear();
 
-    int adapter = 0;
-    while (arr.PopInt32(&adapter)) {
-      DCHECK(adapter >= 0);
-      adapter_to_powered_.emplace(adapter, false);
+    dbus::MessageReader propmap(nullptr);
+    while (arr.PopArray(&propmap)) {
+      int adapter = -1;
+      bool enabled = false;
+
+      if (ParseAdapterWithEnabled(propmap, &adapter, &enabled)) {
+        DCHECK(adapter >= 0);
+        adapter_to_powered_.emplace(adapter, enabled);
+      }
     }
 
     // Trigger the observers for adapter present on any new ones we listed.
     for (auto& observer : observers_) {
-      // Emit present for new adapters that weren't in old list.
+      // Emit present for new adapters that weren't in old list. Also emit the
+      // powered changed for them.
       for (auto& kv : adapter_to_powered_) {
-        if (!base::Contains(previous_adapters, kv.first))
+        if (!base::Contains(previous_adapters, kv.first)) {
           observer.AdapterPresent(kv.first, true);
+          observer.AdapterEnabledChanged(kv.first, kv.second);
+        }
       }
 
       // Emit not present for adapters that aren't in new list.
+      // We don't need to emit AdapterEnabledChanged since we emit
+      // AdapterPresent is false
       for (auto& kv : previous_adapters) {
         if (!base::Contains(adapter_to_powered_, kv.first))
           observer.AdapterPresent(kv.first, false);

@@ -99,9 +99,9 @@ class DEVICE_BLUETOOTH_EXPORT FlossManagerClient
  protected:
   friend class FlossManagerClientTest;
 
-  // Handle response to |ListHciDevices| DBus method call.
-  virtual void HandleListHciDevices(dbus::Response* response,
-                                    dbus::ErrorResponse* error);
+  // Handle response to |GetAvailableAdapters| DBus method call.
+  virtual void HandleGetAvailableAdapters(dbus::Response* response,
+                                          dbus::ErrorResponse* error);
 
   // Handle callback |OnHciDeviceChange| on exported object path.
   virtual void OnHciDeviceChange(
