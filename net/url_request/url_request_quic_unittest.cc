@@ -185,7 +185,6 @@ class URLRequestQuicTest
   static const NetLogSource FindPushUrlSource(
       const std::vector<NetLogEntry>& entries,
       const std::string& push_url) {
-    std::string entry_push_url;
     for (const auto& entry : entries) {
       if (entry.phase == NetLogEventPhase::BEGIN &&
           entry.source.type ==

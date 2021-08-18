@@ -2666,7 +2666,7 @@ TEST_F(TransportClientSocketPoolMockNowSourceTest, IdleUnusedSocketTimeout) {
         // character to the latter.
         auto write_buffer = base::MakeRefCounted<StringIOBuffer>(kWriteData);
         TestCompletionCallback write_callback;
-        int rv = connection.socket()->Write(
+        rv = connection.socket()->Write(
             write_buffer.get(), write_buffer->size(), write_callback.callback(),
             TRAFFIC_ANNOTATION_FOR_TESTS);
         EXPECT_EQ(rv, 1);

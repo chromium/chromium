@@ -217,7 +217,7 @@ int TestTransactionConsumer::quit_counter_ = 0;
 TestTransactionConsumer::TestTransactionConsumer(
     RequestPriority priority,
     HttpTransactionFactory* factory)
-    : state_(IDLE), error_(OK) {
+    : state_(State::kIdle), error_(OK) {
   // Disregard the error code.
   factory->CreateTransaction(priority, &trans_);
   ++quit_counter_;
@@ -227,7 +227,7 @@ TestTransactionConsumer::~TestTransactionConsumer() = default;
 
 void TestTransactionConsumer::Start(const HttpRequestInfo* request,
                                     const NetLogWithSource& net_log) {
-  state_ = STARTING;
+  state_ = State::kStarting;
   int result =
       trans_->Start(request,
                     base::BindOnce(&TestTransactionConsumer::OnIOComplete,
@@ -255,14 +255,14 @@ void TestTransactionConsumer::DidRead(int result) {
 }
 
 void TestTransactionConsumer::DidFinish(int result) {
-  state_ = DONE;
+  state_ = State::kDone;
   error_ = result;
   if (--quit_counter_ == 0)
     base::RunLoop::QuitCurrentWhenIdleDeprecated();
 }
 
 void TestTransactionConsumer::Read() {
-  state_ = READING;
+  state_ = State::kReading;
   read_buf_ = base::MakeRefCounted<IOBuffer>(1024);
   int result =
       trans_->Read(read_buf_.get(), 1024,
@@ -274,10 +274,10 @@ void TestTransactionConsumer::Read() {
 
 void TestTransactionConsumer::OnIOComplete(int result) {
   switch (state_) {
-    case STARTING:
+    case State::kStarting:
       DidStart(result);
       break;
-    case READING:
+    case State::kReading:
       DidRead(result);
       break;
     default:

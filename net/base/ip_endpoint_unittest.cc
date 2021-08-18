@@ -84,8 +84,10 @@ class IPEndPointTest : public PlatformTest {
 };
 
 TEST_F(IPEndPointTest, Constructor) {
-  IPEndPoint endpoint;
-  EXPECT_EQ(0, endpoint.port());
+  {
+    IPEndPoint endpoint;
+    EXPECT_EQ(0, endpoint.port());
+  }
 
   for (const auto& test : tests) {
     IPEndPoint endpoint(test.ip_address, 80);
@@ -353,8 +355,10 @@ TEST_F(IPEndPointTest, LessThan) {
 }
 
 TEST_F(IPEndPointTest, ToString) {
-  IPEndPoint endpoint;
-  EXPECT_EQ(0, endpoint.port());
+  {
+    IPEndPoint endpoint;
+    EXPECT_EQ(0, endpoint.port());
+  }
 
   uint16_t port = 100;
   for (const auto& test : tests) {

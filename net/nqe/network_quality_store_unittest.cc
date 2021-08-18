@@ -341,15 +341,15 @@ TEST(NetworkQualityStoreTest, TestLRUCacheMaximumSize) {
     nqe::internal::NetworkID network_id(NetworkChangeNotifier::CONNECTION_2G,
                                         "test" + base::NumberToString(i), 0);
 
-    nqe::internal::CachedNetworkQuality read_network_quality(
+    nqe::internal::CachedNetworkQuality network_quality(
         tick_clock.NowTicks(),
         nqe::internal::NetworkQuality(base::TimeDelta::FromSeconds(0),
                                       base::TimeDelta::FromSeconds(0), 0),
         EFFECTIVE_CONNECTION_TYPE_2G);
-    if (network_quality_store.GetById(network_id, &read_network_quality)) {
+    if (network_quality_store.GetById(network_id, &network_quality)) {
       cache_match_count++;
-      earliest_last_update_time = std::min(
-          earliest_last_update_time, read_network_quality.last_update_time());
+      earliest_last_update_time = std::min(earliest_last_update_time,
+                                           network_quality.last_update_time());
     }
   }
 

@@ -926,7 +926,6 @@ TEST_F(TransportSecurityStateTest, PinValidationWithoutRejectedCerts) {
 // the preloaded pin contains a report URI.
 TEST_F(TransportSecurityStateTest, PreloadedPKPReportUri) {
   const char kPreloadedPinDomain[] = "with-report-uri-pkp.preloaded.test";
-  const uint16_t kPort = 443;
   HostPortPair host_port_pair(kPreloadedPinDomain, kPort);
   net::NetworkIsolationKey network_isolation_key =
       NetworkIsolationKey::CreateTransient();

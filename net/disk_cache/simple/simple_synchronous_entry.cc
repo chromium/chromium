@@ -1289,9 +1289,9 @@ bool SimpleSynchronousEntry::CheckHeaderAndKey(base::File* file,
     int bytes_to_read = expected_header_size - old_size;
     // This resize will invalidate iterators, since it is enlarging header_data.
     header_data.resize(expected_header_size);
-    int bytes_read =
+    int read_result =
         file->Read(old_size, header_data.data() + old_size, bytes_to_read);
-    if (bytes_read != bytes_to_read) {
+    if (read_result != bytes_to_read) {
       RecordSyncOpenResult(cache_type_, OPEN_ENTRY_CANT_READ_KEY);
       return false;
     }

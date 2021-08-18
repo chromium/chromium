@@ -1113,10 +1113,10 @@ std::unique_ptr<SourceStream> URLRequestHttpJob::SetUpSourceStream() {
 
   std::unique_ptr<SourceStream> upstream = URLRequestJob::SetUpSourceStream();
   HttpResponseHeaders* headers = GetResponseHeaders();
-  std::string type;
   std::vector<SourceStream::SourceType> types;
   size_t iter = 0;
-  while (headers->EnumerateHeader(&iter, "Content-Encoding", &type)) {
+  for (std::string type;
+       headers->EnumerateHeader(&iter, "Content-Encoding", &type);) {
     SourceStream::SourceType source_type =
         FilterSourceStream::ParseEncodingType(type);
     switch (source_type) {

@@ -530,11 +530,11 @@ class NET_EXPORT NetworkChangeNotifier {
  protected:
   // Types of network changes specified to
   // NotifyObserversOfSpecificNetworkChange.
-  enum NetworkChangeType {
-    CONNECTED,
-    DISCONNECTED,
-    SOON_TO_DISCONNECT,
-    MADE_DEFAULT
+  enum class NetworkChangeType {
+    kConnected,
+    kDisconnected,
+    kSoonToDisconnect,
+    kMadeDefault
   };
 
   // NetworkChanged signal is calculated from the IPAddressChanged and

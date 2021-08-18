@@ -62,9 +62,9 @@ class NET_EXPORT_PRIVATE MemEntryImpl final
     : public Entry,
       public base::LinkNode<MemEntryImpl> {
  public:
-  enum EntryType {
-    PARENT_ENTRY,
-    CHILD_ENTRY,
+  enum class EntryType {
+    kParent,
+    kChild,
   };
 
   // Provided to better document calls to |UpdateStateOnUse()|.
@@ -87,7 +87,9 @@ class NET_EXPORT_PRIVATE MemEntryImpl final
   void Open();
   bool InUse() const;
 
-  EntryType type() const { return parent_ ? CHILD_ENTRY : PARENT_ENTRY; }
+  EntryType type() const {
+    return parent_ ? EntryType::kChild : EntryType::kParent;
+  }
   const std::string& key() const { return key_; }
   const MemEntryImpl* parent() const { return parent_; }
   int64_t child_id() const { return child_id_; }

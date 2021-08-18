@@ -452,10 +452,10 @@ base::Value CertVerifyParams(X509Certificate* cert,
 
   if (!additional_trust_anchors.empty()) {
     base::Value certs(base::Value::Type::LIST);
-    for (auto& cert : additional_trust_anchors) {
+    for (auto& anchor : additional_trust_anchors) {
       std::string pem_encoded;
       if (X509Certificate::GetPEMEncodedFromDER(
-              x509_util::CryptoBufferAsStringPiece(cert->cert_buffer()),
+              x509_util::CryptoBufferAsStringPiece(anchor->cert_buffer()),
               &pem_encoded)) {
         certs.Append(std::move(pem_encoded));
       }

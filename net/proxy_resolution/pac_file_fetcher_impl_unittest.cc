@@ -367,24 +367,27 @@ TEST_F(PacFileFetcherImplTest, TooLarge) {
 
   auto pac_fetcher = PacFileFetcherImpl::Create(&context_);
 
-  // Set the maximum response size to 50 bytes.
-  int prev_size = pac_fetcher->SetSizeConstraint(50);
+  {
+    // Set the maximum response size to 50 bytes.
+    int prev_size = pac_fetcher->SetSizeConstraint(50);
 
-  // Try fetching URL that is 101 bytes large. We should abort the request
-  // after 50 bytes have been read, and fail with a too large error.
-  GURL url = test_server_.GetURL("/large-pac.nsproxy");
-  std::u16string text;
-  TestCompletionCallback callback;
-  int result = pac_fetcher->Fetch(url, &text, callback.callback(),
-                                  TRAFFIC_ANNOTATION_FOR_TESTS);
-  EXPECT_THAT(result, IsError(ERR_IO_PENDING));
-  EXPECT_THAT(callback.WaitForResult(), IsError(ERR_FILE_TOO_BIG));
-  EXPECT_TRUE(text.empty());
+    // Try fetching URL that is 101 bytes large. We should abort the request
+    // after 50 bytes have been read, and fail with a too large error.
+    GURL url = test_server_.GetURL("/large-pac.nsproxy");
+    std::u16string text;
+    TestCompletionCallback callback;
+    int result = pac_fetcher->Fetch(url, &text, callback.callback(),
+                                    TRAFFIC_ANNOTATION_FOR_TESTS);
+    EXPECT_THAT(result, IsError(ERR_IO_PENDING));
+    EXPECT_THAT(callback.WaitForResult(), IsError(ERR_FILE_TOO_BIG));
+    EXPECT_TRUE(text.empty());
 
-  // Restore the original size bound.
-  pac_fetcher->SetSizeConstraint(prev_size);
+    // Restore the original size bound.
+    pac_fetcher->SetSizeConstraint(prev_size);
+  }
 
-  {  // Make sure we can still fetch regular URLs.
+  {
+    // Make sure we can still fetch regular URLs.
     GURL url(test_server_.GetURL("/pac.nsproxy"));
     std::u16string text;
     TestCompletionCallback callback;

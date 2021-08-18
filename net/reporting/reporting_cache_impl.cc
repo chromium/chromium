@@ -919,7 +919,7 @@ void ReportingCacheImpl::AddOrUpdateEndpoint(ReportingEndpoint new_endpoint) {
     if (context_->IsClientDataPersisted())
       store()->AddReportingEndpoint(new_endpoint);
 
-    EndpointMap::iterator endpoint_it = endpoints_.insert(
+    endpoint_it = endpoints_.insert(
         std::make_pair(new_endpoint.group_key, std::move(new_endpoint)));
     AddEndpointItToIndex(endpoint_it);
 

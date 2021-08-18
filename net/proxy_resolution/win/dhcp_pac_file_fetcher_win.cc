@@ -420,12 +420,12 @@ void DhcpPacFileFetcherWin::OnFetcherDone(size_t fetcher_index,
        it != fetchers_.end();
        ++it) {
     bool did_finish = (*it)->DidFinish();
-    int result = (*it)->GetResult();
-    if (did_finish && result == OK) {
+    int fetch_result = (*it)->GetResult();
+    if (did_finish && fetch_result == OK) {
       TransitionToDone();
       return;
     }
-    if (!did_finish || result != ERR_PAC_NOT_IN_DHCP) {
+    if (!did_finish || fetch_result != ERR_PAC_NOT_IN_DHCP) {
       break;
     }
   }

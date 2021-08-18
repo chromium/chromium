@@ -125,7 +125,7 @@ void MemBackendImpl::OnEntryUpdated(MemEntryImpl* entry) {
 }
 
 void MemBackendImpl::OnEntryDoomed(MemEntryImpl* entry) {
-  if (entry->type() == MemEntryImpl::PARENT_ENTRY)
+  if (entry->type() == MemEntryImpl::EntryType::kParent)
     entries_.erase(entry->key());
   // LinkedList<>::RemoveFromList() removes |entry| from |lru_list_|.
   entry->RemoveFromList();

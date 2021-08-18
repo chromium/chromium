@@ -178,24 +178,24 @@ void NetworkChangeNotifierAndroid::OnMaxBandwidthChanged(
 
 void NetworkChangeNotifierAndroid::OnNetworkConnected(NetworkHandle network) {
   NetworkChangeNotifier::NotifyObserversOfSpecificNetworkChange(
-      NetworkChangeType::CONNECTED, network);
+      NetworkChangeType::kConnected, network);
 }
 
 void NetworkChangeNotifierAndroid::OnNetworkSoonToDisconnect(
     NetworkHandle network) {
   NetworkChangeNotifier::NotifyObserversOfSpecificNetworkChange(
-      NetworkChangeType::SOON_TO_DISCONNECT, network);
+      NetworkChangeType::kSoonToDisconnect, network);
 }
 
 void NetworkChangeNotifierAndroid::OnNetworkDisconnected(
     NetworkHandle network) {
   NetworkChangeNotifier::NotifyObserversOfSpecificNetworkChange(
-      NetworkChangeType::DISCONNECTED, network);
+      NetworkChangeType::kDisconnected, network);
 }
 
 void NetworkChangeNotifierAndroid::OnNetworkMadeDefault(NetworkHandle network) {
   NetworkChangeNotifier::NotifyObserversOfSpecificNetworkChange(
-      NetworkChangeType::MADE_DEFAULT, network);
+      NetworkChangeType::kMadeDefault, network);
 }
 
 NetworkChangeNotifierAndroid::NetworkChangeNotifierAndroid(

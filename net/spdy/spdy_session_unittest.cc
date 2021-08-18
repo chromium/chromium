@@ -1262,8 +1262,6 @@ TEST_F(SpdySessionTest, PingAndWriteLoop) {
 }
 
 TEST_F(SpdySessionTest, StreamIdSpaceExhausted) {
-  const spdy::SpdyStreamId kLastStreamId = 0x7fffffff;
-
   // Test setup: |stream_hi_water_mark_| and |max_concurrent_streams_| are
   // fixed to allow for two stream ID assignments, and three concurrent
   // streams. Four streams are started, and two are activated. Verify the

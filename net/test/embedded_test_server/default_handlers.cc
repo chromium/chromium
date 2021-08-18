@@ -895,7 +895,6 @@ class DelayedChunkedHttpResponse : public HttpResponse {
 std::unique_ptr<HttpResponse> HandleChunked(const HttpRequest& request) {
   GURL request_url = request.GetURL();
 
-  RequestQuery query = ParseQuery(request_url);
   base::TimeDelta delay_before_headers;
   base::TimeDelta delay_between_chunks;
   int chunk_size = 5;

@@ -730,22 +730,22 @@ class MockWebSocketStreamRequest : public WebSocketStreamRequest {
 
 struct WebSocketStreamCreationCallbackArgumentSaver {
   std::unique_ptr<WebSocketStreamRequest> Create(
-      const GURL& socket_url,
+      const GURL& new_socket_url,
       const std::vector<std::string>& requested_subprotocols,
-      const url::Origin& origin,
-      const SiteForCookies& site_for_cookies,
-      const IsolationInfo& isolation_info,
+      const url::Origin& new_origin,
+      const SiteForCookies& new_site_for_cookies,
+      const IsolationInfo& new_isolation_info,
       const HttpRequestHeaders& additional_headers,
-      URLRequestContext* url_request_context,
+      URLRequestContext* new_url_request_context,
       const NetLogWithSource& net_log,
       NetworkTrafficAnnotationTag traffic_annotation,
-      std::unique_ptr<WebSocketStream::ConnectDelegate> connect_delegate) {
-    this->socket_url = socket_url;
-    this->origin = origin;
-    this->site_for_cookies = site_for_cookies;
-    this->isolation_info = isolation_info;
-    this->url_request_context = url_request_context;
-    this->connect_delegate = std::move(connect_delegate);
+      std::unique_ptr<WebSocketStream::ConnectDelegate> new_connect_delegate) {
+    socket_url = new_socket_url;
+    origin = new_origin;
+    site_for_cookies = new_site_for_cookies;
+    isolation_info = new_isolation_info;
+    url_request_context = new_url_request_context;
+    connect_delegate = std::move(new_connect_delegate);
     return std::make_unique<MockWebSocketStreamRequest>();
   }
 

@@ -942,19 +942,19 @@ void NetworkChangeNotifier::NotifyObserversOfSpecificNetworkChangeImpl(
     NetworkChangeType type,
     NetworkHandle network) {
   switch (type) {
-    case CONNECTED:
+    case NetworkChangeType::kConnected:
       network_observer_list_->Notify(
           FROM_HERE, &NetworkObserver::OnNetworkConnected, network);
       break;
-    case DISCONNECTED:
+    case NetworkChangeType::kDisconnected:
       network_observer_list_->Notify(
           FROM_HERE, &NetworkObserver::OnNetworkDisconnected, network);
       break;
-    case SOON_TO_DISCONNECT:
+    case NetworkChangeType::kSoonToDisconnect:
       network_observer_list_->Notify(
           FROM_HERE, &NetworkObserver::OnNetworkSoonToDisconnect, network);
       break;
-    case MADE_DEFAULT:
+    case NetworkChangeType::kMadeDefault:
       network_observer_list_->Notify(
           FROM_HERE, &NetworkObserver::OnNetworkMadeDefault, network);
       break;

@@ -267,30 +267,30 @@ DnsResponse BuildTestDnsServiceResponse(
     std::string answer_name = "");
 
 struct MockDnsClientRule {
-  enum ResultType {
+  enum class ResultType {
     // Fail asynchronously with ERR_NAME_NOT_RESOLVED and NXDOMAIN.
-    NODOMAIN,
+    kNoDomain,
     // Fail asynchronously with `net_error` or (if nullopt)
     // ERR_NAME_NOT_RESOLVED and  `response` if not nullopt.
-    FAIL,
+    kFail,
     // Fail asynchronously with ERR_DNS_TIMED_OUT.
-    TIMEOUT,
+    kTimeout,
     // Simulates a slow transaction that will complete only with a lenient
     // timeout. Fails asynchronously with ERR_DNS_TIMED_OUT only if the
     // transaction was created with |fast_timeout|. Otherwise completes
-    // successfully as if the ResultType were |OK|.
-    SLOW,
+    // successfully as if the ResultType were |kOk|.
+    kSlow,
     // Return an empty response.
-    EMPTY,
+    kEmpty,
     // "Succeed" but with an unparsable response.
-    MALFORMED,
+    kMalformed,
     // Immediately records a test failure if queried. Used to catch unexpected
     // queries.
-    UNEXPECTED,
+    kUnexpected,
 
     // Results in the response in |Result::response| or, if null, results in a
     // localhost IP response.
-    OK,
+    kOk,
   };
 
   struct Result {
@@ -298,10 +298,9 @@ struct MockDnsClientRule {
                     absl::optional<DnsResponse> response = absl::nullopt,
                     absl::optional<int> net_error = absl::nullopt);
     explicit Result(DnsResponse response);
-    Result(Result&& result);
+    Result(Result&&);
+    Result& operator=(Result&&);
     ~Result();
-
-    Result& operator=(Result&& result);
 
     ResultType type;
     absl::optional<DnsResponse> response;

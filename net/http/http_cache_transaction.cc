@@ -2141,8 +2141,8 @@ int HttpCache::Transaction::DoFinishHeadersComplete(int rv) {
   // If already reading, that means it is a partial request coming back to the
   // headers phase, continue to the appropriate reading state.
   if (reading_) {
-    int rv = TransitionToReadingState();
-    DCHECK_EQ(OK, rv);
+    int reading_state_rv = TransitionToReadingState();
+    DCHECK_EQ(OK, reading_state_rv);
     return OK;
   }
 

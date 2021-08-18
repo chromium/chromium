@@ -569,12 +569,12 @@ class SequencedSocketData : public SocketDataProvider {
 
  private:
   // Defines the state for the read or write path.
-  enum IoState {
-    IDLE,        // No async operation is in progress.
-    PENDING,     // An async operation in waiting for another operation to
-                 // complete.
-    COMPLETING,  // A task has been posted to complete an async operation.
-    PAUSED,      // IO is paused until Resume() is called.
+  enum class IoState {
+    kIdle,        // No async operation is in progress.
+    kPending,     // An async operation in waiting for another operation to
+                  // complete.
+    kCompleting,  // A task has been posted to complete an async operation.
+    kPaused,      // IO is paused until Resume() is called.
   };
 
   // From SocketDataProvider:

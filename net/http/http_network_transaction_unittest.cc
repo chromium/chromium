@@ -12485,30 +12485,28 @@ TEST_F(HttpNetworkTransactionTest, SOCKS5_HTTP_GET) {
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
 
-  const char kSOCKS5GreetRequest[] = { 0x05, 0x01, 0x00 };
-  const char kSOCKS5GreetResponse[] = { 0x05, 0x00 };
-  const char kSOCKS5OkRequest[] = {
+  const char kSOCKS5ExampleOkRequest[] = {
       0x05,  // Version
       0x01,  // Command (CONNECT)
       0x00,  // Reserved.
       0x03,  // Address type (DOMAINNAME).
       0x0F,  // Length of domain (15)
-      'w', 'w', 'w', '.', 'e', 'x', 'a', 'm', 'p', 'l', 'e',  // Domain string
-      '.', 'o', 'r', 'g', 0x00, 0x50,  // 16-bit port (80)
+      'w',  'w', 'w', '.', 'e',  'x',
+      'a',  'm', 'p', 'l', 'e',         // Domain string
+      '.',  'o', 'r', 'g', 0x00, 0x50,  // 16-bit port (80)
   };
-  const char kSOCKS5OkResponse[] =
-      { 0x05, 0x00, 0x00, 0x01, 127, 0, 0, 1, 0x00, 0x50 };
 
   MockWrite data_writes[] = {
-      MockWrite(ASYNC, kSOCKS5GreetRequest, base::size(kSOCKS5GreetRequest)),
-      MockWrite(ASYNC, kSOCKS5OkRequest, base::size(kSOCKS5OkRequest)),
+      MockWrite(ASYNC, kSOCKS5GreetRequest, kSOCKS5GreetRequestLength),
+      MockWrite(ASYNC, kSOCKS5ExampleOkRequest,
+                base::size(kSOCKS5ExampleOkRequest)),
       MockWrite("GET / HTTP/1.1\r\n"
                 "Host: www.example.org\r\n"
                 "Connection: keep-alive\r\n\r\n")};
 
   MockRead data_reads[] = {
-      MockRead(ASYNC, kSOCKS5GreetResponse, base::size(kSOCKS5GreetResponse)),
-      MockRead(ASYNC, kSOCKS5OkResponse, base::size(kSOCKS5OkResponse)),
+      MockRead(ASYNC, kSOCKS5GreetResponse, kSOCKS5GreetResponseLength),
+      MockRead(ASYNC, kSOCKS5OkResponse, kSOCKS5OkResponseLength),
       MockRead("HTTP/1.0 200 OK\r\n"),
       MockRead("Content-Type: text/html; charset=iso-8859-1\r\n\r\n"),
       MockRead("Payload"),
@@ -12556,32 +12554,31 @@ TEST_F(HttpNetworkTransactionTest, SOCKS5_SSL_GET) {
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
 
-  const char kSOCKS5GreetRequest[] = { 0x05, 0x01, 0x00 };
-  const char kSOCKS5GreetResponse[] = { 0x05, 0x00 };
-  const unsigned char kSOCKS5OkRequest[] = {
+  const unsigned char kSOCKS5ExampleOkRequest[] = {
       0x05,  // Version
       0x01,  // Command (CONNECT)
       0x00,  // Reserved.
       0x03,  // Address type (DOMAINNAME).
       0x0F,  // Length of domain (15)
-      'w', 'w', 'w', '.', 'e', 'x', 'a', 'm', 'p', 'l', 'e',  // Domain string
-      '.', 'o', 'r', 'g', 0x01, 0xBB,  // 16-bit port (443)
+      'w',  'w', 'w', '.', 'e',  'x',
+      'a',  'm', 'p', 'l', 'e',         // Domain string
+      '.',  'o', 'r', 'g', 0x01, 0xBB,  // 16-bit port (443)
   };
 
-  const char kSOCKS5OkResponse[] =
-      { 0x05, 0x00, 0x00, 0x01, 0, 0, 0, 0, 0x00, 0x00 };
+  const char kSOCKS5SslOkResponse[] = {0x05, 0x00, 0x00, 0x01, 0,
+                                       0,    0,    0,    0x00, 0x00};
 
   MockWrite data_writes[] = {
-      MockWrite(ASYNC, kSOCKS5GreetRequest, base::size(kSOCKS5GreetRequest)),
-      MockWrite(ASYNC, reinterpret_cast<const char*>(kSOCKS5OkRequest),
-                base::size(kSOCKS5OkRequest)),
+      MockWrite(ASYNC, kSOCKS5GreetRequest, kSOCKS5GreetRequestLength),
+      MockWrite(ASYNC, reinterpret_cast<const char*>(kSOCKS5ExampleOkRequest),
+                base::size(kSOCKS5ExampleOkRequest)),
       MockWrite("GET / HTTP/1.1\r\n"
                 "Host: www.example.org\r\n"
                 "Connection: keep-alive\r\n\r\n")};
 
   MockRead data_reads[] = {
-      MockRead(ASYNC, kSOCKS5GreetResponse, base::size(kSOCKS5GreetResponse)),
-      MockRead(ASYNC, kSOCKS5OkResponse, base::size(kSOCKS5OkResponse)),
+      MockRead(ASYNC, kSOCKS5GreetResponse, kSOCKS5GreetResponseLength),
+      MockRead(ASYNC, kSOCKS5SslOkResponse, base::size(kSOCKS5SslOkResponse)),
       MockRead("HTTP/1.0 200 OK\r\n"),
       MockRead("Content-Type: text/html; charset=iso-8859-1\r\n\r\n"),
       MockRead("Payload"),

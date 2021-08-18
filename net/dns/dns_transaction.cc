@@ -498,22 +498,22 @@ class DnsHTTPAttempt : public DnsAttempt, public URLRequest::Delegate {
       DCHECK(buffer_->data());
       DCHECK_GT(buffer_->capacity(), 0);
 
-      int bytes_read =
+      int read_result =
           request_->Read(buffer_.get(), buffer_->RemainingCapacity());
 
       // If IO is pending, wait for the URLRequest to call OnReadCompleted.
-      if (bytes_read == net::ERR_IO_PENDING)
+      if (read_result == net::ERR_IO_PENDING)
         return;
 
-      if (bytes_read <= 0) {
-        OnReadCompleted(request_.get(), bytes_read);
+      if (read_result <= 0) {
+        OnReadCompleted(request_.get(), read_result);
       } else {
         // Else, trigger OnReadCompleted asynchronously to avoid starving the IO
         // thread in case the URLRequest can provide data synchronously.
         base::SequencedTaskRunnerHandle::Get()->PostTask(
             FROM_HERE, base::BindOnce(&DnsHTTPAttempt::OnReadCompleted,
                                       weak_factory_.GetWeakPtr(),
-                                      request_.get(), bytes_read));
+                                      request_.get(), read_result));
       }
     } else {
       // URLRequest reported an EOF. Call ResponseCompleted.

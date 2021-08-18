@@ -3502,7 +3502,7 @@ TEST_F(CookieMonsterTest, LeaveSecureCookiesAlone_DomainMatch) {
   const char* kDomain = "b.a.foo.com";
   const char* kSubdomain = "c.b.a.foo.com";
   // This domain does not match any, aside from the registrable domain.
-  const char* kOtherDomain = "z.foo.com";
+  const char* kAnotherDomain = "z.foo.com";
 
   for (const char* preexisting_cookie_host :
        {kRegistrableDomain, kSuperdomain, kDomain, kSubdomain}) {
@@ -3591,7 +3591,7 @@ TEST_F(CookieMonsterTest, LeaveSecureCookiesAlone_DomainMatch) {
   // Test non-domain-matching case. These sets should all be allowed because the
   // cookie is not equivalent.
   GURL nonmatching_https_url(base::StrCat(
-      {url::kHttpsScheme, url::kStandardSchemeSeparator, kOtherDomain}));
+      {url::kHttpsScheme, url::kStandardSchemeSeparator, kAnotherDomain}));
 
   for (const char* host : {kSuperdomain, kDomain, kSubdomain}) {
     GURL https_url(
@@ -3605,7 +3605,7 @@ TEST_F(CookieMonsterTest, LeaveSecureCookiesAlone_DomainMatch) {
                     .IsInclude());
     EXPECT_TRUE(CreateAndSetCookieReturnStatus(
                     cm.get(), nonmatching_https_url,
-                    base::StrCat({"B=0; Secure; Domain=", kOtherDomain}))
+                    base::StrCat({"B=0; Secure; Domain=", kAnotherDomain}))
                     .IsInclude());
 
     // New cookie from insecure URL is set.

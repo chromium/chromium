@@ -1161,9 +1161,9 @@ void HttpServerProperties::OnServerInfoLoaded(
         it->first.network_isolation_key);
     // If we already have a valid canonical server, we're done.
     if (base::Contains(canonical_alt_svc_map_, key)) {
-      auto it = server_info_map_.Peek(key);
-      if (it != server_info_map_.end() &&
-          it->second.alternative_services.has_value()) {
+      auto key_it = server_info_map_.Peek(key);
+      if (key_it != server_info_map_.end() &&
+          key_it->second.alternative_services.has_value()) {
         continue;
       }
     }

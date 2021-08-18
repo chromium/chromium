@@ -4185,9 +4185,9 @@ TEST_F(ConfiguredProxyResolutionServiceTest,
       std::unique_ptr<ProxyResolutionRequest> request;
       ProxyInfo info;
       TestCompletionCallback callback;
-      int rv = service->ResolveProxy(url, std::string(), NetworkIsolationKey(),
-                                     &info, callback.callback(), &request,
-                                     NetLogWithSource());
+      rv = service->ResolveProxy(url, std::string(), NetworkIsolationKey(),
+                                 &info, callback.callback(), &request,
+                                 NetLogWithSource());
       EXPECT_THAT(rv, IsOk());
       EXPECT_TRUE(info.is_direct());
     }
@@ -4252,9 +4252,9 @@ TEST_F(ConfiguredProxyResolutionServiceTest, ImplicitlyBypassWithPac) {
       std::unique_ptr<ProxyResolutionRequest> request;
       ProxyInfo info;
       TestCompletionCallback callback;
-      int rv = service.ResolveProxy(url, std::string(), NetworkIsolationKey(),
-                                    &info, callback.callback(), &request,
-                                    NetLogWithSource());
+      rv = service.ResolveProxy(url, std::string(), NetworkIsolationKey(),
+                                &info, callback.callback(), &request,
+                                NetLogWithSource());
       EXPECT_THAT(rv, IsOk());
       EXPECT_TRUE(info.is_direct());
     }

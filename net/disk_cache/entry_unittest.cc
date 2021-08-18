@@ -1603,7 +1603,7 @@ TEST_F(DiskCacheEntryTest, MemoryOnlyEnumerationWithSparseEntries) {
     ++count;
     disk_cache::MemEntryImpl* mem_entry =
         reinterpret_cast<disk_cache::MemEntryImpl*>(entry);
-    EXPECT_EQ(disk_cache::MemEntryImpl::PARENT_ENTRY, mem_entry->type());
+    EXPECT_EQ(disk_cache::MemEntryImpl::EntryType::kParent, mem_entry->type());
     mem_entry->Close();
   }
   EXPECT_EQ(1, count);

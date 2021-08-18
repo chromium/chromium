@@ -417,7 +417,7 @@ class ConfiguredProxyResolutionService::InitProxyResolver {
   InitProxyResolver()
       : proxy_resolver_factory_(nullptr),
         proxy_resolver_(nullptr),
-        next_state_(STATE_NONE),
+        next_state_(State::kNone),
         quick_check_enabled_(true) {}
 
   // Note that the destruction of PacFileDecider will automatically cancel
@@ -435,7 +435,7 @@ class ConfiguredProxyResolutionService::InitProxyResolver {
             const ProxyConfigWithAnnotation& config,
             TimeDelta wait_delay,
             CompletionOnceCallback callback) {
-    DCHECK_EQ(STATE_NONE, next_state_);
+    DCHECK_EQ(State::kNone, next_state_);
     proxy_resolver_ = proxy_resolver;
     proxy_resolver_factory_ = proxy_resolver_factory;
 
@@ -446,7 +446,7 @@ class ConfiguredProxyResolutionService::InitProxyResolver {
     wait_delay_ = wait_delay;
     callback_ = std::move(callback);
 
-    next_state_ = STATE_DECIDE_PAC_FILE;
+    next_state_ = State::kDecidePacFile;
     return DoLoop(OK);
   }
 
@@ -461,7 +461,7 @@ class ConfiguredProxyResolutionService::InitProxyResolver {
                        int decider_result,
                        const PacFileDataWithSource& script_data,
                        CompletionOnceCallback callback) {
-    DCHECK_EQ(STATE_NONE, next_state_);
+    DCHECK_EQ(State::kNone, next_state_);
     proxy_resolver_ = proxy_resolver;
     proxy_resolver_factory_ = proxy_resolver_factory;
 
@@ -472,26 +472,26 @@ class ConfiguredProxyResolutionService::InitProxyResolver {
     if (decider_result != OK)
       return decider_result;
 
-    next_state_ = STATE_CREATE_RESOLVER;
+    next_state_ = State::kCreateResolver;
     return DoLoop(OK);
   }
 
   // Returns the proxy configuration that was selected by PacFileDecider.
   // Should only be called upon completion of the initialization.
   const ProxyConfigWithAnnotation& effective_config() const {
-    DCHECK_EQ(STATE_NONE, next_state_);
+    DCHECK_EQ(State::kNone, next_state_);
     return effective_config_;
   }
 
   // Returns the PAC script data that was selected by PacFileDecider.
   // Should only be called upon completion of the initialization.
   const PacFileDataWithSource& script_data() {
-    DCHECK_EQ(STATE_NONE, next_state_);
+    DCHECK_EQ(State::kNone, next_state_);
     return script_data_;
   }
 
   LoadState GetLoadState() const {
-    if (next_state_ == STATE_DECIDE_PAC_FILE_COMPLETE) {
+    if (next_state_ == State::kDecidePacFileComplete) {
       // In addition to downloading, this state may also include the stall time
       // after network change events (kDelayAfterNetworkChangesMs).
       return LOAD_STATE_DOWNLOADING_PAC_FILE;
@@ -509,46 +509,46 @@ class ConfiguredProxyResolutionService::InitProxyResolver {
   bool quick_check_enabled() const { return quick_check_enabled_; }
 
  private:
-  enum State {
-    STATE_NONE,
-    STATE_DECIDE_PAC_FILE,
-    STATE_DECIDE_PAC_FILE_COMPLETE,
-    STATE_CREATE_RESOLVER,
-    STATE_CREATE_RESOLVER_COMPLETE,
+  enum class State {
+    kNone,
+    kDecidePacFile,
+    kDecidePacFileComplete,
+    kCreateResolver,
+    kCreateResolverComplete,
   };
 
   int DoLoop(int result) {
-    DCHECK_NE(next_state_, STATE_NONE);
+    DCHECK_NE(next_state_, State::kNone);
     int rv = result;
     do {
       State state = next_state_;
-      next_state_ = STATE_NONE;
+      next_state_ = State::kNone;
       switch (state) {
-        case STATE_DECIDE_PAC_FILE:
+        case State::kDecidePacFile:
           DCHECK_EQ(OK, rv);
           rv = DoDecidePacFile();
           break;
-        case STATE_DECIDE_PAC_FILE_COMPLETE:
+        case State::kDecidePacFileComplete:
           rv = DoDecidePacFileComplete(rv);
           break;
-        case STATE_CREATE_RESOLVER:
+        case State::kCreateResolver:
           DCHECK_EQ(OK, rv);
           rv = DoCreateResolver();
           break;
-        case STATE_CREATE_RESOLVER_COMPLETE:
+        case State::kCreateResolverComplete:
           rv = DoCreateResolverComplete(rv);
           break;
         default:
-          NOTREACHED() << "bad state: " << state;
+          NOTREACHED() << "bad state: " << static_cast<int>(state);
           rv = ERR_UNEXPECTED;
           break;
       }
-    } while (rv != ERR_IO_PENDING && next_state_ != STATE_NONE);
+    } while (rv != ERR_IO_PENDING && next_state_ != State::kNone);
     return rv;
   }
 
   int DoDecidePacFile() {
-    next_state_ = STATE_DECIDE_PAC_FILE_COMPLETE;
+    next_state_ = State::kDecidePacFileComplete;
 
     return decider_->Start(config_, wait_delay_,
                            proxy_resolver_factory_->expects_pac_bytes(),
@@ -563,14 +563,14 @@ class ConfiguredProxyResolutionService::InitProxyResolver {
     effective_config_ = decider_->effective_config();
     script_data_ = decider_->script_data();
 
-    next_state_ = STATE_CREATE_RESOLVER;
+    next_state_ = State::kCreateResolver;
     return OK;
   }
 
   int DoCreateResolver() {
     DCHECK(script_data_.data);
     // TODO(eroman): Should log this latency to the NetLog.
-    next_state_ = STATE_CREATE_RESOLVER_COMPLETE;
+    next_state_ = State::kCreateResolverComplete;
     return proxy_resolver_factory_->CreateProxyResolver(
         script_data_.data, proxy_resolver_,
         base::BindOnce(&InitProxyResolver::OnIOCompletion,
@@ -585,7 +585,7 @@ class ConfiguredProxyResolutionService::InitProxyResolver {
   }
 
   void OnIOCompletion(int result) {
-    DCHECK_NE(STATE_NONE, next_state_);
+    DCHECK_NE(State::kNone, next_state_);
     int rv = DoLoop(result);
     if (rv != ERR_IO_PENDING)
       std::move(callback_).Run(result);

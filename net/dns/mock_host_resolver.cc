@@ -615,7 +615,7 @@ int MockHostResolverBase::Resolve(RequestImpl* request) {
   }
 
   if (synchronous_mode_) {
-    int rv = ResolveProc(
+    rv = ResolveProc(
         request->request_host(), request->network_isolation_key(),
         DnsQueryTypeToAddressFamily(request->parameters().dns_query_type),
         request->host_resolver_flags(), request->parameters().source,

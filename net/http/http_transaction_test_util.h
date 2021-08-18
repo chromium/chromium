@@ -148,7 +148,7 @@ class TestTransactionConsumer {
 
   void Start(const HttpRequestInfo* request, const NetLogWithSource& net_log);
 
-  bool is_done() const { return state_ == DONE; }
+  bool is_done() const { return state_ == State::kDone; }
   int error() const { return error_; }
 
   const HttpResponseInfo* response_info() const {
@@ -158,12 +158,7 @@ class TestTransactionConsumer {
   const std::string& content() const { return content_; }
 
  private:
-  enum State {
-    IDLE,
-    STARTING,
-    READING,
-    DONE
-  };
+  enum class State { kIdle, kStarting, kReading, kDone };
 
   void DidStart(int result);
   void DidRead(int result);

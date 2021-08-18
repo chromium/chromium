@@ -2511,11 +2511,12 @@ TEST_F(HttpCacheTest, RangeGET_ParallelValidationDifferentRanges) {
   // Fetch from the cache to check that ranges 30-49 have been successfully
   // cached.
   {
-    MockTransaction transaction(kRangeGET_TransactionOK);
-    transaction.request_headers = "Range: bytes = 30-49\r\n" EXTRA_HEADER;
-    transaction.data = "rg: 30-39 rg: 40-49 ";
+    MockTransaction range_transaction(kRangeGET_TransactionOK);
+    range_transaction.request_headers = "Range: bytes = 30-49\r\n" EXTRA_HEADER;
+    range_transaction.data = "rg: 30-39 rg: 40-49 ";
     std::string headers;
-    RunTransactionTestWithResponse(cache.http_cache(), transaction, &headers);
+    RunTransactionTestWithResponse(cache.http_cache(), range_transaction,
+                                   &headers);
     Verify206Response(headers, 30, 49);
   }
 
@@ -2924,11 +2925,12 @@ TEST_F(HttpCacheTest, RangeGET_ParallelValidationOverlappingRanges) {
   // Fetch from the cache to check that ranges 30-49 have been successfully
   // cached.
   {
-    MockTransaction transaction(kRangeGET_TransactionOK);
-    transaction.request_headers = "Range: bytes = 30-49\r\n" EXTRA_HEADER;
-    transaction.data = "rg: 30-39 rg: 40-49 ";
+    MockTransaction range_transaction(kRangeGET_TransactionOK);
+    range_transaction.request_headers = "Range: bytes = 30-49\r\n" EXTRA_HEADER;
+    range_transaction.data = "rg: 30-39 rg: 40-49 ";
     std::string headers;
-    RunTransactionTestWithResponse(cache.http_cache(), transaction, &headers);
+    RunTransactionTestWithResponse(cache.http_cache(), range_transaction,
+                                   &headers);
     Verify206Response(headers, 30, 49);
   }
 
@@ -3022,11 +3024,12 @@ TEST_F(HttpCacheTest, RangeGET_ParallelValidationRestartDoneHeaders) {
   // Fetch from the cache to check that ranges 30-49 have been successfully
   // cached.
   {
-    MockTransaction transaction(kRangeGET_TransactionOK);
-    transaction.request_headers = "Range: bytes = 30-49\r\n" EXTRA_HEADER;
-    transaction.data = "rg: 30-39 rg: 40-49 ";
+    MockTransaction range_transaction(kRangeGET_TransactionOK);
+    range_transaction.request_headers = "Range: bytes = 30-49\r\n" EXTRA_HEADER;
+    range_transaction.data = "rg: 30-39 rg: 40-49 ";
     std::string headers;
-    RunTransactionTestWithResponse(cache.http_cache(), transaction, &headers);
+    RunTransactionTestWithResponse(cache.http_cache(), range_transaction,
+                                   &headers);
     Verify206Response(headers, 30, 49);
   }
 
@@ -3640,8 +3643,8 @@ TEST_F(HttpCacheTest, SimpleGET_ParallelValidationCancelReader) {
   EXPECT_TRUE(cache.IsHeadersTransactionPresent(cache_key));
 
   // Complete the response body.
-  auto& c = context_list[0];
-  ReadAndVerifyTransaction(c->trans.get(), kSimpleGET_Transaction);
+  ReadAndVerifyTransaction(context_list[0]->trans.get(),
+                           kSimpleGET_Transaction);
 
   // Rest of the transactions should move to readers.
   EXPECT_FALSE(cache.IsWriterPresent(cache_key));
@@ -3675,8 +3678,7 @@ TEST_F(HttpCacheTest, SimpleGET_ParallelValidationCancelReader) {
 
   // Resume network start for headers_transaction. It will doom the entry as it
   // will be a 200 and will go to network for the response body.
-  auto& context = context_list[3];
-  context->trans->ResumeNetworkStart();
+  context_list[3]->trans->ResumeNetworkStart();
 
   // The pending transactions will be added to a new entry as writers.
   base::RunLoop().RunUntilIdle();
@@ -3685,8 +3687,8 @@ TEST_F(HttpCacheTest, SimpleGET_ParallelValidationCancelReader) {
 
   // Complete the rest of the transactions.
   for (int i = 2; i < kNumTransactions; ++i) {
-    auto& c = context_list[i];
-    ReadAndVerifyTransaction(c->trans.get(), kSimpleGET_Transaction);
+    ReadAndVerifyTransaction(context_list[i]->trans.get(),
+                             kSimpleGET_Transaction);
   }
 
   EXPECT_EQ(2, cache.network_layer()->transaction_count());
@@ -4226,9 +4228,8 @@ TEST_F(HttpCacheTest, SimpleGET_ParallelWritingHuge) {
 
   // Complete all of them.
   for (int i = 0; i < kNumTransactions; i++) {
-    auto& c = context_list[i];
-    ReadRemainingAndVerifyTransaction(c->trans.get(), first_read[i],
-                                      kSimpleGET_Transaction);
+    ReadRemainingAndVerifyTransaction(context_list[i]->trans.get(),
+                                      first_read[i], kSimpleGET_Transaction);
   }
 
   // Sadly all of them have to hit the network
@@ -4711,7 +4712,7 @@ TEST_F(HttpCacheTest, SimpleGET_RacingReaders) {
   c->trans.reset();
 
   for (int i = 3; i < kNumTransactions; ++i) {
-    Context* c = context_list[i].get();
+    c = context_list[i].get();
     if (c->result == ERR_IO_PENDING)
       c->result = c->callback.WaitForResult();
     if (c->result == OK)

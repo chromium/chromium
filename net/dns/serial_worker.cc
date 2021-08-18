@@ -18,14 +18,14 @@ namespace net {
 SerialWorker::SerialWorker()
     : base::RefCountedDeleteOnSequence<SerialWorker>(
           base::SequencedTaskRunnerHandle::Get()),
-      state_(IDLE) {}
+      state_(State::kIdle) {}
 
 SerialWorker::~SerialWorker() = default;
 
 void SerialWorker::WorkNow() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   switch (state_) {
-    case IDLE:
+    case State::kIdle:
       // We are posting weak pointer to OnWorkJobFinished to avoid leak when
       // PostTaskAndReply fails to post task back to the original
       // task runner. In this case the callback is not destroyed, and the
@@ -36,40 +36,40 @@ void SerialWorker::WorkNow() {
           base::BindOnce(&SerialWorker::DoWork, this),
           base::BindOnce(&SerialWorker::OnWorkJobFinished,
                          weak_factory_.GetWeakPtr()));
-      state_ = WORKING;
+      state_ = State::kWorking;
       return;
-    case WORKING:
+    case State::kWorking:
       // Remember to re-read after |DoRead| finishes.
-      state_ = PENDING;
+      state_ = State::kPending;
       return;
-    case CANCELLED:
-    case PENDING:
+    case State::kCancelled:
+    case State::kPending:
       return;
     default:
-      NOTREACHED() << "Unexpected state " << state_;
+      NOTREACHED() << "Unexpected state " << static_cast<int>(state_);
   }
 }
 
 void SerialWorker::Cancel() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  state_ = CANCELLED;
+  state_ = State::kCancelled;
 }
 
 void SerialWorker::OnWorkJobFinished() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   switch (state_) {
-    case CANCELLED:
+    case State::kCancelled:
       return;
-    case WORKING:
-      state_ = IDLE;
+    case State::kWorking:
+      state_ = State::kIdle;
       this->OnWorkFinished();
       return;
-    case PENDING:
-      state_ = IDLE;
+    case State::kPending:
+      state_ = State::kIdle;
       WorkNow();
       return;
     default:
-      NOTREACHED() << "Unexpected state " << state_;
+      NOTREACHED() << "Unexpected state " << static_cast<int>(state_);
   }
 }
 

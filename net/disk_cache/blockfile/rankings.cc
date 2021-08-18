@@ -838,8 +838,7 @@ int Rankings::CheckListSection(List list, Addr end1, Addr end2, bool forward,
     (*num_items)++;
 
     if (next_addr == prev_addr) {
-      Addr last = forward ? tails_[list] : heads_[list];
-      if (next_addr == last)
+      if (next_addr == (forward ? tails_[list] : heads_[list]))
         return ERR_NO_ERROR;
       return ERR_INVALID_TAIL;
     }

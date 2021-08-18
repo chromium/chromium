@@ -1284,7 +1284,6 @@ TEST_F(ClientSocketPoolBaseTest, StallAndThenCancelAndTriggerAvailableSocket) {
 
   ClientSocketHandle handles[4];
   for (size_t i = 0; i < base::size(handles); ++i) {
-    TestCompletionCallback callback;
     EXPECT_EQ(ERR_IO_PENDING,
               handles[i].Init(
                   TestGroupId("b"), params_, absl::nullopt, DEFAULT_PRIORITY,
@@ -1413,7 +1412,6 @@ TEST_F(ClientSocketPoolBaseTest, WaitForStalledSocketAtSocketLimit) {
     EXPECT_FALSE(pool_->IsStalled());
     ClientSocketHandle handles[kDefaultMaxSockets];
     for (int i = 0; i < kDefaultMaxSockets; ++i) {
-      TestCompletionCallback callback;
       EXPECT_EQ(
           OK, handles[i].Init(
                   TestGroupId(base::StringPrintf("take-2-%d", i)), params_,
@@ -3159,7 +3157,6 @@ TEST_F(ClientSocketPoolBaseTest, BackupSocketCancelAtMaxSockets) {
   connect_job_factory_->set_job_type(TestConnectJob::kMockJob);
   ClientSocketHandle handles[kDefaultMaxSockets];
   for (int i = 1; i < kDefaultMaxSockets; ++i) {
-    TestCompletionCallback callback;
     EXPECT_EQ(OK, handles[i].Init(TestGroupId("bar"), params_, absl::nullopt,
                                   DEFAULT_PRIORITY, SocketTag(),
                                   ClientSocketPool::RespectLimits::ENABLED,

@@ -523,9 +523,9 @@ TEST_F(TCPSocketTest, DestroyWithPendingWrite) {
   memset(write_buffer->data(), '1', write_buffer->size());
   TestCompletionCallback write_callback;
   while (true) {
-    int result = connecting_socket->Write(
-        write_buffer.get(), write_buffer->size(), write_callback.callback(),
-        TRAFFIC_ANNOTATION_FOR_TESTS);
+    result = connecting_socket->Write(write_buffer.get(), write_buffer->size(),
+                                      write_callback.callback(),
+                                      TRAFFIC_ANNOTATION_FOR_TESTS);
     if (result == ERR_IO_PENDING)
       break;
     ASSERT_LT(0, result);
