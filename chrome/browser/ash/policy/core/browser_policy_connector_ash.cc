@@ -491,10 +491,6 @@ BrowserPolicyConnectorAsh::GetGlobalUserCloudPolicyProvider() {
 void BrowserPolicyConnectorAsh::SetAttestationFlowForTesting(
     std::unique_ptr<chromeos::attestation::AttestationFlow> attestation_flow) {
   attestation_flow_ = std::move(attestation_flow);
-  if (device_cloud_policy_initializer_) {
-    device_cloud_policy_initializer_->SetAttestationFlowForTesting(
-        attestation_flow_.get());
-  }
 }
 
 // static
@@ -572,10 +568,9 @@ void BrowserPolicyConnectorAsh::RestartDeviceCloudPolicyInitializer() {
   device_cloud_policy_initializer_ =
       std::make_unique<DeviceCloudPolicyInitializer>(
           local_state_, device_management_service(),
-          CreateBackgroundTaskRunner(), chromeos::InstallAttributes::Get(),
-          state_keys_broker_.get(),
+          chromeos::InstallAttributes::Get(), state_keys_broker_.get(),
           device_cloud_policy_manager_->device_store(),
-          device_cloud_policy_manager_, attestation_flow_.get(),
+          device_cloud_policy_manager_,
           chromeos::system::StatisticsProvider::GetInstance());
   device_cloud_policy_initializer_->Init();
 }

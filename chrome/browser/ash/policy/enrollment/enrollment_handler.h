@@ -71,7 +71,7 @@ class EnrollmentHandler : public CloudPolicyClient::Observer,
       chromeos::InstallAttributes* install_attributes,
       ServerBackedStateKeysBroker* state_keys_broker,
       chromeos::attestation::AttestationFlow* attestation_flow,
-      SigningService* signing_service,
+      std::unique_ptr<SigningService> signing_service,
       std::unique_ptr<CloudPolicyClient> client,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
       ActiveDirectoryJoinDelegate* ad_join_delegate,
@@ -214,7 +214,8 @@ class EnrollmentHandler : public CloudPolicyClient::Observer,
   chromeos::InstallAttributes* install_attributes_;
   ServerBackedStateKeysBroker* state_keys_broker_;
   chromeos::attestation::AttestationFlow* attestation_flow_;
-  SigningService* signing_service_;
+  // SigningService to be used by |client_| to register with.
+  std::unique_ptr<SigningService> signing_service_;
   std::unique_ptr<CloudPolicyClient> client_;
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
   ActiveDirectoryJoinDelegate* ad_join_delegate_ = nullptr;

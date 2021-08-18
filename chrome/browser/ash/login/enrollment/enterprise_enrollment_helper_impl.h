@@ -19,6 +19,7 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 
 namespace policy {
+class EnrollmentHandler;
 class PolicyOAuth2TokenFetcher;
 }  // namespace policy
 
@@ -90,6 +91,9 @@ class EnterpriseEnrollmentHelperImpl : public EnterpriseEnrollmentHelper {
   policy::ActiveDirectoryJoinDelegate* ad_join_delegate_ = nullptr;
 
   std::unique_ptr<policy::PolicyOAuth2TokenFetcher> oauth_fetcher_;
+
+  // Non-nullptr from DoEnroll till OnEnrollmentFinished.
+  std::unique_ptr<policy::EnrollmentHandler> enrollment_handler_;
 
   base::WeakPtrFactory<EnterpriseEnrollmentHelperImpl> weak_ptr_factory_{this};
 

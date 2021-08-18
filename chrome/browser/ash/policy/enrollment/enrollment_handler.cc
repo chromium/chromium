@@ -222,7 +222,7 @@ EnrollmentHandler::EnrollmentHandler(
     chromeos::InstallAttributes* install_attributes,
     ServerBackedStateKeysBroker* state_keys_broker,
     chromeos::attestation::AttestationFlow* attestation_flow,
-    SigningService* signing_service,
+    std::unique_ptr<SigningService> signing_service,
     std::unique_ptr<CloudPolicyClient> client,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
     ActiveDirectoryJoinDelegate* ad_join_delegate,
@@ -236,7 +236,7 @@ EnrollmentHandler::EnrollmentHandler(
       install_attributes_(install_attributes),
       state_keys_broker_(state_keys_broker),
       attestation_flow_(attestation_flow),
-      signing_service_(signing_service),
+      signing_service_(std::move(signing_service)),
       client_(std::move(client)),
       background_task_runner_(background_task_runner),
       ad_join_delegate_(ad_join_delegate),
@@ -488,7 +488,7 @@ void EnrollmentHandler::HandleRegistrationCertificateResult(
   if (status == chromeos::attestation::ATTESTATION_SUCCESS) {
     client_->RegisterWithCertificate(*register_params_, client_id_,
                                      dm_auth_.Clone(), pem_certificate_chain,
-                                     sub_organization_, signing_service_);
+                                     sub_organization_, signing_service_.get());
   } else {
     ReportResult(EnrollmentStatus::ForStatus(
         EnrollmentStatus::REGISTRATION_CERT_FETCH_FAILED));

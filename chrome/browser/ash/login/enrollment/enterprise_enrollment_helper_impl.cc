@@ -17,8 +17,12 @@
 #include "chrome/browser/ash/login/enrollment/enrollment_uma.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/policy/core/device_cloud_policy_client_factory_ash.h"
+#include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/core/policy_oauth2_token_fetcher.h"
-#include "chrome/browser/ash/policy/enrollment/device_cloud_policy_initializer.h"
+#include "chrome/browser/ash/policy/enrollment/enrollment_handler.h"
+#include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
+#include "chrome/browser/ash/policy/enrollment/tpm_enrollment_key_signing_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -27,6 +31,7 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
+#include "chromeos/system/statistics_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -190,15 +195,37 @@ void EnterpriseEnrollmentHelperImpl::DoEnroll(policy::DMAuth auth_data) {
   }
 
   connector->ScheduleServiceInitialization(0);
-  policy::DeviceCloudPolicyInitializer* dcp_initializer =
-      connector->GetDeviceCloudPolicyInitializer();
-  CHECK(dcp_initializer);
-  dcp_initializer->PrepareEnrollment(
-      connector->device_management_service(), ad_join_delegate_,
-      enrollment_config_, auth_data_.Clone(),
+
+  DCHECK(!enrollment_handler_);
+  policy::DeviceCloudPolicyManagerAsh* policy_manager =
+      connector->GetDeviceCloudPolicyManager();
+  // Obtain attestation_flow from the connector because it can be fake
+  // attestation flow for testing.
+  chromeos::attestation::AttestationFlow* attestation_flow =
+      connector->GetAttestationFlow();
+  auto signing_service =
+      std::make_unique<policy::TpmEnrollmentKeySigningService>();
+  // DeviceDMToken callback is empty here because for device policies this
+  // DMToken is already provided in the policy fetch requests.
+  auto client = policy::CreateDeviceCloudPolicyClientAsh(
+      chromeos::system::StatisticsProvider::GetInstance(),
+      connector->device_management_service(),
+      g_browser_process->shared_url_loader_factory(),
+      policy::CloudPolicyClient::DeviceDMTokenCallback());
+
+  enrollment_handler_ = std::make_unique<policy::EnrollmentHandler>(
+      policy_manager->device_store(), InstallAttributes::Get(),
+      connector->GetStateKeysBroker(), attestation_flow,
+      std::move(signing_service), std::move(client),
+      policy::BrowserPolicyConnectorAsh::CreateBackgroundTaskRunner(),
+      ad_join_delegate_, enrollment_config_, auth_data_.Clone(),
+      InstallAttributes::Get()->GetDeviceId(),
+      policy::EnrollmentRequisitionManager::GetDeviceRequisition(),
+      policy::EnrollmentRequisitionManager::GetSubOrganization(),
       base::BindOnce(&EnterpriseEnrollmentHelperImpl::OnEnrollmentFinished,
                      weak_ptr_factory_.GetWeakPtr()));
-  dcp_initializer->StartEnrollment();
+
+  enrollment_handler_->StartEnrollment();
 }
 
 void EnterpriseEnrollmentHelperImpl::GetDeviceAttributeUpdatePermission() {
@@ -265,17 +292,41 @@ void EnterpriseEnrollmentHelperImpl::OnTokenFetched(
 
 void EnterpriseEnrollmentHelperImpl::OnEnrollmentFinished(
     policy::EnrollmentStatus status) {
+  // Regardless how enrollment has finished, |enrollment_handler_| is expired.
+  // |client| might still be needed to connect the manager.
+  auto client = enrollment_handler_->ReleaseClient();
+  // Though enrollment handler calls this method, it's "fine" do delete the
+  // handler here as it does not do anyhting after that callback in
+  // |EnrollmentHandler::ReportResult()|.
+  // TODO(crbug.com/1236167): Enrollment handler calls this method.  Deal with
+  // removing caller from callee.
+  enrollment_handler_.reset();
+
   VLOG(1) << "Enrollment finished, status: " << status.status();
   ReportEnrollmentStatus(status);
   if (oauth_status_ != OAUTH_NOT_STARTED)
     oauth_status_ = OAUTH_FINISHED;
-  if (status.status() == policy::EnrollmentStatus::SUCCESS) {
-    success_ = true;
-    StartupUtils::MarkOobeCompleted();
-    status_consumer()->OnDeviceEnrolled();
-  } else {
+
+  if (status.status() != policy::EnrollmentStatus::SUCCESS) {
     status_consumer()->OnEnrollmentError(status);
+    return;
   }
+
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
+  policy::DeviceCloudPolicyManagerAsh* policy_manager =
+      connector->GetDeviceCloudPolicyManager();
+
+  // Connect policy manager if necessary. If it has already been connected, no
+  // reconnection needed.
+  if (!policy_manager->IsConnected()) {
+    policy_manager->StartConnection(std::move(client),
+                                    InstallAttributes::Get());
+  }
+
+  success_ = true;
+  StartupUtils::MarkOobeCompleted();
+  status_consumer()->OnDeviceEnrolled();
 }
 
 void EnterpriseEnrollmentHelperImpl::OnDeviceAttributeUpdatePermission(

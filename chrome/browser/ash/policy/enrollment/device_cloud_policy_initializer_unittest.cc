@@ -13,7 +13,6 @@
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_device_state.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/attestation/mock_attestation_flow.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "chromeos/system/statistics_provider.h"
 #include "chromeos/tpm/stub_install_attributes.h"
@@ -41,9 +40,7 @@ class DeviceCloudPolicyInitializerTest
   DeviceCloudPolicyInitializerTest()
       : device_cloud_policy_initializer_(&local_state_,
                                          nullptr,
-                                         nullptr,
                                          &install_attributes_,
-                                         nullptr,
                                          nullptr,
                                          nullptr,
                                          nullptr,
