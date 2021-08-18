@@ -24,6 +24,7 @@
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/label_button.h"
@@ -65,11 +66,11 @@ constexpr gfx::Insets kAssistantIconInsets(10, 10, 0, 8);
 
 // Google icon.
 constexpr int kGoogleIconSizeDip = 16;
-constexpr gfx::Insets kGoogleIconInsets(10, 10, 0, 8);
+constexpr gfx::Insets kGoogleIconInsets(10, 10, 0, 10);
 
 // Info icon.
-constexpr int kDogfoodIconSizeDip = 16;
-constexpr gfx::Insets kDogfoodIconInsets(8, 10, 8, 8);
+constexpr int kDogfoodIconSizeDip = 20;
+constexpr int kDogfoodIconBorderDip = 8;
 
 // Spacing between lines in the main view.
 constexpr int kLineSpacingDip = 4;
@@ -84,18 +85,20 @@ constexpr int kDogfoodButtonSizeDip = 20;
 constexpr SkColor kDogfoodButtonColor = gfx::kGoogleGrey500;
 
 // Settings button.
-constexpr int kSettingsButtonMarginDip = 8;
+constexpr int kSettingsButtonMarginDip = 4;
 constexpr int kSettingsButtonSizeDip = 14;
+constexpr int kSettingsButtonBorderDip = 3;
 constexpr SkColor kSettingsButtonColor = gfx::kGoogleGrey500;
 
 // Phonetics audio button.
-constexpr int kPhoneticsAudioButtonMarginDip = 4;
+constexpr gfx::Insets kPhoneticsAudioButtonMarginInsets(0, 4, 0, 4);
 constexpr int kPhoneticsAudioButtonSizeDip = 14;
+constexpr int kPhoneticsAudioButtonBorderDip = 3;
 constexpr SkColor kPhoneticsAudioButtonColor = gfx::kGoogleBlue600;
 
 // ReportQueryView.
 constexpr char kGoogleSansFont[] = "Google Sans";
-constexpr int kReportQueryButtonMarginDip = 12;
+constexpr int kReportQueryButtonMarginDip = 16;
 constexpr int kReportQueryViewFontSize = 12;
 
 // Maximum height QuickAnswersView can expand to.
@@ -202,7 +205,8 @@ class ReportQueryView : public views::Button {
     SetBackground(views::CreateSolidBackground(gfx::kGoogleBlue050));
 
     auto* dogfood_icon = AddChildView(std::make_unique<views::ImageView>());
-    dogfood_icon->SetBorder(views::CreateEmptyBorder(kDogfoodIconInsets));
+    dogfood_icon->SetBorder(
+        views::CreateEmptyBorder(gfx::Insets(kDogfoodIconBorderDip)));
     dogfood_icon->SetImage(gfx::CreateVectorIcon(
         kDogfoodIcon, kDogfoodIconSizeDip, gfx::kGoogleBlue600));
 
@@ -479,6 +483,8 @@ void QuickAnswersView::AddSettingsButton() {
                             kSettingsButtonColor));
   settings_button_->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_ASH_QUICK_ANSWERS_SETTINGS_BUTTON_TOOLTIP_TEXT));
+  settings_button_->SetBorder(
+      views::CreateEmptyBorder(gfx::Insets(kSettingsButtonBorderDip)));
 }
 
 void QuickAnswersView::AddPhoneticsAudioButton(const GURL& phonetics_audio,
@@ -496,7 +502,7 @@ void QuickAnswersView::AddPhoneticsAudioButton(const GURL& phonetics_audio,
   auto* layout = phonetics_audio_view->SetLayoutManager(
       std::make_unique<views::FlexLayout>());
   layout->SetOrientation(views::LayoutOrientation::kVertical)
-      .SetInteriorMargin(gfx::Insets(kPhoneticsAudioButtonMarginDip))
+      .SetInteriorMargin(kPhoneticsAudioButtonMarginInsets)
       .SetCrossAxisAlignment(views::LayoutAlignment::kEnd);
   phonetics_audio_button_ =
       phonetics_audio_view->AddChildView(std::make_unique<views::ImageButton>(
@@ -509,6 +515,8 @@ void QuickAnswersView::AddPhoneticsAudioButton(const GURL& phonetics_audio,
                             kPhoneticsAudioButtonColor));
   phonetics_audio_button_->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_ASH_QUICK_ANSWERS_PHONETICS_BUTTON_TOOLTIP_TEXT));
+  phonetics_audio_button_->SetBorder(
+      views::CreateEmptyBorder(gfx::Insets(kPhoneticsAudioButtonBorderDip)));
 }
 
 void QuickAnswersView::AddAssistantIcon() {
