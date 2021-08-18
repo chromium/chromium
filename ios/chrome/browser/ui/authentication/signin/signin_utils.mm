@@ -25,7 +25,6 @@
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/user_signin_constants.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
-#import "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 #import "net/base/network_change_notifier.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
