@@ -42,7 +42,7 @@ constexpr char kTmpDir[] = "browser_data_migrator";
 // The base names of files and directories directly under the original profile
 // data directory that should not be copied. e.g. caches or files only needed by
 // ash.
-const char* const kNoCopyPaths[] = {kTmpDir, "Downloads", "Cache"};
+const char* const kNoCopyPaths[] = {kTmpDir, "Downloads", "Cache", "MyFiles"};
 // The base names of files and directories directory under the user data
 // directory.
 const char* const kCopyUserDataPaths[] = {"First Run"};
