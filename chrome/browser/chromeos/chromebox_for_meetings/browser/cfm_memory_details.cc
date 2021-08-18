@@ -35,12 +35,17 @@ CfmMemoryDetails::CfmMemoryDetails(
 CfmMemoryDetails::~CfmMemoryDetails() = default;
 
 void CfmMemoryDetails::OnDetailsAvailable() {
+  if (!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&CfmMemoryDetails::OnDetailsAvailable, this));
+    return;
+  }
+
   CollectProcessInformation();
-  // Now go do expensive memory lookups in a thread pool.
-  base::ThreadPool::PostTask(
+
+  // Now Post to UI thread for expensive extensions information lookups.
+  content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&CfmMemoryDetails::CollectExtensionsInformation, this));
 }
 
