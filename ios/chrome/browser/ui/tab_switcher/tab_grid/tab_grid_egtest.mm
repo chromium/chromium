@@ -111,7 +111,9 @@ id<GREYMatcher> SelectAllButton() {
             (testTabGridItemContextMenuAddToReadingList)] ||
       [self isRunningTest:@selector(testTabGridItemContextCloseTab)] ||
       [self
-          isRunningTest:@selector(testTabGridItemContextMenuAddToBookmarks)]) {
+          isRunningTest:@selector(testTabGridItemContextMenuAddToBookmarks)] ||
+      [self isRunningTest:@selector
+            (testTabGridItemContextMenuAddToBookmarkGreyed)]) {
     config.features_enabled.push_back(kTabGridContextMenu);
   }
 

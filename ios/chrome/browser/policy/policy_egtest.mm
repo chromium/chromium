@@ -21,7 +21,9 @@
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
+#include "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
+#include "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_constants.h"
 #import "ios/chrome/browser/ui/settings/elements/elements_constants.h"
@@ -408,8 +410,14 @@ void VerifyManagedSettingItem(NSString* accessibilityID,
 // Tests that the feed is disappearing when the policy is set to false while it
 // is visible.
 - (void)testDisableContentSuggestions {
-  NSString* feedTitle = l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_TITLE);
+  // Relaunch the app with Discover enabled, as it is required for this test.
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  config.features_enabled.push_back(kDiscoverFeedInNtp);
+  config.features_enabled.push_back(kRefactoredNTP);
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
+  NSString* feedTitle = l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_TITLE);
   [[[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(feedTitle),
                                           grey_sufficientlyVisible(), nil)]
