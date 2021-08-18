@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/containers/span.h"
 #include "base/json/json_reader.h"
@@ -172,8 +173,8 @@ std::unique_ptr<api::printing::SubmitJob::Params> ConstructSubmitJobParams(
   request.job.content_type = content_type;
   request.document_blob_uuid = std::move(document_blob_uuid);
 
-  base::ListValue args;
-  args.Set(0, request.ToValue());
+  std::vector<base::Value> args;
+  args.emplace_back(base::Value::FromUniquePtrValue(request.ToValue()));
   return api::printing::SubmitJob::Params::Create(args);
 }
 

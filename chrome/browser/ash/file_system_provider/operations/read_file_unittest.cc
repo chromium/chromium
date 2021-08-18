@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/containers/span.h"
@@ -164,15 +165,15 @@ TEST_F(FileSystemProviderOperationsReadFileTest, OnSuccess) {
   const bool has_more = false;
   const int execution_time = 0;
 
-  base::Value values_as_list(base::Value::Type::LIST);
-  values_as_list.Append(kFileSystemId);
-  values_as_list.Append(kRequestId);
-  values_as_list.Append(base::Value(base::as_bytes(base::make_span(data))));
-  values_as_list.Append(has_more);
-  values_as_list.Append(execution_time);
+  std::vector<base::Value> values_as_list;
+  values_as_list.emplace_back(kFileSystemId);
+  values_as_list.emplace_back(kRequestId);
+  values_as_list.emplace_back(
+      base::Value(base::as_bytes(base::make_span(data))));
+  values_as_list.emplace_back(has_more);
+  values_as_list.emplace_back(execution_time);
 
-  std::unique_ptr<Params> params(
-      Params::Create(base::Value::AsListValue(std::move(values_as_list))));
+  std::unique_ptr<Params> params(Params::Create(std::move(values_as_list)));
   ASSERT_TRUE(params.get());
   std::unique_ptr<RequestValue> request_value(
       RequestValue::CreateForReadFileSuccess(std::move(params)));

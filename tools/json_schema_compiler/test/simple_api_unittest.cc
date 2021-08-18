@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/json/json_reader.h"
 #include "base/logging.h"
@@ -66,44 +67,44 @@ TEST(JsonSchemaCompilerSimpleTest, IncrementIntegerResultCreate) {
 }
 
 TEST(JsonSchemaCompilerSimpleTest, IncrementIntegerParamsCreate) {
-  auto params_value = std::make_unique<base::ListValue>();
-  params_value->Append(6);
+  std::vector<base::Value> params_value;
+  params_value.emplace_back(6);
   std::unique_ptr<simple_api::IncrementInteger::Params> params(
-      simple_api::IncrementInteger::Params::Create(*params_value));
+      simple_api::IncrementInteger::Params::Create(params_value));
   EXPECT_TRUE(params.get());
   EXPECT_EQ(6, params->num);
 }
 
 TEST(JsonSchemaCompilerSimpleTest, NumberOfParams) {
   {
-    auto params_value = std::make_unique<base::ListValue>();
-    params_value->Append("text");
-    params_value->Append("text");
+    std::vector<base::Value> params_value;
+    params_value.emplace_back("text");
+    params_value.emplace_back("text");
     std::unique_ptr<simple_api::OptionalString::Params> params(
-        simple_api::OptionalString::Params::Create(*params_value));
+        simple_api::OptionalString::Params::Create(params_value));
     EXPECT_FALSE(params.get());
   }
   {
-    auto params_value = std::make_unique<base::ListValue>();
+    std::vector<base::Value> params_value;
     std::unique_ptr<simple_api::IncrementInteger::Params> params(
-        simple_api::IncrementInteger::Params::Create(*params_value));
+        simple_api::IncrementInteger::Params::Create(params_value));
     EXPECT_FALSE(params.get());
   }
 }
 
 TEST(JsonSchemaCompilerSimpleTest, OptionalStringParamsCreate) {
   {
-    auto params_value = std::make_unique<base::ListValue>();
+    std::vector<base::Value> params_value;
     std::unique_ptr<simple_api::OptionalString::Params> params(
-        simple_api::OptionalString::Params::Create(*params_value));
+        simple_api::OptionalString::Params::Create(params_value));
     EXPECT_TRUE(params.get());
     EXPECT_FALSE(params->str.get());
   }
   {
-    auto params_value = std::make_unique<base::ListValue>();
-    params_value->Append("asdf");
+    std::vector<base::Value> params_value;
+    params_value.emplace_back("asdf");
     std::unique_ptr<simple_api::OptionalString::Params> params(
-        simple_api::OptionalString::Params::Create(*params_value));
+        simple_api::OptionalString::Params::Create(params_value));
     EXPECT_TRUE(params.get());
     EXPECT_TRUE(params->str.get());
     EXPECT_EQ("asdf", *params->str);
@@ -112,10 +113,10 @@ TEST(JsonSchemaCompilerSimpleTest, OptionalStringParamsCreate) {
 
 TEST(JsonSchemaCompilerSimpleTest, OptionalParamsTakingNull) {
   {
-    auto params_value = std::make_unique<base::ListValue>();
-    params_value->Append(std::make_unique<base::Value>());
+    std::vector<base::Value> params_value;
+    params_value.emplace_back();
     std::unique_ptr<simple_api::OptionalString::Params> params(
-        simple_api::OptionalString::Params::Create(*params_value));
+        simple_api::OptionalString::Params::Create(params_value));
     EXPECT_TRUE(params.get());
     EXPECT_FALSE(params->str.get());
   }
@@ -123,21 +124,21 @@ TEST(JsonSchemaCompilerSimpleTest, OptionalParamsTakingNull) {
 
 TEST(JsonSchemaCompilerSimpleTest, OptionalStringParamsWrongType) {
   {
-    auto params_value = std::make_unique<base::ListValue>();
-    params_value->Append(5);
+    std::vector<base::Value> params_value;
+    params_value.emplace_back(5);
     std::unique_ptr<simple_api::OptionalString::Params> params(
-        simple_api::OptionalString::Params::Create(*params_value));
+        simple_api::OptionalString::Params::Create(params_value));
     EXPECT_FALSE(params.get());
   }
 }
 
 TEST(JsonSchemaCompilerSimpleTest, OptionalBeforeRequired) {
   {
-    auto params_value = std::make_unique<base::ListValue>();
-    params_value->Append(std::make_unique<base::Value>());
-    params_value->Append("asdf");
+    std::vector<base::Value> params_value;
+    params_value.emplace_back();
+    params_value.emplace_back("asdf");
     std::unique_ptr<simple_api::OptionalBeforeRequired::Params> params(
-        simple_api::OptionalBeforeRequired::Params::Create(*params_value));
+        simple_api::OptionalBeforeRequired::Params::Create(params_value));
     EXPECT_TRUE(params.get());
     EXPECT_FALSE(params->first.get());
     EXPECT_EQ("asdf", params->second);

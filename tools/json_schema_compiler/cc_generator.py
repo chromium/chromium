@@ -854,23 +854,11 @@ class _Generator(object):
 
   def _GenerateFunctionParamsCreate(self, function):
     """Generate function to create an instance of Params. The generated
-    function takes a base::Value::ConstListView of arguments. A deprecated
-    function that takes a base::ListValue is also provided.
+    function takes a base::Value::ConstListView of arguments.
 
     E.g for function "Bar", generate Bar::Params::Create()
     """
     c = Code()
-
-    # Temporary wrapper for base::ListValue
-    # TODO(crbug.com/1187001): Remove once all callers have been converted over.
-    (c.Append('// static')
-      .Sblock('std::unique_ptr<Params> Params::Create(%s) {' %
-                  self._GenerateParams(['const base::ListValue& args']))
-      .Append('return Params::Create(%s);' %
-                  self._GenerateArgs(['args.GetList()']))
-      .Eblock('}')
-      .Append()
-    )
 
     (c.Append('// static')
       .Sblock('std::unique_ptr<Params> Params::Create(%s) {' %

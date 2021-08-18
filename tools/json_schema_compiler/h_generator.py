@@ -344,10 +344,6 @@ class _Generator(object):
       .Append('static std::unique_ptr<Params> Create(%s);' %
                   self._GenerateParams(
                       ('const base::Value::ConstListView& args',)))
-      .Append()
-      .Append('// Deprecated')
-      .Append('static std::unique_ptr<Params> Create(%s);' %
-                  self._GenerateParams(('const base::ListValue& args',)))
       .Append('Params(const Params&) = delete;')
       .Append('Params& operator=(const Params&) = delete;')
       .Append('~Params();')
