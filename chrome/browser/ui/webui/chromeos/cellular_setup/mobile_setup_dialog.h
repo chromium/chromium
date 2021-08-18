@@ -15,8 +15,6 @@ class NetworkState;
 
 namespace cellular_setup {
 
-// Dialog used for cellular activation flow when the
-// kUpdatedCellularActivationUi flag is disabled.
 // DEPRECATED: Being replaced by new UI; see https://crbug.com/778021.
 class MobileSetupDialog : public SystemWebDialogDelegate {
  protected:

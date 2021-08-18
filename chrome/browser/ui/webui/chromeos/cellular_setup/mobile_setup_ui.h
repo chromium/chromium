@@ -12,10 +12,7 @@ namespace chromeos {
 
 namespace cellular_setup {
 
-// A custom WebUI that defines datasource for mobile setup registration page
-// that is used in Chrome OS activate modem and perform plan subscription tasks.
-// This WebUI is being replaced and is only shown when the
-// kUpdatedCellularActivationUi flag is disabled; see go/cros-cellular-design.
+// DEPRECATED: Being replaced by new UI; see https://crbug.com/778021.
 class MobileSetupUI : public ui::WebDialogUI {
  public:
   explicit MobileSetupUI(content::WebUI* web_ui);
