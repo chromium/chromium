@@ -4713,6 +4713,20 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="CrossOriginSubframeWithoutEmbeddingControl">
+  <owner>clamy@chromium.org</owner>
+  <summary>
+    Recorded when a subframe is embedded in a cross-origin context without
+    having a CSP frame-ancestor header or an XFO header.
+  </summary>
+  <metric name="SubframeEmbedded">
+    <summary>
+      Mesaures the number of pages with subframes embedded in cross-origin
+      contexts without having a CSP frame-ancestor header or an XFO header.
+    </summary>
+  </metric>
+</event>
+
 <event name="DataReductionProxy" singular="True">
   <owner>robertogden@chromium.org</owner>
   <summary>
