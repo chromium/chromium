@@ -198,7 +198,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.AppNotificationStatus" enum="NotificationAppStatus"
-    expires_after="2020-11-15">
+    expires_after="never">
+<!-- expires-never: Indicates whether Chrome has notification permission. -->
+
+  <owner>dtrainor@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
     Records whether notifications are enabled for Chrome, as the Android app,
