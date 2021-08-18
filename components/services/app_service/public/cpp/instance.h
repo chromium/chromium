@@ -34,9 +34,9 @@ class Instance {
     // Create an InstanceKey for an app instance backed by a WebContents.
     static InstanceKey ForWebBasedApp(aura::Window* window);
 
-    // TODO(raymes): Replace this constructor with a factory function analogous
-    // to the above.
-    explicit InstanceKey(aura::Window* window);
+    // Create an InstanceKey for any non-web app type.
+    static InstanceKey ForWindowBasedApp(aura::Window* window);
+
     InstanceKey(const InstanceKey& instance_key) = default;
     InstanceKey(InstanceKey&& instance_key) = default;
     ~InstanceKey() = default;

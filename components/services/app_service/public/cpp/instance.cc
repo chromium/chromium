@@ -16,8 +16,12 @@ Instance::InstanceKey Instance::InstanceKey::ForWebBasedApp(
                      /*is_web_contents_backed=*/true);
 }
 
-Instance::InstanceKey::InstanceKey(aura::Window* window)
-    : InstanceKey(window, /*is_web_contents_backed=*/false) {}
+// static
+Instance::InstanceKey Instance::InstanceKey::ForWindowBasedApp(
+    aura::Window* window) {
+  return InstanceKey(window,
+                     /*is_web_contents_backed=*/false);
+}
 
 Instance::InstanceKey::InstanceKey(aura::Window* window,
                                    bool is_web_contents_backed)

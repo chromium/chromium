@@ -21,8 +21,9 @@ class InstanceRegistryTest : public testing::Test,
       aura::Window* window,
       apps::InstanceState state = apps::InstanceState::kUnknown,
       base::Time time = base::Time()) {
-    return MakeInstance(app_id, apps::Instance::InstanceKey(window), state,
-                        time);
+    return MakeInstance(app_id,
+                        apps::Instance::InstanceKey::ForWindowBasedApp(window),
+                        state, time);
   }
 
   static std::unique_ptr<apps::Instance> MakeInstance(
@@ -38,7 +39,7 @@ class InstanceRegistryTest : public testing::Test,
 
   static apps::Instance::InstanceKey MakeInstanceKeyNonWebApp(
       aura::Window* window) {
-    return apps::Instance::InstanceKey(window);
+    return apps::Instance::InstanceKey::ForWindowBasedApp(window);
   }
 
   static apps::Instance::InstanceKey MakeInstanceKeyWebApp(
@@ -55,7 +56,8 @@ class InstanceRegistryTest : public testing::Test,
 
   apps::InstanceState GetState(apps::InstanceRegistry& instance_registry,
                                aura::Window* window) {
-    return instance_registry.GetState(apps::Instance::InstanceKey(window));
+    return instance_registry.GetState(
+        apps::Instance::InstanceKey::ForWindowBasedApp(window));
   }
 
   // apps::InstanceRegistry::Observer overrides.
@@ -122,7 +124,7 @@ class InstanceRecursiveObserver : public apps::InstanceRegistry::Observer {
         });
 
     EXPECT_TRUE(instance_registry_->ForOneInstance(
-        apps::Instance::InstanceKey(outer.Window()),
+        apps::Instance::InstanceKey::ForWindowBasedApp(outer.Window()),
         [&outer](const apps::InstanceUpdate& inner) {
           ExpectEq(outer, inner);
         }));
@@ -252,7 +254,7 @@ TEST_F(InstanceRegistryTest, ForEachInstance) {
 
   bool found_window4 = false;
   EXPECT_TRUE(instance_registry.ForOneInstance(
-      apps::Instance::InstanceKey(&window4),
+      MakeInstanceKeyNonWebApp(&window4),
       [&found_window4](const apps::InstanceUpdate& update) {
         found_window4 = true;
         EXPECT_EQ("c", update.AppId());
@@ -263,7 +265,7 @@ TEST_F(InstanceRegistryTest, ForEachInstance) {
   aura::Window window5(nullptr);
   window5.Init(ui::LAYER_NOT_DRAWN);
   EXPECT_FALSE(instance_registry.ForOneInstance(
-      apps::Instance::InstanceKey(&window5),
+      MakeInstanceKeyNonWebApp(&window5),
       [&found_window5](const apps::InstanceUpdate& update) {
         found_window5 = true;
       }));
@@ -396,7 +398,7 @@ TEST_F(InstanceRegistryTest, WholeProcessForOneWindow) {
 
   bool found_window = false;
   EXPECT_FALSE(instance_registry.ForOneInstance(
-      apps::Instance::InstanceKey(&window),
+      MakeInstanceKeyNonWebApp(&window),
       [&found_window](const apps::InstanceUpdate& update) {
         found_window = true;
       }));
@@ -412,7 +414,7 @@ TEST_F(InstanceRegistryTest, WholeProcessForOneWindow) {
 
   found_window = false;
   EXPECT_TRUE(instance_registry.ForOneInstance(
-      apps::Instance::InstanceKey(&window),
+      MakeInstanceKeyNonWebApp(&window),
       [&found_window](const apps::InstanceUpdate& update) {
         found_window = true;
       }));
@@ -500,7 +502,7 @@ TEST_F(InstanceRegistryTest, Recursive) {
 
   bool found_window = false;
   EXPECT_FALSE(instance_registry.ForOneInstance(
-      apps::Instance::InstanceKey(&window2),
+      MakeInstanceKeyNonWebApp(&window2),
       [&found_window](const apps::InstanceUpdate& update) {
         found_window = true;
       }));
@@ -508,7 +510,7 @@ TEST_F(InstanceRegistryTest, Recursive) {
 
   found_window = false;
   EXPECT_FALSE(instance_registry.ForOneInstance(
-      apps::Instance::InstanceKey(&window4),
+      MakeInstanceKeyNonWebApp(&window4),
       [&found_window](const apps::InstanceUpdate& update) {
         found_window = true;
       }));
@@ -516,7 +518,7 @@ TEST_F(InstanceRegistryTest, Recursive) {
 
   found_window = false;
   EXPECT_FALSE(instance_registry.ForOneInstance(
-      apps::Instance::InstanceKey(&window3),
+      MakeInstanceKeyNonWebApp(&window3),
       [&found_window](const apps::InstanceUpdate& update) {
         found_window = true;
       }));
@@ -524,7 +526,7 @@ TEST_F(InstanceRegistryTest, Recursive) {
 
   found_window = false;
   EXPECT_FALSE(instance_registry.ForOneInstance(
-      apps::Instance::InstanceKey(&window1),
+      MakeInstanceKeyNonWebApp(&window1),
       [&found_window](const apps::InstanceUpdate& update) {
         found_window = true;
       }));
@@ -540,7 +542,7 @@ TEST_F(InstanceRegistryTest, Recursive) {
 
   found_window = false;
   EXPECT_TRUE(instance_registry.ForOneInstance(
-      apps::Instance::InstanceKey(&window2),
+      MakeInstanceKeyNonWebApp(&window2),
       [&found_window](const apps::InstanceUpdate& update) {
         found_window = true;
       }));

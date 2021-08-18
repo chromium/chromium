@@ -201,7 +201,8 @@ class FamilyUserAppMetricsTest
     window_ = std::make_unique<aura::Window>(nullptr);
     window_->Init(ui::LAYER_NOT_DRAWN);
     instances.push_back(std::make_unique<apps::Instance>(
-        /*app_id=*/"a", apps::Instance::InstanceKey(window_.get())));
+        /*app_id=*/"a",
+        apps::Instance::InstanceKey::ForWindowBasedApp(window_.get())));
     instance_registry.OnInstances(instances);
   }
 

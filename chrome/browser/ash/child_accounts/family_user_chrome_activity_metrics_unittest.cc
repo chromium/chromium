@@ -132,9 +132,9 @@ class FamilyUserChromeActivityMetricsTest
   void OnNewDay() { family_user_chrome_activity_metrics_->OnNewDay(); }
 
   void PushChromeAppInstance(aura::Window* window, apps::InstanceState state) {
-    std::unique_ptr<apps::Instance> instance =
-        std::make_unique<apps::Instance>(app_time::GetChromeAppId().app_id(),
-                                         apps::Instance::InstanceKey(window));
+    std::unique_ptr<apps::Instance> instance = std::make_unique<apps::Instance>(
+        app_time::GetChromeAppId().app_id(),
+        apps::Instance::InstanceKey::ForWindowBasedApp(window));
     instance->UpdateState(state, base::Time::Now());
 
     std::vector<std::unique_ptr<apps::Instance>> deltas;

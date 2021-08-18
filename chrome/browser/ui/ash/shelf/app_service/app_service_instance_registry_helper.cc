@@ -236,7 +236,8 @@ void AppServiceInstanceRegistryHelper::OnSetShelfIDForBrowserWindowContents(
   // delays the shelf id setting for windows. So check the top window's visible
   // and activated status when we have the shelf id.
   window = window->GetToplevelWindow();
-  const std::string top_app_id = GetAppId(apps::Instance::InstanceKey(window));
+  const std::string top_app_id =
+      GetAppId(apps::Instance::InstanceKey::ForWindowBasedApp(window));
   if (!top_app_id.empty())
     app_id = top_app_id;
   OnWindowVisibilityChanged(ash::ShelfID(app_id), window, window->IsVisible());
@@ -277,7 +278,7 @@ void AppServiceInstanceRegistryHelper::OnWindowVisibilityChanged(
     return;
   }
 
-  apps::Instance::InstanceKey instance_key(window);
+  auto instance_key = apps::Instance::InstanceKey::ForWindowBasedApp(window);
   apps::InstanceState state = CalculateVisibilityState(instance_key, visible);
   OnInstances(instance_key, extension_misc::kChromeAppId, std::string(), state);
 
@@ -322,7 +323,7 @@ void AppServiceInstanceRegistryHelper::SetWindowActivated(
     return;
   }
 
-  apps::Instance::InstanceKey instance_key(window);
+  auto instance_key = apps::Instance::InstanceKey::ForWindowBasedApp(window);
   apps::InstanceState state = CalculateActivatedState(instance_key, active);
   OnInstances(instance_key, extension_misc::kChromeAppId, std::string(), state);
 
@@ -445,7 +446,7 @@ bool AppServiceInstanceRegistryHelper::IsOpenedInBrowser(
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
     bool found = false;
     proxy->InstanceRegistry().ForOneInstance(
-        apps::Instance::InstanceKey(window),
+        apps::Instance::InstanceKey::ForWindowBasedApp(window),
         [&browser_context, &found](const apps::InstanceUpdate& update) {
           browser_context = update.BrowserContext();
           found = true;

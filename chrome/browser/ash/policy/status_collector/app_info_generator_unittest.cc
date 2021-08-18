@@ -147,7 +147,8 @@ class AppInfoGeneratorTest : public ::testing::Test {
       window_ = std::make_unique<aura::Window>(nullptr);
       window_->Init(ui::LAYER_NOT_DRAWN);
       instance_ = std::make_unique<apps::Instance>(
-          app_id, apps::Instance::InstanceKey(window_.get()));
+          app_id,
+          apps::Instance::InstanceKey::ForWindowBasedApp(window_.get()));
     }
 
     apps::Instance* instance() const { return instance_.get(); }
