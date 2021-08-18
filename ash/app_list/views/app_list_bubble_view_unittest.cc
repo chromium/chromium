@@ -239,12 +239,14 @@ TEST_F(AppListBubbleViewTest, BackActionsClearSearch) {
 
   PressAndReleaseKey(ui::VKEY_BROWSER_BACK);
   EXPECT_TRUE(search_box_view->search_box()->GetText().empty());
+  EXPECT_TRUE(search_box_view->is_search_box_active());
 
   PressAndReleaseKey(ui::VKEY_A);
   EXPECT_FALSE(search_box_view->search_box()->GetText().empty());
 
   PressAndReleaseKey(ui::VKEY_ESCAPE);
   EXPECT_TRUE(search_box_view->search_box()->GetText().empty());
+  EXPECT_TRUE(search_box_view->is_search_box_active());
 }
 
 TEST_F(AppListBubbleViewTest, BackActionsCloseAppList) {

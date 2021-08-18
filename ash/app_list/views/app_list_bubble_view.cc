@@ -85,7 +85,7 @@ AppListBubbleView::~AppListBubbleView() = default;
 
 bool AppListBubbleView::Back() {
   if (search_box_view_->HasSearch()) {
-    search_box_view_->ClearSearchAndDeactivateSearchBox();
+    search_box_view_->ClearSearch();
     return true;
   }
   // TODO(https://crbug.com/1220808): Handle back action for open folders in
