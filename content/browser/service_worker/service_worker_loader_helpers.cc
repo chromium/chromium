@@ -10,6 +10,7 @@
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/browser/loader/browser_initiated_resource_request.h"
 #include "content/browser/service_worker/service_worker_consts.h"
+#include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
@@ -25,6 +26,73 @@
 namespace content {
 
 namespace service_worker_loader_helpers {
+
+namespace {
+
+bool IsPathRestrictionSatisfiedInternal(
+    const GURL& scope,
+    const GURL& script_url,
+    bool service_worker_allowed_header_supported,
+    const std::string* service_worker_allowed_header_value,
+    std::string* error_message) {
+  DCHECK(scope.is_valid());
+  DCHECK(!scope.has_ref());
+  DCHECK(script_url.is_valid());
+  DCHECK(!script_url.has_ref());
+  DCHECK(error_message);
+
+  if (ServiceWorkerUtils::ContainsDisallowedCharacter(scope, script_url,
+                                                      error_message)) {
+    return false;
+  }
+
+  std::string max_scope_string;
+  if (service_worker_allowed_header_value &&
+      service_worker_allowed_header_supported) {
+    GURL max_scope = script_url.Resolve(*service_worker_allowed_header_value);
+    if (!max_scope.is_valid()) {
+      *error_message = "An invalid Service-Worker-Allowed header value ('";
+      error_message->append(*service_worker_allowed_header_value);
+      error_message->append("') was received when fetching the script.");
+      return false;
+    }
+
+    if (max_scope.GetOrigin() != script_url.GetOrigin()) {
+      *error_message = "A cross-origin Service-Worker-Allowed header value ('";
+      error_message->append(*service_worker_allowed_header_value);
+      error_message->append("') was received when fetching the script.");
+      return false;
+    }
+    max_scope_string = max_scope.path();
+  } else {
+    max_scope_string = script_url.GetWithoutFilename().path();
+  }
+
+  std::string scope_string = scope.path();
+  if (!base::StartsWith(scope_string, max_scope_string,
+                        base::CompareCase::SENSITIVE)) {
+    *error_message = "The path of the provided scope ('";
+    error_message->append(scope_string);
+    error_message->append("') is not under the max scope allowed (");
+    if (service_worker_allowed_header_value &&
+        service_worker_allowed_header_supported)
+      error_message->append("set by Service-Worker-Allowed: ");
+    error_message->append("'");
+    error_message->append(max_scope_string);
+    if (service_worker_allowed_header_supported) {
+      error_message->append(
+          "'). Adjust the scope, move the Service Worker script, or use the "
+          "Service-Worker-Allowed HTTP header to allow the scope.");
+    } else {
+      error_message->append(
+          "'). Adjust the scope or move the Service Worker script.");
+    }
+    return false;
+  }
+  return true;
+}
+
+}  // namespace
 
 bool CheckResponseHead(
     const network::mojom::URLResponseHead& response_head,
@@ -234,6 +302,23 @@ network::ResourceRequest CreateRequestForServiceWorkerScript(
   }
 
   return request;
+}
+
+bool IsPathRestrictionSatisfied(
+    const GURL& scope,
+    const GURL& script_url,
+    const std::string* service_worker_allowed_header_value,
+    std::string* error_message) {
+  return IsPathRestrictionSatisfiedInternal(scope, script_url, true,
+                                            service_worker_allowed_header_value,
+                                            error_message);
+}
+
+bool IsPathRestrictionSatisfiedWithoutHeader(const GURL& scope,
+                                             const GURL& script_url,
+                                             std::string* error_message) {
+  return IsPathRestrictionSatisfiedInternal(scope, script_url, false, nullptr,
+                                            error_message);
 }
 
 }  // namespace service_worker_loader_helpers

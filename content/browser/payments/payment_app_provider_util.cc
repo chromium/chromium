@@ -4,6 +4,7 @@
 
 #include "content/public/browser/payment_app_provider_util.h"
 
+#include "content/browser/service_worker/service_worker_loader_helpers.h"
 #include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -27,7 +28,7 @@ bool PaymentAppProviderUtil::IsValidInstallablePaymentApp(
 
   // Scope will be checked against service worker js url when registering, but
   // we check it here earlier to avoid presenting unusable payment handlers.
-  if (!ServiceWorkerUtils::IsPathRestrictionSatisfiedWithoutHeader(
+  if (!service_worker_loader_helpers::IsPathRestrictionSatisfiedWithoutHeader(
           sw_scope, sw_js_url, error_message)) {
     return false;
   }
