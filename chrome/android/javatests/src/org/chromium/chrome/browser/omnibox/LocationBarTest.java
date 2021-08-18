@@ -593,8 +593,12 @@ public class LocationBarTest {
 
     @Test
     @MediumTest
+    @CommandLineFlags.Add({"enable-features=" + ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR,
+            "disable-features=" + ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR + ","
+                    + ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
     @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
-    public void testFocusLogic_buttonVisibilityTablet() {
+    public void
+    testFocusLogic_buttonVisibilityTablet() {
         startActivityNormally();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
         String url = mActivityTestRule.getEmbeddedTestServerRule().getServer().getURLWithHostName(
