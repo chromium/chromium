@@ -551,8 +551,16 @@ IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest,
   EXPECT_EQ(u"onresize", title_watcher2.WaitAndGetTitle());
 }
 
+// TODO(https://crbug.com/1234323): Very flaky on Wayland builder.
+#if defined(OS_LINUX)
+#define MAYBE_WindowControlsOverlayDraggableRegions \
+  DISABLED_WindowControlsOverlayDraggableRegions
+#else
+#define MAYBE_WindowControlsOverlayDraggableRegions \
+  WindowControlsOverlayDraggableRegions
+#endif  // defined(OS_LINUX)
 IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest,
-                       WindowControlsOverlayDraggableRegions) {
+                       MAYBE_WindowControlsOverlayDraggableRegions) {
   if (!InstallAndLaunchWebAppWithWindowControlsOverlay())
     return;
 
