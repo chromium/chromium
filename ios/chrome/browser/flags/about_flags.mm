@@ -17,6 +17,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
+#import "base/mac/foundation_util.h"
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
@@ -801,25 +802,10 @@ flags_ui::FlagsState& GetGlobalFlagsState() {
                                                               nullptr);
   return *flags_state;
 }
-}  // namespace
-
-// Add all switches from experimental flags to |command_line|.
-void AppendSwitchesFromExperimentalSettings(base::CommandLine* command_line) {
+// Creates the experimental test policies map, used by AsyncPolicyLoader and
+// PolicyLoaderIOS to locally enable policies.
+NSMutableDictionary* CreateExperimentalTestingPolicies() {
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-
-  // Set the UA flag if UseMobileSafariUA is enabled.
-  if ([defaults boolForKey:@"UseMobileSafariUA"]) {
-    // Safari uses "Vesion/", followed by the OS version excluding bugfix, where
-    // Chrome puts its product token.
-    int32_t major = 0;
-    int32_t minor = 0;
-    int32_t bugfix = 0;
-    base::SysInfo::OperatingSystemVersionNumbers(&major, &minor, &bugfix);
-    std::string product = base::StringPrintf("Version/%d.%d", major, minor);
-
-    command_line->AppendSwitchASCII(switches::kUserAgent,
-                                    web::BuildMobileUserAgent(product));
-  }
 
   // Shared variables for all enterprise experimental flags.
   NSMutableDictionary* testing_policies = [[NSMutableDictionary alloc] init];
@@ -873,11 +859,9 @@ void AppendSwitchesFromExperimentalSettings(base::CommandLine* command_line) {
   }
 
   if ([defaults boolForKey:@"EnableSyncDisabledPolicy"]) {
-    [testing_policies addEntriesFromDictionary:@{
-      base::SysUTF8ToNSString(policy::key::kSyncDisabled) : @YES
-    }];
     NSString* sync_policy_key =
         base::SysUTF8ToNSString(policy::key::kSyncDisabled);
+    [testing_policies addEntriesFromDictionary:@{sync_policy_key : @YES}];
     [allowed_experimental_policies addObject:sync_policy_key];
   }
 
@@ -927,17 +911,6 @@ void AppendSwitchesFromExperimentalSettings(base::CommandLine* command_line) {
     }];
   }
 
-  // If a CBCM enrollment token is provided, force Chrome Browser Cloud
-  // Management to enabled and add the token to the list of policies.
-  NSString* token_key =
-      base::SysUTF8ToNSString(policy::key::kCloudManagementEnrollmentToken);
-  NSString* token = [defaults stringForKey:token_key];
-
-  if ([token length] > 0) {
-    command_line->AppendSwitch(switches::kEnableChromeBrowserCloudManagement);
-    [testing_policies setValue:token forKey:token_key];
-  }
-
   NSString* restriction_pattern =
       [defaults stringForKey:@"RestrictAccountsToPatterns"];
   if ([restriction_pattern length] > 0) {
@@ -955,6 +928,42 @@ void AppendSwitchesFromExperimentalSettings(base::CommandLine* command_line) {
     [testing_policies setValue:allowed_experimental_policies
                         forKey:base::SysUTF8ToNSString(
                                    policy::key::kEnableExperimentalPolicies)];
+  }
+
+  return testing_policies;
+}
+}  // namespace
+
+// Add all switches from experimental flags to |command_line|.
+void AppendSwitchesFromExperimentalSettings(base::CommandLine* command_line) {
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+
+  // Set the UA flag if UseMobileSafariUA is enabled.
+  if ([defaults boolForKey:@"UseMobileSafariUA"]) {
+    // Safari uses "Vesion/", followed by the OS version excluding bugfix, where
+    // Chrome puts its product token.
+    int32_t major = 0;
+    int32_t minor = 0;
+    int32_t bugfix = 0;
+    base::SysInfo::OperatingSystemVersionNumbers(&major, &minor, &bugfix);
+    std::string product = base::StringPrintf("Version/%d.%d", major, minor);
+
+    command_line->AppendSwitchASCII(switches::kUserAgent,
+                                    web::BuildMobileUserAgent(product));
+  }
+
+  // Shared variables for all enterprise experimental flags.
+  NSMutableDictionary* testing_policies = CreateExperimentalTestingPolicies();
+
+  // If a CBCM enrollment token is provided, force Chrome Browser Cloud
+  // Management to enabled and add the token to the list of policies.
+  NSString* token_key =
+      base::SysUTF8ToNSString(policy::key::kCloudManagementEnrollmentToken);
+  NSString* token = [defaults stringForKey:token_key];
+
+  if ([token length] > 0) {
+    command_line->AppendSwitch(switches::kEnableChromeBrowserCloudManagement);
+    [testing_policies setValue:token forKey:token_key];
   }
 
   // If some policies were set, commit them to the app's registration defaults.
@@ -1009,6 +1018,52 @@ void AppendSwitchesFromExperimentalSettings(base::CommandLine* command_line) {
 
   ios::GetChromeBrowserProvider().AppendSwitchesFromExperimentalSettings(
       defaults, command_line);
+}
+
+void MonitorExperimentalSettingsChanges() {
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+
+  // Startup values for settings to be observed.
+  __block bool disabledSync = [defaults boolForKey:@"EnableSyncDisabledPolicy"];
+  __block bool samplePolicies = [defaults boolForKey:@"EnableSamplePolicies"];
+  __block int incognitoAvailability =
+      [defaults integerForKey:@"IncognitoModeAvailability"];
+  __block NSString* restrictionPattern =
+      [defaults stringForKey:@"RestrictAccountsToPatterns"];
+
+  auto monitor = ^(NSNotification* notification) {
+    NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+
+    // Check if observed settings have changed. Since source and destination
+    // are both user defaults, this is required to avoid cycling back here.
+    bool newDisabledSync = [defaults boolForKey:@"EnableSyncDisabledPolicy"];
+    bool newSamplePolicies = [defaults boolForKey:@"EnableSamplePolicies"];
+    int newIncognitoAvailability =
+        [defaults integerForKey:@"IncognitoModeAvailability"];
+    NSString* newRestrictionPattern =
+        [defaults stringForKey:@"RestrictAccountsToPatterns"];
+    if (newDisabledSync != disabledSync ||
+        newSamplePolicies != samplePolicies ||
+        newIncognitoAvailability != incognitoAvailability ||
+        newRestrictionPattern != restrictionPattern) {
+      disabledSync = newDisabledSync;
+      samplePolicies = newSamplePolicies;
+      incognitoAvailability = newIncognitoAvailability;
+      restrictionPattern = newRestrictionPattern;
+
+      // Publish update.
+      NSMutableDictionary* testing_policies =
+          CreateExperimentalTestingPolicies();
+      [defaults setValue:testing_policies
+                  forKey:kPolicyLoaderIOSConfigurationKey];
+    }
+  };
+
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  [center addObserverForName:NSUserDefaultsDidChangeNotification
+                      object:nil
+                       queue:[NSOperationQueue mainQueue]
+                  usingBlock:monitor];
 }
 
 void ConvertFlagsToSwitches(flags_ui::FlagsStorage* flags_storage,

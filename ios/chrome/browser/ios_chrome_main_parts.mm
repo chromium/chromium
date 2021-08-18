@@ -338,6 +338,9 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
   CHECK(base::PathService::Get(ios::DIR_USER_DATA, &user_data_path));
   safe_browsing_service->Initialize(last_used_browser_state->GetPrefs(),
                                     user_data_path);
+
+  // Set monitoring for some experimental flags.
+  MonitorExperimentalSettingsChanges();
 }
 
 void IOSChromeMainParts::PostMainMessageLoopRun() {
