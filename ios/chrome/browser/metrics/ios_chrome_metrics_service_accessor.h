@@ -12,7 +12,7 @@
 #include "base/macros.h"
 #include "components/metrics/metrics_service_accessor.h"
 
-class IOSChromeDataReductionProxySettings;
+class OptimizationGuideService;
 
 namespace {
 class CrashesDOMHandler;
@@ -32,7 +32,7 @@ class IOSChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class IOSChromeMetricsServicesManagerClient;
 
   friend class CrashesDOMHandler;
-  friend class IOSChromeDataReductionProxySettings;
+  friend class OptimizationGuideService;
   friend class IOSChromeMainParts;
 
   FRIEND_TEST_ALL_PREFIXES(IOSChromeMetricsServiceAccessorTest,

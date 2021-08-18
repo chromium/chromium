@@ -37,6 +37,7 @@ class OptimizationGuideServiceFactory : public BrowserStateKeyedServiceFactory {
   // BrowserStateKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
+  bool ServiceIsCreatedWithBrowserState() const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_OPTIMIZATION_GUIDE_OPTIMIZATION_GUIDE_SERVICE_FACTORY_H_

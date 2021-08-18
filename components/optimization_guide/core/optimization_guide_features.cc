@@ -25,8 +25,14 @@ namespace features {
 
 // Enables the syncing of the Optimization Hints component, which provides
 // hints for what optimizations can be applied on a page load.
-const base::Feature kOptimizationHints{"OptimizationHints",
-                                       base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kOptimizationHints {
+  "OptimizationHints",
+#if defined(OS_IOS)
+      base::FEATURE_DISABLED_BY_DEFAULT
+#else   // !defined(OS_IOS)
+      base::FEATURE_ENABLED_BY_DEFAULT
+#endif  // defined(OS_IOS)
+};
 
 // Feature flag that contains a feature param that specifies the field trials
 // that are allowed to be sent up to the Optimization Guide Server.

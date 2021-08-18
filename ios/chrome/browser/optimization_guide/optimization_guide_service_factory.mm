@@ -4,14 +4,22 @@
 
 #include "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
 
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/main/browser_list_factory.h"
-#include "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
+#import "base/feature_list.h"
+#import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "components/optimization_guide/core/optimization_guide_features.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/main/browser_list_factory.h"
+#import "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 // static
 OptimizationGuideService* OptimizationGuideServiceFactory::GetForBrowserState(
     ChromeBrowserState* context) {
+  if (!optimization_guide::features::IsOptimizationHintsEnabled())
+    return nullptr;
   return static_cast<OptimizationGuideService*>(
       GetInstance()->GetServiceForBrowserState(context, /*create=*/true));
 }
@@ -35,5 +43,9 @@ OptimizationGuideServiceFactory::~OptimizationGuideServiceFactory() = default;
 std::unique_ptr<KeyedService>
 OptimizationGuideServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  return std::make_unique<OptimizationGuideService>();
+  return std::make_unique<OptimizationGuideService>(context);
+}
+
+bool OptimizationGuideServiceFactory::ServiceIsCreatedWithBrowserState() const {
+  return optimization_guide::features::IsOptimizationHintsEnabled();
 }
