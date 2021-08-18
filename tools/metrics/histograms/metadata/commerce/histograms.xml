@@ -33,6 +33,18 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
       summary="Tabs between 1 and 90 days since last usage."/>
 </variants>
 
+<histogram name="Commerce.Carts.ExtractionExecutionTime" units="ms"
+    expires_after="2021-12-30">
+  <owner>wychen@chromium.org</owner>
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Logged when cart content extraction is executed for ChromeCart. This
+    histogram records the elapsed time between the start and the end of the
+    extraction JavaScript request execution.
+  </summary>
+</histogram>
+
 <histogram name="Commerce.PriceDrop.NotificationChannelBlocked" enum="Boolean"
     expires_after="M97">
   <owner>zhiyuancai@chromium.org</owner>
