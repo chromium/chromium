@@ -653,9 +653,9 @@ std::string AccessibilityTreeFormatterAuraLinux::ProcessTreeForOutput(
   const base::ListValue* states_value;
   if (node.GetList("states", &states_value)) {
     for (const auto& entry : states_value->GetList()) {
-      std::string state_value;
-      if (entry.GetAsString(&state_value))
-        WriteAttribute(false, state_value, &line);
+      const std::string* state_value = entry.GetIfString();
+      if (state_value)
+        WriteAttribute(false, *state_value, &line);
     }
   }
 
@@ -663,9 +663,9 @@ std::string AccessibilityTreeFormatterAuraLinux::ProcessTreeForOutput(
   std::vector<std::string> action_names;
   if (node.GetList("actions", &action_names_list)) {
     for (const auto& entry : action_names_list->GetList()) {
-      std::string action_name;
-      if (entry.GetAsString(&action_name))
-        action_names.push_back(action_name);
+      const std::string* action_name = entry.GetIfString();
+      if (action_name)
+        action_names.push_back(*action_name);
     }
     std::string actions_str = base::JoinString(action_names, ", ");
     if (actions_str.size()) {
@@ -678,12 +678,13 @@ std::string AccessibilityTreeFormatterAuraLinux::ProcessTreeForOutput(
   const base::ListValue* relations_value;
   if (node.GetList("relations", &relations_value)) {
     for (const auto& entry : relations_value->GetList()) {
-      std::string relation_value;
-      if (entry.GetAsString(&relation_value)) {
+      const std::string* relation_value = entry.GetIfString();
+      if (relation_value) {
         // By default, exclude embedded-by because that should appear on every
         // top-level document object. The other relation types are less common
         // and thus almost always of interest when testing.
-        WriteAttribute(relation_value != "embedded-by", relation_value, &line);
+        WriteAttribute(*relation_value != "embedded-by", *relation_value,
+                       &line);
       }
     }
   }
@@ -704,36 +705,36 @@ std::string AccessibilityTreeFormatterAuraLinux::ProcessTreeForOutput(
   const base::ListValue* value_info;
   if (node.GetList("value", &value_info)) {
     for (const auto& entry : value_info->GetList()) {
-      std::string value_property;
-      if (entry.GetAsString(&value_property))
-        WriteAttribute(true, value_property, &line);
+      const std::string* value_property = entry.GetIfString();
+      if (value_property)
+        WriteAttribute(true, *value_property, &line);
     }
   }
 
   const base::ListValue* table_info;
   if (node.GetList("table", &table_info)) {
     for (const auto& entry : table_info->GetList()) {
-      std::string table_property;
-      if (entry.GetAsString(&table_property))
-        WriteAttribute(true, table_property, &line);
+      const std::string* table_property = entry.GetIfString();
+      if (table_property)
+        WriteAttribute(true, *table_property, &line);
     }
   }
 
   const base::ListValue* cell_info;
   if (node.GetList("cell", &cell_info)) {
     for (const auto& entry : cell_info->GetList()) {
-      std::string cell_property;
-      if (entry.GetAsString(&cell_property))
-        WriteAttribute(true, cell_property, &line);
+      const std::string* cell_property = entry.GetIfString();
+      if (cell_property)
+        WriteAttribute(true, *cell_property, &line);
     }
   }
 
   const base::ListValue* text_info;
   if (node.GetList("text", &text_info)) {
     for (const auto& entry : text_info->GetList()) {
-      std::string cell_property;
-      if (entry.GetAsString(&cell_property))
-        WriteAttribute(false, cell_property, &line);
+      const std::string* text_property = entry.GetIfString();
+      if (text_property)
+        WriteAttribute(false, *text_property, &line);
     }
   }
 

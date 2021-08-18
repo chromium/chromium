@@ -783,8 +783,9 @@ std::string AccessibilityTreeFormatterBlink::ProcessTreeForOutput(
 
     switch (value->type()) {
       case base::Value::Type::STRING: {
-        std::string string_value;
-        value->GetAsString(&string_value);
+        const std::string* string_value_ptr = value->GetIfString();
+        const std::string string_value =
+            string_value_ptr ? *string_value_ptr : std::string();
         WriteAttribute(
             false,
             base::StringPrintf("%s=%s", attribute_name, string_value.c_str()),
