@@ -120,7 +120,8 @@
     "channel": "stable",
     "contexts": ["webui"],
     "matches": [
-      "chrome://bookmarks/*"
+      "chrome://bookmarks/*",
+      "chrome://read-later.top-chrome/*"
     ]
   }],
   "bookmarks": [{

@@ -8,9 +8,11 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/scoped_observation.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/extensions/api/bookmark_manager_private/bookmark_manager_private_api.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel.h"
 #include "chrome/common/webui_url_constants.h"
@@ -40,6 +42,11 @@ class ReadLaterSidePanelWebView : public views::WebView,
     contents_wrapper_->SetHost(weak_factory_.GetWeakPtr());
     contents_wrapper_->ReloadWebContents();
     SetWebContents(contents_wrapper_->web_contents());
+
+    if (base::FeatureList::IsEnabled(features::kSidePanelDragAndDrop)) {
+      extensions::BookmarkManagerPrivateDragEventRouter::CreateForWebContents(
+          contents_wrapper_->web_contents());
+    }
 
     browser_->tab_strip_model()->AddObserver(this);
   }
