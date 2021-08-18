@@ -685,7 +685,7 @@
   {
     "name": "colr-v1-fonts",
     "owners": [ "drott", "layout-dev@chromium.org" ],
-    "expiry_milestone": 94
+    "expiry_milestone": 102
   },
   {
     "name": "commander",
