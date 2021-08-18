@@ -123,22 +123,13 @@ crbug.com/angleproject/4807 [ win angle-d3d11 passthrough ] conformance2/glsl3/s
 crbug.com/1081973 conformance/buffers/buffer-data-and-buffer-sub-data.html [ Failure ]
 crbug.com/1082533 [ mac intel ] conformance/textures/misc/texture-copying-and-deletion.html [ Failure ]
 crbug.com/angleproject/5038 conformance/extensions/ext-color-buffer-half-float.html [ Skip ]
-# TODO(crbug.com/1136231): Uncomment suppression for s3tc-and-rgtc.html below
-# under crbug.com/963205 once these two failures are fixed.
-# crbug.com/1136231 [ win ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
-# crbug.com/1136231 [ linux ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
-# The validating command decoder suppressions here will not be fixed;
-# uncomment the passthrough suppessions once the ANGLE bug is fixed.
-# TODO(crbug.com/angleproject/6245): uncomment and specialize s3tc-and-rgtc.html
-# suppression below for "mac nvidia-0xfe9" once ANGLE bug is fixed.
+crbug.com/1136231 [ win passthrough ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
+crbug.com/1136231 [ linux passthrough ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
+# The validating command decoder suppressions here will not be fixed.
 crbug.com/angleproject/6245 [ no-passthrough ] conformance/extensions/ext-texture-compression-bptc.html [ Failure ]
 crbug.com/angleproject/6245 [ no-passthrough ] conformance/extensions/ext-texture-compression-rgtc.html [ Failure ]
 crbug.com/angleproject/6245 [ no-passthrough ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
 crbug.com/angleproject/6245 [ no-passthrough ] conformance/extensions/webgl-compressed-texture-s3tc-srgb.html [ Failure ]
-crbug.com/angleproject/6245 [ passthrough ] conformance/extensions/ext-texture-compression-bptc.html [ Failure ]
-crbug.com/angleproject/6245 [ passthrough ] conformance/extensions/ext-texture-compression-rgtc.html [ Failure ]
-crbug.com/angleproject/6245 [ passthrough ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
-crbug.com/angleproject/6245 [ passthrough ] conformance/extensions/webgl-compressed-texture-s3tc-srgb.html [ Failure ]
 
 # This test uses H.264 and the ChromeOS and Fuchsia bots aren't compiled with
 # proprietary codecs.
@@ -372,7 +363,7 @@ crbug.com/1027776 [ mac nvidia-0xfe9 ] conformance2/rendering/framebuffer-textur
 crbug.com/1037650 [ mac nvidia-0xfe9 ] conformance2/textures/canvas_sub_rectangle/* [ RetryOnFailure ]
 crbug.com/1073538 [ mac nvidia-0xfe9 ] deqp/functional/gles3/shadermatrix/div_dynamic.html [ RetryOnFailure ]
 crbug.com/1086194 [ mac nvidia-0xfe9 ] conformance/textures/canvas_sub_rectangle/* [ RetryOnFailure ]
-# crbug.com/1136231 [ mac nvidia-0xfe9 ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
+crbug.com/1136231 [ mac nvidia-0xfe9 passthrough ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
 crbug.com/1199098 [ mac nvidia-0xfe9 no-passthrough ] conformance/ogles/GL/functions/functions_017_to_024.html [ RetryOnFailure ]
 crbug.com/1199098 [ mac nvidia-0xfe9 no-passthrough ] deqp/functional/gles3/multisample/fbo_4_samples.html [ RetryOnFailure ]
 crbug.com/1199098 [ mac nvidia-0xfe9 no-passthrough ] deqp/functional/gles3/multisample/fbo_8_samples.html [ RetryOnFailure ]

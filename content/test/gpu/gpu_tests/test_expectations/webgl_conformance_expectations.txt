@@ -170,10 +170,9 @@ crbug.com/1081973 conformance/buffers/buffer-data-and-buffer-sub-data.html [ Fai
 crbug.com/1082533 [ mac intel ] conformance/textures/misc/texture-copying-and-deletion.html [ Failure ]
 # TODO(crbug.com/1136231): Uncomment suppressions for s3tc-and-rgtc.html below
 # under crbug.com/963205 and crbug.com/964321 once these two failures are fixed.
-# crbug.com/1136231 [ win passthrough ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
-# crbug.com/1136231 [ linux passthrough ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
-# The validating command decoder suppressions here will not be fixed;
-# uncomment the passthrough suppessions once the ANGLE bug is fixed.
+crbug.com/1136231 [ win passthrough ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
+crbug.com/1136231 [ linux passthrough ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
+# The validating command decoder suppressions here will not be fixed.
 # TODO(crbug.com/angleproject/6245): uncomment and specialize s3tc-and-rgtc.html
 # suppressions for "mac nvidia-0xfe9" and "android android-shield-android-tv"
 # once ANGLE bug is fixed.
@@ -184,10 +183,6 @@ crbug.com/angleproject/6245 [ no-passthrough ] conformance/extensions/ext-textur
 crbug.com/angleproject/6245 [ no-passthrough ] conformance/extensions/ext-texture-compression-rgtc.html [ Failure ]
 crbug.com/angleproject/6245 [ no-passthrough ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
 crbug.com/angleproject/6245 [ no-passthrough ] conformance/extensions/webgl-compressed-texture-s3tc-srgb.html [ Failure ]
-crbug.com/angleproject/6245 [ passthrough ] conformance/extensions/ext-texture-compression-bptc.html [ Failure ]
-crbug.com/angleproject/6245 [ passthrough ] conformance/extensions/ext-texture-compression-rgtc.html [ Failure ]
-crbug.com/angleproject/6245 [ passthrough ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
-crbug.com/angleproject/6245 [ passthrough ] conformance/extensions/webgl-compressed-texture-s3tc-srgb.html [ Failure ]
 
 # This test uses H.264 and the ChromeOS and Fuchsia bots aren't compiled with
 # proprietary codecs.
@@ -345,7 +340,7 @@ crbug.com/angleproject/2722 [ win intel angle-vulkan passthrough intel_lt_26.20.
 crbug.com/1082565 [ win intel angle-opengl passthrough intel_lt_26.20.100.8141 ] conformance/canvas/webgl-to-2d-canvas.html [ Failure ]
 
 # Intel OpenGL driver issue, fixed in 27.20.100.9126
-# crbug.com/angleproject/5543 [ win intel angle-opengl passthrough ] conformance/extensions/webgl-compressed-texture-s3tc-srgb.html [ Failure ]
+crbug.com/angleproject/5543 [ win intel angle-opengl passthrough ] conformance/extensions/webgl-compressed-texture-s3tc-srgb.html [ Failure ]
 
 # This is an OpenGL driver bug on Intel platform and it is fixed in
 # Intel Driver 25.20.100.6444.
@@ -395,7 +390,7 @@ crbug.com/956134 [ win angle-d3d9 ] conformance/extensions/webgl-depth-texture.h
 # WIN / OpenGL / NVIDIA failures
 crbug.com/715001 [ win nvidia angle-opengl passthrough ] conformance/limits/gl-max-texture-dimensions.html [ Failure ]
 # crbug.com/963205 [ win nvidia angle-opengl passthrough ] conformance/extensions/s3tc-and-rgtc.html [ RetryOnFailure ]
-# crbug.com/963205 [ win nvidia angle-opengl passthrough ] conformance/extensions/webgl-compressed-texture-s3tc-srgb.html [ RetryOnFailure ]
+crbug.com/963205 [ win nvidia angle-opengl passthrough ] conformance/extensions/webgl-compressed-texture-s3tc-srgb.html [ RetryOnFailure ]
 
 # Mark ANGLE's OpenGL as flaky on Windows Nvidia
 crbug.com/582083 [ win nvidia angle-opengl ] conformance/* [ RetryOnFailure ]
@@ -431,7 +426,7 @@ crbug.com/1216686 [ win angle-vulkan passthrough ] conformance/glsl/bugs/complex
 crbug.com/1216686 [ win angle-vulkan passthrough ] conformance/glsl/misc/shader-uniform-packing-restrictions.html [ Failure ]
 
 # Vulkan / Win / NVIDIA / Passthrough command decoder
-# crbug.com/963205 [ win nvidia angle-vulkan passthrough ] conformance/extensions/webgl-compressed-texture-s3tc-srgb.html [ Failure ]
+crbug.com/963205 [ win nvidia angle-vulkan passthrough ] conformance/extensions/webgl-compressed-texture-s3tc-srgb.html [ Failure ]
 # crbug.com/964321 [ win nvidia angle-vulkan passthrough ] conformance/extensions/s3tc-and-rgtc.html [ RetryOnFailure ]
 crbug.com/1051576 [ win nvidia angle-vulkan passthrough ] conformance/extensions/webgl-compressed-texture-size-limit.html [ Failure ]
 crbug.com/963217 [ win nvidia angle-vulkan passthrough ] conformance/glsl/samplers/glsl-function-texture2dprojlod.html [ Failure ]
@@ -490,7 +485,7 @@ crbug.com/996344 [ mac nvidia-0xfe9 ] conformance/glsl/bugs/vector-scalar-arithm
 crbug.com/635081 [ mac nvidia-0xfe9 no-passthrough ] conformance/renderbuffers/framebuffer-object-attachment.html [ Failure ]
 crbug.com/635081 [ mac nvidia-0xfe9 no-passthrough ] conformance/textures/misc/tex-input-validation.html [ Failure ]
 crbug.com/784817 [ mac nvidia-0xfe9 ] conformance/glsl/bugs/init-array-with-loop.html [ Failure ]
-# crbug.com/1136231 [ mac nvidia-0xfe9 ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
+crbug.com/1136231 [ mac nvidia-0xfe9 passthrough ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
 
 # Mac / Passthrough command decoder
 crbug.com/angleproject/4986 [ mac passthrough ] conformance/textures/misc/gl-teximage.html [ Failure ]
@@ -712,7 +707,7 @@ crbug.com/891456 [ android android-shield-android-tv ] conformance/extensions/oe
 crbug.com/891456 [ android android-shield-android-tv ] conformance/extensions/oes-texture-half-float-with-video.html [ Failure ]
 crbug.com/891456 [ android android-shield-android-tv ] conformance/textures/image_bitmap_from_video/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ RetryOnFailure ]
 crbug.com/1025790 [ android android-shield-android-tv ] conformance/textures/misc/tex-image-canvas-corruption.html [ Skip ]
-# crbug.com/1153676 [ android android-shield-android-tv ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
+crbug.com/1153676 [ android android-shield-android-tv passthrough ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
 # Texture tests found to generate intermittent GL errors in the GPU process
 crbug.com/1090407 [ android android-nexus-9 ] conformance/textures/* [ RetryOnFailure ]
 crbug.com/1090407 [ android android-shield-android-tv ] conformance/textures/* [ RetryOnFailure ]
