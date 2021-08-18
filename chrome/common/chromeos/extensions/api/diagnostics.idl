@@ -1,0 +1,38 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Use the <code>chrome.os.diagnostics</code> API to get telemetry data.
+//
+// Many types defined here map with Mojo structs defined in
+// chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.
+[implemented_in = "chrome/browser/chromeos/extensions/telemetry/api/diagnostics_api.h"]
+namespace os.diagnostics {
+  enum RoutineStatus {
+    ready,
+    running,
+    waiting,
+    passed,
+    failed,
+    error,
+    cancelled,
+    failed_to_start,
+    removed,
+    cancelling,
+    unsupported,
+    not_run
+  };
+
+  dictionary RunRoutineResponse {
+    long id;
+
+    RoutineStatus status;
+  };
+
+  callback RunRoutineCallback = void (RunRoutineResponse response);
+
+  interface Functions {
+    // Starts battery capacity routine.
+    [supportsPromises] static void runBatteryCapacityRoutine(RunRoutineCallback callback);
+  };
+};

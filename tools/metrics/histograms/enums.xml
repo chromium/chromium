@@ -28957,6 +28957,7 @@ Called by update_extension_histograms.py.-->
   <int value="1569" label="SCRIPTING_UNREGISTERCONTENTSCRIPTS"/>
   <int value="1570" label="FILEMANAGERPRIVATE_GETZIPPROGRESS"/>
   <int value="1571" label="CRYPTOTOKENPRIVATE_CANMAKEU2FAPIREQUEST"/>
+  <int value="1572" label="OS_DIAGNOSTICS_RUNBATTERYCAPACITYROUTINE"/>
 </enum>
 
 <enum name="ExtensionIconState">

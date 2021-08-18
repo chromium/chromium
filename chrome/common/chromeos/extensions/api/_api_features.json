@@ -8,6 +8,15 @@
 // See chrome/common/extensions/api/_features.md to understand this file, as
 // well as feature.h, simple_feature.h, and feature_provider.h.
 {
+  "os.diagnostics": {
+    // TODO(lamzin): introduce a separate permission instead of manifest
+    // dependency.
+    "dependencies": [ "manifest:chromeos_system_extension" ],
+    "contexts": [
+      "blessed_extension"
+    ],
+    "channel": "dev"
+  },
   "os.telemetry": {
     // TODO(lamzin): introduce a separate permission instead of manifest
     // dependency.

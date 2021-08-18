@@ -12,6 +12,8 @@ assert(enable_extensions,
 
 source_set("api") {
   sources = [
+    "diagnostics_api.cc",
+    "diagnostics_api.h",
     "telemetry_api.cc",
     "telemetry_api.h",
   ]
@@ -44,7 +46,12 @@ function_registration("api_registration") {
 source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  sources = [ "telemetry_api_browsertest.cc" ]
+  sources = [
+    "base_telemetry_extension_browser_test.cc",
+    "base_telemetry_extension_browser_test.h",
+    "diagnostics_api_browsertest.cc",
+    "telemetry_api_browsertest.cc",
+  ]
 
   deps = [
     ":api",
