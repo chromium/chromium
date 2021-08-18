@@ -40,7 +40,7 @@ std::set<GURL> GetOriginsWithInstalledWebApps(
 #if defined(OS_ANDROID)
   return ShortcutHelper::GetOriginsWithInstalledWebApksOrTwas();
 #else
-  auto* provider = web_app::WebAppProvider::Get(
+  auto* provider = web_app::WebAppProvider::GetForWebApps(
       Profile::FromBrowserContext(browser_context));
   // TODO: Change this method to async, or document that the caller must know
   // that WebAppProvider is started.
