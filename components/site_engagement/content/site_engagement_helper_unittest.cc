@@ -2,23 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/engagement/site_engagement_helper.h"
+#include "components/site_engagement/content/site_engagement_helper.h"
+
+#include <memory>
 
 #include "base/memory/ptr_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/timer/mock_timer.h"
 #include "base/values.h"
-#include "chrome/common/chrome_switches.h"
-#include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "chrome/test/base/testing_profile.h"
+#include "components/permissions/test/test_permissions_client.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/site_engagement/content/engagement_type.h"
 #include "components/site_engagement/content/site_engagement_metrics.h"
 #include "components/site_engagement/content/site_engagement_score.h"
 #include "components/site_engagement/content/site_engagement_service.h"
+#include "components/user_prefs/user_prefs.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
@@ -30,11 +34,42 @@ namespace site_engagement {
 
 using content::NavigationSimulator;
 
-class SiteEngagementHelperTest : public ChromeRenderViewHostTestHarness {
+class TestSiteEngagementServiceProvider
+    : public SiteEngagementService::ServiceProvider {
+ public:
+  explicit TestSiteEngagementServiceProvider(
+      content::BrowserContext* browser_context)
+      : site_engagement_service_(browser_context) {}
+  virtual ~TestSiteEngagementServiceProvider() = default;
+
+  SiteEngagementService* GetSiteEngagementService(
+      content::BrowserContext* browser_context) override {
+    return &site_engagement_service_;
+  }
+
+ private:
+  SiteEngagementService site_engagement_service_;
+};
+
+class SiteEngagementHelperTest : public content::RenderViewHostTestHarness {
  public:
   void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
+    content::RenderViewHostTestHarness::SetUp();
     SiteEngagementScore::SetParamValuesForTesting();
+
+    user_prefs::UserPrefs::Set(browser_context(), &pref_service_);
+    SiteEngagementService::RegisterProfilePrefs(pref_service_.registry());
+
+    service_provider_ =
+        std::make_unique<TestSiteEngagementServiceProvider>(browser_context());
+
+    SiteEngagementService::SetServiceProvider(service_provider_.get());
+  }
+
+  void TearDown() override {
+    SiteEngagementService::ClearServiceProvider(service_provider_.get());
+
+    content::RenderViewHostTestHarness::TearDown();
   }
 
   SiteEngagementService::Helper* GetHelper(content::WebContents* web_contents) {
@@ -123,7 +158,8 @@ class SiteEngagementHelperTest : public ChromeRenderViewHostTestHarness {
     content::WebContents* contents = web_contents();
 
     SiteEngagementService::Helper* helper = GetHelper(contents);
-    SiteEngagementService* service = SiteEngagementService::Get(profile());
+    SiteEngagementService* service =
+        SiteEngagementService::Get(browser_context());
     DCHECK(service);
 
     // Check that navigation triggers engagement.
@@ -160,6 +196,11 @@ class SiteEngagementHelperTest : public ChromeRenderViewHostTestHarness {
     EXPECT_DOUBLE_EQ(0.55, service->GetScore(url2));
     EXPECT_DOUBLE_EQ(1.25, service->GetTotalEngagementPoints());
   }
+
+ private:
+  std::unique_ptr<TestSiteEngagementServiceProvider> service_provider_;
+  TestingPrefServiceSimple pref_service_;
+  permissions::TestPermissionsClient permissions_client_;
 };
 
 TEST_F(SiteEngagementHelperTest, KeyPressEngagementAccumulation) {
@@ -184,7 +225,8 @@ TEST_F(SiteEngagementHelperTest, MediaEngagementAccumulation) {
   content::WebContents* contents = web_contents();
 
   SiteEngagementService::Helper* helper = GetHelper(contents);
-  SiteEngagementService* service = SiteEngagementService::Get(profile());
+  SiteEngagementService* service =
+      SiteEngagementService::Get(browser_context());
   DCHECK(service);
 
   NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(), url1);
@@ -237,7 +279,8 @@ TEST_F(SiteEngagementHelperTest, MediaEngagement) {
   base::MockOneShotTimer* media_tracker_timer = new base::MockOneShotTimer();
   SiteEngagementService::Helper* helper = GetHelper(contents);
   SetMediaTrackerPauseTimer(helper, base::WrapUnique(media_tracker_timer));
-  SiteEngagementService* service = SiteEngagementService::Get(profile());
+  SiteEngagementService* service =
+      SiteEngagementService::Get(browser_context());
   DCHECK(service);
 
   NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(), url1);
@@ -307,7 +350,8 @@ TEST_F(SiteEngagementHelperTest, MixedInputEngagementAccumulation) {
   content::WebContents* contents = web_contents();
 
   SiteEngagementService::Helper* helper = GetHelper(contents);
-  SiteEngagementService* service = SiteEngagementService::Get(profile());
+  SiteEngagementService* service =
+      SiteEngagementService::Get(browser_context());
   DCHECK(service);
 
   base::HistogramTester histograms;
@@ -418,7 +462,8 @@ TEST_F(SiteEngagementHelperTest, CheckTimerAndCallbacks) {
   SetInputTrackerPauseTimer(helper, base::WrapUnique(input_tracker_timer));
   SetMediaTrackerPauseTimer(helper, base::WrapUnique(media_tracker_timer));
 
-  SiteEngagementService* service = SiteEngagementService::Get(profile());
+  SiteEngagementService* service =
+      SiteEngagementService::Get(browser_context());
   DCHECK(service);
 
   NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(), url1);

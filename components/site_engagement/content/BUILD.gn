@@ -5,6 +5,8 @@
 source_set("content") {
   sources = [
     "engagement_type.h",
+    "site_engagement_helper.cc",
+    "site_engagement_helper.h",
     "site_engagement_metrics.cc",
     "site_engagement_metrics.h",
     "site_engagement_observer.cc",
@@ -20,6 +22,8 @@ source_set("content") {
     "//components/browsing_data/core",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
+    "//components/no_state_prefetch/browser",
+    "//components/no_state_prefetch/common",
     "//components/permissions",
     "//components/prefs",
     "//components/security_state/core",
@@ -44,12 +48,19 @@ source_set("content") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "site_engagement_score_unittest.cc" ]
+  sources = [
+    "site_engagement_helper_unittest.cc",
+    "site_engagement_score_unittest.cc",
+  ]
   deps = [
     ":content",
     "//base",
     "//base/test:test_support",
+    "//components/permissions:test_support",
+    "//components/prefs:test_support",
     "//components/site_engagement/core/mojom:mojo_bindings",
+    "//components/user_prefs:user_prefs",
+    "//content/test:test_support",
     "//testing/gtest",
   ]
 }

@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENGAGEMENT_SITE_ENGAGEMENT_HELPER_H_
-#define CHROME_BROWSER_ENGAGEMENT_SITE_ENGAGEMENT_HELPER_H_
+#ifndef COMPONENTS_SITE_ENGAGEMENT_CONTENT_SITE_ENGAGEMENT_HELPER_H_
+#define COMPONENTS_SITE_ENGAGEMENT_CONTENT_SITE_ENGAGEMENT_HELPER_H_
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/site_engagement/content/site_engagement_service.h"
@@ -50,6 +49,9 @@ class SiteEngagementService::Helper
     explicit PeriodicTracker(SiteEngagementService::Helper* helper);
     virtual ~PeriodicTracker();
 
+    PeriodicTracker(const PeriodicTracker&) = delete;
+    PeriodicTracker& operator=(const PeriodicTracker&) = delete;
+
     // Begin tracking after |initial_delay|.
     void Start(base::TimeDelta initial_delay);
 
@@ -83,8 +85,6 @@ class SiteEngagementService::Helper
    private:
     SiteEngagementService::Helper* helper_;
     std::unique_ptr<base::OneShotTimer> pause_timer_;
-
-    DISALLOW_COPY_AND_ASSIGN(PeriodicTracker);
   };
 
   // Class to encapsulate time-on-site engagement detection. Time-on-site is
@@ -100,6 +100,9 @@ class SiteEngagementService::Helper
     InputTracker(SiteEngagementService::Helper* helper,
                  content::WebContents* web_contents);
 
+    InputTracker(const InputTracker&) = delete;
+    InputTracker& operator=(const InputTracker&) = delete;
+
     bool is_tracking() const { return is_tracking_; }
 
    private:
@@ -114,8 +117,6 @@ class SiteEngagementService::Helper
 
     // content::WebContentsObserver overrides.
     void DidGetUserInteraction(const blink::WebInputEvent& event) override;
-
-    DISALLOW_COPY_AND_ASSIGN(InputTracker);
   };
 
   // Class to encapsulate media detection. Any media playing in a WebContents
@@ -135,6 +136,9 @@ class SiteEngagementService::Helper
                  content::WebContents* web_contents);
     ~MediaTracker() override;
 
+    MediaTracker(const MediaTracker&) = delete;
+    MediaTracker& operator=(const MediaTracker&) = delete;
+
    private:
     friend class SiteEngagementHelperTest;
 
@@ -150,8 +154,6 @@ class SiteEngagementService::Helper
         WebContentsObserver::MediaStoppedReason reason) override;
 
     std::vector<content::MediaPlayerId> active_media_players_;
-
-    DISALLOW_COPY_AND_ASSIGN(MediaTracker);
   };
 
   // Optionally include |NoStatePrefetchManager| if no state prefetches are
@@ -159,6 +161,10 @@ class SiteEngagementService::Helper
   explicit Helper(
       content::WebContents* web_contents,
       prerender::NoStatePrefetchManager* prefetch_manager = nullptr);
+
+  Helper(const Helper&) = delete;
+  Helper& operator=(const Helper&) = delete;
+
   friend class content::WebContentsUserData<SiteEngagementService::Helper>;
   friend class SiteEngagementHelperTest;
   friend class SiteEngagementHelperBrowserTest;
@@ -180,10 +186,9 @@ class SiteEngagementService::Helper
   SiteEngagementService* service_;
   prerender::NoStatePrefetchManager* prefetch_manager_;
 
-  DISALLOW_COPY_AND_ASSIGN(Helper);
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 }  // namespace site_engagement
 
-#endif  // CHROME_BROWSER_ENGAGEMENT_SITE_ENGAGEMENT_HELPER_H_
+#endif  // COMPONENTS_SITE_ENGAGEMENT_CONTENT_SITE_ENGAGEMENT_HELPER_H_

@@ -467,8 +467,6 @@ static_library("browser") {
     "engagement/history_aware_site_engagement_service.h",
     "engagement/important_sites_util.cc",
     "engagement/important_sites_util.h",
-    "engagement/site_engagement_helper.cc",
-    "engagement/site_engagement_helper.h",
     "engagement/site_engagement_service_factory.cc",
     "engagement/site_engagement_service_factory.h",
     "enterprise/browser_management/browser_management_service.cc",
