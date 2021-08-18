@@ -30,7 +30,7 @@ std::string RemoveQuotes(std::string input) {
   return output;
 }
 
-const int kCurrentVersionNumber = 10;
+const int kCurrentVersionNumber = 11;
 
 }  // namespace
 
@@ -59,7 +59,7 @@ class ConversionStorageSqlMigrationsTest : public testing::Test {
   std::string GetCurrentSchema() {
     base::FilePath current_version_path = temp_directory_.GetPath().Append(
         FILE_PATH_LITERAL("TestCurrentVersion.db"));
-    LoadDatabase(FILE_PATH_LITERAL("version_10.sql"), current_version_path);
+    LoadDatabase(FILE_PATH_LITERAL("version_11.sql"), current_version_path);
     sql::Database db;
     EXPECT_TRUE(db.Open(current_version_path));
     return db.GetSchema();
@@ -594,6 +594,43 @@ TEST_F(ConversionStorageSqlMigrationsTest, MigrateVersion9ToCurrent) {
 
     // Check that the relevant schema changes are made.
     EXPECT_TRUE(db.DoesTableExist("dedup_keys"));
+  }
+
+  // DB migration histograms should be recorded.
+  histograms.ExpectTotalCount("Conversions.Storage.CreationTime", 0);
+  histograms.ExpectTotalCount("Conversions.Storage.MigrationTime", 1);
+}
+
+TEST_F(ConversionStorageSqlMigrationsTest, MigrateVersion10ToCurrent) {
+  base::HistogramTester histograms;
+  LoadDatabase(FILE_PATH_LITERAL("version_10.sql"), DbPath());
+
+  // Verify pre-conditions.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(DbPath()));
+
+    ASSERT_TRUE(db.DoesIndexExist("impression_site_idx"));
+    ASSERT_FALSE(db.DoesIndexExist("event_source_impression_site_idx"));
+  }
+
+  MigrateDatabase();
+
+  // Verify schema is current.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(DbPath()));
+
+    // Check version.
+    EXPECT_EQ(kCurrentVersionNumber, VersionFromDatabase(&db));
+
+    // Compare without quotes as sometimes migrations cause table names to be
+    // string literals.
+    EXPECT_EQ(RemoveQuotes(GetCurrentSchema()), RemoveQuotes(db.GetSchema()));
+
+    // Check that the relevant schema changes are made.
+    ASSERT_FALSE(db.DoesIndexExist("impression_site_idx"));
+    ASSERT_TRUE(db.DoesIndexExist("event_source_impression_site_idx"));
   }
 
   // DB migration histograms should be recorded.

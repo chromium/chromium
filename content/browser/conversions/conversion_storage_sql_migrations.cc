@@ -814,6 +814,29 @@ bool MigrateToVersion10(sql::Database* db, sql::MetaTable* meta_table) {
   return transaction.Commit();
 }
 
+bool MigrateToVersion11(sql::Database* db, sql::MetaTable* meta_table) {
+  // Wrap each migration in its own transaction. See comment in
+  // |MigrateToVersion2|.
+  sql::Transaction transaction(db);
+  if (!transaction.Begin())
+    return false;
+
+  static constexpr char kDropOldImpressionSiteIdxSql[] =
+      "DROP INDEX impression_site_idx";
+  if (!db->Execute(kDropOldImpressionSiteIdxSql))
+    return false;
+
+  static constexpr char kEventSourceImpressionSiteIndexSql[] =
+      "CREATE INDEX IF NOT EXISTS event_source_impression_site_idx "
+      "ON impressions(impression_site)"
+      "WHERE active = 1 AND num_conversions = 0 AND source_type = 1";
+  if (!db->Execute(kEventSourceImpressionSiteIndexSql))
+    return false;
+
+  meta_table->SetVersionNumber(11);
+  return transaction.Commit();
+}
+
 }  // namespace
 
 bool UpgradeConversionStorageSqlSchema(sql::Database* db,
@@ -854,6 +877,10 @@ bool UpgradeConversionStorageSqlSchema(sql::Database* db,
   }
   if (meta_table->GetVersionNumber() == 9) {
     if (!MigrateToVersion10(db, meta_table))
+      return false;
+  }
+  if (meta_table->GetVersionNumber() == 10) {
+    if (!MigrateToVersion11(db, meta_table))
       return false;
   }
   // Add similar if () blocks for new versions here.

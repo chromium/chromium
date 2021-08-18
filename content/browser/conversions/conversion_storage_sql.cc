@@ -83,11 +83,16 @@ const base::FilePath::CharType kDatabasePath[] =
 // Version 10 - 2021/07/16 - https://crrev.com/c/2983439
 //
 // Version 10 adds the dedup_keys table.
-const int kCurrentVersionNumber = 10;
+//
+// Version 11 - 2021/08/10 - https://crrev.com/c/3087755
+//
+// Version 11 replaces impression_site_idx with
+// event_source_impression_site_idx, which stores less data.
+const int kCurrentVersionNumber = 11;
 
 // Earliest version which can use a |kCurrentVersionNumber| database
 // without failing.
-const int kCompatibleVersionNumber = 10;
+const int kCompatibleVersionNumber = 11;
 
 // Latest version of the database that cannot be upgraded to
 // |kCurrentVersionNumber| without razing the database. No versions are
@@ -1321,11 +1326,13 @@ bool ConversionStorageSql::CreateSchema() {
   if (!db_->Execute(kImpressionOriginIndexSql))
     return false;
 
-  // Optimizes `EnsureCapacityForPendingDestinationLimit()`.
-  static constexpr char kImpressionSiteIndexSql[] =
-      "CREATE INDEX IF NOT EXISTS impression_site_idx "
-      "ON impressions(active,impression_site,source_type)";
-  if (!db_->Execute(kImpressionSiteIndexSql))
+  // Optimizes `EnsureCapacityForPendingDestinationLimit()`, which only needs to
+  // examine active, unconverted, event-source impressions.
+  static constexpr char kEventSourceImpressionSiteIndexSql[] =
+      "CREATE INDEX IF NOT EXISTS event_source_impression_site_idx "
+      "ON impressions(impression_site)"
+      "WHERE active = 1 AND num_conversions = 0 AND source_type = 1";
+  if (!db_->Execute(kEventSourceImpressionSiteIndexSql))
     return false;
 
   // All columns in this table are const. |impression_id| is the primary key of
@@ -1425,20 +1432,22 @@ bool ConversionStorageSql::EnsureCapacityForPendingDestinationLimit(
   if (impression.source_type() != StorableImpression::SourceType::kEvent)
     return true;
 
+  static_assert(static_cast<int>(StorableImpression::SourceType::kEvent) == 1,
+                "Update the SQL statement below and this condition");
+
   const std::string serialized_conversion_destination =
       impression.ConversionDestination().Serialize();
 
+  // Optimized by `kEventSourceImpressionSiteIndexSql`.
   static constexpr char kSelectImpressionsSql[] =
       "SELECT impression_id,conversion_destination FROM impressions "
-      DCHECK_SQL_INDEXED_BY("impression_site_idx")
-      "WHERE impression_site = ? AND source_type = ? "
+      DCHECK_SQL_INDEXED_BY("event_source_impression_site_idx")
+      "WHERE impression_site = ? AND source_type = 1 "
       "AND active = 1 AND num_conversions = 0 "
       "ORDER BY impression_time ASC";
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kSelectImpressionsSql));
   statement.BindString(0, impression.ImpressionSite().Serialize());
-  statement.BindInt(
-      1, SerializeSourceType(StorableImpression::SourceType::kEvent));
 
   base::flat_map<std::string, size_t> conversion_destinations;
 
