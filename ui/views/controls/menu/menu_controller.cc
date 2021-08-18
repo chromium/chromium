@@ -1103,6 +1103,15 @@ void MenuController::OnDragExited(SubmenuView* source) {
 ui::mojom::DragOperation MenuController::OnPerformDrop(
     SubmenuView* source,
     const ui::DropTargetEvent& event) {
+  auto drop_cb = GetDropCallback(source, event);
+  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+  std::move(drop_cb).Run(event, output_drag_op);
+  return output_drag_op;
+}
+
+views::View::DropCallback MenuController::GetDropCallback(
+    SubmenuView* source,
+    const ui::DropTargetEvent& event) {
   DCHECK(drop_target_);
   // NOTE: the delegate may delete us after invoking OnPerformDrop, as such
   // we don't call cancel here.
@@ -1133,8 +1142,8 @@ ui::mojom::DragOperation MenuController::OnPerformDrop(
 
   // WARNING: the call to MenuClosed deletes us.
 
-  return drop_target->GetDelegate()->OnPerformDrop(drop_target, drop_position,
-                                                   event);
+  return drop_target->GetDelegate()->GetDropCallback(drop_target, drop_position,
+                                                     event);
 }
 
 void MenuController::OnDragEnteredScrollButton(SubmenuView* source,

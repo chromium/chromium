@@ -45,8 +45,17 @@ ui::mojom::DragOperation TestMenuDelegate::OnPerformDrop(
     MenuItemView* menu,
     DropPosition position,
     const ui::DropTargetEvent& event) {
-  on_perform_drop_called_ = true;
-  return ui::mojom::DragOperation::kCopy;
+  auto drop_cb = GetDropCallback(menu, position, event);
+  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+  std::move(drop_cb).Run(event, output_drag_op);
+  return output_drag_op;
+}
+
+views::View::DropCallback TestMenuDelegate::GetDropCallback(
+    MenuItemView* menu,
+    DropPosition position,
+    const ui::DropTargetEvent& event) {
+  return base::BindOnce(&TestMenuDelegate::PerformDrop, base::Unretained(this));
 }
 
 int TestMenuDelegate::GetDragOperations(MenuItemView* sender) {
@@ -59,6 +68,12 @@ void TestMenuDelegate::WriteDragData(MenuItemView* sender,
 void TestMenuDelegate::WillHideMenu(MenuItemView* menu) {
   will_hide_menu_count_++;
   will_hide_menu_ = menu;
+}
+
+void TestMenuDelegate::PerformDrop(const ui::DropTargetEvent& event,
+                                   ui::mojom::DragOperation& output_drag_op) {
+  is_drop_performed_ = true;
+  output_drag_op = ui::mojom::DragOperation::kCopy;
 }
 
 // MenuControllerTestApi ------------------------------------------------------

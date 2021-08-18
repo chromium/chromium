@@ -276,6 +276,12 @@ ui::mojom::DragOperation SubmenuView::OnPerformDrop(
   return parent_menu_item_->GetMenuController()->OnPerformDrop(this, event);
 }
 
+views::View::DropCallback SubmenuView::GetDropCallback(
+    const ui::DropTargetEvent& event) {
+  DCHECK(parent_menu_item_->GetMenuController());
+  return parent_menu_item_->GetMenuController()->GetDropCallback(this, event);
+}
+
 bool SubmenuView::OnMouseWheel(const ui::MouseWheelEvent& e) {
   gfx::Rect vis_bounds = GetVisibleBounds();
   const auto menu_items = GetMenuItems();

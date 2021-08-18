@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "ui/views/controls/menu/menu_delegate.h"
 #include "ui/views/test/test_views_delegate.h"
+#include "ui/views/view.h"
 
 namespace views {
 
@@ -31,7 +32,7 @@ class TestMenuDelegate : public MenuDelegate {
   int execute_command_id() const { return execute_command_id_; }
   int on_menu_closed_called() const { return on_menu_closed_called_count_; }
   MenuItemView* on_menu_closed_menu() const { return on_menu_closed_menu_; }
-  bool on_perform_drop_called() { return on_perform_drop_called_; }
+  bool is_drop_performed() { return is_drop_performed_; }
   int will_hide_menu_count() { return will_hide_menu_count_; }
   MenuItemView* will_hide_menu() { return will_hide_menu_; }
 
@@ -46,11 +47,19 @@ class TestMenuDelegate : public MenuDelegate {
       MenuItemView* menu,
       DropPosition position,
       const ui::DropTargetEvent& event) override;
+  views::View::DropCallback GetDropCallback(
+      MenuItemView* menu,
+      DropPosition position,
+      const ui::DropTargetEvent& event) override;
   int GetDragOperations(MenuItemView* sender) override;
   void WriteDragData(MenuItemView* sender, OSExchangeData* data) override;
   void WillHideMenu(MenuItemView* menu) override;
 
  private:
+  // Performs the drop operation and updates |output_drag_op| accordingly.
+  void PerformDrop(const ui::DropTargetEvent& event,
+                   ui::mojom::DragOperation& output_drag_op);
+
   // The number of times ShowContextMenu was called.
   int show_context_menu_count_ = 0;
 
@@ -72,7 +81,7 @@ class TestMenuDelegate : public MenuDelegate {
   // The value of the last call to WillHideMenu.
   MenuItemView* will_hide_menu_ = nullptr;
 
-  bool on_perform_drop_called_ = false;
+  bool is_drop_performed_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(TestMenuDelegate);
 };

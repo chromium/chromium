@@ -1678,7 +1678,7 @@ TEST_F(MenuControllerTest, AsynchronousPerformDrop) {
   TestMenuDelegate* menu_delegate =
       static_cast<TestMenuDelegate*>(target->GetDelegate());
   TestMenuControllerDelegate* controller_delegate = menu_controller_delegate();
-  EXPECT_TRUE(menu_delegate->on_perform_drop_called());
+  EXPECT_TRUE(menu_delegate->is_drop_performed());
   EXPECT_FALSE(IsShowing());
   EXPECT_EQ(0, controller_delegate->on_menu_closed_called());
 }
@@ -1730,6 +1730,33 @@ TEST_F(MenuControllerTest, AsynchronousDragHostDeleted) {
   submenu->Close();
   DestroyMenuItem();
   MenuHostOnDragComplete(host);
+}
+
+// Tests that getting the drop callback stops the menu from showing and
+// does not notify the controller.
+TEST_F(MenuControllerTest, AsycDropCallback) {
+  MenuController* controller = menu_controller();
+  SubmenuView* source = menu_item()->GetSubmenu();
+  MenuItemView* target = source->GetMenuItemAt(0);
+
+  SetDropMenuItem(target, MenuDelegate::DropPosition::kAfter);
+
+  ui::OSExchangeData drop_data;
+  gfx::PointF location(target->origin());
+  ui::DropTargetEvent target_event(drop_data, location, location,
+                                   ui::DragDropTypes::DRAG_MOVE);
+  auto drop_cb = controller->GetDropCallback(source, target_event);
+
+  TestMenuDelegate* menu_delegate =
+      static_cast<TestMenuDelegate*>(target->GetDelegate());
+  TestMenuControllerDelegate* controller_delegate = menu_controller_delegate();
+  EXPECT_FALSE(menu_delegate->is_drop_performed());
+  EXPECT_FALSE(IsShowing());
+  EXPECT_EQ(0, controller_delegate->on_menu_closed_called());
+
+  ui::mojom::DragOperation output_drag_op;
+  std::move(drop_cb).Run(target_event, output_drag_op);
+  EXPECT_TRUE(menu_delegate->is_drop_performed());
 }
 
 // Widget destruction and cleanup occurs on the MessageLoop after the

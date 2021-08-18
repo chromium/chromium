@@ -193,6 +193,8 @@ class VIEWS_EXPORT MenuController
   void OnDragExited(SubmenuView* source);
   ui::mojom::DragOperation OnPerformDrop(SubmenuView* source,
                                          const ui::DropTargetEvent& event);
+  views::View::DropCallback GetDropCallback(SubmenuView* source,
+                                            const ui::DropTargetEvent& event);
 
   // Invoked from the scroll buttons of the MenuScrollViewContainer.
   void OnDragEnteredScrollButton(SubmenuView* source, bool is_up);

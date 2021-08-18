@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/bind.h"
 #include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
@@ -77,7 +78,12 @@ class TestTargetView : public views::View {
   void OnDragEntered(const ui::DropTargetEvent& event) override;
   int OnDragUpdated(const ui::DropTargetEvent& event) override;
   DragOperation OnPerformDrop(const ui::DropTargetEvent& event) override;
+  DropCallback GetDropCallback(const ui::DropTargetEvent& event) override;
   void OnDragExited() override;
+
+  // Performs the drop operation and updates |output_drag_op| accordingly.
+  void PerformDrop(const ui::DropTargetEvent& event,
+                   ui::mojom::DragOperation& output_drag_op);
 
   // Whether or not we are currently dragging.
   bool dragging_ = false;
@@ -127,13 +133,26 @@ int TestTargetView::OnDragUpdated(const ui::DropTargetEvent& event) {
 }
 
 DragOperation TestTargetView::OnPerformDrop(const ui::DropTargetEvent& event) {
+  auto drop_cb = GetDropCallback(event);
+  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+  std::move(drop_cb).Run(event, output_drag_op);
+  return output_drag_op;
+}
+
+views::View::DropCallback TestTargetView::GetDropCallback(
+    const ui::DropTargetEvent& event) {
   dragging_ = false;
-  dropped_ = true;
-  return DragOperation::kMove;
+  return base::BindOnce(&TestTargetView::PerformDrop, base::Unretained(this));
 }
 
 void TestTargetView::OnDragExited() {
   dragging_ = false;
+}
+
+void TestTargetView::PerformDrop(const ui::DropTargetEvent& event,
+                                 ui::mojom::DragOperation& output_drag_op) {
+  dropped_ = true;
+  output_drag_op = DragOperation::kMove;
 }
 
 }  // namespace
@@ -176,11 +195,19 @@ class MenuViewDragAndDropTest : public MenuTestBase,
   DragOperation OnPerformDrop(views::MenuItemView* menu,
                               DropPosition position,
                               const ui::DropTargetEvent& event) override;
+  views::View::DropCallback GetDropCallback(
+      views::MenuItemView* menu,
+      DropPosition position,
+      const ui::DropTargetEvent& event) override;
   bool CanDrag(views::MenuItemView* menu) override;
   void WriteDragData(views::MenuItemView* sender,
                      ui::OSExchangeData* data) override;
   int GetDragOperations(views::MenuItemView* sender) override;
   bool ShouldCloseOnDragComplete() override;
+
+  // Performs the drop operation and updates |output_drag_op| accordingly.
+  void PerformDrop(const ui::DropTargetEvent& event,
+                   ui::mojom::DragOperation& output_drag_op);
 
   // The special view in the menu, which supports its own drag and drop.
   TestTargetView* target_view_ = nullptr;
@@ -272,8 +299,18 @@ DragOperation MenuViewDragAndDropTest::OnPerformDrop(
     views::MenuItemView* menu,
     DropPosition position,
     const ui::DropTargetEvent& event) {
-  performed_in_menu_drop_ = true;
-  return DragOperation::kMove;
+  auto drop_cb = GetDropCallback(menu, position, event);
+  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+  std::move(drop_cb).Run(event, output_drag_op);
+  return output_drag_op;
+}
+
+views::View::DropCallback MenuViewDragAndDropTest::GetDropCallback(
+    views::MenuItemView* menu,
+    DropPosition position,
+    const ui::DropTargetEvent& event) {
+  return base::BindOnce(&MenuViewDragAndDropTest::PerformDrop,
+                        base::Unretained(this));
 }
 
 bool MenuViewDragAndDropTest::CanDrag(views::MenuItemView* menu) {
@@ -292,6 +329,13 @@ int MenuViewDragAndDropTest::GetDragOperations(views::MenuItemView* sender) {
 bool MenuViewDragAndDropTest::ShouldCloseOnDragComplete() {
   asked_to_close_ = true;
   return false;
+}
+
+void MenuViewDragAndDropTest::PerformDrop(
+    const ui::DropTargetEvent& event,
+    ui::mojom::DragOperation& output_drag_op) {
+  performed_in_menu_drop_ = true;
+  output_drag_op = DragOperation::kMove;
 }
 
 class MenuViewDragAndDropTestTestInMenuDrag : public MenuViewDragAndDropTest {
