@@ -720,11 +720,12 @@ void AppPlatformMetrics::OnInstanceUpdate(const apps::InstanceUpdate& update) {
   }
 
   bool is_active = update.State() & apps::InstanceState::kActive;
-  auto it = running_start_time_.find(update.Window());
+  auto it = running_start_time_.find(update.InstanceKey());
   if (is_active) {
     if (it == running_start_time_.end()) {
-      AppTypeName app_type_name = GetAppTypeName(
-          profile_, app_type, app_id, update.Window()->GetToplevelWindow());
+      AppTypeName app_type_name =
+          GetAppTypeName(profile_, app_type, app_id,
+                         update.InstanceKey().GetEnclosingAppWindow());
       if (app_type_name == apps::AppTypeName::kUnknown) {
         return;
       }
@@ -737,23 +738,26 @@ void AppPlatformMetrics::OnInstanceUpdate(const apps::InstanceUpdate& update) {
         return;
       }
 
-      AppTypeNameV2 app_type_name_v2 = GetAppTypeNameV2(
-          profile_, app_type, app_id, update.Window()->GetToplevelWindow());
+      AppTypeNameV2 app_type_name_v2 =
+          GetAppTypeNameV2(profile_, app_type, app_id,
+                           update.InstanceKey().GetEnclosingAppWindow());
 
-      running_start_time_[update.Window()].start_time = base::TimeTicks::Now();
-      running_start_time_[update.Window()].app_type_name = app_type_name;
-      running_start_time_[update.Window()].app_type_name_v2 = app_type_name_v2;
+      running_start_time_[update.InstanceKey()].start_time =
+          base::TimeTicks::Now();
+      running_start_time_[update.InstanceKey()].app_type_name = app_type_name;
+      running_start_time_[update.InstanceKey()].app_type_name_v2 =
+          app_type_name_v2;
 
       ++activated_count_[app_type_name];
       should_refresh_activated_count_pref = true;
 
-      start_time_per_five_minutes_[update.Window()].start_time =
+      start_time_per_five_minutes_[update.InstanceKey()].start_time =
           base::TimeTicks::Now();
-      start_time_per_five_minutes_[update.Window()].app_type_name =
+      start_time_per_five_minutes_[update.InstanceKey()].app_type_name =
           app_type_name;
-      start_time_per_five_minutes_[update.Window()].app_type_name_v2 =
+      start_time_per_five_minutes_[update.InstanceKey()].app_type_name_v2 =
           app_type_name_v2;
-      start_time_per_five_minutes_[update.Window()].app_id = app_id;
+      start_time_per_five_minutes_[update.InstanceKey()].app_id = app_id;
     }
     return;
   }
@@ -771,11 +775,11 @@ void AppPlatformMetrics::OnInstanceUpdate(const apps::InstanceUpdate& update) {
 
   base::TimeDelta running_time =
       base::TimeTicks::Now() -
-      start_time_per_five_minutes_[update.Window()].start_time;
+      start_time_per_five_minutes_[update.InstanceKey()].start_time;
   app_type_running_time_per_five_minutes_[app_type_name] += running_time;
   app_type_v2_running_time_per_five_minutes_[app_type_name_v2] += running_time;
   app_id_running_time_per_five_minutes_[app_id] += running_time;
-  start_time_per_five_minutes_.erase(update.Window());
+  start_time_per_five_minutes_.erase(update.InstanceKey());
 
   should_refresh_duration_pref = true;
 }

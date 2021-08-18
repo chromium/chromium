@@ -44,7 +44,7 @@ class Instance {
     aura::Window* Window() const { return window_; }
     // Return enclosing app windows for the |app_id|. If the app is in a browser
     // tab, the window returned will be the window of the browser.
-    aura::Window* GetEnclosingAppWindow();
+    aura::Window* GetEnclosingAppWindow() const;
     bool IsValid() const { return window_ != nullptr; }
     bool operator<(const InstanceKey& other) const;
     bool operator==(const InstanceKey& other) const;

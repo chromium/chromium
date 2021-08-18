@@ -232,7 +232,7 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
 
   // |running_start_time_| and |running_duration_| are used for accumulating app
   // running duration per each day interval.
-  std::map<aura::Window*, RunningStartTime> running_start_time_;
+  std::map<apps::Instance::InstanceKey, RunningStartTime> running_start_time_;
   std::map<AppTypeName, base::TimeDelta> running_duration_;
   std::map<AppTypeName, int> activated_count_;
 
@@ -240,7 +240,8 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   // |app_type_v2_running_time_per_five_minutes_|, and
   // |app_id_running_time_per_five_minutes_| are used for accumulating app
   // running duration per 5 minutes interval.
-  std::map<aura::Window*, RunningStartTime> start_time_per_five_minutes_;
+  std::map<apps::Instance::InstanceKey, RunningStartTime>
+      start_time_per_five_minutes_;
   std::map<AppTypeName, base::TimeDelta>
       app_type_running_time_per_five_minutes_;
   std::map<AppTypeNameV2, base::TimeDelta>

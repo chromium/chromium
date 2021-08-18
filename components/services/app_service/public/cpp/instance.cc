@@ -23,7 +23,7 @@ Instance::InstanceKey::InstanceKey(aura::Window* window,
                                    bool is_web_contents_backed)
     : window_(window), is_web_contents_backed_(is_web_contents_backed) {}
 
-aura::Window* Instance::InstanceKey::GetEnclosingAppWindow() {
+aura::Window* Instance::InstanceKey::GetEnclosingAppWindow() const {
   if (is_web_contents_backed_)
     return window_->GetToplevelWindow();
   return window_;
