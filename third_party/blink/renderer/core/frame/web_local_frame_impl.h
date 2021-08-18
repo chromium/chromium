@@ -46,6 +46,7 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/find_in_page.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/tree_scope_type.mojom-blink.h"
@@ -417,7 +418,9 @@ class CORE_EXPORT WebLocalFrameImpl final
       mojo::PendingAssociatedRemote<mojom::blink::PortalClient>);
   RemoteFrame* AdoptPortal(HTMLPortalElement*);
 
-  RemoteFrame* CreateFencedFrame(HTMLFencedFrameElement*);
+  RemoteFrame* CreateFencedFrame(
+      HTMLFencedFrameElement*,
+      mojo::PendingAssociatedReceiver<mojom::blink::FencedFrameOwnerHost>);
 
   void DidChangeContentsSize(const IntSize&);
 

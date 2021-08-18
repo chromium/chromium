@@ -46,6 +46,7 @@
 #include "third_party/blink/public/common/use_counter/use_counter_feature.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-forward.h"
+#include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/blocked_navigation_types.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-shared.h"
@@ -266,7 +267,9 @@ class BLINK_EXPORT WebLocalFrameClient {
   // Request the creation of a new fenced frame, and return the WebRemoteFrame*
   // associated with it.
   virtual WebRemoteFrame* CreateFencedFrame(
-      const WebElement& fenced_frame_element) {
+      const WebElement& fenced_frame_element,
+      CrossVariantMojoAssociatedReceiver<
+          mojom::FencedFrameOwnerHostInterfaceBase> receiver) {
     return nullptr;
   }
 

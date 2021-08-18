@@ -58,6 +58,7 @@
 #include "content/browser/dom_storage/dom_storage_context_wrapper.h"
 #include "content/browser/download/data_url_blob_reader.h"
 #include "content/browser/feature_observer.h"
+#include "content/browser/fenced_frame/fenced_frame.h"
 #include "content/browser/file_system/file_system_manager_impl.h"
 #include "content/browser/file_system/file_system_url_loader_factory.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
@@ -6626,6 +6627,28 @@ void RenderFrameHostImpl::AdoptPortal(const blink::PortalToken& portal_token,
       proxy_host->GetRoutingID(),
       proxy_host->frame_tree_node()->current_replication_state().Clone(),
       proxy_host->GetFrameToken(), portal->GetDevToolsFrameToken());
+}
+
+std::vector<FencedFrame*> RenderFrameHostImpl::GetFencedFrames() const {
+  std::vector<FencedFrame*> result;
+  for (const std::unique_ptr<FencedFrame>& fenced_frame : fenced_frames_)
+    result.push_back(fenced_frame.get());
+  return result;
+}
+
+void RenderFrameHostImpl::DestroyFencedFrame(FencedFrame& fenced_frame) {
+  auto it = base::ranges::find_if(fenced_frames_,
+                                  base::MatchesUniquePtr(&fenced_frame));
+  CHECK(it != fenced_frames_.end());
+  fenced_frames_.erase(it);
+}
+
+void RenderFrameHostImpl::CreateFencedFrame(
+    mojo::PendingAssociatedReceiver<blink::mojom::FencedFrameOwnerHost>
+        pending_receiver) {
+  fenced_frames_.push_back(std::make_unique<FencedFrame>());
+  FencedFrame* fenced_frame = fenced_frames_.back().get();
+  fenced_frame->Bind(std::move(pending_receiver));
 }
 
 void RenderFrameHostImpl::CreateNewPopupWidget(

@@ -1123,6 +1123,7 @@ test("content_browsertests") {
     "../browser/download/drag_download_file_browsertest.cc",
     "../browser/download/mhtml_generation_browsertest.cc",
     "../browser/download/save_package_browsertest.cc",
+    "../browser/fenced_frame/fenced_frame_browsertest.cc",
     "../browser/file_system/file_system_browsertest.cc",
     "../browser/file_system/file_system_url_loader_factory_browsertest.cc",
     "../browser/file_system/fileapi_browsertest.cc",

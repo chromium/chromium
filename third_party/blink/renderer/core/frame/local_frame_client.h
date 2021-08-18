@@ -47,6 +47,7 @@
 #include "third_party/blink/public/common/use_counter/use_counter_feature.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/triggering_event_info.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/portal/portal.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
@@ -269,7 +270,9 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
 
   // Creates a remote fenced frame hosted by an MPArch frame tree for the
   // |HTMLFencedFrameElement|.
-  virtual RemoteFrame* CreateFencedFrame(HTMLFencedFrameElement*) = 0;
+  virtual RemoteFrame* CreateFencedFrame(
+      HTMLFencedFrameElement*,
+      mojo::PendingAssociatedReceiver<mojom::blink::FencedFrameOwnerHost>) = 0;
 
   // Whether or not plugin creation should fail if the HTMLPlugInElement isn't
   // in the DOM after plugin initialization.

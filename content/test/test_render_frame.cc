@@ -161,6 +161,13 @@ class MockFrameHost : public mojom::FrameHost {
         blink::RemoteFrameToken(), base::UnguessableToken());
   }
 
+  void CreateFencedFrame(
+      mojo::PendingAssociatedReceiver<blink::mojom::FencedFrameOwnerHost>)
+      override {
+    NOTREACHED() << "At the moment, content::FencedFrame is not used in any "
+                    "unit tests, so this path should not be hit";
+  }
+
   void DidCommitSameDocumentNavigation(
       mojom::DidCommitProvisionalLoadParamsPtr params,
       mojom::DidCommitSameDocumentNavigationParamsPtr same_doc_params)

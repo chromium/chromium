@@ -190,6 +190,7 @@ class AppCacheNavigationHandle;
 class CodeCacheHostImpl;
 class CrossOriginEmbedderPolicyReporter;
 class FeatureObserver;
+class FencedFrame;
 class FrameTree;
 class FrameTreeNode;
 class GeolocationServiceImpl;
@@ -1468,6 +1469,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Called when a Portal needs to be destroyed.
   void DestroyPortal(Portal* portal);
 
+  // Return fenced frames owned by |this|.
+  std::vector<FencedFrame*> GetFencedFrames() const;
+
+  // Called when a fenced frame needs to be destroyed.
+  void DestroyFencedFrame(FencedFrame& fenced_frame);
+
   // Called on the main frame of a page embedded in a Portal to forward a
   // message from the host of a portal.
   void ForwardMessageFromHost(blink::TransferableMessage message,
@@ -2480,6 +2487,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
       CreatePortalCallback callback) override;
   void AdoptPortal(const blink::PortalToken& portal_token,
                    AdoptPortalCallback callback) override;
+  void CreateFencedFrame(
+      mojo::PendingAssociatedReceiver<blink::mojom::FencedFrameOwnerHost>
+          pending_receiver) override;
   void GetKeepAliveHandleFactory(
       mojo::PendingReceiver<blink::mojom::KeepAliveHandleFactory> receiver)
       override;
@@ -3743,6 +3753,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // The portals owned by this frame. |Portal::owner_render_frame_host_| points
   // back to |this|.
   base::flat_set<std::unique_ptr<Portal>, base::UniquePtrComparator> portals_;
+
+  // The fenced frames owned by this document.
+  std::vector<std::unique_ptr<FencedFrame>> fenced_frames_;
 
   // Tracking active features in this frame, for use in figuring out whether
   // or not it can be frozen.

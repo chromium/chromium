@@ -29,6 +29,7 @@ import "third_party/blink/public/mojom/browser_interface_broker.mojom";
 import "third_party/blink/public/mojom/commit_result/commit_result.mojom";
 import "third_party/blink/public/mojom/conversions/conversions.mojom";
 import "third_party/blink/public/mojom/devtools/console_message.mojom";
+import "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom";
 import "third_party/blink/public/mojom/frame/frame.mojom";
 import "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom";
 import "third_party/blink/public/mojom/frame/frame_owner_properties.mojom";
@@ -625,6 +626,14 @@ interface FrameHost {
           blink.mojom.FrameReplicationState replicated_state,
           blink.mojom.RemoteFrameToken frame_token,
           mojo_base.mojom.UnguessableToken devtools_frame_token);
+
+  // Sent by the frame in a renderer process that hosts/owns a <fencedframe>
+  // element, to the browser process requesting the creation of a new fenced
+  // frame tree that will host the contents of the <fencedframe> element.
+  // `fenced_frame` - the receiver that the browser will bind to receive
+  //                  messages from the renderer.
+  CreateFencedFrame(
+    pending_associated_receiver<blink.mojom.FencedFrameOwnerHost> fenced_frame);
 
   // Asynchronously creates a child frame. A routing ID must be allocated first
   // by calling RenderMessageFilter::GenerateFrameRoutingID()

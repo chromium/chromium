@@ -61,6 +61,7 @@ mojom("mojom_platform") {
     "favicon/favicon_url.mojom",
     "feature_observer/feature_observer.mojom",
     "federated_learning/floc.mojom",
+    "fenced_frame/fenced_frame.mojom",
     "fetch/fetch_api_request.mojom",
     "fetch/fetch_api_response.mojom",
     "file/file_utilities.mojom",

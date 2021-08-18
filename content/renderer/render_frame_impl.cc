@@ -3624,15 +3624,16 @@ blink::WebRemoteFrame* RenderFrameImpl::AdoptPortal(
 }
 
 blink::WebRemoteFrame* RenderFrameImpl::CreateFencedFrame(
-    const blink::WebElement& fenced_frame) {
+    const blink::WebElement& fenced_frame,
+    blink::CrossVariantMojoAssociatedReceiver<
+        blink::mojom::FencedFrameOwnerHostInterfaceBase> receiver) {
   int proxy_routing_id = MSG_ROUTING_NONE;
   blink::mojom::FrameReplicationStatePtr initial_replicated_state =
       blink::mojom::FrameReplicationState::New();
   blink::RemoteFrameToken frame_token;
   base::UnguessableToken devtools_frame_token;
 
-  // TODO(crbug.com/1123606): Call mojom::FrameHost::CreateFencedFrame() once we
-  // introduce it in a subsequent CL.
+  GetFrameHost()->CreateFencedFrame(std::move(receiver));
 
   RenderFrameProxy* proxy = RenderFrameProxy::CreateProxyForPortalOrFencedFrame(
       agent_scheduling_group_, this, proxy_routing_id, frame_token,

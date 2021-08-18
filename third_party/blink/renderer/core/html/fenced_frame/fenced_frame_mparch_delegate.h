@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FENCED_FRAME_FENCED_FRAME_MPARCH_DELEGATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FENCED_FRAME_FENCED_FRAME_MPARCH_DELEGATE_H_
 
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/html_fenced_frame_element.h"
 
@@ -24,6 +26,9 @@ class CORE_EXPORT FencedFrameMPArchDelegate
 
   void DidGetInserted() override;
   void Navigate(const KURL&) override;
+
+ private:
+  mojo::AssociatedRemote<mojom::blink::FencedFrameOwnerHost> remote_;
 };
 
 }  // namespace blink

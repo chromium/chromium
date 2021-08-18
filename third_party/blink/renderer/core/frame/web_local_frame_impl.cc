@@ -99,6 +99,7 @@
 #include "third_party/blink/public/common/context_menu_data/context_menu_params_builder.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"
+#include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/media_player_action.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/tree_scope_type.mojom-blink.h"
@@ -2140,8 +2141,11 @@ RemoteFrame* WebLocalFrameImpl::AdoptPortal(HTMLPortalElement* portal) {
 }
 
 RemoteFrame* WebLocalFrameImpl::CreateFencedFrame(
-    HTMLFencedFrameElement* fenced_frame) {
-  WebRemoteFrame* frame = client_->CreateFencedFrame(fenced_frame);
+    HTMLFencedFrameElement* fenced_frame,
+    mojo::PendingAssociatedReceiver<mojom::blink::FencedFrameOwnerHost>
+        receiver) {
+  WebRemoteFrame* frame =
+      client_->CreateFencedFrame(fenced_frame, std::move(receiver));
   return To<WebRemoteFrameImpl>(frame)->GetFrame();
 }
 

@@ -146,7 +146,9 @@ RemoteFrame* EmptyLocalFrameClient::AdoptPortal(HTMLPortalElement*) {
   return nullptr;
 }
 
-RemoteFrame* EmptyLocalFrameClient::CreateFencedFrame(HTMLFencedFrameElement*) {
+RemoteFrame* EmptyLocalFrameClient::CreateFencedFrame(
+    HTMLFencedFrameElement*,
+    mojo::PendingAssociatedReceiver<mojom::blink::FencedFrameOwnerHost>) {
   return nullptr;
 }
 
