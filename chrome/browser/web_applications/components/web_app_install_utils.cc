@@ -388,7 +388,6 @@ std::vector<GURL> GetValidIconUrlsToDownload(
     }
   }
 
-  // TODO(crbug.com/1152661): Consider eliminating duplicates.
   return web_app_info_icon_urls;
 }
 
