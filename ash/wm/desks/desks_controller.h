@@ -248,6 +248,8 @@ class ASH_EXPORT DesksController : public DesksHelper,
   void CreateAndActivateNewDeskForTemplate(
       const std::u16string& template_name,
       base::OnceCallback<void(bool)> callback) override;
+  bool OnSingleInstanceAppLaunchingFromTemplate(
+      const std::string& app_id) override;
 
   // Updates the default names (e.g. "Desk 1", "Desk 2", ... etc.) given to the
   // desks. This is called when desks are added, removed or reordered to update

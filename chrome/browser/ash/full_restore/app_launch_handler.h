@@ -42,6 +42,11 @@ class AppLaunchHandler : public apps::AppRegistryCache::Observer {
   // separately.
   void LaunchApps();
 
+  // Called before a system web app or chrome app is launched. Lets subclasses
+  // decide if they want to move an existing window associated with `app_id`, or
+  // continue with trying to launch the app.
+  virtual bool ShouldLaunchSystemWebAppOrChromeApp(const std::string& app_id);
+
   // Called before an extension type app is launched. Allows subclasses to
   // perform some setup prior to launching an extension type app.
   virtual void OnExtensionLaunching(const std::string& app_id) = 0;
