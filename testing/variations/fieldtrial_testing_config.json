@@ -2474,27 +2474,6 @@
             ]
         }
     ],
-    "CopyLinkToTextDesktop": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CopyLinkToText",
-                        "PreemptiveLinkToTextGeneration",
-                        "SharedHighlightingV2"
-                    ]
-                }
-            ]
-        }
-    ],
     "CrOSAutoSelect": [
         {
             "platforms": [
@@ -7727,6 +7706,25 @@
         {
             "platforms": [
                 "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SharedHighlightingV2"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SharedHighlightingDesktopV2": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
             ],
             "experiments": [
                 {
