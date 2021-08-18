@@ -4,6 +4,7 @@
 
 #include "fuchsia/engine/browser/navigation_controller_impl.h"
 
+#include "base/bits.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/memory/page_size.h"
 #include "base/strings/strcat.h"

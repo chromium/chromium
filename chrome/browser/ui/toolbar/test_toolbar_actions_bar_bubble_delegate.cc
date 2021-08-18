@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/toolbar/test_toolbar_actions_bar_bubble_delegate.h"
 
+#include "base/callback.h"
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/macros.h"

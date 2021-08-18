@@ -6,6 +6,7 @@
 
 #include "base/strings/stringprintf.h"
 #import "base/test/ios/wait_util.h"
+#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"

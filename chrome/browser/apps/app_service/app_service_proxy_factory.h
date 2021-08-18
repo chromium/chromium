@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_APPS_APP_SERVICE_APP_SERVICE_PROXY_FACTORY_H_
 
 #include "base/memory/singleton.h"
+#include "build/chromeos_buildflags.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 class Profile;
