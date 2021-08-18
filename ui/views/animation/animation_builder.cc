@@ -46,6 +46,9 @@ class AnimationBuilder::Observer : public ui::LayerAnimationObserver {
   void OnLayerAnimationAborted(ui::LayerAnimationSequence* sequence) override;
   void OnLayerAnimationScheduled(ui::LayerAnimationSequence* sequence) override;
 
+ protected:
+  void OnDetachedFromSequence(ui::LayerAnimationSequence* sequence) override;
+
  private:
   using RepeatMap = base::flat_map<ui::LayerAnimationSequence*, int>;
   RepeatMap repeat_map_;
@@ -97,7 +100,6 @@ void AnimationBuilder::Observer::OnLayerAnimationEnded(
   if (running <= 1) {
     if (on_ended_)
       std::move(on_ended_).Run();
-    delete this;
   }
 }
 
@@ -130,6 +132,12 @@ void AnimationBuilder::Observer::OnLayerAnimationScheduled(
     ui::LayerAnimationSequence* sequence) {
   if (on_scheduled_)
     std::move(on_scheduled_).Run();
+}
+
+void AnimationBuilder::Observer::OnDetachedFromSequence(
+    ui::LayerAnimationSequence* sequence) {
+  if (attached_sequences().empty())
+    delete this;
 }
 
 struct AnimationBuilder::Value {
