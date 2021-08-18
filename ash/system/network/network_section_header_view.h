@@ -125,8 +125,7 @@ class MobileSectionHeaderView : public NetworkSectionHeaderView,
   base::OneShotTimer enable_bluetooth_timer_;
 
   // Button that navigates to the Settings mobile data subpage with the eSIM
-  // setup dialog open. This is null when the updatedCellularActivationUi flag
-  // is off or the device is not eSIM-capable.
+  // setup dialog open. This is null when the device is not eSIM-capable.
   TopShortcutButton* add_esim_button_ = nullptr;
 
   // Indicates whether add_esim_button_ should be enabled when the device is
