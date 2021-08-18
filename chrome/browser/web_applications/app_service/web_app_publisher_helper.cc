@@ -116,13 +116,14 @@ void WebAppPublisherHelper::BadgeManagerDelegate::OnAppBadgeUpdated(
 #endif
 
 WebAppPublisherHelper::WebAppPublisherHelper(Profile* profile,
+                                             WebAppProvider* provider,
                                              apps::mojom::AppType app_type,
                                              Delegate* delegate,
                                              bool observe_media_requests)
     : profile_(profile),
+      provider_(provider),
       app_type_(app_type),
-      delegate_(delegate),
-      provider_(WebAppProvider::Get(profile)) {
+      delegate_(delegate) {
   DCHECK(profile_);
   Init(observe_media_requests);
 }
@@ -323,13 +324,12 @@ void WebAppPublisherHelper::UninstallWebApp(
     bool report_abuse) {
   auto origin = url::Origin::Create(web_app->start_url());
 
-  WebAppProvider* provider = WebAppProvider::Get(profile());
-  DCHECK(provider);
+  DCHECK(provider_);
   DCHECK(
-      provider->install_finalizer().CanUserUninstallWebApp(web_app->app_id()));
+      provider_->install_finalizer().CanUserUninstallWebApp(web_app->app_id()));
   webapps::WebappUninstallSource webapp_uninstall_source =
       ConvertUninstallSourceToWebAppUninstallSource(uninstall_source);
-  provider->install_finalizer().UninstallWebApp(
+  provider_->install_finalizer().UninstallWebApp(
       web_app->app_id(), webapp_uninstall_source, base::DoNothing());
   web_app = nullptr;
 

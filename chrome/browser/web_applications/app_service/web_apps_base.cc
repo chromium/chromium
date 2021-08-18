@@ -70,9 +70,11 @@ WebAppsBase::WebAppsBase(
     const mojo::Remote<apps::mojom::AppService>& app_service,
     Profile* profile)
     : profile_(profile),
+      provider_(WebAppProvider::GetForLocalApps(profile_)),
       app_service_(nullptr),
       app_type_(GetWebAppType()),
       publisher_helper_(profile_,
+                        provider_,
                         app_type_,
                         this,
                         ShouldObserveMediaRequests()) {
@@ -104,7 +106,6 @@ void WebAppsBase::Initialize(
     return;
   }
 
-  provider_ = WebAppProvider::Get(profile_);
   DCHECK(provider_);
 
   PublisherBase::Initialize(app_service, app_type_);

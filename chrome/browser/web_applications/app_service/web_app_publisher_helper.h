@@ -76,6 +76,7 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
   using LoadIconCallback = base::OnceCallback<void(apps::mojom::IconValuePtr)>;
 
   WebAppPublisherHelper(Profile* profile,
+                        WebAppProvider* provider,
                         apps::mojom::AppType app_type,
                         Delegate* delegate,
                         bool observe_media_requests);
@@ -291,13 +292,13 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
 
   Profile* const profile_;
 
+  WebAppProvider* const provider_;
+
   // The app type of the publisher. The app type is kSystemWeb if the web apps
   // are serving from Lacros, and the app type is kWeb for all other cases.
   const apps::mojom::AppType app_type_;
 
   Delegate* const delegate_;
-
-  WebAppProvider* const provider_;
 
   base::ScopedObservation<WebAppRegistrar, AppRegistrarObserver>
       registrar_observation_{this};

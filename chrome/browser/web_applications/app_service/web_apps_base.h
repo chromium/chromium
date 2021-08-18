@@ -109,14 +109,14 @@ class WebAppsBase : public apps::PublisherBase,
 
   Profile* const profile_;
 
-  WebAppProvider* provider_ = nullptr;
+  WebAppProvider* const provider_;
 
   // app_service_ is owned by the object that owns this object.
   apps::mojom::AppService* app_service_;
 
   // The app type of the publisher. The app type is kSystemWeb if the web apps
   // are serving from Lacros, and the app type is kWeb for all other cases.
-  apps::mojom::AppType app_type_;
+  const apps::mojom::AppType app_type_;
 
   WebAppPublisherHelper publisher_helper_;
 };
