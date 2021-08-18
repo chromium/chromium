@@ -61,6 +61,28 @@ void RecordAssistantOptInStatus(AssistantOptInFlowStatus status) {
   UMA_HISTOGRAM_ENUMERATION("Assistant.OptInFlowStatus", status, kMaxValue + 1);
 }
 
+void RecordAssistantActivityControlOptInStatus(
+    sync_pb::UserConsentTypes::AssistantActivityControlConsent::SettingType
+        setting_type,
+    bool opted_in) {
+  AssistantOptInFlowStatus status;
+  switch (setting_type) {
+    case AssistantActivityControlConsent::ALL:
+    case AssistantActivityControlConsent::SETTING_TYPE_UNSPECIFIED:
+      status = opted_in ? ACTIVITY_CONTROL_ACCEPTED : ACTIVITY_CONTROL_SKIPPED;
+      break;
+    case AssistantActivityControlConsent::WEB_AND_APP_ACTIVITY:
+      status = opted_in ? ACTIVITY_CONTROL_WAA_ACCEPTED
+                        : ACTIVITY_CONTROL_WAA_SKIPPED;
+      break;
+    case AssistantActivityControlConsent::DEVICE_APPS:
+      status =
+          opted_in ? ACTIVITY_CONTROL_DA_ACCEPTED : ACTIVITY_CONTROL_DA_SKIPPED;
+      break;
+  }
+  RecordAssistantOptInStatus(status);
+}
+
 // Construct SettingsUiSelector for the ConsentFlow UI.
 assistant::SettingsUiSelector GetSettingsUiSelector() {
   assistant::SettingsUiSelector selector;

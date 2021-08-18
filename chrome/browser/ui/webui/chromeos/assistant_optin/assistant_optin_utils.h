@@ -41,11 +41,19 @@ enum AssistantOptInFlowStatus {
   RELATED_INFO_SHOWN = 16,
   RELATED_INFO_ACCEPTED = 17,
   RELATED_INFO_SKIPPED = 18,
+  ACTIVITY_CONTROL_DA_ACCEPTED = 19,
+  ACTIVITY_CONTROL_DA_SKIPPED = 20,
+  ACTIVITY_CONTROL_WAA_ACCEPTED = 21,
+  ACTIVITY_CONTROL_WAA_SKIPPED = 22,
   // Magic constant used by the histogram macros.
-  kMaxValue = VOICE_MATCH_ENROLLMENT_ERROR
+  kMaxValue = ACTIVITY_CONTROL_WAA_SKIPPED
 };
 
 void RecordAssistantOptInStatus(AssistantOptInFlowStatus);
+void RecordAssistantActivityControlOptInStatus(
+    sync_pb::UserConsentTypes::AssistantActivityControlConsent::SettingType
+        setting_type,
+    bool opted_in);
 
 // Construct SettingsUiSelector for the ConsentFlow UI.
 assistant::SettingsUiSelector GetSettingsUiSelector();

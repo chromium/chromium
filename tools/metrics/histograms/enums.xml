@@ -4341,6 +4341,13 @@ others/histograms.xml -->
   <int value="13" label="VOICE_MATCH_ENROLLMENT_DONE"/>
   <int value="14" label="VOICE_MATCH_ENROLLMENT_SKIPPED"/>
   <int value="15" label="VOICE_MATCH_ENROLLMENT_ERROR"/>
+  <int value="16" label="RELATED_INFO_SHOWN"/>
+  <int value="17" label="RELATED_INFO_ACCEPTED"/>
+  <int value="18" label="RELATED_INFO_SKIPPED"/>
+  <int value="19" label="ACTIVITY_CONTROL_DA_ACCEPTED"/>
+  <int value="20" label="ACTIVITY_CONTROL_DA_SKIPPED"/>
+  <int value="21" label="ACTIVITY_CONTROL_WAA_ACCEPTED"/>
+  <int value="22" label="ACTIVITY_CONTROL_WAA_SKIPPED"/>
 </enum>
 
 <enum name="AssistantQueryResponseType">

@@ -304,9 +304,7 @@ void AssistantOptInFlowScreenHandler::OnActivityControlOptInResult(
                                data.setting_type);
   if (opted_in) {
     has_opted_in_any_consent_ = true;
-    // TODO(https://crbug.com/1224850): differentiate which activity control is
-    // accepted.
-    RecordAssistantOptInStatus(ACTIVITY_CONTROL_ACCEPTED);
+    RecordAssistantActivityControlOptInStatus(data.setting_type, opted_in);
     assistant::AssistantSettings::Get()->UpdateSettings(
         GetSettingsUiUpdate(data.consent_token).SerializeAsString(),
         base::BindOnce(
@@ -314,9 +312,7 @@ void AssistantOptInFlowScreenHandler::OnActivityControlOptInResult(
             weak_factory_.GetWeakPtr()));
   } else {
     has_opted_out_any_consent_ = true;
-    // TODO(https://crbug.com/1224850): differentiate which activity control is
-    // skipped.
-    RecordAssistantOptInStatus(ACTIVITY_CONTROL_SKIPPED);
+    RecordAssistantActivityControlOptInStatus(data.setting_type, opted_in);
     profile->GetPrefs()->SetInteger(assistant::prefs::kAssistantConsentStatus,
                                     assistant::prefs::ConsentStatus::kUnknown);
     if (pending_consent_data_.empty()) {
