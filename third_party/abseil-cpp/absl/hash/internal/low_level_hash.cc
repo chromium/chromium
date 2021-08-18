@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "absl/hash/internal/wyhash.h"
+#include "absl/hash/internal/low_level_hash.h"
 
 #include "absl/base/internal/unaligned_access.h"
 #include "absl/numeric/int128.h"
@@ -21,14 +21,14 @@ namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace hash_internal {
 
-static uint64_t WyhashMix(uint64_t v0, uint64_t v1) {
+static uint64_t Mix(uint64_t v0, uint64_t v1) {
   absl::uint128 p = v0;
   p *= v1;
   return absl::Uint128Low64(p) ^ absl::Uint128High64(p);
 }
 
-uint64_t Wyhash(const void* data, size_t len, uint64_t seed,
-                const uint64_t salt[]) {
+uint64_t LowLevelHash(const void* data, size_t len, uint64_t seed,
+                      const uint64_t salt[]) {
   const uint8_t* ptr = static_cast<const uint8_t*>(data);
   uint64_t starting_length = static_cast<uint64_t>(len);
   uint64_t current_state = seed ^ salt[0];
@@ -49,12 +49,12 @@ uint64_t Wyhash(const void* data, size_t len, uint64_t seed,
       uint64_t g = absl::base_internal::UnalignedLoad64(ptr + 48);
       uint64_t h = absl::base_internal::UnalignedLoad64(ptr + 56);
 
-      uint64_t cs0 = WyhashMix(a ^ salt[1], b ^ current_state);
-      uint64_t cs1 = WyhashMix(c ^ salt[2], d ^ current_state);
+      uint64_t cs0 = Mix(a ^ salt[1], b ^ current_state);
+      uint64_t cs1 = Mix(c ^ salt[2], d ^ current_state);
       current_state = (cs0 ^ cs1);
 
-      uint64_t ds0 = WyhashMix(e ^ salt[3], f ^ duplicated_state);
-      uint64_t ds1 = WyhashMix(g ^ salt[4], h ^ duplicated_state);
+      uint64_t ds0 = Mix(e ^ salt[3], f ^ duplicated_state);
+      uint64_t ds1 = Mix(g ^ salt[4], h ^ duplicated_state);
       duplicated_state = (ds0 ^ ds1);
 
       ptr += 64;
@@ -70,7 +70,7 @@ uint64_t Wyhash(const void* data, size_t len, uint64_t seed,
     uint64_t a = absl::base_internal::UnalignedLoad64(ptr);
     uint64_t b = absl::base_internal::UnalignedLoad64(ptr + 8);
 
-    current_state = WyhashMix(a ^ salt[1], b ^ current_state);
+    current_state = Mix(a ^ salt[1], b ^ current_state);
 
     ptr += 16;
     len -= 16;
@@ -101,9 +101,9 @@ uint64_t Wyhash(const void* data, size_t len, uint64_t seed,
     b = 0;
   }
 
-  uint64_t w = WyhashMix(a ^ salt[1], b ^ current_state);
+  uint64_t w = Mix(a ^ salt[1], b ^ current_state);
   uint64_t z = salt[1] ^ starting_length;
-  return WyhashMix(w, z);
+  return Mix(w, z);
 }
 
 }  // namespace hash_internal

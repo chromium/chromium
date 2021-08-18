@@ -666,7 +666,6 @@ absl_cc_library(
     absl::hash_policy_traits
     absl::hashtable_debug_hooks
     absl::have_sse
-    absl::layout
     absl::memory
     absl::meta
     absl::optional

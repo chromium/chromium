@@ -42,7 +42,7 @@
 #include "absl/base/internal/unaligned_access.h"
 #include "absl/base/port.h"
 #include "absl/container/fixed_array.h"
-#include "absl/hash/internal/wyhash.h"
+#include "absl/hash/internal/low_level_hash.h"
 #include "absl/meta/type_traits.h"
 #include "absl/numeric/int128.h"
 #include "absl/strings/string_view.h"
@@ -874,14 +874,14 @@ class ABSL_DLL MixingHashState : public HashStateBase<MixingHashState> {
     return static_cast<uint64_t>(m ^ (m >> (sizeof(m) * 8 / 2)));
   }
 
-  // An extern to avoid bloat on a direct call to Wyhash() with fixed values for
-  // both the seed and salt parameters.
-  static uint64_t WyhashImpl(const unsigned char* data, size_t len);
+  // An extern to avoid bloat on a direct call to LowLevelHash() with fixed
+  // values for both the seed and salt parameters.
+  static uint64_t LowLevelHashImpl(const unsigned char* data, size_t len);
 
   ABSL_ATTRIBUTE_ALWAYS_INLINE static uint64_t Hash64(const unsigned char* data,
                                                       size_t len) {
 #ifdef ABSL_HAVE_INTRINSIC_INT128
-    return WyhashImpl(data, len);
+    return LowLevelHashImpl(data, len);
 #else
     return absl::hash_internal::CityHash64(reinterpret_cast<const char*>(data), len);
 #endif
@@ -945,8 +945,8 @@ inline uint64_t MixingHashState::CombineContiguousImpl(
 inline uint64_t MixingHashState::CombineContiguousImpl(
     uint64_t state, const unsigned char* first, size_t len,
     std::integral_constant<int, 8> /* sizeof_size_t */) {
-  // For large values we use Wyhash or CityHash depending on the platform, for
-  // small ones we just use a multiplicative hash.
+  // For large values we use LowLevelHash or CityHash depending on the platform,
+  // for small ones we just use a multiplicative hash.
   uint64_t v;
   if (len > 16) {
     if (ABSL_PREDICT_FALSE(len > PiecewiseChunkSize())) {

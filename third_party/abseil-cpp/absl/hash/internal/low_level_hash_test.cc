@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "absl/hash/internal/wyhash.h"
+#include "absl/hash/internal/low_level_hash.h"
 
 #include "absl/strings/escaping.h"
 #include "gmock/gmock.h"
@@ -28,47 +28,47 @@ static const uint64_t kSalt[5] = {0xa0761d6478bd642f, 0xe7037ed1a0b428dbl,
 // Note: We don't account for endianness, so the values here are only correct if
 // you're also running on a little endian platform.
 
-TEST(WyhashTest, EmptyString) {
+TEST(LowLevelHashTest, EmptyString) {
   const std::string s = "";
-  EXPECT_EQ(
-      absl::hash_internal::Wyhash(s.c_str(), s.length(), kCurrentSeed, kSalt),
-      4808886099364463827);
+  EXPECT_EQ(absl::hash_internal::LowLevelHash(s.c_str(), s.length(),
+                                              kCurrentSeed, kSalt),
+            4808886099364463827);
 }
 
-TEST(WyhashTest, Spaces) {
+TEST(LowLevelHashTest, Spaces) {
   const std::string s = "   ";
-  EXPECT_EQ(
-      absl::hash_internal::Wyhash(s.c_str(), s.length(), kCurrentSeed, kSalt),
-      1686201463024549249);
+  EXPECT_EQ(absl::hash_internal::LowLevelHash(s.c_str(), s.length(),
+                                              kCurrentSeed, kSalt),
+            1686201463024549249);
 }
 
-TEST(WyhashTest, RepeatingString) {
+TEST(LowLevelHashTest, RepeatingString) {
   const std::string s = "aaaa";
-  EXPECT_EQ(
-      absl::hash_internal::Wyhash(s.c_str(), s.length(), kCurrentSeed, kSalt),
-      6646112255271966632);
+  EXPECT_EQ(absl::hash_internal::LowLevelHash(s.c_str(), s.length(),
+                                              kCurrentSeed, kSalt),
+            6646112255271966632);
 }
 
-TEST(WyhashTest, HexString) {
+TEST(LowLevelHashTest, HexString) {
   const std::string small = "\x01\x02\x03";
   const std::string med = "\x01\x02\x03\x04";
 
-  EXPECT_EQ(absl::hash_internal::Wyhash(small.c_str(), small.length(),
-                                        kCurrentSeed, kSalt),
+  EXPECT_EQ(absl::hash_internal::LowLevelHash(small.c_str(), small.length(),
+                                              kCurrentSeed, kSalt),
             11989428023081740911ULL);
-  EXPECT_EQ(absl::hash_internal::Wyhash(med.c_str(), med.length(), kCurrentSeed,
-                                        kSalt),
+  EXPECT_EQ(absl::hash_internal::LowLevelHash(med.c_str(), med.length(),
+                                              kCurrentSeed, kSalt),
             9765997711188871556ULL);
 }
 
-TEST(WyhashTest, Words) {
+TEST(LowLevelHashTest, Words) {
   const std::string s = "third_party|wyhash|64";
-  EXPECT_EQ(
-      absl::hash_internal::Wyhash(s.c_str(), s.length(), kCurrentSeed, kSalt),
-      3702018632387611330);
+  EXPECT_EQ(absl::hash_internal::LowLevelHash(s.c_str(), s.length(),
+                                              kCurrentSeed, kSalt),
+            3702018632387611330);
 }
 
-TEST(WyhashTest, LongString) {
+TEST(LowLevelHashTest, LongString) {
   const std::string s =
       "AbCdEfGhIjKlMnOpQrStUvWxYz0123456789AbCdEfGhIjKlMnOpQrStUvWxYz"
       "0123456789AbCdEfGhIjKlMnOpQrStUvWxYz0123456789AbCdEfGhIjKlMnOp"
@@ -76,12 +76,12 @@ TEST(WyhashTest, LongString) {
       "GhIjKlMnOpQrStUvWxYz0123456789AbCdEfGhIjKlMnOpQrStUvWxYz012345"
       "6789AbCdEfGhIjKlMnOpQrStUvWxYz0123456789";
 
-  EXPECT_EQ(
-      absl::hash_internal::Wyhash(s.c_str(), s.length(), kCurrentSeed, kSalt),
-      9245411362605796064ULL);
+  EXPECT_EQ(absl::hash_internal::LowLevelHash(s.c_str(), s.length(),
+                                              kCurrentSeed, kSalt),
+            9245411362605796064ULL);
 }
 
-TEST(WyhashTest, BigReference) {
+TEST(LowLevelHashTest, BigReference) {
   struct ExpectedResult {
     absl::string_view base64_data;
     uint64_t seed;
@@ -477,8 +477,8 @@ TEST(WyhashTest, BigReference) {
   for (const auto& expected_result : expected_results) {
     std::string str;
     ASSERT_TRUE(absl::Base64Unescape(expected_result.base64_data, &str));
-    EXPECT_EQ(absl::hash_internal::Wyhash(str.data(), str.size(),
-                                          expected_result.seed, kSalt),
+    EXPECT_EQ(absl::hash_internal::LowLevelHash(str.data(), str.size(),
+                                                expected_result.seed, kSalt),
               expected_result.hash);
   }
 }

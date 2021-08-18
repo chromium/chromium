@@ -598,7 +598,6 @@ cc_library(
         ":hashtable_debug_hooks",
         ":hashtablez_sampler",
         ":have_sse",
-        ":layout",
         "//absl/base:config",
         "//absl/base:core_headers",
         "//absl/base:endian",

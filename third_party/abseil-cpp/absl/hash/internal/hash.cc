@@ -46,21 +46,22 @@ uint64_t MixingHashState::CombineLargeContiguousImpl64(
 
 ABSL_CONST_INIT const void* const MixingHashState::kSeed = &kSeed;
 
-// The salt array used by Wyhash. This array is NOT the mechanism used to make
-// absl::Hash non-deterministic between program invocations.  See `Seed()` for
-// that mechanism.
+// The salt array used by LowLevelHash. This array is NOT the mechanism used to
+// make absl::Hash non-deterministic between program invocations.  See `Seed()`
+// for that mechanism.
 //
 // Any random values are fine. These values are just digits from the decimal
 // part of pi.
 // https://en.wikipedia.org/wiki/Nothing-up-my-sleeve_number
-constexpr uint64_t kWyhashSalt[5] = {
+constexpr uint64_t kHashSalt[5] = {
     uint64_t{0x243F6A8885A308D3}, uint64_t{0x13198A2E03707344},
     uint64_t{0xA4093822299F31D0}, uint64_t{0x082EFA98EC4E6C89},
     uint64_t{0x452821E638D01377},
 };
 
-uint64_t MixingHashState::WyhashImpl(const unsigned char* data, size_t len) {
-  return Wyhash(data, len, Seed(), kWyhashSalt);
+uint64_t MixingHashState::LowLevelHashImpl(const unsigned char* data,
+                                           size_t len) {
+  return LowLevelHash(data, len, Seed(), kHashSalt);
 }
 
 }  // namespace hash_internal

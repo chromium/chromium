@@ -2145,6 +2145,8 @@ EXPORTS
     ?LogSeverityName@absl@@YAPEBDW4LogSeverity@1@@Z
     ?LossyAdd@CordzUpdateTracker@cord_internal@absl@@QEAAXAEBV123@@Z
     ?LossyAdd@CordzUpdateTracker@cord_internal@absl@@QEAAXW4MethodIdentifier@123@_J@Z
+    ?LowLevelHash@hash_internal@absl@@YA_KPEBX_K1QEB_K@Z
+    ?LowLevelHashImpl@MixingHashState@hash_internal@absl@@CA_KPEBE_K@Z
     ?MakeConcat@CordForest@absl@@AEAAPEAUCordRep@cord_internal@2@PEAU342@0@Z
     ?MakeDuration@time_internal@absl@@YA?AVDuration@2@_J0@Z
     ?MakeDuration@time_internal@absl@@YA?AVDuration@2@_JI@Z
@@ -2598,8 +2600,6 @@ EXPORTS
     ?Write@BufferRawSink@str_format_internal@absl@@QEAAXVstring_view@3@@Z
     ?Write@FILERawSink@str_format_internal@absl@@QEAAXVstring_view@3@@Z
     ?Write@FormatRawSinkImpl@str_format_internal@absl@@QEAAXVstring_view@3@@Z
-    ?Wyhash@hash_internal@absl@@YA_KPEBX_K1QEB_K@Z
-    ?WyhashImpl@MixingHashState@hash_internal@absl@@CA_KPEBE_K@Z
     ?ZeroDuration@absl@@YA?AVDuration@1@XZ
     ?__add_back_capacity@?$deque@PEBVImpl@time_zone@cctz@time_internal@absl@@V?$allocator@PEBVImpl@time_zone@cctz@time_internal@absl@@@__1@std@@@__1@std@@AEAAXXZ
     ?__addr@?$__temp_value@UTransition@cctz@time_internal@absl@@V?$allocator@UTransition@cctz@time_internal@absl@@@__1@std@@@__1@std@@QEAAPEAUTransition@cctz@time_internal@absl@@XZ

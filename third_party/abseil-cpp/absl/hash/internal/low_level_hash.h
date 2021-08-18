@@ -12,16 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-// This file provides the Google-internal implementation of the Wyhash
-// algorithm.
+// This file provides the Google-internal implementation of LowLevelHash.
 //
-// Wyhash is a fast hash function for hash tables, the fastest we've currently
-// (late 2020) found that passes the SMHasher tests. The algorithm relies on
-// intrinsic 128-bit multiplication for speed. This is not meant to be secure -
-// just fast.
+// LowLevelHash is a fast hash function for hash tables, the fastest we've
+// currently (late 2020) found that passes the SMHasher tests. The algorithm
+// relies on intrinsic 128-bit multiplication for speed. This is not meant to be
+// secure - just fast.
+//
+// It is closely based on a version of wyhash, but does not maintain or
+// guarantee future compatibility with it.
 
-#ifndef ABSL_HASH_INTERNAL_WYHASH_H_
-#define ABSL_HASH_INTERNAL_WYHASH_H_
+#ifndef ABSL_HASH_INTERNAL_LOW_LEVEL_HASH_H_
+#define ABSL_HASH_INTERNAL_LOW_LEVEL_HASH_H_
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -38,11 +40,11 @@ namespace hash_internal {
 // To allow all hashable types (including string_view and Span) to depend on
 // this algorithm, we keep the API low-level, with as few dependencies as
 // possible.
-uint64_t Wyhash(const void* data, size_t len, uint64_t seed,
-                const uint64_t salt[5]);
+uint64_t LowLevelHash(const void* data, size_t len, uint64_t seed,
+                      const uint64_t salt[5]);
 
 }  // namespace hash_internal
 ABSL_NAMESPACE_END
 }  // namespace absl
 
-#endif  // ABSL_HASH_INTERNAL_WYHASH_H_
+#endif  // ABSL_HASH_INTERNAL_LOW_LEVEL_HASH_H_

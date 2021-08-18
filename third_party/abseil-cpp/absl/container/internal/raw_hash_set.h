@@ -112,7 +112,6 @@
 #include "absl/container/internal/hashtable_debug_hooks.h"
 #include "absl/container/internal/hashtablez_sampler.h"
 #include "absl/container/internal/have_sse.h"
-#include "absl/container/internal/layout.h"
 #include "absl/memory/memory.h"
 #include "absl/meta/type_traits.h"
 #include "absl/numeric/bits.h"
@@ -625,6 +624,20 @@ inline void SetCtrl(size_t i, h2_t h, size_t capacity, ctrl_t* ctrl,
   SetCtrl(i, static_cast<ctrl_t>(h), capacity, ctrl, slot, slot_size);
 }
 
+// The allocated block consists of `capacity + 1 + NumClonedBytes()` control
+// bytes followed by `capacity` slots, which must be aligned to `slot_align`.
+// SlotOffset returns the offset of the slots into the allocated block.
+inline size_t SlotOffset(size_t capacity, size_t slot_align) {
+  assert(IsValidCapacity(capacity));
+  const size_t num_control_bytes = capacity + 1 + NumClonedBytes();
+  return (num_control_bytes + slot_align - 1) & (~slot_align + 1);
+}
+
+// Returns the size of the allocated block. See also above comment.
+inline size_t AllocSize(size_t capacity, size_t slot_size, size_t slot_align) {
+  return SlotOffset(capacity, slot_align) + capacity * slot_size;
+}
+
 // Policy: a policy defines how to perform different operations on
 // the slots of the hashtable (see hash_policy_traits.h for the full interface
 // of policy).
@@ -680,15 +693,6 @@ class raw_hash_set {
   // Give an early error when key_type is not hashable/eq.
   auto KeyTypeCanBeHashed(const Hash& h, const key_type& k) -> decltype(h(k));
   auto KeyTypeCanBeEq(const Eq& eq, const key_type& k) -> decltype(eq(k, k));
-
-  using Layout = absl::container_internal::Layout<ctrl_t, slot_type>;
-
-  static Layout MakeLayout(size_t capacity) {
-    assert(IsValidCapacity(capacity));
-    // The extra control bytes are for 1 sentinel byte followed by
-    // NumClonedBytes() bytes that are cloned from the beginning.
-    return Layout(capacity + 1 + NumClonedBytes(), capacity);
-  }
 
   using AllocTraits = absl::allocator_traits<allocator_type>;
   using SlotAlloc = typename absl::allocator_traits<
@@ -1610,11 +1614,12 @@ class raw_hash_set {
       infoz() = Sample();
     }
 
-    auto layout = MakeLayout(capacity_);
-    char* mem = static_cast<char*>(
-        Allocate<Layout::Alignment()>(&alloc_ref(), layout.AllocSize()));
-    ctrl_ = layout.template Pointer<0>(mem);
-    slots_ = layout.template Pointer<1>(mem);
+    char* mem = static_cast<char*>(Allocate<alignof(slot_type)>(
+        &alloc_ref(),
+        AllocSize(capacity_, sizeof(slot_type), alignof(slot_type))));
+    ctrl_ = reinterpret_cast<ctrl_t*>(mem);
+    slots_ = reinterpret_cast<slot_type*>(
+        mem + SlotOffset(capacity_, alignof(slot_type)));
     ResetCtrl(capacity_, ctrl_, slots_, sizeof(slot_type));
     reset_growth_left();
     infoz().RecordStorageChanged(size_, capacity_);
@@ -1627,10 +1632,11 @@ class raw_hash_set {
         PolicyTraits::destroy(&alloc_ref(), slots_ + i);
       }
     }
-    auto layout = MakeLayout(capacity_);
     // Unpoison before returning the memory to the allocator.
     SanitizerUnpoisonMemoryRegion(slots_, sizeof(slot_type) * capacity_);
-    Deallocate<Layout::Alignment()>(&alloc_ref(), ctrl_, layout.AllocSize());
+    Deallocate<alignof(slot_type)>(
+        &alloc_ref(), ctrl_,
+        AllocSize(capacity_, sizeof(slot_type), alignof(slot_type)));
     ctrl_ = EmptyGroup();
     slots_ = nullptr;
     size_ = 0;
@@ -1661,9 +1667,9 @@ class raw_hash_set {
     if (old_capacity) {
       SanitizerUnpoisonMemoryRegion(old_slots,
                                     sizeof(slot_type) * old_capacity);
-      auto layout = MakeLayout(old_capacity);
-      Deallocate<Layout::Alignment()>(&alloc_ref(), old_ctrl,
-                                      layout.AllocSize());
+      Deallocate<alignof(slot_type)>(
+          &alloc_ref(), old_ctrl,
+          AllocSize(old_capacity, sizeof(slot_type), alignof(slot_type)));
     }
     infoz().RecordRehash(total_probe_length);
   }
@@ -1948,8 +1954,7 @@ struct HashtableDebugAccess<Set, absl::void_t<typename Set::raw_hash_set>> {
   static size_t AllocatedByteSize(const Set& c) {
     size_t capacity = c.capacity_;
     if (capacity == 0) return 0;
-    auto layout = Set::MakeLayout(capacity);
-    size_t m = layout.AllocSize();
+    size_t m = AllocSize(capacity, sizeof(Slot), alignof(Slot));
 
     size_t per_slot = Traits::space_used(static_cast<const Slot*>(nullptr));
     if (per_slot != ~size_t{}) {
@@ -1967,8 +1972,8 @@ struct HashtableDebugAccess<Set, absl::void_t<typename Set::raw_hash_set>> {
   static size_t LowerBoundAllocatedByteSize(size_t size) {
     size_t capacity = GrowthToLowerboundCapacity(size);
     if (capacity == 0) return 0;
-    auto layout = Set::MakeLayout(NormalizeCapacity(capacity));
-    size_t m = layout.AllocSize();
+    size_t m =
+        AllocSize(NormalizeCapacity(capacity), sizeof(Slot), alignof(Slot));
     size_t per_slot = Traits::space_used(static_cast<const Slot*>(nullptr));
     if (per_slot != ~size_t{}) {
       m += per_slot * size;

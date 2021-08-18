@@ -61,9 +61,6 @@ ABSL_FLAG(
     "Even more long long long long long long long long long long long long "
     "help message.");
 
-ABSL_RETIRED_FLAG(int64_t, usage_reporting_test_flag_07, 1,
-                  "usage_reporting_test_flag_07 help message");
-
 namespace {
 
 namespace flags = absl::flags_internal;
