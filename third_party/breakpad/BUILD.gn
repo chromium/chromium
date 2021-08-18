@@ -486,6 +486,14 @@ if (is_mac) {
   }
 }
 
+# TODO(thakis): Remove this once we roll breakpad.
+# Upstream fixes we need:
+# https://chromium.googlesource.com/breakpad/breakpad/+/0d9416d3bfa659
+# https://chromium.googlesource.com/breakpad/breakpad/+/32096a2dc8f8a7
+config("temp_wunreach_config") {
+  cflags = [ "-Wno-unreachable-code-break" ]
+}
+
 if (is_linux || is_chromeos || is_android) {
   if (current_toolchain == host_toolchain) {
     executable("symupload") {
@@ -509,6 +517,7 @@ if (is_linux || is_chromeos || is_android) {
         "breakpad/src/third_party",
       ]
 
+      configs += [ ":temp_wunreach_config" ]
       configs += [ ":tools_config" ]
 
       libs = [ "dl" ]
@@ -810,6 +819,8 @@ if (is_linux || is_chromeos || is_android) {
     ]
 
     include_dirs = [ "breakpad/src" ]
+
+    configs += [ ":temp_wunreach_config" ]
 
     deps = [ ":client" ]
   }
