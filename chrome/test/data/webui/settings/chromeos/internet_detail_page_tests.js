@@ -155,11 +155,17 @@ suite('InternetDetailPage', function() {
     });
   });
 
-  function init() {
+  /**
+   * @param {boolean=} opt_doNotProvidePrefs If provided, determine whether
+   *     prefs should be provided for the element.
+   */
+  function init(opt_doNotProvidePrefs) {
     internetDetailPage =
         document.createElement('settings-internet-detail-page');
     assertTrue(!!internetDetailPage);
-    internetDetailPage.prefs = Object.assign({}, prefs_);
+    if (!opt_doNotProvidePrefs) {
+      internetDetailPage.prefs = Object.assign({}, prefs_);
+    }
     document.body.appendChild(internetDetailPage);
   }
 
@@ -385,8 +391,12 @@ suite('InternetDetailPage', function() {
   });
 
   suite('DetailsPageVPN', function() {
-    setup(function() {
-      init();
+    /**
+     * @param {boolean=} opt_doNotProvidePrefs If provided, determine whether
+     *     prefs should be provided for the element.
+     */
+    function initVpn(opt_doNotProvidePrefs) {
+      init(opt_doNotProvidePrefs);
       const mojom = chromeos.networkConfig.mojom;
       mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kVPN, true);
       setNetworksForTest([
@@ -394,9 +404,10 @@ suite('InternetDetailPage', function() {
       ]);
 
       internetDetailPage.init('vpn1_guid', 'VPN', 'vpn1');
-    });
+    }
 
     test('VPN config allowed', function() {
+      initVpn();
       prefs_.vpn_config_allowed.value = true;
       internetDetailPage.prefs = Object.assign({}, prefs_);
       return flushAsync().then(() => {
@@ -407,6 +418,7 @@ suite('InternetDetailPage', function() {
     });
 
     test('VPN config disallowed', function() {
+      initVpn();
       prefs_.vpn_config_allowed.value = false;
       internetDetailPage.prefs = Object.assign({}, prefs_);
       return flushAsync().then(() => {
@@ -414,6 +426,15 @@ suite('InternetDetailPage', function() {
         assertTrue(disconnectButton.hasAttribute('enforced_'));
         assertTrue(!!disconnectButton.$$('cr-policy-pref-indicator'));
       });
+    });
+
+    // Regression test for issue fixed as part of https://crbug.com/1191626
+    // where page would throw an exception if prefs were undefined. Prefs are
+    // expected to be undefined if InternetDetailPage is loaded directly (e.g.,
+    // when the user clicks on the network in Quick Settings).
+    test('VPN without prefs', function() {
+      initVpn(/*opt_doNotProvidePrefs=*/ true);
+      return flushAsync();
     });
   });
 

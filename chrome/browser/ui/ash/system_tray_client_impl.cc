@@ -28,7 +28,6 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
@@ -52,11 +51,6 @@
 #include "chromeos/network/network_util.h"
 #include "chromeos/network/onc/onc_utils.h"
 #include "chromeos/network/tether_constants.h"
-#include "components/arc/arc_service_manager.h"
-#include "components/arc/metrics/arc_metrics_constants.h"
-#include "components/arc/mojom/net.mojom.h"
-#include "components/arc/session/arc_bridge_service.h"
-#include "components/arc/session/connection_holder.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/user_manager/user_manager.h"
@@ -112,12 +106,6 @@ const chromeos::NetworkState* GetNetworkState(const std::string& network_id) {
   return chromeos::NetworkHandler::Get()
       ->network_state_handler()
       ->GetNetworkStateFromGuid(network_id);
-}
-
-bool IsArcVpn(const std::string& network_id) {
-  const chromeos::NetworkState* network_state = GetNetworkState(network_id);
-  return network_state && network_state->type() == shill::kTypeVPN &&
-         network_state->GetVpnProviderType() == shill::kProviderArcVpn;
 }
 
 bool ShouldOpenCellularSetupPsimFlowOnClick(const std::string& network_id) {
@@ -548,20 +536,6 @@ void SystemTrayClientImpl::ShowNetworkSettingsHelper(
     return;
   if (!session_manager->IsSessionStarted()) {
     chromeos::InternetDetailDialog::ShowDialog(network_id);
-    return;
-  }
-
-  if (IsArcVpn(network_id)) {
-    // Special case: clicking on a connected ARCVPN will ask Android to
-    // show the settings dialog.
-    auto* net_instance = ARC_GET_INSTANCE_FOR_METHOD(
-        arc::ArcServiceManager::Get()->arc_bridge_service()->net(),
-        ConfigureAndroidVpn);
-    if (!net_instance) {
-      LOG(ERROR) << "User requested VPN configuration but API is unavailable";
-      return;
-    }
-    net_instance->ConfigureAndroidVpn();
     return;
   }
 
