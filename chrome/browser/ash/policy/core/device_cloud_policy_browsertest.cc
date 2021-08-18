@@ -17,7 +17,6 @@
 #include "base/values.h"
 #include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
-#include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
@@ -36,7 +35,6 @@
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
-#include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/core/common/policy_switches.h"
@@ -61,37 +59,6 @@
 #include "url/gurl.h"
 
 namespace policy {
-
-namespace {
-
-class DeviceCloudPolicyBrowserTest : public InProcessBrowserTest {
- protected:
-  DeviceCloudPolicyBrowserTest()
-      : mock_client_(std::make_unique<MockCloudPolicyClient>()) {}
-
-  std::unique_ptr<MockCloudPolicyClient> mock_client_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeviceCloudPolicyBrowserTest);
-};
-
-}  // namespace
-
-IN_PROC_BROWSER_TEST_F(DeviceCloudPolicyBrowserTest, Initializer) {
-  BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  // Initializer exists at first.
-  EXPECT_TRUE(connector->GetDeviceCloudPolicyInitializer());
-
-  // Initializer is deleted when the manager connects.
-  connector->GetDeviceCloudPolicyManager()->StartConnection(
-      std::move(mock_client_), connector->GetInstallAttributes());
-  EXPECT_FALSE(connector->GetDeviceCloudPolicyInitializer());
-
-  // Initializer is restarted when the manager disconnects.
-  connector->GetDeviceCloudPolicyManager()->Disconnect();
-  EXPECT_TRUE(connector->GetDeviceCloudPolicyInitializer());
-}
 
 namespace {
 

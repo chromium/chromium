@@ -161,11 +161,6 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
   }
 
   // May be nullptr, e.g. for devices managed by Active Directory.
-  DeviceCloudPolicyInitializer* GetDeviceCloudPolicyInitializer() const {
-    return device_cloud_policy_initializer_.get();
-  }
-
-  // May be nullptr, e.g. for devices managed by Active Directory.
   DeviceLocalAccountPolicyService* GetDeviceLocalAccountPolicyService() const {
     return device_local_account_policy_service_.get();
   }

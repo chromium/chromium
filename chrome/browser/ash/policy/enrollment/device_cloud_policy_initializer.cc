@@ -61,12 +61,11 @@ void DeviceCloudPolicyInitializer::Init() {
 
   is_initialized_ = true;
   policy_store_->AddObserver(this);
-  state_keys_update_subscription_ =
-      state_keys_broker_->RegisterUpdateCallback(base::BindRepeating(
-          &DeviceCloudPolicyInitializer::TryToStartConnection,
-          base::Unretained(this), StartConnectionReason::kStateKeysStored));
+  state_keys_update_subscription_ = state_keys_broker_->RegisterUpdateCallback(
+      base::BindRepeating(&DeviceCloudPolicyInitializer::TryToStartConnection,
+                          base::Unretained(this)));
 
-  TryToStartConnection(StartConnectionReason::kInitialCreation);
+  TryToStartConnection();
 }
 
 void DeviceCloudPolicyInitializer::Shutdown() {
@@ -225,7 +224,7 @@ EnrollmentConfig DeviceCloudPolicyInitializer::GetPrescribedEnrollmentConfig()
 }
 
 void DeviceCloudPolicyInitializer::OnStoreLoaded(CloudPolicyStore* store) {
-  TryToStartConnection(StartConnectionReason::kCloudPolicyLoaded);
+  TryToStartConnection();
 }
 
 void DeviceCloudPolicyInitializer::OnStoreError(CloudPolicyStore* store) {
@@ -244,8 +243,7 @@ std::unique_ptr<CloudPolicyClient> DeviceCloudPolicyInitializer::CreateClient(
       CloudPolicyClient::DeviceDMTokenCallback());
 }
 
-void DeviceCloudPolicyInitializer::TryToStartConnection(
-    DeviceCloudPolicyInitializer::StartConnectionReason reason) {
+void DeviceCloudPolicyInitializer::TryToStartConnection() {
   if (install_attributes_->IsActiveDirectoryManaged()) {
     // This will go away once ChromeAd deprecation is completed.
     return;
@@ -255,17 +253,13 @@ void DeviceCloudPolicyInitializer::TryToStartConnection(
   // Server we could drop the `state_keys_broker_->available()` requirement.
   if (policy_store_->is_initialized() && policy_store_->has_policy() &&
       state_keys_broker_->available()) {
-    StartConnection(reason, CreateClient(enterprise_service_));
+    StartConnection(CreateClient(enterprise_service_));
   }
 }
 
 void DeviceCloudPolicyInitializer::StartConnection(
-    DeviceCloudPolicyInitializer::StartConnectionReason reason,
     std::unique_ptr<CloudPolicyClient> client) {
   if (!policy_manager_->IsConnected()) {
-    LOG(WARNING)
-        << "DeviceCloudPolicyInitializer will be removed soon with reason: "
-        << static_cast<int>(reason);
     policy_manager_->StartConnection(std::move(client), install_attributes_);
   }
 }

@@ -70,6 +70,7 @@ class DeviceCloudPolicyInitializer : public CloudPolicyStore::Observer {
   // enrollment recovery, or already-present install attributes. Note that
   // |config.management_domain| may be non-empty even if |config.mode| is
   // MODE_NONE.
+  // TODO(crbug.com/1236174): Remove EnrollmentConfig from initializer.
   EnrollmentConfig GetPrescribedEnrollmentConfig() const;
 
   // CloudPolicyStore::Observer:
@@ -80,30 +81,12 @@ class DeviceCloudPolicyInitializer : public CloudPolicyStore::Observer {
       scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory);
 
  private:
-
-  // TODO(crbug.com/705758) When DeviceCloudPolicyInitializer starts connection,
-  // that means it will be deleted soon by
-  // |BrowserPolicyConnectorAsh::OnDeviceCloudPolicyManagerConnected|.
-  // Sometimes this happens before |EnterpriseEnrollmentHelperImpl::DoEnroll|
-  // initiates |StartConnection| and leads to a crash. Track the reason of
-  // |StartConnection| call to find who initiates removal. Remove once the crash
-  // is resolved.
-  enum class StartConnectionReason {
-    // |StartConnection| succeeds after call from |Init|.
-    kInitialCreation = 0,
-    // |StartConnection| succeeds after notification from |state_keys_broker_|.
-    kStateKeysStored = 1,
-    // |StartConnection| succeeds after notification from |policy_store_|.
-    kCloudPolicyLoaded = 2,
-  };
-
   // Creates a new CloudPolicyClient.
   std::unique_ptr<CloudPolicyClient> CreateClient(
       DeviceManagementService* device_management_service);
 
-  void TryToStartConnection(StartConnectionReason reason);
-  void StartConnection(StartConnectionReason reason,
-                       std::unique_ptr<CloudPolicyClient> client);
+  void TryToStartConnection();
+  void StartConnection(std::unique_ptr<CloudPolicyClient> client);
 
   // Get a machine flag from |statistics_provider_|, returning the given
   // |default_value| if not present.
