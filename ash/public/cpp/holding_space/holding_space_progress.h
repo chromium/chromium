@@ -29,6 +29,17 @@ class ASH_PUBLIC_EXPORT HoldingSpaceProgress {
                        const absl::optional<int64_t>& total_bytes,
                        const absl::optional<bool>& complete);
 
+  // Creates an instance for the specified `current_bytes` and `total_bytes`
+  // which is explicitly `complete` or incomplete. If absent, completion will be
+  // calculated based on `current_bytes` and `total_bytes`. If `true`, then it
+  // must also be true that `current_bytes.value()` == `total_bytes.value()`. If
+  // `hidden` is `true`, this instance should not be painted nor included in
+  // cumulative progress calculations.
+  HoldingSpaceProgress(const absl::optional<int64_t>& current_bytes,
+                       const absl::optional<int64_t>& total_bytes,
+                       const absl::optional<bool>& complete,
+                       bool hidden);
+
   HoldingSpaceProgress(const HoldingSpaceProgress&);
   HoldingSpaceProgress& operator=(const HoldingSpaceProgress&);
   ~HoldingSpaceProgress();
@@ -49,10 +60,15 @@ class ASH_PUBLIC_EXPORT HoldingSpaceProgress {
   // Returns `true` if progress is indeterminate.
   bool IsIndeterminate() const;
 
+  // Returns `true` if progress is hidden and therefore should not be painted
+  // nor included in cumulative progress calculations.
+  bool IsHidden() const;
+
  private:
   absl::optional<int64_t> current_bytes_;
   absl::optional<int64_t> total_bytes_;
   bool complete_;
+  bool hidden_;
 };
 
 }  // namespace ash

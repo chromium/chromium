@@ -256,9 +256,9 @@ class HoldingSpaceAnimationRegistry::ProgressRingAnimationDelegate
 
     // Iterate over each holding space item in the attached `model_`.
     for (const auto& item : model_->items()) {
-      // If an `item` is not initialized, it should neither contribute to
-      // `cumulative_progress_` nor should it have an animation.
-      if (!item->IsInitialized()) {
+      // If an `item` is not initialized or is not visibly in-progress, it
+      // shouldn't contribute to `cumulative_progress_` nor have an animation.
+      if (!item->IsInitialized() || item->progress().IsHidden()) {
         EraseAnimationForKey(item.get());
         continue;
       }
