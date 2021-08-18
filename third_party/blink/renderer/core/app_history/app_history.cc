@@ -549,7 +549,7 @@ AppHistory::DispatchResult AppHistory::DispatchNavigateEvent(
 
   init->setCancelable(involvement != UserNavigationInvolvement::kBrowserUI ||
                       type != WebFrameLoadType::kBackForward);
-  init->setCanRespond(
+  init->setCanTransition(
       CanChangeToUrlForHistoryApi(url, GetSupplementable()->GetSecurityOrigin(),
                                   current_url) &&
       (event_type != NavigateEventType::kCrossDocument ||
@@ -588,7 +588,8 @@ AppHistory::DispatchResult AppHistory::DispatchNavigateEvent(
     // TODO(japhet): Figure out how cross-document back-forward should work.
     if (type != WebFrameLoadType::kBackForward) {
       GetSupplementable()->document()->Loader()->RunURLAndHistoryUpdateSteps(
-          url, mojom::blink::SameDocumentNavigationType::kAppHistoryRespondWith,
+          url,
+          mojom::blink::SameDocumentNavigationType::kAppHistoryTransitionWhile,
           state_object, type);
     }
   }
@@ -614,7 +615,7 @@ AppHistory::DispatchResult AppHistory::DispatchNavigateEvent(
   }
 
   return promise_list.IsEmpty() ? DispatchResult::kContinue
-                                : DispatchResult::kRespondWith;
+                                : DispatchResult::kTransitionWhile;
 }
 
 void AppHistory::InformAboutCanceledNavigation() {

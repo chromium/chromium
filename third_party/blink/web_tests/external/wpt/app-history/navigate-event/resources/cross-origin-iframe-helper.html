@@ -3,8 +3,8 @@ appHistory.onnavigate = e => {
   let message = "";
   if (e.cancelable)
     message += "cancelable,";
-  if (e.canRespond)
-    message += "canRespond,";
+  if (e.canTransition)
+    message += "canTransition,";
   if (e.userInitiated)
     message += "userInitiated,";
   if (e.hashChange)

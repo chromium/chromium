@@ -14,12 +14,12 @@ promise_test(async t => {
   appHistory.onnavigate = t.step_func(e => {
     events.push("navigate");
     e.signal.onabort = () => events.push("onabort");
-    e.respondWith(new Promise(resolve => t.step_timeout(resolve, 2)));
+    e.transitionWhile(new Promise(resolve => t.step_timeout(resolve, 2)));
   });
   const p1 = promise_rejects_dom(t, 'AbortError', appHistory.navigate("#1")).then(() => events.push("p1_reject"));
   await appHistory.navigate("#2").then(() => events.push("p2_fulfill"));
   await p1;
   assert_equals(location.hash, "#2");
   assert_array_equals(events, ["navigate", "onabort", "onnavigateerror", "navigate", "p1_reject", "onnavigatesuccess", "p2_fulfill"]);
-}, "navigateerror ordering when navigate() is called repeatedly and handled by respondWith()");
+}, "navigateerror ordering when navigate() is called repeatedly and handled by transitionWhile()");
 </script>

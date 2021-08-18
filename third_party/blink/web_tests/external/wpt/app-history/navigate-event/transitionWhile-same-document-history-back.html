@@ -10,7 +10,7 @@ async_test(t => {
     let onnavigatesuccess_calls = 0;
     appHistory.onnavigate = e => {
       onnavigate_calls++;
-      e.respondWith(Promise.resolve());
+      e.transitionWhile(Promise.resolve());
     }
     appHistory.onnavigatesuccess = t.step_func(e => {
       onnavigatesuccess_calls++;
@@ -36,5 +36,5 @@ async_test(t => {
         history.back();
       }));
   }, 0);
-}, "AppHistoryNavigateEvent.respondWith can intercept same-document history.back()");
+}, "AppHistoryNavigateEvent's transitionWhile() can intercept same-document history.back()");
 </script>

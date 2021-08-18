@@ -8,7 +8,7 @@ async_test(t => {
     i.contentWindow.appHistory.onnavigate = t.step_func_done(e => {
       let iframe_constructor = i.contentWindow.DOMException;
       i.remove();
-      assert_throws_dom("InvalidStateError", iframe_constructor, () => e.respondWith(Promise.resolve()));
+      assert_throws_dom("InvalidStateError", iframe_constructor, () => e.transitionWhile(Promise.resolve()));
     });
 
     i.contentWindow.location.href = "#1";

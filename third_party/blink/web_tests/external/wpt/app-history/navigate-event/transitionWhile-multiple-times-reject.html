@@ -20,9 +20,9 @@ promise_test(async t => {
     assert_greater_than(e.lineno, 0);
   });
   appHistory.onnavigate = t.step_func(e => {
-    e.respondWith(Promise.resolve());
-    e.respondWith(new Promise((resolve, reject) => t.step_timeout(() => reject(err), 1)));
-    e.respondWith(new Promise(resolve => t.step_timeout(resolve, 1)));
+    e.transitionWhile(Promise.resolve());
+    e.transitionWhile(new Promise((resolve, reject) => t.step_timeout(() => reject(err), 1)));
+    e.transitionWhile(new Promise(resolve => t.step_timeout(resolve, 1)));
   });
 
   await appHistory.navigate("#1").catch(t.step_func(e => {
@@ -31,5 +31,5 @@ promise_test(async t => {
   }));
   assert_true(onnavigateerror_called);
   assert_true(caught_rejection);
-}, "AppHistoryNavigateEvent.respondWith is called multiple times and one of the promises rejects");
+}, "AppHistoryNavigateEvent's transitionWhile() is called multiple times and one of the promises rejects");
 </script>

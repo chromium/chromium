@@ -44,16 +44,16 @@ class AppHistoryNavigateEvent final : public Event,
 
   String navigationType() { return navigation_type_; }
   AppHistoryDestination* destination() { return destination_; }
-  bool canRespond() const { return can_respond_; }
+  bool canTransition() const { return can_transition_; }
   bool userInitiated() const { return user_initiated_; }
   bool hashChange() const { return hash_change_; }
   AbortSignal* signal() { return signal_; }
   FormData* formData() const { return form_data_; }
   ScriptValue info() const { return info_; }
 
-  void respondWith(ScriptState*,
-                   ScriptPromise newNavigationAction,
-                   ExceptionState&);
+  void transitionWhile(ScriptState*,
+                       ScriptPromise newNavigationAction,
+                       ExceptionState&);
 
   const HeapVector<ScriptPromise>& GetNavigationActionPromisesList() {
     return navigation_action_promises_list_;
@@ -65,7 +65,7 @@ class AppHistoryNavigateEvent final : public Event,
  private:
   String navigation_type_;
   Member<AppHistoryDestination> destination_;
-  bool can_respond_;
+  bool can_transition_;
   bool user_initiated_;
   bool hash_change_;
   Member<AbortSignal> signal_;

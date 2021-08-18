@@ -17,7 +17,7 @@ promise_test(async t => {
     assert_equals(location.href, start_href);
     events.push("navigate");
     e.signal.onabort = () => events.push("abort");
-    e.respondWith(new Promise(resolve => t.step_timeout(resolve, 2)));
+    e.transitionWhile(new Promise(resolve => t.step_timeout(resolve, 2)));
     if (first_onnavigate) {
       first_onnavigate = false;
       p2 = appHistory.navigate("#2").then(() => events.push("p2_fulfill"));
@@ -30,5 +30,5 @@ promise_test(async t => {
   await p1;
   await p2;
   assert_array_equals(events, ["navigate", "abort", "navigateerror", "navigate", "p1_reject", "navigatesuccess", "p2_fulfill"]);
-}, "navigateerror ordering when navigate() is called reentrantly and handled by respondWith()");
+}, "navigateerror ordering when navigate() is called reentrantly and handled by transitionWhile()");
 </script>

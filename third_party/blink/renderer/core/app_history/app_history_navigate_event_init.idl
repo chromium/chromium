@@ -13,7 +13,7 @@ enum AppHistoryNavigationType {
 dictionary AppHistoryNavigateEventInit : EventInit {
   AppHistoryNavigationType navigationType = "push";
   required AppHistoryDestination destination;
-  boolean canRespond = false;
+  boolean canTransition = false;
   boolean userInitiated = false;
   boolean hashChange = false;
   required AbortSignal signal;

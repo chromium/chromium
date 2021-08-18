@@ -3,5 +3,5 @@ self.addEventListener('fetch', function(event) {
   const body =
     `method = ${request.method}, ` +
     `isReloadNavigation = ${request.isReloadNavigation}`;
-  event.respondWith(new Response(body));
+  event.transitionWhile(new Response(body));
 });

@@ -269,7 +269,7 @@ interface AppHistoryEntry : EventTarget
     method getState
 interface AppHistoryNavigateEvent : Event
     attribute @@toStringTag
-    getter canRespond
+    getter canTransition
     getter destination
     getter formData
     getter hashChange
@@ -278,7 +278,7 @@ interface AppHistoryNavigateEvent : Event
     getter signal
     getter userInitiated
     method constructor
-    method respondWith
+    method transitionWhile
 interface Attr : Node
     attribute @@toStringTag
     getter localName

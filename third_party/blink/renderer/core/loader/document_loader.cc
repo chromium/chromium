@@ -692,8 +692,8 @@ static SinglePageAppNavigationType CategorizeSinglePageAppNavigation(
       // WebFrameLoadType::kBackForward.
       DCHECK(frame_load_type != WebFrameLoadType::kBackForward);
       return kSPANavTypeHistoryPushStateOrReplaceState;
-    case mojom::blink::SameDocumentNavigationType::kAppHistoryRespondWith:
-      return kSPANavTypeAppHistoryRespondWith;
+    case mojom::blink::SameDocumentNavigationType::kAppHistoryTransitionWhile:
+      return kSPANavTypeAppHistoryTransitionWhile;
   }
   NOTREACHED();
   return kSPANavTypeSameDocumentBackwardOrForward;
@@ -1301,17 +1301,17 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
         involvement, nullptr, history_item);
     if (dispatch_result == AppHistory::DispatchResult::kAbort)
       return mojom::blink::CommitResult::Aborted;
-    // In the kRespondWith case, if the navigation is not back-forward,
+    // In the kTransitionWhile case, if the navigation is not back-forward,
     // DispatchNavigateEvent() will have taken care of emulating a commit and we
     // can abort here. In the back-forward case, though, DispatchNavigateEvent()
     // doesn't have all the state needed to correctly commit, so fall through
     // and let the commit proceed normally, just with the
     // mojom::blink::SameDocumentNavigationType modified.
-    if (dispatch_result == AppHistory::DispatchResult::kRespondWith) {
+    if (dispatch_result == AppHistory::DispatchResult::kTransitionWhile) {
       if (frame_load_type != WebFrameLoadType::kBackForward)
         return mojom::blink::CommitResult::Aborted;
       same_document_navigation_type =
-          mojom::blink::SameDocumentNavigationType::kAppHistoryRespondWith;
+          mojom::blink::SameDocumentNavigationType::kAppHistoryTransitionWhile;
     }
   }
 

@@ -14,7 +14,7 @@ promise_test(async t => {
   appHistory.onnavigate = t.step_func(e => {
     events.push("navigate");
     e.signal.onabort = () => events.push("abort");
-    e.respondWith(Promise.resolve());
+    e.transitionWhile(Promise.resolve());
   });
   location.hash = "#1";
   location.hash = "#2";

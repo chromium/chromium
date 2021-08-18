@@ -17,10 +17,10 @@ async_test(t => {
     assert_greater_than(e.lineno, 0);
   });
   appHistory.onnavigate = e => {
-    e.respondWith(new Promise((resolve, reject) => t.step_timeout(() => reject(err), 0)));
+    e.transitionWhile(new Promise((resolve, reject) => t.step_timeout(() => reject(err), 0)));
   };
 
   location.href = "#1";
   assert_equals(location.hash, "#1");
-}, "AppHistoryNavigateEvent.respondWith should abort if the given promise rejects");
+}, "AppHistoryNavigateEvent's transitionWhile() should abort if the given promise rejects");
 </script>

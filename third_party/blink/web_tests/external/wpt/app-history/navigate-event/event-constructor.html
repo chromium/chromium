@@ -6,7 +6,7 @@ test(() => {
   assert_throws_js(TypeError, () => {
     new AppHistoryNavigateEvent("navigate", {
       navigationType: "push",
-      canRespond: false,
+      canTransition: false,
       userInitiated: false,
       hashChange: false,
       signal: (new AbortController()).signal,
@@ -23,7 +23,7 @@ async_test(t => {
       new AppHistoryNavigateEvent("navigate", {
         navigationType: "push",
         destination: e.destination,
-        canRespond: false,
+        canTransition: false,
         userInitiated: false,
         hashChange: false,
         formData: null,
@@ -44,7 +44,7 @@ async_test(t => {
     const event = new AppHistoryNavigateEvent("navigate", {
       navigationType: "replace",
       destination: e.destination,
-      canRespond: true,
+      canTransition: true,
       userInitiated: true,
       hashChange: true,
       signal,
@@ -54,7 +54,7 @@ async_test(t => {
 
     assert_equals(event.navigationType, "replace");
     assert_equals(event.destination, e.destination);
-    assert_equals(event.canRespond, true);
+    assert_equals(event.canTransition, true);
     assert_equals(event.userInitiated, true);
     assert_equals(event.hashChange, true);
     assert_equals(event.signal, signal);
@@ -73,7 +73,7 @@ async_test(t => {
     });
 
     assert_equals(event.navigationType, "push");
-    assert_equals(event.canRespond, false);
+    assert_equals(event.canTransition, false);
     assert_equals(event.userInitiated, false);
     assert_equals(event.hashChange, false);
     assert_equals(event.formData, null);

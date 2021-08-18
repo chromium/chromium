@@ -8,12 +8,12 @@ async_test(t => {
   window.onload = () => t.step_timeout(() => {
     appHistory.navigate("#foo").then(() => {
       assert_true(appHistory.canGoBack);
-      appHistory.onnavigate = t.step_func(e => e.respondWith(Promise.resolve()));
+      appHistory.onnavigate = t.step_func(e => e.transitionWhile(Promise.resolve()));
       appHistory.back().then(t.step_func_done(() => {
         assert_equals(appHistory.entries().length, 2);
         assert_equals(appHistory.current, appHistory.entries()[0]);
       }));
     });
   }, 0);
-}, "AppHistoryNavigateEvent.respondWith can intercept appHistory.back()");
+}, "AppHistoryNavigateEvent's transitionWhile() can intercept appHistory.back()");
 </script>

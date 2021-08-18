@@ -11,7 +11,6 @@ enum SameDocumentNavigationType {
   kFragment = 0,
   // Navigating with window.history
   kHistoryApi = 1,
-  // Navigating with AppHistoryNavigateEvent.respondWith()
-  kAppHistoryRespondWith = 2,
+  // Navigating with AppHistoryNavigateEvent's transitionWhile()
+  kAppHistoryTransitionWhile = 2,
 };
-

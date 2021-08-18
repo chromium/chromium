@@ -5,19 +5,19 @@
 async_test(t => {
   let start_length = history.length;
   appHistory.onnavigate = t.step_func(e => {
-    e.respondWith(new Promise(resolve => t.step_timeout(() => {
+    e.transitionWhile(new Promise(resolve => t.step_timeout(() => {
       resolve();
       t.step_timeout(t.step_func_done(() => {
         assert_equals(location.hash, "#1");
         assert_equals(history.state, "update");
-        assert_equals(history.length, start_length);
+        assert_equals(history.length, start_length + 1);
       }, 0));
     }, 0)));
   });
 
-  history.replaceState("update", "", "#1");
+  history.pushState("update", "", "#1");
   assert_equals(location.hash, "#1");
   assert_equals(history.state, "update");
-  assert_equals(history.length, start_length);
-}, "AppHistoryNavigateEvent.respondWith should proceed if the given promise resolves");
+  assert_equals(history.length, start_length + 1);
+}, "AppHistoryNavigateEvent's transitionWhile() should proceed if the given promise resolves");
 </script>

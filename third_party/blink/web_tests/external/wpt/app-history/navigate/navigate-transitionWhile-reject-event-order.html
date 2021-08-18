@@ -11,7 +11,7 @@ async_test(t => {
 
   appHistory.onnavigate = e => {
     events.push("onnavigate");
-    e.respondWith(Promise.reject());
+    e.transitionWhile(Promise.reject());
   };
   appHistory.onnavigatesuccess = () => events.push("onnavigatesuccess");
   appHistory.onnavigateerror = () => events.push("onnavigateerror");
