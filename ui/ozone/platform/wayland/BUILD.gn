@@ -190,6 +190,7 @@ source_set("wayland") {
     "//base",
     "//build:chromeos_buildflags",
     "//build/config/linux/libdrm",
+    "//components/crash/core/common:crash_key",
     "//components/exo/wayland/protocol:aura_shell_protocol",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
