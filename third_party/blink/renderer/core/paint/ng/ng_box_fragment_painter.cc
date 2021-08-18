@@ -1210,13 +1210,17 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackgroundForBlockInInline(
     NGInlineCursor* children,
     const PaintInfo& paint_info,
     const PhysicalOffset& paint_offset) {
-  for (; *children; children->MoveToNext()) {
+  while (*children) {
     const NGFragmentItem* item = children->Current().Item();
-    if (item->Type() != NGFragmentItem::kBox)
-      continue;
-    const NGPhysicalBoxFragment* fragment = item->BoxFragment();
-    if (fragment && fragment->IsBlockInInline())
-      PaintBoxItem(*item, *fragment, *children, paint_info, paint_offset);
+    if (const NGPhysicalBoxFragment* fragment = item->BoxFragment()) {
+      if (fragment->HasSelfPaintingLayer()) {
+        children->MoveToNextSkippingChildren();
+        continue;
+      }
+      if (fragment->IsBlockInInline())
+        PaintBoxItem(*item, *fragment, *children, paint_info, paint_offset);
+    }
+    children->MoveToNext();
   }
 }
 
