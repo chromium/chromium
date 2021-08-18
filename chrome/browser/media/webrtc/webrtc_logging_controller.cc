@@ -187,6 +187,7 @@ void WebRtcLoggingController::StoreLog(const std::string& log_id,
       base::SequencedTaskRunnerHandle::Get()->PostTask(
           FROM_HERE,
           base::BindOnce(std::move(stop_rtp_dump_callback_), true, true));
+      stop_rtp_dump_callback_.Reset();
     }
 
     rtp_dump_handler_->StopOngoingDumps(
@@ -216,7 +217,13 @@ void WebRtcLoggingController::StoreLogContinue(const std::string& log_id,
 void WebRtcLoggingController::StartRtpDump(RtpDumpType type,
                                            GenericDoneCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!stop_rtp_dump_callback_);
+
+  if (stop_rtp_dump_callback_) {
+    DCHECK(rtp_dump_handler_);
+    FireGenericDoneCallback(std::move(callback), false,
+                            "RTP dump already started.");
+    return;
+  }
 
   content::RenderProcessHost* host =
       content::RenderProcessHost::FromID(render_process_id_);
@@ -256,6 +263,7 @@ void WebRtcLoggingController::StopRtpDump(RtpDumpType type,
         base::BindOnce(std::move(stop_rtp_dump_callback_),
                        type == RTP_DUMP_INCOMING || type == RTP_DUMP_BOTH,
                        type == RTP_DUMP_OUTGOING || type == RTP_DUMP_BOTH));
+    stop_rtp_dump_callback_.Reset();
   }
 
   rtp_dump_handler_->StopDump(type, std::move(callback));
@@ -418,7 +426,6 @@ void WebRtcLoggingController::TriggerUpload(
     UploadDoneCallback callback,
     const base::FilePath& log_directory) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   if (rtp_dump_handler_) {
     if (stop_rtp_dump_callback_) {
       base::SequencedTaskRunnerHandle::Get()->PostTask(
