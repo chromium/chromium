@@ -1408,7 +1408,7 @@
     },
     {
       name: "MediaStreamInsertableStreams",
-      status: "experimental",
+      status: "stable",
       origin_trial_feature_name: "WebCodecs"
     },
     // This is enabled by default on Windows only. The only part that's
