@@ -37,6 +37,11 @@ namespace {
 // The maximum number of clicks to track in a single navigation.
 size_t kMaxClicksTracked = 10;
 
+bool IsPrerendering(content::RenderFrameHost* render_frame_host) {
+  return render_frame_host->GetLifecycleState() ==
+         content::RenderFrameHost::LifecycleState::kPrerendering;
+}
+
 }  // namespace
 
 NavigationPredictor::NavigationPredictor(
@@ -46,7 +51,11 @@ NavigationPredictor::NavigationPredictor(
           render_frame_host,
           std::move(receiver)) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
-  DCHECK(render_frame_host->GetPage().IsPrimary());
+  // When using content::Page::IsPrimary, bfcache can cause returning a false in
+  // the back/forward navigation. So, DCHECK only checks if current page is
+  // prerendering until deciding how to handle bfcache navigations. See also
+  // https://crbug.com/1239310.
+  DCHECK(!IsPrerendering(render_frame_host));
 
   ukm_recorder_ = ukm::UkmRecorder::Get();
   ukm_source_id_ = render_frame_host->GetMainFrame()->GetPageUkmSourceId();
@@ -60,7 +69,7 @@ void NavigationPredictor::Create(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::AnchorElementMetricsHost> receiver) {
   DCHECK(base::FeatureList::IsEnabled(blink::features::kNavigationPredictor));
-  DCHECK(render_frame_host->GetPage().IsPrimary());
+  DCHECK(!IsPrerendering(render_frame_host));
 
   // Only valid for the main frame.
   if (render_frame_host->GetParent())
@@ -97,7 +106,7 @@ void NavigationPredictor::ReportNewAnchorElements(
     std::vector<blink::mojom::AnchorElementMetricsPtr> elements) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(base::FeatureList::IsEnabled(blink::features::kNavigationPredictor));
-  DCHECK(render_frame_host()->GetPage().IsPrimary());
+  DCHECK(!IsPrerendering(render_frame_host()));
 
   // Create the AnchorsData object for this WebContents if it doesn't already
   // exist. Note that NavigationPredictor only runs on the main frame, but get
@@ -167,7 +176,7 @@ void NavigationPredictor::ReportAnchorElementClick(
     blink::mojom::AnchorElementClickPtr click) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(base::FeatureList::IsEnabled(blink::features::kNavigationPredictor));
-  DCHECK(render_frame_host()->GetPage().IsPrimary());
+  DCHECK(!IsPrerendering(render_frame_host()));
 
   clicked_count_++;
   if (clicked_count_ > kMaxClicksTracked)
@@ -198,7 +207,7 @@ void NavigationPredictor::ReportAnchorElementsEnteredViewport(
     std::vector<blink::mojom::AnchorElementEnteredViewportPtr> elements) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(base::FeatureList::IsEnabled(blink::features::kNavigationPredictor));
-  DCHECK(render_frame_host()->GetPage().IsPrimary());
+  DCHECK(!IsPrerendering(render_frame_host()));
 
   if (elements.empty()) {
     return;
