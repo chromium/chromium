@@ -19,6 +19,7 @@ import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionPrope
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties.AVATAR;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties.FAVICON_OR_FALLBACK;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties.ON_CLICK_LISTENER;
+import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.DataSharingConsentProperties.PROVIDER_URL;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.FORMATTED_URL;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.SINGLE_ACCOUNT;
 
@@ -71,12 +72,15 @@ public class AccountSelectionControllerTest {
     private static final GURL TEST_PROFILE_PIC =
             JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1_WITH_PATH);
 
-    private static final Account ANA =
-            new Account("Ana", "ana@one.test", "Ana Doe", "Ana", TEST_PROFILE_PIC, TEST_URL_1);
+    private static final Account ANA = new Account(
+            "Ana", "ana@one.test", "Ana Doe", "Ana", TEST_PROFILE_PIC, TEST_URL_1, true);
     private static final Account BOB =
-            new Account("Bob", "", "Bob", "", TEST_PROFILE_PIC, TEST_URL_2);
-    private static final Account CARL =
-            new Account("Carl", "carl@three.test", "Carl Test", ":)", TEST_PROFILE_PIC, TEST_URL_3);
+            new Account("Bob", "", "Bob", "", TEST_PROFILE_PIC, TEST_URL_2, true);
+    private static final Account CARL = new Account(
+            "Carl", "carl@three.test", "Carl Test", ":)", TEST_PROFILE_PIC, TEST_URL_3, true);
+    private static final Account NEW_USER = new Account("602214076", "goto@email.example",
+            "Sam E. Goto", "Sam", TEST_PROFILE_PIC, TEST_URL_3, false);
+
     private static final @Px int DESIRED_FAVICON_SIZE = 64;
     private static final @Px int DESIRED_AVATAR_SIZE = 100;
 
@@ -109,6 +113,9 @@ public class AccountSelectionControllerTest {
         when(mUrlFormatterJniMock.formatStringUrlForSecurityDisplay(
                      anyString(), eq(SchemeDisplay.OMIT_HTTP_AND_HTTPS)))
                 .then(inv -> formatForSecurityDisplay(inv.getArgument(0)));
+        when(mUrlFormatterJniMock.formatUrlForSecurityDisplay(
+                     any(GURL.class), eq(SchemeDisplay.OMIT_HTTP_AND_HTTPS)))
+                .then(inv -> formatForSecurityDisplay(((GURL) inv.getArgument(0)).getSpec()));
 
         mMediator = new AccountSelectionMediator(mMockDelegate, mSheetItems,
                 mMockBottomSheetController, null, mMockImageFetcher, DESIRED_AVATAR_SIZE,
@@ -296,6 +303,20 @@ public class AccountSelectionControllerTest {
         mMediator.onAccountSelected(ANA);
         verify(mMockDelegate).onAccountSelected(ANA);
         assertEquals("Incorrectly visible", false, mMediator.isVisible());
+    }
+
+    @Test
+    public void testShowDataSharingConsentForSingleNewAccount() {
+        mMediator.showAccounts(TEST_URL, Arrays.asList(NEW_USER));
+        // For new user we expect header + account + consent text + continue btn
+        assertEquals("Incorrect item sheet count", 4, mSheetItems.size());
+        assertEquals("Incorrect header type", ItemType.HEADER, mSheetItems.get(0).type);
+        assertEquals("Incorrect item type", ItemType.ACCOUNT, mSheetItems.get(1).type);
+        assertEquals(
+                "Incorrect consent type", ItemType.DATA_SHARING_CONSENT, mSheetItems.get(2).type);
+        assertEquals("Incorrect continue type", ItemType.CONTINUE_BUTTON, mSheetItems.get(3).type);
+        assertEquals("Incorrect provider url", formatForSecurityDisplay(TEST_URL_3.getSpec()),
+                mSheetItems.get(2).model.get(PROVIDER_URL));
     }
 
     /**

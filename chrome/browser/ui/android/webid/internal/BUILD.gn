@@ -53,6 +53,7 @@ android_resources("java_resources") {
   sources = [
     "java/res/layout/account_selection_account_item.xml",
     "java/res/layout/account_selection_continue_button.xml",
+    "java/res/layout/account_selection_data_sharing_consent_item.xml",
     "java/res/layout/account_selection_header_item.xml",
     "java/res/layout/account_selection_sheet.xml",
     "java/res/values/dimens.xml",

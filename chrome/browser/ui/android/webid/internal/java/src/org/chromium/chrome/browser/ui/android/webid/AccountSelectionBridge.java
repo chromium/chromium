@@ -70,15 +70,15 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
             // This call passes the account fields directly as String and GURL parameters as an
             // optimization to avoid needing multiple JNI getters on the Account class on for each
             // field.
-            AccountSelectionBridgeJni.get().onAccountSelected(
-                    mNativeView, account.getStringFields(), account.getPictureUrl());
+            AccountSelectionBridgeJni.get().onAccountSelected(mNativeView,
+                    account.getStringFields(), account.getPictureUrl(), account.isSignIn());
         }
     }
 
     @NativeMethods
     interface Natives {
         void onAccountSelected(long nativeAccountSelectionViewAndroid, String[] accountFields,
-                GURL accountPictureUrl);
+                GURL accountPictureUrl, boolean isSignedIn);
         void onDismiss(long nativeAccountSelectionViewAndroid);
     }
 }

@@ -90,6 +90,9 @@ public class AccountSelectionCoordinator implements AccountSelectionComponent {
         adapter.registerType(AccountSelectionProperties.ItemType.ACCOUNT,
                 AccountSelectionCoordinator::buildAccountView,
                 AccountSelectionViewBinder::bindAccountView);
+        adapter.registerType(AccountSelectionProperties.ItemType.DATA_SHARING_CONSENT,
+                AccountSelectionCoordinator::buildDataSharingConsentView,
+                AccountSelectionViewBinder::bindDataSharingConsentView);
         adapter.registerType(AccountSelectionProperties.ItemType.CONTINUE_BUTTON,
                 AccountSelectionCoordinator::buildContinueButtonView,
                 AccountSelectionViewBinder::bindContinueButtonView);
@@ -106,6 +109,11 @@ public class AccountSelectionCoordinator implements AccountSelectionComponent {
     static View buildAccountView(ViewGroup parent) {
         return LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.account_selection_account_item, parent, false);
+    }
+
+    static View buildDataSharingConsentView(ViewGroup parent) {
+        return LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.account_selection_data_sharing_consent_item, parent, false);
     }
 
     static View buildContinueButtonView(ViewGroup parent) {

@@ -22,6 +22,7 @@ import androidx.annotation.StringRes;
 
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.DataSharingConsentProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
@@ -145,6 +146,25 @@ class AccountSelectionViewBinder {
         favicon.setBounds(badgeX, badgeY, badgeX + badgeSize, badgeY + badgeSize);
         favicon.draw(canvas);
         return new BitmapDrawable(view.getResources(), badgedAvatar);
+    }
+
+    /**
+     * Called whenever a user data sharing consent is bound to this view.
+     * @param model The model containing the data for the view.
+     * @param view The view to be bound.
+     * @param key The key of the property to be bound.
+     */
+    static void bindDataSharingConsentView(PropertyModel model, View view, PropertyKey key) {
+        if (key == DataSharingConsentProperties.PROVIDER_URL) {
+            String providerUrl = model.get(DataSharingConsentProperties.PROVIDER_URL);
+            String consentText = String.format(
+                    view.getContext().getString(R.string.account_selection_data_sharing_consent),
+                    providerUrl);
+            TextView textView = view.findViewById(R.id.user_data_sharing_consent);
+            textView.setText(consentText);
+        } else {
+            assert false : "Unhandled update to property:" + key;
+        }
     }
 
     /**

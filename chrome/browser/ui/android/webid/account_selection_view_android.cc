@@ -38,7 +38,8 @@ ScopedJavaLocalRef<jobject> ConvertToJavaAccount(JNIEnv* env,
       ConvertUTF8ToJavaString(env, account.name),
       ConvertUTF8ToJavaString(env, account.given_name),
       url::GURLAndroid::FromNativeGURL(env, account.picture),
-      url::GURLAndroid::FromNativeGURL(env, idp_url));
+      url::GURLAndroid::FromNativeGURL(env, idp_url),
+      account.login_state == Account::LoginState::kSignIn);
 }
 
 ScopedJavaLocalRef<jobjectArray> ConvertToJavaAccounts(
@@ -63,7 +64,8 @@ ScopedJavaLocalRef<jobjectArray> ConvertToJavaAccounts(
 Account ConvertFieldsToAccount(
     JNIEnv* env,
     const JavaParamRef<jobjectArray>& string_fields_obj,
-    const JavaParamRef<jobject>& picture_url_obj) {
+    const JavaParamRef<jobject>& picture_url_obj,
+    bool is_sign_in) {
   std::vector<std::string> string_fields;
   AppendJavaStringArrayToStringVector(env, string_fields_obj, &string_fields);
   auto sub = string_fields[0];
@@ -71,8 +73,11 @@ Account ConvertFieldsToAccount(
   auto name = string_fields[2];
   auto given_name = string_fields[3];
 
+  Account::LoginState login_state =
+      is_sign_in ? Account::LoginState::kSignIn : Account::LoginState::kSignUp;
+
   GURL picture_url = *url::GURLAndroid::ToNativeGURL(env, picture_url_obj);
-  return Account(sub, email, name, given_name, picture_url);
+  return Account(sub, email, name, given_name, picture_url, login_state);
 }
 
 }  // namespace
@@ -113,9 +118,10 @@ void AccountSelectionViewAndroid::Show(const GURL& rp_url,
 void AccountSelectionViewAndroid::OnAccountSelected(
     JNIEnv* env,
     const JavaParamRef<jobjectArray>& account_string_fields,
-    const JavaParamRef<jobject>& account_picture_url) {
-  delegate_->OnAccountSelected(
-      ConvertFieldsToAccount(env, account_string_fields, account_picture_url));
+    const JavaParamRef<jobject>& account_picture_url,
+    bool is_sign_in) {
+  delegate_->OnAccountSelected(ConvertFieldsToAccount(
+      env, account_string_fields, account_picture_url, is_sign_in));
 }
 
 void AccountSelectionViewAndroid::OnDismiss(JNIEnv* env) {

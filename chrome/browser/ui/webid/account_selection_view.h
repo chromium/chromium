@@ -16,8 +16,8 @@
 
 using Account = content::IdentityRequestAccount;
 
-// This class represents the interface used for communicating between the Touch
-// To Fill controller with the Android frontend.
+// This class represents the interface used for communicating between the
+// identity dialog controller with the Android frontend.
 class AccountSelectionView {
  public:
   class Delegate {

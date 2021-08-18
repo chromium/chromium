@@ -62,10 +62,10 @@ public class AccountSelectionIntegrationTest {
     private static final GURL TEST_PROFILE_PIC =
             JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1_WITH_PATH);
 
-    private static final Account ANA =
-            new Account("Ana", "ana@one.test", "Ana Doe", "Ana", TEST_PROFILE_PIC, TEST_URL_1);
+    private static final Account ANA = new Account(
+            "Ana", "ana@one.test", "Ana Doe", "Ana", TEST_PROFILE_PIC, TEST_URL_1, true);
     private static final Account BOB =
-            new Account("Bob", "", "Bob", "", TEST_PROFILE_PIC, TEST_URL_2);
+            new Account("Bob", "", "Bob", "", TEST_PROFILE_PIC, TEST_URL_2, false);
 
     private AccountSelectionComponent mAccountSelection;
 

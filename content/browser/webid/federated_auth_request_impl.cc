@@ -399,7 +399,6 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
                 url::Origin::Create(provider_), origin(), account.sub)) {
           login_state = LoginState::kSignIn;
         }
-
         account.login_state = login_state;
       }
 

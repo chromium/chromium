@@ -20,21 +20,6 @@ extern const char CONTENT_EXPORT kSecWebIdCsrfHeader[];
 // Represents a federated user account which is used when displaying an account
 // selector.
 struct CONTENT_EXPORT IdentityRequestAccount {
-  IdentityRequestAccount(const std::string& sub,
-                         const std::string& email,
-                         const std::string& name,
-                         const std::string& given_name,
-                         const GURL& picture);
-  IdentityRequestAccount(const IdentityRequestAccount&);
-  ~IdentityRequestAccount();
-
-  // sub, short for subject, is the unique identifier.
-  std::string sub;
-  std::string email;
-  std::string name;
-  std::string given_name;
-  GURL picture;
-
   enum class LoginState {
     // This is a returning user signing in with RP/IDP in this browser.
     kSignIn,
@@ -47,6 +32,23 @@ struct CONTENT_EXPORT IdentityRequestAccount {
     // user when using it to customize the UI.
     kSignUp,
   };
+
+  IdentityRequestAccount(const std::string& sub,
+                         const std::string& email,
+                         const std::string& name,
+                         const std::string& given_name,
+                         const GURL& picture,
+                         LoginState login_state = LoginState::kSignUp);
+  IdentityRequestAccount(const IdentityRequestAccount&);
+  ~IdentityRequestAccount();
+
+  // sub, short for subject, is the unique identifier.
+  std::string sub;
+  std::string email;
+  std::string name;
+  std::string given_name;
+  GURL picture;
+
   // The account login state. Unlike the other fields this one is not populated
   // by the IDP but instead by the browser based on its stored permission
   // grants.

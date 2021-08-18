@@ -89,6 +89,19 @@ class AccountSelectionProperties {
      * Properties defined here reflect the state of the continue button in the AccountSelection
      * sheet.
      */
+    static class DataSharingConsentProperties {
+        static final PropertyModel.ReadableObjectPropertyKey<String> PROVIDER_URL =
+                new PropertyModel.ReadableObjectPropertyKey<>("provider_url");
+
+        static final PropertyKey[] ALL_KEYS = {PROVIDER_URL};
+
+        private DataSharingConsentProperties() {}
+    }
+
+    /**
+     * Properties defined here reflect the state of the continue button in the AccountSelection
+     * sheet.
+     */
     static class ContinueButtonProperties {
         static final PropertyModel.ReadableObjectPropertyKey<Account> ACCOUNT =
                 new PropertyModel.ReadableObjectPropertyKey<>("account");
@@ -100,7 +113,8 @@ class AccountSelectionProperties {
         private ContinueButtonProperties() {}
     }
 
-    @IntDef({ItemType.HEADER, ItemType.ACCOUNT, ItemType.CONTINUE_BUTTON})
+    @IntDef({ItemType.HEADER, ItemType.ACCOUNT, ItemType.DATA_SHARING_CONSENT,
+            ItemType.CONTINUE_BUTTON})
     @Retention(RetentionPolicy.SOURCE)
     @interface ItemType {
         /**
@@ -114,9 +128,15 @@ class AccountSelectionProperties {
         int ACCOUNT = 2;
 
         /**
+         * The user data sharing consent text when there is only one account and it is a sign-up
+         * moment.
+         */
+        int DATA_SHARING_CONSENT = 3;
+
+        /**
          * The continue button at the end of the sheet when there is only one account.
          */
-        int CONTINUE_BUTTON = 3;
+        int CONTINUE_BUTTON = 4;
     }
 
     private AccountSelectionProperties() {}

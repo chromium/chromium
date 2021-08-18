@@ -9,6 +9,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.DataSharingConsentProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemType;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
@@ -79,14 +80,15 @@ class AccountSelectionMediator {
     void showAccounts(String url, List<Account> accounts) {
         mSheetItems.clear();
 
+        String site_url =
+                UrlFormatter.formatUrlForSecurityDisplay(url, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
+
         // We remove the HTTPS from URL since it is the only protocol that is
         // allowed with WebID.
         mSheetItems.add(new ListItem(ItemType.HEADER,
                 new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
                         .with(HeaderProperties.SINGLE_ACCOUNT, accounts.size() == 1)
-                        .with(HeaderProperties.FORMATTED_URL,
-                                UrlFormatter.formatUrlForSecurityDisplay(
-                                        url, SchemeDisplay.OMIT_HTTP_AND_HTTPS))
+                        .with(HeaderProperties.FORMATTED_URL, site_url)
                         .build()));
 
         for (Account account : accounts) {
@@ -94,11 +96,21 @@ class AccountSelectionMediator {
             mSheetItems.add(new ListItem(ItemType.ACCOUNT, model));
             requestIconOrFallbackImage(model);
             requestAvatarImage(model);
-            // If there is only a single account we need to show the continue button.
-            if (accounts.size() == 1) {
-                final PropertyModel continueBtnModel = createContinueBtnItem(account);
-                mSheetItems.add(new ListItem(ItemType.CONTINUE_BUTTON, continueBtnModel));
+        }
+
+        // If there is only a single account we need to show the continue button and potentially
+        // the data sharing consent text.
+        if (accounts.size() == 1) {
+            Account account = accounts.get(0);
+            // Only show the user data sharing consent text for sign up.
+            if (!account.isSignIn()) {
+                String provider_url = UrlFormatter.formatUrlForSecurityDisplay(
+                        account.getOriginUrl(), SchemeDisplay.OMIT_HTTP_AND_HTTPS);
+                mSheetItems.add(new ListItem(
+                        ItemType.DATA_SHARING_CONSENT, createDataSharingConsentItem(provider_url)));
             }
+            final PropertyModel continueBtnModel = createContinueBtnItem(account);
+            mSheetItems.add(new ListItem(ItemType.CONTINUE_BUTTON, continueBtnModel));
         }
 
         showContent();
@@ -183,6 +195,12 @@ class AccountSelectionMediator {
         return new PropertyModel.Builder(ContinueButtonProperties.ALL_KEYS)
                 .with(ContinueButtonProperties.ACCOUNT, account)
                 .with(ContinueButtonProperties.ON_CLICK_LISTENER, this::onAccountSelected)
+                .build();
+    }
+
+    private PropertyModel createDataSharingConsentItem(String provider) {
+        return new PropertyModel.Builder(DataSharingConsentProperties.ALL_KEYS)
+                .with(DataSharingConsentProperties.PROVIDER_URL, provider)
                 .build();
     }
 }

@@ -18,6 +18,7 @@ public class Account {
     private final String mGivenName;
     private final GURL mPictureUrl;
     private final GURL mOriginUrl;
+    private final boolean mIsSignIn;
 
     /**
      * @param subject Subject shown to the user.
@@ -28,7 +29,7 @@ public class Account {
      */
     @CalledByNative
     public Account(String subject, String email, String name, String givenName, GURL pictureUrl,
-            GURL originUrl) {
+            GURL originUrl, boolean isSignIn) {
         assert subject != null : "Account subject is null!";
         mSubject = subject;
         mEmail = email;
@@ -36,6 +37,7 @@ public class Account {
         mGivenName = givenName;
         mPictureUrl = pictureUrl;
         mOriginUrl = originUrl;
+        mIsSignIn = isSignIn;
     }
 
     public String getSubject() {
@@ -60,6 +62,10 @@ public class Account {
 
     public GURL getOriginUrl() {
         return mOriginUrl;
+    }
+
+    public boolean isSignIn() {
+        return mIsSignIn;
     }
 
     // Return all the String fields. Note that this excludes non-string fields in particular

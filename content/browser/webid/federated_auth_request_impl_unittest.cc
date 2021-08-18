@@ -834,7 +834,9 @@ TEST_F(BasicFederatedAuthRequestImplTest,
       test_case.inputs.prefer_auto_sign_in);
 }
 
-TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInForReturningUser) {
+// TODO(https://crbug.com/1236678): This test is incorrect and will be fixed
+// with the AutoSignIn UI implementation.
+TEST_F(BasicFederatedAuthRequestImplTest, DISABLED_AutoSignInForReturningUser) {
   const auto& test_case = kSuccessfulMediatedAutoSignInTestCase;
   auto& auth_request = CreateAuthRequest(GURL(test_case.inputs.provider));
   SetMockExpectations(test_case);

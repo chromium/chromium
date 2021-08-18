@@ -25,12 +25,14 @@ IdentityRequestAccount::IdentityRequestAccount(const std::string& sub,
                                                const std::string& email,
                                                const std::string& name,
                                                const std::string& given_name,
-                                               const GURL& picture)
+                                               const GURL& picture,
+                                               LoginState login_state)
     : sub{sub},
       email{email},
       name{name},
       given_name{given_name},
-      picture{picture} {}
+      picture{picture},
+      login_state{login_state} {}
 
 IdentityRequestAccount::IdentityRequestAccount(const IdentityRequestAccount&) =
     default;

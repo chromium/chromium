@@ -4944,12 +4944,16 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
 
       <!-- WebID Account Selection strings -->
-      <message name="IDS_ACCOUNT_SELECTION_SHEET_TITLE_SINGLE" desc="Header for Account Selection sheet where users only have a single account to select." translateable="false">
-        Create a <ph name="SITE_NAME">%1$s<ex>airbnb.com</ex></ph> account
+      <message name="IDS_ACCOUNT_SELECTION_SHEET_TITLE_SINGLE" desc="Header for Account Selection sheet where the user only has a single account to sign up with." translateable="false">
+        Sign up for <ph name="SITE_NAME">%1$s<ex>airbnb.com</ex></ph>
       </message>
-      <message name="IDS_ACCOUNT_SELECTION_SHEET_TITLE" desc="Header for Account Selection sheet where users can pick an account to select." translateable="false">
-        Create a <ph name="SITE_NAME">%1$s<ex>airbnb.com</ex></ph> account…
+      <message name="IDS_ACCOUNT_SELECTION_SHEET_TITLE" desc="Header for Account Selection sheet where the user can pick an account to sign up with." translateable="false">
+        Choose an account to sign up for <ph name="SITE_NAME">%1$s<ex>airbnb.com</ex></ph>
       </message>
+      <message name="IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT" desc="The consent text shown to the user before sign up." translateable="false">
+        To sign up, <ph name="PROVIDER_NAME">%1$s<ex>provider.example</ex></ph> will share your name, email, address, and profile picture with the site.
+      </message>
+
       <message name="IDS_ACCOUNT_SELECTION_CONTINUE" desc="Title of the button that continues filling with the only available set of credentials." translateable="false">
         Continue as <ph name="NAME">%1$s<ex>Albus (or Albus Dumbledore)</ex></ph>
       </message>

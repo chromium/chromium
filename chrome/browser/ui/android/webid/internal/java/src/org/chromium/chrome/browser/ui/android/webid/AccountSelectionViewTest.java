@@ -36,6 +36,7 @@ import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.DataSharingConsentProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -60,12 +61,12 @@ import java.util.Collections;
 public class AccountSelectionViewTest {
     private static final GURL TEST_PROFILE_PIC = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
 
-    private static final Account ANA =
-            new Account("Ana", "S3cr3t", "Ana Doe", "Ana", TEST_PROFILE_PIC, GURL.emptyGURL());
-    private static final Account NO_ONE = new Account("", "***", "No Subject", "", TEST_PROFILE_PIC,
-            JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1));
-    private static final Account BOB = new Account("Bob", "***", "Bob", "", TEST_PROFILE_PIC,
-            JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2));
+    private static final Account ANA = new Account(
+            "Ana", "ana@email.example", "Ana Doe", "Ana", TEST_PROFILE_PIC, GURL.emptyGURL(), true);
+    private static final Account NO_ONE = new Account("", "", "No Subject", "", TEST_PROFILE_PIC,
+            JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1), true);
+    private static final Account BOB = new Account("Bob", "", "Bob", "", TEST_PROFILE_PIC,
+            JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2), true);
 
     @Mock
     private Callback<Account> mAccountCallback;
@@ -185,6 +186,22 @@ public class AccountSelectionViewTest {
         waitForEvent(mAccountCallback).onResult(eq(ANA));
     }
 
+    @Test
+    @MediumTest
+    public void testDataSharingConsentDisplayed() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mSheetItems.addAll(
+                    Collections.singletonList(buildDataSharingConsentItem("www.example.org")));
+        });
+        pollUiThread(() -> mContentView.getVisibility() == View.VISIBLE);
+        assertNotNull(getAccounts().getChildAt(0));
+        TextView consent = mContentView.findViewById(R.id.user_data_sharing_consent);
+        assertEquals("Incorrect data sharing consent text",
+                mActivity.getString(
+                        R.string.account_selection_data_sharing_consent, "www.example.org"),
+                consent.getText());
+    }
+
     private RecyclerView getAccounts() {
         return mContentView.findViewById(R.id.sheet_item_list);
     }
@@ -215,6 +232,13 @@ public class AccountSelectionViewTest {
                 new PropertyModel.Builder(ContinueButtonProperties.ALL_KEYS)
                         .with(ContinueButtonProperties.ACCOUNT, account)
                         .with(ContinueButtonProperties.ON_CLICK_LISTENER, mAccountCallback)
+                        .build());
+    }
+
+    private MVCListAdapter.ListItem buildDataSharingConsentItem(String provider) {
+        return new MVCListAdapter.ListItem(AccountSelectionProperties.ItemType.DATA_SHARING_CONSENT,
+                new PropertyModel.Builder(DataSharingConsentProperties.ALL_KEYS)
+                        .with(DataSharingConsentProperties.PROVIDER_URL, provider)
                         .build());
     }
 }
