@@ -7041,6 +7041,7 @@ test("unit_tests") {
       "../browser/enterprise/connectors/device_trust/signals:test_support",
       "../browser/enterprise/connectors/device_trust/signals/decorators/common",
       "../browser/enterprise/connectors/device_trust/signals/decorators/common:test_support",
+      "../browser/enterprise/connectors/device_trust/signals/decorators/common:unit_tests",
     ]
   }
 
