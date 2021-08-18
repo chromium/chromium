@@ -106,9 +106,12 @@ void LockImpl::Unlock() {
 
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
 
+BASE_EXPORT std::string SystemErrorCodeToString(int error_code);
+
 bool LockImpl::Try() {
   int rv = pthread_mutex_trylock(&native_handle_);
-  DCHECK(rv == 0 || rv == EBUSY) << ". " << strerror(rv);
+  DCHECK(rv == 0 || rv == EBUSY)
+      << ". " << base::internal::SystemErrorCodeToString(rv);
   return rv == 0;
 }
 
