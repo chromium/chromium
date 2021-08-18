@@ -3,8 +3,9 @@
     color: var(--google-green-500);
   }
 
-  #bluetoothDeviceName {
-    padding-inline-start: 0;
+  .bluetooth-middle {
+    align-items: center;
+    flex: auto;
   }
 
   .cancel-button {
@@ -32,8 +33,9 @@
       </template>
     </div>
   </div>
-  <div id="deviceNameSettings" class="settings-box ">
-    <div id="bluetoothDeviceName" class="middle settings-box-text no-padding"
+  <div id="deviceNameSettings" class="settings-box">
+    <div id="bluetoothDeviceName"
+        class="bluetooth-middle settings-box-text no-padding"
         aria-hidden="true">
       $i18n{bluetoothDeviceDetailName}
       <div class="secondary" id="bluetoothDeviceNameLabel">
@@ -46,9 +48,22 @@
       $i18n{bluetoothDeviceDetailChangeDeviceName}
     </cr-button>
   </div>
-  <div id="changeDeviceSettings" class="settings-box" aria-hidden="true">
-    <!-- TODO(crbug.com/1010321): Add device settings string -->
-  </div>
+  <template is="dom-if"
+      if="[[shouldShowChangeMouseDeviceSettings_(device_.*)]]" restamp>
+    <cr-link-row
+        id="changeMouseSettings"
+        class="hr settings-box"
+        label="$i18n{bluetoothDeviceDetailChangeDeviceSettingsMouse}">
+    </cr-link-row>
+  </template>
+  <template is="dom-if"
+      if="[[shouldShowChangeKeyboardDeviceSettings_(device_.*)]]" restamp>
+    <cr-link-row
+        id="changeKeyboardSettings"
+        class="hr settings-box"
+        label="$i18n{bluetoothDeviceDetailChangeDeviceSettingsKeyboard}">
+    </cr-link-row>
+  </template>
 </div>
 
 <template is="dom-if" if="[[shouldShowChangeDeviceNameDialog_]]" restamp>

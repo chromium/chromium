@@ -89,6 +89,43 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     assertEquals('device1', bluetoothDeviceDetailPage.parentNode.pageTitle);
   });
 
+  test('Show change settings row', async function() {
+    init();
+    bluetoothConfig.setBluetoothEnabledState(/*enabled=*/ true);
+
+    const getChangeMouseSettings = () =>
+        bluetoothDeviceDetailPage.$$('#changeMouseSettings');
+    const getChangeKeyboardSettings = () =>
+        bluetoothDeviceDetailPage.$$('#changeKeyboardSettings');
+
+    const device1 = createDefaultBluetoothDevice(
+        /*id=*/ '12//345&6789',
+        /*publicName=*/ 'BeatsX',
+        /*connected=*/ true,
+        /*nickname=*/ 'device1',
+        /*audioCapability=*/ mojom.AudioOutputCapability.kCapableOfAudioOutput,
+        /*deviceType=*/ mojom.DeviceType.kMouse);
+
+    bluetoothConfig.appendToPairedDeviceList([device1]);
+    await flushAsync();
+
+    assertFalse(!!getChangeMouseSettings());
+    assertFalse(!!getChangeKeyboardSettings());
+
+    const params = new URLSearchParams();
+    params.append('id', '12//345&6789');
+    settings.Router.getInstance().navigateTo(
+        settings.routes.BLUETOOTH_DEVICE_DETAIL, params);
+
+    await flushAsync();
+    assertTrue(!!getChangeMouseSettings());
+    assertFalse(!!getChangeKeyboardSettings());
+    assertEquals(
+        bluetoothDeviceDetailPage.i18n(
+            'bluetoothDeviceDetailChangeDeviceSettingsMouse'),
+        getChangeMouseSettings().label);
+  });
+
   test('Device becomes unavailable while viewing page.', async function() {
     init();
     bluetoothConfig.setBluetoothEnabledState(/*enabled=*/ true);
@@ -146,7 +183,8 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
         /*publicName=*/ 'BeatsX',
         /*connected=*/ true,
         /*nickname=*/ 'device1',
-        /*audioCapability=*/ mojom.AudioOutputCapability.kCapableOfAudioOutput);
+        /*audioCapability=*/ mojom.AudioOutputCapability.kCapableOfAudioOutput,
+        /*deviceType=*/ mojom.DeviceType.kHeadset);
 
     bluetoothConfig.appendToPairedDeviceList([device1]);
     await flushAsync();

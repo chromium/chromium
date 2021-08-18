@@ -199,6 +199,29 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
   onCloseChangeDeviceNameDialog_() {
     this.shouldShowChangeDeviceNameDialog_ = false;
   }
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  shouldShowChangeMouseDeviceSettings_() {
+    if (!this.device_) {
+      return false;
+    }
+    return this.device_.deviceProperties.deviceType === mojom.DeviceType.kMouse;
+  }
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  shouldShowChangeKeyboardDeviceSettings_() {
+    if (!this.device_) {
+      return false;
+    }
+    return this.device_.deviceProperties.deviceType ===
+        mojom.DeviceType.kKeyboard;
+  }
 }
 
 customElements.define(
