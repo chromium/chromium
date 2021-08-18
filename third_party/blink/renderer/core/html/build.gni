@@ -660,6 +660,7 @@ blink_core_tests_html = [
   "forms/form_controller_test.cc",
   "forms/form_data_test.cc",
   "forms/html_data_list_element_test.cc",
+  "forms/html_field_set_element_test.cc",
   "forms/html_form_control_element_test.cc",
   "forms/html_form_element_test.cc",
   "forms/html_input_element_test.cc",
