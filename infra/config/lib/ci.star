@@ -420,6 +420,10 @@ def fyi_builder(
         goma_backend = builders.goma.backend.RBE_PROD,
         **kwargs):
     kwargs.setdefault("os", os.LINUX_BIONIC_REMOVE)
+
+    # TODO(crbug.com/1135718): Promote out of experiment for all builders.
+    kwargs.setdefault("experiments", {})
+    kwargs["experiments"].setdefault("chromium.chromium_tests.use_rdb_results", 1)
     return ci.builder(
         name = name,
         builder_group = "chromium.fyi",
