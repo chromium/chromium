@@ -370,6 +370,9 @@ extern const char kDisallowDocWrittenScriptsUiDescription[];
 extern const char kDocumentTransitionName[];
 extern const char kDocumentTransitionDescription[];
 
+extern const char kDocumentTransitionSlowdownFactorName[];
+extern const char kDocumentTransitionSlowdownFactorDescription[];
+
 extern const char kEnableAudioFocusEnforcementName[];
 extern const char kEnableAudioFocusEnforcementDescription[];
 

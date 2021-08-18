@@ -134,12 +134,15 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager {
   // Tick both the root and shared animations.
   void TickAnimations(base::TimeTicks new_time);
 
+  base::TimeDelta ApplySlowdownFactor(base::TimeDelta original) const;
+
   enum class State { kIdle, kAnimating, kLastFrame };
 
   TransitionDirectiveCompleteCallback sequence_id_finished_callback_;
 
   uint32_t last_processed_sequence_id_ = 0;
 
+  const int animation_slowdown_factor_ = 1;
   TransferableResourceTracker transferable_resource_tracker_;
 
   absl::optional<TransferableResourceTracker::ResourceFrame> saved_textures_;

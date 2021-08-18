@@ -2588,6 +2588,13 @@ const FeatureEntry::FeatureVariation kContinuousSearchFeatureVariations[] = {
      base::size(kContinuousSearchDoubleRowChip), nullptr}};
 #endif  // defined(OS_ANDROID)
 
+const FeatureEntry::Choice kDocumentTransitionSlowdownFactorChoices[] = {
+    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
+    {"5", switches::kDocumentTransitionSlowdownFactor, "5"},
+    {"10", switches::kDocumentTransitionSlowdownFactor, "10"},
+    {"20", switches::kDocumentTransitionSlowdownFactor, "20"},
+    {"50", switches::kDocumentTransitionSlowdownFactor, "50"}};
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -3779,6 +3786,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"document-transition", flag_descriptions::kDocumentTransitionName,
      flag_descriptions::kDocumentTransitionDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kDocumentTransition)},
+    {"document-transition-slowdown-factor",
+     flag_descriptions::kDocumentTransitionSlowdownFactorName,
+     flag_descriptions::kDocumentTransitionSlowdownFactorDescription, kOsAll,
+     MULTI_VALUE_TYPE(kDocumentTransitionSlowdownFactorChoices)},
 #if defined(OS_WIN)
     {"use-winrt-midi-api", flag_descriptions::kUseWinrtMidiApiName,
      flag_descriptions::kUseWinrtMidiApiDescription, kOsWin,

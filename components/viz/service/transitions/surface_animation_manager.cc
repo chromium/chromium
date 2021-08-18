@@ -20,6 +20,7 @@
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/common/resources/transferable_resource.h"
+#include "components/viz/common/switches.h"
 #include "components/viz/common/transition_utils.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_saved_frame_storage.h"
@@ -39,16 +40,14 @@
 namespace viz {
 namespace {
 
-constexpr int kAnimationSlowDownFactor = 1;
-
 constexpr base::TimeDelta kDefaultAnimationDuration =
-    base::TimeDelta::FromMilliseconds(250) * kAnimationSlowDownFactor;
+    base::TimeDelta::FromMilliseconds(250);
 
 constexpr base::TimeDelta kSharedOpacityAnimationDuration =
-    base::TimeDelta::FromMilliseconds(60) * kAnimationSlowDownFactor;
+    base::TimeDelta::FromMilliseconds(60);
 
 constexpr base::TimeDelta kSharedOpacityAnimationDelay =
-    base::TimeDelta::FromMilliseconds(60) * kAnimationSlowDownFactor;
+    base::TimeDelta::FromMilliseconds(60);
 
 // Scale the overall duration to produce the opacity duration. Opacity
 // transitions which reveal an element (i.e., transition opacity from 0 -> 1)
@@ -141,45 +140,49 @@ void CreateAndAppendSharedRenderPassDrawQuad(
 std::unique_ptr<gfx::AnimationCurve> CreateOpacityCurve(
     float start_opacity,
     float end_opacity,
+    base::TimeDelta opacity_duration,
+    base::TimeDelta opacity_delay,
+    base::TimeDelta total_duration,
     gfx::FloatAnimationCurve::Target* target) {
   auto float_curve = gfx::KeyframedFloatAnimationCurve::Create();
 
   // The curve starts at opacity delay and runs for opacity animation, so it
   // potentially has 4 points:
   // time 0 == start opacity
-  // time 'delay' == start opacity
-  // time 'delay' + 'duration' == end opacity
-  // time end of animation == end opacity
+  // time 'opacity_delay' == start opacity
+  // time 'opacity_delay' + 'opacity_duration' == end opacity
+  // time 'total_duration' == end opacity
   float_curve->AddKeyframe(
       gfx::FloatKeyframe::Create(base::TimeDelta(), start_opacity, nullptr));
-  if (!kSharedOpacityAnimationDelay.is_zero()) {
-    float_curve->AddKeyframe(gfx::FloatKeyframe::Create(
-        kSharedOpacityAnimationDelay, start_opacity, nullptr));
+  if (!opacity_delay.is_zero()) {
+    float_curve->AddKeyframe(
+        gfx::FloatKeyframe::Create(opacity_delay, start_opacity, nullptr));
   }
   float_curve->AddKeyframe(gfx::FloatKeyframe::Create(
-      kSharedOpacityAnimationDuration + kSharedOpacityAnimationDelay,
-      end_opacity, nullptr));
-  float_curve->AddKeyframe(gfx::FloatKeyframe::Create(kDefaultAnimationDuration,
-                                                      end_opacity, nullptr));
+      opacity_duration + opacity_delay, end_opacity, nullptr));
+  float_curve->AddKeyframe(
+      gfx::FloatKeyframe::Create(total_duration, end_opacity, nullptr));
   float_curve->set_target(target);
   return float_curve;
 }
 
 std::unique_ptr<gfx::AnimationCurve> CreateSizeCurve(
     const gfx::SizeF& start_size,
+    base::TimeDelta duration,
     std::unique_ptr<gfx::TimingFunction> timing_function,
     gfx::SizeAnimationCurve::Target* target) {
   auto size_curve = gfx::KeyframedSizeAnimationCurve::Create();
   size_curve->AddKeyframe(gfx::SizeKeyframe::Create(
       base::TimeDelta(), start_size, timing_function->Clone()));
   size_curve->AddKeyframe(gfx::SizeKeyframe::Create(
-      kDefaultAnimationDuration, start_size, std::move(timing_function)));
+      duration, start_size, std::move(timing_function)));
   size_curve->set_target(target);
   return size_curve;
 }
 
 std::unique_ptr<gfx::AnimationCurve> CreateTransformCurve(
     const gfx::Transform& transform,
+    base::TimeDelta duration,
     std::unique_ptr<gfx::TimingFunction> timing_function,
     gfx::TransformAnimationCurve::Target* target) {
   gfx::TransformOperations transform_ops;
@@ -189,7 +192,7 @@ std::unique_ptr<gfx::AnimationCurve> CreateTransformCurve(
   transform_curve->AddKeyframe(gfx::TransformKeyframe::Create(
       base::TimeDelta(), transform_ops, timing_function->Clone()));
   transform_curve->AddKeyframe(gfx::TransformKeyframe::Create(
-      kDefaultAnimationDuration, transform_ops, std::move(timing_function)));
+      duration, transform_ops, std::move(timing_function)));
   transform_curve->set_target(target);
   return transform_curve;
 }
@@ -198,7 +201,9 @@ std::unique_ptr<gfx::AnimationCurve> CreateTransformCurve(
 
 SurfaceAnimationManager::SurfaceAnimationManager(
     SharedBitmapManager* shared_bitmap_manager)
-    : transferable_resource_tracker_(shared_bitmap_manager) {}
+    : animation_slowdown_factor_(
+          switches::GetDocumentTransitionSlowDownFactor()),
+      transferable_resource_tracker_(shared_bitmap_manager) {}
 
 SurfaceAnimationManager::~SurfaceAnimationManager() = default;
 
@@ -855,7 +860,8 @@ void SurfaceAnimationManager::CreateRootAnimationCurves(
               : gfx::CubicBezierTimingFunction::EaseType::EASE_OUT);
 
   // Create the transform curve.
-  base::TimeDelta transform_duration = kDefaultAnimationDuration;
+  base::TimeDelta transform_duration =
+      ApplySlowdownFactor(kDefaultAnimationDuration);
 
   std::unique_ptr<gfx::KeyframedTransformAnimationCurve> transform_curve(
       gfx::KeyframedTransformAnimationCurve::Create());
@@ -912,6 +918,11 @@ void SurfaceAnimationManager::CreateSharedElementCurves() {
   shared_animations_.resize(
       animate_directive_->shared_render_pass_ids().size());
 
+  const auto opacity_duration =
+      ApplySlowdownFactor(kSharedOpacityAnimationDuration);
+  const auto opacity_delay = ApplySlowdownFactor(kSharedOpacityAnimationDelay);
+  const auto total_duration = ApplySlowdownFactor(kDefaultAnimationDuration);
+
   // Since we don't have a target state yet, create animations as if all of the
   // shared elements are targeted to stay in place with opacity going to 0.
   for (size_t i = 0; i < saved_textures_->shared.size(); ++i) {
@@ -928,7 +939,9 @@ void SurfaceAnimationManager::CreateSharedElementCurves() {
     //   element to gradually fade out.
     // The animation is re-targeted once the dest element values are known.
     float start_opacity = has_src_element ? shared->draw_data.opacity : 0.f;
-    auto opacity_curve = CreateOpacityCurve(start_opacity, 1.f, &state);
+    auto opacity_curve =
+        CreateOpacityCurve(start_opacity, 1.f, opacity_duration, opacity_delay,
+                           total_duration, &state);
     state.driver().AddKeyframeModel(gfx::KeyframeModel::Create(
         std::move(opacity_curve), gfx::KeyframeEffect::GetNextKeyframeModelId(),
         SharedAnimationState::kCombinedOpacity));
@@ -943,14 +956,16 @@ void SurfaceAnimationManager::CreateSharedElementCurves() {
     // Interpolation between the 2 textures involves an opacity animation (to
     // cross-fade the content) and a scale animation to transition the content
     // size.
-    auto content_size_curve = CreateSizeCurve(
-        gfx::SizeF(shared->draw_data.size), ease_timing->Clone(), &state);
+    auto content_size_curve =
+        CreateSizeCurve(gfx::SizeF(shared->draw_data.size), total_duration,
+                        ease_timing->Clone(), &state);
     state.driver().AddKeyframeModel(gfx::KeyframeModel::Create(
         std::move(content_size_curve),
         gfx::KeyframeEffect::GetNextKeyframeModelId(),
         SharedAnimationState::kContentSize));
-    auto content_opacity_curve =
-        CreateOpacityCurve(/*start_opacity=*/0.f, /*end_opacity=*/1.f, &state);
+    auto content_opacity_curve = CreateOpacityCurve(
+        /*start_opacity=*/0.f, /*end_opacity=*/1.f, opacity_duration,
+        opacity_delay, total_duration, &state);
     state.driver().AddKeyframeModel(gfx::KeyframeModel::Create(
         std::move(content_opacity_curve),
         gfx::KeyframeEffect::GetNextKeyframeModelId(),
@@ -959,13 +974,19 @@ void SurfaceAnimationManager::CreateSharedElementCurves() {
     // The screen space transform for the interpolated texture is animated from
     // src element to dest element value. The animation is re-targeted once the
     // dest element values are known.
-    auto transform_curve = CreateTransformCurve(
-        shared->draw_data.target_transform, ease_timing->Clone(), &state);
+    auto transform_curve =
+        CreateTransformCurve(shared->draw_data.target_transform, total_duration,
+                             ease_timing->Clone(), &state);
     state.driver().AddKeyframeModel(gfx::KeyframeModel::Create(
         std::move(transform_curve),
         gfx::KeyframeEffect::GetNextKeyframeModelId(),
         SharedAnimationState::kCombinedTransform));
   }
+}
+
+base::TimeDelta SurfaceAnimationManager::ApplySlowdownFactor(
+    base::TimeDelta original) const {
+  return original * animation_slowdown_factor_;
 }
 
 // RootAnimationState

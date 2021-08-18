@@ -1171,8 +1171,13 @@
   },
    {
     "name": "document-transition",
-    "owners": [ "vmpstr", "chrishtr" ],
-    "expiry_milestone" : 94
+    "owners": [ "khushalsagar", "vmpstr", "chrishtr" ],
+    "expiry_milestone" : 98
+  },
+   {
+    "name": "document-transition-slowdown-factor",
+    "owners": [ "khushalsagar", "vmpstr", "chrishtr" ],
+    "expiry_milestone" : 98
   },
   {
     "name": "double-buffer-compositing",
