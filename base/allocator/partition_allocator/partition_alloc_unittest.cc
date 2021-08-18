@@ -356,6 +356,12 @@ class PartitionAllocTest : public testing::Test {
 
   void RunRefCountReallocSubtest(size_t orig_size, size_t new_size);
 
+  NOINLINE MALLOC_FN void* Alloc(size_t size) {
+    return allocator.root()->Alloc(size, "");
+  }
+
+  NOINLINE void Free(void* ptr) { allocator.root()->Free(ptr); }
+
   base::test::ScopedFeatureList scoped_feature_list;
   PartitionAllocator<base::internal::ThreadSafe> allocator;
   PartitionAllocator<base::internal::ThreadSafe> aligned_allocator;
@@ -3524,6 +3530,22 @@ TEST_F(PartitionAllocTest, GetIndex) {
     size_t index = BucketIndexLookup::GetIndex(size);
     ASSERT_EQ(lookup.bucket_sizes()[index], size);
   }
+}
+
+// Used to check alignment. If the compiler understands the annotations, the
+// zeroing in the constructor uses aligned SIMD instructions.
+TEST_F(PartitionAllocTest, MallocFunctionAnnotations) {
+  struct TestStruct {
+    uint64_t a = 0;
+    uint64_t b = 0;
+  };
+
+  void* buffer = Alloc(sizeof(TestStruct));
+  // Should use "mov*a*ps" on x86_64.
+  auto* x = new (buffer) TestStruct();
+
+  EXPECT_EQ(x->a, 0u);
+  Free(buffer);
 }
 
 }  // namespace internal

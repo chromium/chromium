@@ -7,10 +7,20 @@
 
 #include <atomic>
 
+#include "base/allocator/buildflags.h"
 #include "base/check_op.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+// FastMalloc() defers to malloc() in this case, and including its header
+// ensures that the compiler knows that malloc() is "special", e.g. that it
+// returns properly-aligned, distinct memory locations.
+#include <malloc.h>
+#else
+#include "base/allocator/partition_allocator/partition_alloc.h"
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 namespace WTF {
 

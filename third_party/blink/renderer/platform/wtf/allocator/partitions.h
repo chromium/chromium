@@ -77,13 +77,18 @@ class WTF_EXPORT Partitions {
 
   static void DumpMemoryStats(bool is_light_dump, base::PartitionStatsDumper*);
 
-  static void* BufferMalloc(size_t n, const char* type_name);
-  static void* BufferTryRealloc(void* p, size_t n, const char* type_name);
+  static void* MALLOC_FN BufferMalloc(size_t n,
+                                      const char* type_name) MALLOC_ALIGNED;
+  static void* BufferTryRealloc(void* p,
+                                size_t n,
+                                const char* type_name) MALLOC_ALIGNED;
   static void BufferFree(void* p);
   static size_t BufferPotentialCapacity(size_t n);
 
-  static void* FastMalloc(size_t n, const char* type_name);
-  static void* FastZeroedMalloc(size_t n, const char* type_name);
+  static void* MALLOC_FN FastMalloc(size_t n,
+                                    const char* type_name) MALLOC_ALIGNED;
+  static void* MALLOC_FN FastZeroedMalloc(size_t n,
+                                          const char* type_name) MALLOC_ALIGNED;
   static void FastFree(void* p);
 
   static void HandleOutOfMemory(size_t size);

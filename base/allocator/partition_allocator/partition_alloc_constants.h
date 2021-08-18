@@ -13,6 +13,7 @@
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
+#include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "build/build_config.h"
 
 #if defined(OS_APPLE) && defined(ARCH_CPU_64_BITS)
@@ -240,27 +241,6 @@ PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
 DirectMapAllocationGranularityOffsetMask() {
   return DirectMapAllocationGranularity() - 1;
 }
-
-// Alignment has two constraints:
-// - Alignment requirement for scalar types: alignof(std::max_align_t)
-// - Alignment requirement for operator new().
-//
-// The two are separate on Windows 64 bits, where the first one is 8 bytes, and
-// the second one 16. We could technically return something different for
-// malloc() and operator new(), but this would complicate things, and most of
-// our allocations are presumably coming from operator new() anyway.
-//
-// __STDCPP_DEFAULT_NEW_ALIGNMENT__ is C++17. As such, it is not defined on all
-// platforms, as Chrome's requirement is C++14 as of 2020.
-#if defined(__STDCPP_DEFAULT_NEW_ALIGNMENT__)
-constexpr size_t kAlignment =
-    std::max(alignof(max_align_t), __STDCPP_DEFAULT_NEW_ALIGNMENT__);
-#else
-constexpr size_t kAlignment = alignof(max_align_t);
-#endif
-static_assert(kAlignment <= 16,
-              "PartitionAlloc doesn't support a fundamental alignment larger "
-              "than 16 bytes.");
 
 // The "order" of an allocation is closely related to the power-of-1 size of the
 // allocation. More precisely, the order is the bit index of the
