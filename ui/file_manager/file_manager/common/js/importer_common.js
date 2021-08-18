@@ -5,7 +5,9 @@
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
+
 import {FileType} from './file_type.js';
+import {toFilesAppURL} from './url_constants.js';
 import {VolumeManagerCommon} from './volume_manager_types.js';
 import {xfm} from './xfm.js';
 
@@ -601,9 +603,9 @@ importer.APP_URL_PREFIX_ =
  * @return {string}
  */
 importer.deflateAppUrl = url => {
-  if (url.substring(0, importer.APP_URL_PREFIX_.length) ===
-      importer.APP_URL_PREFIX_) {
-    return '$' + url.substring(importer.APP_URL_PREFIX_.length);
+  const appPrefix = 'filesystem:' + toFilesAppURL('/external').toString();
+  if (url.startsWith(appPrefix)) {
+    return url.replace(appPrefix, '$');
   }
 
   return url;
@@ -617,8 +619,9 @@ importer.deflateAppUrl = url => {
  * @return {string}
  */
 importer.inflateAppUrl = deflated => {
-  if (deflated.substring(0, 1) === '$') {
-    return importer.APP_URL_PREFIX_ + deflated.substring(1);
+  if (deflated.startsWith('$')) {
+    const path = '/external' + deflated.replace('$', '');
+    return 'filesystem:' + toFilesAppURL(path).toString();
   }
   return deflated;
 };

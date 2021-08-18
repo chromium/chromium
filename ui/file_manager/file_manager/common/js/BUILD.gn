@@ -178,6 +178,7 @@ js_library("filtered_volume_manager") {
 js_library("importer_common") {
   deps = [
     ":file_type",
+    ":url_constants",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
     "//ui/file_manager/file_manager/externs:volume_info",
