@@ -40,7 +40,7 @@ class NET_EXPORT HostPortPair {
 
   // Creates a HostPortPair from a string formatted in same manner as
   // ToString().
-  static HostPortPair FromString(const std::string& str);
+  static HostPortPair FromString(base::StringPiece str);
 
   // TODO(willchan): Define a functor instead.
   // Comparator function so this can be placed in a std::map.
