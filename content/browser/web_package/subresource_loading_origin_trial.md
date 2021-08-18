@@ -10,7 +10,7 @@ This document is for web developers who want to participate in Origin Trial for
 
 ## Origin Trial timeline
 
-Chrome M90-M92.
+Chrome M90-M96.
 
 ## How to create a bundle
 
