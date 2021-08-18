@@ -32,8 +32,8 @@
             app:layout_column="0"
             app:layout_row="0"
             app:layout_rowSpan="4"
-            app:cornerRadiusTopStart="@dimen/download_manager_thumbnail_corner_radius"
-            app:cornerRadiusBottomStart="@dimen/download_manager_thumbnail_corner_radius"
+            app:cornerRadiusTopStart="@dimen/card_rounded_corner_radius"
+            app:cornerRadiusBottomStart="@dimen/card_rounded_corner_radius"
             style="@style/AsyncImageView"
             tools:ignore="ContentDescription" />
 
