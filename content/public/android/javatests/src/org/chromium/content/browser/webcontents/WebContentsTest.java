@@ -33,6 +33,7 @@ import org.chromium.content_shell_apk.ChildProcessLauncherTestUtils;
 import org.chromium.content_shell_apk.ContentShellActivity;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
 
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
@@ -358,6 +359,24 @@ public class WebContentsTest {
                 Assert.assertEquals("RenderFrameHost associated with different WebContents",
                         webContents, associatedWebContents);
             }
+        });
+    }
+
+    @Test
+    @SmallTest
+    public void testWebContentsGetAllRenderFrameHosts() {
+        String testUrl = UrlUtils.encodeHtmlDataUri("<html><body>"
+                + "   <iframe srcdoc='<body>frame1</body>'></iframe>"
+                + "   <iframe srcdoc='<body>frame2</body>'></iframe>"
+                + "</body></html>");
+
+        final ContentShellActivity activity = mActivityTestRule.launchContentShellWithUrl(testUrl);
+        mActivityTestRule.waitForActiveShellToBeDoneLoading();
+        final WebContentsImpl webContents = ((WebContentsImpl) activity.getActiveWebContents());
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            List<RenderFrameHost> frames = webContents.getAllRenderFrameHosts();
+            Assert.assertEquals(3, frames.size());
         });
     }
 
