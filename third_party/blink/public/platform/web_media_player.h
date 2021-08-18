@@ -179,9 +179,6 @@ class WebMediaPlayer {
   // calls are still made periodically.
   virtual void OnTimeUpdate() {}
 
-  virtual void RequestRemotePlayback() {}
-  virtual void RequestRemotePlaybackControl() {}
-  virtual void RequestRemotePlaybackStop() {}
   virtual void RequestRemotePlaybackDisabled(bool disabled) {}
   virtual void FlingingStarted() {}
   virtual void FlingingStopped() {}
