@@ -146,9 +146,15 @@ class ChromeBrowserProvider {
   // Fires |OnChromeIdentityServiceDidChange| on all observers.
   void FireChromeIdentityServiceDidChange(ChromeIdentityService* new_service);
 
+  // Creates a ChromeIdentityService. This methods has to be be implemented
+  // in subclasses.
+  virtual std::unique_ptr<ios::ChromeIdentityService>
+  CreateChromeIdentityService();
+
  private:
   base::ObserverList<Observer, true>::Unchecked observer_list_;
   std::unique_ptr<MailtoHandlerProvider> mailto_handler_provider_;
+  std::unique_ptr<ios::ChromeIdentityService> chrome_identity_service_;
 };
 
 }  // namespace ios

@@ -40,6 +40,7 @@ ChromeBrowserProvider::ChromeBrowserProvider()
     : mailto_handler_provider_(std::make_unique<MailtoHandlerProvider>()) {}
 
 ChromeBrowserProvider::~ChromeBrowserProvider() {
+  chrome_identity_service_.reset();
   for (auto& observer : observer_list_)
     observer.OnChromeBrowserProviderWillBeDestroyed();
 }
@@ -55,10 +56,16 @@ SigninResourcesProvider* ChromeBrowserProvider::GetSigninResourcesProvider() {
 }
 
 void ChromeBrowserProvider::SetChromeIdentityServiceForTesting(
-    std::unique_ptr<ChromeIdentityService> service) {}
+    std::unique_ptr<ChromeIdentityService> service) {
+  chrome_identity_service_ = std::move(service);
+  FireChromeIdentityServiceDidChange(chrome_identity_service_.get());
+}
 
 ChromeIdentityService* ChromeBrowserProvider::GetChromeIdentityService() {
-  return nullptr;
+  if (!chrome_identity_service_) {
+    chrome_identity_service_ = CreateChromeIdentityService();
+  }
+  return chrome_identity_service_.get();
 }
 
 ChromeTrustedVaultService*
@@ -123,6 +130,11 @@ void ChromeBrowserProvider::FireChromeIdentityServiceDidChange(
     ChromeIdentityService* new_service) {
   for (auto& observer : observer_list_)
     observer.OnChromeIdentityServiceDidChange(new_service);
+}
+
+std::unique_ptr<ios::ChromeIdentityService>
+ChromeBrowserProvider::CreateChromeIdentityService() {
+  return nullptr;
 }
 
 }  // namespace ios

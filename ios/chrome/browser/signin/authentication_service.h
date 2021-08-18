@@ -34,6 +34,7 @@ class SyncSetupService;
 // authentication library.
 class AuthenticationService : public KeyedService,
                               public signin::IdentityManager::Observer,
+                              public ios::ChromeBrowserProvider::Observer,
                               public ios::ChromeIdentityService::Observer,
                               public ChromeAccountManagerService::Observer {
  public:
@@ -127,17 +128,17 @@ class AuthenticationService : public KeyedService,
   // error. Returns true if |identity| had an associated error, false otherwise.
   bool ShowMDMErrorDialogForIdentity(ChromeIdentity* identity);
 
-  // Resets the ChromeIdentityService observer to the one available in the
-  // ChromeBrowserProvider. Used for testing when changing the
-  // ChromeIdentityService to or from a fake one.
-  void ResetChromeIdentityServiceObserverForTesting();
-
   // Returns a weak pointer of this.
   base::WeakPtr<AuthenticationService> GetWeakPtr();
 
   // This needs to be invoked when the application enters foreground to
   // sync the accounts between the IdentityManager and the SSO library.
   void OnApplicationWillEnterForeground();
+
+  // ChromeBrowserProvider implementation.
+  void OnChromeIdentityServiceDidChange(
+      ios::ChromeIdentityService* new_service) override;
+  void OnChromeBrowserProviderWillBeDestroyed() override;
 
  private:
   friend class AuthenticationServiceTest;

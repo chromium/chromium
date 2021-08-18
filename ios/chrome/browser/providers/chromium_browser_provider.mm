@@ -33,20 +33,6 @@ ChromiumBrowserProvider::GetSigninResourcesProvider() {
   return signin_resources_provider_.get();
 }
 
-void ChromiumBrowserProvider::SetChromeIdentityServiceForTesting(
-    std::unique_ptr<ios::ChromeIdentityService> service) {
-  chrome_identity_service_ = std::move(service);
-  FireChromeIdentityServiceDidChange(chrome_identity_service_.get());
-}
-
-ios::ChromeIdentityService*
-ChromiumBrowserProvider::GetChromeIdentityService() {
-  if (!chrome_identity_service_) {
-    chrome_identity_service_ = std::make_unique<ios::ChromeIdentityService>();
-  }
-  return chrome_identity_service_.get();
-}
-
 UITextField* ChromiumBrowserProvider::CreateStyledTextField() const {
   return [[UITextField alloc] initWithFrame:CGRectZero];
 }
@@ -71,4 +57,9 @@ OverridesProvider* ChromiumBrowserProvider::GetOverridesProvider() const {
 
 DiscoverFeedProvider* ChromiumBrowserProvider::GetDiscoverFeedProvider() const {
   return discover_feed_provider_.get();
+}
+
+std::unique_ptr<ios::ChromeIdentityService>
+ChromiumBrowserProvider::CreateChromeIdentityService() {
+  return std::make_unique<ios::ChromeIdentityService>();
 }

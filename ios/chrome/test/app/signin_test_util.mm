@@ -58,14 +58,10 @@ void SetUpMockAuthentication() {
   service->SetUpForIntegrationTests();
   ios::GetChromeBrowserProvider().SetChromeIdentityServiceForTesting(
       std::move(service));
-  AuthenticationServiceFactory::GetForBrowserState(GetOriginalBrowserState())
-      ->ResetChromeIdentityServiceObserverForTesting();
 }
 
 void TearDownMockAuthentication() {
   ios::GetChromeBrowserProvider().SetChromeIdentityServiceForTesting(nullptr);
-  AuthenticationServiceFactory::GetForBrowserState(GetOriginalBrowserState())
-      ->ResetChromeIdentityServiceObserverForTesting();
 }
 
 void SignOutAndClearIdentities() {

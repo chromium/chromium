@@ -45,19 +45,6 @@ TestChromeBrowserProvider::GetSigninResourcesProvider() {
   return signin_resources_provider_.get();
 }
 
-void TestChromeBrowserProvider::SetChromeIdentityServiceForTesting(
-    std::unique_ptr<ChromeIdentityService> service) {
-  chrome_identity_service_ = std::move(service);
-  FireChromeIdentityServiceDidChange(chrome_identity_service_.get());
-}
-
-ChromeIdentityService* TestChromeBrowserProvider::GetChromeIdentityService() {
-  if (!chrome_identity_service_) {
-    chrome_identity_service_.reset(new FakeChromeIdentityService());
-  }
-  return chrome_identity_service_.get();
-}
-
 ChromeTrustedVaultService*
 TestChromeBrowserProvider::GetChromeTrustedVaultService() {
   if (!chrome_trusted_vault_service_) {
@@ -92,6 +79,11 @@ MailtoHandlerProvider* TestChromeBrowserProvider::GetMailtoHandlerProvider()
 DiscoverFeedProvider* TestChromeBrowserProvider::GetDiscoverFeedProvider()
     const {
   return discover_feed_provider_.get();
+}
+
+std::unique_ptr<ChromeIdentityService>
+TestChromeBrowserProvider::CreateChromeIdentityService() {
+  return std::make_unique<FakeChromeIdentityService>();
 }
 
 }  // namespace ios

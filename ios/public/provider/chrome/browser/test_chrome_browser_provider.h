@@ -25,9 +25,6 @@ class TestChromeBrowserProvider : public ChromeBrowserProvider {
 
   // ChromeBrowserProvider:
   SigninResourcesProvider* GetSigninResourcesProvider() override;
-  void SetChromeIdentityServiceForTesting(
-      std::unique_ptr<ChromeIdentityService> service) override;
-  ChromeIdentityService* GetChromeIdentityService() override;
   ChromeTrustedVaultService* GetChromeTrustedVaultService() override;
   UITextField* CreateStyledTextField() const override NS_RETURNS_RETAINED;
   VoiceSearchProvider* GetVoiceSearchProvider() const override;
@@ -37,7 +34,9 @@ class TestChromeBrowserProvider : public ChromeBrowserProvider {
   DiscoverFeedProvider* GetDiscoverFeedProvider() const override;
 
  private:
-  std::unique_ptr<ChromeIdentityService> chrome_identity_service_;
+  // ChromeBrowserProvider:
+  std::unique_ptr<ChromeIdentityService> CreateChromeIdentityService() override;
+
   std::unique_ptr<ChromeTrustedVaultService> chrome_trusted_vault_service_;
   std::unique_ptr<OmahaServiceProvider> omaha_service_provider_;
   std::unique_ptr<SigninResourcesProvider> signin_resources_provider_;

@@ -201,6 +201,16 @@ void AuthenticationService::ApproveAccountList() {
       current_accounts_info);
 }
 
+void AuthenticationService::OnChromeIdentityServiceDidChange(
+    ios::ChromeIdentityService* new_service) {
+  identity_service_observation_.Observe(
+      ios::GetChromeBrowserProvider().GetChromeIdentityService());
+}
+
+void AuthenticationService::OnChromeBrowserProviderWillBeDestroyed() {
+  identity_service_observation_.Reset();
+}
+
 void AuthenticationService::MigrateAccountsStoredInPrefsIfNeeded() {
   if (identity_manager_->GetAccountIdMigrationState() ==
       signin::IdentityManager::AccountIdMigrationState::MIGRATION_NOT_STARTED) {
@@ -410,12 +420,6 @@ bool AuthenticationService::ShowMDMErrorDialogForIdentity(
   identity_service->HandleMDMNotification(identity, cached_info, ^(bool){
                                                     });
   return true;
-}
-
-void AuthenticationService::ResetChromeIdentityServiceObserverForTesting() {
-  DCHECK(!identity_service_observation_.IsObserving());
-  identity_service_observation_.Observe(
-      ios::GetChromeBrowserProvider().GetChromeIdentityService());
 }
 
 base::WeakPtr<AuthenticationService> AuthenticationService::GetWeakPtr() {
