@@ -622,7 +622,7 @@ ExtensionFunction::ResponseAction RuntimeOpenOptionsPageFunction::Run() {
 
 ExtensionFunction::ResponseAction RuntimeSetUninstallURLFunction::Run() {
   std::unique_ptr<api::runtime::SetUninstallURL::Params> params(
-      api::runtime::SetUninstallURL::Params::Create(*args_));
+      api::runtime::SetUninstallURL::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
   if (!params->url.empty() && !GURL(params->url).SchemeIsHTTPOrHTTPS())
     return RespondNow(Error(kInvalidUrlError, params->url));
@@ -683,7 +683,7 @@ ExtensionFunction::ResponseAction RuntimeRestartAfterDelayFunction::Run() {
   }
 
   std::unique_ptr<api::runtime::RestartAfterDelay::Params> params(
-      api::runtime::RestartAfterDelay::Params::Create(*args_));
+      api::runtime::RestartAfterDelay::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   int seconds = params->seconds;
 

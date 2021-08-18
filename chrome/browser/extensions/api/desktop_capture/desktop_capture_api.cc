@@ -49,7 +49,7 @@ DesktopCaptureChooseDesktopMediaFunction::Run() {
   mutable_args().erase(args().begin());
 
   std::unique_ptr<api::desktop_capture::ChooseDesktopMedia::Params> params =
-      api::desktop_capture::ChooseDesktopMedia::Params::Create(*args_);
+      api::desktop_capture::ChooseDesktopMedia::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   // |web_contents| is the WebContents for which the stream is created, and will

@@ -239,7 +239,7 @@ TerminalPrivateOpenTerminalProcessFunction::
 ExtensionFunction::ResponseAction
 TerminalPrivateOpenTerminalProcessFunction::Run() {
   std::unique_ptr<OpenTerminalProcess::Params> params(
-      OpenTerminalProcess::Params::Create(*args_));
+      OpenTerminalProcess::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   return OpenProcess(params->process_name, std::move(params->args));
@@ -454,7 +454,7 @@ TerminalPrivateOpenVmshellProcessFunction::
 ExtensionFunction::ResponseAction
 TerminalPrivateOpenVmshellProcessFunction::Run() {
   std::unique_ptr<OpenVmshellProcess::Params> params(
-      OpenVmshellProcess::Params::Create(*args_));
+      OpenVmshellProcess::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   // Only opens 'vmshell'.
@@ -464,7 +464,7 @@ TerminalPrivateOpenVmshellProcessFunction::Run() {
 TerminalPrivateSendInputFunction::~TerminalPrivateSendInputFunction() = default;
 
 ExtensionFunction::ResponseAction TerminalPrivateSendInputFunction::Run() {
-  std::unique_ptr<SendInput::Params> params(SendInput::Params::Create(*args_));
+  std::unique_ptr<SendInput::Params> params(SendInput::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   if (!TerminalTabHelper::ValidateTerminalId(GetSenderWebContents(),
@@ -505,7 +505,7 @@ TerminalPrivateCloseTerminalProcessFunction::
 ExtensionFunction::ResponseAction
 TerminalPrivateCloseTerminalProcessFunction::Run() {
   std::unique_ptr<CloseTerminalProcess::Params> params(
-      CloseTerminalProcess::Params::Create(*args_));
+      CloseTerminalProcess::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   if (!TerminalTabHelper::ValidateTerminalId(GetSenderWebContents(),
@@ -536,7 +536,7 @@ TerminalPrivateOnTerminalResizeFunction::
 ExtensionFunction::ResponseAction
 TerminalPrivateOnTerminalResizeFunction::Run() {
   std::unique_ptr<OnTerminalResize::Params> params(
-      OnTerminalResize::Params::Create(*args_));
+      OnTerminalResize::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   if (!TerminalTabHelper::ValidateTerminalId(GetSenderWebContents(),
@@ -576,7 +576,7 @@ void TerminalPrivateOnTerminalResizeFunction::RespondOnUIThread(bool success) {
 TerminalPrivateAckOutputFunction::~TerminalPrivateAckOutputFunction() = default;
 
 ExtensionFunction::ResponseAction TerminalPrivateAckOutputFunction::Run() {
-  std::unique_ptr<AckOutput::Params> params(AckOutput::Params::Create(*args_));
+  std::unique_ptr<AckOutput::Params> params(AckOutput::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   // Every running terminal page will call ackOutput(), but we should only react
@@ -635,7 +635,7 @@ TerminalPrivateSetSettingsFunction::~TerminalPrivateSetSettingsFunction() =
 
 ExtensionFunction::ResponseAction TerminalPrivateSetSettingsFunction::Run() {
   std::unique_ptr<SetSettings::Params> params(
-      SetSettings::Params::Create(*args_));
+      SetSettings::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   PrefService* service =

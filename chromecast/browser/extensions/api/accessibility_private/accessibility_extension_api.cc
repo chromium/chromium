@@ -46,7 +46,7 @@ AccessibilityPrivateSetNativeAccessibilityEnabledFunction::Run() {
 ExtensionFunction::ResponseAction
 AccessibilityPrivateSetFocusRingsFunction::Run() {
   std::unique_ptr<accessibility_private::SetFocusRings::Params> params(
-      accessibility_private::SetFocusRings::Params::Create(*args_));
+      accessibility_private::SetFocusRings::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   auto* accessibility_manager =
@@ -93,7 +93,7 @@ AccessibilityPrivateSetHighlightsFunction::Run() {
           ->accessibility_manager();
 
   std::unique_ptr<accessibility_private::SetHighlights::Params> params(
-      accessibility_private::SetHighlights::Params::Create(*args_));
+      accessibility_private::SetHighlights::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   std::vector<gfx::Rect> rects;
@@ -140,7 +140,7 @@ ExtensionFunction::ResponseAction
 AccessibilityPrivateSendSyntheticMouseEventFunction::Run() {
   std::unique_ptr<accessibility_private::SendSyntheticMouseEvent::Params>
       params = accessibility_private::SendSyntheticMouseEvent::Params::Create(
-          *args_);
+          args());
   EXTENSION_FUNCTION_VALIDATE(params);
   accessibility_private::SyntheticMouseEvent* mouse_data = &params->mouse_event;
 

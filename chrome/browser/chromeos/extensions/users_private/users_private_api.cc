@@ -181,7 +181,7 @@ UsersPrivateIsUserInListFunction::~UsersPrivateIsUserInListFunction() = default;
 
 ExtensionFunction::ResponseAction UsersPrivateIsUserInListFunction::Run() {
   std::unique_ptr<api::users_private::IsUserInList::Params> parameters =
-      api::users_private::IsUserInList::Params::Create(*args_);
+      api::users_private::IsUserInList::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters.get());
 
   std::string username = gaia::CanonicalizeEmail(parameters->email);
@@ -200,7 +200,7 @@ UsersPrivateAddUserFunction::~UsersPrivateAddUserFunction() = default;
 
 ExtensionFunction::ResponseAction UsersPrivateAddUserFunction::Run() {
   std::unique_ptr<api::users_private::AddUser::Params> parameters =
-      api::users_private::AddUser::Params::Create(*args_);
+      api::users_private::AddUser::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters.get());
 
   // Non-owners should not be able to add users.
@@ -232,7 +232,7 @@ UsersPrivateRemoveUserFunction::~UsersPrivateRemoveUserFunction() = default;
 
 ExtensionFunction::ResponseAction UsersPrivateRemoveUserFunction::Run() {
   std::unique_ptr<api::users_private::RemoveUser::Params> parameters =
-      api::users_private::RemoveUser::Params::Create(*args_);
+      api::users_private::RemoveUser::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters.get());
 
   // Non-owners should not be able to remove users.

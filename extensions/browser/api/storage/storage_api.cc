@@ -534,7 +534,7 @@ StorageStorageAreaSetAccessLevelFunction::RunInSession() {
     return Error("Context cannot set the storage access level");
 
   std::unique_ptr<api::storage::StorageArea::SetAccessLevel::Params> params(
-      api::storage::StorageArea::SetAccessLevel::Params::Create(*args_));
+      api::storage::StorageArea::SetAccessLevel::Params::Create(args()));
 
   if (!params)
     return BadMessage();

@@ -23,7 +23,7 @@ namespace extensions {
 ExtensionFunction::ResponseAction
 ChromeWebViewInternalContextMenusCreateFunction::Run() {
   std::unique_ptr<webview::ContextMenusCreate::Params> params(
-      webview::ContextMenusCreate::Params::Create(*args_));
+      webview::ContextMenusCreate::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   MenuItem::Id id(
@@ -56,7 +56,7 @@ ChromeWebViewInternalContextMenusCreateFunction::Run() {
 ExtensionFunction::ResponseAction
 ChromeWebViewInternalContextMenusUpdateFunction::Run() {
   std::unique_ptr<webview::ContextMenusUpdate::Params> params(
-      webview::ContextMenusUpdate::Params::Create(*args_));
+      webview::ContextMenusUpdate::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
@@ -84,7 +84,7 @@ ChromeWebViewInternalContextMenusUpdateFunction::Run() {
 ExtensionFunction::ResponseAction
 ChromeWebViewInternalContextMenusRemoveFunction::Run() {
   std::unique_ptr<webview::ContextMenusRemove::Params> params(
-      webview::ContextMenusRemove::Params::Create(*args_));
+      webview::ContextMenusRemove::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   MenuManager* menu_manager =
@@ -121,7 +121,7 @@ ChromeWebViewInternalContextMenusRemoveFunction::Run() {
 ExtensionFunction::ResponseAction
 ChromeWebViewInternalContextMenusRemoveAllFunction::Run() {
   std::unique_ptr<webview::ContextMenusRemoveAll::Params> params(
-      webview::ContextMenusRemoveAll::Params::Create(*args_));
+      webview::ContextMenusRemoveAll::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   MenuManager* menu_manager =
@@ -145,7 +145,7 @@ ChromeWebViewInternalShowContextMenuFunction::
 ExtensionFunction::ResponseAction
 ChromeWebViewInternalShowContextMenuFunction::Run() {
   std::unique_ptr<webview::ShowContextMenu::Params> params(
-      webview::ShowContextMenu::Params::Create(*args_));
+      webview::ShowContextMenu::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   // TODO(lazyboy): Actually implement filtering menu items.

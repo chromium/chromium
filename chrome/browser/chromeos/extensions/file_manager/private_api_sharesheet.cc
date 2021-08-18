@@ -56,7 +56,7 @@ ExtensionFunction::ResponseAction
 FileManagerPrivateInternalSharesheetHasTargetsFunction::Run() {
   using extensions::api::file_manager_private_internal::SharesheetHasTargets::
       Params;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
+  const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   if (params->urls.empty())
@@ -185,7 +185,7 @@ ExtensionFunction::ResponseAction
 FileManagerPrivateInternalInvokeSharesheetFunction::Run() {
   using extensions::api::file_manager_private_internal::InvokeSharesheet::
       Params;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
+  const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   if (params->urls.empty())

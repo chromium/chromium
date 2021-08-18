@@ -293,7 +293,7 @@ FileBrowserHandlerInternalSelectFileFunction::
 ExtensionFunction::ResponseAction
 FileBrowserHandlerInternalSelectFileFunction::Run() {
   std::unique_ptr<SelectFile::Params> params(
-      SelectFile::Params::Create(*args_));
+      SelectFile::Params::Create(args()));
 
   base::FilePath suggested_name(params->selection_params.suggested_name);
   std::vector<std::string> allowed_extensions;

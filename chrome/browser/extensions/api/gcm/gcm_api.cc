@@ -110,7 +110,7 @@ GcmRegisterFunction::~GcmRegisterFunction() {}
 
 ExtensionFunction::ResponseAction GcmRegisterFunction::Run() {
   std::unique_ptr<api::gcm::Register::Params> params(
-      api::gcm::Register::Params::Create(*args_));
+      api::gcm::Register::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   GetGCMDriver()->Register(
@@ -160,7 +160,7 @@ GcmSendFunction::~GcmSendFunction() {}
 
 ExtensionFunction::ResponseAction GcmSendFunction::Run() {
   std::unique_ptr<api::gcm::Send::Params> params(
-      api::gcm::Send::Params::Create(*args_));
+      api::gcm::Send::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   EXTENSION_FUNCTION_VALIDATE(
       ValidateMessageData(params->message.data.additional_properties));

@@ -27,7 +27,7 @@ SettingsPrivateSetPrefFunction::~SettingsPrivateSetPrefFunction() {
 
 ExtensionFunction::ResponseAction SettingsPrivateSetPrefFunction::Run() {
   std::unique_ptr<api::settings_private::SetPref::Params> parameters =
-      api::settings_private::SetPref::Params::Create(*args_);
+      api::settings_private::SetPref::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters.get());
 
   SettingsPrivateDelegate* delegate =
@@ -79,7 +79,7 @@ SettingsPrivateGetPrefFunction::~SettingsPrivateGetPrefFunction() {
 
 ExtensionFunction::ResponseAction SettingsPrivateGetPrefFunction::Run() {
   std::unique_ptr<api::settings_private::GetPref::Params> parameters =
-      api::settings_private::GetPref::Params::Create(*args_);
+      api::settings_private::GetPref::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters.get());
 
   SettingsPrivateDelegate* delegate =
@@ -122,7 +122,7 @@ SettingsPrivateSetDefaultZoomFunction::
 ExtensionFunction::ResponseAction
     SettingsPrivateSetDefaultZoomFunction::Run() {
   std::unique_ptr<api::settings_private::SetDefaultZoom::Params> parameters =
-      api::settings_private::SetDefaultZoom::Params::Create(*args_);
+      api::settings_private::SetDefaultZoom::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters.get());
 
   SettingsPrivateDelegate* delegate =

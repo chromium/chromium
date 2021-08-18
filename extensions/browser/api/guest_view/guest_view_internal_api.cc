@@ -88,7 +88,7 @@ GuestViewInternalDestroyGuestFunction::
 
 ExtensionFunction::ResponseAction GuestViewInternalDestroyGuestFunction::Run() {
   std::unique_ptr<guest_view_internal::DestroyGuest::Params> params(
-      guest_view_internal::DestroyGuest::Params::Create(*args_));
+      guest_view_internal::DestroyGuest::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   GuestViewBase* guest =
       GuestViewBase::From(source_process_id(), params->instance_id);
@@ -106,7 +106,7 @@ GuestViewInternalSetSizeFunction::~GuestViewInternalSetSizeFunction() {
 
 ExtensionFunction::ResponseAction GuestViewInternalSetSizeFunction::Run() {
   std::unique_ptr<guest_view_internal::SetSize::Params> params(
-      guest_view_internal::SetSize::Params::Create(*args_));
+      guest_view_internal::SetSize::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   GuestViewBase* guest =
       GuestViewBase::From(source_process_id(), params->instance_id);

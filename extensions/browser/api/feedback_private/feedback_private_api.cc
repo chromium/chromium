@@ -295,7 +295,7 @@ void FeedbackPrivateAPI::RequestFeedbackForFlow(
 base::OnceClosure* FeedbackPrivateGetStringsFunction::test_callback_ = nullptr;
 
 ExtensionFunction::ResponseAction FeedbackPrivateGetStringsFunction::Run() {
-  auto params = feedback_private::GetStrings::Params::Create(*args_);
+  auto params = feedback_private::GetStrings::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   FeedbackPrivateDelegate* feedback_private_delegate =
@@ -363,7 +363,7 @@ void FeedbackPrivateGetSystemInformationFunction::OnCompleted(
 ExtensionFunction::ResponseAction FeedbackPrivateReadLogSourceFunction::Run() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   using Params = feedback_private::ReadLogSource::Params;
-  std::unique_ptr<Params> api_params = Params::Create(*args_);
+  std::unique_ptr<Params> api_params = Params::Create(args());
 
   LogSourceAccessManager* log_source_manager =
       FeedbackPrivateAPI::GetFactoryInstance()
@@ -396,7 +396,7 @@ void FeedbackPrivateReadLogSourceFunction::OnCompleted(
 
 ExtensionFunction::ResponseAction FeedbackPrivateSendFeedbackFunction::Run() {
   std::unique_ptr<feedback_private::SendFeedback::Params> params(
-      feedback_private::SendFeedback::Params::Create(*args_));
+      feedback_private::SendFeedback::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   bool load_system_info =

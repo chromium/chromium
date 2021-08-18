@@ -205,7 +205,7 @@ EventsEventAddRulesFunction::EventsEventAddRulesFunction() = default;
 EventsEventAddRulesFunction::~EventsEventAddRulesFunction() = default;
 
 bool EventsEventAddRulesFunction::CreateParams() {
-  params_ = AddRules::Params::Create(*args_);
+  params_ = AddRules::Params::Create(args());
   return params_ != nullptr;
 }
 
@@ -250,7 +250,7 @@ EventsEventRemoveRulesFunction::EventsEventRemoveRulesFunction() = default;
 EventsEventRemoveRulesFunction::~EventsEventRemoveRulesFunction() = default;
 
 bool EventsEventRemoveRulesFunction::CreateParams() {
-  params_ = RemoveRules::Params::Create(*args_);
+  params_ = RemoveRules::Params::Create(args());
   return params_ != nullptr;
 }
 
@@ -292,7 +292,7 @@ EventsEventGetRulesFunction::EventsEventGetRulesFunction() = default;
 EventsEventGetRulesFunction::~EventsEventGetRulesFunction() = default;
 
 bool EventsEventGetRulesFunction::CreateParams() {
-  params_ = GetRules::Params::Create(*args_);
+  params_ = GetRules::Params::Create(args());
   return params_ != nullptr;
 }
 

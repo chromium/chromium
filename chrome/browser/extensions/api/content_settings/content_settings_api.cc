@@ -81,7 +81,7 @@ ContentSettingsContentSettingClearFunction::Run() {
   ContentSettingsType content_type;
   EXTENSION_FUNCTION_VALIDATE(RemoveContentType(mutable_args(), &content_type));
 
-  std::unique_ptr<Clear::Params> params(Clear::Params::Create(*args_));
+  std::unique_ptr<Clear::Params> params(Clear::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   ExtensionPrefsScope scope = kExtensionPrefsScopeRegular;
@@ -115,7 +115,7 @@ ContentSettingsContentSettingGetFunction::Run() {
   ContentSettingsType content_type;
   EXTENSION_FUNCTION_VALIDATE(RemoveContentType(mutable_args(), &content_type));
 
-  std::unique_ptr<Get::Params> params(Get::Params::Create(*args_));
+  std::unique_ptr<Get::Params> params(Get::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
 
@@ -183,7 +183,7 @@ ContentSettingsContentSettingSetFunction::Run() {
   ContentSettingsType content_type;
   EXTENSION_FUNCTION_VALIDATE(RemoveContentType(mutable_args(), &content_type));
 
-  std::unique_ptr<Set::Params> params(Set::Params::Create(*args_));
+  std::unique_ptr<Set::Params> params(Set::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   std::string primary_error;

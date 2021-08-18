@@ -78,7 +78,7 @@ LoginLaunchManagedGuestSessionFunction::Run() {
   ui::UserActivityDetector::Get()->HandleExternalUserActivity();
 
   std::unique_ptr<api::login::LaunchManagedGuestSession::Params> parameters =
-      api::login::LaunchManagedGuestSession::Params::Create(*args_);
+      api::login::LaunchManagedGuestSession::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   if (session_manager::SessionManager::Get()->session_state() !=
@@ -114,7 +114,7 @@ LoginExitCurrentSessionFunction::~LoginExitCurrentSessionFunction() = default;
 
 ExtensionFunction::ResponseAction LoginExitCurrentSessionFunction::Run() {
   std::unique_ptr<api::login::ExitCurrentSession::Params> parameters =
-      api::login::ExitCurrentSession::Params::Create(*args_);
+      api::login::ExitCurrentSession::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   PrefService* local_state = g_browser_process->local_state();
@@ -183,7 +183,7 @@ LoginUnlockManagedGuestSessionFunction::Run() {
   ui::UserActivityDetector::Get()->HandleExternalUserActivity();
 
   std::unique_ptr<api::login::UnlockManagedGuestSession::Params> parameters =
-      api::login::UnlockManagedGuestSession::Params::Create(*args_);
+      api::login::UnlockManagedGuestSession::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   const user_manager::User* active_user =

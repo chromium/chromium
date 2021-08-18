@@ -352,7 +352,7 @@ LanguageSettingsPrivateEnableLanguageFunction::
 ExtensionFunction::ResponseAction
 LanguageSettingsPrivateEnableLanguageFunction::Run() {
   const auto parameters =
-      language_settings_private::EnableLanguage::Params::Create(*args_);
+      language_settings_private::EnableLanguage::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters.get());
   const std::string& language_code = parameters->language_code;
 
@@ -383,7 +383,7 @@ LanguageSettingsPrivateDisableLanguageFunction::
 ExtensionFunction::ResponseAction
 LanguageSettingsPrivateDisableLanguageFunction::Run() {
   const auto parameters =
-      language_settings_private::DisableLanguage::Params::Create(*args_);
+      language_settings_private::DisableLanguage::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters.get());
   const std::string& language_code = parameters->language_code;
 
@@ -417,7 +417,7 @@ LanguageSettingsPrivateSetEnableTranslationForLanguageFunction::
 ExtensionFunction::ResponseAction
 LanguageSettingsPrivateSetEnableTranslationForLanguageFunction::Run() {
   const auto parameters = language_settings_private::
-      SetEnableTranslationForLanguage::Params::Create(*args_);
+      SetEnableTranslationForLanguage::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters.get());
   const std::string& language_code = parameters->language_code;
   // True if translation enabled, false if disabled.
@@ -468,7 +468,7 @@ LanguageSettingsPrivateSetLanguageAlwaysTranslateStateFunction::
 ExtensionFunction::ResponseAction
 LanguageSettingsPrivateSetLanguageAlwaysTranslateStateFunction::Run() {
   const auto params = language_settings_private::
-      SetLanguageAlwaysTranslateState::Params::Create(*args_);
+      SetLanguageAlwaysTranslateState::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   const std::unique_ptr<translate::TranslatePrefs> translate_prefs =
@@ -510,7 +510,7 @@ LanguageSettingsPrivateMoveLanguageFunction::
 ExtensionFunction::ResponseAction
 LanguageSettingsPrivateMoveLanguageFunction::Run() {
   const auto parameters =
-      language_settings_private::MoveLanguage::Params::Create(*args_);
+      language_settings_private::MoveLanguage::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters.get());
 
   const std::string app_locale = g_browser_process->GetApplicationLocale();
@@ -630,7 +630,7 @@ LanguageSettingsPrivateAddSpellcheckWordFunction::
 ExtensionFunction::ResponseAction
 LanguageSettingsPrivateAddSpellcheckWordFunction::Run() {
   const auto params =
-      language_settings_private::AddSpellcheckWord::Params::Create(*args_);
+      language_settings_private::AddSpellcheckWord::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   SpellcheckService* service =
@@ -656,7 +656,7 @@ LanguageSettingsPrivateRemoveSpellcheckWordFunction::
 ExtensionFunction::ResponseAction
 LanguageSettingsPrivateRemoveSpellcheckWordFunction::Run() {
   const auto params =
-      language_settings_private::RemoveSpellcheckWord::Params::Create(*args_);
+      language_settings_private::RemoveSpellcheckWord::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   SpellcheckService* service =
@@ -699,7 +699,7 @@ ExtensionFunction::ResponseAction
 LanguageSettingsPrivateSetTranslateTargetLanguageFunction::Run() {
   const auto parameters =
       language_settings_private::SetTranslateTargetLanguage::Params::Create(
-          *args_);
+          args());
   EXTENSION_FUNCTION_VALIDATE(parameters.get());
   const std::string& language_code = parameters->language_code;
 
@@ -817,7 +817,7 @@ LanguageSettingsPrivateAddInputMethodFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(false);
 #else
   const auto params =
-      language_settings_private::AddInputMethod::Params::Create(*args_);
+      language_settings_private::AddInputMethod::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   InputMethodManager* manager = InputMethodManager::Get();
@@ -892,7 +892,7 @@ LanguageSettingsPrivateRemoveInputMethodFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(false);
 #else
   const auto params =
-      language_settings_private::RemoveInputMethod::Params::Create(*args_);
+      language_settings_private::RemoveInputMethod::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   InputMethodManager* manager = InputMethodManager::Get();
@@ -937,7 +937,7 @@ ExtensionFunction::ResponseAction
 LanguageSettingsPrivateRetryDownloadDictionaryFunction::Run() {
   const auto parameters =
       language_settings_private::RetryDownloadDictionary::Params::Create(
-          *args_);
+          args());
   EXTENSION_FUNCTION_VALIDATE(parameters.get());
 
   LanguageSettingsPrivateDelegate* delegate =

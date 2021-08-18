@@ -39,7 +39,7 @@ base::LazyInstance<BrowserContextKeyedAPIFactory<PowerAPI>>::DestructorAtExit
 
 ExtensionFunction::ResponseAction PowerRequestKeepAwakeFunction::Run() {
   std::unique_ptr<api::power::RequestKeepAwake::Params> params(
-      api::power::RequestKeepAwake::Params::Create(*args_));
+      api::power::RequestKeepAwake::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
   PowerAPI::Get(browser_context())->AddRequest(extension_id(), params->level);
   return RespondNow(NoArguments());

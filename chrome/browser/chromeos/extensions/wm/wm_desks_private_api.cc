@@ -66,7 +66,7 @@ WmDesksPrivateUpdateDeskTemplateFunction::
 ExtensionFunction::ResponseAction
 WmDesksPrivateUpdateDeskTemplateFunction::Run() {
   std::unique_ptr<api::wm_desks_private::UpdateDeskTemplate::Params> params(
-      api::wm_desks_private::UpdateDeskTemplate::Params::Create(*args_));
+      api::wm_desks_private::UpdateDeskTemplate::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   DesksClient::Get()->UpdateDeskTemplate(
@@ -129,7 +129,7 @@ WmDesksPrivateDeleteDeskTemplateFunction::
 ExtensionFunction::ResponseAction
 WmDesksPrivateDeleteDeskTemplateFunction::Run() {
   std::unique_ptr<api::wm_desks_private::DeleteDeskTemplate::Params> params(
-      api::wm_desks_private::DeleteDeskTemplate::Params::Create(*args_));
+      api::wm_desks_private::DeleteDeskTemplate::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   DesksClient::Get()->DeleteDeskTemplate(
@@ -158,7 +158,7 @@ WmDesksPrivateLaunchDeskTemplateFunction::
 ExtensionFunction::ResponseAction
 WmDesksPrivateLaunchDeskTemplateFunction::Run() {
   std::unique_ptr<api::wm_desks_private::LaunchDeskTemplate::Params> params(
-      api::wm_desks_private::LaunchDeskTemplate::Params::Create(*args_));
+      api::wm_desks_private::LaunchDeskTemplate::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   DesksClient::Get()->LaunchDeskTemplate(

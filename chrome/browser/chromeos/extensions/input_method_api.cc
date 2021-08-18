@@ -148,7 +148,7 @@ InputMethodPrivateGetCurrentInputMethodFunction::Run() {
 ExtensionFunction::ResponseAction
 InputMethodPrivateSetCurrentInputMethodFunction::Run() {
   std::unique_ptr<SetCurrentInputMethod::Params> params(
-      SetCurrentInputMethod::Params::Create(*args_));
+      SetCurrentInputMethod::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   scoped_refptr<chromeos::input_method::InputMethodManager::State> ime_state =
       chromeos::input_method::InputMethodManager::Get()->GetActiveIMEState();
@@ -217,7 +217,7 @@ InputMethodPrivateFetchAllDictionaryWordsFunction::Run() {
 ExtensionFunction::ResponseAction
 InputMethodPrivateAddWordToDictionaryFunction::Run() {
   std::unique_ptr<AddWordToDictionary::Params> params(
-      AddWordToDictionary::Params::Create(*args_));
+      AddWordToDictionary::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   SpellcheckService* spellcheck =
       SpellcheckServiceFactory::GetForContext(browser_context());
@@ -261,7 +261,7 @@ InputMethodPrivateGetEncryptSyncEnabledFunction::Run() {
 ExtensionFunction::ResponseAction
 InputMethodPrivateSetXkbLayoutFunction::Run() {
   std::unique_ptr<SetXkbLayout::Params> params(
-      SetXkbLayout::Params::Create(*args_));
+      SetXkbLayout::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   chromeos::input_method::InputMethodManager* manager =
       chromeos::input_method::InputMethodManager::Get();
@@ -295,7 +295,7 @@ InputMethodPrivateHideInputViewFunction::Run() {
 ExtensionFunction::ResponseAction
 InputMethodPrivateOpenOptionsPageFunction::Run() {
   std::unique_ptr<OpenOptionsPage::Params> params(
-      OpenOptionsPage::Params::Create(*args_));
+      OpenOptionsPage::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   scoped_refptr<chromeos::input_method::InputMethodManager::State> ime_state =
       chromeos::input_method::InputMethodManager::Get()->GetActiveIMEState();
@@ -330,7 +330,7 @@ InputMethodPrivateGetSurroundingTextFunction::Run() {
         kErrorInputContextHandlerNotAvailable, static_function_name())));
 
   std::unique_ptr<GetSurroundingText::Params> params(
-      GetSurroundingText::Params::Create(*args_));
+      GetSurroundingText::Params::Create(args()));
   if (params->before_length < 0 || params->after_length < 0)
     return RespondNow(Error(InformativeError(
         base::StringPrintf("%s before_length = %d, after_length = %d.",
@@ -377,7 +377,7 @@ InputMethodPrivateGetSurroundingTextFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction InputMethodPrivateGetSettingsFunction::Run() {
-  const auto params = GetSettings::Params::Create(*args_);
+  const auto params = GetSettings::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   const base::DictionaryValue* input_methods =
@@ -392,7 +392,7 @@ ExtensionFunction::ResponseAction InputMethodPrivateGetSettingsFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction InputMethodPrivateSetSettingsFunction::Run() {
-  const auto params = SetSettings::Params::Create(*args_);
+  const auto params = SetSettings::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   DictionaryPrefUpdate update(
@@ -423,7 +423,7 @@ InputMethodPrivateSetCompositionRangeFunction::Run() {
   if (!engine)
     return RespondNow(Error(InformativeError(error, static_function_name())));
 
-  const auto parent_params = SetCompositionRange::Params::Create(*args_);
+  const auto parent_params = SetCompositionRange::Params::Create(args());
   const auto& params = parent_params->parameters;
   std::vector<InputMethodEngineBase::SegmentInfo> segments;
   if (params.segments) {
@@ -467,7 +467,7 @@ InputMethodPrivateSetComposingRangeFunction::Run() {
   if (!engine)
     return RespondNow(Error(InformativeError(error, static_function_name())));
 
-  const auto parent_params = SetComposingRange::Params::Create(*args_);
+  const auto parent_params = SetComposingRange::Params::Create(args());
   const auto& params = parent_params->parameters;
   std::vector<InputMethodEngineBase::SegmentInfo> segments;
   if (params.segments) {
@@ -510,7 +510,7 @@ InputMethodPrivateGetAutocorrectRangeFunction::Run() {
   if (!engine)
     return RespondNow(Error(InformativeError(error, static_function_name())));
 
-  const auto parent_params = GetAutocorrectRange::Params::Create(*args_);
+  const auto parent_params = GetAutocorrectRange::Params::Create(args());
   const auto& params = parent_params->parameters;
   const gfx::Range range = engine->InputMethodEngineBase::GetAutocorrectRange(
       params.context_id, &error);
@@ -530,7 +530,7 @@ InputMethodPrivateGetAutocorrectCharacterBoundsFunction::Run() {
     return RespondNow(Error(InformativeError(error, static_function_name())));
 
   const auto parent_params =
-      GetAutocorrectCharacterBounds::Params::Create(*args_);
+      GetAutocorrectCharacterBounds::Params::Create(args());
   const auto& params = parent_params->parameters;
   const gfx::Rect rect =
       engine->InputMethodEngineBase::GetAutocorrectCharacterBounds(
@@ -555,7 +555,7 @@ InputMethodPrivateSetAutocorrectRangeFunction::Run() {
   if (!engine)
     return RespondNow(Error(InformativeError(error, static_function_name())));
 
-  const auto parent_params = SetAutocorrectRange::Params::Create(*args_);
+  const auto parent_params = SetAutocorrectRange::Params::Create(args());
   const auto& params = parent_params->parameters;
   if (!engine->InputMethodEngineBase::SetAutocorrectRange(
           params.context_id,
@@ -576,7 +576,7 @@ InputMethodPrivateSetSelectionRangeFunction::Run() {
     return RespondNow(Error(InformativeError(error, static_function_name())));
 
   std::unique_ptr<SetSelectionRange::Params> parent_params(
-      SetSelectionRange::Params::Create(*args_));
+      SetSelectionRange::Params::Create(args()));
   const SetSelectionRange::Params::Parameters& params =
       parent_params->parameters;
 
@@ -605,7 +605,7 @@ ExtensionFunction::ResponseAction InputMethodPrivateResetFunction::Run() {
 ExtensionFunction::ResponseAction
 InputMethodPrivateOnAutocorrectFunction::Run() {
   std::unique_ptr<OnAutocorrect::Params> parent_params(
-      OnAutocorrect::Params::Create(*args_));
+      OnAutocorrect::Params::Create(args()));
   const OnAutocorrect::Params::Parameters& params = parent_params->parameters;
   std::string error;
   ash::input_method::NativeInputMethodEngine* engine =

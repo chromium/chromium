@@ -711,7 +711,7 @@ void FileSystemChooseEntryFunction::SetInitialPathAndShowPicker(
 
 ExtensionFunction::ResponseAction FileSystemChooseEntryFunction::Run() {
   std::unique_ptr<ChooseEntry::Params> params(
-      ChooseEntry::Params::Create(*args_));
+      ChooseEntry::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   base::FilePath suggested_name;
@@ -945,7 +945,7 @@ ExtensionFunction::ResponseAction FileSystemRestoreEntryFunction::Run() {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 ExtensionFunction::ResponseAction FileSystemRequestFileSystemFunction::Run() {
   using file_system::RequestFileSystem::Params;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
+  const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   NOTIMPLEMENTED();
@@ -964,7 +964,7 @@ FileSystemRequestFileSystemFunction::~FileSystemRequestFileSystemFunction() {}
 
 ExtensionFunction::ResponseAction FileSystemRequestFileSystemFunction::Run() {
   using file_system::RequestFileSystem::Params;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
+  const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   FileSystemDelegate* delegate =

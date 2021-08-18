@@ -210,7 +210,7 @@ SocketCreateFunction::~SocketCreateFunction() = default;
 
 ExtensionFunction::ResponseAction SocketCreateFunction::Work() {
   std::unique_ptr<api::socket::Create::Params> params =
-      api::socket::Create::Params::Create(*args_);
+      api::socket::Create::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   Socket* socket = nullptr;
@@ -410,7 +410,7 @@ SocketListenFunction::SocketListenFunction() = default;
 SocketListenFunction::~SocketListenFunction() = default;
 
 ExtensionFunction::ResponseAction SocketListenFunction::Work() {
-  params_ = api::socket::Listen::Params::Create(*args_);
+  params_ = api::socket::Listen::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params_.get());
 
   Socket* socket = GetSocket(params_->socket_id);
@@ -457,7 +457,7 @@ SocketAcceptFunction::~SocketAcceptFunction() = default;
 
 ExtensionFunction::ResponseAction SocketAcceptFunction::Work() {
   std::unique_ptr<api::socket::Accept::Params> params =
-      api::socket::Accept::Params::Create(*args_);
+      api::socket::Accept::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   Socket* socket = GetSocket(params->socket_id);
@@ -495,7 +495,7 @@ SocketReadFunction::~SocketReadFunction() = default;
 
 ExtensionFunction::ResponseAction SocketReadFunction::Work() {
   std::unique_ptr<api::socket::Read::Params> params =
-      api::socket::Read::Params::Create(*args_);
+      api::socket::Read::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   Socket* socket = GetSocket(params->socket_id);
@@ -566,7 +566,7 @@ SocketRecvFromFunction::~SocketRecvFromFunction() = default;
 
 ExtensionFunction::ResponseAction SocketRecvFromFunction::Work() {
   std::unique_ptr<api::socket::RecvFrom::Params> params =
-      api::socket::RecvFrom::Params::Create(*args_);
+      api::socket::RecvFrom::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   Socket* socket = GetSocket(params->socket_id);
@@ -676,7 +676,7 @@ SocketSetKeepAliveFunction::~SocketSetKeepAliveFunction() = default;
 
 ExtensionFunction::ResponseAction SocketSetKeepAliveFunction::Work() {
   std::unique_ptr<api::socket::SetKeepAlive::Params> params =
-      api::socket::SetKeepAlive::Params::Create(*args_);
+      api::socket::SetKeepAlive::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   Socket* socket = GetSocket(params->socket_id);
@@ -704,7 +704,7 @@ SocketSetNoDelayFunction::~SocketSetNoDelayFunction() = default;
 
 ExtensionFunction::ResponseAction SocketSetNoDelayFunction::Work() {
   std::unique_ptr<api::socket::SetNoDelay::Params> params =
-      api::socket::SetNoDelay::Params::Create(*args_);
+      api::socket::SetNoDelay::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   Socket* socket = GetSocket(params->socket_id);
@@ -728,7 +728,7 @@ SocketGetInfoFunction::~SocketGetInfoFunction() = default;
 
 ExtensionFunction::ResponseAction SocketGetInfoFunction::Work() {
   std::unique_ptr<api::socket::GetInfo::Params> params =
-      api::socket::GetInfo::Params::Create(*args_);
+      api::socket::GetInfo::Params::Create(args());
 
   Socket* socket = GetSocket(params->socket_id);
   if (!socket) {
@@ -801,7 +801,7 @@ SocketJoinGroupFunction::~SocketJoinGroupFunction() = default;
 
 ExtensionFunction::ResponseAction SocketJoinGroupFunction::Work() {
   std::unique_ptr<api::socket::JoinGroup::Params> params =
-      api::socket::JoinGroup::Params::Create(*args_);
+      api::socket::JoinGroup::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   Socket* socket = GetSocket(params->socket_id);
@@ -843,7 +843,7 @@ SocketLeaveGroupFunction::~SocketLeaveGroupFunction() = default;
 
 ExtensionFunction::ResponseAction SocketLeaveGroupFunction::Work() {
   std::unique_ptr<api::socket::LeaveGroup::Params> params =
-      api::socket::LeaveGroup::Params::Create(*args_);
+      api::socket::LeaveGroup::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   Socket* socket = GetSocket(params->socket_id);
@@ -887,7 +887,7 @@ SocketSetMulticastTimeToLiveFunction::~SocketSetMulticastTimeToLiveFunction() =
 
 ExtensionFunction::ResponseAction SocketSetMulticastTimeToLiveFunction::Work() {
   std::unique_ptr<api::socket::SetMulticastTimeToLive::Params> params =
-      api::socket::SetMulticastTimeToLive::Params::Create(*args_);
+      api::socket::SetMulticastTimeToLive::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   Socket* socket = GetSocket(params->socket_id);
@@ -917,7 +917,7 @@ SocketSetMulticastLoopbackModeFunction::
 ExtensionFunction::ResponseAction
 SocketSetMulticastLoopbackModeFunction::Work() {
   std::unique_ptr<api::socket::SetMulticastLoopbackMode::Params> params =
-      api::socket::SetMulticastLoopbackMode::Params::Create(*args_);
+      api::socket::SetMulticastLoopbackMode::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   Socket* socket = GetSocket(params->socket_id);
@@ -944,7 +944,7 @@ SocketGetJoinedGroupsFunction::~SocketGetJoinedGroupsFunction() = default;
 
 ExtensionFunction::ResponseAction SocketGetJoinedGroupsFunction::Work() {
   std::unique_ptr<api::socket::GetJoinedGroups::Params> params =
-      api::socket::GetJoinedGroups::Params::Create(*args_);
+      api::socket::GetJoinedGroups::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   Socket* socket = GetSocket(params->socket_id);
@@ -979,7 +979,7 @@ SocketSecureFunction::~SocketSecureFunction() = default;
 
 ExtensionFunction::ResponseAction SocketSecureFunction::Work() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  params_ = api::socket::Secure::Params::Create(*args_);
+  params_ = api::socket::Secure::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params_.get());
 
   Socket* socket = GetSocket(params_->socket_id);

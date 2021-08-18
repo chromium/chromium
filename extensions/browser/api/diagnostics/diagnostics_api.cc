@@ -57,7 +57,7 @@ DiagnosticsSendPacketFunction::DiagnosticsSendPacketFunction() = default;
 DiagnosticsSendPacketFunction::~DiagnosticsSendPacketFunction() = default;
 
 ExtensionFunction::ResponseAction DiagnosticsSendPacketFunction::Run() {
-  auto params = api::diagnostics::SendPacket::Params::Create(*args_);
+  auto params = api::diagnostics::SendPacket::Params::Create(args());
 
   std::map<std::string, std::string> config;
   config[kCount] = kDefaultCount;

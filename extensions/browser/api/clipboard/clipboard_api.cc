@@ -53,7 +53,7 @@ ClipboardSetImageDataFunction::~ClipboardSetImageDataFunction() {}
 
 ExtensionFunction::ResponseAction ClipboardSetImageDataFunction::Run() {
   std::unique_ptr<clipboard::SetImageData::Params> params(
-      clipboard::SetImageData::Params::Create(*args_));
+      clipboard::SetImageData::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   // Fill in the omitted additional data items with empty data.

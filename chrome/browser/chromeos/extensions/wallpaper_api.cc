@@ -150,7 +150,7 @@ WallpaperSetWallpaperFunction::~WallpaperSetWallpaperFunction() {
 
 ExtensionFunction::ResponseAction WallpaperSetWallpaperFunction::Run() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  params_ = set_wallpaper::Params::Create(*args_);
+  params_ = set_wallpaper::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params_);
 
   // Gets account id from the caller, ensuring multiprofile compatibility.

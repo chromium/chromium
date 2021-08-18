@@ -462,7 +462,7 @@ ProcessesEventRouter* ProcessesAPI::processes_event_router() {
 ExtensionFunction::ResponseAction ProcessesGetProcessIdForTabFunction::Run() {
   // For this function, the task manager doesn't even need to be running.
   std::unique_ptr<api::processes::GetProcessIdForTab::Params> params(
-      api::processes::GetProcessIdForTab::Params::Create(*args_));
+      api::processes::GetProcessIdForTab::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   const int tab_id = params->tab_id;
@@ -492,7 +492,7 @@ ExtensionFunction::ResponseAction ProcessesTerminateFunction::Run() {
 
   // For this function, the task manager doesn't even need to be running.
   std::unique_ptr<api::processes::Terminate::Params> params(
-      api::processes::Terminate::Params::Create(*args_));
+      api::processes::Terminate::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   child_process_host_id_ = params->process_id;
@@ -583,7 +583,7 @@ ProcessesGetProcessInfoFunction::ProcessesGetProcessInfoFunction()
 
 ExtensionFunction::ResponseAction ProcessesGetProcessInfoFunction::Run() {
   std::unique_ptr<api::processes::GetProcessInfo::Params> params(
-      api::processes::GetProcessInfo::Params::Create(*args_));
+      api::processes::GetProcessInfo::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   if (params->process_ids.as_integer)
     process_host_ids_.push_back(*params->process_ids.as_integer);

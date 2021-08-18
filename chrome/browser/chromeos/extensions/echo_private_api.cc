@@ -81,7 +81,7 @@ EchoPrivateGetRegistrationCodeFunction::GetRegistrationCode(
 ExtensionFunction::ResponseAction
 EchoPrivateGetRegistrationCodeFunction::Run() {
   std::unique_ptr<echo_api::GetRegistrationCode::Params> params =
-      echo_api::GetRegistrationCode::Params::Create(*args_);
+      echo_api::GetRegistrationCode::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   return RespondNow(GetRegistrationCode(params->type));
 }
@@ -92,7 +92,7 @@ EchoPrivateSetOfferInfoFunction::~EchoPrivateSetOfferInfoFunction() {}
 
 ExtensionFunction::ResponseAction EchoPrivateSetOfferInfoFunction::Run() {
   std::unique_ptr<echo_api::SetOfferInfo::Params> params =
-      echo_api::SetOfferInfo::Params::Create(*args_);
+      echo_api::SetOfferInfo::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   const std::string& service_id = params->id;
@@ -112,7 +112,7 @@ EchoPrivateGetOfferInfoFunction::~EchoPrivateGetOfferInfoFunction() {}
 
 ExtensionFunction::ResponseAction EchoPrivateGetOfferInfoFunction::Run() {
   std::unique_ptr<echo_api::GetOfferInfo::Params> params =
-      echo_api::GetOfferInfo::Params::Create(*args_);
+      echo_api::GetOfferInfo::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   const std::string& service_id = params->id;
@@ -235,7 +235,7 @@ void EchoPrivateGetUserConsentFunction::OnRedeemOffersAllowedChecked(
   redeem_offers_allowed_ = is_allowed;
 
   std::unique_ptr<echo_api::GetUserConsent::Params> params =
-      echo_api::GetUserConsent::Params::Create(*args_);
+      echo_api::GetUserConsent::Params::Create(args());
 
   // Verify that the passed origin URL is valid.
   GURL service_origin = GURL(params->consent_requester.origin);

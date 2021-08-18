@@ -49,7 +49,7 @@ PasswordsPrivateRecordPasswordsPageAccessInSettingsFunction::Run() {
 // PasswordsPrivateChangeSavedPasswordFunction
 ResponseAction PasswordsPrivateChangeSavedPasswordFunction::Run() {
   auto parameters =
-      api::passwords_private::ChangeSavedPassword::Params::Create(*args_);
+      api::passwords_private::ChangeSavedPassword::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   if (!GetDelegate(browser_context())
@@ -68,7 +68,7 @@ ResponseAction PasswordsPrivateChangeSavedPasswordFunction::Run() {
 // PasswordsPrivateRemoveSavedPasswordFunction
 ResponseAction PasswordsPrivateRemoveSavedPasswordFunction::Run() {
   auto parameters =
-      api::passwords_private::RemoveSavedPassword::Params::Create(*args_);
+      api::passwords_private::RemoveSavedPassword::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
   GetDelegate(browser_context())->RemoveSavedPasswords({parameters->id});
   return RespondNow(NoArguments());
@@ -77,7 +77,7 @@ ResponseAction PasswordsPrivateRemoveSavedPasswordFunction::Run() {
 // PasswordsPrivateRemoveSavedPasswordsFunction
 ResponseAction PasswordsPrivateRemoveSavedPasswordsFunction::Run() {
   auto parameters =
-      api::passwords_private::RemoveSavedPasswords::Params::Create(*args_);
+      api::passwords_private::RemoveSavedPasswords::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
   GetDelegate(browser_context())->RemoveSavedPasswords(parameters->ids);
   return RespondNow(NoArguments());
@@ -86,7 +86,7 @@ ResponseAction PasswordsPrivateRemoveSavedPasswordsFunction::Run() {
 // PasswordsPrivateRemovePasswordExceptionFunction
 ResponseAction PasswordsPrivateRemovePasswordExceptionFunction::Run() {
   auto parameters =
-      api::passwords_private::RemovePasswordException::Params::Create(*args_);
+      api::passwords_private::RemovePasswordException::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
   GetDelegate(browser_context())->RemovePasswordExceptions({parameters->id});
   return RespondNow(NoArguments());
@@ -95,7 +95,7 @@ ResponseAction PasswordsPrivateRemovePasswordExceptionFunction::Run() {
 // PasswordsPrivateRemovePasswordExceptionsFunction
 ResponseAction PasswordsPrivateRemovePasswordExceptionsFunction::Run() {
   auto parameters =
-      api::passwords_private::RemovePasswordExceptions::Params::Create(*args_);
+      api::passwords_private::RemovePasswordExceptions::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
   GetDelegate(browser_context())->RemovePasswordExceptions(parameters->ids);
   return RespondNow(NoArguments());
@@ -111,7 +111,7 @@ PasswordsPrivateUndoRemoveSavedPasswordOrExceptionFunction::Run() {
 // PasswordsPrivateRequestPlaintextPasswordFunction
 ResponseAction PasswordsPrivateRequestPlaintextPasswordFunction::Run() {
   auto parameters =
-      api::passwords_private::RequestPlaintextPassword::Params::Create(*args_);
+      api::passwords_private::RequestPlaintextPassword::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   GetDelegate(browser_context())
@@ -136,7 +136,7 @@ void PasswordsPrivateRequestPlaintextPasswordFunction::GotPassword(
   Respond(Error(base::StringPrintf(
       "Could not obtain plaintext password. Either the user is not "
       "authenticated or no password with id = %d could be found.",
-      api::passwords_private::RequestPlaintextPassword::Params::Create(*args_)
+      api::passwords_private::RequestPlaintextPassword::Params::Create(args())
           ->id)));
 }
 
@@ -190,7 +190,7 @@ void PasswordsPrivateGetPasswordExceptionListFunction::GotList(
 // PasswordsPrivateMovePasswordToAccountFunction
 ResponseAction PasswordsPrivateMovePasswordsToAccountFunction::Run() {
   auto parameters =
-      api::passwords_private::MovePasswordsToAccount::Params::Create(*args_);
+      api::passwords_private::MovePasswordsToAccount::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
   GetDelegate(browser_context())
       ->MovePasswordsToAccount(parameters->ids, GetSenderWebContents());
@@ -244,7 +244,7 @@ ResponseAction PasswordsPrivateIsOptedInForAccountStorageFunction::Run() {
 // PasswordsPrivateOptInForAccountStorageFunction
 ResponseAction PasswordsPrivateOptInForAccountStorageFunction::Run() {
   auto parameters =
-      api::passwords_private::OptInForAccountStorage::Params::Create(*args_);
+      api::passwords_private::OptInForAccountStorage::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters.get());
 
   GetDelegate(browser_context())
@@ -279,7 +279,7 @@ PasswordsPrivateGetPlaintextInsecurePasswordFunction::
 ResponseAction PasswordsPrivateGetPlaintextInsecurePasswordFunction::Run() {
   auto parameters =
       api::passwords_private::GetPlaintextInsecurePassword::Params::Create(
-          *args_);
+          args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   GetDelegate(browser_context())
@@ -314,7 +314,7 @@ PasswordsPrivateChangeInsecureCredentialFunction::
 
 ResponseAction PasswordsPrivateChangeInsecureCredentialFunction::Run() {
   auto parameters =
-      api::passwords_private::ChangeInsecureCredential::Params::Create(*args_);
+      api::passwords_private::ChangeInsecureCredential::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   if (parameters->new_password.empty()) {
@@ -340,7 +340,7 @@ PasswordsPrivateRemoveInsecureCredentialFunction::
 
 ResponseAction PasswordsPrivateRemoveInsecureCredentialFunction::Run() {
   auto parameters =
-      api::passwords_private::RemoveInsecureCredential::Params::Create(*args_);
+      api::passwords_private::RemoveInsecureCredential::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   if (!GetDelegate(browser_context())

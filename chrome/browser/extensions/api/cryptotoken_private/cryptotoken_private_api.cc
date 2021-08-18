@@ -98,7 +98,7 @@ CryptotokenPrivateCanOriginAssertAppIdFunction::
 ExtensionFunction::ResponseAction
 CryptotokenPrivateCanOriginAssertAppIdFunction::Run() {
   std::unique_ptr<cryptotoken_private::CanOriginAssertAppId::Params> params =
-      cryptotoken_private::CanOriginAssertAppId::Params::Create(*args_);
+      cryptotoken_private::CanOriginAssertAppId::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   const GURL origin_url(params->security_origin);
@@ -156,7 +156,7 @@ CryptotokenPrivateIsAppIdHashInEnterpriseContextFunction::Run() {
   std::unique_ptr<cryptotoken_private::IsAppIdHashInEnterpriseContext::Params>
       params(
           cryptotoken_private::IsAppIdHashInEnterpriseContext::Params::Create(
-              *args_));
+              args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   Profile* const profile = Profile::FromBrowserContext(browser_context());
@@ -175,7 +175,7 @@ CryptotokenPrivateCanAppIdGetAttestationFunction::
 ExtensionFunction::ResponseAction
 CryptotokenPrivateCanAppIdGetAttestationFunction::Run() {
   std::unique_ptr<cryptotoken_private::CanAppIdGetAttestation::Params> params =
-      cryptotoken_private::CanAppIdGetAttestation::Params::Create(*args_);
+      cryptotoken_private::CanAppIdGetAttestation::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   const GURL origin_url(params->options.origin);
@@ -271,7 +271,7 @@ CryptotokenPrivateCanMakeU2fApiRequestFunction::
 ExtensionFunction::ResponseAction
 CryptotokenPrivateCanMakeU2fApiRequestFunction::Run() {
   auto params =
-      cryptotoken_private::CanMakeU2fApiRequest::Params::Create(*args_);
+      cryptotoken_private::CanMakeU2fApiRequest::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   if (!base::FeatureList::IsEnabled(device::kU2fPermissionPrompt)) {
     return RespondNow(OneArgument(base::Value(true)));
@@ -313,7 +313,7 @@ void CryptotokenPrivateCanMakeU2fApiRequestFunction::Complete(bool result) {
 ExtensionFunction::ResponseAction
 CryptotokenPrivateRecordRegisterRequestFunction::Run() {
   auto params =
-      cryptotoken_private::RecordRegisterRequest::Params::Create(*args_);
+      cryptotoken_private::RecordRegisterRequest::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   content::RenderFrameHost* frame = RenderFrameHostForTabAndFrameId(
@@ -329,7 +329,7 @@ CryptotokenPrivateRecordRegisterRequestFunction::Run() {
 
 ExtensionFunction::ResponseAction
 CryptotokenPrivateRecordSignRequestFunction::Run() {
-  auto params = cryptotoken_private::RecordSignRequest::Params::Create(*args_);
+  auto params = cryptotoken_private::RecordSignRequest::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   content::RenderFrameHost* frame = RenderFrameHostForTabAndFrameId(

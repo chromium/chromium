@@ -105,7 +105,7 @@ class HidConnectionIoFunction : public ExtensionFunction {
  protected:
   ~HidConnectionIoFunction() override;
 
-  // Returns true if params were successfully read from |args_|.
+  // Returns true if params were successfully read from |args()|.
   virtual bool ReadParameters() = 0;
   virtual void StartWork(device::mojom::HidConnection* connection) = 0;
 

@@ -33,7 +33,7 @@ ExtensionFunction::ResponseAction
 WebstoreWidgetPrivateInstallWebstoreItemFunction::Run() {
   const std::unique_ptr<webstore_widget_private::InstallWebstoreItem::Params>
       params(
-          webstore_widget_private::InstallWebstoreItem::Params::Create(*args_));
+          webstore_widget_private::InstallWebstoreItem::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   if (params->item_id.empty())

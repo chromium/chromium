@@ -57,7 +57,7 @@ TestNotifyFailFunction::~TestNotifyFailFunction() {}
 
 ExtensionFunction::ResponseAction TestNotifyFailFunction::Run() {
   std::unique_ptr<NotifyFail::Params> params(
-      NotifyFail::Params::Create(*args_));
+      NotifyFail::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   TestApiObserverRegistry::GetInstance()->NotifyTestFailed(
       browser_context(), params->message);
@@ -67,7 +67,7 @@ ExtensionFunction::ResponseAction TestNotifyFailFunction::Run() {
 TestLogFunction::~TestLogFunction() {}
 
 ExtensionFunction::ResponseAction TestLogFunction::Run() {
-  std::unique_ptr<Log::Params> params(Log::Params::Create(*args_));
+  std::unique_ptr<Log::Params> params(Log::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   VLOG(1) << params->message;
   return RespondNow(NoArguments());
@@ -77,7 +77,7 @@ TestSendMessageFunction::TestSendMessageFunction() = default;
 
 ExtensionFunction::ResponseAction TestSendMessageFunction::Run() {
   std::unique_ptr<PassMessage::Params> params(
-      PassMessage::Params::Create(*args_));
+      PassMessage::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   bool listener_will_respond =
       TestApiObserverRegistry::GetInstance()->NotifyTestMessage(
@@ -142,7 +142,7 @@ TestWaitForRoundTripFunction::~TestWaitForRoundTripFunction() {}
 
 ExtensionFunction::ResponseAction TestWaitForRoundTripFunction::Run() {
   std::unique_ptr<WaitForRoundTrip::Params> params(
-      WaitForRoundTrip::Params::Create(*args_));
+      WaitForRoundTrip::Params::Create(args()));
   return RespondNow(OneArgument(base::Value(params->message)));
 }
 

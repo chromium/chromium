@@ -70,7 +70,7 @@ DeclarativeNetRequestUpdateDynamicRulesFunction::Run() {
   using Params = dnr_api::UpdateDynamicRules::Params;
 
   std::u16string error;
-  std::unique_ptr<Params> params(Params::Create(*args_, &error));
+  std::unique_ptr<Params> params(Params::Create(args(), &error));
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(error.empty());
 
@@ -165,7 +165,7 @@ DeclarativeNetRequestUpdateSessionRulesFunction::Run() {
   using Params = dnr_api::UpdateSessionRules::Params;
 
   std::u16string error;
-  std::unique_ptr<Params> params(Params::Create(*args_, &error));
+  std::unique_ptr<Params> params(Params::Create(args(), &error));
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(error.empty());
 
@@ -229,7 +229,7 @@ DeclarativeNetRequestUpdateEnabledRulesetsFunction::Run() {
   using DNRManifestData = declarative_net_request::DNRManifestData;
 
   std::u16string error;
-  std::unique_ptr<Params> params(Params::Create(*args_, &error));
+  std::unique_ptr<Params> params(Params::Create(args(), &error));
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(error.empty());
 
@@ -342,7 +342,7 @@ DeclarativeNetRequestGetMatchedRulesFunction::Run() {
   using Params = dnr_api::GetMatchedRules::Params;
 
   std::u16string error;
-  std::unique_ptr<Params> params(Params::Create(*args_, &error));
+  std::unique_ptr<Params> params(Params::Create(args(), &error));
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(error.empty());
 
@@ -415,7 +415,7 @@ DeclarativeNetRequestSetExtensionActionOptionsFunction::Run() {
   using Params = dnr_api::SetExtensionActionOptions::Params;
 
   std::u16string error;
-  std::unique_ptr<Params> params(Params::Create(*args_, &error));
+  std::unique_ptr<Params> params(Params::Create(args(), &error));
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(error.empty());
 
@@ -484,7 +484,7 @@ DeclarativeNetRequestIsRegexSupportedFunction::Run() {
   using Params = dnr_api::IsRegexSupported::Params;
 
   std::u16string error;
-  std::unique_ptr<Params> params(Params::Create(*args_, &error));
+  std::unique_ptr<Params> params(Params::Create(args(), &error));
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(error.empty());
 

@@ -249,7 +249,7 @@ FileManagerPrivateGetPreferencesFunction::Run() {
 ExtensionFunction::ResponseAction
 FileManagerPrivateSetPreferencesFunction::Run() {
   using extensions::api::file_manager_private::SetPreferences::Params;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
+  const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
@@ -285,7 +285,7 @@ FileManagerPrivateInternalZipSelectionFunction::
 ExtensionFunction::ResponseAction
 FileManagerPrivateInternalZipSelectionFunction::Run() {
   using extensions::api::file_manager_private_internal::ZipSelection::Params;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
+  const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   Profile* const profile = Profile::FromBrowserContext(browser_context());
@@ -385,7 +385,7 @@ FileManagerPrivateCancelZipFunction::~FileManagerPrivateCancelZipFunction() =
 
 ExtensionFunction::ResponseAction FileManagerPrivateCancelZipFunction::Run() {
   using extensions::api::file_manager_private::CancelZip::Params;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
+  const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   // Retrieve matching ZipFileCreator from the collection of active ones.
@@ -433,7 +433,7 @@ FileManagerPrivateGetZipProgressFunction::ZipProgressValue(
 ExtensionFunction::ResponseAction
 FileManagerPrivateGetZipProgressFunction::Run() {
   using extensions::api::file_manager_private::GetZipProgress::Params;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
+  const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   zip_id_ = params->zip_id;
@@ -466,7 +466,7 @@ void FileManagerPrivateGetZipProgressFunction::OnProgress() {
 
 ExtensionFunction::ResponseAction FileManagerPrivateZoomFunction::Run() {
   using extensions::api::file_manager_private::Zoom::Params;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
+  const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   content::PageZoom zoom_type;
@@ -574,7 +574,7 @@ ExtensionFunction::ResponseAction FileManagerPrivateGetProfilesFunction::Run() {
 ExtensionFunction::ResponseAction
 FileManagerPrivateOpenInspectorFunction::Run() {
   using extensions::api::file_manager_private::OpenInspector::Params;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
+  const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   switch (params->type) {
@@ -609,7 +609,7 @@ FileManagerPrivateOpenInspectorFunction::Run() {
 ExtensionFunction::ResponseAction
 FileManagerPrivateOpenSettingsSubpageFunction::Run() {
   using extensions::api::file_manager_private::OpenSettingsSubpage::Params;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
+  const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   Profile* profile = ProfileManager::GetActiveUserProfile();
@@ -631,7 +631,7 @@ FileManagerPrivateInternalGetMimeTypeFunction::
 ExtensionFunction::ResponseAction
 FileManagerPrivateInternalGetMimeTypeFunction::Run() {
   using extensions::api::file_manager_private_internal::GetMimeType::Params;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
+  const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   // Convert file url to local path.
@@ -708,7 +708,7 @@ FileManagerPrivateAddProvidedFileSystemFunction::
 ExtensionFunction::ResponseAction
 FileManagerPrivateAddProvidedFileSystemFunction::Run() {
   using extensions::api::file_manager_private::AddProvidedFileSystem::Params;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
+  const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   using ash::file_system_provider::ProviderId;
@@ -728,7 +728,7 @@ FileManagerPrivateConfigureVolumeFunction::
 ExtensionFunction::ResponseAction
 FileManagerPrivateConfigureVolumeFunction::Run() {
   using extensions::api::file_manager_private::ConfigureVolume::Params;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
+  const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   using file_manager::Volume;
@@ -838,7 +838,7 @@ FileManagerPrivateInternalImportCrostiniImageFunction::Run() {
   using extensions::api::file_manager_private_internal::ImportCrostiniImage::
       Params;
 
-  const auto params = Params::Create(*args_);
+  const auto params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
@@ -867,7 +867,7 @@ ExtensionFunction::ResponseAction
 FileManagerPrivateInternalSharePathsWithCrostiniFunction::Run() {
   using extensions::api::file_manager_private_internal::SharePathsWithCrostini::
       Params;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
+  const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
@@ -899,7 +899,7 @@ ExtensionFunction::ResponseAction
 FileManagerPrivateInternalUnsharePathWithCrostiniFunction::Run() {
   using extensions::api::file_manager_private_internal::
       UnsharePathWithCrostini::Params;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
+  const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
@@ -927,7 +927,7 @@ ExtensionFunction::ResponseAction
 FileManagerPrivateInternalGetCrostiniSharedPathsFunction::Run() {
   using extensions::api::file_manager_private_internal::GetCrostiniSharedPaths::
       Params;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
+  const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
   // TODO(crbug.com/1057591): Unexpected crashes in
   // GuestOsSharePath::GetPersistedSharedPaths with null profile_.
@@ -974,7 +974,7 @@ FileManagerPrivateInternalGetCrostiniSharedPathsFunction::Run() {
 ExtensionFunction::ResponseAction
 FileManagerPrivateInternalGetLinuxPackageInfoFunction::Run() {
   using api::file_manager_private_internal::GetLinuxPackageInfo::Params;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
+  const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
@@ -1014,7 +1014,7 @@ ExtensionFunction::ResponseAction
 FileManagerPrivateInternalInstallLinuxPackageFunction::Run() {
   using extensions::api::file_manager_private_internal::InstallLinuxPackage::
       Params;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
+  const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
@@ -1063,7 +1063,7 @@ ExtensionFunction::ResponseAction
 FileManagerPrivateInternalGetCustomActionsFunction::Run() {
   using extensions::api::file_manager_private_internal::GetCustomActions::
       Params;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
+  const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   const scoped_refptr<storage::FileSystemContext> file_system_context =
@@ -1117,7 +1117,7 @@ ExtensionFunction::ResponseAction
 FileManagerPrivateInternalExecuteCustomActionFunction::Run() {
   using extensions::api::file_manager_private_internal::ExecuteCustomAction::
       Params;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
+  const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   const scoped_refptr<storage::FileSystemContext> file_system_context =
@@ -1158,7 +1158,7 @@ FileManagerPrivateInternalGetRecentFilesFunction::
 ExtensionFunction::ResponseAction
 FileManagerPrivateInternalGetRecentFilesFunction::Run() {
   using extensions::api::file_manager_private_internal::GetRecentFiles::Params;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
+  const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   Profile* const profile = Profile::FromBrowserContext(browser_context());
@@ -1243,7 +1243,7 @@ void FileManagerPrivateInternalGetRecentFilesFunction::
 ExtensionFunction::ResponseAction
 FileManagerPrivateDetectCharacterEncodingFunction::Run() {
   using extensions::api::file_manager_private::DetectCharacterEncoding::Params;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
+  const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   std::string input;

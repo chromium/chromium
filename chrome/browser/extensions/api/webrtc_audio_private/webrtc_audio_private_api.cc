@@ -169,7 +169,7 @@ WebrtcAudioPrivateGetAssociatedSinkFunction::
 
 ExtensionFunction::ResponseAction
 WebrtcAudioPrivateGetAssociatedSinkFunction::Run() {
-  params_ = wap::GetAssociatedSink::Params::Create(*args_);
+  params_ = wap::GetAssociatedSink::Params::Create(args());
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   EXTENSION_FUNCTION_VALIDATE(params_.get());
   InitDeviceIDSalt();

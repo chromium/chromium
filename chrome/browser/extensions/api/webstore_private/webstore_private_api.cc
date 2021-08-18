@@ -410,7 +410,7 @@ std::u16string WebstorePrivateBeginInstallWithManifest3Function::
 
 ExtensionFunction::ResponseAction
 WebstorePrivateBeginInstallWithManifest3Function::Run() {
-  params_ = Params::Create(*args_);
+  params_ = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params_);
 
   profile_ = Profile::FromBrowserContext(browser_context());
@@ -907,7 +907,7 @@ WebstorePrivateCompleteInstallFunction::
 ExtensionFunction::ResponseAction
 WebstorePrivateCompleteInstallFunction::Run() {
   std::unique_ptr<CompleteInstall::Params> params(
-      CompleteInstall::Params::Create(*args_));
+      CompleteInstall::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
   Profile* const profile = Profile::FromBrowserContext(browser_context());
   if (profile->IsGuestSession() || profile->IsOffTheRecord()) {
@@ -1031,7 +1031,7 @@ WebstorePrivateSetStoreLoginFunction::
 
 ExtensionFunction::ResponseAction WebstorePrivateSetStoreLoginFunction::Run() {
   std::unique_ptr<SetStoreLogin::Params> params(
-      SetStoreLogin::Params::Create(*args_));
+      SetStoreLogin::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
   SetWebstoreLogin(Profile::FromBrowserContext(browser_context()),
                    params->login);
@@ -1117,7 +1117,7 @@ WebstorePrivateIsPendingCustodianApprovalFunction::
 ExtensionFunction::ResponseAction
 WebstorePrivateIsPendingCustodianApprovalFunction::Run() {
   std::unique_ptr<IsPendingCustodianApproval::Params> params(
-      IsPendingCustodianApproval::Params::Create(*args_));
+      IsPendingCustodianApproval::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   if (!Profile::FromBrowserContext(browser_context())->IsSupervised())
@@ -1213,7 +1213,7 @@ WebstorePrivateGetExtensionStatusFunction::
 ExtensionFunction::ResponseAction
 WebstorePrivateGetExtensionStatusFunction::Run() {
   std::unique_ptr<GetExtensionStatus::Params> params(
-      GetExtensionStatus::Params::Create(*args_));
+      GetExtensionStatus::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   const ExtensionId& extension_id = params->id;
@@ -1283,7 +1283,7 @@ WebstorePrivateRequestExtensionFunction::
 ExtensionFunction::ResponseAction
 WebstorePrivateRequestExtensionFunction::Run() {
   std::unique_ptr<RequestExtension::Params> params(
-      RequestExtension::Params::Create(*args_));
+      RequestExtension::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   const ExtensionId& extension_id = params->id;

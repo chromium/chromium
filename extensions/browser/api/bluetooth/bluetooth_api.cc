@@ -130,7 +130,7 @@ BluetoothGetDevicesFunction::BluetoothGetDevicesFunction() = default;
 BluetoothGetDevicesFunction::~BluetoothGetDevicesFunction() = default;
 
 bool BluetoothGetDevicesFunction::CreateParams() {
-  params_ = GetDevices::Params::Create(*args_);
+  params_ = GetDevices::Params::Create(args());
   return params_ != nullptr;
 }
 
@@ -178,7 +178,7 @@ BluetoothGetDeviceFunction::BluetoothGetDeviceFunction() = default;
 BluetoothGetDeviceFunction::~BluetoothGetDeviceFunction() = default;
 
 bool BluetoothGetDeviceFunction::CreateParams() {
-  params_ = GetDevice::Params::Create(*args_);
+  params_ = GetDevice::Params::Create(args());
   return params_ != nullptr;
 }
 

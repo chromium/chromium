@@ -113,7 +113,7 @@ ExtensionFunction::ResponseAction IdentityGetAuthTokenFunction::Run() {
   }
 
   std::unique_ptr<api::identity::GetAuthToken::Params> params(
-      api::identity::GetAuthToken::Params::Create(*args_));
+      api::identity::GetAuthToken::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   interactive_ = params->details.get() && params->details->interactive.get() &&
                  *params->details->interactive;

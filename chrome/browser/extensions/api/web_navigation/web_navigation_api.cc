@@ -449,7 +449,7 @@ void WebNavigationTabObserver::RenderFrameHostPendingDeletion(
 }
 
 ExtensionFunction::ResponseAction WebNavigationGetFrameFunction::Run() {
-  std::unique_ptr<GetFrame::Params> params(GetFrame::Params::Create(*args_));
+  std::unique_ptr<GetFrame::Params> params(GetFrame::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   int tab_id = params->details.tab_id;
   int frame_id = params->details.frame_id;
@@ -492,7 +492,7 @@ ExtensionFunction::ResponseAction WebNavigationGetFrameFunction::Run() {
 
 ExtensionFunction::ResponseAction WebNavigationGetAllFramesFunction::Run() {
   std::unique_ptr<GetAllFrames::Params> params(
-      GetAllFrames::Params::Create(*args_));
+      GetAllFrames::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   int tab_id = params->details.tab_id;
 

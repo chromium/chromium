@@ -488,11 +488,6 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
     return *args_;
   }
 
-  // TODO(crbug.com/1187001): Make this private. This will require changing a
-  // large number of `Params::Create(*args_)` calls.
-  // The arguments to the API. Only non-null if arguments were specified.
-  absl::optional<std::vector<base::Value>> args_;
-
   // The extension that called this function.
   scoped_refptr<const extensions::Extension> extension_;
 
@@ -513,6 +508,9 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // The callback for mojom::Renderer::TransferBlobs().
   void OnTransferBlobsAck(int process_id,
                           const std::vector<std::string>& blob_uuids);
+
+  // The arguments to the API. Only non-null if arguments were specified.
+  absl::optional<std::vector<base::Value>> args_;
 
   base::ElapsedTimer timer_;
 

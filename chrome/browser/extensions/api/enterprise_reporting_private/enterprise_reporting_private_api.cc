@@ -167,7 +167,7 @@ EnterpriseReportingPrivateGetPersistentSecretFunction::Run() {
   std::unique_ptr<
       api::enterprise_reporting_private::GetPersistentSecret::Params>
       params(api::enterprise_reporting_private::GetPersistentSecret::Params::
-                 Create(*args_));
+                 Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   bool force_create = params->reset_secret ? *params->reset_secret : false;
   base::ThreadPool::PostTask(
@@ -220,7 +220,7 @@ ExtensionFunction::ResponseAction
 EnterpriseReportingPrivateGetDeviceDataFunction::Run() {
   std::unique_ptr<api::enterprise_reporting_private::GetDeviceData::Params>
       params(api::enterprise_reporting_private::GetDeviceData::Params::Create(
-          *args_));
+          args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   base::ThreadPool::PostTask(
       FROM_HERE,
@@ -276,7 +276,7 @@ ExtensionFunction::ResponseAction
 EnterpriseReportingPrivateSetDeviceDataFunction::Run() {
   std::unique_ptr<api::enterprise_reporting_private::SetDeviceData::Params>
       params(api::enterprise_reporting_private::SetDeviceData::Params::Create(
-          *args_));
+          args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   base::ThreadPool::PostTask(
       FROM_HERE,
@@ -421,7 +421,7 @@ ExtensionFunction::ResponseAction
 EnterpriseReportingPrivateGetCertificateFunction::Run() {
   std::unique_ptr<api::enterprise_reporting_private::GetCertificate::Params>
       params(api::enterprise_reporting_private::GetCertificate::Params::Create(
-          *args_));
+          args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   // If AutoSelectCertificateForUrl is not set at the machine level, this

@@ -559,7 +559,7 @@ DebuggerAttachFunction::DebuggerAttachFunction() = default;
 DebuggerAttachFunction::~DebuggerAttachFunction() = default;
 
 ExtensionFunction::ResponseAction DebuggerAttachFunction::Run() {
-  std::unique_ptr<Attach::Params> params(Attach::Params::Create(*args_));
+  std::unique_ptr<Attach::Params> params(Attach::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   CopyDebuggee(&debuggee_, params->target);
@@ -598,7 +598,7 @@ DebuggerDetachFunction::DebuggerDetachFunction() = default;
 DebuggerDetachFunction::~DebuggerDetachFunction() = default;
 
 ExtensionFunction::ResponseAction DebuggerDetachFunction::Run() {
-  std::unique_ptr<Detach::Params> params(Detach::Params::Create(*args_));
+  std::unique_ptr<Detach::Params> params(Detach::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   CopyDebuggee(&debuggee_, params->target);
@@ -619,7 +619,7 @@ DebuggerSendCommandFunction::~DebuggerSendCommandFunction() = default;
 
 ExtensionFunction::ResponseAction DebuggerSendCommandFunction::Run() {
   std::unique_ptr<SendCommand::Params> params(
-      SendCommand::Params::Create(*args_));
+      SendCommand::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   CopyDebuggee(&debuggee_, params->target);

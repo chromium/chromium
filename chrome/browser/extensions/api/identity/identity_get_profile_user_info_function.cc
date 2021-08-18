@@ -49,7 +49,7 @@ ExtensionFunction::ResponseAction IdentityGetProfileUserInfoFunction::Run() {
   }
 
   std::unique_ptr<api::identity::GetProfileUserInfo::Params> params(
-      api::identity::GetProfileUserInfo::Params::Create(*args_));
+      api::identity::GetProfileUserInfo::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   api::identity::ProfileUserInfo profile_user_info;
