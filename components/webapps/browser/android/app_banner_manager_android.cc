@@ -467,7 +467,7 @@ std::u16string AppBannerManagerAndroid::GetAppName() const {
     // Prefer the short name if it's available. It's guaranteed that at least
     // one of these is non-empty.
     std::u16string short_name = manifest().short_name.value_or(u"");
-    return short_name.empty() ? manifest().name.value_or(u"") : u"";
+    return short_name.empty() ? manifest().name.value_or(u"") : short_name;
   }
 
   return native_app_title_;
