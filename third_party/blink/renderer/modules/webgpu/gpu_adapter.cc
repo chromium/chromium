@@ -91,6 +91,13 @@ GPUSupportedFeatures* GPUAdapter::features() const {
   return features_;
 }
 
+bool GPUAdapter::isSoftware(ExecutionContext* execution_context) {
+  this->AddConsoleWarning(
+      execution_context,
+      "isSoftware is deprecated. Use isFallbackAdapter instead.");
+  return this->isFallbackAdapter();
+}
+
 void GPUAdapter::OnRequestDeviceCallback(ScriptState* script_state,
                                          ScriptPromiseResolver* resolver,
                                          const GPUDeviceDescriptor* descriptor,

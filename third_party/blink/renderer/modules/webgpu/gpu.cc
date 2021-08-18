@@ -99,6 +99,16 @@ std::unique_ptr<WebGraphicsContext3DProvider> CreateContextProvider(
   return context_provider;
 }
 
+void AddConsoleWarning(ExecutionContext* execution_context,
+                       const char* message) {
+  if (execution_context) {
+    auto* console_message = MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kRendering,
+        mojom::blink::ConsoleMessageLevel::kWarning, message);
+    execution_context->AddConsoleMessage(console_message);
+  }
+}
+
 }  // anonymous namespace
 
 // static
@@ -226,8 +236,18 @@ ScriptPromise GPU::requestAdapter(ScriptState* script_state,
     }
   }
 
+  bool forceFallbackAdapter = options->forceFallbackAdapter();
+
+  if (options->hasForceSoftware()) {
+    AddConsoleWarning(
+        ExecutionContext::From(script_state),
+        "forceSoftware is deprecated. Use forceFallbackAdapter instead.");
+
+    forceFallbackAdapter = options->forceSoftware();
+  }
+
   // Software adapters are not currently supported.
-  if (options->forceSoftware() == true) {
+  if (forceFallbackAdapter) {
     resolver->Resolve(v8::Null(script_state->GetIsolate()));
     return promise;
   }
