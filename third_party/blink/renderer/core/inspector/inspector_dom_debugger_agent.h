@@ -162,7 +162,9 @@ class CORE_EXPORT InspectorDOMDebuggerAgent final
                               int breakpoint_type,
                               bool insertion);
   void UpdateSubtreeBreakpoints(Node*, uint32_t root_mask, bool set);
-  bool HasBreakpoint(Node*, int type);
+  bool HasBreakpoint(Node*, int type) const;
+  // Returns value if node is in `dom_breakpoints_`, otherwise zero.
+  uint32_t FindBreakpointMask(Node*) const;
   protocol::Response SetBreakpoint(const String& event_name,
                                    const String& target_name);
   protocol::Response RemoveBreakpoint(const String& event_name,
