@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/clang_profiling_buildflags.h"
 #include "base/command_line.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -462,6 +463,11 @@ void SetTryingToQuit(bool quitting) {
   PrefService* pref_service = g_browser_process->local_state();
   if (pref_service) {
 #if !defined(OS_ANDROID)
+    // TODO(https://crbug.com/1227426): for debugging.
+    if (pref_service->GetBoolean(prefs::kWasRestarted) &&
+        chrome::DidCallRelaunchIgnoreUnloadHandlers()) {
+      base::debug::DumpWithoutCrashing();
+    }
     pref_service->ClearPref(prefs::kWasRestarted);
 #endif  // !defined(OS_ANDROID)
     pref_service->ClearPref(prefs::kRestartLastSessionOnShutdown);
