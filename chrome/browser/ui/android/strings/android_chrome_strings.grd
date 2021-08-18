@@ -2031,7 +2031,7 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
 
       <!-- Download progress message UI -->
       <message name="IDS_DOWNLOAD_MESSAGE_DOWNLOAD_IN_PROGRESS_DESCRIPTION" desc="Download message text describing that user can find about their download status from notifications.">
-        You can see the download status in your notifications
+        See notification for download status
       </message>
       <message name="IDS_DOWNLOAD_MESSAGE_DOWNLOAD_COMPLETE_DESCRIPTION" desc="Download message description text about downloaded file name and their size.">
         (<ph name="megabytes">%1$s<ex>100 MB</ex></ph>)\n<ph name="url">%2$s<ex>https://...example.com</ex></ph>
