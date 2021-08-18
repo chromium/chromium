@@ -73,8 +73,7 @@ bool GetVirtualKeyboardFeatureValue(PrefService* prefs,
   if (!features)
     return false;
 
-  bool feature_value = false;
-  return features->GetBoolean(feature_path, &feature_value) && feature_value;
+  return features->FindBoolPath(feature_path).value_or(false);
 }
 
 }  // namespace
