@@ -2554,6 +2554,7 @@ test("ash_unittests") {
     "//components/arc:notification_test_support",
     "//components/full_restore",
     "//components/media_message_center",
+    "//components/onc",
     "//components/password_manager/core/browser:hash_password_manager",
     "//components/prefs:test_support",
     "//components/quirks",
