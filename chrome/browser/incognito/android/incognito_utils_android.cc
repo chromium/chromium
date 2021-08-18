@@ -4,7 +4,7 @@
 
 #include <jni.h>
 
-#include "chrome/android/chrome_jni_headers/IncognitoUtils_jni.h"
+#include "chrome/browser/incognito/jni_headers/IncognitoUtils_jni.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"

@@ -4,25 +4,14 @@
 
 package org.chromium.chrome.browser.incognito;
 
-import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.app.ActivityManager.RecentTaskInfo;
-
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ApplicationStatus;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKey;
-import org.chromium.chrome.browser.tabmodel.IncognitoTabHostUtils;
-import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.ui.base.WindowAndroid;
-
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Utilities for working with incognito tabs spread across multiple activities.
@@ -31,49 +20,6 @@ public class IncognitoUtils {
     private static Boolean sIsEnabledForTesting;
 
     private IncognitoUtils() {}
-
-    /**
-     * Determine whether the incognito profile needs to be destroyed as part of startup.  This is
-     * only needed on L+ when it is possible to swipe away tasks from Android recents without
-     * killing the process.  When this occurs, the normal incognito profile shutdown does not
-     * happen, which can leave behind incognito cookies from an existing session.
-     */
-    @SuppressLint("NewApi")
-    public static boolean shouldDestroyIncognitoProfileOnStartup(
-            boolean selectedTabModelIsIncognito, Set<String> componentNames) {
-        if (!Profile.getLastUsedRegularProfile().hasPrimaryOTRProfile()) {
-            return false;
-        }
-
-        Set<RecentTaskInfo> matchingTaskInfos =
-                AndroidTaskUtils.getRecentTaskInfosMatchingComponentNames(
-                        ContextUtils.getApplicationContext(), componentNames);
-        Set<Integer> tabbedModeTaskIds = new HashSet<>();
-        for (RecentTaskInfo info : matchingTaskInfos) {
-            tabbedModeTaskIds.add(info.id);
-        }
-
-        if (tabbedModeTaskIds.size() == 0) {
-            return true;
-        }
-
-        for (Activity activity : ApplicationStatus.getRunningActivities()) {
-            tabbedModeTaskIds.remove(activity.getTaskId());
-        }
-
-        // If all tabbed mode tasks listed in Android recents are alive, check to see if
-        // any incognito tabs exist and the current tab model isn't incognito. If so, we should
-        // destroy the incognito profile; otherwise it's not safe to do so yet.
-        if (tabbedModeTaskIds.size() == 0) {
-            return !(IncognitoTabHostUtils.doIncognitoTabsExist() || selectedTabModelIsIncognito);
-        }
-
-        // In this case, we have tabbed mode activities listed in recents that do not have an
-        // active running activity associated with them.  We can not accurately get an incognito
-        // tab count as we do not know if any incognito tabs are associated with the yet unrestored
-        // tabbed mode.  Thus we do not proactively destroy the incognito profile.
-        return false;
-    }
 
     /**
      * @return true if incognito mode is enabled.
