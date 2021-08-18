@@ -430,6 +430,12 @@ void CartDiscountFetcher::OnDiscountsAvailable(
   const base::Value* is_tester_value = value->FindKey("externalTester");
   if (is_tester_value && is_tester_value->is_bool()) {
     is_tester = is_tester_value->GetBool();
+  } else {
+    const base::Value* is_internal_tester_value =
+        value->FindKey("internalTester");
+    if (is_internal_tester_value && is_internal_tester_value->is_bool()) {
+      is_tester = is_internal_tester_value->GetBool();
+    }
   }
 
   std::move(callback).Run(std::move(cart_discount_map), is_tester);
