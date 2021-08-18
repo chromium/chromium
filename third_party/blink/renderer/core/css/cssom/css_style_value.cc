@@ -70,8 +70,7 @@ CSSStyleValueVector CSSStyleValue::parseAll(
 
 String CSSStyleValue::toString() const {
   const CSSValue* result = ToCSSValue();
-  DCHECK(result);
-  return result->CssText();
+  return result ? result->CssText() : "";
 }
 
 }  // namespace blink
