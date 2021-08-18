@@ -3498,6 +3498,11 @@ bool WebMediaPlayerImpl::ShouldPausePlaybackWhenHidden() const {
     return false;
   }
 
+#if defined(OS_ANDROID)
+  if (IsInPictureInPicture())
+    return false;
+#endif
+
   if (!is_background_video_playback_enabled_)
     return true;
 

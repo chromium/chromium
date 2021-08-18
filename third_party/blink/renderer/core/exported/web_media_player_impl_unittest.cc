@@ -2363,9 +2363,10 @@ TEST_P(WebMediaPlayerImplBackgroundBehaviorTest, VideoOnly) {
 
   // Video is always paused when suspension is on and only if matches the
   // optimization criteria if the optimization is on.
-  bool should_pause = !IsBackgroundVideoPlaybackEnabled() ||
-                      IsMediaSuspendOn() ||
-                      (IsBackgroundPauseOn() && matches_requirements);
+  bool should_pause =
+      (!IsBackgroundVideoPlaybackEnabled() || IsMediaSuspendOn() ||
+       (IsBackgroundPauseOn() && matches_requirements)) &&
+      !(IsPictureInPictureOn() && IsAndroid());
   EXPECT_EQ(should_pause, ShouldPausePlaybackWhenHidden());
 }
 
@@ -2385,8 +2386,9 @@ TEST_P(WebMediaPlayerImplBackgroundBehaviorTest, AudioVideo) {
   // videos is on and background video playback is disabled. Background video
   // playback is enabled by default. Both media suspend and resume background
   // videos are on by default on Android and off on desktop.
-  EXPECT_EQ(!IsBackgroundVideoPlaybackEnabled() ||
-                (IsMediaSuspendOn() && IsResumeBackgroundVideoEnabled()),
+  EXPECT_EQ((!IsBackgroundVideoPlaybackEnabled() ||
+             (IsMediaSuspendOn() && IsResumeBackgroundVideoEnabled())) &&
+                !(IsPictureInPictureOn() && IsAndroid()),
             ShouldPausePlaybackWhenHidden());
 
   if (!matches_requirements || !ShouldDisableVideoWhenHidden() ||
