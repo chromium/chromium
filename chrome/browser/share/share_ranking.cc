@@ -226,6 +226,34 @@ std::map<std::string, int> BuildHistoryMap(
   return result;
 }
 
+void InsertIntoRankingOrderedByUsage(
+    std::vector<std::string>* ranking,
+    const std::string& item,
+    unsigned int fold,
+    const std::map<std::string, int>& history) {
+  DCHECK_GT(history.count(item), 0U);
+  for (unsigned int i = fold; i < ranking->size(); ++i) {
+    const std::string this_item = ranking->at(i);
+    if (!history.count(this_item) || history.at(item) > history.at(this_item)) {
+      ranking->insert(ranking->begin() + i, item);
+      return;
+    }
+  }
+  ranking->push_back(item);
+}
+
+std::vector<std::string> AddMissingItemsFromHistory(
+    const std::vector<std::string> existing,
+    const std::map<std::string, int> history,
+    unsigned int fold) {
+  std::vector<std::string> updated = existing;
+  for (const auto& item : history) {
+    if (!RankingContains(updated, item.first))
+      InsertIntoRankingOrderedByUsage(&updated, item.first, fold, history);
+  }
+  return updated;
+}
+
 bool ShouldFixMore() {
   // TODO(ellyjones): Add a field trial and wire it up here.
   return true;
@@ -346,8 +374,13 @@ void ShareRanking::ComputeRanking(
   // overwritten with More.
   int logical_fold = fix_more ? fold - 1 : fold;
 
-  std::vector<std::string> new_ranking = MaybeUpdateRankingFromHistory(
-      old_ranking, all_share_history, recent_share_history, logical_fold);
+  Ranking augmented_old_ranking = AddMissingItemsFromHistory(
+      AddMissingItemsFromHistory(old_ranking, all_share_history, logical_fold),
+      recent_share_history, logical_fold);
+
+  std::vector<std::string> new_ranking =
+      MaybeUpdateRankingFromHistory(augmented_old_ranking, all_share_history,
+                                    recent_share_history, logical_fold);
 
   Ranking computed_display_ranking =
       ReplaceUnavailableEntries(new_ranking, available_on_system);
