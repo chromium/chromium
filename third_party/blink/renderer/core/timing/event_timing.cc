@@ -43,6 +43,10 @@ bool ShouldReportForEventTiming(WindowPerformance* performance) {
 
 }  // namespace
 
+// Record FID even when there's no event listener.
+const base::Feature kFirstInputDelayWithoutEventListener{
+    "FirstInputDelayWithoutEventListener", base::FEATURE_DISABLED_BY_DEFAULT};
+
 EventTiming::EventTiming(base::TimeTicks processing_start,
                          WindowPerformance* performance,
                          const Event& event)
@@ -111,6 +115,9 @@ std::unique_ptr<EventTiming> EventTiming::Create(LocalDOMWindow* window,
 
   if (!should_report_for_event_timing && !should_log_event)
     return nullptr;
+
+  if (base::FeatureList::IsEnabled(kFirstInputDelayWithoutEventListener))
+    HandleInputDelay(window, event);
 
   base::TimeTicks processing_start = Now();
   return should_report_for_event_timing
