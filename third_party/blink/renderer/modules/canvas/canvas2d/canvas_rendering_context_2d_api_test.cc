@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
@@ -590,8 +591,17 @@ TEST_F(CanvasRenderingContext2DAPITest, IdentifiabilityStudyDigest_Combo) {
   EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredPartiallyDigestedImage());
 }
 
+// TODO(crbug.com/1239374): Fix test on Android L and re-enable.
+#if defined(OS_ANDROID)
+#define MAYBE_IdentifiabilityStudyDigest_putImageData \
+  DISABLED_IdentifiabilityStudyDigest_putImageData
+#else
+#define MAYBE_IdentifiabilityStudyDigest_putImageData \
+  IdentifiabilityStudyDigest_putImageData
+#endif  // defined(OS_ANDROID)
+
 TEST_F(CanvasRenderingContext2DAPITest,
-       IdentifiabilityStudyDigest_putImageData) {
+       MAYBE_IdentifiabilityStudyDigest_putImageData) {
   StudyParticipationRaii study_participation_raii;
   CreateContext(kNonOpaque);
   NonThrowableExceptionState exception_state;
