@@ -1683,8 +1683,8 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
   if (beforeunload_initiator && beforeunload_initiator != this) {
     base::TimeTicks approx_renderer_start_time = send_before_unload_start_time_;
     beforeunload_initiator->ProcessBeforeUnloadCompletedFromFrame(
-        true /* proceed */, false /* treat_as_final_completion_callback */,
-        this, true /* is_frame_being_destroyed */, approx_renderer_start_time,
+        /*proceed=*/true, /*treat_as_final_completion_callback=*/false, this,
+        /*is_frame_being_destroyed=*/true, approx_renderer_start_time,
         base::TimeTicks::Now());
   }
 
@@ -1953,7 +1953,7 @@ void RenderFrameHostImpl::ForEachRenderFrameHost(
 
 void RenderFrameHostImpl::ForEachRenderFrameHost(
     FrameIterationCallbackImpl on_frame) {
-  ForEachRenderFrameHostImpl(on_frame, /* include_speculative */ false);
+  ForEachRenderFrameHostImpl(on_frame, /*include_speculative=*/false);
 }
 
 void RenderFrameHostImpl::ForEachRenderFrameHost(
@@ -1963,7 +1963,7 @@ void RenderFrameHostImpl::ForEachRenderFrameHost(
 
 void RenderFrameHostImpl::ForEachRenderFrameHostIncludingSpeculative(
     FrameIterationCallbackImpl on_frame) {
-  ForEachRenderFrameHostImpl(on_frame, /* include_speculative */ true);
+  ForEachRenderFrameHostImpl(on_frame, /*include_speculative=*/true);
 }
 
 void RenderFrameHostImpl::ForEachRenderFrameHostIncludingSpeculative(
@@ -2359,7 +2359,7 @@ gfx::NativeView RenderFrameHostImpl::GetNativeView() {
 void RenderFrameHostImpl::AddMessageToConsole(
     blink::mojom::ConsoleMessageLevel level,
     const std::string& message) {
-  AddMessageToConsoleImpl(level, message, false /* discard_duplicates */);
+  AddMessageToConsoleImpl(level, message, /*discard_duplicates=*/false);
 }
 
 void RenderFrameHostImpl::ExecuteJavaScriptMethod(
@@ -4031,8 +4031,8 @@ void RenderFrameHostImpl::DidOpenDocumentInputStream(const GURL& url) {
   // checking, the restrictions should be the same as a same-document navigation
   // since document.open() can only update the URL to a same-origin URL.
   if (!ValidateURLAndOrigin(url, last_committed_origin_,
-                            true /* is_same_document_navigation */,
-                            nullptr /* navigation_request */)) {
+                            /*is_same_document_navigation=*/true,
+                            /*navigation_request=*/nullptr)) {
     return;
   }
   // Filter the URL, then update `renderer_url_info_`'s `last_document_url`.
@@ -4041,7 +4041,7 @@ void RenderFrameHostImpl::DidOpenDocumentInputStream(const GURL& url) {
   // See https://crbug.com/1046898 and https://github.com/whatwg/html/pull/6649
   // for more details.
   GURL filtered_url(url);
-  GetProcess()->FilterURL(false /* empty_allowed */, &filtered_url);
+  GetProcess()->FilterURL(/*empty_allowed=*/false, &filtered_url);
   renderer_url_info_.last_document_url = filtered_url;
   if (!is_error_page_ &&
       !renderer_url_info_
@@ -4265,7 +4265,7 @@ void RenderFrameHostImpl::ProcessBeforeUnloadCompleted(
   // this frame.  This could be either this frame itself or an ancestor frame.
   initiator->ProcessBeforeUnloadCompletedFromFrame(
       proceed, treat_as_final_completion_callback, this,
-      false /* is_frame_being_destroyed */, renderer_before_unload_start_time,
+      /*is_frame_being_destroyed=*/false, renderer_before_unload_start_time,
       renderer_before_unload_end_time);
 }
 
@@ -5772,7 +5772,7 @@ void RenderFrameHostImpl::EnterFullscreen(
   }
 
   delegate_->EnterFullscreenMode(this, *options);
-  delegate_->FullscreenStateChanged(this, true /* is_fullscreen */,
+  delegate_->FullscreenStateChanged(this, /*is_fullscreen=*/true,
                                     std::move(options));
 
   // The previous call might change the fullscreen state. We need to make sure
@@ -5789,7 +5789,7 @@ void RenderFrameHostImpl::EnterFullscreen(
 // TODO(alexmos): When the allowFullscreen flag is known in the browser
 // process, use it to double-check that fullscreen can be entered here.
 void RenderFrameHostImpl::ExitFullscreen() {
-  delegate_->ExitFullscreenMode(/* will_cause_resize */ true);
+  delegate_->ExitFullscreenMode(/*will_cause_resize=*/true);
 
   // The previous call might change the fullscreen state. We need to make sure
   // the renderer is aware of that, which is done via the resize message.
@@ -6088,8 +6088,7 @@ void RenderFrameHostImpl::DidChangeFrameOwnerProperties(
   child->frame_tree_node()->render_manager()->OnDidUpdateFrameOwnerProperties(
       *properties);
   if (has_display_none_property_changed) {
-    delegate_->DidChangeDisplayState(
-        child, properties->is_display_none /* is_display_none */);
+    delegate_->DidChangeDisplayState(child, properties->is_display_none);
   }
 }
 
@@ -6980,7 +6979,7 @@ CanCommitStatus RenderFrameHostImpl::CanCommitOriginAndUrl(
   // UrlInfoInit constructor).
   if (!Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
           this, UrlInfo(UrlInfoInit(url).WithOrigin(origin)),
-          /* is_renderer_initiated_check */ true)) {
+          /*is_renderer_initiated_check=*/true)) {
     return CanCommitStatus::CANNOT_COMMIT_URL;
   }
 
@@ -7165,7 +7164,7 @@ void RenderFrameHostImpl::DispatchBeforeUnload(BeforeUnloadType type,
       // Run beforeunload in this frame and its cross-process descendant
       // frames, in parallel.
       CheckOrDispatchBeforeUnloadForSubtree(check_subframes_only,
-                                            true /* send_ipc */, is_reload);
+                                            /*send_ipc=*/true, is_reload);
     }
   }
 }
@@ -7259,14 +7258,14 @@ void RenderFrameHostImpl::SimulateBeforeUnloadCompleted(bool proceed) {
       FROM_HERE,
       base::BindOnce(&RenderFrameHostImpl::ProcessBeforeUnloadCompleted,
                      weak_ptr_factory_.GetWeakPtr(), proceed,
-                     true /* treat_as_final_completion_callback */,
+                     /*treat_as_final_completion_callback=*/true,
                      approx_renderer_start_time, base::TimeTicks::Now()));
 }
 
 bool RenderFrameHostImpl::ShouldDispatchBeforeUnload(
     bool check_subframes_only) {
   return CheckOrDispatchBeforeUnloadForSubtree(
-      check_subframes_only, false /* send_ipc */, false /* is_reload */);
+      check_subframes_only, /*send_ipc=*/false, /*is_reload=*/false);
 }
 
 void RenderFrameHostImpl::SetBeforeUnloadTimeoutDelayForTesting(
@@ -7596,11 +7595,11 @@ void RenderFrameHostImpl::CommitNavigation(
               browser_context, this, GetProcess()->GetID(),
               ContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
               subresource_loader_factories_config.origin(),
-              absl::nullopt /* navigation_id */,
+              /*navigation_id=*/absl::nullopt,
               subresource_loader_factories_config.ukm_source_id(),
-              &appcache_proxied_receiver, nullptr /* header_client */,
-              nullptr /* bypass_redirect_checks */,
-              nullptr /* disable_secure_dns */, nullptr /* factory_override */);
+              &appcache_proxied_receiver, /*header_client=*/nullptr,
+              /*bypass_redirect_checks=*/nullptr,
+              /*disable_secure_dns=*/nullptr, /*factory_override=*/nullptr);
       if (use_proxy) {
         appcache_remote->Clone(std::move(appcache_proxied_receiver));
         appcache_remote.reset();
@@ -7627,11 +7626,11 @@ void RenderFrameHostImpl::CommitNavigation(
           browser_context, this, GetProcess()->GetID(),
           ContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
           subresource_loader_factories_config.origin(),
-          absl::nullopt /* navigation_id */,
+          /*navigation_id=*/absl::nullopt,
           subresource_loader_factories_config.ukm_source_id(),
-          &factory_receiver, nullptr /* header_client */,
-          nullptr /* bypass_redirect_checks */,
-          nullptr /* disable_secure_dns */, nullptr /* factory_override */);
+          &factory_receiver, /*header_client=*/nullptr,
+          /*bypass_redirect_checks=*/nullptr,
+          /*disable_secure_dns=*/nullptr, /*factory_override=*/nullptr);
       mojo::Remote<network::mojom::URLLoaderFactory> direct_factory_for_webui(
           CreateWebUIURLLoaderFactory(this, effective_scheme, {}));
       direct_factory_for_webui->Clone(std::move(factory_receiver));
@@ -8692,14 +8691,14 @@ void RenderFrameHostImpl::WillCreateURLLoaderFactory(
   GetContentClient()->browser()->WillCreateURLLoaderFactory(
       GetBrowserContext(), this, GetProcess()->GetID(),
       ContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
-      request_initiator, absl::nullopt /* navigation_id */, ukm_source_id,
+      request_initiator, /*navigation_id=*/absl::nullopt, ukm_source_id,
       factory_receiver, header_client, bypass_redirect_checks,
       disable_secure_dns, factory_override);
 
   // Keep DevTools proxy last, i.e. closest to the network.
   devtools_instrumentation::WillCreateURLLoaderFactory(
-      this, false /* is_navigation */, false /* is_download */,
-      factory_receiver, factory_override);
+      this, /*is_navigation=*/false, /*is_download=*/false, factory_receiver,
+      factory_override);
 }
 
 bool RenderFrameHostImpl::CanExecuteJavaScript() {
@@ -9236,7 +9235,7 @@ void RenderFrameHostImpl::BindRestrictedCookieManagerWithOrigin(
       ->CreateRestrictedCookieManager(
           network::mojom::RestrictedCookieManagerRole::SCRIPT, origin,
           isolation_info,
-          /* is_service_worker = */ false, GetProcess()->GetID(), routing_id(),
+          /*is_service_worker=*/false, GetProcess()->GetID(), routing_id(),
           std::move(receiver), CreateCookieAccessObserver());
 }
 
@@ -9526,7 +9525,7 @@ void RenderFrameHostImpl::BeforeUnloadTimeout() {
   if (render_view_host_->GetDelegate()->ShouldIgnoreUnresponsiveRenderer())
     return;
 
-  SimulateBeforeUnloadCompleted(true /* proceed */);
+  SimulateBeforeUnloadCompleted(/*proceed=*/true);
 }
 
 void RenderFrameHostImpl::SetLastCommittedSiteInfo(const GURL& url) {
@@ -10448,7 +10447,7 @@ void RenderFrameHostImpl::MaybeGenerateCrashReport(
 
   // Send the crash report to the Reporting API.
   GetProcess()->GetStoragePartition()->GetNetworkContext()->QueueReport(
-      "crash" /* type */, "default" /* group */, last_committed_url_,
+      /*type=*/"crash", /*group=*/"default", last_committed_url_,
       isolation_info_.network_isolation_key(), absl::nullopt, std::move(body));
 }
 
@@ -10625,7 +10624,7 @@ void RenderFrameHostImpl::DidCommitNavigation(
       unload_ack_is_for_navigation_ && !GetParent()) {
     base::TimeTicks approx_renderer_start_time = send_before_unload_start_time_;
     ProcessBeforeUnloadCompleted(
-        true /* proceed */, true /* treat_as_final_completion_callback */,
+        /*proceed=*/true, /*treat_as_final_completion_callback=*/true,
         approx_renderer_start_time, base::TimeTicks::Now());
   }
 
@@ -10673,7 +10672,7 @@ void RenderFrameHostImpl::DidCommitNavigation(
   }
 
   if (!DidCommitNavigationInternal(std::move(request), std::move(params),
-                                   nullptr /* same_document_params */)) {
+                                   /*same_document_params=*/nullptr)) {
     return;
   }
 
@@ -10722,7 +10721,7 @@ void RenderFrameHostImpl::SendBeforeUnload(
         if (!impl)
           return;
         impl->ProcessBeforeUnloadCompleted(
-            proceed, false /* treat_as_final_completion_callback */,
+            proceed, /*treat_as_final_completion_callback=*/false,
             renderer_before_unload_start_time, renderer_before_unload_end_time);
       },
       rfh);
@@ -11870,7 +11869,7 @@ void RenderFrameHostImpl::SetLifecycleState(LifecycleStateImpl state) {
           }));
   DCHECK_STATE_TRANSITION(allowed_transitions,
                           /*old_state=*/lifecycle_state_,
-                          /*new_state*/ state);
+                          /*new_state=*/state);
 #endif  // DCHECK_IS_ON()
 
   LifecycleStateImpl old_state = lifecycle_state_;
