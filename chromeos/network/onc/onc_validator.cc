@@ -681,13 +681,14 @@ bool Validator::ValidateNetworkConfiguration(base::DictionaryValue* result) {
 
     std::string type = GetStringFromDict(*result, ::onc::network_config::kType);
 
-    // Prohibit anything but WiFi, Ethernet and VPN for device-level policy
-    // (which corresponds to shared networks). See also
+    // Prohibit anything but WiFi, Ethernet, VPN and Cellular for device-level
+    // policy (which corresponds to shared networks). See also
     // http://crosbug.com/28741.
     if (onc_source_ == ::onc::ONC_SOURCE_DEVICE_POLICY && !type.empty() &&
         type != ::onc::network_type::kVPN &&
         type != ::onc::network_type::kWiFi &&
-        type != ::onc::network_type::kEthernet) {
+        type != ::onc::network_type::kEthernet &&
+        type != ::onc::network_type::kCellular) {
       std::ostringstream msg;
       msg << "Networks of type '" << type
           << "' are prohibited in ONC device policies.";
@@ -710,6 +711,9 @@ bool Validator::ValidateNetworkConfiguration(base::DictionaryValue* result) {
     } else if (type == ::onc::network_type::kTether) {
       all_required_exist &=
           RequireField(*result, ::onc::network_config::kTether);
+    } else if (type == ::onc::network_type::kCellular) {
+      all_required_exist &=
+          RequireField(*result, ::onc::network_config::kCellular);
     }
   }
 
