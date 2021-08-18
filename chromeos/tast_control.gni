@@ -15,12 +15,6 @@ tast_disabled_tests_from_chrome_all = [
   # crbug.com/1167243
   "login.Chrome",
 
-  # crbug.com/1154794
-  "policy.DefaultGeolocationSetting",
-
-  # crbug.com/1156006
-  "filemanager.DragDrop",
-
   # crbug.com/1171146
   "session.LogoutCleanup",
 
@@ -33,29 +27,8 @@ tast_disabled_tests_from_chrome_all = [
   # crbug.com/1185030
   "inputs.VirtualKeyboardJapaneseInputs.stable",
 
-  # crbug.com/1185031
-  "inputs.VirtualKeyboardInputFields.jp_us_stable",
-
-  # crbug.com/1192623
-  "policy.AllowDeletingBrowserHistory",
-
-  #crbug.com/1204550
-  "policy.DefaultNotificationsSetting",
-
-  # crbug.com/1212689
-  "policy.AllowWakeLocks",
-
-  # crbug.com/1186991
-  "launcher.SearchBuiltInApps",
-
   # crbug.com/1212788
   "apps.LaunchGallery.stable",
-
-  # b/192195619
-  "policy.AccessibilityPolicies.spoken_feedback",
-
-  # b/192195806
-  "policy.PrintingEnabled.print_with_hotkey",
 
   # crbug.com/1182538
   "policy.URLCheck.allowlist",
