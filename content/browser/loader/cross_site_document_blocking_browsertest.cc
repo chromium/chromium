@@ -894,10 +894,11 @@ IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest,
   interceptor.Verify(kShouldBeBlockedWithoutSniffing,
                      "no resource body needed for blocking verification");
 
-  // Verify that most response headers have been removed by CORB.
+  // Verify that all response headers have been removed by CORB.
   const std::string& headers =
       interceptor.response_head()->headers->raw_headers();
-  EXPECT_THAT(headers, HasSubstr("Access-Control-Allow-Origin: https://other"));
+  EXPECT_THAT(headers,
+              Not(HasSubstr("Access-Control-Allow-Origin: https://other")));
   EXPECT_THAT(headers, Not(HasSubstr("Cache-Control")));
   EXPECT_THAT(headers, Not(HasSubstr("Content-Language")));
   EXPECT_THAT(headers, Not(HasSubstr("Content-Length")));

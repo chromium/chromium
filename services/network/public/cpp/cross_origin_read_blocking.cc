@@ -182,18 +182,7 @@ SniffingResult MaybeSkipHtmlComment(StringPiece* data) {
   return CrossOriginReadBlocking::kYes;
 }
 
-// Removes headers that should be blocked in cross-origin case.
-//
-// Note that corbSanitizedResponse in https://fetch.spec.whatwg.org/#main-fetch
-// has an empty list of headers, but the code below doesn't remove all the
-// headers for improved user experience - for better error messages for CORS.
-// See also https://github.com/whatwg/fetch/pull/686#issuecomment-383711732 and
-// the http/tests/xmlhttprequest/origin-exact-matching/07.html layout test.
-//
-// Note that CORB doesn't block responses allowed through CORS - this means
-// that the list of allowed headers below doesn't have to consider header
-// names listed in the Access-Control-Expose-Headers header.
-void BlockResponseHeaders(
+void RemoveAllHttpResponseHeaders(
     const scoped_refptr<net::HttpResponseHeaders>& headers) {
   DCHECK(headers);
   std::unordered_set<std::string> names_of_headers_to_remove;
@@ -201,21 +190,8 @@ void BlockResponseHeaders(
   size_t it = 0;
   std::string name;
   std::string value;
-  while (headers->EnumerateHeaderLines(&it, &name, &value)) {
-    // Don't remove CORS headers - doing so would lead to incorrect error
-    // messages for CORS-blocked responses (e.g. Blink would say "[...] No
-    // 'Access-Control-Allow-Origin' header is present [...]" instead of saying
-    // something like "[...] Access-Control-Allow-Origin' header has a value
-    // 'http://www2.localhost:8000' that is not equal to the supplied origin
-    // [...]").
-    if (base::StartsWith(name, "Access-Control-",
-                         base::CompareCase::INSENSITIVE_ASCII)) {
-      continue;
-    }
-
-    // Remove all other headers.
+  while (headers->EnumerateHeaderLines(&it, &name, &value))
     names_of_headers_to_remove.insert(base::ToLowerASCII(name));
-  }
 
   headers->RemoveHeaders(names_of_headers_to_remove);
 }
@@ -560,7 +536,7 @@ void CrossOriginReadBlocking::SanitizeBlockedResponse(
   DCHECK(response);
   response->content_length = 0;
   if (response->headers)
-    BlockResponseHeaders(response->headers);
+    RemoveAllHttpResponseHeaders(response->headers);
 }
 
 // static
