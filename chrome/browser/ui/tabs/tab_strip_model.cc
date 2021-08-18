@@ -1091,7 +1091,8 @@ tab_groups::TabGroupId TabStripModel::AddToNewGroup(
     const std::vector<int>& indices) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
 
-  // Ensure that the indices are sorted and unique.
+  // Ensure that the indices are nonempty, sorted, and unique.
+  DCHECK_GT(indices.size(), 0u);
   DCHECK(base::ranges::is_sorted(indices));
   DCHECK(std::adjacent_find(indices.begin(), indices.end()) == indices.end());
 

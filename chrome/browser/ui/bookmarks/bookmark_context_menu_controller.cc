@@ -253,8 +253,12 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
                                initial_disposition);
 
       if (id == IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP) {
-        TabStripModel* model = browser_->tab_strip_model();
+        // This menu item should be disabled in IsCommandIdEnabled() if the
+        // folder or Bookmarks bar was empty.
         int count = chrome::OpenCount(parent_window_, selection_);
+        DCHECK_GT(count, 0);
+
+        TabStripModel* model = browser_->tab_strip_model();
         std::vector<int> tab_indicies(count);
 
         for (auto i = 0; i < count; i++)
@@ -499,8 +503,8 @@ bool BookmarkContextMenuController::IsCommandIdEnabled(int command_id) const {
              &&
              !profile_->IsOffTheRecord() &&
              incognito_avail != IncognitoModePrefs::DISABLED;
-
     case IDC_BOOKMARK_BAR_OPEN_ALL:
+    case IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP:
       return chrome::HasBookmarkURLs(selection_);
     case IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW:
       return chrome::HasBookmarkURLs(selection_) &&
