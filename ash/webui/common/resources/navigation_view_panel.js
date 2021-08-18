@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './page_toolbar.js';
+
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -43,7 +45,7 @@ export class NavigationViewPanelElement extends PolymerElement {
        */
       selectedItem: {
         type: Object,
-        observer: "selectedItemChanged_",
+        observer: 'selectedItemChanged_',
         value: null,
       },
 
@@ -54,7 +56,28 @@ export class NavigationViewPanelElement extends PolymerElement {
       menuItems_: {
         type: Array,
         value: () => [],
-      }
+      },
+
+      /**
+       * This title only appears if |showToolBar| is True. Is otherwise a
+       * no-opt if title is set and |showToolbar| is False.
+       */
+      title: {
+        type: String,
+        value: '',
+      },
+
+      /**
+       * Can only be set to True if specified from the parent element by adding
+       * show-tool-bar as an attribute to <navigation-view-panel>. If True,
+       * a toolbar will appear at the top of the navigation view panel with
+       * a 2 column view below it (sidebar + page). If False, navigation view
+       * panel will only be a 2 column view (sidebar + page).
+       */
+      showToolBar: {
+        type: Boolean,
+        value: false,
+      },
     }
   }
 

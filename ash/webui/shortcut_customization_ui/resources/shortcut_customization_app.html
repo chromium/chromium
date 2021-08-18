@@ -2,14 +2,11 @@
   :host {
     @apply --shortcut-customization-default-font;
   }
-
-  page-toolbar {
-    font-size: 0.7rem;
-  }
 </style>
 <!-- TODO(jimmyxgong): Localize this title -->
-<page-toolbar title="Shortcut Customization"></page-toolbar>
-<navigation-view-panel id="navigationPanel"></navigation-view-panel>
+<navigation-view-panel id="navigationPanel" title="Shortcut Customization"
+    show-tool-bar>
+</navigation-view-panel>
 
 <template is="dom-if" if="[[showEditDialog_]]" restamp>
   <accelerator-edit-dialog id="editDialog"

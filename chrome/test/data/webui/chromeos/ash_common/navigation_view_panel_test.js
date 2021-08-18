@@ -193,4 +193,19 @@ export function navigationViewPanelTestSuite() {
     assertFalse(!!viewElement.shadowRoot.querySelector(`#${id1}`));
     assertFalse(!!viewElement.shadowRoot.querySelector(`#${dummyPage2}`));
   });
+
+  test('toolBarVisible', async () => {
+    const dummyPage1 = 'dummy-page1';
+    const expectedTitle = 'title';
+    viewElement.title = expectedTitle;
+    viewElement.showToolBar = true;
+
+    await addNavigationSection('dummyPage1', dummyPage1);
+
+    assertFalse(viewElement.shadowRoot.querySelector(`#${dummyPage1}`).hidden);
+    // The title is only visible if the toolbar is stamped.
+    const pageToolbar = viewElement.shadowRoot.querySelector('page-toolbar');
+    const toolbarTitle = pageToolbar.$.title.textContent.trim();
+    assertEquals(expectedTitle, toolbarTitle);
+  });
 }

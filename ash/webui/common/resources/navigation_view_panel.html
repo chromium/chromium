@@ -5,26 +5,61 @@
     position: fixed;
   }
 
-  #container {
-    align-items: flex-start;
+  :host([show-tool-bar]) #container {
+    display: grid;
+    grid-template-areas: "head head" "sideNav main";
+    grid-template-columns: 1fr 4fr;
+    grid-template-rows: 1fr 9fr;
+    width: 100%;
+  }
+
+  :host(:not([show-tool-bar])) #container {
+    display: grid;
+    grid-template-areas: "sideNav main";
+    grid-template-columns: 1fr 4fr;
+  }
+
+  :host([show-tool-bar]) #topNav {
+    grid-area: head;
+    position: sticky;
+    top: 0;
+  }
+
+  #sideNav {
+    grid-area: sideNav;
     display: flex;
-    flex: 1;
-    position: relative;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+
+  #navigationBody {
+    grid-area: main;
   }
 
   .left-aligned {
-    height: 100%;
     position: sticky;
     top: 75px;
+  }
+
+  page-toolbar {
+    font-size: 0.7rem;
   }
 </style>
 
 <div id="container">
-  <div id="navigationSelector" class="left-aligned">
-    <navigation-selector menu-items={{menuItems_}}
-        selected-item={{selectedItem}}>
-    </navigation-selector>
-    <slot name="bottom-nav-content"></slot>
+  <template is="dom-if" if="[[showToolBar]]">
+    <div id="topNav">
+      <page-toolbar title="[[title]]"></page-toolbar>
+    </div>
+  </template>
+
+  <div id="sideNav">
+    <div id="navigationSelector" class="left-aligned">
+      <navigation-selector menu-items={{menuItems_}}
+          selected-item={{selectedItem}}>
+      </navigation-selector>
+      <slot name="bottom-nav-content"></slot>
+    </div>
   </div>
 
   <div id="navigationBody" class="right-aligned"></div>

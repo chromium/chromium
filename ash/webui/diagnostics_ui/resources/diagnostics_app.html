@@ -18,8 +18,8 @@
 </style>
 <div id="diagnosticsAppContainer">
   <div hidden$="[[!showNavPanel_]]">
-    <page-toolbar title="[[i18n('diagnosticsTitle')]]"></page-toolbar>
-    <navigation-view-panel id="navigationPanel">
+    <navigation-view-panel id="navigationPanel"
+        title="[[i18n('diagnosticsTitle')]]" show-tool-bar>
       <div slot="bottom-nav-content" class="session-log-container">
         <cr-button on-click="onSessionLogClick_" class="session-log-button"
             hidden="[[!isLoggedIn_]]">
