@@ -190,7 +190,7 @@ class AdsPageLoadMetricsObserver
 
   void UpdateAdFrameData(content::NavigationHandle* navigation_handle,
                          bool is_adframe,
-                         bool should_ignored_detected_ad);
+                         bool should_ignore_detected_ad);
 
   // Gets the number of bytes that we may have not attributed to ad
   // resources due to the resource being reported as an ad late.
