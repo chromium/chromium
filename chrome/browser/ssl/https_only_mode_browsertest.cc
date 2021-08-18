@@ -13,6 +13,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/prefs/pref_service.h"
+#include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -515,4 +516,69 @@ IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest, InterstitialLearnMoreLink) {
                 ->GetVisibleURL()
                 .query(),
             "p=first_mode");
+}
+
+// Tests that if the user bypasses the HTTPS-First Mode interstitial, and then
+// later the server fixes their HTTPS support and the user successfully connects
+// over HTTPS, the allowlist entry is cleared (so HFM will kick in again for
+// that site).
+IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest, BadHttpsFollowedByGoodHttps) {
+  GURL http_url = http_server()->GetURL("foo.com", "/close-socket");
+  GURL bad_https_url = https_server()->GetURL("foo.com", "/close-socket");
+  GURL good_https_url = https_server()->GetURL("foo.com", "/ssl/google.html");
+
+  ASSERT_EQ(http_url.host(), bad_https_url.host());
+  ASSERT_EQ(bad_https_url.host(), good_https_url.host());
+
+  auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
+  auto* state = static_cast<StatefulSSLHostStateDelegate*>(
+      profile->GetSSLHostStateDelegate());
+
+  // First check that main frame requests revoke the decision.
+
+  // Navigate to `http_url`, which will get upgraded to `bad_https_url`.
+  EXPECT_FALSE(content::NavigateToURL(tab, http_url));
+
+  ASSERT_TRUE(
+      chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(tab));
+  ProceedThroughInterstitial(tab);
+  EXPECT_TRUE(state->HasAllowException(http_url.host(), tab));
+
+  EXPECT_TRUE(content::NavigateToURL(tab, good_https_url));
+  EXPECT_FALSE(state->HasAllowException(http_url.host(), tab));
+
+  // Rarely, an open connection with the bad cert might be reused for the next
+  // navigation, which is supposed to show an interstitial. Close open
+  // connections to ensure a fresh connection (and certificate validation) for
+  // the next navigation. See https://crbug.com/1150592. A deeper fix for this
+  // issue would be to unify certificate bypass logic which is currently split
+  // between the net stack and content layer; see https://crbug.com/488043.
+  // See also: SSLUITest.BadCertFollowedByGoodCert.
+  state->RevokeUserAllowExceptionsHard(http_url.host());
+
+  // Now check that subresource requests revoke the decision.
+
+  // Navigate to `http_url`, which will get upgraded to `bad_https_url`.
+  EXPECT_FALSE(content::NavigateToURL(tab, http_url));
+
+  ASSERT_TRUE(
+      chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(tab));
+  ProceedThroughInterstitial(tab);
+  EXPECT_TRUE(state->HasAllowException(http_url.host(), tab));
+
+  // Load "logo.gif" as an image on the page.
+  GURL image = https_server()->GetURL("foo.com", "/ssl/google_files/logo.gif");
+  bool result = false;
+  EXPECT_TRUE(ExecuteScriptAndExtractBool(
+      tab,
+      std::string("var img = document.createElement('img');img.src ='") +
+          image.spec() +
+          "';img.onload=function() { "
+          "window.domAutomationController.send(true); };"
+          "document.body.appendChild(img);",
+      &result));
+  EXPECT_TRUE(result);
+
+  EXPECT_FALSE(state->HasAllowException(http_url.host(), tab));
 }

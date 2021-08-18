@@ -542,13 +542,16 @@ void PageInfoBubbleView::SetIdentityInfo(const IdentityInfo& identity_info) {
       ->SetEnabledColor(views::style::GetColor(
           *this, views::style::CONTEXT_DIALOG_TITLE, text_style));
 
+  // The "re-enable warnings" button is shown if the user has bypassed SSL
+  // error interstitials or HTTP warning interstitials (with HTTPS-First Mode
+  // enabled) on this site.
+  if (identity_info.show_ssl_decision_revoke_button) {
+    header_->AddResetDecisionsLabel(base::BindRepeating(
+        &PageInfoBubbleView::ResetDecisionsClicked, base::Unretained(this)));
+  }
+
   if (identity_info.certificate) {
     certificate_ = identity_info.certificate;
-
-    if (identity_info.show_ssl_decision_revoke_button) {
-      header_->AddResetDecisionsLabel(base::BindRepeating(
-          &PageInfoBubbleView::ResetDecisionsClicked, base::Unretained(this)));
-    }
 
     // Show information about the page's certificate.
     // The text of link to the Certificate Viewer varies depending on the

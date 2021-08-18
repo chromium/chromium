@@ -266,6 +266,13 @@ enum class ContentSettingsType : int32_t {
   // Whether to use the v8 optimized JIT for running JavaScript on the page.
   JAVASCRIPT_JIT,
 
+  // Content setting which stores user decisions to allow loading a site over
+  // HTTP. Entries are added by hostname when a user bypasses the HTTPS-First
+  // Mode interstitial warning when a site does not support HTTPS. Allowed hosts
+  // are exact hostname matches -- subdomains of a host on the allowlist must be
+  // separately allowlisted.
+  HTTP_ALLOWED,
+
   NUM_TYPES,
 };
 

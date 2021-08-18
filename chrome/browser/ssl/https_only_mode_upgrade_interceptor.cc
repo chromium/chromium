@@ -116,8 +116,8 @@ void HttpsOnlyModeUpgradeInterceptor::MaybeCreateLoader(
         static_cast<StatefulSSLHostStateDelegate*>(
             profile->GetSSLHostStateDelegate());
     // StatefulSSLHostStateDelegate can be null during tests.
-    if (state &&
-        state->IsHttpAllowedForHost(tentative_resource_request.url.host())) {
+    if (state && state->IsHttpAllowedForHost(
+                     tentative_resource_request.url.host(), web_contents)) {
       std::move(callback).Run({});
       return;
     }

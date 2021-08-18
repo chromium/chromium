@@ -73,9 +73,11 @@ class AwSSLHostStateDelegate : public content::SSLHostStateDelegate {
                                  int child_id,
                                  InsecureContentType content_type) override;
 
-  // HTTPS-Only Mode is not implemented in Android Webview.
-  void AllowHttpForHost(const std::string& host) override;
-  bool IsHttpAllowedForHost(const std::string& host) override;
+  // HTTPS-First Mode is not implemented in Android Webview.
+  void AllowHttpForHost(const std::string& host,
+                        content::WebContents* web_contents) override;
+  bool IsHttpAllowedForHost(const std::string& host,
+                            content::WebContents* web_contents) override;
 
   // Revokes all SSL certificate error allow exceptions made by the user for
   // |host|.
