@@ -12,6 +12,7 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/chromeos/scheduler_configuration_manager.h"
 #include "chromeos/dbus/resourced/resourced_client.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
@@ -80,11 +81,13 @@ constexpr base::TimeDelta kStopRestoreDelay = base::TimeDelta::FromMinutes(1);
 
 // The ArcAppLaunchHandler class restores ARC apps during the system startup
 // phase.
-class ArcAppLaunchHandler : public apps::AppRegistryCache::Observer,
-                            public chromeos::ResourcedClient::Observer,
-                            public wm::ActivationChangeObserver,
-                            public aura::EnvObserver,
-                            public aura::WindowObserver {
+class ArcAppLaunchHandler
+    : public apps::AppRegistryCache::Observer,
+      public chromeos::ResourcedClient::Observer,
+      public wm::ActivationChangeObserver,
+      public aura::EnvObserver,
+      public aura::WindowObserver,
+      public chromeos::SchedulerConfigurationManagerBase::Observer {
  public:
   struct WindowInfo {
     std::string app_id;
@@ -125,6 +128,9 @@ class ArcAppLaunchHandler : public apps::AppRegistryCache::Observer,
 
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
+
+  // chromeos::SchedulerConfigurationManagerBase::Observer:
+  void OnConfigurationSet(bool success, size_t num_cores_disabled) override;
 
  private:
   friend ArcAppLaunchHandlerArcAppBrowserTest;
@@ -195,6 +201,8 @@ class ArcAppLaunchHandler : public apps::AppRegistryCache::Observer,
   void RecordArcGhostWindowLaunch(bool is_arc_ghost_window);
   void RecordRestoreResult();
 
+  chromeos::SchedulerConfigurationManager* GetSchedulerConfigurationManager();
+
   FullRestoreAppLaunchHandler* handler_ = nullptr;
 
   // The app id list from the restore data. If the app has been added the
@@ -254,7 +262,7 @@ class ArcAppLaunchHandler : public apps::AppRegistryCache::Observer,
   chromeos::ResourcedClient::PressureLevel pressure_level_ =
       chromeos::ResourcedClient::PressureLevel::MODERATE;
 
-  bool should_apply_cpu_restirction_ = false;
+  absl::optional<bool> should_apply_cpu_restirction_;
 
   // Record if the restore process faced memory pressure or CPU usage limiting.
   bool was_memory_pressured_ = false;

@@ -11,8 +11,8 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/contains.h"
-#include "base/cpu.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/system/sys_info.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/apps/app_service/app_platform_metrics.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -23,6 +23,8 @@
 #include "chrome/browser/ash/full_restore/arc_window_utils.h"
 #include "chrome/browser/ash/full_restore/full_restore_app_launch_handler.h"
 #include "chrome/browser/ash/full_restore/full_restore_arc_task_handler.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/ash/shelf/arc_shelf_spinner_item_controller.h"
@@ -30,6 +32,7 @@
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
+#include "chromeos/system/scheduler_configuration_manager_base.h"
 #include "components/arc/arc_util.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
 #include "components/full_restore/app_launch_info.h"
@@ -93,11 +96,20 @@ ArcAppLaunchHandler::ArcAppLaunchHandler() {
       activation_client->AddObserver(this);
   }
 
-  // Get CPU cores.
-  base::CPU::TimeInState state;
-  if (base::CPU::GetTimeInState(state) &&
-      state.size() <= kCpuRestrictCoresCondition) {
-    should_apply_cpu_restirction_ = true;
+  auto* manager = GetSchedulerConfigurationManager();
+  if (manager) {
+    absl::optional<std::pair<bool, size_t>> scheduler_configuration =
+        manager->GetLastReply();
+    if (scheduler_configuration) {
+      // Logical CPU core number should consider system HyperThread status.
+      should_apply_cpu_restirction_ =
+          (base::SysInfo::NumberOfProcessors() -
+           scheduler_configuration->second) <= kCpuRestrictCoresCondition;
+    } else {
+      // If the configuration not exist, add observer to receive configuration
+      // update.
+      manager->AddObserver(this);
+    }
   }
 }
 
@@ -108,6 +120,10 @@ ArcAppLaunchHandler::~ArcAppLaunchHandler() {
     if (activation_client)
       activation_client->RemoveObserver(this);
   }
+
+  auto* manager = GetSchedulerConfigurationManager();
+  if (manager)
+    manager->RemoveObserver(this);
 }
 
 void ArcAppLaunchHandler::RestoreArcApps(
@@ -317,6 +333,17 @@ void ArcAppLaunchHandler::OnWindowDestroying(aura::Window* window) {
   RemoveWindow(*arc_app_id, window_id);
 }
 
+void ArcAppLaunchHandler::OnConfigurationSet(bool success,
+                                             size_t num_cores_disabled) {
+  // Logical CPU core number should consider system HyperThread status.
+  should_apply_cpu_restirction_ =
+      (base::SysInfo::NumberOfProcessors() - num_cores_disabled) <=
+      kCpuRestrictCoresCondition;
+  auto* manager = GetSchedulerConfigurationManager();
+  if (manager)
+    manager->RemoveObserver(this);
+}
+
 void ArcAppLaunchHandler::LoadRestoreData() {
   DCHECK(handler_);
   for (const auto& it : handler_->restore_data_->app_id_to_launch_list())
@@ -482,7 +509,9 @@ bool ArcAppLaunchHandler::IsUnderMemoryPressure() {
 }
 
 bool ArcAppLaunchHandler::IsUnderCPUUsageLimiting() {
-  if (should_apply_cpu_restirction_) {
+  // If the CPU HyperThread info has not updated from CrOS, enable cpu usage
+  // limiting as default behavior.
+  if (should_apply_cpu_restirction_.value_or(true)) {
     int cpu_usage_rate = GetCpuUsageRate();
     if (cpu_usage_rate >= kCpuUsageThreshold) {
       LOG(WARNING) << "CPU usage rate is too high to restore Arc apps: "
@@ -699,6 +728,10 @@ void ArcAppLaunchHandler::StopRestore() {
     stop_restore_timer_->Stop();
   stop_restore_timer_.reset();
 
+  auto* manager = GetSchedulerConfigurationManager();
+  if (manager)
+    manager->RemoveObserver(this);
+
   StopCpuUsageCount();
 
   RecordRestoreResult();
@@ -802,6 +835,13 @@ void ArcAppLaunchHandler::RecordRestoreResult() {
                                 window_handler_->ghost_window_pop_count());
   }
 #endif
+}
+
+chromeos::SchedulerConfigurationManager*
+ArcAppLaunchHandler::GetSchedulerConfigurationManager() {
+  if (!g_browser_process || !g_browser_process->platform_part())
+    return nullptr;
+  return g_browser_process->platform_part()->scheduler_configuration_manager();
 }
 
 }  // namespace full_restore
