@@ -14,7 +14,6 @@
 #include "base/base64.h"
 #include "base/feature_list.h"
 #include "base/ios/ios_util.h"
-#include "base/macros.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/strings/strcat.h"
@@ -81,6 +80,7 @@ using base::TimeTicks;
 using ::testing::ElementsAre;
 using ::testing::HasSubstr;
 using ::testing::Matcher;
+using ::testing::NiceMock;
 using ::testing::UnorderedPointwise;
 
 namespace autofill {
@@ -408,7 +408,7 @@ void AutofillMetricsTest::SetUp() {
   personal_data_->SetSyncServiceForTest(&sync_service_);
 
   autocomplete_history_manager_ =
-      std::make_unique<MockAutocompleteHistoryManager>();
+      std::make_unique<NiceMock<MockAutocompleteHistoryManager>>();
 
   payments::TestPaymentsClient* payments_client =
       new payments::TestPaymentsClient(autofill_driver_->GetURLLoaderFactory(),

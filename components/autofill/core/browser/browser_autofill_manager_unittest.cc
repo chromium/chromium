@@ -94,6 +94,7 @@ using testing::DoAll;
 using testing::Each;
 using testing::ElementsAre;
 using testing::HasSubstr;
+using testing::NiceMock;
 using testing::Not;
 using testing::Return;
 using testing::SaveArg;
@@ -356,7 +357,7 @@ class BrowserAutofillManagerTest : public testing::Test {
     personal_data_.SetPrefService(autofill_client_.GetPrefs());
 
     autocomplete_history_manager_ =
-        std::make_unique<MockAutocompleteHistoryManager>();
+        std::make_unique<NiceMock<MockAutocompleteHistoryManager>>();
     autocomplete_history_manager_->Init(
         /*profile_database=*/database_,
         /*pref_service=*/autofill_client_.GetPrefs(),
@@ -673,7 +674,7 @@ class BrowserAutofillManagerTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  MockAutofillClient autofill_client_;
+  NiceMock<MockAutofillClient> autofill_client_;
   std::unique_ptr<MockAutofillDriver> autofill_driver_;
   std::unique_ptr<TestBrowserAutofillManager> browser_autofill_manager_;
   TestAutofillExternalDelegate* external_delegate_;
