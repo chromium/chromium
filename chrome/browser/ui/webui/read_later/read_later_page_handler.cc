@@ -382,17 +382,17 @@ void ReadLaterPageHandler::UpdateCurrentPageActionButton() {
   if (!url.has_value())
     return;
 
-  if (!reading_list_model_->IsUrlSupported(url.value())) {
-    current_page_action_button_state_ =
-        read_later::mojom::CurrentPageActionButtonState::kDisabled;
-  } else if (reading_list_model_->GetEntryByURL(url.value()) &&
-             !reading_list_model_->GetEntryByURL(url.value())->IsRead()) {
-    current_page_action_button_state_ =
-        read_later::mojom::CurrentPageActionButtonState::kRemove;
+  read_later::mojom::CurrentPageActionButtonState new_state;
+  if (!reading_list_model_->IsUrlSupported(url.value()) ||
+      (reading_list_model_->GetEntryByURL(url.value()) &&
+       !reading_list_model_->GetEntryByURL(url.value())->IsRead())) {
+    new_state = read_later::mojom::CurrentPageActionButtonState::kDisabled;
   } else {
-    current_page_action_button_state_ =
-        read_later::mojom::CurrentPageActionButtonState::kAdd;
+    new_state = read_later::mojom::CurrentPageActionButtonState::kAdd;
   }
-  page_->CurrentPageActionButtonStateChanged(current_page_action_button_state_,
-                                             url.value());
+  if (current_page_action_button_state_ != new_state) {
+    current_page_action_button_state_ = new_state;
+    page_->CurrentPageActionButtonStateChanged(
+        current_page_action_button_state_);
+  }
 }
