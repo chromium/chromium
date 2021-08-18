@@ -4,6 +4,9 @@
 #include "components/safe_browsing/content/browser/password_protection/password_protection_service.h"
 
 #include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
@@ -63,6 +66,7 @@ using testing::AnyNumber;
 using testing::ElementsAre;
 using testing::IsEmpty;
 using testing::Mock;
+using testing::NiceMock;
 using testing::Return;
 using testing::StrictMock;
 
@@ -85,13 +89,13 @@ using PasswordReuseEvent = LoginReputationClientRequest::PasswordReuseEvent;
 class MockSafeBrowsingTokenFetcher : public SafeBrowsingTokenFetcher {
  public:
   MockSafeBrowsingTokenFetcher() = default;
+  MockSafeBrowsingTokenFetcher(const MockSafeBrowsingTokenFetcher&) = delete;
+  MockSafeBrowsingTokenFetcher& operator=(const MockSafeBrowsingTokenFetcher&) =
+      delete;
   ~MockSafeBrowsingTokenFetcher() override = default;
 
   MOCK_METHOD1(Start, void(Callback));
   MOCK_METHOD1(OnInvalidAccessToken, void(const std::string&));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockSafeBrowsingTokenFetcher);
 };
 
 class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
@@ -99,23 +103,31 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
   MockSafeBrowsingDatabaseManager()
       : TestSafeBrowsingDatabaseManager(content::GetUIThreadTaskRunner({}),
                                         content::GetIOThreadTaskRunner({})) {}
+  MockSafeBrowsingDatabaseManager(const MockSafeBrowsingDatabaseManager&) =
+      delete;
+  MockSafeBrowsingDatabaseManager& operator=(
+      const MockSafeBrowsingDatabaseManager&) = delete;
 
   MOCK_METHOD2(CheckCsdAllowlistUrl,
                AsyncMatch(const GURL&, SafeBrowsingDatabaseManager::Client*));
 
- protected:
-  ~MockSafeBrowsingDatabaseManager() override {}
+  // Override to silence not implemented warnings.
+  bool CanCheckUrl(const GURL& url) const override {
+    return (url != GURL("about:blank"));
+  }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockSafeBrowsingDatabaseManager);
+ protected:
+  ~MockSafeBrowsingDatabaseManager() override = default;
 };
 
 // PhishingDetector is not supported on Android.
 #if !defined(OS_ANDROID)
 class TestPhishingDetector : public mojom::PhishingDetector {
  public:
-  TestPhishingDetector() : should_timeout_(false) {}
-  ~TestPhishingDetector() override {}
+  TestPhishingDetector() = default;
+  TestPhishingDetector(const TestPhishingDetector&) = delete;
+  TestPhishingDetector& operator=(const TestPhishingDetector&) = delete;
+  ~TestPhishingDetector() override = default;
 
   void Bind(mojo::ScopedMessagePipeHandle handle) {
     receiver_.Bind(
@@ -148,11 +160,9 @@ class TestPhishingDetector : public mojom::PhishingDetector {
   void set_should_timeout(bool timeout) { should_timeout_ = timeout; }
 
  private:
-  bool should_timeout_;
+  bool should_timeout_ = false;
   std::vector<StartPhishingDetectionCallback> deferred_callbacks_;
   mojo::Receiver<mojom::PhishingDetector> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestPhishingDetector);
 };
 #endif
 
@@ -180,6 +190,9 @@ class TestPasswordProtectionService : public MockPasswordProtectionService {
                                                   content_setting_map.get())) {
     cache_manager_->StopCleanUpTimerForTesting();
   }
+  TestPasswordProtectionService(const TestPasswordProtectionService&) = delete;
+  TestPasswordProtectionService& operator=(
+      const TestPasswordProtectionService&) = delete;
 
   void RequestFinished(
       PasswordProtectionRequest* request,
@@ -196,7 +209,7 @@ class TestPasswordProtectionService : public MockPasswordProtectionService {
 
   void WaitForResponse() { run_loop_.Run(); }
 
-  ~TestPasswordProtectionService() override {}
+  ~TestPasswordProtectionService() override = default;
 
   size_t GetPendingRequestsCount() { return pending_requests_.size(); }
 
@@ -264,8 +277,6 @@ class TestPasswordProtectionService : public MockPasswordProtectionService {
   // The TestPasswordProtectionService manages its own cache, rather than using
   // the global one.
   std::unique_ptr<VerdictCacheManager> cache_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestPasswordProtectionService);
 };
 
 }  // namespace
@@ -283,7 +294,7 @@ class PasswordProtectionServiceTest : public ::testing::Test {
         /*store_last_modified=*/false, /*restore_session=*/false);
     database_manager_ = new MockSafeBrowsingDatabaseManager();
     password_protection_service_ =
-        std::make_unique<TestPasswordProtectionService>(
+        std::make_unique<NiceMock<TestPasswordProtectionService>>(
             database_manager_,
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_),
@@ -378,7 +389,7 @@ class PasswordProtectionServiceBaseTest
     identity_test_env_.MakePrimaryAccountAvailable("user@gmail.com",
                                                    signin::ConsentLevel::kSync);
     password_protection_service_ =
-        std::make_unique<TestPasswordProtectionService>(
+        std::make_unique<NiceMock<TestPasswordProtectionService>>(
             database_manager_,
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_),
