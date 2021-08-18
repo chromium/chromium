@@ -67,7 +67,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="HoldingSpace.Animation.PodResize.Smoothness" units="%"
-    expires_after="2021-09-24">
+    expires_after="2022-01-30">
   <owner>dmblack@google.com</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -109,7 +109,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="HoldingSpace.Item.Action.{action}" enum="HoldingSpaceItemType"
-    expires_after="2021-09-24">
+    expires_after="2022-01-30">
   <owner>dmblack@google.com</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -120,7 +120,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="HoldingSpace.Item.Action.{action}.Extension"
-    enum="HoldingSpaceExtension" expires_after="2021-09-24">
+    enum="HoldingSpaceExtension" expires_after="2022-01-30">
   <owner>dmblack@google.com</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -131,7 +131,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="HoldingSpace.Item.Count.{type}" units="items"
-    expires_after="2021-09-24">
+    expires_after="2022-01-30">
   <owner>dmblack@google.com</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -142,7 +142,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="HoldingSpace.Item.FailureToLaunch" enum="HoldingSpaceItemType"
-    expires_after="2021-09-24">
+    expires_after="2022-01-30">
   <owner>dmblack@google.com</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -152,7 +152,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="HoldingSpace.Item.FailureToLaunch.Extension"
-    enum="HoldingSpaceExtension" expires_after="2021-09-24">
+    enum="HoldingSpaceExtension" expires_after="2022-01-30">
   <owner>dmblack@google.com</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -172,7 +172,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="HoldingSpace.TimeFromFirstAvailabilityToFirstAdd" units="ms"
-    expires_after="2021-09-24">
+    expires_after="2022-01-30">
   <owner>dmblack@google.com</owner>
   <owner>gzadina@google.com</owner>
   <summary>
