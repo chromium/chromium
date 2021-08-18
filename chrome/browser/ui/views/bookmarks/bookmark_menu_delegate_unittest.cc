@@ -17,6 +17,8 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
+#include "ui/views/controls/menu/menu_delegate.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/submenu_view.h"
@@ -24,6 +26,10 @@
 using base::ASCIIToUTF16;
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
+
+namespace {
+const char kBasePath[] = "file:///c:/tmp/";
+}  // namespace
 
 class BookmarkMenuDelegateTest : public BrowserWithTestWindowTest {
  public:
@@ -114,8 +120,6 @@ class BookmarkMenuDelegateTest : public BrowserWithTestWindowTest {
     }
   }
 
-  std::string base_path() const { return "file:///c:/tmp/"; }
-
   // Creates the following structure:
   // bookmark bar node
   //   a
@@ -130,7 +134,7 @@ class BookmarkMenuDelegateTest : public BrowserWithTestWindowTest {
   //     of1a
   void AddTestData() {
     const BookmarkNode* bb_node = model_->bookmark_bar_node();
-    std::string test_base = base_path();
+    std::string test_base(kBasePath);
     model_->AddURL(bb_node, 0, u"a", GURL(test_base + "a"));
     const BookmarkNode* f1 = model_->AddFolder(bb_node, 1, u"F1");
     model_->AddURL(f1, 0, u"f1a", GURL(test_base + "f1a"));
@@ -244,4 +248,66 @@ TEST_F(BookmarkMenuDelegateTest, CloseOnRemove) {
                                 BOOKMARK_LAUNCH_LOCATION_NONE);
   // Any nodes on the bookmark bar should close on remove.
   EXPECT_TRUE(ShouldCloseOnRemove(model_->other_node()->children()[0].get()));
+}
+
+TEST_F(BookmarkMenuDelegateTest, DropCallback) {
+  views::MenuDelegate test_delegate;
+  const BookmarkNode* node = model_->bookmark_bar_node()->children()[1].get();
+  NewDelegate();
+  bookmark_menu_delegate_->Init(&test_delegate, nullptr, node, 0,
+                                BookmarkMenuDelegate::HIDE_PERMANENT_FOLDERS,
+                                BOOKMARK_LAUNCH_LOCATION_NONE);
+  LoadAllMenus();
+
+  views::MenuItemView* root_item = bookmark_menu_delegate_->menu();
+  gfx::Point menu_loc;
+  views::View::ConvertPointToScreen(root_item, &menu_loc);
+  ui::OSExchangeData drop_data;
+  drop_data.SetURL(GURL("http://www.chromium.org/"), std::u16string(u"z"));
+  ui::DropTargetEvent target_event(drop_data, gfx::PointF(menu_loc),
+                                   gfx::PointF(menu_loc),
+                                   ui::DragDropTypes::DRAG_COPY);
+  auto* f1_item = root_item->GetSubmenu()->GetMenuItemAt(1);
+  EXPECT_TRUE(bookmark_menu_delegate_->CanDrop(f1_item, drop_data));
+  EXPECT_EQ(model_->bookmark_bar_node()->children()[1]->children().size(), 2u);
+
+  auto drop_cb = bookmark_menu_delegate_->GetDropCallback(
+      f1_item, views::MenuDelegate::DropPosition::kAfter, target_event);
+  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+  std::move(drop_cb).Run(target_event, output_drag_op);
+
+  EXPECT_EQ(output_drag_op, ui::mojom::DragOperation::kCopy);
+  EXPECT_EQ(model_->bookmark_bar_node()->children()[1]->children().size(), 3u);
+}
+
+TEST_F(BookmarkMenuDelegateTest, DropCallback_ModelChanged) {
+  views::MenuDelegate test_delegate;
+  const BookmarkNode* node = model_->bookmark_bar_node()->children()[1].get();
+  NewDelegate();
+  bookmark_menu_delegate_->Init(&test_delegate, nullptr, node, 0,
+                                BookmarkMenuDelegate::HIDE_PERMANENT_FOLDERS,
+                                BOOKMARK_LAUNCH_LOCATION_NONE);
+  LoadAllMenus();
+
+  views::MenuItemView* root_item = bookmark_menu_delegate_->menu();
+  gfx::Point menu_loc;
+  views::View::ConvertPointToScreen(root_item, &menu_loc);
+  ui::OSExchangeData drop_data;
+  drop_data.SetURL(GURL("http://www.chromium.org/"), std::u16string(u"z"));
+  ui::DropTargetEvent target_event(drop_data, gfx::PointF(menu_loc),
+                                   gfx::PointF(menu_loc),
+                                   ui::DragDropTypes::DRAG_COPY);
+  auto* f1_item = root_item->GetSubmenu()->GetMenuItemAt(1);
+  EXPECT_TRUE(bookmark_menu_delegate_->CanDrop(f1_item, drop_data));
+  EXPECT_EQ(model_->bookmark_bar_node()->children()[1]->children().size(), 2u);
+
+  auto drop_cb = bookmark_menu_delegate_->GetDropCallback(
+      f1_item, views::MenuDelegate::DropPosition::kAfter, target_event);
+  model_->AddURL(model_->bookmark_bar_node(), 2, u"z1",
+                 GURL(std::string(kBasePath) + "z1"));
+  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+  std::move(drop_cb).Run(target_event, output_drag_op);
+
+  EXPECT_EQ(output_drag_op, ui::mojom::DragOperation::kNone);
+  EXPECT_EQ(model_->bookmark_bar_node()->children()[1]->children().size(), 2u);
 }

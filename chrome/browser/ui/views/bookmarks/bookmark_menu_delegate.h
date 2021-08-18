@@ -18,6 +18,7 @@
 #include "components/bookmarks/browser/bookmark_node_data.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/views/controls/menu/menu_delegate.h"
+#include "ui/views/view.h"
 
 class Browser;
 class Profile;
@@ -116,6 +117,10 @@ class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
       const ui::DropTargetEvent& event,
       views::MenuDelegate::DropPosition* position);
   ui::mojom::DragOperation OnPerformDrop(
+      views::MenuItemView* menu,
+      views::MenuDelegate::DropPosition position,
+      const ui::DropTargetEvent& event);
+  views::View::DropCallback GetDropCallback(
       views::MenuItemView* menu,
       views::MenuDelegate::DropPosition position,
       const ui::DropTargetEvent& event);

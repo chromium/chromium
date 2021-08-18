@@ -95,6 +95,10 @@ class BookmarkMenuController : public bookmarks::BaseBookmarkModelObserver,
       views::MenuItemView* menu,
       DropPosition position,
       const ui::DropTargetEvent& event) override;
+  views::View::DropCallback GetDropCallback(
+      views::MenuItemView* menu,
+      DropPosition position,
+      const ui::DropTargetEvent& event) override;
   bool ShowContextMenu(views::MenuItemView* source,
                        int id,
                        const gfx::Point& p,

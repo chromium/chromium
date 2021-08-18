@@ -12,6 +12,7 @@
 #include <set>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/i18n/number_formatting.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
@@ -921,10 +922,20 @@ ui::mojom::DragOperation AppMenu::OnPerformDrop(
     MenuItemView* menu,
     DropPosition position,
     const ui::DropTargetEvent& event) {
-  if (!IsBookmarkCommand(menu->GetCommand()))
-    return ui::mojom::DragOperation::kNone;
+  auto drop_cb = GetDropCallback(menu, position, event);
+  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+  std::move(drop_cb).Run(event, output_drag_op);
+  return output_drag_op;
+}
 
-  return bookmark_menu_delegate_->OnPerformDrop(menu, position, event);
+views::View::DropCallback AppMenu::GetDropCallback(
+    views::MenuItemView* menu,
+    DropPosition position,
+    const ui::DropTargetEvent& event) {
+  if (!IsBookmarkCommand(menu->GetCommand()))
+    return base::DoNothing();
+
+  return bookmark_menu_delegate_->GetDropCallback(menu, position, event);
 }
 
 bool AppMenu::ShowContextMenu(MenuItemView* source,
