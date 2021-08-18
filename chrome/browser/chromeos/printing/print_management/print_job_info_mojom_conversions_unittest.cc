@@ -37,6 +37,7 @@ constexpr uint32_t kPrintedPageNumber = 1;
 proto::PrintJobInfo CreatePrintJobInfoProto() {
   // Create Printer proto.
   proto::Printer printer;
+  printer.set_id(kPrinterId);
   printer.set_name(kName);
   printer.set_uri(kUri);
 
@@ -82,6 +83,7 @@ TEST(PrintJobInfoMojomConversionsTest, PrintJobProtoToMojom) {
   EXPECT_EQ(kTitle16, print_job_mojo->title);
   EXPECT_EQ(base::Time::FromJsTime(kJobCreationTime),
             print_job_mojo->creation_time);
+  EXPECT_EQ(kPrinterId, print_job_mojo->printer_id);
   EXPECT_EQ(kName16, print_job_mojo->printer_name);
   EXPECT_EQ(kUri, print_job_mojo->printer_uri.spec());
   EXPECT_EQ(kPagesNumber, print_job_mojo->number_of_pages);
@@ -99,6 +101,7 @@ TEST(PrintJobInfoMojomConversionsTest, CupsPrintJobToMojom) {
   EXPECT_EQ(cups_print_job->GetUniqueId(), print_job_mojo->id);
   EXPECT_EQ(kTitle16, print_job_mojo->title);
   EXPECT_EQ(cups_print_job->creation_time(), print_job_mojo->creation_time);
+  EXPECT_EQ(kPrinterId, print_job_mojo->printer_id);
   EXPECT_EQ(kName16, print_job_mojo->printer_name);
   EXPECT_EQ(kUri, print_job_mojo->printer_uri.spec());
   EXPECT_EQ(kPagesNumber, print_job_mojo->number_of_pages);

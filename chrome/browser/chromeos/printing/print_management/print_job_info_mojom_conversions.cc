@@ -136,6 +136,7 @@ mojom::PrintJobInfoPtr PrintJobProtoToMojom(
   print_job_mojom->creation_time =
       base::Time::FromJsTime(print_job_info_proto.creation_time());
   print_job_mojom->number_of_pages = print_job_info_proto.number_of_pages();
+  print_job_mojom->printer_id = print_job_info_proto.printer().id();
   print_job_mojom->printer_name =
       base::UTF8ToUTF16(print_job_info_proto.printer().name());
   print_job_mojom->printer_uri = GURL(print_job_info_proto.printer().uri());
@@ -158,6 +159,7 @@ mojom::PrintJobInfoPtr CupsPrintJobToMojom(const CupsPrintJob& job) {
   print_job_mojom->title = base::UTF8ToUTF16(job.document_title());
   print_job_mojom->creation_time = job.creation_time();
   print_job_mojom->number_of_pages = job.total_page_number();
+  print_job_mojom->printer_id = job.printer().id();
   print_job_mojom->printer_name =
       base::UTF8ToUTF16(job.printer().display_name());
   print_job_mojom->printer_uri = GURL(job.printer().uri().GetNormalized());

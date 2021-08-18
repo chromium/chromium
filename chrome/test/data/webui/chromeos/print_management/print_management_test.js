@@ -95,6 +95,7 @@ function createJobEntry(
     'id': id,
     'title': strToMojoString16(title),
     'creationTime': {internalValue: date},
+    'printerId': 'printerId',
     'printerName': strToMojoString16('printerName'),
     'printerUri': {url: '192.168.1.1'},
     'numberOfPages': 4,
@@ -148,6 +149,7 @@ function verifyPrintJobs(expected, actual) {
     assertEquals(
         Number(expected[i].creationTime.internalValue),
         Number(actualJobInfo.creationTime.internalValue));
+    assertEquals(expected[i].printerId, actualJobInfo.printerId);
     assertEquals(
         decodeString16(expected[i].printerName),
         decodeString16(actualJobInfo.printerName));

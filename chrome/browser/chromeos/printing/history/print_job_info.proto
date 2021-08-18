@@ -70,6 +70,9 @@ message Printer {
 
   // The source of the printer.
   PrinterSource source = 3;
+
+  // Printer ID.
+  string id = 4;
 }
 
 // Print job information. The ordering of these enums must match that of

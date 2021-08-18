@@ -135,6 +135,7 @@ int64_t TimeToMillisecondsPastUnixEpoch(const base::Time& time) {
 
 proto::Printer PrinterToProto(const chromeos::Printer& printer) {
   proto::Printer printer_proto;
+  printer_proto.set_id(printer.id());
   printer_proto.set_name(printer.display_name());
   printer_proto.set_uri(printer.uri().GetNormalized());
   printer_proto.set_source(PrinterSourceToProto(printer.source()));
