@@ -39,51 +39,36 @@ class LayoutObject;
 
 struct SameSizeAsInlineBox : DisplayItemClient {
   ~SameSizeAsInlineBox() override = default;
-  void* a[3];
-  WeakPersistent<void*> members[1];
+  Member<void*> members[4];
   LayoutPoint b;
   LayoutUnit c;
   uint32_t bitfields;
-#if DCHECK_IS_ON()
-  bool f;
-#endif
 };
 
 ASSERT_SIZE(InlineBox, SameSizeAsInlineBox);
 
-#if DCHECK_IS_ON()
-InlineBox::~InlineBox() {
-  if (!has_bad_parent_ && parent_)
-    parent_->SetHasBadChildList();
+void InlineBox::Trace(Visitor* visitor) const {
+  visitor->Trace(next_);
+  visitor->Trace(prev_);
+  visitor->Trace(parent_);
+  visitor->Trace(line_layout_item_);
 }
-#endif
 
 DISABLE_CFI_PERF
 void InlineBox::Destroy() {
   // We do not need to issue invalidations if the page is being destroyed
   // since these objects will never be repainted.
-  if (!line_layout_item_.DocumentBeingDestroyed()) {
+  if (!GetLineLayoutItem().DocumentBeingDestroyed()) {
     SetLineLayoutItemShouldDoFullPaintInvalidationIfNeeded();
 
     // TODO(crbug.com/619630): Make this fast.
-    line_layout_item_.SlowSetPaintingLayerNeedsRepaint();
+    GetLineLayoutItem().SlowSetPaintingLayerNeedsRepaint();
   }
-
-  delete this;
 }
 
 void InlineBox::Remove(MarkLineBoxes mark_line_boxes) {
   if (Parent())
     Parent()->RemoveChild(this, mark_line_boxes);
-}
-
-void* InlineBox::operator new(size_t sz) {
-  return WTF::Partitions::LayoutPartition()->Alloc(
-      sz, WTF_HEAP_PROFILER_TYPE_NAME(InlineBox));
-}
-
-void InlineBox::operator delete(void* ptr) {
-  WTF::Partitions::LayoutPartition()->Free(ptr);
 }
 
 const char* InlineBox::BoxName() const {
@@ -368,7 +353,7 @@ void InlineBox::SetLineLayoutItemShouldDoFullPaintInvalidationIfNeeded() {
   // For RootInlineBox, we only need to invalidate if it's using the first line
   // style. Otherwise it paints nothing so we don't need to invalidate it.
   if (!IsRootInlineBox() || IsFirstLineStyle())
-    line_layout_item_.SetShouldDoFullPaintInvalidation();
+    GetLineLayoutItem().SetShouldDoFullPaintInvalidation();
 }
 
 bool CanUseInlineBox(const LayoutObject& node) {

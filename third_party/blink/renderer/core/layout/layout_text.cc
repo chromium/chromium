@@ -92,8 +92,9 @@ struct SameSizeAsLayoutText : public LayoutObject {
   DOMNodeId node_id;
   float widths[4];
   String text;
-  void* pointers[2];
+  Member<void*> members[2];
   PhysicalOffset previous_starting_point;
+  wtf_size_t first_fragment_item_index_;
 };
 
 ASSERT_SIZE(LayoutText, SameSizeAsLayoutText);
@@ -185,6 +186,11 @@ LayoutText::LayoutText(Node* node, scoped_refptr<StringImpl> str)
   // removed.
   GetSecureTextTimers();
   GetSelectionDisplayItemClientMap();
+}
+
+void LayoutText::Trace(Visitor* visitor) const {
+  visitor->Trace(text_boxes_);
+  LayoutObject::Trace(visitor);
 }
 
 LayoutText* LayoutText::CreateEmptyAnonymous(
@@ -2254,7 +2260,8 @@ void LayoutText::DirtyLineBoxes() {
 
 InlineTextBox* LayoutText::CreateTextBox(int start, uint16_t length) {
   NOT_DESTROYED();
-  return new InlineTextBox(LineLayoutItem(this), start, length);
+  return MakeGarbageCollected<InlineTextBox>(LineLayoutItem(this), start,
+                                             length);
 }
 
 InlineTextBox* LayoutText::CreateInlineTextBox(int start, uint16_t length) {

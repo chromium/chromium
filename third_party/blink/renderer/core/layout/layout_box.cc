@@ -133,8 +133,10 @@ struct SameSizeAsLayoutBox : public LayoutBoxModelObject {
   LayoutRectOutsets margin_box_outsets;
   MinMaxSizes intrinsic_logical_widths;
   LayoutUnit intrinsic_logical_widths_initial_block_size;
-  void* pointers[4];
+  void* pointers[3];
   Vector<scoped_refptr<const NGLayoutResult>, 1> layout_results;
+  Member<void*> inline_box_wrapper;
+  wtf_size_t first_fragment_item_index_;
   Member<void*> rare_data;
 };
 
@@ -442,6 +444,7 @@ LayoutBox::LayoutBox(ContainerNode* node)
 }
 
 void LayoutBox::Trace(Visitor* visitor) const {
+  visitor->Trace(inline_box_wrapper_);
   visitor->Trace(rare_data_);
   LayoutBoxModelObject::Trace(visitor);
 }
@@ -3186,7 +3189,7 @@ PhysicalOffset LayoutBox::OffsetFromContainerInternal(
 
 InlineBox* LayoutBox::CreateInlineBox() {
   NOT_DESTROYED();
-  return new InlineBox(LineLayoutItem(this));
+  return MakeGarbageCollected<InlineBox>(LineLayoutItem(this));
 }
 
 void LayoutBox::DirtyLineBoxes(bool full_layout) {

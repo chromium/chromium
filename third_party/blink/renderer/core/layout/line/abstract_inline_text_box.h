@@ -132,12 +132,7 @@ class CORE_EXPORT LegacyAbstractInlineTextBox final
   bool IsLineBreak() const final;
   bool NeedsTrailingSpace() const final;
 
-  InlineTextBox* inline_text_box_;
-
-  typedef HashMap<InlineTextBox*, scoped_refptr<AbstractInlineTextBox>>
-      InlineToLegacyAbstractInlineTextBoxHashMap;
-  static InlineToLegacyAbstractInlineTextBoxHashMap*
-      g_abstract_inline_text_box_map_;
+  Persistent<InlineTextBox> inline_text_box_;
 };
 
 }  // namespace blink

@@ -83,7 +83,7 @@ class SVGTextLayoutEngine {
   unsigned logical_character_offset_;
   unsigned logical_metrics_list_offset_;
 
-  Vector<SVGInlineTextBox*> line_layout_boxes_;
+  HeapVector<Member<SVGInlineTextBox>> line_layout_boxes_;
 
   SVGTextFragment current_text_fragment_;
   SVGInlineTextMetricsIterator visual_metrics_iterator_;

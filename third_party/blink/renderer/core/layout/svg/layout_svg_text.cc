@@ -328,7 +328,8 @@ void LayoutSVGText::RecalcVisualOverflow() {
 
 RootInlineBox* LayoutSVGText::CreateRootInlineBox() {
   NOT_DESTROYED();
-  RootInlineBox* box = new SVGRootInlineBox(LineLayoutItem(this));
+  RootInlineBox* box =
+      MakeGarbageCollected<SVGRootInlineBox>(LineLayoutItem(this));
   box->SetHasVirtualLogicalHeight();
   return box;
 }

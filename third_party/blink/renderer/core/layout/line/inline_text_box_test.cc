@@ -17,7 +17,8 @@ class TestInlineTextBox : public InlineTextBox {
   TestInlineTextBox(LineLayoutItem item) : InlineTextBox(item, 0, 0) {
     SetHasVirtualLogicalHeight();
   }
-  ~TestInlineTextBox() override {
+  void Destroy() override {
+    InlineTextBox::Destroy();
     GetLineLayoutItem().GetLayoutObject()->Destroy();
   }
 
@@ -25,7 +26,7 @@ class TestInlineTextBox : public InlineTextBox {
     Text* node = document.createTextNode(string);
     LayoutText* text = MakeGarbageCollected<LayoutText>(node, string.Impl());
     text->SetStyle(document.GetStyleResolver().CreateComputedStyle());
-    return new TestInlineTextBox(LineLayoutItem(text));
+    return MakeGarbageCollected<TestInlineTextBox>(LineLayoutItem(text));
   }
 
   LayoutUnit VirtualLogicalHeight() const override { return logical_height_; }

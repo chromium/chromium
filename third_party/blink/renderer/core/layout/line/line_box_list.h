@@ -32,6 +32,7 @@
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/api/hit_test_action.h"
+#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -52,6 +53,7 @@ class InlineBoxList {
 
  public:
   InlineBoxList() : first_(nullptr), last_(nullptr) {}
+  void Trace(Visitor*) const;
 
 #if DCHECK_IS_ON()
   // Owners should check this on destructor. This class does not implement
@@ -134,8 +136,8 @@ class InlineBoxList {
   // For block flows, each box represents the root inline box for a line in the
   // paragraph.
   // For inline flows, each box represents a portion of that inline.
-  InlineBoxType* first_ = nullptr;
-  InlineBoxType* last_ = nullptr;
+  Member<InlineBoxType> first_;
+  Member<InlineBoxType> last_;
 };
 
 extern template class CORE_EXTERN_TEMPLATE_EXPORT InlineBoxList<InlineFlowBox>;

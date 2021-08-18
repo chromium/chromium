@@ -472,7 +472,7 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
 
   FloatingObject* LastFloatFromPreviousLine() const {
     NOT_DESTROYED();
-    return ContainsFloats() ? floating_objects_->Set().back().get() : nullptr;
+    return ContainsFloats() ? floating_objects_->Set().back().Get() : nullptr;
   }
 
   void SetShouldDoFullPaintInvalidationForFirstLine();
@@ -871,7 +871,7 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
 
   const FloatingObjects* GetFloatingObjects() const {
     NOT_DESTROYED();
-    return floating_objects_.get();
+    return floating_objects_;
   }
 
   static void UpdateAncestorShouldPaintFloatingObject(
@@ -1005,7 +1005,7 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
 
  protected:
   Member<LayoutBlockFlowRareData> rare_data_;
-  std::unique_ptr<FloatingObjects> floating_objects_;
+  Member<FloatingObjects> floating_objects_;
 
   friend class MarginInfo;
   friend class LineWidth;  // needs to know FloatingObject
