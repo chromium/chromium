@@ -50,51 +50,86 @@ suite('OsPairedBluetoothListItemTest', function() {
         'os-settings:battery-' + batteryIconRange);
   }
 
-  test('Device name, type and battery percentage', async function() {
-    // Device with no nickname, battery info and unknown device type.
-    const publicName = 'BeatsX';
-    const device = createDefaultBluetoothDevice(
-        /*id=*/ '123456789', /*publicName=*/ publicName, /*connected=*/ true);
-    pairedBluetoothListItem.device = device;
-    await flushAsync();
+  test(
+      'Device name, type, battery percentage and a11y labels',
+      async function() {
+        // Device with no nickname, battery info and unknown device type.
+        const publicName = 'BeatsX';
+        const device = createDefaultBluetoothDevice(
+            /*id=*/ '123456789', /*publicName=*/ publicName,
+            /*connected=*/ true);
+        pairedBluetoothListItem.device = device;
 
-    const getDeviceName = () => {
-      return pairedBluetoothListItem.$.deviceName;
-    };
-    const getBatteryPercentage = () => {
-      return pairedBluetoothListItem.shadowRoot.querySelector(
-          '#batteryPercentage');
-    };
-    const getDeviceTypeIcon = () => {
-      return pairedBluetoothListItem.$.deviceTypeIcon;
-    };
-    assertTrue(!!getDeviceName());
-    assertEquals(getDeviceName().innerText, publicName);
-    assertFalse(!!getBatteryPercentage());
-    assertTrue(!!getDeviceTypeIcon());
-    assertEquals(getDeviceTypeIcon().icon, 'os-settings:bluetooth');
+        const itemIndex = 3;
+        const listSize = 15;
+        pairedBluetoothListItem.itemIndex = itemIndex;
+        pairedBluetoothListItem.listSize = listSize;
+        await flushAsync();
 
-    // Set device nickname, type and battery info.
-    const nickname = 'nickname';
-    device.nickname = nickname;
-    device.deviceProperties.deviceType =
-        chromeos.bluetoothConfig.mojom.DeviceType.kComputer;
-    const batteryPercentage = 60;
-    device.deviceProperties.batteryInfo = {
-      defaultProperties: {batteryPercentage: batteryPercentage}
-    };
-    pairedBluetoothListItem.device = {...device};
-    await flushAsync();
+        const getDeviceName = () => {
+          return pairedBluetoothListItem.$.deviceName;
+        };
+        const getBatteryPercentage = () => {
+          return pairedBluetoothListItem.shadowRoot.querySelector(
+              '#batteryPercentage');
+        };
+        const getDeviceTypeIcon = () => {
+          return pairedBluetoothListItem.$.deviceTypeIcon;
+        };
+        const getItemA11yLabel = () => {
+          return pairedBluetoothListItem.shadowRoot.querySelector('.list-item')
+              .ariaLabel;
+        };
+        const getSubpageButtonA11yLabel = () => {
+          return pairedBluetoothListItem.$.subpageButton.ariaLabel;
+        };
+        assertTrue(!!getDeviceName());
+        assertEquals(getDeviceName().innerText, publicName);
+        assertFalse(!!getBatteryPercentage());
+        assertTrue(!!getDeviceTypeIcon());
+        assertEquals(getDeviceTypeIcon().icon, 'os-settings:bluetooth');
+        assertEquals(
+            getItemA11yLabel(),
+            pairedBluetoothListItem.i18n(
+                'bluetoothPairedDeviceItemA11yLabelTypeUnknown', itemIndex + 1,
+                listSize, publicName));
+        assertEquals(
+            getSubpageButtonA11yLabel(),
+            pairedBluetoothListItem.i18n(
+                'bluetoothPairedDeviceItemSubpageButtonA11yLabel', publicName));
 
-    assertTrue(!!getDeviceName());
-    assertEquals(getDeviceName().innerText, nickname);
-    assertTrue(!!getBatteryPercentage());
-    assertEquals(
-        getBatteryPercentage().innerText.trim(),
-        pairedBluetoothListItem.i18n(
-            'bluetoothPairedDeviceItemBatteryPercentage', batteryPercentage));
-    assertEquals(getDeviceTypeIcon().icon, 'os-settings:bluetooth-computer');
-  });
+        // Set device nickname, type and battery info.
+        const nickname = 'nickname';
+        device.nickname = nickname;
+        device.deviceProperties.deviceType =
+            chromeos.bluetoothConfig.mojom.DeviceType.kComputer;
+        const batteryPercentage = 60;
+        device.deviceProperties.batteryInfo = {
+          defaultProperties: {batteryPercentage: batteryPercentage}
+        };
+        pairedBluetoothListItem.device = {...device};
+        await flushAsync();
+
+        assertTrue(!!getDeviceName());
+        assertEquals(getDeviceName().innerText, nickname);
+        assertTrue(!!getBatteryPercentage());
+        assertEquals(
+            getBatteryPercentage().innerText.trim(),
+            pairedBluetoothListItem.i18n(
+                'bluetoothPairedDeviceItemBatteryPercentage',
+                batteryPercentage));
+        assertEquals(
+            getDeviceTypeIcon().icon, 'os-settings:bluetooth-computer');
+        assertEquals(
+            getItemA11yLabel(),
+            pairedBluetoothListItem.i18n(
+                'bluetoothPairedDeviceItemA11yLabelTypeComputerWithBatteryInfo',
+                itemIndex + 1, listSize, nickname, batteryPercentage));
+        assertEquals(
+            getSubpageButtonA11yLabel(),
+            pairedBluetoothListItem.i18n(
+                'bluetoothPairedDeviceItemSubpageButtonA11yLabel', nickname));
+      });
 
   test('Battery icon and color', async function() {
     const device = createDefaultBluetoothDevice(

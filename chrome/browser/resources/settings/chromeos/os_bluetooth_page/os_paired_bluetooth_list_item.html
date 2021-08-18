@@ -21,12 +21,12 @@
   }
 </style>
 <div focus-row-container>
-  <!-- TODO(crbug.com/1010321): Add a11y label. -->
   <div class="list-item"
       focus-row-control
       focus-type="rowWrapper"
       role="button"
-      selectable>
+      selectable
+      aria-label="[[getAriaLabel_(device, itemIndex, listSize)]]">
     <iron-icon id="deviceTypeIcon"
         icon="os-settings:[[getDeviceTypeIcon_(device)]]">
     </iron-icon>
@@ -45,9 +45,11 @@
     </div>
     <div>
       <!-- TODO(crbug.com/1010321): Add click listener. -->
-      <cr-icon-button class="subpage-arrow"
+      <cr-icon-button id="subpageButton"
+          class="subpage-arrow"
           focus-row-control
-          focus-type="subpageButton">
+          focus-type="subpageButton"
+          aria-label="[[getSubpageButtonA11yLabel_(device)]]">
       </cr-icon-button>
     </div>
   </div>

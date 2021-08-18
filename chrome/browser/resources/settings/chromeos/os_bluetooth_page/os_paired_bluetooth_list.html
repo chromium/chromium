@@ -11,10 +11,12 @@
     no-bottom-scroll-border>
   <iron-list items="[[devices]]" scroll-target="container" preserve-focus>
     <template>
-      <!-- TODO(crbug.com/1010321): Fix focus behavior. -->
       <os-settings-paired-bluetooth-list-item
           device="[[item]]"
-          tabindex="[[tabIndex]]">
+          tabindex$="[[tabIndex]]"
+          iron-list-tab-index="[[tabIndex]]"
+          item-index="[[index]]"
+          list-size="[[devices.length]]">
       </os-settings-paired-bluetooth-list-item>
     </template>
   </iron-list>
