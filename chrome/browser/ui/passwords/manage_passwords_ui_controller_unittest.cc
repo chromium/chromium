@@ -1285,16 +1285,16 @@ TEST_F(ManagePasswordsUIControllerTest,
   controller()->OnBubbleShown();
 
   // Automatic form submission detected.
+  submitted_form().username_value = u"new_username";
+  submitted_form().password_value = u"12345";
   test_form_manager = CreateFormManagerWithBestMatches(&matches);
-  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility()).Times(0);
+  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
   controller()->OnPasswordSubmitted(std::move(test_form_manager));
 
-  // It should have no effect as the bubble was already open.
+  // It should update the bubble already open.
   ExpectIconAndControllerStateIs(password_manager::ui::PENDING_PASSWORD_STATE);
-  EXPECT_EQ(u"manual_username",
-            controller()->GetPendingPassword().username_value);
-  EXPECT_EQ(u"manual_pass1234",
-            controller()->GetPendingPassword().password_value);
+  EXPECT_EQ(u"new_username", controller()->GetPendingPassword().username_value);
+  EXPECT_EQ(u"12345", controller()->GetPendingPassword().password_value);
 }
 
 TEST_F(ManagePasswordsUIControllerTest,
