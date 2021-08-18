@@ -358,6 +358,8 @@ void ShareRanking::ComputeRanking(
 
   if (fix_more)
     computed_display_ranking[logical_fold] = kMoreTarget;
+  else
+    computed_display_ranking.push_back(kMoreTarget);
 
   *persisted_ranking = new_ranking;
   *display_ranking = computed_display_ranking;
@@ -373,6 +375,8 @@ void ShareRanking::ComputeRanking(
                                       logical_fold));
     DCHECK(AtMostOneSlotChanged(old_ranking, *persisted_ranking, logical_fold));
     DCHECK(NoEmptySlots(*display_ranking, logical_fold));
+
+    DCHECK(RankingContains(*display_ranking, kMoreTarget));
 
     DCHECK_GE(persisted_ranking->size(), fold);
   }
