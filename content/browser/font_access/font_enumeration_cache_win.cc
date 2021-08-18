@@ -99,12 +99,11 @@ ExtractNamesFromFamily(Microsoft::WRL::ComPtr<IDWriteFontCollection> collection,
       std::vector<blink::FontEnumerationTable_FontMetadata>();
 
   Microsoft::WRL::ComPtr<IDWriteFontFamily> family;
-  Microsoft::WRL::ComPtr<IDWriteLocalizedStrings> family_names;
-
   HRESULT hr = collection->GetFontFamily(family_index, &family);
   if (FAILED(hr))
     return family_result;
 
+  Microsoft::WRL::ComPtr<IDWriteLocalizedStrings> family_names;
   hr = family->GetFamilyNames(&family_names);
   if (FAILED(hr))
     return family_result;
@@ -114,12 +113,11 @@ ExtractNamesFromFamily(Microsoft::WRL::ComPtr<IDWriteFontCollection> collection,
   if (!native_family_name)
     return family_result;
 
-  UINT32 font_count = family->GetFontCount();
-  for (UINT32 font_index = 0; font_index < font_count; ++font_index) {
+  uint32_t font_count = family->GetFontCount();
+  for (uint32_t font_index = 0; font_index < font_count; ++font_index) {
     BOOL exists = false;
 
     Microsoft::WRL::ComPtr<IDWriteFont> font;
-
     {
       base::ScopedBlockingCall scoped_blocking_call(
           FROM_HERE, base::BlockingType::MAY_BLOCK);
@@ -133,10 +131,6 @@ ExtractNamesFromFamily(Microsoft::WRL::ComPtr<IDWriteFontCollection> collection,
     if (font->GetSimulations() != DWRITE_FONT_SIMULATIONS_NONE)
       continue;
 
-    Microsoft::WRL::ComPtr<IDWriteLocalizedStrings> postscript_name;
-    Microsoft::WRL::ComPtr<IDWriteLocalizedStrings> full_name;
-    Microsoft::WRL::ComPtr<IDWriteLocalizedStrings> style_name;
-
     // DWRITE_INFORMATIONAL_STRING_POSTSCRIPT_NAME and
     // DWRITE_INFORMATIONAL_STRING_FULL_NAME are only supported on Windows 7
     // with KB2670838 (https://support.microsoft.com/en-us/kb/2670838)
@@ -145,6 +139,7 @@ ExtractNamesFromFamily(Microsoft::WRL::ComPtr<IDWriteFontCollection> collection,
     // this might not be worth the effort.
 
     // Extracting the postscript name.
+    Microsoft::WRL::ComPtr<IDWriteLocalizedStrings> postscript_name;
     {
       base::ScopedBlockingCall scoped_blocking_call(
           FROM_HERE, base::BlockingType::MAY_BLOCK);
@@ -165,6 +160,7 @@ ExtractNamesFromFamily(Microsoft::WRL::ComPtr<IDWriteFontCollection> collection,
     }
 
     // Extracting the full name.
+    Microsoft::WRL::ComPtr<IDWriteLocalizedStrings> full_name;
     {
       base::ScopedBlockingCall scoped_blocking_call(
           FROM_HERE, base::BlockingType::MAY_BLOCK);
@@ -185,6 +181,7 @@ ExtractNamesFromFamily(Microsoft::WRL::ComPtr<IDWriteFontCollection> collection,
       localized_full_name = native_postscript_name;
 
     // Extracting style name.
+    Microsoft::WRL::ComPtr<IDWriteLocalizedStrings> style_name;
     {
       base::ScopedBlockingCall scoped_blocking_call(
           FROM_HERE, base::BlockingType::MAY_BLOCK);
@@ -310,7 +307,7 @@ void FontEnumerationCacheWin::PrepareFontEnumerationCache() {
   std::string locale =
       locale_override_.value_or(base::i18n::GetConfiguredLocale());
 
-  for (UINT32 family_index = 0; family_index < outstanding_family_results_;
+  for (uint32_t family_index = 0; family_index < outstanding_family_results_;
        ++family_index) {
     // Specify base::ThreadPolicy::MUST_USE_FOREGROUND because a priority
     // inversion was observed https://crbug.com/960263 for the enumeration
