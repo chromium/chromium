@@ -774,6 +774,7 @@ android_library("common_java") {
   deps = [
     "//base:base_java",
     "//cc/base:cc_base_java",
+    "//components/autofill/android:autofill_features_java",
     "//components/metrics:metrics_java",
     "//components/power_scheduler:power_scheduler_java",
     "//components/viz:viz_java",

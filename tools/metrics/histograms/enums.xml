@@ -48449,6 +48449,8 @@ from previous Chrome versions.
   <int value="-832561975" label="enable-picture-in-picture"/>
   <int value="-831066457" label="IncognitoBrandConsistencyForDesktop:disabled"/>
   <int value="-825942229" label="tab-management-experiment-type-elderberry"/>
+  <int value="-825747847"
+      label="AutofillEnableSupportForMoreStructureInAddresses:enabled"/>
   <int value="-824199802" label="ContextualSearchSimplifiedServer:enabled"/>
   <int value="-823394398" label="TargetEmbeddingLookalikes:enabled"/>
   <int value="-823165021" label="MaterialDesignUserMenu:enabled"/>
@@ -48618,6 +48620,8 @@ from previous Chrome versions.
   <int value="-695687521" label="double-buffer-compositing"/>
   <int value="-694622753" label="VizHitTest:disabled"/>
   <int value="-694187898" label="MashOopViz:disabled"/>
+  <int value="-693881124"
+      label="AutofillEnableSupportForMoreStructureInNames:disabled"/>
   <int value="-688003116" label="FocusFollowsCursor:enabled"/>
   <int value="-687302378" label="BluetoothFixA2dpPacketSize:enabled"/>
   <int value="-686788480" label="OsSettingsAppNotificationsPage:enabled"/>
@@ -50757,6 +50761,8 @@ from previous Chrome versions.
   <int value="1070449228" label="ContextualSuggestionsCarousel:enabled"/>
   <int value="1070840417" label="ChromeColors:enabled"/>
   <int value="1071520357" label="WebAuthenticationTouchId:enabled"/>
+  <int value="1071962531"
+      label="AutofillEnableSupportForMoreStructureInAddresses:disabled"/>
   <int value="1072010558" label="NTPModernLayout:disabled"/>
   <int value="1072517479" label="ImprovedCookieControls:enabled"/>
   <int value="1074359194" label="UseSuggestionsEvenIfFew:enabled"/>
@@ -51562,6 +51568,8 @@ from previous Chrome versions.
   <int value="1707873180"
       label="OmniboxOnFocusSuggestionsContextualWebAllowSRP:disabled"/>
   <int value="1708118086" label="TextFragmentAnchor:disabled"/>
+  <int value="1710630380"
+      label="AutofillEnableSupportForMoreStructureInNames:enabled"/>
   <int value="1711286384" label="ContextMenuCopyImage:disabled"/>
   <int value="1712622545" label="Memories:disabled"/>
   <int value="1712697097" label="QuickAnswersV2:disabled"/>

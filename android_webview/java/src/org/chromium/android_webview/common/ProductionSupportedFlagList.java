@@ -7,6 +7,7 @@ package org.chromium.android_webview.common;
 import org.chromium.base.BaseSwitches;
 import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.cc.base.CcSwitches;
+import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.metrics.MetricsSwitches;
 import org.chromium.components.power_scheduler.PowerSchedulerFeatures;
 import org.chromium.components.viz.common.VizFeatures;
@@ -141,6 +142,13 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(BlinkFeatures.GMS_CORE_EMOJI,
                     "Enables retrieval of the emoji font through GMS Core "
                             + "improving emoji glyph coverage."),
+            Flag.baseFeature(AutofillFeatures.AUTOFILL_ENABLE_SUPPORT_FOR_MORE_STRUCTURE_IN_NAMES,
+                    "Enables support for names with a rich structure including multiple last "
+                            + "names."),
+            Flag.baseFeature(
+                    AutofillFeatures.AUTOFILL_ENABLE_SUPPORT_FOR_MORE_STRUCTURE_IN_ADDRESSES,
+                    "Enables support for address with a rich structure including separate street "
+                            + "names and house numberse."),
             Flag.baseFeature(
                     NetworkServiceFeatures.TRUST_TOKENS, "Enables the prototype Trust Tokens API."),
             Flag.baseFeature(AwFeatures.WEBVIEW_APPS_PACKAGE_NAMES_ALLOWLIST,
