@@ -13,7 +13,7 @@
       }
   `);
 
-  TestRunner.addSniffer(SDK.RuntimeModel.prototype, '_executionContextCreated', contextCreated);
+  TestRunner.addSniffer(SDK.RuntimeModel.prototype, 'executionContextCreated', contextCreated);
   TestRunner.evaluateInPage('startWorker()');
 
   function contextCreated() {

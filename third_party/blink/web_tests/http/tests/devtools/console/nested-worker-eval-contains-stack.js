@@ -9,14 +9,14 @@
       }
   `);
 
-  TestRunner.addSniffer(SDK.RuntimeModel.prototype, '_executionContextCreated', contextCreated);
+  TestRunner.addSniffer(SDK.RuntimeModel.prototype, 'executionContextCreated', contextCreated);
   TestRunner.evaluateInPage('startWorker()');
 
   var contexts_still_loading = 2;
   function contextCreated() {
     contexts_still_loading--;
     if (contexts_still_loading > 0) {
-      TestRunner.addSniffer(SDK.RuntimeModel.prototype, '_executionContextCreated', contextCreated);
+      TestRunner.addSniffer(SDK.RuntimeModel.prototype, 'executionContextCreated', contextCreated);
       return;
     }
 
