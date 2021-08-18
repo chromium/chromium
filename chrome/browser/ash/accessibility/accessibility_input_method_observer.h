@@ -10,6 +10,7 @@
 
 namespace ui {
 class InputMethod;
+class InputMethodObserver;
 }
 
 namespace ash {

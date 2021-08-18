@@ -23,6 +23,7 @@
     autocorrectionOccured,
     blur,
     busyChanged,
+    caretBoundsChanged,
     checkedStateChanged,
     checkedStateDescriptionChanged,
     childrenChanged,
@@ -909,6 +910,9 @@ enum SortDirectionType {
 
     // The level of a heading or tree item.
     long? hierarchicalLevel;
+
+    // The current caret bounds in screen coordinates.
+    Rect? caretBounds;
 
     // The start and end index of each word in an inline text box.
     long[]? wordStarts;

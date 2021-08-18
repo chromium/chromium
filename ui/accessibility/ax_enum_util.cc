@@ -1046,6 +1046,8 @@ const char* ToString(ax::mojom::IntListAttribute int_list_attribute) {
       return "characterOffsets";
     case ax::mojom::IntListAttribute::kCachedLineStarts:
       return "cachedLineStarts";
+    case ax::mojom::IntListAttribute::kCaretBounds:
+      return "caretBounds";
     case ax::mojom::IntListAttribute::kWordStarts:
       return "wordStarts";
     case ax::mojom::IntListAttribute::kWordEnds:

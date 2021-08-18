@@ -810,7 +810,8 @@ enum BoolAttribute {
   kTouchPassthrough = 20,
 };
 
-// Next value: 16
+// Next version: 2
+// Next value: 17
 [Extensible, Stable, Uuid="6d1f823f-28a9-4263-bc4a-69fb19a4ef46"]
 enum IntListAttribute {
   [Default]kNone = 0,
@@ -859,6 +860,9 @@ enum IntListAttribute {
   // items. Developer can expose those actions as custom actions. Currently
   // custom actions are used only in Android window.
   kCustomActionIds = 15,
+
+  // Caret bounds in screen coordinates - [left, top, width, height].
+  [MinVersion=1] kCaretBounds = 16,
 };
 
 // Next value: 2

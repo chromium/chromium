@@ -1264,6 +1264,13 @@ chrome.automation.AutomationNode.prototype.htmlTag;
 chrome.automation.AutomationNode.prototype.hierarchicalLevel;
 
 /**
+ * An array of ints of the current caret bounds in screen coordinates. (x, y, width, height).
+ * @type {(!Array<number>|undefined)}
+ * @see https://developer.chrome.com/extensions/automation#type-caretBounds
+ */
+chrome.automation.AutomationNode.prototype.caretBounds;
+
+/**
  * The start and end index of each word in an inline text box.
  * @type {(!Array<number>|undefined)}
  * @see https://developer.chrome.com/extensions/automation#type-wordStarts

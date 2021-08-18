@@ -656,6 +656,19 @@ AutomationNodeImpl.prototype = {
     return GetChecked(this.treeID, this.id);
   },
 
+  get caretBounds() {
+    const data = GetIntListAttribute(this.treeID, this.id, 'caretBounds');
+    if (!data) {
+      return;
+    }
+
+    if (data.length !== 4) {
+      throw 'Internal encoding error for caret bounds.';
+    }
+
+    return {left: data[0], top: data[1], width: data[2], height: data[3]};
+  },
+
   get location() {
     return GetLocation(this.treeID, this.id);
   },
@@ -2049,6 +2062,7 @@ utils.expose(AutomationNode, AutomationNodeImpl, {
       [
         'ariaCurrentState',
         'bold',
+        'caretBounds',
         'checked',
         'children',
         'customActions',

@@ -688,6 +688,9 @@ void AXEventGenerator::OnIntListAttributeChanged(
         AddEvent(node, Event::TEXT_ATTRIBUTE_CHANGED);
       }
       break;
+    case ax::mojom::IntListAttribute::kCaretBounds:
+      AddEvent(node, Event::CARET_BOUNDS_CHANGED);
+      break;
     default:
       AddEvent(node, Event::OTHER_ATTRIBUTE_CHANGED);
       break;
@@ -1177,6 +1180,8 @@ const char* ToString(AXEventGenerator::Event event) {
       return "autoCompleteChanged";
     case AXEventGenerator::Event::BUSY_CHANGED:
       return "busyChanged";
+    case AXEventGenerator::Event::CARET_BOUNDS_CHANGED:
+      return "caretBoundsChanged";
     case AXEventGenerator::Event::CHECKED_STATE_CHANGED:
       return "checkedStateChanged";
     case AXEventGenerator::Event::CHECKED_STATE_DESCRIPTION_CHANGED:

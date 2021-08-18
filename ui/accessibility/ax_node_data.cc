@@ -200,6 +200,7 @@ bool IsNodeIdIntListAttribute(ax::mojom::IntListAttribute attr) {
     case ax::mojom::IntListAttribute::kMarkerEnds:
     case ax::mojom::IntListAttribute::kCharacterOffsets:
     case ax::mojom::IntListAttribute::kCachedLineStarts:
+    case ax::mojom::IntListAttribute::kCaretBounds:
     case ax::mojom::IntListAttribute::kWordStarts:
     case ax::mojom::IntListAttribute::kWordEnds:
     case ax::mojom::IntListAttribute::kCustomActionIds:
@@ -1730,6 +1731,9 @@ std::string AXNodeData::ToString() const {
         break;
       case ax::mojom::IntListAttribute::kCachedLineStarts:
         result += " cached_line_start_offsets=" + IntVectorToString(values);
+        break;
+      case ax::mojom::IntListAttribute::kCaretBounds:
+        result += " caret_bounds=" + IntVectorToString(values);
         break;
       case ax::mojom::IntListAttribute::kWordStarts:
         result += " word_starts=" + IntVectorToString(values);

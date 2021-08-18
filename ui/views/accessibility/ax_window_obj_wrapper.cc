@@ -18,6 +18,7 @@
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/aura/window_tree_host_platform.h"
+#include "ui/base/ime/text_input_client.h"
 #include "ui/compositor/layer.h"
 #include "ui/platform_window/platform_window.h"
 #include "ui/views/accessibility/ax_aura_obj_cache.h"
@@ -89,6 +90,14 @@ AXWindowObjWrapper::AXWindowObjWrapper(AXAuraObjCache* aura_obj_cache,
 
   if (is_root_window_)
     aura_obj_cache_->OnRootWindowObjCreated(window);
+
+  // This is a top level root window.
+  if (window->IsRootWindow() && !window->parent()) {
+    // On desktop aura there is one WindowTreeHost per top-level window.
+    aura::WindowTreeHost* window_tree_host = window->GetHost();
+    if (window_tree_host)
+      ime_observation_.Observe(window_tree_host->GetInputMethod());
+  }
 }
 
 AXWindowObjWrapper::~AXWindowObjWrapper() = default;
@@ -159,6 +168,18 @@ void AXWindowObjWrapper::Serialize(ui::AXNodeData* out_node_data) {
     }
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (window_->IsRootWindow() && !window_->parent() && window_->GetHost()) {
+    ui::TextInputClient* client =
+        window_->GetHost()->GetInputMethod()->GetTextInputClient();
+    // Only set caret bounds if input caret is in an editable node.
+    if (client && client->GetTextInputType() != ui::TEXT_INPUT_TYPE_NONE) {
+      gfx::Rect caret_bounds_in_screen = client->GetCaretBounds();
+      out_node_data->AddIntListAttribute(
+          ax::mojom::IntListAttribute::kCaretBounds,
+          {caret_bounds_in_screen.x(), caret_bounds_in_screen.y(),
+           caret_bounds_in_screen.width(), caret_bounds_in_screen.height()});
+    }
+  }
 
   out_node_data->id = GetUniqueId();
   ax::mojom::Role role = window_->GetProperty(ui::kAXRoleOverride);
@@ -216,6 +237,11 @@ ui::AXNodeID AXWindowObjWrapper::GetUniqueId() const {
 
 std::string AXWindowObjWrapper::ToString() const {
   return GetWindowName(window_);
+}
+
+void AXWindowObjWrapper::OnCaretBoundsChanged(
+    const ui::TextInputClient* client) {
+  FireEvent(ax::mojom::Event::kTreeChanged);
 }
 
 void AXWindowObjWrapper::OnWindowDestroyed(aura::Window* window) {
