@@ -34,7 +34,4 @@ sudo apt-get -y install lib32z1 lighttpd xvfb x11-utils
 # See https://developer.android.com/sdk/installing/index.html?pkg=tools
 sudo apt-get -y install libncurses5:i386 libstdc++6:i386 zlib1g:i386
 
-# Required for apk-patch-size-estimator
-sudo apt-get -y install bsdiff
-
 echo "install-build-deps-android.sh complete."

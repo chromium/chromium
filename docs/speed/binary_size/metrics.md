@@ -83,12 +83,11 @@ For Googlers, more information available at [go/chrome-apk-size](https://goto.go
  * Deflated apk size:
    * [Telemetry Graph](https://chromeperf.appspot.com/report?sid=c7dcbe09dee57f6dab19f9307acd97a044a150710357ad25bf217ce004b3b4bb)
    * Only relevant for non-patch updates of Chrome (new installs, or manual app updates)
- * Patch Size:
-   * Uses [https://github.com/googlesamples/apk-patch-size-estimator](https://github.com/googlesamples/apk-patch-size-estimator)
-   * No longer runs:
-     * Is too slow to be running on the Perf Builder
-     * Was found to be fairly unactionable
-     * Can be run manually: `build/android/resource_sizes.py --estimate-patch-size out/Release/apks/ChromePublic.apk`
+ * Patch Size (no longer available):
+   * Is too slow to be running on the Perf Builder
+   * Was found to be fairly unactionable
+   * Used to use [https://github.com/googlesamples/apk-patch-size-estimator](https://github.com/googlesamples/apk-patch-size-estimator)
+   * Functionality now exists in `//third_party/android_sdk/public/cmdline-tools/latest/bin/apkanalyzer download-size`
 
 ### Uncompressed Metrics
 
