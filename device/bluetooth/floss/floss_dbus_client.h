@@ -8,48 +8,50 @@
 #include <string>
 
 #include "base/callback.h"
+#include "device/bluetooth/bluetooth_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace dbus {
 class Bus;
+class Response;
 class ErrorResponse;
 }  // namespace dbus
 
 namespace floss {
 
 // TODO(b/189499077) - Expose via floss package
-extern const char kAdapterService[];
-extern const char kAdapterInterface[];
-extern const char kManagerInterface[];
-extern const char kManagerObject[];
-extern const char kAdapterObjectFormat[];
+extern DEVICE_BLUETOOTH_EXPORT const char kAdapterService[];
+extern DEVICE_BLUETOOTH_EXPORT const char kAdapterInterface[];
+extern DEVICE_BLUETOOTH_EXPORT const char kManagerInterface[];
+extern DEVICE_BLUETOOTH_EXPORT const char kManagerObject[];
+extern DEVICE_BLUETOOTH_EXPORT const char kAdapterObjectFormat[];
 
 namespace adapter {
-extern const char kGetAddress[];
-extern const char kStartDiscovery[];
-extern const char kCancelDiscovery[];
-extern const char kCreateBond[];
-extern const char kRegisterCallback[];
-extern const char kCallbackInterface[];
+extern DEVICE_BLUETOOTH_EXPORT const char kGetAddress[];
+extern DEVICE_BLUETOOTH_EXPORT const char kStartDiscovery[];
+extern DEVICE_BLUETOOTH_EXPORT const char kCancelDiscovery[];
+extern DEVICE_BLUETOOTH_EXPORT const char kCreateBond[];
+extern DEVICE_BLUETOOTH_EXPORT const char kRegisterCallback[];
+extern DEVICE_BLUETOOTH_EXPORT const char kCallbackInterface[];
 
-extern const char kOnAddressChanged[];
-extern const char kOnDeviceFound[];
-extern const char kOnDiscoveringChanged[];
-extern const char kOnSspRequest[];
+extern DEVICE_BLUETOOTH_EXPORT const char kOnAddressChanged[];
+extern DEVICE_BLUETOOTH_EXPORT const char kOnDeviceFound[];
+extern DEVICE_BLUETOOTH_EXPORT const char kOnDiscoveringChanged[];
+extern DEVICE_BLUETOOTH_EXPORT const char kOnSspRequest[];
 }  // namespace adapter
 
 namespace manager {
-extern const char kStart[];
-extern const char kStop[];
-extern const char kGetFlossEnabled[];
-extern const char kSetFlossEnabled[];
-extern const char kGetState[];
-extern const char kListHciDevices[];
-extern const char kRegisterCallback[];
-extern const char kCallbackInterface[];
+extern DEVICE_BLUETOOTH_EXPORT const char kStart[];
+extern DEVICE_BLUETOOTH_EXPORT const char kStop[];
+extern DEVICE_BLUETOOTH_EXPORT const char kGetFlossEnabled[];
+extern DEVICE_BLUETOOTH_EXPORT const char kSetFlossEnabled[];
+extern DEVICE_BLUETOOTH_EXPORT const char kGetState[];
+extern DEVICE_BLUETOOTH_EXPORT const char kListHciDevices[];
+extern DEVICE_BLUETOOTH_EXPORT const char kRegisterCallback[];
+extern DEVICE_BLUETOOTH_EXPORT const char kCallbackInterface[];
 
-extern const char kOnHciDeviceChanged[];
-extern const char kOnHciEnabledChanged[];
+extern DEVICE_BLUETOOTH_EXPORT const char kOnHciDeviceChanged[];
+extern DEVICE_BLUETOOTH_EXPORT const char kOnHciEnabledChanged[];
 }  // namespace manager
 
 // BluetoothDevice structure for DBus apis.
@@ -81,6 +83,11 @@ class FlossDBusClient {
   FlossDBusClient(const FlossDBusClient&) = delete;
   FlossDBusClient& operator=(const FlossDBusClient&) = delete;
 
+  // Common init signature for all clients.
+  virtual void Init(dbus::Bus* bus,
+                    const std::string& bluetooth_service_name,
+                    const std::string& bluetooth_adapter_path) = 0;
+
  protected:
   // Convert a dbus::ErrorResponse into a floss::Error struct.
   static Error ErrorResponseToError(const std::string& default_name,
@@ -90,15 +97,21 @@ class FlossDBusClient {
   FlossDBusClient();
   virtual ~FlossDBusClient();
 
-  virtual void Init(dbus::Bus* bus,
-                    const std::string& bluetooth_service_name,
-                    const std::string& bluetooth_adapter_path) = 0;
-
   // Log a dbus::ErrorResponse.
   void LogErrorResponse(const std::string& message, dbus::ErrorResponse* error);
 
- private:
-  friend class FlossDBusManager;
+  // Default handler that runs |callback| with the callback with an optional
+  // error.
+  void DefaultResponseWithCallback(ResponseCallback callback,
+                                   dbus::Response* response,
+                                   dbus::ErrorResponse* error_response);
+
+  // Default handler for a response. It will either log the error response or
+  // print |caller| to VLOG. |caller| should be the name of the DBus method that
+  // is being called.
+  void DefaultResponse(const std::string& caller,
+                       dbus::Response* response,
+                       dbus::ErrorResponse* error_response);
 };
 
 }  // namespace floss
