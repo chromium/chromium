@@ -28,14 +28,14 @@ export function actionToolbarTest() {
   // Verify the page count text updates when the number of scanned images
   // changes.
   test('totalPageCountIncrements', () => {
-    assertEquals('', actionToolbar.$$('#pageNumbers').textContent.trim());
-
-    actionToolbar.numTotalPages = 3;
-    assertEquals('', actionToolbar.$$('#pageNumbers').textContent.trim());
-
-    actionToolbar.numTotalPages = 3;
     actionToolbar.currentPageInView = 1;
+    assertEquals('', actionToolbar.$$('#pageNumbers').textContent.trim());
+
+    actionToolbar.numTotalPages = 3;
     assertEquals('1 of 3', actionToolbar.$$('#pageNumbers').textContent.trim());
+
+    actionToolbar.currentPageInView = -1;
+    assertEquals('', actionToolbar.$$('#pageNumbers').textContent.trim());
 
     actionToolbar.numTotalPages = 4;
     actionToolbar.currentPageInView = 2;

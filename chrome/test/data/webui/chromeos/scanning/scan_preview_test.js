@@ -204,25 +204,52 @@ export function scanPreviewTest() {
         });
   });
 
-  // Tests that the remove page dialog opens and shows the correct page number.
+  // Tests that the remove page dialog opens, shows the correct page number,
+  // then fires the correct event when the action button is clicked.
   test('removePageDialog', () => {
-    const pageNum = 5;
+    const pageNumberToRemove = 5;
+    let pageIndexFromEvent;
+    scanPreview.addEventListener('remove-page', (e) => {
+      pageIndexFromEvent = e.detail;
+    });
+    scanPreview.objectUrls = ['svg/ready_to_scan.svg'];
+
+
     assertFalse(scanPreview.$$('#scanPreviewDialog').open);
     scanPreview.$$('action-toolbar')
-        .dispatchEvent(
-            new CustomEvent('show-remove-page-dialog', {detail: pageNum}));
+        .dispatchEvent(new CustomEvent(
+            'show-remove-page-dialog', {detail: pageNumberToRemove}));
 
     return flushTasks().then(() => {
       assertTrue(scanPreview.$$('#scanPreviewDialog').open);
       assertEquals(
-          'Remove page ' + pageNum,
+          'Remove page ' + pageNumberToRemove,
           scanPreview.$$('#dialogTitle').textContent.trim());
       assertEquals(
-          'Remove page ' + pageNum,
+          'Remove page ' + pageNumberToRemove,
           scanPreview.$$('#actionButton').textContent.trim());
       assertEquals(
-          loadTimeData.getStringF('removePageConfirmationText', pageNum),
+          loadTimeData.getStringF(
+              'removePageConfirmationText', pageNumberToRemove),
           scanPreview.$$('#dialogConfirmationText').textContent.trim());
+
+      scanPreview.$$('#actionButton').click();
+      assertFalse(scanPreview.$$('#scanPreviewDialog').open);
+      assertEquals(pageNumberToRemove - 1, pageIndexFromEvent);
+    });
+  });
+
+  // Tests that clicking the cancel button closes the remove page dialog.
+  test('cancelRemovePageDialog', () => {
+    assertFalse(scanPreview.$$('#scanPreviewDialog').open);
+    scanPreview.$$('action-toolbar')
+        .dispatchEvent(new CustomEvent('show-remove-page-dialog'));
+
+    return flushTasks().then(() => {
+      assertTrue(scanPreview.$$('#scanPreviewDialog').open);
+
+      scanPreview.$$('#cancelButton').click();
+      assertFalse(scanPreview.$$('#scanPreviewDialog').open);
     });
   });
 

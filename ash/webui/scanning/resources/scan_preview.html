@@ -149,7 +149,7 @@
     [[dialogConfirmationText_]]
   </div>
   <div slot="button-container">
-    <cr-button class="cancel-button">
+    <cr-button id="cancelButton" class="cancel-button" on-click="closeDialog_">
       [[i18n('cancelButtonText')]]
     </cr-button>
     <cr-button id="actionButton" class="action-button">

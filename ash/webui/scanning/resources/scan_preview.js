@@ -339,15 +339,36 @@ Polymer({
   setFocusedScannedImage_(scannedImages, pageInView) {
     assert(this.multiPageScanChecked);
 
-    // Remove the focus CSS class from the scanned image which already has it.
+    this.removeFocusFromScannedImage_(scannedImages);
+
+    assert(pageInView > 0 && pageInView <= scannedImages.length);
+    scannedImages[pageInView - 1].classList.add('focused-scanned-image');
+    this.currentPageInView_ = pageInView;
+  },
+
+  /**
+   * Removes the focus CSS class from the scanned image which already has it
+   * then resets |currentPageInView_|.
+   * @param {!HTMLCollection} scannedImages
+   * @private
+   */
+  removeFocusFromScannedImage_(scannedImages) {
+    // This condition is only true when the user chooses to remove a page from
+    // the multi-page scan session. When a page gets removed, the focus is
+    // cleared and not immediately set again.
+    if (this.currentPageInView_ <= 0) {
+      return;
+    }
+
     assert(
         this.currentPageInView_ > 0 &&
         this.currentPageInView_ <= scannedImages.length);
     scannedImages[this.currentPageInView_ - 1].classList.remove(
         'focused-scanned-image');
 
-    scannedImages[pageInView - 1].classList.add('focused-scanned-image');
-    this.currentPageInView_ = pageInView;
+    // Set to -1 because the focus has been removed from the current page and no
+    // other page has it.
+    this.currentPageInView_ = -1;
   },
 
   /**
@@ -429,6 +450,12 @@ Polymer({
    * @private
    */
   showRemoveOrRescanDialog_(isRemovePageDialog, pageNumber) {
+    // Configure the on-click action.
+    this.$$('#actionButton').addEventListener('click', () => {
+      this.fireDialogAction_(
+          isRemovePageDialog ? 'remove-page' : 'rescan-page', pageNumber);
+    }, {once: true});
+
     // Configure the dialog strings for the requested mode (Remove or Rescan).
     const buttonLabelKey =
         isRemovePageDialog ? 'removePageButtonLabel' : 'rescanPageButtonLabel';
@@ -445,6 +472,27 @@ Polymer({
               // Once strings are loaded, open the dialog.
               this.$$('#scanPreviewDialog').showModal();
             });
+  },
+
+  /**
+   * @param {string} event Either the 'remove-page' or 'rescan-page' event.
+   * @param {number} pageNumber
+   * @private
+   */
+  fireDialogAction_(event, pageNumber) {
+    const scannedImages =
+        this.$$('#scannedImages').getElementsByClassName('scanned-image');
+    this.removeFocusFromScannedImage_(scannedImages);
+
+    // Subtract one from |pageNumber| to get the page's index.
+    assert(pageNumber > 0);
+    this.fire(event, pageNumber - 1);
+    this.closeDialog_();
+  },
+
+  /**  @private */
+  closeDialog_() {
+    this.$$('#scanPreviewDialog').close();
   },
 
   /**

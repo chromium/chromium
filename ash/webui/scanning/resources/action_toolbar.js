@@ -62,11 +62,13 @@ Polymer({
    * @private
    */
   computePageNumberText_() {
-    if (!this.currentPageInView || !this.numTotalPages) {
+    // |currentPageInView| is <= 0 means a page was removed from the multi-page
+    // scan session and the next page in view has not been set yet.
+    if (this.currentPageInView <= 0 || !this.numTotalPages) {
       return '';
     }
 
-    assert(this.currentPageInView > 0 && this.numTotalPages > 0);
+    assert(this.numTotalPages > 0);
     assert(this.currentPageInView <= this.numTotalPages);
 
     return this.i18n(
