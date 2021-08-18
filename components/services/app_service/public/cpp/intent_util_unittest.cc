@@ -340,17 +340,102 @@ TEST_F(IntentUtilTest, CommonMimeTypeMatch) {
       apps_util::CreateIntentFilterForSend(mime_type_sub_wildcard);
   auto filter_all_wildcard =
       apps_util::CreateIntentFilterForSend(mime_type_all_wildcard);
+  auto filter1_and_2 = apps_util::CreateIntentFilterForSend(mime_type1);
+  filter1_and_2->conditions[1]->condition_values.push_back(
+      apps_util::MakeConditionValue(mime_type2,
+                                    apps::mojom::PatternMatchType::kMimeType));
 
   std::vector<GURL> urls;
   std::vector<std::string> mime_types;
 
   urls.emplace_back("abc");
 
+  // Test match with text/plain type.
+  mime_types.push_back(mime_type1);
+  auto intent = apps_util::CreateShareIntentFromFiles(urls, mime_types);
+  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter1));
+  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter2));
+  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter1_and_2));
+  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter3));
+  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter_sub_wildcard));
+  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter_all_wildcard));
+
+  // Test match with image/jpeg type.
+  mime_types.clear();
+  mime_types.push_back(mime_type2);
+  intent = apps_util::CreateShareIntentFromFiles(urls, mime_types);
+  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter1));
+  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter2));
+  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter1_and_2));
+  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter3));
+  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter_sub_wildcard));
+  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter_all_wildcard));
+
+  // Test match with text/html type.
+  mime_types.clear();
+  mime_types.push_back(mime_type3);
+  intent = apps_util::CreateShareIntentFromFiles(urls, mime_types);
+  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter1));
+  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter2));
+  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter1_and_2));
+  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter3));
+  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter_sub_wildcard));
+  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter_all_wildcard));
+
+  // Test match with text/* types.
+  mime_types.clear();
+  mime_types.push_back(mime_type_sub_wildcard);
+  intent = apps_util::CreateShareIntentFromFiles(urls, mime_types);
+  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter1));
+  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter2));
+  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter1_and_2));
+  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter3));
+  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter_sub_wildcard));
+  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter_all_wildcard));
+
+  // Test match with */* type.
+  mime_types.clear();
+  mime_types.push_back(mime_type_all_wildcard);
+  intent = apps_util::CreateShareIntentFromFiles(urls, mime_types);
+  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter1));
+  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter2));
+  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter1_and_2));
+  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter3));
+  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter_sub_wildcard));
+  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter_all_wildcard));
+}
+
+TEST_F(IntentUtilTest, CommonMimeTypeMatchMultiple) {
+  std::string mime_type1 = "text/plain";
+  std::string mime_type2 = "image/jpeg";
+  std::string mime_type3 = "text/html";
+  std::string mime_type_sub_wildcard = "text/*";
+  std::string mime_type_all_wildcard = "*/*";
+
+  auto filter1 = apps_util::CreateIntentFilterForSendMultiple(mime_type1);
+  auto filter2 = apps_util::CreateIntentFilterForSendMultiple(mime_type2);
+  auto filter3 = apps_util::CreateIntentFilterForSendMultiple(mime_type3);
+  auto filter_sub_wildcard =
+      apps_util::CreateIntentFilterForSendMultiple(mime_type_sub_wildcard);
+  auto filter_all_wildcard =
+      apps_util::CreateIntentFilterForSendMultiple(mime_type_all_wildcard);
+  auto filter1_and_2 = apps_util::CreateIntentFilterForSendMultiple(mime_type1);
+  filter1_and_2->conditions[1]->condition_values.push_back(
+      apps_util::MakeConditionValue(mime_type2,
+                                    apps::mojom::PatternMatchType::kMimeType));
+
+  std::vector<GURL> urls;
+  std::vector<std::string> mime_types;
+
+  urls.emplace_back("abc");
+  urls.emplace_back("def");
+
   // Test match with same mime types.
   mime_types.push_back(mime_type1);
   mime_types.push_back(mime_type1);
   auto intent = apps_util::CreateShareIntentFromFiles(urls, mime_types);
   EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter1));
+  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter1_and_2));
   EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter3));
 
   // Test match with same main type and different sub type.
@@ -359,6 +444,7 @@ TEST_F(IntentUtilTest, CommonMimeTypeMatch) {
   mime_types.push_back(mime_type3);
   intent = apps_util::CreateShareIntentFromFiles(urls, mime_types);
   EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter1));
+  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter1_and_2));
   EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter3));
   EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter_sub_wildcard));
 
@@ -368,6 +454,7 @@ TEST_F(IntentUtilTest, CommonMimeTypeMatch) {
   mime_types.push_back(mime_type_sub_wildcard);
   intent = apps_util::CreateShareIntentFromFiles(urls, mime_types);
   EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter1));
+  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter1_and_2));
   EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter_sub_wildcard));
 
   // Test match with different mime types.
@@ -378,6 +465,7 @@ TEST_F(IntentUtilTest, CommonMimeTypeMatch) {
   EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter1));
   EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter2));
   EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter_sub_wildcard));
+  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter1_and_2));
   EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter_all_wildcard));
 
   // Test match with explicit type and general wildcard type.
@@ -386,6 +474,7 @@ TEST_F(IntentUtilTest, CommonMimeTypeMatch) {
   mime_types.push_back(mime_type_all_wildcard);
   intent = apps_util::CreateShareIntentFromFiles(urls, mime_types);
   EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter1));
+  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter1_and_2));
   EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter_sub_wildcard));
   EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter_all_wildcard));
 }
