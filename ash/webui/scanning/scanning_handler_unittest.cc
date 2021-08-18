@@ -356,6 +356,7 @@ TEST_F(ScanningHandlerTest, ValidFilePathExists) {
   args.Append(kHandlerFunctionName);
   args.Append(myScanPath.value());
   web_ui_.HandleReceivedMessage("ensureValidFilePath", &args);
+  task_environment_.RunUntilIdle();
 
   const content::TestWebUI::CallData& call_data =
       GetCallData(call_data_count_before_call);
@@ -376,6 +377,7 @@ TEST_F(ScanningHandlerTest, InvalidFilePath) {
   args.Append(kHandlerFunctionName);
   args.Append(invalidFilePath);
   web_ui_.HandleReceivedMessage("ensureValidFilePath", &args);
+  task_environment_.RunUntilIdle();
 
   const content::TestWebUI::CallData& call_data =
       GetCallData(call_data_count_before_call);

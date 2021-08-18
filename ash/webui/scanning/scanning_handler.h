@@ -17,6 +17,7 @@
 
 namespace base {
 class ListValue;
+class SequencedTaskRunner;
 }  // namespace base
 
 namespace content {
@@ -87,6 +88,11 @@ class ScanningHandler : public content::WebUIMessageHandler,
   // display name. If the file path doesn't exist, return an empty file path.
   void HandleEnsureValidFilePath(const base::ListValue* args);
 
+  // Callback for HandleEnsureValidFilePath().
+  void OnPathExists(const base::FilePath& file_path,
+                    const std::string& callback,
+                    bool file_path_exists);
+
   std::string scan_location_callback_id_;
 
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
@@ -95,6 +101,9 @@ class ScanningHandler : public content::WebUIMessageHandler,
   std::unique_ptr<ScanningAppDelegate> scanning_app_delegate_;
 
   std::map<std::string, int> string_id_map_;
+
+  // Task runner for the I/O function base::FilePath().
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 
 }  // namespace ash

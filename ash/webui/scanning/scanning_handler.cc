@@ -11,6 +11,9 @@
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
+#include "base/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_contents.h"
@@ -29,7 +32,10 @@ namespace ash {
 
 ScanningHandler::ScanningHandler(
     std::unique_ptr<ScanningAppDelegate> scanning_app_delegate)
-    : scanning_app_delegate_(std::move(scanning_app_delegate)) {}
+    : scanning_app_delegate_(std::move(scanning_app_delegate)),
+      task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {}
 
 ScanningHandler::~ScanningHandler() = default;
 
@@ -230,13 +236,22 @@ void ScanningHandler::HandleEnsureValidFilePath(const base::ListValue* args) {
   const std::string callback = args->GetList()[0].GetString();
   const base::FilePath file_path(args->GetList()[1].GetString());
 
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&base::PathExists, file_path),
+      base::BindOnce(&ScanningHandler::OnPathExists, base::Unretained(this),
+                     file_path, callback));
+}
+
+void ScanningHandler::OnPathExists(const base::FilePath& file_path,
+                                   const std::string& callback,
+                                   bool file_path_exists) {
   // When |file_path| is not valid, return a dictionary with an empty file path.
-  const bool filePathValid =
-      scanning_app_delegate_->IsFilePathSupported(file_path) &&
-      base::PathExists(file_path);
+  const bool file_path_valid =
+      file_path_exists &&
+      scanning_app_delegate_->IsFilePathSupported(file_path);
   ResolveJavascriptCallback(
       base::Value(callback),
-      CreateSelectedPathValue(filePathValid ? file_path : base::FilePath()));
+      CreateSelectedPathValue(file_path_valid ? file_path : base::FilePath()));
 }
 
 }  // namespace ash
