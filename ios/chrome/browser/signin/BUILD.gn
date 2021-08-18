@@ -138,6 +138,7 @@ source_set("unit_tests") {
     "gaia_auth_fetcher_ios_ns_url_session_bridge_unittests.mm",
     "gaia_auth_fetcher_ios_unittest.mm",
     "pattern_account_restriction_unittest.mm",
+    "resized_avatar_cache_unittest.mm",
     "signin_browser_state_info_updater_unittest.mm",
     "user_approved_account_list_manager_unittest.mm",
   ]

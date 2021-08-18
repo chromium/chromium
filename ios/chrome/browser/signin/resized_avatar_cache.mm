@@ -16,18 +16,21 @@
 #endif
 
 @interface ResizedAvatarCache ()
+
 // Size of resized avatar.
 @property(nonatomic, assign) CGSize expectedSize;
+// Default avatar at |self.expectedSize| size.
+@property(nonatomic, strong) UIImage* defaultResizedAvatar;
+// Retains resized images. Key is Chrome Identity.
+@property(nonatomic, strong) NSCache<ChromeIdentity*, UIImage*>* resizedImages;
+// Holds weak references to the cached avatar image from the
+// ChromeIdentityService. Key is Chrome Identity.
+@property(nonatomic, strong)
+    NSMapTable<ChromeIdentity*, UIImage*>* originalImages;
+
 @end
 
-@implementation ResizedAvatarCache {
-  // Retains resized images. Key is Chrome Identity.
-  NSCache<ChromeIdentity*, UIImage*>* _resizedImages;
-
-  // Holds weak references to the cached avatar image from the
-  // ChromeIdentityService. Key is Chrome Identity.
-  NSMapTable<ChromeIdentity*, UIImage*>* _originalImages;
-}
+@implementation ResizedAvatarCache
 
 - (instancetype)initWithSize:(CGSize)size {
   self = [super init];
@@ -35,6 +38,11 @@
     _expectedSize = size;
     _resizedImages = [[NSCache alloc] init];
     _originalImages = [NSMapTable strongToWeakObjectsMapTable];
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(notificicationReceived:)
+               name:UIApplicationDidReceiveMemoryWarningNotification
+             object:nil];
   }
   return self;
 }
@@ -49,12 +57,11 @@
                        .GetChromeIdentityService()
                        ->GetCachedAvatarForIdentity(identity);
   if (!image) {
-    image = ios::provider::GetSigninDefaultAvatar();
-
     // No cached image, trigger a fetch, which will notify all observers.
     ios::GetChromeBrowserProvider()
         .GetChromeIdentityService()
         ->GetAvatarForIdentity(identity, nil);
+    return self.defaultResizedAvatar;
   }
 
   // If the currently used image has already been resized, use it.
@@ -70,6 +77,24 @@
   }
   [_resizedImages setObject:image forKey:identity];
   return image;
+}
+
+- (void)notificicationReceived:(NSNotification*)notification {
+  if ([notification.name
+          isEqual:UIApplicationDidReceiveMemoryWarningNotification]) {
+    self.defaultResizedAvatar = nil;
+  }
+}
+
+#pragma mark - Properties
+
+- (UIImage*)defaultResizedAvatar {
+  if (!_defaultResizedAvatar) {
+    UIImage* image = ios::provider::GetSigninDefaultAvatar();
+    _defaultResizedAvatar =
+        ResizeImage(image, self.expectedSize, ProjectionMode::kAspectFit);
+  }
+  return _defaultResizedAvatar;
 }
 
 @end
