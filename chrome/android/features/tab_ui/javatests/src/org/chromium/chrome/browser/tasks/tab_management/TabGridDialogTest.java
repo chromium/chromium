@@ -367,8 +367,12 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
+    // clang-format off
+    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:enable_tab_group_sharing/true"})
     public void testDialogToolbarMenuShareGroup() {
+        // clang-format on
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createTabs(cta, false, 2);
         enterTabSwitcher(cta);
@@ -391,7 +395,9 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     // clang-format off
-    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
+    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
+        "force-fieldtrial-params=Study.Group:enable_tab_group_sharing/true"})
     public void testDialogToolbarMenuShareGroup_WithSharingHub() {
         // clang-format on
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -1131,8 +1137,10 @@ public class TabGridDialogTest {
                     ListView listView = (ListView) v;
                     verifyTabGridDialogToolbarMenuItem(listView, 0,
                             cta.getString(R.string.tab_grid_dialog_toolbar_remove_from_group));
-                    verifyTabGridDialogToolbarMenuItem(listView, 1,
-                            cta.getString(R.string.tab_grid_dialog_toolbar_share_group));
+                    if (TabUiFeatureUtilities.ENABLE_TAB_GROUP_SHARING.getValue()) {
+                        verifyTabGridDialogToolbarMenuItem(listView, 1,
+                                cta.getString(R.string.tab_grid_dialog_toolbar_share_group));
+                    }
                     if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
                         assertEquals(3, listView.getCount());
                         verifyTabGridDialogToolbarMenuItem(listView, 2,

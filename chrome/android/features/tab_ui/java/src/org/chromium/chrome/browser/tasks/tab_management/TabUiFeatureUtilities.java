@@ -92,6 +92,11 @@ public class TabUiFeatureUtilities {
             new BooleanCachedFieldTrialParameter(
                     ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID, TAB_GROUP_AUTO_CREATION_PARAM, true);
 
+    private static final String TAB_GROUP_SHARING_PARAM = "enable_tab_group_sharing";
+    public static final BooleanCachedFieldTrialParameter ENABLE_TAB_GROUP_SHARING =
+            new BooleanCachedFieldTrialParameter(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
+                    TAB_GROUP_SHARING_PARAM, false);
+
     private static Boolean sTabManagementModuleSupportedForTesting;
 
     /**
