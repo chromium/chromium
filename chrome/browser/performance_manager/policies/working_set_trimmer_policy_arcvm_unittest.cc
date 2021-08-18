@@ -220,17 +220,6 @@ TEST_F(WorkingSetTrimmerPolicyArcVmTest, TrimOnBootCompleteAfterArcVmRestart) {
   EXPECT_FALSE(trimmer()->IsEligibleForReclaim(GetInterval(), true));
 }
 
-// Tests that OnUserSessionStarted() does not crash. This is mainly for better
-// test coverage.
-TEST_F(WorkingSetTrimmerPolicyArcVmTest, OnUserSessionStarted) {
-  trimmer()->OnUserSessionStarted(/*is_primary_user=*/true);
-}
-
-// Tests the same but with is_primary_user=false.
-TEST_F(WorkingSetTrimmerPolicyArcVmTest, OnUserSessionStarted_NonPrimary) {
-  trimmer()->OnUserSessionStarted(/*is_primary_user=*/false);
-}
-
 }  // namespace
 }  // namespace policies
 }  // namespace performance_manager

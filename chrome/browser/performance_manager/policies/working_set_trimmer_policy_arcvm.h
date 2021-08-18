@@ -14,7 +14,6 @@
 #include "components/arc/mojom/app.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/session/connection_holder.h"
-#include "components/session_manager/core/session_manager_observer.h"
 #include "ui/wm/public/activation_change_observer.h"
 
 namespace aura {
@@ -36,8 +35,7 @@ class WorkingSetTrimmerPolicyArcVm
       public arc::ArcMetricsService::UserInteractionObserver,
       public arc::ArcSessionManagerObserver,
       public arc::ConnectionObserver<arc::mojom::AppInstance>,
-      public wm::ActivationChangeObserver,
-      public session_manager::SessionManagerObserver {
+      public wm::ActivationChangeObserver {
  public:
   // Gets an instance of WorkingSetTrimmerPolicyArcVm.
   static WorkingSetTrimmerPolicyArcVm* Get();
@@ -72,12 +70,11 @@ class WorkingSetTrimmerPolicyArcVm
                          aura::Window* gained_active,
                          aura::Window* lost_active) override;
 
-  // session_manager::SessionManagerObserver overrides.
-  void OnUserSessionStarted(bool is_primary_user) override;
-
  private:
   friend class base::NoDestructor<WorkingSetTrimmerPolicyArcVm>;
   WorkingSetTrimmerPolicyArcVm();
+
+  void StartObservingUserInteractions();
 
   content::BrowserContext* context_for_testing_ = nullptr;
 
@@ -92,6 +89,8 @@ class WorkingSetTrimmerPolicyArcVm
   // True if IsEligibleForReclaim() has already returned true for the single
   // trim that happens after boot when `trim_once_after_arcvm_boot` is set.
   bool trimmed_at_boot_ = false;
+  // True if observing the user's interactions with ARCVM via ArcMetricsService.
+  bool observing_user_interactions_ = false;
 };
 
 }  // namespace policies
