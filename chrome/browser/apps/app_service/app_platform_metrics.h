@@ -160,11 +160,16 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   void OnTenMinutes();
   void OnFiveMinutes();
 
-  // Records UKM when launching apps.
+  // Records UKM when launching an app.
   void RecordAppLaunchUkm(apps::mojom::AppType app_type,
                           const std::string& app_id,
                           apps::mojom::LaunchSource launch_source,
                           apps::mojom::LaunchContainer container);
+
+  // Records UKM when uninstalling an app.
+  void RecordAppUninstallUkm(apps::mojom::AppType app_type,
+                             const std::string& app_id,
+                             apps::mojom::UninstallSource uninstall_source);
 
  private:
   struct RunningStartTime {

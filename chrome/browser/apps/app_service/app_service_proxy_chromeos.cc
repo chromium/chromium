@@ -328,6 +328,8 @@ void AppServiceProxyChromeOs::OnUninstallDialogClosed(
 
     app_service_->Uninstall(app_type, app_id, uninstall_source, clear_site_data,
                             report_abuse);
+
+    PerformPostUninstallTasks(app_type, app_id, uninstall_source);
   }
 
   DCHECK(uninstall_dialog);
@@ -487,6 +489,17 @@ void AppServiceProxyChromeOs::InitAppPlatformMetrics() {
   if (app_platform_metrics_service_) {
     app_platform_metrics_service_->Start(app_registry_cache_,
                                          instance_registry_);
+  }
+}
+
+void AppServiceProxyChromeOs::PerformPostUninstallTasks(
+    apps::mojom::AppType app_type,
+    const std::string& app_id,
+    apps::mojom::UninstallSource uninstall_source) {
+  if (app_platform_metrics_service_ &&
+      app_platform_metrics_service_->AppPlatformMetrics()) {
+    app_platform_metrics_service_->AppPlatformMetrics()->RecordAppUninstallUkm(
+        app_type, app_id, uninstall_source);
   }
 }
 

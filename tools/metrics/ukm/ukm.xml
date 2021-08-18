@@ -4033,6 +4033,46 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="ChromeOSApp.UninstallApp">
+  <owner>nancylingwang@chromium.org</owner>
+  <owner>dominickn@chromium.org</owner>
+  <summary>
+    Records the uninstalled app in Chrome OS, only when the user allows app
+    syncing or allows sync of everything, and the user does not set up a sync
+    passphrase. Only ARC apps, Chrome apps and web apps(PWA), system web apps,
+    buildin apps are recorded. This is logged when the user uninstalls an app.
+  </summary>
+  <metric name="AppType" enum="AppType">
+    <summary>
+      An enum that records the app type.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="UninstallSource" enum="UninstallSource">
+    <summary>
+      An enum that records how the app was uninstalled.
+    </summary>
+  </metric>
+  <metric name="UserDeviceMatrix" enum="UserDeviceMatrix">
+    <summary>
+      An enum that records the user type and the device type.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="ChromeOSApp.UsageTime">
   <owner>nancylingwang@chromium.org</owner>
   <owner>dominickn@chromium.org</owner>

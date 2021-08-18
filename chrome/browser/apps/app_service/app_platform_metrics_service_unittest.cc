@@ -550,6 +550,27 @@ class AppPlatformMetricsServiceTest : public testing::Test {
     ASSERT_EQ(1, count);
   }
 
+  void VerifyAppsUninstallUkm(const std::string& app_info,
+                              AppTypeName app_type_name,
+                              apps::mojom::UninstallSource uninstall_source) {
+    const auto entries =
+        test_ukm_recorder()->GetEntriesByName("ChromeOSApp.UninstallApp");
+    int count = 0;
+    for (const auto* entry : entries) {
+      const ukm::UkmSource* src =
+          test_ukm_recorder()->GetSourceForSourceId(entry->source_id);
+      if (src == nullptr || src->url() != GURL(app_info)) {
+        continue;
+      }
+      ++count;
+      test_ukm_recorder()->ExpectEntryMetric(entry, "AppType",
+                                             (int)app_type_name);
+      test_ukm_recorder()->ExpectEntryMetric(entry, "UninstallSource",
+                                             (int)uninstall_source);
+    }
+    ASSERT_EQ(1, count);
+  }
+
   ukm::TestAutoSetUkmRecorder* test_ukm_recorder() {
     return test_ukm_recorder_.get();
   }
@@ -1077,6 +1098,23 @@ TEST_F(AppPlatformMetricsServiceTest, LaunchAppsUkm) {
       apps::mojom::AppLaunchSource::kSourceTest));
   VerifyAppsLaunchUkm("https://os-settings", AppTypeName::kChromeBrowser,
                       apps::mojom::LaunchSource::kFromTest);
+}
+
+TEST_F(AppPlatformMetricsServiceTest, UninstallAppUkm) {
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
+  proxy->SetAppPlatformMetricsServiceForTesting(GetAppPlatformMetricsService());
+
+  proxy->UninstallSilently(
+      /*app_id=*/"c", apps::mojom::UninstallSource::kAppList);
+  // Verify UKM is not reported for the Crostini app.
+  const auto entries =
+      test_ukm_recorder()->GetEntriesByName("ChromeOSApp.UninstallApp");
+  ASSERT_EQ(0U, entries.size());
+
+  proxy->UninstallSilently(
+      /*app_id=*/"a", apps::mojom::UninstallSource::kAppList);
+  VerifyAppsUninstallUkm("app://com.google.A", AppTypeName::kArc,
+                         apps::mojom::UninstallSource::kAppList);
 }
 
 }  // namespace apps

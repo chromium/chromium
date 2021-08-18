@@ -303,9 +303,10 @@ void AppServiceProxyBase::UninstallSilently(
     const std::string& app_id,
     apps::mojom::UninstallSource uninstall_source) {
   if (app_service_.is_connected()) {
-    app_service_->Uninstall(app_registry_cache_.GetAppType(app_id), app_id,
-                            uninstall_source,
+    apps::mojom::AppType app_type = app_registry_cache_.GetAppType(app_id);
+    app_service_->Uninstall(app_type, app_id, uninstall_source,
                             /*clear_site_data=*/false, /*report_abuse=*/false);
+    PerformPostUninstallTasks(app_type, app_id, uninstall_source);
   }
 }
 
@@ -565,5 +566,10 @@ void AppServiceProxyBase::RecordAppPlatformMetrics(
     const apps::AppUpdate& update,
     apps::mojom::LaunchSource launch_source,
     apps::mojom::LaunchContainer container) {}
+
+void AppServiceProxyBase::PerformPostUninstallTasks(
+    apps::mojom::AppType app_type,
+    const std::string& app_id,
+    apps::mojom::UninstallSource uninstall_source) {}
 
 }  // namespace apps
