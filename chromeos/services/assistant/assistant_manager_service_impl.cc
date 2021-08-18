@@ -444,6 +444,7 @@ void AssistantManagerServiceImpl::InitAssistant(
   bootup_config->hotword_enabled = assistant_state()->hotword_enabled().value();
   bootup_config->locale = assistant_state()->locale().value();
   bootup_config->spoken_feedback_enabled = spoken_feedback_enabled_;
+  bootup_config->dark_mode_enabled = dark_mode_enabled_;
 
   service_controller().Initialize(std::move(bootup_config),
                                   BindURLLoaderFactory());
@@ -537,6 +538,16 @@ void AssistantManagerServiceImpl::OnAccessibilityStatusChanged(
   // options to turn on/off A11Y features in LibAssistant.
   if (IsServiceStarted())
     settings_controller().SetSpokenFeedbackEnabled(spoken_feedback_enabled_);
+}
+
+void AssistantManagerServiceImpl::OnColorModeChanged(bool dark_mode_enabled) {
+  if (dark_mode_enabled_ == dark_mode_enabled)
+    return;
+
+  dark_mode_enabled_ = dark_mode_enabled;
+
+  if (IsServiceStarted())
+    settings_controller().SetDarkModeEnabled(dark_mode_enabled_);
 }
 
 void AssistantManagerServiceImpl::OnDeviceAppsEnabled(bool enabled) {

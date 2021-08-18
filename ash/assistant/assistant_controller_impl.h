@@ -28,10 +28,13 @@
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
 #include "ash/public/cpp/image_downloader.h"
+#include "ash/public/cpp/style/color_mode_observer.h"
 #include "ash/public/mojom/assistant_volume_control.mojom.h"
+#include "ash/style/ash_color_provider.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -52,7 +55,8 @@ class ASH_EXPORT AssistantControllerImpl
       public mojom::AssistantVolumeControl,
       public CrasAudioHandler::AudioObserver,
       public AccessibilityObserver,
-      public AssistantInterfaceBinder {
+      public AssistantInterfaceBinder,
+      public ColorModeObserver {
  public:
   AssistantControllerImpl();
   ~AssistantControllerImpl() override;
@@ -97,6 +101,9 @@ class ASH_EXPORT AssistantControllerImpl
 
   // AccessibilityObserver:
   void OnAccessibilityStatusChanged() override;
+
+  // ColorModeObserver:
+  void OnColorModeChanged(bool dark_mode_enabled) override;
 
   AssistantAlarmTimerControllerImpl* alarm_timer_controller() {
     return &assistant_alarm_timer_controller_;
@@ -146,6 +153,8 @@ class ASH_EXPORT AssistantControllerImpl
       assistant_volume_control_receiver_{this};
   mojo::RemoteSet<mojom::VolumeObserver> volume_observers_;
 
+  // |assistant_| can be nullptr if libassistant creation is not yet completed,
+  // i.e. it cannot take a request.
   chromeos::assistant::Assistant* assistant_ = nullptr;
 
   // Assistant sub-controllers.
@@ -161,6 +170,9 @@ class ASH_EXPORT AssistantControllerImpl
   AssistantWebUiController assistant_web_ui_controller_;
 
   AssistantViewDelegateImpl view_delegate_{this};
+
+  base::ScopedObservation<AshColorProvider, ColorModeObserver>
+      color_mode_observer_{this};
 
   base::WeakPtrFactory<AssistantControllerImpl> weak_factory_{this};
 

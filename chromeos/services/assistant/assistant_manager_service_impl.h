@@ -148,6 +148,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
                             int action_index) override;
   void DismissNotification(const AssistantNotification& notification) override;
   void OnAccessibilityStatusChanged(bool spoken_feedback_enabled) override;
+  void OnColorModeChanged(bool dark_mode_enabled) override;
   void SendAssistantFeedback(const AssistantFeedback& feedback) override;
   void AddTimeToTimer(const std::string& id, base::TimeDelta duration) override;
   void PauseTimer(const std::string& id) override;
@@ -250,6 +251,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
       state_observer_receiver_{this};
 
   bool spoken_feedback_enabled_ = false;
+  bool dark_mode_enabled_ = false;
 
   base::TimeTicks started_time_;
 
