@@ -19,13 +19,13 @@ extern const wchar_t kGlobalPrefix[];
 extern const wchar_t kPrefsAccessMutex[];
 
 // Registry keys and value names.
-#define COMPANY_KEY "Software\\" COMPANY_SHORTNAME_STRING "\\"
+#define COMPANY_KEY L"Software\\" COMPANY_SHORTNAME_STRING L"\\"
 
 // Use |Update| instead of PRODUCT_FULLNAME_STRING for the registry key name
 // to be backward compatible with Google Update / Omaha.
-#define UPDATER_KEY COMPANY_KEY "Update\\"
-#define CLIENTS_KEY UPDATER_KEY "Clients\\"
-#define CLIENT_STATE_KEY UPDATER_KEY "ClientState\\"
+#define UPDATER_KEY COMPANY_KEY L"Update\\"
+#define CLIENTS_KEY UPDATER_KEY L"Clients\\"
+#define CLIENT_STATE_KEY UPDATER_KEY L"ClientState\\"
 
 #define COMPANY_POLICIES_KEY \
   L"Software\\Policies\\" COMPANY_SHORTNAME_STRING L"\\"

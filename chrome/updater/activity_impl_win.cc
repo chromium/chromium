@@ -26,7 +26,7 @@ using ProcessActiveBitUnderKeyCallback =
 constexpr wchar_t kDidRun[] = L"dr";
 
 std::wstring GetAppClientStateKey(const std::string& id) {
-  return base::ASCIIToWide(base::StrCat({CLIENT_STATE_KEY, id}));
+  return base::StrCat({CLIENT_STATE_KEY, base::ASCIIToWide(id)});
 }
 
 bool GetActiveBitUnderKey(HKEY rootkey, const std::wstring& key_name) {

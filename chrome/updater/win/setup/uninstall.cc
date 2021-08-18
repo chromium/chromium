@@ -17,7 +17,6 @@
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/win/scoped_com_initializer.h"
 #include "chrome/installer/util/install_service_work_item.h"
 #include "chrome/installer/util/install_util.h"
@@ -61,7 +60,7 @@ void DeleteComService() {
   for (const bool is_internal_service : {true, false}) {
     const std::wstring service_name = GetServiceName(is_internal_service);
     if (!installer::InstallServiceWorkItem::DeleteService(
-            service_name.c_str(), base::ASCIIToWide(UPDATER_KEY), {}, {})) {
+            service_name.c_str(), UPDATER_KEY, {}, {})) {
       LOG(WARNING) << "DeleteService [" << service_name << "] failed.";
     }
   }
@@ -139,7 +138,7 @@ int Uninstall(UpdaterScope scope) {
   updater::UnregisterWakeTask();
 
   std::unique_ptr<WorkItemList> uninstall_list(WorkItem::CreateWorkItemList());
-  uninstall_list->AddDeleteRegKeyWorkItem(key, base::ASCIIToWide(UPDATER_KEY),
+  uninstall_list->AddDeleteRegKeyWorkItem(key, UPDATER_KEY,
                                           WorkItem::kWow64Default);
   if (!uninstall_list->Do()) {
     LOG(ERROR) << "Failed to delete the registry keys.";

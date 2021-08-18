@@ -83,7 +83,7 @@ absl::optional<base::FilePath> GetProductVersionPath(UpdaterScope scope) {
 }
 
 std::wstring GetAppClientStateKey(const std::string& id) {
-  return base::ASCIIToWide(base::StrCat({CLIENT_STATE_KEY, id}));
+  return base::StrCat({CLIENT_STATE_KEY, base::ASCIIToWide(id)});
 }
 
 bool RegKeyExists(HKEY root, REGSAM regsam, const std::wstring& path) {
@@ -139,8 +139,7 @@ bool DeleteService(const wchar_t* const service_name) {
 
     ::CloseServiceHandle(service);
   }
-  base::win::RegKey(HKEY_LOCAL_MACHINE, base::ASCIIToWide(UPDATER_KEY).c_str(),
-                    KEY_WRITE)
+  base::win::RegKey(HKEY_LOCAL_MACHINE, UPDATER_KEY, KEY_WRITE)
       .DeleteValue(service_name);
 
   ::CloseServiceHandle(scm);
@@ -151,8 +150,8 @@ bool DeleteService(const wchar_t* const service_name) {
 void Clean(UpdaterScope scope) {
   const HKEY root =
       scope == UpdaterScope::kSystem ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
-  for (const char* key : {CLIENT_STATE_KEY, CLIENTS_KEY, UPDATER_KEY}) {
-    EXPECT_TRUE(DeleteRegKey(root, KEY_WOW64_32KEY, base::ASCIIToWide(key)));
+  for (const wchar_t* key : {CLIENT_STATE_KEY, CLIENTS_KEY, UPDATER_KEY}) {
+    EXPECT_TRUE(DeleteRegKey(root, KEY_WOW64_32KEY, key));
   }
   for (const wchar_t* key : {kRegKeyCompanyCloudManagement,
                              kRegKeyCompanyEnrollment, UPDATER_POLICIES_KEY}) {
@@ -212,16 +211,15 @@ bool IsServiceGone(const wchar_t* const service_name) {
   ::CloseServiceHandle(scm);
 
   return is_service_gone &&
-         !base::win::RegKey(HKEY_LOCAL_MACHINE,
-                            base::ASCIIToWide(UPDATER_KEY).c_str(), KEY_READ)
+         !base::win::RegKey(HKEY_LOCAL_MACHINE, UPDATER_KEY, KEY_READ)
               .HasValue(service_name);
 }
 
 void ExpectClean(UpdaterScope scope) {
   const HKEY root =
       scope == UpdaterScope::kSystem ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
-  for (const char* key : {CLIENT_STATE_KEY, CLIENTS_KEY, UPDATER_KEY}) {
-    EXPECT_FALSE(RegKeyExists(root, KEY_WOW64_32KEY, base::ASCIIToWide(key)));
+  for (const wchar_t* key : {CLIENT_STATE_KEY, CLIENTS_KEY, UPDATER_KEY}) {
+    EXPECT_FALSE(RegKeyExists(root, KEY_WOW64_32KEY, key));
   }
   for (const wchar_t* key : {kRegKeyCompanyCloudManagement,
                              kRegKeyCompanyEnrollment, UPDATER_POLICIES_KEY}) {

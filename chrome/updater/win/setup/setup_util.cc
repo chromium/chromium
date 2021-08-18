@@ -220,7 +220,7 @@ void AddComServiceWorkItems(const base::FilePath& com_service_path,
   list->AddWorkItem(new installer::InstallServiceWorkItem(
       GetServiceName(internal_service).c_str(),
       GetServiceDisplayName(internal_service).c_str(), com_service_command,
-      base::ASCIIToWide(UPDATER_KEY),
+      UPDATER_KEY,
       internal_service ? GetSideBySideServers(UpdaterScope::kSystem)
                        : GetActiveServers(UpdaterScope::kSystem),
       {}));

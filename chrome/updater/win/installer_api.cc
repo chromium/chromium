@@ -35,8 +35,7 @@ absl::optional<base::win::RegKey> ClientStateAppKeyOpen(
   if (!base::UTF8ToWide(app_id.c_str(), app_id.size(), &subkey))
     return absl::nullopt;
   regsam = regsam | KEY_WOW64_32KEY;
-  base::win::RegKey key(HKEY_CURRENT_USER,
-                        base::ASCIIToWide(CLIENT_STATE_KEY).c_str(), regsam);
+  base::win::RegKey key(HKEY_CURRENT_USER, CLIENT_STATE_KEY, regsam);
   if (key.OpenKey(subkey.c_str(), regsam) != ERROR_SUCCESS)
     return absl::nullopt;
   return key;
@@ -52,8 +51,7 @@ absl::optional<base::win::RegKey> ClientStateAppKeyCreate(
   if (!base::UTF8ToWide(app_id.c_str(), app_id.size(), &subkey))
     return absl::nullopt;
   regsam = regsam | KEY_WOW64_32KEY;
-  base::win::RegKey key(HKEY_CURRENT_USER,
-                        base::ASCIIToWide(CLIENT_STATE_KEY).c_str(), regsam);
+  base::win::RegKey key(HKEY_CURRENT_USER, CLIENT_STATE_KEY, regsam);
   if (key.CreateKey(subkey.c_str(), regsam) != ERROR_SUCCESS)
     return absl::nullopt;
   return key;
@@ -70,8 +68,7 @@ bool ClientStateAppKeyDelete(const std::string& app_id) {
   if (!base::UTF8ToWide(app_id.c_str(), app_id.size(), &subkey))
     return false;
   constexpr REGSAM kRegSam = KEY_WRITE | KEY_WOW64_32KEY;
-  base::win::RegKey key(HKEY_CURRENT_USER,
-                        base::ASCIIToWide(CLIENT_STATE_KEY).c_str(), kRegSam);
+  base::win::RegKey key(HKEY_CURRENT_USER, CLIENT_STATE_KEY, kRegSam);
   return key.DeleteKey(subkey.c_str()) == ERROR_SUCCESS;
 }
 

@@ -412,11 +412,11 @@ void GetAdminDaclSecurityAttributes(CSecurityAttributes* sec_attr,
 }
 
 std::wstring GetRegistryKeyClientsUpdater() {
-  return base::ASCIIToWide(base::StrCat({CLIENTS_KEY, kUpdaterAppId}));
+  return base::StrCat({CLIENTS_KEY, base::ASCIIToWide(kUpdaterAppId)});
 }
 
 std::wstring GetRegistryKeyClientStateUpdater() {
-  return base::ASCIIToWide(base::StrCat({CLIENT_STATE_KEY, kUpdaterAppId}));
+  return base::StrCat({CLIENT_STATE_KEY, base::ASCIIToWide(kUpdaterAppId)});
 }
 
 int GetDownloadProgress(int64_t downloaded_bytes, int64_t total_bytes) {

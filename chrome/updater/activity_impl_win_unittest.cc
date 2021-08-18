@@ -4,8 +4,6 @@
 
 #include "chrome/updater/activity_impl.h"
 
-#include <tchar.h>
-
 #include <string>
 #include <tuple>
 
@@ -52,7 +50,7 @@ struct ReadWriteCallbacks {
 constexpr wchar_t kDidRun[] = L"dr";
 constexpr char kAppId[] = "{6ACB7D4D-E5BA-48b0-85FE-A4051500A1BD}";
 constexpr wchar_t kClientStateKeyPath[] =
-    _T(CLIENT_STATE_KEY) L"{6ACB7D4D-E5BA-48b0-85FE-A4051500A1BD}";
+    CLIENT_STATE_KEY L"{6ACB7D4D-E5BA-48b0-85FE-A4051500A1BD}";
 
 DWORD WriteActiveBitAsString(base::win::RegKey& key, bool value) {
   return key.WriteValue(kDidRun, value ? L"1" : L"0");
