@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_mediator.h"
 
 #import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/logging/first_run_signin_logger.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/logging/user_signin_logger.h"
@@ -22,7 +21,6 @@
       _accountManagerServiceObserver;
 }
 
-@property(nonatomic, readonly) ios::ChromeIdentityService* identityService;
 // Logger used to record sign in metrics.
 @property(nonatomic, strong) UserSigninLogger* logger;
 // Account manager service to retrieve Chrome identities.
@@ -99,10 +97,6 @@
   [self updateConsumer];
 }
 
-- (ios::ChromeIdentityService*)identityService {
-  return ios::GetChromeBrowserProvider().GetChromeIdentityService();
-}
-
 #pragma mark - ChromeAccountManagerServiceObserver
 
 - (void)identityListChanged {
@@ -125,29 +119,16 @@
 #pragma mark - Private
 
 - (void)updateConsumer {
-  if (!self.consumer)
-    return;
-
-  // Reset the image to the default image. If an avatar icon is found, the image
-  // will be updated.
-  [self.consumer setUserImage:nil];
-
-  if (self.selectedIdentity) {
+  if (!self.selectedIdentity) {
+    [self.consumer noIdentityAvailable];
+  } else {
+    UIImage* avatar = self.accountManagerService->GetIdentityAvatarWithIdentity(
+        self.selectedIdentity, IdentityAvatarSize::DefaultLarge);
     [self.consumer
         setSelectedIdentityUserName:self.selectedIdentity.userFullName
                               email:self.selectedIdentity.userEmail
-                          givenName:self.selectedIdentity.userGivenName];
-
-    ChromeIdentity* selectedIdentity = self.selectedIdentity;
-    __weak __typeof(self) weakSelf = self;
-    self.identityService->GetAvatarForIdentity(
-        selectedIdentity, ^(UIImage* identityAvatar) {
-          if (weakSelf.selectedIdentity != selectedIdentity)
-            return;
-          [weakSelf.consumer setUserImage:identityAvatar];
-        });
-  } else {
-    [self.consumer noIdentityAvailable];
+                          givenName:self.selectedIdentity.userGivenName
+                             avatar:avatar];
   }
 }
 

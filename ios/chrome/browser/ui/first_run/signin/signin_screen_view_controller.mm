@@ -103,16 +103,16 @@ const CGFloat kIdentityTopMargin = 16;
 
 #pragma mark - SignInScreenConsumer
 
-- (void)setUserImage:(UIImage*)userImage {
-  [self.identityControl setIdentityAvatar:userImage];
-}
-
 - (void)setSelectedIdentityUserName:(NSString*)userName
                               email:(NSString*)email
-                          givenName:(NSString*)givenName {
+                          givenName:(NSString*)givenName
+                             avatar:(UIImage*)avatar {
+  DCHECK(email);
+  DCHECK(avatar);
   self.personalizedButtonPrompt = givenName ? givenName : email;
   [self updateUIForIdentityAvailable:YES];
   [self.identityControl setIdentityName:userName email:email];
+  [self.identityControl setIdentityAvatar:avatar];
 }
 
 - (void)noIdentityAvailable {

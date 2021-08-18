@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/signin_util.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_consumer.h"
 #include "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
@@ -36,7 +37,7 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 @property(nonatomic, copy) NSString* userName;
 @property(nonatomic, copy) NSString* email;
 @property(nonatomic, copy) NSString* givenName;
-@property(nonatomic, strong) UIImage* userImage;
+@property(nonatomic, strong) UIImage* avatar;
 
 @end
 
@@ -46,16 +47,14 @@ using base::test::ios::WaitUntilConditionOrTimeout;
   self.hidden = YES;
 }
 
-- (void)setUserImage:(UIImage*)userImage {
-  _userImage = userImage;
-}
-
 - (void)setSelectedIdentityUserName:(NSString*)userName
                               email:(NSString*)email
-                          givenName:(NSString*)givenName {
+                          givenName:(NSString*)givenName
+                             avatar:(UIImage*)avatar {
   self.userName = userName;
   self.email = email;
   self.givenName = givenName;
+  self.avatar = avatar;
 }
 
 @end
@@ -121,13 +120,11 @@ TEST_F(SigninScreenMediatorTest, TestSettingConsumerWithExistingIdentity) {
   EXPECT_EQ(identity_.userEmail, consumer_.email);
   EXPECT_EQ(identity_.userFullName, consumer_.userName);
   EXPECT_FALSE(consumer_.hidden);
-  // The image is added asynchronously.
-  EXPECT_EQ(nil, consumer_.userImage);
-
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool {
-    return identity_service_->GetCachedAvatarForIdentity(identity_) ==
-           consumer_.userImage;
-  }));
+  UIImage* avatar = consumer_.avatar;
+  EXPECT_NE(nil, avatar);
+  CGSize expected_size =
+      GetSizeForIdentityAvatarSize(IdentityAvatarSize::DefaultLarge);
+  EXPECT_TRUE(CGSizeEqualToSize(expected_size, avatar.size));
 }
 
 // Tests that the consumer is correctly updated when the selected identity is
@@ -139,7 +136,7 @@ TEST_F(SigninScreenMediatorTest, TestUpdatingSelectedIdentity) {
   EXPECT_EQ(nil, consumer_.userName);
   // True because the selected identity is nil.
   EXPECT_TRUE(consumer_.hidden);
-  EXPECT_EQ(nil, consumer_.userImage);
+  EXPECT_EQ(nil, consumer_.avatar);
 
   consumer_.hidden = NO;
   mediator_.selectedIdentity = identity_;
@@ -147,13 +144,11 @@ TEST_F(SigninScreenMediatorTest, TestUpdatingSelectedIdentity) {
   EXPECT_EQ(identity_.userEmail, consumer_.email);
   EXPECT_EQ(identity_.userFullName, consumer_.userName);
   EXPECT_FALSE(consumer_.hidden);
-  // The image is added asynchronously.
-  EXPECT_EQ(nil, consumer_.userImage);
-
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool {
-    return identity_service_->GetCachedAvatarForIdentity(identity_) ==
-           consumer_.userImage;
-  }));
+  UIImage* avatar = consumer_.avatar;
+  EXPECT_NE(nil, avatar);
+  CGSize expected_size =
+      GetSizeForIdentityAvatarSize(IdentityAvatarSize::DefaultLarge);
+  EXPECT_TRUE(CGSizeEqualToSize(expected_size, avatar.size));
 }
 
 // Tests IdentityService observations of the identity list.
@@ -164,7 +159,7 @@ TEST_F(SigninScreenMediatorTest, TestIdentityListChanged) {
   EXPECT_EQ(nil, consumer_.userName);
   // True because the selected identity is nil.
   EXPECT_TRUE(consumer_.hidden);
-  EXPECT_EQ(nil, consumer_.userImage);
+  EXPECT_EQ(nil, consumer_.avatar);
 
   consumer_.hidden = NO;
 
@@ -174,13 +169,11 @@ TEST_F(SigninScreenMediatorTest, TestIdentityListChanged) {
   EXPECT_EQ(identity_.userEmail, consumer_.email);
   EXPECT_EQ(identity_.userFullName, consumer_.userName);
   EXPECT_FALSE(consumer_.hidden);
-  // The image is added asynchronously.
-  EXPECT_EQ(nil, consumer_.userImage);
-
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool {
-    return identity_service_->GetCachedAvatarForIdentity(identity_) ==
-           consumer_.userImage;
-  }));
+  UIImage* avatar = consumer_.avatar;
+  EXPECT_NE(nil, avatar);
+  CGSize expected_size =
+      GetSizeForIdentityAvatarSize(IdentityAvatarSize::DefaultLarge);
+  EXPECT_TRUE(CGSizeEqualToSize(expected_size, avatar.size));
 
   // Removing all the identity is resetting the selected identity.
   __block bool callback_done = false;
@@ -192,7 +185,6 @@ TEST_F(SigninScreenMediatorTest, TestIdentityListChanged) {
   }));
 
   EXPECT_TRUE(consumer_.hidden);
-  EXPECT_EQ(nil, consumer_.userImage);
 }
 
 // Tests BrowserProvider observation of the identity service.
@@ -218,6 +210,12 @@ TEST_F(SigninScreenMediatorTest, TestProfileUpdate) {
 
   EXPECT_EQ(email, consumer_.email);
   EXPECT_EQ(name, consumer_.userName);
+  // Get the avatar before the fetch (the default avatar).
+  UIImage* default_avatar = consumer_.avatar;
+  EXPECT_NE(nil, default_avatar);
+
+  // Wait for the avatar to be fetched.
+  second_service->WaitForServiceCallbacksToComplete();
 
   NSString* updated_email = @"updated@email.com";
   NSString* updated_name = @"Second - Updated";
@@ -234,6 +232,10 @@ TEST_F(SigninScreenMediatorTest, TestProfileUpdate) {
 
   EXPECT_EQ(updated_email, consumer_.email);
   EXPECT_EQ(updated_name, consumer_.userName);
+  // With the notification the real avatar is expected instead of the default
+  // avatar.
+  UIImage* real_avatar = consumer_.avatar;
+  EXPECT_NE(default_avatar, real_avatar);
 }
 
 // Tests Signing In the selected identity.
