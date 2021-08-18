@@ -68,6 +68,7 @@ source_set("feature_flags") {
     "feature_flags.h",
     "feature_flags.mm",
   ]
+  deps = [ "//ios/chrome/common/app_group:app_group" ]
   frameworks = [ "Foundation.framework" ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }

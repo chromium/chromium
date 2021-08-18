@@ -17,7 +17,7 @@ namespace app_group {
 
 const char kChromeAppGroupXCallbackCommand[] = "app-group-command";
 
-const char kChromeExtensionFieldTrialPreference[] = "Extension.FieldTrial";
+NSString* const kChromeExtensionFieldTrialPreference = @"Extension.FieldTrial";
 
 const char kChromeAppGroupCommandPreference[] =
     "GroupApp.ChromeAppGroupCommand";

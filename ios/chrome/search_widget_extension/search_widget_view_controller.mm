@@ -124,8 +124,7 @@
 // handler with whether any updates occured..
 - (void)updateWidgetWithCompletionHandler:(void (^)(BOOL))completionHandler {
   NSUserDefaults* sharedDefaults = app_group::GetGroupUserDefaults();
-  NSString* fieldTrialKey =
-      base::SysUTF8ToNSString(app_group::kChromeExtensionFieldTrialPreference);
+  NSString* fieldTrialKey = app_group::kChromeExtensionFieldTrialPreference;
   self.fieldTrialValues = [sharedDefaults dictionaryForKey:fieldTrialKey];
 
   NSString* supportsSearchByImageKey =

@@ -17,4 +17,8 @@ extern NSString* const kFieldTrialValueKey;
 // The dictionary key for the trial version.
 extern NSString* const kFieldTrialVersionKey;
 
+// The current version of the credential provider extension's password creation
+// feature.
+extern const int kPasswordCreationFeatureVersion;
+
 #endif  // IOS_CHROME_COMMON_APP_GROUP_APP_GROUP_FIELD_TRIAL_VERSION_H_

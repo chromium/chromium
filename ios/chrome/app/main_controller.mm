@@ -66,6 +66,7 @@
 #include "ios/chrome/browser/crash_report/crash_report_helper.h"
 #import "ios/chrome/browser/crash_report/crash_restore_helper.h"
 #include "ios/chrome/browser/credential_provider/credential_provider_buildflags.h"
+#import "ios/chrome/browser/credential_provider/feature_flags.h"
 #include "ios/chrome/browser/download/download_directory_util.h"
 #import "ios/chrome/browser/external_files/external_file_remover_factory.h"
 #import "ios/chrome/browser/external_files/external_file_remover_impl.h"
@@ -108,6 +109,7 @@
 #import "ios/chrome/browser/web/session_state/web_session_state_cache_factory.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #include "ios/chrome/common/app_group/app_group_constants.h"
+#include "ios/chrome/common/app_group/app_group_field_trial_version.h"
 #include "ios/chrome/common/app_group/app_group_utils.h"
 #include "ios/net/cookies/cookie_store_ios.h"
 #import "ios/net/empty_nsurlcache.h"
@@ -976,20 +978,27 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 - (void)saveFieldTrialValuesForExtensions {
   NSUserDefaults* sharedDefaults = app_group::GetGroupUserDefaults();
 
-  NSString* fieldTrialValueKey =
-      base::SysUTF8ToNSString(app_group::kChromeExtensionFieldTrialPreference);
+  NSNumber* passwordCreationValue = [NSNumber
+      numberWithBool:base::FeatureList::IsEnabled(kPasswordCreationEnabled)];
+  NSNumber* passwordCreationVersion =
+      [NSNumber numberWithInt:kPasswordCreationFeatureVersion];
 
   // Add other field trial values here if they are needed by extensions.
   // The general format is
   // {
   //   name: {
-  //     value: bool,
-  //     version: bool
+  //     value: NSNumber bool,
+  //     version: NSNumber int,
   //   }
   // }
   NSDictionary* fieldTrialValues = @{
+    base::SysUTF8ToNSString(kPasswordCreationEnabled.name) : @{
+      kFieldTrialValueKey : passwordCreationValue,
+      kFieldTrialVersionKey : passwordCreationVersion,
+    }
   };
-  [sharedDefaults setObject:fieldTrialValues forKey:fieldTrialValueKey];
+  [sharedDefaults setObject:fieldTrialValues
+                     forKey:app_group::kChromeExtensionFieldTrialPreference];
 }
 
 // Schedules a call to |logIfEnterpriseManagedDevice| for deferred

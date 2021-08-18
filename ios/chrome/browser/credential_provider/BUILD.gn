@@ -13,6 +13,16 @@ buildflag_header("buildflags") {
   ]
 }
 
+source_set("feature_flags") {
+  sources = [
+    "feature_flags.h",
+    "feature_flags.mm",
+  ]
+  deps = [ "//base" ]
+  frameworks = [ "Foundation.framework" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
 if (ios_enable_credential_provider_extension) {
   source_set("credential_provider") {
     configs += [ "//build/config/compiler:enable_arc" ]
@@ -33,6 +43,7 @@ if (ios_enable_credential_provider_extension) {
     public_deps = [ "//base" ]
     deps = [
       ":buildflags",
+      ":feature_flags",
       "//base",
       "//components/autofill/core/common",
       "//components/keyed_service/core",

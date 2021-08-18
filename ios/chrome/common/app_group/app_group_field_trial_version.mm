@@ -10,3 +10,5 @@
 
 NSString* const kFieldTrialValueKey = @"FieldTrialValue";
 NSString* const kFieldTrialVersionKey = @"FieldTrialVersion";
+
+const int kPasswordCreationFeatureVersion = 0;
