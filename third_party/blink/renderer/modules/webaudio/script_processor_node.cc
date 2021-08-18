@@ -487,7 +487,7 @@ ScriptProcessorNode* ScriptProcessorNode::Create(
     case 0:
       // Choose an appropriate size.  For an AudioContext that is not closed, we
       // need to choose an appropriate size based on the callback buffer size.
-      if (context.HasRealtimeConstraint() && !context.IsContextClosed()) {
+      if (context.HasRealtimeConstraint() && !context.IsContextCleared()) {
         RealtimeAudioDestinationHandler& destination_handler =
             static_cast<RealtimeAudioDestinationHandler&>(
                 context.destination()->GetAudioDestinationHandler());
@@ -625,7 +625,7 @@ void ScriptProcessorNode::DispatchEvent(double playback_time,
 
 bool ScriptProcessorNode::HasPendingActivity() const {
   // To prevent the node from leaking after the context is closed.
-  if (context()->IsContextClosed())
+  if (context()->IsContextCleared())
     return false;
 
   // If |onaudioprocess| event handler is defined, the node should not be

@@ -291,7 +291,7 @@ class MODULES_EXPORT BaseAudioContext
   // A context is considered closed if:
   //  - closeContext() has been called.
   //  - it has been stopped by its execution context.
-  virtual bool IsContextClosed() const { return is_cleared_; }
+  virtual bool IsContextCleared() const { return is_cleared_; }
 
   // Get the security origin for this audio context.
   const SecurityOrigin* GetSecurityOrigin() const;

@@ -158,7 +158,7 @@ ScriptPromise OfflineAudioContext::startOfflineRendering(
   // Calling close() on an OfflineAudioContext is not supported/allowed,
   // but it might well have been stopped by its execution context.
   // See: crbug.com/435867
-  if (IsContextClosed() || ContextState() == AudioContextState::kClosed) {
+  if (IsContextCleared() || ContextState() == AudioContextState::kClosed) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "cannot call startRendering on an OfflineAudioContext in a stopped "
@@ -314,7 +314,7 @@ ScriptPromise OfflineAudioContext::resumeContext(ScriptState* script_state) {
 
   // If the context is in a closed state or it really is closed (cleared),
   // reject the promise.
-  if (IsContextClosed() || ContextState() == AudioContextState::kClosed) {
+  if (IsContextCleared() || ContextState() == AudioContextState::kClosed) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError,
         "cannot resume a closed offline context"));

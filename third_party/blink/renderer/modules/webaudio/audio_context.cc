@@ -289,7 +289,7 @@ ScriptPromise AudioContext::resumeContext(ScriptState* script_state,
                                           ExceptionState& exception_state) {
   DCHECK(IsMainThread());
 
-  if (IsContextClosed()) {
+  if (IsContextCleared()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
                                       "cannot resume a closed AudioContext");
     return ScriptPromise();
@@ -382,7 +382,7 @@ AudioTimestamp* AudioContext::getOutputTimestamp(
 
 ScriptPromise AudioContext::closeContext(ScriptState* script_state,
                                          ExceptionState& exception_state) {
-  if (IsContextClosed()) {
+  if (IsContextCleared()) {
     // We've already closed the context previously, but it hasn't yet been
     // resolved, so just throw a DOM exception to trigger a promise rejection
     // and return an empty promise.
@@ -414,8 +414,8 @@ void AudioContext::DidClose() {
     close_resolver_->Resolve();
 }
 
-bool AudioContext::IsContextClosed() const {
-  return close_resolver_ || BaseAudioContext::IsContextClosed();
+bool AudioContext::IsContextCleared() const {
+  return close_resolver_ || BaseAudioContext::IsContextCleared();
 }
 
 void AudioContext::StartRendering() {

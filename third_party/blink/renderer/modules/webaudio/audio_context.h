@@ -52,7 +52,7 @@ class MODULES_EXPORT AudioContext : public BaseAudioContext {
   bool HasPendingActivity() const override;
 
   ScriptPromise closeContext(ScriptState*, ExceptionState&);
-  bool IsContextClosed() const final;
+  bool IsContextCleared() const final;
 
   ScriptPromise suspendContext(ScriptState*);
   ScriptPromise resumeContext(ScriptState*, ExceptionState&);
