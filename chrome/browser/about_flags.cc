@@ -2936,12 +2936,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCompositingBasedThrottling,
      flag_descriptions::kCompositingBasedThrottlingDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kCompositingBasedThrottling)},
-    {"bluetooth-aggressive-appearance-filter",
-     flag_descriptions::kBluetoothAggressiveAppearanceFilterName,
-     flag_descriptions::kBluetoothAggressiveAppearanceFilterDescription,
-     kOsCrOS,
-     FEATURE_VALUE_TYPE(
-         chromeos::features::kBluetoothAggressiveAppearanceFilter)},
     {"bluetooth-fix-a2dp-packet-size",
      flag_descriptions::kBluetoothFixA2dpPacketSizeName,
      flag_descriptions::kBluetoothFixA2dpPacketSizeDescription, kOsCrOS,

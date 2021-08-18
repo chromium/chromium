@@ -83,9 +83,7 @@ BluetoothAdapter::DeviceList FilterUnknownDevices(
   for (BluetoothDevice* device : devices) {
     // Always filter out laptops, etc. There is no intended use case or
     // Bluetooth profile in this context.
-    if (base::FeatureList::IsEnabled(
-            chromeos::features::kBluetoothAggressiveAppearanceFilter) &&
-        device->GetDeviceType() == BluetoothDeviceType::COMPUTER) {
+    if (device->GetDeviceType() == BluetoothDeviceType::COMPUTER) {
       continue;
     }
 
@@ -132,9 +130,7 @@ BluetoothAdapter::DeviceList FilterUnknownDevices(
       // https://crbug.com/1656971 for more.
       case BLUETOOTH_TRANSPORT_DUAL:
         if (device->GetName()) {
-          if (base::FeatureList::IsEnabled(
-                  chromeos::features::kBluetoothAggressiveAppearanceFilter) &&
-              device->GetDeviceType() == BluetoothDeviceType::UNKNOWN) {
+          if (device->GetDeviceType() == BluetoothDeviceType::UNKNOWN) {
             continue;
           }
 

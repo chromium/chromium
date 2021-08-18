@@ -4,13 +4,11 @@
 
 #include "device/bluetooth/chromeos/bluetooth_utils.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/bluetooth_device.h"
@@ -72,16 +70,10 @@ class BluetoothUtilsTest : public testing::Test {
     EXPECT_EQ(num_expected_remaining_devices, filtered_device_list.size());
   }
 
-  void DisableAggressiveAppearanceFilter() {
-    feature_list_.InitAndDisableFeature(
-        chromeos::features::kBluetoothAggressiveAppearanceFilter);
-  }
-
  private:
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<MockBluetoothAdapter> adapter_ =
       base::MakeRefCounted<testing::NiceMock<MockBluetoothAdapter>>();
-  base::test::ScopedFeatureList feature_list_;
 
   DISALLOW_COPY_AND_ASSIGN(BluetoothUtilsTest);
 };
@@ -199,36 +191,11 @@ TEST_F(
 
 TEST_F(
     BluetoothUtilsTest,
-    TestFilterBluetoothDeviceList_FilterKnown_DualDevicesWithoutAppearances_KeepWithFilterFlagDisabled) {
-  DisableAggressiveAppearanceFilter();
-
-  AddMockBluetoothDeviceToAdapter(BLUETOOTH_TRANSPORT_DUAL);
-
-  VerifyFilterBluetoothDeviceList(BluetoothFilterType::KNOWN,
-                                  1u /* num_expected_remaining_devices */);
-}
-
-TEST_F(
-    BluetoothUtilsTest,
     TestFilterBluetoothDeviceList_FilterKnown_DualDevicesWithoutAppearances_RemoveWithFilterFlagEnabled) {
   AddMockBluetoothDeviceToAdapter(BLUETOOTH_TRANSPORT_DUAL);
 
   VerifyFilterBluetoothDeviceList(BluetoothFilterType::KNOWN,
                                   0u /* num_expected_remaining_devices */);
-}
-
-TEST_F(
-    BluetoothUtilsTest,
-    TestFilterBluetoothDeviceList_FilterKnown_AppearanceComputer_KeepWithFilterFlagDisabled) {
-  DisableAggressiveAppearanceFilter();
-
-  auto* mock_bluetooth_device =
-      AddMockBluetoothDeviceToAdapter(BLUETOOTH_TRANSPORT_CLASSIC);
-  ON_CALL(*mock_bluetooth_device, GetDeviceType)
-      .WillByDefault(testing::Return(BluetoothDeviceType::COMPUTER));
-
-  VerifyFilterBluetoothDeviceList(BluetoothFilterType::KNOWN,
-                                  1u /* num_expected_remaining_devices */);
 }
 
 TEST_F(

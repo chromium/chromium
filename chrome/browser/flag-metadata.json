@@ -488,11 +488,6 @@
     "expiry_milestone": 97
   },
   {
-    "name": "bluetooth-aggressive-appearance-filter",
-    "owners": [ "hansberry", "cros-system-services@google.com" ],
-    "expiry_milestone": 85
-  },
-  {
     "name": "bluetooth-fix-a2dp-packet-size",
     "owners": [ "michaelfsun", "chromeos-bluetooth@google.com" ],
     "expiry_milestone": 86

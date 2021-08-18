@@ -177,11 +177,6 @@ const base::Feature kBentoBar{"BentoBar", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kBluetoothAdvertisementMonitoring{
     "BluetoothAdvertisementMonitoring", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables or disables more aggressive filtering out of Bluetooth devices with
-// "appearances" that are less likely to be pairable or useful.
-const base::Feature kBluetoothAggressiveAppearanceFilter{
-    "BluetoothAggressiveAppearanceFilter", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables or disables the usage of fixed Bluetooth A2DP packet size to improve
 // audio performance in noisy environment.
 const base::Feature kBluetoothFixA2dpPacketSize{

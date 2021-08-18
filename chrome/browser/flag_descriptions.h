@@ -2271,9 +2271,6 @@ extern const char kAshEnableUnifiedDesktopDescription[];
 extern const char kBluetoothAdvertisementMonitoringName[];
 extern const char kBluetoothAdvertisementMonitoringDescription[];
 
-extern const char kBluetoothAggressiveAppearanceFilterName[];
-extern const char kBluetoothAggressiveAppearanceFilterDescription[];
-
 extern const char kBluetoothFixA2dpPacketSizeName[];
 extern const char kBluetoothFixA2dpPacketSizeDescription[];
 

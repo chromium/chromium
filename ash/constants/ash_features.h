@@ -81,8 +81,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kBentoBar;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kBluetoothAdvertisementMonitoring;
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::Feature kBluetoothAggressiveAppearanceFilter;
-COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kBluetoothFixA2dpPacketSize;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kBluetoothPhoneFilter;
