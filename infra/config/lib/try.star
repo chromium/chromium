@@ -301,10 +301,6 @@ def chromium_chromiumos_builder(*, name, **kwargs):
         name = name,
         builder_group = "tryserver.chromium.chromiumos",
         goma_backend = builders.goma.backend.RBE_PROD,
-        experiments = {
-            # TODO(crbug.com/1237607): disable rbe cas temporarily.
-            "chromium.chromium_tests.use_rbe_cas": 0,
-        },
         **kwargs
     )
 
