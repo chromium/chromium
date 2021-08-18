@@ -541,6 +541,8 @@ crbug.com/1141066 [ mac apple-apple-m1 angle-opengl passthrough ] conformance/te
 # Introduced by upstreaming Apple's direct-to-metal backend
 crbug.com/angleproject/5505 [ mac apple-angle-metal-renderer:-apple-m1 angle-metal ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
 crbug.com/angleproject/5505 [ mac apple-angle-metal-renderer:-apple-m1 angle-metal ] conformance/rendering/multisample-corruption.html [ Failure ]
+# No active browser window, but no crash stack.
+crbug.com/1240443 [ mac apple-apple-m1 passthrough angle-opengl ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ RetryOnFailure ]
 
 ####################
 # Linux failures   #
