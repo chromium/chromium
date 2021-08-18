@@ -122,16 +122,18 @@ void LocationBarBubbleDelegateView::ShowForReason(DisplayReason reason,
   if (reason == USER_GESTURE) {
     GetWidget()->Show();
   } else {
-    GetWidget()->ShowInactive();
-
+// TODO(crbug.com/1186729): Reenable this announcement on Mac when the keyboard
+// shortcut to reach it gets a keybinding and is verified to work. This will
+// also require a string update with the new key binding on Mac.
+#if !defined(OS_MAC)
     if (allow_refocus_alert) {
-      // Since this widget is inactive (but shown), accessibility tools won't
-      // alert the user to its presence. Accessibility tools such as screen
-      // readers work by tracking system focus. Give users of these tools a hint
-      // description and alert them to the presence of this widget.
+      // Since this will show as inactive, add a description for how to get to
+      // it.
       GetWidget()->GetRootView()->GetViewAccessibility().OverrideDescription(
           l10n_util::GetStringUTF8(IDS_SHOW_BUBBLE_INACTIVE_DESCRIPTION));
     }
+#endif
+    GetWidget()->ShowInactive();
   }
 }
 

@@ -222,10 +222,7 @@ views::Widget* TranslateBubbleView::ShowBubble(
     translate_bubble_view_->SwitchToErrorView(error_type);
   }
 
-  // |allow_refocus_alert| is set to false because translate bubble does not
-  // have an additional screen reader alert instructing the user to use a
-  // hotkey combination to focus the bubble.
-  view->ShowForReason(reason, false);
+  view->ShowForReason(reason);
   translate::ReportUiAction(translate::BUBBLE_SHOWN);
 
   ChromeTranslateClient::GetManagerFromWebContents(web_contents)
