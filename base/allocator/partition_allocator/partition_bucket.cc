@@ -489,7 +489,7 @@ PartitionBucket<thread_safe>::AllocNewSlotSpan(PartitionRoot<thread_safe>* root,
                root->next_partition_page_end)) {
     // In this case, we can no longer hand out pages from the current super page
     // allocation. Get a new super page.
-    if (!AllocNewSuperPage(root)) {
+    if (!AllocNewSuperPage(root, flags)) {
       return nullptr;
     }
     // AllocNewSuperPage() updates root->next_partition_page, re-query.
@@ -534,7 +534,8 @@ PartitionBucket<thread_safe>::AllocNewSlotSpan(PartitionRoot<thread_safe>* root,
 
 template <bool thread_safe>
 ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSuperPage(
-    PartitionRoot<thread_safe>* root) {
+    PartitionRoot<thread_safe>* root,
+    int flags) {
   // Need a new super page. We want to allocate super pages in a contiguous
   // address region as much as possible. This is important for not causing
   // page table bloat and not fragmenting address spaces in 32 bit
@@ -545,8 +546,14 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSuperPage(
   pool_handle pool = root->ChooseGigaCagePool(/* is_direct_map= */ false);
   char* super_page =
       ReserveMemoryFromGigaCage(pool, requested_address, kSuperPageSize);
-  if (UNLIKELY(!super_page))
-    return nullptr;
+  if (UNLIKELY(!super_page)) {
+    if (flags & PartitionAllocReturnNull)
+      return nullptr;
+
+    // Didn't manage to get a new uncommitted super page -> address space issue.
+    ScopedUnlockGuard<thread_safe> unlock{root->lock_};
+    PartitionOutOfMemoryMappingFailure(root, kSuperPageSize);
+  }
 
   *ReservationOffsetPointer(reinterpret_cast<uintptr_t>(super_page)) =
       kOffsetTagNormalBuckets;

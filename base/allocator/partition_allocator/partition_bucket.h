@@ -154,7 +154,8 @@ struct PartitionBucket {
 
   // Allocates a new super page from the current extent. All slot-spans will be
   // in the decommitted state. Returns nullptr on error.
-  ALWAYS_INLINE void* AllocNewSuperPage(PartitionRoot<thread_safe>* root)
+  ALWAYS_INLINE void* AllocNewSuperPage(PartitionRoot<thread_safe>* root,
+                                        int flags)
       EXCLUSIVE_LOCKS_REQUIRED(root->lock_);
 
   // Each bucket allocates a slot span when it runs out of slots.
