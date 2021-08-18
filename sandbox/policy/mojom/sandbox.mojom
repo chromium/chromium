@@ -79,4 +79,8 @@ enum Sandbox {
   // Chrome branded builds.
   [EnableIf=is_chromeos_ash]
   kLibassistant,
+
+  // Like kUtility but allows access to IOSurface on macOS.
+  [EnableIf=is_mac]
+  kMirroring,
 };

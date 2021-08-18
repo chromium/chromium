@@ -149,6 +149,10 @@ inline constexpr sandbox::policy::SandboxType MapToSandboxType(
     case sandbox::mojom::Sandbox::kXrCompositing:
       return sandbox::policy::SandboxType::kXrCompositing;
 #endif  // OS_WIN
+#if defined(OS_MAC)
+    case sandbox::mojom::Sandbox::kMirroring:
+      return sandbox::policy::SandboxType::kMirroring;
+#endif  // defined(OS_MAC)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     case sandbox::mojom::Sandbox::kIme:
       return sandbox::policy::SandboxType::kIme;
