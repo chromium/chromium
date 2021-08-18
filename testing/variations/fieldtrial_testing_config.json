@@ -3648,6 +3648,28 @@
             ]
         }
     ],
+    "FeedPullToRefresh": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithIph",
+                    "enable_features": [
+                        "FeedInteractiveRefresh",
+                        "IPH_FeedSwipeRefresh"
+                    ]
+                },
+                {
+                    "name": "EnabledWithoutIph",
+                    "enable_features": [
+                        "FeedInteractiveRefresh"
+                    ]
+                }
+            ]
+        }
+    ],
     "FillingAcrossAffiliatedWebsites": [
         {
             "platforms": [
