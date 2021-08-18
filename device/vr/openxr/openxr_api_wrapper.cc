@@ -22,11 +22,11 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl_dxgi.h"
+#include "ui/gfx/geometry/angle_conversions.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/quaternion.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/transform.h"
-#include "ui/gfx/transform_util.h"
 
 namespace device {
 
@@ -87,8 +87,8 @@ void OpenXrApiWrapper::Reset() {
   swapchain_size_ = gfx::Size(0, 0);
   color_swapchain_images_.clear();
   frame_state_ = {};
-  origin_from_eye_views_.clear();
-  head_from_eye_views_.clear();
+  local_from_eye_views_.clear();
+  local_from_viewer_ = {XR_TYPE_SPACE_LOCATION};
   layer_projection_views_.clear();
   input_helper_.reset();
 }
@@ -349,8 +349,7 @@ XrResult OpenXrApiWrapper::InitSession(
   // Since the objects in these arrays are used on every frame,
   // we don't want to create and destroy these objects every frame,
   // so create the number of objects we need and reuse them.
-  origin_from_eye_views_.resize(kNumViews);
-  head_from_eye_views_.resize(kNumViews);
+  local_from_eye_views_.resize(kNumViews);
   layer_projection_views_.resize(kNumViews);
 
   // Make sure all of the objects we initialized are there.
@@ -649,7 +648,7 @@ XrResult OpenXrApiWrapper::EndFrame() {
   XrCompositionLayerProjection* multi_projection_layer_ptr =
       &multi_projection_layer;
   multi_projection_layer.space = local_space_;
-  multi_projection_layer.viewCount = origin_from_eye_views_.size();
+  multi_projection_layer.viewCount = local_from_eye_views_.size();
   multi_projection_layer.views = layer_projection_views_.data();
 
   XrFrameEndInfo end_frame_info = {XR_TYPE_FRAME_END_INFO};
@@ -677,14 +676,16 @@ bool OpenXrApiWrapper::HasPendingFrame() const {
 
 XrResult OpenXrApiWrapper::UpdateProjectionLayers() {
   RETURN_IF_XR_FAILED(
-      LocateViews(XR_REFERENCE_SPACE_TYPE_LOCAL, &origin_from_eye_views_));
-  RETURN_IF_XR_FAILED(
-      LocateViews(XR_REFERENCE_SPACE_TYPE_VIEW, &head_from_eye_views_));
+      LocateViews(XR_REFERENCE_SPACE_TYPE_LOCAL, &local_from_eye_views_));
+
+  RETURN_IF_XR_FAILED(xrLocateSpace(view_space_, local_space_,
+                                    frame_state_.predictedDisplayTime,
+                                    &local_from_viewer_));
 
   uint32_t x_offset = 0;
-  for (uint32_t view_index = 0; view_index < origin_from_eye_views_.size();
+  for (uint32_t view_index = 0; view_index < local_from_eye_views_.size();
        view_index++) {
-    const XrView& view = origin_from_eye_views_[view_index];
+    const XrView& view = local_from_eye_views_[view_index];
 
     XrCompositionLayerProjectionView& layer_projection_view =
         layer_projection_views_[view_index];
@@ -771,18 +772,32 @@ XrTime OpenXrApiWrapper::GetPredictedDisplayTime() const {
   return frame_state_.predictedDisplayTime;
 }
 
-XrResult OpenXrApiWrapper::GetHeadPose(
-    absl::optional<gfx::Quaternion>* orientation,
-    absl::optional<gfx::Point3F>* position,
-    bool* emulated_position) const {
-  DCHECK(HasSpace(XR_REFERENCE_SPACE_TYPE_LOCAL));
-  DCHECK(HasSpace(XR_REFERENCE_SPACE_TYPE_VIEW));
+std::vector<mojom::XRViewPtr> OpenXrApiWrapper::GetViews() const {
+  std::vector<mojom::XRViewPtr> views(local_from_eye_views_.size());
+  for (size_t i = 0; i < local_from_eye_views_.size(); i++) {
+    const XrView& xr_view = local_from_eye_views_[i];
 
-  XrSpaceLocation view_from_local = {XR_TYPE_SPACE_LOCATION};
-  RETURN_IF_XR_FAILED(xrLocateSpace(view_space_, local_space_,
-                                    frame_state_.predictedDisplayTime,
-                                    &view_from_local));
+    mojom::XRViewPtr view = mojom::XRView::New();
+    view->eye = GetEyeFromIndex(i);
+    view->mojo_from_view = XrPoseToGfxTransform(xr_view.pose);
+    view->field_of_view = mojom::VRFieldOfView::New();
 
+    view->field_of_view->up_degrees = gfx::RadToDeg(xr_view.fov.angleUp);
+    view->field_of_view->down_degrees = gfx::RadToDeg(-xr_view.fov.angleDown);
+    view->field_of_view->left_degrees = gfx::RadToDeg(-xr_view.fov.angleLeft);
+    view->field_of_view->right_degrees = gfx::RadToDeg(xr_view.fov.angleRight);
+
+    view->viewport = gfx::Size(view_configs_[i].recommendedImageRectWidth,
+                               view_configs_[i].recommendedImageRectHeight);
+
+    views[i] = std::move(view);
+  }
+
+  return views;
+}
+
+mojom::VRPosePtr OpenXrApiWrapper::GetViewerPose() const {
+  mojom::VRPosePtr pose = mojom::VRPose::New();
   // emulated_position indicates when there is a fallback from a fully-tracked
   // (i.e. 6DOF) type case to some form of orientation-only type tracking
   // (i.e. 3DOF/IMU type sensors)
@@ -790,37 +805,24 @@ XrResult OpenXrApiWrapper::GetHeadPose(
   // Valid Bit only indicates it's either tracked or emulated, we have to check
   // for XR_SPACE_LOCATION_ORIENTATION_TRACKED_BIT to make sure orientation is
   // tracked.
-  if (view_from_local.locationFlags &
+  if (local_from_viewer_.locationFlags &
       XR_SPACE_LOCATION_ORIENTATION_TRACKED_BIT) {
-    *orientation = gfx::Quaternion(
-        view_from_local.pose.orientation.x, view_from_local.pose.orientation.y,
-        view_from_local.pose.orientation.z, view_from_local.pose.orientation.w);
-  } else {
-    *orientation = absl::nullopt;
+    pose->orientation = gfx::Quaternion(local_from_viewer_.pose.orientation.x,
+                                        local_from_viewer_.pose.orientation.y,
+                                        local_from_viewer_.pose.orientation.z,
+                                        local_from_viewer_.pose.orientation.w);
   }
 
-  if (view_from_local.locationFlags & XR_SPACE_LOCATION_POSITION_VALID_BIT) {
-    *position = gfx::Point3F(view_from_local.pose.position.x,
-                             view_from_local.pose.position.y,
-                             view_from_local.pose.position.z);
-  } else {
-    *position = absl::nullopt;
+  if (local_from_viewer_.locationFlags & XR_SPACE_LOCATION_POSITION_VALID_BIT) {
+    pose->position = gfx::Point3F(local_from_viewer_.pose.position.x,
+                                  local_from_viewer_.pose.position.y,
+                                  local_from_viewer_.pose.position.z);
   }
 
-  *emulated_position = true;
-  if (view_from_local.locationFlags & XR_SPACE_LOCATION_POSITION_TRACKED_BIT) {
-    *emulated_position = false;
-  }
+  pose->emulated_position = !(local_from_viewer_.locationFlags &
+                              XR_SPACE_LOCATION_POSITION_TRACKED_BIT);
 
-  return XR_SUCCESS;
-}
-
-void OpenXrApiWrapper::GetHeadFromEyes(XrView* left, XrView* right) const {
-  DCHECK(HasSession());
-  DCHECK_EQ(head_from_eye_views_.size(), kNumViews);
-
-  *left = head_from_eye_views_[kLeftView];
-  *right = head_from_eye_views_[kRightView];
+  return pose;
 }
 
 std::vector<mojom::XRInputSourceStatePtr> OpenXrApiWrapper::GetInputState(
@@ -1057,6 +1059,16 @@ void OpenXrApiWrapper::SetTestHook(VRTestHook* hook) {
   test_hook_ = hook;
   if (service_test_hook_) {
     service_test_hook_->SetTestHook(test_hook_);
+  }
+}
+
+mojom::XREye OpenXrApiWrapper::GetEyeFromIndex(int i) {
+  if (i == OpenXrApiWrapper::kLeftView) {
+    return mojom::XREye::kLeft;
+  } else if (i == OpenXrApiWrapper::kRightView) {
+    return mojom::XREye::kRight;
+  } else {
+    return mojom::XREye::kNone;
   }
 }
 

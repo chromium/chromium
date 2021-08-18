@@ -39,7 +39,7 @@ mojom::XRViewPtr FakeVRDevice::InitView(mojom::XREye eye,
 
   gfx::DecomposedTransform decomp;
   decomp.translate[0] = offset;
-  view->head_from_eye = gfx::ComposeTransform(decomp);
+  view->mojo_from_view = gfx::ComposeTransform(decomp);
 
   view->viewport = gfx::Size(size, size);
 

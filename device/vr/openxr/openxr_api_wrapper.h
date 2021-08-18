@@ -24,8 +24,6 @@
 #include "third_party/openxr/src/include/openxr/openxr_platform.h"
 
 namespace gfx {
-class Quaternion;
-class Point3F;
 class Size;
 class Transform;
 }  // namespace gfx
@@ -70,10 +68,8 @@ class OpenXrApiWrapper {
   bool HasPendingFrame() const;
   bool HasFrameState() const;
 
-  XrResult GetHeadPose(absl::optional<gfx::Quaternion>* orientation,
-                       absl::optional<gfx::Point3F>* position,
-                       bool* emulated_position) const;
-  void GetHeadFromEyes(XrView* left, XrView* right) const;
+  std::vector<mojom::XRViewPtr> GetViews() const;
+  mojom::VRPosePtr GetViewerPose() const;
   std::vector<mojom::XRInputSourceStatePtr> GetInputState(
       bool hand_input_enabled);
 
@@ -102,11 +98,14 @@ class OpenXrApiWrapper {
   void StoreFence(Microsoft::WRL::ComPtr<ID3D11Fence> d3d11_fence,
                   int16_t frame_index);
 
+  static mojom::XREye GetEyeFromIndex(int i);
+
   // The number of views the OpenXR runtime is returning on each frame.
   static constexpr uint32_t kNumViews = 2;
 
-  // Per the OpenXR 1.0 spec, the XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO view
-  // configuration must have the left view in index 0 and right view in index 1.
+  // Per the OpenXR 1.0 spec for the XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO
+  // view configuration: View index 0 must represent the left eye and view index
+  // 1 must represent the right eye.
   static constexpr uint32_t kLeftView = 0;
   static constexpr uint32_t kRightView = 1;
   // Since kNumViews is used to size a vector that uses kLeftView/kRightView as
@@ -199,8 +198,8 @@ class OpenXrApiWrapper {
   // These objects store information about the current frame. They're
   // valid only while a session is active, and they are updated each frame.
   XrFrameState frame_state_;
-  std::vector<XrView> origin_from_eye_views_;
-  std::vector<XrView> head_from_eye_views_;
+  std::vector<XrView> local_from_eye_views_;
+  XrSpaceLocation local_from_viewer_;
   std::vector<XrCompositionLayerProjectionView> layer_projection_views_;
 
   std::unique_ptr<OpenXrAnchorManager> anchor_manager_;

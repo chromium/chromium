@@ -27,7 +27,7 @@ class MODULES_EXPORT XRView final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  XRView(XRFrame*, XRViewData*);
+  XRView(XRFrame*, XRViewData*, const TransformationMatrix&);
 
   const String& eye() const { return eye_string_; }
   device::mojom::blink::XREye EyeValue() const { return eye_; }
@@ -36,7 +36,7 @@ class MODULES_EXPORT XRView final : public ScriptWrappable {
   XRFrame* frame() const;
   XRSession* session() const;
   DOMFloat32Array* projectionMatrix() const;
-  XRRigidTransform* transform() const;
+  XRRigidTransform* refSpaceFromView() const;
   XRCamera* camera() const;
 
   // isFirstPersonObserver is only true for views that composed with a video
@@ -56,7 +56,9 @@ class MODULES_EXPORT XRView final : public ScriptWrappable {
   String eye_string_;
   Member<XRFrame> frame_;
   Member<XRViewData> view_data_;
-  Member<XRRigidTransform> ref_space_from_eye_;
+  // The transform from the view to the reference space requested by
+  // XRFrame::getViewerPose.
+  Member<XRRigidTransform> ref_space_from_view_;
   Member<DOMFloat32Array> projection_matrix_;
 };
 
@@ -67,7 +69,10 @@ class MODULES_EXPORT XRViewData final : public GarbageCollected<XRViewData> {
              double depth_near,
              double depth_far);
 
-  void UpdatePoseMatrix(const TransformationMatrix& ref_space_from_head);
+  void UpdateView(const device::mojom::blink::XRViewPtr& view,
+                  double depth_near,
+                  double depth_far);
+
   void UpdateProjectionMatrixFromFoV(float up_rad,
                                      float down_rad,
                                      float left_rad,
@@ -79,15 +84,13 @@ class MODULES_EXPORT XRViewData final : public GarbageCollected<XRViewData> {
                                         float near_depth,
                                         float far_depth);
 
-  void SetHeadFromEyeTransform(const TransformationMatrix& head_from_eye);
-
   TransformationMatrix UnprojectPointer(double x,
                                         double y,
                                         double canvas_width,
                                         double canvas_height);
 
   device::mojom::blink::XREye Eye() const { return eye_; }
-  const TransformationMatrix& Transform() const { return ref_space_from_eye_; }
+  const TransformationMatrix& MojoFromView() const { return mojo_from_view_; }
   const TransformationMatrix& ProjectionMatrix() const {
     return projection_matrix_;
   }
@@ -113,10 +116,9 @@ class MODULES_EXPORT XRViewData final : public GarbageCollected<XRViewData> {
 
  private:
   const device::mojom::blink::XREye eye_;
-  TransformationMatrix ref_space_from_eye_;
+  TransformationMatrix mojo_from_view_;
   TransformationMatrix projection_matrix_;
   TransformationMatrix inv_projection_;
-  TransformationMatrix head_from_eye_;
   bool inv_projection_dirty_ = true;
   absl::optional<double> recommended_viewport_scale_ = absl::nullopt;
   double requested_viewport_scale_ = 1.0;

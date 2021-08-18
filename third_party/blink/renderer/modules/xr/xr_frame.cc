@@ -92,7 +92,23 @@ XRViewerPose* XRFrame::getViewerPose(XRReferenceSpace* reference_space,
 
   session_->LogGetPose();
 
-  device::mojom::blink::XRReferenceSpaceType type = reference_space->GetType();
+  absl::optional<TransformationMatrix> native_from_mojo =
+      reference_space->NativeFromMojo();
+  if (!native_from_mojo) {
+    DVLOG(1) << __func__ << ": native_from_mojo is invalid";
+    return nullptr;
+  }
+
+  TransformationMatrix ref_space_from_mojo =
+      reference_space->OffsetFromNativeMatrix();
+  ref_space_from_mojo.Multiply(*native_from_mojo);
+
+  // Can only update an XRViewerPose's views with an invertible matrix.
+  if (!ref_space_from_mojo.IsInvertible()) {
+    DVLOG(1) << __func__ << ": ref_space_from_mojo is not invertible";
+    return nullptr;
+  }
+
   absl::optional<TransformationMatrix> offset_space_from_viewer =
       reference_space->OffsetFromViewer();
 
@@ -105,10 +121,12 @@ XRViewerPose* XRFrame::getViewerPose(XRReferenceSpace* reference_space,
     return nullptr;
   }
 
+  device::mojom::blink::XRReferenceSpaceType type = reference_space->GetType();
+
   // If the |reference_space| type is kViewer, we know that the pose is not
   // emulated. Otherwise, ask the session if the poses are emulated or not.
   return MakeGarbageCollected<XRViewerPose>(
-      this, *offset_space_from_viewer,
+      this, ref_space_from_mojo, *offset_space_from_viewer,
       (type == device::mojom::blink::XRReferenceSpaceType::kViewer)
           ? false
           : session_->EmulatedPosition());

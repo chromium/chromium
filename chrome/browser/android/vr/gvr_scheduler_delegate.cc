@@ -22,6 +22,7 @@
 #include "components/webxr/mailbox_to_surface_bridge_impl.h"
 #include "content/public/common/content_features.h"
 #include "device/vr/android/gvr/gvr_delegate.h"
+#include "device/vr/android/gvr/gvr_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl_android_hardware_buffer.h"
@@ -984,6 +985,8 @@ void GvrSchedulerDelegate::SendVSync(device::mojom::VRPosePtr pose,
   while (gvr_api_->PollEvent(&last_event)) {
     frame_data->mojo_space_reset |= last_event.type == GVR_EVENT_RECENTER;
   }
+
+  frame_data->views = device::gvr_utils::CreateViews(gvr_api_, pose.get());
 
   TRACE_EVENT0("gpu", "GvrSchedulerDelegate::XRInput");
   frame_data->input_state = std::move(input_states_);
