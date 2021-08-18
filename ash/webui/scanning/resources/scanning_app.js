@@ -843,13 +843,13 @@ Polymer({
   },
 
   /** @private */
-  onDialogOkClick_() {
+  onScanFailedDialogOkClick_() {
     this.$.scanFailedDialog.close();
     this.setAppState_(AppState.READY);
   },
 
   /** @private */
-  onDialogGetHelpClick_() {
+  onScanFailedDialogGetHelpClick_() {
     this.$.scanFailedDialog.close();
     this.setAppState_(AppState.READY);
     window.open(HELP_PAGE_LINK);

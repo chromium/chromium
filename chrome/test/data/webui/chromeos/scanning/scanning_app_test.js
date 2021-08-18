@@ -504,7 +504,7 @@ export function scanningAppTest() {
    * Clicks the "Ok" button to close the scan failed dialog.
    * @return {!Promise}
    */
-  function clickOkButton() {
+  function clickScanFailedDialogOkButton() {
     const button = scanningApp.$$('#okButton');
     assertTrue(!!button);
     button.click();
@@ -740,7 +740,7 @@ export function scanningAppTest() {
           // The scan failed dialog should open.
           assertTrue(scanningApp.$$('#scanFailedDialog').open);
           // Click the dialog's Ok button to return to READY state.
-          return clickOkButton();
+          return clickScanFailedDialogOkButton();
         })
         .then(() => {
           // After the dialog closes, the scan button should be enabled and
@@ -846,7 +846,7 @@ export function scanningAppTest() {
           assertEquals(
               loadTimeData.getString('scanFailedDialogUnknownErrorText'),
               scanningApp.$$('#scanFailedDialogText').textContent.trim());
-          return clickOkButton();
+          return clickScanFailedDialogOkButton();
         })
         .then(() => {
           scanButton.click();
@@ -860,7 +860,7 @@ export function scanningAppTest() {
           assertEquals(
               loadTimeData.getString('scanFailedDialogDeviceBusyText'),
               scanningApp.$$('#scanFailedDialogText').textContent.trim());
-          return clickOkButton();
+          return clickScanFailedDialogOkButton();
         })
         .then(() => {
           scanButton.click();
@@ -874,7 +874,7 @@ export function scanningAppTest() {
           assertEquals(
               loadTimeData.getString('scanFailedDialogAdfJammedText'),
               scanningApp.$$('#scanFailedDialogText').textContent.trim());
-          return clickOkButton();
+          return clickScanFailedDialogOkButton();
         })
         .then(() => {
           scanButton.click();
@@ -888,7 +888,7 @@ export function scanningAppTest() {
           assertEquals(
               loadTimeData.getString('scanFailedDialogAdfEmptyText'),
               scanningApp.$$('#scanFailedDialogText').textContent.trim());
-          return clickOkButton();
+          return clickScanFailedDialogOkButton();
         })
         .then(() => {
           scanButton.click();
@@ -902,7 +902,7 @@ export function scanningAppTest() {
           assertEquals(
               loadTimeData.getString('scanFailedDialogFlatbedOpenText'),
               scanningApp.$$('#scanFailedDialogText').textContent.trim());
-          return clickOkButton();
+          return clickScanFailedDialogOkButton();
         })
         .then(() => {
           scanButton.click();
@@ -916,7 +916,7 @@ export function scanningAppTest() {
           assertEquals(
               loadTimeData.getString('scanFailedDialogIoErrorText'),
               scanningApp.$$('#scanFailedDialogText').textContent.trim());
-          return clickOkButton();
+          return clickScanFailedDialogOkButton();
         });
   });
 
