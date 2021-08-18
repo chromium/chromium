@@ -958,15 +958,6 @@ if (!is_component_build) {
     "//net/android:net_java",
     "//net/android:net_java_test_support",
     "//url:url_java",
-    "//third_party/google-truth:google_truth_java",
-    "//third_party/junit",
-    "//third_party/mockito:mockito_java",
-
-    # Transitive Mockito dependencies
-    "//third_party/byte_buddy:byte_buddy_agent_java",
-    "//third_party/byte_buddy:byte_buddy_android_java",
-    "//third_party/byte_buddy:dx_25_0_2_java",
-    "//third_party/byte_buddy:byte_buddy_java",
   ]
 
   android_library("cronet_javatests") {
@@ -1020,7 +1011,10 @@ if (!is_component_build) {
       "//third_party/android_sdk:android_test_base_java",
       "//third_party/android_support_test_runner:runner_java",
       "//third_party/androidx:androidx_test_runner_java",
+      "//third_party/google-truth:google_truth_java",
       "//third_party/hamcrest:hamcrest_core_java",
+      "//third_party/junit",
+      "//third_party/mockito:mockito_java",
     ]
     deps += cronet_javatests_deps_to_package
     data = [ "//components/cronet/testing/test_server/data/" ]
