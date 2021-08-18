@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
@@ -97,7 +98,7 @@ class SearchBoxDataProvider implements LocationBarDataProvider {
 
     @Override
     public String getCurrentUrl() {
-        return SearchWidgetProvider.getDefaultSearchEngineUrl();
+        return SearchActivityPreferencesManager.getCurrent().searchEngineUrl;
     }
 
     @Override

@@ -5,5 +5,40 @@
 import("//build/config/android/rules.gni")
 
 android_library("java") {
-  sources = [ "java/src/org/chromium/chrome/browser/ui/searchactivityutils/SearchActivityConstants.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/searchactivityutils/SearchActivityConstants.java",
+    "java/src/org/chromium/chrome/browser/ui/searchactivityutils/SearchActivityPreferencesManager.java",
+  ]
+  deps = [
+    "//base:base_java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/search_engines/android:java",
+    "//chrome/browser/ui/android/omnibox:java",
+    "//components/search_engines/android:java",
+    "//content/public/android:content_main_dex_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+}
+
+java_library("junit") {
+  # Skip platform checks since Robolectric depends on requires_android targets.
+  bypass_platform_checks = true
+  testonly = true
+
+  sources = [ "java/src/org/chromium/chrome/browser/ui/searchactivityutils/SearchActivityPreferencesManagerTest.java" ]
+
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/search_engines/android:java",
+    "//components/search_engines/android:java",
+    "//third_party/android_deps:robolectric_all_java",
+    "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+  ]
 }

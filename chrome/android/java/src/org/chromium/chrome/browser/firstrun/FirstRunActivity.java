@@ -34,7 +34,6 @@ import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.metrics.UmaUtils;
 import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
-import org.chromium.chrome.browser.searchwidget.SearchWidgetProvider;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -486,8 +485,6 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
             }
         }
 
-        // Update the search engine name cached by the widget.
-        SearchWidgetProvider.updateCachedEngineName();
         if (sObserver != null) sObserver.onUpdateCachedEngineName(this);
 
         launchPendingIntentAndFinish();

@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager;
 
 /** Implementation of the {@link LocationBarLayout} that is displayed for widget searches. */
 public class SearchActivityLocationBarLayout extends LocationBarLayout {
@@ -66,7 +67,7 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
             boolean isVoiceSearchIntent, @NonNull VoiceRecognitionHandler voiceRecognitionHandler) {
         getAutocompleteCoordinator().prefetchZeroSuggestResults();
 
-        SearchWidgetProvider.updateCachedVoiceSearchAvailability(
+        SearchActivityPreferencesManager.updateCachedValues(
                 voiceRecognitionHandler.isVoiceSearchEnabled());
 
         assert !LocaleManager.getInstance().needToCheckForSearchEnginePromo();

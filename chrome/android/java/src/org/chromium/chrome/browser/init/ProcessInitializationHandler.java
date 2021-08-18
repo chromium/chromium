@@ -74,6 +74,7 @@ import org.chromium.chrome.browser.rlz.RevenueStats;
 import org.chromium.chrome.browser.searchwidget.SearchWidgetProvider;
 import org.chromium.chrome.browser.sharing.shared_clipboard.SharedClipboardShareActivity;
 import org.chromium.chrome.browser.signin.SigninCheckerProvider;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager;
 import org.chromium.chrome.browser.util.AfterStartupTaskUtils;
 import org.chromium.chrome.browser.webapps.WebApkVersionManager;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
@@ -246,6 +247,7 @@ public class ProcessInitializationHandler {
                     return dialog;
                 });
 
+        SearchActivityPreferencesManager.onNativeLibraryReady();
         SearchWidgetProvider.initialize();
 
         if (VersionConstants.CHANNEL == Channel.CANARY

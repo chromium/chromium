@@ -810,6 +810,10 @@ public final class ChromePreferenceKeys {
             "org.chromium.chrome.browser.searchwidget.NUM_CONSECUTIVE_CRASHES";
     public static final String SEARCH_WIDGET_SEARCH_ENGINE_SHORTNAME =
             "org.chromium.chrome.browser.searchwidget.SEARCH_ENGINE_SHORTNAME";
+    public static final String SEARCH_WIDGET_SEARCH_ENGINE_URL =
+            "org.chromium.chrome.browser.searchwidget.SEARCH_ENGINE_URL";
+    public static final String SEARCH_WIDGET_IS_GOOGLE_LENS_AVAILABLE =
+            "org.chromium.chrome.browser.searchwidget.IS_GOOGLE_LENS_AVAILABLE";
 
     // Tracks which GUIDs there is an active notification for.
     public static final String SEND_TAB_TO_SELF_ACTIVE_NOTIFICATIONS =

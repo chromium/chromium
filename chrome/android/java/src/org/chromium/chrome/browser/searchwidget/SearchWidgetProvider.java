@@ -20,23 +20,18 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.app.ActivityOptionsCompat;
 
+import org.chromium.base.Consumer;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
-import org.chromium.base.ThreadUtils;
-import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
 import org.chromium.chrome.browser.locale.LocaleManager;
-import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityConstants;
-import org.chromium.components.search_engines.TemplateUrl;
-import org.chromium.components.search_engines.TemplateUrlService;
-import org.chromium.components.search_engines.TemplateUrlService.LoadListener;
-import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager.SearchActivityPreferences;
 
 /**
  * Widget that lets the user search using their default search engine.
@@ -54,7 +49,7 @@ import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServ
  */
 public class SearchWidgetProvider extends AppWidgetProvider {
     /** Wraps up all things that a {@link SearchWidgetProvider} can request things from. */
-    static class SearchWidgetProviderDelegate {
+    static class SearchWidgetProviderDelegate implements Consumer<SearchActivityPreferences> {
         private final Context mContext;
         private final @Nullable AppWidgetManager mManager;
 
@@ -85,24 +80,10 @@ public class SearchWidgetProvider extends AppWidgetProvider {
             assert mManager != null;
             mManager.updateAppWidget(id, views);
         }
-    }
-
-    /** Monitors the TemplateUrlService for changes, updating the widget when necessary. */
-    private static final class SearchWidgetTemplateUrlServiceObserver
-            implements LoadListener, TemplateUrlServiceObserver {
-        @Override
-        public void onTemplateUrlServiceLoaded() {
-            TemplateUrlServiceFactory.get().unregisterLoadListener(this);
-            updateCachedEngineName();
-        }
 
         @Override
-        public void onTemplateURLServiceChanged() {
-            updateCachedEngineName();
-        }
-
-        private void updateCachedEngineName() {
-            SearchWidgetProvider.updateCachedEngineName();
+        public void accept(SearchActivityPreferences prefs) {
+            performUpdate(null, prefs);
         }
     }
 
@@ -119,48 +100,13 @@ public class SearchWidgetProvider extends AppWidgetProvider {
 
     /** Number of consecutive crashes this widget will absorb before giving up. */
     private static final int CRASH_LIMIT = 3;
-
     private static final Object DELEGATE_LOCK = new Object();
-    private static final Object OBSERVER_LOCK = new Object();
 
-    /** The default search engine's root URL. */
-    private static String sDefaultSearchEngineUrl;
-
-    @SuppressLint("StaticFieldLeak")
-    private static SearchWidgetTemplateUrlServiceObserver sObserver;
     @SuppressLint("StaticFieldLeak")
     private static SearchWidgetProviderDelegate sDelegate;
 
-    /**
-     * Creates the singleton instance of the observer that will monitor for search engine changes.
-     * The native library and the browser process must have been fully loaded before calling this.
-     */
     public static void initialize() {
-        ThreadUtils.assertOnUiThread();
-        assert LibraryLoader.getInstance().isInitialized();
-
-        // Set up an observer to monitor for changes.
-        synchronized (OBSERVER_LOCK) {
-            if (sObserver != null) return;
-            sObserver = new SearchWidgetTemplateUrlServiceObserver();
-
-            TemplateUrlService service = TemplateUrlServiceFactory.get();
-            service.registerLoadListener(sObserver);
-            service.addObserver(sObserver);
-            if (!service.isLoaded()) service.load();
-        }
-        int[] ids = getDelegate().getAllSearchWidgetIds();
-        LocaleManager.getInstance().recordLocaleBasedSearchWidgetMetrics(
-                ids != null && ids.length > 0);
-    }
-
-    /** Nukes all cached information and forces all widgets to start with a blank slate. */
-    public static void reset() {
-        SharedPreferencesManager prefs = getDelegate().getSharedPreferencesManager();
-        prefs.removeKey(ChromePreferenceKeys.SEARCH_WIDGET_IS_VOICE_SEARCH_AVAILABLE);
-        prefs.removeKey(ChromePreferenceKeys.SEARCH_WIDGET_SEARCH_ENGINE_SHORTNAME);
-
-        performUpdate(null);
+        SearchActivityPreferencesManager.addObserver(getDelegate());
     }
 
     @Override
@@ -168,7 +114,7 @@ public class SearchWidgetProvider extends AppWidgetProvider {
         run(new Runnable() {
             @Override
             public void run() {
-                performUpdate(ids);
+                performUpdate(ids, null);
             }
         });
     }
@@ -196,19 +142,14 @@ public class SearchWidgetProvider extends AppWidgetProvider {
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public static void performUpdate(int[] ids) {
+    public static void performUpdate(int[] ids, SearchActivityPreferences prefs) {
         SearchWidgetProviderDelegate delegate = getDelegate();
-
         if (ids == null) ids = delegate.getAllSearchWidgetIds();
-        if (ids.length == 0) return;
-
-        SharedPreferencesManager prefs = delegate.getSharedPreferencesManager();
-        boolean isVoiceSearchAvailable = getCachedVoiceSearchAvailability(prefs);
-        String engineName = getCachedEngineName(prefs);
+        if (prefs == null) prefs = SearchActivityPreferencesManager.getCurrent();
 
         for (int id : ids) {
             RemoteViews views = createWidgetViews(
-                    delegate.getContext(), id, engineName, isVoiceSearchAvailable);
+                    delegate.getContext(), id, prefs.searchEngineName, prefs.voiceSearchAvailable);
             delegate.updateAppWidget(id, views);
         }
     }
@@ -232,60 +173,6 @@ public class SearchWidgetProvider extends AppWidgetProvider {
         return views;
     }
 
-    /** Caches whether or not a voice search is possible. */
-    static void updateCachedVoiceSearchAvailability(boolean isVoiceSearchAvailable) {
-        SharedPreferencesManager prefs = getDelegate().getSharedPreferencesManager();
-        if (getCachedVoiceSearchAvailability(prefs) != isVoiceSearchAvailable) {
-            prefs.writeBoolean(ChromePreferenceKeys.SEARCH_WIDGET_IS_VOICE_SEARCH_AVAILABLE,
-                    isVoiceSearchAvailable);
-            performUpdate(null);
-        }
-    }
-
-    /** Attempts to update the cached search engine name. */
-    public static void updateCachedEngineName() {
-        ThreadUtils.assertOnUiThread();
-        if (!LibraryLoader.getInstance().isInitialized()) return;
-
-        // Getting an instance of the TemplateUrlService requires that the native library be
-        // loaded, but the TemplateUrlService also itself needs to be initialized.
-        TemplateUrlService service = TemplateUrlServiceFactory.get();
-        if (!service.isLoaded()) return;
-
-        // Update the URL that we show for zero-suggest.
-        TemplateUrl dseTemplateUrl = service.getDefaultSearchEngineTemplateUrl();
-        String engineName = null;
-        if (dseTemplateUrl != null) {
-            String searchEngineUrl =
-                    service.getSearchEngineUrlFromTemplateUrl(dseTemplateUrl.getKeyword());
-            UrlBarData urlBarData = UrlBarData.forUrl(searchEngineUrl);
-            sDefaultSearchEngineUrl =
-                    urlBarData.displayText
-                            .subSequence(urlBarData.originStartIndex, urlBarData.originEndIndex)
-                            .toString();
-            engineName = dseTemplateUrl.getShortName();
-        }
-
-        updateCachedEngineName(engineName);
-    }
-
-    /**
-     * Updates the name of the user's default search engine that is cached in SharedPreferences.
-     * Caching it in SharedPreferences prevents us from having to load the native library and the
-     * TemplateUrlService whenever the widget is updated.
-     */
-    static void updateCachedEngineName(String engineName) {
-        SharedPreferencesManager prefs = getDelegate().getSharedPreferencesManager();
-
-        if (!shouldShowFullString()) engineName = null;
-
-        if (!TextUtils.equals(getCachedEngineName(prefs), engineName)) {
-            prefs.writeString(
-                    ChromePreferenceKeys.SEARCH_WIDGET_SEARCH_ENGINE_SHORTNAME, engineName);
-            performUpdate(null);
-        }
-    }
-
     /** Updates the number of consecutive crashes this widget has absorbed. */
     @SuppressLint({"ApplySharedPref", "CommitPrefEdits"})
     static void updateNumConsecutiveCrashes(int newValue) {
@@ -296,15 +183,6 @@ public class SearchWidgetProvider extends AppWidgetProvider {
         prefs.writeIntSync(ChromePreferenceKeys.SEARCH_WIDGET_NUM_CONSECUTIVE_CRASHES, newValue);
     }
 
-    private static boolean getCachedVoiceSearchAvailability(SharedPreferencesManager prefs) {
-        return prefs.readBoolean(
-                ChromePreferenceKeys.SEARCH_WIDGET_IS_VOICE_SEARCH_AVAILABLE, true);
-    }
-
-    private static String getCachedEngineName(SharedPreferencesManager prefs) {
-        return prefs.readString(ChromePreferenceKeys.SEARCH_WIDGET_SEARCH_ENGINE_SHORTNAME, null);
-    }
-
     @VisibleForTesting
     static int getNumConsecutiveCrashes(SharedPreferencesManager prefs) {
         return prefs.readInt(ChromePreferenceKeys.SEARCH_WIDGET_NUM_CONSECUTIVE_CRASHES);
@@ -312,7 +190,9 @@ public class SearchWidgetProvider extends AppWidgetProvider {
 
     private static SearchWidgetProviderDelegate getDelegate() {
         synchronized (DELEGATE_LOCK) {
-            if (sDelegate == null) sDelegate = new SearchWidgetProviderDelegate(null);
+            if (sDelegate == null) {
+                sDelegate = new SearchWidgetProviderDelegate(null);
+            }
         }
         return sDelegate;
     }
@@ -350,14 +230,5 @@ public class SearchWidgetProvider extends AppWidgetProvider {
     static void setActivityDelegateForTest(SearchWidgetProviderDelegate delegate) {
         assert sDelegate == null;
         sDelegate = delegate;
-    }
-
-    /** See {@link #sDefaultSearchEngineUrl}. */
-    static String getDefaultSearchEngineUrl() {
-        // TODO(ender): Get rid of this.
-        if (sDefaultSearchEngineUrl == null) {
-            updateCachedEngineName();
-        }
-        return sDefaultSearchEngineUrl;
     }
 }
