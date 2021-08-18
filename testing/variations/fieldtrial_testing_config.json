@@ -3665,6 +3665,9 @@
                     "name": "EnabledWithoutIph",
                     "enable_features": [
                         "FeedInteractiveRefresh"
+                    ],
+                    "disable_features": [
+                        "IPH_FeedSwipeRefresh"
                     ]
                 }
             ]
