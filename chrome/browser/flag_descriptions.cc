@@ -1343,6 +1343,13 @@ const char kGlobalMediaControlsOverlayControlsDescription[] =
     "Allowing controls to be dragged out from Global Media Controls dialog. "
     "Requires #global-media-controls to also be enabled.";
 
+const char kOpenscreenCastStreamingSessionName[] =
+    "Enable Open Screen Library (libcast) as the Mirroring Service's Cast "
+    "Streaming implementation.";
+const char kOpenscreenCastStreamingSessionDescription[] =
+    "Enables Open Screen Library's (libcast) Cast Streaming implementation to "
+    "be used for negotiating and executing mirroring and remoting sessions";
+
 const char kGoogleLensSdkIntentName[] =
     "Enable the use of the Lens SDK when starting intent into Lens.";
 const char kGoogleLensSdkIntentDescription[] =

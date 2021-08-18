@@ -14,6 +14,8 @@ component("mirroring_service") {
     "message_dispatcher.h",
     "mirror_settings.cc",
     "mirror_settings.h",
+    "mirroring_features.cc",
+    "mirroring_features.h",
     "mirroring_service.cc",
     "mirroring_service.h",
     "receiver_response.cc",
