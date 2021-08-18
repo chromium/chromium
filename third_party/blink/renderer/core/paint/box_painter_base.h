@@ -173,6 +173,8 @@ class BoxPainterBase {
       PhysicalBoxSides sides_to_include = PhysicalBoxSides());
 
  private:
+  LayoutRectOutsets ComputeSnappedBorders() const;
+
   const Document* document_;
   const ComputedStyle& style_;
   Node* node_;

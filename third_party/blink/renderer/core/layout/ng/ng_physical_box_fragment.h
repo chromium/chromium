@@ -237,12 +237,6 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
         ComputeRareDataAddress()->multicols_with_pending_oofs);
   }
 
-  NGPixelSnappedPhysicalBoxStrut PixelSnappedPadding() const {
-    if (!has_padding_)
-      return NGPixelSnappedPhysicalBoxStrut();
-    return ComputePaddingAddress()->SnapToDevicePixels();
-  }
-
   // Return true if this is either a container that establishes an inline
   // formatting context, or if it's non-atomic inline content participating in
   // one. Empty blocks don't establish an inline formatting context.
@@ -370,7 +364,6 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
     return PhysicalBoxSides(include_border_top_, include_border_right_,
                             include_border_bottom_, include_border_left_);
   }
-  NGPixelSnappedPhysicalBoxStrut BorderWidths() const;
 
   // Return true if this is the first fragment generated from a node.
   bool IsFirstForNode() const { return is_first_for_node_; }

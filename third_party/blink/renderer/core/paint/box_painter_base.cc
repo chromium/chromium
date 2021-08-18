@@ -882,9 +882,16 @@ bool ShouldApplyBlendOperation(const BoxPainterBase::FillLayerInfo& info,
 
 }  // anonymous namespace
 
+LayoutRectOutsets BoxPainterBase::ComputeSnappedBorders() const {
+  const LayoutRectOutsets border_widths = ComputeBorders();
+  return LayoutRectOutsets(
+      border_widths.Top().ToInt(), border_widths.Right().ToInt(),
+      border_widths.Bottom().ToInt(), border_widths.Left().ToInt());
+}
+
 LayoutRectOutsets BoxPainterBase::AdjustedBorderOutsets(
     const FillLayerInfo& info) const {
-  return AdjustOutsetsForEdgeInclusion(ComputeBorders(), info);
+  return AdjustOutsetsForEdgeInclusion(ComputeSnappedBorders(), info);
 }
 
 void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
@@ -931,7 +938,7 @@ void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
     }
   }
 
-  LayoutRectOutsets border = ComputeBorders();
+  LayoutRectOutsets border = ComputeSnappedBorders();
   LayoutRectOutsets padding = ComputePadding();
   LayoutRectOutsets border_padding_insets = -(border + padding);
   FloatRoundedRect border_rect = RoundedBorderRectForClip(

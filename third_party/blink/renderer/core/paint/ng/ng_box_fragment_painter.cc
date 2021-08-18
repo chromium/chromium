@@ -60,13 +60,6 @@ namespace blink {
 
 namespace {
 
-LayoutRectOutsets BoxStrutToLayoutRectOutsets(
-    const NGPixelSnappedPhysicalBoxStrut& box_strut) {
-  return LayoutRectOutsets(
-      LayoutUnit(box_strut.top), LayoutUnit(box_strut.right),
-      LayoutUnit(box_strut.bottom), LayoutUnit(box_strut.left));
-}
-
 inline bool HasSelection(const LayoutObject* layout_object) {
   return layout_object->GetSelectionState() != SelectionState::kNone;
 }
@@ -1797,11 +1790,11 @@ PhysicalRect NGBoxFragmentPainter::AdjustRectForScrolledContent(
 LayoutRectOutsets NGBoxFragmentPainter::ComputeBorders() const {
   if (box_fragment_.GetLayoutObject()->IsTableCellLegacy())
     return To<LayoutBox>(box_fragment_.GetLayoutObject())->BorderBoxOutsets();
-  return BoxStrutToLayoutRectOutsets(PhysicalFragment().BorderWidths());
+  return PhysicalFragment().Borders().ToLayoutRectOutsets();
 }
 
 LayoutRectOutsets NGBoxFragmentPainter::ComputePadding() const {
-  return BoxStrutToLayoutRectOutsets(PhysicalFragment().PixelSnappedPadding());
+  return PhysicalFragment().Padding().ToLayoutRectOutsets();
 }
 
 BoxPainterBase::FillLayerInfo NGBoxFragmentPainter::GetFillLayerInfo(
