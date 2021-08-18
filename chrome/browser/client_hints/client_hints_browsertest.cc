@@ -2402,10 +2402,18 @@ class CriticalClientHintsBrowserTest : public InProcessBrowserTest {
   absl::optional<std::string> ch_lang_ GUARDED_BY(ch_lang_lock_);
 };
 
+#if defined(OS_CHROMEOS)
+// Flaky on the linux-chromeos-chrome try bot: http://crbug.com/1222742
+#define MAYBE_CriticalClientHintInRequestHeader \
+  DISABLED_CriticalClientHintInRequestHeader
+#else
+#define MAYBE_CriticalClientHintInRequestHeader \
+  CriticalClientHintInRequestHeader
+#endif
 // Verify that setting Critical-CH in the response header causes the request to
 // be resent with the client hint included.
 IN_PROC_BROWSER_TEST_F(CriticalClientHintsBrowserTest,
-                       CriticalClientHintInRequestHeader) {
+                       MAYBE_CriticalClientHintInRequestHeader) {
   blink::UserAgentMetadata ua = embedder_support::GetUserAgentMetadata();
   // On the first navigation request, the client hints in the Critical-CH
   // should be set on the request header.
@@ -2725,8 +2733,16 @@ IN_PROC_BROWSER_TEST_F(UaReducedOriginTrialBrowserTest,
       /*critical_ch_ua_reduced_expected=*/false);
 }
 
+#if defined(OS_CHROMEOS)
+// Flaky on the linux-chromeos-chrome try bot: http://crbug.com/1222742
+#define MAYBE_CriticalChUaReducedWithValidOriginTrialToken \
+  DISABLED_CriticalChUaReducedWithValidOriginTrialToken
+#else
+#define MAYBE_CriticalChUaReducedWithValidOriginTrialToken \
+  CriticalChUaReducedWithValidOriginTrialToken
+#endif
 IN_PROC_BROWSER_TEST_F(UaReducedOriginTrialBrowserTest,
-                       CriticalChUaReducedWithValidOriginTrialToken) {
+                       MAYBE_CriticalChUaReducedWithValidOriginTrialToken) {
   // The initial navigation also contains the Critical-CH header, so the
   // Sec-CH-UA-Reduced header should be set after the first navigation.
   NavigateTwiceAndCheckHeader(
