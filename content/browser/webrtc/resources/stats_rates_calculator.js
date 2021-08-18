@@ -45,8 +45,6 @@ class CalculatedStats {
     if (!calculatedMetrics) {
       calculatedMetrics = [];
       this.calculatedMetricsByOriginalName.set(originalName, calculatedMetrics);
-      // Early return to avoid cases where the first difference is incorrect.
-      return;
     }
     calculatedMetrics.push(metric);
   }
