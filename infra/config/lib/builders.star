@@ -289,7 +289,7 @@ def _isolated_property(*, isolated_server):
 
     return isolated or None
 
-def _reclient_property(*, instance, service, jobs, rewrapper_env, profiler_service, publish_trace):
+def _reclient_property(*, instance, service, jobs, rewrapper_env, profiler_service, publish_trace, cache_silo):
     reclient = {}
     instance = defaults.get_value("reclient_instance", instance)
     if instance:
@@ -314,6 +314,8 @@ def _reclient_property(*, instance, service, jobs, rewrapper_env, profiler_servi
     publish_trace = defaults.get_value("reclient_publish_trace", publish_trace)
     if publish_trace:
         reclient["publish_trace"] = True
+    if cache_silo:
+        reclient["cache_silo"] = cache_silo
     return reclient or None
 
 ################################################################################
@@ -359,6 +361,7 @@ defaults = args.defaults(
     reclient_rewrapper_env = None,
     reclient_profiler_service = None,
     reclient_publish_trace = None,
+    reclient_cache_silo = None,
 
     # Provide vars for bucket and executable so users don't have to
     # unnecessarily make wrapper functions
@@ -410,6 +413,7 @@ def builder(
         reclient_rewrapper_env = args.DEFAULT,
         reclient_profiler_service = args.DEFAULT,
         reclient_publish_trace = args.DEFAULT,
+        reclient_cache_silo = None,
         **kwargs):
     """Define a builder.
 
@@ -558,6 +562,8 @@ def builder(
       * reclient_profiler_service - a string indicating service name for
         re-client's cloud profiler.
       * reclient_publish_trace - If True, it publish trace by rpl2cloudtrace.
+      * reclient_cache_silo - A string indicating a cache siling key to use for
+        remote caching.
       * kwargs - Additional keyword arguments to forward on to `luci.builder`.
     """
 
@@ -706,6 +712,7 @@ def builder(
         rewrapper_env = reclient_rewrapper_env,
         profiler_service = reclient_profiler_service,
         publish_trace = reclient_publish_trace,
+        cache_silo = reclient_cache_silo,
     )
     if reclient != None:
         properties["$build/reclient"] = reclient

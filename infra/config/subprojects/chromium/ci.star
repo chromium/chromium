@@ -3891,7 +3891,7 @@ ci.fyi_builder(
     goma_jobs = 250,
     executable = "recipe:reclient_goma_comparison",
     execution_timeout = 6 * time.hour,
-    reclient_rewrapper_env = {"RBE_cache_silo": "Comparison Linux - cache siloed"},
+    reclient_cache_silo = "Comparison Linux - cache siloed",
     reclient_instance = rbe_instance.DEFAULT,
     reclient_jobs = 250,
     configure_kitchen = True,
