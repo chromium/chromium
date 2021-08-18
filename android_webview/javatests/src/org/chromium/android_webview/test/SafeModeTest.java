@@ -287,9 +287,15 @@ public class SafeModeTest {
         private int mCallCount;
         private int mExecutionOrder;
         private final String mId;
+        private final boolean mSuccess;
 
         TestSafeModeAction(String id) {
+            this(id, true);
+        }
+
+        TestSafeModeAction(String id, boolean success) {
             mId = id;
+            mSuccess = success;
         }
 
         @Override
@@ -299,9 +305,10 @@ public class SafeModeTest {
         }
 
         @Override
-        public void execute() {
+        public boolean execute() {
             mCallCount++;
             mExecutionOrder = mTestSafeModeActionExecutionCounter.incrementAndGet();
+            return mSuccess;
         }
 
         public int getCallCount() {
@@ -449,6 +456,42 @@ public class SafeModeTest {
     }
 
     @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testSafeModeAction_overallSuccessStatus() throws Throwable {
+        TestSafeModeAction successAction1 = new TestSafeModeAction("successAction1");
+        TestSafeModeAction successAction2 = new TestSafeModeAction("successAction2");
+        Set<String> allSuccessful = asSet(successAction1.getId(), successAction2.getId());
+        SafeModeController.getInstance().registerActions(
+                new SafeModeAction[] {successAction1, successAction2});
+        boolean success = SafeModeController.getInstance().executeActions(allSuccessful);
+        Assert.assertTrue(
+                "Overall status should be successful if all actions are successful", success);
+        Assert.assertEquals("successAction1 should have been executed exactly 1 time", 1,
+                successAction1.getCallCount());
+        Assert.assertEquals("successAction2 should have been executed exactly 1 time", 1,
+                successAction2.getCallCount());
+
+        // Register a new set of actions where at least one indicates failure.
+        SafeModeController.getInstance().unregisterActionsForTesting();
+        TestSafeModeAction failAction = new TestSafeModeAction("failAction", false);
+        Set<String> oneFailure =
+                asSet(successAction1.getId(), failAction.getId(), successAction2.getId());
+        SafeModeController.getInstance().registerActions(
+                new SafeModeAction[] {successAction1, failAction, successAction2});
+        success = SafeModeController.getInstance().executeActions(oneFailure);
+        Assert.assertFalse(
+                "Overall status should be failure if at least one action fails", success);
+        // One step failing should not block subsequent steps from executing.
+        Assert.assertEquals(
+                "successAction1 should have been executed again", 2, successAction1.getCallCount());
+        Assert.assertEquals("failAction should have been executed exactly 1 time", 1,
+                failAction.getCallCount());
+        Assert.assertEquals(
+                "successAction2 should have been executed again", 2, successAction2.getCallCount());
+    }
+
+    @Test
     @MediumTest
     public void testSafeModeAction_canRegisterBrowserActions() throws Exception {
         // Validity check: verify we can register the production SafeModeAction list. As long as
@@ -468,7 +511,8 @@ public class SafeModeTest {
             VariationsTestUtils.writeMockSeed(oldFile);
             VariationsTestUtils.writeMockSeed(newFile);
             VariationsSeedSafeModeAction action = new VariationsSeedSafeModeAction();
-            action.execute();
+            boolean success = action.execute();
+            Assert.assertTrue("VariationsSeedSafeModeAction should indicate success", success);
             Assert.assertFalse(
                     "Old seed should have been deleted but it still exists", oldFile.exists());
             Assert.assertFalse(
@@ -489,7 +533,8 @@ public class SafeModeTest {
             VariationsTestUtils.writeMockSeed(oldFile);
             VariationsTestUtils.writeMockSeed(newFile);
             VariationsSeedSafeModeAction action = new VariationsSeedSafeModeAction();
-            action.execute();
+            boolean success = action.execute();
+            Assert.assertTrue("VariationsSeedSafeModeAction should indicate success", success);
 
             TestLoader loader = new TestLoader(new TestLoaderResult());
             loader.startVariationsInit();
@@ -509,7 +554,8 @@ public class SafeModeTest {
             File oldFile = VariationsUtils.getSeedFile();
             File newFile = VariationsUtils.getNewSeedFile();
             VariationsSeedSafeModeAction action = new VariationsSeedSafeModeAction();
-            action.execute();
+            boolean success = action.execute();
+            Assert.assertTrue("VariationsSeedSafeModeAction should indicate success", success);
             Assert.assertFalse("Old seed should never have existed", oldFile.exists());
             Assert.assertFalse("New seed should never have existed", newFile.exists());
         } finally {

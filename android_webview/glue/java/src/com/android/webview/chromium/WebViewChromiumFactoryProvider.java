@@ -418,12 +418,16 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                             actions.size());
                     RecordHistogram.recordCount100Histogram(
                             "Android.WebView.SafeMode.ActionsCount", actions.size());
-                    controller.executeActions(actions);
+                    boolean success = controller.executeActions(actions);
                     long safeModeQueryExecuteEnd = SystemClock.elapsedRealtime();
                     RecordHistogram.recordTimesHistogram(
                             "Android.WebView.SafeMode.QueryAndExecuteBlockingTime",
                             safeModeQueryExecuteEnd - safeModeQueryExecuteStart);
-                    logSafeModeExecutionResult(SafeModeExecutionResult.SUCCESS);
+                    if (success) {
+                        logSafeModeExecutionResult(SafeModeExecutionResult.SUCCESS);
+                    } else {
+                        logSafeModeExecutionResult(SafeModeExecutionResult.ACTION_FAILED);
+                    }
                 } catch (Throwable t) {
                     // Don't let SafeMode crash WebView. Instead just log the error.
                     Log.e(TAG, "WebViewSafeMode threw exception: ", t);
@@ -460,11 +464,13 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
-    @IntDef({SafeModeExecutionResult.SUCCESS, SafeModeExecutionResult.UNKNOWN_ERROR})
+    @IntDef({SafeModeExecutionResult.SUCCESS, SafeModeExecutionResult.UNKNOWN_ERROR,
+            SafeModeExecutionResult.ACTION_FAILED})
     private @interface SafeModeExecutionResult {
         int SUCCESS = 0;
         int UNKNOWN_ERROR = 1;
-        int COUNT = 2;
+        int ACTION_FAILED = 2;
+        int COUNT = 3;
     }
 
     private static void logSafeModeExecutionResult(@SafeModeExecutionResult int result) {

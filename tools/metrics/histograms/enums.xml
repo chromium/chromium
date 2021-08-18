@@ -2528,7 +2528,8 @@ Unknown properties are collapsed to zero. -->
 
 <enum name="AndroidWebViewSafeModeResult">
   <int value="0" label="Success"/>
-  <int value="1" label="Unknown error"/>
+  <int value="1" label="Unknown error (Java Exception)"/>
+  <int value="2" label="At least one action indiciates failure"/>
 </enum>
 
 <enum name="AndroidWebViewSingleOrMultiProcess">
