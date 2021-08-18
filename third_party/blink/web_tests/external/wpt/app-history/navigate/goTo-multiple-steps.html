@@ -2,29 +2,24 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script>
-async_test(t => {
+promise_test(async t => {
   // Wait for after the load event so that the navigation doesn't get converted
   // into a replace navigation.
-  window.onload = () => t.step_timeout(() => {
-    assert_equals(appHistory.entries().length, 1);
-    let key0 = appHistory.current.key;
-    appHistory.navigate("#1");
-    appHistory.navigate("#2");
-    let key2 = appHistory.current.key;
-    assert_equals(appHistory.entries().length, 3);
+  await new Promise(resolve => window.onload = () => t.step_timeout(resolve, 0));
+  assert_equals(appHistory.entries().length, 1);
+  let key0 = appHistory.current.key;
+  await appHistory.navigate("#1");
+  await appHistory.navigate("#2");
+  let key2 = appHistory.current.key;
+  assert_equals(appHistory.entries().length, 3);
 
-    appHistory.goTo(key0)
-      .then(t.step_func(() => {
-        assert_equals(appHistory.entries().length, 3);
-        assert_equals(appHistory.current, appHistory.entries()[0]);
-        assert_equals(key0, appHistory.current.key);
-        return appHistory.goTo(key2);
-      }))
-      .then(t.step_func_done(() => {
-        assert_equals(appHistory.entries().length, 3);
-        assert_equals(appHistory.current, appHistory.entries()[2]);
-        assert_equals(key2, appHistory.current.key);
-      }));
-  }, 0);
+  await appHistory.goTo(key0);
+  assert_equals(appHistory.entries().length, 3);
+  assert_equals(appHistory.current, appHistory.entries()[0]);
+  assert_equals(key0, appHistory.current.key);
+  await appHistory.goTo(key2);
+  assert_equals(appHistory.entries().length, 3);
+  assert_equals(appHistory.current, appHistory.entries()[2]);
+  assert_equals(key2, appHistory.current.key);
 }, "goto() can precisely traverse multiple steps in the joint session history");
 </script>
