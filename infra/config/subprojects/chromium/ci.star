@@ -1478,6 +1478,7 @@ ci.chromium_builder(
 ci.chromium_builder(
     name = "fuchsia-official",
     branch_selector = branches.STANDARD_MILESTONE,
+    builderless = False,
     main_console_view = "main",
     console_view_entry = [
         consoles.console_view_entry(
