@@ -306,9 +306,10 @@ void SelectSingleClientCertificateFromOnc(
     size_t client_certificate_index,
     std::vector<chromeos::onc::OncParsedCertificates::ClientCertificate>*
         out_parsed_client_certificates) {
-  base::ListValue* certs = nullptr;
-  toplevel_onc->FindKey(onc::toplevel_config::kCertificates)->GetAsList(&certs);
+  base::Value* certs =
+      toplevel_onc->FindKey(onc::toplevel_config::kCertificates);
   ASSERT_TRUE(certs);
+  ASSERT_TRUE(certs->is_list());
   ASSERT_TRUE(certs->GetList().size() > client_certificate_index);
 
   base::ListValue selected_certs;
@@ -374,9 +375,10 @@ class NetworkConfigurationUpdaterTest : public testing::Test {
         ->GetAsDictionary(&global_config);
     fake_global_network_config_.MergeDictionary(global_config);
 
-    base::ListValue* certs = nullptr;
-    fake_toplevel_onc.FindKey(onc::toplevel_config::kCertificates)
-        ->GetAsList(&certs);
+    base::Value* certs =
+        fake_toplevel_onc.FindKey(onc::toplevel_config::kCertificates);
+    ASSERT_TRUE(certs->is_list());
+
     fake_certificates_ =
         std::make_unique<chromeos::onc::OncParsedCertificates>(*certs);
 

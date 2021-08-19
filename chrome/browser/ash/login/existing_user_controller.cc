@@ -1311,11 +1311,13 @@ void ExistingUserController::LoginAsPublicSessionWithPolicyStoreReady(
             ->store()
             ->policy_map()
             .Get(policy::key::kSessionLocales);
-    base::ListValue const* list = nullptr;
     if (entry && entry->level == policy::POLICY_LEVEL_RECOMMENDED &&
-        entry->value() && entry->value()->GetAsList(&list)) {
-      if (list->GetString(0, &locale))
+        entry->value() && entry->value()->is_list()) {
+      base::Value::ConstListView list = entry->value()->GetList();
+      if (!list.empty() && list[0].is_string()) {
+        locale = list[0].GetString();
         new_user_context.SetPublicSessionLocale(locale);
+      }
     }
   }
 

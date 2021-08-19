@@ -161,14 +161,14 @@ std::unique_ptr<std::set<std::string>> GetAllowedLockScreenApps(
   const base::Value* allowed_lock_screen_apps_value =
       allowed_lock_screen_apps_pref->GetValue();
 
-  const base::ListValue* allowed_apps_list = nullptr;
   if (!allowed_lock_screen_apps_value ||
-      !allowed_lock_screen_apps_value->GetAsList(&allowed_apps_list)) {
+      !allowed_lock_screen_apps_value->is_list()) {
     return nullptr;
   }
 
   auto allowed_apps = std::make_unique<std::set<std::string>>();
-  for (const base::Value& app_value : allowed_apps_list->GetList()) {
+  for (const base::Value& app_value :
+       allowed_lock_screen_apps_value->GetList()) {
     if (!app_value.is_string()) {
       LOG(ERROR) << "Invalid app ID value " << app_value;
       continue;

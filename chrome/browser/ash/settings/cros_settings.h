@@ -14,18 +14,13 @@
 #include "base/callback_list.h"
 #include "base/macros.h"
 #include "base/sequence_checker.h"
+#include "base/values.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/settings/cros_settings_provider.h"
 #include "components/user_manager/user_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
-
-namespace base {
-class DictionaryValue;
-class ListValue;
-class Value;
-}  // namespace base
 
 namespace ash {
 
@@ -110,7 +105,7 @@ class CrosSettings {
                        bool* wildcard_match) const;
 
   // Same as above, but receives already populated user list.
-  static bool FindEmailInList(const base::ListValue* list,
+  static bool FindEmailInList(const base::Value::ConstListView& list,
                               const std::string& email,
                               bool* wildcard_match);
 

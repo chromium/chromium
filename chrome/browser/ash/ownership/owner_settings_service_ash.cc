@@ -487,9 +487,8 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
     em::DeviceLocalAccountsProto* device_local_accounts =
         settings.mutable_device_local_accounts();
     device_local_accounts->clear_account();
-    const base::ListValue* accounts_list = nullptr;
-    if (value.GetAsList(&accounts_list)) {
-      for (const auto& entry : accounts_list->GetList()) {
+    if (value.is_list()) {
+      for (const auto& entry : value.GetList()) {
         const base::DictionaryValue* entry_dict = nullptr;
         if (entry.GetAsDictionary(&entry_dict)) {
           em::DeviceLocalAccountInfoProto* account =
