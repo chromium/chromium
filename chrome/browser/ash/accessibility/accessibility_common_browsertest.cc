@@ -35,7 +35,7 @@ class AccessibilityCommonTest : public InProcessBrowserTest {
 
   void TearDownOnMainThread() override {
     EXPECT_FALSE(console_observer_->HasErrorsOrWarnings())
-        << "Found console.log or console.warn with message: "
+        << "Found console.warn or console.error with message: "
         << console_observer_->GetErrorOrWarningAt(0);
   }
 

@@ -40,7 +40,7 @@ E2ETestBase = class extends testing.Test {
     GEN(`
     if (fail_on_console_error) {
       EXPECT_EQ(0u, console_observer.messages().size())
-          << "Found console.log or console.warn with message: "
+          << "Found console.warn or console.error with message: "
           << console_observer.GetMessageAt(0);
     }
     `);
