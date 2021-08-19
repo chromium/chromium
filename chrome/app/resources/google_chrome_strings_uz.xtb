@@ -57,16 +57,6 @@
 <translation id="2348335408836342058">Bu sayt kamera va mikrofoningizdan foydalanishi uchun Chrome brauzeriga ruxsat berishingiz lozim</translation>
 <translation id="234869673307233423">Chrome parollaringizni tekshira olmadi. Keyinroq qayta urining.</translation>
 <translation id="235650106824528204">Bu profil ishlatilganda yaratilgan har qanday Chrome maʼlumotlari (bukmarklar, tarix, parollar va boshqa sozlamalar kabi) ish profili administratori tomonidan tozalanishi mumkin. <ph name="LEARN_MORE" /></translation>
-<translation id="2409866122341731384">Diskni tozalash va Chrome OS tizimini oʻrnatish</translation>
-<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />Chrome OS tizimini oʻrnatishga tayyormiz! Boshlashingiz bilan:
-          <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Fayllar, maʼlumotlar va joriy operatsion tizimingiz tozalanadi.
-          <ph name="LIST_ITEM" />Chrome OS oʻrnatiladi.
-          <ph name="LIST_ITEM" />Oʻrnatish yakunida qurilmangiz oʻchiriladi.
-          <ph name="END_LIST" />
-          <ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Oxirgi eslatma: oʻrnatishda qattiq diskdagi barcha maʼlumotlar oʻchirib tashlanadi. Kerakli axborotlarni zaxiralashga ulgurganingizni yaxshilab tekshiring.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Oʻrnatish boshlanganidan keyin uni bekor qilish imkonsiz.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">Google Chrome domeningizda Sync xizmati yo‘qligi sababli ma’lumotlaringizni sinxronlay olmadi.</translation>
 <translation id="2467438592969358367">Google Chrome parollaringizni eksport qilmoqchi. Ruxsat berish uchun Windows platformasidagi parolingizni kiriting.</translation>
 <translation id="2485422356828889247">O‘chirib tashlash</translation>
@@ -221,7 +211,6 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="6418662306461808273">Mavjud Chrome profiliga almashilsinmi?</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6568793831116033768">Chrome OS tizimi</translation>
-<translation id="664235759707825982">Chrome OS oʻrnatilishga tayyor</translation>
 <translation id="6676384891291319759">Internetga ulanish</translation>
 <translation id="6679975945624592337">Google Chrome fonda ishlashiga ruxsat</translation>
 <translation id="6739177684496155661">Yangi Chrome profilida davom etasizmi?</translation>

@@ -60,16 +60,6 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2348335408836342058">Chrome het toestemming nodig om toegang te kry tot jou kamera en mikrofoon vir hierdie werf</translation>
 <translation id="234869673307233423">Chrome kan nie jou wagwoorde nagaan nie. Probeer later weer.</translation>
 <translation id="235650106824528204">Enige Chrome-data wat tydens die gebruik van hierdie profiel gegenereer word (soos die skepping van boekmerke, geskiedenis, wagwoorde, en ander instellings) kan deur die werkprofieladministrateur verwyder word. <ph name="LEARN_MORE" /></translation>
-<translation id="2409866122341731384">Vee hardeskyf uit en installeer Chrome-bedryfstelsel</translation>
-<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />Ons is gereed om Chrome-bedryfstelsel te installeer! Sodra jy voortgaan:
-          <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Sal lêers, data en jou huidige bedryfstelsel uitgevee word.
-          <ph name="LIST_ITEM" />Sal Chrome-bedryfstelsel geïnstalleer word.
-          <ph name="LIST_ITEM" />Sal jou toestel afskakel wanneer installasie afgehandel is.
-          <ph name="END_LIST" />
-          <ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Een laaste onthounota: Installasie sal jou hele hardeskyf uitvee. Maak asseblief seker dat alle data wat vir jou belangrik is, gerugsteun is.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Installasie kan nie gekanselleer word nadat dit begin is nie.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">Google Chrome kon nie jou data sinkroniseer nie, omdat sinkronisering nie vir jou domein beskikbaar is nie.</translation>
 <translation id="2467438592969358367">Google Chrome wil jou wagwoorde uitvoer. Tik jou Windows-wagwoord in om dit toe te laat.</translation>
 <translation id="2485422356828889247">Deïnstalleer</translation>
@@ -224,7 +214,6 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="6418662306461808273">Skakel oor na bestaande Chrome-profiel?</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="6568793831116033768">Chrome OS-stelsel</translation>
-<translation id="664235759707825982">Gereed om Chrome-bedryfstelsel te installeer</translation>
 <translation id="6676384891291319759">Gaan by die internet in</translation>
 <translation id="6679975945624592337">Laat Google Chrome in die agtergrond loop</translation>
 <translation id="6739177684496155661">Gaan voort in 'n nuwe Chrome-profiel?</translation>

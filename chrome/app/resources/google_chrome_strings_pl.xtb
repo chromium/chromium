@@ -55,16 +55,6 @@
 <translation id="2348335408836342058">Chrome potrzebuje uprawnień dostępu do aparatu i mikrofonu na tej stronie</translation>
 <translation id="234869673307233423">Chrome nie może sprawdzić Twoich haseł. Spróbuj później.</translation>
 <translation id="235650106824528204">Wszystkie dane Chrome wygenerowane podczas używania tego profilu (takie jak zakładki, historia, hasła i inne ustawienia) mogą zostać usunięte przez administratora profilu służbowego. <ph name="LEARN_MORE" /></translation>
-<translation id="2409866122341731384">Wyczyść dysk twardy i zainstaluj system operacyjny Chrome</translation>
-<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />Możemy zainstalować system operacyjny Chrome. Jeśli przejdziesz dalej:
-          <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />pliki, dane i bieżący system operacyjny zostaną usunięte;
-          <ph name="LIST_ITEM" />zostanie zainstalowany system operacyjny Chrome;
-          <ph name="LIST_ITEM" />po zakończeniu instalacji urządzenie się wyłączy.
-          <ph name="END_LIST" />
-          <ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Ostatnie przypomnienie: instalacja wykasuje wszystkie dane z dysku twardego. Upewnij się, że masz kopię zapasową wszystkich ważnych danych.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Rozpoczętej instalacji nie będzie można anulować.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">Google Chrome nie może zsynchronizować danych, ponieważ synchronizacja jest niedostępna w Twojej domenie.</translation>
 <translation id="2467438592969358367">Google Chrome chce wyeksportować Twoje hasła. Wpisz swoje hasło do Windows, by na to zezwolić.</translation>
 <translation id="2485422356828889247">Odinstaluj</translation>
@@ -213,7 +203,6 @@
 <translation id="6418662306461808273">Przełączyć na istniejący profil Chrome?</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="6568793831116033768">System operacyjny Chrome</translation>
-<translation id="664235759707825982">Możesz zainstalować system operacyjny Chrome</translation>
 <translation id="6676384891291319759">Skorzystaj z internetu</translation>
 <translation id="6679975945624592337">Zezwalaj Google Chrome na działanie w tle</translation>
 <translation id="6739177684496155661">Kontynuować w nowym profilu Chrome?</translation>

@@ -55,16 +55,6 @@
 <translation id="2348335408836342058">Chrome are nevoie de permisiune ca să acceseze camera foto și microfonul pentru acest site</translation>
 <translation id="234869673307233423">Chrome nu îți poate verifica parolele. Încearcă din nou mai târziu.</translation>
 <translation id="235650106824528204">Toate datele Chrome generate în timpul folosirii acestui profil (precum marcajele create, istoricul, parolele și alte setări) pot fi eliminate de administratorul profilului de serviciu. <ph name="LEARN_MORE" /></translation>
-<translation id="2409866122341731384">Șterge datele de pe hard disk și instalează sistemul de operare Chrome</translation>
-<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />Suntem gata să instalăm sistemul de operare Chrome! Dacă alegi să continui:
-          <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />fișierele, datele și sistemul de operare actual vor fi șterse;
-          <ph name="LIST_ITEM" />se va instala sistemul de operare Chrome;
-          <ph name="LIST_ITEM" />dispozitivul se va închide după finalizarea instalării.
-          <ph name="END_LIST" />
-          <ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Un ultim memento: instalarea va șterge toate datele de pe hard disk. Asigură-te că ai făcut backup datelor pe care vrei să le păstrezi.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Odată ce începe instalarea, nu o poți anula.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">Google Chrome nu a putut sincroniza datele, deoarece sincronizarea nu este disponibilă pentru domeniul dvs.</translation>
 <translation id="2467438592969358367">Google Chrome vrea să îți exporte parolele. Pentru a permite asta, introdu parola pentru Windows.</translation>
 <translation id="2485422356828889247">Dezinstalează</translation>
@@ -215,7 +205,6 @@
 <translation id="6418662306461808273">Schimbi la profilul Chrome existent?</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="6568793831116033768">Sistemul de operare Chrome</translation>
-<translation id="664235759707825982">Ești gata să instalezi sistemul de operare Chrome</translation>
 <translation id="6676384891291319759">Accesează internetul</translation>
 <translation id="6679975945624592337">Permite Google Chrome să ruleze în fundal</translation>
 <translation id="6739177684496155661">Continui cu un profil Chrome nou?</translation>

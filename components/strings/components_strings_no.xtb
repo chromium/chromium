@@ -1124,9 +1124,9 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4825507807291741242">Kraftfull</translation>
 <translation id="4827402517081186284">Inkognito gjør deg ikke usynlig på nettet:
         <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Nettsteder vet når du besøker dem<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Arbeidsgivere og skoler kan spore nettleseraktivitet<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Internettleverandører kan overvåke nettrafikk<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Nettsteder vet når du besøker dem.<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Arbeidsgivere og skoler kan spore nettleseraktivitet.<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Internettleverandører kan overvåke nettrafikk.<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="4838327282952368871">Drømmende</translation>
 <translation id="484462545196658690">Auto</translation>

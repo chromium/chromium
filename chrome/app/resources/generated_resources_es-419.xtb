@@ -2196,7 +2196,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3305661444342691068">Abrir PDF en vista previa</translation>
 <translation id="3308116878371095290">Se impidió que esta página configure cookies.</translation>
 <translation id="3308134619352333507">Ocultar botón</translation>
-<translation id="3308681281309926497">Los sitios que visitas podrán seguir recordando tu información hasta que cierres Chrome.</translation>
+<translation id="3308681281309926497">Los sitios que visites seguirán recordando tu información hasta que cierres Chrome.</translation>
 <translation id="3308738399950580893">anuncios</translation>
 <translation id="3308852433423051161">Cargando el Asistente de Google…</translation>
 <translation id="3309330461362844500">ID del perfil del certificado</translation>
@@ -3898,7 +3898,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="5157635116769074044">Fijar esta página a la pantalla de inicio…</translation>
 <translation id="5159094275429367735">Configurar Crostini</translation>
 <translation id="5159419673777902220">Tu padre o madre inhabilitaron los permisos de extensiones</translation>
-<translation id="5159643365935452998">Revisar el borrado de datos automático</translation>
+<translation id="5159643365935452998">Revisar el borrado automático de datos</translation>
 <translation id="5160634252433617617">Teclado físico</translation>
 <translation id="5160857336552977725">Accede a tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5161251470972801814">Dispositivos USB de <ph name="VENDOR_NAME" /></translation>
@@ -7598,7 +7598,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="9121814364785106365">Abrir como pestaña anclada</translation>
 <translation id="9122176249172999202">Se pausó <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
 <translation id="9124003689441359348">Las contraseñas guardadas aparecerán aquí</translation>
-<translation id="9125387974662074614">Notificarme cuando Chrome termine de buscar software dañino</translation>
 <translation id="9126149354162942022">Color del cursor</translation>
 <translation id="9128317794749765148">No se completó la configuración</translation>
 <translation id="9128335130883257666">Abrir la página de configuración para <ph name="INPUT_METHOD_NAME" /></translation>

@@ -84,7 +84,6 @@
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> හට Chromium පැතිකඩවල් අතර මාරු විය හැකිය</translation>
 <translation id="3509308970982693815">කරුණාකර සියලු Chromium කවුළු වසා නැවත උත්සාහ කරන්න.</translation>
 <translation id="3575459661164320785">ඔබගේ පරිගණකයෙහි හානිකර මෘදුකාංග ඇත. ඔබේ බ්‍රවුසරය නැවතත් සාමාන්‍ය පරිදි ක්‍රියා කරවීමට, Chromium හට එය ඉවත් කිරීම, ඔබේ සැකසීම් ප්‍රතිසාධන කිරීම, සහ දිගු අබල කිරීම කළ හැක.</translation>
-<translation id="3610776674893128619">දෘඪ තැටිය මකන්න සහ Chromium OS ස්ථාපනය කරන්න</translation>
 <translation id="3639635944603682591">මෙම පුද්ගලයාගේ බ්‍රවුස් කිරීමේ දත්ත මෙම උපාංගයෙන් මකනු ලැබේ. දත්ත ප්‍රතිසාධන කිරීමට, <ph name="USER_EMAIL" /> ලෙස Chromium එකට පුරන්න.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Chromium සඳහා නව යාවත්කාලීනයක් ලබා ගත හැකි අතර ඔබ යළි දියත් කරන විගස යොදනු ලැබේ.}=1{Chromium සඳහා නව යාවත්කාලීනයක් ලබා ගත හැකි අතර ඔබ යළි දියත් කරන විගස යොදනු ලැබේ. ඔබේ අප්‍රසිද්ධ කවුළුව යළි විවෘත නොවෙයි.}one{Chromium සඳහා නව යාවත්කාලීනයක් ලබා ගත හැකි අතර ඔබ යළි දියත් කරන විගස යොදනු ලැබේ. ඔබේ අප්‍රසිද්ධ කවුළු # යළි විවෘත නොවෙයි.}other{Chromium සඳහා නව යාවත්කාලීනයක් ලබා ගත හැකි අතර ඔබ යළි දියත් කරන විගස යොදනු ලැබේ. ඔබේ අප්‍රසිද්ධ කවුළු # යළි විවෘත නොවෙයි.}}</translation>
 <translation id="3651803019964686660"><ph name="ORIGIN" /> වෙතින් ඔබගේ Android දුරකථනයට අංකයක් යැවීමට, උපාංග දෙකෙහිම Chromium වෙත පුරන්න.</translation>
@@ -166,15 +165,6 @@
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> අනතුරුදායකයි, එම නිසා Chromium එය අවහිර කර ඇත.</translation>
 <translation id="6134968993075716475">සුරක්ෂිත පිරික්සුම ක්‍රියාවිරහිතයි. එය ක්‍රියාත්මක කිරීමට Chromium නිර්දේශ කරයි.</translation>
 <translation id="6145820983052037069">ඔබට මෙහිදී Chromium පැතිකඩවල් අතර මාරු විය හැකිය</translation>
-<translation id="61577490437262925"><ph name="BEGIN_PARAGRAPH1" />අපි Chromium OS ස්ථාපනය කිරීමට සූදානම්ය! ඔබ ඉදිරියට ගිය විට:
-          <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />ගොනු, දත්ත සහ ඔබගේ වර්තමාන මෙහෙයුම් පද්ධතිය මකනු ඇත.
-          <ph name="LIST_ITEM" />Chromium OS ස්ථාපනය කරනු ඇත.
-          <ph name="LIST_ITEM" />ස්ථාපනය අවසන් වූ පසු ඔබගේ උපාංගය වසා දමනු ඇත.
-          <ph name="END_LIST" />
-          <ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />අවසන් එක් මතක් කිරීමක්: ස්ථාපනය ඔබගේ සම්පූර්ණ දෘඪ තැටිය මකනු ඇත. කරුණාකර ඔබ උපස්ථ කිරීමට සැලකිලිමත් වන කිනම් හෝ දත්ත ඇති බවට සහතික කර ගන්න.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />ස්ථාපනය ආරම්භ වූ පසු එය අවලංගු කළ නොහැකිය.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6183079672144801177">ඔබ ඔබගේ <ph name="TARGET_DEVICE_NAME" /> හි Chromium වෙත පුරා ඇති බව සහතික කර ගෙන අනතුරුව නැවත යැවීමට උත්සාහ කරන්න.</translation>
 <translation id="6212496753309875659">මෙම පරිගණකය සතුව දැනටමත් නව Chromium සංස්කරණයක් පවතී. මෘදුකාංගය ක්‍රියා නොකරයි නම් කරුණාකර Chromium ඉවත්කර නැවත උත්සහ කරන්න.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium දැන් යළි දියත් වෙයි}=1{Chromium 1 තත්පරයකින් යළි දියත් වෙයි}one{Chromium තත්පර # කින් යළි දියත් වෙයි}other{Chromium තත්පර # කින් යළි දියත් වෙයි}}</translation>
@@ -192,7 +182,6 @@
 <translation id="6434250628340475518">Chromium OS පද්ධතිය</translation>
 <translation id="6455857529632101747">Chromium පැතිකඩවල් වෙත සාදරයෙන් පිළිගනිමු</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium තත්පර 1කින් යළි ඇරඹෙනු ඇත}one{Chromium තත්පර #කින් යළි ඇරඹෙනු ඇත}other{Chromium තත්පර #කින් යළි ඇරඹෙනු ඇත}}</translation>
-<translation id="646620589868199210">Chromium OS ස්ථාපනය කිරීමට සූදානම්ය</translation>
 <translation id="6475912303565314141">ඔබ Chromium ආරම්භ කරන විට කුමන පිටුව පෙන්වන්නේද යන්නද එමගින් පාලනය කෙරේ.</translation>
 <translation id="6510925080656968729">Chromium අස්ථාපනය කරන්න</translation>
 <translation id="6542839706527980775">එක් එක් පැතිකඩ පිටුසන්, ඉතිහාසය, මුරපද සහ තවත් දේවල් වැනි එහිම Chromium තොරතුරු දරයි</translation>

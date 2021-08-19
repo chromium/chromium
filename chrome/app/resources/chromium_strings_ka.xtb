@@ -84,7 +84,6 @@
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> გადართავს Chromium პროფილებს</translation>
 <translation id="3509308970982693815">დახურეთ Chromium-ის ყველა ფანჯარა და ხელახლა სცადეთ.</translation>
 <translation id="3575459661164320785">თქვენს კომპიუტერზე აღმოჩენილია საზიანო პროგრამული უზრუნველყოფა. Chromium-ს შეუძლია მისი ამოშლა, თქვენი პარამეტრების აღდგენა და გაფართოებების გათიშვა, რომ ბრაუზერმა კვლავ ნორმალურად იმუშაოს.</translation>
-<translation id="3610776674893128619">მყარი დისკის ამოშლა და Chromium OS-ის ინსტალაცია</translation>
 <translation id="3639635944603682591">ამ პიროვნების დათვალიერების მონაცემები წაიშლება ამ მოწყობილობიდან. მონაცემების აღსადგენად შედით Chromium-ში, როგორც <ph name="USER_EMAIL" />.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{ხელმისაწვდომია Chromium-ის განახლება, რომელიც მას მიესადაგება ხელახლა გაშვებისთანავე.}=1{ხელმისაწვდომია Chromium-ის განახლება, რომელიც მას მიესადაგება ხელახლა გაშვებისთანავე. თქვენი ინკოგნიტო ფანჯარა ხელახლა არ გაიხსნება.}other{ხელმისაწვდომია Chromium-ის განახლება, რომელიც მას მიესადაგება ხელახლა გაშვებისთანავე. თქვენი # ინკოგნიტო ფანჯარა ხელახლა არ გაიხსნება.}}</translation>
 <translation id="3651803019964686660"><ph name="ORIGIN" />-დან თქვენს Android ტელეფონზე ნომრის გასაგზავნად შედით Chromium-ში ორივე მოწყობილობაზე.</translation>
@@ -166,15 +165,6 @@
 <translation id="6129621093834146363">Chromium-მა დაბლოკა <ph name="FILE_NAME" />, რადგან ის სახიფათოა.</translation>
 <translation id="6134968993075716475">Safe Browsing გამორთულია. Chromium გირჩევთ მის ჩართვას.</translation>
 <translation id="6145820983052037069">აქ შეგიძლიათ Chromium პროფილებს შორის გადართვა</translation>
-<translation id="61577490437262925"><ph name="BEGIN_PARAGRAPH1" />Chromium OS-ის ინსტალაციისთვის ყველაფერი მზადაა! გაგრძელების შემდეგ:
-          <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />ფაილები, მონაცემები და თქვენი ამჟამინდელი ოპერაციული სისტემა ამოიშლება.
-          <ph name="LIST_ITEM" />დაინსტალირდება Chromium OS.
-          <ph name="LIST_ITEM" />ინსტალაციის დასრულების შემდეგ თქვენი მოწყობილობა გამოირთვება.
-          <ph name="END_LIST" />
-          <ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />ბოლოჯერ შეგახსენებთ, რომ ინსტალაცია მთლიანად ამოშლის თქვენს მყარ დისკს. დარწმუნდით, რომ თქვენთვის მნიშვნელოვანი მონაცემების სარეზერვო ასლი გაქვთ შექმნილი.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />ინსტალაციის დაწყების შემდეგ მას ვეღარ გააუქმებთ.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6183079672144801177">დარწმუნდით, რომ თქვენს <ph name="TARGET_DEVICE_NAME" />-ზე შესული ხართ Chromium-ში, შემდეგ კი ხელახლა ცადეთ გაგზავნა.</translation>
 <translation id="6212496753309875659">ამ კომპიუტერს უკვე აქვს Chromium.-ის უფრო ახალი ვერსია. იმ შემთხვევაში, თუ პროგრამა არ მუშაობს, გთხოვთ, განახორციელეთ Chromium-ის დეინსტალაცია და სცადეთ ისევ.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium ახლა ხელახლა გაეშვება}=1{Chromium ხელახლა გაეშვება 1 წამში}other{Chromium ხელახლა გაეშვება # წამში}}</translation>
@@ -192,7 +182,6 @@
 <translation id="6434250628340475518">Chromium OS სისტემა</translation>
 <translation id="6455857529632101747">მოგესალმებათ Chromium პროფილები</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium გადაიტვირთება 1 წამში}other{Chromium გადაიტვირთება # წამში}}</translation>
-<translation id="646620589868199210">Chromium OS-ის ინსტალაციისთვის ყველაფერი მზადაა</translation>
 <translation id="6475912303565314141">იგი ასევე აკონტროლებს, თუ რომელი გვერდი გამოჩნდება Chromium-ის გაშვებისას.</translation>
 <translation id="6510925080656968729">Chromium-ის დეინსტალაცია</translation>
 <translation id="6542839706527980775">თითოეულ პროფილში ინახება საკუთარი Chromium ინფორმაცია, როგორიცაა სანიშნეები, ისტორია, პაროლები და სხვა</translation>

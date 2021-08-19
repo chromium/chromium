@@ -56,16 +56,6 @@
 <translation id="2348335408836342058">இந்தத் தளத்திற்காகக் கேமராவையும் மைக்ரோஃபோனையும் அணுக Chromeமுக்கு அனுமதி தேவை</translation>
 <translation id="234869673307233423">Chromeமால் உங்கள் கடவுச்சொற்களைச் சரிபார்க்க முடியவில்லை. பிறகு முயலவும்.</translation>
 <translation id="235650106824528204">இந்தச் சுயவிவரத்தைப் பயன்படுத்தும்போது உருவாக்கப்படும் Chrome தரவு அனைத்தையும் (எ.கா. நீங்கள் உருவாக்கும் புக்மார்க்குகள், வரலாறு, கடவுச்சொற்கள் மற்றும் பிற அமைப்புகள்) பணிக் கணக்கு நிர்வாகி அகற்றலாம். <ph name="LEARN_MORE" /></translation>
-<translation id="2409866122341731384">ஹார்டு டிரைவில் இருக்கும் தரவை அழித்துவிட்டு Chrome OSஸை நிறுவுக</translation>
-<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />Chrome OSஸை நிறுவத் தயாராக உள்ளோம்! நிறுவத் தொடங்கினால்:
-          <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />ஃபைல்கள், தரவு, தற்போதைய ஆப்ரேட்டிங் சிஸ்டம் ஆகியவை அழிக்கப்படும்.
-          <ph name="LIST_ITEM" />Chrome OS நிறுவப்படும்.
-          <ph name="LIST_ITEM" />நிறுவியதும் உங்கள் சாதனம் ஷட் டவுன் செய்யப்படும்.
-          <ph name="END_LIST" />
-          <ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />இறுதியாக ஒரு நினைவூட்டல்: இதை நிறுவினால் உங்கள் ஹார்டு டிரைவில் இருக்கும் தரவு அனைத்தும் அழிக்கப்படும். எனவே, உங்கள் தரவைக் காப்புப் பிரதி எடுத்துவிட்டீர்கள் என்பதை உறுதிசெய்துகொள்ளவும்.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />நிறுவத் தொடங்கினால் இதை ரத்துசெய்ய முடியாது.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">உங்கள் களத்திற்கு ஒத்திசைவு இல்லாததால், Google Chrome ஆல் உங்கள் தரவை ஒத்திசைக்க முடியவில்லை.</translation>
 <translation id="2467438592969358367">Google Chrome உங்கள் கடவுச்சொற்களை ஏற்ற விரும்புகிறது. இதை அனுமதிக்க, உங்கள் Windows கடவுச்சொல்லை உள்ளிடவும்.</translation>
 <translation id="2485422356828889247">நிறுவல் நீக்கு</translation>
@@ -216,7 +206,6 @@
 <translation id="6418662306461808273">ஏற்கெனவே உள்ள Chrome சுயவிவரத்திற்கு மாறவா?</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6568793831116033768">Chrome OS சிஸ்டம்</translation>
-<translation id="664235759707825982">Chrome OSஸை நிறுவத் தயாரா?</translation>
 <translation id="6676384891291319759">இணையத்தை அணுகுதல்</translation>
 <translation id="6679975945624592337">பின்னணியில் Google Chromeஐ இயங்க அனுமதி</translation>
 <translation id="6739177684496155661">புதிய Chrome சுயவிவரத்தில் தொடரவா?</translation>

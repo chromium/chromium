@@ -272,7 +272,7 @@
 <translation id="1838374766361614909">Очистити поле пошуку</translation>
 <translation id="1839551713262164453">Не вдалося перевірити значення правила. Знайдено помилки</translation>
 <translation id="1842969606798536927">Оплатити</translation>
-<translation id="1856713167556118146">Що недоступно в анонімному режимі</translation>
+<translation id="1856713167556118146">Чого не забезпечує анонімний режим</translation>
 <translation id="1871208020102129563">Проксі-сервер налаштовано на використання фіксованих проксі-серверів, а не URL-адреси сценарію .pac.</translation>
 <translation id="1871284979644508959">Обов’язкове поле</translation>
 <translation id="1875512691959384712">Google Форми</translation>
@@ -1021,7 +1021,7 @@
 <translation id="4465818729556336129">Цей документ конфіденційний. Адміністратор рекомендує не роздруковувати його.</translation>
 <translation id="4476953670630786061">Ця форма незахищена. Автозаповнення вимкнено.</translation>
 <translation id="4477350412780666475">Наступна композиція</translation>
-<translation id="4481251927743463293">Що доступно в анонімному режимі</translation>
+<translation id="4481251927743463293">Що забезпечує анонімний режим</translation>
 <translation id="4481394504112738036">Конфіденційний файл</translation>
 <translation id="4482953324121162758">Цей сайт не перекладатиметься.</translation>
 <translation id="4490717597759821841">A7</translation>
@@ -1122,7 +1122,7 @@
 <translation id="4819347708020428563">Редагувати примітки в режимі перегляду за умовчанням?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб швидко створити нову таблицю Google</translation>
 <translation id="4825507807291741242">Потужний</translation>
-<translation id="4827402517081186284">В анонімному режимі ваші дії в Інтернеті на стають невидимими:
+<translation id="4827402517081186284">В анонімному режимі ваші дії в Інтернеті не стають невидимими:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />коли ви відвідуєте веб-сайти, вони бачать це;<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />роботодавці та заклади освіти можуть відстежувати ваші дії у веб-переглядачі;<ph name="END_LIST_ITEM" />
@@ -1704,7 +1704,7 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965978654500191972">Пристрій</translation>
 <translation id="696703987787944103">Перцептивна</translation>
-<translation id="6968269510885595029">Скористайтеся ключем безпеки</translation>
+<translation id="6968269510885595029">Використовувати ваш ключ безпеки</translation>
 <translation id="6970216967273061347">Округ</translation>
 <translation id="6971439137020188025">Швидко створюйте нові презентації в Google Презентаціях</translation>
 <translation id="6972629891077993081">Пристрої HID</translation>
@@ -1770,7 +1770,7 @@
 <translation id="7210863904660874423">Хост <ph name="HOST_NAME" /> не відповідає стандартам безпеки.</translation>
 <translation id="7210993021468939304">Активність Linux у межах контейнера. Може встановлювати та запускати додатки Linux у межах контейнера</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /> про цю проблему.</translation>
-<translation id="7215025035562547931">Оцініть точність даних</translation>
+<translation id="7215025035562547931">Оцінюйте наведену тут інформацію критично</translation>
 <translation id="7217745192097460130">Підтвердити й завершити покупку за допомогою Touch ID?</translation>
 <translation id="7219179957768738017">З'єднання використовує версію <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Обробка</translation>

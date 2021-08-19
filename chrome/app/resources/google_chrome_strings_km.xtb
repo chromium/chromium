@@ -60,16 +60,6 @@
 <translation id="2348335408836342058">Chrome ត្រូវការ​ការអនុញ្ញាត​ដើម្បី​ចូលប្រើ​កាមេរ៉ា និង​មីក្រូហ្វូន​របស់អ្នក​សម្រាប់​ទំព័រនេះ</translation>
 <translation id="234869673307233423">Chrome មិន​អាចពិនិត្យ​ពាក្យសម្ងាត់របស់អ្នកបានទេ។ សូមព្យាយាមម្តងទៀតនៅពេលក្រោយ។</translation>
 <translation id="235650106824528204">អ្នកគ្រប់គ្រងកម្រងព័ត៌មានការងារអាចលុបទិន្នន័យ Chrome ទាំងឡាយ ដែលបង្កើតអំឡុងពេលប្រើកម្រងព័ត៌មាននេះ (ដូចជាការបង្កើតចំណាំ ប្រវត្តិ ពាក្យសម្ងាត់ និងការកំណត់ផ្សេងទៀត)។ <ph name="LEARN_MORE" /></translation>
-<translation id="2409866122341731384">លុបថាស​រឹង និងដំឡើង Chrome OS</translation>
-<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />យើងត្រៀមខ្លួនដំឡើង Chrome OS ហើយ! នៅពេលដែលអ្នកបន្ត៖
-          <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />ឯកសារ ទិន្នន័យ និងប្រព័ន្ធ​ប្រតិបត្តិការបច្ចុប្បន្នរបស់អ្នកនឹងត្រូវលុប។
-          <ph name="LIST_ITEM" />Chrome OS នឹងត្រូវបានដំឡើង។
-          <ph name="LIST_ITEM" />ឧបករណ៍របស់អ្នកនឹងបិទ នៅពេលការដំឡើងបញ្ចប់។
-          <ph name="END_LIST" />
-          <ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />ការរំលឹកចុងក្រោយ៖ ការដំឡើងនឹងលុបថាស​រឹងរបស់អ្នកទាំងស្រុង។ សូម​ប្រាកដថា អ្នកបានបម្រុងទុកទិន្នន័យដែលចាំបាច់សម្រាប់អ្នក។<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />នៅពេលការដំឡើងចាប់ផ្ដើម អ្នកមិនអាចបោះបង់បានទេ។<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">Google Chrome មិនអាចធ្វើសមកម្មទិន្នន័យរបស់អ្នកទេ ពីព្រោះ សមកម្ម មិនមានសម្រាប់ដែនរបស់អ្នកទេ។</translation>
 <translation id="2467438592969358367">Google Chrome ចង់​នាំចេញពាក្យ​សម្ងាត់​របស់អ្នក​។ សូមវាយ​បញ្ចូលពាក្យ​សម្ងាត់ Windows របស់អ្នក​ដើម្បីអនុញ្ញាត​ការនាំចេញ​នេះ។</translation>
 <translation id="2485422356828889247">លុបការតំឡើង</translation>
@@ -224,7 +214,6 @@ Google Chrome មិនអាចសង្គ្រោះការកំណត់
 <translation id="6418662306461808273">ប្ដូរទៅកម្រងព័ត៌មាន Chrome ដែលមានស្រាប់ឬ?</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6568793831116033768">ប្រព័ន្ធ Chrome OS</translation>
-<translation id="664235759707825982">ត្រៀមខ្លួនដំឡើង Chrome OS</translation>
 <translation id="6676384891291319759">ចូលប្រើអ៊ីនធឺណិត</translation>
 <translation id="6679975945624592337">អនុញ្ញាត​ឱ្យ Google Chrome ដំណើរការ​នៅ​ផ្ទៃខាងក្រោយ</translation>
 <translation id="6739177684496155661">បន្តនៅក្នុងកម្រងព័ត៌មាន Chrome ថ្មីឬ?</translation>

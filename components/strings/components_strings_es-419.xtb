@@ -1114,7 +1114,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4819347708020428563">¿Quieres editar anotaciones en la vista predeterminada?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para crear una nueva hoja de cálculo de Google rápidamente</translation>
 <translation id="4825507807291741242">Powerful</translation>
-<translation id="4827402517081186284">El modo incógnito no hace que seas invisible en línea:
+<translation id="4827402517081186284">El modo Incógnito no hace que seas invisible en línea:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />Los sitios saben cuándo los visitas.<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />Los empleadores o instituciones educativas pueden rastrear tu actividad de navegación.<ph name="END_LIST_ITEM" />
@@ -1124,7 +1124,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="484462545196658690">Automático</translation>
 <translation id="4850886885716139402">Ver</translation>
 <translation id="485316830061041779">Alemán</translation>
-<translation id="4853901935952445031">Este sitio no podrá usar la API de U2F después de febrero de 2022. Si es el propietario de este sitio, debería cambiarlo para usar la API de Web Authentication.</translation>
+<translation id="4853901935952445031">Este sitio no podrá usar la API de U2F después de febrero de 2022. Si eres el propietario del sitio, deberás modificarlo para que use la API de Web Authentication.</translation>
 <translation id="4854362297993841467">Este método de entrega no está disponible. Prueba otro método.</translation>
 <translation id="4854853140771946034">Crear una nota nueva en Google Keep rápidamente</translation>
 <translation id="4876188919622883022">Vista simplificada</translation>
@@ -1762,7 +1762,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> no cumple con las normas de seguridad.</translation>
 <translation id="7210993021468939304">La actividad de Linux en el contenedor; también pueden instalar y ejecutar apps de Linux en el contenedor</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /> acerca de este problema.</translation>
-<translation id="7215025035562547931">Tómate un momento para analizar la veracidad</translation>
+<translation id="7215025035562547931">Tómate un momento para analizar el grado de exactitud de la información</translation>
 <translation id="7217745192097460130">¿Deseas usar Touch ID para verificar y completar tu compra?</translation>
 <translation id="7219179957768738017">La conexión usa <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Procesando</translation>
@@ -2102,7 +2102,7 @@ Detalles adicionales:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />Tu actividad de navegación de este dispositivo<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />Tu historial de búsqueda de este dispositivo<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />La información que ingresas en formularios<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />La información que hayas ingresado en formularios<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">Se denegó el acceso a <ph name="HOST_NAME" /></translation>
 <translation id="833262891116910667">Destacar</translation>

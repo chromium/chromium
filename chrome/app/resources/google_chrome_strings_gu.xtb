@@ -60,19 +60,10 @@
 <translation id="2348335408836342058">Chromeને આ સાઇટ માટે તમારા કૅમેરા અને માઇક્રોફોનના ઍક્સેસની પરવાનગીની જરૂર પડે છે</translation>
 <translation id="234869673307233423">Chrome તમારા પાસવર્ડ ચેક કરી શકતું નથી. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="235650106824528204">આ પ્રોફાઇલના ઉપયોગ (જેમકે બુકમાર્ક, ઇતિહાસ, પાસવર્ડ બનાવવા અને અન્ય સેટિંગ ગોઠવવા) દરમિયાન જનરેટ થયેલા કોઈપણ Chrome ડેટાને ઑફિસની પ્રોફાઇલના વ્યવસ્થાપક કાઢી નાખી શકે છે. <ph name="LEARN_MORE" /></translation>
-<translation id="2409866122341731384">હાર્ડ ડ્રાઇવનો ડેટા કાઢી નાખો અને Chrome OSને ઇન્સ્ટૉલ કરો</translation>
-<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />અમે Chrome OS ઇન્સ્ટૉલ કરવા માટે તૈયાર છીએ! તમે આગળ વધશો પછી:
-          <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />ફાઇલો, ડેટા અને તમારી હાલની ઑપરેટિંગ સિસ્ટમ કાઢી નાખવામાં આવશે.
-          <ph name="LIST_ITEM" />Chrome OS ઇન્સ્ટૉલ કરવામાં આવશે.
-          <ph name="LIST_ITEM" />ઇન્સ્ટૉલેશન પૂર્ણ થઈ ગયા પછી, તમારું ડિવાઇસ શટ ડાઉન થઈ જશે.
-          <ph name="END_LIST" />
-          <ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />છેલ્લું રિમાઇન્ડર: ઇન્સ્ટૉલેશન કરવાથી, તમારી હાર્ડ ડ્રાઇવનો બધો ડેટા કાઢી નાખવામાં આવશે. કૃપા કરીને ખાતરી કરો કે તમે તમારા જરૂરી ડેટાનો બૅકઅપ લઈ લીધો છે.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />એકવાર ઇન્સ્ટૉલેશન શરૂ થયા પછી, તેને રદ કરી શકાશે નહીં.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">Google Chrome તમારા ડેટાને સમન્વયિત કરી શક્યું નથી કારણ કે તમારા ડોમેન માટે સમન્વયન ઉપલબ્ધ નથી.</translation>
 <translation id="2467438592969358367">Google Chrome તમારા પાસવર્ડની નિકાસ કરવા માગે છે. આને મંજૂરી આપવા માટે તમારો Windows પાસવર્ડ ટાઇપ કરો.</translation>
 <translation id="2485422356828889247">અનઇન્સ્ટૉલ કરો</translation>
+<translation id="2518751521812750372">તમે જ્યારે Chrome બંધ કરો, ત્યારે તે ઑટોમૅટિક રીતે કુકી અને તમે મુલાકાત લીધેલા પેજમાંના સાઇટનો ડેટા સાફ કરે છે</translation>
 <translation id="2534507159460261402">Google Pay (Chrome પર કૉપિ કરેલ છે)</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> આ Chrome પ્રોફાઇલમાં પહેલેથી સાઇન ઇન છે. તમારું બ્રાઉઝિંગ અલગ રાખવા, Chrome તમારા માટે તમારી અલગ પ્રોફાઇલ બનાવી શકે છે.</translation>
 <translation id="2580411288591421699">હાલમાં ચાલી રહ્યું છે તે જ Google Chrome વર્ઝનને ઇન્સ્ટૉલ કરી શકાતું નથી. કૃપા કરીને Google Chrome બંધ કરો અને ફરીથી પ્રયાસ કરો.</translation>
@@ -223,7 +214,6 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="6418662306461808273">વર્તમાન Chrome પ્રોફાઇલ પર સ્વિચ કરીએ?</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6568793831116033768">Chrome OS સિસ્ટમ</translation>
-<translation id="664235759707825982">Chrome OS ઇન્સ્ટૉલ કરવા માટે તૈયાર છે</translation>
 <translation id="6676384891291319759">ઇંટરનેટ ઍક્સેસ કરો</translation>
 <translation id="6679975945624592337">Google Chromeને બૅકગ્રાઉન્ડમાં ચાલવા દો</translation>
 <translation id="6739177684496155661">નવી Chrome પ્રોફાઇલમાં બ્રાઉઝિંગ ચાલુ રાખીએ?</translation>

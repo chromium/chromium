@@ -208,13 +208,6 @@
 <translation id="1265053460044691532">限制透過 SAML 驗證的使用者可離線登入的時間</translation>
 <translation id="127264587838521316">啟用 <ph name="PRODUCT_NAME" /> 擴充功能安裝要求</translation>
 <translation id="1274997165432133392">Cookie 和其他網站資料</translation>
-<translation id="127699919157094139">這項政策會停止 Google 代管的同步處理服務在 <ph name="PRODUCT_NAME" /> 上同步處理資料，並禁止使用者變更這項設定。
-
-      如果你啟用這項設定，使用者就無法在 <ph name="PRODUCT_NAME" /> 中變更或覆寫這項設定。
-
-      如果不設定這項政策，使用者將可選擇是否要使用 Google Sync。
-
-      如要完全停用 Google Sync，建議你在 Google 管理控制台中停用 Google Sync 服務。</translation>
 <translation id="128059397544257017">如果將這項政策設為啟用，當 <ph name="CHROME_CLEANUP_NAME" />偵測到垃圾軟體時，可按照 <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" /> 所設定的政策，向 Google 回報掃描作業相關資訊。<ph name="CHROME_CLEANUP_NAME" />會詢問使用者是否要進行清理，並將掃描結果傳送給 Google。
 
       如果將這項政策設為停用，當 <ph name="CHROME_CLEANUP_NAME" />偵測到垃圾軟體時，無論 <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" /> 的值為何，都不會向 Google 回報掃描作業相關資訊。<ph name="CHROME_CLEANUP_NAME" />會詢問使用者是否要進行清理，但不會將掃描結果回報給 Google。
@@ -2758,9 +2751,6 @@
       如果不設定這項政策，系統會將進階充電模式保持關閉。
 
       在 <ph name="CHARGE_START_TIME_FIELD_NAME" /> 和 <ph name="CHARGE_END_TIME_FIELD_NAME" /> 的 <ph name="MINUTE_FIELD_NAME" /> 欄位中，有效值為 0、15、30、45。</translation>
-<translation id="4450222911834151460">如果設定了這項政策，系統會將所有指定的資料類型從同步處理作業 (包含 Google Sync 和漫遊設定檔的同步處理作業) 中排除。這有助於縮減漫遊設定檔的大小，或限制上傳到 Google Sync 伺服器的資料類型。
-
-      這項政策目前涵蓋的資料類型為：「bookmarks」、「readingList」、「preferences」、「passwords」、「autofill」、「themes」、「typedUrls」、「extensions」、「apps」、「tabs」、「wifiConfigurations」。這些名稱有大小寫之分。</translation>
 <translation id="4452653762766030431">控管是否允許在 Chrome 作業系統使用網路檔案共用區</translation>
 <translation id="445270821089253489">控管 Chrome 回報的使用者與裝置資訊類型。</translation>
 <translation id="4453913621209182880">只允許使用背景圖形列印</translation>
@@ -4157,11 +4147,6 @@
 <translation id="6371561334154580937">在最後一個關閉的視窗上顯示登出對話方塊。</translation>
 <translation id="6372105930898423193">允許重新啟用 AppCache 功能 (即使預設值為停用)。</translation>
 <translation id="6376659517206731212">可強制實行</translation>
-<translation id="6377355597423503887">這項政策已被淘汰，請考慮改用 BrowserSignin。
-
-      允許使用者登入 <ph name="PRODUCT_NAME" />。
-
-      如果設定這項政策，你可以設定是否允許使用者登入 <ph name="PRODUCT_NAME" />。將這項政策設為「False」後，將會導致使用 chrome.identity API 的應用程式和擴充功能無法運作，因此建議你改用 SyncDisabled。</translation>
 <translation id="6378076389057087301">指定會影響電源管理的音訊活動</translation>
 <translation id="6378393933102834628">如果將這項政策設為 True，系統會顯示應用程式捷徑。如果將這項政策設為 False，系統一律不會顯示應用程式捷徑。
 
@@ -5097,13 +5082,6 @@
       如果不設定這項政策，系統會採取「暫停」動作。
 
       注意：如果指定動作為「暫停」，你可以另行設定 <ph name="PRODUCT_OS_NAME" />在暫停前是否要鎖定螢幕。</translation>
-<translation id="7476621944304431784">如果啟用這項設定，使用者將可在搭載 <ph name="PRODUCT_OS_NAME" />的裝置和已連結的 Android 手機上，將 Wi-Fi 網路設定保持同步。在同步 Wi-Fi 網路設定之前，使用者必須先完成設定流程以明確啟用這項功能。
-
-      如果停用這項設定，使用者就無法同步 Wi-Fi 網路設定。
-
-      這項功能取決於要啟用的 Chrome 同步功能中的 <ph name="WIFI_CONFIGURATIONS_DATATYPE_NAME" /> 資料類型。如果在 <ph name="SYNC_TYPES_LIST_DISABLED_POLICY_NAME" /> 政策中停用 <ph name="WIFI_CONFIGURATIONS_DATATYPE_NAME" />，或是在 <ph name="SYNC_DISABLED_POLICY_NAME" /> 政策中停用 Chrome 同步功能，使用者將無法啟用這項功能。
-
-      如果未設定這項政策，在預設情況下，受管理的使用者將無法使用這項功能。</translation>
 <translation id="7477149584454865826">布林值標記，表示是否要使用 IPP Everywhere 設定印表機。</translation>
 <translation id="7477231245051133709">啟用單聲道音訊無障礙功能</translation>
 <translation id="7477239290070847560">可支援無須調整設定 (mDNS 和 DNS-SD) 的通訊協定目的地</translation>
@@ -5418,7 +5396,6 @@
 <translation id="7882585827992171421">這項政策僅在零售模式下有效。
 
       決定使用擴充程式 ID 當做登入畫面的螢幕保護程式。該擴充功能必須屬於你透過 DeviceAppPack 政策為這個網域設定的 AppPack。</translation>
-<translation id="7882857838942884046">停用 Google Sync 會造成 Android 備份與還原功能無法正常運作。</translation>
 <translation id="7882890448959833986">偵測到不支援的作業系統時不顯示警告</translation>
 <translation id="7887379840451099426">只有在裝置使用電池供電時才適用的電源管理設定</translation>
 <translation id="7891884447851425349">如果已啟用 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 政策，你可以設定 <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> 政策來指定在進行預設搜尋時所使用的搜尋引擎網址。網址應包含字串 <ph name="SEARCH_TERM_MARKER" />，系統會在查詢中將其替換為使用者的搜尋字詞。

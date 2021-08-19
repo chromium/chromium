@@ -81,7 +81,6 @@
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> ব্যবহার করে একটি Chromium প্রোফাইল থেকে আরেকটিতে পাল্টানো যায়</translation>
 <translation id="3509308970982693815">দয়া করে সব Chromium উইন্ডো বন্ধ করুন ও আবার চেষ্টা করুন৷</translation>
 <translation id="3575459661164320785">আপনার কম্পিউটারে ক্ষতিকারক সফ্টওয়্যার পাওয়া গেছে। Chromium এটিকে সরিয়ে দিতে পারে, আপনার সেটিংস রিস্টোর করতে পারে এবং বিভিন্ন এক্সটেনশন বন্ধ করে দিতে পারে যাতে আপনার ব্রাউজার আবার স্বাভাবিকভাবে কাজ করে।</translation>
-<translation id="3610776674893128619">হার্ড ড্রাইভের ডেটা মুছে ফেলে Chromium OS ইনস্টল করুন</translation>
 <translation id="3639635944603682591">এই ডিভাইস থেকে এই ব্যক্তির ব্রাউজিং ডেটা মুছে ফেলা হবে। ডেটা ফিরিয়ে আনতে Chromium-এ <ph name="USER_EMAIL" /> হিসেবে সাইন-ইন করুন।</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Chromium-এর একটি নতুন আপডেট উপলভ্য আছে এবং আপনি আবার চালু করলেই সেটি প্রয়োগ করা হবে।}=1{Chromium-এর একটি নতুন আপডেট উপলভ্য আছে এবং আপনি আবার চালু করলেই সেটি প্রয়োগ করা হবে। আপনার ছদ্মবেশী উইন্ডো আবার খুলবে না।}one{Chromium-এর একটি নতুন আপডেট উপলভ্য আছে এবং আপনি আবার চালু করলেই সেটি প্রয়োগ করা হবে। আপনার #টি ছদ্মবেশী উইন্ডো আবার খুলবে না।}other{Chromium-এর একটি নতুন আপডেট উপলভ্য আছে এবং আপনি আবার চালু করলেই সেটি প্রয়োগ করা হবে। আপনার #টি ছদ্মবেশী উইন্ডো আবার খুলবে না।}}</translation>
 <translation id="3651803019964686660"><ph name="ORIGIN" /> থেকে আপনার Android ফোনে একটি নম্বর পাঠাতে, উভয় ডিভাইসের Chromium-এ সাইন-ইন করুন।</translation>
@@ -163,15 +162,6 @@
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> বিপজ্জনক, তাই Chromium এটিকে অবরুদ্ধ করেছে।</translation>
 <translation id="6134968993075716475">'Safe Browsing'-এর সুবিধা বন্ধ করা আছে। তবে এটি চালু রাখার জন্য Chromium আপনাকে সাজেস্ট করছে।</translation>
 <translation id="6145820983052037069">আপনি এখানে একটি Chromium প্রোফাইল থেকে আরেকটিতে পাল্টাতে পারেন</translation>
-<translation id="61577490437262925"><ph name="BEGIN_PARAGRAPH1" />আমরা Chromium OS ইনস্টল করার জন্য প্রস্তুত! একবার শুরু করে ফেললে:
-          <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />সব ফাইল, ডেটা ও আপনার বর্তমান অপারেটিং সিস্টেম মুছে যাবে।
-          <ph name="LIST_ITEM" />Chromium OS ইনস্টল করা হবে।
-          <ph name="LIST_ITEM" />ইনস্টল করা হয়ে গেলে আপনার ডিভাইস বন্ধ হয়ে যাবে।
-          <ph name="END_LIST" />
-          <ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />শেষ বারের মতো রিমাইন্ডার: ইনস্টল করা হলে আপনার হার্ড ড্রাইভের সমস্ত ডেটা মুছে যাবে। দরকারি সমস্ত ডেটার ব্যাক-আপ নেওয়া হয়েছে কিনা দেখে নিন।<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />ইনস্টল করা একবার শুরু হয়ে গেলে আর বন্ধ করা যাবে না।<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6183079672144801177">আপনার <ph name="TARGET_DEVICE_NAME" />-এর Chromium-এ সাইন-ইন করেছেন কিনা তা দেখে নিন এবং তারপরে আবার পাঠানোর চেষ্টা করুন।</translation>
 <translation id="6212496753309875659">এই কম্পিউটারে ইতিমধ্যে Chromium-এর আরও একটি সাম্প্রতিক ভার্সন রয়েছে৷ যদি সফ্টওয়্যার কাজ না করে, দয়া করে Chromium আনইনস্টল করুন এবং আবার চেষ্টা করুন৷</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium এখন আবার লঞ্চ হবে}=1{Chromium ১ সেকেন্ডের মধ্যে আবার লঞ্চ হবে}one{Chromium # সেকেন্ডের মধ্যে আবার লঞ্চ হবে}other{Chromium # সেকেন্ডের মধ্যে আবার লঞ্চ হবে}}</translation>
@@ -189,7 +179,6 @@
 <translation id="6434250628340475518">Chromium OS সিস্টেম</translation>
 <translation id="6455857529632101747">Chromium প্রোফাইল-এ স্বাগতম</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium ১ সেকেন্ডের মধ্যে রিস্টার্ট হবে}one{Chromium # সেকেন্ডের মধ্যে রিস্টার্ট হবে}other{Chromium # সেকেন্ডের মধ্যে রিস্টার্ট হবে}}</translation>
-<translation id="646620589868199210">Chromium OS ইনস্টল করার জন্য প্রস্তুত</translation>
 <translation id="6475912303565314141">আপনি Chromium শুরু করলে কোন পৃষ্ঠাটি দেখানো হবে তাও এটি নিয়ন্ত্রণ করে।</translation>
 <translation id="6510925080656968729">Chromium আনইনস্টল করুন</translation>
 <translation id="6542839706527980775">প্রতিটি প্রোফাইলে বুকমার্ক, ইতিহাস, পাসওয়ার্ড ও আরও অনেক কিছুর মতো তার নিজস্ব Chromium তথ্য আছে</translation>

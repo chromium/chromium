@@ -59,16 +59,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="2348335408836342058">Chrome a besoin de votre autorisation pour accéder à votre appareil photo et à votre micro pour ce site</translation>
 <translation id="234869673307233423">Chrome ne parvient pas à vérifier vos mots de passe. Réessayez plus tard.</translation>
 <translation id="235650106824528204">Toutes les données Chrome générées quand vous utilisez ce profil (comme la création de favoris, l'historique, les mots de passe etc.) peuvent être supprimées par l'administrateur du profil professionnel. <ph name="LEARN_MORE" /></translation>
-<translation id="2409866122341731384">Effacer le disque dur et installer Chrome OS</translation>
-<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />Nous sommes prêts à installer Chrome OS ! Si vous poursuivez :
-          <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Les fichiers, les données et votre système d'exploitation actuel seront effacés.
-          <ph name="LIST_ITEM" />Chrome OS sera installé.
-          <ph name="LIST_ITEM" />Votre appareil s'éteindra une fois l'installation terminée.
-          <ph name="END_LIST" />
-          <ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Un dernier rappel : l'installation effacera la totalité de votre disque dur. Assurez-vous que toutes vos données importantes sont sauvegardées.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Une fois commencée, l'installation ne peut être annulée.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">Impossible de synchroniser vos données dans Google Chrome, car la synchronisation n'est pas disponible pour votre domaine.</translation>
 <translation id="2467438592969358367">Google Chrome veut exporter vos mots de passe. Pour autoriser cette action, saisissez votre mot de passe Windows.</translation>
 <translation id="2485422356828889247">Désinstaller</translation>
@@ -222,7 +212,6 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6418662306461808273">Passer au profil Chrome existant ?</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome pour les développeurs</translation>
 <translation id="6568793831116033768">Système Chrome OS</translation>
-<translation id="664235759707825982">Chrome OS est prêt à être installé</translation>
 <translation id="6676384891291319759">Accéder à Internet</translation>
 <translation id="6679975945624592337">Laisser Google Chrome s'exécuter en arrière-plan</translation>
 <translation id="6739177684496155661">Continuer avec un nouveau profil Chrome ?</translation>

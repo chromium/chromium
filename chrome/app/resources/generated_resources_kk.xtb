@@ -2195,7 +2195,7 @@
 <translation id="3305661444342691068">PDF файлын алдын ала қарау қолданбасында ашу</translation>
 <translation id="3308116878371095290">Бұл бетке cookie файлдарын орнатуға тыйым салынды.</translation>
 <translation id="3308134619352333507">Түймені жасыру</translation>
-<translation id="3308681281309926497">Сіз кіретін сайттар Chrome жабылмағанша ақпараттарыңызды есте сақтауы мүмкін.</translation>
+<translation id="3308681281309926497">Кірген сайттар ақпаратыңызды Chrome жабылғанша есте сақтап тұрады.</translation>
 <translation id="3308738399950580893">жарнамалар</translation>
 <translation id="3308852433423051161">Google Assistant жүктелуде…</translation>
 <translation id="3309330461362844500">Сертификат профилінің идентификаторы</translation>
@@ -7595,7 +7595,6 @@
 <translation id="9121814364785106365">Бекітілген қойынды ретінде ашу</translation>
 <translation id="9122176249172999202"><ph name="IDS_SHORT_PRODUCT_NAME" /> кідіртілді</translation>
 <translation id="9124003689441359348">Сақталған құпия сөздер мына жерге шығады</translation>
-<translation id="9125387974662074614">Chrome компьютерде зиянды бағдарламалық құралдарды іздеп болғасын маған хабарландыру келсін.</translation>
 <translation id="9126149354162942022">Көрсеткі түсі</translation>
 <translation id="9128317794749765148">Реттеу аяқталмады</translation>
 <translation id="9128335130883257666"><ph name="INPUT_METHOD_NAME" /> енгізу әдісіне арналған параметрлер бетін ашу</translation>

@@ -272,7 +272,7 @@
 <translation id="1838374766361614909">ניקוי חיפוש</translation>
 <translation id="1839551713262164453">אימות ערכי המדיניות נכשל והתרחשו שגיאות</translation>
 <translation id="1842969606798536927">לתשלום</translation>
-<translation id="1856713167556118146">מה לא קורה במצב אנונימי</translation>
+<translation id="1856713167556118146">מה לא קורה במצב האנונימי</translation>
 <translation id="1871208020102129563">‏שרת ה-Proxy מוגדר להשתמש בשרתי Proxy קבועים, לא בכתובת אתר של סקריפט ‎.Pac</translation>
 <translation id="1871284979644508959">שדה חובה</translation>
 <translation id="1875512691959384712">Google Forms</translation>
@@ -1019,7 +1019,7 @@
 <translation id="4465818729556336129">המסמך הזה סודי ולפי מנהל המערכת, לא מומלץ להדפיס אותו.</translation>
 <translation id="4476953670630786061">הטופס הזה לא מאובטח. המילוי האוטומטי נכבה.</translation>
 <translation id="4477350412780666475">הטראק הבא</translation>
-<translation id="4481251927743463293">מה כן קורה במצב אנונימי</translation>
+<translation id="4481251927743463293">מה כן קורה במצב האנונימי</translation>
 <translation id="4481394504112738036">קובץ סודי</translation>
 <translation id="4482953324121162758">האתר הזה לא יתורגם.</translation>
 <translation id="4490717597759821841">A7</translation>
@@ -1124,7 +1124,7 @@ Del</translation>
 <translation id="4819347708020428563">לערוך את ההערות בתצוגת ברירת מחדל?</translation>
 <translation id="4825496307559726072">‏<ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, מקישים על Tab ואז על Enter כדי ליצור במהירות גיליון אלקטרוני חדש ב-Google Sheets</translation>
 <translation id="4825507807291741242">עוצמתי</translation>
-<translation id="4827402517081186284">המצב האנונימי לא מסתיר אותך באינטרנט:
+<translation id="4827402517081186284">המצב האנונימי לא מסתיר אותך לגמרי באינטרנט:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />אתרים יודעים שביקרת בהם<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />מעסיקים ומוסדות לימודים יכולים לעקוב אחר פעילות הגלישה שלך<ph name="END_LIST_ITEM" />
@@ -1134,7 +1134,7 @@ Del</translation>
 <translation id="484462545196658690">אוטומטי</translation>
 <translation id="4850886885716139402">הצגה</translation>
 <translation id="485316830061041779">גרמנית</translation>
-<translation id="4853901935952445031">‏האתר הזה לא יוכל להשתמש בממשק U2F אחרי פברואר 2022. אם האתר בבעלותך, צריך לשנות אותו כך שיוכל להשתמש ב-API לאימות אינטרנט.</translation>
+<translation id="4853901935952445031">‏האתר הזה לא יוכל להשתמש ב-U2F API אחרי פברואר 2022. אם האתר בבעלותך, צריך לשנות אותו כך שיוכל להשתמש ב-Web Authentication API.</translation>
 <translation id="4854362297993841467">שיטת המסירה הזו אינה זמינה. עליך לבחור שיטה אחרת.</translation>
 <translation id="4854853140771946034">‏יצירת הערה חדשה ב-Google Keep במהירות</translation>
 <translation id="4876188919622883022">תצוגה נקייה</translation>
@@ -1659,7 +1659,7 @@ Del</translation>
 <translation id="6757797048963528358">המכשיר עבר למצב שינה.</translation>
 <translation id="6767985426384634228">לעדכן את הכתובת?</translation>
 <translation id="6768213884286397650">Hagaki (Postcard)‎</translation>
-<translation id="6774185088257932239"><ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /> על מצב אנונימי</translation>
+<translation id="6774185088257932239"><ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /> על המצב האנונימי</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">סגול סיגלית</translation>
 <translation id="6786747875388722282">תוספים</translation>
@@ -1773,7 +1773,7 @@ Del</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> לא פועל בהתאם לתקני האבטחה.</translation>
 <translation id="7210993021468939304">‏קיימת פעילות של Linux בתוך המאגר וניתן להתקין ולהפעיל אפליקציות של Linux בתוך המאגר</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /> בנושא זה.</translation>
-<translation id="7215025035562547931">משקיעים כמה דקות וחושבים על הדיוק</translation>
+<translation id="7215025035562547931">משקיעים כמה דקות ובודקים: האם המידע מדויק?</translation>
 <translation id="7217745192097460130">‏רוצה להשתמש ב-Touch ID כדי לאמת ולהשלים את הרכישה?</translation>
 <translation id="7219179957768738017">החיבור משתמש ב-<ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">המערכת מעבדת את התשלום</translation>
@@ -2109,11 +2109,11 @@ Del</translation>
 <translation id="8307888238279532626">את האפליקציות המותקנות ואת תדירות השימוש בהן.</translation>
 <translation id="831207732689920588">‏הדף הזה חשוד (סומן על-ידי Chrome).</translation>
 <translation id="831997045666694187">ערב</translation>
-<translation id="8328484624016508118">‏לאחר סגירת כל הכרטיסיות במצב אנונימי, יימחקו בדפדפן Chrome:
+<translation id="8328484624016508118">‏אחרי שסוגרים את כל הכרטיסיות במצב אנונימי, יימחקו בדפדפן Chrome:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />פעילות הגלישה מהמכשיר הזה<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />היסטוריית החיפושים שלך מהמכשיר הזה<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />מידע שהוזן בטפסים<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />המידע שהוזן בטפסים<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">אין גישה אל <ph name="HOST_NAME" /></translation>
 <translation id="833262891116910667">הדגשה</translation>

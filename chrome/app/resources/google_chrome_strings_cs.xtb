@@ -60,16 +60,6 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="2348335408836342058">Chrome pro tento web potřebuje oprávnění k přístupu k fotoaparátu a mikrofonu</translation>
 <translation id="234869673307233423">Chrome nemůže zkontrolovat vaše hesla. Zkuste to později.</translation>
 <translation id="235650106824528204">Veškerá data prohlížeče Chrome vygenerovaná během používání tohoto profilu (jako je vytvoření záložek, historie, hesel a další nastavení) může administrátor pracovního profilu odstranit. <ph name="LEARN_MORE" /></translation>
-<translation id="2409866122341731384">Vymazat pevný disk a nainstalovat Chrome OS</translation>
-<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />Jsme připraveni nainstalovat systém Chrome OS. Pokud budete pokračovat:
-          <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Budou vymazány soubory, data a váš současný operační systém.
-          <ph name="LIST_ITEM" />Nainstaluje se systém Chrome OS.
-          <ph name="LIST_ITEM" />Po dokončení instalace se zařízení vypne.
-          <ph name="END_LIST" />
-          <ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Ještě poslední připomenutí: Při instalaci bude zcela vymazán pevný disk. Zkontrolujte si, zda máte všechna důležitá data zálohovaná.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Po spuštění již instalaci nelze zrušit.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">Google Chrome nemohl synchronizovat vaše data, protože Synchronizace ve vaší doméně není k dispozici.</translation>
 <translation id="2467438592969358367">Google Chrome chce exportovat vaše hesla. Tato akce vyžaduje zadání hesla systému Windows.</translation>
 <translation id="2485422356828889247">Odinstalovat</translation>
@@ -223,7 +213,6 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="6418662306461808273">Přepnout na stávající profil Chrome?</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="6568793831116033768">Systém Chrome OS</translation>
-<translation id="664235759707825982">Jsme připraveni nainstalovat Chrome OS</translation>
 <translation id="6676384891291319759">Přístup k internetu</translation>
 <translation id="6679975945624592337">Nechat Google Chrome běžet na pozadí</translation>
 <translation id="6739177684496155661">Pokračovat v novém profilu Chrome?</translation>

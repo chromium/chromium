@@ -209,13 +209,6 @@
 <translation id="1265053460044691532">SAML kullanarak kimlik doğrulaması yapmış kullanıcının çevrimdışı olarak giriş yapabileceği süreyi sınırla</translation>
 <translation id="127264587838521316"><ph name="PRODUCT_NAME" /> uzantı yükleme isteklerini etkinleştirir</translation>
 <translation id="1274997165432133392">Çerezler ve diğer site verileri</translation>
-<translation id="127699919157094139">Google tarafından barındırılan senkronizasyon hizmetlerini kullanarak yapılan <ph name="PRODUCT_NAME" /> içindeki veri senkronizasyonunu devre dışı bırakır ve kullanıcıların bu ayarı değiştirmelerini önler.
-
-      Bu ayarı etkinleştirirseniz kullanıcılar <ph name="PRODUCT_NAME" /> içinden bu ayarı değiştiremez ve geçersiz kılamazlar.
-
-      Bu politika ayarlanmadan bırakılırsa kullanıcılar Google Sync aracılığıyla politikayı kullanıp kullanmamayı seçebilirler.
-
-      Google Sync'i tamamıyla devre dışı bırakmak için Google Sync hizmetini Google Yönetim konsolunda devre dışı bırakmanız önerilir.</translation>
 <translation id="128059397544257017">Politika, Etkin değerine ayarlandığında <ph name="CHROME_CLEANUP_NAME" />, istenmeyen yazılımlar tespit ederse <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" /> tarafından ayarlanan politikaya uygun olarak tarama verilerini Google'a gönderebilir. <ph name="CHROME_CLEANUP_NAME" />, kullanıcılara temizleme işlemini isteyip istemediklerini sorar. Sonuçları Google'a gönderir.
 
       Politika, Devre Dışı değerine ayarlandığında <ph name="CHROME_CLEANUP_NAME" />, istenmeyen yazılımlar tespit ederse <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" /> değeri ne olursa olsun tarama verilerini Google'a göndermez. <ph name="CHROME_CLEANUP_NAME" />, kullanıcılara temizleme işlemini isteyip istemediklerini sorar. Sonuçlar, Google'a bildirilmez.
@@ -2787,9 +2780,6 @@ Bu politika ayarlandığında <ph name="PRODUCT_OS_NAME" />, listenin boş olmam
       Politika ayarlanmadan bırakılırsa gelişmiş pil şarj modu kapalı olur.
 
       <ph name="CHARGE_START_TIME_FIELD_NAME" /> ve <ph name="CHARGE_END_TIME_FIELD_NAME" /> içinde <ph name="MINUTE_FIELD_NAME" /> için geçerli değerler 0, 15, 30, 45'tir.</translation>
-<translation id="4450222911834151460">Bu politika ayarlanırsa belirtilen tüm veri türleri hem Google Sync senkronizasyonunun hem de dolaşım profili senkronizasyonunun dışında tutulur. Bu, dolaşım profilinin boyutunu küçültmeye veya Google Sync sunucularına yüklenen veri türlerini sınırlandırmaya yarayabilir.
-
-      Şu anda bu politika kapsamında bulunan veri türleri şunlardır: "bookmarks", "preferences", "passwords", "autofill", "themes", "typedUrls", "extensions", "apps", "tabs", "wifiConfigurations". Bu adlar büyük/küçük harfe duyarlıdır.</translation>
 <translation id="4452653762766030431">ChromeOS için Ağ Dosya Paylaşımı'nın kullanılabilirliğini kontrol eder</translation>
 <translation id="445270821089253489">Ne tür kullanıcı ve cihaz bilgilerinin rapor edileceğini kontrol eder.</translation>
 <translation id="4453913621209182880">Yalnızca arka plan grafikleriyle yazdırmaya izin ver</translation>
@@ -4203,11 +4193,6 @@ Bu ayarı etkinleştirirseniz veya yapılandırmazsanız kullanıcılar şifrele
 <translation id="6371561334154580937">Son kapatılan pencerede oturum kapatma iletişimi göster.</translation>
 <translation id="6372105930898423193">AppCache özelliğinin, varsayılan olarak kapalı olsa bile yeniden etkinleştirilmesine olanak tanır.</translation>
 <translation id="6376659517206731212">Zorunlu Olabilir</translation>
-<translation id="6377355597423503887">Bu politika kullanımdan kaldırılmıştır. Bunun yerine BrowserSignin'i kullanabilirsiniz.
-
-      Kullanıcının <ph name="PRODUCT_NAME" /> ürününde oturum açmasına olanak verir.
-
-      Bu politikayı ayarlarsanız, bir kullanıcının <ph name="PRODUCT_NAME" /> ürününde oturum açmasına izin verilip verilmeyeceğini yapılandırabilirsiniz. Bu politika "false" (yanlış) seçeneğine ayarlanırsa, chrome.identity API'sini kullanan uygulamaların ve uzantıların çalışması engelleneceğinden, onun yerine SyncDisabled'ı kullanmak isteyebilirsiniz.</translation>
 <translation id="6378076389057087301">Ses etkinliğinin güç yönetimini etkileyip etkilemeyeceğini belirtme</translation>
 <translation id="6378393933102834628">Politikayı True (Doğru) değerine ayarlamak, uygulama kısayollarını görüntüler. Politikayı False (Yanlış) değerine ayarlamak, bu kısayolun hiçbir zaman görünmeyeceği anlamına gelir.
 
@@ -5147,13 +5132,6 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
       Politika ayarlanmadan bırakılırsa Askıya Alma işlemi uygulanır.
 
       Not: Uygulanacak işlem Askıya Alma ise <ph name="PRODUCT_OS_NAME" />, askıya almadan önce ekranı kilitleyecek veya kilitlemeyecek şekilde ayrı olarak ayarlanabilir.</translation>
-<translation id="7476621944304431784">Bu ayar etkinleştirildiğinde kullanıcıların, <ph name="PRODUCT_OS_NAME" /> cihazları ile bağlı Android telefonları arasında kablosuz ağ yapılandırmalarını senkronize etmelerine izin verilir. Kablosuz ağ yapılandırmaları senkronize edilmeden önce kullanıcıların bir kurulum akışını tamamlayarak bu özelliğe açık bir şekilde kaydolmaları gerekir.
-
-      Bu ayar devre dışı bırakılırsa kullanıcıların, kablosuz ağ yapılandırmalarını senkronize etmelerine izin verilmez.
-
-      Bu özellik, etkinleştirilen Chrome Senkronizasyonundaki <ph name="WIFI_CONFIGURATIONS_DATATYPE_NAME" /> veri türüne bağlıdır. <ph name="SYNC_TYPES_LIST_DISABLED_POLICY_NAME" /> politikasında <ph name="WIFI_CONFIGURATIONS_DATATYPE_NAME" /> devre dışı bırakılırsa veya <ph name="SYNC_DISABLED_POLICY_NAME" /> politikasında Chrome Senkronizasyonu devre dışı bırakılırsa bu özellik etkinleştirilmez.
-
-      Bu politika ayarlanmadan bırakılırsa yönetilen kullanıcılar için varsayılana izin verilmez.</translation>
 <translation id="7477149584454865826">Yazıcıyı kurmak için IPP Everywhere'in kullanılıp kullanılmayacağını belirten boole flag'i.</translation>
 <translation id="7477231245051133709">Mono ses erişilebilirlik özelliklerini etkinleştir</translation>
 <translation id="7477239290070847560">Zeroconf tabanlı (mDNS + DNS-SD) protokol hedefleri</translation>
@@ -5476,7 +5454,6 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 <translation id="7882585827992171421">Bu politika yalnızca perakende modunda etkindir.
 
       Oturum açma ekranında ekran koruyucu olarak kullanılacak uzantının kimliğini belirler. Uzantı, DeviceAppPack politikası kullanılarak bu alan adı için yapılandırılmış AppPack'in bir parçası olmalıdır.</translation>
-<translation id="7882857838942884046">Google Sync'in devre dışı bırakılması, Android Yedekleme ve Geri Yükleme özelliğinin düzgün çalışmamasına neden olur.</translation>
 <translation id="7882890448959833986">Desteklenmeyen OS uyarısını gizle</translation>
 <translation id="7887379840451099426">Yalnızca pil gücüyle çalışırken geçerli olan güç yönetimi ayarları</translation>
 <translation id="7891884447851425349"><ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> açıksa <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> politikasının ayarlanması, varsayılan arama sırasında kullanılan arama motorunu belirtir. URL, sorguda kullanıcının arama terimi ile değiştirilen <ph name="SEARCH_TERM_MARKER" /> dizesini içermelidir.

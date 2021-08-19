@@ -59,16 +59,6 @@
 <translation id="2348335408836342058">Chrome necesita permiso para acceder á cámara e ao micrófono neste sitio</translation>
 <translation id="234869673307233423">Chrome non puido comprobar os teus contrasinais. Téntao de novo máis tarde.</translation>
 <translation id="235650106824528204">O administrador do perfil de traballo pode quitar os datos de Chrome que se xeren durante o uso deste perfil (por exemplo, os marcadores, o historial, os contrasinais e outras opcións de configuración). <ph name="LEARN_MORE" /></translation>
-<translation id="2409866122341731384">Borrar unidade de disco duro e instalar Chrome OS</translation>
-<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />Está todo listo para instalar Chrome OS! Ao continuar:
-<ph name="BEGIN_LIST" />
-<ph name="LIST_ITEM" />Borraranse os ficheiros, os datos e o teu sistema operativo actual.
-          <ph name="LIST_ITEM" />Instalarase Chrome OS.
-          <ph name="LIST_ITEM" />O dispositivo apagarase en canto remate a instalación.
-          <ph name="END_LIST" />
-<ph name="END_PARAGRAPH1" />
-<ph name="BEGIN_PARAGRAPH2" />Non esquezas que coa instalación borrarase toda a unidade de disco duro. Asegúrate de ter unha copia de seguranza dos datos que sexan importantes.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />En canto se inicia a instalación non se pode cancelar.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">Google Chrome non puido sincronizar os teus datos porque a sincronización non está dispoñible para o teu dominio.</translation>
 <translation id="2467438592969358367">Google Chrome quere exportar os teus contrasinais. Escribe o teu contrasinal de Windows para permitir esta acción.</translation>
 <translation id="2485422356828889247">Desinstalar</translation>
@@ -223,7 +213,6 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="6418662306461808273">Queres cambiar ao perfil existente de Chrome?</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> (Google Chrome para programadores)</translation>
 <translation id="6568793831116033768">Sistema Chrome OS</translation>
-<translation id="664235759707825982">Todo listo para instalar Chrome OS</translation>
 <translation id="6676384891291319759">Accede a Internet</translation>
 <translation id="6679975945624592337">Permitir que Google Chrome se execute en segundo plano</translation>
 <translation id="6739177684496155661">Queres continuar nun perfil de Chrome novo?</translation>

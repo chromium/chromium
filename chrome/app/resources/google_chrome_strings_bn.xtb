@@ -58,16 +58,6 @@
 <translation id="2348335408836342058">এই সাইটটির জন্য Chrome কে আপনার ক্যামেরা এবং মাইক্রোফোনে অ্যাক্সেস দিতে হবে</translation>
 <translation id="234869673307233423">Chrome আপনার পাসওয়ার্ড চেক করতে পারছে না। পরে আবার চেষ্টা করুন।</translation>
 <translation id="235650106824528204">এই প্রোফাইল ব্যবহার করার সময় জেনারেট হওয়া Chrome ডেটা (যেমন বুকমার্ক, ইতিহাস, পাসওয়ার্ড ও অন্যান্য সেটিংস) অফিস প্রোফাইল অ্যাডমিনিস্ট্রেটর মুছে দিতে পারেন। <ph name="LEARN_MORE" /></translation>
-<translation id="2409866122341731384">হার্ড ড্রাইভের ডেটা মুছে ফেলে Chrome OS ইনস্টল করুন</translation>
-<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />আমরা Chrome OS ইনস্টল করার জন্য প্রস্তুত! একবার শুরু করে ফেললে:
-          <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />সব ফাইল, ডেটা ও আপনার বর্তমান অপারেটিং সিস্টেম মুছে যাবে।
-          <ph name="LIST_ITEM" />Chrome OS ইনস্টল করা হবে।
-          <ph name="LIST_ITEM" />ইনস্টল করা হয়ে গেলে আপনার ডিভাইস বন্ধ হয়ে যাবে।
-          <ph name="END_LIST" />
-          <ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />শেষ বারের মতো রিমাইন্ডার: ইনস্টল করা হলে আপনার হার্ড ড্রাইভের সমস্ত ডেটা মুছে যাবে। দরকারি সমস্ত ডেটার ব্যাক-আপ নেওয়া হয়েছে কিনা দেখে নিন।<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />ইনস্টল করা একবার শুরু হয়ে গেলে আর বন্ধ করা যাবে না।<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">আপনার ডোমেনে সিঙ্ক উপলভ্য না থাকার কারণে Google Chrome সিঙ্ক করতে পারেনি৷</translation>
 <translation id="2467438592969358367">Google Chrome আপনার পাসওয়ার্ড এক্সপোর্ট করতে চাইছে। অনুমতি দিতে Windows এর পাসওয়ার্ড টাইপ করুন।</translation>
 <translation id="2485422356828889247">আনইনস্টল</translation>
@@ -219,7 +209,6 @@
 <translation id="6418662306461808273">বর্তমান Chrome প্রোফাইলে পাল্টাতে চান?</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6568793831116033768">Chrome OS সিস্টেম</translation>
-<translation id="664235759707825982">Chrome OS ইনস্টলের জন্য প্রস্তুত</translation>
 <translation id="6676384891291319759">ইন্টারনেটটি অ্যাক্সেস করুন</translation>
 <translation id="6679975945624592337">Google Chrome-কে ব্যাকগ্রাউন্ডে চলতে দিন</translation>
 <translation id="6739177684496155661">নতুন Chrome প্রোফাইলে কাজ চালিয়ে যেতে চান?</translation>

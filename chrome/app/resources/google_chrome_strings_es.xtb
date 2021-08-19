@@ -60,16 +60,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2348335408836342058">Chrome necesita permiso para acceder a la cámara y al micrófono en este sitio web</translation>
 <translation id="234869673307233423">Chrome no puede comprobar tus contraseñas. Vuelve a intentarlo más tarde.</translation>
 <translation id="235650106824528204">El administrador del perfil de trabajo puede quitar cualquier dato de Chrome generado durante el uso de este perfil, como los marcadores, el historial, las contraseñas y otros ajustes. <ph name="LEARN_MORE" /></translation>
-<translation id="2409866122341731384">Borrar disco duro e instalar Chrome OS</translation>
-<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />¡Estamos listos para instalar Chrome OS! Cuando continúes:
-          <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Se eliminarán los archivos, los datos y tu sistema operativo actual.
-          <ph name="LIST_ITEM" />Se instalará Chrome OS.
-          <ph name="LIST_ITEM" />Tu dispositivo se apagará cuando se complete la instalación.
-          <ph name="END_LIST" />
-          <ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Un último recordatorio: la instalación borrará todo tu disco duro. Asegúrate de tener una copia de seguridad de los datos importantes.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />La instalación no se puede cancelar una vez que empiece.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">Google Chrome no ha podido sincronizar los datos porque la función de sincronización no está disponible para tu dominio.</translation>
 <translation id="2467438592969358367">Google Chrome quiere exportar tus contraseñas. Escribe tu contraseña de Windows para permitirlo.</translation>
 <translation id="2485422356828889247">Desinstalar</translation>
@@ -224,7 +214,6 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="6418662306461808273">¿Cambiar a un perfil de Chrome?</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> ‑ Google Chrome Dev</translation>
 <translation id="6568793831116033768">Sistema Chrome OS</translation>
-<translation id="664235759707825982">Todo listo para instalar Chrome OS</translation>
 <translation id="6676384891291319759">Accede a Internet.</translation>
 <translation id="6679975945624592337">Permitir que Google Chrome se ejecute en segundo plano</translation>
 <translation id="6739177684496155661">¿Continuar en un nuevo perfil de Chrome?</translation>

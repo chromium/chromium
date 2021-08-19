@@ -60,16 +60,6 @@
 <translation id="2348335408836342058">На Chrome му треба дозвола за да пристапи до камерата и микрофонот за сајтов</translation>
 <translation id="234869673307233423">Chrome не може да ги провери вашите лозинки. Обидете се пак подоцна.</translation>
 <translation id="235650106824528204">Податоците на Chrome што се генерирани при користењето на овој профил (како на пример, создавање обележувачи, историја, лозинки и други поставки) може да се отстранат од страна на администраторот на работниот профил. <ph name="LEARN_MORE" /></translation>
-<translation id="2409866122341731384">Избриши го хард дискот и инсталирај Chrome OS</translation>
-<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />Подготвени сме за инсталирање на Chrome OS! Штом ќе продолжите:
-          <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Датотеките, податоците и моменталниот оперативен систем ќе се избришат.
-          <ph name="LIST_ITEM" />Ќе се инсталира Chrome OS.
-          <ph name="LIST_ITEM" />Уредот ќе се исклучи кога ќе заврши инсталацијата.
-          <ph name="END_LIST" />
-          <ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Еден последен потсетник: инсталацијата ќе го избрише целиот хард диск. Погрижете се дека сте направиле бекап од податоците што ви се важни.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Штом ќе започне инсталирањето нема да може да се откаже.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">Google Chrome не може да ги синхронизира вашите податоци затоа што Sync не е достапен за вашиот домен.</translation>
 <translation id="2467438592969358367">Google Chrome сака да ги извезе вашите лозинки. Внесете ја лозинката за Windows за да го дозволите ова.</translation>
 <translation id="2485422356828889247">Деинсталирај</translation>
@@ -224,7 +214,6 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="6418662306461808273">Сакате да се префрлите на постојниот профил на Chrome?</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6568793831116033768">Систем Chrome OS</translation>
-<translation id="664235759707825982">Chrome OS е подготвен за инсталирање</translation>
 <translation id="6676384891291319759">Пристап до интернет</translation>
 <translation id="6679975945624592337">Остави Google Chrome да работи во заднина</translation>
 <translation id="6739177684496155661">Сакате да продолжите на нов профил на Chrome?</translation>

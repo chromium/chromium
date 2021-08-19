@@ -60,16 +60,6 @@
 <translation id="2348335408836342058">ဤဝဘ်ဆိုက်အတွက် Chrome သည် သင်၏ကင်မရာနှင့် မိုက်ခရိုဖုန်းကို အသုံးပြုခွင့်ရရန် လိုအပ်ပါသည်</translation>
 <translation id="234869673307233423">Chrome က သင့်စကားဝှက်များကို စစ်ဆေး၍မရပါ။ နောက်မှ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="235650106824528204">ဤပရိုဖိုင်အသုံးပြုစဉ်အတွင်း ရရှိလာသော Chrome ဒေတာမှန်သမျှ (လိပ်စာများ၊ မှတ်တမ်း၊ စကားဝှက်နှင့် အခြားဆက်တင်များပြုလုပ်ခြင်း ကဲ့သို့) ကို အလုပ်ပရိုဖိုင် စီမံခန့်ခွဲသူက ဖယ်ရှားနိုင်သည်။ <ph name="LEARN_MORE" /></translation>
-<translation id="2409866122341731384">ဟတ်ဒရိုက် ဒေတာဖျက်ပြီး Chrome OS ထည့်သွင်းရန်</translation>
-<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />Chrome OS ထည့်သွင်းရန် အသင့်ဖြစ်ပါပြီ။ ရှေ့ဆက်သောအခါ-
-          <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />ဖိုင်များ၊ ဒေတာနှင့် သင်၏လက်ရှိ လည်ပတ်သည့်စနစ်ကို ဖျက်လိုက်ပါမည်။
-          <ph name="LIST_ITEM" />Chrome OS ထည့်သွင်းပါမည်။
-          <ph name="LIST_ITEM" />ထည့်သွင်းမှုပြီးသောအခါ သင်၏စက် အပြီးပိတ်သွားပါမည်။
-          <ph name="END_LIST" />
-          <ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />နောက်ဆုံး သတိပေးချက်- ထည့်သွင်းမှုသည် သင့်ဟတ်ဒရိုက်ဗ်တစ်ခုလုံးကို ဖျက်လိုက်ပါမည်။ အရေးကြီးသောဒေတာကို အရန်သိမ်းထားကြောင်း သေချာပါစေ။<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />ထည့်သွင်းမှုစတင်သောအခါ ၎င်းကို ပယ်ဖျက်၍မရပါ။<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">သင်၏ ဒိုမိန်းအတွက် စင့်က် လုပ်မရနိုင်သောကြောင့် Google Chrome က သင်၏ ဒေတာကို စင့်က် မလုပ်နိုင်ခဲ့ပါ။</translation>
 <translation id="2467438592969358367">Google Chrome သည် သင်၏ စကားဝှက်များကို တင်ပို့လိုသည်။ ၎င်းကို ခွင့်ပြုရန် သင်၏ Windows စကားဝှက်ကို ထည့်ပါ။</translation>
 <translation id="2485422356828889247">ဖြုတ်ရန်</translation>
@@ -224,7 +214,6 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="6418662306461808273">လက်ရှိ Chrome ပရိုဖိုင်သို့ ပြောင်းမလား။</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6568793831116033768">Chrome OS စနစ်</translation>
-<translation id="664235759707825982">Chrome OS ထည့်သွင်းရန် အသင့်ဖြစ်ပါပြီ</translation>
 <translation id="6676384891291319759">အင်တာနက် ရယူရန်</translation>
 <translation id="6679975945624592337">Google Chrome ကို နောက်ခံတွင် ဖွင့်ခွင့်ပေးပါ</translation>
 <translation id="6739177684496155661">Chrome ပရိုဖိုင်အသစ်တွင် ဆက်လုပ်မလား။</translation>

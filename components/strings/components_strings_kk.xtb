@@ -272,7 +272,7 @@
 <translation id="1838374766361614909">Іздеуді тазарту</translation>
 <translation id="1839551713262164453">Қателерге байланысты саясат мәндері тексерілмеді</translation>
 <translation id="1842969606798536927">Төлем</translation>
-<translation id="1856713167556118146">Инкогнито режимінде орындалмайтындар:</translation>
+<translation id="1856713167556118146">Инкогнито режимінде орындалмайды</translation>
 <translation id="1871208020102129563">Прокси .pac сценарий URL мекенжайын емес, бекітілген прокси серверлерін пайдалануға орнатылған.</translation>
 <translation id="1871284979644508959">Міндетті өріс</translation>
 <translation id="1875512691959384712">Google Forms</translation>
@@ -1020,7 +1020,7 @@
 <translation id="4465818729556336129">Бұл құжат құпия және әкімші оны басып шығармауға кеңес береді.</translation>
 <translation id="4476953670630786061">Бұл үлгі қорғалмаған. Автотолтыру өшірілді.</translation>
 <translation id="4477350412780666475">Келесі аудиотрек</translation>
-<translation id="4481251927743463293">Инкогнито режимінде орындалатындар:</translation>
+<translation id="4481251927743463293">Инкогнито режимінде орындалады</translation>
 <translation id="4481394504112738036">Құпия файл</translation>
 <translation id="4482953324121162758">Бұл сайт аударылмайды.</translation>
 <translation id="4490717597759821841">A7</translation>
@@ -1121,17 +1121,17 @@
 <translation id="4819347708020428563">Аннотацияларды әдепкі көріністе өзгерту керек пе?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, жаңа Google парағын жылдам жасау үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
 <translation id="4825507807291741242">Қуатты</translation>
-<translation id="4827402517081186284">Инкогнито режимі сізді интернетте көрінбейтін етпейді:
+<translation id="4827402517081186284">Инкогнито режимі интернеттегі іс-әрекетіңізді жасырмайды:
         <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />сайттар қашан кіргеніңізді біледі;<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />қызметкерлер немесе мектептер браузерді қолдану мәліметін қарай алады;<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />интернет провайдерлері интернет трафигін бақылай алады.<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Сайттар қашан кіргеніңізді біледі.<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Қызметкерлер немесе мектептер браузерді қолдану мәліметін қарай алады.<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Интернет провайдерлері трафикті бақылай алады.<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="4838327282952368871">Арманшыл</translation>
 <translation id="484462545196658690">Авто</translation>
 <translation id="4850886885716139402">Көрініс</translation>
 <translation id="485316830061041779">неміс</translation>
-<translation id="4853901935952445031">2022 жылдың ақпанынан кейін бұл сайтта U2F API қолдауы тоқтатылады. Егер сіз осы сайттың иесі болсаңыз, Web Authentication API-ды пайдалану үшін оны ауыстыруыңыз тиіс.</translation>
+<translation id="4853901935952445031">2022 жылдың ақпанынан кейін бұл сайтта U2F API қолдауы тоқтатылады. Егер осы сайттың иесі болсаңыз, Web Authentication API-ға көшуіңіз тиіс.</translation>
 <translation id="4854362297993841467">Бұл жеткізу әдісі қолжетімді емес. Басқа әдісті қолданып көріңіз.</translation>
 <translation id="4854853140771946034">Google Keep-те жылдам жаңа ескертпе жасау</translation>
 <translation id="4876188919622883022">Қарапайым көрініс</translation>
@@ -2105,11 +2105,11 @@
 <translation id="8307888238279532626">Орнатылған қолданбалар және олардың пайдаланылу жиілігі</translation>
 <translation id="831207732689920588">Бұл бет күдікті (Chrome белгілеген).</translation>
 <translation id="831997045666694187">Кеш</translation>
-<translation id="8328484624016508118">Барлық инкогнито қойындылары жабылғанда, Chrome келесілерді жояды:
+<translation id="8328484624016508118">Барлық инкогнито қойындыcы жабылғанда, Chrome келесілерді жояды:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />осы құрылғыдағы браузерді қолдану мәліметі;<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />осы құрылғыдағы іздеу тарихы;<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />үлгілерге енгізілген ақпараттар.<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />үлгілерге енгізілген ақпарат.<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489"><ph name="HOST_NAME" /> сайтына кіруге тыйым салынған</translation>
 <translation id="833262891116910667">Бөлектеу</translation>

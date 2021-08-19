@@ -208,13 +208,6 @@
 <translation id="1265053460044691532">限制通过SAML验证身份的用户可离线登录的时长</translation>
 <translation id="127264587838521316">启用 <ph name="PRODUCT_NAME" /> 扩展程序安装请求</translation>
 <translation id="1274997165432133392">Cookie 及其他网站数据</translation>
-<translation id="127699919157094139">使用由 Google 托管的同步服务停用 <ph name="PRODUCT_NAME" /> 中的数据同步功能，并阻止用户更改此设置。
-
-      如果您启用了此设置，用户将无法在 <ph name="PRODUCT_NAME" /> 中更改或覆盖此设置。
-
-      如果您未设置此政策，用户便能自行决定是否要使用 Google 同步。
-
-      若要完全停用 Google 同步服务，您最好在 Google 管理控制台中停用此服务。</translation>
 <translation id="128059397544257017">如果此政策已启用，当 <ph name="CHROME_CLEANUP_NAME" />检测到垃圾软件时，它可以按照 <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" /> 设置的政策向 Google 报告与此项扫描相关的数据。<ph name="CHROME_CLEANUP_NAME" />会询问用户是否需要清理，并会将扫描结果发送给 Google。
 
       如果此政策已停用，当 <ph name="CHROME_CLEANUP_NAME" />检测到垃圾软件时，无论 <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" /> 的值是什么，它都不会向 Google 报告与此项扫描相关的数据。<ph name="CHROME_CLEANUP_NAME" />会询问用户是否需要清理，但不会向 Google 报告扫描结果。
@@ -2739,9 +2732,6 @@
       如果您未设置此政策，高级电池充电模式会保持关闭状态。
 
       <ph name="CHARGE_START_TIME_FIELD_NAME" /> 和 <ph name="CHARGE_END_TIME_FIELD_NAME" /> 中的有效 <ph name="MINUTE_FIELD_NAME" /> 字段值为 0、15、30、45。</translation>
-<translation id="4450222911834151460">如果您设置了此政策，系统将会从同步操作（无论是 Google 同步还是漫游个人资料同步）中排除所有指定的数据类型。这有助于缩减漫游个人资料的大小，或者限制向 Google 同步服务器上传的数据类型。
-
-      此政策当前可用的数据类型为：“bookmarks”、“readingList”、“preferences”、“passwords”、“autofill”、“themes”、“typedUrls”、“extensions”、“apps”、“tabs”、“wifiConfiguration”。这些名称区分大小写！</translation>
 <translation id="4452653762766030431">控制是否允许在 Chrome 操作系统中使用“网络文件共享”功能</translation>
 <translation id="445270821089253489">控制要报告的用户和设备信息种类。</translation>
 <translation id="4453913621209182880">仅允许在有背景图片的情况下打印</translation>
@@ -4153,11 +4143,6 @@
 <translation id="6371561334154580937">在用户关闭最后一个窗口时显示让用户确认退出登录的对话框。</translation>
 <translation id="6372105930898423193">允许重新启用 AppCache 功能，即使此功能默认处于关闭状态。</translation>
 <translation id="6376659517206731212">可强制执行</translation>
-<translation id="6377355597423503887">此政策已弃用，请考虑改用 BrowserSignin。
-
-      允许用户登录 <ph name="PRODUCT_NAME" />。
-
-      如果您设置了此政策，则可以配置是否允许用户登录 <ph name="PRODUCT_NAME" />。如果将此政策设为“False”，使用 chrome.identity API 的应用和扩展程序将无法正常运行，因此我们建议您改用 SyncDisabled。</translation>
 <translation id="6378076389057087301">指定音频活动是否影响电源管理</translation>
 <translation id="6378393933102834628">如果此政策设为 True，系统会显示应用快捷方式。如果此政策设为 False，系统一律不会显示此类快捷方式。
 
@@ -5091,13 +5076,6 @@
       如果您未设置此政策，系统会执行暂停操作。
 
       注意：如果需要执行的操作是暂停，您还可另行设置 <ph name="PRODUCT_OS_NAME" />在暂停前是否锁定屏幕。</translation>
-<translation id="7476621944304431784">如果此设置已启用，用户将能够在其 <ph name="PRODUCT_OS_NAME" />设备和一部已连接的 Android 手机之间同步 Wi-Fi 网络配置。不过，用户必须通过完成一个设置流程来明确选择启用这项功能，才能同步 Wi-Fi 网络配置。
-
-      如果此设置已停用，用户将无法同步 Wi-Fi 网络配置。
-
-      这项功能有赖于在 Chrome 同步设置中启用 <ph name="WIFI_CONFIGURATIONS_DATATYPE_NAME" /> 数据类型。如果 <ph name="SYNC_TYPES_LIST_DISABLED_POLICY_NAME" /> 政策已停用 <ph name="WIFI_CONFIGURATIONS_DATATYPE_NAME" />，或者 <ph name="SYNC_DISABLED_POLICY_NAME" /> 政策已停用 Chrome 同步，系统将不会启用这项功能。
-
-      如果此政策未设置，默认情况下，受管用户将无法使用这项功能。</translation>
 <translation id="7477149584454865826">一个布尔值标记，用于表明是否应该使用 IPP Everywhere 来设置打印机。</translation>
 <translation id="7477231245051133709">启用“单声道音频”无障碍功能</translation>
 <translation id="7477239290070847560">基于 Zeroconf (mDNS + DNS-SD) 的协议目的地</translation>
@@ -5404,7 +5382,6 @@
 <translation id="7882585827992171421">此策略仅在零售模式下有效。
 
       确定在登录屏幕上用作屏幕保护程序的扩展程序的 ID。该扩展程序必须属于通过 DeviceAppPack 策略为此域配置的 AppPack。</translation>
-<translation id="7882857838942884046">停用 Google 同步会导致 Android 的备份和恢复机制无法正常运行。</translation>
 <translation id="7882890448959833986">禁止显示“操作系统不受支持”警告</translation>
 <translation id="7887379840451099426">仅当使用电池供电时才适用的电源管理设置</translation>
 <translation id="7891884447851425349">如果 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 已开启，您便可通过设置 <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> 来指定在默认搜索期间使用的搜索引擎网址。该网址应包含字符串<ph name="SEARCH_TERM_MARKER" />；当用户执行查询时，系统会将此字符串替换成用户的搜索字词。

@@ -60,16 +60,6 @@
 <translation id="2348335408836342058">ഈ സൈറ്റിനായി, Chrome-ന് നിങ്ങളുടെ ക്യാമറയും മൈക്രോഫോണും ആക്‌സസ് ചെയ്യാനുള്ള അനുമതി ആവശ്യമാണ്</translation>
 <translation id="234869673307233423">Chrome-ന് നിങ്ങളുടെ പാസ്‌വേഡുകൾ പരിശോധിക്കാനാവുന്നില്ല. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="235650106824528204">ഈ പ്രൊഫൈലിന്റെ ഉപയോഗത്തിനിടയിൽ ഉണ്ടായ ഏത് Chrome ഡാറ്റയും (ബുക്ക്‌മാർക്കുകൾ, ചരിത്രം, പാസ്‌വേഡുകൾ, മറ്റ് ക്രമീകരണം എന്നിവ സൃഷ്ടിക്കൽ പോലുള്ളവ) ഔദ്യോഗിക പ്രൊഫൈൽ അഡ്മിന് നീക്കം ചെയ്യാനാകും. <ph name="LEARN_MORE" /></translation>
-<translation id="2409866122341731384">ഹാർഡ് ഡ്രൈവ് മായ്ച്ച് Chrome OS ഇൻസ്‌റ്റാൾ ചെയ്യുക</translation>
-<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />Chrome OS ഇൻസ്‌റ്റാൾ ചെയ്യാൻ ഞങ്ങൾ തയ്യാറാണ്! തുടർന്നാൽ:
-          <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />ഫയലുകൾ, ഡാറ്റ, നിങ്ങളുടെ നിലവിലെ ഓപ്പറേറ്റിംഗ് സിസ്‌റ്റം എന്നിവ മായ്ക്കും.
-          <ph name="LIST_ITEM" />Chrome OS ഇൻസ്‌റ്റാൾ ചെയ്യും.
-          <ph name="LIST_ITEM" />ഇൻസ്‌റ്റാൾ ചെയ്യൽ പൂർത്തിയായാൽ നിങ്ങളുടെ ഉപകരണം ഷട്ട് ഡൗൺ ആകും.
-          <ph name="END_LIST" />
-          <ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />അവസാന റിമൈൻഡർ: ഇൻസ്‌റ്റാൾ ചെയ്യുന്നത് നിങ്ങളുടെ ഹാർഡ് ഡ്രൈവ് മുഴുവനായും മായ്ക്കും. നിങ്ങൾക്ക് വേണ്ട എല്ലാ ഡാറ്റയും ബാക്കപ്പെടുത്തിട്ടുണ്ടെന്ന് ഉറപ്പാക്കുക.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />ഒരിക്കൽ ഇൻസ്‌റ്റാൾ ചെയ്യൽ ആരംഭിച്ചാൽ അത് റദ്ദാക്കാനാകില്ല.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">നിങ്ങളുടെ ഡൊമെയ്‌‌നിനായി സമന്വയം ലഭ്യമല്ലാത്തതിനാൽ Google Chrome-ന് നിങ്ങളുടെ ഡാറ്റ സമന്വയിപ്പിക്കാനായില്ല.</translation>
 <translation id="2467438592969358367">നിങ്ങളുടെ പാസ്‌വേഡുകൾ എക്‌സ്‌പോർട്ട് ചെയ്യാൻ Google Chrome ആഗ്രഹിക്കുന്നു. ഇത് അനുവദിക്കാൻ നിങ്ങളുടെ Windows പാസ്‌വേഡ് നൽകുക.</translation>
 <translation id="2485422356828889247">അണ്‍‌ഇന്‍‌സ്റ്റാള്‍‌ ചെയ്യുക</translation>
@@ -224,7 +214,6 @@
 <translation id="6418662306461808273">നിലവിലുള്ള Chrome പ്രൊഫൈലിലേക്ക് മാറണോ?</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6568793831116033768">Chrome OS സിസ്‌റ്റം</translation>
-<translation id="664235759707825982">Chrome OS ഇൻസ്‌റ്റാൾ ചെയ്യാൻ തയ്യാറാണ്</translation>
 <translation id="6676384891291319759">ഇന്റര്‍‌നെറ്റ് ആക്‌സസ് ചെയ്യുക</translation>
 <translation id="6679975945624592337">പശ്ചാത്തലത്തില്‍ Google Chrome പ്രവര്‍ത്തിക്കാന്‍ അനുവദിക്കുക</translation>
 <translation id="6739177684496155661">പുതിയ Chrome പ്രൊഫൈലിൽ തുടരണോ?</translation>

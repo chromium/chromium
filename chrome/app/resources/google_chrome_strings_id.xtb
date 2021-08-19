@@ -56,16 +56,6 @@
 <translation id="2348335408836342058">Chrome memerlukan izin akses ke kamera dan mikrofon untuk situs ini</translation>
 <translation id="234869673307233423">Chrome tidak dapat memeriksa sandi Anda. Coba lagi nanti.</translation>
 <translation id="235650106824528204">Data Chrome yang dibuat selama penggunaan profil ini (seperti pembuatan bookmark, histori, sandi, dan setelan lain) dapat dihapus oleh administrator profil kerja. <ph name="LEARN_MORE" /></translation>
-<translation id="2409866122341731384">Hapus Hard Drive &amp; Instal Chrome OS</translation>
-<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />Kami siap menginstal Chrome OS. Setelah Anda melanjutkan:
-          <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />File, data, dan sistem operasi saat ini akan dihapus.
-          <ph name="LIST_ITEM" />Chrome OS akan diinstal.
-          <ph name="LIST_ITEM" />Perangkat Anda akan dimatikan setelah proses penginstalan selesai.
-          <ph name="END_LIST" />
-          <ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Pengingat terakhir: penginstalan akan menghapus seluruh data di hard drive. Pastikan Anda telah mencadangkan semua data penting.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Penginstalan tidak dapat dibatalkan setelah dimulai.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">Google Chrome tidak dapat menyinkronkan data Anda karena Sinkronisasi tidak tersedia untuk domain Anda.</translation>
 <translation id="2467438592969358367">Google Chrome ingin mengekspor sandi. Ketik sandi Windows Anda untuk mengizinkannya.</translation>
 <translation id="2485422356828889247">Uninstal</translation>
@@ -216,7 +206,6 @@
 <translation id="6418662306461808273">Beralih ke profil Chrome yang sudah ada?</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6568793831116033768">Sistem Chrome OS</translation>
-<translation id="664235759707825982">Siap menginstal Chrome OS</translation>
 <translation id="6676384891291319759">Akses Internet</translation>
 <translation id="6679975945624592337">Jalankan Google Chrome di Background</translation>
 <translation id="6739177684496155661">Lanjutkan di profil Chrome baru?</translation>

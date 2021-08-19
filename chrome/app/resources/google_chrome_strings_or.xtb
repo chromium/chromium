@@ -60,16 +60,6 @@
 <translation id="2348335408836342058">ଏହି ସାଇଟ୍ ପାଇଁ ଆପଣଙ୍କର କ୍ୟାମେରା ଏବଂ ମାଇକ୍ରୋଫୋନ୍ ଆକ୍ସେସ୍ କରିବାକୁ Chrome ଅନୁମତି ଆବଶ୍ୟକ କରୁଛି</translation>
 <translation id="234869673307233423">Chrome ଆପଣଙ୍କର ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରିପାରିବ ନାହିଁ। ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="235650106824528204">ଏହି ପ୍ରୋଫାଇଲର ବ୍ୟବହାର ସମୟରେ ସୃଷ୍ଟି ହୋଇଥିବା ଯେ କୌଣସି Chrome ଡାଟା (ଯେପରି ବୁକମାର୍କ୍, ଇତିହାସ, ପାସୱାର୍ଡ ଏବଂ ଅନ୍ୟ ସେଟିଂସର କ୍ରିଏସନ୍) ୱାର୍କ ପ୍ରୋଫାଇଲ୍ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା କାଢ଼ି ଦିଆଯାଇପାରିବ। <ph name="LEARN_MORE" /></translation>
-<translation id="2409866122341731384">ହାର୍ଡ ଡ୍ରାଇଭର ଡାଟା ଖାଲି କରି Chrome OS ଇନଷ୍ଟଲ୍ କରନ୍ତୁ</translation>
-<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />ଆମେ Chrome OS ଇନଷ୍ଟଲ୍ କରିବାକୁ ପ୍ରସ୍ତୁତ! ଆପଣ ଆଗକୁ ବଢ଼ିବା ପରେ:
-          <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />ଫାଇଲ୍, ଡାଟା ଏବଂ ଆପଣଙ୍କ ବର୍ତ୍ତମାନର ଅପରେଟିଂ ସିଷ୍ଟମକୁ ଖାଲି କରାଯିବ।
-          <ph name="LIST_ITEM" />Chrome OS ଇନଷ୍ଟଲ୍ କରାଯିବ।
-          <ph name="LIST_ITEM" />ଇନଷ୍ଟଲେସନ୍ ପ୍ରକ୍ରିୟା ସମ୍ପୂର୍ଣ୍ଣ ହେବା ପରେ ଆପଣଙ୍କ ଡିଭାଇସଟି ବନ୍ଦ ହୋଇଯିବ।
-          <ph name="END_LIST" />
-          <ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />ଶେଷ ଥର ପାଇଁ ରିମାଇଣ୍ଡର୍: ଇନଷ୍ଟଲ୍ କଲେ ଆପଣଙ୍କ ହାର୍ଡ ଡ୍ରାଇଭର ସମସ୍ତ ଡାଟାକୁ ଖାଲି କରାଯିବ। ଆପଣ ଆପଣଙ୍କ ସମସ୍ତ ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ ଡାଟାର ବ୍ୟାକଅପ୍ ନେଇଛନ୍ତି ବୋଲି ସୁନିଶ୍ଚିତ କରନ୍ତୁ।<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />ଥରେ ଇନଷ୍ଟଲେସନ୍ ଆରମ୍ଭ ହେଲେ ଏହାକୁ ବାତିଲ୍ କରାଯାଇପାରିବ ନାହିଁ।<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">ଆପଣଙ୍କର ଡୋମେନ୍ ପାଇଁ ସିଙ୍କ୍ ଉପଲବ୍ଧ ନଥିବାରୁ Google Chrome ଆପଣଙ୍କର ଡାଟା ସିଙ୍କ୍ କରିପାରିଲା ନାହିଁ।</translation>
 <translation id="2467438592969358367">Google Chrome ଆପଣଙ୍କର ପାସ୍‌ୱାର୍ଡଗୁଡିକୁ ଏକ୍ସପୋର୍ଟ କରିବାକୁ ଚାହେଁ। ଏହାକୁ ଅନୁମତି ଦେବା ପାଇଁ ନିଜର Windows ପାସ୍‌ୱାର୍ଡ ଟାଇପ୍ କରନ୍ତୁ।</translation>
 <translation id="2485422356828889247">ଅନ୍‍ଇନ୍‍ଷ୍ଟଲ୍‌ କରନ୍ତୁ</translation>
@@ -223,7 +213,6 @@
 <translation id="6418662306461808273">ପୂର୍ବରୁ ଥିବା Chrome ପ୍ରୋଫାଇଲକୁ ସ୍ୱିଚ୍ କରିବେ?</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6568793831116033768">Chrome OS ସିଷ୍ଟମ୍</translation>
-<translation id="664235759707825982">Chrome OS ଇନଷ୍ଟଲ୍ କରିବା ପାଇଁ ପ୍ରସ୍ତୁତ</translation>
 <translation id="6676384891291319759">ଇଣ୍ଟର୍ନେଟ୍ ପ୍ରବେଶ କରନ୍ତୁ</translation>
 <translation id="6679975945624592337">ପୃଷ୍ଠଭୂମିରେ Google Chromeକୁ ଚାଲିବାକୁ ଦିଅନ୍ତୁ</translation>
 <translation id="6739177684496155661">ଏକ ନୂଆ Chrome ପ୍ରୋଫାଇଲରେ ଜାରି ରଖିବେ?</translation>

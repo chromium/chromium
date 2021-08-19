@@ -59,19 +59,10 @@
 <translation id="2348335408836342058">या साइटसाठी Chrome ला तुमचा कॅमेरा आणि मायक्रोफोन ॲक्सेस करण्याची परवानगी हवी आहे</translation>
 <translation id="234869673307233423">Chrome तुमचे पासवर्ड तपासू शकत नाही. नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="235650106824528204">या प्रोफाइलच्या वापरादरम्यान जनरेट केला गेलेला कोणताही Chrome डेटा (जसे की बुकमार्क, इतिहास, पासवर्ड आणि इतर सेटिंग्जची निर्मिती) कार्य प्रोफाइल अ‍ॅडमिनिस्ट्रेटरला हटवता येतो. <ph name="LEARN_MORE" /></translation>
-<translation id="2409866122341731384">हार्ड ड्राइव्ह मिटवा आणि Chrome OS इंस्टॉल करा</translation>
-<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />आम्ही Chrome OS इंस्टॉल करण्यासाठी तयार आहोत! तुम्ही पुढे सुरू ठेवल्यानंतर:
-          <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />फाइल, डेटा आणि तुमची सध्याची ऑपरेटिंग सिस्टम मिटवली जाईल.
-          <ph name="LIST_ITEM" />Chrome OS इंस्टॉल केले जाईल.
-          <ph name="LIST_ITEM" />इंस्टॉलेशन पूर्ण झाल्यानंतर, तुमचे डिव्हाइस एकदा बंद होईल.
-          <ph name="END_LIST" />
-          <ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />एक शेवटचा रिमाइंडर: इंस्टॉलेशन तुमची संपूर्ण हार्ड ड्राइव्ह मिटवेल. कृपया तुमच्यासाठी महत्त्वाच्या असलेल्या डेटाचा तुम्ही बॅकअप घेतला असल्याची खात्री करा.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />इंस्टॉलेशन सुरू झाल्यावर ते रद्द करता येऊ शकत नाही.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">आपल्या डोमेनसाठी सिंक उपलब्ध नसल्यामुळे Google Chrome तुमचा डेटा संकालित करू शकले नाही.</translation>
 <translation id="2467438592969358367">Google Chrome ला तुमचे पासवर्ड निर्यात करायचे आहेत. हे करू देण्यासाठी तुमचा Windows पासवर्ड टाइप करा.</translation>
 <translation id="2485422356828889247">अनइंस्टॉल करा</translation>
+<translation id="2518751521812750372">तुम्ही Chrome बंद केल्यास, ते तुम्ही भेट दिलेल्या पेजच्या कुकी आणि साइट डेटा आपोआप साफ करते</translation>
 <translation id="2534507159460261402">Google Pay (Chrome वर कॉपी केले)</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> यांनी आधीपासून या Chrome प्रोफाइलमध्ये साइन इन केलेले आहे. तुमचे ब्राउझिंग स्वतंत्र ठेवण्यासाठी, Chrome तुमच्याकरिता तुमची स्वतःची प्रोफाइल तयार करू शकते.</translation>
 <translation id="2580411288591421699">सध्या चालत असलेली Google Chrome ची समान आवृत्ती इंस्टॉल करू शकत नाही. कृपया Google Chrome बंद करा आणि पुन्हा प्रयत्न करा.</translation>
@@ -221,7 +212,6 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="6418662306461808273">सध्याच्या Chrome प्रोफाइलवर स्विच करायचे आहे का?</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome डेव्हलपर</translation>
 <translation id="6568793831116033768">Chrome OS सिस्टम</translation>
-<translation id="664235759707825982">Chrome OS इंस्टॉल करण्यासाठी तयार आहे</translation>
 <translation id="6676384891291319759">इंटरनेट ॲक्सेस करा</translation>
 <translation id="6679975945624592337">Google Chrome बॅकग्राउंडमध्ये सुरू द्या</translation>
 <translation id="6739177684496155661">नवीन Chrome प्रोफाइलमध्ये सुरू ठेवायचे आहे का?</translation>

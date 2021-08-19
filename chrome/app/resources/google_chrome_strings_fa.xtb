@@ -56,16 +56,6 @@
 <translation id="2348335408836342058">‏Chrome برای این سایت به مجوز دسترسی به دوربین و میکروفون نیاز دارد</translation>
 <translation id="234869673307233423">‏Chrome نمی‌تواند گذرواژه‌هایتان را بررسی کند. بعداً دوباره امتحان کنید.</translation>
 <translation id="235650106824528204">‏سرپرست نمایه کاری می‌تواند داده‌های Chrome را که درطول استفاده از این نمایه ایجاد شده‌اند (مثل ایجاد سابقه نشانک‌ها، گذرواژه‌ها، و دیگر تنظیمات) بردارد. <ph name="LEARN_MORE" /></translation>
-<translation id="2409866122341731384">‏پاک کردن دیسک سخت و نصب کردن Chrome OS</translation>
-<translation id="2417565246123344595">‏<ph name="BEGIN_PARAGRAPH1" />آماده‌ایم Chrome OS را نصب کنیم! اگر ادامه دهید:
-          <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />فایل‌ها، داده‌ها، و سیستم‌عامل کنونی پاک خواهد شد.
-          <ph name="LIST_ITEM" />Chrome OS نصب خواهد شد.
-          <ph name="LIST_ITEM" />وقتی نصب تکمیل شود، دستگاهتان خاموش خواهد شد.
-          <ph name="END_LIST" />
-          <ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />آخرین یادآوری: درصورت نصب کردن، کل دیسک سخت پاک خواهد شد. لطفاً مطمئن شوید همه داده‌های مهمتان را پشتیبان‌گیری کرده باشید.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />وقتی نصب شروع شود، نمی‌توان آن را لغو کرد.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">‏Google Chrome قادر به همگام‌سازی داده‌های شما نبود زیرا همگام‌سازی برای دامنه شما قابل دسترسی نیست.</translation>
 <translation id="2467438592969358367">‏Google Chrome می‌خواهد گذرواژه‌های شما را صادر کند. برای اجازه به این کار، گذرواژه Windows خود را تایپ کنید.</translation>
 <translation id="2485422356828889247">حذف نصب</translation>
@@ -216,7 +206,6 @@
 <translation id="6418662306461808273">‏به نمایه Chrome موجود می‌روید؟</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6568793831116033768">‏سیستم Chrome OS</translation>
-<translation id="664235759707825982">‏آماده برای نصب Chrome OS</translation>
 <translation id="6676384891291319759">دسترسی به اینترنت</translation>
 <translation id="6679975945624592337">‏اجازه به Google Chrome برای اجرا در پس‌زمینه</translation>
 <translation id="6739177684496155661">‏در نمایه جدیدی از Chrome ادامه می‌دهید؟</translation>

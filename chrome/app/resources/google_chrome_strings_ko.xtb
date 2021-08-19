@@ -60,16 +60,6 @@
 <translation id="2348335408836342058">이 사이트에서 카메라와 마이크에 액세스하려면 Chrome에 권한이 필요합니다</translation>
 <translation id="234869673307233423">Chrome에서 비밀번호를 확인할 수 없습니다. 나중에 다시 시도하세요.</translation>
 <translation id="235650106824528204">북마크, 방문 기록, 비밀번호, 기타 설정 생성 등 이 프로필을 사용하는 동안 생성된 모든 Chrome 데이터는 직장 프로필 관리자가 삭제할 수 있습니다. <ph name="LEARN_MORE" /></translation>
-<translation id="2409866122341731384">하드 드라이브 삭제 및 Chrome OS 설치</translation>
-<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />Chrome OS를 설치할 준비가 완료되었습니다. 설치 시 다음 사항이 적용됩니다.
-          <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />파일, 데이터, 현재 운영체제가 삭제됩니다.
-          <ph name="LIST_ITEM" />Chrome OS가 설치됩니다.
-          <ph name="LIST_ITEM" />설치가 완료되면 기기가 종료됩니다.
-          <ph name="END_LIST" />
-          <ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />한 번 더 알려드립니다. 설치를 진행하면 하드 드라이브에 있는 모든 데이터가 삭제됩니다. 중요한 데이터를 모두 백업했는지 확인해 주시기 바랍니다.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />설치가 시작되면 취소할 수 없습니다.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">도메인에서 동기화를 사용할 수 없어 Chrome에서 데이터를 동기화하지 못했습니다.</translation>
 <translation id="2467438592969358367">Chrome에서 비밀번호를 내보내려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
 <translation id="2485422356828889247">제거</translation>
@@ -224,7 +214,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="6418662306461808273">기존 Chrome 프로필로 전환하시겠습니까?</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - 개발자용 Chrome</translation>
 <translation id="6568793831116033768">Chrome OS 시스템</translation>
-<translation id="664235759707825982">Chrome OS 설치 준비 완료</translation>
 <translation id="6676384891291319759">인터넷 연결</translation>
 <translation id="6679975945624592337">백그라운드에서 Chrome을 실행</translation>
 <translation id="6739177684496155661">새 Chrome 프로필에서 계속하시겠습니까?</translation>

@@ -84,7 +84,6 @@
 <translation id="3497319089134299931">Со <ph name="SHORTCUT" /> се менуваат профили на Chromium</translation>
 <translation id="3509308970982693815">Затворете ги сите прозорци на Chromium и обидете се повторно.</translation>
 <translation id="3575459661164320785">Има штетен софтвер на вашиот компјутер. Chromium може да го отстрани, да ги врати вашите поставки и да ги оневозможи екстензиите за да му овозможи на вашиот прелистувач повторно да функционира нормално.</translation>
-<translation id="3610776674893128619">Избриши го хард дискот и инсталирај Chromium OS</translation>
 <translation id="3639635944603682591">Податоците од прелистување на ова лице ќе се избришат од уредов. За да ги вратите податоците, најавете се на Chromium како <ph name="USER_EMAIL" />.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Достапно е ново ажурирање за Chromium и ќе се примени штом рестартирате.}=1{Достапно е ново ажурирање за Chromium и ќе се примени штом рестартирате. Прозорецот „Инкогнито“ нема да се отвори повторно.}one{Достапно е ново ажурирање за Chromium и ќе се примени штом рестартирате. # прозорец „Инкогнито“ нема да се отвори повторно.}other{Достапно е ново ажурирање за Chromium и ќе се примени штом рестартирате. # прозорци „Инкогнито“ нема да се отворат повторно.}}</translation>
 <translation id="3651803019964686660">За да испратите број од <ph name="ORIGIN" /> до телефонот со Android, најавете се на Chromium на двата уреда.</translation>
@@ -166,15 +165,6 @@
 <translation id="6129621093834146363">Датотеката <ph name="FILE_NAME" /> е опасна, па затоа Chromium ја блокираше.</translation>
 <translation id="6134968993075716475">„Безбедното прелистување“ е исклучено. Chromium препорачува да го вклучите.</translation>
 <translation id="6145820983052037069">Може да се префрлате помеѓу профилите на Chromium тука</translation>
-<translation id="61577490437262925"><ph name="BEGIN_PARAGRAPH1" />Подготвени сме за инсталирање на Chromium OS! Штом ќе продолжите:
-          <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Датотеките, податоците и моменталниот оперативен систем ќе се избришат.
-          <ph name="LIST_ITEM" />Ќе се инсталира Chromium OS.
-          <ph name="LIST_ITEM" />Уредот ќе се исклучи кога ќе заврши инсталацијата.
-          <ph name="END_LIST" />
-          <ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Еден последен потсетник: инсталацијата ќе го избрише целиот хард диск. Погрижете се дека сте направиле бекап од податоците што ви се важни.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Штом ќе започне инсталирањето нема да може да се откаже.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6183079672144801177">Проверете дали сте најавени на Chromium на <ph name="TARGET_DEVICE_NAME" /> и обидете се да испратите повторно.</translation>
 <translation id="6212496753309875659">Овој компјутер веќе има најнова верзија на Chromium. Доколку софтверот не работи, деинсталирајте го Chromium и обидете се повторно.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium ќе се рестартира сега}=1{Chromium ќе се рестартира по 1 секунда}one{Chromium ќе се рестартира по # секунда}other{Chromium ќе се рестартира по # секунди}}</translation>
@@ -192,7 +182,6 @@
 <translation id="6434250628340475518">Систем Chromium OS</translation>
 <translation id="6455857529632101747">Добре дојдовте во профили на Chromium</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium ќе се рестартира за 1 секунда}one{Chromium ќе се рестартира за # секунда}other{Chromium ќе се рестартира за # секунди}}</translation>
-<translation id="646620589868199210">Chromium OS е подготвен за инсталирање</translation>
 <translation id="6475912303565314141">Тоа исто така контролира која страница ќе се прикаже кога го стартувате Chromium.</translation>
 <translation id="6510925080656968729">Деинсталирај Chromium</translation>
 <translation id="6542839706527980775">Секој профил содржи сопствени податоци на Chromium, како обележувачи, историја, лозинки и друго</translation>

@@ -57,16 +57,6 @@
 <translation id="2348335408836342058">ಈ ಸೈಟ್‌ಗಾಗಿ ನಿಮ್ಮ ಕ್ಯಾಮರಾ ಮತ್ತು ಮೈಕ್ರೊಫೋನ್‌ಗೆ ಪ್ರವೇಶಿಸಲು Chrome ಗೆ ಅನುಮತಿಯ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="234869673307233423">Chrome ಗೆ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ. ನಂತರ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="235650106824528204">ಈ ಪ್ರೊಫೈಲ್‌ನ ಬಳಕೆಯ ಸಮಯದಲ್ಲಿ ಉತ್ಪತ್ತಿಯಾಗುವ ಯಾವುದೇ Chrome ಡೇಟಾವನ್ನು (ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಇತಿಹಾಸ, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಇತರ ಸೆಟ್ಟಿಂಗ್‌ಗಳ ರಚನೆಯಂತಹ) ಉದ್ಯೋಗ ಪ್ರೊಫೈಲ್‌ ನಿರ್ವಾಹಕರು ತೆಗೆದುಹಾಕಬಹುದು. <ph name="LEARN_MORE" /></translation>
-<translation id="2409866122341731384">ಹಾರ್ಡ್ ಡ್ರೈವ್ ಅನ್ನು ಅಳಿಸಿ ಮತ್ತು Chrome OS ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ</translation>
-<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />Chrome OS ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ನಾವು ಸಿದ್ಧರಿದ್ದೇವೆ! ಒಮ್ಮೆ ನೀವು ಮುಂದುವರಿಯಿರಿ:
-          <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />ಫೈಲ್‌ಗಳು, ಡೇಟಾ ಮತ್ತು ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಆಪರೇಟಿಂಗ್ ಸಿಸ್ಟಮ್ ಅನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ.
-          <ph name="LIST_ITEM" />Chrome OS ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗುತ್ತದೆ.
-          <ph name="LIST_ITEM" />ಇನ್‌ಸ್ಟಾಲೇಶನ್ ಪೂರ್ಣಗೊಂಡ ನಂತರ ನಿಮ್ಮ ಸಾಧನವು ಶಟ್ ಡೌನ್ ಆಗುತ್ತದೆ.
-          <ph name="END_LIST" />
-          <ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />ಕೊನೆಯ ರಿಮೈಂಡರ್: ಇನ್‌ಸ್ಟಾಲೇಶನ್ ನಿಮ್ಮ ಸಂಪೂರ್ಣ ಹಾರ್ಡ್ ಡ್ರೈವ್ ಅನ್ನು ಅಳಿಸುತ್ತದೆ. ನಿಮಗೆ ಬೇಕಾದ ಯಾವುದೇ ಡೇಟಾವನ್ನು ಬ್ಯಾಕಪ್ ಮಾಡಲಾಗಿದೆ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />ಇನ್‌ಸ್ಟಾಲೇಶನ್ ಪ್ರಾರಂಭವಾದ ನಂತರ ಅದನ್ನು ರದ್ದು ಮಾಡಲಾಗುವುದಿಲ್ಲ.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">ನಿಮ್ಮ ಡೊಮೇನ್‌ನಲ್ಲಿ ಸಿಂಕ್‌ ಮಾಡುವ ಸೌಲಭ್ಯವಿಲ್ಲದ ಕಾರಣ Google Chrome ಗೆ ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಸಿಂಕ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.</translation>
 <translation id="2467438592969358367">Google Chrome ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ರಫ್ತು ಮಾಡಲು ಬಯಸುತ್ತದೆ. ಇದನ್ನು ಅನುಮತಿಸಲು ನಿಮ್ಮ Windows ಪಾಸ್‌ವರ್ಡ್‌ ಟೈಪ್ ಮಾಡಿ.</translation>
 <translation id="2485422356828889247">ಅನ್‌ಇನ್‌ಸ್ಟಾಲ್</translation>
@@ -216,7 +206,6 @@
 <translation id="6418662306461808273">ಈಗಿರುವ Chrome ಪ್ರೊಫೈಲ್‌ಗೆ ಬದಲಿಸಬೇಕೆ?</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6568793831116033768">Chrome OS ಸಿಸ್ಟಂ</translation>
-<translation id="664235759707825982">Chrome OS ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಸಿದ್ಧವಾಗಿದೆ</translation>
 <translation id="6676384891291319759">ಇಂಟರ್ನೆಟ್ ಅನ್ನು ಪ್ರವೇಶಿಸಿ</translation>
 <translation id="6679975945624592337">Google Chrome ಹಿನ್ನೆಲೆಯಲ್ಲಿ ರನ್ ಆಗಲು ಅನುಮತಿಸಿ</translation>
 <translation id="6739177684496155661">ಹೊಸ Chrome ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ ಮುಂದುವರಿಯಬೇಕೆ?</translation>

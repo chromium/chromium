@@ -60,16 +60,6 @@
 <translation id="2348335408836342058">Chrome ຕ້ອງການການອະນຸຍາດເພື່ອເຂົ້າເຖິງກ້ອງຖ່າຍຮູບ ແລະ ໄມໂຄຣໂຟນຂອງທ່ານສຳລັບເວັບໄຊນີ້</translation>
 <translation id="234869673307233423">Chrome ບໍ່ສາມາດກວດລະຫັດຜ່ານຂອງທ່ານໄດ້. ກະລຸນາລອງໃໝ່ໃນພາຍຫລັງ.</translation>
 <translation id="235650106824528204">ຜູ້ເບິ່ງແຍງລະບົບໂປຣໄຟລ໌ບ່ອນເຮັດວຽກສາມາດລຶບຂໍ້ມູນ Chrome ໃດໆກໍຕາມທີ່ສ້າງຂຶ້ນໃນລະຫວ່າງການນຳໃຊ້ໂປຣໄຟລ໌ນີ້ (ເຊັ່ນ: ການສ້າງບຸກມາກ, ປະຫວັດ, ລະຫັດຜ່ານ ແລະ ການຕັ້ງຄ່າອື່ນໆ) ອອກໄດ້. <ph name="LEARN_MORE" /></translation>
-<translation id="2409866122341731384">ລຶບຮາດໄດຣຟ໌ ແລະ ຕິດຕັ້ງ Chrome OS</translation>
-<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />ພວກເຮົາພ້ອມຕິດຕັ້ງ Chrome OS ແລ້ວ! ຫຼັງຈາກທີ່ທ່ານດຳເນີນການຕໍ່ແລ້ວ:
-          <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />ໄຟລ໌, ຂໍ້ມູນ ແລະ ລະບົບປະຕິບັດການປັດຈຸບັນຂອງທ່ານຈະຖືກລຶບອອກ.
-          <ph name="LIST_ITEM" />Chrome OS ຈະຖືກຕິດຕັ້ງ.
-          <ph name="LIST_ITEM" />ອຸປະກອນຂອງທ່ານຈະປິດເຄື່ອງເມື່ອການຕິດຕັ້ງສຳເລັດແລ້ວ.
-          <ph name="END_LIST" />
-          <ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />ການແຈ້ງເຕືອນເທື່ອສຸດທ້າຍ: ການຕິດຕັ້ງຈະລຶບທັງຮາດໄດຣຟ໌ຂອງທ່ານອອກ. ກະລຸນາກວດສອບວ່າທ່ານສຳຮອງຂໍ້ມູນທີ່ທ່ານຕ້ອງການໄວ້ໝົດແລ້ວ.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />ຫຼັງຈາກເລີ່ມການຕິດຕັ້ງແລ້ວມັນຈະບໍ່ສາມາດຍົກເລີກໄດ້.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">Google Chrome ບໍ່​ສາ​ມາດຊິງຄ໌ຂໍ້​ມູນ​ຂອງ​ທ່ານໄດ້ ເພາະວ່າບໍ່ມີການຊິງຄ໌ຢູ່ໃນໂດເມນຂອງທ່ານ.</translation>
 <translation id="2467438592969358367">Google Chrome ຕ້ອງການສົ່ງອອກລະຫັດຜ່ານຂອງທ່ານ. ກະລຸນາພິມລະຫັດຜ່ານ Windows ຂອງທ່ານ ເພື່ອອະນຸຍາດສິ່ງນີ້.</translation>
 <translation id="2485422356828889247">ຖອນ​ຕິດ​ຕັ້ງ</translation>
@@ -224,7 +214,6 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="6418662306461808273">ສະຫຼັບໄປຫາໂປຣໄຟລ໌ Chrome ທີ່ມີຢູ່ກ່ອນແລ້ວບໍ?</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6568793831116033768">ລະບົບ Chrome OS</translation>
-<translation id="664235759707825982">ພ້ອມຕິດຕັ້ງ Chrome OS ແລ້ວ</translation>
 <translation id="6676384891291319759">ການເຂົ້າຫາອິນເຕີເນັດ</translation>
 <translation id="6679975945624592337">ໃຫ້ Google Chrome ເປີດໃຊ້ຢູ່ໃນພື້ນຫຼັງ</translation>
 <translation id="6739177684496155661">ສືບຕໍ່ໃນໂປຣໄຟລ໌ Chrome ໃໝ່ບໍ?</translation>

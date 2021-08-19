@@ -59,16 +59,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2348335408836342058">Chrome needs permission to access your camera and microphone for this site</translation>
 <translation id="234869673307233423">Chrome can't check your passwords. Try again later.</translation>
 <translation id="235650106824528204">Any Chrome data that is generated during the use of this profile (such as the creation of bookmarks, history, passwords and other settings) can be removed by the work profile administrator. <ph name="LEARN_MORE" /></translation>
-<translation id="2409866122341731384">Erase hard drive and install Chrome OS</translation>
-<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />We’re ready to install Chrome OS! Once you proceed:
-          <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Files, data and your current operating system will be erased.
-          <ph name="LIST_ITEM" />Chrome OS will be installed.
-          <ph name="LIST_ITEM" />Your device will shut down once the installation is complete.
-          <ph name="END_LIST" />
-          <ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />One last reminder: installation will erase your entire hard drive. Please make sure that you have any data that you care about backed up.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Once installation starts it cannot be cancelled.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">Google Chrome could not sync your data because Sync is not available for your domain.</translation>
 <translation id="2467438592969358367">Google Chrome wants to export your passwords. Type your Windows password to allow this.</translation>
 <translation id="2485422356828889247">Uninstall</translation>
@@ -223,7 +213,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6418662306461808273">Switch to existing Chrome profile?</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="6568793831116033768">Chrome OS system</translation>
-<translation id="664235759707825982">Ready to install Chrome OS</translation>
 <translation id="6676384891291319759">Access the Internet</translation>
 <translation id="6679975945624592337">Let Google Chrome Run in the Background</translation>
 <translation id="6739177684496155661">Continue in a new Chrome profile?</translation>

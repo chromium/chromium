@@ -56,16 +56,6 @@
 <translation id="2348335408836342058">Chrome потрібен дозвіл на використання камери й мікрофона, щоб надати цьому сайту доступ до них</translation>
 <translation id="234869673307233423">Chrome не може перевірити паролі. Повторіть спробу пізніше.</translation>
 <translation id="235650106824528204">Будь-які дані Chrome, створені під час використання цього робочого профілю (наприклад, закладки, історію, паролі й інші налаштування), може видалити його адміністратор. <ph name="LEARN_MORE" /></translation>
-<translation id="2409866122341731384">Видалити всі дані жорсткого диска й установити ОС Chrome</translation>
-<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />ОС Chrome уже можна встановити. Коли ви продовжите:
-          <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />усі файли, дані та поточну операційну систему буде видалено з пристрою;
-          <ph name="LIST_ITEM" />буде встановлено ОС Chrome;
-          <ph name="LIST_ITEM" />після завершення встановлення пристрій завершить роботу.
-          <ph name="END_LIST" />
-          <ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Останнє нагадування: під час встановлення всі дані жорсткого диска буде видалено. Переконайтеся, що ви маєте резервну копію всіх важливих даних.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Коли встановлення розпочнеться, його не можна буде скасувати.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">Google Chrome не вдалося синхронізувати ваші дані, оскільки синхронізація для вашого домену недоступна.</translation>
 <translation id="2467438592969358367">Google Chrome хоче експортувати ваші паролі. Щоб дозволити, введіть свій пароль Windows.</translation>
 <translation id="2485422356828889247">Видалити</translation>
@@ -216,7 +206,6 @@
 <translation id="6418662306461808273">Перейти в наявний профіль Chrome?</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Версія Google Chrome для розробників</translation>
 <translation id="6568793831116033768">ОС Chrome</translation>
-<translation id="664235759707825982">ОС Chrome можна встановити</translation>
 <translation id="6676384891291319759">Доступ до Інтернету</translation>
 <translation id="6679975945624592337">Дозволити Google Chrome працювати у фоновому режимі</translation>
 <translation id="6739177684496155661">Продовжити в новому профілі Chrome?</translation>

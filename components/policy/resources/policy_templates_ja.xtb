@@ -205,13 +205,6 @@
 <translation id="1265053460044691532">SAML 経由で認証されたユーザーがオフラインでログインできる時間を制限する</translation>
 <translation id="127264587838521316"><ph name="PRODUCT_NAME" /> 拡張機能のインストールのリクエストを有効にする</translation>
 <translation id="1274997165432133392">Cookie と他のサイトデータ</translation>
-<translation id="127699919157094139"><ph name="PRODUCT_NAME" /> で、Google がホストする同期サービスを使用したデータの同期を無効にして、ユーザーがこの設定を変更できないようにします。
-
-      この設定を有効にした場合、ユーザーは <ph name="PRODUCT_NAME" /> でこの設定を変更またはオーバーライドできません。
-
-      このポリシーを未設定のままにした場合、Google Sync を使用するかどうかをユーザーが選択できます。
-
-      Google Sync を完全に無効にするには、Google 管理コンソールで Google Sync サービスを無効にするようおすすめします。</translation>
 <translation id="128059397544257017">このポリシーを有効に設定した場合、<ph name="CHROME_CLEANUP_NAME" /> で望ましくないソフトウェアが検出されたときに、<ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" /> で設定されたポリシー値に沿って、スキャンに関するレポートが Google に送信可能となります。<ph name="CHROME_CLEANUP_NAME" /> でクリーンアップを行うかどうかをユーザーに確認し、結果が Google に送信されます。
 
       このポリシーを無効に設定した場合、<ph name="CHROME_CLEANUP_NAME" /> で望ましくないソフトウェアが検出されたときに、<ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" /> の値に関係なく、スキャンに関するレポートは Google に送信されません。<ph name="CHROME_CLEANUP_NAME" /> でクリーンアップを行うかどうかをユーザーに確認し、結果は Google に送信されません。
@@ -2745,9 +2738,6 @@
       このポリシーを未設定のままにした場合、詳細なバッテリー充電モードは無効になります。
 
       <ph name="CHARGE_START_TIME_FIELD_NAME" /> と <ph name="CHARGE_END_TIME_FIELD_NAME" /> の <ph name="MINUTE_FIELD_NAME" /> フィールドで指定できる有効な値は 0、15、30、45 です。</translation>
-<translation id="4450222911834151460">このポリシーを設定した場合、指定したすべてのデータタイプが Google Sync とローミング プロファイルの同期から除外されます。これにより、ローミング プロファイルのサイズを抑えたり、Google Sync サーバーにアップロードされるデータのタイプを制限したりできます。
-
-      現在、このポリシーで指定できるデータタイプは次のとおりです: "bookmarks"、"readingList"、"preferences"、"passwords"、"autofill"、"themes"、"typedUrls"、"extensions"、"apps"、"tabs"、"wifiConfigurations"。データタイプの名前では大文字と小文字が区別されます。</translation>
 <translation id="4452653762766030431">Chrome OS でネットワーク ファイル共有を使用できるかどうかを管理する</translation>
 <translation id="445270821089253489">レポートを送信するユーザーとデバイスの情報の種類を制御します。</translation>
 <translation id="4453913621209182880">背景のグラフィックありの印刷のみを許可する</translation>
@@ -4124,11 +4114,6 @@
 <translation id="6371561334154580937">最後のウィンドウを閉じたときにログアウト ダイアログを表示する</translation>
 <translation id="6372105930898423193">AppCache 機能がデフォルトで無効になっている場合でも有効化を許可します。</translation>
 <translation id="6376659517206731212">必須に設定可能</translation>
-<translation id="6377355597423503887">このポリシーはサポート終了となりました。代わりに BrowserSignin の使用を検討してください。
-
-      ユーザーが <ph name="PRODUCT_NAME" /> にログインできるかどうかを設定します。
-
-      このポリシーを設定する場合は、ユーザーによる <ph name="PRODUCT_NAME" /> へのログインが可能かどうかを指定できます。このポリシーを「False」に設定すると、chrome.identity API を使用するアプリや拡張機能が機能しなくなるため、代わりに SyncDisabled の使用をおすすめします。</translation>
 <translation id="6378076389057087301">音声操作を電源管理に関連付けるかどうかを指定する</translation>
 <translation id="6378393933102834628">このポリシーを True に設定した場合、アプリのショートカットが表示されます。このポリシーを False に設定した場合、このショートカットは表示されません。このポリシーを設定した場合、ユーザーは設定を変更できません。設定しない場合、アプリのショートカットの表示と非表示は、ユーザーがブックマーク バーのコンテキスト メニューから指定します。</translation>
 <translation id="6394350458541421998">このポリシーは <ph name="PRODUCT_OS_NAME" /> バージョン 29 で廃止されました。PresentationScreenDimDelayScale ポリシーを代わりに使用してください。</translation>
@@ -5023,13 +5008,6 @@
       このポリシーを未設定のままにした場合は、「停止」処理が行われます。
 
       注: 「停止」処理を指定した場合は、<ph name="PRODUCT_OS_NAME" /> で停止前に画面をロックするかどうかを別途設定できます。</translation>
-<translation id="7476621944304431784">この設定を有効にした場合、ユーザーは <ph name="PRODUCT_OS_NAME" /> デバイスと接続された Android スマートフォンとの間で Wi-Fi ネットワーク設定を同期できます。Wi-Fi ネットワーク設定を同期する前に、ユーザーは設定手順を完了して、この機能を明示的に有効にする必要があります。
-
-      この設定を無効にした場合、ユーザーは Wi-Fi ネットワーク設定を同期できません。
-
-      この機能は、Chrome 同期で <ph name="WIFI_CONFIGURATIONS_DATATYPE_NAME" /> データタイプが有効になっているかどうかに依存します。<ph name="WIFI_CONFIGURATIONS_DATATYPE_NAME" /> が <ph name="SYNC_TYPES_LIST_DISABLED_POLICY_NAME" /> ポリシーで無効になっている場合、または <ph name="SYNC_DISABLED_POLICY_NAME" /> ポリシーで Chrome 同期が無効になっている場合、この機能は有効にできません。
-
-      このポリシーを未設定のままにした場合、管理対象ユーザーはデフォルトでこの機能を有効にできません。</translation>
 <translation id="7477149584454865826">プリンタの設定に IPP Everywhere を使用するかどうかを示すブール値のフラグです。</translation>
 <translation id="7477231245051133709">「モノラル音声」のユーザー補助機能を有効にする</translation>
 <translation id="7477239290070847560">Zeroconf（mDNS+DNS-SD）プロトコルの送信先</translation>
@@ -5339,7 +5317,6 @@
 <translation id="7882585827992171421">このポリシーは小売りモードでのみアクティブになります。
 
       ログイン画面のスクリーンセーバーとして使用する拡張機能の ID を指定します。拡張機能は、DeviceAppPack ポリシーを使用してこのドメインに設定されている AppPack のものである必要があります。</translation>
-<translation id="7882857838942884046">Google Sync を無効にすると、Android のバックアップと復旧が適切に機能しなくなります。</translation>
 <translation id="7882890448959833986">サポート外の OS の警告を表示しない</translation>
 <translation id="7887379840451099426">バッテリーでの使用中にのみ適用する電源管理設定</translation>
 <translation id="7891884447851425349"><ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> がオンの場合に、<ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> では、デフォルトの検索に使用する検索エンジンの URL を指定できます。この URL には <ph name="SEARCH_TERM_MARKER" /> という文字列を含めます。この文字列は、クエリの送信時にユーザーが指定した検索キーワードに置き換えられます。
