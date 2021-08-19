@@ -67,8 +67,6 @@ void AppUninstall::FirstTaskRun() {
     return;
   }
 
-#if defined(OS_MAC)
-  // TODO(crbug.com/1114719): Implement --uninstall-self for Win.
   if (command_line->HasSwitch(kUninstallSelfSwitch)) {
     CHECK(!global_prefs_);
     base::ThreadPool::PostTaskAndReplyWithResult(
@@ -77,7 +75,6 @@ void AppUninstall::FirstTaskRun() {
         base::BindOnce(&AppUninstall::Shutdown, this));
     return;
   }
-#endif
 
   if (command_line->HasSwitch(kUninstallIfUnusedSwitch)) {
     CHECK(global_prefs_);
