@@ -323,7 +323,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceRedirectLoginRobotsBrowserTest,
 
 // Test is flaky. See https://crbug.com/1187754
 IN_PROC_BROWSER_TEST_F(SubresourceRedirectLoginRobotsBrowserTest,
-                       DISABLEDTestImageDisallowedByRobots) {
+                       DISABLED_TestImageDisallowedByRobots) {
   CreateUkmRecorder();
   robots_rules_server_.AddRobotsRules(GetHttpsTestURL("/"),
                                       {{kRuleTypeDisallow, ""}});
