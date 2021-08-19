@@ -376,7 +376,7 @@ class Frame(object):
 
 
 class ShadowRoot(object):
-    identifier = "shadow-6066-11e4-a52e-4f735466cecf"
+    identifier = "shadow-075b-4da1-b6ba-e579c2d3230a"
 
     def __init__(self, session, id):
         """
@@ -392,7 +392,7 @@ class ShadowRoot(object):
     @classmethod
     def from_json(cls, json, session):
         uuid = json[ShadowRoot.identifier]
-        return cls(session, uuid)
+        return cls(uuid, session)
 
     def send_shadow_command(self, method, uri, body=None):
         url = "shadow/{}/{}".format(self.id, uri)

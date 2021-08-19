@@ -219,7 +219,6 @@
 ./tools/webdriver/webdriver/transport.py
 ./tools/webdriver/webdriver/bidi/__init__.py
 ./tools/webdriver/webdriver/bidi/client.py
-./tools/webdriver/webdriver/bidi/error.py
 ./tools/wpt/__init__.py
 ./tools/wpt/android.py
 ./tools/wpt/browser.py

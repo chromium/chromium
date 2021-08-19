@@ -9,9 +9,15 @@ from urllib.parse import urljoin, urlparse
 
 import websockets
 
-from .error import from_error_details
 
 logger = logging.getLogger("webdriver.bidi")
+
+
+class BidiException(Exception):
+    def __init__(self, err: str, msg: str, stack: Optional[str] = None):
+        self.err = err
+        self.msg = msg
+        self.stack = stack
 
 
 def get_running_loop() -> asyncio.AbstractEventLoop:
@@ -177,10 +183,9 @@ class BidiSession:
             elif "error" in data and "message" in data:
                 assert isinstance(data["error"], str)
                 assert isinstance(data["message"], str)
-                exception = from_error_details(data["error"],
-                                               data["message"],
-                                               data.get("stacktrace"))
-                future.set_exception(exception)
+                future.set_exception(BidiException(data["error"],
+                                                   data["message"],
+                                                   data.get("stacktrace")))
             else:
                 raise ValueError(f"Unexpected message: {data!r}")
         elif "method" in data and "params" in data:
@@ -360,9 +365,9 @@ class Session(BidiModule):
 
     @command
     def subscribe(self,
-                  events: List[str],
+                  events: Optional[List[str]] = None,
                   contexts: Optional[List[str]] = None) -> Mapping[str, Any]:
-        params: MutableMapping[str, Any] = {"events": events}
+        params: MutableMapping[str, Any] = {"events": events if events is not None else []}
         if contexts is not None:
             params["contexts"] = contexts
         return params
