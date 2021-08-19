@@ -237,7 +237,8 @@ DownloadItemImpl::RequestInfo::RequestInfo(
     ui::PageTransition transition_type,
     bool has_user_gesture,
     const std::string& remote_address,
-    base::Time start_time)
+    base::Time start_time,
+    ::network::mojom::CredentialsMode credentials_mode)
     : url_chain(url_chain),
       referrer_url(referrer_url),
       site_url(site_url),
@@ -249,7 +250,8 @@ DownloadItemImpl::RequestInfo::RequestInfo(
       transition_type(transition_type),
       has_user_gesture(has_user_gesture),
       remote_address(remote_address),
-      start_time(start_time) {}
+      start_time(start_time),
+      credentials_mode(credentials_mode) {}
 
 DownloadItemImpl::RequestInfo::RequestInfo(const GURL& url)
     : url_chain(std::vector<GURL>(1, url)), start_time(base::Time::Now()) {}
@@ -332,7 +334,8 @@ DownloadItemImpl::DownloadItemImpl(
                     ui::PAGE_TRANSITION_LINK,
                     false,
                     std::string(),
-                    start_time),
+                    start_time,
+                    ::network::mojom::CredentialsMode::kInclude),
       guid_(guid),
       download_id_(download_id),
       mime_type_(mime_type),
@@ -394,7 +397,8 @@ DownloadItemImpl::DownloadItemImpl(DownloadItemImplDelegate* delegate,
                                          : ui::PAGE_TRANSITION_LINK,
                     info.has_user_gesture,
                     info.remote_address,
-                    info.start_time),
+                    info.start_time,
+                    info.credentials_mode),
       guid_(info.guid.empty() ? base::GenerateGUID() : info.guid),
       download_id_(download_id),
       response_headers_(info.response_headers),
@@ -1140,6 +1144,10 @@ DownloadItem::DownloadCreationType DownloadItemImpl::GetDownloadCreationType()
 const absl::optional<DownloadSchedule>& DownloadItemImpl::GetDownloadSchedule()
     const {
   return download_schedule_;
+}
+
+::network::mojom::CredentialsMode DownloadItemImpl::GetCredentialsMode() const {
+  return request_info_.credentials_mode;
 }
 
 void DownloadItemImpl::OnContentCheckCompleted(DownloadDangerType danger_type,

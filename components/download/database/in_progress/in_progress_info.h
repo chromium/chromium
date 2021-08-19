@@ -13,6 +13,7 @@
 #include "components/download/public/common/download_item_rename_progress_update.h"
 #include "components/download/public/common/download_schedule.h"
 #include "components/download/public/common/download_url_parameters.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -130,6 +131,10 @@ struct InProgressInfo {
 
   // When to start the download. Used by download later feature.
   absl::optional<DownloadSchedule> download_schedule;
+
+  // The credentials mode of the request.
+  ::network::mojom::CredentialsMode credentials_mode =
+      ::network::mojom::CredentialsMode::kInclude;
 };
 
 }  // namespace download

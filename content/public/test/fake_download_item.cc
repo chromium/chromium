@@ -207,6 +207,10 @@ FakeDownloadItem::GetDownloadSchedule() const {
   return download_schedule_;
 }
 
+::network::mojom::CredentialsMode FakeDownloadItem::GetCredentialsMode() const {
+  return ::network::mojom::CredentialsMode::kInclude;
+}
+
 void FakeDownloadItem::SetIsDone(bool is_done) {
   is_done_ = is_done;
 }

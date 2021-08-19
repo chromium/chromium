@@ -60,6 +60,7 @@ class FakeDownloadItem : public download::DownloadItem {
   DownloadCreationType GetDownloadCreationType() const override;
   const absl::optional<download::DownloadSchedule>& GetDownloadSchedule()
       const override;
+  ::network::mojom::CredentialsMode GetCredentialsMode() const override;
   bool IsDone() const override;
   const std::string& GetETag() const override;
   const std::string& GetLastModifiedTime() const override;
