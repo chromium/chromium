@@ -16363,6 +16363,160 @@ class OmniboxPedalImplementationsTest : public testing::Test {
             "run google chrome game dinosaur",
         },
 
+        // ID#28
+        {
+            // Generated suggestions:
+            "find phone",
+            "phone find",
+        },
+
+        // ID#29
+        {
+            // Generated suggestions:
+            "google manage privacy",
+            "google privacy manage",
+            "manage google privacy",
+            "manage privacy google",
+            "privacy google manage",
+            "privacy manage google",
+        },
+
+        // ID#30
+        {
+            // Generated suggestions:
+            "ad settings google manage",
+            "ad settings manage google",
+            "google ad settings manage",
+            "google manage ad settings",
+            "manage ad settings google",
+            "manage google ad settings",
+        },
+
+        // ID#31
+        {
+            // Generated suggestions:
+            "chrome manage settings",
+            "chrome settings manage",
+            "manage chrome settings",
+            "manage settings",
+            "manage settings chrome",
+            "settings chrome manage",
+            "settings manage",
+            "settings manage chrome",
+        },
+
+        // ID#32
+        {
+            // Generated suggestions:
+            "chrome downloads manage",
+            "chrome manage downloads",
+            "downloads chrome manage",
+            "downloads manage",
+            "downloads manage chrome",
+            "manage chrome downloads",
+            "manage downloads",
+            "manage downloads chrome",
+        },
+
+        // ID#33
+        {
+            // Generated suggestions:
+            "chrome history view",
+            "chrome view history",
+            "history chrome view",
+            "history view",
+            "history view chrome",
+            "view chrome history",
+            "view history",
+            "view history chrome",
+        },
+
+        // ID#34
+        {
+            // Generated suggestions:
+            "current page share",
+            "current share page",
+            "current share site",
+            "current share website",
+            "current site share",
+            "current website share",
+            "page current share",
+            "page share current",
+            "page share this",
+            "page this share",
+            "share current page",
+            "share current site",
+            "share current website",
+            "share page current",
+            "share page this",
+            "share site current",
+            "share site this",
+            "share this page",
+            "share this site",
+            "share this website",
+            "share website current",
+            "share website this",
+            "site current share",
+            "site share current",
+            "site share this",
+            "site this share",
+            "this page share",
+            "this share page",
+            "this share site",
+            "this share website",
+            "this site share",
+            "this website share",
+            "website current share",
+            "website share current",
+            "website share this",
+            "website this share",
+        },
+
+        // ID#35
+        {
+            // Generated suggestions:
+            "accessibility chrome manage",
+            "accessibility manage",
+            "accessibility manage chrome",
+            "chrome accessibility manage",
+            "chrome manage accessibility",
+            "manage accessibility",
+            "manage accessibility chrome",
+            "manage chrome accessibility",
+        },
+
+        // ID#36
+        {
+            // Generated suggestions:
+            "chrome customize fonts",
+            "chrome fonts",
+            "chrome fonts customize",
+            "customize chrome fonts",
+            "customize fonts chrome",
+            "fonts chrome",
+            "fonts chrome customize",
+            "fonts customize chrome",
+        },
+
+        // ID#37
+        {
+            // Generated suggestions:
+            "chrome manage themes",
+            "chrome themes manage",
+            "manage chrome themes",
+            "manage themes chrome",
+            "themes chrome manage",
+            "themes manage chrome",
+        },
+
+        // ID#38
+        {
+            // Generated suggestions:
+            "customize search engines",
+            "search engines",
+            "search engines customize",
+        },
+
         // End of generated test code
         // clang-format on
     };

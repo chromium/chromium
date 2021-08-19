@@ -1,7 +1,7 @@
 {
   "schema": "pedal_concepts_runtime",
   "schema_version": 3,
-  "data_version": 15996517,
+  "data_version": 15998484,
   "tokenize_each_character": false,
   "dictionary": [
     "a",
@@ -1900,6 +1900,428 @@
         "spoken_button_focus_announcement": "Play Dino Run button, Enter to play the Dino Run game in Chrome"
       },
       "url": "chrome://dino"
+    },
+    {
+      "id": 28,
+      "groups": [
+        {
+          "required": true,
+          "single": true,
+          "synonyms": [
+            [
+              63
+            ]
+          ]
+        },
+        {
+          "required": true,
+          "single": true,
+          "synonyms": [
+            [
+              113
+            ]
+          ]
+        }
+      ],
+      "omnibox_ui_strings": {
+        "button_text": "Find my phone",
+        "description_text": "Find my phone",
+        "spoken_suggestion_description_suffix": "$1, Find my phone",
+        "spoken_button_focus_announcement": "Find my phone"
+      },
+      "url": "https://www.google.com/android/find?u=0?"
+    },
+    {
+      "id": 29,
+      "groups": [
+        {
+          "required": true,
+          "single": true,
+          "synonyms": [
+            [
+              90
+            ]
+          ]
+        },
+        {
+          "required": true,
+          "single": true,
+          "synonyms": [
+            [
+              117
+            ]
+          ]
+        },
+        {
+          "required": true,
+          "single": true,
+          "synonyms": [
+            [
+              72
+            ]
+          ]
+        }
+      ],
+      "omnibox_ui_strings": {
+        "button_text": "Manage my privacy on Google",
+        "description_text": "Manage my privacy on Google",
+        "spoken_suggestion_description_suffix": "$1, Manage my privacy on Google",
+        "spoken_button_focus_announcement": "Manage my privacy on Google"
+      },
+      "url": "https://myaccount.google.com/data-and-privacy"
+    },
+    {
+      "id": 30,
+      "groups": [
+        {
+          "required": true,
+          "single": true,
+          "synonyms": [
+            [
+              90
+            ]
+          ]
+        },
+        {
+          "required": true,
+          "single": true,
+          "synonyms": [
+            [
+              72
+            ]
+          ]
+        },
+        {
+          "required": true,
+          "single": true,
+          "synonyms": [
+            [
+              4,
+              135
+            ]
+          ]
+        }
+      ],
+      "omnibox_ui_strings": {
+        "button_text": "Manage my Google Ad Settings",
+        "description_text": "Manage my Google Ad Settings",
+        "spoken_suggestion_description_suffix": "$1, Manage my Google Ad Settings",
+        "spoken_button_focus_announcement": "Manage my Google Ad Settings"
+      },
+      "url": "https://adssettings.google.com/authenticated?hl=en"
+    },
+    {
+      "id": 31,
+      "groups": [
+        {
+          "required": true,
+          "single": true,
+          "synonyms": [
+            [
+              90
+            ]
+          ]
+        },
+        {
+          "required": false,
+          "single": true,
+          "synonyms": [
+            [
+              29
+            ]
+          ]
+        },
+        {
+          "required": true,
+          "single": true,
+          "synonyms": [
+            [
+              135
+            ]
+          ]
+        }
+      ],
+      "omnibox_ui_strings": {
+        "button_text": "Manage Chrome settings",
+        "description_text": "Manage your Chrome settings",
+        "spoken_suggestion_description_suffix": "$1, Press Tab then Enter to manage your Chrome settings",
+        "spoken_button_focus_announcement": "Manage Chrome settings button, press Enter to visit your Chrome settings"
+      },
+      "url": "chrome://settings"
+    },
+    {
+      "id": 32,
+      "groups": [
+        {
+          "required": true,
+          "single": true,
+          "synonyms": [
+            [
+              90
+            ]
+          ]
+        },
+        {
+          "required": false,
+          "single": true,
+          "synonyms": [
+            [
+              29
+            ]
+          ]
+        },
+        {
+          "required": true,
+          "single": true,
+          "synonyms": [
+            [
+              52
+            ]
+          ]
+        }
+      ],
+      "omnibox_ui_strings": {
+        "button_text": "Manage downloads in Chrome",
+        "description_text": "Manage files you have downloaded in Chrome",
+        "spoken_suggestion_description_suffix": "$1, Press Tab then Enter to manage files you have downloaded in Chrome",
+        "spoken_button_focus_announcement": "Manage downloads in Chrome button, press Enter to manage files you have downloaded in Chrome."
+      },
+      "url": "chrome://downloads"
+    },
+    {
+      "id": 33,
+      "groups": [
+        {
+          "required": true,
+          "single": true,
+          "synonyms": [
+            [
+              167
+            ]
+          ]
+        },
+        {
+          "required": false,
+          "single": true,
+          "synonyms": [
+            [
+              29
+            ]
+          ]
+        },
+        {
+          "required": true,
+          "single": true,
+          "synonyms": [
+            [
+              74
+            ]
+          ]
+        }
+      ],
+      "omnibox_ui_strings": {
+        "button_text": "View your Chrome history",
+        "description_text": "View and manage your browsing history in Chrome settings",
+        "spoken_suggestion_description_suffix": "$1, Press tab then Enter to view your browsing history in Chrome",
+        "spoken_button_focus_announcement": "View your Chrome history button, Enter to view and manage your browsing history in Chrome settings"
+      },
+      "url": "chrome://history"
+    },
+    {
+      "id": 34,
+      "groups": [
+        {
+          "required": true,
+          "single": true,
+          "synonyms": [
+            [
+              136
+            ]
+          ]
+        },
+        {
+          "required": true,
+          "single": true,
+          "synonyms": [
+            [
+              39
+            ],
+            [
+              156
+            ]
+          ]
+        },
+        {
+          "required": true,
+          "single": true,
+          "synonyms": [
+            [
+              171
+            ],
+            [
+              105
+            ],
+            [
+              141
+            ]
+          ]
+        }
+      ],
+      "omnibox_ui_strings": {
+        "button_text": "Share this page",
+        "description_text": "Share this page by sharing the link, creating a QR code, casting, and more.",
+        "spoken_suggestion_description_suffix": "$1, Press tab then Enter to share this page, with options to share the link, create a QR code, cast, and more.",
+        "spoken_button_focus_announcement": "Share this page button, Enter to share this page with options to share the link, create a QR code, cast, and more."
+      },
+      "url": ""
+    },
+    {
+      "id": 35,
+      "groups": [
+        {
+          "required": true,
+          "single": true,
+          "synonyms": [
+            [
+              90
+            ]
+          ]
+        },
+        {
+          "required": false,
+          "single": true,
+          "synonyms": [
+            [
+              29
+            ]
+          ]
+        },
+        {
+          "required": true,
+          "single": true,
+          "synonyms": [
+            [
+              1
+            ]
+          ]
+        }
+      ],
+      "omnibox_ui_strings": {
+        "button_text": "Manage accessibility settings",
+        "description_text": "Personalize your accessibility tools in Chrome settings",
+        "spoken_suggestion_description_suffix": "$1, Press tab then Enter to personalize your accessibility tools in Chrome settings.",
+        "spoken_button_focus_announcement": "Manage accessibility settings button, Enter to personalize your accessibility tools in Chrome settings."
+      },
+      "url": "chrome://settings/accessibility"
+    },
+    {
+      "id": 36,
+      "groups": [
+        {
+          "required": false,
+          "single": true,
+          "synonyms": [
+            [
+              40
+            ]
+          ]
+        },
+        {
+          "required": true,
+          "single": true,
+          "synonyms": [
+            [
+              29
+            ]
+          ]
+        },
+        {
+          "required": true,
+          "single": true,
+          "synonyms": [
+            [
+              65
+            ]
+          ]
+        }
+      ],
+      "omnibox_ui_strings": {
+        "button_text": "Customize fonts in Chrome",
+        "description_text": "Customize font sizes and typefaces in Chrome",
+        "spoken_suggestion_description_suffix": "$1, Press tab then Enter to customize font sizes and typefaces in Chrome",
+        "spoken_button_focus_announcement": "Customize fonts in Chrome button, Enter to customize font sizes and typefaces in Chrome"
+      },
+      "url": "chrome://settings/fonts"
+    },
+    {
+      "id": 37,
+      "groups": [
+        {
+          "required": true,
+          "single": true,
+          "synonyms": [
+            [
+              90
+            ]
+          ]
+        },
+        {
+          "required": true,
+          "single": true,
+          "synonyms": [
+            [
+              29
+            ]
+          ]
+        },
+        {
+          "required": true,
+          "single": true,
+          "synonyms": [
+            [
+              154
+            ]
+          ]
+        }
+      ],
+      "omnibox_ui_strings": {
+        "button_text": "Manage Chrome themes",
+        "description_text": "Customize the look of your browser with themes",
+        "spoken_suggestion_description_suffix": "$1, Press tab then Enter to customize the look of your browser with themes.",
+        "spoken_button_focus_announcement": "Manage Chrome themes button, Enter to customize the look of your browser with themes."
+      },
+      "url": "chrome://new-tab-page?open-customize-menu"
+    },
+    {
+      "id": 38,
+      "groups": [
+        {
+          "required": false,
+          "single": true,
+          "synonyms": [
+            [
+              40
+            ]
+          ]
+        },
+        {
+          "required": true,
+          "single": true,
+          "synonyms": [
+            [
+              129,
+              55
+            ]
+          ]
+        }
+      ],
+      "omnibox_ui_strings": {
+        "button_text": "Manage site search",
+        "description_text": "Manage site search and your default search engine",
+        "spoken_suggestion_description_suffix": "$1, Press tab then Enter to manage site search and your default search engine",
+        "spoken_button_focus_announcement": "Manage site search button, press Enter to manage site search and your default search engine"
+      },
+      "url": "chrome://settings/searchEngines"
     }
   ],
   "ignore_group": {

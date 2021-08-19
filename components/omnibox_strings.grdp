@@ -420,6 +420,161 @@
     Resume journey button, press Enter to resume your journey and see relevant activity in your Chrome history
   </message>
 
+
+
+
+
+
+
+  <message name="IDS_OMNIBOX_PEDAL_FIND_MY_PHONE_HINT" desc="The button text contents to suggest pedal action, FIND_MY_PHONE">
+    Find my phone
+  </message>
+  <message name="IDS_OMNIBOX_PEDAL_FIND_MY_PHONE_SUGGESTION_CONTENTS" desc="The button hover tooltip text to describe pedal action, FIND_MY_PHONE">
+    Find my phone
+  </message>
+  <message name="IDS_ACC_OMNIBOX_PEDAL_FIND_MY_PHONE_SUFFIX" desc="Suffix for spoken suggestion description with pedal action button, to explain keystroke used to FIND_MY_PHONE.">
+    <ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, Find my phone
+  </message>
+  <message name="IDS_ACC_OMNIBOX_PEDAL_FIND_MY_PHONE" desc="Announcement when pedal action button is focused, FIND_MY_PHONE">
+    Find my phone
+  </message>
+
+  <message name="IDS_OMNIBOX_PEDAL_MANAGE_GOOGLE_PRIVACY_HINT" desc="The button text contents to suggest pedal action, MANAGE_GOOGLE_PRIVACY">
+    Manage my privacy on Google
+  </message>
+  <message name="IDS_OMNIBOX_PEDAL_MANAGE_GOOGLE_PRIVACY_SUGGESTION_CONTENTS" desc="The button hover tooltip text to describe pedal action, MANAGE_GOOGLE_PRIVACY">
+    Manage my privacy on Google
+  </message>
+  <message name="IDS_ACC_OMNIBOX_PEDAL_MANAGE_GOOGLE_PRIVACY_SUFFIX" desc="Suffix for spoken suggestion description with pedal action button, to explain keystroke used to MANAGE_GOOGLE_PRIVACY.">
+    <ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, Manage my privacy on Google
+  </message>
+  <message name="IDS_ACC_OMNIBOX_PEDAL_MANAGE_GOOGLE_PRIVACY" desc="Announcement when pedal action button is focused, MANAGE_GOOGLE_PRIVACY">
+    Manage my privacy on Google
+  </message>
+
+  <message name="IDS_OMNIBOX_PEDAL_MANAGE_GOOGLE_AD_SETTINGS_HINT" desc="The button text contents to suggest pedal action, MANAGE_GOOGLE_AD_SETTINGS">
+    Manage my Google Ad Settings
+  </message>
+  <message name="IDS_OMNIBOX_PEDAL_MANAGE_GOOGLE_AD_SETTINGS_SUGGESTION_CONTENTS" desc="The button hover tooltip text to describe pedal action, MANAGE_GOOGLE_AD_SETTINGS">
+    Manage my Google Ad Settings
+  </message>
+  <message name="IDS_ACC_OMNIBOX_PEDAL_MANAGE_GOOGLE_AD_SETTINGS_SUFFIX" desc="Suffix for spoken suggestion description with pedal action button, to explain keystroke used to MANAGE_GOOGLE_AD_SETTINGS.">
+    <ph name="MANAGE_GOOGLE_AD_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, Manage my Google Ad Settings
+  </message>
+  <message name="IDS_ACC_OMNIBOX_PEDAL_MANAGE_GOOGLE_AD_SETTINGS" desc="Announcement when pedal action button is focused, MANAGE_GOOGLE_AD_SETTINGS">
+    Manage my Google Ad Settings
+  </message>
+
+  <message name="IDS_OMNIBOX_PEDAL_MANAGE_CHROME_SETTINGS_HINT" desc="The button text contents to suggest pedal action, MANAGE_CHROME_SETTINGS">
+    Manage Chrome settings
+  </message>
+  <message name="IDS_OMNIBOX_PEDAL_MANAGE_CHROME_SETTINGS_SUGGESTION_CONTENTS" desc="The button hover tooltip text to describe pedal action, MANAGE_CHROME_SETTINGS">
+    Manage your Chrome settings
+  </message>
+  <message name="IDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROME_SETTINGS_SUFFIX" desc="Suffix for spoken suggestion description with pedal action button, to explain keystroke used to MANAGE_CHROME_SETTINGS.">
+    <ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, Press Tab then Enter to manage your Chrome settings
+  </message>
+  <message name="IDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROME_SETTINGS" desc="Announcement when pedal action button is focused, MANAGE_CHROME_SETTINGS">
+    Manage Chrome settings button, press Enter to visit your Chrome settings
+  </message>
+
+  <message name="IDS_OMNIBOX_PEDAL_MANAGE_CHROME_DOWNLOADS_HINT" desc="The button text contents to suggest pedal action, MANAGE_CHROME_DOWNLOADS">
+    Manage downloads in Chrome
+  </message>
+  <message name="IDS_OMNIBOX_PEDAL_MANAGE_CHROME_DOWNLOADS_SUGGESTION_CONTENTS" desc="The button hover tooltip text to describe pedal action, MANAGE_CHROME_DOWNLOADS">
+    Manage files you have downloaded in Chrome
+  </message>
+  <message name="IDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROME_DOWNLOADS_SUFFIX" desc="Suffix for spoken suggestion description with pedal action button, to explain keystroke used to MANAGE_CHROME_DOWNLOADS.">
+    <ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, Press Tab then Enter to manage files you have downloaded in Chrome
+  </message>
+  <message name="IDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROME_DOWNLOADS" desc="Announcement when pedal action button is focused, MANAGE_CHROME_DOWNLOADS">
+    Manage downloads in Chrome button, press Enter to manage files you have downloaded in Chrome.
+  </message>
+
+  <message name="IDS_OMNIBOX_PEDAL_VIEW_CHROME_HISTORY_HINT" desc="The button text contents to suggest pedal action, VIEW_CHROME_HISTORY">
+    View your Chrome history
+  </message>
+  <message name="IDS_OMNIBOX_PEDAL_VIEW_CHROME_HISTORY_SUGGESTION_CONTENTS" desc="The button hover tooltip text to describe pedal action, VIEW_CHROME_HISTORY">
+    View and manage your browsing history in Chrome settings
+  </message>
+  <message name="IDS_ACC_OMNIBOX_PEDAL_VIEW_CHROME_HISTORY_SUFFIX" desc="Suffix for spoken suggestion description with pedal action button, to explain keystroke used to VIEW_CHROME_HISTORY.">
+    <ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, Press tab then Enter to view your browsing history in Chrome
+  </message>
+  <message name="IDS_ACC_OMNIBOX_PEDAL_VIEW_CHROME_HISTORY" desc="Announcement when pedal action button is focused, VIEW_CHROME_HISTORY">
+    View your Chrome history button, Enter to view and manage your browsing history in Chrome settings
+  </message>
+
+  <message name="IDS_OMNIBOX_PEDAL_SHARE_THIS_PAGE_HINT" desc="The button text contents to suggest pedal action, SHARE_THIS_PAGE">
+    Share this page
+  </message>
+  <message name="IDS_OMNIBOX_PEDAL_SHARE_THIS_PAGE_SUGGESTION_CONTENTS" desc="The button hover tooltip text to describe pedal action, SHARE_THIS_PAGE">
+    Share this page by sharing the link, creating a QR code, casting, and more.
+  </message>
+  <message name="IDS_ACC_OMNIBOX_PEDAL_SHARE_THIS_PAGE_SUFFIX" desc="Suffix for spoken suggestion description with pedal action button, to explain keystroke used to SHARE_THIS_PAGE.">
+    <ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, Press tab then Enter to share this page, with options to share the link, create a QR code, cast, and more.
+  </message>
+  <message name="IDS_ACC_OMNIBOX_PEDAL_SHARE_THIS_PAGE" desc="Announcement when pedal action button is focused, SHARE_THIS_PAGE">
+    Share this page button, Enter to share this page with options to share the link, create a QR code, cast, and more.
+  </message>
+
+  <message name="IDS_OMNIBOX_PEDAL_MANAGE_CHROME_ACCESSIBILITY_HINT" desc="The button text contents to suggest pedal action, MANAGE_CHROME_ACCESSIBILITY">
+    Manage accessibility settings
+  </message>
+  <message name="IDS_OMNIBOX_PEDAL_MANAGE_CHROME_ACCESSIBILITY_SUGGESTION_CONTENTS" desc="The button hover tooltip text to describe pedal action, MANAGE_CHROME_ACCESSIBILITY">
+    Personalize your accessibility tools in Chrome settings
+  </message>
+  <message name="IDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROME_ACCESSIBILITY_SUFFIX" desc="Suffix for spoken suggestion description with pedal action button, to explain keystroke used to MANAGE_CHROME_ACCESSIBILITY.">
+    <ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, Press tab then Enter to personalize your accessibility tools in Chrome settings.
+  </message>
+  <message name="IDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROME_ACCESSIBILITY" desc="Announcement when pedal action button is focused, MANAGE_CHROME_ACCESSIBILITY">
+    Manage accessibility settings button, Enter to personalize your accessibility tools in Chrome settings.
+  </message>
+
+  <message name="IDS_OMNIBOX_PEDAL_CUSTOMIZE_CHROME_FONTS_HINT" desc="The button text contents to suggest pedal action, CUSTOMIZE_CHROME_FONTS">
+    Customize fonts in Chrome
+  </message>
+  <message name="IDS_OMNIBOX_PEDAL_CUSTOMIZE_CHROME_FONTS_SUGGESTION_CONTENTS" desc="The button hover tooltip text to describe pedal action, CUSTOMIZE_CHROME_FONTS">
+    Customize font sizes and typefaces in Chrome
+  </message>
+  <message name="IDS_ACC_OMNIBOX_PEDAL_CUSTOMIZE_CHROME_FONTS_SUFFIX" desc="Suffix for spoken suggestion description with pedal action button, to explain keystroke used to CUSTOMIZE_CHROME_FONTS.">
+    <ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, Press tab then Enter to customize font sizes and typefaces in Chrome
+  </message>
+  <message name="IDS_ACC_OMNIBOX_PEDAL_CUSTOMIZE_CHROME_FONTS" desc="Announcement when pedal action button is focused, CUSTOMIZE_CHROME_FONTS">
+    Customize fonts in Chrome button, Enter to customize font sizes and typefaces in Chrome
+  </message>
+
+  <message name="IDS_OMNIBOX_PEDAL_MANAGE_CHROME_THEMES_HINT" desc="The button text contents to suggest pedal action, MANAGE_CHROME_THEMES">
+    Manage Chrome themes
+  </message>
+  <message name="IDS_OMNIBOX_PEDAL_MANAGE_CHROME_THEMES_SUGGESTION_CONTENTS" desc="The button hover tooltip text to describe pedal action, MANAGE_CHROME_THEMES">
+    Customize the look of your browser with themes
+  </message>
+  <message name="IDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROME_THEMES_SUFFIX" desc="Suffix for spoken suggestion description with pedal action button, to explain keystroke used to MANAGE_CHROME_THEMES.">
+    <ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, Press tab then Enter to customize the look of your browser with themes.
+  </message>
+  <message name="IDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROME_THEMES" desc="Announcement when pedal action button is focused, MANAGE_CHROME_THEMES">
+    Manage Chrome themes button, Enter to customize the look of your browser with themes.
+  </message>
+
+  <message name="IDS_OMNIBOX_PEDAL_CUSTOMIZE_SEARCH_ENGINES_HINT" desc="The button text contents to suggest pedal action, CUSTOMIZE_SEARCH_ENGINES">
+    Manage site search
+  </message>
+  <message name="IDS_OMNIBOX_PEDAL_CUSTOMIZE_SEARCH_ENGINES_SUGGESTION_CONTENTS" desc="The button hover tooltip text to describe pedal action, CUSTOMIZE_SEARCH_ENGINES">
+    Manage site search and your default search engine
+  </message>
+  <message name="IDS_ACC_OMNIBOX_PEDAL_CUSTOMIZE_SEARCH_ENGINES_SUFFIX" desc="Suffix for spoken suggestion description with pedal action button, to explain keystroke used to CUSTOMIZE_SEARCH_ENGINES.">
+    <ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, Press tab then Enter to manage site search and your default search engine
+  </message>
+  <message name="IDS_ACC_OMNIBOX_PEDAL_CUSTOMIZE_SEARCH_ENGINES" desc="Announcement when pedal action button is focused, CUSTOMIZE_SEARCH_ENGINES">
+    Manage site search button, press Enter to manage site search and your default search engine
+  </message>
+
+
+
+
+
+
+
   <!-- Accessibility labels for autocomplete match types.
        These are parameterized on the text being completed into the omnibox.
   -->

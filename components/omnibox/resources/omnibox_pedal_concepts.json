@@ -1,7 +1,7 @@
 {
   "schema": "pedals_translation_model",
   "schema_version": 3,
-  "time_generated": "2021-08-16T16:08:38.709Z",
+  "time_generated": "2021-08-18T01:24:20.962Z",
   "primary_language_code": "en",
   "pedal_definitions": [
     {
@@ -296,7 +296,7 @@
       "id": 37,
       "name": "MANAGE_CHROME_THEMES",
       "enabled": true,
-      "url": "https://chrome.google.com/webstore/category/themes",
+      "url": "chrome://new-tab-page?open-customize-menu",
       "description": "Change themes in Chrome\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_MANAGE_CHROME_THEMES_HINT\nIDS_OMNIBOX_PEDAL_MANAGE_CHROME_THEMES_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROME_THEMES_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROME_THEMES\n",
       "tags": "batch3"
     },
@@ -10438,7 +10438,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "Find my phone",
             "description_text": "Find my phone",
@@ -10473,7 +10473,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "Manage my privacy on Google",
             "description_text": "Manage my privacy on Google",
@@ -10508,7 +10508,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "Manage my Google Ad Settings",
             "description_text": "Manage my Google Ad Settings",
@@ -10543,7 +10543,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "Manage Chrome settings",
             "description_text": "Manage your Chrome settings",
@@ -10578,7 +10578,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "Manage downloads in Chrome",
             "description_text": "Manage files you have downloaded in Chrome",
@@ -10613,7 +10613,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "View your Chrome history",
             "description_text": "View and manage your browsing history in Chrome settings",
@@ -10651,7 +10651,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "Share this page",
             "description_text": "Share this page by sharing the link, creating a QR code, casting, and more.",
@@ -10686,7 +10686,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "Manage accessibility settings",
             "description_text": "Personalize your accessibility tools in Chrome settings",
@@ -10721,7 +10721,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "Customize fonts in Chrome",
             "description_text": "Customize font sizes and typefaces in Chrome",
@@ -10756,7 +10756,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "Manage Chrome themes",
             "description_text": "Customize the look of your browser with themes",
@@ -10784,7 +10784,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "Manage site search",
             "description_text": "Manage site search and your default search engine",

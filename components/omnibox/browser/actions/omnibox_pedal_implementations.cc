@@ -1094,6 +1094,202 @@ class OmniboxPedalPlayChromeDinoGame : public OmniboxPedal {
 
 // =============================================================================
 
+class OmniboxPedalFindMyPhone : public OmniboxPedal {
+ public:
+  OmniboxPedalFindMyPhone()
+      : OmniboxPedal(
+            OmniboxPedalId::FIND_MY_PHONE,
+            LabelStrings(IDS_OMNIBOX_PEDAL_FIND_MY_PHONE_HINT,
+                         IDS_OMNIBOX_PEDAL_FIND_MY_PHONE_SUGGESTION_CONTENTS,
+                         IDS_ACC_OMNIBOX_PEDAL_FIND_MY_PHONE_SUFFIX,
+                         IDS_ACC_OMNIBOX_PEDAL_FIND_MY_PHONE),
+            GURL()) {}
+
+ protected:
+  ~OmniboxPedalFindMyPhone() override = default;
+};
+
+// =============================================================================
+
+class OmniboxPedalManageGooglePrivacy : public OmniboxPedal {
+ public:
+  OmniboxPedalManageGooglePrivacy()
+      : OmniboxPedal(
+            OmniboxPedalId::MANAGE_GOOGLE_PRIVACY,
+            LabelStrings(
+                IDS_OMNIBOX_PEDAL_MANAGE_GOOGLE_PRIVACY_HINT,
+                IDS_OMNIBOX_PEDAL_MANAGE_GOOGLE_PRIVACY_SUGGESTION_CONTENTS,
+                IDS_ACC_OMNIBOX_PEDAL_MANAGE_GOOGLE_PRIVACY_SUFFIX,
+                IDS_ACC_OMNIBOX_PEDAL_MANAGE_GOOGLE_PRIVACY),
+            GURL()) {}
+
+ protected:
+  ~OmniboxPedalManageGooglePrivacy() override = default;
+};
+
+// =============================================================================
+
+class OmniboxPedalManageGoogleAdSettings : public OmniboxPedal {
+ public:
+  OmniboxPedalManageGoogleAdSettings()
+      : OmniboxPedal(
+            OmniboxPedalId::MANAGE_GOOGLE_AD_SETTINGS,
+            LabelStrings(
+                IDS_OMNIBOX_PEDAL_MANAGE_GOOGLE_AD_SETTINGS_HINT,
+                IDS_OMNIBOX_PEDAL_MANAGE_GOOGLE_AD_SETTINGS_SUGGESTION_CONTENTS,
+                IDS_ACC_OMNIBOX_PEDAL_MANAGE_GOOGLE_AD_SETTINGS_SUFFIX,
+                IDS_ACC_OMNIBOX_PEDAL_MANAGE_GOOGLE_AD_SETTINGS),
+            GURL()) {}
+
+ protected:
+  ~OmniboxPedalManageGoogleAdSettings() override = default;
+};
+
+// =============================================================================
+
+class OmniboxPedalManageChromeSettings : public OmniboxPedal {
+ public:
+  OmniboxPedalManageChromeSettings()
+      : OmniboxPedal(
+            OmniboxPedalId::MANAGE_CHROME_SETTINGS,
+            LabelStrings(
+                IDS_OMNIBOX_PEDAL_MANAGE_CHROME_SETTINGS_HINT,
+                IDS_OMNIBOX_PEDAL_MANAGE_CHROME_SETTINGS_SUGGESTION_CONTENTS,
+                IDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROME_SETTINGS_SUFFIX,
+                IDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROME_SETTINGS),
+            GURL()) {}
+
+ protected:
+  ~OmniboxPedalManageChromeSettings() override = default;
+};
+
+// =============================================================================
+
+class OmniboxPedalManageChromeDownloads : public OmniboxPedal {
+ public:
+  OmniboxPedalManageChromeDownloads()
+      : OmniboxPedal(
+            OmniboxPedalId::MANAGE_CHROME_DOWNLOADS,
+            LabelStrings(
+                IDS_OMNIBOX_PEDAL_MANAGE_CHROME_DOWNLOADS_HINT,
+                IDS_OMNIBOX_PEDAL_MANAGE_CHROME_DOWNLOADS_SUGGESTION_CONTENTS,
+                IDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROME_DOWNLOADS_SUFFIX,
+                IDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROME_DOWNLOADS),
+            GURL()) {}
+
+ protected:
+  ~OmniboxPedalManageChromeDownloads() override = default;
+};
+
+// =============================================================================
+
+class OmniboxPedalViewChromeHistory : public OmniboxPedal {
+ public:
+  OmniboxPedalViewChromeHistory()
+      : OmniboxPedal(
+            OmniboxPedalId::VIEW_CHROME_HISTORY,
+            LabelStrings(
+                IDS_OMNIBOX_PEDAL_VIEW_CHROME_HISTORY_HINT,
+                IDS_OMNIBOX_PEDAL_VIEW_CHROME_HISTORY_SUGGESTION_CONTENTS,
+                IDS_ACC_OMNIBOX_PEDAL_VIEW_CHROME_HISTORY_SUFFIX,
+                IDS_ACC_OMNIBOX_PEDAL_VIEW_CHROME_HISTORY),
+            GURL()) {}
+
+ protected:
+  ~OmniboxPedalViewChromeHistory() override = default;
+};
+
+// =============================================================================
+
+class OmniboxPedalShareThisPage : public OmniboxPedal {
+ public:
+  OmniboxPedalShareThisPage()
+      : OmniboxPedal(
+            OmniboxPedalId::SHARE_THIS_PAGE,
+            LabelStrings(IDS_OMNIBOX_PEDAL_SHARE_THIS_PAGE_HINT,
+                         IDS_OMNIBOX_PEDAL_SHARE_THIS_PAGE_SUGGESTION_CONTENTS,
+                         IDS_ACC_OMNIBOX_PEDAL_SHARE_THIS_PAGE_SUFFIX,
+                         IDS_ACC_OMNIBOX_PEDAL_SHARE_THIS_PAGE),
+            GURL()) {}
+
+ protected:
+  ~OmniboxPedalShareThisPage() override = default;
+};
+
+// =============================================================================
+
+class OmniboxPedalManageChromeAccessibility : public OmniboxPedal {
+ public:
+  OmniboxPedalManageChromeAccessibility()
+      : OmniboxPedal(
+            OmniboxPedalId::MANAGE_CHROME_ACCESSIBILITY,
+            LabelStrings(
+                IDS_OMNIBOX_PEDAL_MANAGE_CHROME_ACCESSIBILITY_HINT,
+                IDS_OMNIBOX_PEDAL_MANAGE_CHROME_ACCESSIBILITY_SUGGESTION_CONTENTS,
+                IDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROME_ACCESSIBILITY_SUFFIX,
+                IDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROME_ACCESSIBILITY),
+            GURL()) {}
+
+ protected:
+  ~OmniboxPedalManageChromeAccessibility() override = default;
+};
+
+// =============================================================================
+
+class OmniboxPedalCustomizeChromeFonts : public OmniboxPedal {
+ public:
+  OmniboxPedalCustomizeChromeFonts()
+      : OmniboxPedal(
+            OmniboxPedalId::CUSTOMIZE_CHROME_FONTS,
+            LabelStrings(
+                IDS_OMNIBOX_PEDAL_CUSTOMIZE_CHROME_FONTS_HINT,
+                IDS_OMNIBOX_PEDAL_CUSTOMIZE_CHROME_FONTS_SUGGESTION_CONTENTS,
+                IDS_ACC_OMNIBOX_PEDAL_CUSTOMIZE_CHROME_FONTS_SUFFIX,
+                IDS_ACC_OMNIBOX_PEDAL_CUSTOMIZE_CHROME_FONTS),
+            GURL()) {}
+
+ protected:
+  ~OmniboxPedalCustomizeChromeFonts() override = default;
+};
+
+// =============================================================================
+
+class OmniboxPedalManageChromeThemes : public OmniboxPedal {
+ public:
+  OmniboxPedalManageChromeThemes()
+      : OmniboxPedal(
+            OmniboxPedalId::MANAGE_CHROME_THEMES,
+            LabelStrings(
+                IDS_OMNIBOX_PEDAL_MANAGE_CHROME_THEMES_HINT,
+                IDS_OMNIBOX_PEDAL_MANAGE_CHROME_THEMES_SUGGESTION_CONTENTS,
+                IDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROME_THEMES_SUFFIX,
+                IDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROME_THEMES),
+            GURL()) {}
+
+ protected:
+  ~OmniboxPedalManageChromeThemes() override = default;
+};
+
+// =============================================================================
+
+class OmniboxPedalCustomizeSearchEngines : public OmniboxPedal {
+ public:
+  OmniboxPedalCustomizeSearchEngines()
+      : OmniboxPedal(
+            OmniboxPedalId::CUSTOMIZE_SEARCH_ENGINES,
+            LabelStrings(
+                IDS_OMNIBOX_PEDAL_CUSTOMIZE_SEARCH_ENGINES_HINT,
+                IDS_OMNIBOX_PEDAL_CUSTOMIZE_SEARCH_ENGINES_SUGGESTION_CONTENTS,
+                IDS_ACC_OMNIBOX_PEDAL_CUSTOMIZE_SEARCH_ENGINES_SUFFIX,
+                IDS_ACC_OMNIBOX_PEDAL_CUSTOMIZE_SEARCH_ENGINES),
+            GURL()) {}
+
+ protected:
+  ~OmniboxPedalCustomizeSearchEngines() override = default;
+};
+
+// =============================================================================
+
 std::unordered_map<OmniboxPedalId, scoped_refptr<OmniboxPedal>>
 GetPedalImplementations(bool with_branding, bool incognito) {
   std::unordered_map<OmniboxPedalId, scoped_refptr<OmniboxPedal>> pedals;
@@ -1131,6 +1327,17 @@ GetPedalImplementations(bool with_branding, bool incognito) {
       add(new OmniboxPedalCloseIncognitoWindows());
     }
     add(new OmniboxPedalPlayChromeDinoGame());
+    add(new OmniboxPedalFindMyPhone());
+    add(new OmniboxPedalManageGooglePrivacy());
+    add(new OmniboxPedalManageGoogleAdSettings());
+    add(new OmniboxPedalManageChromeSettings());
+    add(new OmniboxPedalManageChromeDownloads());
+    add(new OmniboxPedalViewChromeHistory());
+    add(new OmniboxPedalShareThisPage());
+    add(new OmniboxPedalManageChromeAccessibility());
+    add(new OmniboxPedalCustomizeChromeFonts());
+    add(new OmniboxPedalManageChromeThemes());
+    add(new OmniboxPedalCustomizeSearchEngines());
   }
   return pedals;
 }
