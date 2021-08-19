@@ -628,6 +628,10 @@ const base::Feature kImeSystemEmojiPickerClipboard{
 const base::Feature kImeStylusHandwriting{"StylusHandwriting",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enable or disable the improved screen capture settings.
+const base::Feature kImprovedScreenCaptureSettings{
+    "ImprovedScreenCaptureSettings", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables Instant Tethering on Chrome OS.
 const base::Feature kInstantTethering{"InstantTethering",
                                       base::FEATURE_ENABLED_BY_DEFAULT};
@@ -1157,6 +1161,10 @@ bool AreContextualNudgesEnabled() {
   if (!IsHideShelfControlsInTabletModeEnabled())
     return false;
   return base::FeatureList::IsEnabled(kContextualNudges);
+}
+
+bool AreImprovedScreenCaptureSettingsEnabled() {
+  return base::FeatureList::IsEnabled(kImprovedScreenCaptureSettings);
 }
 
 bool DoWindowsFollowCursor() {
