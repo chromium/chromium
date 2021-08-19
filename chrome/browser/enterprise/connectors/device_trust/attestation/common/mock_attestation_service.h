@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_ATTESTATION_COMMON_MOCK_ATTESTATION_SERVICE_H_
 
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_service.h"
-#include "components/enterprise/common/proto/device_trust_report_event.pb.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation/common/proto/device_trust_attestation_ca.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace enterprise_connectors {
@@ -19,8 +19,12 @@ class MockAttestationService : public AttestationService {
   MockAttestationService();
   ~MockAttestationService() override;
 
-  MOCK_METHOD2(BuildChallengeResponseForVAChallenge,
-               void(const std::string&, AttestationCallback));
+  MOCK_METHOD(void,
+              BuildChallengeResponseForVAChallenge,
+              (const std::string&,
+               std::unique_ptr<DeviceTrustSignals>,
+               AttestationCallback),
+              (override));
   MOCK_METHOD1(StampReport, void(DeviceTrustReportEvent&));
 };
 

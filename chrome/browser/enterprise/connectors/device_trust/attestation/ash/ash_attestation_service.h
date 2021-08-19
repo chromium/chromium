@@ -5,10 +5,19 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_ATTESTATION_ASH_ASH_ATTESTATION_SERVICE_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_ATTESTATION_ASH_ASH_ATTESTATION_SERVICE_H_
 
-#include "chrome/browser/ash/attestation/tpm_challenge_key_with_timeout.h"
+#include <memory>
+
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_service.h"
 
 class Profile;
+
+namespace ash {
+namespace attestation {
+struct TpmChallengeKeyResult;
+class TpmChallengeKeyWithTimeout;
+}  // namespace attestation
+}  // namespace ash
 
 namespace enterprise_connectors {
 
@@ -23,6 +32,7 @@ class AshAttestationService : public AttestationService {
   // AttestationService:
   void BuildChallengeResponseForVAChallenge(
       const std::string& challenge,
+      std::unique_ptr<DeviceTrustSignals> signals,
       AttestationCallback callback) override;
 
  private:
@@ -32,7 +42,7 @@ class AshAttestationService : public AttestationService {
   void ReturnResult(AttestationCallback callback,
                     const ash::attestation::TpmChallengeKeyResult& result);
 
-  Profile* profile_;
+  Profile* const profile_;
   std::unique_ptr<ash::attestation::TpmChallengeKeyWithTimeout>
       tpm_key_challenger_;
 

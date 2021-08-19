@@ -8,6 +8,7 @@
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_utils.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation/common/proto/device_trust_attestation_ca.pb.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signal_reporter.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/signals_service.h"
 #include "components/prefs/pref_service.h"
@@ -145,10 +146,8 @@ void DeviceTrustService::OnSignalReported(bool success) {
 
 void DeviceTrustService::BuildChallengeResponse(const std::string& challenge,
                                                 AttestationCallback callback) {
-  // TODO(crbug.com/1208881): Forward signals to the attestation service to be
-  // added to the reply.
   attestation_service_->BuildChallengeResponseForVAChallenge(
-      challenge, std::move(callback));
+      challenge, signals_service_->CollectSignals(), std::move(callback));
 }
 
 base::CallbackListSubscription

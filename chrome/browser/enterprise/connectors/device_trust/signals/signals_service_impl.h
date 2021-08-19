@@ -25,7 +25,7 @@ class SignalsServiceImpl : public SignalsService {
   ~SignalsServiceImpl() override;
 
   // SignalsService:
-  DeviceTrustSignals CollectSignals() override;
+  std::unique_ptr<DeviceTrustSignals> CollectSignals() override;
 
  private:
   std::vector<std::unique_ptr<SignalsDecorator>> signals_decorators_;

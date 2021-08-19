@@ -4,6 +4,9 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/desktop_attestation_service.h"
 
+#include <utility>
+
+#include "base/check.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/task/task_traits.h"
@@ -11,13 +14,16 @@
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_utils.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation/common/proto/device_trust_attestation_ca.pb.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/crypto_utility.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/signing_key_pair.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
+#include "components/enterprise/common/proto/device_trust_report_event.pb.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_store.h"
 #include "crypto/random.h"
+#include "crypto/unexportable_key.h"
 
 namespace enterprise_connectors {
 
@@ -80,7 +86,9 @@ std::string DesktopAttestationService::ExportPublicKey() {
 
 void DesktopAttestationService::BuildChallengeResponseForVAChallenge(
     const std::string& challenge,
+    std::unique_ptr<DeviceTrustSignals> signals,
     AttestationCallback callback) {
+  DCHECK(signals);
   std::string serialized_signed_data =
       JsonChallengeToProtobufChallenge(challenge);
   // If one of this values is missing then attestation flow won't succeed.
@@ -97,7 +105,8 @@ void DesktopAttestationService::BuildChallengeResponseForVAChallenge(
           &DesktopAttestationService::
               VerifyChallengeAndMaybeCreateChallengeResponse,
           base::Unretained(this), JsonChallengeToProtobufChallenge(challenge),
-          google_keys_.va_signing_key(VAType::DEFAULT_VA).modulus_in_hex()),
+          google_keys_.va_signing_key(VAType::DEFAULT_VA).modulus_in_hex(),
+          std::move(signals)),
       std::move(reply));
 }
 
@@ -116,7 +125,8 @@ void DesktopAttestationService::StampReport(DeviceTrustReportEvent& report) {
 std::string
 DesktopAttestationService::VerifyChallengeAndMaybeCreateChallengeResponse(
     const std::string& serialized_signed_data,
-    const std::string& public_key_modulus_hex) {
+    const std::string& public_key_modulus_hex,
+    std::unique_ptr<DeviceTrustSignals> signals) {
   if (!ChallengeComesFromVerifiedAccess(serialized_signed_data,
                                         public_key_modulus_hex)) {
     LOG(ERROR) << "Challenge signature verification did not succeed.";
@@ -128,7 +138,7 @@ DesktopAttestationService::VerifyChallengeAndMaybeCreateChallengeResponse(
   SignEnterpriseChallengeReply result;
   request.set_challenge(serialized_signed_data);
   request.set_va_type(VAType::DEFAULT_VA);
-  SignEnterpriseChallenge(request, &result);
+  SignEnterpriseChallenge(request, std::move(signals), &result);
   return result.challenge_response();
 }
 
@@ -149,12 +159,7 @@ void DesktopAttestationService::ParseChallengeResponseAndRunCallback(
 
 void DesktopAttestationService::SignEnterpriseChallenge(
     const SignEnterpriseChallengeRequest& request,
-    SignEnterpriseChallengeReply* result) {
-  SignEnterpriseChallengeTask(request, result);
-}
-
-void DesktopAttestationService::SignEnterpriseChallengeTask(
-    const SignEnterpriseChallengeRequest& request,
+    std::unique_ptr<DeviceTrustSignals> signals,
     SignEnterpriseChallengeReply* result) {
   // Validate that the challenge is coming from the expected source.
   SignedData signed_challenge;
@@ -169,6 +174,8 @@ void DesktopAttestationService::SignEnterpriseChallengeTask(
   key_info.set_browser_instance_public_key(public_key_);
   key_info.set_device_id(device_id_);
   key_info.set_customer_id(customer_id_);
+
+  key_info.set_allocated_device_trust_signals(signals.release());
 
   ChallengeResponse response_pb;
   *response_pb.mutable_challenge() = signed_challenge;

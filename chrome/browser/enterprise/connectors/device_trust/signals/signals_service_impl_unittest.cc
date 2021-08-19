@@ -42,10 +42,10 @@ TEST(SignalsServiceImplTest, CollectSignals_CallsAllDecorators) {
 
   SignalsServiceImpl service(std::move(decorators));
 
-  DeviceTrustSignals signals = service.CollectSignals();
+  std::unique_ptr<DeviceTrustSignals> signals = service.CollectSignals();
 
-  EXPECT_EQ(signals.obfuscated_customer_id(), fake_obfuscated_customer_id);
-  EXPECT_EQ(signals.device_id(), fake_device_id);
+  EXPECT_EQ(signals->obfuscated_customer_id(), fake_obfuscated_customer_id);
+  EXPECT_EQ(signals->device_id(), fake_device_id);
 }
 
 }  // namespace enterprise_connectors

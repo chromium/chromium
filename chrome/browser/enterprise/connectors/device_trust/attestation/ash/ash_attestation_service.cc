@@ -4,9 +4,18 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/ash/ash_attestation_service.h"
 
+#include <memory>
+#include <string>
+#include <utility>
+
 #include "base/base64.h"
+#include "base/bind.h"
+#include "base/callback.h"
+#include "base/time/time.h"
+#include "chrome/browser/ash/attestation/tpm_challenge_key_result.h"
+#include "chrome/browser/ash/attestation/tpm_challenge_key_with_timeout.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_utils.h"
-#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation/common/proto/device_trust_attestation_ca.pb.h"
 
 namespace enterprise_connectors {
 
@@ -16,6 +25,7 @@ AshAttestationService::~AshAttestationService() = default;
 
 void AshAttestationService::BuildChallengeResponseForVAChallenge(
     const std::string& challenge,
+    std::unique_ptr<DeviceTrustSignals> signals,
     AttestationCallback callback) {
   tpm_key_challenger_ =
       std::make_unique<ash::attestation::TpmChallengeKeyWithTimeout>();
@@ -24,17 +34,17 @@ void AshAttestationService::BuildChallengeResponseForVAChallenge(
       base::BindOnce(&AshAttestationService::ReturnResult,
                      weak_factory_.GetWeakPtr(), std::move(callback)),
       JsonChallengeToProtobufChallenge(challenge), /*register_key=*/false,
-      /*key_name_for_spkac=*/"");
+      /*key_name_for_spkac=*/std::string());
 }
 
 void AshAttestationService::ReturnResult(
     AttestationCallback callback,
     const ash::attestation::TpmChallengeKeyResult& result) {
-  if (!result.IsSuccess())
-    LOG(WARNING) << "Device attestation error: " << result.GetErrorMessage();
-
   std::string encoded_response;
-  base::Base64Encode(result.challenge_response, &encoded_response);
+  if (result.IsSuccess()) {
+    // TODO(crbug.com/1241405): Handle failure case better.
+    base::Base64Encode(result.challenge_response, &encoded_response);
+  }
   std::move(callback).Run(encoded_response);
 }
 

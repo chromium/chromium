@@ -8,31 +8,26 @@ import("//build/config/features.gni")
 source_set("common") {
   sources = [
     "attestation_service.cc",
-    "attestation_service.h",
     "attestation_utils.cc",
+  ]
+
+  public = [
+    "attestation_service.h",
     "attestation_utils.h",
   ]
 
-  deps = [
-    "//base",
-    "//chrome/browser/enterprise/connectors/device_trust/attestation/common/proto:attestation_ca_proto",
-    "//chrome/browser/enterprise/connectors/device_trust/attestation/common/proto:interface_proto",
-    "//components/enterprise/common/proto:device_trust_report_event_proto",
-  ]
+  public_deps = [ "//base" ]
 }
 
 source_set("test_support") {
   testonly = true
-  sources = [
-    "mock_attestation_service.cc",
-    "mock_attestation_service.h",
-  ]
+  sources = [ "mock_attestation_service.cc" ]
 
-  deps = [
+  public = [ "mock_attestation_service.h" ]
+
+  public_deps = [
     ":common",
-    "//base",
-    "//components/enterprise/common/proto:device_trust_report_event_proto",
+    "//chrome/browser/enterprise/connectors/device_trust/attestation/common/proto:attestation_ca_proto",
     "//testing/gmock",
-    "//testing/gtest",
   ]
 }

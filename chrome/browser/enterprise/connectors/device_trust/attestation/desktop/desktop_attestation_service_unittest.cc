@@ -88,13 +88,19 @@ class DesktopAttestationServiceTest : public testing::Test {
 TEST_F(DesktopAttestationServiceTest, BuildChallengeResponse) {
   SignEnterpriseChallengeRequest request;
   SignEnterpriseChallengeReply result;
+
+  // TODO(crbug.com/1208881): Add signals and validate they effectively get
+  // added to the signed data.
+  auto signals = std::make_unique<DeviceTrustSignals>();
+
   // Get the challenge from the SignedData json and create request.
   request.set_challenge(JsonChallengeToProtobufChallenge(challenge));
   // If challenge is equal to empty string, then
   // `JsonChallengeToProtobufChallenge()` failed.
   EXPECT_NE(request.challenge(), std::string());
 
-  attestation_service()->SignEnterpriseChallenge(request, &result);
+  attestation_service()->SignEnterpriseChallenge(request, std::move(signals),
+                                                 &result);
   // If challenge is equal to empty string, then
   // `JsonChallengeToProtobufChallenge()` failed.
   EXPECT_NE(result.challenge_response(), std::string());
