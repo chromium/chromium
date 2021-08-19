@@ -124,3 +124,24 @@ class BroadcastMessageQueue {
     });
   }
 }
+
+// Returns <iframe> element upon load.
+function createFrame(url) {
+  return new Promise(resolve => {
+      const frame = document.createElement('iframe');
+      frame.src = url;
+      frame.onload = () => resolve(frame);
+      document.body.appendChild(frame);
+    });
+}
+
+// Returns <img> element upon load.
+function createImg(url) {
+  return new Promise(resolve => {
+      const img = document.createElement('img');
+      img.src = url;
+      img.onload = () => resolve(img);
+      img.onerror = () => resolve(img);
+      document.body.appendChild(img);
+    });
+}

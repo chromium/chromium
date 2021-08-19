@@ -243,6 +243,10 @@ class PrerenderBrowserTest : public ContentBrowserTest {
     return prerender_helper_->GetRequestCount(url);
   }
 
+  net::test_server::HttpRequest::HeaderMap GetRequestHeaders(const GURL& url) {
+    return prerender_helper_->GetRequestHeaders(url);
+  }
+
   WebContents* web_contents() const { return shell()->web_contents(); }
 
   WebContentsImpl* web_contents_impl() const {
@@ -4572,6 +4576,58 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ActivateWhileReloadingSubframe) {
   second_response.Send(net::HTTP_OK, "");
   second_response.Done();
   nav_observer.WaitForNavigationFinished();
+}
+
+// Tests that the request for the initial prerender navigation has the
+// "Purpose: prefetch" header.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PurposePrefetchHeader) {
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), GetUrl("/empty.html")));
+
+  // Start prerendering `kPrerenderingUrl`.
+  const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender");
+  AddPrerender(kPrerenderingUrl);
+
+  // The prerender request should have the "Purpose: prefetch" header.
+  net::test_server::HttpRequest::HeaderMap headers =
+      GetRequestHeaders(kPrerenderingUrl);
+  auto it = headers.find("Purpose");
+  ASSERT_NE(headers.end(), it);
+  EXPECT_EQ("prefetch", it->second);
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       PurposePrefetchHeaderOnRedirection) {
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), GetUrl("/empty.html")));
+
+  // Start prerendering a URL that causes same-origin redirection.
+  const GURL kRedirectedUrl = GetUrl("/empty.html?prerender");
+  const GURL kPrerenderingUrl =
+      GetUrl("/server-redirect?" + kRedirectedUrl.spec());
+  RedirectChainObserver redirect_chain_observer(*shell()->web_contents(),
+                                                kRedirectedUrl);
+  AddPrerender(kPrerenderingUrl);
+  ASSERT_EQ(2u, redirect_chain_observer.redirect_chain().size());
+  EXPECT_EQ(kPrerenderingUrl, redirect_chain_observer.redirect_chain()[0]);
+  EXPECT_EQ(kRedirectedUrl, redirect_chain_observer.redirect_chain()[1]);
+
+  // Both the initial request and the redirected request should have the
+  // "Purpose: prefetch" header.
+  {
+    net::test_server::HttpRequest::HeaderMap headers =
+        GetRequestHeaders(kPrerenderingUrl);
+    auto it = headers.find("Purpose");
+    ASSERT_NE(headers.end(), it);
+    EXPECT_EQ("prefetch", it->second);
+  }
+  {
+    net::test_server::HttpRequest::HeaderMap headers =
+        GetRequestHeaders(kRedirectedUrl);
+    auto it = headers.find("Purpose");
+    ASSERT_NE(headers.end(), it);
+    EXPECT_EQ("prefetch", it->second);
+  }
 }
 
 }  // namespace

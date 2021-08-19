@@ -715,6 +715,14 @@ TEST_F(PrerenderHostRegistryTest,
       })));
 }
 
+// Tests that the Purpose header is ignored when comparing request headers.
+TEST_F(PrerenderHostRegistryTest, PurposeHeaderIsIgnoredForParamMatching) {
+  EXPECT_TRUE(CheckIsActivatedForParams(
+      base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
+        navigation->set_request_headers("Purpose: Test");
+      })));
+}
+
 TEST_F(PrerenderHostRegistryTest,
        CompareInitialAndActivationBeginParams_LoadFlags) {
   EXPECT_FALSE(CheckIsActivatedForParams(

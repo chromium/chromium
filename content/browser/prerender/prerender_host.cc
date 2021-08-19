@@ -67,6 +67,27 @@ struct ActivateResult {
   std::unique_ptr<StoredPage> page;
 };
 
+bool AreHttpRequestHeadersCompatible(
+    const std::string& potential_activation_headers_str,
+    const std::string& prerender_headers_str) {
+  net::HttpRequestHeaders prerender_headers;
+  prerender_headers.AddHeadersFromString(prerender_headers_str);
+
+  net::HttpRequestHeaders potential_activation_headers;
+  potential_activation_headers.AddHeadersFromString(
+      potential_activation_headers_str);
+
+  // `prerender_headers` contains the "Purpose: prefetch" to notify servers of
+  // prerender requests, while `potential_activation_headers` doesn't contain
+  // it. Remove "Purpose" matching from consideration so that activation works
+  // with the header.
+  prerender_headers.RemoveHeader("Purpose");
+  potential_activation_headers.RemoveHeader("Purpose");
+
+  return prerender_headers.ToString() ==
+         potential_activation_headers.ToString();
+}
+
 }  // namespace
 
 class PrerenderHost::PageHolder : public FrameTree::Delegate,
@@ -524,7 +545,8 @@ bool PrerenderHost::AreBeginNavigationParamsCompatibleWithNavigation(
     return false;
   }
 
-  if (potential_activation.headers != begin_params_->headers) {
+  if (!AreHttpRequestHeadersCompatible(potential_activation.headers,
+                                       begin_params_->headers)) {
     return false;
   }
 

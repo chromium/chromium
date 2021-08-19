@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<body>
+<script type="module">
+
+const IFRAME_URL = 'purpose-prefetch-header-iframe.html';
+const NESTED_IFRAME_URL = 'empty.html';
+const IMAGE_URL = 'missing.jpg';
+const FETCH_URL = 'missing.txt';
+
+if (document.prerendering) {
+  // Fetch resources during prerendering.
+  let tag = '?prerendering';
+  let iframe = await createFrame(IFRAME_URL + tag);
+  createImg(IMAGE_URL + tag);
+  fetch(FETCH_URL + tag);
+
+  // Fetch resources in the iframe during prerendering.
+  tag = '?prerendering-iframe';
+  iframe.contentWindow.createFrame(NESTED_IFRAME_URL + tag);
+  iframe.contentWindow.createImg(IMAGE_URL + tag);
+  iframe.contentWindow.fetch(FETCH_URL + tag);
+
+  document.onprerenderingchange = async e => {
+    // Fetch resources after activation.
+    tag = '?activated';
+    iframe = await createFrame(IFRAME_URL + tag);
+    createImg(IMAGE_URL + tag);
+    fetch(FETCH_URL + tag);
+
+    // Fetch resources in the iframe after activation.
+    tag = '?activated-iframe';
+    iframe.contentWindow.createFrame(NESTED_IFRAME_URL + tag);
+    iframe.contentWindow.createImg(IMAGE_URL + tag);
+    iframe.contentWindow.fetch(FETCH_URL + tag);
+  };
+} else {
+  const channel = new BroadcastChannel('activation-channel');
+  const queue = new BroadcastMessageQueue(channel);
+
+  const prerendering_url = location.href + '?prerendering';
+  startPrerendering(prerendering_url);
+
+  // Wait for the signal from the main test page.
+  const message = await queue.nextMessage();
+  assert_equals(message, 'activate');
+
+  // Activate the prerendered page.
+  location.href = prerendering_url;
+}
+
+</script>
+</body>

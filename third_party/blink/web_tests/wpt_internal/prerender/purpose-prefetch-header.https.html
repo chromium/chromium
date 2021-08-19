@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<!--
+This file cannot be upstreamed to WPT until:
+* startPrerendering() usage is replaced with a WebDriver API.
+* `Purpose: prefetch` is standardized. See
+  https://github.com/w3c/resource-hints/issues/74.
+-->
+<title>"Purpose: prefetch" header on prerendering requests</title>
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/utils.js"></script>
+<script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
+<body>
+<script>
+
+// Helper class to keep request headers captured by a service worker and check
+// if they have the "Purpose: prefetch" header.
+class CapturedHeaderChecker {
+  // `channel` is associated with the service worker.
+  constructor(channel) {
+    this.headerMaps = {};
+    this.channel = channel;
+    this.queue = new BroadcastMessageQueue(this.channel);
+  }
+
+  // Returns request headers captured by the service worker.
+  async getHeaders(expected_url) {
+    // The expected URL has already been fetched. Return the captured headers.
+    if (this.headerMaps[expected_url] !== undefined)
+      return this.headerMaps[expected_url];
+
+    // Wait until the expected URL is fetched.
+    while (true) {
+      const {url, headers} = await this.queue.nextMessage();
+      this.headerMaps[url] = headers;
+      if (url === expected_url)
+        return headers;
+    }
+  }
+
+  // Verifies that the request has the "Purpose: prefetch" header.
+  async verifyHeaderExists(path) {
+    const url = this.buildUrl(path);
+    const headers = await this.getHeaders(url);
+    assert_equals(headers['purpose'], 'prefetch');
+  }
+
+  // Verifies that the request doesn't have the "Purpose: prefetch" header.
+  async verifyHeaderNotExist(path) {
+    const url = this.buildUrl(path);
+    const headers = await this.getHeaders(url);
+    assert_false('purpose' in headers);
+  }
+
+  buildUrl(path) {
+    return new URL('resources/' + path, location.href).toString();
+  }
+};
+
+const MAIN_URL = 'purpose-prefetch-header.html';
+const IFRAME_URL = 'purpose-prefetch-header-iframe.html';
+const NESTED_IFRAME_URL = 'empty.html';
+const IMAGE_URL = 'missing.jpg';
+const FETCH_URL = 'missing.txt';
+
+promise_test(async t => {
+  // Set up a service worker to capture request headers.
+  const registration =
+      await service_worker_unregister_and_register(
+          t, 'resources/capture-headers-worker.js', 'resources/');
+  t.add_cleanup(() => registration.unregister());
+  const worker = registration.installing;
+  await wait_for_state(t, registration.installing, 'activated');
+
+  // Receive captured request headers via this channel.
+  const channel = new BroadcastChannel('captured-headers-channel');
+  const checker = new CapturedHeaderChecker(channel);
+
+  // Start prerendering.
+  window.open('resources/purpose-prefetch-header.html', '_blank', 'noopener');
+
+  // The request for the prerender initial navigation should have the
+  // 'Purpose: prefetch' header.
+  let tag = '?prerendering';
+  await checker.verifyHeaderExists(MAIN_URL + tag);
+
+  // The requests initiated by the prerendered main frame should have the
+  // header.
+  await checker.verifyHeaderExists(IFRAME_URL + tag);
+  await checker.verifyHeaderExists(IMAGE_URL + tag);
+  await checker.verifyHeaderExists(FETCH_URL + tag);
+
+  // The requests initiated by the prerendered same-origin iframe should have
+  // the header.
+  tag = '?prerendering-iframe';
+  await checker.verifyHeaderExists(NESTED_IFRAME_URL + tag);
+  await checker.verifyHeaderExists(IMAGE_URL + tag);
+  await checker.verifyHeaderExists(FETCH_URL + tag);
+
+  // Activate the prerendered page.
+  const activation_channel = new BroadcastChannel('activation-channel');
+  activation_channel.postMessage('activate');
+  activation_channel.close();
+
+  // The requests initiated by the activated main frame should not have the
+  // header.
+  tag = '?activated';
+  await checker.verifyHeaderNotExist(IFRAME_URL + tag);
+  await checker.verifyHeaderNotExist(IMAGE_URL + tag);
+  await checker.verifyHeaderNotExist(FETCH_URL + tag);
+
+  // The requests initiated by the activated same-origin iframe should not have
+  // the header.
+  tag = '?activated-iframe';
+  await checker.verifyHeaderNotExist(NESTED_IFRAME_URL + tag);
+  await checker.verifyHeaderNotExist(IMAGE_URL + tag);
+  await checker.verifyHeaderNotExist(FETCH_URL + tag);
+}, 'Requests for prerendering should have the "Purpose: prefetch" header');
+
+</script>
+</body>

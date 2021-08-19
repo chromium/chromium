@@ -325,6 +325,10 @@ void FrameFetchContext::AddAdditionalRequestHeaders(ResourceRequest& request) {
 
   AddBackForwardCacheExperimentHTTPHeaderIfNeeded(
       document_->GetExecutionContext(), request);
+
+  // Add the "Purpose: prefetch" header to requests from prerendered pages.
+  if (IsPrerendering())
+    request.SetHttpHeaderField("Purpose", "prefetch");
 }
 
 // TODO(toyoshim, arthursonzogni): PlzNavigate doesn't use this function to set

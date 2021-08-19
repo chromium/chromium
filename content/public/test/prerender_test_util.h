@@ -10,6 +10,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_request.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -138,6 +139,7 @@ class PrerenderTestHelper {
   RenderFrameHost* GetPrerenderedMainFrameHost(int host_id);
 
   int GetRequestCount(const GURL& url);
+  net::test_server::HttpRequest::HeaderMap GetRequestHeaders(const GURL& url);
 
   // Waits until the request count for `url` reaches `count`.
   void WaitForRequest(const GURL& gurl, int count);
@@ -152,6 +154,8 @@ class PrerenderTestHelper {
   // "127.0.0.1") before the server handles them.
   // This is accessed from the UI thread and `EmbeddedTestServer::io_thread_`.
   std::map<std::string, int> request_count_by_path_ GUARDED_BY(lock_);
+  std::map<std::string, net::test_server::HttpRequest::HeaderMap>
+      request_headers_by_path_ GUARDED_BY(lock_);
   base::test::ScopedFeatureList feature_list_;
   base::OnceClosure monitor_callback_ GUARDED_BY(lock_);
   base::Lock lock_;

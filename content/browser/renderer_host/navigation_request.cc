@@ -365,6 +365,11 @@ void AddAdditionalRequestHeaders(
       headers->SetHeader("Sec-Required-Document-Policy", policy_header.value());
     }
   }
+
+  // Add the "Purpose: prefetch" header to prerender navigations including
+  // subframe navigations.
+  if (frame_tree_node->frame_tree()->is_prerendering())
+    headers->SetHeader("Purpose", "prefetch");
 }
 
 // Should match the definition of
