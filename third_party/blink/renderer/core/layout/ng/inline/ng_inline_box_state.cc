@@ -335,6 +335,20 @@ void NGInlineLayoutStateStack::EndBoxState(const NGConstraintSpace& space,
     parent_box.metrics.Unite(box->metrics);
 }
 
+void NGInlineLayoutStateStack::OnBlockInInline(const FontHeight& metrics,
+                                               NGLogicalLineItems* line_box) {
+  for (NGInlineBoxState& box : stack_)
+    box.metrics = metrics;
+
+  // Update the metrics in placeholders.
+  const LayoutUnit line_height = metrics.LineHeight();
+  for (NGLogicalLineItem& item : *line_box) {
+    DCHECK(item.IsPlaceholder());
+    item.rect.offset.block_offset = LayoutUnit();
+    item.rect.size.block_size = line_height;
+  }
+}
+
 // Crete a placeholder for a box fragment.
 // We keep a flat list of fragments because it is more suitable for operations
 // such as ApplyBaselineShift. Later, CreateBoxFragments() creates box fragments

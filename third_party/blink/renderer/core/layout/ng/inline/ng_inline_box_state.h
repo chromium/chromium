@@ -172,6 +172,8 @@ class CORE_EXPORT NGInlineLayoutStateStack {
                        NGLogicalLineItems*,
                        FontBaseline);
 
+  void OnBlockInInline(const FontHeight& metrics, NGLogicalLineItems* line_box);
+
   bool HasBoxFragments() const { return !box_data_list_.IsEmpty(); }
 
   wtf_size_t NumBoxFragments() const { return box_data_list_.size(); }

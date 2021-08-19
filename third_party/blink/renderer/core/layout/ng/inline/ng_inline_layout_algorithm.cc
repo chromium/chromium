@@ -628,8 +628,8 @@ void NGInlineLayoutAlgorithm::PlaceBlockInInline(
     DCHECK(layout_object->IsAnonymous());
     const FontHeight metrics = fragment.BaselineMetrics(
         /* margins */ NGLineBoxStrut(), baseline_type_);
+    box_states_->OnBlockInInline(metrics, line_box);
     container_builder_.SetMetrics(metrics);
-    line_box->MoveInBlockDirection(metrics.ascent);
 
     // If a spanner was found inside the child, we need to finish up and
     // propagate the spanner to the column layout algorithm, so that it can take
