@@ -98,8 +98,20 @@ PaintResult PaintLayerPainter::Paint(
     return kFullyPainted;
   }
 
-  // If the transform can't be inverted, then don't paint anything.
-  if (paint_layer_.PaintsWithTransform(painting_info.GetGlobalPaintFlags()) &&
+  // If the transform can't be inverted, don't paint anything. We still need
+  // to paint with CompositeAfterPaint if there are animations to ensure the
+  // animation can be setup to run on the compositor.
+  bool paint_non_invertible_transforms = false;
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    const auto* properties =
+        paint_layer_.GetLayoutObject().FirstFragment().PaintProperties();
+    if (properties && properties->Transform() &&
+        properties->Transform()->HasActiveTransformAnimation()) {
+      paint_non_invertible_transforms = true;
+    }
+  }
+  if (!paint_non_invertible_transforms &&
+      paint_layer_.PaintsWithTransform(painting_info.GetGlobalPaintFlags()) &&
       !paint_layer_.RenderableTransform(painting_info.GetGlobalPaintFlags())
            .IsInvertible()) {
     return kFullyPainted;
@@ -225,6 +237,14 @@ bool PaintLayerPainter::ShouldUseInfiniteCullRectInternal(
         // details.
         if (!transform->IsIdentityOr2DTranslation() &&
             transform->Matrix().HasPerspective()) {
+          return true;
+        }
+
+        // Ensure content under animating transforms is not culled out, even if
+        // the initial matrix is non-invertible.
+        if (transform->HasActiveTransformAnimation() &&
+            !transform->IsIdentityOr2DTranslation() &&
+            !transform->Matrix().IsInvertible()) {
           return true;
         }
 
