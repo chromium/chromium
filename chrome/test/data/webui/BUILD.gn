@@ -566,9 +566,6 @@ group("closure_compile") {
       "settings/chromeos:closure_compile",
     ]
   }
-  if (!is_android) {
-    deps += [ "commander:closure_compile" ]
-  }
   if (enable_print_preview) {
     deps += [ "print_preview:closure_compile" ]
   }

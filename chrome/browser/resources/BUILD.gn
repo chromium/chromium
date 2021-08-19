@@ -121,7 +121,6 @@ if (enable_js_type_check) {
     if (is_linux || is_chromeos || is_win || is_mac) {
       deps += [
         "bluetooth_internals:closure_compile",
-        "commander:closure_compile",
         "discards:closure_compile",
         "federated_learning:closure_compile",
         "feedback_webui/js:closure_compile",
