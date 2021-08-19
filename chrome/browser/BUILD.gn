@@ -705,8 +705,6 @@ static_library("browser") {
     "media/webrtc/audio_debug_recordings_handler.h",
     "media/webrtc/capture_policy_utils.cc",
     "media/webrtc/capture_policy_utils.h",
-    "media/webrtc/chrome_camera_pan_tilt_zoom_permission_context_delegate.cc",
-    "media/webrtc/chrome_camera_pan_tilt_zoom_permission_context_delegate.h",
     "media/webrtc/desktop_media_list.h",
     "media/webrtc/desktop_media_list_base.cc",
     "media/webrtc/desktop_media_list_base.h",
