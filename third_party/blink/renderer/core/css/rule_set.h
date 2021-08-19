@@ -25,6 +25,7 @@
 
 #include "base/types/pass_key.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/cascade_layer.h"
 #include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
 #include "third_party/blink/renderer/core/css/media_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/resolver/media_query_result.h"
@@ -244,12 +245,14 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
 
   void AddRulesFromSheet(StyleSheetContents*,
                          const MediaQueryEvaluator&,
-                         AddRuleFlags = kRuleHasNoSpecialState);
+                         AddRuleFlags = kRuleHasNoSpecialState,
+                         CascadeLayer* = nullptr);
   void AddStyleRule(StyleRule*, AddRuleFlags);
   void AddRule(StyleRule*,
                unsigned selector_index,
                AddRuleFlags,
-               const ContainerQuery*);
+               const ContainerQuery*,
+               const CascadeLayer*);
 
   const RuleFeatureSet& Features() const { return features_; }
 
@@ -339,6 +342,11 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
     return slotted_pseudo_element_rules_;
   }
 
+  const CascadeLayer& CascadeLayers() const {
+    DCHECK(root_layer_);
+    return *root_layer_;
+  }
+
   unsigned RuleCount() const { return rule_count_; }
 
   void CompactRulesIfNeeded() {
@@ -357,6 +365,25 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
 
   bool DidMediaQueryResultsChange(const MediaQueryEvaluator& evaluator) const;
 
+  // We use a vector of LayerInterval to represent that rules with positions
+  // between start_position (inclusive) and the next LayerInterval's
+  // start_position (exclusive) belong to the given layer.
+  class LayerInterval {
+    DISALLOW_NEW();
+
+   public:
+    LayerInterval(const CascadeLayer* passed_layer, unsigned passed_position)
+        : layer(passed_layer), start_position(passed_position) {}
+    const Member<const CascadeLayer> layer;
+    const unsigned start_position = 0;
+
+    void Trace(Visitor*) const;
+  };
+
+  const HeapVector<LayerInterval>& LayerIntervals() const {
+    return layer_intervals_;
+  }
+
 #ifndef NDEBUG
   void Show() const;
 #endif
@@ -364,6 +391,8 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   void Trace(Visitor*) const;
 
  private:
+  friend class RuleSetCascadeLayerTest;
+
   using PendingRuleMap =
       HeapHashMap<AtomicString,
                   Member<HeapLinkedStack<Member<const RuleData>>>>;
@@ -384,7 +413,8 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   void AddChildRules(const HeapVector<Member<StyleRuleBase>>&,
                      const MediaQueryEvaluator& medium,
                      AddRuleFlags,
-                     const ContainerQuery*);
+                     const ContainerQuery*,
+                     CascadeLayer*);
   bool FindBestRuleSetAndAdd(const CSSSelector&, RuleData*);
 
   void SortKeyframesRulesIfNeeded();
@@ -409,6 +439,14 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
       pending_rules_ = MakeGarbageCollected<PendingRuleMaps>();
     return pending_rules_.Get();
   }
+
+  CascadeLayer* EnsureRootLayer() {
+    if (!root_layer_)
+      root_layer_ = MakeGarbageCollected<CascadeLayer>(g_empty_atom);
+    return root_layer_;
+  }
+
+  const CascadeLayer& GetLayerForTest(const RuleData&) const;
 
   CompactRuleMap id_rules_;
   CompactRuleMap class_rules_;
@@ -436,11 +474,16 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   unsigned rule_count_;
   Member<PendingRuleMaps> pending_rules_;
 
+  Member<CascadeLayer> root_layer_;
+  HeapVector<LayerInterval> layer_intervals_;
+
 #ifndef NDEBUG
   HeapVector<Member<const RuleData>> all_rules_;
 #endif
 };
 
 }  // namespace blink
+
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::RuleSet::LayerInterval)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RULE_SET_H_

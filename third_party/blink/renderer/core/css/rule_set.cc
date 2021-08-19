@@ -300,7 +300,8 @@ bool RuleSet::FindBestRuleSetAndAdd(const CSSSelector& component,
 void RuleSet::AddRule(StyleRule* rule,
                       unsigned selector_index,
                       AddRuleFlags add_rule_flags,
-                      const ContainerQuery* container_query) {
+                      const ContainerQuery* container_query,
+                      const CascadeLayer* cascade_layer) {
   RuleData* rule_data = RuleData::MaybeCreate(rule, selector_index, rule_count_,
                                               add_rule_flags, container_query);
   if (!rule_data) {
@@ -329,6 +330,16 @@ void RuleSet::AddRule(StyleRule* rule,
         add_rule_flags | kRuleIsVisitedDependent, container_query);
     DCHECK(visited_dependent);
     visited_dependent_rules_.push_back(visited_dependent);
+  }
+
+  if (RuntimeEnabledFeatures::CSSCascadeLayersEnabled()) {
+    if (!cascade_layer)
+      cascade_layer = EnsureRootLayer();
+    if (!layer_intervals_.size() ||
+        layer_intervals_.back().layer != cascade_layer) {
+      layer_intervals_.push_back(
+          LayerInterval(cascade_layer, rule_data->GetPosition()));
+    }
   }
 }
 
@@ -366,7 +377,8 @@ void RuleSet::AddScrollTimelineRule(StyleRuleScrollTimeline* rule) {
 void RuleSet::AddChildRules(const HeapVector<Member<StyleRuleBase>>& rules,
                             const MediaQueryEvaluator& medium,
                             AddRuleFlags add_rule_flags,
-                            const ContainerQuery* container_query) {
+                            const ContainerQuery* container_query,
+                            CascadeLayer* cascade_layer) {
   for (unsigned i = 0; i < rules.size(); ++i) {
     StyleRuleBase* rule = rules[i].Get();
 
@@ -379,7 +391,8 @@ void RuleSet::AddChildRules(const HeapVector<Member<StyleRuleBase>>& rules,
           slotted_pseudo_element_rules_.push_back(
               MinimalRuleData(style_rule, selector_index, add_rule_flags));
         } else {
-          AddRule(style_rule, selector_index, add_rule_flags, container_query);
+          AddRule(style_rule, selector_index, add_rule_flags, container_query,
+                  cascade_layer);
         }
       }
     } else if (auto* page_rule = DynamicTo<StyleRulePage>(rule)) {
@@ -387,7 +400,7 @@ void RuleSet::AddChildRules(const HeapVector<Member<StyleRuleBase>>& rules,
     } else if (auto* media_rule = DynamicTo<StyleRuleMedia>(rule)) {
       if (MatchMediaForAddRules(medium, media_rule->MediaQueries())) {
         AddChildRules(media_rule->ChildRules(), medium, add_rule_flags,
-                      container_query);
+                      container_query, cascade_layer);
       }
     } else if (auto* font_face_rule = DynamicTo<StyleRuleFontFace>(rule)) {
       AddFontFaceRule(font_face_rule);
@@ -404,13 +417,26 @@ void RuleSet::AddChildRules(const HeapVector<Member<StyleRuleBase>>& rules,
     } else if (auto* supports_rule = DynamicTo<StyleRuleSupports>(rule)) {
       if (supports_rule->ConditionIsSupported()) {
         AddChildRules(supports_rule->ChildRules(), medium, add_rule_flags,
-                      container_query);
+                      container_query, cascade_layer);
       }
     } else if (auto* container_rule = DynamicTo<StyleRuleContainer>(rule)) {
       // TODO(crbug.com/1145970): Handle nested container queries.
       // For now only the innermost applies.
       AddChildRules(container_rule->ChildRules(), medium, add_rule_flags,
-                    &container_rule->GetContainerQuery());
+                    &container_rule->GetContainerQuery(), cascade_layer);
+    } else if (auto* layer_block_rule = DynamicTo<StyleRuleLayerBlock>(rule)) {
+      if (!cascade_layer)
+        cascade_layer = EnsureRootLayer();
+      CascadeLayer* sub_layer =
+          cascade_layer->GetOrAddSubLayer(layer_block_rule->GetName());
+      AddChildRules(layer_block_rule->ChildRules(), medium, add_rule_flags,
+                    container_query, sub_layer);
+    } else if (auto* layer_statement_rule =
+                   DynamicTo<StyleRuleLayerStatement>(rule)) {
+      if (!cascade_layer)
+        cascade_layer = EnsureRootLayer();
+      for (const auto& layer_name : layer_statement_rule->GetNames())
+        cascade_layer->GetOrAddSubLayer(layer_name);
     }
   }
 }
@@ -429,23 +455,35 @@ bool RuleSet::MatchMediaForAddRules(const MediaQueryEvaluator& evaluator,
 
 void RuleSet::AddRulesFromSheet(StyleSheetContents* sheet,
                                 const MediaQueryEvaluator& medium,
-                                AddRuleFlags add_rule_flags) {
+                                AddRuleFlags add_rule_flags,
+                                CascadeLayer* cascade_layer) {
   TRACE_EVENT0("blink", "RuleSet::addRulesFromSheet");
 
   DCHECK(sheet);
+
+  if (RuntimeEnabledFeatures::CSSCascadeLayersEnabled()) {
+    if (!cascade_layer)
+      cascade_layer = EnsureRootLayer();
+  }
 
   const HeapVector<Member<StyleRuleImport>>& import_rules =
       sheet->ImportRules();
   for (unsigned i = 0; i < import_rules.size(); ++i) {
     StyleRuleImport* import_rule = import_rules[i].Get();
+    CascadeLayer* import_layer = cascade_layer;
+    if (import_rule->IsLayered()) {
+      import_layer =
+          cascade_layer->GetOrAddSubLayer(import_rule->GetLayerName());
+    }
     if (import_rule->GetStyleSheet() &&
         MatchMediaForAddRules(medium, import_rule->MediaQueries())) {
-      AddRulesFromSheet(import_rule->GetStyleSheet(), medium, add_rule_flags);
+      AddRulesFromSheet(import_rule->GetStyleSheet(), medium, add_rule_flags,
+                        import_layer);
     }
   }
 
   AddChildRules(sheet->ChildRules(), medium, add_rule_flags,
-                nullptr /* container_query */);
+                nullptr /* container_query */, cascade_layer);
 }
 
 void RuleSet::AddStyleRule(StyleRule* rule, AddRuleFlags add_rule_flags) {
@@ -454,8 +492,8 @@ void RuleSet::AddStyleRule(StyleRule* rule, AddRuleFlags add_rule_flags) {
        selector_index != kNotFound;
        selector_index =
            rule->SelectorList().IndexOfNextSelectorAfter(selector_index)) {
-    AddRule(rule, selector_index, add_rule_flags,
-            nullptr /* container_query */);
+    AddRule(rule, selector_index, add_rule_flags, nullptr /* container_query */,
+            nullptr /* cascade_layer */);
   }
 }
 
@@ -520,6 +558,16 @@ const ContainerQuery* RuleData::GetContainerQuery() const {
   return nullptr;
 }
 
+const CascadeLayer& RuleSet::GetLayerForTest(const RuleData& rule) const {
+  DCHECK(RuntimeEnabledFeatures::CSSCascadeLayersEnabled());
+  DCHECK(layer_intervals_.size());
+  for (unsigned i = 1; i < layer_intervals_.size(); ++i) {
+    if (layer_intervals_[i].start_position > rule.GetPosition())
+      return *layer_intervals_[i - 1].layer;
+  }
+  return *layer_intervals_.back().layer;
+}
+
 void RuleData::Trace(Visitor* visitor) const {
   switch (static_cast<Type>(type_)) {
     case Type::kNormal:
@@ -556,6 +604,10 @@ void RuleSet::PendingRuleMaps::Trace(Visitor* visitor) const {
   visitor->Trace(ua_shadow_pseudo_element_rules);
 }
 
+void RuleSet::LayerInterval::Trace(Visitor* visitor) const {
+  visitor->Trace(layer);
+}
+
 void RuleSet::Trace(Visitor* visitor) const {
   visitor->Trace(id_rules_);
   visitor->Trace(class_rules_);
@@ -578,6 +630,8 @@ void RuleSet::Trace(Visitor* visitor) const {
   visitor->Trace(scroll_timeline_rules_);
   visitor->Trace(slotted_pseudo_element_rules_);
   visitor->Trace(pending_rules_);
+  visitor->Trace(root_layer_);
+  visitor->Trace(layer_intervals_);
 #ifndef NDEBUG
   visitor->Trace(all_rules_);
 #endif

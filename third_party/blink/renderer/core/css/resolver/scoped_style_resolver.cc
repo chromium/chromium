@@ -300,8 +300,11 @@ static void AddRules(RuleSet* rule_set,
   for (const auto& info : rules) {
     // TODO(crbug.com/1145970): Store container_query on MinimalRuleData
     // and propagate it here.
+    // TODO(crbug.com/1095765): Store cascade_layer on MinimalRuleData and
+    // propagate it here.
     rule_set->AddRule(info.rule_, info.selector_index_, info.flags_,
-                      nullptr /* container_query */);
+                      nullptr /* container_query */,
+                      nullptr /* cascade_layer */);
   }
 }
 

@@ -29,7 +29,7 @@ namespace css_test_helpers {
 // RuleSet& ruleSet = sheet.ruleSet();
 // ... examine RuleSet to find the rule and test properties on it.
 class TestStyleSheet {
-  STACK_ALLOCATED();
+  DISALLOW_NEW();
 
  public:
   TestStyleSheet();
