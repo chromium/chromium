@@ -106,7 +106,7 @@ IN_PROC_BROWSER_TEST_P(WebRtcImageCaptureStressBrowserTest,
 // Note, these tests must be run sequentially, since multiple parallel test runs
 // competing for a single physical webcam typically causes failures.
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
-    defined(OS_ANDROID) || defined(OS_WIN)
+    defined(OS_ANDROID) || defined(OS_WIN) || defined(OS_FUCHSIA)
 
 const TargetVideoCaptureImplementation
     kTargetVideoCaptureImplementationsForRealWebcam[] = {
