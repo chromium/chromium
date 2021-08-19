@@ -332,12 +332,6 @@ function dailyRefreshReducer(state, action) {
  */
 function errorReducer(state, action) {
   switch (action.name) {
-    case ActionName.SET_SELECTED_IMAGE:
-      const {image} = action;
-      if (!image) {
-        return loadTimeData.getString('setWallpaperError');
-      }
-      return state;
     case ActionName.END_SELECT_IMAGE:
       const {success} =
           /** @type {{name: string, success: boolean}} */ (action);
