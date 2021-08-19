@@ -127,8 +127,11 @@ export class ChromeHelper {
           }
         });
 
-    await this.remote_.setCameraUsageMonitor(
+    const {isSuccess} = await this.remote_.setCameraUsageMonitor(
         usageCallbackRouter.$.bindNewPipeAndPassRemote());
+    if (!isSuccess) {
+      throw new Error('Failed to set camera usage monitor');
+    }
 
     let {controller} = await this.remote_.getWindowStateController();
     controller = wrapEndpoint(controller);

@@ -36,7 +36,7 @@ class CameraAppWindowManager : public views::WidgetObserver {
       aura::Window* window,
       mojo::PendingRemote<chromeos_camera::mojom::CameraUsageOwnershipMonitor>
           usage_monitor,
-      base::OnceCallback<void()> callback);
+      base::OnceCallback<void(bool)> callback);
 
   void SetDevToolsEnabled(bool enabled);
 

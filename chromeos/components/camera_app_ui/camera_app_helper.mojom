@@ -153,9 +153,11 @@ interface CameraAppHelper {
   // message to Feedback extension via chrome.runtime API.
   OpenFeedbackDialog(string placeholder);
 
-  // Sets the monitor to monitor the camera usage ownership changed.
+  // Sets the monitor to monitor the camera usage ownership changed. If the
+  // window operation is not supported for current instance, return false.
   SetCameraUsageMonitor(
-      pending_remote<CameraUsageOwnershipMonitor> usage_monitor) => ();
+      pending_remote<CameraUsageOwnershipMonitor> usage_monitor)
+          => (bool is_success);
 
   // Gets the controller to control and monitor the window state of app.
   GetWindowStateController()

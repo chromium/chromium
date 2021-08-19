@@ -241,6 +241,7 @@ export const ErrorType = {
   IDLE_DETECTOR_FAILURE: 'idle-detector-failure',
   INVALID_REVIEW_UI_STATE: 'invalid-review-ui-state',
   METADATA_MAPPING_FAILURE: 'metadata-mapping-failure',
+  MULTIPLE_STREAMS_FAILURE: 'multiple-streams-failure',
   NO_AVAILABLE_LEVEL: 'no-available-level',
   PERF_METRICS_FAILURE: 'perf-metrics-failure',
   PRELOAD_IMAGE_FAILURE: 'preload-image-failure',
@@ -252,7 +253,6 @@ export const ErrorType = {
   UNKNOWN_FACING: 'unknown-facing',
   UNSAFE_INTEGER: 'unsafe-integer',
   UNSUPPORTED_PROTOCOL: 'unsupported-protocol',
-  MULTIPLE_STREAMS_FAILURE: 'multiple-streams-failure',
 };
 
 /**

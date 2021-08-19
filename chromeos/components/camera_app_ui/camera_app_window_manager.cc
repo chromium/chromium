@@ -21,9 +21,16 @@ void CameraAppWindowManager::SetCameraUsageMonitor(
     aura::Window* window,
     mojo::PendingRemote<chromeos_camera::mojom::CameraUsageOwnershipMonitor>
         usage_monitor,
-    base::OnceCallback<void()> callback) {
+    base::OnceCallback<void(bool)> callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto* widget = views::Widget::GetWidgetForNativeWindow(window);
+  if (widget == nullptr) {
+    // For some rare use cases (e.g. Launch CCA via devtool inspector), the
+    // widget will be null. Therefore, returns here to let CCA know that
+    // window-retaled operations is not supported.
+    std::move(callback).Run(false);
+    return;
+  }
 
   mojo::Remote<chromeos_camera::mojom::CameraUsageOwnershipMonitor> remote(
       std::move(usage_monitor));
@@ -35,7 +42,7 @@ void CameraAppWindowManager::SetCameraUsageMonitor(
   if (!widget->HasObserver(this)) {
     widget->AddObserver(this);
   }
-  std::move(callback).Run();
+  std::move(callback).Run(true);
 
   if (widget->IsVisible()) {
     OnWidgetActivationChanged(widget, true);
