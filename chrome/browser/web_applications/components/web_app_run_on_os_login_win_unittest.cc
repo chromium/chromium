@@ -6,9 +6,11 @@
 
 #include <vector>
 
+#include "base/base_paths_win.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_path_override.h"
 #include "base/win/shortcut.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
@@ -88,6 +90,9 @@ class WebAppRunOnOsLoginWinTest : public WebAppTest {
     std::vector<base::FilePath> shortcuts = GetShortcuts();
     EXPECT_EQ(shortcuts.size(), 0u);
   }
+
+ private:
+  base::ScopedPathOverride override_user_startup{base::DIR_USER_STARTUP};
 };
 
 TEST_F(WebAppRunOnOsLoginWinTest, Register) {
