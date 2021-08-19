@@ -82,6 +82,8 @@ namespace {
 const char kAgentPath[] = "/org/chromium/bluetooth_agent";
 const char kGattApplicationObjectPath[] = "/gatt_application";
 
+const char kDeviceNameArcTouch[] = "Arc Touch BT Mouse";
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // This root path identifies the application registering low energy scanners
 // through D-Bus.
@@ -136,6 +138,17 @@ device::BluetoothDevice::ManufacturerDataMap ConvertManufacturerDataMap(
                                                       input.end());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+bool IsBatteryDisplayBlocklisted(const BluetoothDevice* device) {
+  if (!device->GetName())
+    return false;
+
+  // b/191919291: Arc Touch BT Mouse battery values change back and forth.
+  if (device->GetName()->find(kDeviceNameArcTouch) != std::string::npos)
+    return true;
+
+  return false;
+}
 
 }  // namespace
 
@@ -2120,6 +2133,15 @@ void BluetoothAdapterBlueZ::UpdateDeviceBatteryLevelFromBatteryClient(
 
   if (!device) {
     BLUETOOTH_LOG(ERROR) << "Trying to update battery for non-existing device";
+    return;
+  }
+
+  if (IsBatteryDisplayBlocklisted(device)) {
+    // Some peripherals are known to send unreliable battery values. So don't
+    // display the battery value if such device is detected (best effort).
+    BLUETOOTH_LOG(DEBUG)
+        << "Filtering out a device from having battery value set: "
+        << (device->GetName() ? *(device->GetName()) : "<Unknown name>");
     return;
   }
 
