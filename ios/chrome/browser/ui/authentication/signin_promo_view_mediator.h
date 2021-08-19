@@ -110,6 +110,9 @@ class PrefRegistrySyncable;
 // called.
 - (void)signinPromoViewIsRemoved;
 
+// Disconnects the mediator.
+- (void)disconnect;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_PROMO_VIEW_MEDIATOR_H_

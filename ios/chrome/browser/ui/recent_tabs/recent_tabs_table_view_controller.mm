@@ -173,7 +173,8 @@ const int kRecentlyClosedTabsSectionIndex = 0;
 }
 
 - (void)dealloc {
-  [_signinPromoViewMediator signinPromoViewIsRemoved];
+  [self.signinPromoViewMediator disconnect];
+  self.signinPromoViewMediator = nil;
 }
 
 - (void)viewDidLoad {

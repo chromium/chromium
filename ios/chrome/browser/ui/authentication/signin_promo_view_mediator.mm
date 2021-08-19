@@ -525,6 +525,13 @@ const char* AlreadySeenSigninViewPreferenceKey(
                                                      displayedCount);
 }
 
+- (void)disconnect {
+  [self signinPromoViewIsRemoved];
+  self.consumer = nil;
+  self.accountManagerService = nullptr;
+  self.authService = nullptr;
+}
+
 #pragma mark - Public properties
 
 - (BOOL)isInvalidClosedOrNeverVisible {
