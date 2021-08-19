@@ -51,30 +51,6 @@ NSMutableSet* invokedCompletionUUID = nil;
   return YES;
 }
 
-+ (void)disableKeyboardTutorials {
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    // Set the preferences values directly on simulator for the keyboard
-    // modifiers. For persisting these values, CFPreferencesSynchronize must be
-    // called after.
-    CFStringRef app = CFSTR("com.apple.keyboard.preferences.plist");
-    CFPreferencesSetValue(CFSTR("DidShowContinuousPathIntroduction"),
-                          kCFBooleanTrue, app, kCFPreferencesAnyUser,
-                          kCFPreferencesAnyHost);
-    CFPreferencesSetValue(CFSTR("KeyboardDidShowProductivityTutorial"),
-                          kCFBooleanTrue, app, kCFPreferencesAnyUser,
-                          kCFPreferencesAnyHost);
-    CFPreferencesSetValue(CFSTR("DidShowGestureKeyboardIntroduction"),
-                          kCFBooleanTrue, app, kCFPreferencesAnyUser,
-                          kCFPreferencesAnyHost);
-    CFPreferencesSetValue(
-        CFSTR("UIKeyboardDidShowInternationalInfoIntroduction"), kCFBooleanTrue,
-        app, kCFPreferencesAnyUser, kCFPreferencesAnyHost);
-    CFPreferencesSynchronize(kCFPreferencesAnyApplication,
-                             kCFPreferencesAnyUser, kCFPreferencesAnyHost);
-  });
-}
-
 #pragma mark - Private
 
 + (void)completionInvokedWithUUID:(NSUUID*)completionUUID {

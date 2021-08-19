@@ -406,6 +406,8 @@ ios_framework_bundle("app_framework") {
     "src/AppFramework/Synchronization/GREYUIThreadExecutor+GREYApp.h",
     "src/AppFramework/Synchronization/GREYUIThreadExecutor+Private.h",
     "src/AppFramework/Synchronization/GREYUIThreadExecutor.m",
+    "src/AppFramework/Synchronization/UIApplication+ActiveRunLoopMode.h",
+    "src/AppFramework/Synchronization/UIApplication+ActiveRunLoopMode.m",
   ]
 
   deps = [
