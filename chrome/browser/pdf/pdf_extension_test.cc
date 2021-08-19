@@ -1453,7 +1453,13 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, TabTitleWithEmbeddedPdf) {
   EXPECT_EQ(u"TabTitleWithEmbeddedPdf", GetActiveWebContents()->GetTitle());
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionTest, PdfZoomWithoutBubble) {
+// Flaky, http://crbug.com/767427
+#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
+#define MAYBE_PdfZoomWithoutBubble DISABLED_PdfZoomWithoutBubble
+#else
+#define MAYBE_PdfZoomWithoutBubble PdfZoomWithoutBubble
+#endif
+IN_PROC_BROWSER_TEST_P(PDFExtensionTest, MAYBE_PdfZoomWithoutBubble) {
   WebContents* guest_contents =
       LoadPdfGetGuestContents(embedded_test_server()->GetURL("/pdf/test.pdf"));
   ASSERT_TRUE(guest_contents);
