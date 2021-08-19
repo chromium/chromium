@@ -42,7 +42,7 @@ class NoStatePrefetchHelper
 
  private:
   // RenderFrameObserver implementation.
-  void DidFinishDocumentLoad() override;
+  void DidDispatchDOMContentLoadedEvent() override;
   void OnDestruct() override;
 
   void AddThrottle(PrerenderURLLoaderThrottle& throttle);

@@ -1248,7 +1248,7 @@ void PasswordAutofillAgent::SendPasswordForms(bool only_visible) {
 #endif
 }
 
-void PasswordAutofillAgent::DidFinishDocumentLoad() {
+void PasswordAutofillAgent::DidDispatchDOMContentLoadedEvent() {
   SendPasswordForms(false);
 }
 

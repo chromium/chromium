@@ -113,7 +113,7 @@ std::string ContentPageAnnotatorDriver::GenerateSourceId(
   return std::string();
 }
 
-void ContentPageAnnotatorDriver::DidFinishDocumentLoad() {
+void ContentPageAnnotatorDriver::DidDispatchDOMContentLoadedEvent() {
   if (!render_frame()->IsMainFrame())
     return;
 

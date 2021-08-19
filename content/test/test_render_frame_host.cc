@@ -636,7 +636,7 @@ void TestRenderFrameHost::SimulateLoadingCompleted(
     if (frame_tree_node_->IsMainFrame())
       DocumentAvailableInMainFrame(/* uses_temporary_zoom_level */ false);
 
-    DidFinishDocumentLoad();
+    DidDispatchDOMContentLoadedEvent();
 
     if (frame_tree_node_->IsMainFrame())
       DocumentOnLoadCompleted();

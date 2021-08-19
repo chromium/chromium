@@ -546,7 +546,7 @@ class CONTENT_EXPORT RenderFrameImpl
   void DidCreateDocumentElement() override;
   void RunScriptsAtDocumentElementAvailable() override;
   void DidReceiveTitle(const blink::WebString& title) override;
-  void DidFinishDocumentLoad() override;
+  void DidDispatchDOMContentLoadedEvent() override;
   void RunScriptsAtDocumentReady() override;
   void RunScriptsAtDocumentIdle() override;
   void DidHandleOnloadEvents() override;
@@ -898,7 +898,7 @@ class CONTENT_EXPORT RenderFrameImpl
   // that means we have got specified title. Because in most of webpages,
   // title tags will follow meta tags. In here we try to get encoding of
   // page if it has been specified in meta tag.
-  // c) function:DidFinishDocumentLoadForFrame. When this function is
+  // c) function:DidDispatchDOMContentLoadedEvent. When this function is
   // called, that means we have got whole html page. In here we should
   // finally get right encoding of page.
   void UpdateEncoding(blink::WebFrame* frame, const std::string& encoding_name);

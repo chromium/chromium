@@ -86,7 +86,7 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
   void DocumentOnLoadCompleted() override;
   void ForwardResourceTimingToParent(
       mojom::blink::ResourceTimingInfoPtr timing) override;
-  void DidFinishDocumentLoad() override;
+  void DidDispatchDOMContentLoadedEvent() override;
   void RunModalAlertDialog(const WTF::String& alert_message,
                            bool disable_third_party_subframe_suppresion,
                            RunModalAlertDialogCallback callback) override;

@@ -1992,7 +1992,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void DocumentOnLoadCompleted() override;
   void ForwardResourceTimingToParent(
       blink::mojom::ResourceTimingInfoPtr timing) override;
-  void DidFinishDocumentLoad() override;
+  void DidDispatchDOMContentLoadedEvent() override;
   void RunModalAlertDialog(const std::u16string& alert_message,
                            bool disable_third_party_subframe_suppresion,
                            RunModalAlertDialogCallback callback) override;
@@ -3789,8 +3789,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
     // subframes.
     std::unique_ptr<PageImpl> owned_page;
 
-    // Indicates whether `blink::mojom::DidFinishDocumentLoad` was called for
-    // this document or not.
+    // Indicates whether `blink::mojom::DidDispatchDOMContentLoadedEvent` was
+    // called for this document or not.
     bool dom_content_loaded_ = false;
 
     // Prerender2:

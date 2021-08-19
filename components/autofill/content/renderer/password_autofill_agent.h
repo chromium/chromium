@@ -239,7 +239,7 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   virtual bool FrameCanAccessPasswordManager();
 
   // RenderFrameObserver:
-  void DidFinishDocumentLoad() override;
+  void DidDispatchDOMContentLoadedEvent() override;
   void DidFinishLoad() override;
   void ReadyToCommitNavigation(
       blink::WebDocumentLoader* document_loader) override;

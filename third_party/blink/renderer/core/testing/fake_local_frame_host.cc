@@ -124,7 +124,7 @@ void FakeLocalFrameHost::DocumentOnLoadCompleted() {}
 void FakeLocalFrameHost::ForwardResourceTimingToParent(
     mojom::blink::ResourceTimingInfoPtr timing) {}
 
-void FakeLocalFrameHost::DidFinishDocumentLoad() {}
+void FakeLocalFrameHost::DidDispatchDOMContentLoadedEvent() {}
 
 void FakeLocalFrameHost::RunModalAlertDialog(
     const WTF::String& alert_message,

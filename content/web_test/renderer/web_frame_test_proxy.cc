@@ -185,7 +185,7 @@ class TestRenderFrameObserver : public RenderFrameObserver {
     }
   }
 
-  void DidFinishDocumentLoad() override {
+  void DidDispatchDOMContentLoadedEvent() override {
     if (test_runner_->ShouldDumpFrameLoadCallbacks()) {
       std::string description = frame_proxy()->GetFrameDescriptionForWebTests();
       test_runner_->PrintMessage(description +

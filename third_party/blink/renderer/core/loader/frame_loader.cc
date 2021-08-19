@@ -344,11 +344,11 @@ void FrameLoader::FinishedParsing() {
 
   progress_tracker_->FinishedParsing();
 
-  frame_->GetLocalFrameHostRemote().DidFinishDocumentLoad();
+  frame_->GetLocalFrameHostRemote().DidDispatchDOMContentLoadedEvent();
 
   if (Client()) {
     ScriptForbiddenScope forbid_scripts;
-    Client()->DispatchDidFinishDocumentLoad();
+    Client()->DispatchDidDispatchDOMContentLoadedEvent();
   }
 
   if (Client()) {

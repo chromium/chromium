@@ -147,7 +147,7 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
       const blink::DocumentPolicyFeatureState& document_policy_header) = 0;
   virtual void DispatchDidFailLoad(const ResourceError&,
                                    WebHistoryCommitType) = 0;
-  virtual void DispatchDidFinishDocumentLoad() = 0;
+  virtual void DispatchDidDispatchDOMContentLoadedEvent() = 0;
   virtual void DispatchDidFinishLoad() = 0;
 
   virtual void BeginNavigation(

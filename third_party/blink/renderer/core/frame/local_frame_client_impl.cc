@@ -356,13 +356,14 @@ void LocalFrameClientImpl::DispatchWillSendRequest(ResourceRequest& request) {
   }
 }
 
-void LocalFrameClientImpl::DispatchDidFinishDocumentLoad() {
+void LocalFrameClientImpl::DispatchDidDispatchDOMContentLoadedEvent() {
   // TODO(dglazkov): Sadly, workers are WebLocalFrameClients, and they can
-  // totally destroy themselves when didFinishDocumentLoad is invoked, and in
-  // turn destroy the fake WebLocalFrame that they create, which means that you
-  // should not put any code touching `this` after the two lines below.
+  // totally destroy themselves when DidDispatchDOMContentLoadedEvent is
+  // invoked, and in turn destroy the fake WebLocalFrame that they create, which
+  // means that you should not put any code touching `this` after the two lines
+  // below.
   if (web_frame_->Client())
-    web_frame_->Client()->DidFinishDocumentLoad();
+    web_frame_->Client()->DidDispatchDOMContentLoadedEvent();
 }
 
 void LocalFrameClientImpl::DispatchDidLoadResourceFromMemoryCache(

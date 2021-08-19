@@ -79,7 +79,7 @@ class ScriptInjectionManager::RFOHelper : public content::RenderFrameObserver {
   void DidCreateNewDocument() override;
   void DidCreateDocumentElement() override;
   void DidFailProvisionalLoad() override;
-  void DidFinishDocumentLoad() override;
+  void DidDispatchDOMContentLoadedEvent() override;
   void WillDetach() override;
   void OnDestruct() override;
   void OnStop() override;
@@ -166,7 +166,7 @@ void ScriptInjectionManager::RFOHelper::DidFailProvisionalLoad() {
   }
 }
 
-void ScriptInjectionManager::RFOHelper::DidFinishDocumentLoad() {
+void ScriptInjectionManager::RFOHelper::DidDispatchDOMContentLoadedEvent() {
   DCHECK(content::RenderThread::Get());
   ExtensionFrameHelper::Get(render_frame())
       ->ScheduleAtDocumentEnd(base::BindOnce(
@@ -174,14 +174,14 @@ void ScriptInjectionManager::RFOHelper::DidFinishDocumentLoad() {
           weak_factory_.GetWeakPtr(), mojom::RunLocation::kDocumentEnd));
 
   // We try to run idle in two places: a delayed task here and in response to
-  // ContentRendererClient::RunScriptsAtDocumentIdle(). DidFinishDocumentLoad()
-  // corresponds to completing the document's load, whereas
-  // RunScriptsAtDocumentIdle() corresponds to completing the document and all
-  // subresources' load (but before the window.onload event). We don't want to
-  // hold up script injection for a particularly slow subresource, so we set a
-  // delayed task from here - but if we finish everything before that point
-  // (i.e., RunScriptsAtDocumentIdle() is triggered), then there's no reason to
-  // keep waiting.
+  // ContentRendererClient::RunScriptsAtDocumentIdle().
+  // DidDispatchDOMContentLoadedEvent() corresponds to completing the document's
+  // load, whereas RunScriptsAtDocumentIdle() corresponds to completing the
+  // document and all subresources' load (but before the window.onload event).
+  // We don't want to hold up script injection for a particularly slow
+  // subresource, so we set a delayed task from here - but if we finish
+  // everything before that point (i.e., RunScriptsAtDocumentIdle() is
+  // triggered), then there's no reason to keep waiting.
   render_frame()
       ->GetTaskRunner(blink::TaskType::kInternalDefault)
       ->PostDelayedTask(

@@ -5884,7 +5884,7 @@ bool RenderFrameHostImpl::InsidePortal() {
   return GetRenderViewHost()->GetDelegate()->IsPortal();
 }
 
-void RenderFrameHostImpl::DidFinishDocumentLoad() {
+void RenderFrameHostImpl::DidDispatchDOMContentLoadedEvent() {
   document_associated_data_->dom_content_loaded_ = true;
 
   // In case of prerendering, we dispatch DOMContentLoaded on activation. This

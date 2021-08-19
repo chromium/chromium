@@ -3997,11 +3997,12 @@ void RenderFrameImpl::DidReceiveTitle(const blink::WebString& title) {
   UpdateEncoding(frame_, frame_->View()->PageEncoding().Utf8());
 }
 
-void RenderFrameImpl::DidFinishDocumentLoad() {
+void RenderFrameImpl::DidDispatchDOMContentLoadedEvent() {
   TRACE_EVENT1("navigation,benchmark,rail",
-               "RenderFrameImpl::didFinishDocumentLoad", "id", routing_id_);
+               "RenderFrameImpl::DidDispatchDOMContentLoadedEvent", "id",
+               routing_id_);
   for (auto& observer : observers_)
-    observer.DidFinishDocumentLoad();
+    observer.DidDispatchDOMContentLoadedEvent();
 
   // Check whether we have new encoding name.
   UpdateEncoding(frame_, frame_->View()->PageEncoding().Utf8());

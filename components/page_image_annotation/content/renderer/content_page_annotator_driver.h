@@ -55,7 +55,7 @@ class ContentPageAnnotatorDriver
   ContentPageAnnotatorDriver(content::RenderFrame* render_frame);
 
   // content::RenderFrameObserver:
-  void DidFinishDocumentLoad() override;
+  void DidDispatchDOMContentLoadedEvent() override;
   void OnDestruct() override;
 
   // Traverse the DOM starting at the given node, and add all elements with

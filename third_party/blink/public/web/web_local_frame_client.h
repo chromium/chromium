@@ -405,13 +405,12 @@ class BLINK_EXPORT WebLocalFrameClient {
   // The page title is available.
   virtual void DidReceiveTitle(const WebString& title) {}
 
-  // The frame's document finished loading.
+  // The DOMContentLoaded event was dispatched for the frame's document.
   // This method may not execute JavaScript code.
-  // TODO(dgozman): rename this to DidFireDOMContentLoadedEvent.
-  virtual void DidFinishDocumentLoad() {}
+  virtual void DidDispatchDOMContentLoadedEvent() {}
 
-  // Like |didFinishDocumentLoad|, except this method may run JavaScript
-  // code (and possibly invalidate the frame).
+  // Like |DidDispatchDOMContentLoadedEvent|, except this method may run
+  // JavaScript code (and possibly invalidate the frame).
   virtual void RunScriptsAtDocumentReady() {}
 
   // The frame's window.onload event is ready to fire. This method may delay

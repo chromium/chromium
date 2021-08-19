@@ -264,7 +264,7 @@ void AutofillAgent::DidCommitProvisionalLoad(ui::PageTransition transition) {
   SendPotentiallySubmittedFormToBrowser();
 }
 
-void AutofillAgent::DidFinishDocumentLoad() {
+void AutofillAgent::DidDispatchDOMContentLoadedEvent() {
   ProcessForms();
 }
 

@@ -171,7 +171,7 @@ class AutofillAgent : public content::RenderFrameObserver,
 
   // content::RenderFrameObserver:
   void DidCommitProvisionalLoad(ui::PageTransition transition) override;
-  void DidFinishDocumentLoad() override;
+  void DidDispatchDOMContentLoadedEvent() override;
   void DidChangeScrollOffset() override;
   void FocusedElementChanged(const blink::WebElement& element) override;
   void AccessibilityModeChanged(const ui::AXMode& mode) override;

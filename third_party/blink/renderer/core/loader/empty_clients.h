@@ -271,7 +271,7 @@ class CORE_EXPORT EmptyLocalFrameClient : public LocalFrameClient {
       override {}
   void DispatchDidFailLoad(const ResourceError&,
                            WebHistoryCommitType) override {}
-  void DispatchDidFinishDocumentLoad() override {}
+  void DispatchDidDispatchDOMContentLoadedEvent() override {}
   void DispatchDidFinishLoad() override {}
 
   void BeginNavigation(

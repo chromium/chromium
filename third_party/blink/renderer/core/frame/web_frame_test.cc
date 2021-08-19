@@ -12811,9 +12811,9 @@ TEST_F(WebFrameTest, NoLoadingCompletionCallbacksInDetach) {
       TestWebFrameClient::DidStopLoading();
     }
 
-    void DidFinishDocumentLoad() override {
+    void DidDispatchDOMContentLoadedEvent() override {
       // TODO(dcheng): Investigate not calling this as well during frame detach.
-      did_call_did_finish_document_load_ = true;
+      did_call_did_dispatch_dom_content_loaded_event_ = true;
     }
 
     void DidHandleOnloadEvents() override {
@@ -12827,8 +12827,8 @@ TEST_F(WebFrameTest, NoLoadingCompletionCallbacksInDetach) {
 
     bool DidCallFrameDetached() const { return did_call_frame_detached_; }
     bool DidCallDidStopLoading() const { return did_call_did_stop_loading_; }
-    bool DidCallDidFinishDocumentLoad() const {
-      return did_call_did_finish_document_load_;
+    bool DidCallDidDispatchDOMContentLoadedEvent() const {
+      return did_call_did_dispatch_dom_content_loaded_event_;
     }
     bool DidCallDidHandleOnloadEvents() const {
       return did_call_did_handle_onload_events_;
@@ -12837,7 +12837,7 @@ TEST_F(WebFrameTest, NoLoadingCompletionCallbacksInDetach) {
    private:
     bool did_call_frame_detached_ = false;
     bool did_call_did_stop_loading_ = false;
-    bool did_call_did_finish_document_load_ = false;
+    bool did_call_did_dispatch_dom_content_loaded_event_ = false;
     bool did_call_did_handle_onload_events_ = false;
   };
 
@@ -12878,7 +12878,8 @@ TEST_F(WebFrameTest, NoLoadingCompletionCallbacksInDetach) {
 
   EXPECT_TRUE(main_frame_client.ChildClient().DidCallFrameDetached());
   EXPECT_TRUE(main_frame_client.ChildClient().DidCallDidStopLoading());
-  EXPECT_TRUE(main_frame_client.ChildClient().DidCallDidFinishDocumentLoad());
+  EXPECT_TRUE(main_frame_client.ChildClient()
+                  .DidCallDidDispatchDOMContentLoadedEvent());
   EXPECT_TRUE(main_frame_client.ChildClient().DidCallDidHandleOnloadEvents());
 
   web_view_helper.Reset();

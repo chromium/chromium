@@ -396,8 +396,9 @@ interface LocalFrameHost {
   // should be added to the performance entries of the parent frame.
   ForwardResourceTimingToParent(ResourceTimingInfo timing);
 
-  // Notifies the browser that a document has been loaded.
-  DidFinishDocumentLoad();
+  // Notifies the browser that the DOMContentLoaded event was dispatched
+  // for the document in this frame.
+  DidDispatchDOMContentLoadedEvent();
 
   // A request to run a JavaScript dialog displaying |alert_message|.
   [Sync]
