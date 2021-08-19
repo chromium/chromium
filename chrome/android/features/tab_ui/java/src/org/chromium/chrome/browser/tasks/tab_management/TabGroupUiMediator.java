@@ -156,6 +156,14 @@ public class TabGroupUiMediator implements SnackbarManager.SnackbarController {
                         .setAction(context.getString(R.string.undo), null)
                         .setDuration(UNDO_DISMISS_SNACKBAR_DURATION);
 
+        if (overviewModeBehaviorSupplier.get() != null
+                && overviewModeBehaviorSupplier.get().overviewVisible()) {
+            // It is possible that the overview mode is showing when the TabGroupUiMediator is
+            // created, sets the mIsShowingOverViewMode early to prevent the Tab strip is wrongly
+            // showing on the Start surface homepage. See https://crbug.com/1239272.
+            mIsShowingOverViewMode = true;
+        }
+
         // register for tab model
         mTabModelObserver = new TabModelObserver() {
             private int mAddedTabId = Tab.INVALID_TAB_ID;
