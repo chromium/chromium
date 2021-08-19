@@ -30,7 +30,8 @@ namespace security_interstitials {
 content::NavigationEntry* GetNavigationEntryForResource(
     const UnsafeResource& resource);
 
-// Builds a getter for WebContents* from the given render frame id.
+// Returns a reference to WebContents* after ensuring a specific RenderFrameHost
+// is still available.
 base::RepeatingCallback<content::WebContents*(void)> GetWebContentsGetter(
     int render_process_host_id,
     int render_frame_id);
