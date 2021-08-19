@@ -131,11 +131,9 @@ CommandForKeyEventResult ShortcutCommand(int cmd) {
   return {cmd, /*from_main_menu=*/false};
 }
 
-}  // namespace
-
-const std::vector<KeyboardShortcutData>& GetShortcutsNotPresentInMainMenu() {
+std::vector<KeyboardShortcutData> CreateKeyboardShortcutVector() {
   // clang-format off
-  static base::NoDestructor<std::vector<KeyboardShortcutData>> keys({
+  std::vector<KeyboardShortcutData> keys({
   // cmd    shift  cntrl  option vkeycode               command
   // ---    -----  -----  ------ --------               -------
     {true,  true,  false, false, kVK_ANSI_RightBracket, IDC_SELECT_NEXT_TAB},
@@ -171,19 +169,26 @@ const std::vector<KeyboardShortcutData>& GetShortcutsNotPresentInMainMenu() {
 
     {true,  false, false, true,  kVK_DownArrow,         IDC_FOCUS_NEXT_PANE},
     {true,  false, false, true,  kVK_UpArrow,           IDC_FOCUS_PREVIOUS_PANE},
+    {true,  true,  false, false, kVK_ANSI_A,            IDC_TAB_SEARCH},
   });
-
-  keys->push_back({true,  true,  false, false, kVK_ANSI_A, IDC_TAB_SEARCH});
+  // clang-format on
 
   if (base::FeatureList::IsEnabled(features::kUIDebugTools)) {
-    keys->push_back({false, true, true, true, kVK_ANSI_T,
-                     IDC_DEBUG_TOGGLE_TABLET_MODE});
-    keys->push_back({false, true, true, true, kVK_ANSI_V,
-                     IDC_DEBUG_PRINT_VIEW_TREE});
-    keys->push_back({false, true, true, true, kVK_ANSI_M,
-                     IDC_DEBUG_PRINT_VIEW_TREE_DETAILS});
+    keys.push_back(
+        {false, true, true, true, kVK_ANSI_T, IDC_DEBUG_TOGGLE_TABLET_MODE});
+    keys.push_back(
+        {false, true, true, true, kVK_ANSI_V, IDC_DEBUG_PRINT_VIEW_TREE});
+    keys.push_back({false, true, true, true, kVK_ANSI_M,
+                    IDC_DEBUG_PRINT_VIEW_TREE_DETAILS});
   }
-  // clang-format on
+  return keys;
+}
+
+}  // namespace
+
+const std::vector<KeyboardShortcutData>& GetShortcutsNotPresentInMainMenu() {
+  static const base::NoDestructor<std::vector<KeyboardShortcutData>> keys(
+      CreateKeyboardShortcutVector());
   return *keys;
 }
 
