@@ -721,6 +721,7 @@ public class LocationBarTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1237419")
     public void testOmniboxSearchEngineLogo_siteToSite() {
         setupSearchEngineLogo(GOOGLE_URL);
         startActivityNormally();
