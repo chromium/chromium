@@ -37,6 +37,7 @@
 <translation id="1621067168122174824">运行充电测试</translation>
 <translation id="1639239467298939599">正在加载</translation>
 <translation id="1641857168437328880">文件馈送器（单面）</translation>
+<translation id="1643449475550628585">每天更改一次壁纸图片</translation>
 <translation id="1644574205037202324">历史记录</translation>
 <translation id="1662989795263954667">已停止 - 墨水已用完</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -76,6 +77,7 @@
 <translation id="2448312741937722512">类型</translation>
 <translation id="2461822463642141190">电流</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
+<translation id="2505327257735685095">刷新当前壁纸图片</translation>
 <translation id="2517472476991765520">扫描</translation>
 <translation id="2570743873672969996">正在运行<ph name="TEST_NAME" />测试…</translation>
 <translation id="2585245331261708204">Chrome 操作系统的新变化</translation>
