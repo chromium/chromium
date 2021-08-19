@@ -92,6 +92,7 @@ class MODULES_EXPORT PaintRenderingContext2D : public ScriptWrappable,
   void resetTransform() final;
 
   sk_sp<PaintRecord> GetRecord();
+  cc::PaintCanvas* GetDrawingPaintCanvas();
 
  protected:
   CanvasColorParams GetCanvas2DColorParams() const override;
