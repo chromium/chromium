@@ -31,4 +31,7 @@ tast_disabled_tests_from_chrome_all = [
 
   # b/196705842
   "apps.LaunchGalleryLanguage",
+
+  # crbug.com/1241412
+  "arc.IMEBlockingVK",
 ]
