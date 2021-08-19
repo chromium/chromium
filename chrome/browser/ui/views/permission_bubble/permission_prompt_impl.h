@@ -14,10 +14,6 @@
 
 class Browser;
 
-namespace views {
-class BubbleDialogDelegateView;
-}
-
 namespace permissions {
 class PermissionRequestManager;
 }
@@ -43,11 +39,7 @@ class PermissionPromptImpl : public permissions::PermissionPrompt,
   permissions::PermissionPromptDisposition GetPromptDisposition()
       const override;
 
-  views::BubbleDialogDelegateView* prompt_bubble_for_testing() {
-    if (prompt_bubble_)
-      return prompt_bubble_;
-    return chip_ ? chip_->GetPermissionPromptBubbleForTest() : nullptr;
-  }
+  views::Widget* GetPromptBubbleWidgetForTesting();
 
   // views::WidgetObserver:
   void OnWidgetClosing(views::Widget* widget) override;
