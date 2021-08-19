@@ -296,7 +296,7 @@ void ExecuteJavaScriptFunction(const std::string& name,
   }
 }
 
-bool ExtractIDs(NSString* json_string, std::vector<uint32_t>* ids) {
+bool ExtractIDs(NSString* json_string, std::vector<FieldRendererId>* ids) {
   DCHECK(ids);
   std::unique_ptr<base::Value> ids_value = ParseJson(json_string);
   if (!ids_value)
@@ -312,7 +312,7 @@ bool ExtractIDs(NSString* json_string, std::vector<uint32_t>* ids) {
       return false;
     uint32_t id_num = 0;
     StringToUint(id_string, &id_num);
-    ids->push_back(id_num);
+    ids->push_back(FieldRendererId(id_num));
   }
   return true;
 }

@@ -69,6 +69,7 @@ using autofill::FormActivityParams;
 using autofill::FormData;
 using autofill::FormFieldData;
 using autofill::FormRendererId;
+using autofill::FormRemovalParams;
 using autofill::FieldRendererId;
 using password_manager::PasswordForm;
 using autofill::PasswordFormFillData;
@@ -329,6 +330,20 @@ class PasswordControllerTest : public ChromeWebTest {
     params.value = value;
     [passwordController_.sharedPasswordController webState:web_state()
                                    didRegisterFormActivity:params
+                                                   inFrame:frame];
+  }
+
+  void SimulateFormRemovalObserverSignal(
+      FormRendererId form_id,
+      std::vector<FieldRendererId> field_ids) {
+    std::string mainFrameID = web::GetMainWebFrameId(web_state());
+    WebFrame* frame = web::GetWebFrameWithId(web_state(), mainFrameID);
+    FormRemovalParams params;
+    params.unique_form_id = form_id;
+    params.removed_unowned_fields = field_ids;
+    params.frame_id = mainFrameID;
+    [passwordController_.sharedPasswordController webState:web_state()
+                                    didRegisterFormRemoval:params
                                                    inFrame:frame];
   }
 
@@ -972,6 +987,14 @@ static NSString* kAddFormDynamicallyScript =
      "dynamicForm.appendChild(inputPassword);"
      "dynamicForm.appendChild(submitButton);"
      "document.body.appendChild(dynamicForm);";
+
+static NSString* kHtmlFormlessPasswordFields =
+    @"<input id='un' type='text' name=\"u'\""
+     "  onkeyup='window.onKeyUpCalled_=true'"
+     "  onchange='window.onChangeCalled_=true'>"
+     "<input id='pw' type='password' name=\"pw'\""
+     "  onkeyup='window.onKeyUpCalled_=true'"
+     "  onchange='window.onChangeCalled_=true'>";
 
 struct SuggestionTestData {
   std::string description;
@@ -1944,38 +1967,51 @@ TEST_F(PasswordControllerTest, FindDynamicallyAddedForm2) {
 TEST_F(PasswordControllerTest, DetectSubmissionOnRemovedForm) {
   ON_CALL(*store_, GetLogins)
       .WillByDefault(WithArg<1>(InvokeEmptyConsumerWithForms()));
-  LoadHtml(kHtmlWithPasswordForm);
-  WaitForFormManagersCreation();
+  for (bool has_form_tag : {true, false}) {
+    SCOPED_TRACE(testing::Message("has_form_tag = ") << has_form_tag);
+    LoadHtml(has_form_tag ? kHtmlWithPasswordForm
+                          : kHtmlFormlessPasswordFields);
+    WaitForFormManagersCreation();
 
-  std::string mainFrameID = web::GetMainWebFrameId(web_state());
+    std::string mainFrameID = web::GetMainWebFrameId(web_state());
 
-  SimulateUserTyping("login_form", FormRendererId(1), "username",
-                     FieldRendererId(2), "user1", mainFrameID);
-  SimulateUserTyping("login_form", FormRendererId(1), "pw", FieldRendererId(3),
-                     "password1", mainFrameID);
+    std::string form_name = has_form_tag ? "login_form" : "";
+    FormRendererId form_id(has_form_tag ? 1 : 0);
+    FieldRendererId username_id(has_form_tag ? 2 : 4);
+    FieldRendererId password_id(has_form_tag ? 3 : 5);
 
-  std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
-  EXPECT_CALL(*weak_client_, PromptUserToSaveOrUpdatePasswordPtr)
-      .WillOnce(WithArg<0>(SaveToScopedPtr(&form_manager_to_save)));
+    SimulateUserTyping(form_name, form_id, "un", username_id, "user1",
+                       mainFrameID);
+    SimulateUserTyping(form_name, form_id, "pw", password_id, "password1",
+                       mainFrameID);
 
-  SimulateFormActivityObserverSignal("password_form_removed", FormRendererId(1),
-                                     FieldRendererId(), std::string());
+    std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
+    EXPECT_CALL(*weak_client_, PromptUserToSaveOrUpdatePasswordPtr)
+        .WillOnce(WithArg<0>(SaveToScopedPtr(&form_manager_to_save)));
 
-  auto& form_manager_check = form_manager_to_save;
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool() {
-    return form_manager_check != nullptr;
-  }));
-  EXPECT_EQ("https://chromium.test/",
-            form_manager_to_save->GetPendingCredentials().signon_realm);
-  EXPECT_EQ(u"user1",
-            form_manager_to_save->GetPendingCredentials().username_value);
-  EXPECT_EQ(u"password1",
-            form_manager_to_save->GetPendingCredentials().password_value);
+    std::vector<FieldRendererId> removed_ids;
+    if (!has_form_tag) {
+      removed_ids.push_back(FieldRendererId(4));
+      removed_ids.push_back(FieldRendererId(5));
+    }
+    SimulateFormRemovalObserverSignal(form_id, removed_ids);
 
-  auto* form_manager =
-      static_cast<PasswordFormManager*>(form_manager_to_save.get());
-  EXPECT_TRUE(form_manager->is_submitted());
-  EXPECT_FALSE(form_manager->IsPasswordUpdate());
+    auto& form_manager_check = form_manager_to_save;
+    ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool() {
+      return form_manager_check != nullptr;
+    }));
+    EXPECT_EQ("https://chromium.test/",
+              form_manager_to_save->GetPendingCredentials().signon_realm);
+    EXPECT_EQ(u"user1",
+              form_manager_to_save->GetPendingCredentials().username_value);
+    EXPECT_EQ(u"password1",
+              form_manager_to_save->GetPendingCredentials().password_value);
+
+    auto* form_manager =
+        static_cast<PasswordFormManager*>(form_manager_to_save.get());
+    EXPECT_TRUE(form_manager->is_submitted());
+    EXPECT_FALSE(form_manager->IsPasswordUpdate());
+  }
 }
 
 // Tests that submission is not detected on form removal if saving is

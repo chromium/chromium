@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
+#import "components/autofill/ios/form_util/autofill_test_with_web_state.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 #include "components/password_manager/ios/account_select_fill_data.h"
@@ -46,10 +47,10 @@ using test_helpers::SetFillData;
 using test_helpers::SetFormData;
 
 namespace {
-class PasswordFormHelperTest : public web::WebTestWithWebState {
+class PasswordFormHelperTest : public AutofillTestWithWebState {
  public:
   PasswordFormHelperTest()
-      : web::WebTestWithWebState(std::make_unique<web::FakeWebClient>()) {
+      : AutofillTestWithWebState(std::make_unique<web::FakeWebClient>()) {
     web::FakeWebClient* web_client =
         static_cast<web::FakeWebClient*>(GetWebClient());
     web_client->SetJavaScriptFeatures(
@@ -83,16 +84,8 @@ class PasswordFormHelperTest : public web::WebTestWithWebState {
       return false;
     }
     DCHECK(main_frame);
+    SetUpForUniqueIds(main_frame);
 
-    constexpr uint32_t next_available_id = 1;
-    autofill::FormUtilJavaScriptFeature::GetInstance()
-        ->SetUpForUniqueIDsWithInitialState(main_frame, next_available_id);
-
-    // Wait for |SetUpForUniqueIDsWithInitialState| to complete.
-    success = WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
-      return [ExecuteJavaScript(@"document[__gCrWeb.fill.ID_SYMBOL]")
-                 intValue] == int{next_available_id};
-    });
     if (!success) {
       return false;
     }

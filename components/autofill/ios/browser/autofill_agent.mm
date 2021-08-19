@@ -394,11 +394,10 @@ void GetFormField(autofill::FormFieldData* field,
 }
 
 - (void)updateFieldManagerForClearedIDs:(NSString*)jsonString {
-  std::vector<uint32_t> clearingResults;
+  std::vector<FieldRendererId> clearingResults;
   if (autofill::ExtractIDs(jsonString, &clearingResults)) {
     for (auto uniqueID : clearingResults) {
-      _fieldDataManager->UpdateFieldDataMap(FieldRendererId(uniqueID),
-                                            std::u16string(),
+      _fieldDataManager->UpdateFieldDataMap(uniqueID, std::u16string(),
                                             kAutofilledOnUserTrigger);
     }
   }

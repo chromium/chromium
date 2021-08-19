@@ -17,6 +17,7 @@ class WebState;
 namespace autofill {
 
 struct FormActivityParams;
+struct FormRemovalParams;
 
 // Interface for observing form activity.
 // It is the responsibility of the observer to unregister if the web_state
@@ -59,6 +60,16 @@ class FormActivityObserver {
                                  const std::string& form_data,
                                  bool has_user_gesture,
                                  bool form_in_main_frame) {}
+
+  // Called when the form is removed in the main frame or in the same-origin
+  // iframe. |params.input_missing| is indicating if there is any
+  // error when parsing the form field information.
+  // |sender_frame| is the WebFrame that sent the form activity message.
+  // |sender_frame| can be null if frame messaging is not enabled (see
+  // web::WebState::ScriptCommandCallback comment for details).
+  virtual void FormRemoved(web::WebState* web_state,
+                           web::WebFrame* sender_frame,
+                           const FormRemovalParams& params) {}
 
  private:
   DISALLOW_COPY_AND_ASSIGN(FormActivityObserver);

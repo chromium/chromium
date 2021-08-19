@@ -21,6 +21,7 @@ source_set("form_util") {
   deps = [
     "//base",
     "//components/autofill/core/common",
+    "//components/autofill/ios/browser:util",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
   ]
@@ -75,15 +76,22 @@ source_set("test_support") {
   testonly = true
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "autofill_test_with_web_state.h",
+    "autofill_test_with_web_state.mm",
     "test_form_activity_observer.h",
     "test_form_activity_observer.mm",
     "test_form_activity_tab_helper.h",
     "test_form_activity_tab_helper.mm",
   ]
   deps = [
+    ":form_handler_feature",
     ":form_util",
+    ":form_util_feature",
     "//base",
+    "//base/test:test_support",
     "//ios/web/public",
+    "//ios/web/public/js_messaging",
+    "//ios/web/public/test",
     "//testing/gtest",
   ]
 }

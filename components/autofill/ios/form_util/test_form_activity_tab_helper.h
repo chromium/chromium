@@ -17,6 +17,7 @@ class WebState;
 namespace autofill {
 
 struct FormActivityParams;
+struct FormRemovalParams;
 
 class TestFormActivityTabHelper {
  public:
@@ -25,6 +26,8 @@ class TestFormActivityTabHelper {
 
   void FormActivityRegistered(web::WebFrame* sender_frame,
                               const FormActivityParams& params);
+  void FormRemovalRegistered(web::WebFrame* sender_frame,
+                             const FormRemovalParams& params);
   void DocumentSubmitted(web::WebFrame* sender_frame,
                          const std::string& form_name,
                          const std::string& form_data,

@@ -25,6 +25,11 @@
                    formInMainFrame:(BOOL)formInMainFrame
                            inFrame:(web::WebFrame*)frame;
 
+// Invoked by FormActivityObserverBridge::FormRemoved.
+- (void)webState:(web::WebState*)webState
+    didRegisterFormRemoval:(const autofill::FormRemovalParams&)params
+                   inFrame:(web::WebFrame*)frame;
+
 @end
 
 namespace autofill {
@@ -54,6 +59,10 @@ class FormActivityObserverBridge : public FormActivityObserver {
                          const std::string& form_data,
                          bool has_user_gesture,
                          bool form_in_main_frame) override;
+
+  void FormRemoved(web::WebState* web_state,
+                   web::WebFrame* sender_frame,
+                   const FormRemovalParams& params) override;
 
  private:
   web::WebState* web_state_ = nullptr;
