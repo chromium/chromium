@@ -1680,7 +1680,9 @@ class TestWebAuthenticationDelegate : public WebAuthenticationDelegate {
   bool ShouldPermitIndividualAttestation(
       content::BrowserContext* browser_context,
       const std::string& relying_party_id) override {
-    return permit_individual_attestation;
+    return permit_individual_attestation ||
+           (permit_individual_attestation_for_rp_id.has_value() &&
+            relying_party_id == *permit_individual_attestation_for_rp_id);
   }
 
   bool SupportsResidentKeys(RenderFrameHost*) override {
@@ -1707,6 +1709,9 @@ class TestWebAuthenticationDelegate : public WebAuthenticationDelegate {
   // Indicates whether individual attestation should be permitted by the
   // delegate.
   bool permit_individual_attestation = false;
+
+  // A specific RP ID for which individual attestation will be permitted.
+  absl::optional<std::string> permit_individual_attestation_for_rp_id;
 
   // Indicates whether resident key operations should be permitted by the
   // delegate.
@@ -2027,7 +2032,6 @@ class AuthenticatorContentBrowserClientTest : public AuthenticatorImplTest {
  protected:
   TestAuthenticatorContentBrowserClient test_client_;
 
- private:
   static const char* AttestationConveyancePreferenceToString(
       AttestationConveyancePreference v) {
     switch (v) {
@@ -2505,6 +2509,46 @@ TEST_F(AuthenticatorContentBrowserClientTest,
   };
 
   RunTestCases(kTests);
+}
+
+TEST_F(AuthenticatorContentBrowserClientTest,
+       GoogleLegacyAppidSupportEnterpriseAttestation) {
+  // When the googleLegacyAppidSupport extension is used, individual attestation
+  // decisions should key off the AppId, not the RP ID.
+  constexpr char kGstaticAppId[] =
+      "https://www.gstatic.com/securitykey/origins.json";
+  test_client_.GetTestWebAuthenticationDelegate()
+      ->permit_individual_attestation_for_rp_id = kGstaticAppId;
+
+  const char kStandardCommonName[] = "U2F Attestation";
+  const char kIndividualCommonName[] = "Individual Cert";
+  virtual_device_factory_->mutable_state()->attestation_cert_common_name =
+      kStandardCommonName;
+  virtual_device_factory_->mutable_state()
+      ->individual_attestation_cert_common_name = kIndividualCommonName;
+
+  NavigateAndCommit(GURL("https://accounts.google.com"));
+
+  PublicKeyCredentialCreationOptionsPtr options =
+      GetTestPublicKeyCredentialCreationOptions();
+  options->relying_party.id = "google.com";
+  options->google_legacy_app_id_support = true;
+  options->attestation = ::device::AttestationConveyancePreference::
+      kEnterpriseIfRPListedOnAuthenticator;
+
+  auto result = AuthenticatorMakeCredential(std::move(options));
+  ASSERT_EQ(result.status, AuthenticatorStatus::SUCCESS);
+
+  const device::AuthenticatorData auth_data =
+      AuthDataFromMakeCredentialResponse(result.response);
+  absl::optional<Value> attestation_value =
+      Reader::Read(result.response->attestation_object);
+  ASSERT_TRUE(attestation_value);
+  ASSERT_TRUE(attestation_value->is_map());
+  const auto& attestation = attestation_value->GetMap();
+
+  ExpectMapHasKeyWithStringValue(attestation, "fmt", "fido-u2f");
+  ExpectCertificateContainingSubstring(attestation, kIndividualCommonName);
 }
 
 TEST_F(AuthenticatorContentBrowserClientTest, BlockedAttestation) {
