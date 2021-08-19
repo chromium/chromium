@@ -11,7 +11,6 @@
 #include "ash/webui/diagnostics_ui/mojom/system_routine_controller.mojom.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -32,7 +31,7 @@ class RoutineLogTest : public testing::Test {
     log_path_ = temp_dir_.GetPath().AppendASCII(kLogFileName);
   }
 
-  ~RoutineLogTest() override { base::RunLoop().RunUntilIdle(); }
+  ~RoutineLogTest() override = default;
 
  protected:
   base::test::TaskEnvironment task_environment_{
@@ -45,9 +44,6 @@ class RoutineLogTest : public testing::Test {
 TEST_F(RoutineLogTest, Empty) {
   RoutineLog log(log_path_);
 
-  // Ensure pending tasks complete.
-  task_environment_.RunUntilIdle();
-
   EXPECT_FALSE(base::PathExists(log_path_));
   EXPECT_TRUE(log.GetContents().empty());
 }
@@ -56,9 +52,6 @@ TEST_F(RoutineLogTest, Basic) {
   RoutineLog log(log_path_);
 
   log.LogRoutineStarted(mojom::RoutineType::kCpuStress);
-
-  // Ensure pending tasks complete.
-  task_environment_.RunUntilIdle();
 
   EXPECT_TRUE(base::PathExists(log_path_));
 
@@ -78,10 +71,6 @@ TEST_F(RoutineLogTest, TwoLine) {
   log.LogRoutineStarted(mojom::RoutineType::kMemory);
   log.LogRoutineCompleted(mojom::RoutineType::kMemory,
                           mojom::StandardRoutineResult::kTestPassed);
-
-  // Ensure pending tasks complete.
-  task_environment_.RunUntilIdle();
-
   EXPECT_TRUE(base::PathExists(log_path_));
 
   const std::string contents = log.GetContents();
@@ -108,10 +97,6 @@ TEST_F(RoutineLogTest, Cancelled) {
 
   log.LogRoutineStarted(mojom::RoutineType::kMemory);
   log.LogRoutineCancelled();
-
-  // Ensure pending tasks complete.
-  task_environment_.RunUntilIdle();
-
   EXPECT_TRUE(base::PathExists(log_path_));
 
   const std::string contents = log.GetContents();
