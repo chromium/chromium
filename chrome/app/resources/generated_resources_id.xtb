@@ -2755,7 +2755,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="3892414795099177503">Tambahkan OpenVPN / L2TP...</translation>
 <translation id="3893295674388762059">Untuk menghapus data, tutup semua jendela Samaran</translation>
 <translation id="3893536212201235195">Baca dan ubah setelan aksesibilitas Anda</translation>
-<translation id="3893630138897523026">ChromeVox (masukan lisan)</translation>
+<translation id="3893630138897523026">ChromeVox (respons lisan)</translation>
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
 <translation id="3894123633473837029">Sertakan histori Asisten terbaru melalui Sherlog. Informasi ini mencakup identitas, lokasi, dan info debug Anda <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="3894427358181296146">Tambah folder</translation>
@@ -2785,7 +2785,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="3919145445993746351">Untuk dapat mengakses ekstensi Anda di semua komputer, aktifkan sinkronisasi</translation>
 <translation id="3919798653937160644">Halaman yang Anda lihat di jendela ini tidak akan muncul di histori browser dan tidak akan meninggalkan jejak lain, seperti cookie, di komputer setelah Anda menutup semua jendela Tamu yang terbuka. Namun, file apa pun yang Anda download akan tersimpan.</translation>
 <translation id="3920504717067627103">Kebijakan Sertifikat</translation>
-<translation id="392089482157167418">Aktifkan ChromeVox (masukan lisan)</translation>
+<translation id="392089482157167418">Aktifkan ChromeVox (respons lisan)</translation>
 <translation id="3920909973552939961">Tidak diizinkan menginstal pengelola pembayaran</translation>
 <translation id="3923184630988645767">Penggunaan data</translation>
 <translation id="3923676227229836009">Halaman ini diizinkan untuk melihat file</translation>
@@ -7704,7 +7704,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini</translation>
 <translation id="991413375315957741">sensor gerakan atau cahaya</translation>
 <translation id="992032470292211616">Ekstensi, aplikasi, dan tema dapat membahayakan perangkat Anda. Yakin ingin melanjutkan?</translation>
 <translation id="992256792861109788">Pink</translation>
-<translation id="992592832486024913">Nonaktifkan ChromeVox (masukan lisan)</translation>
+<translation id="992592832486024913">Nonaktifkan ChromeVox (respons lisan)</translation>
 <translation id="992778845837390402">Backup Linux saat ini sedang berlangsung</translation>
 <translation id="993540765962421562">Penginstalan sedang berlangsung</translation>
 <translation id="994289308992179865">&amp;Putaran</translation>

@@ -368,7 +368,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="385051799172605136">Kembali</translation>
 <translation id="385300504083504382">Awal</translation>
 <translation id="3891340733213178823">Tekan Ctrl+Shift+Q dua kali untuk keluar.</translation>
-<translation id="3893630138897523026">ChromeVox (masukan lisan)</translation>
+<translation id="3893630138897523026">ChromeVox (respons lisan)</translation>
 <translation id="3897533311200664389">Mulai kueri teks</translation>
 <translation id="3899995891769452915">Masukan suara</translation>
 <translation id="3900355044994618856">Sesi akan berakhir dalam <ph name="SESSION_TIME_REMAINING" /></translation>
@@ -587,7 +587,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="5577281275355252094">Periksa apakah Bluetooth diaktifkan di ponsel untuk menggunakan Phone Hub</translation>
 <translation id="558849140439112033">Tarik untuk memilih area yang akan diambil gambarnya</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
-<translation id="5600837773213129531">Tekan Ctrl + Alt + Z untuk menonaktifkan masukan lisan.</translation>
+<translation id="5600837773213129531">Tekan Ctrl + Alt + Z untuk menonaktifkan respons lisan.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5619862035903135339">Kebijakan administrator akan menonaktifkan tangkapan layar</translation>
 <translation id="5625955975703555628">LTE+</translation>
@@ -848,7 +848,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (pemilik)</translation>
 <translation id="7647488630410863958">Buka kunci perangkat untuk melihat notifikasi</translation>
 <translation id="7649070708921625228">Bantuan</translation>
-<translation id="7654687942625752712">Tekan dan tahan kedua tombol volume selama 5 detik untuk menonaktifkan masukan lisan.</translation>
+<translation id="7654687942625752712">Tekan dan tahan kedua tombol volume selama 5 detik untuk menonaktifkan respons lisan.</translation>
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7662283695561029522">Ketuk untuk mengonfigurasi</translation>
 <translation id="7705524343798198388">VPN</translation>
