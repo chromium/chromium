@@ -27,7 +27,6 @@ import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
@@ -459,13 +458,14 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
 
     private int getSoftCleanupDelay() {
         if (mSoftCleanupDelayMsForTesting != null) return mSoftCleanupDelayMsForTesting;
-        if (!LibraryLoader.getInstance().isInitialized()) {
-            return 0;
-        }
 
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID, SOFT_CLEANUP_DELAY_PARAM,
-                DEFAULT_SOFT_CLEANUP_DELAY_MS);
+        String delay = ChromeFeatureList.getFieldTrialParamByFeature(
+                ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID, SOFT_CLEANUP_DELAY_PARAM);
+        try {
+            return Integer.valueOf(delay);
+        } catch (NumberFormatException e) {
+            return DEFAULT_SOFT_CLEANUP_DELAY_MS;
+        }
     }
 
     @VisibleForTesting
@@ -475,13 +475,14 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
 
     private int getCleanupDelay() {
         if (mCleanupDelayMsForTesting != null) return mCleanupDelayMsForTesting;
-        if (!LibraryLoader.getInstance().isInitialized()) {
-            return 0;
-        }
 
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID, CLEANUP_DELAY_PARAM,
-                DEFAULT_CLEANUP_DELAY_MS);
+        String delay = ChromeFeatureList.getFieldTrialParamByFeature(
+                ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID, CLEANUP_DELAY_PARAM);
+        try {
+            return Integer.valueOf(delay);
+        } catch (NumberFormatException e) {
+            return DEFAULT_CLEANUP_DELAY_MS;
+        }
     }
 
     private void setVisibility(boolean isVisible) {
