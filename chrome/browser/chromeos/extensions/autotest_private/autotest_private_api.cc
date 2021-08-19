@@ -135,6 +135,7 @@
 #include "components/policy/core/common/policy_service.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "content/public/browser/browser_thread.h"
@@ -1233,6 +1234,12 @@ ExtensionFunction::ResponseAction AutotestPrivateLoginStatusFunction::Run() {
           break;
       }
       result->SetString("userImage", user_image);
+
+      if (user->HasGaiaAccount()) {
+        result->SetBoolean("hasValidOauth2Token",
+                           user->oauth_token_status() ==
+                               user_manager::User::OAUTH2_TOKEN_STATUS_VALID);
+      }
     }
   }
   return RespondNow(

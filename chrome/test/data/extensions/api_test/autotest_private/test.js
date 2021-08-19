@@ -83,6 +83,7 @@ var defaultTests = [
           chrome.test.assertTrue(status.hasOwnProperty("email"));
           chrome.test.assertTrue(status.hasOwnProperty("displayEmail"));
           chrome.test.assertTrue(status.hasOwnProperty("userImage"));
+          chrome.test.assertTrue(status.hasOwnProperty("hasValidOauth2Token"));
         }));
   },
   function getExtensionsInfo() {

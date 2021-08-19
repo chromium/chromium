@@ -152,6 +152,8 @@ namespace autotestPrivate {
     DOMString? displayEmail;
     // User image: 'file', 'profile' or a number. Set only if `isLoggedIn`.
     DOMString? userImage;
+    // Whether the user has a valid oauth2 token. Only set for gaia user.
+    boolean? hasValidOauth2Token;
   };
   callback LoginStatusCallback = void (LoginStatusDict status);
 
