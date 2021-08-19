@@ -74,7 +74,7 @@ class OpenXrRenderLoop : public XRCompositorCommon,
   // viz::ContextLostObserver Implementation
   void OnContextLost() override;
 
-  void SendInitialDisplayInfo();
+  void InitializeDisplayInfo();
   bool UpdateViews();
   bool UpdateView(const XrView& view_head,
                   int width,
@@ -137,6 +137,7 @@ class OpenXrRenderLoop : public XRCompositorCommon,
 
   base::RepeatingCallback<void(mojom::VRDisplayInfoPtr)>
       on_display_info_changed_;
+  mojom::VRDisplayInfoPtr current_display_info_;
 
   mojo::AssociatedReceiver<mojom::XREnvironmentIntegrationProvider>
       environment_receiver_{this};

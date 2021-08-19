@@ -504,18 +504,22 @@ const String& XRSession::depthDataFormat(ExceptionState& exception_state) {
 
 void XRSession::UpdateViews(
     const Vector<device::mojom::blink::XRViewPtr>& views) {
-  if (views.IsEmpty()) {
-    // If there are no views provided for this frame, keep the views we
-    // currently have from the previous frame.
-    return;
-  }
+  bool updated = false;
 
   if (pending_views_.size() != views.size()) {
     pending_views_.resize(views.size());
+    updated = true;
   }
 
   for (wtf_size_t i = 0; i < views.size(); i++) {
+    if (!pending_views_[i] || !pending_views_[i]->Equals(*views[i])) {
       pending_views_[i] = views[i].Clone();
+      updated = true;
+    }
+  }
+
+  if (updated) {
+    update_views_next_frame_ = true;
   }
 }
 
@@ -1515,6 +1519,7 @@ void XRSession::ApplyPendingRenderState() {
   if (pending_render_state_.size() > 0) {
     prev_base_layer_ = render_state_->baseLayer();
     HTMLCanvasElement* prev_ouput_canvas = render_state_->output_canvas();
+    update_views_next_frame_ = true;
 
     // Loop through each pending render state and apply it to the active one.
     for (auto& init : pending_render_state_) {
@@ -1573,28 +1578,22 @@ void XRSession::UpdatePresentationFrameState(
   if (ended_)
     return;
 
-  if (frame_data) {
-    // Views need to be updated first, since views() creates a new set of views.
-    UpdateViews(frame_data->views);
-
-    // Apply dynamic viewport scaling if available.
-    if (supports_viewport_scaling_) {
-      float gpu_load = frame_data->rendering_time_ratio;
-      absl::optional<double> scale = absl::nullopt;
-      if (gpu_load > 0.0f) {
-        if (!viewport_scaler_) {
-          // Lazily create an instance of the viewport scaler on first use.
-          viewport_scaler_ = std::make_unique<XRSessionViewportScaler>();
-        }
-
-        viewport_scaler_->UpdateRenderingTimeRatio(gpu_load);
-        scale = viewport_scaler_->Scale();
-        DVLOG(3) << __func__ << ": gpu_load=" << gpu_load
-                 << " scale=" << *scale;
+  // Apply dynamic viewport scaling if available.
+  if (frame_data && supports_viewport_scaling_) {
+    float gpu_load = frame_data->rendering_time_ratio;
+    absl::optional<double> scale = absl::nullopt;
+    if (gpu_load > 0.0f) {
+      if (!viewport_scaler_) {
+        // Lazily create an instance of the viewport scaler on first use.
+        viewport_scaler_ = std::make_unique<XRSessionViewportScaler>();
       }
-      for (XRViewData* view : views()) {
-        view->SetRecommendedViewportScale(scale);
-      }
+
+      viewport_scaler_->UpdateRenderingTimeRatio(gpu_load);
+      scale = viewport_scaler_->Scale();
+      DVLOG(3) << __func__ << ": gpu_load=" << gpu_load << " scale=" << *scale;
+    }
+    for (XRViewData* view : views()) {
+      view->SetRecommendedViewportScale(scale);
     }
   }
 
@@ -1832,7 +1831,11 @@ void XRSession::OnFrame(
 
     XRFrame* presentation_frame = CreatePresentationFrame(true);
 
-    views_updated_this_frame_ = false;
+    // Make sure that any frame-bounded changed to the views array take effect.
+    if (update_views_next_frame_) {
+      views_dirty_ = true;
+      update_views_next_frame_ = false;
+    }
 
     // If the device has opted in, mark the viewports as modifiable
     // at the start of an animation frame:
@@ -1934,6 +1937,7 @@ void XRSession::UpdateCanvasDimensions(Element* element) {
     devicePixelRatio = window->GetFrame()->DevicePixelRatio();
   }
 
+  update_views_next_frame_ = true;
   output_width_ = element->OffsetWidth() * devicePixelRatio;
   output_height_ = element->OffsetHeight() * devicePixelRatio;
 
@@ -2208,38 +2212,19 @@ const HeapVector<Member<XRViewData>>& XRSession::views() {
   // always hold true, however, so the view configuration should ultimately come
   // from the backing service. See also XRWebGLLayer::UpdateViewports() which
   // assumes that the views are arranged as follows.
-  if (!views_updated_this_frame_) {
+  if (views_dirty_) {
     if (immersive()) {
       // In immersive mode the projection and view matrices must be aligned with
       // the device's physical optics.
-
-      // Views shouldn't be re-created on each frame because they contain
-      // viewport scaling information, such as requested viewport scales.
-      // However, if the number of views changed or if the order of the views
-      // changed, we should recreate the views since we aren't able to match
-      // the old views to the new views.
-      bool create_views = false;
       if (views_.size() != pending_views_.size()) {
         views_.clear();
         views_.resize(pending_views_.size());
-        create_views = true;
       }
 
-      for (wtf_size_t i = 0; !create_views && i < pending_views_.size(); ++i) {
-        if (views_[i]->Eye() == pending_views_[i]->eye) {
-          views_[i]->UpdateView(pending_views_[i], render_state_->depthNear(),
-                                render_state_->depthFar());
-        } else {
-          create_views = true;
-        }
-      }
-
-      if (create_views) {
-        for (wtf_size_t i = 0; i < pending_views_.size(); ++i) {
-          views_[i] = MakeGarbageCollected<XRViewData>(
-              pending_views_[i], render_state_->depthNear(),
-              render_state_->depthFar());
-        }
+      for (wtf_size_t i = 0; i < pending_views_.size(); ++i) {
+        views_[i] = MakeGarbageCollected<XRViewData>(pending_views_[i],
+                                                     render_state_->depthNear(),
+                                                     render_state_->depthFar());
       }
     } else {
       if (views_.IsEmpty()) {
@@ -2266,7 +2251,7 @@ const HeapVector<Member<XRViewData>>& XRSession::views() {
           render_state_->depthFar());
     }
 
-    views_updated_this_frame_ = true;
+    views_dirty_ = false;
   }
 
   return views_;

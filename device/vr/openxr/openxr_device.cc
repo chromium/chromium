@@ -14,6 +14,7 @@
 #include "device/vr/openxr/openxr_api_wrapper.h"
 #include "device/vr/openxr/openxr_render_loop.h"
 #include "device/vr/openxr/openxr_statics.h"
+#include "device/vr/util/transform_utils.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace device {
@@ -40,6 +41,9 @@ mojom::VRDisplayInfoPtr CreateFakeVRDisplayInfo() {
 
   left_eye->field_of_view = mojom::VRFieldOfView::New(kFov, kFov, kFov, kFov);
   right_eye->field_of_view = left_eye->field_of_view.Clone();
+
+  left_eye->head_from_eye = vr_utils::DefaultHeadFromLeftEyeTransform();
+  right_eye->head_from_eye = vr_utils::DefaultHeadFromRightEyeTransform();
 
   left_eye->viewport = gfx::Size(kRenderWidth, kRenderHeight);
   right_eye->viewport = gfx::Size(kRenderWidth, kRenderHeight);

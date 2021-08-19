@@ -25,10 +25,6 @@ device::mojom::XRRenderInfoPtr GetRenderInfo(
   result->frame_id = frame_data.frame_id;
   result->pose = frame_data.pose.Clone();
 
-  for (size_t i = 0; i < frame_data.views.size(); i++) {
-    result->views.push_back(frame_data.views[i]->Clone());
-  }
-
   return result;
 }
 

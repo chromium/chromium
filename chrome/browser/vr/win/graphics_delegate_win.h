@@ -50,7 +50,6 @@ class GraphicsDelegateWin : public GraphicsDelegate {
   void ResetMemoryBuffer();
   bool BindContext();
   void ClearContext();
-  void UpdateViews(std::vector<device::mojom::XRViewPtr> views);
 
  private:
   // GraphicsDelegate:

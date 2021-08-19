@@ -31,13 +31,11 @@
 #include "device/vr/public/cpp/xr_frame_sink_client.h"
 #include "device/vr/public/mojom/pose.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
-#include "device/vr/util/transform_utils.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl_android_hardware_buffer.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/angle_conversions.h"
 #include "ui/gfx/gpu_fence.h"
-#include "ui/gfx/transform_util.h"
 #include "ui/gl/android/scoped_java_surface.h"
 #include "ui/gl/android/surface_texture.h"
 #include "ui/gl/gl_bindings.h"
@@ -410,7 +408,7 @@ void ArCoreGl::CreateSession(mojom::VRDisplayInfoPtr display_info,
       presentation_receiver_.BindNewPipeAndPassRemote();
   submit_frame_sink->transport_options = std::move(transport_options);
 
-  DCHECK_EQ(display_info->views.size(), 1u);
+  DCHECK_EQ(display_info->views.size(), static_cast<size_t>(1));
   display_info_ = std::move(display_info);
 
   ArCoreGlCreateSessionResult result(
@@ -584,7 +582,7 @@ void ArCoreGl::RecalculateUvsAndProjection() {
            << " left=" << field_of_view->left_degrees
            << " right=" << field_of_view->right_degrees;
 
-  DCHECK_EQ(display_info_->views.size(), 1u);
+  DCHECK_EQ(display_info_->views.size(), static_cast<size_t>(1));
   display_info_->views[0]->field_of_view = std::move(field_of_view);
   display_info_changed_ = true;
 }
@@ -751,21 +749,6 @@ void ArCoreGl::GetFrameData(
   // Create the frame data to return to the renderer.
   if (!pose) {
     DVLOG(1) << __func__ << ": pose unavailable!";
-  }
-
-  if (pose) {
-    // The pose returned by ArCoreImpl::Update populates both the orientation
-    // and position if there is a pose.
-    DCHECK(pose->orientation);
-    DCHECK(pose->position);
-
-    // The view properties besides the transform are calculated by
-    // ArCoreGl::RecalculateUvsAndProjection() as needed.
-    DCHECK_EQ(display_info_->views.size(), 1u);
-    mojom::XRViewPtr view = display_info_->views[0]->Clone();
-    view->mojo_from_view = vr_utils::VrPoseToTransform(pose.get());
-
-    frame_data->views.push_back(std::move(view));
   }
 
   frame_data->pose = std::move(pose);

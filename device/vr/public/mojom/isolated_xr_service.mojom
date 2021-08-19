@@ -115,14 +115,6 @@ struct XRRenderInfo
 
   // The pose may be null if the device lost tracking.
   VRPose? pose;
-
-  // Information about all the views in a frame. Views can appear in any order
-  // so it should not be assumed the left eye comes before the right eye. It is
-  // valid for the array to contain multiple views of the same eye. An example
-  // of this scenario are displays that have dominant left/right eyes and inset
-  // left/right eyes. In these scenarios, the dominant views comes before the
-  // inset views in the array.
-  array<XRView> views;
 };
 
 // Represents an overlay that the browser may show on top of or instead of WebXR

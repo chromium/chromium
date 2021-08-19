@@ -12,18 +12,17 @@
 namespace blink {
 
 XRViewerPose::XRViewerPose(XRFrame* frame,
-                           const TransformationMatrix& ref_space_from_mojo,
-                           const TransformationMatrix& ref_space_from_viewer,
+                           const TransformationMatrix& pose_model_matrix,
                            bool emulated_position)
-    : XRPose(ref_space_from_viewer, emulated_position) {
+    : XRPose(pose_model_matrix, emulated_position) {
   DVLOG(3) << __func__ << ": emulatedPosition()=" << emulatedPosition();
 
   const HeapVector<Member<XRViewData>>& view_data = frame->session()->views();
 
   // Snapshot the session's current views.
   for (XRViewData* view : view_data) {
-    XRView* xr_view =
-        MakeGarbageCollected<XRView>(frame, view, ref_space_from_mojo);
+    view->UpdatePoseMatrix(transform_->TransformMatrix());
+    XRView* xr_view = MakeGarbageCollected<XRView>(frame, view);
     views_.push_back(xr_view);
   }
 }

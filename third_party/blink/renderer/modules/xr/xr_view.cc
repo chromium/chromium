@@ -26,9 +26,7 @@ const double kDegToRad = M_PI / 180.0;
 
 }  // namespace
 
-XRView::XRView(XRFrame* frame,
-               XRViewData* view_data,
-               const TransformationMatrix& ref_space_from_mojo)
+XRView::XRView(XRFrame* frame, XRViewData* view_data)
     : eye_(view_data->Eye()), frame_(frame), view_data_(view_data) {
   switch (eye_) {
     case device::mojom::blink::XREye::kLeft:
@@ -40,8 +38,8 @@ XRView::XRView(XRFrame* frame,
     default:
       eye_string_ = "none";
   }
-  ref_space_from_view_ = MakeGarbageCollected<XRRigidTransform>(
-      ref_space_from_mojo * view_data->MojoFromView());
+  ref_space_from_eye_ =
+      MakeGarbageCollected<XRRigidTransform>(view_data->Transform());
   projection_matrix_ =
       transformationMatrixToDOMFloat32Array(view_data->ProjectionMatrix());
 }
@@ -69,21 +67,15 @@ XRViewData::XRViewData(const device::mojom::blink::XRViewPtr& view,
                        double depth_near,
                        double depth_far)
     : eye_(view->eye) {
-  UpdateView(view, depth_near, depth_far);
-}
-
-void XRViewData::UpdateView(const device::mojom::blink::XRViewPtr& view,
-                            double depth_near,
-                            double depth_far) {
-  DCHECK_EQ(eye_, view->eye);
-
   const device::mojom::blink::VRFieldOfViewPtr& fov = view->field_of_view;
+
   UpdateProjectionMatrixFromFoV(
       fov->up_degrees * kDegToRad, fov->down_degrees * kDegToRad,
       fov->left_degrees * kDegToRad, fov->right_degrees * kDegToRad, depth_near,
       depth_far);
 
-  mojo_from_view_ = TransformationMatrix(view->mojo_from_view.matrix());
+  const TransformationMatrix matrix(view->head_from_eye.matrix());
+  SetHeadFromEyeTransform(matrix);
 }
 
 void XRViewData::UpdateProjectionMatrixFromFoV(float up_rad,
@@ -167,8 +159,20 @@ TransformationMatrix XRViewData::UnprojectPointer(double x,
   return inv_pointer.Inverse();
 }
 
-XRRigidTransform* XRView::refSpaceFromView() const {
-  return ref_space_from_view_;
+void XRViewData::SetHeadFromEyeTransform(
+    const TransformationMatrix& head_from_eye) {
+  head_from_eye_ = head_from_eye;
+}
+
+// ref_space_from_eye_ = ref_space_from_head * head_from_eye_
+void XRViewData::UpdatePoseMatrix(
+    const TransformationMatrix& ref_space_from_head) {
+  ref_space_from_eye_ = ref_space_from_head;
+  ref_space_from_eye_.Multiply(head_from_eye_);
+}
+
+XRRigidTransform* XRView::transform() const {
+  return ref_space_from_eye_;
 }
 
 absl::optional<double> XRView::recommendedViewportScale() const {
@@ -209,7 +213,7 @@ XRCamera* XRView::camera() const {
 void XRView::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
   visitor->Trace(projection_matrix_);
-  visitor->Trace(ref_space_from_view_);
+  visitor->Trace(ref_space_from_eye_);
   visitor->Trace(view_data_);
   ScriptWrappable::Trace(visitor);
 }
