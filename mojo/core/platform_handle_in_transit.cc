@@ -31,7 +31,8 @@ HANDLE TransferHandle(HANDLE handle,
   if (result) {
     return handle;
   } else {
-    DPLOG(ERROR) << "DuplicateHandle failed";
+    PLOG(FATAL) << "DuplicateHandle failed from " << from_process << " to "
+                << to_process << " for handle " << handle;
     return INVALID_HANDLE_VALUE;
   }
 }
