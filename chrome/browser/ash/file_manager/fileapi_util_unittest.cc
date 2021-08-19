@@ -7,9 +7,11 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/file_system_provider/fake_extension_provider.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
 #include "chrome/browser/ash/file_system_provider/service_factory.h"
@@ -91,8 +93,22 @@ class TempFileSystem {
   base::ScopedTempDir temp_dir_;
 };
 
-class FileManagerFileAPIUtilTest : public ::testing::Test {
+// Parameter for the unit test to allow us to test both System Files App case
+// and Extension Files app.
+enum FilesAppMode {
+  EXTENSION_FILES_APP,
+  SYSTEM_FILES_APP,
+};
+
+class FileManagerFileAPIUtilTest
+    : public ::testing::TestWithParam<FilesAppMode> {
  public:
+  FileManagerFileAPIUtilTest() {
+    if (GetParam() == SYSTEM_FILES_APP) {
+      feature_list_.InitAndEnableFeature(chromeos::features::kFilesSWA);
+    }
+  }
+
   // Carries information on how to create a FileSystemURL for a given file name.
   // For !valid orders we create a test URL. Otherwise, we use temp file system.
   struct FileSystemURLOrder {
@@ -172,6 +188,7 @@ class FileManagerFileAPIUtilTest : public ::testing::Test {
   const std::string file_system_id_ = "test-filesystem";
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   TestingProfile* profile_;
@@ -184,7 +201,7 @@ void PassFileChooserFileInfoList(FileChooserFileInfoList* output,
     output->push_back(file->Clone());
 }
 
-TEST_F(FileManagerFileAPIUtilTest,
+TEST_P(FileManagerFileAPIUtilTest,
        ConvertSelectedFileInfoListToFileChooserFileInfoList) {
   Profile* const profile = GetProfile();
   const std::string extension_id = "abc";
@@ -264,7 +281,7 @@ TEST_F(FileManagerFileAPIUtilTest,
   EXPECT_EQ(55u, result[2]->get_file_system()->length);
 }
 
-TEST_F(FileManagerFileAPIUtilTest,
+TEST_P(FileManagerFileAPIUtilTest,
        ConvertFileDefinitionListToEntryDefinitionListExtension) {
   std::vector<FileSystemURLOrder> orders = {
       {.file_name = "x.txt", .valid = true},
@@ -279,7 +296,7 @@ TEST_F(FileManagerFileAPIUtilTest,
       "chrome-extension://abc/efg", orders);
 }
 
-TEST_F(FileManagerFileAPIUtilTest,
+TEST_P(FileManagerFileAPIUtilTest,
        ConvertFileDefinitionListToEntryDefinitionListApp) {
   std::vector<FileSystemURLOrder> orders = {
       {.file_name = "a.txt", .valid = false},
@@ -294,7 +311,7 @@ TEST_F(FileManagerFileAPIUtilTest,
       "chrome://file-manager/abc", orders);
 }
 
-TEST_F(FileManagerFileAPIUtilTest,
+TEST_P(FileManagerFileAPIUtilTest,
        ConvertFileDefinitionListToEntryDefinitionNullContext) {
   Profile* const profile = GetProfile();
   const GURL appURL("chrome-extension://abc/");
@@ -324,7 +341,7 @@ TEST_F(FileManagerFileAPIUtilTest,
   run_loop.Run();
 }
 
-TEST_F(FileManagerFileAPIUtilTest,
+TEST_P(FileManagerFileAPIUtilTest,
        ConvertFileDefinitionListToEntryDefinitionContextReset) {
   Profile* const profile = GetProfile();
   const GURL appURL("chrome-extension://abc/");
@@ -359,6 +376,11 @@ TEST_F(FileManagerFileAPIUtilTest,
 
   run_loop.Run();
 }
+
+INSTANTIATE_TEST_SUITE_P(FilesAppMode,
+                         FileManagerFileAPIUtilTest,
+                         ::testing::Values(EXTENSION_FILES_APP,
+                                           SYSTEM_FILES_APP));
 
 }  // namespace
 }  // namespace util

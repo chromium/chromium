@@ -38,7 +38,7 @@ void AddFilesAppResources(content::WebUIDataSource* source,
 
 FileManagerUI::FileManagerUI(content::WebUI* web_ui,
                              std::unique_ptr<FileManagerUIDelegate> delegate)
-    : MojoWebUIController(web_ui), delegate_(std::move(delegate)) {
+    : MojoWebDialogUI(web_ui), delegate_(std::move(delegate)) {
   auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
   auto* trusted_source = CreateTrustedAppDataSource();
   content::WebUIDataSource::Add(browser_context, trusted_source);

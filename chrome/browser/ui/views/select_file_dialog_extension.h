@@ -9,39 +9,41 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/ui/views/extensions/extension_dialog_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"  // gfx::NativeWindow
 #include "ui/shell_dialogs/select_file_dialog.h"
+#include "url/gurl.h"
 
 class ExtensionDialog;
 class Profile;
 
 namespace aura {
 class Window;
-}
+}  // namespace aura
 
 namespace content {
 class RenderFrameHost;
 class WebContents;
-}
+}  // namespace content
 
 namespace ui {
 struct SelectedFileInfo;
 class SelectFilePolicy;
-}
+}  // namespace ui
 
 // Shows a dialog box for selecting a file or a folder, using the
 // file manager extension implementation.
-class SelectFileDialogExtension
-    : public ui::SelectFileDialog,
-      public ExtensionDialogObserver {
+class SelectFileDialogExtension : public ui::SelectFileDialog,
+                                  public ExtensionDialogObserver {
  public:
   // Opaque ID type for identifying the tab spawned each dialog, unique for
   // every WebContents or every Android task ID.
   typedef std::string RoutingID;
+
+  SelectFileDialogExtension(const SelectFileDialogExtension&) = delete;
+  SelectFileDialogExtension& operator=(SelectFileDialogExtension&) = delete;
 
   static SelectFileDialogExtension* Create(
       ui::SelectFileDialog::Listener* listener,
@@ -64,6 +66,18 @@ class SelectFileDialogExtension
       RoutingID routing_id,
       const std::vector<ui::SelectedFileInfo>& files);
   static void OnFileSelectionCanceled(RoutingID routing_id);
+
+  // Helper method that given parameters that are passed to the
+  // SelectFileWithFileManagerParams method creates a URL for launching File
+  // Manager as a dialog.
+  static GURL MakeDialogURL(Type type,
+                            const std::u16string& title,
+                            const base::FilePath& default_path,
+                            const FileTypeInfo* file_types,
+                            int file_type_index,
+                            const std::string& search_query,
+                            bool show_android_picker_apps,
+                            Profile* profile);
 
   // Allows access to the extension's main frame for injecting javascript.
   content::RenderFrameHost* GetMainFrame();
@@ -108,6 +122,12 @@ class SelectFileDialogExtension
   friend class BaseSelectFileDialogExtensionBrowserTest;
   friend class SelectFileDialogExtensionTest;
   friend class SelectFileDialogExtensionTestFactory;
+  friend class SystemFilesAppDialogDelegate;
+
+  // For the benefit of SystemFilesAppDialogDelegate.
+  void OnSystemDialogShown(content::WebContents* content,
+                           const std::string& id);
+  void OnSystemDialogWillClose();
 
   // Object is ref-counted, use Create().
   explicit SelectFileDialogExtension(
@@ -133,6 +153,11 @@ class SelectFileDialogExtension
   // Host for the extension that implements this dialog.
   scoped_refptr<ExtensionDialog> extension_dialog_;
 
+  // If System Files App is enabled it stores the web contents associated with
+  // System File App dialog. Not owned by this class. Set only while System
+  // Files App dialog is opened.
+  content::WebContents* system_files_app_web_contents_;
+
   // ID of the tab that spawned this dialog, used to route callbacks.
   RoutingID routing_id_;
 
@@ -153,9 +178,8 @@ class SelectFileDialogExtension
   SelectionType selection_type_ = CANCEL;
   std::vector<ui::SelectedFileInfo> selection_files_;
   int selection_index_ = 0;
+  bool can_resize_ = true;
   void* params_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(SelectFileDialogExtension);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SELECT_FILE_DIALOG_EXTENSION_H_

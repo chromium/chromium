@@ -30,6 +30,6 @@ static_library("file_manager_ui") {
     "//content/public/browser",
     "//ui/file_manager:file_manager_gen_resources",
     "//ui/file_manager:resources",
-    "//ui/webui",
+    "//ui/web_dialogs",
   ]
 }
