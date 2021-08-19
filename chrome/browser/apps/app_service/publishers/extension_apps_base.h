@@ -40,9 +40,7 @@ class ExtensionAppsEnableFlow;
 
 // An app base publisher (in the App Service sense) of extension-backed apps,
 // including Chrome Apps (platform apps and legacy packaged apps) and hosted
-// apps (including desktop PWAs).
-//
-// In the future, desktop PWAs will be migrated to a new system.
+// apps.
 //
 // See components/services/app_service/README.md.
 class ExtensionAppsBase : public apps::PublisherBase,

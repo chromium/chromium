@@ -24,9 +24,7 @@ namespace apps {
 
 // An app publisher (in the App Service sense) of extension-backed apps for
 // Chrome, including Chrome Apps (platform apps and legacy packaged apps) and
-// hosted apps (including desktop PWAs).
-//
-// In the future, desktop PWAs will be migrated to a new system.
+// hosted apps.
 //
 // See components/services/app_service/README.md.
 class ExtensionApps : public apps::ExtensionAppsBase {
