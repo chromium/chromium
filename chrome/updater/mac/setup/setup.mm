@@ -8,7 +8,6 @@
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
-#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -25,7 +24,6 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
 #include "chrome/common/mac/launchd.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/crash_client.h"
@@ -33,6 +31,7 @@
 #include "chrome/updater/launchd_util.h"
 #import "chrome/updater/mac/mac_util.h"
 #import "chrome/updater/mac/xpc_service_names.h"
+#include "chrome/updater/setup.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util.h"
@@ -439,41 +438,6 @@ int UninstallCandidate(UpdaterScope scope) {
   return setup_exit_codes::kSuccess;
 }
 
-void UninstallOtherVersions(UpdaterScope scope) {
-  const absl::optional<base::FilePath> path =
-      GetVersionedUpdaterFolderPath(scope);
-  if (!path) {
-    LOG(ERROR) << "Failed to get updater folder path.";
-    return;
-  }
-  base::FileEnumerator file_enumerator(*path, true,
-                                       base::FileEnumerator::DIRECTORIES);
-  for (base::FilePath version_folder_path = file_enumerator.Next();
-       !version_folder_path.empty() &&
-       version_folder_path != GetVersionedUpdaterFolderPath(scope);
-       version_folder_path = file_enumerator.Next()) {
-    const base::FilePath version_executable_path =
-        version_folder_path.Append(GetExecutableRelativePath());
-
-    if (base::PathExists(version_executable_path)) {
-      base::CommandLine command_line(version_executable_path);
-      command_line.AppendSwitch(kUninstallSelfSwitch);
-      if (scope == UpdaterScope::kSystem)
-        command_line.AppendSwitch(kSystemSwitch);
-      command_line.AppendSwitch(kEnableLoggingSwitch);
-      command_line.AppendSwitchASCII(kLoggingModuleSwitch,
-                                     "*/chrome/updater/*=2");
-
-      int exit_code = -1;
-      std::string output;
-      base::GetAppOutputWithExitCode(command_line, &output, &exit_code);
-    } else {
-      VLOG(1) << base::CommandLine::ForCurrentProcess()->GetCommandLineString()
-              << " : Path doesn't exist: " << version_executable_path;
-    }
-  }
-}
-
 int Uninstall(UpdaterScope scope) {
   VLOG(1) << base::CommandLine::ForCurrentProcess()->GetCommandLineString()
           << " : " << __func__;
@@ -483,8 +447,6 @@ int Uninstall(UpdaterScope scope) {
 
   if (!RemoveUpdateServiceJobFromLaunchd(scope))
     return setup_exit_codes::kFailedToRemoveActiveUpdateServiceJobFromLaunchd;
-
-  UninstallOtherVersions(scope);
 
   if (!DeleteInstallFolder(scope))
     return setup_exit_codes::kFailedToDeleteFolder;

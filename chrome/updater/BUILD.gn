@@ -234,6 +234,7 @@ if (is_win || is_mac) {
         "prefs_win.cc",
         "service_factory_win.cc",
         "setup_win.cc",
+        "util_win.cc",
         "win/action_handler.cc",
         "win/install_progress_observer.cc",
         "win/install_progress_observer.h",

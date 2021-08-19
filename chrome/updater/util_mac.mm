@@ -10,17 +10,36 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/process/launch.h"
+#include "base/strings/strcat.h"
+#include "base/version.h"
+#include "chrome/updater/constants.h"
+#import "chrome/updater/mac/mac_util.h"
+#include "chrome/updater/updater_branding.h"
+#include "chrome/updater/updater_version.h"
 
 namespace updater {
 namespace {
+
 constexpr base::FilePath::CharType kZipExePath[] =
     FILE_PATH_LITERAL("/usr/bin/unzip");
+
+base::FilePath GetUpdaterFolderName() {
+  return base::FilePath(COMPANY_SHORTNAME_STRING)
+      .AppendASCII(PRODUCT_FULLNAME_STRING);
 }
+
+base::FilePath ExecutableFolderPath() {
+  return base::FilePath(
+             base::StrCat({PRODUCT_FULLNAME_STRING, kExecutableSuffix, ".app"}))
+      .Append(FILE_PATH_LITERAL("Contents"))
+      .Append(FILE_PATH_LITERAL("MacOS"));
+}
+}  // namespace
 
 bool UnzipWithExe(const base::FilePath& src_path,
                   const base::FilePath& dest_path) {
-  base::FilePath fp(kZipExePath);
-  base::CommandLine command(fp);
+  base::FilePath file_path(kZipExePath);
+  base::CommandLine command(file_path);
   command.AppendArg(src_path.value());
   command.AppendArg("-d");
   command.AppendArg(dest_path.value());
@@ -40,6 +59,36 @@ bool UnzipWithExe(const base::FilePath& src_path,
   }
 
   return exit_code <= 1;
+}
+
+absl::optional<base::FilePath> GetUpdaterFolderPath(UpdaterScope scope) {
+  absl::optional<base::FilePath> path = GetLibraryFolderPath(scope);
+  if (!path)
+    return absl::nullopt;
+  return path->Append(GetUpdaterFolderName());
+}
+
+absl::optional<base::FilePath> GetExecutableFolderPathForVersion(
+    UpdaterScope scope,
+    const base::Version& version) {
+  absl::optional<base::FilePath> path =
+      GetVersionedUpdaterFolderPathForVersion(scope, version);
+  if (!path)
+    return absl::nullopt;
+  return path->Append(ExecutableFolderPath());
+}
+
+absl::optional<base::FilePath> GetUpdaterExecutablePath(UpdaterScope scope) {
+  absl::optional<base::FilePath> path = GetVersionedUpdaterFolderPath(scope);
+  if (!path)
+    return absl::nullopt;
+  return path->Append(ExecutableFolderPath())
+      .AppendASCII(base::StrCat({PRODUCT_FULLNAME_STRING, kExecutableSuffix}));
+}
+
+base::FilePath GetExecutableRelativePath() {
+  return ExecutableFolderPath().Append(
+      base::StrCat({PRODUCT_FULLNAME_STRING, kExecutableSuffix}));
 }
 
 }  // namespace updater

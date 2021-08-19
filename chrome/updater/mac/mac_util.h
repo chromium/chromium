@@ -12,14 +12,9 @@
 
 namespace base {
 class FilePath;
-class Version;
 }  // namespace base
 
 namespace updater {
-
-// Returns a relative path to the executable, such as
-// "GoogleUpdater.app/Contents/MacOS/GoogleUpdater".
-base::FilePath GetExecutableRelativePath();
 
 // For user installations returns: the "~/Library" for the logged in user.
 // For system installations returns: "/Library".
@@ -30,39 +25,6 @@ absl::optional<base::FilePath> GetLibraryFolderPath(UpdaterScope scope);
 // "/Library/Application Support".
 absl::optional<base::FilePath> GetApplicationSupportDirectory(
     UpdaterScope scope);
-
-// For user installations:
-// ~/Library/Google/GoogleUpdater
-// For system installations:
-// /Library/Google/GoogleUpdater
-absl::optional<base::FilePath> GetUpdaterFolderPath(UpdaterScope scope);
-
-// For user installations:
-// ~/Library/Google/GoogleUpdater/88.0.4293.0
-// For system installations:
-// /Library/Google/GoogleUpdater/88.0.4293.0
-absl::optional<base::FilePath> GetVersionedUpdaterFolderPathForVersion(
-    UpdaterScope scope,
-    const base::Version& version);
-
-// The same as GetVersionedUpdaterFolderPathForVersion, where the version is
-// kUpdaterVersion.
-absl::optional<base::FilePath> GetVersionedUpdaterFolderPath(
-    UpdaterScope scope);
-
-// For user installations:
-// ~/Library/Google/GoogleUpdater/88.0.4293.0/GoogleUpdater.app/Contents/MacOS/GoogleUpdater
-// For system installations:
-// /Library/Google/GoogleUpdater/88.0.4293.0/GoogleUpdater.app/Contents/MacOS/GoogleUpdater
-absl::optional<base::FilePath> GetUpdaterExecutablePath(UpdaterScope scope);
-
-// For user installations:
-// ~/Library/Google/GoogleUpdater/88.0.4293.0/GoogleUpdater.app/Contents/MacOS
-// For system installations:
-// /Library/Google/GoogleUpdater/88.0.4293.0/GoogleUpdater.app/Contents/MacOS
-absl::optional<base::FilePath> GetExecutableFolderPathForVersion(
-    UpdaterScope scope,
-    const base::Version& version);
 
 // Removes the Launchd job with the given 'name'.
 bool RemoveJobFromLaunchd(UpdaterScope scope,

@@ -31,24 +31,7 @@ namespace {
 
 constexpr int kLaunchctlExitCodeNoSuchProcess = 3;
 
-base::FilePath GetUpdateFolderName() {
-  return base::FilePath(COMPANY_SHORTNAME_STRING)
-      .AppendASCII(PRODUCT_FULLNAME_STRING);
-}
-
-base::FilePath ExecutableFolderPath() {
-  return base::FilePath(
-             base::StrCat({PRODUCT_FULLNAME_STRING, kExecutableSuffix, ".app"}))
-      .Append(FILE_PATH_LITERAL("Contents"))
-      .Append(FILE_PATH_LITERAL("MacOS"));
-}
-
 }  // namespace
-
-base::FilePath GetExecutableRelativePath() {
-  return ExecutableFolderPath().Append(
-      base::StrCat({PRODUCT_FULLNAME_STRING, kExecutableSuffix}));
-}
 
 absl::optional<base::FilePath> GetLibraryFolderPath(UpdaterScope scope) {
   switch (scope) {
@@ -82,48 +65,6 @@ absl::optional<base::FilePath> GetApplicationSupportDirectory(
 
   VLOG(1) << "Could not get applications support path";
   return absl::nullopt;
-}
-
-absl::optional<base::FilePath> GetUpdaterFolderPath(UpdaterScope scope) {
-  absl::optional<base::FilePath> path = GetLibraryFolderPath(scope);
-  if (!path)
-    return absl::nullopt;
-  return path->Append(GetUpdateFolderName());
-}
-
-absl::optional<base::FilePath> GetVersionedUpdaterFolderPathForVersion(
-    UpdaterScope scope,
-    const base::Version& version) {
-  absl::optional<base::FilePath> path = GetUpdaterFolderPath(scope);
-  if (!path)
-    return absl::nullopt;
-  return path->AppendASCII(version.GetString());
-}
-
-absl::optional<base::FilePath> GetVersionedUpdaterFolderPath(
-    UpdaterScope scope) {
-  absl::optional<base::FilePath> path = GetUpdaterFolderPath(scope);
-  if (!path)
-    return absl::nullopt;
-  return path->AppendASCII(kUpdaterVersion);
-}
-
-absl::optional<base::FilePath> GetExecutableFolderPathForVersion(
-    UpdaterScope scope,
-    const base::Version& version) {
-  absl::optional<base::FilePath> path =
-      GetVersionedUpdaterFolderPathForVersion(scope, version);
-  if (!path)
-    return absl::nullopt;
-  return path->Append(ExecutableFolderPath());
-}
-
-absl::optional<base::FilePath> GetUpdaterExecutablePath(UpdaterScope scope) {
-  absl::optional<base::FilePath> path = GetVersionedUpdaterFolderPath(scope);
-  if (!path)
-    return absl::nullopt;
-  return path->Append(ExecutableFolderPath())
-      .AppendASCII(base::StrCat({PRODUCT_FULLNAME_STRING, kExecutableSuffix}));
 }
 
 bool PathOwnedByUser(const base::FilePath& path) {

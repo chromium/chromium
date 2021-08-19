@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
+#include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/tag.h"
@@ -42,7 +43,7 @@ struct Charmap {
     return ((map[c >> 5] & (1 << (c & 31))) != 0);
   }
 
-  uint32_t map[8];
+  uint32_t map[8] = {};
 };
 
 // Everything except alphanumerics and !'()*-._~
@@ -129,6 +130,21 @@ absl::optional<base::FilePath> GetVersionedDirectory(UpdaterScope scope) {
   }
 
   return versioned_dir;
+}
+
+absl::optional<base::FilePath> GetVersionedUpdaterFolderPathForVersion(
+    UpdaterScope scope,
+    const base::Version& version) {
+  const absl::optional<base::FilePath> path = GetUpdaterFolderPath(scope);
+  if (!path)
+    return absl::nullopt;
+  return path->AppendASCII(version.GetString());
+}
+
+absl::optional<base::FilePath> GetVersionedUpdaterFolderPath(
+    UpdaterScope scope) {
+  return GetVersionedUpdaterFolderPathForVersion(
+      scope, base::Version(kUpdaterVersion));
 }
 
 absl::optional<tagging::TagArgs> GetTagArgs() {

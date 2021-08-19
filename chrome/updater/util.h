@@ -9,6 +9,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
+#include "chrome/updater/updater_scope.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
@@ -17,6 +18,7 @@ class GURL;
 namespace base {
 
 class CommandLine;
+class Version;
 
 template <class T>
 std::ostream& operator<<(std::ostream& os, const absl::optional<T>& opt) {
@@ -46,6 +48,46 @@ absl::optional<base::FilePath> GetBaseDirectory(UpdaterScope scope);
 // stores its files and data. For instance, this function may return
 // %localappdata%\Chromium\ChromiumUpdater\1.2.3.4 for a user install.
 absl::optional<base::FilePath> GetVersionedDirectory(UpdaterScope scope);
+
+// For user installations:
+// ~/Library/Google/GoogleUpdater/88.0.4293.0
+// For system installations:
+// /Library/Google/GoogleUpdater/88.0.4293.0
+absl::optional<base::FilePath> GetVersionedUpdaterFolderPathForVersion(
+    UpdaterScope scope,
+    const base::Version& version);
+
+// The same as GetVersionedUpdaterFolderPathForVersion, where the version is
+// kUpdaterVersion.
+absl::optional<base::FilePath> GetVersionedUpdaterFolderPath(
+    UpdaterScope scope);
+
+// For user installations:
+// ~/Library/Google/GoogleUpdater
+// For system installations:
+// /Library/Google/GoogleUpdater
+absl::optional<base::FilePath> GetUpdaterFolderPath(UpdaterScope scope);
+
+// For user installations:
+// ~/Library/Google/GoogleUpdater/88.0.4293.0/GoogleUpdater.app/Contents/
+//    MacOS/GoogleUpdater
+// For system installations:
+// /Library/Google/GoogleUpdater/88.0.4293.0/GoogleUpdater.app/Contents/
+//    MacOS/GoogleUpdater
+absl::optional<base::FilePath> GetUpdaterExecutablePath(UpdaterScope scope);
+
+// For user installations:
+// ~/Library/Google/GoogleUpdater/88.0.4293.0/GoogleUpdater.app/Contents/MacOS
+// For system installations:
+// /Library/Google/GoogleUpdater/88.0.4293.0/GoogleUpdater.app/Contents/MacOS
+absl::optional<base::FilePath> GetExecutableFolderPathForVersion(
+    UpdaterScope scope,
+    const base::Version& version);
+
+// Returns a relative path to the executable, such as
+// "GoogleUpdater.app/Contents/MacOS/GoogleUpdater" on macOS.
+// "updater.exe" on Win.
+base::FilePath GetExecutableRelativePath();
 
 // Returns the parsed values from --tag command line argument. The function
 // implementation uses lazy initialization and caching to avoid reparsing
