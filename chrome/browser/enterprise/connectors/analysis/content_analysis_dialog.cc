@@ -40,6 +40,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/layout_provider.h"
 
 namespace enterprise_connectors {
 
@@ -224,6 +225,8 @@ ContentAnalysisDialog::ContentAnalysisDialog(
       files_count_(files_count) {
   DCHECK(delegate_);
   SetOwnedByWidget(true);
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 
   if (observer_for_testing)
     observer_for_testing->ConstructorCalled(this, base::TimeTicks::Now());
