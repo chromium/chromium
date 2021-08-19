@@ -93,7 +93,7 @@ NGConstraintSpace CreateConstraintSpaceForFloat(
   return builder.ToConstraintSpace();
 }
 
-std::unique_ptr<NGExclusionShapeData> CreateExclusionShapeData(
+NGExclusionShapeData* CreateExclusionShapeData(
     const NGBoxStrut& margins,
     const NGUnpositionedFloat& unpositioned_float) {
   const LayoutBox* layout_box = unpositioned_float.node.GetLayoutBox();
@@ -129,13 +129,13 @@ std::unique_ptr<NGExclusionShapeData> CreateExclusionShapeData(
       break;
   }
 
-  return std::make_unique<NGExclusionShapeData>(layout_box, new_margins,
-                                                shape_insets);
+  return MakeGarbageCollected<NGExclusionShapeData>(layout_box, new_margins,
+                                                    shape_insets);
 }
 
 // Creates an exclusion from the fragment that will be placed in the provided
 // layout opportunity.
-scoped_refptr<const NGExclusion> CreateExclusion(
+const NGExclusion* CreateExclusion(
     const NGFragment& fragment,
     const NGBfcOffset& float_margin_bfc_offset,
     const NGBoxStrut& margins,
@@ -148,7 +148,7 @@ scoped_refptr<const NGExclusion> CreateExclusion(
       start_offset.block_offset +
           (fragment.BlockSize() + margins.BlockSum()).ClampNegativeToZero());
 
-  std::unique_ptr<NGExclusionShapeData> shape_data =
+  NGExclusionShapeData* shape_data =
       unpositioned_float.node.GetLayoutBox()->GetShapeOutsideInfo()
           ? CreateExclusionShapeData(margins, unpositioned_float)
           : nullptr;
@@ -361,12 +361,12 @@ NGPositionedFloat PositionFloat(NGUnpositionedFloat* unpositioned_float,
     // current fragmentainer).
     NGBfcOffset past_everything(LayoutUnit(),
                                 FragmentainerSpaceAtBfcStart(parent_space));
-    scoped_refptr<const NGExclusion> exclusion =
+    const NGExclusion* exclusion =
         NGExclusion::Create(NGBfcRect(past_everything, past_everything),
                             node.Style().Floating(parent_space.Direction()));
     exclusion_space->Add(std::move(exclusion));
   } else {
-    scoped_refptr<const NGExclusion> exclusion = CreateExclusion(
+    const NGExclusion* exclusion = CreateExclusion(
         float_fragment, float_margin_bfc_offset, fragment_margins,
         *unpositioned_float, node.Style().Floating(parent_space.Direction()));
     exclusion_space->Add(std::move(exclusion));

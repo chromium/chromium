@@ -117,6 +117,9 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
 
   // Info needed to perform Layout() on an OOF positioned node.
   struct NodeInfo {
+    DISALLOW_NEW();
+
+   public:
     NGBlockNode node;
     const NGConstraintSpace constraint_space;
     const NGLogicalStaticPosition static_position;
