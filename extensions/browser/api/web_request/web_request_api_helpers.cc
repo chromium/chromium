@@ -1750,15 +1750,15 @@ bool ShouldHideResponseHeader(int extra_info_spec, const std::string& name) {
 
 bool ArePublicSessionRestrictionsEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos::LoginState::IsInitialized()) {
-    return chromeos::LoginState::Get()->ArePublicSessionRestrictionsEnabled();
-  }
+  return chromeos::LoginState::IsInitialized() &&
+         chromeos::LoginState::Get()->ArePublicSessionRestrictionsEnabled();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   DCHECK(chromeos::LacrosService::Get());
   return chromeos::LacrosService::Get()->init_params()->session_type ==
          crosapi::mojom::SessionType::kPublicSession;
-#endif
+#else
   return false;
+#endif
 }
 
 }  // namespace extension_web_request_api_helpers

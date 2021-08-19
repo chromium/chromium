@@ -276,15 +276,15 @@ void RemoveBrowsingDataForProfile(const base::FilePath& profile_path) {
 
 bool IsPublicSession() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos::LoginState::IsInitialized()) {
-    return chromeos::LoginState::Get()->IsPublicSessionUser();
-  }
+  return chromeos::LoginState::IsInitialized() &&
+         chromeos::LoginState::Get()->IsPublicSessionUser();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   DCHECK(chromeos::LacrosService::Get());
   return chromeos::LacrosService::Get()->init_params()->session_type ==
          crosapi::mojom::SessionType::kPublicSession;
-#endif
+#else
   return false;
+#endif
 }
 
 bool ArePublicSessionRestrictionsEnabled() {
@@ -298,15 +298,15 @@ bool ArePublicSessionRestrictionsEnabled() {
 
 bool IsKioskApp() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos::LoginState::IsInitialized()) {
-    return chromeos::LoginState::Get()->IsKioskApp();
-  }
+  return chromeos::LoginState::IsInitialized() &&
+         chromeos::LoginState::Get()->IsKioskApp();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   DCHECK(chromeos::LacrosService::Get());
   return chromeos::LacrosService::Get()->init_params()->session_type ==
          crosapi::mojom::SessionType::kWebKioskSession;
-#endif
+#else
   return false;
+#endif
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

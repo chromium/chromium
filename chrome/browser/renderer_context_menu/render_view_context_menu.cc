@@ -2377,8 +2377,8 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
 
     case IDC_CONTENT_CLIPBOARD_HISTORY_MENU:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      if (chromeos::features::IsClipboardHistoryEnabled())
-        return ash::ClipboardHistoryController::Get()->CanShowMenu();
+      return chromeos::features::IsClipboardHistoryEnabled() &&
+             ash::ClipboardHistoryController::Get()->CanShowMenu();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
     {
       auto* service = chromeos::LacrosService::Get();
@@ -2387,8 +2387,8 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
     }
 #else
       NOTREACHED();
-#endif
       return false;
+#endif
     default:
       NOTREACHED();
       return false;
