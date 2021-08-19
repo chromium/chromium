@@ -17,9 +17,6 @@
 // URL for the Cast Streaming application.
 extern const char kCastStreamingWebUrl[];
 
-// Origin value for the Cast Streaming MessagePort.
-extern const char kCastStreamingMessagePortOrigin[];
-
 // Name of the Cast Streaming MessagePort.
 extern const char kCastStreamingMessagePortName[];
 
@@ -29,5 +26,8 @@ bool IsAppConfigForCastStreaming(
 
 // Modifies |params| to apply Cast Streaming-specific Context Params.
 void ApplyCastStreamingContextParams(fuchsia::web::CreateContextParams* params);
+
+// Returns the proper origin value for the MessagePort for |app_id|.
+std::string GetMessagePortOriginForAppId(const std::string& app_id);
 
 #endif  // FUCHSIA_RUNNERS_CAST_CAST_STREAMING_H_
