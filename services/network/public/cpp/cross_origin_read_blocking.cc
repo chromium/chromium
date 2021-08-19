@@ -536,7 +536,7 @@ SniffingResult CrossOriginReadBlocking::SniffForFetchOnlyResource(
 
 // static
 void CrossOriginReadBlocking::SanitizeBlockedResponse(
-    network::mojom::URLResponseHead* response) {
+    mojom::URLResponseHead* response) {
   DCHECK(response);
   response->content_length = 0;
   if (response->headers)
@@ -564,14 +564,13 @@ class CrossOriginReadBlocking::ResponseAnalyzer::ConfirmationSniffer {
 };
 
 // A ConfirmationSniffer that wraps one of the sniffing functions from
-// network::CrossOriginReadBlocking.
+// CrossOriginReadBlocking.
 class CrossOriginReadBlocking::ResponseAnalyzer::SimpleConfirmationSniffer
     : public CrossOriginReadBlocking::ResponseAnalyzer::ConfirmationSniffer {
  public:
   // The function pointer type corresponding to one of the available sniffing
-  // functions from network::CrossOriginReadBlocking.
-  using SnifferFunction =
-      decltype(&network::CrossOriginReadBlocking::SniffForHTML);
+  // functions from CrossOriginReadBlocking.
+  using SnifferFunction = decltype(&CrossOriginReadBlocking::SniffForHTML);
 
   explicit SimpleConfirmationSniffer(SnifferFunction sniffer_function)
       : sniffer_function_(sniffer_function) {}
@@ -613,7 +612,7 @@ class CrossOriginReadBlocking::ResponseAnalyzer::SimpleConfirmationSniffer
 CrossOriginReadBlocking::ResponseAnalyzer::ResponseAnalyzer(
     const GURL& request_url,
     const absl::optional<url::Origin>& request_initiator,
-    const network::mojom::URLResponseHead& response,
+    const mojom::URLResponseHead& response,
     mojom::RequestMode request_mode)
     : seems_sensitive_from_cors_heuristic_(
           SeemsSensitiveFromCORSHeuristic(response)),
@@ -643,8 +642,7 @@ CrossOriginReadBlocking::ResponseAnalyzer::ResponseAnalyzer(
   // Canonicalize the MIME type.  Note that even if it doesn't claim to be a
   // blockable type (i.e., HTML, XML, JSON, or plain text), it may still fail
   // the checks during the SniffForFetchOnlyResource() phase.
-  canonical_mime_type_ =
-      network::CrossOriginReadBlocking::GetCanonicalMimeType(mime_type);
+  canonical_mime_type_ = GetCanonicalMimeType(mime_type);
 
   should_block_based_on_headers_ =
       ShouldBlockBasedOnHeaders(request_mode, request_url, request_initiator,
@@ -668,8 +666,7 @@ CrossOriginReadBlocking::ResponseAnalyzer::ResponseAnalyzer(
     corb_protection_logging_needs_sniffing_ =
         (would_protect_based_on_headers ==
          BlockingDecision::kNeedToSniffMore) &&
-        base::FeatureList::IsEnabled(
-            network::features::kCORBProtectionSniffing);
+        base::FeatureList::IsEnabled(features::kCORBProtectionSniffing);
     hypothetical_sniffing_mode_ =
         corb_protection_logging_needs_sniffing_ &&
         should_block_based_on_headers_ != BlockingDecision::kNeedToSniffMore;
@@ -706,7 +703,7 @@ CrossOriginReadBlocking::ResponseAnalyzer::ShouldBlockBasedOnHeaders(
     mojom::RequestMode request_mode,
     const GURL& request_url,
     const absl::optional<url::Origin>& request_initiator,
-    const network::mojom::URLResponseHead& response,
+    const mojom::URLResponseHead& response,
     MimeType canonical_mime_type) {
   // The checks in this method are ordered to rule out blocking in most cases as
   // quickly as possible.  Checks that are likely to lead to returning false or
@@ -734,7 +731,7 @@ CrossOriginReadBlocking::ResponseAnalyzer::ShouldBlockBasedOnHeaders(
   // Only apply CORB to `no-cors` requests.
   //
   // CORB doesn't need to block kNavigate requests because results of these are
-  // OOPIF-isolated (note that network::CorsURLLoaderFactory::IsValidRequest
+  // OOPIF-isolated (note that CorsURLLoaderFactory::IsValidRequest
   // validates that only the Browser process can initiate requests in kNavigate
   // mode).
   //
@@ -755,14 +752,14 @@ CrossOriginReadBlocking::ResponseAnalyzer::ShouldBlockBasedOnHeaders(
   // also https://crbug.com/803672.
   if (response.was_fetched_via_service_worker) {
     switch (response.response_type) {
-      case network::mojom::FetchResponseType::kBasic:
-      case network::mojom::FetchResponseType::kCors:
-      case network::mojom::FetchResponseType::kDefault:
-      case network::mojom::FetchResponseType::kError:
+      case mojom::FetchResponseType::kBasic:
+      case mojom::FetchResponseType::kCors:
+      case mojom::FetchResponseType::kDefault:
+      case mojom::FetchResponseType::kError:
         // Non-opaque responses shouldn't be blocked.
         return kAllow;
-      case network::mojom::FetchResponseType::kOpaque:
-      case network::mojom::FetchResponseType::kOpaqueRedirect:
+      case mojom::FetchResponseType::kOpaque:
+      case mojom::FetchResponseType::kOpaqueRedirect:
         // Opaque responses are eligible for blocking. Continue on...
         break;
     }
@@ -828,7 +825,7 @@ CrossOriginReadBlocking::ResponseAnalyzer::ShouldBlockBasedOnHeaders(
 
 // static
 bool CrossOriginReadBlocking::ResponseAnalyzer::SeemsSensitiveFromCORSHeuristic(
-    const network::mojom::URLResponseHead& response) {
+    const mojom::URLResponseHead& response) {
   // Check if the response has an Access-Control-Allow-Origin with a value other
   // than "*" or "null" ("null" offers no more protection than "*" because it
   // matches any unique origin).
@@ -846,8 +843,7 @@ bool CrossOriginReadBlocking::ResponseAnalyzer::SeemsSensitiveFromCORSHeuristic(
 
 // static
 bool CrossOriginReadBlocking::ResponseAnalyzer::
-    SeemsSensitiveFromCacheHeuristic(
-        const network::mojom::URLResponseHead& response) {
+    SeemsSensitiveFromCacheHeuristic(const mojom::URLResponseHead& response) {
   // Check if the response has both Vary: Origin and Cache-Control: Private
   // headers, which we take as a signal that it may be a sensitive resource. We
   // require both to reduce the number of false positives (as both headers are
@@ -863,7 +859,7 @@ bool CrossOriginReadBlocking::ResponseAnalyzer::
 
 // static
 bool CrossOriginReadBlocking::ResponseAnalyzer::SupportsRangeRequests(
-    const network::mojom::URLResponseHead& response) {
+    const mojom::URLResponseHead& response) {
   if (response.headers) {
     std::string value;
     response.headers->GetNormalizedHeader("accept-ranges", &value);
@@ -877,7 +873,7 @@ bool CrossOriginReadBlocking::ResponseAnalyzer::SupportsRangeRequests(
 // static
 CrossOriginReadBlocking::ResponseAnalyzer::MimeTypeBucket
 CrossOriginReadBlocking::ResponseAnalyzer::GetMimeTypeBucket(
-    const network::mojom::URLResponseHead& response) {
+    const mojom::URLResponseHead& response) {
   std::string mime_type;
   if (response.headers)
     response.headers->GetMimeType(&mime_type);
@@ -938,19 +934,19 @@ void CrossOriginReadBlocking::ResponseAnalyzer::CreateSniffers() {
   // HTML sniffer.
   if (use_all || canonical_mime_type_ == MimeType::kHtml) {
     sniffers_.push_back(std::make_unique<SimpleConfirmationSniffer>(
-        &network::CrossOriginReadBlocking::SniffForHTML));
+        &CrossOriginReadBlocking::SniffForHTML));
   }
 
   // XML sniffer.
   if (use_all || canonical_mime_type_ == MimeType::kXml) {
     sniffers_.push_back(std::make_unique<SimpleConfirmationSniffer>(
-        &network::CrossOriginReadBlocking::SniffForXML));
+        &CrossOriginReadBlocking::SniffForXML));
   }
 
   // JSON sniffer.
   if (use_all || canonical_mime_type_ == MimeType::kJson) {
     sniffers_.push_back(std::make_unique<SimpleConfirmationSniffer>(
-        &network::CrossOriginReadBlocking::SniffForJSON));
+        &CrossOriginReadBlocking::SniffForJSON));
   }
 
   // Parser-breaker sniffer.
@@ -961,7 +957,7 @@ void CrossOriginReadBlocking::ResponseAnalyzer::CreateSniffers() {
   //
   // For MimeType::kOthers, this will be the only sniffer that's active.
   sniffers_.push_back(std::make_unique<SimpleConfirmationSniffer>(
-      &network::CrossOriginReadBlocking::SniffForFetchOnlyResource));
+      &CrossOriginReadBlocking::SniffForFetchOnlyResource));
 }
 
 void CrossOriginReadBlocking::ResponseAnalyzer::SniffResponseBody(
@@ -1071,10 +1067,8 @@ void CrossOriginReadBlocking::ResponseAnalyzer::LogAllowedResponse() {
   // - for example to allow responses to requests initiated by content scripts.
   // This means that we cannot DCHECK(!ShouldBlock()) here.
 
-  LogAction(
-      needs_sniffing()
-          ? network::CrossOriginReadBlocking::Action::kAllowedAfterSniffing
-          : network::CrossOriginReadBlocking::Action::kAllowedWithoutSniffing);
+  LogAction(needs_sniffing() ? Action::kAllowedAfterSniffing
+                             : Action::kAllowedWithoutSniffing);
 }
 
 void CrossOriginReadBlocking::ResponseAnalyzer::LogBlockedResponse() {
@@ -1090,10 +1084,8 @@ void CrossOriginReadBlocking::ResponseAnalyzer::LogBlockedResponse() {
         SniffingDecisionToProtectionDecision(found_blockable_content_));
   }
 
-  LogAction(
-      needs_sniffing()
-          ? network::CrossOriginReadBlocking::Action::kBlockedAfterSniffing
-          : network::CrossOriginReadBlocking::Action::kBlockedWithoutSniffing);
+  LogAction(needs_sniffing() ? Action::kBlockedAfterSniffing
+                             : Action::kBlockedWithoutSniffing);
 
   UMA_HISTOGRAM_ENUMERATION(
       "SiteIsolation.XSD.Browser.Blocked.CanonicalMimeType",
@@ -1102,7 +1094,7 @@ void CrossOriginReadBlocking::ResponseAnalyzer::LogBlockedResponse() {
 
 // static
 bool CrossOriginReadBlocking::ResponseAnalyzer::HasNoSniff(
-    const network::mojom::URLResponseHead& response) {
+    const mojom::URLResponseHead& response) {
   if (!response.headers)
     return false;
   std::string nosniff_header;

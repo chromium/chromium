@@ -1891,9 +1891,8 @@ class ResponseAnalyzerTest : public testing::Test,
     std::string cors_header_value;
     response.headers->GetNormalizedHeader("access-control-allow-origin",
                                           &cors_header_value);
-    auto request_mode = cors_header_value == ""
-                            ? network::mojom::RequestMode::kNoCors
-                            : network::mojom::RequestMode::kCors;
+    auto request_mode = cors_header_value == "" ? mojom::RequestMode::kNoCors
+                                                : mojom::RequestMode::kCors;
 
     // Create a ResponseAnalyzer to test.
     //
@@ -2059,16 +2058,16 @@ TEST_P(ResponseAnalyzerTest, ResponseBlocking) {
   int end_action = -1;
   if (should_be_blocked && expected_to_sniff) {
     end_action = static_cast<int>(
-        network::CrossOriginReadBlocking::Action::kBlockedAfterSniffing);
+        CrossOriginReadBlocking::Action::kBlockedAfterSniffing);
   } else if (should_be_blocked && !expected_to_sniff) {
     end_action = static_cast<int>(
-        network::CrossOriginReadBlocking::Action::kBlockedWithoutSniffing);
+        CrossOriginReadBlocking::Action::kBlockedWithoutSniffing);
   } else if (!should_be_blocked && expected_to_sniff) {
     end_action = static_cast<int>(
-        network::CrossOriginReadBlocking::Action::kAllowedAfterSniffing);
+        CrossOriginReadBlocking::Action::kAllowedAfterSniffing);
   } else if (!should_be_blocked && !expected_to_sniff) {
     end_action = static_cast<int>(
-        network::CrossOriginReadBlocking::Action::kAllowedWithoutSniffing);
+        CrossOriginReadBlocking::Action::kAllowedWithoutSniffing);
   } else {
     NOTREACHED();
   }
@@ -2107,17 +2106,15 @@ TEST_P(ResponseAnalyzerTest, CORBProtectionLogging) {
   auto response =
       CreateResponse(scenario.response_content_type, scenario.response_headers,
                      scenario.initiator_origin);
-  const bool seems_sensitive_from_cors_heuristic =
-      network::CrossOriginReadBlocking::ResponseAnalyzer::
-          SeemsSensitiveFromCORSHeuristic(*response);
-  const bool seems_sensitive_from_cache_heuristic =
-      network::CrossOriginReadBlocking::ResponseAnalyzer::
-          SeemsSensitiveFromCacheHeuristic(*response);
+  const bool seems_sensitive_from_cors_heuristic = CrossOriginReadBlocking::
+      ResponseAnalyzer::SeemsSensitiveFromCORSHeuristic(*response);
+  const bool seems_sensitive_from_cache_heuristic = CrossOriginReadBlocking::
+      ResponseAnalyzer::SeemsSensitiveFromCacheHeuristic(*response);
   const bool supports_range_requests =
-      network::CrossOriginReadBlocking::ResponseAnalyzer::SupportsRangeRequests(
+      CrossOriginReadBlocking::ResponseAnalyzer::SupportsRangeRequests(
           *response);
   const bool expect_nosniff =
-      network::CrossOriginReadBlocking::ResponseAnalyzer::HasNoSniff(*response);
+      CrossOriginReadBlocking::ResponseAnalyzer::HasNoSniff(*response);
 
   // Run the analyzer and confirm it allows/blocks correctly.
   RunAnalyzerOnScenario(*response);
