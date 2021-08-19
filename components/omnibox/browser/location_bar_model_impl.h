@@ -40,6 +40,7 @@ class LocationBarModelImpl : public LocationBarModel {
   bool ShouldDisplayURL() const override;
   bool IsOfflinePage() const override;
   bool ShouldPreventElision() const override;
+  bool ShouldUseUpdatedConnectionSecurityIndicators() const override;
 
  private:
   std::u16string GetFormattedURL(

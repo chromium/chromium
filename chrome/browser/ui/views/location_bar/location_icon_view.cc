@@ -276,8 +276,8 @@ void LocationIconView::Update(bool suppress_animations) {
 
     // Show in-product help for the updated connection security icon.
     if (last_update_security_level_ == security_state::SECURE &&
-        base::FeatureList::IsEnabled(
-            omnibox::kUpdatedConnectionSecurityIndicators)) {
+        delegate_->GetLocationBarModel()
+            ->ShouldUseUpdatedConnectionSecurityIndicators()) {
       feature_engagement_tracker_->NotifyEvent(
           feature_engagement::events::
               kUpdatedConnectionSecurityIndicatorDisplayed);
