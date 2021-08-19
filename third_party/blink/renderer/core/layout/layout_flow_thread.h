@@ -46,17 +46,19 @@ typedef HeapLinkedHashSet<Member<LayoutMultiColumnSet>>
 // that we can roll back to the initial state if we need to re-lay out said
 // block child.
 class MultiColumnLayoutState {
+  DISALLOW_NEW();
   friend class LayoutMultiColumnFlowThread;
 
  public:
-  MultiColumnLayoutState() : column_set_(nullptr) {}
+  MultiColumnLayoutState() = default;
+  void Trace(Visitor*) const;
 
  private:
   explicit MultiColumnLayoutState(LayoutMultiColumnSet* column_set)
       : column_set_(column_set) {}
   LayoutMultiColumnSet* ColumnSet() const { return column_set_; }
 
-  UntracedMember<LayoutMultiColumnSet> column_set_;
+  Member<LayoutMultiColumnSet> column_set_;
 };
 
 // LayoutFlowThread is used to collect all the layout objects that participate

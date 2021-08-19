@@ -71,6 +71,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 
 namespace blink {
@@ -210,6 +211,8 @@ ASSERT_SIZE(MarginInfo, SameSizeAsMarginInfo);
 // child siblings. Only looking at the object currently being laid out isn't
 // always enough.
 class BlockChildrenLayoutInfo {
+  STACK_ALLOCATED();
+
  public:
   BlockChildrenLayoutInfo(LayoutBlockFlow* block_flow,
                           LayoutUnit before_edge,

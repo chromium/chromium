@@ -323,4 +323,8 @@ void LayoutFlowThread::MultiColumnSetSearchAdapter::CollectIfNeeded(
     result_ = interval.Data();
 }
 
+void MultiColumnLayoutState::Trace(Visitor* visitor) const {
+  visitor->Trace(column_set_);
+}
+
 }  // namespace blink
