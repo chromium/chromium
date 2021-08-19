@@ -13,6 +13,15 @@
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/controls/highlight_path_generator.h"
 
+namespace {
+
+// Padding between chip's icon and label.
+constexpr int kChipImagePadding = 4;
+// An extra space between chip's label and right edge.
+constexpr int kExtraRightPadding = 4;
+
+}  // namespace
+
 OmniboxChipButton::OmniboxChipButton(PressedCallback callback,
                                      const gfx::VectorIcon& icon,
                                      std::u16string message,
@@ -29,8 +38,7 @@ OmniboxChipButton::OmniboxChipButton(PressedCallback callback,
   SetElideBehavior(gfx::ElideBehavior::FADE_TAIL);
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   // Equalizing padding on the left, right and between icon and label.
-  SetImageLabelSpacing(
-      GetLayoutInsets(LOCATION_BAR_ICON_INTERIOR_PADDING).left());
+  SetImageLabelSpacing(kChipImagePadding);
   SetCustomPadding(
       gfx::Insets(GetLayoutConstant(LOCATION_BAR_CHILD_INTERIOR_PADDING),
                   GetLayoutInsets(LOCATION_BAR_ICON_INTERIOR_PADDING).left()));
@@ -67,8 +75,8 @@ void OmniboxChipButton::SetExpandAnimationEndedCallback(
 
 gfx::Size OmniboxChipButton::CalculatePreferredSize() const {
   const int fixed_width = GetIconSize() + GetInsets().width();
-  const int collapsable_width =
-      label()->GetPreferredSize().width() + GetInsets().right();
+  const int collapsable_width = label()->GetPreferredSize().width() +
+                                kChipImagePadding + kExtraRightPadding;
   const double animation_value =
       force_expanded_for_testing_ ? 1.0 : animation_->GetCurrentValue();
   const int width =
