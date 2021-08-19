@@ -326,6 +326,7 @@ WebInputEventResult MouseEventManager::DispatchMouseEvent(
           mouse_event.FromTouch() ? MouseEvent::kFromTouch
                                   : MouseEvent::kRealOrIndistinguishable,
           mouse_event.menu_source_type);
+      event->SetTrusted(true);
       if (frame_ && frame_->DomWindow())
         event_timing = EventTiming::Create(frame_->DomWindow(), *event);
       if (should_dispatch) {
@@ -342,6 +343,7 @@ WebInputEventResult MouseEventManager::DispatchMouseEvent(
           mouse_event.FromTouch() ? MouseEvent::kFromTouch
                                   : MouseEvent::kRealOrIndistinguishable,
           mouse_event.menu_source_type);
+      event->SetTrusted(true);
       if (frame_ && frame_->DomWindow())
         event_timing = EventTiming::Create(frame_->DomWindow(), *event);
       if (should_dispatch) {
