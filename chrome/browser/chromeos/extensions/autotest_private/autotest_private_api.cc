@@ -116,6 +116,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/extensions/api/autotest_private.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/printing/printer_configuration.h"
@@ -518,6 +519,21 @@ std::string SetWhitelistedPref(Profile* profile,
     DCHECK(value.is_bool());
   } else if (pref_name == prefs::kPrintingAPIExtensionsAllowlist) {
     DCHECK(value.is_list());
+  } else if (pref_name ==
+             chromeos::quick_answers::prefs::kQuickAnswersEnabled) {
+    DCHECK(value.is_bool());
+  } else if (pref_name ==
+             chromeos::quick_answers::prefs::kQuickAnswersDefinitionEnabled) {
+    DCHECK(value.is_bool());
+  } else if (pref_name ==
+             chromeos::quick_answers::prefs::kQuickAnswersTranslationEnabled) {
+    DCHECK(value.is_bool());
+  } else if (pref_name == chromeos::quick_answers::prefs::
+                              kQuickAnswersUnitConverstionEnabled) {
+    DCHECK(value.is_bool());
+  } else if (pref_name ==
+             chromeos::quick_answers::prefs::kQuickAnswersConsentStatus) {
+    DCHECK(value.is_int());
   } else {
     return "The pref " + pref_name + " is not whitelisted.";
   }
