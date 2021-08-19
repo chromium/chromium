@@ -38,7 +38,6 @@
 #include "base/version.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
-#include "chrome/browser/ash/account_manager/account_manager_migrator.h"
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
 #include "chrome/browser/ash/arc/arc_migration_guide_notification.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -2198,13 +2197,6 @@ void UserSessionManager::CheckEolInfo(Profile* profile) {
   iter->second->CheckEolInfo();
 }
 
-void UserSessionManager::StartAccountManagerMigration(Profile* profile) {
-  // `migrator` is nullptr for incognito profiles.
-  auto* migrator = AccountManagerMigratorFactory::GetForBrowserContext(profile);
-  if (migrator)
-    migrator->Start();
-}
-
 EasyUnlockKeyManager* UserSessionManager::GetEasyUnlockKeyManager() {
   if (!easy_unlock_key_manager_)
     easy_unlock_key_manager_ = std::make_unique<EasyUnlockKeyManager>();
@@ -2281,8 +2273,6 @@ void UserSessionManager::DoBrowserLaunchInternal(Profile* profile,
   CheckEolInfo(profile);
 
   ShowNotificationsIfNeeded(profile);
-
-  StartAccountManagerMigration(profile);
 }
 
 void UserSessionManager::RespectLocalePreferenceWrapper(

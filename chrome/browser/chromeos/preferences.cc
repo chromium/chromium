@@ -171,11 +171,6 @@ void Preferences::RegisterProfilePrefs(
 
   // This pref is device specific and must not be synced.
   registry->RegisterIntegerPref(
-      ::prefs::kAccountManagerNumTimesMigrationRanSuccessfully,
-      0 /* default_value */);
-
-  // This pref is device specific and must not be synced.
-  registry->RegisterIntegerPref(
       ::prefs::kAccountManagerNumTimesWelcomeScreenShown,
       0 /* default_value */);
 

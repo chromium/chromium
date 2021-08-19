@@ -477,11 +477,6 @@ const char kPrintingAPIExtensionsAllowlist[] =
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // An integer preference to store the number of times the Chrome OS Account
-// Manager migration flow ran successfully.
-const char kAccountManagerNumTimesMigrationRanSuccessfully[] =
-    "account_manager.num_times_migration_ran_successfully";
-
-// An integer preference to store the number of times the Chrome OS Account
 // Manager welcome screen has been shown.
 const char kAccountManagerNumTimesWelcomeScreenShown[] =
     "account_manager.num_times_welcome_screen_shown";

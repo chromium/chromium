@@ -4,7 +4,6 @@
 
 #include "chrome/browser/chromeos/browser_context_keyed_service_factories.h"
 
-#include "chrome/browser/ash/account_manager/account_manager_migrator.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_helper_bridge.h"
 #include "chrome/browser/ash/authpolicy/authpolicy_credentials_manager.h"
 #include "chrome/browser/ash/bluetooth/debug_logs_manager_factory.h"
@@ -55,11 +54,9 @@
 
 namespace chromeos {
 
-using ::ash::AccountManagerMigratorFactory;
 using ::ash::AuthPolicyCredentialsManagerFactory;
 
 void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
-  AccountManagerMigratorFactory::GetInstance();
   android_sms::AndroidSmsServiceFactory::GetInstance();
   arc::ArcAccessibilityHelperBridge::CreateFactory();
   ash::CalendarKeyedServiceFactory::GetInstance();

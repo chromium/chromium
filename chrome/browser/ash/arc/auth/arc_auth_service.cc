@@ -13,7 +13,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/account_manager_facade_factory.h"
-#include "chrome/browser/ash/account_manager/account_manager_migrator.h"
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
 #include "chrome/browser/ash/arc/arc_optin_uma.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -153,41 +152,6 @@ bool IsPrimaryOrDeviceLocalAccount(
   return IsPrimaryGaiaAccount(account_info.gaia);
 }
 
-void TriggerAccountManagerMigrationsIfRequired(Profile* profile) {
-  if (!ash::IsAccountManagerAvailable(profile))
-    return;
-
-  ash::AccountManagerMigrator* const migrator =
-      ash::AccountManagerMigratorFactory::GetForBrowserContext(profile);
-  if (!migrator) {
-    // Migrator can be null for ephemeral and kiosk sessions. Ignore those cases
-    // since there are no accounts to be migrated in that case.
-    return;
-  }
-  const absl::optional<ash::AccountMigrationRunner::MigrationResult>
-      last_migration_run_result = migrator->GetLastMigrationRunResult();
-
-  if (!last_migration_run_result)
-    return;
-
-  if (last_migration_run_result->final_status !=
-      ash::AccountMigrationRunner::Status::kFailure) {
-    return;
-  }
-
-  if (last_migration_run_result->failed_step_id !=
-      ash::AccountManagerMigrator::kArcAccountsMigrationId) {
-    // Migrations failed but not because of ARC. ARC should not try to re-run
-    // migrations in this case.
-    return;
-  }
-
-  // Migrations are idempotent and safe to run multiple times. It may have
-  // happened that ARC migrations timed out at the start of the session. Give
-  // it a chance to run again.
-  migrator->Start();
-}
-
 // See //components/arc/mojom/auth.mojom RequestPrimaryAccount() for the spec.
 // See also go/arc-primary-account.
 std::string GetAccountName(Profile* profile) {
@@ -276,16 +240,14 @@ void ArcAuthService::RequestPrimaryAccount(
 }
 
 void ArcAuthService::OnConnectionReady() {
-  // |TriggerAccountsPushToArc()| will not be triggered for the first session,
+  // `TriggerAccountsPushToArc()` will not be triggered for the first session,
   // when ARC has not been provisioned yet. For the first session, an account
-  // push will be triggered by |OnArcInitialStart()|, after a successful device
+  // push will be triggered by `OnArcInitialStart()`, after a successful device
   // provisioning.
-  // For the second and subsequent sessions,
-  // |ArcSessionManager::Get()->IsArcProvisioned()| will be |true|.
-  if (arc::IsArcProvisioned(profile_)) {
-    TriggerAccountManagerMigrationsIfRequired(profile_);
+  // For the second and subsequent sessions, `arc::IsArcProvisioned()` will be
+  // `true`.
+  if (arc::IsArcProvisioned(profile_))
     TriggerAccountsPushToArc(false /* filter_primary_account */);
-  }
 
   if (pending_get_arc_accounts_callback_)
     DispatchAccountsInArc(std::move(pending_get_arc_accounts_callback_));

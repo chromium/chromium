@@ -647,6 +647,12 @@ const char kAccountStorageExists[] = "profile.password_account_storage_exists";
 // Deprecated 07/2021.
 const char kUserLanguageProfile[] = "language_profile";
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Deprecated 08/2021.
+const char kAccountManagerNumTimesMigrationRanSuccessfully[] =
+    "account_manager.num_times_migration_ran_successfully";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -689,10 +695,11 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 void RegisterProfilePrefsForMigration(
     user_prefs::PrefRegistrySyncable* registry) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterIntegerPref(kAccountManagerNumTimesMigrationRanSuccessfully,
+                                0);
   registry->RegisterDictionaryPref(kSupervisedUserAllowlists);
   chromeos::HelpAppNotificationController::RegisterObsoletePrefsForMigration(
       registry);
-
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   chrome_browser_net::secure_dns::RegisterProbesSettingBackupPref(registry);
@@ -1644,6 +1651,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 
   // Added 07/2021
   profile_prefs->ClearPref(kUserLanguageProfile);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Added 08/2021.
+  profile_prefs->ClearPref(kAccountManagerNumTimesMigrationRanSuccessfully);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

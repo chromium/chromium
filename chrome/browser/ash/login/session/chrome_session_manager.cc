@@ -162,7 +162,6 @@ void StartUserSession(Profile* user_profile, const std::string& login_user_id) {
 
   UserSessionManager::GetInstance()->ShowNotificationsIfNeeded(user_profile);
   UserSessionManager::GetInstance()->MaybeLaunchSettings(user_profile);
-  UserSessionManager::GetInstance()->StartAccountManagerMigration(user_profile);
 }
 
 }  // namespace
