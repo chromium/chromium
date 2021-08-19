@@ -76,7 +76,7 @@ TEST_F(RssLinksFetcherUnitTest, Success) {
   link_reader.WaitForCall();
 
   {
-    // Have link reader return TesetRssUrls as well as some invalid URLs which
+    // Have link reader return TestRssUrls as well as some invalid URLs which
     // are filtered out.
     std::vector<GURL> returned_urls = TestRssUrls();
     returned_urls.push_back(GURL());
