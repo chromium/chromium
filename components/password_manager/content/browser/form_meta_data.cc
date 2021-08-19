@@ -4,6 +4,7 @@
 
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 
+#include "components/password_manager/core/browser/password_manager_util.h"
 #include "content/public/browser/render_frame_host.h"
 
 namespace password_manager {
@@ -14,15 +15,6 @@ GURL StripAuth(const GURL& gurl) {
   GURL::Replacements rep;
   rep.ClearUsername();
   rep.ClearPassword();
-  return gurl.ReplaceComponents(rep);
-}
-
-GURL StripAuthAndParams(const GURL& gurl) {
-  GURL::Replacements rep;
-  rep.ClearUsername();
-  rep.ClearPassword();
-  rep.ClearQuery();
-  rep.ClearRef();
   return gurl.ReplaceComponents(rep);
 }
 
@@ -46,7 +38,7 @@ void SetFrameAndFormMetaData(content::RenderFrameHost* rfh,
   GURL url = GetURLFromRenderFrameHost(rfh);
   DCHECK(url.is_valid());
   form.host_frame = autofill::LocalFrameToken(rfh->GetFrameToken().value());
-  form.url = StripAuthAndParams(url);
+  form.url = password_manager_util::StripAuthAndParams(url);
   form.full_url = StripAuth(url);
   form.main_frame_origin = rfh->GetMainFrame()->GetLastCommittedOrigin();
 }

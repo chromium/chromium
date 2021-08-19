@@ -191,4 +191,13 @@ SubmissionIndicatorEvent ToSubmissionIndicatorEvent(SubmissionSource source) {
   return SubmissionIndicatorEvent::NONE;
 }
 
+GURL StripAuthAndParams(const GURL& gurl) {
+  GURL::Replacements rep;
+  rep.ClearUsername();
+  rep.ClearPassword();
+  rep.ClearQuery();
+  rep.ClearRef();
+  return gurl.ReplaceComponents(rep);
+}
+
 }  // namespace autofill

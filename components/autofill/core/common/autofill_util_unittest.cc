@@ -204,4 +204,9 @@ INSTANTIATE_TEST_SUITE_P(
         LowercaseAndTokenizeAttributeStringCase{"foO    baR bAz",
                                                 {"foo", "bar", "baz"}}));
 
+TEST(StripAuthAndParamsTest, StripsAll) {
+  GURL url = GURL("https://login:password@example.com/login/?param=value#ref");
+  EXPECT_EQ(GURL("https://example.com/login/"), StripAuthAndParams(url));
+}
+
 }  // namespace autofill

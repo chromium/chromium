@@ -501,4 +501,9 @@ TEST(PasswordManagerUtil,
   UserTriggeredManualGenerationFromContextMenu(&mock_client);
 }
 
+TEST(PasswordManagerUtil, StripAuthAndParams) {
+  GURL url = GURL("https://login:password@example.com/login/?param=value#ref");
+  EXPECT_EQ(GURL("https://example.com/login/"), StripAuthAndParams(url));
+}
+
 }  // namespace password_manager_util

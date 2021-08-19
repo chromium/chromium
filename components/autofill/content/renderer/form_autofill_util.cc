@@ -1612,17 +1612,6 @@ void TrimStringVectorForIPC(std::vector<std::u16string>* strings) {
   }
 }
 
-// Helper function that strips any authentication data, as well as query and
-// ref portions of URL.
-GURL StripAuthAndParams(const GURL& gurl) {
-  GURL::Replacements rep;
-  rep.ClearUsername();
-  rep.ClearPassword();
-  rep.ClearQuery();
-  rep.ClearRef();
-  return gurl.ReplaceComponents(rep);
-}
-
 // Build a map from entries in |form_control_renderer_ids| to their indices,
 // for more efficient lookup.
 base::flat_map<FieldRendererId, size_t> BuildRendererIdToIndex(

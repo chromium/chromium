@@ -344,4 +344,13 @@ bool CanUseBiometricAuth(device_reauth::BiometricAuthenticator* authenticator) {
              password_manager::features::kBiometricTouchToFill);
 }
 
+GURL StripAuthAndParams(const GURL& gurl) {
+  GURL::Replacements rep;
+  rep.ClearUsername();
+  rep.ClearPassword();
+  rep.ClearQuery();
+  rep.ClearRef();
+  return gurl.ReplaceComponents(rep);
+}
+
 }  // namespace password_manager_util

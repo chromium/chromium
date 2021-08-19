@@ -8,6 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #import "ios/chrome/browser/credential_provider/credential_provider_util.h"
 #include "url/gurl.h"
@@ -23,17 +24,6 @@ using base::SysNSStringToUTF16;
 using base::SysUTF8ToNSString;
 using base::SysUTF16ToNSString;
 
-// Helper function that strips any authentication data, as well as query and
-// ref portions of URL.
-GURL StripAuthAndParams(const GURL& gurl) {
-  GURL::Replacements rep;
-  rep.ClearUsername();
-  rep.ClearPassword();
-  rep.ClearQuery();
-  rep.ClearRef();
-  return gurl.ReplaceComponents(rep);
-}
-
 }  // namespace
 
 password_manager::PasswordForm PasswordFormFromCredential(
@@ -43,7 +33,7 @@ password_manager::PasswordForm PasswordFormFromCredential(
   GURL url(SysNSStringToUTF8(credential.serviceIdentifier));
   DCHECK(url.is_valid());
 
-  form.url = StripAuthAndParams(url);
+  form.url = password_manager_util::StripAuthAndParams(url);
   form.signon_realm = form.url.GetOrigin().spec();
   form.username_value = SysNSStringToUTF16(credential.user);
   form.encrypted_password = SysNSStringToUTF8(credential.keychainIdentifier);
