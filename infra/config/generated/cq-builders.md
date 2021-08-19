@@ -35,10 +35,6 @@ These builders must pass before a CL may land that affects files outside of
 
 * [cast_shell_linux](https://ci.chromium.org/p/chromium/builders/try/cast_shell_linux) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+cast_shell_linux)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+cast_shell_linux))
 
-* [chromeos-amd64-generic-rel](https://ci.chromium.org/p/chromium/builders/try/chromeos-amd64-generic-rel) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+chromeos-amd64-generic-rel)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+chromeos-amd64-generic-rel))
-
-* [chromeos-arm-generic-rel](https://ci.chromium.org/p/chromium/builders/try/chromeos-arm-generic-rel) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+chromeos-arm-generic-rel)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+chromeos-arm-generic-rel))
-
 * [chromium_presubmit](https://ci.chromium.org/p/chromium/builders/try/chromium_presubmit) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+chromium_presubmit)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+chromium_presubmit))
 
 * [fuchsia-x64-cast](https://ci.chromium.org/p/chromium/builders/try/fuchsia-x64-cast) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+fuchsia-x64-cast)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+fuchsia-x64-cast))
@@ -48,10 +44,6 @@ These builders must pass before a CL may land that affects files outside of
 * [fuchsia_x64](https://ci.chromium.org/p/chromium/builders/try/fuchsia_x64) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+fuchsia_x64)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+fuchsia_x64))
 
 * [ios-simulator](https://ci.chromium.org/p/chromium/builders/try/ios-simulator) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+ios-simulator)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+ios-simulator))
-
-* [lacros-amd64-generic-rel](https://ci.chromium.org/p/chromium/builders/try/lacros-amd64-generic-rel) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+lacros-amd64-generic-rel)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+lacros-amd64-generic-rel))
-
-* [lacros-arm-generic-rel](https://ci.chromium.org/p/chromium/builders/try/lacros-arm-generic-rel) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+lacros-arm-generic-rel)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+lacros-arm-generic-rel))
 
 * [linux-chromeos-compile-dbg](https://ci.chromium.org/p/chromium/builders/try/linux-chromeos-compile-dbg) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+linux-chromeos-compile-dbg)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+linux-chromeos-compile-dbg))
 
@@ -436,14 +428,26 @@ as required builders.
 * [android-pie-arm64-coverage-experimental-rel](https://ci.chromium.org/p/chromium/builders/try/android-pie-arm64-coverage-experimental-rel) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+android-pie-arm64-coverage-experimental-rel)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+android-pie-arm64-coverage-experimental-rel))
   * Experiment percentage: 3.0
 
+* [chromeos-amd64-generic-rel](https://ci.chromium.org/p/chromium/builders/try/chromeos-amd64-generic-rel) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+chromeos-amd64-generic-rel)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+chromeos-amd64-generic-rel))
+  * Experiment percentage: 100.0
+
 * [chromeos-amd64-generic-rel-rts](https://ci.chromium.org/p/chromium/builders/try/chromeos-amd64-generic-rel-rts) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+chromeos-amd64-generic-rel-rts)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+chromeos-amd64-generic-rel-rts))
   * Experiment percentage: 5.0
+
+* [chromeos-arm-generic-rel](https://ci.chromium.org/p/chromium/builders/try/chromeos-arm-generic-rel) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+chromeos-arm-generic-rel)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+chromeos-arm-generic-rel))
+  * Experiment percentage: 100.0
 
 * [fuchsia_x64_rts](https://ci.chromium.org/p/chromium/builders/try/fuchsia_x64_rts) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+fuchsia_x64_rts)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+fuchsia_x64_rts))
   * Experiment percentage: 5.0
 
 * [ios-simulator-rts](https://ci.chromium.org/p/chromium/builders/try/ios-simulator-rts) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+ios-simulator-rts)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+ios-simulator-rts))
   * Experiment percentage: 1.0
+
+* [lacros-amd64-generic-rel](https://ci.chromium.org/p/chromium/builders/try/lacros-amd64-generic-rel) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+lacros-amd64-generic-rel)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+lacros-amd64-generic-rel))
+  * Experiment percentage: 10.0
+
+* [lacros-arm-generic-rel](https://ci.chromium.org/p/chromium/builders/try/lacros-arm-generic-rel) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+lacros-arm-generic-rel)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+lacros-arm-generic-rel))
+  * Experiment percentage: 10.0
 
 * [linux-1mbu-compile-fyi-rel](https://ci.chromium.org/p/chromium/builders/try/linux-1mbu-compile-fyi-rel) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+linux-1mbu-compile-fyi-rel)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+linux-1mbu-compile-fyi-rel))
   * Experiment percentage: 5.0
