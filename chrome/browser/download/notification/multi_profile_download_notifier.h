@@ -68,9 +68,6 @@ class MultiProfileDownloadNotifier
     virtual void OnManagerGoingDown(content::DownloadManager* manager) {}
     virtual void OnDownloadCreated(content::DownloadManager* manager,
                                    download::DownloadItem* item) {}
-    // For `OnDownloadUpdated() and OnDownloadDestroyed(), `manager` is nullptr
-    // if the function is called while `item`'s original download manager is
-    // shutting down.
     virtual void OnDownloadUpdated(content::DownloadManager* manager,
                                    download::DownloadItem* item) {}
     virtual void OnDownloadDestroyed(content::DownloadManager* manager,

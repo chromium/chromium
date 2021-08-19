@@ -111,14 +111,16 @@ void MultiProfileDownloadNotifier::OnDownloadCreated(
 void MultiProfileDownloadNotifier::OnDownloadUpdated(
     content::DownloadManager* manager,
     download::DownloadItem* item) {
-  if (!manager || IsManagerReady(manager))
+  DCHECK(manager);
+  if (IsManagerReady(manager))
     client_->OnDownloadUpdated(manager, item);
 }
 
 void MultiProfileDownloadNotifier::OnDownloadDestroyed(
     content::DownloadManager* manager,
     download::DownloadItem* item) {
-  if (!manager || IsManagerReady(manager))
+  DCHECK(manager);
+  if (IsManagerReady(manager))
     client_->OnDownloadDestroyed(manager, item);
 }
 
