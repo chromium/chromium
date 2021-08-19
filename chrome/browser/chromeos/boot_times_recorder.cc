@@ -88,7 +88,7 @@ constexpr base::FilePath::CharType kChromeFirstRender[] =
     FPL("chrome-first-render");
 
 // Names of login UMA values.
-static const char kUmaLogin[] = "BootTime.Login";
+static const char kUmaLogin[] = "BootTime.Login2";
 static const char kUmaLoginNewUser[] = "BootTime.LoginNewUser";
 constexpr char kUmaLoginPrefix[] = "BootTime.";
 constexpr char kUmaLogout[] = "ShutdownTime.Logout";
@@ -135,7 +135,7 @@ void BootTimesRecorder::LoginDone(bool is_user_new) {
                       content::NotificationService::AllSources());
     render_widget_host_observations_.RemoveAllObservations();
   }
-  LoginEventRecorder::Get()->WriteLoginTimes(
+  LoginEventRecorder::Get()->ScheduleWriteLoginTimes(
       kLoginTimes, (is_user_new ? kUmaLoginNewUser : kUmaLogin),
       kUmaLoginPrefix);
 }

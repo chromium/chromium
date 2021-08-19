@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/login/login_state/login_state.h"
+#include "chromeos/metrics/login_event_recorder.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/compositor/total_animation_throughput_reporter.h"
@@ -57,6 +58,11 @@ void ReportLogin(base::TimeTicks start,
     LOG(WARNING) << "Zero frames expected in login animation throughput data";
     return;
   }
+  chromeos::LoginEventRecorder::Get()->AddLoginTimeMarker(
+      "LoginAnimationEnd",
+      /*send_to_uma=*/false,
+      /*write_to_file=*/false);
+  chromeos::LoginEventRecorder::Get()->RunScheduledWriteLoginTimes();
   RecordMetrics(start, data, "Ash.LoginAnimation.Smoothness.",
                 "Ash.LoginAnimation.Jank.", "Ash.LoginAnimation.Duration.");
 }

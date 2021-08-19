@@ -26,7 +26,8 @@ class COMPONENT_EXPORT(CHROMEOS_METRICS) LoginEventRecorder {
    public:
     TimeMarker(const char* name,
                absl::optional<std::string> url,
-               bool send_to_uma);
+               bool send_to_uma,
+               bool write_to_file);
     TimeMarker(const TimeMarker& other);
     ~TimeMarker();
 
@@ -34,6 +35,7 @@ class COMPONENT_EXPORT(CHROMEOS_METRICS) LoginEventRecorder {
     base::Time time() const { return time_; }
     const absl::optional<std::string>& url() const { return url_; }
     bool send_to_uma() const { return send_to_uma_; }
+    bool write_to_file() const { return write_to_file_; }
 
     // comparator for sorting
     bool operator<(const TimeMarker& other) const {
@@ -46,6 +48,7 @@ class COMPONENT_EXPORT(CHROMEOS_METRICS) LoginEventRecorder {
     base::Time time_ = base::Time::NowFromSystemTime();
     absl::optional<std::string> url_;
     bool send_to_uma_;
+    bool write_to_file_;
   };
 
   class Stats {
@@ -89,11 +92,14 @@ class COMPONENT_EXPORT(CHROMEOS_METRICS) LoginEventRecorder {
   // /tmp/login-times-sent after login is done. If |send_to_uma| is true
   // the time between this marker and the last will be sent to UMA with
   // the identifier BootTime.|marker_name|.
-  void AddLoginTimeMarker(const char* marker_name, bool send_to_uma);
+  void AddLoginTimeMarker(const char* marker_name,
+                          bool send_to_uma,
+                          bool write_to_file = true);
 
   void AddLoginTimeMarkerWithURL(const char* marker_name,
                                  absl::optional<std::string> url,
-                                 bool send_to_uma);
+                                 bool send_to_uma,
+                                 bool write_to_file = true);
 
   // Add a time marker for logout. A timeline will be dumped to
   // /tmp/logout-times-sent after logout is done. If |send_to_uma| is true
@@ -115,11 +121,14 @@ class COMPONENT_EXPORT(CHROMEOS_METRICS) LoginEventRecorder {
   // Existing stats files will not be overwritten.
   void RecordCurrentStats(const std::string& name);
 
-  // Write login and logout times to logs.
-  void WriteLoginTimes(const std::string base_name,
-                       const std::string uma_name,
-                       const std::string uma_prefix);
+  // Schedule writing login times to logs.
+  void ScheduleWriteLoginTimes(const std::string base_name,
+                               const std::string uma_name,
+                               const std::string uma_prefix);
+  // Immediately execute the task to write login times.
+  void RunScheduledWriteLoginTimes();
 
+  // Write logout times to logs.
   void WriteLogoutTimes(const std::string base_name,
                         const std::string uma_name,
                         const std::string uma_prefix);
@@ -127,12 +136,11 @@ class COMPONENT_EXPORT(CHROMEOS_METRICS) LoginEventRecorder {
  private:
   void AddMarker(std::vector<TimeMarker>* vector, TimeMarker&& marker);
 
-  void WriteLoginTimesDelayed(const std::string base_name,
-                              const std::string uma_name,
-                              const std::string uma_prefix);
+  void WriteLoginTimesDelayed();
+
   std::vector<TimeMarker> login_time_markers_;
   std::vector<TimeMarker> logout_time_markers_;
-  bool write_login_requested_ = false;
+  base::OnceCallback<void(std::vector<TimeMarker>)> callback_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   base::WeakPtrFactory<LoginEventRecorder> weak_ptr_factory_{this};

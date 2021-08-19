@@ -2092,6 +2092,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="BootTime.Login2" units="ms" expires_after="M99">
+  <owner>rsorokin@chromium.org</owner>
+  <owner>antrim@chromium.org</owner>
+  <owner>alemate@chromium.org</owner>
+  <owner>cros-oac@chromium.org</owner>
+  <summary>
+    Time from the moment sign in authentication is started until the first user
+    session UI elements become ready to use. (Chrome OS).
+  </summary>
+</histogram>
+
 <histogram name="BootTime.Total2" units="ms" expires_after="2022-01-02">
   <owner>bccheng@chromium.org</owner>
   <owner>semenzato@chromium.org</owner>
