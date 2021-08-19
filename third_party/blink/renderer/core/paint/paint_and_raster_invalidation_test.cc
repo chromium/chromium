@@ -951,6 +951,52 @@ TEST_P(PaintAndRasterInvalidationTest, ScrollingInvalidatesStickyOffset) {
   EXPECT_EQ(PhysicalOffset(), inner->FirstFragment().PaintOffset());
 }
 
+TEST_P(PaintAndRasterInvalidationTest, NoDamageDueToFloatingPointError) {
+  SetBodyInnerHTML(R"HTML(
+      <style>
+        #canvas {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 0;
+          height: 0;
+          will-change: transform;
+          transform-origin: top left;
+        }
+        .initial { transform: translateX(0px) scale(1.8); }
+        .updated { transform: translateX(47.22222222222222px) scale(1.8); }
+        #tile {
+          position: absolute;
+          will-change: transform;
+          transform-origin: top left;
+          transform: scale(0.55555555555556);
+        }
+        #tileInner {
+          transform-origin: top left;
+          transform: scale(1.8);
+          width: 200px;
+          height: 200px;
+          background: lightblue;
+        }
+      </style>
+      <div id="canvas" class="initial">
+        <div id="tile">
+          <div id="tileInner"></div>
+        </div>
+      </div>
+  )HTML");
+
+  GetDocument().View()->SetTracksRasterInvalidations(true);
+
+  auto* canvas = GetDocument().getElementById("canvas");
+  canvas->setAttribute(html_names::kClassAttr, "updated");
+  GetDocument().View()->SetPaintArtifactCompositorNeedsUpdate();
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(GetRasterInvalidationTracking(1)->HasInvalidations());
+  GetDocument().View()->SetTracksRasterInvalidations(false);
+}
+
 TEST_P(PaintAndRasterInvalidationTest, ResizeElementWhichHasNonCustomResizer) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
