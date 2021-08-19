@@ -107,11 +107,15 @@ void MediaStop() {
 }
 
 void NewIncognitoWindow() {
-  NewWindowDelegate::GetPrimary()->NewWindow(/*is_incognito=*/true);
+  NewWindowDelegate::GetPrimary()->NewWindow(
+      /*is_incognito=*/true,
+      /*should_trigger_session_restore=*/false);
 }
 
 void NewWindow() {
-  NewWindowDelegate::GetPrimary()->NewWindow(/*is_incognito=*/false);
+  NewWindowDelegate::GetPrimary()->NewWindow(
+      /*is_incognito=*/false,
+      /*should_trigger_session_restore=*/false);
 }
 
 void OpenCalculator() {

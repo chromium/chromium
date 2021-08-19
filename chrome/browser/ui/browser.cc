@@ -464,6 +464,7 @@ Browser::Browser(const CreateParams& params)
       is_trusted_source_(params.trusted_source),
       session_id_(SessionID::NewUnique()),
       omit_from_session_restore_(params.omit_from_session_restore),
+      should_trigger_session_restore_(params.should_trigger_session_restore),
       cancel_download_confirmation_state_(NOT_PROMPTED),
       override_bounds_(params.initial_bounds),
       initial_show_state_(params.initial_show_state),

@@ -135,7 +135,9 @@ void AppServiceShelfContextMenu::ExecuteCommand(int command_id,
       } else if (app_type_ == apps::mojom::AppType::kStandaloneBrowser) {
         crosapi::BrowserManager::Get()->NewWindow(/*incongnito=*/false);
       } else {
-        ash::NewWindowDelegate::GetInstance()->NewWindow(/*incognito=*/false);
+        ash::NewWindowDelegate::GetInstance()->NewWindow(
+            /*incognito=*/false,
+            /*should_trigger_session_restore=*/false);
       }
       ash::full_restore::FullRestoreService::MaybeCloseNotification(
           controller()->profile());
@@ -145,7 +147,9 @@ void AppServiceShelfContextMenu::ExecuteCommand(int command_id,
       if (app_type_ == apps::mojom::AppType::kStandaloneBrowser) {
         crosapi::BrowserManager::Get()->NewWindow(/*incognito=*/true);
       } else {
-        ash::NewWindowDelegate::GetInstance()->NewWindow(/*incognito=*/true);
+        ash::NewWindowDelegate::GetInstance()->NewWindow(
+            /*incognito=*/true,
+            /*should_trigger_session_restore=*/false);
       }
       ash::full_restore::FullRestoreService::MaybeCloseNotification(
           controller()->profile());

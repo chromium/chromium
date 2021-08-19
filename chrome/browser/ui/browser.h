@@ -242,6 +242,12 @@ class Browser : public TabStripModelObserver,
     // Browser should be omitted from being saved/restored by session restore.
     bool omit_from_session_restore = false;
 
+    // Specifies the browser `should_trigger_session_restore` value. If true, a
+    // new window opening should be treated like the start of a session (with
+    // potential session restore, startup URLs, etc.). Otherwise, don't restore
+    // the session.
+    bool should_trigger_session_restore = true;
+
     // The bounds of the window to open.
     gfx::Rect initial_bounds;
 
@@ -396,6 +402,9 @@ class Browser : public TabStripModelObserver,
   }
   const SessionID& session_id() const { return session_id_; }
   bool omit_from_session_restore() const { return omit_from_session_restore_; }
+  bool should_trigger_session_restore() const {
+    return should_trigger_session_restore_;
+  }
   BrowserContentSettingBubbleModelDelegate*
   content_setting_bubble_model_delegate() {
     return content_setting_bubble_model_delegate_.get();
@@ -1132,6 +1141,11 @@ class Browser : public TabStripModelObserver,
   // Whether this Browser should be omitted from being saved/restored by session
   // restore.
   bool omit_from_session_restore_ = false;
+
+  // If true, a new window opening should be treated like the start of a session
+  // (with potential session restore, startup URLs, etc.). Otherwise, don't
+  // restore the session.
+  const bool should_trigger_session_restore_;
 
   // The model for the toolbar view.
   std::unique_ptr<LocationBarModel> location_bar_model_;

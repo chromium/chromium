@@ -218,10 +218,12 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, CreateNewWindow) {
             chrome::GetBrowserCount(browser()->profile()->GetPrimaryOTRProfile(
                 /*create_if_needed=*/true)));
 
-  controller->CreateNewWindow(/*incognito=*/false);
+  controller->CreateNewWindow(/*incognito=*/false,
+                              /*should_trigger_session_restore=*/true);
   EXPECT_EQ(2U, chrome::GetBrowserCount(browser()->profile()));
 
-  controller->CreateNewWindow(/*incognito=*/true);
+  controller->CreateNewWindow(/*incognito=*/true,
+                              /*should_trigger_session_restore=*/true);
   EXPECT_EQ(1U,
             chrome::GetBrowserCount(browser()->profile()->GetPrimaryOTRProfile(
                 /*create_if_needed=*/true)));
@@ -467,7 +469,8 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest,
 
   // Create an incognito browser so that we can close the regular one without
   // exiting the test.
-  controller->CreateNewWindow(/*incognito=*/true);
+  controller->CreateNewWindow(/*incognito=*/true,
+                              /*should_trigger_session_restore=*/true);
   EXPECT_EQ(1U, chrome::GetBrowserCount(profile_otr));
   // Creating incognito browser should not update the launch time.
   EXPECT_EQ(time_recorded1,
@@ -482,7 +485,8 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest,
 
   // Launch another regular browser.
   const base::Time time_before_launch = base::Time::Now();
-  controller->CreateNewWindow(/*incognito=*/false);
+  controller->CreateNewWindow(/*incognito=*/false,
+                              /*should_trigger_session_restore=*/true);
   const base::Time time_after_launch = base::Time::Now();
   EXPECT_EQ(1U, chrome::GetBrowserCount(profile));
 
@@ -492,7 +496,8 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest,
   EXPECT_GE(time_after_launch, time_recorded2);
 
   // Creating a second regular browser should not update the launch time.
-  controller->CreateNewWindow(/*incognito=*/false);
+  controller->CreateNewWindow(/*incognito=*/false,
+                              /*should_trigger_session_restore=*/true);
   EXPECT_EQ(2U, chrome::GetBrowserCount(profile));
   EXPECT_EQ(time_recorded2,
             prefs->GetLastLaunchTime(extension_misc::kChromeAppId));

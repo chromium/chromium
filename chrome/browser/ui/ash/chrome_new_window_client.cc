@@ -325,7 +325,8 @@ void ChromeNewWindowClient::NewTabWithUrl(const GURL& url,
   OpenUrlImpl(url, from_user_interaction);
 }
 
-void ChromeNewWindowClient::NewWindow(bool is_incognito) {
+void ChromeNewWindowClient::NewWindow(bool is_incognito,
+                                      bool should_trigger_session_restore) {
   if (is_incognito && !IsIncognitoAllowed())
     return;
 
@@ -335,7 +336,8 @@ void ChromeNewWindowClient::NewWindow(bool is_incognito) {
                          : ProfileManager::GetActiveUserProfile();
   chrome::NewEmptyWindow(
       is_incognito ? profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)
-                   : profile);
+                   : profile,
+      should_trigger_session_restore);
 }
 
 void ChromeNewWindowClient::OpenCalculator() {

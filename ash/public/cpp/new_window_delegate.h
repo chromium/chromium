@@ -42,8 +42,12 @@ class ASH_PUBLIC_EXPORT NewWindowDelegate {
   // page will be able to autoplay media without restriction.
   virtual void NewTabWithUrl(const GURL& url, bool from_user_interaction) = 0;
 
-  // Invoked when the user uses Ctrl-N or Ctrl-Shift-N to open a new window.
-  virtual void NewWindow(bool incognito) = 0;
+  // Invoked when the user uses Ctrl-N or Ctrl-Shift-N to open a new window. If
+  // the |should_trigger_session_restore| is true, a new window opening should
+  // be treated like the start of a session (with potential session restore,
+  // startup URLs, etc.). Otherwise, don't restore the session.
+  virtual void NewWindow(bool incognito,
+                         bool should_trigger_session_restore) = 0;
 
   // Invoked when an accelerator (calculator key) is used to open calculator.
   virtual void OpenCalculator() = 0;

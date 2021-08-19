@@ -101,9 +101,11 @@ bool SessionService::ShouldNewWindowStartSession(Browser* browser) {
   // startup setting.
   if (full_restore::features::IsFullRestoreEnabled()) {
     // If there are other browser windows, or during the restoring process, or
-    // restore from crash, sessions should not be restored.
+    // restore from crash, or should not restore for `browser`, sessions should
+    // not be restored.
     if (SessionRestore::IsRestoring(profile()) ||
-        has_open_trackable_browsers_ || HasPendingUncleanExit(profile())) {
+        has_open_trackable_browsers_ || HasPendingUncleanExit(profile()) ||
+        (browser && !browser->should_trigger_session_restore())) {
       return false;
     }
 
