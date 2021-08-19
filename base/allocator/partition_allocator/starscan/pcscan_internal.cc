@@ -404,7 +404,7 @@ SuperPageSnapshot::SuperPageSnapshot(uintptr_t super_page) {
         ++current;
       });
 
-  PA_DCHECK(kMaxSlotSpansInSuperPage > current);
+  PA_DCHECK(kMaxSlotSpansInSuperPage >= current);
   scan_areas_.set_size(current);
 }
 
