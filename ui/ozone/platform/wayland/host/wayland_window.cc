@@ -162,13 +162,16 @@ uint32_t WaylandWindow::GetPreferredEnteredOutputId() {
   // output that has the biggest scale factor. Otherwise, use the very first one
   // that was entered. This way, we can be sure that the contents of the Window
   // are rendered at correct dpi when a user moves the window between displays.
-  auto* preferred_output = *root_surface_->entered_outputs().begin();
-  for (WaylandOutput* output : root_surface_->entered_outputs()) {
+  uint32_t preferred_output_id = *root_surface_->entered_outputs().begin();
+  for (uint32_t output_id : root_surface_->entered_outputs()) {
+    auto* output_manager = connection_->wayland_output_manager();
+    auto* output = output_manager->GetOutput(output_id);
+    auto* preferred_output = output_manager->GetOutput(preferred_output_id);
     if (output->scale_factor() > preferred_output->scale_factor())
-      preferred_output = output;
+      preferred_output_id = output_id;
   }
 
-  return preferred_output->output_id();
+  return preferred_output_id;
 }
 
 void WaylandWindow::SetPointerFocus(bool focus) {

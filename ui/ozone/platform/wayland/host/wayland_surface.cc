@@ -359,7 +359,7 @@ void WaylandSurface::Enter(void* data,
 
   auto* wayland_output =
       static_cast<WaylandOutput*>(wl_output_get_user_data(output));
-  surface->entered_outputs_.emplace_back(wayland_output);
+  surface->entered_outputs_.emplace_back(wayland_output->output_id());
 
   if (surface->root_window_)
     surface->root_window_->OnEnteredOutputIdAdded();
@@ -381,9 +381,9 @@ void WaylandSurface::RemoveEnteredOutput(uint32_t output_id) {
   if (entered_outputs().empty())
     return;
 
-  auto entered_outputs_it_ = std::find_if(
-      entered_outputs_.begin(), entered_outputs_.end(),
-      [&output_id](auto* it) { return it->output_id() == output_id; });
+  auto entered_outputs_it_ =
+      std::find_if(entered_outputs_.begin(), entered_outputs_.end(),
+                   [&output_id](uint32_t id) { return id == output_id; });
 
   // The `entered_outputs_` list should be updated,
   // 1. for wl_surface::leave, when a user switches physical output between two

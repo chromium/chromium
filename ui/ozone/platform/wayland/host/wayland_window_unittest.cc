@@ -34,6 +34,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection_test_api.h"
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
+#include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
 #include "ui/ozone/platform/wayland/host/wayland_zcr_cursor_shapes.h"
 #include "ui/ozone/platform/wayland/test/mock_pointer.h"
@@ -1893,9 +1894,8 @@ TEST_P(WaylandWindowTest, GetPreferredOutput) {
   EXPECT_EQ(2u, entered_outputs.size());
 
   // The window must prefer the output that it entered first.
-  auto* expected_entered_output = *entered_outputs.begin();
-  EXPECT_EQ(expected_entered_output->output_id(),
-            window_->GetPreferredEnteredOutputId());
+  uint32_t expected_entered_output_id = *entered_outputs.begin();
+  EXPECT_EQ(expected_entered_output_id, window_->GetPreferredEnteredOutputId());
 
   // Create the third output and pretend the window entered 3 outputs at the
   // same time.
@@ -1911,8 +1911,7 @@ TEST_P(WaylandWindowTest, GetPreferredOutput) {
   EXPECT_EQ(3u, entered_outputs.size());
 
   // but it still must prefer the output that it entered first.
-  EXPECT_EQ(expected_entered_output->output_id(),
-            window_->GetPreferredEnteredOutputId());
+  EXPECT_EQ(expected_entered_output_id, window_->GetPreferredEnteredOutputId());
 
   // Pretend that the output2 has scale factor equals to 2 now.
   output2->SetScale(2);
@@ -1923,12 +1922,14 @@ TEST_P(WaylandWindowTest, GetPreferredOutput) {
   EXPECT_EQ(3u, entered_outputs.size());
 
   // It must be the second entered output now.
-  expected_entered_output = *(++entered_outputs.begin());
+  expected_entered_output_id = *(++entered_outputs.begin());
+  auto* expected_entered_output =
+      connection_->wayland_output_manager()->GetOutput(
+          expected_entered_output_id);
   EXPECT_EQ(2, expected_entered_output->scale_factor());
 
   // The window_ must return the output with largest scale.
-  EXPECT_EQ(expected_entered_output->output_id(),
-            window_->GetPreferredEnteredOutputId());
+  EXPECT_EQ(expected_entered_output_id, window_->GetPreferredEnteredOutputId());
 
   // Now, the output1 changes its scale factor to 2 as well.
   output1->SetScale(2);
@@ -1937,9 +1938,8 @@ TEST_P(WaylandWindowTest, GetPreferredOutput) {
 
   // It must be the very first output now.
   entered_outputs = window_->root_surface()->entered_outputs();
-  expected_entered_output = *entered_outputs.begin();
-  EXPECT_EQ(expected_entered_output->output_id(),
-            window_->GetPreferredEnteredOutputId());
+  expected_entered_output_id = *entered_outputs.begin();
+  EXPECT_EQ(expected_entered_output_id, window_->GetPreferredEnteredOutputId());
 
   // Now, the output1 changes its scale factor back to 1.
   output1->SetScale(1);
@@ -1948,9 +1948,8 @@ TEST_P(WaylandWindowTest, GetPreferredOutput) {
 
   // It must be the very the second output now.
   entered_outputs = window_->root_surface()->entered_outputs();
-  expected_entered_output = *(++entered_outputs.begin());
-  EXPECT_EQ(expected_entered_output->output_id(),
-            window_->GetPreferredEnteredOutputId());
+  expected_entered_output_id = *(++entered_outputs.begin());
+  EXPECT_EQ(expected_entered_output_id, window_->GetPreferredEnteredOutputId());
 
   // All outputs have scale factor of 1. window_ prefers the output that
   // it entered first again.
@@ -1959,9 +1958,8 @@ TEST_P(WaylandWindowTest, GetPreferredOutput) {
   Sync();
 
   entered_outputs = window_->root_surface()->entered_outputs();
-  expected_entered_output = *(entered_outputs.begin());
-  EXPECT_EQ(expected_entered_output->output_id(),
-            window_->GetPreferredEnteredOutputId());
+  expected_entered_output_id = *(entered_outputs.begin());
+  EXPECT_EQ(expected_entered_output_id, window_->GetPreferredEnteredOutputId());
 }
 
 TEST_P(WaylandWindowTest, GetChildrenPreferredOutput) {
@@ -2044,9 +2042,8 @@ TEST_P(WaylandWindowTest, GetChildrenPreferredOutput) {
 
   // It must be the very the second output now.
   entered_outputs = window_->root_surface()->entered_outputs();
-  auto* expected_entered_output = *(++entered_outputs.begin());
-  EXPECT_EQ(expected_entered_output->output_id(),
-            window_->GetPreferredEnteredOutputId());
+  uint32_t expected_entered_output_id = *(++entered_outputs.begin());
+  EXPECT_EQ(expected_entered_output_id, window_->GetPreferredEnteredOutputId());
 
   EXPECT_EQ(window_->GetPreferredEnteredOutputId(),
             menu_window->GetPreferredEnteredOutputId());

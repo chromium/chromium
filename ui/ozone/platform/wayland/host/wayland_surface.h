@@ -41,7 +41,7 @@ class WaylandSurface {
   wl_surface* surface() const { return surface_.get(); }
   wp_viewport* viewport() const { return viewport_.get(); }
 
-  const std::vector<WaylandOutput*>& entered_outputs() const {
+  const std::vector<uint32_t>& entered_outputs() const {
     return entered_outputs_;
   }
 
@@ -170,7 +170,7 @@ class WaylandSurface {
   // events so their list of entered outputs becomes meaningless after they have
   // been hidden at least once.  To determine which output the popup belongs to,
   // we ask its parent.
-  std::vector<WaylandOutput*> entered_outputs_;
+  std::vector<uint32_t> entered_outputs_;
 
   // Transformation for how the compositor interprets the contents of the
   // buffer.
