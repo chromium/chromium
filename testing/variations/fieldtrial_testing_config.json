@@ -3656,6 +3656,12 @@
             "experiments": [
                 {
                     "name": "EnabledWithIph",
+                    "params": {
+                        "availability": "any",
+                        "event_trigger": "name:pulltorefresh_dummy;comparator:any;window:1;storage:1",
+                        "event_used": "name:pulltorefresh_dummy;comparator:any;window:1;storage:1",
+                        "session_rate": "==0"
+                    },
                     "enable_features": [
                         "FeedInteractiveRefresh",
                         "IPH_FeedSwipeRefresh"
