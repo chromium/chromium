@@ -178,7 +178,8 @@ class FollowManagementMediator {
     void fillRecyclerView(List<WebFeedMetadata> followedWebFeeds) {
         String updatesUnavailable =
                 mContext.getResources().getString(R.string.follow_manage_updates_unavailable);
-
+        String waitingForContent =
+                mContext.getResources().getString(R.string.follow_manage_waiting_for_content);
         // Remove the loading UI from the recycler view before showing the results.
         mModelList.clear();
 
