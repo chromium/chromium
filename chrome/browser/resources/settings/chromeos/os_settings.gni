@@ -342,6 +342,7 @@ os_settings_migrated_imports = cr_components_migrated_imports + [
                                  "chrome/browser/resources/settings/chromeos/os_a11y_page/change_dictation_locale_dialog.html",
                                  "chrome/browser/resources/settings/chromeos/os_apps_page/app_notifications_page/app_notifications_subpage.html",
                                  "chrome/browser/resources/settings/chromeos/os_bluetooth_page/os_bluetooth_page.html",
+                                 "chrome/browser/resources/settings/chromeos/os_bluetooth_page/os_bluetooth_device_battery_info.html",
                                  "chrome/browser/resources/settings/chromeos/os_bluetooth_page/os_bluetooth_devices_subpage.html",
                                  "chrome/browser/resources/settings/chromeos/os_bluetooth_page/os_bluetooth_device_detail_subpage.html",
                                  "chrome/browser/resources/settings/chromeos/os_bluetooth_page/os_bluetooth_change_device_name_dialog.html",

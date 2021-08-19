@@ -10,31 +10,13 @@
 
 import '../../settings_shared_css.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
-import '../os_icons.m.js';
+import './os_bluetooth_device_battery_info.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {getDeviceName} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_utils.js';
+import {getBatteryPercentage, getDeviceName} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_utils.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {FocusRowBehavior, FocusRowBehaviorInterface} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
-
-/**
- * The threshold percentage where any battery percentage lower is considered
- * 'low battery'.
- * @type {number}
- */
-const LOW_BATTERY_THRESHOLD_PERCENTAGE = 25;
-
-/**
- * Ranges for each battery icon, where the value of the first index is the
- * minimum battery percentage in the range (inclusive), and the second index is
- * the maximum battery percentage in the range (inclusive).
- * @type {Array<Array<number>>}
- */
-const BATTERY_ICONS_RANGES = [
-  [0, 7], [8, 14], [15, 21], [22, 28], [29, 35], [36, 42], [43, 49], [50, 56],
-  [57, 63], [64, 70], [71, 77], [78, 85], [86, 92], [93, 100]
-];
 
 /**
  * @constructor
@@ -73,19 +55,6 @@ class SettingsPairedBluetoothListItemElement extends
        * a11y label.
        */
       listSize: Number,
-
-      /** @private {boolean} */
-      isBatteryPercentageAvailable_: {
-        type: Boolean,
-        computed: 'computeIsBatteryPercentageAvailable_(device)',
-      },
-
-      /** @private {boolean} */
-      isLowBattery_: {
-        reflectToAttribute: true,
-        type: Boolean,
-        computed: 'computeIsLowBattery_(device)',
-      }
     };
   }
 
@@ -130,95 +99,13 @@ class SettingsPairedBluetoothListItemElement extends
   }
 
   /**
-   * Returns the battery percentage of device, or undefined if device does
-   * not exist or it has no battery information. Clients that call this method
-   * should explicitly check if the return value is undefined to differentiate
-   * it from a return value of 0.
-   * @param {!chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties}
-   *     device
-   * @return {number|undefined}
-   * @private
-   */
-  getBatteryPercentage_(device) {
-    if (!device) {
-      return undefined;
-    }
-
-    const batteryInfo = device.deviceProperties.batteryInfo;
-    if (!batteryInfo || !batteryInfo.defaultProperties) {
-      return undefined;
-    }
-
-    return batteryInfo.defaultProperties.batteryPercentage;
-  }
-
-  /**
    * @param {!chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties}
    *     device
    * @return {boolean}
    * @private
    */
-  computeIsBatteryPercentageAvailable_(device) {
-    const batteryPercentage = this.getBatteryPercentage_(device);
-    if (batteryPercentage === undefined) {
-      return false;
-    }
-    return batteryPercentage >= 0 && batteryPercentage <= 100;
-  }
-
-  /**
-   * @param {!chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties}
-   *     device
-   * @return {boolean}
-   * @private
-   */
-  computeIsLowBattery_(device) {
-    if (!this.isBatteryPercentageAvailable_) {
-      return false;
-    }
-    const batteryPercentage = this.getBatteryPercentage_(device);
-    return batteryPercentage < LOW_BATTERY_THRESHOLD_PERCENTAGE;
-  }
-
-  /**
-   * @param {!chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties}
-   *     device
-   * @return {string}
-   * @private
-   */
-  getBatteryPercentageString_(device) {
-    if (!this.isBatteryPercentageAvailable_) {
-      return '';
-    }
-    const batteryPercentage = this.getBatteryPercentage_(device);
-
-    // Required for closure compiler not to complain about the line below.
-    assert(batteryPercentage !== undefined);
-    return this.i18n(
-        'bluetoothPairedDeviceItemBatteryPercentage', batteryPercentage);
-  }
-
-  /**
-   * @param {!chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties}
-   *     device
-   * @return {string}
-   * @private
-   */
-  getBatteryIcon_(device) {
-    if (!this.isBatteryPercentageAvailable_) {
-      return '';
-    }
-    const batteryPercentage = this.getBatteryPercentage_(device);
-
-    // Range should always find a value because isBatteryPercentageAvailable_
-    // ensures batteryPercentage is within bounds.
-    const range = BATTERY_ICONS_RANGES.find(range => {
-      return range[0] <= batteryPercentage && batteryPercentage <= range[1];
-    });
-    assert(
-        !!range && range.length === 2, 'Battery percentage range is invalid');
-
-    return 'os-settings:battery-' + range[0] + '-' + range[1];
+  shouldShowBatteryInfo_(device) {
+    return getBatteryPercentage(device) !== undefined;
   }
 
   /**
@@ -230,60 +117,61 @@ class SettingsPairedBluetoothListItemElement extends
   getAriaLabel_(device) {
     const deviceName = this.getDeviceName_(device);
     const deviceType = chromeos.bluetoothConfig.mojom.DeviceType;
+    const shouldShowBatteryInfo = this.shouldShowBatteryInfo_(device);
     let stringName;
     switch (device.deviceProperties.deviceType) {
       case deviceType.kComputer:
-        stringName = this.isBatteryPercentageAvailable_ ?
+        stringName = shouldShowBatteryInfo ?
             'bluetoothPairedDeviceItemA11yLabelTypeComputerWithBatteryInfo' :
             'bluetoothPairedDeviceItemA11yLabelTypeComputer';
         break;
       case deviceType.kPhone:
-        stringName = this.isBatteryPercentageAvailable_ ?
+        stringName = shouldShowBatteryInfo ?
             'bluetoothPairedDeviceItemA11yLabelTypePhoneWithBatteryInfo' :
             'bluetoothPairedDeviceItemA11yLabelTypePhone';
         break;
       case deviceType.kHeadset:
-        stringName = this.isBatteryPercentageAvailable_ ?
+        stringName = shouldShowBatteryInfo ?
             'bluetoothPairedDeviceItemA11yLabelTypeHeadsetWithBatteryInfo' :
             'bluetoothPairedDeviceItemA11yLabelTypeHeadset';
         break;
       case deviceType.kVideoCamera:
-        stringName = this.isBatteryPercentageAvailable_ ?
+        stringName = shouldShowBatteryInfo ?
             'bluetoothPairedDeviceItemA11yLabelTypeVideoCameraWithBatteryInfo' :
             'bluetoothPairedDeviceItemA11yLabelTypeVideoCamera';
         break;
       case deviceType.kGameController:
-        stringName = this.isBatteryPercentageAvailable_ ?
+        stringName = shouldShowBatteryInfo ?
             'bluetoothPairedDeviceItemA11yLabelTypeGameControllerWithBatteryInfo' :
             'bluetoothPairedDeviceItemA11yLabelTypeGameController';
         break;
       case deviceType.kKeyboard:
-        stringName = this.isBatteryPercentageAvailable_ ?
+        stringName = shouldShowBatteryInfo ?
             'bluetoothPairedDeviceItemA11yLabelTypeKeyboardWithBatteryInfo' :
             'bluetoothPairedDeviceItemA11yLabelTypeKeyboard';
         break;
       case deviceType.kMouse:
-        stringName = this.isBatteryPercentageAvailable_ ?
+        stringName = shouldShowBatteryInfo ?
             'bluetoothPairedDeviceItemA11yLabelTypeMouseWithBatteryInfo' :
             'bluetoothPairedDeviceItemA11yLabelTypeMouse';
         break;
       case deviceType.kTablet:
-        stringName = this.isBatteryPercentageAvailable_ ?
+        stringName = shouldShowBatteryInfo ?
             'bluetoothPairedDeviceItemA11yLabelTypeTabletWithBatteryInfo' :
             'bluetoothPairedDeviceItemA11yLabelTypeTablet';
         break;
       default:
-        stringName = this.isBatteryPercentageAvailable_ ?
+        stringName = shouldShowBatteryInfo ?
             'bluetoothPairedDeviceItemA11yLabelTypeUnknownWithBatteryInfo' :
             'bluetoothPairedDeviceItemA11yLabelTypeUnknown';
     }
 
-    if (!this.isBatteryPercentageAvailable_) {
+    if (!shouldShowBatteryInfo) {
       return this.i18n(
           stringName, this.itemIndex + 1, this.listSize, deviceName);
     }
 
-    const batteryPercentage = this.getBatteryPercentage_(device);
+    const batteryPercentage = getBatteryPercentage(device);
     assert(batteryPercentage !== undefined);
     return this.i18n(
         stringName, this.itemIndex + 1, this.listSize, deviceName,

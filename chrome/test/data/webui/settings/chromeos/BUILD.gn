@@ -123,6 +123,7 @@ js_modulizer("modulize") {
     "os_about_page_tests.js",
     "os_bluetooth_page_tests.js",
     "os_bluetooth_summary_tests.js",
+    "os_bluetooth_device_battery_info_tests.js",
     "os_bluetooth_devices_subpage_tests.js",
     "os_bluetooth_device_detail_subpage_tests.js",
     "os_bluetooth_change_device_name_dialog_tests.js",

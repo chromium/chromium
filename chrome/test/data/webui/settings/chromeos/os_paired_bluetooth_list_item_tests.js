@@ -39,20 +39,8 @@ suite('OsPairedBluetoothListItemTest', function() {
     return flushAsync();
   }
 
-  /**
-   * @param {boolean} isLowBattery
-   * @param {boolean} batteryIconRange
-   */
-  function assertBatteryUIState(isLowBattery, batteryIconRange) {
-    assertEquals(pairedBluetoothListItem.isLowBattery_, isLowBattery);
-    assertEquals(
-        pairedBluetoothListItem.shadowRoot.querySelector('#batteryIcon').icon,
-        'os-settings:battery-' + batteryIconRange);
-  }
-
   test(
-      'Device name, type, battery percentage and a11y labels',
-      async function() {
+      'Device name, type, battery info and a11y labels', async function() {
         // Device with no nickname, battery info and unknown device type.
         const publicName = 'BeatsX';
         const device = createDefaultBluetoothDevice(
@@ -69,9 +57,9 @@ suite('OsPairedBluetoothListItemTest', function() {
         const getDeviceName = () => {
           return pairedBluetoothListItem.$.deviceName;
         };
-        const getBatteryPercentage = () => {
+        const getBatteryInfo = () => {
           return pairedBluetoothListItem.shadowRoot.querySelector(
-              '#batteryPercentage');
+              'os-settings-bluetooth-device-battery-info');
         };
         const getDeviceTypeIcon = () => {
           return pairedBluetoothListItem.$.deviceTypeIcon;
@@ -85,7 +73,7 @@ suite('OsPairedBluetoothListItemTest', function() {
         };
         assertTrue(!!getDeviceName());
         assertEquals(getDeviceName().innerText, publicName);
-        assertFalse(!!getBatteryPercentage());
+        assertFalse(!!getBatteryInfo());
         assertTrue(!!getDeviceTypeIcon());
         assertEquals(getDeviceTypeIcon().icon, 'os-settings:bluetooth');
         assertEquals(
@@ -112,12 +100,8 @@ suite('OsPairedBluetoothListItemTest', function() {
 
         assertTrue(!!getDeviceName());
         assertEquals(getDeviceName().innerText, nickname);
-        assertTrue(!!getBatteryPercentage());
-        assertEquals(
-            getBatteryPercentage().innerText.trim(),
-            pairedBluetoothListItem.i18n(
-                'bluetoothPairedDeviceItemBatteryPercentage',
-                batteryPercentage));
+        assertTrue(!!getBatteryInfo());
+        assertEquals(getBatteryInfo().device, pairedBluetoothListItem.device);
         assertEquals(
             getDeviceTypeIcon().icon, 'os-settings:bluetooth-computer');
         assertEquals(
@@ -131,54 +115,20 @@ suite('OsPairedBluetoothListItemTest', function() {
                 'bluetoothPairedDeviceItemSubpageButtonA11yLabel', nickname));
       });
 
-  test('Battery icon and color', async function() {
+  test('Battery percentage out of bounds', async function() {
     const device = createDefaultBluetoothDevice(
         /*id=*/ '123456789', /*publicName=*/ 'BeatsX', /*connected=*/ true);
     pairedBluetoothListItem.device = device;
 
-    const getBatteryContainer = () => {
+    const getBatteryInfo = () => {
       return pairedBluetoothListItem.shadowRoot.querySelector(
-          '#batteryContainer');
+          'os-settings-bluetooth-device-battery-info');
     };
 
-    // Battery percentage out of bounds, should not be visible.
     await setBatteryPercentage(-10);
-    assertFalse(!!getBatteryContainer());
+    assertFalse(!!getBatteryInfo());
 
-    // Lower bound edge case.
-    await setBatteryPercentage(0);
-    assertBatteryUIState(/*isLowBattery=*/ true, /*batteryIconRange=*/ '0-7');
-
-    await setBatteryPercentage(3);
-    assertBatteryUIState(
-        /*isLowBattery=*/ true,
-        /*batteryIconRange=*/ '0-7');
-
-    // Maximum 'low battery' percentage.
-    await setBatteryPercentage(24);
-    assertBatteryUIState(
-        /*isLowBattery=*/ true,
-        /*batteryIconRange=*/ '22-28');
-
-    // Minimum non-'low battery' percentage.
-    await setBatteryPercentage(25);
-    assertBatteryUIState(
-        /*isLowBattery=*/ false,
-        /*batteryIconRange=*/ '22-28');
-
-    await setBatteryPercentage(94);
-    assertBatteryUIState(
-        /*isLowBattery=*/ false,
-        /*batteryIconRange=*/ '93-100');
-
-    // Upper bound edge case.
-    await setBatteryPercentage(100);
-    assertBatteryUIState(
-        /*isLowBattery=*/ false,
-        /*batteryIconRange=*/ '93-100');
-
-    // Battery percentage out of bounds, should not be visible.
     await setBatteryPercentage(101);
-    assertFalse(!!getBatteryContainer());
+    assertFalse(!!getBatteryInfo());
   });
 });

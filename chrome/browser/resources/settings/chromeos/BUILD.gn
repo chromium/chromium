@@ -393,6 +393,7 @@ preprocess_if_expr("preprocess_gen_v3") {
     "chromeos/nearby_share_page/nearby_share_subpage.m.js",
     "chromeos/nearby_share_page/types.m.js",
     "chromeos/os_bluetooth_page/os_bluetooth_page.js",
+    "chromeos/os_bluetooth_page/os_bluetooth_device_battery_info.js",
     "chromeos/os_bluetooth_page/os_bluetooth_devices_subpage.js",
     "chromeos/os_bluetooth_page/os_bluetooth_device_detail_subpage.js",
     "chromeos/os_bluetooth_page/os_bluetooth_change_device_name_dialog.js",

@@ -1,23 +1,6 @@
 <style include="settings-shared">
-  .secondary {
+  os-settings-bluetooth-device-battery-info {
     padding-top: 3px;
-  }
-
-  :host([is-low-battery_]) .secondary {
-    --iron-icon-fill-color: var(--google-red-600);
-    color: var(--google-red-600);
-  }
-
-  :host(:not([is-low-battery_])) .secondary {
-    --iron-icon-fill-color: var(--google-grey-600);
-    color: var(--google-grey-700);
-  }
-
-  #batteryIcon {
-    --iron-icon-height: 16px;
-    --iron-icon-width: 16px;
-    margin-inline-end: -2px;
-    padding-bottom: 2px;
   }
 </style>
 <div focus-row-container>
@@ -33,14 +16,10 @@
     <div class="middle" aria-hidden="true">
       <div id="deviceName">[[getDeviceName_(device)]]</div>
       <template is="dom-if"
-          if="[[isBatteryPercentageAvailable_]]" restamp>
-        <div id="batteryContainer" class="secondary">
-          <iron-icon id="batteryIcon" icon="[[getBatteryIcon_(device)]]">
-          </iron-icon>
-          <span id="batteryPercentage">
-            [[getBatteryPercentageString_(device)]]
-          </span>
-        </div>
+          if="[[shouldShowBatteryInfo_(device)]]" restamp>
+        <os-settings-bluetooth-device-battery-info
+            device="[[device]]">
+        </os-settings-bluetooth-device-battery-info>
       </template>
     </div>
     <div>

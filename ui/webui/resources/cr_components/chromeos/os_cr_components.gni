@@ -44,7 +44,7 @@ cr_components_chromeos_auto_imports = [
   "ui/webui/resources/cr_elements/policy/cr_policy_indicator_behavior.html|CrPolicyIndicatorType",
   "ui/webui/resources/cr_elements/cr_container_shadow_behavior.html|CrContainerShadowBehavior",
   "ui/webui/resources/cr_components/chromeos/bluetooth/bluetooth_metrics_utils.html|BluetoothUiSurface,recordBluetoothUiSurfaceMetrics",
-  "ui/webui/resources/cr_components/chromeos/bluetooth/bluetooth_utils.html|mojoString16ToString,stringToMojoString16,getDeviceName",
+  "ui/webui/resources/cr_components/chromeos/bluetooth/bluetooth_utils.html|mojoString16ToString,stringToMojoString16,getDeviceName,getBatteryPercentage",
   "ui/webui/resources/cr_components/chromeos/cellular_setup/cellular_types.html|ButtonState,Button,ButtonBarState,CellularSetupPageName",
   "ui/webui/resources/cr_components/chromeos/cellular_setup/cellular_setup_delegate.html|CellularSetupDelegate",
   "ui/webui/resources/cr_components/chromeos/cellular_setup/subflow_behavior.html|SubflowBehavior",

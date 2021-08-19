@@ -44,3 +44,30 @@ export function getDeviceName(device) {
 
   return mojoString16ToString(device.deviceProperties.publicName);
 }
+
+/**
+ * Returns the battery percentage of device, or undefined if device does
+ * not exist, has no battery information, or the battery percentage is out of
+ * bounds. Clients that call this method should explicitly check if the return
+ * value is undefined to differentiate it from a return value of 0.
+ * @param {!chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties}
+ *     device
+ * @return {number|undefined}
+ */
+export function getBatteryPercentage(device) {
+  if (!device) {
+    return undefined;
+  }
+
+  const batteryInfo = device.deviceProperties.batteryInfo;
+  if (!batteryInfo || !batteryInfo.defaultProperties) {
+    return undefined;
+  }
+
+  const batteryPercentage = batteryInfo.defaultProperties.batteryPercentage;
+  if (batteryPercentage < 0 || batteryPercentage > 100) {
+    return undefined;
+  }
+
+  return batteryPercentage;
+}
