@@ -155,7 +155,14 @@ class FormControlsBrowserTest : public ContentBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, DISABLED_Checkbox) {
+// Checkbox renders differently on Android x86. crbug.com/1238283
+#if defined(OS_ANDROID) && defined(ARCH_CPU_X86)
+#define MAYBE_Checkbox DISABLED_Checkbox
+#else
+#define MAYBE_Checkbox Checkbox
+#endif
+
+IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, MAYBE_Checkbox) {
   if (SkipTestForOldAndroidVersions())
     return;
 
