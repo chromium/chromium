@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.share.screenshot;
-
-import static org.mockito.ArgumentMatchers.eq;
+package org.chromium.chrome.browser.share;
 
 import android.Manifest.permission;
 import android.app.Activity;
@@ -19,27 +17,22 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.ui.base.AndroidPermissionDelegate;
 import org.chromium.ui.base.PermissionCallback;
-import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.DummyUiActivity;
 import org.chromium.ui.test.util.ThemedDummyUiActivityTestRule;
 
 /**
- * Tests for the {@link ScreenshotShareSheetView}.
+ * Tests for the {@link SaveBitmapDelegate}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@Features.EnableFeatures(ChromeFeatureList.CHROME_SHARE_SCREENSHOT)
-public class ScreenshotShareSheetSaveDelegateTest {
-    private ScreenshotShareSheetSaveDelegate mScreenshotShareSheetSaveDelegate;
+public class SaveBitmapDelegateTest {
+    private SaveBitmapDelegate mSaveBitmapDelegate;
 
     @Rule
     public ThemedDummyUiActivityTestRule<DummyUiActivity> mActivityTestRule =
@@ -47,30 +40,25 @@ public class ScreenshotShareSheetSaveDelegateTest {
                     DummyUiActivity.class, R.style.ColorOverlay_ChromiumAndroid);
 
     @Mock
-    private PropertyModel mModel;
-
-    @Mock
     private Runnable mCloseDialogRunnable;
 
     private TestAndroidPermissionDelegate mPermissionDelegate;
 
-    private boolean mScreenshotSaved;
+    private boolean mBitmapSaved;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
-        Mockito.when(mModel.get(eq(ScreenshotShareSheetViewProperties.SCREENSHOT_BITMAP)))
-                .thenReturn(Bitmap.createBitmap(10, 10, Bitmap.Config.ALPHA_8));
-
         mActivityTestRule.launchActivity(null);
         Activity activity = mActivityTestRule.getActivity();
         mPermissionDelegate = new TestAndroidPermissionDelegate();
-        mScreenshotShareSheetSaveDelegate = new ScreenshotShareSheetSaveDelegate(
-                activity, mModel, mCloseDialogRunnable, mPermissionDelegate) {
+        Bitmap bitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ALPHA_8);
+        mSaveBitmapDelegate = new SaveBitmapDelegate(activity, bitmap,
+                R.string.screenshot_filename_prefix, mCloseDialogRunnable, mPermissionDelegate) {
             @Override
             protected void finishDownloadWithPermission(boolean granted) {
-                mScreenshotSaved = true;
+                mBitmapSaved = true;
             }
         };
     }
@@ -80,11 +68,11 @@ public class ScreenshotShareSheetSaveDelegateTest {
     @UiThreadTest
     public void testSaveWithPermission() {
         mPermissionDelegate.setHasPermission(true);
-        mScreenshotShareSheetSaveDelegate.save();
+        mSaveBitmapDelegate.save();
 
         Assert.assertTrue(mPermissionDelegate.calledHasPermission());
         Assert.assertFalse(mPermissionDelegate.calledCanRequestPermission());
-        Assert.assertTrue(mScreenshotSaved);
+        Assert.assertTrue(mBitmapSaved);
     }
 
     @Test
@@ -93,12 +81,12 @@ public class ScreenshotShareSheetSaveDelegateTest {
     public void testSaveWithoutPermissionCanNotAsk() {
         mPermissionDelegate.setHasPermission(false);
         mPermissionDelegate.setCanRequestPermission(false);
-        mScreenshotShareSheetSaveDelegate.save();
+        mSaveBitmapDelegate.save();
 
         Assert.assertTrue(mPermissionDelegate.calledHasPermission());
         Assert.assertTrue(mPermissionDelegate.calledCanRequestPermission());
-        Assert.assertTrue(mScreenshotShareSheetSaveDelegate.getDialog().isShowing());
-        Assert.assertFalse(mScreenshotSaved);
+        Assert.assertTrue(mSaveBitmapDelegate.getDialog().isShowing());
+        Assert.assertFalse(mBitmapSaved);
     }
 
     /**
