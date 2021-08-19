@@ -1,0 +1,17 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
+
+source_set("cpp") {
+  sources = [
+    "cros_bluetooth_config_util.cc",
+    "cros_bluetooth_config_util.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/services/bluetooth_config/public/mojom",
+  ]
+}
