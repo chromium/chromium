@@ -473,6 +473,16 @@ bool IsAXSetter(SEL selector) {
   if ([announcementText length] == 0)
     return nullptr;
 
+  const std::string& description =
+      _node->GetStringAttribute(ax::mojom::StringAttribute::kDescription);
+  if (!description.empty()) {
+    // Concatenating name and description, with a newline in between to create a
+    // pause to avoid treating the concatenation as a single sentence.
+    announcementText =
+        [NSString stringWithFormat:@"%@\n%@", announcementText,
+                                   base::SysUTF8ToNSString(description)];
+  }
+
   auto announcement = std::make_unique<AnnouncementSpec>();
   announcement->announcement =
       base::scoped_nsobject<NSString>([announcementText retain]);
