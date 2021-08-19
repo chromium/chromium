@@ -23,21 +23,23 @@ class Console;
 class SharedStorage;
 
 // The global JS execution context for shared storage worklet. It holds a
-// v8::Isolate and a v8::Context to execute all worklet operations.
+// v8::Isolate and a v8::Context to execute all worklet operations. Members are
+// initialized only after AddModule() succeeds.
 // https://github.com/pythagoraskitty/shared-storage/blob/main/README.md
 class SharedStorageWorkletGlobalScope {
  public:
-  explicit SharedStorageWorkletGlobalScope(
-      mojom::SharedStorageWorkletServiceClient* client);
+  SharedStorageWorkletGlobalScope();
   ~SharedStorageWorkletGlobalScope();
 
   void AddModule(
+      mojom::SharedStorageWorkletServiceClient* client,
       const GURL& script_source_url,
       mojom::SharedStorageWorkletService::AddModuleCallback callback);
 
   void OnModuleScriptDownloaded(
-      mojom::SharedStorageWorkletService::AddModuleCallback callback,
+      mojom::SharedStorageWorkletServiceClient* client,
       const GURL& script_source_url,
+      mojom::SharedStorageWorkletService::AddModuleCallback callback,
       std::unique_ptr<std::string> response_body,
       std::string error_message);
 

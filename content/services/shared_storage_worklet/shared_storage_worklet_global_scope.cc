@@ -50,11 +50,34 @@ void InitV8() {
 
 }  // namespace
 
-SharedStorageWorkletGlobalScope::SharedStorageWorkletGlobalScope(
-    mojom::SharedStorageWorkletServiceClient* client) {
+SharedStorageWorkletGlobalScope::SharedStorageWorkletGlobalScope() = default;
+SharedStorageWorkletGlobalScope::~SharedStorageWorkletGlobalScope() = default;
+
+void SharedStorageWorkletGlobalScope::AddModule(
+    mojom::SharedStorageWorkletServiceClient* client,
+    const GURL& script_source_url,
+    mojom::SharedStorageWorkletService::AddModuleCallback callback) {
+  // TODO(yaoxia): handle script downloading
+  OnModuleScriptDownloaded(client, script_source_url, std::move(callback),
+                           nullptr, "addModule not implemented");
+}
+
+void SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded(
+    mojom::SharedStorageWorkletServiceClient* client,
+    const GURL& script_source_url,
+    mojom::SharedStorageWorkletService::AddModuleCallback callback,
+    std::unique_ptr<std::string> response_body,
+    std::string error_message) {
+  if (!response_body) {
+    std::move(callback).Run(false, error_message);
+    return;
+  }
+
+  DCHECK(error_message.empty());
+
+  // Now the module script is downloaded, initialize the worklet environment.
   InitV8();
 
-  // Now the initialization is completed, create an isolate.
   isolate_holder_ = std::make_unique<gin::IsolateHolder>(
       base::ThreadTaskRunnerHandle::Get(), gin::IsolateHolder::kUseLocker,
       gin::IsolateHolder::IsolateType::kUtility);
@@ -67,15 +90,12 @@ SharedStorageWorkletGlobalScope::SharedStorageWorkletGlobalScope(
 
   v8::Local<v8::Object> global = context->Global();
 
-  console_ = std::make_unique<Console>(client);
-
-  shared_storage_ = std::make_unique<SharedStorage>(client);
-
   url_selection_operation_handler_ =
       std::make_unique<UrlSelectionOperationHandler>();
 
   unnamed_operation_handler_ = std::make_unique<UnnamedOperationHandler>();
 
+  console_ = std::make_unique<Console>(client);
   global
       ->Set(context, gin::StringToSymbol(Isolate(), "console"),
             console_->GetWrapper(Isolate()).ToLocalChecked())
@@ -103,50 +123,25 @@ SharedStorageWorkletGlobalScope::SharedStorageWorkletGlobalScope(
                 ->GetFunction(context)
                 .ToLocalChecked())
       .Check();
-}
 
-SharedStorageWorkletGlobalScope::~SharedStorageWorkletGlobalScope() = default;
+  // Execute the module script.
+  v8::MaybeLocal<v8::Value> result = WorkletV8Helper::CompileAndRunScript(
+      context, *response_body, script_source_url, &error_message);
 
-void SharedStorageWorkletGlobalScope::AddModule(
-    const GURL& script_source_url,
-    mojom::SharedStorageWorkletService::AddModuleCallback callback) {
-  // TODO(yaoxia): handle script downloading
-  OnModuleScriptDownloaded(std::move(callback), script_source_url, nullptr,
-                           "addModule not implemented");
-}
-
-void SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded(
-    mojom::SharedStorageWorkletService::AddModuleCallback callback,
-    const GURL& script_source_url,
-    std::unique_ptr<std::string> response_body,
-    std::string error_message) {
-  if (!response_body) {
+  if (result.IsEmpty()) {
     std::move(callback).Run(false, error_message);
     return;
   }
 
   DCHECK(error_message.empty());
 
-  {
-    WorkletV8Helper::HandleScope scope(Isolate());
-    v8::Local<v8::Context> context = LocalContext();
-    v8::Context::Scope context_scope(context);
-
-    v8::MaybeLocal<v8::Value> result = WorkletV8Helper::CompileAndRunScript(
-        context, *response_body, script_source_url, &error_message);
-
-    if (result.IsEmpty()) {
-      std::move(callback).Run(false, error_message);
-      return;
-    }
-
-    DCHECK(error_message.empty());
-
-    context->Global()
-        ->Set(context, gin::StringToSymbol(Isolate(), "sharedStorage"),
-              shared_storage_->GetWrapper(Isolate()).ToLocalChecked())
-        .Check();
-  }
+  // After the module script execution, create and expose the shared storage
+  // object.
+  shared_storage_ = std::make_unique<SharedStorage>(client);
+  context->Global()
+      ->Set(context, gin::StringToSymbol(Isolate(), "sharedStorage"),
+            shared_storage_->GetWrapper(Isolate()).ToLocalChecked())
+      .Check();
 
   std::move(callback).Run(true, {});
 }

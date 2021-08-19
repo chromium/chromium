@@ -143,13 +143,14 @@ class SharedStorageWorkletGlobalScopeTest : public testing::Test {
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     test_client_ = std::make_unique<TestClient>(
         task_environment_.GetMainThreadTaskRunner());
-    global_scope_ =
-        std::make_unique<SharedStorageWorkletGlobalScope>(test_client_.get());
+    global_scope_ = std::make_unique<SharedStorageWorkletGlobalScope>();
   }
 
   ~SharedStorageWorkletGlobalScopeTest() override = default;
 
   v8::Isolate* Isolate() { return global_scope_->Isolate(); }
+
+  bool IsolateInitialized() { return !!global_scope_->isolate_holder_; }
 
   v8::Local<v8::Context> LocalContext() {
     return global_scope_->LocalContext();
@@ -182,19 +183,24 @@ class SharedStorageWorkletGlobalScopeTest : public testing::Test {
   std::unique_ptr<SharedStorageWorkletGlobalScope> global_scope_;
 };
 
-TEST_F(SharedStorageWorkletGlobalScopeTest, AvailableAPI) {
+TEST_F(SharedStorageWorkletGlobalScopeTest, IsolateNotInitializedByDefault) {
+  EXPECT_FALSE(IsolateInitialized());
+}
+
+TEST_F(SharedStorageWorkletGlobalScopeTest, OnModuleScriptDownloadedSuccess) {
+  global_scope_->OnModuleScriptDownloaded(
+      test_client_.get(), GURL("https://example.test"),
+      base::DoNothing::Once<bool, const std::string&>(),
+      /*response_body=*/std::make_unique<std::string>(),
+      /*error_message=*/{});
+
+  EXPECT_TRUE(IsolateInitialized());
+
   EXPECT_EQ(GetTypeOf("console"), "object");
   EXPECT_EQ(GetTypeOf("console.log"), "function");
   EXPECT_EQ(GetTypeOf("registerURLSelectionOperation"), "function");
   EXPECT_EQ(GetTypeOf("registerOperation"), "function");
-  EXPECT_EQ(GetTypeOf("sharedStorage"), "undefined");
-
-  global_scope_->OnModuleScriptDownloaded(
-      base::DoNothing::Once<bool, const std::string&>(),
-      GURL("https://example.test"),
-      /*response_body=*/std::make_unique<std::string>(),
-      /*error_message=*/{});
-
+  EXPECT_EQ(GetTypeOf("sharedStorage"), "object");
   EXPECT_EQ(GetTypeOf("sharedStorage"), "object");
   EXPECT_EQ(GetTypeOf("sharedStorage.set"), "function");
   EXPECT_EQ(GetTypeOf("sharedStorage.append"), "function");
@@ -214,12 +220,11 @@ TEST_F(SharedStorageWorkletGlobalScopeTest, OnModuleScriptDownloadedWithError) {
         callback_called = true;
       });
 
-  global_scope_->OnModuleScriptDownloaded(
-      std::move(cb), GURL("https://example.test"), nullptr, "error1");
+  global_scope_->OnModuleScriptDownloaded(test_client_.get(),
+                                          GURL("https://example.test"),
+                                          std::move(cb), nullptr, "error1");
 
-  // sharedStorage is not exposed when addModule fails.
-  EXPECT_EQ(GetTypeOf("sharedStorage"), "undefined");
-
+  EXPECT_FALSE(IsolateInitialized());
   EXPECT_TRUE(callback_called);
 }
 
@@ -237,7 +242,7 @@ class SharedStorageAddModuleTest : public SharedStorageWorkletGlobalScopeTest {
         });
 
     global_scope_->OnModuleScriptDownloaded(
-        std::move(cb), GURL("https://example.test"),
+        test_client_.get(), GURL("https://example.test"), std::move(cb),
         std::make_unique<std::string>(script_body), /*error_message=*/{});
 
     ASSERT_TRUE(callback_called);
@@ -253,8 +258,6 @@ class SharedStorageAddModuleTest : public SharedStorageWorkletGlobalScopeTest {
 };
 
 TEST_F(SharedStorageAddModuleTest, VanillaScriptSuccess) {
-  EXPECT_EQ(GetTypeOf("a"), "undefined");
-
   SimulateAddModule(R"(
     a = 1;
   )");
@@ -273,6 +276,20 @@ TEST_F(SharedStorageAddModuleTest, VanillaScriptError) {
   EXPECT_EQ(
       error_message(),
       "https://example.test/:2 Uncaught ReferenceError: a is not defined.");
+}
+
+TEST_F(SharedStorageAddModuleTest, ObjectDefinedStatusDuringAddModule) {
+  SimulateAddModule(R"(
+    if (typeof(console) !== 'object' ||
+        typeof(registerOperation) !== 'function' ||
+        typeof(registerURLSelectionOperation) !== 'function' ||
+        typeof(sharedStorage) !== 'undefined') {
+      throw Error('Unexpected object defined status.');
+    }
+  )");
+
+  EXPECT_TRUE(success());
+  EXPECT_TRUE(error_message().empty());
 }
 
 TEST_F(SharedStorageAddModuleTest, RegisterOperation_MissingOperationName) {
@@ -397,7 +414,8 @@ class SharedStorageRunOperationTest
         });
 
     global_scope_->OnModuleScriptDownloaded(
-        std::move(add_module_callback), GURL("https://example.test"),
+        test_client_.get(), GURL("https://example.test"),
+        std::move(add_module_callback),
         std::make_unique<std::string>(script_body), /*error_message=*/{});
 
     ASSERT_TRUE(add_module_callback_called);
@@ -627,6 +645,18 @@ TEST_F(SharedStorageRunOperationTest,
 }
 
 TEST_F(SharedStorageRunOperationTest, UnnamedOperation_ExpectedCustomData) {
+  SimulateAddModule(R"(
+      class TestClass {
+        async run(data) {
+          if (data.customField != 'customValue') {
+            throw 'Unexpected value for customField field';
+          }
+        }
+      }
+
+      registerOperation("test-operation", TestClass);
+    )");
+
   std::vector<uint8_t> serialized_data;
   {
     WorkletV8Helper::HandleScope scope(Isolate());
@@ -639,6 +669,14 @@ TEST_F(SharedStorageRunOperationTest, UnnamedOperation_ExpectedCustomData) {
     serialized_data = Serialize(Isolate(), LocalContext(), obj);
   }
 
+  SimulateRunOperation("test-operation", serialized_data);
+
+  EXPECT_TRUE(unnamed_operation_finished());
+  EXPECT_TRUE(unnamed_operation_success());
+  EXPECT_TRUE(unnamed_operation_error_message().empty());
+}
+
+TEST_F(SharedStorageRunOperationTest, UnnamedOperation_UnexpectedCustomData) {
   SimulateAddModule(R"(
       class TestClass {
         async run(data) {
@@ -651,14 +689,6 @@ TEST_F(SharedStorageRunOperationTest, UnnamedOperation_ExpectedCustomData) {
       registerOperation("test-operation", TestClass);
     )");
 
-  SimulateRunOperation("test-operation", serialized_data);
-
-  EXPECT_TRUE(unnamed_operation_finished());
-  EXPECT_TRUE(unnamed_operation_success());
-  EXPECT_TRUE(unnamed_operation_error_message().empty());
-}
-
-TEST_F(SharedStorageRunOperationTest, UnnamedOperation_UnexpectedCustomData) {
   std::vector<uint8_t> serialized_data;
   {
     WorkletV8Helper::HandleScope scope(Isolate());
@@ -670,18 +700,6 @@ TEST_F(SharedStorageRunOperationTest, UnnamedOperation_UnexpectedCustomData) {
     dict.Set<std::string>("customField", std::string("customValue123"));
     serialized_data = Serialize(Isolate(), LocalContext(), obj);
   }
-
-  SimulateAddModule(R"(
-      class TestClass {
-        async run(data) {
-          if (data.customField != 'customValue') {
-            throw 'Unexpected value for customField field';
-          }
-        }
-      }
-
-      registerOperation("test-operation", TestClass);
-    )");
 
   SimulateRunOperation("test-operation", serialized_data);
 
