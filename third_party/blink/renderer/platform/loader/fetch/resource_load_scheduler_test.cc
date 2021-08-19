@@ -91,10 +91,12 @@ class ResourceLoadSchedulerTest : public testing::Test {
     bool HasMessage() const { return has_message_; }
 
    private:
-    void AddConsoleMessageImpl(mojom::ConsoleMessageSource,
-                               mojom::ConsoleMessageLevel,
-                               const String&,
-                               bool discard_duplicates) override {
+    void AddConsoleMessageImpl(
+        mojom::ConsoleMessageSource,
+        mojom::ConsoleMessageLevel,
+        const String&,
+        bool discard_duplicates,
+        absl::optional<mojom::ConsoleMessageCategory> category) override {
       has_message_ = true;
     }
     bool has_message_ = false;

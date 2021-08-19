@@ -4451,6 +4451,8 @@ domain Log
         error
       # Logged text.
       string text
+      optional enum category
+        cors
       # Timestamp when this entry was added.
       Runtime.Timestamp timestamp
       # URL of the resource if known.

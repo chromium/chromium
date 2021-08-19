@@ -902,9 +902,13 @@ void FetchManager::Loader::Failed(
   if (!message.IsEmpty() && !issue_only) {
     // CORS issues are reported via network service instrumentation, with the
     // exception of early errors reported in FileIssueAndPerformNetworkError.
-    execution_context_->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::ConsoleMessageSource::kJavaScript,
-        mojom::ConsoleMessageLevel::kError, message));
+    auto* console_message = MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kJavaScript,
+        mojom::blink::ConsoleMessageLevel::kError, message);
+    if (issue_id) {
+      console_message->SetCategory(mojom::blink::ConsoleMessageCategory::Cors);
+    }
+    execution_context_->AddConsoleMessage(console_message);
   }
   if (resolver_) {
     ScriptState* state = resolver_->GetScriptState();

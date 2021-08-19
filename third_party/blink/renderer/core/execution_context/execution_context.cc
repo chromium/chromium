@@ -298,13 +298,17 @@ void ExecutionContext::ReportNavigatorUserAgentAccess() {
   AuditsIssue::ReportNavigatorUserAgentAccess(this, Url().GetString());
 }
 
-void ExecutionContext::AddConsoleMessageImpl(mojom::ConsoleMessageSource source,
-                                             mojom::ConsoleMessageLevel level,
-                                             const String& message,
-                                             bool discard_duplicates) {
-  AddConsoleMessage(
-      MakeGarbageCollected<ConsoleMessage>(source, level, message),
-      discard_duplicates);
+void ExecutionContext::AddConsoleMessageImpl(
+    mojom::blink::ConsoleMessageSource source,
+    mojom::blink::ConsoleMessageLevel level,
+    const String& message,
+    bool discard_duplicates,
+    absl::optional<mojom::ConsoleMessageCategory> category) {
+  auto* console_message =
+      MakeGarbageCollected<ConsoleMessage>(source, level, message);
+  if (category)
+    console_message->SetCategory(*category);
+  AddConsoleMessage(console_message, discard_duplicates);
 }
 
 void ExecutionContext::DispatchErrorEvent(

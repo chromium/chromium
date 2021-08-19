@@ -455,10 +455,12 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
 
  private:
   // ConsoleLogger implementation.
-  void AddConsoleMessageImpl(mojom::ConsoleMessageSource,
-                             mojom::ConsoleMessageLevel,
-                             const String& message,
-                             bool discard_duplicates) override;
+  void AddConsoleMessageImpl(
+      mojom::blink::ConsoleMessageSource,
+      mojom::blink::ConsoleMessageLevel,
+      const String& message,
+      bool discard_duplicates,
+      absl::optional<mojom::ConsoleMessageCategory> category) override;
   virtual void AddConsoleMessageImpl(ConsoleMessage*,
                                      bool discard_duplicates) = 0;
 
