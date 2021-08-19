@@ -56,10 +56,10 @@ const char* kVariationsRestrictionsByPolicy =
 std::vector<std::string> ListValueToStringVector(const base::ListValue* value) {
   std::vector<std::string> results;
   results.reserve(value->GetSize());
-  std::string s;
   for (const auto& entry : value->GetList()) {
-    if (entry.GetAsString(&s))
-      results.push_back(s);
+    const std::string* s = entry.GetIfString();
+    if (s)
+      results.push_back(*s);
   }
   return results;
 }
