@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/mobile_metrics/mobile_friendliness_checker.h"
 
 #include "third_party/blink/public/mojom/mobile_metrics/mobile_friendliness.mojom-blink.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/page_scale_constraints_set.h"
@@ -152,6 +153,7 @@ bool IsTapTargetCandidate(const Node* node) {
 int ExtractAndCountAllTapTargets(
     LayoutObject* const root,
     int finger_radius,
+    int max_height,
     Vector<int>& x_positions,
     const base::Time& started,
     Vector<std::pair<int, EdgeOrCenter>>& vertices) {
@@ -185,6 +187,9 @@ int ExtractAndCountAllTapTargets(
       const int left = clampTo<int>(rect.X() - finger_radius);
       const int right = clampTo<int>(rect.MaxX() + finger_radius);
       const int center = right / 2 + left / 2;
+      if (top > max_height) {
+        return tap_targets;
+      }
       vertices.emplace_back(top, EdgeOrCenter::StartEdge(left, right));
       vertices.emplace_back(bottom / 2 + top / 2, EdgeOrCenter::Center(center));
       vertices.emplace_back(bottom, EdgeOrCenter::EndEdge(left, right));
@@ -292,6 +297,7 @@ void MobileFriendlinessChecker::ComputeBadTapTargetsRatio() {
   // targets.
   int all_tap_targets = ExtractAndCountAllTapTargets(
       frame_view_->GetFrame().GetDocument()->GetLayoutView(), finger_radius,
+      frame_view_->GetFrame().GetDocument()->domWindow()->innerHeight(),
       x_positions, started, vertices);
   if (all_tap_targets == -1) {
     mobile_friendliness_.bad_tap_targets_ratio = kTimeBudgetExceeded;
