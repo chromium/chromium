@@ -504,8 +504,10 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
     WillDrawInternal(true);
     const bool needs_clear = !is_cleared_;
     is_cleared_ = true;
+    // TODO(crbug.com/1241168): As a speculative fix we using a verified
+    // sync token.  This should be reverted if it does not fix the issue.
     RasterRecordOOP(last_recording, needs_clear,
-                    resource()->GetOrCreateGpuMailbox(kUnverifiedSyncToken));
+                    resource()->GetOrCreateGpuMailbox(kVerifiedSyncToken));
   }
 
   bool ShouldReplaceTargetBuffer(
