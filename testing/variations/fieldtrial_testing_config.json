@@ -8871,7 +8871,8 @@
                 "mac",
                 "chromeos_lacros",
                 "chromeos",
-                "ios"
+                "ios",
+                "android_webview"
             ],
             "experiments": [
                 {
