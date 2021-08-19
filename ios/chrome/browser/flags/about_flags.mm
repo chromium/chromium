@@ -930,7 +930,29 @@ NSMutableDictionary* CreateExperimentalTestingPolicies() {
                                    policy::key::kEnableExperimentalPolicies)];
   }
 
+  // Warning: Add new flags to TestingPoliciesHash() below.
+
   return testing_policies;
+}
+
+// Generates a unique NSString based on currently monitored policies from
+// NSUserDefaults standardUserDefaults.
+NSString* TestingPoliciesHash() {
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  return [NSString
+      stringWithFormat:@"%d|%d|%d|%@|%d|%d|%d|%d|%d|%d|%d",
+                       [defaults boolForKey:@"EnableSyncDisabledPolicy"],
+                       [defaults boolForKey:@"EnableSamplePolicies"],
+                       (int)[defaults
+                           integerForKey:@"IncognitoModeAvailability"],
+                       [defaults stringForKey:@"RestrictAccountsToPatterns"],
+                       [defaults boolForKey:@"SyncTypesListBookmarks"],
+                       [defaults boolForKey:@"SyncTypesListReadingList"],
+                       [defaults boolForKey:@"SyncTypesListPreferences"],
+                       [defaults boolForKey:@"SyncTypesListPasswords"],
+                       [defaults boolForKey:@"SyncTypesListAutofill"],
+                       [defaults boolForKey:@"SyncTypesListTypedUrls"],
+                       [defaults boolForKey:@"SyncTypesListTabs"]];
 }
 }  // namespace
 
@@ -1021,37 +1043,18 @@ void AppendSwitchesFromExperimentalSettings(base::CommandLine* command_line) {
 }
 
 void MonitorExperimentalSettingsChanges() {
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-
   // Startup values for settings to be observed.
-  __block bool disabledSync = [defaults boolForKey:@"EnableSyncDisabledPolicy"];
-  __block bool samplePolicies = [defaults boolForKey:@"EnableSamplePolicies"];
-  __block int incognitoAvailability =
-      [defaults integerForKey:@"IncognitoModeAvailability"];
-  __block NSString* restrictionPattern =
-      [defaults stringForKey:@"RestrictAccountsToPatterns"];
+  __block NSString* hash = TestingPoliciesHash();
 
   auto monitor = ^(NSNotification* notification) {
-    NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-
     // Check if observed settings have changed. Since source and destination
     // are both user defaults, this is required to avoid cycling back here.
-    bool newDisabledSync = [defaults boolForKey:@"EnableSyncDisabledPolicy"];
-    bool newSamplePolicies = [defaults boolForKey:@"EnableSamplePolicies"];
-    int newIncognitoAvailability =
-        [defaults integerForKey:@"IncognitoModeAvailability"];
-    NSString* newRestrictionPattern =
-        [defaults stringForKey:@"RestrictAccountsToPatterns"];
-    if (newDisabledSync != disabledSync ||
-        newSamplePolicies != samplePolicies ||
-        newIncognitoAvailability != incognitoAvailability ||
-        newRestrictionPattern != restrictionPattern) {
-      disabledSync = newDisabledSync;
-      samplePolicies = newSamplePolicies;
-      incognitoAvailability = newIncognitoAvailability;
-      restrictionPattern = newRestrictionPattern;
+    NSString* newHash = TestingPoliciesHash();
+    if (![newHash isEqualToString:hash]) {
+      hash = newHash;
 
       // Publish update.
+      NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
       NSMutableDictionary* testing_policies =
           CreateExperimentalTestingPolicies();
       [defaults setValue:testing_policies
