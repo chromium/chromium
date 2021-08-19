@@ -45,6 +45,10 @@ void TrySubset(hb_face_t* face,
   }
 
   HbScoped<hb_face_t> result(hb_subset_or_fail(face, input.get()));
+  if (!result) {
+    // Subset failed, so nothing to check.
+    return;
+  }
   HbScoped<hb_blob_t> blob(hb_face_reference_blob(result.get()));
   uint32_t length;
   const char* data = hb_blob_get_data(blob.get(), &length);
