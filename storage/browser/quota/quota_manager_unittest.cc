@@ -336,6 +336,17 @@ class QuotaManagerImplTest : public testing::Test {
                        weak_factory_.GetWeakPtr()));
   }
 
+  void FindAndDeleteBucketData(const StorageKey& storage_key,
+                               const std::string& bucket_name) {
+    base::RunLoop run_loop;
+    quota_status_ = QuotaStatusCode::kUnknown;
+    quota_manager_impl_->FindAndDeleteBucketData(
+        storage_key, bucket_name,
+        base::BindOnce(&QuotaManagerImplTest::StatusCallbackSync,
+                       weak_factory_.GetWeakPtr(), run_loop.QuitClosure()));
+    run_loop.Run();
+  }
+
   void GetStorageCapacity() {
     available_space_ = -1;
     total_space_ = -1;
@@ -467,6 +478,13 @@ class QuotaManagerImplTest : public testing::Test {
   void StatusCallback(QuotaStatusCode status) {
     ++status_callback_count_;
     quota_status_ = status;
+  }
+
+  void StatusCallbackSync(base::OnceClosure quit_closure,
+                          QuotaStatusCode status) {
+    ++status_callback_count_;
+    quota_status_ = status;
+    std::move(quit_closure).Run();
   }
 
   void DidGetHostUsageBreakdown(
@@ -2576,6 +2594,81 @@ TEST_F(QuotaManagerImplTest, DeleteBucketDataMultipleClientsDifferentTypes) {
   GetHostUsageWithBreakdown("bar.com", kPerm);
   task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_bar_pers - 1000, usage());
+}
+
+TEST_F(QuotaManagerImplTest, FindAndDeleteBucketData) {
+  static const MockStorageKeyData kData1[] = {
+      {"http://foo.com/", kTemp, 1},
+      {"http://bar.com/", kTemp, 4000},
+  };
+  static const MockStorageKeyData kData2[] = {
+      {"http://foo.com/", kTemp, 50000},
+      {"http://bar.com/", kTemp, 9},
+  };
+  CreateAndRegisterClient(kData1, QuotaClientType::kFileSystem,
+                          {blink::mojom::StorageType::kTemporary,
+                           blink::mojom::StorageType::kPersistent});
+  CreateAndRegisterClient(kData2, QuotaClientType::kDatabase,
+                          {blink::mojom::StorageType::kTemporary,
+                           blink::mojom::StorageType::kPersistent});
+
+  CreateBucketForTesting(ToStorageKey("http://foo.com"), kDefaultBucketName,
+                         kTemp);
+  ASSERT_TRUE(bucket_.ok());
+  BucketInfo foo_bucket = bucket_.value();
+
+  CreateBucketForTesting(ToStorageKey("http://bar.com"), kDefaultBucketName,
+                         kTemp);
+  ASSERT_TRUE(bucket_.ok());
+  BucketInfo bar_bucket = bucket_.value();
+
+  // Check usage data before deletion.
+  GetGlobalUsage(kTemp);
+  task_environment_.RunUntilIdle();
+  const int64_t predelete_global_tmp = usage();
+  ASSERT_EQ((1 + 9 + 4000 + 50000), usage());
+
+  GetHostUsageWithBreakdown("foo.com", kTemp);
+  task_environment_.RunUntilIdle();
+  ASSERT_EQ((1 + 50000), usage());
+
+  GetHostUsageWithBreakdown("bar.com", kTemp);
+  task_environment_.RunUntilIdle();
+  ASSERT_EQ((9 + 4000), usage());
+
+  // Delete bucket for "http://foo.com/".
+  reset_status_callback_count();
+  FindAndDeleteBucketData(foo_bucket.storage_key, foo_bucket.name);
+  EXPECT_EQ(1, status_callback_count());
+
+  GetBucket(foo_bucket.storage_key, foo_bucket.name, foo_bucket.type);
+  ASSERT_FALSE(bucket_.ok());
+  EXPECT_EQ(bucket_.error(), QuotaError::kNotFound);
+
+  GetGlobalUsage(kTemp);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(predelete_global_tmp - (1 + 50000), usage());
+
+  GetHostUsageWithBreakdown("foo.com", kTemp);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(0, usage());
+
+  // Delete bucket for "http://bar.com/".
+  reset_status_callback_count();
+  FindAndDeleteBucketData(bar_bucket.storage_key, bar_bucket.name);
+  EXPECT_EQ(1, status_callback_count());
+
+  GetBucket(bar_bucket.storage_key, bar_bucket.name, bar_bucket.type);
+  ASSERT_FALSE(bucket_.ok());
+  EXPECT_EQ(bucket_.error(), QuotaError::kNotFound);
+
+  GetGlobalUsage(kTemp);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(0, usage());
+
+  GetHostUsageWithBreakdown("bar.com", kTemp);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(0, usage());
 }
 
 TEST_F(QuotaManagerImplTest, GetCachedStorageKeys) {

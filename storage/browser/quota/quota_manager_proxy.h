@@ -99,6 +99,16 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback);
 
+  // Deletes bucket with `bucket_name` for `storage_key` for
+  // StorageType::kTemporary for all registered QuotaClients if a bucket exists.
+  // Will return QuotaStatusCode to the callback. Called by Storage Buckets API
+  // for deleting buckets via StorageBucketManager.
+  virtual void DeleteBucket(
+      const blink::StorageKey& storage_key,
+      const std::string& bucket_name,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      base::OnceCallback<void(blink::mojom::QuotaStatusCode)> callback);
+
   virtual void NotifyStorageAccessed(const blink::StorageKey& storage_key,
                                      blink::mojom::StorageType type,
                                      base::Time access_time);
