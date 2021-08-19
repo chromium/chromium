@@ -224,7 +224,6 @@ Sakatu bilatu nahi duzun hitza. Bilaketa mugatzeko, eduki testua sakatuta eta ha
 <translation id="2433507940547922241">Itxura</translation>
 <translation id="2435457462613246316">Erakutsi pasahitza</translation>
 <translation id="2450083983707403292">Berriro hasi nahi duzu <ph name="FILE_NAME" /> deskargatzen?</translation>
-<translation id="2450209325949418501">Jakinarazpenetan ikus dezakezu deskargen egoera</translation>
 <translation id="2450907520913474542">Lortu informazio gehiago beste webgune batzuetan, oraingo orritik irten gabe. "Sakatu bilatzeko" eginbideak hitz bat eta haren testuingurua Google Bilaketa zerbitzura bidaltzen ditu, eta definizioak, irudiak, bilaketa-emaitzak eta beste zenbait xehetasun eskaintzen.
 
 Eduki sakatuta bilatu nahi duzun hitza. Bilaketa mugatzeko, hautatu hitz gehiago edo gutxiago. Bilaketa editatzeko, ireki panela, sakatu fitxa berri batean irekitzeko ikonoa eta aldatu bilaketa-koadroko testua.</translation>
@@ -1230,6 +1229,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="8497726226069778601">Hutsik dago… momentuz.</translation>
 <translation id="8503559462189395349">Chrome-ko pasahitzak</translation>
 <translation id="8503813439785031346">Erabiltzaile-izena</translation>
+<translation id="8505766168025405649">Ikusi deskarga-egoerari buruzko jakinarazpena</translation>
 <translation id="8514477925623180633">Esportatu Chrome-rekin gordetako pasahitzak</translation>
 <translation id="8516012719330875537">Irudi-editorea</translation>
 <translation id="8523928698583292556">Ezabatu gordetako pasahitza</translation>

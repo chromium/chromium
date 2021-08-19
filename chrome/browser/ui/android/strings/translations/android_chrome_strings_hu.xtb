@@ -224,7 +224,6 @@ A kereséshez koppintson a kívánt szóra. A keresés finomításához ujja nyo
 <translation id="2433507940547922241">Megjelenés</translation>
 <translation id="2435457462613246316">Jelszó megjelenítése</translation>
 <translation id="2450083983707403292">Szeretné újra elkezdeni a(z) <ph name="FILE_NAME" /> letöltését?</translation>
-<translation id="2450209325949418501">A letöltés állapota az értesítések között látható</translation>
 <translation id="2450907520913474542">Többet is megtudhat a webhelyeken lévő egyes témákról anélkül, hogy elhagyná az adott oldalt. Az Érintéssel keresés funkció elküldi az adott szót és annak kontextusát a Google Kereső számára, majd meghatározásokat, képeket, keresési találatokat és egyéb részleteket jelenít meg.
 
 A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válasszon ki több vagy kevesebb szót. A keresés módosításához nyissa meg a panelt, koppintson az új lapon való megnyitás ikonjára, majd végezze el a módosításokat a keresőmezőben.</translation>
@@ -1230,6 +1229,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="8497726226069778601">Nincs itt semmi látnivaló… még</translation>
 <translation id="8503559462189395349">Chrome-jelszavak</translation>
 <translation id="8503813439785031346">Felhasználónév</translation>
+<translation id="8505766168025405649">A letöltés állapotát a vonatkozó értesítésben láthatja</translation>
 <translation id="8514477925623180633">A Chrome-ban tárolt jelszavak exportálása</translation>
 <translation id="8516012719330875537">Képszerkesztő</translation>
 <translation id="8523928698583292556">Tárolt jelszó törlése</translation>

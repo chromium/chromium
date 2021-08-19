@@ -224,7 +224,6 @@ Dodirnite bilo koju riječ da je pretražite. Za fino podešavanje pretraživanj
 <translation id="2433507940547922241">Izgled</translation>
 <translation id="2435457462613246316">Prikaži lozinku</translation>
 <translation id="2450083983707403292">Želite li ponovo početi preuzimanje fajla <ph name="FILE_NAME" />?</translation>
-<translation id="2450209325949418501">Status preuzimanja možete vidjeti u obavještenjima</translation>
 <translation id="2450907520913474542">Saznajte više o temama na web lokacijama bez napuštanja stranice. Kada dodirnete Pretraživanje, poslat ćete riječ i njen kontekst u Google Pretraživanje, a dobit ćete definicije, slike, rezultate pretraživanja i druge detalje.
 
 Dodirnite i zadržite bilo koju riječ da je pretražite. Za fino podešavanje pretraživanja, odaberite više ili manje riječi. Da uredite pretraživanje, otvorite ploču, dodirnite ikonu da otvorite novu karticu, a zatim izvršite izmjene u okviru za pretraživanje.</translation>
@@ -1230,6 +1229,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="8497726226069778601">Ovdje nema ničega… još uvijek</translation>
 <translation id="8503559462189395349">Chrome lozinke</translation>
 <translation id="8503813439785031346">Korisničko ime</translation>
+<translation id="8505766168025405649">Status preuzimanja provjerite u obavještenju</translation>
 <translation id="8514477925623180633">Izvoz lozinki pohranjenih u Chromeu</translation>
 <translation id="8516012719330875537">Uređivač slika</translation>
 <translation id="8523928698583292556">Izbriši sačuvane lozinke</translation>

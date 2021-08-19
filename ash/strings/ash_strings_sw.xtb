@@ -93,6 +93,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1615402009686901181">Sera ya msimamizi huzuia kupiga picha ya skrini wakati maudhui ya siri yanaonekana</translation>
 <translation id="1632985212731562677">Unaweza kuzima Kipengele cha Kufikia Kupitia Swichi katika Mipangilio &gt; Ufikivu.</translation>
 <translation id="1654477262762802994">Anza kutamka hoja ya utafutaji</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Bonyeza kitufe cha Utafutaji pamoja na kitufe cha Nafasi ili uone matokeo katika programu ya Mratibu.</translation>
 <translation id="1667964833127753507">Hali ya rangi ya kawaida haitumii rangi zilizotolewa kwenye mandhari, inazibadilisha na kuweka seti ya rangi angavu au nyeusi zenye uzito wa wastani.</translation>
 <translation id="1677472565718498478">Zimesalia <ph name="TIME" /></translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> haijaunganishwa.</translation>
@@ -171,7 +172,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="229397294990920565">Data ya mtandao wa simu inazima...</translation>
 <translation id="2295777434187870477">Maikrofoni imewasha, ukigeuza swichi utaizima.</translation>
 <translation id="2298170939937364391">Umewasha Kikuza Skrini Nzima. Bonyeza Ctrl+Search+M tena ili ukizime.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />; Bofya kidirisha ili uone matokeo katika programu ya Mratibu.</translation>
 <translation id="2302092602801625023">Akaunti hii inasimamiwa na Family Link</translation>
 <translation id="2303600792989757991">Geuza muhtasari wa dirisha</translation>
 <translation id="2322173485024759474">Rudi nyuma kwa herufi moja</translation>
@@ -349,7 +349,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="370665806235115550">Inapakia...</translation>
 <translation id="371370241367527062">Maikrofoni ya mbele</translation>
 <translation id="3713734891607377840">Ifungue ikimaliza kupakuliwa</translation>
-<translation id="3732269052167349831"><ph name="DESC_TEXT" />; Bofya kidirisha ili uone matokeo katika huduma ya Tafuta na Google.</translation>
 <translation id="3742055079367172538">Picha ya skrini imepigwa</translation>
 <translation id="3771549900096082774">Hali ya Juu ya Utofautishaji</translation>
 <translation id="3773700760453577392">Msimamizi ameondoa uwezo wa <ph name="USER_EMAIL" /> wa kuingia katika akaunti nyingi kwa wakati mmoja. Watumiaji wote lazima waondoke katika akaunti ili waendelee.</translation>
@@ -544,6 +543,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="5083553833479578423">Fungua vipengele zaidi vya programu yako ya Mratibu.</translation>
 <translation id="5136175204352732067">Kibodi tofauti imeunganishwa</translation>
 <translation id="5155897006997040331">Kasi ya kusoma</translation>
+<translation id="5166918508782100047">Mipangilio ya majibu ya haraka</translation>
 <translation id="5168181903108465623">Vifaa vinavyorusha maudhui vinapatikana</translation>
 <translation id="5170568018924773124">Onyesha katika folda</translation>
 <translation id="5176318573511391780">Rekodi sehemu ya skrini</translation>
@@ -596,6 +596,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="5620281292257375798">Ndani ya kampuni pekee</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Pini ya maikrofoni</translation>
+<translation id="5649768706273821470">Sikiliza</translation>
 <translation id="5662709761327382534">Hali ya maikrofoni ya kurekodi <ph name="CURRENT_STATE" />, Bonyeza 'enter' ili ubadilishe hali ya maikrofoni ya kurekodi iwe <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Inawashwa</translation>
 <translation id="5673434351075758678">Imebadalisha lugha kutoka "<ph name="FROM_LOCALE" />" kuwa "<ph name="TO_LOCALE" />" baada ya kusawazisha mipangilio yako.</translation>
@@ -797,6 +798,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="7302889331339392448">Kipengele cha Manukuu Papo Hapo kimezimwa.</translation>
 <translation id="7303365578352795231">Hoja inajibiwa kwa kutumia kifaa kingine.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Bonyeza kitufe cha Utafutaji pamoja na kitufe cha Nafasi ili uone matokeo katika huduma ya Tafuta na Google.</translation>
 <translation id="7346909386216857016">Sawa, nimeelewa</translation>
 <translation id="7348093485538360975">Kibodi ya skrini</translation>
 <translation id="735745346212279324">VPN imekatwa muunganisho</translation>

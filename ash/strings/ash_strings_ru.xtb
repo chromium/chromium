@@ -93,6 +93,7 @@
 <translation id="1615402009686901181">Администратор запретил запись экрана, когда видны конфиденциальные данные.</translation>
 <translation id="1632985212731562677">Функцию Switch Access можно отключить в разделе "Настройки &gt; Специальные возможности".</translation>
 <translation id="1654477262762802994">Произнесите запрос</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Чтобы посмотреть результат в Ассистенте, нажмите "Поиск + Пробел".</translation>
 <translation id="1667964833127753507">В режиме нейтральных цветов не используются оттенки ваших обоев. Вместо них интерфейс будет окрашен в нейтральные светлые или темные цвета.</translation>
 <translation id="1677472565718498478">Ещё <ph name="TIME" /></translation>
 <translation id="1677507110654891115">Функция "<ph name="FEATURE_NAME" />" не подключена.</translation>
@@ -171,7 +172,6 @@
 <translation id="229397294990920565">Отключение мобильного Интернета…</translation>
 <translation id="2295777434187870477">Микрофон включен. Нажмите, чтобы отключить его.</translation>
 <translation id="2298170939937364391">Полноэкранная лупа включена. Чтобы отключить ее, ещё раз нажмите Ctrl + Поиск + M.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />. Чтобы ознакомиться с результатами в Ассистенте, нажмите на диалоговое окно.</translation>
 <translation id="2302092602801625023">Аккаунт находится под управлением Family Link</translation>
 <translation id="2303600792989757991">Переключить режим обзора</translation>
 <translation id="2322173485024759474">Назад на одну букву</translation>
@@ -349,7 +349,6 @@
 <translation id="370665806235115550">Загрузка...</translation>
 <translation id="371370241367527062">Фронтальный микрофон</translation>
 <translation id="3713734891607377840">Открыть после скачивания</translation>
-<translation id="3732269052167349831"><ph name="DESC_TEXT" />. Нажмите на диалоговое окно, чтобы увидеть результат в Google Поиске.</translation>
 <translation id="3742055079367172538">Сделан скриншот</translation>
 <translation id="3771549900096082774">Режим высокой контрастности</translation>
 <translation id="3773700760453577392">Администратор отключил множественный вход для аккаунта <ph name="USER_EMAIL" />. Чтобы продолжить, все пользователи должны выйти из аккаунтов.</translation>
@@ -544,6 +543,7 @@
 <translation id="5083553833479578423">Получите доступ к другим возможностям Ассистента.</translation>
 <translation id="5136175204352732067">Подключена другая клавиатура</translation>
 <translation id="5155897006997040331">Скорость чтения</translation>
+<translation id="5166918508782100047">Настройка функции "Быстрые ответы"</translation>
 <translation id="5168181903108465623">Доступны устройства для трансляции</translation>
 <translation id="5170568018924773124">Показать в папке</translation>
 <translation id="5176318573511391780">Запись видео с части экрана</translation>
@@ -596,6 +596,7 @@
 <translation id="5620281292257375798">Конфиденциально</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Микрофонный разъем</translation>
+<translation id="5649768706273821470">Прослушать</translation>
 <translation id="5662709761327382534">Запись аудио с микрофона <ph name="CURRENT_STATE" />. Нажмите Ввод, чтобы она стала <ph name="NEW_STATE" />.</translation>
 <translation id="5669267381087807207">Активация</translation>
 <translation id="5673434351075758678">В результате синхронизации настроек язык изменен. Теперь используется <ph name="TO_LOCALE" />, а не <ph name="FROM_LOCALE" />.</translation>
@@ -797,6 +798,7 @@
 <translation id="7302889331339392448">Автоматические субтитры отключены</translation>
 <translation id="7303365578352795231">Ассистент отвечает на другом устройстве.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Чтобы посмотреть результат в Google Поиске, нажмите "Поиск + Пробел".</translation>
 <translation id="7346909386216857016">ОК</translation>
 <translation id="7348093485538360975">Экранная клавиатура</translation>
 <translation id="735745346212279324">VPN-соединение прервано</translation>

@@ -93,6 +93,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1615402009686901181">Politika e administratorit çaktivizon regjistrimin e ekranit kur përmbajtja konfidenciale është e dukshme</translation>
 <translation id="1632985212731562677">"Qasja me çelës" mund të çaktivizohet te Cilësimet &gt; Qasshmëria.</translation>
 <translation id="1654477262762802994">Nis një pyetje me zë</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Shtyp "Kërko" plus "Hapësirë" për ta shikuar rezultatin tek "Asistenti".</translation>
 <translation id="1667964833127753507">Modaliteti me ngjyra neutrale nuk përdor ngjyrat e nxjerra nga imazhi i sfondit, duke i zëvendësuar me një grupim me nuanca me tonalitet të çelur ose të errët.</translation>
 <translation id="1677472565718498478">Koha e mbetur <ph name="TIME" /></translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> nuk është lidhur.</translation>
@@ -171,7 +172,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="229397294990920565">Të dhënat celulare po çaktivizohen...</translation>
 <translation id="2295777434187870477">Mikrofoni është aktiv. Ndryshimi i tij do ta çaktivizojë hyrjen.</translation>
 <translation id="2298170939937364391">"Zmadhuesi i ekranit të plotë" u aktivizua. Shtyp përsëri Ctrl+Kërko+M për ta çaktivizuar.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />; Kliko dialogun për ta parë rezultatin tek "Asistenti".</translation>
 <translation id="2302092602801625023">Kjo llogari menaxhohet nga Family Link</translation>
 <translation id="2303600792989757991">Ndrysho përmbledhjen e dritares</translation>
 <translation id="2322173485024759474">Një shkronjë pas</translation>
@@ -349,7 +349,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="370665806235115550">Po ngarkon...</translation>
 <translation id="371370241367527062">Mikrofoni i përparmë</translation>
 <translation id="3713734891607377840">Hape kur të përfundojë</translation>
-<translation id="3732269052167349831"><ph name="DESC_TEXT" />; Kliko dialogun për të parë rezultatin te "Kërko në Google".</translation>
 <translation id="3742055079367172538">Pamja e ekranit u mor</translation>
 <translation id="3771549900096082774">Modaliteti i kontrastit të lartë</translation>
 <translation id="3773700760453577392">Një administrator ka ndaluar identifikimin e shumëfishtë për <ph name="USER_EMAIL" />. Të gjithë përdoruesit duhet të dalin për të vazhduar.</translation>
@@ -544,6 +543,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="5083553833479578423">Shkyç më shumë funksione të "Asistentit".</translation>
 <translation id="5136175204352732067">Është lidhur një tastierë tjetër</translation>
 <translation id="5155897006997040331">Shpejtësia e leximit</translation>
+<translation id="5166918508782100047">Cilësimet e "Përgjigjeve të shpejta"</translation>
 <translation id="5168181903108465623">Pajisjet e transmetimit janë të disponueshme</translation>
 <translation id="5170568018924773124">Shfaq në dosje</translation>
 <translation id="5176318573511391780">Regjistro ekranin e pjesshëm</translation>
@@ -596,6 +596,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="5620281292257375798">Vetëm i brendshëm</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Fisha e mikrofonit</translation>
+<translation id="5649768706273821470">Dëgjo</translation>
 <translation id="5662709761327382534">Regjistro me mikrofonin: <ph name="CURRENT_STATE" />. Shtyp "Enter" për ta vendosur regjistrimin e mikrofonit si: <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Po aktivizohet</translation>
 <translation id="5673434351075758678">Nga "<ph name="FROM_LOCALE" />" në "<ph name="TO_LOCALE" />" pas sinkronizimit të cilësimeve të tua.</translation>
@@ -797,6 +798,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="7302889331339392448">"Titrat në çast" janë joaktivë.</translation>
 <translation id="7303365578352795231">Po përgjigjet në një pajisje tjetër</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Shtyp "Kërko" plus "Hapësirë" për ta shikuar rezultatin në "Kërko në Google".</translation>
 <translation id="7346909386216857016">Në rregull, kuptova</translation>
 <translation id="7348093485538360975">Tastiera në ekran</translation>
 <translation id="735745346212279324">Rrjeti VPN u shkëput</translation>

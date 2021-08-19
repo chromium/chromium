@@ -93,6 +93,7 @@
 <translation id="1615402009686901181">Администраторын бодлого нь нууцлалтай контентыг харагдаж байх үед дэлгэцийн зураг авахыг идэвхгүй болгодог</translation>
 <translation id="1632985212731562677">Сэлгүүрийг Тохиргоо &gt; Хандалт хэсэгт идэвхгүй болгох боломжтой.</translation>
 <translation id="1654477262762802994">Дуут асуулга эхлүүлэх</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Туслахад илэрц харахын тулд Search болон Space-г дарна уу.</translation>
 <translation id="1667964833127753507">Завсрын өнгөний горим нь дэлгэцийн зургаас гаргаж авсан өнгийг ашигладаггүй тул завсрын цайвар эсвэл бараан өнгөөр орлуулдаг.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> үлдсэн</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> холбогдоогүй.</translation>
@@ -171,7 +172,6 @@
 <translation id="229397294990920565">Мобайл датаг унтрааж байна...</translation>
 <translation id="2295777434187870477">Микрофон асаалттай байна. Унтраах нь оролтын дууг хаана.</translation>
 <translation id="2298170939937364391">Бүтэн дэлгэц томруулагчийг идэвхжүүлсэн. Үүнийг унтраахын тулд Ctrl+Хайх+M-г дахин дарна уу.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />; Туслахад илэрц харахын тулд харилцах цонхыг товшино уу.</translation>
 <translation id="2302092602801625023">Энэ бүртгэлийг Family Link-р удирддаг</translation>
 <translation id="2303600792989757991">Цонхыг тоймлож харах</translation>
 <translation id="2322173485024759474">Нэг үсгээр буцаах</translation>
@@ -349,7 +349,6 @@
 <translation id="370665806235115550">Уншиж байна...</translation>
 <translation id="371370241367527062">Урд талын микрофон</translation>
 <translation id="3713734891607377840">Дуусах үед нээх</translation>
-<translation id="3732269052167349831"><ph name="DESC_TEXT" />; Google Хайлтад илэрц харахын тулд харилцах цонхыг товшино уу.</translation>
 <translation id="3742055079367172538">Дэлгэцний зургийг авсан болно (Screenshot)</translation>
 <translation id="3771549900096082774">Өндөр ялгаралтай горим</translation>
 <translation id="3773700760453577392">Админ <ph name="USER_EMAIL" />-д олон зэрэг нэвтрэхийг зөвшөөрөөгүй байна. 
@@ -545,6 +544,7 @@
 <translation id="5083553833479578423">Tуслахын бусад онцлогийн түгжээг тайлна уу.</translation>
 <translation id="5136175204352732067">Өөр гар холбосон</translation>
 <translation id="5155897006997040331">Унших хурд</translation>
+<translation id="5166918508782100047">Шуурхай хариултын тохиргоо</translation>
 <translation id="5168181903108465623">Бэлэн төхөөрөмжийг каст хийх</translation>
 <translation id="5170568018924773124">Хавтсанд харуул</translation>
 <translation id="5176318573511391780">Хэсэгчилсэн дэлгэцийг бичих</translation>
@@ -597,6 +597,7 @@
 <translation id="5620281292257375798">Зөвхөн дотоодод</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Микрофоны чихэвчний оролт</translation>
+<translation id="5649768706273821470">Сонсох</translation>
 <translation id="5662709761327382534">Микрофоныг бичих <ph name="CURRENT_STATE" /> байна. Микрофоны бичлэгийг <ph name="NEW_STATE" /> болгохын тулд enter дээр дарна уу</translation>
 <translation id="5669267381087807207">Идэвхжиж байна</translation>
 <translation id="5673434351075758678">Тохиргоогоо синк хийсний дараа "<ph name="FROM_LOCALE" />"-с "<ph name="TO_LOCALE" />" руу шилжүүлнэ.</translation>
@@ -798,6 +799,7 @@
 <translation id="7302889331339392448">Шууд тайлбар унтраалттай байна.</translation>
 <translation id="7303365578352795231">Өөр төхөөрөмж дээр хариулж байна.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Хайлтад илэрц харахын тулд Search болон Space-г дарна уу.</translation>
 <translation id="7346909386216857016">OK, ойлголоо</translation>
 <translation id="7348093485538360975">Дэлгэцэн дээрх компьютерийн гар</translation>
 <translation id="735745346212279324">VPN салгагдсан</translation>

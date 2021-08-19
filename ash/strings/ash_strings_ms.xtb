@@ -93,6 +93,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1615402009686901181">Dasar pentadbir melumpuhkan tangkapan skrin apabila kandungan sulit kelihatan</translation>
 <translation id="1632985212731562677">Akses Suis boleh dilumpuhkan dalam Tetapan &gt; Kebolehaksesan.</translation>
 <translation id="1654477262762802994">Mulakan pertanyaan suara</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Tekan Cari dan Ruang untuk melihat hasil carian dalam Assistant.</translation>
 <translation id="1667964833127753507">Mod warna neutral tidak menggunakan warna yang diekstrak daripada kertas dinding, menggantikan warna tersebut dengan sekumpulan warna cerah bertona neutral atau warna gelap.</translation>
 <translation id="1677472565718498478">Berbaki <ph name="TIME" /></translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> tidak disambungkan.</translation>
@@ -171,7 +172,6 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="229397294990920565">Data mudah alih sedang dimatikan...</translation>
 <translation id="2295777434187870477">Mikrofon dihidupkan, tindakan menogol akan meredamkan input.</translation>
 <translation id="2298170939937364391">Penggadang Skrin Penuh didayakan. Tekan Ctrl+Cari+M semula untuk mematikannya.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />; Klik dialog untuk melihat hasil dalam Assistant.</translation>
 <translation id="2302092602801625023">Akaun ini diurus oleh Family Link</translation>
 <translation id="2303600792989757991">Togol gambaran keseluruhan tetingkap</translation>
 <translation id="2322173485024759474">Undur satu huruf</translation>
@@ -349,7 +349,6 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="370665806235115550">Memuatkan...</translation>
 <translation id="371370241367527062">Mikrofon depan</translation>
 <translation id="3713734891607377840">Buka apabila sudah selesai</translation>
-<translation id="3732269052167349831"><ph name="DESC_TEXT" />; Klik dialog untuk melihat hasil dalam Google Search.</translation>
 <translation id="3742055079367172538">Tangkapan skrin diambil</translation>
 <translation id="3771549900096082774">Mod Kontras Tinggi</translation>
 <translation id="3773700760453577392">Pentadbir tidak membenarkan log masuk berbilang untuk <ph name="USER_EMAIL" />.
@@ -545,6 +544,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5083553833479578423">Buka kunci pelbagai lagi ciri Assistant.</translation>
 <translation id="5136175204352732067">Papan kekunci lain disambungkan</translation>
 <translation id="5155897006997040331">Kelajuan membaca</translation>
+<translation id="5166918508782100047">Tetapan jawapan segera</translation>
 <translation id="5168181903108465623">Peranti Cast tersedia</translation>
 <translation id="5170568018924773124">Paparkan dalam folder</translation>
 <translation id="5176318573511391780">Rakam skrin separa</translation>
@@ -597,6 +597,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5620281292257375798">Dalaman sahaja</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Bicu mikrofon</translation>
+<translation id="5649768706273821470">Dengar</translation>
 <translation id="5662709761327382534">Rakam mikrofon <ph name="CURRENT_STATE" />, Tekan Enter untuk menghidupkan rakaman mikrofon <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Mengaktifkan</translation>
 <translation id="5673434351075758678">Daripada "<ph name="FROM_LOCALE" />" kepada "<ph name="TO_LOCALE" />" selepas menyegerakkan tetapan anda.</translation>
@@ -798,6 +799,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="7302889331339392448">Sari Kata Langsung dimatikan.</translation>
 <translation id="7303365578352795231">Menjawab menggunakan peranti lain.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Tekan Cari dan Ruang untuk melihat hasil carian dalam Google Search.</translation>
 <translation id="7346909386216857016">Ok, faham</translation>
 <translation id="7348093485538360975">Papan kekunci pada skrin</translation>
 <translation id="735745346212279324">VPN diputuskan sambungan</translation>

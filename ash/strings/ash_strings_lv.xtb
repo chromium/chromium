@@ -93,6 +93,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1615402009686901181">Ja ekrānā ir redzams konfidenciāls saturs, administratora politika atspējo ekrāna uzņemšanu</translation>
 <translation id="1632985212731562677">Slēdžu piekļuvi var atspējot sadaļā Iestatījumi &gt; Pieejamība.</translation>
 <translation id="1654477262762802994">Sākt balss vaicājumu</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; lai skatītu rezultātu Asistentā, nospiediet meklēšanas taustiņu un atstarpes taustiņu.</translation>
 <translation id="1667964833127753507">Neitrālo krāsu režīmā netiek izmantotas no fona tapetes iegūtās krāsas — to vietā tiek lietotas neitrālu toņu gaišas vai tumšas nokrāsas.</translation>
 <translation id="1677472565718498478">Atlikušais laiks: <ph name="TIME" /></translation>
 <translation id="1677507110654891115">Nav savienojuma ar funkciju <ph name="FEATURE_NAME" />.</translation>
@@ -171,7 +172,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="229397294990920565">Notiek mobilo datu savienojuma izslēgšana...</translation>
 <translation id="2295777434187870477">Mikrofons ir ieslēgts. Pārslēdzot iestatījumu, tiks izslēgta ievade.</translation>
 <translation id="2298170939937364391">Pilnekrāna lupa ir iespējota. Lai to izslēgtu, vēlreiz nospiediet taustiņu kombināciju Ctrl+Search+M.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />; lai skatītu Asistenta rezultātu, noklikšķiniet uz dialoglodziņa.</translation>
 <translation id="2302092602801625023">Šo kontu pārvalda lietotne Family Link.</translation>
 <translation id="2303600792989757991">Pārslēgt loga kopsavilkumu</translation>
 <translation id="2322173485024759474">Pāriet atpakaļ pa burtam</translation>
@@ -349,7 +349,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="370665806235115550">Notiek ielāde...</translation>
 <translation id="371370241367527062">Priekšējais mikrofons</translation>
 <translation id="3713734891607377840">Kad gatavs, atvērt</translation>
-<translation id="3732269052167349831"><ph name="DESC_TEXT" />; noklikšķiniet uz dialoglodziņa, lai skatītu rezultātu pakalpojumā Google meklēšana.</translation>
 <translation id="3742055079367172538">Ekrānuzņēmums ir uzņemts</translation>
 <translation id="3771549900096082774">Augsta kontrasta režīms</translation>
 <translation id="3773700760453577392">Administrators ir aizliedzis lietotājam <ph name="USER_EMAIL" /> vairākkārtēju pierakstīšanos. Lai turpinātu, visiem lietotājiem ir jāizrakstās.</translation>
@@ -544,6 +543,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="5083553833479578423">Piekļūstiet citām Asistenta funkcijām</translation>
 <translation id="5136175204352732067">Ir pievienota cita tastatūra</translation>
 <translation id="5155897006997040331">Lasīšanas ātrums</translation>
+<translation id="5166918508782100047">Ātro atbilžu iestatījumi</translation>
 <translation id="5168181903108465623">Pieejamas apraides ierīces</translation>
 <translation id="5170568018924773124">Rādīt mapē</translation>
 <translation id="5176318573511391780">Ierakstīt daļu ekrāna</translation>
@@ -596,6 +596,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="5620281292257375798">Tikai iekšējai lietošanai</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Mikrofona ligzda</translation>
+<translation id="5649768706273821470">Klausīties</translation>
 <translation id="5662709761327382534">Ierakstīt mikrofona skaņu <ph name="CURRENT_STATE" /> Lai mikrofona ierakstīšanai ieslēgtu statusu <ph name="NEW_STATE" />, nospiediet taustiņu Enter</translation>
 <translation id="5669267381087807207">Notiek aktivizācija</translation>
 <translation id="5673434351075758678">Pēc iestatījumu sinhronizēšanas valoda tika mainīta no “<ph name="FROM_LOCALE" />” uz “<ph name="TO_LOCALE" />”.</translation>
@@ -797,6 +798,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="7302889331339392448">Subtitri reāllaikā ir izslēgti.</translation>
 <translation id="7303365578352795231">Tiek atbildēts citā ierīcē.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; lai skatītu rezultātu Google meklēšanā, nospiediet meklēšanas taustiņu un atstarpes taustiņu.</translation>
 <translation id="7346909386216857016">Labi, sapratu</translation>
 <translation id="7348093485538360975">Ekrāntastatūra</translation>
 <translation id="735745346212279324">VPN ir atvienots</translation>

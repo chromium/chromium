@@ -93,6 +93,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1615402009686901181">Dini-disable ng patakaran ng administrator ang screen capture kapag may nakikitang kumpidensyal na content</translation>
 <translation id="1632985212731562677">Puwedeng i-disable ang Switch Access sa Mga Setting &gt; Accessibility.</translation>
 <translation id="1654477262762802994">Magsimula ng query gamit ang boses</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Pindutin ang Search at Space para tingnan ang resulta sa Assistant.</translation>
 <translation id="1667964833127753507">Ang neutral color mode ay hindi gumagamit ng mga kulay na na-extract sa wallpaper, at pinapalitan nito ang mga ito ng isang hanay ng mga neutral na maliwanag o madilim na kulay.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> na lang ang natitira</translation>
 <translation id="1677507110654891115">Hindi nakakonekta ang <ph name="FEATURE_NAME" />.</translation>
@@ -171,7 +172,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="229397294990920565">Ino-off ang mobile data...</translation>
 <translation id="2295777434187870477">Naka-on ang mikropono, mamu-mute ang input kapag nag-toggle.</translation>
 <translation id="2298170939937364391">Na-enable ang Pang-magnify ng Full-screen. Pindutin ulit ang Ctrl+Search+M para i-off ito.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />; I-click ang dialog para makita ang resulta sa Assistant.</translation>
 <translation id="2302092602801625023">Pinapamahalaan ng Family Link ang account na ito</translation>
 <translation id="2303600792989757991">I-toggle ang window ng pangkalahatang-ideya</translation>
 <translation id="2322173485024759474">Bumalik nang paisa-isang titik</translation>
@@ -349,7 +349,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="370665806235115550">Naglo-load...</translation>
 <translation id="371370241367527062">Mikropono sa harap</translation>
 <translation id="3713734891607377840">Buksan kapag kumpleto na</translation>
-<translation id="3732269052167349831"><ph name="DESC_TEXT" />; I-click ang dialog para makita ang resulta sa Google Search.</translation>
 <translation id="3742055079367172538">Nakakuha na ng screenshot</translation>
 <translation id="3771549900096082774">High Contrast Mode</translation>
 <translation id="3773700760453577392">Hindi pinayagan ng isang administrator ang maraming pag-sign in para sa <ph name="USER_EMAIL" />. Dapat mag-sign out ang lahat ng user para makapagpatuloy.</translation>
@@ -544,6 +543,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="5083553833479578423">Mag-unlock ng higit pang feature ng Assistant.</translation>
 <translation id="5136175204352732067">Ibang keyboard ang nakakonekta</translation>
 <translation id="5155897006997040331">Bilis ng pagbabasa</translation>
+<translation id="5166918508782100047">Mga setting ng instant na impormasyon</translation>
 <translation id="5168181903108465623">I-cast ang mga available na device</translation>
 <translation id="5170568018924773124">Ipinakita sa folder</translation>
 <translation id="5176318573511391780">I-record ang hindi buong screen</translation>
@@ -596,6 +596,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="5620281292257375798">Internal lang</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Jack ng mikropono</translation>
+<translation id="5649768706273821470">Pakinggan</translation>
 <translation id="5662709761327382534"><ph name="CURRENT_STATE" /> ang I-record ang mikropono, Pindutin ang enter para itakda sa <ph name="NEW_STATE" /> ang pag-record ng mikropono</translation>
 <translation id="5669267381087807207">Ina-activate</translation>
 <translation id="5673434351075758678">Gagawing "<ph name="TO_LOCALE" />" mula "<ph name="FROM_LOCALE" />" pagkatapos i-sync ang iyong mga setting.</translation>
@@ -797,6 +798,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="7302889331339392448">Naka-off ang Instant Caption</translation>
 <translation id="7303365578352795231">Sinasagot sa ibang device.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Pindutin ang Search at Space para tingnan ang resulta sa Google Search.</translation>
 <translation id="7346909386216857016">Ok, nakuha ko</translation>
 <translation id="7348093485538360975">Nasa screen na keyboard</translation>
 <translation id="735745346212279324">Nakadiskonekta ang VPN</translation>

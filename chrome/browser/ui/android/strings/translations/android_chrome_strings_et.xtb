@@ -224,7 +224,6 @@ Puudutage otsimiseks mis tahes sõna. Otsingu täpsustamiseks puudutage pikalt, 
 <translation id="2433507940547922241">Välimus</translation>
 <translation id="2435457462613246316">Kuva parool</translation>
 <translation id="2450083983707403292">Kas soovite faili <ph name="FILE_NAME" /> allalaadimist uuesti alustada?</translation>
-<translation id="2450209325949418501">Allalaadimise olekut saate vaadata märguannete loendis</translation>
 <translation id="2450907520913474542">Vaadake lisateavet veebisaitide teemade kohta ilma lehelt lahkumata. Funktsioon Puuduta otsimiseks saadab sõna ja seda ümbritseva konteksti Google'i otsingule, saates tagasi definitsioonid, pildid, otsingutulemused ja muud üksikasjad.
 
 Puudutage pikalt mis tahes sõna, et seda otsida. Otsingu täpsustamiseks valige rohkem või vähem sõnu. Otsingu muutmiseks avage paneel, puudutage uuel vahelehel avamiseks ikooni ja tehke otsingukastis muudatused.</translation>
@@ -1230,6 +1229,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="8497726226069778601">Siin pole midagi vaadata ... veel</translation>
 <translation id="8503559462189395349">Chrome'i paroolid</translation>
 <translation id="8503813439785031346">Kasutajanimi</translation>
+<translation id="8505766168025405649">Vaadake märguannet allalaadimise oleku kohta</translation>
 <translation id="8514477925623180633">Chrome'i salvestatud paroolide eksportimine</translation>
 <translation id="8516012719330875537">Pildiredigeerija</translation>
 <translation id="8523928698583292556">Salvestatud parooli kustutamine</translation>

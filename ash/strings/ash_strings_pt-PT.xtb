@@ -93,6 +93,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1615402009686901181">A política do administrador desativa a captura de ecrã quando existe conteúdo confidencial visível.</translation>
 <translation id="1632985212731562677">O acesso por comutador pode ser desativado em Definições &gt; Acessibilidade.</translation>
 <translation id="1654477262762802994">Iniciar uma consulta de voz</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; prima Pesquisar e a tecla de espaço para ver o resultado no Assistente.</translation>
 <translation id="1667964833127753507">O modo de cores neutras não utiliza cores extraídas da imagem de fundo: substitui-as por um conjunto de tons claros ou escuros.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> restante(s)</translation>
 <translation id="1677507110654891115">A funcionalidade <ph name="FEATURE_NAME" /> não está ligada.</translation>
@@ -171,7 +172,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="229397294990920565">Os dados móveis estão a ser desativados…</translation>
 <translation id="2295777434187870477">O microfone está ativado. Se o desativar, irá desativar a entrada de som.</translation>
 <translation id="2298170939937364391">Lupa de ecrã inteiro ativada. Prima Ctrl + Pesquisa + M novamente para a desativar.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />; clique na caixa de diálogo para ver o resultado no Assistente.</translation>
 <translation id="2302092602801625023">Esta conta é gerida pelo Family Link</translation>
 <translation id="2303600792989757991">Ativar/desativar vista geral das janelas</translation>
 <translation id="2322173485024759474">Recuar por letra</translation>
@@ -349,7 +349,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="370665806235115550">A carregar...</translation>
 <translation id="371370241367527062">Microfone frontal</translation>
 <translation id="3713734891607377840">Abrir ao concluir</translation>
-<translation id="3732269052167349831"><ph name="DESC_TEXT" />; clique na caixa de diálogo para ver o resultado na Pesquisa Google.</translation>
 <translation id="3742055079367172538">Captura de ecrã efetuada</translation>
 <translation id="3771549900096082774">Modo de alto contraste</translation>
 <translation id="3773700760453577392">Um administrador não permitiu o início de sessão integrado para <ph name="USER_EMAIL" />. Todos os utilizadores têm de terminar sessão para continuar.</translation>
@@ -544,6 +543,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="5083553833479578423">Desbloqueie mais funcionalidades do Assistente.</translation>
 <translation id="5136175204352732067">Teclado diferente ligado</translation>
 <translation id="5155897006997040331">Velocidade de leitura</translation>
+<translation id="5166918508782100047">Definições das Respostas rápidas</translation>
 <translation id="5168181903108465623">Dispositivos de transmissão disponíveis</translation>
 <translation id="5170568018924773124">Mostrar numa pasta</translation>
 <translation id="5176318573511391780">Gravar ecrã parcial</translation>
@@ -596,6 +596,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="5620281292257375798">Apenas interno</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Entrada para microfone</translation>
+<translation id="5649768706273821470">Ouvir</translation>
 <translation id="5662709761327382534">Gravar microfone <ph name="CURRENT_STATE" />; prima Enter para ativar a gravação do microfone <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">A activar</translation>
 <translation id="5673434351075758678">De "<ph name="FROM_LOCALE" />" para "<ph name="TO_LOCALE" />" após a sincronização das suas definições.</translation>
@@ -797,6 +798,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="7302889331339392448">As Legendas instantâneas estão desativadas.</translation>
 <translation id="7303365578352795231">A responder noutro dispositivo…</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; prima Pesquisar e a tecla de espaço para ver o resultado na Pesquisa Google.</translation>
 <translation id="7346909386216857016">OK, compreendi</translation>
 <translation id="7348093485538360975">Teclado no ecrã</translation>
 <translation id="735745346212279324">VPN desligado</translation>

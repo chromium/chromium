@@ -93,6 +93,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1615402009686901181">Kebijakan administrator akan menonaktifkan tangkapan layar saat konten rahasia terlihat</translation>
 <translation id="1632985212731562677">Tombol Akses dapat dinonaktifkan di Setelan &gt; Aksesibilitas.</translation>
 <translation id="1654477262762802994">Mulai kueri suara</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Tekan tombol Penelusuran dan Spasi untuk melihat hasil di Asisten.</translation>
 <translation id="1667964833127753507">Mode warna netral tidak menggunakan warna yang diekstrak dari wallpaper, tetapi menggantinya dengan satu set warna terang atau gelap bernuansa netral.</translation>
 <translation id="1677472565718498478">Sisa waktu <ph name="TIME" /></translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> tidak terhubung.</translation>
@@ -171,7 +172,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="229397294990920565">Data seluler dinonaktifkan ...</translation>
 <translation id="2295777434187870477">Mikrofon aktif, mengalihkan tombol akan membisukan masukan.</translation>
 <translation id="2298170939937364391">Kaca Pembesar Layar diaktifkan. Tekan Ctrl+Penelusuran+M lagi untuk menonaktifkannya.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />; Klik dialog untuk melihat hasil di Asisten.</translation>
 <translation id="2302092602801625023">Akun ini dikelola oleh Family Link</translation>
 <translation id="2303600792989757991">Beralih ikhtisar jendela</translation>
 <translation id="2322173485024759474">Mundur per huruf</translation>
@@ -349,7 +349,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="370665806235115550">Memuat...</translation>
 <translation id="371370241367527062">Mikrofon depan</translation>
 <translation id="3713734891607377840">Buka saat selesai</translation>
-<translation id="3732269052167349831"><ph name="DESC_TEXT" />; Klik dialog untuk melihat hasil di Google Penelusuran.</translation>
 <translation id="3742055079367172538">Screenshot telah diambil</translation>
 <translation id="3771549900096082774">Mode Kontras Tinggi</translation>
 <translation id="3773700760453577392">Administrator telah melarang fitur login multipel untuk <ph name="USER_EMAIL" />. Semua pengguna harus logout untuk melanjutkan.</translation>
@@ -544,6 +543,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="5083553833479578423">Dapatkan lebih banyak fitur Asisten.</translation>
 <translation id="5136175204352732067">Keyboard yang berbeda terhubung</translation>
 <translation id="5155897006997040331">Kecepatan baca</translation>
+<translation id="5166918508782100047">Setelan jawaban instan</translation>
 <translation id="5168181903108465623">Perangkat transmisi tersedia</translation>
 <translation id="5170568018924773124">Tampilkan dalam folder</translation>
 <translation id="5176318573511391780">Rekam sebagian layar</translation>
@@ -596,6 +596,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="5620281292257375798">Khusus internal</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Colokan mikrofon</translation>
+<translation id="5649768706273821470">Dengar</translation>
 <translation id="5662709761327382534">Rekam mikrofon <ph name="CURRENT_STATE" />, Tekan enter agar perekaman mikrofon <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Mengaktifkan</translation>
 <translation id="5673434351075758678">Dari "<ph name="FROM_LOCALE" />" ke "<ph name="TO_LOCALE" />" setelah menyinkronkan setelan Anda.</translation>
@@ -797,6 +798,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="7302889331339392448">Teks Otomatis nonaktif.</translation>
 <translation id="7303365578352795231">Menjawab di perangkat lain.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Tekan tombol Penelusuran dan Spasi untuk melihat hasil di Google Penelusuran.</translation>
 <translation id="7346909386216857016">Oke, mengerti</translation>
 <translation id="7348093485538360975">Keyboard di layar</translation>
 <translation id="735745346212279324">VPN terputus</translation>

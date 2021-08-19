@@ -93,6 +93,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1615402009686901181">Administratzailearen gidalerroek pantaila-kapturak ateratzea eragozten dute isilpeko edukia ikusgai dagoenean</translation>
 <translation id="1632985212731562677">Ezarpenak &gt; Erabilerraztasuna atalean desgai dezakezu erabilerraztasun-osagarria.</translation>
 <translation id="1654477262762802994">Sortu ahozko kontsulta bat</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Laguntzailea eginbideak emaitza irakurtzeko, sakatu Bilaketa eta, gero, zuriune-barra.</translation>
 <translation id="1667964833127753507">Kolore neutroaren moduak ez ditu erabiltzen horma-paperetik ateratako koloreak, baizik eta tonu neutroko ñabardura argien edo ilunen multzo batekin ordezkatzen.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> geratzen dira</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> ez dago konektatuta.</translation>
@@ -171,7 +172,6 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="229397294990920565">Datu-konexioa desaktibatzen…</translation>
 <translation id="2295777434187870477">Mikrofonoa aktibatuta dago. Aldatzen baduzu, audioa desaktibatuko da.</translation>
 <translation id="2298170939937364391">Gaitu da pantaila osoko lupa. Desaktibatzeko, sakatu berriro Ktrl + Bilatu + M.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />; sakatu leihoa Laguntzailea aplikazioan emaitza ikusteko.</translation>
 <translation id="2302092602801625023">Kontua Family Link bidez kudeatzen da</translation>
 <translation id="2303600792989757991">Aldatu leihoen ikuspegi orokorra</translation>
 <translation id="2322173485024759474">Joan aurreko hizkira</translation>
@@ -349,7 +349,6 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="370665806235115550">Kargatzen…</translation>
 <translation id="371370241367527062">Aurreko mikrofonoa</translation>
 <translation id="3713734891607377840">Deskarga amaitzen denean irekiko da</translation>
-<translation id="3732269052167349831"><ph name="DESC_TEXT" />; egin klik leihoan emaitzak Google Bilaketa zerbitzuan ikusteko.</translation>
 <translation id="3742055079367172538">Pantaila-argazkia hartu da</translation>
 <translation id="3771549900096082774">Kontraste handiko modua</translation>
 <translation id="3773700760453577392">Administratzaile batek <ph name="USER_EMAIL" /> erabiltzaileari saio-hasiera anitza desgaitu dio.
@@ -545,6 +544,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="5083553833479578423">Lortu Laguntzailea eginbidearen aukera gehiago.</translation>
 <translation id="5136175204352732067">Beste teklatu bat konektatu duzu</translation>
 <translation id="5155897006997040331">Irakurketa-abiadura</translation>
+<translation id="5166918508782100047">Erantzun bizkorrak eginbidearen ezarpenak</translation>
 <translation id="5168181903108465623">Igorpen-gailuak erabilgarri</translation>
 <translation id="5170568018924773124">Erakutsi karpetan</translation>
 <translation id="5176318573511391780">Grabatu pantailaren zati bat</translation>
@@ -597,6 +597,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="5620281292257375798">Barnekoa soilik</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Mikrofonoaren konektorea</translation>
+<translation id="5649768706273821470">Entzun</translation>
 <translation id="5662709761327382534">Mikrofono bidezko grabaketa <ph name="CURRENT_STATE" /> dago. Mikrofono bidezko grabaketa <ph name="NEW_STATE" /> egon dadin, sakatu Sartu.</translation>
 <translation id="5669267381087807207">Aktibatzen</translation>
 <translation id="5673434351075758678">Ezarpenak sinkronizatu ondoren, "<ph name="FROM_LOCALE" />" ordez, "<ph name="TO_LOCALE" />" ezarri da hizkuntza gisa.</translation>
@@ -798,6 +799,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="7302889331339392448">Istanteko azpitituluak desaktibatuta daude.</translation>
 <translation id="7303365578352795231">Beste gailu batean erantzuten.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; emaitza Google Bilaketa zerbitzuan ikusteko, sakatu Bilaketa eta, gero, zuriune-barra.</translation>
 <translation id="7346909386216857016">Ados, ulertu dut</translation>
 <translation id="7348093485538360975">Pantailako teklatua</translation>
 <translation id="735745346212279324">VPN deskonektatu da</translation>

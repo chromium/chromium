@@ -224,7 +224,6 @@ Trykk på et ord for å søke. For å finstemme søket, trykk og hold inne for �
 <translation id="2433507940547922241">Utseende</translation>
 <translation id="2435457462613246316">Vis passord</translation>
 <translation id="2450083983707403292">Vil du laste ned <ph name="FILE_NAME" /> på nytt?</translation>
-<translation id="2450209325949418501">Du kan se nedlastingsstatusen i varslene dine</translation>
 <translation id="2450907520913474542">Finn ut mer om emner på nettsteder uten å forlate siden. «Trykk for å søke» sender ord til Google Søk sammen med den omkringliggende konteksten, og definisjoner, bilder, søkeresultater og annen informasjon returneres.
 
 Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere eller færre ord. For å redigere søket, åpne panelet, trykk på ikonet for å åpne i en ny fane, og gjør endringer i søkefeltet.</translation>
@@ -1230,6 +1229,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="8497726226069778601">Det er ikke noe her foreløpig</translation>
 <translation id="8503559462189395349">Chrome-passord</translation>
 <translation id="8503813439785031346">Brukernavn</translation>
+<translation id="8505766168025405649">Se varsel for nedlastingsstatus</translation>
 <translation id="8514477925623180633">Eksportér passord som er lagret med Chrome</translation>
 <translation id="8516012719330875537">Bilderedigeringsprogram</translation>
 <translation id="8523928698583292556">Slett lagrede passord</translation>

@@ -93,6 +93,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1615402009686901181">Administrator siyasəti məxfi məzmun görünəndə ekran çəkimini deaktiv edir</translation>
 <translation id="1632985212731562677">Dəyişdirici Girişini Ayarlar &gt; Əlçatımlıq bölməsində deaktiv edə bilərsiniz.</translation>
 <translation id="1654477262762802994">Səsli sorğuya başlayın</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Assistentdə nəticəni görmək üçün Axtarış və Boşluq düyməsinə basın.</translation>
 <translation id="1667964833127753507">Neytral rəng rejimi divar kağızının çıxarılmış rənglərini istifadə etmir, onları neytral tonlu açıq və ya tünd çalarlarla əvəz edir.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> qaldı</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> qoşulmayıb.</translation>
@@ -171,7 +172,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="229397294990920565">Mobil data deaktiv edilir...</translation>
 <translation id="2295777434187870477">Mikrofon aktivdir, dəyişdirdikdə daxiletmə səssiz ediləcək.</translation>
 <translation id="2298170939937364391">Tam Ekran Böyüdücüsü aktiv edildi. Rejimi deaktiv etmək üçün Ctrl+Search+M düymələrinə basın.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />; Assistentdə nəticəyə baxmaq üçün dialoqu klikləyin.</translation>
 <translation id="2302092602801625023">Bu hesab Family Link tərəfindən idarə olunur</translation>
 <translation id="2303600792989757991">Pəncərə ümumi görünüşünə keçirin</translation>
 <translation id="2322173485024759474">Hərf üzrə geri qayıdın</translation>
@@ -349,7 +349,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="370665806235115550">Yüklənir...</translation>
 <translation id="371370241367527062">Ön mikrofon</translation>
 <translation id="3713734891607377840">Tamamlandıqda açın</translation>
-<translation id="3732269052167349831"><ph name="DESC_TEXT" />; Nəticəni Google Axtarışda görmək üçün dialoqa tıklayın.</translation>
 <translation id="3742055079367172538">Skrinşot çəkildi</translation>
 <translation id="3771549900096082774">Yüksək Kontrast Rejimi</translation>
 <translation id="3773700760453577392">Administrator <ph name="USER_EMAIL" /> üçün çoxsaylı girişə icazə verməyib. Bütün istifadəçilər davam etmək üçün çıxış etməlidir.</translation>
@@ -544,6 +543,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="5083553833479578423">Daha çox Assistent funksiyalarını kiliddən çıxarın.</translation>
 <translation id="5136175204352732067">Fərqli klaviatura qoşuldu</translation>
 <translation id="5155897006997040331">Oxuma sürəti</translation>
+<translation id="5166918508782100047">Cəld cavab ayarları</translation>
 <translation id="5168181903108465623">Mövcud Cast cihazlar</translation>
 <translation id="5170568018924773124">Qovluqda göstərin</translation>
 <translation id="5176318573511391780">Ekranın bir hissəsini çəkin</translation>
@@ -596,6 +596,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="5620281292257375798">Yalnız daxili</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Mikrofon yuvası</translation>
+<translation id="5649768706273821470">Dinləyin</translation>
 <translation id="5662709761327382534">Mikrofonun yazılması <ph name="CURRENT_STATE" />, Mikrofonun yazılmasını <ph name="NEW_STATE" /> etmək üçün enter düyməsinə basın</translation>
 <translation id="5669267381087807207">Aktivləşir</translation>
 <translation id="5673434351075758678">Ayarları sinxronizasiya etdikdən sonra "<ph name="FROM_LOCALE" />" dilindən "<ph name="TO_LOCALE" />" dilinə.</translation>
@@ -797,6 +798,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="7302889331339392448">Canlı Altyazı deaktivdir.</translation>
 <translation id="7303365578352795231">Digər cihaz cavab verir.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Axtarışda nəticəni görmək üçün Axtarış və Boşluq düyməsinə basın.</translation>
 <translation id="7346909386216857016">Ok, anladım</translation>
 <translation id="7348093485538360975">Ekran klaviaturası</translation>
 <translation id="735745346212279324">VPN bağlantısı kəsildi</translation>

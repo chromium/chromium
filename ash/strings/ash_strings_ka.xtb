@@ -93,6 +93,7 @@
 <translation id="1615402009686901181">ადმინისტრატორის წესების მიხედვით, ეკრანის აღბეჭდვა გათიშულია, როცა ხილულია კონფიდენციალური კონტენტი</translation>
 <translation id="1632985212731562677">გადამრთველით წვდომის გათიშვა შესაძლებელია აქ: პარამეტრები &gt; მარტივი წვდომა.</translation>
 <translation id="1654477262762802994">ხმოვანი მოთხოვნის დაწყება</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; შედეგის ასისტენტში სანახავად დააჭირეთ კლავიშთა კომბინაციას Search პლუს შორისი.</translation>
 <translation id="1667964833127753507">ფერთა ნეიტრალური რეჟიმი არ იყენებს ფონიდან ამოღებულ ფერებს — ისინი ნეიტრალური ღია ან მუქი ტონებით ნაცვლდება.</translation>
 <translation id="1677472565718498478">დარჩენილია <ph name="TIME" /></translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> არ არის დაკავშირებული.</translation>
@@ -171,7 +172,6 @@
 <translation id="229397294990920565">მიმდინარეობს მობილური ინტერნეტის გათიშვა...</translation>
 <translation id="2295777434187870477">მიკროფონი ჩართულია, გადართვისას აუდიოშეყვანა დადუმდება.</translation>
 <translation id="2298170939937364391">სრულეკრანიანი ლუპა ჩართულია. გამოსართავად ხელახლა დააჭირეთ კლავიშთა კომბინაციას: Ctrl+Search+M.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />; შედეგის ასისტენტში სანახავად დააწკაპუნეთ დიალოგზე.</translation>
 <translation id="2302092602801625023">ეს ანგარიში იმართება Family Link-ის მეშვეობით</translation>
 <translation id="2303600792989757991">ფანჯრის მიმოხილვის გადართვა</translation>
 <translation id="2322173485024759474">ერთი ასოთი უკან</translation>
@@ -349,7 +349,6 @@
 <translation id="370665806235115550">იტვირთება…</translation>
 <translation id="371370241367527062">წინა მიკროფონი</translation>
 <translation id="3713734891607377840">დასრულებისას გახსნა</translation>
-<translation id="3732269052167349831"><ph name="DESC_TEXT" />; შედეგის Google Search-ში სანახავად დააწკაპუნეთ დიალოგზე.</translation>
 <translation id="3742055079367172538">ეკრანის ანაბეჭდი გადაღებულია</translation>
 <translation id="3771549900096082774">მაღალკონტრასტული რეჟიმი</translation>
 <translation id="3773700760453577392">ადმინისტრატორმა აკრძალა მრავალჯერადი შესვლა <ph name="USER_EMAIL" />-ისთვის. გასაგრძელებლად საჭიროა ყველა მომხმარებლის გამოსვლა სისტემიდან.</translation>
@@ -544,6 +543,7 @@
 <translation id="5083553833479578423">განბლოკეთ ასისტენტის დამატებითი ფუნქციები.</translation>
 <translation id="5136175204352732067">დაკავშირებულია განსხვავებული კლავიატურა</translation>
 <translation id="5155897006997040331">წაკითხვის სიჩქარე</translation>
+<translation id="5166918508782100047">სწრაფი პასუხების პარამეტრები</translation>
 <translation id="5168181903108465623">ხელმისაწვდომია გადაცემის მოწყობილობები</translation>
 <translation id="5170568018924773124">საქაღალდეში ჩვენება</translation>
 <translation id="5176318573511391780">ეკრანის ნაწილის ჩაწერა</translation>
@@ -596,6 +596,7 @@
 <translation id="5620281292257375798">მხოლოდ შიდა გამოყენებისთვის</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">მიკროფონის ჯეკი</translation>
+<translation id="5649768706273821470">მოსმენა</translation>
 <translation id="5662709761327382534">მიკროფონის ჩაწერაა <ph name="CURRENT_STATE" />, დააჭირეთ კლავიშს enter, თუ გსურთ, მიკროფონის ჩაწერა <ph name="NEW_STATE" /> იყოს</translation>
 <translation id="5669267381087807207">გააქტიურება</translation>
 <translation id="5673434351075758678">„<ph name="FROM_LOCALE" />“ გახდა „<ph name="TO_LOCALE" />“ თქვენი პარამეტრების სინქრონიზაციის შემდეგ.</translation>
@@ -797,6 +798,7 @@
 <translation id="7302889331339392448">ავტოსუბტიტრები გამორთულია.</translation>
 <translation id="7303365578352795231">პასუხის გაცემა მიმდინარეობს სხვა მოწყობილობაზე.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; შედეგის Google Search-ში სანახავად დააჭირეთ კლავიშთა კომბინაციას Search პლუს შორისი.</translation>
 <translation id="7346909386216857016">კარგი, გასაგებია</translation>
 <translation id="7348093485538360975">ეკრანული კლავიატურა</translation>
 <translation id="735745346212279324">VPN გამორთულია</translation>

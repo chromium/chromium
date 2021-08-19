@@ -93,6 +93,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1615402009686901181">Die Administratorrichtlinie blockiert die Bildschirmaufnahme, wenn vertrauliche Inhalte sichtbar sind</translation>
 <translation id="1632985212731562677">Der Schalterzugriff kann unter "Einstellungen" &gt; "Bedienungshilfen" deaktiviert werden.</translation>
 <translation id="1654477262762802994">Gesprochene Anfrage starten</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" />, <ph name="RESULT_TEXT" />, Drücken Sie zum Anzeigen des Ergebnisses in Assistant die Suchtaste + Leertaste.</translation>
 <translation id="1667964833127753507">Der neutrale Farbmodus verwendet keine aus dem Hintergrund extrahierten Farben, sondern ersetzt sie durch neutrale helle und dunkle Farbtöne.</translation>
 <translation id="1677472565718498478">Verbleibende Zeit: <ph name="TIME" /> h</translation>
 <translation id="1677507110654891115">"<ph name="FEATURE_NAME" />" ist nicht verbunden.</translation>
@@ -171,7 +172,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="229397294990920565">Mobile Daten werden deaktiviert…</translation>
 <translation id="2295777434187870477">Mikrofon ist an. Sie können es hier stummschalten.</translation>
 <translation id="2298170939937364391">Vollbildlupe aktiviert. Wenn Sie sie deaktivieren möchten, drücken Sie noch einmal Strg + Suchtaste + M.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />; klicken Sie auf das Dialogfeld, um in Assistant Ergebnisse zu sehen.</translation>
 <translation id="2302092602801625023">Dieses Konto wird über Family Link verwaltet</translation>
 <translation id="2303600792989757991">Fensterübersicht umschalten</translation>
 <translation id="2322173485024759474">Zurück um einen Buchstaben</translation>
@@ -349,7 +349,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="370665806235115550">Wird geladen...</translation>
 <translation id="371370241367527062">Mikrofon auf der Vorderseite</translation>
 <translation id="3713734891607377840">Nach dem Herunterladen öffnen</translation>
-<translation id="3732269052167349831"><ph name="DESC_TEXT" />; klicken Sie auf das Dialogfeld, um in der Google Suche das Ergebnis zu sehen.</translation>
 <translation id="3742055079367172538">Screenshot erstellt</translation>
 <translation id="3771549900096082774">Modus mit hohem Kontrast</translation>
 <translation id="3773700760453577392">Ein Administrator hat die Mehrfachanmeldung für <ph name="USER_EMAIL" /> deaktiviert. Alle Nutzer müssen sich abmelden, um fortfahren zu können.</translation>
@@ -544,6 +543,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="5083553833479578423">Möchten Sie weitere Assistant-Funktionen freischalten?</translation>
 <translation id="5136175204352732067">Andere Tastatur angeschlossen</translation>
 <translation id="5155897006997040331">Lesegeschwindigkeit</translation>
+<translation id="5166918508782100047">Einstellungen für die Funktion „Schnellinfo“</translation>
 <translation id="5168181903108465623">Übertragungsgeräte verfügbar</translation>
 <translation id="5170568018924773124">In Ordner zeigen</translation>
 <translation id="5176318573511391780">Teil des Bildschirms aufzeichnen</translation>
@@ -596,6 +596,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="5620281292257375798">Nur zur internen Nutzung</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Mikrofonanschluss</translation>
+<translation id="5649768706273821470">Anhören</translation>
 <translation id="5662709761327382534">Ton über Mikrofon aufnehmen <ph name="CURRENT_STATE" /> – Drücken Sie die Eingabetaste, um die Aufnahme von Ton über das Mikrofon auf „<ph name="NEW_STATE" />“ zu stellen</translation>
 <translation id="5669267381087807207">Wird aktiviert</translation>
 <translation id="5673434351075758678">Nach der Synchronisierung der Einstellungen von "<ph name="FROM_LOCALE" />" zu "<ph name="TO_LOCALE" />" geändert.</translation>
@@ -797,6 +798,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="7302889331339392448">Automatische Untertitel sind aus.</translation>
 <translation id="7303365578352795231">Antwort auf einem anderen Gerät.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Drücken Sie zum Anzeigen des Ergebnisses in der Google Suche die Suchtaste + Leertaste.</translation>
 <translation id="7346909386216857016">Ok</translation>
 <translation id="7348093485538360975">Bildschirmtastatur</translation>
 <translation id="735745346212279324">VPN-Verbindung getrennt</translation>

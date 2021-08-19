@@ -93,6 +93,7 @@
 <translation id="1615402009686901181">當畫面上出現機密內容時，管理員政策就會停用螢幕截圖擷取功能</translation>
 <translation id="1632985212731562677">您可在 [設定] &gt; [無障礙功能] 中停用「按鈕控制」。</translation>
 <translation id="1654477262762802994">開始語音查詢</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" />；<ph name="RESULT_TEXT" />；㩒搜尋鍵加空白鍵就可以睇到 Google 助理入面嘅結果。</translation>
 <translation id="1667964833127753507">中性色調模式不會使用從桌布擷取的顏色，而是改用一組中性的淺色或深色調。</translation>
 <translation id="1677472565718498478">電量尚餘 <ph name="TIME" /></translation>
 <translation id="1677507110654891115">「<ph name="FEATURE_NAME" />」並未連線。</translation>
@@ -171,7 +172,6 @@
 <translation id="229397294990920565">正在關閉流動數據…</translation>
 <translation id="2295777434187870477">開咗咪高風，切換將會靜音。</translation>
 <translation id="2298170939937364391">已啟用全螢幕放大鏡。再次按下 Ctrl+Search+M 鍵即可停用。</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />；㩒一下對話框就可以睇到「Google 助理」入面嘅結果。</translation>
 <translation id="2302092602801625023">此帳戶由 Family Link 管理</translation>
 <translation id="2303600792989757991">切換視窗總覽</translation>
 <translation id="2322173485024759474">往後一個字母</translation>
@@ -349,7 +349,6 @@
 <translation id="370665806235115550">載入中…</translation>
 <translation id="371370241367527062">前置麥克風</translation>
 <translation id="3713734891607377840">下載完成後開啟</translation>
-<translation id="3732269052167349831"><ph name="DESC_TEXT" />；㩒一下對話框就可以睇到「Google 搜尋」入面嘅結果。</translation>
 <translation id="3742055079367172538">已拍攝螢幕擷圖</translation>
 <translation id="3771549900096082774">高對比模式</translation>
 <translation id="3773700760453577392">管理員已禁止 <ph name="USER_EMAIL" /> 的多重登入功能。所有使用者都必須登出，才能繼續操作。</translation>
@@ -543,6 +542,7 @@
 <translation id="5083553833479578423">啟用更多「Google 助理」功能。</translation>
 <translation id="5136175204352732067">已連接不同的鍵盤</translation>
 <translation id="5155897006997040331">朗讀速度</translation>
+<translation id="5166918508782100047">「快速解答」設定</translation>
 <translation id="5168181903108465623">有可用投放裝置</translation>
 <translation id="5170568018924773124">在資料夾中顯示</translation>
 <translation id="5176318573511391780">錄影部分螢幕</translation>
@@ -595,6 +595,7 @@
 <translation id="5620281292257375798">只供內部使用</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">麥克風插孔</translation>
+<translation id="5649768706273821470">收聽</translation>
 <translation id="5662709761327382534">錄音枝咪<ph name="CURRENT_STATE" />，㩒 Enter 鍵就可以<ph name="NEW_STATE" />咪錄音功能</translation>
 <translation id="5669267381087807207">啟用</translation>
 <translation id="5673434351075758678">同步處理您的設定後，系統會將語言從「<ph name="FROM_LOCALE" />」改為「<ph name="TO_LOCALE" />」。</translation>
@@ -796,6 +797,7 @@
 <translation id="7302889331339392448">「即時字幕」功能已關閉。</translation>
 <translation id="7303365578352795231">正在透過其他裝置回應。</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />；<ph name="RESULT_TEXT" />；㩒搜尋鍵加空白鍵就可以睇到 Google 搜尋入面嘅結果。</translation>
 <translation id="7346909386216857016">好，我知道了</translation>
 <translation id="7348093485538360975">螢幕小鍵盤</translation>
 <translation id="735745346212279324">已中斷 VPN 連線</translation>

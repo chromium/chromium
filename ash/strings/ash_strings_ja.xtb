@@ -93,6 +93,7 @@
 <translation id="1615402009686901181">管理者のポリシーによって、機密コンテンツが表示されているときは、スクリーン キャプチャが無効になります</translation>
 <translation id="1632985212731562677">スイッチ アクセスは [設定] &gt; [ユーザー補助機能] で無効にできます。</translation>
 <translation id="1654477262762802994">音声検索を開始</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; アシスタントで結果を確認するには [検索]+Space キーを押してください。</translation>
 <translation id="1667964833127753507">壁紙から抽出した色の代わりに、ライトまたはダークな色調の中間色を使用します。</translation>
 <translation id="1677472565718498478">残り <ph name="TIME" /></translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> は接続されていません。</translation>
@@ -171,7 +172,6 @@
 <translation id="229397294990920565">モバイルデータ通信は無効になっています...</translation>
 <translation id="2295777434187870477">マイクはオンです。切り替えるとミュートになります。</translation>
 <translation id="2298170939937364391">全画面拡大鏡がオンになっています。オフにするには Ctrl+検索+M キーをもう一度押します。</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />: ダイアログをクリックするとアシスタントで結果を確認できます。</translation>
 <translation id="2302092602801625023">このアカウントはファミリー リンクによって管理されています</translation>
 <translation id="2303600792989757991">ウィンドウ切り替えの概要</translation>
 <translation id="2322173485024759474">1 字戻る</translation>
@@ -349,7 +349,6 @@
 <translation id="370665806235115550">読み込んでいます...</translation>
 <translation id="371370241367527062">前方のマイク</translation>
 <translation id="3713734891607377840">完了したら開く</translation>
-<translation id="3732269052167349831"><ph name="DESC_TEXT" />: ダイアログをクリックすると Google 検索で結果を確認できます。</translation>
 <translation id="3742055079367172538">スクリーンショット撮影完了</translation>
 <translation id="3771549900096082774">ハイ コントラスト モード</translation>
 <translation id="3773700760453577392"><ph name="USER_EMAIL" /> へのマルチログインは、管理者によって禁止されています。続行するには、すべてのユーザーがログアウトする必要があります。</translation>
@@ -544,6 +543,7 @@
 <translation id="5083553833479578423">さらに多くのアシスタント機能をぜひご活用ください。</translation>
 <translation id="5136175204352732067">別のキーボードが接続されています</translation>
 <translation id="5155897006997040331">読み上げ速度</translation>
+<translation id="5166918508782100047">クイック アンサーの設定</translation>
 <translation id="5168181903108465623">キャスト デバイスを利用できます</translation>
 <translation id="5170568018924773124">フォルダを開く</translation>
 <translation id="5176318573511391780">画面の一部を録画</translation>
@@ -596,6 +596,7 @@
 <translation id="5620281292257375798">内部専用</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">マイク差込口</translation>
+<translation id="5649768706273821470">聴く</translation>
 <translation id="5662709761327382534">マイク録音は <ph name="CURRENT_STATE" /> です。マイク録音を <ph name="NEW_STATE" /> にするには Enter キーを押してください</translation>
 <translation id="5669267381087807207">有効化中</translation>
 <translation id="5673434351075758678">設定の同期後に「<ph name="FROM_LOCALE" />」から「<ph name="TO_LOCALE" />」に変更されました。</translation>
@@ -797,6 +798,7 @@
 <translation id="7302889331339392448">自動字幕起こしはオフになっています。</translation>
 <translation id="7303365578352795231">別のデバイスで応答しています。</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google 検索で結果を確認するには [検索]+Space キーを押してください。</translation>
 <translation id="7346909386216857016">OK</translation>
 <translation id="7348093485538360975">画面キーボード</translation>
 <translation id="735745346212279324">VPN が切断されました</translation>

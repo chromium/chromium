@@ -93,6 +93,7 @@
 <translation id="1615402009686901181">ଯେତେବେଳେ ଗୋପନୀୟ ବିଷୟବସ୍ତୁ ଦୃଶ୍ୟମାନ ହୁଏ, ଆଡମିନିଷ୍ଟ୍ରେଟର୍ ନୀତି ସ୍କ୍ରିନ୍ କ୍ୟାପଚରକୁ ଅକ୍ଷମ କରିଦିଏ</translation>
 <translation id="1632985212731562677">ସେଟିଂସ୍ &gt; ଆକ୍ସେସିବିଲିଟୀରେ 'ସ୍ୱିଚ୍ ଆକ୍ସେସ୍' ସୁବିଧା ଅକ୍ଷମ କରାଯାଇପାରିବ।</translation>
 <translation id="1654477262762802994">ଏକ ଭିଡିଓ କ୍ବେରୀ ଆରମ୍ଭ କରନ୍ତୁ</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Assistantରେ ଫଳାଫଳ ଦେଖିବାକୁ Search ସହିତ Space ଦବାନ୍ତୁ।</translation>
 <translation id="1667964833127753507">ନ୍ୟୁଟ୍ରାଲ୍ କଲର ମୋଡ୍ ୱାଲପେପରରୁ ବାହାର କରାଯାଇଥିବା ରଙ୍ଗଗୁଡ଼ିକୁ ବ୍ୟବହାର କରେ ନାହିଁ, ତାହା ପରିବର୍ତ୍ତେ ନ୍ୟୁଟ୍ରାଲ୍ ଟୋନ୍ ଥିବା ଫିକା କିମ୍ବା ଗାଢ଼ା ରଙ୍ଗର ଏକ ସେଟ୍ ବ୍ୟବହାର କରେ।</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> ବାକି ଅଛି</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> ସଂଯୁକ୍ତ ହୋଇନାହିଁ।</translation>
@@ -171,7 +172,6 @@
 <translation id="229397294990920565">ମୋବାଇଲ୍ ଡାଟା ବନ୍ଦ କରାଯାଉଛି...</translation>
 <translation id="2295777434187870477">ମାଇକ୍ ଚାଲୁ ଅଛି, ଟୋଗଲ୍ କରିବା ଦ୍ୱାରା ଇନପୁଟ୍ ମ୍ୟୁଟ୍ ହୋଇଯିବ।</translation>
 <translation id="2298170939937364391">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍ ମ୍ୟାଗ୍ନିଫାୟର୍ ସକ୍ଷମ କରାଯାଇଛି। ଟୋଗଲ୍ କରି ଏହାକୁ ବନ୍ଦ କରିବା ପାଇଁ ପୁଣି Ctrl+Search+M ଦବାନ୍ତୁ।</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />; Assistantରେ ଫଳାଫଳ ଦେଖିବାକୁ ଡାଏଲଗରେ କ୍ଲିକ୍ କରନ୍ତୁ।</translation>
 <translation id="2302092602801625023">Family Link ଦ୍ୱାରା ଏହି ଆକାଉଣ୍ଟ ପରିଚାଳିତ ହେଉଛି</translation>
 <translation id="2303600792989757991">ୱିଣ୍ଡୋର ସାରାଂଶ ଟୋଗଲ୍ କରନ୍ତୁ</translation>
 <translation id="2322173485024759474">ଗୋଟିଏ ଅକ୍ଷର ପଛକୁ ଫେରନ୍ତୁ</translation>
@@ -349,7 +349,6 @@
 <translation id="370665806235115550">ଲୋଡ୍ କରୁଛି...</translation>
 <translation id="371370241367527062">ସାମ୍‌ନାପଟର ମାଇକ୍ରୋଫୋନ୍</translation>
 <translation id="3713734891607377840">ସମ୍ପୂର୍ଣ୍ଣ ହେବା ପରେ ଖୋଲନ୍ତୁ</translation>
-<translation id="3732269052167349831"><ph name="DESC_TEXT" />; Google Searchରେ ଫଳାଫଳ ଦେଖିବାକୁ ଡାଏଲଗରେ କ୍ଲିକ୍ କରନ୍ତୁ।</translation>
 <translation id="3742055079367172538">ସ୍କ୍ରି‍ନ୍‍ସଟ୍ ନିଆଯାଇଛି</translation>
 <translation id="3771549900096082774">ଉଚ୍ଚ କଣ୍ଟ୍ରାଷ୍ଟ୍ ମୋଡ୍</translation>
 <translation id="3773700760453577392">ଜଣେ ବ୍ୟବସ୍ଥାପକ <ph name="USER_EMAIL" /> ପାଇଁ ଏକାଧିକ ସାଇନ୍-ଇନ୍‌କୁ ଅନୁମୋଦିତ କରିନାହାନ୍ତି। ଜାରି ରଖିବା ନିମନ୍ତେ ସମସ୍ତ ଉପଯୋଗକର୍ତ୍ତାଙ୍କୁ ସାଇନ୍ ଆଉଟ୍ କରିବାକୁ ହେବ।</translation>
@@ -544,6 +543,7 @@
 <translation id="5083553833479578423">ଆହୁରି ଆସିଷ୍ଟାଣ୍ଟ ବୈଶିଷ୍ଟ୍ୟଗୁଡ଼ିକ ଅନ୍‌ଲକ୍‌ କରନ୍ତୁ</translation>
 <translation id="5136175204352732067">ଅଲଗା କୀବୋର୍ଡ ସଂଯୁକ୍ତ ହୋ‍ଇଛି</translation>
 <translation id="5155897006997040331">ପଢ଼ିବା ବେଗ</translation>
+<translation id="5166918508782100047">କ୍ୱିକ୍ ଉତ୍ତରଗୁଡ଼ିକର ସେଟିଂସ୍</translation>
 <translation id="5168181903108465623">କାଷ୍ଟ ଡିଭାଇସ୍ ଉପଲବ୍ଧ</translation>
 <translation id="5170568018924773124">ଫୋଲ୍ଡରରେ ଦେଖାନ୍ତୁ</translation>
 <translation id="5176318573511391780">ଆଂଶିକ ସ୍କ୍ରିନ୍ ରେକର୍ଡ କରନ୍ତୁ</translation>
@@ -596,6 +596,7 @@
 <translation id="5620281292257375798">କେବଳ ଇଣ୍ଟର୍ନଲ୍</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">ମାଇକ୍ ଜ୍ୟାକ୍</translation>
+<translation id="5649768706273821470">ଶୁଣନ୍ତୁ</translation>
 <translation id="5662709761327382534">ମାଇକ୍ରୋଫୋନରେ ରେକର୍ଡ କରନ୍ତୁ <ph name="CURRENT_STATE" />, ମାଇକ୍ରୋଫୋନରେ ରେକର୍ଡିଂ ଚାଲୁ କରିବାକୁ Enter କୀ'କୁ ଦବାନ୍ତୁ <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">ସକ୍ରିୟ ହେଉଛି</translation>
 <translation id="5673434351075758678">ଆପଣଙ୍କର ସେଟିଂସ୍ ସିଙ୍କ୍ ହେବା ପରେ "<ph name="FROM_LOCALE" />"ରୁ "<ph name="TO_LOCALE" />" ପର୍ଯ୍ୟନ୍ତ।</translation>
@@ -797,6 +798,7 @@
 <translation id="7302889331339392448">ଲାଇଭ୍ କ୍ୟାପ୍ସନ୍ ବନ୍ଦ ଅଛି।</translation>
 <translation id="7303365578352795231">ଅନ୍ୟ ଡିଭାଇସ୍‌ରେ ଉତ୍ତର ଦିଆଯାଉଛି।</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Searchରେ ଫଳାଫଳ ଦେଖିବାକୁ Search ସହିତ Space ଦବାନ୍ତୁ।</translation>
 <translation id="7346909386216857016">ଠିକ ଅଛି, ଏହା ବୁଝିଗଲି</translation>
 <translation id="7348093485538360975">ଅନ୍-ସ୍କ୍ରିନ୍ କୀ'ବୋର୍ଡ</translation>
 <translation id="735745346212279324">VPN ବିଚ୍ଛିନ୍ନ ହୋଇଛି</translation>

@@ -93,6 +93,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1615402009686901181">Remiantis administratoriaus politika, negalima užfiksuoti ekrano, jei matomas konfidencialus turinys</translation>
 <translation id="1632985212731562677">Prieigos jungikliu funkciją galima išjungti skiltyje „Nustatymai“ &gt; „Pritaikomumas“.</translation>
 <translation id="1654477262762802994">Pradėti užklausą balsu</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; paspauskite paieškos ir tarpo klavišus, kad rezultatą galėtumėte peržiūrėti naudodami Padėjėją.</translation>
 <translation id="1667964833127753507">Neutralių spalvų režimu nenaudojamos išskirtos ekrano fono spalvos, pakeičiant jas neutralių šviesių ir tamsių atspalvių rinkiniu.</translation>
 <translation id="1677472565718498478">Liko <ph name="TIME" /></translation>
 <translation id="1677507110654891115">„<ph name="FEATURE_NAME" />“ neprijungta.</translation>
@@ -171,7 +172,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="229397294990920565">Mobiliojo ryšio duomenys išjungiami...</translation>
 <translation id="2295777434187870477">Mikrofonas įjungtas; perjungiant įvestis bus nutildyta.</translation>
 <translation id="2298170939937364391">Viso ekrano didinimas įgalintas. Dar kartą paspauskite „Ctrl“ + paieškos klavišą + M, kad išjungtumėte režimą.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />; spustelėkite dialogo langą, kad rezultatą galėtumėte peržiūrėti naudodamiesi Padėjėju.</translation>
 <translation id="2302092602801625023">Ši paskyra tvarkoma naudojant „Family Link“</translation>
 <translation id="2303600792989757991">Perjungti lango apžvalgą</translation>
 <translation id="2322173485024759474">Grįžti per vieną raidę</translation>
@@ -349,7 +349,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="370665806235115550">Įkeliama...</translation>
 <translation id="371370241367527062">Priekinis mikrofonas</translation>
 <translation id="3713734891607377840">Baigus atidaryti</translation>
-<translation id="3732269052167349831"><ph name="DESC_TEXT" />; spustelėkite dialogo langą, kad rezultatą galėtumėte peržiūrėti „Google“ paieškoje.</translation>
 <translation id="3742055079367172538">Ekrano kopija padaryta</translation>
 <translation id="3771549900096082774">Didelio kontrasto režimas</translation>
 <translation id="3773700760453577392">Administratorius neleido <ph name="USER_EMAIL" /> prisijungti prie kelių paskyrų. Norėdami tęsti, visi naudotojai turi atsijungti.</translation>
@@ -544,6 +543,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="5083553833479578423">Atrakinkite daugiau Padėjėjo funkcijų.</translation>
 <translation id="5136175204352732067">Prijungta kita klaviatūra</translation>
 <translation id="5155897006997040331">Skaitymo sparta</translation>
+<translation id="5166918508782100047">Sparčiųjų atsakymų nustatymai</translation>
 <translation id="5168181903108465623">Pasiekiami perdavimo įrenginiai</translation>
 <translation id="5170568018924773124">Rodyti aplanke</translation>
 <translation id="5176318573511391780">Įrašyti dalinį ekrano vaizdą</translation>
@@ -596,6 +596,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="5620281292257375798">Tik vidiniams naudotojams</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Mikrofono jungtis</translation>
+<translation id="5649768706273821470">Klausyti</translation>
 <translation id="5662709761327382534">Mikrofono įrašymo parinktis: <ph name="CURRENT_STATE" />, paspauskite klavišą „Enter“, kad nustatytumėte mikrofono įrašymo parinktį: <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Aktyvinama</translation>
 <translation id="5673434351075758678">Po nustatymų sinchronizavimo kalba pakeista iš „<ph name="FROM_LOCALE" />“ į „<ph name="TO_LOCALE" />“.</translation>
@@ -797,6 +798,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="7302889331339392448">Subtitrai realiuoju laiku išjungti.</translation>
 <translation id="7303365578352795231">Atsakoma kitame įrenginyje.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; paspauskite paieškos ir tarpo klavišus, kad rezultatą galėtumėte peržiūrėti naudodami „Google“ paiešką.</translation>
 <translation id="7346909386216857016">Gerai, supratau</translation>
 <translation id="7348093485538360975">Ekraninė klaviatūra</translation>
 <translation id="735745346212279324">VPN atjungtas</translation>

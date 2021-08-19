@@ -93,6 +93,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1615402009686901181">Slökkt er á skjáupptöku þegar trúnaðarefni er sýnilegt vegna reglu kerfisstjóra</translation>
 <translation id="1632985212731562677">Hægt er að slökkva á rofaaðgangi í Stillingar &gt; Aðgengi.</translation>
 <translation id="1654477262762802994">Hefja raddfyrirspurn</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Ýttu á leitarhnappinn og bilslána til að skoða niðurstöður í Hjálpara.</translation>
 <translation id="1667964833127753507">Hlutlaus litastilling notar ekki liti sem dregnir eru úr veggfóðrinu en skiptir þeim þess í stað út fyrir sett af hlutlausum ljósum eða dökkum litbrigðum.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> eftir</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> er ótengt.</translation>
@@ -171,7 +172,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="229397294990920565">Slekkur á farsímagögnum...</translation>
 <translation id="2295777434187870477">Kveikt er á hljóðnemanum, ef hnappurinn er valinn verður slökkt á hljóðinntaki.</translation>
 <translation id="2298170939937364391">Kveikt er á stækkunargleri á öllum skjánum. Ýttu aftur á Ctrl+leitarhnappinn+M til að loka því.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />; smelltu á gluggann til að sjá niðurstöðu í Hjálpara.</translation>
 <translation id="2302092602801625023">Þessum reikningi er stjórnað með Family Link</translation>
 <translation id="2303600792989757991">Víxla gluggayfirliti</translation>
 <translation id="2322173485024759474">Til baka um staf</translation>
@@ -349,7 +349,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="370665806235115550">Hleður...</translation>
 <translation id="371370241367527062">Fremri hljóðnemi</translation>
 <translation id="3713734891607377840">Opna þegar niðurhali lýkur</translation>
-<translation id="3732269052167349831"><ph name="DESC_TEXT" />; smelltu á gluggann til að sjá niðurstöðu í Google leit.</translation>
 <translation id="3742055079367172538">Skjámynd tekin</translation>
 <translation id="3771549900096082774">Mikil birtuskil</translation>
 <translation id="3773700760453577392">Stjórnandi hefur lokað á innskráningu fleiri en eins notanda fyrir <ph name="USER_EMAIL" />. Allir notendur verða að skrá sig út til að halda áfram.</translation>
@@ -544,6 +543,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="5083553833479578423">Opnaðu fyrir fleiri eiginleika hjálparans.</translation>
 <translation id="5136175204352732067">Annað lyklaborð tengt</translation>
 <translation id="5155897006997040331">Leshraði</translation>
+<translation id="5166918508782100047">Stillingar skjótra svara</translation>
 <translation id="5168181903108465623">Útsendingartæki í boði</translation>
 <translation id="5170568018924773124">Sýna í möppu</translation>
 <translation id="5176318573511391780">Upptaka á hluta skjás</translation>
@@ -596,6 +596,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="5620281292257375798">Aðeins innanhúss</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Hljóðnematengi</translation>
+<translation id="5649768706273821470">Hlusta</translation>
 <translation id="5662709761327382534">Upptaka hljóðnema <ph name="CURRENT_STATE" />. Ýttu á færslulykilinn (enter) til að <ph name="NEW_STATE" /> á upptöku hljóðnema</translation>
 <translation id="5669267381087807207">Virkjar</translation>
 <translation id="5673434351075758678">Úr „<ph name="FROM_LOCALE" />“ í „<ph name="TO_LOCALE" />“ eftir að stillingarnar þínar voru samstilltar.</translation>
@@ -797,6 +798,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="7302889331339392448">Slökkt er á skjátextum í rauntíma.</translation>
 <translation id="7303365578352795231">Svarar á öðru tæki.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Ýttu á leitarhnappinn og bilslána til að skoða niðurstöður í Google leit.</translation>
 <translation id="7346909386216857016">Ég skil</translation>
 <translation id="7348093485538360975">Skjályklaborð</translation>
 <translation id="735745346212279324">VPN ótengt</translation>

@@ -93,6 +93,7 @@
 <translation id="1615402009686901181">Заснемането на екрана, когато се вижда поверително съдържание, е деактивирано чрез администраторско правило</translation>
 <translation id="1632985212731562677">Функцията „Достъп с превключване“ може да бъде деактивирана в „Настройки &gt; Достъпност“.</translation>
 <translation id="1654477262762802994">Стартиране на гласова заявка</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; За преглед на резултата в Асистент натиснете клавиша „търсене“ + интервал.</translation>
 <translation id="1667964833127753507">При режима за неутрални цветове не се извличат цветовете от тапета, а се използва набор от неутрални светли или тъмни нюанси.</translation>
 <translation id="1677472565718498478">Оставащо време: <ph name="TIME" /></translation>
 <translation id="1677507110654891115">Функцията „<ph name="FEATURE_NAME" />“ не е свързана.</translation>
@@ -171,7 +172,6 @@
 <translation id="229397294990920565">Мобилните данни се изключват…</translation>
 <translation id="2295777434187870477">Микрофонът е включен. Превключването ще го заглуши.</translation>
 <translation id="2298170939937364391">Лупата за увеличаване на целия екран е активирана. За да я изключите, натиснете отново Ctrl + клавиша „Търсене“ + M.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />; Кликнете върху диалоговия прозорец, за да прегледате резултата в Асистент.</translation>
 <translation id="2302092602801625023">Този профил се управлява от Family Link</translation>
 <translation id="2303600792989757991">Превключване на общия преглед на прозорците</translation>
 <translation id="2322173485024759474">Придвижване назад с една буква</translation>
@@ -349,7 +349,6 @@
 <translation id="370665806235115550">Зарежда се...</translation>
 <translation id="371370241367527062">Преден микрофон</translation>
 <translation id="3713734891607377840">Отваряне, когато е завършено</translation>
-<translation id="3732269052167349831"><ph name="DESC_TEXT" />; Кликнете върху диалоговия прозорец, за да прегледате резултата в Google Търсене.</translation>
 <translation id="3742055079367172538">Направена бе екранна снимка</translation>
 <translation id="3771549900096082774">Режим на висок контраст</translation>
 <translation id="3773700760453577392">Администратор е деактивирал централизирания вход за <ph name="USER_EMAIL" />. За да се продължи, всички потребители трябва да излязат от профилите си.</translation>
@@ -544,6 +543,7 @@
 <translation id="5083553833479578423">Отключете още функции на Асистент.</translation>
 <translation id="5136175204352732067">Свързана е различна клавиатура</translation>
 <translation id="5155897006997040331">Скорост на четене</translation>
+<translation id="5166918508782100047">Настройки за „Бързи отговори“</translation>
 <translation id="5168181903108465623">Налице са устройства Cast</translation>
 <translation id="5170568018924773124">Показване в папката</translation>
 <translation id="5176318573511391780">Записване на част от екрана</translation>
@@ -596,6 +596,7 @@
 <translation id="5620281292257375798">Само за вътрешно ползване</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Жак за микрофон</translation>
+<translation id="5649768706273821470">Слушане</translation>
 <translation id="5662709761327382534">Записването от микрофона e <ph name="CURRENT_STATE" />. Натиснете Enter, за да бъде <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Активира се</translation>
 <translation id="5673434351075758678">От <ph name="FROM_LOCALE" /> към <ph name="TO_LOCALE" /> след синхронизиране на настройките ви.</translation>
@@ -797,6 +798,7 @@
 <translation id="7302889331339392448">Функцията „Надписи на живо“ е изключена.</translation>
 <translation id="7303365578352795231">Отговаря се на друго устройство.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; За да видите резултата в Google Търсене, натиснете клавиша „търсене“ + интервал.</translation>
 <translation id="7346909386216857016">Добре, разбрах</translation>
 <translation id="7348093485538360975">Екранна клавиатура</translation>
 <translation id="735745346212279324">Връзката с виртуалната частна мрежа (VPN) е прекъсната</translation>

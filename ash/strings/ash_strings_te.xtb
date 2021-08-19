@@ -93,6 +93,7 @@
 <translation id="1615402009686901181">గోప్యమైన కంటెంట్ కనిపించినప్పుడు, అడ్మినిస్ట్రేటర్ పాలసీ స్క్రీన్ క్యాప్చర్‌ను డిజేబుల్ చేస్తుంది</translation>
 <translation id="1632985212731562677">సెట్టింగ్‌లు &gt; యాక్సెసిబిలిటీలో స్విచ్ యాక్సెస్‌ను డిజేబుల్ చేయవచ్చు.</translation>
 <translation id="1654477262762802994">వాయిస్ ప్రశ్నను ప్రారంభించు</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Assistantలో ఫలితాన్ని చూడటానికి 'Search + Space'ను నొక్కండి.</translation>
 <translation id="1667964833127753507">'న్యూట్రల్ రంగు మోడ్'లో వాల్‌పేపర్ నుండి సంగ్రహించిన రంగులు ఉపయోగించబడవు, వాటి స్థానంలో తటస్థంగా కనిపించే పలుచని లేదా ముదురు రంగులు ఉపయోగించబడతాయి.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> మిగిలి ఉంది</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> కనెక్ట్ కాలేదు.</translation>
@@ -171,7 +172,6 @@
 <translation id="229397294990920565">మొబైల్ డేటా ఆఫ్ చేయబడుతోంది...</translation>
 <translation id="2295777434187870477">మైక్ ఆన్‌లో ఉంది, టోగుల్ చేయడం వలన ఇన్‌పుట్ మ్యూట్ అవుతుంది.</translation>
 <translation id="2298170939937364391">పూర్తి-స్క్రీన్ మాగ్నిఫైయర్ ఎనేబుల్ చేయబడింది. దాన్ని ఆఫ్‌కు టోగుల్ చేయడానికి మళ్లీ Ctrl+Search+Mని నొక్కండి.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />; Assistantలో ఫలితాన్ని చూడటానికి డైలాగ్‌ను క్లిక్ చేయండి.</translation>
 <translation id="2302092602801625023">ఈ ఖాతా Family Link ద్వారా నిర్వహించబడుతుంది</translation>
 <translation id="2303600792989757991">విండో స్థూలదృష్టిని టోగుల్ చేయి</translation>
 <translation id="2322173485024759474">ఒక అక్షరం వెనుకకు</translation>
@@ -349,7 +349,6 @@
 <translation id="370665806235115550">లోడ్ అవుతోంది...</translation>
 <translation id="371370241367527062">ముందువైపు మైక్రోఫోన్</translation>
 <translation id="3713734891607377840">పూర్తయినప్పుడు తెరవండి</translation>
-<translation id="3732269052167349831"><ph name="DESC_TEXT" />; Google Searchలో ఫలితాన్ని చూడటానికి డైలాగ్‌ను క్లిక్ చేయండి.</translation>
 <translation id="3742055079367172538">స్క్రీన్‌షాట్ తీసినప్పుడు</translation>
 <translation id="3771549900096082774">అధిక కాంట్రాస్ట్ మోడ్</translation>
 <translation id="3773700760453577392"><ph name="USER_EMAIL" /> కోసం బహుళ సైన్-ఇన్ అనుమతిని నిర్వాహకుడు తిరస్కరించారు.
@@ -545,6 +544,7 @@
 <translation id="5083553833479578423">మరిన్ని Assistant ఫీచర్‌లను అన్‌లాక్ చేయండి.</translation>
 <translation id="5136175204352732067">వేరే కీబోర్డ్ కనెక్ట్ చేయబడింది</translation>
 <translation id="5155897006997040331">రీడింగ్ వేగం</translation>
+<translation id="5166918508782100047">క్విక్ ఆన్సర్స్‌కు సంబంధించిన సెట్టింగ్‌లు</translation>
 <translation id="5168181903108465623">Cast పరికరాలు అందుబాటులో ఉన్నాయి</translation>
 <translation id="5170568018924773124">ఫోల్డర్‌లో చూపించు</translation>
 <translation id="5176318573511391780">పాక్షిక స్క్రీన్‌ను రికార్డ్ చేయండి</translation>
@@ -597,6 +597,7 @@
 <translation id="5620281292257375798">అంతర్గతం మాత్రమే</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">మైక్ జాక్</translation>
+<translation id="5649768706273821470">వినండి</translation>
 <translation id="5662709761327382534">మైక్రోఫోన్‌తో రికార్డ్ చేయడం <ph name="CURRENT_STATE" />లో ఉంది, మైక్రోఫోన్‌తో రికార్డ్ చేయడాన్ని <ph name="NEW_STATE" /> చేయడానికి enterను నొక్కండి</translation>
 <translation id="5669267381087807207">సక్రియమవుతోంది</translation>
 <translation id="5673434351075758678">మీ సెట్టింగులను సమకాలీకరించిన తర్వాత "<ph name="FROM_LOCALE" />" నుండి "<ph name="TO_LOCALE" />"కి.</translation>
@@ -798,6 +799,7 @@
 <translation id="7302889331339392448">లైవ్ క్యాప్షన్ ఆఫ్ చేయబడింది.</translation>
 <translation id="7303365578352795231">మరొక పరికరంలో సమాధానం ఇవ్వబడుతోంది.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Searchలో ఫలితాన్ని చూడటానికి 'Search + Space'ను నొక్కండి.</translation>
 <translation id="7346909386216857016">సరే, అర్థమైంది</translation>
 <translation id="7348093485538360975">ఆన్-స్క్రీన్ కీబోర్డ్</translation>
 <translation id="735745346212279324">VPN డిస్‌కనెక్ట్ చేయబడింది</translation>

@@ -93,6 +93,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1615402009686901181">La política de l'administrador desactiva la captura de pantalla quan es mostra contingut confidencial</translation>
 <translation id="1632985212731562677">L'accés amb interruptors es pot desactivar a Configuració &gt; Accessibilitat.</translation>
 <translation id="1654477262762802994">Inicia una consulta per veu</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Prem Cerca+Espai per veure el resultat a l'Assistent.</translation>
 <translation id="1667964833127753507">El mode de color neutre no utilitza colors extrets del fons de pantalla, sinó que els substitueix per un conjunt de tons neutres clars o foscos.</translation>
 <translation id="1677472565718498478">Temps restant: <ph name="TIME" /></translation>
 <translation id="1677507110654891115">La funció <ph name="FEATURE_NAME" /> no està connectada.</translation>
@@ -171,7 +172,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="229397294990920565">S'estan desactivant les dades mòbils...</translation>
 <translation id="2295777434187870477">El micròfon està activat. Utilitza el commutador per silenciar l'entrada.</translation>
 <translation id="2298170939937364391">La lupa de pantalla completa està activada. Torna a prémer Ctrl+Cerca+M per desactivar-la.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />; fes clic al quadre de diàleg per veure el resultat a l'Assistent.</translation>
 <translation id="2302092602801625023">Family Link gestiona aquest compte</translation>
 <translation id="2303600792989757991">Commuta la visió general de la finestra</translation>
 <translation id="2322173485024759474">Enrere per lletra</translation>
@@ -349,7 +349,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="370665806235115550">S'està carregant...</translation>
 <translation id="371370241367527062">Micròfon frontal</translation>
 <translation id="3713734891607377840">Obre'l en acabar</translation>
-<translation id="3732269052167349831"><ph name="DESC_TEXT" />; fes clic al quadre de diàleg per veure el resultat a Cerca de Google</translation>
 <translation id="3742055079367172538">Captura de pantalla feta</translation>
 <translation id="3771549900096082774">Mode d'alt contrast</translation>
 <translation id="3773700760453577392">Un administrador ha desactivat l'inici de sessió múltiple per a <ph name="USER_EMAIL" />. Tots els usuaris han de tancar la sessió per continuar.</translation>
@@ -544,6 +543,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="5083553833479578423">Desbloqueja més funcions de l'Assistent.</translation>
 <translation id="5136175204352732067">S'ha connectat un altre teclat</translation>
 <translation id="5155897006997040331">Velocitat de lectura</translation>
+<translation id="5166918508782100047">Configuració de Respostes ràpides</translation>
 <translation id="5168181903108465623">Dispositius d'emissió disponibles</translation>
 <translation id="5170568018924773124">Mostra a la carpeta</translation>
 <translation id="5176318573511391780">Grava una part de la pantalla</translation>
@@ -596,6 +596,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="5620281292257375798">Només intern</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Connector per al micròfon</translation>
+<translation id="5649768706273821470">Escolta</translation>
 <translation id="5662709761327382534">Grava el micròfon <ph name="CURRENT_STATE" />. Prem Retorn per canviar la gravació del micròfon a <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Activant</translation>
 <translation id="5673434351075758678">Després de sincronitzar la configuració, canvia <ph name="FROM_LOCALE" /> per <ph name="TO_LOCALE" />.</translation>
@@ -797,6 +798,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="7302889331339392448">La funció Subtítols instantanis està desactivada.</translation>
 <translation id="7303365578352795231">S'està responent en un altre dispositiu.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Prem Cerca+Espai per veure el resultat a la Cerca de Google.</translation>
 <translation id="7346909386216857016">D'acord</translation>
 <translation id="7348093485538360975">Teclat en pantalla</translation>
 <translation id="735745346212279324">VPN desconnectada</translation>

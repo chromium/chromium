@@ -93,6 +93,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1615402009686901181">Pravilnik skrbnika onemogoča zajem zaslona, če je vidna zaupna vsebina.</translation>
 <translation id="1632985212731562677">Stikalni dostop lahko onemogočite v »Nastavitve &gt; Dostopnost«.</translation>
 <translation id="1654477262762802994">Začetek glasovne poizvedbe</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Pritisnite tipko za iskanje in preslednico, če si želite rezultat ogledati v Pomočniku.</translation>
 <translation id="1667964833127753507">Nevtralni barvni način ne uporablja barv, pridobljenih iz zaslonskega ozadja, temveč jih nadomesti s kompletom nevtralnih svetlih ali temnih odtenkov.</translation>
 <translation id="1677472565718498478">Še <ph name="TIME" /></translation>
 <translation id="1677507110654891115">Povezava s funkcijo <ph name="FEATURE_NAME" /> ni vzpostavljena.</translation>
@@ -171,7 +172,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="229397294990920565">Prenos podatkov v mobilnem omrežju se izklaplja …</translation>
 <translation id="2295777434187870477">Mikrofon je vklopljen; če ga preklopite, bo izklopljen vhodni zvok.</translation>
 <translation id="2298170939937364391">Celozaslonska lupa je omogočena. Če jo želite izklopiti, znova pritisnite Ctrl + tipko za iskanje + M.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />; Kliknite pogovorno okno za ogled rezultatov v Pomočniku.</translation>
 <translation id="2302092602801625023">Ta račun upravlja Family Link</translation>
 <translation id="2303600792989757991">Preklop pregleda okna</translation>
 <translation id="2322173485024759474">Nazaj po črki</translation>
@@ -349,7 +349,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="370665806235115550">Nalaganje ...</translation>
 <translation id="371370241367527062">Sprednji mikrofon</translation>
 <translation id="3713734891607377840">Odpri ob dokončanju</translation>
-<translation id="3732269052167349831"><ph name="DESC_TEXT" />; Kliknite pogovorno okno, če si želite ogledati rezultat v Iskanju Google.</translation>
 <translation id="3742055079367172538">Posnetek zaslona je narejen</translation>
 <translation id="3771549900096082774">Visokokontrastni način</translation>
 <translation id="3773700760453577392">Skrbnik je prepovedal prijavo z več računi za <ph name="USER_EMAIL" />. Če želite nadaljevati, morajo biti odjavljeni vsi uporabniki.</translation>
@@ -544,6 +543,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="5083553833479578423">Odklenite več funkcij Pomočnika.</translation>
 <translation id="5136175204352732067">Priklopljena je druga tipkovnica</translation>
 <translation id="5155897006997040331">Hitrost branja</translation>
+<translation id="5166918508782100047">Nastavitve hitrih odgovorov</translation>
 <translation id="5168181903108465623">Naprave za predvajanje so na voljo</translation>
 <translation id="5170568018924773124">Prikaži v mapi</translation>
 <translation id="5176318573511391780">Snemanje delnega zaslona</translation>
@@ -596,6 +596,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="5620281292257375798">Samo za interno rabo</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Vtič za mikrofon</translation>
+<translation id="5649768706273821470">Poslušajte</translation>
 <translation id="5662709761327382534">Snemanje mikrofona <ph name="CURRENT_STATE" />. Pritisnite Enter, če želite vklopiti mikrofon: <ph name="NEW_STATE" />.</translation>
 <translation id="5669267381087807207">Aktiviranje</translation>
 <translation id="5673434351075758678">Iz jezika »<ph name="FROM_LOCALE" />« v jezik »<ph name="TO_LOCALE" />« po sinhronizaciji nastavitev.</translation>
@@ -797,6 +798,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="7302889331339392448">Samodejni podnapisi so izklopljeni.</translation>
 <translation id="7303365578352795231">Odgovor v drugi napravi.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Pritisnite tipko za iskanje in preslednico, če si želite rezultat ogledati v Iskanju Google.</translation>
 <translation id="7346909386216857016">V redu, razumem</translation>
 <translation id="7348093485538360975">Zaslonska tipkovnica</translation>
 <translation id="735745346212279324">Povezava z navideznim zasebnim omrežjem je prekinjena</translation>

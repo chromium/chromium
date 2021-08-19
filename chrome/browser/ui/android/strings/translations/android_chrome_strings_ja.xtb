@@ -224,7 +224,6 @@
 <translation id="2433507940547922241">デザイン</translation>
 <translation id="2435457462613246316">パスワードを表示</translation>
 <translation id="2450083983707403292"><ph name="FILE_NAME" /> のダウンロードをやり直してもよろしいですか？</translation>
-<translation id="2450209325949418501">ダウンロードの状況は通知で確認できます</translation>
 <translation id="2450907520913474542">ウェブサイト上のトピックについて、ページを移動せずに調べることができます。「タップして検索」では、単語とその周囲のコンテキストが Google 検索に送信され、定義、画像、検索結果などの情報が返されます。
 
 検索するには、対象の単語を長押しします。検索を絞り込むには、単語の選択範囲を変更します。パネルを開いてアイコンをタップすると、新しいタブで検索ボックスの内容を編集できます。</translation>
@@ -1230,6 +1229,7 @@
 <translation id="8497726226069778601">表示するものがまだありません</translation>
 <translation id="8503559462189395349">Chrome パスワード</translation>
 <translation id="8503813439785031346">ユーザー名</translation>
+<translation id="8505766168025405649">ダウンロード ステータスの通知を表示</translation>
 <translation id="8514477925623180633">Chrome に保存されたパスワードをエクスポートします</translation>
 <translation id="8516012719330875537">画像エディタ</translation>
 <translation id="8523928698583292556">保存したパスワードを削除</translation>

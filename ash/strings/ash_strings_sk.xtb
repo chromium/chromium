@@ -93,6 +93,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1615402009686901181">Pravidlo správcu zakazuje snímanie obrazovky, keď je viditeľný dôverný obsah</translation>
 <translation id="1632985212731562677">Ovládanie prepínačmi je možné deaktivovať v sekcii Nastavenia &gt; Dostupnosť.</translation>
 <translation id="1654477262762802994">Spustiť hlasový dopyt</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; stlačením klávesa vyhľadávania a medzerníka zobrazíte výsledok v Asistentovi.</translation>
 <translation id="1667964833127753507">Režim neutrálnych farieb nepoužíva farby získané z tapety. Nahradí ich skupinou svetlých a tmavých neutrálnych odtieňov.</translation>
 <translation id="1677472565718498478">Zostávajúci čas: <ph name="TIME" /></translation>
 <translation id="1677507110654891115">Funkcia <ph name="FEATURE_NAME" /> nie je pripojená.</translation>
@@ -171,7 +172,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="229397294990920565">Vypínajú sa mobilné dáta…</translation>
 <translation id="2295777434187870477">Mikrofón je zapnutý. Prepnutím vypnete zvuk vstupu.</translation>
 <translation id="2298170939937364391">Bola zapnutá lupa na celú obrazovku. Vypnete ju opätovným stlačením kombinácie klávesov Ctrl+Hľadať+M.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />; Kliknutím na dialógové okno si zobrazte výsledok v Asistentovi.</translation>
 <translation id="2302092602801625023">Tento účet spravuje aplikácia Family Link</translation>
 <translation id="2303600792989757991">Prepnúť prehľad okien</translation>
 <translation id="2322173485024759474">Dozadu o písmeno</translation>
@@ -349,7 +349,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="370665806235115550">Načítava sa...</translation>
 <translation id="371370241367527062">Predný mikrofón</translation>
 <translation id="3713734891607377840">Po dokončení otvoriť</translation>
-<translation id="3732269052167349831"><ph name="DESC_TEXT" />; Kliknutím na dialógové okno zobrazte výsledok vo Vyhľadávaní Google.</translation>
 <translation id="3742055079367172538">Vytvorila sa snímka obrazovky</translation>
 <translation id="3771549900096082774">Režim s vysokým kontrastom</translation>
 <translation id="3773700760453577392">Správca zakázal viacnásobné prihlásenie pre používateľa <ph name="USER_EMAIL" />. Všetci používatelia sa musia odhlásiť a až potom môžu pokračovať.</translation>
@@ -544,6 +543,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="5083553833479578423">Odblokujte ďalšie funkcie Asistenta.</translation>
 <translation id="5136175204352732067">Bola pripojená iná klávesnica</translation>
 <translation id="5155897006997040331">Rýchlosť čítania</translation>
+<translation id="5166918508782100047">Nastavenia rýchlych odpovedí</translation>
 <translation id="5168181903108465623">Dostupné zariadenia na prenos</translation>
 <translation id="5170568018924773124">Zobraziť v priečinku</translation>
 <translation id="5176318573511391780">Nahrať časť obrazovky</translation>
@@ -596,6 +596,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="5620281292257375798">Iba interné</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Konektor mikrofónu</translation>
+<translation id="5649768706273821470">Počúvať</translation>
 <translation id="5662709761327382534">Nahrávať mikrofón <ph name="CURRENT_STATE" />. Stlačením klávesa Enter zapnete nahrávanie zvuku z mikrofónu <ph name="NEW_STATE" />.</translation>
 <translation id="5669267381087807207">Aktivuje sa</translation>
 <translation id="5673434351075758678">Po synchronizácii nastavení bol zmenený z možnosti <ph name="FROM_LOCALE" /> na <ph name="TO_LOCALE" />.</translation>
@@ -797,6 +798,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="7302889331339392448">Živý prepis je vypnutý.</translation>
 <translation id="7303365578352795231">Odpoveď dostanete v inom zariadení.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; stlačením klávesa vyhľadávania a medzerníka zobrazíte výsledok vo Vyhľadávaní Google.</translation>
 <translation id="7346909386216857016">Dobre</translation>
 <translation id="7348093485538360975">Klávesnica na obrazovke</translation>
 <translation id="735745346212279324">Sieť VPN je odpojená</translation>

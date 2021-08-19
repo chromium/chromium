@@ -93,6 +93,7 @@
 <translation id="1615402009686901181">בהתאם למדיניות מנהל המערכת, צילום המסך מושבת כשמוצג תוכן סודי</translation>
 <translation id="1632985212731562677">ניתן להשבית את התכונה 'גישה באמצעות מתג' דרך 'הגדרות' &gt; 'נגישות'.</translation>
 <translation id="1654477262762802994">הפעלה של שאילתה קולית</translation>
+<translation id="1655967159878494613">‏<ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; כדי לראות את התוצאות ב-Assistant לוחצים על 'חיפוש' ועל מקש הרווח.</translation>
 <translation id="1667964833127753507">במצב 'צבעים ניטרליים' לא נעשה שימוש בצבעים שנשלפו מהטפט, אלא בערכת גוונים ניטרליים, בהירים וכהים.</translation>
 <translation id="1677472565718498478">זמן נותר - <ph name="TIME" /></translation>
 <translation id="1677507110654891115">התכונה <ph name="FEATURE_NAME" /> לא מחוברת.</translation>
@@ -171,7 +172,6 @@
 <translation id="229397294990920565">מתבצע כיבוי של הנתונים הסלולריים…</translation>
 <translation id="2295777434187870477">המיקרופון פועל. החלפת המצב תשתיק אותו.</translation>
 <translation id="2298170939937364391">‏הגדלה של כל המסך הופעלה. כדי להשבית אותה יש להקיש שוב על Ctrl+Search+M.</translation>
-<translation id="2301480084224169662">‏<ph name="DESC_TEXT" />; כדי לראות את התוצאה ב-Assistant, יש ללחוץ על תיבת הדו-שיח.</translation>
 <translation id="2302092602801625023">‏החשבון הזה מנוהל באמצעות Family Link</translation>
 <translation id="2303600792989757991">החלפת סקירת חלון</translation>
 <translation id="2322173485024759474">אות אחת אחורה</translation>
@@ -349,7 +349,6 @@
 <translation id="370665806235115550">בטעינה...</translation>
 <translation id="371370241367527062">מיקרופון קדמי</translation>
 <translation id="3713734891607377840">פתיחה לאחר השלמת ההורדה</translation>
-<translation id="3732269052167349831">‏<ph name="DESC_TEXT" />; כדי לראות את התוצאה בחיפוש Google, יש ללחוץ על תיבת הדו-שיח.</translation>
 <translation id="3742055079367172538">צילום המסך בוצע</translation>
 <translation id="3771549900096082774">מצב ניגודיות גבוהה</translation>
 <translation id="3773700760453577392">מנהל מערכת ביטל הרשאה של כניסה עם מספר חשבונות עבור <ph name="USER_EMAIL" />. כדי להמשיך, כל המשתמשים חייבים לבצע יציאה.</translation>
@@ -544,6 +543,7 @@
 <translation id="5083553833479578423">‏אפשר להפעיל תכונות Assistant נוספות.</translation>
 <translation id="5136175204352732067">חוברה מקלדת אחרת</translation>
 <translation id="5155897006997040331">מהירות הקריאה</translation>
+<translation id="5166918508782100047">ההגדרות של התשובות המהירות</translation>
 <translation id="5168181903108465623">מכשירי העברה זמינים</translation>
 <translation id="5170568018924773124">הצגה בתיקייה</translation>
 <translation id="5176318573511391780">הקלטה של מסך חלקי</translation>
@@ -596,6 +596,7 @@
 <translation id="5620281292257375798">פנימי בלבד</translation>
 <translation id="5625955975703555628">+LTE</translation>
 <translation id="5648021990716966815">שקע מיקרופון</translation>
+<translation id="5649768706273821470">האזנה</translation>
 <translation id="5662709761327382534">‏הקלטת המיקרופון <ph name="CURRENT_STATE" />, יש להקיש על Enter כדי להעביר את הקלטת המיקרופון למצב <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">ההפעלה מתבצעת</translation>
 <translation id="5673434351075758678">מ"<ph name="FROM_LOCALE" />" ל"<ph name="TO_LOCALE" />" אחרי סנכרון ההגדרות.</translation>
@@ -797,6 +798,7 @@
 <translation id="7302889331339392448">התכונה 'כתוביות מיידיות' מושבתת.</translation>
 <translation id="7303365578352795231">התשובה מתקבלת במכשיר אחר.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942">‏<ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; כדי לראות את התוצאות בחיפוש Google, לוחצים על 'חיפוש' ועל מקש הרווח.</translation>
 <translation id="7346909386216857016">בסדר, הבנתי</translation>
 <translation id="7348093485538360975">מקלדת על המסך</translation>
 <translation id="735745346212279324">‏VPN מנותק</translation>

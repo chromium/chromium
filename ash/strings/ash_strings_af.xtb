@@ -93,6 +93,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1615402009686901181">Administrateursbeleid deaktiveer skermskote wanneer vertroulike inhoud sigbaar is</translation>
 <translation id="1632985212731562677">Skakelaartoegang kan in Instellings &gt; Toeganklikheid gedeaktiveer word.</translation>
 <translation id="1654477262762802994">Begin 'n stemnavraag</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Druk Search plus spasiebalk om resultaat in Assistent te sien.</translation>
 <translation id="1667964833127753507">Die neutrale kleurmodus gebruik nie kleure wat van die muurpapier onttrek is nie, maar vervang dit met 'n stel ligte of donker skakerings van neutrale kleure.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> oor</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> is nie gekoppel nie.</translation>
@@ -171,7 +172,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="229397294990920565">Mobiele data skakel tans af …</translation>
 <translation id="2295777434187870477">Mikrofoon is aan. Wissel om invoer te demp.</translation>
 <translation id="2298170939937364391">Volskermvergrootglas is geaktiveer. Druk weer Ctrl+Search+M om dit af te skakel.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />; klik die dialoog om resultaat in Assistent te sien.</translation>
 <translation id="2302092602801625023">Hierdie rekening word deur Family Link bestuur</translation>
 <translation id="2303600792989757991">Wissel tussen vensteroorsig</translation>
 <translation id="2322173485024759474">Terug per letter</translation>
@@ -349,7 +349,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="370665806235115550">Laai tans …</translation>
 <translation id="371370241367527062">Voorste mikrofoon</translation>
 <translation id="3713734891607377840">Maak oop wanneer dit volledig is</translation>
-<translation id="3732269052167349831"><ph name="DESC_TEXT" />; klik die dialoog om resultaat in Google Search te sien.</translation>
 <translation id="3742055079367172538">Skermkiekie geneem</translation>
 <translation id="3771549900096082774">Hoëkontrasmodus</translation>
 <translation id="3773700760453577392">'n Administrateur laat nie veelvuldige aanmeldings deur <ph name="USER_EMAIL" /> toe nie.
@@ -545,6 +544,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5083553833479578423">Ontsluit meer Assistent-kenmerke.</translation>
 <translation id="5136175204352732067">Ander sleutelbord is gekoppel</translation>
 <translation id="5155897006997040331">Leesspoed</translation>
+<translation id="5166918508782100047">Vinnige Antwoorde-instellings</translation>
 <translation id="5168181903108465623">Uitsaaitoestelle is beskikbaar</translation>
 <translation id="5170568018924773124">Wys in vouer</translation>
 <translation id="5176318573511391780">Neem gedeeltelike skerm op</translation>
@@ -597,6 +597,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5620281292257375798">Slegs intern</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Mikrofoonsok</translation>
+<translation id="5649768706273821470">Luister</translation>
 <translation id="5662709761327382534">Neem mikrofoon <ph name="CURRENT_STATE" /> op; druk enter om mikrofoonopname <ph name="NEW_STATE" /> te begin</translation>
 <translation id="5669267381087807207">Aktiveer tans</translation>
 <translation id="5673434351075758678">Van "<ph name="FROM_LOCALE" />" af na "<ph name="TO_LOCALE" />" toe nadat jou instellings gesinkroniseer is.</translation>
@@ -798,6 +799,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="7302889331339392448">Intydse onderskrifte is af.</translation>
 <translation id="7303365578352795231">Antwoord tans op 'n ander toestel.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Druk Search plus spasiebalk om resultaat in Google Search te sien.</translation>
 <translation id="7346909386216857016">OK, het dit</translation>
 <translation id="7348093485538360975">Opskerm-sleutelbord</translation>
 <translation id="735745346212279324">VPN ontkoppel</translation>

@@ -93,6 +93,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1615402009686901181">Il criterio dell'amministratore disattiva l'acquisizione schermo se sono visibili contenuti riservati</translation>
 <translation id="1632985212731562677">È possibile disattivare Switch Access in Impostazioni &gt; Accessibilità.</translation>
 <translation id="1654477262762802994">Avvia una query vocale</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; premi Tasto per la ricerca e Barra spaziatrice per vedere il risultato nell'assistente.</translation>
 <translation id="1667964833127753507">La modalità colore Neutra non usa i colori estratti dallo sfondo, che sostituisce con un insieme di tonalità neutre chiare o scure.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> rimanenti</translation>
 <translation id="1677507110654891115">La funzionalità <ph name="FEATURE_NAME" /> non è connessa.</translation>
@@ -171,7 +172,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="229397294990920565">Disattivazione dei dati mobili…</translation>
 <translation id="2295777434187870477">L'audio del microfono è attivo: la disattivazione impedirà l'ingresso audio.</translation>
 <translation id="2298170939937364391">Ingrandimento a schermo intero attivato. Premi di nuovo CTRL + tasto per la ricerca + M per disattivarlo.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />. Fai clic sulla finestra di dialogo per visualizzare i risultati nell'assistente.</translation>
 <translation id="2302092602801625023">Questo account è gestito da Family Link</translation>
 <translation id="2303600792989757991">Attiva/disattiva panoramica finestra</translation>
 <translation id="2322173485024759474">Indietro per lettera</translation>
@@ -349,7 +349,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="370665806235115550">Caricamento in corso...</translation>
 <translation id="371370241367527062">Microfono anteriore</translation>
 <translation id="3713734891607377840">Apri dopo il completamento</translation>
-<translation id="3732269052167349831"><ph name="DESC_TEXT" />; fai clic sulla finestra di dialogo per visualizzare il risultato nella Ricerca Google.</translation>
 <translation id="3742055079367172538">Screenshot acquisito</translation>
 <translation id="3771549900096082774">Modalità ad alto contrasto</translation>
 <translation id="3773700760453577392">Un amministratore ha vietato l'accesso simultaneo per <ph name="USER_EMAIL" />.
@@ -545,6 +544,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="5083553833479578423">Sblocca altre funzioni dell'assistente.</translation>
 <translation id="5136175204352732067">Tastiera diversa collegata</translation>
 <translation id="5155897006997040331">Velocità di lettura</translation>
+<translation id="5166918508782100047">Impostazioni Risposte rapide</translation>
 <translation id="5168181903108465623">Dispositivi di trasmissione disponibili</translation>
 <translation id="5170568018924773124">Mostra nella cartella</translation>
 <translation id="5176318573511391780">Registra schermo parziale</translation>
@@ -597,6 +597,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="5620281292257375798">Solo per uso interno</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Jack per microfono</translation>
+<translation id="5649768706273821470">Ascolta</translation>
 <translation id="5662709761327382534">Registrazione con microfono <ph name="CURRENT_STATE" />, Premi Invio per attivare la registrazione del microfono <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Attivazione</translation>
 <translation id="5673434351075758678">Da "<ph name="FROM_LOCALE" />" a "<ph name="TO_LOCALE" />" dopo la sincronizzazione delle impostazioni.</translation>
@@ -798,6 +799,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="7302889331339392448">La funzionalità Sottotitoli in tempo reale è disattivata.</translation>
 <translation id="7303365578352795231">Risposta su un altro dispositivo.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; premi Tasto per la ricerca e Barra spaziatrice per vedere il risultato nella Ricerca Google.</translation>
 <translation id="7346909386216857016">OK</translation>
 <translation id="7348093485538360975">Tastiera sullo schermo</translation>
 <translation id="735745346212279324">VPN scollegata</translation>

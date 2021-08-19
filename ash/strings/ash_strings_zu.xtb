@@ -93,6 +93,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="1615402009686901181">Inqubomgomo yomlawuli ikhubaza ukuthatha isikrini lapho okuqukethwe okuyimfihlo kubonakala</translation>
 <translation id="1632985212731562677">Ukushintsha ukufinyelela kungakhutshazwa kokuthi Izilungiselelo &gt; Ukufinyeleleka.</translation>
 <translation id="1654477262762802994">Qalisa umbuzo wezwi</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Cindezela okuthi Sesha ne-Space ukuze ubone imiphumela ku-Assistant.</translation>
 <translation id="1667964833127753507">Imodi yombala omaphakathi ayisebenzisi isithombe sangemuva semibala ekhishiwe, ukuyibuyekeza ngesethi yokukhanya kwethoni emaphakathi noma ama-hue amnyama.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> esele</translation>
 <translation id="1677507110654891115">I-<ph name="FEATURE_NAME" /> ayixhunyiwe.</translation>
@@ -171,7 +172,6 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="229397294990920565">Idatha yeselula iyacisha...</translation>
 <translation id="2295777434187870477">I-mic ivuliwe, ukuguqula kuzothulisa okokufaka.</translation>
 <translation id="2298170939937364391">Isikhulisis sesikrini esigcwele sinikwe amandla. Cindzela u-Ctrl+Search+M futhi ukuze uyivale.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />; Chofoza ibhokisi ukuze ubone imiphumela Kumsizi.</translation>
 <translation id="2302092602801625023">Le akhawunti iphethwe i-Family Link</translation>
 <translation id="2303600792989757991">Shintsha ukuhlola kuqala iwindi</translation>
 <translation id="2322173485024759474">Emuva ngohlamvu</translation>
@@ -349,7 +349,6 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="370665806235115550">Kuyalayisha...</translation>
 <translation id="371370241367527062">Imakrofoni yangaphambili</translation>
 <translation id="3713734891607377840">Vula lapho isiqedile</translation>
-<translation id="3732269052167349831"><ph name="DESC_TEXT" />; Chofoza ibhokisi ukuze ubone imiphumela Ekusesheni ku-Google.</translation>
 <translation id="3742055079367172538">Kuthathwe isithombe-skrini</translation>
 <translation id="3771549900096082774">Imodi yokugqama okuphezulu</translation>
 <translation id="3773700760453577392">Umlawuli akazange avumele ukungena ngemvume okuningi kwe-<ph name="USER_EMAIL" />. Bonke abasebenzisi kumele baphume ngemvume ukuze baqhubeke.</translation>
@@ -544,6 +543,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="5083553833479578423">Vula izici eziningi zomsizi.</translation>
 <translation id="5136175204352732067">Ikhibhodi ehlukile ixhunyiwe</translation>
 <translation id="5155897006997040331">Isivinini sokufunda</translation>
+<translation id="5166918508782100047">Amasethingi wezimpendulo ezisheshayo</translation>
 <translation id="5168181903108465623">Amadivayisi wabalingisi ayatholakala</translation>
 <translation id="5170568018924773124">Bonisa kufolda</translation>
 <translation id="5176318573511391780">Rekhoda ingxenye yesikrini</translation>
@@ -596,6 +596,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="5620281292257375798">Kwangaphakathi kuphela</translation>
 <translation id="5625955975703555628">I-LTE+</translation>
 <translation id="5648021990716966815">Umgodi we-earphone</translation>
+<translation id="5649768706273821470">Lalela</translation>
 <translation id="5662709761327382534">Rekhoda imakrofoni <ph name="CURRENT_STATE" />, Cindezela u-enter ukuvula ukurekhoda imakrofoni ibe ku-<ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Yenza isebenze</translation>
 <translation id="5673434351075758678">Kusukela ku-"<ph name="FROM_LOCALE" />" ukuya ku-"<ph name="TO_LOCALE" />" ngemuva kokuvumelanisa izilungiselelo zakho.</translation>
@@ -797,6 +798,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="7302889331339392448">Okushuthwe Bukhoma kuvaliwe.</translation>
 <translation id="7303365578352795231">Ukuphendula kwenye idivayisi.</translation>
 <translation id="7305884605064981971">I-EDGE</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Cindezela okuthi Sesha ne-Space ukuze ubone umphumela ku-Google Search.</translation>
 <translation id="7346909386216857016">Ok, ngiyezwa</translation>
 <translation id="7348093485538360975">Ikhibhodi kusikrini</translation>
 <translation id="735745346212279324">I-VPN inqanyuliwe</translation>

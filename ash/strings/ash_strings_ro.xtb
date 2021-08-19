@@ -93,6 +93,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1615402009686901181">Politica implementată de administrator dezactivează capturarea ecranului atunci când se afișează conținut confidențial</translation>
 <translation id="1632985212731562677">Accesul prin comutare poate fi dezactivat din Setări &gt; Accesibilitate.</translation>
 <translation id="1654477262762802994">Începe o interogare vocală</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; apasă tasta de căutare + bara de spațiu pentru a vedea rezultatul în Asistent.</translation>
 <translation id="1667964833127753507">Modul de culoare neutru nu folosește culori extrase din imaginea de fundal, ci le înlocuiește cu un set de culori deschise sau închise în tonuri neutre.</translation>
 <translation id="1677472565718498478">Timp rămas: <ph name="TIME" /></translation>
 <translation id="1677507110654891115">Opțiunea <ph name="FEATURE_NAME" /> nu s-a conectat.</translation>
@@ -171,7 +172,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="229397294990920565">Datele mobile se dezactivează...</translation>
 <translation id="2295777434187870477">Microfonul este activat. Comutarea îl va dezactiva.</translation>
 <translation id="2298170939937364391">Lupa de ecran complet este activată. Apasă din nou pe Ctrl + tasta de căutare + M pentru a o dezactiva.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />; dă clic pe caseta de dialog ca să vezi rezultatul în Asistent.</translation>
 <translation id="2302092602801625023">Acest cont este gestionat de Family Link</translation>
 <translation id="2303600792989757991">Activați/Dezactivați prezentarea ferestrei</translation>
 <translation id="2322173485024759474">Înapoi cu o literă</translation>
@@ -349,7 +349,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="370665806235115550">Se încarcă…</translation>
 <translation id="371370241367527062">Microfonul din față</translation>
 <translation id="3713734891607377840">Deschide după finalizare</translation>
-<translation id="3732269052167349831"><ph name="DESC_TEXT" />; dă clic pe caseta de dialog ca să vezi rezultatul în Căutarea Google.</translation>
 <translation id="3742055079367172538">Captură de ecran efectuată</translation>
 <translation id="3771549900096082774">Mod de contrast ridicat</translation>
 <translation id="3773700760453577392">Un administrator a interzis conectarea multiplă pentru <ph name="USER_EMAIL" />. Toți utilizatorii trebuie să se deconecteze pentru a continua.</translation>
@@ -544,6 +543,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="5083553833479578423">Deblochează mai multe funcții ale Asistentului.</translation>
 <translation id="5136175204352732067">Altă tastatură conectată</translation>
 <translation id="5155897006997040331">Viteza de citire</translation>
+<translation id="5166918508782100047">Setări pentru Răspunsuri rapide</translation>
 <translation id="5168181903108465623">Dispozitive de proiecție disponibile</translation>
 <translation id="5170568018924773124">Afișează în dosar</translation>
 <translation id="5176318573511391780">Înregistrează ecranul parțial</translation>
@@ -596,6 +596,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="5620281292257375798">Numai intern</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Mufă pentru microfon</translation>
+<translation id="5649768706273821470">Ascultă</translation>
 <translation id="5662709761327382534">Înregistrare audio <ph name="CURRENT_STATE" />, Apasă pe Enter pentru înregistrare audio <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Se activează</translation>
 <translation id="5673434351075758678">Din „<ph name="FROM_LOCALE" />” în „<ph name="TO_LOCALE" />” după sincronizarea setărilor.</translation>
@@ -797,6 +798,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="7302889331339392448">Funcția Subtitrări live este dezactivată.</translation>
 <translation id="7303365578352795231">Se răspunde pe alt dispozitiv.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; apasă tasta de căutare + bara de spațiu pentru a vedea rezultatul în Căutarea Google.</translation>
 <translation id="7346909386216857016">OK, am înțeles</translation>
 <translation id="7348093485538360975">Tastatură pe ecran</translation>
 <translation id="735745346212279324">Rețea VPN deconectată</translation>

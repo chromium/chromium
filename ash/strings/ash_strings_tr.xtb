@@ -93,6 +93,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1615402009686901181">Yönetici politikası ekranda gizli içerik varken ekran görüntüsü almaya izin vermiyor</translation>
 <translation id="1632985212731562677">Anahtar Erişimi, Ayarlar &gt; Erişilebilirlik'te devre dışı bırakılabilir.</translation>
 <translation id="1654477262762802994">Sesli sorgu başlat</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Sonucu Asistan'da görmek için Ara'ya ve Boşluk çubuğuna basın.</translation>
 <translation id="1667964833127753507">Nötr renk modu, duvar kağıdından çıkarılan renkleri kullanmaz, bunları nötr tonlu açık veya koyu renklerle değiştirir.</translation>
 <translation id="1677472565718498478">Kalan süre: <ph name="TIME" /></translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> bağlı değil.</translation>
@@ -171,7 +172,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="229397294990920565">Mobil veriler kapanıyor...</translation>
 <translation id="2295777434187870477">Mikrofon açık, düğmeye basılırsa girişin sesi kapatılacak.</translation>
 <translation id="2298170939937364391">Tam Ekran Büyüteci etkinleştirildi. Kapatmak için tekrar Ctrl+Arama+M tuşlarına basın.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />; Asistan'da sonucu görmek için iletişim kutusunu tıklayın.</translation>
 <translation id="2302092602801625023">Bu hesap Family Link tarafından yönetiliyor</translation>
 <translation id="2303600792989757991">Pencere genel bakışını değiştir</translation>
 <translation id="2322173485024759474">Harf bazında geri git</translation>
@@ -349,7 +349,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="370665806235115550">Yükleniyor...</translation>
 <translation id="371370241367527062">Ön mikrofon</translation>
 <translation id="3713734891607377840">Tamamlandığında aç</translation>
-<translation id="3732269052167349831"><ph name="DESC_TEXT" />; Google Arama'da sonucu görmek için iletişim kutusunu tıklayın.</translation>
 <translation id="3742055079367172538">Ekran görüntüsü alındı</translation>
 <translation id="3771549900096082774">Yüksek Kontrast Modu</translation>
 <translation id="3773700760453577392">Bir yönetici <ph name="USER_EMAIL" /> için çoklu oturum açmayı engellemiş. Tüm kullanıcılar devam etmek için çıkış yapmalıdır.</translation>
@@ -544,6 +543,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="5083553833479578423">Diğer Asistan özelliklerinin kilidini açın.</translation>
 <translation id="5136175204352732067">Farklı klavye bağlandı</translation>
 <translation id="5155897006997040331">Okuma hızı</translation>
+<translation id="5166918508782100047">Bil bakalım ayarları</translation>
 <translation id="5168181903108465623">Yayın cihazları kullanılabilir</translation>
 <translation id="5170568018924773124">Klasörde göster</translation>
 <translation id="5176318573511391780">Kısmi ekranı kaydet</translation>
@@ -596,6 +596,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="5620281292257375798">Yalnızca dahili</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Mikrofon jakı</translation>
+<translation id="5649768706273821470">Dinle</translation>
 <translation id="5662709761327382534">Mikrofon kaydı <ph name="CURRENT_STATE" />, mikrofon kaydını <ph name="NEW_STATE" /> konuma getirmek için Enter'a basın</translation>
 <translation id="5669267381087807207">Etkinleştiriliyor</translation>
 <translation id="5673434351075758678">Ayarlarınız senkronize edildikten sonra "<ph name="FROM_LOCALE" />" olan dil "<ph name="TO_LOCALE" />" olarak değiştirildi.</translation>
@@ -798,6 +799,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="7302889331339392448">Canlı Altyazı kapalı.</translation>
 <translation id="7303365578352795231">Başka bir cihazda yanıtlanıyor.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Sonucu Google Arama'da görmek için Ara'ya ve Boşluk çubuğuna basın.</translation>
 <translation id="7346909386216857016">Tamam, anladım</translation>
 <translation id="7348093485538360975">Ekran klavyesi</translation>
 <translation id="735745346212279324">VPN bağlantısı kesildi</translation>

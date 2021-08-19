@@ -93,6 +93,7 @@
 <translation id="1615402009686901181">ரகசியமான உள்ளடக்கம் காட்டப்படுவதால் திரையைப் படமெடுப்பதை நிர்வாகக் கொள்கை முடக்கிவிட்டது</translation>
 <translation id="1632985212731562677">அமைப்புகள் &gt; அணுகலம்சங்கள் என்பதற்குச் சென்று சுவிட்ச் அணுகலை முடக்கலாம்.</translation>
 <translation id="1654477262762802994">குரல் வினவலைத் தொடங்கு</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Assistantடில் முடிவைப் பார்க்க Search + Space அழுத்தவும்.</translation>
 <translation id="1667964833127753507">வால்பேப்பரிலிருந்து எடுக்கப்பட்ட வண்ணங்களை நியூட்ரல் வண்ணப் பயன்முறை பயன்படுத்தாது. அவற்றுக்குப் பதிலாக நியூட்ரலாக டோன் செய்யப்பட்ட லைட் அல்லது டார்க் நிறச்சாயல்களின் தொகுப்பைப் பயன்படுத்தும்.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> மணி நேரம்</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> இணைக்கப்படவில்லை.</translation>
@@ -171,7 +172,6 @@
 <translation id="229397294990920565">மொபைல் டேட்டா முடக்கப்படுகிறது...</translation>
 <translation id="2295777434187870477">மைக் ஒலி இயக்கப்பட்டுள்ளது, நிலைமாற்றினால் அது ஒலியடக்கப்படும்.</translation>
 <translation id="2298170939937364391">முழுத்திரைப் பெரிதாக்கி இயக்கப்பட்டுள்ளது. அதை முடக்க Ctrl+Search+Mமை மீண்டும் அழுத்தவும்.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />; Assistantடில் முடிவைப் பார்க்க, உரையாடலைக் கிளிக் செய்யுங்கள்.</translation>
 <translation id="2302092602801625023">இந்தக் கணக்கு Family Linkகால் நிர்வகிக்கப்படுகிறது</translation>
 <translation id="2303600792989757991">சாளர மேலோட்டத்தை நிலைமாற்று</translation>
 <translation id="2322173485024759474">எழுத்து வாரியாகப் பின்செல்</translation>
@@ -349,7 +349,6 @@
 <translation id="370665806235115550">ஏற்றுகிறது…</translation>
 <translation id="371370241367527062">முன்பக்க மைக்ரோஃபோன்</translation>
 <translation id="3713734891607377840">பதிவிறக்கியதும் திற</translation>
-<translation id="3732269052167349831"><ph name="DESC_TEXT" />; Google Searchசில் முடிவைப் பார்க்க உரையாடலைக் கிளிக் செய்யுங்கள்.</translation>
 <translation id="3742055079367172538">ஸ்கிரீன்ஷாட் எடுக்கப்பட்டது</translation>
 <translation id="3771549900096082774">அதிக ஒளி மாறுபாட்டுப் பயன்முறை</translation>
 <translation id="3773700760453577392"><ph name="USER_EMAIL" />க்கு, பல உள்நுழைவை நிர்வாகி அனுமதிக்கவில்லை. தொடர, எல்லாப் பயனர்களும் வெளியேற வேண்டும்.</translation>
@@ -544,6 +543,7 @@
 <translation id="5083553833479578423">மேலும் பல அசிஸ்டண்ட் அம்சங்களைப் பெறுக.</translation>
 <translation id="5136175204352732067">வேறொரு கீபோர்டு இணைக்கப்பட்டது</translation>
 <translation id="5155897006997040331">வாசிப்பு வேகம்</translation>
+<translation id="5166918508782100047">'விரைவான பதில்கள்' அம்சத்திற்கான அமைப்புகள்</translation>
 <translation id="5168181903108465623">Cast சாதனங்கள் உள்ளன</translation>
 <translation id="5170568018924773124">கோப்புறையில் காண்பி</translation>
 <translation id="5176318573511391780">திரையைப் பகுதியளவு ரெக்கார்டு செய்யும்</translation>
@@ -596,6 +596,7 @@
 <translation id="5620281292257375798">அகப் பயன்பாட்டிற்கானது</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">மைக் ஜாக்</translation>
+<translation id="5649768706273821470">கேள்</translation>
 <translation id="5662709761327382534">மைக்ரோஃபோன் மூலம் ரெக்கார்டு செய்தல் <ph name="CURRENT_STATE" />, மைக்ரோஃபோன் ரெக்கார்டிங் நிலையை மாற்ற Enter விசையை அழுத்துங்கள் <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">செயலாக்குகிறது</translation>
 <translation id="5673434351075758678">அமைப்புகளை ஒத்திசைத்த பின்னர், "<ph name="FROM_LOCALE" />" இலிருந்து "<ph name="TO_LOCALE" />"க்கு மாற்றப்பட்டது.</translation>
@@ -797,6 +798,7 @@
 <translation id="7302889331339392448">'உடனடி வசனம்' முடக்கப்பட்டது.</translation>
 <translation id="7303365578352795231">மற்றொரு சாதனத்தில் பதிலளிக்கப்படுகிறது.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Searchசில் முடிவைப் பார்க்க Search + Space அழுத்தவும்.</translation>
 <translation id="7346909386216857016">சரி, புரிந்தது</translation>
 <translation id="7348093485538360975">ஸ்கிரீன் கீபோர்டு</translation>
 <translation id="735745346212279324">VPN துண்டிக்கப்பட்டது</translation>

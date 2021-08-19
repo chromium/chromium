@@ -93,6 +93,7 @@
 <translation id="1615402009686901181">ນະໂຍບາຍຂອງຜູ້ເບິ່ງແຍງລະບົບປິດການນຳໃຊ້ການຖ່າຍຮູບໜ້າຈໍໄວ້ເມື່ອສະແດງເນື້ອຫາທີ່ເປັນຄວາມລັບຢູ່</translation>
 <translation id="1632985212731562677">ປິດການນຳໃຊ້ການເຂົ້າເຖິງດ້ວຍປຸ່ມກົດໄດ້ໃນການຕັ້ງຄ່າ &gt; ການຊ່ວຍເຂົ້າເຖິງ.</translation>
 <translation id="1654477262762802994">ເລີ່ມຄຳຊອກຫາດ້ວຍສຽງ</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; ກົດຊອກຫາພ້ອມກັບຍະຫວ່າງເພື່ອເບິ່ງຜົນການຊອກຫາໃນຜູ້ຊ່ວຍ.</translation>
 <translation id="1667964833127753507">ໂໝດສີປານກາງບໍ່ໃຊ້ສີທີ່ດຶງມາຈາກຮູບພື້ນຫຼັງ, ແຕ່ຈະໃຊ້ໂທນສີທີ່ແຈ້ງ ຫຼື ເຂັ້ມປານກາງແທນສີເຫຼົ່ານັ້ນ.</translation>
 <translation id="1677472565718498478">ຍັງເຫຼືອ <ph name="TIME" /></translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> ບໍ່ໄດ້ເຊື່ອມຕໍ່.</translation>
@@ -171,7 +172,6 @@
 <translation id="229397294990920565">ອິນເຕີເນັດມືຖືກຳລັງປິດ...</translation>
 <translation id="2295777434187870477">ໄມເປີດຢູ່, ການປິດໄມຈະປິດສຽງການປ້ອນຂໍ້ມູນ.</translation>
 <translation id="2298170939937364391">ເປີດນຳໃຊ້ແວ່ນຂະຫຍາຍເຕັມຈໍແລ້ວ. ກະລຸນາກົດ Ctrl+Search+M ອີກຄັ້ງເພື່ອປິດມັນ.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />; ຄລິກກ່ອງໂຕ້ຕອບເພື່ອເບິ່ງຜົນໄດ້ຮັບໃນຜູ້ຊ່ວຍ.</translation>
 <translation id="2302092602801625023">ບັນຊີນີ້ຖືກຈັດການໂດຍ Family Link</translation>
 <translation id="2303600792989757991">ສະຫຼັບແຜນຜັງໜ້າຕ່າງ</translation>
 <translation id="2322173485024759474">ຖອຍກັບເທື່ອລະຕົວໜັງສື</translation>
@@ -349,7 +349,6 @@
 <translation id="370665806235115550">ກໍາລັງໂຫຼດ ...</translation>
 <translation id="371370241367527062">ໄມໂຄຣໂຟນໜ້າ</translation>
 <translation id="3713734891607377840">ເປີດເມື່ອສຳເລັດ</translation>
-<translation id="3732269052167349831"><ph name="DESC_TEXT" />; ຄລິກໃສ່ກ່ອງໂຕ້​ຕອບເພື່ອເບິ່ງຜົນການຊອກຫາໃນ Google ຊອກຫາ.</translation>
 <translation id="3742055079367172538">ຖ່າຍຮູບໜ້າຈໍແລ້ວ</translation>
 <translation id="3771549900096082774">ໂໝດສີຕັດກັນສູງ</translation>
 <translation id="3773700760453577392">ຜູ້ເບິ່ງແຍງລະບົບໄດ້ເຊົາອະນຸຍາດການເຂົ້າສູ່ລະບົບແບບຫຼາຍບັນຊີສໍາລັບ <ph name="USER_EMAIL" /> ແລ້ວ. ຜູ້ໃຊ້ທັງໝົດຕ້ອງອອກຈາກລະບົບເພື່ອສືບຕໍ່.</translation>
@@ -544,6 +543,7 @@
 <translation id="5083553833479578423">ປົດລັອກຄຸນສົມບັດເພີ່ມເຕີມຂອງຜູ້ຊ່ວຍ.</translation>
 <translation id="5136175204352732067">ເຊື່ອມຕໍ່ແປ້ນພິມອື່ນແລ້ວ</translation>
 <translation id="5155897006997040331">ຄວາມໄວການອ່ານ</translation>
+<translation id="5166918508782100047">ການຕັ້ງຄ່າຄຳຕອບດ່ວນ</translation>
 <translation id="5168181903108465623">ອຸປະກອນຄາສທ໌ທີ່ມີໃຫ້</translation>
 <translation id="5170568018924773124">ສະ​ແດງ​ຢູ່​ໃນ​ໂຟລ​ເດີ</translation>
 <translation id="5176318573511391780">ບັນທຶກໜ້າຈໍບາງສ່ວນ</translation>
@@ -596,6 +596,7 @@
 <translation id="5620281292257375798">ສະ​ເພາະ​ພາຍ​ໃນ​ເທົ່າ​ນັ້ນ</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">ແຈັກໄມໂຄຣໂຟນ</translation>
+<translation id="5649768706273821470">​ຟັງ</translation>
 <translation id="5662709761327382534">ບັນທຶກໄມໂຄຣໂຟນ <ph name="CURRENT_STATE" />. ກົດ Enter ເພື່ອ<ph name="NEW_STATE" />ການບັນທຶກສຽງຈາກໄມໂຄຣໂຟນ</translation>
 <translation id="5669267381087807207">ກຳລັງເປີດນຳໃຊ້</translation>
 <translation id="5673434351075758678">ຈາກ "<ph name="FROM_LOCALE" />" ເປັນ "<ph name="TO_LOCALE" />" ຫຼັງຈາກຊິ້ງຂໍ້ມູນການຕັ້ງຄ່າຂອງທ່ານ.</translation>
@@ -797,6 +798,7 @@
 <translation id="7302889331339392448">ຄຳບັນຍາຍສົດປິດຢູ່.</translation>
 <translation id="7303365578352795231">ກຳລັງຕອບຢູ່ໃນອຸປະກອນອື່ນ.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; ກົດຊອກຫາພ້ອມກັບຍະຫວ່າງເພື່ອເບິ່ງຜົນການຊອກຫາໃນ Google ຊອກຫາ.</translation>
 <translation id="7346909386216857016">ຕົກລົງ, ເຂົ້າໃຈແລ້ວ</translation>
 <translation id="7348093485538360975">ຄີບອດເທິງຫນ້າ​ຈໍ​</translation>
 <translation id="735745346212279324">VPN ຕັດເຊື່ອມຕໍ່ແລ້ວ</translation>

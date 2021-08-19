@@ -93,6 +93,7 @@
 <translation id="1615402009686901181">Смернице администратора онемогућавају снимање екрана када је видљив поверљив садржај</translation>
 <translation id="1632985212731562677">Приступ помоћу прекидача може да се онемогући у одељку Подешавања &gt; Приступачност.</translation>
 <translation id="1654477262762802994">Започните гласовну претрагу</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Притисните тастер за претрагу и размак да бисте видели резултат у Помоћнику.</translation>
 <translation id="1667964833127753507">Режим неутралних боја не користи боје из позадина и замењује их скупом неутралних светлих и тамних нијанси.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> је преостало</translation>
 <translation id="1677507110654891115">Функција <ph name="FEATURE_NAME" /> није повезана.</translation>
@@ -171,7 +172,6 @@
 <translation id="229397294990920565">Пренос података преко мобилног оператера се искључује...</translation>
 <translation id="2295777434187870477">Микрофон је укључен. Можете да га искључите померањем прекидача.</translation>
 <translation id="2298170939937364391">Лупа за цео екран је омогућена. Поново притисните Ctrl + тастер за претрагу + M да бисте је искључили.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />; Кликните на дијалог да бисте видели резултат у Помоћнику.</translation>
 <translation id="2302092602801625023">Овим налогом управља Family Link</translation>
 <translation id="2303600792989757991">Укључи/искључи преглед прозора</translation>
 <translation id="2322173485024759474">Слово уназад</translation>
@@ -349,7 +349,6 @@
 <translation id="370665806235115550">Учитава се...</translation>
 <translation id="371370241367527062">Предњи микрофон</translation>
 <translation id="3713734891607377840">Отвори када буде завршено</translation>
-<translation id="3732269052167349831"><ph name="DESC_TEXT" />; Кликните на дијалог да бисте видели резултат у Google претрази.</translation>
 <translation id="3742055079367172538">Снимак екрана је направљен</translation>
 <translation id="3771549900096082774">Режим високог контраста</translation>
 <translation id="3773700760453577392">Администратор је забранио вишеструко пријављивање за <ph name="USER_EMAIL" />. Сви корисници морају да се одјаве да бисмо наставили са сесијом.</translation>
@@ -544,6 +543,7 @@
 <translation id="5083553833479578423">Откључајте још функција Помоћника.</translation>
 <translation id="5136175204352732067">Нека друга тастатура је повезана</translation>
 <translation id="5155897006997040331">Брзина читања</translation>
+<translation id="5166918508782100047">Подешавања брзих одговора</translation>
 <translation id="5168181903108465623">Доступни су уређаји за пребацивање</translation>
 <translation id="5170568018924773124">Прикажи у директоријуму</translation>
 <translation id="5176318573511391780">Сними део екрана</translation>
@@ -596,6 +596,7 @@
 <translation id="5620281292257375798">Само интерно</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Утикач за микрофон</translation>
+<translation id="5649768706273821470">Слушај</translation>
 <translation id="5662709761327382534">Подешавање Снимај помоћу микрофона је <ph name="CURRENT_STATE" />, притисните enter да би снимање помоћу микрофона било <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Активирање</translation>
 <translation id="5673434351075758678">Са језика „<ph name="FROM_LOCALE" />“ на „<ph name="TO_LOCALE" />“ после синхронизације уређаја.</translation>
@@ -797,6 +798,7 @@
 <translation id="7302889331339392448">Титл уживо је искључен.</translation>
 <translation id="7303365578352795231">Одговор се даје на другом уређају.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Притисните тастер за претрагу и размак да бисте видели резултат у Google претрази.</translation>
 <translation id="7346909386216857016">Важи</translation>
 <translation id="7348093485538360975">Тастатура на екрану</translation>
 <translation id="735745346212279324">Веза са VPN-ом је прекинута</translation>

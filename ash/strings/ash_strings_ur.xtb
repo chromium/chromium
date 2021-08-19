@@ -93,6 +93,7 @@
 <translation id="1615402009686901181">منتظم کی پالیسی کے تحت، رازدارانہ مواد کے مرئی ہونے پر اسکرین کیپچر کرنے کی سہولت غیر فعال ہو جاتی ہے</translation>
 <translation id="1632985212731562677">سوئچ رسائی کو ترتیبات &gt; ایکسیسبیلٹی میں غیر فعال کیا جا سکتا ہے۔</translation>
 <translation id="1654477262762802994">صوتی استفسار شروع کریں</translation>
+<translation id="1655967159878494613">‏<ph name="QUERY_TEXT" />؛ <ph name="RESULT_TEXT" />؛ اسسٹنٹ میں نتیجہ دیکھنے کیلئے Search اور Space دبائیں۔</translation>
 <translation id="1667964833127753507">نیوٹرل رنگ موڈ وال پیپر ایکسٹریکٹیڈ رنگوں کا استعمال نہیں کرتا ہے، ان کی جگہ نیوٹرل طور پر ٹون کی گئی لائٹ یا گہری ہیوز والے سیٹ کا استعمال کیا جا رہا ہے۔</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> باقی</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> منسلک نہیں ہے۔</translation>
@@ -171,7 +172,6 @@
 <translation id="229397294990920565">موبائل ڈیٹا بند ہو رہا ہے...</translation>
 <translation id="2295777434187870477">مائیک آن ہے، ٹوگل کرنے سے ان پٹ خاموش ہو جائے گا۔</translation>
 <translation id="2298170939937364391">‏فُل اسکرین میگنیفائر فعال ہے۔ اسے ٹوگل کر کے بند کرنے کے لیے Ctrl+Search+M کو دوبارہ دبائیں۔</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />؛ اسسٹنٹ میں نتیجہ دیکھنے کے لئے ڈائیلاگ پر کلک کریں۔</translation>
 <translation id="2302092602801625023">‏یہ اکاؤنٹ Family Link کے زیر نظم ہے</translation>
 <translation id="2303600792989757991">ونڈو کا عمومی جائزہ ٹوگل کریں</translation>
 <translation id="2322173485024759474">ایک حرف پیچھے جائیں</translation>
@@ -349,7 +349,6 @@
 <translation id="370665806235115550">لوڈ ہو رہے ہیں…</translation>
 <translation id="371370241367527062">سامنے کا مائیکروفون</translation>
 <translation id="3713734891607377840">مکمل ہونے پر کھولیں</translation>
-<translation id="3732269052167349831">‏<ph name="DESC_TEXT" />؛ Google تلاش میں نتیجہ دیکھنے کیلئے ڈائیلاگ پر کلک کریں۔</translation>
 <translation id="3742055079367172538">اسکرین شاٹ لی گئی</translation>
 <translation id="3771549900096082774">اعلی تناسب امتزاج وضع</translation>
 <translation id="3773700760453577392">منتظم نے <ph name="USER_EMAIL" /> کیلئے متعدد سائن ان کی اجازت نہیں دی ہے۔ جاری رکھنے کیلئے تمام صارفین کا سائن آؤٹ کرنا لازمی ہے۔</translation>
@@ -544,6 +543,7 @@
 <translation id="5083553833479578423">اسسٹنٹ کی مزید خصوصیات کو غیر مقفل کریں۔</translation>
 <translation id="5136175204352732067">مختلف کی بورڈ منسلک کر دیا گیا</translation>
 <translation id="5155897006997040331">پڑھنے کی رفتار</translation>
+<translation id="5166918508782100047">فوری جوابات کی ترتیبات</translation>
 <translation id="5168181903108465623">کاسٹ آلات دستیاب ہیں</translation>
 <translation id="5170568018924773124">فولڈر میں دکھائیں</translation>
 <translation id="5176318573511391780">جزوی اسکرین کو ریکارڈ کریں</translation>
@@ -596,6 +596,7 @@
 <translation id="5620281292257375798">صرف داخلی</translation>
 <translation id="5625955975703555628">LTE+‎</translation>
 <translation id="5648021990716966815">مائیک جیک</translation>
+<translation id="5649768706273821470">سنیں</translation>
 <translation id="5662709761327382534">‏مائیکروفون کے ذریعے ریکارڈ کریں <ph name="CURRENT_STATE" />، مائیکروفون کے ذریعے ریکارڈنگ کرنے کیلئے Enter دبائیں <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">فعال ہو رہا ہے</translation>
 <translation id="5673434351075758678">‏آپ کی ترتیبات کی مطابقت پذیری کے بعد '<ph name="FROM_LOCALE" />' سے '‎'‎<ph name="TO_LOCALE" />‎ میں۔</translation>
@@ -797,6 +798,7 @@
 <translation id="7302889331339392448">لائیو کیپشن آف ہے۔</translation>
 <translation id="7303365578352795231">ایک دوسرے آلہ پر جواب دیا جا رہا ہے۔</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942">‏<ph name="QUERY_TEXT" />؛ <ph name="RESULT_TEXT" />؛ Google تلاش میں نتیجہ دیکھنے کیلئے Search اور Space دبائیں۔</translation>
 <translation id="7346909386216857016">ٹھیک ہے، سمجھ آ گئی</translation>
 <translation id="7348093485538360975">آن اسکرین کی بورڈ</translation>
 <translation id="735745346212279324">‏VPN منقطع ہو گیا</translation>

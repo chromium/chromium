@@ -93,6 +93,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1615402009686901181">Theo chính sách của quản trị viên, tính năng chụp ảnh màn hình bị tắt khi có nội dung bí mật</translation>
 <translation id="1632985212731562677">Bạn có thể tắt tính năng Tiếp cận bằng công tắc trong phần Cài đặt &gt; Hỗ trợ tiếp cận.</translation>
 <translation id="1654477262762802994">Bắt đầu đặt câu hỏi bằng giọng nói</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Hãy nhấn phím Tìm kiếm + Phím cách để xem kết quả trong Trợ lý.</translation>
 <translation id="1667964833127753507">Chế độ màu trung tính không dùng màu được trích xuất từ hình nền mà thay các màu này bằng bộ màu sáng hoặc tối có sắc trung tính.</translation>
 <translation id="1677472565718498478">Còn <ph name="TIME" /></translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> chưa kết nối.</translation>
@@ -171,7 +172,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="229397294990920565">Đang tắt dữ liệu di động...</translation>
 <translation id="2295777434187870477">Micrô đang bật. Nhấn vào nút bật tắt sẽ tắt micrô và không thu được tiếng.</translation>
 <translation id="2298170939937364391">Đã bật tính năng Phóng to toàn màn hình. Hãy nhấn lại tổ hợp phím Ctrl+Tìm kiếm+M để tắt tính năng này.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />; Nhấp vào hộp thoại để xem kết quả trong Trợ lý.</translation>
 <translation id="2302092602801625023">Tài khoản này do Family Link quản lý</translation>
 <translation id="2303600792989757991">Tổng quan về chuyển đổi cửa sổ</translation>
 <translation id="2322173485024759474">Lùi một ký tự</translation>
@@ -349,7 +349,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="370665806235115550">Đang tải...</translation>
 <translation id="371370241367527062">Micrô mặt trước</translation>
 <translation id="3713734891607377840">Mở khi hoàn tất</translation>
-<translation id="3732269052167349831"><ph name="DESC_TEXT" />; Hãy nhấp vào hộp thoại để xem kết quả trong Google Tìm kiếm.</translation>
 <translation id="3742055079367172538">Ảnh màn hình đã chụp</translation>
 <translation id="3771549900096082774">Chế độ tương phản cao</translation>
 <translation id="3773700760453577392">Quản trị viên không cho phép <ph name="USER_EMAIL" /> thực hiện đăng nhập nhiều tài khoản. Tất cả người dùng phải đăng xuất để tiếp tục.</translation>
@@ -544,6 +543,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="5083553833479578423">Mở khóa các tính năng khác của Trợ lý.</translation>
 <translation id="5136175204352732067">Đã kết nối bàn phím khác</translation>
 <translation id="5155897006997040331">Tốc độ đọc</translation>
+<translation id="5166918508782100047">Chế độ cài đặt tính năng Thông tin nhanh</translation>
 <translation id="5168181903108465623">Có thiết bị truyền</translation>
 <translation id="5170568018924773124">Hiển thị trong thư mục</translation>
 <translation id="5176318573511391780">Ghi một phần màn hình</translation>
@@ -596,6 +596,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="5620281292257375798">Chỉ sử dụng nội bộ</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Giắc cắm micrô</translation>
+<translation id="5649768706273821470">Nghe</translation>
 <translation id="5662709761327382534">Tính năng ghi âm <ph name="CURRENT_STATE" />. Hãy nhấn Enter để chuyển tính năng này sang trạng thái <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Đang kích hoạt</translation>
 <translation id="5673434351075758678">Từ "<ph name="FROM_LOCALE" />" sang "<ph name="TO_LOCALE" />" sau khi đồng bộ hóa cài đặt của bạn.</translation>
@@ -797,6 +798,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="7302889331339392448">Tính năng Phụ đề trực tiếp đang tắt.</translation>
 <translation id="7303365578352795231">Đang trả lời trên thiết bị khác.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Hãy nhấn phím Tìm kiếm + Phím cách để xem kết quả trong Google Tìm kiếm.</translation>
 <translation id="7346909386216857016">Ok</translation>
 <translation id="7348093485538360975">Bàn phím ảo</translation>
 <translation id="735745346212279324">Đã ngắt kết nối VPN</translation>

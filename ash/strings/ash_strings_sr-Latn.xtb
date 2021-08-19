@@ -93,6 +93,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1615402009686901181">Smernice administratora onemogućavaju snimanje ekrana kada je vidljiv poverljiv sadržaj</translation>
 <translation id="1632985212731562677">Pristup pomoću prekidača može da se onemogući u odeljku Podešavanja &gt; Pristupačnost.</translation>
 <translation id="1654477262762802994">Započnite glasovnu pretragu</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Pritisnite taster za pretragu i razmak da biste videli rezultat u Pomoćniku.</translation>
 <translation id="1667964833127753507">Režim neutralnih boja ne koristi boje iz pozadina i zamenjuje ih skupom neutralnih svetlih i tamnih nijansi.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> je preostalo</translation>
 <translation id="1677507110654891115">Funkcija <ph name="FEATURE_NAME" /> nije povezana.</translation>
@@ -171,7 +172,6 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="229397294990920565">Prenos podataka preko mobilnog operatera se isključuje...</translation>
 <translation id="2295777434187870477">Mikrofon je uključen. Možete da ga isključite pomeranjem prekidača.</translation>
 <translation id="2298170939937364391">Lupa za ceo ekran je omogućena. Ponovo pritisnite Ctrl + taster za pretragu + M da biste je isključili.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />; Kliknite na dijalog da biste videli rezultat u Pomoćniku.</translation>
 <translation id="2302092602801625023">Ovim nalogom upravlja Family Link</translation>
 <translation id="2303600792989757991">Uključi/isključi pregled prozora</translation>
 <translation id="2322173485024759474">Slovo unazad</translation>
@@ -349,7 +349,6 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="370665806235115550">Učitava se...</translation>
 <translation id="371370241367527062">Prednji mikrofon</translation>
 <translation id="3713734891607377840">Otvori kada bude završeno</translation>
-<translation id="3732269052167349831"><ph name="DESC_TEXT" />; Kliknite na dijalog da biste videli rezultat u Google pretrazi.</translation>
 <translation id="3742055079367172538">Snimak ekrana je napravljen</translation>
 <translation id="3771549900096082774">Režim visokog kontrasta</translation>
 <translation id="3773700760453577392">Administrator je zabranio višestruko prijavljivanje za <ph name="USER_EMAIL" />. Svi korisnici moraju da se odjave da bismo nastavili sa sesijom.</translation>
@@ -544,6 +543,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="5083553833479578423">Otključajte još funkcija Pomoćnika.</translation>
 <translation id="5136175204352732067">Neka druga tastatura je povezana</translation>
 <translation id="5155897006997040331">Brzina čitanja</translation>
+<translation id="5166918508782100047">Podešavanja brzih odgovora</translation>
 <translation id="5168181903108465623">Dostupni su uređaji za prebacivanje</translation>
 <translation id="5170568018924773124">Prikaži u direktorijumu</translation>
 <translation id="5176318573511391780">Snimi deo ekrana</translation>
@@ -596,6 +596,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="5620281292257375798">Samo interno</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Utikač za mikrofon</translation>
+<translation id="5649768706273821470">Slušaj</translation>
 <translation id="5662709761327382534">Podešavanje Snimaj pomoću mikrofona je <ph name="CURRENT_STATE" />, pritisnite enter da bi snimanje pomoću mikrofona bilo <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Aktiviranje</translation>
 <translation id="5673434351075758678">Sa jezika „<ph name="FROM_LOCALE" />“ na „<ph name="TO_LOCALE" />“ posle sinhronizacije uređaja.</translation>
@@ -797,6 +798,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="7302889331339392448">Titl uživo je isključen.</translation>
 <translation id="7303365578352795231">Odgovor se daje na drugom uređaju.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Pritisnite taster za pretragu i razmak da biste videli rezultat u Google pretrazi.</translation>
 <translation id="7346909386216857016">Važi</translation>
 <translation id="7348093485538360975">Tastatura na ekranu</translation>
 <translation id="735745346212279324">Veza sa VPN-om je prekinuta</translation>

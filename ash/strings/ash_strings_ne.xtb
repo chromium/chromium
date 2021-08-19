@@ -93,6 +93,7 @@
 <translation id="1615402009686901181">तपाईंको स्क्रिनमा गोप्य सामग्री देखिएका बेला एड्मिनले तोक्नुभएको नीतिअनुसार स्क्रिन क्याप्चर गर्ने सुविधा अफ गरिन्छ</translation>
 <translation id="1632985212731562677">सेटिङ &gt; पहुँचमा गएर स्विचमार्फत पहुँच राख्ने सुविधा असक्षम पार्न सकिन्छ।</translation>
 <translation id="1654477262762802994">आवाजमार्फत गरिने क्वेरी सुरु गर्नुहोस्</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; सहायकमा परिणाम हेर्न Search र Space बटन एकै चोटि थिच्नुहोस्।</translation>
 <translation id="1667964833127753507">'तटस्थ रङ' मोडमा वालपेपरबाट निकालिएका रङ्गहरू प्रयोग गरिँदैन। बरु यो मोडमा तटस्थ रङ्गहरू मिसाएर बनाइएको हल्का वा गाढा प्रकारको रङ प्रयोग गरिन्छ।</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> बाँकी छ</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> कनेक्ट गरिएको छैन।</translation>
@@ -171,7 +172,6 @@
 <translation id="229397294990920565">मोबाइल डेटा अफ गरिँदै छ...</translation>
 <translation id="2295777434187870477">माइक सक्रिय छ, टगल गर्नुले माइक म्युट गर्ने छ।</translation>
 <translation id="2298170939937364391">फुल स्क्रिन म्याग्निफायर सक्षम पारियो। यसलाई निष्क्रिय पार्न फेरि Ctrl+Search+M थिच्नुहोस्।</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />; सहायकमा परिणाम हेर्न डायलगमा क्लिक गर्नुहोस्।</translation>
 <translation id="2302092602801625023">यो खाता Family Link मार्फत व्यवस्थित गरिन्छ</translation>
 <translation id="2303600792989757991">सञ्झ्याल सिंहावलोकन टगल गर्नुहोस्</translation>
 <translation id="2322173485024759474">कर्सरलाई एक अक्षर पछाडि लैजानुहोस्</translation>
@@ -349,7 +349,6 @@
 <translation id="370665806235115550">लोड गर्दै...</translation>
 <translation id="371370241367527062">अगाडिको माइक्रोफोन</translation>
 <translation id="3713734891607377840">डाउनलोड भएपछि खुल्ने छ</translation>
-<translation id="3732269052167349831"><ph name="DESC_TEXT" />; तपाईं Google Search मा खोज परिणाम हेर्न चाहनुहुन्छ भने यो डायलगमा क्लिक गर्नुहोस्।</translation>
 <translation id="3742055079367172538">स्क्रिनसट लिइयो</translation>
 <translation id="3771549900096082774">उच्च कन्ट्रास्ट मोड</translation>
 <translation id="3773700760453577392">कुनै प्रशासकले <ph name="USER_EMAIL" /> बाट एकभन्दा बढी साइन इन गर्ने अनुमति दिनुभएको छैन। जारी राख्न सबै प्रयोगकर्ताहरूले अनिवार्य रूपमा साइन आउट गर्नु पर्छ।</translation>
@@ -544,6 +543,7 @@
 <translation id="5083553833479578423">सहायकका थप सुविधाहरू अनलक गर्नुहोस्।</translation>
 <translation id="5136175204352732067">भिन्न किबोर्ड जडान गरियो</translation>
 <translation id="5155897006997040331">पढ्ने गति</translation>
+<translation id="5166918508782100047">द्रुत जवाफसम्बन्धी सेटिङ</translation>
 <translation id="5168181903108465623">Cast यन्त्रहरू उपलब्ध</translation>
 <translation id="5170568018924773124">फोल्डरमा देखाउनुहोस्</translation>
 <translation id="5176318573511391780">स्क्रिनको केही भागको भिडियो रेकर्ड गर्नुहोस्</translation>
@@ -596,6 +596,7 @@
 <translation id="5620281292257375798">आन्तरिक प्रयोजनका लागि मात्र</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">माइकको ज्याक</translation>
+<translation id="5649768706273821470">सुन्नुहोस्</translation>
 <translation id="5662709761327382534">माइक्रोफोन प्रयोग गरी रेकर्ड गर्ने सुविधा <ph name="CURRENT_STATE" /> छ, माइक्रोफोन प्रयोग गरी रेकर्ड गर्ने सुविधा <ph name="NEW_STATE" /> गर्न 'इन्टर' थिच्नुहोस्</translation>
 <translation id="5669267381087807207">सक्रिय गर्दै</translation>
 <translation id="5673434351075758678">तपाईंका सेटिङहरू सिंक पश्चात् "<ph name="TO_LOCALE" />" बाट "<ph name="FROM_LOCALE" />" मा परिवर्तन भएका छन्।</translation>
@@ -797,6 +798,7 @@
 <translation id="7302889331339392448">लाइभ क्याप्सन अफ छ।</translation>
 <translation id="7303365578352795231">अर्को यन्त्रमा जवाफ दिँदै।</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Search मा परिणाम हेर्न Search र Space बटन एकै चोटि थिच्नुहोस्।</translation>
 <translation id="7346909386216857016">ठिक छ, बुझेँ</translation>
 <translation id="7348093485538360975">अन्-स्क्रिन कुञ्जीपाटी</translation>
 <translation id="735745346212279324">VPN को जडान विच्छेद भयो</translation>

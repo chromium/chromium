@@ -224,7 +224,6 @@ Trokit te një fjalë për të kërkuar. Për ta përsosur kërkimin, preke dhe 
 <translation id="2433507940547922241">Pamja</translation>
 <translation id="2435457462613246316">Shfaq fjalëkalimin</translation>
 <translation id="2450083983707403292">Dëshiron që të fillosh ta shkarkosh <ph name="FILE_NAME" /> përsëri?</translation>
-<translation id="2450209325949418501">Mund të shikosh statusin e shkarkimit në njoftimet e tua</translation>
 <translation id="2450907520913474542">Mëso për temat në sajtet e uebit pa u larguar nga faqja. "Trokit për të kërkuar" dërgon një fjalë dhe kontekstin e saj rrethues te "Kërko në Google", duke sjellë përkufizime, fotografi, rezultate kërkimi dhe detaje të tjera.
 
 Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin, zgjidh më shumë ose më pak fjalë. Për ta modifikuar kërkimin, hape panelin, trokit tek ikona për ta hapur në një skedë të re dhe bëj ndryshimet në kutinë e kërkimit.</translation>
@@ -1230,6 +1229,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="8497726226069778601">Ende nuk ka asgjë për të parë këtu</translation>
 <translation id="8503559462189395349">Fjalëkalimet e Chrome</translation>
 <translation id="8503813439785031346">Emri i përdoruesit</translation>
+<translation id="8505766168025405649">Shiko njoftimin për statusin e shkarkimit</translation>
 <translation id="8514477925623180633">Eksporto fjalëkalimet e ruajtura me Chrome</translation>
 <translation id="8516012719330875537">Redaktori i imazheve</translation>
 <translation id="8523928698583292556">Fshi fjalëkalimin e ruajtur</translation>

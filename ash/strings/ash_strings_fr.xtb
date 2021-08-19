@@ -93,6 +93,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1615402009686901181">Une règle définie par l'administrateur a désactivé la capture d'écran lorsqu'un contenu confidentiel est affiché</translation>
 <translation id="1632985212731562677">Vous pouvez désactiver Switch Access en sélectionnant Paramètres &gt; Accessibilité.</translation>
 <translation id="1654477262762802994">Soumettre une requête vocale</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" /> ; <ph name="RESULT_TEXT" /> ; Appuyez sur "Rechercher" et sur "Espace" pour voir le résultat dans l'Assistant.</translation>
 <translation id="1667964833127753507">Le mode couleur neutre n'utilise pas des couleurs issues du fond d'écran : il les remplace par une gamme de tonalités neutres (claires ou sombres).</translation>
 <translation id="1677472565718498478">Temps restant : <ph name="TIME" /></translation>
 <translation id="1677507110654891115">La fonctionnalité <ph name="FEATURE_NAME" /> n'est pas connectée.</translation>
@@ -171,7 +172,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="229397294990920565">Désactivation des données mobiles…</translation>
 <translation id="2295777434187870477">Le son du micro est activé et peut être coupé si vous déplacez le curseur vers la gauche.</translation>
 <translation id="2298170939937364391">Le mode Loupe plein écran est activé. Appuyez de nouveau sur Ctrl+Recherche+M pour le désactiver.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" /> : Cliquez sur la boîte de dialogue pour voir le résultat dans l'Assistant.</translation>
 <translation id="2302092602801625023">Ce compte est géré par Family Link</translation>
 <translation id="2303600792989757991">Activer/Désactiver la vue d'ensemble des fenêtres</translation>
 <translation id="2322173485024759474">Reculer par lettre</translation>
@@ -349,7 +349,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="370665806235115550">Chargement en cours...</translation>
 <translation id="371370241367527062">Micro avant</translation>
 <translation id="3713734891607377840">Ouvrir une fois terminé</translation>
-<translation id="3732269052167349831"><ph name="DESC_TEXT" />. Cliquez sur la boîte de dialogue pour voir le résultat dans la recherche Google.</translation>
 <translation id="3742055079367172538">Capture d'écran réalisée</translation>
 <translation id="3771549900096082774">Mode Contraste élevé</translation>
 <translation id="3773700760453577392">Un administrateur a désactivé la connexion multicompte pour <ph name="USER_EMAIL" />. Tous les utilisateurs doivent se déconnecter pour continuer.</translation>
@@ -544,6 +543,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="5083553833479578423">Déverrouiller plus de fonctionnalités de l'Assistant.</translation>
 <translation id="5136175204352732067">Clavier différent branché</translation>
 <translation id="5155897006997040331">Vitesse de lecture</translation>
+<translation id="5166918508782100047">Paramètres des Réponses rapides</translation>
 <translation id="5168181903108465623">Appareils Cast disponibles</translation>
 <translation id="5170568018924773124">Afficher le dossier</translation>
 <translation id="5176318573511391780">Enregistrer une partie de l'écran</translation>
@@ -596,6 +596,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="5620281292257375798">Interne uniquement</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Connecteur micro</translation>
+<translation id="5649768706273821470">Écouter</translation>
 <translation id="5662709761327382534">Enregistrement via le micro <ph name="CURRENT_STATE" />, appuyez sur Entrée pour qu'il soit <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Activation</translation>
 <translation id="5673434351075758678">La langue utilisée est passée de "<ph name="FROM_LOCALE" />" à "<ph name="TO_LOCALE" />" après la synchronisation de vos paramètres.</translation>
@@ -797,6 +798,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="7302889331339392448">Sous-titres instantanés désactivés.</translation>
 <translation id="7303365578352795231">Réponse sur un autre appareil.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" /> ; <ph name="RESULT_TEXT" /> ; Appuyez sur "Rechercher" et sur "Espace" pour voir le résultat dans la recherche Google.</translation>
 <translation id="7346909386216857016">OK</translation>
 <translation id="7348093485538360975">Clavier virtuel</translation>
 <translation id="735745346212279324">VPN déconnecté</translation>

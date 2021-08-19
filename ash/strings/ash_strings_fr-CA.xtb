@@ -93,6 +93,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1615402009686901181">La politique définie par l'administrateur désactive les captures d'écran lorsque du contenu confidentiel est visible</translation>
 <translation id="1632985212731562677">Switch Access peut être désactivé sous Paramètres &gt; Accessibilité.</translation>
 <translation id="1654477262762802994">Démarrer une requête vocale</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Appuyez simultanément sur le bouton de recherche et la barre d'espacement pour afficher les résultats dans l'Assistant.</translation>
 <translation id="1667964833127753507">Le mode couleur neutre n'utilise pas de couleurs extraites d'un fond d'écran, il les remplace par un ensemble de couleurs claires ou sombres aux teintes neutres.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> d'autonomie restante</translation>
 <translation id="1677507110654891115">La fonctionnalité <ph name="FEATURE_NAME" /> n'est pas connectée.</translation>
@@ -171,7 +172,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="229397294990920565">Désactivation des données cellulaires en cours…</translation>
 <translation id="2295777434187870477">Le microphone est activé. Si vous le désactivez, l'entrée sonore sera aussi désactivée.</translation>
 <translation id="2298170939937364391">La loupe en mode plein écran a été activée. Appuyez à nouveau sur Ctrl+Recherche+M pour la désactiver.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />; cliquez sur la boîte de dialogue pour voir les résultats dans l'Assistant.</translation>
 <translation id="2302092602801625023">Ce compte est géré par Family Link</translation>
 <translation id="2303600792989757991">Activer ou désactiver la vue d'ensemble des fenêtres</translation>
 <translation id="2322173485024759474">Déplacer une lettre vers l'arrière</translation>
@@ -349,7 +349,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="370665806235115550">Chargement en cours...</translation>
 <translation id="371370241367527062">Microphone avant</translation>
 <translation id="3713734891607377840">Ouvrir une fois terminé</translation>
-<translation id="3732269052167349831"><ph name="DESC_TEXT" />; cliquez sur la boîte de dialogue pour consulter les résultats dans la recherche Google.</translation>
 <translation id="3742055079367172538">Saisie d'écran enregistrée</translation>
 <translation id="3771549900096082774">Mode de contraste élevé</translation>
 <translation id="3773700760453577392">Un administrateur a désactivé la connexion multicompte pour <ph name="USER_EMAIL" />. Tous les utilisateurs doivent se déconnecter pour continuer.</translation>
@@ -544,6 +543,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="5083553833479578423">Déverrouillez davantage de fonctionnalités de l'Assistant Google.</translation>
 <translation id="5136175204352732067">Autre clavier branché</translation>
 <translation id="5155897006997040331">Vitesse de lecture</translation>
+<translation id="5166918508782100047">Paramètres des réponses rapides</translation>
 <translation id="5168181903108465623">Appareils de diffusion disponibles</translation>
 <translation id="5170568018924773124">Afficher dans le dossier</translation>
 <translation id="5176318573511391780">Enregistrer une partie de l'écran</translation>
@@ -596,6 +596,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="5620281292257375798">Pour usage interne seulement</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Prise du microphone</translation>
+<translation id="5649768706273821470">Écouter</translation>
 <translation id="5662709761327382534">Enregistrement avec le microphone <ph name="CURRENT_STATE" />; appuyez sur Entrée pour <ph name="NEW_STATE" /> l'enregistrement avec le microphone</translation>
 <translation id="5669267381087807207">Activation…</translation>
 <translation id="5673434351075758678">De « <ph name="FROM_LOCALE" />  à « <ph name="TO_LOCALE" /> » après la synchronisation de vos paramètres.</translation>
@@ -797,6 +798,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="7302889331339392448">La transcription instantanée est désactivée.</translation>
 <translation id="7303365578352795231">Réponse sur un autre appareil.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Appuyez simultanément sur le bouton de recherche et la barre d'espacement pour afficher les résultats dans la recherche Google.</translation>
 <translation id="7346909386216857016">OK, j'ai compris</translation>
 <translation id="7348093485538360975">Clavier à l'écran</translation>
 <translation id="735745346212279324">RPV déconnecté</translation>

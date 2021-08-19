@@ -224,7 +224,6 @@ Toca qualsevol paraula per cercar. Per definir millor la cerca, mantén premut e
 <translation id="2433507940547922241">Aparença</translation>
 <translation id="2435457462613246316">Mostra la contrasenya</translation>
 <translation id="2450083983707403292">Vols tornar a baixar el fitxer <ph name="FILE_NAME" />?</translation>
-<translation id="2450209325949418501">Pots veure l'estat de la baixada a les notificacions</translation>
 <translation id="2450907520913474542">Obtén informació sobre temes dels llocs web sense sortir de la pàgina. La funció Toca per cercar envia una paraula i el context que l'envolta a la Cerca de Google i torna definicions, imatges, resultats de la cerca i altres detalls.
 
 Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, selecciona més paraules o menys. Per editar la cerca, obre el tauler, toca la icona per obrir-la en una pestanya nova i fes els canvis al quadre de cerca.</translation>
@@ -1230,6 +1229,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="8497726226069778601">Aquí encara no hi ha contingut per mostrar</translation>
 <translation id="8503559462189395349">Contrasenyes de Chrome</translation>
 <translation id="8503813439785031346">Nom d'usuari</translation>
+<translation id="8505766168025405649">Consulta la notificació de l'estat de la baixada</translation>
 <translation id="8514477925623180633">Exporta les contrasenyes emmagatzemades a Chrome</translation>
 <translation id="8516012719330875537">Editor d'imatges</translation>
 <translation id="8523928698583292556">Suprimeix la contrasenya emmagatzemada</translation>

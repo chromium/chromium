@@ -93,6 +93,7 @@
 <translation id="1615402009686901181">गोपनीय आशय दृश्यमान असेल तेव्हा अ‍ॅडमिनिस्ट्रेटर धोरण स्‍क्रीन कॅप्‍चर बंद करते</translation>
 <translation id="1632985212731562677">सेटिंग्ज &gt; अ‍ॅक्सेसिबिलिटी मध्ये स्विच अ‍ॅक्सेस बंद केले जाऊ शकते.</translation>
 <translation id="1654477262762802994">व्हॉइस क्वेरी सुरू करा</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Assistant मध्ये परिणाम पाहण्यासाठी सर्च आणि स्पेस दाबा.</translation>
 <translation id="1667964833127753507">न्यूट्रल रंगीत मोड हा तटस्थपणे टोन केलेल्या फिकट किंवा गडद रंगछटांचा सेट वापरतो आणि वॉलपेपरमधून निवडलेल्या रंगांचा वापर करत नाही.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> शिल्लक</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> कनेक्ट केलेले नाही.</translation>
@@ -171,7 +172,6 @@
 <translation id="229397294990920565">मोबाइल डेटा बंद करत आहे...</translation>
 <translation id="2295777434187870477">माइक सुरू आहे, टॉगल केल्याने इनपुट म्यूट होईल.</translation>
 <translation id="2298170939937364391">फुल-स्क्रीन मॅग्निफायर सुरू केला आहे. तो टॉगल करून बंद करण्यासाठी पुन्हा Ctrl+Search+M दाबा.</translation>
-<translation id="2301480084224169662"><ph name="DESC_TEXT" />; मध्ये परिणाम पाहण्यासाठी डायलॉगवर क्लिक करा.</translation>
 <translation id="2302092602801625023">हे खाते Family Link द्वारे व्यवस्थापित केले जाते</translation>
 <translation id="2303600792989757991">विंडो विहंगावलोकन टॉगल करा</translation>
 <translation id="2322173485024759474">एक अक्षर मागे जा</translation>
@@ -349,7 +349,6 @@
 <translation id="370665806235115550">लोड करीत आहे...</translation>
 <translation id="371370241367527062">समोरील मायक्रोफोन</translation>
 <translation id="3713734891607377840">पूर्ण झाल्यावर उघडा</translation>
-<translation id="3732269052167349831"><ph name="DESC_TEXT" />; Google Search मध्ये परिणाम पाहण्यासाठी डायलॉगवर क्लिक करा.</translation>
 <translation id="3742055079367172538">स्क्रीनशॉट घेतला</translation>
 <translation id="3771549900096082774">उच्च कॉन्ट्रास्ट मोड</translation>
 <translation id="3773700760453577392">ॲडमिनिस्ट्रेटरने <ph name="USER_EMAIL" /> साठी एकाहून अधिक साइन-इन बंद केले आहे. सुरू ठेवण्यासाठी सर्व वापरकर्त्यांनी साइन आउट करणे आवश्यक आहे.</translation>
@@ -544,6 +543,7 @@
 <translation id="5083553833479578423">असिस्टंटची आणखी वैशिष्ट्ये अनलॉक करा.</translation>
 <translation id="5136175204352732067">वेगळा कीबोर्ड कनेक्ट केला आहे</translation>
 <translation id="5155897006997040331">वाचनाचा वेग</translation>
+<translation id="5166918508782100047">क्विक आन्सर्स सेटिंग्ज</translation>
 <translation id="5168181903108465623">कास्‍ट डिव्‍हाइसेस उपलब्‍ध</translation>
 <translation id="5170568018924773124">फोल्डरमध्ये दर्शवा</translation>
 <translation id="5176318573511391780">स्क्रीन अंशतः रेकॉर्ड करा</translation>
@@ -596,6 +596,7 @@
 <translation id="5620281292257375798">फक्त अंतर्गत</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">माइक जॅक</translation>
+<translation id="5649768706273821470">ऐका</translation>
 <translation id="5662709761327382534">मायक्रोफोन वापरून रेकॉर्ड करा <ph name="CURRENT_STATE" />, मायक्रोफोन वापरून रेकॉर्डिंग सुरू करण्यासाठी एंटर दाबा <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">सक्रिय करत आहे</translation>
 <translation id="5673434351075758678">तुमच्या सेटिंग्ज सिंक केल्यानंतर "<ph name="FROM_LOCALE" />" पासून "<ph name="TO_LOCALE" />" पर्यंत.</translation>
@@ -797,6 +798,7 @@
 <translation id="7302889331339392448">लाइव्ह कॅप्शन बंद आहे.</translation>
 <translation id="7303365578352795231">दुसऱ्या डिव्हाइसवर उत्तर देत आहे.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Search मध्ये परिणाम पाहण्यासाठी सर्च आणि स्पेस दाबा.</translation>
 <translation id="7346909386216857016">ठीक आहे, समजले</translation>
 <translation id="7348093485538360975">ऑन-स्क्रीन कीबोर्ड</translation>
 <translation id="735745346212279324">VPN डिस्कनेक्ट केले</translation>

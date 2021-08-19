@@ -224,7 +224,6 @@ Aby coś wyszukać, dotknij dowolnego słowa. Aby doprecyzować wyszukiwanie, na
 <translation id="2433507940547922241">Wygląd</translation>
 <translation id="2435457462613246316">Pokaż hasło</translation>
 <translation id="2450083983707403292">Czy chcesz jeszcze raz rozpocząć pobieranie pliku <ph name="FILE_NAME" />?</translation>
-<translation id="2450209325949418501">Stan pobierania zobaczysz w powiadomieniach</translation>
 <translation id="2450907520913474542">Poznaj tematy omawiane w witrynach, nie opuszczając strony. Funkcja „Dotknij, by wyszukać” wysyła słowo i najbliższy kontekst do wyszukiwarki Google, a następnie zwraca definicje, zdjęcia, wyniki wyszukiwania i inne informacje.
 
 Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować wyszukiwanie, wybierz więcej lub mniej słów. Aby edytować wyszukiwanie, otwórz panel i kliknij ikonę, by przejść do nowej karty, i wprowadź zmiany w polu wyszukiwania.</translation>
@@ -1230,6 +1229,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="8497726226069778601">Tu jeszcze niczego nie ma</translation>
 <translation id="8503559462189395349">Hasła w Chrome</translation>
 <translation id="8503813439785031346">Nazwa użytkownika</translation>
+<translation id="8505766168025405649">Stan pobierania możesz sprawdzić w powiadomieniu</translation>
 <translation id="8514477925623180633">Eksportuj hasła zapisane w Chrome</translation>
 <translation id="8516012719330875537">Edytor obrazów</translation>
 <translation id="8523928698583292556">Usuń zapisane hasło</translation>
