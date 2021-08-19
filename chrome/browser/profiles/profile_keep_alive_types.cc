@@ -19,8 +19,6 @@ std::ostream& operator<<(std::ostream& out,
       return out << "kOffTheRecordProfile";
     case ProfileKeepAliveOrigin::kDownloadInProgress:
       return out << "kDownloadInProgress";
-    case ProfileKeepAliveOrigin::kAppControllerMac:
-      return out << "kAppControllerMac";
     case ProfileKeepAliveOrigin::kClearingBrowsingData:
       return out << "kClearingBrowsingData";
     case ProfileKeepAliveOrigin::kAppWindow:

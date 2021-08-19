@@ -1093,8 +1093,9 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
   // already loaded a new one, so the pointer needs to be updated;
   // otherwise we will try to start up a browser window with a pointer
   // to the old profile.
+  //
   // In a browser test, the application is not brought to the front, so
-  // |lastProfile_| might be null.
+  // |_lastProfile| might be null.
   if (!_lastProfile || (profilePath == _lastProfile->GetPath() &&
                         isOffTheRecord == _lastProfile->IsOffTheRecord())) {
     Profile* last_used_profile = nullptr;
@@ -1122,14 +1123,23 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
                             attachedSheet] isKindOfClass:[NSWindow class]];
 }
 
+- (BOOL)canOpenNewBrowser {
+  Profile* unsafeLastProfile = [self lastProfileIfLoaded];
+  // If the profile is not loaded, try to load it. If it's not usable, the
+  // profile picker will be open instead.
+  if (!unsafeLastProfile)
+    return YES;
+  return [self safeProfileForNewWindows:unsafeLastProfile] ? YES : NO;
+}
+
 // Validates menu items in the dock (always) and in the menu bar (if there is no
 // browser).
 - (BOOL)validateUserInterfaceItem:(id<NSValidatedUserInterfaceItem>)item {
   SEL action = [item action];
   BOOL enable = NO;
   // Whether the profile is loaded and opening a new browser window is allowed.
-  BOOL canOpenNewBrowser =
-      [self safeProfileForNewWindows:[self lastProfileIfLoaded]] ? YES : NO;
+  BOOL canOpenNewBrowser = [self canOpenNewBrowser];
+  BOOL hasLoadedProfile = [self lastProfileIfLoaded] ? YES : NO;
   // Commands from dock are always handled by commandFromDock:, but commands
   // from the menu bar are only handled by commandDispatch: if there is no key
   // window.
@@ -1146,6 +1156,11 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
         // function comment).
         case IDC_RESTORE_TAB:
           enable = ![self keyWindowIsModal] && [self canRestoreTab];
+          break;
+        // Profile-level items that affect how the profile's UI looks should
+        // only be available while there is a Profile opened.
+        case IDC_SHOW_FULL_URLS:
+          enable = hasLoadedProfile;
           break;
         // Browser-level items that open in new tabs or perform an action in a
         // current tab should not open if there's a window- or app-modal dialog.
@@ -1225,8 +1240,8 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
   if (!_keep_alive)
     return;
 
-  Profile* lastProfile =
-      [self safeProfileForNewWindows:[self lastProfileIfLoaded]];
+  Profile* unsafeLastProfile = [self lastProfileIfLoaded];
+  Profile* lastProfile = [self safeProfileForNewWindows:unsafeLastProfile];
   // Ignore commands during session restore's browser creation.  It uses a
   // nested run loop and commands dispatched during this operation cause
   // havoc.
@@ -1242,90 +1257,105 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
     return;
   }
 
-  if (!lastProfile) {
+  if (unsafeLastProfile && !lastProfile) {
     // The profile is disallowed by policy (locked or guest mode disabled).
     ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileLocked);
     return;
   }
 
+  // Asynchronously load profile first if needed.
+  RunInSafeProfileHelper::Run(
+      base::BindOnce(base::RetainBlock(^(Profile* profile) {
+        [self executeCommand:sender withProfile:profile];
+      })));
+}
+
+- (void)executeCommand:(id)sender withProfile:(Profile*)profile {
+  if (!profile) {
+    // Couldn't load the Profile. RunInSafeProfileHelper will show the
+    // ProfilePicker instead.
+    return;
+  }
+
+  NSInteger tag = [sender tag];
+
   switch (tag) {
     case IDC_NEW_TAB:
       // Create a new tab in an existing browser window (which we activate) if
       // possible.
-      if (Browser* browser = ActivateBrowser(lastProfile)) {
+      if (Browser* browser = ActivateBrowser(profile)) {
         chrome::ExecuteCommand(browser, IDC_NEW_TAB);
         break;
       }
       FALLTHROUGH;  // To create new window.
     case IDC_NEW_WINDOW:
-      CreateBrowser(lastProfile);
+      CreateBrowser(profile);
       break;
     case IDC_FOCUS_LOCATION:
-      chrome::ExecuteCommand(ActivateOrCreateBrowser(lastProfile),
+      chrome::ExecuteCommand(ActivateOrCreateBrowser(profile),
                              IDC_FOCUS_LOCATION);
       break;
     case IDC_FOCUS_SEARCH:
-      chrome::ExecuteCommand(ActivateOrCreateBrowser(lastProfile),
+      chrome::ExecuteCommand(ActivateOrCreateBrowser(profile),
                              IDC_FOCUS_SEARCH);
       break;
     case IDC_NEW_INCOGNITO_WINDOW:
-      CreateBrowser(
-          lastProfile->GetPrimaryOTRProfile(/*create_if_needed=*/true));
+      CreateBrowser(profile->GetPrimaryOTRProfile(/*create_if_needed=*/true));
       break;
     case IDC_RESTORE_TAB:
-      chrome::OpenWindowWithRestoredTabs(lastProfile);
+      chrome::OpenWindowWithRestoredTabs(profile);
       break;
     case IDC_OPEN_FILE:
-      chrome::ExecuteCommand(CreateBrowser(lastProfile), IDC_OPEN_FILE);
+      chrome::ExecuteCommand(CreateBrowser(profile), IDC_OPEN_FILE);
       break;
     case IDC_CLEAR_BROWSING_DATA: {
       // There may not be a browser open, so use the default profile.
-      if (Browser* browser = ActivateBrowser(lastProfile)) {
+      if (Browser* browser = ActivateBrowser(profile)) {
         chrome::ShowClearBrowsingDataDialog(browser);
       } else {
-        chrome::OpenClearBrowsingDataDialogWindow(lastProfile);
+        chrome::OpenClearBrowsingDataDialogWindow(profile);
       }
       break;
     }
     case IDC_IMPORT_SETTINGS: {
-      if (Browser* browser = ActivateBrowser(lastProfile)) {
+      if (Browser* browser = ActivateBrowser(profile)) {
         chrome::ShowImportDialog(browser);
       } else {
-        chrome::OpenImportSettingsDialogWindow(lastProfile);
+        chrome::OpenImportSettingsDialogWindow(profile);
       }
       break;
     }
     case IDC_SHOW_BOOKMARK_MANAGER:
-      if (Browser* browser = ActivateBrowser(lastProfile)) {
+      if (Browser* browser = ActivateBrowser(profile)) {
         chrome::ShowBookmarkManager(browser);
       } else {
         // No browser window, so create one for the bookmark manager tab.
-        chrome::OpenBookmarkManagerWindow(lastProfile);
+        chrome::OpenBookmarkManagerWindow(profile);
       }
       break;
     case IDC_SHOW_HISTORY:
-      if (Browser* browser = ActivateBrowser(lastProfile))
+      if (Browser* browser = ActivateBrowser(profile))
         chrome::ShowHistory(browser);
       else
-        chrome::OpenHistoryWindow(lastProfile);
+        chrome::OpenHistoryWindow(profile);
       break;
     case IDC_SHOW_DOWNLOADS:
-      if (Browser* browser = ActivateBrowser(lastProfile))
+      if (Browser* browser = ActivateBrowser(profile))
         chrome::ShowDownloads(browser);
       else
-        chrome::OpenDownloadsWindow(lastProfile);
+        chrome::OpenDownloadsWindow(profile);
       break;
     case IDC_MANAGE_EXTENSIONS:
-      if (Browser* browser = ActivateBrowser(lastProfile))
+      if (Browser* browser = ActivateBrowser(profile))
         chrome::ShowExtensions(browser, std::string());
       else
-        chrome::OpenExtensionsWindow(lastProfile);
+        chrome::OpenExtensionsWindow(profile);
       break;
     case IDC_HELP_PAGE_VIA_MENU:
-      if (Browser* browser = ActivateBrowser(lastProfile))
+      if (Browser* browser = ActivateBrowser(profile))
         chrome::ShowHelp(browser, chrome::HELP_SOURCE_MENU);
       else
-        chrome::OpenHelpWindow(lastProfile, chrome::HELP_SOURCE_MENU);
+        chrome::OpenHelpWindow(profile, chrome::HELP_SOURCE_MENU);
       break;
     case IDC_OPTIONS:
       [self showPreferences:sender];
@@ -1615,8 +1645,18 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
 // Show the preferences window, or bring it to the front if it's already
 // visible.
 - (IBAction)showPreferences:(id)sender {
-  Profile* profile = [self safeProfileForNewWindows:[self lastProfileIfLoaded]];
-  DCHECK(profile);
+  // Asynchronously load profile first if needed.
+  RunInSafeProfileHelper::Run(
+      base::BindOnce(base::RetainBlock(^(Profile* profile) {
+        [self showPreferencesForProfile:profile];
+      })));
+}
+
+- (IBAction)showPreferencesForProfile:(Profile*)profile {
+  if (!profile) {
+    // Failed to load profile, show Profile Picker instead.
+    return;
+  }
   // Re-use an existing browser, or create a new one.
   if (Browser* browser = ActivateBrowser(profile))
     chrome::ShowSettings(browser);
@@ -1625,8 +1665,18 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
 }
 
 - (IBAction)orderFrontStandardAboutPanel:(id)sender {
-  Profile* profile = [self safeProfileForNewWindows:[self lastProfileIfLoaded]];
-  DCHECK(profile);
+  // Asynchronously load profile first if needed.
+  RunInSafeProfileHelper::Run(
+      base::BindOnce(base::RetainBlock(^(Profile* profile) {
+        [self orderFrontStandardAboutPanelForProfile:profile];
+      })));
+}
+
+- (IBAction)orderFrontStandardAboutPanelForProfile:(Profile*)profile {
+  if (!profile) {
+    // Failed to load profile, show Profile Picker instead.
+    return;
+  }
   // Re-use an existing browser, or create a new one.
   if (Browser* browser = ActivateBrowser(profile))
     chrome::ShowAboutChrome(browser);
@@ -1721,7 +1771,6 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
   _historyMenuBridge.reset();
 
   _profilePrefRegistrar.reset();
-  _lastProfileKeepAlive.reset();
 
   // Rebuild the menus with the new profile. The bookmarks submenu is cached to
   // avoid slowdowns when switching between profiles with large numbers of
@@ -1733,16 +1782,12 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
   NSMenuItem* bookmarkItem = [[NSApp mainMenu] itemWithTag:IDC_BOOKMARKS_MENU];
   BOOL hidden = [bookmarkItem isHidden];
   [bookmarkItem setHidden:NO];
+  _bookmarkMenuBridge = nullptr;
 
   _lastProfile = profile;
 
   if (_lastProfile == nullptr)
     return;
-
-  if (!profile->IsOffTheRecord()) {
-    _lastProfileKeepAlive = std::make_unique<ScopedProfileKeepAlive>(
-        _lastProfile, ProfileKeepAliveOrigin::kAppControllerMac);
-  }
 
   auto& entry = _profileBookmarkMenuBridgeMap[profile->GetPath()];
   if (!entry) {

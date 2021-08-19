@@ -39,7 +39,10 @@ enum class ProfileKeepAliveOrigin {
   // On macOS, Chrome doesn't exit when all windows are closed. Keep one Profile
   // alive so we can open windows for the last-used Profile when the user
   // "launches" Chrome again.
-  kAppControllerMac = 5,
+  //
+  // DEPRECATED: Not currently in use, but left here for consistency with
+  // enums.xml.
+  // kAppControllerMac = 5,
 
   // In the middle of clearing browsing data, e.g. when the user deletes it via
   // the Profile menu, or during ephemeral profile teardown.
