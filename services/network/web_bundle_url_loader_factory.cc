@@ -144,6 +144,8 @@ class WebBundleURLLoaderClient : public network::mojom::URLLoaderClient {
     if (status.error_code != net::OK) {
       if (factory_)
         factory_->OnWebBundleFetchFailed();
+      base::UmaHistogramSparse("SubresourceWebBundles.BundleFetchErrorCode",
+                               -status.error_code);
     }
     if (completed_)
       return;

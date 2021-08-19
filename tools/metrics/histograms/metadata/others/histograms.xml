@@ -16260,6 +16260,16 @@ should be kept until we remove incident reporting. -->
   </summary>
 </histogram>
 
+<histogram name="SubresourceWebBundles.BundleFetchErrorCode"
+    enum="NetErrorCodes" expires_after="M99">
+  <owner>ksakamoto@chromium.org</owner>
+  <owner>webpackage-dev@chromium.org</owner>
+  <summary>
+    The net error code recorded when request for a subresource web bundle was
+    failed.
+  </summary>
+</histogram>
+
 <histogram name="SubresourceWebBundles.ContentLength" units="bytes"
     expires_after="M99">
   <owner>horo@chromium.org</owner>
