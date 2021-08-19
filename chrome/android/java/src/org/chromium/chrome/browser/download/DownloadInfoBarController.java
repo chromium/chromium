@@ -1136,11 +1136,11 @@ public class DownloadInfoBarController implements DownloadMessageUiController {
         assert shownState != -1 : "Invalid state " + state;
 
         RecordHistogram.recordEnumeratedHistogram(
-                "Android.Download.InfoBar.Shown", shownState, UmaInfobarShown.NUM_ENTRIES);
-        RecordHistogram.recordEnumeratedHistogram("Android.Download.InfoBar.Shown",
+                "Download.Progress.InfoBar.Shown", shownState, UmaInfobarShown.NUM_ENTRIES);
+        RecordHistogram.recordEnumeratedHistogram("Download.Progress.InfoBar.Shown",
                 UmaInfobarShown.ANY_STATE, UmaInfobarShown.NUM_ENTRIES);
         if (multipleDownloadState != -1) {
-            RecordHistogram.recordEnumeratedHistogram("Android.Download.InfoBar.Shown",
+            RecordHistogram.recordEnumeratedHistogram("Download.Progress.InfoBar.Shown",
                     multipleDownloadState, UmaInfobarShown.NUM_ENTRIES);
         }
     }
@@ -1151,7 +1151,7 @@ public class DownloadInfoBarController implements DownloadMessageUiController {
 
     private void recordCloseButtonClicked() {
         RecordUserAction.record("Android.Download.InfoBar.CloseButtonClicked");
-        RecordHistogram.recordEnumeratedHistogram("Android.Download.InfoBar.CloseButtonClicked",
+        RecordHistogram.recordEnumeratedHistogram("Download.Progress.InfoBar.CloseButtonClicked",
                 mState, DownloadInfoBarState.NUM_ENTRIES);
     }
 
