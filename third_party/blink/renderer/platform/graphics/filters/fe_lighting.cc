@@ -53,6 +53,28 @@ FELighting::FELighting(Filter* filter,
       specular_constant_(std::max(specular_constant, 0.0f)),
       specular_exponent_(clampTo(specular_exponent, 1.0f, 128.0f)) {}
 
+Color FELighting::LightingColor() const {
+  return lighting_color_;
+}
+
+bool FELighting::SetLightingColor(const Color& lighting_color) {
+  if (lighting_color_ == lighting_color)
+    return false;
+  lighting_color_ = lighting_color;
+  return true;
+}
+
+float FELighting::SurfaceScale() const {
+  return surface_scale_;
+}
+
+bool FELighting::SetSurfaceScale(float surface_scale) {
+  if (surface_scale_ == surface_scale)
+    return false;
+  surface_scale_ = surface_scale;
+  return true;
+}
+
 sk_sp<PaintFilter> FELighting::CreateImageFilter() {
   if (!light_source_)
     return CreateTransparentBlack();

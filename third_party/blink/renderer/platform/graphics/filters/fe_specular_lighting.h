@@ -31,26 +31,17 @@ class PLATFORM_EXPORT FESpecularLighting final : public FELighting {
  public:
   FESpecularLighting(Filter*,
                      const Color&,
-                     float,
-                     float,
-                     float,
+                     float surface_scale,
+                     float specular_constant,
+                     float specular_exponent,
                      scoped_refptr<LightSource>);
   ~FESpecularLighting() override;
-
-  Color LightingColor() const;
-  bool SetLightingColor(const Color&);
-
-  float SurfaceScale() const;
-  bool SetSurfaceScale(float);
 
   float SpecularConstant() const;
   bool SetSpecularConstant(float);
 
   float SpecularExponent() const;
   bool SetSpecularExponent(float);
-
-  const LightSource* GetLightSource() const;
-  void SetLightSource(scoped_refptr<LightSource>);
 
   WTF::TextStream& ExternalRepresentation(WTF::TextStream&,
                                           int indention) const override;
