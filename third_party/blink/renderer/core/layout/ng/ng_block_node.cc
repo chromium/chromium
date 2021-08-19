@@ -500,9 +500,8 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::Layout(
 
   // Fragment geometry scrollbars are potentially size constrained, and cannot
   // be used for comparison with their after layout size.
-  NGBoxStrut before_layout_scrollbars =
-      ComputeScrollbars(constraint_space, *this);
-  bool before_layout_intrinsic_logical_widths_dirty =
+  NGBoxStrut scrollbars_before = ComputeScrollbars(constraint_space, *this);
+  bool intrinsic_logical_widths_dirty_before =
       box_->IntrinsicLogicalWidthsDirty();
 
   if (!layout_result)
@@ -514,42 +513,59 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::Layout(
   // - Our scrollbars have changed causing our size to change (shrink-to-fit)
   //   or the available space to our children changing.
   // - A child changed scrollbars causing our size to change (shrink-to-fit).
-  //
-  // This mirrors legacy code in PaintLayerScrollableArea::UpdateAfterLayout.
-  if ((before_layout_scrollbars !=
-       ComputeScrollbars(constraint_space, *this)) ||
-      (!before_layout_intrinsic_logical_widths_dirty &&
+  NGBoxStrut scrollbars_after = ComputeScrollbars(constraint_space, *this);
+  if (scrollbars_before != scrollbars_after ||
+      (!intrinsic_logical_widths_dirty_before &&
        box_->IntrinsicLogicalWidthsDirty())) {
-    PaintLayerScrollableArea::FreezeScrollbarsScope freeze_scrollbars;
+    bool freeze_horizontal = false, freeze_vertical = false;
+    // If we're in a measure pass, freeze both scrollbars right away, to avoid
+    // quadratic time complexity for deeply nested flexboxes.
+    if (constraint_space.CacheSlot() == NGCacheSlot::kMeasure)
+      freeze_horizontal = freeze_vertical = true;
+    do {
+      // Freeze any scrollbars that appeared, and relayout. Repeat until both
+      // have appeared, or until the scrollbar situation doesn't change,
+      // whichever comes first.
+      AddScrollbarFreeze(scrollbars_before, scrollbars_after,
+                         constraint_space.GetWritingDirection(),
+                         &freeze_horizontal, &freeze_vertical);
+      scrollbars_before = scrollbars_after;
+      PaintLayerScrollableArea::FreezeScrollbarsRootScope freezer(
+          *box_, freeze_horizontal, freeze_vertical);
 
-    // We need to clear any previous results when scrollbars change. For
-    // example - we may have stored a "measure" layout result which will be
-    // incorrect if we try and reuse it.
-    params.previous_result = nullptr;
-    box_->ClearLayoutResults();
+      // We need to clear any previous results when scrollbars change. For
+      // example - we may have stored a "measure" layout result which will be
+      // incorrect if we try and reuse it.
+      params.previous_result = nullptr;
+      box_->ClearLayoutResults();
 
 #if DCHECK_IS_ON()
-    // Ensure turning on/off scrollbars only once at most, when we call
-    // |LayoutWithAlgorithm| recursively.
-    DEFINE_STATIC_LOCAL(
-        Persistent<HeapHashSet<WeakMember<LayoutBox>>>, scrollbar_changed,
-        (MakeGarbageCollected<HeapHashSet<WeakMember<LayoutBox>>>()));
-    DCHECK(scrollbar_changed->insert(box_.Get()).is_new_entry);
+      // Ensure turning on/off scrollbars only once at most, when we call
+      // |LayoutWithAlgorithm| recursively.
+      DEFINE_STATIC_LOCAL(
+          Persistent<HeapHashSet<WeakMember<LayoutBox>>>, scrollbar_changed,
+          (MakeGarbageCollected<HeapHashSet<WeakMember<LayoutBox>>>()));
+      DCHECK(scrollbar_changed->insert(box_.Get()).is_new_entry);
 #endif
 
-    // Scrollbar changes are hard to detect. Make sure everyone gets the
-    // message.
-    box_->SetNeedsLayout(layout_invalidation_reason::kScrollbarChanged,
-                         kMarkOnlyThis);
+      // Scrollbar changes are hard to detect. Make sure everyone gets the
+      // message.
+      box_->SetNeedsLayout(layout_invalidation_reason::kScrollbarChanged,
+                           kMarkOnlyThis);
 
-    fragment_geometry =
-        CalculateInitialFragmentGeometry(constraint_space, *this);
-    layout_result = LayoutWithAlgorithm(params);
-    FinishLayout(block_flow, constraint_space, break_token, layout_result);
+      fragment_geometry =
+          CalculateInitialFragmentGeometry(constraint_space, *this);
+      layout_result = LayoutWithAlgorithm(params);
+      FinishLayout(block_flow, constraint_space, break_token, layout_result);
 
 #if DCHECK_IS_ON()
     scrollbar_changed->erase(box_);
 #endif
+
+    scrollbars_after = ComputeScrollbars(constraint_space, *this);
+    DCHECK(!freeze_horizontal || !freeze_vertical ||
+           scrollbars_after == scrollbars_before);
+    } while (scrollbars_after != scrollbars_before);
   }
 
   // We always need to update the ShapeOutsideInfo even if the layout is

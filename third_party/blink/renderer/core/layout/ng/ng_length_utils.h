@@ -642,6 +642,18 @@ absl::optional<MinMaxSizesResult> CalculateMinMaxSizesIgnoringChildren(
     const NGBlockNode&,
     const NGBoxStrut& border_scrollbar_padding);
 
+// Determine which scrollbars to freeze in the next layout pass. Scrollbars that
+// appear will be frozen (while scrollbars that disappear will not). Input is
+// the scrollbar situation before and after the previous layout pass, and the
+// current freeze state (|freeze_horizontal|, |freeze_vertical|). Output is the
+// new freeze state (|freeze_horizontal|, |freeze_vertical|). A scrollbar that
+// was previously frozen will not become unfrozen.
+void AddScrollbarFreeze(const NGBoxStrut& scrollbars_before,
+                        const NGBoxStrut& scrollbars_after,
+                        WritingDirectionMode,
+                        bool* freeze_horizontal,
+                        bool* freeze_vertical);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_LENGTH_UTILS_H_

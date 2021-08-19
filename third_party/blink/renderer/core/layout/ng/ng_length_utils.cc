@@ -1696,4 +1696,19 @@ absl::optional<MinMaxSizesResult> CalculateMinMaxSizesIgnoringChildren(
   return absl::nullopt;
 }
 
+void AddScrollbarFreeze(const NGBoxStrut& scrollbars_before,
+                        const NGBoxStrut& scrollbars_after,
+                        WritingDirectionMode writing_direction,
+                        bool* freeze_horizontal,
+                        bool* freeze_vertical) {
+  NGPhysicalBoxStrut physical_before =
+      scrollbars_before.ConvertToPhysical(writing_direction);
+  NGPhysicalBoxStrut physical_after =
+      scrollbars_after.ConvertToPhysical(writing_direction);
+  *freeze_horizontal |= (!physical_before.top && physical_after.top) ||
+                        (!physical_before.bottom && physical_after.bottom);
+  *freeze_vertical |= (!physical_before.left && physical_after.left) ||
+                      (!physical_before.right && physical_after.right);
+}
+
 }  // namespace blink
