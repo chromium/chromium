@@ -19,6 +19,8 @@
 #include "media/remoting/receiver_controller.h"
 #include "media/remoting/stream_provider.h"
 
+using openscreen::cast::RpcMessenger;
+
 namespace media {
 namespace remoting {
 namespace {
@@ -40,32 +42,35 @@ Receiver::Receiver(
     : rpc_handle_(rpc_handle),
       remote_handle_(remote_handle),
       receiver_controller_(receiver_controller),
-      rpc_broker_(receiver_controller_->rpc_broker()),
+      rpc_messenger_(receiver_controller_->rpc_messenger()),
       main_task_runner_(base::ThreadTaskRunnerHandle::Get()),
       media_task_runner_(media_task_runner),
       renderer_(std::move(renderer)),
       acquire_renderer_done_cb_(std::move(acquire_renderer_done_cb)) {
-  DCHECK(rpc_handle_ != RpcBroker::kInvalidHandle);
+  DCHECK(rpc_handle_ != RpcMessenger::kInvalidHandle);
   DCHECK(receiver_controller_);
-  DCHECK(rpc_broker_);
+  DCHECK(rpc_messenger_);
   DCHECK(renderer_);
 
   // Note: The constructor is running on the main thread, but will be destroyed
   // on the media thread. Therefore, all weak pointers must be dereferenced on
   // the media thread.
-  const RpcBroker::ReceiveMessageCallback receive_callback = base::BindPostTask(
+  auto receive_callback = base::BindPostTask(
       media_task_runner_,
       BindRepeating(&Receiver::OnReceivedRpc, weak_factory_.GetWeakPtr()));
 
   // Listening all renderer rpc messages.
-  rpc_broker_->RegisterMessageReceiverCallback(rpc_handle_, receive_callback);
+  rpc_messenger_->RegisterMessageReceiverCallback(
+      rpc_handle_, [cb = receive_callback](
+                       std::unique_ptr<openscreen::cast::RpcMessage> message) {
+        cb.Run(std::move(message));
+      });
+
   VerifyAcquireRendererDone();
 }
 
 Receiver::~Receiver() {
-  rpc_broker_->UnregisterMessageReceiverCallback(rpc_handle_);
-  rpc_broker_->UnregisterMessageReceiverCallback(
-      RpcBroker::kAcquireRendererHandle);
+  rpc_messenger_->UnregisterMessageReceiverCallback(rpc_handle_);
 }
 
 // Receiver::Initialize() will be called by the local pipeline, it would only
@@ -106,12 +111,11 @@ base::TimeDelta Receiver::GetMediaTime() {
 
 void Receiver::SendRpcMessageOnMainThread(
     std::unique_ptr<openscreen::cast::RpcMessage> message) {
-  // |rpc_broker_| is owned by |receiver_controller_| which is a singleton per
-  // process, so it's safe to use Unretained() here.
+  // |rpc_messenger_| is owned by |receiver_controller_| which is a singleton
+  // per process, so it's safe to use Unretained() here.
   main_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&RpcBroker::SendMessageToRemote,
-                     base::Unretained(rpc_broker_), std::move(message)));
+      FROM_HERE, base::BindOnce(&RpcMessenger::SendMessageToRemote,
+                                base::Unretained(rpc_messenger_), *message));
 }
 
 void Receiver::OnReceivedRpc(
@@ -140,14 +144,14 @@ void Receiver::OnReceivedRpc(
 }
 
 void Receiver::SetRemoteHandle(int remote_handle) {
-  DCHECK_NE(remote_handle, RpcBroker::kInvalidHandle);
-  DCHECK_EQ(remote_handle_, RpcBroker::kInvalidHandle);
+  DCHECK_NE(remote_handle, RpcMessenger::kInvalidHandle);
+  DCHECK_EQ(remote_handle_, RpcMessenger::kInvalidHandle);
   remote_handle_ = remote_handle;
   VerifyAcquireRendererDone();
 }
 
 void Receiver::VerifyAcquireRendererDone() {
-  if (remote_handle_ == RpcBroker::kInvalidHandle)
+  if (remote_handle_ == RpcMessenger::kInvalidHandle)
     return;
 
   DCHECK(acquire_renderer_done_cb_);

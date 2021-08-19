@@ -9,17 +9,17 @@
 
 #include "base/no_destructor.h"
 #include "media/mojo/mojom/remoting.mojom.h"
-#include "media/remoting/rpc_broker.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/openscreen/src/cast/streaming/rpc_messenger.h"
 
 namespace media {
 namespace remoting {
 
-// ReceiverController is the bridge that owns |rpc_broker_| to allow Receivers
-// and StreamProvider::MediaStreams to communicate with the sender via RPC
-// calls.
+// ReceiverController is the bridge that owns |rpc_messenger_| to allow
+// Receivers and StreamProvider::MediaStreams to communicate with the sender via
+// RPC calls.
 //
 // It also forwards calls to a |media_remotee_| instance, which will be
 // implemented the browser process. Currently, the only use case will be on
@@ -39,8 +39,7 @@ class ReceiverController : mojom::RemotingSink {
       mojo::PendingRemote<mojom::RemotingDataStreamReceiver> audio_stream,
       mojo::PendingRemote<mojom::RemotingDataStreamReceiver> video_stream);
 
-  // The reference of |rpc_broker_|.
-  media::remoting::RpcBroker* rpc_broker() { return &rpc_broker_; }
+  openscreen::cast::RpcMessenger* rpc_messenger() { return &rpc_messenger_; }
 
  private:
   friend base::NoDestructor<ReceiverController>;
@@ -53,10 +52,10 @@ class ReceiverController : mojom::RemotingSink {
   // media::mojom::RemotingSink implementation.
   void OnMessageFromSource(const std::vector<uint8_t>& message) override;
 
-  // Callback for |rpc_broker_| to send messages.
-  void OnSendRpc(std::unique_ptr<std::vector<uint8_t>> message);
+  // Callback for |rpc_messenger_| to send messages.
+  void OnSendRpc(std::vector<uint8_t> message);
 
-  RpcBroker rpc_broker_;
+  openscreen::cast::RpcMessenger rpc_messenger_;
 
   const scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
 

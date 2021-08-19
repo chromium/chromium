@@ -86,7 +86,7 @@ class MockReceiverController : public ReceiverController {
   MockReceiverController();
   ~MockReceiverController() override;
 
-  void OnSendRpc(std::unique_ptr<std::vector<uint8_t>> message);
+  void OnSendRpc(std::vector<uint8_t> message);
 
   std::unique_ptr<MockRemotee> mock_remotee_;
 };

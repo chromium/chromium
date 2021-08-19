@@ -16,8 +16,14 @@
 #include "media/base/demuxer_stream.h"
 #include "media/base/renderer.h"
 #include "media/base/renderer_client.h"
-#include "media/remoting/rpc_broker.h"
 #include "third_party/openscreen/src/cast/streaming/remoting.pb.h"
+#include "third_party/openscreen/src/cast/streaming/rpc_messenger.h"
+
+namespace openscreen {
+namespace cast {
+class RpcMessenger;
+}
+}  // namespace openscreen
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -27,7 +33,6 @@ namespace media {
 namespace remoting {
 
 class ReceiverController;
-class RpcBroker;
 
 // Receiver runs on a remote device, and forwards the information sent from a
 // CourierRenderer to |renderer_|, which actually renders the media.
@@ -123,9 +128,9 @@ class Receiver final : public Renderer, public RendererClient {
   int remote_handle_;
 
   ReceiverController* const receiver_controller_;  // Outlives this class.
-  RpcBroker* const rpc_broker_;                    // Outlives this class.
+  openscreen::cast::RpcMessenger* const rpc_messenger_;  // Outlives this class.
 
-  // Calling SendMessageCallback() of |rpc_broker_| should be on main thread.
+  // Calling SendMessageCallback() of |rpc_messenger_| should be on main thread.
   const scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
 
   // Media tasks should run on media thread.

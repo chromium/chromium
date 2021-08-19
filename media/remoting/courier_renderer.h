@@ -21,11 +21,12 @@
 #include "media/base/renderer.h"
 #include "media/mojo/mojom/remoting.mojom.h"
 #include "media/remoting/metrics.h"
-#include "media/remoting/rpc_broker.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/openscreen/src/cast/streaming/remoting.pb.h"
+#include "third_party/openscreen/src/cast/streaming/rpc_messenger.h"
+#include "third_party/openscreen/src/util/weak_ptr.h"
 
 namespace media {
 
@@ -57,7 +58,7 @@ class CourierRenderer final : public Renderer {
   static void OnDataPipeCreatedOnMainThread(
       scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
       base::WeakPtr<CourierRenderer> self,
-      base::WeakPtr<RpcBroker> rpc_broker,
+      openscreen::WeakPtr<openscreen::cast::RpcMessenger> rpc_messenger,
       mojo::PendingRemote<mojom::RemotingDataStreamSender> audio,
       mojo::PendingRemote<mojom::RemotingDataStreamSender> video,
       mojo::ScopedDataPipeProducerHandle audio_handle,
@@ -155,6 +156,9 @@ class CourierRenderer final : public Renderer {
   // though the playback might be delayed or paused.
   bool IsWaitingForDataFromDemuxers() const;
 
+  // Helper to deregister the renderer from the RPC messenger.
+  void DeregisterFromRpcMessaging();
+
   State state_;
   const scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   const scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
@@ -173,8 +177,13 @@ class CourierRenderer final : public Renderer {
 
   // Component to establish mojo remoting service on browser process.
   const base::WeakPtr<RendererController> controller_;
-  // Broker class to process incoming and outgoing RPC message.
-  const base::WeakPtr<RpcBroker> rpc_broker_;
+
+  // Broker class to process incoming and outgoing RPC messages.
+  // Only accessed on |main_task_runner_|. NOTE: the messenger is wrapped
+  // in an |openscreen::WeakPtr| instead of |base|'s implementation due to
+  // it being defined in the third_party/openscreen repository.
+  const openscreen::WeakPtr<openscreen::cast::RpcMessenger> rpc_messenger_;
+
   // RPC handle value for CourierRenderer component.
   const int rpc_handle_;
 

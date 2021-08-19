@@ -108,8 +108,9 @@ RendererController::RendererController(
     mojo::PendingReceiver<mojom::RemotingSource> source_receiver,
     mojo::PendingRemote<mojom::Remoter> remoter)
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING_RPC)
-    : rpc_broker_(base::BindRepeating(&RendererController::SendMessageToSink,
-                                      base::Unretained(this))),
+    : rpc_messenger_([this](std::vector<uint8_t> message) {
+        SendMessageToSink(std::move(message));
+      }),
 #else
     :
 #endif
@@ -187,7 +188,7 @@ void RendererController::OnMessageFromSink(
     return;
   }
 
-  rpc_broker_.ProcessMessageFromRemote(std::move(rpc));
+  rpc_messenger_.ProcessMessageFromRemote(std::move(rpc));
 #endif
 }
 
@@ -213,10 +214,11 @@ void RendererController::OnRemotePlaybackDisabled(bool disabled) {
 }
 
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING_RPC)
-base::WeakPtr<RpcBroker> RendererController::GetRpcBroker() {
+openscreen::WeakPtr<openscreen::cast::RpcMessenger>
+RendererController::GetRpcMessenger() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  return rpc_broker_.GetWeakPtr();
+  return rpc_messenger_.GetWeakPtr();
 }
 #endif
 
@@ -632,10 +634,9 @@ bool RendererController::SinkSupportsRemoting() const {
   return HasFeatureCapability(RemotingSinkFeature::RENDERING);
 }
 
-void RendererController::SendMessageToSink(
-    std::unique_ptr<std::vector<uint8_t>> message) {
+void RendererController::SendMessageToSink(std::vector<uint8_t> message) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  remoter_->SendMessageToSink(*message);
+  remoter_->SendMessageToSink(message);
 }
 
 #if defined(OS_ANDROID)

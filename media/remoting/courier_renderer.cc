@@ -27,6 +27,8 @@
 #include "media/remoting/proto_utils.h"
 #include "media/remoting/renderer_controller.h"
 
+using openscreen::cast::RpcMessenger;
+
 namespace media {
 namespace remoting {
 
@@ -69,18 +71,25 @@ CourierRenderer::CourierRenderer(
       media_resource_(nullptr),
       client_(nullptr),
       controller_(controller),
-      rpc_broker_(controller_->GetRpcBroker()),
-      rpc_handle_(rpc_broker_->GetUniqueHandle()),
-      remote_renderer_handle_(RpcBroker::kInvalidHandle),
+      rpc_messenger_(controller_->GetRpcMessenger()),
+      rpc_handle_(rpc_messenger_->GetUniqueHandle()),
+      remote_renderer_handle_(RpcMessenger::kInvalidHandle),
       video_renderer_sink_(video_renderer_sink),
       clock_(base::DefaultTickClock::GetInstance()) {
   // Note: The constructor is running on the main thread, but will be destroyed
   // on the media thread. Therefore, all weak pointers must be dereferenced on
   // the media thread.
-  const RpcBroker::ReceiveMessageCallback receive_callback =
-      base::BindRepeating(&CourierRenderer::OnMessageReceivedOnMainThread,
-                          media_task_runner_, weak_factory_.GetWeakPtr());
-  rpc_broker_->RegisterMessageReceiverCallback(rpc_handle_, receive_callback);
+  rpc_messenger_->RegisterMessageReceiverCallback(
+      rpc_handle_,
+      [runner = media_task_runner_, ptr = weak_factory_.GetWeakPtr()](
+          std::unique_ptr<openscreen::cast::RpcMessage> message) {
+        if (ptr) {
+          CourierRenderer::OnMessageReceivedOnMainThread(runner, ptr,
+                                                         std::move(message));
+        } else {
+          LOG(WARNING) << "Invalid weak factory pointer.";
+        }
+      });
 }
 
 CourierRenderer::~CourierRenderer() {
@@ -88,8 +97,8 @@ CourierRenderer::~CourierRenderer() {
 
   // Post task on main thread to unregister message receiver.
   main_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&RpcBroker::UnregisterMessageReceiverCallback,
-                                rpc_broker_, rpc_handle_));
+      FROM_HERE, base::BindOnce(&CourierRenderer::DeregisterFromRpcMessaging,
+                                weak_factory_.GetWeakPtr()));
 
   if (video_renderer_sink_) {
     video_renderer_sink_->PaintSingleFrame(
@@ -134,7 +143,7 @@ void CourierRenderer::Initialize(MediaResource* media_resource,
           audio_demuxer_stream, video_demuxer_stream,
           base::BindOnce(&CourierRenderer::OnDataPipeCreatedOnMainThread,
                          media_task_runner_, weak_factory_.GetWeakPtr(),
-                         rpc_broker_)));
+                         rpc_messenger_)));
 }
 
 void CourierRenderer::SetLatencyHint(
@@ -255,7 +264,7 @@ base::TimeDelta CourierRenderer::GetMediaTime() {
 void CourierRenderer::OnDataPipeCreatedOnMainThread(
     scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
     base::WeakPtr<CourierRenderer> self,
-    base::WeakPtr<RpcBroker> rpc_broker,
+    openscreen::WeakPtr<RpcMessenger> rpc_messenger,
     mojo::PendingRemote<mojom::RemotingDataStreamSender> audio,
     mojo::PendingRemote<mojom::RemotingDataStreamSender> video,
     mojo::ScopedDataPipeProducerHandle audio_handle,
@@ -265,10 +274,10 @@ void CourierRenderer::OnDataPipeCreatedOnMainThread(
       base::BindOnce(&CourierRenderer::OnDataPipeCreated, self,
                      std::move(audio), std::move(video),
                      std::move(audio_handle), std::move(video_handle),
-                     rpc_broker ? rpc_broker->GetUniqueHandle()
-                                : RpcBroker::kInvalidHandle,
-                     rpc_broker ? rpc_broker->GetUniqueHandle()
-                                : RpcBroker::kInvalidHandle));
+                     rpc_messenger ? rpc_messenger->GetUniqueHandle()
+                                   : RpcMessenger::kInvalidHandle,
+                     rpc_messenger ? rpc_messenger->GetUniqueHandle()
+                                   : RpcMessenger::kInvalidHandle));
 }
 
 void CourierRenderer::OnDataPipeCreated(
@@ -294,20 +303,20 @@ void CourierRenderer::OnDataPipeCreated(
 
   // Create audio demuxer stream adapter if audio is available.
   if (audio_demuxer_stream && audio.is_valid() && audio_handle.is_valid() &&
-      audio_rpc_handle != RpcBroker::kInvalidHandle) {
+      audio_rpc_handle != RpcMessenger::kInvalidHandle) {
     audio_demuxer_stream_adapter_ = std::make_unique<DemuxerStreamAdapter>(
         main_task_runner_, media_task_runner_, "audio", audio_demuxer_stream,
-        rpc_broker_, audio_rpc_handle, std::move(audio),
+        rpc_messenger_, audio_rpc_handle, std::move(audio),
         std::move(audio_handle),
         base::BindOnce(&CourierRenderer::OnFatalError, base::Unretained(this)));
   }
 
   // Create video demuxer stream adapter if video is available.
   if (video_demuxer_stream && video.is_valid() && video_handle.is_valid() &&
-      video_rpc_handle != RpcBroker::kInvalidHandle) {
+      video_rpc_handle != RpcMessenger::kInvalidHandle) {
     video_demuxer_stream_adapter_ = std::make_unique<DemuxerStreamAdapter>(
         main_task_runner_, media_task_runner_, "video", video_demuxer_stream,
-        rpc_broker_, video_rpc_handle, std::move(video),
+        rpc_messenger_, video_rpc_handle, std::move(video),
         std::move(video_handle),
         base::BindOnce(&CourierRenderer::OnFatalError, base::Unretained(this)));
   }
@@ -322,23 +331,23 @@ void CourierRenderer::OnDataPipeCreated(
 
   // Issues RPC_ACQUIRE_DEMUXER RPC message.
   auto rpc = std::make_unique<openscreen::cast::RpcMessage>();
-  rpc->set_handle(RpcBroker::kAcquireDemuxerHandle);
+  rpc->set_handle(RpcMessenger::kAcquireDemuxerHandle);
   rpc->set_proc(openscreen::cast::RpcMessage::RPC_ACQUIRE_DEMUXER);
   openscreen::cast::AcquireDemuxer* message =
       rpc->mutable_acquire_demuxer_rpc();
   message->set_audio_demuxer_handle(
       audio_demuxer_stream_adapter_
           ? audio_demuxer_stream_adapter_->rpc_handle()
-          : RpcBroker::kInvalidHandle);
+          : RpcMessenger::kInvalidHandle);
   message->set_video_demuxer_handle(
       video_demuxer_stream_adapter_
           ? video_demuxer_stream_adapter_->rpc_handle()
-          : RpcBroker::kInvalidHandle);
+          : RpcMessenger::kInvalidHandle);
   SendRpcToRemote(std::move(rpc));
 
   // Issues RPC_ACQUIRE_RENDERER RPC message.
   rpc = std::make_unique<openscreen::cast::RpcMessage>();
-  rpc->set_handle(RpcBroker::kAcquireRendererHandle);
+  rpc->set_handle(RpcMessenger::kAcquireRendererHandle);
   rpc->set_proc(openscreen::cast::RpcMessage::RPC_ACQUIRE_RENDERER);
   rpc->set_integer_value(rpc_handle_);
   SendRpcToRemote(std::move(rpc));
@@ -349,9 +358,13 @@ void CourierRenderer::OnMessageReceivedOnMainThread(
     scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
     base::WeakPtr<CourierRenderer> self,
     std::unique_ptr<openscreen::cast::RpcMessage> message) {
-  media_task_runner->PostTask(
-      FROM_HERE, base::BindOnce(&CourierRenderer::OnReceivedRpc, self,
-                                std::move(message)));
+  if (media_task_runner) {
+    media_task_runner->PostTask(
+        FROM_HERE, base::BindOnce(&CourierRenderer::OnReceivedRpc, self,
+                                  std::move(message)));
+  } else {
+    LOG(WARNING) << "No valid task runner.";
+  }
 }
 
 void CourierRenderer::OnReceivedRpc(
@@ -405,9 +418,9 @@ void CourierRenderer::SendRpcToRemote(
     std::unique_ptr<openscreen::cast::RpcMessage> message) {
   DCHECK(media_task_runner_->BelongsToCurrentThread());
   DCHECK(main_task_runner_);
-  main_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&RpcBroker::SendMessageToRemote, rpc_broker_,
-                                std::move(message)));
+  main_task_runner_->PostTask(FROM_HERE,
+                              base::BindOnce(&RpcMessenger::SendMessageToRemote,
+                                             rpc_messenger_, *message));
 }
 
 void CourierRenderer::AcquireRendererDone(
@@ -433,11 +446,11 @@ void CourierRenderer::AcquireRendererDone(
   init->set_audio_demuxer_handle(
       audio_demuxer_stream_adapter_
           ? audio_demuxer_stream_adapter_->rpc_handle()
-          : RpcBroker::kInvalidHandle);
+          : RpcMessenger::kInvalidHandle);
   init->set_video_demuxer_handle(
       video_demuxer_stream_adapter_
           ? video_demuxer_stream_adapter_->rpc_handle()
-          : RpcBroker::kInvalidHandle);
+          : RpcMessenger::kInvalidHandle);
   init->set_callback_handle(rpc_handle_);
   SendRpcToRemote(std::move(rpc));
 }
@@ -796,6 +809,13 @@ bool CourierRenderer::IsWaitingForDataFromDemuxers() const {
           (audio_demuxer_stream_adapter_ &&
            audio_demuxer_stream_adapter_->is_processing_read_request() &&
            !audio_demuxer_stream_adapter_->is_data_pending()));
+}
+
+void CourierRenderer::DeregisterFromRpcMessaging() {
+  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  if (rpc_messenger_) {
+    rpc_messenger_->UnregisterMessageReceiverCallback(rpc_handle_);
+  }
 }
 
 }  // namespace remoting

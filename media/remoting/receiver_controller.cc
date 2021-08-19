@@ -17,8 +17,9 @@ ReceiverController* ReceiverController::GetInstance() {
 }
 
 ReceiverController::ReceiverController()
-    : rpc_broker_(base::BindRepeating(&ReceiverController::OnSendRpc,
-                                      base::Unretained(this))),
+    : rpc_messenger_([this](std::vector<uint8_t> message) {
+        OnSendRpc(std::move(message));
+      }),
       main_task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
 
 ReceiverController::~ReceiverController() = default;
@@ -93,11 +94,10 @@ void ReceiverController::OnMessageFromSource(
   if (!rpc_message->ParseFromArray(message.data(), message.size()))
     return;
 
-  rpc_broker_.ProcessMessageFromRemote(std::move(rpc_message));
+  rpc_messenger_.ProcessMessageFromRemote(std::move(rpc_message));
 }
 
-void ReceiverController::OnSendRpc(
-    std::unique_ptr<std::vector<uint8_t>> message) {
+void ReceiverController::OnSendRpc(std::vector<uint8_t> message) {
   if (!main_task_runner_->BelongsToCurrentThread()) {
     // |this| is a singleton per process, it would be safe to use
     // base::Unretained() here.
@@ -108,9 +108,8 @@ void ReceiverController::OnSendRpc(
   }
 
   DCHECK(media_remotee_.is_bound());
-  std::vector<uint8_t> binary_message = *message;
   if (media_remotee_.is_bound())
-    media_remotee_->SendMessageToSource(binary_message);
+    media_remotee_->SendMessageToSource(message);
 }
 
 }  // namespace remoting

@@ -20,6 +20,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using openscreen::cast::RpcMessenger;
 using testing::_;
 using testing::Invoke;
 using testing::Return;
@@ -36,13 +37,15 @@ class MockDemuxerStreamAdapter {
       DemuxerStream* demuxer_stream,
       mojo::PendingRemote<mojom::RemotingDataStreamSender> stream_sender_remote,
       mojo::ScopedDataPipeProducerHandle producer_handle) {
-    rpc_broker_ = std::make_unique<RpcBroker>(
-        base::BindRepeating(&MockDemuxerStreamAdapter::OnSendMessageToSink,
-                            weak_factory_.GetWeakPtr()));
+    rpc_messenger_ = std::make_unique<RpcMessenger>(
+        [cb =
+             base::BindRepeating(&MockDemuxerStreamAdapter::OnSendMessageToSink,
+                                 weak_factory_.GetWeakPtr())](
+            std::vector<uint8_t> message) { cb.Run(std::move(message)); });
     demuxer_stream_adapter_ = std::make_unique<DemuxerStreamAdapter>(
         std::move(main_task_runner), std::move(media_task_runner), name,
-        demuxer_stream, rpc_broker_->GetWeakPtr(),
-        rpc_broker_->GetUniqueHandle(), std::move(stream_sender_remote),
+        demuxer_stream, rpc_messenger_->GetWeakPtr(),
+        rpc_messenger_->GetUniqueHandle(), std::move(stream_sender_remote),
         std::move(producer_handle),
         base::BindOnce(&MockDemuxerStreamAdapter::OnError,
                        weak_factory_.GetWeakPtr()));
@@ -93,14 +96,14 @@ class MockDemuxerStreamAdapter {
   }
 
  private:
-  void OnSendMessageToSink(std::unique_ptr<std::vector<uint8_t>> message) {
+  void OnSendMessageToSink(std::vector<uint8_t> message) {
     last_received_rpc_ = std::make_unique<openscreen::cast::RpcMessage>();
-    CHECK(last_received_rpc_->ParseFromArray(message->data(), message->size()));
+    CHECK(last_received_rpc_->ParseFromArray(message.data(), message.size()));
   }
 
   void OnError(StopTrigger stop_trigger) { errors_.push_back(stop_trigger); }
 
-  std::unique_ptr<RpcBroker> rpc_broker_;
+  std::unique_ptr<RpcMessenger> rpc_messenger_;
   std::unique_ptr<DemuxerStreamAdapter> demuxer_stream_adapter_;
   std::unique_ptr<openscreen::cast::RpcMessage> last_received_rpc_;
 

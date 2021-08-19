@@ -18,13 +18,14 @@
 #include "media/base/video_decoder_config.h"
 #include "media/mojo/common/mojo_data_pipe_read_write.h"
 #include "media/mojo/mojom/remoting.mojom.h"
-#include "media/remoting/rpc_broker.h"
 #include "media/remoting/triggers.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/openscreen/src/cast/streaming/rpc_messenger.h"
+#include "third_party/openscreen/src/util/weak_ptr.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -51,7 +52,8 @@ class DemuxerStreamAdapter {
   // |media_task_runner|: Task runner to run whole class on media thread.
   // |name|: Demuxer stream name. For troubleshooting purposes.
   // |demuxer_stream|: Demuxer component.
-  // |rpc_broker|: Broker class to handle incoming and outgoing RPC message. It
+  // |rpc_messenger|: Broker class to handle incoming and outgoing RPC message.
+  // It
   //               is used only on the main thread.
   // |rpc_handle|: Unique value that references this DemuxerStreamAdapter.
   // |stream_sender_remote|: Transfer of pipe binding on the media thread. It is
@@ -64,7 +66,7 @@ class DemuxerStreamAdapter {
       scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
       const std::string& name,
       DemuxerStream* demuxer_stream,
-      const base::WeakPtr<RpcBroker>& rpc_broker,
+      const openscreen::WeakPtr<openscreen::cast::RpcMessenger>& rpc_messenger,
       int rpc_handle,
       mojo::PendingRemote<mojom::RemotingDataStreamSender> stream_sender_remote,
       mojo::ScopedDataPipeProducerHandle producer_handle,
@@ -72,7 +74,7 @@ class DemuxerStreamAdapter {
   ~DemuxerStreamAdapter();
 
   // Rpc handle for this class. This is used for sending/receiving RPC message
-  // with specific hanle using Rpcbroker.
+  // with specific handle using RpcMessenger.
   int rpc_handle() const { return rpc_handle_; }
 
   // Returns the number of bytes that have been written to the data pipe since
@@ -92,7 +94,8 @@ class DemuxerStreamAdapter {
     // received, and will be reset to invalid value after
     // RPC_DS_READUNTIL_CALLBACK is sent back to receiver. Therefore it can be
     // used to determine if the class is in the reading state or not.
-    return read_until_callback_handle_ != RpcBroker::kInvalidHandle;
+    return read_until_callback_handle_ !=
+           openscreen::cast::RpcMessenger::kInvalidHandle;
   }
 
   // Indicates whether there is data waiting to be written to the mojo data
@@ -102,7 +105,7 @@ class DemuxerStreamAdapter {
  private:
   friend class MockDemuxerStreamAdapter;
 
-  // Receives RPC message from RpcBroker.
+  // Receives RPC message from RpcMessenger.
   void OnReceivedRpc(std::unique_ptr<openscreen::cast::RpcMessage> message);
 
   // RPC message tasks.
@@ -124,15 +127,20 @@ class DemuxerStreamAdapter {
   // Callback function when a fatal runtime error occurs.
   void OnFatalError(StopTrigger stop_trigger);
 
+  // Helper to deregister the renderer from the RPC messenger.
+  void DeregisterFromRpcMessaging();
+
   const scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   const scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
 
   // Name of demuxer stream. Debug only.
   const std::string name_;
 
-  // Weak pointer of RpcBroker. It should use |main_task_runner_| to access the
-  // interfaces.
-  const base::WeakPtr<RpcBroker> rpc_broker_;
+  // Broker class to process incoming and outgoing RPC messages.
+  // Only accessed on |main_task_runner_|. NOTE: the messenger is wrapped
+  // in an |openscreen::WeakPtr| instead of |base|'s implementation due to
+  // it being defined in the third_party/openscreen repository.
+  const openscreen::WeakPtr<openscreen::cast::RpcMessenger> rpc_messenger_;
 
   // RPC handle for this demuxer stream service.
   const int rpc_handle_;
