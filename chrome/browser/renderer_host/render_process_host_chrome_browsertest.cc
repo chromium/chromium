@@ -265,7 +265,13 @@ class ChromeRenderProcessHostTestWithCommandLine
   DISALLOW_COPY_AND_ASSIGN(ChromeRenderProcessHostTestWithCommandLine);
 };
 
-IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostTest, ProcessPerTab) {
+// TODO(crbug.com/1241506): Enable this test on macOS after the issue is fixed.
+#if defined(OS_MAC)
+#define MAYBE_ProcessPerTab DISABLED_ProcessPerTab
+#else
+#define MAYBE_ProcessPerTab ProcessPerTab
+#endif
+IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostTest, MAYBE_ProcessPerTab) {
   // Set max renderers to 1 to force running out of processes.
   content::RenderProcessHost::SetMaxRendererProcessCount(1);
 
