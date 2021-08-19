@@ -18,6 +18,7 @@
 #include "weblayer/browser/background_fetch/background_fetch_permission_context.h"
 #include "weblayer/browser/host_content_settings_map_factory.h"
 #include "weblayer/browser/permissions/geolocation_permission_context_delegate.h"
+#include "weblayer/browser/permissions/weblayer_camera_pan_tilt_zoom_permission_context_delegate.h"
 #include "weblayer/browser/permissions/weblayer_nfc_permission_context_delegate.h"
 
 namespace weblayer {
@@ -65,6 +66,8 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
     content::BrowserContext* browser_context) {
   embedder_support::PermissionContextDelegates delegates;
 
+  delegates.camera_pan_tilt_zoom_permission_context_delegate =
+      std::make_unique<WebLayerCameraPanTiltZoomPermissionContextDelegate>();
   delegates.geolocation_permission_context_delegate =
       std::make_unique<GeolocationPermissionContextDelegate>();
 #if defined(OS_MAC)

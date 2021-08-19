@@ -17,10 +17,12 @@ namespace permissions {
 
 CameraPanTiltZoomPermissionContext::CameraPanTiltZoomPermissionContext(
     content::BrowserContext* browser_context,
+    std::unique_ptr<Delegate> delegate,
     const webrtc::MediaStreamDeviceEnumerator* device_enumerator)
     : PermissionContextBase(browser_context,
                             ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
                             blink::mojom::PermissionsPolicyFeature::kNotFound),
+      delegate_(std::move(delegate)),
       device_enumerator_(device_enumerator) {
   DCHECK(device_enumerator_);
   host_content_settings_map_ =
@@ -60,16 +62,18 @@ void CameraPanTiltZoomPermissionContext::RequestPermission(
                                         user_gesture, std::move(callback));
 }
 
-#if defined(OS_ANDROID)
 ContentSetting CameraPanTiltZoomPermissionContext::GetPermissionStatusInternal(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {
-  // The PTZ permission is automatically granted on Android. It is safe to do so
-  // because pan and tilt are not supported on Android.
-  return CONTENT_SETTING_ALLOW;
+  ContentSetting result = CONTENT_SETTING_DEFAULT;
+  if (delegate_->GetPermissionStatusInternal(requesting_origin,
+                                             embedding_origin, &result)) {
+    return result;
+  }
+  return PermissionContextBase::GetPermissionStatusInternal(
+      render_frame_host, requesting_origin, embedding_origin);
 }
-#endif
 
 bool CameraPanTiltZoomPermissionContext::IsRestrictedToSecureOrigins() const {
   return true;

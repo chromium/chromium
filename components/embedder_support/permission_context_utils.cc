@@ -45,6 +45,7 @@ CreateDefaultPermissionContexts(content::BrowserContext* browser_context,
                                 PermissionContextDelegates delegates) {
   permissions::PermissionManager::PermissionContextMap permission_contexts;
 
+  DCHECK(delegates.camera_pan_tilt_zoom_permission_context_delegate);
   DCHECK(delegates.geolocation_permission_context_delegate);
 #if defined(OS_MAC)
   DCHECK(delegates.geolocation_manager);
@@ -62,7 +63,9 @@ CreateDefaultPermissionContexts(content::BrowserContext* browser_context,
       std::make_unique<BackgroundSyncPermissionContext>(browser_context);
   permission_contexts[ContentSettingsType::CAMERA_PAN_TILT_ZOOM] =
       std::make_unique<permissions::CameraPanTiltZoomPermissionContext>(
-          browser_context, delegates.media_stream_device_enumerator);
+          browser_context,
+          std::move(delegates.camera_pan_tilt_zoom_permission_context_delegate),
+          delegates.media_stream_device_enumerator);
   permission_contexts[ContentSettingsType::CLIPBOARD_READ_WRITE] =
       std::make_unique<permissions::ClipboardReadWritePermissionContext>(
           browser_context);

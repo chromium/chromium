@@ -260,6 +260,8 @@ source_set("weblayer_lib_base") {
     "browser/permissions/permission_decision_auto_blocker_factory.h",
     "browser/permissions/permission_manager_factory.cc",
     "browser/permissions/permission_manager_factory.h",
+    "browser/permissions/weblayer_camera_pan_tilt_zoom_permission_context_delegate.cc",
+    "browser/permissions/weblayer_camera_pan_tilt_zoom_permission_context_delegate.h",
     "browser/permissions/weblayer_nfc_permission_context_delegate.cc",
     "browser/permissions/weblayer_nfc_permission_context_delegate.h",
     "browser/permissions/weblayer_permissions_client.cc",
