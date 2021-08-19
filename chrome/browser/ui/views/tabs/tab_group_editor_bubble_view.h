@@ -12,6 +12,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 
@@ -22,6 +23,10 @@ enum class TabGroupColorId;
 class TabGroupId;
 }  // namespace tab_groups
 
+namespace views {
+class ToggleButton;
+}  // namespace views
+
 class ColorPickerView;
 class TabGroupHeader;
 
@@ -30,11 +35,12 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
  public:
   METADATA_HEADER(TabGroupEditorBubbleView);
 
-  static constexpr int TAB_GROUP_HEADER_CXMENU_NEW_TAB_IN_GROUP = 13;
-  static constexpr int TAB_GROUP_HEADER_CXMENU_UNGROUP = 14;
-  static constexpr int TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP = 15;
-  static constexpr int TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW = 16;
-  static constexpr int TAB_GROUP_HEADER_CXMENU_FEEDBACK = 17;
+  static constexpr int TAB_GROUP_HEADER_CXMENU_SAVE_GROUP = 13;
+  static constexpr int TAB_GROUP_HEADER_CXMENU_NEW_TAB_IN_GROUP = 14;
+  static constexpr int TAB_GROUP_HEADER_CXMENU_UNGROUP = 15;
+  static constexpr int TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP = 16;
+  static constexpr int TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW = 17;
+  static constexpr int TAB_GROUP_HEADER_CXMENU_FEEDBACK = 18;
 
   using Colors =
       std::vector<std::pair<tab_groups::TabGroupColorId, std::u16string>>;
@@ -65,6 +71,7 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
 
   void UpdateGroup();
 
+  void OnSaveTogglePressed();
   void NewTabInGroupPressed();
   void UngroupPressed(TabGroupHeader* header_view);
   void CloseGroupPressed();
@@ -117,6 +124,8 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
 
   Colors colors_;
   ColorPickerView* color_selector_;
+
+  views::ToggleButton* save_group_toggle_ = nullptr;
 
   // If true will use the |anchor_rect_| provided in the constructor, otherwise
   // fall back to using the anchor view bounds.

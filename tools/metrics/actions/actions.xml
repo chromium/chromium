@@ -27334,6 +27334,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="TabGroups_TabGroupBubble_GroupSaved">
+  <owner>cyan@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    User saved an existing tab group by switching the toggle to the right next
+    to 'Save group' from the tab group editor bubble.
+  </description>
+</action>
+
+<action name="TabGroups_TabGroupBubble_GroupUnsaved">
+  <owner>cyan@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    User unsaved an existing tab group by switching the toggle to the left next
+    to 'Save group' from the tab group editor bubble.
+  </description>
+</action>
+
 <action name="TabGroups_TabGroupBubble_NameChanged">
   <owner>connily@chromium.org</owner>
   <owner>cyan@chromium.org</owner>

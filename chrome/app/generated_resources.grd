@@ -7334,6 +7334,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
 
       <!-- Tab Group Editor Bubble -->
       <if expr="not use_titlecase">
+        <message name="IDS_TAB_GROUP_HEADER_CXMENU_SAVE_GROUP" desc="The label of the tab group header context menu item for saving the current group.">
+          Save group
+        </message>
         <message name="IDS_TAB_GROUP_HEADER_CXMENU_NEW_TAB_IN_GROUP" desc="The label of the tab group header context menu item for adding a new tab into the current group.">
           New tab in group
         </message>
@@ -7354,6 +7357,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
         </message>
       </if>
       <if expr="use_titlecase">
+        <message name="IDS_TAB_GROUP_HEADER_CXMENU_SAVE_GROUP" desc="In Title Case: The label of the tab group header context menu item for saving the current group.">
+          Save Group
+        </message>
         <message name="IDS_TAB_GROUP_HEADER_CXMENU_NEW_TAB_IN_GROUP" desc="In Title Case: The label of the tab group header context menu item for adding a new tab into the current group.">
           New Tab in Group
         </message>
