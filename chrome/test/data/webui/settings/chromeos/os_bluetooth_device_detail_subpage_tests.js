@@ -169,6 +169,8 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
         bluetoothDeviceDetailPage.$$('#stateBtn');
     const getBluetoothDeviceNameLabel = () =>
         bluetoothDeviceDetailPage.$$('#bluetoothDeviceNameLabel');
+    const getBluetoothDeviceBatteryInfo = () =>
+        bluetoothDeviceDetailPage.$$('#batteryInfo');
 
     bluetoothConfig.setBluetoothEnabledState(/*enabled=*/ true);
 
@@ -177,6 +179,7 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     assertTrue(!!getBluetoothForgetBtn());
     assertTrue(!!getBluetoothDeviceNameLabel());
     assertFalse(!!getBluetoothStateBtn());
+    assertFalse(!!getBluetoothDeviceBatteryInfo());
 
     const device1 = createDefaultBluetoothDevice(
         /*id=*/ '123456789',
@@ -186,6 +189,9 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
         /*audioCapability=*/ mojom.AudioOutputCapability.kCapableOfAudioOutput,
         /*deviceType=*/ mojom.DeviceType.kHeadset);
 
+    device1.deviceProperties.batteryInfo = {
+      defaultProperties: {batteryPercentage: 90}
+    };
     bluetoothConfig.appendToPairedDeviceList([device1]);
     await flushAsync();
 
@@ -203,13 +209,15 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     assertEquals('device1', getBluetoothDeviceNameLabel().textContent.trim());
     assertEquals(
         'os-settings:bluetooth-connected', getBluetoothStatusIcon().icon);
+    assertTrue(!!getBluetoothDeviceBatteryInfo());
 
     // Simulate disconnected state and not audio capable.
     device1.deviceProperties.connectionState =
         mojom.DeviceConnectionState.kNotConnected;
     device1.deviceProperties.audioCapability =
         mojom.AudioOutputCapability.kNotCapableOfAudioOutput;
-    bluetoothConfig.updatePairedDevice(device1);
+    device1.deviceProperties.batteryInfo = {defaultProperties: null};
+    bluetoothConfig.updatePairedDevice({...device1});
     await flushAsync();
 
     assertFalse(!!getBluetoothStateBtn());
@@ -218,6 +226,7 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
         getBluetoothStateText().textContent.trim());
     assertEquals(
         'os-settings:bluetooth-disabled', getBluetoothStatusIcon().icon);
+    assertFalse(!!getBluetoothDeviceBatteryInfo());
   });
 
   test(

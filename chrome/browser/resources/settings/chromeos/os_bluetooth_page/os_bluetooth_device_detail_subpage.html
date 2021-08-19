@@ -21,6 +21,13 @@
         class="middle settings-box-text"
         aria-hidden="true">
       [[getBluetoothStateTextLabel_(device_.*)]]
+      <template is="dom-if" if="[[shouldShowBatteryInfo_(device_.*)]]" restamp>
+        <os-settings-bluetooth-device-battery-info
+            id="batteryInfo"
+            class="secondary"
+            device="[[device_]]">
+        </os-settings-bluetooth-device-battery-info>
+      </template>
     </div>
     <div id="buttonContainer" class="layout end">
       <cr-button id="forgetBtn" class="cancel-button">

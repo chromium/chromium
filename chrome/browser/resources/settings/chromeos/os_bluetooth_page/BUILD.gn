@@ -84,6 +84,7 @@ js_library("os_bluetooth_device_battery_info") {
 js_library("os_bluetooth_device_detail_subpage") {
   deps = [
     ":os_bluetooth_change_device_name_dialog",
+    ":os_bluetooth_device_battery_info",
     "..:os_route.m",
     "../..:router",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
