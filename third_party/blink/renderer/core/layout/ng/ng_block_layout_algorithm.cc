@@ -2310,8 +2310,8 @@ NGBreakStatus NGBlockLayoutAlgorithm::FinalizeForFragmentation() {
                                  std::min(line_count, int(Style().Orphans())));
         }
         // We need to layout again, and stop at the right line number.
-        scoped_refptr<const NGEarlyBreak> breakpoint =
-            base::AdoptRef(new NGEarlyBreak(line_number));
+        const NGEarlyBreak* breakpoint =
+            MakeGarbageCollected<NGEarlyBreak>(line_number);
         container_builder_.SetEarlyBreak(breakpoint, kBreakAppealPerfect);
         return NGBreakStatus::kNeedsEarlierBreak;
       }
@@ -2480,8 +2480,8 @@ void NGBlockLayoutAlgorithm::UpdateEarlyBreakBetweenLines() {
     appeal = kBreakAppealViolatingOrphansAndWidows;
   }
   if (container_builder_.BreakAppeal() <= appeal) {
-    scoped_refptr<const NGEarlyBreak> breakpoint =
-        base::AdoptRef(new NGEarlyBreak(line_number));
+    const NGEarlyBreak* breakpoint =
+        MakeGarbageCollected<NGEarlyBreak>(line_number);
     container_builder_.SetEarlyBreak(breakpoint, appeal);
   }
 }

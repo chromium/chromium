@@ -117,7 +117,7 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
     return HasRareData() && rare_data_->is_empty_spanner_parent;
   }
 
-  scoped_refptr<const NGEarlyBreak> GetEarlyBreak() const {
+  const NGEarlyBreak* GetEarlyBreak() const {
     if (!HasRareData())
       return nullptr;
     return rare_data_->early_break;
@@ -470,7 +470,7 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
     LayoutUnit bfc_line_offset;
     absl::optional<LayoutUnit> bfc_block_offset;
 
-    scoped_refptr<const NGEarlyBreak> early_break;
+    Persistent<const NGEarlyBreak> early_break;
     NGBreakAppeal early_break_appeal = kBreakAppealLastResort;
     LogicalOffset oof_positioned_offset;
     NGMarginStrut end_margin_strut;

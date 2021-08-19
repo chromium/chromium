@@ -398,15 +398,14 @@ class CORE_EXPORT NGBoxFragmentBuilder final
     lines_until_clamp_ = value;
   }
 
-  void SetEarlyBreak(scoped_refptr<const NGEarlyBreak> breakpoint,
-                     NGBreakAppeal appeal) {
+  void SetEarlyBreak(const NGEarlyBreak* breakpoint, NGBreakAppeal appeal) {
     early_break_ = breakpoint;
     break_appeal_ = appeal;
   }
-  bool HasEarlyBreak() const { return early_break_.get(); }
+  bool HasEarlyBreak() const { return early_break_; }
   const NGEarlyBreak& EarlyBreak() const {
-    DCHECK(early_break_.get());
-    return *early_break_.get();
+    DCHECK(early_break_);
+    return *early_break_;
   }
 
   // Set the highest break appeal found so far. This is either:
