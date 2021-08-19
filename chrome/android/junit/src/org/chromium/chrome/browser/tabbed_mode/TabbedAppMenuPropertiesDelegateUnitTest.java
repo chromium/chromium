@@ -634,5 +634,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         String tabCountKey =
                 ChromePreferenceKeys.MULTI_INSTANCE_TAB_COUNT.createKey(String.valueOf(index));
         SharedPreferencesManager.getInstance().writeInt(tabCountKey, 1);
+        String accessTimeKey = ChromePreferenceKeys.MULTI_INSTANCE_LAST_ACCESSED_TIME.createKey(
+                String.valueOf(index));
+        SharedPreferencesManager.getInstance().writeLong(accessTimeKey, System.currentTimeMillis());
     }
 }

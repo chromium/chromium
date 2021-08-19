@@ -637,6 +637,7 @@ public class MultiInstanceManagerApi31UnitTest {
 
         // Store minimal data to get the instance recognized.
         MultiInstanceManagerApi31.writeUrl(instanceId, "url" + instanceId);
+        MultiInstanceManagerApi31.writeLastAccessedTime(index);
         SharedPreferencesManager.getInstance().writeInt(
                 MultiInstanceManagerApi31.tabCountKey(index), 1);
         return instanceId;

@@ -313,7 +313,9 @@ public class MultiWindowUtils implements ActivityStateListener {
     public static int getInstanceCount() {
         int count = 0;
         for (int i = 0; i < getMaxInstances(); ++i) {
-            if (MultiInstanceManagerApi31.readUrl(i) != null && isRestorableInstance(i)) count++;
+            if (MultiInstanceManagerApi31.instanceEntryExists(i) && isRestorableInstance(i)) {
+                count++;
+            }
         }
         return count;
     }
