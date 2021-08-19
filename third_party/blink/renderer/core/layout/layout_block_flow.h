@@ -753,12 +753,14 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
  public:
   struct FloatWithRect {
     DISALLOW_NEW();
-    FloatWithRect(LayoutBox* f)
+    explicit FloatWithRect(LayoutBox* f)
         : object(f), rect(f->FrameRect()), ever_had_layout(f->EverHadLayout()) {
       rect.Expand(f->MarginBoxOutsets());
     }
 
-    UntracedMember<LayoutBox> object;
+    void Trace(Visitor* visitor) const { visitor->Trace(object); }
+
+    Member<LayoutBox> object;
     LayoutRect rect;
     bool ever_had_layout;
   };
@@ -1073,7 +1075,7 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
                                   const InlineIterator& clean_line_start,
                                   const BidiStatus& clean_line_bidi_status);
   void LinkToEndLineIfNeeded(LineLayoutState&);
-  void MarkDirtyFloatsForPaintInvalidation(Vector<FloatWithRect>& floats);
+  void MarkDirtyFloatsForPaintInvalidation(HeapVector<FloatWithRect>& floats);
   RootInlineBox* DetermineStartPosition(LineLayoutState&, InlineBidiResolver&);
   void DetermineEndPosition(LineLayoutState&,
                             RootInlineBox* start_box,
@@ -1109,5 +1111,8 @@ struct DowncastTraits<LayoutBlockFlow> {
 };
 
 }  // namespace blink
+
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
+    blink::LayoutBlockFlow::FloatWithRect)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_BLOCK_FLOW_H_

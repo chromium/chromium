@@ -1450,7 +1450,7 @@ void LayoutBlockFlow::LinkToEndLineIfNeeded(LineLayoutState& layout_state) {
 }
 
 void LayoutBlockFlow::MarkDirtyFloatsForPaintInvalidation(
-    Vector<FloatWithRect>& floats) {
+    HeapVector<FloatWithRect>& floats) {
   NOT_DESTROYED();
   wtf_size_t float_count = floats.size();
   // Floats that did not have layout did not paint invalidations when we laid
