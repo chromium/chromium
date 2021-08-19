@@ -10,7 +10,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
-#include "chromeos/services/libassistant/grpc/assistant_client.h"
+#include "chromeos/services/libassistant/grpc/assistant_client_v1.h"
 #include "chromeos/services/libassistant/grpc/external_services/grpc_services_initializer.h"
 
 namespace chromeos {
@@ -20,7 +20,7 @@ class GrpcLibassistantClient;
 
 // This class wraps the libassistant grpc client and exposes V2 APIs for
 // ChromeOS to use.
-class AssistantClientImpl : public AssistantClient {
+class AssistantClientImpl : public AssistantClientV1 {
  public:
   AssistantClientImpl(
       std::unique_ptr<assistant_client::AssistantManager> assistant_manager,
@@ -31,8 +31,14 @@ class AssistantClientImpl : public AssistantClient {
   ~AssistantClientImpl() override;
 
   // chromeos::libassistant::AssistantClient overrides:
+  void StartServices() override;
   bool StartGrpcServices() override;
   void AddExperimentIds(const std::vector<std::string>& exp_ids) override;
+  void SendVoicelessInteraction(
+      const ::assistant::api::Interaction& interaction,
+      const std::string& description,
+      const ::assistant::api::VoicelessOptions& options,
+      base::OnceCallback<void(bool)> on_done) override;
 
  private:
   chromeos::libassistant::GrpcServicesInitializer grpc_services_;
