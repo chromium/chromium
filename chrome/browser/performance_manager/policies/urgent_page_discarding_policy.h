@@ -8,8 +8,11 @@
 #include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/sequence_checker.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/system_node.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace performance_manager {
 
@@ -38,6 +41,11 @@ class UrgentPageDiscardingPolicy : public GraphOwned,
 
   // Callback called when a discard attempt has completed.
   void PostDiscardAttemptCallback(bool success);
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Called when the reclaim target is ready.
+  void OnReclaimTarget(absl::optional<uint64_t> reclaim_target_kb);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // True while we are in the process of discarding tab(s) in response to a
   // memory pressure notification. It becomes false once we're done responding

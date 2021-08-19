@@ -21,10 +21,15 @@ namespace testing {
 LenientMockPageDiscarder::LenientMockPageDiscarder() = default;
 LenientMockPageDiscarder::~LenientMockPageDiscarder() = default;
 
-void LenientMockPageDiscarder::DiscardPageNode(
-    const PageNode* page_node,
+void LenientMockPageDiscarder::DiscardPageNodes(
+    const std::vector<const PageNode*>& page_nodes,
     base::OnceCallback<void(bool)> post_discard_cb) {
-  std::move(post_discard_cb).Run(DiscardPageNodeImpl(page_node));
+  bool result = false;
+  for (auto* node : page_nodes) {
+    if (DiscardPageNodeImpl(node))
+      result = true;
+  }
+  std::move(post_discard_cb).Run(result);
 }
 
 GraphTestHarnessWithMockDiscarder::GraphTestHarnessWithMockDiscarder() {
