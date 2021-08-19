@@ -208,7 +208,8 @@ class PLATFORM_EXPORT GraphicsContext {
   void DrawRect(const IntRect&);
 
   // DrawLine() only operates on horizontal or vertical lines and uses the
-  // current stroke settings.
+  // current stroke settings. For dotted or dashed stroke, the line need to be
+  // top-to-down or left-to-right to get correct interval of dots/dashes.
   void DrawLine(const IntPoint&,
                 const IntPoint&,
                 const DarkModeFilter::ElementRole role =

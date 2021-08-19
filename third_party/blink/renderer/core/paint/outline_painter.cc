@@ -23,78 +23,6 @@ namespace blink {
 
 namespace {
 
-struct OutlineEdgeInfo {
-  int x1;
-  int y1;
-  int x2;
-  int y2;
-  BoxSide side;
-};
-
-// Adjust length of edges if needed. Returns the width of the joint.
-int AdjustJoint(int outline_width,
-                OutlineEdgeInfo& edge1,
-                OutlineEdgeInfo& edge2) {
-  // A clockwise joint:
-  // - needs no adjustment of edge length because our edges are along the
-  //   clockwise outer edge of the outline;
-  // - needs a positive adjacent joint width (required by
-  //   BoxBorderPainter::DrawLineForBoxSide).
-  // A counterclockwise joint:
-  // - needs to increase the edge length to include the joint;
-  // - needs a negative adjacent joint width (required by
-  //   BoxBorderPainter::DrawLineForBoxSide).
-  switch (edge1.side) {
-    case BoxSide::kTop:
-      switch (edge2.side) {
-        case BoxSide::kRight:  // Clockwise
-          return outline_width;
-        case BoxSide::kLeft:  // Counterclockwise
-          edge1.x2 += outline_width;
-          edge2.y2 += outline_width;
-          return -outline_width;
-        default:  // Same side or no joint.
-          return 0;
-      }
-    case BoxSide::kRight:
-      switch (edge2.side) {
-        case BoxSide::kBottom:  // Clockwise
-          return outline_width;
-        case BoxSide::kTop:  // Counterclockwise
-          edge1.y2 += outline_width;
-          edge2.x1 -= outline_width;
-          return -outline_width;
-        default:  // Same side or no joint.
-          return 0;
-      }
-    case BoxSide::kBottom:
-      switch (edge2.side) {
-        case BoxSide::kLeft:  // Clockwise
-          return outline_width;
-        case BoxSide::kRight:  // Counterclockwise
-          edge1.x1 -= outline_width;
-          edge2.y1 -= outline_width;
-          return -outline_width;
-        default:  // Same side or no joint.
-          return 0;
-      }
-    case BoxSide::kLeft:
-      switch (edge2.side) {
-        case BoxSide::kTop:  // Clockwise
-          return outline_width;
-        case BoxSide::kBottom:  // Counterclockwise
-          edge1.y1 -= outline_width;
-          edge2.x2 += outline_width;
-          return -outline_width;
-        default:  // Same side or no joint.
-          return 0;
-      }
-    default:
-      NOTREACHED();
-      return 0;
-  }
-}
-
 // A negative outline-offset should not cause the rendered outline shape to
 // become smaller than twice the computed value of the outline-width, in each
 // direction separately. See: https://drafts.csswg.org/css-ui/#outline-offset
@@ -184,91 +112,8 @@ void IterateRightAnglePath(const SkPath& path, const Action& contour_action) {
   }
 }
 
-void PaintComplexRightAngleOutlineContour(GraphicsContext& context,
-                                          const Vector<Line>& lines,
-                                          const ComputedStyle& style,
-                                          Color color) {
-  int width = style.OutlineWidthInt();
-  Vector<OutlineEdgeInfo> edges;
-  edges.ReserveInitialCapacity(lines.size());
-  for (auto& line : lines) {
-    auto& edge = edges.emplace_back();
-    edge.x1 = SkScalarTruncToInt(line.start.x());
-    edge.y1 = SkScalarTruncToInt(line.start.y());
-    edge.x2 = SkScalarTruncToInt(line.end.x());
-    edge.y2 = SkScalarTruncToInt(line.end.y());
-    if (edge.x1 == edge.x2) {
-      if (edge.y1 < edge.y2) {
-        edge.x1 -= width;
-        edge.side = BoxSide::kRight;
-      } else {
-        std::swap(edge.y1, edge.y2);
-        edge.x2 += width;
-        edge.side = BoxSide::kLeft;
-      }
-    } else {
-      DCHECK(edge.y1 == edge.y2);
-      if (edge.x1 < edge.x2) {
-        edge.y2 += width;
-        edge.side = BoxSide::kTop;
-      } else {
-        std::swap(edge.x1, edge.x2);
-        edge.y1 -= width;
-        edge.side = BoxSide::kBottom;
-      }
-    }
-  }
-
-  int first_adjacent_width = AdjustJoint(width, edges.back(), edges.front());
-  // The width of the angled part of starting and ending joint of the current
-  // edge.
-  int adjacent_width_start = first_adjacent_width;
-  int adjacent_width_end;
-  for (wtf_size_t i = 0; i < edges.size(); ++i) {
-    OutlineEdgeInfo& edge = edges[i];
-    adjacent_width_end = i == edges.size() - 1
-                             ? first_adjacent_width
-                             : AdjustJoint(width, edge, edges[i + 1]);
-    int adjacent_width1 = adjacent_width_start;
-    int adjacent_width2 = adjacent_width_end;
-    if (edge.side == BoxSide::kLeft || edge.side == BoxSide::kBottom)
-      std::swap(adjacent_width1, adjacent_width2);
-    BoxBorderPainter::DrawLineForBoxSide(
-        context, edge.x1, edge.y1, edge.x2, edge.y2, edge.side, color,
-        style.OutlineStyle(), adjacent_width1, adjacent_width2,
-        /*antialias*/ false);
-    adjacent_width_start = adjacent_width_end;
-  }
-}
-
-void PaintComplexRightAngleOutline(GraphicsContext& context,
-                                   const Vector<IntRect>& rects,
-                                   const ComputedStyle& style) {
-  DCHECK(!style.OutlineStyleIsAuto());
-
-  SkPath path;
-  if (!ComputeRightAnglePath(path, rects, style.OutlineOffsetInt(),
-                             style.OutlineWidthInt())) {
-    return;
-  }
-
-  Color color = style.VisitedDependentColor(GetCSSPropertyOutlineColor());
-  bool use_transparency_layer = color.HasAlpha();
-  if (use_transparency_layer) {
-    context.BeginLayer(static_cast<float>(color.Alpha()) / 255);
-    color.SetRGB(color.Red(), color.Green(), color.Blue());
-  }
-
-  IterateRightAnglePath(path, [&](const Vector<Line>& lines) {
-    PaintComplexRightAngleOutlineContour(context, lines, style, color);
-  });
-
-  if (use_transparency_layer)
-    context.EndLayer();
-}
-
 // Given 3 points defining a right angle corner, returns |p2| shifted to make
-// the containing path shrink by |inset|.
+// the containing path shrunk by |inset|.
 SkPoint ShrinkCorner(const SkPoint& p1,
                      const SkPoint& p2,
                      const SkPoint& p3,
@@ -394,6 +239,9 @@ void AdjustLineBetweenCorners(Line& line,
   }
 }
 
+// The weight of SkPath::conicTo() to create a 90deg rounded corner arc.
+constexpr float kCornerConicWeight = 0.707106781187;  // 1/sqrt(2)
+
 // Create a rounded path from a right angle |path| by
 // - inserting arc segments for corners;
 // - adjusting length of the lines.
@@ -413,29 +261,126 @@ void AddCornerRadiiToPath(SkPath& path,
     }
     // Generate the new contour into |path|.
     DCHECK_EQ(lines.size(), new_lines.size());
-    path.moveTo(new_lines[0].start);
+    path.moveTo(new_lines.back().end);
     for (wtf_size_t i = 0; i < new_lines.size(); i++) {
-      const Line& line = new_lines[i];
-      if (line.end != line.start)
-        path.lineTo(line.end);
-      const Line& next_line = new_lines[i == lines.size() - 1 ? 0 : i + 1];
-      if (line.end != next_line.start) {
-        constexpr float kCornerConicWeight = 0.707106781187;  // 1/sqrt(2)
-        // This produces a 90 degree arc from line.end towards lines[i].end
-        // to next_line.start.
-        path.conicTo(lines[i].end, next_line.start, kCornerConicWeight);
-      }
+      // Keep empty arcs and lines to allow RoundedEdgePathIterator to match
+      // edges. Produce a 90 degree arc from the current point (end of the
+      // previous line) towards lines[i].start to new_lines[i].start.
+      path.conicTo(lines[i].start, new_lines[i].start, kCornerConicWeight);
+      path.lineTo(new_lines[i].end);
     }
     path.close();
   });
 }
 
-class ComplexRoundedOutlinePainter {
+// Move |point| so that the length of the line to |other| will be extended by
+// |offset|.
+void ExtendLineAtEndpoint(SkPoint& point, const SkPoint& other, int offset) {
+  if (point.x() == other.x()) {
+    point.offset(0, point.y() < other.y() ? -offset : offset);
+  } else {
+    DCHECK_EQ(point.y(), other.y());
+    point.offset(point.x() < other.x() ? -offset : offset, 0);
+  }
+}
+
+// Iterates a rounded outline center path, and for each edge [1] returns the
+// path that can be used to stroke the edge.
+// [1] An "edge" means a segment of the path, including a horizontal or vertical
+// line and approximate halves of its adjacent arcs if any.
+class RoundedEdgePathIterator {
  public:
-  ComplexRoundedOutlinePainter(GraphicsContext& context,
-                               const Vector<IntRect>& rects,
-                               const PhysicalRect& reference_border_rect,
-                               const ComputedStyle& style)
+  RoundedEdgePathIterator(const SkPath& rounded_center_path, int center_inset)
+      : iter_(rounded_center_path, /*forceClose*/ true),
+        center_inset_(center_inset) {}
+
+  SkPath Next() {
+    SkPath edge_stroke_path;
+    while (true) {
+      SkPoint points[4];
+      switch (iter_.next(points)) {
+        case SkPath::kConic_Verb:
+          if (is_new_contour_) {
+            std::copy_n(points, kArcPointCount, prev_arc_points_);
+            std::copy_n(points, kArcPointCount, first_arc_points_);
+            is_new_contour_ = false;
+            continue;
+          }
+          GenerateEdgeStrokePath(edge_stroke_path, prev_arc_points_, points);
+          std::copy_n(points, kArcPointCount, prev_arc_points_);
+          return edge_stroke_path;
+        case SkPath::kClose_Verb:
+          DCHECK(!is_new_contour_);
+          GenerateEdgeStrokePath(edge_stroke_path, prev_arc_points_,
+                                 first_arc_points_);
+          is_new_contour_ = true;
+          return edge_stroke_path;
+        case SkPath::kDone_Verb:
+          return edge_stroke_path;
+        default:
+          continue;
+      }
+    }
+  }
+
+ private:
+  // An example of an edge stroke path:
+  // |             Short extension before the starting arc (see code comment)
+  //  \            Starting arc
+  //   \______     Line
+  //          \    Ending arc
+  //           |   Short extension after the ending arc (see code comment)
+  // The edge will drawn with a clip to remove the first half of the starting
+  // arc and the second half of the ending arc.
+  void GenerateEdgeStrokePath(SkPath& edge_stroke_path,
+                              const SkPoint starting_arc_points[],
+                              const SkPoint ending_arc_points[]) {
+    SkPoint line_start = starting_arc_points[2];
+    SkPoint line_end = ending_arc_points[0];
+    if (starting_arc_points[0] == line_start) {
+      // No starting arc. Extend the line to fill the miter.
+      ExtendLineAtEndpoint(line_start, ending_arc_points[1], center_inset_);
+      edge_stroke_path.moveTo(line_start);
+    } else {
+      SkPoint start = starting_arc_points[0];
+      // Add a short line before the arc in case the starting arc is too short
+      // to fill the miter.
+      ExtendLineAtEndpoint(start, starting_arc_points[1], center_inset_);
+      edge_stroke_path.moveTo(start);
+      edge_stroke_path.lineTo(starting_arc_points[0]);
+      edge_stroke_path.conicTo(starting_arc_points[1], line_start,
+                               kCornerConicWeight);
+    }
+    if (line_end == ending_arc_points[2]) {
+      // No ending arc. Extend the line to fill the miter.
+      ExtendLineAtEndpoint(line_end, starting_arc_points[1], center_inset_);
+      edge_stroke_path.lineTo(line_end);
+    } else {
+      edge_stroke_path.lineTo(line_end);
+      SkPoint end = ending_arc_points[2];
+      edge_stroke_path.conicTo(ending_arc_points[1], end, kCornerConicWeight);
+      // Add a short line after the ending arc in case the arc is too short to
+      // fill the miter.
+      ExtendLineAtEndpoint(end, ending_arc_points[1], center_inset_);
+      edge_stroke_path.lineTo(end);
+    }
+  }
+
+  SkPath::Iter iter_;
+  const int center_inset_;
+  bool is_new_contour_ = true;
+  // The three points are: start, control (the right-angle corner), end.
+  static constexpr size_t kArcPointCount = 3;
+  SkPoint first_arc_points_[kArcPointCount];
+  SkPoint prev_arc_points_[kArcPointCount];
+};
+
+class ComplexOutlinePainter {
+ public:
+  ComplexOutlinePainter(GraphicsContext& context,
+                        const Vector<IntRect>& rects,
+                        const PhysicalRect& reference_border_rect,
+                        const ComputedStyle& style)
       : context_(context),
         rects_(rects),
         reference_border_rect_(reference_border_rect),
@@ -443,8 +388,10 @@ class ComplexRoundedOutlinePainter {
         outline_style_(style.OutlineStyle()),
         offset_(style.OutlineOffsetInt()),
         width_(style.OutlineWidthInt()),
-        color_(style.VisitedDependentColor(GetCSSPropertyOutlineColor())) {
+        color_(style.VisitedDependentColor(GetCSSPropertyOutlineColor())),
+        is_rounded_(style.HasBorderRadius()) {
     DCHECK(!style.OutlineStyleIsAuto());
+    DCHECK_NE(width_, 0);
     if (width_ <= 2 && outline_style_ == EBorderStyle::kDouble) {
       outline_style_ = EBorderStyle::kSolid;
     } else if (width_ == 1 && (outline_style_ == EBorderStyle::kRidge ||
@@ -457,26 +404,34 @@ class ComplexRoundedOutlinePainter {
     }
   }
 
-  bool Paint() {
-    if (width_ == 0)
-      return true;
-
+  void Paint() {
     if (!ComputeRightAnglePath(right_angle_outer_path_, rects_, offset_,
                                width_)) {
-      return true;
+      return;
+    }
+
+    bool use_alpha_layer = color_.HasAlpha() &&
+                           outline_style_ != EBorderStyle::kSolid &&
+                           outline_style_ != EBorderStyle::kDouble;
+    if (use_alpha_layer) {
+      context_.BeginLayer(color_.Alpha() / 255.0);
+      color_.SetRGB(color_.Red(), color_.Green(), color_.Blue());
     }
 
     SkPath outer_path = right_angle_outer_path_;
     SkPath inner_path = right_angle_outer_path_;
     ShrinkRightAnglePath(inner_path, width_);
-    auto inner_radii = ComputeRadii(0);
-    auto outer_radii = ComputeRadii(width_);
-    AddCornerRadiiToPath(outer_path, outer_radii, inner_radii);
-    AddCornerRadiiToPath(inner_path, inner_radii, outer_radii);
+    if (is_rounded_) {
+      auto inner_radii = ComputeRadii(0);
+      auto outer_radii = ComputeRadii(width_);
+      AddCornerRadiiToPath(outer_path, outer_radii, inner_radii);
+      AddCornerRadiiToPath(inner_path, inner_radii, outer_radii);
+    }
 
     GraphicsContextStateSaver saver(context_);
     context_.ClipPath(outer_path, kAntiAliased);
-    context_.ClipOut(inner_path);
+    MakeClipOutPath(inner_path);
+    context_.ClipPath(inner_path, kAntiAliased);
     context_.SetFillColor(color_);
 
     switch (outline_style_) {
@@ -490,12 +445,21 @@ class ComplexRoundedOutlinePainter {
       case EBorderStyle::kDashed:
         PaintDottedOrDashedOutline();
         break;
+      case EBorderStyle::kGroove:
+      case EBorderStyle::kRidge:
+        PaintGrooveOrRidgeOutline();
+        break;
+      case EBorderStyle::kInset:
+      case EBorderStyle::kOutset:
+        PaintInsetOrOutsetOutline(CenterPath(),
+                                  outline_style_ == EBorderStyle::kInset);
+        break;
       default:
-        // TODO(wangxianzhu): Draw kRidge, kGroove, kInset, kOutset by calling
-        // BoxBorderPainter::DrawBoxSideFromPath() for each segment of the path.
-        return false;
+        NOTREACHED();
     }
-    return true;
+
+    if (use_alpha_layer)
+      context_.EndLayer();
   }
 
  private:
@@ -505,44 +469,192 @@ class ComplexRoundedOutlinePainter {
     int stroke_width = std::round(width_ / 3.0);
     ShrinkRightAnglePath(inner_third_path, width_ - stroke_width);
     ShrinkRightAnglePath(outer_third_path, stroke_width);
-    auto inner_third_radii = ComputeRadii(stroke_width);
-    auto outer_third_radii = ComputeRadii(width_ - stroke_width);
-    AddCornerRadiiToPath(inner_third_path, inner_third_radii,
-                         outer_third_radii);
-    AddCornerRadiiToPath(outer_third_path, outer_third_radii,
-                         inner_third_radii);
-    {
-      GraphicsContextStateSaver saver(context_);
-      context_.ClipOut(outer_third_path);
-      context_.FillRect(right_angle_outer_path_.getBounds());
+    if (is_rounded_) {
+      auto inner_third_radii = ComputeRadii(stroke_width);
+      auto outer_third_radii = ComputeRadii(width_ - stroke_width);
+      AddCornerRadiiToPath(inner_third_path, inner_third_radii,
+                           outer_third_radii);
+      AddCornerRadiiToPath(outer_third_path, outer_third_radii,
+                           inner_third_radii);
     }
     context_.FillPath(inner_third_path);
+    MakeClipOutPath(outer_third_path);
+    context_.ClipPath(outer_third_path, kAntiAliased);
+    context_.FillRect(right_angle_outer_path_.getBounds());
   }
 
   void PaintDottedOrDashedOutline() {
-    SkPath center_path = right_angle_outer_path_;
-    int center_outset = width_ / 2;
-    ShrinkRightAnglePath(center_path, width_ - center_outset);
-    auto center_radii = ComputeRadii(center_outset);
-    AddCornerRadiiToPath(center_path, center_radii, center_radii);
     context_.SetStrokeColor(color_);
     auto stroke_style =
         outline_style_ == EBorderStyle::kDashed ? kDashedStroke : kDottedStroke;
     context_.SetStrokeStyle(stroke_style);
-    if (StrokeData::StrokeIsDashed(width_, stroke_style)) {
-      // Draw wider to fill the clip area between inner_path_ and outer_path_,
-      // to get smoother edges, and even stroke thickness when the outline is
-      // thin.
+    if ((width_ % 2) && StrokeData::StrokeIsDashed(width_, stroke_style)) {
+      // If width_ is odd, draw wider to fill the clip area.
       context_.SetStrokeThickness(width_ + 2);
     } else {
       context_.SetStrokeThickness(width_);
-      context_.SetLineCap(kRoundCap);
     }
-    context_.StrokePath(center_path, Path(center_path).length(), width_);
+
+    SkPath center_path = CenterPath();
+    if (is_rounded_) {
+      context_.StrokePath(center_path, Path(center_path).length() + width_,
+                          width_);
+    } else {
+      // Draw edges one by one instead of the whole path to let the corners
+      // have starting/ending dots/dashes.
+      IterateRightAnglePath(center_path, [this](const Vector<Line>& lines) {
+        for (const auto& line : lines)
+          PaintStraightEdge(line);
+      });
+    }
+  }
+
+  void PaintGrooveOrRidgeOutline() {
+    SkPath center_path = CenterPath();
+    // Paint the whole outline, treating kGroove as kInset.
+    PaintInsetOrOutsetOutline(center_path,
+                              outline_style_ == EBorderStyle::kGroove);
+    // Paint dark color in the inner half.
+    context_.ClipPath(center_path, kAntiAliased);
+    context_.SetStrokeColor(color_.Dark());
+    PaintTopLeftOrBottomRight(center_path,
+                              outline_style_ == EBorderStyle::kRidge);
+    // Paint light color in the inner half. If width_ is odd, draw thinner
+    // (by preferring outer half) because light color looks wider.
+    if (width_ % 2) {
+      SkPath center_path_prefer_outer = CenterPath(/*prefer_outer*/ true);
+      context_.ClipPath(center_path_prefer_outer, kAntiAliased);
+    }
+    context_.SetStrokeColor(color_);
+    PaintTopLeftOrBottomRight(center_path,
+                              outline_style_ == EBorderStyle::kGroove);
+  }
+
+  void PaintInsetOrOutsetOutline(const SkPath& center_path, bool is_inset) {
+    context_.SetStrokeColor(color_);
+    PaintTopLeftOrBottomRight(center_path, !is_inset);
+    context_.SetStrokeColor(color_.Dark());
+    PaintTopLeftOrBottomRight(center_path, is_inset);
+  }
+
+  void PaintTopLeftOrBottomRight(const SkPath& center_path,
+                                 bool top_left_or_bottom_right) {
+    // If width_ is odd, draw wider to fill the clip area.
+    context_.SetStrokeThickness(width_ % 2 ? width_ + 2 : width_);
+    absl::optional<RoundedEdgePathIterator> rounded_edge_path_iterator;
+    if (is_rounded_)
+      rounded_edge_path_iterator.emplace(center_path, (width_ + 1) / 2);
+    IterateRightAnglePath(
+        is_rounded_ ? right_angle_outer_path_ : center_path,
+        [this, top_left_or_bottom_right,
+         &rounded_edge_path_iterator](const Vector<Line>& lines) {
+          for (wtf_size_t i = 0; i < lines.size(); i++) {
+            const Line& line = lines[i];
+            absl::optional<SkPath> rounded_edge_path;
+            if (rounded_edge_path_iterator)
+              rounded_edge_path = rounded_edge_path_iterator->Next();
+            bool is_top_or_left =
+                line.start.x() < line.end.x() || line.start.y() > line.end.y();
+            if (is_top_or_left != top_left_or_bottom_right)
+              continue;
+            const Line& prev_line = lines[i == 0 ? lines.size() - 1 : i - 1];
+            const Line& next_line = lines[i == lines.size() - 1 ? 0 : i + 1];
+            GraphicsContextStateSaver clip_saver(context_);
+            context_.ClipPath(
+                MiterClipPath(prev_line.start, line, next_line.end),
+                kNotAntiAliased);
+            if (is_rounded_) {
+              context_.StrokePath(*rounded_edge_path);
+            } else {
+              PaintStraightEdge(line);
+            }
+          }
+        });
+  }
+
+  void MakeClipOutPath(SkPath& path) const {
+    // Add a counter-clockwise rect around the path, so that with kWinding fill
+    // type:
+    // 1. the areas enclosed in clockwise boundaries become "out",
+    // 2. the areas outside of the original path become "in", and
+    // 3. the areas enclosed in counter-clockwise boundaries are still "in".
+    // This is different from kInverseWinding or GraphicsContext::ClipOut()
+    // in #3, which is important not to clip out the areas enclosed by crossing
+    // edges produced when shrinking from the outer path.
+    DCHECK_EQ(path.getFillType(), SkPathFillType::kWinding);
+    path.addRect(right_angle_outer_path_.getBounds(), SkPathDirection::kCCW);
   }
 
   FloatRoundedRect::Radii ComputeRadii(int outset) const {
+    DCHECK(is_rounded_);
     return ComputeCornerRadii(style_, reference_border_rect_, offset_ + outset);
+  }
+
+  SkPath CenterPath(bool prefer_outer_half = false) const {
+    SkPath center_path = right_angle_outer_path_;
+    // If |prefer_outer_half| and width_ is odd_, give the outer half 1 more
+    // pixel than the inner half.
+    int outset_from_inner = prefer_outer_half ? width_ / 2 : (width_ + 1) / 2;
+    ShrinkRightAnglePath(center_path, width_ - outset_from_inner);
+    if (is_rounded_) {
+      auto center_radii = ComputeRadii(outset_from_inner);
+      AddCornerRadiiToPath(center_path, center_radii, center_radii);
+    }
+    return center_path;
+  }
+
+  static int MiterSlope(const SkPoint& p1,
+                        const SkPoint& p2,
+                        const SkPoint& p3) {
+    if (p1.x() == p2.x())
+      return (p3.x() > p2.x()) == (p2.y() > p1.y()) ? 1 : -1;
+    return (p3.y() > p2.y()) == (p2.x() > p1.x()) ? 1 : -1;
+  }
+
+  // Apply clip to remove the extra part of an edge exceeding the miters
+  // (formed by 45deg divisions between edges, across the rounded or right-angle
+  // corners). The clip should be big enough to include rounded corners within
+  // the miters.
+  SkPath MiterClipPath(const SkPoint& prev_point,
+                       const Line& line,
+                       const SkPoint& next_point) const {
+    SkRect bounds = right_angle_outer_path_.getBounds();
+    int start_miter_slope = MiterSlope(prev_point, line.start, line.end);
+    int end_miter_slope = MiterSlope(line.start, line.end, next_point);
+    SkPoint p1 = SkPoint::Make(
+        line.start.x() + start_miter_slope * (line.start.y() - bounds.top()),
+        bounds.top());
+    SkPoint p2 = SkPoint::Make(
+        line.end.x() + end_miter_slope * (line.end.y() - bounds.top()),
+        bounds.top());
+    SkPoint p3 = SkPoint::Make(
+        line.end.x() - end_miter_slope * (bounds.bottom() - line.end.y()),
+        bounds.bottom());
+    SkPoint p4 = SkPoint::Make(
+        line.start.x() - start_miter_slope * (bounds.bottom() - line.start.y()),
+        bounds.bottom());
+    // If start_miter_slope == end_miter_slope, the clip path is a parallelogram
+    // which is good for both horizontal and vertical edges. Otherwise the path
+    // is a trapezoid or a butterfly quadrilateral, and a vertical edge is
+    // outside of the path.
+    auto path = SkPath::Polygon({p1, p2, p3, p4}, /*isClosed*/ true);
+    if (start_miter_slope != end_miter_slope && line.start.x() == line.end.x())
+      path.setFillType(SkPathFillType::kInverseWinding);
+    return path;
+  }
+
+  void PaintStraightEdge(const Line& line) {
+    Line adjusted_line = line;
+    // GraphicsContext::DrawLine requires the line to be top-to-down or
+    // left-to-right get correct interval among dots/dashes.
+    if (line.start.x() > line.end.x() || line.start.y() > line.end.y())
+      std::swap(adjusted_line.start, adjusted_line.end);
+    // Extend the line to fully cover the corners at both endpoints.
+    int joint_offset = (width_ + 1) / 2;
+    ExtendLineAtEndpoint(adjusted_line.start, adjusted_line.end, joint_offset);
+    ExtendLineAtEndpoint(adjusted_line.end, adjusted_line.start, joint_offset);
+    context_.DrawLine(RoundedIntPoint(FloatPoint(adjusted_line.start)),
+                      RoundedIntPoint(FloatPoint(adjusted_line.end)));
   }
 
   GraphicsContext& context_;
@@ -553,6 +665,7 @@ class ComplexRoundedOutlinePainter {
   int offset_;
   int width_;
   Color color_;
+  bool is_rounded_;
   SkPath right_angle_outer_path_;
 };
 
@@ -699,14 +812,9 @@ void OutlinePainter::PaintOutlineRects(
     return;
   }
 
-  if (style.HasBorderRadius() &&
-      ComplexRoundedOutlinePainter(context, pixel_snapped_outline_rects,
-                                   outline_rects[0], style)
-          .Paint()) {
-    return;
-  }
-
-  PaintComplexRightAngleOutline(context, pixel_snapped_outline_rects, style);
+  ComplexOutlinePainter(context, pixel_snapped_outline_rects, outline_rects[0],
+                        style)
+      .Paint();
 }
 
 void OutlinePainter::PaintFocusRingPath(GraphicsContext& context,
