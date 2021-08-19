@@ -4,6 +4,7 @@
 
 #include "media/audio/android/aaudio_output.h"
 
+#include "base/android/build_info.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/thread_annotations.h"
@@ -114,18 +115,26 @@ AAudioOutputStream::AAudioOutputStream(AudioManagerAndroid* manager,
 
 AAudioOutputStream::~AAudioOutputStream() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  if (base::android::SdkVersion::SDK_VERSION_S >=
+      base::android::BuildInfo::GetInstance()->sdk_int()) {
+    // On Android S+, |destruction_helper_| can be destroyed as part of the
+    // normal class teardown.
+    return;
+  }
+
   // In R and earlier, it is possible for callbacks to still be running even
   // after calling AAudioStream_close(). The code below is a mitigation to work
   // around this issue. See crbug.com/1183255.
 
   // Keep |destruction_helper_| alive longer than |this|, so the |user_data|
-  // bound to the callback stays valid until the callbacks stop.
+  // bound to the callback stays valid, until the callbacks stop.
   base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(
           base::DoNothing::Once<std::unique_ptr<AAudioDestructionHelper>>(),
           std::move(destruction_helper_)),
-      base::TimeDelta::FromMilliseconds(250));
+      base::TimeDelta::FromSeconds(1));
 }
 
 void AAudioOutputStream::Flush() {}
