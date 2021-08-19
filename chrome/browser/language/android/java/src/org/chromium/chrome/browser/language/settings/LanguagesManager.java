@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.language.settings;
 
-import android.text.TextUtils;
-
 import androidx.annotation.IntDef;
 import androidx.core.util.Predicate;
 
@@ -300,7 +298,7 @@ public class LanguagesManager {
      * @return LanguageItem or null if none found
      */
     public LanguageItem getLanguageItem(String localeCode) {
-        if (TextUtils.equals(localeCode, AppLocaleUtils.SYSTEM_LANGUAGE_VALUE)) {
+        if (AppLocaleUtils.isDefaultSystemLanguage(localeCode)) {
             return LanguageItem.makeSystemDefaultLanguageItem();
         }
         LanguageItem result = mLanguagesMap.get(localeCode);

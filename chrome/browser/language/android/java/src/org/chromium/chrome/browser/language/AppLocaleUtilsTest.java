@@ -71,6 +71,15 @@ public class AppLocaleUtilsTest {
 
     @Test
     @SmallTest
+    public void testIsDefaultSystemLanguage() {
+        Assert.assertTrue(AppLocaleUtils.isDefaultSystemLanguage(null));
+        Assert.assertTrue(
+                AppLocaleUtils.isDefaultSystemLanguage(AppLocaleUtils.SYSTEM_LANGUAGE_VALUE));
+        Assert.assertFalse(AppLocaleUtils.isDefaultSystemLanguage("en"));
+    }
+
+    @Test
+    @SmallTest
     public void testIsAvailableBaseUiLanguage() {
         // Base languages that there are no UI translations for.
         List<String> notAvailableBaseLanguages =

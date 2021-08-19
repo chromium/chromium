@@ -46,7 +46,7 @@ public class LanguageItemPickerPreference extends ChromeBasePreference {
      */
     public void setLanguageItem(String languageCode) {
         LanguageItem languageItem;
-        if (TextUtils.equals(languageCode, AppLocaleUtils.SYSTEM_LANGUAGE_VALUE)) {
+        if (AppLocaleUtils.isDefaultSystemLanguage(languageCode)) {
             languageItem = LanguageItem.makeSystemDefaultLanguageItem();
         } else {
             languageItem = LanguagesManager.getInstance().getLanguageItem(languageCode);

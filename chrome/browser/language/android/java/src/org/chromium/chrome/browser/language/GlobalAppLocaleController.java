@@ -127,8 +127,11 @@ public class GlobalAppLocaleController {
      * language is set report it as the empty string.
      */
     public void recordOverrideLanguageMetrics() {
-        String overrideLanguage = TextUtils.isEmpty(mOverrideLanguage) ? "" : mOverrideLanguage;
-        AndroidLanguageMetricsBridge.reportAppOverrideLanguage(overrideLanguage);
+        // The Default System Language value means no override language is set and the app UI
+        // language tracks the system UI language.
+        String histogramLanguage =
+                AppLocaleUtils.isDefaultSystemLanguage(mOverrideLanguage) ? "" : mOverrideLanguage;
+        AndroidLanguageMetricsBridge.reportAppOverrideLanguage(histogramLanguage);
 
         int status = getOverrideVsSystemLanguageStatus(
                 mOverrideLanguage, LocaleUtils.toLanguageTag(mOriginalSystemLocale));
@@ -137,15 +140,16 @@ public class GlobalAppLocaleController {
     }
 
     /**
-     * Get the status of the override language compared to the system language. The value of the
-     * override language should not be the default system language.
+     * Get the status of the override language compared to the system language.
      * @return The {@link OverrideLanguageStatus} that describes the relationship between the system
      * language and override language.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     static @OverrideLanguageStatus int getOverrideVsSystemLanguageStatus(
             String overrideLanguage, String systemLanguage) {
-        if (TextUtils.isEmpty(overrideLanguage)) {
+        // The Default System Language value means no override language is set and the app UI
+        // language tracks the system UI language.
+        if (AppLocaleUtils.isDefaultSystemLanguage(overrideLanguage)) {
             return OverrideLanguageStatus.NO_OVERRIDE;
         }
         if (TextUtils.equals(overrideLanguage, systemLanguage)) {

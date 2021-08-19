@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.language;
 import android.app.Activity;
 import android.content.res.Resources;
 import android.os.SystemClock;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -313,7 +312,7 @@ public class AppLanguagePromoDialog {
         long displayTime = SystemClock.elapsedRealtime() - mStartTime;
         if (dismissalCause == DialogDismissalCause.POSITIVE_BUTTON_CLICKED) {
             String languageCode = mAdapter.getSelectedLanguage().getCode();
-            if (TextUtils.equals(languageCode, AppLocaleUtils.getAppLanguagePref())) {
+            if (AppLocaleUtils.isAppLanguagePref(languageCode)) {
                 recordDismissAction(ActionType.OK_SAME_LANGUAGE, displayTime);
             } else {
                 recordDismissAction(ActionType.OK_CHANGE_LANGUAGE, displayTime);
