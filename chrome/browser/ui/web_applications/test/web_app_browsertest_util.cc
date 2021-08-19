@@ -34,6 +34,7 @@
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/test/service_worker_registration_waiter.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
@@ -69,15 +70,6 @@ using ui_test_utils::BrowserChangeObserver;
 namespace web_app {
 
 namespace {
-
-void WaitUntilReady(WebAppProvider* provider) {
-  if (provider->on_registry_ready().is_signaled())
-    return;
-
-  base::RunLoop run_loop;
-  provider->on_registry_ready().Post(FROM_HERE, run_loop.QuitClosure());
-  run_loop.Run();
-}
 
 // Waits for |browser| to be removed from BrowserList and then calls |callback|.
 class BrowserRemovedWaiter final : public BrowserListObserver {
@@ -157,7 +149,7 @@ AppId InstallWebAppFromPage(Browser* browser, const GURL& app_url) {
 
   auto* provider = WebAppProvider::GetForTest(browser->profile());
   DCHECK(provider);
-  WaitUntilReady(provider);
+  test::WaitUntilReady(provider);
   provider->install_manager().InstallWebAppFromManifestWithFallback(
       browser->tab_strip_model()->GetActiveWebContents(),
       /*force_shortcut_app=*/false,
@@ -186,7 +178,7 @@ AppId InstallWebAppFromManifest(Browser* browser, const GURL& app_url) {
 
   auto* provider = WebAppProvider::GetForTest(browser->profile());
   DCHECK(provider);
-  WaitUntilReady(provider);
+  test::WaitUntilReady(provider);
   provider->install_manager().InstallWebAppFromManifestWithFallback(
       browser->tab_strip_model()->GetActiveWebContents(),
       /*force_shortcut_app=*/false,
@@ -271,7 +263,7 @@ InstallResultCode ExternallyManagedAppManagerInstall(
   DCHECK(profile);
   auto* provider = WebAppProvider::GetForTest(profile);
   DCHECK(provider);
-  WaitUntilReady(provider);
+  test::WaitUntilReady(provider);
   base::RunLoop run_loop;
   InstallResultCode result_code;
 
