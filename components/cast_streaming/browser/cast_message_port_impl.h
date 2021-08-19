@@ -43,6 +43,11 @@ class CastMessagePortImpl : public openscreen::cast::MessagePort,
   void SendInjectResponse(const std::string& sender_id,
                           const std::string& message);
 
+  // Handles messages from the media namespace. Ignores play/pause requests and
+  // sends the media status as continuously playing.
+  void HandleMediaMessage(const std::string& sender_id,
+                          const std::string& message);
+
   // cast_api_bindings::MessagePort::Receiver implementation.
   bool OnMessage(
       base::StringPiece message,
