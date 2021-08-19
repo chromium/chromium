@@ -8,11 +8,13 @@
 
 #include <memory>
 #include <tuple>
+#include <utility>
 #include <vector>
 
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -24,6 +26,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_controller.h"
+#include "chrome/browser/ash/policy/enrollment/private_membership/testing_private_membership_rlwe_client.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_device_state.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
@@ -42,7 +45,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/private_membership/src/internal/testing/regression_test_data/regression_test_data.pb.h"
-#include "third_party/private_membership/src/private_membership_rlwe_client.h"
 #include "third_party/shell-encryption/src/testing/status_testing.h"
 
 namespace em = enterprise_management;
@@ -195,12 +197,18 @@ class AutoEnrollmentClientImplTest
           progress_callback, service_.get(), local_state_,
           shared_url_loader_factory_, kStateKey, power_initial, power_limit);
     } else {
+      // PSM RLWE testing client factory has to be always non-null whenever
+      // creating a client for initial enrollment when PSM is enabled.
+      DCHECK(psm_rlwe_test_client_factory_ ||
+             GetPsmState() == PsmState::kDisabled);
+
       client_ =
           AutoEnrollmentClientImpl::FactoryImpl().CreateForInitialEnrollment(
               progress_callback, service_.get(), local_state_,
               shared_url_loader_factory_, kSerialNumber, kBrandCode,
               power_initial, power_limit,
-              kInitialEnrollmentModulusPowerOutdatedServer);
+              kInitialEnrollmentModulusPowerOutdatedServer,
+              psm_rlwe_test_client_factory_.get());
     }
   }
 
@@ -547,6 +555,11 @@ class AutoEnrollmentClientImplTest
   AutoEnrollmentClientImpl* release_client() {
     return static_cast<AutoEnrollmentClientImpl*>(client_.release());
   }
+
+  // Sets which PSM RLWE client will be created, depending on the factory. It is
+  // only used for PSM during creating the client for initial enrollment.
+  std::unique_ptr<TestingPrivateMembershipRlweClient::FactoryImpl>
+      psm_rlwe_test_client_factory_;
 
   base::HistogramTester histogram_tester_;
   content::BrowserTaskEnvironment task_environment_{
@@ -1456,13 +1469,16 @@ class PsmHelperTest : public AutoEnrollmentClientImplTest {
               nullptr);
     ASSERT_EQ(local_state_->GetUserPref(prefs::kEnrollmentPsmResult), nullptr);
 
+    // Create PSM test case, before setting up the base class, to construct the
+    // PSM RLWE testing client factory.
+    CreatePsmTestCase();
+
     // Set up the base class AutoEnrollmentClientImplTest after the private set
     // membership has been enabled.
     AutoEnrollmentClientImplTest::SetUp();
 
-    // Create PSM test case, and its corresponding RLWE client.
-    CreatePsmTestCase();
-    SetPsmRlweClient();
+    // Override the stored PSM ID in the client.
+    SetPsmRlweIdClient();
   }
 
   void CreatePsmTestCase() {
@@ -1486,18 +1502,19 @@ class PsmHelperTest : public AutoEnrollmentClientImplTest {
     EXPECT_TRUE(ParseProtoFromFile(kPsmTestDataPath, &test_data));
     EXPECT_EQ(test_data.test_cases_size(), kNumberOfPsmTestCases);
     psm_test_case_ = test_data.test_cases(GetPsmTestCaseIndex());
+
+    std::vector<private_membership::rlwe::RlwePlaintextId> plaintext_ids{
+        psm_test_case_.plaintext_id()};
+
+    // Sets the PSM RLWE client factory to testing client.
+    psm_rlwe_test_client_factory_ =
+        std::make_unique<TestingPrivateMembershipRlweClient::FactoryImpl>(
+            psm_test_case_.ec_cipher_key(), psm_test_case_.seed(),
+            plaintext_ids);
   }
 
-  void SetPsmRlweClient() {
-    auto rlwe_client_or_status =
-        psm_rlwe::PrivateMembershipRlweClient::CreateForTesting(
-            psm_test_case_.use_case(), {psm_test_case_.plaintext_id()},
-            psm_test_case_.ec_cipher_key(), psm_test_case_.seed());
-    ASSERT_OK(rlwe_client_or_status.status());
-
-    auto rlwe_client = std::move(rlwe_client_or_status.value());
-    client()->SetPsmRlweClientForTesting(std::move(rlwe_client),
-                                         psm_test_case_.plaintext_id());
+  void SetPsmRlweIdClient() {
+    client()->SetPsmRlweIdForTesting(psm_test_case_.plaintext_id());
   }
 
   void ServerWillReplyWithPsmOprfResponse() {

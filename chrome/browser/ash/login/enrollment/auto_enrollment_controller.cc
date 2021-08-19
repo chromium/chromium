@@ -16,6 +16,7 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_client_impl.h"
+#include "chrome/browser/ash/policy/enrollment/private_membership/private_membership_rlwe_client_impl.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/browser_process.h"
@@ -763,7 +764,8 @@ void AutoEnrollmentController::StartClientForInitialEnrollment() {
       g_browser_process->system_network_context_manager()
           ->GetSharedURLLoaderFactory(),
       serial_number, rlz_brand_code, power_initial, power_limit,
-      kInitialEnrollmentModulusPowerOutdatedServer);
+      kInitialEnrollmentModulusPowerOutdatedServer,
+      &psm_rlwe_client_impl_factory_);
 
   LOG(WARNING) << "Starting auto-enrollment client for Initial Enrollment.";
   client_->Start();
