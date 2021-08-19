@@ -62,7 +62,7 @@ TEST(CableV2Encoding, QRs) {
   std::array<uint8_t, kQRKeySize> qr_key;
   crypto::RandBytes(qr_key);
   std::string url = qr::Encode(qr_key);
-  EXPECT_LE(url.size(), 81u) << "QR code doesn't fit into version five";
+  EXPECT_LE(url.size(), 84u) << "QR code doesn't fit into version five";
   const absl::optional<qr::Components> decoded = qr::Parse(url);
   ASSERT_TRUE(decoded.has_value());
   static_assert(EXTENT(qr_key) >= EXTENT(decoded->secret), "");

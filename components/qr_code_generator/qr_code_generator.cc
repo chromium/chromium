@@ -56,7 +56,6 @@ struct QRVersionInfo {
         (version < 7 && encoded_version != 0) ||
         (version >= 7 &&
          encoded_version >> 12 != static_cast<uint32_t>(version)) ||
-        (version <= kMaxVersionWithSmallLengths && input_bytes() >= 256) ||
         (group2_num_blocks != 0 &&
          group2_block_ec_bytes() != group1_block_ec_bytes())) {
       __builtin_unreachable();
@@ -119,14 +118,9 @@ struct QRVersionInfo {
     return group2_block_data_bytes * group2_num_blocks;
   }
 
-  // Two bytes of overhead are needed for QR framing.
-  // If extending beyond version 26, framing would need to be updated.
+  // input_bytes is the maximum number of data bytes, including framing bytes.
   constexpr size_t input_bytes() const {
-    if (version <= 9) {
-      return group1_data_bytes() + group2_data_bytes() - 2;
-    } else {
-      return group1_data_bytes() + group2_data_bytes() - 3;
-    }
+    return group1_data_bytes() + group2_data_bytes();
   }
 
  private:

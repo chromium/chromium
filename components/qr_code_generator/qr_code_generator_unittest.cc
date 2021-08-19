@@ -59,15 +59,26 @@ TEST(QRCodeGenerator, ManySizes) {
   // that there are no edge cases like crbug.com/1177437.
   QRCodeGenerator qr;
   std::string input = "!";
+  std::map<int, size_t> max_input_length_for_qr_size;
 
   for (size_t i = input.size();; i++) {
-    if (!qr.Generate(base::span<const uint8_t>(
-            reinterpret_cast<const uint8_t*>(input.data()), input.size()))) {
+    absl::optional<QRCodeGenerator::GeneratedCode> code =
+        qr.Generate(base::span<const uint8_t>(
+            reinterpret_cast<const uint8_t*>(input.data()), input.size()));
+    if (!code) {
       break;
     }
+    max_input_length_for_qr_size[code->qr_size] = input.size();
 
     input.push_back('!');
   }
 
   ASSERT_GT(input.size(), 200u);
+
+  // Capacities taken from https://www.qrcode.com/en/about/version.html
+  ASSERT_EQ(max_input_length_for_qr_size[25], 32u);   // 2-L
+  ASSERT_EQ(max_input_length_for_qr_size[37], 84u);   // 5-M
+  ASSERT_EQ(max_input_length_for_qr_size[45], 122u);  // 7-M
+  ASSERT_EQ(max_input_length_for_qr_size[53], 180u);  // 9-M
+  ASSERT_EQ(max_input_length_for_qr_size[65], 287u);  // 12-M
 }
