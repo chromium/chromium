@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <utility>
+#include <vector>
 
 #include "base/cxx17_backports.h"
 #include "cc/animation/animation_delegate.h"
@@ -119,6 +120,12 @@ void ElementAnimations::ClearAffectedElementTypes(
   RemoveKeyframeEffectsFromTicking();
 }
 
+// TODO(crbug.com/1240712): the ReservedElementId should always be 'registered'.
+// Instead of calling this from AnimationHost::UpdateRegisteredElementIds, we
+// can ensure that the |has_element_in_active_list_| and the
+// |has_element_in_pending_list_| are true for ReservedElementId, and this
+// should result in animations ticking right away. With that, we do not need to
+// add anything to the |keyframe_effects_list_| for ReservedElementId.
 void ElementAnimations::ElementIdRegistered(ElementId element_id,
                                             ElementListType list_type) {
   DCHECK_EQ(element_id_, element_id);
@@ -304,6 +311,11 @@ void ElementAnimations::InitClientAnimationState() {
 
 void ElementAnimations::UpdateClientAnimationState() {
   if (!element_id())
+    return;
+  // For a custom property animation, or an animation that uses paint worklet,
+  // it is not associated with any property node, and thus this function is not
+  // needed.
+  if (element_id().GetStableId() == ElementId::kReservedElementId)
     return;
   DCHECK(animation_host_);
   if (!animation_host_->mutator_host_client())
