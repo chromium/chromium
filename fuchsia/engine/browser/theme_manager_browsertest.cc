@@ -7,7 +7,6 @@
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/fuchsia/test_component_context_for_process.h"
 #include "base/json/json_writer.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "content/public/test/browser_test.h"
@@ -16,6 +15,7 @@
 #include "fuchsia/base/test/test_navigation_listener.h"
 #include "fuchsia/engine/browser/context_impl.h"
 #include "fuchsia/engine/browser/frame_impl.h"
+#include "fuchsia/engine/test/frame_for_test.h"
 #include "fuchsia/engine/test/test_data.h"
 #include "fuchsia/engine/test/web_engine_browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -46,20 +46,21 @@ class ThemeManagerTest : public cr_fuchsia::WebEngineBrowserTest,
     ASSERT_TRUE(embedded_test_server()->Start());
     cr_fuchsia::WebEngineBrowserTest::SetUpOnMainThread();
 
-    frame_ = WebEngineBrowserTest::CreateFrame(&navigation_listener_);
+    frame_ = cr_fuchsia::FrameForTest::Create(
+        context(), fuchsia::web::CreateFrameParams());
     base::RunLoop().RunUntilIdle();
-    frame_->GetNavigationController(controller_.NewRequest());
 
     const std::string kPageTitle = "title 1";
     const GURL kPageUrl = embedded_test_server()->GetURL("/title1.html");
 
-    cr_fuchsia::LoadUrlAndExpectResponse(
-        controller_.get(), fuchsia::web::LoadUrlParams(), kPageUrl.spec());
+    cr_fuchsia::LoadUrlAndExpectResponse(frame_.GetNavigationController(),
+                                         fuchsia::web::LoadUrlParams(),
+                                         kPageUrl.spec());
 
     fuchsia::web::NavigationState state;
     state.set_is_main_document_loaded(true);
     state.set_title(kPageTitle);
-    navigation_listener_.RunUntilNavigationStateMatches(state);
+    frame_.navigation_listener().RunUntilNavigationStateMatches(state);
   }
 
   // Reports the system |theme_type| via the Display FIDL service.
@@ -85,7 +86,9 @@ class ThemeManagerTest : public cr_fuchsia::WebEngineBrowserTest,
   // Returns the name of the color scheme selected by the CSS feature matcher.
   base::StringPiece QueryThemeFromCssFeature() {
     content::WebContents* web_contents =
-        context_impl()->GetFrameImplForTest(&frame_)->web_contents_for_test();
+        context_impl()
+            ->GetFrameImplForTest(&frame_.ptr())
+            ->web_contents_for_test();
 
     for (const char* scheme : {kCssDark, kCssLight}) {
       bool matches;
@@ -108,7 +111,7 @@ class ThemeManagerTest : public cr_fuchsia::WebEngineBrowserTest,
   bool SetTheme(fuchsia::settings::ThemeType theme) {
     frame_->SetPreferredTheme(theme);
     base::RunLoop().RunUntilIdle();
-    return frame_.is_bound();
+    return frame_.ptr().is_bound();
   }
 
  protected:
@@ -126,9 +129,7 @@ class ThemeManagerTest : public cr_fuchsia::WebEngineBrowserTest,
   absl::optional<base::TestComponentContextForProcess> component_context_;
   absl::optional<base::ScopedServiceBinding<fuchsia::settings::Display>>
       display_binding_;
-  cr_fuchsia::TestNavigationListener navigation_listener_;
-  fuchsia::web::NavigationControllerPtr controller_;
-  fuchsia::web::FramePtr frame_;
+  cr_fuchsia::FrameForTest frame_;
 
   base::OnceClosure on_watch_closure_;
   absl::optional<WatchCallback> watch_callback_;
@@ -168,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(ThemeManagerTest, DISABLED_DefaultWithMissingService) {
   base::RunLoop().RunUntilIdle();
 
   ASSERT_FALSE(display_binding_);
-  ASSERT_FALSE(frame_);
+  ASSERT_FALSE(frame_.ptr());
 }
 
 // Verify that invalid values from the Display service, such as DEFAULT,

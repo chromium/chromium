@@ -5,7 +5,6 @@
 #ifndef FUCHSIA_ENGINE_BROWSER_FRAME_IMPL_BROWSER_TEST_BASE_H_
 #define FUCHSIA_ENGINE_BROWSER_FRAME_IMPL_BROWSER_TEST_BASE_H_
 
-#include "fuchsia/base/test/test_navigation_listener.h"
 #include "fuchsia/engine/test/web_engine_browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
@@ -19,9 +18,6 @@ class FrameImplTestBase : public cr_fuchsia::WebEngineBrowserTest {
  protected:
   FrameImplTestBase();
   ~FrameImplTestBase() override = default;
-
-  // Creates a Frame without a navigation listener attached.
-  virtual fuchsia::web::FramePtr CreateFrame();
 };
 
 // Base test class used for testing FrameImpl and the WebEngine Frame FIDL
@@ -38,10 +34,6 @@ class FrameImplTestBaseWithServer : public FrameImplTestBase {
   FrameImplTestBaseWithServer();
   ~FrameImplTestBaseWithServer() override = default;
 
-  // Creates a Frame with |navigation_listener_| attached.
-  fuchsia::web::FramePtr CreateFrame() override;
-
-  cr_fuchsia::TestNavigationListener navigation_listener_;
   net::test_server::EmbeddedTestServerHandle test_server_handle_;
 };
 

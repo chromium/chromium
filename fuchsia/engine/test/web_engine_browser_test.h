@@ -6,7 +6,6 @@
 #define FUCHSIA_ENGINE_TEST_WEB_ENGINE_BROWSER_TEST_H_
 
 #include <fuchsia/web/cpp/fidl.h>
-#include <lib/fidl/cpp/binding_set.h>
 #include <memory>
 
 #include "base/files/file_path.h"
@@ -38,28 +37,11 @@ class WebEngineBrowserTest : public content::BrowserTestBase {
   // through its outgoing directory.
   sys::ServiceDirectory& published_services();
 
-  // Creates a Frame for this Context using default parameters.
-  // |listener|: If set, specifies the navigation listener for the Frame.
-  fuchsia::web::FramePtr CreateFrame(
-      fuchsia::web::NavigationEventListener* listener);
-
-  // Creates a Frame for this Context using non-default parameters.
-  // |listener|: If set, specifies the navigation listener for the Frame.
-  // |params|: The CreateFrameParams to use.
-  fuchsia::web::FramePtr CreateFrameWithParams(
-      fuchsia::web::NavigationEventListener* listener,
-      fuchsia::web::CreateFrameParams params);
-
   // Gets the client object for the Context service.
   fuchsia::web::ContextPtr& context() { return context_; }
 
   // Gets the underlying ContextImpl service instance.
   ContextImpl* context_impl() const;
-
-  fidl::BindingSet<fuchsia::web::NavigationEventListener>&
-  navigation_listener_bindings() {
-    return navigation_listener_bindings_;
-  }
 
   void SetHeadlessInCommandLine(base::CommandLine* command_line);
 
@@ -71,13 +53,10 @@ class WebEngineBrowserTest : public content::BrowserTestBase {
   void SetUp() override;
   void PreRunTestOnMainThread() override;
   void PostRunTestOnMainThread() override;
-  void TearDownOnMainThread() override;
 
  private:
   base::FilePath test_server_root_;
   fuchsia::web::ContextPtr context_;
-  fidl::BindingSet<fuchsia::web::NavigationEventListener>
-      navigation_listener_bindings_;
 
   // Client for the directory of services published by this browser process.
   std::shared_ptr<sys::ServiceDirectory> published_services_;

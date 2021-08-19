@@ -17,6 +17,7 @@
 #include "fuchsia/base/test/frame_test_util.h"
 #include "fuchsia/base/test/result_receiver.h"
 #include "fuchsia/base/test/test_navigation_listener.h"
+#include "fuchsia/engine/test/frame_for_test.h"
 #include "fuchsia/engine/test/web_engine_browser_test.h"
 #include "fuchsia/runners/cast/api_bindings_client.h"
 #include "fuchsia/runners/cast/create_web_message.h"
@@ -34,6 +35,9 @@ class ApiBindingsClientTest : public cr_fuchsia::WebEngineBrowserTest {
 
   ~ApiBindingsClientTest() override = default;
 
+  ApiBindingsClientTest(const ApiBindingsClientTest&) = delete;
+  ApiBindingsClientTest& operator=(const ApiBindingsClientTest&) = delete;
+
   void SetUp() override { cr_fuchsia::WebEngineBrowserTest::SetUp(); }
 
  protected:
@@ -49,8 +53,8 @@ class ApiBindingsClientTest : public cr_fuchsia::WebEngineBrowserTest {
     run_loop.Run();
     ASSERT_TRUE(client_->HasBindings());
 
-    frame_ = WebEngineBrowserTest::CreateFrame(&navigation_listener_);
-    frame_->GetNavigationController(controller_.NewRequest());
+    frame_ = cr_fuchsia::FrameForTest::Create(
+        context(), fuchsia::web::CreateFrameParams());
     connector_ =
         std::make_unique<NamedMessagePortConnectorFuchsia>(frame_.get());
 
@@ -73,15 +77,11 @@ class ApiBindingsClientTest : public cr_fuchsia::WebEngineBrowserTest {
     client_.reset();
   }
 
-  fuchsia::web::FramePtr frame_;
+  cr_fuchsia::FrameForTest frame_;
   std::unique_ptr<NamedMessagePortConnectorFuchsia> connector_;
   FakeApiBindingsImpl api_service_;
   fidl::Binding<chromium::cast::ApiBindings> api_service_binding_;
   std::unique_ptr<ApiBindingsClient> client_;
-  cr_fuchsia::TestNavigationListener navigation_listener_;
-  fuchsia::web::NavigationControllerPtr controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(ApiBindingsClientTest);
 };
 
 // Tests API registration, injection, and message IPC.
@@ -106,8 +106,9 @@ IN_PROC_BROWSER_TEST_F(ApiBindingsClientTest, EndToEnd) {
   // Navigate to a test page that makes use of the injected bindings.
   const GURL test_url = embedded_test_server()->GetURL("/echo.html");
   EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      controller_.get(), fuchsia::web::LoadUrlParams(), test_url.spec()));
-  navigation_listener_.RunUntilUrlEquals(test_url);
+      frame_.GetNavigationController(), fuchsia::web::LoadUrlParams(),
+      test_url.spec()));
+  frame_.navigation_listener().RunUntilUrlEquals(test_url);
 
   std::string connect_message;
   std::unique_ptr<cast_api_bindings::MessagePort> connect_port;

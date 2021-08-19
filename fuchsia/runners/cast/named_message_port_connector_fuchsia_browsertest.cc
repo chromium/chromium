@@ -7,7 +7,6 @@
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/strings/string_piece.h"
 #include "components/cast/message_port/fuchsia/message_port_fuchsia.h"
@@ -18,6 +17,7 @@
 #include "fuchsia/base/test/frame_test_util.h"
 #include "fuchsia/base/test/result_receiver.h"
 #include "fuchsia/base/test/test_navigation_listener.h"
+#include "fuchsia/engine/test/frame_for_test.h"
 #include "fuchsia/engine/test/web_engine_browser_test.h"
 #include "fuchsia/runners/cast/create_web_message.h"
 #include "fuchsia/runners/cast/named_message_port_connector_fuchsia.h"
@@ -35,18 +35,24 @@ class NamedMessagePortConnectorFuchsiaTest
  public:
   NamedMessagePortConnectorFuchsiaTest() {
     set_test_server_root(base::FilePath("fuchsia/runners/cast/testdata"));
-    navigation_listener_.SetBeforeAckHook(base::BindRepeating(
-        &NamedMessagePortConnectorFuchsiaTest::OnBeforeAckHook,
-        base::Unretained(this)));
   }
 
   ~NamedMessagePortConnectorFuchsiaTest() override = default;
+
+  NamedMessagePortConnectorFuchsiaTest(
+      const NamedMessagePortConnectorFuchsiaTest&) = delete;
+  NamedMessagePortConnectorFuchsiaTest& operator=(
+      const NamedMessagePortConnectorFuchsiaTest&) = delete;
 
  protected:
   // BrowserTestBase implementation.
   void SetUpOnMainThread() override {
     cr_fuchsia::WebEngineBrowserTest::SetUpOnMainThread();
-    frame_ = WebEngineBrowserTest::CreateFrame(&navigation_listener_);
+    frame_ = cr_fuchsia::FrameForTest::Create(
+        context(), fuchsia::web::CreateFrameParams());
+    frame_.navigation_listener().SetBeforeAckHook(base::BindRepeating(
+        &NamedMessagePortConnectorFuchsiaTest::OnBeforeAckHook,
+        base::Unretained(this)));
     connector_ =
         std::make_unique<NamedMessagePortConnectorFuchsia>(frame_.get());
   }
@@ -75,11 +81,8 @@ class NamedMessagePortConnectorFuchsiaTest
   }
 
   std::unique_ptr<base::RunLoop> navigate_run_loop_;
-  fuchsia::web::FramePtr frame_;
+  cr_fuchsia::FrameForTest frame_;
   std::unique_ptr<NamedMessagePortConnectorFuchsia> connector_;
-  cr_fuchsia::TestNavigationListener navigation_listener_;
-
-  DISALLOW_COPY_AND_ASSIGN(NamedMessagePortConnectorFuchsiaTest);
 };
 
 IN_PROC_BROWSER_TEST_F(NamedMessagePortConnectorFuchsiaTest, EndToEnd) {
@@ -106,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(NamedMessagePortConnectorFuchsiaTest, EndToEnd) {
 
   EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
       controller.get(), fuchsia::web::LoadUrlParams(), test_url.spec()));
-  navigation_listener_.RunUntilUrlEquals(test_url);
+  frame_.navigation_listener().RunUntilUrlEquals(test_url);
 
   // The JS code in connector.html should connect to the port "echo".
   receive_port_run_loop.Run();
