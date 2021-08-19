@@ -60,7 +60,7 @@ MediaDeviceSaltAndOrigin GetSaltAndOrigin(int /* process_id */,
                                           int /* frame_id */) {
   return MediaDeviceSaltAndOrigin(
       "fake_media_device_salt", "fake_group_id_salt",
-      url::Origin::Create(GURL("https://test.com")));
+      url::Origin::Create(GURL("https://test.com")), /*has_focus=*/true);
 }
 
 // This class mocks the audio manager and overrides some methods to ensure that

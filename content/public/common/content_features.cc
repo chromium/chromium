@@ -736,6 +736,11 @@ const base::FeatureParam<SubframeShutdownDelayType>
                                     SubframeShutdownDelayType::kConstant,
                                     &delay_types};
 
+// If enabled, GetUserMedia API will only work when the concerned tab is in
+// focus
+const base::Feature kUserMediaCaptureOnFocus{"UserMediaCaptureOnFocus",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
 // This is intended as a kill switch for the WebOTP Service feature. To enable
 // this feature, the experimental web platform features flag should be set.
 const base::Feature kWebOTP{"WebOTP", base::FEATURE_ENABLED_BY_DEFAULT};
