@@ -28,12 +28,11 @@ declare_args() {
 
 # Configuration file selection based on operating system.
 if (is_linux || is_android || is_chromeos) {
-  rbe_cc_cfg_file = "${rbe_cfg_dir}/chromium-browser-clang/rewrapper_linux.cfg"
+  rbe_cc_cfg_file = "${rbe_cfg_dir}/rewrapper_linux.cfg"
 }
 if (is_win) {
-  rbe_cc_cfg_file =
-      "${rbe_cfg_dir}/chromium-browser-clang/rewrapper_windows.cfg"
+  rbe_cc_cfg_file = "${rbe_cfg_dir}/rewrapper_windows.cfg"
 }
 if (is_mac || is_ios) {
-  rbe_cc_cfg_file = "${rbe_cfg_dir}/chromium-browser-clang/rewrapper_mac.cfg"
+  rbe_cc_cfg_file = "${rbe_cfg_dir}/rewrapper_mac.cfg"
 }
