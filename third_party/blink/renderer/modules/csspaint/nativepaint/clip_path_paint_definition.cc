@@ -100,11 +100,10 @@ struct DowncastTraits<ClipPathPaintWorkletInput> {
 // static
 ClipPathPaintDefinition* ClipPathPaintDefinition::Create(
     LocalFrame& local_root) {
-  return MakeGarbageCollected<ClipPathPaintDefinition>(PassKey(), local_root);
+  return MakeGarbageCollected<ClipPathPaintDefinition>(local_root);
 }
 
-ClipPathPaintDefinition::ClipPathPaintDefinition(PassKey pass_key,
-                                                 LocalFrame& local_root)
+ClipPathPaintDefinition::ClipPathPaintDefinition(LocalFrame& local_root)
     : worklet_id_(PaintWorkletIdGenerator::NextId()) {
   DCHECK(local_root.IsLocalRoot());
   DCHECK(IsMainThread());
