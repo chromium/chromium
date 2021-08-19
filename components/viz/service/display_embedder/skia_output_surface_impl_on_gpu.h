@@ -147,8 +147,8 @@ class SkiaOutputSurfaceImplOnGpu
   // Runs |deferred_framebuffer_draw_closure| when SwapBuffers() or CopyOutput()
   // will not.
   void SwapBuffersSkipped();
-  void EnsureBackbuffer() { output_device_->EnsureBackbuffer(); }
-  void DiscardBackbuffer() { output_device_->DiscardBackbuffer(); }
+  void EnsureBackbuffer();
+  void DiscardBackbuffer();
   void FinishPaintRenderPass(const gpu::Mailbox& mailbox,
                              sk_sp<SkDeferredDisplayList> ddl,
                              std::vector<ImageContextImpl*> image_contexts,

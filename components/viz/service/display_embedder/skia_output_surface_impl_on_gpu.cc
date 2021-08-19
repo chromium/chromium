@@ -1910,4 +1910,19 @@ void SkiaOutputSurfaceImplOnGpu::InitDelegatedInkPointRendererReceiver(
   }
 }
 
+void SkiaOutputSurfaceImplOnGpu::EnsureBackbuffer() {
+  // We call GLSurface::SetBackbuffferAllocation in Ensure/Discard backbuffer,
+  // so technically need framebuffer. In reality no GLSurface implements it, but
+  // until it's removed we should keep true here.
+  MakeCurrent(/*need_framebuffer=*/true);
+  output_device_->EnsureBackbuffer();
+}
+void SkiaOutputSurfaceImplOnGpu::DiscardBackbuffer() {
+  // We call GLSurface::SetBackbuffferAllocation in Ensure/Discard backbuffer,
+  // so technically need framebuffer. In reality no GLSurface implements it, but
+  // until it's removed we should keep true here.
+  MakeCurrent(/*need_framebuffer=*/true);
+  output_device_->DiscardBackbuffer();
+}
+
 }  // namespace viz
