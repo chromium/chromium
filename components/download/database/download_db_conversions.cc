@@ -9,7 +9,6 @@
 #include "base/notreached.h"
 #include "base/pickle.h"
 #include "components/download/public/common/download_features.h"
-#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 
 namespace download {
 namespace {
@@ -225,8 +224,6 @@ download_pb::InProgressInfo DownloadDBConversions::InProgressInfoToProto(
   if (in_progress_info.reroute_info.IsInitialized()) {
     *proto.mutable_reroute_info() = in_progress_info.reroute_info;
   }
-  proto.set_credentials_mode(
-      static_cast<int32_t>(in_progress_info.credentials_mode));
   return proto;
 }
 
@@ -285,10 +282,6 @@ InProgressInfo DownloadDBConversions::InProgressInfoFromProto(
   }
   if (proto.has_reroute_info()) {
     info.reroute_info = proto.reroute_info();
-  }
-  if (proto.has_credentials_mode()) {
-    info.credentials_mode = static_cast<::network::mojom::CredentialsMode>(
-        proto.credentials_mode());
   }
 
   return info;
