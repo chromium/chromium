@@ -63,7 +63,7 @@ enum class TransformedWritingMode {
   kBottomToTopWritingMode
 };
 
-typedef Vector<FlexItem, 8> FlexItemVector;
+typedef HeapVector<FlexItem, 8> FlexItemVector;
 
 class AutoClearOverrideLogicalHeight {
   STACK_ALLOCATED();
@@ -192,9 +192,11 @@ class FlexItem {
                                     bool is_wrap_reverse,
                                     bool is_deprecated_webkit_box);
 
+  void Trace(Visitor*) const;
+
   const FlexLayoutAlgorithm* algorithm_;
   wtf_size_t line_number_;
-  UntracedMember<LayoutBox> box_;
+  Member<LayoutBox> box_;
   const ComputedStyle& style_;
   const LayoutUnit flex_base_content_size_;
   const MinMaxSizes min_max_main_sizes_;
@@ -372,6 +374,8 @@ class FlexLayoutAlgorithm {
                       LogicalSize percent_resolution_sizes,
                       Document*);
   FlexLayoutAlgorithm(const FlexLayoutAlgorithm&) = delete;
+
+  ~FlexLayoutAlgorithm() { all_items_.clear(); }
   FlexLayoutAlgorithm& operator=(const FlexLayoutAlgorithm&) = delete;
 
   template <typename... Args>
@@ -448,6 +452,9 @@ class FlexLayoutAlgorithm {
                                     LogicalSize percent_resolution_sizes);
   static LayoutUnit GapBetweenLines(const ComputedStyle& style,
                                     LogicalSize percent_resolution_sizes);
+
+  void Trace(Visitor*) const;
+
   const LayoutUnit gap_between_items_;
   const LayoutUnit gap_between_lines_;
 
@@ -467,5 +474,7 @@ inline const FlexLine* FlexItem::Line() const {
 }
 
 }  // namespace blink
+
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::FlexItem)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FLEXIBLE_BOX_ALGORITHM_H_

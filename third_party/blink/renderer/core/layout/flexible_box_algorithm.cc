@@ -282,6 +282,10 @@ void FlexItem::ComputeStretchedSize() {
   }
 }
 
+void FlexItem::Trace(Visitor* visitor) const {
+  visitor->Trace(box_);
+}
+
 // static
 LayoutUnit FlexItem::AlignmentOffset(LayoutUnit available_free_space,
                                      ItemPosition position,
@@ -334,6 +338,7 @@ LayoutUnit FlexItem::AlignmentOffset(LayoutUnit available_free_space,
   }
   return LayoutUnit();
 }
+
 void FlexLine::FreezeViolations(ViolationsVector& violations) {
   const ComputedStyle& flex_box_style = algorithm_->StyleRef();
   for (wtf_size_t i = 0; i < violations.size(); ++i) {
@@ -1161,6 +1166,10 @@ bool FlexLayoutAlgorithm::IsNGFlexBox() const {
   // The FlexItems created by legacy will have an empty ng_input_node. An NG
   // FlexItem's ng_input_node will have a LayoutBox.
   return all_items_.at(0).ng_input_node_.GetLayoutBox();
+}
+
+void FlexLayoutAlgorithm::Trace(Visitor* visitor) const {
+  visitor->Trace(all_items_);
 }
 
 }  // namespace blink
