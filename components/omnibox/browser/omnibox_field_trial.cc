@@ -654,11 +654,11 @@ std::string OmniboxFieldTrial::OnDeviceHeadModelLocaleConstraint(
 int OmniboxFieldTrial::OnDeviceHeadSuggestMaxScoreForNonUrlInput(
     bool is_incognito) {
   const int kDefaultScore =
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if defined(OS_IOS)
       99;
 #else
       is_incognito ? 99 : 1000;
-#endif  // defined(OS_ANDROID) || defined(OS_IOS)
+#endif  // defined(OS_IOS)
   return is_incognito
              ? kDefaultScore
              : base::GetFieldTrialParamByFeatureAsInt(
@@ -669,11 +669,11 @@ int OmniboxFieldTrial::OnDeviceHeadSuggestMaxScoreForNonUrlInput(
 int OmniboxFieldTrial::OnDeviceHeadSuggestDelaySuggestRequestMs(
     bool is_incognito) {
   const int kDefaultDelayNonIncognito =
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if defined(OS_IOS)
       100;
 #else
       0;
-#endif  // defined(OS_ANDROID) || defined(OS_IOS)
+#endif  // defined(OS_IOS)
   return is_incognito ? 0
                       : base::GetFieldTrialParamByFeatureAsInt(
                             omnibox::kOnDeviceHeadProviderNonIncognito,
@@ -693,10 +693,10 @@ std::string OmniboxFieldTrial::OnDeviceHeadSuggestDemoteMode() {
   std::string demote_mode = base::GetFieldTrialParamValueByFeature(
       omnibox::kOnDeviceHeadProviderNonIncognito,
       kOnDeviceHeadSuggestDemoteMode);
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !defined(OS_IOS)
   if (demote_mode.empty())
     demote_mode = "decrease-relevances";
-#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
+#endif  // !defined(OS_IOS)
   return demote_mode;
 }
 
