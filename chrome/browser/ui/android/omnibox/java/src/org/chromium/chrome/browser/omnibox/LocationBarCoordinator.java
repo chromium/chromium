@@ -172,10 +172,12 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
                 isTablet() && isTabletLayout(), searchEngineLogoUtils, LensController.getInstance(),
                 launchAssistanceSettingsAction, saveOfflineButtonState, omniboxUma,
                 isToolbarMicEnabledSupplier);
+        final boolean isIncognito =
+                incognitoStateProvider != null && incognitoStateProvider.isIncognitoSelected();
         mUrlCoordinator =
                 new UrlBarCoordinator((UrlBar) mUrlBar, windowDelegate, actionModeCallback,
                         mCallbackController.makeCancelable(mLocationBarMediator::onUrlFocusChange),
-                        mLocationBarMediator, windowAndroid.getKeyboardDelegate());
+                        mLocationBarMediator, windowAndroid.getKeyboardDelegate(), isIncognito);
         mAutocompleteCoordinator =
                 new AutocompleteCoordinator(mLocationBarLayout, this, this, mUrlCoordinator,
                         modalDialogManagerSupplier, activityTabSupplier, shareDelegateSupplier,

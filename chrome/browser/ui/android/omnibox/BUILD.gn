@@ -175,6 +175,7 @@ android_library("java") {
     "//content/public/android:content_java",
     "//third_party/android_deps:android_support_v7_appcompat_java",
     "//third_party/android_deps:guava_android_java",
+    "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_collection_collection_java",
     "//third_party/metrics_proto:metrics_proto_java",
