@@ -26,7 +26,8 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
-#include "third_party/nearby/src/cpp/core/internal/service_controller.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/nearby/src/cpp/core/internal/service_controller_router.h"
 
 namespace location {
 namespace nearby {
@@ -152,8 +153,8 @@ class NearbyConnections : public mojom::NearbyConnections {
   // Returns the task runner for the thread that created |this|.
   scoped_refptr<base::SingleThreadTaskRunner> GetThreadTaskRunner();
 
-  void SetServiceControllerForTesting(
-      std::unique_ptr<ServiceController> service_controller);
+  void SetServiceControllerRouterForTesting(
+      std::unique_ptr<ServiceControllerRouter> service_controller_router);
 
  private:
   // These values are used for metrics. Entries should not be renumbered and
@@ -188,11 +189,11 @@ class NearbyConnections : public mojom::NearbyConnections {
   mojo::SharedRemote<sharing::mojom::WebRtcSignalingMessenger>
       webrtc_signaling_messenger_;
 
-  std::unique_ptr<ServiceController> service_controller_;
+  std::unique_ptr<ServiceControllerRouter> service_controller_router_;
 
   // Map from service ID to the Core object to be used for that service. Each
   // service uses its own Core object, but all Core objects share the underlying
-  // ServiceController instance.
+  // ServiceControllerRouter instance.
   base::flat_map<std::string, std::unique_ptr<Core>> service_id_to_core_map_;
 
   // Handles incoming stream payloads. This object buffers partial streams as
