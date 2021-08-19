@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "ui/base/cursor/cursor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/events/event.h"
@@ -103,6 +104,9 @@ class ScreenshotFlow : public ui::LayerDelegate, public ui::EventHandler {
   void PaintSelectionLayer(gfx::Canvas* canvas,
                            const gfx::Rect& selection,
                            const gfx::Rect& invalidation_region);
+
+  // Requests to set the cursor type.
+  void SetCursor(ui::mojom::CursorType cursor_type);
 
   base::WeakPtr<ScreenshotFlow> weak_this_;
 

@@ -8,6 +8,7 @@
 
 #include "base/logging.h"
 #include "build/build_config.h"
+#include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/compositor/paint_recorder.h"
@@ -100,6 +101,8 @@ void ScreenshotFlow::CreateAndAddUIOverlay() {
   content_layer->StackAtTop(screen_capture_layer_.get());
   screen_capture_layer_->SetBounds(bounds);
   screen_capture_layer_->SetVisible(true);
+
+  SetCursor(ui::mojom::CursorType::kCross);
 }
 
 void ScreenshotFlow::RemoveUIOverlay() {
@@ -122,6 +125,11 @@ void ScreenshotFlow::RemoveUIOverlay() {
 
   screen_capture_layer_->set_delegate(nullptr);
   screen_capture_layer_.reset();
+
+  // Restore the cursor to pointer; there's no corresponding GetCursor()
+  // to store the pre-capture-mode cursor, and the pointer will have moved
+  // in the meantime.
+  SetCursor(ui::mojom::CursorType::kPointer);
 }
 
 void ScreenshotFlow::Start(ScreenshotCaptureCallback flow_callback) {
@@ -167,6 +175,9 @@ void ScreenshotFlow::OnMouseEvent(ui::MouseEvent* event) {
 
   gfx::Point location = located_event->location();
   switch (event->type()) {
+    case ui::ET_MOUSE_MOVED:
+      SetCursor(ui::mojom::CursorType::kCross);
+      break;
     case ui::ET_MOUSE_PRESSED:
       if (event->IsLeftMouseButton()) {
         capture_mode_ = CaptureMode::SELECTION_RECTANGLE;
@@ -261,6 +272,18 @@ void ScreenshotFlow::PaintSelectionLayer(gfx::Canvas* canvas,
 
   // Add a small border around the selection region.
   canvas->DrawRect(gfx::RectF(selection), kColorSelectionRect);
+}
+
+void ScreenshotFlow::SetCursor(ui::mojom::CursorType cursor_type) {
+  if (!web_contents_) {
+    return;
+  }
+  content::RenderWidgetHost* host =
+      web_contents_->GetMainFrame()->GetRenderWidgetHost();
+  if (host) {
+    ui::Cursor cursor(cursor_type);
+    host->SetCursor(cursor);
+  }
 }
 
 }  // namespace image_editor
