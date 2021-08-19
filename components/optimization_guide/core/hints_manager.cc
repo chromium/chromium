@@ -121,25 +121,10 @@ bool IsOptimizationTypeAllowed(
     const google::protobuf::RepeatedPtrField<
         optimization_guide::proto::Optimization>& optimizations,
     optimization_guide::proto::OptimizationType optimization_type,
-    optimization_guide::OptimizationMetadata* optimization_metadata,
-    absl::optional<uint64_t>* tuning_version) {
-  DCHECK(tuning_version);
-  *tuning_version = absl::nullopt;
-
+    optimization_guide::OptimizationMetadata* optimization_metadata) {
   for (const auto& optimization : optimizations) {
     if (optimization_type != optimization.optimization_type())
       continue;
-
-    if (optimization.has_tuning_version()) {
-      *tuning_version = optimization.tuning_version();
-
-      if (optimization.tuning_version() == UINT64_MAX) {
-        // UINT64_MAX is the sentinel value indicating that the optimization
-        // should not be served and was only added to the list for metrics
-        // purposes.
-        return false;
-      }
-    }
 
     // We found an optimization that can be applied. Populate optimization
     // metadata if applicable and return.
@@ -170,25 +155,6 @@ bool IsOptimizationTypeAllowed(
   }
 
   return false;
-}
-
-// Logs an OptimizationAutotuning event for the navigation with |navigation_id|,
-// if |navigation_id| and |tuning_version| are non-null.
-void MaybeLogOptimizationAutotuningUKMForNavigation(
-    absl::optional<int64_t> navigation_id,
-    optimization_guide::proto::OptimizationType optimization_type,
-    absl::optional<int64_t> tuning_version) {
-  if (!navigation_id || !tuning_version) {
-    // Only log if we can correlate the tuning event with a navigation.
-    return;
-  }
-
-  ukm::SourceId ukm_source_id =
-      ukm::ConvertToSourceId(*navigation_id, ukm::SourceIdType::NAVIGATION_ID);
-  ukm::builders::OptimizationGuideAutotuning builder(ukm_source_id);
-  builder.SetOptimizationType(optimization_type)
-      .SetTuningVersion(*tuning_version)
-      .Record(ukm::UkmRecorder::Get());
 }
 
 // Util class for recording whether a hints fetch race against the current
@@ -1000,15 +966,13 @@ bool HintsManager::HasLoadedOptimizationBlocklist(
 
 void HintsManager::CanApplyOptimizationAsync(
     const GURL& navigation_url,
-    const absl::optional<int64_t>& navigation_id,
     optimization_guide::proto::OptimizationType optimization_type,
     optimization_guide::OptimizationGuideDecisionCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   optimization_guide::OptimizationMetadata metadata;
   optimization_guide::OptimizationTypeDecision type_decision =
-      CanApplyOptimization(navigation_url, navigation_id, optimization_type,
-                           &metadata);
+      CanApplyOptimization(navigation_url, optimization_type, &metadata);
   optimization_guide::OptimizationGuideDecision decision =
       GetOptimizationGuideDecisionFromOptimizationTypeDecision(type_decision);
   // It's possible that a hint that applies to |navigation_url| will come in
@@ -1026,12 +990,11 @@ void HintsManager::CanApplyOptimizationAsync(
   }
 
   registered_callbacks_[navigation_url][optimization_type].push_back(
-      std::make_pair(navigation_id, std::move(callback)));
+      std::move(callback));
 }
 
 optimization_guide::OptimizationTypeDecision HintsManager::CanApplyOptimization(
     const GURL& navigation_url,
-    const absl::optional<int64_t>& navigation_id,
     optimization_guide::proto::OptimizationType optimization_type,
     optimization_guide::OptimizationMetadata* optimization_metadata) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1108,29 +1071,20 @@ optimization_guide::OptimizationTypeDecision HintsManager::CanApplyOptimization(
         kHadOptimizationFilterButNotLoadedInTime;
   }
 
-  absl::optional<uint64_t> tuning_version;
-
   // First, check if the optimization type is allowlisted by a URL-keyed hint.
   const optimization_guide::proto::Hint* url_keyed_hint =
       hint_cache_->GetURLKeyedHint(navigation_url);
   if (url_keyed_hint) {
     DCHECK_EQ(url_keyed_hint->page_hints_size(), 1);
     if (url_keyed_hint->page_hints_size() > 0) {
-      bool is_allowed = IsOptimizationTypeAllowed(
-          url_keyed_hint->page_hints(0).allowlisted_optimizations(),
-          optimization_type, optimization_metadata, &tuning_version);
-      if (is_allowed || tuning_version) {
-        MaybeLogOptimizationAutotuningUKMForNavigation(
-            navigation_id, optimization_type, tuning_version);
-        const auto type_decision =
-            is_allowed
-                ? optimization_guide::OptimizationTypeDecision::kAllowedByHint
-                : optimization_guide::OptimizationTypeDecision::
-                      kNotAllowedByHint;
-        scoped_logger.set_type_decision(type_decision);
+      if (IsOptimizationTypeAllowed(
+              url_keyed_hint->page_hints(0).allowlisted_optimizations(),
+              optimization_type, optimization_metadata)) {
+        scoped_logger.set_type_decision(
+            optimization_guide::OptimizationTypeDecision::kAllowedByHint);
         if (optimization_metadata && !optimization_metadata->empty())
           scoped_logger.set_has_metadata();
-        return type_decision;
+        return optimization_guide::OptimizationTypeDecision::kAllowedByHint;
       }
     }
   }
@@ -1168,20 +1122,13 @@ optimization_guide::OptimizationTypeDecision HintsManager::CanApplyOptimization(
     return optimization_guide::OptimizationTypeDecision::kNoHintAvailable;
   }
 
-  bool is_allowed = IsOptimizationTypeAllowed(
-      loaded_hint->allowlisted_optimizations(), optimization_type,
-      optimization_metadata, &tuning_version);
-  if (is_allowed || tuning_version) {
-    MaybeLogOptimizationAutotuningUKMForNavigation(
-        navigation_id, optimization_type, tuning_version);
-    const auto type_decision =
-        is_allowed
-            ? optimization_guide::OptimizationTypeDecision::kAllowedByHint
-            : optimization_guide::OptimizationTypeDecision::kNotAllowedByHint;
-    scoped_logger.set_type_decision(type_decision);
+  if (IsOptimizationTypeAllowed(loaded_hint->allowlisted_optimizations(),
+                                optimization_type, optimization_metadata)) {
+    scoped_logger.set_type_decision(
+        optimization_guide::OptimizationTypeDecision::kAllowedByHint);
     if (optimization_metadata && !optimization_metadata->empty())
       scoped_logger.set_has_metadata();
-    return type_decision;
+    return optimization_guide::OptimizationTypeDecision::kAllowedByHint;
   }
 
   const optimization_guide::proto::PageHint* matched_page_hint =
@@ -1194,11 +1141,9 @@ optimization_guide::OptimizationTypeDecision HintsManager::CanApplyOptimization(
     return optimization_guide::OptimizationTypeDecision::kNotAllowedByHint;
   }
 
-  is_allowed = IsOptimizationTypeAllowed(
-      matched_page_hint->allowlisted_optimizations(), optimization_type,
-      optimization_metadata, &tuning_version);
-  MaybeLogOptimizationAutotuningUKMForNavigation(
-      navigation_id, optimization_type, tuning_version);
+  bool is_allowed =
+      IsOptimizationTypeAllowed(matched_page_hint->allowlisted_optimizations(),
+                                optimization_type, optimization_metadata);
   const auto type_decision =
       is_allowed
           ? optimization_guide::OptimizationTypeDecision::kAllowedByHint
@@ -1236,12 +1181,10 @@ void HintsManager::OnReadyToInvokeRegisteredCallbacks(
     optimization_guide::proto::OptimizationType opt_type =
         opt_type_and_callbacks.first;
 
-    for (auto& navigation_id_and_callback : opt_type_and_callbacks.second) {
-      absl::optional<int64_t> navigation_id = navigation_id_and_callback.first;
+    for (auto& callback : opt_type_and_callbacks.second) {
       optimization_guide::OptimizationMetadata metadata;
       optimization_guide::OptimizationTypeDecision type_decision =
-          CanApplyOptimization(navigation_url, navigation_id, opt_type,
-                               &metadata);
+          CanApplyOptimization(navigation_url, opt_type, &metadata);
       optimization_guide::OptimizationGuideDecision decision =
           GetOptimizationGuideDecisionFromOptimizationTypeDecision(
               type_decision);
@@ -1249,7 +1192,7 @@ void HintsManager::OnReadyToInvokeRegisteredCallbacks(
           "OptimizationGuide.ApplyDecisionAsync." +
               optimization_guide::GetStringNameForOptimizationType(opt_type),
           type_decision);
-      std::move(navigation_id_and_callback.second).Run(decision, metadata);
+      std::move(callback).Run(decision, metadata);
     }
   }
   registered_callbacks_.erase(navigation_url);

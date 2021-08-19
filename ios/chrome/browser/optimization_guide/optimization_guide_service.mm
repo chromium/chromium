@@ -128,8 +128,7 @@ OptimizationGuideService::CanApplyOptimization(
     optimization_guide::OptimizationMetadata* optimization_metadata) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   optimization_guide::OptimizationTypeDecision optimization_type_decision =
-      hints_manager_->CanApplyOptimization(url, /*navigation_id=*/absl::nullopt,
-                                           optimization_type,
+      hints_manager_->CanApplyOptimization(url, optimization_type,
                                            optimization_metadata);
   base::UmaHistogramEnumeration(
       "OptimizationGuide.ApplyDecision." +
@@ -148,8 +147,7 @@ void OptimizationGuideService::CanApplyOptimizationAsync(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   hints_manager_->CanApplyOptimizationAsync(
-      navigation_context->GetUrl(), navigation_context->GetNavigationId(),
-      optimization_type, std::move(callback));
+      navigation_context->GetUrl(), optimization_type, std::move(callback));
 }
 
 void OptimizationGuideService::Shutdown() {

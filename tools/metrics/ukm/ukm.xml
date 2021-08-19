@@ -11085,6 +11085,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="OptimizationGuideAutotuning">
+  <obsolete>
+    Removed 8/2021.
+  </obsolete>
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>

@@ -234,8 +234,7 @@ OptimizationGuideKeyedService::CanApplyOptimization(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   optimization_guide::OptimizationTypeDecision optimization_type_decision =
-      hints_manager_->CanApplyOptimization(url, /*navigation_id=*/absl::nullopt,
-                                           optimization_type,
+      hints_manager_->CanApplyOptimization(url, optimization_type,
                                            optimization_metadata);
   base::UmaHistogramEnumeration(
       "OptimizationGuide.ApplyDecision." +
@@ -255,8 +254,7 @@ void OptimizationGuideKeyedService::CanApplyOptimizationAsync(
   DCHECK(navigation_handle->IsInMainFrame());
 
   hints_manager_->CanApplyOptimizationAsync(
-      navigation_handle->GetURL(), navigation_handle->GetNavigationId(),
-      optimization_type, std::move(callback));
+      navigation_handle->GetURL(), optimization_type, std::move(callback));
 }
 
 void OptimizationGuideKeyedService::AddHintForTesting(

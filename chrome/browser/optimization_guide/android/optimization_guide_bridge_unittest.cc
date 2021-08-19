@@ -48,9 +48,8 @@ class MockOptimizationGuideHintsManager
             /*url_loader_factory=*/nullptr,
             content::GetNetworkConnectionTracker()) {}
   ~MockOptimizationGuideHintsManager() override = default;
-  MOCK_METHOD4(CanApplyOptimizationAsync,
+  MOCK_METHOD3(CanApplyOptimizationAsync,
                void(const GURL&,
-                    const absl::optional<int64_t>&,
                     optimization_guide::proto::OptimizationType,
                     optimization_guide::OptimizationGuideDecisionCallback));
 };
@@ -153,10 +152,10 @@ TEST_F(OptimizationGuideBridgeTest, CanApplyOptimizationAsyncHasHint) {
   metadata.SetAnyMetadataForTesting(hints_metadata);
   EXPECT_CALL(
       *optimization_guide_hints_manager_,
-      CanApplyOptimizationAsync(GURL("https://example.com/"), Eq(absl::nullopt),
+      CanApplyOptimizationAsync(GURL("https://example.com/"),
                                 optimization_guide::proto::PERFORMANCE_HINTS,
                                 base::test::IsNotNullCallback()))
-      .WillOnce(base::test::RunOnceCallback<3>(
+      .WillOnce(base::test::RunOnceCallback<2>(
           optimization_guide::OptimizationGuideDecision::kTrue,
           ByRef(metadata)));
 

@@ -39,9 +39,6 @@ class OptimizationGuideDecider {
 
   // Returns whether |optimization_type| can be applied for |url|. This should
   // only be called for main frame navigations or future main frame navigations.
-  //
-  // Note: DO NOT USE this method if you intend to opt into the Optimization
-  // Guide's autotuning framework at any point.
   virtual OptimizationGuideDecision CanApplyOptimization(
       const GURL& url,
       proto::OptimizationType optimization_type,

@@ -108,7 +108,6 @@ class HintsManager : public OptimizationHintsComponentObserver,
   // |optimization_metadata| will be populated, if applicable.
   optimization_guide::OptimizationTypeDecision CanApplyOptimization(
       const GURL& navigation_url,
-      const absl::optional<int64_t>& navigation_id,
       optimization_guide::proto::OptimizationType optimization_type,
       optimization_guide::OptimizationMetadata* optimization_metadata);
 
@@ -117,7 +116,6 @@ class HintsManager : public OptimizationHintsComponentObserver,
   // |this| to make the decision. Virtual for testing.
   virtual void CanApplyOptimizationAsync(
       const GURL& navigation_url,
-      const absl::optional<int64_t>& navigation_id,
       optimization_guide::proto::OptimizationType optimization_type,
       optimization_guide::OptimizationGuideDecisionCallback callback);
 
@@ -354,15 +352,12 @@ class HintsManager : public OptimizationHintsComponentObserver,
                  std::unique_ptr<optimization_guide::OptimizationFilter>>
       blocklist_optimization_filters_;
 
-  // A map from URL to a map of callbacks (along with the navigation IDs that
-  // they were called for) keyed by their optimization type.
+  // A map from URL to a map of callbacks keyed by their optimization type.
   base::flat_map<
       GURL,
       base::flat_map<
           optimization_guide::proto::OptimizationType,
-          std::vector<std::pair<
-              absl::optional<int64_t>,
-              optimization_guide::OptimizationGuideDecisionCallback>>>>
+          std::vector<optimization_guide::OptimizationGuideDecisionCallback>>>
       registered_callbacks_;
 
   // Whether |this| was created for an off the record profile.
