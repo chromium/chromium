@@ -42,6 +42,7 @@
     <dimen name="quick_action_search_widget_small_search_bar_icon_margin">8dp</dimen>
 
     <!-- Dino Widget Dimensions -->
+    <dimen name="quick_action_search_widget_dino_min_size">110dp</dimen>
     <dimen name="quick_action_search_widget_dino_size">124dp</dimen>
     <dimen name="quick_action_search_widget_dino_corner_radius">24dp</dimen>
 </resources>

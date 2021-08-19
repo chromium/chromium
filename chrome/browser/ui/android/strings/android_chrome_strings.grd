@@ -4209,7 +4209,7 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
 
       <!-- Dino Widget -->
-      <message name="IDS_DINO_WIDGET_TEXT" desc="Text displayed on the Dino Widget">
+      <message name="IDS_DINO_WIDGET_TEXT" desc="Text displayed on the Dino Widget. One medium-length or two short words max (area for about 10em)">
               Chrome Dino
       </message>
 
