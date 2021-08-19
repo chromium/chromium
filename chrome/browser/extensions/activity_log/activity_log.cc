@@ -266,7 +266,7 @@ void ExtractUrls(scoped_refptr<Action> action, Profile* profile) {
   if (action->arg_url().is_valid())
     return;
 
-  base::Value::ConstListView args_list = action->args()->GetList();
+  base::Value::ListView args_list = action->mutable_args()->GetList();
 
   GURL arg_url;
   bool arg_incognito = action->page_incognito();
@@ -276,11 +276,10 @@ void ExtractUrls(scoped_refptr<Action> action, Profile* profile) {
       // No translation needed; just extract the URL directly from a raw string
       // or from a dictionary.  Succeeds if we can find a string in the
       // argument list and that the string resolves to a valid URL.
-      std::string url_string;
-      if (action->args()->GetString(url_index, &url_string) &&
-          ResolveUrl(action->page_url(), url_string, &arg_url)) {
-        action->mutable_args()->Set(
-            url_index, std::make_unique<base::Value>(kArgUrlPlaceholder));
+      if (args_list[url_index].is_string() &&
+          ResolveUrl(action->page_url(), args_list[url_index].GetString(),
+                     &arg_url)) {
+        args_list[url_index] = base::Value(kArgUrlPlaceholder);
       }
       break;
     }
@@ -291,12 +290,14 @@ void ExtractUrls(scoped_refptr<Action> action, Profile* profile) {
       // if we can find a dictionary in the argument list, the dictionary
       // contains the specified key, and the corresponding value resolves to a
       // valid URL.
-      base::DictionaryValue* dict = NULL;
-      std::string url_string;
-      if (action->mutable_args()->GetDictionary(url_index, &dict) &&
-          dict->GetString(api_info->arg_url_dict_path, &url_string) &&
-          ResolveUrl(action->page_url(), url_string, &arg_url)) {
-        dict->SetString(api_info->arg_url_dict_path, kArgUrlPlaceholder);
+      if (args_list[url_index].is_dict()) {
+        const std::string* url_string =
+            args_list[url_index].FindStringPath(api_info->arg_url_dict_path);
+        if (url_string &&
+            ResolveUrl(action->page_url(), *url_string, &arg_url)) {
+          args_list[url_index].SetStringPath(api_info->arg_url_dict_path,
+                                             kArgUrlPlaceholder);
+        }
       }
       break;
     }
@@ -311,13 +312,10 @@ void ExtractUrls(scoped_refptr<Action> action, Profile* profile) {
         tab_id = args_list[url_index].GetInt();
         // Single tab ID to translate.
         GetUrlForTabId(tab_id, profile, &arg_url, &arg_incognito);
-        if (arg_url.is_valid()) {
-          action->mutable_args()->Set(
-              url_index, std::make_unique<base::Value>(kArgUrlPlaceholder));
-        }
+        if (arg_url.is_valid())
+          args_list[url_index] = base::Value(kArgUrlPlaceholder);
       } else if (args_list[url_index].is_list()) {
-        base::Value::ListView tab_list =
-            action->mutable_args()->GetList()[url_index].GetList();
+        base::Value::ListView tab_list = args_list[url_index].GetList();
         // A list of possible IDs to translate.  Work through in reverse order
         // so the last one translated is left in arg_url.
         int extracted_index = -1;  // Which list item is copied to arg_url?
