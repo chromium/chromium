@@ -155,7 +155,7 @@ AppId InstallWebAppFromPage(Browser* browser, const GURL& app_url) {
   AppId app_id;
   base::RunLoop run_loop;
 
-  auto* provider = WebAppProvider::Get(browser->profile());
+  auto* provider = WebAppProvider::GetForTest(browser->profile());
   DCHECK(provider);
   WaitUntilReady(provider);
   provider->install_manager().InstallWebAppFromManifestWithFallback(
@@ -184,7 +184,7 @@ AppId InstallWebAppFromManifest(Browser* browser, const GURL& app_url) {
   AppId app_id;
   base::RunLoop run_loop;
 
-  auto* provider = WebAppProvider::Get(browser->profile());
+  auto* provider = WebAppProvider::GetForTest(browser->profile());
   DCHECK(provider);
   WaitUntilReady(provider);
   provider->install_manager().InstallWebAppFromManifestWithFallback(
@@ -227,7 +227,7 @@ Browser* LaunchWebAppBrowser(Profile* profile, const AppId& app_id) {
 // Launches the app, waits for the app url to load.
 Browser* LaunchWebAppBrowserAndWait(Profile* profile, const AppId& app_id) {
   ui_test_utils::UrlLoadObserver url_observer(
-      WebAppProvider::Get(profile)->registrar().GetAppLaunchUrl(app_id),
+      WebAppProvider::GetForTest(profile)->registrar().GetAppLaunchUrl(app_id),
       content::NotificationService::AllSources());
   Browser* const app_browser = LaunchWebAppBrowser(profile, app_id);
   url_observer.Wait();
@@ -269,7 +269,7 @@ InstallResultCode ExternallyManagedAppManagerInstall(
     Profile* profile,
     ExternalInstallOptions install_options) {
   DCHECK(profile);
-  auto* provider = WebAppProvider::Get(profile);
+  auto* provider = WebAppProvider::GetForTest(profile);
   DCHECK(provider);
   WaitUntilReady(provider);
   base::RunLoop run_loop;
@@ -377,7 +377,7 @@ bool IsBrowserOpen(const Browser* test_browser) {
 }
 
 void UninstallWebApp(Profile* profile, const AppId& app_id) {
-  auto* provider = WebAppProvider::Get(profile);
+  auto* provider = WebAppProvider::GetForTest(profile);
   DCHECK(provider);
   DCHECK(provider->install_finalizer().CanUserUninstallWebApp(app_id));
   provider->install_finalizer().UninstallWebApp(
@@ -387,7 +387,7 @@ void UninstallWebApp(Profile* profile, const AppId& app_id) {
 void UninstallWebAppWithCallback(Profile* profile,
                                  const AppId& app_id,
                                  UninstallWebAppCallback callback) {
-  auto* provider = WebAppProvider::Get(profile);
+  auto* provider = WebAppProvider::GetForTest(profile);
   DCHECK(provider);
   DCHECK(provider->install_finalizer().CanUserUninstallWebApp(app_id));
   provider->install_finalizer().UninstallWebApp(
@@ -401,7 +401,7 @@ SkColor ReadAppIconPixel(Profile* profile,
                          int y) {
   SkColor result;
   base::RunLoop run_loop;
-  WebAppProvider::Get(profile)->icon_manager().ReadIcons(
+  WebAppProvider::GetForTest(profile)->icon_manager().ReadIcons(
       app_id, IconPurpose::ANY, {size},
       base::BindLambdaForTesting(
           [&](std::map<SquareSizePx, SkBitmap> icon_bitmaps) {

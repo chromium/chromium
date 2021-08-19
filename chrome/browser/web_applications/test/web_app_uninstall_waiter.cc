@@ -10,7 +10,7 @@ namespace web_app {
 
 WebAppUninstallWaiter::WebAppUninstallWaiter(Profile* profile, AppId app_id)
     : app_id_(std::move(app_id)) {
-  observation_.Observe(&WebAppProvider::Get(profile)->registrar());
+  observation_.Observe(&WebAppProvider::GetForTest(profile)->registrar());
 }
 WebAppUninstallWaiter::~WebAppUninstallWaiter() = default;
 

@@ -40,7 +40,7 @@ class WebAppUninstallBrowserTest : public WebAppControllerBrowserTest {
   }
 
   void UninstallWebApp(const AppId& app_id) {
-    WebAppProvider* const provider = WebAppProvider::Get(profile());
+    WebAppProvider* const provider = WebAppProvider::GetForTest(profile());
     base::RunLoop run_loop;
 
     DCHECK(provider->install_finalizer().CanUserUninstallWebApp(app_id));
@@ -154,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallBrowserTest, TwoUninstallCalls) {
   bool quit_run_loop = false;
 
   // Trigger app uninstall without waiting for result.
-  WebAppProvider* const provider = WebAppProvider::Get(profile());
+  WebAppProvider* const provider = WebAppProvider::GetForTest(profile());
   EXPECT_TRUE(provider->registrar().IsInstalled(app_id));
   DCHECK(provider->install_finalizer().CanUserUninstallWebApp(app_id));
   provider->install_finalizer().UninstallWebApp(

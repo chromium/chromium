@@ -85,6 +85,11 @@ WebAppProvider* WebAppProvider::GetForLocalApps(Profile* profile) {
 }
 
 // static
+WebAppProvider* WebAppProvider::GetForTest(Profile* profile) {
+  return GetForLocalApps(profile);
+}
+
+// static
 WebAppProvider* WebAppProvider::GetForWebContents(
     content::WebContents* web_contents) {
   Profile* profile =

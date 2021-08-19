@@ -117,7 +117,7 @@ void DeleteDeskTemplate(const base::GUID uuid) {
 }
 
 web_app::AppId CreateSettingsSystemWebApp(Profile* profile) {
-  web_app::WebAppProvider::Get(profile)
+  web_app::WebAppProvider::GetForTest(profile)
       ->system_web_app_manager()
       .InstallSystemAppsForTesting();
   web_app::AppId settings_app_id = *web_app::GetAppIdForSystemWebApp(

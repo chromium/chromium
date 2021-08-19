@@ -207,7 +207,7 @@ class PreinstalledWebAppMigrationBrowserTest : public InProcessBrowserTest {
     }
     PreinstalledWebAppManager::SetConfigsForTesting(&app_configs);
 
-    WebAppProvider::Get(profile())
+    WebAppProvider::GetForTest(profile())
         ->preinstalled_web_app_manager()
         .LoadAndSynchronizeForTesting(std::move(callback));
 
@@ -217,8 +217,9 @@ class PreinstalledWebAppMigrationBrowserTest : public InProcessBrowserTest {
   }
 
   bool IsWebAppInstalled() {
-    return WebAppProvider::Get(profile())->registrar().IsLocallyInstalled(
-        GetWebAppId());
+    return WebAppProvider::GetForTest(profile())
+        ->registrar()
+        .IsLocallyInstalled(GetWebAppId());
   }
 
   bool IsExtensionAppInstalled() {
@@ -472,8 +473,9 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
 
     // User launch preference should migrate across and override
     // "launch_container": "window" in the JSON config.
-    EXPECT_EQ(WebAppProvider::Get(profile())->registrar().GetAppUserDisplayMode(
-                  web_app_id),
+    EXPECT_EQ(WebAppProvider::GetForTest(profile())
+                  ->registrar()
+                  .GetAppUserDisplayMode(web_app_id),
               DisplayMode::kBrowser);
   }
 }

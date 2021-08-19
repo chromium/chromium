@@ -66,7 +66,7 @@ class TwoClientWebAppsBMOSyncTest : public SyncTest {
     if (!result)
       return result;
     for (Profile* profile : GetAllProfiles()) {
-      auto* web_app_provider = WebAppProvider::Get(profile);
+      auto* web_app_provider = WebAppProvider::GetForTest(profile);
       base::RunLoop loop;
       web_app_provider->on_registry_ready().Post(FROM_HERE, loop.QuitClosure());
       loop.Run();
@@ -111,7 +111,7 @@ class TwoClientWebAppsBMOSyncTest : public SyncTest {
 
     AppId app_id;
     base::RunLoop run_loop;
-    WebAppProvider::Get(profile)
+    WebAppProvider::GetForTest(profile)
         ->install_manager()
         .InstallWebAppFromManifestWithFallback(
             browser->tab_strip_model()->GetActiveWebContents(),
@@ -140,16 +140,18 @@ class TwoClientWebAppsBMOSyncTest : public SyncTest {
     base::RunLoop run_loop;
     AppId app_id;
 
-    WebAppProvider::Get(profile)->install_manager().InstallWebAppFromInfo(
-        std::make_unique<WebApplicationInfo>(info), ForInstallableSite::kYes,
-        source,
-        base::BindLambdaForTesting(
-            [&run_loop, &app_id](const AppId& new_app_id,
-                                 InstallResultCode code) {
-              DCHECK_EQ(code, InstallResultCode::kSuccessNewInstall);
-              app_id = new_app_id;
-              run_loop.Quit();
-            }));
+    WebAppProvider::GetForTest(profile)
+        ->install_manager()
+        .InstallWebAppFromInfo(
+            std::make_unique<WebApplicationInfo>(info),
+            ForInstallableSite::kYes, source,
+            base::BindLambdaForTesting(
+                [&run_loop, &app_id](const AppId& new_app_id,
+                                     InstallResultCode code) {
+                  DCHECK_EQ(code, InstallResultCode::kSuccessNewInstall);
+                  app_id = new_app_id;
+                  run_loop.Quit();
+                }));
     run_loop.Run();
 
     const WebAppRegistrar& registrar = GetRegistrar(profile);
@@ -160,12 +162,12 @@ class TwoClientWebAppsBMOSyncTest : public SyncTest {
   }
 
   const WebAppRegistrar& GetRegistrar(Profile* profile) {
-    return WebAppProvider::Get(profile)->registrar();
+    return WebAppProvider::GetForTest(profile)->registrar();
   }
 
   TestOsIntegrationManager& GetOsIntegrationManager(Profile* profile) {
     return reinterpret_cast<TestOsIntegrationManager&>(
-        WebAppProvider::Get(profile)->os_integration_manager());
+        WebAppProvider::GetForTest(profile)->os_integration_manager());
   }
 
   extensions::AppSorting* GetAppSorting(Profile* profile) {
@@ -299,7 +301,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, DisplayMode) {
   AppId app_id = InstallAppAsUserInitiated(GetProfile(0));
   EXPECT_EQ(WebAppInstallObserver(GetProfile(1)).AwaitNextInstall(), app_id);
 
-  WebAppProvider::Get(GetProfile(1))
+  WebAppProvider::GetForTest(GetProfile(1))
       ->registry_controller()
       .SetAppUserDisplayMode(app_id, web_app::DisplayMode::kBrowser,
                              /*is_user_action=*/false);
@@ -396,7 +398,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, NotSyncedThenSynced) {
 
   // The app should have synced from profile 0 to profile 1, which enables sync
   // on profile 0. So changes should propagate from profile 0 to profile 1 now.
-  WebAppProvider::Get(GetProfile(0))
+  WebAppProvider::GetForTest(GetProfile(0))
       ->registry_controller()
       .SetAppUserDisplayMode(app_id, web_app::DisplayMode::kBrowser,
                              /*is_user_action=*/false);

@@ -139,7 +139,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsUtilsBrowserTest, CreateIntentFilters) {
   std::vector<IntentFilterPtr> filters;
   {
     const web_app::WebAppRegistrar& registrar =
-        web_app::WebAppProvider::Get(browser()->profile())->registrar();
+        web_app::WebAppProvider::GetForTest(browser()->profile())->registrar();
     const web_app::AppId app_id =
         web_app::InstallWebAppFromManifest(browser(), app_url);
     const web_app::WebApp* web_app = registrar.GetAppById(app_id);
@@ -172,7 +172,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsUtilsBrowserTest, PartialWild) {
   std::vector<IntentFilterPtr> filters;
   {
     const web_app::WebAppRegistrar& registrar =
-        web_app::WebAppProvider::Get(browser()->profile())->registrar();
+        web_app::WebAppProvider::GetForTest(browser()->profile())->registrar();
     const web_app::AppId app_id =
         web_app::InstallWebAppFromManifest(browser(), app_url);
     const web_app::WebApp* web_app = registrar.GetAppById(app_id);
@@ -202,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsUtilsBrowserTest, ShareTargetWithoutFiles) {
   std::vector<IntentFilterPtr> filters;
   {
     const web_app::WebAppRegistrar& registrar =
-        web_app::WebAppProvider::Get(browser()->profile())->registrar();
+        web_app::WebAppProvider::GetForTest(browser()->profile())->registrar();
     const web_app::AppId app_id =
         web_app::InstallWebAppFromManifest(browser(), app_url);
     const web_app::WebApp* web_app = registrar.GetAppById(app_id);

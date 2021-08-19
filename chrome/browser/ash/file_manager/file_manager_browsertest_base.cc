@@ -1898,7 +1898,8 @@ void FileManagerBrowserTestBase::SetUpOnMainThread() {
   // Enable System Web Apps if needed.
   if (options.media_swa || options.files_swa) {
     auto& system_web_app_manager =
-        web_app::WebAppProvider::Get(profile())->system_web_app_manager();
+        web_app::WebAppProvider::GetForTest(profile())
+            ->system_web_app_manager();
     system_web_app_manager.InstallSystemAppsForTesting();
   }
 

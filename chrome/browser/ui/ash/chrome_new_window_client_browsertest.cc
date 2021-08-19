@@ -201,7 +201,7 @@ void TestOpenSettingFromArc(Browser* browser,
                             const GURL& expected_url,
                             size_t expected_setting_window_count) {
   // Install the Settings App.
-  web_app::WebAppProvider::Get(browser->profile())
+  web_app::WebAppProvider::GetForTest(browser->profile())
       ->system_web_app_manager()
       .InstallSystemAppsForTesting();
 
@@ -475,7 +475,7 @@ void TestAllAboutPages() {
 
 IN_PROC_BROWSER_TEST_F(ChromeNewWindowClientBrowserTest, TestOpenChromePage) {
   // Install the Settings App.
-  web_app::WebAppProvider::Get(browser()->profile())
+  web_app::WebAppProvider::GetForTest(browser()->profile())
       ->system_web_app_manager()
       .InstallSystemAppsForTesting();
 

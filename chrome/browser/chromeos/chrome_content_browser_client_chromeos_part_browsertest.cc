@@ -20,7 +20,7 @@ using ChromeContentBrowserClientChromeOsPartTest = InProcessBrowserTest;
 IN_PROC_BROWSER_TEST_F(ChromeContentBrowserClientChromeOsPartTest,
                        SettingsWindowFontSize) {
   // Install the Settings App.
-  web_app::WebAppProvider::Get(browser()->profile())
+  web_app::WebAppProvider::GetForTest(browser()->profile())
       ->system_web_app_manager()
       .InstallSystemAppsForTesting();
 

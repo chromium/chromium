@@ -566,7 +566,8 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
   const AppId app_id = InstallTestWebApp(GURL(kAppUrl1));
 
   {
-    WebAppProvider* const provider = WebAppProvider::Get(browser()->profile());
+    WebAppProvider* const provider =
+        WebAppProvider::GetForTest(browser()->profile());
     base::RunLoop run_loop;
 
     ASSERT_TRUE(provider->install_finalizer().CanUserUninstallWebApp(app_id));

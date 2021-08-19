@@ -79,7 +79,7 @@ AppId InstallDummyWebApp(Profile* profile,
   // Hence we use FinalizeInstall instead of InstallWebAppFromManifest
   // to install the web app.
   base::RunLoop run_loop;
-  WebAppProvider::Get(profile)->install_finalizer().FinalizeInstall(
+  WebAppProvider::GetForTest(profile)->install_finalizer().FinalizeInstall(
       web_app_info, options,
       base::BindLambdaForTesting(
           [&](const AppId& installed_app_id, InstallResultCode code) {
@@ -100,7 +100,7 @@ AppId InstallWebApp(Profile* profile,
 
   AppId app_id;
   base::RunLoop run_loop;
-  auto* provider = WebAppProvider::Get(profile);
+  auto* provider = WebAppProvider::GetForTest(profile);
   DCHECK(provider);
   WaitUntilReady(provider);
   provider->install_manager().InstallWebAppFromInfo(
@@ -133,7 +133,7 @@ AppId InstallWebAppWithUrlHandlers(
   web_app::AppId app_id =
       web_app::test::InstallWebApp(profile, std::move(info));
 
-  auto& url_handler_manager = WebAppProvider::Get(profile)
+  auto& url_handler_manager = WebAppProvider::GetForTest(profile)
                                   ->os_integration_manager()
                                   .url_handler_manager_for_testing();
 
@@ -149,7 +149,7 @@ AppId InstallWebAppWithUrlHandlers(
 #endif
 
 void UninstallWebApp(Profile* profile, const AppId& app_id) {
-  WebAppProvider* const provider = WebAppProvider::Get(profile);
+  WebAppProvider* const provider = WebAppProvider::GetForTest(profile);
   base::RunLoop run_loop;
 
   DCHECK(provider->install_finalizer().CanUserUninstallWebApp(app_id));

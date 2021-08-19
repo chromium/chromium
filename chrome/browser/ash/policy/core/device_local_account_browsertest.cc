@@ -2777,7 +2777,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, WebAppsInPublicSession) {
   // WebAppProvider should be enabled for TYPE_PUBLIC_SESSION user account.
   Profile* profile = GetProfileForTest();
   ASSERT_TRUE(profile);
-  EXPECT_TRUE(web_app::WebAppProvider::Get(profile));
+  EXPECT_TRUE(web_app::WebAppProvider::GetForTest(profile));
 }
 
 }  // namespace policy

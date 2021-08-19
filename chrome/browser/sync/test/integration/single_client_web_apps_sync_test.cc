@@ -90,7 +90,7 @@ class SingleClientWebAppsSyncTest : public SyncTest {
     }
 
     for (Profile* profile : GetAllProfiles()) {
-      auto* web_app_provider = web_app::WebAppProvider::Get(profile);
+      auto* web_app_provider = web_app::WebAppProvider::GetForTest(profile);
       base::RunLoop loop;
       web_app_provider->on_registry_ready().Post(FROM_HERE, loop.QuitClosure());
       loop.Run();
@@ -173,7 +173,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   AwaitWebAppQuiescence();
 
   auto& web_app_registrar =
-      web_app::WebAppProvider::Get(GetProfile(0))->registrar();
+      web_app::WebAppProvider::GetForTest(GetProfile(0))->registrar();
   EXPECT_TRUE(web_app_registrar.IsInstalled(app_id));
 }
 
@@ -186,7 +186,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   ASSERT_TRUE(SetupSync());
   AwaitWebAppQuiescence();
   auto& web_app_registrar =
-      web_app::WebAppProvider::Get(GetProfile(0))->registrar();
+      web_app::WebAppProvider::GetForTest(GetProfile(0))->registrar();
 
   EXPECT_EQ(web_app_registrar.GetAppById(app_id), nullptr);
 }
@@ -201,7 +201,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   ASSERT_TRUE(SetupSync());
   AwaitWebAppQuiescence();
   auto& web_app_registrar =
-      web_app::WebAppProvider::Get(GetProfile(0))->registrar();
+      web_app::WebAppProvider::GetForTest(GetProfile(0))->registrar();
 
   EXPECT_FALSE(web_app_registrar.IsInstalled(app_id));
 }
@@ -235,7 +235,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   AwaitWebAppQuiescence();
 
   auto& web_app_registrar =
-      web_app::WebAppProvider::Get(GetProfile(0))->registrar();
+      web_app::WebAppProvider::GetForTest(GetProfile(0))->registrar();
 
   EXPECT_FALSE(web_app_registrar.IsInstalled(app_id));
 }
@@ -251,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   AwaitWebAppQuiescence();
 
   auto& web_app_registrar =
-      web_app::WebAppProvider::Get(GetProfile(0))->registrar();
+      web_app::WebAppProvider::GetForTest(GetProfile(0))->registrar();
 
   EXPECT_TRUE(web_app_registrar.IsInstalled(app_id));
 
@@ -280,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   AwaitWebAppQuiescence();
 
   auto& web_app_registrar =
-      web_app::WebAppProvider::Get(GetProfile(0))->registrar();
+      web_app::WebAppProvider::GetForTest(GetProfile(0))->registrar();
 
   EXPECT_TRUE(web_app_registrar.IsInstalled(app_id));
 

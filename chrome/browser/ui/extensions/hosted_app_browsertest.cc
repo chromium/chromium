@@ -307,7 +307,7 @@ class HostedOrWebAppTest : public extensions::ExtensionBrowserTest,
   }
 
   web_app::WebAppRegistrar& registrar() {
-    auto* provider = web_app::WebAppProvider::Get(profile());
+    auto* provider = web_app::WebAppProvider::GetForTest(profile());
     CHECK(provider);
     return provider->registrar();
   }

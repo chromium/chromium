@@ -307,7 +307,7 @@ void WebAppIntegrationBrowserTestBase::InstallPolicyAppInternal(
     const bool create_shortcut) {
   GURL url = GetInstallableAppURL(action_mode);
   WebAppRegistrar& web_app_registrar =
-      WebAppProvider::Get(profile())->registrar();
+      WebAppProvider::GetForTest(profile())->registrar();
   base::RunLoop run_loop;
   WebAppInstallObserver observer(profile());
   observer.SetWebAppInstalledDelegate(
@@ -467,7 +467,7 @@ void WebAppIntegrationBrowserTestBase::LaunchInternal(
 }
 
 void WebAppIntegrationBrowserTestBase::ListAppsInternal() {
-  app_ids_ = WebAppProvider::Get(profile())->registrar().GetAppIds();
+  app_ids_ = WebAppProvider::GetForTest(profile())->registrar().GetAppIds();
 }
 
 void WebAppIntegrationBrowserTestBase::NavigateTabbedBrowserToSite(
@@ -494,7 +494,7 @@ void WebAppIntegrationBrowserTestBase::SetOpenInTab(
       << "No app installed for scope: " << action_mode;
   auto app_id = app_state->id;
   auto& app_registry_controller =
-      WebAppProvider::Get(profile())->registry_controller();
+      WebAppProvider::GetForTest(profile())->registry_controller();
   app_registry_controller.SetAppUserDisplayMode(
       app_id, blink::mojom::DisplayMode::kBrowser, true);
 }
@@ -507,7 +507,7 @@ void WebAppIntegrationBrowserTestBase::SetOpenInWindow(
       << "No app installed for scope: " << action_mode;
   auto app_id = app_state->id;
   auto& app_registry_controller =
-      WebAppProvider::Get(profile())->registry_controller();
+      WebAppProvider::GetForTest(profile())->registry_controller();
   app_registry_controller.SetAppUserDisplayMode(
       app_id, blink::mojom::DisplayMode::kStandalone, true);
 }
@@ -786,7 +786,7 @@ std::string WebAppIntegrationBrowserTestBase::BuildLogForTest(
 
 std::vector<AppId> WebAppIntegrationBrowserTestBase::GetAppIdsForProfile(
     Profile* profile) {
-  return WebAppProvider::Get(profile)->registrar().GetAppIds();
+  return WebAppProvider::GetForTest(profile)->registrar().GetAppIds();
 }
 
 GURL WebAppIntegrationBrowserTestBase::GetInstallableAppURL(
@@ -799,7 +799,7 @@ GURL WebAppIntegrationBrowserTestBase::GetInstallableAppURL(
 
 WebAppProvider* WebAppIntegrationBrowserTestBase::GetProviderForProfile(
     Profile* profile) {
-  return WebAppProvider::Get(profile);
+  return WebAppProvider::GetForTest(profile);
 }
 
 void WebAppIntegrationBrowserTestBase::ResetRegistrarObserver() {

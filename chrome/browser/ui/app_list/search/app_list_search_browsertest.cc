@@ -180,7 +180,7 @@ IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest, SearchDoesntCrash) {
 // the Discover page.
 IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest,
                        ClickingDiscoverTabSuggestionChipLaunchesHelpApp) {
-  web_app::WebAppProvider::Get(GetProfile())
+  web_app::WebAppProvider::GetForTest(GetProfile())
       ->system_web_app_manager()
       .InstallSystemAppsForTesting();
   GetProfile()->GetPrefs()->SetInteger(
@@ -224,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest,
 // left to show it.
 IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest,
                        AppListSearchHasReleaseNotesSuggestionChip) {
-  web_app::WebAppProvider::Get(GetProfile())
+  web_app::WebAppProvider::GetForTest(GetProfile())
       ->system_web_app_manager()
       .InstallSystemAppsForTesting();
   GetProfile()->GetPrefs()->SetInteger(
@@ -246,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest,
 // the chip is shown.
 IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest,
                        ReleaseNotesDecreasesTimesShownOnAppListOpen) {
-  web_app::WebAppProvider::Get(GetProfile())
+  web_app::WebAppProvider::GetForTest(GetProfile())
       ->system_web_app_manager()
       .InstallSystemAppsForTesting();
   GetProfile()->GetPrefs()->SetInteger(
@@ -266,7 +266,7 @@ IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest,
 // the What's New page.
 IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest,
                        ClickingReleaseNotesSuggestionChipLaunchesHelpApp) {
-  web_app::WebAppProvider::Get(GetProfile())
+  web_app::WebAppProvider::GetForTest(GetProfile())
       ->system_web_app_manager()
       .InstallSystemAppsForTesting();
   GetProfile()->GetPrefs()->SetInteger(
@@ -307,7 +307,7 @@ IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest,
 IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest,
                        HelpAppProviderProvidesListResults) {
   // Need this because it sets up the icon.
-  web_app::WebAppProvider::Get(GetProfile())
+  web_app::WebAppProvider::GetForTest(GetProfile())
       ->system_web_app_manager()
       .InstallSystemAppsForTesting();
   // Add some searchable content to the help app search handler.
@@ -383,7 +383,7 @@ class AppListSearchSystemWebAppBrowserTest : public AppListSearchBrowserTest,
 // Test that Help App shows up normally even when suggestion chip should show.
 IN_PROC_BROWSER_TEST_P(AppListSearchSystemWebAppBrowserTest,
                        AppListSearchHasApp) {
-  web_app::WebAppProvider::Get(GetProfile())
+  web_app::WebAppProvider::GetForTest(GetProfile())
       ->system_web_app_manager()
       .InstallSystemAppsForTesting();
   GetProfile()->GetPrefs()->SetInteger(
@@ -407,7 +407,7 @@ IN_PROC_BROWSER_TEST_P(AppListSearchSystemWebAppBrowserTest,
 IN_PROC_BROWSER_TEST_P(AppListSearchSystemWebAppBrowserTest, Launch) {
   Profile* profile = browser()->profile();
   auto& system_web_app_manager =
-      web_app::WebAppProvider::Get(profile)->system_web_app_manager();
+      web_app::WebAppProvider::GetForTest(profile)->system_web_app_manager();
   system_web_app_manager.InstallSystemAppsForTesting();
   const web_app::AppId app_id = web_app::kHelpAppId;
 

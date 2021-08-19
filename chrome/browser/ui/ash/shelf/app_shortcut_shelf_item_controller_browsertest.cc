@@ -34,7 +34,7 @@ class AppShortcutShelfItemControllerBrowserTest : public InProcessBrowserTest {
   }
 
   void InstallApp() {
-    web_app::WebAppProvider::Get(browser()->profile())
+    web_app::WebAppProvider::GetForTest(browser()->profile())
         ->system_web_app_manager()
         .InstallSystemAppsForTesting();
 

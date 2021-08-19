@@ -155,7 +155,8 @@ constexpr SkColor kAnotherInstallableIconTopLeftColor =
     SkColorSetRGB(0x5C, 0x5C, 0x5C);
 
 ManifestUpdateManager& GetManifestUpdateManager(Browser* browser) {
-  return WebAppProvider::Get(browser->profile())->manifest_update_manager();
+  return WebAppProvider::GetForTest(browser->profile())
+      ->manifest_update_manager();
 }
 
 class UpdateCheckResultAwaiter {
@@ -351,7 +352,7 @@ class ManifestUpdateManagerBrowserTest : public InProcessBrowserTest {
   }
 
   WebAppProvider& GetProvider() {
-    return *WebAppProvider::Get(browser()->profile());
+    return *WebAppProvider::GetForTest(browser()->profile());
   }
 
  protected:

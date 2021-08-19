@@ -1849,7 +1849,8 @@ AutotestPrivateWaitForSystemWebAppsInstallFunction::
 ExtensionFunction::ResponseAction
 AutotestPrivateWaitForSystemWebAppsInstallFunction::Run() {
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  web_app::WebAppProvider* provider = web_app::WebAppProvider::Get(profile);
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForTest(profile);
 
   if (!provider)
     return RespondNow(Error("Web Apps are not available for profile."));
@@ -1875,7 +1876,8 @@ AutotestPrivateGetRegisteredSystemWebAppsFunction::
 ExtensionFunction::ResponseAction
 AutotestPrivateGetRegisteredSystemWebAppsFunction::Run() {
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  web_app::WebAppProvider* provider = web_app::WebAppProvider::Get(profile);
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForTest(profile);
 
   if (!provider)
     return RespondNow(Error("Web Apps are not available for profile."));
@@ -1909,7 +1911,8 @@ AutotestPrivateIsSystemWebAppOpenFunction::
 ExtensionFunction::ResponseAction
 AutotestPrivateIsSystemWebAppOpenFunction::Run() {
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  web_app::WebAppProvider* provider = web_app::WebAppProvider::Get(profile);
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForTest(profile);
 
   if (!provider)
     return RespondNow(Error("Web Apps are not available for profile."));
@@ -1990,7 +1993,7 @@ AutotestPrivateLaunchSystemWebAppFunction::Run() {
            << params->app_name << " url: " << params->url;
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  auto* provider = web_app::WebAppProvider::Get(profile);
+  auto* provider = web_app::WebAppProvider::GetForTest(profile);
   if (!provider)
     return RespondNow(Error("Web Apps not enabled for profile."));
 
@@ -4113,7 +4116,8 @@ class AutotestPrivateInstallPWAForCurrentURLFunction::PWARegistrarObserver
   PWARegistrarObserver(Profile* profile,
                        base::OnceCallback<void(const web_app::AppId&)> callback)
       : callback_(std::move(callback)) {
-    observation_.Observe(&web_app::WebAppProvider::Get(profile)->registrar());
+    observation_.Observe(
+        &web_app::WebAppProvider::GetForTest(profile)->registrar());
   }
   ~PWARegistrarObserver() override {}
 

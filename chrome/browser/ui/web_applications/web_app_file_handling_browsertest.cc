@@ -108,7 +108,7 @@ class FakeFileHandlingExpiryService
 
 class WebAppFileHandlingTestBase : public WebAppControllerBrowserTest {
  public:
-  WebAppProvider* provider() { return WebAppProvider::Get(profile()); }
+  WebAppProvider* provider() { return WebAppProvider::GetForTest(profile()); }
 
   FileHandlerManager& file_handler_manager() {
     return provider()
@@ -1088,7 +1088,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingPolicyBrowserTest,
 // on WebAppProvider system setup based on current permission settings.
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingPolicyBrowserTest,
                        PolicySettingsBlockedUrl) {
-  auto* provider = WebAppProvider::Get(profile());
+  auto* provider = WebAppProvider::GetForTest(profile());
   DCHECK(provider);
   test::WaitUntilReady(provider);
 
@@ -1193,7 +1193,7 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingIconBrowserTest, Basic) {
   const GURL app_url(
       embedded_test_server()->GetURL("/web_app_file_handling/icons_app.html"));
   const AppId app_id = InstallWebAppFromManifest(browser(), app_url);
-  auto* provider = WebAppProvider::Get(browser()->profile());
+  auto* provider = WebAppProvider::GetForTest(browser()->profile());
   const WebApp* web_app = provider->registrar().GetAppById(app_id);
   ASSERT_TRUE(web_app);
 

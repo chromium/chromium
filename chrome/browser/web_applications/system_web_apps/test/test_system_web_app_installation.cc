@@ -697,7 +697,7 @@ TestSystemWebAppInstallation::CreateWebAppProviderWithNoSystemWebApps(
 
 void TestSystemWebAppInstallation::WaitForAppInstall() {
   base::RunLoop run_loop;
-  WebAppProvider::Get(profile_)
+  WebAppProvider::GetForTest(profile_)
       ->system_web_app_manager()
       .on_apps_synchronized()
       .Post(FROM_HERE, base::BindLambdaForTesting([&]() {
@@ -710,14 +710,15 @@ void TestSystemWebAppInstallation::WaitForAppInstall() {
 }
 
 AppId TestSystemWebAppInstallation::GetAppId() {
-  return WebAppProvider::Get(profile_)
+  return WebAppProvider::GetForTest(profile_)
       ->system_web_app_manager()
       .GetAppIdForSystemApp(type_.value())
       .value();
 }
 
 const GURL& TestSystemWebAppInstallation::GetAppUrl() {
-  return WebAppProvider::Get(profile_)->registrar().GetAppStartUrl(GetAppId());
+  return WebAppProvider::GetForTest(profile_)->registrar().GetAppStartUrl(
+      GetAppId());
 }
 
 SystemAppType TestSystemWebAppInstallation::GetType() {

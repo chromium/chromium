@@ -53,7 +53,7 @@ class SettingsWindowManagerTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     // Install the Settings App.
-    web_app::WebAppProvider::Get(browser()->profile())
+    web_app::WebAppProvider::GetForTest(browser()->profile())
         ->system_web_app_manager()
         .InstallSystemAppsForTesting();
   }

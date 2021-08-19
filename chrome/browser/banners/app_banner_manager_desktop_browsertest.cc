@@ -313,7 +313,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
   // Uninstall web app by policy.
   {
     base::RunLoop run_loop;
-    web_app::WebAppProvider::Get(profile)
+    web_app::WebAppProvider::GetForTest(profile)
         ->externally_managed_app_manager()
         .UninstallApps({GetBannerURL()},
                        web_app::ExternalInstallSource::kExternalPolicy,

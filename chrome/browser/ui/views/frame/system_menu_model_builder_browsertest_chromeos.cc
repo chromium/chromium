@@ -52,7 +52,7 @@ IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderMultiUserTest,
   // Install the Settings App.
   Profile* profile = ProfileHelper::Get()->GetProfileByUser(
       UserManager::Get()->FindUser(account_id1_));
-  web_app::WebAppProvider::Get(profile)
+  web_app::WebAppProvider::GetForTest(profile)
       ->system_web_app_manager()
       .InstallSystemAppsForTesting();
 

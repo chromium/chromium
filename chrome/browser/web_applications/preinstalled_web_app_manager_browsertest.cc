@@ -123,11 +123,12 @@ class PreinstalledWebAppManagerBrowserTest
   }
 
   const WebAppRegistrar& registrar() {
-    return WebAppProvider::Get(browser()->profile())->registrar();
+    return WebAppProvider::GetForTest(browser()->profile())->registrar();
   }
 
   const PreinstalledWebAppManager& manager() {
-    return WebAppProvider::Get(profile())->preinstalled_web_app_manager();
+    return WebAppProvider::GetForTest(profile())
+        ->preinstalled_web_app_manager();
   }
 
   void SyncEmptyConfigs() {
@@ -135,7 +136,7 @@ class PreinstalledWebAppManagerBrowserTest
     PreinstalledWebAppManager::SetConfigsForTesting(&app_configs);
 
     base::RunLoop run_loop;
-    WebAppProvider::Get(profile())
+    WebAppProvider::GetForTest(profile())
         ->preinstalled_web_app_manager()
         .LoadAndSynchronizeForTesting(base::BindLambdaForTesting(
             [&](std::map<GURL, ExternallyManagedAppManager::InstallResult>
@@ -179,7 +180,7 @@ class PreinstalledWebAppManagerBrowserTest
 
     absl::optional<InstallResultCode> code;
     base::RunLoop sync_run_loop;
-    WebAppProvider::Get(profile())
+    WebAppProvider::GetForTest(profile())
         ->preinstalled_web_app_manager()
         .LoadAndSynchronizeForTesting(base::BindLambdaForTesting(
             [&](std::map<GURL, ExternallyManagedAppManager::InstallResult>
@@ -747,7 +748,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   {
     base::RunLoop run_loop;
     WebAppPolicyManager& policy_manager =
-        WebAppProvider::Get(profile())->policy_manager();
+        WebAppProvider::GetForTest(profile())->policy_manager();
     policy_manager.SetOnAppsSynchronizedCompletedCallbackForTesting(
         run_loop.QuitClosure());
     const char kWebAppPolicy[] = R"([{

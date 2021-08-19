@@ -97,7 +97,7 @@ class TwoClientWebAppsIntegrationSyncTestMacWinLinux
     }
 
     for (Profile* profile : GetAllProfiles()) {
-      auto* web_app_provider = WebAppProvider::Get(profile);
+      auto* web_app_provider = WebAppProvider::GetForTest(profile);
       base::RunLoop loop;
       web_app_provider->on_registry_ready().Post(FROM_HERE, loop.QuitClosure());
       loop.Run();

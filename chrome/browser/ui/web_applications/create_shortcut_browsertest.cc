@@ -57,13 +57,13 @@ class CreateShortcutBrowserTest : public WebAppControllerBrowserTest {
   }
 
   WebAppRegistrar& registrar() {
-    auto* provider = WebAppProvider::Get(profile());
+    auto* provider = WebAppProvider::GetForTest(profile());
     CHECK(provider);
     return provider->registrar();
   }
 
   AppRegistryController& registry_controller() {
-    auto* provider = WebAppProvider::Get(profile());
+    auto* provider = WebAppProvider::GetForTest(profile());
     CHECK(provider);
     return provider->registry_controller();
   }

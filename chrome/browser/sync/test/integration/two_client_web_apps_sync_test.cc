@@ -52,7 +52,7 @@ class TwoClientWebAppsSyncTest : public SyncTest {
   }
 
   const WebAppRegistrar& GetRegistrar(Profile* profile) {
-    return WebAppProvider::Get(profile)->registrar();
+    return WebAppProvider::GetForTest(profile)->registrar();
   }
 
   bool AllProfilesHaveSameWebAppIds() {
@@ -346,7 +346,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncUsingIconUrlFallback) {
   // Make sure icon downloaded despite not loading start_url.
   {
     base::RunLoop run_loop;
-    WebAppProvider::Get(dest_profile)
+    WebAppProvider::GetForTest(dest_profile)
         ->icon_manager()
         .ReadSmallestIconAny(
             synced_app_id, 192,

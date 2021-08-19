@@ -42,14 +42,15 @@ WebAppInstallObserver::WebAppInstallObserver(
 }
 
 WebAppInstallObserver::WebAppInstallObserver(Profile* profile)
-    : WebAppInstallObserver(&WebAppProvider::Get(profile)->registrar()) {}
+    : WebAppInstallObserver(&WebAppProvider::GetForTest(profile)->registrar()) {
+}
 
 WebAppInstallObserver::WebAppInstallObserver(
     Profile* profile,
     const std::set<AppId>& listening_for_install_app_ids,
     const std::set<AppId>& listening_for_uninstall_app_id,
     const std::set<AppId>& listening_for_install_with_os_hooks_app_ids)
-    : WebAppInstallObserver(&WebAppProvider::Get(profile)->registrar(),
+    : WebAppInstallObserver(&WebAppProvider::GetForTest(profile)->registrar(),
                             listening_for_install_app_ids,
                             listening_for_uninstall_app_id,
                             listening_for_install_with_os_hooks_app_ids) {}

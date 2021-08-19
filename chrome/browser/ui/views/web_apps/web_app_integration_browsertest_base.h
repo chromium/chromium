@@ -246,7 +246,9 @@ class WebAppIntegrationBrowserTestBase : public AppRegistrarObserver {
   GURL GetInScopeURL(const std::string& action_scope);
   GURL GetNonInstallableAppURL();
   GURL GetOutOfScopeURL(const std::string& action_scope);
-  WebAppProvider* GetProvider() { return WebAppProvider::Get(profile()); }
+  WebAppProvider* GetProvider() {
+    return WebAppProvider::GetForTest(profile());
+  }
   GURL GetURLForScope(const std::string& scope);
   void InstallCreateShortcut(bool open_in_window);
 

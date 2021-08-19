@@ -116,7 +116,7 @@ class WebAppLinkCapturingBrowserTest : public WebAppNavigationBrowserTest {
   }
 
   WebAppProvider& provider() {
-    auto* provider = WebAppProvider::Get(profile());
+    auto* provider = WebAppProvider::GetForTest(profile());
     DCHECK(provider);
     return *provider;
   }
@@ -558,7 +558,7 @@ constexpr char kOriginTrialToken[] =
 
 IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingOriginTrialBrowserTest,
                        OriginTrial) {
-  WebAppProvider& provider = *WebAppProvider::Get(browser()->profile());
+  WebAppProvider& provider = *WebAppProvider::GetForTest(browser()->profile());
 
   bool serve_token = true;
   content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(

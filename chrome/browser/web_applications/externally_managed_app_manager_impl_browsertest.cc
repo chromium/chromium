@@ -44,11 +44,11 @@ class ExternallyManagedAppManagerImplBrowserTest : public InProcessBrowserTest {
   }
 
   WebAppRegistrar& registrar() {
-    return WebAppProvider::Get(browser()->profile())->registrar();
+    return WebAppProvider::GetForTest(browser()->profile())->registrar();
   }
 
   ExternallyManagedAppManager& externally_managed_app_manager() {
-    return WebAppProvider::Get(browser()->profile())
+    return WebAppProvider::GetForTest(browser()->profile())
         ->externally_managed_app_manager();
   }
 
@@ -181,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
       embedded_test_server()->GetURL("/banners/manifest_test_page.html"));
 
   // Start an installation but don't wait for it to finish.
-  WebAppProvider::Get(browser()->profile())
+  WebAppProvider::GetForTest(browser()->profile())
       ->externally_managed_app_manager()
       .Install(std::move(install_options), base::DoNothing());
 

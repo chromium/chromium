@@ -198,7 +198,7 @@ class PreinstalledAppsMigrationBrowserTest
 
     {
       web_app::PreinstalledWebAppManager& web_app_manager =
-          web_app::WebAppProvider::Get(profile())
+          web_app::WebAppProvider::GetForTest(profile())
               ->preinstalled_web_app_manager();
       base::RunLoop run_loop;
       auto quit =
@@ -240,15 +240,17 @@ class PreinstalledAppsMigrationBrowserTest
   bool IsWebAppCurrentlyInstalled() {
     const web_app::AppId app_id =
         web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, GetAppUrl());
-    return web_app::WebAppProvider::Get(profile())->registrar().IsInstalled(
-        app_id);
+    return web_app::WebAppProvider::GetForTest(profile())
+        ->registrar()
+        .IsInstalled(app_id);
   }
 
   bool CanWebAppAlwaysUpdateIdentity() {
     const web_app::AppId app_id =
         web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, GetAppUrl());
     const web_app::WebApp* web_app =
-        web_app::WebAppProvider::Get(profile())->registrar().GetAppById(app_id);
+        web_app::WebAppProvider::GetForTest(profile())->registrar().GetAppById(
+            app_id);
     return CanWebAppUpdateIdentity(web_app);
   }
 

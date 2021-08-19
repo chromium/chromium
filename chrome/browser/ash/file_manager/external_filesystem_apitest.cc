@@ -720,7 +720,7 @@ class FileSystemExtensionApiTestWithApps
   void SetUpOnMainThread() override {
     Profile* profile = browser()->profile();
     file_manager::test::AddDefaultComponentExtensionsOnMainThread(profile);
-    web_app::WebAppProvider::Get(profile)
+    web_app::WebAppProvider::GetForTest(profile)
         ->system_web_app_manager()
         .InstallSystemAppsForTesting();
     LocalFileSystemExtensionApiTest::SetUpOnMainThread();

@@ -83,7 +83,7 @@ class WebAppTabStripBrowserTest : public InProcessBrowserTest {
   }
 
   WebAppRegistrar& registrar() {
-    return WebAppProvider::Get(browser()->profile())->registrar();
+    return WebAppProvider::GetForTest(browser()->profile())->registrar();
   }
 
  private:

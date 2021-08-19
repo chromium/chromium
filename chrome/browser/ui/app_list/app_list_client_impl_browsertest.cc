@@ -171,7 +171,7 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, UninstallApp) {
 }
 
 IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, ShowAppInfo) {
-  web_app::WebAppProvider::Get(profile())
+  web_app::WebAppProvider::GetForTest(profile())
       ->system_web_app_manager()
       .InstallSystemAppsForTesting();
 

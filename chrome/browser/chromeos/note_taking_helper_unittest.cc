@@ -747,7 +747,7 @@ TEST_F(NoteTakingHelperTest, CustomWebApps_FlagDisabled) {
     web_app::test::InstallWebApp(profile(), std::move(app_info));
   }
   // Check apps were installed.
-  auto* provider = web_app::WebAppProvider::Get(profile());
+  auto* provider = web_app::WebAppProvider::GetForTest(profile());
   EXPECT_EQ(provider->registrar().CountUserInstalledApps(), 2);
 
   // Apps with note_taking_new_note_url are not yet supported.
@@ -778,7 +778,7 @@ TEST_F(NoteTakingHelperTest, CustomWebApps_FlagEnabled) {
     app2_id = web_app::test::InstallWebApp(profile(), std::move(app_info));
   }
   // Check apps were installed.
-  auto* provider = web_app::WebAppProvider::Get(profile());
+  auto* provider = web_app::WebAppProvider::GetForTest(profile());
   EXPECT_EQ(provider->registrar().CountUserInstalledApps(), 2);
 
   // Apps with note_taking_new_note_url are listed.

@@ -64,7 +64,7 @@ class WebAppUiManagerImplBrowserTest : public InProcessBrowserTest {
   }
 
   WebAppUiManager& ui_manager() {
-    return WebAppProvider::Get(profile())->ui_manager();
+    return WebAppProvider::GetForTest(profile())->ui_manager();
   }
 
   TestShortcutManager* shortcut_manager_;
@@ -110,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUiManagerImplBrowserTest,
   // It has 2 browser window object.
   EXPECT_EQ(2u, BrowserList::GetInstance()->size());
   // Retrieve the provider before closing the browser, as this causes a crash.
-  WebAppProvider* provider = web_app::WebAppProvider::Get(profile());
+  WebAppProvider* provider = web_app::WebAppProvider::GetForTest(profile());
   web_app::CloseAndWait(browser());
   EXPECT_EQ(1u, BrowserList::GetInstance()->size());
   Browser* app_browser = BrowserList::GetInstance()->GetLastActive();

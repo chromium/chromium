@@ -111,7 +111,7 @@ class PreinstalledWebAppManagerTest : public testing::Test {
     auto preinstalled_web_app_manager =
         std::make_unique<PreinstalledWebAppManager>(profile);
 
-    auto* provider = WebAppProvider::Get(profile);
+    auto* provider = WebAppProvider::GetForTest(profile);
     DCHECK(provider);
     preinstalled_web_app_manager->SetSubsystems(
         &provider->registrar(), &provider->externally_managed_app_manager());

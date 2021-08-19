@@ -96,7 +96,7 @@ class ApkWebAppInstallerBrowserTest : public InProcessBrowserTest,
   }
 
   void SetUpWebApps() {
-    provider_ = web_app::WebAppProvider::Get(browser()->profile());
+    provider_ = web_app::WebAppProvider::GetForTest(browser()->profile());
     DCHECK(provider_);
     observation_.Observe(&provider_->registrar());
   }

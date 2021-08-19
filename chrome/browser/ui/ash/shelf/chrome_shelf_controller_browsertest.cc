@@ -2261,7 +2261,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, DISABLED_V1AppNavigation) {
 // Ensure opening settings and task manager windows create new shelf items.
 IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, SettingsAndTaskManagerWindows) {
   // Install the Settings App.
-  web_app::WebAppProvider::Get(browser()->profile())
+  web_app::WebAppProvider::GetForTest(browser()->profile())
       ->system_web_app_manager()
       .InstallSystemAppsForTesting();
   chrome::SettingsWindowManager* settings_manager =
@@ -2365,7 +2365,7 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WindowedHostedAndWebApps) {
   // Set both apps to open in windows.
   extensions::SetLaunchType(browser()->profile(), hosted_app->id(),
                             extensions::LAUNCH_TYPE_WINDOW);
-  WebAppProvider* provider = WebAppProvider::Get(browser()->profile());
+  WebAppProvider* provider = WebAppProvider::GetForTest(browser()->profile());
   DCHECK(provider);
   provider->registry_controller().SetAppUserDisplayMode(
       web_app_id, web_app::DisplayMode::kStandalone, /*is_user_action=*/false);

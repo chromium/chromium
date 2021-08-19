@@ -345,7 +345,7 @@ class WebAppBuilderTest : public AppServiceAppModelBuilderTest {
     }
 
     web_app::WebAppProvider* web_app_provider =
-        web_app::WebAppProvider::Get(profile());
+        web_app::WebAppProvider::GetForTest(profile());
     ASSERT_TRUE(web_app_provider);
 
     base::RunLoop run_loop;

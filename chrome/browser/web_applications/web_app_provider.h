@@ -77,6 +77,10 @@ class WebAppProvider : public KeyedService {
   // non-system Web Apps.
   static WebAppProvider* GetForLocalApps(Profile* profile);
 
+  // Return the WebAppProvider for tests, regardless of whether this is running
+  // in Lacros/Ash.
+  static WebAppProvider* GetForTest(Profile* profile);
+
   static WebAppProvider* GetForWebContents(content::WebContents* web_contents);
 
   using OsIntegrationManagerFactory =

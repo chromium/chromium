@@ -52,7 +52,7 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppsBrowserTest, CheckInstalledFields) {
   base::AutoReset<bool> scope =
       SetPreinstalledAppInstallFeatureAlwaysEnabledForTesting();
 
-  auto& provider = *WebAppProvider::Get(browser()->profile());
+  auto& provider = *WebAppProvider::GetForTest(browser()->profile());
 
   struct OfflineOnlyExpectation {
     const char* app_id;

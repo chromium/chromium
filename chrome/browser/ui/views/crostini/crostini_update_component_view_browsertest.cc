@@ -118,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(CrostiniUpdateComponentViewBrowserTest,
 IN_PROC_BROWSER_TEST_F(CrostiniUpdateComponentViewBrowserTest,
                        LaunchAppOffline_UpgradeNeeded) {
   // Ensure Terminal System App is installed.
-  web_app::WebAppProvider::Get(browser()->profile())
+  web_app::WebAppProvider::GetForTest(browser()->profile())
       ->system_web_app_manager()
       .InstallSystemAppsForTesting();
 

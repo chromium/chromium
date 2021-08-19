@@ -1688,7 +1688,7 @@ class StartupBrowserWithWebAppTest : public StartupBrowserCreatorTest {
     }
   }
   web_app::WebAppProvider& provider() {
-    return *web_app::WebAppProvider::Get(profile());
+    return *web_app::WebAppProvider::GetForTest(profile());
   }
 };
 
@@ -1739,7 +1739,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
   // Install a web app that we will launch from the command line in
   // the PRE test.
   web_app::WebAppProvider* const provider =
-      web_app::WebAppProvider::Get(browser()->profile());
+      web_app::WebAppProvider::GetForTest(browser()->profile());
   web_app::WebAppInstallFinalizer& web_app_finalizer =
       provider->install_finalizer();
 
@@ -1835,7 +1835,7 @@ class StartupBrowserWithRealWebAppTest : public StartupBrowserCreatorTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {}
 
   web_app::WebAppProvider& provider() {
-    return *web_app::WebAppProvider::Get(profile());
+    return *web_app::WebAppProvider::GetForTest(profile());
   }
 };
 
@@ -2420,7 +2420,7 @@ class StartupBrowserWebAppProtocolHandlingTest : public InProcessBrowserTest {
   }
 
   web_app::WebAppProvider* provider() {
-    return web_app::WebAppProvider::Get(browser()->profile());
+    return web_app::WebAppProvider::GetForTest(browser()->profile());
   }
 
   // Install a web app with protocol_handlers then register it with the

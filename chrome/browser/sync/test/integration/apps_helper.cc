@@ -35,7 +35,7 @@ std::string CreateFakeAppName(int index) {
 
 std::unique_ptr<web_app::WebAppInstallObserver>
 SetupSyncInstallObserverForProfile(Profile* profile) {
-  auto apps_to_be_sync_installed = web_app::WebAppProvider::Get(profile)
+  auto apps_to_be_sync_installed = web_app::WebAppProvider::GetForTest(profile)
                                        ->install_manager()
                                        .GetEnqueuedInstallAppIdsForTesting();
 
@@ -49,7 +49,7 @@ SetupSyncInstallObserverForProfile(Profile* profile) {
 std::unique_ptr<web_app::WebAppInstallObserver>
 SetupSyncUninstallObserverForProfile(Profile* profile) {
   std::set<web_app::AppId> apps_in_sync_uninstall =
-      web_app::WebAppProvider::Get(profile)
+      web_app::WebAppProvider::GetForTest(profile)
           ->registry_controller()
           .AsWebAppSyncBridge()
           ->GetAppsInSyncUninstallForTest();
@@ -211,13 +211,13 @@ void AwaitWebAppQuiescence(std::vector<Profile*> profiles) {
     // happens asynchronously after the observer gets OnWebAppInstalled. And
     // some installs might not have OS hooks installed but they will be in the
     // registry.
-    ASSERT_TRUE(web_app::WebAppProvider::Get(profile)
+    ASSERT_TRUE(web_app::WebAppProvider::GetForTest(profile)
                     ->registrar()
                     .GetAppsFromSyncAndPendingInstallation()
                     .empty());
 
     std::set<web_app::AppId> apps_in_sync_uninstall =
-        web_app::WebAppProvider::Get(profile)
+        web_app::WebAppProvider::GetForTest(profile)
             ->registry_controller()
             .AsWebAppSyncBridge()
             ->GetAppsInSyncUninstallForTest();
@@ -229,7 +229,7 @@ web_app::AppId InstallWebApp(Profile* profile, const WebApplicationInfo& info) {
   DCHECK(info.start_url.is_valid());
   base::RunLoop run_loop;
   web_app::AppId app_id;
-  auto* provider = web_app::WebAppProvider::Get(profile);
+  auto* provider = web_app::WebAppProvider::GetForTest(profile);
   provider->install_manager().InstallWebAppFromInfo(
       std::make_unique<WebApplicationInfo>(info),
       web_app::ForInstallableSite::kYes,
