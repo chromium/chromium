@@ -49,22 +49,6 @@ constexpr VideoCodecProfile kH264Profile = VideoCodecProfile::H264PROFILE_MAIN;
 
 constexpr int kH264MinimumTargetBitrateKbpsPerMegapixel = 1800;
 
-void ArgbToI420(const webrtc::DesktopFrame& frame,
-                scoped_refptr<VideoFrame> video_frame) {
-  const uint8_t* rgb_data = frame.data();
-  const int rgb_stride = frame.stride();
-  const int y_stride = video_frame->stride(VideoFrame::kYPlane);
-  DCHECK_EQ(video_frame->stride(VideoFrame::kUPlane),
-            video_frame->stride(VideoFrame::kVPlane));
-  const int uv_stride = video_frame->stride(VideoFrame::kUVPlane);
-  uint8_t* y_data = video_frame->data(VideoFrame::kYPlane);
-  uint8_t* u_data = video_frame->data(VideoFrame::kUPlane);
-  uint8_t* v_data = video_frame->data(VideoFrame::kVPlane);
-  libyuv::ARGBToI420(rgb_data, rgb_stride, y_data, y_stride, u_data, uv_stride,
-                     v_data, uv_stride, video_frame->visible_rect().width(),
-                     video_frame->visible_rect().height());
-}
-
 gpu::GpuPreferences CreateGpuPreferences() {
   gpu::GpuPreferences gpu_preferences;
 #if defined(OS_WIN)
@@ -260,15 +244,21 @@ void WebrtcVideoEncoderGpu::Core::Encode(
   DCHECK_EQ(state_, INITIALIZED);
 
   scoped_refptr<VideoFrame> video_frame = VideoFrame::CreateFrame(
-      VideoPixelFormat::PIXEL_FORMAT_I420, input_coded_size_,
+      VideoPixelFormat::PIXEL_FORMAT_NV12, input_coded_size_,
       gfx::Rect(input_visible_size_), input_visible_size_, base::TimeDelta());
 
   base::TimeDelta new_timestamp = previous_timestamp_ + params.duration;
   video_frame->set_timestamp(new_timestamp);
   previous_timestamp_ = new_timestamp;
 
-  // H264 encoder on Windows supports only I420.
-  ArgbToI420(*frame, video_frame);
+  // H264 encoder on Windows uses NV12 so convert here.
+  libyuv::ARGBToNV12(frame->data(), frame->stride(),
+                     video_frame->data(VideoFrame::kYPlane),
+                     video_frame->stride(VideoFrame::kYPlane),
+                     video_frame->data(VideoFrame::kUVPlane),
+                     video_frame->stride(VideoFrame::kUVPlane),
+                     video_frame->visible_rect().width(),
+                     video_frame->visible_rect().height());
 
   callbacks_[video_frame->timestamp()] = std::move(done);
 
@@ -357,7 +347,7 @@ void WebrtcVideoEncoderGpu::Core::BeginInitialization() {
   }
 #endif
 
-  VideoPixelFormat input_format = VideoPixelFormat::PIXEL_FORMAT_I420;
+  VideoPixelFormat input_format = VideoPixelFormat::PIXEL_FORMAT_NV12;
   // TODO(zijiehe): implement some logical way to set an initial bitrate.
   // Currently we set the bitrate to 8M bits / 1M bytes per frame, and 30 frames
   // per second.
