@@ -247,7 +247,7 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
     @Override
     @NonNull
     public SiteSettingsDelegate getSiteSettingsDelegate() {
-        return new ChromeSiteSettingsDelegate(mContext, getBrowserContext());
+        return new ChromeSiteSettingsDelegate(mContext, mProfile);
     }
 
     @NonNull

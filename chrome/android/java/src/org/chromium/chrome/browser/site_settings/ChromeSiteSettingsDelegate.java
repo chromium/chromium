@@ -54,13 +54,13 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     private static final float FAVICON_TEXT_SIZE_FRACTION = 0.625f;
 
     private final Context mContext;
-    private final BrowserContextHandle mBrowserContext;
+    private final Profile mProfile;
     private ManagedPreferenceDelegate mManagedPreferenceDelegate;
     private PrivacySandboxSnackbarController mPrivacySandboxController;
 
-    public ChromeSiteSettingsDelegate(Context context, BrowserContextHandle browserContext) {
+    public ChromeSiteSettingsDelegate(Context context, Profile profile) {
         mContext = context;
-        mBrowserContext = browserContext;
+        mProfile = profile;
     }
 
     /**
@@ -75,7 +75,7 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
 
     @Override
     public BrowserContextHandle getBrowserContextHandle() {
-        return mBrowserContext;
+        return mProfile;
     }
 
     @Override
@@ -93,7 +93,7 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
 
     @Override
     public void getFaviconImageForURL(GURL faviconUrl, Callback<Bitmap> callback) {
-        new FaviconLoader(faviconUrl, callback);
+        new FaviconLoader(faviconUrl, callback, mProfile);
     }
 
     /**
@@ -110,18 +110,15 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
         // Loads the favicons asynchronously.
         private final FaviconHelper mFaviconHelper;
 
-        private FaviconLoader(GURL faviconUrl, Callback<Bitmap> callback) {
+        private FaviconLoader(GURL faviconUrl, Callback<Bitmap> callback, Profile profile) {
             mFaviconUrl = faviconUrl;
             mCallback = callback;
             mFaviconSizePx =
                     mContext.getResources().getDimensionPixelSize(R.dimen.default_favicon_size);
             mFaviconHelper = new FaviconHelper();
 
-            // TODO(https://crbug.com/1048632): Use the current profile (i.e., regular profile or
-            // incognito profile) instead of always using regular profile. It works correctly now,
-            // but it is not safe.
             if (!mFaviconHelper.getLocalFaviconImageForURL(
-                        Profile.getLastUsedRegularProfile(), mFaviconUrl, mFaviconSizePx, this)) {
+                        profile, mFaviconUrl, mFaviconSizePx, this)) {
                 onFaviconAvailable(/*image=*/null, null);
             }
         }
