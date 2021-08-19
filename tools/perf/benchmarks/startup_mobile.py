@@ -161,7 +161,7 @@ class _MobileStartupSharedState(story_module.SharedState):
     self.platform.WaitForBatteryTemperature(_MAX_BATTERY_TEMP)
     self.platform.StartActivity(intent.Intent(
         package='org.chromium.maps_go_webapk',
-        activity='org.chromium.webapk.shell_apk.h2o.H2OMainActivity',
+        activity='org.chromium.webapk.shell_apk.h2o.H2OOpaqueMainActivity',
         category='android.intent.category.LAUNCHER',
         action='android.intent.action.MAIN'),
                                 blocking=True)
