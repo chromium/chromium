@@ -210,15 +210,6 @@ void SearchControllerImplNew::SetResults(
               return a->relevance() > b->relevance();
             });
 
-  // TODO(crbug.com/1199206): Remove this debug output once we no longer need to
-  // inspect launcher scores so closely, and before the categorical search flag
-  // is enabled for any users.
-  LOG(ERROR) << "(categorical search) updating results to:";
-  for (const auto* result : all_results) {
-    LOG(ERROR) << "(categorical search) - " << result->relevance() << "  "
-               << result->id();
-  }
-
   if (!observer_list_.empty()) {
     std::vector<const ChromeSearchResult*> observer_results;
     for (auto* result : all_results)
