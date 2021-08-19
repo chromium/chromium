@@ -132,9 +132,4 @@ void ChromeBrowserProvider::FireChromeIdentityServiceDidChange(
     observer.OnChromeIdentityServiceDidChange(new_service);
 }
 
-std::unique_ptr<ios::ChromeIdentityService>
-ChromeBrowserProvider::CreateChromeIdentityService() {
-  return nullptr;
-}
-
 }  // namespace ios

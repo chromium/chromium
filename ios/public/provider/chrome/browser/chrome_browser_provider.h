@@ -94,10 +94,10 @@ class ChromeBrowserProvider {
   // Returns an instance of a signin resources provider.
   virtual SigninResourcesProvider* GetSigninResourcesProvider();
   // Sets the current instance of Chrome identity service. Used for testing.
-  virtual void SetChromeIdentityServiceForTesting(
+  void SetChromeIdentityServiceForTesting(
       std::unique_ptr<ChromeIdentityService> service);
   // Returns an instance of a Chrome identity service.
-  virtual ChromeIdentityService* GetChromeIdentityService();
+  ChromeIdentityService* GetChromeIdentityService();
   // Returns an instance of a Chrome trusted vault service.
   virtual ChromeTrustedVaultService* GetChromeTrustedVaultService();
   // Creates and returns a new styled text field.
@@ -149,7 +149,7 @@ class ChromeBrowserProvider {
   // Creates a ChromeIdentityService. This methods has to be be implemented
   // in subclasses.
   virtual std::unique_ptr<ios::ChromeIdentityService>
-  CreateChromeIdentityService();
+  CreateChromeIdentityService() = 0;
 
  private:
   base::ObserverList<Observer, true>::Unchecked observer_list_;
