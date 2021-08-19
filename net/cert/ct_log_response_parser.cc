@@ -112,11 +112,11 @@ struct JsonConsistencyProof {
 };
 
 bool ConvertIndividualProofNode(const base::Value* value, std::string* result) {
-  std::string b64_encoded_node;
-  if (!value->GetAsString(&b64_encoded_node))
+  const std::string* b64_encoded_node = value->GetIfString();
+  if (!b64_encoded_node)
     return false;
 
-  if (!ConvertSHA256RootHash(b64_encoded_node, result))
+  if (!ConvertSHA256RootHash(*b64_encoded_node, result))
     return false;
 
   return true;
