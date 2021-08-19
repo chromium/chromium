@@ -7,16 +7,16 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
+#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/saml/fake_saml_idp_mixin.h"
 #include "chrome/browser/ash/login/saml/in_session_password_sync_manager.h"
 #include "chrome/browser/ash/login/saml/in_session_password_sync_manager_factory.h"
 #include "chrome/browser/ash/login/session/user_session_manager_test_api.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/login/test/test_condition_waiter.h"
 #include "chrome/browser/ash/login/users/test_users.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_reauth_dialogs.h"
@@ -99,19 +99,18 @@ class LockscreenWebUiTest : public MixinBasedInProcessBrowserTest {
         prefs::kLockScreenReauthenticationEnabled, true);
     ASSERT_TRUE(password_sync_manager_);
     password_sync_manager_->CreateAndShowDialog();
-    base::RunLoop().RunUntilIdle();
+    WaitForReauthDialogToLoad();
 
     // Fetch the dialog, WebUi controller and main message handler.
     reauth_dialog_ = password_sync_manager_->get_reauth_dialog_for_testing();
     ASSERT_TRUE(reauth_dialog_);
+    ASSERT_TRUE(reauth_dialog_->GetWebUIForTest());
     reauth_webui_controller_ = static_cast<LockScreenStartReauthUI*>(
         reauth_dialog_->GetWebUIForTest()->GetController());
     ASSERT_TRUE(reauth_webui_controller_);
     main_handler_ = reauth_webui_controller_->GetMainHandlerForTests();
     ASSERT_TRUE(main_handler_);
     main_handler_->force_saml_redirect_for_testing();
-
-    WaitForWebUi();
   }
 
   void LockscreenAndShowDialog() {
@@ -121,18 +120,19 @@ class LockscreenWebUiTest : public MixinBasedInProcessBrowserTest {
     ShowDialogAndWait();
   }
 
-  void WaitForWebUi() {
-    base::RunLoop run_loop;
-    if (!main_handler_->IsJsReadyForTesting(run_loop.QuitClosure())) {
-      run_loop.Run();
-    }
-  }
-
   void WaitForAuthenticatorToLoad() {
     base::RunLoop run_loop;
     if (!main_handler_->IsAuthenticatorLoaded(run_loop.QuitClosure())) {
       run_loop.Run();
-    };
+    }
+  }
+
+  void WaitForReauthDialogToLoad() {
+    base::RunLoop run_loop;
+    if (!password_sync_manager_->IsReauthDialogLoadedForTesting(
+            run_loop.QuitClosure())) {
+      run_loop.Run();
+    }
   }
 
   void WaitForIdpPageLoad() {
@@ -192,17 +192,18 @@ class LockscreenWebUiTest : public MixinBasedInProcessBrowserTest {
   FakeSamlIdpMixin fake_saml_idp_{&mixin_host_, fake_gaia_mixin()};
 };
 
-// Flaky. See https://crbug.com/1224705.
-IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, DISABLED_Login) {
+IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, Login) {
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login.html");
 
   LockscreenAndShowDialog();
 
   // Expect the main screen to be visible and proceed to the SAML page.
+  JS().CreateVisibilityWaiter(true, kMainScreen)->Wait();
   JS().ExpectVisiblePath(kMainScreen);
   JS().TapOnPath(kMainVerifyButton);
   WaitForAuthenticatorToLoad();
 
+  JS().CreateVisibilityWaiter(true, kSamlContainer)->Wait();
   JS().ExpectVisiblePath(kSamlContainer);
   JS().ExpectHiddenPath(kMainScreen);
   base::RunLoop().RunUntilIdle();

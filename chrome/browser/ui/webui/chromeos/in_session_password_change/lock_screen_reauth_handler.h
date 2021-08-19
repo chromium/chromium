@@ -60,7 +60,7 @@ class LockScreenReauthHandler : public content::WebUIMessageHandler {
 
   void OnCookieWaitTimeout();
 
-  void OnJsReadyForTesting();
+  void OnReauthDialogReadyForTesting();
 
   void CheckCredentials(const UserContext& user_context);
 
@@ -90,10 +90,6 @@ class LockScreenReauthHandler : public content::WebUIMessageHandler {
 
   // A test may be waiting for the authenticator to load.
   base::OnceClosure waiting_caller_;
-
-  // Tests need to wait until the renderer is ready to execute JavaScript.
-  bool js_ready_ = false;
-  base::OnceClosure initialization_callback_for_testing_;
 
   base::WeakPtrFactory<LockScreenReauthHandler> weak_factory_{this};
 };

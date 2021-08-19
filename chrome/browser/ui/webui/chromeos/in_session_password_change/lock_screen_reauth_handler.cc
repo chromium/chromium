@@ -81,7 +81,7 @@ LockScreenReauthHandler::~LockScreenReauthHandler() = default;
 
 void LockScreenReauthHandler::HandleInitialize(const base::ListValue* value) {
   AllowJavascript();
-  OnJsReadyForTesting();
+  OnReauthDialogReadyForTesting();
   LoadAuthenticatorParam();
 }
 
@@ -280,10 +280,9 @@ void LockScreenReauthHandler::OnCookieWaitTimeout() {
   password_sync_manager->DismissDialog();
 }
 
-void LockScreenReauthHandler::OnJsReadyForTesting() {
-    js_ready_ = true;
-    if (initialization_callback_for_testing_)
-      std::move(initialization_callback_for_testing_).Run();
+void LockScreenReauthHandler::OnReauthDialogReadyForTesting() {
+  auto* password_sync_manager = GetInSessionPasswordSyncManager();
+  password_sync_manager->OnReauthDialogReadyForTesting();
 }
 
 void LockScreenReauthHandler::CheckCredentials(
@@ -343,16 +342,5 @@ bool LockScreenReauthHandler::IsAuthenticatorLoaded(
   waiting_caller_ = std::move(callback);
   return false;
 }
-
-bool LockScreenReauthHandler::IsJsReadyForTesting(
-  base::OnceClosure js_ready_callback) {
-    if (js_ready_)
-      return true;
-
-    DCHECK(initialization_callback_for_testing_.is_null());
-    initialization_callback_for_testing_ = std::move(js_ready_callback);
-    return false;
-}
-
 
 }  // namespace chromeos
