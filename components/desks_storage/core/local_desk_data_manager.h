@@ -116,6 +116,9 @@ class LocalDeskDataManager : public DeskModel {
   void OnDeleteEntry(std::unique_ptr<DeskModel::DeleteEntryStatus> status_ptr,
                      DeskModel::DeleteEntryCallback callback);
 
+  // Returns true if |templates_| contains a desk template with |name|.
+  bool HasTemplateWithName(const std::u16string& name);
+
   // Task runner used to schedule tasks on the IO thread.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 

@@ -31,12 +31,23 @@ constexpr char kJunkData[] = "This is not valid template data.";
 constexpr char kTemplateFileNameFormat[] = "%s.template";
 constexpr char kUuidFormat[] = "1c186d5a-502e-49ce-9ee1-00000000000%d";
 constexpr char kTemplateNameFormat[] = "desk_%d";
+constexpr char kDeskOneTemplateDuplicateExpectedName[] = "desk_01 (1)";
+constexpr char kDeskOneTemplateDuplicateTwoExpectedName[] = "desk_01 (2)";
+constexpr char kDuplicatePatternMatchingNamedDeskExpectedNameOne[] =
+    "(1) desk_template (1)";
+constexpr char kDuplicatePatternMatchingNamedDeskExpectedNameTwo[] =
+    "(1) desk_template (2)";
 
 const base::FilePath kInvalidFilePath = base::FilePath("?");
 const std::string kTestUuid1 = base::StringPrintf(kUuidFormat, 1);
 const std::string kTestUuid2 = base::StringPrintf(kUuidFormat, 2);
 const std::string kTestUuid3 = base::StringPrintf(kUuidFormat, 3);
 const std::string kTestUuid4 = base::StringPrintf(kUuidFormat, 4);
+const std::string kTestUuid5 = base::StringPrintf(kUuidFormat, 5);
+const std::string kTestUuid6 = base::StringPrintf(kUuidFormat, 6);
+const std::string kTestUuid7 = base::StringPrintf(kUuidFormat, 7);
+const std::string kTestUuid8 = base::StringPrintf(kUuidFormat, 8);
+const std::string kTestUuid9 = base::StringPrintf(kUuidFormat, 9);
 const base::Time kTestTime1 = base::Time();
 const std::string kTestFileName1 =
     base::StringPrintf(kTemplateFileNameFormat, kTestUuid1.c_str());
@@ -54,6 +65,19 @@ bool FindUuidInUuidList(const std::string& uuid_query,
   }
 
   return false;
+}
+
+// Takes in a vector of DeskTemplate pointers and a uuid, returns a pointer to
+// the DeskTemplate with matching uuid if found in vector, nullptr if not.
+ash::DeskTemplate* FindEntryInEntryList(
+    const std::string& uuid_string,
+    const std::vector<ash::DeskTemplate*>& entries) {
+  base::GUID uuid = base::GUID::ParseLowercase(uuid_string);
+  auto found_entry = std::find_if(
+      entries.begin(), entries.end(),
+      [&uuid](ash::DeskTemplate* entry) { return uuid == entry->uuid(); });
+
+  return found_entry != entries.end() ? *found_entry : nullptr;
 }
 
 // Verifies that the status passed into it is kOk
@@ -96,6 +120,29 @@ class LocalDeskDataManagerTest : public testing::Test {
             std::make_unique<ash::DeskTemplate>(kTestUuid1,
                                                 std::string("desk_01"),
                                                 kTestTime1)),
+        sample_desk_template_one_duplicate_(
+            std::make_unique<ash::DeskTemplate>(kTestUuid5,
+                                                std::string("desk_01"),
+                                                base::Time::Now())),
+        sample_desk_template_one_duplicate_two_(
+            std::make_unique<ash::DeskTemplate>(kTestUuid6,
+                                                std::string("desk_01"),
+                                                base::Time::Now())),
+        duplicate_pattern_matching_named_desk_(
+            std::make_unique<ash::DeskTemplate>(
+                kTestUuid7,
+                std::string("(1) desk_template"),
+                base::Time::Now())),
+        duplicate_pattern_matching_named_desk_two_(
+            std::make_unique<ash::DeskTemplate>(
+                kTestUuid8,
+                std::string("(1) desk_template"),
+                base::Time::Now())),
+        duplicate_pattern_matching_named_desk_three_(
+            std::make_unique<ash::DeskTemplate>(
+                kTestUuid9,
+                std::string("(1) desk_template"),
+                base::Time::Now())),
         sample_desk_template_two_(
             std::make_unique<ash::DeskTemplate>(kTestUuid2,
                                                 std::string("desk_02"),
@@ -111,6 +158,16 @@ class LocalDeskDataManagerTest : public testing::Test {
         task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
         data_manager_(std::unique_ptr<LocalDeskDataManager>()) {
     sample_desk_template_one_->set_desk_restore_data(
+        std::make_unique<full_restore::RestoreData>());
+    sample_desk_template_one_duplicate_->set_desk_restore_data(
+        std::make_unique<full_restore::RestoreData>());
+    sample_desk_template_one_duplicate_two_->set_desk_restore_data(
+        std::make_unique<full_restore::RestoreData>());
+    duplicate_pattern_matching_named_desk_->set_desk_restore_data(
+        std::make_unique<full_restore::RestoreData>());
+    duplicate_pattern_matching_named_desk_two_->set_desk_restore_data(
+        std::make_unique<full_restore::RestoreData>());
+    duplicate_pattern_matching_named_desk_three_->set_desk_restore_data(
         std::make_unique<full_restore::RestoreData>());
     sample_desk_template_two_->set_desk_restore_data(
         std::make_unique<full_restore::RestoreData>());
@@ -133,6 +190,12 @@ class LocalDeskDataManagerTest : public testing::Test {
 
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<ash::DeskTemplate> sample_desk_template_one_;
+  std::unique_ptr<ash::DeskTemplate> sample_desk_template_one_duplicate_;
+  std::unique_ptr<ash::DeskTemplate> sample_desk_template_one_duplicate_two_;
+  std::unique_ptr<ash::DeskTemplate> duplicate_pattern_matching_named_desk_;
+  std::unique_ptr<ash::DeskTemplate> duplicate_pattern_matching_named_desk_two_;
+  std::unique_ptr<ash::DeskTemplate>
+      duplicate_pattern_matching_named_desk_three_;
   std::unique_ptr<ash::DeskTemplate> sample_desk_template_two_;
   std::unique_ptr<ash::DeskTemplate> sample_desk_template_three_;
   std::unique_ptr<ash::DeskTemplate> modified_sample_desk_template_one_;
@@ -183,6 +246,83 @@ TEST_F(LocalDeskDataManagerTest, CanGetAllEntries) {
 
         // Sanity check for the search function.
         EXPECT_FALSE(FindUuidInUuidList(kTestUuid4, entries));
+        loop.Quit();
+      }));
+  loop.Run();
+}
+
+TEST_F(LocalDeskDataManagerTest, CanMarkDuplicateEntryNames) {
+  data_manager_->AddOrUpdateEntry(std::move(sample_desk_template_one_),
+                                  base::BindOnce(&VerifyEntryAddedCorrectly));
+  data_manager_->AddOrUpdateEntry(
+      std::move(sample_desk_template_one_duplicate_),
+      base::BindOnce(&VerifyEntryAddedCorrectly));
+
+  data_manager_->AddOrUpdateEntry(
+      std::move(sample_desk_template_one_duplicate_two_),
+      base::BindOnce(&VerifyEntryAddedCorrectly));
+
+  base::RunLoop loop;
+  data_manager_->GetAllEntries(
+      base::BindLambdaForTesting([&](DeskModel::GetAllEntriesStatus status,
+                                     std::vector<ash::DeskTemplate*> entries) {
+        EXPECT_EQ(status, DeskModel::GetAllEntriesStatus::kOk);
+        EXPECT_EQ(entries.size(), 3ul);
+        EXPECT_TRUE(FindUuidInUuidList(kTestUuid1, entries));
+        EXPECT_TRUE(FindUuidInUuidList(kTestUuid5, entries));
+        EXPECT_TRUE(FindUuidInUuidList(kTestUuid6, entries));
+
+        ash::DeskTemplate* duplicate_one =
+            FindEntryInEntryList(kTestUuid5, entries);
+        EXPECT_NE(duplicate_one, nullptr);
+        EXPECT_EQ(base::UTF16ToUTF8(duplicate_one->template_name()),
+                  std::string(kDeskOneTemplateDuplicateExpectedName));
+
+        ash::DeskTemplate* duplicate_two =
+            FindEntryInEntryList(kTestUuid6, entries);
+        EXPECT_NE(duplicate_two, nullptr);
+        EXPECT_EQ(base::UTF16ToUTF8(duplicate_two->template_name()),
+                  std::string(kDeskOneTemplateDuplicateTwoExpectedName));
+        loop.Quit();
+      }));
+  loop.Run();
+}
+
+TEST_F(LocalDeskDataManagerTest, AppendsDuplicateMarkingsCorrectly) {
+  data_manager_->AddOrUpdateEntry(
+      std::move(duplicate_pattern_matching_named_desk_),
+      base::BindOnce(&VerifyEntryAddedCorrectly));
+  data_manager_->AddOrUpdateEntry(
+      std::move(duplicate_pattern_matching_named_desk_two_),
+      base::BindOnce(&VerifyEntryAddedCorrectly));
+
+  data_manager_->AddOrUpdateEntry(
+      std::move(duplicate_pattern_matching_named_desk_three_),
+      base::BindOnce(&VerifyEntryAddedCorrectly));
+
+  base::RunLoop loop;
+  data_manager_->GetAllEntries(
+      base::BindLambdaForTesting([&](DeskModel::GetAllEntriesStatus status,
+                                     std::vector<ash::DeskTemplate*> entries) {
+        EXPECT_EQ(status, DeskModel::GetAllEntriesStatus::kOk);
+        EXPECT_EQ(entries.size(), 3ul);
+        EXPECT_TRUE(FindUuidInUuidList(kTestUuid7, entries));
+        EXPECT_TRUE(FindUuidInUuidList(kTestUuid8, entries));
+        EXPECT_TRUE(FindUuidInUuidList(kTestUuid9, entries));
+
+        ash::DeskTemplate* duplicate_one =
+            FindEntryInEntryList(kTestUuid8, entries);
+        EXPECT_NE(duplicate_one, nullptr);
+        EXPECT_EQ(
+            base::UTF16ToUTF8(duplicate_one->template_name()),
+            std::string(kDuplicatePatternMatchingNamedDeskExpectedNameOne));
+
+        ash::DeskTemplate* duplicate_two =
+            FindEntryInEntryList(kTestUuid9, entries);
+        EXPECT_NE(duplicate_two, nullptr);
+        EXPECT_EQ(
+            base::UTF16ToUTF8(duplicate_two->template_name()),
+            std::string(kDuplicatePatternMatchingNamedDeskExpectedNameTwo));
         loop.Quit();
       }));
   loop.Run();
