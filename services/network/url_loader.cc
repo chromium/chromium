@@ -1645,13 +1645,14 @@ void URLLoader::OnReadCompleted(net::URLRequest* url_request, int bytes_read) {
   // |this| may have been deleted.
 }
 
-int URLLoader::OnBeforeStartTransaction(net::CompletionOnceCallback callback,
-                                        net::HttpRequestHeaders* headers) {
+int URLLoader::OnBeforeStartTransaction(
+    const net::HttpRequestHeaders& headers,
+    net::NetworkDelegate::OnBeforeStartTransactionCallback callback) {
   if (header_client_) {
     header_client_->OnBeforeSendHeaders(
-        *headers, base::BindOnce(&URLLoader::OnBeforeSendHeadersComplete,
-                                 weak_ptr_factory_.GetWeakPtr(),
-                                 std::move(callback), headers));
+        headers,
+        base::BindOnce(&URLLoader::OnBeforeSendHeadersComplete,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
     return net::ERR_IO_PENDING;
   }
   return net::OK;
@@ -2032,13 +2033,10 @@ void URLLoader::ResumeStart() {
 }
 
 void URLLoader::OnBeforeSendHeadersComplete(
-    net::CompletionOnceCallback callback,
-    net::HttpRequestHeaders* out_headers,
+    net::NetworkDelegate::OnBeforeStartTransactionCallback callback,
     int result,
     const absl::optional<net::HttpRequestHeaders>& headers) {
-  if (headers)
-    *out_headers = headers.value();
-  std::move(callback).Run(result);
+  std::move(callback).Run(result, headers);
 }
 
 void URLLoader::OnHeadersReceivedComplete(
