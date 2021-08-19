@@ -1387,8 +1387,6 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_m.content_shell_test_apk.filter',
         ],
-        #TODO(crbug.com/1127110): Enable this on CQ
-        'ci_only': True,
       },
       'android-pie-x86-rel': {
         'args': [
