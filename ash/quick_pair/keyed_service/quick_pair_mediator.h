@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/quick_pair/feature_status_tracker/quick_pair_feature_status_tracker.h"
+#include "ash/quick_pair/pairing/pairer_broker.h"
 #include "ash/quick_pair/scanning/scanner_broker.h"
 #include "ash/quick_pair/ui/ui_broker.h"
 #include "base/memory/scoped_refptr.h"
@@ -23,6 +24,7 @@ struct Device;
 // system, e.g. the UI Broker, Scanning Broker and Pairing Broker.
 class Mediator final : public FeatureStatusTracker::Observer,
                        public ScannerBroker::Observer,
+                       public PairerBroker::Observer,
                        public UIBroker::Observer {
  public:
   class Factory {
@@ -37,6 +39,7 @@ class Mediator final : public FeatureStatusTracker::Observer,
 
   Mediator(std::unique_ptr<FeatureStatusTracker> feature_status_tracker,
            std::unique_ptr<ScannerBroker> scanner_broker,
+           std::unique_ptr<PairerBroker> pairer_broker,
            std::unique_ptr<UIBroker> ui_broker,
            std::unique_ptr<FastPairRepository> fast_pair_repository);
   Mediator(const Mediator&) = delete;
@@ -49,6 +52,13 @@ class Mediator final : public FeatureStatusTracker::Observer,
   // SannerBroker::Observer
   void OnDeviceFound(scoped_refptr<Device> device) override;
   void OnDeviceLost(scoped_refptr<Device> device) override;
+
+  // PairerBroker::Observer
+  void OnDevicePaired(scoped_refptr<Device> device) override;
+  void OnPairFailure(scoped_refptr<Device> device,
+                     PairFailure failure) override;
+  void OnAccountKeyWrite(scoped_refptr<Device> device,
+                         absl::optional<AccountKeyFailure> error) override;
 
   // UIBroker::Observer
   void OnDiscoveryAction(scoped_refptr<Device> device,
@@ -65,6 +75,7 @@ class Mediator final : public FeatureStatusTracker::Observer,
 
   std::unique_ptr<FeatureStatusTracker> feature_status_tracker_;
   std::unique_ptr<ScannerBroker> scanner_broker_;
+  std::unique_ptr<PairerBroker> pairer_broker_;
   std::unique_ptr<UIBroker> ui_broker_;
   std::unique_ptr<FastPairRepository> fast_pair_repository_;
 
@@ -72,6 +83,8 @@ class Mediator final : public FeatureStatusTracker::Observer,
       feature_status_tracker_observation_{this};
   base::ScopedObservation<ScannerBroker, ScannerBroker::Observer>
       scanner_broker_observation_{this};
+  base::ScopedObservation<PairerBroker, PairerBroker::Observer>
+      pairer_broker_observation_{this};
   base::ScopedObservation<UIBroker, UIBroker::Observer> ui_broker_observation_{
       this};
 };

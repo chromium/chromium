@@ -10,6 +10,7 @@
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/feature_status_tracker/quick_pair_feature_status_tracker.h"
 #include "ash/quick_pair/feature_status_tracker/quick_pair_feature_status_tracker_impl.h"
+#include "ash/quick_pair/pairing/pairer_broker_impl.h"
 #include "ash/quick_pair/repository/fast_pair_repository_impl.h"
 #include "ash/quick_pair/scanning/scanner_broker_impl.h"
 #include "ash/quick_pair/ui/actions.h"
@@ -31,7 +32,8 @@ std::unique_ptr<Mediator> Mediator::Factory::Create() {
 
   return std::make_unique<Mediator>(
       std::make_unique<FeatureStatusTrackerImpl>(),
-      std::make_unique<ScannerBrokerImpl>(), std::make_unique<UIBrokerImpl>(),
+      std::make_unique<ScannerBrokerImpl>(),
+      std::make_unique<PairerBrokerImpl>(), std::make_unique<UIBrokerImpl>(),
       std::make_unique<FastPairRepositoryImpl>());
 }
 
@@ -42,14 +44,17 @@ void Mediator::Factory::SetFactoryForTesting(Factory* factory) {
 
 Mediator::Mediator(std::unique_ptr<FeatureStatusTracker> feature_status_tracker,
                    std::unique_ptr<ScannerBroker> scanner_broker,
+                   std::unique_ptr<PairerBroker> pairer_broker,
                    std::unique_ptr<UIBroker> ui_broker,
                    std::unique_ptr<FastPairRepository> fast_pair_repository)
     : feature_status_tracker_(std::move(feature_status_tracker)),
       scanner_broker_(std::move(scanner_broker)),
+      pairer_broker_(std::move(pairer_broker)),
       ui_broker_(std::move(ui_broker)),
       fast_pair_repository_(std::move(fast_pair_repository)) {
   feature_status_tracker_observation_.Observe(feature_status_tracker_.get());
   scanner_broker_observation_.Observe(scanner_broker_.get());
+  pairer_broker_observation_.Observe(pairer_broker_.get());
   ui_broker_observation_.Observe(ui_broker_.get());
 
   SetFastPairState(feature_status_tracker_->IsFastPairEnabled());
@@ -77,6 +82,21 @@ void Mediator::SetFastPairState(bool is_enabled) {
     scanner_broker_->StartScanning(Protocol::kFastPair);
   else
     scanner_broker_->StopScanning(Protocol::kFastPair);
+}
+
+void Mediator::OnDevicePaired(scoped_refptr<Device> device) {
+  QP_LOG(INFO) << __func__ << ": Device=" << device;
+}
+
+void Mediator::OnPairFailure(scoped_refptr<Device> device,
+                             PairFailure failure) {
+  QP_LOG(INFO) << __func__ << ": Device=" << device << ",Failure=" << failure;
+  ui_broker_->ShowPairingFailed(std::move(device));
+}
+
+void Mediator::OnAccountKeyWrite(scoped_refptr<Device> device,
+                                 absl::optional<AccountKeyFailure> error) {
+  QP_LOG(INFO) << __func__ << ": Device=" << device;
 }
 
 void Mediator::OnDiscoveryAction(scoped_refptr<Device> device,
