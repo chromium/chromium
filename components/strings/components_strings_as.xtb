@@ -272,6 +272,7 @@
 <translation id="1838374766361614909">সন্ধান কৰা বস্তুবোৰ মচক</translation>
 <translation id="1839551713262164453">নীতিৰ মান মান্যতাকৰণ কৰোঁতে আসোঁৱাহ হৈছে</translation>
 <translation id="1842969606798536927">পৰিশোধ কৰক</translation>
+<translation id="1856713167556118146">ইনক’গনিট’ টেবে কি নকৰে</translation>
 <translation id="1871208020102129563">প্ৰক্সিয়ে কোনো .pac স্ক্ৰিপ্টৰ URLৰ সলনি স্থিৰ প্ৰ'ক্সী ছার্ভাৰ ব্যৱহাৰ কৰিবলৈ ছেট কৰা হৈছে।</translation>
 <translation id="1871284979644508959">বাধ্যতামূলক ক্ষেত্ৰ</translation>
 <translation id="1875512691959384712">Google Forms</translation>
@@ -1015,6 +1016,7 @@
 <translation id="4465818729556336129">এই নথিখন গোপনীয় আৰু আপোনাৰ প্ৰশাসকে এইখন প্ৰিণ্ট কৰিবলৈ পৰামৰ্শ নিদিয়ে।</translation>
 <translation id="4476953670630786061">এই ফৰ্মখন সুৰক্ষিত নহয়। স্বয়ংক্রিয়ভাৱে পূৰ কৰাৰ সুবিধাটো অফ কৰা হৈছে।</translation>
 <translation id="4477350412780666475">পৰৱৰ্তী ট্ৰেক</translation>
+<translation id="4481251927743463293">ইনক’গনিট’ টেবে কি কৰে</translation>
 <translation id="4481394504112738036">গোপনীয় ফাইল</translation>
 <translation id="4482953324121162758">এই ছাইটটো অনুবাদ কৰা নহয়।</translation>
 <translation id="4490717597759821841">A7</translation>
@@ -1115,10 +1117,17 @@
 <translation id="4819347708020428563">ডিফ’ল্ট ভিউত এন’টেশ্বন সম্পাদনা কৰিবনে?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, এখন নতুন Google Sheet ক্ষিপ্ৰভাৱে সৃষ্টি কৰিবলৈ প্ৰথমে টেব আৰু তাৰ পাছত এণ্টাৰ টিপক</translation>
 <translation id="4825507807291741242">শক্তিশালী</translation>
+<translation id="4827402517081186284">ইনক’গনিট’ টেবে আপোনাক অনলাইনত অদৃশ্য নকৰে:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />আপুনি ছাইটসমূহ কেতিয়া চাইছিল সেয়া ছাইটসমূহে জানে<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />নিয়োগদাতা অথবা বিদ্যালয়ে ব্ৰাউজিঙৰ কার্যকলাপ ট্ৰেক কৰিব পাৰে<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />ইণ্টাৰনেট সেৱা প্ৰদানকাৰীয়ে ৱেবৰ ট্ৰেফিক নিৰীক্ষণ কৰিব পাৰে<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="4838327282952368871">স্বপ্নময়</translation>
 <translation id="484462545196658690">স্বয়ংক্ৰিয়</translation>
 <translation id="4850886885716139402">চাওক</translation>
 <translation id="485316830061041779">জাৰ্মান</translation>
+<translation id="4853901935952445031">এই ছাইটটোৱে ফেব্ৰুৱাৰী, ২০২২ৰ পাছত U2F API ব্যৱহাৰ কৰিব নোৱাৰিব। যদি আপুনি এই ছাইটটোৰ গৰাকী, তেন্তে আপুনি Web Authentication API ব্যৱহাৰ কৰিবলৈ ইয়াক সলনি কৰা উচিত।</translation>
 <translation id="4854362297993841467">ডেলিভাৰীৰ এই পদ্ধতিটো নাই। অন্য কোনো পদ্ধতি ব্যৱহাৰ কৰি চাওক।</translation>
 <translation id="4854853140771946034">Google Keepত ক্ষিপ্ৰভাৱে এটা নতুন টোকা সৃষ্টি কৰক</translation>
 <translation id="4876188919622883022">সৰলীকৃত ভিউ</translation>
@@ -1640,6 +1649,7 @@
 <translation id="6757797048963528358">আপোনাৰ ডিভাইচটো সুপ্ত অৱস্থালৈ গৈছে।</translation>
 <translation id="6767985426384634228">ঠিকনা আপডে’ট কৰিবনে?</translation>
 <translation id="6768213884286397650">হেগাকি (প'ষ্টকাৰ্ড)</translation>
+<translation id="6774185088257932239">ইনক’গনিট’ টেবৰ বিষয়ে <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">বেঙুনীয়া</translation>
 <translation id="6786747875388722282">এক্সটেনশ্বনসমূহ</translation>
@@ -1687,6 +1697,7 @@
 <translation id="6965382102122355670">ঠিক আছে</translation>
 <translation id="6965978654500191972">ডিভাইচ</translation>
 <translation id="696703987787944103">পাৰ্চেপশ্বুৱেল</translation>
+<translation id="6968269510885595029">আপোনাৰ সুৰক্ষা সম্পৰ্কীয় চাবিটো ব্যৱহাৰ কৰক</translation>
 <translation id="6970216967273061347">জিলা</translation>
 <translation id="6971439137020188025">Slidesত ক্ষিপ্ৰতাৰে এটা নতুন Google উপস্থাপন সৃষ্টি কৰক</translation>
 <translation id="6972629891077993081">HID ডিভাইচসমূহ</translation>
@@ -1750,6 +1761,7 @@
 <translation id="7210863904660874423"><ph name="HOST_NAME" />এ সুৰক্ষাৰ নীতি মানি নচলে।</translation>
 <translation id="7210993021468939304">কণ্টেইনাৰটোৰ ভিতৰৰ Linux কাৰ্যকলাপে কণ্টেইনাৰৰ ভিতৰত থকা Linux এপ্‌সমূহ ইনষ্টল কৰিব আৰু চলাব পাৰে</translation>
 <translation id="721197778055552897">এই সমস্যাটোৰ বিষয়ে <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" />।</translation>
+<translation id="7215025035562547931">সঠিকতা বিবেচনা কৰিবলৈ অলপ সময় লওক</translation>
 <translation id="7217745192097460130">আপোনাৰ ক্ৰয়টো সত্যাপন আৰু সম্পূৰ্ণ কৰিবলৈ স্পৰ্শ আইডি ব্যৱহাৰ কৰিবনে?</translation>
 <translation id="7219179957768738017">সংযোগটোৱে <ph name="SSL_VERSION" /> ব্যৱহাৰ কৰে।</translation>
 <translation id="7220786058474068424">প্ৰক্ৰিয়া চলি আছে</translation>
@@ -2084,6 +2096,12 @@
 <translation id="8307888238279532626">কি এপ্‌ ইনষ্টল কৰা হৈছে আৰু সেইবোৰ কিমান সঘনাই ব্যৱহাৰ কৰা হৈছে</translation>
 <translation id="831207732689920588">এই পৃষ্ঠাখন সন্দেহজনক (Chromeএ ফ্লেগ কৰিছে)।</translation>
 <translation id="831997045666694187">সন্ধিয়া</translation>
+<translation id="8328484624016508118">আটাইবোৰ ইনক’গ্নিট’ টেব বন্ধ কৰাৰ পাছত, Chromeএ তলত দিয়া তথ্যসমূহ মচে:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />এই ডিভাইচটোত আপোনাৰ ব্ৰাউজিঙৰ কার্যকলাপ<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />এই ডিভাইচটোৰ পৰা আপোনাৰ সন্ধানৰ ইতিহাস<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />ফ'র্মত দিয়া তথ্য<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489"><ph name="HOST_NAME" />লৈ এক্সেছ অগ্ৰাহ্য কৰা হৈছিল</translation>
 <translation id="833262891116910667">হাইলাইট</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> ভাষাৰ পৃষ্ঠাসমূহ অনুবাদ কৰা নহয়</translation>

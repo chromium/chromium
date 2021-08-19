@@ -2211,6 +2211,7 @@
 <translation id="3305661444342691068">Preview এপত PDFটো খোলক</translation>
 <translation id="3308116878371095290">এই পৃষ্ঠাটোক কুকী ছেট কৰা বাধা দিয়া হৈছে।</translation>
 <translation id="3308134619352333507">লুকুৱাবলৈ ব্যৱহাৰ কৰা বুটাম</translation>
+<translation id="3308681281309926497">আপুনি Chrome বন্ধ নকৰালৈকে আপুনি চোৱা ছাইটসমূহে তথাপি আপোনাৰ তথ্য মনত ৰাখিব পাৰে</translation>
 <translation id="3308738399950580893">বিজ্ঞাপন</translation>
 <translation id="3308852433423051161">Google Assistant ল'ড কৰি থকা হৈছে...</translation>
 <translation id="3309330461362844500">প্ৰমাণপত্ৰৰ প্ৰ’ফাইলৰ আইডি</translation>
@@ -2764,6 +2765,7 @@
 <translation id="3873423927483480833">পিনসমূহ দেখুৱাওক</translation>
 <translation id="3873915545594852654">ARC++ৰ ক্ষেত্ৰত এটা সমস্যাই দেখা দিছে।</translation>
 <translation id="3874164307099183178">Google Assistant অন কৰক</translation>
+<translation id="3875815154304214043">এটা নতুন ব্ৰাউজাৰৰ টেবত খুলিবলৈ <ph name="APP_NAME" /> ছেট কৰা আছে, সমৰ্থিত লিংকসমূহো ব্ৰাউজাৰটোত খুলিব। <ph name="BEGIN_LINK_LEARN_MORE" />অধিক জানক<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" />ৰ ডিভাইচৰ Nearby Share কৰাৰ সুবিধাটোৰ ছেটিং, <ph name="USER_EMAIL" /> একাউণ্টৰ অধীনত শ্বেয়াৰ কৰি থকা হৈছে।</translation>
 <translation id="3879748587602334249">ডাউনল’ড মেনেজাৰ</translation>
 <translation id="3882165008614329320">কেমেৰা অথবা ফাইলৰ পৰা ইতিমধ্যে থকা ভিডিঅ’</translation>
@@ -3908,6 +3910,7 @@
 <translation id="5157635116769074044">এই পৃষ্ঠাটো আৰম্ভণিতে দেখা পোৱা স্ক্ৰীণত পিন কৰক...</translation>
 <translation id="5159094275429367735">Crostini ছেট আপ কৰক</translation>
 <translation id="5159419673777902220">আপোনাৰ অভিভাৱকে এক্সটেনশ্বনৰ অনুমতিসমূহ অক্ষম কৰিছে</translation>
+<translation id="5159643365935452998">স্বয়ংক্ৰিয়ভাৱে ডেটা মচাটো পর্যালোচনা কৰক</translation>
 <translation id="5160634252433617617">কায়িক কীব’ৰ্ড</translation>
 <translation id="5160857336552977725">আপোনাৰ <ph name="DEVICE_TYPE" />ত ছাইন ইন কৰক</translation>
 <translation id="5161251470972801814"><ph name="VENDOR_NAME" />ৰ ইউএছবি ডিভাইচ</translation>
@@ -4470,6 +4473,7 @@
 <translation id="5790651917470750848">প’ৰ্ট ফৰৱাৰ্ড কৰাৰ সুবিধাটো ইতিমধ্যে আছে</translation>
 <translation id="5792728279623964091">অনুগ্ৰহ কৰি, আপোনাৰ পাৱাৰ বুটামটো টিপক</translation>
 <translation id="5793339252089865437">আপুনি যদি আপডে'টটো ম'বাইল ডেটা ব্যৱহাৰ কৰি ডাউনল'ড কৰে, এইটোৰ বাবে অতিমাত্ৰা মাচুল ভৰিবলগীয়া হ'ব পাৰে।</translation>
+<translation id="5794034487966529952"><ph name="DESK_TITLE" /> ডেস্কৰ <ph name="NUM_BROWSERS" /> খন ব্ৰাউজাৰৰ ৱিণ্ড' খোলা আছে</translation>
 <translation id="5794414402486823030">সদায় ছিষ্টেম ভিউৱাৰৰ জৰিয়তে খোলক</translation>
 <translation id="5794700615121138172">Linuxৰ শ্বেয়াৰ কৰা ফ’ল্ডাৰসমূহ</translation>
 <translation id="5794786537412027208">সকলো Chrome এপৰ পৰা বাহিৰ হওঁক</translation>

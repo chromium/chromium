@@ -43,6 +43,7 @@
 <translation id="3227137524299004712">麦克风</translation>
 <translation id="3240426699337459095">已复制链接</translation>
 <translation id="3259149966178251584">摄像头分辨率</translation>
+<translation id="3260401663013584785">检测不到文件</translation>
 <translation id="3448774564454087943">未能保存此视频，因为它太短了</translation>
 <translation id="3517926952904427380">无法拍摄纵向照片</translation>
 <translation id="3569311554794739032">确定要移除“<ph name="FILE" />”吗？</translation>
@@ -50,6 +51,7 @@
 <translation id="3838931309141338733">扫描条形码</translation>
 <translation id="3892148308691398805">复制文字</translation>
 <translation id="4118525110028899586">暂停录制</translation>
+<translation id="4121305183798804752">检测到文件</translation>
 <translation id="4269820728363426813">复制链接地址</translation>
 <translation id="4279490309300973883">正在镜像</translation>
 <translation id="4329152592498422850">切换到正方形照片拍摄模式</translation>

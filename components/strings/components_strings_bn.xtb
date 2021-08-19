@@ -272,6 +272,7 @@
 <translation id="1838374766361614909">সার্চ সাফ করুন</translation>
 <translation id="1839551713262164453">নীতির মূল্য যাচাইকরণে সমস্যা হওয়ার জন্য যাচাই করা যায়নি</translation>
 <translation id="1842969606798536927">পেমেন্ট করুন</translation>
+<translation id="1856713167556118146">'ছদ্মবেশী' মোড কী করতে পারে না</translation>
 <translation id="1871208020102129563">
 প্রক্সি স্থির প্রক্সি সার্ভারগুলি ব্যবহার করতে সেট করা আছে কোনো .pac স্ক্রিপ্ট URL নয়৷</translation>
 <translation id="1871284979644508959">আবশ্যক ক্ষেত্র</translation>
@@ -1020,6 +1021,7 @@
 <translation id="4465818729556336129">এই ডকুমেন্ট গোপনীয় বলে আপনার অ্যাডমিনিস্ট্রেটর এটি প্রিন্ট না করার পরামর্শ দিচ্ছে।</translation>
 <translation id="4476953670630786061">এই ফর্ম নিরাপদ নয়। অটোফিল বন্ধ করে দেওয়া হয়েছে।</translation>
 <translation id="4477350412780666475">পরের ট্র্যাক চালান</translation>
+<translation id="4481251927743463293">'ছদ্মবেশী' মোড কী করে</translation>
 <translation id="4481394504112738036">গোপনীয় ফাইল</translation>
 <translation id="4482953324121162758">এই সাইটটি অনুবাদ করা হবে না।</translation>
 <translation id="4490717597759821841">A7</translation>
@@ -1120,10 +1122,17 @@
 <translation id="4819347708020428563">ডিফল্ট ভিউতে অ্যানোটেশন এডিট করবেন?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, চটপট নতুন Google Sheet তৈরি করতে প্রথমে Tab, তারপরে Enter প্রেস করুন</translation>
 <translation id="4825507807291741242">ক্ষমতাশালী</translation>
+<translation id="4827402517081186284">'ছদ্মবেশী' মোড আপনাকে অনলাইন থাকাকালীন অদৃশ্য করে রাখে না:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />সাইটগুলি জানে যে আপনি কখন সেগুলি ভিজিট করেন<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />নিয়োগকর্তা বা স্কুল ব্রাউজিং অ্যাক্টিভিটি ট্র্যাক করতে পারে<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />ইন্টারনেট পরিষেবা প্রদানকারী, ওয়েব ট্রাফিক মনিটর করতে পারে<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="4838327282952368871">স্বপ্নালু</translation>
 <translation id="484462545196658690">অটো</translation>
 <translation id="4850886885716139402">দেখুন</translation>
 <translation id="485316830061041779">জার্মান</translation>
+<translation id="4853901935952445031">২০২২ সালের ফেব্রুয়ারি মাসের পর থেকে, এই সাইট U2F API ব্যবহার করতে পারবে না। আপনি এই সাইটের মালিক হলে, Web Authentication API ব্যবহার করার জন্য আপনাকে এটি পরিবর্তন করতে হবে।</translation>
 <translation id="4854362297993841467">এই পদ্ধতিতে ডেলিভারি করা যাবে না। অন্য পদ্ধতি ব্যবহার করুন।</translation>
 <translation id="4854853140771946034">Google Keep-এ চটপট নতুন নোট তৈরি করুন</translation>
 <translation id="4876188919622883022">সরলীকৃত ভিউ</translation>
@@ -1645,6 +1654,7 @@
 <translation id="6757797048963528358">আপনার ডিভাইস নিদ্রা মোডে গিয়েছে।</translation>
 <translation id="6767985426384634228">ঠিকানা আপডেট করবেন?</translation>
 <translation id="6768213884286397650">Hagaki (Postcard)</translation>
+<translation id="6774185088257932239">'ছদ্মবেশী' মোড সম্পর্কে <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">বেগুনি</translation>
 <translation id="6786747875388722282">এক্সটেনশানসমূহ</translation>
@@ -1692,6 +1702,7 @@
 <translation id="6965382102122355670">ঠিক আছে</translation>
 <translation id="6965978654500191972">ডিভাইস</translation>
 <translation id="696703987787944103">পারসেপচুয়াল</translation>
+<translation id="6968269510885595029">আপনার 'নিরাপত্তা কী' ব্যবহার করুন</translation>
 <translation id="6970216967273061347">জেলা</translation>
 <translation id="6971439137020188025">Slides-এ চটপট নতুন Google প্রেজেন্টেশন তৈরি করুন</translation>
 <translation id="6972629891077993081">HID ডিভাইস</translation>
@@ -1757,6 +1768,7 @@
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> নিরাপত্তা মান মেনে চলে না।</translation>
 <translation id="7210993021468939304">কন্টেনারের মধ্যে Linux অ্যাক্টিভিটি দেখা যাবে এবং কন্টেনারের মধ্যেই Linux অ্যাপ ইনস্টল করা ও চালানো যাবে</translation>
 <translation id="721197778055552897">এই সমস্যাটি সম্পর্কে <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" />৷</translation>
+<translation id="7215025035562547931">কিছুটা সময় নিন এবং পৃষ্ঠাটি আরও ভাল করে তুলতে সাহায্য করুন</translation>
 <translation id="7217745192097460130">আপনার কেনাকাটা যাচাই ও সম্পূর্ণ করতে টাচ আইডি ব্যবহার করবেন?</translation>
 <translation id="7219179957768738017">এই সংযোগটি <ph name="SSL_VERSION" />টি ব্যবহার করে</translation>
 <translation id="7220786058474068424">প্রক্রিয়ায় রয়েছে</translation>
@@ -2092,6 +2104,12 @@
 <translation id="8307888238279532626">কোন কোন অ্যাপ ইনস্টল করা আছে এবং কত ঘন ঘন সেগুলি ব্যবহার করা হয়েছে</translation>
 <translation id="831207732689920588">এই পৃষ্ঠাটি সন্দেহজনক বলে মনে হচ্ছে (Chrome থেকে ফ্ল্যাগ করা হয়েছে)।</translation>
 <translation id="831997045666694187">সন্ধ্যা</translation>
+<translation id="8328484624016508118">সব 'ছদ্মবেশী' ট্যাব বন্ধ করার পরে, Chrome এগুলি মুছে ফেলে:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />এই ডিভাইস থেকে আপনার ব্রাউজিং অ্যাক্টিভিটি<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />এই ডিভাইস থেকে আপনার সার্চ ইতিহাস<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />ফর্মে লেখা তথ্য<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489"><ph name="HOST_NAME" /> এ অ্যাক্সেস অস্বীকার করা হয়েছে</translation>
 <translation id="833262891116910667">হাইলাইট</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> ভাষার পৃষ্ঠার অনুবাদ করা হবে না</translation>

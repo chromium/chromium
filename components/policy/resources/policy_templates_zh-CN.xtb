@@ -271,6 +271,7 @@
 
       如果此政策设为 false，<ph name="PRODUCT_NAME" /> 将禁止使用访客个人资料登录。</translation>
 <translation id="1363275621236827384">允许在 Quirks Server 中查询硬件配置文件</translation>
+<translation id="1372618949173323717">停用 JavaScript</translation>
 <translation id="1376119291123231789">启用高级电池充电模式</translation>
 <translation id="1384459581748403878">参考页面：<ph name="REFERENCE_URL" /></translation>
 <translation id="138847842893090358">报告操作系统更新状态</translation>
@@ -305,6 +306,13 @@
        如需详细了解有效的<ph name="URL_LABEL" />格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是此政策可接受的值。
 
        请注意，先前我们误在 Android 设备上启用了此政策，但我们从未在 Android 设备上为这项功能提供完整支持。</translation>
+<translation id="1435493974546396517">控制 <ph name="PRODUCT_NAME" /> 如何在 <ph name="MS_WIN_NAME" /> 和 <ph name="MAC_OS_NAME" /> 上提供“以图片形式打印”选项来打印 PDF。
+
+      如果在 <ph name="MS_WIN_NAME" /> 或 <ph name="MAC_OS_NAME" /> 上打印 PDF，某些打印机有时需要将打印任务光栅化为图片，才能输出正确的结果。
+
+      如果此政策已启用，在打印 PDF 时，<ph name="PRODUCT_NAME" /> 将在“打印预览”对话框中提供“以图片形式打印”选项。
+
+      如果此政策已停用或未设置，<ph name="PRODUCT_NAME" /> 将不会在“打印预览”对话框中向用户提供“以图片形式打印”选项，PDF 将会像平常一样打印，而不会在发送到目的地之前光栅化为图片。</translation>
 <translation id="1435659902881071157">设备级网络配置</translation>
 <translation id="1438739959477268107">默认的密钥生成设置</translation>
 <translation id="1449083855104537880">如果此政策设为 True，无障碍选项将会显示在系统任务栏菜单中。如果此政策设为 False，这些选项就不会显示在菜单中。
@@ -537,6 +545,13 @@
       如果您设置了此政策，当设备上的可用磁盘空间少于此政策规定的数值时，<ph name="PLUGIN_VM_NAME" /> 安装会失败。</translation>
 <translation id="1690383938831887552">阻止加载通过 Signed HTTP Exchange (SXG) 提供的内容</translation>
 <translation id="169467210981344373">停用全局范围的 HTTP 身份验证缓存</translation>
+<translation id="1698810555265314018">控制 <ph name="PRODUCT_NAME" /> 以光栅化模式打印 PDF 时的打印图片分辨率。
+
+      使用“以图片形式打印”选项打印 PDF 时，不妨指定与设备的打印机设置或 PDF 默认值不同的打印分辨率，因为这样做可能会大有裨益。高分辨率会显著增加处理和打印用时，低分辨率则可能会导致图片质量不佳。
+
+      此政策允许设置特定分辨率，以用于在打印之前进行 PDF 光栅化。
+
+      如果此政策设为零或根本未设置，系统将在对网页图片进行光栅化时使用系统默认分辨率。</translation>
 <translation id="1700458869527146675">通过设置此政策，您可为 Chrome 和 ARC 应用配置代理设置，它们会忽略从命令行中指定的所有与代理有关的选项。
 
        如果您未设置此政策，用户便可自行选择代理设置。
@@ -2047,6 +2062,7 @@
 <translation id="348495353354674884">启用虚拟键盘</translation>
 <translation id="3485200437120267231">停用登录拦截功能</translation>
 <translation id="3487651201232258606">原生消息传递</translation>
+<translation id="3492351353716550742">不使用默认引荐来源网址政策值 no-referrer-when-downgrade</translation>
 <translation id="3492834335089638487">此政策用于控制设备对来源不受信任（不是来自 Google Play 商店）的 Android 应用的使用。
 
       不设置此政策的值等同于禁止使用此功能。
@@ -2063,6 +2079,7 @@
 <translation id="350443680860256679">配置 ARC</translation>
 <translation id="350797926066071931">启用翻译</translation>
 <translation id="3508047333410537654">在登录屏幕上启用“单声道音频”</translation>
+<translation id="3513265258454735822">允许保存浏览器历史记录</translation>
 <translation id="3513655665999652754">Quirks Server 可提供硬件方面的配置文件（例如 ICC 显示配置文件），以调整显示器校准。
 
       如果此政策设为 false，设备将不会尝试联系 Quirks Server 来下载配置文件。
@@ -2367,6 +2384,7 @@
 
       如果未设置此政策，将可以使用 SPDY 协议。</translation>
 <translation id="3891357445869647828">启用 JavaScript</translation>
+<translation id="3891769546914233112">提供“以图片形式打印 PDF 文件”选项</translation>
 <translation id="3897218615484393758">限制通过 SAML 验证身份的用户可在锁定屏幕上离线登录的时长</translation>
 <translation id="3898345958122666461">开启 NTLMv2</translation>
 <translation id="3898795800259311780">允许或拒绝屏幕截图</translation>
@@ -2666,6 +2684,7 @@
 <translation id="4372704773119750918">不允许企业用户成为多用户配置的用户（一级或二级）</translation>
 <translation id="4377599627073874279">允许所有网站显示所有图片</translation>
 <translation id="437791893267799639">政策未设置，禁止数据迁移和 ARC</translation>
+<translation id="4381227367939912539">禁止玩恐龙复活节彩蛋游戏</translation>
 <translation id="4382413175336720282">已停用实时网址检查功能。</translation>
 <translation id="4387741272680827493">通过设置此政策，您可以指定一系列可绕过预加载的 HSTS 升级（从 HTTP 升级到 HTTPS）的主机名。
 
@@ -2724,6 +2743,7 @@
       尽管上述平台均支持此政策，但此政策启用的功能在其中的少数平台上可能无法使用。并非所有已弃用的网络平台功能都可重新启用。只有下面明确列出的功能才能在限定的时间（具体因功能而异）内重新发挥功效。字符串标记的常用格式为 [已弃用功能的名称]_EffectiveUntil[yyyymmdd]。要了解更改网络平台功能的意图，请访问 https://bit.ly/blinkintents。
       </translation>
 <translation id="4442582539341804154">当设备进入待机或暂停状态时启用锁定</translation>
+<translation id="4443711908766051441">允许玩恐龙复活节彩蛋游戏</translation>
 <translation id="4447668084338250480">内网重定向行为</translation>
 <translation id="4449469846627734399">设定日间用电高峰转移配置</translation>
 <translation id="4449545651113180484">将屏幕顺时针旋转 270 度</translation>
@@ -3969,6 +3989,7 @@
 <translation id="6135398260575578389">“安全浏览”功能会处于开启状态且会在增强模式下运行。此模式可提高安全性，但需与 Google 分享更多浏览信息。</translation>
 <translation id="6138636318340561140">实时查看网址的安全浏览状态</translation>
 <translation id="6141402445226505817">一律使用粗略式时区检测方式</translation>
+<translation id="6142501278956229253">打印光栅化的 PDF DPI</translation>
 <translation id="6144046700495610112">如果此政策已启用，当首次运行浏览器时，系统将会从先前的默认浏览器导入自动填充表单数据。如果此政策已停用或未设置，当首次运行浏览器时，系统不会导入任何自动填充表单数据。
 
       用户可以触发导入对话框，系统将会根据此政策的值选中或不选中“自动填充表单数据”复选框。</translation>
@@ -4155,6 +4176,7 @@
 <translation id="6401669939808766804">使用户退出</translation>
 <translation id="640244877779556713">启用表情符号建议</translation>
 <translation id="6407093060083181305">配置扩展程序安装屏蔽名单</translation>
+<translation id="640827304541402854">禁止从远程访问主机穿越防火墙</translation>
 <translation id="6417265370957905582">Google 助理</translation>
 <translation id="6422575351619065453">在自助服务终端模式中，用于控制是否显示悬浮无障碍功能菜单。
 
@@ -5621,6 +5643,7 @@
 <translation id="8244171102276095471">在 TLS 中启用 RC4 加密套件</translation>
 <translation id="8244525275280476362">政策失效后的最大提取延迟</translation>
 <translation id="8245574649143980200">如果此政策未设置或已启用，用户便可以在上下文菜单中查看和使用 <ph name="GOOGLE_LENS_PRODUCT_NAME" />区域搜索菜单项。如果此政策已停用，而且系统支持 <ph name="GOOGLE_LENS_PRODUCT_NAME" />区域搜索，用户将不会在上下文菜单中看到 <ph name="GOOGLE_LENS_PRODUCT_NAME" />区域搜索菜单项。</translation>
+<translation id="824818544897669723">禁止删除浏览器历史记录和下载记录</translation>
 <translation id="82530263956734297">要从屏蔽名单中排除的扩展程序 ID</translation>
 <translation id="8256688113167012935">控制 <ph name="PRODUCT_OS_NAME" />在登录屏幕上为相应的设备本地帐号显示的帐号名。
 
@@ -6025,6 +6048,7 @@
       基于扩展程序的打印机也称为打印提供程序目的地，包括 <ph name="PRODUCT_NAME" /> 扩展程序名下的所有目的地。
 
       本地打印机也称为本机打印目的地，包括可供本地计算机使用的目的地以及共享的网络打印机。</translation>
+<translation id="8753264624162178499">向用户提供“以图片形式打印”选项，以允许在将打印任务发送到目的地之前进行 PDF 光栅化。</translation>
 <translation id="8757552286070680084">Wilco DTC 配置</translation>
 <translation id="8758831693895931466">启用强制性云管理注册</translation>
 <translation id="8759829385824155666">允许的 Kerberos 加密类型</translation>
@@ -6058,6 +6082,7 @@
           如果未设置，此政策将不会产生任何影响。在这种情况下，此计算机上的远程访问连接将不会受到任何时长上限的制约。</translation>
 <translation id="8800453707696044281">设置电池充电自定义停止充电值（以百分比表示）</translation>
 <translation id="8801680448782904838">系统建议或要求重新启动浏览器或重启设备时，通知用户</translation>
+<translation id="8804685015028424497">停用无痕模式</translation>
 <translation id="8807313206348471682">显示让用户确认退出登录的对话框</translation>
 <translation id="8817960019535659860">阻止用户通过注册 Chrome 操作系统来兑换优惠</translation>
 <translation id="8818173863808665831">报告设备的地理位置。
@@ -6408,6 +6433,7 @@
 <translation id="9207596996305971030">不报告登录/退出事件</translation>
 <translation id="9213751049772256263">停用所有变体</translation>
 <translation id="9217154963008402249">发送监控网络数据包的频率</translation>
+<translation id="9220314833408124365">使用默认引荐来源网址政策值 no-referrer-when-downgrade</translation>
 <translation id="922540222991413931">配置扩展程序、应用和用户脚本安装源</translation>
 <translation id="924557436754151212">首次运行时，从默认浏览器导入保存的密码</translation>
 <translation id="927384371566552478">如果此政策已启用或未设置，用户便可使用导出/导入界面。如果此政策已停用，用户便无法使用导出/导入界面。</translation>
@@ -6437,6 +6463,7 @@
 
       注意：屏蔽内部 chrome://* 网址可能会导致意外的错误。</translation>
 <translation id="957778406002650056">可供下载相应 <ph name="PLUGIN_VM_NAME" /> 图片的网址。</translation>
+<translation id="971677226939413180">提供“以图片形式打印”选项供用户选择。</translation>
 <translation id="974349541138387272">指定所需 DNS-over-HTTPS 解析器的 URI 模板</translation>
 <translation id="979467274961593903">不允许进行远程调试</translation>
 <translation id="980218166381006412">如果此政策已启用，系统会开启后台模式。在后台模式下，<ph name="PRODUCT_NAME" /> 进程会在用户登录操作系统时启动，并会在最后一个浏览器窗口关闭后继续运行，从而使后台应用和浏览会话保持活动状态。系统任务栏中会显示该后台进程的图标，用户可以随时在此处关闭该后台进程。

@@ -994,6 +994,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4358461427845829800">Pamahalaan ang mga paraan ng pagbabayad...</translation>
 <translation id="4359160567981085931">Kakalagay mo lang ng iyong password sa isang mapanlinang na site. Makakatulong ang Chrome. Para palitan ang iyong password at abisuhan ang Google na posibleng nasa panganib ang iyong account, i-click ang Protektahan ang Account.</translation>
 <translation id="4367563149485757821">Number-12 (Envelope)</translation>
+<translation id="437040971055499437">Nagkaroon ng event tungkol sa seguridad</translation>
 <translation id="437058704415269440">Balanse sa Account</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Inaasahang <ph name="VALUE_TYPE" /> na halaga.</translation>
@@ -1403,6 +1404,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5803412860119678065">Gusto mo bang ilagay ang iyong <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Mga Pahintulot</translation>
 <translation id="5810442152076338065">Naka-encrypt ang iyong koneksyon sa <ph name="DOMAIN" /> gamit ang isang hindi na ginagamit na cipher suite.</translation>
+<translation id="5812947184178430888">Kapag na-flag ng Chrome ang mga event tungkol sa seguridad, ipapadala sa iyong administrator ang nauugnay na data tungkol sa mga event. Puwedeng kabilang dito ang mga URL ng mga page na binibisita mo sa Chrome, mga pangalan ng file o metadata, at ang username na iyong ginagamit para mag-sign in sa mga web based na application, sa device mo at sa Chrome.</translation>
 <translation id="5813119285467412249">&amp;Gawing Muli ang Pagdagdag</translation>
 <translation id="5817918615728894473">Ipares</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Sisingilin ang card na ito kapag nagbayad ka, pero hindi ibabahagi sa site na ito ang totoong numero nito. Para sa karagdagang seguridad, bubuo ng pansamantalang CVC.}one{Sisingilin ang card na iyong pipiliin kapag nagbayad ka, pero hindi ibabahagi sa site na ito ang totoong numero nito. Para sa karagdagang seguridad, bubuo ng pansamantalang CVC.}other{Sisingilin ang card na iyong pipiliin kapag nagbayad ka, pero hindi ibabahagi sa site na ito ang totoong numero nito. Para sa karagdagang seguridad, bubuo ng pansamantalang CVC.}}</translation>

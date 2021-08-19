@@ -4432,6 +4432,7 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
           Wurde "false" oder "not configured" festgelegt, wird die Erstellung und Anmeldung betreuter Nutzer deaktiviert. Alle vorhandenen betreuten Nutzer werden ausgeblendet.
 
           Hinweis: Das Standardverhalten bei Geräten für Kunden und bei Geräten für Unternehmen ist unterschiedlich: Bei Geräten für Kunden sind betreute Nutzer standardmäßig aktiviert, bei Geräten für Unternehmen hingegen sind sie standardmäßig deaktiviert.</translation>
+<translation id="665023848306499203">Geräten das Festlegen einer bestimmten Updateversion erlauben</translation>
 <translation id="6652197835259177259">Einstellungen für lokal verwaltete Nutzer</translation>
 <translation id="6653897159826215341">Wenn die Richtlinie aktiviert ist, öffnet <ph name="PRODUCT_NAME" /> nicht die integrierte Druckvorschau, sondern das Druckdialogfeld des Systems, wenn ein Nutzer die Druckfunktion verwendet.
 
@@ -5144,6 +5145,20 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
 <translation id="7477231245051133709">Bedienungshilfe "Mono-Audio" aktivieren</translation>
 <translation id="7477239290070847560">Zeroconf-basierte (mDNS + DNS-SD) Protokollziele</translation>
 <translation id="7485481791539008776">Regeln zur Auswahl des Standarddruckers</translation>
+<translation id="7493995861907758679">Mit dieser Einstellung können Sie für Geräteupdates eine bestimmte Zielversion von <ph name="PRODUCT_OS_NAME" /> festlegen.
+
+      Wenn sie nicht aktiviert ist, werden Updates entsprechend sonstigen vorgenommenen Einstellungen durchgeführt oder die Geräte werden auf die neueste verfügbare Version aktualisiert.
+
+      Ist die Einstellung aktiviert, wird auf die ausgewählte Version aktualisiert.
+
+      Das genaue Format des Richtlinienwerts ist abhängig vom Updatedienst und kann sich ändern. Der Wert wird nicht auf dem Gerät verarbeitet.
+
+      Bei Verwendung zusammen mit <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> prüft der Updatedienst zuerst die Richtlinie für die Versionsauswahl.
+      Die Geräte bleiben so lange auf der festgelegten Version, bis diese Richtlinie geändert wird. (Wenn <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> allein verwendet wird, sind je nach festgelegtem Wert kleinere Updates möglich.)
+
+      Durch Kombination mit <ph name="DEVICE_ROLLBACK_TO_TARGET_VERSION_POLICY_NAME" /> können die Geräte auf eine frühere Version zurückgesetzt werden.
+
+      Warnung: Google rät von Versionsbeschränkungen ab, da die Geräte dann möglicherweise weder Softwareupdates noch kritische Sicherheitskorrekturen erhalten. Updatebeschränkungen auf eine bestimmte Version können ein Risiko für die Nutzer sein.</translation>
 <translation id="7506745375479451616">Mit dieser Richtlinie wird der Befehl konfiguriert, mit dem URLs in <ph name="PRODUCT_NAME" /> geöffnet werden, wenn von <ph name="IE_PRODUCT_NAME" /> dorthin gewechselt wird. Diese Richtlinie kann mit einem Pfad zur ausführbaren Datei oder <ph name="PRODUCT_NAME_PLACEHOLDER" /> konfiguriert werden, damit das Verzeichnis von <ph name="PRODUCT_NAME" /> automatisch erkannt wird.
 
       Ist die Richtlinie nicht konfiguriert, erkennt <ph name="IE_PRODUCT_NAME" /> den Pfad zur ausführbaren Datei von <ph name="PRODUCT_NAME" /> automatisch, wenn <ph name="PRODUCT_NAME" /> über Internet Explorer geöffnet wird.

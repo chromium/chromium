@@ -983,6 +983,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="4358461427845829800">Zahlungsmethoden verwalten…</translation>
 <translation id="4359160567981085931">Sie haben Ihr Passwort gerade auf einer verdächtigen Website eingegeben. Chrome kann Ihnen helfen. Wenn Sie Ihr Passwort ändern und Google darüber informieren möchten, dass Ihr Konto gefährdet sein könnte, klicken Sie auf "Konto schützen".</translation>
 <translation id="4367563149485757821">Number-12 (Umschlag)</translation>
+<translation id="437040971055499437">Sicherheitshinweis aufgetreten</translation>
 <translation id="437058704415269440">Guthaben</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Erwarteter <ph name="VALUE_TYPE" />-Wert</translation>
@@ -1392,6 +1393,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="5803412860119678065">Möchten Sie die Daten Ihrer <ph name="CARD_DETAIL" /> eingeben?</translation>
 <translation id="5804241973901381774">Berechtigungen</translation>
 <translation id="5810442152076338065">Ihre Verbindung zu <ph name="DOMAIN" /> ist mit einer veralteten Codier-Suite verschlüsselt.</translation>
+<translation id="5812947184178430888">Wenn Chrome Sicherheitshinweise meldet, werden relevante Informationen an Ihren Administrator gesendet. Dazu gehören z. B. URLs der von Ihnen in Chrome besuchten Seiten, Dateinamen oder Metadaten sowie der Nutzername, den Sie zum Anmelden in Webanwendungen, auf Ihrem Gerät und in Chrome verwenden.</translation>
 <translation id="5813119285467412249">&amp;Hinzufügen wiederholen</translation>
 <translation id="5817918615728894473">Koppeln</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Diese Karte wird beim Bezahlen zwar belastet, doch die echte Kreditkartennummer wird nicht an diese Website weitergegeben. Für zusätzliche Sicherheit wird ein temporärer CVC generiert.}other{Die ausgewählte Karte wird beim Bezahlen zwar belastet, doch die echte Kreditkartennummer wird nicht an diese Website weitergegeben. Für zusätzliche Sicherheit wird ein temporärer CVC generiert.}}</translation>

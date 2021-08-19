@@ -93,6 +93,7 @@
 <translation id="1615402009686901181">কোনও গোপনীয় কন্টেন্ট দেখা গেলে অ্যাডমিনিস্ট্রেটরের সেট করা নীতি অনুযায়ী স্ক্রিন ক্যাপচার করার সুবিধা বন্ধ করে দেওয়া হয়</translation>
 <translation id="1632985212731562677">সেটিংস &gt; অ্যাক্সেসিবিলিটি বিকল্পে গিয়ে 'অ্যাক্সেস পাল্টান' ফিচারটি বন্ধ করা করতে পারেন।</translation>
 <translation id="1654477262762802994">ভয়েস কোয়েরি শুরু করুন</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Assistant-এ ফলাফল দেখতে Search ও Space 'কী' প্রেস করুন।</translation>
 <translation id="1667964833127753507">'নিউট্রাল কালার' মোড ওয়ালপেপার থেকে রং নিয়ে ব্যবহার করে না। এর পরিবর্তে নিউট্রাল টোনযুক্ত কিছু হালকা অথবা গাঢ় হিউ ব্যবহার করা হয়।</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> বাকি আছে</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> ফিচারটি কানেক্ট করা নেই।</translation>
@@ -140,6 +141,7 @@
 <translation id="2016340657076538683">একটি মেসেজ লিখুন</translation>
 <translation id="2018630726571919839">একটি জোকস শোনাও</translation>
 <translation id="2021864487439853900">আনলক করতে ক্লিক করুন</translation>
+<translation id="2023558322300866873">আপনি যেকোনও সময় প্যাকেট ক্যাপচার বন্ধ করে দিতে পারবেন</translation>
 <translation id="2047639699071423250">কী আইডিয়া যোগ করুন</translation>
 <translation id="2049240716062114887">ডেস্কের নাম পরিবর্তন করে <ph name="DESK_NAME" /> রাখা হয়েছে</translation>
 <translation id="2050339315714019657">প্রতিকৃতি</translation>
@@ -542,6 +544,7 @@
 <translation id="5083553833479578423">অ্যাসিস্ট্যান্ট-এর আরও বৈশিষ্ট্য আনলক করুন।</translation>
 <translation id="5136175204352732067">বিভিন্ন কীবোর্ড কানেক্ট করা হয়েছে</translation>
 <translation id="5155897006997040331">পড়ার গতি</translation>
+<translation id="5166918508782100047">'কুইক আন্সার' সেটিংস</translation>
 <translation id="5168181903108465623">কাস্ট ডিভাইসগুলি উপলব্ধ</translation>
 <translation id="5170568018924773124">ফোল্ডারে দেখান</translation>
 <translation id="5176318573511391780">আংশিক স্ক্রিন রেকর্ড করুন</translation>
@@ -796,6 +799,7 @@
 <translation id="7302889331339392448">লাইভ ক্যাপশন বন্ধ আছে।</translation>
 <translation id="7303365578352795231">অন্য ডিভাইসে উত্তর দেওয়া হচ্ছে।</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Search-এ ফলাফল দেখতে Search ও Space 'কী' প্রেস করুন।</translation>
 <translation id="7346909386216857016">ঠিক আছে, বুঝেছি</translation>
 <translation id="7348093485538360975">অন-স্ক্রীণ কীবোর্ড</translation>
 <translation id="735745346212279324">VPN ডিসকানেক্ট করা হয়েছে</translation>

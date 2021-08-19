@@ -2195,6 +2195,7 @@
 <translation id="3305661444342691068">使用预览程序打开 PDF</translation>
 <translation id="3308116878371095290">系统已禁止设置此网页的 Cookie。</translation>
 <translation id="3308134619352333507">隐藏按钮</translation>
+<translation id="3308681281309926497">在您关闭 Chrome 之前，您访问的网站仍能记住您的信息</translation>
 <translation id="3308738399950580893">广告</translation>
 <translation id="3308852433423051161">正在加载 Google 助理…</translation>
 <translation id="3309330461362844500">证书 ID</translation>
@@ -2748,6 +2749,7 @@
 <translation id="3873423927483480833">显示 PIN 码</translation>
 <translation id="3873915545594852654">ARC++ 出问题了。</translation>
 <translation id="3874164307099183178">开启 Google 助理</translation>
+<translation id="3875815154304214043"><ph name="APP_NAME" />已设为在新的浏览器标签页中打开，所支持的链接也会在浏览器中打开。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" />的设备的“附近分享”设置，通过帐号 <ph name="USER_EMAIL" /> 进行分享。</translation>
 <translation id="3879748587602334249">下载管理器</translation>
 <translation id="3882165008614329320">来自摄像头或文件的现有视频</translation>
@@ -3894,6 +3896,7 @@
 <translation id="5157635116769074044">将此页固定到“开始”屏幕…</translation>
 <translation id="5159094275429367735">设置 Crostini</translation>
 <translation id="5159419673777902220">您的家长已停用扩展程序权限</translation>
+<translation id="5159643365935452998">查看用于自动清除数据的设置</translation>
 <translation id="5160634252433617617">实体键盘</translation>
 <translation id="5160857336552977725">登录您的<ph name="DEVICE_TYPE" /></translation>
 <translation id="5161251470972801814">由<ph name="VENDOR_NAME" />提供的 USB 设备</translation>
@@ -4457,6 +4460,7 @@
 <translation id="5790651917470750848">端口转发已存在</translation>
 <translation id="5792728279623964091">请点按您的电源按钮</translation>
 <translation id="5793339252089865437">如果您通过移动网络下载更新，则可能需要支付超额费用。</translation>
+<translation id="5794034487966529952">桌面“<ph name="DESK_TITLE" />”打开了 <ph name="NUM_BROWSERS" /> 个浏览器窗口</translation>
 <translation id="5794414402486823030">始终使用系统查看器打开</translation>
 <translation id="5794700615121138172">Linux 共享文件夹</translation>
 <translation id="5794786537412027208">退出所有Chrome应用</translation>
