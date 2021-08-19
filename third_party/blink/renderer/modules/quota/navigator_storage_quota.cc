@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/modules/quota/navigator_storage_quota.h"
 
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -74,6 +75,10 @@ DeprecatedStorageQuota* NavigatorStorageQuota::webkitTemporaryStorage(
 
 DeprecatedStorageQuota* NavigatorStorageQuota::webkitPersistentStorage(
     Navigator& navigator) {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kPersistentQuotaIsTemporaryQuota)) {
+    return webkitTemporaryStorage(navigator);
+  }
   NavigatorStorageQuota& navigator_storage = From(navigator);
   if (!navigator_storage.persistent_storage_) {
     navigator_storage.persistent_storage_ =
