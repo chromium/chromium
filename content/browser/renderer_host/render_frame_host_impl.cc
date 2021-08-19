@@ -3949,6 +3949,28 @@ void RenderFrameHostImpl::DidCommitPageActivation(
   std::unique_ptr<NavigationRequest> owned_request = std::move(request->second);
   navigation_requests_.erase(committing_navigation_request);
 
+#if DCHECK_IS_ON()
+  // We do not support activating a page while subframes have any ongoing
+  // NavigationRequest with a NavigationEntry (this would happen on a navigation
+  // to an existing entry; this is called a "history navigation"). This would be
+  // tricky to support because the NavigationRequest would change its
+  // NavigationController in the course of the activation, and while that may be
+  // safe for a normal navigation, it has more implications for a history
+  // navigation. Fortunately, for prerendering, we do not expect there to be any
+  // ongoing history navigations in a subframe, because we maintain a trivial
+  // session history, so check that nav_entry_id() is 0 here.
+  //
+  // Note that due to PrerenderCommitDeferringCondition, the main frame should
+  // have no ongoing NavigationRequest at all, so it is not checked here.
+  ForEachRenderFrameHost(base::BindRepeating([](RenderFrameHostImpl* rfh) {
+    // Interested only in subframes.
+    if (rfh->is_main_frame())
+      return;
+    for (const auto& pair : rfh->navigation_requests_)
+      DCHECK_EQ(pair.first->nav_entry_id(), 0);
+  }));
+#endif
+
   DidCommitNavigationInternal(std::move(owned_request), std::move(params),
                               /*same_document_params=*/nullptr);
 
