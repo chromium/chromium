@@ -268,6 +268,7 @@
   X(TRACE_DISABLED_BY_DEFAULT("xr.debug"))
 
 #define INTERNAL_TRACE_LIST_BUILTIN_CATEGORY_GROUPS(X)                        \
+  X("android_webview,toplevel")                                               \
   X("base,toplevel")                                                          \
   X("benchmark,drm")                                                          \
   X("benchmark,latencyInfo,rail")                                             \
@@ -299,8 +300,11 @@
   X("dwrite,fonts")                                                           \
   X("fonts,ui")                                                               \
   X("gpu,benchmark")                                                          \
+  X("gpu,benchmark,android_webview")                                          \
+  X("gpu,benchmark,webview")                                                  \
   X("gpu,startup")                                                            \
   X("gpu,toplevel.flow")                                                      \
+  X("gpu.angle,startup")                                                      \
   X("inc2,inc")                                                               \
   X("inc,inc2")                                                               \
   X("input,benchmark")                                                        \
@@ -310,6 +314,7 @@
   X("input,views")                                                            \
   X("ipc,security")                                                           \
   X("ipc,toplevel")                                                           \
+  X("Java,devtools," TRACE_DISABLED_BY_DEFAULT("devtools.timeline"))          \
   X("loading,rail")                                                           \
   X("loading,rail,devtools.timeline")                                         \
   X("media,gpu")                                                              \
