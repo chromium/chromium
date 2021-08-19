@@ -40,6 +40,23 @@ component("common") {
   ]
 }
 
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "mock_quick_pair_browser_delegate.cc",
+    "mock_quick_pair_browser_delegate.h",
+    "quick_pair_browser_delegate.h",
+  ]
+
+  deps = [
+    "//ash/services/quick_pair/public/mojom",
+    "//base/test:test_support",
+    "//services/network/public/cpp",
+    "//testing/gtest",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
