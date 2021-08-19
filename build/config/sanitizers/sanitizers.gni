@@ -126,6 +126,9 @@ declare_args() {
   is_ubsan_vptr = is_ubsan_security
 }
 
+assert(!is_hwasan || (target_os == "android" && target_cpu == "arm64"),
+       "HWASan only supported on Android ARM64 builds.")
+
 # Disable sanitizers for non-target toolchains.
 if (!is_a_target_toolchain) {
   is_asan = false
@@ -147,6 +150,8 @@ if (!is_a_target_toolchain) {
   use_libfuzzer = false
   use_locally_built_instrumented_libraries = false
   use_sanitizer_coverage = false
+} else if (current_cpu != "arm64") {
+  is_hwasan = false
 }
 
 # Use dynamic libraries instrumented by one of the sanitizers instead of the
@@ -228,9 +233,6 @@ if (use_libfuzzer && (is_linux || is_chromeos)) {
 # For one-off testing, just comment this assertion out.
 assert(!is_debug || !(is_msan || is_ubsan || is_ubsan_null || is_ubsan_vptr),
        "Sanitizers should generally be used in release (set is_debug=false).")
-
-assert(!is_hwasan || (is_android && current_cpu == "arm64"),
-       "HWASan only supported on Android ARM64 builds.")
 
 assert(!is_msan || ((is_linux || is_chromeos) && current_cpu == "x64"),
        "MSan currently only works on 64-bit Linux and ChromeOS builds.")
