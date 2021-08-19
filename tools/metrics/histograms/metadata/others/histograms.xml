@@ -15767,7 +15767,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SiteIsolation.ProxyCountPerBrowsingInstance" units="units"
-    expires_after="2021-09-30">
+    expires_after="2022-08-18">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
