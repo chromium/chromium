@@ -18,7 +18,7 @@
 
   function didShowScriptSource(shownSourceFrame) {
     sourceFrame = shownSourceFrame;
-    textEditor = sourceFrame._textEditor;
+    textEditor = sourceFrame.textEditor;
     // We are probably still updating the editor in current callstack, so postpone the test execution.
     queueMicrotask(() => {
       textEditorUpdated();
@@ -29,8 +29,8 @@
     searchableView.showSearchField();
 
     TestRunner.addResult('Performing search...');
-    searchableView._searchInputElement.value = searchString;
-    searchableView._performSearch(true, true);
+    searchableView.searchInputElement.value = searchString;
+    searchableView.performSearch(true, true);
     TestRunner.addResult('Recording editor viewport after searching...');
 
     var originalViewport = {from: textEditor.firstVisibleLine(), to: textEditor.lastVisibleLine()};
