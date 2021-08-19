@@ -516,6 +516,19 @@ export class Camera extends View {
       };
       this.addConfigureCompleteListener_(checkShowDialog);
     }
+
+    // When entering document mode, refocus to shutter button for letting user
+    // to take document photo with space key as shortcut. See b/196907822.
+    const checkRefocus = () => {
+      if (!state.get(state.State.CAMERA_CONFIGURING) &&
+          state.get(Mode.SCANNER) &&
+          this.scannerOptions_.isDocumentModeEanbled()) {
+        dom.getAll('button.shutter', HTMLButtonElement)
+            .forEach((btn) => btn.offsetParent && btn.focus());
+      }
+    };
+    state.addObserver(state.State.CAMERA_CONFIGURING, checkRefocus);
+    this.scannerOptions_.onChange = checkRefocus;
   }
 
   /**
