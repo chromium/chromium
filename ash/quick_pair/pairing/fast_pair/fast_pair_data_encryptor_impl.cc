@@ -41,8 +41,9 @@ void FastPairDataEncryptorImpl::Factory::CreateAsync(
     return;
   }
 
+  auto metadata_id = device->metadata_id;
   FastPairRepository::Get()->GetDeviceMetadata(
-      device->metadata_id,
+      metadata_id,
       base::BindOnce(
           &FastPairDataEncryptorImpl::Factory::DeviceMetadataRetrieved,
           std::move(device), std::move(on_get_instance_callback)));
@@ -57,6 +58,7 @@ void FastPairDataEncryptorImpl::Factory::DeviceMetadataRetrieved(
   if (!device_metadata) {
     QP_LOG(WARNING) << "No device metadata retrieved.";
     std::move(on_get_instance_callback).Run(nullptr);
+    return;
   }
 
   const std::string& public_anti_spoofing_key =
