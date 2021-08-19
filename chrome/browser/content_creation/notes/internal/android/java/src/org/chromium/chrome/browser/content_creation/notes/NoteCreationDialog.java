@@ -69,17 +69,7 @@ public class NoteCreationDialog extends DialogFragment {
         mContentView = getActivity().getLayoutInflater().inflate(R.layout.creation_dialog, null);
         builder.setView(mContentView);
 
-        // Push down the note title depending on screensize.
-        int minTopMargin = getActivity().getResources().getDimensionPixelSize(
-                R.dimen.note_title_min_top_margin);
-        int screenHeight = getActivity().getResources().getDisplayMetrics().heightPixels;
-        int topMarginOffset = getActivity().getResources().getDimensionPixelSize(
-                R.dimen.note_title_top_margin_offset);
-        View titleView = mContentView.findViewById(R.id.title);
-        MarginLayoutParams params = (MarginLayoutParams) titleView.getLayoutParams();
-        params.topMargin = (int) (minTopMargin + (screenHeight - topMarginOffset) * 0.15f);
-        titleView.setLayoutParams(params);
-        titleView.requestLayout();
+        setTitleTopMargin();
 
         if (mIsPublishAvailable) {
             Button publishButton = (Button) mContentView.findViewById(R.id.publish);
@@ -102,6 +92,9 @@ public class NoteCreationDialog extends DialogFragment {
             onDestroyView();
             return;
         }
+
+        // Title top margin depends on screen orientation.
+        setTitleTopMargin();
 
         // Force recycler view to redraw to recalculate the left/right paddings for first/last
         // items.
@@ -308,5 +301,19 @@ public class NoteCreationDialog extends DialogFragment {
                 - getNoteViewAt(mSelectedItemIndex).getWidth() / 2
                 - getActivity().getResources().getDimensionPixelSize(R.dimen.note_side_padding);
         layoutManager.scrollToPositionWithOffset(mSelectedItemIndex, centerOfScreen);
+    }
+
+    private void setTitleTopMargin() {
+        // Push down the note title depending on screensize.
+        int minTopMargin = getActivity().getResources().getDimensionPixelSize(
+                R.dimen.note_title_min_top_margin);
+        int screenHeight = getActivity().getResources().getDisplayMetrics().heightPixels;
+        int topMarginOffset = getActivity().getResources().getDimensionPixelSize(
+                R.dimen.note_title_top_margin_offset);
+        View titleView = mContentView.findViewById(R.id.title);
+        MarginLayoutParams params = (MarginLayoutParams) titleView.getLayoutParams();
+        params.topMargin = (int) (minTopMargin + (screenHeight - topMarginOffset) * 0.15f);
+        titleView.setLayoutParams(params);
+        titleView.requestLayout();
     }
 }
