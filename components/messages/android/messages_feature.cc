@@ -4,6 +4,8 @@
 
 #include "components/messages/android/messages_feature.h"
 
+#include "base/metrics/field_trial_params.h"
+
 namespace messages {
 
 const base::Feature kMessagesForAndroidAdsBlocked{
@@ -39,6 +41,10 @@ const base::Feature kMessagesForAndroidSaveCard{
 const base::Feature kMessagesForAndroidUpdatePassword{
     "MessagesForAndroidUpdatePassword", base::FEATURE_DISABLED_BY_DEFAULT};
 
+constexpr base::FeatureParam<bool>
+    kMessagesForAndroidUpdatePassword_UseFollowupButtonText{
+        &kMessagesForAndroidUpdatePassword, "use_followup_button_text", false};
+
 bool IsAdsBlockedMessagesUiEnabled() {
   return base::FeatureList::IsEnabled(kMessagesForAndroidInfrastructure) &&
          base::FeatureList::IsEnabled(kMessagesForAndroidAdsBlocked);
@@ -67,6 +73,10 @@ bool IsSaveCardMessagesUiEnabled() {
 bool IsUpdatePasswordMessagesUiEnabled() {
   return base::FeatureList::IsEnabled(kMessagesForAndroidInfrastructure) &&
          base::FeatureList::IsEnabled(kMessagesForAndroidUpdatePassword);
+}
+
+bool UseFollowupButtonTextForUpdatePasswordButton() {
+  return kMessagesForAndroidUpdatePassword_UseFollowupButtonText.Get();
 }
 
 bool IsNotificationBlockedMessagesUiEnabled() {

@@ -606,6 +606,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "use_followup_button_text": "true"
+                    },
                     "enable_features": [
                         "MessagesForAndroidUpdatePassword"
                     ]
