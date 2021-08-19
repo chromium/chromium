@@ -21,6 +21,7 @@
 #include "chrome/browser/web_applications/components/app_registry_controller.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
@@ -86,6 +87,23 @@ void WebAppBrowserController::ToggleWindowControlsOverlayEnabled() {
 
   provider_.registry_controller().SetAppWindowControlsOverlayEnabled(
       app_id(), !registrar().GetWindowControlsOverlayEnabled(app_id()));
+}
+
+gfx::Rect WebAppBrowserController::GetDefaultBounds() const {
+  if (system_app_type().has_value()) {
+    return provider_.system_web_app_manager().GetDefaultBounds(
+        system_app_type().value(), browser());
+  }
+
+  return gfx::Rect();
+}
+
+bool WebAppBrowserController::HasReloadButton() const {
+  if (!system_app_type())
+    return true;
+
+  return provider_.system_web_app_manager().ShouldHaveReloadButtonInMinimalUi(
+      system_app_type().value());
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

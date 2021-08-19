@@ -328,13 +328,12 @@ bool AppBrowserController::IsWindowControlsOverlayEnabled() const {
 
 void AppBrowserController::ToggleWindowControlsOverlayEnabled() {}
 
-bool AppBrowserController::HasReloadButton() const {
-  if (!system_app_type_)
-    return true;
+gfx::Rect AppBrowserController::GetDefaultBounds() const {
+  return gfx::Rect();
+}
 
-  return WebAppProvider::Get(browser()->profile())
-      ->system_web_app_manager()
-      .ShouldHaveReloadButtonInMinimalUi(system_app_type_.value());
+bool AppBrowserController::HasReloadButton() const {
+  return true;
 }
 
 std::u16string AppBrowserController::GetLaunchFlashText() const {
@@ -366,16 +365,6 @@ void AppBrowserController::Uninstall(
 void AppBrowserController::UpdateCustomTabBarVisibility(bool animate) const {
   browser()->window()->UpdateCustomTabBarVisibility(ShouldShowCustomTabBar(),
                                                     animate);
-}
-
-gfx::Rect AppBrowserController::GetDefaultBounds() const {
-  if (system_app_type_.has_value()) {
-    return WebAppProvider::Get(browser()->profile())
-        ->system_web_app_manager()
-        .GetDefaultBounds(system_app_type_.value(), browser());
-  }
-
-  return gfx::Rect();
 }
 
 bool AppBrowserController::ShouldShowTabContextMenuShortcut(

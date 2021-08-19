@@ -75,6 +75,8 @@ class WebAppBrowserController : public AppBrowserController,
   bool AppUsesWindowControlsOverlay() const override;
   bool IsWindowControlsOverlayEnabled() const override;
   void ToggleWindowControlsOverlayEnabled() override;
+  gfx::Rect GetDefaultBounds() const override;
+  bool HasReloadButton() const override;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   bool ShouldShowCustomTabBar() const override;

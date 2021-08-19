@@ -157,6 +157,9 @@ class AppBrowserController : public TabStripModelObserver,
 
   virtual void ToggleWindowControlsOverlayEnabled();
 
+  // Returns the default bounds for the app or empty for no defaults.
+  virtual gfx::Rect GetDefaultBounds() const;
+
   // Whether the browser should show the reload button in the toolbar.
   virtual bool HasReloadButton() const;
 
@@ -180,9 +183,6 @@ class AppBrowserController : public TabStripModelObserver,
   // Gets the url that the app browser controller was created with. Note: This
   // may be empty until the web contents begins navigating.
   const GURL& initial_url() const { return initial_url_; }
-
-  // Returns the default bounds for the app or empty for no defaults.
-  gfx::Rect GetDefaultBounds() const;
 
   // Returns whether the specified Tab Context Menu shortcut should be shown.
   bool ShouldShowTabContextMenuShortcut(int command_id) const;
