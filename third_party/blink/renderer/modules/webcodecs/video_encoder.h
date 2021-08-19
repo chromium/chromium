@@ -91,7 +91,9 @@ class MODULES_EXPORT VideoEncoder final
   void ResetInternal() override;
 
   void UpdateEncoderLog(std::string encoder_name, bool is_hw_accelerated);
-
+  static std::unique_ptr<media::VideoEncoder> CreateSoftwareVideoEncoder(
+      VideoEncoder* self,
+      media::VideoCodec codec);
 
   ParsedConfig* ParseConfig(const VideoEncoderConfig*,
                             ExceptionState&) override;
