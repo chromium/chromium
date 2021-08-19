@@ -105,6 +105,10 @@ class AutoEnrollmentController {
   // command-line flags.
   static bool IsPsmEnabled();
 
+  // Returns true if it is determined to use the fake PSM RLWE client based on
+  // command-line flags.
+  static bool ShouldUseFakePsmRlweClient();
+
   // Returns whether the FRE auto-enrollment check is required. When
   // kCheckEnrollmentKey VPD entry is present, it is explicitly stating whether
   // the forced re-enrollment is required or not. Otherwise, for backward
