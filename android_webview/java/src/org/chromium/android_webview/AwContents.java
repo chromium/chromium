@@ -939,7 +939,8 @@ public class AwContents implements SmartClipProvider {
 
             List<Rect> openWebContentRects = new ArrayList<Rect>();
             for (AwContents content : mAwContentsList) {
-                assert !content.isDestroyed(NO_WARN);
+                // A workaround for a deeper problem: https://crbug.com/1232765#c19
+                if (content.isDestroyed(NO_WARN)) continue;
                 if (AwContentsJni.get().isDisplayingOpenWebContent(
                             content.mNativeAwContents, content)) {
                     // The result of getGlobalVisibleRect can change underneath us, so take a
