@@ -81,9 +81,10 @@ class SigninPromoViewMediatorTest : public PlatformTest {
     EXPECT_TRUE(ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
                     ->WaitForServiceCallbacksToComplete());
     if (mediator_) {
-      [mediator_ signinPromoViewIsRemoved];
+      [mediator_ disconnect];
       EXPECT_EQ(ios::SigninPromoViewState::Invalid,
                 mediator_.signinPromoViewState);
+      EXPECT_EQ(nil, mediator_.consumer);
       mediator_ = nil;
     }
     EXPECT_OCMOCK_VERIFY((id)consumer_);
@@ -520,7 +521,7 @@ TEST_F(SigninPromoViewMediatorTest,
   // Start sign-in with an identity.
   [mediator_ signinPromoViewDidTapSigninWithDefaultAccount:signin_promo_view_];
   // Remove the sign-in promo.
-  [mediator_ signinPromoViewIsRemoved];
+  [mediator_ disconnect];
   EXPECT_EQ(ios::SigninPromoViewState::Invalid, mediator_.signinPromoViewState);
   // Dealloc the mediator.
   mediator_ = nil;
@@ -551,13 +552,13 @@ TEST_F(SigninPromoViewMediatorTest, RemoveSigninPromoWhileSignedIn) {
   // Start sign-in with an identity.
   [mediator_ signinPromoViewDidTapSigninWithDefaultAccount:signin_promo_view_];
   // Remove the sign-in promo.
-  [mediator_ signinPromoViewIsRemoved];
+  [mediator_ disconnect];
   EXPECT_EQ(ios::SigninPromoViewState::Invalid, mediator_.signinPromoViewState);
   // Finish the sign-in.
   OCMExpect([consumer_ signinDidFinish]);
   completion(YES);
   // Set mediator_ to nil to avoid the TearDown doesn't call
-  // -[mediator_ signinPromoViewIsRemoved] again.
+  // -[mediator_ disconnect] again.
   mediator_ = nil;
 }
 

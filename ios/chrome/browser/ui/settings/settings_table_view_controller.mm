@@ -586,9 +586,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   } else {
     [self.tableViewModel
         removeSectionWithIdentifier:SettingsSectionIdentifierSignIn];
-    [_signinPromoViewMediator signinPromoViewIsRemoved];
-    // Make sure we don't receive any notification.
-    _signinPromoViewMediator.consumer = nil;
+    [_signinPromoViewMediator disconnect];
     _signinPromoViewMediator = nil;
 
     if (!_hasRecordedSigninImpression) {
@@ -1741,7 +1739,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 
   _settingsHasBeenDismissed = YES;
   DCHECK(!self.isSigninInProgress);
-  [_signinPromoViewMediator signinPromoViewIsRemoved];
+  [_signinPromoViewMediator disconnect];
   _signinPromoViewMediator = nil;
   [self stopBrowserStateServiceObservers];
 }

@@ -496,35 +496,6 @@ const char* AlreadySeenSigninViewPreferenceKey(
   self.signinPromoViewVisible = NO;
 }
 
-- (void)signinPromoViewIsRemoved {
-  DCHECK_NE(ios::SigninPromoViewState::Invalid, self.signinPromoViewState);
-  BOOL wasNeverVisible =
-      self.signinPromoViewState == ios::SigninPromoViewState::NeverVisible;
-  BOOL wasUnused =
-      self.signinPromoViewState == ios::SigninPromoViewState::Unused;
-  self.signinPromoViewState = ios::SigninPromoViewState::Invalid;
-  self.signinPromoViewVisible = NO;
-  if (wasNeverVisible)
-    return;
-
-  // If the sign-in promo view has been used at least once, it should not be
-  // counted as dismissed (even if the sign-in has been canceled).
-  const char* displayedCountPreferenceKey =
-      DisplayedCountPreferenceKey(self.accessPoint);
-  if (!displayedCountPreferenceKey || !wasUnused)
-    return;
-
-  // If the sign-in view is removed when the user is authenticated, then the
-  // sign-in for sync has been done by another view, and this mediator cannot be
-  // counted as being dismissed.
-  if (self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSync))
-    return;
-  int displayedCount =
-      self.prefService->GetInteger(displayedCountPreferenceKey);
-  RecordImpressionsTilDismissHistogramForAccessPoint(self.accessPoint,
-                                                     displayedCount);
-}
-
 - (void)disconnect {
   [self signinPromoViewIsRemoved];
   self.consumer = nil;
@@ -653,6 +624,36 @@ const char* AlreadySeenSigninViewPreferenceKey(
                  callback:completion];
     [self.presenter showSignin:command];
   }
+}
+
+// Changes the promo view state, and records the metrics.
+- (void)signinPromoViewIsRemoved {
+  DCHECK_NE(ios::SigninPromoViewState::Invalid, self.signinPromoViewState);
+  BOOL wasNeverVisible =
+      self.signinPromoViewState == ios::SigninPromoViewState::NeverVisible;
+  BOOL wasUnused =
+      self.signinPromoViewState == ios::SigninPromoViewState::Unused;
+  self.signinPromoViewState = ios::SigninPromoViewState::Invalid;
+  self.signinPromoViewVisible = NO;
+  if (wasNeverVisible)
+    return;
+
+  // If the sign-in promo view has been used at least once, it should not be
+  // counted as dismissed (even if the sign-in has been canceled).
+  const char* displayedCountPreferenceKey =
+      DisplayedCountPreferenceKey(self.accessPoint);
+  if (!displayedCountPreferenceKey || !wasUnused)
+    return;
+
+  // If the sign-in view is removed when the user is authenticated, then the
+  // sign-in for sync has been done by another view, and this mediator cannot be
+  // counted as being dismissed.
+  if (self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSync))
+    return;
+  int displayedCount =
+      self.prefService->GetInteger(displayedCountPreferenceKey);
+  RecordImpressionsTilDismissHistogramForAccessPoint(self.accessPoint,
+                                                     displayedCount);
 }
 
 #pragma mark - ChromeIdentityServiceObserver
