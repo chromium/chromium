@@ -482,6 +482,8 @@ class AccessibilityManager
 
   void ShowDictationLanguageUpgradedNudge(const std::string& locale);
 
+  void CreateChromeVoxPanel();
+
   // Profile which has the current a11y context.
   Profile* profile_ = nullptr;
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};

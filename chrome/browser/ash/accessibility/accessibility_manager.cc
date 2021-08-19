@@ -1579,14 +1579,8 @@ void AccessibilityManager::PostLoadChromeVox() {
       std::vector<base::Value>()));
   event_router->DispatchEventWithLazyListener(extension_id, std::move(event));
 
-  if (!chromevox_panel_) {
-    chromevox_panel_ = new ChromeVoxPanel(profile_);
-    chromevox_panel_widget_observer_ =
-        std::make_unique<AccessibilityPanelWidgetObserver>(
-            chromevox_panel_->GetWidget(),
-            base::BindOnce(&AccessibilityManager::OnChromeVoxPanelDestroying,
-                           base::Unretained(this)));
-  }
+  if (!chromevox_panel_ && spoken_feedback_enabled_)
+    CreateChromeVoxPanel();
 
   audio_focus_manager_->SetEnforcementMode(
       media_session::mojom::EnforcementMode::kNone);
@@ -1628,17 +1622,23 @@ void AccessibilityManager::PostUnloadChromeVox() {
       media_session::mojom::EnforcementMode::kDefault);
 }
 
-void AccessibilityManager::PostSwitchChromeVoxProfile() {
-  if (chromevox_panel_) {
-    chromevox_panel_->CloseNow();
-    chromevox_panel_ = nullptr;
-  }
+void AccessibilityManager::CreateChromeVoxPanel() {
+  DCHECK(!chromevox_panel_ && spoken_feedback_enabled_);
   chromevox_panel_ = new ChromeVoxPanel(profile_);
   chromevox_panel_widget_observer_ =
       std::make_unique<AccessibilityPanelWidgetObserver>(
           chromevox_panel_->GetWidget(),
           base::BindOnce(&AccessibilityManager::OnChromeVoxPanelDestroying,
                          base::Unretained(this)));
+}
+
+void AccessibilityManager::PostSwitchChromeVoxProfile() {
+  if (chromevox_panel_) {
+    chromevox_panel_->CloseNow();
+    chromevox_panel_ = nullptr;
+  }
+  if (!chromevox_panel_ && spoken_feedback_enabled_)
+    CreateChromeVoxPanel();
 }
 
 void AccessibilityManager::OnChromeVoxPanelDestroying() {

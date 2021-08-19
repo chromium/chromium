@@ -26,6 +26,7 @@
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "chrome/test/base/extension_load_waiter_one_shot.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -323,6 +324,13 @@ void AssertMessageCenterEmpty() {
   ASSERT_EQ(0, notifications.size());
 }
 
+void WaitForExtensionToLoad(const char* extension_id) {
+  base::RunLoop run_loop;
+  ExtensionLoadWaiterOneShot waiter;
+  waiter.WaitForExtension(extension_id, run_loop.QuitClosure());
+  run_loop.Run();
+}
+
 }  // namespace
 
 // For user session accessibility manager tests.
@@ -368,6 +376,14 @@ class AccessibilityManagerTest : public MixinBasedInProcessBrowserTest {
   bool ShouldShowNetworkDictationDialog(const std::string& locale) {
     return AccessibilityManager::Get()->ShouldShowNetworkDictationDialog(
         locale);
+  }
+
+  void PostSwitchChromeVoxProfile() {
+    AccessibilityManager::Get()->PostSwitchChromeVoxProfile();
+  }
+
+  bool IsChromeVoxPanelActive() {
+    return AccessibilityManager::Get()->chromevox_panel_ != nullptr;
   }
 
  protected:
@@ -691,6 +707,27 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, AccessibilityMenuVisibility) {
   EXPECT_TRUE(ShouldShowAccessibilityMenu());
   SetSelectToSpeakEnabled(false);
   EXPECT_FALSE(ShouldShowAccessibilityMenu());
+}
+
+// Ensures that the ChromeVox panel stays in sync with ChromeVox's enabled
+// state. The panel should only be created if ChromeVox is enabled and if there
+// is no existing panel.
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, ChromeVoxPanel) {
+  ASSERT_FALSE(IsSpokenFeedbackEnabled());
+  ASSERT_FALSE(IsChromeVoxPanelActive());
+  // Switch profiles. The panel shouldn't be created if ChromeVox is off.
+  PostSwitchChromeVoxProfile();
+  ASSERT_FALSE(IsChromeVoxPanelActive());
+  SetSpokenFeedbackEnabled(true);
+  WaitForExtensionToLoad(extension_misc::kChromeVoxExtensionId);
+  ASSERT_TRUE(IsSpokenFeedbackEnabled());
+  ASSERT_TRUE(IsChromeVoxPanelActive());
+  // Switch profiles. The panel should not be recreated.
+  PostSwitchChromeVoxProfile();
+  ASSERT_TRUE(IsChromeVoxPanelActive());
+  SetSpokenFeedbackEnabled(false);
+  ASSERT_FALSE(IsSpokenFeedbackEnabled());
+  ASSERT_FALSE(IsChromeVoxPanelActive());
 }
 
 class AccessibilityManagerSodaTest : public AccessibilityManagerTest {
