@@ -912,8 +912,15 @@ void DownloadItemView::UpdateButtons() {
 void DownloadItemView::UpdateAccessibleAlertAndAnimationsForNormalMode() {
   using State = download::DownloadItem::DownloadState;
   const State state = model_->GetState();
+  const std::u16string web_drive = model_->GetWebDriveName();
   if ((state == State::IN_PROGRESS) && !model_->IsPaused()) {
-    UpdateAccessibleAlert(GetInProgressAccessibleAlertText());
+    if (web_drive.empty()) {
+      UpdateAccessibleAlert(GetInProgressAccessibleAlertText());
+    } else {
+      announce_accessible_alert_soon_ = true;
+      UpdateAccessibleAlert(
+          l10n_util::GetStringFUTF16(IDS_DOWNLOAD_STATUS_UPLOADING, web_drive));
+    }
 
     if (!indeterminate_progress_timer_.IsRunning()) {
       indeterminate_progress_start_time_ = base::TimeTicks::Now();
@@ -944,8 +951,17 @@ void DownloadItemView::UpdateAccessibleAlertAndAnimationsForNormalMode() {
         {State::COMPLETE, IDS_DOWNLOAD_COMPLETE_ACCESSIBLE_ALERT},
         {State::CANCELLED, IDS_DOWNLOAD_CANCELLED_ACCESSIBLE_ALERT},
     });
-    const std::u16string alert_text = l10n_util::GetStringFUTF16(
-        kMap.at(state), model_->GetFileNameToReportUser().LossyDisplayName());
+    const std::u16string alert_text =
+        (web_drive.empty() || state == State::CANCELLED)
+            ? l10n_util::GetStringFUTF16(
+                  kMap.at(state),
+                  model_->GetFileNameToReportUser().LossyDisplayName())
+            // When the file is rereouted to web drive and not cancelled, use
+            // regular string formulated in DownloadUIModel.
+            // TODO(https://crbug.com/1240372) Update with accessibility
+            // specific localized strings.
+            : model_->GetStatusText();
+
     announce_accessible_alert_soon_ = true;
     UpdateAccessibleAlert(alert_text);
   }
