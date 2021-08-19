@@ -501,12 +501,15 @@ void HoldingSpaceItemChipView::UpdateImageTransform() {
   if (image_->bounds().IsEmpty())
     return;
 
+  const bool is_item_visibly_in_progress =
+      !item()->progress().IsHidden() && !item()->progress().IsComplete();
+
   const HoldingSpaceProgressRingAnimation* progress_ring_animation =
       HoldingSpaceAnimationRegistry::GetInstance()
           ->GetProgressRingAnimationForKey(item());
 
   gfx::Transform transform;
-  if (!item()->progress().IsComplete() || progress_ring_animation) {
+  if (is_item_visibly_in_progress || progress_ring_animation) {
     transform = gfx::GetScaleTransform(image_->bounds().CenterPoint(),
                                        kInProgressImageScaleFactor);
   }

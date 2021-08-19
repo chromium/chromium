@@ -124,10 +124,12 @@ class HoldingSpaceControllerProgressRing
     // Iterate over all holding space items.
     for (const auto& item : model->items()) {
       // Ignore any holding space items that are not yet initialized, since
-      // they are not visible to the user, or items that are not in-progress,
-      // since they do not contribute to `cumulative_progress`.
-      if (item->IsInitialized() && !item->progress().IsComplete())
+      // they are not visible to the user, or items that are not visibly
+      // in-progress, since they do not contribute to `cumulative_progress`.
+      if (item->IsInitialized() && !item->progress().IsHidden() &&
+          !item->progress().IsComplete()) {
         cumulative_progress += item->progress();
+      }
     }
 
     return cumulative_progress.GetValue();
@@ -205,8 +207,10 @@ class HoldingSpaceItemProgressRing : public HoldingSpaceProgressRing,
   // HoldingSpaceProgressRing:
   absl::optional<float> CalculateProgress() const override {
     // If `item_` is `nullptr` it is being destroyed. Return `1.f` in that case
-    // so that no progress ring will be painted.
-    return item_ ? item_->progress().GetValue() : 1.f;
+    // so that no progress ring will be painted. Similarly, return `1.f` to
+    // prevent painting a progress ring when progress is hidden.
+    return item_ && !item_->progress().IsHidden() ? item_->progress().GetValue()
+                                                  : 1.f;
   }
 
   // HoldingSpaceModelObserver:

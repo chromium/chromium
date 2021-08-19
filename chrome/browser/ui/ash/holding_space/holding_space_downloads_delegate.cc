@@ -207,11 +207,13 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
   }
 
   // Returns the current progress of the underlying download.
+  // NOTE: Progress is hidden if the download is dangerous or mixed content.
   HoldingSpaceProgress GetProgress() const {
     if (IsComplete(mojo_download_item_.get()))
       return HoldingSpaceProgress();
     return HoldingSpaceProgress(GetReceivedBytes(), GetTotalBytes(),
-                                /*complete=*/false);
+                                /*complete=*/false,
+                                /*hidden=*/IsDangerous() || IsMixedContent());
   }
 
   // Returns the number of bytes received for the underlying download.
