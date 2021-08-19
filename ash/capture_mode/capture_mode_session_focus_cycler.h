@@ -45,6 +45,8 @@ class ASH_EXPORT CaptureModeSessionFocusCycler : public views::WidgetObserver {
     kSelection,
     // The button in the middle of a selection region to capture or record.
     kCaptureButton,
+    // In window mode, the group to tab through the available MRU windows.
+    kCaptureWindow,
     // The buttons to open the settings menu and exit capture mode on the
     // capture bar.
     kSettingsClose,

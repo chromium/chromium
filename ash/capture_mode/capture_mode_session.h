@@ -136,6 +136,10 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   // for the touch events than the mouse events.
   void UpdateCursor(const gfx::Point& location_in_screen, bool is_touch);
 
+  // Highlights the give |window| for keyboard navigation
+  // events (tabbing through windows in capture window mode).
+  void HighlightWindowForTab(aura::Window* window);
+
  private:
   friend class CaptureModeSessionFocusCycler;
   friend class CaptureModeSessionTestApi;

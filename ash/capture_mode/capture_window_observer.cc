@@ -36,6 +36,11 @@ void CaptureWindowObserver::UpdateSelectedWindowAtPosition(
   // Find the toplevel window under the mouse/touch position.
   aura::Window* window =
       GetTopmostWindowAtPoint(location_in_screen_, ignore_windows);
+  SetSelectedWindow(window);
+  capture_mode_session_->UpdateCursor(location_in_screen, /*is_touch=*/false);
+}
+
+void CaptureWindowObserver::SetSelectedWindow(aura::Window* window) {
   if (window_ == window)
     return;
 
@@ -56,7 +61,6 @@ void CaptureWindowObserver::UpdateSelectedWindowAtPosition(
   if (window)
     StartObserving(window);
   RepaintCaptureRegion();
-  capture_mode_session_->UpdateCursor(location_in_screen, /*is_touch=*/false);
 }
 
 void CaptureWindowObserver::OnWindowBoundsChanged(
