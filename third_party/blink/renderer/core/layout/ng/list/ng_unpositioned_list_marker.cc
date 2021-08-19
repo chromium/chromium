@@ -209,4 +209,8 @@ void NGUnpositionedListMarker::CheckMargin() const {
 }
 #endif
 
+void NGUnpositionedListMarker::Trace(Visitor* visitor) const {
+  visitor->Trace(marker_layout_object_);
+}
+
 }  // namespace blink

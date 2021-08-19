@@ -99,13 +99,15 @@ class CORE_EXPORT NGUnpositionedListMarker final {
   void CheckMargin() const;
 #endif
 
+  void Trace(Visitor*) const;
+
  private:
   LayoutUnit ComputeIntrudedFloatOffset(const NGConstraintSpace&,
                                         const NGBoxFragmentBuilder*,
                                         const NGBoxStrut&,
                                         LayoutUnit) const;
 
-  UntracedMember<LayoutNGOutsideListMarker> marker_layout_object_;
+  Member<LayoutNGOutsideListMarker> marker_layout_object_;
 };
 
 }  // namespace blink
