@@ -8,7 +8,7 @@
   await TestRunner.showPanel('timeline');
 
   TestRunner.TestTimelineLoaderClient = function() {
-    this._completePromise = new Promise(resolve => this._resolve = resolve);
+    this.completePromise = new Promise(resolve => this.resolve = resolve);
   };
 
   TestRunner.TestTimelineLoaderClient.prototype = {
@@ -24,11 +24,11 @@
 
     loadingComplete: function(model) {
       TestRunner.addResult(`TimelineLoaderClient.loadingComplete(${!!model})`);
-      this._resolve(model);
+      this.resolve(model);
     },
 
     modelPromise: function() {
-      return this._completePromise;
+      return this.completePromise;
     }
   };
 
@@ -60,10 +60,10 @@
   }
 
   var data = [
-    {'args': {'number': 32}, 'cat': '__metadata', 'name': 'num_cpus', 'ph': 'M', 'pid': 32127, 'tid': 0, 'ts': 0},
+    {'args': {'number': 32}, 'cat': '_metadata', 'name': 'num_cpus', 'ph': 'M', 'pid': 32127, 'tid': 0, 'ts': 0},
     {
       'args': {'sort_index': -5},
-      'cat': '__metadata',
+      'cat': '_metadata',
       'name': 'process_sort_index',
       'ph': 'M',
       'pid': 32127,
@@ -72,7 +72,7 @@
     },
     {
       'args': {'name': 'Renderer'},
-      'cat': '__metadata',
+      'cat': '_metadata',
       'name': 'process_name',
       'ph': 'M',
       'pid': 32127,
@@ -81,7 +81,7 @@
     },
     {
       'args': {'sort_index': -1},
-      'cat': '__metadata',
+      'cat': '_metadata',
       'name': 'thread_sort_index',
       'ph': 'M',
       'pid': 32127,
@@ -98,10 +98,10 @@
       'ts': 95904702436,
       'tts': 1161841
     },
-    {'args': {'number': 32}, 'cat': '__metadata', 'name': 'num_cpus', 'ph': 'M', 'pid': 32120, 'tid': 0, 'ts': 0},
+    {'args': {'number': 32}, 'cat': '_metadata', 'name': 'num_cpus', 'ph': 'M', 'pid': 32120, 'tid': 0, 'ts': 0},
     {
       'args': {'sort_index': -5},
-      'cat': '__metadata',
+      'cat': '_metadata',
       'name': 'process_sort_index',
       'ph': 'M',
       'pid': 32120,
@@ -110,7 +110,7 @@
     },
     {
       'args': {'name': 'Renderer'},
-      'cat': '__metadata',
+      'cat': '_metadata',
       'name': 'process_name',
       'ph': 'M',
       'pid': 32120,
@@ -119,7 +119,7 @@
     },
     {
       'args': {'sort_index': -1},
-      'cat': '__metadata',
+      'cat': '_metadata',
       'name': 'thread_sort_index',
       'ph': 'M',
       'pid': 32120,
@@ -128,7 +128,7 @@
     },
     {
       'args': {'name': 'CrRendererMain'},
-      'cat': '__metadata',
+      'cat': '_metadata',
       'name': 'thread_name',
       'ph': 'M',
       'pid': 32120,
@@ -433,10 +433,10 @@
       'ts': 95904701489,
       'tts': 1435618
     },
-    {'args': {'number': 32}, 'cat': '__metadata', 'name': 'num_cpus', 'ph': 'M', 'pid': 32072, 'tid': 0, 'ts': 0},
+    {'args': {'number': 32}, 'cat': '_metadata', 'name': 'num_cpus', 'ph': 'M', 'pid': 32072, 'tid': 0, 'ts': 0},
     {
       'args': {'sort_index': -6},
-      'cat': '__metadata',
+      'cat': '_metadata',
       'name': 'process_sort_index',
       'ph': 'M',
       'pid': 32072,
@@ -445,7 +445,7 @@
     },
     {
       'args': {'name': 'Browser'},
-      'cat': '__metadata',
+      'cat': '_metadata',
       'name': 'process_name',
       'ph': 'M',
       'pid': 32072,
@@ -454,7 +454,7 @@
     },
     {
       'args': {'name': 'CrBrowserMain'},
-      'cat': '__metadata',
+      'cat': '_metadata',
       'name': 'thread_name',
       'ph': 'M',
       'pid': 32072,
@@ -484,7 +484,7 @@
     function testBroken(next) {
       var data = [{
         'args': {'number': 32},
-        'cat': '__metadata',
+        'cat': '_metadata',
         'name': 'num_cpus',
         'ph': 'M',
         'pid': 32127,

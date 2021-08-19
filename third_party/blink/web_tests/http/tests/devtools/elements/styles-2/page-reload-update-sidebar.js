@@ -17,7 +17,7 @@
       }
   `);
 
-  var stylesSidebarPane = UI.panels.elements._stylesWidget;
+  var stylesSidebarPane = UI.panels.elements.stylesWidget;
   TestRunner.runTestSuite([
     function selectInspectedNode(next) {
       ElementsTestRunner.selectNodeAndWaitForStyles('inspected', next);
@@ -29,7 +29,7 @@
       treeElement.startEditing(treeElement.valueElement);
       var nodeRebuiltHappened = false;
       var pageReloadHappened = false;
-      TestRunner.addSniffer(Elements.StylesSidebarPane.prototype, '_nodeStylesUpdatedForTest', onNodeRebuilt);
+      TestRunner.addSniffer(Elements.StylesSidebarPane.prototype, 'nodeStylesUpdatedForTest', onNodeRebuilt);
       TestRunner.reloadPage(reloadedCallback);
 
       function onNodeRebuilt(node, rebuild) {
@@ -54,7 +54,7 @@
     },
 
     function onPageReloaded(next) {
-      if (stylesSidebarPane._isEditingStyle) {
+      if (stylesSidebarPane.isEditingStyle) {
         TestRunner.addResult('StylesSidebarPane should not be locked in editing on page reload.');
         TestRunner.completeTest();
         return;

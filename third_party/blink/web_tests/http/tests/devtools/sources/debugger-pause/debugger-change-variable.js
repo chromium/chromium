@@ -33,18 +33,18 @@
 
   function localScopeObject() {
     var localsSection = SourcesTestRunner.scopeChainSections()[0];
-    return localsSection._object;
+    return localsSection.object;
   }
 
   function step1() {
     SourcesTestRunner.runTestFunctionAndWaitUntilPaused();
     TestRunner.addSniffer(
-              Sources.CallStackSidebarPane.prototype, '_updatedForTest', step2);
+              Sources.CallStackSidebarPane.prototype, 'updatedForTest', step2);
   }
 
   function step2(callFrames) {
     var pane = Sources.CallStackSidebarPane.instance();
-    pane._selectNextCallFrameOnStack();
+    pane.selectNextCallFrameOnStack();
     TestRunner.deprecatedRunAfterPendingDispatches(step3);
   }
 

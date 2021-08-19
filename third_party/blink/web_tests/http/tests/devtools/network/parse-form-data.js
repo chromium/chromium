@@ -67,7 +67,7 @@
     `--${newBoundary}\r\nContent-Disposition: form-data; name=\"a\r\nb\"\r\n\r\na\r\nv\r\n` +
     `--${newBoundary}\r\nContent-Disposition: form-data; name=\"a\r\nc\"; filename="a.gif"\r\nContent-Type: application/octer-stream\r\n\r\na\r\nv\r\n` +
     `--${newBoundary}--\r\n\u0000`;
-  const nonURLEncodedNameFormData = SDK.NetworkRequest.prototype._parseMultipartFormDataParameters(nonURLEncodedNameRequestBody, newBoundary);
+  const nonURLEncodedNameFormData = SDK.NetworkRequest.prototype.parseMultipartFormDataParameters(nonURLEncodedNameRequestBody, newBoundary);
 
   TestRunner.addResult(JSON.stringify(nonURLEncodedNameFormData, ' ', 1));
 

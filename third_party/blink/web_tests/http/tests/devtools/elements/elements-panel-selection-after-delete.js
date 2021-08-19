@@ -70,13 +70,13 @@
   }
 
   function removeElementAsUser(element, callback) {
-    TestRunner.addSniffer(Elements.ElementsTreeOutline.prototype, '_updateModifiedNodes', callback);
+    TestRunner.addSniffer(Elements.ElementsTreeOutline.prototype, 'updateModifiedNodes', callback);
     element.remove();
   }
 
   function removeElementExternally(element, callback) {
     var node = element.node();
-    TestRunner.addSniffer(Elements.ElementsTreeOutline.prototype, '_updateChildren', callback);
+    TestRunner.addSniffer(Elements.ElementsTreeOutline.prototype, 'updateChildren', callback);
     node.removeNode();
   }
 

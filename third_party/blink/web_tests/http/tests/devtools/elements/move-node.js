@@ -43,9 +43,9 @@
 
       var child2 = ElementsTestRunner.expandedNodeWithId('child2');
       var child4 = ElementsTestRunner.expandedNodeWithId('child4');
-      treeOutline._treeElementBeingDragged = treeOutline.treeElementByNode.get(child2);
+      treeOutline.treeElementBeingDragged = treeOutline.treeElementByNode.get(child2);
       var treeElementToDropOn = treeOutline.treeElementByNode.get(child4);
-      treeOutline._doMove(treeElementToDropOn);
+      treeOutline.doMove(treeElementToDropOn);
     }
   ]);
 })();

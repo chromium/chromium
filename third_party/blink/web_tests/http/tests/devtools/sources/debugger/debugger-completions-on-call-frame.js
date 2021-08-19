@@ -26,77 +26,77 @@
     },
 
     function step2(next) {
-      ObjectUI.javaScriptAutocomplete._completionsForExpression('', 'var').then(
+      ObjectUI.javaScriptAutocomplete.completionsForExpression('', 'var').then(
           checkAgainstGolden.bind(this, ['var1', 'var2'], [], next));
     },
 
     function step3(next) {
-      ObjectUI.javaScriptAutocomplete._completionsForExpression('', 'di').then(
+      ObjectUI.javaScriptAutocomplete.completionsForExpression('', 'di').then(
           checkAgainstGolden.bind(this, ['dir', 'dirxml'], [], next));
     },
 
     function step4(next) {
-      ObjectUI.javaScriptAutocomplete._completionsForExpression('', 'win').then(
+      ObjectUI.javaScriptAutocomplete.completionsForExpression('', 'win').then(
           checkAgainstGolden.bind(this, ['window'], [], next));
     },
 
     function step5(next) {
-      ObjectUI.javaScriptAutocomplete._completionsForExpression('', 't').then(
+      ObjectUI.javaScriptAutocomplete.completionsForExpression('', 't').then(
           checkAgainstGolden.bind(this, ['this'], [], next));
     },
 
     function step6(next) {
-      ObjectUI.javaScriptAutocomplete._completionsForExpression('var1.', 'toExp')
+      ObjectUI.javaScriptAutocomplete.completionsForExpression('var1.', 'toExp')
           .then(checkAgainstGolden.bind(this, ['toExponential'], [], next));
     },
 
     function step7(next) {
-      ObjectUI.javaScriptAutocomplete._completionsForExpression('123.', 'toExp')
+      ObjectUI.javaScriptAutocomplete.completionsForExpression('123.', 'toExp')
           .then(checkAgainstGolden.bind(this, [], ['toExponential'], next));
     },
 
     function step8(next) {
-      ObjectUI.javaScriptAutocomplete._completionsForExpression('', '').then(
+      ObjectUI.javaScriptAutocomplete.completionsForExpression('', '').then(
           checkAgainstGolden.bind(this, [], ['$'], next));
     },
 
     function step9(next) {
-      ObjectUI.javaScriptAutocomplete._completionsForExpression('', '', true)
+      ObjectUI.javaScriptAutocomplete.completionsForExpression('', '', true)
           .then(checkAgainstGolden.bind(this, ['$', 'window'], [], next));
     },
 
     function step10(next) {
-      ObjectUI.javaScriptAutocomplete._completionsForExpression('console.', 'log(\'bar\');')
+      ObjectUI.javaScriptAutocomplete.completionsForExpression('console.', 'log(\'bar\');')
           .then(checkAgainstGolden.bind(this, [], ['$'], next));
     },
 
     function step11(next) {
-      ObjectUI.javaScriptAutocomplete._completionsForExpression('arr1.', '')
+      ObjectUI.javaScriptAutocomplete.completionsForExpression('arr1.', '')
           .then(checkAgainstGolden.bind(this, ['length'], ['1', '2', '3'], next));
     },
 
     function step12(next) {
-      ObjectUI.javaScriptAutocomplete._completionsForExpression('arr1[', '')
+      ObjectUI.javaScriptAutocomplete.completionsForExpression('arr1[', '')
           .then(checkAgainstGolden.bind(this, ['"length"]'], ['3]'], next));
     },
 
     function step13_ShouldNotCrash(next) {
-      ObjectUI.javaScriptAutocomplete._completionsForExpression('arr2.', '')
+      ObjectUI.javaScriptAutocomplete.completionsForExpression('arr2.', '')
           .then(checkAgainstGolden.bind(this, ['length'], ['1', '2', '3'], next));
     },
 
     function step14(next) {
-      ObjectUI.javaScriptAutocomplete._completionsForExpression('document\n', 'E')
+      ObjectUI.javaScriptAutocomplete.completionsForExpression('document\n', 'E')
           .then(checkAgainstGolden.bind(this, ['Element'], ['ELEMENT_NODE'], next));
     },
 
     function step15_ShouldNotCrash(next) {
-      ObjectUI.javaScriptAutocomplete._completionsForExpression('arr3.', '')
+      ObjectUI.javaScriptAutocomplete.completionsForExpression('arr3.', '')
           .then(checkAgainstGolden.bind(this, ['length'], ['1', '2', '3'], next));
     },
 
     function step16(next) {
-      ObjectUI.javaScriptAutocomplete._completionsForExpression('this.', 'win')
+      ObjectUI.javaScriptAutocomplete.completionsForExpression('this.', 'win')
           .then(checkAgainstGolden.bind(this, ['window'], ['arr3'], next));
     }
   ]);

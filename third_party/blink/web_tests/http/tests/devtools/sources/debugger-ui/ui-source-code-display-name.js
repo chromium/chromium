@@ -11,7 +11,7 @@
     var uiSourceCode = await SourcesTestRunner.addScriptUISourceCode(url, '');
     TestRunner.addResult(
         'UISourceCode display name for url "' + url + '" is "' +
-        Sources.TabbedEditorContainer.prototype._titleForFile(uiSourceCode) + '".');
+        Sources.TabbedEditorContainer.prototype.titleForFile(uiSourceCode) + '".');
   }
 
   const baseURL = 'http://localhost:8080/folder/';

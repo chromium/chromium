@@ -16,8 +16,8 @@
   const treeElement = section.addNewBlankProperty(0);
 
   // Flush the pane's throttler and then stall it.
-  const originalDoUpdate = () => treeElement._parentPane.doUpdate();
-  await treeElement._parentPane.update();
+  const originalDoUpdate = () => treeElement.parentPane.doUpdate();
+  await treeElement.parentPane.update();
 
   // Trigger a model change that will schedule a pane update.
   // Once editing begins, we expect any scheduled updates to be suppressed.

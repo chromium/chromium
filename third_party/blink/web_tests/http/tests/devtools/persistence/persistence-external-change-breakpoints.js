@@ -26,7 +26,7 @@
       await SourcesTestRunner.setBreakpoint(sourceFrame, 2, '', true);
       const debuggerPlugin = SourcesTestRunner.debuggerPlugin(sourceFrame);
       await TestRunner.addSnifferPromise(
-          debuggerPlugin, '_breakpointDecorationsUpdatedForTest');
+          debuggerPlugin, 'breakpointDecorationsUpdatedForTest');
       await SourcesTestRunner.dumpDebuggerPluginBreakpoints(sourceFrame);
       next();
     },
@@ -35,7 +35,7 @@
       await new Promise(x => setTimeout(x, 1000));
       var uiSourceCode = await TestRunner.waitForUISourceCode('foo.js', Workspace.projectTypes.FileSystem);
       var sourceFrame = await SourcesTestRunner.showUISourceCodePromise(uiSourceCode);
-      var promise = TestRunner.addSnifferPromise(SDK.DebuggerModel.prototype, '_didEditScriptSource');
+      var promise = TestRunner.addSnifferPromise(SDK.DebuggerModel.prototype, 'didEditScriptSource');
       uiSourceCode.addRevision(`
 var w = 'some content';
 var x = 'new content'; var inline = 'something else';
@@ -43,7 +43,7 @@ var y = 'more new content';`);
       await promise;
       const debuggerPlugin = SourcesTestRunner.debuggerPlugin(sourceFrame);
       await TestRunner.addSnifferPromise(
-          debuggerPlugin, '_breakpointDecorationsUpdatedForTest');
+          debuggerPlugin, 'breakpointDecorationsUpdatedForTest');
       await SourcesTestRunner.dumpDebuggerPluginBreakpoints(sourceFrame);
       next();
     }

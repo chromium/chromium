@@ -39,51 +39,51 @@
   nodes.push(node);
   nodes[24].appendChild(node);
 
-  dataGrid._update();
+  dataGrid.update();
   dumpVisibleNodes();
 
   TestRunner.addResult("Expanding Node 3 and Node 24");
   nodes[3].expand();
   nodes[24].expand();
-  dataGrid._update();
+  dataGrid.update();
   dumpVisibleNodes();
 
   TestRunner.addResult("Collapsing Node 3");
   nodes[3].collapse();
-  dataGrid._update();
+  dataGrid.update();
   dumpVisibleNodes();
 
   TestRunner.addResult("Scrolled down to 220px");
   setScrollPosition(220);
-  dataGrid._update();
+  dataGrid.update();
   TestRunner.addResult("Expanding Node 3 while not in dom");
   nodes[3].expand();
-  dataGrid._update();
+  dataGrid.update();
   TestRunner.addResult("Scrolled back up to 0px");
   setScrollPosition(0);
-  dataGrid._update();
+  dataGrid.update();
   dumpVisibleNodes();
 
   TestRunner.addResult("Moving node 0 to be a child of node 3 to make sure attributes adjust (name does not change)");
   nodes[3].insertChild(nodes[0], 0);
-  dataGrid._update();
+  dataGrid.update();
   dumpVisibleNodes();
 
   TestRunner.addResult("Moving node that is attached to dom (node 0) to child of offscreen parent (node 24)");
   nodes[24].insertChild(nodes[0], 0);
-  dataGrid._update();
+  dataGrid.update();
   dumpVisibleNodes();
 
   TestRunner.addResult("Scrolling down to 1000px - should be at bottom to make sure node 0 is attached properly to node 24");
   setScrollPosition(1000);
-  dataGrid._update();
+  dataGrid.update();
   dumpVisibleNodes();
 
   TestRunner.completeTest();
 
   function setScrollPosition(yPosition) {
-    dataGrid._scrollContainer.scrollTop = yPosition;
-    dataGrid._onScroll();
+    dataGrid.scrollContainer.scrollTop = yPosition;
+    dataGrid.onScroll();
   }
 
   function dumpVisibleNodes() {

@@ -29,14 +29,14 @@
   }
 
   async function didShowScriptSource(frame) {
-    scriptSource = frame._uiSourceCode;
+    scriptSource = frame.uiSourceCode;
     var matches =
         await scriptSource.searchInContent('magic-string', true, false);
     TestRunner.addResult('Pre-format search results:');
     SourcesTestRunner.dumpSearchMatches(matches);
     shouldRequestContent = true;
     TestRunner.addSniffer(
-        Sources.ScriptFormatterEditorAction.prototype, '_updateButton',
+        Sources.ScriptFormatterEditorAction.prototype, 'updateButton',
         uiSourceCodeScriptFormatted);
     scriptFormatter.toggleFormatScriptSource();
   }

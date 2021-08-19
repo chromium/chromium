@@ -27,12 +27,12 @@
 
   function step1() {
     SourcesTestRunner.runTestFunctionAndWaitUntilPaused();
-    TestRunner.addSniffer(Sources.CallStackSidebarPane.prototype, '_updatedForTest', step2);
+    TestRunner.addSniffer(Sources.CallStackSidebarPane.prototype, 'updatedForTest', step2);
   }
 
   function step2() {
     InspectorFrontendHost.copyText = text => TestRunner.addResult(TestRunner.clearSpecificInfoFromStackFrames(text));
-    Sources.CallStackSidebarPane.instance()._copyStackTrace();
+    Sources.CallStackSidebarPane.instance().copyStackTrace();
     SourcesTestRunner.completeDebuggerTest();
   }
 })();

@@ -15,8 +15,8 @@
 
   ElementsTestRunner.selectNodeAndWaitForStyles('inspected', selectCallback);
   function selectCallback() {
-    TestRunner.addSniffer(Elements.StylesSidebarPane.prototype, '_innerRebuildUpdate', sniffRebuild, true);
-    var stylesPane = UI.panels.elements._stylesWidget;
+    TestRunner.addSniffer(Elements.StylesSidebarPane.prototype, 'innerRebuildUpdate', sniffRebuild, true);
+    var stylesPane = UI.panels.elements.stylesWidget;
     for (var i = 0; i < UPDATE_COUNT; ++i)
       UI.context.setFlavor(SDK.DOMNode, stylesPane.node());
 

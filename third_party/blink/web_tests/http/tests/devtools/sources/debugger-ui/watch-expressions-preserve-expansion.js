@@ -30,15 +30,15 @@
   `);
 
   var watchExpressionsPane = Sources.WatchExpressionsSidebarPane.instance();
-  UI.panels.sources._sidebarPaneStack
-      .showView(UI.panels.sources._watchSidebarPane)
+  UI.panels.sources.sidebarPaneStack
+      .showView(UI.panels.sources.watchSidebarPane)
       .then(() => {
         watchExpressionsPane.doUpdate();
-        watchExpressionsPane._createWatchExpression('globalObject');
-        watchExpressionsPane._createWatchExpression('windowAlias');
-        watchExpressionsPane._createWatchExpression('array');
-        watchExpressionsPane._createWatchExpression('func');
-        watchExpressionsPane._saveExpressions();
+        watchExpressionsPane.createWatchExpression('globalObject');
+        watchExpressionsPane.createWatchExpression('windowAlias');
+        watchExpressionsPane.createWatchExpression('array');
+        watchExpressionsPane.createWatchExpression('func');
+        watchExpressionsPane.saveExpressions();
         TestRunner.deprecatedRunAfterPendingDispatches(step2);
       });
 
@@ -66,13 +66,13 @@
   function dumpWatchExpressions() {
     var pane = Sources.WatchExpressionsSidebarPane.instance();
 
-    for (var i = 0; i < pane._watchExpressions.length; i++) {
-      var watch = pane._watchExpressions[i];
+    for (var i = 0; i < pane.watchExpressions.length; i++) {
+      var watch = pane.watchExpressions[i];
       TestRunner.addResult(
           watch.expression() + ': ' +
-          watch._treeElement._object._description);
+          watch.treeElement._object._description);
       dumpObjectPropertiesTreeElement(
-          watch._treeElement, '  ');
+          watch.treeElement, '  ');
     }
   }
 
@@ -80,7 +80,7 @@
     if (treeElement.property)
       addResult(
           indent + treeElement.property.name + ': ' +
-          treeElement.property.value._description);
+          treeElement.property.value.description);
     else if (typeof treeElement.title === 'string')
       addResult(indent + treeElement.title);
 
@@ -120,10 +120,10 @@
   function expandWatchExpression(path, callback) {
     var pane = Sources.WatchExpressionsSidebarPane.instance();
     var expression = path.shift();
-    for (var i = 0; i < pane._watchExpressions.length; i++) {
-      var watch = pane._watchExpressions[i];
+    for (var i = 0; i < pane.watchExpressions.length; i++) {
+      var watch = pane.watchExpressions[i];
       if (watch.expression() === expression) {
-        expandProperties(watch._treeElement, path, callback);
+        expandProperties(watch.treeElement, path, callback);
         break;
       }
     }

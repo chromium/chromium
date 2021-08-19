@@ -26,7 +26,7 @@
   uiSourceCode.setContent(sourceCode);
   await Common.Revealer.reveal(uiSourceCode);
   await uiSourceCode.rename('my_snippet_name');
-  Sources.SourcesPanel.instance()._runSnippet();
+  Sources.SourcesPanel.instance().runSnippet();
 
   await ConsoleTestRunner.waitUntilNthMessageReceivedPromise(2);
   await ConsoleTestRunner.dumpConsoleMessages();

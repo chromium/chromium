@@ -21,7 +21,7 @@
   await ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
 
   TestRunner.addResult('After showing all properties:')
-  ElementsTestRunner.firstMatchedStyleSection()._showAllButton.click();
+  ElementsTestRunner.firstMatchedStyleSection().showAllButton.click();
   await ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
   TestRunner.completeTest();
 })();

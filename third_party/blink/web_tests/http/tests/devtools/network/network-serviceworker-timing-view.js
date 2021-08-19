@@ -61,7 +61,7 @@
         'http://example.com/fake-document-url', 1, 1, fakeInitiator);
     setRequestValues(testRequest);
 
-    const calculator = UI.panels.network._calculator;
+    const calculator = UI.panels.network.calculator;
     const tableElement = Network.RequestTimingView.createTimingTable(testRequest, calculator);
 
     for (const element of tableElement.getElementsByTagName('td')) {

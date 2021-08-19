@@ -24,7 +24,7 @@
     const c1 = new SDK.Cookie('a', 'b');
     c1.addAttribute('path', '/path');
     c1.addAttribute('domain', 'example.com');
-    request._includedRequestCookies = [
+    request.includedRequestCookies = [
       c1,
       new SDK.Cookie('a1', 'b1'),
       new SDK.Cookie('c1', 'd1'),

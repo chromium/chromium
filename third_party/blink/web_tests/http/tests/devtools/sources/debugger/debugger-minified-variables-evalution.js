@@ -13,7 +13,7 @@
   function step1() {
     SourcesTestRunner.runTestFunctionAndWaitUntilPaused();
     TestRunner.addSniffer(
-              Sources.CallStackSidebarPane.prototype, '_updatedForTest', step2)
+              Sources.CallStackSidebarPane.prototype, 'updatedForTest', step2)
   }
 
   function step2() {

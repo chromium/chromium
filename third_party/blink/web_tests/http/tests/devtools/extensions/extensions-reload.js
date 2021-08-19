@@ -12,9 +12,9 @@
 
   TestRunner.lastMessageScriptId = function(callback) {
     var consoleView = Console.ConsoleView.instance();
-    if (consoleView._needsFullUpdate)
-      consoleView._updateMessageList();
-    var viewMessages = consoleView._visibleViewMessages;
+    if (consoleView.needsFullUpdate)
+      consoleView.updateMessageList();
+    var viewMessages = consoleView.visibleViewMessages;
     if (viewMessages.length !== 1)
       callback(null);
     var uiMessage = viewMessages[viewMessages.length - 1];

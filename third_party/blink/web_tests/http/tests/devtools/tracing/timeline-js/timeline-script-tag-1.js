@@ -16,7 +16,7 @@
       }
   `);
 
-  UI.panels.timeline._disableCaptureJSProfileSetting.set(true);
+  UI.panels.timeline.disableCaptureJSProfileSetting.set(true);
   await PerformanceTestRunner.startTimeline();
   TestRunner.evaluateInPage('performActions()');
   await ConsoleTestRunner.waitUntilMessageReceivedPromise();

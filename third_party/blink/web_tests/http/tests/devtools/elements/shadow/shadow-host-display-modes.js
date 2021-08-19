@@ -124,7 +124,7 @@
   }
 
   function waitForModifiedNodesUpdate(title, next) {
-    TestRunner.addSniffer(Elements.ElementsTreeOutline.prototype, '_updateModifiedNodes', callback);
+    TestRunner.addSniffer(Elements.ElementsTreeOutline.prototype, 'updateModifiedNodes', callback);
 
     function callback() {
       expandAndDumpShadowHostNode('========= ' + title + ' ========', next);

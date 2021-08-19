@@ -11,7 +11,7 @@
 
   await PerformanceTestRunner.runPerfTraceWithReload();
   const widget = await PerformanceTestRunner.getTimelineWidget();
-  const timeLineViewElement = widget._overviewPane.element;
+  const timeLineViewElement = widget.overviewPane.element;
   await AxeCoreTestRunner.runValidation(timeLineViewElement);
 
   TestRunner.completeTest();

@@ -16,11 +16,11 @@
 
   TestRunner.addResult('Invalid Origins:');
   invalidOrigins.map(origin => {
-    TestRunner.addResult(origin + ', valid = ' + cacheStorageModel._isValidSecurityOrigin(origin));
+    TestRunner.addResult(origin + ', valid = ' + cacheStorageModel.isValidSecurityOrigin(origin));
   });
   TestRunner.addResult('\nValid Origins:');
   validOrigins.map(origin => {
-    TestRunner.addResult(origin + ', valid = ' + cacheStorageModel._isValidSecurityOrigin(origin));
+    TestRunner.addResult(origin + ', valid = ' + cacheStorageModel.isValidSecurityOrigin(origin));
   });
   TestRunner.completeTest();
 })();

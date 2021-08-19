@@ -53,7 +53,7 @@
 
     TestRunner.addResult(`Class list: ${dataGrid.element.classList}`);
 
-    for (var node of dataGrid._visibleNodes)
+    for (var node of dataGrid.visibleNodes)
       TestRunner.addResult(node.data.id);
   }
 
@@ -165,7 +165,7 @@
   var children = root.children.slice();
   root.removeChildren();
   // Assure wheelTarget is anything but null, otherwise it happily bypasses crashing code.
-  dataGrid._wheelTarget = children[children.length - 1].element;
+  dataGrid.wheelTarget = children[children.length - 1].element;
   for (var i = 0; i < 40; ++i) {
     children[i].refresh();
     root.appendChild(children[i]);
@@ -176,7 +176,7 @@
   TestRunner.addResult('Scrolling to the top');
   revealChildAndDumpClassAndVisibleNodes(0);
   TestRunner.addResult('Scrolling 1 node down');
-  revealChildAndDumpClassAndVisibleNodes(dataGrid._visibleNodes.length);
+  revealChildAndDumpClassAndVisibleNodes(dataGrid.visibleNodes.length);
   TestRunner.addResult('Disabling the stripes');
   dataGrid.setStriped(false);
   TestRunner.addResult(`Class list: ${dataGrid.element.classList}`);

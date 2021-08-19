@@ -30,7 +30,7 @@
       //# sourceURL=foo.js
     `);
 
-  Bindings.breakpointManager._storage._breakpoints = new Map();
+  Bindings.breakpointManager.storage._breakpoints = new Map();
   SourcesTestRunner.runDebuggerTestSuite([
     function testAddRemoveBreakpoint(next) {
       var javaScriptSourceFrame;

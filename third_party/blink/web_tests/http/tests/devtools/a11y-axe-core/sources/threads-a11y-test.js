@@ -13,9 +13,9 @@
   await TestRunner.evaluateInPagePromise(`new Worker('../../sources/resources/worker-source.js')`);
   await SourcesTestRunner.waitUntilPausedPromise();
   const sourcesPanel = UI.panels.sources;
-  sourcesPanel._showThreadsIfNeeded();
+  sourcesPanel.showThreadsIfNeeded();
 
-  const threadsSidebarPane = await sourcesPanel._threadsSidebarPane.widget();
+  const threadsSidebarPane = await sourcesPanel.threadsSidebarPane.widget();
   const threadsSidebarElement = threadsSidebarPane.contentElement;
   TestRunner.addResult(`Threads sidebar pane content:\n ${threadsSidebarElement.deepTextContent()}`);
   TestRunner.addResult('Running the axe-core linter on the threads sidebar pane.');

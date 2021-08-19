@@ -26,7 +26,7 @@
   function onNodeSelected() {
     ElementsTestRunner.firstElementsTreeOutline().addEventListener(
         Elements.ElementsTreeOutline.Events.SelectedNodeChanged, onSelectionChangedEvent);
-    TestRunner.addSniffer(Elements.ElementsTreeOutline.prototype, '_updateChildren', onNodeAppended);
+    TestRunner.addSniffer(Elements.ElementsTreeOutline.prototype, 'updateChildren', onNodeAppended);
     TestRunner.evaluateInPage('appendNewNode()');
   }
 

@@ -44,12 +44,12 @@
         TestRunner.deprecatedRunAfterPendingDispatches(step2);
 
         function step2() {
-          TestRunner.addResult(treeElement._editing.editor.text());
-          treeElement._editing.editor.setText(
+          TestRunner.addResult(treeElement.editing.editor.text());
+          treeElement.editing.editor.setText(
               '<span foo="shadow-span"><span id="inner-shadow-span">Shadow span contents</span></span>');
           var event = TestRunner.createKeyEvent('Enter');
           event.isMetaOrCtrlForTest = true;
-          treeElement._editing.editor.widget().element.dispatchEvent(event);
+          treeElement.editing.editor.widget().element.dispatchEvent(event);
           TestRunner.deprecatedRunAfterPendingDispatches(
               ElementsTestRunner.expandElementsTree.bind(ElementsTestRunner, done));
         }

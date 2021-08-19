@@ -16,7 +16,7 @@
   TestRunner.addSniffer(Animation.AnimationModel.prototype, 'animationStarted', animationStarted);
 
   function animationStarted() {
-    TestRunner.addResult(timeline._previewMap.size);
+    TestRunner.addResult(timeline.previewMap.size);
     TestRunner.completeTest();
   }
 })();

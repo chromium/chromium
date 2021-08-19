@@ -17,7 +17,7 @@
   await UI.inspectorView.showPanel('sources');
   await CoverageTestRunner.sourceDecorated('coverage.js');
 
-  var decoratorPromise = TestRunner.addSnifferPromise(Coverage.CoverageView.LineDecorator.prototype, '_innerDecorate');
+  var decoratorPromise = TestRunner.addSnifferPromise(Coverage.CoverageView.LineDecorator.prototype, 'innerDecorate');
   Sources.ScriptFormatterEditorAction.instance().toggleFormatScriptSource();
   await decoratorPromise;
   CoverageTestRunner.dumpDecorationsInSourceFrame(UI.panels.sources.visibleView);

@@ -13,7 +13,7 @@
 
       A.prototype.aMember = 1;
       A.prototype.shadowedMember = 0;
-      A.prototype.__proto__ = null;
+      A.prototype._proto__ = null;
 
       function B() {
           A.call(this);
@@ -22,7 +22,7 @@
       B.prototype.bMember = 1;
       B.prototype.ePriorityMember = 2;
       B.prototype.shadowedMember = 1;
-      B.prototype.__proto__ = A.prototype;
+      B.prototype._proto__ = A.prototype;
 
       function C() {
           B.call(this);
@@ -31,7 +31,7 @@
       C.prototype.cMember = 1;
       C.prototype.EPriorityMember = 2;
       C.prototype.shadowedMember = 2;
-      C.prototype.__proto__ = B.prototype;
+      C.prototype._proto__ = B.prototype;
 
       var objectC = new C();
 
@@ -43,12 +43,12 @@
   `);
 
   TestRunner.addResult('Completions for objectC.:');
-  let completions = await ObjectUI.javaScriptAutocomplete._completionsForExpression('objectC.', 'e');
+  let completions = await ObjectUI.javaScriptAutocomplete.completionsForExpression('objectC.', 'e');
   for (var completion of completions)
     TestRunner.addObject(completion);
 
   TestRunner.addResult('Completions for prefix:');
-  completions = await ObjectUI.javaScriptAutocomplete._completionsForExpression('', 'prefix');
+  completions = await ObjectUI.javaScriptAutocomplete.completionsForExpression('', 'prefix');
   for (var completion of completions)
     TestRunner.addObject(completion);
 

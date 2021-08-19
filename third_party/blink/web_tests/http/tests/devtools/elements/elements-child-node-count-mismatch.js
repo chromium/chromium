@@ -23,8 +23,8 @@
     TestRunner.addResult(`BEFORE: children: ${node.children()}, childNodeCount: ${node.childNodeCount()}`);
 
     // Any operation that modifies the node, followed by an immediate, synchronous update.
-    TestRunner.domModel._childNodeCountUpdated(node.id, 3);
-    treeOutline._updateModifiedNodes();
+    TestRunner.domModel.childNodeCountUpdated(node.id, 3);
+    treeOutline.updateModifiedNodes();
 
     TestRunner.addResult(`AFTER: children: ${node.children()}, childNodeCount: ${node.childNodeCount()}`);
     ElementsTestRunner.expandElementsTree(afterExpand);

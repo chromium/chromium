@@ -15,7 +15,7 @@
 
       function callback()
       {
-          return window.__foo;
+          return window._foo;
       }
   `);
 

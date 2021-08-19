@@ -27,10 +27,10 @@
   async function step1() {
     TestRunner.addResult('=== Before key modification ===');
     await ElementsTestRunner.dumpSelectedElementStyles(true);
-    var section = UI.panels.elements._stylesWidget._sectionBlocks[1].sections[1];
+    var section = UI.panels.elements.stylesWidget._sectionBlocks[1].sections[1];
     section.startEditingSelector();
-    section._selectorElement.textContent = '1%';
-    section._selectorElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
+    section.selectorElement.textContent = '1%';
+    section.selectorElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
     ElementsTestRunner.waitForSelectorCommitted(step2);
   }
 
@@ -52,10 +52,10 @@
   async function step4() {
     TestRunner.addResult('=== After redo ===');
     await ElementsTestRunner.dumpSelectedElementStyles(true);
-    var section = UI.panels.elements._stylesWidget._sectionBlocks[1].sections[1];
+    var section = UI.panels.elements.stylesWidget._sectionBlocks[1].sections[1];
     section.startEditingSelector();
-    section._selectorElement.textContent = '1% /*';
-    section._selectorElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
+    section.selectorElement.textContent = '1% /*';
+    section.selectorElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
     ElementsTestRunner.waitForSelectorCommitted(step5);
   }
 

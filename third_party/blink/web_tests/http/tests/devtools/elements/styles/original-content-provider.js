@@ -36,7 +36,7 @@ div {}
     `);
   await ElementsTestRunner.selectNodeAndWaitForStylesPromise('inspected');
 
-  TestRunner.addSniffer(SDK.CSSModel.prototype, '_originalContentRequestedForTest', onOriginalContentRequested, true);
+  TestRunner.addSniffer(SDK.CSSModel.prototype, 'originalContentRequestedForTest', onOriginalContentRequested, true);
   function onOriginalContentRequested(header) {
     TestRunner.addResult('original content loaded for header: ' + header.sourceURL);
   }

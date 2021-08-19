@@ -15,17 +15,17 @@
   const debuggerPlugin = SourcesTestRunner.debuggerPlugin(sourceFrame);
 
   TestRunner.addResult('\nSet first breakpoint.');
-  debuggerPlugin._setBreakpoint(17, 2, '', true);
+  debuggerPlugin.setBreakpoint(17, 2, '', true);
   await SourcesTestRunner.waitBreakpointSidebarPane();
   SourcesTestRunner.dumpBreakpointSidebarPane();
 
   TestRunner.addResult('\nSet second breakpoint on the same line.');
-  debuggerPlugin._setBreakpoint(17, 15, '', true);
+  debuggerPlugin.setBreakpoint(17, 15, '', true);
   await SourcesTestRunner.waitBreakpointSidebarPane();
   SourcesTestRunner.dumpBreakpointSidebarPane();
 
   TestRunner.addResult('\nSet a third breakpoint on a different line.');
-  debuggerPlugin._setBreakpoint(16, 2, '', true);
+  debuggerPlugin.setBreakpoint(16, 2, '', true);
   await SourcesTestRunner.waitBreakpointSidebarPane();
   SourcesTestRunner.dumpBreakpointSidebarPane();
 

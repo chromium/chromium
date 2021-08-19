@@ -13,11 +13,11 @@
   function createNetworkRequestForURLAndDumpNameAndPath(url, targetUrl) {
     var mainTarget = SDK.targetManager.mainTarget();
     var currentTargetURL = mainTarget.inspectedURL();
-    var dispatcher = TestRunner.networkManager._dispatcher;
+    var dispatcher = TestRunner.networkManager.dispatcher;
     if (targetUrl)
       mainTarget.setInspectedURL(targetUrl);
     TestRunner.addResult('Dumping request name and path for url: ' + url);
-    var request = dispatcher._createNetworkRequest(0, '', '', url);
+    var request = dispatcher.createNetworkRequest(0, '', '', url);
     TestRunner.addResult('    name = ' + request.name());
     TestRunner.addResult('    path = ' + request.path());
     TestRunner.addResult('    targetUrl = ' + (targetUrl ? targetUrl : currentTargetURL));

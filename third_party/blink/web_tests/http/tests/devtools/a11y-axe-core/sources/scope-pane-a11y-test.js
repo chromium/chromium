@@ -23,7 +23,7 @@
   `);
   await SourcesTestRunner.waitUntilPausedPromise();
 
-  await TestRunner.addSnifferPromise(Sources.ScopeChainSidebarPane.prototype, '_sidebarPaneUpdatedForTest');
+  await TestRunner.addSnifferPromise(Sources.ScopeChainSidebarPane.prototype, 'sidebarPaneUpdatedForTest');
   const scopePane = Sources.ScopeChainSidebarPane.instance();
   await TestRunner.addSnifferPromise(ObjectUI.ObjectPropertyTreeElement, 'populateWithProperties');
   TestRunner.addResult(`Scope pane content: ${scopePane.contentElement.deepTextContent()}`);
@@ -31,7 +31,7 @@
   await AxeCoreTestRunner.runValidation(scopePane.contentElement);
 
   TestRunner.addResult('Expanding the makeClosure closure.');
-  scopePane._treeOutline._rootElement.childAt(1).expand();
+  scopePane.treeOutline._rootElement.childAt(1).expand();
   await TestRunner.addSnifferPromise(ObjectUI.ObjectPropertyTreeElement, 'populateWithProperties');
   TestRunner.addResult(`Scope pane content: ${scopePane.contentElement.deepTextContent()}`);
   TestRunner.addResult(`Running the axe-core linter on the scope pane.`);

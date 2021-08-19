@@ -15,9 +15,9 @@
   var scope1 = 'http://127.0.0.1:8000/devtools/service-workers/resources/scope1/'; // with trailing '/'
   var scope2 = 'http://127.0.0.1:8000/devtools/service-workers/resources/scope2';  // without trailing '/'
   var step = 0;
-  Resources.ServiceWorkersView._noThrottle = true;
+  Resources.ServiceWorkersView.noThrottle = true;
 
-  TestRunner.addSniffer(Resources.ServiceWorkersView.prototype, '_updateRegistration', updateRegistration, true);
+  TestRunner.addSniffer(Resources.ServiceWorkersView.prototype, 'updateRegistration', updateRegistration, true);
   function updateRegistration(registration) {
     for (var version of registration.versions.values()) {
       if (step == 0 && registration.scopeURL == scope1 && version.isActivated() && version.isRunning()) {
@@ -45,7 +45,7 @@
   }
 
   TestRunner.addResult('Select ServiceWorkers tree element.');
-  UI.panels.resources._sidebar.serviceWorkersTreeElement.select();
+  UI.panels.resources.sidebar.serviceWorkersTreeElement.select();
   TestRunner.addResult('Register ServiceWorker for scope1');
   ApplicationTestRunner.registerServiceWorker(scriptURL, scope1);
 })();

@@ -10,7 +10,7 @@
 
   class TestTimelineControllerClient {
     constructor() {
-      this._hadLoadingProgress = false;
+      this.hadLoadingProgress = false;
     }
 
     recordingProgress() {
@@ -26,9 +26,9 @@
     }
 
     loadingProgress() {
-      if (this._hadLoadingProgress)
+      if (this.hadLoadingProgress)
         return;
-      this._hadLoadingProgress = true;
+      this.hadLoadingProgress = true;
       TestRunner.addResult('TimelineControllerClient.loadingProgress');
     }
 

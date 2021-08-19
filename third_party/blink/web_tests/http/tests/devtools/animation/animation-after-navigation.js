@@ -28,7 +28,7 @@
   TestRunner.addSniffer(Animation.AnimationModel.prototype, 'animationStarted',
       () => {
         TestRunner.addResult('SUCCESS (size = ' +
-                             timeline._previewMap.size + ', expecting 1)');
+                             timeline.previewMap.size + ', expecting 1)');
         TestRunner.completeTest();
       });
   TestRunner.evaluateInPage(`

@@ -27,21 +27,21 @@
   async function step1() {
     await dumpConsoleMessageURLs();
 
-    TestRunner.addSniffer(Bindings.IgnoreListManager.prototype, '_patternChangeFinishedForTests', step2);
+    TestRunner.addSniffer(Bindings.IgnoreListManager.prototype, 'patternChangeFinishedForTests', step2);
     var frameworkRegexString = 'foo\\.js';
     Common.settingForTest('skipStackFramesPattern').set(frameworkRegexString);
   }
 
   async function step2() {
     await dumpConsoleMessageURLs();
-    TestRunner.addSniffer(Bindings.IgnoreListManager.prototype, '_patternChangeFinishedForTests', step3);
+    TestRunner.addSniffer(Bindings.IgnoreListManager.prototype, 'patternChangeFinishedForTests', step3);
     var frameworkRegexString = 'foo\\.js|boo\\.js';
     Common.settingForTest('skipStackFramesPattern').set(frameworkRegexString);
   }
 
   async function step3() {
     await dumpConsoleMessageURLs();
-    TestRunner.addSniffer(Bindings.IgnoreListManager.prototype, '_patternChangeFinishedForTests', step4);
+    TestRunner.addSniffer(Bindings.IgnoreListManager.prototype, 'patternChangeFinishedForTests', step4);
     var frameworkRegexString = '';
     Common.settingForTest('skipStackFramesPattern').set(frameworkRegexString);
   }

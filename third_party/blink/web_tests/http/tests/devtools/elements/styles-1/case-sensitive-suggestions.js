@@ -34,7 +34,7 @@
     var selectionRange = document.createRange();
     selectionRange.selectNodeContents(proxyElement);
     var prefix = selectionRange.toString();
-    prompt._buildPropertyCompletions(inputText.substring(0, inputText.length - prefix.length), prefix, true)
+    prompt.buildPropertyCompletions(inputText.substring(0, inputText.length - prefix.length), prefix, true)
         .then(completions);
 
     function completions(result) {

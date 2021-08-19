@@ -50,7 +50,7 @@
         TestRunner.deprecatedRunAfterPendingDispatches(step2);
 
         function step2() {
-          var editor = treeElement._editing.editor;
+          var editor = treeElement.editing.editor;
           TestRunner.addResult(editor.text());
           editor.setText(editor.text().replace(/&/g, '#'));
           var event = TestRunner.createKeyEvent('Enter');
@@ -80,12 +80,12 @@
         TestRunner.deprecatedRunAfterPendingDispatches(step2);
 
         function step2() {
-          var value = treeElement._editing.editor._codeMirror.getValue();
+          var value = treeElement.editing.editor._codeMirror.getValue();
           TestRunner.addResult(value);
-          treeElement._editing.editor.setText(value.replace('100', '110'));
+          treeElement.editing.editor.setText(value.replace('100', '110'));
           var event = TestRunner.createKeyEvent('Enter');
           event.isMetaOrCtrlForTest = true;
-          treeElement._editing.editor.widget().element.dispatchEvent(event);
+          treeElement.editing.editor.widget().element.dispatchEvent(event);
           TestRunner.deprecatedRunAfterPendingDispatches(
               ElementsTestRunner.expandElementsTree.bind(ElementsTestRunner, done));
         }

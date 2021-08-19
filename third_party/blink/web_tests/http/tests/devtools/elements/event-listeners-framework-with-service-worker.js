@@ -46,7 +46,7 @@
     TestRunner.addResult('Dumping listeners');
     await UI.viewManager.showView('sources.globalListeners').then(() => {
       objectEventListenersPane.update();
-      ElementsTestRunner.expandAndDumpEventListeners(objectEventListenersPane._eventListenersView, step3);
+      ElementsTestRunner.expandAndDumpEventListeners(objectEventListenersPane.eventListenersView, step3);
     });
   }
 
@@ -55,7 +55,7 @@
     SourcesTestRunner.selectThread(SDK.targetManager.mainTarget());
     TestRunner.addResult('Context is service worker: ' + isServiceWorker());
     TestRunner.addResult('Dumping listeners');
-    ElementsTestRunner.expandAndDumpEventListeners(objectEventListenersPane._eventListenersView, step4);
+    ElementsTestRunner.expandAndDumpEventListeners(objectEventListenersPane.eventListenersView, step4);
   }
 
   async function step4() {

@@ -19,21 +19,21 @@
   await Promise.all([
     TestRunner.addSnifferPromise(sourceFrame, 'setContent'),
     sourceFrame.show(UI.inspectorView.element)]);
-  TestRunner.addResult('Showing raw content: ' + !sourceFrame._prettyToggle.toggled());
+  TestRunner.addResult('Showing raw content: ' + !sourceFrame.prettyToggle.toggled());
   TestRunner.addResult(sourceFrame.textEditor.text());
   TestRunner.addResult('');
 
   await Promise.all([
       TestRunner.addSnifferPromise(sourceFrame, 'setContent'),
-      sourceFrame._prettyToggle.element.click()]);
-  TestRunner.addResult('Showing pretty content: ' + sourceFrame._prettyToggle.toggled());
+      sourceFrame.prettyToggle.element.click()]);
+  TestRunner.addResult('Showing pretty content: ' + sourceFrame.prettyToggle.toggled());
   TestRunner.addResult(sourceFrame.textEditor.text());
   TestRunner.addResult('');
 
   await Promise.all([
     TestRunner.addSnifferPromise(sourceFrame, 'setContent'),
-    sourceFrame._prettyToggle.element.click()]);
-  TestRunner.addResult('Back to raw content: ' + !sourceFrame._prettyToggle.toggled());
+    sourceFrame.prettyToggle.element.click()]);
+  TestRunner.addResult('Back to raw content: ' + !sourceFrame.prettyToggle.toggled());
   TestRunner.addResult(sourceFrame.textEditor.text());
 
   TestRunner.completeTest();

@@ -9,12 +9,12 @@ async function assertLocation(section, select_row) {
   let rowWithLocation = instanceRow;
 
   if (select_row) {
-    rowWithLocation = HeapProfilerTestRunner.findMatchingRow(n => n._referenceName === select_row, rowWithLocation);
+    rowWithLocation = HeapProfilerTestRunner.findMatchingRow(n => n.referenceName === select_row, rowWithLocation);
   }
 
   let linkNode;
   do {
-    linkNode = rowWithLocation._element.querySelector('.heap-object-source-link .devtools-link');
+    linkNode = rowWithLocation.element.querySelector('.heap-object-source-link .devtools-link');
     await new Promise(r => requestAnimationFrame(r));
   } while (!linkNode);
 

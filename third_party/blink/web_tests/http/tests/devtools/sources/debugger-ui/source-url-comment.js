@@ -51,7 +51,7 @@
 
       function didShowScriptSource(sourceFrame) {
         var panel = UI.panels.sources;
-        var uiSourceCodes = panel._workspace.uiSourceCodes();
+        var uiSourceCodes = panel.workspace.uiSourceCodes();
         var ignored = true;
         for (var i = 0; i < uiSourceCodes.length && ignored; ++i) {
           if (uiSourceCodes[i].url().indexOf('inlineScriptURL.js') !== -1)
@@ -85,7 +85,7 @@
 
       function didShowScriptSource(sourceFrame) {
         var panel = UI.panels.sources;
-        var uiSourceCodes = panel._workspace.uiSourceCodes();
+        var uiSourceCodes = panel.workspace.uiSourceCodes();
         for (var i = 0; i < uiSourceCodes.length; ++i) {
           if (uiSourceCodes[i].url().indexOf('scriptWithPoorSourceURL.js') !==
               -1)

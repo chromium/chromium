@@ -26,14 +26,14 @@
 
   function runTestFunction() {
     TestRunner.addSniffer(
-        Sources.DebuggerPlugin.prototype, '_executionLineChanged',
+        Sources.DebuggerPlugin.prototype, 'executionLineChanged',
         onSetExecutionLocation);
     TestRunner.evaluateInPage('setTimeout(testFunction, 0)');
   }
 
   async function onSetExecutionLocation(liveLocation) {
     TestRunner.deprecatedRunAfterPendingDispatches(dumpAndContinue.bind(
-        null, this._textEditor, (await liveLocation.uiLocation()).lineNumber));
+        null, this.textEditor, (await liveLocation.uiLocation()).lineNumber));
   }
 
   function dumpAndContinue(textEditor, lineNumber) {
@@ -46,12 +46,12 @@
       output.push(i == lineNumber ? '>' : ' ');
       output.push(textEditor.line(i));
       output.push('\t');
-      textEditor._decorations.get(i).forEach(decoration => output.push(decoration.element.deepTextContent()));
+      textEditor.decorations.get(i).forEach(decoration => output.push(decoration.element.deepTextContent()));
       TestRunner.addResult(output.join(' '));
     }
 
     TestRunner.addSniffer(
-        Sources.DebuggerPlugin.prototype, '_executionLineChanged',
+        Sources.DebuggerPlugin.prototype, 'executionLineChanged',
         onSetExecutionLocation);
     if (++stepCount < 6)
       SourcesTestRunner.stepInto();

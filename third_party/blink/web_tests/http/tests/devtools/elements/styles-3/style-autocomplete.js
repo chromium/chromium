@@ -121,9 +121,9 @@
       selectionRange.selectNodeContents(proxyElement);
     }
     var range = selectionRange.startContainer.rangeOfWord(
-        selectionRange.startOffset, prompt._completionStopCharacters, proxyElement, 'backward');
+        selectionRange.startOffset, prompt.completionStopCharacters, proxyElement, 'backward');
     var prefix = range.toString();
-    prompt._buildPropertyCompletions(inputText.substring(0, inputText.length - prefix.length), prefix, force)
+    prompt.buildPropertyCompletions(inputText.substring(0, inputText.length - prefix.length), prefix, force)
         .then(completions);
 
     function completions(result) {

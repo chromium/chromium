@@ -28,7 +28,7 @@
   }
 
   function onCSSFile(uiSourceCode) {
-    TestRunner.addSniffer(SDK.SourceMapManager.prototype, '_sourceMapLoadedForTest', onSourceMapRerequested);
+    TestRunner.addSniffer(SDK.SourceMapManager.prototype, 'sourceMapLoadedForTest', onSourceMapRerequested);
     uiSourceCode.addRevision(
         'div { color: blue; } /*# sourceMappingURL=styles-rerequest-sourcemap-on-watchdog.css.map */');
   }

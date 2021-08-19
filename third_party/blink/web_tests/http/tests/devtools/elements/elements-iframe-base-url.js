@@ -15,7 +15,7 @@
   ElementsTestRunner.expandElementsTree(step1);
 
   async function step1() {
-    const innerMapping = TestRunner.domModel._idToDOMNode;
+    const innerMapping = TestRunner.domModel.idToDOMNode;
     const docs = Object.values(innerMapping).filter(n => n instanceof SDK.DOMDocument);
     for (const doc of docs) {
       if (doc.parentNode)

@@ -8,7 +8,7 @@
   await TestRunner.loadModule('console'); await TestRunner.loadTestModule('application_test_runner');
   await TestRunner.showPanel('resources');
 
-  TestRunner.addSniffer(SDK.ResourceTreeFrame.prototype, '_addRequest', requestAdded, true);
+  TestRunner.addSniffer(SDK.ResourceTreeFrame.prototype, 'addRequest', requestAdded, true);
   TestRunner.addSniffer(TestRunner.PageAgent, 'getResourceContent', pageAgentGetResourceContentCalled, true);
   TestRunner.evaluateInPageAsync(`
     (function loadStylesheet() {

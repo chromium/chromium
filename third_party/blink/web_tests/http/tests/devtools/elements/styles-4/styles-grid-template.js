@@ -37,7 +37,7 @@
     TestRunner.addResult('Start editing "grid-template-areas"');
     treeElement.startEditing(treeElement.valueElement);
 
-    TestRunner.addResult(`Prompt text ${treeElement._prompt.text()}`);
+    TestRunner.addResult(`Prompt text ${treeElement.prompt.text()}`);
 
     TestRunner.completeTest();
   }

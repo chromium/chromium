@@ -42,11 +42,11 @@
     },
 
     function testEditSelector(next) {
-      var section = UI.panels.elements._stylesWidget._sectionBlocks[0].sections[3];
+      var section = UI.panels.elements.stylesWidget._sectionBlocks[0].sections[3];
       section.startEditingSelector();
-      section._selectorElement.textContent = '.should-change, .INSERTED-OTHER-SELECTOR';
+      section.selectorElement.textContent = '.should-change, .INSERTED-OTHER-SELECTOR';
       ElementsTestRunner.waitForSelectorCommitted(onSelectorEdited);
-      section._selectorElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
+      section.selectorElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
 
       async function onSelectorEdited() {
         TestRunner.addResult('\n\n#### AFTER SELECTOR EDIT ####\n\n');

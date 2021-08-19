@@ -85,7 +85,7 @@
   ];
 
   var model = PerformanceTestRunner.createPerformanceModelWithEvents(testData);
-  const tabbedPane = UI.panels.timeline._flameChart._detailsView._tabbedPane;
+  const tabbedPane = UI.panels.timeline.flameChart._detailsView._tabbedPane;
   tabbedPane.selectTab(Timeline.TimelineDetailsView.Tab.BottomUp);
   const view = tabbedPane.visibleView;
 
@@ -102,7 +102,7 @@
 
   async function dumpRecords() {
     await PerformanceTestRunner.walkTimelineEventTreeUnderNode(
-        printEventMessage, view._root);
+        printEventMessage, view.root);
     TestRunner.addResult('');
   }
 
@@ -110,11 +110,11 @@
   await dumpRecords();
 
   TestRunner.addResult(`Filtered by 'AAA':`);
-  view._textFilterUI.setValue('AAA', true);
+  view.textFilterUI.setValue('AAA', true);
   await dumpRecords();
 
   TestRunner.addResult(`Filtered by 'BBB':`);
-  view._textFilterUI.setValue('BBB', true);
+  view.textFilterUI.setValue('BBB', true);
   await dumpRecords();
 
   TestRunner.completeTest();

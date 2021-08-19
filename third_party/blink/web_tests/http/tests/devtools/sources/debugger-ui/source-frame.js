@@ -34,8 +34,8 @@
       function didShowScriptSource(sourceFrame) {
         TestRunner.addResult('Script source was shown.');
         shownSourceFrame = sourceFrame;
-        TestRunner.addSniffer(Sources.UISourceCodeFrame.prototype, '_addMessageToSource', didAddMessage);
-        TestRunner.addSniffer(Sources.UISourceCodeFrame.prototype, '_removeMessageFromSource', didRemoveMessage);
+        TestRunner.addSniffer(Sources.UISourceCodeFrame.prototype, 'addMessageToSource', didAddMessage);
+        TestRunner.addSniffer(Sources.UISourceCodeFrame.prototype, 'removeMessageFromSource', didRemoveMessage);
         TestRunner.evaluateInPage('addErrorToConsole()');
       }
 
@@ -65,7 +65,7 @@
       TestRunner.resourceTreeModel.forAllResources(visit);
       function visit(resource) {
         if (resource.url.indexOf('script.js') !== -1) {
-          UI.panels.resources._sidebar.showResource(resource, 1);
+          UI.panels.resources.sidebar.showResource(resource, 1);
           return true;
         }
       }

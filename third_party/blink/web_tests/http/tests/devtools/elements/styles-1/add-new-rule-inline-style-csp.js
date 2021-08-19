@@ -30,7 +30,7 @@
 
       function successCallback(section) {
         rule = section.style().parentRule;
-        matchedStyles = section._matchedStyles;
+        matchedStyles = section.matchedStyles;
         TestRunner.addResult('=== Rule added ===');
         TestRunner.addResult(rule.selectorText() + ' {' + rule.style.cssText + '}');
         TestRunner.addResult(

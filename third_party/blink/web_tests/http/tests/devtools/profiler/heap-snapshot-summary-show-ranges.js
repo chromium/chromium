@@ -19,10 +19,10 @@
     function dumpAndPopulate(step, from, to) {
       TestRunner.addResult('');
       TestRunner.addResult(step);
-      TestRunner.addResult('Retrieved ranges: ' + JSON.stringify(row._retrievedChildrenRanges));
+      TestRunner.addResult('Retrieved ranges: ' + JSON.stringify(row.retrievedChildrenRanges));
       for (var i = 0; i < row.children.length; ++i)
-        TestRunner.addResult('[' + i + '] ' + row.children[i]._element.textContent.replace(/[^\w\d]/mg, ' '));
-      return row._populateChildren(from, to);
+        TestRunner.addResult('[' + i + '] ' + row.children[i].element.textContent.replace(/[^\w\d]/mg, ' '));
+      return row.populateChildren(from, to);
     }
 
     function step1() {
