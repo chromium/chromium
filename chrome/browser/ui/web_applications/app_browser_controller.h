@@ -212,7 +212,11 @@ class AppBrowserController : public TabStripModelObserver,
   void SetOnUpdateDraggableRegionForTesting(base::OnceClosure done);
 
  protected:
-  explicit AppBrowserController(Browser* browser, web_app::AppId app_id);
+  AppBrowserController(Browser* browser,
+                       AppId app_id,
+                       absl::optional<SystemAppType> system_app_type,
+                       bool has_tab_strip);
+  AppBrowserController(Browser* browser, AppId app_id);
 
   // Called once the app browser controller has determined its initial url.
   virtual void OnReceivedInitialURL();
@@ -230,18 +234,16 @@ class AppBrowserController : public TabStripModelObserver,
 
   void UpdateThemePack();
 
-  const AppId app_id_;
   Browser* const browser_;
+  const AppId app_id_;
+  const absl::optional<SystemAppType> system_app_type_;
+  const bool has_tab_strip_;
   GURL initial_url_;
 
   scoped_refptr<BrowserThemePack> theme_pack_;
   std::unique_ptr<ui::ThemeProvider> theme_provider_;
   absl::optional<SkColor> last_theme_color_;
   absl::optional<SkColor> last_background_color_;
-
-  absl::optional<SystemAppType> system_app_type_;
-
-  const bool has_tab_strip_;
 
   absl::optional<SkRegion> draggable_region_ = absl::nullopt;
 

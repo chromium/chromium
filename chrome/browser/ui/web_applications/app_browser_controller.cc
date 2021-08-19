@@ -108,10 +108,19 @@ AppBrowserController::MaybeCreateWebAppController(Browser* browser) {
   std::unique_ptr<AppBrowserController> controller;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   const AppId app_id = GetAppIdFromApplicationName(browser->app_name());
-  auto* provider = WebAppProvider::GetForLocalApps(browser->profile());
-  if (provider && provider->registrar().IsInstalled(app_id))
-    controller = std::make_unique<WebAppBrowserController>(browser);
-  if (!controller) {
+  auto* const provider = WebAppProvider::GetForLocalApps(browser->profile());
+  if (provider && provider->registrar().IsInstalled(app_id)) {
+    auto system_app_type =
+        GetSystemWebAppTypeForAppId(browser->profile(), app_id);
+    const bool has_tab_strip =
+        (system_app_type.has_value() &&
+         provider->system_web_app_manager().ShouldHaveTabStrip(
+             system_app_type.value())) ||
+        (base::FeatureList::IsEnabled(features::kDesktopPWAsTabStrip) &&
+         provider->registrar().IsTabbedWindowModeEnabled(app_id));
+    controller = std::make_unique<WebAppBrowserController>(
+        *provider, browser, app_id, std::move(system_app_type), has_tab_strip);
+  } else {
     const extensions::Extension* extension =
         extensions::ExtensionRegistry::Get(browser->profile())
             ->GetExtensionById(app_id,
@@ -153,26 +162,23 @@ const ui::ThemeProvider* AppBrowserController::GetThemeProvider() const {
   return theme_provider_.get();
 }
 
-AppBrowserController::AppBrowserController(Browser* browser,
-                                           web_app::AppId app_id)
+AppBrowserController::AppBrowserController(
+    Browser* browser,
+    AppId app_id,
+    absl::optional<SystemAppType> system_app_type,
+    bool has_tab_strip)
     : content::WebContentsObserver(nullptr),
-      app_id_(std::move(app_id)),
       browser_(browser),
+      app_id_(std::move(app_id)),
+      system_app_type_(std::move(system_app_type)),
+      has_tab_strip_(has_tab_strip),
       theme_provider_(
-          ThemeService::CreateBoundThemeProvider(browser_->profile(), this)),
-      system_app_type_(
-          GetSystemWebAppTypeForAppId(browser_->profile(), app_id_)),
-      has_tab_strip_(
-          (system_app_type_.has_value() &&
-           WebAppProvider::Get(browser->profile())
-               ->system_web_app_manager()
-               .ShouldHaveTabStrip(system_app_type_.value())) ||
-          (base::FeatureList::IsEnabled(features::kDesktopPWAsTabStrip) &&
-           WebAppProvider::Get(browser->profile())
-               ->registrar()
-               .IsTabbedWindowModeEnabled(app_id_))) {
+          ThemeService::CreateBoundThemeProvider(browser_->profile(), this)) {
   browser->tab_strip_model()->AddObserver(this);
 }
+
+AppBrowserController::AppBrowserController(Browser* browser, AppId app_id)
+    : AppBrowserController(browser, std::move(app_id), absl::nullopt, false) {}
 
 void AppBrowserController::Init() {
   UpdateThemePack();

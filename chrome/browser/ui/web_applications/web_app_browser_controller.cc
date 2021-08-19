@@ -41,10 +41,17 @@ constexpr char kRelationship[] = "delegate_permission/common.handle_all_urls";
 
 namespace web_app {
 
-WebAppBrowserController::WebAppBrowserController(Browser* browser)
+WebAppBrowserController::WebAppBrowserController(
+    WebAppProvider& provider,
+    Browser* browser,
+    AppId app_id,
+    absl::optional<SystemAppType> system_app_type,
+    bool has_tab_strip)
     : AppBrowserController(browser,
-                           GetAppIdFromApplicationName(browser->app_name())),
-      provider_(*WebAppProvider::GetForLocalApps(browser->profile())) {
+                           std::move(app_id),
+                           std::move(system_app_type),
+                           has_tab_strip),
+      provider_(provider) {
   registrar_observation_.Observe(&provider_.registrar());
   PerformDigitalAssetLinkVerification(browser);
 }
@@ -136,9 +143,9 @@ ui::ImageModel WebAppBrowserController::GetWindowAppIcon() const {
 #endif
 
   if (provider_.icon_manager().HasSmallestIcon(app_id(), {IconPurpose::ANY},
-                                               web_app::kWebAppIconSmall)) {
+                                               kWebAppIconSmall)) {
     provider_.icon_manager().ReadSmallestIconAny(
-        app_id(), web_app::kWebAppIconSmall,
+        app_id(), kWebAppIconSmall,
         base::BindOnce(&WebAppBrowserController::OnReadIcon,
                        weak_ptr_factory_.GetWeakPtr()));
   }
@@ -241,12 +248,12 @@ bool WebAppBrowserController::IsInstalled() const {
 
 void WebAppBrowserController::OnTabInserted(content::WebContents* contents) {
   AppBrowserController::OnTabInserted(contents);
-  web_app::SetAppPrefsForWebContents(contents);
+  SetAppPrefsForWebContents(contents);
 }
 
 void WebAppBrowserController::OnTabRemoved(content::WebContents* contents) {
   AppBrowserController::OnTabRemoved(contents);
-  web_app::ClearAppPrefsForWebContents(contents);
+  ClearAppPrefsForWebContents(contents);
 }
 
 const WebAppRegistrar& WebAppBrowserController::registrar() const {
@@ -257,7 +264,7 @@ void WebAppBrowserController::LoadAppIcon(bool allow_placeholder_icon) const {
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
   proxy->LoadIcon(proxy->AppRegistryCache().GetAppType(app_id()), app_id(),
-                  apps::mojom::IconType::kStandard, web_app::kWebAppIconSmall,
+                  apps::mojom::IconType::kStandard, kWebAppIconSmall,
                   allow_placeholder_icon,
                   base::BindOnce(&WebAppBrowserController::OnLoadIcon,
                                  weak_ptr_factory_.GetWeakPtr()));

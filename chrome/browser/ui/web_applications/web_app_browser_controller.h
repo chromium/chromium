@@ -46,7 +46,11 @@ class WebAppProvider;
 class WebAppBrowserController : public AppBrowserController,
                                 public AppRegistrarObserver {
  public:
-  explicit WebAppBrowserController(Browser* browser);
+  WebAppBrowserController(WebAppProvider& provider,
+                          Browser* browser,
+                          AppId app_id,
+                          absl::optional<SystemAppType> system_app_type,
+                          bool has_tab_strip);
   WebAppBrowserController(const WebAppBrowserController&) = delete;
   WebAppBrowserController& operator=(const WebAppBrowserController&) = delete;
   ~WebAppBrowserController() override;
@@ -83,7 +87,7 @@ class WebAppBrowserController : public AppBrowserController,
   void SetReadIconCallbackForTesting(base::OnceClosure callback);
 
  protected:
-  // web_app::AppBrowserController:
+  // AppBrowserController:
   void OnTabInserted(content::WebContents* contents) override;
   void OnTabRemoved(content::WebContents* contents) override;
 
