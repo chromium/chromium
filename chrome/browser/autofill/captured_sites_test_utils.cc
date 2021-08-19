@@ -1149,10 +1149,13 @@ bool TestRecipeReplayer::ExecuteClickIfNotSeenAction(
                                    true)) {
     return true;
   } else {
+    // If the selector wasn't found, take the clickSelector and make it the
+    // selector to attempt a click with that element instead.
     absl::optional<std::string> click_xpath_text =
         FindPopulateString(action, "clickSelector", "click xpath selector");
 
-    action.emplace("clickSelector", *click_xpath_text);
+    action.insert_or_assign("selector", base::Value(*click_xpath_text));
+
     return ExecuteClickAction(std::move(action));
   }
 }
