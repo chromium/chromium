@@ -215,6 +215,22 @@ public class RevampedIncognitoDescriptionView
         mDescriptionTextContainer.setLayoutParams(new LinearLayout.LayoutParams(
                 contentWidthPx, LinearLayout.LayoutParams.WRAP_CONTENT));
 
+        // The learn more text view has height of min_touch_target_size. This effectively
+        // creates padding above and below it, depending on Android font size settings.
+        // We want to have a R.dimen.learn_more_vertical_spacing tall gap between the learn more
+        // text and the adjacent elements. So adjust the margin to be the difference between
+        // targeted spacing and effective padding.
+        int innerSpacing = (int) ((getContext().getResources().getDimensionPixelSize(
+                                           R.dimen.min_touch_target_size)
+                                          - mLearnMore.getTextSize())
+                / 2);
+        int learnMoreVerticalMargin =
+                mResources.getDimensionPixelSize(R.dimen.learn_more_vertical_spacing)
+                - innerSpacing;
+
+        LinearLayout.LayoutParams params = (LayoutParams) mLearnMore.getLayoutParams();
+        params.setMargins(0, learnMoreVerticalMargin, 0, learnMoreVerticalMargin);
+
         mContainer.setPadding(
                 paddingHorizontalPx, paddingVerticalPx, paddingHorizontalPx, paddingVerticalPx);
     }

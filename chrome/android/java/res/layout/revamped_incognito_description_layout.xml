@@ -123,9 +123,7 @@
             android:layout_height="wrap_content"
             android:textAppearance="@style/TextAppearance.TextMedium.Secondary.Light"
             android:minHeight="@dimen/min_touch_target_size"
-            android:gravity="start"
-            android:layout_marginTop="@dimen/learn_more_vertical_spacing"
-            android:layout_marginBottom="@dimen/learn_more_vertical_spacing"/>
+            android:gravity="center_vertical"/>
 
     </LinearLayout>
 
