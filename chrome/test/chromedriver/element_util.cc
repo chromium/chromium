@@ -379,10 +379,9 @@ Status FindElement(int interval_ms,
         *value = std::move(temp);
         return Status(kOk);
       }
-      base::ListValue* result;
-      if (!temp->GetAsList(&result))
+      if (!temp->is_list())
         return Status(kUnknownError, "script returns unexpected result");
-      if (result->GetSize() > 0U) {
+      if (temp->GetList().size() > 0U) {
         *value = std::move(temp);
         return Status(kOk);
       }

@@ -551,16 +551,14 @@ Status ProcessCapabilities(const base::DictionaryValue& params,
   }
 
   // 3. Get the property "firstMatch" from capabilities request.
-  base::ListValue default_list;
-  const base::ListValue* all_first_match_capabilities;
-  const base::Value* all_first_match_capabilities_value =
+  base::Value default_list(base::Value::Type::LIST);
+  const base::Value* all_first_match_capabilities =
       capabilities_request->FindKey("firstMatch");
-  if (all_first_match_capabilities_value == nullptr) {
-    default_list.Append(std::make_unique<base::DictionaryValue>());
+  if (all_first_match_capabilities == nullptr) {
+    default_list.Append(base::Value(base::Value::Type::DICTIONARY));
     all_first_match_capabilities = &default_list;
-  } else if (all_first_match_capabilities_value->GetAsList(
-                 &all_first_match_capabilities)) {
-    if (all_first_match_capabilities->GetSize() < 1)
+  } else if (all_first_match_capabilities->is_list()) {
+    if (all_first_match_capabilities->GetList().size() < 1)
       return Status(kInvalidArgument,
                     "'firstMatch' must contain at least one entry");
   } else {
@@ -571,7 +569,7 @@ Status ProcessCapabilities(const base::DictionaryValue& params,
   std::vector<const base::DictionaryValue*> validated_first_match_capabilities;
 
   // 5. Validate all first match capabilities.
-  for (size_t i = 0; i < all_first_match_capabilities->GetSize(); ++i) {
+  for (size_t i = 0; i < all_first_match_capabilities->GetList().size(); ++i) {
     const base::Value& first_match = all_first_match_capabilities->GetList()[i];
     if (!first_match.is_dict()) {
       return Status(kInvalidArgument,

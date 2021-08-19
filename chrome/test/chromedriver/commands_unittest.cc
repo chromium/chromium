@@ -9,13 +9,13 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
-
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
@@ -88,13 +88,12 @@ void OnGetSessions(const Status& status,
                    bool w3c_compliant) {
   ASSERT_EQ(kOk, status.code());
   ASSERT_TRUE(value.get());
-  base::ListValue* sessions;
-  ASSERT_TRUE(value->GetAsList(&sessions));
-  base::Value::ConstListView sessions_list = sessions->GetList();
+  std::vector<base::Value> sessions_list =
+      base::Value::FromUniquePtrValue(std::move(value)).TakeList();
   ASSERT_EQ(static_cast<size_t>(2), sessions_list.size());
 
-  const base::Value& session1 = std::move(sessions_list[0]);
-  const base::Value& session2 = std::move(sessions_list[1]);
+  const base::Value& session1 = sessions_list[0];
+  const base::Value& session2 = sessions_list[1];
   ASSERT_TRUE(session1.is_dict());
   ASSERT_TRUE(session2.is_dict());
 
@@ -512,9 +511,8 @@ TEST(CommandsTest, FailedFindElements) {
                                      base::Value::AsDictionaryValue(params),
                                      &result, nullptr)
                      .code());
-  base::ListValue* list;
-  ASSERT_TRUE(result->GetAsList(&list));
-  ASSERT_EQ(0U, list->GetList().size());
+  ASSERT_TRUE(result->is_list());
+  ASSERT_EQ(0U, result->GetList().size());
 }
 
 TEST(CommandsTest, SuccessfulFindChildElement) {
@@ -591,9 +589,8 @@ TEST(CommandsTest, FailedFindChildElements) {
                      1, &session, &web_view, element_id,
                      base::Value::AsDictionaryValue(params), &result)
                      .code());
-  base::ListValue* list;
-  ASSERT_TRUE(result->GetAsList(&list));
-  ASSERT_EQ(0U, list->GetList().size());
+  ASSERT_TRUE(result->is_list());
+  ASSERT_EQ(0U, result->GetList().size());
 }
 
 TEST(CommandsTest, TimeoutInFindElement) {

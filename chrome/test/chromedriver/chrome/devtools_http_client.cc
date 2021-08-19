@@ -281,26 +281,26 @@ Status ParseWebViewsInfo(const std::string& data, WebViewsInfo* views_info) {
   std::unique_ptr<base::Value> value = base::JSONReader::ReadDeprecated(data);
   if (!value.get())
     return Status(kUnknownError, "DevTools returned invalid JSON");
-  base::ListValue* list;
-  if (!value->GetAsList(&list))
+  if (!value->is_list())
     return Status(kUnknownError, "DevTools did not return list");
 
   std::vector<WebViewInfo> temp_views_info;
-  for (size_t i = 0; i < list->GetSize(); ++i) {
-    base::DictionaryValue* info;
-    if (!list->GetDictionary(i, &info))
+  for (const base::Value& info_value : value->GetList()) {
+    if (!info_value.is_dict())
       return Status(kUnknownError, "DevTools contains non-dictionary item");
+    const base::DictionaryValue& info =
+        base::Value::AsDictionaryValue(info_value);
     std::string id;
-    if (!info->GetString("id", &id))
+    if (!info.GetString("id", &id))
       return Status(kUnknownError, "DevTools did not include id");
     std::string type_as_string;
-    if (!info->GetString("type", &type_as_string))
+    if (!info.GetString("type", &type_as_string))
       return Status(kUnknownError, "DevTools did not include type");
     std::string url;
-    if (!info->GetString("url", &url))
+    if (!info.GetString("url", &url))
       return Status(kUnknownError, "DevTools did not include url");
     std::string debugger_url;
-    info->GetString("webSocketDebuggerUrl", &debugger_url);
+    info.GetString("webSocketDebuggerUrl", &debugger_url);
     WebViewInfo::Type type;
     Status status = ParseType(type_as_string, &type);
     if (status.IsError())

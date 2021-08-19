@@ -35,8 +35,8 @@ class DomTracker : public DevToolsEventListener {
                  const base::DictionaryValue& params) override;
 
  private:
-  bool ProcessNodeList(const base::Value* nodes);
-  bool ProcessNode(const base::Value* node);
+  bool ProcessNodeList(const base::Value& nodes);
+  bool ProcessNode(const base::Value& node);
 
   std::map<int, std::string> node_to_frame_map_;
 
