@@ -46,6 +46,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.LauncherShortcutActivity;
@@ -211,6 +212,7 @@ public final class TabbedActivityLaunchCauseMetricsTest {
 
     @Test
     @MediumTest
+    @RequiresRestart("crbug.com/1223068")
     public void testExternalSearchIntentNoResolvers() throws Throwable {
         final int count = 1
                 + histogramCountForValue(
