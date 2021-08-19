@@ -158,6 +158,14 @@ struct BASE_EXPORT PartitionRoot {
   using ScopedGuard = internal::ScopedGuard<thread_safe>;
   using PCScan = internal::PCScan;
 
+  // Start of read-mostly flags.
+
+  // Flags accessed on fast paths.
+  //
+  // Careful! PartitionAlloc's performance is sensitive to its layout. Please
+  // put the fast-path objects below, and the other ones further (see comment in
+  // this file).
+
   // Defines whether objects should be quarantined for this root.
   enum class QuarantineMode : uint8_t {
     kAlwaysDisabled,
@@ -171,11 +179,6 @@ struct BASE_EXPORT PartitionRoot {
     kEnabled,
   } scan_mode = ScanMode::kDisabled;
 
-  // Flags accessed on fast paths.
-  //
-  // Careful! PartitionAlloc's performance is sensitive to its layout. Please
-  // put the fast-path objects below, and the other ones further (see comment in
-  // this file).
   bool with_thread_cache = false;
   const bool is_thread_safe = thread_safe;
 
@@ -202,6 +205,26 @@ struct BASE_EXPORT PartitionRoot {
   uint32_t extras_size;
   uint32_t extras_offset;
 #endif  // !defined(PA_EXTRAS_REQUIRED)
+
+  // End of read-mostly flags.
+
+  // DO NOT MOVE THIS.
+  //
+  // The flags above are accessed for all (de)allocations, and are mostly
+  // read-only. They should not share a cacheline with the data below, which is
+  // only touched when the lock is taken.
+  //
+  // Adding a whole cacheline of padding is a bit heavy-handed, but with all the
+  // various configurations, it is cumbersome to compute the precise
+  // values. Besides, adding an entire cacheline worth of padding removes any
+  // constraint on the root alignment itself.
+  //
+  // Note: with C++17, it will be possible to reduce the padding, but as of
+  // C++14, static members are forbidden inside anonymous structs, so we cannot
+  // use the union { struct { /* all flags */}; /* padding */} trick. Wasting an
+  // entire cacheline per PartitionRoot is not a big issue, given that
+  // the opbject is very large anyway.
+  uint8_t padding[64];  // Assume a cacheline size <= 64 bytes.
 
   // Not used on the fastest path (thread cache allocations), but on the fast
   // path of the central allocator.

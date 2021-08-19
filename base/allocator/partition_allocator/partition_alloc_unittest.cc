@@ -3548,6 +3548,18 @@ TEST_F(PartitionAllocTest, MallocFunctionAnnotations) {
   Free(buffer);
 }
 
+TEST_F(PartitionAllocTest, Padding) {
+  uintptr_t allow_ref_count_offset =
+      reinterpret_cast<uintptr_t>(&allocator.root()->allow_ref_count) -
+      reinterpret_cast<uintptr_t>(allocator.root());
+  uintptr_t lock_offset =
+      reinterpret_cast<uintptr_t>(&allocator.root()->lock_) -
+      reinterpret_cast<uintptr_t>(allocator.root());
+
+  // Double-check that the padding in the root was not removed.
+  EXPECT_GT(lock_offset - allow_ref_count_offset, 64u);
+}
+
 }  // namespace internal
 }  // namespace base
 
