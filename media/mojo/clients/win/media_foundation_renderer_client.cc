@@ -108,9 +108,8 @@ void MediaFoundationRendererClient::OnRemoteRendererInitialized(
   }
 
   // Initialize DCOMP texture size to {1, 1} to signify to SwapChainPresenter
-  // that the video output size is not yet known. {1, 1} is chosen as opposed
-  // to {0, 0} because VideoFrameSubmitter will not submit 0x0 video frames.
-  if (natural_size_.IsEmpty())
+  // that the video output size is not yet known.
+  if (output_size_.IsEmpty())
     dcomp_texture_wrapper_->UpdateTextureSize(gfx::Size(1, 1));
 
   std::move(init_cb_).Run(PIPELINE_OK);
@@ -121,9 +120,10 @@ void MediaFoundationRendererClient::OnDCOMPSurfaceHandleSet(bool success) {
   DCHECK(media_task_runner_->BelongsToCurrentThread());
   DCHECK(has_video_);
 
-  dcomp_texture_wrapper_->CreateVideoFrame(
-      base::BindOnce(&MediaFoundationRendererClient::OnVideoFrameCreated,
-                     weak_factory_.GetWeakPtr()));
+  if (!success) {
+    DLOG(ERROR) << __func__ << " Failed to set DCOMP surface handle";
+    OnError(PIPELINE_ERROR_COULD_NOT_RENDER);
+  }
 }
 
 void MediaFoundationRendererClient::OnDCOMPSurfaceReceived(
@@ -163,7 +163,10 @@ void MediaFoundationRendererClient::OnCompositionParamsReceived(
   DCHECK(media_task_runner_->BelongsToCurrentThread());
   DCHECK(has_video_);
 
-  renderer_extension_->SetOutputParams(output_rect);
+  renderer_extension_->SetOutputParams(
+      output_rect,
+      base::BindOnce(&MediaFoundationRendererClient::OnSetOutputParamsDone,
+                     weak_factory_.GetWeakPtr(), output_rect.size()));
 }
 
 void MediaFoundationRendererClient::InitializeDCOMPRenderingIfNeeded() {
@@ -285,15 +288,10 @@ void MediaFoundationRendererClient::OnVideoNaturalSizeChange(
   DCHECK(has_video_);
 
   natural_size_ = size;
-
-  // Ensure we don't update with an empty size as |dcomp_text_wrapper_| was
-  // initialized with size of 1x1.
-  auto texture_size = natural_size_.IsEmpty() ? gfx::Size(1, 1) : natural_size_;
-  dcomp_texture_wrapper_->UpdateTextureSize(texture_size);
-  InitializeDCOMPRenderingIfNeeded();
-
-  if (dcomp_video_frame_)
-    sink_->PaintSingleFrame(dcomp_video_frame_, true);
+  dcomp_texture_wrapper_->CreateVideoFrame(
+      natural_size_,
+      base::BindOnce(&MediaFoundationRendererClient::OnVideoFrameCreated,
+                     weak_factory_.GetWeakPtr()));
 
   client_->OnVideoNaturalSizeChange(natural_size_);
 }
@@ -309,6 +307,36 @@ void MediaFoundationRendererClient::OnVideoFrameRateChange(
   DVLOG_FUNC(1) << "fps=" << (fps ? *fps : -1);
   DCHECK(has_video_);
   client_->OnVideoFrameRateChange(fps);
+}
+
+void MediaFoundationRendererClient::OnSetOutputParamsDone(const gfx::Size& size,
+                                                          bool success) {
+  DVLOG_FUNC(1) << "size=" << size.ToString();
+  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(has_video_);
+
+  if (!success) {
+    DLOG(ERROR) << "Failed to SetOutputParams";
+    // Ignore this error as video can possibly be seen but displayed incorrectly
+    // against the video output area.
+    return;
+  }
+
+  output_size_ = size;
+  if (output_size_updated_)
+    return;
+
+  // Call UpdateTextureSize() only 1 time to indicate DCOMP rendering is ready.
+  // The actual size does not matter as long as it is not empty and not (1x1).
+  if (!output_size_.IsEmpty() && output_size_ != gfx::Size(1, 1)) {
+    dcomp_texture_wrapper_->UpdateTextureSize(output_size_);
+    output_size_updated_ = true;
+  }
+  InitializeDCOMPRenderingIfNeeded();
+  // Ensures `SwapChainPresenter::PresentDCOMPSurface()` is invoked to add video
+  // into DCOMP visual tree if needed.
+  if (dcomp_video_frame_)
+    sink_->PaintSingleFrame(dcomp_video_frame_, true);
 }
 
 }  // namespace media

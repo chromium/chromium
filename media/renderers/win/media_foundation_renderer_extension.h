@@ -32,7 +32,9 @@ class MEDIA_EXPORT MediaFoundationRendererExtension {
   virtual void SetVideoStreamEnabled(bool enabled) = 0;
 
   // Notifies renderer of output composition parameters.
-  virtual void SetOutputParams(const ::gfx::Rect& rect) = 0;
+  using SetOutputParamsCB = base::OnceCallback<void(bool)>;
+  virtual void SetOutputParams(const ::gfx::Rect& rect,
+                               SetOutputParamsCB callback) = 0;
 };
 
 }  // namespace media

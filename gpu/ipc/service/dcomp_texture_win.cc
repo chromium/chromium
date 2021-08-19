@@ -72,8 +72,8 @@ DCOMPTexture::DCOMPTexture(
     int32_t route_id,
     mojo::PendingAssociatedReceiver<mojom::DCOMPTexture> receiver,
     scoped_refptr<SharedContextState> context_state)
-    // VideoFrameSubmitter requires frames to be non-zero size.
-    // See MediaFoundationRendererClient::OnDCOMPStreamTextureInitialized.
+    // Size of {1, 1} to signify the Media Foundation rendering pipeline is not
+    // ready to setup DCOMP video yet.
     : GLImageDCOMPSurface({1, 1}, INVALID_HANDLE_VALUE),
       channel_(channel),
       route_id_(route_id),

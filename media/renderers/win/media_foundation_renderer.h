@@ -64,7 +64,8 @@ class MEDIA_EXPORT MediaFoundationRenderer
   // MediaFoundationRendererExtension implementation.
   void GetDCompSurface(GetDCompSurfaceCB callback) override;
   void SetVideoStreamEnabled(bool enabled) override;
-  void SetOutputParams(const gfx::Rect& output_rect) override;
+  void SetOutputParams(const gfx::Rect& output_rect,
+                       SetOutputParamsCB callback) override;
 
  private:
   HRESULT CreateMediaEngine(MediaResource* media_resource);
@@ -117,9 +118,6 @@ class MEDIA_EXPORT MediaFoundationRenderer
 
   // This is the same as "natural_size" in Chromium.
   gfx::Size native_video_size_;
-
-  // The actual output Rect for video.
-  gfx::Rect output_rect_;
 
   // Keep the last volume value being set.
   float volume_ = 1.0;

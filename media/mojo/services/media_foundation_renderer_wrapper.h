@@ -55,7 +55,8 @@ class MediaFoundationRendererWrapper final
   // mojom::MediaFoundationRendererExtension implementation.
   void GetDCOMPSurface(GetDCOMPSurfaceCallback callback) override;
   void SetVideoStreamEnabled(bool enabled) override;
-  void SetOutputParams(const gfx::Rect& output_rect) override;
+  void SetOutputParams(const gfx::Rect& output_rect,
+                       SetOutputParamsCallback callback) override;
 
   // mojom::MuteStateObserver implementation.
   void OnMuteStateChange(bool muted) override;

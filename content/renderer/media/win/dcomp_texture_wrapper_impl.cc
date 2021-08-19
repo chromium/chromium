@@ -100,12 +100,12 @@ DCOMPTextureWrapperImpl::~DCOMPTextureWrapperImpl() {
 }
 
 bool DCOMPTextureWrapperImpl::Initialize(
-    const gfx::Size& natural_size,
+    const gfx::Size& output_size,
     CompositionParamsReceivedCB comp_params_received_cb) {
   DVLOG_FUNC(1);
   DCHECK(media_task_runner_->BelongsToCurrentThread());
 
-  natural_size_ = natural_size;
+  output_size_ = output_size;
 
   dcomp_texture_host_ = factory_->CreateDCOMPTextureHost(this);
   if (!dcomp_texture_host_)
@@ -121,11 +121,11 @@ void DCOMPTextureWrapperImpl::UpdateTextureSize(const gfx::Size& new_size) {
 
   // We would like to invoke SetTextureSize() which will let DCOMPTexture to
   // bind a mailbox to its SharedImage as early as possible. Let new_size of
-  // gfx::Size(1, 1) to pass thru. as it is the initial |natural_size_|.
-  if (natural_size_ == new_size && new_size != gfx::Size(1, 1))
+  // gfx::Size(1, 1) to pass thru. as it is the initial |output_size_|.
+  if (output_size_ == new_size && new_size != gfx::Size(1, 1))
     return;
 
-  natural_size_ = new_size;
+  output_size_ = new_size;
   dcomp_texture_host_->SetTextureSize(new_size);
 }
 
@@ -140,10 +140,12 @@ void DCOMPTextureWrapperImpl::SetDCOMPSurfaceHandle(
 }
 
 void DCOMPTextureWrapperImpl::CreateVideoFrame(
+    const gfx::Size& natural_size,
     CreateVideoFrameCB create_video_frame_cb) {
   DVLOG_FUNC(2);
   DCHECK(media_task_runner_->BelongsToCurrentThread());
 
+  natural_size_ = natural_size;
   if (mailbox_.IsZero()) {
     DVLOG_FUNC(1) << "mailbox_ not bound yet";
     create_video_frame_cb_ = std::move(create_video_frame_cb);
@@ -191,7 +193,7 @@ void DCOMPTextureWrapperImpl::OnSharedImageMailboxBound(gpu::Mailbox mailbox) {
 
   if (!create_video_frame_cb_.is_null()) {
     DVLOG_FUNC(3) << "Mailbox bound: CreateVideoFrame";
-    CreateVideoFrame(std::move(create_video_frame_cb_));
+    CreateVideoFrame(natural_size_, std::move(create_video_frame_cb_));
   }
 }
 

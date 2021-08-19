@@ -26,11 +26,11 @@ class DCOMPTextureWrapper {
   // Initializes the DCOMPTexture and returns success/failure.
   using CompositionParamsReceivedCB = base::RepeatingCallback<void(gfx::Rect)>;
   virtual bool Initialize(
-      const gfx::Size& natural_size,
+      const gfx::Size& output_size,
       CompositionParamsReceivedCB comp_params_received_cb) = 0;
 
-  // Called whenever the video's natural size changes.
-  virtual void UpdateTextureSize(const gfx::Size& natural_size) = 0;
+  // Called whenever the video's output size changes.
+  virtual void UpdateTextureSize(const gfx::Size& output_size) = 0;
 
   // Sets the DirectComposition surface identified by `token`.
   using SetDCOMPSurfaceHandleCB = base::OnceCallback<void(bool)>;
@@ -41,7 +41,8 @@ class DCOMPTextureWrapper {
   // Creates VideoFrame which will be returned in `create_video_frame_cb`.
   using CreateVideoFrameCB =
       base::OnceCallback<void(scoped_refptr<VideoFrame>)>;
-  virtual void CreateVideoFrame(CreateVideoFrameCB create_video_frame_cb) = 0;
+  virtual void CreateVideoFrame(const gfx::Size& natural_size,
+                                CreateVideoFrameCB create_video_frame_cb) = 0;
 };
 
 }  // namespace media

@@ -43,7 +43,7 @@ class DCOMPTextureWrapperImpl : public media::DCOMPTextureWrapper,
 
   // Initializes `this` and returns success or failure. All other methods should
   // only be called after a successful initialization.
-  bool Initialize(const gfx::Size& natural_size,
+  bool Initialize(const gfx::Size& output_size,
                   CompositionParamsReceivedCB comp_params_received_cb) override;
 
   // DCOMPTextureWrapper:
@@ -51,7 +51,8 @@ class DCOMPTextureWrapperImpl : public media::DCOMPTextureWrapper,
   void SetDCOMPSurfaceHandle(
       const base::UnguessableToken& token,
       SetDCOMPSurfaceHandleCB set_dcomp_surface_handle_cb) override;
-  void CreateVideoFrame(CreateVideoFrameCB create_video_frame_cb) override;
+  void CreateVideoFrame(const gfx::Size& natural_size,
+                        CreateVideoFrameCB create_video_frame_cb) override;
 
  private:
   DCOMPTextureWrapperImpl(
@@ -68,6 +69,7 @@ class DCOMPTextureWrapperImpl : public media::DCOMPTextureWrapper,
   scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
 
   gfx::Size natural_size_;  // Size of the video frames.
+  gfx::Size output_size_;   // Size of the video output (on-screen size).
   CompositionParamsReceivedCB comp_params_received_cb_;
 
   std::unique_ptr<DCOMPTextureHost> dcomp_texture_host_;

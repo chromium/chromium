@@ -78,6 +78,7 @@ class MediaFoundationRendererClient : public Renderer, public RendererClient {
   void OnDCOMPSurfaceHandleSet(bool success);
   void OnVideoFrameCreated(scoped_refptr<VideoFrame> video_frame);
   void OnCompositionParamsReceived(gfx::Rect output_rect);
+  void OnSetOutputParamsDone(const gfx::Size& size, bool success);
 
   void OnCdmAttached(bool success);
   void OnConnectionError();
@@ -96,6 +97,8 @@ class MediaFoundationRendererClient : public Renderer, public RendererClient {
   RendererClient* client_ = nullptr;
   bool dcomp_rendering_initialized_ = false;
   gfx::Size natural_size_;  // video's native size.
+  gfx::Size output_size_;   // video's output size (the on-screen video size).
+  bool output_size_updated_ = false;
 
   bool has_video_ = false;
   scoped_refptr<VideoFrame> dcomp_video_frame_;

@@ -64,6 +64,11 @@ interface MediaFoundationRendererExtension {
   // Notifies whether video is enabled.
   SetVideoStreamEnabled(bool enabled);
 
-  // Notifies of output composition parameters.
-  SetOutputParams(gfx.mojom.Rect rect);
+  // Notifies of output composition parameters. It might fail if
+  // MediaFoundationRenderer runs into error while setting the `rect`
+  // information onto MFMediaEngine. It it fails, the video will be displayed
+  // incorrectly (e.g. a smaller video rendered at the corner of the video
+  // output area.). In case of failure, caller should not use the `rect` for
+  // further operations.
+  SetOutputParams(gfx.mojom.Rect rect) => (bool success);
 };

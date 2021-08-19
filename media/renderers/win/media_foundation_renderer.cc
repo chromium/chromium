@@ -452,10 +452,9 @@ void MediaFoundationRenderer::SetVideoStreamEnabled(bool enabled) {
   }
 }
 
-void MediaFoundationRenderer::SetOutputParams(const gfx::Rect& output_rect) {
+void MediaFoundationRenderer::SetOutputParams(const gfx::Rect& output_rect,
+                                              SetOutputParamsCB callback) {
   DVLOG_FUNC(2);
-
-  output_rect_ = output_rect;
 
   if (virtual_video_window_ &&
       !::SetWindowPos(virtual_video_window_, HWND_BOTTOM, output_rect.x(),
@@ -463,16 +462,22 @@ void MediaFoundationRenderer::SetOutputParams(const gfx::Rect& output_rect) {
                       output_rect.height(), SWP_NOACTIVATE)) {
     DLOG(ERROR) << "Failed to SetWindowPos: "
                 << PrintHr(HRESULT_FROM_WIN32(GetLastError()));
+    std::move(callback).Run(false);
     return;
   }
 
-  ignore_result(UpdateVideoStream(output_rect));
+  if (FAILED(UpdateVideoStream(output_rect))) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  std::move(callback).Run(true);
 }
 
 HRESULT MediaFoundationRenderer::UpdateVideoStream(const gfx::Rect& rect) {
   ComPtr<IMFMediaEngineEx> mf_media_engine_ex;
   RETURN_IF_FAILED(mf_media_engine_.As(&mf_media_engine_ex));
-  RECT dest_rect = rect.ToRECT();
+  RECT dest_rect = {0, 0, rect.width(), rect.height()};
   RETURN_IF_FAILED(mf_media_engine_ex->UpdateVideoStream(
       /*pSrc=*/nullptr, &dest_rect, /*pBorderClr=*/nullptr));
   return S_OK;
@@ -628,9 +633,14 @@ void MediaFoundationRenderer::OnVideoNaturalSizeChange() {
                           base::checked_cast<int>(native_height)};
   }
 
-  // If `output_rect_` is not available yet, use `native_video_size_` for now.
-  if (output_rect_.IsEmpty())
-    ignore_result(UpdateVideoStream(gfx::Rect(native_video_size_)));
+  // TODO(frankli): Let test code to call `UpdateVideoStream()`.
+  if (force_dcomp_mode_for_testing_) {
+    const gfx::Rect test_rect(/*x=*/0, /*y=*/0, /*width=*/640, /*height=*/320);
+    // This invokes IMFMediaEngineEx::UpdateVideoStream() for video frames to
+    // be presented. Otherwise, the Media Foundation video renderer will not
+    // request video samples from our source.
+    ignore_result(UpdateVideoStream(test_rect));
+  }
 
   renderer_client_->OnVideoNaturalSizeChange(native_video_size_);
 }
