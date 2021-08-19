@@ -1,0 +1,11 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++comboBoxGrouping name='ComboBoxGrouping' haspopup=listbox
+++++++++textField
+++++++++++genericContainer
+++++++textFieldWithComboBox name='TextFieldWithComboBox' haspopup=listbox
+++++++++genericContainer
+++++++comboBoxMenuButton name='ComboBoxMenuButton"' value='Select' haspopup=listbox
+++++++++staticText name='Select'
+++++++++++inlineTextBox name='Select'
