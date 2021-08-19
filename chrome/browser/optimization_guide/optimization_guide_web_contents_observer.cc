@@ -21,6 +21,9 @@ namespace {
 
 bool IsValidOptimizationGuideNavigation(
     content::NavigationHandle* navigation_handle) {
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
   return navigation_handle->IsInPrimaryMainFrame() &&
          navigation_handle->GetURL().SchemeIsHTTPOrHTTPS();
 }
@@ -65,8 +68,13 @@ void OptimizationGuideWebContentsObserver::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (navigation_handle->IsInPrimaryMainFrame())
+  // Clear any leftover hint requests from a previous navigation.
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
+  if (navigation_handle->IsInPrimaryMainFrame()) {
     ClearHintsToFetchBasedOnPredictions(navigation_handle);
+  }
 
   if (!IsValidOptimizationGuideNavigation(navigation_handle))
     return;
@@ -108,11 +116,13 @@ void OptimizationGuideWebContentsObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // TODO(https://crbug.com/1218946): Move |hints_target_urls_| to a
-  // PageUserData instead of resetting data in DidFinishNavigation to prevent
-  // from misattributed to the wrong document/page.
-  if (navigation_handle->IsInPrimaryMainFrame())
+  // Clear any leftover hint requests from a previous navigation.
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
+  if (navigation_handle->IsInPrimaryMainFrame()) {
     ClearHintsToFetchBasedOnPredictions(navigation_handle);
+  }
 
   if (!IsValidOptimizationGuideNavigation(navigation_handle)) {
     return;
@@ -135,19 +145,18 @@ void OptimizationGuideWebContentsObserver::DidFinishNavigation(
 
 void OptimizationGuideWebContentsObserver::DocumentOnLoadCompletedInMainFrame(
     content::RenderFrameHost* render_frame_host) {
-  // We fetch only hints for navigations of HTTP or HTTPS schemes that were
-  // predicted for the current page load.
-  if (!render_frame_host->GetLastCommittedURL().SchemeIsHTTPOrHTTPS())
+  if (!render_frame_host->GetLastCommittedURL().SchemeIsHTTPOrHTTPS()) {
     return;
-
+  }
   if (web_contents() !=
       content::WebContents::FromRenderFrameHost(render_frame_host)) {
     // The current web contents isn't for the main frame that reached onload.
     return;
   }
 
-  if (!optimization_guide_keyed_service_)
+  if (!optimization_guide_keyed_service_) {
     return;
+  }
 
   // Give the renderer some time to send us predictions that might have come
   // at onload.
