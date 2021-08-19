@@ -110,10 +110,12 @@ class HitTestRequest {
            stop_node_ == value.stop_node_;
   }
 
+  void Trace(Visitor*) const;
+
  private:
   HitTestRequestType request_type_;
   // If non-null, do not hit test the children of this object.
-  UntracedMember<const LayoutObject> stop_node_;
+  Member<const LayoutObject> stop_node_;
 };
 
 }  // namespace blink
