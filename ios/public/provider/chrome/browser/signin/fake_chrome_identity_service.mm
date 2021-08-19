@@ -265,6 +265,7 @@ void FakeChromeIdentityService::GetAvatarForIdentity(
     }
     if (callback)
       callback(avatar);
+    FireProfileDidUpdate(identity);
   });
 }
 

@@ -27,8 +27,6 @@
 namespace {
 // Horizontal padding for label and buttons.
 constexpr CGFloat kHorizontalPadding = 40;
-// Image size for warm state.
-constexpr CGFloat kProfileImageFixedSize = 48;
 
 // UI Refresh Constants:
 // Vertical spacing between stackView and cell contentView.
@@ -241,7 +239,9 @@ constexpr CGFloat kImageViewWidthHeight = 32;
 
 - (void)setProfileImage:(UIImage*)image {
   DCHECK_NE(_mode, SigninPromoViewModeNoAccounts);
-  self.imageView.image = CircularImageFromImage(image, kProfileImageFixedSize);
+  DCHECK_EQ(kImageViewWidthHeight, image.size.width);
+  DCHECK_EQ(kImageViewWidthHeight, image.size.height);
+  self.imageView.image = CircularImageFromImage(image, kImageViewWidthHeight);
 }
 
 - (void)accessibilityPrimaryAction:(id)unused {

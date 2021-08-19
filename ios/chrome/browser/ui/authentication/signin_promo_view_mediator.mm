@@ -536,22 +536,10 @@ const char* AlreadySeenSigninViewPreferenceKey(
   if (!self.identity) {
     self.identityAvatar = nil;
   } else {
-    __weak SigninPromoViewMediator* weakSelf = self;
-    ios::GetChromeBrowserProvider()
-        .GetChromeIdentityService()
-        ->GetAvatarForIdentity(identity, ^(UIImage* identityAvatar) {
-          if (weakSelf.identity != identity) {
-            return;
-          }
-          [weakSelf identityAvatarUpdated:identityAvatar];
-        });
+    self.identityAvatar =
+        self.accountManagerService->GetIdentityAvatarWithIdentity(
+            identity, IdentityAvatarSize::SmallSize);
   }
-}
-
-// Updates the Chrome identity avatar in the sign-in promo.
-- (void)identityAvatarUpdated:(UIImage*)identityAvatar {
-  self.identityAvatar = identityAvatar;
-  [self sendConsumerNotificationWithIdentityChanged:NO];
 }
 
 // Sends the update notification to the consummer if the signin-in is not in
