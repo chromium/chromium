@@ -7,7 +7,6 @@
 
 #include <list>
 #include <string>
-#include <utility>
 
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -43,7 +42,7 @@ class BreadcrumbManager {
 
   // Logs a breadcrumb event with message data |event|.
   // NOTE: |event| must not include newline characters as newlines are used by
-  // BreadcrumbPersistentStore as a deliminator.
+  // BreadcrumbPersistentStorageManager as a delimiter.
   void AddEvent(const std::string& event);
 
   // Adds and removes observers.
@@ -55,9 +54,6 @@ class BreadcrumbManager {
   // guaranteed to be removed. Explicitly, stale events will be retained while
   // newer events are limited.
   void DropOldEvents();
-
-  // Creation time of the BreadcrumbManager.
-  const base::Time start_time_;
 
   // List of events, paired with the time they were logged to minute resolution.
   // Newer events are at the end of the list.
