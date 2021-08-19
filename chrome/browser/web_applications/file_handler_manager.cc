@@ -36,10 +36,14 @@ namespace {
 //
 // Do not change this value, because it is persisted to disk.
 const double kMaxOriginTrialExpiryTime = 9007199254740;
-}  // namespace
 
-bool FileHandlerManager::disable_automatic_file_handler_cleanup_for_testing_ =
-    false;
+// Used to enable running tests on platforms that don't support file handling
+// icons.
+absl::optional<bool> g_icons_supported_by_os_override;
+
+bool g_disable_automatic_file_handler_cleanup_for_testing = false;
+
+}  // namespace
 
 FileHandlerManager::FileHandlerManager(Profile* profile) : profile_(profile) {}
 
@@ -52,8 +56,7 @@ void FileHandlerManager::SetSubsystems(WebAppRegistrar* registrar) {
 void FileHandlerManager::Start() {
   DCHECK(registrar_);
 
-  if (!FileHandlerManager::
-          disable_automatic_file_handler_cleanup_for_testing_) {
+  if (!g_disable_automatic_file_handler_cleanup_for_testing) {
     content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
         ->PostTask(
             FROM_HERE,
@@ -69,6 +72,11 @@ void FileHandlerManager::DisableOsIntegrationForTesting() {
 
 int FileHandlerManager::TriggerFileHandlerCleanupForTesting() {
   return CleanupAfterOriginTrials();
+}
+
+// static
+void FileHandlerManager::SetIconsSupportedByOsForTesting(bool value) {
+  g_icons_supported_by_os_override = value;
 }
 
 void FileHandlerManager::SetOnFileHandlingExpiryUpdatedForTesting(
@@ -202,6 +210,13 @@ bool FileHandlerManager::AreFileHandlersEnabled(const AppId& app_id) const {
   return GetBoolWebAppPref(profile()->GetPrefs(), app_id, kFileHandlersEnabled);
 }
 
+// static
+bool FileHandlerManager::IconsEnabled() {
+  return g_icons_supported_by_os_override.value_or(
+             FileHandlingIconsSupportedByOs()) &&
+         base::FeatureList::IsEnabled(blink::features::kFileHandlingIcons);
+}
+
 void FileHandlerManager::OnOriginTrialExpiryTimeReceived(
     mojo::AssociatedRemote<blink::mojom::FileHandlingExpiry> /*interface*/,
     const AppId& app_id,
@@ -239,7 +254,7 @@ void FileHandlerManager::UpdateFileHandlersForOriginTrialExpiryTime(
 }
 
 void FileHandlerManager::DisableAutomaticFileHandlerCleanupForTesting() {
-  disable_automatic_file_handler_cleanup_for_testing_ = true;
+  g_disable_automatic_file_handler_cleanup_for_testing = true;
 }
 
 int FileHandlerManager::CleanupAfterOriginTrials() {

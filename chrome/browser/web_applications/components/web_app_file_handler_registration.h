@@ -24,6 +24,9 @@ namespace web_app {
 // know how to register file handlers.
 bool ShouldRegisterFileHandlersWithOs();
 
+// Returns true if file type association icons are supported by the OS.
+bool FileHandlingIconsSupportedByOs();
+
 // Do OS-specific registration to handle opening files with the specified
 // |file_extensions| and |mime_types| with the PWA with the specified |app_id|.
 // This may also involve creating a shim app to launch Chrome from.

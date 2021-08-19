@@ -12,6 +12,20 @@ source_set("app_file_handling") {
     "file_handler_info.h",
   ]
 
+  public_deps = [ ":app_icon_info" ]
+
+  deps = [
+    "//base",
+    "//url",
+  ]
+}
+
+source_set("app_icon_info") {
+  sources = [
+    "icon_info.cc",
+    "icon_info.h",
+  ]
+
   deps = [
     "//base",
     "//url",

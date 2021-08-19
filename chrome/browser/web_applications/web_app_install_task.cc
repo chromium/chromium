@@ -704,7 +704,7 @@ void WebAppInstallTask::OnIconsRetrieved(
   DCHECK(web_app_info);
 
   PopulateProductIcons(web_app_info.get(), &icons_map);
-  PopulateShortcutItemIcons(web_app_info.get(), icons_map);
+  PopulateOtherIcons(web_app_info.get(), icons_map);
 
   install_finalizer_->FinalizeInstall(
       *web_app_info, finalize_options,
@@ -721,7 +721,7 @@ void WebAppInstallTask::OnIconsRetrievedShowDialog(
   DCHECK(web_app_info);
 
   PopulateProductIcons(web_app_info.get(), &icons_map);
-  PopulateShortcutItemIcons(web_app_info.get(), icons_map);
+  PopulateOtherIcons(web_app_info.get(), icons_map);
 
   if (background_installation_) {
     DCHECK(!dialog_callback_);
@@ -749,7 +749,7 @@ void WebAppInstallTask::OnIconsRetrievedFinalizeUpdate(
   if (update_product_icons)
     PopulateProductIcons(web_app_info.get(), &icons_map);
 
-  PopulateShortcutItemIcons(web_app_info.get(), icons_map);
+  PopulateOtherIcons(web_app_info.get(), icons_map);
 
   install_finalizer_->FinalizeUpdate(
       *web_app_info, web_contents(),

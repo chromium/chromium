@@ -13,7 +13,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/banners/app_banner_manager_desktop.h"
+#include "chrome/browser/web_applications/components/file_handler_manager.h"
+#include "chrome/browser/web_applications/components/web_app_file_handler_registration.h"
 #include "chrome/browser/web_applications/components/web_app_icon_generator.h"
+#include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/share_target.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
@@ -216,6 +219,82 @@ std::vector<apps::ProtocolHandlerInfo> ToWebAppProtocolHandlers(
   return protocol_handlers;
 }
 
+void PopulateShortcutItemIcons(WebApplicationInfo* web_app_info,
+                               const IconsMap& icons_map) {
+  web_app_info->shortcuts_menu_icon_bitmaps.clear();
+  for (auto& shortcut : web_app_info->shortcuts_menu_item_infos) {
+    IconBitmaps shortcut_icon_bitmaps;
+
+    for (IconPurpose purpose : kIconPurposes) {
+      std::map<SquareSizePx, SkBitmap> bitmaps;
+      for (const auto& icon :
+           shortcut.GetShortcutIconInfosForPurpose(purpose)) {
+        auto it = icons_map.find(icon.url);
+        if (it != icons_map.end()) {
+          std::set<SquareSizePx> sizes_to_generate;
+          sizes_to_generate.emplace(icon.square_size_px);
+          SizeToBitmap resized_bitmaps(
+              ConstrainBitmapsToSizes(it->second, sizes_to_generate));
+
+          // Don't overwrite as a shortcut item could have multiple icon urls.
+          bitmaps.insert(resized_bitmaps.begin(), resized_bitmaps.end());
+        }
+      }
+      shortcut_icon_bitmaps.SetBitmapsForPurpose(purpose, std::move(bitmaps));
+    }
+
+    web_app_info->shortcuts_menu_icon_bitmaps.emplace_back(
+        std::move(shortcut_icon_bitmaps));
+  }
+}
+
+// Reconcile the file handling icons that were specified in the manifest with
+// the icons we were successfully able to download. Store the actual bitmaps and
+// update the icon metadata in `web_app_info`.
+void PopulateFileHandlingIcons(WebApplicationInfo* web_app_info,
+                               const IconsMap& icons_map) {
+  IconsMap& other_icon_bitmaps = web_app_info->other_icon_bitmaps;
+  other_icon_bitmaps.clear();
+
+  // Before starting, each `apps::IconInfo` in `web_app_info` has a source URL
+  // and a purpose, but no size. Replace with structs that copy the URL and
+  // purpose and set the size based on what is found in `icons_map`.
+  for (auto& file_handler : web_app_info->file_handlers) {
+    if (!FileHandlerManager::IconsEnabled()) {
+      DCHECK(file_handler.icons.empty());
+      continue;
+    }
+
+    std::vector<apps::IconInfo> icon_infos;
+
+    for (const auto& icon_info_without_size : file_handler.icons) {
+      const GURL& src = icon_info_without_size.url;
+      // Only store bitmaps for this URL if it's the first time we've seen it.
+      bool bitmaps_already_saved_for_url =
+          other_icon_bitmaps.find(src) != other_icon_bitmaps.end();
+      const auto& downloaded_bitmaps_for_url = icons_map.find(src);
+      if (downloaded_bitmaps_for_url == icons_map.end())
+        continue;
+
+      for (const SkBitmap& bitmap : downloaded_bitmaps_for_url->second) {
+        // Filter out non-square or too large icons.
+        if (bitmap.width() != bitmap.height() || bitmap.width() > kMaxIconSize)
+          continue;
+
+        // Add the size to the FileHandler icon metadata.
+        apps::IconInfo icon_info_with_size(icon_info_without_size);
+        icon_info_with_size.square_size_px = bitmap.width();
+        icon_infos.push_back(std::move(icon_info_with_size));
+
+        // Add the bitmap to `other_icon_bitmaps`.
+        if (!bitmaps_already_saved_for_url)
+          other_icon_bitmaps[src].push_back(bitmap);
+      }
+    }
+    file_handler.icons = std::move(icon_infos);
+  }
+}
+
 }  // namespace
 
 apps::FileHandlers CreateFileHandlersFromManifest(
@@ -237,6 +316,28 @@ apps::FileHandlers CreateFileHandlersFromManifest(
             base::UTF16ToUTF8(manifest_file_extension));
       }
       web_app_file_handler.accept.push_back(std::move(web_app_accept_entry));
+    }
+
+    if (FileHandlerManager::IconsEnabled()) {
+      for (const auto& image_resource : manifest_file_handler->icons) {
+        for (const auto manifest_purpose : image_resource.purpose) {
+          apps::IconInfo icon_info;
+          icon_info.url = image_resource.src;
+          // The sizes are not filled in until images are actually downloaded.
+          switch (manifest_purpose) {
+            case IconPurpose::ANY:
+              icon_info.purpose = apps::IconInfo::Purpose::kAny;
+              break;
+            case IconPurpose::MONOCHROME:
+              icon_info.purpose = apps::IconInfo::Purpose::kMonochrome;
+              break;
+            case IconPurpose::MASKABLE:
+              icon_info.purpose = apps::IconInfo::Purpose::kMaskable;
+              break;
+          }
+          web_app_file_handler.icons.push_back(std::move(icon_info));
+        }
+      }
     }
 
     web_app_file_handlers.push_back(std::move(web_app_file_handler));
@@ -388,36 +489,22 @@ std::vector<GURL> GetValidIconUrlsToDownload(
     }
   }
 
+  // File handling icons.
+  for (const auto& file_handler : web_app_info.file_handlers) {
+    for (const auto& icon : file_handler.icons) {
+      if (!icon.url.is_valid())
+        continue;
+      web_app_info_icon_urls.push_back(icon.url);
+    }
+  }
+
   return web_app_info_icon_urls;
 }
 
-void PopulateShortcutItemIcons(WebApplicationInfo* web_app_info,
-                               const IconsMap& icons_map) {
-  web_app_info->shortcuts_menu_icon_bitmaps.clear();
-  for (auto& shortcut : web_app_info->shortcuts_menu_item_infos) {
-    IconBitmaps shortcut_icon_bitmaps;
-
-    for (IconPurpose purpose : kIconPurposes) {
-      std::map<SquareSizePx, SkBitmap> bitmaps;
-      for (const auto& icon :
-           shortcut.GetShortcutIconInfosForPurpose(purpose)) {
-        auto it = icons_map.find(icon.url);
-        if (it != icons_map.end()) {
-          std::set<SquareSizePx> sizes_to_generate;
-          sizes_to_generate.emplace(icon.square_size_px);
-          SizeToBitmap resized_bitmaps(
-              ConstrainBitmapsToSizes(it->second, sizes_to_generate));
-
-          // Don't overwrite as a shortcut item could have multiple icon urls.
-          bitmaps.insert(resized_bitmaps.begin(), resized_bitmaps.end());
-        }
-      }
-      shortcut_icon_bitmaps.SetBitmapsForPurpose(purpose, std::move(bitmaps));
-    }
-
-    web_app_info->shortcuts_menu_icon_bitmaps.emplace_back(
-        std::move(shortcut_icon_bitmaps));
-  }
+void PopulateOtherIcons(WebApplicationInfo* web_app_info,
+                        const IconsMap& icons_map) {
+  PopulateShortcutItemIcons(web_app_info, icons_map);
+  PopulateFileHandlingIcons(web_app_info, icons_map);
 }
 
 void PopulateProductIcons(WebApplicationInfo* web_app_info,

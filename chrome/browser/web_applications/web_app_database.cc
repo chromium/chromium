@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/web_applications/components/file_handler_manager.h"
 #include "chrome/browser/web_applications/components/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_utils.h"
@@ -327,6 +328,11 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
 
       for (const auto& file_extension : accept_entry.file_extensions)
         accept_entry_proto->add_file_extensions(file_extension);
+    }
+
+    for (const apps::IconInfo& icon_info : file_handler.icons) {
+      *(file_handler_proto->add_icon_infos()) =
+          AppIconInfoToSyncProto(icon_info);
     }
   }
 
@@ -686,6 +692,16 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
         accept_entry.file_extensions.insert(file_extension);
       }
       file_handler.accept.push_back(std::move(accept_entry));
+    }
+
+    if (FileHandlerManager::IconsEnabled()) {
+      absl::optional<std::vector<apps::IconInfo>> parsed_icon_infos =
+          ParseAppIconInfos("WebApp", file_handler_proto.icon_infos());
+      if (!parsed_icon_infos.has_value()) {
+        // ParseAppIconInfos() reports any errors.
+        return nullptr;
+      }
+      file_handler.icons = std::move(parsed_icon_infos.value());
     }
 
     file_handlers.push_back(std::move(file_handler));

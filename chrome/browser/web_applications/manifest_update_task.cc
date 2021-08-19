@@ -361,8 +361,7 @@ void ManifestUpdateTask::OnAllIconsRead(IconsMap downloaded_icons_map,
   stage_ = Stage::kPendingAppIdentityCheck;
   Observe(nullptr);
 
-  PopulateShortcutItemIcons(&web_application_info_.value(),
-                            downloaded_icons_map);
+  PopulateOtherIcons(&web_application_info_.value(), downloaded_icons_map);
 
   if (!AllowUnpromptedNameUpdate(app_id_, registrar_) &&
       !AllowUnpromptedIconUpdate(app_id_, registrar_) &&

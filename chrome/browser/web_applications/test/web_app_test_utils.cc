@@ -68,6 +68,8 @@ apps::FileHandlers CreateRandomFileHandlers(uint32_t suffix) {
     file_handler.action = GURL("https://example.com/open-" + suffix_str);
     file_handler.accept.push_back(std::move(accept_entry1));
     file_handler.accept.push_back(std::move(accept_entry2));
+    file_handler.icons.emplace_back(GURL("https://example.com/image.png"), 16);
+    file_handler.icons.emplace_back(GURL("https://example.com/image2.png"), 48);
 
     file_handlers.push_back(std::move(file_handler));
   }

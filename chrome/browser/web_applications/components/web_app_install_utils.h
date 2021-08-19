@@ -49,12 +49,11 @@ void UpdateWebAppInfoFromManifest(const blink::mojom::Manifest& manifest,
 std::vector<GURL> GetValidIconUrlsToDownload(
     const WebApplicationInfo& web_app_info);
 
-// Populate shortcut item icon maps in WebApplicationInfo using the IconsMap.
-// This ignores icons that might have already existed in `web_app_info`.
-// TODO(estade): also save bitmaps in `icons_map` that are relevant to file
-// handling in `web_app_info->other_icon_bitmaps`.
-void PopulateShortcutItemIcons(WebApplicationInfo* web_app_info,
-                               const IconsMap& icons_map);
+// Populate non-product icons in WebApplicationInfo using the IconsMap. This
+// currently covers shortcut item icons and file handler icons. It ignores
+// icons that might have already existed in `web_app_info`.
+void PopulateOtherIcons(WebApplicationInfo* web_app_info,
+                        const IconsMap& icons_map);
 
 // Populates main product icons into `web_app_info`. This method filters icons
 // from `icons_map` to only square icons and ensures that the necessary-sized

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="manifest" href="icons_app_manifest.json">
+</head>
+<body>
+  <h1>Web app that handles file opening</h1>
+  <script>
+    window.onload = () => {
+      navigator.serviceWorker.register('/web_app_file_handling/service_worker.js');
+    };
+  </script>
+</body>
+</html>

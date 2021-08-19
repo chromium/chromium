@@ -51,6 +51,11 @@ class FileHandlerManager {
   // completed this can be removed.
   int TriggerFileHandlerCleanupForTesting();
 
+  // Called by tests to enable file handling icon infrastructure on a platform
+  // independently of whether it's needed or used in production. Note that the
+  // feature flag must also separately be enabled.
+  static void SetIconsSupportedByOsForTesting(bool value);
+
   // Set a callback which is fired when the file handling expiry time is
   // updated.
   void SetOnFileHandlingExpiryUpdatedForTesting(
@@ -104,6 +109,9 @@ class FileHandlerManager {
 
   // Indicates whether file handlers have been registered for an app.
   bool AreFileHandlersEnabled(const AppId& app_id) const;
+
+  // Returns true when the system supports file type association icons.
+  static bool IconsEnabled();
 
  protected:
   Profile* profile() const { return profile_; }

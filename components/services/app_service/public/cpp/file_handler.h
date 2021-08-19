@@ -12,6 +12,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/values.h"
+#include "components/services/app_service/public/cpp/icon_info.h"
 #include "url/gurl.h"
 
 namespace apps {
@@ -48,6 +49,11 @@ struct FileHandler {
   // will match on.
   using Accept = std::vector<AcceptEntry>;
   Accept accept;
+
+  // The icons defined for this file handler, to be used as file type
+  // association icons in OS surfaces. The sizes in `icons`, when present,
+  // represent the actual size of a bitmap that was downloaded.
+  std::vector<IconInfo> icons;
 };
 using FileHandlers = std::vector<FileHandler>;
 

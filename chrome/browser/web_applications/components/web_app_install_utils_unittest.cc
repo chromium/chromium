@@ -11,14 +11,18 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/web_applications/components/file_handler_manager.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_icon_generator.h"
+#include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+#include "ui/gfx/image/image_unittest_util.h"
+#include "ui/gfx/skia_util.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -630,7 +634,7 @@ TEST(WebAppInstallUtils, PopulateShortcutItemIcons) {
     icons_map.emplace(kIconUrl2, bmp2);
     icons_map.emplace(GURL("http://www.chromium.org/shortcuts/icon3.png"),
                       bmp3);
-    PopulateShortcutItemIcons(&web_app_info, icons_map);
+    PopulateOtherIcons(&web_app_info, icons_map);
   }
 
   // Ensure that reused shortcut icons are processed correctly.
@@ -640,7 +644,7 @@ TEST(WebAppInstallUtils, PopulateShortcutItemIcons) {
   EXPECT_EQ(0U, web_app_info.shortcuts_menu_icon_bitmaps[1].maskable.size());
 }
 
-// Tests that when PopulateShortcutItemIcons is called with no shortcut icon
+// Tests that when PopulateOtherItemIcons is called with no shortcut icon
 // urls specified, no data is written to shortcuts_menu_item_infos.
 TEST(WebAppInstallUtils, PopulateShortcutItemIconsNoShortcutIcons) {
   WebApplicationInfo web_app_info;
@@ -652,7 +656,7 @@ TEST(WebAppInstallUtils, PopulateShortcutItemIconsNoShortcutIcons) {
   icons_map.emplace(GURL("http://www.chromium.org/shortcuts/icon2.png"), bmp2);
   icons_map.emplace(GURL("http://www.chromium.org/shortcuts/icon3.png"), bmp3);
 
-  PopulateShortcutItemIcons(&web_app_info, icons_map);
+  PopulateOtherIcons(&web_app_info, icons_map);
 
   EXPECT_EQ(0U, web_app_info.shortcuts_menu_item_infos.size());
 }
@@ -748,43 +752,204 @@ TEST(WebAppInstallUtils, PopulateProductIconsNoWebAppIconData_WithShortcuts) {
   }
 }
 
-TEST(WebAppInstallUtils, CreateFileHandlersFromManifest_MaxFileHandlers) {
-  const GURL start_url = GURL("https://www.example.com/index.html");
-
-  auto action_url = [&start_url](unsigned index) {
-    return start_url.Resolve(base::StringPrintf("a%u", index));
-  };
-
-  auto mime_type = [](unsigned index) {
-    return base::StringPrintf("application/x-%u", index);
-  };
-
-  auto extension = [](unsigned index) {
-    return base::StringPrintf(".e%u", index);
-  };
-
-  // Add more than |kMaxFileHandlers| file handlers.
-  std::vector<blink::mojom::ManifestFileHandlerPtr> manifest_file_handlers;
-  for (unsigned i = 0; i <= 2 * kMaxFileHandlers; ++i) {
-    auto file_handler = blink::mojom::ManifestFileHandler::New();
-    file_handler->action = action_url(i);
-    file_handler->name = base::UTF8ToUTF16(base::StringPrintf("n%u", i));
-    file_handler->accept[base::UTF8ToUTF16(mime_type(i))] = {
-        base::UTF8ToUTF16(extension(i))};
-    manifest_file_handlers.push_back(std::move(file_handler));
+class FileHandlersFromManifestTest : public ::testing::TestWithParam<bool> {
+ public:
+  FileHandlersFromManifestTest() {
+    feature_list_.InitWithFeatures({blink::features::kFileHandlingIcons}, {});
+    FileHandlerManager::SetIconsSupportedByOsForTesting(GetParam());
   }
+
+  ~FileHandlersFromManifestTest() override = default;
+
+ protected:
+  static std::vector<blink::mojom::ManifestFileHandlerPtr>
+  CreateManifestFileHandlers(unsigned count) {
+    std::vector<blink::mojom::ManifestFileHandlerPtr> manifest_file_handlers;
+    for (unsigned i = 0; i < count; ++i) {
+      auto file_handler = blink::mojom::ManifestFileHandler::New();
+      file_handler->action = MakeActionUrl(i);
+      file_handler->name = base::UTF8ToUTF16(base::StringPrintf("n%u", i));
+      file_handler->accept[base::UTF8ToUTF16(MakeMimeType(i))] = {
+          base::UTF8ToUTF16(MakeExtension(i))};
+
+      blink::Manifest::ImageResource icon;
+      icon.src = MakeImageUrl(i);
+      icon.sizes = {{16, 16}, {32, 32}, {64, 64}};
+      icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
+      file_handler->icons.push_back(std::move(icon));
+
+      blink::Manifest::ImageResource icon2;
+      icon2.src = MakeImageUrlForSecondImage(i);
+      icon2.sizes = {{16, 16}};
+      icon2.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY,
+                       blink::mojom::ManifestImageResource_Purpose::MASKABLE};
+      file_handler->icons.push_back(std::move(icon2));
+
+      manifest_file_handlers.push_back(std::move(file_handler));
+    }
+    return manifest_file_handlers;
+  }
+
+  static GURL MakeActionUrl(unsigned index) {
+    return GetStartUrl().Resolve(base::StringPrintf("a%u", index));
+  }
+
+  static GURL MakeImageUrl(unsigned index) {
+    return GetStartUrl().Resolve(base::StringPrintf("image%u.png", index));
+  }
+
+  static GURL MakeImageUrlForSecondImage(unsigned index) {
+    return GetStartUrl().Resolve(base::StringPrintf("image%u-2.png", index));
+  }
+
+  static std::string MakeMimeType(unsigned index) {
+    return base::StringPrintf("application/x-%u", index);
+  }
+
+  static std::string MakeExtension(unsigned index) {
+    return base::StringPrintf(".e%u", index);
+  }
+
+  static GURL GetStartUrl() {
+    return GURL("https://www.example.com/index.html");
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(FileHandlersFromManifestTest, Basic) {
+  std::vector<blink::mojom::ManifestFileHandlerPtr> manifest_file_handlers =
+      CreateManifestFileHandlers(6);
 
   apps::FileHandlers file_handlers =
-      CreateFileHandlersFromManifest(manifest_file_handlers, start_url);
-  EXPECT_EQ(file_handlers.size(), kMaxFileHandlers);
-  for (unsigned i = 0; i < kMaxFileHandlers; ++i) {
-    EXPECT_EQ(file_handlers[i].action, action_url(i));
-    EXPECT_EQ(file_handlers[i].accept.size(), 1U);
-    EXPECT_EQ(file_handlers[i].accept[0].mime_type, mime_type(i));
+      CreateFileHandlersFromManifest(manifest_file_handlers, GetStartUrl());
+  ASSERT_EQ(file_handlers.size(), 6U);
+  for (unsigned i = 0; i < 6U; ++i) {
+    EXPECT_EQ(file_handlers[i].action, MakeActionUrl(i));
+    ASSERT_EQ(file_handlers[i].accept.size(), 1U);
+    EXPECT_EQ(file_handlers[i].accept[0].mime_type, MakeMimeType(i));
     EXPECT_EQ(file_handlers[i].accept[0].file_extensions.size(), 1U);
     EXPECT_EQ(*file_handlers[i].accept[0].file_extensions.begin(),
-              extension(i));
+              MakeExtension(i));
+
+    if (FileHandlerManager::IconsEnabled()) {
+      ASSERT_EQ(file_handlers[i].icons.size(), 3U);
+
+      // The manifest-specified `sizes` are ignored.
+      EXPECT_FALSE(file_handlers[i].icons[0].square_size_px);
+      EXPECT_EQ(MakeImageUrl(i), file_handlers[i].icons[0].url);
+      EXPECT_EQ(apps::IconInfo::Purpose::kAny,
+                file_handlers[i].icons[0].purpose);
+
+      EXPECT_FALSE(file_handlers[i].icons[1].square_size_px);
+      EXPECT_EQ(MakeImageUrlForSecondImage(i), file_handlers[i].icons[1].url);
+      EXPECT_EQ(apps::IconInfo::Purpose::kAny,
+                file_handlers[i].icons[1].purpose);
+
+      EXPECT_FALSE(file_handlers[i].icons[2].square_size_px);
+      EXPECT_EQ(MakeImageUrlForSecondImage(i), file_handlers[i].icons[2].url);
+      EXPECT_EQ(apps::IconInfo::Purpose::kMaskable,
+                file_handlers[i].icons[2].purpose);
+    } else {
+      EXPECT_TRUE(file_handlers[i].icons.empty());
+    }
   }
 }
+
+TEST_P(FileHandlersFromManifestTest, MaxFileHandlers) {
+  // Add more than |kMaxFileHandlers| file handlers.
+  std::vector<blink::mojom::ManifestFileHandlerPtr> manifest_file_handlers =
+      CreateManifestFileHandlers(2 * kMaxFileHandlers);
+
+  apps::FileHandlers file_handlers =
+      CreateFileHandlersFromManifest(manifest_file_handlers, GetStartUrl());
+  EXPECT_EQ(file_handlers.size(), kMaxFileHandlers);
+  for (unsigned i = 0; i < kMaxFileHandlers; ++i) {
+    EXPECT_EQ(file_handlers[i].action, MakeActionUrl(i));
+    EXPECT_EQ(file_handlers[i].accept.size(), 1U);
+    EXPECT_EQ(file_handlers[i].accept[0].mime_type, MakeMimeType(i));
+    EXPECT_EQ(file_handlers[i].accept[0].file_extensions.size(), 1U);
+    EXPECT_EQ(*file_handlers[i].accept[0].file_extensions.begin(),
+              MakeExtension(i));
+  }
+}
+
+TEST_P(FileHandlersFromManifestTest, PopulateFileHandlerIcons) {
+  if (!FileHandlerManager::IconsEnabled())
+    return;
+
+  std::vector<blink::mojom::ManifestFileHandlerPtr> manifest_file_handlers =
+      CreateManifestFileHandlers(1);
+  WebApplicationInfo web_app_info;
+  web_app_info.file_handlers =
+      CreateFileHandlersFromManifest(manifest_file_handlers, GetStartUrl());
+
+  const GURL first_image_url = MakeImageUrl(0);
+  const GURL second_image_url = MakeImageUrlForSecondImage(0);
+  IconsMap icons_map;
+  // The first URL returns two valid bitmaps and one invalid (non-square), which
+  // should be ignored.
+  std::vector<SkBitmap> bmps1 = {CreateSquareIcon(17, SK_ColorWHITE),
+                                 CreateSquareIcon(29, SK_ColorBLUE),
+                                 gfx::test::CreateBitmap(16, 15)};
+  icons_map.emplace(first_image_url, bmps1);
+  std::vector<SkBitmap> bmps2 = {CreateSquareIcon(79, SK_ColorRED),
+                                 CreateSquareIcon(134, SK_ColorRED)};
+  icons_map.emplace(second_image_url, bmps2);
+  PopulateOtherIcons(&web_app_info, icons_map);
+
+  // Make sure bitmaps are copied from `icons_map` into `web_app_info`.
+  // Images downloaded from two distinct URLs.
+  ASSERT_EQ(2U, web_app_info.other_icon_bitmaps.size());
+  // First URL correlates to two bitmaps.
+  ASSERT_EQ(2U, web_app_info.other_icon_bitmaps[first_image_url].size());
+  EXPECT_TRUE(
+      gfx::BitmapsAreEqual(web_app_info.other_icon_bitmaps[first_image_url][0],
+                           icons_map[first_image_url][0]));
+  EXPECT_TRUE(
+      gfx::BitmapsAreEqual(web_app_info.other_icon_bitmaps[first_image_url][1],
+                           icons_map[first_image_url][1]));
+  // Second URL correlates to two more bitmaps.
+  ASSERT_EQ(2U, web_app_info.other_icon_bitmaps[second_image_url].size());
+  EXPECT_TRUE(
+      gfx::BitmapsAreEqual(web_app_info.other_icon_bitmaps[second_image_url][0],
+                           icons_map[second_image_url][0]));
+  EXPECT_TRUE(
+      gfx::BitmapsAreEqual(web_app_info.other_icon_bitmaps[second_image_url][1],
+                           icons_map[second_image_url][1]));
+
+  // We end up with one file handler with 6 icon infos. The second URL produces
+  // 4 IconInfos because it has two bitmaps and two purposes: 2 x 2 = 4.
+  ASSERT_EQ(1U, web_app_info.file_handlers.size());
+
+  // The metadata we expect to be saved after icons are finished downloading and
+  // processing. Note that the icon sizes saved to `apps::FileHandler::icons`
+  // match downloaded sizes, not those specified in the manifest.
+  struct {
+    GURL expected_url;
+    apps::IconInfo::SquareSizePx expected_size;
+    apps::IconInfo::Purpose expected_purpose;
+  } expectations[] = {
+      {first_image_url, 17, apps::IconInfo::Purpose::kAny},
+      {first_image_url, 29, apps::IconInfo::Purpose::kAny},
+      {second_image_url, 79, apps::IconInfo::Purpose::kAny},
+      {second_image_url, 134, apps::IconInfo::Purpose::kAny},
+      {second_image_url, 79, apps::IconInfo::Purpose::kMaskable},
+      {second_image_url, 134, apps::IconInfo::Purpose::kMaskable},
+  };
+
+  const size_t num_expectations =
+      sizeof(expectations) / sizeof(expectations[0]);
+  ASSERT_EQ(num_expectations, web_app_info.file_handlers[0].icons.size());
+
+  for (size_t i = 0; i < num_expectations; ++i) {
+    const auto& icon = web_app_info.file_handlers[0].icons[i];
+    EXPECT_EQ(expectations[i].expected_url, icon.url);
+    EXPECT_EQ(expectations[i].expected_size, icon.square_size_px);
+    EXPECT_EQ(expectations[i].expected_purpose, icon.purpose);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(, FileHandlersFromManifestTest, testing::Bool());
 
 }  // namespace web_app

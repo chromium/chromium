@@ -37,6 +37,10 @@ base::Value FileHandler::AsDebugValue() const {
       *root.SetKey("accept", base::Value(base::Value::Type::LIST));
   for (const AcceptEntry& entry : accept)
     accept_json.Append(entry.AsDebugValue());
+  base::Value& icons_json =
+      *root.SetKey("icons", base::Value(base::Value::Type::LIST));
+  for (const IconInfo& entry : icons)
+    icons_json.Append(entry.AsDebugValue());
 
   return root;
 }

@@ -26,6 +26,11 @@ bool ShouldRegisterFileHandlersWithOs() {
   return true;
 }
 
+bool FileHandlingIconsSupportedByOs() {
+  // TODO(crbug/1218234): implement and flip this to true.
+  return false;
+}
+
 void RegisterFileHandlersWithOsTask(
     const AppId& app_id,
     const std::wstring& app_name,

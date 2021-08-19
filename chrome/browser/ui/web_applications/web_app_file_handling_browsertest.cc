@@ -1172,4 +1172,42 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingOriginTrialTest,
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+class WebAppFileHandlingIconBrowserTest
+    : public InProcessBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  WebAppFileHandlingIconBrowserTest() {
+    feature_list_.InitWithFeatures({blink::features::kFileHandlingAPI,
+                                    blink::features::kFileHandlingIcons},
+                                   {});
+    FileHandlerManager::SetIconsSupportedByOsForTesting(GetParam());
+  }
+  ~WebAppFileHandlingIconBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(WebAppFileHandlingIconBrowserTest, Basic) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL app_url(
+      embedded_test_server()->GetURL("/web_app_file_handling/icons_app.html"));
+  const AppId app_id = InstallWebAppFromManifest(browser(), app_url);
+  auto* provider = WebAppProvider::Get(browser()->profile());
+  const WebApp* web_app = provider->registrar().GetAppById(app_id);
+  ASSERT_TRUE(web_app);
+
+  ASSERT_EQ(1U, web_app->file_handlers().size());
+  if (FileHandlerManager::IconsEnabled()) {
+    ASSERT_EQ(1U, web_app->file_handlers()[0].icons.size());
+    EXPECT_EQ(20, web_app->file_handlers()[0].icons[0].square_size_px);
+  } else {
+    EXPECT_TRUE(web_app->file_handlers()[0].icons.empty());
+  }
+}
+
+// TODO(crbug.com/1218210): add more tests.
+
+INSTANTIATE_TEST_SUITE_P(, WebAppFileHandlingIconBrowserTest, testing::Bool());
+
 }  // namespace web_app

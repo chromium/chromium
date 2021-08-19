@@ -264,7 +264,16 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
          "file_extensions": [ ".13087720410a", ".13087720410b" ],
          "mime_type": "application/13087720410+bar"
       } ],
-      "action": "https://example.com/open-13087720410"
+      "action": "https://example.com/open-13087720410",
+      "icons": [ {
+         "purpose": 0,
+         "square_size_px": 16,
+         "url": "https://example.com/image.png"
+      }, {
+         "purpose": 0,
+         "square_size_px": 48,
+         "url": "https://example.com/image2.png"
+      } ]
    }, {
       "accept": [ {
          "file_extensions": [ ".13087720411a", ".13087720411b" ],
@@ -273,7 +282,16 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
          "file_extensions": [ ".13087720411a", ".13087720411b" ],
          "mime_type": "application/13087720411+bar"
       } ],
-      "action": "https://example.com/open-13087720411"
+      "action": "https://example.com/open-13087720411",
+      "icons": [ {
+         "purpose": 0,
+         "square_size_px": 16,
+         "url": "https://example.com/image.png"
+      }, {
+         "purpose": 0,
+         "square_size_px": 48,
+         "url": "https://example.com/image2.png"
+      } ]
    }, {
       "accept": [ {
          "file_extensions": [ ".13087720412a", ".13087720412b" ],
@@ -282,7 +300,16 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
          "file_extensions": [ ".13087720412a", ".13087720412b" ],
          "mime_type": "application/13087720412+bar"
       } ],
-      "action": "https://example.com/open-13087720412"
+      "action": "https://example.com/open-13087720412",
+      "icons": [ {
+         "purpose": 0,
+         "square_size_px": 16,
+         "url": "https://example.com/image.png"
+      }, {
+         "purpose": 0,
+         "square_size_px": 48,
+         "url": "https://example.com/image2.png"
+      } ]
    }, {
       "accept": [ {
          "file_extensions": [ ".13087720413a", ".13087720413b" ],
@@ -291,7 +318,16 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
          "file_extensions": [ ".13087720413a", ".13087720413b" ],
          "mime_type": "application/13087720413+bar"
       } ],
-      "action": "https://example.com/open-13087720413"
+      "action": "https://example.com/open-13087720413",
+      "icons": [ {
+         "purpose": 0,
+         "square_size_px": 16,
+         "url": "https://example.com/image.png"
+      }, {
+         "purpose": 0,
+         "square_size_px": 48,
+         "url": "https://example.com/image2.png"
+      } ]
    }, {
       "accept": [ {
          "file_extensions": [ ".13087720414a", ".13087720414b" ],
@@ -300,7 +336,16 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
          "file_extensions": [ ".13087720414a", ".13087720414b" ],
          "mime_type": "application/13087720414+bar"
       } ],
-      "action": "https://example.com/open-13087720414"
+      "action": "https://example.com/open-13087720414",
+      "icons": [ {
+         "purpose": 0,
+         "square_size_px": 16,
+         "url": "https://example.com/image.png"
+      }, {
+         "purpose": 0,
+         "square_size_px": 48,
+         "url": "https://example.com/image2.png"
+      } ]
    } ],
    "icon_infos": [ {
       "purpose": "ANY",
