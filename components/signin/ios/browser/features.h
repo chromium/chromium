@@ -9,9 +9,6 @@
 
 namespace signin {
 
-// This feature simplify sign-out UI in the account table view.
-extern const base::Feature kSimplifySignOutIOS;
-
 // Returns true if the startup sign-in promo should be displayed at boot.
 bool ForceStartupSigninPromo();
 

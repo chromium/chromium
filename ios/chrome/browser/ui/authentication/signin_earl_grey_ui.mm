@@ -94,22 +94,6 @@ void CloseSigninManagedAccountDialogIfAny(FakeChromeIdentity* fakeIdentity) {
   }
 }
 
-+ (void)signOut {
-  NSString* primaryAccountEmail =
-      [SigninEarlGreyAppInterface primaryAccountEmail];
-  GREYAssert(![primaryAccountEmail hasSuffix:ios::kManagedIdentityEmailSuffix],
-             @"Managed account must clear data on signout");
-  [self signOutWithButton:SignOutAccountsButton()
-      confirmationLabelID:IDS_IOS_DISCONNECT_DIALOG_CONTINUE_BUTTON_MOBILE];
-}
-
-+ (void)signOutAndClearDataFromDevice {
-  [self signOutWithButton:
-            grey_accessibilityID(
-                kSettingsAccountsTableViewSignoutAndClearDataCellId)
-      confirmationLabelID:IDS_IOS_DISCONNECT_DIALOG_CONTINUE_AND_CLEAR_MOBILE];
-}
-
 + (void)signOutWithConfirmationChoice:(SignOutConfirmationChoice)confirmation {
   int confirmationLabelID = 0;
   switch (confirmation) {

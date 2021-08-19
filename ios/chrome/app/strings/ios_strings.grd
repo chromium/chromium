@@ -748,23 +748,6 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_DISCONNECT_DIALOG_CONTINUE_BUTTON_MOBILE" desc="The title of the continue button on the disconnect dialog [Length: 20em].">
         Sign Out
       </message>
-      <message name="IDS_IOS_DISCONNECT_DIALOG_CONTINUE_AND_CLEAR_MOBILE" desc="The title of the continue and clear browsing data button on the disconnect dialog [iOS only].">
-        Sign Out and Clear Data from this Device
-      </message>
-     <message name="IDS_IOS_DISCONNECT_NON_MANAGED_ACCOUNT_FOOTER_INFO_MOBILE" desc="The information text on the disconnect footer describing signout for non-managed accounts [Length: 400em].">
-      By signing out, your bookmarks, history, passwords, and other Chrome data will no longer be synced to your Google Account.
-      </message>
-      <message name="IDS_IOS_DISCONNECT_MANAGED_ACCOUNT_FOOTER_INFO_MOBILE" desc="The information text on the disconnect footer describing signout for managed accounts [Length: 400em].">
-      By signing out, your bookmarks, history, passwords, and other Chrome data will no longer be synced to your Google Account.
-
-Because your account is managed by <ph name="HOSTED_DOMAIN">$1<ex>google.com</ex></ph>, your Chrome data will be deleted from this device when signing out. Your synced data will remain in your Google Account.
-      </message>
-      <message name="IDS_IOS_DISCONNECT_DESTRUCTIVE_DIALOG_INFO_MOBILE" desc="The information text on the disconnect dialog describing signout and clearing data [Length: 400em].">
-      This will sign you out, turn off sync, and clear all Chrome data from this device. Your synced data will remain in your Google Account.
-      </message>
-      <message name="IDS_IOS_DISCONNECT_KEEP_DATA_DIALOG_INFO_MOBILE" desc="The information text on the disconnect dialog describing signout without removing synced data [Length: 400em].">
-      This will sign you out and turn off sync, but your bookmarks, history, passwords and other Chrome data will remain on this device.
-      </message>
       <message name="IDS_IOS_DISCONNECT_DIALOG_INFO_MOBILE" desc="The information text on the disconnect dialog [Length: 400em].">
         Changes to your bookmarks, history, passwords, and other settings will no longer be synced to your Google Account. However, your existing data will remain stored in your Google Account.
       </message>

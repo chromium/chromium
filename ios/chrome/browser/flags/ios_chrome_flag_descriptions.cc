@@ -448,10 +448,6 @@ const char kShowAutofillTypePredictionsDescription[] =
     "Annotates web forms with Autofill field type predictions as placeholder "
     "text.";
 
-const char kSimplifySignOutIOSName[] = "Simplify sign-out";
-const char kSimplifySignOutIOSDescription[] =
-    "When enabled, sign-out UI in the account table view is simplified.";
-
 const char kSyncSandboxName[] = "Use Chrome Sync sandbox";
 const char kSyncSandboxDescription[] =
     "Connects to the testing server for Chrome Sync.";

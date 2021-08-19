@@ -9,11 +9,9 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
-#include "components/signin/ios/browser/features.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/device_accounts_synchronizer.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -494,8 +492,6 @@ TEST_F(AuthenticationServiceTest,
 // Tests that local data are not cleared when signing out of a non-syncing
 // managed account.
 TEST_F(AuthenticationServiceTest, SignedInManagedAccountSignOut) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(signin::kSimplifySignOutIOS);
   identity_service()->AddManagedIdentities(@[ @"foo3" ]);
 
   SetExpectationsForSignIn();
@@ -517,9 +513,6 @@ TEST_F(AuthenticationServiceTest, SignedInManagedAccountSignOut) {
 // Tests that MDM errors are correctly cleared when signing out of a managed
 // account.
 TEST_F(AuthenticationServiceTest, ManagedAccountSignOut) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(signin::kSimplifySignOutIOS);
-
   identity_service()->AddManagedIdentities(@[ @"foo3" ]);
 
   SetExpectationsForSignIn();
