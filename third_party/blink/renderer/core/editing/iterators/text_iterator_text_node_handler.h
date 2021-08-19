@@ -27,6 +27,7 @@ class TextIteratorTextNodeHandler {
   TextIteratorTextNodeHandler(const TextIteratorBehavior&,
                               TextIteratorTextState*);
   TextIteratorTextNodeHandler(const TextIteratorTextNodeHandler&) = delete;
+  ~TextIteratorTextNodeHandler() { mapping_units_.clear(); }
   TextIteratorTextNodeHandler& operator=(const TextIteratorTextNodeHandler&) =
       delete;
 

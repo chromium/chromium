@@ -593,4 +593,8 @@ bool NGOffsetMapping::HasBidiControlCharactersOnly(unsigned start,
   return true;
 }
 
+void NGOffsetMappingUnit::Trace(Visitor* visitor) const {
+  visitor->Trace(layout_object_);
+}
+
 }  // namespace blink

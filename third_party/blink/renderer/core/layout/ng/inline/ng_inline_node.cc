@@ -544,7 +544,7 @@ void NGInlineNode::PrepareLayout(NGInlineNodeData* previous_data) const {
   DCHECK(!data->offset_mapping);
   ComputeOffsetMappingIfNeeded();
   DCHECK(data->offset_mapping);
-  data->offset_mapping.reset();
+  data->offset_mapping.Clear();
 #endif
 }
 
@@ -954,7 +954,7 @@ const NGOffsetMapping* NGInlineNode::ComputeOffsetMappingIfNeeded() const {
     DCHECK(data->offset_mapping);
   }
 
-  return data->offset_mapping.get();
+  return data->offset_mapping;
 }
 
 void NGInlineNode::ComputeOffsetMapping(LayoutBlockFlow* layout_block_flow,
@@ -1023,8 +1023,8 @@ const NGOffsetMapping* NGInlineNode::GetOffsetMapping(
     return mapping;
   NGInlineNodeData* data = MakeGarbageCollected<NGInlineNodeData>();
   ComputeOffsetMapping(layout_block_flow, data);
-  NGOffsetMapping* const mapping = data->offset_mapping.get();
-  layout_block_flow->SetOffsetMapping(std::move(data->offset_mapping));
+  NGOffsetMapping* const mapping = data->offset_mapping.Release();
+  layout_block_flow->SetOffsetMapping(mapping);
   return mapping;
 }
 
@@ -1085,7 +1085,7 @@ const SvgTextChunkOffsets* NGInlineNode::FindSvgTextChunks(
 
   // Compute DOM offsets of text chunks.
   mapping_builder.SetDestinationString(ifc_text_content);
-  std::unique_ptr<NGOffsetMapping> mapping = mapping_builder.Build();
+  NGOffsetMapping* mapping = mapping_builder.Build();
   // Index in a UTF-32 sequence
   unsigned last_addressable = 0;
   // Index in a UTF-16 sequence for last_addressable.

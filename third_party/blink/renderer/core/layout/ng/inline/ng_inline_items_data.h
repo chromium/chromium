@@ -35,7 +35,7 @@ struct CORE_EXPORT NGInlineItemsData
   std::unique_ptr<NGInlineItemSegments> segments;
 
   // The DOM to text content offset mapping of this inline node.
-  std::unique_ptr<NGOffsetMapping> offset_mapping;
+  Member<NGOffsetMapping> offset_mapping;
 
   bool IsValidOffset(unsigned index, unsigned offset) const {
     return index < items.size() && items[index].IsValidOffset(offset);

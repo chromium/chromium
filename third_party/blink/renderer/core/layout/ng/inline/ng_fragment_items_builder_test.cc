@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_items_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_logical_line_item.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_test.h"
 
 using testing::ElementsAre;
