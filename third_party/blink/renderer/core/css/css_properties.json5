@@ -2031,7 +2031,7 @@
     {
       name: "container-type",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
-      keywords: ["none", "block-size", "inline-size"],
+      keywords: ["none", "block-size", "inline-size", "size"],
       field_group: "*",
       field_size: 2,
       field_template: "primitive",

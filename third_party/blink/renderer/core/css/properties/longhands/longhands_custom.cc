@@ -1998,12 +1998,14 @@ const CSSValue* ContainerType::CSSValueFromComputedStyleInternal(
     bool allow_visited_style) const {
   if (style.ContainerType() == kContainerTypeNone)
     return CSSIdentifierValue::Create(CSSValueID::kNone);
-  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  if (style.ContainerType() & kContainerTypeInlineSize)
-    list->Append(*CSSIdentifierValue::Create(CSSValueID::kInlineSize));
-  if (style.ContainerType() & kContainerTypeBlockSize)
-    list->Append(*CSSIdentifierValue::Create(CSSValueID::kBlockSize));
-  return list;
+  if (style.ContainerType() == kContainerTypeSize)
+    return CSSIdentifierValue::Create(CSSValueID::kSize);
+  if (style.ContainerType() == kContainerTypeInlineSize)
+    return CSSIdentifierValue::Create(CSSValueID::kInlineSize);
+  if (style.ContainerType() == kContainerTypeBlockSize)
+    return CSSIdentifierValue::Create(CSSValueID::kBlockSize);
+  NOTREACHED();
+  return nullptr;
 }
 
 namespace {

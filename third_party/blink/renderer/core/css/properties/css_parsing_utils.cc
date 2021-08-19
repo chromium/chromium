@@ -4931,29 +4931,20 @@ CSSValue* ConsumeContainerType(CSSParserTokenRange& range) {
   if (CSSValue* value = ConsumeIdent<CSSValueID::kNone>(range))
     return value;
 
-  CSSIdentifierValue* inline_size = nullptr;
-  CSSIdentifierValue* block_size = nullptr;
-
-  while (range.Peek().GetType() == kIdentToken) {
-    CSSValueID id = range.Peek().Id();
-    if (id == CSSValueID::kInlineSize && !inline_size) {
-      inline_size = ConsumeIdent(range);
-    } else if (id == CSSValueID::kBlockSize && !block_size) {
-      block_size = ConsumeIdent(range);
-    } else {
-      return nullptr;
-    }
+  if (CSSValue* value = ConsumeIdent<CSSValueID::kSize, CSSValueID::kInlineSize,
+                                     CSSValueID::kBlockSize>(range)) {
+    // Note that StyleBuilderConverter::ConvertFlags requires that values
+    // other than 'none' appear in a CSSValueList, hence we return a list with
+    // one item here. Also note that the full grammar will require multiple
+    // list items in the future, when we add support for 'style' and 'state'.
+    CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+    list->Append(*value);
+    return list;
   }
 
-  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-
-  if (inline_size)
-    list->Append(*inline_size);
-  if (block_size)
-    list->Append(*block_size);
-
-  return list;
+  return nullptr;
 }
+
 CSSValue* ConsumeSVGPaint(CSSParserTokenRange& range,
                           const CSSParserContext& context) {
   if (range.Peek().Id() == CSSValueID::kNone)

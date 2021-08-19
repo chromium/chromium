@@ -222,12 +222,12 @@ TEST_F(ContainerQueryTest, QueryZoom) {
       #container1 {
         width: 100px;
         height: 200px;
-        container-type: inline-size block-size;
+        container-type: size;
       }
       #container2 {
         width: 200px;
         height: 400px;
-        container-type: inline-size block-size;
+        container-type: size;
       }
       @container (width: 100px) {
         div { --w100:1; }

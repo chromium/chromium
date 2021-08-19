@@ -2083,7 +2083,7 @@ class ComputedStyle : public ComputedStyleBase,
   }
   bool ContainsSize() const {
     return ((Contain() & kContainsSize) == kContainsSize) ||
-           IsInlineAndBlockSizeContainer() || SkipsContents();
+           IsSizeContainer() || SkipsContents();
   }
   bool ContainsInlineSize() const {
     return (Contain() & kContainsInlineSize) || IsInlineSizeContainer() ||
@@ -2710,12 +2710,10 @@ class ComputedStyle : public ComputedStyleBase,
     return ContainerType() & kContainerTypeBlockSize;
   }
   bool IsInlineOrBlockSizeContainer() const {
-    return ContainerType() &
-           (kContainerTypeInlineSize | kContainerTypeBlockSize);
+    return ContainerType() & kContainerTypeSize;
   }
-  bool IsInlineAndBlockSizeContainer() const {
-    const unsigned both = (kContainerTypeInlineSize | kContainerTypeBlockSize);
-    return (ContainerType() & both) == both;
+  bool IsSizeContainer() const {
+    return (ContainerType() & kContainerTypeSize) == kContainerTypeSize;
   }
   bool IsContentVisibilityVisible() const {
     return ContentVisibility() == EContentVisibility::kVisible;
