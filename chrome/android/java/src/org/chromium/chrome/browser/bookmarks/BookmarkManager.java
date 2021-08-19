@@ -89,7 +89,7 @@ public class BookmarkManager
                     && node.getId().equals(mStateStack.peek().mFolder)) {
                 if (mBookmarkModel.getTopLevelFolderIDs(true, true).contains(
                         node.getId())) {
-                    openFolder(mBookmarkModel.getDefaultFolder());
+                    openFolder(mBookmarkModel.getDefaultFolderViewLocation());
                 } else {
                     openFolder(parent.getId());
                 }
@@ -392,8 +392,8 @@ public class BookmarkManager
      */
     private void setState(BookmarkUIState state) {
         if (!state.isValid(mBookmarkModel)) {
-            state = BookmarkUIState.createFolderState(mBookmarkModel.getDefaultFolder(),
-                    mBookmarkModel);
+            state = BookmarkUIState.createFolderState(
+                    mBookmarkModel.getDefaultFolderViewLocation(), mBookmarkModel);
         }
 
         if (!mStateStack.isEmpty() && mStateStack.peek().equals(state)) return;
