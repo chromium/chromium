@@ -782,10 +782,7 @@ try_.chromium_chromiumos_builder(
     builderless = not settings.is_main,
     main_list_view = "try",
     os = os.LINUX_BIONIC_REMOVE,
-    tryjob = try_.job(
-        # TODO(https://crbug.com/1241517) Make this non-experimental again
-        experiment_percentage = 100,
-    ),
+    tryjob = try_.job(),
 )
 
 try_.chromium_chromiumos_builder(
@@ -802,20 +799,14 @@ try_.chromium_chromiumos_builder(
     builderless = not settings.is_main,
     main_list_view = "try",
     os = os.LINUX_BIONIC_REMOVE,
-    tryjob = try_.job(
-        # TODO(https://crbug.com/1241517) Make this non-experimental again
-        experiment_percentage = 100,
-    ),
+    tryjob = try_.job(),
 )
 
 try_.chromium_chromiumos_builder(
     name = "lacros-amd64-generic-rel",
     builderless = not settings.is_main,
     main_list_view = "try",
-    tryjob = try_.job(
-        # TODO(https://crbug.com/1241517) Make this non-experimental again
-        experiment_percentage = 10,
-    ),
+    tryjob = try_.job(),
     os = os.LINUX_BIONIC_REMOVE,
 )
 
@@ -823,10 +814,7 @@ try_.chromium_chromiumos_builder(
     name = "lacros-arm-generic-rel",
     builderless = not settings.is_main,
     main_list_view = "try",
-    tryjob = try_.job(
-        # TODO(https://crbug.com/1241517) Make this non-experimental again
-        experiment_percentage = 10,
-    ),
+    tryjob = try_.job(),
     os = os.LINUX_BIONIC_REMOVE,
 )
 
