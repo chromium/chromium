@@ -822,24 +822,10 @@
       },
     },
   },
-  'chrome_modern_public_bundle_fake_modules_smoke_test': {
-    'remove_from': [
-      # Runs on android-marshmallow-x86-rel already (crbug.com/1127110)
-      'android-marshmallow-arm64-rel',
-    ],
-  },
-  'chrome_modern_public_bundle_smoke_test': {
-    'remove_from': [
-      # Runs on android-marshmallow-x86-rel already (crbug.com/1127110)
-      'android-marshmallow-arm64-rel',
-    ],
-  },
   'chrome_public_smoke_test': {
     'remove_from': [
       'android-code-coverage-native', # Does not generate profraw data.
       'android-pie-arm64-coverage-experimental-rel', # Does not generate profraw data.
-      # Runs on android-marshmallow-x86-rel already (crbug.com/1127110#c21)
-      'android-marshmallow-arm64-rel',
     ],
   },
   'chrome_public_test_apk': {
@@ -848,9 +834,6 @@
       'android-code-coverage-native', # Does not generate profraw data.
       'android-lollipop-arm-rel', # https://crbug.com/1060245
       'android-pie-arm64-coverage-experimental-rel', # Does not generate profraw data.
-
-      # Runs on android-marshmallow-x86-rel already (crbug.com/1127110)
-      'android-marshmallow-arm64-rel',
     ],
     'modifications': {
       'Marshmallow 64 bit Tester': {
@@ -2898,9 +2881,6 @@
   },
   'unit_tests': {
     'remove_from': [
-      # There's no need to run unit_tests on both lollipop and marshmallow
-      # on the CQ. https://crbug.com/1026487.
-      'android-marshmallow-arm64-rel',
       'android-pie-arm64-rel',  # https://crbug.com/1010211
     ],
     'modifications': {

@@ -155,6 +155,67 @@
       },
     },
 
+    # List gtests with ci_only set to True so that they run on the CI of
+    # android-marshmallow-arm64-rel but not the mirrored CQ.
+    # Includes the following compound test suites:
+    # * android_modern_smoke_tests
+    # * android_smoke_tests
+    # * chromium_gtests_for_devices_with_graphical_output
+    # * chrome_public_tests
+    # * linux_flavor_specific_chromium_gtests
+    'android_marshmallow_device_ci_only_gtests': {
+      'cc_unittests': {
+        'ci_only': True,
+      },
+      'chrome_modern_public_bundle_fake_modules_smoke_test': {
+        'ci_only': True,
+      },
+      'chrome_modern_public_bundle_smoke_test': {
+        'ci_only': True,
+      },
+      'chrome_public_smoke_test': {
+        'ci_only': True,
+      },
+      'chrome_public_test_apk': {
+        'ci_only': True,
+        'swarming': {
+          'shards': 20,
+        },
+        'mixins': [
+          'chrome-gold-service-account',
+          'skia_gold_test',
+        ],
+      },
+      'chrome_public_unit_test_apk': {
+        'ci_only': True,
+        'mixins': [
+          'chrome-gold-service-account',
+          'skia_gold_test',
+        ],
+      },
+      'device_unittests': {
+        'ci_only': True,
+      },
+      'display_unittests': {
+        'ci_only': True,
+      },
+      'gfx_unittests': {
+        'ci_only': True,
+      },
+      'sandbox_linux_unittests': {
+        'ci_only': True,
+      },
+      'unit_tests': {
+        'ci_only': True,
+        'android_swarming': {
+          'shards': 2,
+        },
+      },
+      'viz_unittests': {
+        'ci_only': True,
+      },
+    },
+
     # List gtests that are part of other composition test suites.
     # MM emulator CQ builder currently has limited capacity so some composition
     # test suites cannot be fullly enabled at once.
@@ -5752,6 +5813,23 @@
       'weblayer_gtests',
     ],
 
+    # List gtests that run on android-marshmallow-arm64-rel builder.
+    # TODO(crbug.com/1127110): Use android_lollipop_marshmallow_gtests when
+    # android-marshmallow-x86-rel is not mirrored to CQ.
+    'android_marshmallow_device_gtests': [
+      'android_marshmallow_device_ci_only_gtests',
+
+      # TODO(crbug.com/1127110): Remove once webview_instrumentation_test_apk
+      # and content_shell_test_apk are enabled on android-marshmallow-x86-rel
+      'android_specific_chromium_gtests',  # Already includes gl_gtests.
+
+      'chromium_gtests',
+      'vr_android_specific_chromium_tests',
+      'vr_platform_specific_chromium_gtests',
+      'weblayer_android_gtests',
+      'weblayer_gtests',
+    ],
+
     # List gtests that run on android-marshmallow-x86-rel builder.
     # Test suites will be gradually moved from
     # android_marshmallow_emulator_non_cq_gtests
@@ -5776,7 +5854,7 @@
     # Note that tests here are gradually moved to
     # android_marshmallow_emulator_gtests (crbug.com/1127110)
     #
-    # The diff between android_lollipop_marshmallow_gtests and
+    # The diff between android_marshmallow_device_gtests and
     # (android_marshmallow_emulator_non_cq_gtests +
     # android_marshmallow_emulator_gtests)
     # is android_wpr_record_replay_tests
