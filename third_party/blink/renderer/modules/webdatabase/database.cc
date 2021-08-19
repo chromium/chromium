@@ -33,6 +33,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/probe/async_task_id.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
@@ -247,6 +248,7 @@ Database::Database(DatabaseContext* database_context,
       database_authorizer_(kInfoTableName),
       transaction_in_progress_(false),
       is_transaction_queue_enabled_(true),
+      did_try_to_count_third_party_transaction_(false),
       feature_handle_for_scheduler_(
           database_context->GetExecutionContext()
               ->GetScheduler()
@@ -834,6 +836,13 @@ void Database::RunTransaction(
     return;
 
   DCHECK(GetExecutionContext()->IsContextThread());
+
+  if (!did_try_to_count_third_party_transaction_) {
+    GetExecutionContext()->CountUseOnlyInCrossSiteIframe(
+        WebFeature::kReadOrWriteWebDatabaseThirdPartyContext);
+    did_try_to_count_third_party_transaction_ = true;
+  }
+
 // FIXME: Rather than passing errorCallback to SQLTransaction and then
 // sometimes firing it ourselves, this code should probably be pushed down
 // into Database so that we only create the SQLTransaction if we're

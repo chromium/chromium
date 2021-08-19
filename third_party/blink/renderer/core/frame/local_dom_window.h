@@ -194,7 +194,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
 
   // Count |feature| only when this window is associated with a cross-site
   // iframe. A "site" is a scheme and registrable domain.
-  void CountUseOnlyInCrossSiteIframe(mojom::blink::WebFeature feature);
+  void CountUseOnlyInCrossSiteIframe(mojom::blink::WebFeature feature) override;
 
   // Count permissions policy feature usage through use counter.
   void CountPermissionsPolicyUsage(
