@@ -24,6 +24,7 @@
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/mock_quota_manager.h"
 #include "storage/browser/test/mock_quota_manager_proxy.h"
+#include "storage/browser/test/quota_manager_proxy_sync.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/native_io/native_io.mojom.h"
@@ -242,36 +243,6 @@ class NativeIOFileHostSync {
   blink::mojom::NativeIOFileHost* const file_host_;
 };
 
-class QuotaManagerProxySync {
- public:
-  // `proxy` must outlive the newly created instance.
-  explicit QuotaManagerProxySync(storage::QuotaManagerProxy* proxy)
-      : proxy_(proxy) {
-    DCHECK(proxy);
-  }
-
-  storage::QuotaErrorOr<storage::BucketInfo> GetBucket(
-      const StorageKey& storage_key,
-      const std::string& bucket_name,
-      blink::mojom::StorageType storage_type) {
-    storage::QuotaErrorOr<storage::BucketInfo> result;
-    base::RunLoop run_loop;
-    proxy_->GetBucket(
-        storage_key, bucket_name, storage_type,
-        base::ThreadTaskRunnerHandle::Get().get(),
-        base::BindLambdaForTesting(
-            [&](storage::QuotaErrorOr<storage::BucketInfo> bucket_info) {
-              result = std::move(bucket_info);
-              run_loop.Quit();
-            }));
-    run_loop.Run();
-    return result;
-  }
-
- private:
-  storage::QuotaManagerProxy* const proxy_;
-};
-
 const char kExampleStorageKey[] = "https://example.com";
 const char kGoogleStorageKey[] = "https://google.com";
 
@@ -381,12 +352,14 @@ class NativeIOManagerTest : public testing::TestWithParam<bool> {
 
 TEST_P(NativeIOManagerTest, DefaultBucketCreatedOnBindReceiver) {
   EXPECT_THAT(google_host_->GetAllFileNames(), testing::SizeIs(0));
-  QuotaManagerProxySync proxy(quota_manager_proxy());
+  storage::QuotaManagerProxySync quota_manager_proxy_sync(
+      quota_manager_proxy());
 
   // Check default bucket exists for https://example.com.
-  storage::QuotaErrorOr<storage::BucketInfo> result = proxy.GetBucket(
-      StorageKey::CreateFromStringForTesting(kExampleStorageKey),
-      storage::kDefaultBucketName, blink::mojom::StorageType::kTemporary);
+  storage::QuotaErrorOr<storage::BucketInfo> result =
+      quota_manager_proxy_sync.GetBucket(
+          StorageKey::CreateFromStringForTesting(kExampleStorageKey),
+          storage::kDefaultBucketName, blink::mojom::StorageType::kTemporary);
   EXPECT_TRUE(result.ok());
   EXPECT_EQ(result->name, storage::kDefaultBucketName);
   EXPECT_EQ(result->storage_key,
@@ -394,7 +367,7 @@ TEST_P(NativeIOManagerTest, DefaultBucketCreatedOnBindReceiver) {
   EXPECT_GT(result->id.value(), 0);
 
   // Check default bucket exists for https://google.com.
-  result = proxy.GetBucket(
+  result = quota_manager_proxy_sync.GetBucket(
       StorageKey::CreateFromStringForTesting(kGoogleStorageKey),
       storage::kDefaultBucketName, blink::mojom::StorageType::kTemporary);
   EXPECT_TRUE(result.ok());
