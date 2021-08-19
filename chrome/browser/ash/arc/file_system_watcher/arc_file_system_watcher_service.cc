@@ -433,7 +433,9 @@ void ArcFileSystemWatcherService::OnFileSystemChanged(
     if (base::StartsWith(path, kAndroidMyFilesDownloadsDir,
                          base::CompareCase::SENSITIVE)) {
       // Exclude files under .../MyFiles/Downloads/ because they are also
-      // indexed as files under /storage/emulated/0/Download/
+      // indexed as files under /storage/emulated/0/Download/ (which is
+      // updated by the inotify attached to Downloads directory outside
+      // MyFiles).
       continue;
     }
     filtered_paths.push_back(path);
