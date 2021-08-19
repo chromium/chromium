@@ -43,8 +43,10 @@ class TestOmniboxEditModel : public OmniboxEditModel {
  public:
   TestOmniboxEditModel(OmniboxView* view,
                        OmniboxEditController* controller,
-                       std::unique_ptr<OmniboxClient> client)
-      : OmniboxEditModel(view, controller, std::move(client)) {}
+                       std::unique_ptr<OmniboxClient> client,
+                       PrefService* pref_service)
+      : OmniboxEditModel(view, controller, std::move(client)),
+        pref_service_(pref_service) {}
   bool PopupIsOpen() const override { return true; }
 
   const std::u16string& text() const { return text_; }
@@ -66,10 +68,14 @@ class TestOmniboxEditModel : public OmniboxEditModel {
     is_temporary_text_ = is_temporary_text;
   }
 
+ protected:
+  PrefService* GetPrefService() const override { return pref_service_; }
+
  private:
   // Contains the most recent text passed by the popup model to the edit model.
   std::u16string text_;
   bool is_temporary_text_ = false;
+  PrefService* pref_service_;
 };
 
 }  // namespace
@@ -80,10 +86,12 @@ class OmniboxPopupModelTest : public ::testing::Test {
  public:
   OmniboxPopupModelTest()
       : view_(&controller_),
-        model_(&view_, &controller_, std::make_unique<TestOmniboxClient>()) {
+        model_(&view_,
+               &controller_,
+               std::make_unique<TestOmniboxClient>(),
+               &pref_service_) {
     omnibox::RegisterProfilePrefs(pref_service_.registry());
-    model_.set_popup_model(std::make_unique<OmniboxPopupModel>(
-        &popup_view_, &model_, &pref_service_));
+    model_.set_popup_view(&popup_view_);
   }
   OmniboxPopupModelTest(const OmniboxPopupModelTest&) = delete;
   OmniboxPopupModelTest& operator=(const OmniboxPopupModelTest&) = delete;

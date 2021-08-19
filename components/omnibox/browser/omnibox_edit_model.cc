@@ -146,9 +146,13 @@ OmniboxEditModel::OmniboxEditModel(OmniboxView* view,
 OmniboxEditModel::~OmniboxEditModel() {
 }
 
-void OmniboxEditModel::set_popup_model(
-    std::unique_ptr<OmniboxPopupModel> popup_model) {
-  popup_model_ = std::move(popup_model);
+void OmniboxEditModel::set_popup_view(OmniboxPopupView* popup_view) {
+  if (popup_view) {
+    popup_model_ =
+        std::make_unique<OmniboxPopupModel>(popup_view, this, GetPrefService());
+  } else {
+    popup_model_.reset();
+  }
 }
 
 metrics::OmniboxEventProto::PageClassification
@@ -1685,16 +1689,18 @@ void OmniboxEditModel::RevertTemporaryTextAndPopup() {
   view_->OnRevertTemporaryText(match.fill_into_edit, match);
 }
 
+PrefService* OmniboxEditModel::GetPrefService() const {
+  return autocomplete_controller()->autocomplete_provider_client()->GetPrefs();
+}
+
 bool OmniboxEditModel::ShouldPreventElision() const {
   return controller()->GetLocationBarModel()->ShouldPreventElision();
 }
 
 bool OmniboxEditModel::AllowKeywordSpaceTriggering() const {
-  PrefService* pref_service =
-      autocomplete_controller()->autocomplete_provider_client()->GetPrefs();
   return !base::FeatureList::IsEnabled(
              omnibox::kKeywordSpaceTriggeringSetting) ||
-         pref_service->GetBoolean(omnibox::kKeywordSpaceTriggeringEnabled);
+         GetPrefService()->GetBoolean(omnibox::kKeywordSpaceTriggeringEnabled);
 }
 
 bool OmniboxEditModel::MaybeAcceptKeywordBySpace(

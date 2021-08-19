@@ -43,12 +43,11 @@ OmniboxPopupViewIOS::OmniboxPopupViewIOS(
     : edit_model_(edit_model), delegate_(delegate) {
   DCHECK(delegate);
   DCHECK(edit_model);
-  edit_model->set_popup_model(
-      std::make_unique<OmniboxPopupModel>(this, edit_model, nullptr));
+  edit_model->set_popup_view(this);
 }
 
 OmniboxPopupViewIOS::~OmniboxPopupViewIOS() {
-  edit_model_->set_popup_model(nullptr);
+  edit_model_->set_popup_view(nullptr);
 }
 
 // Set left image to globe or magnifying glass depending on which autocomplete

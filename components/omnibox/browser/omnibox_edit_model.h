@@ -27,7 +27,7 @@ class AutocompleteResult;
 class OmniboxClient;
 class OmniboxEditController;
 class OmniboxPopupModel;
-class OmniboxView;
+class OmniboxPopupView;
 
 namespace gfx {
 class Image;
@@ -73,7 +73,7 @@ class OmniboxEditModel {
     return omnibox_controller_->autocomplete_controller();
   }
 
-  void set_popup_model(std::unique_ptr<OmniboxPopupModel> popup_model);
+  void set_popup_view(OmniboxPopupView* popup_view);
 
   // NOTE: popup_model() can be NULL for testing.
   OmniboxPopupModel* popup_model() const { return popup_model_.get(); }
@@ -412,6 +412,11 @@ class OmniboxEditModel {
 
   // Returns whether to prevent elision of the display URL.
   bool ShouldPreventElision() const;
+
+ protected:
+  // Utility method to get current PrefService; protected instead of private
+  // because it may be overridden by derived test classes.
+  virtual PrefService* GetPrefService() const;
 
  private:
   friend class OmniboxControllerTest;
