@@ -860,7 +860,7 @@ Nếu bạn tắt chính sách này, thì việc cuộn trang web đến các ph
 <translation id="2043749682619281558">Bật tính năng làm nổi bật con trỏ trên màn hình đăng nhập</translation>
 <translation id="2043770014371753404">Đã tắt máy in dành cho doanh nghiệp</translation>
 <translation id="2057317273526988987">Cho phép truy cập vào một danh sách các URL</translation>
-<translation id="2061123930713023976">Cho phép dùng kỹ thuật chụp gói dữ liệu có trong mạng để gỡ lỗi</translation>
+<translation id="2061123930713023976">Cho phép dùng kỹ thuật chặn bắt gói tin qua mạng để gỡ lỗi</translation>
 <translation id="2061810934846663491">Định cấu hình tên miền bắt buộc cho máy chủ truy cập từ xa</translation>
 <translation id="2069350366303315077">Khi bạn đặt chính sách này thành Bật, thì <ph name="PRODUCT_NAME" /> sẽ thực thi các phiên khách và ngăn chặn các phiên đăng nhập vào hồ sơ. Phiên đăng nhập khách là các hồ sơ <ph name="PRODUCT_NAME" />, trong đó các cửa sổ đều ở Chế độ ẩn danh.
 
@@ -1276,7 +1276,7 @@ Nếu bạn không đặt chính sách này, thì màn hình bảo vệ quyền 
           Nếu bạn đặt chính sách này, thì người dùng sẽ không thể thay đổi hay ghi đè chính sách.
 
           Nếu bạn không đặt chính sách này, thì ban đầu, tính năng làm nổi bật dấu chèn sẽ tắt nhưng người dùng có thể bật bất cứ lúc nào.</translation>
-<translation id="2509748672176727116">Người dùng sẽ có thể sử dụng kỹ thuật chụp gói dữ liệu có trong mạng</translation>
+<translation id="2509748672176727116">Người dùng sẽ có thể chặn bắt gói tin qua mạng</translation>
 <translation id="2509919237512982967">Dùng các thành phần điều khiển biểu mẫu cũ cho đến M84.</translation>
 <translation id="2512972020817284317">Cho phép hợp nhất các chính sách đám mây ở cấp người dùng.</translation>
 <translation id="2515699738406900920">Khả năng hiển thị bộ chọn hồ sơ khi khởi động</translation>
@@ -2871,10 +2871,10 @@ Khi bạn đặt chính sách này, <ph name="PRODUCT_OS_NAME" /> chỉ cho phé
 
       Trên Windows, nếu bạn không đặt chính sách này, đường dẫn tới cấu hình chuyển vùng mặc định sẽ được sử dụng.</translation>
 <translation id="4596517047440640833">Mở khóa bằng mã pin</translation>
-<translation id="4596742680861734343">Cho phép dùng kỹ thuật chụp gói dữ liệu có trong mạng trên thiết bị để gỡ lỗi.
+<translation id="4596742680861734343">Cho phép dùng kỹ thuật chặn bắt gói tin qua mạng trên thiết bị để gỡ lỗi.
 
-      Nếu bạn bật hoặc không đặt chính sách này, thì người dùng sẽ có thể sử dụng kỹ thuật chụp gói dữ liệu có trong mạng trên thiết bị.
-      Nếu bạn tắt chính sách này, người dùng sẽ không sử dụng được kỹ thuật chụp gói dữ liệu có trong mạng trên thiết bị.</translation>
+      Nếu bạn bật hoặc không đặt chính sách này, thì người dùng sẽ có thể sử dụng kỹ thuật chặn bắt gói tin qua mạng trên thiết bị.
+      Nếu bạn tắt chính sách này, người dùng sẽ không sử dụng được kỹ thuật chặn bắt gói tin qua mạng trên thiết bị.</translation>
 <translation id="4600786265870346112">Bật con trỏ lớn</translation>
 <translation id="4607416370554533118">Khi đặt chính sách này, bạn có thể tạo danh sách các mẫu URL chỉ định trang web mà Chrome có thể tự động chọn chứng chỉ máy khách. Giá trị là một mảng từ điển JSON phân thành chuỗi, mỗi mảng có dạng <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE" />, trong đó <ph name="URL_PATTERN_PLACEHOLDER" /> là mẫu thông tin cài đặt nội dung. <ph name="FILTER_PLACEHOLDER" /> giới hạn các chứng chỉ máy khách mà trình duyệt sẽ tự động chọn. Bất kể bộ lọc là gì, chỉ các chứng chỉ khớp với yêu cầu chứng chỉ của máy chủ mới được chọn.
 
@@ -5378,7 +5378,7 @@ Nếu bạn đặt chính sách thành Tắt, thì <ph name="PRODUCT_NAME" /> s�
       Nếu bạn không đặt chính sách này, người dùng có thể chọn có nhắc nhập mật khẩu để đánh thức thiết bị hay không.</translation>
 <translation id="7784062550705119230">Nếu bạn chọn <ph name="PRINTERS_ALLOWLIST" /> cho <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, việc đặt <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> sẽ chỉ định những máy in mà người dùng có thể sử dụng. Người dùng chỉ có thể sử dụng những máy in có mã nhận dạng khớp với giá trị trong chính sách này. Các mã nhận dạng này phải tương ứng với trường <ph name="ID_FIELD" /> hoặc <ph name="GUID_FIELD" /> ở tệp được chỉ định trong <ph name="DEVICE_PRINTERS_POLICY_NAME" /></translation>
 <translation id="7788511847830146438">Cho mỗi hồ sơ</translation>
-<translation id="7792796937016596423">Người dùng sẽ không thể sử dụng kỹ thuật chụp gói dữ liệu có trong mạng</translation>
+<translation id="7792796937016596423">Người dùng sẽ không thể chặn bắt gói tin qua mạng</translation>
 <translation id="7798441698807517880">Chúng tôi đã xóa chính sách này khỏi <ph name="PRODUCT_NAME" /> phiên bản 89 trở đi <ph name="FLASH_PLUGIN_NAME" /> không còn được dùng nữa.
 
       Nếu bạn đặt chính sách này thành Bật, thì tất cả nội dung <ph name="FLASH_PLUGIN_NAME" /> được nhúng trên những trang web cho phép <ph name="FLASH_PLUGIN_NAME" /> đều sẽ chạy, kể cả nội dung của các nguồn khác hoặc nội dung nhỏ.
