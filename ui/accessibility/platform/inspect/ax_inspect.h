@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ui/accessibility/ax_export.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace ui {
 
@@ -27,12 +28,19 @@ struct AX_EXPORT AXTreeSelector {
   };
   int types{None};
   std::string pattern;
+  gfx::AcceleratedWidget widget{0};
 
   AXTreeSelector() = default;
   AXTreeSelector(int types, const std::string& pattern)
       : types(types), pattern(pattern) {}
+  AXTreeSelector(int types,
+                 const std::string& pattern,
+                 gfx::AcceleratedWidget widget)
+      : types(types), pattern(pattern), widget(widget) {}
 
-  bool empty() const { return types == None && pattern.empty(); }
+  bool empty() const {
+    return (types & ~(ActiveTab)) == None && widget == 0 && pattern.empty();
+  }
 
   // Returns an application name for a type if the type specifies an
   // application.

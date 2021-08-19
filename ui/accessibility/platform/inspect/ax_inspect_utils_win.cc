@@ -730,6 +730,10 @@ BOOL CALLBACK MatchWindow(HWND hwnd, LPARAM lParam) {
 }
 
 AX_EXPORT HWND GetHWNDBySelector(const AXTreeSelector& selector) {
+  if (selector.widget) {
+    return selector.widget;
+  }
+
   HWNDSearchInfo info;
   if (selector.types & AXTreeSelector::Chrome) {
     info.title = kChromeTitle;
