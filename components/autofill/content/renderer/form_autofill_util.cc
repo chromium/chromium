@@ -1809,11 +1809,6 @@ GURL GetCanonicalActionForForm(const WebFormElement& form) {
   return StripAuthAndParams(full_action);
 }
 
-GURL GetCanonicalOriginForDocument(const WebDocument& document) {
-  GURL full_origin(document.Url());
-  return StripAuthAndParams(full_origin);
-}
-
 GURL GetDocumentUrlWithoutAuth(const WebDocument& document) {
   GURL::Replacements rep;
   rep.ClearUsername();
@@ -2100,20 +2095,10 @@ bool WebFormElementToFormData(
   form->name = GetFormIdentifier(form_element);
   form->unique_renderer_id =
       FormRendererId(form_element.UniqueRendererFormId());
-  if (base::FeatureList::IsEnabled(features::kAutofillAugmentFormsInRenderer))
-    form->url = GetCanonicalOriginForDocument(frame->GetDocument());
   form->action = GetCanonicalActionForForm(form_element);
   form->is_action_empty =
       form_element.Action().IsNull() || form_element.Action().IsEmpty();
-  if (frame->Top()) {
-    if (base::FeatureList::IsEnabled(features::kAutofillAugmentFormsInRenderer))
-      form->main_frame_origin = frame->Top()->GetSecurityOrigin();
-    else
-      form->main_frame_origin = url::Origin();
-  } else {
-    form->main_frame_origin = url::Origin();
-    NOTREACHED();
-  }
+  form->main_frame_origin = url::Origin();
   // If the completed URL is not valid, just use the action we get from
   // WebKit.
   if (!form->action.is_valid())
@@ -2203,14 +2188,7 @@ bool UnownedFormElementsAndFieldSetsToFormData(
     return false;
 
   form->unique_renderer_id = FormRendererId();
-  if (base::FeatureList::IsEnabled(features::kAutofillAugmentFormsInRenderer))
-    form->url = GetCanonicalOriginForDocument(document);
-  if (base::FeatureList::IsEnabled(features::kAutofillAugmentFormsInRenderer) &&
-      frame->Top()) {
-    form->main_frame_origin = frame->Top()->GetSecurityOrigin();
-  } else {
-    form->main_frame_origin = url::Origin();
-  }
+  form->main_frame_origin = url::Origin();
 
   form->is_form_tag = false;
 

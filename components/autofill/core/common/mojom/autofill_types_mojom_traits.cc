@@ -170,15 +170,9 @@ bool StructTraits<autofill::mojom::FormDataDataView, autofill::FormData>::Read(
     return false;
   if (!data.ReadButtonTitles(&out->button_titles))
     return false;
-  if (!data.ReadUrl(&out->url))
-    return false;
-  if (!data.ReadFullUrl(&out->full_url))
-    return false;
   if (!data.ReadAction(&out->action))
     return false;
   out->is_action_empty = data.is_action_empty();
-  if (!data.ReadMainFrameOrigin(&out->main_frame_origin))
-    return false;
 
   out->is_form_tag = data.is_form_tag();
 

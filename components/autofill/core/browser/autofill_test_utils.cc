@@ -52,8 +52,9 @@ bool operator==(const FormFieldDataPredictions& a,
 }
 
 bool operator==(const FormDataPredictions& a, const FormDataPredictions& b) {
-  return a.data.SameFormAs(b.data) && a.signature == b.signature &&
-         a.fields == b.fields;
+  return test::WithoutUnserializedData(a.data).SameFormAs(
+             test::WithoutUnserializedData(b.data)) &&
+         a.signature == b.signature && a.fields == b.fields;
 }
 
 namespace test {
@@ -220,7 +221,6 @@ void CreateTestAddressFormData(FormData* form,
   form->button_titles = {std::make_pair(
       u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
   form->url = GURL("https://myform.com/form.html");
-  form->full_url = GURL("https://myform.com/form.html?foo=bar");
   form->action = GURL("https://myform.com/submit.html");
   form->is_action_empty = true;
   form->main_frame_origin =
@@ -280,7 +280,6 @@ void CreateTestPersonalInformationFormData(FormData* form,
   form->unique_renderer_id = MakeFormRendererId();
   form->name = u"MyForm" + ASCIIToUTF16(unique_id ? unique_id : "");
   form->url = GURL("https://myform.com/form.html");
-  form->full_url = GURL("https://myform.com/form.html?foo=bar");
   form->action = GURL("https://myform.com/submit.html");
   form->main_frame_origin =
       url::Origin::Create(GURL("https://myform_root.com/form.html"));
@@ -305,13 +304,11 @@ void CreateTestCreditCardFormData(FormData* form,
   form->name = u"MyForm" + ASCIIToUTF16(unique_id ? unique_id : "");
   if (is_https) {
     form->url = GURL("https://myform.com/form.html");
-    form->full_url = GURL("https://myform.com/form.html?foo=bar");
     form->action = GURL("https://myform.com/submit.html");
     form->main_frame_origin =
         url::Origin::Create(GURL("https://myform_root.com/form.html"));
   } else {
     form->url = GURL("http://myform.com/form.html");
-    form->full_url = GURL("http://myform.com/form.html?foo=bar");
     form->action = GURL("http://myform.com/submit.html");
     form->main_frame_origin =
         url::Origin::Create(GURL("http://myform_root.com/form.html"));
@@ -349,6 +346,8 @@ void CreateTestCreditCardFormData(FormData* form,
 }
 
 FormData WithoutUnserializedData(FormData form) {
+  form.url = {};
+  form.main_frame_origin = {};
   form.host_frame = {};
   for (FormFieldData& field : form.fields)
     field = WithoutUnserializedData(std::move(field));

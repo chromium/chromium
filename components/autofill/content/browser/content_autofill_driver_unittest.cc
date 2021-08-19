@@ -519,7 +519,8 @@ TEST_P(ContentAutofillDriverTest, FormDataSentToRenderer_PreviewForm) {
   EXPECT_TRUE(fake_agent_.GetAutofillPreviewFormMessage(&output_page_id,
                                                         &output_form_data));
   EXPECT_EQ(input_page_id, output_page_id);
-  EXPECT_TRUE(input_form_data.SameFormAs(output_form_data));
+  EXPECT_TRUE(test::WithoutUnserializedData(input_form_data)
+                  .SameFormAs(output_form_data));
 }
 
 TEST_P(ContentAutofillDriverTest, TypePredictionsSentToRendererWhenEnabled) {

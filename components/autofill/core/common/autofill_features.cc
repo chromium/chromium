@@ -91,13 +91,6 @@ const base::Feature kAutofillAllowDuplicateFormSubmissions{
 const base::Feature kAutofillAllowNonHttpActivation{
     "AutofillAllowNonHttpActivation", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Controls whether some members of FormData are retrieved in the renderer
-// instead of being extracted in the browser.
-// TODO(crbug/1206049): Disable and remove once the extraction code has been
-// migrated to the browser.
-const base::Feature kAutofillAugmentFormsInRenderer{
-    "AutofillAugmentFormsInRenderer", base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kAutofillCreateDataForTest{
     "AutofillCreateDataForTest", base::FEATURE_DISABLED_BY_DEFAULT};
 

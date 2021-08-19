@@ -48,8 +48,6 @@ extern const base::Feature kAutofillAllowDuplicateFormSubmissions;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillAllowNonHttpActivation;
 COMPONENT_EXPORT(AUTOFILL)
-extern const base::Feature kAutofillAugmentFormsInRenderer;
-COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillCreateDataForTest;
 COMPONENT_EXPORT(AUTOFILL) extern const base::Feature kAutofillDisableFilling;
 COMPONENT_EXPORT(AUTOFILL)

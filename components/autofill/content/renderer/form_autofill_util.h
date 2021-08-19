@@ -142,7 +142,6 @@ bool AreFormContentsVisible(const blink::WebFormElement& form);
 // origin. The action will proplerly take into account <BASE>, and both will
 // strip unnecessary data (e.g. query params and HTTP credentials).
 GURL GetCanonicalActionForForm(const blink::WebFormElement& form);
-GURL GetCanonicalOriginForDocument(const blink::WebDocument& document);
 GURL GetDocumentUrlWithoutAuth(const blink::WebDocument& document);
 
 // Returns true if |element| is a month input element.

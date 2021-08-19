@@ -1096,6 +1096,8 @@ void PasswordAutofillAgent::AnnotateFormsAndFieldsWithSignatures(
     std::unique_ptr<FormData> form_data = GetFormDataFromWebForm(form);
     std::string form_signature;
     if (form_data) {
+      // GetFormSignatureAsString() may require the FormData::url.
+      form_data->url = render_frame()->GetWebFrame()->GetDocument().Url();
       form_signature = GetFormSignatureAsString(*form_data);
       SetAttributeAsync(form, kDebugAttributeForFormSignature, form_signature);
     }
@@ -1109,8 +1111,11 @@ void PasswordAutofillAgent::AnnotateFormsAndFieldsWithSignatures(
           render_frame()->GetWebFrame()->GetDocument(), nullptr);
   std::unique_ptr<FormData> form_data = GetFormDataFromUnownedInputElements();
   std::string form_signature;
-  if (form_data)
+  if (form_data) {
+    // GetFormSignatureAsString() may require the FormData::url.
+    form_data->url = render_frame()->GetWebFrame()->GetDocument().Url();
     form_signature = GetFormSignatureAsString(*form_data);
+  }
   AnnotateFieldsWithSignatures(unowned_elements, form_signature);
 }
 
@@ -1227,13 +1232,6 @@ void PasswordAutofillAgent::SendPasswordForms(bool only_visible) {
         HasPasswordField(*frame)) {
       // Set everything that |FormDigest| needs.
       password_forms_data.push_back(FormData());
-      if (base::FeatureList::IsEnabled(
-              features::kAutofillAugmentFormsInRenderer)) {
-        password_forms_data.back().url =
-            form_util::GetCanonicalOriginForDocument(frame->GetDocument());
-        password_forms_data.back().full_url =
-            form_util::GetDocumentUrlWithoutAuth(frame->GetDocument());
-      }
     }
     if (!password_forms_data.empty()) {
       sent_request_to_store_ = true;

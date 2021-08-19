@@ -134,12 +134,6 @@ std::unique_ptr<FormData> CreateFormDataFromWebForm(
     return nullptr;
 
   auto form_data = std::make_unique<FormData>();
-  if (base::FeatureList::IsEnabled(features::kAutofillAugmentFormsInRenderer)) {
-    form_data->url =
-        form_util::GetCanonicalOriginForDocument(web_form.GetDocument());
-    form_data->full_url =
-        form_util::GetDocumentUrlWithoutAuth(web_form.GetDocument());
-  }
   form_data->is_gaia_with_skip_save_password_form =
       IsGaiaWithSkipSavePasswordForm(web_form) ||
       IsGaiaReauthenticationForm(web_form);
@@ -187,12 +181,6 @@ std::unique_ptr<FormData> CreateFormDataFromUnownedInputElements(
     return nullptr;
   }
 
-  if (base::FeatureList::IsEnabled(features::kAutofillAugmentFormsInRenderer)) {
-    form_data->url =
-        form_util::GetCanonicalOriginForDocument(frame.GetDocument());
-    form_data->full_url =
-        form_util::GetDocumentUrlWithoutAuth(frame.GetDocument());
-  }
   form_data->username_predictions = GetUsernamePredictions(
       control_elements, *form_data, username_detector_cache, WebFormElement());
   form_data->button_titles = form_util::GetButtonTitles(

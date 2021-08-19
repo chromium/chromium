@@ -105,9 +105,11 @@ struct FormData {
   // Titles of form's buttons.
   ButtonTitleList button_titles;
   // The URL (minus query parameters and fragment) containing the form.
+  // This value should not be sent via mojo.
   GURL url;
   // The full URL, including query parameters and fragment.
   // This value should be set only for password forms.
+  // This value should not be sent via mojo.
   GURL full_url;
   // The action target of the form.
   GURL action;
@@ -116,6 +118,7 @@ struct FormData {
   // indicates whether the action attribute is empty in the form in the DOM.
   bool is_action_empty = false;
   // The URL of main frame containing this form.
+  // This value should not be sent via mojo.
   url::Origin main_frame_origin;
   // True if this form is a form tag.
   bool is_form_tag = true;
