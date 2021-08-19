@@ -35,12 +35,11 @@ enum class PaintBenchmarkMode {
   kNormal,
   kForceRasterInvalidationAndConvert,
   kForcePaintArtifactCompositorUpdate,
+  // Tests PaintController performance of moving cached subsequences.
   kForcePaint,
-  // The above modes don't additionally invalidate paintings, i.e. during
-  // repeated benchmarking, the PaintController is fully cached.
-  kPartialInvalidation,
-  kSmallInvalidation,
+  // Tests performance of core paint tree walk and moving cached display items.
   kSubsequenceCachingDisabled,
+  // Tests performance of full repaint.
   kCachingDisabled,
 };
 
@@ -379,8 +378,6 @@ class PLATFORM_EXPORT PaintController {
 #endif
 
   void SetBenchmarkMode(PaintBenchmarkMode);
-  bool ShouldInvalidateDisplayItemForBenchmark();
-  bool ShouldInvalidateSubsequenceForBenchmark();
 
   void CheckNoNewPaint() const {
 #if DCHECK_IS_ON()
@@ -459,8 +456,6 @@ class PLATFORM_EXPORT PaintController {
   wtf_size_t current_fragment_ = 0;
 
   PaintBenchmarkMode benchmark_mode_ = PaintBenchmarkMode::kNormal;
-  int partial_invalidation_display_item_count_ = 0;
-  int partial_invalidation_subsequence_count_ = 0;
 
   static CounterForTesting* counter_for_testing_;
 

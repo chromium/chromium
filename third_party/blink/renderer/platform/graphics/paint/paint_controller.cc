@@ -126,7 +126,7 @@ bool PaintController::UseCachedItemIfPossible(const DisplayItemClient& client,
   if (usage_ == kTransient)
     return false;
 
-  if (ShouldInvalidateDisplayItemForBenchmark())
+  if (benchmark_mode_ == PaintBenchmarkMode::kCachingDisabled)
     return false;
 
   if (!ClientCacheIsValid(client))
@@ -173,7 +173,8 @@ bool PaintController::UseCachedSubsequenceIfPossible(
   if (usage_ == kTransient)
     return false;
 
-  if (ShouldInvalidateSubsequenceForBenchmark())
+  if (benchmark_mode_ == PaintBenchmarkMode::kCachingDisabled ||
+      benchmark_mode_ == PaintBenchmarkMode::kSubsequenceCachingDisabled)
     return false;
 
   if (!ClientCacheIsValid(client))
@@ -767,52 +768,9 @@ void PaintController::ValidateNewChunkId(const PaintChunk::Id& id) {
 #endif
 }
 
-bool PaintController::ShouldInvalidateDisplayItemForBenchmark() {
-  if (benchmark_mode_ == PaintBenchmarkMode::kCachingDisabled)
-    return true;
-
-  // For kPartialInvalidation, invalidate one out of every
-  // |kInvalidateDisplayItemInterval| display items for the micro benchmark of
-  // record time with partial invalidation.
-  constexpr int kInvalidateDisplayItemInterval = 8;
-  return benchmark_mode_ == PaintBenchmarkMode::kPartialInvalidation &&
-         !(partial_invalidation_display_item_count_++ %
-           kInvalidateDisplayItemInterval);
-}
-
-bool PaintController::ShouldInvalidateSubsequenceForBenchmark() {
-  if (benchmark_mode_ == PaintBenchmarkMode::kCachingDisabled ||
-      benchmark_mode_ == PaintBenchmarkMode::kSubsequenceCachingDisabled)
-    return true;
-
-  // Similar to the ShouldInvalidateDisplayItemsForBenchmark(), but for
-  // subsequences.
-  constexpr int kInvalidateSubsequenceInterval = 2;
-  return benchmark_mode_ == PaintBenchmarkMode::kPartialInvalidation &&
-         !(partial_invalidation_subsequence_count_++ %
-           kInvalidateSubsequenceInterval);
-}
-
 void PaintController::SetBenchmarkMode(PaintBenchmarkMode mode) {
   DCHECK(new_paint_artifact_->IsEmpty());
   benchmark_mode_ = mode;
-  if (mode == PaintBenchmarkMode::kPartialInvalidation) {
-    partial_invalidation_display_item_count_ = 0;
-    partial_invalidation_subsequence_count_ = 0;
-  } else if (mode == PaintBenchmarkMode::kSmallInvalidation) {
-    auto& subsequences = current_subsequences_.tree;
-    if (subsequences.size()) {
-      // Invalidate the clients of the middle subsequence and its ancestors.
-      wtf_size_t middle_index = subsequences.size() / 2;
-      const auto& middle_markers = subsequences[middle_index];
-      for (wtf_size_t i = 0; i <= middle_index; i++) {
-        const auto& markers = subsequences[i];
-        DCHECK_LE(markers.start_chunk_index, middle_markers.start_chunk_index);
-        if (markers.end_chunk_index >= middle_markers.end_chunk_index)
-          markers.client->Invalidate();
-      }
-    }
-  }
 }
 
 }  // namespace blink
