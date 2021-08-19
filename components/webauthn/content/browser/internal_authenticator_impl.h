@@ -29,7 +29,7 @@ class RenderFrameHost;
 // Implementation of the public InternalAuthenticator interface.
 // This class is meant only for trusted and internal components of Chrome to
 // use.
-class InternalAuthenticatorImpl : public autofill::InternalAuthenticator,
+class InternalAuthenticatorImpl : public webauthn::InternalAuthenticator,
                                   public WebContentsObserver {
  public:
   explicit InternalAuthenticatorImpl(RenderFrameHost* render_frame_host);

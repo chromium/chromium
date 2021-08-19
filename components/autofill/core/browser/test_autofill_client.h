@@ -63,8 +63,8 @@ class TestAutofillClient : public AutofillClient {
   translate::LanguageState* GetLanguageState() override;
   translate::TranslateDriver* GetTranslateDriver() override;
 #if !defined(OS_IOS)
-  std::unique_ptr<InternalAuthenticator> CreateCreditCardInternalAuthenticator(
-      content::RenderFrameHost* rfh) override;
+  std::unique_ptr<webauthn::InternalAuthenticator>
+  CreateCreditCardInternalAuthenticator(content::RenderFrameHost* rfh) override;
 #endif
 
   void ShowAutofillSettings(bool show_credit_card_settings) override;

@@ -12,7 +12,7 @@
 namespace autofill {
 
 // Subclass of InternalAuthenticator meant for testing purposes.
-class TestInternalAuthenticator : public InternalAuthenticator {
+class TestInternalAuthenticator : public webauthn::InternalAuthenticator {
  public:
   TestInternalAuthenticator() = default;
   ~TestInternalAuthenticator() override = default;

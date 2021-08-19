@@ -65,7 +65,7 @@ class SecurePaymentConfirmationAppFactory
       const std::vector<SkBitmap>& bitmaps,
       const std::vector<gfx::Size>& unused_sizes);
 
-  std::unique_ptr<autofill::InternalAuthenticator> authenticator_;
+  std::unique_ptr<webauthn::InternalAuthenticator> authenticator_;
 
   std::map<WebDataServiceBase::Handle, std::unique_ptr<Request>> requests_;
   base::WeakPtrFactory<SecurePaymentConfirmationAppFactory> weak_ptr_factory_{

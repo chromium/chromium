@@ -27,7 +27,7 @@ class RenderFrameHost;
 // passes the response through InvokeMakeCredentialResponse() and
 // InvokeGetAssertionResponse(), which eventually invokes the callback given by
 // the original caller.
-class InternalAuthenticatorAndroid : public autofill::InternalAuthenticator {
+class InternalAuthenticatorAndroid : public webauthn::InternalAuthenticator {
  public:
   explicit InternalAuthenticatorAndroid(
       content::RenderFrameHost* render_frame_host);

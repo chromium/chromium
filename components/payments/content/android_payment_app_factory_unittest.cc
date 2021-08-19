@@ -68,7 +68,7 @@ class MockPaymentAppFactoryDelegate : public PaymentAppFactory::Delegate {
   MOCK_CONST_METHOD0(GetMethodData,
                      const std::vector<mojom::PaymentMethodDataPtr>&());
   MOCK_CONST_METHOD0(CreateInternalAuthenticator,
-                     std::unique_ptr<autofill::InternalAuthenticator>());
+                     std::unique_ptr<webauthn::InternalAuthenticator>());
   MOCK_CONST_METHOD0(GetPaymentManifestWebDataService,
                      scoped_refptr<PaymentManifestWebDataService>());
   MOCK_METHOD0(MayCrawlForInstallablePaymentApps, bool());

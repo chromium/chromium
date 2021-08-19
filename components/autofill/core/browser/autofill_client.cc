@@ -53,7 +53,7 @@ profile_metrics::BrowserProfileType AutofillClient::GetProfileType() const {
 }
 
 #if !defined(OS_IOS)
-std::unique_ptr<InternalAuthenticator>
+std::unique_ptr<webauthn::InternalAuthenticator>
 AutofillClient::CreateCreditCardInternalAuthenticator(
     content::RenderFrameHost* rfh) {
   return nullptr;

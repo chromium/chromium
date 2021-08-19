@@ -236,7 +236,7 @@ void ChromePaymentRequestDelegate::ShowNoMatchingPaymentCredentialDialog(
                                    std::move(response_callback));
 }
 
-std::unique_ptr<autofill::InternalAuthenticator>
+std::unique_ptr<webauthn::InternalAuthenticator>
 ChromePaymentRequestDelegate::CreateInternalAuthenticator() const {
   // This authenticator can be used in a cross-origin iframe only if the
   // top-level frame allowed it with Permissions Policy, e.g., with

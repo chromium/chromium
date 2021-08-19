@@ -62,7 +62,7 @@ class AutofillDriver {
 
 #if !defined(OS_IOS)
   // Gets or creates a pointer to an implementation of InternalAuthenticator.
-  virtual InternalAuthenticator*
+  virtual webauthn::InternalAuthenticator*
   GetOrCreateCreditCardInternalAuthenticator() = 0;
 #endif
 

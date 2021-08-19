@@ -143,7 +143,8 @@ class ContentAutofillDriver : public AutofillDriver,
   ui::AXTreeID GetAxTreeId() const override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   bool RendererIsAvailable() override;
-  InternalAuthenticator* GetOrCreateCreditCardInternalAuthenticator() override;
+  webauthn::InternalAuthenticator* GetOrCreateCreditCardInternalAuthenticator()
+      override;
   void PropagateAutofillPredictions(
       const std::vector<autofill::FormStructure*>& forms) override;
   void HandleParsedForms(const std::vector<const FormData*>& forms) override;
@@ -416,7 +417,7 @@ class ContentAutofillDriver : public AutofillDriver,
   BrowserAutofillManager* browser_autofill_manager_;
 
   // Pointer to an implementation of InternalAuthenticator.
-  std::unique_ptr<InternalAuthenticator> authenticator_impl_;
+  std::unique_ptr<webauthn::InternalAuthenticator> authenticator_impl_;
 
   content::RenderWidgetHost::KeyPressEventCallback key_press_handler_;
 

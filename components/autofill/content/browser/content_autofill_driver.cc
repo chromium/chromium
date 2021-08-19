@@ -155,7 +155,7 @@ bool ContentAutofillDriver::RendererIsAvailable() {
   return render_frame_host_->GetRenderViewHost() != nullptr;
 }
 
-InternalAuthenticator*
+webauthn::InternalAuthenticator*
 ContentAutofillDriver::GetOrCreateCreditCardInternalAuthenticator() {
   if (!authenticator_impl_ && browser_autofill_manager_ &&
       browser_autofill_manager_->client()) {

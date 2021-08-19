@@ -265,7 +265,7 @@ PaymentAppServiceBridge::GetMethodData() const {
   return spec_->method_data();
 }
 
-std::unique_ptr<autofill::InternalAuthenticator>
+std::unique_ptr<webauthn::InternalAuthenticator>
 PaymentAppServiceBridge::CreateInternalAuthenticator() const {
   // This authenticator can be used in a cross-origin iframe only if the
   // top-level frame allowed it with Permissions Policy, e.g., with

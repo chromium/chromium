@@ -804,7 +804,7 @@ void CreditCardFIDOAuthenticator::UpdateUserPref() {
                                                   user_is_opted_in_);
 }
 
-InternalAuthenticator* CreditCardFIDOAuthenticator::authenticator() {
+webauthn::InternalAuthenticator* CreditCardFIDOAuthenticator::authenticator() {
   if (authenticator_)
     return authenticator_;
 

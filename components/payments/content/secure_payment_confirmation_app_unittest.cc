@@ -35,7 +35,7 @@ using ::testing::Eq;
 static constexpr char kChallengeBase64[] = "aaaa";
 static constexpr char kCredentialIdBase64[] = "cccc";
 
-class MockAuthenticator : public autofill::InternalAuthenticator {
+class MockAuthenticator : public webauthn::InternalAuthenticator {
  public:
   explicit MockAuthenticator(bool should_succeed)
       : web_contents_(web_contents_factory_.CreateWebContents(&context_)),
@@ -58,7 +58,7 @@ class MockAuthenticator : public autofill::InternalAuthenticator {
     return web_contents_->GetMainFrame();
   }
 
-  // Implements an autofill::InternalAuthenticator method to delegate fields of
+  // Implements an webauthn::InternalAuthenticator method to delegate fields of
   // |options| to gmock methods for easier verification.
   void GetAssertion(
       blink::mojom::PublicKeyCredentialRequestOptionsPtr options,

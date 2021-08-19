@@ -15,9 +15,9 @@
 template <class T>
 class scoped_refptr;
 
-namespace autofill {
+namespace webauthn {
 class InternalAuthenticator;
-}  // namespace autofill
+}  // namespace webauthn
 
 namespace payments {
 
@@ -34,7 +34,7 @@ class ContentPaymentRequestDelegate : public PaymentRequestDelegate {
 
   // Creates and returns an instance of the InternalAuthenticator interface for
   // communication with WebAuthn.
-  virtual std::unique_ptr<autofill::InternalAuthenticator>
+  virtual std::unique_ptr<webauthn::InternalAuthenticator>
   CreateInternalAuthenticator() const = 0;
 
   // Returns the web data service for caching payment method manifests.

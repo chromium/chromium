@@ -72,7 +72,7 @@ class PaymentAppServiceBridge : public PaymentAppFactory::Delegate {
       const override;
   const std::vector<mojom::PaymentMethodDataPtr>& GetMethodData()
       const override;
-  std::unique_ptr<autofill::InternalAuthenticator> CreateInternalAuthenticator()
+  std::unique_ptr<webauthn::InternalAuthenticator> CreateInternalAuthenticator()
       const override;
   scoped_refptr<PaymentManifestWebDataService>
   GetPaymentManifestWebDataService() const override;

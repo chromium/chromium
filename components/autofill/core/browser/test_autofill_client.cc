@@ -102,7 +102,7 @@ translate::TranslateDriver* TestAutofillClient::GetTranslateDriver() {
 }
 
 #if !defined(OS_IOS)
-std::unique_ptr<InternalAuthenticator>
+std::unique_ptr<webauthn::InternalAuthenticator>
 TestAutofillClient::CreateCreditCardInternalAuthenticator(
     content::RenderFrameHost* rfh) {
   return std::make_unique<TestInternalAuthenticator>();

@@ -12,7 +12,7 @@ namespace content {
 class RenderFrameHost;
 }  // namespace content
 
-namespace autofill {
+namespace webauthn {
 
 // Interface similar to blink::mojom::Authenticator meant only for internal
 // components in Chrome to use in order to direct authenticators to create or
@@ -62,6 +62,6 @@ class InternalAuthenticator {
   virtual content::RenderFrameHost* GetRenderFrameHost() = 0;
 };
 
-}  // namespace autofill
+}  // namespace webauthn
 
 #endif  // COMPONENTS_WEBAUTHN_CORE_BROWSER_INTERNAL_AUTHENTICATOR_H_

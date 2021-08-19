@@ -52,7 +52,7 @@ bool TestAutofillDriver::RendererIsAvailable() {
 }
 
 #if !defined(OS_IOS)
-InternalAuthenticator*
+webauthn::InternalAuthenticator*
 TestAutofillDriver::GetOrCreateCreditCardInternalAuthenticator() {
   return test_authenticator_.get();
 }
@@ -127,7 +127,7 @@ void TestAutofillDriver::SetSharedURLLoaderFactory(
 
 #if !defined(OS_IOS)
 void TestAutofillDriver::SetAuthenticator(
-    InternalAuthenticator* authenticator_) {
+    webauthn::InternalAuthenticator* authenticator_) {
   test_authenticator_.reset(authenticator_);
 }
 #endif
