@@ -77,21 +77,6 @@ content::GetServiceSandboxType<chrome::mojom::ProfileImport>() {
   return sandbox::policy::SandboxType::kNoSandbox;
 }
 
-// mac_notifications::mojom::MacNotificationProvider
-#if defined(OS_MAC)
-namespace mac_notifications {
-namespace mojom {
-class MacNotificationProvider;
-}  // namespace mojom
-}  // namespace mac_notifications
-
-template <>
-inline sandbox::policy::SandboxType content::GetServiceSandboxType<
-    mac_notifications::mojom::MacNotificationProvider>() {
-  return sandbox::policy::SandboxType::kNoSandbox;
-}
-#endif  // defined(OS_MAC)
-
 // printing::mojom::PrintBackendService
 #if (defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
      defined(OS_CHROMEOS)) &&                                   \
