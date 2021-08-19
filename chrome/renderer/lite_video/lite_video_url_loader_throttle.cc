@@ -10,8 +10,12 @@
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/web/web_local_frame.h"
 
 namespace lite_video {
+
+namespace {
 
 LiteVideoHintAgent* GetLiteVideoHintAgent(int render_frame_id) {
   DCHECK_NE(MSG_ROUTING_NONE, render_frame_id);
@@ -21,6 +25,17 @@ LiteVideoHintAgent* GetLiteVideoHintAgent(int render_frame_id) {
   }
   return nullptr;
 }
+
+bool IsPrerendering(int render_frame_id) {
+  auto* render_frame = content::RenderFrame::FromRoutingID(render_frame_id);
+  if (blink::features::IsPrerender2Enabled() && render_frame &&
+      render_frame->GetWebFrame()->GetDocument().IsPrerendering()) {
+    return true;
+  }
+  return false;
+}
+
+}  // namespace
 
 // static
 std::unique_ptr<LiteVideoURLLoaderThrottle>
@@ -36,6 +51,9 @@ LiteVideoURLLoaderThrottle::MaybeCreateThrottle(
   // disabled or ECT worsens. This logic should probably be in the browser
   // process.
   if (!IsLiteVideoEnabled())
+    return nullptr;
+
+  if (IsPrerendering(render_frame_id))
     return nullptr;
 
   auto* lite_video_hint_agent = GetLiteVideoHintAgent(render_frame_id);
