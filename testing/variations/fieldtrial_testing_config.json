@@ -5509,10 +5509,12 @@
                     },
                     "enable_features": [
                         "OmniboxClobberTriggersContextualWebZeroSuggest",
+                        "OmniboxDocumentProviderAso",
                         "OmniboxEntitySuggestionsReduceLatency",
                         "OmniboxKeywordSearchButton",
                         "OmniboxMaxURLMatches",
                         "OmniboxMaxZeroSuggestMatches",
+                        "OmniboxPreserveLongerShortcutsText",
                         "OmniboxRemoveSuggestionsFromClipboard",
                         "OmniboxRichAutocompletion",
                         "OmniboxUIExperimentMaxAutocompleteMatches",
