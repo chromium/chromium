@@ -40,6 +40,9 @@ enum Sandbox {
   // Composits PDF and XPS documents.
   kPrintCompositor,
 
+  // Like kUtility but allows loading of speech recognition libraries.
+  kSpeechRecognition,
+
   // Equivalent to no sandbox on all non-Fuchsia platforms.
   // Minimally privileged sandbox on Fuchsia.
   // TODO(crbug.com/1236898) Fix this mapping.

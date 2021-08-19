@@ -7,7 +7,6 @@
 
 #include "build/build_config.h"
 #include "content/public/browser/service_process_host.h"
-#include "media/base/media_switches.h"
 #include "printing/buildflags/buildflags.h"
 #include "sandbox/policy/sandbox_type.h"
 
@@ -92,21 +91,6 @@ inline sandbox::policy::SandboxType content::GetServiceSandboxType<
   return sandbox::policy::SandboxType::kNoSandbox;
 }
 #endif  // defined(OS_MAC)
-
-// media::mojom::SpeechRecognitionService
-#if !defined(OS_ANDROID)
-namespace media {
-namespace mojom {
-class SpeechRecognitionService;
-}
-}  // namespace media
-
-template <>
-inline sandbox::policy::SandboxType
-content::GetServiceSandboxType<media::mojom::SpeechRecognitionService>() {
-  return sandbox::policy::SandboxType::kSpeechRecognition;
-}
-#endif  // !defined(OS_ANDROID)
 
 // printing::mojom::PrintBackendService
 #if (defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \

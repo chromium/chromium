@@ -133,6 +133,8 @@ inline constexpr sandbox::policy::SandboxType MapToSandboxType(
       return sandbox::policy::SandboxType::kPrintCompositor;
     case sandbox::mojom::Sandbox::kService:
       return sandbox::policy::SandboxType::kService;
+    case sandbox::mojom::Sandbox::kSpeechRecognition:
+      return sandbox::policy::SandboxType::kSpeechRecognition;
     case sandbox::mojom::Sandbox::kUtility:
       return sandbox::policy::SandboxType::kUtility;
     case sandbox::mojom::Sandbox::kVideoCapture:

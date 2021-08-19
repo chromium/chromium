@@ -9,6 +9,7 @@ import "media/mojo/mojom/audio_stream_factory.mojom";
 import "media/mojo/mojom/media_types.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
 
 // Corresponds to the LangIdEvent.ConfidenceInterval defined in
@@ -47,6 +48,7 @@ interface SpeechRecognitionContext {
 // The main interface to a speech secognition service process.
 // Used by the browser to issue top-level control requests to the service,
 // acquired during process launch.
+[ServiceSandbox=sandbox.mojom.Sandbox.kSpeechRecognition]
 interface SpeechRecognitionService {
   // Bind the context to a new instance of the speech recognition.
   BindContext(pending_receiver<SpeechRecognitionContext> context);
