@@ -93,7 +93,7 @@ public class CachedFeatureFlags {
                     .put(ChromeFeatureList.NEW_WINDOW_APP_MENU, true)
                     .put(ChromeFeatureList.CCT_RESIZABLE_FOR_FIRST_PARTIES, true)
                     .put(ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES, false)
-                    .put(ChromeFeatureList.INSTANCE_SWITCHER, false)
+                    .put(ChromeFeatureList.INSTANCE_SWITCHER, true)
                     .build();
 
     /**
