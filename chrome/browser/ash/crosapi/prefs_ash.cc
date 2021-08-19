@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/common/pref_names.h"
 #include "chromeos/crosapi/mojom/prefs.mojom.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -126,6 +127,12 @@ absl::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
     case mojom::PrefPath::kDeviceSystemWideTracingEnabled:
       return State{local_state_, &local_state_registrar_,
                    ash::prefs::kDeviceSystemWideTracingEnabled};
+    case mojom::PrefPath::kDnsOverHttpsMode:
+      return State{local_state_, &local_state_registrar_,
+                   prefs::kDnsOverHttpsMode};
+    case mojom::PrefPath::kDnsOverHttpsTemplates:
+      return State{local_state_, &local_state_registrar_,
+                   prefs::kDnsOverHttpsTemplates};
     default:
       LOG(WARNING) << "Unknown pref path: " << path;
       return absl::nullopt;

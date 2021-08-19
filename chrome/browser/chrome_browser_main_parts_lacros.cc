@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lacros/metrics_reporting_observer.h"
+#include "chrome/browser/lacros/secure_dns_prefs_observer.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chromeos/lacros/lacros_dbus_helper.h"
 #include "chromeos/lacros/lacros_service.h"
@@ -35,6 +36,9 @@ int ChromeBrowserMainPartsLacros::PreEarlyInitialization() {
   metrics_reporting_observer_ = std::make_unique<MetricsReportingObserver>(
       g_browser_process->local_state());
   metrics_reporting_observer_->Init();
+  secure_dns_prefs_observer_ = std::make_unique<SecureDnsPrefsObserver>(
+      g_browser_process->local_state());
+  secure_dns_prefs_observer_->Init();
 
   return content::RESULT_CODE_NORMAL_EXIT;
 }

@@ -1,0 +1,28 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/lacros/secure_dns_prefs_observer.h"
+
+#include "base/test/task_environment.h"
+#include "chrome/common/pref_names.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+TEST(SecureDnsPrefsObserver, LocalStateUpdatedOnChange) {
+  base::test::TaskEnvironment task_environment;
+
+  ScopedTestingLocalState local_state(TestingBrowserProcess::GetGlobal());
+  local_state.Get()->SetString(prefs::kDnsOverHttpsMode, "automatic");
+  local_state.Get()->SetString(prefs::kDnsOverHttpsTemplates, "");
+
+  SecureDnsPrefsObserver observer(local_state.Get());
+  observer.OnDnsOverHttpsModeChanged(base::Value("off"));
+  EXPECT_EQ("off", local_state.Get()->GetString(prefs::kDnsOverHttpsMode));
+
+  observer.OnDnsOverHttpsTemplatesChanged(
+      base::Value("https://dns.google/dns-query{?dns}"));
+  EXPECT_EQ("https://dns.google/dns-query{?dns}",
+            local_state.Get()->GetString(prefs::kDnsOverHttpsTemplates));
+}
