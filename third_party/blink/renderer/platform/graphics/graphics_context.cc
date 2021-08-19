@@ -88,6 +88,14 @@ std::pair<IntPoint, IntPoint> GetPointsForTextLine(FloatPoint pt,
   return {IntPoint(pt.X(), y), IntPoint(pt.X() + width, y)};
 }
 
+Color DarkModeColor(GraphicsContext& context,
+                    const Color& color,
+                    DarkModeFilter::ElementRole role) {
+  if (context.IsDarkModeEnabled())
+    return context.GetDarkModeFilter()->InvertColorIfNeeded(color.Rgb(), role);
+  return color;
+}
+
 }  // namespace
 
 // Helper class that copies |flags| only when dark mode is enabled.
@@ -338,8 +346,8 @@ void GraphicsContext::DrawFocusRingPath(const SkPath& path,
                                         float corner_radius) {
   DrawPlatformFocusRing(
       path, canvas_,
-      DarkModeFilterHelper::ApplyToColorIfNeeded(
-          this, color.Rgb(), DarkModeFilter::ElementRole::kBackground),
+      DarkModeColor(*this, color, DarkModeFilter::ElementRole::kBackground)
+          .Rgb(),
       width, corner_radius);
 }
 
@@ -348,8 +356,8 @@ void GraphicsContext::DrawFocusRingRect(const SkRRect& rrect,
                                         float width) {
   DrawPlatformFocusRing(
       rrect, canvas_,
-      DarkModeFilterHelper::ApplyToColorIfNeeded(
-          this, color.Rgb(), DarkModeFilter::ElementRole::kBackground),
+      DarkModeColor(*this, color, DarkModeFilter::ElementRole::kBackground)
+          .Rgb(),
       width);
 }
 
@@ -715,16 +723,17 @@ void GraphicsContext::DrawImage(
   image_flags.setBlendMode(op);
   image_flags.setColor(SK_ColorBLACK);
 
-  if (!has_disable_dark_mode_style) {
-    DarkModeFilterHelper::ApplyToImageIfNeeded(this, image, &image_flags, src,
-                                               dest);
+  const bool apply_dark_mode =
+      IsDarkModeEnabled() && !has_disable_dark_mode_style;
+  if (apply_dark_mode) {
+    DarkModeFilterHelper::ApplyToImageIfNeeded(*GetDarkModeFilter(), image,
+                                               &image_flags, src, dest);
   }
   ImageDrawOptions draw_options;
   draw_options.sampling_options = ComputeSamplingOptions(image, dest, src);
   draw_options.respect_orientation = should_respect_image_orientation;
   draw_options.decode_mode = decode_mode;
-  draw_options.apply_dark_mode =
-      !has_disable_dark_mode_style && IsDarkModeEnabled();
+  draw_options.apply_dark_mode = apply_dark_mode;
   image->Draw(canvas_, image_flags, dest, src, draw_options);
   paint_controller_.SetImagePainted();
 }
@@ -759,8 +768,12 @@ void GraphicsContext::DrawImageRRect(
   image_flags.setBlendMode(op);
   image_flags.setColor(SK_ColorBLACK);
 
-  DarkModeFilterHelper::ApplyToImageIfNeeded(this, image, &image_flags,
-                                             src_rect, dest.Rect());
+  const bool apply_dark_mode =
+      IsDarkModeEnabled() && !has_disable_dark_mode_style;
+  if (apply_dark_mode) {
+    DarkModeFilterHelper::ApplyToImageIfNeeded(
+        *GetDarkModeFilter(), image, &image_flags, src_rect, dest.Rect());
+  }
 
   bool use_shader = (visible_src == src_rect) &&
                     (respect_orientation == kDoNotRespectImageOrientation ||
@@ -787,7 +800,7 @@ void GraphicsContext::DrawImageRRect(
     draw_options.sampling_options = sampling;
     draw_options.respect_orientation = respect_orientation;
     draw_options.decode_mode = decode_mode;
-    draw_options.apply_dark_mode = IsDarkModeEnabled();
+    draw_options.apply_dark_mode = apply_dark_mode;
     image->Draw(canvas_, image_flags, dest.Rect(), src_rect, draw_options);
   }
 
@@ -833,16 +846,18 @@ void GraphicsContext::DrawImageTiled(
   PaintFlags image_flags = ImmutableState()->FillFlags();
   image_flags.setBlendMode(op);
 
-  if (!has_disable_dark_mode_style) {
+  const bool apply_dark_mode =
+      IsDarkModeEnabled() && !has_disable_dark_mode_style;
+  if (apply_dark_mode) {
     DarkModeFilterHelper::ApplyToImageIfNeeded(
-        this, image, &image_flags, tiling_info.image_rect, dest_rect);
+        *GetDarkModeFilter(), image, &image_flags, tiling_info.image_rect,
+        dest_rect);
   }
 
   ImageDrawOptions draw_options;
   draw_options.sampling_options = ImageSamplingOptions();
   draw_options.respect_orientation = respect_orientation;
-  draw_options.apply_dark_mode =
-      !has_disable_dark_mode_style && IsDarkModeEnabled();
+  draw_options.apply_dark_mode = apply_dark_mode;
   image->DrawPattern(*this, image_flags, dest_rect, tiling_info, draw_options);
   paint_controller_.SetImagePainted();
 }
@@ -979,13 +994,14 @@ void GraphicsContext::FillDRRect(const FloatRoundedRect& outer,
                                  const Color& color) {
   DCHECK(canvas_);
 
+  const Color& actual_color =
+      DarkModeColor(*this, color, DarkModeFilter::ElementRole::kBackground);
   if (!IsSimpleDRRect(outer, inner)) {
     if (color == FillColor()) {
       canvas_->drawDRRect(outer, inner, ImmutableState()->FillFlags());
     } else {
       PaintFlags flags(ImmutableState()->FillFlags());
-      flags.setColor(DarkModeFilterHelper::ApplyToColorIfNeeded(
-          this, color.Rgb(), DarkModeFilter::ElementRole::kBackground));
+      flags.setColor(actual_color.Rgb());
       canvas_->drawDRRect(outer, inner, flags);
     }
 
@@ -998,8 +1014,7 @@ void GraphicsContext::FillDRRect(const FloatRoundedRect& outer,
   stroke_r_rect.inset(stroke_width / 2, stroke_width / 2);
 
   PaintFlags stroke_flags(ImmutableState()->FillFlags());
-  stroke_flags.setColor(DarkModeFilterHelper::ApplyToColorIfNeeded(
-      this, color.Rgb(), DarkModeFilter::ElementRole::kBackground));
+  stroke_flags.setColor(actual_color.Rgb());
   stroke_flags.setStyle(PaintFlags::kStroke_Style);
   stroke_flags.setStrokeWidth(stroke_width);
 
@@ -1011,8 +1026,9 @@ void GraphicsContext::FillRectWithRoundedHole(
     const FloatRoundedRect& rounded_hole_rect,
     const Color& color) {
   PaintFlags flags(ImmutableState()->FillFlags());
-  flags.setColor(DarkModeFilterHelper::ApplyToColorIfNeeded(
-      this, color.Rgb(), DarkModeFilter::ElementRole::kBackground));
+  flags.setColor(
+      DarkModeColor(*this, color, DarkModeFilter::ElementRole::kBackground)
+          .Rgb());
   canvas_->drawDRRect(SkRRect::MakeRect(rect), rounded_hole_rect, flags);
 }
 
