@@ -1160,7 +1160,7 @@ TEST_F(FilePathWatcherTest, TrivialParentDirChange) {
 
   // There should be no notification for a change to |sub_dir2|'s parent.
   ASSERT_TRUE(Move(sub_dir1, tmp_dir.Append(FILE_PATH_LITERAL("over_here"))));
-  ASSERT_FALSE(WaitForEvents());
+  ASSERT_FALSE(WaitForEventsWithTimeout(TestTimeouts::tiny_timeout()));
 }
 
 // Do not crash when a directory is moved; https://crbug.com/1156603.
