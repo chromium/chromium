@@ -33,6 +33,8 @@ class RenderWidgetHostViewAndroidTest : public testing::Test {
     return render_widget_host_view_android_;
   }
 
+  MockRenderWidgetHostDelegate* delegate() { return delegate_.get(); }
+
   // Directly map to RenderWidgetHostViewAndroid methods.
   bool SynchronizeVisualProperties(
       const cc::DeadlinePolicy& deadline_policy,
@@ -257,6 +259,12 @@ class RenderWidgetHostViewAndroidRotationTest
   RenderWidgetHostViewAndroidRotationTest();
   ~RenderWidgetHostViewAndroidRotationTest() override {}
 
+  void OnDidUpdateVisualPropertiesComplete(
+      const cc::RenderFrameMetadata& metadata);
+  void OnRenderFrameMetadataChangedAfterActivation(
+      cc::RenderFrameMetadata metadata,
+      base::TimeTicks activation_time);
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -264,6 +272,23 @@ class RenderWidgetHostViewAndroidRotationTest
 RenderWidgetHostViewAndroidRotationTest::
     RenderWidgetHostViewAndroidRotationTest() {
   scoped_feature_list_.InitAndEnableFeature(features::kSurfaceSyncThrottling);
+}
+
+void RenderWidgetHostViewAndroidRotationTest::
+    OnDidUpdateVisualPropertiesComplete(
+        const cc::RenderFrameMetadata& metadata) {
+  render_widget_host_view_android()->OnDidUpdateVisualPropertiesComplete(
+      metadata);
+}
+
+void RenderWidgetHostViewAndroidRotationTest::
+    OnRenderFrameMetadataChangedAfterActivation(
+        cc::RenderFrameMetadata metadata,
+        base::TimeTicks activation_time) {
+  render_widget_host_view_android()
+      ->host()
+      ->render_frame_metadata_provider()
+      ->OnRenderFrameMetadataChangedAfterActivation(metadata, activation_time);
 }
 
 // Tests that when a rotation occurs, that we only advance the
@@ -294,6 +319,197 @@ TEST_F(RenderWidgetHostViewAndroidRotationTest,
   EXPECT_TRUE(post_rotation_local_surface_id.is_valid());
   EXPECT_TRUE(
       post_rotation_local_surface_id.IsNewerThan(initial_local_surface_id));
+}
+
+// Tests that when a rotation occurs while the view is hidden, that we advance
+// the viz::LocalSurfaceId upon becoming visible again. Then once rotation has
+// completed we update again, and unblock all other visual changes.
+// (https://crbug.com/1223299)
+TEST_F(RenderWidgetHostViewAndroidRotationTest,
+       HiddenRotationDisplaysImmediately) {
+  // Android default host and views initialize as visible.
+  RenderWidgetHostViewAndroid* rwhva = render_widget_host_view_android();
+  EXPECT_TRUE(rwhva->IsShowing());
+  const viz::LocalSurfaceId initial_local_surface_id =
+      rwhva->GetLocalSurfaceId();
+  EXPECT_TRUE(initial_local_surface_id.is_valid());
+
+  rwhva->Hide();
+
+  // When rotation has started we should not be performing Surface Sync. The
+  // viz::LocalSurfaceId should not have advanced.
+  rwhva->OnSynchronizedDisplayPropertiesChanged(/* rotation= */ true);
+  EXPECT_FALSE(rwhva->CanSynchronizeVisualProperties());
+  EXPECT_EQ(initial_local_surface_id, rwhva->GetLocalSurfaceId());
+
+  // When rotation occurs while hidden we will only have a partial state.
+  // However we do not want to delay showing content until Android tells us of
+  // the final state. So we advance the viz::LocalSurfaceId to have the newest
+  // possible content ready.
+  rwhva->Show();
+  const viz::LocalSurfaceId shown_local_surface_id = rwhva->GetLocalSurfaceId();
+  EXPECT_NE(initial_local_surface_id, shown_local_surface_id);
+  EXPECT_TRUE(shown_local_surface_id.is_valid());
+  EXPECT_TRUE(shown_local_surface_id.IsNewerThan(initial_local_surface_id));
+  // However we should still block further updates until rotation has completed.
+  EXPECT_FALSE(rwhva->CanSynchronizeVisualProperties());
+
+  // When rotation has completed we should begin Surface Sync again. There
+  // should also be a new viz::LocalSurfaceId.
+  rwhva->OnPhysicalBackingSizeChanged(/* deadline_override= */ absl::nullopt);
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+  const viz::LocalSurfaceId post_rotation_local_surface_id =
+      rwhva->GetLocalSurfaceId();
+  EXPECT_NE(shown_local_surface_id, post_rotation_local_surface_id);
+  EXPECT_TRUE(post_rotation_local_surface_id.is_valid());
+  EXPECT_TRUE(
+      post_rotation_local_surface_id.IsNewerThan(shown_local_surface_id));
+}
+
+// Test that when the view is hidden, and another enters Fullscreen, that we
+// complete the advancement of the viz::LocalSurfaceId upon becoming visible
+// again. Since the Fullscreen flow does not trigger
+// OnPhysicalBackingSizeChanged, we will continue to block further Surface Sync
+// until the post rotation frame has been generated. (https://crbug.com/1223299)
+TEST_F(RenderWidgetHostViewAndroidRotationTest,
+       HiddenPartialRotationFromFullscreen) {
+  // Android default host and views initialize as visible.
+  RenderWidgetHostViewAndroid* rwhva = render_widget_host_view_android();
+  EXPECT_TRUE(rwhva->IsShowing());
+  const viz::LocalSurfaceId initial_local_surface_id =
+      rwhva->GetLocalSurfaceId();
+  EXPECT_TRUE(initial_local_surface_id.is_valid());
+
+  rwhva->Hide();
+
+  // When another view enters Fullscreen, all hidden views are notified of the
+  // start of rotation. We should not be performing Surface Sync. The
+  // viz::LocalSurfaceId should not have advanced.
+  rwhva->OnSynchronizedDisplayPropertiesChanged(/* rotation= */ true);
+  EXPECT_FALSE(rwhva->CanSynchronizeVisualProperties());
+  EXPECT_EQ(initial_local_surface_id, rwhva->GetLocalSurfaceId());
+
+  // When the other view exits Fullscreen, all hidden views are notified of a
+  // rotation back to the original orientation. We should continue in the same
+  // state.
+  rwhva->OnSynchronizedDisplayPropertiesChanged(/* rotation= */ true);
+  EXPECT_FALSE(rwhva->CanSynchronizeVisualProperties());
+  EXPECT_EQ(initial_local_surface_id, rwhva->GetLocalSurfaceId());
+
+  // When the cause of rotation is Fullscreen, we will NOT receive a call to
+  // OnPhysicalBackingSizeChanged. Due to this we advance the
+  // viz::LocalSurfaceId upon becoming visible, to send all visual updates to
+  // the Renderer.
+  rwhva->Show();
+  const viz::LocalSurfaceId shown_local_surface_id = rwhva->GetLocalSurfaceId();
+  EXPECT_NE(initial_local_surface_id, shown_local_surface_id);
+  EXPECT_TRUE(shown_local_surface_id.is_valid());
+  EXPECT_TRUE(shown_local_surface_id.IsNewerThan(initial_local_surface_id));
+  // However we should still block further updates until rotation has completed.
+  EXPECT_FALSE(rwhva->CanSynchronizeVisualProperties());
+
+  // When the Renderer submits the first post rotation frame we unblock further
+  // Surface Sync.
+  cc::RenderFrameMetadata metadata;
+  metadata.local_surface_id = shown_local_surface_id;
+  OnRenderFrameMetadataChangedAfterActivation(metadata, base::TimeTicks::Now());
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+}
+
+// Tests that when a rotation occurs, that we accept updated viz::LocalSurfaceId
+// from the Renderer, and merge them with any of our own changes.
+// (https://crbug.com/1223299)
+TEST_F(RenderWidgetHostViewAndroidRotationTest,
+       ChildLocalSurfaceIdsAcceptedDuringRotation) {
+  // Android default host and views initialize as visible.
+  RenderWidgetHostViewAndroid* rwhva = render_widget_host_view_android();
+  EXPECT_TRUE(rwhva->IsShowing());
+  const viz::LocalSurfaceId initial_local_surface_id =
+      rwhva->GetLocalSurfaceId();
+  EXPECT_TRUE(initial_local_surface_id.is_valid());
+
+  // When rotation has started we should not be performing Surface Sync. The
+  // viz::LocalSurfaceId should not have advanced.
+  rwhva->OnSynchronizedDisplayPropertiesChanged(/* rotation= */ true);
+  EXPECT_FALSE(rwhva->CanSynchronizeVisualProperties());
+  EXPECT_EQ(initial_local_surface_id, rwhva->GetLocalSurfaceId());
+
+  // If the child Renderer advances the viz::LocalSurfaceId we should accept it
+  // and merge it. So that we are up to date for when rotation completes.
+  const viz::LocalSurfaceId child_advanced_local_surface_id(
+      initial_local_surface_id.parent_sequence_number(),
+      initial_local_surface_id.child_sequence_number() + 1,
+      initial_local_surface_id.embed_token());
+  cc::RenderFrameMetadata metadata;
+  metadata.local_surface_id = child_advanced_local_surface_id;
+  OnDidUpdateVisualPropertiesComplete(metadata);
+  const viz::LocalSurfaceId merged_local_surface_id =
+      rwhva->GetLocalSurfaceId();
+  EXPECT_NE(initial_local_surface_id, merged_local_surface_id);
+  EXPECT_TRUE(merged_local_surface_id.is_valid());
+  EXPECT_TRUE(merged_local_surface_id.IsNewerThan(initial_local_surface_id));
+  // Still wait for rotation to end before resuming Surface Sync from other
+  // sources.
+  EXPECT_FALSE(rwhva->CanSynchronizeVisualProperties());
+}
+
+TEST_F(RenderWidgetHostViewAndroidRotationTest, FullscreenRotation) {
+  // Android default host and views initialize as visible.
+  RenderWidgetHostViewAndroid* rwhva = render_widget_host_view_android();
+  EXPECT_TRUE(rwhva->IsShowing());
+  const viz::LocalSurfaceId initial_local_surface_id =
+      rwhva->GetLocalSurfaceId();
+  EXPECT_TRUE(initial_local_surface_id.is_valid());
+
+  // When entering fullscreen the rotation should behave as normal.
+  delegate()->set_is_fullscreen(true);
+
+  // When rotation has started we should not be performing Surface Sync. The
+  // viz::LocalSurfaceId should not have advanced.
+  rwhva->OnSynchronizedDisplayPropertiesChanged(/* rotation= */ true);
+  EXPECT_FALSE(rwhva->CanSynchronizeVisualProperties());
+  EXPECT_EQ(initial_local_surface_id, rwhva->GetLocalSurfaceId());
+
+  // When rotation has completed we should begin Surface Sync again. There
+  // should also be a new viz::LocalSurfaceId.
+  rwhva->OnPhysicalBackingSizeChanged(/* deadline_override= */ absl::nullopt);
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+  const viz::LocalSurfaceId post_rotation_local_surface_id =
+      rwhva->GetLocalSurfaceId();
+  EXPECT_NE(initial_local_surface_id, post_rotation_local_surface_id);
+  EXPECT_TRUE(post_rotation_local_surface_id.is_valid());
+  EXPECT_TRUE(
+      post_rotation_local_surface_id.IsNewerThan(initial_local_surface_id));
+
+  {
+    cc::RenderFrameMetadata metadata;
+    metadata.local_surface_id = post_rotation_local_surface_id;
+    OnRenderFrameMetadataChangedAfterActivation(metadata,
+                                                base::TimeTicks::Now());
+  }
+
+  // When exiting rotation the order of visual property updates can differ.
+  delegate()->set_is_fullscreen(false);
+  rwhva->OnPhysicalBackingSizeChanged(/* deadline_override= */ absl::nullopt);
+  EXPECT_FALSE(rwhva->CanSynchronizeVisualProperties());
+  EXPECT_EQ(post_rotation_local_surface_id, rwhva->GetLocalSurfaceId());
+
+  rwhva->OnSynchronizedDisplayPropertiesChanged(/* rotation= */ true);
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+  const viz::LocalSurfaceId post_fullscreen_local_surface_id =
+      rwhva->GetLocalSurfaceId();
+  EXPECT_NE(post_rotation_local_surface_id, post_fullscreen_local_surface_id);
+  EXPECT_TRUE(post_fullscreen_local_surface_id.is_valid());
+  EXPECT_TRUE(post_fullscreen_local_surface_id.IsNewerThan(
+      post_rotation_local_surface_id));
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+
+  {
+    cc::RenderFrameMetadata metadata;
+    metadata.local_surface_id = post_fullscreen_local_surface_id;
+    OnRenderFrameMetadataChangedAfterActivation(metadata,
+                                                base::TimeTicks::Now());
+  }
 }
 
 }  // namespace content
