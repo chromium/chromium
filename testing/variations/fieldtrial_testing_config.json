@@ -9349,6 +9349,21 @@
             ]
         }
     ],
+    "WebApkInstallCompleteNotification": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebApkInstallCompleteNotification"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebAuthenticationCableSecondFactorV2": [
         {
             "platforms": [
