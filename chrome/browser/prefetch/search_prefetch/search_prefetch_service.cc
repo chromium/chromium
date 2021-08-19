@@ -543,9 +543,8 @@ bool SearchPrefetchService::LoadFromPrefs() {
 
   for (auto element : dictionary->DictItems()) {
     GURL navigation_url(element.first);
-    if (!navigation_url.is_valid()) {
+    if (!navigation_url.is_valid())
       continue;
-    }
 
     base::Value::ConstListView const prefetch_url_and_time =
         base::Value::AsListValue(element.second).GetList();
@@ -556,21 +555,19 @@ bool SearchPrefetchService::LoadFromPrefs() {
       continue;
     }
 
-    std::string prefetch_url;
-    if (!prefetch_url_and_time[0].GetAsString(&prefetch_url)) {
+    const std::string* prefetch_url = prefetch_url_and_time[0].GetIfString();
+    if (!prefetch_url)
       continue;
-    }
 
     // Make sure we are only mapping same origin in case of corrupted prefs.
     if (url::Origin::Create(navigation_url) !=
-        url::Origin::Create(GURL(prefetch_url))) {
+        url::Origin::Create(GURL(*prefetch_url))) {
       continue;
     }
 
     // Don't redirect same URL.
-    if (navigation_url == prefetch_url) {
+    if (navigation_url == *prefetch_url)
       continue;
-    }
 
     // Make sure the navigation URL is still a search URL.
     std::u16string search_terms;
@@ -595,7 +592,7 @@ bool SearchPrefetchService::LoadFromPrefs() {
 
     prefetch_cache_.emplace(
         navigation_url,
-        std::make_pair(GURL(prefetch_url), last_update.value()));
+        std::make_pair(GURL(*prefetch_url), last_update.value()));
   }
   return dictionary->DictSize() > prefetch_cache_.size();
 }
