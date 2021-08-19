@@ -4123,7 +4123,6 @@ crbug.com/1179585 virtual/layout_ng_svg_text/svg/text/bbox-with-glyph-overflow.h
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/text/bbox-with-glyph-overflow-on-path.html [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/text/bbox-with-glyph-overflow-zoomed.html [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/text/bidi-dir-rtl.html [ Failure ]
-crbug.com/1179585 virtual/layout_ng_svg_text/svg/text/bidi-embedded-direction.svg [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/text/getextentofchar-nonbmp.html [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/text/text-decorations-in-scaled-pattern.svg [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/text/text-selection-deco-01-b.svg [ Failure ]
