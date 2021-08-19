@@ -465,7 +465,7 @@ void SVGUseElement::AttachShadowTree(SVGElement& target) {
     }
     // Setup the mapping from the corresponding (original) element back to the
     // instance.
-    corresponding_element->MapInstanceToElement(&instance);
+    corresponding_element->AddInstance(&instance);
   }
 }
 

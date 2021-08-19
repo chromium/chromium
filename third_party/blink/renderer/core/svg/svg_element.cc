@@ -367,7 +367,7 @@ void SVGElement::RemovedFrom(ContainerNode& root_parent) {
     if (SVGElement* corresponding_element =
             HasSVGRareData() ? SvgRareData()->CorrespondingElement()
                              : nullptr) {
-      corresponding_element->RemoveInstanceMapping(this);
+      corresponding_element->RemoveInstance(this);
       SvgRareData()->SetCorrespondingElement(nullptr);
     }
     RebuildAllIncomingReferences();
@@ -584,7 +584,7 @@ SVGElement* SVGElement::viewportElement() const {
   return nullptr;
 }
 
-void SVGElement::MapInstanceToElement(SVGElement* instance) {
+void SVGElement::AddInstance(SVGElement* instance) {
   DCHECK(instance);
   DCHECK(instance->InUseShadowTree());
 
@@ -595,7 +595,7 @@ void SVGElement::MapInstanceToElement(SVGElement* instance) {
   instances.insert(instance);
 }
 
-void SVGElement::RemoveInstanceMapping(SVGElement* instance) {
+void SVGElement::RemoveInstance(SVGElement* instance) {
   DCHECK(instance);
   // Called during instance->RemovedFrom() after removal from shadow tree
   DCHECK(!instance->isConnected());
