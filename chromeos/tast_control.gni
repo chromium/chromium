@@ -12,6 +12,9 @@ tast_disabled_tests_from_chrome_all = [
   # crbug.com/1170669
   "hwsec.ChapsRSAPSS",
 
+  # crbug.com/1167243
+  "login.Chrome",
+
   # crbug.com/1171146
   "session.LogoutCleanup",
 
