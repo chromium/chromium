@@ -1283,11 +1283,9 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
           // the special min-size treatment above. (They will all end up being
           // the specified size).
           if (is_parallel_with_track_direction) {
-            // TODO(ikilpatrick): This is incorrect for replaced elements.
-            const NGBoxStrut border_padding =
-                ComputeBorders(space, node) + ComputePadding(space, item_style);
-            contribution =
-                ComputeInlineSizeForFragment(space, node, border_padding);
+            contribution = main_length.IsMaxContent()
+                               ? MinMaxContentSizes().max_size
+                               : MinMaxContentSizes().min_size;
           } else {
             contribution = BlockContributionSize();
           }
