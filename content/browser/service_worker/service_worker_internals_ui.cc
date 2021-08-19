@@ -24,6 +24,7 @@
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/service_worker/service_worker_version.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/grit/dev_ui_content_resources.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -150,8 +151,10 @@ void UpdateVersionInfo(const ServiceWorkerVersionInfo& version, Value* info) {
     base::Value client(base::Value::Type::DICTIONARY);
     client.SetStringKey("client_id", it.first);
     if (it.second.type() == blink::mojom::ServiceWorkerClientType::kWindow) {
-      WebContents* web_contents =
-          WebContents::FromFrameTreeNodeId(it.second.GetFrameTreeNodeId());
+      // TODO(crbug.com/1239092): Replace WebContents::GetURL() with
+      // RenderFrameHost::GetLastCommittedURL().
+      WebContents* web_contents = WebContentsImpl::FromRenderFrameHostID(
+          it.second.GetRenderFrameHostId());
       if (web_contents)
         client.SetStringKey("url", web_contents->GetURL().spec());
     }

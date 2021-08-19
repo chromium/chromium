@@ -2438,7 +2438,7 @@ bool ServiceWorkerVersion::ShouldRequireForegroundPriority(
   // limited by the automatic shutdown mechanism.
   for (const auto& controllee : controllee_map_) {
     ServiceWorkerContainerHost* container_host = controllee.second;
-    if (container_host->process_id() != worker_process_id)
+    if (container_host->GetProcessId() != worker_process_id)
       return true;
   }
   return false;

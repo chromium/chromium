@@ -316,9 +316,11 @@ TEST_F(ServiceWorkerRegistrationTest, FailedRegistrationNoCrash) {
   // Prepare a ServiceWorkerContainerHost.
   ServiceWorkerRemoteContainerEndpoint remote_endpoint;
   base::WeakPtr<ServiceWorkerContainerHost> container_host =
-      CreateContainerHostForWindow(helper_->mock_render_process_id(),
-                                   true /* is_parent_frame_secure */,
-                                   context()->AsWeakPtr(), &remote_endpoint);
+      CreateContainerHostForWindow(
+          GlobalRenderFrameHostId(helper_->mock_render_process_id(),
+                                  /*mock frame_routing_id=*/1),
+          /*is_parent_frame_secure=*/true, context()->AsWeakPtr(),
+          &remote_endpoint);
   auto registration_object_host =
       std::make_unique<ServiceWorkerRegistrationObjectHost>(
           context()->AsWeakPtr(), container_host.get(), registration);
@@ -420,8 +422,10 @@ class ServiceWorkerActivationTest : public ServiceWorkerRegistrationTest,
 
     // Give the active version a controllee.
     container_host_ = CreateContainerHostForWindow(
-        helper_->mock_render_process_id(), true /* is_parent_frame_secure */,
-        context()->AsWeakPtr(), &remote_endpoint_);
+        GlobalRenderFrameHostId(helper_->mock_render_process_id(),
+                                /*mock frame_routing_id=*/1),
+        /*is_parent_frame_secure=*/true, context()->AsWeakPtr(),
+        &remote_endpoint_);
     DCHECK(remote_endpoint_.client_receiver()->is_valid());
     DCHECK(remote_endpoint_.host_remote()->is_bound());
     container_host_->UpdateUrls(kUrl, net::SiteForCookies::FromUrl(kUrl),
@@ -930,9 +934,11 @@ class ServiceWorkerRegistrationObjectHostTest
       base::WeakPtr<ServiceWorkerContainerHost>* out_container_host) {
     ServiceWorkerRemoteContainerEndpoint remote_endpoint;
     base::WeakPtr<ServiceWorkerContainerHost> container_host =
-        CreateContainerHostForWindow(helper_->mock_render_process_id(),
-                                     true /* is_parent_frame_secure */,
-                                     context()->AsWeakPtr(), &remote_endpoint);
+        CreateContainerHostForWindow(
+            GlobalRenderFrameHostId(helper_->mock_render_process_id(),
+                                    /*mock frame_routing_id=*/1),
+            /*is_parent_frame_secure=*/true, context()->AsWeakPtr(),
+            &remote_endpoint);
     container_host->UpdateUrls(document_url,
                                net::SiteForCookies::FromUrl(document_url),
                                url::Origin::Create(document_url));
@@ -1146,9 +1152,11 @@ TEST_P(ServiceWorkerRegistrationObjectHostUpdateTest,
 
   ServiceWorkerRemoteContainerEndpoint remote_endpoint;
   base::WeakPtr<ServiceWorkerContainerHost> container_host =
-      CreateContainerHostForWindow(helper_->mock_render_process_id(),
-                                   true /* is_parent_frame_secure */,
-                                   context()->AsWeakPtr(), &remote_endpoint);
+      CreateContainerHostForWindow(
+          GlobalRenderFrameHostId(helper_->mock_render_process_id(),
+                                  /*mock frame_routing_id=*/1),
+          /*is_parent_frame_secure=*/true, context()->AsWeakPtr(),
+          &remote_endpoint);
   container_host->UpdateUrls(kScope, net::SiteForCookies::FromUrl(kScope),
                              url::Origin::Create(kScope));
   version->AddControllee(container_host.get());

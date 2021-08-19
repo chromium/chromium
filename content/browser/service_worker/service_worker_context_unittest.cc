@@ -467,8 +467,10 @@ TEST_F(ServiceWorkerContextTest, Observer_ControlleeEvents) {
 
   ServiceWorkerRemoteContainerEndpoint endpoint;
   base::WeakPtr<ServiceWorkerContainerHost> container_host =
-      CreateContainerHostForWindow(helper_->mock_render_process_id(), true,
-                                   context()->AsWeakPtr(), &endpoint);
+      CreateContainerHostForWindow(
+          GlobalRenderFrameHostId(helper_->mock_render_process_id(),
+                                  /*mock frame_routing_id=*/1),
+          /*is_parent_frame_secure=*/true, context()->AsWeakPtr(), &endpoint);
 
   TestServiceWorkerContextObserver observer(context_wrapper());
 
@@ -1075,8 +1077,10 @@ TEST_F(ServiceWorkerContextTest, ContainerHostIterator) {
   remote_endpoints.emplace_back();
   base::WeakPtr<ServiceWorkerContainerHost> container_host1 =
       CreateContainerHostForWindow(
-          kRenderProcessId1, true /* is_parent_frame_secure */,
-          context()->AsWeakPtr(), &remote_endpoints.back());
+          GlobalRenderFrameHostId(kRenderProcessId1,
+                                  /*mock frame_routing_id=*/1),
+          /*is_parent_frame_secure=*/true, context()->AsWeakPtr(),
+          &remote_endpoints.back());
   container_host1->UpdateUrls(kOrigin1, net::SiteForCookies::FromUrl(kOrigin1),
                               url::Origin::Create(kOrigin1));
 
@@ -1084,8 +1088,10 @@ TEST_F(ServiceWorkerContextTest, ContainerHostIterator) {
   remote_endpoints.emplace_back();
   base::WeakPtr<ServiceWorkerContainerHost> container_host2 =
       CreateContainerHostForWindow(
-          kRenderProcessId2, true /* is_parent_frame_secure */,
-          context()->AsWeakPtr(), &remote_endpoints.back());
+          GlobalRenderFrameHostId(kRenderProcessId2,
+                                  /*mock frame_routing_id=*/1),
+          /*is_parent_frame_secure=*/true, context()->AsWeakPtr(),
+          &remote_endpoints.back());
   container_host2->UpdateUrls(kOrigin2, net::SiteForCookies::FromUrl(kOrigin2),
                               url::Origin::Create(kOrigin2));
 
@@ -1093,8 +1099,10 @@ TEST_F(ServiceWorkerContextTest, ContainerHostIterator) {
   remote_endpoints.emplace_back();
   base::WeakPtr<ServiceWorkerContainerHost> container_host3 =
       CreateContainerHostForWindow(
-          kRenderProcessId2, true /* is_parent_frame_secure */,
-          context()->AsWeakPtr(), &remote_endpoints.back());
+          GlobalRenderFrameHostId(kRenderProcessId2,
+                                  /*mock frame_routing_id=*/1),
+          /*is_parent_frame_secure=*/true, context()->AsWeakPtr(),
+          &remote_endpoints.back());
   container_host3->UpdateUrls(kOrigin1, net::SiteForCookies::FromUrl(kOrigin1),
                               url::Origin::Create(kOrigin1));
 

@@ -55,8 +55,6 @@ stop
 skipWaiting
 Received
 Clients
-http://127.0.0.1:8000/devtools/resources/inspected-page.html
-focus
 Push
 Push
 Sync

@@ -274,7 +274,7 @@ ServiceWorkerContainerHostAndInfo::~ServiceWorkerContainerHostAndInfo() =
     default;
 
 base::WeakPtr<ServiceWorkerContainerHost> CreateContainerHostForWindow(
-    int process_id,
+    const GlobalRenderFrameHostId& render_frame_host_id,
     bool is_parent_frame_secure,
     base::WeakPtr<ServiceWorkerContextCore> context,
     ServiceWorkerRemoteContainerEndpoint* output_endpoint) {
@@ -292,9 +292,8 @@ base::WeakPtr<ServiceWorkerContainerHost> CreateContainerHostForWindow(
   // In production code this is called from NavigationRequest in the browser
   // process right before navigation commit.
   container_host->OnBeginNavigationCommit(
-      GlobalRenderFrameHostId(process_id, 1 /* route_id */),
-      network::CrossOriginEmbedderPolicy(), std::move(reporter),
-      ukm::kInvalidSourceId);
+      render_frame_host_id, network::CrossOriginEmbedderPolicy(),
+      std::move(reporter), ukm::kInvalidSourceId);
   return container_host;
 }
 

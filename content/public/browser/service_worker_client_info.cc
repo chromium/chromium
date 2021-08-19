@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/public/browser/service_worker_client_info.h"
+#include "content/public/common/child_process_host.h"
 
 namespace content {
 
@@ -42,6 +43,20 @@ ServiceWorkerClientInfo::~ServiceWorkerClientInfo() = default;
 int ServiceWorkerClientInfo::GetFrameTreeNodeId() const {
   DCHECK_EQ(type_, blink::mojom::ServiceWorkerClientType::kWindow);
   return frame_tree_node_id_;
+}
+
+GlobalRenderFrameHostId ServiceWorkerClientInfo::GetRenderFrameHostId() const {
+  DCHECK_EQ(type_, blink::mojom::ServiceWorkerClientType::kWindow);
+  return render_frame_host_id_;
+}
+
+void ServiceWorkerClientInfo::SetRenderFrameHostId(
+    const GlobalRenderFrameHostId& render_frame_host_id) {
+  DCHECK_EQ(type_, blink::mojom::ServiceWorkerClientType::kWindow);
+  DCHECK_NE(ChildProcessHost::kInvalidUniqueID, render_frame_host_id.child_id);
+  DCHECK_NE(MSG_ROUTING_NONE, render_frame_host_id.frame_routing_id);
+
+  render_frame_host_id_ = render_frame_host_id;
 }
 
 blink::DedicatedWorkerToken ServiceWorkerClientInfo::GetDedicatedWorkerToken()

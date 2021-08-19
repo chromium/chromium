@@ -24,6 +24,7 @@
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/browser/storage_partition_impl_map.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -450,8 +451,8 @@ void ServiceWorkerHandler::OnWorkerVersionUpdated(
     for (const auto& client : version.clients) {
       if (client.second.type() ==
           blink::mojom::ServiceWorkerClientType::kWindow) {
-        WebContents* web_contents = WebContents::FromFrameTreeNodeId(
-            client.second.GetFrameTreeNodeId());
+        WebContents* web_contents = WebContentsImpl::FromRenderFrameHostID(
+            client.second.GetRenderFrameHostId());
         // There is a possibility that the frame is already deleted
         // because of the thread hopping.
         if (!web_contents)

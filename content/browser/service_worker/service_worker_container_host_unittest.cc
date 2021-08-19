@@ -186,10 +186,11 @@ class ServiceWorkerContainerHostTest : public testing::Test {
   CreateContainerHostWithInsecureParentFrame(const GURL& document_url) {
     remote_endpoints_.emplace_back();
     base::WeakPtr<ServiceWorkerContainerHost> container_host =
-        CreateContainerHostForWindow(helper_->mock_render_process_id(),
-                                     false /* is_parent_frame_secure */,
-                                     helper_->context()->AsWeakPtr(),
-                                     &remote_endpoints_.back());
+        CreateContainerHostForWindow(
+            GlobalRenderFrameHostId(helper_->mock_render_process_id(),
+                                    /*mock frame_routing_id=*/1),
+            /*is_parent_frame_secure=*/false, helper_->context()->AsWeakPtr(),
+            &remote_endpoints_.back());
     container_host->UpdateUrls(document_url,
                                net::SiteForCookies::FromUrl(document_url),
                                url::Origin::Create(document_url));
@@ -344,10 +345,11 @@ class ServiceWorkerContainerHostTest : public testing::Test {
       const absl::optional<url::Origin>& top_frame_origin,
       ServiceWorkerRemoteContainerEndpoint* remote_endpoint) {
     base::WeakPtr<ServiceWorkerContainerHost> container_host =
-        CreateContainerHostForWindow(helper_->mock_render_process_id(),
-                                     true /* is_parent_frame_secure */,
-                                     helper_->context()->AsWeakPtr(),
-                                     remote_endpoint);
+        CreateContainerHostForWindow(
+            GlobalRenderFrameHostId(helper_->mock_render_process_id(),
+                                    /*mock frame_routing_id=*/1),
+            /*is_parent_frame_secure=*/true, helper_->context()->AsWeakPtr(),
+            remote_endpoint);
     container_host->UpdateUrls(document_url, site_for_cookies,
                                top_frame_origin);
     return container_host;

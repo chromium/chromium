@@ -173,11 +173,6 @@ class ServiceWorkerObjectHostTest : public testing::Test {
     return nullptr;
   }
 
-  void SetContainerHostRenderFrameId(ServiceWorkerContainerHost* container_host,
-                                     int render_frame_id) {
-    container_host->frame_routing_id_ = render_frame_id;
-  }
-
   blink::mojom::ServiceWorkerRegistrationObjectInfoPtr
   GetRegistrationFromRemote(
       blink::mojom::ServiceWorkerContainerHost* container_host,
@@ -255,8 +250,10 @@ TEST_F(ServiceWorkerObjectHostTest, OnVersionStateChanged) {
   ServiceWorkerRemoteContainerEndpoint remote_endpoint;
   base::WeakPtr<ServiceWorkerContainerHost> container_host =
       CreateContainerHostForWindow(
-          helper_->mock_render_process_id(), true /* is_parent_frame_secure */,
-          helper_->context()->AsWeakPtr(), &remote_endpoint);
+          GlobalRenderFrameHostId(helper_->mock_render_process_id(),
+                                  /*mock frame_routing_id=*/1),
+          /*is_parent_frame_secure=*/true, helper_->context()->AsWeakPtr(),
+          &remote_endpoint);
   container_host->UpdateUrls(scope, net::SiteForCookies::FromUrl(scope),
                              url::Origin::Create(scope));
   blink::mojom::ServiceWorkerRegistrationObjectInfoPtr registration_info =
@@ -407,10 +404,8 @@ TEST_F(ServiceWorkerObjectHostTest, DispatchExtendableMessageEvent_FromClient) {
   ServiceWorkerRemoteContainerEndpoint remote_endpoint;
   base::WeakPtr<ServiceWorkerContainerHost> container_host =
       CreateContainerHostForWindow(
-          frame_host->GetProcess()->GetID(), true /* is_parent_frame_secure */,
+          frame_host->GetGlobalId(), /*is_parent_frame_secure=*/true,
           helper_->context()->AsWeakPtr(), &remote_endpoint);
-  SetContainerHostRenderFrameId(container_host.get(),
-                                frame_host->GetRoutingID());
   container_host->UpdateUrls(scope, net::SiteForCookies::FromUrl(scope),
                              url::Origin::Create(scope));
 

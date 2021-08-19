@@ -419,11 +419,13 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
 
   base::TimeTicks create_time() const { return create_time_; }
 
-  int process_id() const { return process_id_; }
-
   // For service worker window clients. The RFH ID is set only after
   // navigation commit.
   GlobalRenderFrameHostId GetRenderFrameHostId() const;
+
+  // For service worker clients. For window clients, this is not populated until
+  // after navigation commit.
+  int GetProcessId() const;
 
   // For service worker window clients.
   int frame_tree_node_id() const { return client_info_->GetFrameTreeNodeId(); }
@@ -636,11 +638,6 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   // The phase that this container host is on.
   ClientPhase client_phase_ = ClientPhase::kInitial;
 
-  // The ID of the process where the container lives. For window clients, this
-  // is set on response commit, while it is set during initialization for worker
-  // clients.
-  int process_id_ = ChildProcessHost::kInvalidUniqueID;
-
   // Callbacks to run upon transition to kExecutionReady.
   std::vector<ExecutionReadyCallback> execution_ready_callbacks_;
 
@@ -697,7 +694,7 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   mojo::AssociatedRemote<blink::mojom::ServiceWorkerContainer> container_;
 
   // The type of client.
-  const absl::optional<ServiceWorkerClientInfo> client_info_;
+  absl::optional<ServiceWorkerClientInfo> client_info_;
 
   // The source id of the client's ExecutionContext, set on response commit.
   ukm::SourceId ukm_source_id_ = ukm::kInvalidSourceId;
@@ -705,6 +702,14 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   // The URL used for service worker scope matching. It is empty except in the
   // case of a service worker client with a blob URL.
   GURL scope_match_url_for_blob_client_;
+
+  // For worker clients only ---------------------------------------------------
+
+  // The ID of the process where the container lives for worker clients. It is
+  // set during initialization. Use `GetProcessId()` instead of directly
+  // accessing `process_id_for_worker_client_` to avoid using a wrong process
+  // id.
+  const int process_id_for_worker_client_ = ChildProcessHost::kInvalidUniqueID;
 
   // For window clients only ---------------------------------------------------
 
@@ -717,10 +722,6 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   // right now because this gets reset on redirects, and potentially sites rely
   // on the GUID format.
   base::UnguessableToken fetch_request_window_id_;
-
-  // The routing ID of the RenderFrameHost that hosts this client. Set on
-  // navigation commit.
-  int frame_routing_id_ = MSG_ROUTING_NONE;
 
   // The embedder policy of the client. Set on response commit.
   absl::optional<network::CrossOriginEmbedderPolicy>

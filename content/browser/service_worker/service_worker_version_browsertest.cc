@@ -439,8 +439,10 @@ class ServiceWorkerVersionBrowserTest : public ContentBrowserTest {
     remote_endpoints_.emplace_back();
     base::WeakPtr<ServiceWorkerContainerHost> container_host =
         CreateContainerHostForWindow(
-            33 /* dummy render process id */, true /* is_parent_frame_secure */,
-            wrapper()->context()->AsWeakPtr(), &remote_endpoints_.back());
+            GlobalRenderFrameHostId(/*mock process_id=*/33,
+                                    /*mock frame_routing_id=*/1),
+            /*is_parent_frame_secure=*/true, wrapper()->context()->AsWeakPtr(),
+            &remote_endpoints_.back());
     const GURL url = embedded_test_server()->GetURL("/service_worker/host");
     container_host->UpdateUrls(url, net::SiteForCookies::FromUrl(url),
                                url::Origin::Create(url));

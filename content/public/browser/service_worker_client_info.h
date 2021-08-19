@@ -6,6 +6,7 @@
 #define CONTENT_PUBLIC_BROWSER_SERVICE_WORKER_CLIENT_INFO_H_
 
 #include "content/common/content_export.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/multi_token.h"
@@ -37,7 +38,13 @@ class CONTENT_EXPORT ServiceWorkerClientInfo {
   // Returns the type of this client.
   blink::mojom::ServiceWorkerClientType type() const { return type_; }
 
+  // DEPRECATED. This id can be stale because the client's FrameTreeNode can
+  // change over time due to prerender activation.
   int GetFrameTreeNodeId() const;
+
+  GlobalRenderFrameHostId GetRenderFrameHostId() const;
+  void SetRenderFrameHostId(
+      const GlobalRenderFrameHostId& render_frame_host_id);
 
   // Returns the corresponding DedicatedWorkerToken. This should only be called
   // if "type() == blink::mojom::ServiceWorkerClientType::kDedicatedWorker".
@@ -53,6 +60,9 @@ class CONTENT_EXPORT ServiceWorkerClientInfo {
 
   // The frame tree node ID, if it is a window client.
   int frame_tree_node_id_ = content::RenderFrameHost::kNoFrameTreeNodeId;
+
+  // For a window client.
+  GlobalRenderFrameHostId render_frame_host_id_;
 
   // The ID of the client, if it is a worker.
   absl::optional<DedicatedOrSharedWorkerToken> worker_token_;

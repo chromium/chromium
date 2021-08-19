@@ -121,14 +121,14 @@ ServiceWorkerContainerHost::ServiceWorkerContainerHost(
     : context_(std::move(context)),
       create_time_(base::TimeTicks::Now()),
       client_uuid_(base::GenerateGUID()),
-      process_id_(process_id),
       container_(std::move(container_remote)),
-      client_info_(client_info) {
+      client_info_(client_info),
+      process_id_for_worker_client_(process_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsContainerForWorkerClient());
   DCHECK(context_);
-  DCHECK_NE(process_id_, ChildProcessHost::kInvalidUniqueID);
+  DCHECK_NE(process_id_for_worker_client_, ChildProcessHost::kInvalidUniqueID);
   DCHECK(container_.is_bound());
 }
 
@@ -216,9 +216,9 @@ void ServiceWorkerContainerHost::Register(
   // process yet. This must be after commit so it should be populated, while
   // it's possible the RenderFrameHost has already been destroyed due to IPC
   // ordering.
-  DCHECK_NE(process_id_, ChildProcessHost::kInvalidUniqueID);
-  DCHECK_NE(frame_routing_id_, MSG_ROUTING_NONE);
   GlobalRenderFrameHostId global_frame_id = GetRenderFrameHostId();
+  DCHECK_NE(global_frame_id.child_id, ChildProcessHost::kInvalidUniqueID);
+  DCHECK_NE(global_frame_id.frame_routing_id, MSG_ROUTING_NONE);
 
   // Registrations could come from different origins when "disable-web-security"
   // is active, we need to make sure we get the correct key.
@@ -379,7 +379,7 @@ void ServiceWorkerContainerHost::EnsureFileAccess(
     ChildProcessSecurityPolicyImpl* policy =
         ChildProcessSecurityPolicyImpl::GetInstance();
     for (const auto& file : file_paths) {
-      if (!policy->CanReadFile(process_id_, file))
+      if (!policy->CanReadFile(GetProcessId(), file))
         mojo::ReportBadMessage(
             "The renderer doesn't have access to the file "
             "but it tried to grant access to the controller.");
@@ -789,15 +789,10 @@ void ServiceWorkerContainerHost::OnBeginNavigationCommit(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsContainerForWindowClient());
 
-  DCHECK_EQ(ChildProcessHost::kInvalidUniqueID, process_id_);
-  DCHECK_NE(ChildProcessHost::kInvalidUniqueID, rfh_id.child_id);
-  process_id_ = rfh_id.child_id;
+  client_info_->SetRenderFrameHostId(rfh_id);
+
   if (controller_)
     controller_->UpdateForegroundPriority();
-
-  DCHECK_EQ(MSG_ROUTING_NONE, frame_routing_id_);
-  DCHECK_NE(MSG_ROUTING_NONE, rfh_id.frame_routing_id);
-  frame_routing_id_ = rfh_id.frame_routing_id;
 
   DCHECK(!cross_origin_embedder_policy_.has_value());
   cross_origin_embedder_policy_ = cross_origin_embedder_policy;
@@ -1059,7 +1054,15 @@ GlobalRenderFrameHostId ServiceWorkerContainerHost::GetRenderFrameHostId()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsContainerForWindowClient());
-  return GlobalRenderFrameHostId(process_id_, frame_routing_id_);
+  return client_info_->GetRenderFrameHostId();
+}
+
+int ServiceWorkerContainerHost::GetProcessId() const {
+  if (IsContainerForWindowClient()) {
+    return GetRenderFrameHostId().child_id;
+  }
+  DCHECK(IsContainerForWorkerClient());
+  return process_id_for_worker_client_;
 }
 
 const std::string& ServiceWorkerContainerHost::client_uuid() const {

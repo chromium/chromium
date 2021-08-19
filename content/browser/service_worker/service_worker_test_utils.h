@@ -129,7 +129,7 @@ struct ServiceWorkerContainerHostAndInfo {
 // use this function, but if more control is required
 // CreateContainerHostAndInfoForWindow() can be used instead.
 base::WeakPtr<ServiceWorkerContainerHost> CreateContainerHostForWindow(
-    int process_id,
+    const GlobalRenderFrameHostId& render_frame_host_id,
     bool is_parent_frame_secure,
     base::WeakPtr<ServiceWorkerContextCore> context,
     ServiceWorkerRemoteContainerEndpoint* output_endpoint);

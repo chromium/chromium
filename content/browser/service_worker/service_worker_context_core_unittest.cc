@@ -142,8 +142,10 @@ class ServiceWorkerContextCoreTest : public testing::Test,
     remote_endpoints_.emplace_back();
     base::WeakPtr<ServiceWorkerContainerHost> container_host =
         CreateContainerHostForWindow(
-            /*dummy_render_process_id=*/33, /*is_parent_frame_secure=*/true,
-            helper_->context()->AsWeakPtr(), &remote_endpoints_.back());
+            GlobalRenderFrameHostId(/*mock process_id=*/33,
+                                    /*mock frame_routing_id=*/1),
+            /*is_parent_frame_secure=*/true, helper_->context()->AsWeakPtr(),
+            &remote_endpoints_.back());
     return container_host.get();
   }
 

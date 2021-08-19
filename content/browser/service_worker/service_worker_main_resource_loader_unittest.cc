@@ -494,7 +494,8 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
     // ServiceWorkerControlleeRequestHandler does to assign it a controller.
     if (!container_host_) {
       container_host_ = CreateContainerHostForWindow(
-          helper_->mock_render_process_id(),
+          GlobalRenderFrameHostId(helper_->mock_render_process_id(),
+                                  /*mock frame_routing_id=*/1),
           /*is_parent_frame_secure=*/true, helper_->context()->AsWeakPtr(),
           &container_endpoints_);
       container_host_->UpdateUrls(request->url,
@@ -630,8 +631,10 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, NoActiveWorker) {
 
   // Make a container host without a controller.
   container_host_ = CreateContainerHostForWindow(
-      helper_->mock_render_process_id(), /*is_parent_frame_secure=*/true,
-      helper_->context()->AsWeakPtr(), &container_endpoints_);
+      GlobalRenderFrameHostId(helper_->mock_render_process_id(),
+                              /*mock frame_routing_id=*/1),
+      /*is_parent_frame_secure=*/true, helper_->context()->AsWeakPtr(),
+      &container_endpoints_);
   container_host_->UpdateUrls(
       GURL("https://example.com/"),
       net::SiteForCookies::FromUrl(GURL("https://example.com/")),
