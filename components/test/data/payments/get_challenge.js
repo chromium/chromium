@@ -139,11 +139,6 @@ function createPaymentRequest(
        credentialIds: [Uint8Array.from(atob(credentialId),
                                        (b) => b.charCodeAt(0))],
        timeout: 6000,
-
-       // SPCv1:
-       networkData: challenge,
-
-       // SPCv2:
        challenge,
        instrument: {
         icon: window.location.origin + '/icon.png',

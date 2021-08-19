@@ -19,8 +19,7 @@ function getTestMethodData(credentialIdentifier) {
       credentialIds: [Uint8Array.from(
           (credentialIdentifier ? atob(credentialIdentifier) : 'cred'),
           (c) => c.charCodeAt(0))],
-      networkData: Uint8Array.from('network_data', (c) => c.charCodeAt(0)),
-      challenge: Uint8Array.from('network_data', (c) => c.charCodeAt(0)),
+      challenge: Uint8Array.from('challenge', (c) => c.charCodeAt(0)),
       instrument: {
         displayName: 'display_name_for_instrument',
         icon: window.location.origin + '/icon.png',

@@ -28,7 +28,6 @@ async function requestPayment(credentialId) {
             action: 'authenticate',
             credentialIds: [Uint8Array.from(atob(credentialId),
                                             (b) => b.charCodeAt(0))],
-            networkData: new TextEncoder().encode('hello world'),
             challenge: new TextEncoder().encode('hello world'),
             instrument: {
               displayName: 'Hello World',

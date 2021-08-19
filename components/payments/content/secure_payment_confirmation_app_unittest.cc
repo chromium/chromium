@@ -32,7 +32,7 @@ namespace {
 using ::testing::_;
 using ::testing::Eq;
 
-static constexpr char kNetworkDataBase64[] = "aaaa";
+static constexpr char kChallengeBase64[] = "aaaa";
 static constexpr char kCredentialIdBase64[] = "cccc";
 
 class MockAuthenticator : public autofill::InternalAuthenticator {
@@ -96,14 +96,14 @@ class SecurePaymentConfirmationAppTest : public testing::Test,
   }
 
   void SetUp() override {
-    ASSERT_TRUE(base::Base64Decode(kNetworkDataBase64, &network_data_bytes_));
+    ASSERT_TRUE(base::Base64Decode(kChallengeBase64, &challenge_bytes_));
     ASSERT_TRUE(base::Base64Decode(kCredentialIdBase64, &credential_id_bytes_));
   }
 
   mojom::SecurePaymentConfirmationRequestPtr MakeRequest() {
     auto request = mojom::SecurePaymentConfirmationRequest::New();
-    request->challenge = std::vector<uint8_t>(network_data_bytes_.begin(),
-                                              network_data_bytes_.end());
+    request->challenge =
+        std::vector<uint8_t>(challenge_bytes_.begin(), challenge_bytes_.end());
     return request;
   }
 
@@ -129,7 +129,7 @@ class SecurePaymentConfirmationAppTest : public testing::Test,
 
   std::u16string label_;
   std::unique_ptr<PaymentRequestSpec> spec_;
-  std::string network_data_bytes_;
+  std::string challenge_bytes_;
   std::string credential_id_bytes_;
   bool on_instrument_details_ready_called_ = false;
   bool on_instrument_details_error_called_ = false;
@@ -153,8 +153,8 @@ TEST_F(SecurePaymentConfirmationAppTest, Smoke) {
       url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
       MakeRequest(), std::move(authenticator));
 
-  std::vector<uint8_t> expected_bytes = std::vector<uint8_t>(
-      network_data_bytes_.begin(), network_data_bytes_.end());
+  std::vector<uint8_t> expected_bytes =
+      std::vector<uint8_t>(challenge_bytes_.begin(), challenge_bytes_.end());
 
   EXPECT_CALL(*mock_authenticator, VerifyChallenge(Eq(expected_bytes)));
   app.InvokePaymentApp(/*delegate=*/weak_ptr_factory_.GetWeakPtr());
