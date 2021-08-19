@@ -24,6 +24,8 @@ promise_test(async t => {
   });
   const url = `resources/media-devices-access.https.html?&audio=true`;
   window.open(url, '_blank', 'noopener');
+  // According to spec, gUM will resolve only if the window has focus.
+  window.focus();
 
   const result = await gotMessage;
   const expected = [

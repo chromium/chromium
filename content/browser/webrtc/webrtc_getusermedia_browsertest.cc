@@ -105,6 +105,8 @@ class WebRtcGetUserMediaBrowserTest : public WebRtcContentBrowserTestBase {
   WebRtcGetUserMediaBrowserTest() {
     // Automatically grant device permission.
     AppendUseFakeUIForMediaStreamFlag();
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kUserMediaCaptureOnFocus);
   }
   ~WebRtcGetUserMediaBrowserTest() override {}
 
@@ -163,7 +165,7 @@ class WebRtcGetUserMediaBrowserTest : public WebRtcContentBrowserTestBase {
   }
 
  private:
-  base::test::ScopedFeatureList audio_service_features_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // These tests will all make a getUserMedia call with different constraints and

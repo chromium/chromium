@@ -54,14 +54,27 @@ function doGetUserMedia(constraints) {
     returnToTest('Browser does not support WebRTC.');
     return;
   }
-  debug('Requesting doGetUserMedia: constraints: ' +
-        JSON.stringify(constraints, null, 0).replace(/[\r\n]/g, ''));
-  navigator.getUserMedia(constraints,
-               function(stream) {
-                 ensureGotAllExpectedStreams_(stream, constraints);
-                 getUserMediaOkCallback_(stream);
-               },
-               getUserMediaFailedCallback_);
+  debug(
+      'Requesting doGetUserMedia: constraints: ' +
+      JSON.stringify(constraints, null, 0).replace(/[\r\n]/g, ''));
+  var gumPromise = new Promise(function(resolve) {
+    navigator.mediaDevices.getUserMedia(constraints)
+        .then(function(stream) {
+          ensureGotAllExpectedStreams_(stream, constraints);
+          getUserMediaOkCallback_(stream);
+          resolve('request-callback-granted');
+        })
+        .catch(function(err) {
+          getUserMediaFailedCallback_(err);
+          resolve('request-callback-denied');
+        });
+  });
+  var timeoutPromise = new Promise(function(resolve) {
+    setTimeout(() => resolve('request-timedout'), 4000);
+  });
+  Promise.race([gumPromise, timeoutPromise]).then(function(value) {
+    returnToTest(value);
+  });
 }
 
 /**
@@ -84,8 +97,9 @@ function obtainGetUserMediaResult() {
  */
 function stopLocalStream() {
   if (gLocalStream == null)
-    throw failTest('Tried to stop local stream, ' +
-                   'but media access is not granted.');
+    throw failTest(
+        'Tried to stop local stream, ' +
+        'but media access is not granted.');
 
   gLocalStream.getVideoTracks().forEach(function(track) {
     track.stop();
@@ -106,13 +120,15 @@ function stopLocalStream() {
  */
 function addLocalStreamToPeerConnection(peerConnection) {
   if (gLocalStream == null)
-    throw failTest('Tried to add local stream to peer connection, ' +
-                   'but there is no stream yet.');
+    throw failTest(
+        'Tried to add local stream to peer connection, ' +
+        'but there is no stream yet.');
   try {
     peerConnection.addStream(gLocalStream, gAddStreamConstraints);
   } catch (exception) {
-    throw failTest('Failed to add stream with constraints ' +
-                   gAddStreamConstraints + ': ' + exception);
+    throw failTest(
+        'Failed to add stream with constraints ' + gAddStreamConstraints +
+        ': ' + exception);
   }
   debug('Added local stream.');
 }
@@ -134,15 +150,17 @@ function getLocalStream() {
 function ensureGotAllExpectedStreams_(stream, constraints) {
   if (constraints['video'] && stream.getVideoTracks().length == 0) {
     gRequestWebcamAndMicrophoneResult = 'failed-to-get-video';
-    throw ('Requested video, but did not receive a video stream from ' +
-           'getUserMedia. Perhaps the machine you are running on ' +
-           'does not have a webcam.');
+    throw (
+        'Requested video, but did not receive a video stream from ' +
+        'getUserMedia. Perhaps the machine you are running on ' +
+        'does not have a webcam.');
   }
   if (constraints['audio'] && stream.getAudioTracks().length == 0) {
     gRequestWebcamAndMicrophoneResult = 'failed-to-get-audio';
-    throw ('Requested audio, but did not receive an audio stream ' +
-           'from getUserMedia. Perhaps the machine you are running ' +
-           'on does not have audio devices.');
+    throw (
+        'Requested audio, but did not receive an audio stream ' +
+        'from getUserMedia. Perhaps the machine you are running ' +
+        'on does not have audio devices.');
   }
 }
 
@@ -155,8 +173,6 @@ function getUserMediaOkCallback_(stream) {
   gRequestWebcamAndMicrophoneResult = 'ok-got-stream';
 
   $('local-view').srcObject = stream;
-
-  returnToTest('request-callback-granted');
 }
 
 /**
@@ -170,8 +186,6 @@ function getUserMediaFailedCallback_(error) {
   debug('GetUserMedia FAILED: Maybe the camera is in use by another process?');
   gRequestWebcamAndMicrophoneResult = 'failed-with-error-' + errorName;
   debug(gRequestWebcamAndMicrophoneResult);
-
-  returnToTest('request-callback-denied');
 }
 
 function openDesktopMediaStream() {

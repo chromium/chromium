@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/bind_post_task.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/task/post_task.h"
@@ -16,6 +17,9 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/render_view_host.h"
+#include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
@@ -42,6 +46,85 @@ void BindMediaStreamDeviceObserverReceiver(
 
 int MediaStreamDispatcherHost::next_requester_id_ = 0;
 
+// Holds pending request information so that we process requests only when the
+// Webcontent is in focus.
+struct MediaStreamDispatcherHost::PendingAccessRequest {
+  PendingAccessRequest(
+      int32_t page_request_id,
+      const blink::StreamControls& controls,
+      bool user_gesture,
+      blink::mojom::StreamSelectionInfoPtr audio_stream_selection_info_ptr,
+      GenerateStreamCallback callback,
+      MediaDeviceSaltAndOrigin salt_and_origin)
+      : page_request_id(page_request_id),
+        controls(controls),
+        user_gesture(user_gesture),
+        audio_stream_selection_info_ptr(
+            std::move(audio_stream_selection_info_ptr)),
+        callback(std::move(callback)),
+        salt_and_origin(salt_and_origin) {}
+  ~PendingAccessRequest() = default;
+
+  int32_t page_request_id;
+  const blink::StreamControls controls;
+  bool user_gesture;
+  blink::mojom::StreamSelectionInfoPtr audio_stream_selection_info_ptr;
+  GenerateStreamCallback callback;
+  MediaDeviceSaltAndOrigin salt_and_origin;
+};
+
+class MediaStreamDispatcherHost::Broker
+    : public base::RefCountedThreadSafe<MediaStreamDispatcherHost::Broker> {
+ public:
+  explicit Broker(MediaStreamDispatcherHost* host) : host_(host) {}
+
+ private:
+  friend class base::RefCountedThreadSafe<MediaStreamDispatcherHost::Broker>;
+  friend class MediaStreamDispatcherHost;
+
+  ~Broker() = default;
+
+  void OnHostDestroyedOrStopped();
+  void OnWebContentsFocused();
+  void StartObservingWebContents(int render_process_id, int render_frame_id);
+
+  base::Lock lock_;
+  MediaStreamDispatcherHost* host_ GUARDED_BY(lock_);
+  std::unique_ptr<MediaStreamWebContentsObserver> web_contents_observer_;
+};
+
+void MediaStreamDispatcherHost::Broker::OnHostDestroyedOrStopped() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  base::AutoLock lock(lock_);
+  host_ = nullptr;
+  web_contents_observer_->StopObserving();
+  web_contents_observer_.reset();
+}
+
+void MediaStreamDispatcherHost::Broker::OnWebContentsFocused() {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  base::AutoLock lock(lock_);
+  if (!host_)
+    return;
+  host_->OnWebContentsFocused();
+}
+
+void MediaStreamDispatcherHost::Broker::StartObservingWebContents(
+    int render_process_id,
+    int render_frame_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  base::AutoLock lock(lock_);
+  web_contents_observer_ = std::make_unique<MediaStreamWebContentsObserver>(
+      render_process_id, render_frame_id);
+  web_contents_observer_->RegisterFocusCallback(base::BindPostTask(
+      GetIOThreadTaskRunner({}),
+      base::BindRepeating(
+          &MediaStreamDispatcherHost::Broker::OnWebContentsFocused, this)));
+}
+
 MediaStreamDispatcherHost::MediaStreamDispatcherHost(
     int render_process_id,
     int render_frame_id,
@@ -51,12 +134,22 @@ MediaStreamDispatcherHost::MediaStreamDispatcherHost(
       requester_id_(next_requester_id_++),
       media_stream_manager_(media_stream_manager),
       salt_and_origin_callback_(
-          base::BindRepeating(&GetMediaDeviceSaltAndOrigin)) {
+          base::BindRepeating(&GetMediaDeviceSaltAndOrigin)),
+      broker_(base::MakeRefCounted<MediaStreamDispatcherHost::Broker>(this)) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &MediaStreamDispatcherHost::Broker::StartObservingWebContents,
+          broker_, render_process_id_, render_frame_id_));
 }
 
 MediaStreamDispatcherHost::~MediaStreamDispatcherHost() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  base::OnceClosure stop_observing_cb = base::BindOnce(
+      &MediaStreamDispatcherHost::Broker::OnHostDestroyedOrStopped, broker_);
+  GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(stop_observing_cb));
   CancelAllRequests();
 }
 
@@ -109,6 +202,32 @@ void MediaStreamDispatcherHost::OnDeviceCaptureHandleChange(
   GetMediaStreamDeviceObserver()->OnDeviceCaptureHandleChange(label, device);
 }
 
+void MediaStreamDispatcherHost::OnWebContentsFocused() {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  while (!pending_requests_.empty()) {
+    std::unique_ptr<PendingAccessRequest> request =
+        std::move(pending_requests_.front());
+    media_stream_manager_->GenerateStream(
+        render_process_id_, render_frame_id_, requester_id_,
+        request->page_request_id, request->controls,
+        std::move(request->salt_and_origin), request->user_gesture,
+        std::move(request->audio_stream_selection_info_ptr),
+        std::move(request->callback),
+        base::BindRepeating(&MediaStreamDispatcherHost::OnDeviceStopped,
+                            weak_factory_.GetWeakPtr()),
+        base::BindRepeating(&MediaStreamDispatcherHost::OnDeviceChanged,
+                            weak_factory_.GetWeakPtr()),
+        base::BindRepeating(
+            &MediaStreamDispatcherHost::OnDeviceRequestStateChange,
+            weak_factory_.GetWeakPtr()),
+        base::BindRepeating(
+            &MediaStreamDispatcherHost::OnDeviceCaptureHandleChange,
+            weak_factory_.GetWeakPtr()));
+    pending_requests_.pop_front();
+  }
+}
+
 const mojo::Remote<blink::mojom::MediaStreamDeviceObserver>&
 MediaStreamDispatcherHost::GetMediaStreamDeviceObserver() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -135,6 +254,16 @@ void MediaStreamDispatcherHost::OnMediaStreamDeviceObserverConnectionError() {
 }
 
 void MediaStreamDispatcherHost::CancelAllRequests() {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  for (auto& pending_request : pending_requests_) {
+    std::move(pending_request->callback)
+        .Run(blink::mojom::MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN,
+             std::string(), blink::MediaStreamDevices(),
+             blink::MediaStreamDevices(),
+             /*pan_tilt_zoom_allowed=*/false);
+  }
+  pending_requests_.clear();
   media_stream_manager_->CancelAllRequests(render_process_id_, render_frame_id_,
                                            requester_id_);
 }
@@ -180,6 +309,19 @@ void MediaStreamDispatcherHost::DoGenerateStream(
         blink::mojom::MediaStreamRequestResult::INVALID_SECURITY_ORIGIN,
         std::string(), blink::MediaStreamDevices(), blink::MediaStreamDevices(),
         /*pan_tilt_zoom_allowed=*/false);
+    return;
+  }
+
+  bool is_gum_request = (controls.audio.stream_type ==
+                         blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE) ||
+                        (controls.video.stream_type ==
+                         blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE);
+  if (!salt_and_origin.has_focus && is_gum_request &&
+      base::FeatureList::IsEnabled(features::kUserMediaCaptureOnFocus)) {
+    pending_requests_.push_back(std::make_unique<PendingAccessRequest>(
+        page_request_id, controls, user_gesture,
+        std::move(audio_stream_selection_info_ptr), std::move(callback),
+        salt_and_origin));
     return;
   }
 

@@ -869,7 +869,7 @@ std::string MediaStreamManager::MakeMediaAccessRequest(
       blink::MEDIA_DEVICE_ACCESS, controls,
       MediaDeviceSaltAndOrigin{std::string() /* salt */,
                                std::string() /* group_id_salt */,
-                               security_origin});
+                               security_origin, true /* has_focus */});
 
   request->media_access_request_cb = std::move(callback);
   const std::string& label = AddRequest(std::move(request));

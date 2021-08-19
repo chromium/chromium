@@ -1179,6 +1179,8 @@ source_set("browser") {
     "media/media_power_experiment_manager.cc",
     "media/media_power_experiment_manager.h",
     "media/media_service.cc",
+    "media/media_stream_web_contents_observer.cc",
+    "media/media_stream_web_contents_observer.h",
     "media/media_web_contents_observer.cc",
     "media/media_web_contents_observer.h",
     "media/midi_host.cc",

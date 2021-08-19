@@ -266,6 +266,21 @@ void WebRtcTestBase::GetUserMedia(content::WebContents* tab_contents,
               result == "request-callback-granted");
 }
 
+void WebRtcTestBase::GetUserMediaReturnsFalseIfWaitIsTooLong(
+    content::WebContents* tab_contents,
+    const std::string& constraints) const {
+  std::string result;
+  permissions::PermissionRequestManager::FromWebContents(tab_contents)
+      ->set_auto_response_for_test(
+          permissions::PermissionRequestManager::ACCEPT_ALL);
+  permissions::PermissionRequestObserver observer(tab_contents);
+  // Request user media: this will launch the media stream info bar or bubble.
+  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+      tab_contents, "doGetUserMedia(" + constraints + ");", &result));
+
+  EXPECT_TRUE(result == "request-timedout");
+}
+
 content::WebContents* WebRtcTestBase::OpenPageAndGetUserMediaInNewTab(
     const GURL& url) const {
   return OpenPageAndGetUserMediaInNewTabWithConstraints(

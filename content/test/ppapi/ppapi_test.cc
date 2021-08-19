@@ -114,6 +114,7 @@ void PPAPITestBase::RunTestURL(const GURL& test_url) {
   PPAPITestMessageHandler handler;
   JavascriptTestObserver observer(shell()->web_contents(), &handler);
   shell()->LoadURL(test_url);
+  shell()->web_contents()->Focus();
 
   ASSERT_TRUE(observer.Run()) << handler.error_message();
   EXPECT_STREQ("PASS", handler.message().c_str());
