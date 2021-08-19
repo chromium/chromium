@@ -2834,6 +2834,9 @@ extern const char kSystemKoreanPhysicalTypingDescription[];
 extern const char kSystemLatinPhysicalTypingName[];
 extern const char kSystemLatinPhysicalTypingDescription[];
 
+extern const char kTerminalSSHName[];
+extern const char kTerminalSSHDescription[];
+
 extern const char kTetherName[];
 extern const char kTetherDescription[];
 

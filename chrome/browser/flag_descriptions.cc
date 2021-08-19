@@ -4914,6 +4914,10 @@ const char kPluginVmFullscreenName[] = "Plugin VM Fullscreen";
 const char kPluginVmFullscreenDescription[] =
     "Hides shelf in immersive mode and allows esc hold to exit.";
 
+const char kTerminalSSHName[] = "Terminal SSH tabs";
+const char kTerminalSSHDescription[] =
+    "Enables SSH tabs in the Terminal System App.";
+
 const char kTetherName[] = "Instant Tethering";
 const char kTetherDescription[] =
     "Enables Instant Tethering. Instant Tethering allows your nearby Google "

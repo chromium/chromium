@@ -5242,6 +5242,11 @@
     "expiry_milestone": 95
   },
   {
+    "name": "terminal-ssh",
+    "owners": [ "lxj", "joelhockey", "//chrome/browser/ash/guest_os/OWNERS" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "text-fragment-color-change",
     "owners": [ "cheickcisse@google.com" ],
     "expiry_milestone": 94

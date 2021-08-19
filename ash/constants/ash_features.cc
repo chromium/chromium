@@ -1036,6 +1036,10 @@ const base::Feature kTabClusterUI{"TabClusterUI",
 const base::Feature kTelemetryExtension{"TelemetryExtension",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables SSH tabs in the Terminal System App.
+const base::Feature kTerminalSSH{"TerminalSSH",
+                                 base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables the Settings UI to show data usage for cellular networks.
 const base::Feature kTrafficCountersSettingsUi{
     "TrafficCountersSettingsUi", base::FEATURE_ENABLED_BY_DEFAULT};

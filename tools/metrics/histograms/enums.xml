@@ -48252,6 +48252,7 @@ from previous Chrome versions.
   <int value="-991412904" label="SettingsLandingPageRedesign:disabled"/>
   <int value="-991253797"
       label="OmniboxSpeculativeServiceWorkerStartOnQueryInput:disabled"/>
+  <int value="-990704221" label="TerminalSSH:enabled"/>
   <int value="-990187062" label="SendTabToSelfShowSendingUI:enabled"/>
   <int value="-989671895" label="OfflineIndicatorAlwaysHttpProbe:enabled"/>
   <int value="-989050085" label="AppStoreBillingDebug:enabled"/>
@@ -49666,6 +49667,7 @@ from previous Chrome versions.
   <int value="181150000" label="CrosVmCupsProxy:enabled"/>
   <int value="182358203" label="AddToHomescreenIPH:enabled"/>
   <int value="182788555" label="DecoupleSyncFromAndroidMasterSync:disabled"/>
+  <int value="182986882" label="TerminalSSH:disabled"/>
   <int value="183208826" label="TabGroups:enabled"/>
   <int value="185991204" label="enable-webrtc-srtp-encrypted-headers"/>
   <int value="186463628" label="DnsOverHttps:disabled"/>
