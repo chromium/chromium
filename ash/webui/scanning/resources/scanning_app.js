@@ -658,6 +658,19 @@ Polymer({
             });
   },
 
+  /**
+   * @param {Event} e
+   * @private
+   */
+  onRemovePage_(e) {
+    const pageIndex = e.detail;
+    assert(pageIndex >= 0 && pageIndex < this.objectUrls_.length);
+
+    this.splice('objectUrls_', pageIndex, 1);
+    this.pageNumber_ = this.objectUrls_.length;
+    this.multiPageScanController_.removePage(pageIndex);
+  },
+
   /** @private */
   onCompleteMultiPageScan_() {
     this.multiPageScanController_.completeMultiPageScan();

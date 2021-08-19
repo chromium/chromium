@@ -297,6 +297,9 @@ class FakeMultiPageScanController {
       close() {},
     };
 
+    /** @private {number} */
+    this.pageIndexToRemove_ = -1;
+
     this.resetForTest();
   }
 
@@ -347,10 +350,18 @@ class FakeMultiPageScanController {
     });
   }
 
-  removePage() {}
+  /** @param {number} pageIndex */
+  removePage(pageIndex) {
+    this.pageIndexToRemove_ = pageIndex;
+  }
 
   completeMultiPageScan() {
     this.methodCalled('completeMultiPageScan');
+  }
+
+  /** @return {number}*/
+  getPageIndexToRemove() {
+    return this.pageIndexToRemove_;
   }
 }
 
@@ -957,6 +968,73 @@ export function scanningAppTest() {
           // There should be 2 images from scanning once, failing once, then
           // scanning again successfully.
           assertEquals(2, scannedImages.querySelectorAll('img').length);
+        });
+  });
+
+  // Verify the correct page can be removed from a multi-page scan job by
+  // scanning three pages then removing the second page.
+  test('MultiPageScanPageRemoved', () => {
+    const pageNumberToRemove = 2;
+    let expectedObjectUrls;
+    return initializeScanningApp(expectedScanners, capabilities)
+        .then(() => {
+          return getScannerCapabilities();
+        })
+        .then(() => {
+          scanningApp.selectedSource = PLATEN;
+          scanningApp.selectedFileType = FileType.PDF.toString();
+          return waitAfterNextRender(/** @type {!HTMLElement} */ (scanningApp));
+        })
+        .then(() => {
+          scanningApp.multiPageScanChecked = true;
+        })
+        .then(() => {
+          scanningApp.$$('#scanButton').click();
+          return fakeScanService_.whenCalled('startMultiPageScan');
+        })
+        .then(() => {
+          return fakeScanService_.simulatePageComplete(1);
+        })
+        .then(() => {
+          scanningApp.$$('multi-page-scan').$$('#scanButton').click();
+          return fakeMultiPageScanController_.whenCalled('scanNextPage');
+        })
+        .then(() => {
+          return fakeScanService_.simulatePageComplete(1);
+        })
+        .then(() => {
+          scanningApp.$$('multi-page-scan').$$('#scanButton').click();
+          return fakeMultiPageScanController_.whenCalled('scanNextPage');
+        })
+        .then(() => {
+          return fakeScanService_.simulatePageComplete(1);
+        })
+        .then(() => {
+          // Save the current scanned images
+          expectedObjectUrls = scanningApp.$$('#scanPreview').objectUrls;
+          assertEquals(3, expectedObjectUrls.length);
+
+          // Open the remove page dialog.
+          scanningApp.$$('#scanPreview')
+              .$$('action-toolbar')
+              .dispatchEvent(new CustomEvent(
+                  'show-remove-page-dialog', {detail: pageNumberToRemove}));
+          return flushTasks();
+        })
+        .then(() => {
+          scanningApp.$$('#scanPreview').$$('#actionButton').click();
+          return flushTasks();
+        })
+        .then(() => {
+          assertEquals(
+              pageNumberToRemove - 1,
+              fakeMultiPageScanController_.getPageIndexToRemove());
+
+          // Remove the second page from the expected scanned images and verify
+          // the correct image was removed from the actual scanned images.
+          expectedObjectUrls.splice(pageNumberToRemove - 1, 1);
+          assertArrayEquals(
+              expectedObjectUrls, scanningApp.$$('#scanPreview').objectUrls);
         });
   });
 
