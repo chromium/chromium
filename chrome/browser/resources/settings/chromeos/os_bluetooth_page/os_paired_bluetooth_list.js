@@ -42,7 +42,13 @@ class SettingsPairedBluetoothListElement extends
         type: Array,
         observer: 'onDevicesChanged_',
         value: [],
-      }
+      },
+
+      /**
+       * Used by FocusRowBehavior to track the last focused element on a row.
+       * @private
+       */
+      lastFocused_: Object,
     };
   }
 

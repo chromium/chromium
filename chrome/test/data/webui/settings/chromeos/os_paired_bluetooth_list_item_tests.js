@@ -8,8 +8,10 @@
 // #import 'chrome://os-settings/strings.m.js';
 
 // #import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {assertTrue} from '../../../chai_assert.js';
+// #import {assertTrue, assertEquals} from '../../../chai_assert.js';
+// #import {eventToPromise} from 'chrome://test/test_util.m.js';
 // #import {createDefaultBluetoothDevice} from './fake_bluetooth_config.m.js';
+// #import {Router, Route, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 // clang-format on
 
 suite('OsPairedBluetoothListItemTest', function() {
@@ -130,5 +132,48 @@ suite('OsPairedBluetoothListItemTest', function() {
 
     await setBatteryPercentage(101);
     assertFalse(!!getBatteryInfo());
+  });
+
+  test('Selecting item routes to detail subpage', async function() {
+    const id = '123456789';
+    const device = createDefaultBluetoothDevice(
+        id, /*publicName=*/ 'BeatsX', /*connected=*/ true);
+    pairedBluetoothListItem.device = device;
+    await flushAsync();
+
+    const getItemContainer = () => {
+      return pairedBluetoothListItem.shadowRoot.querySelector('.list-item');
+    };
+    const assertInDetailSubpage = async () => {
+      await flushAsync();
+      assertEquals(
+          Router.getInstance().getCurrentRoute(),
+          settings.routes.BLUETOOTH_DEVICE_DETAIL);
+      assertEquals(
+          id, settings.Router.getInstance().getQueryParameters().get('id'));
+
+      settings.Router.getInstance().resetRouteForTesting();
+      assertEquals(
+          Router.getInstance().getCurrentRoute(), settings.routes.BASIC);
+    };
+
+    // Simulate clicking item.
+    assertEquals(Router.getInstance().getCurrentRoute(), settings.routes.BASIC);
+    getItemContainer().click();
+    await assertInDetailSubpage();
+
+    // Simulate pressing enter on the item.
+    getItemContainer().dispatchEvent(
+        new KeyboardEvent('keydown', {'key': 'Enter'}));
+    await assertInDetailSubpage();
+
+    // Simulate pressing space on the item.
+    getItemContainer().dispatchEvent(
+        new KeyboardEvent('keydown', {'key': ' '}));
+    await assertInDetailSubpage();
+
+    // Simulate clicking the item's subpage button.
+    pairedBluetoothListItem.$.subpageButton.click();
+    await assertInDetailSubpage();
   });
 });

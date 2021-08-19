@@ -17,6 +17,8 @@ import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/pol
 import {getBatteryPercentage, getDeviceName} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_utils.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {FocusRowBehavior, FocusRowBehaviorInterface} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
+import {Router} from '../../router.js';
+import {routes} from '../os_route.m.js';
 
 /**
  * @constructor
@@ -56,6 +58,35 @@ class SettingsPairedBluetoothListItemElement extends
        */
       listSize: Number,
     };
+  }
+
+  /**
+   * @param {!KeyboardEvent} event
+   * @private
+   */
+  onKeydown_(event) {
+    if (event.key !== 'Enter' && event.key !== ' ') {
+      return;
+    }
+
+    this.navigateToDetailPage_();
+    event.stopPropagation();
+  }
+
+  /**
+   * @param {!Event} event
+   * @private
+   */
+  onSelected_(event) {
+    this.navigateToDetailPage_();
+    event.stopPropagation();
+  }
+
+  /** @private */
+  navigateToDetailPage_() {
+    const params = new URLSearchParams();
+    params.append('id', this.device.deviceProperties.id);
+    Router.getInstance().navigateTo(routes.BLUETOOTH_DEVICE_DETAIL, params);
   }
 
   /**
