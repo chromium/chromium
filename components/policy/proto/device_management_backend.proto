@@ -1369,6 +1369,7 @@ message SmbiosInfo {
   optional string sys_vendor = 1;
   optional string product_name = 2;
   optional string product_version = 3;
+  optional string bios_version = 4;
 }
 
 // Information about the parameters passed to the kernel.

@@ -165,6 +165,23 @@ constexpr char kFakeVersionMilestone[] = "87";
 constexpr char kFakeVersionBuildNumber[] = "13544";
 constexpr char kFakeVersionPatchNumber[] = "59.0";
 constexpr char kFakeVersionReleaseChannel[] = "stable-channel";
+// System V2 test values:
+constexpr char kFakeOsInfoCodeName[] = "OsInfo Code Name";
+constexpr char kFakeOSInfoMarketingName[] = "OsInfo Marketing Name";
+constexpr cros_healthd::BootMode kFakeOsInfoBootMode =
+    cros_healthd::BootMode::kCrosSecure;
+constexpr char kFakeVpdInfoRegion[] = "VpdInfo Region";
+constexpr char kFakeDmiInfoBiosVendor[] = "DMI Bios Vendor";
+constexpr char kFakeDmiInfoBiosVersion[] = "DMI Bios Version";
+constexpr char kFakeDmiInfoBoardName[] = "DMI Board Name";
+constexpr char kFakeDmiInfoBoardVendor[] = "DMI Board Vendor";
+constexpr char kFakeDmiInfoBoardVersion[] = "DMI Board Version";
+constexpr char kFakeDmiInfoChassisVendor[] = "DMI Chassis Vendor";
+constexpr uint64_t kFakeDmiInfoChassisType = 9;
+constexpr char kFakeDmiInfoProductFamily[] = "DMI Product Family";
+constexpr char kFakeDmiInfoSysVendor[] = "DMI System Vendor";
+constexpr char kFakeDmiInfoProductName[] = "DMI Product Name";
+constexpr char kFakeDmiInfoProductVersion[] = "DMI Product Version";
 // CPU test values:
 constexpr uint32_t kFakeNumTotalThreads = 8;
 constexpr char kFakeModelName[] = "fake_cpu_model_name";
@@ -542,6 +559,27 @@ cros_healthd::SystemResultPtr CreateSystemResult() {
               kFakeVersionPatchNumber, kFakeVersionReleaseChannel)));
 }
 
+cros_healthd::SystemResultV2Ptr CreateSystemResultV2() {
+  return cros_healthd::SystemResultV2::NewSystemInfoV2(
+      cros_healthd::SystemInfoV2::New(
+          cros_healthd::OsInfo::New(
+              kFakeOsInfoCodeName, kFakeOSInfoMarketingName,
+              cros_healthd::OsVersion::New(
+                  kFakeVersionMilestone, kFakeVersionBuildNumber,
+                  kFakeVersionPatchNumber, kFakeVersionReleaseChannel),
+              kFakeOsInfoBootMode),
+          cros_healthd::VpdInfo::New(kFakeSerialNumber, kFakeVpdInfoRegion,
+                                     kFakeManufactureDate, kFakeFirstPowerDate,
+                                     kFakeSkuNumber, kFakeModelName),
+          cros_healthd::DmiInfo::New(
+              kFakeDmiInfoBiosVendor, kFakeDmiInfoBiosVersion,
+              kFakeDmiInfoBoardName, kFakeDmiInfoBoardVendor,
+              kFakeDmiInfoBoardVersion, kFakeDmiInfoChassisVendor,
+              cros_healthd::NullableUint64::New(kFakeDmiInfoChassisType),
+              kFakeDmiInfoProductFamily, kFakeDmiInfoProductName,
+              kFakeDmiInfoProductVersion, kFakeDmiInfoSysVendor)));
+}
+
 std::vector<cros_healthd::CpuCStateInfoPtr> CreateCStateInfo() {
   std::vector<cros_healthd::CpuCStateInfoPtr> c_states;
   c_states.push_back(cros_healthd::CpuCStateInfo::New(
@@ -677,6 +715,7 @@ void FetchFakeFullCrosHealthdData(
       fake_info.battery_result = CreateBatteryResult();
       fake_info.block_device_result = CreateBlockDeviceResult();
       fake_info.system_result = CreateSystemResult();
+      fake_info.system_result_v2 = CreateSystemResultV2();
       fake_info.cpu_result = CreateCpuResult();
       fake_info.timezone_result = CreateTimezoneResult();
       fake_info.memory_result = CreateMemoryResult();
@@ -3283,6 +3322,7 @@ TEST_F(DeviceStatusCollectorTest, TestCrosHealthdInfo) {
   EXPECT_FALSE(device_status_.has_power_status());
   EXPECT_FALSE(device_status_.has_storage_status());
   EXPECT_FALSE(device_status_.has_system_status());
+  EXPECT_FALSE(device_status_.has_smbios_info());
   EXPECT_FALSE(device_status_.has_timezone_info());
   EXPECT_FALSE(device_status_.has_memory_info());
   EXPECT_EQ(device_status_.fan_info_size(), 0);
@@ -3385,6 +3425,16 @@ TEST_F(DeviceStatusCollectorTest, TestCrosHealthdInfo) {
   EXPECT_EQ(device_status_.system_status().board_version(), kFakeBoardVersion);
   EXPECT_EQ(device_status_.system_status().chassis_type(), kFakeChassisType);
   EXPECT_EQ(device_status_.system_status().product_name(), kFakeProductName);
+
+  // Verify the system v2 info.
+  ASSERT_TRUE(device_status_.has_smbios_info());
+  EXPECT_EQ(device_status_.smbios_info().product_name(),
+            kFakeDmiInfoProductName);
+  EXPECT_EQ(device_status_.smbios_info().product_version(),
+            kFakeDmiInfoProductVersion);
+  EXPECT_EQ(device_status_.smbios_info().sys_vendor(), kFakeDmiInfoSysVendor);
+  EXPECT_EQ(device_status_.smbios_info().bios_version(),
+            kFakeDmiInfoBiosVersion);
 
   // Verify the CPU data.
   ASSERT_TRUE(device_status_.has_global_cpu_info());
@@ -3539,6 +3589,7 @@ TEST_F(DeviceStatusCollectorTest, TestPartialCrosHealthdInfo) {
   EXPECT_FALSE(device_status_.has_memory_info());
   EXPECT_FALSE(device_status_.has_timezone_info());
   EXPECT_FALSE(device_status_.has_system_status());
+  EXPECT_FALSE(device_status_.has_smbios_info());
   EXPECT_FALSE(device_status_.has_storage_status());
   EXPECT_EQ(device_status_.backlight_info_size(), 0);
   EXPECT_EQ(device_status_.fan_info_size(), 0);
@@ -3580,6 +3631,13 @@ TEST_F(DeviceStatusCollectorTest, TestCrosHealthdVpdAndSystemInfo) {
   ASSERT_FALSE(device_status_.system_status().has_chassis_type());
   ASSERT_FALSE(device_status_.system_status().has_product_name());
 
+  // Verify the system info v2 is not populated.
+  ASSERT_TRUE(device_status_.has_smbios_info());
+  ASSERT_FALSE(device_status_.smbios_info().has_sys_vendor());
+  ASSERT_FALSE(device_status_.smbios_info().has_product_name());
+  ASSERT_FALSE(device_status_.smbios_info().has_product_version());
+  ASSERT_FALSE(device_status_.smbios_info().has_bios_version());
+
   // When the system reporting policy is turned on and the vpd reporting policy
   // is turned off, we expect the protobuf to have all system info except the
   // subset of vpd info.
@@ -3601,6 +3659,16 @@ TEST_F(DeviceStatusCollectorTest, TestCrosHealthdVpdAndSystemInfo) {
   EXPECT_EQ(device_status_.system_status().board_version(), kFakeBoardVersion);
   EXPECT_EQ(device_status_.system_status().chassis_type(), kFakeChassisType);
   EXPECT_EQ(device_status_.system_status().product_name(), kFakeProductName);
+
+  // Verify system info V2 exists too.
+  ASSERT_TRUE(device_status_.has_smbios_info());
+  EXPECT_EQ(device_status_.smbios_info().product_name(),
+            kFakeDmiInfoProductName);
+  EXPECT_EQ(device_status_.smbios_info().product_version(),
+            kFakeDmiInfoProductVersion);
+  EXPECT_EQ(device_status_.smbios_info().sys_vendor(), kFakeDmiInfoSysVendor);
+  EXPECT_EQ(device_status_.smbios_info().bios_version(),
+            kFakeDmiInfoBiosVersion);
 }
 
 TEST_F(DeviceStatusCollectorTest, GenerateAppInfo) {

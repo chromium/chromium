@@ -1309,6 +1309,46 @@ class DeviceStatusCollectorState : public StatusCollectorState {
       }
     }
 
+    // Process SystemResultV2.
+    const auto& system_result_v2 = probe_result->system_result_v2;
+    if (!system_result_v2.is_null()) {
+      switch (system_result_v2->which()) {
+        case cros_healthd::SystemResultV2::Tag::ERROR: {
+          LOG(ERROR) << "cros_healthd: Error getting system info v2: "
+                     << system_result_v2->get_error()->msg;
+          break;
+        }
+
+        case cros_healthd::SystemResultV2::Tag::SYSTEM_INFO_V2: {
+          const auto& system_info_v2 = system_result_v2->get_system_info_v2();
+          em::SmbiosInfo* const smbios_info_out =
+              response_params_.device_status->mutable_smbios_info();
+          if (report_system_info) {
+            if (!system_info_v2->dmi_info.is_null()) {
+              const auto& dmi_info = system_info_v2->dmi_info;
+              if (dmi_info->bios_version.has_value()) {
+                smbios_info_out->set_bios_version(
+                    dmi_info->bios_version.value());
+              }
+              if (dmi_info->sys_vendor.has_value()) {
+                smbios_info_out->set_sys_vendor(dmi_info->sys_vendor.value());
+              }
+              if (dmi_info->product_name.has_value()) {
+                smbios_info_out->set_product_name(
+                    dmi_info->product_name.value());
+              }
+              if (dmi_info->product_version.has_value()) {
+                smbios_info_out->set_product_version(
+                    dmi_info->product_version.value());
+              }
+            }
+            SetDeviceStatusReported();
+          }
+          break;
+        }
+      }
+    }
+
     // Process StatefulPartition result.
     const auto& stateful_partition_result =
         probe_result->stateful_partition_result;
