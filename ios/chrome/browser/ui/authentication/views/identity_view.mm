@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/authentication/views/identity_view.h"
 
 #import "base/check.h"
+#import "base/check_op.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
@@ -175,6 +176,8 @@ constexpr CGFloat kHorizontalAvatarLeadingMargin = 16.;
                                                    .minimumBottomMargin],
     ];
     [NSLayoutConstraint activateConstraints:_bottomConstraints];
+    // Initialize the style.
+    [self updateStyle];
   }
   return self;
 }
@@ -182,12 +185,14 @@ constexpr CGFloat kHorizontalAvatarLeadingMargin = 16.;
 #pragma mark - Setter
 
 - (void)setAvatar:(UIImage*)avatarImage {
-  if (avatarImage) {
+  if (!avatarImage) {
+    self.avatarView.image = nil;
+  } else {
     const StyleValues* style = [self styleValues];
+    DCHECK_EQ(avatarImage.size.width, style->avatarSize);
+    DCHECK_EQ(avatarImage.size.height, style->avatarSize);
     self.avatarView.image = avatarImage;
     self.avatarView.layer.cornerRadius = style->avatarSize / 2.0;
-  } else {
-    self.avatarView.image = nil;
   }
 }
 
