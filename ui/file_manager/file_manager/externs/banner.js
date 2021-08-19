@@ -35,10 +35,11 @@ export class Banner extends HTMLElement {
   diskThreshold() {}
 
   /**
-   * Volume types to watch if they unmount at all.
-   * @return {!Array<!VolumeManagerCommon.VolumeType|!undefined>}
+   * The duration (in seconds) to hide the banner after it has been dismissed by
+   * the user.
+   * @return {number|undefined}
    */
-  unmountedVolumeTypes() {}
+  hideAfterDismissedDurationSeconds() {}
 
   /**
    * Drive connection state to trigger the banner on.
@@ -79,3 +80,12 @@ Banner.DiskThresholdMinSize;
  *          }}
  */
 Banner.DiskThresholdMinRatio;
+
+/**
+ * Events dispatched by concrete banners.
+ * @enum {string}
+ * @const
+ */
+Banner.Event = {
+  BANNER_DISMISSED: 'banner-dismissed',
+};

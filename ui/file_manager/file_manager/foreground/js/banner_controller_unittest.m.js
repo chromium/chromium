@@ -37,6 +37,7 @@ let volumeManagerGetVolumeInfoType;
  *    setShowLimit: function(number),
  *    setDiskThreshold:
  * function((!Banner.DiskThresholdMinSize|!Banner.DiskThresholdMinRatio|!undefined)),
+ *    setHideAfterDismissedDurationSeconds: function(number),
  *    reset: function(),
  *    tagName: string,
  * }}
@@ -101,6 +102,11 @@ function createTestBanner(tagName) {
    */
   let diskThreshold;
 
+  /**
+   * @type {number|undefined}
+   */
+  let hideAfterDismissDurationSeconds;
+
   class FakeBanner extends Banner {
     allowedVolumeTypes() {
       return allowedVolumeTypes;
@@ -112,6 +118,10 @@ function createTestBanner(tagName) {
 
     diskThreshold() {
       return diskThreshold;
+    }
+
+    hideAfterDismissedDurationSeconds() {
+      return hideAfterDismissDurationSeconds;
     }
   }
 
@@ -132,6 +142,9 @@ function createTestBanner(tagName) {
     setDiskThreshold: (threshold) => {
       diskThreshold = threshold;
     },
+    setHideAfterDismissedDurationSeconds: (duration) => {
+      hideAfterDismissDurationSeconds = duration;
+    },
     // Element.tagName returns uppercase.
     tagName: tagName.toUpperCase(),
   };
@@ -151,7 +164,7 @@ function isBannerVisible(banner) {
       return false;
     }
 
-    if (visibleBanner.getAttribute('hidden') === 'true' ||
+    if (visibleBanner.hasAttribute('hidden') ||
         visibleBanner.getAttribute('aria-hidden') === 'true') {
       return false;
     }
@@ -160,8 +173,8 @@ function isBannerVisible(banner) {
       if (element === visibleBanner) {
         continue;
       }
-      if (element.getAttribute('hidden') !== 'true' ||
-          element.getAttribute('hidden') !== 'true') {
+      if (!element.hasAttribute('hidden') ||
+          element.getAttribute('aria-hidden') === 'false') {
         return false;
       }
     }
@@ -175,8 +188,8 @@ function isBannerVisible(banner) {
  */
 function isAllBannersHidden() {
   for (const element of bannerContainer.children) {
-    if (element.getAttribute('hidden') !== 'true' ||
-        element.getAttribute('hidden') !== 'true') {
+    if (!element.hasAttribute('hidden') ||
+        element.getAttribute('aria-hidden') === 'false') {
       return false;
     }
   }
@@ -225,6 +238,37 @@ function changeCurrentVolumeDiskSpace(newSizeStats, dispatchEvent = true) {
   if (dispatchEvent) {
     mockChromeFileManagerPrivate.dispatchOnDirectoryChanged();
   }
+}
+
+/**
+ * Sends a dismiss-click event to the supplied banner. This synthetic event is
+ * wired up to the event handler set in the BannerController.
+ * @param {!TestBanner} banner The banner to click dismiss on.
+ */
+function clickDismissButton(banner) {
+  const visibleBanner =
+      /** @type {!Banner} */ (bannerContainer.querySelector(banner.tagName));
+  visibleBanner.dispatchEvent(new CustomEvent(
+      Banner.Event.BANNER_DISMISSED,
+      {bubbles: true, composed: true, detail: {banner: visibleBanner}}));
+}
+
+/**
+ * Mocks the Date.now() function to enable us to not have to wait for a
+ * specified duration. Returns 2 functions, one to set the Date.now() and one
+ * to restore the Date.now() to it's existing functionality.
+ * @returns {{ setDate: !function(number), restoreDate: !function() }}
+ */
+function mockDate() {
+  const dateNowRestore = Date.now;
+  const setDate = (seconds) => {
+    // Date.now works in milliseconds, convert seconds appropriately.
+    Date.now = () => seconds * 1000;
+  };
+  const restoreDate = () => {
+    Date.now = dateNowRestore;
+  };
+  return {setDate, restoreDate};
 }
 
 export function setUpPage() {
@@ -357,9 +401,7 @@ export async function testBannersAreHiddenOnVolumeChange() {
   await waitUntil(isBannerVisible(testWarningBanners[0]));
 
   // Change volume to Drives and verify the second warning banner is showing.
-  changeCurrentVolume(
-      VolumeManagerCommon.VolumeType.DRIVE, /* volumeId */ null);
-  await controller.reconcile();
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DRIVE);
   await waitUntil(isBannerVisible(testWarningBanners[1]));
 
   // Change volume to Android files and verify the educational banner is shown.
@@ -434,7 +476,6 @@ export async function testChangingVolumesDoesntIncreaseShowTimes() {
   for (let i = 0; i < bannerShowLimit + 1; i++) {
     // Change directory and verify no banner shown.
     changeCurrentVolume(VolumeManagerCommon.VolumeType.DRIVE);
-    await controller.reconcile();
     await waitUntil(isAllBannersHidden);
 
     // Change back to DOWNLOADS and verify banner has been shown.
@@ -669,4 +710,56 @@ export async function testChangingDirectoryMidSizeUpdateHidesBanner() {
   // size causes the banner to be shown.
   changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS, 'downloads');
   await waitUntil(isBannerVisible(testWarningBanners[0]));
+}
+
+/**
+ * Test the dismiss button hides the banner appropriately.
+ */
+export async function testDismissHidesBanner() {
+  controller.setWarningBannersInOrder([testWarningBanners[0].tagName]);
+  testWarningBanners[0].setAllowedVolumeTypes([downloadsAllowedVolumeType]);
+
+  // Set the hidden duration to 999999 seconds to ensure it doesn't reappear.
+  testWarningBanners[0].setHideAfterDismissedDurationSeconds(999999);
+
+  // Verify for Downloads the warning banner is shown.
+  await controller.initialize();
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS);
+  await waitUntil(isBannerVisible(testWarningBanners[0]));
+
+  // Click the dismiss button and ensure the banner is hidden.
+  clickDismissButton(testWarningBanners[0]);
+  await waitUntil(isAllBannersHidden);
+}
+
+/**
+ * Test that the duration set for the banner to be hidden for is respected.
+ */
+export async function testDismissedBannerShowsAfterDuration() {
+  controller.setWarningBannersInOrder([testWarningBanners[0].tagName]);
+  testWarningBanners[0].setAllowedVolumeTypes([downloadsAllowedVolumeType]);
+  testWarningBanners[0].setHideAfterDismissedDurationSeconds(15);
+
+  // Verify for Downloads the warning banner is shown.
+  await controller.initialize();
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS);
+  await waitUntil(isBannerVisible(testWarningBanners[0]));
+
+  const mock = mockDate();
+
+  // Move the clock to 10s and click the dismiss button. This should have the
+  // banner be hidden for the duration [10s, 25s].
+  mock.setDate(10);
+  clickDismissButton(testWarningBanners[0]);
+  await waitUntil(isAllBannersHidden);
+
+  // Move the clock to 1 second after the banner duration has expired (banner
+  // expires at 25s, so 26s the banner should appear again). Change the
+  // directory to the same place to kick off a reconciliation.
+  mock.setDate(26);
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS);
+  await waitUntil(isBannerVisible(testWarningBanners[0]));
+
+  // Restore the Date.now() function to prior to it's mock.
+  mock.restoreDate();
 }

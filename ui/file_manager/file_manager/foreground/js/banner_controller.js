@@ -189,6 +189,8 @@ export class BannerController extends EventTarget {
       return false;
     }
 
+    // Check if the banner has exceeded the maximum number of times it can be
+    // shown over multiple Files app sessions.
     const showLimit = banner.showLimit();
     const timesShown =
         this.localStorageCache_[`${banner.tagName}_${VIEW_COUNTER_SUFFIX}`];
@@ -196,6 +198,7 @@ export class BannerController extends EventTarget {
       return false;
     }
 
+    // Check if the threshold has been breached for the banner to be shown.
     const diskThreshold = banner.diskThreshold();
     if (diskThreshold) {
       const currentVolumeSizeStats = this.currentVolume_ &&
@@ -203,6 +206,19 @@ export class BannerController extends EventTarget {
       if (!isBelowThreshold(diskThreshold, currentVolumeSizeStats)) {
         return false;
       }
+    }
+
+    // Check if the banner has previously been dismissed and should not be shown
+    // for a set duration. Date.now returns in milliseconds so convert seconds
+    // into milliseconds.
+    const hideAfterDismissedDurationSeconds =
+        banner.hideAfterDismissedDurationSeconds() * 1000;
+    const lastDismissedMilliseconds =
+        this.localStorageCache_[`${banner.tagName}_${LAST_DISMISSED_SUFFIX}`];
+    if (hideAfterDismissedDurationSeconds &&
+        ((Date.now() - lastDismissedMilliseconds) <
+         hideAfterDismissedDurationSeconds)) {
+      return false;
     }
 
     return true;
@@ -224,8 +240,8 @@ export class BannerController extends EventTarget {
           localStorageKey, this.localStorageCache_[localStorageKey] + 1);
     }
 
-    banner.setAttribute('hidden', false);
-    banner.setAttribute('aria-hidden', false);
+    banner.removeAttribute('hidden');
+    banner.setAttribute('aria-hidden', 'false');
 
     banner.onShow();
   }
@@ -240,8 +256,8 @@ export class BannerController extends EventTarget {
       return;
     }
 
-    banner.setAttribute('hidden', true);
-    banner.setAttribute('aria-hidden', true);
+    banner.toggleAttribute('hidden', true);
+    banner.setAttribute('aria-hidden', 'true');
   }
 
   /**
@@ -265,26 +281,57 @@ export class BannerController extends EventTarget {
 
   /**
    * Creates all the warning banners with the supplied tagName's. This will
-   * populate the |warningBanners_| array with HTMLElement's.
+   * populate the warningBanners_ array with HTMLElement's.
    * @param {!Array<string>} bannerTagNames The HTMLElement tagName's to create.
    */
   setWarningBannersInOrder(bannerTagNames) {
     for (const tagName of bannerTagNames) {
-      this.warningBanners_.push(
-          /** @type {!Banner} */ (document.createElement(tagName)));
+      const banner = /** @type {!Banner} */ (document.createElement(tagName));
+      banner.toggleAttribute('hidden', true);
+      banner.setAttribute('aria-hidden', 'true');
+      banner.addEventListener(
+          Banner.Event.BANNER_DISMISSED,
+          this.onBannerDismissedClick_.bind(this));
+      this.warningBanners_.push(banner);
     }
   }
 
   /**
    * Creates all the educational banners with the supplied tagName's. This will
-   * populate the |educationalBanners_| array with HTMLElement's.
+   * populate the educationalBanners_ array with HTMLElement's.
    * @param {!Array<string>} bannerTagNames The HTMLElement tagName's to create.
    */
   setEducationalBannersInOrder(bannerTagNames) {
     for (const tagName of bannerTagNames) {
-      this.educationalBanners_.push(
-          /** @type {!Banner} */ (document.createElement(tagName)));
+      const banner = /** @type {!Banner} */ (document.createElement(tagName));
+      banner.toggleAttribute('hidden', true);
+      banner.setAttribute('aria-hidden', 'true');
+      banner.addEventListener(
+          Banner.Event.BANNER_DISMISSED,
+          this.onBannerDismissedClick_.bind(this));
+      this.educationalBanners_.push(banner);
     }
+  }
+
+  /**
+   * Create an event handler bound to the specific banner that was created.
+   * @param {!Event} event The banner-dismissed event.
+   * @private
+   */
+  onBannerDismissedClick_(event) {
+    if (!event.detail || !event.detail.banner) {
+      console.warn(
+          `${Banner.Event.BANNER_DISMISSED} event missing banner detail`);
+      return;
+    }
+    const banner = event.detail.banner;
+
+    // Reset the view counter so that after the dismiss duration elapses the
+    // banner can be shown for the showLimit again.
+    this.setLocalStorage_(`${banner.tagName}_${VIEW_COUNTER_SUFFIX}`, 0);
+    this.setLocalStorage_(
+        `${banner.tagName}_${LAST_DISMISSED_SUFFIX}`, Date.now());
+    this.hideBannerIfShown_(banner);
   }
 
   /**
