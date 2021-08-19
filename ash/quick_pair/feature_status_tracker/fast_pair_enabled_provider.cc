@@ -5,6 +5,7 @@
 #include "ash/quick_pair/feature_status_tracker/fast_pair_enabled_provider.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/feature_status_tracker/base_enabled_provider.h"
 #include "ash/quick_pair/feature_status_tracker/bluetooth_enabled_provider.h"
 #include "base/bind.h"
@@ -39,6 +40,14 @@ FastPairEnabledProvider::FastPairEnabledProvider(
 FastPairEnabledProvider::~FastPairEnabledProvider() = default;
 
 bool FastPairEnabledProvider::AreSubProvidersEnabled() {
+  QP_LOG(VERBOSE) << __func__ << ": Flag:"
+                  << base::FeatureList::IsEnabled(features::kFastPair)
+                  << " Google API Key:"
+                  << google_api_key_availability_provider_->is_enabled()
+                  << " Logged in User:"
+                  << logged_in_user_enabled_provider_->is_enabled()
+                  << " Bluetooth:" << bluetooth_enabled_provider_->is_enabled();
+
   return base::FeatureList::IsEnabled(features::kFastPair) &&
          google_api_key_availability_provider_->is_enabled() &&
          logged_in_user_enabled_provider_->is_enabled() &&
