@@ -106,6 +106,8 @@ class ProfileShortcutManagerWin : public ProfileShortcutManager,
   void OnProfileNameChanged(const base::FilePath& profile_path,
                             const std::u16string& old_profile_name) override;
   void OnProfileAvatarChanged(const base::FilePath& profile_path) override;
+  void OnProfileHighResAvatarLoaded(
+      const base::FilePath& profile_path) override;
 
   // ProfileManagerObserver:
   void OnProfileAdded(Profile* profile) override;
@@ -125,6 +127,9 @@ class ProfileShortcutManagerWin : public ProfileShortcutManager,
       bool incognito);
 
   ProfileManager* profile_manager_;
+  // The profile icon of these profiles needs to be updated when an avatar image
+  // is loaded.
+  std::set<base::FilePath> profiles_with_pending_avatar_load_;
 };
 
 #endif  // CHROME_BROWSER_PROFILES_PROFILE_SHORTCUT_MANAGER_WIN_H_

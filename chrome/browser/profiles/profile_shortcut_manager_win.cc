@@ -15,6 +15,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
@@ -886,11 +887,31 @@ void ProfileShortcutManagerWin::OnProfileAvatarChanged(
   CreateOrUpdateProfileIcon(profile_path);
 }
 
+void ProfileShortcutManagerWin::OnProfileHighResAvatarLoaded(
+    const base::FilePath& profile_path) {
+  if (base::Contains(profiles_with_pending_avatar_load_, profile_path)) {
+    profiles_with_pending_avatar_load_.erase(profile_path);
+    CreateOrUpdateProfileIcon(profile_path);
+  }
+}
+
 void ProfileShortcutManagerWin::OnProfileAdded(Profile* profile) {
   if (profile->GetPrefs()->GetInteger(prefs::kProfileIconVersion) <
       kCurrentProfileIconVersion) {
+    const base::FilePath profile_path = profile->GetPath();
     // Ensure the profile's icon file has been created.
-    CreateOrUpdateProfileIcon(profile->GetPath());
+    CreateOrUpdateProfileIcon(profile_path);
+
+    ProfileAttributesStorage& storage =
+        profile_manager_->GetProfileAttributesStorage();
+    const ProfileAttributesEntry* entry =
+        storage.GetProfileAttributesWithPath(profile_path);
+    // If GAIA picture is not yet loaded, the profile icon will be updated when
+    // it loads.
+    if (entry && !entry->GetLastDownloadedGAIAPictureUrlWithSize().empty() &&
+        !entry->IsGAIAPictureLoaded()) {
+      profiles_with_pending_avatar_load_.insert(profile_path);
+    }
   }
 }
 
