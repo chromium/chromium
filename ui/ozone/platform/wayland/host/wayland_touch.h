@@ -72,6 +72,7 @@ class WaylandTouch::Delegate {
                                   base::TimeTicks timestamp,
                                   PointerId id) = 0;
   virtual void OnTouchCancelEvent() = 0;
+  virtual void OnTouchFocusChanged(WaylandWindow* window, bool focus) = 0;
   virtual std::vector<PointerId> GetActiveTouchPointIds() = 0;
 };
 

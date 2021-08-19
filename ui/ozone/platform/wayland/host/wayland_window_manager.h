@@ -57,6 +57,9 @@ class WaylandWindowManager {
   // Returns a current focused window by pointer.
   WaylandWindow* GetCurrentPointerFocusedWindow() const;
 
+  // Returns a current focused window by touch.
+  WaylandWindow* GetCurrentTouchFocusedWindow() const;
+
   // Returns a current focused window by keyboard.
   WaylandWindow* GetCurrentKeyboardFocusedWindow() const;
 

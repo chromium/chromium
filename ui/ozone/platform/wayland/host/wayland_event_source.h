@@ -124,6 +124,7 @@ class WaylandEventSource : public PlatformEventSource,
                           base::TimeTicks timestamp,
                           PointerId id) override;
   void OnTouchCancelEvent() override;
+  void OnTouchFocusChanged(WaylandWindow* window, bool focus) override;
   std::vector<PointerId> GetActiveTouchPointIds() override;
 
   // WaylandZwpPointerGesture::Delegate:

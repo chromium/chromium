@@ -82,6 +82,15 @@ WaylandWindow* WaylandWindowManager::GetCurrentPointerFocusedWindow() const {
   return nullptr;
 }
 
+WaylandWindow* WaylandWindowManager::GetCurrentTouchFocusedWindow() const {
+  for (const auto& entry : window_map_) {
+    WaylandWindow* window = entry.second;
+    if (window->has_touch_focus())
+      return window;
+  }
+  return nullptr;
+}
+
 WaylandWindow* WaylandWindowManager::GetCurrentKeyboardFocusedWindow() const {
   for (const auto& entry : window_map_) {
     WaylandWindow* window = entry.second;

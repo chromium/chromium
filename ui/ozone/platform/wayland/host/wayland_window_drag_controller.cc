@@ -202,7 +202,12 @@ void WaylandWindowDragController::OnDragEnter(WaylandWindow* window,
   // as WaylandScreen, are able to properly retrieve focus related info during
   // window dragging sesstions.
   pointer_location_ = location;
-  pointer_delegate_->OnPointerFocusChanged(window, location);
+
+  DCHECK(drag_source_.has_value());
+  if (*drag_source_ == DragSource::kMouse)
+    pointer_delegate_->OnPointerFocusChanged(window, location);
+  else
+    touch_delegate_->OnTouchFocusChanged(window, true);
 
   VLOG(1) << "OnEnter. widget=" << window->GetWidget();
 

@@ -259,21 +259,12 @@ TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDrop_TOUCH) {
   auto* move_loop_handler = GetWmMoveLoopHandler(*window_);
   DCHECK(move_loop_handler);
 
-  enum { kStarted, kDragging, kDropping, kDone } test_step = kStarted;
+  enum TestStep { kStarted, kDragging, kDropping, kDone } test_step = kStarted;
 
   EXPECT_CALL(delegate_, DispatchEvent(_)).WillRepeatedly([&](Event* event) {
+    EXPECT_NE(event->type(), ET_MOUSE_ENTERED);
+
     switch (test_step) {
-      case kStarted:
-        // TODO(tonikitoo,nickdiego): Is it correct to emit a mouse enter here?
-        EXPECT_EQ(ET_MOUSE_ENTERED, event->type());
-        EXPECT_EQ(State::kDetached, drag_controller()->state());
-        // Ensure PlatformScreen keeps consistent.
-        EXPECT_EQ(window_->GetWidget(),
-                  screen_->GetLocalProcessWidgetAtPoint({10, 10}, {}));
-        // Drag it a bit more.
-        SendDndMotion({20, 20});
-        test_step = kDragging;
-        break;
       case kDropping:
         EXPECT_EQ(ET_TOUCH_RELEASED, event->type());
         EXPECT_EQ(State::kDropped, drag_controller()->state());
@@ -305,6 +296,18 @@ TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDrop_TOUCH) {
         SendDndDrop();
         test_step = kDropping;
       });
+
+  auto test = [](WaylandWindowDragControllerTest* self,
+                 enum TestStep* test_step) {
+    // While in |kDetached| state, motion events are expected to be propagated
+    // by window drag controller as bounds changes.
+    EXPECT_EQ(State::kDetached, self->drag_controller()->state());
+    EXPECT_EQ(*test_step, kStarted);
+    *test_step = kDragging;
+    self->SendDndMotion({20, 20});
+    self->Sync();
+  };
+  ScheduleTestTask(base::BindOnce(test, base::Unretained(this), &test_step));
 
   // RunMoveLoop() blocks until the dragging session ends, so resume test
   // server's run loop until it returns.
