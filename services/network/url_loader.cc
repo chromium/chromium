@@ -1364,9 +1364,6 @@ void URLLoader::ContinueOnResponseStarted() {
                                   url_request_->initiator(), request_mode_,
                                   request_destination_, *response_);
   if (factory_params_->is_corb_enabled) {
-    CrossOriginReadBlocking::LogAction(
-        CrossOriginReadBlocking::Action::kResponseStarted);
-
     corb_analyzer_ =
         std::make_unique<CrossOriginReadBlocking::ResponseAnalyzer>(
             url_request_->url(), url_request_->initiator(), *response_,
@@ -1374,12 +1371,10 @@ void URLLoader::ContinueOnResponseStarted() {
     is_more_corb_sniffing_needed_ = corb_analyzer_->needs_sniffing();
     if (corb_analyzer_->ShouldBlock()) {
       DCHECK(!is_more_corb_sniffing_needed_);
-      corb_analyzer_->LogBlockedResponse();
       if (BlockResponseForCorb() == kWillCancelRequest)
         return;
     } else if (corb_analyzer_->ShouldAllow()) {
       DCHECK(!is_more_corb_sniffing_needed_);
-      corb_analyzer_->LogAllowedResponse();
     }
   }
   if ((options_ & mojom::kURLLoadOptionSniffMimeType)) {
@@ -1536,12 +1531,10 @@ void URLLoader::DidRead(int num_bytes, bool completed_synchronously) {
       if (is_more_corb_sniffing_needed_ && has_new_data_to_sniff) {
         corb_analyzer_->SniffResponseBody(data);
         if (corb_analyzer_->ShouldBlock()) {
-          corb_analyzer_->LogBlockedResponse();
           is_more_corb_sniffing_needed_ = false;
           if (BlockResponseForCorb() == kWillCancelRequest)
             return;
         } else if (corb_analyzer_->ShouldAllow()) {
-          corb_analyzer_->LogAllowedResponse();
           is_more_corb_sniffing_needed_ = false;
         }
       }
@@ -1550,11 +1543,8 @@ void URLLoader::DidRead(int num_bytes, bool completed_synchronously) {
     if (num_bytes <= 0 ||
         pending_write_buffer_offset_ >= net::kMaxBytesToSniff) {
       is_more_mime_sniffing_needed_ = false;
-
-      if (is_more_corb_sniffing_needed_) {
-        corb_analyzer_->LogAllowedResponse();
-        is_more_corb_sniffing_needed_ = false;
-      }
+      is_more_corb_sniffing_needed_ = false;
+      corb_analyzer_.reset();
     }
 
     if (!is_more_mime_sniffing_needed_ && !is_more_corb_sniffing_needed_) {

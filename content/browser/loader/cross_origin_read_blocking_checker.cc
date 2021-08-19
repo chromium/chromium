@@ -100,8 +100,6 @@ CrossOriginReadBlockingChecker::CrossOriginReadBlockingChecker(
     base::OnceCallback<void(Result)> callback)
     : callback_(std::move(callback)) {
   DCHECK(!callback_.is_null());
-  network::CrossOriginReadBlocking::LogAction(
-      network::CrossOriginReadBlocking::Action::kResponseStarted);
 
   corb_analyzer_ =
       std::make_unique<network::CrossOriginReadBlocking::ResponseAnalyzer>(
@@ -134,12 +132,10 @@ int CrossOriginReadBlockingChecker::GetNetError() {
 }
 
 void CrossOriginReadBlockingChecker::OnAllowed() {
-  corb_analyzer_->LogAllowedResponse();
   std::move(callback_).Run(Result::kAllowed);
 }
 
 void CrossOriginReadBlockingChecker::OnBlocked() {
-  corb_analyzer_->LogBlockedResponse();
   std::move(callback_).Run(corb_analyzer_->ShouldReportBlockedResponse()
                                ? Result::kBlocked_ShouldReport
                                : Result::kBlocked_ShouldNotReport);

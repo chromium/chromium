@@ -297,6 +297,10 @@ const auto& GetNeverSniffedMimeTypes() {
   return kNeverSniffedMimeTypes;
 }
 
+void LogAction(CrossOriginReadBlocking::Action action) {
+  UMA_HISTOGRAM_ENUMERATION("SiteIsolation.XSD.Browser.Action", action);
+}
+
 }  // namespace
 
 // static
@@ -539,11 +543,6 @@ void CrossOriginReadBlocking::SanitizeBlockedResponse(
     RemoveAllHttpResponseHeaders(response->headers);
 }
 
-// static
-void CrossOriginReadBlocking::LogAction(Action action) {
-  UMA_HISTOGRAM_ENUMERATION("SiteIsolation.XSD.Browser.Action", action);
-}
-
 // An interface to enable incremental content sniffing. These are instantiated
 // for each each request; thus they can be stateful.
 class CrossOriginReadBlocking::ResponseAnalyzer::ConfirmationSniffer {
@@ -625,6 +624,8 @@ CrossOriginReadBlocking::ResponseAnalyzer::ResponseAnalyzer(
       content_length_(response.content_length),
       http_response_code_(response.headers ? response.headers->response_code()
                                            : 0) {
+  LogAction(Action::kResponseStarted);
+
   // CORB should look directly at the Content-Type header if one has been
   // received from the network. Ignoring |response.mime_type| helps avoid
   // breaking legitimate websites (which might happen more often when blocking
@@ -688,7 +689,16 @@ CrossOriginReadBlocking::ResponseAnalyzer::ResponseAnalyzer(
     CreateSniffers();
 }
 
-CrossOriginReadBlocking::ResponseAnalyzer::~ResponseAnalyzer() = default;
+CrossOriginReadBlocking::ResponseAnalyzer::~ResponseAnalyzer() {
+  if (ShouldBlock()) {
+    LogBlockedResponse();
+  } else {
+    // Allowing happens either 1) explicitly, or 2) when sniffing didn't reach a
+    // conclusion after sniffing 1024 (or all) bytes.
+    DCHECK(ShouldAllow() || needs_sniffing());
+    LogAllowedResponse();
+  }
+}
 
 // static
 CrossOriginReadBlocking::ResponseAnalyzer::BlockingDecision
@@ -1042,6 +1052,9 @@ bool CrossOriginReadBlocking::ResponseAnalyzer::ShouldReportBlockedResponse()
 }
 
 void CrossOriginReadBlocking::ResponseAnalyzer::LogAllowedResponse() {
+  DCHECK(!has_logged_final_decision_);
+  has_logged_final_decision_ = true;
+
   if (corb_protection_logging_needs_sniffing_) {
     LogSensitiveResponseProtection(
         SniffingDecisionToProtectionDecision(found_blockable_content_));
@@ -1058,13 +1071,16 @@ void CrossOriginReadBlocking::ResponseAnalyzer::LogAllowedResponse() {
   // - for example to allow responses to requests initiated by content scripts.
   // This means that we cannot DCHECK(!ShouldBlock()) here.
 
-  CrossOriginReadBlocking::LogAction(
+  LogAction(
       needs_sniffing()
           ? network::CrossOriginReadBlocking::Action::kAllowedAfterSniffing
           : network::CrossOriginReadBlocking::Action::kAllowedWithoutSniffing);
 }
 
 void CrossOriginReadBlocking::ResponseAnalyzer::LogBlockedResponse() {
+  DCHECK(!has_logged_final_decision_);
+  has_logged_final_decision_ = true;
+
   DCHECK(!ShouldAllow());
   DCHECK(ShouldBlock());
   DCHECK(sniffers_.empty());
@@ -1074,7 +1090,7 @@ void CrossOriginReadBlocking::ResponseAnalyzer::LogBlockedResponse() {
         SniffingDecisionToProtectionDecision(found_blockable_content_));
   }
 
-  CrossOriginReadBlocking::LogAction(
+  LogAction(
       needs_sniffing()
           ? network::CrossOriginReadBlocking::Action::kBlockedAfterSniffing
           : network::CrossOriginReadBlocking::Action::kBlockedWithoutSniffing);

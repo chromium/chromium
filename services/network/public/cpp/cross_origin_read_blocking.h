@@ -156,9 +156,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
     class ConfirmationSniffer;
     class SimpleConfirmationSniffer;
 
-    void LogAllowedResponse();
-    void LogBlockedResponse();
-
     // Returns true if the response has a nosniff header.
     static bool HasNoSniff(const network::mojom::URLResponseHead& response);
 
@@ -174,6 +171,9 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
     FRIEND_TEST_ALL_PREFIXES(content::CrossSiteDocumentResourceHandlerTest,
                              CORBProtectionLogging);
     FRIEND_TEST_ALL_PREFIXES(ResponseAnalyzerTest, CORBProtectionLogging);
+
+    void LogAllowedResponse();
+    void LogBlockedResponse();
 
     // Three conclusions are possible from looking at the headers:
     //   - Allow: response doesn't need to be blocked (e.g. if it is same-origin
@@ -271,6 +271,11 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
     // Sniffing results.
     bool found_blockable_content_ = false;
 
+    // Whether the final allow/block decision has been logged to UMA.
+    // (This is only used in DCHECKs that verify that such UMA is only logged
+    // once.)
+    bool has_logged_final_decision_ = false;
+
     DISALLOW_COPY_AND_ASSIGN(ResponseAnalyzer);
   };
 
@@ -299,7 +304,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
 
     kMaxValue = kAllowedAfterSniffing
   };
-  static void LogAction(Action action);
 
   // Three conclusions are possible from sniffing a byte sequence:
   //  - No: meaning that the data definitively doesn't match the indicated type.

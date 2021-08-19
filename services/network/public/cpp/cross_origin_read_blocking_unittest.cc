@@ -1875,9 +1875,9 @@ class ResponseAnalyzerTest : public testing::Test,
     return response;
   }
 
-  // Instantiate and run |analyzer_| on the current scenario. Allow the analyzer
-  // to sniff the response body if needed and confirm it correctly decides to
-  // block or allow.
+  // Instantiate and run CORB analyzer on the current scenario. Allow the
+  // analyzer to sniff the response body if needed and confirm it correctly
+  // decides to block or allow.
   void RunAnalyzerOnScenario(const mojom::URLResponseHead& response) {
     TestScenario scenario = GetParam();
     // Initialize |request| from the parameters.
@@ -1896,17 +1896,21 @@ class ResponseAnalyzerTest : public testing::Test,
                             : network::mojom::RequestMode::kCors;
 
     // Create a ResponseAnalyzer to test.
-    analyzer_ = std::make_unique<ResponseAnalyzer>(
+    //
+    // The ResponseAnalyzer will be destructed when `analyzer` goes out of scope
+    // (the destructor triggers logging of UMAs that some callers of
+    // RunAnalyzerOnScenario attempt to verify).
+    auto analyzer = std::make_unique<ResponseAnalyzer>(
         request->url(), request->initiator(), response, request_mode);
 
     // Verify MIME type was classified correctly.
     EXPECT_EQ(scenario.canonical_mime_type,
-              analyzer_->canonical_mime_type_for_testing());
+              analyzer->canonical_mime_type_for_testing());
 
     // Verify that the verdict packet is >= 0 if CORB expects to sniff.
     bool expected_to_sniff =
         scenario.verdict_packet != kVerdictPacketForHeadersBasedVerdict;
-    ASSERT_EQ(expected_to_sniff, analyzer_->needs_sniffing());
+    ASSERT_EQ(expected_to_sniff, analyzer->needs_sniffing());
 
     // This vector holds the packets to be delivered.
     std::vector<const char*> packets_vector(scenario.packets);
@@ -1920,16 +1924,18 @@ class ResponseAnalyzerTest : public testing::Test,
     // If we don't expect to sniff then CORB should have already made a blockng
     // decision based on the headers.
     if (!expected_to_sniff) {
+      EXPECT_FALSE(analyzer->needs_sniffing());
       if (scenario.verdict == Verdict::kBlock) {
-        ASSERT_FALSE(analyzer_->ShouldAllow());
-        ASSERT_TRUE(analyzer_->ShouldBlock());
+        ASSERT_FALSE(analyzer->ShouldAllow());
+        ASSERT_TRUE(analyzer->ShouldBlock());
       } else {
-        ASSERT_FALSE(analyzer_->ShouldBlock());
-        ASSERT_TRUE(analyzer_->ShouldAllow());
+        ASSERT_FALSE(analyzer->ShouldBlock());
+        ASSERT_TRUE(analyzer->ShouldAllow());
       }
+      return;
     }
     // Simulate the behaviour of the URLLoader by appending the packets into
-    // |data_buffer| and feeding this to |analyzer_|.
+    // |data_buffer| and feeding this to |analyzer|.
     std::string data_buffer;
     size_t data_offset = 0;
     bool reached_final_packet = false;
@@ -1938,13 +1944,13 @@ class ResponseAnalyzerTest : public testing::Test,
       SCOPED_TRACE(testing::Message()
                    << "While delivering packet #" << packet_index);
 
-      // At each iteration of the loop we feed a new packet to |analyzer_|,
+      // At each iteration of the loop we feed a new packet to |analyzer|,
       // breaking at the |verdict_packet|. Since we haven't given the next
-      // packet to |analyzer_| yet at this point in the loop, it shouldn't have
+      // packet to |analyzer| yet at this point in the loop, it shouldn't have
       // made a decision yet.
-      EXPECT_TRUE(analyzer_->needs_sniffing());
-      EXPECT_FALSE(analyzer_->ShouldBlock());
-      EXPECT_FALSE(analyzer_->ShouldAllow());
+      EXPECT_TRUE(analyzer->needs_sniffing());
+      EXPECT_FALSE(analyzer->ShouldBlock());
+      EXPECT_FALSE(analyzer->ShouldAllow());
 
       // Append the next packet of the response body. If appending the entire
       // packet would exceed net::kMaxBytesToSniff we truncate the data.
@@ -1954,11 +1960,11 @@ class ResponseAnalyzerTest : public testing::Test,
       data_buffer.append(packets_vector[packet_index], bytes_to_append);
 
       // Hand |analyzer_| the data to sniff.
-      analyzer_->SniffResponseBody(data_buffer);
+      analyzer->SniffResponseBody(data_buffer);
       data_offset += bytes_to_append;
 
       // If the latest packet was empty, or we reached net::kMaxBytesToSniff
-      // then sniffing should be over. Furthermore, if the |analyzer_| hasn't
+      // then sniffing should be over. Furthermore, if the |analyzer| hasn't
       // decided to block or allow, then (in the real implementation) URLLoader
       // will default to allowing. We check here that this occurs only when it
       // is supposed to.
@@ -1970,7 +1976,7 @@ class ResponseAnalyzerTest : public testing::Test,
         bool expected_to_run_out_of_data =
             scenario.verdict == Verdict::kAllowBecauseOutOfData;
         bool did_run_out_of_data =
-            !analyzer_->ShouldAllow() && !analyzer_->ShouldBlock();
+            !analyzer->ShouldAllow() && !analyzer->ShouldBlock();
         EXPECT_EQ(expected_to_run_out_of_data, did_run_out_of_data);
       }
     }
@@ -1978,24 +1984,21 @@ class ResponseAnalyzerTest : public testing::Test,
     // Confirm the analyzer is blocking or allowing correctly (now that we have
     // performed any needed sniffing).
     if (scenario.verdict == Verdict::kBlock) {
-      ASSERT_FALSE(analyzer_->ShouldAllow());
-      ASSERT_TRUE(analyzer_->ShouldBlock());
-      // Log the response as URLLoader would.
-      analyzer_->LogBlockedResponse();
+      ASSERT_FALSE(analyzer->ShouldAllow());
+      ASSERT_TRUE(analyzer->ShouldBlock());
     } else {
-      // In this case either the |analyzer_| has decided to allow the response,
+      // In this case either the |analyzer| has decided to allow the response,
       // or run out of data and so the response will be allowed by default.
-      ASSERT_FALSE(analyzer_->ShouldBlock());
+      ASSERT_FALSE(analyzer->ShouldBlock());
       if (scenario.verdict == Verdict::kAllow) {
-        ASSERT_TRUE(analyzer_->ShouldAllow());
+        ASSERT_TRUE(analyzer->ShouldAllow());
       } else {
         // In this case |scenario.verdict| == Verdict::kAllowBecauseOutOfData,
         // so double-check that sniffing actually occurred and failed.
-        ASSERT_FALSE(analyzer_->ShouldAllow());
+        EXPECT_EQ(Verdict::kAllowBecauseOutOfData, scenario.verdict);
+        ASSERT_FALSE(analyzer->ShouldAllow());
         EXPECT_TRUE(reached_final_packet);
       }
-      // Log the response as URLLoader would.
-      analyzer_->LogAllowedResponse();
     }
   }
 
@@ -2003,9 +2006,6 @@ class ResponseAnalyzerTest : public testing::Test,
   base::test::TaskEnvironment task_environment_;
   net::TestURLRequestContext context_;
   net::TestDelegate delegate_;
-
-  // |analyzer_| is the ResponseAnalyzer instance under test.
-  std::unique_ptr<ResponseAnalyzer> analyzer_;
 
   DISALLOW_COPY_AND_ASSIGN(ResponseAnalyzerTest);
 };  // namespace network
@@ -2073,13 +2073,20 @@ TEST_P(ResponseAnalyzerTest, ResponseBlocking) {
     NOTREACHED();
   }
 
-  // Expecting one action recording CORB's decision.
-  expected_counts[histogram_base + ".Action"] = 1;
+  // Expecting two actions:
+  // 1. kResponseStarted
+  // 2. The action recording CORB's actual decision (`end_action`).
+  expected_counts[histogram_base + ".Action"] = 2;
+  const auto kResponseStarted = static_cast<base::HistogramBase::Sample>(
+      CrossOriginReadBlocking::Action::kResponseStarted);
   EXPECT_THAT(histograms.GetAllSamples(histogram_base + ".Action"),
-              testing::ElementsAre(base::Bucket(end_action, 1)))
+              testing::ElementsAre(base::Bucket(kResponseStarted, 1),
+                                   base::Bucket(end_action, 1)))
       << "Should have incremented the right actions.";
+
   if (should_be_blocked)
     expected_counts[histogram_base + ".Blocked.CanonicalMimeType"] = 1;
+
   // Make sure that the expected metrics, and only those metrics, were
   // incremented.
   EXPECT_THAT(histograms.GetTotalCountsForPrefix("SiteIsolation.XSD.Browser"),
