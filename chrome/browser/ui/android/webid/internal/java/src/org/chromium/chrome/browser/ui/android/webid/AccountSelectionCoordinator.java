@@ -96,6 +96,9 @@ public class AccountSelectionCoordinator implements AccountSelectionComponent {
         adapter.registerType(AccountSelectionProperties.ItemType.CONTINUE_BUTTON,
                 AccountSelectionCoordinator::buildContinueButtonView,
                 AccountSelectionViewBinder::bindContinueButtonView);
+        adapter.registerType(AccountSelectionProperties.ItemType.AUTO_SIGN_IN_CANCEL_BUTTON,
+                AccountSelectionCoordinator::buildAutoSignInCancelButtonView,
+                AccountSelectionViewBinder::bindAutoSignInCancelButtonView);
         sheetItemListView.setAdapter(adapter);
 
         return contentView;
@@ -121,8 +124,13 @@ public class AccountSelectionCoordinator implements AccountSelectionComponent {
                 .inflate(R.layout.account_selection_continue_button, parent, false);
     }
 
+    static View buildAutoSignInCancelButtonView(ViewGroup parent) {
+        return LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.auto_sign_in_cancel_button, parent, false);
+    }
+
     @Override
-    public void showAccounts(String url, List<Account> accounts) {
-        mMediator.showAccounts(url, accounts);
+    public void showAccounts(String url, List<Account> accounts, boolean isAutoSignIn) {
+        mMediator.showAccounts(url, accounts, isAutoSignIn);
     }
 }

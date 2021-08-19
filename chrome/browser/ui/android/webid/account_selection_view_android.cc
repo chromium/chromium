@@ -96,7 +96,8 @@ AccountSelectionViewAndroid::~AccountSelectionViewAndroid() {
 
 void AccountSelectionViewAndroid::Show(const GURL& rp_url,
                                        const GURL& idp_url,
-                                       base::span<const Account> accounts) {
+                                       base::span<const Account> accounts,
+                                       bool is_auto_sign_in) {
   if (!RecreateJavaObject()) {
     // It's possible that the constructor cannot access the bottom sheet clank
     // component. That case may be temporary but we can't let users in a
@@ -112,7 +113,7 @@ void AccountSelectionViewAndroid::Show(const GURL& rp_url,
       ConvertToJavaAccounts(env, accounts, idp_url);
   Java_AccountSelectionBridge_showAccounts(
       env, java_object_internal_, ConvertUTF8ToJavaString(env, rp_url.spec()),
-      accounts_obj);
+      accounts_obj, is_auto_sign_in);
 }
 
 void AccountSelectionViewAndroid::OnAccountSelected(
@@ -125,6 +126,11 @@ void AccountSelectionViewAndroid::OnAccountSelected(
 }
 
 void AccountSelectionViewAndroid::OnDismiss(JNIEnv* env) {
+  delegate_->OnDismiss();
+}
+
+void AccountSelectionViewAndroid::OnAutoSignInCancelled(JNIEnv* env) {
+  // TODO(yigu): Alternatively we could fall back to manual sign in flow.
   delegate_->OnDismiss();
 }
 

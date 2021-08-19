@@ -105,11 +105,13 @@ class CONTENT_EXPORT IdentityRequestDialogController {
       InitialApprovalCallback approval_callback);
 
   // Shows and accounts selections for the given IDP. The |on_selected| callback
-  // is called with the selected account id or empty string otherwise.
+  // is called with the selected account id or empty string otherwise. The bool
+  // |is_auto_sign_in| represents whether this is an auto sign in flow.
   virtual void ShowAccountsDialog(content::WebContents* rp_web_contents,
                                   content::WebContents* idp_web_contents,
                                   const GURL& idp_signin_url,
                                   AccountList accounts,
+                                  bool is_auto_sign_in,
                                   AccountSelectionCallback on_selected) {}
 
   // Shows the identity provider sign-in page at the given URL using the

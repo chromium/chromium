@@ -480,11 +480,13 @@ class FederatedAuthRequestImplTest : public RenderViewHostTestHarness {
       // even though the bit is set we may not exercise the AutoSignIn flow.
       // e.g. for sign up flow, multiple accounts, user opt-out etc. In this
       // case, it's up to the test to expect this mock function call.
-      EXPECT_CALL(*mock_dialog_controller_, ShowAccountsDialog(_, _, _, _, _))
+      EXPECT_CALL(*mock_dialog_controller_,
+                  ShowAccountsDialog(_, _, _, _, _, _))
           .WillOnce(Invoke(
               [&](content::WebContents* rp_web_contents,
                   content::WebContents* idp_web_contents,
                   const GURL& idp_signin_url, AccountList accounts,
+                  bool is_auto_sign_in,
                   IdentityRequestDialogController::AccountSelectionCallback
                       on_selected) {
                 displayed_accounts_ = accounts;
@@ -834,9 +836,8 @@ TEST_F(BasicFederatedAuthRequestImplTest,
       test_case.inputs.prefer_auto_sign_in);
 }
 
-// TODO(https://crbug.com/1236678): This test is incorrect and will be fixed
-// with the AutoSignIn UI implementation.
-TEST_F(BasicFederatedAuthRequestImplTest, DISABLED_AutoSignInForReturningUser) {
+TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInForReturningUser) {
+  AccountList displayed_accounts;
   const auto& test_case = kSuccessfulMediatedAutoSignInTestCase;
   auto& auth_request = CreateAuthRequest(GURL(test_case.inputs.provider));
   SetMockExpectations(test_case);
@@ -854,17 +855,27 @@ TEST_F(BasicFederatedAuthRequestImplTest, DISABLED_AutoSignInForReturningUser) {
               HasSharingPermissionForAccount(
                   url::Origin::Create(GURL(kIdpTestOrigin)), _, "1234"))
       .WillOnce(Return(true));
-  // TODO(yigu): once the AutoSignIn UI is implemented we expect this call to
-  // happen once.
-  EXPECT_CALL(*mock_dialog_controller(), ShowAccountsDialog(_, _, _, _, _))
-      .Times(0);
+
+  EXPECT_CALL(*mock_dialog_controller(), ShowAccountsDialog(_, _, _, _, _, _))
+      .WillOnce(
+          Invoke([&](content::WebContents* rp_web_contents,
+                     content::WebContents* idp_web_contents,
+                     const GURL& idp_signin_url, AccountList accounts,
+                     bool is_auto_sign_in,
+                     IdentityRequestDialogController::AccountSelectionCallback
+                         on_selected) {
+            EXPECT_TRUE(is_auto_sign_in);
+            displayed_accounts = accounts;
+            std::move(on_selected).Run(accounts[0].sub);
+          }));
 
   EXPECT_EQ(test_case.config.Mediated_conf.accounts.size(), 1u);
   auto auth_response = PerformAuthRequest(
       test_case.inputs.client_id, test_case.inputs.nonce, test_case.inputs.mode,
       test_case.inputs.prefer_auto_sign_in);
-  EXPECT_EQ(test_case.config.Mediated_conf.accounts[0].login_state,
-            LoginState::kSignIn);
+
+  ASSERT_FALSE(displayed_accounts.empty());
+  EXPECT_EQ(displayed_accounts[0].login_state, LoginState::kSignIn);
   EXPECT_EQ(auth_response.second.value(), kToken);
 }
 
@@ -872,13 +883,15 @@ TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInForFirstTimeUser) {
   AccountList displayed_accounts;
   const auto& test_case = kSuccessfulMediatedAutoSignInTestCase;
   CreateAuthRequest(GURL(test_case.inputs.provider));
-  EXPECT_CALL(*mock_dialog_controller(), ShowAccountsDialog(_, _, _, _, _))
+  EXPECT_CALL(*mock_dialog_controller(), ShowAccountsDialog(_, _, _, _, _, _))
       .WillOnce(
           Invoke([&](content::WebContents* rp_web_contents,
                      content::WebContents* idp_web_contents,
                      const GURL& idp_signin_url, AccountList accounts,
+                     bool is_auto_sign_in,
                      IdentityRequestDialogController::AccountSelectionCallback
                          on_selected) {
+            EXPECT_FALSE(is_auto_sign_in);
             displayed_accounts = accounts;
             std::move(on_selected).Run(accounts[0].sub);
           }));

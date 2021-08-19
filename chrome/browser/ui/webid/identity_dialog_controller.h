@@ -52,6 +52,7 @@ class IdentityDialogController
                           content::WebContents* idp_web_contents,
                           const GURL& idp_url,
                           AccountList accounts,
+                          bool is_auto_sign_in,
                           AccountSelectionCallback on_selected) override;
 
   void ShowIdProviderWindow(content::WebContents* rp_web_contents,

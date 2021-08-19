@@ -21,6 +21,7 @@ import android.widget.TextView;
 import androidx.annotation.StringRes;
 
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AutoSignInCancelButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.DataSharingConsentProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties;
@@ -193,20 +194,45 @@ class AccountSelectionViewBinder {
     }
 
     /**
+     * Called whenever a cancel button for a single account is bound to this view.
+     * @param model The model containing the data for the view.
+     * @param view The view to be bound.
+     * @param key The key of the property to be bound.
+     */
+    static void bindAutoSignInCancelButtonView(PropertyModel model, View view, PropertyKey key) {
+        if (key != AutoSignInCancelButtonProperties.ON_CLICK_LISTENER) {
+            assert false : "Unhandled update to property:" + key;
+            return;
+        }
+        view.setOnClickListener(clickedView -> {
+            model.get(AutoSignInCancelButtonProperties.ON_CLICK_LISTENER).run();
+        });
+        String btnText = String.format(view.getContext().getString(R.string.cancel));
+        Button button = view.findViewById(R.id.auto_sign_in_cancel_btn);
+        button.setText(btnText);
+    }
+
+    /**
      * Called whenever a header is bound to this view.
      * @param model The model containing the data for the view.
      * @param view The view to be bound.
      * @param key The key of the property to be bound.
      */
     static void bindHeaderView(PropertyModel model, View view, PropertyKey key) {
-        if (key == HeaderProperties.SINGLE_ACCOUNT || key == HeaderProperties.FORMATTED_URL) {
+        if (key == HeaderProperties.FORMATTED_URL || key == HeaderProperties.TYPE) {
             TextView sheetTitleText = view.findViewById(R.id.account_selection_sheet_title);
             @StringRes
-            int titleStringId;
-            if (model.get(HeaderProperties.SINGLE_ACCOUNT)) {
-                titleStringId = R.string.account_selection_sheet_title_single;
-            } else {
-                titleStringId = R.string.account_selection_sheet_title;
+            int titleStringId = R.string.account_selection_sheet_title_single;
+            switch (model.get(HeaderProperties.TYPE)) {
+                case SINGLE_ACCOUNT:
+                    titleStringId = R.string.account_selection_sheet_title_single;
+                    break;
+                case MULTIPLE_ACCOUNT:
+                    titleStringId = R.string.account_selection_sheet_title;
+                    break;
+                case AUTO_SIGN_IN:
+                    titleStringId = R.string.auto_sign_in_sheet_title;
+                    break;
             }
 
             String title = String.format(view.getContext().getString(titleStringId),

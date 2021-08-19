@@ -99,6 +99,7 @@ void IdentityDialogController::ShowAccountsDialog(
     content::WebContents* idp_web_contents,
     const GURL& idp_url,
     AccountList accounts,
+    bool is_auto_sign_in,
     AccountSelectionCallback on_selected) {
   // IDP scheme is expected to always be `https://`.
   CHECK(idp_url.SchemeIs(url::kHttpsScheme));
@@ -112,7 +113,7 @@ void IdentityDialogController::ShowAccountsDialog(
   if (!account_view_)
     account_view_ = AccountSelectionView::Create(this);
 
-  account_view_->Show(rp_url, idp_url, accounts);
+  account_view_->Show(rp_url, idp_url, accounts, is_auto_sign_in);
 #endif
 }
 

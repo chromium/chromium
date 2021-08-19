@@ -402,21 +402,16 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
         account.login_state = login_state;
       }
 
+      idp_web_contents_ = CreateIdpWebContents();
       // Auto signs in returning users if they have a single account and are
       // signing in.
       // TODO(yigu): Add additional controls for RP/IDP/User for this flow.
       // https://crbug.com/1236678.
-      if (prefer_auto_sign_in_ && accounts.size() == 1 &&
-          accounts[0].login_state == LoginState::kSignIn) {
-        // TODO(yigu): Implement UI for users to cancel the auto sign in.
-        // https://crbug.com/1236678.
-        OnAccountSelected(accounts[0].sub);
-        return;
-      }
-
-      idp_web_contents_ = CreateIdpWebContents();
+      bool is_auto_sign_in = prefer_auto_sign_in_ && accounts.size() == 1 &&
+                             accounts[0].login_state == LoginState::kSignIn;
       request_dialog_controller_->ShowAccountsDialog(
           rp_web_contents, idp_web_contents_.get(), provider_, accounts,
+          is_auto_sign_in,
           base::BindOnce(&FederatedAuthRequestImpl::OnAccountSelected,
                          weak_ptr_factory_.GetWeakPtr()));
       return;

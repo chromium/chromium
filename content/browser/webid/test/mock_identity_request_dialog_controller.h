@@ -38,11 +38,12 @@ class MockIdentityRequestDialogController
                void(content::WebContents*,
                     const GURL&,
                     TokenExchangeApprovalCallback));
-  MOCK_METHOD5(ShowAccountsDialog,
+  MOCK_METHOD6(ShowAccountsDialog,
                void(WebContents*,
                     WebContents*,
                     const GURL&,
                     AccountList,
+                    bool,
                     AccountSelectionCallback));
 };
 

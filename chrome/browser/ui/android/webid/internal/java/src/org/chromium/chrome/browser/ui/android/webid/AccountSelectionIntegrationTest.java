@@ -93,8 +93,9 @@ public class AccountSelectionIntegrationTest {
     @Test
     @MediumTest
     public void testBackDismissesAndCallsCallback() {
-        runOnUiThreadBlocking(
-                () -> { mAccountSelection.showAccounts(EXAMPLE_URL, Arrays.asList(ANA, BOB)); });
+        runOnUiThreadBlocking(() -> {
+            mAccountSelection.showAccounts(EXAMPLE_URL, Arrays.asList(ANA, BOB), false);
+        });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
 
         Espresso.pressBack();
@@ -119,8 +120,9 @@ public class AccountSelectionIntegrationTest {
         pollUiThread(() -> getBottomSheetState() == SheetState.PEEK);
         Espresso.onView(withText("Another bottom sheet content")).check(matches(isDisplayed()));
 
-        runOnUiThreadBlocking(
-                () -> { mAccountSelection.showAccounts(EXAMPLE_URL, Arrays.asList(ANA, BOB)); });
+        runOnUiThreadBlocking(() -> {
+            mAccountSelection.showAccounts(EXAMPLE_URL, Arrays.asList(ANA, BOB), false);
+        });
         waitForEvent(mMockBridge).onDismissed();
         verify(mMockBridge, never()).onAccountSelected(any());
         Espresso.onView(withText("Another bottom sheet content")).check(matches(isDisplayed()));
