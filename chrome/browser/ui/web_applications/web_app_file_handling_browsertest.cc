@@ -637,7 +637,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
 
   // Install a second app, which is on the same origin and does not handle any
   // files. This should not affect the permission.
-  GURL second_app_url = https_server()->GetURL("app.com", "/pwa/app2.html");
+  GURL second_app_url = https_server()->GetURL("app.com", "/pwa2/app.html");
   InstallPWA(second_app_url);
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             map->GetContentSetting(origin, origin,
@@ -661,7 +661,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
 
   // Install a third app, which is on a different origin; this should have no
   // effect on the permission.
-  GURL third_app_url = https_server()->GetURL("otherapp.com", "/pwa/app2.html");
+  GURL third_app_url = https_server()->GetURL("otherapp.com", "/pwa/app.html");
   InstallAnotherFileHandlingPwa(third_app_url);
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             map->GetContentSetting(origin, origin,
@@ -678,7 +678,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
   // permission. Uninstalling one should not reset the permission.
   InstallFileHandlingPWA();
   InstallAnotherFileHandlingPwa(
-      https_server()->GetURL("app.com", "/pwa/app2.html"));
+      https_server()->GetURL("app.com", "/pwa3/app.html"));
   map->SetContentSettingDefaultScope(origin, origin,
                                      ContentSettingsType::FILE_HANDLING,
                                      CONTENT_SETTING_ALLOW);
