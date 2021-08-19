@@ -7490,19 +7490,24 @@ bool LayoutBox::PercentageLogicalHeightIsResolvable() const {
 }
 
 DISABLE_CFI_PERF
-bool LayoutBox::HasUnsplittableScrollingOverflow() const {
+bool LayoutBox::HasUnsplittableScrollingOverflow(
+    FragmentationEngine engine) const {
   NOT_DESTROYED();
+  // Fragmenting scrollbars is only problematic in interactive media, e.g.
+  // multicol on a screen. If we're printing, which is non-interactive media, we
+  // should allow objects with non-visible overflow to be paginated as normally.
+  if (GetDocument().Printing())
+    return false;
+
+  // In LayoutNG, treat any scrollable container as monolithic.
+  if (engine == kNGFragmentationEngine && StyleRef().IsScrollContainer())
+    return true;
+
   // We will paginate as long as we don't scroll overflow in the pagination
   // direction.
   bool is_horizontal = IsHorizontalWritingMode();
   if ((is_horizontal && !ScrollsOverflowY()) ||
       (!is_horizontal && !ScrollsOverflowX()))
-    return false;
-
-  // Fragmenting scrollbars is only problematic in interactive media, e.g.
-  // multicol on a screen. If we're printing, which is non-interactive media, we
-  // should allow objects with non-visible overflow to be paginated as normally.
-  if (GetDocument().Printing())
     return false;
 
   // We do have overflow. We'll still be willing to paginate as long as the
@@ -7524,7 +7529,8 @@ bool LayoutBox::HasUnsplittableScrollingOverflow() const {
 LayoutBox::PaginationBreakability LayoutBox::GetPaginationBreakability(
     FragmentationEngine engine) const {
   NOT_DESTROYED();
-  if (ShouldBeConsideredAsReplaced() || HasUnsplittableScrollingOverflow() ||
+  if (ShouldBeConsideredAsReplaced() ||
+      HasUnsplittableScrollingOverflow(engine) ||
       (Parent() && IsWritingModeRoot()) ||
       (IsFixedPositioned() && GetDocument().Printing() &&
        IsA<LayoutView>(Container())) ||

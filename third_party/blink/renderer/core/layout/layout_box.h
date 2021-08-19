@@ -1556,8 +1556,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return false;
   }
 
-  bool HasUnsplittableScrollingOverflow() const;
-
   // Page / column breakability inside block-level objects.
   enum PaginationBreakability {
     kAllowAnyBreaks,  // No restrictions on breaking. May examine children to
@@ -1587,6 +1585,8 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     NOT_DESTROYED();
     return GetPaginationBreakability(kNGFragmentationEngine);
   }
+
+  bool HasUnsplittableScrollingOverflow(FragmentationEngine) const;
 
   LayoutRect LocalCaretRect(
       const InlineBox*,
