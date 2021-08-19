@@ -449,7 +449,7 @@ public final class WebFeedFollowIntroControllerTest {
             @WebFeedSubscriptionStatus int subscriptionStatus, boolean isRecommended) {
         WebFeedBridge.WebFeedMetadata webFeedMetadata =
                 new WebFeedBridge.WebFeedMetadata(sWebFeedId, "title", sTestUrl, subscriptionStatus,
-                        /*isActive=*/true, isRecommended);
+                        WebFeedAvailabilityStatus.ACTIVE, isRecommended);
         doAnswer(invocation -> {
             invocation.<Callback<WebFeedBridge.WebFeedMetadata>>getArgument(1).onResult(
                     webFeedMetadata);

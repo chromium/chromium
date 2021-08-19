@@ -136,6 +136,15 @@ enum class WebFeedSubscriptionStatus {
 };
 std::ostream& operator<<(std::ostream& out, WebFeedSubscriptionStatus value);
 
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.feed.webfeed
+enum class WebFeedAvailabilityStatus {
+  kStateUnspecified = 0,
+  kInactive = 1,
+  kActive = 2,
+  kWaitingForContent = 4,
+};
+std::ostream& operator<<(std::ostream& out, WebFeedAvailabilityStatus value);
+
 // Information about a web feed.
 struct WebFeedMetadata {
   WebFeedMetadata();
@@ -147,7 +156,8 @@ struct WebFeedMetadata {
   // Unique ID of the web feed. Empty if the client knows of no web feed.
   std::string web_feed_id;
   // Whether the subscribed Web Feed has content available for fetching.
-  bool is_active = false;
+  WebFeedAvailabilityStatus availability_status =
+      WebFeedAvailabilityStatus::kStateUnspecified;
   // Whether the Web Feed is recommended by the web feeds service.
   bool is_recommended = false;
   std::string title;

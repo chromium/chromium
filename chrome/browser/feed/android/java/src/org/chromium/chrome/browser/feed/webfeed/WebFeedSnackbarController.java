@@ -65,7 +65,8 @@ public class WebFeedSnackbarController {
             String fallbackTitle) {
         if (results.requestStatus == WebFeedSubscriptionRequestStatus.SUCCESS) {
             if (results.metadata != null) {
-                showPostSuccessfulFollowHelp(results.metadata.title, results.metadata.isActive);
+                showPostSuccessfulFollowHelp(results.metadata.title,
+                        results.metadata.availabilityStatus == WebFeedAvailabilityStatus.ACTIVE);
             } else {
                 showPostSuccessfulFollowHelp(fallbackTitle, /*isActive=*/false);
             }
