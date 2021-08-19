@@ -16,7 +16,8 @@
 class ReceiverSessionClient {
  public:
   explicit ReceiverSessionClient(
-      fidl::InterfaceRequest<fuchsia::web::MessagePort> message_port_request);
+      fidl::InterfaceRequest<fuchsia::web::MessagePort> message_port_request,
+      bool video_only_receiver);
   ReceiverSessionClient(const ReceiverSessionClient& other) = delete;
 
   ~ReceiverSessionClient();
@@ -34,6 +35,8 @@ class ReceiverSessionClient {
 
   // Created in SetCastStreamingReceiver(), and empty prior to that call.
   std::unique_ptr<cast_streaming::ReceiverSession> receiver_session_;
+
+  const bool video_only_receiver_;
 };
 
 #endif  // FUCHSIA_ENGINE_BROWSER_RECEIVER_SESSION_CLIENT_H_
