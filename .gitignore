@@ -178,6 +178,7 @@ vs-chromium-project.txt
 /chromeos/components/media_app_ui/resources/prod
 /chromeos/components/media_app_ui/resources/app
 /chromeos/components/media_app_ui/resources/pkg
+/chromeos/components/projector_app/resources/prod
 /chromeos/profiles/chromeos.orderfile.txt
 /chromeos/profiles/*.local.txt
 /chromeos/profiles/*.afdo.prof
