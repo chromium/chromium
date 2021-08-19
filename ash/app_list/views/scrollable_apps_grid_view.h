@@ -52,6 +52,7 @@ class ASH_EXPORT ScrollableAppsGridView : public AppsGridView {
   void StopAutoScroll() override;
   void SetFocusAfterEndDrag() override;
   void RecordAppMovingTypeMetrics(AppListAppMovingType type) override;
+  int TilesPerPage(int page) const override;
 
   // AppListItemView::GridDelegate:
   void OnAppListItemViewActivated(AppListItemView* pressed_item_view,

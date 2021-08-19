@@ -253,6 +253,10 @@ void ScrollableAppsGridView::RecordAppMovingTypeMetrics(
                             kMaxAppListAppMovingType);
 }
 
+int ScrollableAppsGridView::TilesPerPage(int page) const {
+  return cols() * rows_per_page();
+}
+
 void ScrollableAppsGridView::OnAppListItemViewActivated(
     AppListItemView* pressed_item_view,
     const ui::Event& event) {

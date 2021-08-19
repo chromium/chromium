@@ -18,6 +18,7 @@ class AppListBubbleSearchPage;
 class AppListControllerImpl;
 class AppListView;
 class ContinueSectionView;
+class PagedAppsGridView;
 class RecentAppsView;
 class ScrollableAppsGridView;
 class SearchBoxView;
@@ -74,6 +75,9 @@ class AppListTestHelper {
 
   // Fullscreen/peeking launcher helpers.
   AppListView* GetAppListView();
+
+  // Paged launcher helpers.
+  PagedAppsGridView* GetRootPagedAppsGridView();
 
   // Bubble launcher helpers. The bubble must be open before calling these.
   SearchBoxView* GetBubbleSearchBoxView();

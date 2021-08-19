@@ -89,6 +89,7 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   void StopAutoScroll() override {}
   void SetFocusAfterEndDrag() override;
   void RecordAppMovingTypeMetrics(AppListAppMovingType type) override;
+  int TilesPerPage(int page) const override;
 
   // AppListItemView::GridDelegate:
   void OnAppListItemViewActivated(AppListItemView* pressed_item_view,
@@ -230,6 +231,9 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   // Layer array for apps grid background cards. Used to display the background
   // card during cardified state.
   std::vector<std::unique_ptr<ui::Layer>> background_cards_;
+
+  // Whether the AppListBubble is enabled.
+  const bool is_app_list_bubble_enabled_;
 
   base::WeakPtrFactory<PagedAppsGridView> weak_ptr_factory_{this};
 };

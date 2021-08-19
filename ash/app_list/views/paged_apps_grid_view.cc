@@ -181,7 +181,8 @@ PagedAppsGridView::PagedAppsGridView(
                    contents_view->GetAppListMainView()->view_delegate(),
                    folder_delegate),
       contents_view_(contents_view),
-      page_flip_delay_(kPageFlipDelay) {
+      page_flip_delay_(kPageFlipDelay),
+      is_app_list_bubble_enabled_(features::IsAppListBubbleEnabled()) {
   DCHECK(contents_view_);
   view_structure_.Init(IsInFolder() ? PagedViewStructure::Mode::kFullPages
                                     : PagedViewStructure::Mode::kPartialPages);
@@ -573,6 +574,16 @@ void PagedAppsGridView::SetFocusAfterEndDrag() {
 void PagedAppsGridView::RecordAppMovingTypeMetrics(AppListAppMovingType type) {
   UMA_HISTOGRAM_ENUMERATION("Apps.AppListAppMovingType", type,
                             kMaxAppListAppMovingType);
+}
+
+int PagedAppsGridView::TilesPerPage(int page) const {
+  if (IsInFolder())
+    return GetAppListConfig().max_folder_items_per_page();
+
+  if (is_app_list_bubble_enabled_)
+    return page == 0 ? 15 : 20;
+
+  return cols() * rows_per_page();
 }
 
 void PagedAppsGridView::OnAppListItemViewActivated(

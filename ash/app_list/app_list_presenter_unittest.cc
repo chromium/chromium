@@ -894,7 +894,7 @@ TEST_P(PopulatedAppListTest, MouseDragAppsGridViewHandledByAppList) {
 TEST_P(PopulatedAppListTest,
        MouseDragAppsGridViewHandledByPaginationController) {
   InitializeAppsGrid();
-  app_list_test_model_->PopulateApps(apps_grid_test_api_->TilesPerPage() + 1);
+  app_list_test_model_->PopulateApps(apps_grid_test_api_->TilesPerPage(0) + 1);
   EXPECT_EQ(2, apps_grid_view_->pagination_model()->total_pages());
 
   // Calculate the drag start/end points. |drag_start_point| is between the
@@ -926,7 +926,7 @@ TEST_P(PopulatedAppListTest,
 // (e.g. on screen rotation).
 TEST_P(PopulatedAppListTest, CancelItemDragOnMouseCaptureLoss) {
   InitializeAppsGrid();
-  app_list_test_model_->PopulateApps(apps_grid_test_api_->TilesPerPage() + 1);
+  app_list_test_model_->PopulateApps(apps_grid_test_api_->TilesPerPage(0) + 1);
 
   AppListItemView* const dragged_view = apps_grid_view_->GetItemViewAt(0);
 
@@ -1212,7 +1212,7 @@ TEST_P(PopulatedAppListTest, ScreenRotationDuringAppsGridItemDrag) {
   UpdateDisplay("1200x600");
 
   InitializeAppsGrid();
-  app_list_test_model_->PopulateApps(apps_grid_test_api_->TilesPerPage() + 1);
+  app_list_test_model_->PopulateApps(apps_grid_test_api_->TilesPerPage(0) + 1);
 
   AppListItemView* const dragged_view = apps_grid_view_->GetItemViewAt(0);
 
@@ -1258,7 +1258,7 @@ TEST_P(PopulatedAppListTest,
   UpdateDisplay("1200x600");
 
   InitializeAppsGrid();
-  app_list_test_model_->PopulateApps(apps_grid_test_api_->TilesPerPage() + 1);
+  app_list_test_model_->PopulateApps(apps_grid_test_api_->TilesPerPage(0) + 1);
 
   AppListItemView* const dragged_view = apps_grid_view_->GetItemViewAt(0);
 

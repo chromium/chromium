@@ -12,7 +12,10 @@
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/views/app_list_bubble_apps_page.h"
 #include "ash/app_list/views/app_list_bubble_view.h"
+#include "ash/app_list/views/app_list_main_view.h"
 #include "ash/app_list/views/app_list_view.h"
+#include "ash/app_list/views/apps_container_view.h"
+#include "ash/app_list/views/contents_view.h"
 #include "ash/shell.h"
 #include "base/run_loop.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -95,6 +98,14 @@ void AppListTestHelper::AddAppItems(int num_apps) {
 
 AppListView* AppListTestHelper::GetAppListView() {
   return app_list_controller_->presenter()->GetView();
+}
+
+PagedAppsGridView* AppListTestHelper::GetRootPagedAppsGridView() {
+  return GetAppListView()
+      ->app_list_main_view()
+      ->contents_view()
+      ->apps_container_view()
+      ->apps_grid_view();
 }
 
 SearchBoxView* AppListTestHelper::GetBubbleSearchBoxView() {

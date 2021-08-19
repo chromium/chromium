@@ -248,6 +248,7 @@ source_set("unit_tests") {
     "views/assistant/assistant_page_view_unittest.cc",
     "views/continue_section_view_unittest.cc",
     "views/folder_header_view_unittest.cc",
+    "views/paged_apps_grid_view_unittest.cc",
     "views/privacy_container_view_unittest.cc",
     "views/recent_apps_view_unittest.cc",
     "views/result_selection_controller_unittest.cc",

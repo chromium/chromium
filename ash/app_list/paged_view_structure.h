@@ -149,7 +149,7 @@ class ASH_EXPORT PagedViewStructure {
   void ClearEmptyPages();
 
   // Returns TilesPerPage() from `apps_grid_view_`.
-  int TilesPerPage() const;
+  int TilesPerPage(int page) const;
 
   // Not const for tests.
   Mode mode_ = Mode::kPartialPages;

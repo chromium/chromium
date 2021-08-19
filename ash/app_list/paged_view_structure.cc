@@ -60,7 +60,6 @@ void PagedViewStructure::LoadFromOther(const PagedViewStructure& other) {
 
 void PagedViewStructure::LoadFromMetadata() {
   const auto* view_model = apps_grid_view_->view_model();
-  const size_t tiles_per_page = TilesPerPage();
 
   pages_.clear();
   pages_.emplace_back();
@@ -77,8 +76,10 @@ void PagedViewStructure::LoadFromMetadata() {
   if (mode_ == Mode::kFullPages) {
     // Copy the view model to N full pages.
     for (int i = 0; i < view_model->view_size(); ++i) {
-      if (pages_.back().size() == tiles_per_page)
+      if (pages_.back().size() ==
+          static_cast<size_t>(TilesPerPage(pages_.size() - 1))) {
         pages_.emplace_back();
+      }
       pages_.back().push_back(view_model->view_at(i));
     }
     return;
@@ -96,7 +97,7 @@ void PagedViewStructure::LoadFromMetadata() {
     }
 
     // Create a new page if the current page is full.
-    const size_t current_page_max_items = apps_grid_view_->TilesPerPage();
+    const size_t current_page_max_items = TilesPerPage(pages_.size() - 1);
     if (sanitize_locks_ == 0 && pages_.back().size() == current_page_max_items)
       pages_.emplace_back();
 
@@ -221,9 +222,12 @@ GridIndex PagedViewStructure::GetIndexFromModelIndex(int model_index) const {
     return GridIndex(0, model_index);
 
   if (mode_ == Mode::kFullPages) {
-    const int tiles_per_page = TilesPerPage();
-    return GridIndex(model_index / tiles_per_page,
-                     model_index % tiles_per_page);
+    int current_page = 0;
+    while (model_index >= TilesPerPage(current_page)) {
+      model_index -= TilesPerPage(current_page);
+      ++current_page;
+    }
+    return GridIndex(current_page, model_index);
   }
 
   AppListItemView* view = apps_grid_view_->view_model()->view_at(model_index);
@@ -243,8 +247,14 @@ int PagedViewStructure::GetModelIndexFromIndex(const GridIndex& index) const {
     return index.slot;
   }
 
-  if (mode_ == Mode::kFullPages)
-    return index.page * TilesPerPage() + index.slot;
+  if (mode_ == Mode::kFullPages) {
+    int model_index = 0;
+    for (int i = 0; i < index.page; i++) {
+      model_index += TilesPerPage(i);
+    }
+    model_index += index.slot;
+    return model_index;
+  }
 
   auto* view_model = apps_grid_view_->view_model();
   if (index.page >= total_pages() || index.slot >= items_on_page(index.page))
@@ -265,7 +275,7 @@ GridIndex PagedViewStructure::GetLastTargetIndex() const {
 
   int last_page_index = total_pages() - 1;
   int target_slot = CalculateTargetSlot(pages_.back());
-  if (target_slot == apps_grid_view_->TilesPerPage()) {
+  if (target_slot == TilesPerPage(last_page_index)) {
     // The last page is full, so the last target visual index is the first slot
     // in the next new page.
     target_slot = 0;
@@ -283,7 +293,7 @@ GridIndex PagedViewStructure::GetLastTargetIndexOfPage(int page_index) const {
   if (mode_ == Mode::kFullPages) {
     if (page_index == apps_grid_view_->pagination_model_.total_pages() - 1)
       return GetLastTargetIndex();
-    return GridIndex(page_index, TilesPerPage() - 1);
+    return GridIndex(page_index, TilesPerPage(page_index) - 1);
   }
 
   const int page_size = total_pages();
@@ -294,7 +304,7 @@ GridIndex PagedViewStructure::GetLastTargetIndexOfPage(int page_index) const {
     return GridIndex(page_index, 0);
 
   int target_slot = CalculateTargetSlot(pages_[page_index]);
-  if (target_slot == apps_grid_view_->TilesPerPage()) {
+  if (target_slot == TilesPerPage(page_index)) {
     // The specified page is full, so the last target visual index is the last
     // slot in the page_index.
     --target_slot;
@@ -428,7 +438,7 @@ bool PagedViewStructure::IsFullPage(int page_index) const {
   if (page_index >= total_pages())
     return false;
   return static_cast<int>(pages_[page_index].size()) ==
-         apps_grid_view_->TilesPerPage();
+         TilesPerPage(page_index);
 }
 
 int PagedViewStructure::CalculateTargetSlot(const Page& page) const {
@@ -447,7 +457,6 @@ void PagedViewStructure::Sanitize() {
 }
 
 void PagedViewStructure::ClearOverflow() {
-  const size_t max_item_views = apps_grid_view_->TilesPerPage();
   std::vector<AppListItemView*> overflow_views;
   auto iter = pages_.begin();
   while (iter != pages_.end() || !overflow_views.empty()) {
@@ -457,6 +466,8 @@ void PagedViewStructure::ClearOverflow() {
       iter = pages_.end() - 1;
     }
 
+    const size_t max_item_views =
+        TilesPerPage(static_cast<int>(iter - pages_.begin()));
     auto& page = *iter;
 
     if (!overflow_views.empty()) {
@@ -488,8 +499,8 @@ void PagedViewStructure::ClearEmptyPages() {
   }
 }
 
-int PagedViewStructure::TilesPerPage() const {
-  return apps_grid_view_->TilesPerPage();
+int PagedViewStructure::TilesPerPage(int page) const {
+  return apps_grid_view_->TilesPerPage(page);
 }
 
 }  // namespace ash

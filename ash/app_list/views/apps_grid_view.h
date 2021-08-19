@@ -336,6 +336,11 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Returns the size of the entire tile grid.
   virtual gfx::Size GetTileGridSize() const = 0;
 
+  // Returns the number of app tiles per page. Takes a page number as an
+  // argument as the first page might have less apps shown. Folder grids may
+  // have different numbers of tiles from the main grid.
+  virtual int TilesPerPage(int page) const = 0;
+
   // Returns the padding between each page of the apps grid, or zero if the grid
   // does not use pages.
   virtual int GetPaddingBetweenPages() const = 0;
@@ -392,10 +397,6 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   GridIndex GetIndexOfView(const AppListItemView* view) const;
   AppListItemView* GetViewAtIndex(const GridIndex& index) const;
-
-  // Returns the number of apps tiles per page. Folder grids may have different
-  // numbers of tiles from the main grid.
-  int TilesPerPage() const;
 
   // Returns the number of existing items in specified page. Returns 0 if |page|
   // is out of range.
