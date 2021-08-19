@@ -41,6 +41,7 @@
 #include "components/ntp_tiles/switches.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/payments/core/features.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
@@ -533,6 +534,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableFullPageScreenshotName,
      flag_descriptions::kEnableFullPageScreenshotDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kEnableFullPageScreenshot)},
+    {"enable-optimization-guide",
+     flag_descriptions::kEnableOptimizationGuideName,
+     flag_descriptions::kEnableOptimizationGuideDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(optimization_guide::features::kOptimizationHints)},
     {"legacy-tls-interstitial",
      flag_descriptions::kIOSLegacyTLSInterstitialsName,
      flag_descriptions::kIOSLegacyTLSInterstitialsDescription, flags_ui::kOsIos,

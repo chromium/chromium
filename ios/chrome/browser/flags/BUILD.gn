@@ -28,6 +28,7 @@ source_set("flags") {
     "//components/ntp_tiles",
     "//components/omnibox/browser",
     "//components/omnibox/common",
+    "//components/optimization_guide/core",
     "//components/password_manager/core/common",
     "//components/payments/core",
     "//components/policy:generated",

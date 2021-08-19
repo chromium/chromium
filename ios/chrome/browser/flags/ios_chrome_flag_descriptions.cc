@@ -222,6 +222,10 @@ const char kEnableNTPMemoryEnhancementName[] = "Enable NTP Memory Enhancement";
 const char kEnableNTPMemoryEnhancementDescription[] =
     "NTP will consume less memory.";
 
+const char kEnableOptimizationGuideName[] = "Enable optimization guide";
+const char kEnableOptimizationGuideDescription[] =
+    "Enables the optimization guide to provide intelligence for page loads.";
+
 const char kExpandedTabStripName[] = "Enable expanded tabstrip";
 const char kExpandedTabStripDescription[] =
     "Enables the new expanded tabstrip. Activated by swiping down the tabstrip"

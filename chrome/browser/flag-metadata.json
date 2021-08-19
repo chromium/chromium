@@ -2260,6 +2260,11 @@
     "expiry_milestone": 105
   },
   {
+    "name": "enable-optimization-guide",
+    "owners": [ "rajendrant", "robertogden" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "enable-os-feedback",
     "owners": [ "xiangdongkong", "cros-telemetry@google.com" ],
     "expiry_milestone": 96
