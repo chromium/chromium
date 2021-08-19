@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
@@ -1240,9 +1241,9 @@ const ui::NativeTheme* View::GetNativeTheme() const {
   if (widget)
     return widget->GetNativeTheme();
 
-  // CHECK here to ensure we catch fallthrough to the global NativeTheme
+  // Crash dump here to ensure we catch fallthrough to the global NativeTheme
   // instance on all Chromium builds (crbug.com/1056756).
-  CHECK(false);
+  base::debug::DumpWithoutCrashing();
 
   return ui::NativeTheme::GetInstanceForNativeUi();
 }
