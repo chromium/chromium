@@ -789,7 +789,10 @@ test("headless_browsertests") {
   ]
 
   if (is_mac) {
-    deps += [ "//third_party/crashpad/crashpad/client" ]
+    deps += [
+      "//services/device/public/cpp:test_support",
+      "//third_party/crashpad/crashpad/client",
+    ]
   }
 
   if (enable_basic_printing) {

@@ -20,6 +20,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "headless/lib/browser/headless_browser_impl.h"
+#include "headless/lib/browser/headless_browser_main_parts.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
 #include "headless/lib/headless_content_main_delegate.h"
 #include "headless/public/devtools/domains/emulation.h"
@@ -31,6 +32,10 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/gl_switches.h"
 #include "url/gurl.h"
+
+#if defined(OS_MAC)
+#include "services/device/public/cpp/test/fake_geolocation_manager.h"
+#endif
 
 namespace headless {
 namespace {
@@ -175,6 +180,18 @@ void HeadlessBrowserTest::PostRunTestOnMainThread() {
   // Pump tasks produced during shutdown.
   base::RunLoop().RunUntilIdle();
 }
+
+#if defined(OS_MAC)
+void HeadlessBrowserTest::CreatedBrowserMainParts(
+    content::BrowserMainParts* parts) {
+  auto fake_geolocation_manager =
+      std::make_unique<device::FakeGeolocationManager>();
+  fake_geolocation_manager->SetSystemPermission(
+      device::LocationSystemPermissionStatus::kAllowed);
+  static_cast<HeadlessBrowserMainParts*>(parts)
+      ->SetGeolocationManagerForTesting(std::move(fake_geolocation_manager));
+}
+#endif
 
 HeadlessBrowser* HeadlessBrowserTest::browser() const {
   return HeadlessContentMainDelegate::GetInstance()->browser();

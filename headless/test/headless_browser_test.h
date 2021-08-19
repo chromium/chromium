@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "build/build_config.h"
 #include "content/public/test/browser_test_base.h"
 #include "headless/public/devtools/domains/network.h"
 #include "headless/public/devtools/domains/page.h"
@@ -65,6 +66,9 @@ class HeadlessBrowserTest : public content::BrowserTestBase {
   void SetUp() override;
   void PreRunTestOnMainThread() override;
   void PostRunTestOnMainThread() override;
+#if defined(OS_MAC)
+  void CreatedBrowserMainParts(content::BrowserMainParts* parts) override;
+#endif
 
   // Run an asynchronous test in a nested run loop. The caller should call
   // FinishAsynchronousTest() to notify that the test should finish.

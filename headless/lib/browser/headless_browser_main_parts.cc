@@ -97,6 +97,11 @@ void HeadlessBrowserMainParts::PostMainMessageLoopRun() {
 device::GeolocationManager* HeadlessBrowserMainParts::GetGeolocationManager() {
   return geolocation_manager_.get();
 }
+
+void HeadlessBrowserMainParts::SetGeolocationManagerForTesting(
+    std::unique_ptr<device::GeolocationManager> fake_geolocation_manager) {
+  geolocation_manager_ = std::move(fake_geolocation_manager);
+}
 #endif
 
 void HeadlessBrowserMainParts::QuitMainMessageLoop() {

@@ -11,6 +11,7 @@
 #include "content/public/browser/browser_main_parts.h"
 #include "content/public/common/main_function_params.h"
 #include "headless/public/headless_browser.h"
+#include "headless/public/headless_export.h"
 
 #if defined(HEADLESS_USE_PREFS)
 #include "components/prefs/pref_registry_simple.h"
@@ -29,7 +30,8 @@ namespace headless {
 
 class HeadlessBrowserImpl;
 
-class HeadlessBrowserMainParts : public content::BrowserMainParts {
+class HEADLESS_EXPORT HeadlessBrowserMainParts
+    : public content::BrowserMainParts {
  public:
   explicit HeadlessBrowserMainParts(
       const content::MainFunctionParams& parameters,
@@ -51,6 +53,8 @@ class HeadlessBrowserMainParts : public content::BrowserMainParts {
 
 #if defined(OS_MAC)
   device::GeolocationManager* GetGeolocationManager();
+  void SetGeolocationManagerForTesting(
+      std::unique_ptr<device::GeolocationManager> fake_geolocation_manager);
 #endif
 
 #if defined(HEADLESS_USE_PREFS)

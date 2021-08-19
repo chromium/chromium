@@ -9,4 +9,5 @@ include_rules = [
   "+third_party/skia/include",
   "+components/policy",
   "+components/prefs",
+  "+services/device/public/cpp/test/fake_geolocation_manager.h",
 ]

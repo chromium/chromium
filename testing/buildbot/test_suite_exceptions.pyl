@@ -1725,7 +1725,6 @@
     },
     'remove_from': [
       'CrWinAsan(dll)', # https://crbug.com/935598
-      'Mac10.13 Tests', # https://crbug.com/1204424
     ],
   },
   'info_collection_tests': {
