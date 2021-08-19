@@ -622,8 +622,8 @@ struct BrowserInitParams {
 // has accidentally become a kitchen sink for different features. This was not
 // intentional.
 //
-// Next MinVersion: 12.
-// Next ID: 10
+// Next MinVersion: 13.
+// Next ID: 11
 //
 [Stable, Uuid="4e04dc16-b34c-40fd-9e3f-3c55c2c6cf91",
  RenamedFrom="crosapi.mojom.LacrosChromeService"]
@@ -634,6 +634,7 @@ interface BrowserService {
 
   // Opens a new window in the browser with, currently, the last used profile.
   // The callback is called on the command execution.
+  // This is designed to be equivalent of CTRL+N (or CTRL+SHIFT+N) behavior.
   NewWindow@1([MinVersion=10] bool incognito) => ();
 
   // Opens a new fullscreen window in the browser with, currently, the last
@@ -649,9 +650,19 @@ interface BrowserService {
   // This may open a new window, if there's no window. Please see also
   // the Chrome's NewTab command for details.
   // The callback is called on the command execution.
+  // This is designed to be equivalent of CTRL+T behavior. By default, this
+  // opens a new-tab-page, but extensions may override the behavior.
   // Added in M91.
   [MinVersion=10]
   NewTab@7() => ();
+
+  // Opens the specified URL in the browser. This opens a new tab and loads
+  // the page at specified URL.
+  // This is designed to handle opening URL requests from other OS parts,
+  // such as web-page opening request from ash features, or Crostini/ARC apps.
+  // Added in M96.
+  [MinVersion=12]
+  OpenUrl@10(url.mojom.Url url) => ();
 
   // Restores a tab (or a window) recently closed in the browser with,
   // currently, the last used profile. Please see also RestoreTab command

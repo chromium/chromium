@@ -357,6 +357,8 @@ void BrowserManager::NewFullscreenWindow(const GURL& url,
 }
 
 void BrowserManager::NewTab() {
+  // TODO(crbug.com/1236859): Pass URL parameter via BrowserInitParams here
+  // to open the tab in case the browser is not running.
   auto result = MaybeStart(mojom::InitialBrowserAction::kUseStartupPreference);
   if (result != MaybeStartResult::kRunning)
     return;
@@ -366,6 +368,25 @@ void BrowserManager::NewTab() {
     return;
   }
   browser_service_->service->NewTab(base::DoNothing());
+}
+
+void BrowserManager::OpenUrl(const GURL& url) {
+  // TODO(crbug.com/1236859): Pass URL parameter via BrowserInitParams here
+  // to open the tab in case the browser is not running.
+  auto result = MaybeStart(mojom::InitialBrowserAction::kOpenNewTabPageWindow);
+  if (result != MaybeStartResult::kRunning)
+    return;
+
+  if (!browser_service_.has_value()) {
+    LOG(ERROR) << "BrowserService was disconnected";
+    return;
+  }
+  if (browser_service_->interface_version <
+      mojom::BrowserService::kOpenUrlMinVersion) {
+    LOG(ERROR) << "BrowserService does not support OpenUrl";
+    return;
+  }
+  browser_service_->service->OpenUrl(url, base::DoNothing());
 }
 
 void BrowserManager::RestoreTab() {

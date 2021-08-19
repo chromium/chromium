@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/channel_info.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
@@ -30,6 +31,7 @@
 #include "components/feedback/system_logs/system_logs_fetcher.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -109,6 +111,21 @@ void BrowserServiceLacros::NewTab(NewTabCallback callback) {
   Browser* browser = chrome::FindBrowserWithProfile(profile);
   DCHECK(browser) << "No browser is found.";
   chrome::NewTab(browser);
+  std::move(callback).Run();
+}
+
+void BrowserServiceLacros::OpenUrl(const GURL& url, OpenUrlCallback callback) {
+  // TODO(crbug.com/1102815): Find what profile should be used.
+  Profile* profile = ProfileManager::GetLastUsedProfileAllowedByPolicy();
+  DCHECK(profile) << "No last used profile is found.";
+  Browser* browser = chrome::FindBrowserWithProfile(profile);
+  DCHECK(browser) << "No browser is found.";
+  NavigateParams navigate_params(
+      browser, url,
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
+                                ui::PAGE_TRANSITION_FROM_API));
+  navigate_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  Navigate(&navigate_params);
   std::move(callback).Run();
 }
 

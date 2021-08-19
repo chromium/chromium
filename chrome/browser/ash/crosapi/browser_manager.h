@@ -110,6 +110,11 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // See crosapi::mojom::BrowserService::NewTab for more details
   void NewTab();
 
+  // Opens the specified URL in lacros-chrome. If it is not running,
+  // it launches lacros-chrome with the given URL.
+  // See crosapi::mojom::BrowserService::OpenUrl for more details.
+  void OpenUrl(const GURL& url);
+
   // Similar to NewWindow(), but restores a tab recently closed.
   // See crosapi::mojom::BrowserService::RestoreTab for more details
   void RestoreTab();
