@@ -34,7 +34,7 @@ ConversionInternalsUI::ConversionInternalsUI(WebUI* web_ui)
   source->SetDefaultResource(IDR_CONVERSION_INTERNALS_HTML);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
-      "trusted-types cr-ui-tree-js-static;");
+      "trusted-types static-types;");
   WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(), source);
 }
 

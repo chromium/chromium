@@ -35,7 +35,7 @@ OmniboxUI::OmniboxUI(content::WebUI* web_ui)
 
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
-      "trusted-types cr-autocomplete-match parse-html-subset;");
+      "trusted-types static-types parse-html-subset;");
 
   // Expose version information to client because it is useful in output.
   VersionUI::AddVersionDetailStrings(source);

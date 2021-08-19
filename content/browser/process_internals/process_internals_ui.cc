@@ -42,7 +42,7 @@ ProcessInternalsUI::ProcessInternalsUI(WebUI* web_ui)
   source->SetDefaultResource(IDR_PROCESS_INTERNALS_HTML);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
-      "trusted-types cr-ui-tree-js-static;");
+      "trusted-types static-types;");
 
   WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(), source);
 }

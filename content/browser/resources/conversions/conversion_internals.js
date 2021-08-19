@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.m.js';
+import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {$} from 'chrome://resources/js/util.m.js';
 import {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 
@@ -31,12 +32,6 @@ let reports = [];
  * @type {!Array<!SentReportInfo>}
  */
 let sentReports = [];
-
-/**
- * This is used to create TrustedHTML.
- * @type {?TrustedTypePolicy}
- */
-let staticHtmlPolicy = null;
 
 /**
  * Remove all rows from the given table.
@@ -204,19 +199,9 @@ function updatePageData() {
         response.enabled ? 'enabled' : 'disabled';
     $('feature-status-content').classList.toggle('disabled', !response.enabled);
 
-    const htmlString = 'The #conversion-measurement-debug-mode flag is ' +
-        '<strong>enabled</strong>, ' +
-        'reports are sent immediately and never pending.';
-
-    if (window.trustedTypes) {
-      if (staticHtmlPolicy === null) {
-        staticHtmlPolicy = trustedTypes.createPolicy(
-            'cr-ui-tree-js-static', {createHTML: () => htmlString});
-      }
-      $('debug-mode-content').innerHTML = staticHtmlPolicy.createHTML('');
-    } else {
-      $('debug-mode-content').innerHTML = htmlString;
-    }
+    $('debug-mode-content').innerHTML =
+        getTrustedHTML`The #conversion-measurement-debug-mode flag is
+ <strong>enabled</strong>, reports are sent immediately and never pending.`;
 
     if (!response.debugMode) {
       $('debug-mode-content').innerText = '';

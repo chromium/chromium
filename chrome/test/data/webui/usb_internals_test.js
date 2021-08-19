@@ -267,7 +267,7 @@ suite('UsbInternalsUITest', function() {
   let app = null;
 
   suiteSetup(async function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML = trustedTypes.emptyHTML;
     app = document.createElement('usb-internals-app');
     document.body.appendChild(app);
 
@@ -341,18 +341,17 @@ suite('UsbInternalsUITest', function() {
     const tree = deviceTab.querySelector('tree');
     const treeItems = tree.querySelectorAll('.tree-item');
     assertEquals(11, treeItems.length);
-    expectEquals('USB Version: 2.0.0', treeItems[0].textContent);
-    expectEquals('Class Code: 0 (Device)', treeItems[1].textContent);
-    expectEquals('Subclass Code: 0', treeItems[2].textContent);
-    expectEquals('Protocol Code: 0', treeItems[3].textContent);
-    expectEquals('Port Number: 0', treeItems[4].textContent);
-    expectEquals('Vendor Id: 0x1050', treeItems[5].textContent);
-    expectEquals('Product Id: 0x17EF', treeItems[6].textContent);
-    expectEquals('Device Version: 3.2.1', treeItems[7].textContent);
-    expectEquals('Manufacturer Name: test', treeItems[8].textContent);
-    expectEquals(
-        'WebUSB Landing Page: http://google.com', treeItems[9].textContent);
-    expectEquals('Active Configuration: 1', treeItems[10].textContent);
+
+    const labels = [
+      'USB Version: 2.0.0', 'Class Code: 0 (Device)', 'Subclass Code: 0',
+      'Protocol Code: 0', 'Port Number: 0', 'Vendor Id: 0x1050',
+      'Product Id: 0x17EF', 'Device Version: 3.2.1', 'Manufacturer Name: test',
+      'WebUSB Landing Page: http://google.com', 'Active Configuration: 1'
+    ];
+    labels.forEach((label, i) => {
+      expectEquals(
+          label, treeItems[i].querySelector('.tree-label').textContent);
+    });
   });
 
   test('RenderDeviceDescriptor', async function() {
@@ -371,24 +370,20 @@ suite('UsbInternalsUITest', function() {
     expectEquals(0, panel.querySelectorAll('error').length);
     const treeItems = panel.querySelectorAll('.tree-item');
     assertEquals(14, treeItems.length);
-    expectEquals('Length (should be 18): 18', treeItems[0].textContent);
-    expectEquals(
-        'Descriptor Type (should be 0x01): 0x01', treeItems[1].textContent);
-    expectEquals('USB Version: 2.0.0', treeItems[2].textContent);
-    expectEquals('Class Code: 0 (Device)', treeItems[3].textContent);
-    expectEquals('Subclass Code: 0', treeItems[4].textContent);
-    expectEquals('Protocol Code: 0', treeItems[5].textContent);
-    expectEquals(
-        'Control Pipe Maximum Packet Size: 64', treeItems[6].textContent);
-    expectEquals('Vendor ID: 0x1050', treeItems[7].textContent);
-    expectEquals('Product ID: 0x17EF', treeItems[8].textContent);
-    expectEquals('Device Version: 3.2.1', treeItems[9].textContent);
-    // The string descriptor index fields with non-zero number should have a
-    // "GET" button.
-    expectEquals('Manufacturer String Index: 1GET', treeItems[10].textContent);
-    expectEquals('Product String Index: 2GET', treeItems[11].textContent);
-    expectEquals('Serial Number Index: 0', treeItems[12].textContent);
-    expectEquals('Number of Configurations: 1', treeItems[13].textContent);
+
+    const labels = [
+      'Length (should be 18): 18', 'Descriptor Type (should be 0x01): 0x01',
+      'USB Version: 2.0.0', 'Class Code: 0 (Device)', 'Subclass Code: 0',
+      'Protocol Code: 0', 'Control Pipe Maximum Packet Size: 64',
+      'Vendor ID: 0x1050', 'Product ID: 0x17EF', 'Device Version: 3.2.1',
+      'Manufacturer String Index: 1GET', 'Product String Index: 2GET',
+      'Serial Number Index: 0', 'Number of Configurations: 1'
+    ];
+    labels.forEach((label, i) => {
+      expectEquals(
+          label, treeItems[i].querySelector('.tree-label').textContent);
+    });
+
     const byteElements = panel.querySelectorAll('.raw-data-byte-view span');
     expectEquals(18, byteElements.length);
     expectEquals(
@@ -449,15 +444,16 @@ suite('UsbInternalsUITest', function() {
     // For the short response, the returned data should still be rendered.
     const treeItems = panel.querySelectorAll('.tree-item');
     assertEquals(7, treeItems.length);
-    expectEquals('Length (should be 18): 18', treeItems[0].textContent);
-    expectEquals(
-        'Descriptor Type (should be 0x01): 0x01', treeItems[1].textContent);
-    expectEquals('USB Version: 2.0.0', treeItems[2].textContent);
-    expectEquals('Class Code: 0 (Device)', treeItems[3].textContent);
-    expectEquals('Subclass Code: 0', treeItems[4].textContent);
-    expectEquals('Protocol Code: 0', treeItems[5].textContent);
-    expectEquals(
-        'Control Pipe Maximum Packet Size: 64', treeItems[6].textContent);
+
+    const labels = [
+      'Length (should be 18): 18', 'Descriptor Type (should be 0x01): 0x01',
+      'USB Version: 2.0.0', 'Class Code: 0 (Device)', 'Subclass Code: 0',
+      'Protocol Code: 0', 'Control Pipe Maximum Packet Size: 64'
+    ];
+    labels.forEach((label, i) => {
+      expectEquals(
+          label, treeItems[i].querySelector('.tree-label').textContent);
+    });
 
     const byteElements = panel.querySelectorAll('.raw-data-byte-view span');
     expectEquals(9, byteElements.length);

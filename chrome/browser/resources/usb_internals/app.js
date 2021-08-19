@@ -9,6 +9,7 @@
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {decorate} from 'chrome://resources/js/cr/ui.m.js';
 import {TabBox} from 'chrome://resources/js/cr/ui/tabs.js';
+import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 
 import {DevicesPage} from './devices_page.js';
 import {UsbInternalsPageHandler} from './usb_internals.mojom-webui.js';
@@ -21,7 +22,7 @@ window.setupFn = window.setupFn || function() {
 
 class UsbInternalsAppElement extends HTMLElement {
   static get template() {
-    return `{__html_template__}`;
+    return getTrustedHTML`{__html_template__}`;
   }
 
   constructor() {
@@ -29,7 +30,7 @@ class UsbInternalsAppElement extends HTMLElement {
 
     this.attachShadow({mode: 'open'});
     const template = document.createElement('template');
-    template.innerHTML = this.constructor.template || '';
+    template.innerHTML = this.constructor.template || trustedTypes.emptyHTML;
     this.shadowRoot.appendChild(template.content.cloneNode(true));
   }
 

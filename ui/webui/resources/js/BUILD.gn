@@ -48,6 +48,7 @@ preprocess_if_expr("preprocess_src") {
     "icon.js",
     "load_time_data.m.js",
     "plural_string_proxy.js",
+    "static_types.js",
     "post_message_api_server.js",
     "post_message_api_client.js",
     "search_highlight_utils.js",
@@ -274,6 +275,7 @@ js_type_check("js_resources_modules") {
     ":post_message_api_server.m",
     ":promise_resolver.m",
     ":search_highlight_utils",
+    ":static_types",
     ":util.m",
     ":web_ui_listener_behavior.m",
   ]
@@ -354,6 +356,10 @@ js_library("promise_resolver.m") {
 }
 
 js_library("search_highlight_utils") {
+  deps = [ ":assert.m" ]
+}
+
+js_library("static_types") {
   deps = [ ":assert.m" ]
 }
 

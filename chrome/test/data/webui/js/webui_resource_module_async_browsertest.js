@@ -144,3 +144,14 @@ var CustomElementModuleTest = class extends WebUIResourceModuleAsyncTest {
 TEST_F('CustomElementModuleTest', 'All', function() {
   mocha.run();
 });
+
+var StaticTypesTest = class extends WebUIResourceModuleAsyncTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://test/test_loader.html?module=js/static_types_test.js';
+  }
+};
+
+TEST_F('StaticTypesTest', 'All', function() {
+  mocha.run();
+});
