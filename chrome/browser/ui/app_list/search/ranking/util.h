@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "chrome/browser/ui/app_list/search/ranking/types.h"
 
 class Profile;
 
@@ -19,6 +20,10 @@ base::FilePath RankerStateDirectory(Profile* profile);
 
 // TODO(crbug.com/1199206): Once the UI has support for categories this can be
 // removed.
+
+// Given a category, returns a debug string of its name suitable for the interim
+// UI.
+std::u16string CategoryDebugString(const Category category);
 
 // Deletes a prefix of the form "(...) " from |str| if it exists.
 std::u16string RemoveDebugPrefix(std::u16string str);

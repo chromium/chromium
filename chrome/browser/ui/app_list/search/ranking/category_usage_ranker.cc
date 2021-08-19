@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/app_list/search/ranking/category_ranker.h"
+#include "chrome/browser/ui/app_list/search/ranking/category_usage_ranker.h"
 
 #include "base/logging.h"
 #include "base/strings/strcat.h"
@@ -17,78 +17,6 @@
 namespace app_list {
 namespace {
 
-// The different categories of search result to display in launcher search.
-// Every search result type maps to one category. These values are not stable,
-// and should not be used for metrics.
-enum class Category {
-  kApp = 1,
-  kWeb = 2,
-  kFiles = 3,
-  kAssistant = 4,
-  kSettings = 5,
-  kHelp = 6,
-  kPlayStore = 7,
-  kMaxValue = kPlayStore,
-};
-
-std::u16string CategoryDebugString(const Category category) {
-  switch (category) {
-    case Category::kApp:
-      return u"(apps) ";
-    case Category::kWeb:
-      return u"(web) ";
-    case Category::kFiles:
-      return u"(files) ";
-    case Category::kAssistant:
-      return u"(assistant) ";
-    case Category::kSettings:
-      return u"(settings) ";
-    case Category::kHelp:
-      return u"(help) ";
-    case Category::kPlayStore:
-      return u"(play store) ";
-  }
-}
-
-Category ResultTypeToCategory(ResultType result_type) {
-  switch (result_type) {
-    case ResultType::kInstalledApp:
-    case ResultType::kInstantApp:
-    case ResultType::kInternalApp:
-    case ResultType::kArcAppShortcut:
-      return Category::kApp;
-    case ResultType::kOmnibox:
-    case ResultType::kAnswerCard:
-      return Category::kWeb;
-    case ResultType::kZeroStateFile:
-    case ResultType::kZeroStateDrive:
-    case ResultType::kFileChip:
-    case ResultType::kDriveChip:
-    case ResultType::kFileSearch:
-    case ResultType::kDriveSearch:
-      return Category::kFiles;
-    case ResultType::kAssistantChip:
-    case ResultType::kAssistantText:
-      return Category::kAssistant;
-    case ResultType::kOsSettings:
-      return Category::kSettings;
-    case ResultType::kHelpApp:
-      return Category::kHelp;
-    case ResultType::kPlayStoreReinstallApp:
-    case ResultType::kPlayStoreApp:
-      return Category::kPlayStore;
-    // Never used in the search backend.
-    case ResultType::kUnknown:
-    // Suggested content toggle fake result type. Used only in ash, not in the
-    // search backend.
-    case ResultType::kInternalPrivacyInfo:
-    // Deprecated.
-    case ResultType::kLauncher:
-      NOTREACHED();
-      return Category::kApp;
-  }
-}
-
 std::string CategoryToString(const Category value) {
   return base::NumberToString(static_cast<int>(value));
 }
@@ -101,7 +29,7 @@ Category StringToCategory(const std::string& value) {
 
 }  // namespace
 
-CategoryRanker::CategoryRanker(Profile* profile) {
+CategoryUsageRanker::CategoryUsageRanker(Profile* profile) {
   // Initialize category ranking as a most-frecently-used list.
   RecurrenceRankerConfigProto config;
   config.set_min_seconds_between_saves(1u);
@@ -112,12 +40,12 @@ CategoryRanker::CategoryRanker(Profile* profile) {
   config.mutable_predictor()->mutable_default_predictor();
 
   category_ranker_ = std::make_unique<RecurrenceRanker>(
-      "CategoryRanker",
+      "CategoryUsageRanker",
       RankerStateDirectory(profile).AppendASCII("category_ranker.pb"), config,
       chromeos::ProfileHelper::IsEphemeralUserProfile(profile));
 }
 
-void CategoryRanker::InitializeCategoryScores() {
+void CategoryUsageRanker::InitializeCategoryScores() {
   // Set a default ranking for categories by recording every category once. The
   // |category_ranker_| has a small recency component to its scores, so the
   // categories will appear in reverse order to the Record calls. This must
@@ -135,9 +63,9 @@ void CategoryRanker::InitializeCategoryScores() {
             static_cast<size_t>(Category::kMaxValue));
 }
 
-CategoryRanker::~CategoryRanker() {}
+CategoryUsageRanker::~CategoryUsageRanker() {}
 
-void CategoryRanker::Start(const std::u16string& query) {
+void CategoryUsageRanker::Start(const std::u16string& query) {
   if (!category_ranker_->is_initialized())
     return;
 
@@ -165,7 +93,7 @@ void CategoryRanker::Start(const std::u16string& query) {
   }
 }
 
-void CategoryRanker::Rank(ResultsMap& results, ProviderType provider) {
+void CategoryUsageRanker::Rank(ResultsMap& results, ProviderType provider) {
   // Update each result's score to be:
   //  kCategoryScoreFactor*(category rank) + (result relevance)
   const auto it = results.find(provider);
@@ -186,7 +114,7 @@ void CategoryRanker::Rank(ResultsMap& results, ProviderType provider) {
   }
 }
 
-void CategoryRanker::Train(const LaunchData& launch) {
+void CategoryUsageRanker::Train(const LaunchData& launch) {
   if (launch.launched_from !=
       ash::AppListLaunchedFrom::kLaunchedFromSearchBox) {
     return;

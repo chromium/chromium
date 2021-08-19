@@ -22,6 +22,25 @@ base::FilePath RankerStateDirectory(Profile* profile) {
   return profile->GetPath().AppendASCII(kRankerStateDirectory);
 }
 
+std::u16string CategoryDebugString(const Category category) {
+  switch (category) {
+    case Category::kApp:
+      return u"(apps) ";
+    case Category::kWeb:
+      return u"(web) ";
+    case Category::kFiles:
+      return u"(files) ";
+    case Category::kAssistant:
+      return u"(assistant) ";
+    case Category::kSettings:
+      return u"(settings) ";
+    case Category::kHelp:
+      return u"(help) ";
+    case Category::kPlayStore:
+      return u"(play store) ";
+  }
+}
+
 std::u16string RemoveDebugPrefix(const std::u16string str) {
   std::string result = base::UTF16ToUTF8(str);
 

@@ -2,28 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_RANKING_CATEGORY_RANKER_H_
-#define CHROME_BROWSER_UI_APP_LIST_SEARCH_RANKING_CATEGORY_RANKER_H_
+#ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_RANKING_CATEGORY_USAGE_RANKER_H_
+#define CHROME_BROWSER_UI_APP_LIST_SEARCH_RANKING_CATEGORY_USAGE_RANKER_H_
 
 #include "chrome/browser/ui/app_list/search/ranking/ranker.h"
+#include "chrome/browser/ui/app_list/search/ranking/types.h"
 
 class Profile;
 
 namespace app_list {
-namespace {
-enum class Category;
-}  // namespace
 
 class RecurrenceRanker;
 
 // A ranker that groups results into categories.
-class CategoryRanker : public Ranker {
+class CategoryUsageRanker : public Ranker {
  public:
-  explicit CategoryRanker(Profile* profile);
-  ~CategoryRanker() override;
+  explicit CategoryUsageRanker(Profile* profile);
+  ~CategoryUsageRanker() override;
 
-  CategoryRanker(const CategoryRanker&) = delete;
-  CategoryRanker& operator=(const CategoryRanker&) = delete;
+  CategoryUsageRanker(const CategoryUsageRanker&) = delete;
+  CategoryUsageRanker& operator=(const CategoryUsageRanker&) = delete;
 
   // Ranker:
   void Start(const std::u16string& query) override;
@@ -40,4 +38,4 @@ class CategoryRanker : public Ranker {
 
 }  // namespace app_list
 
-#endif  // CHROME_BROWSER_UI_APP_LIST_SEARCH_RANKING_CATEGORY_RANKER_H_
+#endif  // CHROME_BROWSER_UI_APP_LIST_SEARCH_RANKING_CATEGORY_USAGE_RANKER_H_
