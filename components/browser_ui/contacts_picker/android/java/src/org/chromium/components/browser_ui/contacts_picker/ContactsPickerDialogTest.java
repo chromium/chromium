@@ -27,12 +27,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.FeatureList;
-import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.blink.mojom.ContactIconBlob;
+import org.chromium.components.browser_ui.contacts_picker.test.R;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate.SelectionObserver;
@@ -47,6 +47,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.DummyUiActivity;
 import org.chromium.ui.test.util.RenderTestRule;
+import org.chromium.ui.test.util.ThemedDummyUiActivityTestRule;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -65,8 +66,9 @@ public class ContactsPickerDialogTest
     public static DisableAnimationsTestRule mDisableAnimationsTestRule =
             new DisableAnimationsTestRule();
     @ClassRule
-    public static BaseActivityTestRule<DummyUiActivity> activityTestRule =
-            new BaseActivityTestRule<>(DummyUiActivity.class);
+    public static ThemedDummyUiActivityTestRule<DummyUiActivity> activityTestRule =
+            new ThemedDummyUiActivityTestRule<>(
+                    DummyUiActivity.class, R.style.ColorOverlay_BrowserUi);
 
     private Activity mActivity;
     private WindowAndroid mWindowAndroid;

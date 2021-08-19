@@ -309,7 +309,7 @@
     </style>
 
     <style name="NtpHeaderTabLayoutStyle" parent="TabLayoutStyle">
-        <item name="tabIndicatorColor">@color/default_icon_color_blue</item>
+        <item name="tabIndicatorColor">?attr/default_icon_color_blue</item>
         <item name="tabTextAppearance">@style/TextAppearance.TextAccentMediumThick</item>
         <item name="tabGravity">center</item>
         <item name="android:background">@android:color/transparent</item>
