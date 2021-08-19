@@ -68,8 +68,10 @@ class CAPTURE_EXPORT FileVideoCaptureDevice : public VideoCaptureDevice {
       VideoCaptureFormat* video_format);
 
   // Crops frame with respect to PTZ settings.
-  std::unique_ptr<uint8_t[]> CropPTZRegion(const uint8_t* frame,
-                                           size_t frame_buffer_size);
+  std::unique_ptr<uint8_t[]> CropPTZRegion(
+      const uint8_t* frame,
+      size_t frame_buffer_size,
+      VideoPixelFormat* final_pixel_format);
 
   // Called on the |capture_thread_|.
   void OnAllocateAndStart(const VideoCaptureParams& params,
