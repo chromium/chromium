@@ -164,6 +164,25 @@ export class ReadLaterAppElement extends PolymerElement {
   }
 
   /**
+   * @return {boolean}
+   * @private
+   */
+  shouldShowCurrentPageActionButton_() {
+    return loadTimeData.getBoolean('currentPageActionButtonEnabled');
+  }
+
+  /**
+   * @return {string} The appropriate text for the empty state subheader
+   * @private
+   */
+  getEmptyStateSubheaderText_() {
+    if (this.shouldShowCurrentPageActionButton_()) {
+      return loadTimeData.getString('emptyStateAddFromDialogSubheader');
+    }
+    return loadTimeData.getString('emptyStateSubheader');
+  }
+
+  /**
    * @return {boolean} Whether the current page action button should be disabled
    * @private
    */
@@ -227,14 +246,6 @@ export class ReadLaterAppElement extends PolymerElement {
   onCloseClick_(e) {
     e.stopPropagation();
     this.apiProxy_.closeUI();
-  }
-
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowCurrentPageActionButton_() {
-    return loadTimeData.getBoolean('currentPageActionButtonEnabled');
   }
 
   /**
