@@ -1207,13 +1207,13 @@ void NearbySharingServiceImpl::OnEnabledChanged(bool enabled) {
       feature_usage_metrics_.GetNearbyShareEnabledState());
   base::UmaHistogramBoolean("Nearby.Share.EnabledStateChanged", enabled);
   if (enabled) {
-    NS_LOG(INFO) << __func__ << ": Nearby sharing enabled!";
+    NS_LOG(VERBOSE) << __func__ << ": Nearby sharing enabled!";
     local_device_data_manager_->Start();
     contact_manager_->Start();
     certificate_manager_->Start();
     BindToNearbyProcess();
   } else {
-    NS_LOG(INFO) << __func__ << ": Nearby sharing disabled!";
+    NS_LOG(VERBOSE) << __func__ << ": Nearby sharing disabled!";
     StopAdvertising();
     StopScanning();
     nearby_connections_manager_->Shutdown();
