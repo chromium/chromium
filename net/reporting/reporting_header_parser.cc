@@ -146,10 +146,9 @@ bool ProcessEndpointGroup(ReportingDelegate* delegate,
   }
   parsed_endpoint_group_out->ttl = base::TimeDelta::FromSeconds(ttl_sec);
 
-  bool subdomains_bool = false;
-  if (dict->HasKey(kIncludeSubdomainsKey) &&
-      dict->GetBoolean(kIncludeSubdomainsKey, &subdomains_bool) &&
-      subdomains_bool == true) {
+  absl::optional<bool> subdomains_bool =
+      dict->FindBoolKey(kIncludeSubdomainsKey);
+  if (subdomains_bool && subdomains_bool.value()) {
     // Disallow eTLDs from setting include_subdomains endpoint groups.
     if (registry_controlled_domains::GetRegistryLength(
             origin.GetURL(),
