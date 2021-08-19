@@ -1252,15 +1252,20 @@ std::unique_ptr<protocol::DictionaryValue> BuildGridInfo(
     Element* element = DynamicTo<Element>(node);
     DCHECK(element);
     StyleResolver& style_resolver = element->GetDocument().GetStyleResolver();
+
     HeapHashMap<CSSPropertyName, Member<const CSSValue>> cascaded_values =
         style_resolver.CascadedValuesForElement(element, kPseudoIdNone);
+
+    auto FindCSSValue =
+        [&cascaded_values](CSSPropertyID id) -> const CSSValue* {
+      auto it = cascaded_values.find(CSSPropertyName(id));
+      return it != cascaded_values.end() ? it->value : nullptr;
+    };
     Vector<String> column_authored_values = GetAuthoredGridTrackSizes(
-        cascaded_values.DeprecatedAtOrEmptyValue(
-            CSSPropertyName(CSSPropertyID::kGridTemplateColumns)),
+        FindCSSValue(CSSPropertyID::kGridTemplateColumns),
         grid_interface->AutoRepeatCountForDirection(kForColumns));
     Vector<String> row_authored_values = GetAuthoredGridTrackSizes(
-        cascaded_values.DeprecatedAtOrEmptyValue(
-            CSSPropertyName(CSSPropertyID::kGridTemplateRows)),
+        FindCSSValue(CSSPropertyID::kGridTemplateRows),
         grid_interface->AutoRepeatCountForDirection(kForRows));
 
     grid_info->setValue(

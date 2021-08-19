@@ -185,15 +185,17 @@ int LegacyDOMSnapshotAgent::VisitNode(Node* node,
           .build();
   if (origin_url_map_ &&
       origin_url_map_->Contains(owned_value->getBackendNodeId())) {
-    String origin_url = origin_url_map_->DeprecatedAtOrEmptyValue(
-        owned_value->getBackendNodeId());
+    String origin_url = origin_url_map_->at(owned_value->getBackendNodeId());
     // In common cases, it is implicit that a child node would have the same
     // origin url as its parent, so no need to mark twice.
-    if (!node->parentNode() ||
-        origin_url_map_->DeprecatedAtOrEmptyValue(
-            DOMNodeIds::IdForNode(node->parentNode())) != origin_url) {
-      owned_value->setOriginURL(origin_url_map_->DeprecatedAtOrEmptyValue(
-          owned_value->getBackendNodeId()));
+    if (!node->parentNode()) {
+      owned_value->setOriginURL(std::move(origin_url));
+    } else {
+      DOMNodeId parent_id = DOMNodeIds::IdForNode(node->parentNode());
+      auto it = origin_url_map_->find(parent_id);
+      String parent_url = it != origin_url_map_->end() ? it->value : String();
+      if (parent_url != origin_url)
+        owned_value->setOriginURL(std::move(origin_url));
     }
   }
   protocol::DOMSnapshot::DOMNode* value = owned_value.get();
@@ -397,10 +399,7 @@ int LegacyDOMSnapshotAgent::VisitLayoutTreeNode(LayoutObject* layout_object,
     PaintLayer* paint_layer = layout_object->EnclosingLayer();
 
     // We visited all PaintLayers when building |paint_order_map_|.
-    DCHECK(paint_order_map_->Contains(paint_layer));
-
-    if (int paint_order =
-            paint_order_map_->DeprecatedAtOrEmptyValue(paint_layer))
+    if (int paint_order = paint_order_map_->at(paint_layer))
       layout_tree_node->setPaintOrder(paint_order);
   }
 

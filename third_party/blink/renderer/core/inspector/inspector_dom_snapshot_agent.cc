@@ -516,14 +516,17 @@ void InspectorDOMSnapshotAgent::VisitNode(Node* node,
   BuildLayoutTreeNode(node->GetLayoutObject(), node, index, contrast);
 
   if (origin_url_map_ && origin_url_map_->Contains(backend_node_id)) {
-    String origin_url =
-        origin_url_map_->DeprecatedAtOrEmptyValue(backend_node_id);
+    String origin_url = origin_url_map_->at(backend_node_id);
     // In common cases, it is implicit that a child node would have the same
     // origin url as its parent, so no need to mark twice.
-    if (!node->parentNode() ||
-        origin_url_map_->DeprecatedAtOrEmptyValue(
-            DOMNodeIds::IdForNode(node->parentNode())) != origin_url) {
-      SetRare(nodes->getOriginURL(nullptr), index, origin_url);
+    if (!node->parentNode()) {
+      SetRare(nodes->getOriginURL(nullptr), index, std::move(origin_url));
+    } else {
+      DOMNodeId parent_id = DOMNodeIds::IdForNode(node->parentNode());
+      auto it = origin_url_map_->find(parent_id);
+      String parent_url = it != origin_url_map_->end() ? it->value : String();
+      if (parent_url != origin_url)
+        SetRare(nodes->getOriginURL(nullptr), index, std::move(origin_url));
     }
   }
 
@@ -534,8 +537,9 @@ void InspectorDOMSnapshotAgent::VisitNode(Node* node,
   if (element) {
     if (auto* frame_owner = DynamicTo<HTMLFrameOwnerElement>(node)) {
       if (Document* doc = frame_owner->contentDocument()) {
-        SetRare(nodes->getContentDocumentIndex(nullptr), index,
-                document_order_map_.DeprecatedAtOrEmptyValue(doc));
+        auto it = document_order_map_.find(doc);
+        if (it != document_order_map_.end())
+          SetRare(nodes->getContentDocumentIndex(nullptr), index, it->value);
       }
     }
 
@@ -675,8 +679,7 @@ int InspectorDOMSnapshotAgent::BuildLayoutTreeNode(
 
   if (paint_order_map_) {
     PaintLayer* paint_layer = layout_object->EnclosingLayer();
-    DCHECK(paint_order_map_->Contains(paint_layer));
-    int paint_order = paint_order_map_->DeprecatedAtOrEmptyValue(paint_layer);
+    int paint_order = paint_order_map_->at(paint_layer);
     layout_tree_snapshot->getPaintOrders(nullptr)->emplace_back(paint_order);
   }
 

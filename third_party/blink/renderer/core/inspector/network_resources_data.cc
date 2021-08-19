@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
 namespace blink {
@@ -374,8 +375,7 @@ void NetworkResourcesData::SetXHRReplayData(const String& request_id,
 HeapVector<Member<NetworkResourcesData::ResourceData>>
 NetworkResourcesData::Resources() {
   HeapVector<Member<ResourceData>> result;
-  for (auto& request : request_id_to_resource_data_map_)
-    result.push_back(request.value);
+  WTF::CopyValuesToVector(request_id_to_resource_data_map_, result);
   return result;
 }
 
@@ -402,7 +402,7 @@ void NetworkResourcesData::AddPendingEncodedDataLength(
 }
 
 void NetworkResourcesData::Clear(const String& preserved_loader_id) {
-  if (!request_id_to_resource_data_map_.size())
+  if (request_id_to_resource_data_map_.IsEmpty())
     return;
   request_ids_deque_.clear();
   content_size_ = 0;
@@ -436,7 +436,8 @@ NetworkResourcesData::ResourceData*
 NetworkResourcesData::ResourceDataForRequestId(const String& request_id) const {
   if (request_id.IsNull())
     return nullptr;
-  return request_id_to_resource_data_map_.DeprecatedAtOrEmptyValue(request_id);
+  auto it = request_id_to_resource_data_map_.find(request_id);
+  return it != request_id_to_resource_data_map_.end() ? it->value : nullptr;
 }
 
 void NetworkResourcesData::EnsureNoDataForRequestId(const String& request_id) {
