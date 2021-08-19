@@ -16,7 +16,7 @@ class DeviceNameApplier {
  public:
   virtual ~DeviceNameApplier() = default;
 
-  // Replaces the existing device name in DHCP with the new one.
+  // Replaces the existing device name in DHCP and Bluetooth with the new one.
   virtual void SetDeviceName(const std::string& new_device_name) = 0;
 
  protected:
