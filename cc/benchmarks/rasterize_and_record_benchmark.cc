@@ -8,12 +8,10 @@
 
 #include <algorithm>
 #include <limits>
-#include <memory>
 #include <string>
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/values.h"
 #include "cc/benchmarks/rasterize_and_record_benchmark_impl.h"
 #include "cc/layers/content_layer_client.h"
 #include "cc/layers/layer.h"
@@ -21,6 +19,7 @@
 #include "cc/layers/recording_source.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/trees/layer_tree_host.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace cc {
@@ -28,24 +27,28 @@ namespace cc {
 namespace {
 
 const int kDefaultRecordRepeatCount = 100;
+const int kDefaultRasterizeRepeatCount = 100;
 
 }  // namespace
 
 RasterizeAndRecordBenchmark::RasterizeAndRecordBenchmark(
-    std::unique_ptr<base::Value> value,
+    base::Value settings,
     MicroBenchmark::DoneCallback callback)
     : MicroBenchmark(std::move(callback)),
       record_repeat_count_(kDefaultRecordRepeatCount),
-      settings_(std::move(value)),
+      rasterize_repeat_count_(kDefaultRasterizeRepeatCount),
       main_thread_benchmark_done_(false),
       layer_tree_host_(nullptr) {
-  base::DictionaryValue* settings = nullptr;
-  settings_->GetAsDictionary(&settings);
-  if (!settings)
+  if (!settings.is_dict())
     return;
 
-  if (settings->HasKey("record_repeat_count"))
-    settings->GetInteger("record_repeat_count", &record_repeat_count_);
+  auto record_repeat_count = settings.FindIntKey("record_repeat_count");
+  if (record_repeat_count.has_value())
+    record_repeat_count_ = *record_repeat_count;
+
+  auto rasterize_repeat_count = settings.FindIntKey("rasterize_repeat_count");
+  if (rasterize_repeat_count.has_value())
+    rasterize_repeat_count_ = *rasterize_repeat_count;
 }
 
 RasterizeAndRecordBenchmark::~RasterizeAndRecordBenchmark() {
@@ -112,7 +115,7 @@ std::unique_ptr<MicroBenchmarkImpl>
 RasterizeAndRecordBenchmark::CreateBenchmarkImpl(
     scoped_refptr<base::SingleThreadTaskRunner> origin_task_runner) {
   return base::WrapUnique(new RasterizeAndRecordBenchmarkImpl(
-      origin_task_runner, settings_.get(),
+      origin_task_runner, rasterize_repeat_count_,
       base::BindOnce(&RasterizeAndRecordBenchmark::RecordRasterResults,
                      weak_ptr_factory_.GetWeakPtr())));
 }

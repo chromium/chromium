@@ -22,7 +22,7 @@ class RasterizeAndRecordBenchmarkImpl : public MicroBenchmarkImpl {
  public:
   explicit RasterizeAndRecordBenchmarkImpl(
       scoped_refptr<base::SingleThreadTaskRunner> origin_task_runner,
-      base::Value* value,
+      int rasterize_repeat_count,
       MicroBenchmarkImpl::DoneCallback callback);
   ~RasterizeAndRecordBenchmarkImpl() override;
 

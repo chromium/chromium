@@ -5,6 +5,8 @@
 #ifndef CC_BENCHMARKS_UNITTEST_ONLY_BENCHMARK_H_
 #define CC_BENCHMARKS_UNITTEST_ONLY_BENCHMARK_H_
 
+#include <memory>
+
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "cc/benchmarks/micro_benchmark.h"
@@ -13,8 +15,7 @@ namespace cc {
 
 class CC_EXPORT UnittestOnlyBenchmark : public MicroBenchmark {
  public:
-  UnittestOnlyBenchmark(std::unique_ptr<base::Value> value,
-                        DoneCallback callback);
+  UnittestOnlyBenchmark(base::Value settings, DoneCallback callback);
   ~UnittestOnlyBenchmark() override;
 
   void DidUpdateLayers(LayerTreeHost* layer_tree_host) override;

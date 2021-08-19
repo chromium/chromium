@@ -4,27 +4,26 @@
 
 #include "cc/benchmarks/unittest_only_benchmark.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/single_thread_task_runner.h"
 #include "base/values.h"
 #include "cc/benchmarks/unittest_only_benchmark_impl.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cc {
 
-UnittestOnlyBenchmark::UnittestOnlyBenchmark(std::unique_ptr<base::Value> value,
+UnittestOnlyBenchmark::UnittestOnlyBenchmark(base::Value settings,
                                              DoneCallback callback)
     : MicroBenchmark(std::move(callback)), create_impl_benchmark_(false) {
-  if (!value)
+  if (!settings.is_dict())
     return;
 
-  base::DictionaryValue* settings = nullptr;
-  value->GetAsDictionary(&settings);
-  if (!settings)
-    return;
-
-  if (settings->HasKey("run_benchmark_impl"))
-    settings->GetBoolean("run_benchmark_impl", &create_impl_benchmark_);
+  auto run_benchmark_impl = settings.FindBoolKey("run_benchmark_impl");
+  if (run_benchmark_impl.has_value())
+    create_impl_benchmark_ = *run_benchmark_impl;
 }
 
 UnittestOnlyBenchmark::~UnittestOnlyBenchmark() {

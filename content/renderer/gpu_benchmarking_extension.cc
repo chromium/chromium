@@ -1300,9 +1300,10 @@ int GpuBenchmarking::RunMicroBenchmark(gin::Arguments* args) {
   v8::Local<v8::Context> v8_context = callback_and_context->GetContext();
   std::unique_ptr<base::Value> value =
       V8ValueConverter::Create()->FromV8Value(arguments, v8_context);
+  DCHECK(value);
 
   return context.layer_tree_host()->ScheduleMicroBenchmark(
-      name, std::move(value),
+      name, base::Value::FromUniquePtrValue(std::move(value)),
       base::BindOnce(&OnMicroBenchmarkCompleted,
                      base::RetainedRef(callback_and_context)));
 }

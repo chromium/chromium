@@ -28,7 +28,6 @@ namespace cc {
 
 namespace {
 
-const int kDefaultRasterizeRepeatCount = 100;
 
 void RunBenchmark(RasterSource* raster_source,
                   ImageDecodeCache* image_decode_cache,
@@ -144,18 +143,10 @@ class FixedInvalidationPictureLayerTilingClient
 
 RasterizeAndRecordBenchmarkImpl::RasterizeAndRecordBenchmarkImpl(
     scoped_refptr<base::SingleThreadTaskRunner> origin_task_runner,
-    base::Value* value,
+    int rasterize_repeat_count,
     MicroBenchmarkImpl::DoneCallback callback)
     : MicroBenchmarkImpl(std::move(callback), origin_task_runner),
-      rasterize_repeat_count_(kDefaultRasterizeRepeatCount) {
-  base::DictionaryValue* settings = nullptr;
-  value->GetAsDictionary(&settings);
-  if (!settings)
-    return;
-
-  if (settings->HasKey("rasterize_repeat_count"))
-    settings->GetInteger("rasterize_repeat_count", &rasterize_repeat_count_);
-}
+      rasterize_repeat_count_(rasterize_repeat_count) {}
 
 RasterizeAndRecordBenchmarkImpl::~RasterizeAndRecordBenchmarkImpl() = default;
 

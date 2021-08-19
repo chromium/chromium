@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <string>
 
 #include "cc/benchmarks/micro_benchmark_controller.h"
@@ -21,7 +22,7 @@ class LayerTreeHost;
 // measurement.
 class CC_EXPORT InvalidationBenchmark : public MicroBenchmark {
  public:
-  explicit InvalidationBenchmark(std::unique_ptr<base::Value> value,
+  explicit InvalidationBenchmark(base::Value settings,
                                  MicroBenchmark::DoneCallback callback);
   ~InvalidationBenchmark() override;
 

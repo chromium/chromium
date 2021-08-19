@@ -14,6 +14,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
+#include "base/values.h"
 #include "cc/benchmarks/micro_benchmark_controller.h"
 #include "cc/layers/recording_source.h"
 
@@ -27,7 +28,7 @@ class LayerTreeHost;
 
 class RasterizeAndRecordBenchmark : public MicroBenchmark {
  public:
-  explicit RasterizeAndRecordBenchmark(std::unique_ptr<base::Value> value,
+  explicit RasterizeAndRecordBenchmark(base::Value settings,
                                        MicroBenchmark::DoneCallback callback);
   ~RasterizeAndRecordBenchmark() override;
 
@@ -49,7 +50,7 @@ class RasterizeAndRecordBenchmark : public MicroBenchmark {
 
   RecordResults record_results_;
   int record_repeat_count_;
-  std::unique_ptr<base::Value> settings_;
+  int rasterize_repeat_count_;
   std::unique_ptr<base::DictionaryValue> results_;
 
   // The following is used in DCHECKs.

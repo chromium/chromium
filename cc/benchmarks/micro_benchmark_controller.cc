@@ -5,7 +5,7 @@
 #include "cc/benchmarks/micro_benchmark_controller.h"
 
 #include <limits>
-#include <string>
+#include <utility>
 
 #include "base/callback.h"
 #include "base/containers/cxx20_erase.h"
@@ -25,16 +25,16 @@ namespace {
 
 std::unique_ptr<MicroBenchmark> CreateBenchmark(
     const std::string& name,
-    std::unique_ptr<base::Value> value,
+    base::Value settings,
     MicroBenchmark::DoneCallback callback) {
   if (name == "invalidation_benchmark") {
-    return std::make_unique<InvalidationBenchmark>(std::move(value),
+    return std::make_unique<InvalidationBenchmark>(std::move(settings),
                                                    std::move(callback));
   } else if (name == "rasterize_and_record_benchmark") {
-    return std::make_unique<RasterizeAndRecordBenchmark>(std::move(value),
+    return std::make_unique<RasterizeAndRecordBenchmark>(std::move(settings),
                                                          std::move(callback));
   } else if (name == "unittest_only_benchmark") {
-    return std::make_unique<UnittestOnlyBenchmark>(std::move(value),
+    return std::make_unique<UnittestOnlyBenchmark>(std::move(settings),
                                                    std::move(callback));
   }
   return nullptr;
@@ -54,10 +54,10 @@ MicroBenchmarkController::~MicroBenchmarkController() = default;
 
 int MicroBenchmarkController::ScheduleRun(
     const std::string& micro_benchmark_name,
-    std::unique_ptr<base::Value> value,
+    base::Value settings,
     MicroBenchmark::DoneCallback callback) {
   std::unique_ptr<MicroBenchmark> benchmark = CreateBenchmark(
-      micro_benchmark_name, std::move(value), std::move(callback));
+      micro_benchmark_name, std::move(settings), std::move(callback));
   if (benchmark.get()) {
     int id = GetNextIdAndIncrement();
     benchmark->set_id(id);

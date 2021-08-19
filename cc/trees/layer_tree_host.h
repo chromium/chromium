@@ -329,7 +329,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   // Returns the id of the benchmark on success, 0 otherwise.
   int ScheduleMicroBenchmark(const std::string& benchmark_name,
-                             std::unique_ptr<base::Value> value,
+                             base::Value settings,
                              MicroBenchmark::DoneCallback callback);
 
   // Returns true if the message was successfully delivered and handled.

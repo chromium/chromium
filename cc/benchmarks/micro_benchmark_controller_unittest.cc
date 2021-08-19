@@ -4,7 +4,7 @@
 
 #include "cc/benchmarks/micro_benchmark_controller.h"
 
-#include <memory>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -61,15 +61,15 @@ void IncrementCallCount(int* count, std::unique_ptr<base::Value> value) {
 }
 
 TEST_F(MicroBenchmarkControllerTest, ScheduleFail) {
-  int id = layer_tree_host_->ScheduleMicroBenchmark("non_existant_benchmark",
-                                                    nullptr, base::DoNothing());
+  int id = layer_tree_host_->ScheduleMicroBenchmark(
+      "non_existant_benchmark", base::Value(), base::DoNothing());
   EXPECT_EQ(id, 0);
 }
 
 TEST_F(MicroBenchmarkControllerTest, CommitScheduled) {
   layer_tree_host_->reset_needs_commit();
-  int id = layer_tree_host_->ScheduleMicroBenchmark("unittest_only_benchmark",
-                                                    nullptr, base::DoNothing());
+  int id = layer_tree_host_->ScheduleMicroBenchmark(
+      "unittest_only_benchmark", base::Value(), base::DoNothing());
   EXPECT_GT(id, 0);
   EXPECT_TRUE(layer_tree_host_->needs_commit());
 }
@@ -77,7 +77,7 @@ TEST_F(MicroBenchmarkControllerTest, CommitScheduled) {
 TEST_F(MicroBenchmarkControllerTest, BenchmarkRan) {
   int run_count = 0;
   int id = layer_tree_host_->ScheduleMicroBenchmark(
-      "unittest_only_benchmark", nullptr,
+      "unittest_only_benchmark", base::Value(),
       base::BindOnce(&IncrementCallCount, base::Unretained(&run_count)));
   EXPECT_GT(id, 0);
 
@@ -89,11 +89,11 @@ TEST_F(MicroBenchmarkControllerTest, BenchmarkRan) {
 TEST_F(MicroBenchmarkControllerTest, MultipleBenchmarkRan) {
   int run_count = 0;
   int id = layer_tree_host_->ScheduleMicroBenchmark(
-      "unittest_only_benchmark", nullptr,
+      "unittest_only_benchmark", base::Value(),
       base::BindOnce(&IncrementCallCount, base::Unretained(&run_count)));
   EXPECT_GT(id, 0);
   id = layer_tree_host_->ScheduleMicroBenchmark(
-      "unittest_only_benchmark", nullptr,
+      "unittest_only_benchmark", base::Value(),
       base::BindOnce(&IncrementCallCount, base::Unretained(&run_count)));
   EXPECT_GT(id, 0);
 
@@ -102,11 +102,11 @@ TEST_F(MicroBenchmarkControllerTest, MultipleBenchmarkRan) {
   EXPECT_EQ(2, run_count);
 
   id = layer_tree_host_->ScheduleMicroBenchmark(
-      "unittest_only_benchmark", nullptr,
+      "unittest_only_benchmark", base::Value(),
       base::BindOnce(&IncrementCallCount, base::Unretained(&run_count)));
   EXPECT_GT(id, 0);
   id = layer_tree_host_->ScheduleMicroBenchmark(
-      "unittest_only_benchmark", nullptr,
+      "unittest_only_benchmark", base::Value(),
       base::BindOnce(&IncrementCallCount, base::Unretained(&run_count)));
   EXPECT_GT(id, 0);
 
@@ -119,8 +119,8 @@ TEST_F(MicroBenchmarkControllerTest, MultipleBenchmarkRan) {
 
 TEST_F(MicroBenchmarkControllerTest, BenchmarkImplRan) {
   int run_count = 0;
-  std::unique_ptr<base::DictionaryValue> settings(new base::DictionaryValue);
-  settings->SetBoolean("run_benchmark_impl", true);
+  base::Value settings(base::Value::Type::DICTIONARY);
+  settings.SetBoolKey("run_benchmark_impl", true);
 
   // Schedule a main thread benchmark.
   int id = layer_tree_host_->ScheduleMicroBenchmark(
@@ -152,7 +152,7 @@ TEST_F(MicroBenchmarkControllerTest, SendMessage) {
   // Schedule a benchmark
   int run_count = 0;
   int id = layer_tree_host_->ScheduleMicroBenchmark(
-      "unittest_only_benchmark", nullptr,
+      "unittest_only_benchmark", base::Value(),
       base::BindOnce(&IncrementCallCount, base::Unretained(&run_count)));
   EXPECT_GT(id, 0);
 
