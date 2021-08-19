@@ -2872,6 +2872,10 @@ void CrosNetworkConfig::GetAlwaysOnVpn(GetAlwaysOnVpnCallback callback) {
       network_profile_handler_->GetDefaultUserProfile();
   if (!profile) {
     NET_LOG(ERROR) << "GetAlwaysOnVpn: no user profile found";
+    // No profile available, ensure the callback gets fired with always-on VPN
+    // disabled.
+    OnGetAlwaysOnVpn(std::move(callback), shill::kAlwaysOnVpnModeOff,
+                     std::string());
     return;
   }
 
