@@ -100,15 +100,10 @@ MediaDeviceSaltAndOrigin::MediaDeviceSaltAndOrigin() = default;
 
 MediaDeviceSaltAndOrigin::MediaDeviceSaltAndOrigin(std::string device_id_salt,
                                                    std::string group_id_salt,
-                                                   url::Origin origin,
-                                                   bool has_focus)
+                                                   url::Origin origin)
     : device_id_salt(std::move(device_id_salt)),
       group_id_salt(std::move(group_id_salt)),
-      origin(std::move(origin)),
-      has_focus(has_focus) {}
-
-MediaDeviceSaltAndOrigin::MediaDeviceSaltAndOrigin(
-    const MediaDeviceSaltAndOrigin& other) = default;
+      origin(std::move(origin)) {}
 
 void GetDefaultMediaDeviceID(
     MediaDeviceType device_type,
@@ -145,7 +140,6 @@ MediaDeviceSaltAndOrigin GetMediaDeviceSaltAndOrigin(int render_process_id,
   GURL site_for_cookies;
   url::Origin top_level_origin;
   std::string frame_salt;
-  bool has_focus = true;
 
   if (frame_host) {
     origin = frame_host->GetLastCommittedOrigin();
@@ -156,7 +150,6 @@ MediaDeviceSaltAndOrigin GetMediaDeviceSaltAndOrigin(int render_process_id,
                            ->GetMainFrame()
                            ->GetLastCommittedOrigin();
     frame_salt = frame_host->GetMediaDeviceIDSaltBase();
-    has_focus = frame_host->GetView()->HasFocus();
   }
 
   bool are_persistent_ids_allowed = false;
@@ -182,7 +175,7 @@ MediaDeviceSaltAndOrigin GetMediaDeviceSaltAndOrigin(int render_process_id,
   group_id_salt += frame_salt + "groupid";
 
   return {std::move(device_id_salt), std::move(group_id_salt),
-          std::move(origin), has_focus};
+          std::move(origin)};
 }
 
 blink::WebMediaDeviceInfo TranslateMediaDeviceInfo(

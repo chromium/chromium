@@ -9,11 +9,8 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/synchronization/lock.h"
 #include "content/browser/media/media_devices_util.h"
-#include "content/browser/media/media_stream_web_contents_observer.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -41,7 +38,6 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
       MediaStreamManager* media_stream_manager,
       mojo::PendingReceiver<blink::mojom::MediaStreamDispatcherHost> receiver);
 
-  void OnWebContentsFocused();
   void set_salt_and_origin_callback_for_testing(
       MediaDeviceSaltAndOriginCallback callback) {
     salt_and_origin_callback_ = std::move(callback);
@@ -53,12 +49,6 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
 
  private:
   friend class MockMediaStreamDispatcherHost;
-
-  class Broker;
-  struct PendingAccessRequest;
-  using RequestsQueue =
-      base::circular_deque<std::unique_ptr<PendingAccessRequest>>;
-  RequestsQueue pending_requests_;
 
   const mojo::Remote<blink::mojom::MediaStreamDeviceObserver>&
   GetMediaStreamDeviceObserver();
@@ -121,8 +111,6 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
   mojo::Remote<blink::mojom::MediaStreamDeviceObserver>
       media_stream_device_observer_;
   MediaDeviceSaltAndOriginCallback salt_and_origin_callback_;
-
-  scoped_refptr<Broker> broker_;
 
   base::WeakPtrFactory<MediaStreamDispatcherHost> weak_factory_{this};
 

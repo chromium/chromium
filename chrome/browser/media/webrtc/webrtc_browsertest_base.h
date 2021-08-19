@@ -90,9 +90,6 @@ class WebRtcTestBase : public InProcessBrowserTest {
       content::WebContents* tab_contents) const;
   void GetUserMedia(content::WebContents* tab_contents,
                     const std::string& constraints) const;
-  void GetUserMediaReturnsFalseIfWaitIsTooLong(
-      content::WebContents* tab_contents,
-      const std::string& constraints) const;
 
   // Convenience method which opens the page at url, calls GetUserMediaAndAccept
   // and returns the new tab.
