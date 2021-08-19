@@ -26,10 +26,7 @@ component("libassistant") {
     "libassistant_service.h",
   ]
 
-  public_deps = [
-    "//chromeos/assistant/internal/proto:assistant",
-    "//chromeos/services/libassistant/public/mojom",
-  ]
+  public_deps = [ "//chromeos/services/libassistant/public/mojom" ]
 
   deps = [
     ":internal",
