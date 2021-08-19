@@ -364,8 +364,12 @@ void SVGElement::RemovedFrom(ContainerNode& root_parent) {
   Element::RemovedFrom(root_parent);
 
   if (was_in_document) {
-    if (HasSVGRareData() && SvgRareData()->CorrespondingElement())
-      SvgRareData()->CorrespondingElement()->RemoveInstanceMapping(this);
+    if (SVGElement* corresponding_element =
+            HasSVGRareData() ? SvgRareData()->CorrespondingElement()
+                             : nullptr) {
+      corresponding_element->RemoveInstanceMapping(this);
+      SvgRareData()->SetCorrespondingElement(nullptr);
+    }
     RebuildAllIncomingReferences();
     RemoveAllIncomingReferences();
   }
