@@ -54,7 +54,7 @@ CaptureModeSettingsView::CaptureModeSettingsView(bool projector_mode)
   layer()->SetRoundedCornerRadius(kBorderRadius);
   layer()->SetBackgroundBlur(
       static_cast<float>(AshColorProvider::LayerBlurSigma::kBlurDefault));
-  layer()->SetBackdropFilterQuality(capture_mode::kBlurQuality);
+  layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, kSettingsPadding,

@@ -50,6 +50,7 @@ AppListBubbleView::AppListBubbleView(
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetIsFastRoundedCorner(true);
   layer()->SetBackgroundBlur(kUnifiedMenuBackgroundBlur);
+  layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
 
   auto* layout = SetLayoutManager(
       std::make_unique<BoxLayout>(BoxLayout::Orientation::kVertical));

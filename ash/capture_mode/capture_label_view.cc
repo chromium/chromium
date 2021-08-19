@@ -149,7 +149,7 @@ CaptureLabelView::CaptureLabelView(CaptureModeSession* capture_mode_session)
   layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(kCaptureLabelRadius));
   layer()->SetBackgroundBlur(
       static_cast<float>(AshColorProvider::LayerBlurSigma::kBlurDefault));
-  layer()->SetBackdropFilterQuality(capture_mode::kBlurQuality);
+  layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
 
   SkColor text_color = color_provider->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary);

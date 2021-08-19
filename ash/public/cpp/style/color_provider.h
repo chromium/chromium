@@ -33,6 +33,10 @@ class ASH_PUBLIC_EXPORT ColorProvider {
     kBlurSigma10 = 10,
   };
 
+  // The default blur quality for background blur. Using a value less than 1
+  // improves performance.
+  static constexpr float kBackgroundBlurQuality = 0.33f;
+
   // Types of Base layer.
   enum class BaseLayerType {
     // Number at the end of each transparent type indicates the alpha value.

@@ -30,6 +30,7 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/shell.h"
 #include "ash/wm/work_area_insets.h"
@@ -95,9 +96,6 @@ constexpr int kAppInfoDialogHeight = 384;
 // The duration of app list animations when |short_animations_for_testing| are
 // enabled.
 constexpr int kAppListAnimationDurationImmediateMs = 0;
-
-// Quality of the shield background blur.
-constexpr float kAppListBlurQuality = 0.33f;
 
 // Set animation durations to 0 for testing.
 // TODO(oshima): Use ui::ScopedAnimationDurationScaleMode instead.
@@ -524,7 +522,7 @@ class AppListBackgroundShieldView : public views::View {
 
     if (use_blur) {
       layer()->SetBackgroundBlur(preferred_blur_radius_);
-      layer()->SetBackdropFilterQuality(kAppListBlurQuality);
+      layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
     } else {
       layer()->SetBackgroundBlur(0);
     }

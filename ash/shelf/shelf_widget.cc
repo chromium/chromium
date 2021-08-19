@@ -55,7 +55,6 @@ constexpr int kShelfBlurRadius = 30;
 // The maximum size of the opaque layer during an "overshoot" (drag away from
 // the screen edge).
 constexpr int kShelfMaxOvershootHeight = 40;
-constexpr float kShelfBlurQuality = 0.33f;
 constexpr int kDragHandleCornerRadius = 2;
 
 // Return the first or last focusable child of |root|.
@@ -301,7 +300,8 @@ void ShelfWidget::DelegateView::UpdateBackgroundBlur() {
 
   opaque_background()->SetBackgroundBlur(
       should_blur_background ? kShelfBlurRadius : 0);
-  opaque_background()->SetBackdropFilterQuality(kShelfBlurQuality);
+  opaque_background()->SetBackdropFilterQuality(
+      ColorProvider::kBackgroundBlurQuality);
 
   background_is_currently_blurred_ = should_blur_background;
 }

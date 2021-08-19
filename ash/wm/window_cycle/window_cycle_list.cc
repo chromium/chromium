@@ -66,13 +66,6 @@ constexpr gfx::RoundedCornersF kBackgroundCornerRadius{16.f};
 // Shield horizontal inset.
 constexpr int kBackgroundHorizontalInsetDp = 8;
 
-// Shield background blur sigma.
-constexpr float kBackgroundBlurSigma =
-    static_cast<float>(AshColorProvider::LayerBlurSigma::kBlurDefault);
-
-// Quality of the shield background blur.
-constexpr float kBackgroundBlurQuality = 0.33f;
-
 // All previews are the same height (this is achieved via a combination of
 // scaling and padding).
 constexpr int kFixedPreviewHeightDp = 256;
@@ -303,8 +296,9 @@ class WindowCycleView : public views::WidgetDelegateView,
     SkColor background_color = AshColorProvider::Get()->GetBaseLayerColor(
         AshColorProvider::BaseLayerType::kTransparent80);
     layer->SetColor(background_color);
-    layer->SetBackgroundBlur(kBackgroundBlurSigma);
-    layer->SetBackdropFilterQuality(kBackgroundBlurQuality);
+    layer->SetBackgroundBlur(
+        static_cast<float>(ColorProvider::LayerBlurSigma::kBlurDefault));
+    layer->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
     layer->SetName("WindowCycleView");
     layer->SetMasksToBounds(true);
 
