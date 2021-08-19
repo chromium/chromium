@@ -18,7 +18,13 @@ namespace blink {
 // Tests covering incremental updates of paint property trees.
 class PaintPropertyTreeUpdateTest : public PaintPropertyTreeBuilderTest {};
 
-INSTANTIATE_PAINT_TEST_SUITE_P(PaintPropertyTreeUpdateTest);
+INSTANTIATE_TEST_SUITE_P(All,
+                         PaintPropertyTreeUpdateTest,
+                         ::testing::Values(0,
+                                           kCompositeAfterPaint,
+                                           kUnderInvalidationChecking,
+                                           kCompositeAfterPaint |
+                                               kUnderInvalidationChecking));
 
 TEST_P(PaintPropertyTreeUpdateTest,
        ThreadedScrollingDisabledMainThreadScrollReason) {
@@ -826,7 +832,7 @@ TEST_P(PaintPropertyTreeUpdateTest,
   SetBodyInnerHTML(R"HTML(
     <style>
       ::-webkit-scrollbar {width: 20px; height: 20px}
-      body {height: 10000px; width: 10000px; margin: 0;}
+      body {height: 2000px; width: 2000px; margin: 0;}
     </style>
   )HTML");
 
@@ -840,7 +846,7 @@ TEST_P(PaintPropertyTreeUpdateTest,
 
 TEST_P(PaintPropertyTreeUpdateTest, ViewportAddRemoveDeviceEmulationNode) {
   SetBodyInnerHTML(
-      "<style>body {height: 10000px; width: 10000px; margin: 0;}</style>");
+      "<style>body {height: 2000px; width: 2000px; margin: 0;}</style>");
 
   auto& visual_viewport = GetDocument().GetPage()->GetVisualViewport();
   EXPECT_FALSE(visual_viewport.GetDeviceEmulationTransformNode());
@@ -858,8 +864,10 @@ TEST_P(PaintPropertyTreeUpdateTest, ViewportAddRemoveDeviceEmulationNode) {
     EXPECT_EQ(&TransformPaintPropertyNode::Root(),
               &scrollbar_layer->GetPropertyTreeState().Transform());
   } else {
-    // TODO(wangxianzhu): Test for CompositeAfterPaint.
-    EXPECT_FALSE(scrollbar_layer);
+    auto& chunk = *(ContentPaintChunks().begin() + 1);
+    EXPECT_EQ(DisplayItem::kScrollbarHorizontal, chunk.id.type);
+    EXPECT_EQ(&TransformPaintPropertyNode::Root(),
+              &chunk.properties.Transform());
   }
 
   // These emulate WebViewImpl::SetDeviceEmulationTransform().
@@ -874,8 +882,10 @@ TEST_P(PaintPropertyTreeUpdateTest, ViewportAddRemoveDeviceEmulationNode) {
     EXPECT_EQ(visual_viewport.GetDeviceEmulationTransformNode(),
               &scrollbar_layer->GetPropertyTreeState().Transform());
   } else {
-    // TODO(wangxianzhu): Test for CompositeAfterPaint.
-    EXPECT_FALSE(scrollbar_layer);
+    auto& chunk = *(ContentPaintChunks().begin() + 1);
+    EXPECT_EQ(DisplayItem::kScrollbarHorizontal, chunk.id.type);
+    EXPECT_EQ(visual_viewport.GetDeviceEmulationTransformNode(),
+              &chunk.properties.Transform());
   }
 
   // These emulate WebViewImpl::SetDeviceEmulationTransform().
@@ -889,8 +899,10 @@ TEST_P(PaintPropertyTreeUpdateTest, ViewportAddRemoveDeviceEmulationNode) {
     EXPECT_EQ(&TransformPaintPropertyNode::Root(),
               &scrollbar_layer->GetPropertyTreeState().Transform());
   } else {
-    // TODO(wangxianzhu): Test for CompositeAfterPaint.
-    EXPECT_FALSE(scrollbar_layer);
+    auto& chunk = *(ContentPaintChunks().begin() + 1);
+    EXPECT_EQ(DisplayItem::kScrollbarHorizontal, chunk.id.type);
+    EXPECT_EQ(&TransformPaintPropertyNode::Root(),
+              &chunk.properties.Transform());
   }
 }
 
