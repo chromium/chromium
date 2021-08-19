@@ -55,6 +55,7 @@ LayoutMultiColumnSet* LayoutMultiColumnSet::CreateAnonymous(
 }
 
 void LayoutMultiColumnSet::Trace(Visitor* visitor) const {
+  visitor->Trace(fragmentainer_groups_);
   visitor->Trace(flow_thread_);
   LayoutBlockFlow::Trace(visitor);
 }
