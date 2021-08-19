@@ -9,6 +9,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/bits.h"
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
 #include "base/feature_list.h"
@@ -244,9 +245,11 @@ IOSurfaceRef CreateIOSurface(const gfx::Size& size,
       const size_t plane_height = (size.height() + factor - 1) / factor;
       const size_t plane_bytes_per_element = BytesPerElement(format, plane);
       const size_t plane_bytes_per_row = IOSurfaceAlignProperty(
-          kIOSurfacePlaneBytesPerRow, plane_width * plane_bytes_per_element);
+          kIOSurfacePlaneBytesPerRow,
+          base::bits::AlignUp(plane_width, 2) * plane_bytes_per_element);
       const size_t plane_bytes_alloc = IOSurfaceAlignProperty(
-          kIOSurfacePlaneSize, plane_height * plane_bytes_per_row);
+          kIOSurfacePlaneSize,
+          base::bits::AlignUp(plane_height, 2) * plane_bytes_per_row);
       const size_t plane_offset =
           IOSurfaceAlignProperty(kIOSurfacePlaneOffset, total_bytes_alloc);
 
@@ -273,9 +276,11 @@ IOSurfaceRef CreateIOSurface(const gfx::Size& size,
   } else {
     const size_t bytes_per_element = BytesPerElement(format, 0);
     const size_t bytes_per_row = IOSurfaceAlignProperty(
-        kIOSurfaceBytesPerRow, size.width() * bytes_per_element);
+        kIOSurfaceBytesPerRow,
+        base::bits::AlignUp(size.width(), 2) * bytes_per_element);
     const size_t bytes_alloc = IOSurfaceAlignProperty(
-        kIOSurfaceAllocSize, size.height() * bytes_per_row);
+        kIOSurfaceAllocSize,
+        base::bits::AlignUp(size.height(), 2) * bytes_per_row);
     AddIntegerValue(properties, kIOSurfaceBytesPerElement, bytes_per_element);
     AddIntegerValue(properties, kIOSurfaceBytesPerRow, bytes_per_row);
     AddIntegerValue(properties, kIOSurfaceAllocSize, bytes_alloc);
