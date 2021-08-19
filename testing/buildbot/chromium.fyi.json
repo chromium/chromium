@@ -23492,7 +23492,7 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.blink_unittests.filter",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.blink_unittests.filter;../../testing/buildbot/filters/fuchsia.debug.blink_unittests.filter",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "merge": {
@@ -23647,7 +23647,8 @@
       },
       {
         "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.debug.cc_unittests.filter"
         ],
         "merge": {
           "args": [],
@@ -23692,7 +23693,8 @@
       },
       {
         "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.debug.compositor_unittests.filter"
         ],
         "merge": {
           "args": [],
@@ -24156,7 +24158,8 @@
       },
       {
         "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.debug.media_unittests.filter"
         ],
         "merge": {
           "args": [],
@@ -24424,7 +24427,8 @@
       },
       {
         "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.debug.snapshot_unittests.filter"
         ],
         "merge": {
           "args": [],
@@ -24558,7 +24562,7 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.views_unittests.filter",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.views_unittests.filter;../../testing/buildbot/filters/fuchsia.debug.views_unittests.filter",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "merge": {
@@ -24581,7 +24585,7 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.viz_unittests.filter",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.viz_unittests.filter;../../testing/buildbot/filters/fuchsia.debug.viz_unittests.filter",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "merge": {

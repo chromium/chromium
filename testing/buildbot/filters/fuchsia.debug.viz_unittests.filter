@@ -1,0 +1,12 @@
+# https://crbug.com/1241502
+-All/SkiaReadbackPixelTest.*
+-All/YUVReadbackPixelTest.*
+-ExternalStencilPixelTest.*
+-GLRendererPixelTestFastSolidColorDraw.*
+-GLRendererPixelTestWithBackdropFilter.*
+-SkiaOutputSurfaceImplTest.*
+-YUVReadbackTest.*
+
+# Fuchsia DCHECK failure crbug.com/1098090
+-HostGpuMemoryBufferManagerTest.AllocationRequestFromDeadGpuService
+-HostGpuMemoryBufferManagerTest.AllocationRequestsForDestroyedClient
