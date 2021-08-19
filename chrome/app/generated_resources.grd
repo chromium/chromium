@@ -514,9 +514,16 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_SEARCH_NO_RESULTS" desc="Text description of a search that has no results.">
           No search results found
         </message>
-        <message name="IDS_SHOW_BUBBLE_INACTIVE_DESCRIPTION" desc="Message announced to screen reader users when an inactive bubble gets shown.">
-          Press Alt Shift A to show
-        </message>
+        <if expr="is_macosx">
+          <message name="IDS_SHOW_BUBBLE_INACTIVE_DESCRIPTION" is_accessibility_with_no_ui="true" desc="Message announced to screen reader users when an inactive bubble gets shown.">
+            This dialog is not currently focused. Press Command-Shift-Option A to focus this dialog.
+          </message>
+        </if>
+        <if expr="not is_macosx">
+          <message name="IDS_SHOW_BUBBLE_INACTIVE_DESCRIPTION" is_accessibility_with_no_ui="true" desc="Message announced to screen reader users when an inactive bubble gets shown.">
+            This dialog is not currently focused. Press Alt-Shift A to focus this dialog.
+          </message>
+        </if>
       </if>
 
        <!-- content area context menus. Android does not use it -->
