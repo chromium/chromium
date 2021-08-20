@@ -553,6 +553,9 @@
     <message name="IDS_ENTERPRISE_PROFILE_WELCOME_ACCOUNT_MANAGED_BY" desc="Subtitle of the enteprise profile welcome screen, informing that the account is managed by an administrator.">
       This account is managed by <ph name="PROFILE_NAME">$1<ex>example.com</ex></ph>
     </message>
+    <message name="IDS_ENTERPRISE_PROFILE_WELCOME_ACCOUNT_EMAIL_MANAGED_BY" desc="Subtitle of the enteprise profile welcome screen for a signin interception, informing that the account is managed by an administrator.">
+      This account (<ph name="USER_EMAIL_ADDRESS">$1<ex>john.doe@example.com</ex></ph>) is managed by <ph name="PROFILE_NAME">$2<ex>example.com</ex></ph>
+    </message>
     <message name="IDS_ENTERPRISE_PROFILE_WELCOME_DEVICE_MANAGED_BY" desc="Subtitle of the enteprise profile welcome screen, informing that the device is managed by an administrator.">
       Your device is managed by <ph name="PROFILE_NAME">$1<ex>example.com</ex></ph>
     </message>

@@ -49,6 +49,22 @@ std::string GetManagedAccountTitle(ProfileAttributesEntry* entry,
       base::UTF8ToUTF16(domain_name));
 }
 
+std::string GetManagedAccountTitleWithEmail(
+    ProfileAttributesEntry* entry,
+    const std::string& fallback_domain_name,
+    const std::u16string& email) {
+  DCHECK(entry);
+  DCHECK(!email.empty());
+  if (entry->GetHostedDomain() == kNoHostedDomainFound)
+    return std::string();
+  const std::string domain_name = entry->GetHostedDomain().empty()
+                                      ? fallback_domain_name
+                                      : entry->GetHostedDomain();
+  return l10n_util::GetStringFUTF8(
+      IDS_ENTERPRISE_PROFILE_WELCOME_ACCOUNT_EMAIL_MANAGED_BY, email,
+      base::UTF8ToUTF16(domain_name));
+}
+
 std::string GetManagedDeviceTitle() {
   absl::optional<std::string> device_manager =
       chrome::GetDeviceManagerIdentity();
@@ -81,6 +97,7 @@ EnterpriseProfileWelcomeHandler::EnterpriseProfileWelcomeHandler(
     base::OnceCallback<void(bool)> proceed_callback)
     : browser_(browser),
       type_(type),
+      email_(base::UTF8ToUTF16(account_info.email)),
       domain_name_(gaia::ExtractDomainName(account_info.email)),
       account_id_(account_info.account_id),
       profile_color_(profile_color),
@@ -238,7 +255,8 @@ base::Value EnterpriseProfileWelcomeHandler::GetProfileInfoValue() {
       break;
     case EnterpriseProfileWelcomeUI::ScreenType::kEnterpriseAccountCreation:
       dict.SetBoolKey("showEnterpriseBadge", false);
-      enterprise_title = GetManagedAccountTitle(entry, domain_name_);
+      enterprise_title =
+          GetManagedAccountTitleWithEmail(entry, domain_name_, email_);
       enterprise_info = l10n_util::GetStringUTF8(
           IDS_ENTERPRISE_PROFILE_WELCOME_MANAGED_DESCRIPTION_WITH_SYNC);
       dict.SetStringKey(
