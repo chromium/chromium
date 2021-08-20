@@ -77,6 +77,12 @@ class BrowserLoader
   // start the stateful lacros installation.
   void OnLoadSelection(LoadCompletionCallback callback, bool was_installed);
 
+  // Called to make sure stateful lacros is mounted before version comparison.
+  void OnLoadSelectionMountStateful(
+      LoadCompletionCallback callback,
+      component_updater::CrOSComponentManager::Error error,
+      const base::FilePath& path);
+
   // Called to determine which lacros to load based on version (rootfs vs
   // stateful).
   void LoadVersionSelection(LoadCompletionCallback callback);
