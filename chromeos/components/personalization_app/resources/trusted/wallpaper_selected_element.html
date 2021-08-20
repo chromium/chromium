@@ -2,21 +2,39 @@
   #container {
     border-bottom: 1px solid var(--cros-separator-color);
     box-sizing: border-box;
-    display: flex;
-    flex-flow: row nowrap;
+    display: grid;
+    grid-template-columns: 224px 20px minmax(0, 1fr);
+    grid-template-rows: 1fr 16px 34px 20px;
+    grid-template-areas: "image . text"
+                         "image . ."
+                         "image . buttons"
+                         ".     . .";
     height: 100%;
     margin: 0 8px;
-    padding-bottom: 20px;
   }
 
-  #imageErrorContainer,
-  #imageLoadingContainer,
+  #imageContainer,
+  #imagePlaceholder {
+    grid-area: image;
+  }
+
+  #textContainer,
+  #textPlaceholder {
+    grid-area: text;
+  }
+
+  #buttonContainer,
+  #buttonPlaceholder {
+    grid-area: buttons;
+  }
+
+  .placeholder {
+    border-radius: 12px;
+  }
+
   #imageContainer {
     border-radius: 12px;
-    flex: 0 0 auto;
-    height: 100%;
     overflow: hidden;
-    width: 224px;
   }
 
   img {
@@ -25,17 +43,11 @@
     width: 100%;
   }
 
-  .text-container {
+  #textContainer {
     align-items: flex-start;
     display: flex;
     flex-flow: column nowrap;
-    justify-content: center;
-    margin: 0 8px 0 20px;
-    min-width: 0;
-  }
-
-  .text-container.options {
-    align-self: flex-end;
+    justify-content: flex-end;
   }
 
   #textContainer > * {
@@ -44,16 +56,6 @@
     max-width: 100%;
     text-overflow: ellipsis;
     white-space: nowrap;
-  }
-
-  #infoErrorContainer,
-  #infoLoadingContainer {
-    width: 100%;
-  }
-
-  #infoErrorContainer > * + *,
-  #infoLoadingContainer > * + * {
-    margin-top: 8px;
   }
 
   #textContainer > * + * {
@@ -78,12 +80,6 @@
     line-height: 20px;
   }
 
-  #wallpaperOptions,
-  #collectionOptions {
-    margin-top: 16px;
-    display: flex;
-  }
-
   #wallpaperOptions .text,
   #collectionOptions .text {
     margin-inline-start: 8px;
@@ -95,7 +91,6 @@
     border-radius: 16px;
     box-shadow: none;
     margin-inline-end: 8px;
-    padding: 16px;
   }
 
   #wallpaperOptions > cr-button[aria-selected='true'],
@@ -104,76 +99,61 @@
     border: 0;
   }
 </style>
-<header id="container" tabindex="0" aria-label="[[getAriaLabel_(image_)]]"
-    role="heading" aria-level="1">
-  <template is="dom-if" if=[[hasError_]]>
-    <div id="imageErrorContainer">
-      <div class="photo-error-placeholder"></div>
-    </div>
-    <div id="infoErrorContainer" class="text-container">
-      <div class="attribution-error-placeholder"></div>
-      <div class="attribution-error-placeholder"></div>
-      <div class="attribution-error-placeholder"></div>
-    </div>
+<header id="container" aria-label$="[[getAriaLabel_(image_)]]">
+  <template is="dom-if"
+      if="[[showPlaceholders_(isLoading_, showImage_)]]">
+    <div id="imagePlaceholder" class="placeholder"></div>
+    <div id="textPlaceholder" class="placeholder"></div>
+    <div id="buttonPlaceholder" class="placeholder"></div>
   </template>
-  <template is="dom-if" if=[[!hasError_]]>
+  <template is="dom-if" if="[[showImage_]]">
     <div id="imageContainer">
-      <img hidden$="[[!showImage_]]" aria-labelledby="imageLabel"
-          src="[[getImageSrc_(image_)]]">
-      <div hidden$="[[isLoadingPlaceholderHidden_(isLoading_, showImage_)]]"
-          class="photo-loading-placeholder"></div>
+      <img src="[[getImageSrc_(image_)]]" aria-hidden="true">
     </div>
-    <template is="dom-if" if="[[!isLoadingPlaceholderHidden_(isLoading_, showImage_)]]">
-      <div id="infoLoadingContainer" class="text-container">
-        <div class="attribution-loading-placeholder"></div>
-        <div class="attribution-loading-placeholder"></div>
-        <div class="attribution-loading-placeholder"></div>
-      </div>
-    </template>
-    <template is="dom-if" if="[[showImage_]]">
-      <div id="textContainer" class$="[[textContainerClass_]]">
-        <p id="currentlySet">[[i18n('currentlySet')]]</p>
-        <p id="imageTitle" title="[[imageTitle_]]">[[imageTitle_]]</p>
-        <dom-repeat items="[[imageOtherAttribution_]]">
-          <template>
-            <p title="[[item]]">[[item]]</p>
-          </template>
-        </dom-repeat>
-        <template is="dom-if" if="[[showWallpaperOptions_]]">
-          <div id="wallpaperOptions">
-            <cr-button id="fill" data-layout="FILL" on-click="onClickLayoutIcon_"
-                aria-selected$=[[getFillAriaSelected_(image_)]]>
-              <iron-icon icon="[[fillIcon_]]"></iron-icon>
-              <div class="text">[[i18n('fill')]]</div>
-            </cr-button>
-            <cr-button id="center" data-layout="CENTER"
-                on-click="onClickLayoutIcon_"
-                aria-selected$="[[getCenterAriaSelected_(image_)]]">
-              <iron-icon icon="[[centerIcon_]]"></iron-icon>
-              <div class="text">[[i18n('center')]]</div>
-            </cr-button>
-          </div>
+    <div id="textContainer">
+      <p id="currentlySet">[[i18n('currentlySet')]]</p>
+      <p id="imageTitle" title="[[imageTitle_]]">[[imageTitle_]]</p>
+      <dom-repeat items="[[imageOtherAttribution_]]">
+        <template>
+          <p title="[[item]]">[[item]]</p>
         </template>
-        <template is="dom-if" if="[[showCollectionOptions_]]">
-          <div id="collectionOptions">
-            <cr-button id="dailyRefresh" data-collection-id$="[[collectionId]]"
-                aria-label$="[[i18n('ariaLabelChangeDaily')]]"
-                data-daily-refresh-collection-id$="[[dailyRefreshCollectionId_]]"
-                aria-pressed="[[ariaPressed_]]"
-                on-click="onClickDailyRefreshToggle_">
-              <iron-icon icon="[[dailyRefreshIcon_]]"></iron-icon>
-              <div class="text">[[i18n('changeDaily')]]</div>
-            </cr-button>
-            <cr-button id="refreshWallpaper"
-                aria-label$="[[i18n('ariaLabelRefresh')]]"
-                on-click="onClickUpdateDailyRefreshWallpaper_"
-                hidden=[[!showRefreshButton_]]>
-              <iron-icon icon="personalization:refresh"></iron-icon>
-              <div class="text">[[i18n('refresh')]]</div>
-            </cr-button>
-          </div>
-        </template>
-      </div>
-    </template>
+      </dom-repeat>
+    </div>
+    <div id="buttonContainer">
+      <template is="dom-if" if="[[showWallpaperOptions_]]">
+        <div id="wallpaperOptions">
+          <cr-button id="fill" data-layout="FILL" on-click="onClickLayoutIcon_"
+              aria-selected$="[[getFillAriaSelected_(image_)]]">
+            <iron-icon icon="[[fillIcon_]]"></iron-icon>
+            <div class="text">[[i18n('fill')]]</div>
+          </cr-button>
+          <cr-button id="center" data-layout="CENTER"
+              on-click="onClickLayoutIcon_"
+              aria-selected$="[[getCenterAriaSelected_(image_)]]">
+            <iron-icon icon="[[centerIcon_]]"></iron-icon>
+            <div class="text">[[i18n('center')]]</div>
+          </cr-button>
+        </div>
+      </template>
+      <template is="dom-if" if="[[showCollectionOptions_]]">
+        <div id="collectionOptions">
+          <cr-button id="dailyRefresh" data-collection-id$="[[collectionId]]"
+              aria-label$="[[i18n('ariaLabelChangeDaily')]]"
+              data-daily-refresh-collection-id$="[[dailyRefreshCollectionId_]]"
+              aria-pressed="[[ariaPressed_]]"
+              on-click="onClickDailyRefreshToggle_">
+            <iron-icon icon="[[dailyRefreshIcon_]]"></iron-icon>
+            <div class="text">[[i18n('changeDaily')]]</div>
+          </cr-button>
+          <cr-button id="refreshWallpaper"
+              aria-label$="[[i18n('ariaLabelRefresh')]]"
+              on-click="onClickUpdateDailyRefreshWallpaper_"
+              hidden="[[!showRefreshButton_]]">
+            <iron-icon icon="personalization:refresh"></iron-icon>
+            <div class="text">[[i18n('refresh')]]</div>
+          </cr-button>
+        </div>
+      </template>
+    </div>
   </template>
 </header>

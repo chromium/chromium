@@ -48,19 +48,18 @@ export function WallpaperSelectedTest() {
         };
         wallpaperSelectedElement = initElement(WallpaperSelected.is);
 
-        const img = wallpaperSelectedElement.shadowRoot.querySelector('img');
-        assertTrue(img.hidden);
+        assertEquals(
+            null, wallpaperSelectedElement.shadowRoot.querySelector('img'));
 
         assertEquals(
             null,
             wallpaperSelectedElement.shadowRoot.getElementById(
                 'textContainer'));
 
-        const placeholder = wallpaperSelectedElement.shadowRoot.querySelector(
-            '.photo-loading-placeholder');
+        const placeholder = wallpaperSelectedElement.shadowRoot.getElementById(
+            'imagePlaceholder');
 
         assertTrue(!!placeholder);
-        assertFalse(placeholder.hidden);
 
         // Loading placeholder should be hidden.
         personalizationStore.data.loading = {
@@ -71,9 +70,9 @@ export function WallpaperSelectedTest() {
         personalizationStore.data.currentSelected =
             wallpaperProvider.currentWallpaper;
         personalizationStore.notifyObservers();
-        waitAfterNextRender(wallpaperSelectedElement);
+        await waitAfterNextRender(wallpaperSelectedElement);
 
-        assertTrue(placeholder.hidden);
+        assertEquals('none', placeholder.style.display);
 
         // Sent a request to update user wallpaper. Loading placeholder should
         // come back.
@@ -83,9 +82,9 @@ export function WallpaperSelectedTest() {
           setImage: 1,
         };
         personalizationStore.notifyObservers();
-        waitAfterNextRender(wallpaperSelectedElement);
+        await waitAfterNextRender(wallpaperSelectedElement);
 
-        assertFalse(placeholder.hidden);
+        assertEquals('', placeholder.style.display);
       });
 
   test('sets wallpaper image in store on first load', async () => {
@@ -185,7 +184,7 @@ export function WallpaperSelectedTest() {
     assertEquals('chrome://image/?https://testing', img.src);
   });
 
-  test('shows grey boxes when image fails to load', async () => {
+  test('shows placeholders when image fails to load', async () => {
     wallpaperSelectedElement = initElement(WallpaperSelected.is);
     await waitAfterNextRender(wallpaperSelectedElement);
 
@@ -195,27 +194,20 @@ export function WallpaperSelectedTest() {
     personalizationStore.notifyObservers();
     await waitAfterNextRender(wallpaperSelectedElement);
 
-    const placeholder = wallpaperSelectedElement.shadowRoot.querySelector(
-        '.photo-loading-placeholder');
+    const placeholder =
+        wallpaperSelectedElement.shadowRoot.getElementById('imagePlaceholder');
     assertTrue(!!placeholder);
-    assertFalse(placeholder.hidden);
-    const imageErrorContainer =
-        wallpaperSelectedElement.shadowRoot.getElementById(
-            'imageErrorContainer');
-    assertEquals('none', imageErrorContainer.style.display);
-    const infoErrorContainer =
-        wallpaperSelectedElement.shadowRoot.getElementById(
-            'infoErrorContainer');
-    assertEquals('none', infoErrorContainer.style.display);
 
     // Loading finished and still no current wallpaper.
     personalizationStore.data.loading.selected = false;
     personalizationStore.notifyObservers();
     await waitAfterNextRender(wallpaperSelectedElement);
 
-    assertNotEquals('none', imageErrorContainer.style.display);
-    assertNotEquals('none', infoErrorContainer.style.display);
-    assertTrue(wallpaperSelectedElement.shadowRoot.querySelector('img').hidden);
+    // Dom-if will set display: none if the element is hidden. Make sure it is
+    // not hidden.
+    assertNotEquals('none', placeholder.style.display);
+    assertEquals(
+        null, wallpaperSelectedElement.shadowRoot.querySelector('img'));
   });
 
   test('sets selected wallpaper data in store', async () => {
