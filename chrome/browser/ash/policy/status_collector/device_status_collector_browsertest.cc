@@ -170,6 +170,8 @@ constexpr char kFakeOsInfoCodeName[] = "OsInfo Code Name";
 constexpr char kFakeOSInfoMarketingName[] = "OsInfo Marketing Name";
 constexpr cros_healthd::BootMode kFakeOsInfoBootMode =
     cros_healthd::BootMode::kCrosSecure;
+constexpr em::BootInfo::BootMethod kFakeOsInfoBootMethod =
+    em::BootInfo::CROS_SECURE;
 constexpr char kFakeVpdInfoRegion[] = "VpdInfo Region";
 constexpr char kFakeDmiInfoBiosVendor[] = "DMI Bios Vendor";
 constexpr char kFakeDmiInfoBiosVersion[] = "DMI Bios Version";
@@ -3323,6 +3325,7 @@ TEST_F(DeviceStatusCollectorTest, TestCrosHealthdInfo) {
   EXPECT_FALSE(device_status_.has_storage_status());
   EXPECT_FALSE(device_status_.has_system_status());
   EXPECT_FALSE(device_status_.has_smbios_info());
+  EXPECT_FALSE(device_status_.has_boot_info());
   EXPECT_FALSE(device_status_.has_timezone_info());
   EXPECT_FALSE(device_status_.has_memory_info());
   EXPECT_EQ(device_status_.fan_info_size(), 0);
@@ -3435,6 +3438,8 @@ TEST_F(DeviceStatusCollectorTest, TestCrosHealthdInfo) {
   EXPECT_EQ(device_status_.smbios_info().sys_vendor(), kFakeDmiInfoSysVendor);
   EXPECT_EQ(device_status_.smbios_info().bios_version(),
             kFakeDmiInfoBiosVersion);
+  ASSERT_TRUE(device_status_.has_boot_info());
+  EXPECT_EQ(device_status_.boot_info().boot_method(), kFakeOsInfoBootMethod);
 
   // Verify the CPU data.
   ASSERT_TRUE(device_status_.has_global_cpu_info());
@@ -3590,6 +3595,7 @@ TEST_F(DeviceStatusCollectorTest, TestPartialCrosHealthdInfo) {
   EXPECT_FALSE(device_status_.has_timezone_info());
   EXPECT_FALSE(device_status_.has_system_status());
   EXPECT_FALSE(device_status_.has_smbios_info());
+  EXPECT_FALSE(device_status_.has_boot_info());
   EXPECT_FALSE(device_status_.has_storage_status());
   EXPECT_EQ(device_status_.backlight_info_size(), 0);
   EXPECT_EQ(device_status_.fan_info_size(), 0);
@@ -3637,6 +3643,8 @@ TEST_F(DeviceStatusCollectorTest, TestCrosHealthdVpdAndSystemInfo) {
   ASSERT_FALSE(device_status_.smbios_info().has_product_name());
   ASSERT_FALSE(device_status_.smbios_info().has_product_version());
   ASSERT_FALSE(device_status_.smbios_info().has_bios_version());
+  ASSERT_TRUE(device_status_.has_boot_info());
+  ASSERT_FALSE(device_status_.boot_info().has_boot_method());
 
   // When the system reporting policy is turned on and the vpd reporting policy
   // is turned off, we expect the protobuf to have all system info except the
@@ -3669,6 +3677,8 @@ TEST_F(DeviceStatusCollectorTest, TestCrosHealthdVpdAndSystemInfo) {
   EXPECT_EQ(device_status_.smbios_info().sys_vendor(), kFakeDmiInfoSysVendor);
   EXPECT_EQ(device_status_.smbios_info().bios_version(),
             kFakeDmiInfoBiosVersion);
+  ASSERT_TRUE(device_status_.has_boot_info());
+  EXPECT_EQ(device_status_.boot_info().boot_method(), kFakeOsInfoBootMethod);
 }
 
 TEST_F(DeviceStatusCollectorTest, GenerateAppInfo) {

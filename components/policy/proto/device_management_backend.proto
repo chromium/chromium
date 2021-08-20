@@ -1372,17 +1372,17 @@ message SmbiosInfo {
   optional string bios_version = 4;
 }
 
-// Information about the parameters passed to the kernel.
-message KernelParameters {
-  // True if cros_efi was passed to the kernel.
-  // Used to know if the device was booted via EFI.
-  optional bool cros_efi = 1;
-}
-
-// Information about the device's EFI Variables from efivarfs.
-message EFIVars {
-  // True if Secure Boot is enabled on the device.
-  optional bool secure_boot = 1;
+// Information about how the OS was booted. This is information
+// such as boot method and other bios settings
+message BootInfo {
+  enum BootMethod {
+    UNKNOWN = 0;
+    CROS_SECURE = 1;
+    CROS_UEFI = 2;
+    CROS_LEGACY = 3;
+  }
+  optional BootMethod boot_method = 1;
+  optional bool SecureBoot = 2;
 }
 
 // Report device level status.
@@ -1508,11 +1508,10 @@ message DeviceStatusReportRequest {
   // Information from the device's SMBIOS.
   optional SmbiosInfo smbios_info = 41;
 
-  // Information about the parameters passed to the kernel.
-  optional KernelParameters kernel_parameters = 42;
+  // KernelParameters(42) and EFIVars(43) were refactored into BootInfo(44).
 
-  // Information about the device's EFI Variables from efivarfs.
-  optional EFIVars efi_vars = 43;
+  // Information about how the os was booted.
+  optional BootInfo boot_info = 44;
 }
 
 message OsUpdateStatus {

@@ -1323,6 +1323,8 @@ class DeviceStatusCollectorState : public StatusCollectorState {
           const auto& system_info_v2 = system_result_v2->get_system_info_v2();
           em::SmbiosInfo* const smbios_info_out =
               response_params_.device_status->mutable_smbios_info();
+          em::BootInfo* const boot_info_out =
+              response_params_.device_status->mutable_boot_info();
           if (report_system_info) {
             if (!system_info_v2->dmi_info.is_null()) {
               const auto& dmi_info = system_info_v2->dmi_info;
@@ -1341,6 +1343,11 @@ class DeviceStatusCollectorState : public StatusCollectorState {
                 smbios_info_out->set_product_version(
                     dmi_info->product_version.value());
               }
+            }
+            if (!system_info_v2->os_info.is_null()) {
+              const auto& os_info = system_info_v2->os_info;
+              boot_info_out->set_boot_method(
+                  static_cast<em::BootInfo::BootMethod>(os_info->boot_mode));
             }
             SetDeviceStatusReported();
           }
