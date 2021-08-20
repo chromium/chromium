@@ -12,6 +12,7 @@
 #include "ash/shell.h"
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/splitview/split_view_controller.h"
+#include "ash/wm/splitview/split_view_metrics_controller.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_state_delegate.h"
@@ -19,6 +20,7 @@
 #include "ash/wm/wm_event.h"
 #include "ash/wm/workspace_controller.h"
 #include "base/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "ui/aura/client/aura_constants.h"
@@ -47,6 +49,8 @@ const int kMaximizedWindowInset = 10;  // DIPs.
 
 constexpr char kSnapWindowSmoothnessHistogramName[] =
     "Ash.Window.AnimationSmoothness.Snap";
+constexpr char kSnapWindowDeviceOrientationHistogramName[] =
+    "Ash.Window.Snap.DeviceOrientation";
 
 gfx::Size GetWindowMaximumSize(aura::Window* window) {
   return window->delegate() ? window->delegate()->GetMaximumSize()
@@ -514,6 +518,11 @@ void DefaultState::UpdateBoundsFromState(WindowState* window_state,
     case WindowStateType::kSecondarySnapped:
       bounds_in_parent =
           GetSnappedWindowBoundsInParent(window_state->window(), state_type_);
+      base::UmaHistogramEnumeration(
+          kSnapWindowDeviceOrientationHistogramName,
+          SplitViewController::IsLayoutHorizontal(window)
+              ? SplitViewMetricsController::DeviceOrientation::kLandscape
+              : SplitViewMetricsController::DeviceOrientation::kPortrait);
       break;
 
     case WindowStateType::kDefault:

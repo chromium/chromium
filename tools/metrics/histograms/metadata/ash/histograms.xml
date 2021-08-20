@@ -2612,6 +2612,23 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="Ash.SplitView.DeviceOrientation.{DeviceUIMode}"
+    enum="DeviceOrientation" expires_after="2022-08-11">
+  <owner>cattalyya@chromium.org</owner>
+  <owner>afakhry@chromium.org</owner>
+  <owner>nupurjain@chromium.org</owner>
+  <owner>fanafan@chromium.org</owner>
+  <summary>
+    Emitted at entry to split view mode and each time the orientation or the
+    device mode changes to report whether the device is in clamshell mode or
+    tablet mode and whether the orientation is landscape or portrait.
+  </summary>
+  <token key="DeviceUIMode">
+    <variant name="ClamshellMode"/>
+    <variant name="TabletMode"/>
+  </token>
+</histogram>
+
 <histogram name="Ash.SplitView.EntryPoint.DeviceOrientation"
     enum="DeviceOrientation" expires_after="2022-06-11">
   <owner>xdai@chromium.org</owner>
@@ -3164,6 +3181,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     recorded exactly once when a window is snapped to the left or right in
     clamshell mode using the alt + [ or ] accelerator, but only if the size of
     the window's bounds change.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Window.Snap.DeviceOrientation" enum="DeviceOrientation"
+    expires_after="2022-08-11">
+  <owner>cattalyya@chromium.org</owner>
+  <owner>afakhry@chromium.org</owner>
+  <owner>nupurjain@chromium.org</owner>
+  <owner>fanafan@chromium.org</owner>
+  <summary>
+    Emitted when the user snaps the window to record whether window snap is used
+    while the display orientation is portrait or landscape mode.
   </summary>
 </histogram>
 

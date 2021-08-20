@@ -197,6 +197,11 @@ class SplitViewMetricsController : public TabletModeObserver,
   void StartRecordTabletMultiDisplaySplitView();
   void StopRecordTabletMultiDisplaySplitView();
 
+  // Called when the display orientation or mode changes to report device mode
+  // and orientation the user uses split screen in. This updates UMA metric
+  // `Ash.SplitView.DeviceOrientation.{DeviceUIMode}`.
+  void ReportDeviceUIModeAndOrientationHistogram();
+
   // We need to save an ptr of the observed `SplitViewController`. Because the
   // `RootWindowController` will be deconstructed in advance. Then, we cannot
   // use it to get observed `SplitViewController`.
