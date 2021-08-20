@@ -354,11 +354,12 @@ Polymer({
       for (var j in zippy_data[i]) {
         var data = zippy_data[i][j];
         var zippy = document.createElement('setting-zippy');
+        let background = this.isMinorMode_ ? '#e8f0fe' /* gblue50 */ : 'white';
         zippy.setAttribute(
             'icon-src',
             'data:text/html;charset=utf-8,' +
-                encodeURIComponent(
-                    zippy.getWrappedIcon(data['iconUri'], data['title'])));
+                encodeURIComponent(zippy.getWrappedIcon(
+                    data['iconUri'], data['title'], background)));
         zippy.setAttribute('step', i);
         if (!this.newLayoutEnabled_) {
           zippy.setAttribute('hide-line', true);
