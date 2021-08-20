@@ -237,6 +237,7 @@ class OSMetrics;
 }
 namespace metrics {
 class AndroidMetricsServiceClient;
+class CleanExitBeacon;
 }
 namespace midi {
 class TaskService;  // https://crbug.com/796830
@@ -435,6 +436,7 @@ class BASE_EXPORT ScopedAllowBlocking {
   friend class ios_web_view::WebViewBrowserState;
   friend class memory_instrumentation::OSMetrics;
   friend class metrics::AndroidMetricsServiceClient;
+  friend class metrics::CleanExitBeacon;
   friend class module_installer::ScopedAllowModulePakLoad;
   friend class mojo::CoreLibraryInitializer;
   friend class printing::LocalPrinterHandlerDefault;

@@ -95,6 +95,10 @@ class CleanExitBeacon {
   static void SkipCleanShutdownStepsForTesting();
 
  private:
+  // Writes |exited_cleanly| and the crash streak to the file located at
+  // |beacon_file_path_|.
+  void WriteVariationsSafeModeFile(bool exited_cleanly) const;
+
 #if defined(OS_IOS)
   // Checks if the NSUserDefault clean exit beacon value is set.
   static bool HasUserDefaultsBeacon();
