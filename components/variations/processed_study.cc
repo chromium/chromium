@@ -74,6 +74,13 @@ bool ValidateStudyAndComputeTotalProbability(
       // If |divisor| is not 0, there was at least one prior non-zero group.
       if (divisor != 0)
         multiple_assigned_groups = true;
+
+      if (divisor + experiment.probability_weight() >
+          std::numeric_limits<base::FieldTrial::Probability>::max()) {
+        DVLOG(1) << study.name() << "'s total probability weight exceeds the "
+                 << "maximum supported value";
+        return false;
+      }
       divisor += experiment.probability_weight();
     }
     if (study.experiment(i).name() == default_group_name)
