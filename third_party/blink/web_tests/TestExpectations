@@ -7185,3 +7185,8 @@ crbug.com/1234315 [ Mac ] virtual/threaded/external/wpt/animation-worklet/workle
 
 # Sheriff 2021-08-20
 crbug.com/1241778 [ Mac10.13 ] virtual/web-bluetooth-new-permissions-backend/wpt_internal/bluetooth/requestDevice/filter-does-not-match.https.html [ Pass Timeout ]
+crbug.com/1241787 [ Mac10.15 ] inspector-protocol/dom/dom-get-nodes-for-subtree-by-style-errors.js [ Pass Timeout ]
+crbug.com/1241787 [ Mac10.15 ] inspector-protocol/dom/dom-get-nodes-for-subtree-by-style-with-pierce-details.js [ Pass Timeout ]
+crbug.com/1241787 [ Mac10.15 ] inspector-protocol/dom/dom-get-nodes-for-subtree-by-style-with-pierce-unslotted-elements.js [ Pass Timeout ]
+crbug.com/1241787 [ Mac10.15 ] inspector-protocol/dom/dom-get-nodes-for-subtree-by-style-with-pierce.js [ Pass Timeout ]
+crbug.com/1241787 [ Mac10.15 ] inspector-protocol/dom/dom-get-nodes-for-subtree-by-style.js [ Pass Timeout ]
