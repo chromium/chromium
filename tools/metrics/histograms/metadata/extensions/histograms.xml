@@ -771,6 +771,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Extensions.DeclarativeNetRequest.ManifestRulesCount2"
     units="rules" expires_after="2022-03-31">
+  <obsolete>
+    Deprecated and removed from code as of 08/2021.
+  </obsolete>
   <owner>karandeepb@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>

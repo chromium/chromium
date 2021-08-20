@@ -49,7 +49,7 @@ api::declarative_net_request::Rule GetAPIRule(const TestRule& rule) {
 
 struct TestLoadRulesetInfo {
   bool has_new_checksum = false;
-  absl::optional<bool> reindexing_successful;
+  absl::optional<bool> indexing_successful;
   absl::optional<LoadRulesetResult> load_result;
 };
 
@@ -144,8 +144,8 @@ class FileSequenceHelperTest : public ExtensionsTest {
 
             EXPECT_EQ(expected_result.has_new_checksum,
                       ruleset.new_checksum().has_value());
-            EXPECT_EQ(expected_result.reindexing_successful,
-                      ruleset.reindexing_successful());
+            EXPECT_EQ(expected_result.indexing_successful,
+                      ruleset.indexing_successful());
             ASSERT_TRUE(ruleset.load_ruleset_result());
             EXPECT_EQ(expected_result.load_result,
                       ruleset.load_ruleset_result())
@@ -225,8 +225,8 @@ TEST_F(FileSequenceHelperTest, IndexedRulesetDeleted) {
   // re-index.
   base::DeleteFile(test_cases[0].source.indexed_path());
   base::DeleteFile(test_cases[2].source.indexed_path());
-  test_cases[0].expected_result.reindexing_successful = true;
-  test_cases[2].expected_result.reindexing_successful = true;
+  test_cases[0].expected_result.indexing_successful = true;
+  test_cases[2].expected_result.indexing_successful = true;
 
   TestLoadRulesets(test_cases);
 
@@ -249,8 +249,8 @@ TEST_F(FileSequenceHelperTest, ChecksumMismatch) {
       LoadRulesetResult::kErrorChecksumMismatch;
   test_cases[2].expected_result.load_result =
       LoadRulesetResult::kErrorChecksumMismatch;
-  test_cases[1].expected_result.reindexing_successful = false;
-  test_cases[2].expected_result.reindexing_successful = false;
+  test_cases[1].expected_result.indexing_successful = false;
+  test_cases[2].expected_result.indexing_successful = false;
 
   TestLoadRulesets(test_cases);
 }
@@ -265,9 +265,9 @@ TEST_F(FileSequenceHelperTest, RulesetFormatVersionMismatch) {
   ScopedIncrementRulesetVersion scoped_version_change =
       CreateScopedIncrementRulesetVersionForTesting();
 
-  // Version mismatch will cause reindexing and updated checksums.
+  // Version mismatch will cause re-indexing and updated checksums.
   for (auto& test_case : test_cases) {
-    test_case.expected_result.reindexing_successful = true;
+    test_case.expected_result.indexing_successful = true;
     test_case.expected_result.has_new_checksum = true;
     test_case.expected_result.load_result = LoadRulesetResult::kSuccess;
   }
@@ -286,9 +286,9 @@ TEST_F(FileSequenceHelperTest, JSONAndIndexedRulesetDeleted) {
   base::DeleteFile(test_cases[0].source.indexed_path());
   base::DeleteFile(test_cases[1].source.indexed_path());
 
-  // Reindexing will fail since the JSON ruleset is now deleted.
-  test_cases[0].expected_result.reindexing_successful = false;
-  test_cases[1].expected_result.reindexing_successful = false;
+  // Re-indexing will fail since the JSON ruleset is now deleted.
+  test_cases[0].expected_result.indexing_successful = false;
+  test_cases[1].expected_result.indexing_successful = false;
 
   test_cases[0].expected_result.load_result =
       LoadRulesetResult::kErrorInvalidPath;

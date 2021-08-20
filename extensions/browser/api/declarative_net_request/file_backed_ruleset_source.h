@@ -139,10 +139,19 @@ struct ReadJSONRulesResult {
 // header to recognise the indexed schema version.
 class FileBackedRulesetSource : public RulesetSource {
  public:
+  enum class RulesetFilter {
+    // Only include static rulesets which are enabled by default in the
+    // manifest.
+    kIncludeManifestEnabled,
+    // Include all static rulesets.
+    kIncludeAll
+  };
+
   // Creates FileBackedRulesetSources corresponding to the static rulesets in
   // the extension package.
   static std::vector<FileBackedRulesetSource> CreateStatic(
-      const Extension& extension);
+      const Extension& extension,
+      RulesetFilter ruleset_filter);
 
   // Creates a static FileBackedRulesetSource corresponding to |info| for the
   // given |extension|.
@@ -180,7 +189,9 @@ class FileBackedRulesetSource : public RulesetSource {
   // Indexes and persists the JSON ruleset. This is potentially unsafe since the
   // JSON rules file is parsed in-process. Note: This must be called on a
   // sequence where file IO is allowed.
-  IndexAndPersistJSONRulesetResult IndexAndPersistJSONRulesetUnsafe() const;
+  IndexAndPersistJSONRulesetResult IndexAndPersistJSONRulesetUnsafe(
+      RulesetSource::InvalidRuleParseBehavior invalid_rule_parse_behavior)
+      const;
 
   using IndexAndPersistJSONRulesetCallback =
       base::OnceCallback<void(IndexAndPersistJSONRulesetResult)>;
@@ -191,6 +202,7 @@ class FileBackedRulesetSource : public RulesetSource {
   // NOTE: This must be called on a sequence where file IO is allowed.
   void IndexAndPersistJSONRuleset(
       data_decoder::DataDecoder* decoder,
+      RulesetSource::InvalidRuleParseBehavior invalid_rule_parse_behavior,
       IndexAndPersistJSONRulesetCallback callback) const;
 
   // Reads JSON rules synchronously. Callers should only use this if the JSON is

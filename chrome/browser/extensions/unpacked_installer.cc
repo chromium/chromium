@@ -23,7 +23,9 @@
 #include "components/sync/model/string_ordinal.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
 #include "extensions/browser/api/declarative_net_request/index_helper.h"
+#include "extensions/browser/api/declarative_net_request/ruleset_source.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -271,12 +273,20 @@ bool UnpackedInstaller::LoadExtension(mojom::ManifestLocation location,
 bool UnpackedInstaller::IndexAndPersistRulesIfNeeded(std::string* error) {
   DCHECK(extension());
 
+  // Index all static rulesets and therefore parse all static rules at
+  // installation time for unpacked extensions. Throw an error for invalid rules
+  // where possible so that the extension developer is immediately notified.
+  auto ruleset_filter = declarative_net_request::FileBackedRulesetSource::
+      RulesetFilter::kIncludeAll;
+  auto invalid_rule_parse_behavior =
+      declarative_net_request::RulesetSource::InvalidRuleParseBehavior::kError;
+
   // TODO(crbug.com/761107): IndexStaticRulesetsUnsafe will read and parse JSON
   // synchronously. Change this so that we don't need to parse JSON in the
   // browser process.
   declarative_net_request::IndexHelper::Result result =
       declarative_net_request::IndexHelper::IndexStaticRulesetsUnsafe(
-          *extension());
+          *extension(), ruleset_filter, invalid_rule_parse_behavior);
   if (result.error) {
     *error = std::move(*result.error);
     return false;

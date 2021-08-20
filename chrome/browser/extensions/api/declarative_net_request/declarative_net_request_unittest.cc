@@ -33,6 +33,7 @@
 #include "extensions/browser/api/declarative_net_request/composite_matcher.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/api/declarative_net_request/declarative_net_request_api.h"
+#include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
 #include "extensions/browser/api/declarative_net_request/parse_info.h"
 #include "extensions/browser/api/declarative_net_request/rules_count_pair.h"
 #include "extensions/browser/api/declarative_net_request/rules_monitor_service.h"
@@ -78,10 +79,6 @@ using ::testing::Pointee;
 using ::testing::Property;
 using ::testing::UnorderedElementsAre;
 using ::testing::UnorderedElementsAreArray;
-
-std::string GetParseError(ParseResult result, int rule_id) {
-  return ParseInfo(result, rule_id).error();
-}
 
 std::string GetErrorWithFilename(
     const std::string& error,
@@ -150,8 +147,13 @@ class DeclarativeNetRequestUnittest : public DNRTestBase {
     extension_ = loader_->LoadExtension(extension_dir_);
     ASSERT_TRUE(extension_.get());
 
-    EXPECT_TRUE(
-        AreAllIndexedStaticRulesetsValid(*extension_, browser_context()));
+    auto ruleset_filter = FileBackedRulesetSource::RulesetFilter::kIncludeAll;
+    if (GetParam() == ExtensionLoadType::PACKED) {
+      ruleset_filter =
+          FileBackedRulesetSource::RulesetFilter::kIncludeManifestEnabled;
+    }
+    EXPECT_TRUE(AreAllIndexedStaticRulesetsValid(*extension_, browser_context(),
+                                                 ruleset_filter));
 
     // Ensure no load errors were reported.
     EXPECT_TRUE(error_reporter()->GetErrors()->empty());
@@ -162,8 +164,6 @@ class DeclarativeNetRequestUnittest : public DNRTestBase {
 
       tester.ExpectTotalCount(kIndexAndPersistRulesTimeHistogram,
                               expected_samples);
-      tester.ExpectUniqueSample(kManifestRulesCountHistogram,
-                                expected_rules_count, expected_samples);
       tester.ExpectUniqueSample(kManifestEnabledRulesCountHistogram,
                                 expected_enabled_rules_count, expected_samples);
     }
@@ -196,7 +196,44 @@ class DeclarativeNetRequestUnittest : public DNRTestBase {
         << "expected: " << error_with_filename << " actual: " << errors->at(0);
 
     tester.ExpectTotalCount(kIndexAndPersistRulesTimeHistogram, 0u);
-    tester.ExpectTotalCount(kManifestRulesCountHistogram, 0u);
+    tester.ExpectTotalCount(kManifestEnabledRulesCountHistogram, 0u);
+  }
+
+  void LoadAndExpectParseFailure(ParseResult parse_result,
+                                 int rule_id,
+                                 const std::string& filename) {
+    std::string expected_error = GetParseError(parse_result, rule_id);
+
+    if (GetParam() == ExtensionLoadType::UNPACKED) {
+      // All static rulesets are indexed (and therefore all static rules are
+      // parsed) at installation time for unpacked extensions, with invalid
+      // rules resulting in a hard installation error where possible.
+      LoadAndExpectError(expected_error, filename);
+      return;
+    }
+
+    // Static ruleset indexing for packed extensions is deferred until the
+    // ruleset is enabled. Invalid static rules are ignored with a warning
+    // raised.
+
+    base::HistogramTester tester;
+    WriteExtensionData();
+
+    loader_->set_should_fail(false);
+
+    // Clear all load errors before loading the extension.
+    error_reporter()->ClearErrors();
+
+    extension_ = loader_->LoadExtension(extension_dir_);
+
+    EXPECT_TRUE(extension_.get());
+    const std::vector<std::u16string>* errors = error_reporter()->GetErrors();
+    ASSERT_TRUE(errors->empty());
+
+    // TODO(crbug.com/879355): CrxInstaller reloads the extension after moving
+    // it, which causes it to lose the install warning. This should be fixed.
+    // Once it is, we should verify that the expected error matches the first
+    // warning here.
   }
 
   enum class RulesetScope { kDynamic, kSession };
@@ -441,6 +478,11 @@ class SingleRulesetTest : public DeclarativeNetRequestUnittest {
                                                       kJSONRulesFilename);
   }
 
+  void LoadAndExpectParseFailure(ParseResult parse_result, int rule_id) {
+    DeclarativeNetRequestUnittest::LoadAndExpectParseFailure(
+        parse_result, rule_id, kJSONRulesFilename);
+  }
+
   // |expected_rules_count| refers to the count of indexed rules. When
   // |expected_rules_count| is not set, it is inferred from the added rules.
   void LoadAndExpectSuccess(
@@ -500,8 +542,8 @@ TEST_P(SingleRulesetTest, DuplicateResourceTypes) {
       std::vector<std::string>({"image", "stylesheet"});
   rule.condition->excluded_resource_types = std::vector<std::string>({"image"});
   AddRule(rule);
-  LoadAndExpectError(
-      GetParseError(ParseResult::ERROR_RESOURCE_TYPE_DUPLICATED, *rule.id));
+  LoadAndExpectParseFailure(ParseResult::ERROR_RESOURCE_TYPE_DUPLICATED,
+                            *rule.id);
 }
 
 TEST_P(SingleRulesetTest, EmptyRedirectRuleUrl) {
@@ -514,16 +556,14 @@ TEST_P(SingleRulesetTest, EmptyRedirectRuleUrl) {
   rule.priority = kMinValidPriority;
   AddRule(rule);
 
-  LoadAndExpectError(
-      GetParseError(ParseResult::ERROR_INVALID_REDIRECT, *rule.id));
+  LoadAndExpectParseFailure(ParseResult::ERROR_INVALID_REDIRECT, *rule.id);
 }
 
 TEST_P(SingleRulesetTest, InvalidRuleID) {
   TestRule rule = CreateGenericRule();
   rule.id = kMinValidID - 1;
   AddRule(rule);
-  LoadAndExpectError(
-      GetParseError(ParseResult::ERROR_INVALID_RULE_ID, *rule.id));
+  LoadAndExpectParseFailure(ParseResult::ERROR_INVALID_RULE_ID, *rule.id);
 }
 
 TEST_P(SingleRulesetTest, InvalidRedirectRulePriority) {
@@ -533,8 +573,7 @@ TEST_P(SingleRulesetTest, InvalidRedirectRulePriority) {
   rule.action->redirect->url = std::string("https://google.com");
   rule.priority = kMinValidPriority - 1;
   AddRule(rule);
-  LoadAndExpectError(
-      GetParseError(ParseResult::ERROR_INVALID_RULE_PRIORITY, *rule.id));
+  LoadAndExpectParseFailure(ParseResult::ERROR_INVALID_RULE_PRIORITY, *rule.id);
 }
 
 TEST_P(SingleRulesetTest, NoApplicableResourceTypes) {
@@ -544,32 +583,30 @@ TEST_P(SingleRulesetTest, NoApplicableResourceTypes) {
        "object", "xmlhttprequest", "ping", "csp_report", "media", "websocket",
        "other"});
   AddRule(rule);
-  LoadAndExpectError(
-      GetParseError(ParseResult::ERROR_NO_APPLICABLE_RESOURCE_TYPES, *rule.id));
+  LoadAndExpectParseFailure(ParseResult::ERROR_NO_APPLICABLE_RESOURCE_TYPES,
+                            *rule.id);
 }
 
 TEST_P(SingleRulesetTest, EmptyDomainsList) {
   TestRule rule = CreateGenericRule();
   rule.condition->domains = std::vector<std::string>();
   AddRule(rule);
-  LoadAndExpectError(
-      GetParseError(ParseResult::ERROR_EMPTY_DOMAINS_LIST, *rule.id));
+  LoadAndExpectParseFailure(ParseResult::ERROR_EMPTY_DOMAINS_LIST, *rule.id);
 }
 
 TEST_P(SingleRulesetTest, EmptyResourceTypeList) {
   TestRule rule = CreateGenericRule();
   rule.condition->resource_types = std::vector<std::string>();
   AddRule(rule);
-  LoadAndExpectError(
-      GetParseError(ParseResult::ERROR_EMPTY_RESOURCE_TYPES_LIST, *rule.id));
+  LoadAndExpectParseFailure(ParseResult::ERROR_EMPTY_RESOURCE_TYPES_LIST,
+                            *rule.id);
 }
 
 TEST_P(SingleRulesetTest, EmptyURLFilter) {
   TestRule rule = CreateGenericRule();
   rule.condition->url_filter = std::string();
   AddRule(rule);
-  LoadAndExpectError(
-      GetParseError(ParseResult::ERROR_EMPTY_URL_FILTER, *rule.id));
+  LoadAndExpectParseFailure(ParseResult::ERROR_EMPTY_URL_FILTER, *rule.id);
 }
 
 TEST_P(SingleRulesetTest, InvalidRedirectURL) {
@@ -579,8 +616,7 @@ TEST_P(SingleRulesetTest, InvalidRedirectURL) {
   rule.action->redirect->url = std::string("google");
   rule.priority = kMinValidPriority;
   AddRule(rule);
-  LoadAndExpectError(
-      GetParseError(ParseResult::ERROR_INVALID_REDIRECT_URL, *rule.id));
+  LoadAndExpectParseFailure(ParseResult::ERROR_INVALID_REDIRECT_URL, *rule.id);
 }
 
 TEST_P(SingleRulesetTest, ListNotPassed) {
@@ -592,7 +628,7 @@ TEST_P(SingleRulesetTest, DuplicateIDS) {
   TestRule rule = CreateGenericRule();
   AddRule(rule);
   AddRule(rule);
-  LoadAndExpectError(GetParseError(ParseResult::ERROR_DUPLICATE_IDS, *rule.id));
+  LoadAndExpectParseFailure(ParseResult::ERROR_DUPLICATE_IDS, *rule.id);
 }
 
 // Ensure that we limit the number of parse failure warnings shown.
@@ -811,8 +847,8 @@ TEST_P(SingleRulesetTest, WarningAndError) {
   rule.id = kMinValidID + 1;
   AddRule(rule);
 
-  LoadAndExpectError(
-      GetParseError(ParseResult::ERROR_INVALID_REGEX_FILTER, kMinValidID + 1));
+  LoadAndExpectParseFailure(ParseResult::ERROR_INVALID_REGEX_FILTER,
+                            kMinValidID + 1);
 }
 
 // Ensure that we get an install warning on exceeding the regex rule count
@@ -1054,7 +1090,8 @@ TEST_P(SingleRulesetTest, RuleCountLimitMatched) {
   ruleset_waiter.WaitForExtensionsWithRulesetsCount(1);
 
   std::vector<FileBackedRulesetSource> static_sources =
-      FileBackedRulesetSource::CreateStatic(*extension());
+      FileBackedRulesetSource::CreateStatic(
+          *extension(), FileBackedRulesetSource::RulesetFilter::kIncludeAll);
 
   ASSERT_EQ(1u, static_sources.size());
   EXPECT_TRUE(base::PathExists(static_sources[0].indexed_path()));
@@ -1121,7 +1158,8 @@ TEST_P(SingleRulesetTest, RuleCountLimitExceeded) {
       0, 0, false /* expect_rulesets_indexed */);
 
   std::vector<FileBackedRulesetSource> static_sources =
-      FileBackedRulesetSource::CreateStatic(*extension());
+      FileBackedRulesetSource::CreateStatic(
+          *extension(), FileBackedRulesetSource::RulesetFilter::kIncludeAll);
 
   // Since the ruleset was ignored and not indexed, it should not be persisted
   // to a file.
@@ -1632,21 +1670,27 @@ TEST_P(MultipleRulesetsTest, UpdateEnabledRulesets_RegexRuleCountExceeded) {
 
 TEST_P(MultipleRulesetsTest, UpdateEnabledRulesets_InternalError) {
   AddRuleset(CreateRuleset(kId1, 10, 10, true));
-  AddRuleset(CreateRuleset(kId2, 10, 10, false));
+  AddRuleset(CreateRuleset(kId2, 10, 10, true));
 
   RulesetManagerObserver ruleset_waiter(manager());
   LoadAndExpectSuccess();
   ruleset_waiter.WaitForExtensionsWithRulesetsCount(1);
 
   std::vector<FileBackedRulesetSource> static_sources =
-      FileBackedRulesetSource::CreateStatic(*extension());
+      FileBackedRulesetSource::CreateStatic(
+          *extension(), FileBackedRulesetSource::RulesetFilter::kIncludeAll);
   ASSERT_EQ(2u, static_sources.size());
 
   constexpr char kReindexHistogram[] =
       "Extensions.DeclarativeNetRequest.RulesetReindexSuccessful";
   {
-    // First delete the indexed ruleset file for the second ruleset. Enabling it
-    // should cause re-indexing and succeed in enabling the ruleset.
+    // First disable the second ruleset and then delete its indexed ruleset
+    // file.
+    RunUpdateEnabledRulesetsFunction(*extension(), {kId2}, {}, absl::nullopt);
+    ASSERT_TRUE(base::DeleteFile(static_sources[1].indexed_path()));
+
+    // Enabling it again should cause re-indexing and succeed in enabling the
+    // ruleset.
     base::HistogramTester tester;
     ASSERT_TRUE(base::DeleteFile(static_sources[1].indexed_path()));
 
@@ -1767,7 +1811,8 @@ TEST_P(MultipleRulesetsTest, StaticRuleCountExceeded) {
                   Pointee(Property(&RulesetMatcher::GetRulesCount, 250))));
 
   std::vector<FileBackedRulesetSource> static_sources =
-      FileBackedRulesetSource::CreateStatic(*extension());
+      FileBackedRulesetSource::CreateStatic(
+          *extension(), FileBackedRulesetSource::RulesetFilter::kIncludeAll);
   ASSERT_EQ(2u, static_sources.size());
 
   if (GetParam() != ExtensionLoadType::PACKED) {

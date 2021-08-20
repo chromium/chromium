@@ -144,6 +144,9 @@ size_t GetEnabledStaticRuleCount(const CompositeMatcher* composite_matcher);
 bool HasDNRFeedbackPermission(const Extension* extension,
                               const absl::optional<int>& tab_id);
 
+// Returns the appropriate error string for an unsuccessful rule parsing result.
+std::string GetParseError(ParseResult error_reason, int rule_id);
+
 }  // namespace declarative_net_request
 }  // namespace extensions
 

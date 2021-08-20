@@ -24,6 +24,7 @@ class ParseInfo {
   ParseInfo(size_t rules_count,
             size_t regex_rules_count,
             std::vector<int> regex_limit_exceeded_rules,
+            std::vector<std::string> rule_ignored_warnings,
             flatbuffers::DetachedBuffer buffer,
             int ruleset_checksum);
 
@@ -50,6 +51,11 @@ class ParseInfo {
   const std::vector<int>& regex_limit_exceeded_rules() const {
     DCHECK(!has_error_);
     return regex_limit_exceeded_rules_;
+  }
+
+  const std::vector<std::string>& rule_ignored_warnings() const {
+    DCHECK(!has_error_);
+    return rule_ignored_warnings_;
   }
 
   size_t rules_count() const {
@@ -84,6 +90,9 @@ class ParseInfo {
   std::vector<int> regex_limit_exceeded_rules_;
   flatbuffers::DetachedBuffer buffer_;
   int ruleset_checksum_ = -1;
+
+  // Install warnings for rules which could not be parsed and are ignored.
+  std::vector<std::string> rule_ignored_warnings_;
 };
 
 }  // namespace declarative_net_request

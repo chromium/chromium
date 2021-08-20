@@ -17,6 +17,7 @@
 #include "extensions/browser/api/declarative_net_request/indexed_rule.h"
 #include "extensions/browser/api/declarative_net_request/rules_count_pair.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_matcher.h"
+#include "extensions/browser/api/declarative_net_request/ruleset_source.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/common/api/declarative_net_request/test_utils.h"
@@ -330,9 +331,10 @@ std::ostream& operator<<(std::ostream& output, const RulesCountPair& count) {
 
 bool AreAllIndexedStaticRulesetsValid(
     const Extension& extension,
-    content::BrowserContext* browser_context) {
+    content::BrowserContext* browser_context,
+    FileBackedRulesetSource::RulesetFilter ruleset_filter) {
   std::vector<FileBackedRulesetSource> sources =
-      FileBackedRulesetSource::CreateStatic(extension);
+      FileBackedRulesetSource::CreateStatic(extension, ruleset_filter);
 
   const ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context);
   for (const auto& source : sources) {
@@ -369,7 +371,8 @@ bool CreateVerifiedMatcher(const std::vector<TestRule>& rules,
 
   // Index ruleset.
   IndexAndPersistJSONRulesetResult result =
-      source.IndexAndPersistJSONRulesetUnsafe();
+      source.IndexAndPersistJSONRulesetUnsafe(
+          FileBackedRulesetSource::InvalidRuleParseBehavior::kError);
   if (result.status == IndexStatus::kError) {
     DCHECK(result.error.empty()) << result.error;
     return false;

@@ -732,9 +732,6 @@ class DeclarativeNetRequestBrowserTest
 
       tester.ExpectTotalCount(kIndexAndPersistRulesTimeHistogram,
                               expected_histogram_counts);
-      tester.ExpectBucketCount(kManifestRulesCountHistogram,
-                               expected_manifest_rules_count /*sample*/,
-                               expected_histogram_counts);
       tester.ExpectBucketCount(kManifestEnabledRulesCountHistogram,
                                expected_manifest_enabled_rules_count /*sample*/,
                                expected_histogram_counts);
@@ -746,7 +743,13 @@ class DeclarativeNetRequestBrowserTest
                               LoadRulesetResult::kSuccess /*sample*/,
                               expected_enabled_rulesets_count);
 
-    EXPECT_TRUE(AreAllIndexedStaticRulesetsValid(*extension, profile()));
+    auto ruleset_filter = FileBackedRulesetSource::RulesetFilter::kIncludeAll;
+    if (GetParam() == ExtensionLoadType::PACKED) {
+      ruleset_filter =
+          FileBackedRulesetSource::RulesetFilter::kIncludeManifestEnabled;
+    }
+    EXPECT_TRUE(AreAllIndexedStaticRulesetsValid(*extension, profile(),
+                                                 ruleset_filter));
 
     // Wait for the background page to load if needed.
     if (flags_ & kConfig_HasBackgroundScript) {
@@ -2251,7 +2254,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
 
   const Extension* extension = last_loaded_extension();
   std::vector<FileBackedRulesetSource> static_sources =
-      FileBackedRulesetSource::CreateStatic(*extension);
+      FileBackedRulesetSource::CreateStatic(
+          *extension, FileBackedRulesetSource::RulesetFilter::kIncludeAll);
   ASSERT_EQ(1u, static_sources.size());
   FileBackedRulesetSource dynamic_source =
       FileBackedRulesetSource::CreateDynamic(profile(), extension->id());
@@ -2372,7 +2376,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   ASSERT_TRUE(extension);
 
   std::vector<FileBackedRulesetSource> sources =
-      FileBackedRulesetSource::CreateStatic(*extension);
+      FileBackedRulesetSource::CreateStatic(
+          *extension, FileBackedRulesetSource::RulesetFilter::kIncludeAll);
   ASSERT_EQ(kNumStaticRulesets, sources.size());
 
   // Mimic extension prefs corruption by overwriting the indexed ruleset
@@ -2494,7 +2499,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
   const ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
   const Extension* extension = last_loaded_extension();
   std::vector<FileBackedRulesetSource> static_sources =
-      FileBackedRulesetSource::CreateStatic(*extension);
+      FileBackedRulesetSource::CreateStatic(
+          *extension, FileBackedRulesetSource::RulesetFilter::kIncludeAll);
   ASSERT_EQ(static_cast<size_t>(kNumStaticRulesets), static_sources.size());
 
   int checksum = kTestChecksum + 1;
@@ -2522,7 +2528,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   const Extension* extension = last_loaded_extension();
 
   std::vector<FileBackedRulesetSource> static_sources =
-      FileBackedRulesetSource::CreateStatic(*extension);
+      FileBackedRulesetSource::CreateStatic(
+          *extension, FileBackedRulesetSource::RulesetFilter::kIncludeAll);
   ASSERT_EQ(1u, static_sources.size());
 
   DisableExtension(extension_id);
@@ -4486,6 +4493,22 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
   const ExtensionId extension_id = last_loaded_extension_id();
   const Extension* extension = last_loaded_extension();
 
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
+  ASSERT_TRUE(prefs);
+
+  // Since this is a packed extension, rulesets are only indexed when they are
+  // first enabled. The second ruleset has not been enabled yet, so it shouldn't
+  // have been indexed yet either.
+  int checksum = -1;
+  EXPECT_TRUE(prefs->GetDNRStaticRulesetChecksum(
+      extension_id, kMinValidStaticRulesetID, &checksum));
+  EXPECT_FALSE(prefs->GetDNRStaticRulesetChecksum(
+      extension_id, RulesetID(kMinValidStaticRulesetID.value() + 1),
+      &checksum));
+  EXPECT_TRUE(prefs->GetDNRStaticRulesetChecksum(
+      extension_id, RulesetID(kMinValidStaticRulesetID.value() + 2),
+      &checksum));
+
   // Also add a dynamic rule.
   ASSERT_NO_FATAL_FAILURE(
       AddDynamicRules(extension_id, {CreateMainFrameBlockRule("dynamic")}));
@@ -4500,10 +4523,9 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
   EXPECT_THAT(GetPublicRulesetIDs(*extension, *composite_matcher),
               UnorderedElementsAre("id2", "id3", dnr_api::DYNAMIC_RULESET_ID));
 
-  // Also sanity check the extension prefs entry for the rulesets.
-  ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
-  ASSERT_TRUE(prefs);
-  int checksum = -1;
+  // Also sanity check the extension prefs entry for the rulesets. Note that
+  // the second static ruleset now should have been indexed since it has now
+  // been enabled.
   int dynamic_checksum_1 = -1;
   EXPECT_TRUE(prefs->GetDNRStaticRulesetChecksum(
       extension_id, kMinValidStaticRulesetID, &checksum));
@@ -4547,7 +4569,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
   int dynamic_checksum_2;
   EXPECT_TRUE(prefs->GetDNRStaticRulesetChecksum(
       extension_id, kMinValidStaticRulesetID, &checksum));
-  EXPECT_TRUE(prefs->GetDNRStaticRulesetChecksum(
+  EXPECT_FALSE(prefs->GetDNRStaticRulesetChecksum(
       extension_id, RulesetID(kMinValidStaticRulesetID.value() + 1),
       &checksum));
   EXPECT_FALSE(prefs->GetDNRStaticRulesetChecksum(

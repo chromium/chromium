@@ -110,7 +110,8 @@ std::unique_ptr<RulesetMatcher> CreateSessionScopedMatcher(
   RulesetSource source(kSessionRulesetID, GetDynamicAndSessionRuleLimit(),
                        extension_id, true /* enabled */);
 
-  ParseInfo info = source.IndexRules(std::move(rules));
+  ParseInfo info = source.IndexRules(
+      std::move(rules), RulesetSource::InvalidRuleParseBehavior::kError);
   if (info.has_error()) {
     *error = info.error();
     return nullptr;
@@ -449,7 +450,8 @@ void RulesMonitorService::OnExtensionLoaded(
   // Static rulesets.
   {
     std::vector<FileBackedRulesetSource> sources =
-        FileBackedRulesetSource::CreateStatic(*extension);
+        FileBackedRulesetSource::CreateStatic(
+            *extension, FileBackedRulesetSource::RulesetFilter::kIncludeAll);
 
     absl::optional<std::set<RulesetID>> prefs_enabled_rulesets =
         prefs_->GetDNREnabledStaticRulesets(extension->id());
@@ -692,19 +694,18 @@ void RulesMonitorService::UpdateEnabledStaticRulesetsInternal(
   LoadRequestData load_data(extension_id);
   int expected_ruleset_checksum = -1;
   for (const RulesetID& id_to_enable : ids_to_enable) {
-    if (!prefs_->GetDNRStaticRulesetChecksum(extension_id, id_to_enable,
-                                             &expected_ruleset_checksum)) {
-      // This might happen on prefs corruption.
-      LogLoadRulesetResult(LoadRulesetResult::kErrorChecksumNotFound);
-      std::move(callback).Run(kInternalErrorUpdatingEnabledRulesets);
-      return;
-    }
-
     const DNRManifestData::RulesetInfo& info =
         DNRManifestData::GetRuleset(*extension, id_to_enable);
     RulesetInfo static_ruleset(
         FileBackedRulesetSource::CreateStatic(*extension, info));
-    static_ruleset.set_expected_checksum(expected_ruleset_checksum);
+
+    // Take note of the expected checksum if this ruleset has been indexed in
+    // the past.
+    if (prefs_->GetDNRStaticRulesetChecksum(extension_id, id_to_enable,
+                                            &expected_ruleset_checksum)) {
+      static_ruleset.set_expected_checksum(expected_ruleset_checksum);
+    }
+
     load_data.rulesets.push_back(std::move(static_ruleset));
   }
 

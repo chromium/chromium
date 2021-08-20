@@ -128,8 +128,6 @@ const char kIncrementActionCountWithoutUseAsBadgeTextError[] =
 
 const char kIndexAndPersistRulesTimeHistogram[] =
     "Extensions.DeclarativeNetRequest.IndexAndPersistRulesTime";
-const char kManifestRulesCountHistogram[] =
-    "Extensions.DeclarativeNetRequest.ManifestRulesCount2";
 const char kManifestEnabledRulesCountHistogram[] =
     "Extensions.DeclarativeNetRequest.ManifestEnabledRulesCount2";
 const char kUpdateDynamicRulesStatusHistogram[] =

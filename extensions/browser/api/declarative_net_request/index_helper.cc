@@ -105,10 +105,6 @@ IndexHelper::Result CombineResults(
         total_index_and_persist_time);
 
     UMA_HISTOGRAM_COUNTS_1M(
-        declarative_net_request::kManifestRulesCountHistogram,
-        total_rules_count);
-
-    UMA_HISTOGRAM_COUNTS_1M(
         declarative_net_request::kManifestEnabledRulesCountHistogram,
         enabled_rules_count);
   }
@@ -124,8 +120,11 @@ IndexHelper::Result::Result(Result&&) = default;
 IndexHelper::Result& IndexHelper::Result::operator=(Result&&) = default;
 
 // static
-void IndexHelper::IndexStaticRulesets(const Extension& extension,
-                                      IndexCallback callback) {
+void IndexHelper::IndexStaticRulesets(
+    const Extension& extension,
+    FileBackedRulesetSource::RulesetFilter ruleset_filter,
+    RulesetSource::InvalidRuleParseBehavior invalid_rule_parse_behavior,
+    IndexCallback callback) {
   // Note we use ref-counting instead of manual memory management since there
   // are some subtle cases:
   //  - Zero rulesets to index.
@@ -133,20 +132,25 @@ void IndexHelper::IndexStaticRulesets(const Extension& extension,
   // In these cases there's a potential for a use-after-free with manual memory
   // management.
   auto index_helper = base::WrapRefCounted(new IndexHelper(
-      FileBackedRulesetSource::CreateStatic(extension), std::move(callback)));
-  index_helper->Start();
+      FileBackedRulesetSource::CreateStatic(extension, ruleset_filter),
+      std::move(callback)));
+  index_helper->Start(invalid_rule_parse_behavior);
 }
 
 // static
 IndexHelper::Result IndexHelper::IndexStaticRulesetsUnsafe(
-    const Extension& extension) {
+    const Extension& extension,
+    FileBackedRulesetSource::RulesetFilter ruleset_filter,
+    RulesetSource::InvalidRuleParseBehavior invalid_rule_parse_behavior) {
   std::vector<FileBackedRulesetSource> sources =
-      FileBackedRulesetSource::CreateStatic(extension);
+      FileBackedRulesetSource::CreateStatic(extension, ruleset_filter);
 
   IndexResults results;
   results.reserve(sources.size());
-  for (const FileBackedRulesetSource& source : sources)
-    results.emplace_back(&source, source.IndexAndPersistJSONRulesetUnsafe());
+  for (const FileBackedRulesetSource& source : sources) {
+    results.emplace_back(&source, source.IndexAndPersistJSONRulesetUnsafe(
+                                      invalid_rule_parse_behavior));
+  }
 
   // Don't log histograms for unpacked extensions so that the histograms reflect
   // real world usage.
@@ -161,7 +165,8 @@ IndexHelper::IndexHelper(std::vector<FileBackedRulesetSource> sources,
 
 IndexHelper::~IndexHelper() = default;
 
-void IndexHelper::Start() {
+void IndexHelper::Start(
+    RulesetSource::InvalidRuleParseBehavior invalid_rule_parse_behavior) {
   // |all_done_closure| will be invoked once |barrier_closure| is run
   // |sources_.size()| times.
   base::OnceClosure all_done_closure =
@@ -173,7 +178,8 @@ void IndexHelper::Start() {
     // Since |sources_| is const, |sources_[i]| is guaranteed to remain valid.
     auto callback = base::BindOnce(&IndexHelper::OnRulesetIndexed, this,
                                    barrier_closure, i);
-    sources_[i].IndexAndPersistJSONRuleset(&decoder_, std::move(callback));
+    sources_[i].IndexAndPersistJSONRuleset(
+        &decoder_, invalid_rule_parse_behavior, std::move(callback));
   }
 }
 

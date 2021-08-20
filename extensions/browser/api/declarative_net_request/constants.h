@@ -195,7 +195,6 @@ extern const char kIncrementActionCountWithoutUseAsBadgeTextError[];
 
 // Histogram names.
 extern const char kIndexAndPersistRulesTimeHistogram[];
-extern const char kManifestRulesCountHistogram[];
 extern const char kManifestEnabledRulesCountHistogram[];
 extern const char kUpdateDynamicRulesStatusHistogram[];
 extern const char kReadDynamicRulesJSONStatusHistogram[];

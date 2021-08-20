@@ -38,101 +38,107 @@ namespace {
 
 namespace dnr_api = extensions::api::declarative_net_request;
 
-// A class to help in re-indexing multiple rulesets.
-class ReindexHelper : public base::RefCountedThreadSafe<ReindexHelper> {
+// A class to help in indexing multiple rulesets.
+// TODO(kzar): Look into either combining this with the separate IndexHelper
+//             class, or rename that other class to InstallIndexHelper.
+class IndexHelper : public base::RefCountedThreadSafe<IndexHelper> {
  public:
-  using ReindexCallback = base::OnceCallback<void(LoadRequestData)>;
-  ReindexHelper(LoadRequestData data, ReindexCallback callback)
+  using IndexCallback = base::OnceCallback<void(LoadRequestData)>;
+  IndexHelper(LoadRequestData data, IndexCallback callback)
       : data_(std::move(data)), callback_(std::move(callback)) {}
 
-  // Starts re-indexing rulesets. Must be called on the extension file task
-  // runner.
-  void Start() {
+  // Starts indexing rulesets. Must be called on the extension file task runner.
+  void Start(
+      RulesetSource::InvalidRuleParseBehavior invalid_rule_parse_behavior) {
     DCHECK(GetExtensionFileTaskRunner()->RunsTasksInCurrentSequence());
 
-    std::vector<RulesetInfo*> rulesets_to_reindex;
+    std::vector<RulesetInfo*> rulesets_to_index;
     for (auto& ruleset : data_.rulesets) {
       if (ruleset.did_load_successfully())
         continue;
 
-      rulesets_to_reindex.push_back(&ruleset);
+      rulesets_to_index.push_back(&ruleset);
     }
 
-    // |done_closure| will be invoked once |barrier_closure| is run
-    // |rulesets_to_reindex.size()| times.
+    // `done_closure` will be invoked once `barrier_closure` is run
+    // `rulesets_to_index.size()` times.
     base::OnceClosure done_closure =
-        base::BindOnce(&ReindexHelper::OnAllRulesetsReindexed, this);
-    base::RepeatingClosure barrier_closure = base::BarrierClosure(
-        rulesets_to_reindex.size(), std::move(done_closure));
+        base::BindOnce(&IndexHelper::OnAllRulesetsIndexed, this);
+    base::RepeatingClosure barrier_closure =
+        base::BarrierClosure(rulesets_to_index.size(), std::move(done_closure));
 
-    // Post tasks to reindex individual rulesets.
-    for (RulesetInfo* ruleset : rulesets_to_reindex) {
-      auto callback = base::BindOnce(&ReindexHelper::OnReindexCompleted, this,
+    // Post tasks to index individual rulesets.
+    for (RulesetInfo* ruleset : rulesets_to_index) {
+      auto callback = base::BindOnce(&IndexHelper::OnIndexCompleted, this,
                                      ruleset, barrier_closure);
-      ruleset->source().IndexAndPersistJSONRuleset(&decoder_,
-                                                   std::move(callback));
+      ruleset->source().IndexAndPersistJSONRuleset(
+          &decoder_, invalid_rule_parse_behavior, std::move(callback));
     }
   }
 
  private:
-  friend class base::RefCountedThreadSafe<ReindexHelper>;
-  ~ReindexHelper() = default;
+  friend class base::RefCountedThreadSafe<IndexHelper>;
+  ~IndexHelper() = default;
 
-  // Callback invoked when reindexing of all rulesets is completed.
-  void OnAllRulesetsReindexed() {
+  // Callback invoked when indexing of all rulesets is completed.
+  void OnAllRulesetsIndexed() {
     DCHECK(GetExtensionFileTaskRunner()->RunsTasksInCurrentSequence());
 
     // Our job is done.
     std::move(callback_).Run(std::move(data_));
   }
 
-  // Callback invoked when a single ruleset is re-indexed.
-  void OnReindexCompleted(RulesetInfo* ruleset,
-                          base::OnceClosure done_closure,
-                          IndexAndPersistJSONRulesetResult result) {
+  // Callback invoked when a single ruleset is indexed.
+  void OnIndexCompleted(RulesetInfo* ruleset,
+                        base::OnceClosure done_closure,
+                        IndexAndPersistJSONRulesetResult result) {
     using IndexStatus = IndexAndPersistJSONRulesetResult::Status;
     DCHECK(ruleset);
 
-    // The checksum of the reindexed ruleset should have been the same as the
-    // expected checksum obtained from prefs, in all cases except when the
-    // ruleset version changes. If this is not the case, then there is some
-    // other issue (like the JSON rules file has been modified from the one used
-    // during installation or preferences are corrupted). But taking care of
-    // these is beyond our scope here, so simply signal a failure.
-    bool reindexing_success =
-        result.status == IndexStatus::kSuccess &&
-        ruleset->expected_checksum() == result.ruleset_checksum;
+    bool indexing_success = result.status == IndexStatus::kSuccess;
+    bool is_reindexing = ruleset->expected_checksum().has_value();
+    if (indexing_success) {
+      // If this is the first time that the ruleset is being indexed, or if the
+      // ruleset's version has updated, then take note of the new checksum.
+      bool update_checksum =
+          !is_reindexing || ruleset->load_ruleset_result() ==
+                                LoadRulesetResult::kErrorVersionMismatch;
+      if (update_checksum) {
+        ruleset->set_new_checksum(result.ruleset_checksum);
 
-    // In case of updates to the ruleset version, the change of ruleset checksum
-    // is expected.
-    if (result.status == IndexStatus::kSuccess &&
-        ruleset->load_ruleset_result() ==
-            LoadRulesetResult::kErrorVersionMismatch) {
-      ruleset->set_new_checksum(result.ruleset_checksum);
-
-      // Also change the |expected_checksum| so that any subsequent load
-      // succeeds.
-      ruleset->set_expected_checksum(result.ruleset_checksum);
-      reindexing_success = true;
+        // Also change the `expected_checksum` so that any subsequent load
+        // succeeds.
+        ruleset->set_expected_checksum(result.ruleset_checksum);
+      } else {
+        // Otherwise, the checksum of the re-indexed ruleset should match the
+        // expected checksum. If this is not the case, then there is some other
+        // issue (like the JSON rules file has been modified from the one used
+        // during installation or preferences are corrupted). But taking care of
+        // these is beyond our scope here, so simply signal a failure.
+        indexing_success =
+            ruleset->expected_checksum() == result.ruleset_checksum;
+      }
     }
 
-    ruleset->set_reindexing_successful(reindexing_success);
+    ruleset->set_indexing_successful(indexing_success);
 
-    UMA_HISTOGRAM_BOOLEAN(
-        "Extensions.DeclarativeNetRequest.RulesetReindexSuccessful",
-        reindexing_success);
+    if (is_reindexing) {
+      UMA_HISTOGRAM_BOOLEAN(
+          "Extensions.DeclarativeNetRequest.RulesetReindexSuccessful",
+          indexing_success);
+    }
 
     std::move(done_closure).Run();
   }
 
   LoadRequestData data_;
-  ReindexCallback callback_;
+  IndexCallback callback_;
 
   // We use a single shared Data Decoder service instance to process all of the
-  // rulesets for this ReindexHelper.
+  // rulesets for this IndexHelper.
   data_decoder::DataDecoder decoder_;
 
-  DISALLOW_COPY_AND_ASSIGN(ReindexHelper);
+  DISALLOW_COPY_AND_ASSIGN(IndexHelper);
 };
 
 UpdateDynamicRulesStatus GetUpdateDynamicRuleStatus(LoadRulesetResult result) {
@@ -258,7 +264,8 @@ bool UpdateAndIndexDynamicRules(const FileBackedRulesetSource& source,
   }
 
   // Index rules.
-  ParseInfo info = source.IndexRules(std::move(new_rules));
+  ParseInfo info = source.IndexRules(
+      std::move(new_rules), RulesetSource::InvalidRuleParseBehavior::kError);
   if (info.has_error()) {
     *error = info.error();
     *status = UpdateDynamicRulesStatus::kErrorInvalidRules;
@@ -310,7 +317,7 @@ bool UpdateAndIndexDynamicRules(const FileBackedRulesetSource& source,
     // We have entered into an inconsistent state where the indexed ruleset was
     // updated but not the JSON ruleset. This should be extremely rare. However
     // if we get here, the next time the extension is loaded, we'll identify
-    // that the indexed ruleset checksum is inconsistent and reindex the JSON
+    // that the indexed ruleset checksum is inconsistent and re-index the JSON
     // ruleset.
     // If the JSON ruleset is corrupted here though, loading the dynamic ruleset
     // subsequently will fail. A call by extension to `updateDynamicRules`
@@ -376,6 +383,12 @@ void FileSequenceHelper::LoadRulesets(
 
   bool success = true;
   for (auto& ruleset : load_data.rulesets) {
+    if (!ruleset.expected_checksum()) {
+      // This ruleset hasn't been indexed yet.
+      success = false;
+      continue;
+    }
+
     ruleset.CreateVerifiedMatcher();
     success &= ruleset.did_load_successfully();
   }
@@ -388,17 +401,23 @@ void FileSequenceHelper::LoadRulesets(
     return;
   }
 
-  // Loading one or more rulesets failed. Re-index them.
+  // Not all rulesets were loaded. This can be because some rulesets haven't
+  // been indexed previously or because indexing failed for a ruleset. Try
+  // indexing these rulesets now.
 
-  // Using a WeakPtr is safe since |reindex_callback| will be called on this
+  // Ignore invalid static rules during deferred indexing or while re-indexing.
+  auto invalid_rule_parse_behavior =
+      RulesetSource::InvalidRuleParseBehavior::kIgnore;
+
+  // Using a WeakPtr is safe since `index_callback` will be called on this
   // sequence itself.
-  auto reindex_callback =
-      base::BindOnce(&FileSequenceHelper::OnRulesetsReindexed,
+  auto index_callback =
+      base::BindOnce(&FileSequenceHelper::OnRulesetsIndexed,
                      weak_factory_.GetWeakPtr(), std::move(ui_callback));
 
-  auto reindex_helper = base::MakeRefCounted<ReindexHelper>(
-      std::move(load_data), std::move(reindex_callback));
-  reindex_helper->Start();
+  auto index_helper = base::MakeRefCounted<IndexHelper>(
+      std::move(load_data), std::move(index_callback));
+  index_helper->Start(invalid_rule_parse_behavior);
 }
 
 void FileSequenceHelper::UpdateDynamicRules(
@@ -454,14 +473,15 @@ void FileSequenceHelper::UpdateDynamicRules(
   log_status_and_dispatch_callback(absl::nullopt, status);
 }
 
-void FileSequenceHelper::OnRulesetsReindexed(LoadRulesetsUICallback ui_callback,
-                                             LoadRequestData load_data) const {
+void FileSequenceHelper::OnRulesetsIndexed(LoadRulesetsUICallback ui_callback,
+                                           LoadRequestData load_data) const {
   DCHECK(GetExtensionFileTaskRunner()->RunsTasksInCurrentSequence());
 
-  // Load rulesets for which reindexing succeeded.
+  // Load rulesets for which indexing succeeded.
   for (auto& ruleset : load_data.rulesets) {
-    if (ruleset.reindexing_successful().value_or(false)) {
-      // Only rulesets which can't be loaded are re-indexed.
+    if (ruleset.indexing_successful().value_or(false)) {
+      // Only rulesets which weren't indexed previously or for which loading
+      // failed are being indexed.
       DCHECK(!ruleset.did_load_successfully());
       ruleset.CreateVerifiedMatcher();
     }

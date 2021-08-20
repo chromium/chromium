@@ -84,7 +84,9 @@ class RulesetManagerTest : public DNRTestBase {
         ->AddEnabled(last_loaded_extension_);
 
     std::vector<FileBackedRulesetSource> sources =
-        FileBackedRulesetSource::CreateStatic(*last_loaded_extension_);
+        FileBackedRulesetSource::CreateStatic(
+            *last_loaded_extension_,
+            FileBackedRulesetSource::RulesetFilter::kIncludeAll);
     ASSERT_EQ(1u, sources.size());
 
     int expected_checksum;

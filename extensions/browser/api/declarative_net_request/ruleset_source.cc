@@ -35,10 +35,12 @@ RulesetSource::RulesetSource(RulesetSource&&) = default;
 RulesetSource& RulesetSource::operator=(RulesetSource&&) = default;
 
 ParseInfo RulesetSource::IndexRules(
-    std::vector<api::declarative_net_request::Rule> rules) const {
+    std::vector<api::declarative_net_request::Rule> rules,
+    InvalidRuleParseBehavior invalid_rule_parse_behavior) const {
   DCHECK_LE(rules.size(), rule_count_limit_);
 
   FlatRulesetIndexer indexer;
+  std::vector<std::string> rule_warnings;
 
   size_t rules_count = 0;
   size_t regex_rules_count = 0;
@@ -49,8 +51,14 @@ ParseInfo RulesetSource::IndexRules(
     for (auto& rule : rules) {
       int rule_id = rule.id;
       bool inserted = id_set.insert(rule_id).second;
-      if (!inserted)
-        return ParseInfo(ParseResult::ERROR_DUPLICATE_IDS, rule_id);
+      if (!inserted) {
+        if (invalid_rule_parse_behavior == InvalidRuleParseBehavior::kError)
+          return ParseInfo(ParseResult::ERROR_DUPLICATE_IDS, rule_id);
+
+        rule_warnings.push_back(
+            GetParseError(ParseResult::ERROR_DUPLICATE_IDS, rule_id));
+        continue;
+      }
 
       IndexedRule indexed_rule;
       ParseResult parse_result = IndexedRule::CreateIndexedRule(
@@ -61,8 +69,13 @@ ParseInfo RulesetSource::IndexRules(
         continue;
       }
 
-      if (parse_result != ParseResult::SUCCESS)
-        return ParseInfo(parse_result, rule_id);
+      if (parse_result != ParseResult::SUCCESS) {
+        if (invalid_rule_parse_behavior == InvalidRuleParseBehavior::kError)
+          return ParseInfo(parse_result, rule_id);
+
+        rule_warnings.push_back(GetParseError(parse_result, rule_id));
+        continue;
+      }
 
       indexer.AddUrlRule(indexed_rule);
       rules_count++;
@@ -78,8 +91,8 @@ ParseInfo RulesetSource::IndexRules(
   int ruleset_checksum =
       GetChecksum(base::make_span(buffer.data(), buffer.size()));
   return ParseInfo(rules_count, regex_rules_count,
-                   std::move(large_regex_rule_ids), std::move(buffer),
-                   ruleset_checksum);
+                   std::move(large_regex_rule_ids), std::move(rule_warnings),
+                   std::move(buffer), ruleset_checksum);
 }
 
 LoadRulesetResult RulesetSource::CreateVerifiedMatcher(

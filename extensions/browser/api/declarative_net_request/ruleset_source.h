@@ -21,6 +21,13 @@ class RulesetMatcher;
 // Encapsulates information for a single extension ruleset.
 class RulesetSource {
  public:
+  enum class InvalidRuleParseBehavior {
+    // Incorrectly specified rules are ignored and raise an InstallWarning.
+    kIgnore,
+    // Incorrectly specified rules cause a hard error, stopping further parsing.
+    kError
+  };
+
   RulesetSource(RulesetID id,
                 size_t rule_count_limit,
                 ExtensionId extension_id,
@@ -46,7 +53,8 @@ class RulesetSource {
 
   // Indexes the given |rules| in indexed/flatbuffer format.
   ParseInfo IndexRules(
-      std::vector<api::declarative_net_request::Rule> rules) const;
+      std::vector<api::declarative_net_request::Rule> rules,
+      InvalidRuleParseBehavior invalid_rule_parse_behavior) const;
 
   // Creates a verified RulesetMatcher corresponding to the buffer in |data|.
   // Returns kSuccess on success along with the ruleset |matcher|.

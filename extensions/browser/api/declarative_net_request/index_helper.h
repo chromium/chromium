@@ -13,6 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_install_pref.h"
+#include "extensions/browser/api/declarative_net_request/ruleset_source.h"
 #include "extensions/common/install_warning.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -43,13 +44,19 @@ class IndexHelper : public base::RefCountedThreadSafe<IndexHelper> {
   // IO. The |callback| will be dispatched to the same sequence on which
   // IndexStaticRulesets() is called.
   using IndexCallback = base::OnceCallback<void(Result result)>;
-  static void IndexStaticRulesets(const Extension& extension,
-                                  IndexCallback callback);
+  static void IndexStaticRulesets(
+      const Extension& extension,
+      FileBackedRulesetSource::RulesetFilter ruleset_filter,
+      RulesetSource::InvalidRuleParseBehavior invalid_rule_parse_behavior,
+      IndexCallback callback);
 
   // Synchronously indexes the static rulesets for an extension. Must be called
   // on a sequence which supports file IO. This is potentially unsafe since this
   // parses JSON in-process.
-  static Result IndexStaticRulesetsUnsafe(const Extension& extension);
+  static Result IndexStaticRulesetsUnsafe(
+      const Extension& extension,
+      FileBackedRulesetSource::RulesetFilter ruleset_filter,
+      RulesetSource::InvalidRuleParseBehavior invalid_rule_parse_behavior);
 
  private:
   friend class base::RefCountedThreadSafe<IndexHelper>;
@@ -61,7 +68,8 @@ class IndexHelper : public base::RefCountedThreadSafe<IndexHelper> {
   ~IndexHelper();
 
   // Starts indexing the rulesets.
-  void Start();
+  void Start(
+      RulesetSource::InvalidRuleParseBehavior invalid_rule_parse_behavior);
 
   // Callback invoked when indexing of all rulesets is completed.
   void OnAllRulesetsIndexed();
