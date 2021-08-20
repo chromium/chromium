@@ -25,24 +25,10 @@ class PLATFORM_EXPORT DisplayItemClient {
   DisplayItemClient()
       : paint_invalidation_reason_(
             static_cast<uint8_t>(PaintInvalidationReason::kJustCreated)),
-        marked_for_validation_(0) {
-#if DCHECK_IS_ON()
-    OnCreate();
-#endif
-  }
+        marked_for_validation_(0) {}
   DisplayItemClient(const DisplayItemClient&) = delete;
   DisplayItemClient& operator=(const DisplayItemClient&) = delete;
-  virtual ~DisplayItemClient() {
-#if DCHECK_IS_ON()
-    OnDestroy();
-#endif
-  }
-
-#if DCHECK_IS_ON()
-  // Tests if this DisplayItemClient object has been created and has not been
-  // deleted yet.
-  bool IsAlive() const;
-#endif
+  virtual ~DisplayItemClient() = default;
 
   DisplayItemClientId Id() const {
     return reinterpret_cast<DisplayItemClientId>(this);

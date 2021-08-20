@@ -439,9 +439,6 @@ void PaintController::UpdateCurrentPaintChunkProperties(
 
 bool PaintController::ClientCacheIsValid(
     const DisplayItemClient& client) const {
-#if DCHECK_IS_ON()
-  DCHECK(client.IsAlive());
-#endif
   if (IsSkippingCache() || cache_is_all_invalid_)
     return false;
   return client.IsValid();

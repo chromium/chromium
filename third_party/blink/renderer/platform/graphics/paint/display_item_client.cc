@@ -11,27 +11,6 @@
 
 namespace blink {
 
-#if DCHECK_IS_ON()
-
-HashSet<const DisplayItemClient*>* g_live_display_item_clients = nullptr;
-
-void DisplayItemClient::OnCreate() {
-  if (!g_live_display_item_clients)
-    g_live_display_item_clients = new HashSet<const DisplayItemClient*>();
-  g_live_display_item_clients->insert(this);
-}
-
-void DisplayItemClient::OnDestroy() {
-  g_live_display_item_clients->erase(this);
-}
-
-bool DisplayItemClient::IsAlive() const {
-  return g_live_display_item_clients &&
-         g_live_display_item_clients->Contains(this);
-}
-
-#endif  // DCHECK_IS_ON()
-
 String DisplayItemClient::ToString() const {
 #if DCHECK_IS_ON()
   return String::Format("%p:%s", this, DebugName().Utf8().c_str());

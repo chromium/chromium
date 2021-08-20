@@ -2097,7 +2097,6 @@ source_set("blink_platform_unittests_sources") {
     "graphics/gpu/webgpu_swap_buffer_provider_test.cc",
     "graphics/graphics_context_test.cc",
     "graphics/paint/cull_rect_test.cc",
-    "graphics/paint/display_item_client_test.cc",
     "graphics/paint/display_item_raster_invalidator_test.cc",
     "graphics/paint/display_item_test.cc",
     "graphics/paint/drawing_display_item_test.cc",
