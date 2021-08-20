@@ -9,6 +9,7 @@
 #include "components/download/internal/background_service/proto_conversions.h"
 #include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 
 namespace download {
 
@@ -250,6 +251,14 @@ RequestParams ProtoConversions::RequestParamsFromProto(
   request_params.method = proto.method();
   request_params.fetch_error_body = proto.fetch_error_body();
   request_params.require_safety_checks = proto.require_safety_checks();
+  if (proto.has_credentials_mode()) {
+    request_params.credentials_mode =
+        static_cast<::network::mojom::CredentialsMode>(
+            proto.credentials_mode());
+  } else {
+    request_params.credentials_mode =
+        ::network::mojom::CredentialsMode::kInclude;
+  }
 
   for (int i = 0; i < proto.headers_size(); i++) {
     protodb::RequestHeader header = proto.headers(i);
@@ -265,6 +274,8 @@ void ProtoConversions::RequestParamsToProto(const RequestParams& request_params,
   proto->set_method(request_params.method);
   proto->set_fetch_error_body(request_params.fetch_error_body);
   proto->set_require_safety_checks(request_params.require_safety_checks);
+  proto->set_credentials_mode(
+      static_cast<int32_t>(request_params.credentials_mode));
 
   int i = 0;
   net::HttpRequestHeaders::Iterator iter(request_params.request_headers);

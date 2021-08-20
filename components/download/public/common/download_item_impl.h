@@ -31,6 +31,7 @@
 #include "components/download/public/common/url_loader_factory_provider.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -61,7 +62,8 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
                 ui::PageTransition transition_type,
                 bool has_user_gesture,
                 const std::string& remote_address,
-                base::Time start_time);
+                base::Time start_time,
+                ::network::mojom::CredentialsMode credentials_mode);
     RequestInfo();
     explicit RequestInfo(const RequestInfo& other);
     explicit RequestInfo(const GURL& url);
@@ -105,6 +107,10 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
 
     // Time the download was started.
     base::Time start_time;
+
+    // The credentials mode of the request.
+    ::network::mojom::CredentialsMode credentials_mode =
+        ::network::mojom::CredentialsMode::kInclude;
   };
 
   // Information about the current state of the download destination.
@@ -304,6 +310,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   bool IsParallelDownload() const override;
   DownloadCreationType GetDownloadCreationType() const override;
   const absl::optional<DownloadSchedule>& GetDownloadSchedule() const override;
+  ::network::mojom::CredentialsMode GetCredentialsMode() const override;
   void OnContentCheckCompleted(DownloadDangerType danger_type,
                                DownloadInterruptReason reason) override;
   void OnAsyncScanningCompleted(DownloadDangerType danger_type) override;
