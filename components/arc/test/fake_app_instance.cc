@@ -446,10 +446,10 @@ void FakeAppInstance::GetRecentAndSuggestedAppsFromPlayStore(
   std::move(callback).Run(state_code, std::move(fake_apps));
 }
 
-void FakeAppInstance::GetIcingGlobalQueryResults(
+void FakeAppInstance::GetIcingGlobalQueryResultsDeprecated(
     const std::string& query,
     int32_t max_results,
-    GetIcingGlobalQueryResultsCallback callback) {
+    GetIcingGlobalQueryResultsDeprecatedCallback callback) {
   // Fake successful app data search results.
   std::vector<arc::mojom::AppDataResultPtr> fake_app_data_results;
 
