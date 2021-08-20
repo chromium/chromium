@@ -18,6 +18,13 @@ import {loadTimeData} from '../../i18n_setup.js';
 
 const mojom = chromeos.bluetoothConfig.mojom;
 
+/** @type {number} */
+const MAX_INPUT_LENGTH = 20;
+
+/** @type {RegExp} */
+const EMOJI_REGEX_EXP =
+    /(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])/gi;
+
 /**
  * @constructor
  * @extends {PolymerElement}
@@ -47,10 +54,24 @@ class SettingsBluetoothChangeDeviceNameDialogElement extends
         observer: 'onDeviceChanged_',
       },
 
+      /** Used to reference the MAX_INPUT_LENGTH constant in HTML. */
+      MAX_INPUT_LENGTH: {
+        type: Number,
+        value: MAX_INPUT_LENGTH,
+      },
+
       /** @private */
       deviceName_: {
         type: String,
         value: '',
+        observer: 'onDeviceNameChanged_',
+      },
+
+      /** @private */
+      isInputInvalid_: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
       }
     };
   }
@@ -68,6 +89,49 @@ class SettingsBluetoothChangeDeviceNameDialogElement extends
   /** @private */
   onDoneClick_() {
     this.$.dialog.close();
+  }
+
+  /**
+   * Returns a formatted string containing the current number of characters
+   * entered in the input compared to the maximum number of characters allowed.
+   * @param {string} deviceName
+   * @return {string}
+   * @private
+   */
+  getInputCountString_(deviceName) {
+    // minimumIntegerDigits is 2 because we want to show a leading zero if
+    // length is less than 10.
+    return this.i18n(
+        'bluetoothChangeNameDialogInputCharCount',
+        deviceName.length.toLocaleString(
+            /*locales=*/ undefined, {minimumIntegerDigits: 2}),
+        MAX_INPUT_LENGTH.toLocaleString());
+  }
+
+  /**
+   * Observer for deviceName_ that sanitizes its value by removing any
+   * Emojis and truncating it to MAX_INPUT_LENGTH. This method will be
+   * recursively called until deviceName_ is fully sanitized.
+   * @param {string} newValue
+   * @param {string} oldValue
+   * @private
+   */
+  onDeviceNameChanged_(newValue, oldValue) {
+    if (oldValue) {
+      const sanitizedOldValue = oldValue.replace(EMOJI_REGEX_EXP, '');
+      // If sanitizedOldValue.length > MAX_INPUT_LENGTH, the user attempted to
+      // enter more than the max limit, this method was called and it was
+      // truncated, and then this method was called one more time.
+      this.isInputInvalid_ = sanitizedOldValue.length > MAX_INPUT_LENGTH;
+    } else {
+      this.isInputInvalid_ = false;
+    }
+
+    // Remove all Emojis from the name.
+    const sanitizedProfileName = this.deviceName_.replace(EMOJI_REGEX_EXP, '');
+
+    // Truncate the name to MAX_INPUT_LENGTH.
+    this.deviceName_ = sanitizedProfileName.substring(0, MAX_INPUT_LENGTH);
   }
 }
 

@@ -2031,6 +2031,15 @@ Press an assigned switch to remove assignment
   <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_CHANGE_DEVICE_SETTINGS_KEYBOARD" desc="Bluetooth device details page: label for button that changes current keyboard device settings.">
     Change keyboard settings
   </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_CHANGE_DEVICE_NAME_DIALOG_INPUT_A11Y_LABEL" desc="Bluetooth device details page > Change device name dialog:  The a11y label for the dialog input that renames a Bluetooth device, informing the user that letters, numbers and special characters are allowed, as well as the maximum number of characters permitted.">
+    Name can use letters, numbers, and special characters, and must be <ph name="MAX_CHARACTER_COUNT">$1<ex>20</ex></ph> characters or fewer
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_CHANGE_DEVICE_NAME_DIALOG_INPUT_SUBTITLE" desc="Bluetooth device details page > Change device name dialog: The Label for the dialog input that renames a Bluetooth device, informing the user that letters, numbers and special characters are allowed.">
+    Name can use letters, numbers, and special characters
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_CHANGE_DEVICE_NAME_DIALOG_INPUT_CHARACTER_COUNT" desc="Bluetooth device details page > Change device name dialog: The Label for the dialog input that renames a Bluetooth device, informing the user the number of characters they have inputted compared to the maximum number of characters allowed.">
+    <ph name="CURRENT_CHARACTER_COUNT">$1<ex>15</ex></ph>/<ph name="MAX_CHARACTER_COUNT">$2<ex>20</ex></ph>
+  </message>
   <message name="IDS_SETTINGS_BLUETOOTH_TOGGLE_ACCESSIBILITY_LABEL" desc="Accessibility only label for Bluetooth enable/disable toggle.">
     Bluetooth enable
   </message>
