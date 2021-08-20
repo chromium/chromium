@@ -283,6 +283,7 @@ KeyRepeatSettings KeyboardControllerImpl::GetKeyRepeatSettings() {
 // SessionObserver
 void KeyboardControllerImpl::OnSessionStateChanged(
     session_manager::SessionState state) {
+  SetEnableFlagFromCommandLine();
   if (!keyboard_ui_controller_->IsEnabled())
     return;
 
@@ -298,19 +299,6 @@ void KeyboardControllerImpl::OnSessionStateChanged(
       break;
     default:
       break;
-  }
-}
-
-void KeyboardControllerImpl::OnUserSessionAdded(const AccountId&) {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          keyboard::switches::kEnableVirtualKeyboard)) {
-    keyboard_ui_controller_->SetEnableFlag(
-        KeyboardEnableFlag::kCommandLineEnabled);
-  }
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          keyboard::switches::kDisableVirtualKeyboard)) {
-    keyboard_ui_controller_->SetEnableFlag(
-        KeyboardEnableFlag::kCommandLineDisabled);
   }
 }
 
@@ -462,6 +450,19 @@ void KeyboardControllerImpl::OnKeyboardEnableFlagsChanged(
 void KeyboardControllerImpl::OnKeyboardEnabledChanged(bool is_enabled) {
   for (auto& observer : observers_)
     observer.OnKeyboardEnabledChanged(is_enabled);
+}
+
+void KeyboardControllerImpl::SetEnableFlagFromCommandLine() {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          keyboard::switches::kEnableVirtualKeyboard)) {
+    keyboard_ui_controller_->SetEnableFlag(
+        KeyboardEnableFlag::kCommandLineEnabled);
+  }
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          keyboard::switches::kDisableVirtualKeyboard)) {
+    keyboard_ui_controller_->SetEnableFlag(
+        KeyboardEnableFlag::kCommandLineDisabled);
+  }
 }
 
 }  // namespace ash
