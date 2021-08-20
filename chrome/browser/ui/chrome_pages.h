@@ -78,6 +78,7 @@ enum FeedbackSource {
   kFeedbackSourceBentoBar,
   kFeedbackSourceQuickAnswers,
   kFeedbackSourceWhatsNew,
+  kFeedbackSourceConnectivityDiagnostics,
 
   // Must be last.
   kFeedbackSourceCount,
