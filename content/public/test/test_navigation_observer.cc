@@ -275,6 +275,8 @@ void TestNavigationObserver::OnDidFinishNavigation(
   last_navigation_type_ = navigation_handle->HasCommitted()
                               ? request->navigation_type()
                               : NAVIGATION_TYPE_UNKNOWN;
+  last_nav_entry_id_ =
+      NavigationRequest::From(navigation_handle)->nav_entry_id();
 
   // Allow extending classes to fetch data available via navigation_handle.
   NavigationOfInterestDidFinish(navigation_handle);

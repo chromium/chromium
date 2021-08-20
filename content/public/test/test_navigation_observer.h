@@ -115,6 +115,10 @@ class TestNavigationObserver {
   // URL / net error filters, if set).
   NavigationType last_navigation_type() const { return last_navigation_type_; }
 
+  // Returns the navigation entry ID of the last finished navigation (that
+  // matched URL if set).
+  int last_nav_entry_id() const { return last_nav_entry_id_; }
+
  protected:
   // Register this TestNavigationObserver as an observer of the |web_contents|.
   void RegisterAsObserver(WebContents* web_contents);
@@ -239,6 +243,9 @@ class TestNavigationObserver {
 
   // The NavigationType of the last navigation.
   NavigationType last_navigation_type_;
+
+  // The navigation entry ID of the last navigation.
+  int last_nav_entry_id_ = 0;
 
   // The MessageLoopRunner used to spin the message loop.
   scoped_refptr<MessageLoopRunner> message_loop_runner_;

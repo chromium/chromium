@@ -190,6 +190,10 @@ class NavigationControllerBrowserTest
         enable_back_forward_cache ? "BFCacheEnabled" : "BFCacheDisabled");
   }
 
+  RenderFrameHostImpl* current_main_frame_host() {
+    return static_cast<RenderFrameHostImpl*>(contents()->GetMainFrame());
+  }
+
  protected:
   // TODO(bokan): There's one test whose result depends on whether the
   // FractionalScrollOffsets feature is enabled in Blink's
@@ -18644,6 +18648,41 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, FilterAbout) {
   EXPECT_EQ(2, controller.GetEntryCount());
   ASSERT_TRUE(controller.GetVisibleEntry());
   EXPECT_EQ(GURL(kBlockedURL), controller.GetVisibleEntry()->GetURL());
+}
+
+// Tests that reload() does not create a new NavigationEntry.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, WindowReload) {
+  NavigationControllerImpl& controller =
+      static_cast<NavigationControllerImpl&>(contents()->GetController());
+  // Navigate to the initial page.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
+  EXPECT_EQ(1, controller.GetEntryCount());
+
+  TestNavigationObserver observer(contents());
+  EXPECT_TRUE(ExecJs(current_main_frame_host(), "window.location.reload();"));
+  observer.WaitForNavigationFinished();
+  // Reloads in the main frame have a valid nav_entry_id.
+  EXPECT_NE(0, observer.last_nav_entry_id());
+  EXPECT_EQ(1, controller.GetEntryCount());
+}
+
+// Tests that reload() in iframes does not create a new NavigationEntry.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, WindowReloadInIframe) {
+  NavigationControllerImpl& controller =
+      static_cast<NavigationControllerImpl&>(contents()->GetController());
+  // Navigate to the initial page.
+  EXPECT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL(
+                                         "a.com", "/page_with_iframe.html")));
+  EXPECT_EQ(1, controller.GetEntryCount());
+
+  TestNavigationObserver observer(contents());
+  EXPECT_TRUE(ExecJs(current_main_frame_host()->child_at(0),
+                     "window.location.reload();"));
+  observer.WaitForNavigationFinished();
+  // Reloads in subframes do not have a valid nav_entry_id.
+  EXPECT_EQ(0, observer.last_nav_entry_id());
+  EXPECT_EQ(1, controller.GetEntryCount());
 }
 
 INSTANTIATE_TEST_SUITE_P(
