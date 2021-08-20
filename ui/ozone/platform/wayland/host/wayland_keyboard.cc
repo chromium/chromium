@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/files/scoped_file.h"
+#include "base/logging.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/unguessable_token.h"
 #include "ui/base/buildflags.h"
@@ -16,6 +17,7 @@
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/events/ozone/keyboard/event_auto_repeat_handler.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/events/types/event_type.h"
@@ -188,12 +190,24 @@ void WaylandKeyboard::RepeatInfo(void* data,
                                  wl_keyboard* obj,
                                  int32_t rate,
                                  int32_t delay) {
-  WaylandKeyboard* keyboard = static_cast<WaylandKeyboard*>(data);
-  DCHECK(keyboard);
+  // Negative values for either rate or delay are illegal.
+  if (rate < 0 || delay < 0) {
+    VLOG(1) << "Ignoring wl_keyboard.repeat_info event with illegal "
+            << "values (rate=" << rate << " delay=" << delay << ").";
+    return;
+  }
 
-  keyboard->auto_repeat_handler_.SetAutoRepeatRate(
-      base::TimeDelta::FromMilliseconds(delay),
-      base::TimeDelta::FromMilliseconds(rate));
+  DCHECK(data);
+  EventAutoRepeatHandler& handler =
+      static_cast<WaylandKeyboard*>(data)->auto_repeat_handler_;
+
+  // A rate of zero will disable any repeating.
+  handler.SetAutoRepeatEnabled(rate != 0);
+  if (handler.IsAutoRepeatEnabled()) {
+    // The rate is in characters per second.
+    handler.SetAutoRepeatRate(base::TimeDelta::FromMilliseconds(delay),
+                              base::TimeDelta::FromSecondsD(1.0 / rate));
+  }
 }
 
 void WaylandKeyboard::FlushInput(base::OnceClosure closure) {
