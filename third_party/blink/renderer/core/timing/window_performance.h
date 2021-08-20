@@ -194,6 +194,9 @@ class CORE_EXPORT WindowPerformance final : public Performance,
 
   void DispatchFirstInputTiming(PerformanceEventTiming* entry);
 
+  // The last time the page visibility was changed.
+  base::TimeTicks last_visibility_change_timestamp_;
+
   // Counter of the current frame index, based on calls to OnPaintFinished().
   uint64_t frame_index_ = 1;
   // Monotonically increasing value with the last frame index on which a

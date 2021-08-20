@@ -435,10 +435,6 @@ void WindowPerformance::ReportEventTimings(
 
     events_data_.pop_front();
 
-    ResponsivenessMetrics::EventTimestamps event_timestamps = {
-        event_timestamp, presentation_timestamp};
-    responsiveness_metrics_.RecordPerInteractionLatency(
-        DomWindow(), entry->name(), key_code, pointer_id, event_timestamps);
     int duration_in_ms = std::round((end_time - entry->startTime()) / 8) * 8;
     base::TimeDelta input_delay = base::TimeDelta::FromMillisecondsD(
         entry->processingStart() - entry->startTime());
@@ -447,6 +443,16 @@ void WindowPerformance::ReportEventTimings(
     base::TimeDelta time_to_next_paint =
         base::TimeDelta::FromMillisecondsD(end_time - entry->processingEnd());
     entry->SetDuration(duration_in_ms);
+    ResponsivenessMetrics::EventTimestamps event_timestamps = {
+        event_timestamp, presentation_timestamp};
+    // The page visibility was changed. In this case, we don't care about
+    // the time to next paint.
+    if (last_visibility_change_timestamp_ > event_timestamp &&
+        last_visibility_change_timestamp_ <= presentation_timestamp) {
+      event_timestamps.end_time -= time_to_next_paint;
+    }
+    responsiveness_metrics_.RecordPerInteractionLatency(
+        DomWindow(), entry->name(), key_code, pointer_id, event_timestamps);
     TRACE_EVENT2("devtools.timeline", "EventTiming", "data",
                  entry->ToTracedValue(), "frame",
                  ToTraceValue(DomWindow()->GetFrame()));
@@ -554,10 +560,12 @@ void WindowPerformance::AddVisibilityStateEntry(bool is_visible,
 }
 
 void WindowPerformance::PageVisibilityChanged() {
+  last_visibility_change_timestamp_ = base::TimeTicks::Now();
   if (!RuntimeEnabledFeatures::VisibilityStateEntryEnabled())
     return;
 
-  AddVisibilityStateEntry(GetPage()->IsPageVisible(), base::TimeTicks::Now());
+  AddVisibilityStateEntry(GetPage()->IsPageVisible(),
+                          last_visibility_change_timestamp_);
 }
 
 EventCounts* WindowPerformance::eventCounts() {
