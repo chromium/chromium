@@ -23,6 +23,10 @@ class NetworkingLog {
 
   // Returns the networking log as a string.
   std::string GetContents() const;
+  void UpdateContents(mojom::NetworkPtr latest_network_info);
+
+ private:
+  mojom::NetworkPtr latest_network_info_;
 };
 
 }  // namespace diagnostics
