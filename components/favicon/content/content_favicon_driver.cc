@@ -218,7 +218,9 @@ void ContentFaviconDriver::DidStartNavigation(
     navigation_data->has_manifest_url = false;
   }
 
-  bypass_cache_page_url_ = navigation_handle->GetURL();
+  if (reload_type == content::ReloadType::BYPASSING_CACHE)
+    bypass_cache_page_url_ = navigation_handle->GetURL();
+ 
   SetFaviconOutOfDateForPage(
       navigation_handle->GetURL(),
       reload_type == content::ReloadType::BYPASSING_CACHE);

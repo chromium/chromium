@@ -485,6 +485,17 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest, ReloadBypassingCache) {
             url_loader_interceptor.destination(icon_url));
   url_loader_interceptor.Reset();
 
+  // A regular reload should not refetch the favicon from the website.
+  {
+    PendingTaskWaiter waiter(web_contents());
+    chrome::ExecuteCommand(browser(), IDC_RELOAD);
+    waiter.Wait();
+  }
+  EXPECT_FALSE(url_loader_interceptor.did_bypass_cache(icon_url));
+  ASSERT_EQ(network::mojom::RequestDestination::kImage,
+            url_loader_interceptor.destination(icon_url));
+  url_loader_interceptor.Reset();
+
   // A reload ignoring the cache should refetch the favicon from the website.
   {
     PendingTaskWaiter waiter(web_contents());
