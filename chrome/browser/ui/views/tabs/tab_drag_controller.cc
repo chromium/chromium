@@ -656,6 +656,24 @@ void TabDragController::EndDrag(EndDragReason reason) {
                                                              : NORMAL);
 }
 
+void TabDragController::
+    CheckSourceAndAttachedContextContainNoDuplicateTabGroupIds() {
+  if (source_context_ == nullptr || attached_context_ == nullptr ||
+      source_context_ == attached_context_) {
+    return;
+  }
+  const std::vector<tab_groups::TabGroupId> source_groups_vec =
+      source_context_->GetTabStripModel()->group_model()->ListTabGroups();
+  const std::vector<tab_groups::TabGroupId> attached_groups_vec =
+      attached_context_->GetTabStripModel()->group_model()->ListTabGroups();
+
+  for (const tab_groups::TabGroupId& attached_group_id :
+       attached_context_->GetTabStripModel()->group_model()->ListTabGroups()) {
+    CHECK(std::find(source_groups_vec.begin(), source_groups_vec.end(),
+                    attached_group_id) == source_groups_vec.end());
+  }
+}
+
 void TabDragController::SetDragLoopDoneCallbackForTesting(
     base::OnceClosure callback) {
   drag_loop_done_callback_ = std::move(callback);
@@ -1627,6 +1645,10 @@ void TabDragController::EndDragImpl(EndDragType type) {
 
   // Clear out drag data so we don't attempt to do anything with it.
   drag_data_.clear();
+
+  // Check EndDrag leaves Tab Groups in the correct state, see
+  // https://crbug.com/1197888
+  CheckSourceAndAttachedContextContainNoDuplicateTabGroupIds();
 
   TabDragContext* owning_context =
       attached_context_ ? attached_context_ : source_context_;
