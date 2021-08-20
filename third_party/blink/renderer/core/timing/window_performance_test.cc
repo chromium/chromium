@@ -617,14 +617,14 @@ TEST_F(WindowPerformanceTest, PressMultipleKeys) {
 
 TEST_F(WindowPerformanceTest, TapOrClick) {
   // Pointerdown
-  base::TimeTicks pointerdwon_timestamp = GetTimeOrigin();
+  base::TimeTicks pointerdown_timestamp = GetTimeOrigin();
   base::TimeTicks processing_start_pointerdown = GetTimeStamp(1);
   base::TimeTicks processing_end_pointerdown = GetTimeStamp(2);
   base::TimeTicks swap_time_pointerdown = GetTimeStamp(5);
   absl::optional<PointerId> pointer_id = 4;
   absl::optional<int> key_code = absl::nullopt;
   performance_->RegisterEventTiming(
-      "pointerdown", pointerdwon_timestamp, processing_start_pointerdown,
+      "pointerdown", pointerdown_timestamp, processing_start_pointerdown,
       processing_end_pointerdown, false, nullptr, key_code, pointer_id);
   SimulateSwapPromise(swap_time_pointerdown);
   // Pointerup
@@ -672,14 +672,14 @@ TEST_F(WindowPerformanceTest, TapOrClick) {
 
 TEST_F(WindowPerformanceTest, PageVisibilityChanged) {
   // Pointerdown
-  base::TimeTicks pointerdwon_timestamp = GetTimeOrigin();
+  base::TimeTicks pointerdown_timestamp = GetTimeOrigin();
   base::TimeTicks processing_start_pointerdown = GetTimeStamp(1);
   base::TimeTicks processing_end_pointerdown = GetTimeStamp(2);
   base::TimeTicks swap_time_pointerdown = GetTimeStamp(5);
   absl::optional<PointerId> pointer_id = 4;
   absl::optional<int> key_code = absl::nullopt;
   performance_->RegisterEventTiming(
-      "pointerdown", pointerdwon_timestamp, processing_start_pointerdown,
+      "pointerdown", pointerdown_timestamp, processing_start_pointerdown,
       processing_end_pointerdown, false, nullptr, key_code, pointer_id);
   SimulateSwapPromise(swap_time_pointerdown);
 

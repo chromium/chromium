@@ -33,6 +33,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_WINDOW_PERFORMANCE_H_
 
 #include "base/rand_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/web/web_swap_result.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"
@@ -81,11 +82,11 @@ class CORE_EXPORT WindowPerformance final : public Performance,
     }
     ~EventData() = default;
     void Trace(Visitor*) const;
-    PerformanceEventTiming* GetEventTiming() { return event_timing_; }
-    uint64_t GetFrameIndex() { return frame_; }
-    base::TimeTicks GetEventTimestamp() { return event_timestamp_; }
-    absl::optional<int> GetKeyCode() { return key_code_; }
-    absl::optional<PointerId> GetPointerId() { return pointer_id_; }
+    PerformanceEventTiming* GetEventTiming() const { return event_timing_; }
+    uint64_t GetFrameIndex() const { return frame_; }
+    base::TimeTicks GetEventTimestamp() const { return event_timestamp_; }
+    absl::optional<int> GetKeyCode() const { return key_code_; }
+    absl::optional<PointerId> GetPointerId() const { return pointer_id_; }
 
    private:
     // Event PerformanceEventTiming entry that has not been sent to observers

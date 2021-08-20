@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/timing/event_timing.h"
 
 #include "base/time/tick_clock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"
@@ -132,11 +133,11 @@ void EventTiming::SetTickClockForTesting(const base::TickClock* clock) {
 }
 
 EventTiming::~EventTiming() {
-  absl::optional<int> key_code = absl::nullopt;
+  absl::optional<int> key_code;
   if (event_->IsKeyboardEvent())
     key_code = DynamicTo<KeyboardEvent>(event_.Get())->keyCode();
 
-  absl::optional<PointerId> pointer_id = absl::nullopt;
+  absl::optional<PointerId> pointer_id;
   const PointerEvent* pointer_event = DynamicTo<PointerEvent>(event_.Get());
   if (pointer_event)
     pointer_id = pointer_event->pointerId();

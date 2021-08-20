@@ -7,6 +7,7 @@
 
 #include <unordered_map>
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 
@@ -18,9 +19,6 @@ enum class UserInteractionType { kKeyboard = 0, kTapOrClick = 1, kDrag = 2 };
 
 class ResponsivenessMetrics {
  public:
-  ResponsivenessMetrics();
-  ~ResponsivenessMetrics();
-
   // Timestamps for input events.
   struct EventTimestamps {
     // The event creation time.
@@ -29,6 +27,9 @@ class ResponsivenessMetrics {
     // performed.
     base::TimeTicks end_time;
   };
+
+  ResponsivenessMetrics();
+  ~ResponsivenessMetrics();
 
   // Track ongoing user interactions and calculate the latency when an
   // interaction is completed. The latency data for each interaction will be
