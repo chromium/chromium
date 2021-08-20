@@ -40920,6 +40920,19 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="3" label="Training Mode"/>
 </enum>
 
+<enum name="HpsTurnOnResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Version Mismatch, will cause an update"/>
+  <int value="2" label="SPI flash verification failure, will cause an update"/>
+  <int value="3" label="MCU flash verification failure, will cause an update"/>
+  <int value="4" label="Stage 1 did not start"/>
+  <int value="5" label="Application did not start"/>
+  <int value="6" label="No response from the device"/>
+  <int value="7" label="Boot stage timeout other than the above"/>
+  <int value="8" label="Device reported wrong magic number"/>
+  <int value="9" label="Fault bit set during boot"/>
+</enum>
+
 <enum name="HrefTranslatePrefsFilterStatus">
   <int value="0" label="Not in blocklists"/>
   <int value="1" label="Language in blocklist"/>
