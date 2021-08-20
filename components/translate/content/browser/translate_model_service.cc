@@ -72,6 +72,13 @@ void TranslateModelService::Shutdown() {
   // This and the optimization guide are keyed services, currently optimization
   // guide is a BrowserContextKeyedService, it will be cleaned first so removing
   // the observer should not be performed.
+  if (language_detection_model_file_) {
+    // If the model file is already loaded, it should be closed on a
+    // background thread.
+    background_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&CloseModelFile,
+                                  std::move(*language_detection_model_file_)));
+  }
 }
 
 void TranslateModelService::OnModelUpdated(
