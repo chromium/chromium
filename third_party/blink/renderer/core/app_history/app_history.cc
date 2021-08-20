@@ -376,13 +376,13 @@ ScriptPromise AppHistory::goTo(ScriptState* script_state,
   if (key == current()->key())
     return ScriptPromise::CastUndefined(script_state);
 
-  auto previous_navigation = ongoing_traversals_.find(key);
-  if (previous_navigation != ongoing_traversals_.end())
+  auto previous_navigation = upcoming_traversals_.find(key);
+  if (previous_navigation != upcoming_traversals_.end())
     return previous_navigation->value->returned_promise;
 
   AppHistoryApiNavigation* ongoing_navigation =
       MakeGarbageCollected<AppHistoryApiNavigation>(script_state, options, key);
-  ongoing_traversals_.insert(key, ongoing_navigation);
+  upcoming_traversals_.insert(key, ongoing_navigation);
 
   AppHistoryEntry* destination = entries_[keys_to_indices_.at(key)];
 
@@ -500,16 +500,14 @@ AppHistory::DispatchResult AppHistory::DispatchNavigateEvent(
   // The main case were that would be a problem (browser-initiated back/forward)
   // is not implemented yet. Move this once it is implemented.
   InformAboutCanceledNavigation();
-  if (upcoming_non_traversal_navigation_) {
-    ongoing_non_traversal_navigation_ =
-        upcoming_non_traversal_navigation_.Release();
-  }
+  if (upcoming_non_traversal_navigation_)
+    ongoing_navigation_ = upcoming_non_traversal_navigation_.Release();
 
   if (!GetSupplementable()->GetFrame()->Loader().HasLoadedNonEmptyDocument()) {
-    if (ongoing_non_traversal_navigation_) {
+    if (ongoing_navigation_) {
       if (event_type != NavigateEventType::kCrossDocument)
-        ongoing_non_traversal_navigation_->resolver->Resolve();
-      CleanupApiNavigation(*ongoing_non_traversal_navigation_);
+        ongoing_navigation_->resolver->Resolve();
+      CleanupApiNavigation(*ongoing_navigation_);
     }
     return DispatchResult::kContinue;
   }
@@ -522,10 +520,15 @@ AppHistory::DispatchResult AppHistory::DispatchNavigateEvent(
 
   AppHistoryApiNavigation* navigation = nullptr;
   if (destination_item && !destination_item->GetAppHistoryKey().IsNull()) {
-    auto iter = ongoing_traversals_.find(destination_item->GetAppHistoryKey());
-    navigation = iter == ongoing_traversals_.end() ? nullptr : iter->value;
+    DCHECK(!ongoing_navigation_);
+    auto iter = upcoming_traversals_.find(destination_item->GetAppHistoryKey());
+    navigation = iter == upcoming_traversals_.end() ? nullptr : iter->value;
+    if (navigation) {
+      upcoming_traversals_.erase(iter);
+      ongoing_navigation_ = navigation;
+    }
   } else {
-    navigation = ongoing_non_traversal_navigation_;
+    navigation = ongoing_navigation_;
   }
 
   auto* init = AppHistoryNavigateEventInit::Create();
@@ -620,33 +623,26 @@ void AppHistory::InformAboutCanceledNavigation() {
     auto* script_state =
         ToScriptStateForMainWorld(GetSupplementable()->GetFrame());
     ScriptState::Scope scope(script_state);
-    AppHistoryApiNavigation* navigation = ongoing_non_traversal_navigation_;
-    if (!navigation && ongoing_navigate_event_) {
-      auto it = ongoing_traversals_.find(
-          ongoing_navigate_event_->destination()->key());
-      if (it != ongoing_traversals_.end())
-        navigation = it->value;
-    }
-    FinalizeWithAbortedNavigationError(script_state, navigation);
+    FinalizeWithAbortedNavigationError(script_state, ongoing_navigation_);
   }
 
   // If this function is being called as part of frame detach, also cleanup any
-  // ongoing_traversals_.
+  // upcoming_traversals_.
   //
   // This function may be called when a v8 context hasn't been initialized.
-  // ongoing_traversals_ being non-empty requires a v8 context, so check that so
-  // that we don't unnecessarily try to initialize one below.
-  if (!ongoing_traversals_.IsEmpty() && GetSupplementable()->GetFrame() &&
+  // upcoming_traversals_ being non-empty requires a v8 context, so check that
+  // so that we don't unnecessarily try to initialize one below.
+  if (!upcoming_traversals_.IsEmpty() && GetSupplementable()->GetFrame() &&
       !GetSupplementable()->GetFrame()->IsAttached()) {
     auto* script_state =
         ToScriptStateForMainWorld(GetSupplementable()->GetFrame());
     ScriptState::Scope scope(script_state);
 
     HeapVector<Member<AppHistoryApiNavigation>> traversals;
-    CopyValuesToVector(ongoing_traversals_, traversals);
+    CopyValuesToVector(upcoming_traversals_, traversals);
     for (auto& traversal : traversals)
       FinalizeWithAbortedNavigationError(script_state, traversal);
-    DCHECK(ongoing_traversals_.IsEmpty());
+    DCHECK(upcoming_traversals_.IsEmpty());
   }
 }
 
@@ -670,12 +666,11 @@ void AppHistory::RejectPromiseAndFireNavigateErrorEvent(
 }
 
 void AppHistory::CleanupApiNavigation(AppHistoryApiNavigation& navigation) {
-  if (navigation.key.IsNull()) {
-    if (&navigation == ongoing_non_traversal_navigation_)
-      ongoing_non_traversal_navigation_ = nullptr;
-  } else {
-    DCHECK(ongoing_traversals_.Contains(navigation.key));
-    ongoing_traversals_.erase(navigation.key);
+  if (&navigation == ongoing_navigation_) {
+    ongoing_navigation_ = nullptr;
+  } else if (!navigation.key.IsNull()) {
+    DCHECK(upcoming_traversals_.Contains(navigation.key));
+    upcoming_traversals_.erase(navigation.key);
   }
 }
 
@@ -715,8 +710,8 @@ void AppHistory::Trace(Visitor* visitor) const {
   EventTargetWithInlineData::Trace(visitor);
   Supplement<LocalDOMWindow>::Trace(visitor);
   visitor->Trace(entries_);
-  visitor->Trace(ongoing_non_traversal_navigation_);
-  visitor->Trace(ongoing_traversals_);
+  visitor->Trace(ongoing_navigation_);
+  visitor->Trace(upcoming_traversals_);
   visitor->Trace(upcoming_non_traversal_navigation_);
   visitor->Trace(ongoing_navigate_event_);
   visitor->Trace(ongoing_navigation_signal_);
