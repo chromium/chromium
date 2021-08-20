@@ -65,6 +65,10 @@ AppListBubblePresenter* GetBubblePresenter() {
   return Shell::Get()->app_list_controller()->bubble_presenter_for_test();
 }
 
+views::View* GetSeparator() {
+  return GetBubblePresenter()->bubble_view_for_test()->separator_for_test();
+}
+
 // Simulates the Assistant being enabled.
 void SimulateAssistantEnabled() {
   Shell::Get()
@@ -166,6 +170,7 @@ TEST_F(AppListBubbleViewTest, ClickingAssistantButtonShowsAssistantPage) {
   ClickButton(search_box->assistant_button());
 
   EXPECT_FALSE(search_box->GetVisible());
+  EXPECT_FALSE(GetSeparator()->GetVisible());
   EXPECT_FALSE(GetAppsPage()->GetVisible());
   EXPECT_FALSE(GetSearchPage()->GetVisible());
   EXPECT_TRUE(GetAssistantPage()->GetVisible());

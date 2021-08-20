@@ -35,6 +35,31 @@
 using views::BoxLayout;
 
 namespace ash {
+namespace {
+
+// A simplified horizontal separator that uses a solid color layer for painting.
+// This is more efficient than using a views::Separator, which would require
+// SetPaintToLayer(ui::LAYER_TEXTURED).
+class SeparatorWithLayer : public views::View {
+ public:
+  SeparatorWithLayer() {
+    SetPaintToLayer(ui::LAYER_SOLID_COLOR);
+    layer()->SetColor(ColorProvider::Get()->GetContentLayerColor(
+        ColorProvider::ContentLayerType::kSeparatorColor));
+    layer()->SetFillsBoundsOpaquely(false);
+  }
+  SeparatorWithLayer(const SeparatorWithLayer&) = delete;
+  SeparatorWithLayer& operator=(const SeparatorWithLayer&) = delete;
+  ~SeparatorWithLayer() override = default;
+
+  // views::View:
+  gfx::Size CalculatePreferredSize() const override {
+    // The parent's layout manager will stretch it horizontally.
+    return gfx::Size(1, 1);
+  }
+};
+
+}  // namespace
 
 AppListBubbleView::AppListBubbleView(
     AppListViewDelegate* view_delegate,
@@ -63,6 +88,10 @@ AppListBubbleView::AppListBubbleView(
   params.show_close_button_when_active = false;
   params.create_background = false;
   search_box_view_->Init(params);
+
+  // The main view has a solid color layer, so the separator needs its own
+  // layer to visibly paint.
+  separator_ = AddChildView(std::make_unique<SeparatorWithLayer>());
 
   AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
   AddAccelerator(ui::Accelerator(ui::VKEY_BROWSER_BACK, ui::EF_NONE));
@@ -107,6 +136,7 @@ bool AppListBubbleView::IsShowingEmbeddedAssistantUI() const {
 void AppListBubbleView::ShowEmbeddedAssistantUI() {
   // The assistant has its own text input field.
   search_box_view_->SetVisible(false);
+  separator_->SetVisible(false);
 
   apps_page_->SetVisible(false);
   search_page_->SetVisible(false);

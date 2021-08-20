@@ -60,12 +60,15 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   void OnSearchBoxKeyEvent(ui::KeyEvent* event) override;
   bool CanSelectSearchResults() override;
 
+  views::View* separator_for_test() { return separator_; }
+
  private:
   friend class AppListTestHelper;
   friend class AssistantTestApiImpl;
 
   AppListViewDelegate* const view_delegate_;
   SearchBoxView* search_box_view_ = nullptr;
+  views::View* separator_ = nullptr;
   AppListBubbleAppsPage* apps_page_ = nullptr;
   AppListBubbleSearchPage* search_page_ = nullptr;
   AppListBubbleAssistantPage* assistant_page_ = nullptr;
