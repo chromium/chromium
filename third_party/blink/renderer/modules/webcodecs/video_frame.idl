@@ -40,7 +40,7 @@ typedef ([AllowShared] ArrayBuffer or [AllowShared] ArrayBufferView) AllowShared
   readonly attribute unsigned long displayHeight;
 
   // Color space of the data produced by copyTo().
-  readonly attribute VideoColorSpace? colorSpace;
+  readonly attribute VideoColorSpace colorSpace;
 
   // Returns the minimum size (in bytes) of a buffer that copyTo() could
   // copy this frame into with the given options.

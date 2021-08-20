@@ -24,6 +24,7 @@ class MODULES_EXPORT VideoColorSpace final : public ScriptWrappable {
  public:
   static VideoColorSpace* Create(const VideoColorSpaceInit*);
 
+  explicit VideoColorSpace() = default;
   explicit VideoColorSpace(const VideoColorSpaceInit*);
   explicit VideoColorSpace(const gfx::ColorSpace&);
   explicit VideoColorSpace(const media::VideoColorSpace&);

@@ -29,7 +29,10 @@ test(t => {
   assert_equals(frame.visibleRect, null, 'visibleRect');
   assert_equals(frame.displayWidth, 0, 'displayWidth');
   assert_equals(frame.displayHeight, 0, 'displayHeight');
-  assert_equals(frame.colorSpace, null, 'colorSpace');
+  assert_equals(frame.colorSpace.primaries, null, 'colorSpace.primaries');
+  assert_equals(frame.colorSpace.transfer, null, 'colorSpace.transfer');
+  assert_equals(frame.colorSpace.matrix, null, 'colorSpace.matrix');
+  assert_equals(frame.colorSpace.fullRange, null, 'colorSpace.fullRange');
 
   assert_throws_dom('InvalidStateError', () => frame.clone());
 }, 'Test closed VideoFrame.');

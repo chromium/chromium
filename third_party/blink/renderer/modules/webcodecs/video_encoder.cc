@@ -233,8 +233,6 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
   bool is_codec_ambiguous = true;
   result->codec = media::VideoCodec::kUnknown;
   result->profile = media::VIDEO_CODEC_PROFILE_UNKNOWN;
-  // TODO(crbug.com/1138680): Default to sRGB if encoding an RGB format.
-  result->color_space = media::VideoColorSpace::REC709();
   result->level = 0;
   result->codec_string = config->codec();
 
@@ -247,11 +245,10 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
     return nullptr;
   }
 
-  if (config->hasColorSpace()) {
-    VideoColorSpace* color_space =
-        MakeGarbageCollected<VideoColorSpace>(config->colorSpace());
-    result->color_space = color_space->ToMediaColorSpace();
-  }
+  // For now spec allows UA to always choose the output color space, so ignore
+  // whatever we parsed from the codec string. Hard-code to 601 since that is
+  // correct most often. See https://crbug.com/1241448.
+  result->color_space = media::VideoColorSpace::REC601();
 
   // We are done with the parsing.
   if (!config->hasAvc())
@@ -336,12 +333,6 @@ VideoEncoderConfig* CopyConfig(const VideoEncoderConfig& config) {
 
   if (config.hasBitrateMode())
     result->setBitrateMode(config.bitrateMode());
-
-  if (config.hasColorSpace()) {
-    VideoColorSpace* color_space =
-        MakeGarbageCollected<VideoColorSpace>(config.colorSpace());
-    result->setColorSpace(color_space->toJSON());
-  }
 
   if (config.hasLatencyMode())
     result->setLatencyMode(config.latencyMode());
@@ -571,7 +562,6 @@ bool VideoEncoder::CanReconfigure(ParsedConfig& original_config,
   return original_config.codec == new_config.codec &&
          original_config.profile == new_config.profile &&
          original_config.level == new_config.level &&
-         original_config.color_space == new_config.color_space &&
          original_config.hw_pref == new_config.hw_pref;
 }
 
