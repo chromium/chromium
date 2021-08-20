@@ -7,10 +7,11 @@
 
 #include <memory>
 
+#include "base/memory/weak_ptr.h"
+#include "base/sequenced_task_runner.h"
 #include "base/timer/timer.h"
 #include "services/device/generic_sensor/platform_sensor.h"
-
-class SuddenMotionSensor;
+#include "services/device/public/cpp/generic_sensor/sensor_reading.h"
 
 namespace device {
 
@@ -38,14 +39,19 @@ class PlatformSensorAccelerometerMac : public PlatformSensor {
   PlatformSensorConfiguration GetDefaultConfiguration() override;
 
  private:
-  void PollForData();
+  class BlockingTaskRunnerHelper;
 
-  std::unique_ptr<SuddenMotionSensor> sudden_motion_sensor_;
+  void OnReadingAvailable(SensorReading reading);
+
+  scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
+  std::unique_ptr<BlockingTaskRunnerHelper, base::OnTaskRunnerDeleter>
+      blocking_task_helper_;
 
   SensorReading reading_;
 
-  // Repeating timer for data polling.
-  base::RepeatingTimer timer_;
+  bool is_reading_active_ = false;
+
+  base::WeakPtrFactory<PlatformSensorAccelerometerMac> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PlatformSensorAccelerometerMac);
 };
