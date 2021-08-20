@@ -1623,7 +1623,8 @@ void RTCPeerConnectionHandler::AddICECandidate(
       std::move(native_candidate),
       [pc = native_peer_connection_, task_runner = task_runner_,
        handler_weak_ptr = weak_factory_.GetWeakPtr(),
-       tracker_weak_ptr = peer_connection_tracker_, candidate,
+       tracker_weak_ptr = peer_connection_tracker_,
+       persistent_candidate = WrapCrossThreadPersistent(candidate),
        persistent_request = WrapCrossThreadPersistent(request),
        callback_on_task_runner =
            std::move(callback_on_task_runner)](webrtc::RTCError result) {
@@ -1652,7 +1653,7 @@ void RTCPeerConnectionHandler::AddICECandidate(
                 std::move(current_local_description),
                 std::move(pending_remote_description),
                 std::move(current_remote_description),
-                WrapCrossThreadPersistent(candidate), std::move(result),
+                std::move(persistent_candidate), std::move(result),
                 std::move(persistent_request)));
       });
 }
