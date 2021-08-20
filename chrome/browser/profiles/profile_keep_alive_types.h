@@ -93,7 +93,12 @@ enum class ProfileKeepAliveOrigin {
   // profile's NotificationDatabase, so wait for the event to finish processing.
   kPendingNotificationCloseEvent = 20,
 
-  kMaxValue = kPendingNotificationCloseEvent,
+  // The "Send Feedback" WebUI dialog is visible. Because it renders with WebUI,
+  // this dialog holds a RenderProcessHost. Closing the Profile before the RPH
+  // goes away would cause all sorts of problems...
+  kFeedbackDialog = 21,
+
+  kMaxValue = kFeedbackDialog,
 };
 
 std::ostream& operator<<(std::ostream& out,

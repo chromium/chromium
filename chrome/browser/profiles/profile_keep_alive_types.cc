@@ -49,6 +49,8 @@ std::ostream& operator<<(std::ostream& out,
       return out << "kProfileCreationFlow";
     case ProfileKeepAliveOrigin::kPendingNotificationCloseEvent:
       return out << "kPendingNotificationCloseEvent";
+    case ProfileKeepAliveOrigin::kFeedbackDialog:
+      return out << "kFeedbackDialog";
   }
   NOTREACHED();
   return out << static_cast<int>(origin);
