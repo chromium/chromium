@@ -289,7 +289,7 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         results_fetcher = self._tool.results_fetcher
         results = {}
 
-        for build, status in jobs.iteritems():
+        for build, status in jobs.items():
             if status == TryJobStatus('COMPLETED', 'SUCCESS'):
                 # Builds with passing try jobs are mapped to None, to indicate
                 # that there are no baselines to download.
@@ -359,7 +359,7 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
             A TestBaselineSet object.
         """
         builds_to_tests = {}
-        for build, results in builds_to_results.iteritems():
+        for build, results in builds_to_results.items():
             builds_to_tests[build] = self._tests_to_rebaseline(build, results)
         if only_changed_tests:
             files_in_cl = self._tool.git().changed_files(diff_filter='AM')
@@ -373,7 +373,7 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
 
         # Here we have a concrete list of tests so we don't need prefix lookup.
         test_baseline_set = TestBaselineSet(self._tool, prefix_mode=False)
-        for build, tests in builds_to_tests.iteritems():
+        for build, tests in builds_to_tests.items():
             for test in tests:
                 if only_changed_tests and test not in tests_in_cl:
                     continue

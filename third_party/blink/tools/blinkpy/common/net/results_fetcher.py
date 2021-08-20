@@ -30,7 +30,9 @@ import collections
 import logging
 import json
 import re
-import urllib
+import six.moves.urllib.request
+import six.moves.urllib.parse
+import six.moves.urllib.error
 
 from blinkpy.common.memoized import memoized
 from blinkpy.common.net.web import Web
@@ -84,7 +86,8 @@ class TestResultsFetcher(object):
                     Build(builder_name, build_number))
             if step_name:
                 return '%s/%s/%s/layout-test-results' % (
-                    url_base, build_number, urllib.quote(step_name))
+                    url_base, build_number,
+                    six.moves.urllib.parse.quote(step_name))
             return '%s/%s/layout-test-results' % (url_base, build_number)
         return self.accumulated_results_url_base(builder_name)
 
@@ -160,7 +163,8 @@ class TestResultsFetcher(object):
 
         url = '%s/testfile?%s' % (
             TEST_RESULTS_SERVER,
-            urllib.urlencode({
+            six.moves.urllib.parse.
+            urlencode({
                 'builder': build.builder_name,
                 'buildnumber': build.build_number,
                 'name': 'full_results.json',
@@ -215,7 +219,7 @@ class TestResultsFetcher(object):
 
         url = '%s/testfile?%s' % (
             TEST_RESULTS_SERVER,
-            urllib.urlencode({
+            six.moves.urllib.parse.urlencode({
                 'builder': build.builder_name,
                 'buildnumber': build.build_number,
                 'name': 'full_results.json',

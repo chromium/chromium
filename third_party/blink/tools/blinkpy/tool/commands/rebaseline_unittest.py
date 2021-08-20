@@ -344,7 +344,7 @@ class TestRebaseline(BaseTestCase):
                              '--test',
                              'userscripts/first-test.html',
                              '--suffixes',
-                             'txt,png',
+                             'png,txt',
                              '--port-name',
                              'test-win-win7',
                          ]],
@@ -356,7 +356,7 @@ class TestRebaseline(BaseTestCase):
                               '--test',
                               'userscripts/first-test.html',
                               '--suffixes',
-                              'txt,png',
+                              'png,txt',
                               '--port-name',
                               'test-win-win7',
                               '--builder',
@@ -371,7 +371,7 @@ class TestRebaseline(BaseTestCase):
                               '--no-manifest-update',
                               '--verbose',
                               '--suffixes',
-                              'txt,png',
+                              'png,txt',
                               'userscripts/first-test.html',
                           ]]])
 
@@ -381,7 +381,6 @@ class TestRebaseline(BaseTestCase):
                               Build('MOCK Win7 (dbg)'))
 
         self.command.rebaseline(self.options(), test_baseline_set)
-
         self.assertEqual(self.tool.executive.calls,
                          [[[
                              'python',
@@ -391,7 +390,7 @@ class TestRebaseline(BaseTestCase):
                              '--test',
                              'userscripts/first-test.html',
                              '--suffixes',
-                             'txt,png',
+                             'png,txt',
                              '--port-name',
                              'test-win-win7',
                          ]],
@@ -403,7 +402,7 @@ class TestRebaseline(BaseTestCase):
                               '--test',
                               'userscripts/first-test.html',
                               '--suffixes',
-                              'txt,png',
+                              'png,txt',
                               '--port-name',
                               'test-win-win7',
                               '--builder',
@@ -418,7 +417,7 @@ class TestRebaseline(BaseTestCase):
                               '--no-manifest-update',
                               '--verbose',
                               '--suffixes',
-                              'txt,png',
+                              'png,txt',
                               'userscripts/first-test.html',
                           ]]])
 
@@ -438,7 +437,7 @@ class TestRebaseline(BaseTestCase):
                              '--test',
                              'userscripts/first-test.html',
                              '--suffixes',
-                             'txt,png',
+                             'png,txt',
                              '--port-name',
                              'test-win-win7',
                          ]],
@@ -450,7 +449,7 @@ class TestRebaseline(BaseTestCase):
                               '--test',
                               'userscripts/first-test.html',
                               '--suffixes',
-                              'txt,png',
+                              'png,txt',
                               '--port-name',
                               'test-win-win7',
                               '--builder',
@@ -476,7 +475,7 @@ class TestRebaseline(BaseTestCase):
                 '--test',
                 'userscripts/first-test.html',
                 '--suffixes',
-                'txt,png',
+                'png,txt',
                 '--port-name',
                 'test-win-win7',
             ]],
@@ -488,7 +487,7 @@ class TestRebaseline(BaseTestCase):
                 '--test',
                 'userscripts/first-test.html',
                 '--suffixes',
-                'txt,png',
+                'png,txt',
                 '--port-name',
                 'test-win-win7',
                 '--builder',
@@ -515,7 +514,7 @@ class TestRebaseline(BaseTestCase):
                              '--test',
                              'userscripts/first-test.html',
                              '--suffixes',
-                             'txt,png',
+                             'png,txt',
                              '--port-name',
                              'test-win-win10',
                          ]],
@@ -527,7 +526,7 @@ class TestRebaseline(BaseTestCase):
                               '--test',
                               'userscripts/first-test.html',
                               '--suffixes',
-                              'txt,png',
+                              'png,txt',
                               '--port-name',
                               'test-win-win10',
                               '--builder',
@@ -542,7 +541,7 @@ class TestRebaseline(BaseTestCase):
                               '--no-manifest-update',
                               '--verbose',
                               '--suffixes',
-                              'txt,png',
+                              'png,txt',
                               'userscripts/first-test.html',
                           ]]])
 
@@ -921,7 +920,7 @@ class TestRebaselineExecute(BaseTestCase):
             'results_directory': False,
             'optimize': False,
             'builders': None,
-            'suffixes': 'txt,png',
+            'suffixes': 'png,txt',
             'verbose': True,
             'flag_specific': None
         })
@@ -942,7 +941,7 @@ class TestRebaselineExecute(BaseTestCase):
                              '--test',
                              'userscripts/first-test.html',
                              '--suffixes',
-                             'txt,png',
+                             'png,txt',
                              '--port-name',
                              'test-win-win7',
                          ]],
@@ -954,7 +953,7 @@ class TestRebaselineExecute(BaseTestCase):
                               '--test',
                               'userscripts/first-test.html',
                               '--suffixes',
-                              'txt,png',
+                              'png,txt',
                               '--port-name',
                               'test-win-win7',
                               '--builder',
@@ -969,7 +968,6 @@ class TestRebaselineExecute(BaseTestCase):
 
         self._setup_mock_build_data()
         self.command.execute(self.options(), ['userscripts'], self.tool)
-
         self.assertEqual(self.tool.executive.calls,
                          [[[
                              'python',
@@ -979,7 +977,7 @@ class TestRebaselineExecute(BaseTestCase):
                              '--test',
                              'userscripts/first-test.html',
                              '--suffixes',
-                             'txt,png',
+                             'png,txt',
                              '--port-name',
                              'test-win-win7',
                          ],
@@ -991,7 +989,7 @@ class TestRebaselineExecute(BaseTestCase):
                                '--test',
                                'userscripts/second-test.html',
                                '--suffixes',
-                               'wav,png',
+                               'png,wav',
                                '--port-name',
                                'test-win-win7',
                            ]],
@@ -1003,7 +1001,7 @@ class TestRebaselineExecute(BaseTestCase):
                               '--test',
                               'userscripts/first-test.html',
                               '--suffixes',
-                              'txt,png',
+                              'png,txt',
                               '--port-name',
                               'test-win-win7',
                               '--builder',
@@ -1019,7 +1017,7 @@ class TestRebaselineExecute(BaseTestCase):
                                '--test',
                                'userscripts/second-test.html',
                                '--suffixes',
-                               'wav,png',
+                               'png,wav',
                                '--port-name',
                                'test-win-win7',
                                '--builder',

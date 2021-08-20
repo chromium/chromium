@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import optparse
+import six
 
 from blinkpy.common.system.executive_mock import MockExecutive
 from blinkpy.common.system.output_capture import OutputCapture
@@ -60,7 +61,8 @@ class TestRebaselineTest(BaseTestCase):
         finally:
             out, _, _ = oc.restore_output()
 
-        self.assertItemsEqual(self.tool.web.urls_fetched, [actual_result_url])
+        six.assertCountEqual(self, self.tool.web.urls_fetched,
+                             [actual_result_url])
         self.assertMultiLineEqual(
             self._read(baseline_local_absolute_path), 'new win10 result')
         self.assertFalse(
@@ -103,7 +105,7 @@ class TestRebaselineTest(BaseTestCase):
         self.command._rebaseline_test_and_update_expectations(
             self.options(suffixes='png,wav,txt'))
 
-        self.assertItemsEqual(self.tool.web.urls_fetched, [
+        six.assertCountEqual(self, self.tool.web.urls_fetched, [
             self.WEB_PREFIX + '/userscripts/another-test-actual.png',
             self.WEB_PREFIX + '/userscripts/another-test-actual.wav',
             self.WEB_PREFIX + '/userscripts/another-test-actual.txt'
@@ -121,7 +123,9 @@ class TestRebaselineTest(BaseTestCase):
         self.command._rebaseline_test('test-linux-trusty',
                                       'userscripts/another-test.html', 'txt',
                                       self.WEB_PREFIX)
-        self.assertItemsEqual(self.tool.web.urls_fetched, [actual_result_url])
+
+        six.assertCountEqual(self, self.tool.web.urls_fetched,
+                             [actual_result_url])
         port = self.tool.port_factory.get('test-linux-trusty')
         self.assertMultiLineEqual(
             self._read(
@@ -136,7 +140,9 @@ class TestRebaselineTest(BaseTestCase):
         self.command._rebaseline_test('test-linux-trusty',
                                       'userscripts/another-test.html', 'txt',
                                       self.WEB_PREFIX)
-        self.assertItemsEqual(self.tool.web.urls_fetched, [actual_result_url])
+
+        six.assertCountEqual(self, self.tool.web.urls_fetched,
+                             [actual_result_url])
         port = self.tool.port_factory.get('test-linux-trusty')
         self.assertMultiLineEqual(
             self._read(
@@ -150,7 +156,9 @@ class TestRebaselineTest(BaseTestCase):
         self.command._rebaseline_test('test-linux-trusty',
                                       'userscripts/another-test.html', 'txt',
                                       self.WEB_PREFIX)
-        self.assertItemsEqual(self.tool.web.urls_fetched, [actual_result_url])
+
+        six.assertCountEqual(self, self.tool.web.urls_fetched,
+                             [actual_result_url])
         port = self.tool.port_factory.get('test-linux-trusty')
         self.assertMultiLineEqual(
             self._read(
@@ -167,8 +175,9 @@ class TestRebaselineTest(BaseTestCase):
              'bug(z) [ Linux ] userscripts/another-test.html [ Failure ]\n'))
         self.command._rebaseline_test_and_update_expectations(
             self.options(results_directory='/tmp'))
-        self.assertItemsEqual(
-            self.tool.web.urls_fetched,
+
+        six.assertCountEqual(
+            self, self.tool.web.urls_fetched,
             ['file:///tmp/userscripts/another-test-actual.txt'])
 
     def test_rebaseline_reftest(self):
@@ -197,8 +206,9 @@ class TestRebaselineTest(BaseTestCase):
             expected_logs=
             'Cannot rebaseline image result for reftest: userscripts/another-test.html\n'
         )
-        self.assertItemsEqual(
-            self.tool.web.urls_fetched,
+
+        six.assertCountEqual(
+            self, self.tool.web.urls_fetched,
             [self.WEB_PREFIX + '/userscripts/another-test-actual.txt'])
         self.assertDictEqual(self.command.expectation_line_changes.to_dict(),
                              {'remove-lines': []})
