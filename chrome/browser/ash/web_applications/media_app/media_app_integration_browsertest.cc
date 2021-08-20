@@ -237,9 +237,9 @@ namespace {
 // icon-button ids are calculated from a hash of the button labels. Id is used
 // because the UI toolkit has loose guarantees about where the actual label
 // appears in the shadow DOM.
-const std::string kInfoButtonSelector = "#icon-button-2283726";
-const std::string kAnnotationButtonSelector = "#icon-button-3709949292";
-const std::string kCropAndRotateButtonSelector = "#icon-button-2723030533";
+constexpr char kInfoButtonSelector[] = "#icon-button-2283726";
+constexpr char kAnnotationButtonSelector[] = "#icon-button-3709949292";
+constexpr char kCropAndRotateButtonSelector[] = "#icon-button-2723030533";
 
 // Clicks the button on the app bar with the specified selector.
 void clickAppBarButton(content::WebContents* app, const std::string& selector) {
