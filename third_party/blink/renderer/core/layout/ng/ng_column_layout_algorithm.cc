@@ -1269,10 +1269,15 @@ NGConstraintSpace NGColumnLayoutAlgorithm::CreateConstraintSpaceForBalancing(
 NGConstraintSpace NGColumnLayoutAlgorithm::CreateConstraintSpaceForSpanner(
     const NGBlockNode& spanner,
     LayoutUnit block_offset) const {
+  auto child_writing_direction = spanner.Style().GetWritingDirection();
   NGConstraintSpaceBuilder space_builder(
-      ConstraintSpace(), Style().GetWritingDirection(), /* is_new_fc */ true);
+      ConstraintSpace(), child_writing_direction, /* is_new_fc */ true);
+  if (!IsParallelWritingMode(ConstraintSpace().GetWritingMode(),
+                             child_writing_direction.GetWritingMode()))
+    SetOrthogonalFallbackInlineSizeIfNeeded(Style(), spanner, &space_builder);
+  else if (ShouldBlockContainerChildStretchAutoInlineSize(spanner))
+    space_builder.SetInlineAutoBehavior(NGAutoBehavior::kStretchImplicit);
   space_builder.SetAvailableSize(ChildAvailableSize());
-  space_builder.SetInlineAutoBehavior(NGAutoBehavior::kStretchImplicit);
   space_builder.SetPercentageResolutionSize(ChildAvailableSize());
 
   space_builder.SetBaselineAlgorithmType(

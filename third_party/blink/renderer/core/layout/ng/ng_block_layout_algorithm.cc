@@ -2554,14 +2554,13 @@ NGConstraintSpace NGBlockLayoutAlgorithm::CreateConstraintSpaceForChild(
 
   NGConstraintSpaceBuilder builder(ConstraintSpace(), child_writing_direction,
                                    is_new_fc);
-  SetOrthogonalFallbackInlineSizeIfNeeded(Style(), child, &builder);
 
-  if (IsParallelWritingMode(ConstraintSpace().GetWritingMode(),
-                            child_writing_direction.GetWritingMode())) {
-    if (!child.GetLayoutBox()->AutoWidthShouldFitContent() &&
-        !child.IsReplaced() && !child.IsTable())
-      builder.SetInlineAutoBehavior(NGAutoBehavior::kStretchImplicit);
-  }
+  if (UNLIKELY(
+          !IsParallelWritingMode(ConstraintSpace().GetWritingMode(),
+                                 child_writing_direction.GetWritingMode())))
+    SetOrthogonalFallbackInlineSize(Style(), child, &builder);
+  else if (ShouldBlockContainerChildStretchAutoInlineSize(child))
+    builder.SetInlineAutoBehavior(NGAutoBehavior::kStretchImplicit);
 
   builder.SetAvailableSize(child_available_size);
   builder.SetPercentageResolutionSize(child_percentage_size_);

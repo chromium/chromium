@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/ng/ng_space_utils.h"
 
+#include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_bfc_offset.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
@@ -23,13 +24,11 @@ bool AdjustToClearance(LayoutUnit clearance_offset, NGBfcOffset* offset) {
   return false;
 }
 
-void SetOrthogonalFallbackInlineSizeIfNeeded(
-    const ComputedStyle& parent_style,
-    const NGLayoutInputNode child,
-    NGConstraintSpaceBuilder* builder) {
-  if (IsParallelWritingMode(parent_style.GetWritingMode(),
-                            child.Style().GetWritingMode()))
-    return;
+void SetOrthogonalFallbackInlineSize(const ComputedStyle& parent_style,
+                                     const NGLayoutInputNode child,
+                                     NGConstraintSpaceBuilder* builder) {
+  DCHECK(!IsParallelWritingMode(parent_style.GetWritingMode(),
+                                child.Style().GetWritingMode()));
 
   PhysicalSize orthogonal_children_containing_block_size =
       child.InitialContainingBlockSize();
@@ -76,6 +75,12 @@ void SetOrthogonalFallbackInlineSizeIfNeeded(
 
   fallback_size = std::min(fallback_size, size);
   builder->SetOrthogonalFallbackInlineSize(fallback_size);
+}
+
+bool ShouldBlockContainerChildStretchAutoInlineSize(
+    const NGLayoutInputNode& child) {
+  return !child.GetLayoutBox()->AutoWidthShouldFitContent() &&
+         !child.IsReplaced() && !child.IsTable();
 }
 
 }  // namespace blink
