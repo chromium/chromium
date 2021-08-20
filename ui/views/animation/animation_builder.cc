@@ -30,7 +30,7 @@ class AnimationBuilder::Observer : public ui::LayerAnimationObserver {
   Observer() = default;
   Observer(const Observer&) = delete;
   Observer& operator=(const Observer&) = delete;
-  ~Observer() override = default;
+  ~Observer() override;
 
   void SetOnStarted(base::OnceClosure callback);
   void SetOnEnded(base::OnceClosure callback);
@@ -59,6 +59,11 @@ class AnimationBuilder::Observer : public ui::LayerAnimationObserver {
   base::OnceClosure on_aborted_;
   base::OnceClosure on_scheduled_;
 };
+
+AnimationBuilder::Observer::~Observer() {
+  if (*on_observer_deleted_.get())
+    on_observer_deleted_->Run();
+}
 
 void AnimationBuilder::Observer::SetOnStarted(base::OnceClosure callback) {
   DCHECK(!on_started_);
@@ -259,10 +264,20 @@ AnimationBuilder::Observer* AnimationBuilder::GetObserver() {
   return animation_observer_.get();
 }
 
+// static
+void AnimationBuilder::SetObserverDeletedCallbackForTesting(
+    base::RepeatingClosure deleted_closure) {
+  *on_observer_deleted_.get() = std::move(deleted_closure);
+}
+
 AnimationSequenceBlock AnimationBuilder::NewSequence() {
   end_ = base::TimeDelta();
   return AnimationSequenceBlock(base::PassKey<AnimationBuilder>(), this,
                                 base::TimeDelta());
 }
+
+// static
+base::NoDestructor<base::RepeatingClosure>
+    AnimationBuilder::on_observer_deleted_;
 
 }  // namespace views

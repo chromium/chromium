@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/no_destructor.h"
 #include "base/types/pass_key.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animation_sequence.h"
@@ -57,6 +58,9 @@ class VIEWS_EXPORT AnimationBuilder {
   void SetOnAborted(base::OnceClosure callback);
   void SetOnScheduled(base::OnceClosure callback);
 
+  static void SetObserverDeletedCallbackForTesting(
+      base::RepeatingClosure deleted_closure);
+
  private:
   class Observer;
   struct Value;
@@ -77,6 +81,9 @@ class VIEWS_EXPORT AnimationBuilder {
   base::TimeDelta end_;
   // Each vector is kept in sorted order.
   std::map<AnimationKey, std::vector<Value>> values_;
+
+  // Callback used for testing.
+  static base::NoDestructor<base::RepeatingClosure> on_observer_deleted_;
 };
 
 }  // namespace views
