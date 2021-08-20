@@ -41,6 +41,8 @@ namespace gpu {
 namespace {
 class VideoImage : public gl::GLImage {
  public:
+  VideoImage() = default;
+
   VideoImage(AHardwareBuffer* buffer, base::ScopedFD begin_read_fence)
       : handle_(base::android::ScopedHardwareBufferHandle::Create(buffer)),
         begin_read_fence_(std::move(begin_read_fence)) {}
@@ -48,6 +50,9 @@ class VideoImage : public gl::GLImage {
   // gl::GLImage:
   std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
   GetAHardwareBuffer() override {
+    if (!handle_.is_valid())
+      return nullptr;
+
     return std::make_unique<ScopedHardwareBufferFenceSyncImpl>(
         this, base::android::ScopedHardwareBufferHandle::Create(handle_.get()),
         std::move(begin_read_fence_));
@@ -622,7 +627,7 @@ class SharedImageRepresentationOverlayVideo
         // Hence creating a valid object with null buffer which results in a
         // blank video frame and is expected. TODO(vikassoni) : Explore option
         // of returning a null GLImage here.
-        gl_image_ = base::MakeRefCounted<VideoImage>(nullptr, base::ScopedFD());
+        gl_image_ = base::MakeRefCounted<VideoImage>();
       }
     }
     return gl_image_.get();
