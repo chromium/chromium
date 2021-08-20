@@ -316,8 +316,7 @@ void RenderFrameProxyHost::OnAssociatedInterfaceRequest(
     mojo::ScopedInterfaceEndpointHandle handle) {
   // A RenderFrameProxyHost is reused after a crash, so allow reuse of the
   // receivers by resetting them before binding.
-  // TODO(dcheng): Maybe there should be an equivalent to RenderFrameHostImpl's
-  // InvalidateMojoConnection()?
+  // TODO(dcheng): Maybe this should move to InvalidateMojoConnection()?
   if (interface_name == blink::mojom::RemoteFrameHost::Name_) {
     remote_frame_host_receiver_.reset();
     remote_frame_host_receiver_.Bind(
@@ -797,6 +796,7 @@ void RenderFrameProxyHost::BindRemoteMainFrameInterfaces(
 }
 
 void RenderFrameProxyHost::InvalidateMojoConnection() {
+  remote_frame_.reset();
   remote_main_frame_.reset();
   remote_main_frame_host_receiver_.reset();
 }
