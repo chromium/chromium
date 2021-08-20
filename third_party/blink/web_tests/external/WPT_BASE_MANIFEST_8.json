@@ -1376,6 +1376,13 @@
        {}
       ]
      ],
+     "felighting-no-light-source-style-update-crash.html": [
+      "dfc255df3d840449f4f66ea3ef4b477a69528d8e",
+      [
+       null,
+       {}
+      ]
+     ],
      "svg-unused-filter-on-clippath-mutated-crash.html": [
       "060b2547de59dfb14835532e52747bee8cc5fdc3",
       [
@@ -201102,6 +201109,19 @@
          {}
         ]
        ],
+       "top-layer-parent-opacity.html": [
+        "909ea73fd99301692ab60a2928601e2c2b5d1387",
+        [
+         null,
+         [
+          [
+           "/html/semantics/interactive-elements/the-dialog-element/top-layer-parent-opacity-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "top-layer-stacking-correct-order-remove-readd.html": [
         "3b3e33689255731475b4ba541f6853ff4d62d9c3",
         [
@@ -277418,6 +277438,10 @@
        ],
        "top-layer-nesting-ref.html": [
         "0a2936abbeda15ff475fa98d531445fd2b0ef1af",
+        []
+       ],
+       "top-layer-parent-opacity-ref.html": [
+        "e680f3f43a11253240e81c659a7da81a23e8e296",
         []
        ],
        "top-layer-stacking-correct-order-remove-readd-ref.html": [
@@ -495873,6 +495897,13 @@
      ],
      "dtls-fingerprint-validation.html": [
       "0ddc8488ae57213c9b5810633437bca27e4ee9f3",
+      [
+       null,
+       {}
+      ]
+     ],
+     "dtls-setup.https.html": [
+      "6eb0a1ae652a4355dd91daf249136f293bb509e1",
       [
        null,
        {}
