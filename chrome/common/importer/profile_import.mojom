@@ -5,6 +5,7 @@
 module chrome.mojom;
 
 import "mojo/public/mojom/base/string16.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
 import "url/mojom/url.mojom";
 
 [Native]
@@ -84,6 +85,7 @@ interface ProfileImportObserver {
 };
 
 // This interface is used to control the import process.
+[ServiceSandbox=sandbox.mojom.Sandbox.kNoSandbox]
 interface ProfileImport {
   // Start the importer. |items| is a bitmask of importer::ImportItem of items
   // to import.

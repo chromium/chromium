@@ -19,19 +19,6 @@
 // This file maps service classes to sandbox types. See
 // ServiceProcessHost::Launch() for how these templates are consumed.
 
-// chrome::mojom::ProfileImport
-namespace chrome {
-namespace mojom {
-class ProfileImport;
-}
-}  // namespace chrome
-
-template <>
-inline sandbox::policy::SandboxType
-content::GetServiceSandboxType<chrome::mojom::ProfileImport>() {
-  return sandbox::policy::SandboxType::kNoSandbox;
-}
-
 // printing::mojom::PrintBackendService
 #if (defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
      defined(OS_CHROMEOS)) &&                                   \
