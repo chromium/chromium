@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/callback_forward.h"
+#include "base/observer_list.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
@@ -185,6 +186,15 @@ ASH_PUBLIC_EXPORT extern const size_t
 // implement.
 class ASH_PUBLIC_EXPORT AcceleratorController {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    // Invoked when `action` is performed.
+    virtual void OnActionPerformed(AcceleratorAction action) = 0;
+    // Invoked when `controller` is destroyed.
+    virtual void OnAcceleratorControllerWillBeDestroyed(
+        AcceleratorController* controller) {}
+  };
+
   // Returns the singleton instance.
   static AcceleratorController* Get();
 
@@ -228,9 +238,15 @@ class ASH_PUBLIC_EXPORT AcceleratorController {
   virtual bool DoesAcceleratorMatchAction(const ui::Accelerator& accelerator,
                                           const AcceleratorAction action) = 0;
 
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
  protected:
   AcceleratorController();
   virtual ~AcceleratorController();
+  void NotifyActionPerformed(AcceleratorAction action);
+
+  base::ObserverList<Observer, /*check_empty=*/true> observers_;
 };
 
 // The public facing interface for AcceleratorHistory, which is implemented in

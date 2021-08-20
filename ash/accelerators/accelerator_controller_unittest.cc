@@ -252,6 +252,17 @@ class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
               (override));
 };
 
+class MockAcceleratorObserver
+    : public testing::NiceMock<AcceleratorController::Observer> {
+ public:
+  // AcceleratorController::Observer:
+  MOCK_METHOD(void, OnActionPerformed, (AcceleratorAction action), (override));
+  MOCK_METHOD(void,
+              OnAcceleratorControllerWillBeDestroyed,
+              (AcceleratorController * controller),
+              (override));
+};
+
 }  // namespace
 
 // Note AcceleratorControllerTest can't be in the anonymous namespace because
@@ -2105,6 +2116,10 @@ TEST_F(AcceleratorControllerTest, TestToggleHighContrast) {
 }
 
 TEST_F(AcceleratorControllerTest, CalculatorKey) {
+  auto observer = std::make_unique<MockAcceleratorObserver>();
+  auto* accelerator_controller = ash::AcceleratorController::Get();
+  accelerator_controller->AddObserver(observer.get());
+
   // Verify that the launch calculator key (VKEY_MEDIA_LAUNCH_APP2) is
   // registered.
   ui::Accelerator accelerator(ui::VKEY_MEDIA_LAUNCH_APP2, ui::EF_NONE);
@@ -2113,7 +2128,11 @@ TEST_F(AcceleratorControllerTest, CalculatorKey) {
   // Verify that the delegate to open the app is called.
   EXPECT_CALL(*new_window_delegate_, OpenCalculator)
       .WillOnce(testing::Return());
+  EXPECT_CALL(*observer, OnActionPerformed)
+      .WillOnce(
+          [](AcceleratorAction action) { EXPECT_EQ(OPEN_CALCULATOR, action); });
   EXPECT_TRUE(ProcessInController(accelerator));
+  accelerator_controller->RemoveObserver(observer.get());
 }
 
 // Tests the IME mode change key.

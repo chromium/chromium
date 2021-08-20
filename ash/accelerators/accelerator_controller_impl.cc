@@ -2341,6 +2341,8 @@ void AcceleratorControllerImpl::PerformAction(
       break;
   }
 
+  NotifyActionPerformed(action);
+
   // Reset any in progress composition.
   if (::features::IsImprovedKeyboardShortcutsEnabled()) {
     auto* input_method =
