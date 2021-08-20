@@ -627,7 +627,7 @@ void LayerTreeHostImpl::CommitComplete() {
     frame_trackers_.StartSequence(FrameSequenceTrackerType::kRAF);
   if (mutator_host_->HasCanvasInvalidation())
     frame_trackers_.StartSequence(FrameSequenceTrackerType::kCanvasAnimation);
-  if (mutator_host_->HasJSAnimation())
+  if (mutator_host_->CurrentFrameHadRAF() || mutator_host_->HasJSAnimation())
     frame_trackers_.StartSequence(FrameSequenceTrackerType::kJSAnimation);
 
   if (mutator_host_->MainThreadAnimationsCount() > 0 ||
@@ -2414,7 +2414,8 @@ bool LayerTreeHostImpl::DrawLayers(FrameData* frame) {
     frame_trackers_.StopSequence(FrameSequenceTrackerType::kRAF);
   if (!mutator_host_->HasCanvasInvalidation())
     frame_trackers_.StopSequence(FrameSequenceTrackerType::kCanvasAnimation);
-  if (!mutator_host_->HasJSAnimation())
+  if (!mutator_host_->NextFrameHasPendingRAF() &&
+      !mutator_host_->HasJSAnimation())
     frame_trackers_.StopSequence(FrameSequenceTrackerType::kJSAnimation);
 
   if (mutator_host_->MainThreadAnimationsCount() == 0 &&
