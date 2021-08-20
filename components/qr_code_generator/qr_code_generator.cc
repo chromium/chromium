@@ -372,7 +372,7 @@ class BitPacker {
 
   void Append9Bits(uint16_t v) {
     AppendBits(static_cast<uint8_t>(v >> 1), 8);
-    AppendBits(static_cast<uint8_t>(v & 11), 1);
+    AppendBits(static_cast<uint8_t>(v & 1), 1);
   }
 
   void Append11Bits(uint16_t v) {
