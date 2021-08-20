@@ -10,10 +10,12 @@
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_capacity_allocation_host.mojom-blink.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_handle.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_file_delegate.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
 #if defined(OS_MAC)
 #include "third_party/blink/public/mojom/file/file_utilities.mojom-blink.h"
@@ -32,6 +34,8 @@ class FileSystemAccessRegularFileDelegate final
   explicit FileSystemAccessRegularFileDelegate(
       ExecutionContext* context,
       base::File backing_file,
+      mojo::PendingRemote<mojom::blink::FileSystemAccessCapacityAllocationHost>
+          capacity_allocation_host_remote,
       base::PassKey<FileSystemAccessFileDelegate>);
 
   FileSystemAccessRegularFileDelegate(
@@ -41,6 +45,7 @@ class FileSystemAccessRegularFileDelegate final
 
   void Trace(Visitor* visitor) const override {
     FileSystemAccessFileDelegate::Trace(visitor);
+    visitor->Trace(capacity_allocation_host_);
 #if defined(OS_MAC)
     visitor->Trace(context_);
     visitor->Trace(file_utilities_host_);
@@ -93,6 +98,10 @@ class FileSystemAccessRegularFileDelegate final
   Member<ExecutionContext> context_;
   HeapMojoRemote<mojom::blink::FileUtilitiesHost> file_utilities_host_;
 #endif  // defined(OS_MAC)
+
+  // Used to route capacity allocation requests to the browser.
+  HeapMojoRemote<mojom::blink::FileSystemAccessCapacityAllocationHost>
+      capacity_allocation_host_;
 
   // The file on disk backing the parent FileSystemFileHandle.
   base::File backing_file_;

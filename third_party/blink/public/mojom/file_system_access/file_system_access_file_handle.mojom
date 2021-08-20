@@ -12,15 +12,40 @@ import "third_party/blink/public/mojom/file_system_access/file_system_access_acc
 import "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom";
 import "third_party/blink/public/mojom/file_system_access/file_system_access_file_delegate_host.mojom";
 import "third_party/blink/public/mojom/file_system_access/file_system_access_file_writer.mojom";
+import "third_party/blink/public/mojom/file_system_access/file_system_access_capacity_allocation_host.mojom";
 import "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom";
 import "third_party/blink/public/mojom/permissions/permission_status.mojom";
+
+// Representation of a regular file for an AccessHandle.
+// `file` is an OS-level file which provides direct read/write access.
+// `capacity_allocation_host` is a mojo pipe to manage capacity allocations for
+// this file.
+//
+// Each file has an associated capacity, which is the number of bytes of
+// disk space that the consumer is allowed to take up by writing that file.
+// Operations that extend an opened file past its current size, such as Write()
+// and truncate(), consume associated capacity. Operations that reduce the
+// file's size on disk, such as truncate() create capacity.
+//
+// Each file starts out with zero (0) capacity, and may call
+// RequestCapacityChange() on the capacity_allocation_host to obtain capacity
+// from the quota system. Capacity counts as quota usage by the storage key.
+// When the instance's mojo pipe is closed, any available capacity is
+// automatically returned to the quota system.
+//
+// Files should never take up more disk space than available capacity. Renderers
+// that deviate from this requirement will be terminated.
+struct FileSystemAccessRegularFile {
+  mojo_base.mojom.File os_file;
+  pending_remote<FileSystemAccessCapacityAllocationHost> capacity_allocation_host;
+};
 
 // Representation of a file for an AccessHandle.
 // `regular_file` is an OS-level file which provides direct read/write access.
 // 'incognito_file_delegate' is used only in Incognito mode. It routes all file
 // operations to the browser.
 union FileSystemAccessAccessHandleFile {
-    mojo_base.mojom.File regular_file;
+    FileSystemAccessRegularFile regular_file;
     pending_remote<FileSystemAccessFileDelegateHost> incognito_file_delegate;
 };
 

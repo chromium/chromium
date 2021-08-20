@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "content/browser/file_system_access/file_system_access_capacity_allocation_host_impl.h"
 #include "content/browser/file_system_access/file_system_access_file_delegate_host_impl.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/common/content_export.h"
@@ -33,7 +34,10 @@ class CONTENT_EXPORT FileSystemAccessAccessHandleHostImpl
       mojo::PendingReceiver<blink::mojom::FileSystemAccessAccessHandleHost>
           receiver,
       mojo::PendingReceiver<blink::mojom::FileSystemAccessFileDelegateHost>
-          file_delegate_receiver);
+          file_delegate_receiver,
+      mojo::PendingReceiver<
+          blink::mojom::FileSystemAccessCapacityAllocationHost>
+          capacity_allocation_host_receiver);
   FileSystemAccessAccessHandleHostImpl(
       const FileSystemAccessAccessHandleHostImpl&) = delete;
   FileSystemAccessAccessHandleHostImpl& operator=(
@@ -60,6 +64,9 @@ class CONTENT_EXPORT FileSystemAccessAccessHandleHostImpl
   mojo::Receiver<blink::mojom::FileSystemAccessAccessHandleHost> receiver_;
 
   std::unique_ptr<FileSystemAccessFileDelegateHostImpl> incognito_host_;
+
+  std::unique_ptr<FileSystemAccessCapacityAllocationHostImpl>
+      capacity_allocation_host_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

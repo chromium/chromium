@@ -8,6 +8,7 @@
 #include "base/files/file.h"
 #include "base/files/file_error_or.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_capacity_allocation_host.mojom-blink.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_handle.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -26,8 +27,11 @@ class FileSystemAccessFileDelegate
  public:
   virtual ~FileSystemAccessFileDelegate() = default;
 
-  static FileSystemAccessFileDelegate* Create(ExecutionContext* context,
-                                              base::File backing_file);
+  static FileSystemAccessFileDelegate* Create(
+      ExecutionContext* context,
+      base::File backing_file,
+      mojo::PendingRemote<mojom::blink::FileSystemAccessCapacityAllocationHost>
+          capacity_allocation_host_remote);
   static FileSystemAccessFileDelegate* CreateForIncognito(
       ExecutionContext* context,
       mojo::PendingRemote<mojom::blink::FileSystemAccessFileDelegateHost>

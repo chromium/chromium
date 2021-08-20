@@ -27,6 +27,7 @@
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_access_handle_host.mojom.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_capacity_allocation_host.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_delegate_host.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_writer.mojom.h"
@@ -183,7 +184,10 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   CreateAccessHandleHost(
       const storage::FileSystemURL& url,
       mojo::PendingReceiver<blink::mojom::FileSystemAccessFileDelegateHost>
-          file_delegate_receiver);
+          file_delegate_receiver,
+      mojo::PendingReceiver<
+          blink::mojom::FileSystemAccessCapacityAllocationHost>
+          capacity_allocation_host_receiver);
 
   // Create a transfer token for a specific file or directory.
   void CreateTransferToken(

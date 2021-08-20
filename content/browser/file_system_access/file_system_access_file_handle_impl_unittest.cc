@@ -278,7 +278,10 @@ TEST_F(FileSystemAccessAccessHandleTest, OpenAccessHandle) {
                       blink::mojom::FileSystemAccessStatus::kOk);
             // File should be valid and no incognito remote is needed.
             EXPECT_TRUE(file->is_regular_file());
-            EXPECT_TRUE(file->get_regular_file().IsValid());
+            blink::mojom::FileSystemAccessRegularFilePtr regular_file =
+                std::move(file->get_regular_file());
+            EXPECT_TRUE(regular_file->os_file.IsValid());
+            EXPECT_TRUE(regular_file->capacity_allocation_host.is_valid());
             EXPECT_TRUE(access_handle_remote.is_valid());
           })
           .Then(loop.QuitClosure()));

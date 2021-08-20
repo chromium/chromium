@@ -25,6 +25,7 @@
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/mojom/blob/serialized_blob.mojom.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_capacity_allocation_host.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_handle.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom.h"
@@ -183,6 +184,16 @@ void FileSystemAccessFileHandleImpl::OpenAccessHandle(
         file_delegate_host_remote.InitWithNewPipeAndPassReceiver();
   }
 
+  // Create a capacity allocation host for use in non-incognito mode.
+  mojo::PendingRemote<blink::mojom::FileSystemAccessCapacityAllocationHost>
+      capacity_allocation_host_remote;
+  mojo::PendingReceiver<blink::mojom::FileSystemAccessCapacityAllocationHost>
+      capacity_allocation_host_receiver = mojo::NullReceiver();
+  if (!file_system_context()->is_incognito()) {
+    capacity_allocation_host_receiver =
+        capacity_allocation_host_remote.InitWithNewPipeAndPassReceiver();
+  }
+
   //  Attempt to grab an exclusive lock on the file and create the access
   //  handle host. This leads to slightly more complicated error handling,
   //  since we have to make sure that the lock is released if we cannot
@@ -191,7 +202,8 @@ void FileSystemAccessFileHandleImpl::OpenAccessHandle(
   //  operation if there is a lock in place.
   mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost>
       access_handle_host_remote = manager()->CreateAccessHandleHost(
-          url(), std::move(file_delegate_host_receiver));
+          url(), std::move(file_delegate_host_receiver),
+          std::move(capacity_allocation_host_receiver));
   if (!access_handle_host_remote.is_valid()) {
     std::move(callback).Run(file_system_access_error::FromStatus(
                                 FileSystemAccessStatus::kInvalidState,
@@ -210,7 +222,8 @@ void FileSystemAccessFileHandleImpl::OpenAccessHandle(
                            std::move(file_delegate_host_remote))
           : base::BindOnce(&FileSystemAccessFileHandleImpl::DoOpenFile,
                            weak_factory_.GetWeakPtr(),
-                           std::move(access_handle_host_remote));
+                           std::move(access_handle_host_remote),
+                           std::move(capacity_allocation_host_remote));
   RunWithWritePermission(
       std::move(open_file_callback),
       base::BindOnce([](blink::mojom::FileSystemAccessErrorPtr result,
@@ -243,6 +256,8 @@ void FileSystemAccessFileHandleImpl::DoOpenIncognitoFile(
 void FileSystemAccessFileHandleImpl::DoOpenFile(
     mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost>
         access_handle_host_remote,
+    mojo::PendingRemote<blink::mojom::FileSystemAccessCapacityAllocationHost>
+        capacity_allocation_host_remote,
     OpenAccessHandleCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(GetWritePermissionStatus(),
@@ -252,7 +267,8 @@ void FileSystemAccessFileHandleImpl::DoOpenFile(
       FROM_HERE, &FileSystemOperationRunner::OpenFile,
       base::BindOnce(&FileSystemAccessFileHandleImpl::DidOpenFile,
                      weak_factory_.GetWeakPtr(), std::move(callback),
-                     std::move(access_handle_host_remote)),
+                     std::move(access_handle_host_remote),
+                     std::move(capacity_allocation_host_remote)),
       url(),
       base::File::FLAG_OPEN | base::File::FLAG_READ | base::File::FLAG_WRITE);
 }
@@ -261,6 +277,8 @@ void FileSystemAccessFileHandleImpl::DidOpenFile(
     OpenAccessHandleCallback callback,
     mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost>
         access_handle_host_remote,
+    mojo::PendingRemote<blink::mojom::FileSystemAccessCapacityAllocationHost>
+        capacity_allocation_host_remote,
     base::File file,
     base::OnceClosure /*on_close_callback*/) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -275,7 +293,8 @@ void FileSystemAccessFileHandleImpl::DidOpenFile(
   std::move(callback).Run(
       std::move(result),
       blink::mojom::FileSystemAccessAccessHandleFile::NewRegularFile(
-          std::move(file)),
+          blink::mojom::FileSystemAccessRegularFile::New(
+              std::move(file), std::move(capacity_allocation_host_remote))),
       std::move(access_handle_host_remote));
 }
 

@@ -7,8 +7,10 @@
 #include "base/files/file_error_or.h"
 #include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_capacity_allocation_host.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -23,23 +25,32 @@ namespace blink {
 
 FileSystemAccessFileDelegate* FileSystemAccessFileDelegate::Create(
     ExecutionContext* context,
-    base::File backing_file) {
+    base::File backing_file,
+    mojo::PendingRemote<mojom::blink::FileSystemAccessCapacityAllocationHost>
+        capacity_allocation_host_remote) {
   return MakeGarbageCollected<FileSystemAccessRegularFileDelegate>(
       context, std::move(backing_file),
+      std::move(capacity_allocation_host_remote),
       base::PassKey<FileSystemAccessFileDelegate>());
 }
 
 FileSystemAccessRegularFileDelegate::FileSystemAccessRegularFileDelegate(
     ExecutionContext* context,
     base::File backing_file,
+    mojo::PendingRemote<mojom::blink::FileSystemAccessCapacityAllocationHost>
+        capacity_allocation_host_remote,
     base::PassKey<FileSystemAccessFileDelegate>)
     :
 #if defined(OS_MAC)
       context_(context),
       file_utilities_host_(context),
 #endif  // defined(OS_MAC)
+      capacity_allocation_host_(context),
       backing_file_(std::move(backing_file)),
       task_runner_(context->GetTaskRunner(TaskType::kMiscPlatformAPI)) {
+  capacity_allocation_host_.Bind(std::move(capacity_allocation_host_remote),
+                                 task_runner_);
+  DCHECK(capacity_allocation_host_.is_bound());
 }
 
 base::FileErrorOr<int> FileSystemAccessRegularFileDelegate::Read(

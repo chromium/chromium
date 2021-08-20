@@ -50,6 +50,7 @@
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_capacity_allocation_host.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-forward.h"
@@ -988,7 +989,9 @@ mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost>
 FileSystemAccessManagerImpl::CreateAccessHandleHost(
     const storage::FileSystemURL& url,
     mojo::PendingReceiver<blink::mojom::FileSystemAccessFileDelegateHost>
-        file_delegate_receiver) {
+        file_delegate_receiver,
+    mojo::PendingReceiver<blink::mojom::FileSystemAccessCapacityAllocationHost>
+        capacity_allocation_host_receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost> result;
@@ -996,7 +999,8 @@ FileSystemAccessManagerImpl::CreateAccessHandleHost(
   auto access_handle_host =
       std::make_unique<FileSystemAccessAccessHandleHostImpl>(
           this, url, PassKey(), std::move(receiver),
-          std::move(file_delegate_receiver));
+          std::move(file_delegate_receiver),
+          std::move(capacity_allocation_host_receiver));
   auto success =
       write_lock_manager_.AddAccessHandle(url, std::move(access_handle_host));
   if (!success) {
