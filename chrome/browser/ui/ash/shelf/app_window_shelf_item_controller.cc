@@ -76,7 +76,9 @@ bool MaybeLaunchNewWindow(const std::list<AppWindowBase*>& app_windows) {
     }
   }
 
-  ash::NewWindowDelegate::GetPrimary()->NewWindow(/*incognito=*/false);
+  ash::NewWindowDelegate::GetPrimary()->NewWindow(
+      /*incognito=*/false,
+      /*should_trigger_session_restore=*/true);
   return true;
 }
 

@@ -176,10 +176,14 @@ void ExtensionShelfContextMenu::ExecuteCommand(int command_id,
       SetLaunchType(extensions::LAUNCH_TYPE_FULLSCREEN);
       break;
     case ash::MENU_NEW_WINDOW:
-      ash::NewWindowDelegate::GetInstance()->NewWindow(/*incognito=*/false);
+      ash::NewWindowDelegate::GetInstance()->NewWindow(
+          /*incognito=*/false,
+          /*should_trigger_session_restore=*/false);
       break;
     case ash::MENU_NEW_INCOGNITO_WINDOW:
-      ash::NewWindowDelegate::GetInstance()->NewWindow(/*incognito=*/true);
+      ash::NewWindowDelegate::GetInstance()->NewWindow(
+          /*incognito=*/true,
+          /*should_trigger_session_restore=*/false);
       break;
     default:
       if (extension_items_) {

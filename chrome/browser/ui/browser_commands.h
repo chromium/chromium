@@ -48,13 +48,21 @@ void RemoveCommandObserver(Browser*, int command, CommandObserver* observer);
 
 int GetContentRestrictions(const Browser* browser);
 
-// Opens a new window with the default blank tab.
-void NewEmptyWindow(Profile* profile);
+// Opens a new window. If the |should_trigger_session_restore| is true, a new
+// window opening should be treated like the start of a session (with potential
+// session restore, startup URLs, etc.). Otherwise, don't restore the session,
+// opens a new window with the default blank tab.
+void NewEmptyWindow(Profile* profile,
+                    bool should_trigger_session_restore = true);
 
-// Opens a new window with the default blank tab. This bypasses metrics and
+// Opens a new window. If the |should_trigger_session_restore| is true, a new
+// window opening should be treated like the start of a session (with potential
+// session restore, startup URLs, etc.). Otherwise, don't restore the session,
+// opens a new window with the default blank tab. This bypasses metrics and
 // various internal bookkeeping; NewEmptyWindow (above) is preferred.
 // Returns nullptr if browser creation is not possible.
-Browser* OpenEmptyWindow(Profile* profile);
+Browser* OpenEmptyWindow(Profile* profile,
+                         bool should_trigger_session_restore = true);
 
 // Opens a new window with the tabs from |profile|'s TabRestoreService.
 void OpenWindowWithRestoredTabs(Profile* profile);

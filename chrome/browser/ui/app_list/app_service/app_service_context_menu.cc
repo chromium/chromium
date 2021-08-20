@@ -133,7 +133,8 @@ void AppServiceContextMenu::ExecuteCommand(int command_id, int event_flags) {
       if (app_type_ == apps::mojom::AppType::kStandaloneBrowser)
         crosapi::BrowserManager::Get()->NewWindow(is_incognito);
       else
-        controller()->CreateNewWindow(is_incognito);
+        controller()->CreateNewWindow(is_incognito,
+                                      /*should_trigger_session_restore=*/false);
       ash::full_restore::FullRestoreService::MaybeCloseNotification(profile());
       break;
     }

@@ -96,7 +96,9 @@ void BrowserShortcutShelfItemController::ItemSelected(
   ash::full_restore::FullRestoreService::MaybeCloseNotification(profile);
 
   if (event && (event->flags() & ui::EF_CONTROL_DOWN)) {
-    ash::NewWindowDelegate::GetInstance()->NewWindow(/*incognito=*/false);
+    ash::NewWindowDelegate::GetInstance()->NewWindow(
+        /*incognito=*/false,
+        /*should_trigger_session_restore=*/true);
     std::move(callback).Run(ash::SHELF_ACTION_NEW_WINDOW_CREATED, {});
     return;
   }
@@ -119,7 +121,9 @@ void BrowserShortcutShelfItemController::ItemSelected(
   }
 
   if (!last_browser) {
-    ash::NewWindowDelegate::GetInstance()->NewWindow(/*incognito=*/false);
+    ash::NewWindowDelegate::GetInstance()->NewWindow(
+        /*incognito=*/false,
+        /*should_trigger_session_restore=*/true);
     std::move(callback).Run(ash::SHELF_ACTION_NEW_WINDOW_CREATED, {});
     return;
   }
@@ -257,7 +261,9 @@ BrowserShortcutShelfItemController::ActivateOrAdvanceToNextBrowser() {
   }
   // If there are no suitable browsers we create a new one.
   if (items.empty()) {
-    ash::NewWindowDelegate::GetInstance()->NewWindow(/*incognito=*/false);
+    ash::NewWindowDelegate::GetInstance()->NewWindow(
+        /*incognito=*/false,
+        /*should_trigger_session_restore=*/true);
     return ash::SHELF_ACTION_NEW_WINDOW_CREATED;
   }
   Browser* browser = BrowserList::GetInstance()->GetLastActive();

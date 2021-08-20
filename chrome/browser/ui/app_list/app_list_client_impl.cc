@@ -531,8 +531,10 @@ AppListControllerDelegate::Pinnable AppListClientImpl::GetPinnable(
                              ChromeShelfController::instance()->profile());
 }
 
-void AppListClientImpl::CreateNewWindow(bool incognito) {
-  ash::NewWindowDelegate::GetInstance()->NewWindow(incognito);
+void AppListClientImpl::CreateNewWindow(bool incognito,
+                                        bool should_trigger_session_restore) {
+  ash::NewWindowDelegate::GetInstance()->NewWindow(
+      incognito, should_trigger_session_restore);
 }
 
 void AppListClientImpl::OpenURL(Profile* profile,

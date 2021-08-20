@@ -27,7 +27,8 @@ void CrosapiNewWindowDelegate::NewTabWithUrl(const GURL& url,
   delegate_->NewTabWithUrl(url, from_user_interaction);
 }
 
-void CrosapiNewWindowDelegate::NewWindow(bool incognito) {
+void CrosapiNewWindowDelegate::NewWindow(bool incognito,
+                                         bool should_trigger_session_restore) {
   crosapi::BrowserManager::Get()->NewWindow(incognito);
 }
 

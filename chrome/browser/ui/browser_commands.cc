@@ -437,7 +437,7 @@ int GetContentRestrictions(const Browser* browser) {
   return content_restrictions;
 }
 
-void NewEmptyWindow(Profile* profile) {
+void NewEmptyWindow(Profile* profile, bool should_trigger_session_restore) {
   bool off_the_record = profile->IsOffTheRecord();
   PrefService* prefs = profile->GetPrefs();
   if (off_the_record) {
@@ -460,7 +460,12 @@ void NewEmptyWindow(Profile* profile) {
       base::RecordAction(UserMetricsAction("NewGuestWindow"));
     else
       base::RecordAction(UserMetricsAction("NewIncognitoWindow2"));
-    OpenEmptyWindow(profile->GetPrimaryOTRProfile(/*create_if_needed=*/true));
+    OpenEmptyWindow(profile->GetPrimaryOTRProfile(/*create_if_needed=*/true),
+                    should_trigger_session_restore);
+  } else if (!should_trigger_session_restore) {
+    base::RecordAction(UserMetricsAction("NewWindow"));
+    OpenEmptyWindow(profile->GetOriginalProfile(),
+                    /*should_trigger_session_restore=*/false);
   } else {
     base::RecordAction(UserMetricsAction("NewWindow"));
     SessionService* session_service =
@@ -474,13 +479,16 @@ void NewEmptyWindow(Profile* profile) {
   }
 }
 
-Browser* OpenEmptyWindow(Profile* profile) {
+Browser* OpenEmptyWindow(Profile* profile,
+                         bool should_trigger_session_restore) {
   if (Browser::GetCreationStatusForProfile(profile) !=
       Browser::CreationStatus::kOk) {
     return nullptr;
   }
-  Browser* browser = Browser::Create(
-      Browser::CreateParams(Browser::TYPE_NORMAL, profile, true));
+  Browser::CreateParams params =
+      Browser::CreateParams(Browser::TYPE_NORMAL, profile, true);
+  params.should_trigger_session_restore = should_trigger_session_restore;
+  Browser* browser = Browser::Create(params);
   AddTabAt(browser, GURL(), -1, true);
   browser->window()->Show();
   return browser;

@@ -39,7 +39,7 @@ class ChromeNewWindowClient : public ash::NewWindowDelegate,
   // Overridden from ash::NewWindowDelegate:
   void NewTab() override;
   void NewTabWithUrl(const GURL& url, bool from_user_interaction) override;
-  void NewWindow(bool incognito) override;
+  void NewWindow(bool incognito, bool should_trigger_session_restore) override;
   void OpenCalculator() override;
   void OpenFileManager() override;
   void OpenDownloadsFolder() override;
