@@ -210,6 +210,11 @@ TopDomainEntry LookupSkeletonInTopDomains(
     const std::string& skeleton,
     const SkeletonType type = SkeletonType::kFull);
 
+// Removes diacritics from `host` and returns the new string if the input
+// only contains Latin-Greek-Cyrillic characters. Otherwise, returns the
+// input string.
+std::u16string MaybeRemoveDiacritics(const std::u16string& host);
+
 }  // namespace url_formatter
 
 #endif  // COMPONENTS_URL_FORMATTER_URL_FORMATTER_H_
