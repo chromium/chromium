@@ -403,7 +403,7 @@ void WaylandConnection::CreateDataObjectsIfReady() {
   if (data_device_manager_ && seat_) {
     DCHECK(!data_drag_controller_);
     data_drag_controller_ = std::make_unique<WaylandDataDragController>(
-        this, data_device_manager_.get());
+        this, data_device_manager_.get(), event_source(), event_source());
 
     DCHECK(!window_drag_controller_);
     window_drag_controller_ = std::make_unique<WaylandWindowDragController>(

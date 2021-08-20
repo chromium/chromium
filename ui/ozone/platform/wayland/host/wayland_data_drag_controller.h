@@ -15,6 +15,8 @@
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_device.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
+#include "ui/ozone/platform/wayland/host/wayland_pointer.h"
+#include "ui/ozone/platform/wayland/host/wayland_touch.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_observer.h"
 
 class SkBitmap;
@@ -71,7 +73,9 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   };
 
   WaylandDataDragController(WaylandConnection* connection,
-                            WaylandDataDeviceManager* data_device_manager);
+                            WaylandDataDeviceManager* data_device_manager,
+                            WaylandPointer::Delegate* pointer_delegate,
+                            WaylandTouch::Delegate* touch_delegate);
   WaylandDataDragController(const WaylandDataDragController&) = delete;
   WaylandDataDragController& operator=(const WaylandDataDragController&) =
       delete;
@@ -130,6 +134,8 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   WaylandDataDeviceManager* const data_device_manager_;
   WaylandDataDevice* const data_device_;
   WaylandWindowManager* const window_manager_;
+  WaylandPointer::Delegate* const pointer_delegate_;
+  WaylandTouch::Delegate* const touch_delegate_;
 
   State state_ = State::kIdle;
 

@@ -8,6 +8,7 @@
 #include <cstdint>
 
 #include "base/macros.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/types/event_type.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 
@@ -95,6 +96,7 @@ class WaylandPointer::Delegate {
   virtual void OnPointerAxisStopEvent(uint32_t axis) = 0;
   virtual void OnResetPointerFlags() = 0;
   virtual const gfx::PointF& GetPointerLocation() const = 0;
+  virtual bool IsPointerButtonPressed(EventFlags button) const = 0;
 };
 
 }  // namespace ui

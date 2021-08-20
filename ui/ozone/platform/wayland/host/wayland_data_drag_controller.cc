@@ -80,11 +80,15 @@ const SkBitmap* GetDragImage(const OSExchangeData& data) {
 
 WaylandDataDragController::WaylandDataDragController(
     WaylandConnection* connection,
-    WaylandDataDeviceManager* data_device_manager)
+    WaylandDataDeviceManager* data_device_manager,
+    WaylandPointer::Delegate* pointer_delegate,
+    WaylandTouch::Delegate* touch_delegate)
     : connection_(connection),
       data_device_manager_(data_device_manager),
       data_device_(data_device_manager->GetDevice()),
-      window_manager_(connection->wayland_window_manager()) {
+      window_manager_(connection->wayland_window_manager()),
+      pointer_delegate_(pointer_delegate),
+      touch_delegate_(touch_delegate) {
   DCHECK(connection_);
   DCHECK(window_manager_);
   DCHECK(data_device_manager_);
@@ -112,8 +116,8 @@ bool WaylandDataDragController::StartSession(const OSExchangeData& data,
   //
   // TODO(crbug.com/1211874): Improve serial tracking so that it can be used for
   // this validatation, covering both mouse and touch-triggered drags.
-  if (!connection_->event_source()->IsPointerButtonPressed(
-          EF_LEFT_MOUSE_BUTTON)) {
+  if (!pointer_delegate_->IsPointerButtonPressed(EF_LEFT_MOUSE_BUTTON) &&
+      !touch_delegate_->GetActiveTouchPointIds().size()) {
     return false;
   }
 
