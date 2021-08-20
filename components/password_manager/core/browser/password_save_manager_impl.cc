@@ -111,17 +111,14 @@ void SanitizePossibleUsernames(PasswordForm* form) {
 std::unique_ptr<PasswordSaveManagerImpl>
 PasswordSaveManagerImpl::CreatePasswordSaveManagerImpl(
     const PasswordManagerClient* client) {
-  auto profile_form_saver = std::make_unique<FormSaverImpl>(
-      client->GetProfilePasswordStoreInterface());
+  PasswordStoreInterface* profile_store =
+      client->GetProfilePasswordStoreInterface();
+  PasswordStoreInterface* account_store =
+      client->GetAccountPasswordStoreInterface();
 
-  return base::FeatureList::IsEnabled(
-             password_manager::features::kEnablePasswordsAccountStorage)
-             ? std::make_unique<MultiStorePasswordSaveManager>(
-                   std::move(profile_form_saver),
-                   std::make_unique<FormSaverImpl>(
-                       client->GetAccountPasswordStoreInterface()))
-             : std::make_unique<PasswordSaveManagerImpl>(
-                   std::move(profile_form_saver));
+  return std::make_unique<MultiStorePasswordSaveManager>(
+      std::make_unique<FormSaverImpl>(profile_store),
+      account_store ? std::make_unique<FormSaverImpl>(account_store) : nullptr);
 }
 
 PasswordSaveManagerImpl::PasswordSaveManagerImpl(

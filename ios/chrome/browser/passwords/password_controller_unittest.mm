@@ -489,6 +489,7 @@ PasswordForm MakeSimpleForm() {
   form.password_value = u"p4ssword";
   form.signon_realm = "http://www.google.com/";
   form.form_data = MakeSimpleFormData();
+  form.in_store = password_manager::PasswordForm::Store::kProfileStore;
   return form;
 }
 

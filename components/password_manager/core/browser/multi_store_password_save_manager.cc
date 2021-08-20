@@ -110,9 +110,7 @@ MultiStorePasswordSaveManager::MultiStorePasswordSaveManager(
     std::unique_ptr<FormSaver> profile_form_saver,
     std::unique_ptr<FormSaver> account_form_saver)
     : PasswordSaveManagerImpl(std::move(profile_form_saver)),
-      account_store_form_saver_(std::move(account_form_saver)) {
-  DCHECK(account_store_form_saver_);
-}
+      account_store_form_saver_(std::move(account_form_saver)) {}
 
 MultiStorePasswordSaveManager::~MultiStorePasswordSaveManager() = default;
 
@@ -138,7 +136,7 @@ void MultiStorePasswordSaveManager::SavePendingToStoreImpl(
       states.account_store_state == PendingCredentialsState::NEW_LOGIN) {
     // If the credential is new to both stores, store it only in the default
     // store.
-    if (AccountStoreIsDefault()) {
+    if (account_store_form_saver_ && AccountStoreIsDefault()) {
       // TODO(crbug.com/1012203): Record UMA for how many passwords get dropped
       // here. In rare cases it could happen that the user *was* opted in when
       // the save dialog was shown, but now isn't anymore.
@@ -186,7 +184,7 @@ void MultiStorePasswordSaveManager::SavePendingToStoreImpl(
   // TODO(crbug.com/1012203): Record UMA for how many passwords get dropped
   // here. In rare cases it could happen that the user *was* opted in when
   // the save dialog was shown, but now isn't anymore.
-  if (IsOptedInForAccountStorage()) {
+  if (account_store_form_saver_ && IsOptedInForAccountStorage()) {
     switch (states.account_store_state) {
       case PendingCredentialsState::AUTOMATIC_SAVE:
         account_store_form_saver_->Save(pending_credentials_, account_matches,
@@ -222,7 +220,8 @@ void MultiStorePasswordSaveManager::SavePendingToStoreImpl(
 void MultiStorePasswordSaveManager::Blocklist(
     const PasswordFormDigest& form_digest) {
   DCHECK(!client_->IsIncognito());
-  if (IsOptedInForAccountStorage() && AccountStoreIsDefault()) {
+  if (account_store_form_saver_ && IsOptedInForAccountStorage() &&
+      AccountStoreIsDefault()) {
     account_store_form_saver_->Blocklist(form_digest);
   } else {
     // For users who aren't yet opted-in to the account storage, we store their
@@ -236,19 +235,22 @@ void MultiStorePasswordSaveManager::Unblocklist(
   // Try to unblocklist in both stores anyway because if credentials don't
   // exist, the unblocklist operation is no-op.
   form_saver_->Unblocklist(form_digest);
-  if (IsOptedInForAccountStorage())
+  if (account_store_form_saver_ && IsOptedInForAccountStorage())
     account_store_form_saver_->Unblocklist(form_digest);
 }
 
 std::unique_ptr<PasswordSaveManager> MultiStorePasswordSaveManager::Clone() {
   auto result = std::make_unique<MultiStorePasswordSaveManager>(
-      form_saver_->Clone(), account_store_form_saver_->Clone());
+      form_saver_->Clone(),
+      account_store_form_saver_ ? account_store_form_saver_->Clone() : nullptr);
   CloneInto(result.get());
   return result;
 }
 
 void MultiStorePasswordSaveManager::MoveCredentialsToAccountStore(
     metrics_util::MoveToAccountStoreTrigger trigger) {
+  DCHECK(account_store_form_saver_);
+
   base::UmaHistogramEnumeration(
       "PasswordManager.AccountStorage.MoveToAccountStoreFlowAccepted", trigger);
 
@@ -346,8 +348,9 @@ MultiStorePasswordSaveManager::FindSimilarSavedFormAndComputeState(
 }
 
 FormSaver* MultiStorePasswordSaveManager::GetFormSaverForGeneration() {
-  return IsOptedInForAccountStorage() ? account_store_form_saver_.get()
-                                      : form_saver_.get();
+  return (account_store_form_saver_ && IsOptedInForAccountStorage())
+             ? account_store_form_saver_.get()
+             : form_saver_.get();
 }
 
 std::vector<const PasswordForm*>
@@ -355,7 +358,7 @@ MultiStorePasswordSaveManager::GetRelevantMatchesForGeneration(
     const std::vector<const PasswordForm*>& matches) {
   //  For account store users, only matches in the account store should be
   //  considered for conflict resolution during generation.
-  return IsOptedInForAccountStorage()
+  return (account_store_form_saver_ && IsOptedInForAccountStorage())
              ? MatchesInStore(matches, PasswordForm::Store::kAccountStore)
              : matches;
 }

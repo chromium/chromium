@@ -23,6 +23,8 @@ namespace password_manager {
 
 class MultiStorePasswordSaveManager : public PasswordSaveManagerImpl {
  public:
+  // |profile_form_saver| must not be null.
+  // |account_form_saver| may be null (if the account store doesn't exist).
   MultiStorePasswordSaveManager(std::unique_ptr<FormSaver> profile_form_saver,
                                 std::unique_ptr<FormSaver> account_form_saver);
   ~MultiStorePasswordSaveManager() override;
@@ -63,6 +65,7 @@ class MultiStorePasswordSaveManager : public PasswordSaveManagerImpl {
   bool IsOptedInForAccountStorage() const;
   bool AccountStoreIsDefault() const;
 
+  // May be null on platforms that don't support the account store.
   const std::unique_ptr<FormSaver> account_store_form_saver_;
 
   DISALLOW_COPY_AND_ASSIGN(MultiStorePasswordSaveManager);
