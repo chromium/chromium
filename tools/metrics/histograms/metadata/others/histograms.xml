@@ -9223,6 +9223,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="2021-08-24">
   <owner>nyquist@chromium.org</owner>
   <owner>salg@google.com</owner>
+  <owner>chrome-owp-storage@google.com</owner>
   <summary>
     The approximate MemTable memory use of a LevelDB in bytes. Recorded right
     after initializing an on-disk database.
@@ -9230,7 +9231,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="LevelDBEnv.DeleteTableBackupFile" enum="BooleanSuccess"
-    expires_after="2020-12-31">
+    expires_after="2022-08-01">
   <owner>cmumford@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -9239,23 +9240,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="LevelDBEnv.IOError" enum="LevelDBIOErrorMethods"
-    expires_after="M95">
+    expires_after="2022-08-01">
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
   <summary>Methods where leveldb's Chromium environment has IO errors.</summary>
 </histogram>
 
-<histogram name="LevelDBEnv.MissingFiles" units="files" expires_after="M95">
+<histogram name="LevelDBEnv.MissingFiles" units="files"
+    expires_after="2022-08-01">
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Number of backup files found without corresponding ldb files. As measured by
     GetChildren when used in LevelDB clients other than IndexedDB.
   </summary>
 </histogram>
 
-<histogram name="LevelDBWrapper.CommitDelay" units="ms" expires_after="M95">
+<histogram name="LevelDBWrapper.CommitDelay" units="ms"
+    expires_after="2022-08-01">
   <owner>mek@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Delay between the browser process receiving changes and those changes being
     written to the DB.
