@@ -141,8 +141,8 @@ bool ChromeContentBrowserClientPluginsPart::
         &extensions::ExtensionRegistry::Get(profile)->enabled_extensions();
   }
 
-  return IsExtensionOrSharedModuleWhitelisted(url, extension_set,
-                                              GetAllowedFileHandleOrigins()) ||
+  return IsExtensionOrSharedModuleAllowed(url, extension_set,
+                                          GetAllowedFileHandleOrigins()) ||
          IsHostAllowedByCommandLine(url, extension_set,
                                     ::switches::kAllowNaClFileHandleAPI);
 #else
@@ -164,9 +164,9 @@ bool ChromeContentBrowserClientPluginsPart::AllowPepperSocketAPI(
   }
 
   if (private_api) {
-    // Access to private socket APIs is controlled by the whitelist.
-    if (IsExtensionOrSharedModuleWhitelisted(url, extension_set,
-                                             GetAllowedSocketOrigins())) {
+    // Access to private socket APIs is controlled by the allowlist.
+    if (IsExtensionOrSharedModuleAllowed(url, extension_set,
+                                         GetAllowedSocketOrigins())) {
       return true;
     }
   } else {
@@ -246,9 +246,9 @@ bool ChromeContentBrowserClientPluginsPart::IsPluginAllowedToUseDevChannelAPIs(
         &extensions::ExtensionRegistry::Get(profile)->enabled_extensions();
   }
 
-  // Allow access for whitelisted applications.
-  if (IsExtensionOrSharedModuleWhitelisted(url, extension_set,
-                                           GetAllowedDevChannelOrigins())) {
+  // Allow access for allowlisted applications.
+  if (IsExtensionOrSharedModuleAllowed(url, extension_set,
+                                       GetAllowedDevChannelOrigins())) {
     return true;
   }
 #endif

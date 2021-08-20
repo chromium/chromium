@@ -145,10 +145,10 @@ int32_t PepperIsolatedFileSystemMessageFilter::OpenCrxFileSystem(
     extension_set =
         &extensions::ExtensionRegistry::Get(profile)->enabled_extensions();
   }
-  if (!IsExtensionOrSharedModuleWhitelisted(
-          document_url_, extension_set, allowed_crxfs_origins_) &&
-      !IsHostAllowedByCommandLine(
-          document_url_, extension_set, switches::kAllowNaClCrxFsAPI)) {
+  if (!IsExtensionOrSharedModuleAllowed(document_url_, extension_set,
+                                        allowed_crxfs_origins_) &&
+      !IsHostAllowedByCommandLine(document_url_, extension_set,
+                                  switches::kAllowNaClCrxFsAPI)) {
     LOG(ERROR) << "Host " << document_url_.host() << " cannot use CrxFs API.";
     return PP_ERROR_NOACCESS;
   }
