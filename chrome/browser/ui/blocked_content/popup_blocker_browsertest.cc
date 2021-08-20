@@ -667,12 +667,12 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, ModalPopUnder) {
   ASSERT_EQ(popup_browser, chrome::FindLastActive());
 }
 
-#if defined(OS_MAC) || defined(OS_WIN)
 // Tests that the print preview dialog can't be used to create popunders. The
 // test was added due to a bug in MacViews that causes dialogs to activate
 // their parents (https://crbug.com/1073587).
 // TODO(weili): investigate why this failed on Linux and ChromeOS bots.
-IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, PrintPreviewPopUnder) {
+// This test is also flaky on Windows and Mac. https://crbug.com/1241815.
+IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, DISABLED_PrintPreviewPopUnder) {
   WebContents* original_tab =
       browser()->tab_strip_model()->GetActiveWebContents();
   GURL url(
@@ -706,7 +706,6 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, PrintPreviewPopUnder) {
   // The popup is still in front and being activated.
   EXPECT_EQ(popup_browser, chrome::FindLastActive());
 }
-#endif
 
 // Tests that Ctrl+Enter/Cmd+Enter keys on a link open the background tab.
 IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, CtrlEnterKey) {
