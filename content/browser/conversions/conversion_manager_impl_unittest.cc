@@ -58,9 +58,7 @@ class TestConversionReporter
   ~TestConversionReporter() override = default;
 
   // ConversionManagerImpl::ConversionReporter
-  void AddReportsToQueue(std::vector<ConversionReport> reports,
-                         base::RepeatingCallback<void(SentReportInfo)>
-                             report_sent_callback) override {
+  void AddReportsToQueue(std::vector<ConversionReport> reports) override {
     num_reports_ += reports.size();
     last_conversion_id_ = *reports.back().conversion_id;
     last_report_time_ = reports.back().report_time;
@@ -72,7 +70,7 @@ class TestConversionReporter
                                                 : GetBlankSentReportInfo();
         info.conversion_id = *report.conversion_id;
         info.original_report_time = report.original_report_time;
-        report_sent_callback.Run(std::move(info));
+        report_sent_callback_.Run(std::move(info));
       }
     }
 
@@ -104,7 +102,13 @@ class TestConversionReporter
     wait_loop.Run();
   }
 
+  void SetReportSentCallback(
+      base::RepeatingCallback<void(SentReportInfo)> report_sent_callback) {
+    report_sent_callback_ = std::move(report_sent_callback);
+  }
+
  private:
+  base::RepeatingCallback<void(SentReportInfo)> report_sent_callback_;
   bool should_run_report_sent_callbacks_ = false;
   absl::optional<SentReportInfo> sent_report_info_ = absl::nullopt;
   size_t expected_num_reports_ = 0u;
@@ -148,6 +152,9 @@ class ConversionManagerImplTest : public testing::Test {
         std::move(reporter), std::make_unique<ConstantStartupDelayPolicy>(),
         task_environment_.GetMockClock(), dir_.GetPath(), mock_storage_policy_,
         kMaxSentReportsToStore);
+    test_reporter_->SetReportSentCallback(
+        base::BindRepeating(&ConversionManagerImpl::OnReportSent,
+                            base::Unretained(conversion_manager_.get())));
   }
 
   void ExpectNumStoredImpressions(size_t expected_num_impressions) {

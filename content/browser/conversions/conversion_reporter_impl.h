@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/timer/timer.h"
 #include "content/browser/conversions/conversion_manager_impl.h"
 #include "content/common/content_export.h"
@@ -51,8 +51,10 @@ class CONTENT_EXPORT ConversionReporterImpl
                             ReportSentCallback sent_callback) = 0;
   };
 
-  ConversionReporterImpl(StoragePartitionImpl* storage_partition,
-                         const base::Clock* clock);
+  ConversionReporterImpl(
+      StoragePartitionImpl* storage_partition,
+      const base::Clock* clock,
+      base::RepeatingCallback<void(SentReportInfo)> callback);
   ConversionReporterImpl(const ConversionReporterImpl&) = delete;
   ConversionReporterImpl& operator=(const ConversionReporterImpl&) = delete;
   ConversionReporterImpl(ConversionReporterImpl&&) = delete;
@@ -60,9 +62,7 @@ class CONTENT_EXPORT ConversionReporterImpl
   ~ConversionReporterImpl() override;
 
   // ConversionManagerImpl::ConversionReporter:
-  void AddReportsToQueue(std::vector<ConversionReport> reports,
-                         base::RepeatingCallback<void(SentReportInfo)>
-                             report_sent_callback) override;
+  void AddReportsToQueue(std::vector<ConversionReport> reports) override;
 
   void SetNetworkSenderForTesting(
       std::unique_ptr<NetworkSender> network_sender);
@@ -88,14 +88,15 @@ class CONTENT_EXPORT ConversionReporterImpl
                       ReportComparator>
       report_queue_;
 
-  // Map of all conversion ids that are currently in |report_queue| or are being
-  // sent by |network_sender_|, and their associated report sent callbacks. The
-  // number of concurrent conversion reports being sent at any time is expected
-  // to be small, so a flat_map is used.
-  base::flat_map<int64_t, base::OnceCallback<void(SentReportInfo)>>
-      conversion_report_callbacks_;
+  // Set of all conversion IDs that are currently in |report_queue_| or are
+  // being sent by |network_sender_|. The number of concurrent conversion
+  // reports being sent at any time is expected to be small, so a `flat_set` is
+  // used.
+  base::flat_set<int64_t> pending_reports_;
 
   const base::Clock* clock_;
+
+  base::RepeatingCallback<void(SentReportInfo)> callback_;
 
   // Should never be nullptr, since StoragePartition owns the ConversionManager
   // which owns |this|.

@@ -20,8 +20,10 @@ namespace content {
 
 ConversionReporterImpl::ConversionReporterImpl(
     StoragePartitionImpl* storage_partition,
-    const base::Clock* clock)
+    const base::Clock* clock,
+    base::RepeatingCallback<void(SentReportInfo)> callback)
     : clock_(clock),
+      callback_(std::move(callback)),
       partition_(storage_partition),
       network_sender_(
           std::make_unique<ConversionNetworkSenderImpl>(storage_partition)) {
@@ -32,8 +34,7 @@ ConversionReporterImpl::ConversionReporterImpl(
 ConversionReporterImpl::~ConversionReporterImpl() = default;
 
 void ConversionReporterImpl::AddReportsToQueue(
-    std::vector<ConversionReport> reports,
-    base::RepeatingCallback<void(SentReportInfo)> report_sent_callback) {
+    std::vector<ConversionReport> reports) {
   DCHECK(!reports.empty());
 
   // Shuffle new reports to provide plausible deniability on the ordering of
@@ -44,10 +45,9 @@ void ConversionReporterImpl::AddReportsToQueue(
   base::RandomShuffle(reports.begin(), reports.end());
 
   for (ConversionReport& report : reports) {
+    DCHECK(report.conversion_id.has_value());
     // If the given report is already being processed, ignore it.
-    bool inserted = conversion_report_callbacks_
-                        .emplace(*report.conversion_id, report_sent_callback)
-                        .second;
+    bool inserted = pending_reports_.emplace(*report.conversion_id).second;
     if (inserted)
       report_queue_.push(std::move(report));
   }
@@ -113,10 +113,9 @@ void ConversionReporterImpl::MaybeScheduleNextReport() {
 }
 
 void ConversionReporterImpl::OnReportSent(SentReportInfo info) {
-  auto it = conversion_report_callbacks_.find(info.conversion_id);
-  DCHECK(it != conversion_report_callbacks_.end());
-  std::move(it->second).Run(std::move(info));
-  conversion_report_callbacks_.erase(it);
+  size_t num_removed = pending_reports_.erase(info.conversion_id);
+  DCHECK_GT(num_removed, 0u);
+  callback_.Run(std::move(info));
 }
 
 bool ConversionReporterImpl::ReportComparator::operator()(

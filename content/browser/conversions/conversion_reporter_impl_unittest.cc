@@ -79,13 +79,19 @@ class ConversionReporterImplTest : public testing::Test {
         reporter_(std::make_unique<ConversionReporterImpl>(
             static_cast<StoragePartitionImpl*>(
                 browser_context_->GetDefaultStoragePartition()),
-            task_environment_.GetMockClock())) {
+            task_environment_.GetMockClock(),
+            base::BindRepeating(&ConversionReporterImplTest::OnReportSent,
+                                base::Unretained(this)))) {
     auto network_sender = std::make_unique<MockNetworkSender>();
     sender_ = network_sender.get();
     reporter_->SetNetworkSenderForTesting(std::move(network_sender));
   }
 
   const base::Clock& clock() { return *task_environment_.GetMockClock(); }
+
+  const SentReportInfo& last_sent_report_info() const {
+    return last_sent_report_info_;
+  }
 
  protected:
   // |task_enviorment_| must be initialized first.
@@ -94,37 +100,40 @@ class ConversionReporterImplTest : public testing::Test {
 
   std::unique_ptr<ConversionReporterImpl> reporter_;
   MockNetworkSender* sender_;
+
+ private:
+  SentReportInfo last_sent_report_info_ = GetBlankSentReportInfo();
+
+  void OnReportSent(SentReportInfo info) {
+    last_sent_report_info_ = std::move(info);
+  }
 };
 
 TEST_F(ConversionReporterImplTest,
        ReportAddedWithImmediateReportTime_ReportSent) {
   reporter_->AddReportsToQueue(
-      {GetReport(clock().Now(), clock().Now(), /*conversion_id=*/1)},
-      base::BindRepeating([](SentReportInfo info) {
-        EXPECT_EQ(1L, info.conversion_id);
-        EXPECT_EQ(200, info.http_response_code);
-      }));
+      {GetReport(clock().Now(), clock().Now(), /*conversion_id=*/1)});
 
   // Fast forward by 0, as we yield the thread when a report is scheduled to be
   // sent.
   task_environment_.FastForwardBy(base::TimeDelta());
   EXPECT_EQ(1, sender_->last_sent_report_id());
+  EXPECT_EQ(1L, last_sent_report_info().conversion_id);
+  EXPECT_EQ(200, last_sent_report_info().http_response_code);
 }
 
 TEST_F(ConversionReporterImplTest,
        ReportWithReportTimeBeforeCurrentTime_ReportSent) {
   reporter_->AddReportsToQueue(
       {GetReport(clock().Now(), clock().Now() - base::TimeDelta::FromHours(10),
-                 /*conversion_id=*/1)},
-      base::BindRepeating([](SentReportInfo info) {
-        EXPECT_EQ(1L, info.conversion_id);
-        EXPECT_EQ(200, info.http_response_code);
-      }));
+                 /*conversion_id=*/1)});
 
   // Fast forward by 0, as we yield the thread when a report is scheduled to be
   // sent.
   task_environment_.FastForwardBy(base::TimeDelta());
   EXPECT_EQ(1, sender_->last_sent_report_id());
+  EXPECT_EQ(1L, last_sent_report_info().conversion_id);
+  EXPECT_EQ(200, last_sent_report_info().http_response_code);
 }
 
 TEST_F(ConversionReporterImplTest,
@@ -132,8 +141,7 @@ TEST_F(ConversionReporterImplTest,
   const base::TimeDelta delay = base::TimeDelta::FromMinutes(30);
 
   reporter_->AddReportsToQueue(
-      {GetReport(clock().Now(), clock().Now() + delay, /*conversion_id=*/1)},
-      base::DoNothing());
+      {GetReport(clock().Now(), clock().Now() + delay, /*conversion_id=*/1)});
   task_environment_.FastForwardBy(base::TimeDelta());
   EXPECT_EQ(0u, sender_->num_reports_sent());
 
@@ -147,14 +155,12 @@ TEST_F(ConversionReporterImplTest,
 TEST_F(ConversionReporterImplTest, DuplicateReportScheduled_Ignored) {
   reporter_->AddReportsToQueue(
       {GetReport(clock().Now(), clock().Now() + base::TimeDelta::FromMinutes(1),
-                 /*conversion_id=*/1)},
-      base::DoNothing());
+                 /*conversion_id=*/1)});
 
   // A duplicate report should not be scheduled.
   reporter_->AddReportsToQueue(
       {GetReport(clock().Now(), clock().Now() + base::TimeDelta::FromMinutes(1),
-                 /*conversion_id=*/1)},
-      base::DoNothing());
+                 /*conversion_id=*/1)});
   task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(1));
   EXPECT_EQ(1u, sender_->num_reports_sent());
 }
@@ -162,32 +168,26 @@ TEST_F(ConversionReporterImplTest, DuplicateReportScheduled_Ignored) {
 TEST_F(ConversionReporterImplTest,
        NewReportWithPreviouslySeenConversionId_Scheduled) {
   reporter_->AddReportsToQueue(
-      {GetReport(clock().Now(), clock().Now(), /*conversion_id=*/1)},
-      base::DoNothing());
+      {GetReport(clock().Now(), clock().Now(), /*conversion_id=*/1)});
   task_environment_.FastForwardBy(base::TimeDelta());
   EXPECT_EQ(1u, sender_->num_reports_sent());
 
   // We should schedule the new report because the previous report has been
   // sent.
   reporter_->AddReportsToQueue(
-      {GetReport(clock().Now(), clock().Now(), /*conversion_id=*/1)},
-      base::DoNothing());
+      {GetReport(clock().Now(), clock().Now(), /*conversion_id=*/1)});
   task_environment_.FastForwardBy(base::TimeDelta());
   EXPECT_EQ(2u, sender_->num_reports_sent());
 }
 
 TEST_F(ConversionReporterImplTest, ManyReportsAddedAtOnce_SentInOrder) {
   std::vector<ConversionReport> reports;
-  int64_t last_report_id = 0;
   for (int i = 1; i < 10; i++) {
     reports.push_back(GetReport(clock().Now(),
                                 clock().Now() + base::TimeDelta::FromMinutes(i),
                                 /*conversion_id=*/i));
   }
-  reporter_->AddReportsToQueue(
-      reports, base::BindLambdaForTesting([&](SentReportInfo info) {
-        last_report_id = info.conversion_id;
-      }));
+  reporter_->AddReportsToQueue(reports);
   task_environment_.FastForwardBy(base::TimeDelta());
   EXPECT_EQ(0u, sender_->num_reports_sent());
 
@@ -196,20 +196,15 @@ TEST_F(ConversionReporterImplTest, ManyReportsAddedAtOnce_SentInOrder) {
 
     EXPECT_EQ(static_cast<size_t>(i), sender_->num_reports_sent());
     EXPECT_EQ(static_cast<int64_t>(i), sender_->last_sent_report_id());
-    EXPECT_EQ(static_cast<int64_t>(i), last_report_id);
+    EXPECT_EQ(static_cast<int64_t>(i), last_sent_report_info().conversion_id);
   }
 }
 
 TEST_F(ConversionReporterImplTest, ManyReportsAddedSeparately_SentInOrder) {
-  int64_t last_report_id = 0;
-  auto report_sent_callback = base::BindLambdaForTesting(
-      [&](SentReportInfo info) { last_report_id = info.conversion_id; });
   for (int i = 1; i < 10; i++) {
-    reporter_->AddReportsToQueue(
-        {GetReport(clock().Now(),
-                   clock().Now() + base::TimeDelta::FromMinutes(i),
-                   /*conversion_id=*/i)},
-        report_sent_callback);
+    reporter_->AddReportsToQueue({GetReport(
+        clock().Now(), clock().Now() + base::TimeDelta::FromMinutes(i),
+        /*conversion_id=*/i)});
   }
   task_environment_.FastForwardBy(base::TimeDelta());
   EXPECT_EQ(0u, sender_->num_reports_sent());
@@ -219,7 +214,7 @@ TEST_F(ConversionReporterImplTest, ManyReportsAddedSeparately_SentInOrder) {
 
     EXPECT_EQ(static_cast<size_t>(i), sender_->num_reports_sent());
     EXPECT_EQ(static_cast<int64_t>(i), sender_->last_sent_report_id());
-    EXPECT_EQ(static_cast<int64_t>(i), last_report_id);
+    EXPECT_EQ(static_cast<int64_t>(i), last_sent_report_info().conversion_id);
   }
 }
 
@@ -228,18 +223,15 @@ TEST_F(ConversionReporterImplTest, EmbedderDisallowsConversions_ReportNotSent) {
   ContentBrowserClient* old_browser_client =
       SetBrowserClientForTesting(&disallowed_browser_client);
   reporter_->AddReportsToQueue(
-      {GetReport(clock().Now(), clock().Now(), /*conversion_id=*/1)},
-      base::BindRepeating([](SentReportInfo info) {
-        EXPECT_EQ(1L, info.conversion_id);
-
-        // Verify that the report was not sent to the NetworkSender.
-        EXPECT_EQ(0, info.http_response_code);
-      }));
+      {GetReport(clock().Now(), clock().Now(), /*conversion_id=*/1)});
 
   // Fast forward by 0, as we yield the thread when a report is scheduled to be
   // sent.
   task_environment_.FastForwardBy(base::TimeDelta());
   EXPECT_EQ(0u, sender_->num_reports_sent());
+  EXPECT_EQ(1L, last_sent_report_info().conversion_id);
+  // Verify that the report was not sent to the NetworkSender.
+  EXPECT_EQ(0, last_sent_report_info().http_response_code);
   SetBrowserClientForTesting(old_browser_client);
 }
 
@@ -283,13 +275,7 @@ TEST_F(ConversionReporterImplTest, EmbedderDisallowedContext_ReportNotSent) {
         ConversionReport(std::move(impression),
                          /*conversion_data=*/0, clock().Now(), clock().Now(),
                          /*conversion_id=*/1)};
-    reporter_->AddReportsToQueue(
-        std::move(reports),
-        base::BindLambdaForTesting([&](SentReportInfo info) {
-          EXPECT_EQ(1L, info.conversion_id);
-          EXPECT_EQ(test_case.report_allowed ? 200 : 0,
-                    info.http_response_code);
-        }));
+    reporter_->AddReportsToQueue(std::move(reports));
 
     // Fast forward by 0, as we yield the thread when a report is scheduled to
     // be sent.
@@ -299,6 +285,9 @@ TEST_F(ConversionReporterImplTest, EmbedderDisallowedContext_ReportNotSent) {
         << "impression_origin; " << test_case.impression_origin
         << ", conversion_origin: " << test_case.conversion_origin
         << ", reporting_origin: " << test_case.reporting_origin;
+    EXPECT_EQ(1L, last_sent_report_info().conversion_id);
+    EXPECT_EQ(test_case.report_allowed ? 200 : 0,
+              last_sent_report_info().http_response_code);
 
     sender_->Reset();
   }

@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
@@ -110,7 +109,11 @@ ConversionManagerImpl::ConversionManagerImpl(
     : ConversionManagerImpl(
           std::make_unique<ConversionReporterImpl>(
               storage_partition,
-              base::DefaultClock::GetInstance()),
+              base::DefaultClock::GetInstance(),
+              // |reporter_| is owned by |this|, so `base::Unretained()` is safe
+              // as the reporter and callbacks will be deleted first.
+              base::BindRepeating(&ConversionManagerImpl::OnReportSent,
+                                  base::Unretained(this))),
           std::make_unique<ConversionPolicy>(
               base::CommandLine::ForCurrentProcess()->HasSwitch(
                   switches::kConversionsDebugMode)),
@@ -272,47 +275,35 @@ void ConversionManagerImpl::QueueReports(
     report.report_time = updated_report_time;
   }
 
-  // |reporter_| is owned by |this|, so base::Unretained() is safe as the
-  // reporter and callbacks will be deleted first.
-  reporter_->AddReportsToQueue(
-      std::move(reports),
-      base::BindRepeating(&ConversionManagerImpl::OnReportSent,
-                          base::Unretained(this)));
+  reporter_->AddReportsToQueue(std::move(reports));
 }
 
 void ConversionManagerImpl::HandleReportsSentFromWebUI(
     base::OnceClosure done,
     std::vector<ConversionReport> reports) {
-  if (reports.empty()) {
+  // If there's already a send-all in progress, ignore this request.
+  if (reports.empty() || !send_reports_for_web_ui_callback_.is_null()) {
     std::move(done).Run();
     return;
   }
 
+  std::vector<int64_t> conversion_ids;
+  conversion_ids.reserve(reports.size());
   // All reports should be sent immediately.
   for (ConversionReport& report : reports) {
     report.report_time = base::Time::Min();
+    DCHECK(report.conversion_id.has_value());
+    conversion_ids.push_back(*report.conversion_id);
   }
 
-  // Wraps |done| so that is will run once all of the reports have finished
-  // sending.
-  base::RepeatingClosure all_reports_sent =
-      base::BarrierClosure(reports.size(), std::move(done));
+  // Reports may already be in the process of sending, but they will be
+  // deduplicated by `ConversionReporterImpl::AddReportsToQueue()`. In that
+  // case, the callback will be invoked as a result of the in-process reports.
+  pending_conversion_ids_for_internals_ui_ =
+      base::flat_set<int64_t>(std::move(conversion_ids));
+  send_reports_for_web_ui_callback_ = std::move(done);
 
-  // |reporter_| is owned by |this|, so base::Unretained() is safe as the
-  // reporter and callbacks will be deleted first.
-  reporter_->AddReportsToQueue(
-      std::move(reports),
-      base::BindRepeating(&ConversionManagerImpl::OnReportSentFromWebUI,
-                          base::Unretained(this), std::move(all_reports_sent)));
-}
-
-void ConversionManagerImpl::MaybeStoreSentReportInfo(SentReportInfo info) {
-  if (info.report_url.is_empty())
-    return;
-
-  while (sent_reports_.size() >= max_sent_reports_to_store_)
-    sent_reports_.pop_front();
-  sent_reports_.push_back(std::move(info));
+  reporter_->AddReportsToQueue(std::move(reports));
 }
 
 void ConversionManagerImpl::OnReportSent(SentReportInfo info) {
@@ -322,27 +313,25 @@ void ConversionManagerImpl::OnReportSent(SentReportInfo info) {
         .WithArgs(info.conversion_id)
         .Then(base::DoNothing::Once<bool>());
   }
-  MaybeStoreSentReportInfo(std::move(info));
-}
 
-void ConversionManagerImpl::OnReportSentFromWebUI(
-    base::OnceClosure reports_sent_barrier,
-    SentReportInfo info) {
-  // |reports_sent_barrier| is a OnceClosure view of a RepeatingClosure obtained
-  // by base::BarrierClosure().
+  DCHECK_EQ(send_reports_for_web_ui_callback_.is_null(),
+            pending_conversion_ids_for_internals_ui_.empty());
 
-  // Reports that should be retried are not deleted.
-  if (!ShouldRetryReport(*conversion_policy_, clock_->Now(), info)) {
-    conversion_storage_.AsyncCall(&ConversionStorage::DeleteConversion)
-        .WithArgs(info.conversion_id)
-        .Then(base::BindOnce([](base::OnceClosure callback,
-                                bool result) { std::move(callback).Run(); },
-                             std::move(reports_sent_barrier)));
-  } else {
-    std::move(reports_sent_barrier).Run();
+  // If there's a `SendReportsForWebUI()` callback waiting on this report's
+  // conversion ID, remove the ID from the wait-set; if it was the last such ID,
+  // run the callback.
+  if (!send_reports_for_web_ui_callback_.is_null() &&
+      pending_conversion_ids_for_internals_ui_.erase(info.conversion_id) > 0 &&
+      pending_conversion_ids_for_internals_ui_.empty()) {
+    std::move(send_reports_for_web_ui_callback_).Run();
   }
 
-  MaybeStoreSentReportInfo(std::move(info));
+  if (info.report_url.is_empty())
+    return;
+
+  while (sent_reports_.size() >= max_sent_reports_to_store_)
+    sent_reports_.pop_front();
+  sent_reports_.push_back(std::move(info));
 }
 
 }  // namespace content
