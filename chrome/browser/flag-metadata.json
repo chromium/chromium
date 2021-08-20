@@ -538,11 +538,6 @@
     "expiry_milestone" : 103
   },
   {
-    "name": "camera-system-web-app",
-    "owners": [ "chromeos-camera-eng@google.com" ],
-    "expiry_milestone": 92
-  },
-  {
     "name": "canvas-2d-layers",
     "owners": [ "alisalin", "fserb", "juanmihd", "yiyix" ],
     "expiry_milestone": 100
