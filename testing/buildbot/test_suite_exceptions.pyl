@@ -3164,6 +3164,10 @@
         'swarming': {
           'shards': 30,
         },
+        # This configuration is tested with the passthrough decoder as well,
+        # which will be shipped in the nearish future, so any failures that
+        # show up with the validating decoder are just an FYI.
+        'experiment_percentage': 100,
       },
       'Mac FYI GPU ASAN Release': {
         'args': [
