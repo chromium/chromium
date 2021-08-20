@@ -30,6 +30,9 @@ void AddWebApk(Profile* profile,
 absl::optional<std::string> GetWebApkPackageName(Profile* profile,
                                                  const std::string& app_id);
 
+// Returns the package names of all WebAPKs installed in the profile.
+base::flat_set<std::string> GetInstalledWebApkPackageNames(Profile* profile);
+
 // Returns the app IDs of all WebAPKs installed in the profile.
 base::flat_set<std::string> GetWebApkAppIds(Profile* profile);
 

@@ -5,9 +5,11 @@
 #include "chrome/browser/apps/app_service/webapk/webapk_manager.h"
 
 #include <memory>
+#include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "base/strings/strcat.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_chromeos.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -16,10 +18,12 @@
 #include "chrome/browser/apps/app_service/webapk/webapk_install_task.h"
 #include "chrome/browser/apps/app_service/webapk/webapk_prefs.h"
 #include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/arc/mojom/app.mojom.h"
 #include "components/arc/test/fake_app_instance.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -50,6 +54,12 @@ std::unique_ptr<WebApplicationInfo> BuildDefaultWebAppInfo() {
   app_info->share_target = target;
 
   return app_info;
+}
+
+arc::mojom::ArcPackageInfoPtr GetArcPackage(const std::string& package_name) {
+  auto package = arc::mojom::ArcPackageInfo::New();
+  package->package_name = package_name;
+  return package;
 }
 
 }  // namespace
@@ -307,4 +317,25 @@ TEST_F(WebApkManagerTest, RemovesWebApksWhenPolicyDisabled) {
 
   ASSERT_THAT(apps::webapk_prefs::GetWebApkAppIds(profile()),
               testing::IsEmpty());
+}
+
+TEST_F(WebApkManagerTest, RemovesUntrackedInstalledWebApk) {
+  std::vector<arc::mojom::ArcPackageInfoPtr> packages;
+  packages.push_back(GetArcPackage("org.chromium.webapk.package1"));
+  packages.push_back(GetArcPackage("org.chromium.webapk.package2"));
+
+  auto app_id =
+      web_app::test::InstallWebApp(profile(), BuildDefaultWebAppInfo());
+  apps::webapk_prefs::AddWebApk(profile(), app_id,
+                                "org.chromium.webapk.package1");
+  StartWebApkManager();
+
+  base::HistogramTester histograms;
+  arc_test()->app_instance()->SendRefreshPackageList(std::move(packages));
+
+  ASSERT_TRUE(ArcAppListPrefs::Get(profile())->GetPackage(
+      "org.chromium.webapk.package1"));
+  ASSERT_FALSE(ArcAppListPrefs::Get(profile())->GetPackage(
+      "org.chromium.webapk.package2"));
+  histograms.ExpectUniqueSample("ChromeOS.WebAPK.UnlinkedWebAPKCount", 1, 1);
 }

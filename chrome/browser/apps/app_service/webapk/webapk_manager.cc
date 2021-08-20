@@ -6,7 +6,9 @@
 
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/containers/flat_set.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -77,6 +79,7 @@ void WebApkManager::StartOrStopObserving() {
     Observe(&proxy_->AppRegistryCache());
   } else {
     Observe(nullptr);
+    initialized_ = false;
 
     if (!policy_enabled) {
       // Remove any WebAPKs which were installed before the policy was enacted.
@@ -168,6 +171,39 @@ void WebApkManager::OnPackageListInitialRefreshed() {
     UninstallInternal(app_id);
   }
   uninstall_queue_.clear();
+
+  // Uninstall any WebAPK packages which are installed in ARC but not linked to
+  // an app in Prefs. This could happen if the WebAPK installation callback is
+  // never delivered properly, or if the Play Store retries an error in the
+  // background.
+  // If an installed WebAPK is not listed in WebAPK prefs, then we will generate
+  // and install a new WebAPK automatically, possibly resulting in duplicate
+  // apps visible to the user.
+  int uninstall_count = 0;
+  std::vector<std::string> installed_packages =
+      app_list_prefs_->GetPackagesFromPrefs();
+  base::flat_set<std::string> installed_webapk_packages =
+      webapk_prefs::GetInstalledWebApkPackageNames(profile_);
+  for (const auto& package_name : installed_packages) {
+    if (base::StartsWith(package_name, kGeneratedWebApkPackagePrefix) &&
+        !installed_webapk_packages.contains(package_name)) {
+      uninstall_count++;
+      auto* instance = ARC_GET_INSTANCE_FOR_METHOD(
+          app_list_prefs_->app_connection_holder(), UninstallPackage);
+      if (!instance) {
+        return;
+      }
+      instance->UninstallPackage(package_name);
+    }
+  }
+
+  if (uninstall_count > 0) {
+    // Record the number of instances of this issue so we can determine whether
+    // further investigation/prevention is warranted.
+    base::UmaHistogramCustomCounts("ChromeOS.WebAPK.UnlinkedWebAPKCount",
+                                   uninstall_count, /*min=*/1, /*max=*/20,
+                                   /*buckets=*/10);
+  }
 }
 
 void WebApkManager::OnPackageRemoved(const std::string& package_name,

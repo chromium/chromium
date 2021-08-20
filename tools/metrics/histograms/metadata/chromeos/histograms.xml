@@ -1864,6 +1864,19 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.WebAPK.UnlinkedWebAPKCount" units="count"
+    expires_after="2022-03-14">
+  <owner>tsergeant@chromium.org</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <summary>
+    Records the number of installed WebAPKs that were not linked to a Web App
+    which were found and removed. The presence of these apps indicates that
+    something went wrong in the WebAPK installation process. Unlinked apps are
+    detected every startup, this histogram is only recorded when at least 1 app
+    is found.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.WebAPK.{InstallType}.ArcInstallResult"
     enum="WebApkArcInstallResultChromeOS" expires_after="2022-01-14">
   <owner>tsergeant@chromium.org</owner>

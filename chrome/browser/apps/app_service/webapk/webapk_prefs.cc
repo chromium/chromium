@@ -75,11 +75,26 @@ base::flat_set<std::string> GetWebApkAppIds(Profile* profile) {
   const base::Value* generated_webapks =
       profile->GetPrefs()->GetDictionary(kGeneratedWebApksPref);
 
-  for (auto kv : generated_webapks->DictItems()) {
+  for (const auto kv : generated_webapks->DictItems()) {
     ids.insert(kv.first);
   }
 
   return ids;
+}
+
+base::flat_set<std::string> GetInstalledWebApkPackageNames(Profile* profile) {
+  base::flat_set<std::string> package_names;
+
+  const base::Value* generated_webapks =
+      profile->GetPrefs()->GetDictionary(kGeneratedWebApksPref);
+
+  for (const auto kv : generated_webapks->DictItems()) {
+    const std::string* package_name = kv.second.FindStringKey(kPackageNameKey);
+    DCHECK(package_name);
+    package_names.insert(*package_name);
+  }
+
+  return package_names;
 }
 
 absl::optional<std::string> RemoveWebApkByPackageName(
