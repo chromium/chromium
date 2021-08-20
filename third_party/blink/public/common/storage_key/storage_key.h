@@ -10,6 +10,7 @@
 
 #include "base/strings/string_piece.h"
 #include "base/unguessable_token.h"
+#include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "url/origin.h"
@@ -18,18 +19,37 @@ namespace blink {
 
 // A class representing the key that Storage APIs use to key their storage on.
 //
-// At the moment, StorageKey contains an origin and an optional nonce. The
-// top-frame site will be added later in order to implement a finer storage
-// partitioning. Using the nonce is still unsupported since serialization and
-// deserialization don't take it into account. For more details on the overall
-// design, see
+// StorageKey contains an origin, a top-level site, and an optional nonce. Using
+// the nonce is still unsupported since serialization and deserialization don't
+// take it into account. For more details on the overall design, see
 // https://docs.google.com/document/d/1xd6MXcUhfnZqIe5dt2CTyCn6gEZ7nOezAEWS0W9hwbQ/edit.
 class BLINK_COMMON_EXPORT StorageKey {
  public:
+  // This will create a StorageKey with an opaque `origin_` and
+  // `top_level_site_`. These two opaque members will not be the same (i.e.,
+  // their origin's nonce will be different).
   StorageKey() = default;
-  explicit StorageKey(const url::Origin& origin)
-      : StorageKey(origin, nullptr) {}
 
+  // The following three constructors all create a StorageKey without a nonce;
+  // the first of which creates a StorageKey with an implicit top-level site
+  // matching the origin. These are currently kept as constructors, rather than
+  // as static creation method(s), because of the large number of usages of
+  // StorageKey without a top-level site specified. Eventually these will all
+  // merge into a static function(s) that will require the caller to explicitly
+  // specify that they do not want a top-level site.
+  explicit StorageKey(const url::Origin& origin)
+      : StorageKey(origin, net::SchemefulSite(origin), nullptr) {}
+
+  StorageKey(const url::Origin& origin, const url::Origin& top_level_site)
+      : StorageKey(origin, net::SchemefulSite(top_level_site), nullptr) {}
+
+  StorageKey(const url::Origin& origin,
+             const net::SchemefulSite& top_level_site)
+      : StorageKey(origin, top_level_site, nullptr) {}
+
+  // This function does not take a top-level site as the nonce makes it globally
+  // unique anyway. Implementation wise however, the top-level site is set to
+  // the `origin`'s site.
   static StorageKey CreateWithNonce(const url::Origin& origin,
                                     const base::UnguessableToken& nonce);
 
@@ -71,6 +91,8 @@ class BLINK_COMMON_EXPORT StorageKey {
 
   const url::Origin& origin() const { return origin_; }
 
+  const net::SchemefulSite& top_level_site() const { return top_level_site_; }
+
   const absl::optional<base::UnguessableToken>& nonce() const { return nonce_; }
 
   std::string GetDebugString() const;
@@ -80,8 +102,11 @@ class BLINK_COMMON_EXPORT StorageKey {
   std::string GetMemoryDumpString(size_t max_length) const;
 
  private:
-  StorageKey(const url::Origin& origin, const base::UnguessableToken* nonce)
+  StorageKey(const url::Origin& origin,
+             const net::SchemefulSite& top_level_site,
+             const base::UnguessableToken* nonce)
       : origin_(origin),
+        top_level_site_(top_level_site),
         nonce_(nonce ? absl::make_optional(*nonce) : absl::nullopt) {}
 
   BLINK_COMMON_EXPORT
@@ -96,6 +121,15 @@ class BLINK_COMMON_EXPORT StorageKey {
   friend bool operator<(const StorageKey& lhs, const StorageKey& rhs);
 
   url::Origin origin_;
+
+  // The "top-level site"/"top-level frame"/"main frame" of the context
+  // this StorageKey was created for (for storage partitioning purposes).
+  //
+  // Like everything, this too has exceptions:
+  // * If the nonce is populated then this value doesn't matter.
+  // * For extensions or related enterprise policies this may not represent the
+  // top-level site.
+  net::SchemefulSite top_level_site_;
 
   // An optional nonce, forcing a partitioned storage from anything else. Used
   // by anonymous iframes:

@@ -2,23 +2,39 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <ostream>
-
 #include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
+
+#include <ostream>
 
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace blink {
 
 BlinkStorageKey::BlinkStorageKey()
-    : BlinkStorageKey(SecurityOrigin::CreateUniqueOpaque(), nullptr) {}
+    : BlinkStorageKey(SecurityOrigin::CreateUniqueOpaque(),
+                      BlinkSchemefulSite(),
+                      nullptr) {}
 
 BlinkStorageKey::BlinkStorageKey(scoped_refptr<const SecurityOrigin> origin)
     : BlinkStorageKey(std::move(origin), nullptr) {}
 
 BlinkStorageKey::BlinkStorageKey(scoped_refptr<const SecurityOrigin> origin,
+                                 const BlinkSchemefulSite& top_level_site)
+    : BlinkStorageKey(std::move(origin), top_level_site, nullptr) {}
+
+BlinkStorageKey::BlinkStorageKey(scoped_refptr<const SecurityOrigin> origin,
                                  const base::UnguessableToken* nonce)
     : origin_(std::move(origin)),
+      top_level_site_(BlinkSchemefulSite(origin_)),
+      nonce_(nonce ? absl::make_optional(*nonce) : absl::nullopt) {
+  DCHECK(origin_);
+}
+
+BlinkStorageKey::BlinkStorageKey(scoped_refptr<const SecurityOrigin> origin,
+                                 const BlinkSchemefulSite& top_level_site,
+                                 const base::UnguessableToken* nonce)
+    : origin_(std::move(origin)),
+      top_level_site_(top_level_site),
       nonce_(nonce ? absl::make_optional(*nonce) : absl::nullopt) {
   DCHECK(origin_);
 }
@@ -40,16 +56,20 @@ BlinkStorageKey BlinkStorageKey::CreateFromStringForTesting(
 BlinkStorageKey::BlinkStorageKey(const StorageKey& storage_key)
     : BlinkStorageKey(
           SecurityOrigin::CreateFromUrlOrigin(storage_key.origin()),
+          BlinkSchemefulSite(storage_key.top_level_site()),
           storage_key.nonce() ? &storage_key.nonce().value() : nullptr) {}
 
 BlinkStorageKey::operator StorageKey() const {
-  return nonce_.has_value() ? StorageKey::CreateWithNonce(
-                                  origin_->ToUrlOrigin(), nonce_.value())
-                            : StorageKey(origin_->ToUrlOrigin());
+  return nonce_.has_value()
+             ? StorageKey::CreateWithNonce(origin_->ToUrlOrigin(),
+                                           nonce_.value())
+             : StorageKey(origin_->ToUrlOrigin(),
+                          static_cast<net::SchemefulSite>(top_level_site_));
 }
 
 String BlinkStorageKey::ToDebugString() const {
-  return "{ origin: " + GetSecurityOrigin()->ToString() + ", nonce: " +
+  return "{ origin: " + GetSecurityOrigin()->ToString() +
+         ", top-level site: " + top_level_site_.Serialize() + ", nonce: " +
          (GetNonce().has_value() ? String::FromUTF8(GetNonce()->ToString())
                                  : "<null>") +
          " }";
@@ -58,6 +78,14 @@ String BlinkStorageKey::ToDebugString() const {
 bool operator==(const BlinkStorageKey& lhs, const BlinkStorageKey& rhs) {
   DCHECK(lhs.GetSecurityOrigin());
   DCHECK(rhs.GetSecurityOrigin());
+
+  if (blink::StorageKey::IsThirdPartyStoragePartitioningEnabled()) {
+    return lhs.GetSecurityOrigin()->IsSameOriginWith(
+               rhs.GetSecurityOrigin().get()) &&
+           lhs.GetNonce() == rhs.GetNonce() &&
+           lhs.GetTopLevelSite() == rhs.GetTopLevelSite();
+  }
+
   return lhs.GetSecurityOrigin()->IsSameOriginWith(
              rhs.GetSecurityOrigin().get()) &&
          lhs.GetNonce() == rhs.GetNonce();

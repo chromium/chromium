@@ -9,7 +9,9 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/unguessable_token.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/renderer/platform/network/blink_schemeful_site.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -25,12 +27,18 @@ class PLATFORM_EXPORT BlinkStorageKey {
   DISALLOW_NEW();
 
  public:
-  // Creates a BlinkStorageKey with a unique opaque origin.
+  // Creates a BlinkStorageKey with a unique opaque origin and top-level site.
   BlinkStorageKey();
 
   // Creates a BlinkStorageKey with the given origin. `origin` must not be null.
-  // `origin` can be opaque.
+  // `origin` can be opaque. This implicitly sets `top_level_site_` to the same
+  // origin.
   explicit BlinkStorageKey(scoped_refptr<const SecurityOrigin> origin);
+
+  // Creates a BlinkStorageKey with the given origin and top-level site.
+  // `origin` must not be null. `origin` can be opaque.
+  BlinkStorageKey(scoped_refptr<const SecurityOrigin> origin,
+                  const BlinkSchemefulSite& top_level_site);
 
   // Creates a BlinkStorageKey converting the given StorageKey `storage_key`.
   BlinkStorageKey(const StorageKey& storage_key);
@@ -55,6 +63,8 @@ class PLATFORM_EXPORT BlinkStorageKey {
     return origin_;
   }
 
+  const BlinkSchemefulSite& GetTopLevelSite() const { return top_level_site_; }
+
   const absl::optional<base::UnguessableToken>& GetNonce() const {
     return nonce_;
   }
@@ -64,8 +74,12 @@ class PLATFORM_EXPORT BlinkStorageKey {
  private:
   BlinkStorageKey(scoped_refptr<const SecurityOrigin> origin,
                   const base::UnguessableToken* nonce);
+  BlinkStorageKey(scoped_refptr<const SecurityOrigin> origin,
+                  const BlinkSchemefulSite& top_level_site,
+                  const base::UnguessableToken* nonce);
 
   scoped_refptr<const SecurityOrigin> origin_;
+  BlinkSchemefulSite top_level_site_;
   absl::optional<base::UnguessableToken> nonce_;
 };
 

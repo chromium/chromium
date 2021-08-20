@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
+#include "net/base/schemeful_site.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
@@ -21,7 +22,7 @@ namespace {
 // Why not call it IsValid()? Because some tests actually want to check for
 // opaque origins.
 bool IsOpaque(const blink::StorageKey& key) {
-  return key.origin().opaque();
+  return key.origin().opaque() && key.top_level_site().opaque();
 }
 
 }  // namespace
@@ -32,7 +33,8 @@ namespace blink {
 TEST(StorageKeyTest, ConstructionValidity) {
   StorageKey empty = StorageKey();
   EXPECT_TRUE(IsOpaque(empty));
-
+  // These cases will have the same origin for both `origin` and
+  // `top_level_site`.
   url::Origin valid_origin = url::Origin::Create(GURL("https://example.com"));
   StorageKey valid = StorageKey(valid_origin);
   EXPECT_FALSE(IsOpaque(valid));
@@ -43,7 +45,8 @@ TEST(StorageKeyTest, ConstructionValidity) {
   EXPECT_TRUE(IsOpaque(invalid));
 }
 
-// Test that StorageKeys are/aren't equivalent as expected.
+// Test that StorageKeys are/aren't equivalent as expected when storage
+// partitioning is disabled.
 TEST(StorageKeyTest, Equivalence) {
   url::Origin origin1 = url::Origin::Create(GURL("https://example.com"));
   url::Origin origin2 = url::Origin::Create(GURL("https://test.example"));
@@ -70,6 +73,9 @@ TEST(StorageKeyTest, Equivalence) {
   StorageKey key9_origin1_nonce2 = StorageKey::CreateWithNonce(origin1, nonce2);
   StorageKey key10_origin2_nonce1 =
       StorageKey::CreateWithNonce(origin2, nonce1);
+
+  StorageKey key11_origin1_origin2 = StorageKey(origin1, origin2);
+  StorageKey key12_origin2_origin1 = StorageKey(origin2, origin1);
 
   // All are equivalent to themselves
   EXPECT_EQ(key1_origin1, key1_origin1);
@@ -101,6 +107,47 @@ TEST(StorageKeyTest, Equivalence) {
   // StorageKeys created from different origin and different nonces are not
   // equivalent.
   EXPECT_NE(key9_origin1_nonce2, key10_origin2_nonce1);
+
+  // The top-level site doesn't factor in when storage partitioning is disabled.
+  EXPECT_EQ(key11_origin1_origin2, key1_origin1);
+  EXPECT_EQ(key12_origin2_origin1, key3_origin2);
+}
+
+// Test that StorageKeys are/aren't equivalent as expected when storage
+// partitioning is enabled.
+TEST(StorageKeyTest, EquivalencePartitioned) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kThirdPartyStoragePartitioning);
+
+  url::Origin origin1 = url::Origin::Create(GURL("https://example.com"));
+  url::Origin origin2 = url::Origin::Create(GURL("https://test.example"));
+
+  // Keys should only match when both the origin and top-level site are the
+  // same. Such as keys made from the single argument constructor and keys
+  // created by the two argument constructor (when both arguments are the same
+  // origin).
+
+  StorageKey OneArgKey_origin1 = StorageKey(origin1);
+  StorageKey OneArgKey_origin2 = StorageKey(origin2);
+
+  StorageKey TwoArgKey_origin1_origin1 = StorageKey(origin1, origin1);
+  StorageKey TwoArgKey_origin2_origin2 = StorageKey(origin2, origin2);
+
+  EXPECT_EQ(OneArgKey_origin1, TwoArgKey_origin1_origin1);
+  EXPECT_EQ(OneArgKey_origin2, TwoArgKey_origin2_origin2);
+
+  // And when the two argument constructor gets different values
+  StorageKey TwoArgKey1_origin1_origin2 = StorageKey(origin1, origin2);
+  StorageKey TwoArgKey2_origin1_origin2 = StorageKey(origin1, origin2);
+  StorageKey TwoArgKey_origin2_origin1 = StorageKey(origin2, origin1);
+
+  EXPECT_EQ(TwoArgKey1_origin1_origin2, TwoArgKey2_origin1_origin2);
+
+  // Otherwise they're not equivalent.
+  EXPECT_NE(TwoArgKey1_origin1_origin2, TwoArgKey_origin1_origin1);
+  EXPECT_NE(TwoArgKey_origin2_origin1, TwoArgKey_origin2_origin2);
+  EXPECT_NE(TwoArgKey1_origin1_origin2, TwoArgKey_origin2_origin1);
 }
 
 // Test that StorageKeys Serialize to the expected value.
