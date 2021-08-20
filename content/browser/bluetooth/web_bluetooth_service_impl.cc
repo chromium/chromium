@@ -805,9 +805,6 @@ void WebBluetoothServiceImpl::GattCharacteristicValueChanged(
     return;
   }
 
-  // TODO(crbug.com/541390): Don't send notifications when they haven't been
-  // requested by the client.
-
   // On Chrome OS and Linux, GattCharacteristicValueChanged is called before the
   // success callback for ReadRemoteCharacteristic is called, which could result
   // in an event being fired before the readValue promise is resolved.
