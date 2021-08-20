@@ -448,6 +448,9 @@ as required builders.
 * [linux-1mbu-compile-fyi-rel](https://ci.chromium.org/p/chromium/builders/try/linux-1mbu-compile-fyi-rel) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+linux-1mbu-compile-fyi-rel)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+linux-1mbu-compile-fyi-rel))
   * Experiment percentage: 5.0
 
+* [linux-lacros-rel-rts](https://ci.chromium.org/p/chromium/builders/try/linux-lacros-rel-rts) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+linux-lacros-rel-rts)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+linux-lacros-rel-rts))
+  * Experiment percentage: 1.0
+
 * [linux-perfetto-rel](https://ci.chromium.org/p/chromium/builders/try/linux-perfetto-rel) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+linux-perfetto-rel)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+linux-perfetto-rel))
   * Experiment percentage: 100.0
 

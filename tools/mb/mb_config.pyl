@@ -953,6 +953,7 @@
       'linux-chromeos-compile-dbg': 'chromeos_with_codecs_debug_bot',
       'linux-chromeos-dbg': 'chromeos_with_codecs_debug_bot',
       'linux-lacros-rel': 'lacros_on_linux_release_trybot',
+      'linux-lacros-rel-rts': 'lacros_on_linux_release_trybot',
       'linux-cfm-rel': 'linux_cfm_release_trybot',
     },
 
