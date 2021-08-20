@@ -9,6 +9,7 @@
 #include "base/containers/queue.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
+#include "net/base/backoff_entry.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace dbus {
@@ -46,16 +47,19 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler {
 
   void ProcessRequests();
   void AttemptInstallESim();
-  const std::string& GetCurrentSMDPAddress() const;
-  void OnESimProfileInstalled(HermesResponseStatus hermes_status,
-                              absl::optional<dbus::ObjectPath> profile_path);
+  const std::string& GetCurrentSmdpAddress() const;
+  void OnESimProfileInstallAttemptComplete(
+      HermesResponseStatus hermes_status,
+      absl::optional<dbus::ObjectPath> profile_path);
   void CompleteCurrentRequest(absl::optional<const std::string> iccid);
 
   CellularESimInstaller* cellular_esim_installer_ = nullptr;
 
-  size_t install_attempts_so_far_ = 0;
   bool is_installing_ = false;
   base::circular_deque<std::string> remaining_install_requests_;
+
+  // Provides us the backoff timers for AttemptInstallESim().
+  net::BackoffEntry retry_backoff_;
 
   base::WeakPtrFactory<CellularPolicyHandler> weak_ptr_factory_{this};
 };

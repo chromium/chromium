@@ -15,14 +15,22 @@ namespace chromeos {
 
 namespace {
 
-// Delay for first install ESim retry attempt. Delay doubles for every
-// subsequent attempt.
-constexpr base::TimeDelta kInstallRetryDelay = base::TimeDelta::FromMinutes(10);
 const int kInstallRetryLimit = 3;
+
+constexpr net::BackoffEntry::Policy kRetryBackoffPolicy = {
+    0,               // Number of initial errors to ignore.
+    5 * 60 * 1000,   // Initial delay of 5 minutes in ms.
+    2.0,             // Factor by which the waiting time will be multiplied.
+    0,               // Fuzzing percentage.
+    60 * 60 * 1000,  // Maximum delay of 1 hour in ms.
+    -1,              // Never discard the entry.
+    true,            // Use initial delay.
+};
 
 }  // namespace
 
-CellularPolicyHandler::CellularPolicyHandler() = default;
+CellularPolicyHandler::CellularPolicyHandler()
+    : retry_backoff_(&kRetryBackoffPolicy) {}
 
 CellularPolicyHandler::~CellularPolicyHandler() = default;
 
@@ -45,10 +53,13 @@ void CellularPolicyHandler::ProcessRequests() {
   if (is_installing_)
     return;
 
-  install_attempts_so_far_ = 0;
+  // Reset the state of the backoff so that the next backoff retry starts at
+  // the default initial delay.
+  retry_backoff_.Reset();
+
   is_installing_ = true;
   NET_LOG(EVENT) << "Starting installing policy eSim profile with SMDP: "
-                 << GetCurrentSMDPAddress();
+                 << GetCurrentSmdpAddress();
   AttemptInstallESim();
 }
 
@@ -56,59 +67,59 @@ void CellularPolicyHandler::AttemptInstallESim() {
   DCHECK(is_installing_);
 
   absl::optional<dbus::ObjectPath> euicc_path = GetCurrentEuiccPath();
-  if (euicc_path == absl::nullopt) {
+  if (!euicc_path) {
     NET_LOG(ERROR) << "Error installing policy eSim profile for SMDP: "
-                   << GetCurrentSMDPAddress() << ": euicc is not found.";
-    CompleteCurrentRequest(absl::nullopt);
+                   << GetCurrentSmdpAddress() << ": euicc is not found.";
+    CompleteCurrentRequest(/*iccid=*/absl::nullopt);
     return;
   }
 
   NET_LOG(EVENT) << "Attempt installing policy eSim profile with SMDP: "
-                 << GetCurrentSMDPAddress()
-                 << " on euicc path: " << euicc_path.value().value();
+                 << GetCurrentSmdpAddress()
+                 << " on euicc path: " << euicc_path->value();
+  // Remote provisioning of eSIM profiles via SMDP address in policy does not
+  // require confirmation code.
   cellular_esim_installer_->InstallProfileFromActivationCode(
-      GetCurrentSMDPAddress(), std::string(), euicc_path.value(),
-      base::BindOnce(&CellularPolicyHandler::OnESimProfileInstalled,
-                     weak_ptr_factory_.GetWeakPtr()));
+      GetCurrentSmdpAddress(), /*confirmation_code=*/std::string(), *euicc_path,
+      base::BindOnce(
+          &CellularPolicyHandler::OnESimProfileInstallAttemptComplete,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
-const std::string& CellularPolicyHandler::GetCurrentSMDPAddress() const {
+const std::string& CellularPolicyHandler::GetCurrentSmdpAddress() const {
   DCHECK(is_installing_);
 
   return remaining_install_requests_.front();
 }
 
-void CellularPolicyHandler::OnESimProfileInstalled(
+void CellularPolicyHandler::OnESimProfileInstallAttemptComplete(
     HermesResponseStatus hermes_status,
     absl::optional<dbus::ObjectPath> profile_path) {
   DCHECK(is_installing_);
 
   if (hermes_status == HermesResponseStatus::kSuccess) {
-    DCHECK(profile_path != absl::nullopt);
-    DCHECK(profile_path.value().IsValid());
+    retry_backoff_.InformOfRequest(/*succeeded=*/true);
     HermesProfileClient::Properties* profile_properties =
-        HermesProfileClient::Get()->GetProperties(profile_path.value());
-    DCHECK(profile_properties);
+        HermesProfileClient::Get()->GetProperties(*profile_path);
     CompleteCurrentRequest(profile_properties->iccid().value());
     return;
   }
 
-  if (install_attempts_so_far_ >= kInstallRetryLimit) {
+  if (retry_backoff_.failure_count() >= kInstallRetryLimit) {
     NET_LOG(ERROR) << "Install policy eSim profile with SMDP: "
-                   << GetCurrentSMDPAddress() << " failed three times.";
-    CompleteCurrentRequest(absl::nullopt);
+                   << GetCurrentSmdpAddress() << " failed three times.";
+    CompleteCurrentRequest(/*iccid=*/absl::nullopt);
     return;
   }
-  base::TimeDelta retry_delay =
-      kInstallRetryDelay * (1 << install_attempts_so_far_);
+
+  retry_backoff_.InformOfRequest(/*succeeded=*/false);
   NET_LOG(EVENT) << "Install policy eSim profile failed. Retrying in "
-                 << retry_delay;
-  install_attempts_so_far_++;
+                 << retry_backoff_.GetTimeUntilRelease();
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&CellularPolicyHandler::AttemptInstallESim,
                      weak_ptr_factory_.GetWeakPtr()),
-      retry_delay);
+      retry_backoff_.GetTimeUntilRelease());
 }
 
 void CellularPolicyHandler::CompleteCurrentRequest(
