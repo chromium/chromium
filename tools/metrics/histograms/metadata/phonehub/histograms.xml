@@ -133,6 +133,33 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="PhoneHub.MultiDeviceFeatureState{PhoneHubFeature}"
+    enum="MultiDevice_FeatureState" expires_after="2022-02-06">
+  <owner>khorimoto@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Indicates the feature state of Phone Hub features. This metric is emitted to
+    at the creation of the user session (when the user logs in), and when
+    feature state updates occur. {PhoneHubFeature}
+  </summary>
+  <token key="PhoneHubFeature">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+    <variant name=".NotificationBadge"
+        summary="Notification badge sub-feature.">
+      <obsolete>
+        Removed in M88, as the feature will not be included in the M89 launch.
+      </obsolete>
+    </variant>
+    <variant name=".Notifications" summary="Notifications sub-feature."/>
+    <variant name=".TaskContinuation" summary="Task continuation sub-feature."/>
+    <variant name=".TopLevelFeature" summary="Top level Phone Hub feature."/>
+  </token>
+</histogram>
+
 <histogram name="PhoneHub.NotificationAccessSetup.SuccessfulSetupDuration"
     units="ms" expires_after="M98">
   <owner>nohle@chromium.org</owner>

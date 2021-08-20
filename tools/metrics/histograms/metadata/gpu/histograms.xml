@@ -768,6 +768,41 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Gpu.GL.GetErrorDuration.GLImageEGL.BindTexImage"
+    units="microseconds" expires_after="2022-03-31">
+  <owner>berlu@chromium.org</owner>
+  <owner>chromeos-gfx-compositor@google.com</owner>
+  <summary>
+    The time that elapsed for a call to glGetError to complete while trying to
+    bind a GLImageEGL to a texture. The goal is to measure the impact of the
+    potential sync barrier that glGetError represents. Only reported for
+    platforms supporting high resolution clocks.
+  </summary>
+</histogram>
+
+<histogram name="Gpu.GL.GetErrorResult.GLImageEGL.BindTexImage"
+    enum="BooleanError" expires_after="2022-03-31">
+  <owner>berlu@chromium.org</owner>
+  <owner>chromeos-gfx-compositor@google.com</owner>
+  <summary>
+    Whether glGetError actually returned an error while trying to bind a
+    GLImageEGL to a texture. The goal is to evaluate how often the call to
+    glGetError might actually serve its purpose.
+  </summary>
+</histogram>
+
+<histogram name="Gpu.GL.ProgramBuildTime" units="ms" expires_after="M82">
+  <owner>ccameron@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    The time that elapsed between a call to glCreateProgram and the call to
+    query GL_LINK_STATUS via glGetProgramiv in Skia's GrGLInterface. This
+    encompasses the creation of the vertex, fragment, and geometry shaders,
+    their compilation, and their linking. This is called for every program
+    created by Skia via the GrGLInterface.
+  </summary>
+</histogram>
+
 <histogram name="GPU.GLImplementation" enum="GLImplementation"
     expires_after="2021-12-05">
   <owner>magchen@chromium.org</owner>
@@ -995,12 +1030,67 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Gpu.Mac.Backpressure" units="ms" expires_after="M80">
+  <owner>ccameron@chromium.org</owner>
+  <owner>khushalsagar@chromium.org</owner>
+  <summary>
+    The time that the GPU's main CPU thread spends waiting for previous frames'
+    GPU work to complete. Recorded at every frame.
+  </summary>
+</histogram>
+
 <histogram name="GPU.MaxMSAASampleCount" units="samples"
     expires_after="2020-07-06">
   <owner>senorblanco@chromium.org</owner>
   <summary>
     The maximum number of multisampled anti-aliasing (MSAA) samples per pixel
     that the user's GPU can render.
+  </summary>
+</histogram>
+
+<histogram name="Gpu.Metal.TestShaderCompileTime" units="ms"
+    expires_after="M85">
+  <owner>ccameron@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Compiling a MTLLibrary will sometimes hang forever. When initializing the
+    gpu process, a test shader is compiled to see if the MTLCompilerService is
+    responding or not. This records the time that it took for the compile to
+    succeeded, up to 1 minute. After 1 minute, a timeout sentinel value of 3
+    minutes is reported.
+  </summary>
+</histogram>
+
+<histogram name="Gpu.Metal.TestShaderLinkTime" units="ms" expires_after="M85">
+  <owner>ccameron@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Linking a MTLRenderPipelineState will sometimes hang forever. When
+    initializing the GPU process, a test shader is compiled to see if the
+    MTLCompilerService is responding or not. This records the time that it took
+    for the compile to succeeded, up to 1 minute. After 1 minute, a timeout
+    sentinel value of 3 minutes is reported.
+  </summary>
+</histogram>
+
+<histogram name="Gpu.MetalProxy.NewLibraryTime" units="ms" expires_after="M82">
+  <owner>ccameron@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    The time that it takes to create a new MTLLibrary, including all retries.
+    Recorded after every call to -[MTLDeviceProxy newLibraryWithSource:]
+    completes.
+  </summary>
+</histogram>
+
+<histogram name="Gpu.MetalProxy.NewRenderPipelineStateTime" units="ms"
+    expires_after="M82">
+  <owner>ccameron@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    The time that it takes to create a new MTLRenderPipelineState, including all
+    retries. Recorded after every call to -[MTLDeviceProxy
+    newRenderPipelineStateWithDescriptor:] completes.
   </summary>
 </histogram>
 

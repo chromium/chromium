@@ -13078,18 +13078,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="UMA.PersistentAllocator.Allocs"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="PhoneHubFeature" separator=".">
-  <suffix name="NotificationBadge" label="Notification badge sub-feature.">
-    <obsolete>
-      Removed in M88, as the feature will not be included in the M89 launch.
-    </obsolete>
-  </suffix>
-  <suffix name="Notifications" label="Notifications sub-feature."/>
-  <suffix name="TaskContinuation" label="Task continuation sub-feature."/>
-  <suffix name="TopLevelFeature" label="Top level Phone Hub feature."/>
-  <affected-histogram name="PhoneHub.MultiDeviceFeatureState"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="PhoneNumberRegexVariant" separator=".">
   <obsolete>
     Removed in M82 as the experiment has been stopped.
