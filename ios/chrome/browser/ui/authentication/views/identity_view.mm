@@ -8,7 +8,7 @@
 #import "base/check_op.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -96,7 +96,7 @@ constexpr CGFloat kHorizontalAvatarLeadingMargin = 16.;
     _title.adjustsFontForContentSizeCategory = YES;
     _title.translatesAutoresizingMaskIntoConstraints = NO;
     _title.numberOfLines = 1;
-    _title.textColor = UIColor.cr_labelColor;
+    _title.textColor = [UIColor colorNamed:kTextPrimaryColor];
     _title.font = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
     _title.adjustsFontSizeToFitWidth = NO;
     _title.lineBreakMode = NSLineBreakByTruncatingTail;
@@ -106,7 +106,7 @@ constexpr CGFloat kHorizontalAvatarLeadingMargin = 16.;
     _subtitle.adjustsFontForContentSizeCategory = YES;
     _subtitle.translatesAutoresizingMaskIntoConstraints = NO;
     _subtitle.numberOfLines = 1;
-    _subtitle.textColor = UIColor.cr_secondaryLabelColor;
+    _subtitle.textColor = [UIColor colorNamed:kTextSecondaryColor];
     _subtitle.font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
     _subtitle.adjustsFontSizeToFitWidth = NO;
     _subtitle.lineBreakMode = NSLineBreakByTruncatingTail;

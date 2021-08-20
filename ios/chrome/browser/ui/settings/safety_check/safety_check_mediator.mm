@@ -49,7 +49,6 @@
 #include "ios/chrome/browser/upgrade/upgrade_utils.h"
 #include "ios/chrome/common/channel_info.h"
 #import "ios/chrome/common/string_util.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"

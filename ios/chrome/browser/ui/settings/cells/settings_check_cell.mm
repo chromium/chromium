@@ -8,7 +8,6 @@
 #include "base/ios/ios_util.h"
 #include "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -62,7 +61,7 @@
     // |_leadingImageView| attributes
     _leadingImageView = [[UIImageView alloc] init];
     _leadingImageView.translatesAutoresizingMaskIntoConstraints = NO;
-    _leadingImageView.tintColor = UIColor.cr_labelColor;
+    _leadingImageView.tintColor = [UIColor colorNamed:kTextPrimaryColor];
     _leadingImageView.hidden = NO;
     [contentView addSubview:_leadingImageView];
 
@@ -72,7 +71,7 @@
     _textLabel.translatesAutoresizingMaskIntoConstraints = NO;
     _textLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
     _textLabel.adjustsFontForContentSizeCategory = YES;
-    _textLabel.textColor = UIColor.cr_labelColor;
+    _textLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
     [contentView addSubview:_textLabel];
     // |detailText| attributes.
     _detailTextLabel = [[UILabel alloc] init];
@@ -81,14 +80,14 @@
     _detailTextLabel.font =
         [UIFont preferredFontForTextStyle:kTableViewSublabelFontStyle];
     _detailTextLabel.adjustsFontForContentSizeCategory = YES;
-    _detailTextLabel.textColor = UIColor.cr_secondaryLabelColor;
+    _detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
     [contentView addSubview:_detailTextLabel];
 
     // Only |_trailingImageView| or |_activityIndicator| or |_infoButton| is
     // shown, not all at once. |trailingImage| attributes.
     _trailingImageView = [[UIImageView alloc] init];
     _trailingImageView.translatesAutoresizingMaskIntoConstraints = NO;
-    _trailingImageView.tintColor = UIColor.cr_labelColor;
+    _trailingImageView.tintColor = [UIColor colorNamed:kTextPrimaryColor];
     _trailingImageView.hidden = YES;
     [contentView addSubview:_trailingImageView];
     // |activityIndictor| attributes.
@@ -278,7 +277,7 @@
   if (enabled) {
     [self.infoButton setTintColor:[UIColor colorNamed:kBlueColor]];
   } else {
-    [self.infoButton setTintColor:UIColor.cr_secondaryLabelColor];
+    [self.infoButton setTintColor:[UIColor colorNamed:kTextSecondaryColor]];
   }
 }
 

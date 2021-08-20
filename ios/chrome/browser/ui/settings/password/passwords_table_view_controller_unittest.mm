@@ -32,7 +32,6 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_text_item.h"
 #include "ios/chrome/browser/ui/table_view/chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -443,7 +442,7 @@ TEST_F(PasswordsTableViewControllerTest,
   CheckTextCellTextWithId(IDS_IOS_EXPORT_PASSWORDS,
                           GetSectionIndex(SavedPasswords), 0);
 
-  EXPECT_NSEQ(UIColor.cr_secondaryLabelColor, exportButton.textColor);
+  EXPECT_NSEQ([UIColor colorNamed:kTextSecondaryColor], exportButton.textColor);
   EXPECT_TRUE(exportButton.accessibilityTraits &
               UIAccessibilityTraitNotEnabled);
 
@@ -451,7 +450,7 @@ TEST_F(PasswordsTableViewControllerTest,
   AddBlockedForm1();
   // The export button should still be disabled as exporting blocked forms
   // is not currently supported.
-  EXPECT_NSEQ(UIColor.cr_secondaryLabelColor, exportButton.textColor);
+  EXPECT_NSEQ([UIColor colorNamed:kTextSecondaryColor], exportButton.textColor);
   EXPECT_TRUE(exportButton.accessibilityTraits &
               UIAccessibilityTraitNotEnabled);
 }
@@ -488,7 +487,7 @@ TEST_F(PasswordsTableViewControllerTest, TestExportButtonDisabledEditMode) {
 
   [passwords_controller setEditing:YES animated:NO];
 
-  EXPECT_NSEQ(UIColor.cr_secondaryLabelColor, exportButton.textColor);
+  EXPECT_NSEQ([UIColor colorNamed:kTextSecondaryColor], exportButton.textColor);
   EXPECT_TRUE(exportButton.accessibilityTraits &
               UIAccessibilityTraitNotEnabled);
 }
@@ -529,7 +528,8 @@ TEST_F(PasswordsTableViewControllerTest,
 
   [passwords_controller setEditing:YES animated:NO];
 
-  EXPECT_NSEQ(UIColor.cr_secondaryLabelColor, checkPasswordButton.textColor);
+  EXPECT_NSEQ([UIColor colorNamed:kTextSecondaryColor],
+              checkPasswordButton.textColor);
   EXPECT_TRUE(checkPasswordButton.accessibilityTraits &
               UIAccessibilityTraitNotEnabled);
 

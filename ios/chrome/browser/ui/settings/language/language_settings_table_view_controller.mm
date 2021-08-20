@@ -34,7 +34,6 @@
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "net/base/mac/url_conversions.h"
@@ -505,9 +504,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)setAddLanguageItemEnabled:(BOOL)enabled {
   // Update the model.
   self.addLanguageItem.enabled = enabled;
-  self.addLanguageItem.textColor = self.isEditing
-                                       ? UIColor.cr_secondaryLabelColor
-                                       : [UIColor colorNamed:kBlueColor];
+  self.addLanguageItem.textColor =
+      self.isEditing ? [UIColor colorNamed:kTextSecondaryColor]
+                     : [UIColor colorNamed:kBlueColor];
 
   // Update the table view.
   [self reconfigureCellsForItems:@[ self.addLanguageItem ]];

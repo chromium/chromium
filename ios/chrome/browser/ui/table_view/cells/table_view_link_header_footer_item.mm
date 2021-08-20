@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/string_util.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "net/base/mac/url_conversions.h"
 
@@ -132,7 +131,7 @@ const CGFloat kVerticalPadding = 8;
   NSDictionary* textAttributes = @{
     NSFontAttributeName :
         [UIFont preferredFontForTextStyle:kTableViewSublabelFontStyle],
-    NSForegroundColorAttributeName : UIColor.cr_secondaryLabelColor
+    NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor]
   };
 
   NSMutableAttributedString* attributedText =

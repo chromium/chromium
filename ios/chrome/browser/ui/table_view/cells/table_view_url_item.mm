@@ -13,7 +13,6 @@
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -146,11 +145,11 @@ const char kDefaultSupplementalURLTextDelimiter[] = "•";
     _URLLabel.font =
         [UIFont preferredFontForTextStyle:kTableViewSublabelFontStyle];
     _URLLabel.adjustsFontForContentSizeCategory = YES;
-    _URLLabel.textColor = UIColor.cr_secondaryLabelColor;
+    _URLLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
     _URLLabel.hidden = YES;
     _metadataLabel.font =
         [UIFont preferredFontForTextStyle:kTableViewSublabelFontStyle];
-    _metadataLabel.textColor = UIColor.cr_secondaryLabelColor;
+    _metadataLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
     _metadataLabel.adjustsFontForContentSizeCategory = YES;
     _metadataLabel.hidden = YES;
 

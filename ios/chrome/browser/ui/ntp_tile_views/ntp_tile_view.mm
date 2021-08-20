@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/ui/ntp_tile_views/ntp_tile_view.h"
 
 #import "ios/chrome/browser/ui/util/dynamic_type_util.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ios/chrome/common/ui/util/dynamic_type_util.h"
@@ -36,7 +35,7 @@ const CGFloat kPreferredMaxWidth = 73;
   self = [super initWithFrame:frame];
   if (self) {
     _titleLabel = [[UILabel alloc] init];
-    _titleLabel.textColor = UIColor.cr_secondaryLabelColor;
+    _titleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
     _titleLabel.font = [self titleLabelFont];
     _titleLabel.textAlignment = NSTextAlignmentCenter;
     _titleLabel.preferredMaxLayoutWidth = kPreferredMaxWidth;

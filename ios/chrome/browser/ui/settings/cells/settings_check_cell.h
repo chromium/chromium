@@ -48,8 +48,8 @@
 - (void)setInfoButtonHidden:(BOOL)hidden;
 
 // If |enabled|, |infoButton| image's tint color is set to blue otherwise to
-// UIColor.cr_secondaryLabelColor. Also, enable/disable the |infoButton| based
-// on |enabled|.
+// [UIColor colorNamed:kTextSecondaryColor]. Also, enable/disable the
+// |infoButton| based on |enabled|.
 - (void)setInfoButtonEnabled:(BOOL)enabled;
 
 @end

@@ -49,7 +49,6 @@
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #include "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/window_activities/window_activity_helpers.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -934,7 +933,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
     TableViewTextItem* entriesStatusItem =
         [[TableViewTextItem alloc] initWithType:ItemTypeEntriesStatus];
     entriesStatusItem.text = statusMessage;
-    entriesStatusItem.textColor = UIColor.cr_labelColor;
+    entriesStatusItem.textColor = [UIColor colorNamed:kTextPrimaryColor];
     statusMessageItem = entriesStatusItem;
   }
   return statusMessageItem;

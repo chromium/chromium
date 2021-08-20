@@ -27,7 +27,6 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/popover_label_view_controller.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
@@ -272,8 +271,9 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   TableViewTextItem* item =
       [[TableViewTextItem alloc] initWithType:ItemTypeChangePasswordButton];
   item.text = l10n_util::GetNSString(IDS_IOS_CHANGE_COMPROMISED_PASSWORD);
-  item.textColor = self.tableView.editing ? UIColor.cr_secondaryLabelColor
-                                          : [UIColor colorNamed:kBlueColor];
+  item.textColor = self.tableView.editing
+                       ? [UIColor colorNamed:kTextSecondaryColor]
+                       : [UIColor colorNamed:kBlueColor];
   item.accessibilityTraits = UIAccessibilityTraitButton;
   return item;
 }
@@ -502,7 +502,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
       [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
   UIGraphicsBeginImageContextWithOptions(
       CGSizeMake(kWarningIconSize, kWarningIconSize), NO, 0.0);
-  [UIColor.cr_secondaryLabelColor set];
+  [[UIColor colorNamed:kTextSecondaryColor] set];
   [newImage drawInRect:CGRectMake(0, 0, kWarningIconSize, kWarningIconSize)];
   newImage = UIGraphicsGetImageFromCurrentImageContext();
   UIGraphicsEndImageContext();

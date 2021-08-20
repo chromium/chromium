@@ -8,7 +8,6 @@
 #import "ios/chrome/browser/ui/settings/cells/settings_cells_constants.h"
 #include "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -53,7 +52,7 @@ const CGFloat KErrorIconImageSize = 18;
     cell.detailTextLabel.textColor = [UIColor colorNamed:kRedColor];
   } else {
     cell.errorIcon.image = nil;
-    cell.detailTextLabel.textColor = UIColor.cr_secondaryLabelColor;
+    cell.detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
   }
 
   cell.userInteractionEnabled = self.mode == TableViewAccountModeEnabled;
@@ -123,7 +122,7 @@ const CGFloat KErrorIconImageSize = 18;
   _textLabel.translatesAutoresizingMaskIntoConstraints = NO;
   _textLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
   _textLabel.adjustsFontForContentSizeCategory = YES;
-  _textLabel.textColor = UIColor.cr_labelColor;
+  _textLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
   [contentView addSubview:_textLabel];
 
   _detailTextLabel = [[UILabel alloc] init];
@@ -131,7 +130,7 @@ const CGFloat KErrorIconImageSize = 18;
   _detailTextLabel.font =
       [UIFont preferredFontForTextStyle:kTableViewSublabelFontStyle];
   _detailTextLabel.adjustsFontForContentSizeCategory = YES;
-  _detailTextLabel.textColor = UIColor.cr_secondaryLabelColor;
+  _detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
   [contentView addSubview:_detailTextLabel];
 }
 
@@ -242,8 +241,8 @@ const CGFloat KErrorIconImageSize = 18;
   self.imageView.image = nil;
   self.textLabel.text = nil;
   self.detailTextLabel.text = nil;
-  self.textLabel.textColor = UIColor.cr_labelColor;
-  self.detailTextLabel.textColor = UIColor.cr_secondaryLabelColor;
+  self.textLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
+  self.detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
   self.errorIcon.image = nil;
   self.userInteractionEnabled = YES;
   self.contentView.alpha = 1;

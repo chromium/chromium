@@ -34,7 +34,7 @@
 @property(nonatomic, copy) NSString* detailText;
 
 // UIColor for the cell's detailTextLabel. If not set,
-// UIColor.cr_secondaryLabelColor is used.
+// [UIColor colorNamed:kTextSecondaryColor] is used.
 @property(nonatomic, strong) UIColor* detailTextColor;
 
 @end

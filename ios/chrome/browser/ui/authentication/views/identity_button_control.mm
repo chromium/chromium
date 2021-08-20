@@ -9,7 +9,6 @@
 #import "ios/chrome/browser/ui/authentication/views/identity_view.h"
 #import "ios/chrome/browser/ui/authentication/views/views_constants.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
@@ -53,7 +52,7 @@ const CGFloat kArrowDownMargin = 12.;
     _arrowImageView.translatesAutoresizingMaskIntoConstraints = NO;
     _arrowDirection = IdentityButtonControlArrowDown;
     [self updateArrowDirection];
-    _arrowImageView.tintColor = UIColor.cr_labelColor;
+    _arrowImageView.tintColor = [UIColor colorNamed:kTextPrimaryColor];
     [self addSubview:_arrowImageView];
 
     // Main view with avatar, name and email.

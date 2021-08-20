@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
@@ -84,7 +84,7 @@ constexpr float kRotationNinetyCW = (90 / 180.0) * M_PI;
     _subtitleLabel = [[UILabel alloc] init];
     _subtitleLabel.font =
         [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
-    _subtitleLabel.textColor = UIColor.cr_secondaryLabelColor;
+    _subtitleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
     [_subtitleLabel
         setContentCompressionResistancePriority:UILayoutPriorityRequired
                                         forAxis:UILayoutConstraintAxisVertical];
@@ -186,8 +186,8 @@ constexpr float kRotationNinetyCW = (90 / 180.0) * M_PI;
 #pragma mark - properties
 
 - (void)setDisabled:(BOOL)disabled {
-  _titleLabel.textColor =
-      disabled ? UIColor.cr_secondaryLabelColor : UIColor.cr_labelColor;
+  _titleLabel.textColor = disabled ? [UIColor colorNamed:kTextSecondaryColor]
+                                   : [UIColor colorNamed:kTextPrimaryColor];
   _disclosureImageView.image =
       disabled ? nil : [UIImage imageNamed:@"table_view_cell_chevron"];
   _disabled = disabled;

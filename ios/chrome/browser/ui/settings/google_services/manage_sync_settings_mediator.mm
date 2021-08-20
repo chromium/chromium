@@ -29,7 +29,6 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_item.h"
 #include "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -281,7 +280,7 @@ NSString* const kGoogleServicesSyncErrorImage = @"google_services_sync_error";
   if (self.shouldEncryptionItemBeEnabled) {
     self.encryptionItem.textColor = nil;
   } else {
-    self.encryptionItem.textColor = UIColor.cr_secondaryLabelColor;
+    self.encryptionItem.textColor = [UIColor colorNamed:kTextSecondaryColor];
   }
   if (needsUpdate && notifyConsumer) {
     [self.consumer reloadItem:self.encryptionItem];
@@ -765,7 +764,7 @@ NSString* const kGoogleServicesSyncErrorImage = @"google_services_sync_error";
   item.title = GetNSString(
       IDS_IOS_GOOGLE_SERVICES_SETTINGS_SYNC_DISABLBED_BY_ADMINISTRATOR_TITLE);
   item.enabled = NO;
-  item.textColor = UIColor.cr_secondaryLabelColor;
+  item.textColor = [UIColor colorNamed:kTextSecondaryColor];
   return item;
 }
 

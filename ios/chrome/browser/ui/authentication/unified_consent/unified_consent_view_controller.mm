@@ -17,7 +17,6 @@
 #import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/common/string_util.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
@@ -156,7 +155,7 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
   UILabel* title =
       [self addLabelWithStringId:IDS_IOS_ACCOUNT_UNIFIED_CONSENT_TITLE
                        fontStyle:kAuthenticationTitleFontStyle
-                       textColor:UIColor.cr_labelColor
+                       textColor:[UIColor colorNamed:kTextPrimaryColor]
                       parentView:container];
 
   // Identity picker view.
@@ -173,13 +172,13 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
   UILabel* syncTitleLabel =
       [self addLabelWithStringId:IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_TITLE
                        fontStyle:kAuthenticationTextFontStyle
-                       textColor:UIColor.cr_labelColor
+                       textColor:[UIColor colorNamed:kTextPrimaryColor]
                       parentView:container];
 
   UILabel* syncSubtitleLabel =
       [self addLabelWithStringId:IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_SUBTITLE
                        fontStyle:kAuthenticationTextFontStyle
-                       textColor:UIColor.cr_secondaryLabelColor
+                       textColor:[UIColor colorNamed:kTextSecondaryColor]
                       parentView:container];
 
   // Separator.
@@ -370,7 +369,7 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
 - (void)setSettingsLinkURLShown:(BOOL)showLink {
   NSString* text = l10n_util::GetNSString(self.openSettingsStringId);
   NSDictionary* textAttributes = @{
-    NSForegroundColorAttributeName : UIColor.cr_secondaryLabelColor,
+    NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor],
     NSFontAttributeName :
         [UIFont preferredFontForTextStyle:kAuthenticationTextFontStyle]
   };

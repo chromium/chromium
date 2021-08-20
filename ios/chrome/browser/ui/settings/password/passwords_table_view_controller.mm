@@ -53,7 +53,6 @@
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/popover_label_view_controller.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
@@ -607,7 +606,7 @@ std::vector<std::unique_ptr<password_manager::PasswordForm>> CopyOf(
       [[TableViewTextItem alloc] initWithType:ItemTypeCheckForProblemsButton];
   checkForProblemsItem.text =
       l10n_util::GetNSString(IDS_IOS_CHECK_PASSWORDS_NOW_BUTTON);
-  checkForProblemsItem.textColor = UIColor.cr_secondaryLabelColor;
+  checkForProblemsItem.textColor = [UIColor colorNamed:kTextSecondaryColor];
   checkForProblemsItem.accessibilityTraits = UIAccessibilityTraitButton;
   return checkForProblemsItem;
 }
@@ -1209,7 +1208,7 @@ std::vector<std::unique_ptr<password_manager::PasswordForm>> CopyOf(
       l10n_util::GetNSString(IDS_IOS_CHECK_PASSWORDS_NOW_BUTTON);
 
   if (self.editing) {
-    _checkForProblemsItem.textColor = UIColor.cr_secondaryLabelColor;
+    _checkForProblemsItem.textColor = [UIColor colorNamed:kTextSecondaryColor];
     _checkForProblemsItem.accessibilityTraits |= UIAccessibilityTraitNotEnabled;
     return;
   }
@@ -1226,7 +1225,8 @@ std::vector<std::unique_ptr<password_manager::PasswordForm>> CopyOf(
     case PasswordCheckStateRunning:
     // Fall through.
     case PasswordCheckStateDisabled:
-      _checkForProblemsItem.textColor = UIColor.cr_secondaryLabelColor;
+      _checkForProblemsItem.textColor =
+          [UIColor colorNamed:kTextSecondaryColor];
       _checkForProblemsItem.accessibilityTraits |=
           UIAccessibilityTraitNotEnabled;
       break;
@@ -1314,7 +1314,7 @@ std::vector<std::unique_ptr<password_manager::PasswordForm>> CopyOf(
     _exportPasswordsItem.textColor = [UIColor colorNamed:kBlueColor];
     _exportPasswordsItem.accessibilityTraits &= ~UIAccessibilityTraitNotEnabled;
   } else {
-    _exportPasswordsItem.textColor = UIColor.cr_secondaryLabelColor;
+    _exportPasswordsItem.textColor = [UIColor colorNamed:kTextSecondaryColor];
     _exportPasswordsItem.accessibilityTraits |= UIAccessibilityTraitNotEnabled;
   }
   [self reconfigureCellsForItems:@[ _exportPasswordsItem ]];

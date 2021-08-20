@@ -41,7 +41,6 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_info_button_item.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -538,7 +537,8 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
         needsUpdate || self.manageSyncItem.enabled != self.isSyncEnabled;
     self.manageSyncItem.enabled = self.isSyncEnabled;
     self.manageSyncItem.textColor =
-        self.manageSyncItem.enabled ? nil : UIColor.cr_secondaryLabelColor;
+        self.manageSyncItem.enabled ? nil
+                                    : [UIColor colorNamed:kTextSecondaryColor];
     return needsUpdate;
   }
   if (!self.manageSyncItem)
@@ -924,7 +924,7 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
   item.title = GetNSString(
       IDS_IOS_GOOGLE_SERVICES_SETTINGS_SYNC_DISABLBED_BY_ADMINISTRATOR_TITLE);
   item.enabled = NO;
-  item.textColor = UIColor.cr_secondaryLabelColor;
+  item.textColor = [UIColor colorNamed:kTextSecondaryColor];
   return item;
 }
 

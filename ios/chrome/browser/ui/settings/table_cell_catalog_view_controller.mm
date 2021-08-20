@@ -34,7 +34,6 @@
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/signin/signin_resources_provider.h"
@@ -128,7 +127,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [[TableViewTextItem alloc] initWithType:ItemTypeText];
   textItem.text = @"Simple Text Cell";
   textItem.textAlignment = NSTextAlignmentCenter;
-  textItem.textColor = UIColor.cr_labelColor;
+  textItem.textColor = [UIColor colorNamed:kTextPrimaryColor];
   [model addItem:textItem toSectionWithIdentifier:SectionIdentifierText];
 
   textItem = [[TableViewTextItem alloc] initWithType:ItemTypeText];

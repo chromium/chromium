@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
 
 #import "ios/chrome/browser/ui/settings/cells/settings_check_cell.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -38,14 +37,14 @@
             withTintColor:self.leadingImageTintColor];
     [cell setTrailingImage:self.trailingImage
              withTintColor:self.trailingImageTintColor];
-    cell.textLabel.textColor = UIColor.cr_labelColor;
+    cell.textLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
     cell.accessibilityTraits &= ~UIAccessibilityTraitNotEnabled;
   } else {
     [cell setLeadingImage:self.leadingImage
-            withTintColor:UIColor.cr_secondaryLabelColor];
+            withTintColor:[UIColor colorNamed:kTextSecondaryColor]];
     [cell setTrailingImage:self.trailingImage
-             withTintColor:UIColor.cr_secondaryLabelColor];
-    cell.textLabel.textColor = UIColor.cr_secondaryLabelColor;
+             withTintColor:[UIColor colorNamed:kTextSecondaryColor]];
+    cell.textLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
     cell.accessibilityTraits |= UIAccessibilityTraitNotEnabled;
   }
   cell.isAccessibilityElement = YES;

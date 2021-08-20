@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -80,11 +79,11 @@ const CGFloat kEditIconLength = 18;
   if (self.hideIcon) {
     cell.textField.textColor = self.textFieldEnabled
                                    ? [UIColor colorNamed:kBlueColor]
-                                   : UIColor.cr_secondaryLabelColor;
+                                   : [UIColor colorNamed:kTextSecondaryColor];
     [cell setIcon:TableViewTextEditItemIconTypeNone];
   } else {
     if (self.hasValidText) {
-      cell.textField.textColor = UIColor.cr_secondaryLabelColor;
+      cell.textField.textColor = [UIColor colorNamed:kTextSecondaryColor];
     } else {
       cell.textField.textColor = [UIColor colorNamed:kRedColor];
     }

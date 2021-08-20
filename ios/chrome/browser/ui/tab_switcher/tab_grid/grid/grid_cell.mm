@@ -12,7 +12,6 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -397,7 +396,7 @@ void PositionView(UIView* view, CGPoint point) {
   if (@available(iOS 13, *)) {
     if (_state == GridCellStateEditingUnselected) {
       return [[UIImage systemImageNamed:@"circle"]
-          imageWithTintColor:[UIColor cr_systemGray3Color]
+          imageWithTintColor:UIColor.systemGray3Color
                renderingMode:UIImageRenderingModeAlwaysOriginal];
     }
     return [UIImage systemImageNamed:@"checkmark.circle.fill"];

@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_delegate.h"
 #import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
@@ -85,7 +84,7 @@ constexpr CGFloat kImageViewWidthHeight = 32;
     _textLabel.lineBreakMode = NSLineBreakByWordWrapping;
     _textLabel.font =
         [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
-    _textLabel.textColor = UIColor.cr_labelColor;
+    _textLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
 
     // Create and setup primary button.
     UIEdgeInsets primaryButtonInsets;

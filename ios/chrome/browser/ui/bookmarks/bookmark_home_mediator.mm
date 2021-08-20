@@ -32,7 +32,7 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -266,7 +266,7 @@ const int kMaxBookmarksSearchResults = 50;
     TableViewTextItem* item =
         [[TableViewTextItem alloc] initWithType:BookmarkHomeItemTypeMessage];
     item.textAlignment = NSTextAlignmentLeft;
-    item.textColor = UIColor.cr_labelColor;
+    item.textColor = [UIColor colorNamed:kTextPrimaryColor];
     item.text = noResults;
     [self.sharedState.tableViewModel
                         addItem:item
