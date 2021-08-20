@@ -622,7 +622,7 @@ public class RootUiCoordinator
             MessagesFactory.attachMessageDispatcher(mWindowAndroid, mMessageDispatcher);
         }
         DownloadManagerService.getDownloadManagerService().onActivityLaunched(mActivity,
-                mMessageDispatcher, mModalDialogManagerSupplier.get(), mActivityTabProvider);
+                () -> mMessageDispatcher, mModalDialogManagerSupplier.get(), mActivityTabProvider);
     }
 
     /**

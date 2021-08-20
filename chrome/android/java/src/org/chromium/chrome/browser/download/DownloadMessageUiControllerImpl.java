@@ -18,6 +18,7 @@ import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
@@ -288,7 +289,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
     private final Context mContext;
 
     // The message dispatcher for showing the message UI.
-    private final MessageDispatcher mMessageDispatcher;
+    private final Supplier<MessageDispatcher> mMessageDispatcher;
 
     // Dialog manager used for creating download later dialogs.
     private final ModalDialogManager mModalDialogManager;
@@ -305,8 +306,9 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
     private Runnable mDismissRunnable;
 
     /** Constructor. */
-    public DownloadMessageUiControllerImpl(Context context, MessageDispatcher messageDispatcher,
-            ModalDialogManager modalDialogManager, ActivityTabProvider activityTabProvider) {
+    public DownloadMessageUiControllerImpl(Context context,
+            Supplier<MessageDispatcher> messageDispatcher, ModalDialogManager modalDialogManager,
+            ActivityTabProvider activityTabProvider) {
         mUseNewDownloadPath =
                 ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER);
         mMessageDispatcher = messageDispatcher;
@@ -754,7 +756,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
 
         Tab currentTab = mActivityTabProvider.get();
         boolean shouldShowMessage = currentTab != null && currentTab.getWebContents() != null
-                && (info.forceShow || mPropertyModel != null);
+                && mMessageDispatcher.get() != null && (info.forceShow || mPropertyModel != null);
         if (!shouldShowMessage) return;
 
         recordMessageState(state, info);
@@ -774,6 +776,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         mPropertyModel.set(MessageBannerProperties.ICON, drawable);
         mPropertyModel.set(MessageBannerProperties.TITLE, info.message);
         mPropertyModel.set(MessageBannerProperties.DESCRIPTION, info.description);
+        mPropertyModel.set(MessageBannerProperties.DESCRIPTION_MAX_LINES, 3);
         mPropertyModel.set(MessageBannerProperties.PRIMARY_BUTTON_TEXT, info.link);
         mPropertyModel.set(MessageBannerProperties.ON_DISMISSED, this::onMessageDismissed);
         mPropertyModel.set(MessageBannerProperties.ON_PRIMARY_ACTION,
@@ -784,11 +787,12 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         }
 
         mDismissRunnable = () -> {
-            mMessageDispatcher.dismissMessage(mPropertyModel, DismissReason.SCOPE_DESTROYED);
+            if (mMessageDispatcher.get() == null) return;
+            mMessageDispatcher.get().dismissMessage(mPropertyModel, DismissReason.SCOPE_DESTROYED);
         };
 
         if (updateOnly) return;
-        mMessageDispatcher.enqueueMessage(mPropertyModel, currentTab.getWebContents(),
+        mMessageDispatcher.get().enqueueMessage(mPropertyModel, currentTab.getWebContents(),
                 MessageScopeType.WEB_CONTENTS, /*highPriority=*/false);
         recordMessageCreated();
     }
