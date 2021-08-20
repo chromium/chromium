@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/notreached.h"
+#include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
@@ -238,9 +239,7 @@ TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDrop) {
 // 1. With a single window open,
 // 2. Touch down and move the touch point a bit (drag),
 // 3. Run move loop, drag it within the window bounds and drop.
-// TODO(crbug.com/1241791): Test is flaky.
-TEST_P(WaylandWindowDragControllerTest,
-       DISABLED_DragInsideWindowAndDrop_TOUCH) {
+TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDrop_TOUCH) {
   // Ensure there is no window currently focused
   EXPECT_FALSE(window_manager()->GetCurrentFocusedWindow());
   EXPECT_EQ(gfx::kNullAcceleratedWidget,
@@ -299,31 +298,38 @@ TEST_P(WaylandWindowDragControllerTest,
         test_step = kDropping;
       });
 
-  auto test = [](WaylandWindowDragControllerTest* self,
-                 enum TestStep* test_step) {
+  base::RunLoop dont_exit;
+  auto task_1 = base::BindLambdaForTesting([&]() {
+    dont_exit.Quit();
+
+    // RunMoveLoop() blocks until the dragging session ends, so resume test
+    // server's run loop until it returns.
+    server_.Resume();
+    move_loop_handler->RunMoveLoop({});
+    server_.Pause();
+
+    SendPointerEnter(window_.get(), &delegate_);
+    Sync();
+
+    EXPECT_EQ(State::kIdle, drag_controller()->state());
+    EXPECT_EQ(window_.get(), window_manager()->GetCurrentFocusedWindow());
+    EXPECT_EQ(window_->GetWidget(),
+              screen_->GetLocalProcessWidgetAtPoint({20, 20}, {}));
+  });
+
+  auto task_2 = base::BindLambdaForTesting([&]() {
     // While in |kDetached| state, motion events are expected to be propagated
     // by window drag controller as bounds changes.
-    EXPECT_EQ(State::kDetached, self->drag_controller()->state());
-    EXPECT_EQ(*test_step, kStarted);
-    *test_step = kDragging;
-    self->SendDndMotion({20, 20});
-    self->Sync();
-  };
-  ScheduleTestTask(base::BindOnce(test, base::Unretained(this), &test_step));
+    EXPECT_EQ(State::kDetached, drag_controller()->state());
+    EXPECT_EQ(test_step, kStarted);
+    test_step = kDragging;
+    SendDndMotion({20, 20});
+    Sync();
+  });
 
-  // RunMoveLoop() blocks until the dragging session ends, so resume test
-  // server's run loop until it returns.
-  server_.Resume();
-  move_loop_handler->RunMoveLoop({});
-  server_.Pause();
-
-  SendPointerEnter(window_.get(), &delegate_);
-  Sync();
-
-  EXPECT_EQ(State::kIdle, drag_controller()->state());
-  EXPECT_EQ(window_.get(), window_manager()->GetCurrentFocusedWindow());
-  EXPECT_EQ(window_->GetWidget(),
-            screen_->GetLocalProcessWidgetAtPoint({20, 20}, {}));
+  ScheduleTestTask(task_1);
+  ScheduleTestTask(task_2);
+  dont_exit.Run();
 }
 
 // Check the following flow works as expected:
