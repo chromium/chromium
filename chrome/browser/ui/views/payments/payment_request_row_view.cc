@@ -4,13 +4,45 @@
 
 #include "chrome/browser/ui/views/payments/payment_request_row_view.h"
 
+#include <string>
+
 #include "chrome/browser/ui/views/payments/payment_request_views_util.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
+#include "ui/views/controls/label.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
+
+namespace {
+
+// TODO(pbos): Reconsider how to construct accessible names from these nodes.
+// Right now this concatenates (with newlines) every Label inside the row to
+// ensure that no data is inaccessible.
+std::u16string GetAccessibleNameFromTree(views::View* view) {
+  if (views::IsViewClass<views::Label>(view))
+    return static_cast<views::Label*>(view)->GetAccessibleName();
+
+  std::u16string accessible_name;
+  for (views::View* child : view->children()) {
+    // Skip buttons they will be announced independently. This is used for
+    // "more" items.
+    if (views::IsViewClass<views::Button>(child))
+      continue;
+    std::u16string child_accessible_name = GetAccessibleNameFromTree(child);
+    if (child_accessible_name.empty())
+      continue;
+    if (!accessible_name.empty())
+      accessible_name += '\n';
+    accessible_name += child_accessible_name;
+  }
+  return accessible_name;
+}
+
+}  // namespace
 
 namespace payments {
 
@@ -30,7 +62,7 @@ PaymentRequestRowView::PaymentRequestRowView(PressedCallback callback,
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
 }
 
-PaymentRequestRowView::~PaymentRequestRowView() {}
+PaymentRequestRowView::~PaymentRequestRowView() = default;
 
 bool PaymentRequestRowView::GetClickable() const {
   return clickable_;
@@ -83,6 +115,11 @@ void PaymentRequestRowView::SetIsHighlighted(bool highlighted) {
   }
 }
 
+void PaymentRequestRowView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  Button::GetAccessibleNodeData(node_data);
+  node_data->SetName(GetAccessibleNameFromTree(this));
+}
+
 void PaymentRequestRowView::StateChanged(ButtonState old_state) {
   Button::StateChanged(old_state);
   if (!GetClickable())
@@ -102,6 +139,7 @@ void PaymentRequestRowView::OnFocus() {
     SetIsHighlighted(true);
     SchedulePaint();
   }
+  View::OnFocus();
 }
 
 void PaymentRequestRowView::OnBlur() {
