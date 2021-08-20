@@ -55,7 +55,7 @@ Printer CreateAutoconfPrinter() {
 
 // Check the values populated in |printer_info| match the values of |printer|.
 void CheckGenericPrinterInfo(const Printer& printer,
-                             const base::DictionaryValue& printer_info) {
+                             const base::Value& printer_info) {
   ExpectDictStringValue(printer.id(), printer_info, "printerId");
   ExpectDictStringValue(printer.display_name(), printer_info, "printerName");
   ExpectDictStringValue(printer.description(), printer_info,
@@ -66,7 +66,7 @@ void CheckGenericPrinterInfo(const Printer& printer,
 
 // Check that the corresponding values in |printer_info| match the given URI
 // components of |address|, |queue|, and |protocol|.
-void CheckPrinterInfoUri(const base::DictionaryValue& printer_info,
+void CheckPrinterInfoUri(const base::Value& printer_info,
                          const std::string& protocol,
                          const std::string& address,
                          const std::string& queue) {
@@ -268,57 +268,52 @@ TEST(PrinterTranslatorTest, BulkPrinterJson) {
 
 TEST(PrinterTranslatorTest, GetCupsPrinterInfoGenericPrinter) {
   Printer printer = CreateGenericPrinter();
-  std::unique_ptr<base::DictionaryValue> printer_info =
-      GetCupsPrinterInfo(printer);
-  CheckGenericPrinterInfo(CreateGenericPrinter(), *printer_info);
+  base::Value printer_info = GetCupsPrinterInfo(printer);
+  CheckGenericPrinterInfo(CreateGenericPrinter(), printer_info);
 
   // We expect the default values to be set for the URI components since the
   // generic printer does not have the URI field set.
-  CheckPrinterInfoUri(*printer_info, "ipp", "", "");
+  CheckPrinterInfoUri(printer_info, "ipp", "", "");
 
-  ExpectDictBooleanValue(false, *printer_info, "printerPpdReference.autoconf");
+  ExpectDictBooleanValue(false, printer_info, "printerPpdReference.autoconf");
 }
 
 TEST(PrinterTranslatorTest, GetCupsPrinterInfoGenericPrinterWithUri) {
   Printer printer = CreateGenericPrinter();
   ASSERT_TRUE(printer.SetUri(kUri));
 
-  std::unique_ptr<base::DictionaryValue> printer_info =
-      GetCupsPrinterInfo(printer);
-  CheckGenericPrinterInfo(CreateGenericPrinter(), *printer_info);
+  base::Value printer_info = GetCupsPrinterInfo(printer);
+  CheckGenericPrinterInfo(CreateGenericPrinter(), printer_info);
 
-  CheckPrinterInfoUri(*printer_info, "ipp", "printy.domain.co:555",
-                      "ipp/print");
+  CheckPrinterInfoUri(printer_info, "ipp", "printy.domain.co:555", "ipp/print");
 
-  ExpectDictBooleanValue(false, *printer_info, "printerPpdReference.autoconf");
+  ExpectDictBooleanValue(false, printer_info, "printerPpdReference.autoconf");
 }
 
 TEST(PrinterTranslatorTest, GetCupsPrinterInfoGenericPrinterWithUsbUri) {
   Printer printer = CreateGenericPrinter();
   ASSERT_TRUE(printer.SetUri(kUsbUri));
 
-  std::unique_ptr<base::DictionaryValue> printer_info =
-      GetCupsPrinterInfo(printer);
-  CheckGenericPrinterInfo(CreateGenericPrinter(), *printer_info);
+  base::Value printer_info = GetCupsPrinterInfo(printer);
+  CheckGenericPrinterInfo(CreateGenericPrinter(), printer_info);
 
-  CheckPrinterInfoUri(*printer_info, "usb", "1234", "af9d?serial=ink1");
+  CheckPrinterInfoUri(printer_info, "usb", "1234", "af9d?serial=ink1");
 
-  ExpectDictBooleanValue(false, *printer_info, "printerPpdReference.autoconf");
+  ExpectDictBooleanValue(false, printer_info, "printerPpdReference.autoconf");
 }
 
 TEST(PrinterTranslatorTest, GetCupsPrinterInfoAutoconfPrinter) {
   Printer printer = CreateAutoconfPrinter();
-  std::unique_ptr<base::DictionaryValue> printer_info =
-      GetCupsPrinterInfo(printer);
-  CheckGenericPrinterInfo(CreateGenericPrinter(), *printer_info);
+  base::Value printer_info = GetCupsPrinterInfo(printer);
+  CheckGenericPrinterInfo(CreateGenericPrinter(), printer_info);
 
   // We expect the default values to be set for the URI components since the
   // generic printer does not have the URI field set.
-  CheckPrinterInfoUri(*printer_info, "ipp", "", "");
+  CheckPrinterInfoUri(printer_info, "ipp", "", "");
 
   // Since this is an autoconf printer we expect "printerPpdReference.autoconf"
   // to be true.
-  ExpectDictBooleanValue(true, *printer_info, "printerPpdReference.autoconf");
+  ExpectDictBooleanValue(true, printer_info, "printerPpdReference.autoconf");
 }
 
 TEST(PrinterTranslatorTest, GetCupsPrinterStatusOneReason) {
@@ -381,13 +376,12 @@ TEST(PrinterTranslatorTest, GetCupsPrinterStatusTwoReasons) {
 TEST(PrinterTranslatorTest, GetCupsPrinterInfoManagedPrinter) {
   Printer printer = CreateGenericPrinter();
   printer.set_source(Printer::Source::SRC_USER_PREFS);
-  std::unique_ptr<base::DictionaryValue> printer_info =
-      GetCupsPrinterInfo(printer);
-  ExpectDictBooleanValue(false, *printer_info, "isManaged");
+  base::Value printer_info = GetCupsPrinterInfo(printer);
+  ExpectDictBooleanValue(false, printer_info, "isManaged");
 
   printer.set_source(Printer::Source::SRC_POLICY);
   printer_info = GetCupsPrinterInfo(printer);
-  ExpectDictBooleanValue(true, *printer_info, "isManaged");
+  ExpectDictBooleanValue(true, printer_info, "isManaged");
 }
 
 }  // namespace chromeos

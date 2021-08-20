@@ -108,8 +108,7 @@ base::Value BuildCupsPrintersList(const std::vector<Printer>& printers) {
   for (const Printer& printer : printers) {
     // Some of these printers could be invalid but we want to allow the user
     // to edit them. crbug.com/778383
-    printers_list.Append(
-        base::Value::FromUniquePtrValue(GetCupsPrinterInfo(printer)));
+    printers_list.Append(GetCupsPrinterInfo(printer));
   }
 
   base::Value response(base::Value::Type::DICTIONARY);
@@ -542,7 +541,7 @@ void CupsPrintersHandler::OnAutoconfQueriedDiscovered(
   // the rest.
   PRINTER_LOG(EVENT) << "Could not query printer.  Fallback to asking the user";
   RejectJavascriptCallback(base::Value(callback_id),
-                           *GetCupsPrinterInfo(printer));
+                           GetCupsPrinterInfo(printer));
 }
 
 void CupsPrintersHandler::OnAutoconfQueried(
@@ -802,7 +801,7 @@ void CupsPrintersHandler::OnAddedDiscoveredPrinter(
                           "Fall back to manual.";
     // Could not set up printer.  Asking user for manufacturer data.
     RejectJavascriptCallback(base::Value(callback_id),
-                             *GetCupsPrinterInfo(printer));
+                             GetCupsPrinterInfo(printer));
   }
 }
 
@@ -1091,7 +1090,7 @@ void CupsPrintersHandler::HandleAddDiscoveredPrinter(
   // directly, so we have to fall back to manual configuration here.
   if (printer->IsUsbProtocol()) {
     RejectJavascriptCallback(base::Value(callback_id),
-                             *GetCupsPrinterInfo(*printer));
+                             GetCupsPrinterInfo(*printer));
     return;
   }
 
@@ -1221,7 +1220,7 @@ void CupsPrintersHandler::OnIpResolved(const std::string& callback_id,
   PRINTER_LOG(EVENT) << "Request make and model from user";
   // If it's not an IPP printer, the user must choose a PPD.
   RejectJavascriptCallback(base::Value(callback_id),
-                           *GetCupsPrinterInfo(printer));
+                           GetCupsPrinterInfo(printer));
 }
 
 void CupsPrintersHandler::HandleQueryPrintServer(const base::ListValue* args) {
