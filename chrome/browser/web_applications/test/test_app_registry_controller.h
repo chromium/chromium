@@ -9,9 +9,18 @@
 
 namespace web_app {
 
+class TestWebAppDatabaseFactory;
+class WebAppRegistrarMutable;
+
 class TestAppRegistryController : public AppRegistryController {
  public:
   explicit TestAppRegistryController(Profile* profile);
+
+  TestAppRegistryController(
+      Profile* profile,
+      std::unique_ptr<TestWebAppDatabaseFactory> database_factory,
+      std::unique_ptr<WebAppRegistrarMutable> registrar);
+
   ~TestAppRegistryController() override;
 
   // AppRegistryController:
@@ -37,6 +46,10 @@ class TestAppRegistryController : public AppRegistryController {
                                           bool enabled) override;
 
   WebAppSyncBridge* AsWebAppSyncBridge() override;
+
+ private:
+  std::unique_ptr<TestWebAppDatabaseFactory> database_factory_;
+  std::unique_ptr<WebAppRegistrarMutable> registrar_;
 };
 
 }  // namespace web_app

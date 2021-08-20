@@ -4,10 +4,25 @@
 
 #include "chrome/browser/web_applications/test/test_app_registry_controller.h"
 
+#include "chrome/browser/web_applications/test/test_web_app_database_factory.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
+
 namespace web_app {
 
 TestAppRegistryController::TestAppRegistryController(Profile* profile)
-    : AppRegistryController(profile) {}
+    : TestAppRegistryController(
+          profile,
+          std::make_unique<TestWebAppDatabaseFactory>(),
+          std::make_unique<WebAppRegistrarMutable>(profile)) {}
+
+TestAppRegistryController::TestAppRegistryController(
+    Profile* profile,
+    std::unique_ptr<TestWebAppDatabaseFactory> database_factory,
+    std::unique_ptr<WebAppRegistrarMutable> registrar)
+    : AppRegistryController(profile),
+      database_factory_(std::move(database_factory)),
+      registrar_(std::move(registrar)) {}
+
 TestAppRegistryController::~TestAppRegistryController() = default;
 
 void TestAppRegistryController::Init(base::OnceClosure callback) {
