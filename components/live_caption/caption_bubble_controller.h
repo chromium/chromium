@@ -14,7 +14,7 @@
 
 namespace captions {
 
-class LiveCaptionSpeechRecognitionHost;
+class CaptionBubbleContext;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Caption Bubble Controller
@@ -38,16 +38,15 @@ class CaptionBubbleController {
   // the transcription result was set on the caption bubble successfully.
   // Transcriptions will halt if this returns false.
   virtual bool OnTranscription(
-      LiveCaptionSpeechRecognitionHost* live_caption_speech_recognition_host,
+      CaptionBubbleContext* caption_bubble_context,
       const media::SpeechRecognitionResult& result) = 0;
 
   // Called when the speech service has an error.
-  virtual void OnError(LiveCaptionSpeechRecognitionHost*
-                           live_caption_speech_recognition_host) = 0;
+  virtual void OnError(CaptionBubbleContext* caption_bubble_context) = 0;
 
   // Called when the audio stream has ended.
-  virtual void OnAudioStreamEnd(LiveCaptionSpeechRecognitionHost*
-                                    live_caption_speech_recognition_host) = 0;
+  virtual void OnAudioStreamEnd(
+      CaptionBubbleContext* caption_bubble_context) = 0;
 
   // Called when the caption style changes.
   virtual void UpdateCaptionStyle(

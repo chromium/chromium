@@ -36,17 +36,14 @@ class CaptionBubbleControllerViews : public CaptionBubbleController {
   // Called when a transcription is received from the service. Returns whether
   // the transcription result was set on the caption bubble successfully.
   // Transcriptions will halt if this returns false.
-  bool OnTranscription(
-      LiveCaptionSpeechRecognitionHost* live_caption_speech_recognition_host,
-      const media::SpeechRecognitionResult& result) override;
+  bool OnTranscription(CaptionBubbleContext* caption_bubble_context,
+                       const media::SpeechRecognitionResult& result) override;
 
   // Called when the speech service has an error.
-  void OnError(LiveCaptionSpeechRecognitionHost*
-                   live_caption_speech_recognition_host) override;
+  void OnError(CaptionBubbleContext* caption_bubble_context) override;
 
   // Called when the audio stream has ended.
-  void OnAudioStreamEnd(LiveCaptionSpeechRecognitionHost*
-                            live_caption_speech_recognition_host) override;
+  void OnAudioStreamEnd(CaptionBubbleContext* caption_bubble_context) override;
 
   // Called when the caption style changes.
   void UpdateCaptionStyle(
@@ -62,8 +59,7 @@ class CaptionBubbleControllerViews : public CaptionBubbleController {
   // Sets the active CaptionBubbleModel to the one corresponding to the given
   // media player id, and creates a new CaptionBubbleModel if one does not
   // already exist.
-  void SetActiveModel(
-      LiveCaptionSpeechRecognitionHost* live_caption_speech_recognition_host);
+  void SetActiveModel(CaptionBubbleContext* caption_bubble_context);
 
   bool IsWidgetVisibleForTesting() override;
   std::string GetBubbleLabelTextForTesting() override;
@@ -77,8 +73,7 @@ class CaptionBubbleControllerViews : public CaptionBubbleController {
   // A map of media player ids and their corresponding CaptionBubbleModel. New
   // entries are added to this map when a previously unseen media player id is
   // received.
-  std::unordered_map<LiveCaptionSpeechRecognitionHost*,
-                     std::unique_ptr<CaptionBubbleModel>>
+  std::unordered_map<CaptionBubbleContext*, std::unique_ptr<CaptionBubbleModel>>
       caption_bubble_models_;
 };
 }  // namespace captions

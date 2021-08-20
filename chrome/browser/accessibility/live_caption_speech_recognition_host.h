@@ -18,7 +18,6 @@ class RenderFrameHost;
 
 namespace captions {
 
-class CaptionBubbleContext;
 class CaptionBubbleContextBrowser;
 class LiveCaptionController;
 
@@ -54,8 +53,6 @@ class LiveCaptionSpeechRecognitionHost
   void OnLanguageIdentificationEvent(
       media::mojom::LanguageIdentificationEventPtr event) override;
   void OnSpeechRecognitionError() override;
-
-  CaptionBubbleContext* GetContext();
 
  protected:
   // content::WebContentsObserver:

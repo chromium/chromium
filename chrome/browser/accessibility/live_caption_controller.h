@@ -28,7 +28,7 @@ class PrefRegistrySyncable;
 namespace captions {
 
 class CaptionBubbleController;
-class LiveCaptionSpeechRecognitionHost;
+class CaptionBubbleContext;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Live Caption Controller
@@ -56,28 +56,24 @@ class LiveCaptionController : public KeyedService,
   // Routes a transcription to the CaptionBubbleController. Returns whether the
   // transcription result was routed successfully. Transcriptions will halt if
   // this returns false.
-  bool DispatchTranscription(
-      LiveCaptionSpeechRecognitionHost* live_caption_speech_recognition_host,
-      const media::SpeechRecognitionResult& result);
+  bool DispatchTranscription(CaptionBubbleContext* caption_bubble_context,
+                             const media::SpeechRecognitionResult& result);
 
   void OnLanguageIdentificationEvent(
       const media::mojom::LanguageIdentificationEventPtr& event);
 
   // Alerts the CaptionBubbleController that there is an error in the speech
   // recognition service.
-  void OnError(
-      LiveCaptionSpeechRecognitionHost* live_caption_speech_recognition_host);
+  void OnError(CaptionBubbleContext* caption_bubble_context);
 
   // Alerts the CaptionBubbleController that the audio stream has ended.
-  void OnAudioStreamEnd(
-      LiveCaptionSpeechRecognitionHost* live_caption_speech_recognition_host);
+  void OnAudioStreamEnd(CaptionBubbleContext* caption_bubble_context);
 
   // Mac and ChromeOS move the fullscreened window into a new workspace. When
-  // the WebContents associated with the LiveCaptionSpeechRecognitionHost goes
+  // the WebContents associated with the CaptionBubbleContext goes
   // fullscreen, ensure that the Live Caption bubble moves to the new workspace.
 #if defined(OS_MAC) || defined(OS_CHROMEOS)
-  void OnToggleFullscreen(
-      LiveCaptionSpeechRecognitionHost* live_caption_speech_recognition_host);
+  void OnToggleFullscreen(CaptionBubbleContext* caption_bubble_context);
 #endif
 
  private:

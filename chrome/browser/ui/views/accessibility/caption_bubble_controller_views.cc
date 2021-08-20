@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "chrome/browser/accessibility/live_caption_controller.h"
 #include "chrome/browser/accessibility/live_caption_controller_factory.h"
-#include "chrome/browser/accessibility/live_caption_speech_recognition_host.h"
+#include "components/live_caption/caption_bubble_context.h"
 #include "components/live_caption/views/caption_bubble.h"
 #include "components/live_caption/views/caption_bubble_model.h"
 
@@ -41,11 +41,11 @@ void CaptionBubbleControllerViews::OnCaptionBubbleDestroyed() {
 }
 
 bool CaptionBubbleControllerViews::OnTranscription(
-    LiveCaptionSpeechRecognitionHost* live_caption_speech_recognition_host,
+    CaptionBubbleContext* caption_bubble_context,
     const media::SpeechRecognitionResult& result) {
   if (!caption_bubble_)
     return false;
-  SetActiveModel(live_caption_speech_recognition_host);
+  SetActiveModel(caption_bubble_context);
   if (active_model_->IsClosed())
     return false;
 
@@ -65,27 +65,27 @@ bool CaptionBubbleControllerViews::OnTranscription(
 }
 
 void CaptionBubbleControllerViews::OnError(
-    LiveCaptionSpeechRecognitionHost* live_caption_speech_recognition_host) {
+    CaptionBubbleContext* caption_bubble_context) {
   if (!caption_bubble_)
     return;
-  SetActiveModel(live_caption_speech_recognition_host);
+  SetActiveModel(caption_bubble_context);
   if (active_model_->IsClosed())
     return;
   active_model_->OnError();
 }
 
 void CaptionBubbleControllerViews::OnAudioStreamEnd(
-    LiveCaptionSpeechRecognitionHost* live_caption_speech_recognition_host) {
+    CaptionBubbleContext* caption_bubble_context) {
   if (!caption_bubble_)
     return;
 
   CaptionBubbleModel* caption_bubble_model =
-      caption_bubble_models_[live_caption_speech_recognition_host].get();
+      caption_bubble_models_[caption_bubble_context].get();
   if (active_model_ == caption_bubble_model) {
     active_model_ = nullptr;
     caption_bubble_->SetModel(nullptr);
   }
-  caption_bubble_models_.erase(live_caption_speech_recognition_host);
+  caption_bubble_models_.erase(caption_bubble_context);
 }
 
 void CaptionBubbleControllerViews::UpdateCaptionStyle(
@@ -94,16 +94,15 @@ void CaptionBubbleControllerViews::UpdateCaptionStyle(
 }
 
 void CaptionBubbleControllerViews::SetActiveModel(
-    LiveCaptionSpeechRecognitionHost* live_caption_speech_recognition_host) {
-  if (!caption_bubble_models_.count(live_caption_speech_recognition_host)) {
+    CaptionBubbleContext* caption_bubble_context) {
+  if (!caption_bubble_models_.count(caption_bubble_context)) {
     caption_bubble_models_.emplace(
-        live_caption_speech_recognition_host,
-        std::make_unique<CaptionBubbleModel>(
-            live_caption_speech_recognition_host->GetContext()));
+        caption_bubble_context,
+        std::make_unique<CaptionBubbleModel>(caption_bubble_context));
   }
 
   CaptionBubbleModel* caption_bubble_model =
-      caption_bubble_models_[live_caption_speech_recognition_host].get();
+      caption_bubble_models_[caption_bubble_context].get();
   if (active_model_ != caption_bubble_model) {
     active_model_ = caption_bubble_model;
     caption_bubble_->SetModel(active_model_);

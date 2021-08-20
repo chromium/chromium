@@ -40,7 +40,7 @@ LiveCaptionSpeechRecognitionHost::LiveCaptionSpeechRecognitionHost(
 LiveCaptionSpeechRecognitionHost::~LiveCaptionSpeechRecognitionHost() {
   LiveCaptionController* live_caption_controller = GetLiveCaptionController();
   if (live_caption_controller)
-    live_caption_controller->OnAudioStreamEnd(this);
+    live_caption_controller->OnAudioStreamEnd(context_.get());
 }
 
 void LiveCaptionSpeechRecognitionHost::OnSpeechRecognitionRecognitionEvent(
@@ -52,7 +52,7 @@ void LiveCaptionSpeechRecognitionHost::OnSpeechRecognitionRecognitionEvent(
     return;
   }
   std::move(reply).Run(
-      live_caption_controller->DispatchTranscription(this, result));
+      live_caption_controller->DispatchTranscription(context_.get(), result));
 }
 
 void LiveCaptionSpeechRecognitionHost::OnLanguageIdentificationEvent(
@@ -67,7 +67,7 @@ void LiveCaptionSpeechRecognitionHost::OnLanguageIdentificationEvent(
 void LiveCaptionSpeechRecognitionHost::OnSpeechRecognitionError() {
   LiveCaptionController* live_caption_controller = GetLiveCaptionController();
   if (live_caption_controller)
-    live_caption_controller->OnError(this);
+    live_caption_controller->OnError(context_.get());
 }
 
 void LiveCaptionSpeechRecognitionHost::RenderFrameDeleted(
@@ -75,7 +75,7 @@ void LiveCaptionSpeechRecognitionHost::RenderFrameDeleted(
   if (frame_host == frame_host_) {
     LiveCaptionController* live_caption_controller = GetLiveCaptionController();
     if (live_caption_controller)
-      live_caption_controller->OnAudioStreamEnd(this);
+      live_caption_controller->OnAudioStreamEnd(context_.get());
     frame_host_ = nullptr;
   }
 }
@@ -85,13 +85,9 @@ void LiveCaptionSpeechRecognitionHost::MediaEffectivelyFullscreenChanged(
     bool is_fullscreen) {
   LiveCaptionController* live_caption_controller = GetLiveCaptionController();
   if (live_caption_controller)
-    live_caption_controller->OnToggleFullscreen(this);
+    live_caption_controller->OnToggleFullscreen(context_.get());
 }
 #endif
-
-CaptionBubbleContext* LiveCaptionSpeechRecognitionHost::GetContext() {
-  return context_.get();
-}
 
 content::WebContents* LiveCaptionSpeechRecognitionHost::GetWebContents() {
   if (!frame_host_)
