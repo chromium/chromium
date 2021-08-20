@@ -355,7 +355,8 @@ IN_PROC_BROWSER_TEST_P(EmergencyStopTracingTest, StopOnUIThread) {
   CheckOutput(GetExpectedPath(), GetOutputType());
 }
 
-IN_PROC_BROWSER_TEST_P(EmergencyStopTracingTest, StopOnThreadPool) {
+// Test is flaky. https://1241883.
+IN_PROC_BROWSER_TEST_P(EmergencyStopTracingTest, DISABLED_StopOnThreadPool) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl("", "title1.html")));
 
   auto expected_path = GetExpectedPath();
