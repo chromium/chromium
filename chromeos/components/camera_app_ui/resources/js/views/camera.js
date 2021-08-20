@@ -223,7 +223,7 @@ export class Camera extends View {
      * @type {!Facing}
      * @protected
      */
-    this.facingMode_ = Facing.UNKNOWN;
+    this.facingMode_ = Facing.NOT_SET;
 
     /**
      * @type {!metrics.ShutterType}

@@ -134,7 +134,7 @@ export class ModeFactory {
      * @type {!Facing}
      * @protected
      */
-    this.facing_ = Facing.UNKNOWN;
+    this.facing_ = Facing.NOT_SET;
 
     /**
      * Preview constraints.
