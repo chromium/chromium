@@ -619,7 +619,7 @@ TEST_F(NotificationViewMDTest, TestActionButtonClick) {
 }
 
 // TODO(crbug.com/1232197): Test failing on linux-lacros-tester-rel.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_TestInlineReply DISABLED_TestInlineReply
 #else
 #define MAYBE_TestInlineReply TestInlineReply
