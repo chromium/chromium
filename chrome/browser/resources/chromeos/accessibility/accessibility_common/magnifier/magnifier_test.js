@@ -182,24 +182,38 @@ TEST_F(
       });
     });
 
-// Disabled - failing on ASan: crbug.com/1236009
-TEST_F('MagnifierE2ETest', 'DISABLED_MagnifierCenterOnPoint', function() {
+TEST_F('MagnifierE2ETest', 'MagnifierCenterOnPoint', function() {
   this.runWithLoadedTree('', async function(root) {
-    const targetPoint = {x: 100, y: 100};
-    const targetBounds = {left: 100, top: 100, width: 0, height: 0};
     const magnifier = accessibilityCommon.getMagnifierForTest();
     magnifier.setIsInitializingForTest(false);
 
-    // Verify magnifier bounds don't include |targetBounds|.
-    bounds = await this.getNextMagnifierBounds();
-    assertFalse(RectUtil.contains(bounds, targetBounds));
+    const movePointAssertBounds = async (targetPoint, targetBounds) => {
+      return new Promise(resolve => {
+        const boundsChangedListener = newBounds => {
+          // Verify new magnifier bounds include |targetBounds|.
+          if (RectUtil.contains(newBounds, targetBounds)) {
+            chrome.accessibilityPrivate.onMagnifierBoundsChanged.removeListener(
+                boundsChangedListener);
+            clearInterval(id);
+            resolve();
+          }
+        };
+        chrome.accessibilityPrivate.onMagnifierBoundsChanged.addListener(
+            boundsChangedListener);
+        const id = setInterval(() => {
+          // Center magnifier on |targetPoint|.
+          chrome.accessibilityPrivate.magnifierCenterOnPoint(targetPoint);
+        }, 500);
+      });
+    };
 
-    // Center magnifier on point |targetPoint|.
-    chrome.accessibilityPrivate.magnifierCenterOnPoint(targetPoint);
+    // Move magnifier to upper left of screen.
+    await movePointAssertBounds(
+        {x: 100, y: 100}, {left: 100, top: 100, width: 0, height: 0});
 
-    // Verify magnifier bounds do include |targetBounds|.
-    bounds = await this.getNextMagnifierBounds();
-    assertTrue(RectUtil.contains(bounds, targetBounds));
+    // Move magnifier to lower right of screen.
+    await movePointAssertBounds(
+        {x: 650, y: 450}, {left: 650, top: 450, width: 0, height: 0});
   });
 });
 
