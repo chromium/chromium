@@ -627,6 +627,19 @@ suite('languages page', () => {
 
       assertTrue(await metricsProxy.whenCalled('recordToggleTranslate'));
     });
+
+    test('when clicking on Manage Google Account language', async () => {
+      // This test requires Language Settings V2 Update 2 to be enabled.
+      languagesPage.languageSettingsV2Update2Enabled_ = true;
+      loadTimeData.overrideValues({enableLanguageSettingsV2Update2: true});
+      Polymer.dom.flush();
+
+      languagesPage.$$('#manageGoogleAccountLanguage').click();
+      Polymer.dom.flush();
+      assertEquals(
+          await metricsProxy.whenCalled('recordInteraction'),
+          LanguagesPageInteraction.OPEN_MANAGE_GOOGLE_ACCOUNT_LANGUAGE);
+    });
   });
 });
 

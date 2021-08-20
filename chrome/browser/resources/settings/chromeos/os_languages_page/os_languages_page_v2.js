@@ -403,6 +403,8 @@ Polymer({
 
   /** @private */
   openManageGoogleAccountLanguage_() {
+    this.languagesMetricsProxy_.recordInteraction(
+        settings.LanguagesPageInteraction.OPEN_MANAGE_GOOGLE_ACCOUNT_LANGUAGE);
     window.open(loadTimeData.getString('googleAccountLanguagesURL'));
   }
 });

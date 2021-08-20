@@ -22,6 +22,7 @@ cr.define('settings', function() {
     SWITCH_INPUT_METHOD: 2,
     RESTART_LATER: 3,
     OPEN_CUSTOM_SPELL_CHECK: 4,
+    OPEN_MANAGE_GOOGLE_ACCOUNT_LANGUAGE: 5,
   };
 
   /** @interface */
