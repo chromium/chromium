@@ -145,7 +145,6 @@ class UpdateRequiredScreenTest : public OobeBaseTest {
   void SetUpOnMainThread() override {
     OobeBaseTest::SetUpOnMainThread();
 
-    error_screen_ = GetOobeUI()->GetErrorScreen();
     // Set up fake networks.
     network_state_test_helper_ =
         std::make_unique<chromeos::NetworkStateTestHelper>(
@@ -194,7 +193,6 @@ class UpdateRequiredScreenTest : public OobeBaseTest {
  protected:
   UpdateRequiredScreen* update_required_screen_;
   // Error screen - owned by OobeUI.
-  ErrorScreen* error_screen_ = nullptr;
   // Version updater - owned by `update_required_screen_`.
   VersionUpdater* version_updater_ = nullptr;
   // For testing captive portal
@@ -230,8 +228,9 @@ IN_PROC_BROWSER_TEST_F(UpdateRequiredScreenTest, TestCaptivePortal) {
   error_screen_waiter.set_assert_next_screen();
   error_screen_waiter.Wait();
 
+  ErrorScreen* error_screen = GetOobeUI()->GetErrorScreen();
   EXPECT_EQ(UpdateRequiredView::kScreenId.AsId(),
-            error_screen_->GetParentScreen());
+            error_screen->GetParentScreen());
   test::OobeJS().ExpectVisible("error-message");
   test::OobeJS().ExpectVisiblePath(
       {"error-message", "captive-portal-message-text"});
@@ -242,8 +241,7 @@ IN_PROC_BROWSER_TEST_F(UpdateRequiredScreenTest, TestCaptivePortal) {
   // process should start.
   network_portal_detector_.SimulateDefaultNetworkState(
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
-  EXPECT_EQ(OobeScreen::SCREEN_UNKNOWN.AsId(),
-            error_screen_->GetParentScreen());
+  EXPECT_EQ(OobeScreen::SCREEN_UNKNOWN.AsId(), error_screen->GetParentScreen());
 
   SetUpdateEngineStatus(update_engine::Operation::CHECKING_FOR_UPDATE);
   SetUpdateEngineStatus(update_engine::Operation::UPDATE_AVAILABLE);
