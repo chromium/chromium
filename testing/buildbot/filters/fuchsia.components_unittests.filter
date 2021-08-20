@@ -517,3 +517,22 @@
 -Voice*
 -WebAppOriginAssociationFetcher*
 -Zero*
+
+# TODO(crbug.com/1241661): These tests are failing because they cannot find a
+# default font.
+-DOMAgentTest.GetDocumentNativeWidgetOwnsWidget
+-DOMAgentTest.ViewInserted
+-OverlayAgentTest.HighlightRects
+-OverlayAgentTest.HighlightWidget
+-OverlayAgentTest.MouseEventsGenerateFEEventsInInspectMode
+-ViewElementTest.DispatchMouseEvent
+-ViewElementTest.GetNodeWindowAndScreenBounds
+-WidgetElementTest.GetAttributes
+-WidgetElementTest.GetBounds
+-WidgetElementTest.GetNodeWindowAndScreenBounds
+-WidgetElementTest.GetVisible
+-WidgetElementTest.SettingsBoundsOnElementSetsOnWidget
+-WidgetElementTest.SettingsBoundsOnWidgetCallsDelegate
+-WidgetElementTest.SettingVisibleOnElementSetsOnWidget
+-WidgetElementTest.TrackNonParentedElementLifetime
+-WidgetElementTest.TrackParentedElementLifetime
