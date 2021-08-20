@@ -28,6 +28,7 @@ class TestSharesheetController : public sharesheet::SharesheetController {
     EXPECT_EQ(::sharesheet::SharesheetResult::kCancel, result);
     close_called = true;
   }
+  bool IsBubbleVisible() const override { return !close_called; }
 
   bool close_called = false;
 };

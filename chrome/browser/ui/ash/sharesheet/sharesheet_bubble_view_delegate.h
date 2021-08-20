@@ -46,11 +46,10 @@ class SharesheetBubbleViewDelegate : public ::sharesheet::SharesheetUiDelegate {
   // ::sharesheet::SharesheetController:
   void SetBubbleSize(int width, int height) override;
   void CloseBubble(::sharesheet::SharesheetResult result) override;
+  bool IsBubbleVisible() const override;
 
  protected:
   friend class SharesheetBubbleViewTest;
-
-  bool IsBubbleVisible() const;
 
   SharesheetBubbleView* GetBubbleViewForTesting();
 

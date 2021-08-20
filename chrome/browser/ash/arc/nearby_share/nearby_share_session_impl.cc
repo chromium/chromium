@@ -92,6 +92,7 @@ NearbyShareSessionImpl::~NearbyShareSessionImpl() {
 
 void NearbyShareSessionImpl::OnNearbyShareClosed(
     views::Widget::ClosedReason reason) {
+  DCHECK(session_finished_callback_);
   DCHECK(session_instance_);
 
   session_instance_->OnNearbyShareViewClosed();
@@ -102,6 +103,17 @@ void NearbyShareSessionImpl::OnNearbyShareClosed(
     // If share is not continuing after sharesheet closes (e.g. cancel, esc key,
     // lost focus, etc.), we will clean up the current session including files.
     OnCleanupSession();
+  }
+
+  // The Nearby Share bubble is not visible. Delete the current session object
+  // if |file_handler_| is null. |file_handler_| is null if there were no files
+  // shared or |OnCleanupSession| was called.
+  if (!file_handler_) {
+    // Delete the current session object by using the task ID associated with
+    // it.
+    VLOG(1) << "OnNearbyShareClosed: Deleting session with task_id "
+            << task_id_;
+    std::move(session_finished_callback_).Run(task_id_);
   }
 }
 
@@ -334,8 +346,15 @@ void NearbyShareSessionImpl::OnSessionDisconnected() {
     OnCleanupSession();
     return;
   }
-  sharesheet_service->CloseBubble(arc_window,
-                                  sharesheet::SharesheetResult::kCancel);
+  sharesheet::SharesheetController* sharsheet_controller =
+      sharesheet_service->GetSharesheetController(arc_window);
+  if (!sharsheet_controller) {
+    LOG(ERROR) << "Unable to close sharesheet bubble. Cannot find the "
+                  "sharesheet controller";
+    OnCleanupSession();
+    return;
+  }
+  sharsheet_controller->CloseBubble(sharesheet::SharesheetResult::kCancel);
 }
 
 void NearbyShareSessionImpl::OnCleanupSession() {
@@ -357,8 +376,42 @@ void NearbyShareSessionImpl::OnCleanupSession() {
           base::BindOnce(base::GetDeletePathRecursivelyCallback(), share_path));
     }
   }
-  // Delete the current session object by using the task ID associated with it.
-  std::move(session_finished_callback_).Run(task_id_);
+
+  // All temp files have been deleted. If the Nearby Share bubble is not
+  // visible, delete the session object.
+  if (!IsNearbyShareBubbleVisible()) {
+    // Delete the current session object by using the task ID associated with
+    // it.
+    VLOG(1) << "OnCleanupSession: Deleting session with task_id " << task_id_;
+    std::move(session_finished_callback_).Run(task_id_);
+  }
+}
+
+bool NearbyShareSessionImpl::IsNearbyShareBubbleVisible() const {
+  DVLOG(1) << __func__;
+  aura::Window* const arc_window = GetArcWindow(task_id_);
+  if (!arc_window) {
+    LOG(ERROR) << "IsNearbyShareBubbleVisible: Unable to close sharesheet "
+                  "bubble. No ARC window found for task ID: "
+               << task_id_;
+    return false;
+  }
+  DVLOG(1) << "IsNearbyShareBubbleVisible: Getting Sharesheet service";
+  sharesheet::SharesheetService* sharesheet_service =
+      sharesheet::SharesheetServiceFactory::GetForProfile(profile_);
+  if (!sharesheet_service) {
+    LOG(ERROR) << "IsNearbyShareBubbleVisible: Cannot find sharesheet service.";
+    return false;
+  }
+
+  sharesheet::SharesheetController* sharesheet_controller =
+      sharesheet_service->GetSharesheetController(arc_window);
+  if (!sharesheet_controller) {
+    LOG(ERROR) << "IsNearbyShareBubbleVisible: Cannot find sharesheet "
+                  "controller.";
+    return false;
+  }
+  return sharesheet_controller->IsBubbleVisible();
 }
 
 }  // namespace arc

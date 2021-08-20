@@ -87,6 +87,8 @@ class NearbyShareSessionImpl : public mojom::NearbyShareSessionHost,
   // cleaned up along with the share session.
   void OnCleanupSession();
 
+  bool IsNearbyShareBubbleVisible() const;
+
   // Android activity's task ID
   uint32_t task_id_;
 

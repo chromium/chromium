@@ -23,6 +23,9 @@ class SharesheetController {
   // |result| indicates whether the share was successful, cancelled or closed
   // due to an error.
   virtual void CloseBubble(SharesheetResult result) = 0;
+
+  // Returns whether the bubble is visible.
+  virtual bool IsBubbleVisible() const = 0;
 };
 
 }  // namespace sharesheet

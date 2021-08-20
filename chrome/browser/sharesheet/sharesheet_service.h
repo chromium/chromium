@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/sharesheet/sharesheet_action_cache.h"
+#include "chrome/browser/sharesheet/sharesheet_controller.h"
 #include "chrome/browser/sharesheet/sharesheet_metrics.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -84,10 +85,9 @@ class SharesheetService : public KeyedService {
                   SharesheetMetrics::LaunchSource source,
                   DeliveredCallback delivered_callback,
                   CloseCallback close_callback = base::NullCallback());
-  // Closes the sharesheet dialog (aka bubble) for the given |native_window|
-  // with result. If the |native_window| is null or if it's not showing the
-  // sharesheet dialog, this function is a no-op.
-  void CloseBubble(gfx::NativeWindow native_window, SharesheetResult result);
+  // Gets the sharesheet controller for the given |native_window|.
+  SharesheetController* GetSharesheetController(
+      gfx::NativeWindow native_window);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Skips the generic Sharesheet bubble and directly displays the
   // NearbyShare bubble dialog for ARC.
