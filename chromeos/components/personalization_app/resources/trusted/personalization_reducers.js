@@ -301,6 +301,8 @@ function pendingSelectedReducer(state, action) {
   switch (action.name) {
     case ActionName.BEGIN_SELECT_IMAGE:
       return action.image;
+    case ActionName.BEGIN_UPDATE_DAILY_REFRESH_IMAGE:
+      return null;
     default:
       return state;
   }

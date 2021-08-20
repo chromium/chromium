@@ -212,11 +212,10 @@ export class WallpaperImages extends WithPersonalizationStore {
    * @private
    */
   async onPendingSelectedChanged_(pendingSelected) {
-    if (!pendingSelected || !pendingSelected.assetId)
-      return;
     const iframe = await this.iframePromise_;
     sendPendingWallpaperAssetId(
-        /** @type {!Window} */ (iframe.contentWindow), pendingSelected.assetId);
+        /** @type {!Window} */ (iframe.contentWindow),
+        pendingSelected?.assetId || null);
   }
 
   /**
