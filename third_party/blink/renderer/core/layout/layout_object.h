@@ -115,10 +115,15 @@ enum MarkingBehavior {
 enum ScheduleRelayoutBehavior { kScheduleRelayout, kDontScheduleRelayout };
 
 enum {
-  kBackgroundPaintInGraphicsLayer = 1 << 0,
-  kBackgroundPaintInScrollingContents = 1 << 1
+  // Backgrounds paint under FragmentData::LocalBorderBoxProperties().
+  kBackgroundPaintInBorderBoxSpace = 1 << 0,
+  // Backgrounds paint under FragmentData::ContentsProperties().
+  kBackgroundPaintInContentsSpace = 1 << 1,
+  // Paint backgrounds twice.
+  kBackgroundPaintInBothSpaces =
+      kBackgroundPaintInBorderBoxSpace | kBackgroundPaintInContentsSpace,
 };
-using BackgroundPaintLocation = uint8_t;
+using BackgroundPaintLocation = unsigned;
 
 struct AnnotatedRegionValue {
   DISALLOW_NEW();
@@ -133,7 +138,7 @@ struct AnnotatedRegionValue {
 // The axes which overflows should be clipped. This is not just because of
 // overflow clip, but other types of clip as well, such as control clips or
 // contain: paint.
-using OverflowClipAxes = uint8_t;
+using OverflowClipAxes = unsigned;
 
 enum {
   kNoOverflowClip = 0,
@@ -3922,7 +3927,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
           selection_state_(static_cast<unsigned>(SelectionState::kNone)),
           subtree_paint_property_update_reasons_(
               static_cast<unsigned>(SubtreePaintPropertyUpdateReason::kNone)),
-          background_paint_location_(kBackgroundPaintInGraphicsLayer),
+          background_paint_location_(kBackgroundPaintInBorderBoxSpace),
           overflow_clip_axes_(kNoOverflowClip) {}
 
     // Self needs layout for style means that this layout object is marked for a
@@ -4274,8 +4279,8 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     unsigned subtree_paint_property_update_reasons_
         : kSubtreePaintPropertyUpdateReasonsBitfieldWidth;
 
-    // Updated during CompositingUpdate in pre-CompositeAfterPaint, or PrePaint
-    // in CompositeAfterPaint.
+    // For LayoutBox. Updated during CompositingUpdate in
+    // pre-CompositeAfterPaint, or PrePaint in CompositeAfterPaint.
     unsigned background_paint_location_ : 2;  // BackgroundPaintLocation.
 
     unsigned overflow_clip_axes_ : 2;

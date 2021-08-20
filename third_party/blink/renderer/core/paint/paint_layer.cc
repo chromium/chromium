@@ -1713,7 +1713,7 @@ void PaintLayer::UpdateScrollableArea() {
     scrollable_area_->Dispose();
     scrollable_area_.Clear();
     GetLayoutObject().SetBackgroundPaintLocation(
-        kBackgroundPaintInGraphicsLayer);
+        kBackgroundPaintInBorderBoxSpace);
   }
 
   GetLayoutObject().SetNeedsPaintPropertyUpdate();

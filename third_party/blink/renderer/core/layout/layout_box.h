@@ -2070,6 +2070,12 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // (which is responsible for painting the tickmarks).
   void InvalidatePaintForTickmarks();
 
+  // Returns which of the border box space and contents space (maybe both)
+  // the backgrounds should be painted into, if the LayoutBox is composited.
+  // The caller may adjust the value by considering LCD-text etc. if needed and
+  // call SetBackgroundPaintLocation() with the value to be used for painting.
+  BackgroundPaintLocation ComputeBackgroundPaintLocationIfComposited() const;
+
  protected:
   ~LayoutBox() override;
 

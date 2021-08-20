@@ -649,9 +649,9 @@ void PaintLayerScrollableArea::InvalidatePaintForScrollOffsetChange() {
   if (!box->BackgroundNeedsFullPaintInvalidation()) {
     auto background_paint_location = box->GetBackgroundPaintLocation();
     bool background_paint_in_graphics_layer =
-        background_paint_location & kBackgroundPaintInGraphicsLayer;
+        background_paint_location & kBackgroundPaintInBorderBoxSpace;
     bool background_paint_in_scrolling_contents =
-        background_paint_location & kBackgroundPaintInScrollingContents;
+        background_paint_location & kBackgroundPaintInContentsSpace;
 
     // Invalidate background on scroll if needed.
     // Fixed attachment background has been dealt with in
@@ -2618,18 +2618,15 @@ bool PaintLayerScrollableArea::ComputeNeedsCompositedScrolling(
 #endif
 
   const auto* box = GetLayoutBox();
-  auto old_background_paint_location = box->GetBackgroundPaintLocation();
   non_composited_main_thread_scrolling_reasons_ = 0;
   auto new_background_paint_location =
       box->ComputeBackgroundPaintLocationIfComposited();
   bool needs_composited_scrolling = ComputeNeedsCompositedScrollingInternal(
       new_background_paint_location, force_prefer_compositing_to_lcd_text);
   if (!needs_composited_scrolling)
-    new_background_paint_location = kBackgroundPaintInGraphicsLayer;
-  if (new_background_paint_location != old_background_paint_location) {
-    box->GetMutableForPainting().SetBackgroundPaintLocation(
-        new_background_paint_location);
-  }
+    new_background_paint_location = kBackgroundPaintInBorderBoxSpace;
+  box->GetMutableForPainting().SetBackgroundPaintLocation(
+      new_background_paint_location);
 
   return needs_composited_scrolling;
 }
@@ -2682,7 +2679,7 @@ bool PaintLayerScrollableArea::ComputeNeedsCompositedScrollingInternal(
       needs_composited_scrolling = false;
     }
     if (!(background_paint_location_if_composited &
-          kBackgroundPaintInScrollingContents) &&
+          kBackgroundPaintInContentsSpace) &&
         box->StyleRef().HasBackground()) {
       non_composited_main_thread_scrolling_reasons_ |= cc::
           MainThreadScrollingReason::kCantPaintScrollingBackgroundAndLCDText;

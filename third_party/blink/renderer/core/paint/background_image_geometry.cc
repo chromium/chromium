@@ -351,7 +351,7 @@ PhysicalRect FixedAttachmentPositioningArea(
 
   if (const auto* layout_view = DynamicTo<LayoutView>(obj)) {
     if (!(layout_view->GetBackgroundPaintLocation() &
-          kBackgroundPaintInScrollingContents))
+          kBackgroundPaintInContentsSpace))
       return rect;
     // The LayoutView is the only object that can paint a fixed background into
     // its scrolling contents layer, so it gets a special adjustment here.

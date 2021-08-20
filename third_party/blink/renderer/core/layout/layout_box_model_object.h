@@ -191,10 +191,6 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
 
   bool UsesCompositedScrolling() const;
 
-  // Returns which layers backgrounds should be painted into for a overflow
-  // scrolling box if it uses composited scrolling.
-  BackgroundPaintLocation ComputeBackgroundPaintLocationIfComposited() const;
-
   // These return the CSS computed padding values.
   LayoutUnit ComputedCSSPaddingTop() const {
     NOT_DESTROYED();

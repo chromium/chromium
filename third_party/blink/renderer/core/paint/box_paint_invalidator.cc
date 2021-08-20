@@ -191,14 +191,13 @@ bool BoxPaintInvalidator::BackgroundGeometryDependsOnLayoutOverflowRect() {
 bool BoxPaintInvalidator::BackgroundPaintsOntoScrollingContentsLayer() {
   if (!HasEffectiveBackground())
     return false;
-  return box_.GetBackgroundPaintLocation() &
-         kBackgroundPaintInScrollingContents;
+  return box_.GetBackgroundPaintLocation() & kBackgroundPaintInContentsSpace;
 }
 
 bool BoxPaintInvalidator::BackgroundPaintsOntoMainGraphicsLayer() {
   if (!HasEffectiveBackground())
     return false;
-  return box_.GetBackgroundPaintLocation() & kBackgroundPaintInGraphicsLayer;
+  return box_.GetBackgroundPaintLocation() & kBackgroundPaintInBorderBoxSpace;
 }
 
 bool BoxPaintInvalidator::ShouldFullyInvalidateBackgroundOnLayoutOverflowChange(

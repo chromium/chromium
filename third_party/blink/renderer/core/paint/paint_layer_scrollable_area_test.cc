@@ -71,11 +71,6 @@ class PaintLayerScrollableAreaTest : public PaintControllerPaintTest {
     return *chrome_client_;
   }
 
-  BackgroundPaintLocation GetBackgroundPaintLocation(const char* element_id) {
-    return To<LayoutBoxModelObject>(GetLayoutObjectByElementId(element_id))
-        ->GetBackgroundPaintLocation();
-  }
-
   bool IsComposited(const LayoutObject* scroller) {
     const auto* paint_properties = scroller->FirstFragment().PaintProperties();
     return paint_properties && paint_properties->Transform() &&
@@ -128,223 +123,6 @@ class PaintLayerScrollableAreaTest : public PaintControllerPaintTest {
 };
 
 INSTANTIATE_PAINT_TEST_SUITE_P(PaintLayerScrollableAreaTest);
-
-TEST_P(PaintLayerScrollableAreaTest,
-       CanPaintBackgroundOntoScrollingContentsLayer) {
-  GetDocument().GetFrame()->GetSettings()->SetPreferCompositingToLCDTextEnabled(
-      true);
-  SetBodyInnerHTML(R"HTML(
-    <style>
-      .scroller {
-        overflow: scroll;
-        will-change: transform;
-        width: 300px;
-        height: 300px;
-      }
-      .spacer { height: 1000px; }
-      #scroller13::-webkit-scrollbar {
-        width: 13px;
-        height: 13px;
-      }
-    </style>
-    <div id='scroller1' class='scroller' style='background: white local;'>
-      <div id='negative-composited-child' style='background-color: red;
-          width: 1px; height: 1px; position: absolute;
-          backface-visibility: hidden; z-index: -1'></div>
-      <div class='spacer'></div>
-    </div>
-    <div id='scroller2' class='scroller' style='background: white content-box;
-        padding: 10px;'>
-      <div class='spacer'></div>
-    </div>
-    <div id='scroller3' class='scroller'
-        style='background: white local content-box; padding: 10px;'>
-      <div class='spacer'></div>
-    </div>
-    <div id='scroller4' class='scroller'
-        style='background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUg),
-        white local;'>
-      <div class='spacer'></div>
-    </div>
-    <div id='scroller5' class='scroller'
-        style='background:
-        url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUg) local, white local;'>
-      <div class='spacer'></div>
-    </div>
-    <div id='scroller6' class='scroller'
-        style='background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUg)
-        local, white padding-box; padding: 10px;'>
-      <div class='spacer'></div>
-    </div>
-    <div id='scroller7' class='scroller'
-        style='background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUg)
-        local, white content-box; padding: 10px;'>
-      <div class='spacer'></div>
-    </div>
-    <div id='scroller8' class='scroller' style='background: white border-box;'>
-      <div class='spacer'></div>
-    </div>
-    <div id='scroller9' class='scroller' style='background: white border-box;
-        border: 10px solid black;'>
-      <div class='spacer'></div>
-    </div>
-    <div id='scroller10' class='scroller' style='background: white border-box;
-        border: 10px solid rgba(0, 0, 0, 0.5);'>
-      <div class='spacer'></div>
-    </div>
-    <div id='scroller11' class='scroller'
-        style='background: white content-box;'>
-      <div class='spacer'></div>
-    </div>
-    <div id='scroller12' class='scroller' style='background: white content-box;
-        padding: 10px;'>
-      <div class='spacer'></div>
-    </div>
-    <div id='scroller13' class='scroller' style='background: white border-box;'>
-      <div class='spacer'></div>
-    </div>
-    <div id='scroller14' class='scroller' style='background: white;
-        border: 1px solid black; outline: 1px solid blue;
-        outline-offset: -1px;'>
-      <div class='spacer'></div>
-    </div>
-    <div id='scroller15' class='scroller' style='background: white;
-        border: 1px solid black; outline: 1px solid blue;
-        outline-offset: -2px;'>
-      <div class='spacer'></div>
-    </div>
-    <div id='css-clip' class='scroller' style='position: absolute;
-        background: white; clip: rect(0px,10px,10px,0px);'>
-      <div class='spacer'></div>
-    </div>
-    <div id='scroller17' class='scroller'
-        style='background: rgba(255, 255, 255, 0.5) border-box;
-        border: 5px solid rgba(0, 0, 0, 0.5);'>
-      <div class='spacer'></div>
-    </div>
-    <div id='scroller18' class='scroller'
-        style='background: white;
-        border: 5px dashed black;'>
-      <div class='spacer'></div>
-    </div>
-    <div id='box-shadow' class='scroller'
-        style='background: white; box-shadow: 10px 10px black'>
-      <div class='spacer'></div>
-    </div>
-    <div id='inset-box-shadow' class='scroller'
-        style='background: white; box-shadow: 10px 10px black inset'>
-      <div class='spacer'></div>
-    </div>
-  )HTML");
-
-  // #scroller1 can paint background into scrolling contents layer even with a
-  // negative z-index child.
-  EXPECT_EQ(kBackgroundPaintInScrollingContents,
-            GetBackgroundPaintLocation("scroller1"));
-
-  // #scroller2 cannot paint background into scrolling contents layer because it
-  // has a content-box clip without local attachment.
-  EXPECT_EQ(kBackgroundPaintInGraphicsLayer,
-            GetBackgroundPaintLocation("scroller2"));
-
-  // #scroller3 can paint background into scrolling contents layer.
-  EXPECT_EQ(kBackgroundPaintInScrollingContents,
-            GetBackgroundPaintLocation("scroller3"));
-
-  // #scroller4 cannot paint background into scrolling contents layer because
-  // the background image is not locally attached.
-  EXPECT_EQ(kBackgroundPaintInGraphicsLayer,
-            GetBackgroundPaintLocation("scroller4"));
-
-  // #scroller5 can paint background into scrolling contents layer because both
-  // the image and color are locally attached.
-  EXPECT_EQ(kBackgroundPaintInScrollingContents,
-            GetBackgroundPaintLocation("scroller5"));
-
-  // #scroller6 can paint background into scrolling contents layer because the
-  // image is locally attached and even though the color is not, it is filled to
-  // the padding box so it will be drawn the same as a locally attached
-  // background.
-  EXPECT_EQ(kBackgroundPaintInScrollingContents,
-            GetBackgroundPaintLocation("scroller6"));
-
-  // #scroller7 cannot paint background into scrolling contents layer because
-  // the color is filled to the content box and we have padding so it is not
-  // equivalent to a locally attached background.
-  EXPECT_EQ(kBackgroundPaintInGraphicsLayer,
-            GetBackgroundPaintLocation("scroller7"));
-
-  // #scroller8 can paint background into scrolling contents layer because its
-  // border-box is equivalent to its padding box since it has no border.
-  EXPECT_EQ(kBackgroundPaintInScrollingContents,
-            GetBackgroundPaintLocation("scroller8"));
-
-  // #scroller9 can paint background into scrolling contents layer because its
-  // border is opaque so it completely covers the background outside of the
-  // padding-box.
-  EXPECT_EQ(kBackgroundPaintInScrollingContents,
-            GetBackgroundPaintLocation("scroller9"));
-
-  // #scroller10 paints the background into both layers because its border is
-  // partially transparent so the background must be drawn to the
-  // border-box edges.
-  EXPECT_EQ(
-      kBackgroundPaintInGraphicsLayer | kBackgroundPaintInScrollingContents,
-      GetBackgroundPaintLocation("scroller10"));
-
-  // #scroller11 can paint background into scrolling contents layer because its
-  // content-box is equivalent to its padding box since it has no padding.
-  EXPECT_EQ(kBackgroundPaintInScrollingContents,
-            GetBackgroundPaintLocation("scroller11"));
-
-  // #scroller12 cannot paint background into scrolling contents layer because
-  // it has padding so its content-box is not equivalent to its padding-box.
-  EXPECT_EQ(kBackgroundPaintInGraphicsLayer,
-            GetBackgroundPaintLocation("scroller12"));
-
-  // #scroller13 paints the background into both layers because it has a custom
-  // scrollbar which the background may need to draw under.
-  EXPECT_EQ(
-      kBackgroundPaintInGraphicsLayer | kBackgroundPaintInScrollingContents,
-      GetBackgroundPaintLocation("scroller13"));
-
-  // #scroller14 can paint background into scrolling contents layer because the
-  // outline is drawn outside the padding box.
-  EXPECT_EQ(kBackgroundPaintInScrollingContents,
-            GetBackgroundPaintLocation("scroller14"));
-
-  // #scroller15 can paint background into scrolling contents layer because
-  // the outline is drawn into the decoration layer which will not be covered
-  // up.
-  EXPECT_EQ(kBackgroundPaintInScrollingContents,
-            GetBackgroundPaintLocation("scroller15"));
-
-  // css-clip doesn't affect background paint location.
-  EXPECT_EQ(kBackgroundPaintInScrollingContents,
-            GetBackgroundPaintLocation("css-clip"));
-
-  // #scroller17 can only be painted once as it is translucent, and it must
-  // be painted in the graphics layer to be under the translucent border.
-  EXPECT_EQ(kBackgroundPaintInGraphicsLayer,
-            GetBackgroundPaintLocation("scroller17"));
-
-  // #scroller18 can be painted in both layers because the background is a
-  // solid color, it must be because the dashed border reveals the background
-  // underneath it.
-  EXPECT_EQ(
-      kBackgroundPaintInGraphicsLayer | kBackgroundPaintInScrollingContents,
-      GetBackgroundPaintLocation("scroller18"));
-
-  // Background with normal (non-inset) box shadow can be painted in the
-  // scrolling contents layer.
-  EXPECT_EQ(kBackgroundPaintInScrollingContents,
-            GetBackgroundPaintLocation("box-shadow"));
-
-  // Background with inset box shadow can only be painted in the main graphics
-  // layer because the shadow can't scroll.
-  EXPECT_EQ(kBackgroundPaintInGraphicsLayer,
-            GetBackgroundPaintLocation("inset-box-shadow"));
-}
 
 TEST_P(PaintLayerScrollableAreaTest, OpaqueContainedLayersPromoted) {
   SetBodyInnerHTML(R"HTML(
@@ -979,9 +757,9 @@ TEST_P(PaintLayerScrollableAreaTest,
 
   auto* scroller = GetLayoutBoxByElementId("scroller");
   auto* scrollable_area = scroller->GetScrollableArea();
-  EXPECT_EQ(kBackgroundPaintInScrollingContents,
+  EXPECT_EQ(kBackgroundPaintInContentsSpace,
             scroller->ComputeBackgroundPaintLocationIfComposited());
-  EXPECT_EQ(kBackgroundPaintInScrollingContents,
+  EXPECT_EQ(kBackgroundPaintInContentsSpace,
             scroller->GetBackgroundPaintLocation());
   EXPECT_TRUE(UsesCompositedScrolling(scroller));
 
@@ -1017,7 +795,7 @@ TEST_P(PaintLayerScrollableAreaTest, ScrollWith3DPreserveParent) {
   )HTML");
 
   auto* scroller = GetLayoutBoxByElementId("scroller");
-  EXPECT_EQ(kBackgroundPaintInGraphicsLayer,
+  EXPECT_EQ(kBackgroundPaintInBorderBoxSpace,
             scroller->ComputeBackgroundPaintLocationIfComposited());
 }
 
@@ -1040,12 +818,10 @@ TEST_P(PaintLayerScrollableAreaTest,
 
   auto* scroller = GetLayoutBoxByElementId("scroller");
   auto* scrollable_area = scroller->GetScrollableArea();
-  EXPECT_EQ(
-      kBackgroundPaintInGraphicsLayer | kBackgroundPaintInScrollingContents,
-      scroller->ComputeBackgroundPaintLocationIfComposited());
-  EXPECT_EQ(
-      kBackgroundPaintInGraphicsLayer | kBackgroundPaintInScrollingContents,
-      scroller->GetBackgroundPaintLocation());
+  EXPECT_EQ(kBackgroundPaintInBothSpaces,
+            scroller->ComputeBackgroundPaintLocationIfComposited());
+  EXPECT_EQ(kBackgroundPaintInBothSpaces,
+            scroller->GetBackgroundPaintLocation());
 
   // Programmatically changing the scroll offset.
   scrollable_area->SetScrollOffset(ScrollOffset(0, 1),
@@ -1078,10 +854,10 @@ TEST_P(PaintLayerScrollableAreaTest, ViewScrollWithFixedAttachmentBackground) {
     <div style="height: 3000px"></div>
   )HTML");
 
-  EXPECT_EQ(kBackgroundPaintInScrollingContents,
+  EXPECT_EQ(kBackgroundPaintInContentsSpace,
             GetLayoutView().GetBackgroundPaintLocation());
   auto* fixed_background_div = GetLayoutBoxByElementId("fixed-background");
-  EXPECT_EQ(kBackgroundPaintInGraphicsLayer,
+  EXPECT_EQ(kBackgroundPaintInBorderBoxSpace,
             fixed_background_div->GetBackgroundPaintLocation());
   auto* div_scrollable_area = fixed_background_div->GetScrollableArea();
   auto* view_scrollable_area = GetLayoutView().GetScrollableArea();
@@ -1131,12 +907,12 @@ TEST_P(PaintLayerScrollableAreaTest,
 
   // Fixed-attachment solid-color background should be treated as default
   // attachment.
-  EXPECT_EQ(kBackgroundPaintInScrollingContents,
+  EXPECT_EQ(kBackgroundPaintInContentsSpace,
             GetLayoutView().GetBackgroundPaintLocation());
   auto* fixed_background_div = GetLayoutBoxByElementId("fixed-background");
-  EXPECT_EQ(kBackgroundPaintInScrollingContents,
+  EXPECT_EQ(kBackgroundPaintInContentsSpace,
             fixed_background_div->ComputeBackgroundPaintLocationIfComposited());
-  EXPECT_EQ(kBackgroundPaintInScrollingContents,
+  EXPECT_EQ(kBackgroundPaintInContentsSpace,
             fixed_background_div->GetBackgroundPaintLocation());
   auto* div_scrollable_area = fixed_background_div->GetScrollableArea();
   auto* view_scrollable_area = GetLayoutView().GetScrollableArea();
@@ -1186,10 +962,10 @@ TEST_P(PaintLayerScrollableAreaTest,
     <div style="height: 3000px"></div>
   )HTML");
 
-  EXPECT_EQ(kBackgroundPaintInGraphicsLayer,
+  EXPECT_EQ(kBackgroundPaintInBorderBoxSpace,
             GetLayoutView().GetBackgroundPaintLocation());
   auto* fixed_background_div = GetLayoutBoxByElementId("fixed-background");
-  EXPECT_EQ(kBackgroundPaintInGraphicsLayer,
+  EXPECT_EQ(kBackgroundPaintInBorderBoxSpace,
             fixed_background_div->GetBackgroundPaintLocation());
   auto* div_scrollable_area = fixed_background_div->GetScrollableArea();
   auto* view_scrollable_area = GetLayoutView().GetScrollableArea();

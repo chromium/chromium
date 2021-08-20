@@ -258,7 +258,7 @@ class CORE_EXPORT CompositedLayerMapping final : public GraphicsLayerClient {
   // draw with subpixel anti-aliasing.
   bool BackgroundPaintsOntoScrollingContentsLayer() const {
     return GetLayoutObject().GetBackgroundPaintLocation() &
-           kBackgroundPaintInScrollingContents;
+           kBackgroundPaintInContentsSpace;
   }
 
   // Returns true if the background paints onto the main graphics layer.
@@ -266,7 +266,7 @@ class CORE_EXPORT CompositedLayerMapping final : public GraphicsLayerClient {
   // and the scrolling contents layer.
   bool BackgroundPaintsOntoGraphicsLayer() const {
     return GetLayoutObject().GetBackgroundPaintLocation() &
-           kBackgroundPaintInGraphicsLayer;
+           kBackgroundPaintInBorderBoxSpace;
   }
 
   IntRect RecomputeInterestRect(const GraphicsLayer*) const;

@@ -1187,7 +1187,7 @@ bool LocalFrameView::RequiresMainThreadScrollingForBackgroundAttachmentFixed()
   // If the background is viewport background and it paints onto the main
   // graphics layer only, then it doesn't need main thread scrolling.
   if (IsA<LayoutView>(object) &&
-      object->GetBackgroundPaintLocation() == kBackgroundPaintInGraphicsLayer)
+      object->GetBackgroundPaintLocation() == kBackgroundPaintInBorderBoxSpace)
     return false;
   return true;
 }
@@ -1311,7 +1311,7 @@ void LocalFrameView::InvalidateBackgroundAttachmentFixedDescendantsOnScroll(
     // background is not painted on the scrolling contents.
     if (layout_object == GetLayoutView() &&
         !(GetLayoutView()->GetBackgroundPaintLocation() &
-          kBackgroundPaintInScrollingContents))
+          kBackgroundPaintInContentsSpace))
       continue;
     layout_object->SetBackgroundNeedsFullPaintInvalidation();
   }

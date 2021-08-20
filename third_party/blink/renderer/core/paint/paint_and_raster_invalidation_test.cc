@@ -327,7 +327,7 @@ TEST_P(PaintAndRasterInvalidationTest, CompositedLayoutViewResize) {
   target->setAttribute(html_names::kClassAttr, "");
   target->setAttribute(html_names::kStyleAttr, "height: 2000px");
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(kBackgroundPaintInScrollingContents,
+  EXPECT_EQ(kBackgroundPaintInContentsSpace,
             GetLayoutView().GetBackgroundPaintLocation());
 
   // Resize the content.
@@ -357,7 +357,7 @@ TEST_P(PaintAndRasterInvalidationTest, CompositedLayoutViewGradientResize) {
   target->setAttribute(html_names::kClassAttr, "");
   target->setAttribute(html_names::kStyleAttr, "height: 2000px");
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(kBackgroundPaintInScrollingContents,
+  EXPECT_EQ(kBackgroundPaintInContentsSpace,
             GetLayoutView().GetBackgroundPaintLocation());
 
   // Resize the content.
@@ -413,11 +413,11 @@ TEST_P(PaintAndRasterInvalidationTest, NonCompositedLayoutViewResize) {
     EXPECT_EQ(GetLayoutView(),
               EnclosingCompositedContainer(*content->GetLayoutObject()));
   }
-  EXPECT_EQ(kBackgroundPaintInScrollingContents,
+  EXPECT_EQ(kBackgroundPaintInContentsSpace,
             content->GetLayoutObject()
                 ->View()
                 ->ComputeBackgroundPaintLocationIfComposited());
-  EXPECT_EQ(kBackgroundPaintInGraphicsLayer,
+  EXPECT_EQ(kBackgroundPaintInBorderBoxSpace,
             content->GetLayoutObject()->View()->GetBackgroundPaintLocation());
 
   // Resize the content.
@@ -534,7 +534,7 @@ TEST_P(PaintAndRasterInvalidationTest,
   UpdateAllLifecyclePhasesForTest();
 
   auto* target_obj = To<LayoutBoxModelObject>(target->GetLayoutObject());
-  EXPECT_EQ(kBackgroundPaintInScrollingContents,
+  EXPECT_EQ(kBackgroundPaintInContentsSpace,
             target_obj->GetBackgroundPaintLocation());
 
   auto container_raster_invalidation_tracking =
@@ -617,7 +617,7 @@ TEST_P(PaintAndRasterInvalidationTest,
   GetDocument().View()->SetTracksRasterInvalidations(true);
   child->setAttribute(html_names::kStyleAttr, "width: 500px; height: 1000px");
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(kBackgroundPaintInScrollingContents,
+  EXPECT_EQ(kBackgroundPaintInContentsSpace,
             target_obj->GetBackgroundPaintLocation());
 
   // No invalidation on the container layer.
@@ -650,7 +650,7 @@ TEST_P(PaintAndRasterInvalidationTest,
        NonCompositedBackgroundAttachmentLocalResize) {
   SetUpHTML(*this);
   Element* target = GetDocument().getElementById("target");
-  auto* object = target->GetLayoutObject();
+  auto* object = target->GetLayoutBox();
   target->setAttribute(html_names::kClassAttr,
                        "translucent local-attachment scroll");
   target->setInnerHTML(
@@ -660,10 +660,9 @@ TEST_P(PaintAndRasterInvalidationTest,
   UpdateAllLifecyclePhasesForTest();
   if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
     EXPECT_EQ(&GetLayoutView(), EnclosingCompositedContainer(*object));
-  EXPECT_EQ(kBackgroundPaintInScrollingContents,
-            To<LayoutBoxModelObject>(object)
-                ->ComputeBackgroundPaintLocationIfComposited());
-  EXPECT_EQ(kBackgroundPaintInGraphicsLayer,
+  EXPECT_EQ(kBackgroundPaintInContentsSpace,
+            object->ComputeBackgroundPaintLocationIfComposited());
+  EXPECT_EQ(kBackgroundPaintInBorderBoxSpace,
             object->GetBackgroundPaintLocation());
 
   // Resize the content.
@@ -703,9 +702,8 @@ TEST_P(PaintAndRasterInvalidationTest, CompositedSolidBackgroundResize) {
   UpdateAllLifecyclePhasesForTest();
 
   auto* target_object = To<LayoutBoxModelObject>(target->GetLayoutObject());
-  EXPECT_EQ(
-      kBackgroundPaintInScrollingContents | kBackgroundPaintInGraphicsLayer,
-      target_object->GetBackgroundPaintLocation());
+  EXPECT_EQ(kBackgroundPaintInBothSpaces,
+            target_object->GetBackgroundPaintLocation());
 
   const auto* contents_raster_invalidation_tracking =
       RuntimeEnabledFeatures::CompositeAfterPaintEnabled()

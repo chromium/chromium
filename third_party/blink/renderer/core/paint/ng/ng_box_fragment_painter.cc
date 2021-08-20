@@ -437,12 +437,12 @@ void NGBoxFragmentPainter::PaintInternal(const PaintInfo& paint_info) {
     if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
       auto paint_location = To<LayoutBox>(*box_fragment_.GetLayoutObject())
                                 .GetBackgroundPaintLocation();
-      if (!(paint_location & kBackgroundPaintInGraphicsLayer))
+      if (!(paint_location & kBackgroundPaintInBorderBoxSpace))
         info.SetSkipsBackground(true);
       PaintObject(info, paint_offset);
       info.SetSkipsBackground(false);
 
-      if (paint_location & kBackgroundPaintInScrollingContents) {
+      if (paint_location & kBackgroundPaintInContentsSpace) {
         info.SetIsPaintingScrollingBackground(true);
         PaintObject(info, paint_offset);
         info.SetIsPaintingScrollingBackground(false);

@@ -452,9 +452,9 @@ TEST_P(CompositingTest, BackgroundColorInScrollingContentsLayer) {
   Element* scroller = GetElementById("scroller");
   LayoutBox* scroller_box = scroller->GetLayoutBox();
   ASSERT_TRUE(layout_view->GetBackgroundPaintLocation() ==
-              kBackgroundPaintInScrollingContents);
+              kBackgroundPaintInContentsSpace);
   ASSERT_TRUE(scroller_box->GetBackgroundPaintLocation() ==
-              kBackgroundPaintInScrollingContents);
+              kBackgroundPaintInContentsSpace);
 
   // The root layer and root scrolling contents layer get background_color by
   // blending the CSS background-color of the <html> element with
@@ -510,9 +510,9 @@ TEST_P(CompositingTest, BackgroundColorInGraphicsLayer) {
   Element* scroller = GetElementById("scroller");
   LayoutBox* scroller_box = scroller->GetLayoutBox();
   ASSERT_TRUE(layout_view->GetBackgroundPaintLocation() ==
-              kBackgroundPaintInGraphicsLayer);
+              kBackgroundPaintInBorderBoxSpace);
   ASSERT_TRUE(scroller_box->GetBackgroundPaintLocation() ==
-              kBackgroundPaintInGraphicsLayer);
+              kBackgroundPaintInBorderBoxSpace);
 
   // The root layer gets background_color by blending the CSS background-color
   // of the <html> element with LocalFrameView::BaseBackgroundColor(), which is

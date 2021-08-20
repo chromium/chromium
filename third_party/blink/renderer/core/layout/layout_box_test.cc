@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/graphics/test/stub_image.h"
+#include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 
 namespace blink {
 
@@ -1795,6 +1796,268 @@ TEST_P(LayoutBoxTest, SetNeedsOverflowRecalcFlexBox) {
   element->classList().Remove("transform");
   element->GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   EXPECT_TRUE(target->PaintingLayer()->NeedsVisualOverflowRecalc());
+}
+
+class LayoutBoxBackgroundPaintLocationTest : public RenderingTest,
+                                             public PaintTestConfigurations {
+ protected:
+  void SetUp() override {
+    EnableCompositing();
+    RenderingTest::SetUp();
+  }
+
+  BackgroundPaintLocation ScrollerBackgroundPaintLocation() {
+    auto* scroller = To<LayoutBox>(GetLayoutObjectByElementId("scroller"));
+    // The scroller is forced to be composited, so the values equal.
+    EXPECT_EQ(scroller->ComputeBackgroundPaintLocationIfComposited(),
+              scroller->GetBackgroundPaintLocation());
+    return scroller->GetBackgroundPaintLocation();
+  }
+
+  const String kCommonStyle = R"HTML(
+    <style>
+      #scroller {
+        overflow: scroll;
+        width: 300px;
+        height: 300px;
+        will-change: transform;
+      }
+      .spacer { height: 1000px; }
+    </style>
+  )HTML";
+};
+
+INSTANTIATE_PAINT_TEST_SUITE_P(LayoutBoxBackgroundPaintLocationTest);
+
+TEST_P(LayoutBoxBackgroundPaintLocationTest, ContentBoxClipZeroPadding) {
+  SetBodyInnerHTML(kCommonStyle + R"HTML(
+    <div id='scroller' style='background: white content-box; padding: 10px;'>
+      <div class='spacer'></div>
+    </div>
+  )HTML");
+
+  // #scroller cannot paint background into scrolling contents layer because it
+  // has a content-box clip without local attachment.
+  EXPECT_EQ(kBackgroundPaintInBorderBoxSpace,
+            ScrollerBackgroundPaintLocation());
+}
+
+TEST_P(LayoutBoxBackgroundPaintLocationTest,
+       AttachmentLocalContentBoxClipNonZeroPadding) {
+  SetBodyInnerHTML(kCommonStyle + R"HTML(
+    <div id='scroller'
+         style='background: white local content-box; padding: 10px;'>
+      <div class='spacer'></div>
+    </div>
+  )HTML");
+
+  // #scroller can paint background into scrolling contents layer because it
+  // has local attachment.
+  EXPECT_EQ(kBackgroundPaintInContentsSpace, ScrollerBackgroundPaintLocation());
+}
+
+TEST_P(LayoutBoxBackgroundPaintLocationTest, NonLocalImage) {
+  SetBodyInnerHTML(kCommonStyle + R"HTML(
+    <div id='scroller'
+        style='background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUg),
+                           white local;'>
+      <div class='spacer'></div>
+    </div>
+  )HTML");
+
+  // #scroller cannot paint background into scrolling contents layer because
+  // the background image is not locally attached.
+  EXPECT_EQ(kBackgroundPaintInBorderBoxSpace,
+            ScrollerBackgroundPaintLocation());
+}
+
+TEST_P(LayoutBoxBackgroundPaintLocationTest, LocalImageAndColor) {
+  SetBodyInnerHTML(kCommonStyle + R"HTML(
+    <div id='scroller'
+        style='background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUg)
+                           local, white local;'>
+      <div class='spacer'></div>
+    </div>
+  )HTML");
+
+  // #scroller can paint background into scrolling contents layer because both
+  // the image and color are locally attached.
+  EXPECT_EQ(kBackgroundPaintInContentsSpace, ScrollerBackgroundPaintLocation());
+}
+
+TEST_P(LayoutBoxBackgroundPaintLocationTest,
+       LocalImageAndNonLocalClipPaddingColor) {
+  SetBodyInnerHTML(kCommonStyle + R"HTML(
+    <div id='scroller'
+        style='background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUg)
+                           local, white padding-box;
+               padding: 10px;'>
+      <div class='spacer'></div>
+    </div>
+  )HTML");
+
+  // #scroller can paint background into scrolling contents layer because the
+  // image is locally attached and even though the color is not, it is filled to
+  // the padding box so it will be drawn the same as a locally attached
+  // background.
+  EXPECT_EQ(kBackgroundPaintInContentsSpace, ScrollerBackgroundPaintLocation());
+}
+
+TEST_P(LayoutBoxBackgroundPaintLocationTest,
+       LocalImageAndNonLocalClipContentColorNonZeroPadding) {
+  SetBodyInnerHTML(kCommonStyle + R"HTML(
+    <div id='scroller'
+        style='background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUg)
+                           local, white content-box; padding: 10px;'>
+      <div class='spacer'></div>
+    </div>
+  )HTML");
+
+  // #scroller cannot paint background into scrolling contents layer because
+  // the color is filled to the content box and we have padding so it is not
+  // equivalent to a locally attached background.
+  EXPECT_EQ(kBackgroundPaintInBorderBoxSpace,
+            ScrollerBackgroundPaintLocation());
+}
+
+TEST_P(LayoutBoxBackgroundPaintLocationTest, BorderBoxClipColorNoBorder) {
+  SetBodyInnerHTML(kCommonStyle + R"HTML(
+    <div id='scroller' class='scroller' style='background: white border-box;'>
+      <div class='spacer'></div>
+    </div>
+  )HTML");
+
+  // #scroller can paint background into scrolling contents layer because its
+  // border-box is equivalent to its padding box since it has no border.
+  EXPECT_EQ(kBackgroundPaintInContentsSpace, ScrollerBackgroundPaintLocation());
+}
+
+TEST_P(LayoutBoxBackgroundPaintLocationTest, BorderBoxClipColorSolidBorder) {
+  SetBodyInnerHTML(kCommonStyle + R"HTML(
+    <div id='scroller'
+         style='background: white border-box; border: 10px solid black;'>
+      <div class='spacer'></div>
+    </div>
+  )HTML");
+
+  // #scroller can paint background into scrolling contents layer because its
+  // border is opaque so it completely covers the background outside of the
+  // padding-box.
+  EXPECT_EQ(kBackgroundPaintInContentsSpace, ScrollerBackgroundPaintLocation());
+}
+
+TEST_P(LayoutBoxBackgroundPaintLocationTest,
+       BorderBoxClipColorTranslucentBorder) {
+  SetBodyInnerHTML(kCommonStyle + R"HTML(
+    <div id='scroller'
+         style='background: white border-box;
+                border: 10px solid rgba(0, 0, 0, 0.5);'>
+      <div class='spacer'></div>
+    </div>
+  )HTML");
+
+  // #scroller paints the background into both layers because its border is
+  // partially transparent so the background must be drawn to the
+  // border-box edges.
+  EXPECT_EQ(kBackgroundPaintInBothSpaces, ScrollerBackgroundPaintLocation());
+}
+
+TEST_P(LayoutBoxBackgroundPaintLocationTest, BorderBoxClipColorDashedBorder) {
+  SetBodyInnerHTML(kCommonStyle + R"HTML(
+    <div id='scroller'
+         style='background: white; border: 5px dashed black;'>
+      <div class='spacer'></div>
+    </div>
+  )HTML");
+
+  // #scroller can be painted in both layers because the background is a
+  // solid color, it must be because the dashed border reveals the background
+  // underneath it.
+  EXPECT_EQ(kBackgroundPaintInBothSpaces, ScrollerBackgroundPaintLocation());
+}
+
+TEST_P(LayoutBoxBackgroundPaintLocationTest, ContentClipColorZeroPadding) {
+  SetBodyInnerHTML(kCommonStyle + R"HTML(
+    <div id='scroller' style='background: white content-box;'>
+      <div class='spacer'></div>
+    </div>
+  )HTML");
+
+  // #scroller can paint background into scrolling contents layer because its
+  // content-box is equivalent to its padding box since it has no padding.
+  EXPECT_EQ(kBackgroundPaintInContentsSpace, ScrollerBackgroundPaintLocation());
+}
+
+TEST_P(LayoutBoxBackgroundPaintLocationTest, ContentClipColorNonZeroPadding) {
+  SetBodyInnerHTML(kCommonStyle + R"HTML(
+    <div id='scroller' style='background: white content-box; padding: 10px;'>
+      <div class='spacer'></div>
+    </div>
+  )HTML");
+
+  // #scroller cannot paint background into scrolling contents layer because
+  // it has padding so its content-box is not equivalent to its padding-box.
+  EXPECT_EQ(kBackgroundPaintInBorderBoxSpace,
+            ScrollerBackgroundPaintLocation());
+}
+
+TEST_P(LayoutBoxBackgroundPaintLocationTest, CustomScrollbar) {
+  SetBodyInnerHTML(kCommonStyle + R"HTML(
+    <style>
+      #scroller::-webkit-scrollbar {
+        width: 13px;
+        height: 13px;
+      }
+    </style>
+    <div id='scroller' style='background: white border-box;'>
+      <div class='spacer'></div>
+    </div>
+  )HTML");
+
+  // #scroller paints the background into both layers because it has a custom
+  // scrollbar which the background may need to draw under.
+  EXPECT_EQ(kBackgroundPaintInBothSpaces, ScrollerBackgroundPaintLocation());
+}
+
+TEST_P(LayoutBoxBackgroundPaintLocationTest,
+       TranslucentColorAndTranslucentBorder) {
+  SetBodyInnerHTML(kCommonStyle + R"HTML(
+    <div id='scroller'
+         style='background: rgba(255, 255, 255, 0.5) border-box;
+                border: 5px solid rgba(0, 0, 0, 0.5);'>
+      <div class='spacer'></div>
+    </div>
+  )HTML");
+
+  // #scroller17 can only be painted once as it is translucent, and it must
+  // be painted in the border box space to be under the translucent border.
+  EXPECT_EQ(kBackgroundPaintInBorderBoxSpace,
+            ScrollerBackgroundPaintLocation());
+}
+
+TEST_P(LayoutBoxBackgroundPaintLocationTest, InsetBoxShadow) {
+  SetBodyInnerHTML(kCommonStyle + R"HTML(
+    <div id='scroller'
+         style='background: white; box-shadow: 10px 10px black inset'>
+      <div class='spacer'></div>
+    </div>
+  )HTML");
+
+  // Background with inset box shadow can only be painted in the main graphics
+  // layer because the shadow can't scroll.
+  EXPECT_EQ(kBackgroundPaintInBorderBoxSpace,
+            ScrollerBackgroundPaintLocation());
+}
+
+TEST_P(LayoutBoxBackgroundPaintLocationTest, OutsetBoxShadow) {
+  SetBodyInnerHTML(kCommonStyle + R"HTML(
+    <div id='scroller' style='background: white; box-shadow: 10px 10px black'>
+      <div class='spacer'></div>
+    </div>
+  )HTML");
+
+  // Outset box shadow doesn't affect background paint location.
+  EXPECT_EQ(kBackgroundPaintInContentsSpace, ScrollerBackgroundPaintLocation());
 }
 
 }  // namespace blink
