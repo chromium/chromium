@@ -62,10 +62,6 @@ AppListBubbleSearchPage::AppListBubbleSearchPage(
   auto* result_container =
       scroll_contents->AddChildView(std::make_unique<SearchResultListView>(
           /*main_view=*/nullptr, view_delegate));
-  // SearchResultListView uses SearchResultView, which requires a light
-  // background for the text to be readable.
-  result_container->SetBackground(views::CreateSolidBackground(
-      AppListColorProvider::Get()->GetSearchBoxBackgroundColor()));
   result_container->SetResults(view_delegate->GetSearchModel()->results());
   result_container->set_delegate(this);
   result_container_views_.push_back(result_container);

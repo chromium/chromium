@@ -1378,6 +1378,9 @@ This file contains the strings for ash.
       <message name="IDS_ASH_SEARCH_KEY" desc="Name of [Search] key name. This name should be lower case.">
         search
       </message>
+  <message name="IDS_ASH_SEARCH_RESULT_HYPHEN" desc="Concatenation of title and details text for ash search result view.">
+    <ph name="TITLE">$1<ex>Screen Saver</ex></ph> - <ph name="DETAILS">$2<ex>Personalization</ex></ph>
+  </message>
       <message name="IDS_ASH_ALTGR_KEY" desc="Name of [AltGr] key name. Shouldn't be translated in many languages actually. This name should be lower case.">
         altgr
       </message>

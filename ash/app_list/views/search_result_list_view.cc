@@ -81,7 +81,8 @@ SearchResultListView::SearchResultListView(AppListMainView* main_view,
 
   for (size_t i = 0; i < result_count; ++i) {
     search_result_views_.emplace_back(
-        new SearchResultView(this, view_delegate_));
+        new SearchResultView(this, view_delegate_,
+                             SearchResultView::SearchResultViewType::kDefault));
     search_result_views_.back()->set_index_in_container(i);
     results_container_->AddChildView(search_result_views_.back());
     AddObservedResultView(search_result_views_.back());
@@ -119,6 +120,7 @@ int SearchResultListView::DoUpdate() {
     SearchResultView* result_view = GetResultViewAt(i);
     if (i < display_results.size()) {
       result_view->SetResult(display_results[i]);
+      result_view->SizeToPreferredSize();
       result_view->SetVisible(true);
     } else {
       result_view->SetResult(nullptr);

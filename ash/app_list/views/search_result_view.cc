@@ -23,8 +23,11 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_switches.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_provider.h"
 #include "base/bind.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/font.h"
@@ -41,17 +44,17 @@ namespace ash {
 namespace {
 
 constexpr int kPreferredWidth = 640;
-constexpr int kPreferredHeight = 48;
+constexpr int kClassicViewHeight = 48;
+constexpr int kDefaultViewHeight = 40;
+constexpr int kInlineAnswerViewHeight = 80;
 constexpr int kPreferredIconViewWidth = 56;
 constexpr int kTextTrailPadding = 16;
 // Extra margin at the right of the rightmost action icon.
 constexpr int kActionButtonRightMargin = 8;
 // Text line height in the search result.
-constexpr int kTitleLineHeight = 20;
-constexpr int kDetailsLineHeight = 16;
-
-// URL color.
-constexpr SkColor kUrlColor = gfx::kGoogleBlue600;
+constexpr int kPrimaryTextHeight = 20;
+constexpr int kClassicDetailsLineHeight = 16;
+constexpr int kInlineAnswerDetailsLineHeight = 18;
 
 // Delta applied to font size of all AppListSearchResult titles.
 constexpr int kSearchResultTitleTextSizeDelta = 2;
@@ -114,8 +117,11 @@ class MaskedImageView : public views::ImageView {
 };
 
 SearchResultView::SearchResultView(SearchResultListView* list_view,
-                                   AppListViewDelegate* view_delegate)
-    : list_view_(list_view), view_delegate_(view_delegate) {
+                                   AppListViewDelegate* view_delegate,
+                                   SearchResultViewType view_type)
+    : list_view_(list_view),
+      view_delegate_(view_delegate),
+      view_type_(view_type) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetCallback(base::BindRepeating(&SearchResultView::OnButtonPressed,
                                   base::Unretained(this)));
@@ -138,8 +144,47 @@ SearchResultView::~SearchResultView() = default;
 void SearchResultView::OnResultChanged() {
   OnMetadataChanged();
   UpdateTitleText();
-  UpdateDetailsText();
+  switch (view_type_) {
+    case SearchResultViewType::kClassic:
+    case SearchResultViewType::kInlineAnswer:
+      UpdateDetailsText();
+      break;
+    case SearchResultViewType::kDefault:
+      // Default search result views no longer have a separate line for details
+      // text. Details should be merged inline with the title text.
+      break;
+  }
+
   SchedulePaint();
+}
+
+int SearchResultView::PreferredHeight() const {
+  switch (view_type_) {
+    case SearchResultViewType::kClassic:
+      return kClassicViewHeight;
+    case SearchResultViewType::kDefault:
+      return kDefaultViewHeight;
+    case SearchResultViewType::kInlineAnswer:
+      return kInlineAnswerViewHeight;
+  }
+}
+int SearchResultView::PrimaryTextHeight() const {
+  switch (view_type_) {
+    case SearchResultViewType::kClassic:
+    case SearchResultViewType::kDefault:
+    case SearchResultViewType::kInlineAnswer:
+      return kPrimaryTextHeight;
+  }
+}
+int SearchResultView::SecondaryTextHeight() const {
+  switch (view_type_) {
+    case SearchResultViewType::kClassic:
+      return kClassicDetailsLineHeight;
+    case SearchResultViewType::kInlineAnswer:
+      return kInlineAnswerDetailsLineHeight;
+    case SearchResultViewType::kDefault:
+      return kPrimaryTextHeight;
+  }
 }
 
 void SearchResultView::UpdateTitleText() {
@@ -163,7 +208,19 @@ void SearchResultView::UpdateDetailsText() {
 void SearchResultView::CreateTitleRenderText() {
   std::unique_ptr<gfx::RenderText> render_text =
       gfx::RenderText::CreateRenderText();
-  render_text->SetText(result()->title());
+
+  switch (view_type_) {
+    case SearchResultViewType::kClassic:
+    case SearchResultViewType::kInlineAnswer:
+      render_text->SetText(result()->title());
+      break;
+    case SearchResultViewType::kDefault:
+      // TODO: show result->details() using a different font and color.
+      render_text->SetText(
+          l10n_util::GetStringFUTF16(IDS_ASH_SEARCH_RESULT_HYPHEN,
+                                     result()->title(), result()->details()));
+  }
+
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   render_text->SetFontList(
       rb.GetFontList(
@@ -177,7 +234,10 @@ void SearchResultView::CreateTitleRenderText() {
   const SearchResult::Tags& tags = result()->title_tags();
   for (const auto& tag : tags) {
     if (tag.styles & SearchResult::Tag::URL) {
-      render_text->ApplyColor(kUrlColor, tag.range);
+      render_text->ApplyColor(
+          AshColorProvider::Get()->GetContentLayerColor(
+              AshColorProvider::ContentLayerType::kTextColorURL),
+          tag.range);
     }
     if (tag.styles & SearchResult::Tag::MATCH &&
         app_list_features::IsLauncherQueryHighlightingEnabled()) {
@@ -204,7 +264,10 @@ void SearchResultView::CreateDetailsRenderText() {
   const SearchResult::Tags& tags = result()->details_tags();
   for (const auto& tag : tags) {
     if (tag.styles & SearchResult::Tag::URL) {
-      render_text->ApplyColor(kUrlColor, tag.range);
+      render_text->ApplyColor(
+          AshColorProvider::Get()->GetContentLayerColor(
+              AshColorProvider::ContentLayerType::kTextColorURL),
+          tag.range);
     }
     if (tag.styles & SearchResult::Tag::MATCH &&
         app_list_features::IsLauncherQueryHighlightingEnabled()) {
@@ -235,7 +298,7 @@ const char* SearchResultView::GetClassName() const {
 }
 
 gfx::Size SearchResultView::CalculatePreferredSize() const {
-  return gfx::Size(kPreferredWidth, kPreferredHeight);
+  return gfx::Size(kPreferredWidth, PreferredHeight());
 }
 
 void SearchResultView::Layout() {
@@ -321,19 +384,27 @@ void SearchResultView::PaintButtonContents(gfx::Canvas* canvas) {
       GetMirroredXWithWidthInView(text_bounds.x(), text_bounds.width()));
 
   if (title_text_ && details_text_) {
-    gfx::Size title_size(text_bounds.width(), kTitleLineHeight);
-    gfx::Size details_size(text_bounds.width(), kDetailsLineHeight);
-    int total_height = title_size.height() + details_size.height();
-    int y = text_bounds.y() + (text_bounds.height() - total_height) / 2;
+    switch (view_type_) {
+      case SearchResultViewType::kDefault:
+        // Default search result views do not have a second line for details.
+        NOTREACHED();
+        break;
+      case SearchResultViewType::kClassic:
+      case SearchResultViewType::kInlineAnswer:
+        gfx::Size title_size(text_bounds.width(), PrimaryTextHeight());
+        gfx::Size details_size(text_bounds.width(), SecondaryTextHeight());
+        int total_height = title_size.height() + details_size.height();
+        int y = text_bounds.y() + (text_bounds.height() - total_height) / 2;
 
-    title_text_->SetDisplayRect(
-        gfx::Rect(gfx::Point(text_bounds.x(), y), title_size));
-    title_text_->Draw(canvas);
+        title_text_->SetDisplayRect(
+            gfx::Rect(gfx::Point(text_bounds.x(), y), title_size));
+        title_text_->Draw(canvas);
 
-    y += title_size.height();
-    details_text_->SetDisplayRect(
-        gfx::Rect(gfx::Point(text_bounds.x(), y), details_size));
-    details_text_->Draw(canvas);
+        y += title_size.height();
+        details_text_->SetDisplayRect(
+            gfx::Rect(gfx::Point(text_bounds.x(), y), details_size));
+        details_text_->Draw(canvas);
+    }
   } else if (title_text_) {
     gfx::Size title_size(text_bounds.width(),
                          title_text_->GetStringSize().height());

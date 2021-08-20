@@ -458,6 +458,7 @@ SkColor AshColorProvider::GetContentLayerColorImpl(ContentLayerType type,
       return GetSecondToneColor(use_dark_color ? gfx::kGoogleGrey200
                                                : gfx::kGoogleGrey700);
     case ContentLayerType::kButtonLabelColorBlue:
+    case ContentLayerType::kTextColorURL:
     case ContentLayerType::kSliderColorActive:
     case ContentLayerType::kRadioColorActive:
     case ContentLayerType::kSwitchKnobColorActive:

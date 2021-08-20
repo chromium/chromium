@@ -44,18 +44,37 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
                                     public views::ContextMenuController,
                                     public SearchResultActionsViewDelegate {
  public:
+  enum class SearchResultViewType {
+    // The default vew type used for the majority of search results.
+    kDefault,
+    // The classic view type continues support for pre-BubbleView launcher's
+    // search UI.
+    kClassic,
+    // Inline Answer views are used to directly answer questions posed by the
+    // search query.
+    kInlineAnswer,
+  };
+
   // Internal class name.
   static const char kViewClassName[];
 
-  explicit SearchResultView(SearchResultListView* list_view,
-                            AppListViewDelegate* view_delegate);
+  SearchResultView(SearchResultListView* list_view,
+                   AppListViewDelegate* view_delegate,
+                   SearchResultViewType view_type);
   ~SearchResultView() override;
 
   // Sets/gets SearchResult displayed by this view.
   void OnResultChanged() override;
 
+  void SetSearchResultViewType(SearchResultViewType type) { view_type_ = type; }
+
  private:
   friend class test::SearchResultListViewTest;
+  friend class SearchResultListView;
+
+  int PreferredHeight() const;
+  int PrimaryTextHeight() const;
+  int SecondaryTextHeight() const;
 
   void UpdateTitleText();
   void UpdateDetailsText();
@@ -125,6 +144,8 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
 
   // Whether the removal confirmation dialog is invoked by long press touch.
   bool confirm_remove_by_long_press_ = false;
+
+  SearchResultViewType view_type_;
 
   base::WeakPtrFactory<SearchResultView> weak_ptr_factory_{this};
 

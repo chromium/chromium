@@ -27,6 +27,13 @@ namespace test {
 
 namespace {
 int kDefaultSearchItems = 5;
+
+// Preferred sizing for different types of search result views.
+constexpr int kPreferredWidth = 640;
+constexpr int kClassicViewHeight = 48;
+constexpr int kDefaultViewHeight = 40;
+constexpr int kInlineAnswerViewHeight = 80;
+
 }  // namespace
 
 class SearchResultListViewTest : public views::test::WidgetTest {
@@ -39,7 +46,7 @@ class SearchResultListViewTest : public views::test::WidgetTest {
     views::test::WidgetTest::SetUp();
     widget_ = CreateTopLevelPlatformWidget();
     view_ = std::make_unique<SearchResultListView>(nullptr, &view_delegate_);
-    widget_->SetBounds(gfx::Rect(0, 0, 300, 200));
+    widget_->SetBounds(gfx::Rect(0, 0, 700, 500));
     widget_->GetContentsView()->AddChildView(view_.get());
     widget_->Show();
     view_->SetResults(view_delegate_.GetSearchModel()->results());
@@ -133,6 +140,8 @@ class SearchResultListViewTest : public views::test::WidgetTest {
     }
   }
 
+  void DoUpdate() { view()->DoUpdate(); }
+
  private:
   TestAppListColorProvider color_provider_;  // Needed by AppListView.
   AppListTestViewDelegate view_delegate_;
@@ -151,6 +160,34 @@ TEST_F(SearchResultListViewTest, SpokenFeedback) {
 
   // Result 2 has no detail text.
   EXPECT_EQ(u"Result 2", GetResultViewAt(2)->ComputeAccessibleName());
+}
+
+TEST_F(SearchResultListViewTest, SearchResultViewPreferredSize) {
+  // Set SearchResultListView bounds and check views are default size.
+  view()->SetBounds(0, 0, kPreferredWidth, 400);
+  SetUpSearchResults();
+  EXPECT_EQ(gfx::Size(kPreferredWidth, kDefaultViewHeight),
+            GetResultViewAt(0)->size());
+  EXPECT_EQ(gfx::Size(kPreferredWidth, kDefaultViewHeight),
+            GetResultViewAt(1)->size());
+  EXPECT_EQ(gfx::Size(kPreferredWidth, kDefaultViewHeight),
+            GetResultViewAt(2)->size());
+
+  // Override search result tpyes
+  GetResultViewAt(0)->SetSearchResultViewType(
+      SearchResultView::SearchResultViewType::kClassic);
+  GetResultViewAt(1)->SetSearchResultViewType(
+      SearchResultView::SearchResultViewType::kInlineAnswer);
+  GetResultViewAt(2)->SetSearchResultViewType(
+      SearchResultView::SearchResultViewType::kDefault);
+  DoUpdate();
+
+  EXPECT_EQ(gfx::Size(kPreferredWidth, kClassicViewHeight),
+            GetResultViewAt(0)->size());
+  EXPECT_EQ(gfx::Size(kPreferredWidth, kInlineAnswerViewHeight),
+            GetResultViewAt(1)->size());
+  EXPECT_EQ(gfx::Size(kPreferredWidth, kDefaultViewHeight),
+            GetResultViewAt(2)->size());
 }
 
 TEST_F(SearchResultListViewTest, ModelObservers) {
