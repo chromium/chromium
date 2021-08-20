@@ -130,7 +130,7 @@ _kind_to_lite_js_type = {
 _js_reserved_keywords = [
     'arguments',
     'await',
-    'break'
+    'break',
     'case',
     'catch',
     'class',
