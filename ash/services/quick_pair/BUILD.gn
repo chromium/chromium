@@ -11,6 +11,12 @@ source_set("quick_pair") {
   sources = [
     "fast_pair_data_parser.cc",
     "fast_pair_data_parser.h",
+    "quick_pair_process_manager.cc",
+    "quick_pair_process_manager.h",
+    "quick_pair_process_manager_impl.cc",
+    "quick_pair_process_manager_impl.h",
+    "quick_pair_process_shutdown_controller.cc",
+    "quick_pair_process_shutdown_controller.h",
     "quick_pair_service.cc",
     "quick_pair_service.h",
   ]
@@ -29,10 +35,14 @@ source_set("quick_pair") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "fast_pair_data_parser_unittest.cc" ]
+  sources = [
+    "fast_pair_data_parser_unittest.cc",
+    "quick_pair_process_manager_impl_unittest.cc",
+  ]
 
   deps = [
     ":quick_pair",
+    "//ash/quick_pair/common:test_support",
     "//ash/services/quick_pair/public/cpp",
     "//ash/services/quick_pair/public/mojom",
     "//base/test:test_support",
