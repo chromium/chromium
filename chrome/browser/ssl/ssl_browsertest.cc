@@ -1119,8 +1119,9 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestBrokenHTTPSWithInsecureContent) {
 // Tests that the NavigationEntry gets marked as active mixed content,
 // even if there is a certificate error. Regression test for
 // https://crbug.com/593950.
-// TODO(crbug.com/1239347): Flaky on Mac, Linux, and Lacros bots.
-#if defined(OS_MAC) || defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug.com/1239347): Flaky on Mac, Linux, Lacros, and ChromeOs ASAN bots.
+#if defined(OS_MAC) || defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) \
+    || (defined(OS_CHROMEOS) && defined(ADDRESS_SANITIZER))
 #define MAYBE_TestBrokenHTTPSWithActiveInsecureContent \
   DISABLED_TestBrokenHTTPSWithActiveInsecureContent
 #else
