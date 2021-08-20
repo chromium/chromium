@@ -955,6 +955,10 @@ Polymer({
     this.setSelectedColorModeIfAvailable_(scannerSettings.colorMode);
     this.setSelectedPageSizeIfAvailable_(scannerSettings.pageSize);
     this.setSelectedResolutionIfAvailable_(scannerSettings.resolutionDpi);
+
+    // This must be set last because it depends on the values of sourceType and
+    // fileType.
+    this.setMultiPageScanIfAvailable_(scannerSettings.multiPageScanChecked);
   },
 
   /**
@@ -1105,6 +1109,7 @@ Polymer({
       colorMode: colorModeFromString(this.selectedColorMode),
       pageSize: pageSizeFromString(this.selectedPageSize),
       resolutionDpi: Number(this.selectedResolution),
+      multiPageScanChecked: this.multiPageScanChecked,
     });
   },
 
@@ -1222,6 +1227,18 @@ Polymer({
   setSelectedResolutionIfAvailable_(resolution) {
     if (this.capabilities_.resolutions.includes(resolution)) {
       this.selectedResolution = resolution.toString();
+    }
+  },
+
+  /**
+   * @param {boolean} multiPageScanChecked
+   * @private
+   */
+  setMultiPageScanIfAvailable_(multiPageScanChecked) {
+    // Only set the checkbox if it's visible (flag is enabled and correct scan
+    // settings are selected).
+    if (this.showMultiPageCheckbox_) {
+      this.multiPageScanChecked = multiPageScanChecked;
     }
   },
 });

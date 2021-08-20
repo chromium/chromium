@@ -1496,6 +1496,7 @@ export function scanningAppTest() {
         colorMode: ash.scanning.mojom.ColorMode.kGrayscale,
         pageSize: ash.scanning.mojom.PageSize.kMax,
         resolutionDpi: 100,
+        multiPageScanChecked: false,
       }],
     };
     testBrowserProxy.setSavedSettings(JSON.stringify(savedScanSettings));
@@ -1524,6 +1525,7 @@ export function scanningAppTest() {
               scanningApp.$$('#pageSizeSelect').$$('select').value);
           assertEquals(
               '300', scanningApp.$$('#resolutionSelect').$$('select').value);
+          assertFalse(scanningApp.multiPageScanChecked);
         });
   });
 
@@ -1542,11 +1544,12 @@ export function scanningAppTest() {
       scanners: [{
         name: firstScannerName,
         lastScanDate: new Date(),
-        sourceName: ADF_DUPLEX,
-        fileType: ash.scanning.mojom.FileType.kPng,
+        sourceName: PLATEN,
+        fileType: ash.scanning.mojom.FileType.kPdf,
         colorMode: ash.scanning.mojom.ColorMode.kBlackAndWhite,
         pageSize: ash.scanning.mojom.PageSize.kMax,
         resolutionDpi: 75,
+        multiPageScanChecked: true,
       }],
     };
     testBrowserProxy.setSavedSettings(JSON.stringify(savedScanSettings));
@@ -1560,12 +1563,12 @@ export function scanningAppTest() {
               tokenToString(firstScannerId),
               scanningApp.$$('#scannerSelect').$$('select').value);
           assertEquals(
-              ADF_DUPLEX, scanningApp.$$('#sourceSelect').$$('select').value);
+              PLATEN, scanningApp.$$('#sourceSelect').$$('select').value);
           assertEquals(
               selectedPath.baseName,
               scanningApp.$$('#scanToSelect').$$('select').value);
           assertEquals(
-              ash.scanning.mojom.FileType.kPng.toString(),
+              ash.scanning.mojom.FileType.kPdf.toString(),
               scanningApp.$$('#fileTypeSelect').$$('select').value);
           assertEquals(
               ash.scanning.mojom.ColorMode.kBlackAndWhite.toString(),
@@ -1575,6 +1578,7 @@ export function scanningAppTest() {
               scanningApp.$$('#pageSizeSelect').$$('select').value);
           assertEquals(
               '75', scanningApp.$$('#resolutionSelect').$$('select').value);
+          assertTrue(scanningApp.multiPageScanChecked);
         });
   });
 
@@ -1599,6 +1603,7 @@ export function scanningAppTest() {
         colorMode: ash.scanning.mojom.ColorMode.kGrayscale,
         pageSize: -1,
         resolutionDpi: 600,
+        multiPageScanChecked: false,
       }],
     };
     testBrowserProxy.setSavedSettings(JSON.stringify(savedScanSettings));
@@ -1627,6 +1632,76 @@ export function scanningAppTest() {
               scanningApp.$$('#pageSizeSelect').$$('select').value);
           assertEquals(
               '300', scanningApp.$$('#resolutionSelect').$$('select').value);
+          assertFalse(scanningApp.multiPageScanChecked);
+        });
+  });
+
+  // Verify if |multiPageScanChecked| is true in saved settings but the
+  // scanner's capabilities doesn't support it, the multi-page scan checkbox
+  // will not be set.
+  test('MultiPageNotAvailableFromCapabilities', () => {
+    if (!loadTimeData.getBoolean('scanAppStickySettingsEnabled')) {
+      return;
+    }
+
+    const savedScanSettings = {
+      lastUsedScannerName: secondScannerName,
+      scanToPath: '',
+      scanners: [{
+        name: secondScannerName,
+        lastScanDate: new Date(),
+        sourceName: PLATEN,
+        fileType: ash.scanning.mojom.FileType.kPdf,
+        colorMode: ash.scanning.mojom.ColorMode.kGrayscale,
+        pageSize: ash.scanning.mojom.PageSize.kNaLetter,
+        resolutionDpi: 600,
+        multiPageScanChecked: true,
+      }],
+    };
+    testBrowserProxy.setSavedSettings(JSON.stringify(savedScanSettings));
+
+    return initializeScanningApp(expectedScanners, capabilities)
+        .then(() => {
+          return getScannerCapabilities();
+        })
+        .then(() => {
+          // `secondScanner` does not have PLATEN in it's capabilities so the
+          // multi-page scan checkbox should not get set.
+          assertFalse(scanningApp.multiPageScanChecked);
+        });
+  });
+
+  // Verify if the |multiPageScanChecked| is not present in the saved settings
+  // JSON (i.e. the first time the feature is enabled), the multi-page scan
+  // checkbox will not be set.
+  test('MultiPageNotInSavedSettings', () => {
+    if (!loadTimeData.getBoolean('scanAppStickySettingsEnabled')) {
+      return;
+    }
+
+    const savedScanSettings = {
+      lastUsedScannerName: firstScannerName,
+      scanToPath: '',
+      scanners: [{
+        name: secondScannerName,
+        lastScanDate: new Date(),
+        sourceName: PLATEN,
+        fileType: ash.scanning.mojom.FileType.kPdf,
+        colorMode: ash.scanning.mojom.ColorMode.kGrayscale,
+        pageSize: ash.scanning.mojom.PageSize.kNaLetter,
+        resolutionDpi: 600,
+      }],
+    };
+    testBrowserProxy.setSavedSettings(JSON.stringify(savedScanSettings));
+
+    return initializeScanningApp(expectedScanners, capabilities)
+        .then(() => {
+          return getScannerCapabilities();
+        })
+        .then(() => {
+          // The multi-page scan checkbox should not get set because it wasn't
+          // present in the saved settings.
+          assertFalse(scanningApp.multiPageScanChecked);
         });
   });
 
@@ -1647,6 +1722,7 @@ export function scanningAppTest() {
         colorMode: ash.scanning.mojom.ColorMode.kBlackAndWhite,
         pageSize: ash.scanning.mojom.PageSize.kMax,
         resolutionDpi: 75,
+        multiPageScanChecked: false,
       }],
     };
     testBrowserProxy.setSavedSettings(JSON.stringify(savedScanSettings));
@@ -1676,6 +1752,7 @@ export function scanningAppTest() {
       colorMode: ash.scanning.mojom.ColorMode.kBlackAndWhite,
       pageSize: ash.scanning.mojom.PageSize.kMax,
       resolutionDpi: 100,
+      multiPageScanChecked: false,
     };
 
     const savedScanSettings = {
@@ -1721,6 +1798,7 @@ export function scanningAppTest() {
       colorMode: ash.scanning.mojom.ColorMode.kBlackAndWhite,
       pageSize: ash.scanning.mojom.PageSize.kMax,
       resolutionDpi: 100,
+      multiPageScanChecked: false,
     };
 
     // The saved scan settings for the second scanner. This is loaded from the
@@ -1734,6 +1812,7 @@ export function scanningAppTest() {
       colorMode: ash.scanning.mojom.ColorMode.kBlackAndWhite,
       pageSize: ash.scanning.mojom.PageSize.kMax,
       resolutionDpi: 100,
+      multiPageScanChecked: false,
     };
 
     const savedScanSettings = {
@@ -1754,6 +1833,7 @@ export function scanningAppTest() {
       colorMode: ash.scanning.mojom.ColorMode.kGrayscale,
       pageSize: ash.scanning.mojom.PageSize.kIsoA4,
       resolutionDpi: 600,
+      multiPageScanChecked: false,
     };
     savedScanSettings.scanners[1] = newSecondScannerSetting;
 
@@ -1797,6 +1877,7 @@ export function scanningAppTest() {
       colorMode: ash.scanning.mojom.ColorMode.kBlackAndWhite,
       pageSize: ash.scanning.mojom.PageSize.kMax,
       resolutionDpi: 100,
+      multiPageScanChecked: false,
     };
 
     // Create an identical scanner with `lastScanDate` set to infinity so it
@@ -1854,6 +1935,7 @@ export function scanningAppTest() {
         colorMode: ash.scanning.mojom.ColorMode.kBlackAndWhite,
         pageSize: ash.scanning.mojom.PageSize.kMax,
         resolutionDpi: 300,
+        multiPageScanChecked: false,
       };
     }
 

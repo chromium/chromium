@@ -66,6 +66,7 @@ export let ScannerInfo;
  *   colorMode: ash.scanning.mojom.ColorMode,
  *   pageSize: ash.scanning.mojom.PageSize,
  *   resolutionDpi: number,
+ *   multiPageScanChecked: boolean,
  * }}
  */
 export let ScannerSetting;
