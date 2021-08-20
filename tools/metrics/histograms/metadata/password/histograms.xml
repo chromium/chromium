@@ -2086,6 +2086,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.PasswordStore.GetAllLoginsAsync" units="ms"
+    expires_after="2022-06-30">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Real-time duration of the asynchronous call to get all logins from the
+    PasswordStore backend.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.PasswordStoreDeletionsHaveSynced"
     enum="BooleanSuccess" expires_after="M92">
   <obsolete>

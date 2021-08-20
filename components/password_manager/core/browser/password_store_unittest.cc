@@ -25,6 +25,7 @@
 #include "components/password_manager/core/browser/android_affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/android_affiliation/android_affiliation_service.h"
 #include "components/password_manager/core/browser/android_affiliation/mock_affiliated_match_helper.h"
+#include "components/password_manager/core/browser/fake_password_store_backend.h"
 #include "components/password_manager/core/browser/form_parsing/form_parser.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
@@ -298,11 +299,14 @@ class PasswordStoreTest : public testing::Test {
 
   TestingPrefServiceSimple* pref_service() { return &pref_service_; }
 
+ protected:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::UI,
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
  private:
   base::ScopedTempDir temp_dir_;
   TestingPrefServiceSimple pref_service_;
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::MainThreadType::UI};
   base::test::ScopedFeatureList feature_list_;
 
   DISALLOW_COPY_AND_ASSIGN(PasswordStoreTest);
@@ -1545,6 +1549,32 @@ TEST_F(PasswordStoreOriginTest,
   run_loop.Run();
 
   store()->RemoveObserver(&observer);
+}
+
+// Tests the PasswordManager.PasswordStore.GetAllLoginsAsync metric.
+TEST_F(PasswordStoreTest, GetAllLoginsAsyncMetrics) {
+  scoped_refptr<PasswordStore> store =
+      new PasswordStore(std::make_unique<MockPasswordStoreBackend>());
+  auto* mock_backend =
+      static_cast<MockPasswordStoreBackend*>(store->GetBackendForTesting());
+  store->Init(nullptr);
+  constexpr auto delta = base::TimeDelta::FromMilliseconds(123u);
+
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(*mock_backend, GetAllLoginsAsync(_))
+      .WillOnce(WithArg<0>([&](LoginsReply cb) {
+        task_environment_.FastForwardBy(delta);
+        std::move(cb).Run({});
+      }));
+  MockPasswordStoreConsumer mock_consumer;
+  store->GetAllLogins(&mock_consumer);
+  WaitForPasswordStore();
+  store->ShutdownOnUIThread();
+
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.PasswordStore.GetAllLoginsAsync", 1);
+  histogram_tester.ExpectTimeBucketCount(
+      "PasswordManager.PasswordStore.GetAllLoginsAsync", delta, 1);
 }
 
 }  // namespace password_manager

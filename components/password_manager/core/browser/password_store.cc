@@ -20,8 +20,10 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/strcat.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/task_runner_util.h"
@@ -111,6 +113,16 @@ class OperationHandler {
 
   int operations_ = 0;
 };
+
+LoginsResult RecordDurationMetrics(base::Time start,
+                                   const char* function_name,
+                                   LoginsResult result) {
+  base::TimeDelta duration = base::Time::Now() - start;
+  UMA_HISTOGRAM_MEDIUM_TIMES(
+      base::StrCat({"PasswordManager.PasswordStore.", function_name}),
+      duration);
+  return result;
+}
 
 }  // namespace
 
@@ -286,8 +298,11 @@ void PasswordStore::GetAllLogins(PasswordStoreConsumer* consumer) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
 
   backend_->GetAllLoginsAsync(
-      base::BindOnce(&PasswordStoreConsumer::OnGetPasswordStoreResultsFrom,
-                     consumer->GetWeakPtr(), base::RetainedRef(this)));
+      base::BindOnce(&RecordDurationMetrics, base::Time::Now(),
+                     "GetAllLoginsAsync")
+          .Then(base::BindOnce(
+              &PasswordStoreConsumer::OnGetPasswordStoreResultsFrom,
+              consumer->GetWeakPtr(), base::RetainedRef(this))));
 }
 
 void PasswordStore::GetAllLoginsWithAffiliationAndBrandingInformation(
@@ -302,7 +317,10 @@ void PasswordStore::GetAllLoginsWithAffiliationAndBrandingInformation(
       base::BindOnce(&PasswordStore::InjectAffiliationAndBrandingInformation,
                      this, std::move(consumer_reply));
 
-  backend_->GetAllLoginsAsync(std::move(affiliation_injection));
+  backend_->GetAllLoginsAsync(base::BindOnce(&RecordDurationMetrics,
+                                             base::Time::Now(),
+                                             "GetAllLoginsAsync")
+                                  .Then(std::move(affiliation_injection)));
 }
 
 SmartBubbleStatsStore* PasswordStore::GetSmartBubbleStatsStore() {
