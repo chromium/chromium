@@ -39,8 +39,6 @@ export const I18nString = {
       'error_msg_take_portrait_bokeh_photo_failed',
   ERROR_MSG_VIDEO_TOO_SHORT: 'error_msg_video_too_short',
   EXPERT_CUSTOM_VIDEO_PARAMETERS: 'expert_custom_video_parameters',
-  EXPERT_ENABLE_DOCUMENT_MODE_ON_ALL_CAMERAS:
-      'expert_enable_document_mode_on_all_cameras',
   EXPERT_ENABLE_EXPERT_MODE: 'expert_enable_expert_mode',
   EXPERT_MODE_BUTTON: 'expert_mode_button',
   EXPERT_PREVIEW_METADATA: 'expert_preview_metadata',
