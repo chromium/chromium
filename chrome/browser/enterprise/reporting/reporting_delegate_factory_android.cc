@@ -4,6 +4,10 @@
 
 #include "chrome/browser/enterprise/reporting/reporting_delegate_factory_android.h"
 
+#include <utility>
+
+#include "chrome/browser/enterprise/reporting/profile_report_generator_android.h"
+
 namespace enterprise_reporting {
 
 std::unique_ptr<BrowserReportGenerator::Delegate>
@@ -15,9 +19,7 @@ ReportingDelegateFactoryAndroid::GetBrowserReportGeneratorDelegate() {
 
 std::unique_ptr<ProfileReportGenerator::Delegate>
 ReportingDelegateFactoryAndroid::GetProfileReportGeneratorDelegate() {
-  // TODO(crbug.com/1228841) Implement ProfileReportGeneratior::Delegate for
-  // Android
-  return nullptr;
+  return std::make_unique<ProfileReportGeneratorAndroid>();
 }
 
 std::unique_ptr<ReportGenerator::Delegate>

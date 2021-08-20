@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "base/files/file_path.h"
 #include "base/json/values_util.h"
+#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/chromeos_buildflags.h"
@@ -16,17 +16,11 @@
 #include "chrome/browser/enterprise/reporting/extension_request/extension_request_report_generator.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
-#include "chrome/browser/policy/chrome_policy_conversions_client.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "components/enterprise/browser/reporting/policy_info.h"
-#include "components/policy/core/browser/policy_conversions.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/public/identity_manager/account_info.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 #include "extensions/common/extension_urls.h"
 
 namespace em = enterprise_management;
@@ -41,28 +35,6 @@ const int kMaxNumberOfExtensionRequest = 1000;
 ProfileReportGeneratorDesktop::ProfileReportGeneratorDesktop() = default;
 
 ProfileReportGeneratorDesktop::~ProfileReportGeneratorDesktop() = default;
-
-bool ProfileReportGeneratorDesktop::Init(const base::FilePath& path) {
-  profile_ = g_browser_process->profile_manager()->GetProfileByPath(path);
-
-  if (!profile_) {
-    return false;
-  }
-
-  return true;
-}
-
-void ProfileReportGeneratorDesktop::GetSigninUserInfo(
-    enterprise_management::ChromeUserProfileInfo* report) {
-  auto account_info =
-      IdentityManagerFactory::GetForProfile(profile_)->GetPrimaryAccountInfo(
-          signin::ConsentLevel::kSync);
-  if (account_info.IsEmpty())
-    return;
-  auto* signed_in_user_info = report->mutable_chrome_signed_in_user();
-  signed_in_user_info->set_email(account_info.email);
-  signed_in_user_info->set_obfuscated_gaia_id(account_info.gaia);
-}
 
 void ProfileReportGeneratorDesktop::GetExtensionInfo(
     enterprise_management::ChromeUserProfileInfo* report) {
@@ -105,21 +77,6 @@ void ProfileReportGeneratorDesktop::GetExtensionRequest(
     if (timestamp)
       request->set_request_timestamp(timestamp->ToJavaTime());
   }
-}
-
-std::unique_ptr<policy::PolicyConversionsClient>
-ProfileReportGeneratorDesktop::MakePolicyConversionsClient() {
-  return std::make_unique<policy::ChromePolicyConversionsClient>(profile_);
-}
-
-policy::MachineLevelUserCloudPolicyManager*
-ProfileReportGeneratorDesktop::GetCloudPolicyManager() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return nullptr;
-#else
-  return g_browser_process->browser_policy_connector()
-      ->machine_level_user_cloud_policy_manager();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace enterprise_reporting
