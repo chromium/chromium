@@ -11,11 +11,11 @@
 
   TestRunner.clickOnURL = async function() {
     await UI.viewManager.showView("console").then(() => {
-      Console.ConsoleView.instance()._updateMessageList();
+      Console.ConsoleView.instance().updateMessageList();
 
       // Trigger link creation so we can properly await pending live location updates. Needed so we can
       // click the link in the first place.
-      for (const messageView of Console.ConsoleView.instance()._visibleViewMessages) messageView.element();
+      for (const messageView of Console.ConsoleView.instance().visibleViewMessages) messageView.element();
       TestRunner.waitForPendingLiveLocationUpdates().then(() => {
         var xpathResult = document.evaluate("//span[@class='devtools-link' and starts-with(., 'test-script.js')]",
                                             Console.ConsoleView.instance().element, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null);
@@ -28,7 +28,7 @@
   }
 
   TestRunner.waitForStyleSheetChangedEvent = function(reply) {
-    TestRunner.addSniffer(SDK.CSSModel.prototype, "_fireStyleSheetChanged", reply);
+    TestRunner.addSniffer(SDK.CSSModel.prototype, "fireStyleSheetChanged", reply);
   }
 
   await TestRunner.evaluateInPageAnonymously(`
@@ -163,7 +163,7 @@
       webInspector.panels.setOpenResourceHandler(handleOpenResource);
       webInspector.inspectedWindow.eval("logMessage()", function() {
         evaluateOnFrontend("TestRunner.clickOnURL();");
-        evaluateOnFrontend("Components.Linkifier._linkHandlerSetting().set('test extension'); TestRunner.clickOnURL();");
+        evaluateOnFrontend("Components.Linkifier.linkHandlerSetting().set('test extension'); TestRunner.clickOnURL();");
       });
     },
   ]);
