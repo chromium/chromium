@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <string>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
@@ -20,10 +22,12 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 
 // TODO(crbug.com/1215089): Enable this test suite on Lacros.
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -778,6 +782,51 @@ IN_PROC_BROWSER_TEST_F(
   tab.SetCaptureHandleConfig(/*expose_origin=*/true, "new_handle", {"*"});
   EXPECT_EQ(tab.LastEvent(), tab.capture_handle);
   EXPECT_EQ(tab.ReadCaptureHandle(), tab.capture_handle);
+}
+
+class CaptureHandleBrowserTestPrerender : public CaptureHandleBrowserTest {
+ public:
+  CaptureHandleBrowserTestPrerender() {
+    prerender_helper_ = std::make_unique<content::test::PrerenderTestHelper>(
+        base::BindRepeating(
+            &CaptureHandleBrowserTestPrerender::GetCapturedWebContents,
+            base::Unretained(this)));
+  }
+
+  content::WebContents* GetCapturedWebContents() {
+    return captured_web_contents_;
+  }
+
+ protected:
+  std::unique_ptr<content::test::PrerenderTestHelper> prerender_helper_;
+  WebContents* captured_web_contents_ = nullptr;
+};
+
+// Verifies that pre-rendered pages don't change the capture handle config.
+IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTestPrerender,
+                       EmptyConfigForCrossDocumentNavigations) {
+  TabInfo captured_tab =
+      SetUpCapturedPage(/*expose_origin=*/true, "handle", {"*"});
+  captured_web_contents_ = captured_tab.web_contents;
+  TabInfo capturing_tab = SetUpCapturingPage(/*start_capturing=*/true);
+
+  // The capture handle set by the captured tab is observable by the capturer.
+  EXPECT_EQ(capturing_tab.ReadCaptureHandle(), captured_tab.capture_handle);
+
+  // Pre-render a document in the captured tab.
+  const auto host_id = prerender_helper_->AddPrerender(
+      servers_[kCapturedServer]->GetURL(kCapturedPageOther));
+  content::RenderFrameHost* prerender_rfh =
+      prerender_helper_->GetPrerenderedMainFrameHost(host_id);
+  std::string script_result;
+  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+      prerender_rfh,
+      base::StringPrintf("callSetCaptureHandleConfig(%s, \"%s\", %s);", "true",
+                         "prerender_handle",
+                         StringifyPermittedOrigins({"*"}).c_str()),
+      &script_result));
+  EXPECT_EQ(script_result, "capture-handle-set");
+  EXPECT_EQ(capturing_tab.ReadCaptureHandle(), captured_tab.capture_handle);
 }
 
 #endif  //  !BUILDFLAG(IS_CHROMEOS_LACROS)
