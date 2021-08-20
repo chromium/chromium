@@ -41,6 +41,19 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
         EventConfig("profile_menu_shown", Comparator(EQUAL, 0), 360, 360);
     return config;
   }
+
+  if (kIPHReadingListInSidePanelFeature.name == feature->name) {
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    // Show the promo once a year if the side panel was not opened.
+    config->trigger =
+        EventConfig("side_panel_trigger", Comparator(EQUAL, 0), 360, 360);
+    config->used =
+        EventConfig("side_panel_shown", Comparator(EQUAL, 0), 360, 360);
+    return config;
+  }
 #endif  // defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) ||
         // defined(OS_CHROMEOS)
 

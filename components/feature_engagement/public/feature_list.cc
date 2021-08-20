@@ -103,6 +103,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHPasswordsAccountStorageFeature,
     &kIPHReadingListDiscoveryFeature,
     &kIPHReadingListEntryPointFeature,
+    &kIPHReadingListInSidePanelFeature,
     &kIPHReopenTabFeature,
     &kIPHTabSearchFeature,
     &kIPHWebUITabStripFeature,

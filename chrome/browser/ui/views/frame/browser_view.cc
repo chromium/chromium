@@ -163,6 +163,7 @@
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/prefs/pref_service.h"
+#include "components/reading_list/core/reading_list_pref_names.h"
 #include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
@@ -872,10 +873,9 @@ bool BrowserView::GetAccelerator(int cmd_id,
     return true;
 #endif
   // Else, we retrieve the accelerator information from the accelerator table.
-  for (auto it = accelerator_table_.begin(); it != accelerator_table_.end();
-       ++it) {
-    if (it->second == cmd_id) {
-      *accelerator = it->first;
+  for (const auto& it : accelerator_table_) {
+    if (it.second == cmd_id) {
+      *accelerator = it.first;
       return true;
     }
   }
@@ -1758,6 +1758,7 @@ void BrowserView::OnFeatureEngagementTrackerInitialized(bool initialized) {
   if (!initialized)
     return;
   MaybeShowWebUITabStripIPH();
+  MaybeShowReadingListInSidePanelIPH();
 }
 
 void BrowserView::MaybeShowWebUITabStripIPH() {
@@ -1766,6 +1767,19 @@ void BrowserView::MaybeShowWebUITabStripIPH() {
 
   feature_promo_controller_->MaybeShowPromo(
       feature_engagement::kIPHWebUITabStripFeature);
+}
+
+void BrowserView::MaybeShowReadingListInSidePanelIPH() {
+  if (!base::FeatureList::IsEnabled(features::kSidePanel))
+    return;
+
+  PrefService* pref_service = browser()->profile()->GetPrefs();
+  if (pref_service &&
+      pref_service->GetBoolean(
+          reading_list::prefs::kReadingListDesktopFirstUseExperienceShown)) {
+    feature_promo_controller_->MaybeShowPromo(
+        feature_engagement::kIPHReadingListInSidePanelFeature);
+  }
 }
 
 void BrowserView::DestroyBrowser() {

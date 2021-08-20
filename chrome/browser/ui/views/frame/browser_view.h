@@ -820,6 +820,11 @@ class BrowserView : public BrowserWindow,
   // mode changes.
   void MaybeShowWebUITabStripIPH();
 
+  // Attempts to show in-product help for the reading list as moved into the
+  // side panel. Should be called when the IPH backend is initialized or
+  // whenever the touch mode changes.
+  void MaybeShowReadingListInSidePanelIPH();
+
   // The BrowserFrame that hosts this view.
   BrowserFrame* frame_ = nullptr;
 
