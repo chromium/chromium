@@ -280,7 +280,7 @@
 <translation id="8941642502866065432">Chromiumని అప్‌డేట్ చేయడం సాధ్యం కాదు</translation>
 <translation id="8974095189086268230">అదనపు <ph name="BEGIN_LINK_CROS_OSS" />ఓపెన్ సోర్స్ సాఫ్ట్‌వేర్<ph name="END_LINK_CROS_OSS" />పై Chromium OS ఎంతగానో ఆధారపడుతుంది.</translation>
 <translation id="8986207147630327271">మీరు ఈ బ్రౌజర్‌కు వర్క్ ప్రొఫైల్‌ను జోడిస్తున్నారు, ఇంకా మీ అడ్మినిస్ట్రేటర్‌కు వర్క్ ప్రొఫైల్‌పై కంట్రోల్ ఇస్తున్నారు.</translation>
-<translation id="9019929317751753759">Chromiumని సురక్షితం చేయడానికి, మేము క్రింది ఎక్స్‌టెన్షన్‌ను నిలిపివేసాము, ఇది <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />లో లిస్ట్‌ చేయబడలేదు మరియు మీకు తెలియకుండా జోడించబడి ఉండవచ్చు.</translation>
+<translation id="9019929317751753759">Chromiumని సురక్షితం చేయడానికి, మేము కింది ఎక్స్‌టెన్షన్‌ను నిలిపివేసాము, ఇది <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />లో లిస్ట్‌ చేయబడలేదు మరియు మీకు తెలియకుండా జోడించబడి ఉండవచ్చు.</translation>
 <translation id="9089354809943900324">Chromium కాలం చెల్లినది</translation>
 <translation id="9093206154853821181">{0,plural, =1{ఒక గంటలో Chromium తిరిగి ప్రారంభించబడుతుంది}other{# గంటల్లో Chromium తిరిగి ప్రారంభించబడుతుంది}}</translation>
 <translation id="91086099826398415">కొత్త Chromium &amp;ట్యాబ్‌లో లింక్‌ని తెరువు</translation>

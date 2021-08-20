@@ -944,7 +944,7 @@ Privacy Sandbox 试用版功能尚处于积极开发阶段，目前只能在部�
 <translation id="6979737339423435258">时间不限</translation>
 <translation id="6981982820502123353">无障碍</translation>
 <translation id="6989267951144302301">无法下载</translation>
-<translation id="6995899638241819463">当密码遭遇数据泄露时，发送警告</translation>
+<translation id="6995899638241819463">提醒我密码是否遭遇了数据泄露</translation>
 <translation id="7001056293070445572">此文件很大 (<ph name="FILE_SIZE" />)</translation>
 <translation id="7022756207310403729">在浏览器中打开</translation>
 <translation id="702463548815491781">建议在开启 TalkBack 或“开关控制”时使用</translation>

@@ -5520,7 +5520,7 @@
 <translation id="6993000214273684335">此标签页已从未命名的组中移除 - 该组包含<ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">正在更新 Chrome 浏览器</translation>
 <translation id="6994069045767983299">颜色反转</translation>
-<translation id="6995899638241819463">当密码遭遇数据泄露时，发送警告</translation>
+<translation id="6995899638241819463">提醒我密码是否遭遇了数据泄露</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - 活动日志</translation>
 <translation id="6997707937646349884">在您的设备上：</translation>
 <translation id="6998793565256476099">注册设备以进行视频会议</translation>
