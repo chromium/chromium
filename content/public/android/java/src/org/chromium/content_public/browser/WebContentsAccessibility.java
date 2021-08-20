@@ -50,6 +50,12 @@ public interface WebContentsAccessibility {
     void setAccessibilityEnabledForTesting();
 
     /**
+     * Enables a11y service mask flags in the BrowserAccessibilityState for testing.
+     */
+    @VisibleForTesting
+    void setBrowserAccessibilityStateForTesting();
+
+    /**
      *  Add a spelling error.
      */
     @VisibleForTesting

@@ -395,6 +395,12 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
 
     @VisibleForTesting
     @Override
+    public void setBrowserAccessibilityStateForTesting() {
+        BrowserAccessibilityState.setEventTypeMaskForTesting();
+    }
+
+    @VisibleForTesting
+    @Override
     public void addSpellingErrorForTesting(int virtualViewId, int startOffset, int endOffset) {
         WebContentsAccessibilityImplJni.get().addSpellingErrorForTesting(mNativeObj,
                 WebContentsAccessibilityImpl.this, virtualViewId, startOffset, endOffset);

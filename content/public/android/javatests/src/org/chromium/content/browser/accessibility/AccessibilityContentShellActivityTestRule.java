@@ -55,6 +55,7 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
         mWcax = getWebContentsAccessibility();
         mWcax.setState(true);
         mWcax.setAccessibilityEnabledForTesting();
+        mWcax.setBrowserAccessibilityStateForTesting();
 
         mNodeProvider = getAccessibilityNodeProvider();
 

@@ -17,6 +17,8 @@ import android.provider.Settings;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
@@ -128,6 +130,19 @@ public class BrowserAccessibilityState {
             // immediately, but updateAccessibilityServices checks for this and keeps
             // polling until they agree.
             updateAccessibilityServices();
+        }
+    }
+
+    @VisibleForTesting
+    public static void setEventTypeMaskForTesting() {
+        if (!sInitialized) updateAccessibilityServices();
+
+        // Explicitly set mask so all events are relevant to currently enabled service.
+        sEventTypeMask = ~0;
+
+        // Inform all listeners of this change.
+        for (Listener listener : sListeners) {
+            listener.onBrowserAccessibilityStateChanged(true);
         }
     }
 
