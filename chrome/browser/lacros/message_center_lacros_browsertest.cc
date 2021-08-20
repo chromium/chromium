@@ -42,7 +42,9 @@ class TestDelegate : public mojom::NotificationDelegate {
       on_closed_run_loop_->Quit();
   }
   void OnNotificationClicked() override {}
-  void OnNotificationButtonClicked(uint32_t button_index) override {}
+  void OnNotificationButtonClicked(
+      uint32_t button_index,
+      const absl::optional<std::u16string>& reply) override {}
   void OnNotificationSettingsButtonClicked() override {}
   void OnNotificationDisabled() override {}
 

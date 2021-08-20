@@ -40,7 +40,12 @@ interface NotificationDelegate {
 
   // Called when a notification that has buttons (e.g., "Learn more") receives a
   // click on one of the buttons.
-  OnNotificationButtonClicked@2(uint32 button_index);
+  OnNotificationButtonClicked@2(
+    uint32 button_index,
+    // This string contains input that is submitted for a notification button
+    // with input. It's value will be null if the clicked button has no
+    // associated input.
+    [MinVersion=2] mojo_base.mojom.String16? reply);
 
   // Called when a notification's settings button has been pressed.
   OnNotificationSettingsButtonClicked@3();

@@ -75,6 +75,7 @@ std::unique_ptr<mc::Notification> FromMojo(
   for (const auto& mojo_button : notification->buttons) {
     mc::ButtonInfo button;
     button.title = mojo_button->title;
+    button.placeholder = mojo_button->placeholder;
     rich_data.buttons.push_back(button);
   }
   rich_data.pinned = notification->pinned;
@@ -136,12 +137,12 @@ class ForwardingDelegate : public message_center::NotificationDelegate {
 
   void Click(const absl::optional<int>& button_index,
              const absl::optional<std::u16string>& reply) override {
+    // The button index comes out of
+    // trusted ash-side message center UI code and is guaranteed not to be
+    // negative.
     if (button_index) {
-      // Chrome OS does not support inline reply. The button index comes out of
-      // trusted ash-side message center UI code and is guaranteed not to be
-      // negative.
       remote_delegate_->OnNotificationButtonClicked(
-          base::checked_cast<uint32_t>(*button_index));
+          base::checked_cast<uint32_t>(*button_index), reply);
     } else {
       remote_delegate_->OnNotificationClicked();
     }

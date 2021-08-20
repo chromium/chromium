@@ -49,7 +49,8 @@ class TestPlatformBridgeDelegate : public NotificationPlatformBridgeDelegate {
       int button_index,
       const absl::optional<std::u16string>& reply) override {
     ++button_clicked_count_;
-    last_button_index_ = button_index;
+    last_button_clicked_arguments_.emplace(
+        ButtonClickedArguments{button_index, reply});
   }
   void HandleNotificationSettingsButtonClicked(const std::string& id) override {
     ++settings_button_clicked_count_;
@@ -58,13 +59,18 @@ class TestPlatformBridgeDelegate : public NotificationPlatformBridgeDelegate {
     ++disabled_count_;
   }
 
+  struct ButtonClickedArguments {
+    int button_index;
+    absl::optional<std::u16string> reply;
+  };
+
   // Public because this is test code.
   int closed_count_ = 0;
   int clicked_count_ = 0;
   int button_clicked_count_ = 0;
-  int last_button_index_ = -1;
   int settings_button_clicked_count_ = 0;
   int disabled_count_ = 0;
+  absl::optional<ButtonClickedArguments> last_button_clicked_arguments_;
 };
 
 // Simulates MessageCenterAsh in ash-chrome.
@@ -297,10 +303,27 @@ TEST_F(NotificationPlatformBridgeLacrosTest, UserActions) {
   notification_delegate_remote.FlushForTesting();
   EXPECT_EQ(1, bridge_delegate_.clicked_count_);
 
-  notification_delegate_remote->OnNotificationButtonClicked(/*button_index=*/0);
+  notification_delegate_remote->OnNotificationButtonClicked(
+      /*button_index=*/0, /*reply=*/absl::nullopt);
   notification_delegate_remote.FlushForTesting();
   EXPECT_EQ(1, bridge_delegate_.button_clicked_count_);
-  EXPECT_EQ(0, bridge_delegate_.last_button_index_);
+
+  ASSERT_TRUE(bridge_delegate_.last_button_clicked_arguments_.has_value());
+  EXPECT_EQ(0, bridge_delegate_.last_button_clicked_arguments_->button_index);
+  EXPECT_FALSE(
+      bridge_delegate_.last_button_clicked_arguments_->reply.has_value());
+
+  // Test Inline reply.
+  notification_delegate_remote->OnNotificationButtonClicked(
+      /*button_index=*/1, /*reply=*/absl::make_optional(u"test"));
+  notification_delegate_remote.FlushForTesting();
+  EXPECT_EQ(2, bridge_delegate_.button_clicked_count_);
+
+  ASSERT_TRUE(bridge_delegate_.last_button_clicked_arguments_.has_value());
+  EXPECT_EQ(1, bridge_delegate_.last_button_clicked_arguments_->button_index);
+  ASSERT_TRUE(
+      bridge_delegate_.last_button_clicked_arguments_->reply.has_value());
+  EXPECT_EQ(u"test", bridge_delegate_.last_button_clicked_arguments_->reply);
 
   notification_delegate_remote->OnNotificationSettingsButtonClicked();
   notification_delegate_remote.FlushForTesting();
