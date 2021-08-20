@@ -295,8 +295,14 @@ IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, OpenLearnMoreLink) {
       AccuracyTipInteraction::kLearnMore, 1);
 }
 
+// Test is flaky on MSAN. https://crbug.com/1241933
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_SurveyShownAfterShowingTip DISABLED_SurveyShownAfterShowingTip
+#else
+#define MAYBE_SurveyShownAfterShowingTip SurveyShownAfterShowingTip
+#endif
 IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest,
-                       SurveyShownAfterShowingTip) {
+                       MAYBE_SurveyShownAfterShowingTip) {
   auto* tips_service =
       AccuracyServiceFactory::GetForProfile(browser()->profile());
   auto* hats_service =
