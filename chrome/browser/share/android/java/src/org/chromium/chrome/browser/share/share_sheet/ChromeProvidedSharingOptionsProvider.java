@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.content_creation.notes.NoteCreationCoordinato
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator.LinkGeneration;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextMetricsHelper;
 import org.chromium.chrome.browser.share.long_screenshots.LongScreenshotsCoordinator;
@@ -252,11 +251,6 @@ public class ChromeProvidedSharingOptionsProvider {
         mOrderedFirstPartyOptions.add(createCopyFirstPartyOption());
         mOrderedFirstPartyOptions.add(createCopyTextFirstPartyOption());
         mOrderedFirstPartyOptions.add(createSendTabToSelfFirstPartyOption());
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_SHARE_HIGHLIGHTS_ANDROID)
-                && !ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)) {
-            mOrderedFirstPartyOptions.add(createHighlightsFirstPartyOption());
-        }
         if (!mTabProvider.get().getWebContents().isIncognito()) {
             mOrderedFirstPartyOptions.add(createQrCodeFirstPartyOption());
         }
@@ -426,18 +420,6 @@ public class ChromeProvidedSharingOptionsProvider {
                 .setIcon(R.drawable.sharing_print, R.string.print_share_activity_title)
                 .setFeatureNameForMetrics("SharingHubAndroid.PrintSelected")
                 .setOnClickCallback((view) -> { mPrintTabCallback.onResult(mTabProvider.get()); })
-                .build();
-    }
-
-    private FirstPartyOption createHighlightsFirstPartyOption() {
-        return new FirstPartyOptionBuilder(ContentType.HIGHLIGHTED_TEXT)
-                .setIcon(R.drawable.link, R.string.sharing_highlights)
-                .setFeatureNameForMetrics("SharingHubAndroid.LinkToTextSelected")
-                .setOnClickCallback((view) -> {
-                    LinkToTextCoordinator linkToTextCoordinator =
-                            new LinkToTextCoordinator(mActivity, mTabProvider.get(),
-                                    mChromeOptionShareCallback, mUrl, mShareParams.getText());
-                })
                 .build();
     }
 

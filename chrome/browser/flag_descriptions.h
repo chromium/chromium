@@ -1683,9 +1683,6 @@ extern const char kChimeAndroidSdkName[];
 extern const char kContinuousSearchName[];
 extern const char kContinuousSearchDescription[];
 
-extern const char kChromeShareHighlightsAndroidName[];
-extern const char kChromeShareHighlightsAndroidDescription[];
-
 extern const char kChromeShareLongScreenshotName[];
 extern const char kChromeShareLongScreenshotDescription[];
 

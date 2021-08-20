@@ -23113,6 +23113,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="SharingHubAndroid.LinkToTextSelected">
+  <obsolete>
+    Corresponding option was removed from sharing hub in M95. Never launched.
+  </obsolete>
   <owner>gayane@chromium.org</owner>
   <owner>src/components/send_tab_to_self/OWNERS</owner>
   <description>

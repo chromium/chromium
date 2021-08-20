@@ -2933,11 +2933,6 @@ const char kContinuousSearchDescription[] =
     "Enables caching of search results to permit a more seamless search "
     "experience.";
 
-const char kChromeShareHighlightsAndroidName[] =
-    "Chrome Share text highlights on Android";
-const char kChromeShareHighlightsAndroidDescription[] =
-    "Enables UI to generate and share link to text highlights on Android";
-
 const char kChromeShareLongScreenshotName[] = "Chrome Share Long Screenshots";
 const char kChromeShareLongScreenshotDescription[] =
     "Enables UI to edit and share long screenshots on Android";

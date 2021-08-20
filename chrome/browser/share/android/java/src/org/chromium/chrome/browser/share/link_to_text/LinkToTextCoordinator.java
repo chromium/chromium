@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.share.link_to_text;
 
-import android.content.Context;
 import android.net.Uri;
 
 import androidx.annotation.IntDef;
@@ -13,7 +12,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.task.PostTask;
 import org.chromium.blink.mojom.TextFragmentReceiver;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
@@ -23,7 +21,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
-import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
@@ -53,7 +50,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
     private static final int PREVIEW_MAX_LENGTH = 35;
     private static final int PREVIEW_SELECTED_TEXT_CUTOFF_LENGTH = 32;
     private static final String PREVIEW_ELLIPSIS = "...";
-    private final Context mContext;
+
     private final ChromeOptionShareCallback mChromeOptionShareCallback;
     private final Tab mTab;
     private final ChromeShareExtras mChromeShareExtras;
@@ -66,31 +63,9 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
     private ShareParams mShareLinkParams;
     private ShareParams mShareTextParams;
 
-    /**
-     * Constructor for selected link-to-text.
-     */
-    public LinkToTextCoordinator(Context context, Tab tab,
-            ChromeOptionShareCallback chromeOptionShareCallback, String visibleUrl,
-            String selectedText) {
-        this(context, tab, chromeOptionShareCallback, /*chromeShareExtras=*/null,
-                /*shareStartTime=*/0, visibleUrl, selectedText);
-    }
-
-    /**
-     * Constructor for preemptive link-to-text generation.
-     */
-    public LinkToTextCoordinator(ShareParams shareParams, Tab tab,
-            ChromeOptionShareCallback chromeOptionShareCallback,
-            ChromeShareExtras chromeShareExtras, long shareStartTime, String visibleUrl) {
-        this(/*context=*/null, tab, chromeOptionShareCallback, chromeShareExtras, shareStartTime,
-                visibleUrl, shareParams.getText());
-    }
-
-    private LinkToTextCoordinator(Context context, Tab tab,
-            ChromeOptionShareCallback chromeOptionShareCallback,
+    public LinkToTextCoordinator(Tab tab, ChromeOptionShareCallback chromeOptionShareCallback,
             ChromeShareExtras chromeShareExtras, long shareStartTime, String visibleUrl,
             String selectedText) {
-        mContext = context;
         mTab = tab;
         mChromeOptionShareCallback = chromeOptionShareCallback;
         mChromeShareExtras = chromeShareExtras;
@@ -121,53 +96,6 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
     void onSelectorReady(String selector) {
         if (mCancelRequest) return;
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)) {
-            showPreemptiveShareSheet(selector);
-            return;
-        }
-
-        ShareParams params =
-                new ShareParams
-                        .Builder(mTab.getWindowAndroid(), /*title=*/"", getUrlToShare(selector))
-                        .setText(mSelectedText, SHARE_TEXT_TEMPLATE)
-                        .setPreviewText(getPreviewText(), SHARE_TEXT_TEMPLATE)
-                        .build();
-
-        mChromeOptionShareCallback.showThirdPartyShareSheet(params,
-                new ChromeShareExtras.Builder()
-                        .setDetailedContentType(
-                                ChromeShareExtras.DetailedContentType.HIGHLIGHTED_TEXT)
-                        .build(),
-                System.currentTimeMillis());
-
-        if (selector.isEmpty()) {
-            // TODO(gayane): Android toast should be replace by another toast like UI which allows
-            // custom positioning as |setView| and |setGravity| are deprecated starting API 30.
-            String toastMessage =
-                    mContext.getResources().getString(R.string.link_to_text_failure_toast_message);
-            Toast toast = Toast.makeText(mContext, toastMessage, Toast.LENGTH_SHORT);
-            toast.setGravity(toast.getGravity(), toast.getXOffset(),
-                    mContext.getResources().getDimensionPixelSize(
-                            R.dimen.y_offset_thirdparty_sharesheet));
-            toast.show();
-        }
-        // After generation results are communicated to users, cleanup to remove tab listener.
-        cleanup();
-    }
-
-    @VisibleForTesting
-    String getPreviewText() {
-        if (mSelectedText.length() <= PREVIEW_MAX_LENGTH) {
-            return mSelectedText;
-        }
-
-        StringBuilder sb = new StringBuilder();
-        sb.append(mSelectedText.substring(0, PREVIEW_SELECTED_TEXT_CUTOFF_LENGTH));
-        sb.append(PREVIEW_ELLIPSIS);
-        return sb.toString();
-    }
-
-    private void showPreemptiveShareSheet(String selector) {
         mShareLinkParams = selector.isEmpty()
                 ? null
                 : new ShareParams
@@ -184,7 +112,21 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         mChromeOptionShareCallback.showShareSheet(
                 getShareParams(selector.isEmpty() ? LinkToggleState.NO_LINK : LinkToggleState.LINK),
                 mChromeShareExtras, mShareStartTime);
+
+        // After generation results are communicated to users, cleanup to remove tab listener.
         cleanup();
+    }
+
+    @VisibleForTesting
+    String getPreviewText() {
+        if (mSelectedText.length() <= PREVIEW_MAX_LENGTH) {
+            return mSelectedText;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(mSelectedText.substring(0, PREVIEW_SELECTED_TEXT_CUTOFF_LENGTH));
+        sb.append(PREVIEW_ELLIPSIS);
+        return sb.toString();
     }
 
     private void startRequestSelector() {
