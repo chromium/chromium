@@ -2528,10 +2528,10 @@ void RasterDecoderImpl::DoCopySubTextureINTERNALSkia(
 
     auto* canvas = dest_scoped_access->surface()->getCanvas();
     SkPaint paint;
-    if (unpack_flip_y) {
-      canvas->scale(1, -1);
-      canvas->translate(0, -height);
-    }
+
+    // Skia will flip the image if the surface origins do not match.
+    DCHECK_EQ(unpack_flip_y, source_shared_image->surface_origin() !=
+                                 dest_shared_image->surface_origin());
     paint.setBlendMode(SkBlendMode::kSrc);
     canvas->drawImageRect(source_image, gfx::RectToSkRect(source_rect),
                           gfx::RectToSkRect(dest_rect), SkSamplingOptions(),
