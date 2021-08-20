@@ -119,9 +119,9 @@ GlyphMetricsMap<T>::LocatePageSlowCase(unsigned page_number) {
     filled_primary_page_ = true;
   } else {
     if (pages_) {
-      page = pages_->DeprecatedAtOrEmptyValue(page_number);
-      if (page)
-        return page;
+      auto it = pages_->find(page_number);
+      if (it != pages_->end())
+        return it->value.get();
     } else {
       pages_ =
           std::make_unique<HashMap<int, std::unique_ptr<GlyphMetricsPage>>>();
