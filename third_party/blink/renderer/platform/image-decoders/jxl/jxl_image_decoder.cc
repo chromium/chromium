@@ -143,10 +143,27 @@ void JXLImageDecoder::DecodeImpl(wtf_size_t index, bool only_size) {
 
   DCHECK_LE(num_decoded_frames_, frame_buffer_cache_.size());
 
-  if (finished_ ||
-      (num_decoded_frames_ > index &&
-       frame_buffer_cache_[index].GetStatus() == ImageFrame::kFrameComplete)) {
+  if (num_decoded_frames_ > index &&
+      frame_buffer_cache_[index].GetStatus() == ImageFrame::kFrameComplete) {
+    // Frame already complete
     return;
+  }
+
+  if ((index < num_decoded_frames_) && dec_) {
+    // An animation frame that already has been decoded, but does not have
+    // status ImageFrame::kFrameComplete, was requested. This means an earlier
+    // animation frame was purged but is to be re-decoded now. Rewind the
+    // decoder and skip to the requested frame.
+    JxlDecoderRewind(dec_.get());
+    offset_ = 0;
+    // No longer subscribe to JXL_DEC_BASIC_INFO or JXL_DEC_COLOR_ENCODING.
+    if (JXL_DEC_SUCCESS !=
+        JxlDecoderSubscribeEvents(dec_.get(), JXL_DEC_FULL_IMAGE)) {
+      SetFailed();
+      return;
+    }
+    JxlDecoderSkipFrames(dec_.get(), index);
+    num_decoded_frames_ = index;
   }
 
   if (!dec_) {
@@ -433,8 +450,9 @@ void JXLImageDecoder::DecodeImpl(wtf_size_t index, bool only_size) {
         break;
       }
       case JXL_DEC_SUCCESS: {
-        dec_ = nullptr;
-        finished_ = true;
+        // Finished decoding entire image, with all frames in case of animation.
+        // Don't reset dec_, since we may want to rewind it if an earlier
+        // animation frame has to be decoded again.
         segment_.clear();
         return;
       }
@@ -506,8 +524,7 @@ wtf_size_t JXLImageDecoder::DecodeFrameCount() {
   }
 
   FastSharedBufferReader reader(data_.get());
-  if (finished_ || size_at_last_frame_count_ == reader.size() ||
-      has_full_frame_count_) {
+  if (has_full_frame_count_ || size_at_last_frame_count_ == reader.size()) {
     return frame_buffer_cache_.size();
   }
   size_at_last_frame_count_ = reader.size();

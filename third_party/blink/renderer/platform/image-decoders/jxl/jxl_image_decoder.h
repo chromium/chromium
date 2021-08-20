@@ -60,13 +60,6 @@ class PLATFORM_EXPORT JXLImageDecoder final : public ImageDecoder {
   wtf_size_t DecodeFrameCount() override;
   void Decode(wtf_size_t frame) override { DecodeImpl(frame); }
   void InitializeNewFrame(wtf_size_t) override;
-  // TODO(http://crbug.com/1211339): We never clear the frame buffer for now,
-  // as we'd need to restart the decoder from scratch. This can lead to
-  // excessive memory use on web site such as forums, or image collection
-  // sites. This should be fixed to use the existing frame cache disposal
-  // methods when the JPEG XL API can handle resuming decoding from
-  // intermediate frames.
-  void ClearFrameBuffer(wtf_size_t frame_index) override {}
 
   // Decodes up to a given frame.  If |only_size| is true, stops decoding after
   // calculating the image size. If decoding fails but there is no more
@@ -107,9 +100,13 @@ class PLATFORM_EXPORT JXLImageDecoder final : public ImageDecoder {
   // Preserved for JXL pixel callback. Not owned.
   ColorProfileTransform* xform_;
 
-  // For animation support.
+  // Fields for animation support.
+
+  // The amount of frames the JXL decoder has decoded. This can be reset to
+  // an earlier amount if frame buffers were cleared and decoding was
+  // restarted from an earlier frame. This is used to keep track of the index
+  // in the frame_buffer_cache_.
   wtf_size_t num_decoded_frames_ = 0;
-  bool finished_ = false;
   bool has_full_frame_count_ = false;
   size_t size_at_last_frame_count_ = 0;
   WTF::Vector<float> frame_durations_;

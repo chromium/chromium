@@ -606,5 +606,14 @@ TEST(JXLTests, JXLHDRTest) {
           0.45098039507865906, 1);
 }
 
+TEST(JXLTests, RandomFrameDecode) {
+  TestRandomFrameDecode(&CreateJXLDecoder, "/images/resources/jxl/count.jxl");
+}
+
+TEST(JXLTests, RandomDecodeAfterClearFrameBufferCache) {
+  TestRandomDecodeAfterClearFrameBufferCache(&CreateJXLDecoder,
+                                             "/images/resources/jxl/count.jxl");
+}
+
 }  // namespace
 }  // namespace blink
