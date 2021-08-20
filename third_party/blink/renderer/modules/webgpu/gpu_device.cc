@@ -248,6 +248,13 @@ void GPUDevice::OnCreateComputePipelineAsyncCallback(
   }
 }
 
+GPUAdapter* GPUDevice::deprecatedAdapter() {
+  AddConsoleWarning(
+      "The adapter attribute of GPUDevice is deprecated and will soon be "
+      "removed.");
+  return adapter_;
+}
+
 GPUAdapter* GPUDevice::adapter() const {
   return adapter_;
 }

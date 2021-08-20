@@ -70,6 +70,9 @@ class GPUDevice final : public EventTargetWithInlineData,
 
   // gpu_device.idl
   GPUAdapter* adapter() const;
+  // Because adapter() is still used internally, this will be the entry point
+  // for the deprecated IDL attribute until it's removed.
+  GPUAdapter* deprecatedAdapter();
   GPUSupportedFeatures* features() const;
   GPUSupportedLimits* limits() const { return limits_; }
   ScriptPromise lost(ScriptState* script_state);

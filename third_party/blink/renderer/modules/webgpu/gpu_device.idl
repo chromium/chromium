@@ -7,7 +7,7 @@
 [
     Exposed(Window WebGPU, Worker WebGPU)
 ] interface GPUDevice : EventTarget {
-    [SameObject] readonly attribute GPUAdapter adapter;
+    [SameObject, ImplementedAs=deprecatedAdapter] readonly attribute GPUAdapter adapter;
 
     [SameObject] readonly attribute GPUSupportedFeatures features;
     [SameObject] readonly attribute GPUSupportedLimits limits;
