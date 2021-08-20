@@ -109,29 +109,30 @@
     <div class="title">[[folder.title]]</div>
   </button>
 
-<template is="dom-if" if="[[open_]]" restamp>
-  <div id="children" role="group">
-    <template is="dom-repeat" items="[[folder.children]]" initial-count="20">
-      <template is="dom-if" if="[[!item.url]]" restamp>
-        <bookmark-folder folder="[[item]]"
-            depth="[[childDepth_]]"
-            open-folders="[[openFolders]]">
-        </bookmark-folder>
-      </template>
+  <template is="dom-if" if="[[open_]]" restamp>
+    <div id="children" role="group">
+      <template is="dom-repeat" items="[[folder.children]]" initial-count="20">
+        <template is="dom-if" if="[[!item.url]]" restamp>
+          <bookmark-folder folder="[[item]]"
+              depth="[[childDepth_]]"
+              open-folders="[[openFolders]]">
+          </bookmark-folder>
+        </template>
 
-      <template is="dom-if" if="[[item.url]]" restamp>
-        <a role="treeitem" href="[[item.url]]" class="bookmark row"
-            draggable="true" data-bookmark="[[item]]"
-            on-click="onBookmarkClick_"
-            on-auxclick="onBookmarkClick_"
-            on-contextmenu="onBookmarkContextMenu_">
-          <div
-              class="icon"
-              style="background-image: [[getBookmarkIcon_(item.url)]]">
-          </div>
-          <div class="title">[[item.title]]</div>
-        </a>
+        <template is="dom-if" if="[[item.url]]" restamp>
+          <a role="treeitem" href="[[item.url]]" class="bookmark row"
+              draggable="true" data-bookmark="[[item]]"
+              on-click="onBookmarkClick_"
+              on-auxclick="onBookmarkClick_"
+              on-contextmenu="onBookmarkContextMenu_">
+            <div
+                class="icon"
+                style="background-image: [[getBookmarkIcon_(item.url)]]">
+            </div>
+            <div class="title">[[item.title]]</div>
+          </a>
+        </template>
       </template>
-    </template>
-  </div>
-</template>
+    </div>
+  </template>
+</div>
