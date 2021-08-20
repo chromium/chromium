@@ -1596,7 +1596,7 @@ void WallpaperControllerImpl::OnActiveUserPrefServiceChanged(
   pref_change_registrar_->Init(pref_service);
   pref_change_registrar_->Add(
       prefs::kSyncableWallpaperInfo,
-      base::BindRepeating(&WallpaperControllerImpl::OnPrefChanged,
+      base::BindRepeating(&WallpaperControllerImpl::SyncLocalAndRemotePrefs,
                           weak_factory_.GetWeakPtr()));
 
   AccountId account_id = GetActiveAccountId();
@@ -1619,7 +1619,7 @@ void WallpaperControllerImpl::OnActiveUserPrefServiceChanged(
   if (!pref_service->FindPreference(kWallpaperCollectionId)->HasUserSetting())
     wallpaper_controller_client_->MigrateCollectionIdFromChromeApp();
 
-  OnPrefChanged();
+  SyncLocalAndRemotePrefs();
 
   if (IsDailyRefreshEnabled())
     StartDailyRefreshTimer();
@@ -2385,12 +2385,12 @@ bool WallpaperControllerImpl::GetLocalWallpaperInfo(const AccountId& account_id,
                           info);
 }
 
-void WallpaperControllerImpl::OnPrefChanged() {
+void WallpaperControllerImpl::SyncLocalAndRemotePrefs() {
   AccountId account_id = GetActiveAccountId();
-  OnPrefChangedForAccountId(account_id);
+  SyncLocalAndRemotePrefsForAccountId(account_id);
 }
 
-void WallpaperControllerImpl::OnPrefChangedForAccountId(
+void WallpaperControllerImpl::SyncLocalAndRemotePrefsForAccountId(
     const AccountId& account_id) {
   // Check if the synced info was set by another device, and if we have already
   // handled it locally.
@@ -2402,8 +2402,18 @@ void WallpaperControllerImpl::OnPrefChangedForAccountId(
     HandleWallpaperInfoSyncedIn(account_id, synced_info);
     return;
   }
-  if (synced_info != local_info)
+  if (synced_info == local_info)
+    return;
+  if (synced_info.date > local_info.date) {
     HandleWallpaperInfoSyncedIn(account_id, synced_info);
+  } else if (local_info.type == CUSTOMIZED) {
+    // Generally, we handle setting synced_info when local_info is updated.
+    // But for custom images, we wait until the image is uploaded to Drive,
+    // which may not be available at the time of setting the local_info.
+    base::FilePath source = GetCustomWallpaperDir(kOriginalWallpaperSubDir)
+                                .Append(local_info.location);
+    SaveWallpaperToDriveFs(account_id, source);
+  }
 }
 
 void WallpaperControllerImpl::HandleWallpaperInfoSyncedIn(
@@ -2484,24 +2494,7 @@ std::string WallpaperControllerImpl::GetDailyRefreshCollectionId() const {
 
 void WallpaperControllerImpl::OnGoogleDriveMounted(
     const AccountId& account_id) {
-  WallpaperInfo local_info;
-  if (!GetLocalWallpaperInfo(account_id, &local_info))
-    return;
-  if (local_info.type != CUSTOMIZED)
-    return;
-
-  WallpaperInfo synced_info;
-  if (GetSyncedWallpaperInfo(account_id, &synced_info) &&
-      (local_info == synced_info || local_info.date < synced_info.date)) {
-    return;
-  }
-  if (synced_info.date >= local_info.date) {
-    OnPrefChangedForAccountId(account_id);
-  } else {
-    base::FilePath source = GetCustomWallpaperDir(kOriginalWallpaperSubDir)
-                                .Append(local_info.location);
-    SaveWallpaperToDriveFs(account_id, source);
-  }
+  SyncLocalAndRemotePrefsForAccountId(account_id);
 }
 
 bool WallpaperControllerImpl::IsDailyRefreshEnabled() const {
@@ -2656,7 +2649,7 @@ void WallpaperControllerImpl::HandleCustomWallpaperInfoSyncedIn(
 void WallpaperControllerImpl::DriveFsWallpaperChanged(
     const base::FilePath& path,
     bool error) {
-  OnPrefChanged();
+  SyncLocalAndRemotePrefs();
 }
 
 }  // namespace ash

@@ -577,8 +577,8 @@ class ASH_EXPORT WallpaperControllerImpl
                              const WallpaperInfo& info);
   bool GetLocalWallpaperInfo(const AccountId& account_id,
                              WallpaperInfo* info) const;
-  void OnPrefChanged();
-  void OnPrefChangedForAccountId(const AccountId& account_id);
+  void SyncLocalAndRemotePrefs();
+  void SyncLocalAndRemotePrefsForAccountId(const AccountId& account_id);
   void HandleWallpaperInfoSyncedIn(const AccountId& account_id,
                                    WallpaperInfo info);
   void OnAttemptSetOnlineWallpaper(const OnlineWallpaperParams& params,
