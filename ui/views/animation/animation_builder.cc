@@ -48,6 +48,7 @@ class AnimationBuilder::Observer : public ui::LayerAnimationObserver {
 
  protected:
   void OnDetachedFromSequence(ui::LayerAnimationSequence* sequence) override;
+  bool RequiresNotificationWhenAnimatorDestroyed() const override;
 
  private:
   using RepeatMap = base::flat_map<ui::LayerAnimationSequence*, int>;
@@ -138,6 +139,11 @@ void AnimationBuilder::Observer::OnDetachedFromSequence(
     ui::LayerAnimationSequence* sequence) {
   if (attached_sequences().empty())
     delete this;
+}
+
+bool AnimationBuilder::Observer::RequiresNotificationWhenAnimatorDestroyed()
+    const {
+  return true;
 }
 
 struct AnimationBuilder::Value {

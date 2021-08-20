@@ -203,4 +203,47 @@ TEST_F(AnimationBuilderTest, TwoKeyFrame) {
   EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.9f);
 }
 
+// This test checks that repeat callbacks are called after each sequence
+// repetition and callbacks from one sequence do not affect calls from another
+// sequence.
+TEST_F(AnimationBuilderTest, CheckOnWillRepeatCallbacks) {
+  int first_repeat_count = 0;
+  int second_repeat_count = 0;
+
+  TestAnimatibleLayerOwner* first_animating_view = CreateTestLayerOwner();
+  constexpr auto kDelay = base::TimeDelta::FromSeconds(3);
+  gfx::RoundedCornersF first_rounded_corners(12.0f, 12.0f, 12.0f, 12.0f);
+  gfx::RoundedCornersF second_rounded_corners(5.0f, 5.0f, 5.0f, 5.0f);
+
+  {
+    AnimationBuilder b;
+    b.Repeatedly()
+        .SetDuration(kDelay)
+        .OnWillRepeat(
+            base::BindRepeating([](int& repeat) { repeat = repeat + 1; },
+                                std::ref(first_repeat_count)))
+        .SetOpacity(first_animating_view, 0.4f)
+        .Then()
+        .SetDuration(kDelay)
+        .SetOpacity(first_animating_view, 0.9f);
+
+    b.Repeatedly()
+        .SetDuration(kDelay)
+        .OnWillRepeat(
+            base::BindRepeating([](int& repeat) { repeat = repeat + 1; },
+                                std::ref(second_repeat_count)))
+        .SetRoundedCorners(first_animating_view, first_rounded_corners)
+        .Then()
+        .SetDuration(kDelay)
+        .SetRoundedCorners(first_animating_view, second_rounded_corners);
+  }
+
+  Step(kDelay * 2);
+  EXPECT_EQ(first_repeat_count, 1);
+  EXPECT_EQ(second_repeat_count, 1);
+  Step(kDelay * 2);
+  EXPECT_EQ(first_repeat_count, 2);
+  EXPECT_EQ(second_repeat_count, 2);
+}
+
 }  // namespace views
