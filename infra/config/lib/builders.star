@@ -885,6 +885,7 @@ def _bootstrap_properties(ctx):
                     "properties_file": "infra/config/generated/{}".format(properties_file),
                     "exe": builder.exe,
                 },
+                "led_builder_is_bootstrapped": True,
             }
             builder_properties = json.decode(builder.properties)
             for p in _NON_BOOTSTRAPPED_PROPERTIES:
