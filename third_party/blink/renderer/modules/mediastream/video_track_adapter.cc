@@ -270,6 +270,15 @@ void VideoTrackAdapter::VideoFrameResolutionAdapter::AddCallbacks(
     VideoTrackFormatInternalCallback format_callback) {
   DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
 
+  // The new track's settings should match the resolution adapter's current
+  // |track_settings_| as set for existing track(s) with matching
+  // VideoTrackAdapterSettings.
+  if (!callbacks_.empty() && track_settings_.frame_size.width() > 0 &&
+      track_settings_.frame_size.height() > 0) {
+    settings_callback.Run(track_settings_.frame_size,
+                          track_settings_.frame_rate);
+  }
+
   VideoTrackCallbacks track_callbacks = {
       std::move(frame_callback), std::move(encoded_frame_callback),
       std::move(settings_callback), std::move(format_callback)};

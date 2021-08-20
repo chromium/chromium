@@ -371,6 +371,74 @@ TEST_F(VideoTrackAdapterFixtureTest, DeliverFrame_GpuMemoryBuffer) {
   DeliverAndValidateFrame(gmb_frame, base::TimeTicks());
 }
 
+// Tests that we run the |settings_callback| for any additional tracks that
+// share a VideoFrameResolutionAdapter with an existing track. This ensures that
+// the additional track's default frame_size and frame_rate are updated to match
+// incoming frames.
+TEST_F(VideoTrackAdapterFixtureTest,
+       DeliverPortraitFrame_RunSettingsCallbackForSecondTrack) {
+  // Attributes for initial track's incoming frame.
+  const gfx::Size kCodedSize(480, 640);
+  const gfx::Rect kVisibleRect(0, 0, 480, 640);
+  const gfx::Size kNaturalSize(480, 640);
+  const double kFrameRate = 30.0;
+  auto test_frame =
+      CreateTestFrame(kCodedSize, kVisibleRect, kNaturalSize,
+                      /*storage_type=*/media::VideoFrame::STORAGE_OWNED_MEMORY);
+
+  const media::VideoCaptureFormat stream_format(kCodedSize, kFrameRate,
+                                                media::PIXEL_FORMAT_I420);
+  CreateAdapter(stream_format);
+
+  // We don't provide a target size for the initial track.
+  VideoTrackAdapterSettings adapter_settings(
+      /*target_size=*/absl::nullopt,
+      /*min_aspect_ratio=*/0.0000,
+      /*max_aspect_ratio=*/640.0000, kFrameRate);
+  ConfigureTrack(adapter_settings);
+  // The delivered frame for the first track should have a portrait orientation.
+  auto check_portrait =
+      [&](scoped_refptr<media::VideoFrame> frame,
+          std::vector<scoped_refptr<media::VideoFrame>> scaled_frames,
+          base::TimeTicks estimated_capture_time) {
+        // We should get the original frame as-is here.
+        EXPECT_EQ(frame->storage_type(),
+                  media::VideoFrame::STORAGE_OWNED_MEMORY);
+        EXPECT_EQ(frame->coded_size(), kCodedSize);
+        EXPECT_EQ(frame->visible_rect(), kVisibleRect);
+        EXPECT_EQ(frame->natural_size(), kNaturalSize);
+      };
+  SetFrameValidationCallback(base::BindLambdaForTesting(check_portrait));
+  DeliverAndValidateFrame(test_frame, base::TimeTicks());
+
+  base::WaitableEvent settings_callback_run_;
+  // This lambda callback method validates that the |settings_callback|
+  // (MediaStreamVideoTrack::SetSizeAndComputedFrameRate) is run with the
+  // frame_size & frame_rate stored in the adapter's |track_settings_|. These
+  // values should have been set when we delivered a frame for the first
+  // track.
+  auto check_dimensions = [&](gfx::Size frame_size, double frame_rate) {
+    EXPECT_EQ(frame_size, kNaturalSize);
+    EXPECT_EQ(frame_rate, kFrameRate);
+    settings_callback_run_.Signal();
+  };
+
+  // Add an additional track with the same |adapter_settings| as the first
+  // track. Because of this it should share a VideoFrameResolutionAdapter with
+  // the first track. The lambda callback method should run as part of the
+  // VideoTrackAdapter::AddTrack logic.
+  std::unique_ptr<MediaStreamVideoTrack> second_track;
+  testing_render_thread_.task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &VideoTrackAdapter::AddTrack, adapter_, second_track.get(),
+          /*frame_callback=*/base::DoNothing(),
+          /*encoded_frame_callback=*/base::DoNothing(),
+          /*settings_callback=*/base::BindLambdaForTesting(check_dimensions),
+          /*track_callback=*/base::DoNothing(), adapter_settings));
+  settings_callback_run_.Wait();
+}
+
 class VideoTrackAdapterEncodedTest : public ::testing::Test {
  public:
   VideoTrackAdapterEncodedTest()
