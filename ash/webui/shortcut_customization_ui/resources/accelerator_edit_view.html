@@ -14,6 +14,15 @@
     margin-top: 5px;
   }
 
+  #editButton {
+    --cr-icon-button-icon-start-offset: 3px;
+    padding-top: 3px;
+  }
+
+  .clickable-button {
+    --cr-icon-button-fill-color: #1A73E8;
+  }
+
   :host([is-edit-view]) #acceleratorView {
     border-color: var(--google-blue-600);
     border-radius: 5px;
@@ -38,11 +47,13 @@
   <template id="buttonContainer" is="dom-if" if="[[!acceleratorInfo.locked]]">
     <div id="editButtonsContainer" hidden=[[isEditView]]>
       <cr-icon-button id="editButton"
-          iron-icon="shortcut-customization:cancel"
+          class="clickable-button"
+          iron-icon="shortcut-customization:edit"
           aria-hidden="true"
           on-click="onEditButtonClicked_">
       </cr-icon-button>
       <cr-icon-button id="deleteButton"
+          class="clickable-button"
           iron-icon="shortcut-customization:delete"
           aria-hidden="true"
           on-click="onDeleteButtonClicked_">

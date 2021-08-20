@@ -3,6 +3,11 @@
     display: grid;
     row-gap: 5px;
   }
+
+  #addIcon {
+    --iron-icon-fill-color: #1A73E8;
+    padding-top: 11px;
+  }
 </style>
 
 <cr-dialog id="editDialog" on-close="onDialogClose_">
@@ -25,8 +30,7 @@
     </template>
     <div id="addAcceleratorContainer" hidden="[[isAddingNewAccelerator_]]">
       <cr-button id="addAcceleratorButton" on-click="onAddAcceleratorClicked_">
-        <!-- TODO(jimmyxgong): Replace with proper spec icon -->
-        <iron-icon id="addIcon" icon="shortcut-customization:cancel">
+        <iron-icon id="addIcon" icon="shortcut-customization:add">
         </iron-icon>
         <!-- TODO(jimmyxgong): Localize this string -->
         Add shortcut
