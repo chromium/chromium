@@ -27,6 +27,7 @@ source_set("utils") {
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/tabs",
     "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/settings/google_services/resources:google_services_sync_error",
     "//ui/base",
     "//ui/gfx",
   ]

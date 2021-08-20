@@ -29,6 +29,13 @@
 #error "This file requires ARC support."
 #endif
 
+namespace {
+
+// Sync error icon.
+NSString* const kGoogleServicesSyncErrorImage = @"google_services_sync_error";
+
+}  // namespace
+
 // static
 bool SyncErrorInfoBarDelegate::Create(infobars::InfoBarManager* infobar_manager,
                                       ChromeBrowserState* browser_state,
@@ -45,7 +52,7 @@ SyncErrorInfoBarDelegate::SyncErrorInfoBarDelegate(
     id<SyncPresenter> presenter)
     : browser_state_(browser_state), presenter_(presenter) {
   DCHECK(!browser_state->IsOffTheRecord());
-  icon_ = gfx::Image([UIImage imageNamed:@"infobar_warning"]);
+  icon_ = gfx::Image([UIImage imageNamed:kGoogleServicesSyncErrorImage]);
   SyncSetupService* sync_setup_service =
       SyncSetupServiceFactory::GetForBrowserState(browser_state);
   DCHECK(sync_setup_service);
@@ -90,6 +97,10 @@ std::u16string SyncErrorInfoBarDelegate::GetButtonLabel(
 
 gfx::Image SyncErrorInfoBarDelegate::GetIcon() const {
   return icon_;
+}
+
+bool SyncErrorInfoBarDelegate::UseIconBackgroundTint() const {
+  return false;
 }
 
 bool SyncErrorInfoBarDelegate::Accept() {
