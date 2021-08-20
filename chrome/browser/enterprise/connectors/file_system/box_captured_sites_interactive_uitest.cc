@@ -898,6 +898,10 @@ class DownloadManagerObserver : public content::DownloadManager::Observer {
     return download_items_.back();
   }
 
+  std::vector<download::DownloadItem*> GetAllDownloadItems() {
+    return download_items_;
+  }
+
   content::DownloadManager* download_manager() { return download_manager_; }
 
  private:
@@ -939,6 +943,18 @@ class BoxCapturedSitesInteractiveTest : public InProcessBrowserTest {
   void TearDownOnMainThread() override {
     // Make sure any pending requests have finished
     base::RunLoop().RunUntilIdle();
+
+    // Make sure that this function terminates all in-progress downloads.
+    // Otherwise Chrome will prompt the user to confirm closing the Chrome
+    // window while there are active downloads. The prompt in turn prevents
+    // the test from terminating.
+    if (download_manager_observer()) {
+      for (auto* download_item :
+           download_manager_observer()->GetAllDownloadItems()) {
+        if (!download_item->IsDone())
+          download_item->Cancel(false);
+      }
+    }
   }
 
   void SetCloudFSCPolicy(const std::string& policy_value) {
