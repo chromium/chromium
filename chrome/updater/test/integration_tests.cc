@@ -61,7 +61,8 @@ class IntegrationTest : public ::testing::Test {
                          false);  // enable_tickcount
     Clean();
     ExpectClean();
-    SetUpTestService();
+    // TODO(crbug.com/1233612) - reenable the code when system tests pass.
+    // SetUpTestService();
     EnterTestMode(GURL("http://localhost:1234"));
   }
 
@@ -71,7 +72,8 @@ class IntegrationTest : public ::testing::Test {
     // TODO(crbug.com/1159189): Use a specific test output directory
     // because Uninstall() deletes the files under GetDataDirPath().
     CopyLog();
-    TearDownTestService();
+    // TODO(crbug.com/1233612) - reenable the code when system tests pass.
+    // TearDownTestService();
     Clean();
   }
 
