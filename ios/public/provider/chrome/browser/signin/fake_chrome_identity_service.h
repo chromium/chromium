@@ -44,8 +44,7 @@ class FakeChromeIdentityService : public ChromeIdentityService {
                               const std::set<std::string>& scopes,
                               ios::AccessTokenCallback callback) override;
 
-  virtual void GetAvatarForIdentity(ChromeIdentity* identity,
-                                    GetAvatarCallback callback) override;
+  virtual void GetAvatarForIdentity(ChromeIdentity* identity) override;
 
   virtual UIImage* GetCachedAvatarForIdentity(
       ChromeIdentity* identity) override;

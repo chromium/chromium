@@ -125,7 +125,11 @@ void ChromeIdentityService::GetAccessToken(ChromeIdentity* identity,
                                            AccessTokenCallback callback) {}
 
 void ChromeIdentityService::GetAvatarForIdentity(ChromeIdentity* identity,
-                                                 GetAvatarCallback callback) {}
+                                                 GetAvatarCallback callback) {
+  GetAvatarForIdentity(identity);
+}
+
+void ChromeIdentityService::GetAvatarForIdentity(ChromeIdentity* identity) {}
 
 UIImage* ChromeIdentityService::GetCachedAvatarForIdentity(
     ChromeIdentity* identity) {

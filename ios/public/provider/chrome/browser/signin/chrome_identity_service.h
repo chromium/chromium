@@ -212,8 +212,15 @@ class ChromeIdentityService {
   // Fetches the profile avatar, from the cache or the network.
   // For high resolution iPads, returns large images (200 x 200) to avoid
   // pixelization. Calls back on the main thread. |callback| may be nil.
+  // DEPRECATED, use GetAvatarForIdentity(ChromeIdentity*).
   virtual void GetAvatarForIdentity(ChromeIdentity* identity,
                                     GetAvatarCallback callback);
+
+  // Fetches the profile avatar, from the cache or the network.
+  // For high resolution iPads, returns large images (200 x 200) to avoid
+  // pixelization.
+  // Observer::OnProfileUpdate() will be called when the avatar is available.
+  virtual void GetAvatarForIdentity(ChromeIdentity* identity);
 
   // Synchronously returns any cached avatar, or nil.
   // GetAvatarForIdentity() should be generally used instead of this method.

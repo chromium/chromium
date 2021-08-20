@@ -60,7 +60,7 @@
     // No cached image, trigger a fetch, which will notify all observers.
     ios::GetChromeBrowserProvider()
         .GetChromeIdentityService()
-        ->GetAvatarForIdentity(identity, nil);
+        ->GetAvatarForIdentity(identity);
     return self.defaultResizedAvatar;
   }
 
