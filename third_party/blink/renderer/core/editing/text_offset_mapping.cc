@@ -86,6 +86,13 @@ const LayoutBlockFlow& RootInlineContentsContainerOf(
   return *root_block_flow;
 }
 
+bool ShouldSkipChildren(const Node& node) {
+  if (IsTextControl(node))
+    return true;
+  const ShadowRoot* const root = node.GetShadowRoot();
+  return root && root->IsUserAgent();
+}
+
 // TODO(editing-dev): We should have |ComputeInlineContents()| computing first
 // and last layout objects representing a run of inline layout objects in
 // |LayoutBlockFlow| instead of using |ComputeInlineContentsAsBlockFlow()|.
@@ -135,27 +142,50 @@ const LayoutBlockFlow* ComputeInlineContentsAsBlockFlow(
 }
 
 TextOffsetMapping::InlineContents CreateInlineContentsFromBlockFlow(
-    const LayoutBlockFlow& block_flow) {
+    const LayoutBlockFlow& block_flow,
+    const LayoutObject& target) {
   DCHECK(block_flow.ChildrenInline()) << block_flow;
+  DCHECK(target.NonPseudoNode()) << target;
+  const LayoutObject* layout_object = block_flow.FirstChild();
   const LayoutObject* first = nullptr;
-  for (const LayoutObject* runner = block_flow.FirstChild(); runner;
-       runner = runner->NextInPreOrder(&block_flow)) {
-    if (runner->NonPseudoNode()) {
-      first = runner;
+  const LayoutObject* last = nullptr;
+  while (layout_object) {
+    const Node* const node = layout_object->NonPseudoNode();
+    if (node) {
+      last = layout_object;
+      if (!first)
+        first = layout_object;
+    }
+    if (layout_object == &target) {
+      // Note: When |target| is in subtree of user agent shadow root, we don't
+      // reach here. See  http://crbug.com/1224206
+      last = first;
       break;
     }
+    if (layout_object->IsBlockInInline()) {
+      first = nullptr;
+      layout_object = layout_object->NextSibling();
+      continue;
+    }
+    if (node && ShouldSkipChildren(*node))
+      layout_object = layout_object->NextSibling();
+    else
+      layout_object = layout_object->NextInPreOrder(&block_flow);
   }
   if (!first) {
     DCHECK(block_flow.NonPseudoNode()) << block_flow;
     return TextOffsetMapping::InlineContents(block_flow);
   }
-  const LayoutObject* last = nullptr;
-  for (const LayoutObject* runner = block_flow.LastLeafChild(); runner;
-       runner = runner->PreviousInPreOrder(&block_flow)) {
-    if (runner->NonPseudoNode()) {
-      last = runner;
+  while (layout_object) {
+    if (layout_object->IsBlockInInline())
       break;
-    }
+    const Node* const node = layout_object->NonPseudoNode();
+    if (node)
+      last = layout_object;
+    if (node && ShouldSkipChildren(*node))
+      layout_object = layout_object->NextSibling();
+    else
+      layout_object = layout_object->NextInPreOrder(&block_flow);
   }
   DCHECK(last);
   return TextOffsetMapping::InlineContents(block_flow, *first, *last);
@@ -170,7 +200,7 @@ TextOffsetMapping::InlineContents ComputeInlineContentsFromNode(
       ComputeInlineContentsAsBlockFlow(*layout_object);
   if (!block_flow)
     return TextOffsetMapping::InlineContents();
-  return CreateInlineContentsFromBlockFlow(*block_flow);
+  return CreateInlineContentsFromBlockFlow(*block_flow, *layout_object);
 }
 
 String Ensure16Bit(const String& text) {
@@ -338,12 +368,8 @@ TextOffsetMapping::InlineContents TextOffsetMapping::FindForwardInlineContents(
 
   auto next_skipping_text_control = [](const Node& node) {
     DCHECK(!EnclosingTextControl(&node));
-    if (IsTextControl(node))
+    if (ShouldSkipChildren(node))
       return FlatTreeTraversal::NextSkippingChildren(node);
-    if (ShadowRoot* root = node.GetShadowRoot()) {
-      if (root->IsUserAgent())
-        return FlatTreeTraversal::NextSkippingChildren(node);
-    }
     return FlatTreeTraversal::Next(node);
   };
   DCHECK(!EnclosingTextControl(next_node));
