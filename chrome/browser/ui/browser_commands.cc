@@ -1344,6 +1344,7 @@ void Print(Browser* browser) {
 }
 
 bool CanPrint(Browser* browser) {
+#if BUILDFLAG(ENABLE_PRINTING)
   // Do not print when printing is disabled via pref or policy.
   // Do not print when a page has crashed.
   // Do not print when a constrained window is showing. It's confusing.
@@ -1356,6 +1357,9 @@ bool CanPrint(Browser* browser) {
          (current_tab && !current_tab->IsCrashed()) &&
          !(IsShowingWebContentsModalDialog(browser) ||
            GetContentRestrictions(browser) & CONTENT_RESTRICTION_PRINT);
+#else   // BUILDFLAG(ENABLE_PRINTING)
+  return false;
+#endif  // BUILDFLAG(ENABLE_PRINTING)
 }
 
 #if BUILDFLAG(ENABLE_PRINTING)
