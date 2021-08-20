@@ -45,6 +45,18 @@
 namespace ash {
 namespace {
 
+// TODO(https://crbug.com/1241511): Remove this global.
+bool g_offline_login_allowed_ = false;
+
+// Additional flag applied on top of g_offline_login_allowed_ that can block
+// visibility of offline login link when a focused pod user has offline login
+// timer (set by policy) expired. If that happens flag is flipped to false.
+// In all other cases it should be set to a default value of true.
+// Even if a user gets to the (hidden) flow, the offline login may be blocked
+// by checking the policy value there.
+// TODO(https://crbug.com/1241511): Remove this global.
+bool g_offline_login_per_user_allowed_ = true;
+
 // Returns the current running kiosk app profile in a kiosk session. Otherwise,
 // returns nullptr.
 Profile* GetAppProfile() {
@@ -100,11 +112,11 @@ void ErrorScreen::ShowOfflineLoginOption(bool show) {
 }
 
 void ErrorScreen::AllowOfflineLogin(bool allowed) {
-  offline_login_allowed_ = allowed;
+  g_offline_login_allowed_ = allowed;
 }
 
 void ErrorScreen::AllowOfflineLoginPerUser(bool allowed) {
-  offline_login_per_user_allowed_ = allowed;
+  g_offline_login_per_user_allowed_ = allowed;
 }
 
 void ErrorScreen::FixCaptivePortal() {
@@ -238,7 +250,7 @@ void ErrorScreen::ShowNetworkErrorMessage(NetworkStateInformer::State state,
       user_manager::UserManager::Get()->IsGuestSessionAllowed();
   AllowGuestSignin(guest_signin_allowed);
   ShowOfflineLoginOption(
-      offline_login_allowed_ && offline_login_per_user_allowed_ &&
+      g_offline_login_allowed_ && g_offline_login_per_user_allowed_ &&
       GetErrorState() != NetworkError::ERROR_STATE_AUTH_EXT_TIMEOUT);
 
   // No need to show the screen again if it is already shown.
