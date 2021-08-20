@@ -84,7 +84,7 @@ LoginDisplayHostMojo::LoginDisplayHostMojo(DisplayedScreen displayed_screen)
     LoadOobeDialog();
 
     // Should be created after OobeUI loaded with the dialog.
-    wizard_controller_ = std::make_unique<WizardController>();
+    wizard_controller_ = std::make_unique<WizardController>(wizard_context());
 
     GetLoginScreenCertProviderService()->pin_dialog_manager()->AddPinDialogHost(
         &security_token_pin_dialog_host_ash_impl_);

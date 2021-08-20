@@ -25,7 +25,8 @@ class FakeLoginDisplayHost::FakeBaseScreen : public BaseScreen {
 };
 
 FakeLoginDisplayHost::FakeLoginDisplayHost()
-    : session_manager_(std::make_unique<session_manager::SessionManager>()) {}
+    : session_manager_(std::make_unique<session_manager::SessionManager>()),
+      wizard_context_(std::make_unique<WizardContext>()) {}
 
 FakeLoginDisplayHost::~FakeLoginDisplayHost() = default;
 
@@ -62,7 +63,8 @@ void FakeLoginDisplayHost::FinalizeImmediately() {}
 void FakeLoginDisplayHost::SetStatusAreaVisible(bool visible) {}
 
 void FakeLoginDisplayHost::StartWizard(OobeScreenId first_screen) {
-  wizard_controller_ = std::make_unique<WizardController>();
+  wizard_controller_ =
+      std::make_unique<WizardController>(wizard_context_.get());
 
   fake_screen_ = std::make_unique<FakeBaseScreen>(first_screen);
   wizard_controller_->SetCurrentScreenForTesting(fake_screen_.get());

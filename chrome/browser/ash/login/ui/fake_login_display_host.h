@@ -78,6 +78,7 @@ class FakeLoginDisplayHost : public LoginDisplayHost {
   // SessionManager is required by the constructor of WizardController.
   std::unique_ptr<session_manager::SessionManager> session_manager_;
   std::unique_ptr<FakeBaseScreen> fake_screen_;
+  std::unique_ptr<WizardContext> wizard_context_;
   std::unique_ptr<WizardController> wizard_controller_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeLoginDisplayHost);

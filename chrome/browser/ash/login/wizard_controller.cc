@@ -396,9 +396,9 @@ WizardController* WizardController::default_controller() {
 
 PrefService* WizardController::local_state_for_testing_ = nullptr;
 
-WizardController::WizardController()
+WizardController::WizardController(WizardContext* wizard_context)
     : screen_manager_(std::make_unique<ScreenManager>()),
-      wizard_context_(std::make_unique<WizardContext>()),
+      wizard_context_(wizard_context),
       network_state_helper_(std::make_unique<login::NetworkStateHelper>()) {
   AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
   if (accessibility_manager) {
@@ -801,7 +801,7 @@ void WizardController::ShowGaiaPasswordChangedScreen(
   if (current_screen_ != screen) {
     SetCurrentScreen(screen);
   } else {
-    screen->Show(wizard_context_.get());
+    screen->Show(wizard_context_);
   }
 }
 
@@ -1774,7 +1774,7 @@ void WizardController::SetCurrentScreen(BaseScreen* new_current) {
   VLOG(1) << "SetCurrentScreen: "
           << (new_current ? new_current->screen_id().name : "null");
 
-  if (new_current && new_current->MaybeSkip(wizard_context_.get())) {
+  if (new_current && new_current->MaybeSkip(wizard_context_)) {
     RecordUMAHistogramForOOBEStepShownStatus(new_current->screen_id(),
                                              ScreenShownStatus::kSkipped);
     return;
@@ -1813,7 +1813,7 @@ void WizardController::SetCurrentScreen(BaseScreen* new_current) {
   UpdateStatusAreaVisibilityForScreen(current_screen_->screen_id());
   RecordUMAHistogramForOOBEStepShownStatus(current_screen_->screen_id(),
                                            ScreenShownStatus::kShown);
-  current_screen_->Show(wizard_context_.get());
+  current_screen_->Show(wizard_context_);
   NotifyScreenChanged();
 }
 
@@ -1993,16 +1993,6 @@ void WizardController::SimulateDemoModeSetupForTesting(
     demo_setup_controller_ = std::make_unique<DemoSetupController>();
   if (demo_config.has_value())
     demo_setup_controller_->set_demo_config(*demo_config);
-}
-
-void WizardController::SetAuthSessionForOnboarding(
-    const UserContext& auth_session) {
-  wizard_context_->extra_factors_auth_session =
-      std::make_unique<UserContext>(auth_session);
-}
-
-void WizardController::ClearOnboardingAuthSession() {
-  wizard_context_->extra_factors_auth_session.reset();
 }
 
 void WizardController::ShowErrorScreen() {

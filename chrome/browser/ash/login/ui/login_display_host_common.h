@@ -106,6 +106,8 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   // Common code for ShowGaiaDialog() call above.
   void ShowGaiaDialogCommon(const AccountId& prefilled_account);
 
+  WizardContext* wizard_context() { return wizard_context_.get(); }
+
   // Kiosk launch controller.
   std::unique_ptr<KioskLaunchController> kiosk_launch_controller_;
 
@@ -136,6 +138,8 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   KioskAppMenuController kiosk_app_menu_controller_;
 
   std::unique_ptr<LoginFeedback> login_feedback_;
+
+  std::unique_ptr<WizardContext> wizard_context_;
 
   base::WeakPtrFactory<LoginDisplayHostCommon> weak_factory_{this};
 

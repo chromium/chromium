@@ -169,7 +169,8 @@ bool IsAuthError(SigninError error) {
 
 LoginDisplayHostCommon::LoginDisplayHostCommon()
     : keep_alive_(KeepAliveOrigin::LOGIN_DISPLAY_HOST_WEBUI,
-                  KeepAliveRestartOption::DISABLED) {
+                  KeepAliveRestartOption::DISABLED),
+      wizard_context_(std::make_unique<WizardContext>()) {
   // Close the login screen on NOTIFICATION_APP_TERMINATING (for the case where
   // shutdown occurs before login completes).
   registrar_.Add(this, chrome::NOTIFICATION_APP_TERMINATING,
@@ -428,14 +429,13 @@ void LoginDisplayHostCommon::SetAuthSessionForOnboarding(
     const UserContext& user_context) {
   if (PinSetupScreen::ShouldSkipBecauseOfPolicy())
     return;
-  // WizardController may not be initialized in the WebUI login display host.
-  if (GetWizardController())
-    GetWizardController()->SetAuthSessionForOnboarding(user_context);
+
+  wizard_context_->extra_factors_auth_session =
+      std::make_unique<UserContext>(user_context);
 }
 
 void LoginDisplayHostCommon::ClearOnboardingAuthSession() {
-  if (GetWizardController())
-    GetWizardController()->ClearOnboardingAuthSession();
+  wizard_context_->extra_factors_auth_session.reset();
 }
 
 void LoginDisplayHostCommon::StartEncryptionMigration(
