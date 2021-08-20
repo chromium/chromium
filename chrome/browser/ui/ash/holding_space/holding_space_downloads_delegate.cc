@@ -10,6 +10,7 @@
 #include "ash/public/cpp/image_util.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
@@ -157,11 +158,9 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
 
   InProgressDownload(Type type,
                      HoldingSpaceDownloadsDelegate* delegate,
-                     content::DownloadManager* manager,
                      crosapi::mojom::DownloadItemPtr mojo_download_item)
       : type_(type),
         delegate_(delegate),
-        manager_(manager),
         mojo_download_item_(std::move(mojo_download_item)) {
     DCHECK(IsInProgress(mojo_download_item_.get()));
   }
@@ -343,10 +342,6 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
     return secondary_text;
   }
 
-  // Returns the download manager that originated this download. NOTE: This will
-  // be `nullptr` for Lacros downloads.
-  const content::DownloadManager* manager() const { return manager_; }
-
  protected:
   // Updates the `mojo_download_item_` associated with this in-progress
   // download, notifying `delegate_` of the change in state. Note that invoking
@@ -389,7 +384,6 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
  private:
   const Type type_;
   HoldingSpaceDownloadsDelegate* const delegate_;  // NOTE: Owns `this`.
-  content::DownloadManager* const manager_;
   crosapi::mojom::DownloadItemPtr mojo_download_item_;
 
   // The in-progress holding space item associated with this in-progress
@@ -416,8 +410,8 @@ class HoldingSpaceDownloadsDelegate::InProgressAshDownload
                         download::DownloadItem* download_item)
       : InProgressDownload(Type::kAsh,
                            delegate,
-                           manager,
                            ConvertToMojoDownloadItem(download_item)),
+        manager_(manager),
         download_item_(download_item) {
     download_item_observation_.Observe(download_item);
   }
@@ -425,6 +419,12 @@ class HoldingSpaceDownloadsDelegate::InProgressAshDownload
   InProgressAshDownload(const InProgressAshDownload&) = delete;
   InProgressAshDownload& operator=(const InProgressAshDownload&) = delete;
   ~InProgressAshDownload() override = default;
+
+  // Returns the download manager that originated this download.
+  const content::DownloadManager* manager() const { return manager_; }
+
+  // Returns the download item that this in-progress download wraps.
+  const download::DownloadItem* download_item() const { return download_item_; }
 
  private:
   // InProgressDownload:
@@ -447,6 +447,7 @@ class HoldingSpaceDownloadsDelegate::InProgressAshDownload
     UpdateMojoDownloadItem(nullptr);  // NOTE: Destroys `this`.
   }
 
+  content::DownloadManager* const manager_;
   download::DownloadItem* const download_item_;
 
   base::ScopedObservation<download::DownloadItem,
@@ -468,7 +469,6 @@ class HoldingSpaceDownloadsDelegate::InProgressLacrosDownload
                            crosapi::mojom::DownloadItemPtr mojo_download_item)
       : InProgressDownload(Type::kLacros,
                            delegate,
-                           /*manager=*/nullptr,
                            std::move(mojo_download_item)) {
     auto* const download_controller_ash = GetDownloadControllerAsh();
     if (download_controller_ash)
@@ -632,8 +632,13 @@ void HoldingSpaceDownloadsDelegate::OnManagerGoingDown(
   // in a loop that iterates over `in_progress_downloads_`.
   std::set<InProgressDownload*> downloads_to_remove;
   for (const auto& in_progress_download : in_progress_downloads_) {
-    if (in_progress_download->manager() == manager)
+    if (in_progress_download->GetType() != InProgressDownload::Type::kAsh)
+      continue;
+
+    if (static_cast<InProgressAshDownload*>(in_progress_download.get())
+            ->manager() == manager) {
       downloads_to_remove.insert(in_progress_download.get());
+    }
   }
 
   // Fail all of `manager`'s downloads.
@@ -651,12 +656,26 @@ void HoldingSpaceDownloadsDelegate::OnDownloadCreated(
   }
 }
 
-// Override to avoid hiding `OnDownloadUpdated(InProgressDownload*, bool)`.
 void HoldingSpaceDownloadsDelegate::OnDownloadUpdated(
     content::DownloadManager* manager,
     download::DownloadItem* download_item) {
-  // TODO(crbug.com/1240644): Create an `InProgressDownload` here if one does
-  // not already exist, e.g., because the download was interrupted and resumed.
+  if (!IsInProgress(download_item))
+    return;
+
+  // In the common case, we already created an `InProgressDownload` for
+  // `download_item` in `OnDownloadCreated()`.
+  for (const auto& in_progress_download : in_progress_downloads_) {
+    if (in_progress_download->GetType() == InProgressDownload::Type::kAsh &&
+        static_cast<InProgressAshDownload*>(in_progress_download.get())
+                ->download_item() == download_item) {
+      return;
+    }
+  }
+
+  // If `download_item` does not have an existing `InProgressDownload` (e.g.,
+  // because it was interrupted and then resumed), create one.
+  in_progress_downloads_.emplace(
+      std::make_unique<InProgressAshDownload>(this, manager, download_item));
 }
 
 bool HoldingSpaceDownloadsDelegate::ShouldObserveProfile(Profile* profile) {

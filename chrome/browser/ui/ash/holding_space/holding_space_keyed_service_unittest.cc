@@ -1974,6 +1974,210 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddInProgressDownloadItem) {
   EXPECT_TRUE(BitmapsAreEqual(actual_image, expected_image));
 }
 
+// Base class for tests of in-progress downloads integration. Parameterized by
+// whether the holding space in-progress downloads feature is enabled.
+class HoldingSpaceKeyedServiceInProgressDownloadsTest
+    : public HoldingSpaceKeyedServiceTest,
+      public testing::WithParamInterface<
+          bool /* in_progress_downloads_enabled */> {
+ public:
+  HoldingSpaceKeyedServiceInProgressDownloadsTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kHoldingSpaceInProgressDownloadsIntegration,
+        InProgressDownloadsEnabled());
+  }
+
+  // Returns true if the test should run with the in-progress downloads feature
+  // enabled, false otherwise.
+  bool InProgressDownloadsEnabled() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HoldingSpaceKeyedServiceInProgressDownloadsTest,
+                         /*in_progress_downloads_enabled=*/::testing::Bool());
+
+TEST_P(HoldingSpaceKeyedServiceInProgressDownloadsTest,
+       CreateInterruptedDownloadItem) {
+  // Wait for the holding space model to attach.
+  TestingProfile* profile = GetProfile();
+  HoldingSpaceModelAttachedWaiter(profile).Wait();
+
+  // Verify the holding space model is empty.
+  HoldingSpaceModel* const model = HoldingSpaceController::Get()->model();
+  ASSERT_TRUE(model);
+  EXPECT_EQ(model->items().size(), 0u);
+
+  // Create a downloads mount point.
+  std::unique_ptr<ScopedTestMountPoint> downloads_mount =
+      ScopedTestMountPoint::CreateAndMountDownloads(profile);
+  ASSERT_TRUE(downloads_mount->IsValid());
+
+  // Cache current state, file paths, received bytes, and total bytes.
+  auto current_state = download::DownloadItem::INTERRUPTED;
+  base::FilePath current_path;
+  base::FilePath current_target_path;
+  int64_t current_received_bytes = 0;
+  int64_t current_total_bytes = 100;
+  bool current_is_dangerous = false;
+
+  // Create a fake download item and cache a function to update it.
+  std::unique_ptr<content::FakeDownloadItem> fake_download_item =
+      CreateFakeDownloadItem(profile, current_state, current_path,
+                             current_target_path, current_received_bytes,
+                             current_total_bytes);
+  auto UpdateFakeDownloadItem = [&]() {
+    fake_download_item->SetDummyFilePath(current_path);
+    fake_download_item->SetReceivedBytes(current_received_bytes);
+    fake_download_item->SetState(current_state);
+    fake_download_item->SetTargetFilePath(current_target_path);
+    fake_download_item->SetTotalBytes(current_total_bytes);
+    fake_download_item->SetIsDangerous(current_is_dangerous);
+    fake_download_item->NotifyDownloadUpdated();
+  };
+
+  // Verify that no holding space item has been created since the download does
+  // not yet have file path set.
+  EXPECT_EQ(model->items().size(), 0u);
+
+  // Update the file paths for the download.
+  current_path = downloads_mount->CreateFile(base::FilePath("foo.crdownload"));
+  current_target_path = downloads_mount->CreateFile(base::FilePath("foo.png"));
+  UpdateFakeDownloadItem();
+
+  // Verify that no holding space item has been created since the download is
+  // not in progress yet.
+  EXPECT_EQ(model->items().size(), 0u);
+
+  current_state = download::DownloadItem::IN_PROGRESS;
+  UpdateFakeDownloadItem();
+
+  // Verify that a holding space item is created if and only if the in-progress
+  // downloads feature is enabled.
+  if (!InProgressDownloadsEnabled()) {
+    ASSERT_EQ(model->items().size(), 0u);
+  } else {
+    ASSERT_EQ(model->items().size(), 1u);
+    EXPECT_EQ(model->items()[0]->type(), HoldingSpaceItem::Type::kDownload);
+    EXPECT_EQ(model->items()[0]->file_path(), current_path);
+    EXPECT_EQ(model->items()[0]->progress().GetValue(), 0.f);
+  }
+
+  // Complete the download.
+  current_state = download::DownloadItem::COMPLETE;
+  current_path = current_target_path;
+  current_received_bytes = current_total_bytes;
+  UpdateFakeDownloadItem();
+
+  // Verify that completing a download results in exactly one holding space item
+  // existing for it, regardless of whether the in-progress downloads feature is
+  // enabled.
+  ASSERT_EQ(model->items().size(), 1u);
+  EXPECT_EQ(model->items()[0]->type(), HoldingSpaceItem::Type::kDownload);
+  EXPECT_EQ(model->items()[0]->file_path(), current_path);
+  EXPECT_TRUE(model->items()[0]->progress().IsComplete());
+}
+
+TEST_P(HoldingSpaceKeyedServiceInProgressDownloadsTest,
+       InterruptAndResumeDownload) {
+  // Wait for the holding space model to attach.
+  TestingProfile* profile = GetProfile();
+  HoldingSpaceModelAttachedWaiter(profile).Wait();
+
+  // Verify the holding space model is empty.
+  HoldingSpaceModel* const model = HoldingSpaceController::Get()->model();
+  ASSERT_TRUE(model);
+  EXPECT_EQ(model->items().size(), 0u);
+
+  // Create a downloads mount point.
+  std::unique_ptr<ScopedTestMountPoint> downloads_mount =
+      ScopedTestMountPoint::CreateAndMountDownloads(profile);
+  ASSERT_TRUE(downloads_mount->IsValid());
+
+  // Cache current state, file paths, received bytes, and total bytes.
+  auto current_state = download::DownloadItem::IN_PROGRESS;
+  base::FilePath current_path;
+  base::FilePath current_target_path;
+  int64_t current_received_bytes = 0;
+  int64_t current_total_bytes = 100;
+  bool current_is_dangerous = false;
+
+  // Create a fake download item and cache a function to update it.
+  std::unique_ptr<content::FakeDownloadItem> fake_download_item =
+      CreateFakeDownloadItem(profile, current_state, current_path,
+                             current_target_path, current_received_bytes,
+                             current_total_bytes);
+  auto UpdateFakeDownloadItem = [&]() {
+    fake_download_item->SetDummyFilePath(current_path);
+    fake_download_item->SetReceivedBytes(current_received_bytes);
+    fake_download_item->SetState(current_state);
+    fake_download_item->SetTargetFilePath(current_target_path);
+    fake_download_item->SetTotalBytes(current_total_bytes);
+    fake_download_item->SetIsDangerous(current_is_dangerous);
+    fake_download_item->NotifyDownloadUpdated();
+  };
+
+  // Verify that no holding space item has been created since the download does
+  // not yet have file path set.
+  EXPECT_EQ(model->items().size(), 0u);
+
+  // Update the file paths for the download.
+  current_path = downloads_mount->CreateFile(base::FilePath("foo.crdownload"));
+  current_target_path = downloads_mount->CreateFile(base::FilePath("foo.png"));
+  UpdateFakeDownloadItem();
+
+  // Verify that a holding space item is created if and only if the in-progress
+  // downloads feature is enabled.
+  if (!InProgressDownloadsEnabled()) {
+    ASSERT_EQ(model->items().size(), 0u);
+  } else {
+    ASSERT_EQ(model->items().size(), 1u);
+    EXPECT_EQ(model->items()[0]->type(), HoldingSpaceItem::Type::kDownload);
+    EXPECT_EQ(model->items()[0]->file_path(), current_path);
+    EXPECT_EQ(model->items()[0]->progress().GetValue(), 0.f);
+  }
+
+  // Make some progress and interrupt the download.
+  current_received_bytes = 50;
+  current_state = download::DownloadItem::INTERRUPTED;
+  UpdateFakeDownloadItem();
+
+  // Verify that interrupting an in-progress download destroys its holding
+  // space item (if the in-progress downloads feature is enabled).
+  ASSERT_EQ(model->items().size(), 0u);
+
+  // Resume the download.
+  current_state = download::DownloadItem::IN_PROGRESS;
+  UpdateFakeDownloadItem();
+
+  // Verify that resuming an interrupted download creates a new holding space
+  // item if and only if the in-progress downloads feature is enabled.
+  if (!InProgressDownloadsEnabled()) {
+    ASSERT_EQ(model->items().size(), 0u);
+  } else {
+    ASSERT_EQ(model->items().size(), 1u);
+    EXPECT_EQ(model->items()[0]->type(), HoldingSpaceItem::Type::kDownload);
+    EXPECT_EQ(model->items()[0]->file_path(), current_path);
+    EXPECT_EQ(model->items()[0]->progress().GetValue(), 0.5f);
+  }
+
+  // Complete the download.
+  current_state = download::DownloadItem::COMPLETE;
+  current_path = current_target_path;
+  current_received_bytes = current_total_bytes;
+  UpdateFakeDownloadItem();
+
+  // Verify that completing a download results in exactly one holding space item
+  // existing for it, regardless of whether the in-progress downloads feature is
+  // enabled.
+  ASSERT_EQ(model->items().size(), 1u);
+  EXPECT_EQ(model->items()[0]->type(), HoldingSpaceItem::Type::kDownload);
+  EXPECT_EQ(model->items()[0]->file_path(), current_path);
+  EXPECT_TRUE(model->items()[0]->progress().IsComplete());
+}
+
 // Base class for tests which verify adding items to holding space works as
 // intended, parameterized by holding space item type.
 class HoldingSpaceKeyedServiceAddItemTest
