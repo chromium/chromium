@@ -30,6 +30,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "storage/browser/blob/blob_data_builder.h"
 #include "storage/browser/blob/blob_data_item.h"
@@ -63,7 +64,8 @@ File::Error CreateBlobDirectory(const FilePath& blob_storage_dir) {
   UMA_HISTOGRAM_ENUMERATION("Storage.Blob.CreateDirectoryResult", -error,
                             -File::FILE_ERROR_MAX);
   DLOG_IF(ERROR, error != File::FILE_OK)
-      << "Error creating blob storage directory: " << error;
+      << "Error creating blob storage directory '"
+      << blob_storage_dir.LossyDisplayName() << "': " << error;
   return error;
 }
 
