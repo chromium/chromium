@@ -9,7 +9,7 @@
     width: 100%;
   }
 </style>
-<div id="main" role="main" aria-label="[[i18n('myImagesLabel')]]">
+<main id="main" aria-label$="[[i18n('myImagesLabel')]]" tabindex="-1">
   <iron-list
       items="[[imagesToDisplay_]]" grid role="listbox"
       aria-setsize$="[[imagesToDisplay_.length]]">
@@ -41,4 +41,4 @@
       </div>
     </template>
   </iron-list>
-</div>
+</main>

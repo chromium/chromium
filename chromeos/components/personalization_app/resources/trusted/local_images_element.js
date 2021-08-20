@@ -122,6 +122,8 @@ export class LocalImages extends WithPersonalizationStore {
    */
   onHiddenChanged_(hidden) {
     if (!hidden) {
+      document.title = this.i18n('myImagesLabel');
+      this.shadowRoot.getElementById('main').focus();
       afterNextRender(this, () => {
         this.shadowRoot.querySelector('iron-list').fire('iron-resize');
       });
