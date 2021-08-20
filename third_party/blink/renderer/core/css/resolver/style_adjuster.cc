@@ -248,7 +248,8 @@ void StyleAdjuster::AdjustStyleForTextCombine(ComputedStyle& style) {
   const auto line_height = style.GetFontHeight().LineHeight();
   const auto size =
       LengthSize(Length::Fixed(line_height), Length::Fixed(one_em));
-  style.SetContainIntrinsicSize(size);
+  style.SetContainIntrinsicWidth(size.Width());
+  style.SetContainIntrinsicHeight(size.Height());
   style.SetHeight(size.Height());
   style.SetLineHeight(size.Height());
   style.SetMaxHeight(size.Height());

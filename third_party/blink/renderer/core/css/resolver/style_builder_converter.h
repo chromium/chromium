@@ -278,8 +278,6 @@ class StyleBuilderConverter {
       const CSSValue&,
       bool is_animation_tainted);
 
-  static LengthSize ConvertIntrinsicSize(StyleResolverState&, const CSSValue&);
-
   static StyleAspectRatio ConvertAspectRatio(const StyleResolverState&,
                                              const CSSValue&);
 

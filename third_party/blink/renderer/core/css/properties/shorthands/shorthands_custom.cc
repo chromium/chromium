@@ -867,6 +867,30 @@ const CSSValue* Columns::CSSValueFromComputedStyleInternal(
       columnsShorthand(), style, layout_object, allow_visited_style);
 }
 
+bool ContainIntrinsicSize::ParseShorthand(
+    bool important,
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&,
+    HeapVector<CSSPropertyValue, 256>& properties) const {
+  return css_parsing_utils::ConsumeShorthandVia2Longhands(
+      containIntrinsicSizeShorthand(), important, context, range, properties);
+}
+
+const CSSValue* ContainIntrinsicSize::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject* layout_object,
+    bool allow_visited_style) const {
+  const Length& width = style.ContainIntrinsicWidth();
+  const Length& height = style.ContainIntrinsicHeight();
+  if (width != height) {
+    return ComputedStyleUtils::ValuesForShorthandProperty(
+        containIntrinsicSizeShorthand(), style, layout_object,
+        allow_visited_style);
+  }
+  return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(width, style);
+}
+
 bool Container::ParseShorthand(
     bool important,
     CSSParserTokenRange& range,

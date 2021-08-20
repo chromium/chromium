@@ -1934,39 +1934,48 @@ const CSSValue* Contain::CSSValueFromComputedStyleInternal(
   return list;
 }
 
-const CSSValue* ContainIntrinsicSize::ParseSingleValue(
+const CSSValue* ContainIntrinsicWidth::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  if (range.Peek().Id() == CSSValueID::kAuto)
-    return css_parsing_utils::ConsumeIdent(range);
-  CSSValue* width =
-      css_parsing_utils::ConsumeLength(range, context, kValueRangeNonNegative);
-  if (!width)
-    return nullptr;
-  CSSValue* height =
-      css_parsing_utils::ConsumeLength(range, context, kValueRangeNonNegative);
-  if (!height)
-    height = width;
-  return MakeGarbageCollected<CSSValuePair>(width, height,
-                                            CSSValuePair::kDropIdenticalValues);
+  return css_parsing_utils::ConsumeIntrinsicSizeLonghand(range, context);
 }
 
-const CSSValue* ContainIntrinsicSize::CSSValueFromComputedStyleInternal(
+const CSSValue* ContainIntrinsicWidth::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject* layout_object,
     bool allow_visited_style) const {
-  auto& size = style.ContainIntrinsicSize();
-  if (size.Width().IsAuto()) {
-    DCHECK(size.Height().IsAuto());
-    return CSSIdentifierValue::Create(CSSValueID::kAuto);
-  }
-  return MakeGarbageCollected<CSSValuePair>(
-      ComputedStyleUtils::ZoomAdjustedPixelValueForLength(
-          style.ContainIntrinsicSize().Width(), style),
-      ComputedStyleUtils::ZoomAdjustedPixelValueForLength(
-          style.ContainIntrinsicSize().Height(), style),
-      CSSValuePair::kDropIdenticalValues);
+  return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(
+      style.ContainIntrinsicWidth(), style);
+}
+
+const CSSValue* ContainIntrinsicHeight::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  return css_parsing_utils::ConsumeIntrinsicSizeLonghand(range, context);
+}
+
+const CSSValue* ContainIntrinsicHeight::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject* layout_object,
+    bool allow_visited_style) const {
+  return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(
+      style.ContainIntrinsicHeight(), style);
+}
+
+const CSSValue* ContainIntrinsicInlineSize::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  return css_parsing_utils::ConsumeIntrinsicSizeLonghand(range, context);
+}
+
+const CSSValue* ContainIntrinsicBlockSize::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  return css_parsing_utils::ConsumeIntrinsicSizeLonghand(range, context);
 }
 
 const CSSValue* ContainerName::ParseSingleValue(

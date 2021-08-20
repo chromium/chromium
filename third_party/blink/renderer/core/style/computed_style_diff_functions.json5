@@ -35,7 +35,7 @@
         fields_to_diff: ["width", "min-width", "max-width", "height", "min-height", "max-height", "margin-top", "margin-left", "margin-right", "margin-bottom",
                   "left", "right", "top", "bottom", "padding-top",
                   "padding-left", "padding-right", "padding-bottom",
-                  "contain-intrinsic-size"],
+                  "contain-intrinsic-width", "contain-intrinsic-height"],
         methods_to_diff: [
           {
             method: "GetPosition()",
@@ -231,7 +231,8 @@
         fields_to_diff: ["width", "min-width", "max-width", "height", "min-height",
                 "max-height", "VerticalAlignLength", "box-sizing", "align-content",
                 "align-items", "align-self", "justify-content", "justify-items",
-                "justify-self", "contain", "contain-intrinsic-size", "container-type",
+                "justify-self", "contain", "contain-intrinsic-width",
+                "contain-intrinsic-height", "container-type",
                 "content-visibility", "aspect-ratio", "overflow-clip-margin",
                 "-internal-align-self-block", "orphans", "widows"],
         methods_to_diff: [

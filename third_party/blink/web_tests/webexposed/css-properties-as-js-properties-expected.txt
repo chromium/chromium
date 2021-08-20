@@ -129,7 +129,11 @@ columnSpan
 columnWidth
 columns
 contain
+containIntrinsicBlockSize
+containIntrinsicHeight
+containIntrinsicInlineSize
 containIntrinsicSize
+containIntrinsicWidth
 content
 contentVisibility
 counterIncrement

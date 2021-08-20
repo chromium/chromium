@@ -496,6 +496,8 @@ String StylePropertySerializer::SerializeShorthand(
       return GetShorthandValue(columnRuleShorthand());
     case CSSPropertyID::kColumns:
       return GetShorthandValue(columnsShorthand());
+    case CSSPropertyID::kContainIntrinsicSize:
+      return ContainIntrinsicSizeValue();
     case CSSPropertyID::kFlex:
       return GetShorthandValue(flexShorthand());
     case CSSPropertyID::kFlexFlow:
@@ -1351,6 +1353,15 @@ String StylePropertySerializer::PageBreakPropertyValue(
       value_id == CSSValueID::kRight || value_id == CSSValueID::kAvoid)
     return value->CssText();
   return String();
+}
+
+String StylePropertySerializer::ContainIntrinsicSizeValue() const {
+  // If the two values are identical, we return just one.
+  String res = GetCommonValue(containIntrinsicSizeShorthand());
+  if (!res.IsNull())
+    return res;
+  // Otherwise just serialize them in sequence.
+  return GetShorthandValue(containIntrinsicSizeShorthand());
 }
 
 }  // namespace blink

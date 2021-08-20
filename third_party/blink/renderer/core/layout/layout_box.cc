@@ -1222,7 +1222,7 @@ bool LayoutBox::HasOverrideIntrinsicContentWidth() const {
   if (!ShouldApplySizeContainment())
     return false;
 
-  const Length& intrinsic_length = StyleRef().ContainIntrinsicSize().Width();
+  const Length& intrinsic_length = StyleRef().ContainIntrinsicWidth();
   return !intrinsic_length.IsAuto();
 }
 
@@ -1231,7 +1231,7 @@ bool LayoutBox::HasOverrideIntrinsicContentHeight() const {
   if (!ShouldApplySizeContainment())
     return false;
 
-  const Length& intrinsic_length = StyleRef().ContainIntrinsicSize().Height();
+  const Length& intrinsic_length = StyleRef().ContainIntrinsicHeight();
   return !intrinsic_length.IsAuto();
 }
 
@@ -1239,7 +1239,7 @@ LayoutUnit LayoutBox::OverrideIntrinsicContentWidth() const {
   NOT_DESTROYED();
   DCHECK(HasOverrideIntrinsicContentWidth());
   const auto& style = StyleRef();
-  const Length& intrinsic_length = style.ContainIntrinsicSize().Width();
+  const Length& intrinsic_length = style.ContainIntrinsicWidth();
   DCHECK(!intrinsic_length.IsAuto());
   DCHECK(intrinsic_length.IsFixed());
   DCHECK_GE(intrinsic_length.Value(), 0.f);
@@ -1250,7 +1250,7 @@ LayoutUnit LayoutBox::OverrideIntrinsicContentHeight() const {
   NOT_DESTROYED();
   DCHECK(HasOverrideIntrinsicContentHeight());
   const auto& style = StyleRef();
-  const Length& intrinsic_length = style.ContainIntrinsicSize().Height();
+  const Length& intrinsic_length = style.ContainIntrinsicHeight();
   DCHECK(!intrinsic_length.IsAuto());
   DCHECK(intrinsic_length.IsFixed());
   DCHECK_GE(intrinsic_length.Value(), 0.f);

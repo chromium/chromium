@@ -105,6 +105,14 @@ LogicalMapping<4> CSSDirectionAwareResolver::LogicalBorderWidthMapping() {
   return LogicalMapping<4>(kProperties);
 }
 
+PhysicalMapping<2>
+CSSDirectionAwareResolver::PhysicalContainIntrinsicSizeMapping() {
+  static const CSSProperty* kProperties[] = {
+      &GetCSSPropertyContainIntrinsicWidth(),
+      &GetCSSPropertyContainIntrinsicHeight()};
+  return PhysicalMapping<2>(kProperties);
+}
+
 LogicalMapping<4> CSSDirectionAwareResolver::LogicalBorderRadiusMapping() {
   static const CSSProperty* kProperties[] = {
       &GetCSSPropertyBorderStartStartRadius(),

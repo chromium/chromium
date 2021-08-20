@@ -178,6 +178,9 @@ CSSValue* ConsumeImageOrNone(CSSParserTokenRange&, const CSSParserContext&);
 
 CSSValue* ConsumeAxis(CSSParserTokenRange&, const CSSParserContext& context);
 
+CSSValue* ConsumeIntrinsicSizeLonghand(CSSParserTokenRange&,
+                                       const CSSParserContext&);
+
 CSSIdentifierValue* ConsumeShapeBox(CSSParserTokenRange&);
 
 enum class IsImplicitProperty { kNotImplicit, kImplicit };

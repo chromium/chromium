@@ -2105,6 +2105,14 @@ CSSValue* ConsumeAxis(CSSParserTokenRange& range,
   return MakeGarbageCollected<cssvalue::CSSAxisValue>(x, y, z);
 }
 
+CSSValue* ConsumeIntrinsicSizeLonghand(CSSParserTokenRange& range,
+                                       const CSSParserContext& context) {
+  if (css_parsing_utils::IdentMatches<CSSValueID::kAuto>(range.Peek().Id()))
+    return css_parsing_utils::ConsumeIdent(range);
+  return css_parsing_utils::ConsumeLength(range, context,
+                                          kValueRangeNonNegative);
+}
+
 static CSSValue* ConsumeCrossFade(CSSParserTokenRange& args,
                                   const CSSParserContext& context) {
   CSSValue* from_image_value = ConsumeImageOrNone(args, context);

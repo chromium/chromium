@@ -125,6 +125,8 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
       case CSSPropertyID::kBottom:
       case CSSPropertyID::kCx:
       case CSSPropertyID::kCy:
+      case CSSPropertyID::kContainIntrinsicWidth:
+      case CSSPropertyID::kContainIntrinsicHeight:
       case CSSPropertyID::kFlexBasis:
       case CSSPropertyID::kHeight:
       case CSSPropertyID::kLeft:
@@ -299,7 +301,6 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
       case CSSPropertyID::kBorderBottomRightRadius:
       case CSSPropertyID::kBorderTopLeftRadius:
       case CSSPropertyID::kBorderTopRightRadius:
-      case CSSPropertyID::kContainIntrinsicSize:
         applicable_types->push_back(
             std::make_unique<CSSLengthPairInterpolationType>(used_property));
         break;

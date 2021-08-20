@@ -64,6 +64,7 @@ class StylePropertySerializer {
   String OffsetValue() const;
   String TextDecorationValue() const;
   String BackgroundRepeatPropertyValue() const;
+  String ContainIntrinsicSizeValue() const;
   String GetPropertyText(const CSSPropertyName&,
                          const String& value,
                          bool is_important,
