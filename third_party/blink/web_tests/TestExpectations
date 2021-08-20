@@ -7155,3 +7155,6 @@ crbug.com/1240252 [ Linux ] inspector-protocol/dom/dom-get-nodes-for-subtree-by-
 
 # Sheriff 2021-08-19
 crbug.com/1234315 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-with-scroll-timeline-and-overflow-hidden.https.html [ Failure ]
+
+# Sheriff 2021-08-20
+crbug.com/1241778 [ Mac10.13 ] virtual/web-bluetooth-new-permissions-backend/wpt_internal/bluetooth/requestDevice/filter-does-not-match.https.html [ Pass Timeout ]
