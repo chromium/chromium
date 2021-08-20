@@ -76,7 +76,7 @@ Pairing::~Pairing() = default;
 // static
 absl::optional<std::unique_ptr<Pairing>> Pairing::Parse(
     const cbor::Value& cbor,
-    uint32_t tunnel_server_domain,
+    tunnelserver::KnownDomainID domain,
     base::span<const uint8_t, kQRSeedSize> local_identity_seed,
     base::span<const uint8_t, 32> handshake_hash) {
   if (!cbor.is_map()) {
@@ -102,8 +102,7 @@ absl::optional<std::unique_ptr<Pairing>> Pairing::Parse(
           std::tuple_size<decltype(pairing->peer_public_key_x962)>::value) {
   }
 
-  pairing->tunnel_server_domain =
-      tunnelserver::DecodeDomain(tunnel_server_domain),
+  pairing->tunnel_server_domain = tunnelserver::DecodeDomain(domain);
   pairing->contact_id = its[0]->second.GetBytestring();
   pairing->id = its[1]->second.GetBytestring();
   pairing->secret = its[2]->second.GetBytestring();

@@ -9,6 +9,7 @@
 
 #include "base/base64url.h"
 #include "base/bits.h"
+#include "base/cxx17_backports.h"  // for base::size
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_number_conversions.h"
@@ -100,7 +101,26 @@ bssl::UniquePtr<EC_KEY> ECKeyFromSeed(
 
 namespace tunnelserver {
 
-std::string DecodeDomain(uint16_t domain) {
+// kAssignedDomains is the list of defined tunnel server domains. These map
+// to values 0..256.
+static const char* kAssignedDomains[] = {"cable.ua5v.com"};
+
+absl::optional<KnownDomainID> ToKnownDomainID(uint16_t domain) {
+  if (domain >= 256 || domain < base::size(kAssignedDomains)) {
+    return KnownDomainID(domain);
+  }
+  return absl::nullopt;
+}
+
+std::string DecodeDomain(KnownDomainID domain_id) {
+  const uint16_t domain = domain_id.value();
+  if (domain < 256) {
+    // The |KnownDomainID| type should only contain valid values for this but,
+    // just in case, CHECK it too.
+    CHECK_LT(domain, base::size(kAssignedDomains));
+    return kAssignedDomains[domain];
+  }
+
   char templ[] = "caBLEv2 tunnel server domain\x00\x00";
   memcpy(&templ[sizeof(templ) - 2], &domain, sizeof(domain));
   uint8_t digest[SHA256_DIGEST_LENGTH];
@@ -108,10 +128,6 @@ std::string DecodeDomain(uint16_t domain) {
   uint64_t result;
   static_assert(sizeof(result) <= sizeof(digest), "");
   memcpy(&result, digest, sizeof(result));
-  // This value causes the range of this function to intersect at a single point
-  // with the function previously used. This allows us not to change the initial
-  // tunnel server domain name.
-  result ^= 0x35286e67508f8e42;
 
   static const char kBase32Chars[33] = "abcdefghijklmnopqrstuvwxyz234567";
   const int tld_value = result & 3;
@@ -130,7 +146,7 @@ std::string DecodeDomain(uint16_t domain) {
   return ret;
 }
 
-GURL GetNewTunnelURL(uint16_t domain, base::span<const uint8_t, 16> id) {
+GURL GetNewTunnelURL(KnownDomainID domain, base::span<const uint8_t, 16> id) {
   std::string ret = "wss://" + DecodeDomain(domain) + "/cable/new/";
 
   ret += base::HexEncode(id);
@@ -139,7 +155,7 @@ GURL GetNewTunnelURL(uint16_t domain, base::span<const uint8_t, 16> id) {
   return url;
 }
 
-GURL GetConnectURL(uint16_t domain,
+GURL GetConnectURL(KnownDomainID domain,
                    std::array<uint8_t, kRoutingIdSize> routing_id,
                    base::span<const uint8_t, 16> id) {
   std::string ret = "wss://" + DecodeDomain(domain) + "/cable/connect/";
@@ -169,6 +185,10 @@ GURL GetContactURL(const std::string& tunnel_server,
 }  // namespace tunnelserver
 
 namespace eid {
+
+Components::Components() = default;
+Components::~Components() = default;
+Components::Components(const Components&) = default;
 
 std::array<uint8_t, kAdvertSize> Encrypt(
     const CableEidArray& eid,
@@ -229,6 +249,15 @@ absl::optional<CableEidArray> Decrypt(
     return absl::nullopt;
   }
 
+  uint16_t tunnel_server_domain;
+  static_assert(EXTENT(plaintext) >= sizeof(tunnel_server_domain), "");
+  memcpy(&tunnel_server_domain,
+         &plaintext[EXTENT(plaintext) - sizeof(tunnel_server_domain)],
+         sizeof(tunnel_server_domain));
+  if (!tunnelserver::ToKnownDomainID(tunnel_server_domain)) {
+    return absl::nullopt;
+  }
+
   return plaintext;
 }
 
@@ -259,9 +288,14 @@ Components ToComponents(const CableEidArray& eid) {
 
   memcpy(ret.nonce.data(), &eid[1], kNonceSize);
   memcpy(ret.routing_id.data(), &eid[1 + kNonceSize], sizeof(ret.routing_id));
-  memcpy(&ret.tunnel_server_domain,
-         &eid[1 + kNonceSize + sizeof(ret.routing_id)],
-         sizeof(ret.tunnel_server_domain));
+
+  uint16_t tunnel_server_domain;
+  memcpy(&tunnel_server_domain, &eid[1 + kNonceSize + sizeof(ret.routing_id)],
+         sizeof(tunnel_server_domain));
+  // |eid| has been checked by |Decrypt| so the tunnel server domain must be
+  // valid.
+  ret.tunnel_server_domain =
+      *tunnelserver::ToKnownDomainID(tunnel_server_domain);
 
   return ret;
 }
@@ -371,6 +405,9 @@ std::string Encode(base::span<const uint8_t, kQRKeySize> qr_key) {
                  qr_key.data(), device::cablev2::kQRSeedSize)));
 
   qr_contents.emplace(1, qr_key.subspan(device::cablev2::kQRSeedSize));
+
+  qr_contents.emplace(
+      2, static_cast<int64_t>(base::size(tunnelserver::kAssignedDomains)));
 
   const absl::optional<std::vector<uint8_t>> qr_data =
       cbor::Writer::Write(cbor::Value(std::move(qr_contents)));

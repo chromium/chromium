@@ -102,7 +102,7 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) Pairing {
   // |handshake_hash|.
   static absl::optional<std::unique_ptr<Pairing>> Parse(
       const cbor::Value& cbor,
-      uint32_t tunnel_server_domain,
+      tunnelserver::KnownDomainID domain,
       base::span<const uint8_t, kQRSeedSize> local_identity_seed,
       base::span<const uint8_t, 32> handshake_hash);
 

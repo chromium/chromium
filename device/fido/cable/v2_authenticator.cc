@@ -302,11 +302,11 @@ class TunnelTransport : public Transport {
 
     CableEidArray plaintext_eid;
     if (state_ == State::kConnecting) {
-      const device::cablev2::eid::Components components{
-          .tunnel_server_domain = kTunnelServer,
-          .routing_id = *routing_id,
-          .nonce = RandomNonce(),
-      };
+      device::cablev2::eid::Components components;
+      components.tunnel_server_domain = kTunnelServer;
+      components.routing_id = *routing_id;
+      components.nonce = RandomNonce();
+
       plaintext_eid = device::cablev2::eid::FromComponents(components);
       state_ = State::kConnected;
     } else {

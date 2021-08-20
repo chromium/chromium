@@ -19,15 +19,25 @@ namespace cablev2 {
 namespace {
 
 TEST(CableV2Encoding, TunnelServerURLs) {
-  // Test that a domain name survives an encode-decode round trip.
   uint8_t tunnel_id[16] = {0};
-  const GURL url = tunnelserver::GetNewTunnelURL(/*domain=*/0, tunnel_id);
+  // Tunnel ID zero should map to Google's tunnel server.
+  const tunnelserver::KnownDomainID kGoogleDomain(0);
+  const GURL url = tunnelserver::GetNewTunnelURL(kGoogleDomain, tunnel_id);
   EXPECT_TRUE(url.spec().find("//cable.ua5v.com/") != std::string::npos) << url;
+
+  // The hash function shouldn't change across releases, so test a hashed
+  // domain.
+  const tunnelserver::KnownDomainID kHashedDomain(512);
+  const GURL hashed_url =
+      tunnelserver::GetNewTunnelURL(kHashedDomain, tunnel_id);
+  EXPECT_TRUE(hashed_url.spec().find("//cable.snorzvaajskg.org/") !=
+              std::string::npos)
+      << url;
 }
 
 TEST(CableV2Encoding, EIDToFromComponents) {
   eid::Components components;
-  components.tunnel_server_domain = 0x0102;
+  components.tunnel_server_domain = tunnelserver::KnownDomainID(0x0102);
   components.routing_id = {9, 10, 11};
   crypto::RandBytes(components.nonce);
 
@@ -41,7 +51,7 @@ TEST(CableV2Encoding, EIDToFromComponents) {
 
 TEST(CableV2Encoding, EIDEncrypt) {
   eid::Components components;
-  components.tunnel_server_domain = 0x0102;
+  components.tunnel_server_domain = tunnelserver::KnownDomainID(0x0102);
   components.routing_id = {9, 10, 11};
   crypto::RandBytes(components.nonce);
   const CableEidArray eid = eid::FromComponents(components);
@@ -56,6 +66,12 @@ TEST(CableV2Encoding, EIDEncrypt) {
 
   advert[0] ^= 1;
   EXPECT_FALSE(eid::Decrypt(advert, key).has_value());
+
+  // Unknown tunnel server domains should not decrypt.
+  components.tunnel_server_domain = tunnelserver::KnownDomainID(255);
+  const CableEidArray eid3 = eid::FromComponents(components);
+  std::array<uint8_t, kAdvertSize> invalid_advert = eid::Encrypt(eid3, key);
+  EXPECT_FALSE(eid::Decrypt(invalid_advert, key).has_value());
 }
 
 TEST(CableV2Encoding, QRs) {

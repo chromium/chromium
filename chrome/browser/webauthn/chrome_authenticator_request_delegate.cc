@@ -809,8 +809,17 @@ static std::unique_ptr<device::cablev2::Pairing> PairingFromSyncedDevice(
   auto pairing = std::make_unique<device::cablev2::Pairing>();
   pairing->name = NameForDisplay(device->client_name());
 
-  pairing->tunnel_server_domain = device::cablev2::tunnelserver::DecodeDomain(
-      paask_info.tunnel_server_domain);
+  const absl::optional<device::cablev2::tunnelserver::KnownDomainID>
+      tunnel_server_domain = device::cablev2::tunnelserver::ToKnownDomainID(
+          paask_info.tunnel_server_domain);
+  if (!tunnel_server_domain) {
+    // It's possible that a phone is running a more modern version of Chrome
+    // and uses an assigned tunnel server domain that is unknown to this code.
+    return nullptr;
+  }
+
+  pairing->tunnel_server_domain =
+      device::cablev2::tunnelserver::DecodeDomain(*tunnel_server_domain);
   pairing->contact_id = paask_info.contact_id;
   pairing->peer_public_key_x962 = paask_info.peer_public_key_x962;
   pairing->secret.assign(paask_info.secret.begin(), paask_info.secret.end());

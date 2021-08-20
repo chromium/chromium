@@ -248,7 +248,7 @@ GetSyncDataIfRegistered() {
   }
 
   syncer::DeviceInfo::PhoneAsASecurityKeyInfo paask_info;
-  paask_info.tunnel_server_domain = device::cablev2::kTunnelServer;
+  paask_info.tunnel_server_domain = device::cablev2::kTunnelServer.value();
   paask_info.contact_id = *state->sync_registration()->contact_id();
   const uint32_t pairing_id = device::cablev2::sync::IDNow();
   paask_info.id = pairing_id;

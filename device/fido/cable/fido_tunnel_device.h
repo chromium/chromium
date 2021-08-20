@@ -127,7 +127,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTunnelDevice : public FidoDevice {
     std::array<uint8_t, 32> psk;
     base::OnceCallback<void(std::unique_ptr<Pairing>)> pairing_callback;
     std::array<uint8_t, kQRSeedSize> local_identity_seed;
-    uint32_t tunnel_server_domain;
+    tunnelserver::KnownDomainID tunnel_server_domain;
   };
 
   struct PairedInfo {
