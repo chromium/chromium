@@ -12,18 +12,23 @@ import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.vectordrawable.graphics.drawable.Animatable2Compat;
+import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -43,13 +48,17 @@ import org.chromium.chrome.modules.cablev2_authenticator.Cablev2AuthenticatorMod
  * This does not use {@link ModuleInstallUi} because it needs to integrate into the Fragment-based
  * settings UI, while {@link ModuleInstallUi} assumes that the UI does in a {@link Tab}.
  */
-public class CableAuthenticatorModuleProvider extends Fragment {
+public class CableAuthenticatorModuleProvider extends Fragment implements OnClickListener {
     // TAG is subject to a 20 character limit.
     private static final String TAG = "CableAuthModuleProv";
 
     // NOTIFICATION_TIMEOUT_SECS is the number of seconds that a notification
     // will exist for. This stop ignored notifications hanging around.
     private static final int NOTIFICATION_TIMEOUT_SECS = 60;
+
+    // Error codes from the module start at 100, therefore errors outside of the
+    // module count downwards so as never to collide.
+    private static final int INSTALL_FAILURE_ERROR_CODE = 99;
 
     // NETWORK_CONTEXT_KEY is the key under which a pointer to a NetworkContext
     // is passed (as a long) in the arguments {@link Bundle} to the {@link
@@ -63,14 +72,21 @@ public class CableAuthenticatorModuleProvider extends Fragment {
     private static final String SECRET_KEY =
             "org.chromium.chrome.modules.cablev2_authenticator.Secret";
 
+    private View mErrorView;
+
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final Context context = getContext();
+        final ViewGroup top = new LinearLayout(getContext());
 
-        LinearLayout layout = new LinearLayout(context);
-        layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setGravity(Gravity.CENTER_HORIZONTAL);
+        // Inflate the error view in case it's needed later.
+        mErrorView = inflater.inflate(R.layout.cablev2_error, container, false);
+        mErrorView.findViewById(R.id.error_close).setOnClickListener(this);
+        ((TextView) mErrorView.findViewById(R.id.error_code))
+                .setText(getResources().getString(
+                        R.string.cablev2_error_code, INSTALL_FAILURE_ERROR_CODE));
+        ((TextView) mErrorView.findViewById(R.id.error_description))
+                .setText(getResources().getString(R.string.cablev2_error_generic));
 
         if (Cablev2AuthenticatorModule.isInstalled()) {
             showModule();
@@ -78,14 +94,42 @@ public class CableAuthenticatorModuleProvider extends Fragment {
             Cablev2AuthenticatorModule.install((success) -> {
                 if (!success) {
                     Log.e(TAG, "Failed to install caBLE DFM");
-                    getActivity().finish();
+                    final ViewGroup v = (ViewGroup) getView();
+                    v.removeAllViews();
+                    v.addView(mErrorView);
                     return;
                 }
                 showModule();
             });
+
+            top.addView(inflater.inflate(R.layout.cablev2_spinner, container, false));
+            ((TextView) top.findViewById(R.id.status_text))
+                    .setText(getResources().getString(
+                            R.string.cablev2_serverlink_status_dfm_install));
+
+            final AnimatedVectorDrawableCompat anim = AnimatedVectorDrawableCompat.create(
+                    getContext(), R.drawable.circle_loader_animation);
+            // There is no way to make an animation loop. Instead it must be
+            // manually started each time it completes.
+            anim.registerAnimationCallback(new Animatable2Compat.AnimationCallback() {
+                @Override
+                public void onAnimationEnd(Drawable drawable) {
+                    if (drawable != null) {
+                        anim.start();
+                    }
+                }
+            });
+            ((ImageView) top.findViewById(R.id.spinner)).setImageDrawable(anim);
+            anim.start();
         }
 
-        return layout;
+        return top;
+    }
+
+    @Override
+    public void onClick(View v) {
+        // The only button is the "Close" button on the error screen.
+        getActivity().finish();
     }
 
     private void showModule() {

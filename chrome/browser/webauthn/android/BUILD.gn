@@ -7,6 +7,7 @@ import("//build/config/android/rules.gni")
 android_library("java") {
   sources = [ "java/src/org/chromium/chrome/browser/webauthn/CableAuthenticatorModuleProvider.java" ]
   deps = [
+    ":java_resources",
     ":jni_headers",
     "//base:base_java",
     "//chrome/android:chrome_app_java_resources",
@@ -22,4 +23,36 @@ android_library("java") {
 
 generate_jni("jni_headers") {
   sources = [ "java/src/org/chromium/chrome/browser/webauthn/CableAuthenticatorModuleProvider.java" ]
+}
+
+android_resources("java_resources") {
+  sources = [
+    "java/res/anim/circle_loader_animation_interpolator_0.xml",
+    "java/res/anim/circle_loader_animation_interpolator_1.xml",
+    "java/res/anim/circle_loader_animation_interpolator_2.xml",
+    "java/res/anim/circle_loader_animation_interpolator_3.xml",
+    "java/res/anim/circle_loader_animation_interpolator_4.xml",
+    "java/res/anim/circle_loader_animation_interpolator_5.xml",
+    "java/res/anim/circle_loader_animation_interpolator_6.xml",
+    "java/res/anim/circle_loader_animation_interpolator_7.xml",
+    "java/res/anim/circle_loader_animation_interpolator_8.xml",
+    "java/res/anim/circle_loader_circleblue_animation.xml",
+    "java/res/anim/circle_loader_circlegreen_animation.xml",
+    "java/res/anim/circle_loader_circlered_animation.xml",
+    "java/res/anim/circle_loader_circleyellow_animation.xml",
+    "java/res/anim/circle_loader_ellipse_path_2_animation.xml",
+    "java/res/anim/circle_loader_ellipse_path_3_animation.xml",
+    "java/res/anim/circle_loader_ellipse_path_4_animation.xml",
+    "java/res/anim/circle_loader_ellipse_path_5_animation.xml",
+    "java/res/drawable-night/error_icon.xml",
+    "java/res/drawable/circle_loader.xml",
+    "java/res/drawable/circle_loader_animation.xml",
+    "java/res/drawable/error_icon.xml",
+    "java/res/drawable/ic_lock_googblue_48dp.xml",
+    "java/res/layout-sw600dp/cablev2_error.xml",
+    "java/res/layout-sw600dp/cablev2_spinner.xml",
+    "java/res/layout/cablev2_error.xml",
+    "java/res/layout/cablev2_spinner.xml",
+  ]
+  deps = [ "//chrome/android:chrome_app_java_resources" ]
 }

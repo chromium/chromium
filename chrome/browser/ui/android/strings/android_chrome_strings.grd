@@ -4555,6 +4555,10 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Processing request
       </message>
 
+      <message name="IDS_CABLEV2_SERVERLINK_STATUS_DFM_INSTALL" desc="A small subheader on a screen that is shown when a user is connecting their phone to a desktop or laptop computer in order to sign in with it. This text is shown while Chrome is downloading the component that can complete the connection.">
+        Updating Chrome to connect to other devices
+      </message>
+
       <message name="IDS_CABLEV2_ERROR_TITLE" desc="The title of an error screen shown when the user is trying to use their phone to sign into a website on a laptop, but something (probably out of their control) went wrong">
         Something went wrong
       </message>

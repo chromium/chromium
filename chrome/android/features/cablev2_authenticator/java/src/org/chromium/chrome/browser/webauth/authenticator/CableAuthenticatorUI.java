@@ -229,7 +229,7 @@ public class CableAuthenticatorUI
     }
 
     private View createSpinnerScreen(LayoutInflater inflater, ViewGroup container) {
-        View v = inflater.inflate(R.layout.cablev2_serverlink, container, false);
+        View v = inflater.inflate(R.layout.cablev2_spinner, container, false);
         mStatusText = v.findViewById(R.id.status_text);
 
         final AnimatedVectorDrawableCompat anim = AnimatedVectorDrawableCompat.create(
