@@ -2190,12 +2190,13 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, CertificateExplanations) {
       cert->CalculateChainFingerprint256();
 
   // Read the certificate out of the first explanation.
-  const base::ListValue* certificate;
-  ASSERT_TRUE(GetCertificateFromNotificationParams(params.get(), &certificate));
+  const base::ListValue* certificate_list;
+  ASSERT_TRUE(
+      GetCertificateFromNotificationParams(params.get(), &certificate_list));
   std::vector<std::string> der_certs;
-  for (const auto& cert : certificate->GetList()) {
+  for (const auto& certificate : certificate_list->GetList()) {
     std::string decoded;
-    ASSERT_TRUE(base::Base64Decode(cert.GetString(), &decoded));
+    ASSERT_TRUE(base::Base64Decode(certificate.GetString(), &decoded));
     der_certs.push_back(decoded);
   }
   std::vector<base::StringPiece> cert_string_piece;

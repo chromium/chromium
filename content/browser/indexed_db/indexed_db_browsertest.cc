@@ -1233,7 +1233,6 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestBlobKeyCorruption, LifecycleTest) {
   SimpleTest(embedded_test_server()->GetURL(test_file));
   int64_t next_blob_number = GetNextBlobNumber(kTestStorageKey, 1);
 
-  base::ScopedAllowBlockingForTesting allow_blocking;
   base::FilePath first_blob =
       PathForBlob(kTestStorageKey, 1, next_blob_number - 1);
   base::FilePath corrupt_blob =

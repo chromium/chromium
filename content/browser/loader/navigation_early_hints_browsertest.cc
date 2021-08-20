@@ -55,9 +55,9 @@ struct ResponseEntry {
     headers[":status"] = base::StringPrintf("%d", status_code);
   }
 
-  void AddEarlyHints(const std::vector<HeaderField>& headers) {
+  void AddEarlyHints(const std::vector<HeaderField>& header_fields) {
     spdy::Http2HeaderBlock hints_headers;
-    for (const auto& header : headers)
+    for (const auto& header : header_fields)
       hints_headers.AppendValueOrAddHeader(header.name, header.value);
     early_hints.push_back(std::move(hints_headers));
   }

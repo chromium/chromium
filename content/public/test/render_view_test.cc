@@ -679,7 +679,6 @@ gfx::Rect RenderViewTest::GetElementBounds(const std::string& element_id) {
   std::vector<int> coords;
   for (int i = 0; i < 4; ++i) {
     v8::Local<v8::Number> index = v8::Number::New(isolate, i);
-    v8::Local<v8::Value> value;
     if (!array->Get(isolate->GetCurrentContext(), index).ToLocal(&value) ||
         !value->IsInt32()) {
       return gfx::Rect();

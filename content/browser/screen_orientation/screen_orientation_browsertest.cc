@@ -165,10 +165,12 @@ IN_PROC_BROWSER_TEST_F(ScreenOrientationBrowserTest,
   GURL test_url = GetTestUrl("screen_orientation",
                              "screen_orientation_screenorientationchange.html");
 
-  TestNavigationObserver navigation_observer(shell()->web_contents(), 1);
-  shell()->LoadURL(test_url);
-  navigation_observer.Wait();
-  WaitForResizeComplete(shell()->web_contents());
+  {
+    TestNavigationObserver navigation_observer(shell()->web_contents(), 1);
+    shell()->LoadURL(test_url);
+    navigation_observer.Wait();
+    WaitForResizeComplete(shell()->web_contents());
+  }
 
   int angle = GetOrientationAngle();
 
@@ -195,12 +197,14 @@ IN_PROC_BROWSER_TEST_F(ScreenOrientationBrowserTest,
   GURL test_url = GetTestUrl("screen_orientation",
                              "screen_orientation_windoworientationchange.html");
 
-  TestNavigationObserver navigation_observer(shell()->web_contents(), 1);
-  shell()->LoadURL(test_url);
-  navigation_observer.Wait();
+  {
+    TestNavigationObserver navigation_observer(shell()->web_contents(), 1);
+    shell()->LoadURL(test_url);
+    navigation_observer.Wait();
 #if USE_AURA || defined(OS_ANDROID)
-  WaitForResizeComplete(shell()->web_contents());
+    WaitForResizeComplete(shell()->web_contents());
 #endif  // USE_AURA || defined(OS_ANDROID)
+  }
 
   if (!WindowOrientationSupported())
     return;

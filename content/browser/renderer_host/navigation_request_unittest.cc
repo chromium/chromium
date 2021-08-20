@@ -544,7 +544,7 @@ TEST_F(NavigationRequestTest, PolicyContainerInheritance) {
     // - If navigating to a non-local scheme, the target frame should have a new
     //   policy container (hence referrer policy set to "default").
     const GURL kUrl = GURL(test.url);
-    auto navigation =
+    navigation =
         NavigationSimulatorImpl::CreateRendererInitiated(kUrl, child_frame);
     static_cast<blink::mojom::PolicyContainerHost*>(
         child_frame->policy_container_host())

@@ -193,7 +193,6 @@ DevToolsProtocolTest::WaitForMatchingNotification(
 
 void DevToolsProtocolTest::ProcessNavigationsAnyOrder(
     std::vector<ExpectedNavigation> expected_navigations) {
-  std::unique_ptr<base::DictionaryValue> params;
   while (!expected_navigations.empty()) {
     std::unique_ptr<base::DictionaryValue> params =
         WaitForNotification("Network.requestIntercepted");

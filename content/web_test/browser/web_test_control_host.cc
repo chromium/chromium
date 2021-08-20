@@ -1281,8 +1281,7 @@ void WebTestControlHost::OnDumpFrameLayoutResponse(int frame_tree_node_id,
     auto it =
         frame_to_layout_dump_map_.find(render_frame_host->GetFrameTreeNodeId());
     if (it != frame_to_layout_dump_map_.end()) {
-      const std::string& dump = it->second;
-      stitched_layout_dump.append(dump);
+      stitched_layout_dump.append(it->second);
     }
   }
 

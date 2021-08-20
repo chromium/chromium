@@ -3242,7 +3242,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     // should_replace_current_entry to true, but hit a network error. The
     // browser will convert this navigation to do a reload, but ended up doing
     // replacement instead.
-    auto url_loader_interceptor = std::make_unique<URLLoaderInterceptor>(
+    url_loader_interceptor = std::make_unique<URLLoaderInterceptor>(
         base::BindRepeating([](URLLoaderInterceptor::RequestParams* params) {
           network::URLLoaderCompletionStatus status;
           status.error_code = net::ERR_NOT_IMPLEMENTED;
@@ -16559,9 +16559,11 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
   EXPECT_TRUE(NavigateToURLFromRenderer(shell(), b_url));
 
   // Go back to a3_url and do location.replace.
-  TestNavigationObserver load_observer(shell()->web_contents());
-  controller.GoToOffset(-2);
-  load_observer.Wait();
+  {
+    TestNavigationObserver load_observer(shell()->web_contents());
+    controller.GoToOffset(-2);
+    load_observer.Wait();
+  }
   EXPECT_EQ(a3_url, controller.GetLastCommittedEntry()->GetURL());
   GURL y_url(embedded_test_server()->GetURL("/frame_tree/top.html"));
   ASSERT_TRUE(RendererLocationReplace(shell(), y_url));
@@ -17849,9 +17851,11 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   // Navigate frame b cross-document.
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
-  TestNavigationObserver navigation_observer(contents());
-  EXPECT_TRUE(NavigateToURLFromRenderer(ftn_b, url_b));
-  navigation_observer.WaitForNavigationFinished();
+  {
+    TestNavigationObserver navigation_observer(contents());
+    EXPECT_TRUE(NavigateToURLFromRenderer(ftn_b, url_b));
+    navigation_observer.WaitForNavigationFinished();
+  }
   EXPECT_EQ(5, controller.GetEntryCount());
 
   // Go back.  This navigates frame b back, and we should be at next-to-last

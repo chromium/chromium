@@ -469,7 +469,6 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
     // create a response. The main script response is set when the first
     // TransferInstalledScript().
     {
-      absl::optional<blink::ServiceWorkerStatusCode> status;
       base::RunLoop loop;
       version_->StartWorker(
           ServiceWorkerMetrics::EventType::UNKNOWN,

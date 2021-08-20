@@ -4635,7 +4635,7 @@ TEST_F(PINAuthenticatorImplTest, MakeCredentialDontSkipPINTouch) {
   device::test::MultipleVirtualFidoDeviceFactory::DeviceDetails device_1;
   device_1.config.pin_support = true;
   device_1.state->simulate_press_callback =
-      base::BindRepeating([](VirtualFidoDevice* _) { return false; });
+      base::BindRepeating([](VirtualFidoDevice* ignore) { return false; });
   discovery->AddDevice(std::move(device_1));
 
   int taps = 0;
@@ -4643,7 +4643,7 @@ TEST_F(PINAuthenticatorImplTest, MakeCredentialDontSkipPINTouch) {
   device_2.state->pin = kTestPIN;
   device_2.config.pin_support = true;
   device_2.state->simulate_press_callback =
-      base::BindLambdaForTesting([&](VirtualFidoDevice* _) {
+      base::BindLambdaForTesting([&](VirtualFidoDevice* ignore) {
         ++taps;
         return true;
       });
@@ -5021,7 +5021,7 @@ TEST_F(PINAuthenticatorImplTest, GetAssertionDontSkipPINTouch) {
   device::test::MultipleVirtualFidoDeviceFactory::DeviceDetails device_1;
   device_1.config.pin_support = true;
   device_1.state->simulate_press_callback =
-      base::BindRepeating([](VirtualFidoDevice* _) { return false; });
+      base::BindRepeating([](VirtualFidoDevice* ignore) { return false; });
   discovery->AddDevice(std::move(device_1));
 
   int taps = 0;
@@ -5029,7 +5029,7 @@ TEST_F(PINAuthenticatorImplTest, GetAssertionDontSkipPINTouch) {
   device_2.state->pin = kTestPIN;
   device_2.config.pin_support = true;
   device_2.state->simulate_press_callback =
-      base::BindLambdaForTesting([&](VirtualFidoDevice* _) {
+      base::BindLambdaForTesting([&](VirtualFidoDevice* ignore) {
         ++taps;
         return true;
       });
@@ -5291,9 +5291,9 @@ TEST_F(PINAuthenticatorImplTest, RemoveSecondAuthenticator) {
   };
 
   device_1.state->simulate_press_callback = base::BindLambdaForTesting(
-      [&](VirtualFidoDevice* _) -> bool { return touch_callback(1); });
+      [&](VirtualFidoDevice* ignore) -> bool { return touch_callback(1); });
   device_2.state->simulate_press_callback = base::BindLambdaForTesting(
-      [&](VirtualFidoDevice* _) -> bool { return touch_callback(2); });
+      [&](VirtualFidoDevice* ignore) -> bool { return touch_callback(2); });
 
   auto discovery =
       std::make_unique<device::test::MultipleVirtualFidoDeviceFactory>();
@@ -5965,7 +5965,7 @@ TEST_F(BlockingDelegateAuthenticatorImplTest, PostCancelMessage) {
   device::test::MultipleVirtualFidoDeviceFactory::DeviceDetails device_1;
   scoped_refptr<VirtualFidoDevice::State> state_1 = device_1.state;
   device_1.state->simulate_press_callback =
-      base::BindLambdaForTesting([&](VirtualFidoDevice* _) -> bool {
+      base::BindLambdaForTesting([&](VirtualFidoDevice* ignore) -> bool {
         // Drop all makeCredential requests. The reply will be sent when
         // the second authenticator is asked for a fingerprint.
         return false;
@@ -5981,7 +5981,7 @@ TEST_F(BlockingDelegateAuthenticatorImplTest, PostCancelMessage) {
   device_2.state->fingerprints_enrolled = true;
   device_2.state->uv_retries = 8;
   device_2.state->simulate_press_callback =
-      base::BindLambdaForTesting([&](VirtualFidoDevice* _) -> bool {
+      base::BindLambdaForTesting([&](VirtualFidoDevice* ignore) -> bool {
         // If asked for a fingerprint, fail the makeCredential request by
         // simulating a matched excluded credential by the other authenticator.
         base::SequencedTaskRunnerHandle::Get()->PostTask(

@@ -3141,8 +3141,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   // Ensure the navigation completes in the iframe.
   {
     iframe_observer.WaitForNavigationFinished();
-    content::RenderFrameHost* child_frame =
-        ChildFrameAt(web_contents()->GetMainFrame(), 0);
+    child_frame = ChildFrameAt(web_contents()->GetMainFrame(), 0);
     ASSERT_TRUE(child_frame);
     EXPECT_EQ(child_frame->GetLastCommittedURL(), kNewIframeUrl);
   }

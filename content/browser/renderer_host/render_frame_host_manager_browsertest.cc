@@ -3923,10 +3923,10 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, LastCommittedOrigin) {
   // verify the subframe's origin.
   GURL url_c(embedded_test_server()->GetURL("c.com", "/title3.html"));
   {
-    TestFrameNavigationObserver commit_observer(root->child_at(0));
+    TestFrameNavigationObserver child_commit_observer(root->child_at(0));
     EXPECT_TRUE(
         ExecuteScript(child, "location.href = '" + url_c.spec() + "';"));
-    commit_observer.WaitForCommit();
+    child_commit_observer.WaitForCommit();
   }
   EXPECT_EQ(url::Origin::Create(url_c),
             child->current_frame_host()->GetLastCommittedOrigin());
@@ -4360,12 +4360,14 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
     observer.Wait();
 
     // This should swap BrowsingInstances.
-    scoped_refptr<SiteInstance> curr_instance(
+    scoped_refptr<SiteInstance> updated_curr_instance(
         popup->web_contents()->GetSiteInstance());
-    EXPECT_NE(a_site_instance, curr_instance);
-    EXPECT_FALSE(a_site_instance->IsRelatedSiteInstance(curr_instance.get()));
-    EXPECT_NE(prev_instance, curr_instance);
-    EXPECT_FALSE(prev_instance->IsRelatedSiteInstance(curr_instance.get()));
+    EXPECT_NE(a_site_instance, updated_curr_instance);
+    EXPECT_FALSE(
+        a_site_instance->IsRelatedSiteInstance(updated_curr_instance.get()));
+    EXPECT_NE(prev_instance, updated_curr_instance);
+    EXPECT_FALSE(
+        prev_instance->IsRelatedSiteInstance(updated_curr_instance.get()));
   }
 }
 

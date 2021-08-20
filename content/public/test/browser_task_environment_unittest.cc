@@ -128,7 +128,7 @@ TEST(BrowserTaskEnvironmentTest, MessageLoopTypeMismatch) {
 
   EXPECT_DEATH_IF_SUPPORTED(
       {
-        BrowserTaskEnvironment task_environment(
+        BrowserTaskEnvironment second_task_environment(
             BrowserTaskEnvironment::IO_MAINLOOP);
       },
       "");

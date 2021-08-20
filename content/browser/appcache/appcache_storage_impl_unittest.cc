@@ -1573,7 +1573,6 @@ class AppCacheStorageImplTest : public testing::Test {
     // Create records for a degenerate cached manifest that only contains
     // one entry for the manifest file resource.
     if (test_case == CORRUPT_CACHE_ON_LOAD_EXISTING) {
-      AppCacheDatabase db(temp_directory_.GetPath().AppendASCII("Index"));
       GURL manifest_url = GetMockUrl("manifest");
 
       AppCacheDatabase::GroupRecord group_record;

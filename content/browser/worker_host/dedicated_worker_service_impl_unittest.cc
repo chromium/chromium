@@ -245,12 +245,14 @@ TEST_P(DedicatedWorkerServiceImplTest, DedicatedWorkerServiceObserver) {
   observer.RunUntilWorkerEvent();
 
   // The service sent a OnWorkerStarted() notification.
-  ASSERT_EQ(observer.dedicated_worker_infos().size(), 1u);
-  const auto& dedicated_worker_info =
-      observer.dedicated_worker_infos().begin()->second;
-  EXPECT_EQ(dedicated_worker_info.worker_process_id, render_process_host_id);
-  EXPECT_EQ(dedicated_worker_info.ancestor_render_frame_host_id,
-            ancestor_render_frame_host_id);
+  {
+    ASSERT_EQ(observer.dedicated_worker_infos().size(), 1u);
+    const auto& dedicated_worker_info =
+        observer.dedicated_worker_infos().begin()->second;
+    EXPECT_EQ(dedicated_worker_info.worker_process_id, render_process_host_id);
+    EXPECT_EQ(dedicated_worker_info.ancestor_render_frame_host_id,
+              ancestor_render_frame_host_id);
+  }
 
   // Test EnumerateDedicatedWorkers().
   {

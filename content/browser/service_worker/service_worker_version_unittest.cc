@@ -258,15 +258,15 @@ TEST_F(ServiceWorkerVersionTest, ConcurrentStartAndStop) {
     // Call StopWorker() multiple times.
     bool has_stopped1 = false;
     bool has_stopped2 = false;
-    base::RunLoop run_loop_1;
-    base::RunLoop run_loop_2;
+    base::RunLoop run_loop_4;
+    base::RunLoop run_loop_5;
 
-    version_->StopWorker(VerifyCalled(&has_stopped1, run_loop_1.QuitClosure()));
-    version_->StopWorker(VerifyCalled(&has_stopped2, run_loop_2.QuitClosure()));
+    version_->StopWorker(VerifyCalled(&has_stopped1, run_loop_4.QuitClosure()));
+    version_->StopWorker(VerifyCalled(&has_stopped2, run_loop_5.QuitClosure()));
 
     EXPECT_EQ(EmbeddedWorkerStatus::STOPPING, version_->running_status());
-    run_loop_1.Run();
-    run_loop_2.Run();
+    run_loop_4.Run();
+    run_loop_5.Run();
     EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version_->running_status());
 
     // All StopWorker should just succeed.
@@ -278,15 +278,15 @@ TEST_F(ServiceWorkerVersionTest, ConcurrentStartAndStop) {
   status1.reset();
   status2.reset();
 
-  base::RunLoop run_loop_4;
-  base::RunLoop run_loop_5;
+  base::RunLoop run_loop_6;
+  base::RunLoop run_loop_7;
 
   version_->StartWorker(
       ServiceWorkerMetrics::EventType::UNKNOWN,
-      ReceiveServiceWorkerStatus(&status1, run_loop_4.QuitClosure()));
+      ReceiveServiceWorkerStatus(&status1, run_loop_6.QuitClosure()));
 
   EXPECT_EQ(EmbeddedWorkerStatus::STARTING, version_->running_status());
-  run_loop_4.Run();
+  run_loop_6.Run();
   EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version_->running_status());
 
   {
@@ -297,10 +297,10 @@ TEST_F(ServiceWorkerVersionTest, ConcurrentStartAndStop) {
     // And try calling StartWorker while StopWorker is in queue.
     version_->StartWorker(
         ServiceWorkerMetrics::EventType::UNKNOWN,
-        ReceiveServiceWorkerStatus(&status2, run_loop_5.QuitClosure()));
+        ReceiveServiceWorkerStatus(&status2, run_loop_7.QuitClosure()));
 
     EXPECT_EQ(EmbeddedWorkerStatus::STOPPING, version_->running_status());
-    run_loop_5.Run();
+    run_loop_7.Run();
     EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version_->running_status());
 
     // All should just succeed.

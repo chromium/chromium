@@ -137,7 +137,7 @@ void UnnamedOperationHandler::RunOperation(
   }
 
   if (result_promise->State() == v8::Promise::PromiseState::kRejected) {
-    std::string error_message = gin::V8ToString(
+    error_message = gin::V8ToString(
         isolate,
         result_promise->Result()->ToDetailString(context).ToLocalChecked());
 

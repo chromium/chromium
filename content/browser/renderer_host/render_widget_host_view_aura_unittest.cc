@@ -6339,7 +6339,6 @@ TEST_F(InputMethodStateAuraTest, GetCompositionTextRange) {
     state.type = ui::TEXT_INPUT_TYPE_TEXT;
     state.composition = expected_range;
     views_[index]->TextInputStateChanged(state);
-    gfx::Range range_from_client;
 
     EXPECT_TRUE(
         text_input_client()->GetCompositionTextRange(&range_from_client));

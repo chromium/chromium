@@ -1939,8 +1939,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   // Now that input is completely empty, the position of the caret should be
   // returned for character 0. The x,y position and height should be the same as
   // it was as when there was single character, but the width should now be 1.
-  LONG x, y, width, height;
   for (int offset = IA2_TEXT_OFFSET_CARET; offset <= 0; ++offset) {
+    LONG x, y, width, height;
     EXPECT_HRESULT_SUCCEEDED(input_text->get_characterExtents(
         offset, IA2_COORDTYPE_SCREEN_RELATIVE, &x, &y, &width, &height));
     EXPECT_EQ(prev_x, x);
@@ -5307,12 +5307,14 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest, TestOffsetsOfSelectionAll) {
 
   auto* node = static_cast<ui::AXPlatformNodeWin*>(
       ui::AXPlatformNode::FromNativeViewAccessible(document.Get()));
-  LONG start_offset = 0;
-  LONG end_offset = 0;
-  HRESULT hr = node->get_selection(0, &start_offset, &end_offset);
-  EXPECT_EQ(S_OK, hr);
-  EXPECT_EQ(0, start_offset);
-  EXPECT_EQ(3, end_offset);
+  {
+    LONG start_offset = 0;
+    LONG end_offset = 0;
+    HRESULT hr = node->get_selection(0, &start_offset, &end_offset);
+    EXPECT_EQ(S_OK, hr);
+    EXPECT_EQ(0, start_offset);
+    EXPECT_EQ(3, end_offset);
+  }
 
   std::vector<int> expected = {12, 18, 14};  // text length of each child
   std::vector<base::win::ScopedVariant> children =

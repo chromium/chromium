@@ -1025,7 +1025,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   {
     const char kReplacePortNumber[] = "setPortNumber(%d);";
     uint16_t port_number = embedded_test_server()->port();
-    GURL url = embedded_test_server()->GetURL("foo.com", "/title2.html");
+    url = embedded_test_server()->GetURL("foo.com", "/title2.html");
     EXPECT_TRUE(
         ExecJs(shell(), base::StringPrintf(kReplacePortNumber, port_number)));
 
@@ -1059,7 +1059,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   {
     const char kReplacePortNumber[] = "setPortNumber(%d);";
     uint16_t port_number = embedded_test_server()->port();
-    GURL url = embedded_test_server()->GetURL("foo.com", "/title2.html");
+    url = embedded_test_server()->GetURL("foo.com", "/title2.html");
     EXPECT_TRUE(
         ExecJs(shell(), base::StringPrintf(kReplacePortNumber, port_number)));
 
@@ -1099,7 +1099,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   {
     const char kReplacePortNumber[] = "setPortNumber(%d);";
     uint16_t port_number = embedded_test_server()->port();
-    GURL url = embedded_test_server()->GetURL("foo.com", "/title2.html");
+    url = embedded_test_server()->GetURL("foo.com", "/title2.html");
     EXPECT_TRUE(ExecJs(subframe_rfh,
                        base::StringPrintf(kReplacePortNumber, port_number)));
 
@@ -1173,7 +1173,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   {
     const char kReplacePortNumber[] = "setPortNumber(%d);";
     uint16_t port_number = embedded_test_server()->port();
-    GURL url = embedded_test_server()->GetURL("foo.com", "/title2.html");
+    url = embedded_test_server()->GetURL("foo.com", "/title2.html");
     EXPECT_TRUE(
         ExecJs(shell(), base::StringPrintf(kReplacePortNumber, port_number)));
 

@@ -1401,8 +1401,8 @@ TEST_F(RenderViewImplTextInputStateChanged, OnImeTypeChanged) {
     input_mode = updated_states()[0]->mode;
     EXPECT_EQ(ui::TEXT_INPUT_TYPE_PASSWORD, type);
 
-    for (size_t i = 0; i < base::size(kInputModeTestCases); i++) {
-      const InputModeTestCase* test_case = &kInputModeTestCases[i];
+    for (size_t test = 0; test < base::size(kInputModeTestCases); test++) {
+      const InputModeTestCase* test_case = &kInputModeTestCases[test];
       std::u16string javascript = base::ASCIIToUTF16(base::StringPrintf(
           "document.getElementById('%s').focus();", test_case->input_id));
       // Move the input focus to the target <input> element, where we should

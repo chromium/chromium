@@ -70,7 +70,6 @@ TEST(IndexedDBNonRecoverableIOErrorTest, NuancedCleanupTest) {
   ASSERT_TRUE(temp_directory.CreateUniqueTempDir());
   const base::FilePath path = temp_directory.GetPath();
   auto task_runner = base::SequencedTaskRunnerHandle::Get();
-  leveldb::Status s;
 
   DefaultTransactionalLevelDBFactory transactional_leveldb_factory;
   std::array<leveldb::Status, 4> errors = {

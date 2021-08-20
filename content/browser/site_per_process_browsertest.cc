@@ -7372,11 +7372,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // The pending RFH should have been canceled and destroyed, so that it won't
   // be reused while it's not live in the next navigation.
-  {
-    RenderFrameHostImpl* pending_rfh =
-        root->render_manager()->speculative_frame_host();
-    EXPECT_FALSE(pending_rfh);
-  }
+  EXPECT_FALSE(root->render_manager()->speculative_frame_host());
 
   // Navigate main tab to b.com again.  This should not crash.
   GURL b_url(embedded_test_server()->GetURL("b.com", "/title3.html"));

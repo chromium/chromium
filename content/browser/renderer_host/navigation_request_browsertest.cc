@@ -899,7 +899,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, ThrottleCancelFailure) {
   // WillFailRequest() on the throttle. (We set the failure method response to
   // CANCEL, but that shouldn't matter if the test passes.)
   {
-    GURL url(embedded_test_server()->GetURL("/title2.html"));
+    url = embedded_test_server()->GetURL("/title2.html");
     NavigationHandleObserver observer(shell()->web_contents(), url);
     TestNavigationThrottleInstaller installer(
         shell()->web_contents(), NavigationThrottle::PROCEED,

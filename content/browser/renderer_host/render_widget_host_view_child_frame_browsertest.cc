@@ -582,10 +582,9 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
     root_widget->SynchronizeVisualProperties();
 
     while (true) {
-      absl::optional<blink::VisualProperties> properties =
-          oopchild->current_frame_host()
-              ->GetRenderWidgetHost()
-              ->LastComputedVisualProperties();
+      properties = oopchild->current_frame_host()
+                       ->GetRenderWidgetHost()
+                       ->LastComputedVisualProperties();
       if (properties && properties->local_surface_id &&
           oopchild_initial_lsid < properties->local_surface_id) {
         EXPECT_EQ(properties->root_widget_window_segments, expected_segments);
@@ -594,10 +593,9 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
       base::RunLoop().RunUntilIdle();
     }
     while (true) {
-      absl::optional<blink::VisualProperties> properties =
-          oopdescendant->current_frame_host()
-              ->GetRenderWidgetHost()
-              ->LastComputedVisualProperties();
+      properties = oopdescendant->current_frame_host()
+                       ->GetRenderWidgetHost()
+                       ->LastComputedVisualProperties();
       if (properties && properties->local_surface_id &&
           oopdescendant_initial_lsid < properties->local_surface_id) {
         EXPECT_EQ(properties->root_widget_window_segments, expected_segments);
@@ -616,10 +614,9 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
     EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(1), new_frame_url));
 
     while (true) {
-      absl::optional<blink::VisualProperties> properties =
-          oopdescendant->current_frame_host()
-              ->GetRenderWidgetHost()
-              ->LastComputedVisualProperties();
+      properties = oopdescendant->current_frame_host()
+                       ->GetRenderWidgetHost()
+                       ->LastComputedVisualProperties();
       // This check is needed, since we'll get an IPC originating from
       // RenderWidgetHostImpl immediately after the frame is added with the
       // incorrect value (the segments are cascaded from the parent renderer

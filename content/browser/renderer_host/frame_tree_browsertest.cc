@@ -542,11 +542,11 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, ChildFrameWithSrcdoc) {
     observer.Wait();
 
     EXPECT_TRUE(root->child_at(1)->current_url().IsAboutSrcdoc());
-    EvalJsResult frame_origin = EvalJs(root->child_at(1), "self.origin");
+    EvalJsResult js_result = EvalJs(root->child_at(1), "self.origin");
     EXPECT_EQ(root->current_frame_host()->GetLastCommittedURL().GetOrigin(),
-              GURL(frame_origin.ExtractString()));
+              GURL(js_result.ExtractString()));
     EXPECT_NE(child->current_frame_host()->GetLastCommittedURL().GetOrigin(),
-              GURL(frame_origin.ExtractString()));
+              GURL(js_result.ExtractString()));
   }
 
   // Set srcdoc on the existing cross-site frame. It should navigate the frame

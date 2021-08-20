@@ -510,16 +510,17 @@ TEST_P(VideoCaptureControllerTest, NormalCaptureMultipleClients) {
 
   // Third, fourth, and fifth buffers. Pretend they all arrive at the same time.
   for (int i = 0; i < kPoolSize; i++) {
-    const int arbitrary_frame_feedback_id = 200 + i;
-    media::VideoCaptureDevice::Client::Buffer buffer;
-    const auto result_code = device_client_->ReserveOutputBuffer(
+    const int arbitrary_frame_feedback_id_3 = 200 + i;
+    media::VideoCaptureDevice::Client::Buffer buffer3;
+    const auto result_code_3 = device_client_->ReserveOutputBuffer(
         device_format.frame_size, device_format.pixel_format,
-        arbitrary_frame_feedback_id, &buffer);
+        arbitrary_frame_feedback_id_3, &buffer3);
     ASSERT_EQ(media::VideoCaptureDevice::Client::ReserveResult::kSucceeded,
-              result_code);
-    auto buffer_access = buffer.handle_provider->GetHandleForInProcessAccess();
-    memset(buffer_access->data(), buffer_no++, buffer_access->mapped_size());
-    device_client_->OnIncomingCapturedBuffer(std::move(buffer), device_format,
+              result_code_3);
+    auto buffer3_access =
+        buffer3.handle_provider->GetHandleForInProcessAccess();
+    memset(buffer3_access->data(), buffer_no++, buffer3_access->mapped_size());
+    device_client_->OnIncomingCapturedBuffer(std::move(buffer3), device_format,
                                              arbitrary_reference_time_,
                                              arbitrary_timestamp_);
   }

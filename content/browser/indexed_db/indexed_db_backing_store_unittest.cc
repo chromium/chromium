@@ -1037,10 +1037,10 @@ TEST_P(IndexedDBBackingStoreTestWithExternalObjects, DeleteRange) {
             blink::mojom::IDBTransactionMode::ReadWrite);
     transaction1->Begin(CreateDummyLock());
     IndexedDBBackingStore::RecordIdentifier record;
-    for (size_t i = 0; i < values.size(); ++i) {
+    for (size_t j = 0; j < values.size(); ++j) {
       EXPECT_TRUE(backing_store()
                       ->PutRecord(transaction1.get(), database_id,
-                                  object_store_id, keys[i], &values[i], &record)
+                                  object_store_id, keys[j], &values[j], &record)
                       .ok());
     }
 
@@ -1133,10 +1133,10 @@ TEST_P(IndexedDBBackingStoreTestWithExternalObjects, DeleteRangeEmptyRange) {
     transaction1->Begin(CreateDummyLock());
 
     IndexedDBBackingStore::RecordIdentifier record;
-    for (size_t i = 0; i < values.size(); ++i) {
+    for (size_t j = 0; j < values.size(); ++j) {
       EXPECT_TRUE(backing_store()
                       ->PutRecord(transaction1.get(), database_id,
-                                  object_store_id, keys[i], &values[i], &record)
+                                  object_store_id, keys[j], &values[j], &record)
                       .ok());
     }
     // Start committing transaction1.
@@ -2257,10 +2257,10 @@ TEST_P(IndexedDBBackingStoreTestWithExternalObjects, ClearObjectStoreObjects) {
             blink::mojom::IDBTransactionMode::ReadWrite);
     transaction1->Begin(CreateDummyLock());
     IndexedDBBackingStore::RecordIdentifier record;
-    for (size_t i = 0; i < values.size(); ++i) {
+    for (size_t j = 0; j < values.size(); ++j) {
       EXPECT_TRUE(backing_store()
                       ->PutRecord(transaction1.get(), database_id,
-                                  write_object_store_id, keys[i], &values[i],
+                                  write_object_store_id, keys[j], &values[j],
                                   &record)
                       .ok());
     }

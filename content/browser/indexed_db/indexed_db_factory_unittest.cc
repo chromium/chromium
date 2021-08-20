@@ -960,23 +960,25 @@ TEST_F(IndexedDBFactoryTest, DatabaseFailedOpen) {
   auto db_callbacks2 = base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
 
   // Open at version 2.
-  const int64_t db_version = 2;
-  auto create_transaction_callback =
-      base::BindOnce(&CreateAndBindTransactionPlaceholder);
-
-  auto connection = std::make_unique<IndexedDBPendingConnection>(
-      callbacks, db_callbacks,
-      transaction_id, db_version, std::move(create_transaction_callback));
   {
-    base::RunLoop loop;
-    callbacks->CallOnUpgradeNeeded(
-        base::BindLambdaForTesting([&]() { loop.Quit(); }));
-    factory()->Open(db_name, std::move(connection), storage_key,
-                    context()->data_path());
-    loop.Run();
+    const int64_t db_version = 2;
+    auto create_transaction_callback =
+        base::BindOnce(&CreateAndBindTransactionPlaceholder);
+
+    auto connection = std::make_unique<IndexedDBPendingConnection>(
+        callbacks, db_callbacks, transaction_id, db_version,
+        std::move(create_transaction_callback));
+    {
+      base::RunLoop loop;
+      callbacks->CallOnUpgradeNeeded(
+          base::BindLambdaForTesting([&]() { loop.Quit(); }));
+      factory()->Open(db_name, std::move(connection), storage_key,
+                      context()->data_path());
+      loop.Run();
+    }
+    EXPECT_TRUE(callbacks->upgrade_called());
+    EXPECT_TRUE(factory()->IsDatabaseOpen(storage_key, db_name));
   }
-  EXPECT_TRUE(callbacks->upgrade_called());
-  EXPECT_TRUE(factory()->IsDatabaseOpen(storage_key, db_name));
 
   // Finish connecting, then close the connection.
   {

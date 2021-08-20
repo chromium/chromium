@@ -99,7 +99,7 @@ class TextInputManagerTester::InternalObserver
   }
 
   void OnSelectionBoundsChanged(
-      TextInputManager* text_input_manager_,
+      TextInputManager* text_input_manager,
       RenderWidgetHostViewBase* updated_view) override {
     updated_view_ = updated_view;
     if (!on_selection_bounds_changed_callback_.is_null())
