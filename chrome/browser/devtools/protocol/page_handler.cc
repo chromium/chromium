@@ -93,8 +93,7 @@ void PageHandler::GotInstallabilityErrors(
             .SetErrorArguments(std::move(installability_error_arguments))
             .Build());
   }
-  callback->sendSuccess(
-      std::move(result_installability_errors));
+  callback->sendSuccess(std::move(result_installability_errors));
 }
 
 void PageHandler::GetManifestIcons(
@@ -125,4 +124,25 @@ void PageHandler::GotManifestIcons(
   }
 
   callback->sendSuccess(std::move(primaryIconAsBinary));
+}
+
+void PageHandler::PrintToPDF(protocol::Maybe<bool> landscape,
+                             protocol::Maybe<bool> display_header_footer,
+                             protocol::Maybe<bool> print_background,
+                             protocol::Maybe<double> scale,
+                             protocol::Maybe<double> paper_width,
+                             protocol::Maybe<double> paper_height,
+                             protocol::Maybe<double> margin_top,
+                             protocol::Maybe<double> margin_bottom,
+                             protocol::Maybe<double> margin_left,
+                             protocol::Maybe<double> margin_right,
+                             protocol::Maybe<protocol::String> page_ranges,
+                             protocol::Maybe<bool> ignore_invalid_page_ranges,
+                             protocol::Maybe<protocol::String> header_template,
+                             protocol::Maybe<protocol::String> footer_template,
+                             protocol::Maybe<bool> prefer_css_page_size,
+                             protocol::Maybe<protocol::String> transfer_mode,
+                             std::unique_ptr<PrintToPDFCallback> callback) {
+  callback->sendFailure(
+      protocol::Response::ServerError("PrintToPDF is not implemented"));
 }
