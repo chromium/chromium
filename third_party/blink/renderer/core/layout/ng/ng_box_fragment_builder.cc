@@ -74,7 +74,7 @@ void NGBoxFragmentBuilder::AddBreakBeforeChild(
           // If there is an inline break token, it will always be the last
           // child.
           last_inline_break_token_ =
-              DynamicTo<NGInlineBreakToken>(child_tokens.back());
+              DynamicTo<NGInlineBreakToken>(child_tokens.back().Get());
           if (last_inline_break_token_)
             return;
         }
@@ -87,7 +87,7 @@ void NGBoxFragmentBuilder::AddBreakBeforeChild(
     }
     return;
   }
-  auto token = NGBlockBreakToken::CreateBreakBefore(child, is_forced_break);
+  auto* token = NGBlockBreakToken::CreateBreakBefore(child, is_forced_break);
   child_break_tokens_.push_back(token);
 }
 
@@ -268,14 +268,13 @@ void NGBoxFragmentBuilder::AddChild(
   AddChildInternal(&child, child_offset + *relative_offset);
 }
 
-void NGBoxFragmentBuilder::AddBreakToken(
-    scoped_refptr<const NGBreakToken> token,
-    bool is_in_parallel_flow) {
+void NGBoxFragmentBuilder::AddBreakToken(const NGBreakToken* token,
+                                         bool is_in_parallel_flow) {
   // If there's a pre-set break token, we shouldn't be here.
   DCHECK(!break_token_);
 
-  DCHECK(token.get());
-  child_break_tokens_.push_back(std::move(token));
+  DCHECK(token);
+  child_break_tokens_.push_back(token);
   has_inflow_child_break_inside_ |= !is_in_parallel_flow;
 }
 

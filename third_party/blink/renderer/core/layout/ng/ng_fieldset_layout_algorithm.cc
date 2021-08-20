@@ -145,14 +145,14 @@ scoped_refptr<const NGLayoutResult> NGFieldsetLayoutAlgorithm::Layout() {
 }
 
 NGBreakStatus NGFieldsetLayoutAlgorithm::LayoutChildren() {
-  scoped_refptr<const NGBlockBreakToken> content_break_token;
+  const NGBlockBreakToken* content_break_token = nullptr;
   bool has_seen_all_children = false;
   if (const auto* token = BreakToken()) {
     const auto child_tokens = token->ChildBreakTokens();
     if (wtf_size_t break_token_count =
             base::checked_cast<wtf_size_t>(child_tokens.size())) {
-      scoped_refptr<const NGBlockBreakToken> child_token =
-          To<NGBlockBreakToken>(child_tokens[0]);
+      const NGBlockBreakToken* child_token =
+          To<NGBlockBreakToken>(child_tokens[0].Get());
       if (child_token) {
         DCHECK(!child_token->InputNode().IsRenderedLegend());
         content_break_token = child_token;
@@ -176,7 +176,7 @@ NGBreakStatus NGFieldsetLayoutAlgorithm::LayoutChildren() {
     // The legend may eat from the available content box block size. Calculate
     // the minimum block size needed to encompass the legend.
     if (!Node().ShouldApplyBlockSizeContainment() &&
-        !IsResumingLayout(content_break_token.get())) {
+        !IsResumingLayout(content_break_token)) {
       minimum_border_box_block_size_ =
           intrinsic_block_size_ + padding_.BlockSum() + borders_.block_end;
     }
@@ -319,7 +319,7 @@ LayoutUnit NGFieldsetLayoutAlgorithm::ComputeLegendInlineOffset(
 
 NGBreakStatus NGFieldsetLayoutAlgorithm::LayoutFieldsetContent(
     NGBlockNode& fieldset_content,
-    scoped_refptr<const NGBlockBreakToken> content_break_token,
+    const NGBlockBreakToken* content_break_token,
     LogicalSize adjusted_padding_box_size,
     bool has_legend) {
   // If the following conditions meet, the content should be laid out with
@@ -339,8 +339,7 @@ NGBreakStatus NGFieldsetLayoutAlgorithm::LayoutFieldsetContent(
           fieldset_content, adjusted_padding_box_size, intrinsic_block_size_,
           NGCacheSlot::kMeasure);
       LayoutUnit intrinsic_content_block_size =
-          fieldset_content
-              .Layout(child_measure_space, content_break_token.get())
+          fieldset_content.Layout(child_measure_space, content_break_token)
               ->IntrinsicBlockSize();
       if (intrinsic_content_block_size > max_content_block_size)
         adjusted_padding_box_size.block_size = max_content_block_size;
@@ -349,7 +348,7 @@ NGBreakStatus NGFieldsetLayoutAlgorithm::LayoutFieldsetContent(
   auto child_space = CreateConstraintSpaceForFieldsetContent(
       fieldset_content, adjusted_padding_box_size, intrinsic_block_size_,
       NGCacheSlot::kLayout);
-  auto result = fieldset_content.Layout(child_space, content_break_token.get());
+  auto result = fieldset_content.Layout(child_space, content_break_token);
 
   NGBreakStatus break_status = NGBreakStatus::kContinue;
   if (ConstraintSpace().HasBlockFragmentation()) {

@@ -41,7 +41,7 @@ class CORE_EXPORT NGFieldsetLayoutAlgorithm
   void LayoutLegend(NGBlockNode& legend);
   NGBreakStatus LayoutFieldsetContent(
       NGBlockNode& fieldset_content,
-      scoped_refptr<const NGBlockBreakToken> content_break_token,
+      const NGBlockBreakToken* content_break_token,
       LogicalSize adjusted_padding_box_size,
       bool has_legend);
 

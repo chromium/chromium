@@ -26,7 +26,7 @@ scoped_refptr<const NGLayoutResult> NGPageLayoutAlgorithm::Layout() {
 
   WritingDirectionMode writing_direction =
       ConstraintSpace().GetWritingDirection();
-  scoped_refptr<const NGBlockBreakToken> break_token = BreakToken();
+  const NGBlockBreakToken* break_token = BreakToken();
   LayoutUnit intrinsic_block_size;
   LogicalOffset page_offset = BorderScrollbarPadding().StartOffset();
   // TODO(mstensho): Handle auto block size.
@@ -39,7 +39,7 @@ scoped_refptr<const NGLayoutResult> NGPageLayoutAlgorithm::Layout() {
     NGFragmentGeometry fragment_geometry =
         CalculateInitialFragmentGeometry(child_space, Node());
     NGBlockLayoutAlgorithm child_algorithm(
-        {Node(), fragment_geometry, child_space, break_token.get()});
+        {Node(), fragment_geometry, child_space, break_token});
     scoped_refptr<const NGLayoutResult> result = child_algorithm.Layout();
     const auto& page = result->PhysicalFragment();
 

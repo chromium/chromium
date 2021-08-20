@@ -59,12 +59,12 @@ class CORE_EXPORT NGInlineChildLayoutContext {
     item_index_ = item_index;
   }
 
-  const Vector<scoped_refptr<const NGBlockBreakToken>>& PropagatedBreakTokens()
+  const HeapVector<Member<const NGBlockBreakToken>>& PropagatedBreakTokens()
       const {
     return propagated_float_break_tokens_;
   }
   void ClearPropagatedBreakTokens();
-  void PropagateBreakToken(scoped_refptr<const NGBlockBreakToken>);
+  void PropagateBreakToken(const NGBlockBreakToken*);
 
  private:
   // TODO(kojii): Probably better to own |NGInlineChildLayoutContext|. While we
@@ -79,7 +79,7 @@ class CORE_EXPORT NGInlineChildLayoutContext {
   const HeapVector<NGInlineItem>* items_ = nullptr;
   unsigned item_index_ = 0;
 
-  Vector<scoped_refptr<const NGBlockBreakToken>> propagated_float_break_tokens_;
+  HeapVector<Member<const NGBlockBreakToken>> propagated_float_break_tokens_;
 };
 
 }  // namespace blink

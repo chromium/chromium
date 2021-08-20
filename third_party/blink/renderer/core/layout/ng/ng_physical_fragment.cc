@@ -32,7 +32,7 @@ struct SameSizeAsNGPhysicalFragment
   UntracedMember<void*> layout_object;
   PhysicalSize size;
   unsigned flags;
-  scoped_refptr<void*> break_token;
+  Persistent<void*> break_token;
   std::unique_ptr<Vector<NGPhysicalOutOfFlowPositionedNode>>
       oof_positioned_descendants_;
 };

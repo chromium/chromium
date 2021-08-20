@@ -1260,7 +1260,8 @@ void NGBlockNode::PlaceChildrenInFlowThread(
     const auto& child_break_tokens =
         previous_container_break_token->ChildBreakTokens();
     if (!child_break_tokens.empty()) {
-      const auto* token = To<NGBlockBreakToken>(child_break_tokens.back());
+      const auto* token =
+          To<NGBlockBreakToken>(child_break_tokens.back().Get());
       // We also create break tokens for spanners, so we need to check.
       if (token->InputNode() == *this) {
         previous_column_break_token = token;

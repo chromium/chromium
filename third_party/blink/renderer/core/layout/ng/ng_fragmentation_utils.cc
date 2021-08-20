@@ -985,14 +985,13 @@ wtf_size_t PreviousInnerFragmentainerIndex(
 
     // Find the last fragmentainer inside this fragment.
     const auto children = break_token->ChildBreakTokens();
-    for (scoped_refptr<const NGBreakToken> child_token :
-         base::Reversed(children)) {
+    for (auto& child_token : base::Reversed(children)) {
       DCHECK(child_token->IsBlockType());
       if (child_token->InputNode() != break_token->InputNode()) {
         // Not a fragmentainer (probably a spanner)
         continue;
       }
-      idx = To<NGBlockBreakToken>(child_token.get())->SequenceNumber() + 1;
+      idx = To<NGBlockBreakToken>(child_token.Get())->SequenceNumber() + 1;
       break;
     }
   }

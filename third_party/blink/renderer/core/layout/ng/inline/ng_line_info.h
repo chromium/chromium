@@ -73,7 +73,7 @@ class CORE_EXPORT NGLineInfo {
   bool IsBlockInInline() const { return is_block_in_inline_; }
   void SetIsBlockInInline() { is_block_in_inline_ = true; }
   const NGBlockBreakToken* BlockInInlineBreakToken() const {
-    return block_in_inline_break_token_.get();
+    return block_in_inline_break_token_;
   }
   void SetBlockInInlineBreakToken(const NGBlockBreakToken* break_token) {
     block_in_inline_break_token_ = break_token;
@@ -181,7 +181,7 @@ class CORE_EXPORT NGLineInfo {
 
   NGBfcOffset bfc_offset_;
 
-  scoped_refptr<const NGBlockBreakToken> block_in_inline_break_token_;
+  const NGBlockBreakToken* block_in_inline_break_token_ = nullptr;
   scoped_refptr<const NGLayoutResult> aborted_layout_result_;
 
   LayoutUnit available_width_;

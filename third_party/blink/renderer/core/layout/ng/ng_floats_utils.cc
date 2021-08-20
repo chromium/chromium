@@ -83,7 +83,7 @@ NGConstraintSpace CreateConstraintSpaceForFloat(
   // If we're resuming layout of this float after a fragmentainer break, the
   // margins of its children may be adjoining with the fragmentainer
   // block-start, in which case they may get truncated.
-  if (IsResumingLayout(unpositioned_float.token.get()))
+  if (IsResumingLayout(unpositioned_float.token))
     builder.SetDiscardingMarginStrut();
 
   builder.SetAvailableSize(unpositioned_float.available_size);
@@ -226,8 +226,7 @@ NGPositionedFloat PositionFloat(NGUnpositionedFloat* unpositioned_float,
     fragment_margins = ComputeMarginsFor(
         node.Style(), unpositioned_float->percentage_size.inline_size,
         parent_space.GetWritingDirection());
-    AdjustMarginsForFragmentation(unpositioned_float->token.get(),
-                                  &fragment_margins);
+    AdjustMarginsForFragmentation(unpositioned_float->token, &fragment_margins);
 
     // When fragmenting, we need to set the block-offset of the node before
     // laying it out. This is a float, and in order to calculate its offset, we
@@ -261,7 +260,7 @@ NGPositionedFloat PositionFloat(NGUnpositionedFloat* unpositioned_float,
       NGConstraintSpace space = CreateConstraintSpaceForFloat(
           *unpositioned_float, fragmentainer_delta);
 
-      layout_result = node.Layout(space, unpositioned_float->token.get());
+      layout_result = node.Layout(space, unpositioned_float->token);
 
       if (layout_result->Status() != NGLayoutResult::kSuccess) {
         DCHECK_EQ(layout_result->Status(),

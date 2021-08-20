@@ -218,8 +218,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
 
   // Manually add a break token to the builder. Note that we're assuming that
   // this break token is for content in the same flow as this parent.
-  void AddBreakToken(scoped_refptr<const NGBreakToken>,
-                     bool is_in_parallel_flow = false);
+  void AddBreakToken(const NGBreakToken*, bool is_in_parallel_flow = false);
 
   void AddOutOfFlowLegacyCandidate(NGBlockNode,
                                    const NGLogicalStaticPosition&,
@@ -256,13 +255,13 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   // During regular layout a break token is created at the end of layout, if
   // required. When re-using a previous fragment and its children, though, we
   // may want to just re-use the break token as well.
-  void PresetNextBreakToken(scoped_refptr<const NGBreakToken> break_token) {
+  void PresetNextBreakToken(const NGBreakToken* break_token) {
     // We should either do block fragmentation as part of normal layout, or
     // pre-set a break token.
     DCHECK(!did_break_self_);
     DCHECK(child_break_tokens_.IsEmpty());
 
-    break_token_ = std::move(break_token);
+    break_token_ = break_token;
   }
 
   // Return true if we broke inside this node on our own initiative (typically
@@ -271,12 +270,11 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   void SetDidBreakSelf() { did_break_self_ = true; }
 
   // Store the previous break token, if one exists.
-  void SetPreviousBreakToken(
-      scoped_refptr<const NGBlockBreakToken> break_token) {
-    previous_break_token_ = std::move(break_token);
+  void SetPreviousBreakToken(const NGBlockBreakToken* break_token) {
+    previous_break_token_ = break_token;
   }
   const NGBlockBreakToken* PreviousBreakToken() const {
-    return previous_break_token_.get();
+    return previous_break_token_;
   }
 
   // Return true if we need to break before or inside any child, doesn't matter
@@ -289,7 +287,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
       return true;
     // Inline nodes produce a "finished" trailing break token even if we don't
     // need to block-fragment.
-    return last_inline_break_token_.get();
+    return last_inline_break_token_;
   }
 
   // Return true if we need to break before or inside any in-flow child that
@@ -674,7 +672,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   std::unique_ptr<NGMathMLPaintInfo> mathml_paint_info_;
   absl::optional<NGLayoutResult::MathData> math_data_;
 
-  scoped_refptr<const NGBlockBreakToken> previous_break_token_;
+  const NGBlockBreakToken* previous_break_token_ = nullptr;
 
 #if DCHECK_IS_ON()
   // Describes what size_.block_size represents; either the size of a single

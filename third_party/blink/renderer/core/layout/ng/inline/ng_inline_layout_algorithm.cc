@@ -786,16 +786,16 @@ void NGInlineLayoutAlgorithm::PlaceFloatingObjects(
         // We decided to break before the float. No fragment here. Create a
         // break token and propagate it to the block container.
         NGBlockNode float_node(To<LayoutBox>(child.unpositioned_float.Get()));
-        auto break_before = NGBlockBreakToken::CreateBreakBefore(
+        auto* break_before = NGBlockBreakToken::CreateBreakBefore(
             float_node, /* is_forced_break */ false);
-        context_->PropagateBreakToken(std::move(break_before));
+        context_->PropagateBreakToken(break_before);
         continue;
       } else {
         // If the float broke inside, we need to propagate the break token to
         // the block container, so that we'll resume in the next fragmentainer.
-        if (scoped_refptr<const NGBreakToken> token =
+        if (const NGBreakToken* token =
                 positioned_float.layout_result->PhysicalFragment().BreakToken())
-          context_->PropagateBreakToken(To<NGBlockBreakToken>(token.get()));
+          context_->PropagateBreakToken(To<NGBlockBreakToken>(token));
         child.layout_result = std::move(positioned_float.layout_result);
         child.bfc_offset = positioned_float.bfc_offset;
         child.unpositioned_float = nullptr;
@@ -1269,9 +1269,9 @@ scoped_refptr<const NGLayoutResult> NGInlineLayoutAlgorithm::Layout() {
 
     // Propagate any break tokens for floats that we fragmented before or inside
     // to the block container.
-    for (scoped_refptr<const NGBlockBreakToken> float_break_token :
+    for (const NGBlockBreakToken* float_break_token :
          line_breaker.PropagatedBreakTokens())
-      context_->PropagateBreakToken(std::move(float_break_token));
+      context_->PropagateBreakToken(float_break_token);
 
     if (line_info.IsEmptyLine()) {
       DCHECK_EQ(container_builder_.BlockSize(), LayoutUnit());
@@ -1353,14 +1353,14 @@ unsigned NGInlineLayoutAlgorithm::PositionLeadingFloats(
       // Propagate any breaks before or inside floats to the block container.
       if (positioned_float.need_break_before) {
         NGBlockNode float_node(To<LayoutBox>(item.GetLayoutObject()));
-        auto break_before = NGBlockBreakToken::CreateBreakBefore(
+        auto* break_before = NGBlockBreakToken::CreateBreakBefore(
             float_node, /* is_forced_break */ false);
-        context_->PropagateBreakToken(std::move(break_before));
+        context_->PropagateBreakToken(break_before);
         positioned_float.layout_result = nullptr;
-      } else if (scoped_refptr<const NGBreakToken> token =
+      } else if (const NGBreakToken* token =
                      positioned_float.layout_result->PhysicalFragment()
                          .BreakToken()) {
-        context_->PropagateBreakToken(To<NGBlockBreakToken>(token.get()));
+        context_->PropagateBreakToken(To<NGBlockBreakToken>(token));
       }
     }
 

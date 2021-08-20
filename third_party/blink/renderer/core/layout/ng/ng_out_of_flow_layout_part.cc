@@ -707,7 +707,9 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(
     const NGBlockNode& multicol,
     const NGMulticolWithPendingOOFs<LogicalOffset>* multicol_info) {
   Vector<NGLogicalOutOfFlowPositionedNode> oof_nodes_to_layout;
-  Vector<MulticolChildInfo> multicol_children;
+  HeapVector<MulticolChildInfo> multicol_children;
+  ClearCollectionScope<HeapVector<MulticolChildInfo>> multicol_scope(
+      &multicol_children);
 
   const NGBlockBreakToken* current_column_break_token = nullptr;
   const NGBlockBreakToken* previous_multicol_break_token = nullptr;
@@ -795,7 +797,7 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(
       // parent's list of break tokens.
       const auto children = break_token->ChildBreakTokens();
       const NGBlockBreakToken* child_token =
-          To<NGBlockBreakToken>(children[children.size() - 1]);
+          To<NGBlockBreakToken>(children[children.size() - 1].Get());
       if (child_token == current_column_break_token) {
         MulticolChildInfo& child_info = multicol_children[current_column_index];
         child_info.parent_break_token = break_token;
@@ -976,7 +978,7 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
     Vector<NGLogicalOutOfFlowPositionedNode>* descendants,
     LayoutUnit column_inline_progression,
     bool outer_context_has_fixedpos_container,
-    Vector<MulticolChildInfo>* multicol_children) {
+    HeapVector<MulticolChildInfo>* multicol_children) {
   multicol_children_ = multicol_children;
   outer_context_has_fixedpos_container_ = outer_context_has_fixedpos_container;
   DCHECK(multicol_children_ || !outer_context_has_fixedpos_container_);
@@ -986,7 +988,9 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
                         container_builder_->BorderScrollbarPadding())
           .block_size;
 
-  Vector<Vector<NodeToLayout>> descendants_to_layout;
+  HeapVector<HeapVector<NodeToLayout>> descendants_to_layout;
+  ClearCollectionScope<HeapVector<HeapVector<NodeToLayout>>>
+      descendants_to_layout_scope(&descendants_to_layout);
   while (descendants->size() > 0) {
     ComputeInlineContainingBlocksForFragmentainer(*descendants);
 
@@ -1028,7 +1032,9 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
       descendants_to_layout[start_index].emplace_back(node_to_layout);
     }
 
-    Vector<NodeToLayout> fragmented_descendants;
+    HeapVector<NodeToLayout> fragmented_descendants;
+    ClearCollectionScope<HeapVector<NodeToLayout>> fragmented_descendants_scope(
+        &fragmented_descendants);
     fragmentainer_consumed_block_size_ = LayoutUnit();
     wtf_size_t num_children = container_builder_->Children().size();
 
@@ -1040,7 +1046,7 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
 
       // Skip over any column spanners.
       if (!fragment || fragment->IsFragmentainerBox()) {
-        Vector<NodeToLayout>& pending_descendants =
+        HeapVector<NodeToLayout>& pending_descendants =
             descendants_to_layout[index];
         LayoutOOFsInFragmentainer(pending_descendants, index,
                                   column_inline_progression,
@@ -1424,15 +1430,17 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::GenerateFragment(
 }
 
 void NGOutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
-    Vector<NodeToLayout>& pending_descendants,
+    HeapVector<NodeToLayout>& pending_descendants,
     wtf_size_t index,
     LayoutUnit column_inline_progression,
-    Vector<NodeToLayout>* fragmented_descendants) {
+    HeapVector<NodeToLayout>* fragmented_descendants) {
   wtf_size_t num_children = container_builder_->Children().size();
   bool is_new_fragment = index >= num_children;
 
   DCHECK(fragmented_descendants);
-  Vector<NodeToLayout> descendants_continued;
+  HeapVector<NodeToLayout> descendants_continued;
+  ClearCollectionScope<HeapVector<NodeToLayout>> descendants_continued_scope(
+      &descendants_continued);
   std::swap(*fragmented_descendants, descendants_continued);
 
   // If |index| is greater than the number of current children, and there are
@@ -1518,7 +1526,7 @@ void NGOutOfFlowLayoutPart::AddOOFToFragmentainer(
     LogicalOffset fragmentainer_offset,
     wtf_size_t index,
     NGSimplifiedOOFLayoutAlgorithm* algorithm,
-    Vector<NodeToLayout>* fragmented_descendants) {
+    HeapVector<NodeToLayout>* fragmented_descendants) {
   scoped_refptr<const NGLayoutResult> result =
       LayoutOOFNode(descendant, /* only_layout */ nullptr, fragmentainer_space);
 
@@ -1646,7 +1654,7 @@ void NGOutOfFlowLayoutPart::ReplaceFragmentainer(
       // multicol fragment. If there any new columns, they will be appended as
       // part of regenerating the multicol fragment.
       MulticolChildInfo& column_info = (*multicol_children_)[index];
-      if (auto* parent_break_token = column_info.parent_break_token) {
+      if (auto& parent_break_token = column_info.parent_break_token) {
         DCHECK_GT(parent_break_token->ChildBreakTokens().size(), 0u);
         parent_break_token->GetMutableForOutOfFlow().ReplaceChildBreakToken(
             new_fragment->BreakToken(),
@@ -1855,6 +1863,14 @@ NGLogicalStaticPosition NGOutOfFlowLayoutPart::ToStaticPositionForLegacy(
   if (const auto* break_token = container_builder_->PreviousBreakToken())
     position.offset.block_offset += break_token->ConsumedBlockSizeForLegacy();
   return position;
+}
+
+void NGOutOfFlowLayoutPart::MulticolChildInfo::Trace(Visitor* visitor) const {
+  visitor->Trace(parent_break_token);
+}
+
+void NGOutOfFlowLayoutPart::NodeToLayout::Trace(Visitor* visitor) const {
+  visitor->Trace(break_token);
 }
 
 }  // namespace blink

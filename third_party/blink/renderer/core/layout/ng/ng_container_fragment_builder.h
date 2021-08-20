@@ -42,6 +42,7 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
     oof_positioned_fragmentainer_descendants_.clear();
     oof_positioned_descendants_.clear();
     multicols_with_pending_oofs_.clear();
+    child_break_tokens_.clear();
   }
 
   struct ChildWithOffset {
@@ -351,7 +352,7 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   // Only used by the NGBoxFragmentBuilder subclass, but defined here to avoid
   // a virtual function call.
   NGBreakTokenVector child_break_tokens_;
-  scoped_refptr<const NGInlineBreakToken> last_inline_break_token_;
+  const NGInlineBreakToken* last_inline_break_token_ = nullptr;
 
   NGBlockNode column_spanner_ = nullptr;
 

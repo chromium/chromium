@@ -553,7 +553,7 @@ class CORE_EXPORT NGPhysicalFragment
     const NGLink* buffer_;
   };
 
-  const NGBreakToken* BreakToken() const { return break_token_.get(); }
+  const NGBreakToken* BreakToken() const { return break_token_; }
 
   base::span<const NGLink> Children() const;
 
@@ -668,7 +668,7 @@ class CORE_EXPORT NGPhysicalFragment
   // The following are only used by NGPhysicalLineBoxFragment.
   unsigned base_direction_ : 1;  // TextDirection
 
-  scoped_refptr<const NGBreakToken> break_token_;
+  Persistent<const NGBreakToken> break_token_;
   const std::unique_ptr<Vector<NGPhysicalOutOfFlowPositionedNode>>
       oof_positioned_descendants_;
 

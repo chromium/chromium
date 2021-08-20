@@ -50,7 +50,7 @@ class CORE_EXPORT NGSimplifiedOOFLayoutAlgorithm
   base::span<const NGLink>::iterator child_iterator_;
   const NGBlockBreakToken* incoming_break_token_;
   const NGBlockBreakToken* old_fragment_break_token_;
-  base::span<const NGBreakToken* const>::iterator break_token_iterator_;
+  base::span<const Member<const NGBreakToken>>::iterator break_token_iterator_;
   bool only_copy_break_tokens_ = false;
 };
 

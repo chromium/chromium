@@ -87,9 +87,9 @@ scoped_refptr<const NGLayoutResult> NGSimplifiedOOFLayoutAlgorithm::Layout() {
   // have been traversed via the |child_iterator_|, so their break tokens should
   // be added before layout is completed.
   if (old_fragment_break_token_) {
-    for (const auto* child_break_token :
+    for (const auto& child_break_token :
          old_fragment_break_token_->ChildBreakTokens()) {
-      if (To<NGBlockBreakToken>(child_break_token)->IsBreakBefore())
+      if (To<NGBlockBreakToken>(child_break_token.Get())->IsBreakBefore())
         container_builder_.AddBreakToken(child_break_token);
     }
   }
@@ -110,9 +110,10 @@ void NGSimplifiedOOFLayoutAlgorithm::AppendOutOfFlowResult(
           incoming_break_token_->ChildBreakTokens().end()) {
     DCHECK_EQ(result->PhysicalFragment().GetLayoutObject(),
               (*break_token_iterator_)->InputNode().GetLayoutBox());
-    DCHECK(!To<NGPhysicalBoxFragment>(result->PhysicalFragment())
-                .IsFirstForNode() ||
-           To<NGBlockBreakToken>(*break_token_iterator_)->IsBreakBefore());
+    DCHECK(
+        !To<NGPhysicalBoxFragment>(result->PhysicalFragment())
+             .IsFirstForNode() ||
+        To<NGBlockBreakToken>(break_token_iterator_->Get())->IsBreakBefore());
     break_token_iterator_++;
     if (only_copy_break_tokens_)
       AdvanceBreakTokenIterator();
@@ -147,11 +148,11 @@ void NGSimplifiedOOFLayoutAlgorithm::AdvanceChildIterator() {
         break_token_iterator_ !=
             incoming_break_token_->ChildBreakTokens().end()) {
       // Add the current child if it matches the incoming child break token.
-      const auto* break_token = *break_token_iterator_;
+      const auto& break_token = *break_token_iterator_;
       if (child_link.fragment->GetLayoutObject() ==
           break_token->InputNode().GetLayoutBox()) {
         DCHECK(!To<NGPhysicalBoxFragment>(child_link.get())->IsFirstForNode() ||
-               To<NGBlockBreakToken>(break_token)->IsBreakBefore());
+               To<NGBlockBreakToken>(break_token.Get())->IsBreakBefore());
         AddChildFragment(child_link);
         child_iterator_++;
         break_token_iterator_++;
@@ -181,7 +182,7 @@ void NGSimplifiedOOFLayoutAlgorithm::AdvanceBreakTokenIterator() {
          break_token_iterator_ !=
              incoming_break_token_->ChildBreakTokens().end()) {
     // Add the current break token if it is not an OOF positioned element.
-    const auto* break_token = *break_token_iterator_;
+    const auto& break_token = *break_token_iterator_;
     if (!break_token->InputNode().IsOutOfFlowPositioned()) {
       container_builder_.AddBreakToken(break_token);
       break_token_iterator_++;

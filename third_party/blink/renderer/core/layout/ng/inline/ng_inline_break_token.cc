@@ -36,7 +36,7 @@ const NGBlockBreakToken* NGInlineBreakToken::BlockInInlineBreakToken() const {
 }
 
 // static
-scoped_refptr<NGInlineBreakToken> NGInlineBreakToken::Create(
+NGInlineBreakToken* NGInlineBreakToken::Create(
     NGInlineNode node,
     const ComputedStyle* style,
     unsigned item_index,
@@ -52,11 +52,9 @@ scoped_refptr<NGInlineBreakToken> NGInlineBreakToken::Create(
     flags |= kHasBlockInInlineToken;
   }
 
-  void* data = ::WTF::Partitions::FastMalloc(
-      size, ::WTF::GetStringWithTypeName<NGInlineBreakToken>());
-  new (data) NGInlineBreakToken(PassKey(), node, style, item_index, text_offset,
-                                flags, block_in_inline_break_token);
-  return base::AdoptRef(static_cast<NGInlineBreakToken*>(data));
+  return MakeGarbageCollected<NGInlineBreakToken>(
+      PassKey(), node, style, item_index, text_offset, flags,
+      block_in_inline_break_token);
 }
 
 NGInlineBreakToken::NGInlineBreakToken(
@@ -74,17 +72,8 @@ NGInlineBreakToken::NGInlineBreakToken(
   flags_ = flags;
 
   if (UNLIKELY(block_in_inline_break_token)) {
-    block_in_inline_break_token->AddRef();
     const NGBlockBreakToken* const* ptr = BlockInInlineBreakTokenAddress();
     *const_cast<const NGBlockBreakToken**>(ptr) = block_in_inline_break_token;
-  }
-}
-
-NGInlineBreakToken::~NGInlineBreakToken() {
-  if (UNLIKELY(flags_ & kHasBlockInInlineToken)) {
-    const NGBlockBreakToken* const* ptr = BlockInInlineBreakTokenAddress();
-    DCHECK(*ptr);
-    (*ptr)->Release();
   }
 }
 
@@ -111,5 +100,9 @@ String NGInlineBreakToken::ToString() const {
 }
 
 #endif  // DCHECK_IS_ON()
+
+void NGInlineBreakToken::Trace(Visitor* visitor) const {
+  NGBreakToken::Trace(visitor);
+}
 
 }  // namespace blink
