@@ -4510,6 +4510,9 @@ crbug.com/1141909 external/wpt/websockets/cookies/003.html?wss [ Skip ]
 crbug.com/1141909 external/wpt/websockets/cookies/005.html?wss [ Skip ]
 crbug.com/1141909 external/wpt/websockets/cookies/007.html?wss [ Skip ]
 
+# Sheriff failures 2017-11-15
+crbug.com/785179 [ Debug Win7 ] http/tests/devtools/console/console-viewport-stick-to-bottom.js [ Skip ]
+
 # Sheriff failures 2017-12-04
 crbug.com/667560 http/tests/devtools/elements/styles-4/inline-style-sourcemap.js [ Failure Pass ]
 
@@ -5065,13 +5068,6 @@ crbug.com/1207342 http/tests/devtools/unit/source-frame-pretty-print.js [ Failur
 crbug.com/1207342 http/tests/devtools/portals/portals-sources-activate.js [ Failure Pass Timeout ]
 crbug.com/1207342 http/tests/devtools/webaudio/audio-context-selector-test.js [ Failure Pass ]
 crbug.com/1207342 http/tests/devtools/isolated-code-cache/cross-origin-test.js [ Failure Pass ]
-crbug.com/1207342 http/tests/devtools/elements/shadow/elements-panel-shadow-selection-on-refresh-2.js [ Failure Pass Timeout ]
-crbug.com/1207342 http/tests/devtools/elements/shadow/elements-panel-shadow-selection-on-refresh-3.js [ Failure Pass Timeout ]
-crbug.com/1207342 http/tests/devtools/network/network-serviceworker-timing-view.js [ Failure Pass Timeout ]
-crbug.com/1207342 http/tests/devtools/service-workers/service-workers-redundant.js [ Failure Pass Timeout ]
-crbug.com/1207342 http/tests/devtools/service-workers/service-workers-view.js [ Failure Pass Timeout ]
-crbug.com/1207342 http/tests/devtools/sources/debugger-step/debugger-step-out-document-write.js [ Failure Pass Timeout ]
-crbug.com/1207342 http/tests/devtools/tracing/timeline-misc/timeline-event-causes.js [ Failure Pass Timeout ]
 
 # First party DevTools issues only work in the first-party-sets virtual suite
 crbug.com/1179186 http/tests/inspector-protocol/network/blocked-cookie-same-party-issue.js [ Skip ]
@@ -5321,6 +5317,12 @@ crbug.com/1062984 external/wpt/paint-timing/fcp-only/fcp-text-input.html [ Failu
 # Also crbug.com/1044535
 crbug.com/937416 http/tests/devtools/resource-tree/resource-tree-frame-navigate.js [ Failure Pass Timeout ]
 
+# Sheriff 2019-03-04
+# Also crbug.com/1044418
+crbug.com/937811 [ Linux Release ] http/tests/devtools/elements/shadow/elements-panel-shadow-selection-on-refresh-2.js [ Failure Pass Timeout ]
+crbug.com/937811 [ Linux Release ] http/tests/devtools/elements/shadow/elements-panel-shadow-selection-on-refresh-3.js [ Failure Pass ]
+crbug.com/937811 [ Release Win ] http/tests/devtools/elements/shadow/elements-panel-shadow-selection-on-refresh-2.js [ Failure Pass Timeout ]
+
 # Caused a revert of a good change.
 crbug.com/931533 media/video-played-collapse.html [ Failure Pass ]
 
@@ -5472,6 +5474,9 @@ crbug.com/959129 http/tests/devtools/tracing/timeline-script-parse.js [ Failure 
 #   - WebRtcBrowserTest.EstablishVideoOnlyCallAndVerifyGetSynchronizationSourcesWorks
 crbug.com/988432 external/wpt/webrtc/RTCRtpReceiver-getSynchronizationSources.https.html [ Pass Timeout ]
 
+# Sheriff 2019-07-29
+crbug.com/937811 [ Release Win ] http/tests/devtools/elements/shadow/elements-panel-shadow-selection-on-refresh-3.js [ Failure Pass Timeout ]
+
 # Pending enabling navigation feature
 crbug.com/705583 external/wpt/html/semantics/embedded-content/the-iframe-element/iframe_sandbox_navigate_history_go_back.html [ Skip ]
 crbug.com/705583 external/wpt/html/semantics/embedded-content/the-iframe-element/iframe_sandbox_navigate_history_go_forward.html [ Skip ]
@@ -5505,6 +5510,12 @@ crbug.com/994692 [ Linux ] compositing/reflections/nested-reflection-anchor-poin
 crbug.com/994692 [ Win ] compositing/reflections/nested-reflection-anchor-point.html [ Failure Pass ]
 
 crbug.com/996219 [ Win ] virtual/text-antialias/emoji-vertical-origin-visual.html [ Failure ]
+
+# Sheriff 2019-08-22
+crbug.com/994008 [ Linux ] http/tests/devtools/elements/styles-3/styles-computed-trace.js [ Failure Pass Timeout ]
+crbug.com/994008 [ Win ] http/tests/devtools/elements/styles-3/styles-computed-trace.js [ Failure Pass Timeout ]
+crbug.com/994034 [ Linux ] http/tests/devtools/elements/styles-3/styles-add-new-rule-colon.js [ Failure Pass Timeout ]
+crbug.com/994034 [ Win ] http/tests/devtools/elements/styles-3/styles-add-new-rule-colon.js [ Failure Pass Timeout ]
 
 crbug.com/995669 [ Win ] http/tests/media/video-throttled-load-metadata.html [ Crash Failure Pass ]
 
@@ -5601,6 +5612,9 @@ crbug.com/1028684 http/tests/inspector-protocol/animation/animation-release.js [
 # Sheriff 2019-11-29
 crbug.com/1019079 fast/canvas/OffscreenCanvas-placeholder-createImageBitmap.html [ Failure Pass ]
 crbug.com/1027434 external/wpt/html/browsers/origin/cross-origin-objects/cross-origin-objects.html [ Failure Pass Timeout ]
+
+# Sheriff 2019-12-02
+crbug.com/1029528 [ Linux ] http/tests/devtools/network/oopif-content.js [ Failure Pass ]
 
 crbug.com/833100 [ Mac ] external/wpt/battery-status/battery-full-manual.https.html [ Failure Pass ]
 
@@ -6117,8 +6131,10 @@ crbug.com/1094436 http/tests/devtools/sources/debugger/navigator-view.js [ Crash
 crbug.com/1112508 fast/forms/number/number-wheel-event.html [ Failure ]
 
 # Sheriff 2020-07-22
+crbug.com/1107722 [ Mac ] virtual/threaded/http/tests/devtools/tracing/timeline-misc/timeline-event-causes.js [ Failure Pass ]
 # Failing on Webkit Linux Leak
 crbug.com/1046784 [ Linux ] http/tests/devtools/tracing/timeline-paint/timeline-paint.js [ Failure Pass ]
+crbug.com/1046784 [ Linux ] http/tests/devtools/tracing/timeline-misc/timeline-event-causes.js [ Failure Pass ]
 
 # Sheriff 2020-07-23
 crbug.com/1108786 [ Mac ] http/tests/devtools/tracing/timeline-js/timeline-gc-event.js [ Failure Pass ]
@@ -6444,6 +6460,7 @@ crbug.com/893480 external/wpt/uievents/interface/keyboard-accesskey-click-event.
 crbug.com/1171283 [ Fuchsia ] virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gesture-touchscreen-zoom-out-slow.html [ Pass Timeout ]
 
 # Timing out on WebKit Linux Leak
+crbug.com/1176286 [ Linux ] http/tests/devtools/network/network-serviceworker-timing-view.js [ Failure Pass ]
 crbug.com/1176286 [ Linux ] http/tests/devtools/network/subresource-integrity-number-of-requests-for-stylesheet.js [ Failure Pass ]
 
 # Sheriff 2021-02-11
@@ -6487,6 +6504,7 @@ crbug.com/1181857 external/wpt/webaudio/the-audio-api/the-analysernode-interface
 
 # Sheriff 2021-02-25
 crbug.com/1182675 [ Linux ] dom/attr/id-update-map-crash.html [ Failure Pass ]
+crbug.com/1182682 [ Linux ] http/tests/devtools/service-workers/service-workers-view.js [ Failure Pass ]
 
 # Temporarily disabled for https://crrev.com/c/2713104
 crbug.com/v8/11429 http/tests/devtools/profiler/cpu-profiler-profiling.js [ Failure Pass ]
@@ -6919,6 +6937,9 @@ crbug.com/1210658 [ Mac10.15 ] virtual/jxl-enabled/images/jxl/jxl-images.html [ 
 crbug.com/1210658 [ Win ] virtual/jxl-enabled/images/jxl/jxl-images.html [ Failure ]
 
 # Sheriff 2021-5-19
+# Flaky on Webkit Linux Leak
+crbug.com/1210731 [ Linux ] http/tests/devtools/sources/debugger-step/debugger-step-out-document-write.js [ Failure Pass ]
+crbug.com/1210731 [ Linux ] http/tests/devtools/sources/debugger/debug-inlined-scripts-fragment-id.js [ Failure Pass ]
 # The wpt_flags=h2 variants of these tests fail, but the other variants pass. We
 # can't handle this difference with -expected.txt files, so we have to list them
 # here.
