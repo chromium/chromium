@@ -109,10 +109,10 @@ void BluetoothFeaturePodControllerLegacy::UpdateButton() {
     const size_t device_count = connected_devices.size();
     button_->SetVectorIcon(kUnifiedMenuBluetoothConnectedLegacyIcon);
     button_->SetLabel(l10n_util::GetStringUTF16(
-        IDS_ASH_STATUS_TRAY_BLUETOOTH_MULTIPLE_DEVICES_CONNECTED_LABEL));
+        IDS_ASH_STATUS_TRAY_BLUETOOTH_MULTIPLE_DEVICES_CONNECTED_LABEL_LEGACY));
     button_->SetSubLabel(base::FormatNumber(device_count));
     SetTooltipState(l10n_util::GetPluralStringFUTF16(
-        IDS_ASH_STATUS_TRAY_BLUETOOTH_MULTIPLE_DEVICES_CONNECTED_TOOLTIP,
+        IDS_ASH_STATUS_TRAY_BLUETOOTH_MULTIPLE_DEVICES_CONNECTED_TOOLTIP_LEGACY,
         device_count));
   } else if (connected_devices.size() == 1) {
     const device::mojom::BluetoothDeviceInfoPtr& device =
@@ -131,7 +131,8 @@ void BluetoothFeaturePodControllerLegacy::UpdateButton() {
           IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_CONNECTED_LABEL));
     }
     SetTooltipState(l10n_util::GetStringFUTF16(
-        IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_CONNECTED_TOOLTIP, device_name));
+        IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_CONNECTED_TOOLTIP_LEGACY,
+        device_name));
   } else {
     button_->SetVectorIcon(kUnifiedMenuBluetoothLegacyIcon);
     button_->SetLabel(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_BLUETOOTH));

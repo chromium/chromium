@@ -474,13 +474,22 @@ This file contains the strings for ash.
       <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_DISABLED_TOOLTIP" desc="The tooltip text to notify that bluetooth is disabled.">
         Bluetooth is off
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_MULTIPLE_DEVICES_CONNECTED_TOOLTIP" desc="The tooltip text to notify that multiple bluetooth devices are connected. [ICU Syntax]">
+      <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_MULTIPLE_DEVICES_CONNECTED_TOOLTIP_LEGACY" desc="The tooltip text to notify that multiple bluetooth devices are connected. [ICU Syntax]">
         {NUM_DEVICES, plural,
          =1 {Connected to a device}
          other {Connected to # devices}}
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_CONNECTED_TOOLTIP" desc="The tooltip text to notify that one bluetooth device is connected.">
+      <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_MULTIPLE_DEVICES_CONNECTED_TOOLTIP" desc="The tooltip text to notify that multiple bluetooth devices are connected.">
+        Connected to <ph name="NUM_DEVICES">$1<ex>3</ex></ph> devices
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_CONNECTED_TOOLTIP_LEGACY" desc="The legacy tooltip text to notify that one bluetooth device is connected.">
         Connected to <ph name="DEVICE_NAME">$1<ex>wireless mouse</ex></ph>
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_CONNECTED_TOOLTIP" desc="The tooltip text to notify that one bluetooth device is connected.">
+        Connected to a device named <ph name="DEVICE_NAME">$1<ex>wireless mouse</ex></ph>
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_CONNECTED_WITH_BATTERY_TOOLTIP" desc="The tooltip text to notify that one bluetooth device is connected.">
+        Connected to a device named <ph name="DEVICE_NAME">$1<ex>wireless mouse</ex></ph>, <ph name="BATTERY_PERCENTAGE">$2<ex>100</ex></ph>% battery
       </message>
       <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_ENABLED" desc="The label used in the tray popup to notify that bluetooth is enabled.">
         Bluetooth enabled
@@ -515,8 +524,11 @@ This file contains the strings for ash.
       <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_BATTERY_PERCENTAGE_LABEL" desc="The label used to show the battery percentage when a bluetooth device is connected.">
         <ph name="BATTERY_PERCENTAGE">$1<ex>100</ex></ph>% battery
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_MULTIPLE_DEVICES_CONNECTED_LABEL" desc="The header label to notify that multiple bluetooth devices are connected. [CHAR_LIMIT=14]">
+      <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_MULTIPLE_DEVICES_CONNECTED_LABEL_LEGACY" desc="The header label to notify that multiple bluetooth devices are connected. [CHAR_LIMIT=14]">
         Devices
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_MULTIPLE_DEVICES_CONNECTED_LABEL" desc="The header label to notify that multiple bluetooth devices are connected. [CHAR_LIMIT=14]">
+        <ph name="NUM_DEVICES">$1<ex>3</ex></ph> devices
       </message>
 
       <message name="IDS_ASH_STATUS_TRAY_UPDATE" desc="The label used in the tray popup to notify that the user should restart to get system updates.">

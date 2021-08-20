@@ -19,6 +19,7 @@
 #include "ash/system/accessibility/unified_accessibility_detailed_view_controller.h"
 #include "ash/system/audio/unified_audio_detailed_view_controller.h"
 #include "ash/system/audio/unified_volume_slider_controller.h"
+#include "ash/system/bluetooth/bluetooth_feature_pod_controller.h"
 #include "ash/system/bluetooth/bluetooth_feature_pod_controller_legacy.h"
 #include "ash/system/bluetooth/unified_bluetooth_detailed_view_controller.h"
 #include "ash/system/brightness/unified_brightness_slider_controller.h"
@@ -450,8 +451,12 @@ void UnifiedSystemTrayController::OnMediaControlsViewClicked() {
 
 void UnifiedSystemTrayController::InitFeaturePods() {
   AddFeaturePodItem(std::make_unique<NetworkFeaturePodController>(this));
-  AddFeaturePodItem(
-      std::make_unique<BluetoothFeaturePodControllerLegacy>(this));
+  if (ash::features::IsBluetoothRevampEnabled()) {
+    AddFeaturePodItem(std::make_unique<BluetoothFeaturePodController>(this));
+  } else {
+    AddFeaturePodItem(
+        std::make_unique<BluetoothFeaturePodControllerLegacy>(this));
+  }
   AddFeaturePodItem(std::make_unique<AccessibilityFeaturePodController>(this));
   AddFeaturePodItem(std::make_unique<QuietModeFeaturePodController>(this));
   AddFeaturePodItem(std::make_unique<RotationLockFeaturePodController>());

@@ -21,7 +21,7 @@ namespace ash {
 class FeaturePodControllerBase;
 
 // A toggle button with an icon used by feature pods and in other places.
-class FeaturePodIconButton : public views::ImageButton {
+class ASH_EXPORT FeaturePodIconButton : public views::ImageButton {
  public:
   // Used to determine how the button will behave when disabled.
   enum class DisabledButtonBehavior {
@@ -54,6 +54,9 @@ class FeaturePodIconButton : public views::ImageButton {
   bool toggled() const { return toggled_; }
 
  private:
+  // For unit tests.
+  friend class BluetoothFeaturePodControllerTest;
+
   // Updates vector icon. Called by SetToggled to update the icon's color on
   // toggle state.
   void UpdateVectorIcon();
@@ -72,7 +75,7 @@ class FeaturePodIconButton : public views::ImageButton {
 };
 
 // Button internally used in FeaturePodButton. Should not be used directly.
-class FeaturePodLabelButton : public views::Button {
+class ASH_EXPORT FeaturePodLabelButton : public views::Button {
  public:
   explicit FeaturePodLabelButton(PressedCallback callback);
   ~FeaturePodLabelButton() override;
@@ -185,6 +188,9 @@ class ASH_EXPORT FeaturePodButton : public views::View {
   FeaturePodIconButton* icon_button() const { return icon_button_; }
 
  private:
+  // For unit tests.
+  friend class BluetoothFeaturePodControllerTest;
+
   void OnEnabledChanged();
 
   // Owned by views hierarchy.
