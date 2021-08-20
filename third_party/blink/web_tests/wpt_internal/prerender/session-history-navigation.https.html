@@ -6,18 +6,13 @@
 <script src="resources/session-history-test-util.js"></script>
 <body>
   <script>
+    // We test only a fragment-navigation because other kinds of the main frame navigation
+    // in prerender cancels prerendering.
     promise_test(async () => {
       assert_equals(
         await runTestInPrerender("testSyntheticAnchorClickInPrerender"),
         "Passed"
       );
     }, "Synthetic anchor click navigates independently with replacement in a prerender");
-
-    promise_test(async () => {
-      assert_equals(
-        await runTestInPrerender("testHistoryGoInPrerender"),
-        "Passed"
-      );
-    }, "history.go(0) navigates independently in a prerender");
   </script>
 </body>

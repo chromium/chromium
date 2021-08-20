@@ -26,12 +26,5 @@
         "Passed"
       );
     }, "Setting location.href navigates independently with replacement in a prerender");
-
-    promise_test(async () => {
-      assert_equals(
-        await runTestInPrerender("testLocationReloadInPrerender"),
-        "Passed"
-      );
-    }, "location.reload() navigates independently in a prerender");
   </script>
 </body>
