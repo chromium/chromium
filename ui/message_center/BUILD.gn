@@ -216,5 +216,12 @@ if (enable_message_center) {
         "//ui/views:test_support",
       ]
     }
+
+    if (is_fuchsia) {
+      additional_manifest_fragments = [
+        "//build/config/fuchsia/test/font_capabilities.test-cmx",
+        "//build/config/fuchsia/test/present_view_capabilities.test-cmx",
+      ]
+    }
   }
 }
