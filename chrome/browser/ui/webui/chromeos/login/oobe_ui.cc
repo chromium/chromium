@@ -169,6 +169,12 @@ constexpr char kOobeTextButtonJS[] = "components/buttons/oobe_text_button.js";
 constexpr char kOobeIconButtonHTML[] = "components/buttons/oobe_icon_button.html";
 constexpr char kOobeIconButtonJS[] = "components/buttons/oobe_icon_button.js";
 
+// Stylesheets
+constexpr char kOobeCSSPath[] = "oobe.css";
+constexpr char kOobePopupOverlayCSSPath[] = "oobe_popup_overlay.css";
+constexpr char kOobeScreenCSSPath[] = "oobe_screen.css";
+
+
 // Components
 constexpr char kOobeSharedVarsCssHTML[] =
     "components/oobe_vars/oobe_shared_vars_css.html";
@@ -177,6 +183,7 @@ constexpr char kOobeCustomVarsCssHTML[] =
 constexpr char kOobeCustomVarsCssJsM[] =
     "components/oobe_vars/oobe_custom_vars_css.m.js";
 constexpr char kCommonStylesHTML[] = "components/common_styles/common_styles.html";
+constexpr char kOobeFlexLayoutStylesHTML[] = "components/common_styles/oobe_flex_layout_styles.html";
 constexpr char kDialogHostStylesHTML[] = "components/common_styles/oobe_dialog_host_styles.html";
 constexpr char kI18nBehaviorHTML[] = "components/behaviors/oobe_i18n_behavior.html";
 constexpr char kI18nBehaviorJS[] = "components/behaviors/oobe_i18n_behavior.js";
@@ -760,10 +767,19 @@ void OobeUI::AddOobeComponents(content::WebUIDataSource* source,
 
   source->AddResourcePath(kCommonStylesHTML,
                           IDR_OOBE_COMPONENTS_COMMON_STYLES_HTML);
+  source->AddResourcePath(kOobeFlexLayoutStylesHTML,
+                          IDR_OOBE_FLEX_LAYOUT_STYLES_HTML);
   source->AddResourcePath(kDialogHostStylesHTML,
                           IDR_OOBE_COMPONENTS_DIALOG_HOST_STYLES_HTML);
   source->AddResourcePath(kOobeSharedVarsCssHTML,
                           IDR_OOBE_COMPONENTS_OOBE_SHARED_VARS_CSS_HTML);
+
+  source->AddResourcePath(kOobeCSSPath,
+                          IDR_OOBE_CSS);
+  source->AddResourcePath(kOobePopupOverlayCSSPath,
+                          IDR_OOBE_POPUP_OVERLAY_CSS);
+  source->AddResourcePath(kOobeScreenCSSPath,
+                          IDR_OOBE_SCREENS_CSS);
 
   source->AddResourcePath(kHDIronIconHTML,
                           IDR_OOBE_COMPONENTS_HD_IRON_ICON_HTML);

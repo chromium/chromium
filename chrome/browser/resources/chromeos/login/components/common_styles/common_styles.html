@@ -4,12 +4,12 @@
 
 <link rel="import" href="/components/oobe_vars/oobe_custom_vars_css.html">
 <link rel="import" href="/components/oobe_vars/oobe_shared_vars_css.html">
+<link rel="import" href="/components/common_styles/oobe_flex_layout_styles.html">
 
 <dom-module id="oobe-common-styles">
   <template>
-    <style>
-      <include src="../oobe_flex_layout.css">
-      <include src="../oobe_links.css">
+    <style include="oobe-flex-layout-styles">
+
       :host {
         --oobe-default-font: {
             color: var(--oobe-text-color);
@@ -62,6 +62,20 @@
                         rgba(var(--google-grey-refresh-100-rgb), 1) 0,
                         rgba(var(--google-grey-refresh-100-rgb), 0) 8px);
       }
+
+      /* Links styles used within OOBE */
+
+      .oobe-local-link {
+        color: rgb(17, 85, 204); /* #1155CC */
+        cursor: pointer;
+        text-decoration: none;
+      }
+
+      .oobe-local-link:focus {
+        outline-color: rgb(77, 144, 254); /* #4D90FE */
+        transition: outline-color 200ms;
+      }
+
     </style>
   </template>
 </dom-module>

@@ -26,8 +26,6 @@
 
       <structure name="IDR_OOBE_DEBUGGER_JS" file="debug\debug.js" flattenhtml="true" type="chrome_html" />
       <structure name="IDR_OOBE_DEBUGGER_STUB_JS" file="debug\no_debug.js" flattenhtml="true" type="chrome_html" />
-
-      <structure name="IDR_OOBE_COMPONENTS_COMMON_STYLES_HTML" file="components/common_styles/common_styles.html" type="chrome_html" flattenhtml="true"/>
     </structures>
     <includes>
       <!-- Resources that are served under fixed paths -->
@@ -44,7 +42,14 @@
       <include name="IDR_OOBE_COMPONENTS_OOBE_CONTENT_DIALOG_HTML" file="components/dialogs/oobe_content_dialog.html" type="chrome_html" />
       <include name="IDR_OOBE_COMPONENTS_OOBE_CONTENT_DIALOG_JS" file="components/dialogs/oobe_content_dialog.js" type="chrome_html" />
 
-      <!-- OOBE CSS Vars -->
+      <!-- OOBE CSS Styles -->
+      <include name="IDR_OOBE_COMPONENTS_COMMON_STYLES_HTML" file="components/common_styles/common_styles.html" type="chrome_html"/>
+      <include name="IDR_OOBE_FLEX_LAYOUT_STYLES_HTML" file="components/common_styles/oobe_flex_layout_styles.html" type="chrome_html" />
+
+      <include name="IDR_OOBE_CSS" file="oobe.css" type="chrome_html" />
+      <include name="IDR_OOBE_POPUP_OVERLAY_CSS" file="oobe_popup_overlay.css" type="chrome_html" />
+      <include name="IDR_OOBE_SCREENS_CSS" file="oobe_screen.css" type="chrome_html" />
+
       <include name="IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_CSS_HTML" file="components/oobe_vars/oobe_custom_vars_css.html" type="chrome_html" />
       <include name="IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_REMORA_CSS_HTML" file="components/oobe_vars/oobe_custom_vars_remora_css.html" type="chrome_html" />
       <include name="IDR_OOBE_COMPONENTS_OOBE_SHARED_VARS_CSS_HTML" file="components/oobe_vars/oobe_shared_vars_css.html" type="chrome_html" />
