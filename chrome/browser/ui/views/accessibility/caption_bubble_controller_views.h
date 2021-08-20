@@ -9,7 +9,7 @@
 #include <string>
 #include <unordered_map>
 
-#include "chrome/browser/ui/caption_bubble_controller.h"
+#include "components/live_caption/caption_bubble_controller.h"
 
 namespace content {
 class WebContents;

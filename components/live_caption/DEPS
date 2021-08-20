@@ -4,6 +4,7 @@ include_rules = [
   "+components/prefs",
   "+components/strings",
   "+components/vector_icons",
+  "+media/mojo/mojom",
   "+third_party/re2",
   "+ui/accessibility",
   "+ui/base",

@@ -4,16 +4,23 @@
 
 import("//build/config/ui.gni")
 
-if (toolkit_views) {
-  static_library("live_caption") {
-    sources = [
+static_library("live_caption") {
+  sources = [ "caption_bubble_controller.h" ]
+
+  deps = [
+    "//media/mojo/mojom",
+    "//ui/native_theme",
+  ]
+
+  if (toolkit_views) {
+    sources += [
       "views/caption_bubble.cc",
       "views/caption_bubble.h",
       "views/caption_bubble_model.cc",
       "views/caption_bubble_model.h",
     ]
 
-    deps = [
+    deps += [
       "//base",
       "//components/strings",
       "//components/vector_icons",
@@ -21,12 +28,11 @@ if (toolkit_views) {
       "//ui/accessibility",
       "//ui/base",
       "//ui/gfx",
-      "//ui/native_theme",
       "//ui/strings:ui_strings_grit",
       "//ui/views",
     ]
-  }
-}  # toolkit_views
+  }  # toolkit_views
+}
 
 source_set("constants") {
   sources = [

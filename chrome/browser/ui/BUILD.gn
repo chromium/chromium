@@ -933,7 +933,6 @@ static_library("ui") {
       "browser_window.h",
       "browser_window_state.cc",
       "browser_window_state.h",
-      "caption_bubble_controller.h",
       "chrome_pages.cc",
       "chrome_pages.h",
       "chrome_web_modal_dialog_manager_delegate.cc",

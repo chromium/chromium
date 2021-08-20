@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_CAPTION_BUBBLE_CONTROLLER_H_
-#define CHROME_BROWSER_UI_CAPTION_BUBBLE_CONTROLLER_H_
+#ifndef COMPONENTS_LIVE_CAPTION_CAPTION_BUBBLE_CONTROLLER_H_
+#define COMPONENTS_LIVE_CAPTION_CAPTION_BUBBLE_CONTROLLER_H_
 
 #include <memory>
 #include <string>
@@ -63,4 +63,4 @@ class CaptionBubbleController {
 
 }  // namespace captions
 
-#endif  // CHROME_BROWSER_UI_CAPTION_BUBBLE_CONTROLLER_H_
+#endif  // COMPONENTS_LIVE_CAPTION_CAPTION_BUBBLE_CONTROLLER_H_

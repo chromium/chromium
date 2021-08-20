@@ -10,7 +10,7 @@
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/accessibility/live_caption_speech_recognition_host.h"
-#include "chrome/browser/ui/caption_bubble_controller.h"
+#include "components/live_caption/caption_bubble_controller.h"
 #include "components/live_caption/caption_util.h"
 #include "components/live_caption/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"

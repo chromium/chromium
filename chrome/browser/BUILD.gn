@@ -4327,6 +4327,7 @@ static_library("browser") {
       "//components/feedback/content:factory",
       "//components/image_fetcher/core",
       "//components/keep_alive_registry",
+      "//components/live_caption",
       "//components/memory_pressure",
       "//components/pref_registry",
       "//components/services/app_service:lib",
