@@ -35,6 +35,8 @@ class UserClassifierTest : public testing::Test {
   UserClassifierTest() {
     UserClassifier::RegisterProfilePrefs(test_prefs_.registry());
   }
+  UserClassifierTest(const UserClassifierTest&) = delete;
+  UserClassifierTest& operator=(const UserClassifierTest&) = delete;
 
   UserClassifier* CreateUserClassifier() {
     base::Time now;
@@ -52,8 +54,6 @@ class UserClassifierTest : public testing::Test {
   TestingPrefServiceSimple test_prefs_;
   std::unique_ptr<UserClassifier> user_classifier_;
   base::SimpleTestClock test_clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserClassifierTest);
 };
 
 TEST_F(UserClassifierTest, ShouldBeActiveNtpUserInitially) {
@@ -143,10 +143,9 @@ class UserClassifierMetricTest
       public ::testing::WithParamInterface<
           std::pair<UserClassifier::Metric, std::string>> {
  public:
-  UserClassifierMetricTest() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UserClassifierMetricTest);
+  UserClassifierMetricTest() = default;
+  UserClassifierMetricTest(const UserClassifierMetricTest&) = delete;
+  UserClassifierMetricTest& operator=(const UserClassifierMetricTest&) = delete;
 };
 
 TEST_P(UserClassifierMetricTest, ShouldDecreaseEstimateAfterEvent) {

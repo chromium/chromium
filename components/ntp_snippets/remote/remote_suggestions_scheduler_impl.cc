@@ -8,6 +8,7 @@
 #include <random>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
@@ -359,6 +360,8 @@ class EulaState final : public web_resource::EulaAcceptedNotifier::Observer {
     eula_notifier_->Init(this);
   }
 
+  EulaState(const EulaState&) = delete;
+  EulaState& operator=(const EulaState&) = delete;
   ~EulaState() override = default;
 
   bool IsEulaAccepted() {
@@ -382,8 +385,6 @@ class EulaState final : public web_resource::EulaAcceptedNotifier::Observer {
  private:
   std::unique_ptr<web_resource::EulaAcceptedNotifier> eula_notifier_;
   base::OnceClosure eula_accepted_;
-
-  DISALLOW_COPY_AND_ASSIGN(EulaState);
 };
 
 // static
@@ -688,7 +689,6 @@ bool RemoteSuggestionsSchedulerImpl::IsLastSuccessfulFetchStale() const {
 }
 
 void RemoteSuggestionsSchedulerImpl::RefetchIfAppropriate(TriggerType trigger) {
-
   if (background_fetch_in_progress_) {
     return;
   }

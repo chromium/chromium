@@ -4,6 +4,7 @@
 
 #include "components/ntp_snippets/remote/remote_suggestions_scheduler_impl.h"
 
+#include <map>
 #include <memory>
 #include <set>
 #include <string>
@@ -11,7 +12,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -83,7 +83,7 @@ class MockPersistentScheduler : public PersistentScheduler {
 // TODO(jkrcal): Move into its own library to reuse in other unit-tests?
 class MockRemoteSuggestionsProvider : public RemoteSuggestionsProvider {
  public:
-  MockRemoteSuggestionsProvider(Observer* observer)
+  explicit MockRemoteSuggestionsProvider(Observer* observer)
       : RemoteSuggestionsProvider(observer) {}
   // Gmock cannot mock a method with movable-only type callback
   // FetchStatusCallback as a parameter. As a work-around, this function calls
@@ -200,6 +200,10 @@ class RemoteSuggestionsSchedulerImplTest : public ::testing::Test {
         .WillRepeatedly(Return(true));
     ResetProvider();
   }
+  RemoteSuggestionsSchedulerImplTest(
+      const RemoteSuggestionsSchedulerImplTest&) = delete;
+  RemoteSuggestionsSchedulerImplTest& operator=(
+      const RemoteSuggestionsSchedulerImplTest&) = delete;
 
   void ResetProvider() {
     provider_ = std::make_unique<StrictMock<MockRemoteSuggestionsProvider>>(
@@ -295,8 +299,6 @@ class RemoteSuggestionsSchedulerImplTest : public ::testing::Test {
   base::SimpleTestClock test_clock_;
   std::unique_ptr<MockRemoteSuggestionsProvider> provider_;
   std::unique_ptr<RemoteSuggestionsSchedulerImpl> scheduler_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteSuggestionsSchedulerImplTest);
 };
 
 TEST_F(RemoteSuggestionsSchedulerImplTest, ShouldIgnoreSignalsWhenNotEnabled) {

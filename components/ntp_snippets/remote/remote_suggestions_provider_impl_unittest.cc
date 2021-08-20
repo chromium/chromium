@@ -746,7 +746,7 @@ TEST_F(RemoteSuggestionsProviderImplTest, ExperimentalCategoryInfo) {
 }
 
 TEST_F(RemoteSuggestionsProviderImplTest, AddRemoteCategoriesToCategoryRanker) {
-  auto mock_ranker = std::make_unique<MockCategoryRanker>();
+  auto mock_ranker = std::make_unique<NiceMock<MockCategoryRanker>>();
   MockCategoryRanker* raw_mock_ranker = mock_ranker.get();
   SetCategoryRanker(std::move(mock_ranker));
   std::vector<FetchedCategory> fetched_categories;
@@ -785,7 +785,7 @@ TEST_F(RemoteSuggestionsProviderImplTest, AddRemoteCategoriesToCategoryRanker) {
 TEST_F(RemoteSuggestionsProviderImplTest,
        AddRemoteCategoriesToCategoryRankerRelativeToArticles) {
   SetOrderNewRemoteCategoriesBasedOnArticlesCategoryParam(true);
-  auto mock_ranker = std::make_unique<MockCategoryRanker>();
+  auto mock_ranker = std::make_unique<NiceMock<MockCategoryRanker>>();
   MockCategoryRanker* raw_mock_ranker = mock_ranker.get();
   SetCategoryRanker(std::move(mock_ranker));
   std::vector<FetchedCategory> fetched_categories;
@@ -839,7 +839,7 @@ TEST_F(
     RemoteSuggestionsProviderImplTest,
     AddRemoteCategoriesToCategoryRankerRelativeToArticlesWithArticlesAbsent) {
   SetOrderNewRemoteCategoriesBasedOnArticlesCategoryParam(true);
-  auto mock_ranker = std::make_unique<MockCategoryRanker>();
+  auto mock_ranker = std::make_unique<NiceMock<MockCategoryRanker>>();
   MockCategoryRanker* raw_mock_ranker = mock_ranker.get();
   SetCategoryRanker(std::move(mock_ranker));
   std::vector<FetchedCategory> fetched_categories;
@@ -943,7 +943,7 @@ TEST_F(RemoteSuggestionsProviderImplTest, PersistRemoteCategoryOrder) {
 
   // We manually recreate the provider to simulate Chrome restart and enforce a
   // mock ranker.
-  auto mock_ranker = std::make_unique<MockCategoryRanker>();
+  auto mock_ranker = std::make_unique<NiceMock<MockCategoryRanker>>();
   MockCategoryRanker* raw_mock_ranker = mock_ranker.get();
   SetCategoryRanker(std::move(mock_ranker));
   // Ensure that the order is not fetched.

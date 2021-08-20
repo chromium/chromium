@@ -27,13 +27,12 @@ class RequestThrottlerTest : public testing::Test {
                           CONTENT_SUGGESTION_FETCHER_ACTIVE_NTP_USER);
     throttler_->quota_ = kCounterQuota;
   }
+  RequestThrottlerTest(const RequestThrottlerTest&) = delete;
+  RequestThrottlerTest& operator=(const RequestThrottlerTest&) = delete;
 
  protected:
   TestingPrefServiceSimple test_prefs_;
   std::unique_ptr<RequestThrottler> throttler_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RequestThrottlerTest);
 };
 
 TEST_F(RequestThrottlerTest, QuotaExceeded) {

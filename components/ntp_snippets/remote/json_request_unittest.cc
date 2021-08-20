@@ -81,6 +81,8 @@ class JsonRequestTest : public testing::Test {
     language::UrlLanguageHistogram::RegisterProfilePrefs(
         pref_service_->registry());
   }
+  JsonRequestTest(const JsonRequestTest&) = delete;
+  JsonRequestTest& operator=(const JsonRequestTest&) = delete;
 
   std::unique_ptr<language::UrlLanguageHistogram> MakeLanguageHistogram(
       const std::set<std::string>& codes) {
@@ -123,8 +125,6 @@ class JsonRequestTest : public testing::Test {
   std::unique_ptr<base::ThreadTaskRunnerHandle> mock_runner_handle_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(JsonRequestTest);
 };
 
 TEST_F(JsonRequestTest, MAYBE_BuildRequestAuthenticated) {

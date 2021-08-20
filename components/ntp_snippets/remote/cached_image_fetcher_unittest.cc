@@ -84,6 +84,10 @@ class NtpSnippetsCachedImageFetcherTest
 
     EXPECT_TRUE(database_->IsInitialized());
   }
+  NtpSnippetsCachedImageFetcherTest(const NtpSnippetsCachedImageFetcherTest&) =
+      delete;
+  NtpSnippetsCachedImageFetcherTest& operator=(
+      const NtpSnippetsCachedImageFetcherTest&) = delete;
 
   ~NtpSnippetsCachedImageFetcherTest() override {
     cached_image_fetcher_.reset();
@@ -153,8 +157,6 @@ class NtpSnippetsCachedImageFetcherTest
 
   TestingPrefServiceSimple pref_service_;
   base::test::TaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(NtpSnippetsCachedImageFetcherTest);
 };
 
 TEST_P(NtpSnippetsCachedImageFetcherTest, FetchImageFromCache) {

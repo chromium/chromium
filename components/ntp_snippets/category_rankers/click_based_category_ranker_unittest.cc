@@ -42,6 +42,9 @@ class ClickBasedCategoryRankerTest : public testing::Test {
     ranker_ = std::make_unique<ClickBasedCategoryRanker>(
         pref_service_.get(), base::DefaultClock::GetInstance());
   }
+  ClickBasedCategoryRankerTest(const ClickBasedCategoryRankerTest&) = delete;
+  ClickBasedCategoryRankerTest& operator=(const ClickBasedCategoryRankerTest&) =
+      delete;
 
   int GetUnusedRemoteCategoryID() { return unused_remote_category_id_++; }
 
@@ -95,8 +98,6 @@ class ClickBasedCategoryRankerTest : public testing::Test {
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   int unused_remote_category_id_;
   std::unique_ptr<ClickBasedCategoryRanker> ranker_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClickBasedCategoryRankerTest);
 };
 
 TEST_F(ClickBasedCategoryRankerTest, ShouldSortRemoteCategoriesByWhenAdded) {

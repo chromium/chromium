@@ -9,7 +9,6 @@
 #include <set>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "components/ntp_snippets/content_suggestions_provider.h"
@@ -40,6 +39,10 @@ class RemoteSuggestionsSchedulerImpl : public RemoteSuggestionsScheduler {
                                  PrefService* local_state_prefs,
                                  base::Clock* clock);
 
+  RemoteSuggestionsSchedulerImpl(const RemoteSuggestionsSchedulerImpl&) =
+      delete;
+  RemoteSuggestionsSchedulerImpl& operator=(
+      const RemoteSuggestionsSchedulerImpl&) = delete;
   ~RemoteSuggestionsSchedulerImpl() override;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -170,8 +173,6 @@ class RemoteSuggestionsSchedulerImpl : public RemoteSuggestionsScheduler {
   std::set<TriggerType> queued_triggers_;
 
   base::Time background_fetches_allowed_after_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteSuggestionsSchedulerImpl);
 };
 
 }  // namespace ntp_snippets

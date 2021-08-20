@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/ntp_snippets/category.h"
 #include "components/ntp_snippets/category_rankers/category_ranker.h"
@@ -22,6 +21,8 @@ namespace ntp_snippets {
 class ConstantCategoryRanker : public CategoryRanker {
  public:
   ConstantCategoryRanker();
+  ConstantCategoryRanker(const ConstantCategoryRanker&) = delete;
+  ConstantCategoryRanker& operator=(const ConstantCategoryRanker&) = delete;
   ~ConstantCategoryRanker() override;
 
   // CategoryRanker implementation.
@@ -42,8 +43,6 @@ class ConstantCategoryRanker : public CategoryRanker {
   void AppendKnownCategory(KnownCategories known_category);
 
   std::vector<Category> ordered_categories_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConstantCategoryRanker);
 };
 
 }  // namespace ntp_snippets
