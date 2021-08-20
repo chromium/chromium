@@ -293,8 +293,8 @@ class CORE_EXPORT InspectorDOMAgent final
   void NodeCreated(Node* node);
   void PortalRemoteFrameCreated(HTMLPortalElement*);
 
-  Node* NodeForId(int node_id);
-  int BoundNodeId(Node*);
+  Node* NodeForId(int node_id) const;
+  int BoundNodeId(Node*) const;
   void AddDOMListener(DOMListener*);
   void RemoveDOMListener(DOMListener*);
   int PushNodePathToFrontend(Node*);
