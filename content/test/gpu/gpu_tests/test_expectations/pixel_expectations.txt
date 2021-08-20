@@ -359,6 +359,14 @@ crbug.com/1240840 [ linux skia-renderer-disabled ] Pixel_OffscreenCanvasWebGLSof
 crbug.com/1240840 [ linux skia-renderer-disabled ] Pixel_OffscreenCanvasWebGLSoftwareCompositingWorker [ Failure ]
 crbug.com/1240840 [ linux skia-renderer-disabled ] Pixel_RepeatedWebGLTo2D_SoftwareCompositing [ Failure ]
 crbug.com/1240840 [ linux skia-renderer-disabled ] Pixel_WebGLReadPixelsTabSwitch_SoftwareCompositing [ Failure ]
+crbug.com/1240840 [ linux skia-renderer-dawn ] Pixel_OffscreenCanvasWebGLSoftwareCompositing [ Failure ]
+crbug.com/1240840 [ linux skia-renderer-dawn ] Pixel_OffscreenCanvasWebGLSoftwareCompositingWorker [ Failure ]
+crbug.com/1240840 [ linux skia-renderer-dawn ] Pixel_RepeatedWebGLTo2D_SoftwareCompositing [ Failure ]
+crbug.com/1240840 [ linux skia-renderer-dawn ] Pixel_WebGLReadPixelsTabSwitch_SoftwareCompositing [ Failure ]
+crbug.com/1240840 [ win skia-renderer-dawn ] Pixel_OffscreenCanvasWebGLSoftwareCompositing [ Failure ]
+crbug.com/1240840 [ win skia-renderer-dawn ] Pixel_OffscreenCanvasWebGLSoftwareCompositingWorker [ Failure ]
+crbug.com/1240840 [ win skia-renderer-dawn ] Pixel_RepeatedWebGLTo2D_SoftwareCompositing [ Failure ]
+crbug.com/1240840 [ win skia-renderer-dawn ] Pixel_WebGLReadPixelsTabSwitch_SoftwareCompositing [ Failure ]
 
 # Failure of dawn_pixel_skia_gold_test on win dawn
 crbug.com/1228694 [ win skia-renderer-dawn ] Pixel_CSS3DBlueBox [ Failure ]
