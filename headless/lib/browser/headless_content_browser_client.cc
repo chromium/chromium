@@ -61,7 +61,7 @@
 #endif  // defined(HEADLESS_USE_POLICY)
 
 #if BUILDFLAG(ENABLE_PRINTING)
-#include "headless/lib/browser/headless_print_manager.h"
+#include "headless/lib/browser/print_to_pdf/pdf_print_manager.h"
 #endif  // defined(ENABLE_PRINTING)
 
 namespace headless {
@@ -197,7 +197,7 @@ bool HeadlessContentBrowserClient::BindAssociatedReceiverFromFrame(
     mojo::ScopedInterfaceEndpointHandle* handle) {
 #if BUILDFLAG(ENABLE_PRINTING)
   if (interface_name == printing::mojom::PrintManagerHost::Name_) {
-    HeadlessPrintManager::BindPrintManagerHost(
+    headless::PdfPrintManager::BindPrintManagerHost(
         mojo::PendingAssociatedReceiver<printing::mojom::PrintManagerHost>(
             std::move(*handle)),
         render_frame_host);

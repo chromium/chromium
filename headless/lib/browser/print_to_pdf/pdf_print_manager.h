@@ -1,47 +1,26 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef HEADLESS_LIB_BROWSER_HEADLESS_PRINT_MANAGER_H_
-#define HEADLESS_LIB_BROWSER_HEADLESS_PRINT_MANAGER_H_
+#ifndef HEADLESS_LIB_BROWSER_PRINT_TO_PDF_PDF_PRINT_MANAGER_H_
+#define HEADLESS_LIB_BROWSER_PRINT_TO_PDF_PDF_PRINT_MANAGER_H_
 
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "base/memory/ref_counted_memory.h"
+#include "build/build_config.h"
 #include "components/printing/browser/print_manager.h"
-#include "components/printing/common/print.mojom-forward.h"
+#include "components/printing/common/print.mojom.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "headless/public/headless_export.h"
 #include "printing/print_settings.h"
 
 namespace headless {
 
-// Exported for tests.
-struct HEADLESS_EXPORT HeadlessPrintSettings {
-  HeadlessPrintSettings();
-
-  gfx::Size paper_size_in_points;
-  printing::PageMargins margins_in_points;
-  bool prefer_css_page_size;
-
-  bool landscape;
-  bool display_header_footer;
-  bool should_print_backgrounds;
-  // scale = 1 means 100%.
-  double scale;
-
-  std::string page_ranges;
-  bool ignore_invalid_page_ranges;
-  std::string header_template;
-  std::string footer_template;
-};
-
-class HeadlessPrintManager
-    : public printing::PrintManager,
-      public content::WebContentsUserData<HeadlessPrintManager> {
+class PdfPrintManager : public printing::PrintManager,
+                        public content::WebContentsUserData<PdfPrintManager> {
  public:
   enum PrintResult {
     PRINT_SUCCESS,
@@ -56,17 +35,14 @@ class HeadlessPrintManager
     PAGE_COUNT_EXCEEDED,
   };
 
-  enum PageRangeStatus {
-    PRINT_NO_ERROR,
-    SYNTAX_ERROR,
-    LIMIT_ERROR,
-  };
-
-  using GetPDFCallback =
+  using PrintToPdfCallback =
       base::OnceCallback<void(PrintResult,
                               scoped_refptr<base::RefCountedMemory>)>;
 
-  ~HeadlessPrintManager() override;
+  ~PdfPrintManager() override;
+
+  PdfPrintManager(const PdfPrintManager&) = delete;
+  PdfPrintManager& operator=(const PdfPrintManager&) = delete;
 
   static void BindPrintManagerHost(
       mojo::PendingAssociatedReceiver<printing::mojom::PrintManagerHost>
@@ -74,27 +50,16 @@ class HeadlessPrintManager
       content::RenderFrameHost* rfh);
 
   static std::string PrintResultToString(PrintResult result);
-  // Exported for tests.
-  HEADLESS_EXPORT static PageRangeStatus PageRangeTextToPages(
-      base::StringPiece page_range_text,
-      bool ignore_invalid_page_ranges,
-      uint32_t pages_count,
-      std::vector<uint32_t>* pages);
 
-  // Prints the current document immediately. Since the rendering is
-  // asynchronous, the actual printing will not be completed on the return of
-  // this function, and |callback| will always get called when printing
-  // finishes.
-  void GetPDFContents(content::RenderFrameHost* rfh,
-                      const HeadlessPrintSettings& settings,
-                      GetPDFCallback callback);
+  void PrintToPdf(content::RenderFrameHost* rfh,
+                  const std::string& page_ranges,
+                  bool ignore_invalid_page_ranges,
+                  printing::mojom::PrintPagesParamsPtr print_page_params,
+                  PrintToPdfCallback callback);
 
  private:
-  explicit HeadlessPrintManager(content::WebContents* web_contents);
-  friend class content::WebContentsUserData<HeadlessPrintManager>;
-
-  printing::mojom::PrintPagesParamsPtr GetPrintParamsFromSettings(
-      const HeadlessPrintSettings& settings);
+  explicit PdfPrintManager(content::WebContents* web_contents);
+  friend class content::WebContentsUserData<PdfPrintManager>;
 
   // printing::mojom::PrintManagerHost:
   void DidPrintDocument(printing::mojom::DidPrintDocumentParamsPtr params,
@@ -123,22 +88,23 @@ class HeadlessPrintManager
       int32_t cookie,
       const ui::AXTreeUpdate& accessibility_tree) override;
 #endif
+#if defined(OS_ANDROID)
+  void PdfWritingDone(int page_count) override;
+#endif
 
   void Reset();
   void ReleaseJob(PrintResult result);
 
   content::RenderFrameHost* printing_rfh_ = nullptr;
-  GetPDFCallback callback_;
-  printing::mojom::PrintPagesParamsPtr print_params_;
-  std::string page_ranges_text_;
+  std::string page_ranges_;
   bool ignore_invalid_page_ranges_ = false;
+  printing::mojom::PrintPagesParamsPtr print_pages_params_;
+  PrintToPdfCallback callback_;
   std::string data_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(HeadlessPrintManager);
 };
 
 }  // namespace headless
 
-#endif  // HEADLESS_LIB_BROWSER_HEADLESS_PRINT_MANAGER_H_
+#endif  // HEADLESS_LIB_BROWSER_PRINT_TO_PDF_PDF_PRINT_MANAGER_H_

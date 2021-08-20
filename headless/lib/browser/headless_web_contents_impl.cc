@@ -51,7 +51,7 @@
 #include "ui/gfx/switches.h"
 
 #if BUILDFLAG(ENABLE_PRINTING)
-#include "headless/lib/browser/headless_print_manager.h"
+#include "headless/lib/browser/print_to_pdf/pdf_print_manager.h"
 #endif
 
 namespace headless {
@@ -321,7 +321,7 @@ HeadlessWebContentsImpl::HeadlessWebContentsImpl(
       agent_host_(
           content::DevToolsAgentHost::GetOrCreateFor(web_contents_.get())) {
 #if BUILDFLAG(ENABLE_PRINTING)
-  HeadlessPrintManager::CreateForWebContents(web_contents_.get());
+  headless::PdfPrintManager::CreateForWebContents(web_contents_.get());
 // TODO(weili): Add support for printing OOPIFs.
 #endif
   UpdatePrefsFromSystemSettings(web_contents_->GetMutableRendererPrefs());
