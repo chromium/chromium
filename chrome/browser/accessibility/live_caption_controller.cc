@@ -18,7 +18,6 @@
 #include "components/soda/constants.h"
 #include "components/soda/soda_installer.h"
 #include "components/sync_preferences/pref_service_syncable.h"
-#include "content/public/browser/browser_accessibility_state.h"
 #include "media/base/media_switches.h"
 #include "ui/native_theme/native_theme.h"
 
@@ -89,18 +88,12 @@ void LiveCaptionController::Init() {
                           base::Unretained(this)));
 
   enabled_ = IsLiveCaptionEnabled();
+  base::UmaHistogramBoolean("Accessibility.LiveCaption", enabled_);
   if (enabled_) {
     StartLiveCaption();
   } else {
     StopLiveCaption();
   }
-
-  // BrowserAccessibilityState can outlive |this|, use WeakPtr to ensure that
-  // callback is not called on destroyed object.
-  content::BrowserAccessibilityState::GetInstance()
-      ->AddUIThreadHistogramCallback(base::BindOnce(
-          &LiveCaptionController::UpdateAccessibilityCaptionHistograms,
-          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void LiveCaptionController::OnLiveCaptionEnabledChanged() {
@@ -203,10 +196,6 @@ void LiveCaptionController::DestroyUI() {
     DCHECK(pref_change_registrar_->IsObserved(pref_name));
     pref_change_registrar_->Remove(pref_name);
   }
-}
-
-void LiveCaptionController::UpdateAccessibilityCaptionHistograms() {
-  base::UmaHistogramBoolean("Accessibility.LiveCaption", enabled_);
 }
 
 bool LiveCaptionController::DispatchTranscription(

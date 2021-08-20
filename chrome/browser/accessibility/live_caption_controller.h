@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/soda/constants.h"
@@ -109,8 +108,6 @@ class LiveCaptionController : public KeyedService,
   void CreateUI();
   void DestroyUI();
 
-  void UpdateAccessibilityCaptionHistograms();
-
   PrefService* profile_prefs_;
   PrefService* global_prefs_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
@@ -124,8 +121,6 @@ class LiveCaptionController : public KeyedService,
   // feature being enabled--we wait for SODA to download first. This flag
   // ensures that the UI is not constructed or deconstructed twice.
   bool is_ui_constructed_ = false;
-
-  base::WeakPtrFactory<LiveCaptionController> weak_ptr_factory_{this};
 };
 
 }  // namespace captions
