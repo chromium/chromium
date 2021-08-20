@@ -366,6 +366,10 @@ class CORE_EXPORT Performance : public EventTargetWithInlineData {
 
   void DeliverObservationsTimerFired(TimerBase*);
 
+  // Returns the number of dropped entries for the given integer representing a
+  // mask of entry types.
+  int GetDroppedEntriesForTypes(PerformanceEntryTypeMask);
+
   virtual void BuildJSONValue(V8ObjectBuilder&) const;
 
   PerformanceEntryVector resource_timing_buffer_;
@@ -402,6 +406,10 @@ class CORE_EXPORT Performance : public EventTargetWithInlineData {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   HeapTaskRunnerTimer<Performance> deliver_observations_timer_;
   HeapTaskRunnerTimer<Performance> resource_timing_buffer_full_timer_;
+
+  // A map from entry types to the number of dropped entries of that given entry
+  // type. Entries are dropped when the buffer from that entry type is full.
+  WTF::HashMap<PerformanceEntry::EntryType, int> dropped_entries_count_map_;
 
   // See crbug.com/1181774.
   Member<BackgroundTracingHelper> background_tracing_helper_;
