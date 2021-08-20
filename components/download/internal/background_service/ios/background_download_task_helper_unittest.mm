@@ -43,33 +43,20 @@ class BackgroundDownloadTaskHelperTest
     helper_ = BackgroundDownloadTaskHelper::Create();
   }
 
-  void Download(const std::string& relative_url) {
+  void Download(
+      const std::string& relative_url,
+      BackgroundDownloadTaskHelper::CompletionCallback completion_callback) {
     DownloadParams params;
     params.request_params.url = server_.GetURL(relative_url);
     params.request_params.method = "POST";
     params.request_params.request_headers.SetHeader(
         net::HttpRequestHeaders::kIfMatch, kHeaderValue);
-    base::RunLoop loop;
-    helper_->StartDownload(
-        kGuid, dir_.GetPath().AppendASCII(kGuid), params.request_params,
-        params.scheduling_params,
-        base::BindLambdaForTesting(
-            [&](bool, const base::FilePath& file_path, int64_t file_size) {
-              std::string content;
-              ASSERT_TRUE(base::ReadFileToString(file_path, &content));
-              EXPECT_EQ(BackgroundDownloadTestBase::kDefaultResponseContent,
-                        content);
-              EXPECT_EQ(file_size, static_cast<int64_t>(content.size()));
-              DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-              loop.Quit();
-            }),
-        base::DoNothing());
-    loop.Run();
-    DCHECK(request_sent_);
-    auto it = request_sent_->headers.find(net::HttpRequestHeaders::kIfMatch);
-    EXPECT_EQ(kHeaderValue, it->second);
-    EXPECT_EQ(HttpMethod::METHOD_POST, request_sent_->method);
+    helper_->StartDownload(kGuid, dir_.GetPath().AppendASCII(kGuid),
+                           params.request_params, params.scheduling_params,
+                           std::move(completion_callback), base::DoNothing());
   }
+
+  BackgroundDownloadTaskHelper* helper() { return helper_.get(); }
 
  private:
   std::unique_ptr<BackgroundDownloadTaskHelper> helper_;
@@ -77,8 +64,60 @@ class BackgroundDownloadTaskHelperTest
 
 // Verifies download can be finished.
 TEST_F(BackgroundDownloadTaskHelperTest, DownloadComplete) {
-  Download("/test");
+  base::RunLoop loop;
+  Download(
+      "/test", base::BindLambdaForTesting([&](bool success,
+                                              const base::FilePath& file_path,
+                                              int64_t file_size) {
+        std::string content;
+        EXPECT_TRUE(success);
+        ASSERT_TRUE(base::ReadFileToString(file_path, &content));
+        EXPECT_EQ(BackgroundDownloadTestBase::kDefaultResponseContent, content);
+        EXPECT_EQ(file_size, static_cast<int64_t>(content.size()));
+        DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+        loop.Quit();
+      }));
+  loop.Run();
   EXPECT_TRUE(base::PathExists(dir().GetPath().AppendASCII(kGuid)));
+  DCHECK(request_sent());
+  auto it = request_sent()->headers.find(net::HttpRequestHeaders::kIfMatch);
+  EXPECT_EQ(kHeaderValue, it->second);
+  EXPECT_EQ(HttpMethod::METHOD_POST, request_sent()->method);
+}
+
+// Verifies non success http code is treated as error.
+TEST_F(BackgroundDownloadTaskHelperTest, DownloadErrorNonSuccessHttpCode) {
+  base::RunLoop loop;
+  Download("/notfound",
+           base::BindLambdaForTesting([&](bool success,
+                                          const base::FilePath& file_path,
+                                          int64_t file_size) {
+             EXPECT_FALSE(success);
+             DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+             loop.Quit();
+           }));
+  loop.Run();
+  EXPECT_FALSE(base::PathExists(dir().GetPath().AppendASCII(kGuid)));
+}
+
+// Verifies data URL should result in failure.
+TEST_F(BackgroundDownloadTaskHelperTest, DataURL) {
+  base::RunLoop loop;
+  DownloadParams params;
+  params.request_params.url = GURL("data:text/plain;base64,Q2hyb21pdW0=");
+  helper()->StartDownload(
+      kGuid, dir_.GetPath().AppendASCII(kGuid), params.request_params,
+      params.scheduling_params,
+      base::BindLambdaForTesting([&](bool success,
+                                     const base::FilePath& file_path,
+                                     int64_t file_size) {
+        EXPECT_FALSE(success);
+        DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+        loop.Quit();
+      }),
+      base::DoNothing());
+  loop.Run();
+  EXPECT_FALSE(base::PathExists(dir().GetPath().AppendASCII(kGuid)));
 }
 
 }  // namespace download

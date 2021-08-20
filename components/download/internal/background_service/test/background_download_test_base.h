@@ -32,10 +32,18 @@ class BackgroundDownloadTestBase : public PlatformTest {
   const net::test_server::HttpRequest* request_sent() const {
     return request_sent_.get();
   }
+  net::EmbeddedTestServer* server() { return &server_; }
   const base::ScopedTempDir& dir() const { return dir_; }
 
  protected:
+  // A response handler that handles relative url "/test" and serves a http 200
+  // response.
   std::unique_ptr<net::test_server::HttpResponse> DefaultResponse(
+      const net::test_server::HttpRequest& request);
+
+  // A response handler that handles relative url "/notfound" and serves a http
+  // 404 response.
+  std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse(
       const net::test_server::HttpRequest& request);
 
   base::test::TaskEnvironment task_environment_;

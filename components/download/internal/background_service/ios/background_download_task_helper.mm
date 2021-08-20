@@ -55,14 +55,17 @@ using UpdateCallback = download::BackgroundDownloadTaskHelper::UpdateCallback;
   return self;
 }
 
-- (void)invokeCompletionHandler:(bool)success
-                       filePath:(base::FilePath)filePath
-                       fileSize:(int64_t)fileSize {
+- (void)onDownloadCompletion:(bool)success
+                     session:(NSURLSession*)session
+                    filePath:(base::FilePath)filePath
+                    fileSize:(int64_t)fileSize {
   if (_completionCallback) {
+    // Invoke the completion callback on main thread.
     _taskRunner->PostTask(
         FROM_HERE, base::BindOnce(std::move(_completionCallback), success,
                                   filePath, fileSize));
   }
+  [session invalidateAndCancel];
 }
 
 #pragma mark - NSURLSessionDownloadDelegate
@@ -95,10 +98,24 @@ using UpdateCallback = download::BackgroundDownloadTaskHelper::UpdateCallback;
     didFinishDownloadingToURL:(NSURL*)location {
   DVLOG(1) << __func__;
   if (!location) {
-    [self invokeCompletionHandler:/*success=*/false
-                         filePath:base::FilePath()
-                         fileSize:0];
+    [self onDownloadCompletion:/*success=*/false
+                       session:session
+                      filePath:base::FilePath()
+                      fileSize:0];
     return;
+  }
+
+  // Analyze the response code. Treat non http 200 as failure downloads.
+  NSURLResponse* response = [downloadTask response];
+  if (response && [response isKindOfClass:[NSHTTPURLResponse class]]) {
+    NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse*)response;
+    if ([httpResponse statusCode] != 200) {
+      [self onDownloadCompletion:/*success=*/false
+                         session:session
+                        filePath:base::FilePath()
+                        fileSize:0];
+      return;
+    }
   }
 
   // Move the downloaded file from platform temporary directory to download
@@ -109,9 +126,10 @@ using UpdateCallback = download::BackgroundDownloadTaskHelper::UpdateCallback;
   if (!base::Move(tempPath, _downloadPath)) {
     LOG(ERROR) << "Failed to move file from:" << tempPath
                << ", to:" << _downloadPath;
-    [self invokeCompletionHandler:/*success=*/false
-                         filePath:base::FilePath()
-                         fileSize:0];
+    [self onDownloadCompletion:/*success=*/false
+                       session:session
+                      filePath:base::FilePath()
+                      fileSize:0];
     return;
   }
 
@@ -119,14 +137,16 @@ using UpdateCallback = download::BackgroundDownloadTaskHelper::UpdateCallback;
   int64_t fileSize = 0;
   if (!base::GetFileSize(_downloadPath, &fileSize)) {
     LOG(ERROR) << "Failed to get file size from:" << _downloadPath;
-    [self invokeCompletionHandler:/*success=*/false
-                         filePath:base::FilePath()
-                         fileSize:0];
+    [self onDownloadCompletion:/*success=*/false
+                       session:session
+                      filePath:base::FilePath()
+                      fileSize:0];
     return;
   }
-  [self invokeCompletionHandler:/*success=*/true
-                       filePath:_downloadPath
-                       fileSize:fileSize];
+  [self onDownloadCompletion:/*success=*/true
+                     session:session
+                    filePath:_downloadPath
+                    fileSize:fileSize];
 }
 
 #pragma mark - NSURLSessionDelegate
@@ -135,8 +155,14 @@ using UpdateCallback = download::BackgroundDownloadTaskHelper::UpdateCallback;
                     task:(NSURLSessionTask*)task
     didCompleteWithError:(NSError*)error {
   VLOG(1) << __func__;
-  // TODO(xingliu): Check whether we can resume for a few times if the user
-  // terminated the app in multitask window or failed downloads.
+
+  if (!error)
+    return;
+
+  [self onDownloadCompletion:/*success=*/false
+                     session:session
+                    filePath:base::FilePath()
+                    fileSize:0];
 }
 @end
 
