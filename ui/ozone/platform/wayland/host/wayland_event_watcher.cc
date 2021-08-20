@@ -4,6 +4,7 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_event_watcher.h"
 
+#include <wayland-client-core.h>
 #include <cstring>
 #include <memory>
 
@@ -26,6 +27,10 @@ namespace {
 
 void DispatchPending(wl_display* display, wl_event_queue* event_queue) {
   wl_display_dispatch_queue_pending(display, event_queue);
+}
+
+void wayland_log(const char* fmt, va_list argp) {
+  LOG(WARNING) << "libwayland: " << base::StringPrintV(fmt, argp);
 }
 
 }  // namespace
@@ -51,7 +56,9 @@ class WaylandEventWatcherThread : public base::Thread {
   explicit WaylandEventWatcherThread(
       base::OnceClosure start_processing_events_cb)
       : base::Thread("wayland-fd"),
-        start_processing_events_cb_(std::move(start_processing_events_cb)) {}
+        start_processing_events_cb_(std::move(start_processing_events_cb)) {
+    wl_log_set_handler_client(wayland_log);
+  }
   ~WaylandEventWatcherThread() override { Stop(); }
 
   void Init() override {
