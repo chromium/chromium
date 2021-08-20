@@ -91,6 +91,7 @@ const debug_suites_list = [
   'FakeNetworkHealthProvider',
   'FakeSystemDataProvider',
   'FakeSystemRoutineContoller',
+  'FrequencyChannelUtils',
   'InputList',
   'IpConfigInfoDrawer',
   'MemoryCard',

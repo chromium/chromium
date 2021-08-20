@@ -358,6 +358,14 @@ export let WiFiStateProperties = ash.diagnostics.mojom.WiFiStateProperties;
 export let SecurityType = ash.diagnostics.mojom.SecurityType;
 
 /**
+ * Struct for holding data related to WiFi network channel.
+ * @typedef {{
+ *   channel: number,
+ * }}
+ */
+export let ChannelProperties;
+
+/**
  * Type alias for ConnectionType.
  * @typedef {ash.diagnostics.mojom.ConnectionType}
  */

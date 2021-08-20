@@ -26,6 +26,7 @@ js_type_check("closure_compile_module") {
     ":fake_network_health_provider",
     ":fake_system_data_provider",
     ":fake_system_routine_controller",
+    ":frequency_channel_utils",
     ":input_list",
     ":ip_config_info_drawer",
     ":memory_card",
@@ -164,6 +165,10 @@ js_library("fake_system_routine_controller") {
     "//ash/webui/common/resources:fake_method_resolver",
     "//ui/webui/resources/js:cr.m",
   ]
+}
+
+js_library("frequency_channel_utils") {
+  deps = [ ":diagnostics_types" ]
 }
 
 js_library("icons") {

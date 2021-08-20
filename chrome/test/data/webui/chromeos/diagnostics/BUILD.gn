@@ -23,6 +23,7 @@ js_type_check("closure_compile") {
     ":fake_network_health_provider_test",
     ":fake_system_data_provider_test",
     ":fake_system_routine_controller_test",
+    ":frequency_channel_utils_test",
     ":input_list_test",
     ":ip_config_info_drawer_test",
     ":memory_card_test",
@@ -172,6 +173,13 @@ js_library("fake_system_routine_controller_test") {
     "../..:chai_assert",
     "//ash/webui/diagnostics_ui/resources:diagnostics_types",
     "//ash/webui/diagnostics_ui/resources:fake_system_routine_controller",
+  ]
+}
+
+js_library("frequency_channel_utils_test") {
+  deps = [
+    "../../:chai_assert",
+    "//ash/webui/diagnostics_ui/resources:frequency_channel_utils",
   ]
 }
 
