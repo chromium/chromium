@@ -99,6 +99,13 @@ TEST(BluetoothDeviceTest, CanonicalizeAddressFormat_AcceptsAllValidFormats) {
   }
 }
 
+TEST(BluetoothDeviceTest,
+     CanonicalizeAddressFormat_AcceptsAllValidFormatsBytes) {
+  std::array<uint8_t, 6> kValidBytes = {12, 14, 76, 200, 5, 8};
+
+  EXPECT_EQ("0C:0E:4C:C8:05:08", CanonicalizeBluetoothAddress(kValidBytes));
+}
+
 TEST(BluetoothDeviceTest, CanonicalizeAddressFormat_RejectsInvalidFormats) {
   const char* const kInvalidFormats[] = {
       // Empty string.
