@@ -251,6 +251,7 @@ RoleMap BuildSubroleMap() {
       {ax::mojom::Role::kFooter, @"AXLandmarkContentInfo"},
       {ax::mojom::Role::kForm, @"AXLandmarkForm"},
       {ax::mojom::Role::kGraphicsDocument, @"AXDocument"},
+      {ax::mojom::Role::kGroup, @"AXApplicationGroup"},
       {ax::mojom::Role::kHeader, @"AXLandmarkBanner"},
       {ax::mojom::Role::kLog, @"AXApplicationLog"},
       {ax::mojom::Role::kMain, @"AXLandmarkMain"},
