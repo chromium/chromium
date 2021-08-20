@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import static org.chromium.webapk.lib.client.WebApkVersion.REQUEST_UPDATE_FOR_SHELL_APK_VERSION;
 
@@ -39,6 +40,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.PathUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ShortcutHelper;
@@ -68,6 +70,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Unit tests for WebApkUpdateManager.
@@ -278,12 +282,29 @@ public class WebApkUpdateManagerUnitTest {
     }
 
     private void registerStorageForWebApkPackage(String webApkPackageName) {
-        WebappRegistry.getInstance().register(
-                WebappIntentUtils.getIdForWebApkPackage(webApkPackageName),
-                new WebappRegistry.FetchWebappDataStorageCallback() {
-                    @Override
-                    public void onWebappDataStorageRetrieved(WebappDataStorage storage) {}
-                });
+        try {
+            // AtomicBoolean because Java requires |registered| to be final.
+            final AtomicBoolean registered = new AtomicBoolean();
+            CallbackHelper helper = new CallbackHelper();
+            WebappRegistry.getInstance().register(
+                    WebappIntentUtils.getIdForWebApkPackage(webApkPackageName),
+                    new WebappRegistry.FetchWebappDataStorageCallback() {
+                        @Override
+                        public void onWebappDataStorageRetrieved(WebappDataStorage storage) {
+                            new Exception().printStackTrace();
+                            registered.set(true);
+                            helper.notifyCalled();
+                        }
+                    });
+            boolean registeredOnTime = registered.get();
+            helper.waitForFirst();
+            // Assert here instead of in WebappRegistry callback because asserting in the callback
+            // does not fail the test. Wait till the callback is called to fail the test in order
+            // to get the stacktrace.
+            assertTrue("WebappRegistry should be synchronous", registeredOnTime);
+        } catch (TimeoutException e) {
+            fail();
+        }
     }
 
     private static WebappDataStorage getStorage(String packageName) {
