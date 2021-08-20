@@ -18,6 +18,16 @@ namespace blink {
 
 class GraphicsContext;
 
+class CommitCycleScope : public PaintController::CycleScope {
+ public:
+  explicit CommitCycleScope(PaintController& controller)
+      : PaintController::CycleScope(controller, true) {}
+  ~CommitCycleScope() {
+    for (auto* controller : controllers_)
+      controller->CommitNewDisplayItems();
+  }
+};
+
 class PaintControllerTestBase : public testing::Test {
  public:
   static void DrawNothing(GraphicsContext& context,
@@ -53,6 +63,7 @@ class PaintControllerTestBase : public testing::Test {
   void InitRootChunk(PaintController& paint_controller) {
     paint_controller.UpdateCurrentPaintChunkProperties(
         &root_paint_chunk_id_, DefaultPaintChunkProperties());
+    paint_controller.RecordDebugInfo(root_paint_property_client_);
   }
   const PaintChunk::Id DefaultRootChunkId() const {
     return root_paint_chunk_id_;

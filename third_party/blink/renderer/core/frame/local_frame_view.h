@@ -746,6 +746,11 @@ class CORE_EXPORT LocalFrameView final
     return EnsurePaintController();
   }
 
+  bool PaintDebugInfoEnabled() const {
+    return layer_debug_info_enabled_ ||
+           RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled();
+  }
+
  protected:
   void FrameRectsChanged(const IntRect&) override;
   void SelfVisibleChanged() override;
@@ -960,7 +965,8 @@ class CORE_EXPORT LocalFrameView final
   // was prevented (e.g. by ancestor display-lock) or not needed.
   bool LayoutFromRootObject(LayoutObject& root);
 
-  void UpdateLayerDebugInfoEnabled();
+  // Returns true if the value of layer_debug_info_enabled_ changed.
+  bool UpdateLayerDebugInfoEnabled();
 
   // Return the interstitial-ad detector for this frame, creating it if
   // necessary.

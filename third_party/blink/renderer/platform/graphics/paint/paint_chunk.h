@@ -119,7 +119,7 @@ struct PLATFORM_EXPORT PaintChunk {
 
   size_t MemoryUsageInBytes() const;
 
-  String ToString() const;
+  String ToString(const PaintArtifact&) const;
 
   // Index of the first drawing in this chunk.
   wtf_size_t begin_index;
@@ -180,8 +180,6 @@ struct PLATFORM_EXPORT PaintChunk {
   bool is_moved_from_cached_subsequence : 1;
   bool effectively_invisible : 1;
 };
-
-PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const PaintChunk&);
 
 }  // namespace blink
 

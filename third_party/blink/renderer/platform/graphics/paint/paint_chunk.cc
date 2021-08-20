@@ -54,13 +54,14 @@ size_t PaintChunk::MemoryUsageInBytes() const {
   return total_size;
 }
 
-String PaintChunk::ToString() const {
+String PaintChunk::ToString(const PaintArtifact& paint_artifact) const {
   StringBuilder sb;
   sb.AppendFormat(
       "PaintChunk(begin=%u, end=%u, id=%s cacheable=%d props=(%s) bounds=%s "
       "rect_known_to_be_opaque=%s effectively_invisible=%d",
-      begin_index, end_index, id.ToString().Utf8().c_str(), is_cacheable,
-      properties.ToString().Utf8().c_str(), bounds.ToString().Utf8().c_str(),
+      begin_index, end_index, id.ToString(paint_artifact).Utf8().c_str(),
+      is_cacheable, properties.ToString().Utf8().c_str(),
+      bounds.ToString().Utf8().c_str(),
       rect_known_to_be_opaque.ToString().Utf8().c_str(), effectively_invisible);
   if (hit_test_data) {
     sb.Append(", hit_test_data=");
@@ -68,10 +69,6 @@ String PaintChunk::ToString() const {
   }
   sb.Append(')');
   return sb.ToString();
-}
-
-std::ostream& operator<<(std::ostream& os, const PaintChunk& chunk) {
-  return os << chunk.ToString().Utf8() << "\n";
 }
 
 }  // namespace blink

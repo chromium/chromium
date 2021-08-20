@@ -37,7 +37,8 @@ class RasterInvalidationCycleScope : public PaintController::CycleScope {
  public:
   RasterInvalidationCycleScope(PaintController& controller,
                                RasterInvalidator& invalidator)
-      : PaintController::CycleScope(controller), invalidator_(invalidator) {}
+      : PaintController::CycleScope(controller, true),
+        invalidator_(invalidator) {}
   ~RasterInvalidationCycleScope() {
     for (auto* controller : controllers_) {
       controller->CommitNewDisplayItems();

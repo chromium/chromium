@@ -5599,6 +5599,7 @@ crbug.com/476553 virtual/scroll-unification/fast/events/touch/gesture/gesture-ta
 crbug.com/476553 virtual/scroll-unification/fast/events/touch/gesture/touch-gesture-scroll-input-field.html [ Crash Failure Pass Timeout ]
 crbug.com/476553 virtual/scroll-unification/fast/events/touch/gesture/touch-gesture-scroll-listbox.html [ Crash Failure Pass Timeout ]
 crbug.com/476553 virtual/scroll-unification/fast/events/wheel/wheel-latched-scroll-node-removed.html [ Crash Failure Pass Timeout ]
+crbug.com/476553 virtual/scroll-unification/fast/forms/suggestion-picker/datetimelocal-suggestion-picker-appearance.html [ Failure Pass ]
 crbug.com/476553 virtual/scroll-unification/fast/scrolling/resize-corner-tracking-touch.html [ Crash Failure Pass Timeout ]
 crbug.com/476553 virtual/scroll-unification/fast/scrolling/subpixel-overflow-mouse-drag.html [ Crash Failure Pass Timeout ]
 crbug.com/476553 virtual/scroll-unification/http/tests/misc/destroy-middle-click-locked-target-crash.html [ Crash Failure Pass Timeout ]

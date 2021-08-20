@@ -312,9 +312,10 @@ bool GraphicsLayer::PaintRecursively(
   return repainted;
 }
 
-void GraphicsLayer::PaintForTesting(const IntRect& interest_rect) {
+void GraphicsLayer::PaintForTesting(const IntRect& interest_rect,
+                                    bool record_debug_info) {
   Vector<PreCompositedLayerInfo> pre_composited_layers;
-  PaintController::CycleScope cycle_scope;
+  PaintController::CycleScope cycle_scope(record_debug_info);
   Paint(pre_composited_layers, PaintBenchmarkMode::kNormal, &cycle_scope,
         &interest_rect);
 }
@@ -357,6 +358,7 @@ void GraphicsLayer::Paint(Vector<PreCompositedLayerInfo>& pre_composited_layers,
   auto& paint_controller = GetPaintController();
   if (cycle_scope)
     cycle_scope->AddController(paint_controller);
+  paint_controller.RecordDebugInfo(*this);
 
   absl::optional<PaintChunkSubset> previous_chunks;
   if (ShouldCreateLayersAfterPaint())

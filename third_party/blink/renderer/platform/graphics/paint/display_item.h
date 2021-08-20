@@ -22,6 +22,7 @@
 
 namespace blink {
 
+class PaintArtifact;
 enum class PaintPhase;
 
 class PLATFORM_EXPORT DisplayItem {
@@ -171,7 +172,10 @@ class PLATFORM_EXPORT DisplayItem {
     Id(const Id& id, wtf_size_t fragment)
         : client(id.client), type(id.type), fragment(fragment) {}
 
+    // The no-argument version is required for DCHECK support; all values
+    // compared in a DCHECK must be convertible to string.
     String ToString() const;
+    String ToString(const PaintArtifact&) const;
 
     const DisplayItemClient& client;
     const Type type;
@@ -271,9 +275,10 @@ class PLATFORM_EXPORT DisplayItem {
   // A subsequence tombstone is full of zeros set by memset(0);
   bool IsSubsequenceTombstone() const { return !is_not_tombstone_ && !client_; }
   static String TypeAsDebugString(DisplayItem::Type);
-  String AsDebugString() const;
-  String IdAsString() const;
+  String AsDebugString(const PaintArtifact&) const;
+  String IdAsString(const PaintArtifact&) const;
   void PropertiesAsJSON(JSONObject&,
+                        const PaintArtifact&,
                         bool client_known_to_be_alive = false) const;
 #endif
 
@@ -347,8 +352,6 @@ inline bool operator!=(const DisplayItem::Id& a, const DisplayItem::Id& b) {
 }
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, DisplayItem::Type);
-PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const DisplayItem::Id&);
-PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const DisplayItem&);
 
 }  // namespace blink
 

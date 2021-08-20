@@ -1337,11 +1337,13 @@ void PaintArtifactCompositor::SetLayerDebugInfoEnabled(bool enabled) {
 static void UpdateLayerDebugInfo(
     cc::Layer& layer,
     const PaintChunk::Id& id,
+    const String& name,
+    DOMNodeId owner_node_id,
     CompositingReasons compositing_reasons,
     RasterInvalidationTracking* raster_invalidation_tracking) {
   cc::LayerDebugInfo& debug_info = layer.EnsureDebugInfo();
 
-  debug_info.name = id.client.DebugName().Utf8();
+  debug_info.name = name.Utf8();
   if (id.type == DisplayItem::kForeignLayerContentsWrapper) {
     // This is for backward compatibility in pre-CompositeAfterPaint mode.
     DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
@@ -1352,13 +1354,24 @@ static void UpdateLayerDebugInfo(
       CompositingReason::Descriptions(compositing_reasons);
   debug_info.compositing_reason_ids =
       CompositingReason::ShortNames(compositing_reasons);
-  debug_info.owner_node_id = id.client.OwnerNodeId();
+  debug_info.owner_node_id = owner_node_id;
 
   if (RasterInvalidationTracking::IsTracingRasterInvalidations() &&
       raster_invalidation_tracking) {
     raster_invalidation_tracking->AddToLayerDebugInfo(debug_info);
     raster_invalidation_tracking->ClearInvalidations();
   }
+}
+
+static void UpdateLayerDebugInfo(
+    cc::Layer& layer,
+    const PaintChunk::Id& id,
+    const PaintArtifact& paint_artifact,
+    CompositingReasons compositing_reasons,
+    RasterInvalidationTracking* raster_invalidation_tracking) {
+  UpdateLayerDebugInfo(layer, id, paint_artifact.ClientDebugName(id.client),
+                       paint_artifact.ClientOwnerNodeId(id.client),
+                       compositing_reasons, raster_invalidation_tracking);
 }
 
 void PaintArtifactCompositor::UpdateDebugInfo() const {
@@ -1397,13 +1410,22 @@ void PaintArtifactCompositor::UpdateDebugInfo() const {
         ++content_layer_client_it;
         break;
     }
-    UpdateLayerDebugInfo(
-        *layer,
-        pending_layer.GetGraphicsLayer()
-            ? PaintChunk::Id(*pending_layer.GetGraphicsLayer(),
-                             DisplayItem::kUninitializedType)
-            : pending_layer.FirstPaintChunk().id,
-        GetCompositingReasons(pending_layer, previous_pending_layer), tracking);
+    if (pending_layer.GetGraphicsLayer()) {
+      UpdateLayerDebugInfo(
+          *layer,
+          PaintChunk::Id(*pending_layer.GetGraphicsLayer(),
+                         DisplayItem::kUninitializedType),
+          pending_layer.GetGraphicsLayer()->DebugName(),
+          pending_layer.GetGraphicsLayer()->OwnerNodeId(),
+          GetCompositingReasons(pending_layer, previous_pending_layer),
+          tracking);
+    } else {
+      UpdateLayerDebugInfo(
+          *layer, pending_layer.FirstPaintChunk().id,
+          pending_layer.Chunks().GetPaintArtifact(),
+          GetCompositingReasons(pending_layer, previous_pending_layer),
+          tracking);
+    }
     previous_pending_layer = &pending_layer;
   }
 }

@@ -32,7 +32,6 @@ class PaintController::PaintArtifactAsJSON {
   std::unique_ptr<JSONObject> SubsequenceAsJSONObjectRecursive();
   std::unique_ptr<JSONArray> ChunksAsJSONArrayRecursive(wtf_size_t, wtf_size_t);
   void AppendChunksAsJSON(wtf_size_t, wtf_size_t, JSONArray&);
-  String ClientName(const DisplayItemClient&) const;
 
   const PaintArtifact& artifact_;
   const Vector<SubsequenceMarkers>& subsequences_;
@@ -49,7 +48,7 @@ PaintController::PaintArtifactAsJSON::SubsequenceAsJSONObjectRecursive() {
 
   json_object->SetString("subsequence",
                          String::Format("client: %p ", subsequence.client) +
-                             ClientName(*subsequence.client));
+                             artifact_.ClientDebugName(*subsequence.client));
   json_object->SetArray(
       "chunks", ChunksAsJSONArrayRecursive(subsequence.start_chunk_index,
                                            subsequence.end_chunk_index));
@@ -96,25 +95,20 @@ void PaintController::PaintArtifactAsJSON::AppendChunksAsJSON(
     const auto& chunk = artifact_.PaintChunks()[i];
     auto json_object = std::make_unique<JSONObject>();
 
-    json_object->SetString(
-        "chunk", ClientName(chunk.id.client) + " " + chunk.id.ToString());
+    json_object->SetString("chunk", artifact_.ClientDebugName(chunk.id.client) +
+                                        " " + chunk.id.ToString(artifact_));
     json_object->SetString("state", chunk.properties.ToString());
     json_object->SetString("bounds", chunk.bounds.ToString());
     if (flags_ & DisplayItemList::kShowPaintRecords)
-      json_object->SetString("chunkData", chunk.ToString());
+      json_object->SetString("chunkData", chunk.ToString(artifact_));
 
-    json_object->SetArray(
-        "displayItems",
-        DisplayItemList::DisplayItemsAsJSON(
-            chunk.begin_index, artifact_.DisplayItemsInChunk(i), flags_));
+    json_object->SetArray("displayItems",
+                          DisplayItemList::DisplayItemsAsJSON(
+                              artifact_, chunk.begin_index,
+                              artifact_.DisplayItemsInChunk(i), flags_));
 
     json_array.PushObject(std::move(json_object));
   }
-}
-
-String PaintController::PaintArtifactAsJSON::ClientName(
-    const DisplayItemClient& client) const {
-  return client.SafeDebugName(flags_ & DisplayItemList::kClientKnownToBeAlive);
 }
 
 void PaintController::ShowDebugDataInternal(

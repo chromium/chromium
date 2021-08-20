@@ -213,7 +213,7 @@ class PLATFORM_EXPORT GraphicsLayer : public DisplayItemClient,
     needs_check_raster_invalidation_ = true;
   }
 
-  void PaintForTesting(const IntRect& interest_rect);
+  void PaintForTesting(const IntRect& interest_rect, bool record_debug_info);
 
   void SetShouldCreateLayersAfterPaint(bool);
   bool ShouldCreateLayersAfterPaint() const {

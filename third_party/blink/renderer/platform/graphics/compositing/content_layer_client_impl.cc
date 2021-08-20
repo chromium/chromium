@@ -74,10 +74,11 @@ scoped_refptr<cc::PictureLayer> ContentLayerClientImpl::UpdateCcPictureLayer(
   paint_chunk_debug_data_ = std::make_unique<JSONArray>();
   for (auto it = paint_chunks.begin(); it != paint_chunks.end(); ++it) {
     auto json = std::make_unique<JSONObject>();
-    json->SetString("data", it->ToString());
-    json->SetArray("displayItems", DisplayItemList::DisplayItemsAsJSON(
-                                       it->begin_index, it.DisplayItems(),
-                                       DisplayItemList::kCompact));
+    json->SetString("data", it->ToString(paint_chunks.GetPaintArtifact()));
+    json->SetArray("displayItems",
+                   DisplayItemList::DisplayItemsAsJSON(
+                       paint_chunks.GetPaintArtifact(), it->begin_index,
+                       it.DisplayItems(), DisplayItemList::kCompact));
     paint_chunk_debug_data_->PushObject(std::move(json));
   }
 #endif  // EXPENSIVE_DCHECKS_ARE_ON()
@@ -98,7 +99,8 @@ scoped_refptr<cc::PictureLayer> ContentLayerClientImpl::UpdateCcPictureLayer(
   if (RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled()) {
     raster_under_invalidation_params.emplace(
         *raster_invalidator_.GetTracking(), IntRect(IntPoint(), layer_bounds),
-        paint_chunks.begin()->id.client.DebugName());
+        paint_chunks.GetPaintArtifact().ClientDebugName(
+            paint_chunks.begin()->id.client));
   }
 
   // Note: cc::Layer API assumes the layer bounds start at (0, 0), but the

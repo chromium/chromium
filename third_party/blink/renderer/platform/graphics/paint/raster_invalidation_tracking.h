@@ -61,7 +61,6 @@ struct RasterUnderInvalidation {
 
 class PLATFORM_EXPORT RasterInvalidationTracking {
  public:
-  DISALLOW_NEW();
 
   // When RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled() and
   // SimulateRasterUnderInvalidation(true) is called, all changed pixels will

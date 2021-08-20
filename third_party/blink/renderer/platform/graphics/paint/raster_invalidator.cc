@@ -15,32 +15,15 @@
 
 namespace blink {
 
-void RasterInvalidator::UpdateClientDebugNames() {
-  DCHECK(tracking_info_);
-  auto& debug_names = tracking_info_->old_client_debug_names;
-  debug_names.clear();
-  // This is called just after a full document cycle update, so all clients in
-  // old_paint_artifact_ should be still alive.
-  for (const auto& chunk_info : old_paint_chunks_info_) {
-    wtf_size_t chunk_index = chunk_info.index_in_paint_artifact;
-    const auto& chunk = old_paint_artifact_->PaintChunks()[chunk_index];
-    debug_names.insert(&chunk.id.client, chunk.id.client.DebugName());
-    for (const auto& item :
-         old_paint_artifact_->DisplayItemsInChunk(chunk_index))
-      debug_names.insert(&item.Client(), item.Client().DebugName());
-  }
-}
-
 void RasterInvalidator::SetTracksRasterInvalidations(bool should_track) {
   if (should_track) {
-    if (!tracking_info_)
-      tracking_info_ = std::make_unique<RasterInvalidationTrackingInfo>();
-    tracking_info_->tracking.ClearInvalidations();
-    UpdateClientDebugNames();
+    if (!tracking_)
+      tracking_ = std::make_unique<RasterInvalidationTracking>();
+    tracking_->ClearInvalidations();
   } else if (!RasterInvalidationTracking::ShouldAlwaysTrack()) {
-    tracking_info_ = nullptr;
-  } else if (tracking_info_) {
-    tracking_info_->tracking.ClearInvalidations();
+    tracking_ = nullptr;
+  } else if (tracking_) {
+    tracking_->ClearInvalidations();
   }
 }
 
@@ -319,19 +302,17 @@ void RasterInvalidator::TrackRasterInvalidation(const IntRect& rect,
                                                 const DisplayItemClient& client,
                                                 PaintInvalidationReason reason,
                                                 ClientIsOldOrNew old_or_new) {
-  DCHECK(tracking_info_);
-  String debug_name =
-      old_or_new == kClientIsOld
-          ? tracking_info_->old_client_debug_names.DeprecatedAtOrEmptyValue(
-                &client)
-          : client.DebugName();
-  tracking_info_->tracking.AddInvalidation(&client, debug_name, rect, reason);
+  DCHECK(tracking_);
+  String debug_name = old_or_new == kClientIsOld
+                          ? old_paint_artifact_->ClientDebugName(client)
+                          : current_paint_artifact_->ClientDebugName(client);
+  tracking_->AddInvalidation(&client, debug_name, rect, reason);
 }
 
 RasterInvalidationTracking& RasterInvalidator::EnsureTracking() {
-  if (!tracking_info_)
-    tracking_info_ = std::make_unique<RasterInvalidationTrackingInfo>();
-  return tracking_info_->tracking;
+  if (!tracking_)
+    tracking_ = std::make_unique<RasterInvalidationTracking>();
+  return *tracking_;
 }
 
 void RasterInvalidator::Generate(
@@ -348,6 +329,7 @@ void RasterInvalidator::Generate(
   bool layer_bounds_was_empty = layer_bounds_.IsEmpty();
   layer_offset_ = layer_offset;
   layer_bounds_ = layer_bounds;
+  current_paint_artifact_ = &new_chunks.GetPaintArtifact();
 
   Vector<PaintChunkInfo> new_chunks_info;
   new_chunks_info.ReserveCapacity(new_chunks.size());
@@ -377,9 +359,7 @@ void RasterInvalidator::Generate(
 
   old_paint_chunks_info_ = std::move(new_chunks_info);
   old_paint_artifact_ = &new_chunks.GetPaintArtifact();
-
-  if (tracking_info_)
-    UpdateClientDebugNames();
+  current_paint_artifact_ = nullptr;
 }
 
 void RasterInvalidator::SetOldPaintArtifact(

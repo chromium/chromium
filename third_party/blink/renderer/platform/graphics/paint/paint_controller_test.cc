@@ -26,16 +26,6 @@ class PaintControllerTest : public PaintTestConfigurations,
                             public PaintControllerTestBase {
 };
 
-class CommitCycleScope : public PaintController::CycleScope {
- public:
-  explicit CommitCycleScope(PaintController& controller)
-      : PaintController::CycleScope(controller) {}
-  ~CommitCycleScope() {
-    for (auto* controller : controllers_)
-      controller->CommitNewDisplayItems();
-  }
-};
-
 #define EXPECT_DEFAULT_ROOT_CHUNK(size)                               \
   EXPECT_THAT(GetPaintController().PaintChunks(),                     \
               ElementsAre(IsPaintChunk(0, size, DefaultRootChunkId(), \

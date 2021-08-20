@@ -216,6 +216,7 @@ class PLATFORM_EXPORT DisplayItemList {
   typedef unsigned JsonFlags;
 
   static std::unique_ptr<JSONArray> DisplayItemsAsJSON(
+      const PaintArtifact&,
       wtf_size_t first_item_index,
       const Range<const_iterator>& display_items,
       JsonFlags);

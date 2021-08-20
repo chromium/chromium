@@ -120,6 +120,7 @@ void ScrollbarDisplayItem::Record(
   paint_controller.CreateAndAppend<ScrollbarDisplayItem>(
       client, type, std::move(scrollbar), visual_rect, scroll_translation,
       element_id, client.GetPaintInvalidationReason());
+  paint_controller.RecordDebugInfo(client);
 }
 
 }  // namespace blink

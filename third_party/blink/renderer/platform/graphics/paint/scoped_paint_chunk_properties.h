@@ -26,6 +26,7 @@ class ScopedPaintChunkProperties {
         previous_properties_(paint_controller.CurrentPaintChunkProperties()) {
     PaintChunk::Id id(client, type);
     paint_controller_.UpdateCurrentPaintChunkProperties(&id, properties);
+    paint_controller_.RecordDebugInfo(client);
   }
 
   // Use new transform state, and keep the current other properties.

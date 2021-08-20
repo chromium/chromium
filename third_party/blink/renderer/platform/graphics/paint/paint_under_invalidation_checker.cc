@@ -183,9 +183,13 @@ void PaintUnderInvalidationChecker::ShowItemError(
   }
   LOG(ERROR) << "Under-invalidation: " << reason;
 #if DCHECK_IS_ON()
-  LOG(ERROR) << "New display item: " << new_item.AsDebugString();
-  if (old_item)
-    LOG(ERROR) << "Old display item: " << old_item->AsDebugString();
+  LOG(ERROR) << "New display item: "
+             << new_item.AsDebugString(*paint_controller_.new_paint_artifact_);
+  if (old_item) {
+    LOG(ERROR) << "Old display item: "
+               << old_item->AsDebugString(
+                      *paint_controller_.current_paint_artifact_);
+  }
   LOG(ERROR) << "See http://crbug.com/619103.";
 
   if (auto* new_drawing = DynamicTo<DrawingDisplayItem>(new_item)) {
@@ -221,10 +225,15 @@ void PaintUnderInvalidationChecker::ShowSubsequenceError(
     // in a descendant subsequence of the cached subsequence.
     LOG(ERROR) << "Subsequence client: " << client->DebugName();
   }
-  if (new_chunk)
-    LOG(ERROR) << "New paint chunk: " << *new_chunk;
-  if (old_chunk)
-    LOG(ERROR) << "Old paint chunk: " << *old_chunk;
+  if (new_chunk) {
+    LOG(ERROR) << "New paint chunk: "
+               << new_chunk->ToString(*paint_controller_.new_paint_artifact_);
+  }
+  if (old_chunk) {
+    LOG(ERROR) << "Old paint chunk: "
+               << old_chunk->ToString(
+                      *paint_controller_.current_paint_artifact_);
+  }
 #if DCHECK_IS_ON()
   paint_controller_.ShowDebugData();
 #else

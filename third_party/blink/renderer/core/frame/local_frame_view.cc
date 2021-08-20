@@ -2304,9 +2304,6 @@ bool LocalFrameView::UpdateLifecyclePhases(
   if (!frame_->GetDocument()->IsActive())
     return false;
 
-  if (frame_->IsLocalRoot())
-    UpdateLayerDebugInfoEnabled();
-
   // If we're throttling and we aren't required to run the IntersectionObserver
   // steps, then we don't need to update lifecycle phases. The throttling status
   // will get updated in RunPostLifecycleSteps().
@@ -2351,6 +2348,10 @@ bool LocalFrameView::UpdateLifecyclePhases(
       });
     }
   }
+
+  absl::optional<base::AutoReset<bool>> force_debug_info;
+  if (reason == DocumentUpdateReason::kTest)
+    force_debug_info.emplace(&layer_debug_info_enabled_, true);
 
   // Run the lifecycle updates.
   UpdateLifecyclePhasesInternal(target_state);
@@ -2753,7 +2754,7 @@ void LocalFrameView::RunPaintLifecyclePhase(PaintBenchmarkMode benchmark_mode) {
 
   bool needed_update;
   {
-    PaintController::CycleScope cycle_scope;
+    PaintController::CycleScope cycle_scope(PaintDebugInfoEnabled());
     bool repainted = PaintTree(benchmark_mode, cycle_scope);
 
     if (paint_artifact_compositor_ &&
@@ -2884,9 +2885,12 @@ bool LocalFrameView::PaintTree(PaintBenchmarkMode benchmark_mode,
   if (RuntimeEnabledFeatures::CullRectUpdateEnabled())
     CullRectUpdater(*layout_view->Layer()).Update();
 
+  bool debug_info_newly_enabled =
+      UpdateLayerDebugInfoEnabled() && PaintDebugInfoEnabled();
+
   paint_frame_count_++;
   ForAllNonThrottledLocalFrameViews(
-      [](LocalFrameView& frame_view) {
+      [debug_info_newly_enabled](LocalFrameView& frame_view) {
         frame_view.MarkFirstEligibleToPaint();
         frame_view.Lifecycle().AdvanceTo(DocumentLifecycle::kInPaint);
         // Propagate child frame PaintLayer NeedsRepaint flag into the owner
@@ -2908,6 +2912,10 @@ bool LocalFrameView::PaintTree(PaintBenchmarkMode benchmark_mode,
                      kPaintsIntoOwnBacking))
               owner->Layer()->SetDescendantNeedsRepaint();
           }
+          // If debug info was just enabled, then the paint cache won't have any
+          // debug info; we need to force a full repaint to generate it.
+          if (debug_info_newly_enabled)
+            frame_layout_view->InvalidatePaintForViewAndDescendants();
         }
       },
       // Use post-order to ensure correct flag propagation for nested frames.
@@ -3004,26 +3012,32 @@ bool LocalFrameView::PaintTree(PaintBenchmarkMode benchmark_mode,
 
     if (GraphicsLayer* root =
             layout_view->Compositor()->PaintRootGraphicsLayer()) {
-      repainted =
-          root->PaintRecursively(graphics_context, pre_composited_layers_,
-                                 cycle_scope, benchmark_mode);
-      if (visual_viewport_or_overlay_needs_repaint_ &&
-          paint_artifact_compositor_)
-        paint_artifact_compositor_->SetNeedsUpdate();
-
       {
-        PaintChunkSubsetRecorder subset_recorder(*paint_controller_);
-        if (root == GetLayoutView()->Compositor()->RootGraphicsLayer() &&
-            frame_->IsMainFrame()) {
-          GetPage()->GetVisualViewport().Paint(graphics_context);
-        }
-        // Link highlights paint after all other layers.
-        GetPage()->GetLinkHighlight().Paint(graphics_context);
-        pre_composited_layers_.push_back(
-            PreCompositedLayerInfo{subset_recorder.Get()});
-      }
+        // We use a separate CycleScope because paint_controller_ will be
+        // deleted before the cycle_scope argument to PaintTree.
+        PaintController::CycleScope transient_cycle_scope(
+            *paint_controller_, PaintDebugInfoEnabled());
+        repainted =
+            root->PaintRecursively(graphics_context, pre_composited_layers_,
+                                   cycle_scope, benchmark_mode);
+        if (visual_viewport_or_overlay_needs_repaint_ &&
+            paint_artifact_compositor_)
+          paint_artifact_compositor_->SetNeedsUpdate();
 
-      paint_controller_->CommitNewDisplayItems();
+        {
+          PaintChunkSubsetRecorder subset_recorder(*paint_controller_);
+          if (root == GetLayoutView()->Compositor()->RootGraphicsLayer() &&
+              frame_->IsMainFrame()) {
+            GetPage()->GetVisualViewport().Paint(graphics_context);
+          }
+          // Link highlights paint after all other layers.
+          GetPage()->GetLinkHighlight().Paint(graphics_context);
+          pre_composited_layers_.push_back(
+              PreCompositedLayerInfo{subset_recorder.Get()});
+        }
+
+        paint_controller_->CommitNewDisplayItems();
+      }
       paint_controller_ = nullptr;
     } else {
       needs_clear_repaint_flags = true;
@@ -4156,7 +4170,7 @@ void LocalFrameView::PaintContentsForTest(const CullRect& cull_rect) {
   } else {
     GraphicsLayer* graphics_layer =
         GetLayoutView()->Layer()->GraphicsLayerBacking();
-    graphics_layer->PaintForTesting(cull_rect.Rect());
+    graphics_layer->PaintForTesting(cull_rect.Rect(), PaintDebugInfoEnabled());
   }
   Lifecycle().AdvanceTo(DocumentLifecycle::kPaintClean);
 }
@@ -4861,7 +4875,7 @@ LocalFrameView::DisallowLayoutInvalidationScope::
 
 #endif
 
-void LocalFrameView::UpdateLayerDebugInfoEnabled() {
+bool LocalFrameView::UpdateLayerDebugInfoEnabled() {
   DCHECK(frame_->IsLocalRoot());
 #if DCHECK_IS_ON()
   DCHECK(layer_debug_info_enabled_);
@@ -4873,8 +4887,10 @@ void LocalFrameView::UpdateLayerDebugInfoEnabled() {
   if (should_enable != layer_debug_info_enabled_) {
     layer_debug_info_enabled_ = should_enable;
     SetPaintArtifactCompositorNeedsUpdate();
+    return true;
   }
 #endif
+  return false;
 }
 
 OverlayInterstitialAdDetector&

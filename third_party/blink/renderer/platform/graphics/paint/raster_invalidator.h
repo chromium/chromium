@@ -31,9 +31,7 @@ class PLATFORM_EXPORT RasterInvalidator {
   RasterInvalidator() = default;
 
   void SetTracksRasterInvalidations(bool);
-  RasterInvalidationTracking* GetTracking() const {
-    return tracking_info_ ? &tracking_info_->tracking : nullptr;
-  }
+  RasterInvalidationTracking* GetTracking() const { return tracking_.get(); }
 
   RasterInvalidationTracking& EnsureTracking();
 
@@ -62,8 +60,6 @@ class PLATFORM_EXPORT RasterInvalidator {
  private:
   friend class DisplayItemRasterInvalidator;
   friend class RasterInvalidatorTest;
-
-  void UpdateClientDebugNames();
 
   struct PaintChunkInfo {
     PaintChunkInfo(const RasterInvalidator& invalidator,
@@ -123,9 +119,8 @@ class PLATFORM_EXPORT RasterInvalidator {
       const PaintChunkInfo& new_chunk_info,
       const DisplayItemClient&);
 
-  // |old_or_new| indicates if |client| is known to be new (alive) and we can
-  // get DebugName() directly or should get from |tracking_info_
-  // ->old_client_debug_names|.
+  // |old_or_new| indicates whether |client| is from the old or new
+  // PaintArtifact, so we know which one can provide the client's debug name.
   enum ClientIsOldOrNew { kClientIsOld, kClientIsNew };
   void AddRasterInvalidation(RasterInvalidationFunction function,
                              const IntRect& rect,
@@ -135,7 +130,7 @@ class PLATFORM_EXPORT RasterInvalidator {
     if (rect.IsEmpty())
       return;
     function.Run(rect);
-    if (tracking_info_)
+    if (tracking_)
       TrackRasterInvalidation(rect, client, reason, old_or_new);
   }
   void TrackRasterInvalidation(const IntRect&,
@@ -160,14 +155,10 @@ class PLATFORM_EXPORT RasterInvalidator {
   FloatPoint layer_offset_;
   IntSize layer_bounds_;
   Vector<PaintChunkInfo> old_paint_chunks_info_;
+  scoped_refptr<const PaintArtifact> current_paint_artifact_;
   scoped_refptr<const PaintArtifact> old_paint_artifact_;
 
-  struct RasterInvalidationTrackingInfo {
-    using ClientDebugNamesMap = HashMap<const DisplayItemClient*, String>;
-    ClientDebugNamesMap old_client_debug_names;
-    RasterInvalidationTracking tracking;
-  };
-  std::unique_ptr<RasterInvalidationTrackingInfo> tracking_info_;
+  std::unique_ptr<RasterInvalidationTracking> tracking_;
 };
 
 }  // namespace blink

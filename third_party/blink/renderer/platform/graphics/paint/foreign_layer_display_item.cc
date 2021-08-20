@@ -66,6 +66,7 @@ void RecordForeignLayer(GraphicsContext& context,
   paint_controller.CreateAndAppend<ForeignLayerDisplayItem>(
       client, type, std::move(layer), offset,
       client.GetPaintInvalidationReason());
+  paint_controller.RecordDebugInfo(client);
   if (properties) {
     paint_controller.UpdateCurrentPaintChunkProperties(nullptr,
                                                        *previous_properties);

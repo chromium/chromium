@@ -89,12 +89,15 @@ class PLATFORM_EXPORT PaintController {
     STACK_ALLOCATED();
 
    public:
-    CycleScope() = default;
-    explicit CycleScope(PaintController& controller) {
+    explicit CycleScope(bool record_debug_info = false)
+        : record_debug_info_(record_debug_info) {}
+    explicit CycleScope(PaintController& controller,
+                        bool record_debug_info = false)
+        : CycleScope(record_debug_info) {
       AddController(controller);
     }
     void AddController(PaintController& controller) {
-      controller.StartCycle(clients_to_validate_);
+      controller.StartCycle(clients_to_validate_, record_debug_info_);
       controllers_.push_back(&controller);
     }
     ~CycleScope();
@@ -104,10 +107,13 @@ class PLATFORM_EXPORT PaintController {
 
    private:
     Vector<const DisplayItemClient*> clients_to_validate_;
+    bool record_debug_info_;
   };
   friend class CycleScope;
 
   // These methods are called during painting.
+
+  void RecordDebugInfo(const DisplayItemClient& client);
 
   // Provide a new set of paint chunk properties to apply to recorded display
   // items. If id is nullptr, the id of the first display item will be used as
@@ -170,7 +176,7 @@ class PLATFORM_EXPORT PaintController {
             .AllocateAndConstruct<DisplayItemClass>(
                 client, std::forward<Args>(args)...);
     display_item.SetFragment(current_fragment_);
-    ProcessNewItem(display_item);
+    ProcessNewItem(client, display_item);
   }
 
   // Tries to find the cached display item corresponding to the given
@@ -308,7 +314,8 @@ class PLATFORM_EXPORT PaintController {
   void ReserveCapacity();
 
   // Called at the beginning of a paint cycle, as defined by CycleScope.
-  void StartCycle(Vector<const DisplayItemClient*>& clients_to_validate);
+  void StartCycle(Vector<const DisplayItemClient*>& clients_to_validate,
+                  bool record_debug_info);
 
   // Called at the end of a paint cycle, as defined by CycleScope.
   // The PaintController will cleanup data that will no longer be used for the
@@ -333,7 +340,7 @@ class PLATFORM_EXPORT PaintController {
   void InvalidateAllForTesting();
 
   // Set new item state (cache skipping, etc) for the last new display item.
-  void ProcessNewItem(DisplayItem&);
+  void ProcessNewItem(const DisplayItemClient&, DisplayItem&);
 
   void CheckNewItem(DisplayItem&);
   void CheckNewChunk();
@@ -404,6 +411,7 @@ class PLATFORM_EXPORT PaintController {
 
   bool cache_is_all_invalid_ = true;
   bool committed_ = false;
+  bool record_debug_info_ = false;
 
   // A stack recording current frames' first paints.
   Vector<FrameFirstPaint> frame_first_paints_;

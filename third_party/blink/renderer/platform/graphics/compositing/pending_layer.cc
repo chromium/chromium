@@ -160,7 +160,7 @@ std::unique_ptr<JSONObject> PendingLayer::ToJSON() const {
     sb.Append("index=");
     sb.AppendNumber(it.IndexInPaintArtifact());
     sb.Append(" ");
-    sb.Append(it->ToString());
+    sb.Append(it->ToString(chunks_.GetPaintArtifact()));
     json_chunks->PushString(sb.ToString());
   }
   result->SetArray("paint_chunks", std::move(json_chunks));

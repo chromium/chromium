@@ -47,7 +47,6 @@ class PLATFORM_EXPORT DisplayItemClient {
   // Tests if this DisplayItemClient object has been created and has not been
   // deleted yet.
   bool IsAlive() const;
-  String SafeDebugName(bool known_to_be_safe = false) const;
 #endif
 
   virtual String DebugName() const = 0;

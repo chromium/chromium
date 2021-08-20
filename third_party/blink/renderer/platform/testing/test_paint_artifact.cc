@@ -41,6 +41,8 @@ TestPaintArtifact& TestPaintArtifact::Chunk(DisplayItemClient& client,
   paint_artifact_->PaintChunks().emplace_back(
       display_item_list.size(), display_item_list.size(),
       PaintChunk::Id(client, type), PropertyTreeState::Root());
+  paint_artifact_->RecordDebugInfo(client, client.DebugName(),
+                                   client.OwnerNodeId());
   // Assume PaintController has processed this chunk.
   paint_artifact_->PaintChunks().back().client_is_just_created = false;
   return *this;
@@ -71,6 +73,8 @@ TestPaintArtifact& TestPaintArtifact::ForeignLayer(
       .AllocateAndConstruct<ForeignLayerDisplayItem>(
           client, DisplayItem::kForeignLayerFirst, std::move(layer), offset,
           client.GetPaintInvalidationReason());
+  paint_artifact_->RecordDebugInfo(client, client.DebugName(),
+                                   client.OwnerNodeId());
   DidAddDisplayItem();
   return *this;
 }
@@ -90,6 +94,8 @@ TestPaintArtifact& TestPaintArtifact::RectDrawing(DisplayItemClient& client,
           client, DisplayItem::kDrawingFirst, bounds,
           recorder.finishRecordingAsPicture(),
           client.GetPaintInvalidationReason());
+  paint_artifact_->RecordDebugInfo(client, client.DebugName(),
+                                   client.OwnerNodeId());
   DidAddDisplayItem();
   return *this;
 }

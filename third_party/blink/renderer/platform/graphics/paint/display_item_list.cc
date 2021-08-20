@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/logging_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
+#include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
 
 namespace blink {
 
@@ -17,6 +18,7 @@ DisplayItemList::~DisplayItemList() {
 #if DCHECK_IS_ON()
 
 std::unique_ptr<JSONArray> DisplayItemList::DisplayItemsAsJSON(
+    const PaintArtifact& paint_artifact,
     wtf_size_t first_item_index,
     const DisplayItemRange& display_items,
     JsonFlags flags) {
@@ -26,12 +28,13 @@ std::unique_ptr<JSONArray> DisplayItemList::DisplayItemsAsJSON(
       << "kCompact and kShowPaintRecords are exclusive";
   for (auto& item : display_items) {
     if (flags & kCompact) {
-      json_array->PushString(
-          String::Format("%u: %s", i, item.IdAsString().Utf8().data()));
+      json_array->PushString(String::Format(
+          "%u: %s", i, paint_artifact.IdAsString(item.GetId()).Utf8().c_str()));
     } else {
       auto json = std::make_unique<JSONObject>();
       json->SetInteger("index", i);
-      item.PropertiesAsJSON(*json, flags & kClientKnownToBeAlive);
+      item.PropertiesAsJSON(*json, paint_artifact,
+                            flags & kClientKnownToBeAlive);
 
       if ((flags & kShowPaintRecords) && item.IsDrawing()) {
         const auto& drawing_item = To<DrawingDisplayItem>(item);
