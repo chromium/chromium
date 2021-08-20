@@ -668,4 +668,37 @@ bool EnumTraits<crosapi::mojom::WindowMode, apps::mojom::WindowMode>::FromMojom(
   return false;
 }
 
+bool StructTraits<crosapi::mojom::IntentDataView, apps::mojom::IntentPtr>::Read(
+    crosapi::mojom::IntentDataView data,
+    apps::mojom::IntentPtr* out) {
+  std::string action;
+  if (!data.ReadAction(&action))
+    return false;
+
+  absl::optional<GURL> url;
+  if (!data.ReadUrl(&url))
+    return false;
+
+  absl::optional<std::string> mime_type;
+  if (!data.ReadMimeType(&mime_type))
+    return false;
+
+  absl::optional<std::string> share_text;
+  if (!data.ReadShareText(&share_text))
+    return false;
+
+  absl::optional<std::string> share_title;
+  if (!data.ReadShareTitle(&share_title))
+    return false;
+
+  auto intent = apps::mojom::Intent::New();
+  intent->action = action;
+  intent->url = url;
+  intent->mime_type = mime_type;
+  intent->share_text = share_text;
+  intent->share_title = share_title;
+  *out = std::move(intent);
+  return true;
+}
+
 }  // namespace mojo

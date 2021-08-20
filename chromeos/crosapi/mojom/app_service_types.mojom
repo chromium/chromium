@@ -8,6 +8,7 @@ module crosapi.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
 import "ui/gfx/image/mojom/image.mojom";
+import "url/mojom/url.mojom";
 
 // Information about an app. See components/services/app_service/README.md.
 
@@ -272,4 +273,16 @@ enum WindowMode {
   kBrowser,
   // Opens in a tabbed app window
   kTabbedWindow,
+};
+
+// Action and resource handling request. This should
+// be kept in sync with ConvertIntentToValue and ConvertValueToIntent in
+// components/services/app_service/public/cpp/intent_util.*
+[Stable]
+struct Intent {
+  string action@0; // Intent action. e.g. view, send.
+  url.mojom.Url? url@1; // The URL of the intent. e.g. https://www.google.com/.
+  string? mime_type@2; // MIME type. e.g. text/plain, image/*.
+  string? share_text@4; // Text to share. e.g. Share link to other app.
+  string? share_title@5; // Title for the share.
 };

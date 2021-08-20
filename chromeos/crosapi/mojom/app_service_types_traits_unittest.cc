@@ -782,3 +782,21 @@ TEST(AppServiceTypesTraitsTest, RoundTripWindowMode) {
     EXPECT_EQ(output, apps::mojom::WindowMode::kTabbedWindow);
   }
 }
+
+TEST(AppServiceTypesTraitsTest, RoundTripIntent) {
+  auto input = apps::mojom::Intent::New();
+  input->action = "action";
+  input->url = GURL("http://www.google.com");
+  input->mime_type = "mime_type";
+  input->share_text = "share_text";
+  input->share_title = "share_title";
+
+  apps::mojom::IntentPtr output;
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::Intent>(
+      input, output));
+  EXPECT_EQ(output->action, input->action);
+  EXPECT_EQ(output->url, input->url);
+  EXPECT_EQ(output->mime_type, input->mime_type);
+  EXPECT_EQ(output->share_text, input->share_text);
+  EXPECT_EQ(output->share_title, input->share_title);
+}
