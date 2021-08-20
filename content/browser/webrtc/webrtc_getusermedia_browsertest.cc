@@ -277,8 +277,8 @@ IN_PROC_BROWSER_TEST_F(WebRtcGetUserMediaBrowserTest,
   ExecuteJavascriptAndWaitForOk("getUserMediaAndRenderInSeveralVideoTags();");
 }
 
-// TODO(crbug.com/571389): Flaky on TSAN bots.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+// TODO(crbug.com/571389, crbug.com/1241538): Flaky on TSAN bots and macOS.
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
 #define MAYBE_GetUserMediaWithMandatorySourceID \
   DISABLED_GetUserMediaWithMandatorySourceID
 #else
