@@ -22,20 +22,18 @@ GeneratedPasswordSavedMessageDelegate::
 void GeneratedPasswordSavedMessageDelegate::DismissPromptInternal() {
   if (message_ != nullptr) {
     messages::MessageDispatcherBridge::Get()->DismissMessage(
-        message_.get(), web_contents_, messages::DismissReason::UNKNOWN);
+        message_.get(), messages::DismissReason::UNKNOWN);
   }
 }
 
 void GeneratedPasswordSavedMessageDelegate::HandleDismissCallback(
     messages::DismissReason dismiss_reason) {
-  web_contents_ = nullptr;
   message_.reset();
 }
 
 void GeneratedPasswordSavedMessageDelegate::ShowPrompt(
     content::WebContents* web_contents,
     std::unique_ptr<password_manager::PasswordFormManagerForUI> saved_form) {
-  web_contents_ = web_contents;
   message_ = std::make_unique<messages::MessageWrapper>(
       messages::MessageIdentifier::GENERATED_PASSWORD_SAVED,
       base::OnceCallback<void()>(),

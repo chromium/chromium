@@ -137,7 +137,7 @@ void SaveCardMessageControllerAndroid::HandleMessageDismiss(
 void SaveCardMessageControllerAndroid::DismissMessage() {
   if (message_) {
     messages::MessageDispatcherBridge::Get()->DismissMessage(
-        message_.get(), web_contents_, messages::DismissReason::UNKNOWN);
+        message_.get(), messages::DismissReason::UNKNOWN);
   }
 }
 

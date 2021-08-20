@@ -52,7 +52,6 @@ class SaveCardMessageControllerAndroidTest
   void ExpectDismiss() {
     EXPECT_CALL(message_dispatcher_bridge_, DismissMessage)
         .WillOnce([](messages::MessageWrapper* message,
-                     content::WebContents* web_contents,
                      messages::DismissReason dismiss_reason) {
           message->HandleDismissCallback(base::android::AttachCurrentThread(),
                                          static_cast<int>(dismiss_reason));
@@ -158,7 +157,6 @@ void SaveCardMessageControllerAndroidTest::DismissMessage(
     messages::DismissReason reason) {
   EXPECT_CALL(message_dispatcher_bridge_, DismissMessage)
       .WillOnce([&reason](messages::MessageWrapper* message,
-                          content::WebContents* web_contents,
                           messages::DismissReason dismiss_reason) {
         message->HandleDismissCallback(base::android::AttachCurrentThread(),
                                        static_cast<int>(reason));

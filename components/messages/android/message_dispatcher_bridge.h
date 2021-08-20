@@ -35,7 +35,6 @@ class MessageDispatcherBridge {
                                           ui::WindowAndroid* window_android,
                                           MessagePriority priority);
   virtual void DismissMessage(MessageWrapper* message,
-                              content::WebContents* web_contents,
                               DismissReason dismiss_reason);
 
   // Helper method for mapping native resource id to Java Drawable resource id.

@@ -119,15 +119,15 @@ void SaveUpdateAddressProfileMessageController::OnMessageDismissed(
 void SaveUpdateAddressProfileMessageController::DismissMessageForTest(
     messages::DismissReason reason) {
   if (message_) {
-    messages::MessageDispatcherBridge::Get()->DismissMessage(
-        message_.get(), web_contents_, reason);
+    messages::MessageDispatcherBridge::Get()->DismissMessage(message_.get(),
+                                                             reason);
   }
 }
 
 void SaveUpdateAddressProfileMessageController::DismissMessage() {
   if (message_) {
     messages::MessageDispatcherBridge::Get()->DismissMessage(
-        message_.get(), web_contents_, messages::DismissReason::UNKNOWN);
+        message_.get(), messages::DismissReason::UNKNOWN);
   }
 }
 

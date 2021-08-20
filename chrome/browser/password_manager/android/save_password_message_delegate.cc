@@ -69,8 +69,8 @@ void SavePasswordMessageDelegate::DismissSavePasswordPrompt() {
 void SavePasswordMessageDelegate::DismissSavePasswordMessage(
     messages::DismissReason dismiss_reason) {
   if (message_ != nullptr) {
-    messages::MessageDispatcherBridge::Get()->DismissMessage(
-        message_.get(), web_contents_, dismiss_reason);
+    messages::MessageDispatcherBridge::Get()->DismissMessage(message_.get(),
+                                                             dismiss_reason);
   }
 }
 

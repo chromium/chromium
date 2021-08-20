@@ -68,7 +68,7 @@ bool PopupBlockedMessageDelegate::ShowMessage(
 PopupBlockedMessageDelegate::~PopupBlockedMessageDelegate() {
   if (message_ != nullptr) {
     messages::MessageDispatcherBridge::Get()->DismissMessage(
-        message_.get(), web_contents_, messages::DismissReason::UNKNOWN);
+        message_.get(), messages::DismissReason::UNKNOWN);
   }
 }
 
