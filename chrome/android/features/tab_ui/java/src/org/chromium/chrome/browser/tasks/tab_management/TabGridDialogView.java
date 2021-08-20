@@ -108,7 +108,7 @@ public class TabGridDialogView extends FrameLayout {
     public TabGridDialogView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
-        mTabGridCardPadding = TabUiThemeProvider.getTabCardPaddingDimension(mContext);
+        mTabGridCardPadding = TabUiThemeProvider.getTabGridCardMarginForDialogAnimation(mContext);
         mToolbarHeight =
                 (int) mContext.getResources().getDimension(R.dimen.tab_group_toolbar_height);
         mBackgroundDrawableColor =
@@ -632,7 +632,7 @@ public class TabGridDialogView extends FrameLayout {
         ImageView sourceCardFavicon = view.findViewById(R.id.tab_favicon);
         ImageView animationCardFavicon = mAnimationCardView.findViewById(R.id.tab_favicon);
         if (sourceCardFavicon.getDrawable() != null) {
-            int padding = (int) TabUiThemeProvider.getTabCardPaddingDimension(mContext);
+            int padding = (int) TabUiThemeProvider.getTabCardTopFaviconPadding(mContext);
             animationCardFavicon.setPadding(padding, padding, padding, padding);
             animationCardFavicon.setImageDrawable(sourceCardFavicon.getDrawable());
         } else {

@@ -53,6 +53,7 @@
     <dimen name="tab_grid_card_favicon_padding">11dp</dimen>
     <dimen name="tab_grid_card_header_height">40dp</dimen>
     <dimen name="tab_grid_card_margin">8dp</dimen>
+    <dimen name="tab_grid_card_between_card_padding">4dp</dimen>
     <dimen name="tab_grid_card_title_fading_length">20dp</dimen>
     <dimen name="tab_grid_card_title_end_margin">44dp</dimen>
     <dimen name="tab_grid_card_thumbnail_corner_radius_top">4dp</dimen>

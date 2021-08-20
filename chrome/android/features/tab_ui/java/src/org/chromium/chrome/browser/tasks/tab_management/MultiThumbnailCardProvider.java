@@ -347,7 +347,8 @@ public class MultiThumbnailCardProvider implements TabListMediator.ThumbnailProv
     private void initializedThumbnailRects(Context context, float expectedThumbnailAspectRatio) {
         boolean themeRefactorEnabled = TabUiThemeProvider.themeRefactorEnabled();
 
-        float thumbnailHorizontalPadding = TabUiThemeProvider.getTabCardPaddingDimension(context);
+        float thumbnailHorizontalPadding =
+                TabUiThemeProvider.getTabMiniThumbnailPaddingDimension(context);
         float thumbnailVerticalPadding = themeRefactorEnabled
                 ? thumbnailHorizontalPadding
                 : thumbnailHorizontalPadding / expectedThumbnailAspectRatio;
