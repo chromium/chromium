@@ -372,7 +372,8 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, DeleteCurrentProfile) {
   EXPECT_EQ(new_path, last_used->GetPath());
 }
 
-#if defined(OS_LINUX)
+// Test is flaky. https://crbug.com/1206184
+#if defined(OS_LINUX) || defined(OS_MAC) || defined(OS_WIN)
 #define MAYBE_DeleteAllProfiles DISABLED_DeleteAllProfiles
 #else
 #define MAYBE_DeleteAllProfiles DeleteAllProfiles
