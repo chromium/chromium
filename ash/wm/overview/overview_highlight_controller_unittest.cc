@@ -776,4 +776,29 @@ TEST_F(DesksOverviewHighlightControllerTest, ZeroStateOfDesksBar) {
             GetHighlightedView());
 }
 
+TEST_F(DesksOverviewHighlightControllerTest, ActivateHighlightOnViewFocused) {
+  // Set up an overview with 2 mini desk items.
+  ToggleOverview();
+  const auto* desk_bar_view =
+      GetDesksBarViewForRoot(Shell::GetPrimaryRootWindow());
+  CheckDeskBarViewSize(desk_bar_view, "initial");
+  EXPECT_EQ(2u, desk_bar_view->mini_views().size());
+
+  // Tab to first mini desk view.
+  SendKey(ui::VKEY_TAB);
+  ASSERT_EQ(desk_bar_view->mini_views()[0], GetHighlightedView());
+  CheckDeskBarViewSize(desk_bar_view, "overview item");
+
+  // Click on the second mini desk item's name view.
+  auto* event_generator = GetEventGenerator();
+  auto* desk_name_view_1 = desk_bar_view->mini_views()[1]->desk_name_view();
+  event_generator->MoveMouseTo(
+      desk_name_view_1->GetBoundsInScreen().CenterPoint());
+  event_generator->ClickLeftButton();
+  EXPECT_FALSE(desk_bar_view->IsZeroState());
+
+  // Verify that focus has moved to the clicked desk item.
+  EXPECT_EQ(desk_name_view_1, GetHighlightedView());
+  EXPECT_TRUE(desk_name_view_1->HasFocus());
+}
 }  // namespace ash
