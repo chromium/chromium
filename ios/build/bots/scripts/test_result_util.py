@@ -128,6 +128,12 @@ class ResultCollection(object):
     """
     return self._crashed
 
+  @crashed.setter
+  def crashed(self, value):
+    """Sets crash value."""
+    assert (type(value) == bool)
+    self._crashed = value
+
   @property
   def crash_message(self):
     """Logs from crashes in collection which are unrelated to single tests."""

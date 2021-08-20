@@ -168,6 +168,15 @@ class XCTestLogParser(object):
     """Returns a bool indicating whether a system alert is shown on device."""
     return self.system_alert_present
 
+  def Finalize(self):
+    """Finalize for |self._result_collection|.
+
+    Called at the end to add unfinished tests and crash status for
+        self._result_collection.
+    """
+    # TODO(crbug.com/1132476): Switch XCTest parser to use ResultCollection.
+    pass
+
   def ProcessLine(self, line):
     """This is called once with each line of the test log."""
 
