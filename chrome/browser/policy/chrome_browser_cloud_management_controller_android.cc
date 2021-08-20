@@ -13,6 +13,7 @@
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/policy/browser_dm_token_storage_android.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "chrome/browser/policy/client_data_delegate_android.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "components/policy/core/common/policy_namespace.h"
@@ -207,6 +208,11 @@ bool ChromeBrowserCloudManagementControllerAndroid::ReadyToInit() {
   return g_browser_process->browser_policy_connector()
       ->GetPolicyService()
       ->IsInitializationComplete(POLICY_DOMAIN_CHROME);
+}
+
+std::unique_ptr<ClientDataDelegate>
+ChromeBrowserCloudManagementControllerAndroid::CreateClientDataDelegate() {
+  return std::make_unique<ClientDataDelegateAndroid>();
 }
 
 void ChromeBrowserCloudManagementControllerAndroid::DeferInitialization(

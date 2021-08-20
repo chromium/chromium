@@ -33,6 +33,7 @@ class ReportScheduler;
 
 namespace policy {
 class ChromeBrowserCloudManagementRegistrar;
+class ClientDataDelegate;
 class ConfigurationPolicyProvider;
 class MachineLevelUserCloudPolicyManager;
 class MachineLevelUserCloudPolicyFetcher;
@@ -147,6 +148,9 @@ class ChromeBrowserCloudManagementController
     // needs to be deferred. On platforms where controller initialization isn't
     // blocked, this method should return true.
     virtual bool ReadyToInit() = 0;
+
+    // Returns the platform-specific client data delegate.
+    virtual std::unique_ptr<ClientDataDelegate> CreateClientDataDelegate() = 0;
 
     // Postpones controller initialization until |ReadyToInit()| is true.
     // Implemented in the delegate because the reason why initialization needs
@@ -267,7 +271,9 @@ class ChromeBrowserCloudManagementController
 
   std::unique_ptr<enterprise_reporting::ReportScheduler> report_scheduler_;
 
-  std::unique_ptr<policy::CloudPolicyClient> cloud_policy_client_;
+  std::unique_ptr<CloudPolicyClient> cloud_policy_client_;
+
+  std::unique_ptr<ClientDataDelegate> client_data_delegate_;
 
   // Holds a callback to the function that will consume the
   // MachineLevelUserCloudPolicyManager object once it's created.

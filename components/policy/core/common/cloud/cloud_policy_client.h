@@ -38,6 +38,7 @@ class SharedURLLoaderFactory;
 
 namespace policy {
 
+class ClientDataDelegate;
 class SigningService;
 class DMServerJobConfiguration;
 
@@ -239,8 +240,10 @@ class POLICY_EXPORT CloudPolicyClient {
   // This method is used to register browser (e.g. for machine-level policies).
   // Device registration with enrollment token should be performed using
   // RegisterWithCertificate method.
-  virtual void RegisterWithToken(const std::string& token,
-                                 const std::string& client_id);
+  virtual void RegisterWithToken(
+      const std::string& token,
+      const std::string& client_id,
+      const ClientDataDelegate& client_data_delegate);
 
   // Sets information about a policy invalidation. Subsequent fetch operations
   // will use the given info, and callers can use fetched_invalidation_version

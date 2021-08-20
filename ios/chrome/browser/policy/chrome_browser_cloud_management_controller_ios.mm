@@ -4,6 +4,8 @@
 
 #include "ios/chrome/browser/policy/chrome_browser_cloud_management_controller_ios.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
@@ -15,6 +17,7 @@
 #include "ios/chrome/browser/chrome_paths.h"
 #include "ios/chrome/browser/policy/browser_dm_token_storage_ios.h"
 #include "ios/chrome/browser/policy/browser_policy_connector_ios.h"
+#include "ios/chrome/browser/policy/client_data_delegate_ios.h"
 #include "ios/chrome/browser/policy/policy_features.h"
 #include "ios/chrome/browser/policy/reporting/reporting_delegate_factory_ios.h"
 #include "ios/web/public/thread/web_task_traits.h"
@@ -130,6 +133,11 @@ bool ChromeBrowserCloudManagementControllerIOS::ReadyToCreatePolicyManager() {
 
 bool ChromeBrowserCloudManagementControllerIOS::ReadyToInit() {
   return true;
+}
+
+std::unique_ptr<ClientDataDelegate>
+ChromeBrowserCloudManagementControllerIOS::CreateClientDataDelegate() {
+  return std::make_unique<ClientDataDelegateIos>();
 }
 
 }  // namespace policy

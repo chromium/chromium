@@ -46,6 +46,7 @@ void ChromeBrowserCloudManagementRegistrar::
     RegisterForCloudManagementWithEnrollmentToken(
         const std::string& enrollment_token,
         const std::string& client_id,
+        const ClientDataDelegate& client_data_delegate,
         CloudManagementRegistrationCallback callback) {
   DCHECK(!enrollment_token.empty());
   DCHECK(!client_id.empty());
@@ -70,7 +71,7 @@ void ChromeBrowserCloudManagementRegistrar::
       policy_client.get(),
       enterprise_management::DeviceRegisterRequest::BROWSER);
   registration_helper_->StartRegistrationWithEnrollmentToken(
-      enrollment_token, client_id,
+      enrollment_token, client_id, client_data_delegate,
       base::BindOnce(&ChromeBrowserCloudManagementRegistrar::
                          CallCloudManagementRegistrationCallback,
                      base::Unretained(this), std::move(policy_client),

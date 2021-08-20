@@ -4,6 +4,8 @@
 
 #include "chrome/browser/policy/chrome_browser_cloud_management_controller_desktop.h"
 
+#include <utility>
+
 #include "base/command_line.h"
 #include "base/path_service.h"
 #include "build/branding_buildflags.h"
@@ -18,6 +20,7 @@
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/policy/chrome_browser_cloud_management_register_watcher.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "chrome/browser/policy/client_data_delegate_desktop.h"
 #include "chrome/browser/policy/cloud/cloud_policy_invalidator.h"
 #include "chrome/browser/policy/cloud/remote_commands_invalidator_impl.h"
 #include "chrome/common/chrome_features.h"
@@ -226,6 +229,11 @@ bool ChromeBrowserCloudManagementControllerDesktop::
 
 bool ChromeBrowserCloudManagementControllerDesktop::ReadyToInit() {
   return true;
+}
+
+std::unique_ptr<ClientDataDelegate>
+ChromeBrowserCloudManagementControllerDesktop::CreateClientDataDelegate() {
+  return std::make_unique<ClientDataDelegateDesktop>();
 }
 
 void ChromeBrowserCloudManagementControllerDesktop::StartInvalidations() {

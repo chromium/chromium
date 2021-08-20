@@ -16,6 +16,7 @@
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/values.h"
+#include "components/policy/core/common/cloud/client_data_delegate.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/core/common/cloud/cloud_policy_validator.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
@@ -274,8 +275,10 @@ void CloudPolicyClient::RegisterWithCertificate(
                      weak_ptr_factory_.GetWeakPtr(), std::move(auth)));
 }
 
-void CloudPolicyClient::RegisterWithToken(const std::string& token,
-                                          const std::string& client_id) {
+void CloudPolicyClient::RegisterWithToken(
+    const std::string& token,
+    const std::string& client_id,
+    const ClientDataDelegate& client_data_delegate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(service_);
   DCHECK(!token.empty());
@@ -292,24 +295,8 @@ void CloudPolicyClient::RegisterWithToken(const std::string& token,
           base::BindOnce(&CloudPolicyClient::OnRegisterCompleted,
                          weak_ptr_factory_.GetWeakPtr()));
 
-  enterprise_management::RegisterBrowserRequest* request =
-      config->request()->mutable_register_browser_request();
-#if !defined(OS_IOS)
-  // For iOS devices, the machine name is determined by server side logic using
-  // the client ID and / or the device model.
-  request->set_machine_name(GetMachineName());
-
-  if (base::FeatureList::IsEnabled(features::kUploadBrowserDeviceIdentifier)) {
-    request->set_allocated_browser_device_identifier(
-        GetBrowserDeviceIdentifier().release());
-  }
-#endif  // !defined(OS_IOS)
-  request->set_os_platform(GetOSPlatform());
-  request->set_os_version(GetOSVersion());
-#if defined(OS_IOS)
-  request->set_device_model(GetDeviceModel());
-  request->set_brand_name(GetDeviceManufacturer());
-#endif  // defined(OS_IOS)
+  client_data_delegate.FillRegisterBrowserRequest(
+      config->request()->mutable_register_browser_request());
 
   policy_fetch_request_job_ = service_->CreateJob(std::move(config));
 }

@@ -23,6 +23,7 @@ class SharedURLLoaderFactory;
 
 namespace policy {
 
+class ClientDataDelegate;
 class CloudPolicyClient;
 class CloudPolicyClientRegistrationHelper;
 class MachineLevelUserCloudPolicyManager;
@@ -47,6 +48,7 @@ class ChromeBrowserCloudManagementRegistrar {
   void RegisterForCloudManagementWithEnrollmentToken(
       const std::string& enrollment_token,
       const std::string& client_id,
+      const ClientDataDelegate& client_data_delegate,
       CloudManagementRegistrationCallback callback);
 
  private:

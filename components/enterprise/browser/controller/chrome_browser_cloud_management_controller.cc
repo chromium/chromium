@@ -22,6 +22,7 @@
 #include "components/enterprise/browser/enterprise_switches.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/cloud/chrome_browser_cloud_management_metrics.h"
+#include "components/policy/core/common/cloud/client_data_delegate.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/dm_token.h"
@@ -79,7 +80,8 @@ void ChromeBrowserCloudManagementController::Delegate::DeferInitialization(
 
 ChromeBrowserCloudManagementController::ChromeBrowserCloudManagementController(
     std::unique_ptr<ChromeBrowserCloudManagementController::Delegate> delegate)
-    : delegate_(std::move(delegate)) {
+    : delegate_(std::move(delegate)),
+      client_data_delegate_(delegate_->CreateClientDataDelegate()) {
   delegate_->SetDMTokenStorageDelegate();
 }
 
@@ -261,7 +263,7 @@ void ChromeBrowserCloudManagementController::Init(
 
     // Not registered already, so do it now.
     cloud_management_registrar_->RegisterForCloudManagementWithEnrollmentToken(
-        enrollment_token, client_id,
+        enrollment_token, client_id, *client_data_delegate_,
         base::BindOnce(
             &ChromeBrowserCloudManagementController::
                 RegisterForCloudManagementWithEnrollmentTokenCallback,
