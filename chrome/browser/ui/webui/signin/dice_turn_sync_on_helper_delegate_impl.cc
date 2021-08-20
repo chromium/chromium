@@ -73,8 +73,12 @@ void OnEmailConfirmation(DiceTurnSyncOnHelper::SigninChoiceCallback callback,
 
 void OnProfileCheckComplete(const AccountInfo& account_info,
                             DiceTurnSyncOnHelper::SigninChoiceCallback callback,
-                            Browser* browser,
+                            base::WeakPtr<Browser> browser,
                             bool prompt_for_new_profile) {
+  if (!browser) {
+    std::move(callback).Run(DiceTurnSyncOnHelper::SIGNIN_CHOICE_CANCEL);
+    return;
+  }
   if (base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync)) {
     ProfileAttributesEntry* entry =
         g_browser_process->profile_manager()
@@ -94,13 +98,13 @@ void OnProfileCheckComplete(const AccountInfo& account_info,
                             : DiceTurnSyncOnHelper::SIGNIN_CHOICE_CONTINUE
                       : DiceTurnSyncOnHelper::SIGNIN_CHOICE_CANCEL);
             },
-            std::move(callback), browser, prompt_for_new_profile));
+            std::move(callback), browser.get(), prompt_for_new_profile));
     return;
   }
 
   DiceTurnSyncOnHelper::Delegate::ShowEnterpriseAccountConfirmationForBrowser(
       account_info.email, /*prompt_for_new_profile=*/prompt_for_new_profile,
-      std::move(callback), browser);
+      std::move(callback), browser.get());
 }
 
 }  // namespace
@@ -138,7 +142,7 @@ void DiceTurnSyncOnHelperDelegateImpl::ShowEnterpriseAccountConfirmation(
   // asynchronous.
   ShouldEnterpriseConfirmationPromptForNewProfile(
       profile_, base::BindOnce(&OnProfileCheckComplete, account_info,
-                               std::move(callback), browser_));
+                               std::move(callback), browser_->AsWeakPtr()));
 }
 
 void DiceTurnSyncOnHelperDelegateImpl::ShowSyncConfirmation(
