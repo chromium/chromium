@@ -903,9 +903,12 @@ crbug.com/1212917 [ chromeos chromeos-board-kevin no-passthrough ] conformance/c
 crbug.com/1212917 [ chromeos chromeos-board-kevin no-passthrough ] conformance/context/context-attribute-preserve-drawing-buffer.html [ Failure ]
 crbug.com/1212917 [ chromeos chromeos-board-kevin no-passthrough ] conformance/context/context-creation-and-destruction.html [ Failure ]
 crbug.com/1212917 [ chromeos chromeos-board-kevin no-passthrough ] conformance/ogles/GL/atan/atan_001_to_008.html [ Failure ]
+crbug.com/1212917 [ chromeos chromeos-board-kevin no-passthrough ] conformance/ogles/GL/functions/functions_073_to_080.html [ Failure ]
 crbug.com/1212917 [ chromeos chromeos-board-kevin no-passthrough ] conformance/ogles/GL/struct/struct_049_to_056.html [ Failure ]
 crbug.com/1212917 [ chromeos chromeos-board-kevin no-passthrough ] conformance/ogles/GL/swizzlers/swizzlers_009_to_016.html [ Failure ]
 crbug.com/1212917 [ chromeos chromeos-board-kevin no-passthrough ] conformance/rendering/color-mask-preserved-during-implicit-clears.html [ Failure ]
+crbug.com/1212917 [ chromeos chromeos-board-kevin no-passthrough ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
+crbug.com/1212917 [ chromeos chromeos-board-kevin no-passthrough ] conformance/textures/video/tex-2d-alpha-alpha-unsigned_byte.html [ Failure ]
 crbug.com/1212917 [ chromeos chromeos-board-kevin no-passthrough ] conformance/textures/video/tex-2d-luminance-luminance-unsigned_byte.html [ Failure ]
 crbug.com/1212917 [ chromeos chromeos-board-kevin no-passthrough ] conformance/textures/video/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ Failure ]
 crbug.com/1212917 [ chromeos chromeos-board-kevin no-passthrough ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_byte.html [ Failure ]
@@ -917,10 +920,12 @@ crbug.com/1212917 [ chromeos chromeos-board-kevin no-passthrough ] conformance2/
 crbug.com/1212917 [ chromeos chromeos-board-kevin no-passthrough ] conformance2/textures/image_bitmap_from_video/tex-2d-srgb8-rgb-unsigned_byte.html [ Failure ]
 crbug.com/1212917 [ chromeos chromeos-board-kevin no-passthrough ] conformance2/textures/video/tex-2d-r16f-red-half_float.html [ Failure ]
 crbug.com/1212917 [ chromeos chromeos-board-kevin no-passthrough ] conformance2/textures/video/tex-2d-r8ui-red_integer-unsigned_byte.html [ Failure ]
+crbug.com/1212917 [ chromeos chromeos-board-kevin no-passthrough ] conformance2/textures/video/tex-2d-rg32f-rg-float.html [ Failure ]
 crbug.com/1212917 [ chromeos chromeos-board-kevin no-passthrough ] conformance2/textures/video/tex-2d-rgb16f-rgb-half_float.html [ Failure ]
 crbug.com/1212917 [ chromeos chromeos-board-kevin no-passthrough ] conformance2/textures/video/tex-2d-rgb32f-rgb-float.html [ Failure ]
 crbug.com/1212917 [ chromeos chromeos-board-kevin no-passthrough ] conformance2/textures/video/tex-2d-rgba16f-rgba-half_float.html [ Failure ]
 crbug.com/1212917 [ chromeos chromeos-board-kevin no-passthrough ] conformance2/textures/video/tex-2d-rgba4-rgba-unsigned_byte.html [ Failure ]
+crbug.com/1212917 [ chromeos chromeos-board-kevin no-passthrough ] conformance2/textures/video/tex-3d-rgba32f-rgba-float.html [ Failure ]
 
 ##############################
 # Lacros-like Linux Failures #
