@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/accessibility_delegate.h"
 #include "ash/accessibility/magnifier/magnifier_utils.h"
@@ -21,7 +20,6 @@
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "base/cxx17_backports.h"
-#include "base/synchronization/waitable_event.h"
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/window.h"
@@ -41,7 +39,6 @@
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/wm/core/compound_event_filter.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
