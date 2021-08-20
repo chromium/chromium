@@ -53,9 +53,6 @@ class AppBrowserController : public TabStripModelObserver,
   AppBrowserController& operator=(const AppBrowserController&) = delete;
   ~AppBrowserController() override;
 
-  static std::unique_ptr<AppBrowserController> MaybeCreateWebAppController(
-      Browser* browser);
-
   // Returns whether |browser| is a web app window/pop-up.
   static bool IsWebApp(const Browser* browser);
   // Returns whether |browser| is a web app window/pop-up for |app_id|.
