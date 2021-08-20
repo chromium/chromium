@@ -618,7 +618,13 @@ TEST_F(NotificationViewMDTest, TestActionButtonClick) {
   EXPECT_EQ(1, delegate_->clicked_button_index());
 }
 
-TEST_F(NotificationViewMDTest, TestInlineReply) {
+// TODO(crbug.com/1232197): Test failing on linux-lacros-tester-rel.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_TestInlineReply DISABLED_TestInlineReply
+#else
+#define MAYBE_TestInlineReply TestInlineReply
+#endif
+TEST_F(NotificationViewMDTest, MAYBE_TestInlineReply) {
   std::unique_ptr<Notification> notification = CreateSimpleNotification();
   delegate_->set_expecting_reply_submission(true);
 
