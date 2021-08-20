@@ -224,7 +224,6 @@
 <translation id="3153862085237805241">Зачувај ја картичката</translation>
 <translation id="3157387275655328056">Додај во „Списокот за читање“</translation>
 <translation id="3157684681743766797">Означи ги сите…</translation>
-<translation id="3161291298470460782">Со ова ќе се одјавите, ќе се исклучи синхронизацијата и сите податоци од Chrome ќе се избришат од уредов. Синхронизираните податоци ќе останат во вашата сметка на Google.</translation>
 <translation id="3169472444629675720">Откриј</translation>
 <translation id="3175081911749765310">Веб-услуги</translation>
 <translation id="3178650076442119961">Активен денес</translation>
@@ -267,7 +266,6 @@
 <translation id="3494788280727468875">Одобри го чистењето на податоците од прелистување</translation>
 <translation id="35083190962747987">Отвори ${url}</translation>
 <translation id="3519193562722059437">Отворете картичка за да прелистувате на интернет.</translation>
-<translation id="3523473570015918798">Ако се одјавите, обележувачите, историјата, лозинките и другите податоци од Chrome веќе нема да се синхронизираат со вашата сметка на Google.</translation>
 <translation id="3527085408025491307">Папка</translation>
 <translation id="3529024052484145543">Небезбедно</translation>
 <translation id="3533202363250687977">Затвори ги сите инкогнито картички</translation>
@@ -447,7 +445,6 @@
 <translation id="5457226814769348910">Отвори офлајн верзија</translation>
 <translation id="5489208564673669003">За да управувате со колачињата за сите сајтови, погледнете ги <ph name="BEGIN_LINK" />Поставките за колачиња<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Блокирај ги сите колачиња (не се препорачува)</translation>
-<translation id="5508435575041083207">Одјави се и избриши ги податоците од уредов</translation>
 <translation id="5513681519188741830">пред <ph name="TIME" /> ч.</translation>
 <translation id="5525269841082836315">Создај пристапна фраза</translation>
 <translation id="5532698011560297095">Не може да се најави</translation>
@@ -702,9 +699,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7701040980221191251">Нема</translation>
 <translation id="7741325291586284254">Нова страница во картичка „Инкогнито“</translation>
 <translation id="7765158879357617694">Премести</translation>
-<translation id="7771470029643830783">Ако се одјавите, обележувачите, историјата, лозинките и другите податоци од Chrome веќе нема да се синхронизираат со вашата сметка на Google.
-
-Бидејќи со сметката управува <ph name="HOSTED_DOMAIN" />, вашите податоци од Chrome ќе се избришат од уредов кога ќе се одјавите. Синхронизираните податоци ќе останат во вашата сметка на Google.</translation>
 <translation id="7772032839648071052">Потврди лозинка</translation>
 <translation id="7778472311864276518">Отстранете ја сметката од уредов</translation>
 <translation id="7781011649027948662">Да се преведе страницата?</translation>
@@ -774,7 +768,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8495097701594799854">Исклучено од вашата организација.</translation>
 <translation id="8503813439785031346">Корисничко име</translation>
 <translation id="850600235656508448">Отвори во инкогнито</translation>
-<translation id="8510057420705599706">Со ова ќе се одјавите и ќе се исклучи синхронизацијата, но обележувачите, историјата, лозинките и другите податоци од Chrome ќе останат на уредов.</translation>
 <translation id="8517375800490286174">Лиценци со отворен код</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> Картички <ph name="FIRST_VISIBLE_TAB" /> до <ph name="LAST_VISIBLE_TAB" /> од <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8529767659511976195">Ново</translation>

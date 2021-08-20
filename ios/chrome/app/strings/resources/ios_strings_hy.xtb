@@ -224,7 +224,6 @@
 <translation id="3153862085237805241">Պահել քարտը</translation>
 <translation id="3157387275655328056">Ավելացնել ընթերցանության ցանկում</translation>
 <translation id="3157684681743766797">Նշել բոլորը…</translation>
-<translation id="3161291298470460782">Դուք դուրս կգրվեք հաշվից, համաժամացումը կանջատվի, և Chrome-ի բոլոր տվյալները կջնջվեն այս սարքից։ Համաժամացված տվյալները կպահպանվեն ձեր Google հաշվում։</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3175081911749765310">Համացանցի ծառայություններ</translation>
 <translation id="3178650076442119961">Այսօր ակտիվ է եղել</translation>
@@ -267,7 +266,6 @@
 <translation id="3494788280727468875">Հաստատել այցելությունների պատմության ջնջումը</translation>
 <translation id="35083190962747987">Անցնել ${url}</translation>
 <translation id="3519193562722059437">Բացեք ներդիր՝ համացանցում կայքեր դիտելու համար:</translation>
-<translation id="3523473570015918798">Դուրս գրվելու դեպքում էջանիշները, պատմությունը, գաղտնաբառերը և Chrome-ի մյուս տվյալներն այլևս չեն համաժամացվի ձեր Google հաշվի հետ։</translation>
 <translation id="3527085408025491307">Պանակ</translation>
 <translation id="3529024052484145543">Անվտանգ չէ</translation>
 <translation id="3533202363250687977">Փակել բոլոր ինկոգնիտո ներդիրները</translation>
@@ -447,7 +445,6 @@
 <translation id="5457226814769348910">Բացել օֆլայն տարբերակը</translation>
 <translation id="5489208564673669003">Բոլոր կայքերի քուքիները կարող եք կառավարել <ph name="BEGIN_LINK" />Քուքիների կարգավորումներ<ph name="END_LINK" /> բաժնում։</translation>
 <translation id="5490005495580364134">Արգելափակել բոլոր քուքիները (խորհուրդ չի տրվում)</translation>
-<translation id="5508435575041083207">Դուրս գրվել և ջնջել տվյալներն այս սարքից</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> ժ առաջ</translation>
 <translation id="5525269841082836315">Ստեղծել անցաբառ</translation>
 <translation id="5532698011560297095">Չհաջողվեց մուտք գործել</translation>
@@ -702,9 +699,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7701040980221191251">Չկա</translation>
 <translation id="7741325291586284254">Նոր ինկոգնիտո ներդիրի էջ</translation>
 <translation id="7765158879357617694">Տեղափոխել</translation>
-<translation id="7771470029643830783">Դուրս գրվելու դեպքում էջանիշները, պատմությունը, գաղտնաբառերը և Chrome-ի մյուս տվյալներն այլևս չեն համաժամացվի ձեր Google հաշվի հետ։
-
-Քանի որ ձեր հաշիվը <ph name="HOSTED_DOMAIN" /> տիրույթի կողմից է կառավարվում, դուրս գրվելու դեպքում Chrome-ում պահվող ձեր տվյալները կջնջվեն այս սարքից։ Համաժամացված տվյալները կպահպանվեն ձեր Google հաշվում։</translation>
 <translation id="7772032839648071052">Հաստատեք անցաբառը</translation>
 <translation id="7778472311864276518">Հեռացնել հաշիվն այս սարքից</translation>
 <translation id="7781011649027948662">Թարգմանե՞լ էջը</translation>
@@ -774,7 +768,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8495097701594799854">Անջատվել է կազմակերպության կողմից</translation>
 <translation id="8503813439785031346">Օգտանուն</translation>
 <translation id="850600235656508448">Բացել ինկոգնիտո ռեժիմում</translation>
-<translation id="8510057420705599706">Դուք դուրս կգրվեք հաշվից, և համաժամացումը կանջատվի, սակայն ձեր էջանիշները, պատմությունը, գաղտնաբառերը և Chrome-ի այլ տվյալներ կպահպանվեն այս սարքում։</translation>
 <translation id="8517375800490286174">Բաց կոդով հավելվածների լիցենզիաներ</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> Ներդիրներ <ph name="FIRST_VISIBLE_TAB" /> – <ph name="LAST_VISIBLE_TAB" />՝ <ph name="NUMBER_OF_OPEN_TABS" />-ից</translation>
 <translation id="8529767659511976195">Նոր</translation>

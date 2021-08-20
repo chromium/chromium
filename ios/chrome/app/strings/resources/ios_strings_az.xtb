@@ -224,7 +224,6 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="3153862085237805241">Kartı Yadda saxlayın</translation>
 <translation id="3157387275655328056">Oxu Siyahısına əlavə edin</translation>
 <translation id="3157684681743766797">Hamısını Qeyd Edin…</translation>
-<translation id="3161291298470460782">Bunun nəticəsində çıxacaqsınız, sinxronizasiya deaktiv ediləcək və bu cihazdakı bütün Chrome datası silinəcək. Sinxronlaşdırılmış data Google Hesabınızda qalacaq.</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3175081911749765310">Veb Xidmətlər</translation>
 <translation id="3178650076442119961">Bu Gün Aktiv Olub</translation>
@@ -267,7 +266,6 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="3494788280727468875">Brauzer Data Silinməsini Təsdiq Edin</translation>
 <translation id="35083190962747987">${url} keçidini açın</translation>
 <translation id="3519193562722059437">Vebdə baxmaq üçün panel açın.</translation>
-<translation id="3523473570015918798">Çıxsanız, əlfəcin, tarixçə, parol və digər Chrome datası artıq Google Hesabınıza sinxronizasiya edilməyəcək.</translation>
 <translation id="3527085408025491307">Qovluq</translation>
 <translation id="3529024052484145543">Təhlükəsiz deyil</translation>
 <translation id="3533202363250687977">Bütün Gizli Tabları bağlayın</translation>
@@ -447,7 +445,6 @@ Ayarı dəyişmək üçün <ph name="BEGIN_LINK" />sinxronizasiyanı sıfırlay�
 <translation id="5457226814769348910">Oflayn versiyanı açın</translation>
 <translation id="5489208564673669003">Bütün saytlar üçün kukiləri idarə etmək üçün <ph name="BEGIN_LINK" />Kuki Ayarlarına<ph name="END_LINK" /> baxın.</translation>
 <translation id="5490005495580364134">Bütün kukiləri bloklayın (Tövsiyə edilmir)</translation>
-<translation id="5508435575041083207">Çıxış edin və bu cihazdakı datanı silin</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> s əvvəl</translation>
 <translation id="5525269841082836315">Parol söz yaradın</translation>
 <translation id="5532698011560297095">Daxil olmaq mümkün deyil</translation>
@@ -702,9 +699,6 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="7701040980221191251">Heç bir</translation>
 <translation id="7741325291586284254">Yeni Anonim Tab Səhifəsi</translation>
 <translation id="7765158879357617694">Daşıyın</translation>
-<translation id="7771470029643830783">Çıxsanız, əlfəcin, tarixçə, parol və digər Chrome datası artıq Google Hesabınıza sinxronizasiya edilməyəcək.
-
-Hesabınız <ph name="HOSTED_DOMAIN" /> tərəfindən idarə edildiyinə görə, çıxış etdikdə Chrome datanız bu cihazdan silinəcək. Sinxronlaşdırılmış data Google Hesabınızda qalacaq.</translation>
 <translation id="7772032839648071052">Parolu təsdiq edin</translation>
 <translation id="7778472311864276518">Hesabı bu Cihazdan silin</translation>
 <translation id="7781011649027948662">Səhifə tərcümə edilsin?</translation>
@@ -774,7 +768,6 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="8495097701594799854">Təşkilatınız tərəfindən deaktiv edilib.</translation>
 <translation id="8503813439785031346">İstifadəçi adı</translation>
 <translation id="850600235656508448">Gizli rejimdə açın</translation>
-<translation id="8510057420705599706">Bunun nəticəsində çıxacaqsınız və sinxronizasiya deaktiv ediləcək, lakin əlfəcinlər, tarixçə, parollar və digər Chrome datası bu cihazda qalacaq.</translation>
 <translation id="8517375800490286174">Açıq mənbə lisenziyaları</translation>
 <translation id="8524799873541103884"><ph name="NUMBER_OF_OPEN_TABS" /> paneldən <ph name="LAST_VISIBLE_TAB" /> üzrə <ph name="FIRST_VISIBLE_TAB" /> <ph name="INCOGNITO" /> panel</translation>
 <translation id="8529767659511976195">Yeni</translation>

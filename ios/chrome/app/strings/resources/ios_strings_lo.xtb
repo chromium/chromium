@@ -224,7 +224,6 @@
 <translation id="3153862085237805241">ບັນທຶກບັດ</translation>
 <translation id="3157387275655328056">ເພີ່ມໃສ່ລາຍການທີ່ຈະອ່ານ</translation>
 <translation id="3157684681743766797">ໝາຍທັງໝົດ…</translation>
-<translation id="3161291298470460782">ນີ້ຈະນຳທ່ານອອກຈາກລະບົບ, ປິດການຊິ້ງຂໍ້ມູນ ແລະ ລຶບລ້າງຂໍ້ມູນ Chrome ອອກຈາກອຸປະກອນນີ້. ຂໍ້ມູນທີ່ຊິ້ງແລ້ວຂອງທ່ານຈະຍັງຄົງຢູ່ໃນບັນຊີ Google ຂອງທ່ານ.</translation>
 <translation id="3169472444629675720">ຄົ້ນຫາ</translation>
 <translation id="3175081911749765310">ການ​ບໍ​ລິ​ການ​ເວັບ</translation>
 <translation id="3178650076442119961">ນຳໃຊ້ມື້ນີ້</translation>
@@ -267,7 +266,6 @@
 <translation id="3494788280727468875">ຢືນຢັນລຶບລ້າງຂໍ້ມູນການທ່ອງເວັບ</translation>
 <translation id="35083190962747987">ເປີດ ${url}</translation>
 <translation id="3519193562722059437">ເປີດ​ແຖບ​ເພື່ອ​ທ່ອງ​ເວັບ.</translation>
-<translation id="3523473570015918798">ໂດຍການນຳອອກຈາກລະບົບ, ບຸກມາກ, ປະຫວັດ, ລະຫັດຜ່ານ ແລະ ຂໍ້ມູນອື່ນໆໃນ Chrome ຂອງທ່ານຈະບໍ່ຊິ້ງຂໍ້ມູນກັບບັນຊີ Google ຂອງທ່ານອີກຕໍ່ໄປ.</translation>
 <translation id="3527085408025491307">ໂຟລເດີ</translation>
 <translation id="3529024052484145543">ບໍ່ປອດໄພ</translation>
 <translation id="3533202363250687977">ປິດແຖບທີ່ບໍ່ເຜີຍຕົວຕົນທັງໝົດ</translation>
@@ -447,7 +445,6 @@
 <translation id="5457226814769348910">ເປີດເວີຊັນອອບລາຍ</translation>
 <translation id="5489208564673669003">ເພື່ອຈັດການຄຸກກີ້ສຳລັບເວັບໄຊທັງໝົດ, ກະລຸນາເບິ່ງ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າຄຸກກີ້<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">ບລັອກຄຸກກີ້ທັງໝົດ (ບໍ່ແນະນຳ)</translation>
-<translation id="5508435575041083207">ອອກຈາກລະບົບ ແລະ ລຶບລ້າງຂໍ້ມູນອອກຈາກອຸປະກອນນີ້</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> ຊມ ກ່ອນ</translation>
 <translation id="5525269841082836315">ສ້າງວະ​ລີ​ຜ່ານ</translation>
 <translation id="5532698011560297095">ບໍ່ສາມາດເຂົ້າສູ່ລະບົບໄດ້</translation>
@@ -702,9 +699,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="7701040980221191251">ບໍ່​ມີ​</translation>
 <translation id="7741325291586284254">ໜ້າແຖບບໍ່ເປີດເຜີຍຕົວຕົນໃໝ່</translation>
 <translation id="7765158879357617694">ຍ້າຍ</translation>
-<translation id="7771470029643830783">ໂດຍການນຳອອກຈາກລະບົບ, ບຸກມາກ, ປະຫວັດ, ລະຫັດຜ່ານ ແລະ ຂໍ້ມູນອື່ນໆໃນ Chrome ຂອງທ່ານຈະບໍ່ຊິ້ງຂໍ້ມູນກັບບັນຊີ Google ຂອງທ່ານອີກຕໍ່ໄປ.
-
-ເນື່ອງຈາກບັນຊີຂອງທ່ານຖືກຈັດການໂດຍ <ph name="HOSTED_DOMAIN" />, ຂໍ້ມູນ Chrome ຈະຖືກລຶບອອກຈາກອຸປະກອນນີ້ໃນເວລາອອກຈາກລະບົບ. ຂໍ້ມູນທີ່ຊິ້ງແລ້ວຂອງທ່ານຈະຍັງຄົງຢູ່ໃນບັນຊີ Google ຂອງທ່ານ.</translation>
 <translation id="7772032839648071052">ຢືນ​ຢັນວະລີຜ່ານ</translation>
 <translation id="7778472311864276518">ລຶບບັນຊີອອກຈາກອຸປະກອນນີ້</translation>
 <translation id="7781011649027948662">ແປໜ້າບໍ?</translation>
@@ -774,7 +768,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8495097701594799854">ປິດໂດຍອົງການຂອງທ່ານ.</translation>
 <translation id="8503813439785031346">ຊື່​ຜູ້​ໃຊ້</translation>
 <translation id="850600235656508448">ເປີດໃນໂໝດບໍ່ເຜີຍຕົວຕົນ</translation>
-<translation id="8510057420705599706">ນີ້ຈະນຳທ່ານອອກຈາກລະບົບ ແລະ ປິດການຊິ້ງຂໍ້ມູນ, ແຕ່ບຸກມາກ, ປະຫວັດ, ລະຫັດຜ່ານ ແລະ ຂໍ້ມູນ Chrome ອື່ນໆຂອງທ່ານຈະຍັງຄົງຢູ່ໃນອຸປະກອນນີ້.</translation>
 <translation id="8517375800490286174">ໃບ​ອະ​ນຸ​ຍາດ Open source</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> ແຖບ <ph name="FIRST_VISIBLE_TAB" /> ຜ່ານ <ph name="LAST_VISIBLE_TAB" /> ໃນ <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8529767659511976195">ໃໝ່</translation>

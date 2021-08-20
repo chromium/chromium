@@ -224,7 +224,6 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3153862085237805241">Zapisz kartę</translation>
 <translation id="3157387275655328056">Dodaj do listy Do przeczytania</translation>
 <translation id="3157684681743766797">Oznacz wszystko…</translation>
-<translation id="3161291298470460782">Spowoduje to wylogowanie Cię, wyłączenie synchronizacji i usunięcie wszystkich danych Chrome z tego urządzenia. Zsynchronizowane dane pozostaną na Twoim koncie Google.</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3175081911749765310">Usługi internetowe</translation>
 <translation id="3178650076442119961">Aktywność dzisiaj</translation>
@@ -267,7 +266,6 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3494788280727468875">Potwierdź czyszczenie danych przeglądania</translation>
 <translation id="35083190962747987">Otwórz ${url}</translation>
 <translation id="3519193562722059437">Otwórz kartę, by przeglądać strony.</translation>
-<translation id="3523473570015918798">Po wylogowaniu Twoje zakładki, historia, hasła i inne dane Chrome nie będą już synchronizowane z Twoim kontem Google.</translation>
 <translation id="3527085408025491307">Folder</translation>
 <translation id="3529024052484145543">Niezabezpieczona</translation>
 <translation id="3533202363250687977">Zamknij karty incognito</translation>
@@ -445,7 +443,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5457226814769348910">Otwórz wersję offline</translation>
 <translation id="5489208564673669003">Aby zarządzać plikami cookie we wszystkich witrynach, sprawdź <ph name="BEGIN_LINK" />Ustawienia plików cookie<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Blokuj wszystkie pliki cookie (niezalecane)</translation>
-<translation id="5508435575041083207">Wyloguj i usuń dane z tego urządzenia</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> g temu</translation>
 <translation id="5525269841082836315">Utwórz hasło</translation>
 <translation id="5532698011560297095">Nie można się zalogować</translation>
@@ -700,9 +697,6 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7701040980221191251">Brak</translation>
 <translation id="7741325291586284254">Nowa strona karty incognito</translation>
 <translation id="7765158879357617694">Przenieś</translation>
-<translation id="7771470029643830783">Po wylogowaniu Twoje zakładki, historia, hasła i inne dane Chrome nie będą już synchronizowane z Twoim kontem Google.
-
-Ponieważ Twoim kontem zarządza <ph name="HOSTED_DOMAIN" />, Twoje dane Chrome zostaną usunięte z tego urządzenia, gdy się wylogujesz. Zsynchronizowane dane pozostaną na Twoim koncie Google.</translation>
 <translation id="7772032839648071052">Potwierdź hasło</translation>
 <translation id="7778472311864276518">Usuń konto z tego urządzenia</translation>
 <translation id="7781011649027948662">Przetłumaczyć stronę?</translation>
@@ -772,7 +766,6 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8495097701594799854">Wyłączone przez organizację.</translation>
 <translation id="8503813439785031346">Nazwa użytkownika</translation>
 <translation id="850600235656508448">Otwórz w trybie incognito</translation>
-<translation id="8510057420705599706">Spowoduje to wylogowanie Cię i wyłączenie synchronizacji, ale Twoje zakładki, historia, hasła i inne dane Chrome pozostaną na tym urządzeniu.</translation>
 <translation id="8517375800490286174">Licencje typu open source</translation>
 <translation id="8524799873541103884">Karty <ph name="INCOGNITO" /> od <ph name="FIRST_VISIBLE_TAB" /> do <ph name="LAST_VISIBLE_TAB" /> z <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8529767659511976195">Nowość</translation>

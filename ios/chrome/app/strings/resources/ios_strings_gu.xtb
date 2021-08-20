@@ -224,7 +224,6 @@
 <translation id="3153862085237805241">કાર્ડ સાચવો</translation>
 <translation id="3157387275655328056">વાંચન સૂચિમાં ઉમેરો</translation>
 <translation id="3157684681743766797">તમામને આ રીતે ચિહ્નિત કરો…</translation>
-<translation id="3161291298470460782">આમ કરવાથી તમને સાઇન આઉટ કરવામાં આવશે, સિંક કરવાનું બંધ થશે અને આ ડિવાઇસમાંથી બધો Chrome ડેટા સાફ કરવામાં આવશે. તમારો સિંક કરેલો ડેટા તમારા Google એકાઉન્ટમાં રહેશે.</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3175081911749765310">વેબ સેવાઓ</translation>
 <translation id="3178650076442119961">આજે સક્રિય છે</translation>
@@ -267,7 +266,6 @@
 <translation id="3494788280727468875">બ્રાઉઝિંગ ડેટા સાફ કરવાની પુષ્ટિ કરો</translation>
 <translation id="35083190962747987">${url} ખોલો</translation>
 <translation id="3519193562722059437">વેબ બ્રાઉઝ કરવા ટેબ ખોલો.</translation>
-<translation id="3523473570015918798">સાઇન આઉટ કરવાથી તમારા બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને અન્ય Chrome ડેટા હવેથી તમારા Google એકાઉન્ટ પર સિંક થશે નહીં.</translation>
 <translation id="3527085408025491307">ફોલ્ડર</translation>
 <translation id="3529024052484145543">સુરક્ષિત નથી</translation>
 <translation id="3533202363250687977">બધાં છૂપા ટૅબ બંધ કરો</translation>
@@ -447,7 +445,6 @@
 <translation id="5457226814769348910">ઑફલાઇન વર્ઝન ખોલો</translation>
 <translation id="5489208564673669003">બધી સાઇટ માટે કુકી મેનેજ કરવા, <ph name="BEGIN_LINK" />કુકી સેટિંગ જુઓ<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">બધી કુકીને બ્લૉક કરો (સુઝાવ આપતા નથી)</translation>
-<translation id="5508435575041083207">સાઇન આઉટ કરો અને આ ડિવાઇસમાંથી ડેટા સાફ કરો</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> કલાક પહેલાં</translation>
 <translation id="5525269841082836315">પાસફ્રેઝ બનાવો</translation>
 <translation id="5532698011560297095">સાઇન ઇન કરી શકાતું નથી</translation>
@@ -702,9 +699,6 @@
 <translation id="7701040980221191251">કોઈ નથી</translation>
 <translation id="7741325291586284254">છૂપી ટૅબનું નવું પેજ</translation>
 <translation id="7765158879357617694">સ્થાન</translation>
-<translation id="7771470029643830783">સાઇન આઉટ કરવાથી તમારા બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને અન્ય Chrome ડેટા હવેથી તમારા Google એકાઉન્ટ પર સિંક થશે નહીં.
-
-તમારું એકાઉન્ટ <ph name="HOSTED_DOMAIN" /> દ્વારા મેનેજ કરવામાં આવતું હોવાથી, સાઇન આઉટ કરતી વખતે તમારો Chrome ડેટા આ ડિવાઇસમાંથી સાફ કરવામાં આવશે. તમારો સિંક કરેલો ડેટા તમારા Google એકાઉન્ટમાં રહેશે.</translation>
 <translation id="7772032839648071052">પાસફ્રેઝની પુષ્ટિ કરો</translation>
 <translation id="7778472311864276518">આ ડિવાઇસમાંથી એકાઉન્ટ કાઢી નાખો</translation>
 <translation id="7781011649027948662">પેજનો અનુવાદ કરીએ?</translation>
@@ -774,7 +768,6 @@
 <translation id="8495097701594799854">તમારી સંસ્થા દ્વારા આ સુવિધા બંધ કરવામાં આવી છે.</translation>
 <translation id="8503813439785031346">વપરાશકર્તાનામ</translation>
 <translation id="850600235656508448">છુપામાં ખોલો</translation>
-<translation id="8510057420705599706">આમ કરવાથી તમને સાઇન આઉટ કરવામાં આવશે અને સિંક કરવાનું બંધ થશે પણ તમારા બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને અન્ય Chrome ડેટા આ ડિવાઇસમાં જ રહેશે.</translation>
 <translation id="8517375800490286174">ઓપન સોર્સ લાઇસન્સ</translation>
 <translation id="8524799873541103884"><ph name="NUMBER_OF_OPEN_TABS" /> ના  <ph name="FIRST_VISIBLE_TAB" /> થી <ph name="LAST_VISIBLE_TAB" /> સુધી <ph name="INCOGNITO" /> ટેબ્સ</translation>
 <translation id="8529767659511976195">નવી</translation>

@@ -53,6 +53,8 @@
 <translation id="2847479871509788944">Fjern fra Chromium</translation>
 <translation id="2885378588091291677">Oppgavebehandling</translation>
 <translation id="2910007522516064972">Om &amp;Chromium</translation>
+<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Én siste påminnelse: Installasjonen <ph name="BEGIN_BOLD" />kommer til å tømme hele harddisken din<ph name="END_BOLD" />. Forsikre deg om at du har sikkerhetskopiert eventuelle data du bryr deg om.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Når installasjonen er startet, kan den ikke avbrytes.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium er oppdatert</translation>
 <translation id="2983934633046890458">Chromium prøver å redigere passord.</translation>
 <translation id="3032706164202344641">Chromium kan ikke sjekke passordene dine. Prøv igjen senere.</translation>

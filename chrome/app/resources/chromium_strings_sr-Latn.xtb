@@ -55,6 +55,8 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="2847479871509788944">Ukloni iz Chromium-a...</translation>
 <translation id="2885378588091291677">Menadžer zadataka</translation>
 <translation id="2910007522516064972">O &amp;Chromium-u</translation>
+<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Poslednji put vas podsećamo: instalacija <ph name="BEGIN_BOLD" />će obrisati kompletne podatke sa hard-diska<ph name="END_BOLD" />. Uverite se da imate rezervnu kopiju svih podataka koji su vam važni.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Kada instalacija počne, ne može da se otkaže.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium je ažuriran</translation>
 <translation id="2983934633046890458">Chromium pokušava da izmeni lozinke.</translation>
 <translation id="3032706164202344641">Chromium ne može da vam proverava lozinke. Probajte ponovo kasnije.</translation>

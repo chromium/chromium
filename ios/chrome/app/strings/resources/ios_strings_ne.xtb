@@ -224,7 +224,6 @@
 <translation id="3153862085237805241">कार्ड सेभ गर्नुहोस्</translation>
 <translation id="3157387275655328056">पाठ्य सूचीमा थप्नुहोस्</translation>
 <translation id="3157684681743766797">सबैलाई चिन्ह लगाउनुहोस्…</translation>
-<translation id="3161291298470460782">यस कार्यले तपाईंलाई साइन आउट गराउने छ, सिंक गर्ने सुविधा निष्क्रिय पार्ने छ र यो यन्त्रबाट Chrome का सबै डेटा मेटाउने छ। सिंक भएको तपाईंको डेटा तपाईंको Google खातामा रहिरहने छ।</translation>
 <translation id="3169472444629675720">पत्ता लगाउनुहोस्</translation>
 <translation id="3175081911749765310">वेब सेवाहरू</translation>
 <translation id="3178650076442119961">आज सक्रिय</translation>
@@ -267,7 +266,6 @@
 <translation id="3494788280727468875">ब्राउजिङको डेटा खाली गर्ने प्रक्रियाको पुष्टि गर्नुहोस्</translation>
 <translation id="35083190962747987">${url} खोल्नुहोस्</translation>
 <translation id="3519193562722059437">वेब ब्राउज गर्न एउटा ट्याब खोल्नुहोस्।</translation>
-<translation id="3523473570015918798">साइन आउट गरेपछि, तपाईंका पुस्तक चिन्ह, इतिहास, पासवर्ड र Chrome का अन्य डेटा तपाईंको Google खातासँग सिंक हुने छैनन्।</translation>
 <translation id="3527085408025491307">फोल्डर</translation>
 <translation id="3529024052484145543">सुरक्षित छैन</translation>
 <translation id="3533202363250687977">सबै इन्कोग्निटो ट्याबहरू बन्द गर्नुहोस्</translation>
@@ -447,7 +445,6 @@
 <translation id="5457226814769348910">अफलाइन संस्करण खोल्नुहोस्</translation>
 <translation id="5489208564673669003">सबै साइटका कुकीहरू व्यवस्थापन गर्न, <ph name="BEGIN_LINK" />कुकीसम्बन्धी सेटिङ<ph name="END_LINK" />मा जानुहोस्।</translation>
 <translation id="5490005495580364134">सबै कुकीलाई रोक लगाइयोस् (सिफारिस गरिँदैन)</translation>
-<translation id="5508435575041083207">साइन आउट गर्नुहोस् र यो डिभाइसमा भएका डेटा मेटाउनुहोस्</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> घन्टाअघि</translation>
 <translation id="5525269841082836315">पासफ्रेज सिर्जना गर्नुहोस्</translation>
 <translation id="5532698011560297095">साइन इन गर्न सकिएन</translation>
@@ -702,9 +699,6 @@
 <translation id="7701040980221191251">कुनै पनि होइन</translation>
 <translation id="7741325291586284254">इन्कोग्निटो ट्याबसम्बन्धी नयाँ पेज</translation>
 <translation id="7765158879357617694">सार्नुहोस्</translation>
-<translation id="7771470029643830783">साइन आउट गरेपछि, तपाईंका पुस्तक चिन्ह, इतिहास, पासवर्ड र Chrome का अन्य डेटा तपाईंको Google खातासँग सिंक हुने छैनन्।
-
-तपाईंको खाता <ph name="HOSTED_DOMAIN" /> ले व्यवस्थापन गर्ने हुनाले साइन आउट गर्दा Chrome मा रहेको तपाईंको डेटा यो यन्त्रबाट मेटाइने छ। सिंक भएको तपाईंको डेटा तपाईंको Google खातामा रहिरहने छ।</translation>
 <translation id="7772032839648071052">पासफ्रेज पक्का</translation>
 <translation id="7778472311864276518">यो यन्त्रबाट खाता हटाउनुहोस्‌</translation>
 <translation id="7781011649027948662">यो पृष्ठ अनुवाद गर्ने हो?</translation>
@@ -774,7 +768,6 @@
 <translation id="8495097701594799854">तपाईंको सङ्गठनले यो सुविधा अफ गरेको छ।</translation>
 <translation id="8503813439785031346">एक-पटके टेक्स्ट म्यासेज</translation>
 <translation id="850600235656508448">इन्कोग्निटोमा खोल्नुहोस्</translation>
-<translation id="8510057420705599706">यस कार्यले तपाईंलाई साइन आउट गराउने छ र सिंक गर्ने सुविधा निष्क्रिय पार्ने छ तर तपाईंका पुस्तक चिन्ह, इतिहास, पासवर्ड र Chrome का अन्य डेटा भने यो डिभाइसमा रहिरहने छन्।</translation>
 <translation id="8517375800490286174">खुला स्रोतका इजाजतपत्रहरू</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> ट्याबहरू <ph name="FIRST_VISIBLE_TAB" /> मार्फत <ph name="LAST_VISIBLE_TAB" /> को <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8529767659511976195">नयाँ</translation>

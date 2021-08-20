@@ -573,6 +573,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="1602085790802918092">A virtuális gép indítása</translation>
 <translation id="1603914832182249871">(Inkognitó mód)</translation>
 <translation id="1604432177629086300">Nem sikerült nyomtatni. Ellenőrizze a nyomtatót, és próbálja újra.</translation>
+<translation id="1606077700029460857">Egérbeállítások módosítása</translation>
 <translation id="1607139524282324606">Bejegyzés törlése</translation>
 <translation id="1607499585984539560">A felhasználó nem tartozik domainhez</translation>
 <translation id="1608626060424371292">Felhasználó eltávolítása</translation>
@@ -703,6 +704,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="1718835860248848330">Az elmúlt órából</translation>
 <translation id="1719312230114180055">Megjegyzés: Az ujjlenyomat kevésbé biztonságos, mint az erős jelszó vagy PIN-kód.</translation>
 <translation id="1720318856472900922">TLS WWW szerver hitelesítése</translation>
+<translation id="1720941539803966190">Útmutató bezárása</translation>
 <translation id="1721312023322545264">A webhely felkereséséhez <ph name="NAME" /> engedélyére van szükség</translation>
 <translation id="1722460139690167654">A(z) <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> kezelője<ph name="END_LINK" />: <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">&amp;Új ablak</translation>
@@ -777,6 +779,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="1790194216133135334">Link küldése ide: <ph name="DEVICE_NAME" /></translation>
 <translation id="1790976235243700817">Hozzáférés megvonása</translation>
 <translation id="1792619191750875668">Kiterjesztett kijelző</translation>
+<translation id="1793625608969726781"><ph name="DEVICE_COUNT" />/<ph name="DEVICE_INDEX" />. eszköz, <ph name="DEVICE_NAME" />, Számítógép, Akkumulátor töltöttségi szintje: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1794051631868188691">Soha ne jelenítse meg a következőt: <ph name="MERCHANT" /></translation>
 <translation id="1794791083288629568">Küldjön visszajelzést, hogy segítsen a probléma megoldásában.</translation>
 <translation id="1795214765651529549">Klasszikus téma használata</translation>
@@ -1156,6 +1159,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2179416702468739594">Rendelkezésre álló profilok keresése. Ennek következtében előfordulhat, hogy eszköze néhány percre leválik a mobilhálózatról.</translation>
 <translation id="2180620921879609685">Tartalmak letiltása bármely oldalon</translation>
 <translation id="2182058453334755893">Vágólapra másolva</translation>
+<translation id="2183027945672030611"><ph name="DEVICE_COUNT" />/<ph name="DEVICE_INDEX" />. eszköz, <ph name="DEVICE_NAME" />, Játékvezérlő, Akkumulátor töltöttségi szintje: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="2184515124301515068">A Chrome dönthet arról, hogy a webhelyek lejátszhatnak-e hangot (ajánlott)</translation>
 <translation id="2186711480981247270">Másik eszközről megosztott oldal</translation>
 <translation id="2187675480456493911">Szinkronizálva van a fiókjában lévő egyéb eszközökkel. A más felhasználók által módosított beállításokat a rendszer nem szinkronizálja majd. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
@@ -1275,6 +1279,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2301402091755573488">Megosztott lap</translation>
 <translation id="23030561267973084">A(z) „<ph name="EXTENSION_NAME" />” további engedélyeket kért.</translation>
 <translation id="23055578400314116">Válassza ki a felhasználónevét</translation>
+<translation id="2306366691914573029"><ph name="DEVICE_COUNT" />/<ph name="DEVICE_INDEX" />. eszköz, <ph name="DEVICE_NAME" />, Ismeretlen eszköztípus</translation>
 <translation id="2307462900900812319">Hálózat beállítása</translation>
 <translation id="2307553512430195144">Ha Ön beleegyezik, a Google Segéd készenléti módban várakozik, amíg nem észleli az „Ok Google” parancsszót, és fel nem ismeri a Voice Match segítségével, hogy <ph name="SUPERVISED_USER_NAME" /> beszél.
     <ph name="BR" />
@@ -1560,6 +1565,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2606568927909309675">Automatikus feliratkészítés az angol nyelvű audio- és videótartalmakhoz. A hanganyagok és a feliratok sosem kerülnek ki az eszközről.</translation>
 <translation id="2607101320794533334">Nyilvános kulcs adatai</translation>
 <translation id="2609896558069604090">Parancsikonok létrehozása...</translation>
+<translation id="2609902589050805912"><ph name="DEVICE_COUNT" />/<ph name="DEVICE_INDEX" />. eszköz, <ph name="DEVICE_NAME" />, Audioeszköz</translation>
 <translation id="2609980095400624569">Nem sikerült létrehozni a kapcsolatot</translation>
 <translation id="2610157865375787051">Alvó mód</translation>
 <translation id="2610260699262139870">Tény&amp;leges méret</translation>
@@ -1626,6 +1632,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2673135533890720193">A böngészési előzmények olvasása</translation>
 <translation id="2674764818721168631">Ki</translation>
 <translation id="2678063897982469759">Újraengedélyezés</translation>
+<translation id="2678676117809690850"><ph name="DEVICE_COUNT" />/<ph name="DEVICE_INDEX" />. eszköz, <ph name="DEVICE_NAME" />, Telefon, Akkumulátor töltöttségi szintje: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="268053382412112343">Elő&amp;zmények</translation>
 <translation id="2681124317993121768">A vendégprofilok nem támogatottak</translation>
 <translation id="2682498795777673382">Frissítés a szülőtől</translation>
@@ -1821,6 +1828,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="287205682142673348">Portátirányítás</translation>
 <translation id="287286579981869940"><ph name="PROVIDER_NAME" /> hozzáadása...</translation>
 <translation id="2872961005593481000">Leállítás</translation>
+<translation id="2872966656309879564"><ph name="DEVICE_COUNT" />/<ph name="DEVICE_INDEX" />. eszköz, <ph name="DEVICE_NAME" />, Számítógép</translation>
 <translation id="2874939134665556319">Előző szám</translation>
 <translation id="2875698561019555027">(Chrome-hibaoldalak)</translation>
 <translation id="2876336351874743617">2. ujj</translation>
@@ -2001,6 +2009,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3054766768827382232">A letiltással néhány periféria jobban működhet, de nem engedélyezett használat esetén illetéktelenek kezébe kerülhetnek a személyes adatai.</translation>
 <translation id="3055590424724986000">Az Ön által kiválasztott szolgáltatóval</translation>
 <translation id="3058498974290601450">A szinkronizálás bármikor bekapcsolható a beállításokban</translation>
+<translation id="3058517085907878899">Eszköz elnevezése</translation>
 <translation id="3060379269883947824">Felolvasás engedélyezése</translation>
 <translation id="3060952009917586498">Módosítsa az eszköz nyelvét. Jelenleg beállított nyelv: <ph name="LANGUAGE" />.</translation>
 <translation id="3060987956645097882">Nem tudtunk kapcsolatot létesíteni a telefonjával. Gondoskodjon arról, hogy telefonja fel legyen oldva, és a közelben legyen, bekapcsolt Bluetooth és Wi-Fi funkcióval.</translation>
@@ -2011,6 +2020,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3067198360141518313">A plug-in futtatása</translation>
 <translation id="3071624960923923138">Ide kattintva új lapot nyithat meg</translation>
 <translation id="3072775339180057696">Engedélyezi a webhelynek a következő megtekintését: <ph name="FILE_NAME" />?</translation>
+<translation id="3074799113165994093"><ph name="DEVICE_COUNT" />/<ph name="DEVICE_INDEX" />. eszköz, <ph name="DEVICE_NAME" />, Telefon</translation>
 <translation id="3075874217500066906">A Powerwash művelet elindításához újraindítás szükséges. Az újraindítás után a rendszer kéri a folytatás megerősítését.</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Mentés csak ezen az eszközön</translation>
@@ -2052,6 +2062,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3117791853215125017">{COUNT,plural, =1{Nem sikerült <ph name="ATTACHMENTS" /> elküldése a következő eszközre: <ph name="DEVICE_NAME" />}other{Nem sikerült <ph name="ATTACHMENTS" /> elküldése a következő eszközre: <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> Súgó</translation>
 <translation id="3118654181216384296">Néhány pillanat múlva próbálkozzon újra a Linux elindításával.</translation>
+<translation id="3119689272338239690"><ph name="DEVICE_COUNT" />/<ph name="DEVICE_INDEX" />. eszköz, <ph name="DEVICE_NAME" />, Ismeretlen eszköztípus, Akkumulátor töltöttségi szintje: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3119948370277171654">Milyen tartalmat/URL-t küldött át?</translation>
 <translation id="3120430004221004537">Elégtelen titkosítás egy adott művelet esetében a következőn: „<ph name="DEVICE_NAME" />”.</translation>
 <translation id="3122464029669770682">CPU</translation>
@@ -2564,6 +2575,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3682824389861648626">Mozgási küszöbérték</translation>
 <translation id="3683524264665795342"><ph name="APP_NAME" /> – Képernyő-megosztási kérés</translation>
 <translation id="3685598397738512288">A Linux USB-preferenciái</translation>
+<translation id="3686786761304157917"><ph name="DEVICE_COUNT" />/<ph name="DEVICE_INDEX" />. eszköz, <ph name="DEVICE_NAME" />, Billentyűzet, Akkumulátor töltöttségi szintje: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="368789413795732264">A fájl írásakor hiba történt: <ph name="ERROR_TEXT" />.</translation>
 <translation id="3688507211863392146">Az alkalmazásban megnyitott fájlok és mappák írása</translation>
 <translation id="3688526734140524629">Csatornaváltás</translation>
@@ -2663,6 +2675,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3778740492972734840">Fejlesz&amp;tői eszközök</translation>
 <translation id="3778868487658107119">Tegyen fel neki kérdéseket. Adjon neki utasításokat. Az Ön személyes Google-ja mindig segítségre kész.</translation>
 <translation id="3781742599892759500">A Linux mikrofon-hozzáférése</translation>
+<translation id="3782488227140539029"><ph name="DEVICE_COUNT" />/<ph name="DEVICE_INDEX" />. eszköz, <ph name="DEVICE_NAME" />, Videokamera, Akkumulátor töltöttségi szintje: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3782795641773236652">Még nem lett hozzárendelve kapcsoló vagy billentyű</translation>
 <translation id="378312418865624974">Egyedi azonosító olvasása ennél a számítógépnél</translation>
 <translation id="3784372983762739446">Bluetooth-eszközök</translation>
@@ -2902,6 +2915,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4002329649066944389">Webhely-specifikus kivételek kezelése</translation>
 <translation id="4002440992267487163">PIN-kód beállítása</translation>
 <translation id="4005817994523282006">Időzóna-észlelési módszer</translation>
+<translation id="400645326027787740"><ph name="DEVICE_COUNT" />/<ph name="DEVICE_INDEX" />. eszköz, <ph name="DEVICE_NAME" />, Játékvezérlő</translation>
 <translation id="4007856537951125667">Parancsikonok elrejtése</translation>
 <translation id="4008291085758151621">A webhely-információk nem állnak rendelkezésre VR-módban</translation>
 <translation id="4010917659463429001">Könyvjelzők eléréséhez mobileszközön: <ph name="GET_IOS_APP_LINK" />.</translation>
@@ -3207,6 +3221,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4382131447572146376">{COUNT,plural, =0{<ph name="EMAIL" />}=1{<ph name="EMAIL" />; +1 további fiók}other{<ph name="EMAIL" />; +<ph name="EXTRA_ACCOUNTS" /> további fiók}}</translation>
 <translation id="4384312707950789900">Hozzáadás az előnyben részesített hálózatokhoz</translation>
 <translation id="4384652540891215547">Bővítmény aktiválása</translation>
+<translation id="4384886290276344300">Billentyűzetbeállítások módosítása</translation>
 <translation id="438503109373656455">Ló</translation>
 <translation id="4385146930797718821">Képernyőkép vágólapra másolva</translation>
 <translation id="4385905942116811558">Bluetooth- és USB-eszközök keresése</translation>
@@ -3599,6 +3614,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4813136279048157860">Saját képek</translation>
 <translation id="4813512666221746211">Hálózati hiba</translation>
 <translation id="4814378367953456825">Nevezze el ezt az ujjlenyomatot</translation>
+<translation id="4816097470512964351"><ph name="DEVICE" />, részletek</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 könyvjelző törölve}other{{COUNT} könyvjelző törölve}}</translation>
 <translation id="4819607494758673676">Google Segéd-értesítések</translation>
 <translation id="4820236583224459650">Beállítás aktív jegyként</translation>
@@ -3674,6 +3690,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4884987973312178454">6×</translation>
 <translation id="4887424188275796356">Megnyitás a rendszer megtekintőjével</translation>
 <translation id="488785315393301722">Részletek megjelenítése</translation>
+<translation id="4889450157778777235"><ph name="DEVICE_COUNT" />/<ph name="DEVICE_INDEX" />. eszköz, <ph name="DEVICE_NAME" />, Videokamera</translation>
 <translation id="4890773143211625964">Speciális nyomtatóbeállítások megjelenítése</translation>
 <translation id="4891089016822695758">Béta fórum</translation>
 <translation id="4892229439761351791">A webhely használhat Bluetooth-t</translation>
@@ -3810,6 +3827,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="5039696241953571917">Mentett jelszavait megtekintheti és kezelheti Google-fiókjában</translation>
 <translation id="5039804452771397117">Engedélyezés</translation>
 <translation id="5040823038948176460">További tartalombeállítások</translation>
+<translation id="5043440033854483429">A névben betűket, számokat és kötőjeleket (-) használhat, hosszúsága pedig legfeljebb 1–15 karakter lehet.</translation>
 <translation id="5043913660911154449">Vagy adja meg a nyomtatóhoz tartozó PPD-fájlt – <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Helytelen jelszó</translation>
 <translation id="504561833207953641">Megnyitás meglévő böngésző-munkamenetben.</translation>
@@ -4064,6 +4082,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="5319359161174645648">A Google a Chrome-ot ajánlja</translation>
 <translation id="5319712128756744240">Új eszköz párosítása</translation>
 <translation id="5320135788267874712">Új eszköz neve</translation>
+<translation id="532043380734099846"><ph name="DEVICE_COUNT" />/<ph name="DEVICE_INDEX" />. eszköz, <ph name="DEVICE_NAME" />, Egér, Akkumulátor töltöttségi szintje: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="532247166573571973">Lehet, hogy nem áll rendelkezésre a szerver. Próbálja újra később.</translation>
 <translation id="5324300749339591280">Alkalmazások listája</translation>
 <translation id="5324780743567488672">Időzóna automatikus beállítása a tartózkodási hely alapján</translation>
@@ -4091,6 +4110,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="535123479159372765">Szöveg vágólapra másolva másik eszközről</translation>
 <translation id="5352033265844765294">Időbélyegzés</translation>
 <translation id="5353252989841766347">Jelszavak exportálása a Chrome-ból</translation>
+<translation id="5354531123814675522"><ph name="DEVICE_COUNT" />/<ph name="DEVICE_INDEX" />. eszköz, <ph name="DEVICE_NAME" />, Táblagép, Akkumulátor töltöttségi szintje: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5355099869024327351">Engedély a Segédnek értesítések megjelenítésére</translation>
 <translation id="5355191726083956201">A Speciális védelem be van kapcsolva</translation>
 <translation id="5355926466126177564">A(z) <ph name="EXTENSION_NAME" /> bővítmény módosította, hogy melyik oldal jelenjen meg a cím- és keresősávban indított kereséskor.</translation>
@@ -4260,6 +4280,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="5534304873398226603">Kép vagy videó elvetése</translation>
 <translation id="5535941515421698170">Továbbá a meglévő adatok eltávolítása az eszközről</translation>
 <translation id="5539221284352502426">A szerver elutasította a megadott jelszót. Lehetséges okok: Túl rövid a jelszó. A jelszónak tartalmaznia kell számokat és szimbólumokat. A jelszó nem egyezhet meg korábbi jelszavakkal.</translation>
+<translation id="5539467723438368868"><ph name="DEVICE_COUNT" />/<ph name="DEVICE_INDEX" />. eszköz, <ph name="DEVICE_NAME" />, Táblagép</translation>
 <translation id="5541694225089836610">A rendszergazda letiltotta a műveletet.</translation>
 <translation id="5542132724887566711">Profil</translation>
 <translation id="5542750926112347543">A(z) <ph name="DOMAIN" /> oldalról származó cookie-k le vannak tiltva</translation>
@@ -4320,6 +4341,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="5601503069213153581">PIN-kód</translation>
 <translation id="5601823921345337195">Nem csatlakozhatnak a MIDI-eszközökhöz</translation>
 <translation id="5602765853043467355">Könyvjelzők, előzmények, jelszavak és egyebek törlése erről az eszközről</translation>
+<translation id="5604884720628869833"><ph name="DEVICE_COUNT" />/<ph name="DEVICE_INDEX" />. eszköz, <ph name="DEVICE_NAME" />, Billentyűzet</translation>
 <translation id="5605623530403479164">További keresők</translation>
 <translation id="5605758115928394442">A rendszer értesítést küldött az Ön telefonjára, hogy segítségével igazolhassa személyazonosságát.</translation>
 <translation id="560834977503641186">Wi-Fi szinkronizálása, további információ</translation>
@@ -4781,6 +4803,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6113434369102685411">Állítsa be az alapértelmezett keresőmotort a Chrome böngészőhöz és a(z) <ph name="DEVICE_TYPE" /> indítójához</translation>
 <translation id="6113942107547980621">Ha használni szeretné a Smart Lock funkciót, váltson a telefon elsődleges felhasználói profiljára</translation>
 <translation id="6116921718742659598">Nyelvi és beviteli beállítások módosítása</translation>
+<translation id="6119927814891883061">Eszköz elnevezése erre: <ph name="DEVICE_NAME" /></translation>
 <translation id="6120205520491252677">Az oldal rögzítése a kezdőképernyőn...</translation>
 <translation id="6122081475643980456">Internetkapcsolata felett más vette át az irányítást</translation>
 <translation id="6122093587541546701">E-mail cím (nem kötelező):</translation>
@@ -6987,6 +7010,7 @@ Nyomja meg valamelyik hozzárendelt kapcsolót a hozzárendelés megszüntetés�
 <translation id="8475313423285172237">A számítógépen lévő egyik program olyan bővítményt adott hozzá, amely módosíthatja a Chrome működését.</translation>
 <translation id="8477241577829954800">Hatálytalanítva</translation>
 <translation id="8477384620836102176">&amp;Általános</translation>
+<translation id="8479109005219657634"><ph name="DEVICE_COUNT" />/<ph name="DEVICE_INDEX" />. eszköz, <ph name="DEVICE_NAME" />, Audioeszköz, Akkumulátor töltöttségi szintje: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="8479176401914456949">Érvénytelen kód. Próbálja újra.</translation>
 <translation id="8480082892550707549">Még ha töltött is le korábban fájlokat erről a webhelyről, előfordulhat, hogy a webhely ideiglenesen nem biztonságos, mert feltörték. Próbálja meg később letölteni a fájlt.</translation>
 <translation id="8480869669560681089">Ismeretlen eszköz a következő gyártótól: <ph name="VENDOR_NAME" /></translation>
@@ -7456,7 +7480,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="8966809848145604011">Egyéb profilok</translation>
 <translation id="8966870118594285808">Lap újramegnyitása, ha véletlenül bezárja</translation>
 <translation id="8967427617812342790">Hozzáadás olvasási listához</translation>
-<translation id="8967866634928501045">A megjelenítéshez nyomja le az Alt+Shift+A billentyűparancsot</translation>
 <translation id="8968766641738584599">Kártya mentése</translation>
 <translation id="89720367119469899">Vezérlő</translation>
 <translation id="8972513834460200407">Kérdezze meg a hálózati rendszergazdától, hogy a tűzfal nem tiltja-e le a Google szervereiről érkező letöltéseket.</translation>
@@ -7466,6 +7489,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="897525204902889653">Karanténszolgáltatás</translation>
 <translation id="8975396729541388937">Bármikor leiratkozhat a kapott e-mailekben található linkre kattintva.</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{„<ph name="TAB_TITLE" />”}=1{„<ph name="TAB_TITLE" />” és 1 másik lap}other{„<ph name="TAB_TITLE" />” és # másik lap}}</translation>
+<translation id="8977175149983066223"><ph name="DEVICE_COUNT" />/<ph name="DEVICE_INDEX" />. eszköz, <ph name="DEVICE_NAME" />, Egér</translation>
 <translation id="8977811652087512276">Hibás jelszó vagy sérült fájl</translation>
 <translation id="8978154919215542464">Be – az összes szinkronizálása</translation>
 <translation id="897939795688207351">Itt: <ph name="ORIGIN" /></translation>

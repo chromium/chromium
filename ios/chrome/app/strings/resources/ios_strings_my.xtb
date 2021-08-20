@@ -224,7 +224,6 @@
 <translation id="3153862085237805241">ကတ်ကို သိမ်းရန်</translation>
 <translation id="3157387275655328056">ဖတ်ရန်စာရင်းသို့ ထည့်ပါ</translation>
 <translation id="3157684681743766797">အားလုံးကို အမှတ်အသားလုပ်ရန်…</translation>
-<translation id="3161291298470460782">ယခုလုပ်ဆောင်ချက်က သင့်အကောင့်မှထွက်သွားပြီး စင့်ခ်လုပ်ခြင်းကို ပိတ်လိုက်မည်၊ ထို့နောက် ဤစက်မှ Chrome ဒေတာအားလုံး ဖယ်ရှားလိုက်ပါမည်။ သင်စင့်ခ်လုပ်ထားသော ဒေတာများ သင်၏ Google Account တွင် ကျန်နေပါမည်။</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3175081911749765310">ဝဘ် ဝန်ဆောင်မှုများ</translation>
 <translation id="3178650076442119961">ယနေ့ အသုံးပြုထားသည်</translation>
@@ -267,7 +266,6 @@
 <translation id="3494788280727468875">ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာများကို ရှင်းလင်းလိုကြောင်း အတည်ပြုရန်</translation>
 <translation id="35083190962747987">${url} ကို ဖွင့်ရန်</translation>
 <translation id="3519193562722059437">ဝဘ်ကို ကြည့်ရန် တဘ်တစ်ခု ဖွင့်ပါ။</translation>
-<translation id="3523473570015918798">အကောင့်မှထွက်ခြင်းဖြင့် သင်၏လိပ်စာများ၊ မှတ်တမ်း၊ စကားဝှက်များနှင့် အခြား Chrome ဒေတာများကို သင့် Google Account သို့ စင့်ခ်လုပ်တော့မည် မဟုတ်ပါ။</translation>
 <translation id="3527085408025491307">ဖိုင်တွဲ</translation>
 <translation id="3529024052484145543">လုံခြုံမှုမရှိပါ</translation>
 <translation id="3533202363250687977">ရုပ်ဖျက်တဘ်များအားလုံး ပိတ်ရန်</translation>
@@ -447,7 +445,6 @@
 <translation id="5457226814769348910">'အော့ဖ်လိုင်းဗားရှင်း' ဖွင့်ရန်</translation>
 <translation id="5489208564673669003">ဝဘ်ဆိုက်အားလုံးအတွက် ကွတ်ကီးများကို စီမံရန် <ph name="BEGIN_LINK" />ကွတ်ကီးဆက်တင်များ<ph name="END_LINK" /> ကို ကြည့်ပါ။</translation>
 <translation id="5490005495580364134">ကွတ်ကီးအားလုံး ပိတ်ရန် (အကြံမပြုပါ)</translation>
-<translation id="5508435575041083207">ထွက်ပြီး ဤစက်မှဒေတာများ ရှင်းထုတ်ရန်</translation>
 <translation id="5513681519188741830">ပြီးခဲ့သော <ph name="TIME" /> h</translation>
 <translation id="5525269841082836315">စကားစုဝှက် ဖန်တီးမည်</translation>
 <translation id="5532698011560297095">လက်မှတ်ထိုးဝင်၍ မရပါ</translation>
@@ -701,9 +698,6 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="7701040980221191251">မရှိ</translation>
 <translation id="7741325291586284254">ရုပ်ဖျက်တဘ် စာမျက်နှာသစ်</translation>
 <translation id="7765158879357617694">ရွှေ့ရန်</translation>
-<translation id="7771470029643830783">အကောင့်မှထွက်ခြင်းဖြင့် သင်၏လိပ်စာများ၊ မှတ်တမ်း၊ စကားဝှက်များနှင့် အခြား Chrome ဒေတာများကို သင့် Google Account သို့ စင့်ခ်လုပ်တော့မည် မဟုတ်ပါ။
-
-သင့်အကောင့်ကို <ph name="HOSTED_DOMAIN" /> က စီမံခန့်ခွဲသဖြင့် အကောင့်မှထွက်သည့်အခါ ဤစက်မှ သင်၏ Chrome ဒေတာများကို ဖျက်ပါမည်။ သင်စင့်ခ်လုပ်ထားသော ဒေတာများ သင်၏ Google Account တွင် ကျန်နေပါမည်။</translation>
 <translation id="7772032839648071052">စကားစုဝှက်ကို အတည်ပြုရန်</translation>
 <translation id="7778472311864276518">ဤ 'စက်' မှ 'အကောင့်' ဖယ်ရှားခြင်း</translation>
 <translation id="7781011649027948662">စာမျက်နှာကို ဘာသာပြန်လိုပါသလား။</translation>
@@ -773,7 +767,6 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="8495097701594799854">သင်၏အဖွဲ့အစည်းက ပိတ်ထားသည်။</translation>
 <translation id="8503813439785031346">အသုံးပြုသူအမည်</translation>
 <translation id="850600235656508448">ရုပ်ဖျက်မုဒ်သုံး၍ ဖွင့်ရန်</translation>
-<translation id="8510057420705599706">ယခုလုပ်ဆောင်ချက်က သင့်အကောင့်မှထွက်သွားပြီ စင့်ခ်လုပ်ခြင်းကို ပိတ်လိုက်သော်လည်း သင်၏လိပ်စာများ၊ မှတ်တမ်းနှင့် အခြား Chrome ဒေတာများ ဤစက်ပေါ်တွင် ကျန်နေပါမည်။</translation>
 <translation id="8517375800490286174">လွပ်လွပ်လပ်လပ်ဖွင့်ပေးထားသော ရင်းမြစ် လိုင်စင်များ</translation>
 <translation id="8524799873541103884"><ph name="NUMBER_OF_OPEN_TABS" /> ၏<ph name="LAST_VISIBLE_TAB" /> ကိုဖြတ်၍<ph name="FIRST_VISIBLE_TAB" />  <ph name="INCOGNITO" /> တက်များ</translation>
 <translation id="8529767659511976195">အသစ်</translation>

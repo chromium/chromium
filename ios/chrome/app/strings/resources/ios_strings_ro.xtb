@@ -224,7 +224,6 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3153862085237805241">Salvează cardul</translation>
 <translation id="3157387275655328056">Adaugă în lista de lectură</translation>
 <translation id="3157684681743766797">Marchează-le pe toate…</translation>
-<translation id="3161291298470460782">Astfel, te vei deconecta, vei dezactiva sincronizarea și vei șterge toate datele Chrome de pe dispozitiv. Datele sincronizate se vor păstra în Contul Google.</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3175081911749765310">Servicii web</translation>
 <translation id="3178650076442119961">Activ astăzi</translation>
@@ -267,7 +266,6 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3494788280727468875">Confirmă ștergerea datelor de navigare</translation>
 <translation id="35083190962747987">Deschide ${url}</translation>
 <translation id="3519193562722059437">Deschide o filă pentru a naviga pe web.</translation>
-<translation id="3523473570015918798">Dacă te deconectezi, marcajele, istoricul, parolele și alte date Chrome nu se vor mai sincroniza cu Contul Google.</translation>
 <translation id="3527085408025491307">Dosar</translation>
 <translation id="3529024052484145543">Nesecurizat</translation>
 <translation id="3533202363250687977">Închide toate filele incognito</translation>
@@ -447,7 +445,6 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="5457226814769348910">Deschide versiunea offline</translation>
 <translation id="5489208564673669003">Pentru a gestiona cookie-urile pentru toate site-urile, consultă <ph name="BEGIN_LINK" />Setări pentru cookie-uri<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Blochează toate cookie-urile (nu este recomandat)</translation>
-<translation id="5508435575041083207">Deconectează-te și șterge datele de pe dispozitiv</translation>
 <translation id="5513681519188741830">acum <ph name="TIME" /> h</translation>
 <translation id="5525269841082836315">Creează o expresie de acces</translation>
 <translation id="5532698011560297095">Nu se poate conecta</translation>
@@ -702,9 +699,6 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="7701040980221191251">Niciuna</translation>
 <translation id="7741325291586284254">Pagina Filă incognito nouă</translation>
 <translation id="7765158879357617694">Mută</translation>
-<translation id="7771470029643830783">Dacă te deconectezi, marcajele, istoricul, parolele și alte date Chrome nu se vor mai sincroniza cu Contul Google.
-
-Deoarece contul tău este gestionat de <ph name="HOSTED_DOMAIN" />, datele Chrome vor fi șterse de pe acest dispozitiv când te deconectezi. Datele sincronizate se vor păstra în Contul Google.</translation>
 <translation id="7772032839648071052">Confirmă expresia de acces</translation>
 <translation id="7778472311864276518">Elimină contul de pe acest dispozitiv</translation>
 <translation id="7781011649027948662">Traduci pagina?</translation>
@@ -774,7 +768,6 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8495097701594799854">Dezactivată de organizație.</translation>
 <translation id="8503813439785031346">Nume de utilizator</translation>
 <translation id="850600235656508448">Deschide în modul incognito</translation>
-<translation id="8510057420705599706">Astfel, te vei deconecta și vei dezactiva sincronizarea, dar marcajele, istoricul, parolele și alte date Chrome vor rămâne pe acest dispozitiv.</translation>
 <translation id="8517375800490286174">Licențe open source</translation>
 <translation id="8524799873541103884">Filele <ph name="INCOGNITO" /> de la <ph name="FIRST_VISIBLE_TAB" /> la <ph name="LAST_VISIBLE_TAB" /> din <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8529767659511976195">Nou</translation>

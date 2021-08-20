@@ -224,7 +224,6 @@
 <translation id="3153862085237805241">ካርድ አስቀምጥ</translation>
 <translation id="3157387275655328056">ወደ የንባብ ዝርዝር አክል</translation>
 <translation id="3157684681743766797">ሁሉንም ምልክት አድርግባቸው…</translation>
-<translation id="3161291298470460782">ይህ እርስዎን ዘግቶ ያስወጣዎታል፣ ስምረትን ያጠፋል እና እንዲሁም ሁሉንም የChrome ውሂብ ያጸዳል። የእርስዎ የሰመረ ውሂብ በእርስዎ የGoogle መለያ ውስጥ ይቆያል።</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3175081911749765310">የድር አገልግሎቶች</translation>
 <translation id="3178650076442119961">ገባሪ ዛሬ</translation>
@@ -267,7 +266,6 @@
 <translation id="3494788280727468875">የአሰሳ ውሂብን ማጽዳትን ያረጋግጡ</translation>
 <translation id="35083190962747987">${url} ክፈት</translation>
 <translation id="3519193562722059437">ድሩን ለማሰስ ትር ይክፈቱ።</translation>
-<translation id="3523473570015918798">ዘግተው በመውጣት የእርስዎ እልባቶች፣ ታሪክ፣ የይለፍ ቃላት እና ሌላ የChrome ውሂብ ከእንግዲህ ወደ የእርስዎ Google መለያ አይሰምሩም።</translation>
 <translation id="3527085408025491307">አቃፊ</translation>
 <translation id="3529024052484145543">ደህንነቱ አልተጠበቀም</translation>
 <translation id="3533202363250687977">ሁሉንም ማንነት የማያሳውቅ ትሮችን ዝጋ</translation>
@@ -447,7 +445,6 @@
 <translation id="5457226814769348910">ከመስመር ውጭ ስሪትን ክፈት</translation>
 <translation id="5489208564673669003">ለሁሉም ጣቢያዎች ኩኪዎችን ለማቀናበር፣ <ph name="BEGIN_LINK" />የኩኪ ቅንብሮችን<ph name="END_LINK" /> ይመልከቱ።</translation>
 <translation id="5490005495580364134">ሁሉንም ኩኪዎች አግድ (አይመከርም)</translation>
-<translation id="5508435575041083207">ዘግተህ ውጣ እና ከዚህ መሣሪያ ላይ ሁሉንም ውሂብ አጽዳ</translation>
 <translation id="5513681519188741830">ከ<ph name="TIME" /> ሰ በፊት</translation>
 <translation id="5525269841082836315">የይለፍ ሐረግ ፍጠር</translation>
 <translation id="5532698011560297095">መግባት አልተቻለም</translation>
@@ -702,9 +699,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7701040980221191251">ምንም</translation>
 <translation id="7741325291586284254">አዲስ ማንነት የማያሳውቅ የትር ገጽ</translation>
 <translation id="7765158879357617694">ውሰድ</translation>
-<translation id="7771470029643830783">ዘግተው በመውጣት የእርስዎ እልባቶች፣ ታሪክ፣ የይለፍ ቃላት እና ሌላ የChrome ውሂብ ከእንግዲህ ወደ የእርስዎ Google መለያ አይሰምሩም።
-
-የእርስዎ መለያ በ<ph name="HOSTED_DOMAIN" /> የሚተዳደር ስለሆነ ዘግተው ሲወጡ የChrome ውሂብዎ ከዚህ መሣሪያ ይሰረዛል። የእርስዎ የሰመረ ውሂብ በእርስዎ የGoogle መለያ ውስጥ ይቆያል።</translation>
 <translation id="7772032839648071052">የይለፍ ሐረግ ያረጋግጡ</translation>
 <translation id="7778472311864276518">መለያን ከዚህ መሣሪያ አስወግድ</translation>
 <translation id="7781011649027948662">ገጽ ይተርጎም?</translation>
@@ -774,7 +768,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8495097701594799854">በድርጅትዎ ጠፍቷል።</translation>
 <translation id="8503813439785031346">የተጣቃሚ ስም</translation>
 <translation id="850600235656508448">ማንነት በማያሳውቅ ሁነታ ይክፈቱ</translation>
-<translation id="8510057420705599706">ይህ እርስዎን ዘግቶ ያስወጣል እና እንዲሁም ስምረትን ያጠፋል፣ ነገር ግን የእርስዎ ዕልባቶች፣ ታሪክ፣ የይለፍ ቃላት እና ሌላ የChrome ውሂብ በዚህ መሣሪያ ላይ እንዳሉ ይቆያሉ።</translation>
 <translation id="8517375800490286174">የክፍት ምንጭ ፍቃዶች</translation>
 <translation id="8524799873541103884">ከ<ph name="NUMBER_OF_OPEN_TABS" /> <ph name="INCOGNITO" /> ትሮች ውስጥ ከ<ph name="FIRST_VISIBLE_TAB" /> እስከ <ph name="LAST_VISIBLE_TAB" /> ያሉት</translation>
 <translation id="8529767659511976195">አዲስ</translation>

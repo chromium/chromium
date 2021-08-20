@@ -224,7 +224,6 @@
 <translation id="3153862085237805241">ذخیره کردن کارت</translation>
 <translation id="3157387275655328056">افزودن به فهرست خواندن</translation>
 <translation id="3157684681743766797">علامت‌گذاری همه...</translation>
-<translation id="3161291298470460782">‏با این کار، از سیستم خارج می‌شوید، همگام‌سازی خاموش می‌شود، و همه داده‌های Chrome از این دستگاه پاک می‌شود. داده‌های همگام‌سازی‌شده در «حساب Google» شما باقی خواهد ماند.</translation>
 <translation id="3169472444629675720">کشف کردن</translation>
 <translation id="3175081911749765310">خدمات وب</translation>
 <translation id="3178650076442119961">آخرین فعالیت: امروز</translation>
@@ -267,7 +266,6 @@
 <translation id="3494788280727468875">تأیید پاک کردن داده‌های مرور</translation>
 <translation id="35083190962747987">‏باز کردن {url}$</translation>
 <translation id="3519193562722059437">برگه‌ای برای مرور وب باز کنید.</translation>
-<translation id="3523473570015918798">‏با خروج از سیستم، نشانک‌ها، سابقه، گذرواژه‌ها، و سایر داده‌های Chrome دیگر با «حساب Google» شما همگام‌سازی نمی‌شوند.</translation>
 <translation id="3527085408025491307">پوشه</translation>
 <translation id="3529024052484145543">ناامن</translation>
 <translation id="3533202363250687977">بستن همه برگه‌های حالت ناشناس</translation>
@@ -447,7 +445,6 @@
 <translation id="5457226814769348910">باز کردن نسخه آفلاین</translation>
 <translation id="5489208564673669003">برای مدیریت کردن کوکی‌ها برای همه سایت‌ها، به <ph name="BEGIN_LINK" />تنظیمات کوکی‌ها<ph name="END_LINK" /> بروید.</translation>
 <translation id="5490005495580364134">مسدود کردن همه کوکی‌ها (توصیه نمی‌شود)</translation>
-<translation id="5508435575041083207">خروج از سیستم و پاک کردن داده‌ها در این دستگاه</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> ساعت قبل</translation>
 <translation id="5525269841082836315">ایجاد گذرعبارت</translation>
 <translation id="5532698011560297095">ورود به سیستم ممکن نیست</translation>
@@ -702,9 +699,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7701040980221191251">هیچ‌کدام</translation>
 <translation id="7741325291586284254">صفحه برگه ناشناس جدید</translation>
 <translation id="7765158879357617694">انتقال</translation>
-<translation id="7771470029643830783">‏با خروج از سیستم، نشانک‌ها، سابقه، گذرواژه‌ها، و سایر داده‌های Chrome دیگر با «حساب Google» شما همگام‌سازی نمی‌شوند.
-
-چون <ph name="HOSTED_DOMAIN" /> حسابتان را مدیریت می‌کند، با خروج از سیستم، داده‌های Chrome شما در این دستگاه پاک می‌شود. داده‌های همگام‌سازی‌شده در «حساب Google» شما باقی خواهد ماند.</translation>
 <translation id="7772032839648071052">تأیید گذرعبارت</translation>
 <translation id="7778472311864276518">برداشتن حساب از این دستگاه</translation>
 <translation id="7781011649027948662">صفحه ترجمه شود؟</translation>
@@ -774,7 +768,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8495097701594799854">سازمانتان آن را خاموش کرده است.</translation>
 <translation id="8503813439785031346">نام کاربری</translation>
 <translation id="850600235656508448">باز کردن در حالت ناشناس</translation>
-<translation id="8510057420705599706">‏با این کار، از سیستم خارج می‌شوید و همگام‌سازی خاموش می‌شود، اما نشانک‌ها، سابقه، گذرواژه‌ها، و داده‌های دیگر Chrome در این دستگاه باقی خواهند ماند.</translation>
 <translation id="8517375800490286174">مجوزهای منبع باز</translation>
 <translation id="8524799873541103884">برگه‌های <ph name="INCOGNITO" />،‏ <ph name="FIRST_VISIBLE_TAB" /> تا <ph name="LAST_VISIBLE_TAB" /> از <ph name="NUMBER_OF_OPEN_TABS" /> برگه</translation>
 <translation id="8529767659511976195">جدید</translation>

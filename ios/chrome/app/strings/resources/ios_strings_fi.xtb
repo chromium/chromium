@@ -224,7 +224,6 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="3153862085237805241">Tallenna kortti</translation>
 <translation id="3157387275655328056">Lisää lukulistalle</translation>
 <translation id="3157684681743766797">Merkitse kaikki…</translation>
-<translation id="3161291298470460782">Tämä kirjaa sinut ulos, laittaa synkronoinnin pois päältä ja tyhjentää kaiken Chrome-datan tältä laitteelta. Synkronoitu datasi pysyy Google-tililläsi.</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3175081911749765310">Verkkopalvelut</translation>
 <translation id="3178650076442119961">Aktiivinen tänään</translation>
@@ -267,7 +266,6 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="3494788280727468875">Vahvista selaustietojen poistaminen</translation>
 <translation id="35083190962747987">Avaa ${url}</translation>
 <translation id="3519193562722059437">Avaa välilehti selailua varten.</translation>
-<translation id="3523473570015918798">Jos kirjaudut ulos, kirjanmerkkejä, historiaa, salasanoja tai muuta Chrome-dataasi ei enää synkronoida Google-tilillesi.</translation>
 <translation id="3527085408025491307">Kansio</translation>
 <translation id="3529024052484145543">Ei turvallinen</translation>
 <translation id="3533202363250687977">Sulje kaikki incognito-välilehdet</translation>
@@ -447,7 +445,6 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5457226814769348910">Avaa offline-versio</translation>
 <translation id="5489208564673669003">Jos haluat ylläpitää kaikkien sivustojen evästeitä, siirry <ph name="BEGIN_LINK" />Evästeasetuksiin<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Estä kaikki evästeet (ei suositella)</translation>
-<translation id="5508435575041083207">Kirjaudu ulos ja tyhjennä data tältä laitteelta</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> h sitten</translation>
 <translation id="5525269841082836315">Luo tunnuslause</translation>
 <translation id="5532698011560297095">Ei voi kirjautua sisään</translation>
@@ -702,9 +699,6 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="7701040980221191251">Ei mitään</translation>
 <translation id="7741325291586284254">Uusi sivu incognito-välilehdellä</translation>
 <translation id="7765158879357617694">Siirrä</translation>
-<translation id="7771470029643830783">Jos kirjaudut ulos, kirjanmerkkejä, historiaa, salasanoja tai muuta Chrome-dataasi ei enää synkronoida Google-tilillesi.
-
-Koska <ph name="HOSTED_DOMAIN" /> ylläpitää tiliäsi, Chrome-datasi poistetaan tältä laitteelta uloskirjautumisen yhteydessä. Synkronoitu datasi pysyy Google-tililläsi.</translation>
 <translation id="7772032839648071052">Vahvista tunnuslause</translation>
 <translation id="7778472311864276518">Poista tili tältä laitteelta</translation>
 <translation id="7781011649027948662">Käännetäänkö sivu?</translation>
@@ -774,7 +768,6 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="8495097701594799854">Organisaatiosi on laittanut tämän pois päältä.</translation>
 <translation id="8503813439785031346">Käyttäjätunnus</translation>
 <translation id="850600235656508448">Avaa incognito-tilassa</translation>
-<translation id="8510057420705599706">Tämä kirjaa sinut ulos ja laittaa synkronoinnin pois päältä, mutta kirjanmerkit, historia, salasanat ja muu Chrome-datasi pysyy tällä laitteella.</translation>
 <translation id="8517375800490286174">Avoimen lähdekoodin käyttöluv.</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" />-välilehdet: <ph name="FIRST_VISIBLE_TAB" />–<ph name="LAST_VISIBLE_TAB" />/<ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8529767659511976195">Uusi</translation>

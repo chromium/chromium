@@ -53,6 +53,8 @@
 <translation id="2847479871509788944">Usuń z Chromium...</translation>
 <translation id="2885378588091291677">Menedżer zadań</translation>
 <translation id="2910007522516064972">&amp;Chromium – informacje</translation>
+<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Ostatnie przypomnienie: instalacja <ph name="BEGIN_BOLD" />wykasuje wszystkie dane z dysku twardego<ph name="END_BOLD" />. Upewnij się, że masz kopię zapasową wszystkich ważnych danych.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Rozpoczętej instalacji nie będzie można anulować.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Masz aktualną wersję Chromium</translation>
 <translation id="2983934633046890458">Chromium próbuje edytować hasła.</translation>
 <translation id="3032706164202344641">Chromium nie może sprawdzić Twoich haseł. Spróbuj później.</translation>

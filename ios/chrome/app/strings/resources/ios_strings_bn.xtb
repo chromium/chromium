@@ -224,7 +224,6 @@
 <translation id="3153862085237805241">কার্ড সেভ করুন</translation>
 <translation id="3157387275655328056">পড়ার তালিকায় যোগ করুন</translation>
 <translation id="3157684681743766797">সবগুলি চিহ্নিত করুন…</translation>
-<translation id="3161291298470460782">এর ফলে আপনি অ্যাকাউন্ট থেকে সাইন-আউট হয়ে যাবেন, সিঙ্ক করার সুবিধা বন্ধ হয়ে যাবে এবং এই ডিভাইস থেকে Chrome-এর সমস্ত ডেটা মুছে যাবে। আপনি যেসব ডেটা সিঙ্ক করেছেন, সেগুলি আপনার Google অ্যাকাউন্টেই থেকে যাবে।</translation>
 <translation id="3169472444629675720">আবিষ্কার করুন</translation>
 <translation id="3175081911749765310">ওয়েব পরিষেবা</translation>
 <translation id="3178650076442119961">আজ ব্যবহার করা হয়েছে</translation>
@@ -267,7 +266,6 @@
 <translation id="3494788280727468875">ব্রাউজ করা ডেটা সাফ করার বিষয়টি নিশ্চিত করুন</translation>
 <translation id="35083190962747987">${url} খুলুন</translation>
 <translation id="3519193562722059437">ওয়েব ব্রাউজ করার জন্য একটি ট্যাব খুলুন।</translation>
-<translation id="3523473570015918798">সাইন-আউট করে নিলে, আপনার সেভ করা বুকমার্ক, সার্চ করার ইতিহাস, পাসওয়ার্ড ও Chrome-এর অন্যান্য ডেটা আপনার Google অ্যাকাউন্টে আর সিঙ্ক করা যাবে না।</translation>
 <translation id="3527085408025491307">ফোল্ডার</translation>
 <translation id="3529024052484145543">সুরক্ষিত নয়</translation>
 <translation id="3533202363250687977">সব ছদ্মবেশী ট্যাব বন্ধ করুন</translation>
@@ -447,7 +445,6 @@
 <translation id="5457226814769348910">ডাউনলোড করা অফলাইন পেজ খুলন</translation>
 <translation id="5489208564673669003">সব সাইটের জন্য কুকি ম্যানেজ করতে, <ph name="BEGIN_LINK" />কুকি সেটিংস<ph name="END_LINK" /> দেখুন।</translation>
 <translation id="5490005495580364134">সমস্ত সাইটের কুকি ব্লক করুন (যদিও আমরা এটি করতে সাজেস্ট করছি না)</translation>
-<translation id="5508435575041083207">সাইন-আউট করুন এবং এই ডিভাইসে থাকা ডেটা মুছে ফেলুন</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> ঘঃ আগে</translation>
 <translation id="5525269841082836315">পাসফ্রেজ তৈরি করুন</translation>
 <translation id="5532698011560297095">প্রবেশ করুন করা যচ্ছে না</translation>
@@ -703,9 +700,6 @@
 <translation id="7701040980221191251">কিছু নেই</translation>
 <translation id="7741325291586284254">নতুন ছদ্মবেশী ট্যাব পৃষ্ঠা</translation>
 <translation id="7765158879357617694">সরান</translation>
-<translation id="7771470029643830783">সাইন-আউট করে নিলে, আপনার সেভ করা বুকমার্ক, সার্চ করার ইতিহাস, পাসওয়ার্ড ও Chrome-এর অন্যান্য ডেটা আপনার Google অ্যাকাউন্টে আর সিঙ্ক করা যাবে না।
-
-যেহেতু <ph name="HOSTED_DOMAIN" /> আপনার অ্যাকাউন্ট ম্যানেজ করে, তাই সাইন-আউট করে নিলেই, Chrome-এ থাকা আপনার সমস্ত ডেটা এই ডিভাইস থেকে মুছে যাবে। আপনি যেসব ডেটা সিঙ্ক করেছেন, সেগুলি আপনার Google অ্যাকাউন্টেই থেকে যাবে।</translation>
 <translation id="7772032839648071052">পাসফ্রেজ নিশ্চিত করুন</translation>
 <translation id="7778472311864276518">এই ডিভাইস থেকে অ্যাকাউন্ট সরান</translation>
 <translation id="7781011649027948662">পৃষ্ঠাটি অনুবাদ করতে চান?</translation>
@@ -775,7 +769,6 @@
 <translation id="8495097701594799854">আপনার সংস্থা বন্ধ করে দিয়েছে।</translation>
 <translation id="8503813439785031346">ইউজারনেম</translation>
 <translation id="850600235656508448">ছদ্মবেশী ট্যাবে খুলুন</translation>
-<translation id="8510057420705599706">এর ফলে আপনি অ্যাকাউন্ট থেকে সাইন-আউট হয়ে যাবেন এবং সিঙ্ক করার সুবিধা বন্ধ হয়ে যাবে, কিন্তু আপনার সেভ করা বুকমার্ক, সার্চ করার ইতিহাস, পাসওয়ার্ড ও Chrome-এর অন্যান্য ডেটা এই ডিভাইসেই থেকে যাবে।</translation>
 <translation id="8517375800490286174">ওপেন সোর্স লাইসেন্স</translation>
 <translation id="8524799873541103884"><ph name="NUMBER_OF_OPEN_TABS" />টির মধ্যে <ph name="FIRST_VISIBLE_TAB" /> থেকে <ph name="LAST_VISIBLE_TAB" /> পর্যন্ত <ph name="INCOGNITO" /> ট্যাব</translation>
 <translation id="8529767659511976195">নতুন</translation>

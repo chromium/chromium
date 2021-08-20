@@ -3857,7 +3857,7 @@
 <translation id="5109044022078737958">Мия</translation>
 <translation id="5109816792918100764">Удалить язык "<ph name="LANGUAGE_NAME" />"</translation>
 <translation id="5111646998522066203">Выйти из режима инкогнито</translation>
-<translation id="5111692334209731439">Диспетчер закладок</translation>
+<translation id="5111692334209731439">Менеджер закладок</translation>
 <translation id="5112577000029535889">Инструменты разработчика</translation>
 <translation id="5113739826273394829">Нажав на этот значок, вы можете заблокировать устройство <ph name="DEVICE_TYPE" />. Чтобы разблокировать его, вам придется ввести пароль.</translation>
 <translation id="51143538739122961">Вставьте электронный ключ и нажмите кнопку на нем.</translation>
@@ -7445,7 +7445,6 @@
 <translation id="8966809848145604011">Другие профили</translation>
 <translation id="8966870118594285808">Если вы случайно закрыли вкладку, откройте ее снова</translation>
 <translation id="8967427617812342790">Добавить в список для чтения</translation>
-<translation id="8967866634928501045">Чтобы показать, нажмите Alt + Shift + A</translation>
 <translation id="8968766641738584599">Сохранить карту</translation>
 <translation id="89720367119469899">Отключить</translation>
 <translation id="8972513834460200407">Уточните у администратора сети, не блокирует ли брандмауэр скачивание файлов с серверов Google.</translation>

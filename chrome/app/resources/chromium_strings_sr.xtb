@@ -55,6 +55,8 @@
 <translation id="2847479871509788944">Уклони из Chromium-а...</translation>
 <translation id="2885378588091291677">Менаџер задатака</translation>
 <translation id="2910007522516064972">О &amp;Chromium-у</translation>
+<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Последњи пут вас подсећамо: инсталација <ph name="BEGIN_BOLD" />ће обрисати комплетне податке са хард-диска<ph name="END_BOLD" />. Уверите се да имате резервну копију свих података који су вам важни.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Када инсталација почне, не може да се откаже.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium је ажуриран</translation>
 <translation id="2983934633046890458">Chromium покушава да измени лозинке.</translation>
 <translation id="3032706164202344641">Chromium не може да вам проверава лозинке. Пробајте поново касније.</translation>

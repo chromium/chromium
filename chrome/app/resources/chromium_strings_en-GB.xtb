@@ -55,6 +55,8 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2847479871509788944">Remove from Chromium...</translation>
 <translation id="2885378588091291677">Task Manager</translation>
 <translation id="2910007522516064972">About &amp;Chromium</translation>
+<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />One last reminder: installation <ph name="BEGIN_BOLD" />will erase your entire hard drive<ph name="END_BOLD" />. Please make sure that you have any data you care about backed up.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Once installation starts it cannot be cancelled.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium is up to date</translation>
 <translation id="2983934633046890458">Chromium is trying to edit passwords.</translation>
 <translation id="3032706164202344641">Chromium can't check your passwords. Try again later.</translation>

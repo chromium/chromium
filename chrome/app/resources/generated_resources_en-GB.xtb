@@ -573,6 +573,7 @@
 <translation id="1602085790802918092">Starting the virtual machine</translation>
 <translation id="1603914832182249871">(Incognito)</translation>
 <translation id="1604432177629086300">Couldn't print. Check printer and try again.</translation>
+<translation id="1606077700029460857">Change mouse settings</translation>
 <translation id="1607139524282324606">Clear entry</translation>
 <translation id="1607499585984539560">User is not affiliated with domain</translation>
 <translation id="1608626060424371292">Remove this user</translation>
@@ -703,6 +704,7 @@
 <translation id="1718835860248848330">Last hour</translation>
 <translation id="1719312230114180055">Note: Your fingerprint may be less secure than a strong password or PIN.</translation>
 <translation id="1720318856472900922">TLS WWW Server Authentication</translation>
+<translation id="1720941539803966190">Close tutorial</translation>
 <translation id="1721312023322545264">You need permission from <ph name="NAME" /> to visit this site</translation>
 <translation id="1722460139690167654">Your <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> is managed<ph name="END_LINK" /> by <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">&amp;New window</translation>
@@ -777,6 +779,7 @@
 <translation id="1790194216133135334">Send link to <ph name="DEVICE_NAME" /></translation>
 <translation id="1790976235243700817">Remove access</translation>
 <translation id="1792619191750875668">Extended display</translation>
+<translation id="1793625608969726781">Device <ph name="DEVICE_INDEX" /> of <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, Computer, Battery level <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1794051631868188691">Never show <ph name="MERCHANT" /></translation>
 <translation id="1794791083288629568">Send feedback to help us fix this issue.</translation>
 <translation id="1795214765651529549">Use Classic</translation>
@@ -1157,6 +1160,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2179416702468739594">Looking for available profiles. This may cause your mobile network to disconnect for a few minutes.</translation>
 <translation id="2180620921879609685">Block content on any page</translation>
 <translation id="2182058453334755893">Copied to your Clipboard</translation>
+<translation id="2183027945672030611">Device <ph name="DEVICE_INDEX" /> of <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, Game controller, Battery level <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="2184515124301515068">Let Chrome choose when sites can play sound (recommended)</translation>
 <translation id="2186711480981247270">Page shared from another device</translation>
 <translation id="2187675480456493911">Synced with other devices on your account. Settings modified by other users will not be synced. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
@@ -1276,6 +1280,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2301402091755573488">Shared tab</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" has requested additional permissions.</translation>
 <translation id="23055578400314116">Select a username</translation>
+<translation id="2306366691914573029">Device <ph name="DEVICE_INDEX" /> of <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, Unknown device type</translation>
 <translation id="2307462900900812319">Configure network</translation>
 <translation id="2307553512430195144">If you agree, Google Assistant will wait in standby mode to detect ‘Hey Google’ and can recognise it is <ph name="SUPERVISED_USER_NAME" /> speaking with Voice Match.
     <ph name="BR" />
@@ -1561,6 +1566,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2606568927909309675">Automatically creates captions for English audio and video. Audio and captions never leave your device.</translation>
 <translation id="2607101320794533334">Subject Public Key Info</translation>
 <translation id="2609896558069604090">Create Shortcuts...</translation>
+<translation id="2609902589050805912">Device <ph name="DEVICE_INDEX" /> of <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, Audio device</translation>
 <translation id="2609980095400624569">Could not establish connection</translation>
 <translation id="2610157865375787051">Sleep</translation>
 <translation id="2610260699262139870">A&amp;ctual Size</translation>
@@ -1627,6 +1633,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2673135533890720193">Read your browsing history</translation>
 <translation id="2674764818721168631">Off</translation>
 <translation id="2678063897982469759">Re-enable</translation>
+<translation id="2678676117809690850">Device <ph name="DEVICE_INDEX" /> of <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, Phone, Battery level <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="268053382412112343">Hi&amp;story</translation>
 <translation id="2681124317993121768">Guest profiles are not supported</translation>
 <translation id="2682498795777673382">Update from a parent</translation>
@@ -1823,6 +1830,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="287205682142673348">Port forwarding</translation>
 <translation id="287286579981869940">Add <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">Shut down</translation>
+<translation id="2872966656309879564">Device <ph name="DEVICE_INDEX" /> of <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, Computer</translation>
 <translation id="2874939134665556319">Previous track</translation>
 <translation id="2875698561019555027">(Chrome error pages)</translation>
 <translation id="2876336351874743617">Finger 2</translation>
@@ -2003,6 +2011,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3054766768827382232">Disabling can make your peripherals perform better, but may expose your personal data by unauthorised usage.</translation>
 <translation id="3055590424724986000">With a provider of your choice</translation>
 <translation id="3058498974290601450">You can turn on sync at any time in settings</translation>
+<translation id="3058517085907878899">Name device</translation>
 <translation id="3060379269883947824">Enable Select to Speak</translation>
 <translation id="3060952009917586498">Change device language. Current language is <ph name="LANGUAGE" />.</translation>
 <translation id="3060987956645097882">We were unable to establish a connection with your phone. Make sure that your phone is nearby, unlocked and has Bluetooth and Wi-Fi turned on.</translation>
@@ -2013,6 +2022,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3067198360141518313">Run this plug-in</translation>
 <translation id="3071624960923923138">You can click here to open a new tab</translation>
 <translation id="3072775339180057696">Let site view <ph name="FILE_NAME" />?</translation>
+<translation id="3074799113165994093">Device <ph name="DEVICE_INDEX" /> of <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, Phone</translation>
 <translation id="3075874217500066906">A restart is required to begin the Powerwash process. After restart you will be asked to confirm that you want to proceed.</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Save only on this device</translation>
@@ -2054,6 +2064,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3117791853215125017">{COUNT,plural, =1{Failed to send <ph name="ATTACHMENTS" /> to <ph name="DEVICE_NAME" />}other{Failed to send <ph name="ATTACHMENTS" /> to <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> Help</translation>
 <translation id="3118654181216384296">Please try to start Linux again in a few moments.</translation>
+<translation id="3119689272338239690">Device <ph name="DEVICE_INDEX" /> of <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, Unknown device type, Battery level <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3119948370277171654">What content/URL were you casting?</translation>
 <translation id="3120430004221004537">Insufficient encryption for a given operation on: "<ph name="DEVICE_NAME" />".</translation>
 <translation id="3122464029669770682">CPU</translation>
@@ -2566,6 +2577,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3682824389861648626">Movement threshold</translation>
 <translation id="3683524264665795342"><ph name="APP_NAME" /> screen sharing request</translation>
 <translation id="3685598397738512288">Linux USB preferences</translation>
+<translation id="3686786761304157917">Device <ph name="DEVICE_INDEX" /> of <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, Keyboard, Battery level <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="368789413795732264">There was an error while trying to write the file: <ph name="ERROR_TEXT" />.</translation>
 <translation id="3688507211863392146">Write to files and folders that you open in the application</translation>
 <translation id="3688526734140524629">Change channel</translation>
@@ -2665,6 +2677,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3778740492972734840">&amp;Developer tools</translation>
 <translation id="3778868487658107119">Ask it questions. Tell it to do things. It's your personal Google, always ready to help.</translation>
 <translation id="3781742599892759500">Linux microphone access</translation>
+<translation id="3782488227140539029">Device <ph name="DEVICE_INDEX" /> of <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, Video camera, Battery level <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3782795641773236652">No switch or key has been assigned yet</translation>
 <translation id="378312418865624974">Read a unique identifier for this computer</translation>
 <translation id="3784372983762739446">Bluetooth devices</translation>
@@ -2905,6 +2918,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4002329649066944389">Manage site specific exceptions</translation>
 <translation id="4002440992267487163">Pin setup</translation>
 <translation id="4005817994523282006">Time zone detection method</translation>
+<translation id="400645326027787740">Device <ph name="DEVICE_INDEX" /> of <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, Game controller</translation>
 <translation id="4007856537951125667">Hide shortcuts</translation>
 <translation id="4008291085758151621">Site information is not available in VR</translation>
 <translation id="4010917659463429001">To get your bookmarks on your mobile device, <ph name="GET_IOS_APP_LINK" />.</translation>
@@ -3210,6 +3224,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4382131447572146376">{COUNT,plural, =0{<ph name="EMAIL" />}=1{<ph name="EMAIL" />, +1 more account}other{<ph name="EMAIL" />, +<ph name="EXTRA_ACCOUNTS" /> more accounts}}</translation>
 <translation id="4384312707950789900">Add to preferred</translation>
 <translation id="4384652540891215547">Activate the extension</translation>
+<translation id="4384886290276344300">Change keyboard settings</translation>
 <translation id="438503109373656455">Spirit</translation>
 <translation id="4385146930797718821">Screenshot copied to clipboard</translation>
 <translation id="4385905942116811558">Searching for Bluetooth and USB devices</translation>
@@ -3602,6 +3617,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4813136279048157860">My Images</translation>
 <translation id="4813512666221746211">Network error</translation>
 <translation id="4814378367953456825">Enter a name for this fingerprint</translation>
+<translation id="4816097470512964351"><ph name="DEVICE" />, Details</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 bookmark deleted}other{{COUNT} bookmarks deleted}}</translation>
 <translation id="4819607494758673676">Google Assistant notifications</translation>
 <translation id="4820236583224459650">Set as active ticket</translation>
@@ -3677,6 +3693,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4884987973312178454">6x</translation>
 <translation id="4887424188275796356">Open With System Viewer</translation>
 <translation id="488785315393301722">Show details</translation>
+<translation id="4889450157778777235">Device <ph name="DEVICE_INDEX" /> of <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, Video camera</translation>
 <translation id="4890773143211625964">Show advanced printer options</translation>
 <translation id="4891089016822695758">Beta forum</translation>
 <translation id="4892229439761351791">Site can use Bluetooth</translation>
@@ -3813,6 +3830,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5039696241953571917">View and manage saved passwords in your Google Account</translation>
 <translation id="5039804452771397117">Allow</translation>
 <translation id="5040823038948176460">Additional content settings</translation>
+<translation id="5043440033854483429">Name can use letters, numbers and hyphens (-), and must be between 1 and 15 characters inclusive.</translation>
 <translation id="5043913660911154449">Or specify your printer PPD <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Incorrect password</translation>
 <translation id="504561833207953641">Opening in existing browser session.</translation>
@@ -4066,6 +4084,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5319359161174645648">Google recommends Chrome</translation>
 <translation id="5319712128756744240">Pair new device</translation>
 <translation id="5320135788267874712">New device name</translation>
+<translation id="532043380734099846">Device <ph name="DEVICE_INDEX" /> of <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, Mouse, Battery level <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="532247166573571973">The server may be unreachable. Try again later.</translation>
 <translation id="5324300749339591280">Apps list</translation>
 <translation id="5324780743567488672">Set time zone automatically using your location</translation>
@@ -4093,6 +4112,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="535123479159372765">Text copied from other device</translation>
 <translation id="5352033265844765294">Time Stamping</translation>
 <translation id="5353252989841766347">Export Passwords From Chrome</translation>
+<translation id="5354531123814675522">Device <ph name="DEVICE_INDEX" /> of <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, Tablet, Battery level <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5355099869024327351">Allow the Assistant to show you notifications</translation>
 <translation id="5355191726083956201">Enhanced protection is on</translation>
 <translation id="5355926466126177564">The extension "<ph name="EXTENSION_NAME" />" has changed the page that is shown when you search from the Omnibox.</translation>
@@ -4262,6 +4282,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5534304873398226603">Discard photo or video</translation>
 <translation id="5535941515421698170">Also remove your existing data from this device</translation>
 <translation id="5539221284352502426">The password that you entered was rejected by the server. Possible reasons include: The password is too short. The password must include numbers or symbols. The password must be different from previous passwords.</translation>
+<translation id="5539467723438368868">Device <ph name="DEVICE_INDEX" /> of <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, Tablet</translation>
 <translation id="5541694225089836610">Action is disabled by your administrator</translation>
 <translation id="5542132724887566711">Profile</translation>
 <translation id="5542750926112347543">Cookies from <ph name="DOMAIN" /> blocked</translation>
@@ -4322,6 +4343,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">Not allowed to connect to MIDI devices</translation>
 <translation id="5602765853043467355">Clear bookmarks, history, passwords and more from this device</translation>
+<translation id="5604884720628869833">Device <ph name="DEVICE_INDEX" /> of <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, Keyboard</translation>
 <translation id="5605623530403479164">Other search engines</translation>
 <translation id="5605758115928394442">A notification was sent to your phone to confirm that it's you.</translation>
 <translation id="560834977503641186">Wi-Fi Sync, learn more</translation>
@@ -4782,6 +4804,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6113434369102685411">Set your default search engine for Chrome browser and <ph name="DEVICE_TYPE" /> Launcher</translation>
 <translation id="6113942107547980621">To use Smart Lock, switch to the primary user profile on your phone</translation>
 <translation id="6116921718742659598">Change language and input settings</translation>
+<translation id="6119927814891883061">Name device to <ph name="DEVICE_NAME" /></translation>
 <translation id="6120205520491252677">Pin this page to Start screen...</translation>
 <translation id="6122081475643980456">Your Internet connection is being controlled</translation>
 <translation id="6122093587541546701">Email (optional):</translation>
@@ -6989,6 +7012,7 @@ Press an assigned switch to remove assignment</translation>
 <translation id="8475313423285172237">Another programme on your computer added an extension that may change the way Chrome works.</translation>
 <translation id="8477241577829954800">Superseded</translation>
 <translation id="8477384620836102176">&amp;General</translation>
+<translation id="8479109005219657634">Device <ph name="DEVICE_INDEX" /> of <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, Audio device, Battery level <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="8479176401914456949">Invalid code. Please try again.</translation>
 <translation id="8480082892550707549">Even if you have downloaded files from this site before, the site may be temporarily unsafe (hacked). Try downloading this file later.</translation>
 <translation id="8480869669560681089">Unknown device from <ph name="VENDOR_NAME" /></translation>
@@ -7458,7 +7482,6 @@ Press an assigned switch to remove assignment</translation>
 <translation id="8966809848145604011">Other profiles</translation>
 <translation id="8966870118594285808">Reopen a tab if you accidentally closed it</translation>
 <translation id="8967427617812342790">Add to reading list</translation>
-<translation id="8967866634928501045">Press Alt Shift A to show</translation>
 <translation id="8968766641738584599">Save card</translation>
 <translation id="89720367119469899">Escape</translation>
 <translation id="8972513834460200407">Please check with your network administrator to make sure that the firewall is not blocking downloads from Google servers.</translation>
@@ -7468,6 +7491,7 @@ Press an assigned switch to remove assignment</translation>
 <translation id="897525204902889653">Quarantine Service</translation>
 <translation id="8975396729541388937">Unsubscribe at any time by clicking the link in the emails that you receive.</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" and 1 other tab}other{"<ph name="TAB_TITLE" />" and # other tabs}}</translation>
+<translation id="8977175149983066223">Device <ph name="DEVICE_INDEX" /> of <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, Mouse</translation>
 <translation id="8977811652087512276">Incorrect password or corrupt file</translation>
 <translation id="8978154919215542464">On – sync everything</translation>
 <translation id="897939795688207351">On <ph name="ORIGIN" /></translation>

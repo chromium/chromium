@@ -55,6 +55,8 @@
 <translation id="2847479871509788944">Հեռացնել Chromium-ից...</translation>
 <translation id="2885378588091291677">Task Manager</translation>
 <translation id="2910007522516064972">&amp;Chromium-ի մասին</translation>
+<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Վերջին հիշեցում․ տեղադրման արդյունքում <ph name="BEGIN_BOLD" />ձեր կոշտ սկավառակում առկա բոլոր տվյալները կջնջվեն<ph name="END_BOLD" />։ Համոզվեք, որ պահուստավորել եք ձեզ անհրաժեշտ տվյալները։<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Հենց որ տեղադրումը սկսվի, այն հնարավոր չի լինի չեղարկել։<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium-ը թարմացված է</translation>
 <translation id="2983934633046890458">Chromium-ը փորձում է փոխել գաղտնաբառերը:</translation>
 <translation id="3032706164202344641">Chromium-ը չի կարող ստուգել ձեր գաղտնաբառերը։ Փորձեք ավելի ուշ։</translation>

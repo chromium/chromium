@@ -93,6 +93,7 @@
 <translation id="1615402009686901181">ሚስጥራዊ ይዘት በሚታይበት ጊዜ የአስተዳዳሪ መመሪያ የማያ ገጽ ማንሳትን ያሰናክላል</translation>
 <translation id="1632985212731562677">የመዳረሻ መቀየሪያ በቅንብሮች &gt; ተደራሽነት ውስጥ ሊሰናከል ይችላል።</translation>
 <translation id="1654477262762802994">የድምጽ መጠይቅ ይጀምሩ</translation>
+<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; በረዳት ውስጥ ውጤትን ለማየት ፍለጋን እና ክፍተትን ይጫኑ።</translation>
 <translation id="1667964833127753507">ገለልተኛ የቀለም ሁነታ ከልጣፍ የወጡ ቀለማትን አይጠቀምም፣ በገለልተኛ ፈካ ያሉ ወይም ደማቅ ቅልመቶችን ይተካቸዋል።</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> ቀርቷል</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> አልተገናኘም።</translation>
@@ -140,6 +141,7 @@
 <translation id="2016340657076538683">መልዕክት ይተይቡ</translation>
 <translation id="2018630726571919839">ቀልድ ንገረኝ</translation>
 <translation id="2021864487439853900">ለመክፈት ጠቅ ያድርጉ</translation>
+<translation id="2023558322300866873">በማንኛውም ጊዜ የፓኬት ቀረጻን ማቆም ይችላሉ</translation>
 <translation id="2047639699071423250">ቁልፍ ሐሳብ ያክሉ</translation>
 <translation id="2049240716062114887">የዴስክ ስም ወደ <ph name="DESK_NAME" /> ተለውጧል</translation>
 <translation id="2050339315714019657">በቁመት</translation>
@@ -542,6 +544,7 @@
 <translation id="5083553833479578423">ተጨማሪ የረዳት ባህሪያትን ያስከፍቱ።</translation>
 <translation id="5136175204352732067">የተለየ የቁልፍ ሰሌዳ ተገናኝቷል</translation>
 <translation id="5155897006997040331">የንባብ ፍጥነት</translation>
+<translation id="5166918508782100047">የፈጣን መልሶች ቅንብሮች</translation>
 <translation id="5168181903108465623">የCast መሣሪያዎች ይገኛሉ</translation>
 <translation id="5170568018924773124">በአቃፊ አሳይ</translation>
 <translation id="5176318573511391780">ከፊል የማያ ገጽን ቅረጽ</translation>
@@ -796,6 +799,7 @@
 <translation id="7302889331339392448">የቀጥታ መግለጫ ጽሑፍ ጠፍቷል።</translation>
 <translation id="7303365578352795231">በሌላ መሣሪያ ላይ ምላሽ በመስጠት ላይ።</translation>
 <translation id="7305884605064981971">ኤጅ</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; በGoogle ፍለጋ ውስጥ ውጤትን ለማየት ፍለጋን እና ክፍተትን ይጫኑ።</translation>
 <translation id="7346909386216857016">እሺ፣ ገባኝ</translation>
 <translation id="7348093485538360975">የታይታ የቁልፍ ሰሌዳ</translation>
 <translation id="735745346212279324">የቪ ፒ ኤን ግንኙነት ተቋርጧል</translation>

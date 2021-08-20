@@ -53,6 +53,8 @@
 <translation id="2847479871509788944">Κατάργηση από το Chromium…</translation>
 <translation id="2885378588091291677">Διαχείριση εργασιών</translation>
 <translation id="2910007522516064972">Σχετικά με το &amp;Chromium</translation>
+<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Μια τελευταία υπενθύμιση: Η εγκατάσταση <ph name="BEGIN_BOLD" />θα διαγράψει όλα τα περιεχόμενα του σκληρού δίσκου σας<ph name="END_BOLD" />. Βεβαιωθείτε ότι έχετε δημιουργήσει αντίγραφα ασφαλείας των δεδομένων που σας ενδιαφέρουν.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Αφού ξεκινήσει η εγκατάσταση, δεν είναι δυνατή η ακύρωσή της.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Το Chromium έχει ενημερωθεί</translation>
 <translation id="2983934633046890458">Το Chromium προσπαθεί να επεξεργαστεί κωδικούς πρόσβασης.</translation>
 <translation id="3032706164202344641">Το Chromium δεν μπορεί να ελέγξει τους κωδικούς πρόσβασής σας. Δοκιμάστε ξανά αργότερα.</translation>

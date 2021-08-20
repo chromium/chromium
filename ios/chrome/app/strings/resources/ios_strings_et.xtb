@@ -224,7 +224,6 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="3153862085237805241">Salvesta kaart</translation>
 <translation id="3157387275655328056">Lisa lugemisloendisse</translation>
 <translation id="3157684681743766797">Märgi kõik …</translation>
-<translation id="3161291298470460782">See logib teid välja, lülitab sünkroonimise välja ja kustutab sellest seadmest kõik Chrome'i andmed. Teie sünkroonitud andmed jäävad teie Google'i kontole.</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3175081911749765310">Teenused</translation>
 <translation id="3178650076442119961">Aktiivne täna</translation>
@@ -267,7 +266,6 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="3494788280727468875">Kinnita sirvimisandmete kustutamine</translation>
 <translation id="35083190962747987">Avage ${url}</translation>
 <translation id="3519193562722059437">Avage vaheleht veebi sirvimiseks.</translation>
-<translation id="3523473570015918798">Väljalogimisel ei sünkroonita teie järjehoidjaid, ajalugu, paroole ja muid Chrome'i andmeid enam teie Google'i kontoga.</translation>
 <translation id="3527085408025491307">Kaust</translation>
 <translation id="3529024052484145543">Pole turvaline</translation>
 <translation id="3533202363250687977">Sule kõik inkognito vahelehed</translation>
@@ -447,7 +445,6 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="5457226814769348910">Ava võrguühenduseta versioon</translation>
 <translation id="5489208564673669003">Kõigi saitide küpsisefailide haldamiseks vaadake jaotist <ph name="BEGIN_LINK" />Küpsisefailide seaded<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Blokeeri kõik küpsised (ei ole soovitatav)</translation>
-<translation id="5508435575041083207">Logi välja ja kustuta andmed sellest seadmest</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> h tagasi</translation>
 <translation id="5525269841082836315">Parooli loomine</translation>
 <translation id="5532698011560297095">Ei saa sisse logida</translation>
@@ -702,9 +699,6 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="7701040980221191251">Pole</translation>
 <translation id="7741325291586284254">Uus inkognito vaheleht</translation>
 <translation id="7765158879357617694">Liiguta</translation>
-<translation id="7771470029643830783">Väljalogimisel ei sünkroonita teie järjehoidjaid, ajalugu, paroole ja muid Chrome'i andmeid enam teie Google'i kontoga.
-
-Kuna teie kontot haldab domeen <ph name="HOSTED_DOMAIN" />, kustutatakse teie Chrome'i andmed väljalogimisel sellest seadmest. Teie sünkroonitud andmed jäävad teie Google'i kontole.</translation>
 <translation id="7772032839648071052">Kinnitage parool</translation>
 <translation id="7778472311864276518">Eemalda konto sellest seadmest</translation>
 <translation id="7781011649027948662">Kas tõlkida leht?</translation>
@@ -774,7 +768,6 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="8495097701594799854">Teie organisatsioon on välja lülitanud.</translation>
 <translation id="8503813439785031346">Kasutajanimi</translation>
 <translation id="850600235656508448">Ava inkognito režiimis</translation>
-<translation id="8510057420705599706">See logib teid välja ja lülitab sünkroonimise välja, kuid teie järjehoidjad, ajalugu, paroolid ja muud Chrome'i andmed jäävad sellesse seadmesse.</translation>
 <translation id="8517375800490286174">Avatud lähtekoodi litsentsid</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> vahelehed <ph name="FIRST_VISIBLE_TAB" />–<ph name="LAST_VISIBLE_TAB" />/<ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8529767659511976195">Uus</translation>

@@ -55,6 +55,8 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="2847479871509788944">Pašalinti iš „Chromium“...</translation>
 <translation id="2885378588091291677">Užduočių tvarkytuvė</translation>
 <translation id="2910007522516064972">Apie &amp;„Chromium“</translation>
+<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Paskutinis priminimas: įdiegiant <ph name="BEGIN_BOLD" />bus ištrinti visi standžiojo disko duomenys<ph name="END_BOLD" />. Įsitikinkite, kad turite atsarginę svarbių duomenų kopiją.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Pradėto diegimo proceso atšaukti negalima.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">„Chromium“ naujausios versijos</translation>
 <translation id="2983934633046890458">„Chromium“ bando redaguoti slaptažodžius.</translation>
 <translation id="3032706164202344641">„Chromium“ negali patikrinti jūsų slaptažodžių. Vėliau bandykite dar kartą.</translation>

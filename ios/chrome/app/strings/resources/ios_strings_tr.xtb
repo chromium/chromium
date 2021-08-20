@@ -224,7 +224,6 @@ Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatların�
 <translation id="3153862085237805241">Kartı Kaydet</translation>
 <translation id="3157387275655328056">Okuma Listesine Ekle</translation>
 <translation id="3157684681743766797">Tümünü İşaretle…</translation>
-<translation id="3161291298470460782">Bu işlem, oturumunuzun ve senkronizasyonun kapatılmasını, ayrıca tüm Chrome verilerinin bu cihazdan temizlenmesini sağlayacak. Senkronize edilmiş verileriniz Google Hesabınızda kalmaya devam edecek.</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3175081911749765310">Web Hizmetleri</translation>
 <translation id="3178650076442119961">Bugün Etkin</translation>
@@ -267,7 +266,6 @@ Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatların�
 <translation id="3494788280727468875">Tarama Verilerini Temizlemeyi Onayla</translation>
 <translation id="35083190962747987">Aç: ${url}</translation>
 <translation id="3519193562722059437">Web'e göz atmak için bir sekme açın.</translation>
-<translation id="3523473570015918798">Oturumu kapattığınızda, yer işaretleri, geçmiş, şifreler ve diğer Chrome verileriniz artık Google Hesabınız ile senkronize edilmeyecek.</translation>
 <translation id="3527085408025491307">Klasör</translation>
 <translation id="3529024052484145543">Güvenli değil</translation>
 <translation id="3533202363250687977">Tüm Gizli Sekmeleri Kapat</translation>
@@ -447,7 +445,6 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="5457226814769348910">Çevrimdışı Sürümü aç</translation>
 <translation id="5489208564673669003">Çerezlerin tüm siteler için nasıl yönetileceğini <ph name="BEGIN_LINK" />Çerez Ayarları<ph name="END_LINK" /> sayfasından öğrenebilirsiniz.</translation>
 <translation id="5490005495580364134">Tüm çerezleri engelle (Önerilmez)</translation>
-<translation id="5508435575041083207">Oturumu Kapat ve Bu Cihazdaki Verileri Temizle</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> sa. önce</translation>
 <translation id="5525269841082836315">Parola oluşturma</translation>
 <translation id="5532698011560297095">Oturum Açılamıyor</translation>
@@ -702,9 +699,6 @@ Gizli moddayken siteler, örneğin reklamları kişiselleştirmek amacıyla fark
 <translation id="7701040980221191251">Yok</translation>
 <translation id="7741325291586284254">Yeni Gizli Sekme Sayfası</translation>
 <translation id="7765158879357617694">Taşı</translation>
-<translation id="7771470029643830783">Oturumu kapattığınızda, yer işaretleri, geçmiş, şifreler ve diğer Chrome verileriniz artık Google Hesabınız ile senkronize edilmeyecek.
-
-Hesabınız <ph name="HOSTED_DOMAIN" /> tarafından yönetildiği için oturumunuzu kapatırken Chrome verileriniz bu cihazdan silinecek. Senkronize edilmiş verileriniz Google Hesabınızda kalmaya devam edecek.</translation>
 <translation id="7772032839648071052">Parolayı onayla</translation>
 <translation id="7778472311864276518">Hesabı bu Cihazdan kaldır</translation>
 <translation id="7781011649027948662">Sayfa Çevrilsin mi?</translation>
@@ -774,7 +768,6 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="8495097701594799854">Kuruluşunuz tarafından kapatıldı.</translation>
 <translation id="8503813439785031346">Kullanıcı adı</translation>
 <translation id="850600235656508448">Gizli modda aç</translation>
-<translation id="8510057420705599706">Bu işlem, oturumunuzun ve senkronizasyonun kapatılmasını sağlayacak, ancak yer işaretleri, geçmiş, şifreler ve diğer Chrome verileriniz bu cihazda kalmaya devam edecek.</translation>
 <translation id="8517375800490286174">Açık Kaynak Lisansları</translation>
 <translation id="8524799873541103884"><ph name="NUMBER_OF_OPEN_TABS" /> sekmeden <ph name="FIRST_VISIBLE_TAB" />-<ph name="LAST_VISIBLE_TAB" /> arasındakiler <ph name="INCOGNITO" /> Sekmelerdir</translation>
 <translation id="8529767659511976195">Yeni</translation>

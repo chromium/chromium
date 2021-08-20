@@ -224,7 +224,6 @@ Các trang web không thể dùng cookie để giám sát hoạt động duyệt
 <translation id="3153862085237805241">Lưu thẻ</translation>
 <translation id="3157387275655328056">Thêm vào Danh sách đọc</translation>
 <translation id="3157684681743766797">Đánh dấu tất cả...</translation>
-<translation id="3161291298470460782">Thao tác này sẽ khiến bạn bị đăng xuất, tắt tính năng đồng bộ hóa và xóa tất cả dữ liệu trên Chrome khỏi thiết bị này. Dữ liệu đã đồng bộ hóa của bạn sẽ vẫn ở trong Tài khoản Google của bạn.</translation>
 <translation id="3169472444629675720">Khám phá</translation>
 <translation id="3175081911749765310">Dịch vụ web</translation>
 <translation id="3178650076442119961">Hoạt động hôm nay</translation>
@@ -267,7 +266,6 @@ Các trang web không thể dùng cookie để giám sát hoạt động duyệt
 <translation id="3494788280727468875">Xác nhận xóa dữ liệu duyệt web</translation>
 <translation id="35083190962747987">Mở ${url}</translation>
 <translation id="3519193562722059437">Mở thẻ để duyệt web.</translation>
-<translation id="3523473570015918798">Khi bạn đăng xuất, dấu trang, lịch sử hoạt động, mật khẩu và các dữ liệu khác của bạn trên Chrome sẽ không được đồng bộ hóa với Tài khoản Google nữa.</translation>
 <translation id="3527085408025491307">Thư mục</translation>
 <translation id="3529024052484145543">Không an toàn</translation>
 <translation id="3533202363250687977">Đóng tất cả các thẻ ẩn danh</translation>
@@ -447,7 +445,6 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="5457226814769348910">Mở phiên bản ngoại tuyến</translation>
 <translation id="5489208564673669003">Để quản lý cookie cho tất cả trang web, hãy xem phần <ph name="BEGIN_LINK" />Cài đặt cookie<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Chặn tất cả cookie (Không khuyến nghị)</translation>
-<translation id="5508435575041083207">Đăng xuất và xóa dữ liệu khỏi thiết bị này</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> giờ trước</translation>
 <translation id="5525269841082836315">Tạo cụm mật khẩu</translation>
 <translation id="5532698011560297095">Không thể Đăng nhập</translation>
@@ -702,9 +699,6 @@ Hãy cố gắng sử dụng một mật khẩu riêng cho mỗi trang web.</tra
 <translation id="7701040980221191251">Không có</translation>
 <translation id="7741325291586284254">Trang Thẻ ẩn danh mới</translation>
 <translation id="7765158879357617694">Di chuyển</translation>
-<translation id="7771470029643830783">Khi bạn đăng xuất, dấu trang, lịch sử hoạt động, mật khẩu và các dữ liệu khác của bạn trên Chrome sẽ không được đồng bộ hóa với Tài khoản Google nữa.
-
-Vì tài khoản của bạn do <ph name="HOSTED_DOMAIN" /> quản lý, nên dữ liệu trên Chrome sẽ bị xóa khỏi thiết bị này khi bạn đăng xuất. Dữ liệu đã đồng bộ hóa của bạn sẽ vẫn ở trong Tài khoản Google của bạn.</translation>
 <translation id="7772032839648071052">Xác nhận cụm mật khẩu</translation>
 <translation id="7778472311864276518">Xóa tài khoản khỏi thiết bị này</translation>
 <translation id="7781011649027948662">Dịch trang?</translation>
@@ -774,7 +768,6 @@ Các trang web có thể dùng cookie để giám sát hoạt động duyệt we
 <translation id="8495097701594799854">Do tổ chức của bạn tắt.</translation>
 <translation id="8503813439785031346">Tên người dùng</translation>
 <translation id="850600235656508448">Mở trong chế độ ẩn danh</translation>
-<translation id="8510057420705599706">Thao tác này sẽ khiến bạn bị đăng xuất và tắt tính năng đồng bộ hóa. Tuy vậy, dấu trang, lịch sử hoạt động, mật khẩu và các dữ liệu khác của bạn trên Chrome sẽ vẫn tồn tại trên thiết bị này.</translation>
 <translation id="8517375800490286174">Giấy phép nguồn mở</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> Thẻ <ph name="FIRST_VISIBLE_TAB" /> qua <ph name="LAST_VISIBLE_TAB" /> / <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8529767659511976195">Mới</translation>

@@ -4391,6 +4391,7 @@
           如果此政策的值设置为 False 或未配置，则系统将停用受监管用户创建和登录功能，并会隐藏所有现有的受监管用户。
 
           请注意，普通用户设备和企业设备的默认行为有所不同：默认情况下，系统会在普通用户设备上启用受监管用户，而在企业设备上停用受监管用户。</translation>
+<translation id="665023848306499203">允许设备选择要更新到的特定版本</translation>
 <translation id="6652197835259177259">本地托管用户设置</translation>
 <translation id="6653897159826215341">如果此政策已启用，当用户请求打印某个页面时，<ph name="PRODUCT_NAME" /> 将打开系统打印对话框而非内置打印预览。
 
@@ -5102,6 +5103,20 @@
 <translation id="7477231245051133709">启用“单声道音频”无障碍功能</translation>
 <translation id="7477239290070847560">基于 Zeroconf (mDNS + DNS-SD) 的协议目的地</translation>
 <translation id="7485481791539008776">默认打印机选择规则</translation>
+<translation id="7493995861907758679">此设置允许设备选择要更新到的特定 <ph name="PRODUCT_OS_NAME" />目标版本。
+
+      如果此政策未设置，设备将会按照其他设置进行更新，或更新到最新的可用版本。
+
+      如果此政策已设置，设备将会更新到所选版本。
+
+      此政策的值的确切格式是相应更新服务的实现细节，未必会一成不变。此政策的值不是在设备上处理的。
+
+      如果此政策与 <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> 搭配使用，相应更新服务会先查看此政策。
+      与可能会允许进行次要更新的 <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> 不同，采用此政策的设备会保持在所选版本上，直到此政策的值改变为止。
+
+      如果此政策与 <ph name="DEVICE_ROLLBACK_TO_TARGET_VERSION_POLICY_NAME" /> 搭配使用，设备版本可还原到特定的旧版本。
+
+      警告：最好不要配置版本限制，因为这些限制可能会妨碍用户接收软件更新以及重要的安全性修补程序。将所能更新到的版本限制为特定版本可能会将用户置于风险之中。</translation>
 <translation id="7506745375479451616">此政策旨在控制从 <ph name="IE_PRODUCT_NAME" /> 切换至 <ph name="PRODUCT_NAME" /> 时应使用哪个命令打开网址。此政策可设为一个可执行文件路径，也可设为 <ph name="PRODUCT_NAME_PLACEHOLDER" /> 以自动检测 <ph name="PRODUCT_NAME" /> 的位置。
 
       如果您不设置此政策，当从 Internet Explorer 中启动 <ph name="PRODUCT_NAME" /> 时，<ph name="IE_PRODUCT_NAME" /> 将会自动检测 <ph name="PRODUCT_NAME" /> 自有的可执行文件路径。

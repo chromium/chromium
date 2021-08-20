@@ -224,7 +224,6 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="3153862085237805241">Guardar tarjeta</translation>
 <translation id="3157387275655328056">Añadir a lista de lectura</translation>
 <translation id="3157684681743766797">Marcar todas…</translation>
-<translation id="3161291298470460782">Esta acción hará que se cierre tu sesión, se desactive la sincronización y se borren todos los datos de Chrome de este dispositivo. Los datos que hayas sincronizado permanecerán en tu cuenta de Google.</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3175081911749765310">Servicios web</translation>
 <translation id="3178650076442119961">Activo hoy</translation>
@@ -267,7 +266,6 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="3494788280727468875">Confirma que quieres borrar los datos de navegación</translation>
 <translation id="35083190962747987">Abrir ${url}</translation>
 <translation id="3519193562722059437">Abre una pestaña para navegar por la Web.</translation>
-<translation id="3523473570015918798">Si cierras sesión, tus marcadores, tu historial, tus contraseñas y otros datos de Chrome dejarán de sincronizarse con tu cuenta de Google.</translation>
 <translation id="3527085408025491307">Carpeta</translation>
 <translation id="3529024052484145543">No es seguro</translation>
 <translation id="3533202363250687977">Cerrar todas las pestañas de incógnito</translation>
@@ -447,7 +445,6 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="5457226814769348910">Abrir versión sin conexión</translation>
 <translation id="5489208564673669003">Para gestionar las cookies de todos los sitios, ve a <ph name="BEGIN_LINK" />Configuración de cookies<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Bloquear todas las cookies (no recomendado)</translation>
-<translation id="5508435575041083207">Cerrar sesión y borrar los datos de este dispositivo</translation>
 <translation id="5513681519188741830">Hace <ph name="TIME" /> h</translation>
 <translation id="5525269841082836315">Crear frase de contraseña</translation>
 <translation id="5532698011560297095">No se puede acceder.</translation>
@@ -702,9 +699,6 @@ Mientras estás en modo de incógnito, los sitios no pueden usar tus cookies par
 <translation id="7701040980221191251">No hay</translation>
 <translation id="7741325291586284254">Nueva página de pestaña de incógnito</translation>
 <translation id="7765158879357617694">Mover</translation>
-<translation id="7771470029643830783">Si cierras sesión, tus marcadores, tu historial, tus contraseñas y otros datos de Chrome dejarán de sincronizarse con tu cuenta de Google.
-
-Tu cuenta está gestionada por <ph name="HOSTED_DOMAIN" />, por lo que tus datos de Chrome se eliminarán de este dispositivo cuando cierres sesión. Los datos que hayas sincronizado permanecerán en tu cuenta de Google.</translation>
 <translation id="7772032839648071052">Repite la frase de contraseña</translation>
 <translation id="7778472311864276518">Quitar cuenta de este dispositivo</translation>
 <translation id="7781011649027948662">¿Quieres traducir esta página?</translation>
@@ -774,7 +768,6 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8495097701594799854">Desactivado por tu organización.</translation>
 <translation id="8503813439785031346">Nombre de usuario</translation>
 <translation id="850600235656508448">Abrir en modo de incógnito</translation>
-<translation id="8510057420705599706">Esta acción hará que se cierre tu sesión y se desactive la sincronización, pero tus marcadores, tu historial, tus contraseñas y otros datos de Chrome permanecerán en este dispositivo.</translation>
 <translation id="8517375800490286174">Licencias de software libre</translation>
 <translation id="8524799873541103884">Pestañas de <ph name="INCOGNITO" />: de <ph name="FIRST_VISIBLE_TAB" /> a <ph name="LAST_VISIBLE_TAB" /> de <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8529767659511976195">Nuevo</translation>

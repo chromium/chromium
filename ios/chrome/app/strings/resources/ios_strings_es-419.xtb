@@ -224,7 +224,6 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3153862085237805241">Guardar tarjeta</translation>
 <translation id="3157387275655328056">Agregar a la lista de lectura</translation>
 <translation id="3157684681743766797">Marcar todas…</translation>
-<translation id="3161291298470460782">Si realizas esta acción, saldrás de tu cuenta, se desactivará la sincronización y se borrarán todos los datos de Chrome de este dispositivo. Los datos que tengas sincronizados permanecerán en tu Cuenta de Google.</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3175081911749765310">Servicios web</translation>
 <translation id="3178650076442119961">Activo hoy</translation>
@@ -267,7 +266,6 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3494788280727468875">Confirmar el borrado de los datos de navegación</translation>
 <translation id="35083190962747987">Abrir ${url}</translation>
 <translation id="3519193562722059437">Abre una pestaña para navegar por la Web.</translation>
-<translation id="3523473570015918798">Si sales de tu Cuenta de Google, ya no se sincronizarán allí los favoritos, el historial, las contraseñas ni otros datos de Chrome.</translation>
 <translation id="3527085408025491307">Carpeta</translation>
 <translation id="3529024052484145543">No seguro</translation>
 <translation id="3533202363250687977">Cerrar todas las pestañas de incógnito</translation>
@@ -447,7 +445,6 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="5457226814769348910">Versión sin conexión</translation>
 <translation id="5489208564673669003">Para administrar las cookies de todos los sitios, visita la <ph name="BEGIN_LINK" />Configuración de cookies<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Bloquear todas las cookies (no se recomienda)</translation>
-<translation id="5508435575041083207">Salir y borrar los datos de este dispositivo</translation>
 <translation id="5513681519188741830">Hace <ph name="TIME" /> h</translation>
 <translation id="5525269841082836315">Crear frase contras.</translation>
 <translation id="5532698011560297095">No es posible acceder</translation>
@@ -702,9 +699,6 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7701040980221191251">Ninguna</translation>
 <translation id="7741325291586284254">Nueva página de pestañas de incógnito</translation>
 <translation id="7765158879357617694">Mover</translation>
-<translation id="7771470029643830783">Si sales de tu Cuenta de Google, ya no se sincronizarán allí los favoritos, el historial, las contraseñas ni otros datos de Chrome.
-
-Como <ph name="HOSTED_DOMAIN" /> administra tu cuenta, los datos de Chrome se borrarán de este dispositivo cuando salgas. Los datos que tengas sincronizados permanecerán en tu Cuenta de Google.</translation>
 <translation id="7772032839648071052">Confirmar frase de contraseña</translation>
 <translation id="7778472311864276518">Quitar una cuenta de este dispositivo</translation>
 <translation id="7781011649027948662">¿Quieres traducir la página?</translation>
@@ -774,7 +768,6 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8495097701594799854">Tu organización desactivó la función.</translation>
 <translation id="8503813439785031346">Nombre de usuario</translation>
 <translation id="850600235656508448">Abrir en incógnito</translation>
-<translation id="8510057420705599706">Si realizas esta acción, saldrás de tu cuenta y se desactivará la sincronización, pero los favoritos, el historial, las contraseñas y otros datos de Chrome permanecerán en este dispositivo.</translation>
 <translation id="8517375800490286174">Licencias de código abierto</translation>
 <translation id="8524799873541103884">Pestaña de <ph name="INCOGNITO" />: <ph name="FIRST_VISIBLE_TAB" /> a <ph name="LAST_VISIBLE_TAB" /> de <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8529767659511976195">Nuevo</translation>

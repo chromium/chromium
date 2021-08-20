@@ -85,6 +85,8 @@
 <translation id="2888126860611144412">Σχετικά με το Chrome</translation>
 <translation id="2926676257163822632">Είναι εύκολο να μαντέψει κανείς τους ασθενείς κωδικούς πρόσβασης. Επιτρέψτε στο Chrome να <ph name="BEGIN_LINK" />δημιουργεί και να απομνημονεύει ισχυρούς κωδικούς πρόσβασης για εσάς<ph name="END_LINK" />.</translation>
 <translation id="2929907241665500097">Δεν έγινε ενημέρωση του Chrome, παρουσιάστηκε κάποιο σφάλμα. <ph name="BEGIN_LINK" />Επιδιορθώστε τα προβλήματα ενημέρωσης και αποτυχημένων ενημερώσεων του Chrome.<ph name="END_LINK" /></translation>
+<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Μια τελευταία υπενθύμιση: Η εγκατάσταση <ph name="BEGIN_BOLD" />θα διαγράψει όλα τα περιεχόμενα του σκληρού δίσκου σας<ph name="END_BOLD" />. Βεβαιωθείτε ότι έχετε δημιουργήσει αντίγραφα ασφαλείας των δεδομένων που σας ενδιαφέρουν.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Αφού ξεκινήσει η εγκατάσταση, δεν είναι δυνατή η ακύρωσή της.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Σύνδεση δικτύου - Chrome</translation>
 <translation id="3037838751736561277">Το Google Chrome εκτελείται στο παρασκήνιο.</translation>
 <translation id="3059710691562604940">Η Ασφαλής περιήγηση είναι απενεργοποιημένη. Το Chrome συνιστά να την ενεργοποιήσετε.</translation>

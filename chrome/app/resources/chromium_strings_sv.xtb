@@ -55,6 +55,8 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2847479871509788944">Ta bort från Chromium …</translation>
 <translation id="2885378588091291677">Aktivitetshanteraren</translation>
 <translation id="2910007522516064972">Om &amp;Chromium</translation>
+<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />En sista påminnelse: installationen <ph name="BEGIN_BOLD" />rensar hårddisken fullständigt<ph name="END_BOLD" />. Se till att du har säkerhetskopierat all data som du vill behålla.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />När installationen har påbörjats går den inte att avbryta.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium är uppdaterat</translation>
 <translation id="2983934633046890458">Lösenorden i Chromium redigeras.</translation>
 <translation id="3032706164202344641">Chromium kan inte kontrollera dina lösenord. Försök igen senare.</translation>

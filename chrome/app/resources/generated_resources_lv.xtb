@@ -572,6 +572,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1602085790802918092">Virtuālās mašīnas startēšana</translation>
 <translation id="1603914832182249871">(Inkognito)</translation>
 <translation id="1604432177629086300">Nevarēja izdrukāt. Pārbaudiet printeri un mēģiniet vēlreiz.</translation>
+<translation id="1606077700029460857">Mainīt peles iestatījumus</translation>
 <translation id="1607139524282324606">Notīrīt ierakstu</translation>
 <translation id="1607499585984539560">Lietotājs nav saistīts ar domēnu</translation>
 <translation id="1608626060424371292">Noņemt šo lietotāju</translation>
@@ -694,6 +695,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1718835860248848330">Pēdējā stunda</translation>
 <translation id="1719312230114180055">Piezīme. Jūsu pirksta nospiedums var būt mazāk drošs nekā sarežģīta parole vai PIN.</translation>
 <translation id="1720318856472900922">TLS WWW servera autentifikācija</translation>
+<translation id="1720941539803966190">Aizvērt mācību burbuli</translation>
 <translation id="1721312023322545264">Jums ir nepieciešama atļauja no <ph name="NAME" />, lai apmeklētu šo vietni</translation>
 <translation id="1722460139690167654">Jūsu ierīci <ph name="BEGIN_LINK" />(veids: <ph name="DEVICE_TYPE" />) pārvalda<ph name="END_LINK" /> <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">Jauns logs</translation>
@@ -768,6 +770,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1790194216133135334">Nosūtīt saiti uz: <ph name="DEVICE_NAME" /></translation>
 <translation id="1790976235243700817">Noņemt piekļuvi</translation>
 <translation id="1792619191750875668">Paplašinātais attēlojums</translation>
+<translation id="1793625608969726781">Ierīce numur <ph name="DEVICE_INDEX" />, ierīču skaits sarakstā ir <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, dators, akumulatora uzlādes līmenis procentos ir <ph name="BATTERY_PERCENTAGE" /></translation>
 <translation id="1794051631868188691">Nekad nerādīt <ph name="MERCHANT" /> informāciju</translation>
 <translation id="1794791083288629568">Sūtīt atsauksmes, lai palīdzētu novērst šo problēmu.</translation>
 <translation id="1795214765651529549">Izmantot klasisko motīvu</translation>
@@ -1147,6 +1150,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2179416702468739594">Notiek pieejamu profilu meklēšana… Uz dažām minūtēm var tikt pārtraukts savienojums ar mobilo tīklu.</translation>
 <translation id="2180620921879609685">Bloķēt saturu jebkurā lapā</translation>
 <translation id="2182058453334755893">Kopēts jūsu starpliktuvē</translation>
+<translation id="2183027945672030611">Ierīce numur <ph name="DEVICE_INDEX" />, ierīču skaits sarakstā ir <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, spēļu vadāmierīce, akumulatora uzlādes līmenis procentos ir <ph name="BATTERY_PERCENTAGE" /></translation>
 <translation id="2184515124301515068">Atļaut pārlūkam Chrome izvēlēties, kad vietnēs var atskaņot skaņu (ieteicams)</translation>
 <translation id="2186711480981247270">No citas ierīces kopīgota lapa</translation>
 <translation id="2187675480456493911">Tīkls ir sinhronizēts ar citām ierīcēm jūsu kontā. Iestatījumi, kurus ir mainījuši citi lietotāji, netiks sinhronizēti. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
@@ -1263,6 +1267,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2301402091755573488">Kopīgotā cilne</translation>
 <translation id="23030561267973084"><ph name="EXTENSION_NAME" /> pieprasīja papildu atļaujas.</translation>
 <translation id="23055578400314116">Atlasiet lietotājvārdu.</translation>
+<translation id="2306366691914573029">Ierīce numur <ph name="DEVICE_INDEX" />, ierīču skaits sarakstā ir <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, nezināma veida ierīce</translation>
 <translation id="2307462900900812319">Konfigurēt tīklu</translation>
 <translation id="2307553512430195144">Ja piekritīsiet, Google asistents gaidstāves režīmā gaidīs, līdz noteiks īsinājumvārdu “Ok Google”, un varēs izmantot funkciju Voice Match, lai atpazītu, ka runā <ph name="SUPERVISED_USER_NAME" />.
     <ph name="BR" />
@@ -1548,6 +1553,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2606568927909309675">Audio un video saturam angļu valodā tiek automātiski izveidoti subtitri. Audio ieraksti un subtitri vienmēr atrodas tikai jūsu ierīcē.</translation>
 <translation id="2607101320794533334">Subjekta publiskās atslēgas dati</translation>
 <translation id="2609896558069604090">Izveidot saīsnes...</translation>
+<translation id="2609902589050805912">Ierīce numur <ph name="DEVICE_INDEX" />, ierīču skaits sarakstā ir <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, audioierīce</translation>
 <translation id="2609980095400624569">Nevarēja izveidot savienojumu</translation>
 <translation id="2610157865375787051">Miega režīms</translation>
 <translation id="2610260699262139870">Patiesais izmērs</translation>
@@ -1614,6 +1620,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2673135533890720193">Skatīt jūsu pārlūkošanas vēsturi</translation>
 <translation id="2674764818721168631">Izslēgts</translation>
 <translation id="2678063897982469759">Atkārtoti iespējot</translation>
+<translation id="2678676117809690850">Ierīce numur <ph name="DEVICE_INDEX" />, ierīču skaits sarakstā ir <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, tālrunis, akumulatora uzlādes līmenis procentos ir <ph name="BATTERY_PERCENTAGE" /></translation>
 <translation id="268053382412112343">Vēsture</translation>
 <translation id="2681124317993121768">Viesu profili netiek atbalstīti</translation>
 <translation id="2682498795777673382">Atjauninājums no vecākiem</translation>
@@ -1810,6 +1817,7 @@ bet, lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas tausti
 <translation id="287205682142673348">Portu pārsūtīšana</translation>
 <translation id="287286579981869940">Pievienot pakalpojumu sniedzēju <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">Beidzēt</translation>
+<translation id="2872966656309879564">Ierīce numur <ph name="DEVICE_INDEX" />, ierīču skaits sarakstā ir <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, dators</translation>
 <translation id="2874939134665556319">Iepriekšējais ieraksts</translation>
 <translation id="2875698561019555027">(Chrome kļūdu lapas)</translation>
 <translation id="2876336351874743617">2. pirksts</translation>
@@ -1990,6 +1998,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3054766768827382232">Atspējojot datu piekļuves aizsardzību, var uzlabot perifēro ierīču veiktspēju, taču jūsu personas dati var tikt pakļauti neatļautai lietošanai.</translation>
 <translation id="3055590424724986000">Izmantojot jūsu izvēlēto pakalpojumu sniedzēju</translation>
 <translation id="3058498974290601450">Jebkurā brīdī varat ieslēgt sinhronizāciju iestatījumos.</translation>
+<translation id="3058517085907878899">Ierīces nosaukuma piešķiršana</translation>
 <translation id="3060379269883947824">Iespējot funkciju “Atlasīt, lai izrunātu”</translation>
 <translation id="3060952009917586498">Varat mainīt ierīces valodu. Pašreizējā valoda: <ph name="LANGUAGE" />.</translation>
 <translation id="3060987956645097882">Nevarēja izveidot savienojumu ar jūsu tālruni. Tālrunim ir jāatrodas tuvumā, tam jābūt atbloķētam, un tajā ir jābūt ieslēgtam Bluetooth un Wi-Fi savienojumam.</translation>
@@ -2000,6 +2009,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3067198360141518313">Izpildīt šo spraudni</translation>
 <translation id="3071624960923923138">Varat noklikšķināt šeit, lai atvērtu jaunu cilni.</translation>
 <translation id="3072775339180057696">Vai ļaut vietnei skatīt failu <ph name="FILE_NAME" />?</translation>
+<translation id="3074799113165994093">Ierīce numur <ph name="DEVICE_INDEX" />, ierīču skaits sarakstā ir <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, tālrunis</translation>
 <translation id="3075874217500066906">Lai varētu sākt Powerwash procesu, ir jāveic restartēšana. Pēc tam jums tiks lūgts apstiprināt, ka vēlaties turpināt darbu.</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Saglabāt tikai šajā ierīcē</translation>
@@ -2041,6 +2051,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3117791853215125017">{COUNT,plural, =1{Neizdevās nosūtīt saturu (<ph name="ATTACHMENTS" />) uz ierīci <ph name="DEVICE_NAME" />}zero{Neizdevās nosūtīt saturu (<ph name="ATTACHMENTS" />) uz ierīci <ph name="DEVICE_NAME" />}one{Neizdevās nosūtīt saturu (<ph name="ATTACHMENTS" />) uz ierīci <ph name="DEVICE_NAME" />}other{Neizdevās nosūtīt saturu (<ph name="ATTACHMENTS" />) uz ierīci <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> palīdzība</translation>
 <translation id="3118654181216384296">Pēc brīža mēģiniet vēlreiz palaist operētājsistēmu Linux.</translation>
+<translation id="3119689272338239690">Ierīce numur <ph name="DEVICE_INDEX" />, ierīču skaits sarakstā ir <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, nezināma veida ierīce, akumulatora uzlādes līmenis procentos ir <ph name="BATTERY_PERCENTAGE" /></translation>
 <translation id="3119948370277171654">Kādu saturu/URL apraidījāt?</translation>
 <translation id="3120430004221004537">Nepietiekams attiecīgās darbības šifrējums šajā ierīcē: “<ph name="DEVICE_NAME" />”.</translation>
 <translation id="3122464029669770682">Maksa par daļas vienību</translation>
@@ -2553,6 +2564,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3682824389861648626">Kustības slieksnis</translation>
 <translation id="3683524264665795342">Lietotnes <ph name="APP_NAME" /> nosūtītais ekrāna kopīgošanas pieprasījums</translation>
 <translation id="3685598397738512288">Linux USB preferences</translation>
+<translation id="3686786761304157917">Ierīce numur <ph name="DEVICE_INDEX" />, ierīču skaits sarakstā ir <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, tastatūra, akumulatora uzlādes līmenis procentos ir <ph name="BATTERY_PERCENTAGE" /></translation>
 <translation id="368789413795732264">Mēģinot rakstīt failu, radās kļūda: <ph name="ERROR_TEXT" />.</translation>
 <translation id="3688507211863392146">Rakstīt failos un mapēs, kurus atverat lietojumprogrammā</translation>
 <translation id="3688526734140524629">Mainīt kanālu</translation>
@@ -2652,6 +2664,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3778740492972734840">Izstrā&amp;dātāja rīki</translation>
 <translation id="3778868487658107119">Uzdodiet tam jautājumus. Lieciet tam veikt darbības. Pakalpojums Google darbojas jūsu labā — vienmēr gatavs palīdzēt.</translation>
 <translation id="3781742599892759500">Linux piekļuve mikrofonam</translation>
+<translation id="3782488227140539029">Ierīce numur <ph name="DEVICE_INDEX" />, ierīču skaits sarakstā ir <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, videokamera, akumulatora uzlādes līmenis procentos ir <ph name="BATTERY_PERCENTAGE" /></translation>
 <translation id="3782795641773236652">Vēl nav piešķirts neviens slēdzis vai taustiņš</translation>
 <translation id="378312418865624974">Lasīt unikālu šī datora identifikatoru</translation>
 <translation id="3784372983762739446">Bluetooth ierīces</translation>
@@ -2892,6 +2905,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4002329649066944389">Konkrētu vietņu izņēmumu pārvaldība</translation>
 <translation id="4002440992267487163">PIN koda iestatīšana</translation>
 <translation id="4005817994523282006">Laika joslas noteikšanas metode</translation>
+<translation id="400645326027787740">Ierīce numur <ph name="DEVICE_INDEX" />, ierīču skaits sarakstā ir <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, spēļu vadāmierīce</translation>
 <translation id="4007856537951125667">Paslēpt saīsnes</translation>
 <translation id="4008291085758151621">Virtuālajā realitātē vietnes informācija nav pieejama</translation>
 <translation id="4010917659463429001">Lai iegūtu savas grāmatzīmes mobilajā ierīcē, <ph name="GET_IOS_APP_LINK" />.</translation>
@@ -3197,6 +3211,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4382131447572146376">{COUNT,plural, =0{<ph name="EMAIL" />}=1{<ph name="EMAIL" />, vēl vismaz 1 konts}zero{<ph name="EMAIL" />, vēl vismaz <ph name="EXTRA_ACCOUNTS" /> konti}one{<ph name="EMAIL" />, vēl vismaz <ph name="EXTRA_ACCOUNTS" /> konts}other{<ph name="EMAIL" />, vēl vismaz <ph name="EXTRA_ACCOUNTS" /> konti}}</translation>
 <translation id="4384312707950789900">Pievienot vēlamajam</translation>
 <translation id="4384652540891215547">Aktivizēt paplašinājumu</translation>
+<translation id="4384886290276344300">Mainīt tastatūras iestatījumus</translation>
 <translation id="438503109373656455">Bucefals</translation>
 <translation id="4385146930797718821">Ekrānuzņēmums ir kopēts starpliktuvē</translation>
 <translation id="4385905942116811558">Notiek Bluetooth un USB ierīču meklēšana…</translation>
@@ -3588,6 +3603,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4813136279048157860">Mani attēli</translation>
 <translation id="4813512666221746211">Tīkla kļūda</translation>
 <translation id="4814378367953456825">Ievadiet šī pirksta nospieduma nosaukumu.</translation>
+<translation id="4816097470512964351"><ph name="DEVICE" />, informācija</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{Izdzēsta viena grāmatzīme}zero{Izdzēstas {COUNT} grāmatzīmes}one{Izdzēsta {COUNT} grāmatzīme}other{Izdzēstas {COUNT} grāmatzīmes}}</translation>
 <translation id="4819607494758673676">Google asistenta paziņojumi</translation>
 <translation id="4820236583224459650">Iestatīt kā aktīvu biļeti</translation>
@@ -3663,6 +3679,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4884987973312178454">6x</translation>
 <translation id="4887424188275796356">Atvēršana, izmantojot sistēmas skatītāju</translation>
 <translation id="488785315393301722">Rādīt detaļas</translation>
+<translation id="4889450157778777235">Ierīce numur <ph name="DEVICE_INDEX" />, ierīču skaits sarakstā ir <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, videokamera</translation>
 <translation id="4890773143211625964">Rādīt printera papildiespējas</translation>
 <translation id="4891089016822695758">Beta versijas forums</translation>
 <translation id="4892229439761351791">Vietne var izmantot Bluetooth savienojumu</translation>
@@ -3799,6 +3816,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="5039696241953571917">Skatiet un pārvaldiet saglabātās paroles savā Google kontā</translation>
 <translation id="5039804452771397117">Atļaut</translation>
 <translation id="5040823038948176460">Papildu satura iestatījumi</translation>
+<translation id="5043440033854483429">Nosaukumā var izmantot burtus, ciparus un defises (-), un nosaukumā jābūt ne mazāk par vienu un ne vairāk par 15 rakstzīmēm.</translation>
 <translation id="5043913660911154449">Varat arī norādīt printera PPD. <ph name="LINK_BEGIN" />Uzzināt vairāk<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Nepareiza parole</translation>
 <translation id="504561833207953641">Tiek atvērts esošā pārlūka sesijā.</translation>
@@ -4052,6 +4070,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="5319359161174645648">Google iesaka pārlūku Chrome</translation>
 <translation id="5319712128756744240">Savienot pārī ar jaunu ierīci</translation>
 <translation id="5320135788267874712">Jaunais ierīces nosaukums</translation>
+<translation id="532043380734099846">Ierīce numur <ph name="DEVICE_INDEX" />, ierīču skaits sarakstā ir <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, pele, akumulatora uzlādes līmenis procentos ir <ph name="BATTERY_PERCENTAGE" /></translation>
 <translation id="532247166573571973">Iespējams, serveris nav sasniedzams. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="5324300749339591280">Lietotņu saraksts</translation>
 <translation id="5324780743567488672">Automātiski iestatīt laika joslu, izmantojot atrašanās vietu</translation>
@@ -4079,6 +4098,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="535123479159372765">Teksts nokopēts no citas ierīces</translation>
 <translation id="5352033265844765294">Laikspiedola uzlikšana</translation>
 <translation id="5353252989841766347">Paroļu eksportēšana no pārlūka Chrome</translation>
+<translation id="5354531123814675522">Ierīce numur <ph name="DEVICE_INDEX" />, ierīču skaits sarakstā ir <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, planšetdators, akumulatora uzlādes līmenis procentos ir <ph name="BATTERY_PERCENTAGE" /></translation>
 <translation id="5355099869024327351">Ļaut Asistentam rādīt jums paziņojumus</translation>
 <translation id="5355191726083956201">Uzlabota aizsardzība ir ieslēgta</translation>
 <translation id="5355926466126177564">Paplašinājums “<ph name="EXTENSION_NAME" />” mainīja iestatījumu, kura lapa tiek parādīta, kad veicat meklēšanu, izmantojot universālo lodziņu.</translation>
@@ -4248,6 +4268,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="5534304873398226603">Atmest fotoattēlu vai video</translation>
 <translation id="5535941515421698170">Noņemt no šīs ierīces arī jūsu esošos datus</translation>
 <translation id="5539221284352502426">Ievadīto paroli noraidīja serveris. Iespējamie iemesli: parole ir pārāk īsa; parolē ir jābūt ietvertiem cipariem vai simboliem; parolei ir jāatšķiras no iepriekšējām parolēm.</translation>
+<translation id="5539467723438368868">Ierīce numur <ph name="DEVICE_INDEX" />, ierīču skaits sarakstā ir <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, planšetdators</translation>
 <translation id="5541694225089836610">Jūsu administrators ir atspējojis darbību.</translation>
 <translation id="5542132724887566711">Profils</translation>
 <translation id="5542750926112347543">Domēna <ph name="DOMAIN" /> sīkfaili ir bloķēti.</translation>
@@ -4308,6 +4329,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">Nedrīkst izveidot savienojumu ar MIDI ierīcēm</translation>
 <translation id="5602765853043467355">Notīrīt grāmatzīmes, vēsturi, paroles un citu saturu šajā ierīcē</translation>
+<translation id="5604884720628869833">Ierīce numur <ph name="DEVICE_INDEX" />, ierīču skaits sarakstā ir <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, tastatūra</translation>
 <translation id="5605623530403479164">Citas meklētājprogrammas</translation>
 <translation id="5605758115928394442">Uz jūsu tālruni tika nosūtīts paziņojums, lai apstiprinātu, ka tas esat jūs.</translation>
 <translation id="560834977503641186">Wi-Fi sinhronizācija, uzzināt vairāk</translation>
@@ -4768,6 +4790,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="6113434369102685411">Iestatiet noklusējuma meklētājprogrammu pārlūkam Chrome un <ph name="DEVICE_TYPE" /> palaidējam.</translation>
 <translation id="6113942107547980621">Lai izmantotu Smart Lock, pārslēdzieties uz tālruņa primāro lietotāja profilu</translation>
 <translation id="6116921718742659598">Mainīt valodas un ievades iestatījumus</translation>
+<translation id="6119927814891883061">Piešķirt ierīcei nosaukumu <ph name="DEVICE_NAME" /></translation>
 <translation id="6120205520491252677">Piespraust šo lapu sākuma ekrānam...</translation>
 <translation id="6122081475643980456">Jūsu interneta savienojums tiek pārvaldīts</translation>
 <translation id="6122093587541546701">E-pasta adrese (neobligāti):</translation>
@@ -6974,6 +6997,7 @@ Nospiediet piešķirtu slēdzi, lai noņemtu piešķiršanu.</translation>
 <translation id="8475313423285172237">Cita datorā instalēta programma ir izraisījusi tāda paplašinājuma pievienošanu, kas var ietekmēt pārlūkprogrammas Chrome darbību.</translation>
 <translation id="8477241577829954800">Aizvietots</translation>
 <translation id="8477384620836102176">&amp;Vispārīgi</translation>
+<translation id="8479109005219657634">Ierīce numur <ph name="DEVICE_INDEX" />, ierīču skaits sarakstā ir <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, audioierīce, akumulatora uzlādes līmenis procentos ir <ph name="BATTERY_PERCENTAGE" /></translation>
 <translation id="8479176401914456949">Kods nav derīgs. Lūdzu, mēģiniet vēlreiz.</translation>
 <translation id="8480082892550707549">Pat ja esat iepriekš lejupielādējis failus no šīs vietnes, iespējams, vietne ir kļuvusi nedroša uz laiku (uzlauzta). Mēģiniet lejupielādēt failu vēlāk.</translation>
 <translation id="8480869669560681089">Nezināma ierīce no: <ph name="VENDOR_NAME" /></translation>
@@ -7445,7 +7469,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="8966809848145604011">Citi profili</translation>
 <translation id="8966870118594285808">Ja nejauši aizvērāt cilni, atveriet to atkārtoti</translation>
 <translation id="8967427617812342790">Pievienot sarakstam</translation>
-<translation id="8967866634928501045">Lai skatītu saturu, nospiediet Alt+Shift+A.</translation>
 <translation id="8968766641738584599">Saglabāt karti</translation>
 <translation id="89720367119469899">Escape</translation>
 <translation id="8972513834460200407">Lūdzu, sazinieties ar savu tīkla administratoru, lai pārliecinātos, vai ugunsmūris nebloķē lejupielādes no Google serveriem.</translation>
@@ -7455,6 +7478,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="897525204902889653">Karantīnas pakalpojums</translation>
 <translation id="8975396729541388937">Varat jebkurā laikā anulēt abonementu, saņemtajos e-pasta ziņojumos noklikšķinot uz attiecīgās saites.</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{“<ph name="TAB_TITLE" />”}=1{“<ph name="TAB_TITLE" />” un vēl 1 cilne}zero{“<ph name="TAB_TITLE" />” un vēl # cilnes}one{“<ph name="TAB_TITLE" />” un vēl # cilne}other{“<ph name="TAB_TITLE" />” un vēl # cilnes}}</translation>
+<translation id="8977175149983066223">Ierīce numur <ph name="DEVICE_INDEX" />, ierīču skaits sarakstā ir <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, pele</translation>
 <translation id="8977811652087512276">Nepareiza parole vai bojāts fails.</translation>
 <translation id="8978154919215542464">Ieslēgta — sinhronizēt visu</translation>
 <translation id="897939795688207351">Vietnē <ph name="ORIGIN" /></translation>

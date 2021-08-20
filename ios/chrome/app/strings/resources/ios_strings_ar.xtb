@@ -224,7 +224,6 @@
 <translation id="3153862085237805241">حفظ البطاقة</translation>
 <translation id="3157387275655328056">إضافة إلى قائمة القراءة</translation>
 <translation id="3157684681743766797">وضع علامة على الكل...</translation>
-<translation id="3161291298470460782">‏سيؤدي هذا الإجراء إلى تسجيل الخروج من حسابك على Chrome وإيقاف المزامنة ومحو جميع بيانات Chrome من هذا الجهاز. وستظل البيانات المتزامنة في حسابك على Google.</translation>
 <translation id="3169472444629675720">اقتراحات</translation>
 <translation id="3175081911749765310">خدمات الويب</translation>
 <translation id="3178650076442119961">نشط اليوم</translation>
@@ -267,7 +266,6 @@
 <translation id="3494788280727468875">تأكيد محو بيانات التصفّح</translation>
 <translation id="35083190962747987">‏فتح عنوان ${url}</translation>
 <translation id="3519193562722059437">افتح علامة تبويب لتصفح الويب.</translation>
-<translation id="3523473570015918798">‏سيؤدي تسجيل الخروج إلى إيقاف مزامنة الإشارات المرجعية والسجلّ وكلمات المرور وبيانات Chrome الأخرى مع حسابك على Google.</translation>
 <translation id="3527085408025491307">المجلد</translation>
 <translation id="3529024052484145543">غير آمن</translation>
 <translation id="3533202363250687977">إغلاق جميع علامات تبويب التصفُّح المتخفي</translation>
@@ -447,7 +445,6 @@
 <translation id="5457226814769348910">فتح نسخة بلا إنترنت</translation>
 <translation id="5489208564673669003">لإدارة ملفات تعريف الارتباط لجميع المواقع الإلكترونية، يمكنك الاطّلاع على <ph name="BEGIN_LINK" />إعدادات ملفات تعريف الارتباط<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">حظر كل ملفات تعريف الارتباط (غير مُستحسَن)</translation>
-<translation id="5508435575041083207">تسجيل الخروج ومحو البيانات من هذ الجهاز</translation>
 <translation id="5513681519188741830">قبل <ph name="TIME" /> ساعة</translation>
 <translation id="5525269841082836315">إنشاء عبارة مرور</translation>
 <translation id="5532698011560297095">تعذر تسجيل الدخول</translation>
@@ -702,9 +699,6 @@
 <translation id="7701040980221191251">لا يوجد</translation>
 <translation id="7741325291586284254">صفحة علامة تبويب جديدة في وضع التصفّح المتخفي</translation>
 <translation id="7765158879357617694">نقل</translation>
-<translation id="7771470029643830783">‏سيؤدي تسجيل الخروج إلى إيقاف مزامنة الإشارات المرجعية والسجلّ وكلمات المرور وبيانات Chrome الأخرى مع حسابك على Google.
-
-سيتم حذف بيانات Chrome من هذا الجهاز عند تسجيل الخروج، وذلك لأن حسابك تتم إدارته من خلال <ph name="HOSTED_DOMAIN" />. وستظل البيانات المتزامنة في حسابك على Google.</translation>
 <translation id="7772032839648071052">تأكيد عبارة المرور</translation>
 <translation id="7778472311864276518">إزالة الحساب من هذا الجهاز</translation>
 <translation id="7781011649027948662">هل تريد ترجمة الصفحة؟</translation>
@@ -774,7 +768,6 @@
 <translation id="8495097701594799854">تم الإيقاف من قِبل مؤسستك.</translation>
 <translation id="8503813439785031346">اسم المستخدم</translation>
 <translation id="850600235656508448">فتح في وضع التصفح المتخفي</translation>
-<translation id="8510057420705599706">‏سيؤدي هذا الإجراء إلى تسجيل الخروج من حسابك على Chrome وإيقاف المزامنة، ولكن ستظل الإشارات المرجعية والسجلّ وكلمات المرور وبيانات Chrome الأخرى على هذا الجهاز.</translation>
 <translation id="8517375800490286174">تراخيص البرامج المفتوحة المصدر</translation>
 <translation id="8524799873541103884">علامات تبويب <ph name="INCOGNITO" /><ph name="FIRST_VISIBLE_TAB" /> عبر <ph name="LAST_VISIBLE_TAB" /> من <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8529767659511976195">جديد</translation>

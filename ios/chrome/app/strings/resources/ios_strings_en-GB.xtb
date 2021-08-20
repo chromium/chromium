@@ -224,7 +224,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3153862085237805241">Save Card</translation>
 <translation id="3157387275655328056">Add to Reading List</translation>
 <translation id="3157684681743766797">Mark All…</translation>
-<translation id="3161291298470460782">This will sign you out, turn off sync and clear all Chrome data from this device. Your synced data will remain in your Google Account.</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3175081911749765310">Web Services</translation>
 <translation id="3178650076442119961">Active today</translation>
@@ -267,7 +266,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3494788280727468875">Confirm clear browsing data</translation>
 <translation id="35083190962747987">Open ${url}</translation>
 <translation id="3519193562722059437">Open a tab to browse the web.</translation>
-<translation id="3523473570015918798">By signing out, your bookmarks, history, passwords and other Chrome data will no longer be synced to your Google Account.</translation>
 <translation id="3527085408025491307">Folder</translation>
 <translation id="3529024052484145543">Not secure</translation>
 <translation id="3533202363250687977">Close all incognito tabs</translation>
@@ -447,7 +445,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5457226814769348910">Open offline version</translation>
 <translation id="5489208564673669003">To manage cookies for all sites, see <ph name="BEGIN_LINK" />Cookie settings<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Block all cookies (not recommended)</translation>
-<translation id="5508435575041083207">Sign out and clear data from this device</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> h ago</translation>
 <translation id="5525269841082836315">Create passphrase</translation>
 <translation id="5532698011560297095">Can't Sign In</translation>
@@ -702,9 +699,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7701040980221191251">None</translation>
 <translation id="7741325291586284254">New incognito tab page</translation>
 <translation id="7765158879357617694">Move</translation>
-<translation id="7771470029643830783">By signing out, your bookmarks, history, passwords and other Chrome data will no longer be synced to your Google Account.
-
-Because your account is managed by <ph name="HOSTED_DOMAIN" />, your Chrome data will be deleted from this device when signing out. Your synced data will remain in your Google Account.</translation>
 <translation id="7772032839648071052">Confirm passphrase</translation>
 <translation id="7778472311864276518">Remove account from this device</translation>
 <translation id="7781011649027948662">Translate page?</translation>
@@ -774,7 +768,6 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8495097701594799854">Turned off by your organisation.</translation>
 <translation id="8503813439785031346">Username</translation>
 <translation id="850600235656508448">Open in Incognito</translation>
-<translation id="8510057420705599706">This will sign you out and turn off sync, but your bookmarks, history, passwords and other Chrome data will remain on this device.</translation>
 <translation id="8517375800490286174">Open-Source Licences</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> Tabs <ph name="FIRST_VISIBLE_TAB" /> through <ph name="LAST_VISIBLE_TAB" /> of <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8529767659511976195">New</translation>

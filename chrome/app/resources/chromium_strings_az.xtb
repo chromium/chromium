@@ -55,6 +55,8 @@ Bəzi funksiyalar əlçatmaz ola bilər ki, nəticədə tərcihlərə edilən d�
 <translation id="2847479871509788944">Chromium'dan silin...</translation>
 <translation id="2885378588091291677">Tapşırıq Meneceri</translation>
 <translation id="2910007522516064972">Chromium haqqında</translation>
+<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Son xatırlatma: quraşdırma nəticəsində <ph name="BEGIN_BOLD" />sərt diskdəki bütün data silinəcək<ph name="END_BOLD" />. Lazımlı bütün datanı yedəkləyin.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Quraşdırma başladıqdan sonra ləğv edilə bilməz.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium güncəldir</translation>
 <translation id="2983934633046890458">Chromium parolları redaktə etməyə çalışır.</translation>
 <translation id="3032706164202344641">Chromium parollarınızı yoxlaya bilmir. Sonra yenidən cəhd edin.</translation>

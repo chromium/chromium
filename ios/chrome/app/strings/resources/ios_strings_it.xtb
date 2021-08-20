@@ -224,7 +224,6 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="3153862085237805241">Salva carta</translation>
 <translation id="3157387275655328056">Aggiungi all'elenco di lettura</translation>
 <translation id="3157684681743766797">Segna tutti come...</translation>
-<translation id="3161291298470460782">In questo modo il tuo account verrà disconnesso, la sincronizzazione verrà disattivata e tutti i dati di Chrome verranno eliminati da questo dispositivo. I tuoi dati sincronizzati rimarranno nel tuo Account Google.</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3175081911749765310">Servizi web</translation>
 <translation id="3178650076442119961">Attivo oggi</translation>
@@ -267,7 +266,6 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="3494788280727468875">Conferma cancellazione dati di navigazione</translation>
 <translation id="35083190962747987">Apri ${url}</translation>
 <translation id="3519193562722059437">Apri una scheda per navigare sul Web.</translation>
-<translation id="3523473570015918798">Se ti disconnetti, i preferiti, la cronologia, le password e altri dati di Chrome non verranno più sincronizzati con il tuo Account Google.</translation>
 <translation id="3527085408025491307">Cartella</translation>
 <translation id="3529024052484145543">Non sicuro</translation>
 <translation id="3533202363250687977">Chiudi tutte le schede in incognito*</translation>
@@ -447,7 +445,6 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5457226814769348910">Apri versione offline</translation>
 <translation id="5489208564673669003">Per gestire i cookie per tutti i siti, vedi le <ph name="BEGIN_LINK" />Impostazioni dei cookie<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Blocca tutti i cookie (opzione non consigliata)</translation>
-<translation id="5508435575041083207">Esci e cancella i dati da questo dispositivo</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> h fa</translation>
 <translation id="5525269841082836315">Crea passphrase</translation>
 <translation id="5532698011560297095">Impossibile eseguire l'accesso</translation>
@@ -702,9 +699,6 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7701040980221191251">Nulla</translation>
 <translation id="7741325291586284254">Pagina Nuova scheda in incognito</translation>
 <translation id="7765158879357617694">Sposta</translation>
-<translation id="7771470029643830783">Se ti disconnetti, i preferiti, la cronologia, le password e altri dati di Chrome non verranno più sincronizzati con il tuo Account Google.
-
-Poiché il tuo account è gestito da <ph name="HOSTED_DOMAIN" />, i tuoi dati di Chrome verranno eliminati da questo dispositivo quando ti disconnetterai. I tuoi dati sincronizzati rimarranno nel tuo Account Google.</translation>
 <translation id="7772032839648071052">Conferma passphrase</translation>
 <translation id="7778472311864276518">Rimuovi account da questo dispositivo</translation>
 <translation id="7781011649027948662">Tradurre la pagina?</translation>
@@ -774,7 +768,6 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8495097701594799854">Disattivato dalla tua organizzazione.</translation>
 <translation id="8503813439785031346">Nome utente</translation>
 <translation id="850600235656508448">Apri in modalità di navigazione in incognito</translation>
-<translation id="8510057420705599706">In questo modo il tuo account verrà disconnesso e la sincronizzazione verrà disattivata, ma i preferiti, la cronologia, le password e altri dati di Chrome rimarranno salvati nel dispositivo.</translation>
 <translation id="8517375800490286174">Licenze open source</translation>
 <translation id="8524799873541103884">Schede <ph name="INCOGNITO" /> dalla <ph name="FIRST_VISIBLE_TAB" /> alla <ph name="LAST_VISIBLE_TAB" /> di <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8529767659511976195">Novità</translation>

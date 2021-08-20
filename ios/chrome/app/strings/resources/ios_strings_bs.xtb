@@ -224,7 +224,6 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="3153862085237805241">Sačuvajte karticu</translation>
 <translation id="3157387275655328056">Dodaj na popis za čitanje</translation>
 <translation id="3157684681743766797">Označi sve…</translation>
-<translation id="3161291298470460782">Ovim ćete se odjaviti, isključiti sinhronizaciju i obrisati Chrome podatke s ovog uređaja. Vaši sinhronizirani podaci će ostati na vašem Google računu.</translation>
 <translation id="3169472444629675720">Otkrijte</translation>
 <translation id="3175081911749765310">Web usluge</translation>
 <translation id="3178650076442119961">Aktivan danas</translation>
@@ -267,7 +266,6 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="3494788280727468875">Potvrda brisanja podataka pregledanja</translation>
 <translation id="35083190962747987">Otvori ${url}</translation>
 <translation id="3519193562722059437">Otvorite karticu da pregledate web.</translation>
-<translation id="3523473570015918798">Ako se odjavite, vaše oznake, historija, lozinke i drugi Chrome podaci više se neće sinhronizirati s vašim Google računom.</translation>
 <translation id="3527085408025491307">Folder</translation>
 <translation id="3529024052484145543">Nije sigurno</translation>
 <translation id="3533202363250687977">Zatvori sve anonimne kartice</translation>
@@ -447,7 +445,6 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5457226814769348910">Otvori offline verziju</translation>
 <translation id="5489208564673669003">Da upravljate kolačićima za sve web lokacije, pogledajte <ph name="BEGIN_LINK" />Postavke kolačića<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Blokiraj sve kolačiće (ne preporučuje se)</translation>
-<translation id="5508435575041083207">Odjavite se i obrišite podatke s uređaja</translation>
 <translation id="5513681519188741830">Prije <ph name="TIME" /> h</translation>
 <translation id="5525269841082836315">Kreirajte pristupni izraz</translation>
 <translation id="5532698011560297095">Ne mogu se prijaviti</translation>
@@ -702,9 +699,6 @@ U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu
 <translation id="7701040980221191251">Nema</translation>
 <translation id="7741325291586284254">Nova stranica anonimne kartice</translation>
 <translation id="7765158879357617694">Pomjeri</translation>
-<translation id="7771470029643830783">Ako se odjavite, vaše oznake, historija, lozinke i drugi Chrome podaci više se neće sinhronizirati s vašim Google računom.
-
-S obzirom da vašim računom upravlja domena <ph name="HOSTED_DOMAIN" />, vaši Chrome podaci će se izbrisati s ovog uređaja kada se odjavite. Vaši sinhronizirani podaci će ostati na vašem Google računu.</translation>
 <translation id="7772032839648071052">Potvrdite pristupni izraz</translation>
 <translation id="7778472311864276518">Ukloni račun s ovog uređaja</translation>
 <translation id="7781011649027948662">Prevesti stranicu?</translation>
@@ -774,7 +768,6 @@ Web lokacije mogu koristiti kolačiće da vide vašu aktivnost pregledanja na ra
 <translation id="8495097701594799854">Isključila je vaša organizacija.</translation>
 <translation id="8503813439785031346">Korisničko ime</translation>
 <translation id="850600235656508448">Otvori u anonimnom načinu</translation>
-<translation id="8510057420705599706">Ovim ćete se odjaviti i isključiti sinhronizaciju, ali vaše oznake, historija, lozinke i drugi Chrome podaci će ostati na ovom uređaju.</translation>
 <translation id="8517375800490286174">Licence otvorenog koda</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> kartice od <ph name="FIRST_VISIBLE_TAB" /> do <ph name="LAST_VISIBLE_TAB" /> od <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8529767659511976195">Novo</translation>

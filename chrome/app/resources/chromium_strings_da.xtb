@@ -53,6 +53,8 @@
 <translation id="2847479871509788944">Fjern fra Chromium...</translation>
 <translation id="2885378588091291677">Jobliste</translation>
 <translation id="2910007522516064972">Om &amp;Chromium</translation>
+<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />En sidste påmindelse: Når du installerer, <ph name="BEGIN_BOLD" />ryddes hele din harddisk<ph name="END_BOLD" />. Sørg for, at du har sikkerhedskopieret alle dine vigtigste data.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Når installationen først er gået i gang, kan den ikke annulleres.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium er opdateret</translation>
 <translation id="2983934633046890458">Chromium forsøger at redigere adgangskoder.</translation>
 <translation id="3032706164202344641">Chromium kan ikke tjekke dine adgangskoder. Prøv igen senere.</translation>

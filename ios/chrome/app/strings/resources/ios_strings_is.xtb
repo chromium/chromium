@@ -224,7 +224,6 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="3153862085237805241">Vista kort</translation>
 <translation id="3157387275655328056">Bæta við leslista</translation>
 <translation id="3157684681743766797">Merkja allt…</translation>
-<translation id="3161291298470460782">Þetta skráir þig út, slekkur á samstillingu og hreinsar öll Chrome gögn úr þessu tæki. Samstillt gögn verða áfram á Google reikningnum.</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3175081911749765310">Vefþjónusta</translation>
 <translation id="3178650076442119961">Virkt í dag</translation>
@@ -267,7 +266,6 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="3494788280727468875">Staðfesta hreinsun vefskoðunargagna</translation>
 <translation id="35083190962747987">Opna ${url}</translation>
 <translation id="3519193562722059437">Opnaðu flipa til að vafra.</translation>
-<translation id="3523473570015918798">Ef þú skráir þig út verða bókamerkin þín, ferillinn, aðgangsorðin og önnur gögn úr Chrome ekki lengur samstillt við Google reikninginn þinn.</translation>
 <translation id="3527085408025491307">Mappa</translation>
 <translation id="3529024052484145543">Ekki öruggt</translation>
 <translation id="3533202363250687977">Loka öllum huliðsflipum</translation>
@@ -447,7 +445,6 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="5457226814769348910">Opna útgáfu án nettengingar</translation>
 <translation id="5489208564673669003">Fyrir upplýsingar um stjórnun fótspora fyrir öll vefsvæði, sjá <ph name="BEGIN_LINK" />Fótsporastillingar<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Loka á öll fótspor (ekki mælt með)</translation>
-<translation id="5508435575041083207">Skrá út og hreinsa gögn úr þessu tæki</translation>
 <translation id="5513681519188741830">Fyrir <ph name="TIME" /> klst.</translation>
 <translation id="5525269841082836315">Búa til aðgangsorð</translation>
 <translation id="5532698011560297095">Innskráning mistókst</translation>
@@ -702,9 +699,6 @@ Reyndu að nota einkvæmt aðgangsorð á hverju vefsvæði.</translation>
 <translation id="7701040980221191251">Ekkert</translation>
 <translation id="7741325291586284254">Síða með nýjum huliðsflipa</translation>
 <translation id="7765158879357617694">Færa</translation>
-<translation id="7771470029643830783">Ef þú skráir þig út verða bókamerkin þín, ferillinn, aðgangsorðin og önnur gögn úr Chrome ekki lengur samstillt við Google reikninginn þinn.
-
-Þar sem <ph name="HOSTED_DOMAIN" /> hefur umsjón með reikningnum þínum verður Chrome gögnunum þínum eytt úr þessu tæki þegar þú skráir þig út. Samstillt gögn verða áfram á Google reikningnum.</translation>
 <translation id="7772032839648071052">Staðfestu aðgangsorðið</translation>
 <translation id="7778472311864276518">Fjarlægja reikning úr þessu tæki</translation>
 <translation id="7781011649027948662">Þýða síðu?</translation>
@@ -774,7 +768,6 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8495097701594799854">Fyrirtækið þitt slökkti á þessu.</translation>
 <translation id="8503813439785031346">Notandanafn</translation>
 <translation id="850600235656508448">Opna í huliðsstillingu</translation>
-<translation id="8510057420705599706">Þetta skráir þig út og slekkur á samstillingu en bókamerki, ferill, aðgangsorð og önnur gögn verða áfram í þessu tæki.</translation>
 <translation id="8517375800490286174">Leyfi opins kóða</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> Flipar <ph name="FIRST_VISIBLE_TAB" /> til og með <ph name="LAST_VISIBLE_TAB" /> af <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8529767659511976195">Nýtt</translation>

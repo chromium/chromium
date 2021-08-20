@@ -224,7 +224,6 @@
 <translation id="3153862085237805241">Сохранить подсказку</translation>
 <translation id="3157387275655328056">Добавить в список для чтения</translation>
 <translation id="3157684681743766797">Отметить все…</translation>
-<translation id="3161291298470460782">Вы выйдете из аккаунта, синхронизация будет отключена, а все данные Chrome – удалены с этого устройства. Синхронизированные данные останутся в вашем аккаунте Google.</translation>
 <translation id="3169472444629675720">Рекомендации</translation>
 <translation id="3175081911749765310">Веб-сервисы</translation>
 <translation id="3178650076442119961">Последние действия: сегодня</translation>
@@ -267,7 +266,6 @@
 <translation id="3494788280727468875">Подтвердить удаление данных о работе в браузере</translation>
 <translation id="35083190962747987">Открыть URL ${url}</translation>
 <translation id="3519193562722059437">Чтобы просматривать веб-страницы, откройте вкладку.</translation>
-<translation id="3523473570015918798">После выхода из аккаунта ваши закладки, история, пароли и другие данные Chrome перестанут синхронизироваться с аккаунтом Google.</translation>
 <translation id="3527085408025491307">Папка</translation>
 <translation id="3529024052484145543">Автозаполнение не используется</translation>
 <translation id="3533202363250687977">Закрыть все вкладки инкогнито</translation>
@@ -447,7 +445,6 @@
 <translation id="5457226814769348910">Открыть офлайн-версию</translation>
 <translation id="5489208564673669003">Вы можете <ph name="BEGIN_LINK" />настроить файлы cookie<ph name="END_LINK" /> для разных сайтов.</translation>
 <translation id="5490005495580364134">Блокировать все файлы cookie (не рекомендуется)</translation>
-<translation id="5508435575041083207">Выйти из аккаунта и удалить данные с этого устройства</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> ч. назад</translation>
 <translation id="5525269841082836315">Создание код. фразы</translation>
 <translation id="5532698011560297095">Не удается войти</translation>
@@ -702,9 +699,6 @@
 <translation id="7701040980221191251">Нет</translation>
 <translation id="7741325291586284254">Страница "Новая вкладка инкогнито"</translation>
 <translation id="7765158879357617694">Переместить</translation>
-<translation id="7771470029643830783">После выхода из аккаунта ваши закладки, история, пароли и другие данные Chrome перестанут синхронизироваться с аккаунтом Google.
-
-С этого устройства будут удалены все данные Chrome, так как вашим аккаунтом управляет администратор домена <ph name="HOSTED_DOMAIN" />. Синхронизированные данные останутся в вашем аккаунте Google.</translation>
 <translation id="7772032839648071052">Подтвердите кодовую фразу</translation>
 <translation id="7778472311864276518">Удалить аккаунт с этого устройства</translation>
 <translation id="7781011649027948662">Перевести страницу?</translation>
@@ -774,7 +768,6 @@
 <translation id="8495097701594799854">Функция отключена вашей организацией.</translation>
 <translation id="8503813439785031346">Имя пользователя</translation>
 <translation id="850600235656508448">Открыть в режиме инкогнито</translation>
-<translation id="8510057420705599706">Вы выйдете из аккаунта, синхронизация будет отключена, но ваши закладки, история, пароли и другие данные Chrome останутся на этом устройстве.</translation>
 <translation id="8517375800490286174">Лицензии открытого ПО</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" />, вкладки между <ph name="FIRST_VISIBLE_TAB" /> и <ph name="LAST_VISIBLE_TAB" />, всего <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8529767659511976195">Новинка</translation>

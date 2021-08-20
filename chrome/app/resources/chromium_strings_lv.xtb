@@ -53,6 +53,8 @@
 <translation id="2847479871509788944">Noņemšana no pārlūka Chromium...</translation>
 <translation id="2885378588091291677">Uzdevumu pārvaldnieks</translation>
 <translation id="2910007522516064972">Par &amp;Chromium</translation>
+<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Vēl pēdējoreiz atgādinām, ka instalēšanas laikā <ph name="BEGIN_BOLD" />no cietā diska tiks izdzēsti visi dati<ph name="END_BOLD" />. Noteikti dublējiet visus datus, kas jums būs vajadzīgi.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Kad instalēšana būs sākta, to nevarēs atcelt.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium ir atjaunināts</translation>
 <translation id="2983934633046890458">Chromium mēģina rediģēt paroles.</translation>
 <translation id="3032706164202344641">Pārlūkprogrammā Chromium nevar pārbaudīt jūsu paroles. Vēlāk mēģiniet vēlreiz.</translation>

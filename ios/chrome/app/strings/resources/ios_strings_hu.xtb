@@ -224,7 +224,6 @@ A keresési előzmények törléséről a keresőmotorja útmutatójából táj�
 <translation id="3153862085237805241">Kártya mentése</translation>
 <translation id="3157387275655328056">Hozzáadás olvasási listához</translation>
 <translation id="3157684681743766797">Az összes megjelölése…</translation>
-<translation id="3161291298470460782">Ezzel kijelentkezik, kikapcsol a szinkronizálás, és minden Chrome-adat törlődik erről az eszközről. Szinkronizált adatai továbbra is megmaradnak Google-fiókjában.</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3175081911749765310">Webszolgáltató</translation>
 <translation id="3178650076442119961">Ma volt aktív</translation>
@@ -267,7 +266,6 @@ A keresési előzmények törléséről a keresőmotorja útmutatójából táj�
 <translation id="3494788280727468875">Böngészési adatok törlésének megerősítése</translation>
 <translation id="35083190962747987">${url} megnyitása</translation>
 <translation id="3519193562722059437">Nyisson meg egy lapot a böngészéshez.</translation>
-<translation id="3523473570015918798">A kijelentkezés után könyvjelzői, előzményei, jelszavai és más Chrome-adatai többé nem szinkronizálódnak a Google-fiókjával.</translation>
 <translation id="3527085408025491307">Mappa</translation>
 <translation id="3529024052484145543">Nem biztonságos</translation>
 <translation id="3533202363250687977">Összes inkognitó lap bezárása</translation>
@@ -447,7 +445,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5457226814769348910">Offline verzió megnyitása</translation>
 <translation id="5489208564673669003">A <ph name="BEGIN_LINK" />Cookie-beállításokban<ph name="END_LINK" /> kezelheti a webhelyek cookie-jait.</translation>
 <translation id="5490005495580364134">Az összes cookie letiltása (nem ajánlott)</translation>
-<translation id="5508435575041083207">Kijelentkezés és adatok törlése erről az eszközről</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> órája</translation>
 <translation id="5525269841082836315">Jelszó létrehozása</translation>
 <translation id="5532698011560297095">Nem sikerült a bejelentkezés</translation>
@@ -702,9 +699,6 @@ Inkognitó módban a webhelyek nem használhatnak cookie-kat arra, hogy megfigye
 <translation id="7701040980221191251">Nincs</translation>
 <translation id="7741325291586284254">Új inkognitó lap oldal</translation>
 <translation id="7765158879357617694">Áthelyezés</translation>
-<translation id="7771470029643830783">A kijelentkezés után könyvjelzői, előzményei, jelszavai és más Chrome-adatai többé nem szinkronizálódnak a Google-fiókjával.
-
-Mivel fiókját a(z) <ph name="HOSTED_DOMAIN" /> kezeli, Chrome-adatai törölve lesznek erről az eszközről, amikor kijelentkezik. Szinkronizált adatai továbbra is megmaradnak Google-fiókjában.</translation>
 <translation id="7772032839648071052">Összetett jelszó megerősítése</translation>
 <translation id="7778472311864276518">Fiók eltávolítása az eszközről</translation>
 <translation id="7781011649027948662">Lefordítja az oldalt?</translation>
@@ -774,7 +768,6 @@ A webhelyek használhatnak cookie-kat arra, hogy megfigyeljék más webhelyekre 
 <translation id="8495097701594799854">Kikapcsolta a szervezete.</translation>
 <translation id="8503813439785031346">Felhasználónév</translation>
 <translation id="850600235656508448">Megnyitás inkognitó módban</translation>
-<translation id="8510057420705599706">Ezzel kijelentkezik, és kikapcsol a szinkronizálás, de könyvjelzői, előzményei, jelszavai és egyéb Chrome-adatai továbbra is megmaradnak ezen az eszközön.</translation>
 <translation id="8517375800490286174">Nyílt forráskódú licencek</translation>
 <translation id="8524799873541103884">Lapok <ph name="INCOGNITO" /> módban: <ph name="FIRST_VISIBLE_TAB" />–<ph name="LAST_VISIBLE_TAB" />/<ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8529767659511976195">Új</translation>

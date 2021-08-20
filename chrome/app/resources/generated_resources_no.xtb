@@ -570,6 +570,7 @@
 <translation id="1602085790802918092">Starter den virtuelle maskinen</translation>
 <translation id="1603914832182249871">(Inkognito)</translation>
 <translation id="1604432177629086300">Kunne ikke skrive ut. Kontrollér skriveren og prøv på nytt.</translation>
+<translation id="1606077700029460857">Endre museinnstillinger</translation>
 <translation id="1607139524282324606">Tøm oppføring</translation>
 <translation id="1607499585984539560">Brukeren er ikke tilknyttet domenet</translation>
 <translation id="1608626060424371292">Fjern denne brukeren</translation>
@@ -698,6 +699,7 @@
 <translation id="1718835860248848330">Siste time</translation>
 <translation id="1719312230114180055">Merk: Det kan være mindre sikkert å bruke fingeravtrykk enn et sterkt passord eller en sterk PIN-kode.</translation>
 <translation id="1720318856472900922">Autentisering av tjeneren TLS WWW</translation>
+<translation id="1720941539803966190">Lukk veiledningen</translation>
 <translation id="1721312023322545264">Du trenger tillatelse fra <ph name="NAME" /> for å besøke dette nettstedet</translation>
 <translation id="1722460139690167654"><ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> administreres<ph name="END_LINK" /> av <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">&amp;Nytt vindu</translation>
@@ -772,6 +774,7 @@
 <translation id="1790194216133135334">Send link til <ph name="DEVICE_NAME" /></translation>
 <translation id="1790976235243700817">Fjern tilgangen</translation>
 <translation id="1792619191750875668">Utvidet skjerm</translation>
+<translation id="1793625608969726781">Enhet <ph name="DEVICE_INDEX" /> av <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, datamaskin, batterinivå <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="1794051631868188691">Vis aldri <ph name="MERCHANT" /></translation>
 <translation id="1794791083288629568">Send tilbakemelding så vi kan prøve å løse problemet.</translation>
 <translation id="1795214765651529549">Bruk klassisk</translation>
@@ -1151,6 +1154,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2179416702468739594">Ser etter tilgjengelige profiler. Dette kan føre til at mobilnettverket ditt kobles fra i noen minutter.</translation>
 <translation id="2180620921879609685">blokkere innhold på alle sider</translation>
 <translation id="2182058453334755893">Kopiert til utklippstavlen</translation>
+<translation id="2183027945672030611">Enhet <ph name="DEVICE_INDEX" /> av <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, spillkontroller, batterinivå <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="2184515124301515068">La Chrome velge når nettsteder kan spille av lyd (anbefalt)</translation>
 <translation id="2186711480981247270">En side er delt fra en annen enhet</translation>
 <translation id="2187675480456493911">Synkronisert med andre enheter på kontoen. Innstillinger som endres av andre brukere, blir ikke synkronisert. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
@@ -1270,6 +1274,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2301402091755573488">Delt fane</translation>
 <translation id="23030561267973084">«<ph name="EXTENSION_NAME" />» har bedt om ekstra tilgang.</translation>
 <translation id="23055578400314116">Velg et brukernavn</translation>
+<translation id="2306366691914573029">Enhet <ph name="DEVICE_INDEX" /> av <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, ukjent enhetstype</translation>
 <translation id="2307462900900812319">Konfigurer nettverket</translation>
 <translation id="2307553512430195144">Hvis du samtykker, venter Google-assistenten i hvilemodus for å kunne registrere «Hey Google» og kan gjenkjenne at det er <ph name="SUPERVISED_USER_NAME" /> som snakker, med Voice Match.
     <ph name="BR" />
@@ -1555,6 +1560,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2606568927909309675">Lager automatisk teksting for engelsk lyd og video. Lyden og tekstingen forlater aldri enheten.</translation>
 <translation id="2607101320794533334">Informasjon om enhetens offentlige nøkkel</translation>
 <translation id="2609896558069604090">Opprett snarveier</translation>
+<translation id="2609902589050805912">Enhet <ph name="DEVICE_INDEX" /> av <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, lydenhet</translation>
 <translation id="2609980095400624569">Kunne ikke koble til</translation>
 <translation id="2610157865375787051">Hvilemodus</translation>
 <translation id="2610260699262139870">Fa&amp;ktisk størrelse</translation>
@@ -1621,6 +1627,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2673135533890720193">lese nettleserloggen din</translation>
 <translation id="2674764818721168631">Av</translation>
 <translation id="2678063897982469759">Aktiver på nytt</translation>
+<translation id="2678676117809690850">Enhet <ph name="DEVICE_INDEX" /> av <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, telefon, batterinivå <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="268053382412112343">Lo&amp;gg</translation>
 <translation id="2681124317993121768">Gjesteprofiler støttes ikke</translation>
 <translation id="2682498795777673382">Oppdatering fra forelderen din</translation>
@@ -1817,6 +1824,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="287205682142673348">Viderekobling av porter</translation>
 <translation id="287286579981869940">Legg til <ph name="PROVIDER_NAME" /></translation>
 <translation id="2872961005593481000">Slå av</translation>
+<translation id="2872966656309879564">Enhet <ph name="DEVICE_INDEX" /> av <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, datamaskin</translation>
 <translation id="2874939134665556319">Forrige spor</translation>
 <translation id="2875698561019555027">(Chrome-feilsider)</translation>
 <translation id="2876336351874743617">Finger 2</translation>
@@ -1997,6 +2005,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="3054766768827382232">Hvis du slår dette av, kan det hende de eksterne enhetene dine yter bedre, men det kan også medføre at personopplysningene dine blir avdekket som følge av uautorisert bruk.</translation>
 <translation id="3055590424724986000">Med en leverandør du velger selv</translation>
 <translation id="3058498974290601450">Du kan når som helst slå på synkronisering i innstillingene</translation>
+<translation id="3058517085907878899">Gi enheten navn</translation>
 <translation id="3060379269883947824">Slå på Tekstopplesing</translation>
 <translation id="3060952009917586498">Bytt enhetsspråk. Gjeldende språk er <ph name="LANGUAGE" />.</translation>
 <translation id="3060987956645097882">Vi kunne ikke koble til telefonen. Sørg for at telefonen er i nærheten, at den er opplåst, og at Bluetooth og Wi-Fi er slått på.</translation>
@@ -2007,6 +2016,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="3067198360141518313">Kjør dette programtillegget</translation>
 <translation id="3071624960923923138">Du kan klikke her for å åpne en ny fane</translation>
 <translation id="3072775339180057696">Vil du la nettstedet lese <ph name="FILE_NAME" />?</translation>
+<translation id="3074799113165994093">Enhet <ph name="DEVICE_INDEX" /> av <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, telefon</translation>
 <translation id="3075874217500066906">Du må starte enheten på nytt for å starte powerwash-prosessen. Når enheten er startet på nytt, blir du bedt om å bekrefte at du vil fortsette.</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Lagre kun på denne enheten</translation>
@@ -2048,6 +2058,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="3117791853215125017">{COUNT,plural, =1{Kunne ikke sende <ph name="ATTACHMENTS" /> til <ph name="DEVICE_NAME" />}other{Kunne ikke sende <ph name="ATTACHMENTS" /> til <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3118319026408854581">Hjelp for <ph name="PRODUCT_NAME" /></translation>
 <translation id="3118654181216384296">Prøv å starte Linux igjen om en liten stund.</translation>
+<translation id="3119689272338239690">Enhet <ph name="DEVICE_INDEX" /> av <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, ukjent enhetstype, batterinivå <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3119948370277171654">Hvilket innhold eller hvilken nettadresse castet du?</translation>
 <translation id="3120430004221004537">Utilstrekkelig kryptering for en angitt operasjon på: «<ph name="DEVICE_NAME" />».</translation>
 <translation id="3122464029669770682">Prosessor</translation>
@@ -2560,6 +2571,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="3682824389861648626">Bevegelsesterskel</translation>
 <translation id="3683524264665795342"><ph name="APP_NAME" />-forespørsel om skjermdeling</translation>
 <translation id="3685598397738512288">USB-innstillinger for Linux</translation>
+<translation id="3686786761304157917">Enhet <ph name="DEVICE_INDEX" /> av <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, tastatur, batterinivå <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="368789413795732264">Det oppstod en feil under forsøket på å skrive filen: <ph name="ERROR_TEXT" />.</translation>
 <translation id="3688507211863392146">skrive til filer og mapper du åpner i appen</translation>
 <translation id="3688526734140524629">Bytt kanal</translation>
@@ -2659,6 +2671,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="3778740492972734840">&amp;Utviklerverktøy</translation>
 <translation id="3778868487658107119">Still den spørsmål. Be den gjøre ting. Den er din personlige Google – alltid klar til å hjelpe.</translation>
 <translation id="3781742599892759500">Mikrofontilgang i Linux</translation>
+<translation id="3782488227140539029">Enhet <ph name="DEVICE_INDEX" /> av <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, videokamera, batterinivå <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3782795641773236652">Ingen bryter eller tast er tilordnet ennå</translation>
 <translation id="378312418865624974">lese en unik identifikator for denne datamaskinen</translation>
 <translation id="3784372983762739446">Bluetooth-enheter</translation>
@@ -2897,6 +2910,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4002329649066944389">Administrer nettstedsspesifikke unntak</translation>
 <translation id="4002440992267487163">Konfigurering av PIN-kode</translation>
 <translation id="4005817994523282006">Metode for registrering av tidssone</translation>
+<translation id="400645326027787740">Enhet <ph name="DEVICE_INDEX" /> av <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, spillkontroller</translation>
 <translation id="4007856537951125667">Skjul snarveier</translation>
 <translation id="4008291085758151621">Nettstedsinformasjon er ikke tilgjengelig i VR</translation>
 <translation id="4010917659463429001">For å få bokmerker på mobilenheten din, <ph name="GET_IOS_APP_LINK" />.</translation>
@@ -3202,6 +3216,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4382131447572146376">{COUNT,plural, =0{<ph name="EMAIL" />}=1{<ph name="EMAIL" /> og 1 konto til}other{<ph name="EMAIL" /> og <ph name="EXTRA_ACCOUNTS" /> kontoer til}}</translation>
 <translation id="4384312707950789900">Legg til som et foretrukket nettverk</translation>
 <translation id="4384652540891215547">Aktiver utvidelsen</translation>
+<translation id="4384886290276344300">Endre tastaturinnstillinger</translation>
 <translation id="438503109373656455">Jockey</translation>
 <translation id="4385146930797718821">Skjermdumpen er kopiert til utklippstavlen</translation>
 <translation id="4385905942116811558">Søker etter Bluetooth- og USB-enheter</translation>
@@ -3593,6 +3608,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4813136279048157860">Mine bilder</translation>
 <translation id="4813512666221746211">Nettverksfeil</translation>
 <translation id="4814378367953456825">Skriv inn et navn for dette fingeravtrykket</translation>
+<translation id="4816097470512964351"><ph name="DEVICE" />, detaljer</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 bokmerke er slettet}other{{COUNT} bokmerker er slettet}}</translation>
 <translation id="4819607494758673676">Google Assistent-varsler</translation>
 <translation id="4820236583224459650">Angi som aktiv sak</translation>
@@ -3668,6 +3684,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4884987973312178454">6x</translation>
 <translation id="4887424188275796356">Åpne med visningsprogrammet for systemet</translation>
 <translation id="488785315393301722">Vis detaljer</translation>
+<translation id="4889450157778777235">Enhet <ph name="DEVICE_INDEX" /> av <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, videokamera</translation>
 <translation id="4890773143211625964">Vis avanserte skriveralternativer</translation>
 <translation id="4891089016822695758">Forumet for betaversjoner</translation>
 <translation id="4892229439761351791">Nettstedet kan bruke Bluetooth</translation>
@@ -3804,6 +3821,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5039696241953571917">Se og administrer lagrede passord i Google-kontoen din</translation>
 <translation id="5039804452771397117">Tillat</translation>
 <translation id="5040823038948176460">Flere innholdsinnstillinger</translation>
+<translation id="5043440033854483429">Navnet kan inneholde bokstaver, tall og bindestreker (-) og må være 1–15 tegn langt.</translation>
 <translation id="5043913660911154449">Eller angi PPD-fil for skriveren <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Feil passord</translation>
 <translation id="504561833207953641">Åpner i den eksisterende nettleserøkten.</translation>
@@ -4057,6 +4075,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5319359161174645648">Google anbefaler Chrome</translation>
 <translation id="5319712128756744240">Koble til en ny enhet</translation>
 <translation id="5320135788267874712">Nytt enhetsnavn</translation>
+<translation id="532043380734099846">Enhet <ph name="DEVICE_INDEX" /> av <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, mus, batterinivå <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="532247166573571973">Det kan hende tjeneren ikke er tilgjengelig. Prøv igjen senere.</translation>
 <translation id="5324300749339591280">App-liste</translation>
 <translation id="5324780743567488672">Angi tidssonen automatisk ved hjelp av posisjonen din</translation>
@@ -4084,6 +4103,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="535123479159372765">Tekst er kopiert fra en annen enhet</translation>
 <translation id="5352033265844765294">Tidsangivelse</translation>
 <translation id="5353252989841766347">Eksportér passord fra Chrome</translation>
+<translation id="5354531123814675522">Enhet <ph name="DEVICE_INDEX" /> av <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, nettbrett, batterinivå <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="5355099869024327351">La assistenten vise deg varsler</translation>
 <translation id="5355191726083956201">Økt beskyttelse er på</translation>
 <translation id="5355926466126177564">Utvidelsen «<ph name="EXTENSION_NAME" />» har endret hvilken side som vises når du søker fra multifunksjonsfeltet.</translation>
@@ -4253,6 +4273,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5534304873398226603">Forkast bilde eller video</translation>
 <translation id="5535941515421698170">Fjern også de eksisterende dataene dine fra denne enheten</translation>
 <translation id="5539221284352502426">Passordet du skrev inn, ble avvist av tjeneren. Mulige grunner kan være: Passordet er for kort. Passordet må inneholde tall eller symboler. Passordet må være forskjellig fra tidligere passord.</translation>
+<translation id="5539467723438368868">Enhet <ph name="DEVICE_INDEX" /> av <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, nettbrett</translation>
 <translation id="5541694225089836610">Administratoren din har slått av handlingen</translation>
 <translation id="5542132724887566711">Profil</translation>
 <translation id="5542750926112347543">Informasjonskapsler fra <ph name="DOMAIN" /> er blokkert</translation>
@@ -4313,6 +4334,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">Nettsteder som ikke har lov til å koble til MIDI-enheter</translation>
 <translation id="5602765853043467355">Slett bokmerker, logger, passord og annet fra denne enheten</translation>
+<translation id="5604884720628869833">Enhet <ph name="DEVICE_INDEX" /> av <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, tastatur</translation>
 <translation id="5605623530403479164">Andre søkemotorer</translation>
 <translation id="5605758115928394442">Vi har sendt et varsel til telefonen din for å bekrefte at det er deg.</translation>
 <translation id="560834977503641186">Wi-Fi-synkronisering – finn ut mer</translation>
@@ -4773,6 +4795,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6113434369102685411">Angi standard søkemotor for Chrome-nettleseren og appoversikten på <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">For å bruke Smart Lock, bytt til den primære brukerprofilen på telefonen din</translation>
 <translation id="6116921718742659598">Endre språk- og inndatainnstillinger</translation>
+<translation id="6119927814891883061">Gi enheten navnet <ph name="DEVICE_NAME" /></translation>
 <translation id="6120205520491252677">Fest denne siden til startsiden</translation>
 <translation id="6122081475643980456">Internett-tilkoblingen din kontrolleres</translation>
 <translation id="6122093587541546701">E-post (valgfritt):</translation>
@@ -6979,6 +7002,7 @@ Trykk på en tilordnet bryter for å fjerne tilordningen</translation>
 <translation id="8475313423285172237">Et annet program på datamaskinen la til en utvidelse som kan endre måten Chrome fungerer på.</translation>
 <translation id="8477241577829954800">Erstattet</translation>
 <translation id="8477384620836102176">&amp;Generelt</translation>
+<translation id="8479109005219657634">Enhet <ph name="DEVICE_INDEX" /> av <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, lydenhet, batterinivå <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="8479176401914456949">Ugyldig kode. Prøv igjen.</translation>
 <translation id="8480082892550707549">Selv om du har lastet ned filer fra dette nettstedet før, kan det hende at nettstedet er midlertidig utrygt (hacket). Prøv å laste ned filen på nytt senere.</translation>
 <translation id="8480869669560681089">Ukjent enhet fra <ph name="VENDOR_NAME" /></translation>
@@ -7448,7 +7472,6 @@ Trykk på en tilordnet bryter for å fjerne tilordningen</translation>
 <translation id="8966809848145604011">Andre profiler</translation>
 <translation id="8966870118594285808">Åpne faner på nytt hvis du lukket dem ved et uhell</translation>
 <translation id="8967427617812342790">Legg til på leselisten</translation>
-<translation id="8967866634928501045">Trykk på Alt + Shift + A for å vise</translation>
 <translation id="8968766641738584599">Lagre kortet</translation>
 <translation id="89720367119469899">Escape</translation>
 <translation id="8972513834460200407">Kontakt nettverksadministratoren din for å sjekke at brannmuren ikke blokkerer nedlastinger fra Google-tjenere.</translation>
@@ -7458,6 +7481,7 @@ Trykk på en tilordnet bryter for å fjerne tilordningen</translation>
 <translation id="897525204902889653">Karantenetjeneste</translation>
 <translation id="8975396729541388937">Du kan når som helst melde deg av ved å klikke på linken i e-postene du mottar.</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{«<ph name="TAB_TITLE" />»}=1{«<ph name="TAB_TITLE" />» og 1 annen fane}other{«<ph name="TAB_TITLE" />» og # andre faner}}</translation>
+<translation id="8977175149983066223">Enhet <ph name="DEVICE_INDEX" /> av <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, mus</translation>
 <translation id="8977811652087512276">Feil passord eller skadet fil</translation>
 <translation id="8978154919215542464">På – synkroniser alt</translation>
 <translation id="897939795688207351">På <ph name="ORIGIN" /></translation>

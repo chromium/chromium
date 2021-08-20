@@ -224,7 +224,6 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3153862085237805241">Enregistrer la carte</translation>
 <translation id="3157387275655328056">Ajouter à la liste de lecture</translation>
 <translation id="3157684681743766797">Tout marquer…</translation>
-<translation id="3161291298470460782">Cette action vous déconnectera, désactivera la synchronisation et effacera toutes les données de Chrome sur cet appareil. Vos données synchronisées resteront dans votre compte Google.</translation>
 <translation id="3169472444629675720">Découvrir</translation>
 <translation id="3175081911749765310">Servic Web</translation>
 <translation id="3178650076442119961">Actif aujourd'hui</translation>
@@ -267,7 +266,6 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3494788280727468875">Confirmer l'effacement des données de navigation</translation>
 <translation id="35083190962747987">Ouvrir ${url}</translation>
 <translation id="3519193562722059437">Ouvrez un onglet pour naviguer sur le Web.</translation>
-<translation id="3523473570015918798">Si vous vous déconnectez, vos favoris, votre historique, vos mots de passe et d'autres données de Chrome ne seront plus synchronisés avec votre compte Google.</translation>
 <translation id="3527085408025491307">Dossier</translation>
 <translation id="3529024052484145543">Pas sécuritaire</translation>
 <translation id="3533202363250687977">Fermer les onglets de navigation privée</translation>
@@ -447,7 +445,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5457226814769348910">Ouvrir la version hors ligne</translation>
 <translation id="5489208564673669003">Pour gérer les témoins pour tous les sites, reportez-vous à <ph name="BEGIN_LINK" />Paramètres des témoins<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Bloquer tous les témoins (non recommandé)</translation>
-<translation id="5508435575041083207">Se déconnecter et effacer les données sur cet appareil</translation>
 <translation id="5513681519188741830">il y a <ph name="TIME" /> h</translation>
 <translation id="5525269841082836315">Créer phrase passe</translation>
 <translation id="5532698011560297095">Échec de connexion</translation>
@@ -702,9 +699,6 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7701040980221191251">Aucun</translation>
 <translation id="7741325291586284254">Page du nouvel onglet de navigation privée</translation>
 <translation id="7765158879357617694">Déplacer</translation>
-<translation id="7771470029643830783">Si vous vous déconnectez, vos favoris, votre historique, vos mots de passe et d'autres données de Chrome ne seront plus synchronisés avec votre compte Google.
-
-Comme votre compte est géré par <ph name="HOSTED_DOMAIN" />, vos données Chrome seront supprimées de cet appareil lorsque vous vous déconnecterez. Vos données synchronisées resteront dans votre compte Google.</translation>
 <translation id="7772032839648071052">Confirmer la phrase de passe</translation>
 <translation id="7778472311864276518">Supprimer le compte de cet appareil</translation>
 <translation id="7781011649027948662">Traduire la page?</translation>
@@ -774,7 +768,6 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8495097701594799854">Désactivé par votre organisation.</translation>
 <translation id="8503813439785031346">Nom d'utilisateur</translation>
 <translation id="850600235656508448">Ouvrir en mode de navigation privée</translation>
-<translation id="8510057420705599706">Cette action vous déconnectera et désactivera la synchronisation, mais vos favoris, votre historique, vos mots de passe et d'autres données de Chrome resteront sur cet appareil.</translation>
 <translation id="8517375800490286174">Licences de logiciels libres</translation>
 <translation id="8524799873541103884">Onglets <ph name="INCOGNITO" /> <ph name="FIRST_VISIBLE_TAB" /> à <ph name="LAST_VISIBLE_TAB" /> sur <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8529767659511976195">Nouveau</translation>

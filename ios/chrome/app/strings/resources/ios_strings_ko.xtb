@@ -224,7 +224,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="3153862085237805241">카드 저장</translation>
 <translation id="3157387275655328056">읽기 목록에 추가</translation>
 <translation id="3157684681743766797">모두 표시...</translation>
-<translation id="3161291298470460782">로그아웃되고 동기화가 사용 중지되며 기기에서 모든 Chrome 데이터가 삭제됩니다. 동기화된 데이터는 Google 계정에 그대로 유지됩니다.</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3175081911749765310">웹 서비스</translation>
 <translation id="3178650076442119961">오늘 사용됨</translation>
@@ -267,7 +266,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="3494788280727468875">인터넷 사용 기록 삭제 확인</translation>
 <translation id="35083190962747987">${url} 열기</translation>
 <translation id="3519193562722059437">새 탭을 열어 웹을 탐색하세요.</translation>
-<translation id="3523473570015918798">로그아웃하면 북마크, 방문 기록, 비밀번호 및 기타 Chrome 데이터가 더 이상 Google 계정과 동기화되지 않습니다.</translation>
 <translation id="3527085408025491307">폴더</translation>
 <translation id="3529024052484145543">안전하지 않음</translation>
 <translation id="3533202363250687977">모든 시크릿 탭 닫기</translation>
@@ -447,7 +445,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="5457226814769348910">오프라인 버전 열기</translation>
 <translation id="5489208564673669003">모든 사이트의 쿠키를 관리하려면 <ph name="BEGIN_LINK" />쿠키 설정<ph name="END_LINK" />을 참조하세요.</translation>
 <translation id="5490005495580364134">모든 쿠키 차단(권장되지 않음)</translation>
-<translation id="5508435575041083207">로그아웃 및 기기에서 데이터 삭제</translation>
 <translation id="5513681519188741830"><ph name="TIME" />시간 전</translation>
 <translation id="5525269841082836315">암호 만들기</translation>
 <translation id="5532698011560297095">로그인할 수 없음</translation>
@@ -702,9 +699,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="7701040980221191251">없음</translation>
 <translation id="7741325291586284254">새 시크릿 탭 페이지</translation>
 <translation id="7765158879357617694">이동</translation>
-<translation id="7771470029643830783">로그아웃하면 북마크, 방문 기록, 비밀번호 및 기타 Chrome 데이터가 더 이상 Google 계정과 동기화되지 않습니다.
-
-<ph name="HOSTED_DOMAIN" />에서 계정을 관리하므로 로그아웃하면 기기에서 Chrome 데이터가 삭제됩니다. 동기화된 데이터는 Google 계정에 그대로 유지됩니다.</translation>
 <translation id="7772032839648071052">암호 확인</translation>
 <translation id="7778472311864276518">이 기기에서 계정 삭제</translation>
 <translation id="7781011649027948662">페이지를 번역하시겠습니까?</translation>
@@ -774,7 +768,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="8495097701594799854">조직에서 사용 중지했습니다.</translation>
 <translation id="8503813439785031346">사용자이름</translation>
 <translation id="850600235656508448">시크릿 모드에서 열기</translation>
-<translation id="8510057420705599706">로그아웃되고 동기화가 사용 중지되지만 북마크, 방문 기록, 비밀번호 및 기타 Chrome 데이터는 기기에 그대로 유지됩니다.</translation>
 <translation id="8517375800490286174">오픈소스 라이선스</translation>
 <translation id="8524799873541103884">전체 <ph name="NUMBER_OF_OPEN_TABS" />개 탭 중 <ph name="FIRST_VISIBLE_TAB" />~<ph name="LAST_VISIBLE_TAB" />번째 탭이 <ph name="INCOGNITO" /> 탭입니다.</translation>
 <translation id="8529767659511976195">신규</translation>

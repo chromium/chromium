@@ -55,6 +55,8 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="2847479871509788944">Fjarlægja úr Chromium...</translation>
 <translation id="2885378588091291677">Verkstjórn</translation>
 <translation id="2910007522516064972">Um &amp;Chromium</translation>
+<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Lokaáminning: Uppsetningin <ph name="BEGIN_BOLD" />eyðir öllu efni af harða diskinum<ph name="END_BOLD" />. Gættu þess að taka afrit af öllum gögnum sem þú vilt geyma.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Ekki er hægt að stöðva uppsetninguna eftir að hún hefst.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium er uppfært</translation>
 <translation id="2983934633046890458">Chromium er að reyna að breyta aðgangsorðum.</translation>
 <translation id="3032706164202344641">Chromium getur ekki athugað aðgangsorðin þín. Reyndu aftur síðar.</translation>

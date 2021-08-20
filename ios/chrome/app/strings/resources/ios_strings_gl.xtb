@@ -224,7 +224,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3153862085237805241">Gardar tarxeta</translation>
 <translation id="3157387275655328056">Engadir á lista de lectura</translation>
 <translation id="3157684681743766797">Marcar todo como...</translation>
-<translation id="3161291298470460782">Pecharás sesión, desactivarase a sincronización e borraranse deste dispositivo todos os teus datos de Chrome. Os datos sincronizados conservaranse na túa Conta de Google.</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3175081911749765310">Servizos web</translation>
 <translation id="3178650076442119961">Dispositivo activo hoxe</translation>
@@ -267,7 +266,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3494788280727468875">Confirmar a eliminación dos datos de navegación</translation>
 <translation id="35083190962747987">Abre ${url}</translation>
 <translation id="3519193562722059437">Abre unha pestana para examinar a web.</translation>
-<translation id="3523473570015918798">Ao pechar sesión, os marcadores, o historial, os contrasinais e outros datos de Chrome deixarán de sincronizarse coa túa Conta de Google.</translation>
 <translation id="3527085408025491307">Cartafol</translation>
 <translation id="3529024052484145543">Contido non-seguro</translation>
 <translation id="3533202363250687977">Pechar todas as pestanas do modo de incógnito</translation>
@@ -447,7 +445,6 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5457226814769348910">Abrir versión sen conexión</translation>
 <translation id="5489208564673669003">Se queres xestionar as cookies para todos os sitios, vai a <ph name="BEGIN_LINK" />Configuración das cookies<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Bloquear todas as cookies (non recomendado)</translation>
-<translation id="5508435575041083207">Pechar sesión e borrar datos deste dispositivo</translation>
 <translation id="5513681519188741830">Hai <ph name="TIME" /> h</translation>
 <translation id="5525269841082836315">Crear contrasinal</translation>
 <translation id="5532698011560297095">Non se puido iniciar sesión</translation>
@@ -702,9 +699,6 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7701040980221191251">Ningunha</translation>
 <translation id="7741325291586284254">Páxina de nova pestana do modo de incógnito</translation>
 <translation id="7765158879357617694">Mover</translation>
-<translation id="7771470029643830783">Ao pechar sesión, os marcadores, o historial, os contrasinais e outros datos de Chrome deixarán de sincronizarse coa túa Conta de Google.
-
-Ademais, dado que a conta está xestionada por <ph name="HOSTED_DOMAIN" />, os teus datos de Chrome eliminaranse deste dispositivo cando peches sesión. Os datos sincronizados conservaranse na túa Conta de Google.</translation>
 <translation id="7772032839648071052">Confirmar frase de acceso</translation>
 <translation id="7778472311864276518">Quitar conta deste dispositivo</translation>
 <translation id="7781011649027948662">Traducir esta páxina?</translation>
@@ -774,7 +768,6 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8495097701594799854">Desactivouno a túa organización.</translation>
 <translation id="8503813439785031346">Nome de usuario</translation>
 <translation id="850600235656508448">Abrir marcador no modo de incógnito</translation>
-<translation id="8510057420705599706">Pecharás sesión e desactivarase a sincronización, pero conservaranse neste dispositivo os marcadores, o historial, os contrasinais e outros datos de Chrome.</translation>
 <translation id="8517375800490286174">Licenzas de código aberto</translation>
 <translation id="8524799873541103884">Etiquetas de <ph name="INCOGNITO" /> <ph name="FIRST_VISIBLE_TAB" /> a <ph name="LAST_VISIBLE_TAB" /> de <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8529767659511976195">Novidade</translation>

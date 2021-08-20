@@ -4465,7 +4465,7 @@ Si vous sélectionnez les options suivantes :
           Si elle est associée à la valeur "false" ou si elle n'est pas configurée, la création et la connexion des comptes utilisateur supervisés sont désactivées. Tous les utilisateurs supervisés existants sont alors masqués.
 
           REMARQUE : Le comportement par défaut des appareils grand public diffère de celui des appareils professionnels : sur les appareils grand public, les comptes utilisateur supervisés sont autorisés par défaut, contrairement aux appareils professionnels.</translation>
-<translation id="665023848306499203">Autorisez les appareils à sélectionner une version de mise à jour spécifique</translation>
+<translation id="665023848306499203">Autorisez les appareils à sélectionner une version de mise à jour</translation>
 <translation id="6652197835259177259">Paramètres des utilisateurs gérés en local</translation>
 <translation id="6653897159826215341">Lorsque cette règle est activée, <ph name="PRODUCT_NAME" /> ouvre la boîte de dialogue d'impression du système au lieu de l'aperçu avant impression intégré lorsqu'un utilisateur souhaite imprimer une page.
 
@@ -5181,16 +5181,16 @@ Si elle est définie sur "False" ou si elle n'est pas configurée, ces publicit�
 <translation id="7485481791539008776">Instructions de sélection de l'imprimante par défaut</translation>
 <translation id="7493995861907758679">Ce paramètre permet aux appareils de sélectionner une version cible spécifique de <ph name="PRODUCT_OS_NAME" /> vers laquelle ils seront mis à jour.
 
-      S'il n'est pas défini, les appareils se mettront à jour en fonction d'autres paramètres ou de la dernière version disponible.
+      S'il n'est pas défini, la mise à jour se fera selon d'autres paramètres ou vers la dernière version disponible.
 
       S'il est défini, les appareils seront mis à jour vers la version sélectionnée.
 
-      Le format exact de la valeur de cette règle est un détail d'implémentation du service de mise à jour et peut être différent. La valeur de la règle n'est pas traitée sur l'appareil.
+      Le format exact de la valeur de cette règle peut varier selon les détails d'implémentation du service de mise à jour. La valeur de la règle n'est pas traitée sur l'appareil.
 
-      Utilisée avec <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" />, cette règle sera d'abord vérifiée par le service de mise à jour.
-      Contrairement à <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> (qui peut autoriser des mises à jour mineures), les appareils conserveront la version sélectionnée tant que la valeur de cette règle n'aura pas été modifiée.
+      Utilisée avec <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" />, cette règle sera vérifiée la première par le service de mise à jour.
+      Contrairement à <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> (qui peut autoriser des mises à jour mineures), elle applique aux appareils la version sélectionnée tant que sa valeur n'a pas été modifiée.
 
-      Utilisée avec <ph name="DEVICE_ROLLBACK_TO_TARGET_VERSION_POLICY_NAME" />, la version de l'appareil peut être rétablie sur une version antérieure spécifique.
+      Utilisée avec <ph name="DEVICE_ROLLBACK_TO_TARGET_VERSION_POLICY_NAME" />, elle peut rétablir l'appareil vers une version antérieure spécifique.
 
       Avertissement : Il est déconseillé de configurer des restrictions de version, car cela pourrait empêcher les utilisateurs de recevoir des mises à jour logicielles et des correctifs de sécurité essentiels. Limiter les mises à jour à une version spécifique pourrait constituer un risque pour les utilisateurs.</translation>
 <translation id="7506745375479451616">Permet de spécifier la commande à utiliser pour ouvrir les URL dans <ph name="PRODUCT_NAME" /> lors du changement de navigateur depuis <ph name="IE_PRODUCT_NAME" />. Cette règle peut être définie sur le chemin d'accès à un fichier exécutable ou sur <ph name="PRODUCT_NAME_PLACEHOLDER" /> pour détecter automatiquement l'emplacement d'installation de <ph name="PRODUCT_NAME" />.

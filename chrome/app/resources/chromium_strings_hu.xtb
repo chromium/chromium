@@ -53,6 +53,8 @@
 <translation id="2847479871509788944">Eltávolítás a Chromiumból…</translation>
 <translation id="2885378588091291677">Feladatkezelő</translation>
 <translation id="2910007522516064972">A &amp;Chromium névjegye</translation>
+<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Egy utolsó figyelmeztetés: a telepítéssel <ph name="BEGIN_BOLD" />a merevlemez teljes tartalma törlődik<ph name="END_BOLD" />. Győződjön meg róla, hogy minden fontos adatról van biztonsági másolata<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Miután kezdetét vette a telepítés, már nem lehet megszakítani.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">A Chromium naprakész</translation>
 <translation id="2983934633046890458">A Chromium szerkeszteni próbálja a jelszavakat.</translation>
 <translation id="3032706164202344641">A Chromium nem tudja ellenőrizni a jelszavait. Próbálkozzon később.</translation>

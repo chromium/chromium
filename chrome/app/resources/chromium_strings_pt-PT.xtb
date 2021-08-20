@@ -53,6 +53,8 @@
 <translation id="2847479871509788944">Remover do Chromium...</translation>
 <translation id="2885378588091291677">Gestor de tarefas</translation>
 <translation id="2910007522516064972">Acerca do &amp;Chromium</translation>
+<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Só mais um lembrete: a instalação <ph name="BEGIN_BOLD" />apaga todo o seu disco rígido<ph name="END_BOLD" />. Certifique-se de que tem uma cópia de segurança dos dados importantes.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Não pode cancelar a instalação depois de a iniciar.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">O Chromium está atualizado</translation>
 <translation id="2983934633046890458">O Chromium está a tentar editar palavras-passe.</translation>
 <translation id="3032706164202344641">O Chromium não consegue verificar as suas palavras-passe. Tente novamente mais tarde.</translation>

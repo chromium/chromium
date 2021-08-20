@@ -224,7 +224,6 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="3153862085237805241">Uložiť kartu</translation>
 <translation id="3157387275655328056">Pridať do čitateľského zoznamu</translation>
 <translation id="3157684681743766797">Označiť všetko…</translation>
-<translation id="3161291298470460782">Touto akciou sa odhlásite, vypnete synchronizáciu a vymažete všetky údaje Chromu z tohto zariadenia. Synchronizované údaje zostanú vo vašom účte Google.</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3175081911749765310">Web. služ.</translation>
 <translation id="3178650076442119961">Aktívne dnes</translation>
@@ -267,7 +266,6 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="3494788280727468875">Potvrdiť vymazanie dát prehliadania</translation>
 <translation id="35083190962747987">Otvoriť ${url}</translation>
 <translation id="3519193562722059437">Otvorte kartu a prehliadajte web.</translation>
-<translation id="3523473570015918798">Po odhlásení nebudú vaše záložky, história, heslá ani ďalšie údaje Chromu naďalej synchronizované s vaším účtom Google</translation>
 <translation id="3527085408025491307">Priečinok</translation>
 <translation id="3529024052484145543">Nezabezpečené</translation>
 <translation id="3533202363250687977">Zavrieť všetky karty inkognito</translation>
@@ -447,7 +445,6 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />resetujte synchroniz�
 <translation id="5457226814769348910">Otvoriť offline verziu</translation>
 <translation id="5489208564673669003">Ak chcete spravovať súbory cookie pre všetky weby, prejdite do <ph name="BEGIN_LINK" />Nastavení súborov cookie<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Blokovať všetky súbory cookie (neodporúča sa)</translation>
-<translation id="5508435575041083207">Odhlásiť sa a vymazať údaje z tohto zariadenia</translation>
 <translation id="5513681519188741830">Pred <ph name="TIME" /> h</translation>
 <translation id="5525269841082836315">Vytv. prístup. frázu</translation>
 <translation id="5532698011560297095">Nedá sa prihlásiť</translation>
@@ -702,9 +699,6 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="7701040980221191251">Žiadne</translation>
 <translation id="7741325291586284254">Nová stránka s kartou inkognito</translation>
 <translation id="7765158879357617694">Presunúť</translation>
-<translation id="7771470029643830783">Po odhlásení nebudú vaše záložky, história, heslá ani ďalšie údaje Chromu naďalej synchronizované s vaším účtom Google
-
-Váš účet spravuje doména <ph name="HOSTED_DOMAIN" />, takže vaše údaje Chromu budú po odhlásení odstránené z tohto zariadenia. Synchronizované údaje zostanú vo vašom účte Google.</translation>
 <translation id="7772032839648071052">Potvrďte prístupovú frázu</translation>
 <translation id="7778472311864276518">Odstrániť účet z tohto zariadenia</translation>
 <translation id="7781011649027948662">Chcete preložiť stránku?</translation>
@@ -774,7 +768,6 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8495097701594799854">Vypnuté vašou organizáciou.</translation>
 <translation id="8503813439785031346">Meno používateľa</translation>
 <translation id="850600235656508448">Otvoriť v režime inkognito</translation>
-<translation id="8510057420705599706">Touto akciou sa odhlásite a vypnete synchronizáciu, ale vaše záložky, história, heslá a ďalšie údaje Chromu zostanú v tomto zariadení.</translation>
 <translation id="8517375800490286174">Licencie open source</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> – karty <ph name="FIRST_VISIBLE_TAB" /> až <ph name="LAST_VISIBLE_TAB" /> z <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8529767659511976195">Nové</translation>

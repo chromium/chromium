@@ -224,7 +224,6 @@
 <translation id="3153862085237805241">Сачувај картицу</translation>
 <translation id="3157387275655328056">Додај на листу за читање</translation>
 <translation id="3157684681743766797">Означи све…</translation>
-<translation id="3161291298470460782">Тиме ћете се одјавити, искључити синхронизацију и обрисати све Chrome податке са овог уређаја. Синхронизовани подаци ће остати на Google налогу.</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3175081911749765310">Веб-услуге</translation>
 <translation id="3178650076442119961">Последња активност: данас</translation>
@@ -267,7 +266,6 @@
 <translation id="3494788280727468875">Потврди брисање података прегледања</translation>
 <translation id="35083190962747987">Отвори ${url}</translation>
 <translation id="3519193562722059437">Отворите картицу да бисте прегледали веб.</translation>
-<translation id="3523473570015918798">Ако се одјавите, обележивачи, историја, лозинке и други Chrome подаци више се неће синхронизовати са Google налогом.</translation>
 <translation id="3527085408025491307">Фолдер</translation>
 <translation id="3529024052484145543">Није безбедно</translation>
 <translation id="3533202363250687977">Затвори све картице без архивирања</translation>
@@ -447,7 +445,6 @@
 <translation id="5457226814769348910">Отвори офлајн верзију</translation>
 <translation id="5489208564673669003">Да бисте управљали колачићима за све сајтове, погледајте <ph name="BEGIN_LINK" />Подешавања колачића<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Блокирај све колачиће (не препоручује се)</translation>
-<translation id="5508435575041083207">Одјавите се и обришите податке са овог уређаја</translation>
 <translation id="5513681519188741830">пре <ph name="TIME" /> с</translation>
 <translation id="5525269841082836315">Прављење приступне фразе</translation>
 <translation id="5532698011560297095">Не могу да се пријавим</translation>
@@ -702,9 +699,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7701040980221191251">Ништа</translation>
 <translation id="7741325291586284254">Нова страница на картици без архивирања</translation>
 <translation id="7765158879357617694">Премести</translation>
-<translation id="7771470029643830783">Ако се одјавите, обележивачи, историја, лозинке и други Chrome подаци више се неће синхронизовати са Google налогом.
-
-Пошто вашим налогом управља <ph name="HOSTED_DOMAIN" />, Chrome подаци ће се избрисати са овог уређаја када се одјавите. Синхронизовани подаци ће остати на Google налогу.</translation>
 <translation id="7772032839648071052">Потврди приступну фразу</translation>
 <translation id="7778472311864276518">Уклони налог са овог уређаја</translation>
 <translation id="7781011649027948662">Желите да преведете страницу?</translation>
@@ -774,7 +768,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8495097701594799854">Искључила је организација.</translation>
 <translation id="8503813439785031346">Корисничко име</translation>
 <translation id="850600235656508448">Отвори у режиму без архивирања</translation>
-<translation id="8510057420705599706">Тиме ћете се одјавити и искључити синхронизацију, али ће обележивачи, историја, лозинке и други Chrome подаци остати на уређају.</translation>
 <translation id="8517375800490286174">Лиценце отвореног кода</translation>
 <translation id="8524799873541103884">Картице <ph name="INCOGNITO" /> <ph name="FIRST_VISIBLE_TAB" /> до <ph name="LAST_VISIBLE_TAB" /> од <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8529767659511976195">Ново</translation>

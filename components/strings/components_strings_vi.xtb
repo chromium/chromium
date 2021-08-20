@@ -392,6 +392,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2293443924986248631">Khi tùy chọn này bật, các trang web không thể dùng cookie theo dõi bạn trên web. Do đó, các tính năng trên một số trang web có thể hoạt động không đúng cách.</translation>
 <translation id="2295290966866883927">Hệ thống sẽ gửi URL của những trang mà bạn truy cập cho Google Cloud hoặc bên thứ ba để phân tích. Ví dụ: họ có thể quét những trang này để phát hiện trang web không an toàn.</translation>
 <translation id="2297722699537546652">B5 (Phong bì)</translation>
+<translation id="2297822946037605517">Chia sẻ trang này</translation>
 <translation id="2298855485018661510">Nút Quản lý cookie, hãy nhấn Enter để quản lý các lựa chọn ưu tiên về cookie trong phần Cài đặt của Chrome</translation>
 <translation id="2300306941146563769">Chưa tải lên</translation>
 <translation id="2310021320168182093">Chou2 (Phong bì)</translation>
@@ -1404,7 +1405,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5803412860119678065">Bạn có muốn điền <ph name="CARD_DETAIL" /> của mình không?</translation>
 <translation id="5804241973901381774">Quyền</translation>
 <translation id="5810442152076338065">Kết nối của bạn tới <ph name="DOMAIN" /> được mã hóa bằng bộ số 0 đã lỗi thời.</translation>
-<translation id="5812947184178430888">Khi Chrome gắn cờ các sự kiện bảo mật, quản trị viên của bạn sẽ nhận được dữ liệu liên quan đến các sự kiện đó. Dữ liệu này có thể bao gồm URL của những trang bạn truy cập trong Chrome, tên tệp hoặc siêu dữ liệu, cũng như tên người dùng mà bạn sử dụng để đăng nhập vào các ứng dụng dựa trên nền tảng web, thiết bị của bạn và Chrome.</translation>
+<translation id="5812947184178430888">Khi Chrome gắn cờ cho các sự kiện bảo mật, quản trị viên của bạn sẽ nhận được dữ liệu liên quan đến các sự kiện đó. Dữ liệu này có thể bao gồm URL của những trang bạn truy cập trong Chrome, tên tệp hoặc siêu dữ liệu, cũng như tên người dùng mà bạn sử dụng để đăng nhập vào các ứng dụng dựa trên nền tảng web, thiết bị của bạn và Chrome.</translation>
 <translation id="5813119285467412249">&amp;Làm lại thêm</translation>
 <translation id="5817918615728894473">Ghép nối</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Thẻ này sẽ bị trừ tiền khi bạn thanh toán, nhưng số thẻ thật sẽ không được chia sẻ với trang web này. Để tăng cường tính bảo mật, hệ thống sẽ tạo một Mã xác minh thẻ (CVC) tạm thời.}other{Thẻ bạn chọn sẽ bị trừ tiền khi bạn thanh toán, nhưng số thẻ thật sẽ không được chia sẻ với trang web này. Để tăng cường tính bảo mật, hệ thống sẽ tạo một Mã xác minh thẻ (CVC) tạm thời.}}</translation>

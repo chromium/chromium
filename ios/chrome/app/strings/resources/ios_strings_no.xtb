@@ -224,7 +224,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3153862085237805241">Lagre kortet</translation>
 <translation id="3157387275655328056">Legg til i leselisten</translation>
 <translation id="3157684681743766797">Merk alle…</translation>
-<translation id="3161291298470460782">Dette medfører at du blir logget av, synkronisering blir slått av og alle Chrome-data blir slettet fra denne enheten. Du beholder de synkroniserte dataene i Google-kontoen din.</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3175081911749765310">Nettjenester</translation>
 <translation id="3178650076442119961">Aktiv i dag</translation>
@@ -267,7 +266,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3494788280727468875">Bekreft at du vil slette nettleserdataene</translation>
 <translation id="35083190962747987">Åpne ${url}</translation>
 <translation id="3519193562722059437">Åpne en fane for å surfe på nettet.</translation>
-<translation id="3523473570015918798">Når du logger av, blir ikke bokmerker, loggen, passord og andre Chrome-data synkronisert med Google-kontoen din lenger.</translation>
 <translation id="3527085408025491307">Mappe</translation>
 <translation id="3529024052484145543">Ikke sikker</translation>
 <translation id="3533202363250687977">Lukk alle inkognitofaner</translation>
@@ -447,7 +445,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="5457226814769348910">Åpne versjon uten nett</translation>
 <translation id="5489208564673669003">For å administrere informasjonskapsler for alle nettsteder, se <ph name="BEGIN_LINK" />Innstillinger for informasjonskapsler<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Blokkér alle informasjonskapsler (anbefales ikke)</translation>
-<translation id="5508435575041083207">Logg av og slett data fra denne enheten</translation>
 <translation id="5513681519188741830">For <ph name="TIME" /> t siden</translation>
 <translation id="5525269841082836315">Opprett en passordfrase</translation>
 <translation id="5532698011560297095">Kan ikke logge på</translation>
@@ -702,9 +699,6 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7701040980221191251">Ingen</translation>
 <translation id="7741325291586284254">Ny side i inkognitofane</translation>
 <translation id="7765158879357617694">Flytt</translation>
-<translation id="7771470029643830783">Når du logger av, blir ikke bokmerker, loggen, passord og andre Chrome-data synkronisert med Google-kontoen din lenger.
-
-Fordi kontoen din administreres av <ph name="HOSTED_DOMAIN" />, slettes Chrome-dataene dine fra denne enheten når du logger av. Du beholder de synkroniserte dataene i Google-kontoen din.</translation>
 <translation id="7772032839648071052">Bekreft passord</translation>
 <translation id="7778472311864276518">Fjern kontoen fra denne enheten</translation>
 <translation id="7781011649027948662">Vil du oversette siden?</translation>
@@ -774,7 +768,6 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8495097701594799854">Organisasjonen din har slått av denne funksjonen.</translation>
 <translation id="8503813439785031346">Brukernavn</translation>
 <translation id="850600235656508448">Åpne i inkognitomodus</translation>
-<translation id="8510057420705599706">Dette medfører at du blir logget av og synkronisering blir slått av, men bokmerker, loggen, passord og andre Chrome-data blir værende på denne enheten.</translation>
 <translation id="8517375800490286174">Lisenser for åpen kildekode</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" />fane <ph name="FIRST_VISIBLE_TAB" /> til og med <ph name="LAST_VISIBLE_TAB" /> av <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8529767659511976195">Ny</translation>

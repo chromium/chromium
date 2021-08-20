@@ -53,6 +53,8 @@
 <translation id="2847479871509788944">Премахване от Chromium...</translation>
 <translation id="2885378588091291677">Диспечер на задачите</translation>
 <translation id="2910007522516064972">Всичко за &amp;Chromium</translation>
+<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Последно напомняне: при инсталирането <ph name="BEGIN_BOLD" />целият ви твърд диск ще бъде изтрит<ph name="END_BOLD" />. Уверете се, че имате резервно копие на всичките си важни данни.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />След като инсталирането започне, не може да бъде отменено.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium е актуален</translation>
 <translation id="2983934633046890458">Chromium се опитва да редактира паролите.</translation>
 <translation id="3032706164202344641">Chromium не може да провери паролите ви. Опитайте пак по-късно.</translation>

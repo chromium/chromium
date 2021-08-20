@@ -224,7 +224,6 @@
 <translation id="3153862085237805241">Запазване на картата</translation>
 <translation id="3157387275655328056">Добавяне към списъка за четене</translation>
 <translation id="3157684681743766797">Означаване на всички…</translation>
-<translation id="3161291298470460782">Това действие ще прекрати сесията ви, ще изключи синхронизирането и ще изчисти всички данни в Chrome от това устройство. Синхронизираната информация ще остане в профила ви в Google.</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3175081911749765310">Уеб услуги</translation>
 <translation id="3178650076442119961">Активно днес</translation>
@@ -267,7 +266,6 @@
 <translation id="3494788280727468875">Потвърждаване на изчистването на данните за сърфирането</translation>
 <translation id="35083190962747987">Отваряне на ${url}</translation>
 <translation id="3519193562722059437">Отворете раздел, за да сърфирате в мрежата.</translation>
-<translation id="3523473570015918798">Като излезете от профила си в Google, вашите отметки, история, пароли и други данни в Chrome повече няма да се синхронизират с него.</translation>
 <translation id="3527085408025491307">Папка</translation>
 <translation id="3529024052484145543">Няма защита</translation>
 <translation id="3533202363250687977">Затв. на разделите „инкогнито“</translation>
@@ -447,7 +445,6 @@
 <translation id="5457226814769348910">Отваряне на офлайн версията</translation>
 <translation id="5489208564673669003">За да управлявате „бисквитките“ за всички сайтове, вижте <ph name="BEGIN_LINK" />Настройки за „бисквитките“<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Блокиране на всички „бисквитки“ (не се препоръчва)</translation>
-<translation id="5508435575041083207">Излизане от профила и изчистване на данните от това устройство</translation>
 <translation id="5513681519188741830">Преди <ph name="TIME" /> ч</translation>
 <translation id="5525269841082836315">Създаване на пропуск</translation>
 <translation id="5532698011560297095">Не може да се влезе</translation>
@@ -702,9 +699,6 @@
 <translation id="7701040980221191251">Няма</translation>
 <translation id="7741325291586284254">Страница за нови раздели в режим „инкогнито“</translation>
 <translation id="7765158879357617694">Преместване</translation>
-<translation id="7771470029643830783">Като излезете от профила си в Google, вашите отметки, история, пароли и други данни в Chrome повече няма да се синхронизират с него.
-
-Тъй като профилът ви се управлява от <ph name="HOSTED_DOMAIN" />, данните ви в Chrome ще бъдат изтрити от това устройство при излизане от съответния профил. Синхронизираната информация ще остане в профила ви в Google.</translation>
 <translation id="7772032839648071052">Потвърдете пропуска</translation>
 <translation id="7778472311864276518">Премахване на профила от това устройство</translation>
 <translation id="7781011649027948662">Да се преведе ли страницата?</translation>
@@ -774,7 +768,6 @@
 <translation id="8495097701594799854">Изключено от организацията ви.</translation>
 <translation id="8503813439785031346">Потребителско име</translation>
 <translation id="850600235656508448">Отваряне в режим „инкогнито“</translation>
-<translation id="8510057420705599706">Това действие ще прекрати сесията ви и ще изключи синхронизирането, но отметките, историята, паролите и другите ви данни в Chrome ще останат на това устройство.</translation>
 <translation id="8517375800490286174">Лицензи за отворен код</translation>
 <translation id="8524799873541103884">Раздели в режим „<ph name="INCOGNITO" />“: <ph name="FIRST_VISIBLE_TAB" /> до <ph name="LAST_VISIBLE_TAB" /> от общо <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8529767659511976195">Ново</translation>

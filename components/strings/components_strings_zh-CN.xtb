@@ -388,6 +388,7 @@
 <translation id="2293443924986248631">开启此设置后，网站无法使用 Cookie 来跟踪您在网上的活动。某些网站上的功能可能会无法正常运作。</translation>
 <translation id="2295290966866883927">系统会将您所访问网页的网址发送给 Google Cloud 或第三方以供分析。例如，Google Cloud 或第三方可能会扫描这些网址，以检测出不安全的网站。</translation>
 <translation id="2297722699537546652">B5 (Envelope)</translation>
+<translation id="2297822946037605517">分享此页</translation>
 <translation id="2298855485018661510">“管理 Cookie”按钮，按 Enter 键即可在 Chrome 设置中管理您的 Cookie 偏好设置</translation>
 <translation id="2300306941146563769">未上传</translation>
 <translation id="2310021320168182093">Chou2 (Envelope)</translation>
@@ -981,6 +982,7 @@
 <translation id="4358461427845829800">管理付款方式…</translation>
 <translation id="4359160567981085931">您刚刚在一个诈骗网站中输入了密码。Chrome 可以为您提供帮助。若要更改密码并让 Google 知晓您的帐号可能处于危险状态，请点击“保护帐号”。</translation>
 <translation id="4367563149485757821">Number-12 (Envelope)</translation>
+<translation id="437040971055499437">发生了安全性事件</translation>
 <translation id="437058704415269440">帐号余额</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">应使用<ph name="VALUE_TYPE" />值。</translation>
@@ -1390,6 +1392,7 @@
 <translation id="5803412860119678065">要填充您的“<ph name="CARD_DETAIL" />”吗？</translation>
 <translation id="5804241973901381774">权限</translation>
 <translation id="5810442152076338065">您与 <ph name="DOMAIN" /> 之间的连接采用过时的加密套件进行了加密。</translation>
+<translation id="5812947184178430888">当 Chrome 标记了安全性事件时，系统会向您的管理员发送与相应事件有关的数据。这些数据可能包括您在 Chrome 中访问的网页的网址、文件名或元数据，以及您在登录基于网络的应用、您的设备和 Chrome 时使用的用户名。</translation>
 <translation id="5813119285467412249">恢复添加(&amp;R)</translation>
 <translation id="5817918615728894473">配对</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{当您付款时，系统会从这张卡中扣款，但不会将其真实卡号分享给此网站。为进一步增强安全保障，系统会生成一个临时的银行卡验证码 (CVC)。}other{当您付款时，系统会从您所选的卡中扣款，但不会将其真实卡号分享给此网站。为进一步增强安全保障，系统会生成一个临时的银行卡验证码 (CVC)。}}</translation>

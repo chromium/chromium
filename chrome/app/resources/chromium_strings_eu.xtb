@@ -55,6 +55,8 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="2847479871509788944">Kendu Chromium-etik…</translation>
 <translation id="2885378588091291677">Zereginen kudeatzailea</translation>
 <translation id="2910007522516064972">&amp;Chromium arakatzaileari buruz</translation>
+<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Azken abisua: Chrome OS instalatuz gero, <ph name="BEGIN_BOLD" />ezabatu egingo da disko gogor osoko eduki guztia<ph name="END_BOLD" />. Ziurtatu gorde nahi dituzun datuen babeskopia egin duzula.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Instalazio-prozesua hasiz gero, ezin da bertan behera utzi.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Eguneratuta dago Chromium</translation>
 <translation id="2983934633046890458">Pasahitzak editatzen saiatzen ari da Chromium.</translation>
 <translation id="3032706164202344641">Chromium-ek ezin ditu egiaztatu pasahitzak. Saiatu geroago.</translation>

@@ -224,7 +224,6 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="3153862085237805241">I-save ang Card</translation>
 <translation id="3157387275655328056">Idagdag sa Listahan ng Babasahin</translation>
 <translation id="3157684681743766797">Markahan Lahat...</translation>
-<translation id="3161291298470460782">Kapag ginawa ito, masa-sign out ka, mao-off ang pag-sync, at maki-clear ang lahat ng data ng Chrome sa device na ito. Mananatili sa iyong Google Account ang naka-sync mong data.</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3175081911749765310">Web Services</translation>
 <translation id="3178650076442119961">Aktibo Ngayong Araw</translation>
@@ -267,7 +266,6 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="3494788280727468875">Kumpirmahin ang Pag-clear ng Data sa Pag-browse</translation>
 <translation id="35083190962747987">Buksan ang ${url}</translation>
 <translation id="3519193562722059437">Magbukas ng tab upang i-browse ang web.</translation>
-<translation id="3523473570015918798">Sa pamamagitan ng pag-sign out, hindi na masi-sync sa iyong Google Account ang mga bookmark, history, mga password, at iba mo pang data ng Chrome.</translation>
 <translation id="3527085408025491307">Folder</translation>
 <translation id="3529024052484145543">Hindi secure</translation>
 <translation id="3533202363250687977">Isara ang Lahat ng Tab na Incognito</translation>
@@ -447,7 +445,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5457226814769348910">Buksan sa Offline Version</translation>
 <translation id="5489208564673669003">Para pamahalaan ang cookies para sa lahat ng site, tingnan ang <ph name="BEGIN_LINK" />Mga Setting ng Cookie<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">I-block ang Lahat ng Cookies (Hindi Inirerekomenda)</translation>
-<translation id="5508435575041083207">Mag-sign Out at I-clear ang Data sa Device na ito</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> (na) oras na ang nakalipas</translation>
 <translation id="5525269841082836315">Lumikha ng Passphrase</translation>
 <translation id="5532698011560297095">Hindi Makapag-sign In</translation>
@@ -702,9 +699,6 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="7701040980221191251">Wala</translation>
 <translation id="7741325291586284254">Bagong Page ng Tab na Incognito</translation>
 <translation id="7765158879357617694">Ilipat</translation>
-<translation id="7771470029643830783">Sa pamamagitan ng pag-sign out, hindi na masi-sync sa iyong Google Account ang mga bookmark, history, mga password, at iba mo pang data ng Chrome.
-
-Dahil pinapamahalaan ng <ph name="HOSTED_DOMAIN" /> ang iyong account, made-delete ang data ng Chrome mo sa device na ito kapag nag-sign out ka. Mananatili sa iyong Google Account ang naka-sync mong data.</translation>
 <translation id="7772032839648071052">Kumpirmahin ang passphrase</translation>
 <translation id="7778472311864276518">Alisin ang Account sa Device na ito</translation>
 <translation id="7781011649027948662">Isalin ang Page?</translation>
@@ -774,7 +768,6 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="8495097701594799854">Na-off ng iyong organisasyon.</translation>
 <translation id="8503813439785031346">Username</translation>
 <translation id="850600235656508448">Buksan sa Incognito</translation>
-<translation id="8510057420705599706">Kapag ginawa ito, masa-sign out ka at mao-off ang pag-sync, pero mananatili sa device na ito ang iyong mga bookmark, history, mga password, at iba pang data ng Chrome.</translation>
 <translation id="8517375800490286174">Mga Lisensya ng Open Source</translation>
 <translation id="8524799873541103884">Mga Tab na <ph name="INCOGNITO" /> <ph name="FIRST_VISIBLE_TAB" /> hanggang <ph name="LAST_VISIBLE_TAB" /> ng <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8529767659511976195">Bago</translation>

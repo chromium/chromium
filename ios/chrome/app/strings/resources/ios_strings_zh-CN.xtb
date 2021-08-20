@@ -224,7 +224,6 @@
 <translation id="3153862085237805241">保存卡片</translation>
 <translation id="3157387275655328056">添加到阅读清单</translation>
 <translation id="3157684681743766797">全部标为…</translation>
-<translation id="3161291298470460782">执行此操作会使您退出帐号、关闭同步功能并清除此设备中的所有 Chrome 数据，但已同步的数据仍会保留在您的 Google 帐号中。</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3175081911749765310">网络服务</translation>
 <translation id="3178650076442119961">今天曾有活动</translation>
@@ -267,7 +266,6 @@
 <translation id="3494788280727468875">确认清除浏览数据</translation>
 <translation id="35083190962747987">打开 ${url}</translation>
 <translation id="3519193562722059437">打开一个标签页即可浏览网络。</translation>
-<translation id="3523473570015918798">退出帐号后，您的书签、历史记录、密码及其他 Chrome 数据将不再同步到您的 Google 帐号中。</translation>
 <translation id="3527085408025491307">文件夹</translation>
 <translation id="3529024052484145543">不安全</translation>
 <translation id="3533202363250687977">关闭所有无痕式标签页</translation>
@@ -447,7 +445,6 @@
 <translation id="5457226814769348910">打开离线版</translation>
 <translation id="5489208564673669003">若要管理所有网站的 Cookie，请参阅 <ph name="BEGIN_LINK" />Cookie 设置<ph name="END_LINK" />。</translation>
 <translation id="5490005495580364134">阻止所有 Cookie（不建议）</translation>
-<translation id="5508435575041083207">退出帐号并清除此设备中的数据</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> 小时前</translation>
 <translation id="5525269841082836315">创建密码</translation>
 <translation id="5532698011560297095">无法登录</translation>
@@ -702,9 +699,6 @@
 <translation id="7701040980221191251">无</translation>
 <translation id="7741325291586284254">新的无痕式标签页</translation>
 <translation id="7765158879357617694">移动</translation>
-<translation id="7771470029643830783">退出帐号后，您的书签、历史记录、密码及其他 Chrome 数据将不再同步到您的 Google 帐号中。
-
-您的帐号是由 <ph name="HOSTED_DOMAIN" /> 管理，因此在退出帐号后，您的 Chrome 数据将会从此设备中删除，但已同步的数据仍会保留在您的 Google 帐号中。</translation>
 <translation id="7772032839648071052">确认密码</translation>
 <translation id="7778472311864276518">从此设备上移除帐号</translation>
 <translation id="7781011649027948662">翻译网页？</translation>
@@ -774,7 +768,6 @@
 <translation id="8495097701594799854">已被贵组织关闭。</translation>
 <translation id="8503813439785031346">用户名</translation>
 <translation id="850600235656508448">在无痕模式下打开</translation>
-<translation id="8510057420705599706">执行此操作会使您退出帐号并关闭同步功能，但您的书签、历史记录、密码及其他 Chrome 数据仍会保留在此设备上。</translation>
 <translation id="8517375800490286174">开放源代码许可</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" />标签页<ph name="FIRST_VISIBLE_TAB" />-<ph name="LAST_VISIBLE_TAB" />（共<ph name="NUMBER_OF_OPEN_TABS" />个）</translation>
 <translation id="8529767659511976195">新功能</translation>

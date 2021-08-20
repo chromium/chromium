@@ -53,6 +53,8 @@
 <translation id="2847479871509788944">Ukloni iz Chromiuma...</translation>
 <translation id="2885378588091291677">Upravitelj zadataka</translation>
 <translation id="2910007522516064972">O pregledniku &amp;Chromium</translation>
+<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Još jednom podsjećamo: instalacijom se <ph name="BEGIN_BOLD" />briše cijeli tvrdi disk<ph name="END_BOLD" />. Provjerite imate li sigurnosnu kopiju svih važnih podataka.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Nakon što započne, instalacija se ne može otkazati.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium je ažuran</translation>
 <translation id="2983934633046890458">Chromium pokušava urediti zaporke.</translation>
 <translation id="3032706164202344641">Chromium ne može provjeriti vaše zaporke. Pokušajte ponovno kasnije.</translation>

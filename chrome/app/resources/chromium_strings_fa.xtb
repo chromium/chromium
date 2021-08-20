@@ -53,6 +53,8 @@
 <translation id="2847479871509788944">‏حذف از Chromium...</translation>
 <translation id="2885378588091291677">مدیر فعالیت‌ها</translation>
 <translation id="2910007522516064972">‏درباره &amp;Chromium</translation>
+<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />آخرین یادآوری: درصورت نصب کردن، <ph name="BEGIN_BOLD" /> کل داده‌های دیسک سخت پاک خواهد شد<ph name="END_BOLD" />. لطفاً مطمئن شوید همه داده‌های مهم‌تان را پشتیبان‌گیری کرده باشید.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />وقتی نصب شروع شود، نمی‌توان آن را لغو کرد.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">‏Chromium به‌روز است</translation>
 <translation id="2983934633046890458">‏Chromium می‌خواهد گذرواژه‌ها را ویرایش کند.</translation>
 <translation id="3032706164202344641">‏Chromium نمی‌تواند گذرواژه‌هایتان را بررسی کند. بعداً دوباره امتحان کنید.</translation>

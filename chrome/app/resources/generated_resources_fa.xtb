@@ -571,6 +571,7 @@
 <translation id="1602085790802918092">درحال شروع دستگاه مجازی</translation>
 <translation id="1603914832182249871">(ناشناس)</translation>
 <translation id="1604432177629086300">چاپ نشد چاپگر را بررسی کنید و دوباره امتحان کنید.</translation>
+<translation id="1606077700029460857">تغییر تنظیمات موشواره</translation>
 <translation id="1607139524282324606">پاک کردن ورودی</translation>
 <translation id="1607499585984539560">کاربر به دامنه وابسته نیست</translation>
 <translation id="1608626060424371292">حذف این کاربر</translation>
@@ -701,6 +702,7 @@
 <translation id="1718835860248848330">ساعت قبل</translation>
 <translation id="1719312230114180055">توجه: ممکن است امنیت اثر انگشت شما از یک گذرواژه یا پین قوی کمتر باشد.</translation>
 <translation id="1720318856472900922">‏راستی‌آزمایی سرور TLS WWW</translation>
+<translation id="1720941539803966190">بستن آموزش گام‌به‌گام</translation>
 <translation id="1721312023322545264">برای بازدید این سایت باید از <ph name="NAME" /> اجازه بگیرید</translation>
 <translation id="1722460139690167654"><ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /><ph name="END_LINK" /> شما توسط <ph name="ENROLLMENT_DOMAIN" /> مدیریت می‌شود</translation>
 <translation id="1723824996674794290">پنجره &amp;جدید</translation>
@@ -775,6 +777,7 @@
 <translation id="1790194216133135334">ارسال پیوند به <ph name="DEVICE_NAME" /></translation>
 <translation id="1790976235243700817">برداشتن دسترسی</translation>
 <translation id="1792619191750875668">نمایشگر گسترده</translation>
+<translation id="1793625608969726781">دستگاه <ph name="DEVICE_INDEX" /> از <ph name="DEVICE_COUNT" />، <ph name="DEVICE_NAME" />، رایانه، سطح باتری <ph name="BATTERY_PERCENTAGE" />٪</translation>
 <translation id="1794051631868188691">هرگز <ph name="MERCHANT" /> نشان داده نشود</translation>
 <translation id="1794791083288629568">برای کمک به ما در رفع این مشکل بازخورد ارسال کنید.</translation>
 <translation id="1795214765651529549">استفاده از کلاسیک</translation>
@@ -1154,6 +1157,7 @@
 <translation id="2179416702468739594">درحال جستجوی نمایه‌های دردسترس. ممکن است درحین جستجو، اتصال شبکه تلفن همراه برای چند دقیقه قطع شود.</translation>
 <translation id="2180620921879609685">محتوای موجود در همه صفحه‌ها را مسدود کند</translation>
 <translation id="2182058453334755893">در بریده‌دان کپی شد</translation>
+<translation id="2183027945672030611">دستگاه <ph name="DEVICE_INDEX" /> از <ph name="DEVICE_COUNT" />، <ph name="DEVICE_NAME" />، کنترل‌کننده بازی، سطح باتری <ph name="BATTERY_PERCENTAGE" />٪</translation>
 <translation id="2184515124301515068">‏Chrome انتخاب کند سایت‌ها چه موقع صدا پخش کنند (توصیه می‌شود)</translation>
 <translation id="2186711480981247270">صفحه از دستگاه دیگری هم‌رسانی شد</translation>
 <translation id="2187675480456493911">با دستگاه‌های دیگر در حسابتان همگام‌سازی شده است. تنظیماتی که دیگر کاربران تغییر داده‌اند همگام‌سازی نخواهد شد. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
@@ -1273,6 +1277,7 @@
 <translation id="2301402091755573488">برگه هم‌رسانی‌شده</translation>
 <translation id="23030561267973084">«<ph name="EXTENSION_NAME" />» اجازه‌های تکمیلی درخواست کرده است.</translation>
 <translation id="23055578400314116">نام کاربری انتخاب کنید</translation>
+<translation id="2306366691914573029">دستگاه <ph name="DEVICE_INDEX" /> از <ph name="DEVICE_COUNT" />، <ph name="DEVICE_NAME" />، دستگاه نامشخص</translation>
 <translation id="2307462900900812319">پیکربندی شبکه</translation>
 <translation id="2307553512430195144">‏اگر موافقت کنید، «دستیار Google» در حالت آماده‌به‌کار منتظر می‌ماند تا گفته شدن «Ok Google» را تشخیص دهد و می‌تواند تشخیص دهد که <ph name="SUPERVISED_USER_NAME" /> درحال صحبت کردن با Voice Match است.
     <ph name="BR" />
@@ -1558,6 +1563,7 @@
 <translation id="2606568927909309675">به‌طور خودکار برای صدا و ویدیوی انگلیسی زیرنویس ناشنوایان ایجاد می‌کند. صداها و زیرنویس ناشنوایان هرگز از دستگاهتان خارج نمی‌شوند.</translation>
 <translation id="2607101320794533334">اطلاعات کلید عمومی موضوع</translation>
 <translation id="2609896558069604090">ایجاد میان‌برها...</translation>
+<translation id="2609902589050805912">دستگاه <ph name="DEVICE_INDEX" /> از <ph name="DEVICE_COUNT" />، <ph name="DEVICE_NAME" />، دستگاه صوتی</translation>
 <translation id="2609980095400624569">اتصال برقرار نشد</translation>
 <translation id="2610157865375787051">خواب</translation>
 <translation id="2610260699262139870">اندازه &amp;واقعی</translation>
@@ -1624,6 +1630,7 @@
 <translation id="2673135533890720193">خواندن سابقه مرور شما</translation>
 <translation id="2674764818721168631">خاموش</translation>
 <translation id="2678063897982469759">فعال کردن مجدد</translation>
+<translation id="2678676117809690850">دستگاه <ph name="DEVICE_INDEX" /> از <ph name="DEVICE_COUNT" />، <ph name="DEVICE_NAME" />، تلفن، سطح باتری <ph name="BATTERY_PERCENTAGE" />٪</translation>
 <translation id="268053382412112343">&amp;سابقه</translation>
 <translation id="2681124317993121768">نمایه‌های مهمان پشتیبانی نمی‌شود</translation>
 <translation id="2682498795777673382">به‌روزرسانی ازطرف والدین شما</translation>
@@ -1820,6 +1827,7 @@
 <translation id="287205682142673348">بازارسال درگاه</translation>
 <translation id="287286579981869940">افزودن <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">خاموش کردن</translation>
+<translation id="2872966656309879564">دستگاه <ph name="DEVICE_INDEX" /> از <ph name="DEVICE_COUNT" />، <ph name="DEVICE_NAME" />، رایانه</translation>
 <translation id="2874939134665556319">آهنگ قبلی</translation>
 <translation id="2875698561019555027">‏(صفحه‌های خطای Chrome)</translation>
 <translation id="2876336351874743617">انگشت ۲</translation>
@@ -2000,6 +2008,7 @@
 <translation id="3054766768827382232">غیرفعال‌سازی ممکن است باعث شود لوازم جانبی بهتر عمل کنند اما ممکن است داده‌های شخصی‌تان را ازطریق استفاده غیرمجاز درمعرض خطر قرار دهد.</translation>
 <translation id="3055590424724986000">با ارائه‌دهنده‌ای به انتخاب خودتان</translation>
 <translation id="3058498974290601450">هرزمان خواستید می‌توانید همگام‌سازی را در تنظیمات روشن کنید</translation>
+<translation id="3058517085907878899">نام‌گذاری دستگاه</translation>
 <translation id="3060379269883947824">فعال کردن «انتخاب برای شنیدن»</translation>
 <translation id="3060952009917586498">تغییر دادن زبان دستگاه. زبان فعلی <ph name="LANGUAGE" /> است.</translation>
 <translation id="3060987956645097882">‏نتوانستیم اتصال با تلفنتان را برقرار کنیم. مطمئن شوید تلفنتان نزدیک باشد، قفل آن باز، و بلوتوث و Wi-Fi در آن روشن باشد.</translation>
@@ -2010,6 +2019,7 @@
 <translation id="3067198360141518313">اجرای این افزایه</translation>
 <translation id="3071624960923923138">برای باز کردن برگه جدید، می‌توانید اینجا را کلیک کنید</translation>
 <translation id="3072775339180057696">به سایت اجازه می‌دهید <ph name="FILE_NAME" /> را ببیند؟</translation>
+<translation id="3074799113165994093">دستگاه <ph name="DEVICE_INDEX" /> از <ph name="DEVICE_COUNT" />، <ph name="DEVICE_NAME" />، تلفن</translation>
 <translation id="3075874217500066906">‏برای شروع فرآیند Powerwash، به یک راه‌اندازی مجدد نیاز دارید. پس از راه‌اندازی مجدد، از شما خواسته می‌شود تأیید کنید که می‌خواهید ادامه دهید.</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">ذخیره فقط در این دستگاه</translation>
@@ -2051,6 +2061,7 @@
 <translation id="3117791853215125017">{COUNT,plural, =1{ارسال <ph name="ATTACHMENTS" /> به <ph name="DEVICE_NAME" /> ناموفق بود}one{ارسال <ph name="ATTACHMENTS" /> به <ph name="DEVICE_NAME" /> ناموفق بود}other{ارسال <ph name="ATTACHMENTS" /> به <ph name="DEVICE_NAME" /> ناموفق بود}}</translation>
 <translation id="3118319026408854581">راهنمای <ph name="PRODUCT_NAME" /></translation>
 <translation id="3118654181216384296">‏لطفاً چند لحظه دیگر Linux را مجدداً راه‌اندازی کنید.</translation>
+<translation id="3119689272338239690">دستگاه <ph name="DEVICE_INDEX" /> از <ph name="DEVICE_COUNT" />، <ph name="DEVICE_NAME" />، دستگاه نامشخص، سطح باتری <ph name="BATTERY_PERCENTAGE" />٪</translation>
 <translation id="3119948370277171654">درحال ارسال چه محتوا/نشانی وبی بودید؟</translation>
 <translation id="3120430004221004537">رمزگذاری برای عملیات موردنظر در این دستگاه کافی نیست: «<ph name="DEVICE_NAME" />».</translation>
 <translation id="3122464029669770682">CPU</translation>
@@ -2563,6 +2574,7 @@
 <translation id="3682824389861648626">آستانه حرکت</translation>
 <translation id="3683524264665795342">درخواست هم‌رسانی صفحه‌نمایش <ph name="APP_NAME" /></translation>
 <translation id="3685598397738512288">‏اولویت‌های USB در Linux</translation>
+<translation id="3686786761304157917">دستگاه <ph name="DEVICE_INDEX" /> از <ph name="DEVICE_COUNT" />، <ph name="DEVICE_NAME" />، صفحه‌کلید، سطح باتری <ph name="BATTERY_PERCENTAGE" />٪</translation>
 <translation id="368789413795732264">خطایی در حین نوشتن در این فایل وجود داشت: <ph name="ERROR_TEXT" />.</translation>
 <translation id="3688507211863392146">نوشتن بر روی فایل‌ها و پوشه‌هایی که در برنامه باز می‌کنید</translation>
 <translation id="3688526734140524629">تغییر کانال</translation>
@@ -2662,6 +2674,7 @@
 <translation id="3778740492972734840">ابزارهای &amp;برنامه نویس</translation>
 <translation id="3778868487658107119">‏از آن سؤال بپرسید. بگویید کاری انجام دهد. این Google شخصی شما است و همیشه برای کمک آماده است.</translation>
 <translation id="3781742599892759500">‏دسترسی به میکروفون Linux</translation>
+<translation id="3782488227140539029">دستگاه <ph name="DEVICE_INDEX" /> از <ph name="DEVICE_COUNT" />، <ph name="DEVICE_NAME" />، دوربین فیلم‌برداری، سطح باتری <ph name="BATTERY_PERCENTAGE" />٪</translation>
 <translation id="3782795641773236652">هنوز سوئیچ یا کلیدی اختصاص نیافته است</translation>
 <translation id="378312418865624974">خواندن شناسه بی‌نظیر در این رایانه</translation>
 <translation id="3784372983762739446">دستگاه‌های بلوتوث</translation>
@@ -2902,6 +2915,7 @@
 <translation id="4002329649066944389">مدیریت استثناهای ویژه سایت</translation>
 <translation id="4002440992267487163">تنظیم پین</translation>
 <translation id="4005817994523282006">روش تشخیص منطقه زمانی</translation>
+<translation id="400645326027787740">دستگاه <ph name="DEVICE_INDEX" /> از <ph name="DEVICE_COUNT" />، <ph name="DEVICE_NAME" />، کنترل‌کننده بازی</translation>
 <translation id="4007856537951125667">پنهان کردن میان‌برها</translation>
 <translation id="4008291085758151621">‏اطلاعات سایت در VR در دسترس نیست</translation>
 <translation id="4010917659463429001">برای اینکه نشانک‌هایتان را در دستگاه همراهتان داشته باشید، <ph name="GET_IOS_APP_LINK" />.</translation>
@@ -3207,6 +3221,7 @@
 <translation id="4382131447572146376">{COUNT,plural, =0{<ph name="EMAIL" />}=1{<ph name="EMAIL" />، ۱+ حساب دیگر}one{<ph name="EMAIL" />، +<ph name="EXTRA_ACCOUNTS" /> حساب دیگر}other{<ph name="EMAIL" />، +<ph name="EXTRA_ACCOUNTS" /> حساب دیگر}}</translation>
 <translation id="4384312707950789900">افزودن به شبکه‌های برگزیده</translation>
 <translation id="4384652540891215547">فعال کردن افزونه</translation>
+<translation id="4384886290276344300">تغییر تنظیمات صفحه‌کلید</translation>
 <translation id="438503109373656455">اسب</translation>
 <translation id="4385146930797718821">نماگرفت در بریده‌دان کپی شد</translation>
 <translation id="4385905942116811558">‏درحال جستجوی دستگاه‌های USB و بلوتوث</translation>
@@ -3599,6 +3614,7 @@
 <translation id="4813136279048157860">تصاویر من</translation>
 <translation id="4813512666221746211">خطای شبکه</translation>
 <translation id="4814378367953456825">نامی برای این اثرانگشت وارد کنید</translation>
+<translation id="4816097470512964351"><ph name="DEVICE" />، جزئیات</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{۱ نشانک حذف شد}one{{COUNT} نشانک حذف شد}other{{COUNT} نشانک حذف شد}}</translation>
 <translation id="4819607494758673676">‏اعلان‌های «دستیار Google»</translation>
 <translation id="4820236583224459650">تنظیم به‌عنوان بلیت فعال</translation>
@@ -3674,6 +3690,7 @@
 <translation id="4884987973312178454">۶ برابر</translation>
 <translation id="4887424188275796356">‏باز کردن با System Viewer</translation>
 <translation id="488785315393301722">نمایش جزئیات</translation>
+<translation id="4889450157778777235">دستگاه <ph name="DEVICE_INDEX" /> از <ph name="DEVICE_COUNT" />، <ph name="DEVICE_NAME" />، دوربین فیلم‌برداری</translation>
 <translation id="4890773143211625964">نمایش گزینه‌های چاپگر پیشرفته</translation>
 <translation id="4891089016822695758">تالار گفتمان بتا</translation>
 <translation id="4892229439761351791">سایت می‌تواند از بلوتوث استفاده کند</translation>
@@ -3810,6 +3827,7 @@
 <translation id="5039696241953571917">‏در «حساب Google» خود گذرواژه‌های ذخیره‌شده را مشاهده و مدیریت کنید</translation>
 <translation id="5039804452771397117">اجازه دادن</translation>
 <translation id="5040823038948176460">تنظیمات محتوای دیگر</translation>
+<translation id="5043440033854483429">نام می‌تواند از حرف، عدد، و خط تیره (-) تشکیل شود و باید بین ۱ تا ۱۵ نویسه داشته باشد.</translation>
 <translation id="5043913660911154449">‏یا PPD چاپگرتان را تعیین کنید <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">گذرواژه نادرست</translation>
 <translation id="504561833207953641">درحال باز شدن در جلسه مرورگر کنونی.</translation>
@@ -4063,6 +4081,7 @@
 <translation id="5319359161174645648">‏Google،‏ Chrome را توصیه می‌کند</translation>
 <translation id="5319712128756744240">مرتبط‌سازی دستگاه جدید</translation>
 <translation id="5320135788267874712">نام دستگاه جدید</translation>
+<translation id="532043380734099846">دستگاه <ph name="DEVICE_INDEX" /> از <ph name="DEVICE_COUNT" />، <ph name="DEVICE_NAME" />، موشواره، سطح باتری <ph name="BATTERY_PERCENTAGE" />٪</translation>
 <translation id="532247166573571973">ممکن است سرور در دسترس نباشد. بعداً دوباره امتحان کنید.</translation>
 <translation id="5324300749339591280">فهرست برنامه‌ها</translation>
 <translation id="5324780743567488672">تنظیم خودکار منطقه زمانی با استفاده از موقعیت مکانی شما</translation>
@@ -4090,6 +4109,7 @@
 <translation id="535123479159372765">نوشتار از دستگاه دیگری کپی شده است</translation>
 <translation id="5352033265844765294">مهر زمان</translation>
 <translation id="5353252989841766347">‏صادر کردن گذرواژه‌ها از Chrome</translation>
+<translation id="5354531123814675522">دستگاه <ph name="DEVICE_INDEX" /> از <ph name="DEVICE_COUNT" />، <ph name="DEVICE_NAME" />، رایانه لوحی، سطح باتری <ph name="BATTERY_PERCENTAGE" />٪</translation>
 <translation id="5355099869024327351">به «دستیار» اجازه می‌دهد اعلان نشان دهد</translation>
 <translation id="5355191726083956201">«محافظت بهبودیافته» روشن است</translation>
 <translation id="5355926466126177564">‏افزونه «<ph name="EXTENSION_NAME" />»، صفحه‌ای را تغییر داده است که هنگام جستجو از Omnibox نشان داده می‌شود.</translation>
@@ -4259,6 +4279,7 @@
 <translation id="5534304873398226603">صرف‌نظر کردن از عکس یا ویدیو</translation>
 <translation id="5535941515421698170">همچنین داده‌های موجودتان را در این دستگاه پاک کنید</translation>
 <translation id="5539221284352502426">سرور گذرواژه‌ای را که وارد کرده‌اید نپذیرفته است. دلایل احتمالی عبارت‌ است از: گذرواژه خیلی کوتاه است. گذرواژه باید حاوی اعداد یا نمادها باشد. گذرواژه باید با گذرواژه‌های قبلی متفاوت باشد.</translation>
+<translation id="5539467723438368868">دستگاه <ph name="DEVICE_INDEX" /> از <ph name="DEVICE_COUNT" />، <ph name="DEVICE_NAME" />، رایانه لوحی</translation>
 <translation id="5541694225089836610">سرپرستتان کنش را غیرفعال کرده است</translation>
 <translation id="5542132724887566711">نمایه</translation>
 <translation id="5542750926112347543">کوکی‌های <ph name="DOMAIN" /> مسدود شدند</translation>
@@ -4319,6 +4340,7 @@
 <translation id="5601503069213153581">پین</translation>
 <translation id="5601823921345337195">‏اجازه ندارد به دستگاه‌های MIDI مرتبط شود</translation>
 <translation id="5602765853043467355">نشانک‌ها، سابقه، گذرواژه‌ها و موارد دیگر از این دستگاه پاک شود</translation>
+<translation id="5604884720628869833">دستگاه <ph name="DEVICE_INDEX" /> از <ph name="DEVICE_COUNT" />، <ph name="DEVICE_NAME" />، صفحه‌کلید</translation>
 <translation id="5605623530403479164">موتورهای جستجوی دیگر</translation>
 <translation id="5605758115928394442">برای تأیید اینکه خودتان هستید، اعلانی به تلفنتان ارسال شد.</translation>
 <translation id="560834977503641186">‏«همگام‌سازی Wi-Fi»، بیشتر بدانید</translation>
@@ -4779,6 +4801,7 @@
 <translation id="6113434369102685411">‏تنظیم موتور جستجوی پیش‌فرض برای مرورگر Chrome و «راه‌انداز <ph name="DEVICE_TYPE" />»</translation>
 <translation id="6113942107547980621">‏برای استفاده از Smart Lock، به نمایه کاربر اصلی در تلفن جابه‌جا شوید</translation>
 <translation id="6116921718742659598">تغییر تنظیمات زبان و ورودی</translation>
+<translation id="6119927814891883061">تغییر نام دستگاه به <ph name="DEVICE_NAME" /></translation>
 <translation id="6120205520491252677">سنجاق کردن این صفحه به صفحه شروع…</translation>
 <translation id="6122081475643980456">اتصال اینترنت شما کنترل می‌شود</translation>
 <translation id="6122093587541546701">ایمیل (اختیاری):</translation>
@@ -6986,6 +7009,7 @@
 <translation id="8475313423285172237">‏برنامه‌ای دیگر بر روی رایانه شما یک برنامه افزودنی را اضافه کرده است که ممکن است نحوه کارکرد Chrome را تغییر دهد.</translation>
 <translation id="8477241577829954800">از دور خارج شده</translation>
 <translation id="8477384620836102176">&amp;عمومی</translation>
+<translation id="8479109005219657634">دستگاه <ph name="DEVICE_INDEX" /> از <ph name="DEVICE_COUNT" />، <ph name="DEVICE_NAME" />، دستگاه صوتی، سطح باتری <ph name="BATTERY_PERCENTAGE" />٪</translation>
 <translation id="8479176401914456949">کد نامعتبر است. لطفاً دوباره امتحان کنید.</translation>
 <translation id="8480082892550707549">حتی اگر قبلاً از این سایت فایل‌هایی را بارگیری کرده باشید، این سایت ممکن است به‌طور موقت غیرایمن باشد (هک شده باشد). این فایل را بعداً بارگیری کنید.</translation>
 <translation id="8480869669560681089">دستگاه نامشخص از <ph name="VENDOR_NAME" /></translation>
@@ -7456,7 +7480,6 @@
 <translation id="8966809848145604011">نمایه‌های دیگر</translation>
 <translation id="8966870118594285808">اگر به اشتباه برگه‌ای را بستید، دوباره آن را باز کنید</translation>
 <translation id="8967427617812342790">افزودن به فهرست خواندن</translation>
-<translation id="8967866634928501045">‏Alt Shift A را برای نمایش فشار دهید</translation>
 <translation id="8968766641738584599">ذخیره کارت</translation>
 <translation id="89720367119469899">فرار</translation>
 <translation id="8972513834460200407">‏لطفاً با سرپرست شبکه خود بررسی کنید تا مطمئن شوید فایروال از بارگیری از سرورهای Google جلوگیری نمی‌کند.</translation>
@@ -7466,6 +7489,7 @@
 <translation id="897525204902889653">سرویس قرنطینه</translation>
 <translation id="8975396729541388937">با کلیک کردن روی پیوند درج‌شده در ایمیل‌هایی که دریافت می‌کنید، هرزمان خواستید لغو اشتراک کنید.</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{«<ph name="TAB_TITLE" />»}=1{«<ph name="TAB_TITLE" />» و ۱ برگه دیگر}one{«<ph name="TAB_TITLE" />» و # برگه دیگر}other{«<ph name="TAB_TITLE" />» و # برگه دیگر}}</translation>
+<translation id="8977175149983066223">دستگاه <ph name="DEVICE_INDEX" /> از <ph name="DEVICE_COUNT" />، <ph name="DEVICE_NAME" />، موشواره</translation>
 <translation id="8977811652087512276">گذرواژه نادرست یا فایل خراب است</translation>
 <translation id="8978154919215542464">‏On (روشن) - همگام‌سازی همه‌چیز</translation>
 <translation id="897939795688207351">روشن <ph name="ORIGIN" /></translation>

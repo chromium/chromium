@@ -224,7 +224,6 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="3153862085237805241">Hifadhi Kadi</translation>
 <translation id="3157387275655328056">Ongeza kwenye Orodha ya Kusoma</translation>
 <translation id="3157684681743766797">Tia Zote Alama...</translation>
-<translation id="3161291298470460782">Hatua hii itakuondoa katika akaunti, izime usawazishaji na ifute data yote ya Chrome kutoka kwenye kifaa hiki. Data yako iliyosawazishwa itabaki kwenye Akaunti yako ya Google.</translation>
 <translation id="3169472444629675720">Gundua</translation>
 <translation id="3175081911749765310">Huduma za Wavuti</translation>
 <translation id="3178650076442119961">Kimetumika Leo</translation>
@@ -267,7 +266,6 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="3494788280727468875">Thibitisha Kufuta Data ya Kuvinjari</translation>
 <translation id="35083190962747987">Fungua ${url}</translation>
 <translation id="3519193562722059437">Fungua kichupo ili uvinjari wavuti.</translation>
-<translation id="3523473570015918798">Kwa kuondoka katika akaunti, alamisho, historia, manenosiri na data yako nyingine ya Chrome hazitasawazishwa tena kwenye Akaunti yako ya Google.</translation>
 <translation id="3527085408025491307">Folda</translation>
 <translation id="3529024052484145543">Si salama</translation>
 <translation id="3533202363250687977">Funga Vichupo Vyote Fiche</translation>
@@ -447,7 +445,6 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />fanya usawazishaji upya<p
 <translation id="5457226814769348910">Fungua Nakala ya Nje ya Mtandao</translation>
 <translation id="5489208564673669003">Ili udhibiti vidakuzi vya tovuti zote, angalia <ph name="BEGIN_LINK" />Mipangilio ya Vidakuzi<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Zuia Vidakuzi Vyote (Haipendekezwi)</translation>
-<translation id="5508435575041083207">Ondoka katika Akaunti na Ufute Data kwenye Kifaa hiki</translation>
 <translation id="5513681519188741830">Saa <ph name="TIME" /> zilizopita</translation>
 <translation id="5525269841082836315">Unda Kaulisiri</translation>
 <translation id="5532698011560297095">Siwezi Kuingia</translation>
@@ -702,9 +699,6 @@ Katika hali fiche, tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvin
 <translation id="7701040980221191251">Hamna</translation>
 <translation id="7741325291586284254">Ukurasa Mpya wa Kichupo Fiche</translation>
 <translation id="7765158879357617694">Sogeza</translation>
-<translation id="7771470029643830783">Kwa kuondoka katika akaunti, alamisho, historia, manenosiri na data yako nyingine ya Chrome hazitasawazishwa tena kwenye Akaunti yako ya Google.
-
-Kwa sababu akaunti yako inadhibitiwa na <ph name="HOSTED_DOMAIN" />, data yako ya Chrome itafutwa kwenye kifaa hiki ukiondoka katika akaunti. Data yako iliyosawazishwa itabaki kwenye Akaunti yako ya Google.</translation>
 <translation id="7772032839648071052">Thibitisha kaulisiri</translation>
 <translation id="7778472311864276518">Ondoa Akaunti kwenye Kifaa hiki</translation>
 <translation id="7781011649027948662">Ungependa Kutafsiri Ukurasa?</translation>
@@ -774,7 +768,6 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="8495097701594799854">Imezimwa na shirika lako.</translation>
 <translation id="8503813439785031346">Jina la mtumiaji</translation>
 <translation id="850600235656508448">Fungua katika dirisha fiche</translation>
-<translation id="8510057420705599706">Hatua hii itakuondoa katika akaunti na izime usawazishaji, lakini alamisho, historia, manenosiri na data yako nyingine ya Chrome itabaki kwenye kifaa hiki.</translation>
 <translation id="8517375800490286174">Leseni za Programu Huria</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> Vichupo <ph name="FIRST_VISIBLE_TAB" /> kupitia <ph name="LAST_VISIBLE_TAB" /> kati ya <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8529767659511976195">Mpya</translation>

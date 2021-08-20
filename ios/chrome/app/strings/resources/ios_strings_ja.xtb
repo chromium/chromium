@@ -224,7 +224,6 @@
 <translation id="3153862085237805241">カードを保存</translation>
 <translation id="3157387275655328056">リーディング リストに追加</translation>
 <translation id="3157684681743766797">すべてマーク...</translation>
-<translation id="3161291298470460782">この操作を行うと、ログアウトして同期がオフになり、このデバイスから Chrome のデータがすべて削除されます。同期データは Google アカウントに残ります。</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3175081911749765310">ウェブサービス</translation>
 <translation id="3178650076442119961">最終同期: 今日</translation>
@@ -267,7 +266,6 @@
 <translation id="3494788280727468875">閲覧データの削除を確定</translation>
 <translation id="35083190962747987">${url} を開く</translation>
 <translation id="3519193562722059437">ウェブを閲覧するにはタブを開きます。</translation>
-<translation id="3523473570015918798">ログアウトすると、ブックマーク、履歴、パスワード、その他の Chrome データは、Google アカウントに同期されなくなります。</translation>
 <translation id="3527085408025491307">フォルダ</translation>
 <translation id="3529024052484145543">保護されていません</translation>
 <translation id="3533202363250687977">すべてのシークレット タブを閉じる</translation>
@@ -447,7 +445,6 @@
 <translation id="5457226814769348910">オフライン版を開く</translation>
 <translation id="5489208564673669003">すべてのサイトの Cookie を管理するには、<ph name="BEGIN_LINK" />Cookie の設定<ph name="END_LINK" />をご覧ください。</translation>
 <translation id="5490005495580364134">すべての Cookie をブロックする（推奨されません）</translation>
-<translation id="5508435575041083207">ログアウトしてこのデバイスからデータを消去</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> 時間前</translation>
 <translation id="5525269841082836315">パスフレーズの作成</translation>
 <translation id="5532698011560297095">ログインできない</translation>
@@ -702,9 +699,6 @@
 <translation id="7701040980221191251">なし</translation>
 <translation id="7741325291586284254">新しいシークレット タブ ページ</translation>
 <translation id="7765158879357617694">移動</translation>
-<translation id="7771470029643830783">ログアウトすると、ブックマーク、履歴、パスワード、その他の Chrome データは、Google アカウントに同期されなくなります。
-
-アカウントは <ph name="HOSTED_DOMAIN" /> で管理されているため、ログアウトすると、Chrome データはこのデバイスから削除されます。同期データは Google アカウントに残ります。</translation>
 <translation id="7772032839648071052">パスフレーズの確認</translation>
 <translation id="7778472311864276518">このデバイスからアカウントを削除</translation>
 <translation id="7781011649027948662">ページを翻訳しますか？</translation>
@@ -774,7 +768,6 @@
 <translation id="8495097701594799854">組織によって無効にされています。</translation>
 <translation id="8503813439785031346">ユーザー名</translation>
 <translation id="850600235656508448">シークレット モードで開く</translation>
-<translation id="8510057420705599706">この操作を行うと、ログアウトして同期がオフになりますが、ブックマーク、履歴、パスワード、その他の Chrome のデータはこのデバイスに残ります。</translation>
 <translation id="8517375800490286174">オープンソースライセンス</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" />タブ: <ph name="FIRST_VISIBLE_TAB" />～<ph name="LAST_VISIBLE_TAB" />/<ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8529767659511976195">新規</translation>

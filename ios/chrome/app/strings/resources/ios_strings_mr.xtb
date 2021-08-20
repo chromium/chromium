@@ -224,7 +224,6 @@
 <translation id="3153862085237805241">कार्ड सेव्ह करा</translation>
 <translation id="3157387275655328056">वाचन सूचीमध्ये जोडा</translation>
 <translation id="3157684681743766797">सर्व चिन्हांकित करा…</translation>
-<translation id="3161291298470460782">हे या डिव्हाइसमधून तुम्हाला साइन आउट करेल, सिंक बंद करेल आणि सर्व Chrome डेटा साफ करेल. तुमचा सिंक केलेला डेटा तुमचे Google खाते यामध्ये राहील.</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3175081911749765310">वेब सेवा</translation>
 <translation id="3178650076442119961">आज ॲक्टिव्ह होते</translation>
@@ -267,7 +266,6 @@
 <translation id="3494788280727468875">ब्राउझिंग डेटा साफ करता याची पुष्टी करा</translation>
 <translation id="35083190962747987">${url} उघडा</translation>
 <translation id="3519193562722059437">वेब ब्राउझ करण्‍यासाठी एक टॅब उघडा.</translation>
-<translation id="3523473570015918798">साइन आउट केल्याने तुमचे बुकमार्क, इतिहास, पासवर्ड आणि इतर Chrome डेटा यापुढे तुमचे Google खाते याच्याशी सिंक केला जाणार नाही.</translation>
 <translation id="3527085408025491307">फोल्डर</translation>
 <translation id="3529024052484145543">सुरक्षित नाही</translation>
 <translation id="3533202363250687977">सर्व गुप्त टॅब बंद करा</translation>
@@ -448,7 +446,6 @@
 <translation id="5457226814769348910">ऑफलाइन आवृत्ती उघडा</translation>
 <translation id="5489208564673669003">सर्व साइटसाठी कुकी व्यवस्थापित करण्यासाठी <ph name="BEGIN_LINK" />कुकी सेटिंग्ज<ph name="END_LINK" /> पहा.</translation>
 <translation id="5490005495580364134">सर्व कुकी ब्लॉक करा (शिफारस केली जात नाही)</translation>
-<translation id="5508435575041083207">या डिव्हाइसमधून साइन आउट करा आणि डेटा साफ करा</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> तासांपूर्वी</translation>
 <translation id="5525269841082836315">सांकेतिक पासफ्रेझ तयार करा</translation>
 <translation id="5532698011560297095">साइन इन करणे शक्य नाही</translation>
@@ -704,9 +701,6 @@
 <translation id="7701040980221191251">काहीही नाही</translation>
 <translation id="7741325291586284254">नवीन गुप्त टॅब पेज</translation>
 <translation id="7765158879357617694">हलवा</translation>
-<translation id="7771470029643830783">साइन आउट केल्याने तुमचे बुकमार्क, इतिहास, पासवर्ड आणि इतर Chrome डेटा यापुढे तुमचे Google खाते याच्याशी सिंक केला जाणार नाही.
-
-तुमचे खाते <ph name="HOSTED_DOMAIN" /> द्वारे व्यवस्थापित केले जात असल्याने साइन आउट करताना या डिव्हाइसमधून तुमचा Chrome डेटा हटवला जाईल. तुमचा सिंक केलेला डेटा तुमचे Google खाते यामध्ये राहील.</translation>
 <translation id="7772032839648071052">सांकेतिक पासफ्रेझ निश्चित करा</translation>
 <translation id="7778472311864276518">या डिव्हाइसवरून खाते काढून टाका</translation>
 <translation id="7781011649027948662">पेजचे भाषांतर करायचे?</translation>
@@ -776,7 +770,6 @@
 <translation id="8495097701594799854">तुमच्या संस्थेने बंद केले.</translation>
 <translation id="8503813439785031346">वापरकर्ता नाव</translation>
 <translation id="850600235656508448">गुप्त प्रकारात उघडा</translation>
-<translation id="8510057420705599706">हे तुम्हाला साइन आउट करेल आणि सिंक बंद करेल पण तुमचे बुकमार्क, इतिहास, पासवर्ड आणि इतर Chrome डेटा या डिव्हाइसवर राहील.</translation>
 <translation id="8517375800490286174">मुक्त स्रोत परवाने</translation>
 <translation id="8524799873541103884"><ph name="NUMBER_OF_OPEN_TABS" /> पैकी <ph name="LAST_VISIBLE_TAB" /> ते <ph name="FIRST_VISIBLE_TAB" /> <ph name="INCOGNITO" /> टॅब</translation>
 <translation id="8529767659511976195">नवीन</translation>

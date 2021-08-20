@@ -224,7 +224,6 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3153862085237805241">Spara kortet</translation>
 <translation id="3157387275655328056">Lägg till i läslistan</translation>
 <translation id="3157684681743766797">Markera alla …</translation>
-<translation id="3161291298470460782">Med den här åtgärden loggas du ut, synkroniseringen inaktiveras och all data i Chrome rensas från enheten. Din synkroniserade data finns kvar i Google-kontot.</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3175081911749765310">Webbtjänster</translation>
 <translation id="3178650076442119961">Aktiv i dag</translation>
@@ -267,7 +266,6 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3494788280727468875">Bekräfta rensning av webbinformation</translation>
 <translation id="35083190962747987">Öppna ${url}</translation>
 <translation id="3519193562722059437">Öppna en flik om du vill surfa på webben.</translation>
-<translation id="3523473570015918798">När du loggar ut synkroniseras inte längre bokmärken, lösenord och annan data i Chrome till Google-kontot.</translation>
 <translation id="3527085408025491307">Mapp</translation>
 <translation id="3529024052484145543">Inte säkert</translation>
 <translation id="3533202363250687977">Stäng alla inkognitoflikar</translation>
@@ -447,7 +445,6 @@ Din data har krypterats med lösenfrasen för synkronisering. Ange den om du vil
 <translation id="5457226814769348910">Öppna offlineversion</translation>
 <translation id="5489208564673669003">Du kan hantera cookies för alla webbplatser i <ph name="BEGIN_LINK" />Cookie-inställningarna<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Blockera alla cookies (rekommenderas inte)</translation>
-<translation id="5508435575041083207">Logga ut och rensa data från enheten</translation>
 <translation id="5513681519188741830">För <ph name="TIME" /> timmar sedan</translation>
 <translation id="5525269841082836315">Skapa lösenfras</translation>
 <translation id="5532698011560297095">Det går inte att logga in</translation>
@@ -702,9 +699,6 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="7701040980221191251">Inga</translation>
 <translation id="7741325291586284254">Ny fliksida i inkognitoläge</translation>
 <translation id="7765158879357617694">Flytta</translation>
-<translation id="7771470029643830783">När du loggar ut synkroniseras inte längre bokmärken, lösenord och annan data i Chrome till Google-kontot.
-
-Eftersom ditt konto hanteras av <ph name="HOSTED_DOMAIN" /> raderas din data i Chrome från enheten när du loggar ut. Din synkroniserade data finns kvar i Google-kontot.</translation>
 <translation id="7772032839648071052">Bekräfta lösenfras</translation>
 <translation id="7778472311864276518">Ta bort kontot från enheten</translation>
 <translation id="7781011649027948662">Vill du översätta sidan?</translation>
@@ -774,7 +768,6 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8495097701594799854">Har inaktiverats av din organisation.</translation>
 <translation id="8503813439785031346">Användarnamn</translation>
 <translation id="850600235656508448">Öppna i inkognitoläge</translation>
-<translation id="8510057420705599706">Med den här åtgärden loggas du ut och synkroniseringen inaktiveras, men bokmärken, historik, lösenord och annan data i Chrome finns kvar på enheten.</translation>
 <translation id="8517375800490286174">Licenser för öppen källkod</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" />-flikarna <ph name="FIRST_VISIBLE_TAB" /> till <ph name="LAST_VISIBLE_TAB" /> av <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8529767659511976195">Nytt</translation>

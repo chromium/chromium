@@ -224,7 +224,6 @@
 <translation id="3153862085237805241">Картыг хадгалах</translation>
 <translation id="3157387275655328056">Унших жагсаалтад нэмэх</translation>
 <translation id="3157684681743766797">Бүгдийг тэмдэглэх...</translation>
-<translation id="3161291298470460782">Ингэснээр таныг гаргаж, синк хийхийг унтраах бөгөөд Chrome-н бүх өгөгдлийг энэ төхөөрөмжөөс устгана. Таны cинк хийсэн өгөгдөл Google Бүртгэлд тань үлдэнэ.</translation>
 <translation id="3169472444629675720">Олох</translation>
 <translation id="3175081911749765310">Веб үйлчилгээнүүд</translation>
 <translation id="3178650076442119961">Өнөөдөр идэвхтэй</translation>
@@ -267,7 +266,6 @@
 <translation id="3494788280727468875">Хайлтын өгөгдөл цэвэрлэхийг зөвшөөрөх</translation>
 <translation id="35083190962747987">${url}-г нээх</translation>
 <translation id="3519193562722059437">Веб-д зочлохын тулд цонх нээнэ үү.</translation>
-<translation id="3523473570015918798">Гарснаар таны хавчуурга, түүх, нууц үгс болон Chrome-н бусад өгөгдлийг таны Google Бүртгэлд цаашид синк хийхгүй.</translation>
 <translation id="3527085408025491307">Хавтас</translation>
 <translation id="3529024052484145543">Аюултай</translation>
 <translation id="3533202363250687977">Нууцлалын бүх чихтэй хуудсыг хаах</translation>
@@ -446,7 +444,6 @@
 <translation id="5457226814769348910">Офлайн хувилбарыг нээх</translation>
 <translation id="5489208564673669003">Бүх сайтын күүкийг удирдахын тулд <ph name="BEGIN_LINK" />Күүкиний тохиргоог<ph name="END_LINK" /> харна уу.</translation>
 <translation id="5490005495580364134">Бүх күүкиг блоклох (Зөвлөдөггүй)</translation>
-<translation id="5508435575041083207">Гарч, энэ төхөөрөмжөөс өгөгдлийг устгах</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> цагийн өмнө</translation>
 <translation id="5525269841082836315">Нэвтрэх үгийг үүсгэх</translation>
 <translation id="5532698011560297095">Нэвтрэх боломжгүй</translation>
@@ -701,9 +698,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7701040980221191251">Тодорхойгүй</translation>
 <translation id="7741325291586284254">Шинэ Нууцлалтай таб хуудас</translation>
 <translation id="7765158879357617694">Зөөх</translation>
-<translation id="7771470029643830783">Гарснаар таны хавчуурга, түүх, нууц үгс болон Chrome-н бусад өгөгдлийг таны Google Бүртгэлд цаашид синк хийхгүй.
-
-Таны бүртгэлийг <ph name="HOSTED_DOMAIN" />-с удирддаг тул таныг гарах үед Chrome-н өгөгдлийг тань энэ төхөөрөмжөөс устгана. Таны cинк хийсэн өгөгдөл Google Бүртгэлд тань үлдэнэ.</translation>
 <translation id="7772032839648071052">Нэвтрэх үгүүдийг баталгаажуул</translation>
 <translation id="7778472311864276518">Энэ төхөөрөмжөөс бүртгэл хасах</translation>
 <translation id="7781011649027948662">Хуудсыг орчуулах уу?</translation>
@@ -773,7 +767,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8495097701594799854">Танай байгууллага унтраасан.</translation>
 <translation id="8503813439785031346">Хэрэглэгчийн нэр</translation>
 <translation id="850600235656508448">Нууцлалын горимд нээх</translation>
-<translation id="8510057420705599706">Ингэснээр таныг гаргаж, синк хийхийг унтраах боловч таны хавчуурга, түүх, нууц үгc болон Chrome-н бусад өгөгдөл энэ төхөөрөмж дээр үлдэнэ.</translation>
 <translation id="8517375800490286174">Нээлттэй эхийн лицензүүд</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> Цонхнууд<ph name="FIRST_VISIBLE_TAB" /> -аар <ph name="LAST_VISIBLE_TAB" /> -аас <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8529767659511976195">Шинэ</translation>

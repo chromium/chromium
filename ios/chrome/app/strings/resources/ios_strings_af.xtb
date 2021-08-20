@@ -224,7 +224,6 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="3153862085237805241">Stoor kaart</translation>
 <translation id="3157387275655328056">Voeg by leeslys</translation>
 <translation id="3157684681743766797">Merk alles …</translation>
-<translation id="3161291298470460782">Dit sal jou afmeld, sinkronisering afskakel en alle Chrome-data op hierdie toestel uitvee. Jou gesinkroniseerde data sal in jou Google-rekening bly.</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3175081911749765310">Webdienste</translation>
 <translation id="3178650076442119961">Vandag aktief</translation>
@@ -267,7 +266,6 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="3494788280727468875">Bevestig die uitvee van blaaierdata</translation>
 <translation id="35083190962747987">Maak ${url} oop</translation>
 <translation id="3519193562722059437">Maak 'n oortjie oop om deur die web te blaai.</translation>
-<translation id="3523473570015918798">As jy afmeld, sal jou boekmerke, geskiedenis, wagwoorde en ander Chrome-data nie meer met jou Google-rekening gesinkroniseer word nie.</translation>
 <translation id="3527085408025491307">Vouer</translation>
 <translation id="3529024052484145543">Nie veilig nie</translation>
 <translation id="3533202363250687977">Maak alle incognito-oortjies toe</translation>
@@ -447,7 +445,6 @@ Jou data is met jou sinkroniseringwagfrase geënkripteer. Voer dit in om te begi
 <translation id="5457226814769348910">Maak vanlyn weergawe oop</translation>
 <translation id="5489208564673669003">Sien <ph name="BEGIN_LINK" />Webkoekie-instellings<ph name="END_LINK" /> om webkoekies vir alle werwe te bestuur.</translation>
 <translation id="5490005495580364134">Blokkeer alle webkoekies (nie aanbeveel nie)</translation>
-<translation id="5508435575041083207">Meld af en vee data op hierdie toestel uit</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> u. gelede</translation>
 <translation id="5525269841082836315">Skep wagfrase</translation>
 <translation id="5532698011560297095">Kan nie aanmeld nie</translation>
@@ -702,9 +699,6 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="7701040980221191251">Geen</translation>
 <translation id="7741325291586284254">Nuwe Incognito-oortjiebladsy</translation>
 <translation id="7765158879357617694">Skuif</translation>
-<translation id="7771470029643830783">As jy afmeld, sal jou boekmerke, geskiedenis, wagwoorde en ander Chrome-data nie meer met jou Google-rekening gesinkroniseer word nie.
-
-Wanneer jy afmeld, sal jou Chrome-data op hierdie toestel uigevee word omdat jou rekening deur <ph name="HOSTED_DOMAIN" /> bestuur word. Jou gesinkroniseerde data sal in jou Google-rekening bly.</translation>
 <translation id="7772032839648071052">Bevestig wagfrase</translation>
 <translation id="7778472311864276518">Verwyder rekening van hierdie toestel</translation>
 <translation id="7781011649027948662">Vertaal bladsy?</translation>
@@ -774,7 +768,6 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8495097701594799854">Afgeskakel deur jou organisasie.</translation>
 <translation id="8503813439785031346">Gebruikernaam</translation>
 <translation id="850600235656508448">Maak in Incognito oop</translation>
-<translation id="8510057420705599706">Dit sal jou afmeld en sinkronisering afskakel, maar jou boekmerke, geskiedenis, wagwoorde en ander Chrome-data sal op hierdie toestel bly.</translation>
 <translation id="8517375800490286174">Oopbronlisensies</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> Oortjies <ph name="FIRST_VISIBLE_TAB" /> tot <ph name="LAST_VISIBLE_TAB" /> van <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8529767659511976195">Nuut</translation>

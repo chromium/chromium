@@ -224,7 +224,6 @@
 <translation id="3153862085237805241">کارڈ محفوظ کریں</translation>
 <translation id="3157387275655328056">پڑھنے کی فہرست میں شامل کریں</translation>
 <translation id="3157684681743766797">سبھی کو نشان زد کریں…</translation>
-<translation id="3161291298470460782">‏یہ آپ کو سائن آؤٹ، مطابقت پذیری کو آف اور اس آلہ سے تمام Chrome ڈیٹا کو صاف کر دے گا۔ آپ کا مطابقت پذیر ڈیٹا آپ کے Google اکاؤنٹ میں رہے گا۔</translation>
 <translation id="3169472444629675720">دریافت کریں</translation>
 <translation id="3175081911749765310">ویب سروسز</translation>
 <translation id="3178650076442119961">آج فعال تھا</translation>
@@ -267,7 +266,6 @@
 <translation id="3494788280727468875">براؤزنگ ڈیٹا صاف کرنے کی توثیق کریں</translation>
 <translation id="35083190962747987">‏{url}$ کھولیں</translation>
 <translation id="3519193562722059437">ویب براؤز کرنے کیلئے ایک ٹیب کھولیں۔</translation>
-<translation id="3523473570015918798">‏سائن آؤٹ کر کے، آپ کے بُک مارکس، سرگزشت، پاس ورڈز اور Chrome کے دیگر ڈیٹا کی اب آپ کے Google اکاؤنٹ کے ساتھ مطابقت پذیری نہیں کی جائے گی۔</translation>
 <translation id="3527085408025491307">فولڈر</translation>
 <translation id="3529024052484145543">محفوظ نہیں</translation>
 <translation id="3533202363250687977">سبھی پوشیدگی ٹیبز بند کریں</translation>
@@ -447,7 +445,6 @@
 <translation id="5457226814769348910">آف لائن ورژن کھولیں</translation>
 <translation id="5489208564673669003">سبھی سائٹس کی خاطر کوکیز کا نظم کرنے کے لیے، <ph name="BEGIN_LINK" />کوکی کی ترتیبات<ph name="END_LINK" /> دیکھیں۔</translation>
 <translation id="5490005495580364134">سبھی کوکیز مسدود کریں (تجویز نہیں کی جاتی)</translation>
-<translation id="5508435575041083207">اس آلہ سے سائن آؤٹ کریں اور ڈیٹا صاف کریں</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> گھنٹہ پہلے</translation>
 <translation id="5525269841082836315">پاس فریز بنائیں</translation>
 <translation id="5532698011560297095">سائن نہیں کیا جا سکتا</translation>
@@ -702,9 +699,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7701040980221191251">کوئی نہیں</translation>
 <translation id="7741325291586284254">پوشیدگی ٹیب کا نیا صفحہ</translation>
 <translation id="7765158879357617694">منتقل کریں</translation>
-<translation id="7771470029643830783">‏سائن آؤٹ کر کے، آپ کے بُک مارکس، سرگزشت، پاس ورڈز اور Chrome کے دیگر ڈیٹا کی اب آپ کے Google اکاؤنٹ کے ساتھ مطابقت پذیری نہیں کی جائے گی۔
-
-چونکہ آپ کا اکاؤنٹ <ph name="HOSTED_DOMAIN" /> کے زیر نظم ہے، اس لیے سائن آؤٹ کرنے پر آپ کا Chrome ڈیٹا اس آلہ سے حذف کر دیا جائے گا۔ آپ کا مطابقت پذیر ڈیٹا آپ کے Google اکاؤنٹ میں رہے گا۔</translation>
 <translation id="7772032839648071052">پاس فریز کی توثیق کریں</translation>
 <translation id="7778472311864276518">اس آلہ سے اکاؤنٹ کو ہٹائیں</translation>
 <translation id="7781011649027948662">صفحہ کا ترجمہ کریں؟</translation>
@@ -774,7 +768,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8495097701594799854">آپ کی تنظیم کے ذریعے آف کر دیا گیا۔</translation>
 <translation id="8503813439785031346">صارف کا نام</translation>
 <translation id="850600235656508448">پوشیدگی وضع میں کھولیں</translation>
-<translation id="8510057420705599706">‏یہ آپ کو سائن آؤٹ اور مطابقت پذیری کو آف کر دے گا لیکن آپ کے بُک مارکس، سرگزشت، پاس ورڈز اور Chrome کا دیگر ڈیٹا اس آلہ پر رہے گا۔</translation>
 <translation id="8517375800490286174">اوپن سورس لائسنسز</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> ٹیبز <ph name="FIRST_VISIBLE_TAB" /> سے <ph name="LAST_VISIBLE_TAB" /> از <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8529767659511976195">نئی</translation>
