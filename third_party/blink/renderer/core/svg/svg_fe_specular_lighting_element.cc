@@ -100,15 +100,12 @@ bool SVGFESpecularLightingElement::SetFilterEffectAttribute(
     return specular_lighting->SetSpecularExponent(
         specular_exponent_->CurrentValue()->Value());
 
-  const SVGFELightElement* light_element =
-      SVGFELightElement::FindLightElement(*this);
-  DCHECK(light_element);
-
-  absl::optional<bool> light_source_update =
-      light_element->SetLightSourceAttribute(specular_lighting, attr_name);
-  if (light_source_update)
-    return *light_source_update;
-
+  if (const auto* light_element = SVGFELightElement::FindLightElement(*this)) {
+    absl::optional<bool> light_source_update =
+        light_element->SetLightSourceAttribute(specular_lighting, attr_name);
+    if (light_source_update)
+      return *light_source_update;
+  }
   return SVGFilterPrimitiveStandardAttributes::SetFilterEffectAttribute(
       effect, attr_name);
 }
