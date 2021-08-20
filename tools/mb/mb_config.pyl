@@ -727,6 +727,7 @@
       'linux-local-ssd-nvme-rel': 'release_bot',
       'linux-local-ssd-scsi-rel': 'release_bot',
       'linux-pd-ssd-rel': 'release_bot',
+      'win-bootstrap': 'release_bot',
     },
 
     'internal.chrome.fyi': {
@@ -1210,6 +1211,7 @@
 
     'tryserver.infra': {
       'linux-bootstrap': 'release_trybot',
+      'win-bootstrap': 'release_trybot',
     },
 
     'tryserver.v8': {

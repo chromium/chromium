@@ -2154,6 +2154,12 @@ try_.infra_builder(
     bootstrap = True,
 )
 
+try_.infra_builder(
+    name = "win-bootstrap",
+    bootstrap = True,
+    os = os.WINDOWS_10,
+)
+
 # Errors that this builder would catch would go unnoticed until a project is set
 # up on a branch day or even worse when a branch was turned into an LTS branch,
 # long after the change has been made, so make it a presubmit builder to ensure

@@ -821,6 +821,9 @@ _BOOTSTRAP_ALLOWLIST = {e: True for e in [
     ("ci", "linux-bootstrap"),
     ("ci", "linux-bootstrap-tests"),
     ("try", "linux-bootstrap"),
+    ("ci", "win-bootstrap"),
+    ("ci", "win-bootstrap-tests"),
+    ("try", "win-bootstrap"),
 ]}
 
 _NON_BOOTSTRAPPED_PROPERTIES = [

@@ -6472,6 +6472,12 @@
           'all',
         ],
       },
+      'win-bootstrap-tests': {
+        'mixins': ['win10'],
+        'test_suites': {
+          'gtest_tests': 'bootstrap_tests',
+        }
+      },
     }
   },
   {
