@@ -2094,27 +2094,6 @@
             ]
         }
     ],
-    "ClientHintReliability": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "ClientHintReliability",
-                    "enable_features": [
-                        "AcceptCHFrame",
-                        "CriticalClientHint"
-                    ]
-                }
-            ]
-        }
-    ],
     "ClientSideDetectionReferrerChain": [
         {
             "platforms": [
@@ -2555,6 +2534,26 @@
                     "name": "Enabled",
                     "enable_features": [
                         "EditPasswordsInSettings"
+                    ]
+                }
+            ]
+        }
+    ],
+    "CriticalCLientHint": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "CriticalClientHint",
+                    "enable_features": [
+                        "CriticalClientHint"
                     ]
                 }
             ]
