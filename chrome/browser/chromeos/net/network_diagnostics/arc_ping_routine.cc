@@ -120,12 +120,14 @@ void ArcPingRoutine::FetchManagedProperties(
 
 void ArcPingRoutine::PingGateways() {
   arc::mojom::NetInstance* net_instance = GetNetInstance();
-  for (int i = 0; i < gateways_.size(); i++) {
-    net_instance->PingTest(
-        gateways_transport_names_[i], gateways_[i],
-        base::BindOnce(&ArcPingRoutine::OnRequestComplete,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       gateways_[i] == default_network_gateway_));
+  if (net_instance) {
+    for (int i = 0; i < gateways_.size(); i++) {
+      net_instance->PingTest(
+          gateways_transport_names_[i], gateways_[i],
+          base::BindOnce(&ArcPingRoutine::OnRequestComplete,
+                         weak_ptr_factory_.GetWeakPtr(),
+                         gateways_[i] == default_network_gateway_));
+    }
   }
 }
 

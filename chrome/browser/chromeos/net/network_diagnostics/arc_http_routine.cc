@@ -61,9 +61,11 @@ void ArcHttpRoutine::AttemptNextRequest() {
 
   // Call the HttpTest API from the instance of NetInstance.
   arc::mojom::NetInstance* net_instance = GetNetInstance();
-  net_instance->HttpTest("" /* default network */, url,
-                         base::BindOnce(&ArcHttpRoutine::OnRequestComplete,
-                                        weak_ptr_factory_.GetWeakPtr()));
+  if (net_instance) {
+    net_instance->HttpTest("" /* default network */, url,
+                           base::BindOnce(&ArcHttpRoutine::OnRequestComplete,
+                                          weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 arc::mojom::NetInstance* ArcHttpRoutine::GetNetInstance() {

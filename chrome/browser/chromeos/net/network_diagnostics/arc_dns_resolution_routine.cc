@@ -51,10 +51,12 @@ void ArcDnsResolutionRoutine::AttemptNextQuery() {
 
   // Call the DnsResolutionTest API from the instance of NetInstance.
   arc::mojom::NetInstance* net_instance = GetNetInstance();
-  net_instance->DnsResolutionTest(
-      "" /* default network */, hostname,
-      base::BindOnce(&ArcDnsResolutionRoutine::OnQueryComplete,
-                     weak_ptr_factory_.GetWeakPtr()));
+  if (net_instance) {
+    net_instance->DnsResolutionTest(
+        "" /* default network */, hostname,
+        base::BindOnce(&ArcDnsResolutionRoutine::OnQueryComplete,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 arc::mojom::NetInstance* ArcDnsResolutionRoutine::GetNetInstance() {
