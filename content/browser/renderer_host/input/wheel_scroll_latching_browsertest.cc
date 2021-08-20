@@ -134,12 +134,9 @@ class WheelScrollLatchingBrowserTest : public ContentBrowserTest {
 // document's scrolling element and the document's scrolling element will
 // continue scrolling.
 // Disabled on Android due to flakiness. See https://crbug.com/894572.
-#if defined(OS_ANDROID)
-#define MAYBE_WheelEventTarget DISABLED_WheelEventTarget
-#else
-#define MAYBE_WheelEventTarget WheelEventTarget
-#endif
-IN_PROC_BROWSER_TEST_F(WheelScrollLatchingBrowserTest, MAYBE_WheelEventTarget) {
+// Disabled on All due to flakiness. See https://crbug.com/1241691.
+IN_PROC_BROWSER_TEST_F(WheelScrollLatchingBrowserTest,
+                       DISABLED_WheelEventTarget) {
   base::FeatureList::ScopedDisallowOverrides disallow_feature_overrides(
       nullptr);
   base::test::ScopedFeatureList scoped_feature_list;
