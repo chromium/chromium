@@ -91,7 +91,6 @@ component("public") {
     "//net",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/network/public/cpp",
-    "//services/network/public/mojom",
     "//storage/browser",
     "//ui/base",
   ]

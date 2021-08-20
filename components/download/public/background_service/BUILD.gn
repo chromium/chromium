@@ -32,10 +32,7 @@ source_set("public") {
     ]
   }
 
-  deps = [
-    "//components/keyed_service/core",
-    "//services/network/public/mojom",
-  ]
+  deps = [ "//components/keyed_service/core" ]
 
   # Blob storage is not supported on iOS.
   if (!is_ios) {
