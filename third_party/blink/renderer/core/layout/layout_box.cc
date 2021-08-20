@@ -8338,16 +8338,20 @@ BackgroundPaintLocation LayoutBox::ComputeBackgroundPaintLocationIfComposited()
   // contents until we find otherwise.
   BackgroundPaintLocation paint_location = kBackgroundPaintInContentsSpace;
 
+  Color background_color = ResolveColor(GetCSSPropertyBackgroundColor());
   const FillLayer* layer = &(StyleRef().BackgroundLayers());
   for (; layer; layer = layer->Next()) {
     if (layer->Attachment() == EFillAttachment::kLocal)
       continue;
 
-    // Solid color layers with an effective background clip of the padding box
-    // can be treated as local.
-    if (!layer->GetImage() && !layer->Next() &&
-        ResolveColor(GetCSSPropertyBackgroundColor()).Alpha() > 0 &&
+    if (!layer->GetImage() && background_color.Alpha() > 0 &&
         StyleRef().IsScrollbarGutterAuto()) {
+      // The background color is either the only background or it's the
+      // bottommost value from the background property (see final-bg-layer in
+      // https://drafts.csswg.org/css-backgrounds/#the-background).
+      DCHECK(!layer->Next());
+      // Solid color layers with an effective background clip of the padding box
+      // can be treated as local.
       EFillBox clip = layer->Clip();
       if (clip == EFillBox::kPadding)
         continue;
@@ -8369,21 +8373,24 @@ BackgroundPaintLocation LayoutBox::ComputeBackgroundPaintLocationIfComposited()
               StyleRef().BorderBottomStyle() == EBorderStyle::kSolid))) {
           continue;
         }
-        // If we have an opaque background color only, we can safely paint it
-        // into both the scrolling contents layer and the graphics layer to
-        // preserve LCD text.
-        if (layer == (&StyleRef().BackgroundLayers()) &&
-            ResolveColor(GetCSSPropertyBackgroundColor()).Alpha() < 255)
-          return kBackgroundPaintInBorderBoxSpace;
-        paint_location = kBackgroundPaintInBothSpaces;
-        continue;
-      }
-      // A content fill box can be treated as a padding fill box if there is no
-      // padding.
-      if (clip == EFillBox::kContent && StyleRef().PaddingTop().IsZero() &&
-          StyleRef().PaddingLeft().IsZero() &&
-          StyleRef().PaddingRight().IsZero() &&
-          StyleRef().PaddingBottom().IsZero()) {
+        // If we have an opaque background color, we can safely paint it into
+        // both the scrolling contents layer and the graphics layer to preserve
+        // LCD text. The background color is either the only background or
+        // behind background-attachment:local images (ensured by previous
+        // iterations of the loop). For the latter case, the first paint of the
+        // images doesn't matter because it will be covered by the second paint
+        // of the opaque color.
+        if (!background_color.HasAlpha()) {
+          paint_location = kBackgroundPaintInBothSpaces;
+          continue;
+        }
+      } else if (clip == EFillBox::kContent &&
+                 StyleRef().PaddingTop().IsZero() &&
+                 StyleRef().PaddingLeft().IsZero() &&
+                 StyleRef().PaddingRight().IsZero() &&
+                 StyleRef().PaddingBottom().IsZero()) {
+        // A content fill box can be treated as a padding fill box if there is
+        // no padding.
         continue;
       }
     }

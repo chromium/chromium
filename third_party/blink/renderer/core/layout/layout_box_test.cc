@@ -2035,6 +2035,23 @@ TEST_P(LayoutBoxBackgroundPaintLocationTest,
             ScrollerBackgroundPaintLocation());
 }
 
+TEST_P(LayoutBoxBackgroundPaintLocationTest,
+       LocalImageTranslucentColorAndTransparentBorder) {
+  SetBodyInnerHTML(kCommonStyle + R"HTML(
+    <div id='scroller'
+        style='background: local linear-gradient(blue, red),
+                           rgba(0, 128, 0, 0.5);
+               border: 10px solid transparent'>
+      <div class='spacer'></div>
+    </div>
+  )HTML");
+
+  // https://crbug.com/1241801: The background with translucent background color
+  // should not be painted twice.
+  EXPECT_EQ(kBackgroundPaintInBorderBoxSpace,
+            ScrollerBackgroundPaintLocation());
+}
+
 TEST_P(LayoutBoxBackgroundPaintLocationTest, InsetBoxShadow) {
   SetBodyInnerHTML(kCommonStyle + R"HTML(
     <div id='scroller'
