@@ -13,6 +13,7 @@ import androidx.annotation.StringRes;
 
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
+import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.ViewRectProvider;
 
 /**
@@ -41,6 +42,9 @@ public class IPHCommandBuilder {
     private HighlightParams mHighlightParams;
     private Rect mAnchorRect;
     private boolean mRemoveArrow;
+    @AnchoredPopupWindow.VerticalOrientation
+    private int mPreferredVerticalOrientation =
+            AnchoredPopupWindow.VerticalOrientation.MAX_AVAILABLE_SPACE;
 
     /**
      * Constructor for IPHCommandBuilder when you would like your strings to be resolved for you.
@@ -188,6 +192,17 @@ public class IPHCommandBuilder {
 
     /**
      *
+     * @param preferredVerticalOrientation {@link AnchoredPopupWindow.VerticalOrientation} that
+     *         determines the preferred location for the IPH.
+     */
+    public IPHCommandBuilder setPreferredVerticalOrientation(
+            @AnchoredPopupWindow.VerticalOrientation int preferredVerticalOrientation) {
+        mPreferredVerticalOrientation = preferredVerticalOrientation;
+        return this;
+    }
+
+    /**
+     *
      * @return an (@see IPHCommand) containing the accumulated state of this builder.
      */
     public IPHCommand build() {
@@ -220,7 +235,7 @@ public class IPHCommandBuilder {
 
         return new IPHCommand(mFeatureName, mContentString, mAccessibilityText, mDismissOnTouch,
                 mAnchorView, mOnDismissCallback, mOnShowCallback, mOnBlockedCallback, mInsetRect,
-                mAutoDismissTimeout, mViewRectProvider, mHighlightParams, mAnchorRect,
-                mRemoveArrow);
+                mAutoDismissTimeout, mViewRectProvider, mHighlightParams, mAnchorRect, mRemoveArrow,
+                mPreferredVerticalOrientation);
     }
 }

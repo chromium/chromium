@@ -94,6 +94,7 @@ public class UserEducationHelper {
                 accessibilityString, iphCommand.removeArrow ? false : true,
                 viewRectProvider != null ? viewRectProvider : rectProvider,
                 ChromeAccessibilityUtil.get().isAccessibilityEnabled());
+        textBubble.setPreferredVerticalOrientation(iphCommand.preferredVerticalOrientation);
         textBubble.setDismissOnTouchInteraction(iphCommand.dismissOnTouch);
         textBubble.addOnDismissListener(() -> mHandler.postDelayed(() -> {
             if (featureName != null) tracker.dismissed(featureName);

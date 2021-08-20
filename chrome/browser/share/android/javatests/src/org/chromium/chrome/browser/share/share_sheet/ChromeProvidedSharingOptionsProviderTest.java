@@ -351,8 +351,8 @@ public class ChromeProvidedSharingOptionsProviderTest {
                                           .build();
         mChromeProvidedSharingOptionsProvider = new ChromeProvidedSharingOptionsProvider(mActivity,
                 mTabProvider, mBottomSheetController,
-                new ShareSheetBottomSheetContent(
-                        mActivity, null, mShareSheetCoordinator, shareParams),
+                new ShareSheetBottomSheetContent(mActivity, null, mShareSheetCoordinator,
+                        shareParams, /*featureEngagementTracker=*/null),
                 shareParams,
                 /*TabPrinterDelegate=*/null,
                 /*settingsLauncher=*/null,

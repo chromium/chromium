@@ -10,6 +10,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
+import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.ViewRectProvider;
 
 /**
@@ -39,12 +40,15 @@ public class IPHCommand {
     public final HighlightParams highlightParams;
     public final Rect anchorRect;
     public final boolean removeArrow;
+    @AnchoredPopupWindow.VerticalOrientation
+    public final int preferredVerticalOrientation;
 
     IPHCommand(@Nullable String featureName, String contentString, String accessibilityText,
             boolean dismissOnTouch, View anchorView, Runnable onDismissCallback,
             Runnable onShowCallback, Runnable onBlockedCallback, Rect insetRect,
             long autoDismissTimeout, ViewRectProvider viewRectProvider, HighlightParams params,
-            Rect anchorRect, boolean removeArrow) {
+            Rect anchorRect, boolean removeArrow,
+            @AnchoredPopupWindow.VerticalOrientation int preferredVerticalOrientation) {
         this.featureName = featureName;
         this.contentString = contentString;
         this.accessibilityText = accessibilityText;
@@ -59,5 +63,6 @@ public class IPHCommand {
         this.highlightParams = params;
         this.anchorRect = anchorRect;
         this.removeArrow = removeArrow;
+        this.preferredVerticalOrientation = preferredVerticalOrientation;
     }
 }

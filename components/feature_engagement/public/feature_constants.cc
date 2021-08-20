@@ -176,6 +176,8 @@ const base::Feature kIPHPwaInstallAvailableFeature{
     "IPH_PwaInstallAvailableFeature", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHShareScreenshotFeature{
     "IPH_ShareScreenshot", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kIPHSharingHubLinkToggleFeature{
+    "IPH_SharingHubLinkToggle", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHWebFeedFollowFeature{"IPH_WebFeedFollow",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHWebFeedPostFollowDialogFeature{

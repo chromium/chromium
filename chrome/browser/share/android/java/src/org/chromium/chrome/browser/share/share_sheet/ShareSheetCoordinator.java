@@ -186,7 +186,8 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
             }
         }
 
-        mBottomSheet = new ShareSheetBottomSheetContent(mActivity, mIconBridge, this, params);
+        mBottomSheet = new ShareSheetBottomSheetContent(
+                mActivity, mIconBridge, this, params, mFeatureEngagementTracker);
 
         mShareStartTime = shareStartTime;
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)) {
@@ -245,7 +246,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
     }
 
     /**
-     * If preemptive link to text generation is enable, create LinkTotextCoordinator
+     * If preemptive link to text generation is enable, create LinkToTextCoordinator
      * which will generate link to text, create a new share and show share sheet.
      * Otherwise show share sheet with the current share.
      *

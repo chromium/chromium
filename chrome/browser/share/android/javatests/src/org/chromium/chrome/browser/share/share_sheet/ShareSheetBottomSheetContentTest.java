@@ -6,6 +6,11 @@ package org.chromium.chrome.browser.share.share_sheet;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -20,6 +25,7 @@ import androidx.test.filters.MediumTest;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -27,14 +33,19 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetPropertyModelBuilder.ContentType;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.favicon.IconType;
 import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DummyUiActivity;
 import org.chromium.ui.test.util.ThemedDummyUiActivityTestRule;
 import org.chromium.url.GURL;
@@ -56,6 +67,8 @@ public final class ShareSheetBottomSheetContentTest {
 
     @Mock
     private ShareSheetLinkToggleCoordinator mShareSheetLinkToggleCoordinator;
+    @Mock
+    private Tracker mFeatureEngagementTracker;
 
     private static final Bitmap.Config sConfig = Bitmap.Config.ALPHA_8;
     private static final Uri sImageUri = Uri.parse("content://testImage.png");
@@ -73,15 +86,30 @@ public final class ShareSheetBottomSheetContentTest {
         MockitoAnnotations.initMocks(this);
         mActivityTestRule.launchActivity(null);
         mActivity = mActivityTestRule.getActivity();
+
         mPreviewUrl = UrlFormatter.formatUrlForDisplayOmitSchemeOmitTrivialSubdomains(sUrl);
         mShareParams = new ShareParams.Builder(/*window=*/null, sTitle, sUrl)
                                .setText(sText)
                                .setFileUris(new ArrayList<>(ImmutableList.of(sImageUri)))
                                .setLinkToTextSuccessful(true)
                                .build();
+        // Pretend the feature engagement feature is already initialized. Otherwise
+        // UserEducationHelper#requestShowIPH() calls get dropped during test.
+        doAnswer(invocation -> {
+            invocation.<Callback<Boolean>>getArgument(0).onResult(true);
+            return null;
+        })
+                .when(mFeatureEngagementTracker)
+                .addOnInitializedCallback(any());
+        TrackerFactory.setTrackerForTests(mFeatureEngagementTracker);
 
-        mShareSheetBottomSheetContent = new ShareSheetBottomSheetContent(
-                mActivity, new MockLargeIconBridge(), null, mShareParams);
+        mShareSheetBottomSheetContent = new ShareSheetBottomSheetContent(mActivity,
+                new MockLargeIconBridge(), null, mShareParams, mFeatureEngagementTracker);
+    }
+
+    @After
+    public void tearDown() {
+        TrackerFactory.setTrackerForTests(null);
     }
 
     @Test
@@ -93,7 +121,8 @@ public final class ShareSheetBottomSheetContentTest {
                         new ShareParams.Builder(/*window=*/null, /*title=*/"", /*url=*/"")
                                 .setFileUris(new ArrayList<>(ImmutableList.of(sImageUri)))
                                 .setFileContentType(fileContentType)
-                                .build());
+                                .build(),
+                        mFeatureEngagementTracker);
 
         shareSheetBottomSheetContent.createRecyclerViews(ImmutableList.of(), ImmutableList.of(),
                 ImmutableSet.of(ContentType.IMAGE), fileContentType,
@@ -117,7 +146,8 @@ public final class ShareSheetBottomSheetContentTest {
                                 .setFileUris(new ArrayList<>(
                                         ImmutableList.of(Uri.parse("content://TestVideo.mp4"))))
                                 .setFileContentType(fileContentType)
-                                .build());
+                                .build(),
+                        mFeatureEngagementTracker);
 
         shareSheetBottomSheetContent.createRecyclerViews(ImmutableList.of(), ImmutableList.of(),
                 ImmutableSet.of(ContentType.IMAGE), fileContentType,
@@ -219,7 +249,8 @@ public final class ShareSheetBottomSheetContentTest {
     public void createRecyclerViews_webShareUrl() {
         ShareSheetBottomSheetContent shareSheetBottomSheetContent =
                 new ShareSheetBottomSheetContent(mActivity, new MockLargeIconBridge(), null,
-                        new ShareParams.Builder(/*window=*/null, /*title=*/"", sUrl).build());
+                        new ShareParams.Builder(/*window=*/null, /*title=*/"", sUrl).build(),
+                        mFeatureEngagementTracker);
 
         shareSheetBottomSheetContent.createRecyclerViews(ImmutableList.of(), ImmutableList.of(),
                 ImmutableSet.of(ContentType.LINK_PAGE_NOT_VISIBLE), "",
@@ -234,6 +265,58 @@ public final class ShareSheetBottomSheetContentTest {
         assertEquals(View.GONE, titleView.getVisibility());
         assertEquals(mPreviewUrl, subtitleView.getText());
         assertNotNull(imageView.getDrawable());
+    }
+
+    @Test
+    @MediumTest
+    public void createRecyclerViews_toggleOff_showsIph() {
+        String fileContentType = "image/gif";
+        ShareSheetBottomSheetContent shareSheetBottomSheetContent =
+                new ShareSheetBottomSheetContent(mActivity, new MockLargeIconBridge(), null,
+                        new ShareParams.Builder(/*window=*/null, /*title=*/"", /*url=*/"")
+                                .setFileUris(new ArrayList<>(ImmutableList.of(sImageUri)))
+                                .setFileContentType(fileContentType)
+                                .build(),
+                        mFeatureEngagementTracker);
+        when(mShareSheetLinkToggleCoordinator.shouldShowToggle()).thenReturn(true);
+        when(mShareSheetLinkToggleCoordinator.shouldEnableToggleByDefault()).thenReturn(false);
+        when(mFeatureEngagementTracker.shouldTriggerHelpUI(any())).thenReturn(true);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> shareSheetBottomSheetContent.createRecyclerViews(ImmutableList.of(),
+                                ImmutableList.of(), ImmutableSet.of(ContentType.IMAGE),
+                                fileContentType, mShareSheetLinkToggleCoordinator));
+
+        ImageView toggleView =
+                shareSheetBottomSheetContent.getContentView().findViewById(R.id.link_toggle_view);
+        assertEquals(View.VISIBLE, toggleView.getVisibility());
+        verify(mFeatureEngagementTracker)
+                .shouldTriggerHelpUI(FeatureConstants.IPH_SHARING_HUB_LINK_TOGGLE_FEATURE);
+    }
+
+    @Test
+    @MediumTest
+    public void createRecyclerViews_toggleOn_doesNotShowIph() {
+        String fileContentType = "image/jpeg";
+        ShareSheetBottomSheetContent shareSheetBottomSheetContent =
+                new ShareSheetBottomSheetContent(mActivity, new MockLargeIconBridge(), null,
+                        new ShareParams.Builder(/*window=*/null, /*title=*/"", /*url=*/"")
+                                .setFileUris(new ArrayList<>(ImmutableList.of(sImageUri)))
+                                .setFileContentType(fileContentType)
+                                .build(),
+                        mFeatureEngagementTracker);
+        when(mShareSheetLinkToggleCoordinator.shouldShowToggle()).thenReturn(true);
+        when(mShareSheetLinkToggleCoordinator.shouldEnableToggleByDefault()).thenReturn(true);
+
+        shareSheetBottomSheetContent.createRecyclerViews(ImmutableList.of(), ImmutableList.of(),
+                ImmutableSet.of(ContentType.IMAGE), fileContentType,
+                mShareSheetLinkToggleCoordinator);
+
+        ImageView toggleView =
+                shareSheetBottomSheetContent.getContentView().findViewById(R.id.link_toggle_view);
+        assertEquals(View.VISIBLE, toggleView.getVisibility());
+        verifyZeroInteractions(mFeatureEngagementTracker);
     }
 
     private static class MockLargeIconBridge extends LargeIconBridge {
