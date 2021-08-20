@@ -2204,6 +2204,10 @@ void QuotaManagerImpl::DidGetStorageKeys(
     QuotaErrorOr<std::set<StorageKey>> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DidDatabaseWork(result.ok() || result.error() != QuotaError::kDatabaseError);
+  if (!result.ok()) {
+    std::move(callback).Run(std::set<StorageKey>());
+    return;
+  }
   std::move(callback).Run(std::move(result.value()));
 }
 
@@ -2213,6 +2217,10 @@ void QuotaManagerImpl::DidGetModifiedBetween(
     QuotaErrorOr<std::set<BucketInfo>> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DidDatabaseWork(result.ok() || result.error() != QuotaError::kDatabaseError);
+  if (!result.ok()) {
+    std::move(callback).Run(std::set<BucketInfo>(), type);
+    return;
+  }
   std::move(callback).Run(result.value(), type);
 }
 
