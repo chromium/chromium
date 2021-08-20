@@ -96,4 +96,6 @@ export const inputMethodSettings = {
   'xkb:mt::mlt': [SettingsType.BASIC_SETTINGS],
   'xkb:mk::mkd': [SettingsType.BASIC_SETTINGS],
   'xkb:kz::kaz': [SettingsType.BASIC_SETTINGS],
+  'xkb:by::bel': [SettingsType.BASIC_SETTINGS],
+  'xkb:rs::srp': [SettingsType.BASIC_SETTINGS],
 };
