@@ -1117,8 +1117,15 @@ bool NavigationControllerImpl::RendererDidNavigate(
     bool previous_document_was_activated,
     NavigationRequest* navigation_request) {
   DCHECK(navigation_request);
-  if (ShouldMaintainTrivialSessionHistory() && GetLastCommittedEntry())
-    DCHECK(params.should_replace_current_entry);
+  if (ShouldMaintainTrivialSessionHistory() && GetLastCommittedEntry()) {
+    // Ensure that this navigation does not add a navigation entry, since
+    // ShouldMaintainTrivialSessionHistory() means we should not add an entry
+    // beyond the last committed one. Therefore, `should_replace_current_entry`
+    // should be set, which replaces the current entry, or this should be a
+    // reload, which does not create a new entry.
+    DCHECK(params.should_replace_current_entry ||
+           navigation_request->GetReloadType() != ReloadType::NONE);
+  }
   is_initial_navigation_ = false;
 
   // Save the previous state before we clobber it.

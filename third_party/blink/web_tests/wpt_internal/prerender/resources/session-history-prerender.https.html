@@ -134,5 +134,33 @@
       assert(window.parent == window.top, "the direct parent isn't the top");
       assert(history.length == 1, "History length after subframe navigation");
     }
+
+    // This test runs testSubframeReloadInPrerenderInSubframe() in a
+    // subframe, and waits for a message from a navigated subframe.
+    async function testSubframeReloadInPrerender() {
+      assert(window.parent == window, "not the top frame");
+      const params = new URLSearchParams(window.location.search);
+      const testName = params.get("testName");
+      const resultPromise = waitChannelMessage(
+          `prerender-channel-${testName}InSubframe`);
+
+      params.set("testName", testName + "InSubframe");
+      const frame = document.createElement("iframe");
+      const url = location.pathname + "?" + params.toString();
+      frame.src = url;
+      document.body.appendChild(frame);
+      const result = await resultPromise;
+      assert(result == "Passed", result);
+      const second_result = await waitChannelMessage(
+          `prerender-channel-${testName}InSubframe`);
+      assert(second_result == "Passed", second_result);
+    }
+
+    function testSubframeReloadInPrerenderInSubframe() {
+      assert(window.parent != window, "not in a subframe");
+      assert(window.parent == window.top, "the direct parent isn't the top");
+      assert(history.length == 1, "Initial history length");
+      window.location.reload();
+    }
   </script>
 </body>
