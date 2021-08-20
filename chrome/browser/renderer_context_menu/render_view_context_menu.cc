@@ -2268,6 +2268,8 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
     }
 
     case IDC_CONTENT_CONTEXT_COPYAVLOCATION:
+      return params_.src_url.is_valid() && !params_.src_url.SchemeIsBlob();
+
     case IDC_CONTENT_CONTEXT_COPYIMAGELOCATION:
       return params_.src_url.is_valid();
 

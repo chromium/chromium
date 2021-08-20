@@ -1734,6 +1734,23 @@ IN_PROC_BROWSER_TEST_F(LoadImageBrowserTest, LoadImageWithMap) {
   AttemptLoadImage();
 }
 
+IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, ContextMenuForVideo) {
+  std::unique_ptr<TestRenderViewContextMenu> menu = CreateContextMenu(
+      GURL("http://www.example.com/"), GURL("http://www.example.com/foo.mp4"),
+      u"", blink::mojom::ContextMenuDataMediaType::kVideo,
+      ui::MENU_SOURCE_MOUSE);
+  EXPECT_TRUE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_COPYAVLOCATION));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
+                       ContextMenuForVideoWithBlobLink) {
+  std::unique_ptr<TestRenderViewContextMenu> menu = CreateContextMenu(
+      GURL("http://www.example.com/"),
+      GURL("blob:http://example.com/00000000-0000-0000-0000-000000000000"), u"",
+      blink::mojom::ContextMenuDataMediaType::kVideo, ui::MENU_SOURCE_MOUSE);
+  EXPECT_FALSE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_COPYAVLOCATION));
+}
+
 IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
                        ContextMenuForVideoNotInPictureInPicture) {
   content::ContextMenuParams params;
