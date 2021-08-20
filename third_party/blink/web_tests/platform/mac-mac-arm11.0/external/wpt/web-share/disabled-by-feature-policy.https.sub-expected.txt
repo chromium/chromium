@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL share can be disabled by feature policy promise_rejects_dom: function "function() { throw e }" threw object "TypeError: Failed to execute 'share' on 'Navigator': No known share data fields supplied. If using only new fields (other than title, text and url), you must feature-detect them first." that is not a DOMException NotAllowedError: property "code" is equal to undefined, expected 0
+Harness: the test ran to completion.
+

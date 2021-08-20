@@ -569,6 +569,15 @@
        {}
       ]
      ],
+     "crashtests": {
+      "firefox-bug-1715631.html": [
+       "d7dedd929e9e4f959e585b7bfab931bd71fa2c8f",
+       [
+        null,
+        {}
+       ]
+      ]
+     },
      "list-marker-position-crash.html": [
       "06ae5fa45bd06f5df306d96a665d6c7653c4dff0",
       [
@@ -594,6 +603,13 @@
      ],
      "change-out-of-flow-type-and-remove-inner-multicol-crash.html": [
       "eec69f9ede9defd101e7d27d5eb83429099cc029",
+      [
+       null,
+       {}
+      ]
+     ],
+     "column-balancing-with-overflow-auto-crash.html": [
+      "1e522c0ec9e2c3d16704882e89afb67f4d314fd1",
       [
        null,
        {}
@@ -631,6 +647,13 @@
      },
      "extremely-tall-multicol-with-extremely-tall-child-crash.html": [
       "1f74697489df2d8ed687b40d3681d9918f2ecb0f",
+      [
+       null,
+       {}
+      ]
+     ],
+     "overflow-scroll-in-multicol-crash.html": [
+      "ed1f5b6da9b4e164d29072a13a30c42e10a31429",
       [
        null,
        {}
@@ -86399,7 +86422,7 @@
        ]
       ],
       "content-visibility-055.html": [
-       "a53f4bc7e261c3a2d093c0f351cbed47416d0b95",
+       "c57521a0ba6aa11f939b313e44afeecf0e776746",
        [
         null,
         [
@@ -86639,6 +86662,19 @@
         [
          [
           "/css/css-contain/content-visibility/content-visibility-079-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "content-visibility-082.html": [
+       "5fe773a5baa873dd89e6bbd3ddfc8ce7c85c0b38",
+       [
+        null,
+        [
+         [
+          "/css/css-contain/content-visibility/container-focus-ref.html",
           "=="
          ]
         ],
@@ -126112,7 +126148,7 @@
       ]
      ],
      "multicol-width-small-001.xht": [
-      "fd1df1a9c83a928db1abcb21ef5ebb4a7ec780de",
+      "c786be09ec83bff76f4314651062ea23784a0bcd",
       [
        null,
        [
@@ -126261,6 +126297,45 @@
        [
         [
          "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "overflow-unsplittable-001.html": [
+      "2baaaaedf6bc7817e6914441ee51603da5bda392",
+      [
+       null,
+       [
+        [
+         "/css/css-multicol/overflow-unsplittable-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "overflow-unsplittable-002.html": [
+      "d8fafafe2c29da33c7d70644dec2c1e3ba8dac2a",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "overflow-unsplittable-003.html": [
+      "af9c722868f84230425455ec011c8a087f730a87",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
          "=="
         ]
        ],
@@ -200767,13 +200842,143 @@
      },
      "interactive-elements": {
       "the-dialog-element": {
-       "backdrop-dynamic-display-none.html": [
-        "573ed2d6c62c416a532de11d5d2e1775f4086dce",
+       "backdrop-descendant-selector.html": [
+        "3e2ac6afa169fb82a6e2623358ead663b5f08643",
         [
          null,
          [
           [
-           "/html/semantics/interactive-elements/the-dialog-element/backdrop-dynamic-display-none-reference.html",
+           "/html/semantics/interactive-elements/the-dialog-element/backdrop-descendant-selector-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "backdrop-does-not-inherit.html": [
+        "44085b9c31d892d3c827591ccf98f6f68a48cbb3",
+        [
+         null,
+         [
+          [
+           "/html/semantics/interactive-elements/the-dialog-element/backdrop-does-not-inherit-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "backdrop-dynamic-display-none.html": [
+        "bcf100b36898f0d1bb57822e8a7ac1699f4bcc4e",
+        [
+         null,
+         [
+          [
+           "/html/semantics/interactive-elements/the-dialog-element/backdrop-dynamic-display-none-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "backdrop-dynamic-style-change.html": [
+        "19297b8c1712a24de2c67b57c131f82bc5873146",
+        [
+         null,
+         [
+          [
+           "/html/semantics/interactive-elements/the-dialog-element/backdrop-dynamic-style-change-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "backdrop-in-flow.html": [
+        "7201ebbc0225d9f8f8032d6de85ba8824700cfd3",
+        [
+         null,
+         [
+          [
+           "/html/semantics/interactive-elements/the-dialog-element/backdrop-in-flow-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "backdrop-stacking-order.html": [
+        "57cc63aab4802e205944aa455e20149c447513eb",
+        [
+         null,
+         [
+          [
+           "/html/semantics/interactive-elements/the-dialog-element/backdrop-stacking-order-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "dialogs-with-no-backdrop.html": [
+        "fec4ba85874e898bd5f4ffc698b5881513346217",
+        [
+         null,
+         [
+          [
+           "/html/semantics/interactive-elements/the-dialog-element/dialogs-with-no-backdrop-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "dont-share-style-to-top-layer.html": [
+        "efbbab010a08c55138b6ec4168b5429522e41ad3",
+        [
+         null,
+         [
+          [
+           "/html/semantics/interactive-elements/the-dialog-element/dont-share-style-to-top-layer-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "element-removed-from-top-layer-has-original-position.html": [
+        "d78051a9b3eec7a11576673061949ff7a944b1f3",
+        [
+         null,
+         [
+          [
+           "/html/semantics/interactive-elements/the-dialog-element/element-removed-from-top-layer-has-original-position-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "inert-node-is-not-highlighted.html": [
+        "f6db38ed72a8cc24c5462313ae41f803ec0016eb",
+        [
+         null,
+         [
+          [
+           "/html/semantics/interactive-elements/the-dialog-element/inert-node-is-not-highlighted-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "modal-dialog-backdrop.html": [
+        "a18af0d30ea45ac4369031e8499b0a6c58c19f7d",
+        [
+         null,
+         [
+          [
+           "/html/semantics/interactive-elements/the-dialog-element/modal-dialog-backdrop-ref.html",
            "=="
           ]
          ],
@@ -200781,12 +200986,155 @@
         ]
        ],
        "modal-dialog-display-contents.html": [
-        "74d447203adeb5fbc7b72f8becb79279b3ed5d92",
+        "032033de011b9f27a1cf504521d9687115d506ae",
         [
          null,
          [
           [
-           "/html/semantics/interactive-elements/the-dialog-element/modal-dialog-display-contents-expected.html",
+           "/html/semantics/interactive-elements/the-dialog-element/modal-dialog-display-contents-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "modal-dialog-generated-content.html": [
+        "86f43e52c2eb095b07de3a7a1fa8b60927bef843",
+        [
+         null,
+         [
+          [
+           "/html/semantics/interactive-elements/the-dialog-element/modal-dialog-generated-content-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "modal-dialog-in-replaced-renderer.html": [
+        "09490519fd7de1ffd0d53939fcbda6275cbb5d6f",
+        [
+         null,
+         [
+          [
+           "/html/semantics/interactive-elements/the-dialog-element/modal-dialog-in-replaced-renderer-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "modal-dialog-in-table-column.html": [
+        "89ee6977716bc961010b519224ff86253ce27b9c",
+        [
+         null,
+         [
+          [
+           "/html/semantics/interactive-elements/the-dialog-element/modal-dialog-in-table-column-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "modal-dialog-sibling.html": [
+        "85cc61890a2a2bdddf436dd333829d1dcc3566b5",
+        [
+         null,
+         [
+          [
+           "/html/semantics/interactive-elements/the-dialog-element/modal-dialog-sibling-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "removed-element-is-removed-from-top-layer.html": [
+        "b0e50e3869883cfca0388455476a1a57548da517",
+        [
+         null,
+         [
+          [
+           "/html/semantics/interactive-elements/the-dialog-element/removed-element-is-removed-from-top-layer-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "top-layer-containing-block.html": [
+        "10f6c69fbe188a541c80f32e4d2df96bee45cedb",
+        [
+         null,
+         [
+          [
+           "/html/semantics/interactive-elements/the-dialog-element/top-layer-containing-block-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "top-layer-display-none.html": [
+        "5257823eca00c3ce1fdd18db42561bac3dff488a",
+        [
+         null,
+         [
+          [
+           "/html/semantics/interactive-elements/the-dialog-element/top-layer-display-none-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "top-layer-nesting.html": [
+        "6397584387fc4b24b0d372bca5060f94c498a340",
+        [
+         null,
+         [
+          [
+           "/html/semantics/interactive-elements/the-dialog-element/top-layer-nesting-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "top-layer-stacking-correct-order-remove-readd.html": [
+        "3b3e33689255731475b4ba541f6853ff4d62d9c3",
+        [
+         null,
+         [
+          [
+           "/html/semantics/interactive-elements/the-dialog-element/top-layer-stacking-correct-order-remove-readd-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "top-layer-stacking-dynamic.html": [
+        "8ab7068d306ab9bd377d65f6b0044d6caced49ec",
+        [
+         null,
+         [
+          [
+           "/html/semantics/interactive-elements/the-dialog-element/top-layer-stacking-dynamic-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "top-layer-stacking.html": [
+        "6407ef23c2e38ef000bfb59be340900312935a8a",
+        [
+         null,
+         [
+          [
+           "/html/semantics/interactive-elements/the-dialog-element/top-layer-stacking-ref.html",
            "=="
           ]
          ],
@@ -213003,6 +213351,10 @@
     }
    },
    "common": {
+    "CustomCorsResponse.py": [
+     "fc4d122f1b184bee7a0419c464cfc09bd474f071",
+     []
+    ],
     "META.yml": [
      "ca4d2e523c08662078e7d04018acf6a25508821f",
      []
@@ -213041,6 +213393,10 @@
     ],
     "blank.html": [
      "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+     []
+    ],
+    "custom-cors-response.js": [
+     "88688675a2aabf3dc8d7920fa7cc05bae41c7ac0",
      []
     ],
     "domain-setter.sub.html": [
@@ -215785,7 +216141,7 @@
       []
      ],
      "cookie-test.js": [
-      "8096ffc5da86737f6a30ce2f85816015f73b96f1",
+      "65e8fcd9ff2539c4d84435fe0def391384d3231a",
       []
      ],
      "cookie.py": [
@@ -226345,6 +226701,10 @@
       []
      ],
      "content-visibility": {
+      "container-focus-ref.html": [
+       "bbb41abe93dce3e026aed4554e56ec4166c32043",
+       []
+      ],
       "container-ref.html": [
        "e3e8b279ef6d5b661ec5e1b521bd451d31847628",
        []
@@ -241738,6 +242098,10 @@
      ],
      "nested-with-too-tall-line-ref.html": [
       "16be12ca9187db02482a15d47e0ae9015a84959c",
+      []
+     ],
+     "overflow-unsplittable-001-ref.html": [
+      "d245912be88174be6737f8d8194705f99761fc92",
       []
      ],
      "parsing": {
@@ -259592,7 +259956,7 @@
      []
     ],
     "OWNERS": [
-     "300e43542d25a391e1562f4c0c0f9b074287cd47",
+     "f392277fbe9949ecfccf54f990972881597d2cd6",
      []
     ],
     "XMLSerializer-serializeToString-expected.txt": [
@@ -259648,7 +260012,7 @@
      []
     ],
     "OWNERS": [
-     "300e43542d25a391e1562f4c0c0f9b074287cd47",
+     "f392277fbe9949ecfccf54f990972881597d2cd6",
      []
     ],
     "README.md": [
@@ -261957,6 +262321,10 @@
     ],
     "eventsource-constructor-url-bogus.any.worker-expected.txt": [
      "f696383d94335cad6a8509da1c1a9f8d04661ca9",
+     []
+    ],
+    "format-utf-8-expected.txt": [
+     "aa3f78c7df17a652b958bfedb8a7c6afe6d784b4",
      []
     ],
     "resources": {
@@ -276954,16 +277322,76 @@
        ]
       },
       "the-dialog-element": {
-       "backdrop-dynamic-display-none-reference.html": [
+       "backdrop-descendant-selector-ref.html": [
+        "70d84c21ff4b01ef933172c676679e04b9333f14",
+        []
+       ],
+       "backdrop-does-not-inherit-ref.html": [
+        "bdc84186f6960f2f934fff0680f4e072dadb81e6",
+        []
+       ],
+       "backdrop-dynamic-display-none-ref.html": [
         "c49a11d41634dcd035f926cb97fe1db9e16dfb78",
+        []
+       ],
+       "backdrop-dynamic-style-change-ref.html": [
+        "01cb93d2abc9de4a8824904f57b5ef4bf5c93a4a",
+        []
+       ],
+       "backdrop-in-flow-ref.html": [
+        "4857557bf88b491e59ae4cb8d0d3c8bedd6df33b",
+        []
+       ],
+       "backdrop-stacking-order-ref.html": [
+        "d3f82de181503e85509f92ea9eec1ba4370777e6",
         []
        ],
        "centering-iframe.sub.html": [
         "6ffd72296d8302c71866624b08b1b3213f1b5e4e",
         []
        ],
-       "modal-dialog-display-contents-expected.html": [
+       "dialogs-with-no-backdrop-ref.html": [
+        "4b31dc7062e697496f4edfaf98a70c0e794c6245",
+        []
+       ],
+       "dont-share-style-to-top-layer-ref.html": [
+        "535ac935607094ee8c90e075e11263d36094a296",
+        []
+       ],
+       "element-removed-from-top-layer-has-original-position-ref.html": [
+        "c0b64e68bd146566a354e98dba237e68183d0928",
+        []
+       ],
+       "inert-node-is-not-highlighted-ref.html": [
+        "1b757ecf62dbdbf1a6a710525dcd1cd5aa816fa7",
+        []
+       ],
+       "modal-dialog-backdrop-ref.html": [
+        "d703b7f28e01eef831c09a4fdac9403e603a6b9d",
+        []
+       ],
+       "modal-dialog-display-contents-ref.html": [
         "7ac66f50952f4622c4037db6e2c0f99f59ff152b",
+        []
+       ],
+       "modal-dialog-generated-content-ref.html": [
+        "10c9897c63b9fcc8137161880af3568c538f9d2b",
+        []
+       ],
+       "modal-dialog-in-replaced-renderer-ref.html": [
+        "65886154df3dc3c462a87021693f5ca0fe78894a",
+        []
+       ],
+       "modal-dialog-in-table-column-ref.html": [
+        "38b628c3092ab223010db32373e786787e4355b0",
+        []
+       ],
+       "modal-dialog-sibling-ref.html": [
+        "38b628c3092ab223010db32373e786787e4355b0",
+        []
+       ],
+       "removed-element-is-removed-from-top-layer-ref.html": [
+        "0856d6f9f12a6eacdca534b0056ba591857a9f3f",
         []
        ],
        "resources": {
@@ -276971,11 +277399,39 @@
          "c72ed7f19c4544a203be1d8e6b72a8d3214b1ec7",
          []
         ],
+        "dialog.css": [
+         "a640a146231ec5503dc00c90b717fb6dec297f83",
+         []
+        ],
         "submit.jpg": [
          "8909de24309e77c606b0f2a1795f69378a36a151",
          []
         ]
-       }
+       },
+       "top-layer-containing-block-ref.html": [
+        "40b72cf5ef7c4b11d677d334778726042b33e11f",
+        []
+       ],
+       "top-layer-display-none-ref.html": [
+        "1880668cc3b9eecb819b897a6ee579e800640e5b",
+        []
+       ],
+       "top-layer-nesting-ref.html": [
+        "0a2936abbeda15ff475fa98d531445fd2b0ef1af",
+        []
+       ],
+       "top-layer-stacking-correct-order-remove-readd-ref.html": [
+        "392d1ca46ec175f841e06d5ca5e585a5a5743b9f",
+        []
+       ],
+       "top-layer-stacking-dynamic-ref.html": [
+        "6ddb317633130b60d905749cf9e9032b0cfa6fc2",
+        []
+       ],
+       "top-layer-stacking-ref.html": [
+        "b271ef47b43509d3740159fec8d131b94d3ccfb2",
+        []
+       ]
       },
       "the-popup-element": {
        "popup-hidden-display-ref.tentative.html": [
@@ -288544,6 +289000,10 @@
       "4e4fe1e1f068fd88e57506ac4ac295a9ea4f0193",
       []
      ],
+     "tao-response.js": [
+      "2194c5d43a54137e0599671b60e6275b2917e710",
+      []
+     ],
      "webperftestharness.js": [
       "869ef3d74f77b585e14afc00a8dc90be09db970a",
       []
@@ -288693,7 +289153,7 @@
       []
      ],
      "webxr-test.js": [
-      "e8e370814d9e131e54c5d1c30c6be484d9295e1b",
+      "4e3299284f993528d2b3769ce22d3a7450fae97e",
       []
      ],
      "webxr-test.js.headers": [
@@ -295996,7 +296456,7 @@
      []
     ],
     "disabled-by-feature-policy.https.sub-expected.txt": [
-     "2b88bf3eda9d8aeab4aaeb82e63372b226b0944c",
+     "4ddf8ebc03d3d1b364a9b0752ff4046334ae4959",
      []
     ],
     "disabled-by-feature-policy.https.sub.html.headers": [
@@ -378514,7 +378974,7 @@
      ]
     ],
     "format-utf-8.htm": [
-     "d7858a16c067295f62ea3928c581d8d6f99be5f3",
+     "db35dd1f354d777b5c37d92cf71e83e9bdddf4bd",
      [
       null,
       {}
@@ -425915,7 +426375,7 @@
         ]
        ],
        "centering.html": [
-        "4e1245a46feab968a24d5daa840264993cb59a57",
+        "2dc6ce3edfe43fa247ce8f7a12f211821da28297",
         [
          null,
          {}
@@ -462199,7 +462659,7 @@
      ]
     ],
     "TAO-match.html": [
-     "fb140c4f86fe5ca72db7611634fee338f18ed2a1",
+     "dc0e2f744347b2f0bff7ed1690f91acc11303792",
      [
       null,
       {}
@@ -465495,7 +465955,7 @@
    },
    "secure-payment-confirmation": {
     "secure-payment-confirmation.tentative.https.html": [
-     "671f3287a6f936c193ed4ce2cd1bc123ee127c1a",
+     "c31e2af58ab683a9861455543565ee8f4503f86a",
      [
       null,
       {
@@ -489355,21 +489815,21 @@
     ]
    },
    "web-share": {
-    "canShare-files.tentative.https.html": [
+    "canShare-files.https.html": [
      "2c2f2ff9699020b0ffcaf97c65aa75eaafe799e2",
      [
       null,
       {}
      ]
     ],
-    "canShare-insecure.tentative.http.html": [
+    "canShare-insecure.http.html": [
      "ce81c7c0c8a4e6d023257fce6cbd5ed802fabc2c",
      [
       null,
       {}
      ]
     ],
-    "canShare.tentative.https.html": [
+    "canShare.https.html": [
      "55e026dd4cc9bdea9c3e9933b80ec6037d9b6a08",
      [
       null,
@@ -489377,7 +489837,7 @@
      ]
     ],
     "disabled-by-feature-policy.https.sub.html": [
-     "6fc49fa4d97a5fe27173fc89d20e0fc32b18d78d",
+     "93cb4443a0c5d6f7c1a14361c35ee405f3588c8f",
      [
       null,
       {
