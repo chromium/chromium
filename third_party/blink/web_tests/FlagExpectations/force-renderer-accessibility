@@ -12,8 +12,17 @@ crbug.com/1225860 virtual/layout_ng_block_frag/external/wpt/css/css-multicol/mul
 crbug.com/1225860 virtual/layout_ng_block_frag/fast/multicol/dynamic/untransformed-becomes-transformed-has-abspos-crash.html [ CRASH ]
 
 # Slow
+crbug.com/1225893 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/about-blank-iframes.html [ TIMEOUT ]
 crbug.com/1225893 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/activation-start.html [ TIMEOUT ]
 crbug.com/1225893 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/cross-origin-isolated.https.html [ TIMEOUT ]
+crbug.com/1225893 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/purpose-prefetch-header.https.html [ TIMEOUT ]
+crbug.com/1225893 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/session-history-subframe-navigation.https.html [ TIMEOUT ]
+crbug.com/1225893 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/session-history-subframe-reload.https.html [ TIMEOUT ]
+crbug.com/1225893 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/unload-on-prerender-cross-origin-subframe-navigation.html [ TIMEOUT ]
+crbug.com/1225893 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/unload-on-prerender-remove-subframe.html [ TIMEOUT ]
+crbug.com/1225893 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/unload-on-prerender-same-origin-subframe-navigation.html [ TIMEOUT ]
+crbug.com/1225893 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/windowclient-navigate-to-cross-origin-url-on-iframe.https.html [ TIMEOUT ]
+crbug.com/1225893 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/windowclient-navigate-to-same-origin-url-on-iframe.https.html [ TIMEOUT ]
 
 # Intentional failures for focusless spatial navigation.
 # Focusless spatial navigation is intentionally disabled when accessibility is turned on.
@@ -37,6 +46,10 @@ external/wpt/webcodecs/videoDecoder-codec-specific.any.worker.html?h264_annexb [
 external/wpt/webcodecs/videoDecoder-codec-specific.any.worker.html?h264_avc [ SKIP ]
 external/wpt/webcodecs/audioDecoder-codec-specific.any.html?adts_aac [ SKIP ]
 external/wpt/webcodecs/audioDecoder-codec-specific.any.html?mp4_aac [ SKIP ]
+external/wpt/webcodecs/audio-decoder.https.any.html [ SKIP ]
+external/wpt/webcodecs/audio-decoder.https.any.worker.html [ SKIP ]
+external/wpt/webcodecs/video-decoder.https.any.html [ SKIP ]
+external/wpt/webcodecs/video-decoder.https.any.worker.html [ SKIP ]
 external/wpt/webcodecs/video-encoder-config.any.html [ SKIP ]
 external/wpt/webcodecs/video-encoder-config.any.worker.html [ SKIP ]
 external/wpt/webcodecs/videoDecoder-codec-specific.any.html?h264_annexb [ SKIP ]
@@ -45,6 +58,7 @@ external/wpt/webrtc/RTCRtpTransceiver-setCodecPreferences.html [ SKIP ]
 external/wpt/webrtc/protocol/rtp-demuxing.html [ SKIP ]
 external/wpt/webrtc/protocol/video-codecs.https.html [ SKIP ]
 external/wpt/webrtc/simulcast/h264.https.html [ SKIP ]
+fast/mediarecorder/MediaRecorder-ignores-oversize-frames-h264.html [ SKIP ]
 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/restriction-encrypted-media.https.html [ SKIP ]
 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/restriction-media-auto-play-attribute.html [ SKIP ]
 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/restriction-media-play.html [ SKIP ]
