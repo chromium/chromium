@@ -3,27 +3,15 @@
 // found in the LICENSE file.
 
 import * as animation from './animation.js';
-import {assertInstanceof} from './chrome_util.js';
-import {cssStyle} from './css.js';
 import * as dom from './dom.js';
 import {I18nString} from './i18n_string.js';
 import * as loadTimeData from './models/load_time_data.js';
 import * as util from './util.js';
 
 /**
- * Number of popup ripples in one animation duration.
+ * Interval of emerge time between two consecutive ripples in milliseconds.
  */
-const RIPPLE_COUNT = 3;
-
-/**
- * Animation duration for each ripple.
- */
-const RIPPLE_DURATION_MS = 2000;
-
-/**
- * Ripple style.
- */
-const RIPPLE_STYLE = cssStyle('.ripple');
+const RIPPLE_INTERVAL_MS = 5000;
 
 /**
  * Controller for showing ripple effect.
@@ -61,14 +49,7 @@ class RippleEffect {
      */
     this.cancelHandle_ = setInterval(() => {
       this.addRipple_();
-    }, RIPPLE_DURATION_MS / RIPPLE_COUNT);
-
-    RIPPLE_STYLE.setProperty('--duration', `${RIPPLE_DURATION_MS}ms`);
-    const scaleX =
-        assertInstanceof(style.get('--ripple-scale-x'), CSSUnitValue).value;
-    const scaleY =
-        assertInstanceof(style.get('--ripple-scale-y'), CSSUnitValue).value;
-    RIPPLE_STYLE.setProperty('--scale', `scale(${scaleX}, ${scaleY})`);
+    }, RIPPLE_INTERVAL_MS);
 
     this.addRipple_();
   }
