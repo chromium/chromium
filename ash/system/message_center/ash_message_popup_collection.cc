@@ -206,7 +206,8 @@ message_center::MessagePopupView* AshMessagePopupCollection::CreatePopup(
       notification.rich_notification_data()
           .should_make_spoken_feedback_for_popup_updates;
   return new message_center::MessagePopupView(
-      MessageViewFactory::Create(notification), this, a11_feedback_on_init);
+      MessageViewFactory::Create(notification).release(), this,
+      a11_feedback_on_init);
 }
 
 void AshMessagePopupCollection::OnSlideOut(const std::string& notification_id) {

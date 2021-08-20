@@ -81,7 +81,7 @@ class ArcNotificationViewTest : public AshTestBase {
 
     std::unique_ptr<ArcNotificationView> notification_view(
         static_cast<ArcNotificationView*>(
-            MessageViewFactory::Create(*notification)));
+            MessageViewFactory::Create(*notification).release()));
     notification_view_ = notification_view.get();
     surface_ =
         std::make_unique<MockArcNotificationSurface>(kDefaultNotificationKey);

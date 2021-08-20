@@ -140,6 +140,8 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
   virtual void AnimationStarted() {}
   virtual void AnimationFinished() {}
 
+  // TODO(crbug/1241602): std::unique_ptr can be used here and multiple other
+  // places.
   virtual MessagePopupView* CreatePopup(const Notification& notification);
 
   // virtual for testing.

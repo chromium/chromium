@@ -9,10 +9,12 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
+#include "build/chromeos_buildflags.h"
 #include "components/url_formatter/elide_url.h"
 #include "ui/base/class_property.h"
 #include "ui/base/cursor/cursor.h"
@@ -608,9 +610,20 @@ NotificationViewMD::NotificationViewMD(const Notification& notification)
       this));
   AddChildView(ink_drop_container_);
 
+  // TODO(crbug/1241602): std::unique_ptr can be used in multiple places here.
+  // Also, consider using views::Builder<T>.
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Not create expand button on chromeOS since it has a customized button.
+  if (ash::features::IsNotificationsRefreshEnabled())
+    has_expand_button_in_header_view_ = false;
+#endif
+
   // |header_row_| contains app_icon, app_name, control buttons, etc...
-  header_row_ = new NotificationHeaderView(base::BindRepeating(
-      &NotificationViewMD::HeaderRowPressed, base::Unretained(this)));
+  header_row_ = new NotificationHeaderView(
+      base::BindRepeating(&NotificationViewMD::HeaderRowPressed,
+                          base::Unretained(this)),
+      has_expand_button_in_header_view_);
   header_row_->SetPreferredSize(header_row_->GetPreferredSize() -
                                 gfx::Size(GetInsets().width(), 0));
   header_row_->SetID(kHeaderRow);
@@ -625,6 +638,7 @@ NotificationViewMD::NotificationViewMD(const Notification& notification)
           views::BoxLayout::Orientation::kHorizontal, kContentRowPadding, 0));
   content_row_layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStart);
+  content_row_->SetID(kContentRow);
   AddChildView(content_row_);
 
   // |left_content_| contains most contents like title, message, etc...
@@ -741,7 +755,7 @@ void NotificationViewMD::Layout() {
   // We need to call IsExpandable() at the end of Layout() call, since whether
   // we should show expand button or not depends on the current view layout.
   // (e.g. Show expand button when |message_view_| exceeds one line.)
-  header_row_->SetExpandButtonEnabled(IsExpandable());
+  SetExpandButtonEnabled(IsExpandable());
   header_row_->Layout();
 
   // The notification background is rounded in MessageView::Layout(),
@@ -1302,6 +1316,11 @@ void NotificationViewMD::ActionButtonPressed(size_t index,
   }
 }
 
+void NotificationViewMD::SetExpandButtonEnabled(bool enabled) {
+  if (has_expand_button_in_header_view_)
+    header_row_->SetExpandButtonEnabled(enabled);
+}
+
 bool NotificationViewMD::IsExpandable() {
   // Inline settings can not be expanded.
   if (GetMode() == Mode::SETTING)
@@ -1336,7 +1355,8 @@ void NotificationViewMD::ToggleExpanded() {
 }
 
 void NotificationViewMD::UpdateViewForExpandedState(bool expanded) {
-  header_row_->SetExpanded(expanded);
+  if (has_expand_button_in_header_view_)
+    header_row_->SetExpanded(expanded);
   if (message_view_) {
     message_view_->SetMaxLines(expanded ? kMaxLinesForExpandedMessageView
                                         : kMaxLinesForMessageView);
@@ -1358,7 +1378,7 @@ void NotificationViewMD::UpdateViewForExpandedState(bool expanded) {
     status_view_->SetVisible(expanded);
 
   int max_items = expanded ? item_views_.size() : kMaxLinesForMessageView;
-  if (list_items_count_ > max_items)
+  if (has_expand_button_in_header_view_ && list_items_count_ > max_items)
     header_row_->SetOverflowIndicator(list_items_count_ - max_items);
   else if (!item_views_.empty())
     header_row_->SetSummaryText(std::u16string());

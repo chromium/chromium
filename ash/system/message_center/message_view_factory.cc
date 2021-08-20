@@ -4,10 +4,14 @@
 
 #include "ash/system/message_center/message_view_factory.h"
 
+#include <memory>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
+#include "ash/system/message_center/ash_notification_view_md.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/views/notification_view_md.h"
 
@@ -32,9 +36,9 @@ std::unique_ptr<message_center::MessageView> GetCustomNotificationView(
 }  // namespace
 
 // static
-message_center::MessageView* MessageViewFactory::Create(
+std::unique_ptr<message_center::MessageView> MessageViewFactory::Create(
     const message_center::Notification& notification) {
-  message_center::MessageView* notification_view = nullptr;
+  std::unique_ptr<message_center::MessageView> notification_view;
   switch (notification.type()) {
     case message_center::NOTIFICATION_TYPE_BASE_FORMAT:
     case message_center::NOTIFICATION_TYPE_IMAGE:
@@ -44,7 +48,7 @@ message_center::MessageView* MessageViewFactory::Create(
       // Rely on default construction after the switch.
       break;
     case message_center::NOTIFICATION_TYPE_CUSTOM:
-      notification_view = GetCustomNotificationView(notification).release();
+      notification_view = GetCustomNotificationView(notification);
       break;
     default:
       // If the caller asks for an unrecognized kind of view (entirely possible
@@ -57,9 +61,13 @@ message_center::MessageView* MessageViewFactory::Create(
                    << ". Falling back to simple notification type.";
       break;
   }
-
-  if (!notification_view)
-    notification_view = new message_center::NotificationViewMD(notification);
+  if (!notification_view) {
+    notification_view =
+        ash::features::IsNotificationsRefreshEnabled()
+            ? std::make_unique<AshNotificationViewMD>(notification)
+            : std::make_unique<message_center::NotificationViewMD>(
+                  notification);
+  }
 
   return notification_view;
 }

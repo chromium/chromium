@@ -4,6 +4,8 @@
 
 #include "ui/message_center/views/notification_header_view.h"
 
+#include <memory>
+
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -213,6 +215,14 @@ TEST_F(NotificationHeaderViewTest, ColorContrastEnforcement) {
 TEST_F(NotificationHeaderViewTest, DefaultFocusBehavior) {
   EXPECT_EQ(views::View::FocusBehavior::ACCESSIBLE_ONLY,
             notification_header_view_->GetFocusBehavior());
+}
+
+TEST_F(NotificationHeaderViewTest, ExpandButtonCreation) {
+  // Make sure that expand button is not created when specified.
+  auto notification_header_view = std::make_unique<NotificationHeaderView>(
+      views::Button::PressedCallback(), false /* has_expand_button */);
+
+  EXPECT_FALSE(notification_header_view->expand_button());
 }
 
 TEST_F(NotificationHeaderViewTest, MetadataTest) {

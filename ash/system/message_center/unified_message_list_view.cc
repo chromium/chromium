@@ -583,7 +583,7 @@ void UnifiedMessageListView::AnimationCanceled(
 
 MessageView* UnifiedMessageListView::CreateMessageView(
     const Notification& notification) {
-  auto* view = MessageViewFactory::Create(notification);
+  auto* view = MessageViewFactory::Create(notification).release();
   view->SetIsNested();
   view->AddObserver(this);
   message_center_view_->ConfigureMessageView(view);

@@ -167,7 +167,10 @@ class MESSAGE_CENTER_EXPORT NotificationViewMD
     // We start from 1 because 0 is the default view ID.
     kHeaderRow = 1,
     kAppNameView,
+    kHeaderDetailViews,
     kSummaryTextView,
+
+    kContentRow,
     kActionButtonsRow,
     kInlineReply,
   };
@@ -214,6 +217,9 @@ class MESSAGE_CENTER_EXPORT NotificationViewMD
 
  protected:
   views::View* image_container_view() { return image_container_view_; }
+  bool IsExpandable();
+
+  virtual void SetExpandButtonEnabled(bool enabled);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest, AppNameExtension);
@@ -273,7 +279,6 @@ class MESSAGE_CENTER_EXPORT NotificationViewMD
   void HeaderRowPressed();
   void ActionButtonPressed(size_t index, const ui::Event& event);
 
-  bool IsExpandable();
   void ToggleExpanded();
   void UpdateViewForExpandedState(bool expanded);
   void ToggleInlineSettings(const ui::Event& event);
@@ -305,6 +310,9 @@ class MESSAGE_CENTER_EXPORT NotificationViewMD
 
   // Describes whether the view should display a hand pointer or not.
   bool clickable_;
+
+  // Describes if the view should display an expand button in the header view.
+  bool has_expand_button_in_header_view_ = true;
 
   // Container views directly attached to this view.
   NotificationHeaderView* header_row_ = nullptr;

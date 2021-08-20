@@ -162,7 +162,8 @@ gfx::Insets CalculateTopPadding(int font_list_height) {
 
 }  // namespace
 
-NotificationHeaderView::NotificationHeaderView(PressedCallback callback)
+NotificationHeaderView::NotificationHeaderView(PressedCallback callback,
+                                               bool has_expand_button)
     : views::Button(std::move(callback)) {
   const views::FlexSpecification kAppNameFlex =
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
@@ -178,6 +179,9 @@ NotificationHeaderView::NotificationHeaderView(PressedCallback callback)
   layout->SetDefault(views::kMarginsKey, kHeaderSpacing);
   layout->SetInteriorMargin(kHeaderOuterPadding);
   layout->SetCollapseMargins(true);
+
+  // TODO(crbug/1241602): std::unique_ptr can be used in multiple places here.
+  // Also, consider using views::Builder<T>.
 
   // App icon view
   app_icon_view_ = new views::ImageView();
@@ -216,6 +220,7 @@ NotificationHeaderView::NotificationHeaderView(PressedCallback callback)
       detail_views_->SetLayoutManager(std::make_unique<views::FlexLayout>());
   detail_layout->SetCollapseMargins(true);
   detail_layout->SetDefault(views::kMarginsKey, kHeaderSpacing);
+  detail_views_->SetID(NotificationViewMD::kHeaderDetailViews);
   AddChildView(detail_views_);
 
   // Summary text divider
@@ -241,14 +246,16 @@ NotificationHeaderView::NotificationHeaderView(PressedCallback callback)
   timestamp_view_->SetVisible(false);
   detail_views_->AddChildView(timestamp_view_);
 
-  // Expand button view
-  expand_button_ = new ExpandButton();
-  expand_button_->SetBorder(views::CreateEmptyBorder(kExpandIconViewPadding));
-  expand_button_->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
-  expand_button_->SetHorizontalAlignment(views::ImageView::Alignment::kLeading);
-  expand_button_->SetImageSize(gfx::Size(kExpandIconSize, kExpandIconSize));
-  DCHECK_EQ(kInnerHeaderHeight, expand_button_->GetPreferredSize().height());
-  detail_views_->AddChildView(expand_button_);
+  if (has_expand_button) {
+    expand_button_ = new ExpandButton();
+    expand_button_->SetBorder(views::CreateEmptyBorder(kExpandIconViewPadding));
+    expand_button_->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
+    expand_button_->SetHorizontalAlignment(
+        views::ImageView::Alignment::kLeading);
+    expand_button_->SetImageSize(gfx::Size(kExpandIconSize, kExpandIconSize));
+    DCHECK_EQ(kInnerHeaderHeight, expand_button_->GetPreferredSize().height());
+    detail_views_->AddChildView(expand_button_);
+  }
 
   // Spacer between left-aligned views and right-aligned views
   views::View* spacer = new views::View;
@@ -312,7 +319,7 @@ void NotificationHeaderView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->SetDescription(summary_text_view_->GetText() + u" " +
                             timestamp_view_->GetText());
 
-  if (is_expanded_)
+  if (expand_button_ && is_expanded_)
     node_data->AddState(ax::mojom::State::kExpanded);
 }
 
@@ -350,10 +357,14 @@ void NotificationHeaderView::SetDetailViewsVisible(bool visible) {
 }
 
 void NotificationHeaderView::SetExpandButtonEnabled(bool enabled) {
+  // We shouldn't execute this method if the expand button is not here.
+  DCHECK(expand_button_);
   expand_button_->SetVisible(enabled);
 }
 
 void NotificationHeaderView::SetExpanded(bool expanded) {
+  // We shouldn't execute this method if the expand button is not here.
+  DCHECK(expand_button_);
   is_expanded_ = expanded;
   UpdateColors();
   expand_button_->SetTooltipText(l10n_util::GetStringUTF16(
@@ -421,9 +432,12 @@ void NotificationHeaderView::UpdateColors() {
   // Get actual color based on readablility requirements.
   SkColor actual_color = app_name_view_->GetEnabledColor();
 
-  expand_button_->SetImage(gfx::CreateVectorIcon(
-      is_expanded_ ? kNotificationExpandLessIcon : kNotificationExpandMoreIcon,
-      kExpandIconSize, actual_color));
+  if (expand_button_) {
+    expand_button_->SetImage(
+        gfx::CreateVectorIcon(is_expanded_ ? kNotificationExpandLessIcon
+                                           : kNotificationExpandMoreIcon,
+                              kExpandIconSize, actual_color));
+  }
 
   if (using_default_app_icon_) {
     app_icon_view_->SetImage(

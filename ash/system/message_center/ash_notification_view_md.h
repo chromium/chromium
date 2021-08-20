@@ -1,0 +1,69 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef ASH_SYSTEM_MESSAGE_CENTER_ASH_NOTIFICATION_VIEW_MD_H_
+#define ASH_SYSTEM_MESSAGE_CENTER_ASH_NOTIFICATION_VIEW_MD_H_
+
+#include "ash/ash_export.h"
+#include "ui/message_center/views/notification_view_md.h"
+#include "ui/views/controls/button/image_button.h"
+
+namespace message_center {
+class Notification;
+}  // namespace message_center
+
+namespace ash {
+
+// Customized NotificationViewMD for notification on ChromeOS. This view is used
+// to displays all current types of notification on ChromeOS (web, basic, image,
+// and list) except custom notification.
+class ASH_EXPORT AshNotificationViewMD
+    : public message_center::NotificationViewMD {
+ public:
+  explicit AshNotificationViewMD(
+      const message_center::Notification& notification);
+  AshNotificationViewMD(const AshNotificationViewMD&) = delete;
+  AshNotificationViewMD& operator=(const AshNotificationViewMD&) = delete;
+  ~AshNotificationViewMD() override;
+
+  // Toggle the expand state of the notification.
+  void ToggleExpand();
+
+  // message_center::NotificationViewMD:
+  void UpdateWithNotification(
+      const message_center::Notification& notification) override;
+  void SetExpanded(bool expanded) override;
+  void SetExpandButtonEnabled(bool enabled) override;
+
+ private:
+  friend class AshNotificationViewMDTest;
+
+  // Customized expand button for this notification view.
+  class ExpandButton : public views::ImageButton {
+   public:
+    METADATA_HEADER(ExpandButton);
+    explicit ExpandButton(PressedCallback callback);
+    ExpandButton(const ExpandButton&) = delete;
+    ExpandButton& operator=(const ExpandButton&) = delete;
+    ~ExpandButton() override;
+
+    // Change the expanded state. The icon will change.
+    void SetExpanded(bool expanded);
+
+    // views::ImageButton:
+    gfx::Size CalculatePreferredSize() const override;
+    void PaintButtonContents(gfx::Canvas* canvas) override;
+    void OnThemeChanged() override;
+
+   private:
+    // The expand state of the button.
+    bool expanded_ = false;
+  };
+
+  ExpandButton* expand_button_ = nullptr;
+};
+
+}  // namespace ash
+
+#endif  // ASH_SYSTEM_MESSAGE_CENTER_ASH_NOTIFICATION_VIEW_MD_H_
