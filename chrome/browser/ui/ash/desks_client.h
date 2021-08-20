@@ -45,44 +45,50 @@ class DesksClient : public ash::SessionObserver {
   // later when DesksClient (or DesksController) hooks up with storage and can
   // hold an in-memory captured desk template instance.
   using CaptureActiveDeskAndSaveTemplateCallback =
-      base::OnceCallback<void(bool, std::unique_ptr<ash::DeskTemplate>)>;
+      base::OnceCallback<void(std::unique_ptr<ash::DeskTemplate>,
+                              std::string error)>;
   // Captures the active desk as a template and saves the template to storage.
   // If such template can be created and saved, |callback| will be invoked with
-  // |true| with the pointer to the captured desk template, otherwise,
-  // |callback| will be invoked with |false| with a nullptr.
+  // |""| as the error string with the pointer to the captured desk template,
+  // otherwise, |callback| will be invoked with a description of the error as
+  // the |error| with a nullptr.
   void CaptureActiveDeskAndSaveTemplate(
       CaptureActiveDeskAndSaveTemplateCallback callback);
 
-  using UpdateDeskTemplateCallback = base::OnceCallback<void(bool)>;
+  using UpdateDeskTemplateCallback =
+      base::OnceCallback<void(std::string error)>;
   // Updates the existing saved desk template with id |template_uuid| with the
   // new provided template name |template_name|. The |template_uuid| should be
   // the id of an existing desk template that was previously-saved in the
   // storage. If no such existing desk template can be found or the file
-  // operation has failed, |callback| will be invoked with |false| result.
+  // operation has failed, |callback| will be invoked with a description of the
+  // error as the |error|.
   void UpdateDeskTemplate(const std::string& template_uuid,
                           const std::u16string& template_name,
                           UpdateDeskTemplateCallback callback);
 
-  using DeleteDeskTemplateCallback = base::OnceCallback<void(bool)>;
+  using DeleteDeskTemplateCallback =
+      base::OnceCallback<void(std::string error)>;
   // Deletes a saved desk template from storage. If the template can't be
-  // deleted, |callback| will be invoked with |false| result. If it can be
-  // deleted successfully, or there is no such |template_uuid| to be removed,
-  // |callback| will be invoked with |true| result.
+  // deleted, |callback| will be invoked with a description of the error.
+  // If it can be deleted successfully, or there is no such |template_uuid|
+  // to be removed,|callback| will be invoked with an empty error string.
   void DeleteDeskTemplate(const std::string& template_uuid,
                           DeleteDeskTemplateCallback callback);
 
   using TemplateList = std::vector<ash::DeskTemplate*>;
   using GetDeskTemplatesCallback =
-      base::OnceCallback<void(bool, const TemplateList&)>;
+      base::OnceCallback<void(const TemplateList&, std::string error)>;
   // Returns the current available saved desk templates.
   void GetDeskTemplates(GetDeskTemplatesCallback callback);
 
-  using LaunchDeskTemplateCallback = base::OnceCallback<void(bool)>;
+  using LaunchDeskTemplateCallback =
+      base::OnceCallback<void(const std::string error)>;
   // Launches the desk template with |template_uuid| as a new desk.
   // |template_uuid| should be the unique id for an existing desk template. If
   // no such id can be found or we are at the max desk limit (currently is 8)
   // so can't create new desk for the desk template, |callback| will be invoked
-  // with |false| result.
+  // with a description of the error.
   void LaunchDeskTemplate(const std::string& template_uuid,
                           LaunchDeskTemplateCallback callback);
 

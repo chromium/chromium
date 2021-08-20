@@ -44,10 +44,10 @@ WmDesksPrivateCaptureActiveDeskAndSaveTemplateFunction::Run() {
 
 void WmDesksPrivateCaptureActiveDeskAndSaveTemplateFunction::
     OnCaptureActiveDeskAndSaveTemplateCompleted(
-        bool success,
-        std::unique_ptr<ash::DeskTemplate> desk_template) {
-  if (!success) {
-    Respond(Error("Can't capture the active desk and save it as a template!"));
+        std::unique_ptr<ash::DeskTemplate> desk_template,
+        std::string error_string) {
+  if (!error_string.empty()) {
+    Respond(Error(std::move(error_string)));
     return;
   }
 
@@ -79,11 +79,12 @@ WmDesksPrivateUpdateDeskTemplateFunction::Run() {
 }
 
 void WmDesksPrivateUpdateDeskTemplateFunction::OnUpdateDeskTemplateCompleted(
-    bool success) {
-  if (!success) {
-    Respond(Error("Can't update the template!"));
+    std::string error_string) {
+  if (!error_string.empty()) {
+    Respond(Error(std::move(error_string)));
     return;
   }
+
   Respond(NoArguments());
 }
 
@@ -101,10 +102,10 @@ WmDesksPrivateGetSavedDeskTemplatesFunction::Run() {
 }
 
 void WmDesksPrivateGetSavedDeskTemplatesFunction::OnGetSavedDeskTemplate(
-    bool success,
-    const std::vector<ash::DeskTemplate*>& desk_templates) {
-  if (!success) {
-    Respond(Error("Can't get the template list!"));
+    const std::vector<ash::DeskTemplate*>& desk_templates,
+    std::string error_string) {
+  if (!error_string.empty()) {
+    Respond(Error(std::move(error_string)));
     return;
   }
 
@@ -141,9 +142,9 @@ WmDesksPrivateDeleteDeskTemplateFunction::Run() {
 }
 
 void WmDesksPrivateDeleteDeskTemplateFunction::OnDeleteDeskTemplateCompleted(
-    bool success) {
-  if (!success) {
-    Respond(Error("Can't delete the template!"));
+    std::string error_string) {
+  if (!error_string.empty()) {
+    Respond(Error(std::move(error_string)));
     return;
   }
 
@@ -170,9 +171,9 @@ WmDesksPrivateLaunchDeskTemplateFunction::Run() {
 }
 
 void WmDesksPrivateLaunchDeskTemplateFunction::OnLaunchDeskTemplate(
-    bool success) {
-  if (!success) {
-    Respond(Error("Can't launch the template!"));
+    std::string error_string) {
+  if (!error_string.empty()) {
+    Respond(Error(std::move(error_string)));
     return;
   }
 
