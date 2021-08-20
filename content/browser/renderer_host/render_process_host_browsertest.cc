@@ -595,7 +595,7 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, SpareVsDisableKeepAliveRefCount) {
   RenderProcessHostWatcher process_watcher(
       spare_renderer, RenderProcessHostWatcher::WATCH_FOR_HOST_DESTRUCTION);
 
-  spare_renderer->DisableKeepAliveRefCount();
+  spare_renderer->DisableWorkerAndKeepAliveRefCount();
 
   process_watcher.Wait();
   EXPECT_TRUE(process_watcher.did_exit_normally());
@@ -1092,7 +1092,8 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
   RenderProcessHostImpl* rph = static_cast<RenderProcessHostImpl*>(
       shell()->web_contents()->GetMainFrame()->GetProcess());
   // 1 for the service worker.
-  EXPECT_EQ(rph->keep_alive_ref_count(), 1u);
+  EXPECT_EQ(rph->worker_ref_count(), 1u);
+  EXPECT_EQ(rph->keep_alive_ref_count(), 0u);
 
   // We use /workers/send-beacon.html, not send-beacon.html, due to the
   // service worker scope rule.
@@ -1103,7 +1104,8 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
   // We are still using the same process.
   ASSERT_EQ(shell()->web_contents()->GetMainFrame()->GetProcess(), rph);
   // 1 for the service worker, 1 for the keepalive fetch.
-  EXPECT_EQ(rph->keep_alive_ref_count(), 2u);
+  EXPECT_EQ(rph->keep_alive_ref_count(), 1u);
+  EXPECT_EQ(rph->worker_ref_count(), 1u);
 }
 
 // Test is flaky on Android builders: https://crbug.com/875179

@@ -259,8 +259,10 @@ class CONTENT_EXPORT RenderProcessHostImpl
   bool IsProcessBackgrounded() override;
   void IncrementKeepAliveRefCount() override;
   void DecrementKeepAliveRefCount() override;
-  void DisableKeepAliveRefCount() override;
-  bool IsKeepAliveRefCountDisabled() override;
+  void IncrementWorkerRefCount() override;
+  void DecrementWorkerRefCount() override;
+  void DisableWorkerAndKeepAliveRefCount() override;
+  bool IsWorkerAndKeepAliveRefCountDisabled() override;
   mojom::Renderer* GetRendererInterface() override;
   void CreateURLLoaderFactory(
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
@@ -688,6 +690,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
 #endif
 
   size_t keep_alive_ref_count() const { return keep_alive_ref_count_; }
+  size_t worker_ref_count() const { return worker_ref_count_; }
 
   // Allows overriding the URLLoaderFactory creation via CreateURLLoaderFactory.
   // Passing a null callback will restore the default behavior.
@@ -951,11 +954,14 @@ class CONTENT_EXPORT RenderProcessHostImpl
 
   mojo::OutgoingInvitation mojo_invitation_;
 
+  // These cover mutually-exclusive cases. While keep-alive is time-based,
+  // workers are not. Attached documents are tracked via |listeners_| below.
   size_t keep_alive_ref_count_;
+  size_t worker_ref_count_;
 
-  // Set in DisableKeepAliveRefCount(). When true, |keep_alive_ref_count_| must
-  // no longer be modified.
-  bool is_keep_alive_ref_count_disabled_;
+  // Set in DisableWorkerAndKeepAliveRefCount(). When true,
+  // |keep_alive_ref_count_| and |worker_ref_count_| must no longer be modified.
+  bool is_worker_and_keep_alive_ref_count_disabled_;
 
   // The registered IPC listener objects. When this list is empty, we should
   // delete ourselves.

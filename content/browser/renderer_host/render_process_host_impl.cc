@@ -731,7 +731,7 @@ class SpareRenderProcessHostManager : public RenderProcessHostObserver {
       spare_render_process_host_->RemoveObserver(this);
 
       // Make sure the RenderProcessHost object gets destroyed.
-      if (!spare_render_process_host_->IsKeepAliveRefCountDisabled())
+      if (!spare_render_process_host_->IsWorkerAndKeepAliveRefCountDisabled())
         spare_render_process_host_->Cleanup();
 
       // Drop reference to the RenderProcessHost object.
@@ -1706,7 +1706,8 @@ RenderProcessHostImpl::RenderProcessHostImpl(
 #endif
       pending_views_(0),
       keep_alive_ref_count_(0),
-      is_keep_alive_ref_count_disabled_(false),
+      worker_ref_count_(0),
+      is_worker_and_keep_alive_ref_count_disabled_(false),
       visible_clients_(0),
       priority_(!blink::kLaunchingProcessIsBackgrounded,
                 false /* has_media_stream */,
@@ -2327,8 +2328,10 @@ void RenderProcessHostImpl::DelayProcessShutdown(
     const base::TimeDelta& unload_handler_timeout,
     const SiteInfo& site_info) {
   // No need to delay shutdown if the process is already shutting down.
-  if (IsKeepAliveRefCountDisabled() || deleting_soon_ || fast_shutdown_started_)
+  if (IsWorkerAndKeepAliveRefCountDisabled() || deleting_soon_ ||
+      fast_shutdown_started_) {
     return;
+  }
 
   IncrementKeepAliveRefCount();
 
@@ -2398,6 +2401,9 @@ RenderProcessHostImpl::GetInfoForBrowserContextDestructionCrashReporting() {
 
   if (keep_alive_ref_count_ != 0)
     ret += " karc=" + base::NumberToString(keep_alive_ref_count_);
+
+  if (worker_ref_count_ != 0)
+    ret += " wrc=" + base::NumberToString(worker_ref_count_);
 
   if (!listeners_.IsEmpty())
     ret += " lsn=" + base::NumberToString(listeners_.size());
@@ -2861,7 +2867,7 @@ bool RenderProcessHostImpl::IsProcessBackgrounded() {
 
 void RenderProcessHostImpl::IncrementKeepAliveRefCount() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!is_keep_alive_ref_count_disabled_);
+  DCHECK(!is_worker_and_keep_alive_ref_count_disabled_);
   ++keep_alive_ref_count_;
   if (keep_alive_ref_count_ == 1)
     GetRendererInterface()->SetSchedulerKeepActive(true);
@@ -2869,34 +2875,48 @@ void RenderProcessHostImpl::IncrementKeepAliveRefCount() {
 
 void RenderProcessHostImpl::DecrementKeepAliveRefCount() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!is_keep_alive_ref_count_disabled_);
+  DCHECK(!is_worker_and_keep_alive_ref_count_disabled_);
   DCHECK_GT(keep_alive_ref_count_, 0U);
   --keep_alive_ref_count_;
-  if (keep_alive_ref_count_ == 0) {
+  if (keep_alive_ref_count_ == 0 && worker_ref_count_ == 0)
     Cleanup();
-    GetRendererInterface()->SetSchedulerKeepActive(false);
-  }
 }
 
-void RenderProcessHostImpl::DisableKeepAliveRefCount() {
+void RenderProcessHostImpl::IncrementWorkerRefCount() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(!is_worker_and_keep_alive_ref_count_disabled_);
+  ++worker_ref_count_;
+}
+
+void RenderProcessHostImpl::DecrementWorkerRefCount() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(!is_worker_and_keep_alive_ref_count_disabled_);
+  DCHECK_GT(worker_ref_count_, 0U);
+  --worker_ref_count_;
+  if (worker_ref_count_ == 0 && keep_alive_ref_count_ == 0)
+    Cleanup();
+}
+
+void RenderProcessHostImpl::DisableWorkerAndKeepAliveRefCount() {
   TRACE_EVENT("shutdown", "RenderProcessHostImpl::DisableKeepAliveRefCount",
               ChromeTrackEvent::kRenderProcessHost, *this);
 
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (is_keep_alive_ref_count_disabled_)
+  if (is_worker_and_keep_alive_ref_count_disabled_)
     return;
-  is_keep_alive_ref_count_disabled_ = true;
+  is_worker_and_keep_alive_ref_count_disabled_ = true;
 
   keep_alive_ref_count_ = 0;
+  worker_ref_count_ = 0;
   // Cleaning up will also remove this from the SpareRenderProcessHostManager.
   // (in this case |keep_alive_ref_count_| would be 0 even before).
   Cleanup();
 }
 
-bool RenderProcessHostImpl::IsKeepAliveRefCountDisabled() {
+bool RenderProcessHostImpl::IsWorkerAndKeepAliveRefCountDisabled() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return is_keep_alive_ref_count_disabled_;
+  return is_worker_and_keep_alive_ref_count_disabled_;
 }
 
 mojom::Renderer* RenderProcessHostImpl::GetRendererInterface() {
@@ -3231,7 +3251,7 @@ bool RenderProcessHostImpl::IsSpareProcessForCrashReporting(
 
 bool RenderProcessHostImpl::HostHasNotBeenUsed() {
   return IsUnused() && listeners_.IsEmpty() && keep_alive_ref_count_ == 0 &&
-         pending_views_ == 0;
+         worker_ref_count_ == 0 && pending_views_ == 0;
 }
 
 void RenderProcessHostImpl::SetProcessLock(
@@ -3710,6 +3730,9 @@ bool RenderProcessHostImpl::FastShutdownIfPossible(size_t page_count,
     return false;
   }
 
+  if (worker_ref_count_ != 0)
+    return false;
+
   // Set this before ProcessDied() so observers can tell if the render process
   // died due to fast shutdown versus another cause.
   fast_shutdown_started_ = true;
@@ -3916,6 +3939,11 @@ void RenderProcessHostImpl::Cleanup() {
               ctx.event<ChromeTrackEvent>()->set_render_process_host_cleanup();
           proto->set_keep_alive_ref_count(keep_alive_ref_count_);
         });
+    return;
+  } else if (worker_ref_count_ != 0) {
+    TRACE_EVENT2(
+        "shutdown", "RenderProcessHostImpl::Cleanup : Have worker_ref.",
+        "render_process_host", this, "worker_ref_count_", worker_ref_count_);
     return;
   }
 
@@ -5245,7 +5273,7 @@ void RenderProcessHostImpl::GetBrowserHistogram(
 
 void RenderProcessHostImpl::CancelProcessShutdownDelay(
     const SiteInfo& site_info) {
-  if (IsKeepAliveRefCountDisabled())
+  if (IsWorkerAndKeepAliveRefCountDisabled())
     return;
 
   // Remove from the delayed-shutdown tracker. This may have already been done

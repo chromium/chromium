@@ -139,7 +139,7 @@ void BrowserContext::Impl::NotifyWillBeDestroyed() {
     RenderProcessHost* host = host_iterator.GetCurrentValue();
     if (host->GetBrowserContext() == self_) {
       // This will also clean up spare RPH references.
-      host->DisableKeepAliveRefCount();
+      host->DisableWorkerAndKeepAliveRefCount();
     }
   }
 }

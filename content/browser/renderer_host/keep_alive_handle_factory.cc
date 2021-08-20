@@ -28,7 +28,7 @@ class KeepAliveHandleImpl final : public blink::mojom::KeepAliveHandle {
     RenderProcessHost* process_host = RenderProcessHost::FromID(process_id_);
     GetContentClient()->browser()->OnKeepaliveRequestStarted(
         process_host ? process_host->GetBrowserContext() : nullptr);
-    if (!process_host || process_host->IsKeepAliveRefCountDisabled()) {
+    if (!process_host || process_host->IsWorkerAndKeepAliveRefCountDisabled()) {
       return;
     }
     process_host->IncrementKeepAliveRefCount();
@@ -36,7 +36,7 @@ class KeepAliveHandleImpl final : public blink::mojom::KeepAliveHandle {
   ~KeepAliveHandleImpl() override {
     GetContentClient()->browser()->OnKeepaliveRequestFinished();
     RenderProcessHost* process_host = RenderProcessHost::FromID(process_id_);
-    if (!process_host || process_host->IsKeepAliveRefCountDisabled()) {
+    if (!process_host || process_host->IsWorkerAndKeepAliveRefCountDisabled()) {
       return;
     }
     process_host->DecrementKeepAliveRefCount();

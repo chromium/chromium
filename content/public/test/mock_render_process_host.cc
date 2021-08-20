@@ -85,6 +85,7 @@ MockRenderProcessHost::MockRenderProcessHost(
       is_process_backgrounded_(false),
       is_unused_(true),
       keep_alive_ref_count_(0),
+      worker_ref_count_(0),
       foreground_service_worker_count_(0),
       url_loader_factory_(std::make_unique<FakeNetworkURLLoaderFactory>()) {
   // Child process security operations can't be unit tested unless we add
@@ -392,8 +393,21 @@ void MockRenderProcessHost::DecrementKeepAliveRefCount() {
   --keep_alive_ref_count_;
 }
 
-void MockRenderProcessHost::DisableKeepAliveRefCount() {
+void MockRenderProcessHost::IncrementWorkerRefCount() {
+  ++worker_ref_count_;
+}
+
+void MockRenderProcessHost::DecrementWorkerRefCount() {
+  --worker_ref_count_;
+}
+
+size_t MockRenderProcessHost::GetWorkerRefCount() const {
+  return worker_ref_count_;
+}
+
+void MockRenderProcessHost::DisableWorkerAndKeepAliveRefCount() {
   keep_alive_ref_count_ = 0;
+  worker_ref_count_ = 0;
 
   // RenderProcessHost::DisableKeepAliveRefCount() virtual method gets called as
   // part of BrowserContext::NotifyWillBeDestroyed(...).  Normally
@@ -406,7 +420,7 @@ void MockRenderProcessHost::DisableKeepAliveRefCount() {
     Cleanup();
 }
 
-bool MockRenderProcessHost::IsKeepAliveRefCountDisabled() {
+bool MockRenderProcessHost::IsWorkerAndKeepAliveRefCountDisabled() {
   return false;
 }
 

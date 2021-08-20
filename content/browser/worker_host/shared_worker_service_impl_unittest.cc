@@ -422,7 +422,7 @@ TEST_F(SharedWorkerServiceImplTest, TwoRendererTest) {
   EXPECT_TRUE(client0.CheckReceivedOnFeatureUsed(feature2));
 
   // Only a single worker instance in process 0.
-  EXPECT_EQ(1u, renderer_host0->GetKeepAliveRefCount());
+  EXPECT_EQ(1u, renderer_host0->GetWorkerRefCount());
 
   // The second renderer host.
   std::unique_ptr<TestWebContents> web_contents1 =
@@ -448,7 +448,9 @@ TEST_F(SharedWorkerServiceImplTest, TwoRendererTest) {
   EXPECT_TRUE(client1.CheckReceivedOnCreated());
 
   // Only a single worker instance in process 0.
-  EXPECT_EQ(1u, renderer_host0->GetKeepAliveRefCount());
+  EXPECT_EQ(1u, renderer_host0->GetWorkerRefCount());
+  EXPECT_EQ(0u, renderer_host0->GetKeepAliveRefCount());
+  EXPECT_EQ(0u, renderer_host1->GetWorkerRefCount());
   EXPECT_EQ(0u, renderer_host1->GetKeepAliveRefCount());
 
   worker_host->OnConnected(connection_request_id1);

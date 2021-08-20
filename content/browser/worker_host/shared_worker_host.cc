@@ -96,12 +96,12 @@ class SharedWorkerHost::ScopedProcessHostRef {
  public:
   explicit ScopedProcessHostRef(RenderProcessHost* render_process_host)
       : render_process_host_(render_process_host) {
-    render_process_host_->IncrementKeepAliveRefCount();
+    render_process_host_->IncrementWorkerRefCount();
   }
 
   ~ScopedProcessHostRef() {
-    if (!render_process_host_->IsKeepAliveRefCountDisabled())
-      render_process_host_->DecrementKeepAliveRefCount();
+    if (!render_process_host_->IsWorkerAndKeepAliveRefCountDisabled())
+      render_process_host_->DecrementWorkerRefCount();
   }
 
   ScopedProcessHostRef(const ScopedProcessHostRef& other) = delete;

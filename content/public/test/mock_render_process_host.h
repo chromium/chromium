@@ -152,10 +152,13 @@ class MockRenderProcessHost : public RenderProcessHost {
   const base::TimeTicks& GetLastInitTime() override;
   bool IsProcessBackgrounded() override;
   size_t GetKeepAliveRefCount() const;
+  size_t GetWorkerRefCount() const;
   void IncrementKeepAliveRefCount() override;
   void DecrementKeepAliveRefCount() override;
-  void DisableKeepAliveRefCount() override;
-  bool IsKeepAliveRefCountDisabled() override;
+  void DisableWorkerAndKeepAliveRefCount() override;
+  void IncrementWorkerRefCount() override;
+  void DecrementWorkerRefCount() override;
+  bool IsWorkerAndKeepAliveRefCountDisabled() override;
   mojom::Renderer* GetRendererInterface() override;
   void CreateURLLoaderFactory(
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
@@ -288,6 +291,7 @@ class MockRenderProcessHost : public RenderProcessHost {
   bool is_unused_;
   base::Process process;
   int keep_alive_ref_count_;
+  int worker_ref_count_;
   int foreground_service_worker_count_;
   std::unique_ptr<mojo::AssociatedRemote<mojom::Renderer>> renderer_interface_;
   std::map<std::string, InterfaceBinder> binder_overrides_;

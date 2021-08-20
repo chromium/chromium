@@ -383,19 +383,9 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // "Keep alive ref count" represents the number of the customers of this
   // render process who wish the renderer process to be alive. While the ref
   // count is positive, |this| object will keep the renderer process alive,
-  // unless DisableKeepAliveRefCount() is called.
+  // unless DisableWorkerAndKeepAliveRefCount() is called.
   //
   // Here is the list of users:
-  //  - Service Worker:
-  //    While there are service workers who live in this process, they wish
-  //    the renderer process to be alive. The ref count is incremented when this
-  //    process is allocated to the worker, and decremented when worker's
-  //    shutdown sequence is completed.
-  //  - Shared Worker:
-  //    While there are shared workers who live in this process, they wish
-  //    the renderer process to be alive. The ref count is incremented when
-  //    a shared worker is created in the process, and decremented when
-  //    it is terminated (it self-destructs when it no longer has clients).
   //  - Keepalive request (if the KeepAliveRendererForKeepaliveRequests
   //    feature is enabled):
   //    When a fetch request with keepalive flag
@@ -411,15 +401,34 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   virtual void IncrementKeepAliveRefCount() = 0;
   virtual void DecrementKeepAliveRefCount() = 0;
 
+  // "Worker ref count" is similar to "Keep alive ref count", but is specific to
+  // workers since they do not have pre-defined timeouts. Also affected by
+  // DisableWorkerAndKeepAliveRefCount() in the same manner as for
+  // Increment/DecrementKeepAliveRefCount() functions.
+  //
+  // List of users:
+  //  - Service Worker:
+  //    While there are service workers who live in this process, they wish
+  //    the renderer process to be alive. The ref count is incremented when this
+  //    process is allocated to the worker, and decremented when worker's
+  //    shutdown sequence is completed.
+  //  - Shared Worker:
+  //    While there are shared workers who live in this process, they wish
+  //    the renderer process to be alive. The ref count is incremented when
+  //    a shared worker is created in the process, and decremented when
+  //    it is terminated (it self-destructs when it no longer has clients).
+  virtual void IncrementWorkerRefCount() = 0;
+  virtual void DecrementWorkerRefCount() = 0;
+
   // Sets keep alive ref counts to zero. Called when the browser context will be
   // destroyed so this RenderProcessHost can immediately die.
   //
   // After this is called, the Increment/DecrementKeepAliveRefCount() functions
-  // must not be called.
-  virtual void DisableKeepAliveRefCount() = 0;
+  // and Increment/DecrementWorkerRefCount() functions must not be called.
+  virtual void DisableWorkerAndKeepAliveRefCount() = 0;
 
-  // Returns true if DisableKeepAliveRefCount() was called.
-  virtual bool IsKeepAliveRefCountDisabled() = 0;
+  // Returns true if DisableWorkerAndKeepAliveRefCount() was called.
+  virtual bool IsWorkerAndKeepAliveRefCountDisabled() = 0;
 
   // Acquires the |mojom::Renderer| interface to the render process. This is for
   // internal use only, and is only exposed here to support

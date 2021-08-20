@@ -140,7 +140,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
 void StopMessageLoop(base::OnceClosure quit_closure) {
   for (auto it = content::RenderProcessHost::AllHostsIterator(); !it.IsAtEnd();
        it.Advance()) {
-    it.GetCurrentValue()->DisableKeepAliveRefCount();
+    it.GetCurrentValue()->DisableWorkerAndKeepAliveRefCount();
   }
 
   std::move(quit_closure).Run();
