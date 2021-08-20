@@ -238,7 +238,9 @@ TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDrop) {
 // 1. With a single window open,
 // 2. Touch down and move the touch point a bit (drag),
 // 3. Run move loop, drag it within the window bounds and drop.
-TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDrop_TOUCH) {
+// TODO(crbug.com/1241791): Test is flaky.
+TEST_P(WaylandWindowDragControllerTest,
+       DISABLED_DragInsideWindowAndDrop_TOUCH) {
   // Ensure there is no window currently focused
   EXPECT_FALSE(window_manager()->GetCurrentFocusedWindow());
   EXPECT_EQ(gfx::kNullAcceleratedWidget,
