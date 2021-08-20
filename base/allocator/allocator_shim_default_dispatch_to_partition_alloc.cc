@@ -35,6 +35,27 @@ using base::allocator::AllocatorDispatch;
 
 namespace {
 
+class SimpleScopedSpinLocker {
+ public:
+  explicit SimpleScopedSpinLocker(std::atomic<bool>& lock) : lock_(lock) {
+    // Lock. Semantically equivalent to base::Lock::Acquire().
+    bool expected = false;
+    // Weak CAS since we are in a retry loop, relaxed ordering for failure since
+    // in this case we don't imply any ordering.
+    //
+    // This matches partition_allocator/spinning_mutex.h fast path on Linux.
+    while (!lock_.compare_exchange_weak(
+        expected, true, std::memory_order_acquire, std::memory_order_relaxed)) {
+      expected = false;
+    }
+  }
+
+  ~SimpleScopedSpinLocker() { lock_.store(false, std::memory_order_release); }
+
+ private:
+  std::atomic<bool>& lock_;
+};
+
 // We can't use a "static local" or a base::LazyInstance, as:
 // - static local variables call into the runtime on Windows, which is not
 //   prepared to handle it, as the first allocation happens during CRT init.
@@ -57,19 +78,11 @@ class LeakySingleton {
 
   // Replaces the instance pointer with a new one.
   void Replace(T* new_instance) {
-    // Lock. Semantically equivalent to base::Lock::Acquire().
-    bool expected = false;
-    while (!initialization_lock_.compare_exchange_strong(
-        expected, true, std::memory_order_acquire, std::memory_order_acquire)) {
-      expected = false;
-    }
+    SimpleScopedSpinLocker scoped_lock{initialization_lock_};
 
     // Modify under the lock to avoid race between |if (instance)| and
     // |instance_.store()| in GetSlowPath().
     instance_.store(new_instance, std::memory_order_release);
-
-    // Unlock.
-    initialization_lock_.store(false, std::memory_order_release);
   }
 
  private:
@@ -99,27 +112,15 @@ T* LeakySingleton<T, Constructor>::GetSlowPath() {
   // However, we don't want to use a base::Lock here, so instead we use
   // compare-and-exchange on a lock variable, which provides the same
   // guarantees.
-  //
-  // Lock. Semantically equivalent to base::Lock::Acquire().
-  bool expected = false;
-  while (!initialization_lock_.compare_exchange_strong(
-      expected, true, std::memory_order_acquire, std::memory_order_acquire)) {
-    expected = false;
-  }
+  SimpleScopedSpinLocker scoped_lock{initialization_lock_};
 
   T* instance = instance_.load(std::memory_order_relaxed);
   // Someone beat us.
-  if (instance) {
-    // Unlock.
-    initialization_lock_.store(false, std::memory_order_release);
+  if (instance)
     return instance;
-  }
 
   instance = Constructor::New(reinterpret_cast<void*>(instance_buffer_));
   instance_.store(instance, std::memory_order_release);
-
-  // Unlock.
-  initialization_lock_.store(false, std::memory_order_release);
 
   return instance;
 }
