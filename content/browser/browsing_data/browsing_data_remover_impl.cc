@@ -289,6 +289,15 @@ void BrowsingDataRemoverImpl::RemoveImpl(
   DCHECK_NE(base::Time(), delete_end);
   DCHECK(domains_for_deferred_cookie_deletion_.empty());
 
+  // Asynchronous removal tasks might end up finishing after an arbitrary delay
+  // and this might postpone when the next removal task gets run via Notify ->
+  // PostTask -> RunNextTask -> RemoveImpl.  Therefore we need to check if the
+  // destruction of our `browser_context_` might have started in the meantime
+  // and check that in all the removal tasks that depend on `browser_context_`.
+  // See also https://crbug.com/1216406.
+  bool has_browser_context_shutdown_started =
+      browser_context_->ShutdownStarted();
+
   delete_begin_ = delete_begin;
   delete_end_ = delete_end;
   remove_mask_ = remove_mask;
@@ -329,9 +338,14 @@ void BrowsingDataRemoverImpl::RemoveImpl(
   if ((remove_mask & DATA_TYPE_DOWNLOADS) &&
       (!embedder_delegate_ || embedder_delegate_->MayRemoveDownloadHistory())) {
     base::RecordAction(UserMetricsAction("ClearBrowsingData_Downloads"));
-    DownloadManager* download_manager = browser_context_->GetDownloadManager();
-    download_manager->RemoveDownloadsByURLAndTime(url_filter, delete_begin_,
-                                                  delete_end_);
+    if (has_browser_context_shutdown_started) {
+      failed_data_types_ |= DATA_TYPE_DOWNLOADS;
+    } else {
+      DownloadManager* download_manager =
+          browser_context_->GetDownloadManager();
+      download_manager->RemoveDownloadsByURLAndTime(url_filter, delete_begin_,
+                                                    delete_end_);
+    }
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -528,15 +542,19 @@ void BrowsingDataRemoverImpl::RemoveImpl(
   //////////////////////////////////////////////////////////////////////////////
   // Reporting cache.
   if (remove_mask & DATA_TYPE_COOKIES) {
-    network::mojom::NetworkContext* network_context =
-        browser_context_->GetDefaultStoragePartition()->GetNetworkContext();
-    network_context->ClearReportingCacheClients(
-        filter_builder->BuildNetworkServiceFilter(),
-        CreateTaskCompletionClosureForMojo(TracingDataType::kReportingCache));
-    network_context->ClearNetworkErrorLogging(
-        filter_builder->BuildNetworkServiceFilter(),
-        CreateTaskCompletionClosureForMojo(
-            TracingDataType::kNetworkErrorLogging));
+    if (has_browser_context_shutdown_started) {
+      failed_data_types_ |= DATA_TYPE_COOKIES;
+    } else {
+      network::mojom::NetworkContext* network_context =
+          browser_context_->GetDefaultStoragePartition()->GetNetworkContext();
+      network_context->ClearReportingCacheClients(
+          filter_builder->BuildNetworkServiceFilter(),
+          CreateTaskCompletionClosureForMojo(TracingDataType::kReportingCache));
+      network_context->ClearNetworkErrorLogging(
+          filter_builder->BuildNetworkServiceFilter(),
+          CreateTaskCompletionClosureForMojo(
+              TracingDataType::kNetworkErrorLogging));
+    }
   }
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
@@ -544,12 +562,16 @@ void BrowsingDataRemoverImpl::RemoveImpl(
   // Auth cache.
   if ((remove_mask & DATA_TYPE_COOKIES) &&
       !(remove_mask & DATA_TYPE_AVOID_CLOSING_CONNECTIONS)) {
-    browser_context_->GetDefaultStoragePartition()
-        ->GetNetworkContext()
-        ->ClearHttpAuthCache(
-            delete_begin_.is_null() ? base::Time::Min() : delete_begin_,
-            delete_end_.is_null() ? base::Time::Max() : delete_end_,
-            CreateTaskCompletionClosureForMojo(TracingDataType::kAuthCache));
+    if (has_browser_context_shutdown_started) {
+      failed_data_types_ |= DATA_TYPE_COOKIES;
+    } else {
+      browser_context_->GetDefaultStoragePartition()
+          ->GetNetworkContext()
+          ->ClearHttpAuthCache(
+              delete_begin_.is_null() ? base::Time::Min() : delete_begin_,
+              delete_end_.is_null() ? base::Time::Max() : delete_end_,
+              CreateTaskCompletionClosureForMojo(TracingDataType::kAuthCache));
+    }
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -625,6 +647,7 @@ bool BrowsingDataRemoverImpl::RemovalTask::IsSameDeletion(
 }
 
 StoragePartition* BrowsingDataRemoverImpl::GetStoragePartition() {
+  DCHECK(!browser_context_->ShutdownStarted());
   return storage_partition_for_testing_
              ? storage_partition_for_testing_
              : browser_context_->GetDefaultStoragePartition();
@@ -720,13 +743,25 @@ void BrowsingDataRemoverImpl::OnTaskComplete(TracingDataType data_type) {
         std::move(domains_for_deferred_cookie_deletion_);
     // Moving a vector is defined to empty this vector.
     DCHECK(domains_for_deferred_cookie_deletion_.empty());
-    GetStoragePartition()->ClearData(
-        StoragePartition::REMOVE_DATA_MASK_COOKIES,
-        /*quota_storage_remove_mask=*/0,
-        /*origin_matcher=*/base::NullCallback(), std::move(deletion_filter),
-        /*perform_storage_cleanup=*/false, delete_begin_, delete_end_,
-        CreateTaskCompletionClosure(TracingDataType::kDeferredCookies));
-    return;
+
+    // Asynchronous removal tasks might end up finishing after an arbitrary
+    // delay - this can postpone when OnTaskComplete runs.  Therefore we need to
+    // check if destruction of our `browser_context_` might have started in the
+    // meantime.  See also https://crbug.com/1216406.
+    if (browser_context_->ShutdownStarted()) {
+      // The tasks related to `domains_for_deferred_cookie_deletion_` and
+      // `deletion_filter` are implicitly dropped if we can't clear the data
+      // because the StoragePartition's destructor has already started running.
+      failed_data_types_ |= StoragePartition::REMOVE_DATA_MASK_COOKIES;
+    } else {
+      GetStoragePartition()->ClearData(
+          StoragePartition::REMOVE_DATA_MASK_COOKIES,
+          /*quota_storage_remove_mask=*/0,
+          /*origin_matcher=*/base::NullCallback(), std::move(deletion_filter),
+          /*perform_storage_cleanup=*/false, delete_begin_, delete_end_,
+          CreateTaskCompletionClosure(TracingDataType::kDeferredCookies));
+      return;
+    }
   }
 
   slow_pending_tasks_closure_.Cancel();
