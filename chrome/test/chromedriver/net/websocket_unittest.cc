@@ -32,8 +32,9 @@ void OnConnectFinished(base::RunLoop* run_loop, int* save_error, int error) {
 
 class Listener : public WebSocketListener {
  public:
-  explicit Listener(const std::vector<std::string>& messages)
-      : messages_(messages) {}
+  explicit Listener(const std::vector<std::string>& messages,
+                    base::RunLoop* run_loop)
+      : messages_(messages), run_loop_(run_loop) {}
 
   ~Listener() override { EXPECT_TRUE(messages_.empty()); }
 
@@ -42,13 +43,14 @@ class Listener : public WebSocketListener {
     EXPECT_EQ(messages_[0], message);
     messages_.erase(messages_.begin());
     if (messages_.empty())
-      base::RunLoop::QuitCurrentWhenIdleDeprecated();
+      run_loop_->QuitWhenIdle();
   }
 
   void OnClose() override { EXPECT_TRUE(false); }
 
  private:
   std::vector<std::string> messages_;
+  base::RunLoop* run_loop_;
 };
 
 class CloseListener : public WebSocketListener {
@@ -103,13 +105,13 @@ class WebSocketTest : public testing::Test {
   }
 
   void SendReceive(const std::vector<std::string>& messages) {
-    Listener listener(messages);
+    base::RunLoop run_loop;
+    Listener listener(messages, &run_loop);
     std::unique_ptr<WebSocket> sock(CreateConnectedWebSocket(&listener));
     ASSERT_TRUE(sock);
     for (size_t i = 0; i < messages.size(); ++i) {
       ASSERT_TRUE(sock->Send(messages[i]));
     }
-    base::RunLoop run_loop;
     task_environment_.GetMainThreadTaskRunner()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(), base::TimeDelta::FromSeconds(10));
     run_loop.Run();
@@ -182,23 +184,18 @@ TEST_F(WebSocketTest, CloseOnSend) {
   ASSERT_FALSE(sock->Send("hi"));
 }
 
-#if !DCHECK_IS_ON()
 TEST_F(WebSocketTest, SendReceive) {
   std::vector<std::string> messages;
   messages.push_back("hello");
   SendReceive(messages);
 }
-#endif
 
-#if !DCHECK_IS_ON()
 TEST_F(WebSocketTest, SendReceiveLarge) {
   std::vector<std::string> messages;
   messages.push_back(std::string(10 << 20, 'a'));
   SendReceive(messages);
 }
-#endif
 
-#if !DCHECK_IS_ON()
 TEST_F(WebSocketTest, SendReceiveManyPacks) {
   std::vector<std::string> messages;
   // A message size of 1 << 16 crashes code with https://crbug.com/877105 bug
@@ -208,9 +205,7 @@ TEST_F(WebSocketTest, SendReceiveManyPacks) {
   SetReadBufferSize(1);
   SendReceive(messages);
 }
-#endif
 
-#if !DCHECK_IS_ON()
 TEST_F(WebSocketTest, SendReceiveMultiple) {
   std::vector<std::string> messages;
   messages.push_back("1");
@@ -218,4 +213,3 @@ TEST_F(WebSocketTest, SendReceiveMultiple) {
   messages.push_back("3");
   SendReceive(messages);
 }
-#endif
