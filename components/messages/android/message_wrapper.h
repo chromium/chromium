@@ -24,6 +24,11 @@ class MessageWrapper {
  public:
   using DismissCallback = base::OnceCallback<void(DismissReason)>;
 
+  // ActionCallback and DismissCallback default to base::NullCallback.
+  // Normally constructor with callbacks should be used, but this one is useful
+  // in situations when dismiss callback needs to be set after MessageWrapper
+  // creation because MessageWrapper instance needs to be bound to the callback.
+  MessageWrapper(MessageIdentifier message_identifier);
   MessageWrapper(MessageIdentifier message_identifier,
                  base::OnceClosure action_callback,
                  DismissCallback dismiss_callback);
@@ -63,6 +68,9 @@ class MessageWrapper {
   void SetSecondaryActionCallback(base::OnceClosure callback);
 
   void SetDuration(long customDuration);
+
+  void SetActionClick(base::OnceClosure callback);
+  void SetDismissCallback(DismissCallback callback);
 
   // Following methods forward calls from java to provided callbacks.
   void HandleActionClick(JNIEnv* env);
