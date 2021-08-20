@@ -31,23 +31,18 @@ UnittestOnlyBenchmark::~UnittestOnlyBenchmark() {
 }
 
 void UnittestOnlyBenchmark::DidUpdateLayers(LayerTreeHost* layer_tree_host) {
-  NotifyDone(nullptr);
+  NotifyDone(base::Value());
 }
 
-bool UnittestOnlyBenchmark::ProcessMessage(std::unique_ptr<base::Value> value) {
-  base::DictionaryValue* message = nullptr;
-  value->GetAsDictionary(&message);
-  bool can_handle;
-  if (message->HasKey("can_handle")) {
-    message->GetBoolean("can_handle", &can_handle);
-    if (can_handle)
-      return true;
+bool UnittestOnlyBenchmark::ProcessMessage(base::Value message) {
+  auto can_handle = message.FindBoolKey("can_handle");
+  if (can_handle.has_value() && *can_handle) {
+    return true;
   }
   return false;
 }
 
-void UnittestOnlyBenchmark::RecordImplResults(
-    std::unique_ptr<base::Value> results) {
+void UnittestOnlyBenchmark::RecordImplResults(base::Value results) {
   NotifyDone(std::move(results));
 }
 
@@ -57,7 +52,7 @@ std::unique_ptr<MicroBenchmarkImpl> UnittestOnlyBenchmark::CreateBenchmarkImpl(
     return base::WrapUnique<MicroBenchmarkImpl>(nullptr);
 
   return base::WrapUnique(new UnittestOnlyBenchmarkImpl(
-      origin_task_runner, nullptr,
+      origin_task_runner,
       base::BindOnce(&UnittestOnlyBenchmark::RecordImplResults,
                      weak_ptr_factory_.GetWeakPtr())));
 }

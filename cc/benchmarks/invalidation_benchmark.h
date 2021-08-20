@@ -7,9 +7,6 @@
 
 #include <stdint.h>
 
-#include <memory>
-#include <string>
-
 #include "cc/benchmarks/micro_benchmark_controller.h"
 
 namespace cc {
@@ -29,7 +26,7 @@ class CC_EXPORT InvalidationBenchmark : public MicroBenchmark {
   // Implements MicroBenchmark interface.
   void DidUpdateLayers(LayerTreeHost* layer_tree_host) override;
   void RunOnLayer(PictureLayer* layer) override;
-  bool ProcessMessage(std::unique_ptr<base::Value> value) override;
+  bool ProcessMessage(base::Value message) override;
 
  private:
   enum Mode { FIXED_SIZE, LAYER, VIEWPORT, RANDOM };

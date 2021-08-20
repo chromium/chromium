@@ -36,7 +36,7 @@ class CC_EXPORT MicroBenchmarkController {
                   base::Value settings,
                   MicroBenchmark::DoneCallback callback);
   // Returns true if the message was successfully delivered and handled.
-  bool SendMessage(int id, std::unique_ptr<base::Value> value);
+  bool SendMessage(int id, base::Value message);
 
   void ScheduleImplBenchmarks(LayerTreeHostImpl* host_impl);
 

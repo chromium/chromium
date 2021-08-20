@@ -76,8 +76,7 @@ int MicroBenchmarkController::GetNextIdAndIncrement() {
   return id;
 }
 
-bool MicroBenchmarkController::SendMessage(int id,
-                                           std::unique_ptr<base::Value> value) {
+bool MicroBenchmarkController::SendMessage(int id, base::Value message) {
   auto it =
       std::find_if(benchmarks_.begin(), benchmarks_.end(),
                    [id](const std::unique_ptr<MicroBenchmark>& benchmark) {
@@ -85,7 +84,7 @@ bool MicroBenchmarkController::SendMessage(int id,
                    });
   if (it == benchmarks_.end())
     return false;
-  return (*it)->ProcessMessage(std::move(value));
+  return (*it)->ProcessMessage(std::move(message));
 }
 
 void MicroBenchmarkController::ScheduleImplBenchmarks(

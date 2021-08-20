@@ -246,7 +246,7 @@ class CallbackAndContext : public base::RefCounted<CallbackAndContext> {
 };
 
 void OnMicroBenchmarkCompleted(CallbackAndContext* callback_and_context,
-                               std::unique_ptr<base::Value> result) {
+                               base::Value result) {
   v8::Isolate* isolate = callback_and_context->isolate();
   v8::HandleScope scope(isolate);
   v8::Local<v8::Context> context = callback_and_context->GetContext();
@@ -254,7 +254,7 @@ void OnMicroBenchmarkCompleted(CallbackAndContext* callback_and_context,
   WebLocalFrame* frame = WebLocalFrame::FrameForContext(context);
   if (frame) {
     v8::Local<v8::Value> value =
-        V8ValueConverter::Create()->ToV8Value(result.get(), context);
+        V8ValueConverter::Create()->ToV8Value(&result, context);
     v8::Local<v8::Value> argv[] = {value};
 
     frame->CallFunctionEvenIfScriptDisabled(callback_and_context->GetCallback(),
@@ -1317,9 +1317,10 @@ bool GpuBenchmarking::SendMessageToMicroBenchmark(
       context.web_frame()->MainWorldScriptContext();
   std::unique_ptr<base::Value> value =
       V8ValueConverter::Create()->FromV8Value(message, v8_context);
+  DCHECK(value);
 
   return context.layer_tree_host()->SendMessageToMicroBenchmark(
-      id, std::move(value));
+      id, base::Value::FromUniquePtrValue(std::move(value)));
 }
 
 bool GpuBenchmarking::HasGpuChannel() {

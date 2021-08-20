@@ -333,7 +333,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
                              MicroBenchmark::DoneCallback callback);
 
   // Returns true if the message was successfully delivered and handled.
-  bool SendMessageToMicroBenchmark(int id, std::unique_ptr<base::Value> value);
+  bool SendMessageToMicroBenchmark(int id, base::Value message);
 
   // When the main thread informs the compositor thread that it is ready to
   // commit, generally it would remain blocked until the main thread state is

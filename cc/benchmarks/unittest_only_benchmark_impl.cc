@@ -4,6 +4,8 @@
 
 #include "cc/benchmarks/unittest_only_benchmark_impl.h"
 
+#include <utility>
+
 #include "base/single_thread_task_runner.h"
 #include "base/values.h"
 
@@ -11,14 +13,13 @@ namespace cc {
 
 UnittestOnlyBenchmarkImpl::UnittestOnlyBenchmarkImpl(
     scoped_refptr<base::SingleThreadTaskRunner> origin_task_runner,
-    base::Value* settings,
     DoneCallback callback)
     : MicroBenchmarkImpl(std::move(callback), origin_task_runner) {}
 
 UnittestOnlyBenchmarkImpl::~UnittestOnlyBenchmarkImpl() = default;
 
 void UnittestOnlyBenchmarkImpl::DidCompleteCommit(LayerTreeHostImpl* host) {
-  NotifyDone(nullptr);
+  NotifyDone(base::Value());
 }
 
 }  // namespace cc

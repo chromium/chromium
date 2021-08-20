@@ -157,32 +157,31 @@ void RasterizeAndRecordBenchmarkImpl::DidCompleteCommit(
     layer->RunMicroBenchmark(this);
   }
 
-  std::unique_ptr<base::DictionaryValue> result(new base::DictionaryValue());
-  result->SetDoubleKey("rasterize_time_ms",
-                       rasterize_results_.total_best_time.InMillisecondsF());
-  result->SetInteger("pixels_rasterized", rasterize_results_.pixels_rasterized);
-  result->SetInteger("pixels_rasterized_with_non_solid_color",
-                     rasterize_results_.pixels_rasterized_with_non_solid_color);
-  result->SetInteger("pixels_rasterized_as_opaque",
-                     rasterize_results_.pixels_rasterized_as_opaque);
-  result->SetInteger("total_layers", rasterize_results_.total_layers);
-  result->SetInteger("total_picture_layers",
-                     rasterize_results_.total_picture_layers);
-  result->SetInteger("total_picture_layers_with_no_content",
-                     rasterize_results_.total_picture_layers_with_no_content);
-  result->SetInteger("total_picture_layers_off_screen",
-                     rasterize_results_.total_picture_layers_off_screen);
+  base::Value result(base::Value::Type::DICTIONARY);
+  result.SetDoubleKey("rasterize_time_ms",
+                      rasterize_results_.total_best_time.InMillisecondsF());
+  result.SetIntKey("pixels_rasterized", rasterize_results_.pixels_rasterized);
+  result.SetIntKey("pixels_rasterized_with_non_solid_color",
+                   rasterize_results_.pixels_rasterized_with_non_solid_color);
+  result.SetIntKey("pixels_rasterized_as_opaque",
+                   rasterize_results_.pixels_rasterized_as_opaque);
+  result.SetIntKey("total_layers", rasterize_results_.total_layers);
+  result.SetIntKey("total_picture_layers",
+                   rasterize_results_.total_picture_layers);
+  result.SetIntKey("total_picture_layers_with_no_content",
+                   rasterize_results_.total_picture_layers_with_no_content);
+  result.SetIntKey("total_picture_layers_off_screen",
+                   rasterize_results_.total_picture_layers_off_screen);
 
-  std::unique_ptr<base::DictionaryValue> lcd_text_pixels(
-      new base::DictionaryValue());
+  base::Value lcd_text_pixels(base::Value::Type::DICTIONARY);
   for (size_t i = 0; i < kLCDTextDisallowedReasonCount; i++) {
-    lcd_text_pixels->SetInteger(
+    lcd_text_pixels.SetIntKey(
         LCDTextDisallowedReasonToString(
             static_cast<LCDTextDisallowedReason>(i)),
         rasterize_results_.visible_pixels_by_lcd_text_disallowed_reason[i]);
   }
-  result->SetDictionary("visible_pixels_by_lcd_text_disallowed_reason",
-                        std::move(lcd_text_pixels));
+  result.SetKey("visible_pixels_by_lcd_text_disallowed_reason",
+                std::move(lcd_text_pixels));
 
   NotifyDone(std::move(result));
 }

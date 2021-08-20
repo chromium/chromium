@@ -71,42 +71,38 @@ void RasterizeAndRecordBenchmark::DidUpdateLayers(
   layer_tree_host->client()->RunPaintBenchmark(record_repeat_count_,
                                                paint_benchmark_result);
 
-  DCHECK(!results_.get());
-  results_ = base::WrapUnique(new base::DictionaryValue);
-  results_->SetInteger("pixels_recorded", record_results_.pixels_recorded);
-  results_->SetInteger("paint_op_memory_usage",
-                       static_cast<int>(record_results_.paint_op_memory_usage));
-  results_->SetInteger("paint_op_count",
-                       static_cast<int>(record_results_.paint_op_count));
-  results_->SetDoubleKey("record_time_ms",
-                         paint_benchmark_result.record_time_ms);
-  results_->SetDoubleKey(
-      "record_time_caching_disabled_ms",
-      paint_benchmark_result.record_time_caching_disabled_ms);
-  results_->SetDoubleKey(
+  DCHECK(results_.is_none());
+  results_ = base::Value(base::Value::Type::DICTIONARY);
+  results_.SetIntKey("pixels_recorded", record_results_.pixels_recorded);
+  results_.SetIntKey("paint_op_memory_usage",
+                     static_cast<int>(record_results_.paint_op_memory_usage));
+  results_.SetIntKey("paint_op_count",
+                     static_cast<int>(record_results_.paint_op_count));
+  results_.SetDoubleKey("record_time_ms",
+                        paint_benchmark_result.record_time_ms);
+  results_.SetDoubleKey("record_time_caching_disabled_ms",
+                        paint_benchmark_result.record_time_caching_disabled_ms);
+  results_.SetDoubleKey(
       "record_time_subsequence_caching_disabled_ms",
       paint_benchmark_result.record_time_subsequence_caching_disabled_ms);
-  results_->SetDoubleKey(
+  results_.SetDoubleKey(
       "raster_invalidation_and_convert_time_ms",
       paint_benchmark_result.raster_invalidation_and_convert_time_ms);
-  results_->SetDoubleKey(
+  results_.SetDoubleKey(
       "paint_artifact_compositor_update_time_ms",
       paint_benchmark_result.paint_artifact_compositor_update_time_ms);
-  results_->SetInteger(
+  results_.SetIntKey(
       "painter_memory_usage",
       static_cast<int>(paint_benchmark_result.painter_memory_usage));
   main_thread_benchmark_done_ = true;
 }
 
 void RasterizeAndRecordBenchmark::RecordRasterResults(
-    std::unique_ptr<base::Value> results_value) {
+    base::Value results_value) {
   DCHECK(main_thread_benchmark_done_);
+  DCHECK(results_value.is_dict());
 
-  base::DictionaryValue* results = nullptr;
-  results_value->GetAsDictionary(&results);
-  DCHECK(results);
-
-  results_->MergeDictionary(results);
+  results_.MergeDictionary(&results_value);
 
   NotifyDone(std::move(results_));
 }

@@ -19,14 +19,14 @@ class CC_EXPORT UnittestOnlyBenchmark : public MicroBenchmark {
   ~UnittestOnlyBenchmark() override;
 
   void DidUpdateLayers(LayerTreeHost* layer_tree_host) override;
-  bool ProcessMessage(std::unique_ptr<base::Value> value) override;
+  bool ProcessMessage(base::Value message) override;
 
  protected:
   std::unique_ptr<MicroBenchmarkImpl> CreateBenchmarkImpl(
       scoped_refptr<base::SingleThreadTaskRunner> origin_task_runner) override;
 
  private:
-  void RecordImplResults(std::unique_ptr<base::Value> results);
+  void RecordImplResults(base::Value results);
 
   bool create_impl_benchmark_;
   base::WeakPtrFactory<UnittestOnlyBenchmark> weak_ptr_factory_{this};

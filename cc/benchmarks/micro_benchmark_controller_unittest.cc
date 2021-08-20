@@ -56,7 +56,7 @@ class MicroBenchmarkControllerTest : public testing::Test {
   std::unique_ptr<FakeImplTaskRunnerProvider> impl_task_runner_provider_;
 };
 
-void IncrementCallCount(int* count, std::unique_ptr<base::Value> value) {
+void IncrementCallCount(int* count, base::Value value) {
   ++(*count);
 }
 
@@ -143,8 +143,8 @@ TEST_F(MicroBenchmarkControllerTest, BenchmarkImplRan) {
 
 TEST_F(MicroBenchmarkControllerTest, SendMessage) {
   // Send valid message to invalid benchmark (id = 0)
-  std::unique_ptr<base::DictionaryValue> message(new base::DictionaryValue);
-  message->SetBoolean("can_handle", true);
+  base::Value message(base::Value::Type::DICTIONARY);
+  message.SetBoolKey("can_handle", true);
   bool message_handled =
       layer_tree_host_->SendMessageToMicroBenchmark(0, std::move(message));
   EXPECT_FALSE(message_handled);
@@ -157,15 +157,15 @@ TEST_F(MicroBenchmarkControllerTest, SendMessage) {
   EXPECT_GT(id, 0);
 
   // Send valid message to valid benchmark
-  message = base::WrapUnique(new base::DictionaryValue);
-  message->SetBoolean("can_handle", true);
+  message = base::Value(base::Value::Type::DICTIONARY);
+  message.SetBoolKey("can_handle", true);
   message_handled =
       layer_tree_host_->SendMessageToMicroBenchmark(id, std::move(message));
   EXPECT_TRUE(message_handled);
 
   // Send invalid message to valid benchmark
-  message = base::WrapUnique(new base::DictionaryValue);
-  message->SetBoolean("can_handle", false);
+  message = base::Value(base::Value::Type::DICTIONARY);
+  message.SetBoolKey("can_handle", false);
   message_handled =
       layer_tree_host_->SendMessageToMicroBenchmark(id, std::move(message));
   EXPECT_FALSE(message_handled);

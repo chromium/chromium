@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <string>
 #include <utility>
 
 #include "base/rand_util.h"
@@ -112,17 +113,14 @@ void InvalidationBenchmark::RunOnLayer(PictureLayer* layer) {
   }
 }
 
-bool InvalidationBenchmark::ProcessMessage(std::unique_ptr<base::Value> value) {
-  base::DictionaryValue* message = nullptr;
-  value->GetAsDictionary(&message);
-  if (!message)
+bool InvalidationBenchmark::ProcessMessage(base::Value message) {
+  if (!message.is_dict())
     return false;
 
-  bool notify_done;
-  if (message->HasKey("notify_done")) {
-    message->GetBoolean("notify_done", &notify_done);
-    if (notify_done)
-      NotifyDone(std::make_unique<base::Value>());
+  auto notify_done = message.FindBoolKey("notify_done");
+  if (notify_done.has_value()) {
+    if (*notify_done)
+      NotifyDone(base::Value());
     return true;
   }
   return false;
