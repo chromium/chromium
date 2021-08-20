@@ -186,7 +186,7 @@ public class Fido2CredentialRequestTest {
                 PendingIntent intent, WindowAndroid.IntentCallback callback, Integer errorId) {
             // Bypass GmsCore and just call onIntentCompleted.
             if (mCancelableIntentSuccess) {
-                callback.onIntentCompleted(this, mResultCode, mResponseIntent);
+                callback.onIntentCompleted(mResultCode, mResponseIntent);
                 return 0;
             }
             return WindowAndroid.START_INTENT_FAILURE;

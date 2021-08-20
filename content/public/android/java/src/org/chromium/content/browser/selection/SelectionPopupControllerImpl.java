@@ -1148,7 +1148,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         try {
             mWindowAndroid.showIntent(intent, new WindowAndroid.IntentCallback() {
                 @Override
-                public void onIntentCompleted(WindowAndroid window, int resultCode, Intent data) {
+                public void onIntentCompleted(int resultCode, Intent data) {
                     onReceivedProcessTextResult(resultCode, data);
                 }
             }, null);

@@ -83,12 +83,9 @@ public interface IntentRequestTracker {
      * @param requestCode Request code of the requested intent.
      * @param resultCode Result code of the requested intent.
      * @param data The data returned by the intent.
-     * TODO(crbug.com/1221410): this should be refactored away as it is unnecessary.
-     * @param windowAndroid A window to be returned with the result.
      * @return Boolean value of whether the intent.
      */
-    boolean onActivityResult(
-            int requestCode, int resultCode, Intent data, WindowAndroid windowAndroid);
+    boolean onActivityResult(int requestCode, int resultCode, Intent data);
 
     WeakReference<Activity> getActivity();
 

@@ -95,7 +95,7 @@ public class NfcSystemLevelPromptTest {
             return null;
         })
                 .when(mWindowAndroidIntentCallback)
-                .onIntentCompleted(any(WindowAndroid.class), anyInt(), any(Intent.class));
+                .onIntentCompleted(anyInt(), any(Intent.class));
 
         mNfcSystemLevelPrompt = new NfcSystemLevelPrompt();
         mNfcSystemLevelPrompt.show(mWindowAndroid, mModalDialogManager, new Runnable() {
@@ -137,8 +137,7 @@ public class NfcSystemLevelPromptTest {
         Assert.assertEquals(0, mDialogCallback.getCallCount());
         Assert.assertEquals(1, mIntentCallback.getCallCount());
 
-        mWindowAndroidIntentCallback.onIntentCompleted(
-                mWindowAndroid, 0 /* resultCode */, new Intent());
+        mWindowAndroidIntentCallback.onIntentCompleted(0 /* resultCode */, new Intent());
         Assert.assertEquals(1, mDialogCallback.getCallCount());
         Assert.assertEquals(1, mIntentCallback.getCallCount());
     }

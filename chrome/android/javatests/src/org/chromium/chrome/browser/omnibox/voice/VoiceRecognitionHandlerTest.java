@@ -529,7 +529,7 @@ public class VoiceRecognitionHandlerTest {
             mCancelableIntent = intent;
             mCallback = callback;
             if (mCancelableIntentSuccess) {
-                callback.onIntentCompleted(mWindowAndroid, mResultCode, mResults);
+                callback.onIntentCompleted(mResultCode, mResults);
                 return 0;
             }
             return WindowAndroid.START_INTENT_FAILURE;
@@ -1554,7 +1554,7 @@ public class VoiceRecognitionHandlerTest {
         Assert.assertEquals(-1, mHandler.getVoiceSearchUnexpectedResultSource());
 
         IntentCallback callback = mWindowAndroid.getIntentCallback();
-        callback.onIntentCompleted(mWindowAndroid, Activity.RESULT_CANCELED, null);
+        callback.onIntentCompleted(Activity.RESULT_CANCELED, null);
         Assert.assertEquals(
                 VoiceInteractionSource.NTP, mHandler.getVoiceSearchUnexpectedResultSource());
     }

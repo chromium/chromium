@@ -220,7 +220,7 @@ public class ShareHelper {
         }
 
         @Override
-        public void onIntentCompleted(WindowAndroid window, int resultCode, Intent data) {
+        public void onIntentCompleted(int resultCode, Intent data) {
             // NOTE: The validity of the returned |resultCode| is somewhat unexpected. For
             // background, a sharing flow starts with a "Chooser" activity that enables the user
             // to select the app to share to, and then when the user selects that application,

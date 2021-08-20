@@ -119,7 +119,7 @@ public class SmsProviderGms {
                 && (!isLocalRequest || mBackend != GmsBackend.USER_CONSENT);
         boolean shouldUseUserConsentReceiver = mUserConsentReceiver != null && isLocalRequest
                 && mBackend != GmsBackend.VERIFICATION && window != null;
-        if (shouldUseVerificationReceiver) mVerificationReceiver.listen(window, isLocalRequest);
+        if (shouldUseVerificationReceiver) mVerificationReceiver.listen(isLocalRequest);
         if (shouldUseUserConsentReceiver) mUserConsentReceiver.listen(window);
     }
 

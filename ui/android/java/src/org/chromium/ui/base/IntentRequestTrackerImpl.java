@@ -93,14 +93,13 @@ import java.util.HashMap;
     }
 
     @Override
-    public boolean onActivityResult(
-            int requestCode, int resultCode, Intent data, WindowAndroid windowAndroid) {
+    public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
         IntentCallback callback = getOutstandingIntents().get(requestCode);
         getOutstandingIntents().delete(requestCode);
         String errorMessage = mIntentErrors.remove(requestCode);
 
         if (callback != null) {
-            callback.onIntentCompleted(windowAndroid, resultCode, data);
+            callback.onIntentCompleted(resultCode, data);
             return true;
         } else {
             if (errorMessage != null && !mDelegate.onCallbackNotFoundError(errorMessage)) {

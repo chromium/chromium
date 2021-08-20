@@ -121,8 +121,7 @@ public class AccountPickerDelegateImpl implements WebSigninBridge.Listener, Acco
             if (intent != null) {
                 WindowAndroid.IntentCallback intentCallback = new WindowAndroid.IntentCallback() {
                     @Override
-                    public void onIntentCompleted(
-                            WindowAndroid window, int resultCode, Intent data) {
+                    public void onIntentCompleted(int resultCode, Intent data) {
                         if (resultCode == Activity.RESULT_OK) {
                             callback.onResult(data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME));
                         }

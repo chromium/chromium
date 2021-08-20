@@ -460,7 +460,7 @@ public class VoiceRecognitionHandler {
 
         // WindowAndroid.IntentCallback implementation:
         @Override
-        public void onIntentCompleted(WindowAndroid window, int resultCode, Intent data) {
+        public void onIntentCompleted(int resultCode, Intent data) {
             if (mCallbackComplete) {
                 recordVoiceSearchUnexpectedResult(mSource, mTarget);
                 return;

@@ -23,6 +23,7 @@ import com.google.android.gms.tasks.Task;
 
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.content.browser.sms.Wrappers.WebOTPServiceContext;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -48,7 +49,7 @@ public class SmsVerificationReceiver extends BroadcastReceiver {
         NUM_ENTRIES
     }
 
-    public SmsVerificationReceiver(SmsProviderGms provider, Wrappers.WebOTPServiceContext context) {
+    public SmsVerificationReceiver(SmsProviderGms provider, WebOTPServiceContext context) {
         if (DEBUG) Log.d(TAG, "Creating SmsVerificationReceiver.");
 
         mDestroyed = false;
@@ -117,12 +118,12 @@ public class SmsVerificationReceiver extends BroadcastReceiver {
         }
     }
 
-    public void onPermissionDone(WindowAndroid window, int resultCode, boolean isLocalRequest) {
+    public void onPermissionDone(int resultCode, boolean isLocalRequest) {
         if (resultCode == Activity.RESULT_OK) {
             // We have been granted permission to use the SmsCoderetriever so restart the process.
             // |listen| will record the backend availability so no need to do it here.
             if (DEBUG) Log.d(TAG, "The one-time permission was granted");
-            listen(window, isLocalRequest);
+            listen(isLocalRequest);
         } else {
             cancelRequestAndReportBackendAvailability();
             if (DEBUG) Log.d(TAG, "The one-time permission was rejected");
@@ -133,7 +134,7 @@ public class SmsVerificationReceiver extends BroadcastReceiver {
      * Handles failure for the `SmsCodeBrowserClient.startSmsCodeRetriever()`
      * task.
      */
-    public void onRetrieverTaskFailure(WindowAndroid window, boolean isLocalRequest, Exception e) {
+    public void onRetrieverTaskFailure(boolean isLocalRequest, Exception e) {
         if (DEBUG) Log.d(TAG, "Task failed. Attempting recovery.", e);
         ApiException exception = (ApiException) e;
         if (exception.getStatusCode() == SmsRetrieverStatusCodes.API_NOT_CONNECTED) {
@@ -161,14 +162,15 @@ public class SmsVerificationReceiver extends BroadcastReceiver {
                 ResolvableApiException rex = (ResolvableApiException) exception;
                 try {
                     PendingIntent resolutionIntent = rex.getResolution();
-                    window.showIntent(resolutionIntent, new WindowAndroid.IntentCallback() {
-                        @Override
-                        public void onIntentCompleted(
-                                WindowAndroid w, int resultCode, Intent data) {
-                            // Backend availability will be recorded inside |onPermissionDone|.
-                            onPermissionDone(w, resultCode, isLocalRequest);
-                        }
-                    }, null);
+                    mProvider.getWindow().showIntent(
+                            resolutionIntent, new WindowAndroid.IntentCallback() {
+                                @Override
+                                public void onIntentCompleted(int resultCode, Intent data) {
+                                    // Backend availability will be recorded inside
+                                    // |onPermissionDone|.
+                                    onPermissionDone(resultCode, isLocalRequest);
+                                }
+                            }, null);
                 } catch (Exception ex) {
                     cancelRequestAndReportBackendAvailability();
                     Log.e(TAG, "Cannot launch user permission", ex);
@@ -179,7 +181,7 @@ public class SmsVerificationReceiver extends BroadcastReceiver {
         }
     }
 
-    public void listen(WindowAndroid window, boolean isLocalRequest) {
+    public void listen(boolean isLocalRequest) {
         Wrappers.SmsRetrieverClientWrapper client = mProvider.getClient();
         Task<Void> task = client.startSmsCodeBrowserRetriever();
 
@@ -188,7 +190,7 @@ public class SmsVerificationReceiver extends BroadcastReceiver {
             mProvider.verificationReceiverSucceeded(isLocalRequest);
         });
         task.addOnFailureListener((Exception e) -> {
-            this.onRetrieverTaskFailure(window, isLocalRequest, e);
+            this.onRetrieverTaskFailure(isLocalRequest, e);
             mProvider.verificationReceiverFailed(isLocalRequest);
         });
 

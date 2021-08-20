@@ -666,8 +666,7 @@ public abstract class AsyncInitializationActivity
     @CallSuper
     @Override
     public boolean onActivityResultWithNative(int requestCode, int resultCode, Intent intent) {
-        if (mIntentRequestTracker.onActivityResult(
-                    requestCode, resultCode, intent, mWindowAndroid)) {
+        if (mIntentRequestTracker.onActivityResult(requestCode, resultCode, intent)) {
             return true;
         }
         mLifecycleDispatcher.dispatchOnActivityResultWithNative(requestCode, resultCode, intent);
