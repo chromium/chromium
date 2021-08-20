@@ -38,6 +38,9 @@ const char kConfigurationData2[] = R"(
   "key2" : "value_2"
 }
 )";
+const char kConfigurationData3[] = R"(
+[1]
+)";
 const char kKey1[] = "key1";
 const char kKey2[] = "key2";
 const char kKey3[] = "key3";
@@ -264,4 +267,13 @@ IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
   WaitForUpdate();
   ASSERT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}),
                               {{kKey1, kValue1}, {kKey2, kValue2}}));
+}
+
+IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
+                       NonDictionaryConfiguration) {
+  EnableTestServer({{kConfigurationUrl1, {kConfigurationData3}}});
+  SetConfiguration(kConfigurationUrl1, kConfigurationHash1);
+
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}), {}));
 }
