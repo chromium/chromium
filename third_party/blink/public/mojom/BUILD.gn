@@ -279,6 +279,7 @@ mojom("mojom_platform") {
     public_deps += [
       "//services/network/public/mojom:cookies_mojom",
       "//services/network/public/mojom:mojom_network_param",
+      "//services/network/public/mojom:mojom_schemeful_site",
       "//ui/latency/mojom",
     ]
   } else {
@@ -644,6 +645,15 @@ mojom("mojom_platform") {
     {
       types = [
         {
+          mojom = "blink.mojom.StorageKey"
+          cpp = "::blink::StorageKey"
+        },
+      ]
+      traits_headers = [ "//third_party/blink/public/common/storage_key/storage_key_mojom_traits.h" ]
+    },
+    {
+      types = [
+        {
           mojom = "blink.mojom.UseCounterFeature"
           cpp = "::blink::UseCounterFeature"
         },
@@ -842,15 +852,6 @@ mojom("android_mojo_bindings") {
         "//device/fido",
       ]
     },
-    {
-      types = [
-        {
-          mojom = "blink.mojom.StorageKey"
-          cpp = "::blink::StorageKey"
-        },
-      ]
-      traits_headers = [ "//third_party/blink/public/common/storage_key/storage_key_mojom_traits.h" ]
-    },
   ]
 
   blink_cpp_typemaps = [
@@ -863,15 +864,6 @@ mojom("android_mojo_bindings") {
         },
       ]
       traits_headers = [ "//third_party/blink/renderer/platform/blob/serialized_blob_mojom_traits.h" ]
-    },
-    {
-      types = [
-        {
-          mojom = "blink.mojom.StorageKey"
-          cpp = "::blink::BlinkStorageKey"
-        },
-      ]
-      traits_headers = [ "//third_party/blink/renderer/platform/storage/blink_storage_key_mojom_traits.h" ]
     },
   ]
 
