@@ -284,8 +284,8 @@ class CORE_EXPORT NGLineBreaker {
   // True when breaking at soft hyphens (U+00AD) is allowed.
   bool enable_soft_hyphen_ = true;
 
-  // True when the line we are breaking has a list marker.
-  bool has_list_marker_ = false;
+  // True when the line should be non-empty if |IsLastLine|..
+  bool force_non_empty_if_last_line_ = false;
 
   // Set when the line ended with a forced break. Used to setup the states for
   // the next line.

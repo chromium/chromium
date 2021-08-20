@@ -551,7 +551,7 @@ void NGLineBreaker::NextLine(
   // line boxes. These cases need to be reviewed.
   const bool should_create_line_box =
       ShouldCreateLineBox(item_results) ||
-      (has_list_marker_ && line_info->IsLastLine()) ||
+      (force_non_empty_if_last_line_ && line_info->IsLastLine()) ||
       mode_ != NGLineBreakerMode::kContent;
 
   if (!should_create_line_box) {
@@ -658,7 +658,7 @@ void NGLineBreaker::BreakLine(
       MoveToNextOf(item);
     } else if (item.Type() == NGInlineItem::kListMarker) {
       NGInlineItemResult* item_result = AddItem(item, line_info);
-      has_list_marker_ = true;
+      force_non_empty_if_last_line_ = true;
       DCHECK(!item_result->can_break_after);
       MoveToNextOf(item);
     } else {
@@ -1991,6 +1991,7 @@ void NGLineBreaker::HandleBlockInInline(const NGInlineItem& item,
 
   if (!line_info->Results().IsEmpty()) {
     // If there were any items, force a line break before this item.
+    force_non_empty_if_last_line_ = false;
     HandleForcedLineBreak(nullptr, line_info);
     return;
   }
