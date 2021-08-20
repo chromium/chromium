@@ -44,6 +44,12 @@ constexpr const char kBack[] = "back";
 constexpr const char kRetry[] = "retry";
 constexpr const char kUserTos[] = "user_managed_terms_of_service.txt";
 
+// This allows to set callback before screen is created.
+base::OnceClosure& GetTosSavedCallbackOverride() {
+  static base::NoDestructor<base::OnceClosure> tos_saved_for_testing;
+  return *tos_saved_for_testing;
+}
+
 void SaveTosToFile(const std::string& tos, const base::FilePath& tos_path) {
   if (!base::ImportantFileWriter::WriteFileAtomically(tos_path, tos)) {
     LOG(ERROR) << "Failed to save terms of services to file: "
@@ -296,6 +302,12 @@ void TermsOfServiceScreen::OnTosLoadedFromFile(
 }
 
 // static
+void TermsOfServiceScreen::SetTosSavedCallbackForTesting(
+    base::OnceClosure callback) {
+  GetTosSavedCallbackOverride() = std::move(callback);
+}
+
+// static
 base::FilePath TermsOfServiceScreen::GetTosFilePath() {
   auto user_data_dir = ProfileManager::GetActiveUserProfile()->GetPath();
   return user_data_dir.AppendASCII(kUserTos);
@@ -313,8 +325,8 @@ void TermsOfServiceScreen::SaveTos(const std::string& tos) {
 }
 
 void TermsOfServiceScreen::OnTosSavedForTesting() {
-  if (tos_saved_for_testing_)
-    std::move(tos_saved_for_testing_).Run();
+  if (GetTosSavedCallbackOverride())
+    std::move(GetTosSavedCallbackOverride()).Run();
 }
 
 }  // namespace ash

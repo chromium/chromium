@@ -55,9 +55,7 @@ class TermsOfServiceScreen : public BaseScreen {
   void OnViewDestroyed(TermsOfServiceScreenView* view);
 
   // Set callback to wait for file saving in tests.
-  void set_tos_saved_callback_for_testing(base::OnceClosure callback) {
-    tos_saved_for_testing_ = std::move(callback);
-  }
+  static void SetTosSavedCallbackForTesting(base::OnceClosure callback);
 
   void set_exit_callback_for_testing(const ScreenExitCallback& exit_callback) {
     exit_callback_ = exit_callback;
@@ -96,7 +94,6 @@ class TermsOfServiceScreen : public BaseScreen {
 
   TermsOfServiceScreenView* view_;
   ScreenExitCallback exit_callback_;
-  base::OnceClosure tos_saved_for_testing_;
 
   std::unique_ptr<network::SimpleURLLoader> terms_of_service_loader_;
 

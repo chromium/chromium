@@ -433,7 +433,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUserTosScreenTest, TosSaved) {
   SetUpTermsOfServiceUrlPolicy();
   EXPECT_FALSE(TosFileExists());
   base::RunLoop run_loop;
-  GetTosScreen()->set_tos_saved_callback_for_testing(run_loop.QuitClosure());
+  TermsOfServiceScreen::SetTosSavedCallbackForTesting(run_loop.QuitClosure());
   StartManagedUserSession();
 
   WaitFosScreenShown();
