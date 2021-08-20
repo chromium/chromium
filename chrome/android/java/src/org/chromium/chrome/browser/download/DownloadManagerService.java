@@ -143,7 +143,7 @@ public class DownloadManagerService implements DownloadController.Observer,
 
     private OMADownloadHandler mOMADownloadHandler;
     private DownloadSnackbarController mDownloadSnackbarController;
-    private DownloadInfoBarController mInfoBarController;
+    private DownloadMessageUiController mInfoBarController;
     private HashMap<OTRProfileID, DownloadInfoBarController> mIncognitoInfoBarControllerMap =
             new HashMap<>();
     private DownloadMessageUiController mMessageUiController;
@@ -302,8 +302,12 @@ public class DownloadManagerService implements DownloadController.Observer,
     }
 
     /** For testing only. */
-    public void setInfoBarControllerForTesting(DownloadInfoBarController infoBarController) {
-        mInfoBarController = infoBarController;
+    public void setInfoBarControllerForTesting(DownloadMessageUiController infoBarController) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_PROGRESS_MESSAGE)) {
+            mMessageUiController = infoBarController;
+        } else {
+            mInfoBarController = infoBarController;
+        }
     }
 
     // Deprecated after new download backend.

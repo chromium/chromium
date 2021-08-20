@@ -3325,6 +3325,24 @@
             ]
         }
     ],
+    "DownloadProgressMessage": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_10s_20210819",
+                    "params": {
+                        "message_dismiss_duration_seconds": "10"
+                    },
+                    "enable_features": [
+                        "DownloadProgressMessage"
+                    ]
+                }
+            ]
+        }
+    ],
     "DownloadWithServicificationM77": [
         {
             "platforms": [

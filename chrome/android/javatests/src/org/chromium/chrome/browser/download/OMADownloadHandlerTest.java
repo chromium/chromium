@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemState;
 import org.chromium.components.offline_items_collection.UpdateDelta;
@@ -71,14 +72,13 @@ public class OMADownloadHandlerTest {
     }
 
     /**
-     * Mock implementation of the DownloadInfoBarController.
+     * Mock implementation of the DownloadMessageUiController.
      */
-    static class TestInfoBarController extends DownloadInfoBarController {
+    static class TestInfoBarController implements DownloadMessageUiController {
         public boolean mDownloadStarted;
         public OfflineItem mLastUpdatedItem;
 
         public TestInfoBarController() {
-            super(/*otrProfileID=*/null);
         }
 
         @Override
@@ -87,8 +87,31 @@ public class OMADownloadHandlerTest {
         }
 
         @Override
+        public void onDownloadItemUpdated(DownloadItem downloadItem) {
+            OfflineItem offlineItem = DownloadItem.createOfflineItem(downloadItem);
+            onItemUpdated(offlineItem, null);
+        }
+
+        @Override
+        public void onDownloadItemRemoved(ContentId contentId) {}
+
+        @Override
+        public void onItemsAdded(List<OfflineItem> items) {}
+
+        @Override
         public void onItemUpdated(OfflineItem item, UpdateDelta updateDelta) {
             mLastUpdatedItem = item;
+        }
+
+        @Override
+        public void onItemRemoved(ContentId id) {}
+
+        @Override
+        public void onNotificationShown(ContentId id, int notificationId) {}
+
+        @Override
+        public boolean isShowing() {
+            return false;
         }
 
         public OfflineItem getLastUpdatedItem() {
