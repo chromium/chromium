@@ -6,8 +6,10 @@
 #define CHROME_BROWSER_ASH_POLICY_DLP_DATA_TRANSFER_DLP_CONTROLLER_H_
 
 #include "base/callback.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/policy/dlp/dlp_clipboard_notifier.h"
 #include "chrome/browser/ash/policy/dlp/dlp_drag_drop_notifier.h"
+#include "chrome/browser/ash/policy/dlp/dlp_rules_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
 
@@ -16,8 +18,6 @@ class DataTransferEndpoint;
 }
 
 namespace policy {
-
-class DlpRulesManager;
 
 // DataTransferDlpController is responsible for preventing leaks of confidential
 // data through clipboard data read or drag-and-drop by controlling read
@@ -73,6 +73,36 @@ class DataTransferDlpController : public ui::DataTransferPolicyController {
   virtual void NotifyBlockedDrop(
       const ui::DataTransferEndpoint* const data_src,
       const ui::DataTransferEndpoint* const data_dst);
+
+  bool ShouldSkipReporting(const ui::DataTransferEndpoint* const data_src,
+                           const ui::DataTransferEndpoint* const data_dst,
+                           base::TimeTicks curr_time);
+
+  template <typename T>
+  void ReportEvent(const ui::DataTransferEndpoint* const data_src,
+                   const ui::DataTransferEndpoint* const data_dst,
+                   const std::string& src_pattern,
+                   const T& dst,
+                   DlpRulesManager::Level level);
+
+  DlpRulesManager::Level IsDataTransferAllowed(
+      const ui::DataTransferEndpoint* const data_src,
+      const ui::DataTransferEndpoint* const data_dst,
+      const absl::optional<size_t> size);
+
+  // The solution for the issue of sending multiple reporting events for a
+  // single user action. When a user triggers a paste (for instance by pressing
+  // ctrl+V) clipboard API receives multiple mojo calls. For each call we check
+  // if restricted data is being accessed. However, there is no way to identify
+  // if those API calls come from the same user action or not. So after
+  // reporting one event, we skip reporting for a short time.
+  struct LastReportedEndpoints {
+    LastReportedEndpoints();
+    ~LastReportedEndpoints();
+    absl::optional<ui::DataTransferEndpoint> data_src;
+    absl::optional<ui::DataTransferEndpoint> data_dst;
+    base::TimeTicks time;
+  } last_reported_;
 
   const DlpRulesManager& dlp_rules_manager_;
   DlpClipboardNotifier clipboard_notifier_;

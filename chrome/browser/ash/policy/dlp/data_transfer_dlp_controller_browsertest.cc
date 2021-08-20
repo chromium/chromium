@@ -15,6 +15,9 @@
 #include "chrome/browser/ash/policy/core/user_policy_test_helper.h"
 #include "chrome/browser/ash/policy/dlp/data_transfer_dlp_controller.h"
 #include "chrome/browser/ash/policy/dlp/dlp_policy_constants.h"
+#include "chrome/browser/ash/policy/dlp/dlp_policy_event.pb.h"
+#include "chrome/browser/ash/policy/dlp/dlp_reporting_manager.h"
+#include "chrome/browser/ash/policy/dlp/dlp_reporting_manager_test_helper.h"
 #include "chrome/browser/ash/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/ash/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/ash/policy/dlp/dlp_rules_manager_impl.h"
@@ -136,6 +139,8 @@ class MockDlpRulesManager : public DlpRulesManagerImpl {
   explicit MockDlpRulesManager(PrefService* local_state)
       : DlpRulesManagerImpl(local_state, /* dm_token_value= */ "") {}
   ~MockDlpRulesManager() override = default;
+
+  MOCK_CONST_METHOD0(GetReportingManager, DlpReportingManager*());
 };
 
 void SetClipboardText(std::u16string text,
@@ -743,6 +748,12 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, MAYBE_Reporting) {
   FakeClipboardNotifier helper;
   FakeDlpController dlp_controller(rules_manager, &helper);
 
+  DlpReportingManager reporting_manager;
+  std::vector<DlpPolicyEvent> events;
+  SetReportQueueForReportingManager(&reporting_manager, events);
+  EXPECT_CALL(rules_manager, GetReportingManager)
+      .WillRepeatedly(::testing::Return(&reporting_manager));
+
   {
     ListPrefUpdate update(g_browser_process->local_state(),
                           policy_prefs::kDlpRulesList);
@@ -802,6 +813,12 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, MAYBE_Reporting) {
   GetActiveWebContents()->Paste();
   EXPECT_FALSE(dlp_controller.ObserveWidget());
   EXPECT_EQ(kClipboardText1, EvalJs(GetActiveWebContents(), "p"));
+
+  EXPECT_EQ(events.size(), 1u);
+  EXPECT_THAT(events[0],
+              IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                  kMailUrl, "*", DlpRulesManager::Restriction::kClipboard,
+                  DlpRulesManager::Level::kReport)));
 }
 
 }  // namespace policy
