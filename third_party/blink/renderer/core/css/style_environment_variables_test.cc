@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
@@ -426,6 +427,40 @@ TEST_F(StyleEnvironmentVariablesTest, RecordUseCounter_SafeAreaInsetTop) {
   EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kCSSEnvironmentVariable));
   EXPECT_TRUE(GetDocument().IsUseCounted(
       WebFeature::kCSSEnvironmentVariable_SafeAreaInsetTop));
+}
+
+TEST_F(StyleEnvironmentVariablesTest, KeyboardInset_AfterLoad) {
+  // This test asserts that the keyboard inset environment variables should be
+  // loaded by default when the VirtualKeyboard runtime flag is set.
+  ScopedVirtualKeyboardForTest scoped_feature(true);
+  CSSVariableData* data =
+      StyleEnvironmentVariables::GetRootInstance().ResolveVariable(
+          StyleEnvironmentVariables::GetVariableName(
+              UADefinedVariable::kKeyboardInsetTop,
+              /*feature_context=*/nullptr));
+  EXPECT_TRUE(data);
+  data = StyleEnvironmentVariables::GetRootInstance().ResolveVariable(
+      StyleEnvironmentVariables::GetVariableName(
+          UADefinedVariable::kKeyboardInsetLeft, /*feature_context=*/nullptr));
+  EXPECT_TRUE(data);
+  data = StyleEnvironmentVariables::GetRootInstance().ResolveVariable(
+      StyleEnvironmentVariables::GetVariableName(
+          UADefinedVariable::kKeyboardInsetBottom,
+          /*feature_context=*/nullptr));
+  EXPECT_TRUE(data);
+  data = StyleEnvironmentVariables::GetRootInstance().ResolveVariable(
+      StyleEnvironmentVariables::GetVariableName(
+          UADefinedVariable::kKeyboardInsetRight, /*feature_context=*/nullptr));
+  EXPECT_TRUE(data);
+  data = StyleEnvironmentVariables::GetRootInstance().ResolveVariable(
+      StyleEnvironmentVariables::GetVariableName(
+          UADefinedVariable::kKeyboardInsetWidth, /*feature_context=*/nullptr));
+  EXPECT_TRUE(data);
+  data = StyleEnvironmentVariables::GetRootInstance().ResolveVariable(
+      StyleEnvironmentVariables::GetVariableName(
+          UADefinedVariable::kKeyboardInsetHeight,
+          /*feature_context=*/nullptr));
+  EXPECT_TRUE(data);
 }
 
 }  // namespace blink
