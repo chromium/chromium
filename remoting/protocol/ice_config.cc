@@ -172,13 +172,13 @@ IceConfig IceConfig::Parse(const base::DictionaryValue& dictionary) {
     }
 
     for (const auto& url : urls_list->GetList()) {
-      std::string url_str;
-      if (!url.GetAsString(&url_str)) {
+      const std::string* url_str = url.GetIfString();
+      if (!url_str) {
         errors_found = true;
         continue;
       }
-      if (!AddServerToConfig(url_str, username, password, &ice_config)) {
-        LOG(ERROR) << "Invalid ICE server URL: " << url_str;
+      if (!AddServerToConfig(*url_str, username, password, &ice_config)) {
+        LOG(ERROR) << "Invalid ICE server URL: " << *url_str;
       }
     }
   }
