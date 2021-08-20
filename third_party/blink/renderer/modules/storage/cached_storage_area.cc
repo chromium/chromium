@@ -187,13 +187,13 @@ String CachedStorageArea::RegisterSource(Source* source) {
 
 CachedStorageArea::CachedStorageArea(
     AreaType type,
-    scoped_refptr<const SecurityOrigin> origin,
+    const BlinkStorageKey& storage_key,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     StorageNamespace* storage_namespace,
     bool is_session_storage_for_prerendering,
     mojo::PendingRemote<mojom::blink::StorageArea> storage_area)
     : type_(type),
-      origin_(std::move(origin)),
+      storage_key_(storage_key),
       storage_namespace_(storage_namespace),
       is_session_storage_for_prerendering_(is_session_storage_for_prerendering),
       task_runner_(std::move(task_runner)),
@@ -217,7 +217,7 @@ void CachedStorageArea::BindStorageArea(
     remote_area_.Bind(std::move(new_area), task_runner_);
   } else if (storage_namespace_) {
     storage_namespace_->BindStorageArea(
-        origin_, remote_area_.BindNewPipeAndPassReceiver(task_runner_));
+        storage_key_, remote_area_.BindNewPipeAndPassReceiver(task_runner_));
   } else {
     return;
   }
@@ -651,7 +651,7 @@ void CachedStorageArea::EnqueueStorageEvent(const String& key,
   }
   areas_->RemoveAll(areas_to_remove_);
   if (storage_namespace_) {
-    storage_namespace_->DidDispatchStorageEvent(origin_.get(), key, old_value,
+    storage_namespace_->DidDispatchStorageEvent(storage_key_, key, old_value,
                                                 new_value);
   }
 }

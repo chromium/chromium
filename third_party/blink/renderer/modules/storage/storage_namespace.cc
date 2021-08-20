@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/modules/storage/inspector_dom_storage_agent.h"
 #include "third_party/blink/renderer/modules/storage/storage_area.h"
 #include "third_party/blink/renderer/modules/storage/storage_controller.h"
+#include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
@@ -68,7 +69,7 @@ void StorageNamespace::ProvideSessionStorageNamespaceTo(
 }
 
 scoped_refptr<CachedStorageArea> StorageNamespace::GetCachedArea(
-    const SecurityOrigin* origin_ptr,
+    const BlinkStorageKey& storage_key,
     mojo::PendingRemote<mojom::blink::StorageArea> storage_area) {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -81,7 +82,7 @@ scoped_refptr<CachedStorageArea> StorageNamespace::GetCachedArea(
 
   CacheMetrics metric = CacheMetrics::kMiss;
   scoped_refptr<CachedStorageArea> result;
-  auto cache_it = cached_areas_.find(origin_ptr);
+  auto cache_it = cached_areas_.find(storage_key.GetSecurityOrigin());
   if (cache_it != cached_areas_.end()) {
     metric = cache_it->value->HasOneRef() ? CacheMetrics::kHit
                                           : CacheMetrics::kUnused;
@@ -97,27 +98,24 @@ scoped_refptr<CachedStorageArea> StorageNamespace::GetCachedArea(
   if (result)
     return result;
 
-  scoped_refptr<const SecurityOrigin> origin(origin_ptr);
-
   controller_->ClearAreasIfNeeded();
   result = base::MakeRefCounted<CachedStorageArea>(
       IsSessionStorage() ? CachedStorageArea::AreaType::kSessionStorage
                          : CachedStorageArea::AreaType::kLocalStorage,
-      origin, controller_->TaskRunner(), this,
+      storage_key, controller_->TaskRunner(), this,
       /*is_session_storage_for_prerendering=*/false, std::move(storage_area));
-  cached_areas_.insert(std::move(origin), result);
+  cached_areas_.insert(storage_key.GetSecurityOrigin(), result);
   return result;
 }
 
 scoped_refptr<CachedStorageArea> StorageNamespace::CreateCachedAreaForPrerender(
-    const SecurityOrigin* origin_ptr,
+    const BlinkStorageKey& storage_key,
     mojo::PendingRemote<mojom::blink::StorageArea> storage_area) {
   DCHECK((IsSessionStorage()));
-  scoped_refptr<const SecurityOrigin> origin(origin_ptr);
   return base::MakeRefCounted<CachedStorageArea>(
       IsSessionStorage() ? CachedStorageArea::AreaType::kSessionStorage
                          : CachedStorageArea::AreaType::kLocalStorage,
-      origin, controller_->TaskRunner(), this,
+      storage_key, controller_->TaskRunner(), this,
       /*is_session_storage_for_prerendering=*/true, std::move(storage_area));
 }
 
@@ -201,27 +199,31 @@ void StorageNamespace::Trace(Visitor* visitor) const {
   Supplement<Page>::Trace(visitor);
 }
 
-void StorageNamespace::DidDispatchStorageEvent(const SecurityOrigin* origin,
-                                               const String& key,
-                                               const String& old_value,
-                                               const String& new_value) {
+void StorageNamespace::DidDispatchStorageEvent(
+    const BlinkStorageKey& storage_key,
+    const String& key,
+    const String& old_value,
+    const String& new_value) {
   for (InspectorDOMStorageAgent* agent : inspector_agents_) {
     agent->DidDispatchDOMStorageEvent(
         key, old_value, new_value,
         IsSessionStorage() ? StorageArea::StorageType::kSessionStorage
                            : StorageArea::StorageType::kLocalStorage,
-        origin);
+        storage_key);
   }
 }
 
 void StorageNamespace::BindStorageArea(
-    const scoped_refptr<const SecurityOrigin>& origin,
+    const BlinkStorageKey& storage_key,
     mojo::PendingReceiver<mojom::blink::StorageArea> receiver) {
   if (IsSessionStorage()) {
-    controller_->dom_storage()->BindSessionStorageArea(origin, namespace_id_,
-                                                       std::move(receiver));
+    controller_->dom_storage()->BindSessionStorageArea(
+        // TODO(https://crbug.com/1212808) Refactor and pass FrameID as well.
+        storage_key.GetSecurityOrigin(), namespace_id_, std::move(receiver));
   } else {
-    controller_->dom_storage()->OpenLocalStorage(origin, std::move(receiver));
+    controller_->dom_storage()->OpenLocalStorage(
+        // TODO(https://crbug.com/1212808) Refactor and pass FrameID as well.
+        storage_key.GetSecurityOrigin(), std::move(receiver));
   }
 }
 

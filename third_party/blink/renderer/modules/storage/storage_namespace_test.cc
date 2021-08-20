@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/modules/storage/storage_controller.h"
 #include "third_party/blink/renderer/modules/storage/testing/fake_area_source.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/uuid.h"
 
@@ -23,11 +24,12 @@ namespace {
 constexpr size_t kTestCacheLimit = 100;
 
 TEST(StorageNamespaceTest, BasicStorageAreas) {
-  const auto kOrigin = SecurityOrigin::CreateFromString("http://dom_storage1/");
-  const auto kOrigin2 =
-      SecurityOrigin::CreateFromString("http://dom_storage2/");
-  const auto kOrigin3 =
-      SecurityOrigin::CreateFromString("http://dom_storage3/");
+  const BlinkStorageKey kStorageKey =
+      BlinkStorageKey::CreateFromStringForTesting("http://dom_storage1/");
+  const BlinkStorageKey kStorageKey2 =
+      BlinkStorageKey::CreateFromStringForTesting("http://dom_storage2/");
+  const BlinkStorageKey kStorageKey3 =
+      BlinkStorageKey::CreateFromStringForTesting("http://dom_storage3/");
   const String kKey("key");
   const String kValue("value");
   const String kSessionStorageNamespace("abcd");
@@ -49,13 +51,13 @@ TEST(StorageNamespaceTest, BasicStorageAreas) {
   EXPECT_FALSE(localStorage->IsSessionStorage());
   EXPECT_TRUE(sessionStorage->IsSessionStorage());
 
-  auto cached_area1 = localStorage->GetCachedArea(kOrigin.get());
+  auto cached_area1 = localStorage->GetCachedArea(kStorageKey);
   cached_area1->RegisterSource(source_area);
   cached_area1->SetItem(kKey, kValue, source_area);
-  auto cached_area2 = localStorage->GetCachedArea(kOrigin2.get());
+  auto cached_area2 = localStorage->GetCachedArea(kStorageKey2);
   cached_area2->RegisterSource(source_area);
   cached_area2->SetItem(kKey, kValue, source_area);
-  auto cached_area3 = sessionStorage->GetCachedArea(kOrigin3.get());
+  auto cached_area3 = sessionStorage->GetCachedArea(kStorageKey3);
   cached_area3->RegisterSource(source_area);
   cached_area3->SetItem(kKey, kValue, source_area);
 

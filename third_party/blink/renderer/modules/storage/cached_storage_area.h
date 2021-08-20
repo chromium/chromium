@@ -16,7 +16,7 @@
 #include "third_party/blink/renderer/modules/storage/storage_namespace.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -24,10 +24,10 @@
 namespace blink {
 
 // An in-process implementation of LocalStorage using a LevelDB Mojo service.
-// Maintains a complete cache of the origin's Map of key/value pairs for fast
-// access. The cache is primed on first access and changes are written to the
-// backend through the level db interface pointer. Mutations originating in
-// other processes are applied to the cache via mojom::LevelDBObserver
+// Maintains a complete cache of the BlinkStorageKey's Map of key/value pairs
+// for fast access. The cache is primed on first access and changes are written
+// to the backend through the level db interface pointer. Mutations originating
+// in other processes are applied to the cache via mojom::LevelDBObserver
 // callbacks.
 // There is one CachedStorageArea for potentially many LocalStorageArea
 // objects.
@@ -62,7 +62,7 @@ class MODULES_EXPORT CachedStorageArea
 
   CachedStorageArea(
       AreaType type,
-      scoped_refptr<const SecurityOrigin> origin,
+      const BlinkStorageKey& storage_key,
       scoped_refptr<base::SingleThreadTaskRunner> ipc_runner,
       StorageNamespace* storage_namespace,
       bool is_session_storage_for_prerendering,
@@ -184,7 +184,7 @@ class MODULES_EXPORT CachedStorageArea
                                              FormatOption format_option);
 
   const AreaType type_;
-  const scoped_refptr<const SecurityOrigin> origin_;
+  const BlinkStorageKey storage_key_;
   const WeakPersistent<StorageNamespace> storage_namespace_;
   // Session storage state for prerendering is initialized by cloning the
   // primary session storage state. It is used locally by the prerendering

@@ -10,8 +10,8 @@
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/modules/storage/testing/fake_area_source.h"
 #include "third_party/blink/renderer/modules/storage/testing/mock_storage_area.h"
+#include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
-#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -22,8 +22,8 @@ using ::testing::UnorderedElementsAre;
 
 class CachedStorageAreaTest : public testing::Test {
  public:
-  const scoped_refptr<SecurityOrigin> kOrigin =
-      SecurityOrigin::CreateFromString("http://dom_storage/");
+  const BlinkStorageKey kStorageKey =
+      BlinkStorageKey::CreateFromStringForTesting("http://dom_storage/");
   const String kKey = "key";
   const String kValue = "value";
   const String kValue2 = "another value";
@@ -37,8 +37,9 @@ class CachedStorageAreaTest : public testing::Test {
         IsSessionStorage() ? CachedStorageArea::AreaType::kSessionStorage
                            : CachedStorageArea::AreaType::kLocalStorage;
     cached_area_ = base::MakeRefCounted<CachedStorageArea>(
-        area_type, kOrigin, scheduler::GetSingleThreadTaskRunnerForTesting(),
-        nullptr, /*is_session_storage_for_prerendering=*/false);
+        area_type, kStorageKey,
+        scheduler::GetSingleThreadTaskRunnerForTesting(), nullptr,
+        /*is_session_storage_for_prerendering=*/false);
     cached_area_->SetRemoteAreaForTesting(
         mock_storage_area_.GetInterfaceRemote());
     source_area_ = MakeGarbageCollected<FakeAreaSource>(kPageUrl);

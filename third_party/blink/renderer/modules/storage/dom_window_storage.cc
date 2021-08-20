@@ -139,10 +139,10 @@ StorageArea* DOMWindowStorage::GetOrCreateSessionStorage(
   scoped_refptr<CachedStorageArea> cached_storage_area;
   if (window->document()->IsPrerendering()) {
     cached_storage_area = storage_namespace->CreateCachedAreaForPrerender(
-        window->GetSecurityOrigin(), std::move(storage_area_for_init));
+        window->GetStorageKey(), std::move(storage_area_for_init));
   } else {
     cached_storage_area = storage_namespace->GetCachedArea(
-        window->GetSecurityOrigin(), std::move(storage_area_for_init));
+        window->GetStorageKey(), std::move(storage_area_for_init));
   }
   session_storage_ =
       StorageArea::Create(window, std::move(cached_storage_area),
@@ -178,7 +178,7 @@ StorageArea* DOMWindowStorage::GetOrCreateLocalStorage(
     return local_storage_;
 
   auto storage_area = StorageController::GetInstance()->GetLocalStorageArea(
-      window->GetSecurityOrigin(), std::move(storage_area_for_init));
+      window->GetStorageKey(), std::move(storage_area_for_init));
   local_storage_ = StorageArea::Create(window, std::move(storage_area),
                                        StorageArea::StorageType::kLocalStorage);
   return local_storage_;

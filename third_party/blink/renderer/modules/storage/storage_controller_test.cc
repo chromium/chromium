@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/modules/storage/testing/fake_area_source.h"
 #include "third_party/blink/renderer/modules/storage/testing/mock_storage_area.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/uuid.h"
 
@@ -55,11 +56,12 @@ class MockDomStorage : public mojom::blink::DomStorage {
 }  // namespace
 
 TEST(StorageControllerTest, CacheLimit) {
-  const auto kOrigin = SecurityOrigin::CreateFromString("http://dom_storage1/");
-  const auto kOrigin2 =
-      SecurityOrigin::CreateFromString("http://dom_storage2/");
-  const auto kOrigin3 =
-      SecurityOrigin::CreateFromString("http://dom_storage3/");
+  const BlinkStorageKey kStorageKey =
+      BlinkStorageKey::CreateFromStringForTesting("http://dom_storage1/");
+  const BlinkStorageKey kStorageKey2 =
+      BlinkStorageKey::CreateFromStringForTesting("http://dom_storage2/");
+  const BlinkStorageKey kStorageKey3 =
+      BlinkStorageKey::CreateFromStringForTesting("http://dom_storage3/");
   const String kKey("key");
   const String kValue("value");
   const KURL kPageUrl("http://dom_storage/page");
@@ -80,7 +82,7 @@ TEST(StorageControllerTest, CacheLimit) {
                                scheduler::GetSingleThreadTaskRunnerForTesting(),
                                kTestCacheLimit);
 
-  auto cached_area1 = controller.GetLocalStorageArea(kOrigin.get());
+  auto cached_area1 = controller.GetLocalStorageArea(kStorageKey);
   cached_area1->RegisterSource(source_area);
   cached_area1->SetItem(kKey, kValue, source_area);
   const auto* area1_ptr = cached_area1.get();
@@ -89,28 +91,29 @@ TEST(StorageControllerTest, CacheLimit) {
   EXPECT_EQ(expected_total, controller.TotalCacheSize());
   cached_area1 = nullptr;
 
-  auto cached_area2 = controller.GetLocalStorageArea(kOrigin2.get());
+  auto cached_area2 = controller.GetLocalStorageArea(kStorageKey2);
   cached_area2->RegisterSource(source_area);
   cached_area2->SetItem(kKey, kValue, source_area);
-  // Area for kOrigin should still be alive.
+  // Area for kStorageKey should still be alive.
   EXPECT_EQ(2 * cached_area2->quota_used(), controller.TotalCacheSize());
-  EXPECT_EQ(area1_ptr, controller.GetLocalStorageArea(kOrigin.get()));
+  EXPECT_EQ(area1_ptr, controller.GetLocalStorageArea(kStorageKey));
 
   String long_value(Vector<UChar>(kTestCacheLimit, 'a'));
   cached_area2->SetItem(kKey, long_value, source_area);
   // Cache is cleared when a new area is opened.
-  auto cached_area3 = controller.GetLocalStorageArea(kOrigin3.get());
+  auto cached_area3 = controller.GetLocalStorageArea(kStorageKey3);
   EXPECT_EQ(cached_area2->quota_used(), controller.TotalCacheSize());
 }
 
 TEST(StorageControllerTest, CacheLimitSessionStorage) {
   const String kNamespace1 = WTF::CreateCanonicalUUIDString();
   const String kNamespace2 = WTF::CreateCanonicalUUIDString();
-  const auto kOrigin = SecurityOrigin::CreateFromString("http://dom_storage1/");
-  const auto kOrigin2 =
-      SecurityOrigin::CreateFromString("http://dom_storage2/");
-  const auto kOrigin3 =
-      SecurityOrigin::CreateFromString("http://dom_storage3/");
+  const BlinkStorageKey kStorageKey =
+      BlinkStorageKey::CreateFromStringForTesting("http://dom_storage1/");
+  const BlinkStorageKey kStorageKey2 =
+      BlinkStorageKey::CreateFromStringForTesting("http://dom_storage2/");
+  const BlinkStorageKey kStorageKey3 =
+      BlinkStorageKey::CreateFromStringForTesting("http://dom_storage3/");
   const String kKey("key");
   const String kValue("value");
   const KURL kPageUrl("http://dom_storage/page");
@@ -140,7 +143,7 @@ TEST(StorageControllerTest, CacheLimitSessionStorage) {
   StorageNamespace* ns1 = controller.CreateSessionStorageNamespace(kNamespace1);
   StorageNamespace* ns2 = controller.CreateSessionStorageNamespace(kNamespace2);
 
-  auto cached_area1 = ns1->GetCachedArea(kOrigin.get());
+  auto cached_area1 = ns1->GetCachedArea(kStorageKey);
   cached_area1->RegisterSource(source_area);
   cached_area1->SetItem(kKey, kValue, source_area);
   const auto* area1_ptr = cached_area1.get();
@@ -149,17 +152,17 @@ TEST(StorageControllerTest, CacheLimitSessionStorage) {
   EXPECT_EQ(expected_total, controller.TotalCacheSize());
   cached_area1 = nullptr;
 
-  auto cached_area2 = ns2->GetCachedArea(kOrigin2.get());
+  auto cached_area2 = ns2->GetCachedArea(kStorageKey2);
   cached_area2->RegisterSource(source_area);
   cached_area2->SetItem(kKey, kValue, source_area);
-  // Area for kOrigin should still be alive.
+  // Area for kStorageKey should still be alive.
   EXPECT_EQ(2 * cached_area2->quota_used(), controller.TotalCacheSize());
-  EXPECT_EQ(area1_ptr, ns1->GetCachedArea(kOrigin.get()));
+  EXPECT_EQ(area1_ptr, ns1->GetCachedArea(kStorageKey));
 
   String long_value(Vector<UChar>(kTestCacheLimit, 'a'));
   cached_area2->SetItem(kKey, long_value, source_area);
   // Cache is cleared when a new area is opened.
-  auto cached_area3 = ns1->GetCachedArea(kOrigin3.get());
+  auto cached_area3 = ns1->GetCachedArea(kStorageKey3);
   EXPECT_EQ(cached_area2->quota_used(), controller.TotalCacheSize());
 
   int32_t opens = 0;

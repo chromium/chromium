@@ -44,26 +44,18 @@
 
 namespace blink {
 
+class BlinkStorageKey;
 class CachedStorageArea;
 class InspectorDOMStorageAgent;
 class StorageController;
 class SecurityOrigin;
 
-// Contains DOMStorage storage areas for origins & handles inspector agents. A
-// namespace is either a SessionStorage namespace with a namespace_id, or a
-// LocalStorage namespace with no (or an empty) namespace_id. The LocalStorage
-// version of the StorageNamespace lives in the StorageController.
+// Contains DOMStorage storage areas for BlinkStorageKeys & handles inspector
+// agents. A namespace is either a SessionStorage namespace with a namespace_id,
+// or a LocalStorage namespace with no (or an empty) namespace_id. The
+// LocalStorage version of the StorageNamespace lives in the StorageController.
 // InspectorDOMStorageAgents that are registered on this object are notified
 // through `DidDispatchStorageEvent`.
-//
-// With the kOnionSoupDOMStorage flag off:
-// The StorageNamespace basically delegates calls to GetWebStorageArea to the
-// internal WebStorageNamespace. `GetWebStorageArea` is used to get the storage
-// area for an origin.
-//
-// With the kOnionSoupDOMStorage flag on:
-// The StorageNamespace for SessionStorage supplement the Page. `GetCachedArea`
-// is used to get the storage area for an origin.
 class MODULES_EXPORT StorageNamespace final
     : public GarbageCollected<StorageNamespace>,
       public Supplement<Page> {
@@ -84,11 +76,11 @@ class MODULES_EXPORT StorageNamespace final
 
   // |storage_area| is ignored here if a cached namespace already exists.
   scoped_refptr<CachedStorageArea> GetCachedArea(
-      const SecurityOrigin* origin,
+      const BlinkStorageKey& storage_key,
       mojo::PendingRemote<mojom::blink::StorageArea> storage_area = {});
 
   scoped_refptr<CachedStorageArea> CreateCachedAreaForPrerender(
-      const SecurityOrigin* origin,
+      const BlinkStorageKey& storage_key,
       mojo::PendingRemote<mojom::blink::StorageArea> storage_area = {});
 
   void EvictSessionStorageCachedData();
@@ -111,7 +103,7 @@ class MODULES_EXPORT StorageNamespace final
 
   // Iterates all of the inspector agents and calls
   // `DidDispatchDOMStorageEvent`.
-  void DidDispatchStorageEvent(const SecurityOrigin* origin,
+  void DidDispatchStorageEvent(const BlinkStorageKey& storage_key,
                                const String& key,
                                const String& old_value,
                                const String& new_value);
@@ -119,7 +111,7 @@ class MODULES_EXPORT StorageNamespace final
   // Called by areas in `cached_areas_` to bind/rebind their StorageArea
   // interface.
   void BindStorageArea(
-      const scoped_refptr<const SecurityOrigin>& origin,
+      const BlinkStorageKey& storage_key,
       mojo::PendingReceiver<mojom::blink::StorageArea> receiver);
 
   // If this StorageNamespace was previously connected to the backend, this
@@ -138,6 +130,7 @@ class MODULES_EXPORT StorageNamespace final
   // `StorageNamespace` is a per-Page object and doesn't have any
   // `ExecutionContext`.
   HeapMojoRemote<mojom::blink::SessionStorageNamespace> namespace_{nullptr};
+  // TODO(https://crbug.com/1212808) Migrate hash map and function.
   HashMap<scoped_refptr<const SecurityOrigin>,
           scoped_refptr<CachedStorageArea>,
           SecurityOriginHash>
