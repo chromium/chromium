@@ -5207,6 +5207,12 @@ const char kPaintPreviewStartupDescription[] =
 const char kWebUITabStripName[] = "WebUI tab strip";
 const char kWebUITabStripDescription[] =
     "When enabled makes use of a WebUI-based tab strip.";
+
+const char kWebUITabStripContextMenuAfterTapName[] =
+    "WebUI tab strip context menu after tap";
+const char kWebUITabStripContextMenuAfterTapDescription[] =
+    "Enables the context menu to appear after a tap gesture rather than "
+    "following a press gesture.";
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP) && BUILDFLAG(IS_CHROMEOS_ASH)

@@ -289,12 +289,12 @@ export class TabListElement extends CustomElement {
     this.eventTracker_.add(this, 'scroll', e => this.onScroll_(e));
     this.eventTracker_.add(
         document, 'touchstart', (e) => this.onTouchStart_(e));
-    // Touchend events happen when a touch gesture finishes normally (ie not due
-    // to the context menu appearing or drag starting). Clear the last targeted
-    // item on a drag end to ensure `lastTargetedItem_` is cleared for the cases
-    // that do not end with a dragstart or the context menu appearing.
+    // Touchmove events happen when a user has started a touch gesture sequence
+    // and proceeded to move their touch pointer across the screen. Ensure that
+    // we clear the `last_targeted_item_` in these cases to ensure the pressed
+    // visual is cleared away.
     this.eventTracker_.add(
-        document, 'touchend', () => this.clearLastTargetedItem_());
+        document, 'touchmove', () => this.clearLastTargetedItem_());
 
     const dragManager = new DragManager(this);
     dragManager.startObserving();

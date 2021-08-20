@@ -3026,6 +3026,9 @@ extern const char kPaintPreviewStartupDescription[];
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 extern const char kWebUITabStripName[];
 extern const char kWebUITabStripDescription[];
+
+extern const char kWebUITabStripContextMenuAfterTapName[];
+extern const char kWebUITabStripContextMenuAfterTapDescription[];
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP) && BUILDFLAG(IS_CHROMEOS_ASH)
