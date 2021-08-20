@@ -6,6 +6,11 @@
  * @fileoverview Root element of the OOBE UI Debugger.
  */
 
+// #import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
+// #import {loadTimeData} from '../i18n_setup.js';
+// #import {Oobe} from '../cr_ui.m.js'
+// #import {$} from 'chrome://resources/js/util.m.js';
+
 cr.define('cr.ui.login.debug', function() {
   const DEBUG_BUTTON_STYLE = `
       height:20px;
@@ -958,7 +963,7 @@ cr.define('cr.ui.login.debug', function() {
             screen.reset();
             screen.setWebview(RECOMMENDED_APPS_CONTENT);
             let apps = [];
-            for (i = 1; i <= 21; i++) {
+            for (let i = 1; i <= 21; i++) {
               apps.push({
                 name: 'Test app ' + i,
                 package_name: 'app.test' + i,
@@ -1123,7 +1128,7 @@ cr.define('cr.ui.login.debug', function() {
     }
   }
 
-  class DebuggerUI {
+  /* #export */ class DebuggerUI {
     constructor() {
       this.debuggerVisible_ = false;
       /** Element with Debugger UI */
@@ -1558,28 +1563,9 @@ cr.define('cr.ui.login.debug', function() {
 
   cr.addSingletonGetter(DebuggerUI);
 
+  // #cr_define_end
   // Export
   return {
     DebuggerUI: DebuggerUI,
   };
 });
-
-/**
- * Initializes the Debugger. Called after the DOM, and all external scripts,
- * have been loaded.
- */
-function initializeDebugger() {
-  if (document.readyState === 'loading')
-    return;
-  document.removeEventListener('DOMContentLoaded', initializeDebugger);
-  cr.ui.login.debug.DebuggerUI.getInstance().register(document.body);
-}
-
-/**
- * Final initialization performed after DOM and all scripts have loaded.
- */
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initializeDebugger);
-} else {
-  initializeDebugger();
-}
