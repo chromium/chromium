@@ -98,8 +98,8 @@ std::unique_ptr<ash::DeskTemplate> CaptureActiveDeskAndSaveTemplate() {
   std::unique_ptr<ash::DeskTemplate> desk_template;
   DesksClient::Get()->CaptureActiveDeskAndSaveTemplate(
       base::BindLambdaForTesting(
-          [&](bool success,
-              std::unique_ptr<ash::DeskTemplate> captured_desk_template) {
+          [&](std::unique_ptr<ash::DeskTemplate> captured_desk_template,
+              std::string error_string) {
             run_loop.Quit();
             ASSERT_TRUE(captured_desk_template);
             desk_template = std::move(captured_desk_template);
@@ -112,7 +112,8 @@ void DeleteDeskTemplate(const base::GUID uuid) {
   base::RunLoop run_loop;
   DesksClient::Get()->DeleteDeskTemplate(
       uuid.AsLowercaseString(),
-      base::BindLambdaForTesting([&](bool success) { run_loop.Quit(); }));
+      base::BindLambdaForTesting(
+          [&](std::string error_string) { run_loop.Quit(); }));
   run_loop.Run();
 }
 
@@ -533,8 +534,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithSystemAppExisting) {
   std::unique_ptr<ash::DeskTemplate> desk_template;
   DesksClient::Get()->CaptureActiveDeskAndSaveTemplate(
       base::BindLambdaForTesting(
-          [&](bool success,
-              std::unique_ptr<ash::DeskTemplate> captured_desk_template) {
+          [&](std::unique_ptr<ash::DeskTemplate> captured_desk_template,
+              std::string error_string) {
             run_loop.Quit();
             ASSERT_TRUE(captured_desk_template);
             desk_template = std::move(captured_desk_template);
@@ -971,8 +972,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientMultiProfileTest, MultiProfileTest) {
     base::RunLoop run_loop;
     int templates_num = 0;
     DesksClient::Get()->GetDeskTemplates(base::BindLambdaForTesting(
-        [&](bool success,
-            const std::vector<ash::DeskTemplate*>& desk_templates) {
+        [&](const std::vector<ash::DeskTemplate*>& desk_templates,
+            std::string error_string) {
           templates_num = desk_templates.size();
           run_loop.Quit();
         }));
