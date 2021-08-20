@@ -4,6 +4,7 @@
 
 #include "ash/projector/projector_ui_controller.h"
 
+#include "ash/accessibility/caption_bubble_context_ash.h"
 #include "ash/accessibility/magnifier/partial_magnifier_controller.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/projector/projector_metrics.h"
@@ -13,7 +14,6 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/toast/toast_manager_impl.h"
-#include "ash/wm/work_area_insets.h"
 #include "base/callback_helpers.h"
 #include "components/live_caption/views/caption_bubble.h"
 #include "components/live_caption/views/caption_bubble_model.h"
@@ -86,11 +86,6 @@ ProjectorMarkerColor GetMarkerColor(SkColor color) {
   }
 }
 
-gfx::Rect GetScreenBounds() {
-  return WorkAreaInsets::ForWindow(Shell::GetRootWindowForNewWindows())
-      ->user_work_area_bounds();
-}
-
 }  // namespace
 
 // This class controls the interaction with the caption bubble. It keeps track
@@ -100,10 +95,12 @@ class ProjectorUiController::CaptionBubbleController
  public:
   explicit CaptionBubbleController(ProjectorUiController* controller)
       : controller_(controller) {
-    caption_bubble_model_ = std::make_unique<captions::CaptionBubbleModel>(
-        GetScreenBounds(), base::NullCallback());
+    caption_bubble_context_ =
+        std::make_unique<captions::CaptionBubbleContextAsh>();
+    caption_bubble_model_ = std::make_unique<::captions::CaptionBubbleModel>(
+        caption_bubble_context_.get());
 
-    auto* caption_bubble = new captions::CaptionBubble(
+    auto* caption_bubble = new ::captions::CaptionBubble(
         base::NullCallback(), /* hide_on_inactivity= */ false);
     caption_bubble_widget_ = base::WrapUnique<views::Widget>(
         views::BubbleDialogDelegateView::CreateBubble(caption_bubble));
@@ -164,7 +161,8 @@ class ProjectorUiController::CaptionBubbleController
   ProjectorUiController* const controller_;
 
   views::UniqueWidgetPtr caption_bubble_widget_;
-  std::unique_ptr<captions::CaptionBubbleModel> caption_bubble_model_;
+  std::unique_ptr<::captions::CaptionBubbleModel> caption_bubble_model_;
+  std::unique_ptr<captions::CaptionBubbleContextAsh> caption_bubble_context_;
 };
 
 ProjectorUiController::ProjectorUiController(

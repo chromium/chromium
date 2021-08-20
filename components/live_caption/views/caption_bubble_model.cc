@@ -4,6 +4,7 @@
 
 #include "components/live_caption/views/caption_bubble_model.h"
 
+#include "components/live_caption/caption_bubble_context.h"
 #include "components/live_caption/views/caption_bubble.h"
 
 namespace {
@@ -14,11 +15,10 @@ constexpr int kMaxLines = 9;
 
 namespace captions {
 
-CaptionBubbleModel::CaptionBubbleModel(
-    const absl::optional<gfx::Rect>& context_bounds_in_screen,
-    base::RepeatingClosure activate_context_callback)
-    : context_bounds_in_screen_(context_bounds_in_screen),
-      activate_context_callback_(activate_context_callback) {}
+CaptionBubbleModel::CaptionBubbleModel(CaptionBubbleContext* context)
+    : context_(context) {
+  DCHECK(context_);
+}
 
 CaptionBubbleModel::~CaptionBubbleModel() {
   if (observer_)
@@ -103,15 +103,6 @@ void CaptionBubbleModel::CommitPartialText() {
     final_text_.erase(0, truncate_index);
     OnTextChanged();
   }
-}
-
-bool CaptionBubbleModel::IsContextActivatable() {
-  return activate_context_callback_ != base::NullCallback();
-}
-
-void CaptionBubbleModel::ActivateContext() {
-  DCHECK(IsContextActivatable());
-  activate_context_callback_.Run();
 }
 
 }  // namespace captions

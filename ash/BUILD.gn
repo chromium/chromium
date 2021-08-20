@@ -72,6 +72,8 @@ component("ash") {
     "accessibility/autoclick/autoclick_ring_handler.h",
     "accessibility/autoclick/autoclick_scroll_position_handler.cc",
     "accessibility/autoclick/autoclick_scroll_position_handler.h",
+    "accessibility/caption_bubble_context_ash.cc",
+    "accessibility/caption_bubble_context_ash.h",
     "accessibility/chromevox/key_accessibility_enabler.cc",
     "accessibility/chromevox/key_accessibility_enabler.h",
     "accessibility/chromevox/spoken_feedback_enabler.cc",

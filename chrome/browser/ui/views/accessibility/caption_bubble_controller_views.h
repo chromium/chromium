@@ -11,10 +11,6 @@
 
 #include "components/live_caption/caption_bubble_controller.h"
 
-namespace content {
-class WebContents;
-}
-
 namespace views {
 class Widget;
 }
@@ -68,10 +64,6 @@ class CaptionBubbleControllerViews : public CaptionBubbleController {
   // already exist.
   void SetActiveModel(
       LiveCaptionSpeechRecognitionHost* live_caption_speech_recognition_host);
-
-  // A callback passed to the CaptionBubbleModel which is called when the
-  // BackToTab button is clicked in the CaptionBubble.
-  void ActivateContext(content::WebContents* web_contents);
 
   bool IsWidgetVisibleForTesting() override;
   std::string GetBubbleLabelTextForTesting() override;

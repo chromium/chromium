@@ -5,7 +5,10 @@
 import("//build/config/ui.gni")
 
 static_library("live_caption") {
-  sources = [ "caption_bubble_controller.h" ]
+  sources = [
+    "caption_bubble_context.h",
+    "caption_bubble_controller.h",
+  ]
 
   deps = [
     "//media/mojo/mojom",

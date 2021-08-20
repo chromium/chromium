@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "chrome/browser/accessibility/caption_bubble_context_browser.h"
 #include "chrome/browser/accessibility/live_caption_controller.h"
 #include "chrome/browser/accessibility/live_caption_controller_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -33,6 +34,7 @@ LiveCaptionSpeechRecognitionHost::LiveCaptionSpeechRecognitionHost(
   if (!web_contents)
     return;
   Observe(web_contents);
+  context_ = CaptionBubbleContextBrowser::Create(web_contents);
 }
 
 LiveCaptionSpeechRecognitionHost::~LiveCaptionSpeechRecognitionHost() {
@@ -86,6 +88,10 @@ void LiveCaptionSpeechRecognitionHost::MediaEffectivelyFullscreenChanged(
     live_caption_controller->OnToggleFullscreen(this);
 }
 #endif
+
+CaptionBubbleContext* LiveCaptionSpeechRecognitionHost::GetContext() {
+  return context_.get();
+}
 
 content::WebContents* LiveCaptionSpeechRecognitionHost::GetWebContents() {
   if (!frame_host_)

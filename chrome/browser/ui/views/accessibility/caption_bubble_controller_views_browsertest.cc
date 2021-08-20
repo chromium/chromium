@@ -57,7 +57,7 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
     if (!live_caption_speech_recognition_host_)
       live_caption_speech_recognition_host_ = std::make_unique<
           LiveCaptionSpeechRecognitionHost>(
-          browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame());
+          browser()->tab_strip_model()->GetWebContentsAt(0)->GetMainFrame());
     return live_caption_speech_recognition_host_.get();
   }
 
@@ -347,8 +347,9 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, ShowsAndHidesError) {
   OnError();
 
   // The error should not be visible on a different media stream.
+  chrome::NewTab(browser());
   auto media_1 = std::make_unique<LiveCaptionSpeechRecognitionHost>(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetFocusedFrame());
+      browser()->tab_strip_model()->GetWebContentsAt(1)->GetMainFrame());
   OnPartialTranscription("Elephants are vegetarians.", media_1.get());
   EXPECT_TRUE(GetTitle()->GetVisible());
   EXPECT_TRUE(GetLabel()->GetVisible());
@@ -774,8 +775,9 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, ChangeMedia) {
   // Media 1 has the text "A snail can sleep for two years".
   LiveCaptionSpeechRecognitionHost* media_0 =
       GetLiveCaptionSpeechRecognitionHost();
+  chrome::NewTab(browser());
   auto media_1 = std::make_unique<LiveCaptionSpeechRecognitionHost>(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetFocusedFrame());
+      browser()->tab_strip_model()->GetWebContentsAt(1)->GetMainFrame());
 
   // Send final transcription from media 0.
   OnPartialTranscription("Polar bears are the largest", media_0);
@@ -851,8 +853,9 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, ExpandsAndCollapses) {
   EXPECT_EQ(7 * line_height, GetLabel()->GetBoundsInScreen().height());
 
   // Switch media. The bubble should remain expanded.
+  chrome::NewTab(browser());
   auto media_1 = std::make_unique<LiveCaptionSpeechRecognitionHost>(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetFocusedFrame());
+      browser()->tab_strip_model()->GetWebContentsAt(1)->GetMainFrame());
   OnPartialTranscription("Nearly all ants are female.", media_1.get());
   EXPECT_TRUE(GetCollapseButton()->GetVisible());
   EXPECT_FALSE(GetExpandButton()->GetVisible());
@@ -932,8 +935,9 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
                        AccessibleTextChangesWhenMediaChanges) {
   LiveCaptionSpeechRecognitionHost* media_0 =
       GetLiveCaptionSpeechRecognitionHost();
+  chrome::NewTab(browser());
   auto media_1 = std::make_unique<LiveCaptionSpeechRecognitionHost>(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetFocusedFrame());
+      browser()->tab_strip_model()->GetWebContentsAt(1)->GetMainFrame());
 
   OnPartialTranscription("3 dogs survived the Titanic sinking.", media_0);
   EXPECT_EQ(1u, GetAXLineText().size());
