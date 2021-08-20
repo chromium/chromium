@@ -262,9 +262,13 @@ bool SharedImageBackingFactoryGLImage::IsSupported(
   *allow_legacy_mailbox = gr_context_type == GrContextType::kGL;
   return true;
 #else
-  bool needs_interop_factory = (gr_context_type == GrContextType::kVulkan &&
-                                (usage & SHARED_IMAGE_USAGE_DISPLAY)) ||
-                               (usage & SHARED_IMAGE_USAGE_WEBGPU) ||
+  // Doesn't support contexts other than GL for OOPR Canvas
+  if (gr_context_type != GrContextType::kGL &&
+      ((usage & SHARED_IMAGE_USAGE_DISPLAY) ||
+       (usage & SHARED_IMAGE_USAGE_RASTER))) {
+    return false;
+  }
+  bool needs_interop_factory = (usage & SHARED_IMAGE_USAGE_WEBGPU) ||
                                (usage & SHARED_IMAGE_USAGE_VIDEO_DECODE);
 #if defined(OS_ANDROID)
   // Scanout on Android requires explicit fence synchronization which is only
