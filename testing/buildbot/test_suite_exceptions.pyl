@@ -3130,6 +3130,25 @@
       'Mac FYI Retina Release (NVIDIA)',
     ],
   },
+  'webgl2_conformance_gles_passthrough_tests': {
+    'remove_from': [
+      # Not enough CrOS hardware capacity to run on anything other than VMs.
+      # See https://crbug.com/1238070.
+      'ChromeOS FYI Release (kevin)',
+      'Lacros FYI x64 Release (Intel)',
+    ],
+    'modifications': {
+      # This VM configuration is known to be significantly slower than other
+      # CrOS configurations, so increase the shards.
+      # TODO(crbug.com/1223550): Remove this if the configuration can be sped
+      # up.
+      'ChromeOS FYI Release (amd64-generic)': {
+        'swarming': {
+          'shards': 30,
+        },
+      },
+    },
+  },
   'webgl2_conformance_validating_tests': {
     'remove_from': [
       # The Mac NVIDIA Retina bots don't have the capacity to run

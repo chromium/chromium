@@ -3745,6 +3745,9 @@
           # On dual-GPU devices we want the high-performance GPU to be active
           '--extra-browser-args=--use-gl=angle --use-angle=gles --use-cmd-decoder=passthrough --force_high_performance_gpu',
         ],
+        'chromeos_args': [
+          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
+        ],
         'mixins': [
           'has_native_resultdb_integration',
         ],
@@ -6516,7 +6519,7 @@
       # possibly related to other CrOS issues that are already reported.
       # TODO(crbug.com/1080424): Try enabling these again once some of the
       # existing CrOS WebGL issues are resolved.
-      # 'gpu_webgl2_conformance_gl_passthrough_telemetry_tests',
+      'gpu_webgl2_conformance_gles_passthrough_telemetry_tests',
       'gpu_webgl2_conformance_validating_telemetry_tests',
       # 'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
     ],
