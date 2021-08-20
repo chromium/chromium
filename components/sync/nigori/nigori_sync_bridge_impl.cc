@@ -308,16 +308,17 @@ std::vector<std::string> UnpackKeystoreKeys(
   if (!deserialized_keys) {
     return std::vector<std::string>();
   }
-  base::ListValue* list_value = nullptr;
-  if (!deserialized_keys->GetAsList(&list_value)) {
+  if (!deserialized_keys->is_list()) {
     return std::vector<std::string>();
   }
+  base::Value::ListView list = deserialized_keys->GetList();
 
-  std::vector<std::string> keystore_keys(list_value->GetSize());
+  std::vector<std::string> keystore_keys(list.size());
   for (size_t i = 0; i < keystore_keys.size(); ++i) {
-    if (!list_value->GetString(i, &keystore_keys[i])) {
+    if (!list[i].is_string()) {
       return std::vector<std::string>();
     }
+    keystore_keys[i] = std::move(list[i].GetString());
   }
   return keystore_keys;
 }

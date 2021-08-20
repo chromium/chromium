@@ -279,9 +279,8 @@ bool Validator::ValidateRecommendedField(
     return true;
   }
 
-  base::ListValue* recommended_list = nullptr;
-  recommended_value->GetAsList(&recommended_list);
-  DCHECK(recommended_list);  // The types of field values are already verified.
+  // The types of field values are already verified.
+  DCHECK(recommended_value->is_list());
 
   if (!managed_onc_) {
     std::ostringstream msg;
@@ -292,7 +291,7 @@ bool Validator::ValidateRecommendedField(
   }
 
   base::ListValue repaired_recommended;
-  for (const auto& entry : recommended_list->GetList()) {
+  for (const auto& entry : recommended_value->GetList()) {
     const std::string* field_name = entry.GetIfString();
     if (!field_name) {
       NOTREACHED();  // The types of field values are already verified.
@@ -448,12 +447,11 @@ bool Validator::FieldExistsAndIsEmpty(const base::DictionaryValue& object,
     return false;
 
   const std::string* str = value->GetIfString();
-  const base::ListValue* list = NULL;
   if (str) {
     if (!(*str).empty())
       return false;
-  } else if (value->GetAsList(&list)) {
-    if (!list->GetList().empty())
+  } else if (value->is_list()) {
+    if (!value->GetList().empty())
       return false;
   } else {
     NOTREACHED();

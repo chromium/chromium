@@ -29,13 +29,14 @@ void SetListInPref(const PolicyMap& policies,
                    base::DictionaryValue* dict) {
   DCHECK(dict);
   const base::Value* policy_value = policies.GetValue(policy_name);
-  const base::ListValue* policy_list = nullptr;
+  bool is_list = false;
   if (policy_value) {
-    bool is_list = policy_value->GetAsList(&policy_list);
+    is_list = policy_value->is_list();
     DCHECK(is_list);
   }
-  dict->Set(key, policy_list
-                     ? std::make_unique<base::Value>(policy_list->Clone())
+
+  dict->Set(key, is_list
+                     ? std::make_unique<base::Value>(policy_value->Clone())
                      : std::make_unique<base::Value>(base::Value::Type::LIST));
 }
 
@@ -309,8 +310,7 @@ void DefaultSearchPolicyHandler::EnsureListPrefExists(
     PrefValueMap* prefs,
     const std::string& path) {
   base::Value* value;
-  base::ListValue* list_value;
-  if (!prefs->GetValue(path, &value) || !value->GetAsList(&list_value))
+  if (!prefs->GetValue(path, &value) || !value->is_list())
     prefs->SetValue(path, base::Value(base::Value::Type::LIST));
 }
 

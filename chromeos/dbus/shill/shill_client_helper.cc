@@ -185,13 +185,12 @@ void OnListValueMethodWithErrorCallback(
     dbus::Response* response) {
   dbus::MessageReader reader(response);
   std::unique_ptr<base::Value> value(dbus::PopDataAsValue(&reader));
-  base::ListValue* result = nullptr;
-  if (!value.get() || !value->GetAsList(&result)) {
+  if (!value.get() || !value->is_list()) {
     std::move(error_callback)
         .Run(kInvalidResponseErrorName, kInvalidResponseErrorMessage);
     return;
   }
-  std::move(callback).Run(*result);
+  std::move(callback).Run(base::Value::AsListValue(*value));
 }
 
 // Handles running appropriate error callbacks.
@@ -427,16 +426,14 @@ void AppendValueDataAsVariantInternal(dbus::MessageWriter* writer,
       break;
     }
     case base::Value::Type::LIST: {
-      const base::ListValue* list = nullptr;
-      value.GetAsList(&list);
       dbus::MessageWriter variant_writer(nullptr);
       writer->OpenVariant("as", &variant_writer);
       dbus::MessageWriter array_writer(nullptr);
       variant_writer.OpenArray("s", &array_writer);
-      for (const auto& value : list->GetList()) {
+      for (const auto& inner_value : value.GetList()) {
         std::string value_string;
-        if (value.is_string()) {
-          value_string = value.GetString();
+        if (inner_value.is_string()) {
+          value_string = inner_value.GetString();
         } else {
           NET_LOG(ERROR) << "List value not a string: " << value;
         }

@@ -505,12 +505,11 @@ bool KeywordTable::GetKeywordDataFromStatement(sql::Statement& s,
 
   data->alternate_urls.clear();
   absl::optional<base::Value> value(base::JSONReader::Read(s.ColumnString(15)));
-  base::ListValue* alternate_urls_value;
-  if (value && value->GetAsList(&alternate_urls_value)) {
-    std::string alternate_url;
-    for (size_t i = 0; i < alternate_urls_value->GetSize(); ++i) {
-      if (alternate_urls_value->GetString(i, &alternate_url))
-        data->alternate_urls.push_back(alternate_url);
+  if (value && value->is_list()) {
+    for (const base::Value& alternate_url : value->GetList()) {
+      if (alternate_url.is_string()) {
+        data->alternate_urls.push_back(alternate_url.GetString());
+      }
     }
   }
 
