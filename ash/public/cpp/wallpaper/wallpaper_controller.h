@@ -287,7 +287,8 @@ class ASH_PUBLIC_EXPORT WallpaperController {
       RefreshWallpaperCallback callback = base::DoNothing()) = 0;
 
   // DriveFS is available for the active user.
-  virtual void OnGoogleDriveMounted() = 0;
+  // |account_id|: The account id of the Drive user.
+  virtual void OnGoogleDriveMounted(const AccountId& account_id) = 0;
 
   // Returns a suffix to be appended to the base url of Backdrop (online)
   // wallpapers.

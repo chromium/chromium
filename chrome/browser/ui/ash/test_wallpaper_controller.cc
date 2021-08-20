@@ -232,6 +232,7 @@ void TestWallpaperController::UpdateDailyRefreshWallpaper(
   NOTIMPLEMENTED();
 }
 
-void TestWallpaperController::OnGoogleDriveMounted() {
+void TestWallpaperController::OnGoogleDriveMounted(
+    const AccountId& account_id) {
   NOTIMPLEMENTED();
 }
