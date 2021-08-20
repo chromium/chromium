@@ -5,6 +5,7 @@
 #ifndef ASH_PUBLIC_CPP_WALLPAPER_WALLPAPER_INFO_H_
 #define ASH_PUBLIC_CPP_WALLPAPER_WALLPAPER_INFO_H_
 
+#include <ostream>
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
@@ -30,8 +31,10 @@ struct ASH_PUBLIC_EXPORT WallpaperInfo {
                 const base::Time& in_date);
 
   WallpaperInfo(const WallpaperInfo& other);
-
   WallpaperInfo& operator=(const WallpaperInfo& other);
+
+  WallpaperInfo(WallpaperInfo&& other);
+  WallpaperInfo& operator=(WallpaperInfo&& other);
 
   bool operator==(const WallpaperInfo& other) const;
 
@@ -53,6 +56,10 @@ struct ASH_PUBLIC_EXPORT WallpaperInfo {
   // decoded.
   gfx::ImageSkia one_shot_wallpaper;
 };
+
+// For logging use only. Prints out text representation of the `WallpaperInfo`.
+ASH_PUBLIC_EXPORT std::ostream& operator<<(std::ostream& os,
+                                           const WallpaperInfo& info);
 
 }  // namespace ash
 

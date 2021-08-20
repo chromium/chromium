@@ -4,6 +4,8 @@
 
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
 
+#include <iostream>
+
 namespace ash {
 
 WallpaperInfo::WallpaperInfo() {
@@ -31,8 +33,10 @@ WallpaperInfo::WallpaperInfo(const std::string& in_location,
     : location(in_location), layout(in_layout), type(in_type), date(in_date) {}
 
 WallpaperInfo::WallpaperInfo(const WallpaperInfo& other) = default;
-
 WallpaperInfo& WallpaperInfo::operator=(const WallpaperInfo& other) = default;
+
+WallpaperInfo::WallpaperInfo(WallpaperInfo&& other) = default;
+WallpaperInfo& WallpaperInfo::operator=(WallpaperInfo&& other) = default;
 
 bool WallpaperInfo::operator==(const WallpaperInfo& other) const {
   return (location == other.location) && (asset_id == other.asset_id) &&
@@ -45,5 +49,16 @@ bool WallpaperInfo::operator!=(const WallpaperInfo& other) const {
 }
 
 WallpaperInfo::~WallpaperInfo() = default;
+
+std::ostream& operator<<(std::ostream& os, const WallpaperInfo& info) {
+  os << "WallpaperInfo:" << std::endl;
+  os << "  location: " << info.location << std::endl;
+  os << "  asset_id: " << info.asset_id.value_or(-1) << std::endl;
+  os << "  collection_id: " << info.collection_id << std::endl;
+  os << "  layout: " << info.layout << std::endl;
+  os << "  type: " << info.type << std::endl;
+  os << "  date: " << info.date << std::endl;
+  return os;
+}
 
 }  // namespace ash

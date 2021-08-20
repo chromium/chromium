@@ -95,8 +95,7 @@ class ChromePersonalizationAppUiDelegate : public PersonalizationAppUiDelegate {
       UpdateDailyRefreshWallpaperCallback callback) override;
 
  private:
-  void OnFetchCollections(FetchCollectionsCallback callback,
-                          bool success,
+  void OnFetchCollections(bool success,
                           const std::vector<backdrop::Collection>& collections);
 
   void OnFetchCollectionImages(FetchImagesForCollectionCallback callback,
@@ -111,14 +110,23 @@ class ChromePersonalizationAppUiDelegate : public PersonalizationAppUiDelegate {
                                 const SkBitmap* bitmap,
                                 base::File::Error error);
 
-  void OnGetOnlineImageAttribution(const ash::WallpaperInfo& info,
-                                   const GURL& wallpaper_data_url,
-                                   bool success,
-                                   const std::string& collection_id,
-                                   const std::vector<backdrop::Image>& images);
+  void FindAttribution(
+      const ash::WallpaperInfo& info,
+      const GURL& wallpaper_data_url,
+      const absl::optional<std::vector<backdrop::Collection>>& collections);
+
+  void FindAttributionInCollection(
+      const ash::WallpaperInfo& info,
+      const GURL& wallpaper_data_url,
+      std::size_t current_index,
+      const absl::optional<std::vector<backdrop::Collection>>& collections,
+      bool success,
+      const std::string& collection_id,
+      const std::vector<backdrop::Image>& images);
 
   std::unique_ptr<backdrop_wallpaper_handlers::CollectionInfoFetcher>
       wallpaper_collection_info_fetcher_;
+  std::vector<FetchCollectionsCallback> pending_collections_callbacks_;
 
   std::unique_ptr<backdrop_wallpaper_handlers::ImageInfoFetcher>
       wallpaper_images_info_fetcher_;

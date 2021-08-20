@@ -85,8 +85,12 @@ void ChromePersonalizationAppUiDelegate::BindInterface(
 
 void ChromePersonalizationAppUiDelegate::FetchCollections(
     FetchCollectionsCallback callback) {
-  DCHECK(!wallpaper_collection_info_fetcher_)
-      << "Only one request allowed at a time";
+  pending_collections_callbacks_.push_back(std::move(callback));
+  if (wallpaper_collection_info_fetcher_) {
+    // Collection fetching already started. No need to start a second time.
+    return;
+  }
+
   wallpaper_collection_info_fetcher_ =
       std::make_unique<backdrop_wallpaper_handlers::CollectionInfoFetcher>();
 
@@ -94,7 +98,7 @@ void ChromePersonalizationAppUiDelegate::FetchCollections(
   // |wallpaper_collection_info_fetcher_|.
   wallpaper_collection_info_fetcher_->Start(
       base::BindOnce(&ChromePersonalizationAppUiDelegate::OnFetchCollections,
-                     base::Unretained(this), std::move(callback)));
+                     base::Unretained(this)));
 }
 
 void ChromePersonalizationAppUiDelegate::FetchImagesForCollection(
@@ -167,29 +171,22 @@ void ChromePersonalizationAppUiDelegate::GetCurrentWallpaper(
   switch (info.type) {
     case ash::WallpaperType::DAILY:
     case ash::WallpaperType::ONLINE: {
-      if (info.collection_id.empty() || !info.asset_id.has_value()) {
-        // Cannot fetch attribution info from server without collection_id and
-        // asset_id. Return a randomly generated key so that it does not match
-        // any other wallpaper image.
-        DVLOG(2) << "no collection_id or asset_id found";
-        std::move(callback).Run(
-            chromeos::personalization_app::mojom::CurrentWallpaper::New(
-                wallpaper_data_url,
-                /*attribution=*/std::vector<std::string>(), info.layout,
-                info.type,
-                /*key=*/base::UnguessableToken::Create().ToString()));
-        return;
-      }
-      wallpaper_attribution_info_fetcher_ =
-          std::make_unique<backdrop_wallpaper_handlers::ImageInfoFetcher>(
-              info.collection_id);
-
       pending_get_current_wallpaper_callback_ = std::move(callback);
 
-      wallpaper_attribution_info_fetcher_->Start(base::BindOnce(
-          &ChromePersonalizationAppUiDelegate::OnGetOnlineImageAttribution,
-          backend_weak_ptr_factory_.GetWeakPtr(), info, wallpaper_data_url));
+      if (info.collection_id.empty() || !info.asset_id.has_value()) {
+        DVLOG(2) << "no collection_id or asset_id found";
+        // Older versions of ChromeOS do not store these information, need to
+        // look up all collections and match URL.
+        FetchCollections(base::BindOnce(
+            &ChromePersonalizationAppUiDelegate::FindAttribution,
+            backend_weak_ptr_factory_.GetWeakPtr(), info, wallpaper_data_url));
+        return;
+      }
 
+      backdrop::Collection collection;
+      collection.set_collection_id(info.collection_id);
+      FindAttribution(info, wallpaper_data_url,
+                      std::vector<backdrop::Collection>{collection});
       return;
     }
     case ash::WallpaperType::CUSTOMIZED: {
@@ -304,15 +301,20 @@ void ChromePersonalizationAppUiDelegate::UpdateDailyRefreshWallpaper(
 }
 
 void ChromePersonalizationAppUiDelegate::OnFetchCollections(
-    FetchCollectionsCallback callback,
     bool success,
     const std::vector<backdrop::Collection>& collections) {
   DCHECK(wallpaper_collection_info_fetcher_);
+  DCHECK(!pending_collections_callbacks_.empty());
+
   absl::optional<std::vector<backdrop::Collection>> result;
   if (success && !collections.empty()) {
     result = std::move(collections);
   }
-  std::move(callback).Run(std::move(result));
+
+  for (auto& callback : pending_collections_callbacks_) {
+    std::move(callback).Run(result);
+  }
+  pending_collections_callbacks_.clear();
   wallpaper_collection_info_fetcher_.reset();
 }
 
@@ -367,34 +369,91 @@ void ChromePersonalizationAppUiDelegate::OnGetLocalImageThumbnail(
   std::move(callback).Run(webui::GetBitmapDataUrl(*bitmap));
 }
 
-void ChromePersonalizationAppUiDelegate::OnGetOnlineImageAttribution(
+void ChromePersonalizationAppUiDelegate::FindAttribution(
     const ash::WallpaperInfo& info,
     const GURL& wallpaper_data_url,
+    const absl::optional<std::vector<backdrop::Collection>>& collections) {
+  DCHECK(pending_get_current_wallpaper_callback_);
+  DCHECK(!wallpaper_attribution_info_fetcher_);
+  if (!collections.has_value() || collections->empty()) {
+    std::move(pending_get_current_wallpaper_callback_)
+        .Run(chromeos::personalization_app::mojom::CurrentWallpaper::New(
+            wallpaper_data_url, /*attribution=*/std::vector<std::string>(),
+            info.layout, info.type,
+            /*key=*/base::UnguessableToken::Create().ToString()));
+
+    return;
+  }
+
+  std::size_t current_index = 0;
+  wallpaper_attribution_info_fetcher_ =
+      std::make_unique<backdrop_wallpaper_handlers::ImageInfoFetcher>(
+          collections->at(current_index).collection_id());
+
+  wallpaper_attribution_info_fetcher_->Start(base::BindOnce(
+      &ChromePersonalizationAppUiDelegate::FindAttributionInCollection,
+      backend_weak_ptr_factory_.GetWeakPtr(), info, wallpaper_data_url,
+      current_index, collections));
+}
+
+void ChromePersonalizationAppUiDelegate::FindAttributionInCollection(
+    const ash::WallpaperInfo& info,
+    const GURL& wallpaper_data_url,
+    std::size_t current_index,
+    const absl::optional<std::vector<backdrop::Collection>>& collections,
     bool success,
     const std::string& collection_id,
     const std::vector<backdrop::Image>& images) {
-  DCHECK(wallpaper_attribution_info_fetcher_);
   DCHECK(pending_get_current_wallpaper_callback_);
-  DCHECK(info.asset_id.has_value());
+  DCHECK(wallpaper_attribution_info_fetcher_);
 
-  const uint64_t& asset_id = info.asset_id.value();
-
-  std::vector<std::string> attribution;
+  const backdrop::Image* backend_image = nullptr;
   if (success && !images.empty()) {
     for (const auto& proto_image : images) {
       if (!proto_image.has_image_url() || !proto_image.has_asset_id())
         break;
-      if (proto_image.asset_id() == info.asset_id) {
-        for (const auto& attr : proto_image.attribution())
-          attribution.push_back(attr.text());
+      bool is_same_asset_id = info.asset_id.has_value() &&
+                              proto_image.asset_id() == info.asset_id.value();
+      bool is_same_url = info.location.rfind(proto_image.image_url(), 0) == 0;
+      if (is_same_asset_id || is_same_url) {
+        backend_image = &proto_image;
         break;
       }
     }
   }
-  std::move(pending_get_current_wallpaper_callback_)
-      .Run(chromeos::personalization_app::mojom::CurrentWallpaper::New(
-          wallpaper_data_url, attribution, info.layout, info.type,
-          /*key=*/base::NumberToString(asset_id)));
 
-  wallpaper_attribution_info_fetcher_.reset();
+  if (backend_image) {
+    std::vector<std::string> attributions;
+    for (const auto& attr : backend_image->attribution())
+      attributions.push_back(attr.text());
+    std::move(pending_get_current_wallpaper_callback_)
+        .Run(chromeos::personalization_app::mojom::CurrentWallpaper::New(
+            wallpaper_data_url, attributions, info.layout, info.type,
+            /*key=*/base::NumberToString(backend_image->asset_id())));
+    wallpaper_attribution_info_fetcher_.reset();
+    return;
+  }
+
+  ++current_index;
+
+  if (current_index >= collections->size()) {
+    std::move(pending_get_current_wallpaper_callback_)
+        .Run(chromeos::personalization_app::mojom::CurrentWallpaper::New(
+            wallpaper_data_url, /*attribution=*/std::vector<std::string>(),
+            info.layout, info.type,
+            /*key=*/base::UnguessableToken::Create().ToString()));
+    wallpaper_attribution_info_fetcher_.reset();
+    return;
+  }
+
+  auto fetcher =
+      std::make_unique<backdrop_wallpaper_handlers::ImageInfoFetcher>(
+          collections->at(current_index).collection_id());
+  fetcher->Start(base::BindOnce(
+      &ChromePersonalizationAppUiDelegate::FindAttributionInCollection,
+      backend_weak_ptr_factory_.GetWeakPtr(), info, wallpaper_data_url,
+      current_index, collections));
+  // resetting the previous fetcher last because the current method is bound
+  // to a callback owned by the previous fetcher.
+  wallpaper_attribution_info_fetcher_ = std::move(fetcher);
 }
