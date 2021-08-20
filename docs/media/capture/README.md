@@ -98,7 +98,7 @@ request.
 * Issues
   * `UI>Browser>MediaCapture`
 * Docs
-  * To be added later.
+  * [Enterprise policies to restrict available sources in chooser](https://docs.google.com/document/d/e/2PACX-1vQi8P2f493UgVNCJzcdxLUqqSlIdixlybO0mEPAvqnea_8l5bcUWSSZCi4M4EzSTCrFGQodmDX4LZ_u/pub)
 
 
 ## Screen capture indicator
