@@ -111,6 +111,10 @@ ChromotingHostContext::url_loader_factory() {
   return url_loader_factory_owner_->GetURLLoaderFactory();
 }
 
+policy::ManagementService* ChromotingHostContext::management_service() {
+  return &platform_management_service_;
+}
+
 std::unique_ptr<ChromotingHostContext> ChromotingHostContext::Create(
     scoped_refptr<AutoThreadTaskRunner> ui_task_runner) {
 #if defined(OS_WIN)

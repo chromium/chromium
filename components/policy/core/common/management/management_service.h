@@ -6,13 +6,12 @@
 #define COMPONENTS_POLICY_CORE_COMMON_MANAGEMENT_MANAGEMENT_SERVICE_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/containers/flat_set.h"
 #include "components/policy/policy_export.h"
 
 namespace policy {
-
-class ScopedManagementServiceOverrideForTesting;
 
 enum class ManagementTarget { PLATFORM = 0, BROWSER = 1, kMaxValue = BROWSER };
 
@@ -50,7 +49,9 @@ class POLICY_EXPORT ManagementStatusProvider {
 // Interface to gives information related to an entity's management state.
 class POLICY_EXPORT ManagementService {
  public:
-  explicit ManagementService(ManagementTarget target);
+  ManagementService(
+      ManagementTarget target,
+      std::vector<std::unique_ptr<ManagementStatusProvider>> providers);
   virtual ~ManagementService();
 
   // Returns all the active management authorities on the managed entity.
@@ -63,10 +64,12 @@ class POLICY_EXPORT ManagementService {
   // Returns whether there is any management authority at all.
   bool IsManaged();
 
- protected:
-  // Initializes the management status providers.
-  virtual void InitManagementStatusProviders() = 0;
+  static void SetManagementAuthoritiesForTesting(
+      ManagementTarget target,
+      base::flat_set<EnterpriseManagementAuthority> authorities);
+  static void RemoveManagementAuthoritiesForTesting(ManagementTarget target);
 
+ protected:
   // Sets the management status providers to be used by the service.
   void SetManagementStatusProvider(
       std::vector<std::unique_ptr<ManagementStatusProvider>> providers);
@@ -75,12 +78,6 @@ class POLICY_EXPORT ManagementService {
   std::vector<std::unique_ptr<ManagementStatusProvider>>
       management_status_providers_;
   ManagementTarget target_;
-
-  static void SetManagementAuthoritiesForTesting(
-      ManagementTarget target,
-      base::flat_set<EnterpriseManagementAuthority> authorities);
-  static void RemoveManagementAuthoritiesForTesting(ManagementTarget target);
-  friend ScopedManagementServiceOverrideForTesting;
 };
 
 }  // namespace policy

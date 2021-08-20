@@ -35,6 +35,7 @@ class POLICY_EXPORT PolicyLoaderWin
       public base::win::ObjectWatcher::Delegate {
  public:
   PolicyLoaderWin(scoped_refptr<base::SequencedTaskRunner> task_runner,
+                  ManagementService* management_service,
                   const std::wstring& chrome_policy_key);
   PolicyLoaderWin(const PolicyLoaderWin&) = delete;
   PolicyLoaderWin& operator=(const PolicyLoaderWin&) = delete;
@@ -43,6 +44,7 @@ class POLICY_EXPORT PolicyLoaderWin
   // Creates a policy loader that uses the Registry to access GPO.
   static std::unique_ptr<PolicyLoaderWin> Create(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
+      ManagementService* management_service,
       const std::wstring& chrome_policy_key);
 
   // AsyncPolicyLoader implementation.

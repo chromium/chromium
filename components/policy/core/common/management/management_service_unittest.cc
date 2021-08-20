@@ -28,22 +28,23 @@ class TestManagementStatusProvider : public ManagementStatusProvider {
 
 class TestManagementService : public ManagementService {
  public:
-  TestManagementService() : ManagementService(ManagementTarget::kMaxValue) {}
-  explicit TestManagementService(ManagementTarget target)
-      : ManagementService(target) {}
+  TestManagementService()
+      : ManagementService(ManagementTarget::kMaxValue, {}) {}
+  explicit TestManagementService(
+      ManagementTarget target,
+      std::vector<std::unique_ptr<ManagementStatusProvider>> providers)
+      : ManagementService(target, std::move(providers)) {}
   void SetManagementStatusProviderForTesting(
       std::vector<std::unique_ptr<ManagementStatusProvider>> providers) {
     SetManagementStatusProvider(std::move(providers));
   }
-
- protected:
-  // Initializes the management status providers.
-  void InitManagementStatusProviders() override {}
 };
 
 TEST(ManagementService, ScopedManagementServiceOverrideForTesting) {
-  TestManagementService platform_management_service(ManagementTarget::PLATFORM);
-  TestManagementService browser_management_service(ManagementTarget::BROWSER);
+  TestManagementService platform_management_service(ManagementTarget::PLATFORM,
+                                                    {});
+  TestManagementService browser_management_service(ManagementTarget::BROWSER,
+                                                   {});
   std::vector<std::unique_ptr<ManagementStatusProvider>> providers;
   providers.emplace_back(std::make_unique<TestManagementStatusProvider>(
       EnterpriseManagementAuthority::CLOUD, true));

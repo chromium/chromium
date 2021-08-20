@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/sequenced_task_runner.h"
+#include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/policy_bundle.h"
 
 using base::Time;
@@ -32,7 +33,17 @@ constexpr TimeDelta kReloadInterval = TimeDelta::FromMinutes(15);
 AsyncPolicyLoader::AsyncPolicyLoader(
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     bool periodic_updates)
-    : task_runner_(task_runner), periodic_updates_(periodic_updates) {}
+    : task_runner_(task_runner),
+      management_service_(nullptr),
+      periodic_updates_(periodic_updates) {}
+
+AsyncPolicyLoader::AsyncPolicyLoader(
+    const scoped_refptr<base::SequencedTaskRunner>& task_runner,
+    ManagementService* management_service,
+    bool periodic_updates)
+    : task_runner_(task_runner),
+      management_service_(management_service),
+      periodic_updates_(periodic_updates) {}
 
 AsyncPolicyLoader::~AsyncPolicyLoader() {}
 
@@ -69,6 +80,15 @@ void AsyncPolicyLoader::Reload(bool force) {
   }
 }
 
+bool AsyncPolicyLoader::ShouldFilterSensitivePolicies() {
+#if defined(OS_WIN)
+  DCHECK(management_service_);
+  return management_service_->GetManagementAuthorityTrustworthiness() <
+         ManagementAuthorityTrustworthiness::TRUSTED;
+#else
+  return false;
+#endif
+}
 std::unique_ptr<PolicyBundle> AsyncPolicyLoader::InitialLoad(
     const scoped_refptr<SchemaMap>& schema_map) {
   // This is the first load, early during startup. Use this to record the

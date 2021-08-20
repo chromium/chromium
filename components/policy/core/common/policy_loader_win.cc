@@ -36,7 +36,6 @@
 #include "base/win/shlwapi.h"  // For PathIsUNC()
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
-#include "components/policy/core/common/management/platform_management_service.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_load_status.h"
 #include "components/policy/core/common/policy_loader_common.h"
@@ -67,13 +66,6 @@ enum DomainCheckErrors {
   DOMAIN_CHECK_ERROR_DS_BIND = 1,
   DOMAIN_CHECK_ERROR_SIZE,  // Not a DomainCheckError.  Must be last.
 };
-
-// Encapsulates logic to determine if enterprise policies should be honored.
-bool ShouldHonorPolicies() {
-  auto& platform_management_service = PlatformManagementService::GetInstance();
-  return platform_management_service.GetManagementAuthorityTrustworthiness() >=
-         ManagementAuthorityTrustworthiness::TRUSTED;
-}
 
 // Parses |gpo_dict| according to |schema| and writes the resulting policy
 // settings to |policy| for the given |scope| and |level|.
@@ -221,8 +213,11 @@ void CollectEnterpriseUMAs() {
 
 PolicyLoaderWin::PolicyLoaderWin(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
+    ManagementService* management_service,
     const std::wstring& chrome_policy_key)
-    : AsyncPolicyLoader(task_runner, /*periodic_updates=*/true),
+    : AsyncPolicyLoader(task_runner,
+                        management_service,
+                        /*periodic_updates=*/true),
       is_initialized_(false),
       chrome_policy_key_(chrome_policy_key),
       user_policy_changed_event_(
@@ -264,8 +259,10 @@ PolicyLoaderWin::~PolicyLoaderWin() {
 // static
 std::unique_ptr<PolicyLoaderWin> PolicyLoaderWin::Create(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
+    ManagementService* management_service,
     const std::wstring& chrome_policy_key) {
-  return std::make_unique<PolicyLoaderWin>(task_runner, chrome_policy_key);
+  return std::make_unique<PolicyLoaderWin>(task_runner, management_service,
+                                           chrome_policy_key);
 }
 
 void PolicyLoaderWin::InitOnBackgroundThread() {
@@ -327,7 +324,7 @@ void PolicyLoaderWin::LoadChromePolicy(const RegistryDict* gpo_dict,
   const Schema* chrome_schema =
       schema_map()->GetSchema(PolicyNamespace(POLICY_DOMAIN_CHROME, ""));
   ParsePolicy(gpo_dict, level, scope, *chrome_schema, &policy);
-  if (!ShouldHonorPolicies())
+  if (ShouldFilterSensitivePolicies())
     FilterSensitivePolicies(&policy);
   chrome_policy_map->MergeFrom(policy);
 }

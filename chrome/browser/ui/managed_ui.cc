@@ -8,7 +8,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/browser_management/browser_management_service.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -16,7 +16,7 @@
 #include "chrome/browser/ui/webui/management/management_ui_handler.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
-#include "components/policy/core/common/management/platform_management_service.h"
+#include "components/policy/core/common/management/management_service.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -128,7 +128,7 @@ std::u16string GetDeviceManagedUiWebUILabel() {
 #endif
 
 absl::optional<std::string> GetDeviceManagerIdentity() {
-  if (!policy::PlatformManagementService::GetInstance().IsManaged())
+  if (!policy::ManagementServiceFactory::GetForPlatform()->IsManaged())
     return absl::nullopt;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

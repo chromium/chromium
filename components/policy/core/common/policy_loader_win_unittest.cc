@@ -32,6 +32,7 @@
 #include "components/policy/core/common/async_policy_provider.h"
 #include "components/policy/core/common/configuration_policy_provider_test.h"
 #include "components/policy/core/common/external_data_fetcher.h"
+#include "components/policy/core/common/management/platform_management_service.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
@@ -203,6 +204,7 @@ class RegistryTestHarness : public PolicyProviderTestHarness {
   HKEY hive_;
 
   ScopedGroupPolicyRegistrySandbox registry_sandbox_;
+  PlatformManagementService platform_management_service_;
 };
 
 ScopedGroupPolicyRegistrySandbox::ScopedGroupPolicyRegistrySandbox() {}
@@ -283,8 +285,8 @@ ConfigurationPolicyProvider* RegistryTestHarness::CreateProvider(
     SchemaRegistry* registry,
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
   base::win::ScopedDomainStateForTesting scoped_domain(true);
-  std::unique_ptr<AsyncPolicyLoader> loader(
-      new PolicyLoaderWin(task_runner, kTestPolicyKey));
+  std::unique_ptr<AsyncPolicyLoader> loader(new PolicyLoaderWin(
+      task_runner, &platform_management_service_, kTestPolicyKey));
   return new AsyncPolicyProvider(registry, std::move(loader));
 }
 
@@ -416,7 +418,7 @@ class PolicyLoaderWinTest : public PolicyTestBase {
 
   bool Matches(const PolicyBundle& expected) {
     PolicyLoaderWin loader(task_environment_.GetMainThreadTaskRunner(),
-                           kTestPolicyKey);
+                           &platform_management_service_, kTestPolicyKey);
     std::unique_ptr<PolicyBundle> loaded(
         loader.InitialLoad(schema_registry_.schema_map()));
     return loaded->Equals(expected);
@@ -424,6 +426,7 @@ class PolicyLoaderWinTest : public PolicyTestBase {
 
   ScopedGroupPolicyRegistrySandbox registry_sandbox_;
   base::win::ScopedDomainStateForTesting scoped_domain_;
+  PlatformManagementService platform_management_service_;
 };
 
 const wchar_t PolicyLoaderWinTest::kTestPolicyKey[] =

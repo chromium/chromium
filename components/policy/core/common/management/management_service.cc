@@ -34,8 +34,11 @@ ManagementAuthorityTrustworthiness GetTrustworthiness(
 
 ManagementStatusProvider::~ManagementStatusProvider() = default;
 
-ManagementService::ManagementService(ManagementTarget target)
-    : target_(target) {}
+ManagementService::ManagementService(
+    ManagementTarget target,
+    std::vector<std::unique_ptr<ManagementStatusProvider>> providers)
+    : management_status_providers_(std::move(providers)), target_(target) {}
+
 ManagementService::~ManagementService() = default;
 
 base::flat_set<EnterpriseManagementAuthority>
@@ -68,6 +71,7 @@ void ManagementService::SetManagementStatusProvider(
   management_status_providers_ = std::move(providers);
 }
 
+// static
 void ManagementService::SetManagementAuthoritiesForTesting(
     ManagementTarget target,
     base::flat_set<EnterpriseManagementAuthority> authorities) {

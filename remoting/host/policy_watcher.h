@@ -21,6 +21,7 @@ class SingleThreadTaskRunner;
 namespace policy {
 class AsyncPolicyLoader;
 class ConfigurationPolicyProvider;
+class ManagementService;
 class Schema;
 class SchemaRegistry;
 }  // namespace policy
@@ -87,7 +88,8 @@ class PolicyWatcher : public policy::PolicyService::Observer {
   // preferences (which are blocking operations). |file_task_runner| should be
   // of TYPE_IO type.
   static std::unique_ptr<PolicyWatcher> CreateWithTaskRunner(
-      const scoped_refptr<base::SingleThreadTaskRunner>& file_task_runner);
+      const scoped_refptr<base::SingleThreadTaskRunner>& file_task_runner,
+      policy::ManagementService* management_service);
 
   // Creates a PolicyWatcher from the given loader instead of loading the policy
   // from the default location.

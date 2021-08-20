@@ -20,7 +20,7 @@
 #include "base/supports_user_data.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/browser_management/browser_management_service.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/policy/chrome_policy_conversions_client.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service.h"
@@ -45,7 +45,7 @@
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/browser/policy_conversions.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
-#include "components/policy/core/common/management/platform_management_service.h"
+#include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -521,9 +521,11 @@ void DiceTurnSyncOnHelper::SigninAndShowSyncConfirmationUI() {
     // for cloud policies because local policies are instantly available. See
     // http://crbug.com/812546
     auto management_authorities =
-        policy::BrowserManagementService(profile_).GetManagementAuthorities();
+        policy::ManagementServiceFactory::GetForProfile(profile_)
+            ->GetManagementAuthorities();
     auto platform_management_authorities =
-        policy::PlatformManagementService().GetManagementAuthorities();
+        policy::ManagementServiceFactory::GetForPlatform()
+            ->GetManagementAuthorities();
     management_authorities.insert(platform_management_authorities.begin(),
                                   platform_management_authorities.end());
     bool is_enterprise_user =

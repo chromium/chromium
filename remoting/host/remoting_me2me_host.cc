@@ -856,8 +856,8 @@ void HostProcess::StartOnUiThread() {
     return;
   }
 
-  policy_watcher_ =
-      PolicyWatcher::CreateWithTaskRunner(context_->file_task_runner());
+  policy_watcher_ = PolicyWatcher::CreateWithTaskRunner(
+      context_->file_task_runner(), context_->management_service());
   policy_watcher_->StartWatching(
       base::BindRepeating(&HostProcess::OnPolicyUpdate, base::Unretained(this)),
       base::BindRepeating(&HostProcess::OnPolicyError, base::Unretained(this)));

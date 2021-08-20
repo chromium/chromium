@@ -407,14 +407,16 @@ std::unique_ptr<PolicyWatcher> PolicyWatcher::CreateWithPolicyService(
 }
 
 std::unique_ptr<PolicyWatcher> PolicyWatcher::CreateWithTaskRunner(
-    const scoped_refptr<base::SingleThreadTaskRunner>& file_task_runner) {
+    const scoped_refptr<base::SingleThreadTaskRunner>& file_task_runner,
+    policy::ManagementService* management_service) {
   // Create platform-specific PolicyLoader. Always read the Chrome policies
   // (even on Chromium) so that policy enforcement can't be bypassed by running
   // Chromium.
   std::unique_ptr<policy::AsyncPolicyLoader> policy_loader;
 #if defined(OS_WIN)
   policy_loader = std::make_unique<policy::PolicyLoaderWin>(
-      file_task_runner, L"SOFTWARE\\Policies\\Google\\Chrome");
+      file_task_runner, management_service,
+      L"SOFTWARE\\Policies\\Google\\Chrome");
 #elif defined(OS_APPLE)
   CFStringRef bundle_id = CFSTR("com.google.Chrome");
   policy_loader = std::make_unique<policy::PolicyLoaderMac>(

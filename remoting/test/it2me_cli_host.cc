@@ -35,7 +35,8 @@ std::unique_ptr<It2MeNativeMessagingHost> CreateNativeMessagingHost(
     scoped_refptr<AutoThreadTaskRunner> ui_task_runner) {
   auto context = ChromotingHostContext::Create(ui_task_runner);
   std::unique_ptr<PolicyWatcher> policy_watcher =
-      PolicyWatcher::CreateWithTaskRunner(context->file_task_runner());
+      PolicyWatcher::CreateWithTaskRunner(context->file_task_runner(),
+                                          context->management_service());
   auto factory = std::make_unique<It2MeHostFactory>();
   return std::make_unique<It2MeNativeMessagingHost>(
       /* needs_elevation */ false, std::move(policy_watcher),

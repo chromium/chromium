@@ -30,6 +30,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/chrome_browser_main.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/metrics/bluetooth_available_utility.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
@@ -40,7 +41,6 @@
 #include "chrome/browser/shell_integration.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
 #include "components/policy/core/common/management/management_service.h"
-#include "components/policy/core/common/management/platform_management_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_switches.h"
@@ -512,8 +512,8 @@ bool HasEnterpriseBrandCode() {
 // (EnterpriseManagementAuthority::DOMAIN_LOCAL).
 bool IsDomainJoined() {
   auto enterprise_management_authorities =
-      policy::PlatformManagementService::GetInstance()
-          .GetManagementAuthorities();
+      policy::ManagementServiceFactory::GetForPlatform()
+          ->GetManagementAuthorities();
   return enterprise_management_authorities.contains(
       policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
 }
