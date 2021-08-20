@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/cros_action_history/cros_action_recorder.h"
+#include "chrome/browser/ui/app_list/search/ranking/category_item_ranker.h"
 #include "chrome/browser/ui/app_list/search/ranking/category_usage_ranker.h"
 #include "chrome/browser/ui/app_list/search/ranking/filtering_ranker.h"
 #include "chrome/browser/ui/app_list/search/ranking/ranker_delegate.h"
@@ -92,6 +93,8 @@ SearchControllerImplNew::SearchControllerImplNew(
 SearchControllerImplNew::~SearchControllerImplNew() {}
 
 void SearchControllerImplNew::InitializeRankers() {
+  // TODO(crbug.com/1199206): Add an extra state to the chrome flag that allows
+  // toggling between the CategoryItemRanker and CategoryUsageRanker.
   ranker_->AddRanker(std::make_unique<ScoreNormalizingRanker>(profile_));
   ranker_->AddRanker(std::make_unique<CategoryUsageRanker>(profile_));
   ranker_->AddRanker(std::make_unique<TopMatchRanker>());
