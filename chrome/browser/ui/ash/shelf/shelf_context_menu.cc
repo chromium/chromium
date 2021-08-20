@@ -171,7 +171,7 @@ void ShelfContextMenu::ExecuteCommand(int command_id, int event_flags) {
       if (controller_->IsAppPinned(item_.id.app_id))
         controller_->UnpinAppWithID(item_.id.app_id);
       else
-        controller_->PinAppWithID(item_.id.app_id);
+        controller_->shelf_model()->PinExistingItemWithID(item_.id.app_id);
       break;
     case ash::UNINSTALL:
       UninstallApp(controller_->profile(), item_.id.app_id);

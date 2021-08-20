@@ -2143,6 +2143,8 @@ static_library("ui") {
       "ash/shelf/chrome_shelf_controller.h",
       "ash/shelf/chrome_shelf_controller_util.cc",
       "ash/shelf/chrome_shelf_controller_util.h",
+      "ash/shelf/chrome_shelf_item_factory.cc",
+      "ash/shelf/chrome_shelf_item_factory.h",
       "ash/shelf/crostini_app_display.cc",
       "ash/shelf/crostini_app_display.h",
       "ash/shelf/crostini_app_window.cc",

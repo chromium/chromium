@@ -66,6 +66,7 @@
 #include "chrome/browser/ui/ash/shelf/browser_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/browser_status_monitor.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_item_factory.h"
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 #include "chrome/browser/ui/ash/shelf/shelf_extension_app_updater.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
@@ -210,8 +211,9 @@ void ChromeShelfControllerUserSwitchObserver::AddUser(Profile* profile) {
 ChromeShelfController* ChromeShelfController::instance_ = nullptr;
 
 ChromeShelfController::ChromeShelfController(Profile* profile,
-                                             ash::ShelfModel* model)
-    : model_(model) {
+                                             ash::ShelfModel* model,
+                                             ChromeShelfItemFactory* creator)
+    : model_(model), shelf_item_factory_(creator) {
   DCHECK(!instance_);
   instance_ = this;
 

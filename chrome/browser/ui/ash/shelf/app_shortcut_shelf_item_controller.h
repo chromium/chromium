@@ -34,6 +34,7 @@ class ShelfContextMenu;
 class AppShortcutShelfItemController : public ash::ShelfItemDelegate,
                                        public BrowserListObserver {
  public:
+  explicit AppShortcutShelfItemController(const ash::ShelfID& shelf_id);
   ~AppShortcutShelfItemController() override;
 
   static std::unique_ptr<AppShortcutShelfItemController> Create(
@@ -63,9 +64,6 @@ class AppShortcutShelfItemController : public ash::ShelfItemDelegate,
   void set_refocus_url(const GURL& refocus_url) { refocus_url_ = refocus_url; }
 
   bool HasRunningApplications();
-
- protected:
-  explicit AppShortcutShelfItemController(const ash::ShelfID& shelf_id);
 
  private:
   // BrowserListObserver:

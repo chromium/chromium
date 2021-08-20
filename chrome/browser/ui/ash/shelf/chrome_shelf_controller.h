@@ -31,6 +31,7 @@ class AppWindowShelfController;
 class BrowserShortcutShelfItemController;
 class BrowserStatusMonitor;
 class ChromeShelfControllerUserSwitchObserver;
+class ChromeShelfItemFactory;
 class GURL;
 class Profile;
 class ShelfControllerHelper;
@@ -73,11 +74,16 @@ class ChromeShelfController
   // Returns the single ChromeShelfController instance.
   static ChromeShelfController* instance() { return instance_; }
 
-  ChromeShelfController(Profile* profile, ash::ShelfModel* model);
+  ChromeShelfController(Profile* profile,
+                        ash::ShelfModel* model,
+                        ChromeShelfItemFactory* shelf_item_factory);
   ~ChromeShelfController() override;
 
   Profile* profile() const { return profile_; }
   ash::ShelfModel* shelf_model() const { return model_; }
+  ChromeShelfItemFactory* shelf_item_factory() const {
+    return shelf_item_factory_;
+  }
 
   AppServiceAppWindowShelfController* app_service_app_window_controller() {
     return app_service_app_window_controller_;
@@ -409,6 +415,10 @@ class ChromeShelfController
 
   // The ShelfModel instance owned by ash::Shell's ShelfController.
   ash::ShelfModel* model_;
+
+  // Guaranteed to outlive this class. The central authority for creating
+  // ShelfItems from app_ids.
+  ChromeShelfItemFactory* const shelf_item_factory_;
 
   // The AppService app window shelf controller.
   AppServiceAppWindowShelfController* app_service_app_window_controller_ =

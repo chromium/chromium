@@ -11,6 +11,7 @@
 
 #include "ash/public/cpp/app_list/app_list_controller.h"
 #include "ash/public/cpp/new_window_delegate.h"
+#include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -33,6 +34,7 @@
 #include "chrome/browser/ui/app_list/search/search_controller.h"
 #include "chrome/browser/ui/app_list/search/search_controller_factory.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/ranking_item_util.h"
+#include "chrome/browser/ui/ash/shelf/app_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/browser.h"
@@ -518,11 +520,11 @@ bool AppListClientImpl::IsAppOpen(const std::string& app_id) const {
 }
 
 void AppListClientImpl::PinApp(const std::string& app_id) {
-  ChromeShelfController::instance()->PinAppWithID(app_id);
+  PinAppWithIDToShelf(app_id);
 }
 
 void AppListClientImpl::UnpinApp(const std::string& app_id) {
-  ChromeShelfController::instance()->UnpinAppWithID(app_id);
+  UnpinAppWithIDFromShelf(app_id);
 }
 
 AppListControllerDelegate::Pinnable AppListClientImpl::GetPinnable(

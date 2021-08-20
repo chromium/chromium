@@ -554,8 +554,8 @@ class ChromeShelfControllerTest : public BrowserWithTestWindowTest {
 
   // Create an uninitialized controller instance.
   ChromeShelfController* CreateShelfController() {
-    shelf_controller_ =
-        std::make_unique<ChromeShelfController>(profile(), model_.get());
+    shelf_controller_ = std::make_unique<ChromeShelfController>(
+        profile(), model_.get(), /*shelf_item_factory=*/nullptr);
     shelf_controller_->SetProfileForTest(profile());
     shelf_controller_->SetShelfControllerHelperForTest(
         std::make_unique<ShelfControllerHelper>(profile()));

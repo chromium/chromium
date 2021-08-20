@@ -78,6 +78,35 @@ void ShelfModel::PinAppWithID(const std::string& app_id) {
   }
 }
 
+void ShelfModel::AddAndPinAppWithFactoryConstructedDelegate(
+    const std::string& app_id) {
+  DCHECK_LT(ItemIndexByAppID(app_id), 0);
+
+  ShelfItem item;
+  std::unique_ptr<ShelfItemDelegate> delegate;
+  bool result =
+      shelf_item_factory_->CreateShelfItemForAppId(app_id, &item, &delegate);
+  if (!result)
+    return;
+
+  item.type = TYPE_PINNED_APP;
+  Add(item, std::move(delegate));
+}
+
+void ShelfModel::PinExistingItemWithID(const std::string& app_id) {
+  const int index = ItemIndexByAppID(app_id);
+  DCHECK_GE(index, 0);
+
+  if (IsAppPinned(app_id))
+    return;
+
+  ShelfItem item = items_[index];
+  DCHECK_EQ(item.type, TYPE_APP);
+  DCHECK(!item.pinned_by_policy);
+  item.type = TYPE_PINNED_APP;
+  Set(index, item);
+}
+
 bool ShelfModel::IsAppPinned(const std::string& app_id) const {
   const int index = ItemIndexByID(ShelfID(app_id));
   if (index < 0)
@@ -354,6 +383,10 @@ ShelfItemDelegate* ShelfModel::GetShelfItemDelegate(
   if (it != id_to_item_delegate_map_.end())
     return it->second.get();
   return nullptr;
+}
+
+void ShelfModel::SetShelfItemFactory(ShelfModel::ShelfItemFactory* factory) {
+  shelf_item_factory_ = factory;
 }
 
 AppWindowShelfItemController* ShelfModel::GetAppWindowShelfItemController(

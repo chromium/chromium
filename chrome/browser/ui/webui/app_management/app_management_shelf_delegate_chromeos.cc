@@ -11,6 +11,7 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/chrome_shelf_prefs.h"
+#include "chrome/browser/ui/ash/shelf/app_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
@@ -82,15 +83,14 @@ bool AppManagementShelfDelegate::IsPolicyPinned(
 void AppManagementShelfDelegate::SetPinned(const std::string& app_id,
                                            OptionalBool pinned) {
   auto* shelf_controller = ChromeShelfController::instance();
-
   if (!shelf_controller) {
     return;
   }
 
   if (pinned == OptionalBool::kTrue) {
-    shelf_controller->PinAppWithID(app_id);
+    PinAppWithIDToShelf(app_id);
   } else if (pinned == OptionalBool::kFalse) {
-    shelf_controller->UnpinAppWithID(app_id);
+    UnpinAppWithIDFromShelf(app_id);
   } else {
     NOTREACHED();
   }

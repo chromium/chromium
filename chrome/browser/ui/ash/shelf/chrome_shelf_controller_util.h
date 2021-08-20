@@ -7,6 +7,8 @@
 
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 
+#include <string>
+
 class Browser;
 
 namespace ash {
@@ -31,5 +33,17 @@ AppListControllerDelegate::Pinnable GetPinnableForAppID(
 // list.
 bool IsBrowserRepresentedInBrowserList(Browser* browser,
                                        const ash::ShelfModel* model);
+
+// Pins an app to the shelf using only an app_id.
+// If the app is already present in the shelf and is unpinned, mark it as
+// pinned.
+// If the app is already present in the shelf and is pinned, do nothing.
+// If the app is not in the shelf, use ChromeShelfItemFactory to create a
+// ShelfItem and ShelfItemDelegate, add it to the shelf, and mark it as pinned.
+// If the app_id cannot be converted, does nothing.
+void PinAppWithIDToShelf(const std::string& app_id);
+
+// Unpins an app from the shelf, if it is in the shelf. Otherwise does nothing.
+void UnpinAppWithIDFromShelf(const std::string& app_id);
 
 #endif  // CHROME_BROWSER_UI_ASH_SHELF_CHROME_SHELF_CONTROLLER_UTIL_H_

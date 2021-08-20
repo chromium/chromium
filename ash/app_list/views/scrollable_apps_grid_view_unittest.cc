@@ -21,6 +21,10 @@
 #include "ash/app_list/views/apps_grid_view_test_api.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/shelf_item_delegate.h"
+#include "ash/public/cpp/shelf_model.h"
+#include "ash/public/cpp/test/test_shelf_item_delegate.h"
+#include "ash/shelf/shelf_view.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/guid.h"
@@ -52,6 +56,20 @@ void PopulateApps(int n) {
   }
 }
 
+class ShelfItemFactoryFake : public ShelfModel::ShelfItemFactory {
+ public:
+  virtual ~ShelfItemFactoryFake() = default;
+  bool CreateShelfItemForAppId(
+      const std::string& app_id,
+      ShelfItem* item,
+      std::unique_ptr<ShelfItemDelegate>* delegate) override {
+    *item = ShelfItem();
+    item->id = ShelfID(app_id);
+    *delegate = std::make_unique<TestShelfItemDelegate>(item->id);
+    return true;
+  }
+};
+
 }  // namespace
 
 class ScrollableAppsGridViewTest : public AshTestBase {
@@ -65,6 +83,13 @@ class ScrollableAppsGridViewTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
     Shell::Get()->app_list_controller()->SetClient(&app_list_client_);
+    shelf_item_factory_ = std::make_unique<ShelfItemFactoryFake>();
+    ShelfModel::Get()->SetShelfItemFactory(shelf_item_factory_.get());
+  }
+
+  void TearDown() override {
+    ShelfModel::Get()->SetShelfItemFactory(nullptr);
+    AshTestBase::TearDown();
   }
 
   // TODO(crbug.com/1222777): Convert the methods below to use
@@ -104,6 +129,7 @@ class ScrollableAppsGridViewTest : public AshTestBase {
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<ShelfItemFactoryFake> shelf_item_factory_;
   TestAppListClient app_list_client_;
 
   // Cache some view pointers to make the tests more concise.

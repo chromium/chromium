@@ -52,12 +52,43 @@ class ASH_PUBLIC_EXPORT ShelfModel {
     ShelfModel* model_ = nullptr;
   };
 
+  // Some classes in ash have the ability to insert an item into the ShelfModel,
+  // but with no knowledge of the item beyond an |app_id|. This delegate creates
+  // an explicit mechanism for those classes to fetch both a ShelfItem and a
+  // ShelfItemDelegate.
+  //
+  // If we were designing the architecture from scratch, we probably would not
+  // need this class at all. The point of this class is to take a previous
+  // implicit dependency from //ash on //chrome and make it explicit.
+  class ShelfItemFactory {
+   public:
+    // Creates an |item| and a |delegate| for a given |app_id|. Returns false on
+    // failure. |item| and |delegate| are output parameters, only populated on
+    // success.
+    virtual bool CreateShelfItemForAppId(
+        const std::string& app_id,
+        ShelfItem* item,
+        std::unique_ptr<ShelfItemDelegate>* delegate) = 0;
+  };
+
   ShelfModel();
   ~ShelfModel();
 
   // Pins an app with |app_id| to shelf. A running instance will get pinned.
   // If there is no running instance, a new shelf item is created and pinned.
+  // DEPRECATED. Use PinExistingItemWithID() instead.
   void PinAppWithID(const std::string& app_id);
+
+  // Adds an item to the shelf, using the default factory to construct a
+  // delegate. If a delegate cannot be constructed for this type of app, then no
+  // item will be added.
+  // Prefer to use AddItem directly when the delegate can be easily created.
+  void AddAndPinAppWithFactoryConstructedDelegate(const std::string& app_id);
+
+  // This function can only be called with |app_id| is already present in the
+  // shelf. Changes the ShelfItem state to be pinned. This method has no effect
+  // if the item is already pinned.
+  void PinExistingItemWithID(const std::string& app_id);
 
   // Checks if the app with |app_id_| is pinned to the shelf.
   bool IsAppPinned(const std::string& app_id) const;
@@ -189,6 +220,9 @@ class ASH_PUBLIC_EXPORT ShelfModel {
   // Returns ShelfItemDelegate for |shelf_id|, or nullptr if none exists.
   ShelfItemDelegate* GetShelfItemDelegate(const ShelfID& shelf_id) const;
 
+  // Sets the ShelfItemFactory.
+  void SetShelfItemFactory(ShelfItemFactory* factory);
+
   // Returns AppWindowShelfItemController for |shelf_id|, or nullptr if none
   // exists.
   AppWindowShelfItemController* GetAppWindowShelfItemController(
@@ -204,6 +238,9 @@ class ASH_PUBLIC_EXPORT ShelfModel {
   int ValidateInsertionIndex(ShelfItemType type, int index) const;
 
   ShelfItems items_;
+
+  // This pointer must outlive this class.
+  ShelfItemFactory* shelf_item_factory_ = nullptr;
 
   // The shelf ID of the currently active shelf item, or an empty ID if
   // nothing is active.

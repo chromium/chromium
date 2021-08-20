@@ -44,7 +44,9 @@
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ui/app_list/extension_app_utils.h"
+#include "chrome/browser/ui/ash/shelf/app_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #endif
 
 #if defined(OS_WIN)
@@ -325,7 +327,7 @@ void WebAppUiManagerImpl::AddAppToQuickLaunchBar(const AppId& app_id) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // ChromeShelfController does not exist in unit tests.
   if (auto* controller = ChromeShelfController::instance()) {
-    controller->PinAppWithID(app_id);
+    PinAppWithIDToShelf(app_id);
     controller->UpdateV1AppState(app_id);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

@@ -1127,9 +1127,15 @@ bool ShelfView::StartDrag(const std::string& app_id,
   // to be pinned to give them the same (order) possibilities as a shortcut.
   if (!model_->IsAppPinned(app_id)) {
     ShelfModel::ScopedUserTriggeredMutation user_triggered(model_);
-    model_->PinAppWithID(app_id);
-    drag_and_drop_item_pinned_ = true;
+
+    if (model_->ItemIndexByAppID(app_id) >= 0) {
+      model_->PinExistingItemWithID(app_id);
+    } else {
+      model_->AddAndPinAppWithFactoryConstructedDelegate(app_id);
+      drag_and_drop_item_pinned_ = true;
+    }
   }
+
   views::View* drag_and_drop_view =
       view_model_->view_at(model_->ItemIndexByID(drag_and_drop_shelf_id_));
   DCHECK(drag_and_drop_view);
@@ -1318,7 +1324,7 @@ void ShelfView::PointerReleasedOnButton(const views::View* view,
         if (model_->IsAppPinned(drag_app_id)) {
           model_->UnpinAppWithID(drag_app_id);
         } else {
-          model_->PinAppWithID(drag_app_id);
+          model_->PinExistingItemWithID(drag_app_id);
         }
       }
     }

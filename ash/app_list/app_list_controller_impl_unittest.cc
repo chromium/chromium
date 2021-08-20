@@ -31,9 +31,12 @@
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/public/cpp/shelf_config.h"
+#include "ash/public/cpp/shelf_item_delegate.h"
+#include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/system_tray_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
+#include "ash/public/cpp/test/test_shelf_item_delegate.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_layout_manager.h"
@@ -124,12 +127,38 @@ void EnableTabletMode() {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
 }
 
+class ShelfItemFactoryFake : public ShelfModel::ShelfItemFactory {
+ public:
+  virtual ~ShelfItemFactoryFake() = default;
+
+  bool CreateShelfItemForAppId(
+      const std::string& app_id,
+      ShelfItem* item,
+      std::unique_ptr<ShelfItemDelegate>* delegate) override {
+    *item = ShelfItem();
+    item->id = ShelfID(app_id);
+    *delegate = std::make_unique<TestShelfItemDelegate>(item->id);
+    return true;
+  }
+};
+
 }  // namespace
 
 class AppListControllerImplTest : public AshTestBase {
  public:
   AppListControllerImplTest() = default;
   ~AppListControllerImplTest() override = default;
+
+  void SetUp() override {
+    AshTestBase::SetUp();
+    shelf_item_factory_ = std::make_unique<ShelfItemFactoryFake>();
+    ShelfModel::Get()->SetShelfItemFactory(shelf_item_factory_.get());
+  }
+
+  void TearDown() override {
+    ShelfModel::Get()->SetShelfItemFactory(nullptr);
+    AshTestBase::TearDown();
+  }
 
   void PopulateItem(int num) {
     for (int i = 0; i < num; i++) {
@@ -151,6 +180,8 @@ class AppListControllerImplTest : public AshTestBase {
  private:
   // The count of the items created by `PopulateItem()`.
   int populated_item_count_ = 0;
+
+  std::unique_ptr<ShelfItemFactoryFake> shelf_item_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(AppListControllerImplTest);
 };

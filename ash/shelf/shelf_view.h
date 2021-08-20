@@ -83,6 +83,7 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
                              public ShelfTooltipDelegate,
                              public TabletModeObserver {
  public:
+  // Used to communicate with the container class ScrollableShelfView.
   class Delegate {
    public:
     virtual ~Delegate() = default;

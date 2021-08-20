@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_item_factory.h"
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 #endif
 
@@ -92,8 +93,10 @@ class AppInfoDialogViewsTest : public BrowserWithTestWindowTest,
     BrowserWithTestWindowTest::SetUp();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     shelf_model_ = std::make_unique<ash::ShelfModel>();
+    chrome_shelf_item_factory_ = std::make_unique<ChromeShelfItemFactory>();
     chrome_shelf_controller_ = std::make_unique<ChromeShelfController>(
-        extension_environment_.profile(), shelf_model_.get());
+        extension_environment_.profile(), shelf_model_.get(),
+        chrome_shelf_item_factory_.get());
     chrome_shelf_controller_->SetProfileForTest(
         extension_environment_.profile());
     chrome_shelf_controller_->SetShelfControllerHelperForTest(
@@ -189,6 +192,7 @@ class AppInfoDialogViewsTest : public BrowserWithTestWindowTest,
           kInheritExistingTaskEnvironment};
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<ash::ShelfModel> shelf_model_;
+  std::unique_ptr<ChromeShelfItemFactory> chrome_shelf_item_factory_;
   std::unique_ptr<ChromeShelfController> chrome_shelf_controller_;
   ArcAppTest arc_test_;
 #endif

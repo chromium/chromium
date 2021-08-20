@@ -478,8 +478,8 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
   ArcState GetArcState() const { return GetParam(); }
 
   ChromeShelfController* CreateShelfController() {
-    shelf_controller_ =
-        std::make_unique<ChromeShelfController>(profile_.get(), model_.get());
+    shelf_controller_ = std::make_unique<ChromeShelfController>(
+        profile_.get(), model_.get(), /*shelf_item_factory=*/nullptr);
     shelf_controller_->SetProfileForTest(profile_.get());
     shelf_controller_->SetShelfControllerHelperForTest(
         std::make_unique<ShelfControllerHelper>(profile_.get()));
