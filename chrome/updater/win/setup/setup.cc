@@ -191,10 +191,11 @@ int Setup(UpdaterScope scope) {
   run_updater_wake_command.AppendSwitch(kEnableLoggingSwitch);
   run_updater_wake_command.AppendSwitchASCII(kLoggingModuleSwitch,
                                              "*/chrome/updater/*=2");
-  if (!install_list->Do() || !RegisterWakeTask(run_updater_wake_command)) {
+  if (!install_list->Do() ||
+      !RegisterWakeTask(run_updater_wake_command, scope)) {
     LOG(ERROR) << "Install failed, rolling back...";
     install_list->Rollback();
-    UnregisterWakeTask();
+    UnregisterWakeTask(scope);
     LOG(ERROR) << "Rollback complete.";
     return -1;
   }

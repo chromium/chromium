@@ -557,4 +557,17 @@ std::wstring GetServiceDisplayName(bool is_internal_service) {
        L" ", kUpdaterVersionUtf16});
 }
 
+std::wstring GetTaskName(UpdaterScope scope) {
+  std::wstring task_name = GetTaskDisplayName(scope);
+  task_name.erase(std::remove_if(task_name.begin(), task_name.end(), isspace),
+                  task_name.end());
+  return task_name;
+}
+
+std::wstring GetTaskDisplayName(UpdaterScope scope) {
+  return base::StrCat({base::ASCIIToWide(PRODUCT_FULLNAME_STRING), L" Task ",
+                       scope == UpdaterScope::kSystem ? L" System " : L" User ",
+                       kUpdaterVersionUtf16});
+}
+
 }  // namespace updater

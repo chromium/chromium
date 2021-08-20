@@ -57,17 +57,14 @@ struct std::hash<IID> {
 namespace updater {
 namespace {
 
-constexpr wchar_t kTaskName[] = L"UpdateApps";
-constexpr wchar_t kTaskDescription[] = L"Update all applications.";
-
 }  // namespace
 
-// crbug.com(1216670) - the name of the task must be scoped for user or system.
-bool RegisterWakeTask(const base::CommandLine& run_command) {
+bool RegisterWakeTask(const base::CommandLine& run_command,
+                      UpdaterScope scope) {
   auto task_scheduler = TaskScheduler::CreateInstance();
   if (!task_scheduler->RegisterTask(
-          kTaskName, kTaskDescription, run_command,
-          TaskScheduler::TriggerType::TRIGGER_TYPE_HOURLY, true)) {
+          GetTaskName(scope).c_str(), GetTaskDisplayName(scope).c_str(),
+          run_command, TaskScheduler::TriggerType::TRIGGER_TYPE_HOURLY, true)) {
     LOG(ERROR) << "RegisterWakeTask failed.";
     return false;
   }
@@ -75,10 +72,9 @@ bool RegisterWakeTask(const base::CommandLine& run_command) {
   return true;
 }
 
-// crbug.com(1216670) - the name of the task must be scoped for user or system.
-void UnregisterWakeTask() {
+void UnregisterWakeTask(UpdaterScope scope) {
   auto task_scheduler = TaskScheduler::CreateInstance();
-  task_scheduler->DeleteTask(kTaskName);
+  task_scheduler->DeleteTask(GetTaskName(scope).c_str());
 }
 
 std::vector<IID> GetSideBySideInterfaces() {

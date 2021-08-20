@@ -140,9 +140,7 @@ int UninstallImpl(UpdaterScope scope, bool uninstall_all) {
       std::make_unique<base::win::ScopedCOMInitializer>(
           base::win::ScopedCOMInitializer::kMTA);
 
-  // crbug.com(1216670) - The scheduled tasks' names must be different for
-  // different updater scopes and versions.
-  updater::UnregisterWakeTask();
+  updater::UnregisterWakeTask(scope);
 
   if (uninstall_all) {
     std::unique_ptr<WorkItemList> uninstall_list(
