@@ -111,7 +111,7 @@
             },
             {
                 "domain": "Fetch",
-                "async": ["enable", "continueRequest", "failRequest", "fulfillRequest", "continueWithAuth", "getResponseBody", "takeResponseBodyAsStream"]
+                "async": ["enable", "continueRequest", "failRequest", "fulfillRequest", "continueWithAuth", "continueResponse", "getResponseBody", "takeResponseBodyAsStream"]
             },
             {
                 "domain": "WebAuthn",

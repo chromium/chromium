@@ -315,6 +315,39 @@ void FetchHandler::ContinueWithAuth(
                                            WrapCallback(std::move(callback)));
 }
 
+void FetchHandler::ContinueResponse(
+    const String& requestId,
+    Maybe<int> responseCode,
+    Maybe<String> responsePhrase,
+    Maybe<Array<Fetch::HeaderEntry>> responseHeaders,
+    Maybe<Binary> binaryResponseHeaders,
+    std::unique_ptr<ContinueResponseCallback> callback) {
+  if (!interceptor_) {
+    callback->sendFailure(Response::ServerError("Fetch domain is not enabled"));
+    return;
+  }
+  if (responseCode.isJust() &&
+      (responseHeaders.isJust() || binaryResponseHeaders.isJust())) {
+    auto wrapped_callback = std::make_unique<
+        CallbackWrapper<ContinueResponseCallback, FulfillRequestCallback>>(
+        std::move(callback));
+    FulfillRequest(requestId, responseCode.fromJust(),
+                   std::move(responseHeaders), std::move(binaryResponseHeaders),
+                   {}, std::move(responsePhrase), std::move(wrapped_callback));
+    return;
+  }
+  if (!responseCode.isJust() && !responsePhrase.isJust() &&
+      !responseHeaders.isJust() && !binaryResponseHeaders.isJust()) {
+    interceptor_->ContinueInterceptedRequest(
+        requestId,
+        std::make_unique<DevToolsURLLoaderInterceptor::Modifications>(),
+        WrapCallback(std::move(callback)));
+    return;
+  }
+  callback->sendFailure(Response::ServerError(
+      "Cannot override only status or headers, both should be provided"));
+}
+
 void FetchHandler::GetResponseBody(
     const String& requestId,
     std::unique_ptr<GetResponseBodyCallback> callback) {
@@ -322,11 +355,11 @@ void FetchHandler::GetResponseBody(
     callback->sendFailure(Response::ServerError("Fetch domain is not enabled"));
     return;
   }
-  auto weapped_callback = std::make_unique<CallbackWrapper<
+  auto wrapped_callback = std::make_unique<CallbackWrapper<
       GetResponseBodyCallback,
       DevToolsURLLoaderInterceptor::GetResponseBodyForInterceptionCallback,
       const std::string&, bool>>(std::move(callback));
-  interceptor_->GetResponseBody(requestId, std::move(weapped_callback));
+  interceptor_->GetResponseBody(requestId, std::move(wrapped_callback));
 }
 
 void FetchHandler::TakeResponseBodyAsStream(

@@ -80,6 +80,13 @@ class FetchHandler : public DevToolsDomainHandler, public Fetch::Backend {
       std::unique_ptr<protocol::Fetch::AuthChallengeResponse>
           authChallengeResponse,
       std::unique_ptr<ContinueWithAuthCallback> callback) override;
+  void ContinueResponse(
+      const String& fetchId,
+      Maybe<int> responseCode,
+      Maybe<String> responsePhrase,
+      Maybe<Array<Fetch::HeaderEntry>> responseHeaders,
+      Maybe<Binary> binaryResponseHeaders,
+      std::unique_ptr<ContinueResponseCallback> callback) override;
   void GetResponseBody(
       const String& fetchId,
       std::unique_ptr<GetResponseBodyCallback> callback) override;
