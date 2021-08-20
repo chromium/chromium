@@ -7167,11 +7167,8 @@ crbug.com/1178292 [ Mac ] fast/mediacapturefromelement/CanvasCaptureMediaStream-
 
 crbug.com/1236774 external/wpt/css/css-contain/content-visibility/slot-content-visibility-1-crash.html [ Crash ]
 crbug.com/1236774 external/wpt/css/css-contain/content-visibility/slot-content-visibility-2-crash.html [ Crash ]
-crbug.com/1236774 external/wpt/css/css-contain/content-visibility/slot-content-visibility-3-crash.html [ Crash ]
 crbug.com/1236774 external/wpt/css/css-contain/content-visibility/slot-content-visibility-4-crash.html [ Crash ]
 crbug.com/1236774 external/wpt/css/css-contain/content-visibility/slot-content-visibility-5-crash.html [ Crash ]
-crbug.com/1236774 external/wpt/css/css-contain/content-visibility/slot-content-visibility-6-crash.html [ Crash ]
-crbug.com/1236774 external/wpt/css/css-contain/content-visibility/slot-content-visibility-7-crash.html [ Crash ]
 crbug.com/1236774 external/wpt/css/css-contain/content-visibility/slot-content-visibility-8-crash.html [ Crash ]
 
 # Sheriff 2021-08-10
