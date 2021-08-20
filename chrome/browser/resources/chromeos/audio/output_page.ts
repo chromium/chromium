@@ -4,10 +4,52 @@ import {AudioBroker} from './audio_broker.js';
 import {AudioPlayer} from './audio_player.js';
 import {Page} from './page.js';
 
-const AUDIOS = [
-  'sound/mono_44k_sine440.wav', 'sound/mono_48k_sine440.wav',
-  'sound/stereo_48k_sine440.wav', 'sound/stereo_48k_sine440_left.wav',
-  'sound/stereo_48k_sine440_right.wav', 'sound/mono_48k_sine1k.wav'
+
+
+export interface AudioSample {
+  sampleRate: number;
+  freqency: number;
+  channelCount: 1|2;
+  pan: number;
+  description: string;
+}
+
+let audiosSamples: AudioSample[] = [
+  {
+    sampleRate: 44100,
+    freqency: 440,
+    channelCount: 1,
+    pan: 0,
+    description: '44.1k mono 440Hz sine tone'
+  },
+  {
+    sampleRate: 48000,
+    freqency: 440,
+    channelCount: 1,
+    pan: 0,
+    description: '48k mono 440Hz sine tone'
+  },
+  {
+    sampleRate: 48000,
+    freqency: 440,
+    channelCount: 2,
+    pan: 0,
+    description: '48k stereo 440Hz sine tone'
+  },
+  {
+    sampleRate: 48000,
+    freqency: 440,
+    channelCount: 2,
+    pan: -1,
+    description: '48k stereo 440Hz sine tone - Left channel only'
+  },
+  {
+    sampleRate: 48000,
+    freqency: 440,
+    channelCount: 2,
+    pan: 1,
+    description: '48k stereo 440Hz sine tone - Right channel only'
+  },
 ];
 
 export class OutputPage extends Page {
@@ -16,16 +58,12 @@ export class OutputPage extends Page {
     super('output');
     this.testOutputFeedback = new Map();
     this.initOutputMap();
-    this.createAudioPlayers();
-    const firstAudio = AUDIOS[0];
-    if (firstAudio && $(firstAudio)) {
-      $(firstAudio).hidden = false;
-    }
+    this.createAudioPlayer();
   }
 
   initOutputMap() {
-    for (const audio of AUDIOS) {
-      this.testOutputFeedback.set(audio, null);
+    for (const audio of audiosSamples) {
+      this.testOutputFeedback.set(audio.description, null);
     }
   }
 
@@ -40,21 +78,14 @@ export class OutputPage extends Page {
     });
   }
 
-  setOutputMapEntry(audioFile: string, canHear: boolean) {
-    this.testOutputFeedback.set(audioFile, canHear);
+  setOutputMapEntry(audioSample: AudioSample, canHear: boolean) {
+    this.testOutputFeedback.set(audioSample.description, canHear);
     console.log(this.testOutputFeedback);
   }
 
-  createAudioPlayers() {
-    for (var i = 0; i < AUDIOS.length; i++) {
-      const current = AUDIOS[i];
-      const prev = AUDIOS[i - 1];
-      const next = AUDIOS[i + 1];
-      if (current) {
-        const audioPlayer = new AudioPlayer(current, prev, next);
-        $('audio-players').appendChild(audioPlayer);
-      }
-    }
+  createAudioPlayer() {
+    const audioPlayer = new AudioPlayer(audiosSamples);
+    $('audio-player').appendChild(audioPlayer);
   }
 
   static getInstance() {

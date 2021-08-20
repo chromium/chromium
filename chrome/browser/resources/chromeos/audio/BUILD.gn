@@ -57,12 +57,6 @@ generate_grd("build_grd") {
   input_files = [
     "audio.html",
     "audio.css",
-    "sound/mono_44k_sine440.wav",
-    "sound/mono_48k_sine440.wav",
-    "sound/stereo_48k_sine440.wav",
-    "sound/stereo_48k_sine440_left.wav",
-    "sound/stereo_48k_sine440_right.wav",
-    "sound/mono_48k_sine1k.wav",
   ]
   input_files_base_dir = rebase_path(".", "//")
   manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
