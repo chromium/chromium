@@ -47,7 +47,6 @@
 #include "components/reporting/util/task_runner_context.h"
 #include "crypto/random.h"
 #include "crypto/sha2.h"
-#include "storage_uploader_interface.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/protobuf/src/google/protobuf/io/zero_copy_stream_impl_lite.h"
 
@@ -1617,7 +1616,7 @@ void StorageQueue::CheckBackUpload(Status status, int64_t next_sequencing_id) {
   if (!first_unconfirmed_sequencing_id_.has_value() ||
       first_unconfirmed_sequencing_id_.value() < next_sequencing_id) {
     // Not all uploaded events were confirmed after upload, retry.
-    Start<ReadContext>(UploaderInterface::IMCOMPLETE_RETRY, this);
+    Start<ReadContext>(UploaderInterface::INCOMPLETE_RETRY, this);
     return;
   }
 

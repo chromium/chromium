@@ -32,7 +32,7 @@ class UploaderInterface {
     PERIODIC = 3,
     IMMEDIATE_FLUSH = 4,
     FAILURE_RETRY = 5,
-    IMCOMPLETE_RETRY = 6,
+    INCOMPLETE_RETRY = 6,
     INIT_RESUME = 7,
     MAX_REASON = 8,  // Anything beyond this is illegal.
   };

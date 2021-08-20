@@ -9,8 +9,8 @@
 #include <tuple>
 #include <utility>
 
-#include <base/containers/flat_map.h>
 #include "base/callback_helpers.h"
+#include "base/containers/flat_map.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/strcat.h"
@@ -36,7 +36,6 @@
 #include "components/reporting/util/statusor.h"
 #include "components/reporting/util/test_support_callbacks.h"
 #include "crypto/sha2.h"
-#include "storage_uploader_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -46,7 +45,6 @@ using ::testing::Between;
 using ::testing::Eq;
 using ::testing::HasSubstr;
 using ::testing::Invoke;
-using ::testing::Ne;
 using ::testing::NotNull;
 using ::testing::Property;
 using ::testing::Return;
@@ -58,6 +56,9 @@ using ::testing::WithoutArgs;
 
 namespace reporting {
 namespace {
+
+// Mock upload client counter - for generation of unique ids.
+std::atomic<int64_t> next_client_id{0};
 
 // Context of single decryption. Self-destructs upon completion or failure.
 class SingleDecryptionContext {
@@ -195,7 +196,8 @@ class MockUploadClient : public ::testing::NiceMock<UploaderInterface> {
       scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner,
       base::OnceClosure key_generation,
       scoped_refptr<test::Decryptor> decryptor)
-      : last_record_digest_map_(last_record_digest_map),
+      : client_id_(next_client_id.fetch_add(1)),
+        last_record_digest_map_(last_record_digest_map),
         sequenced_task_runner_(sequenced_task_runner),
         key_generation_(std::move(key_generation)),
         decryptor_(decryptor) {}
@@ -242,7 +244,7 @@ class MockUploadClient : public ::testing::NiceMock<UploaderInterface> {
         generation_id_.value() != sequencing_information.generation_id()) {
       std::move(processed_cb)
           .Run(UploadRecordFailure(
-              sequencing_information.priority(),
+              client_id_, sequencing_information.priority(),
               sequencing_information.sequencing_id(),
               Status(
                   error::DATA_LOSS,
@@ -265,26 +267,35 @@ class MockUploadClient : public ::testing::NiceMock<UploaderInterface> {
 
     for (uint64_t c = 0; c < count; ++c) {
       EncounterSeqId(
-          sequencing_information.priority(),
+          client_id_, sequencing_information.priority(),
           sequencing_information.sequencing_id() + static_cast<int64_t>(c));
     }
     std::move(processed_cb)
-        .Run(UploadGap(sequencing_information.priority(),
+        .Run(UploadGap(client_id_, sequencing_information.priority(),
                        sequencing_information.sequencing_id(), count));
   }
 
-  void Completed(Status status) override { UploadComplete(status); }
+  void Completed(Status status) override { UploadComplete(client_id_, status); }
 
   void KeyGeneration() { std::move(key_generation_).Run(); }
 
-  MOCK_METHOD(void, EncounterSeqId, (Priority, int64_t), (const));
+  MOCK_METHOD(void,
+              EncounterSeqId,
+              (int64_t /*client_id*/, Priority, int64_t),
+              (const));
   MOCK_METHOD(bool,
               UploadRecord,
-              (Priority, int64_t, base::StringPiece),
+              (int64_t /*client_id*/, Priority, int64_t, base::StringPiece),
               (const));
-  MOCK_METHOD(bool, UploadRecordFailure, (Priority, int64_t, Status), (const));
-  MOCK_METHOD(bool, UploadGap, (Priority, int64_t, uint64_t), (const));
-  MOCK_METHOD(void, UploadComplete, (Status), (const));
+  MOCK_METHOD(bool,
+              UploadRecordFailure,
+              (int64_t /*client_id*/, Priority, int64_t, Status),
+              (const));
+  MOCK_METHOD(bool,
+              UploadGap,
+              (int64_t /*client_id*/, Priority, int64_t, uint64_t),
+              (const));
+  MOCK_METHOD(void, UploadComplete, (int64_t /*client_id*/, Status), (const));
 
   // Helper class for setting up mock client expectations of a successful
   // completion.
@@ -293,14 +304,18 @@ class MockUploadClient : public ::testing::NiceMock<UploaderInterface> {
     SetUp(Priority priority,
           MockUploadClient* client,
           test::TestCallbackWaiter* waiter)
-        : priority_(priority), client_(client), waiter_(waiter) {}
+        : client_id_(client->client_id_),
+          priority_(priority),
+          client_(client),
+          waiter_(waiter) {}
     ~SetUp() {
-      EXPECT_CALL(*client_, UploadRecordFailure(_, _, _))
+      EXPECT_CALL(*client_, UploadRecordFailure(Eq(client_id_), _, _, _))
           .Times(0)
           .InSequence(client_->test_upload_sequence_);
       test::TestCallbackWaiter* const waiter =
           waiter_;  // let pointer outlive SetUp
-      EXPECT_CALL(*client_, UploadComplete(Eq(Status::StatusOK())))
+      EXPECT_CALL(*client_,
+                  UploadComplete(Eq(client_id_), Eq(Status::StatusOK())))
           .InSequence(client_->test_upload_sequence_,
                       client_->test_encounter_sequence_)
           .WillOnce(
@@ -308,16 +323,18 @@ class MockUploadClient : public ::testing::NiceMock<UploaderInterface> {
     }
 
     SetUp& Required(int64_t sequencing_id, base::StringPiece value) {
-      EXPECT_CALL(*client_, UploadRecord(Eq(priority_), Eq(sequencing_id),
-                                         StrEq(std::string(value))))
+      EXPECT_CALL(*client_,
+                  UploadRecord(Eq(client_id_), Eq(priority_), Eq(sequencing_id),
+                               StrEq(std::string(value))))
           .InSequence(client_->test_upload_sequence_)
           .WillOnce(Return(true));
       return *this;
     }
 
     SetUp& Possible(int64_t sequencing_id, base::StringPiece value) {
-      EXPECT_CALL(*client_, UploadRecord(Eq(priority_), Eq(sequencing_id),
-                                         StrEq(std::string(value))))
+      EXPECT_CALL(*client_,
+                  UploadRecord(Eq(client_id_), Eq(priority_), Eq(sequencing_id),
+                               StrEq(std::string(value))))
           .Times(Between(0, 1))
           .InSequence(client_->test_upload_sequence_)
           .WillRepeatedly(Return(true));
@@ -325,8 +342,8 @@ class MockUploadClient : public ::testing::NiceMock<UploaderInterface> {
     }
 
     SetUp& PossibleGap(int64_t sequence_number, uint64_t count) {
-      EXPECT_CALL(*client_,
-                  UploadGap(Eq(priority_), Eq(sequence_number), Eq(count)))
+      EXPECT_CALL(*client_, UploadGap(Eq(client_id_), Eq(priority_),
+                                      Eq(sequence_number), Eq(count)))
           .Times(Between(0, 1))
           .InSequence(client_->test_upload_sequence_)
           .WillRepeatedly(Return(true));
@@ -338,20 +355,23 @@ class MockUploadClient : public ::testing::NiceMock<UploaderInterface> {
     // belonged to records or gaps. The expectations are set on a separate
     // test sequence.
     SetUp& RequiredSeqId(int64_t sequence_number) {
-      EXPECT_CALL(*client_, EncounterSeqId(Eq(priority_), Eq(sequence_number)))
+      EXPECT_CALL(*client_, EncounterSeqId(Eq(client_id_), Eq(priority_),
+                                           Eq(sequence_number)))
           .Times(1)
           .InSequence(client_->test_encounter_sequence_);
       return *this;
     }
 
     SetUp& PossibleSeqId(int64_t sequence_number) {
-      EXPECT_CALL(*client_, EncounterSeqId(Eq(priority_), Eq(sequence_number)))
+      EXPECT_CALL(*client_, EncounterSeqId(Eq(client_id_), Eq(priority_),
+                                           Eq(sequence_number)))
           .Times(Between(0, 1))
           .InSequence(client_->test_encounter_sequence_);
       return *this;
     }
 
    private:
+    const int64_t client_id_;
     const Priority priority_;
     MockUploadClient* const client_;
     test::TestCallbackWaiter* const waiter_;
@@ -360,34 +380,44 @@ class MockUploadClient : public ::testing::NiceMock<UploaderInterface> {
   // Helper class for setting up mock client expectations on empty queue.
   class SetEmpty {
    public:
-    explicit SetEmpty(MockUploadClient* client) : client_(client) {}
+    explicit SetEmpty(MockUploadClient* client)
+        : client_id_(client->client_id_), client_(client) {}
 
     ~SetEmpty() {
-      EXPECT_CALL(*client_, UploadRecord(_, _, _)).Times(0);
-      EXPECT_CALL(*client_, UploadRecordFailure(_, _, _)).Times(0);
-      EXPECT_CALL(*client_, UploadComplete(Eq(Status::StatusOK()))).Times(1);
+      EXPECT_CALL(*client_, UploadRecord(Eq(client_id_), _, _, _)).Times(0);
+      EXPECT_CALL(*client_, UploadRecordFailure(Eq(client_id_), _, _, _))
+          .Times(0);
+      EXPECT_CALL(*client_,
+                  UploadComplete(Eq(client_id_), Eq(Status::StatusOK())))
+          .Times(1);
     }
 
    private:
+    const int64_t client_id_;
     MockUploadClient* const client_;
   };
 
   // Helper class for setting up mock client expectations for key delivery.
   class SetKeyDelivery {
    public:
-    explicit SetKeyDelivery(MockUploadClient* client) : client_(client) {}
+    explicit SetKeyDelivery(MockUploadClient* client)
+        : client_id_(client->client_id_), client_(client) {}
 
     ~SetKeyDelivery() {
-      EXPECT_CALL(*client_, UploadRecord(_, _, _)).Times(0);
-      EXPECT_CALL(*client_, UploadRecordFailure(_, _, _)).Times(0);
-      EXPECT_CALL(*client_, UploadComplete(Eq(Status::StatusOK())))
+      EXPECT_CALL(*client_, UploadRecord(Eq(client_id_), _, _, _)).Times(0);
+      EXPECT_CALL(*client_, UploadRecordFailure(Eq(client_id_), _, _, _))
+          .Times(0);
+      EXPECT_CALL(*client_,
+                  UploadComplete(Eq(client_id_), Eq(Status::StatusOK())))
           .WillOnce(
               // Provision the storage with a key.
               // Key delivery must have been requested above.
-              WithoutArgs(Invoke(client_, &MockUploadClient::KeyGeneration)));
+              WithoutArgs(Invoke(client_, &MockUploadClient::KeyGeneration)))
+          .RetiresOnSaturation();
     }
 
    private:
+    const int64_t client_id_;
     MockUploadClient* const client_;
   };
 
@@ -410,7 +440,7 @@ class MockUploadClient : public ::testing::NiceMock<UploaderInterface> {
         generation_id_.value() != sequencing_information.generation_id()) {
       std::move(processed_cb)
           .Run(UploadRecordFailure(
-              sequencing_information.priority(),
+              client_id_, sequencing_information.priority(),
               sequencing_information.sequencing_id(),
               Status(
                   error::DATA_LOSS,
@@ -434,7 +464,7 @@ class MockUploadClient : public ::testing::NiceMock<UploaderInterface> {
       if (record_digest != wrapped_record.record_digest()) {
         std::move(processed_cb)
             .Run(UploadRecordFailure(
-                sequencing_information.priority(),
+                client_id_, sequencing_information.priority(),
                 sequencing_information.sequencing_id(),
                 Status(error::DATA_LOSS, "Record digest mismatch")));
         return;
@@ -468,7 +498,7 @@ class MockUploadClient : public ::testing::NiceMock<UploaderInterface> {
         if (it->second != wrapped_record.last_record_digest()) {
           std::move(processed_cb)
               .Run(UploadRecordFailure(
-                  sequencing_information.priority(),
+                  client_id_, sequencing_information.priority(),
                   sequencing_information.sequencing_id(),
                   Status(error::DATA_LOSS, "Last record digest mismatch")));
           return;
@@ -481,13 +511,19 @@ class MockUploadClient : public ::testing::NiceMock<UploaderInterface> {
           record_digest);
     }
 
-    EncounterSeqId(sequencing_information.priority(),
+    EncounterSeqId(client_id_, sequencing_information.priority(),
                    sequencing_information.sequencing_id());
     std::move(processed_cb)
-        .Run(UploadRecord(sequencing_information.priority(),
+        .Run(UploadRecord(client_id_, sequencing_information.priority(),
                           sequencing_information.sequencing_id(),
                           wrapped_record.record().data()));
   }
+
+  // Unique ID of the client - even if the client is allocated
+  // on the same address as an earlier one (already released),
+  // it will get a new id and thus will ensure the expectations
+  // match the expected client.
+  const int64_t client_id_;
 
   absl::optional<int64_t> generation_id_;
   LastRecordDigestMap* const last_record_digest_map_;
@@ -499,11 +535,6 @@ class MockUploadClient : public ::testing::NiceMock<UploaderInterface> {
   Sequence test_encounter_sequence_;
   Sequence test_upload_sequence_;
 };
-
-// Do-nothing mock upload.
-Status DoNotUpload(MockUploadClient*) {
-  return Status::StatusOK();
-}
 
 class StorageTest
     : public ::testing::TestWithParam<::testing::tuple<bool, size_t>> {
@@ -550,6 +581,8 @@ class StorageTest
     // Make sure all disk is not reserved (files remain, but Storage is not
     // responsible for them anymore).
     ASSERT_THAT(GetDiskResource()->GetUsed(), Eq(0u));
+    // Log next client id for possible verification.
+    LOG(ERROR) << "Next client id=" << next_client_id.load();
   }
 
   StatusOr<scoped_refptr<Storage>> CreateTestStorage(
@@ -572,7 +605,7 @@ class StorageTest
             MockUploadClient::SetKeyDelivery client(mock_upload_client);
             return Status::StatusOK();
           })))
-          .WillRepeatedly(WithArg<1>(Invoke(&DoNotUpload)));
+          .RetiresOnSaturation();
     }
 
     return storage;
@@ -584,11 +617,11 @@ class StorageTest
           EncryptionModule::Create(
               /*renew_encryption_key_period=*/base::TimeDelta::FromMinutes(
                   30))) {
-    ASSERT_FALSE(storage_) << "StorageTest already assigned";
+    ASSERT_FALSE(storage_) << "TestStorage already assigned";
     StatusOr<scoped_refptr<Storage>> storage_result =
         CreateTestStorage(options, encryption_module);
     ASSERT_OK(storage_result)
-        << "Failed to create StorageTest, error=" << storage_result.status();
+        << "Failed to create TestStorage, error=" << storage_result.status();
     storage_ = std::move(storage_result.ValueOrDie());
   }
 
@@ -643,13 +676,23 @@ class StorageTest
                              signed_encryption_key_)
             : base::DoNothing(),
         decryptor_);
-    const auto status =
-        set_mock_uploader_expectations_.Call(reason, uploader.get());
-    if (!status.ok()) {
-      std::move(start_uploader_cb).Run(status);
-      return;
-    }
-    std::move(start_uploader_cb).Run(std::move(uploader));
+    sequenced_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](UploaderInterface::UploadReason reason,
+               std::unique_ptr<MockUploadClient> uploader,
+               UploaderInterface::UploaderInterfaceResultCb start_uploader_cb,
+               StorageTest* self) {
+              const auto status = self->set_mock_uploader_expectations_.Call(
+                  reason, uploader.get());
+              if (!status.ok()) {
+                std::move(start_uploader_cb).Run(status);
+                return;
+              }
+              std::move(start_uploader_cb).Run(std::move(uploader));
+            },
+            reason, std::move(uploader), std::move(start_uploader_cb),
+            base::Unretained(this)));
   }
 
   void AsyncStartMockUploaderFailing(
@@ -759,8 +802,8 @@ class StorageTest
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_{
       base::ThreadPool::CreateSequencedTaskRunner(base::TaskTraits())};
 
-  ::testing::NiceMock<::testing::MockFunction<
-      Status(UploaderInterface::UploadReason /*reason*/, MockUploadClient*)>>
+  ::testing::MockFunction<Status(UploaderInterface::UploadReason /*reason*/,
+                                 MockUploadClient*)>
       set_mock_uploader_expectations_;
 };
 
@@ -802,7 +845,7 @@ TEST_P(StorageTest, WriteIntoNewStorageAndUpload) {
   // Set uploader expectations.
   test::TestCallbackAutoWaiter waiter;
   EXPECT_CALL(set_mock_uploader_expectations_,
-              Call(Ne(UploaderInterface::KEY_DELIVERY), NotNull()))
+              Call(Eq(UploaderInterface::PERIODIC), NotNull()))
       .WillOnce(
           WithArg<1>(Invoke([&waiter](MockUploadClient* mock_upload_client) {
             MockUploadClient::SetUp(FAST_BATCH, mock_upload_client, &waiter)
@@ -810,7 +853,8 @@ TEST_P(StorageTest, WriteIntoNewStorageAndUpload) {
                 .Required(1, kData[1])
                 .Required(2, kData[2]);
             return Status::StatusOK();
-          })));
+          })))
+      .RetiresOnSaturation();
 
   // Trigger upload.
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
@@ -832,14 +876,15 @@ TEST_P(StorageTest, WriteIntoNewStorageAndUploadWithKeyUpdate) {
   // Set uploader expectations.
   {
     test::TestCallbackAutoWaiter waiter;
-    EXPECT_CALL(set_mock_uploader_expectations_, Call(/*reason=*/_, NotNull()))
+    EXPECT_CALL(set_mock_uploader_expectations_,
+                Call(Eq(UploaderInterface::KEY_DELIVERY), NotNull()))
         .WillRepeatedly(
             WithArg<1>(Invoke([](MockUploadClient* mock_upload_client) {
               MockUploadClient::SetEmpty client(mock_upload_client);
               return Status::StatusOK();
             })));
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Ne(UploaderInterface::KEY_DELIVERY), NotNull()))
+                Call(Eq(UploaderInterface::MANUAL), NotNull()))
         .WillOnce(
             WithArg<1>(Invoke([&waiter](MockUploadClient* mock_upload_client) {
               MockUploadClient::SetUp(MANUAL_BATCH, mock_upload_client, &waiter)
@@ -847,7 +892,8 @@ TEST_P(StorageTest, WriteIntoNewStorageAndUploadWithKeyUpdate) {
                   .Required(1, kData[1])
                   .Required(2, kData[2]);
               return Status::StatusOK();
-            })));
+            })))
+        .RetiresOnSaturation();
 
     // Trigger upload with no key update.
     EXPECT_OK(storage_->Flush(MANUAL_BATCH));
@@ -877,7 +923,7 @@ TEST_P(StorageTest, WriteIntoNewStorageAndUploadWithKeyUpdate) {
                 .Required(5, kMoreData[2]);
             return Status::StatusOK();
           })))
-      .WillRepeatedly(WithArg<1>(Invoke(&DoNotUpload)));
+      .RetiresOnSaturation();
 
   // Trigger upload with key update after a long wait.
   EXPECT_OK(storage_->Flush(MANUAL_BATCH));
@@ -899,7 +945,7 @@ TEST_P(StorageTest, WriteIntoNewStorageReopenWriteMoreAndUpload) {
   // Set uploader expectations.
   test::TestCallbackAutoWaiter waiter;
   EXPECT_CALL(set_mock_uploader_expectations_,
-              Call(Ne(UploaderInterface::KEY_DELIVERY), NotNull()))
+              Call(Eq(UploaderInterface::PERIODIC), NotNull()))
       .WillOnce(
           WithArg<1>(Invoke([&waiter](MockUploadClient* mock_upload_client) {
             MockUploadClient::SetUp(FAST_BATCH, mock_upload_client, &waiter)
@@ -911,7 +957,7 @@ TEST_P(StorageTest, WriteIntoNewStorageReopenWriteMoreAndUpload) {
                 .Required(5, kMoreData[2]);
             return Status::StatusOK();
           })))
-      .WillRepeatedly(WithArg<1>(Invoke(&DoNotUpload)));
+      .RetiresOnSaturation();
 
   // Trigger upload.
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
@@ -926,7 +972,7 @@ TEST_P(StorageTest, WriteIntoNewStorageAndFlush) {
   // Set uploader expectations.
   test::TestCallbackAutoWaiter waiter;
   EXPECT_CALL(set_mock_uploader_expectations_,
-              Call(Ne(UploaderInterface::KEY_DELIVERY), NotNull()))
+              Call(Eq(UploaderInterface::MANUAL), NotNull()))
       .WillOnce(
           WithArg<1>(Invoke([&waiter](MockUploadClient* mock_upload_client) {
             MockUploadClient::SetUp(MANUAL_BATCH, mock_upload_client, &waiter)
@@ -935,7 +981,7 @@ TEST_P(StorageTest, WriteIntoNewStorageAndFlush) {
                 .Required(2, kData[2]);
             return Status::StatusOK();
           })))
-      .WillRepeatedly(WithArg<1>(Invoke(&DoNotUpload)));
+      .RetiresOnSaturation();
 
   // Trigger upload.
   EXPECT_OK(storage_->Flush(MANUAL_BATCH));
@@ -957,7 +1003,7 @@ TEST_P(StorageTest, WriteIntoNewStorageReopenWriteMoreAndFlush) {
   // Set uploader expectations.
   test::TestCallbackAutoWaiter waiter;
   EXPECT_CALL(set_mock_uploader_expectations_,
-              Call(Ne(UploaderInterface::KEY_DELIVERY), NotNull()))
+              Call(Eq(UploaderInterface::MANUAL), NotNull()))
       .WillOnce(
           WithArg<1>(Invoke([&waiter](MockUploadClient* mock_upload_client) {
             MockUploadClient::SetUp(MANUAL_BATCH, mock_upload_client, &waiter)
@@ -969,7 +1015,7 @@ TEST_P(StorageTest, WriteIntoNewStorageReopenWriteMoreAndFlush) {
                 .Required(5, kMoreData[2]);
             return Status::StatusOK();
           })))
-      .WillRepeatedly(WithArg<1>(Invoke(&DoNotUpload)));
+      .RetiresOnSaturation();
 
   // Trigger upload.
   EXPECT_OK(storage_->Flush(MANUAL_BATCH));
@@ -986,7 +1032,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadWithConfirmations) {
     // Set uploader expectations.
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Ne(UploaderInterface::KEY_DELIVERY), NotNull()))
+                Call(Eq(UploaderInterface::PERIODIC), NotNull()))
         .WillOnce(
             WithArg<1>(Invoke([&waiter](MockUploadClient* mock_upload_client) {
               MockUploadClient::SetUp(FAST_BATCH, mock_upload_client, &waiter)
@@ -995,7 +1041,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadWithConfirmations) {
                   .Required(2, kData[2]);
               return Status::StatusOK();
             })))
-        .WillRepeatedly(WithArg<1>(Invoke(&DoNotUpload)));
+        .RetiresOnSaturation();
 
     // Forward time to trigger upload
     task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
@@ -1007,7 +1053,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadWithConfirmations) {
     // Set uploader expectations.
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Ne(UploaderInterface::KEY_DELIVERY), NotNull()))
+                Call(Eq(UploaderInterface::PERIODIC), NotNull()))
         .WillOnce(
             WithArg<1>(Invoke([&waiter](MockUploadClient* mock_upload_client) {
               MockUploadClient::SetUp(FAST_BATCH, mock_upload_client, &waiter)
@@ -1015,7 +1061,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadWithConfirmations) {
                   .Required(2, kData[2]);
               return Status::StatusOK();
             })))
-        .WillRepeatedly(WithArg<1>(Invoke(&DoNotUpload)));
+        .RetiresOnSaturation();
     // Forward time to trigger upload
     task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
   }
@@ -1026,14 +1072,14 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadWithConfirmations) {
     test::TestCallbackAutoWaiter waiter;
     // Set uploader expectations.
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Ne(UploaderInterface::KEY_DELIVERY), NotNull()))
+                Call(Eq(UploaderInterface::PERIODIC), NotNull()))
         .WillOnce(
             WithArg<1>(Invoke([&waiter](MockUploadClient* mock_upload_client) {
               MockUploadClient::SetUp(FAST_BATCH, mock_upload_client, &waiter)
                   .Required(2, kData[2]);
               return Status::StatusOK();
             })))
-        .WillRepeatedly(WithArg<1>(Invoke(&DoNotUpload)));
+        .RetiresOnSaturation();
     // Forward time to trigger upload
     task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
   }
@@ -1047,7 +1093,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadWithConfirmations) {
     // Set uploader expectations.
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Ne(UploaderInterface::KEY_DELIVERY), NotNull()))
+                Call(Eq(UploaderInterface::PERIODIC), NotNull()))
         .WillOnce(
             WithArg<1>(Invoke([&waiter](MockUploadClient* mock_upload_client) {
               MockUploadClient::SetUp(FAST_BATCH, mock_upload_client, &waiter)
@@ -1057,7 +1103,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadWithConfirmations) {
                   .Required(5, kMoreData[2]);
               return Status::StatusOK();
             })))
-        .WillRepeatedly(WithArg<1>(Invoke(&DoNotUpload)));
+        .RetiresOnSaturation();
     task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
   }
 
@@ -1067,7 +1113,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadWithConfirmations) {
     // Set uploader expectations.
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Ne(UploaderInterface::KEY_DELIVERY), NotNull()))
+                Call(Eq(UploaderInterface::PERIODIC), NotNull()))
         .WillOnce(
             WithArg<1>(Invoke([&waiter](MockUploadClient* mock_upload_client) {
               MockUploadClient::SetUp(FAST_BATCH, mock_upload_client, &waiter)
@@ -1076,7 +1122,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadWithConfirmations) {
                   .Required(5, kMoreData[2]);
               return Status::StatusOK();
             })))
-        .WillRepeatedly(WithArg<1>(Invoke(&DoNotUpload)));
+        .RetiresOnSaturation();
     task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
   }
 }
@@ -1090,14 +1136,14 @@ TEST_P(StorageTest, WriteAndRepeatedlyImmediateUpload) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Ne(UploaderInterface::KEY_DELIVERY), NotNull()))
+                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH), NotNull()))
         .WillOnce(
             WithArg<1>(Invoke([&waiter](MockUploadClient* mock_upload_client) {
               MockUploadClient::SetUp(IMMEDIATE, mock_upload_client, &waiter)
                   .Required(0, kData[0]);
               return Status::StatusOK();
             })))
-        .WillRepeatedly(WithArg<1>(Invoke(&DoNotUpload)));
+        .RetiresOnSaturation();
     WriteStringOrDie(IMMEDIATE,
                      kData[0]);  // Immediately uploads and verifies.
   }
@@ -1105,7 +1151,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyImmediateUpload) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Ne(UploaderInterface::KEY_DELIVERY), NotNull()))
+                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH), NotNull()))
         .WillOnce(
             WithArg<1>(Invoke([&waiter](MockUploadClient* mock_upload_client) {
               MockUploadClient::SetUp(IMMEDIATE, mock_upload_client, &waiter)
@@ -1113,7 +1159,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyImmediateUpload) {
                   .Required(1, kData[1]);
               return Status::StatusOK();
             })))
-        .WillRepeatedly(WithArg<1>(Invoke(&DoNotUpload)));
+        .RetiresOnSaturation();
     WriteStringOrDie(IMMEDIATE,
                      kData[1]);  // Immediately uploads and verifies.
   }
@@ -1121,7 +1167,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyImmediateUpload) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Ne(UploaderInterface::KEY_DELIVERY), NotNull()))
+                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH), NotNull()))
         .WillOnce(
             WithArg<1>(Invoke([&waiter](MockUploadClient* mock_upload_client) {
               MockUploadClient::SetUp(IMMEDIATE, mock_upload_client, &waiter)
@@ -1130,7 +1176,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyImmediateUpload) {
                   .Required(2, kData[2]);
               return Status::StatusOK();
             })))
-        .WillRepeatedly(WithArg<1>(Invoke(&DoNotUpload)));
+        .RetiresOnSaturation();
     WriteStringOrDie(IMMEDIATE,
                      kData[2]);  // Immediately uploads and verifies.
   }
@@ -1146,21 +1192,21 @@ TEST_P(StorageTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Ne(UploaderInterface::KEY_DELIVERY), NotNull()))
+                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH), NotNull()))
         .WillOnce(
             WithArg<1>(Invoke([&waiter](MockUploadClient* mock_upload_client) {
               MockUploadClient::SetUp(IMMEDIATE, mock_upload_client, &waiter)
                   .Required(0, kData[0]);
               return Status::StatusOK();
             })))
-        .WillRepeatedly(WithArg<1>(Invoke(&DoNotUpload)));
+        .RetiresOnSaturation();
     WriteStringOrDie(IMMEDIATE, kData[0]);
   }
 
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Ne(UploaderInterface::KEY_DELIVERY), NotNull()))
+                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH), NotNull()))
         .WillOnce(
             WithArg<1>(Invoke([&waiter](MockUploadClient* mock_upload_client) {
               MockUploadClient::SetUp(IMMEDIATE, mock_upload_client, &waiter)
@@ -1168,14 +1214,14 @@ TEST_P(StorageTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
                   .Required(1, kData[1]);
               return Status::StatusOK();
             })))
-        .WillRepeatedly(WithArg<1>(Invoke(&DoNotUpload)));
+        .RetiresOnSaturation();
     WriteStringOrDie(IMMEDIATE, kData[1]);
   }
 
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Ne(UploaderInterface::KEY_DELIVERY), NotNull()))
+                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH), NotNull()))
         .WillOnce(
             WithArg<1>(Invoke([&waiter](MockUploadClient* mock_upload_client) {
               MockUploadClient::SetUp(IMMEDIATE, mock_upload_client, &waiter)
@@ -1184,7 +1230,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
                   .Required(2, kData[2]);
               return Status::StatusOK();
             })))
-        .WillRepeatedly(WithArg<1>(Invoke(&DoNotUpload)));
+        .RetiresOnSaturation();
     WriteStringOrDie(IMMEDIATE, kData[2]);
   }
 
@@ -1198,7 +1244,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Ne(UploaderInterface::KEY_DELIVERY), NotNull()))
+                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH), NotNull()))
         .WillOnce(
             WithArg<1>(Invoke([&waiter](MockUploadClient* mock_upload_client) {
               MockUploadClient::SetUp(IMMEDIATE, mock_upload_client, &waiter)
@@ -1206,14 +1252,14 @@ TEST_P(StorageTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
                   .Required(3, kMoreData[0]);
               return Status::StatusOK();
             })))
-        .WillRepeatedly(WithArg<1>(Invoke(&DoNotUpload)));
+        .RetiresOnSaturation();
     WriteStringOrDie(IMMEDIATE, kMoreData[0]);
   }
 
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Ne(UploaderInterface::KEY_DELIVERY), NotNull()))
+                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH), NotNull()))
         .WillOnce(
             WithArg<1>(Invoke([&waiter](MockUploadClient* mock_upload_client) {
               MockUploadClient::SetUp(IMMEDIATE, mock_upload_client, &waiter)
@@ -1222,14 +1268,14 @@ TEST_P(StorageTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
                   .Required(4, kMoreData[1]);
               return Status::StatusOK();
             })))
-        .WillRepeatedly(WithArg<1>(Invoke(&DoNotUpload)));
+        .RetiresOnSaturation();
     WriteStringOrDie(IMMEDIATE, kMoreData[1]);
   }
 
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Ne(UploaderInterface::KEY_DELIVERY), NotNull()))
+                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH), NotNull()))
         .WillOnce(
             WithArg<1>(Invoke([&waiter](MockUploadClient* mock_upload_client) {
               MockUploadClient::SetUp(IMMEDIATE, mock_upload_client, &waiter)
@@ -1239,7 +1285,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
                   .Required(5, kMoreData[2]);
               return Status::StatusOK();
             })))
-        .WillRepeatedly(WithArg<1>(Invoke(&DoNotUpload)));
+        .RetiresOnSaturation();
     WriteStringOrDie(IMMEDIATE, kMoreData[2]);
   }
 }
@@ -1250,14 +1296,14 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadMultipleQueues) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Ne(UploaderInterface::KEY_DELIVERY), NotNull()))
+                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH), NotNull()))
         .WillOnce(
             WithArg<1>(Invoke([&waiter](MockUploadClient* mock_upload_client) {
               MockUploadClient::SetUp(IMMEDIATE, mock_upload_client, &waiter)
                   .Required(0, kData[0]);
               return Status::StatusOK();
             })))
-        .WillRepeatedly(WithArg<1>(Invoke(&DoNotUpload)));
+        .RetiresOnSaturation();
     WriteStringOrDie(IMMEDIATE, kData[0]);
   }
 
@@ -1266,7 +1312,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadMultipleQueues) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Ne(UploaderInterface::KEY_DELIVERY), NotNull()))
+                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH), NotNull()))
         .WillOnce(
             WithArg<1>(Invoke([&waiter](MockUploadClient* mock_upload_client) {
               MockUploadClient::SetUp(IMMEDIATE, mock_upload_client, &waiter)
@@ -1274,7 +1320,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadMultipleQueues) {
                   .Required(1, kData[1]);
               return Status::StatusOK();
             })))
-        .WillRepeatedly(WithArg<1>(Invoke(&DoNotUpload)));
+        .RetiresOnSaturation();
     WriteStringOrDie(IMMEDIATE, kData[1]);
   }
 
@@ -1287,7 +1333,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadMultipleQueues) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Ne(UploaderInterface::KEY_DELIVERY), NotNull()))
+                Call(Eq(UploaderInterface::PERIODIC), NotNull()))
         .WillOnce(
             WithArg<1>(Invoke([&waiter](MockUploadClient* mock_upload_client) {
               MockUploadClient::SetUp(SLOW_BATCH, mock_upload_client, &waiter)
@@ -1295,7 +1341,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadMultipleQueues) {
                   .Required(1, kMoreData[1]);
               return Status::StatusOK();
             })))
-        .WillRepeatedly(WithArg<1>(Invoke(&DoNotUpload)));
+        .RetiresOnSaturation();
     task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(20));
   }
 
@@ -1306,14 +1352,14 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadMultipleQueues) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Ne(UploaderInterface::KEY_DELIVERY), NotNull()))
+                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH), NotNull()))
         .WillOnce(
             WithArg<1>(Invoke([&waiter](MockUploadClient* mock_upload_client) {
               MockUploadClient::SetUp(IMMEDIATE, mock_upload_client, &waiter)
                   .Required(2, kData[2]);
               return Status::StatusOK();
             })))
-        .WillRepeatedly(WithArg<1>(Invoke(&DoNotUpload)));
+        .RetiresOnSaturation();
     WriteStringOrDie(IMMEDIATE, kData[2]);
   }
   WriteStringOrDie(SLOW_BATCH, kMoreData[2]);
@@ -1325,7 +1371,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadMultipleQueues) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Ne(UploaderInterface::KEY_DELIVERY), NotNull()))
+                Call(Eq(UploaderInterface::PERIODIC), NotNull()))
         .WillOnce(
             WithArg<1>(Invoke([&waiter](MockUploadClient* mock_upload_client) {
               MockUploadClient::SetUp(SLOW_BATCH, mock_upload_client, &waiter)
@@ -1333,7 +1379,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadMultipleQueues) {
                   .Required(2, kMoreData[2]);
               return Status::StatusOK();
             })))
-        .WillRepeatedly(WithArg<1>(Invoke(&DoNotUpload)));
+        .RetiresOnSaturation();
     task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(20));
   }
 }
@@ -1346,17 +1392,20 @@ TEST_P(StorageTest, WriteAndImmediateUploadWithFailure) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Ne(UploaderInterface::KEY_DELIVERY), NotNull()))
+                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH), NotNull()))
         .WillOnce(WithArg<1>(Invoke([](MockUploadClient* mock_upload_client) {
           return Status(error::UNAVAILABLE, "Test uploader unavailable");
         })))
+        .RetiresOnSaturation();
+    EXPECT_CALL(set_mock_uploader_expectations_,
+                Call(Eq(UploaderInterface::FAILURE_RETRY), NotNull()))
         .WillOnce(
             WithArg<1>(Invoke([&waiter](MockUploadClient* mock_upload_client) {
               MockUploadClient::SetUp(IMMEDIATE, mock_upload_client, &waiter)
                   .Required(0, kData[0]);
               return Status::StatusOK();
             })))
-        .WillRepeatedly(WithArg<1>(Invoke(&DoNotUpload)));
+        .RetiresOnSaturation();
     WriteStringOrDie(IMMEDIATE,
                      kData[0]);  // Immediately uploads and fails.
 
@@ -1400,7 +1449,7 @@ TEST_P(StorageTest, ForceConfirm) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Ne(UploaderInterface::KEY_DELIVERY), NotNull()))
+                Call(Eq(UploaderInterface::PERIODIC), NotNull()))
         .WillOnce(
             WithArg<1>(Invoke([&waiter](MockUploadClient* mock_upload_client) {
               MockUploadClient::SetUp(FAST_BATCH, mock_upload_client, &waiter)
@@ -1409,7 +1458,7 @@ TEST_P(StorageTest, ForceConfirm) {
                   .Required(2, kData[2]);
               return Status::StatusOK();
             })))
-        .WillRepeatedly(WithArg<1>(Invoke(&DoNotUpload)));
+        .RetiresOnSaturation();
     // Forward time to trigger upload
     task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
   }
@@ -1420,14 +1469,14 @@ TEST_P(StorageTest, ForceConfirm) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Ne(UploaderInterface::KEY_DELIVERY), NotNull()))
+                Call(Eq(UploaderInterface::PERIODIC), NotNull()))
         .WillOnce(
             WithArg<1>(Invoke([&waiter](MockUploadClient* mock_upload_client) {
               MockUploadClient::SetUp(FAST_BATCH, mock_upload_client, &waiter)
                   .Required(2, kData[2]);
               return Status::StatusOK();
             })))
-        .WillRepeatedly(WithArg<1>(Invoke(&DoNotUpload)));
+        .RetiresOnSaturation();
     // Forward time to trigger upload
     task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
   }
@@ -1438,7 +1487,7 @@ TEST_P(StorageTest, ForceConfirm) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Ne(UploaderInterface::KEY_DELIVERY), NotNull()))
+                Call(Eq(UploaderInterface::PERIODIC), NotNull()))
         .WillOnce(
             WithArg<1>(Invoke([&waiter](MockUploadClient* mock_upload_client) {
               MockUploadClient::SetUp(FAST_BATCH, mock_upload_client, &waiter)
@@ -1454,7 +1503,7 @@ TEST_P(StorageTest, ForceConfirm) {
                   .Required(2, kData[2]);
               return Status::StatusOK();
             })))
-        .WillRepeatedly(WithArg<1>(Invoke(&DoNotUpload)));
+        .RetiresOnSaturation();
     // Forward time to trigger upload
     task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
   }
@@ -1465,7 +1514,7 @@ TEST_P(StorageTest, ForceConfirm) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Ne(UploaderInterface::KEY_DELIVERY), NotNull()))
+                Call(Eq(UploaderInterface::PERIODIC), NotNull()))
         .WillOnce(
             WithArg<1>(Invoke([&waiter](MockUploadClient* mock_upload_client) {
               MockUploadClient::SetUp(FAST_BATCH, mock_upload_client, &waiter)
@@ -1478,7 +1527,7 @@ TEST_P(StorageTest, ForceConfirm) {
                   .Required(2, kData[2]);
               return Status::StatusOK();
             })))
-        .WillRepeatedly(WithArg<1>(Invoke(&DoNotUpload)));
+        .RetiresOnSaturation();
     // Forward time to trigger upload
     task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
   }
@@ -1518,12 +1567,12 @@ TEST_P(StorageTest, KeyDeliveryFailureOnNewStorage) {
   // key. Make sure no uploads happen, and key is requested.
   key_delivery_failure_.store(false);
   EXPECT_CALL(set_mock_uploader_expectations_,
-              Call(UploaderInterface::KEY_DELIVERY, NotNull()))
+              Call(Eq(UploaderInterface::KEY_DELIVERY), NotNull()))
       .WillOnce(WithArg<1>(Invoke([](MockUploadClient* mock_upload_client) {
         MockUploadClient::SetKeyDelivery client(mock_upload_client);
         return Status::StatusOK();
       })))
-      .WillRepeatedly(WithArg<1>(Invoke(&DoNotUpload)));
+      .RetiresOnSaturation();
 
   // Forward time to trigger upload
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
@@ -1537,7 +1586,7 @@ TEST_P(StorageTest, KeyDeliveryFailureOnNewStorage) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Ne(UploaderInterface::KEY_DELIVERY), NotNull()))
+                Call(Eq(UploaderInterface::PERIODIC), NotNull()))
         .WillOnce(
             WithArg<1>(Invoke([&waiter](MockUploadClient* mock_upload_client) {
               MockUploadClient::SetUp(FAST_BATCH, mock_upload_client, &waiter)
@@ -1546,7 +1595,7 @@ TEST_P(StorageTest, KeyDeliveryFailureOnNewStorage) {
                   .Required(2, kData[2]);
               return Status::StatusOK();
             })))
-        .WillRepeatedly(WithArg<1>(Invoke(&DoNotUpload)));
+        .RetiresOnSaturation();
 
     // Trigger successful upload.
     task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
@@ -1564,7 +1613,7 @@ TEST_P(StorageTest, KeyDeliveryFailureOnNewStorage) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Ne(UploaderInterface::KEY_DELIVERY), NotNull()))
+                Call(Eq(UploaderInterface::PERIODIC), NotNull()))
         .WillOnce(
             WithArg<1>(Invoke([&waiter](MockUploadClient* mock_upload_client) {
               MockUploadClient::SetUp(FAST_BATCH, mock_upload_client, &waiter)
@@ -1576,7 +1625,7 @@ TEST_P(StorageTest, KeyDeliveryFailureOnNewStorage) {
                   .Required(5, kMoreData[2]);
               return Status::StatusOK();
             })))
-        .WillRepeatedly(WithArg<1>(Invoke(&DoNotUpload)));
+        .RetiresOnSaturation();
 
     // Trigger upload.
     task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
