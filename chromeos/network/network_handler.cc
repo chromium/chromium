@@ -4,6 +4,7 @@
 
 #include "chromeos/network/network_handler.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/network/auto_connect_handler.h"
 #include "chromeos/network/cellular_connection_handler.h"
@@ -12,6 +13,7 @@
 #include "chromeos/network/cellular_esim_uninstall_handler.h"
 #include "chromeos/network/cellular_inhibitor.h"
 #include "chromeos/network/cellular_metrics_logger.h"
+#include "chromeos/network/cellular_policy_handler.h"
 #include "chromeos/network/client_cert_resolver.h"
 #include "chromeos/network/geolocation_handler.h"
 #include "chromeos/network/managed_network_configuration_handler_impl.h"
@@ -51,6 +53,9 @@ NetworkHandler::NetworkHandler()
   network_connection_handler_.reset(new NetworkConnectionHandlerImpl());
   cellular_esim_installer_.reset(new CellularESimInstaller());
   cellular_esim_uninstall_handler_.reset(new CellularESimUninstallHandler());
+  if (features::IsESimPolicyEnabled()) {
+    cellular_policy_handler_.reset(new CellularPolicyHandler());
+  }
   cellular_metrics_logger_.reset(new CellularMetricsLogger());
   if (NetworkCertLoader::IsInitialized()) {
     network_cert_migrator_.reset(new NetworkCertMigrator());
@@ -98,6 +103,9 @@ void NetworkHandler::Init() {
       cellular_inhibitor_.get(), cellular_esim_profile_handler_.get(),
       network_configuration_handler_.get(), network_connection_handler_.get(),
       network_state_handler_.get());
+  if (features::IsESimPolicyEnabled()) {
+    cellular_policy_handler_->Init(cellular_esim_installer_.get());
+  }
   cellular_metrics_logger_->Init(network_state_handler_.get(),
                                  network_connection_handler_.get(),
                                  cellular_esim_profile_handler_.get());
@@ -203,6 +211,10 @@ NetworkHandler::cellular_esim_uninstall_handler() {
 
 CellularInhibitor* NetworkHandler::cellular_inhibitor() {
   return cellular_inhibitor_.get();
+}
+
+CellularPolicyHandler* NetworkHandler::cellular_policy_handler() {
+  return cellular_policy_handler_.get();
 }
 
 NetworkDeviceHandler* NetworkHandler::network_device_handler() {

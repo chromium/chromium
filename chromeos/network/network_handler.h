@@ -19,10 +19,11 @@ namespace chromeos {
 class AutoConnectHandler;
 class CellularConnectionHandler;
 class CellularESimProfileHandler;
-class CellularInhibitor;
 class CellularESimInstaller;
 class CellularESimUninstallHandler;
+class CellularInhibitor;
 class CellularMetricsLogger;
+class CellularPolicyHandler;
 class ClientCertResolver;
 class GeolocationHandler;
 class ManagedNetworkConfigurationHandler;
@@ -87,6 +88,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkHandler {
   CellularESimProfileHandler* cellular_esim_profile_handler();
   CellularESimUninstallHandler* cellular_esim_uninstall_handler();
   CellularInhibitor* cellular_inhibitor();
+  CellularPolicyHandler* cellular_policy_handler();
   NetworkStateHandler* network_state_handler();
   NetworkDeviceHandler* network_device_handler();
   NetworkProfileHandler* network_profile_handler();
@@ -127,6 +129,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkHandler {
   std::unique_ptr<CellularESimInstaller> cellular_esim_installer_;
   std::unique_ptr<CellularESimUninstallHandler>
       cellular_esim_uninstall_handler_;
+  std::unique_ptr<CellularPolicyHandler> cellular_policy_handler_;
   std::unique_ptr<CellularMetricsLogger> cellular_metrics_logger_;
   std::unique_ptr<NetworkCertMigrator> network_cert_migrator_;
   std::unique_ptr<ClientCertResolver> client_cert_resolver_;

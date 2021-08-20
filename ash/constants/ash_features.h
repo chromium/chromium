@@ -470,6 +470,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDisplayIdentificationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDragUnpinnedAppToPinEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsEcheSWAEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsEcheSWAResizingEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsESimPolicyEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFamilyLinkOnSchoolDeviceEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFastPairEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFileManagerSwaEnabled();
