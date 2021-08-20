@@ -1715,7 +1715,7 @@ config("chromium_code") {
     if (!is_nacl && !use_libfuzzer) {
       # TODO(1066980): Use -Wunreachable-code-aggressive on all platforms.
       if ((target_os == "android" && target_cpu == "x86") || is_ios ||
-          (is_mac && target_cpu != "arm64") || is_win) {
+          (is_mac && (target_cpu != "arm64" || !is_debug)) || is_win) {
         cflags += [ "-Wunreachable-code-aggressive" ]
       } else {
         cflags += [ "-Wunreachable-code" ]
