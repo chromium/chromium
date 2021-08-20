@@ -721,6 +721,46 @@ void ChooseImportOrKeepDataSepareteDialog(id<GREYMatcher> choiceButtonMatcher) {
   [ChromeEarlGreyUI waitForToolbarVisible:YES];
 }
 
+// Tests that opening the sign-in screen from the Sync Off tab and canceling the
+// sign-in flow will leave a signed-in with sync off user in the same state.
+- (void)testCancelFromSyncOffLink {
+  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
+
+  [ChromeEarlGreyUI openSettingsMenu];
+  // Check Sync Off label is visible and user is signed in.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityValue(
+                                       l10n_util::GetNSString(
+                                           IDS_IOS_SETTING_OFF)),
+                                   grey_accessibilityID(
+                                       kSettingsGoogleSyncAndServicesCellId),
+                                   nil)] performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:
+                 ButtonWithAccessibilityLabelId(
+                     IDS_IOS_ACCOUNT_CONSISTENCY_SETUP_SKIP_BUTTON)]
+      performAction:grey_tap()];
+
+  // Check Sync Off label is visible and user is signed in.
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityValue(
+                                       l10n_util::GetNSString(
+                                           IDS_IOS_SETTING_OFF)),
+                                   grey_accessibilityID(
+                                       kSettingsGoogleSyncAndServicesCellId),
+                                   nil)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGreyUI waitForToolbarVisible:YES];
+}
+
 // Tests that the sign-in promo for no identities is displayed in Settings when
 // the user is signed out and has not added any identities to the device.
 - (void)testSigninPromoWithNoIdentitiesOnDevice {
