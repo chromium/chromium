@@ -1104,11 +1104,19 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest,
   EXPECT_EQ(4, browser->tab_strip_model()->count());
 }
 
+// Test is flaky on Win. https://crbug.com/1241761.
+#if defined(OS_WIN)
+#define MAYBE_TabsFromRestoredWindowsAreLoadedGradually \
+  DISABLED_TabsFromRestoredWindowsAreLoadedGradually
+#else
+#define MAYBE_TabsFromRestoredWindowsAreLoadedGradually \
+  TabsFromRestoredWindowsAreLoadedGradually
+#endif
 // TabLoader (used here) is available only when browser is built
 // with ENABLE_SESSION_SERVICE.
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
 IN_PROC_BROWSER_TEST_F(TabRestoreTest,
-                       TabsFromRestoredWindowsAreLoadedGradually) {
+                       MAYBE_TabsFromRestoredWindowsAreLoadedGradually) {
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url2_, WindowOpenDisposition::NEW_WINDOW,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
