@@ -18,7 +18,7 @@ enum class WKNavigationState;
 
 }  // namespace web
 
-@class CRWJSInjector;
+@class CRWJSInjectionReceiver;
 @protocol CRWScrollableContent;
 @protocol CRWSwipeRecognizerProvider;
 @class CRWWebViewContentView;
@@ -80,8 +80,8 @@ class WebStateImpl;
 // back-forward list navigations.
 @property(nonatomic) BOOL allowsBackForwardNavigationGestures;
 
-// JavaScript injector.
-@property(nonatomic, strong, readonly) CRWJSInjector* jsInjector;
+@property(strong, nonatomic, readonly)
+    CRWJSInjectionReceiver* jsInjectionReceiver;
 
 // Whether the WebController should attempt to keep the render process alive.
 @property(nonatomic, assign, getter=shouldKeepRenderProcessAlive)
@@ -198,6 +198,20 @@ class WebStateImpl;
 // a no-op, and |sessionStateData| will return nil.
 - (BOOL)setSessionStateData:(NSData*)data;
 - (NSData*)sessionStateData;
+
+// Injects the windowID into the main frame of the current webpage.
+// TODO(crbug.com/905939): Remove WindowID.
+- (void)injectWindowID;
+
+#pragma mark CRWJSInjectionEvaluator
+
+// Do not use these executeJavaScript functions directly, prefer
+// WebFrame::CallJavaScriptFunction if possible, otherwise use
+// WebState::ExecuteJavaScript and WebState::ExecuteUserJavaScript.
+- (void)executeJavaScript:(NSString*)javascript
+        completionHandler:(void (^)(id result, NSError* error))completion;
+- (void)executeUserJavaScript:(NSString*)javascript
+            completionHandler:(void (^)(id result, NSError* error))completion;
 
 @end
 

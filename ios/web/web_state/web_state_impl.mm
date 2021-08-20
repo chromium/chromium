@@ -16,7 +16,6 @@
 #import "ios/web/common/crw_content_view.h"
 #include "ios/web/common/features.h"
 #include "ios/web/common/url_util.h"
-#import "ios/web/js_messaging/crw_js_injector.h"
 #import "ios/web/js_messaging/web_view_js_utils.h"
 #import "ios/web/navigation/crw_error_page_helper.h"
 #import "ios/web/navigation/navigation_context_impl.h"
@@ -685,33 +684,26 @@ void WebStateImpl::LoadData(NSData* data,
 }
 
 CRWJSInjectionReceiver* WebStateImpl::GetJSInjectionReceiver() const {
-  return [web_controller_.jsInjector JSInjectionReceiver];
+  return [web_controller_ jsInjectionReceiver];
 }
 
 void WebStateImpl::ExecuteJavaScript(const std::u16string& javascript) {
-  [web_controller_.jsInjector
-      executeJavaScript:base::SysUTF16ToNSString(javascript)
-      completionHandler:nil];
+  [web_controller_ executeJavaScript:base::SysUTF16ToNSString(javascript)
+                   completionHandler:nil];
 }
 
 void WebStateImpl::ExecuteJavaScript(const std::u16string& javascript,
                                      JavaScriptResultCallback callback) {
   __block JavaScriptResultCallback stack_callback = std::move(callback);
-  [web_controller_.jsInjector
+  [web_controller_
       executeJavaScript:base::SysUTF16ToNSString(javascript)
       completionHandler:^(id value, NSError* error) {
-        if (error) {
-          DLOG(WARNING) << "Script execution failed with error: "
-                        << base::SysNSStringToUTF16(
-                               error.userInfo[NSLocalizedDescriptionKey]);
-        }
         std::move(stack_callback).Run(ValueResultFromWKResult(value).get());
       }];
 }
 
 void WebStateImpl::ExecuteUserJavaScript(NSString* javaScript) {
-  [web_controller_.jsInjector executeUserJavaScript:javaScript
-                                  completionHandler:nil];
+  [web_controller_ executeUserJavaScript:javaScript completionHandler:nil];
 }
 
 const std::string& WebStateImpl::GetContentsMimeType() const {

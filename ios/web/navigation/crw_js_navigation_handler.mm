@@ -8,7 +8,6 @@
 #include "base/logging.h"
 #include "base/strings/sys_string_conversions.h"
 #include "ios/web/history_state_util.h"
-#import "ios/web/js_messaging/crw_js_injector.h"
 #import "ios/web/navigation/navigation_context_impl.h"
 #import "ios/web/navigation/navigation_item_impl.h"
 #import "ios/web/navigation/navigation_manager_impl.h"

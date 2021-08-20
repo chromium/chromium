@@ -15,7 +15,6 @@
 #import "ios/net/url_scheme_util.h"
 #include "ios/web/common/features.h"
 #import "ios/web/common/url_scheme_util.h"
-#import "ios/web/js_messaging/crw_js_injector.h"
 #import "ios/web/js_messaging/web_frames_manager_impl.h"
 #import "ios/web/navigation/crw_error_page_helper.h"
 #import "ios/web/navigation/crw_navigation_item_holder.h"
@@ -36,6 +35,7 @@
 #import "ios/web/security/crw_cert_verification_controller.h"
 #import "ios/web/security/wk_web_view_security_util.h"
 #import "ios/web/session/session_certificate_policy_cache_impl.h"
+#import "ios/web/web_state/ui/crw_web_controller.h"
 #import "ios/web/web_state/user_interaction_state.h"
 #import "ios/web/web_state/web_state_impl.h"
 #include "ios/web/web_view/content_type_util.h"
@@ -105,8 +105,6 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
     CRWCertVerificationController* certVerificationController;
 // Returns the docuemnt URL from self.delegate.
 @property(nonatomic, readonly, assign) GURL documentURL;
-// Returns the js injector from self.delegate.
-@property(nonatomic, readonly, weak) CRWJSInjector* JSInjector;
 
 @end
 
@@ -855,7 +853,7 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
     // In unit tests MIME type will be empty, because loadHTML:forURL: does
     // not notify web view delegate about received response, so web controller
     // does not get a chance to properly update MIME type.
-    [self.JSInjector injectWindowID];
+    [self.webStateImpl->GetWebController() injectWindowID];
     self.webStateImpl->GetWebFramesManagerImpl().RegisterExistingFrames();
   }
 
@@ -1167,10 +1165,6 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
 
 - (web::UserInteractionState*)userInteractionState {
   return [self.delegate userInteractionStateForWebViewHandler:self];
-}
-
-- (CRWJSInjector*)JSInjector {
-  return [self.delegate JSInjectorForNavigationHandler:self];
 }
 
 - (CRWCertVerificationController*)certVerificationController {

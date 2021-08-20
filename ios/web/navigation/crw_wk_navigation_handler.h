@@ -18,7 +18,6 @@
 @class CRWWKNavigationHandler;
 @class CRWPendingNavigationInfo;
 @class CRWWKNavigationStates;
-@class CRWJSInjector;
 @class CRWCertVerificationController;
 class GURL;
 namespace web {
@@ -36,10 +35,6 @@ class WKBackForwardListItemHolder;
 - (CRWCertVerificationController*)
     certVerificationControllerForNavigationHandler:
         (CRWWKNavigationHandler*)navigationHandler;
-
-// Returns the associated js injector.
-- (CRWJSInjector*)JSInjectorForNavigationHandler:
-    (CRWWKNavigationHandler*)navigationHandler;
 
 // Sets document URL to newURL, and updates any relevant state information.
 - (void)navigationHandler:(CRWWKNavigationHandler*)navigationHandler

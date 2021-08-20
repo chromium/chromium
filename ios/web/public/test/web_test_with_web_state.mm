@@ -10,7 +10,6 @@
 #include "base/task/current_thread.h"
 #import "base/test/ios/wait_util.h"
 #include "ios/web/common/features.h"
-#import "ios/web/js_messaging/crw_js_injector.h"
 #import "ios/web/navigation/crw_wk_navigation_states.h"
 #import "ios/web/navigation/navigation_manager_impl.h"
 #import "ios/web/navigation/wk_navigation_util.h"
@@ -213,7 +212,7 @@ id WebTestWithWebState::ExecuteJavaScript(NSString* script) {
   __block id execution_result = nil;
   __block bool execution_completed = false;
   SCOPED_TRACE(base::SysNSStringToUTF8(script));
-  [GetWebController(web_state()).jsInjector
+  [GetWebController(web_state())
       executeJavaScript:script
       completionHandler:^(id result, NSError* error) {
         // Most of executed JS does not return the result, and there is no need

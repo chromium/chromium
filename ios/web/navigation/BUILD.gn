@@ -32,6 +32,7 @@ source_set("navigation") {
     "//ios/web/session",
     "//ios/web/web_state:user_interaction",
     "//ios/web/web_state:web_state_impl_header",
+    "//ios/web/web_state/ui:web_controller_header",
     "//ios/web/web_state/ui:web_view_handler",
     "//ios/web/web_view:util",
     "//net",

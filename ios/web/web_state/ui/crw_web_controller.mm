@@ -26,7 +26,7 @@
 #import "ios/web/find_in_page/find_in_page_manager_impl.h"
 #include "ios/web/history_state_util.h"
 #include "ios/web/js_features/scroll_helper/scroll_helper_java_script_feature.h"
-#import "ios/web/js_messaging/crw_js_injector.h"
+#import "ios/web/js_messaging/crw_js_window_id_manager.h"
 #import "ios/web/js_messaging/crw_wk_script_message_router.h"
 #include "ios/web/js_messaging/java_script_feature_util_impl.h"
 #import "ios/web/js_messaging/web_frames_manager_impl.h"
@@ -42,6 +42,8 @@
 #import "ios/web/navigation/navigation_context_impl.h"
 #import "ios/web/navigation/wk_back_forward_list_item_holder.h"
 #import "ios/web/navigation/wk_navigation_util.h"
+#import "ios/web/public/deprecated/crw_js_injection_evaluator.h"
+#import "ios/web/public/deprecated/crw_js_injection_receiver.h"
 #include "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #import "ios/web/public/ui/page_display_state.h"
@@ -106,7 +108,7 @@ NSString* const kSessionRestoreScriptMessageName = @"session_restore";
 
 @interface CRWWebController () <CRWWKNavigationHandlerDelegate,
                                 CRWInputViewProvider,
-                                CRWJSInjectorDelegate,
+                                CRWJSInjectionEvaluator,
                                 CRWSSLStatusUpdaterDataSource,
                                 CRWSSLStatusUpdaterDelegate,
                                 CRWWebControllerContainerViewDelegate,
@@ -233,6 +235,11 @@ NSString* const kSessionRestoreScriptMessageName = @"session_restore";
 @property(nonatomic, strong)
     CRWContextMenuController* contextMenuController API_AVAILABLE(ios(13.0));
 
+// Script manager for setting the windowID.
+@property(nonatomic, strong) CRWJSWindowIDManager* windowIDJSManager;
+
+@property(strong, nonatomic) CRWJSInjectionReceiver* jsInjectionReceiver;
+
 // Returns the current URL of the web view, and sets |trustLevel| accordingly
 // based on the confidence in the verification.
 - (GURL)webURLWithTrustLevel:(web::URLVerificationTrustLevel*)trustLevel;
@@ -304,7 +311,8 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
     DCHECK(_webStateImpl);
     // Content area is lazily instantiated.
     _defaultURL = GURL(url::kAboutBlankURL);
-    _jsInjector = [[CRWJSInjector alloc] initWithDelegate:self];
+    _jsInjectionReceiver =
+        [[CRWJSInjectionReceiver alloc] initWithEvaluator:self];
     _requestController = [[CRWWebRequestController alloc] init];
     _requestController.delegate = self;
     _webViewProxy = [[CRWWebViewProxyImpl alloc] initWithWebController:self];
@@ -469,8 +477,11 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
 
     _webView.allowsBackForwardNavigationGestures =
         _allowsBackForwardNavigationGestures;
+    self.windowIDJSManager =
+        [[CRWJSWindowIDManager alloc] initWithWebView:_webView];
+  } else {
+    self.windowIDJSManager = nil;
   }
-  [_jsInjector setWebView:_webView];
   self.webViewNavigationObserver.webView = _webView;
 
   [self setDocumentURL:_defaultURL context:nullptr];
@@ -947,6 +958,62 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
   return nil;
 }
 
+#pragma mark - JavaScript
+
+- (void)injectWindowID {
+  [_windowIDJSManager inject];
+}
+
+- (void)executeJavaScript:(NSString*)javascript
+        completionHandler:(void (^)(id result, NSError* error))completion {
+  __block void (^stack_completion_block)(id result, NSError* error) =
+      [completion copy];
+  NSString* safeScript = [self scriptByAddingWindowIDCheckForScript:javascript];
+  web::ExecuteJavaScript(self.webView, safeScript, ^(id value, NSError* error) {
+    if (error) {
+      DLOG(WARNING) << "Script execution failed with error: "
+                    << base::SysNSStringToUTF16(
+                           error.userInfo[NSLocalizedDescriptionKey]);
+    }
+    if (stack_completion_block) {
+      stack_completion_block(value, error);
+    }
+  });
+}
+
+- (void)executeUserJavaScript:(NSString*)javascript
+            completionHandler:(void (^)(id result, NSError* error))completion {
+  // For security reasons, executing JavaScript on pages with app-specific URLs
+  // is not allowed, because those pages may have elevated privileges.
+  if (web::GetWebClient()->IsAppSpecificURL(
+          self.webStateImpl->GetLastCommittedURL())) {
+    if (completion) {
+      dispatch_async(dispatch_get_main_queue(), ^{
+        NSError* error = [[NSError alloc]
+            initWithDomain:web::kJSEvaluationErrorDomain
+                      code:web::JS_EVALUATION_ERROR_CODE_REJECTED
+                  userInfo:nil];
+        completion(nil, error);
+      });
+    }
+    return;
+  }
+
+  [self touched:YES];
+
+  [self executeJavaScript:javascript completionHandler:completion];
+}
+
+#pragma mark - JavaScript Helpers (Private)
+
+// Returns a new script which wraps |script| with windowID check so |script| is
+// not evaluated on windowID mismatch.
+- (NSString*)scriptByAddingWindowIDCheckForScript:(NSString*)script {
+  NSString* kTemplate = @"if (__gCrWeb['windowId'] === '%@') { %@; }";
+  return [NSString
+      stringWithFormat:kTemplate, [_windowIDJSManager windowID], script];
+}
+
 #pragma mark - CRWTouchTrackingDelegate (Public)
 
 - (void)touched:(BOOL)touched {
@@ -1160,7 +1227,7 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
     NSString* method =
         [NSString stringWithFormat:@"_crFinishSessionRestoration('%@')",
                                    message.body[@"offset"]];
-    // Don't use |_jsInjector| -executeJavaScript here, as it relies on
+    // Don't use |self executeJavaScript:| here, as it relies on
     // |windowID| being injected before window.onload starts.
     web::ExecuteJavaScript(self.webView, method, nil);
 
@@ -1294,17 +1361,17 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
        "viewport ? viewport.content : '';";
   __weak CRWWebController* weakSelf = self;
   int itemID = currentItem->GetUniqueID();
-  [_jsInjector executeJavaScript:kViewportContentQuery
-               completionHandler:^(id viewportContent, NSError*) {
-                 web::NavigationItem* item = [weakSelf currentNavItem];
-                 if (item && item->GetUniqueID() == itemID) {
-                   web::PageViewportState viewportState(
-                       base::mac::ObjCCast<NSString>(viewportContent));
-                   completion(&viewportState);
-                 } else {
-                   completion(nullptr);
-                 }
-               }];
+  [self executeJavaScript:kViewportContentQuery
+        completionHandler:^(id viewportContent, NSError* error) {
+          web::NavigationItem* item = [weakSelf currentNavItem];
+          if (item && item->GetUniqueID() == itemID) {
+            web::PageViewportState viewportState(
+                base::mac::ObjCCast<NSString>(viewportContent));
+            completion(&viewportState);
+          } else {
+            completion(nullptr);
+          }
+        }];
 }
 
 - (void)surfaceSizeChanged {
@@ -1688,16 +1755,6 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
     self.webStateImpl->DidChangeVisibleSecurityState();
 }
 
-#pragma mark - CRWJSInjectorDelegate methods
-
-- (GURL)lastCommittedURLForJSInjector:(CRWJSInjector*)injector {
-  return self.webState->GetLastCommittedURL();
-}
-
-- (void)willExecuteUserScriptForJSInjector:(CRWJSInjector*)injector {
-  [self touched:YES];
-}
-
 #pragma mark - KVO Observation
 
 - (void)observeValueForKeyPath:(NSString*)keyPath
@@ -1928,11 +1985,6 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
 }
 
 #pragma mark - CRWWKNavigationHandlerDelegate
-
-- (CRWJSInjector*)JSInjectorForNavigationHandler:
-    (CRWWKNavigationHandler*)navigationHandler {
-  return self.jsInjector;
-}
 
 - (CRWCertVerificationController*)
     certVerificationControllerForNavigationHandler:

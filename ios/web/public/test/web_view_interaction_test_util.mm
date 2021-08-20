@@ -11,7 +11,6 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#import "ios/web/js_messaging/crw_js_injector.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #import "ios/web/web_state/ui/crw_web_controller.h"
 #import "ios/web/web_state/ui/crw_web_view_proxy_impl.h"
@@ -194,12 +193,12 @@ bool RunActionOnWebViewElementWithScript(web::WebState* web_state,
   // |executeUserJavaScript:completionHandler:| is no-op for app-specific URLs,
   // so simulate a user gesture by calling TouchTracking method.
   [web_controller touched:YES];
-  [web_controller.jsInjector executeJavaScript:script
-                             completionHandler:^(id result, NSError* error) {
-                               did_complete = true;
-                               element_found = [result boolValue];
-                               block_error = [error copy];
-                             }];
+  [web_controller executeJavaScript:script
+                  completionHandler:^(id result, NSError* error) {
+                    did_complete = true;
+                    element_found = [result boolValue];
+                    block_error = [error copy];
+                  }];
 
   bool js_finished = WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
     return did_complete;

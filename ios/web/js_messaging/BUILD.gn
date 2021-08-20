@@ -22,8 +22,6 @@ source_set("js_messaging") {
   ]
 
   sources = [
-    "crw_js_injector.h",
-    "crw_js_injector.mm",
     "crw_js_window_id_manager.h",
     "crw_js_window_id_manager.mm",
     "crw_wk_script_message_router.h",
