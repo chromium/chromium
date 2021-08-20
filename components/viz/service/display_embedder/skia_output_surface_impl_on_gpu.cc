@@ -925,6 +925,13 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBA(
 
       dest_canvas->clipRect(
           SkRect::MakeXYWH(0, 0, src_rect.width(), src_rect.height()));
+      // TODO(b/197353769): Ideally, we should simply use a kSrc blending mode,
+      // but for some reason, this triggers some antialiasing code that causes
+      // various Vulkan tests to fail. We should investigate this and replace
+      // this clear with blend mode.
+      if (surface->imageInfo().alphaType() != kOpaque_SkAlphaType) {
+        dest_canvas->clear(SK_ColorTRANSPARENT);
+      }
       auto sampling =
           is_downscale_or_identity_in_both_dimensions
               ? SkSamplingOptions(SkFilterMode::kLinear, SkMipmapMode::kLinear)
