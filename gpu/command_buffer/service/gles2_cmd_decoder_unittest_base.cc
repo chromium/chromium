@@ -1051,14 +1051,14 @@ void GLES2DecoderTestBase::SetupShaderForUniform(GLenum uniform_type) {
     { "bar", 1, uniform_type, 0, 2, -1, },
     { "car", 4, uniform_type, 1, 1, -1, },
   };
-  const GLuint kClientVertexShaderId = 5001;
-  const GLuint kServiceVertexShaderId = 6001;
-  const GLuint kClientFragmentShaderId = 5002;
-  const GLuint kServiceFragmentShaderId = 6002;
+  const GLuint kTestClientVertexShaderId = 5001;
+  const GLuint kTestServiceVertexShaderId = 6001;
+  const GLuint kTestClientFragmentShaderId = 5002;
+  const GLuint kTestServiceFragmentShaderId = 6002;
   SetupShader(attribs, base::size(attribs), uniforms, base::size(uniforms),
-              client_program_id_, kServiceProgramId, kClientVertexShaderId,
-              kServiceVertexShaderId, kClientFragmentShaderId,
-              kServiceFragmentShaderId);
+              client_program_id_, kServiceProgramId, kTestClientVertexShaderId,
+              kTestServiceVertexShaderId, kTestClientFragmentShaderId,
+              kTestServiceFragmentShaderId);
 
   EXPECT_CALL(*gl_, UseProgram(kServiceProgramId))
       .Times(1)

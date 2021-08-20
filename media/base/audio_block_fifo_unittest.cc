@@ -114,7 +114,7 @@ TEST_F(AudioBlockFifoTest, PushAndConsume) {
 
   // Consume all blocks of data.
   for (int i = 1; i <= blocks; ++i) {
-    const AudioBus* bus = fifo.Consume();
+    bus = fifo.Consume();
     EXPECT_TRUE(channels == bus->channels());
     EXPECT_TRUE(frames == bus->frames());
     EXPECT_TRUE(fifo.GetUnfilledFrames() == frames * i);
@@ -132,7 +132,7 @@ TEST_F(AudioBlockFifoTest, PushAndConsume) {
 
   // Consume all the existing filled blocks of data.
   while (fifo.available_blocks()) {
-    const AudioBus* bus = fifo.Consume();
+    bus = fifo.Consume();
     EXPECT_TRUE(channels == bus->channels());
     EXPECT_TRUE(frames == bus->frames());
   }

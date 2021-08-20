@@ -73,12 +73,7 @@ class MEDIA_EXPORT FFmpegAudioDecoder : public AudioDecoder {
   //     A decoding error occurs and decoding needs to stop.
   // (any state) -> kNormal:
   //     Any time Reset() is called.
-  enum DecoderState {
-    kUninitialized,
-    kNormal,
-    kDecodeFinished,
-    kError
-  };
+  enum class DecoderState { kUninitialized, kNormal, kDecodeFinished, kError };
 
   // Reset decoder and call |reset_cb_|.
   void DoReset();

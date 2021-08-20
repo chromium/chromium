@@ -301,11 +301,10 @@ TEST_P(SharedImageBackingFactoryGLImageTest, Basic) {
     // Create a R-8 image texture, and check that the internal_format is that
     // of the image (GL_RGBA for TextureImageFactory). This only matters for
     // the validating decoder.
-    auto format = viz::ResourceFormat::RED_8;
-    gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
     backing = backing_factory_->CreateSharedImage(
-        mailbox, format, surface_handle, size, color_space, surface_origin,
-        alpha_type, usage, false /* is_thread_safe */);
+        mailbox, viz::ResourceFormat::RED_8, gpu::kNullSurfaceHandle, size,
+        color_space, surface_origin, alpha_type, usage,
+        false /* is_thread_safe */);
     EXPECT_TRUE(backing);
     shared_image = shared_image_manager_->Register(std::move(backing),
                                                    memory_type_tracker_.get());

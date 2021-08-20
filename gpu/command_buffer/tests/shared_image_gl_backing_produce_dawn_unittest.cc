@@ -146,7 +146,7 @@ TEST_F(SharedImageGLBackingProduceDawnTest, Basic) {
                                reservation.deviceGeneration, reservation.id,
                                reservation.generation, WGPUTextureUsage_CopySrc,
                                reinterpret_cast<GLbyte*>(&gl_mailbox));
-    wgpu::Texture texture = wgpu::Texture::Acquire(reservation.texture);
+    wgpu::Texture wgpu_texture = wgpu::Texture::Acquire(reservation.texture);
 
     // Copy the texture in a mappable buffer.
     wgpu::BufferDescriptor buffer_desc;
@@ -155,7 +155,7 @@ TEST_F(SharedImageGLBackingProduceDawnTest, Basic) {
     wgpu::Buffer readback_buffer = device.CreateBuffer(&buffer_desc);
 
     wgpu::TextureCopyView copy_src = {};
-    copy_src.texture = texture;
+    copy_src.texture = wgpu_texture;
     copy_src.mipLevel = 0;
     copy_src.origin = {0, 0, 0};
 

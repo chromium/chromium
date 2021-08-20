@@ -260,7 +260,7 @@ void FFmpegVideoDecoder::Initialize(const VideoDecoderConfig& config,
   // Success!
   config_ = config;
   output_cb_ = output_cb;
-  state_ = kNormal;
+  state_ = DecoderState::kNormal;
   std::move(bound_init_cb).Run(OkStatus());
 }
 
@@ -270,48 +270,48 @@ void FFmpegVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(buffer.get());
   DCHECK(decode_cb);
-  CHECK_NE(state_, kUninitialized);
+  CHECK_NE(state_, DecoderState::kUninitialized);
 
   DecodeCB decode_cb_bound = BindToCurrentLoop(std::move(decode_cb));
 
-  if (state_ == kError) {
+  if (state_ == DecoderState::kError) {
     std::move(decode_cb_bound).Run(DecodeStatus::DECODE_ERROR);
     return;
   }
 
-  if (state_ == kDecodeFinished) {
+  if (state_ == DecoderState::kDecodeFinished) {
     std::move(decode_cb_bound).Run(DecodeStatus::OK);
     return;
   }
 
-  DCHECK_EQ(state_, kNormal);
+  DCHECK_EQ(state_, DecoderState::kNormal);
 
   // During decode, because reads are issued asynchronously, it is possible to
   // receive multiple end of stream buffers since each decode is acked. There
   // are three states the decoder can be in:
   //
-  //   kNormal: This is the starting state. Buffers are decoded. Decode errors
-  //            are discarded.
-  //   kDecodeFinished: All calls return empty frames.
-  //   kError: Unexpected error happened.
+  //   DecoderState::kNormal: This is the starting state. Buffers are decoded.
+  //                          Decode errors are discarded.
+  //   DecoderState::kDecodeFinished: All calls return empty frames.
+  //   DecoderState::kError: Unexpected error happened.
   //
   // These are the possible state transitions.
   //
-  // kNormal -> kDecodeFinished:
+  // DecoderState::kNormal -> DecoderState::kDecodeFinished:
   //     When EOS buffer is received and the codec has been flushed.
-  // kNormal -> kError:
+  // DecoderState::kNormal -> DecoderState::kError:
   //     A decoding error occurs and decoding needs to stop.
-  // (any state) -> kNormal:
+  // (any state) -> DecoderState::kNormal:
   //     Any time Reset() is called.
 
   if (!FFmpegDecode(*buffer)) {
-    state_ = kError;
+    state_ = DecoderState::kError;
     std::move(decode_cb_bound).Run(DecodeStatus::DECODE_ERROR);
     return;
   }
 
   if (buffer->end_of_stream())
-    state_ = kDecodeFinished;
+    state_ = DecoderState::kDecodeFinished;
 
   // VideoDecoderShim expects that |decode_cb| is called only after
   // |output_cb_|.
@@ -323,7 +323,7 @@ void FFmpegVideoDecoder::Reset(base::OnceClosure closure) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   avcodec_flush_buffers(codec_context_.get());
-  state_ = kNormal;
+  state_ = DecoderState::kNormal;
   // PostTask() to avoid calling |closure| immediately.
   base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                                    std::move(closure));
@@ -332,7 +332,7 @@ void FFmpegVideoDecoder::Reset(base::OnceClosure closure) {
 FFmpegVideoDecoder::~FFmpegVideoDecoder() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (state_ != kUninitialized)
+  if (state_ != DecoderState::kUninitialized)
     ReleaseFFmpegResources();
 }
 

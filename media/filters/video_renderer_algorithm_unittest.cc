@@ -1414,12 +1414,12 @@ TEST_F(VideoRendererAlgorithmTest, VariablePlaybackRateCadence) {
   TickGenerator frame_tg(base::TimeTicks(), NTSC(30));
   TickGenerator display_tg(tick_clock_->NowTicks(), 60);
 
-  const double kTestRates[] = {1.0, 2, 0.215, 0.5, 1.0, 3.15};
-  const bool kTestRateHasCadence[base::size(kTestRates)] = {true, true, true,
-                                                            true, true, false};
+  const double kPlaybackRates[] = {1.0, 2, 0.215, 0.5, 1.0, 3.15};
+  const bool kTestRateHasCadence[base::size(kPlaybackRates)] = {
+      true, true, true, true, true, false};
 
-  for (size_t i = 0; i < base::size(kTestRates); ++i) {
-    const double playback_rate = kTestRates[i];
+  for (size_t i = 0; i < base::size(kPlaybackRates); ++i) {
+    const double playback_rate = kPlaybackRates[i];
     SCOPED_TRACE(base::StringPrintf("Playback Rate: %.03f", playback_rate));
     time_source_.SetPlaybackRate(playback_rate);
     RunFramePumpTest(

@@ -277,16 +277,17 @@ void GpuChannelManager::GpuPeakMemoryMonitor::OnMemoryAllocatedChange(
     // approaches peak. If that is the case we should track a
     // |peak_since_last_sequence_update_| on the the memory changes. Then only
     // update the sequences with a new one is added, or the peak is requested.
-    for (auto& sequence : sequence_trackers_) {
-      if (current_memory_ > sequence.second.total_memory_) {
-        sequence.second.total_memory_ = current_memory_;
+    for (auto& seq : sequence_trackers_) {
+      if (current_memory_ > seq.second.total_memory_) {
+        seq.second.total_memory_ = current_memory_;
         for (auto& sequence : sequence_trackers_) {
           TRACE_EVENT_ASYNC_STEP_INTO1("gpu", "PeakMemoryTracking",
                                        sequence.first, "Peak", "peak",
                                        current_memory_);
         }
-        for (auto& source : current_memory_per_source_) {
-          sequence.second.peak_memory_per_source_[source.first] = source.second;
+        for (auto& memory_per_source : current_memory_per_source_) {
+          seq.second.peak_memory_per_source_[memory_per_source.first] =
+              memory_per_source.second;
         }
       }
     }

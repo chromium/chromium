@@ -152,7 +152,7 @@ TEST_F(CongestionControlTest, RetainsSufficientHistory) {
       base::TimeDelta::FromMilliseconds(400);
 
   // Sanity-check: With no data, GetBitrate() returns an in-range value.
-  const int bitrate = congestion_control_->GetBitrate(
+  int bitrate = congestion_control_->GetBitrate(
       testing_clock_.NowTicks() + kFakePlayoutDelay, kFakePlayoutDelay);
   ASSERT_GE(bitrate, kMinBitrateConfigured);
   ASSERT_LE(bitrate, kMaxBitrateConfigured);
@@ -165,7 +165,7 @@ TEST_F(CongestionControlTest, RetainsSufficientHistory) {
     congestion_control_->SendFrameToTransport(frame_id, 16384,
                                               testing_clock_.NowTicks());
 
-    const int bitrate = congestion_control_->GetBitrate(
+    bitrate = congestion_control_->GetBitrate(
         testing_clock_.NowTicks() + kFakePlayoutDelay, kFakePlayoutDelay);
     ASSERT_GE(bitrate, kMinBitrateConfigured);
     ASSERT_LE(bitrate, kMaxBitrateConfigured);
@@ -180,7 +180,7 @@ TEST_F(CongestionControlTest, RetainsSufficientHistory) {
   for (int i = 0; i < kMaxUnackedFrames; ++i) {
     congestion_control_->AckFrame(frame_id, testing_clock_.NowTicks());
 
-    const int bitrate = congestion_control_->GetBitrate(
+    bitrate = congestion_control_->GetBitrate(
         testing_clock_.NowTicks() + kFakePlayoutDelay, kFakePlayoutDelay);
     ASSERT_GE(bitrate, kMinBitrateConfigured);
     ASSERT_LE(bitrate, kMaxBitrateConfigured);

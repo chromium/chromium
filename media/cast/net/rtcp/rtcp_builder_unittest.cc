@@ -419,9 +419,9 @@ TEST_F(RtcpBuilderTest, RtcpReceiverReportRedundancy) {
     p.AddReceiverFrameLog(test_rtp_timestamp().lower_32_bits(), num_events,
         time_base_ms - (num_events - 1) * kResendDelay *
         kTimeBetweenEventsMs);
-    for (int i = 0; i < num_events; i++) {
+    for (int event = 0; event < num_events; event++) {
       p.AddReceiverEventLog(0, FRAME_ACK_SENT,
-                            base::checked_cast<uint16_t>(i * kResendDelay *
+                            base::checked_cast<uint16_t>(event * kResendDelay *
                                                          kTimeBetweenEventsMs));
     }
 

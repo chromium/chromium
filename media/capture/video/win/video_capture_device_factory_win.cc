@@ -435,7 +435,7 @@ bool VideoCaptureDeviceFactoryWin::CreateDeviceFilterDirectShow(
   for (ComPtr<IMoniker> moniker;
        enum_moniker->Next(1, &moniker, nullptr) == S_OK; moniker.Reset()) {
     ComPtr<IPropertyBag> prop_bag;
-    HRESULT hr = moniker->BindToStorage(0, 0, IID_PPV_ARGS(&prop_bag));
+    hr = moniker->BindToStorage(0, 0, IID_PPV_ARGS(&prop_bag));
     if (FAILED(hr))
       continue;
 

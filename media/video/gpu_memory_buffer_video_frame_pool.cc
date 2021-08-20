@@ -1336,15 +1336,15 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::MailboxHoldersReleased(
   frame_resources->MarkUnused(now);
   auto it = resources_pool_.begin();
   while (it != resources_pool_.end()) {
-    FrameResources* frame_resources = *it;
+    FrameResources* resources = *it;
 
     constexpr base::TimeDelta kStaleFrameLimit =
         base::TimeDelta::FromSeconds(10);
-    if (!frame_resources->is_used() &&
-        now - frame_resources->last_use_time() > kStaleFrameLimit) {
+    if (!resources->is_used() &&
+        now - resources->last_use_time() > kStaleFrameLimit) {
       resources_pool_.erase(it++);
-      DeleteFrameResources(gpu_factories_, frame_resources);
-      delete frame_resources;
+      DeleteFrameResources(gpu_factories_, resources);
+      delete resources;
     } else {
       it++;
     }

@@ -194,7 +194,7 @@ class MEDIA_GPU_EXPORT H264Decoder : public AcceleratedVideoDecoder {
 
  private:
   // Internal state of the decoder.
-  enum State {
+  enum class State {
     // After initialization, need an SPS.
     kNeedStreamMetadata,
     // Ready to decode from any point.
