@@ -140,6 +140,8 @@ inline constexpr sandbox::policy::SandboxType MapToSandboxType(
     case sandbox::mojom::Sandbox::kVideoCapture:
       return sandbox::policy::SandboxType::kVideoCapture;
 #if defined(OS_WIN)
+    case sandbox::mojom::Sandbox::kIconReader:
+      return sandbox::policy::SandboxType::kIconReader;
     case sandbox::mojom::Sandbox::kMediaFoundationCdm:
       return sandbox::policy::SandboxType::kMediaFoundationCdm;
     case sandbox::mojom::Sandbox::kNoSandboxAndElevatedPrivileges:

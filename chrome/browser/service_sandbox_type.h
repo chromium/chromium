@@ -19,51 +19,6 @@
 // This file maps service classes to sandbox types. See
 // ServiceProcessHost::Launch() for how these templates are consumed.
 
-// chrome::mojom::UtilReadIcon
-#if defined(OS_WIN)
-namespace chrome {
-namespace mojom {
-class UtilReadIcon;
-}
-}  // namespace chrome
-
-template <>
-inline sandbox::policy::SandboxType
-content::GetServiceSandboxType<chrome::mojom::UtilReadIcon>() {
-  return sandbox::policy::SandboxType::kIconReader;
-}
-#endif  // defined(OS_WIN)
-
-// chrome::mojom::UtilWin
-#if defined(OS_WIN)
-namespace chrome {
-namespace mojom {
-class UtilWin;
-}
-}  // namespace chrome
-
-template <>
-inline sandbox::policy::SandboxType
-content::GetServiceSandboxType<chrome::mojom::UtilWin>() {
-  return sandbox::policy::SandboxType::kNoSandbox;
-}
-#endif  // defined(OS_WIN)
-
-// chrome::mojom::ProcessorMetrics
-#if defined(OS_WIN)
-namespace chrome {
-namespace mojom {
-class ProcessorMetrics;
-}
-}  // namespace chrome
-
-template <>
-inline sandbox::policy::SandboxType
-content::GetServiceSandboxType<chrome::mojom::ProcessorMetrics>() {
-  return sandbox::policy::SandboxType::kNoSandbox;
-}
-#endif  // defined(OS_WIN)
-
 // chrome::mojom::ProfileImport
 namespace chrome {
 namespace mojom {

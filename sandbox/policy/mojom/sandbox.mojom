@@ -48,6 +48,11 @@ enum Sandbox {
   // TODO(crbug.com/1236898) Fix this mapping.
   kVideoCapture,
 
+  // Allows access to file contents and Windows APIs for parsing icons from PE
+  // files.
+  [EnableIf=is_win]
+  kIconReader,
+
   // Allows LPAC capabilities for the Windws Media Foundation CDM, including
   // internet and private network access, COM, Identity & others. Allows access
   // to files in the `mediaFoundationCdmFiles` Chromium lpac.
