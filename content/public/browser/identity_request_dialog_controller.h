@@ -33,6 +33,15 @@ struct CONTENT_EXPORT IdentityRequestAccount {
     kSignUp,
   };
 
+  enum class SignInMode {
+    // This is the default sign in mode for returning users.
+    kExplicit,
+    // This represents the auto sign in flow. Currently it's only available when
+    // RP specifies |preferAutoSignIn = true| AND there is only one signed in
+    // account.
+    kAuto,
+  };
+
   IdentityRequestAccount(const std::string& sub,
                          const std::string& email,
                          const std::string& name,
@@ -105,14 +114,15 @@ class CONTENT_EXPORT IdentityRequestDialogController {
       InitialApprovalCallback approval_callback);
 
   // Shows and accounts selections for the given IDP. The |on_selected| callback
-  // is called with the selected account id or empty string otherwise. The bool
-  // |is_auto_sign_in| represents whether this is an auto sign in flow.
-  virtual void ShowAccountsDialog(content::WebContents* rp_web_contents,
-                                  content::WebContents* idp_web_contents,
-                                  const GURL& idp_signin_url,
-                                  AccountList accounts,
-                                  bool is_auto_sign_in,
-                                  AccountSelectionCallback on_selected) {}
+  // is called with the selected account id or empty string otherwise.
+  // |sign_in_mode| represents whether this is an auto sign in flow.
+  virtual void ShowAccountsDialog(
+      content::WebContents* rp_web_contents,
+      content::WebContents* idp_web_contents,
+      const GURL& idp_signin_url,
+      AccountList accounts,
+      IdentityRequestAccount::SignInMode sign_in_mode,
+      AccountSelectionCallback on_selected) {}
 
   // Shows the identity provider sign-in page at the given URL using the
   // |idp_web_contents| inside a modal window. The |on_closed| callback is

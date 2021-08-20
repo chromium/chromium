@@ -43,7 +43,7 @@ class MockIdentityRequestDialogController
                     WebContents*,
                     const GURL&,
                     AccountList,
-                    bool,
+                    IdentityRequestAccount::SignInMode,
                     AccountSelectionCallback));
 };
 

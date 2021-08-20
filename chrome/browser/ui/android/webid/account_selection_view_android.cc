@@ -97,7 +97,7 @@ AccountSelectionViewAndroid::~AccountSelectionViewAndroid() {
 void AccountSelectionViewAndroid::Show(const GURL& rp_url,
                                        const GURL& idp_url,
                                        base::span<const Account> accounts,
-                                       bool is_auto_sign_in) {
+                                       Account::SignInMode sign_in_mode) {
   if (!RecreateJavaObject()) {
     // It's possible that the constructor cannot access the bottom sheet clank
     // component. That case may be temporary but we can't let users in a
@@ -113,7 +113,7 @@ void AccountSelectionViewAndroid::Show(const GURL& rp_url,
       ConvertToJavaAccounts(env, accounts, idp_url);
   Java_AccountSelectionBridge_showAccounts(
       env, java_object_internal_, ConvertUTF8ToJavaString(env, rp_url.spec()),
-      accounts_obj, is_auto_sign_in);
+      accounts_obj, sign_in_mode == Account::SignInMode::kAuto);
 }
 
 void AccountSelectionViewAndroid::OnAccountSelected(

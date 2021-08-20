@@ -20,6 +20,7 @@ using blink::mojom::RequestIdTokenStatus;
 using blink::mojom::RequestMode;
 using UserApproval = content::IdentityRequestDialogController::UserApproval;
 using LoginState = content::IdentityRequestAccount::LoginState;
+using SignInMode = content::IdentityRequestAccount::SignInMode;
 
 namespace content {
 
@@ -411,7 +412,7 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
                              accounts[0].login_state == LoginState::kSignIn;
       request_dialog_controller_->ShowAccountsDialog(
           rp_web_contents, idp_web_contents_.get(), provider_, accounts,
-          is_auto_sign_in,
+          is_auto_sign_in ? SignInMode::kAuto : SignInMode::kExplicit,
           base::BindOnce(&FederatedAuthRequestImpl::OnAccountSelected,
                          weak_ptr_factory_.GetWeakPtr()));
       return;

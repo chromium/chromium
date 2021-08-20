@@ -214,7 +214,7 @@ public class AccountSelectionViewTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mSheetItems.add(new MVCListAdapter.ListItem(AccountSelectionProperties.ItemType.HEADER,
                     new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
-                            .with(HeaderProperties.TYPE, HeaderType.AUTO_SIGN_IN)
+                            .with(HeaderProperties.TYPE, HeaderType.SIGN_IN)
                             .with(HeaderProperties.FORMATTED_URL, "www.example.org")
                             .build()));
         });
@@ -222,7 +222,7 @@ public class AccountSelectionViewTest {
         TextView title = mContentView.findViewById(R.id.account_selection_sheet_title);
 
         assertEquals("Incorrect title",
-                mActivity.getString(R.string.auto_sign_in_sheet_title, "www.example.org"),
+                mActivity.getString(R.string.sign_in_sheet_title, "www.example.org"),
                 title.getText());
     }
 

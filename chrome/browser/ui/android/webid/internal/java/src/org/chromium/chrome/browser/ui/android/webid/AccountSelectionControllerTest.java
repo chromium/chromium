@@ -138,10 +138,40 @@ public class AccountSelectionControllerTest {
     }
 
     @Test
-    public void testShowAccountWithSingleEntryCreatesHeader() {
-        mMediator.showAccounts(TEST_URL, Arrays.asList(ANA), false);
+    public void testShowAccountWithSingleEntryCreatesSignUpHeader() {
+        mMediator.showAccounts(TEST_URL, Arrays.asList(NEW_USER), false);
         assertEquals("Incorrect header type", ItemType.HEADER, mSheetItems.get(0).type);
         assertEquals("Incorrect header single account", HeaderType.SINGLE_ACCOUNT,
+                mSheetItems.get(0).model.get(TYPE));
+        assertEquals("Incorrect header url", formatForSecurityDisplay(TEST_URL),
+                mSheetItems.get(0).model.get(FORMATTED_URL));
+    }
+
+    @Test
+    public void testShowAccountWithSingleEntryCreatesSignInHeader() {
+        mMediator.showAccounts(TEST_URL, Arrays.asList(ANA), false);
+        assertEquals("Incorrect header type", ItemType.HEADER, mSheetItems.get(0).type);
+        assertEquals("Incorrect header single account", HeaderType.SIGN_IN,
+                mSheetItems.get(0).model.get(TYPE));
+        assertEquals("Incorrect header url", formatForSecurityDisplay(TEST_URL),
+                mSheetItems.get(0).model.get(FORMATTED_URL));
+    }
+
+    @Test
+    public void testShowAccountWithMultipleEntriesCreatesSignUpHeader() {
+        mMediator.showAccounts(TEST_URL, Arrays.asList(NEW_USER, NEW_USER), false);
+        assertEquals("Incorrect header type", ItemType.HEADER, mSheetItems.get(0).type);
+        assertEquals("Incorrect header single account", HeaderType.MULTIPLE_ACCOUNT,
+                mSheetItems.get(0).model.get(TYPE));
+        assertEquals("Incorrect header url", formatForSecurityDisplay(TEST_URL),
+                mSheetItems.get(0).model.get(FORMATTED_URL));
+    }
+
+    @Test
+    public void testShowAccountWithMultipleEntriesCreatesSignInHeader() {
+        mMediator.showAccounts(TEST_URL, Arrays.asList(ANA, NEW_USER), false);
+        assertEquals("Incorrect header type", ItemType.HEADER, mSheetItems.get(0).type);
+        assertEquals("Incorrect header single account", HeaderType.SIGN_IN,
                 mSheetItems.get(0).model.get(TYPE));
         assertEquals("Incorrect header url", formatForSecurityDisplay(TEST_URL),
                 mSheetItems.get(0).model.get(FORMATTED_URL));

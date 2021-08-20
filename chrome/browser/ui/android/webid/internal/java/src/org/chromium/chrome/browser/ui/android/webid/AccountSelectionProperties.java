@@ -75,7 +75,7 @@ class AccountSelectionProperties {
      * sheet.
      */
     static class HeaderProperties {
-        public enum HeaderType { SINGLE_ACCOUNT, MULTIPLE_ACCOUNT, AUTO_SIGN_IN }
+        public enum HeaderType { SINGLE_ACCOUNT, MULTIPLE_ACCOUNT, SIGN_IN }
         static final PropertyModel.ReadableObjectPropertyKey<HeaderType> TYPE =
                 new PropertyModel.ReadableObjectPropertyKey<>("type");
         static final PropertyModel.ReadableObjectPropertyKey<String> FORMATTED_URL =

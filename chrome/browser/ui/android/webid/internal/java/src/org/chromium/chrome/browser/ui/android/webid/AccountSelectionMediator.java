@@ -85,12 +85,16 @@ class AccountSelectionMediator {
         };
     }
 
-    void showAccounts(String url, List<Account> accounts, boolean isAutoSignIn) {
-        mSheetItems.clear();
-
+    void addHeader(String url, List<Account> accounts) {
+        boolean useSignInHeader = false;
+        for (Account account : accounts) {
+            if (!account.isSignIn()) continue;
+            useSignInHeader = true;
+            break;
+        }
         HeaderType headerType;
-        if (isAutoSignIn) {
-            headerType = HeaderType.AUTO_SIGN_IN;
+        if (useSignInHeader) {
+            headerType = HeaderType.SIGN_IN;
         } else {
             headerType =
                     accounts.size() == 1 ? HeaderType.SINGLE_ACCOUNT : HeaderType.MULTIPLE_ACCOUNT;
@@ -105,35 +109,48 @@ class AccountSelectionMediator {
                         .with(HeaderProperties.TYPE, headerType)
                         .with(HeaderProperties.FORMATTED_URL, site_url)
                         .build()));
+    }
 
+    void addAccounts(List<Account> accounts) {
         for (Account account : accounts) {
             final PropertyModel model = createAccountItem(account);
             mSheetItems.add(new ListItem(ItemType.ACCOUNT, model));
             requestIconOrFallbackImage(model);
             requestAvatarImage(model);
         }
+    }
 
-        if (accounts.size() == 1) {
-            Account account = accounts.get(0);
-            // Only show the user data sharing consent text for sign up.
-            if (!account.isSignIn()) {
-                String provider_url = UrlFormatter.formatUrlForSecurityDisplay(
-                        account.getOriginUrl(), SchemeDisplay.OMIT_HTTP_AND_HTTPS);
-                mSheetItems.add(new ListItem(
-                        ItemType.DATA_SHARING_CONSENT, createDataSharingConsentItem(provider_url)));
-            }
-            if (isAutoSignIn) {
-                assert account.isSignIn();
-                final PropertyModel cancelBtnModel = createAutoSignInCancelBtnItem();
-                mSheetItems.add(new ListItem(ItemType.AUTO_SIGN_IN_CANCEL_BUTTON, cancelBtnModel));
+    void addButtons(List<Account> accounts, boolean isAutoSignIn) {
+        if (accounts.size() != 1) return;
 
-                mAutoSignInTaskHandler.postDelayed(
-                        () -> onAccountSelected(account), AUTO_SIGN_IN_CANCELLATION_TIMER_MS);
-            } else {
-                final PropertyModel continueBtnModel = createContinueBtnItem(account);
-                mSheetItems.add(new ListItem(ItemType.CONTINUE_BUTTON, continueBtnModel));
-            }
+        Account account = accounts.get(0);
+        if (isAutoSignIn) {
+            assert account.isSignIn();
+            final PropertyModel cancelBtnModel = createAutoSignInCancelBtnItem();
+            mSheetItems.add(new ListItem(ItemType.AUTO_SIGN_IN_CANCEL_BUTTON, cancelBtnModel));
+
+            mAutoSignInTaskHandler.postDelayed(
+                    () -> onAccountSelected(account), AUTO_SIGN_IN_CANCELLATION_TIMER_MS);
+            return;
         }
+
+        // Only show the user data sharing consent text for sign up.
+        if (!account.isSignIn()) {
+            String provider_url = UrlFormatter.formatUrlForSecurityDisplay(
+                    account.getOriginUrl(), SchemeDisplay.OMIT_HTTP_AND_HTTPS);
+            mSheetItems.add(new ListItem(
+                    ItemType.DATA_SHARING_CONSENT, createDataSharingConsentItem(provider_url)));
+        }
+        // Shows the continue button for both sign-up and non auto-sign-in.
+        final PropertyModel continueBtnModel = createContinueBtnItem(account);
+        mSheetItems.add(new ListItem(ItemType.CONTINUE_BUTTON, continueBtnModel));
+    }
+
+    void showAccounts(String url, List<Account> accounts, boolean isAutoSignIn) {
+        mSheetItems.clear();
+        addHeader(url, accounts);
+        addAccounts(accounts);
+        addButtons(accounts, isAutoSignIn);
 
         showContent();
     }

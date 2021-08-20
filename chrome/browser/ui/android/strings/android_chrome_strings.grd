@@ -4972,7 +4972,7 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_ACCOUNT_SELECTION_SHEET_CLOSED" desc="Accessibility string read when the Account Selection bottom sheet showing a list of the user's accounts is closed." translateable="false">
         List of accounts to be selected is closed.
       </message>
-      <message name="IDS_AUTO_SIGN_IN_SHEET_TITLE" desc="Header for auto sign in sheet." translateable="false">
+      <message name="IDS_SIGN_IN_SHEET_TITLE" desc="Header for sign in sheet." translateable="false">
         Signing into <ph name="SITE_NAME">%1$s<ex>rp.example</ex></ph>
       </message>
 

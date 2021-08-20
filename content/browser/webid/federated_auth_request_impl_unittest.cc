@@ -38,6 +38,7 @@ using TokenResponse = content::IdpNetworkRequestManager::TokenResponse;
 using UserApproval = content::IdentityRequestDialogController::UserApproval;
 using AccountList = content::IdentityRequestDialogController::AccountList;
 using LoginState = content::IdentityRequestAccount::LoginState;
+using SignInMode = content::IdentityRequestAccount::SignInMode;
 using ::testing::_;
 using ::testing::Invoke;
 using ::testing::NiceMock;
@@ -486,7 +487,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostTestHarness {
               [&](content::WebContents* rp_web_contents,
                   content::WebContents* idp_web_contents,
                   const GURL& idp_signin_url, AccountList accounts,
-                  bool is_auto_sign_in,
+                  SignInMode sign_in_mode,
                   IdentityRequestDialogController::AccountSelectionCallback
                       on_selected) {
                 displayed_accounts_ = accounts;
@@ -861,10 +862,10 @@ TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInForReturningUser) {
           Invoke([&](content::WebContents* rp_web_contents,
                      content::WebContents* idp_web_contents,
                      const GURL& idp_signin_url, AccountList accounts,
-                     bool is_auto_sign_in,
+                     SignInMode sign_in_mode,
                      IdentityRequestDialogController::AccountSelectionCallback
                          on_selected) {
-            EXPECT_TRUE(is_auto_sign_in);
+            EXPECT_EQ(sign_in_mode, SignInMode::kAuto);
             displayed_accounts = accounts;
             std::move(on_selected).Run(accounts[0].sub);
           }));
@@ -888,10 +889,10 @@ TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInForFirstTimeUser) {
           Invoke([&](content::WebContents* rp_web_contents,
                      content::WebContents* idp_web_contents,
                      const GURL& idp_signin_url, AccountList accounts,
-                     bool is_auto_sign_in,
+                     SignInMode sign_in_mode,
                      IdentityRequestDialogController::AccountSelectionCallback
                          on_selected) {
-            EXPECT_FALSE(is_auto_sign_in);
+            EXPECT_EQ(sign_in_mode, SignInMode::kExplicit);
             displayed_accounts = accounts;
             std::move(on_selected).Run(accounts[0].sub);
           }));

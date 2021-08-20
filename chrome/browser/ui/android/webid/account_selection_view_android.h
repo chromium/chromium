@@ -21,7 +21,7 @@ class AccountSelectionViewAndroid : public AccountSelectionView {
   void Show(const GURL& rp_url,
             const GURL& idp_url,
             base::span<const Account> accounts,
-            bool is_auto_sign_in) override;
+            Account::SignInMode sign_in_mode) override;
 
   void OnAccountSelected(
       JNIEnv* env,

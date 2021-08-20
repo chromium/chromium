@@ -230,8 +230,8 @@ class AccountSelectionViewBinder {
                 case MULTIPLE_ACCOUNT:
                     titleStringId = R.string.account_selection_sheet_title;
                     break;
-                case AUTO_SIGN_IN:
-                    titleStringId = R.string.auto_sign_in_sheet_title;
+                case SIGN_IN:
+                    titleStringId = R.string.sign_in_sheet_title;
                     break;
             }
 

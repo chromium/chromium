@@ -48,12 +48,13 @@ class IdentityDialogController
       content::IdentityRequestDialogController::PermissionDialogMode mode,
       InitialApprovalCallback) override;
 
-  void ShowAccountsDialog(content::WebContents* rp_web_contents,
-                          content::WebContents* idp_web_contents,
-                          const GURL& idp_url,
-                          AccountList accounts,
-                          bool is_auto_sign_in,
-                          AccountSelectionCallback on_selected) override;
+  void ShowAccountsDialog(
+      content::WebContents* rp_web_contents,
+      content::WebContents* idp_web_contents,
+      const GURL& idp_url,
+      AccountList accounts,
+      content::IdentityRequestAccount::SignInMode sign_in_mode,
+      AccountSelectionCallback on_selected) override;
 
   void ShowIdProviderWindow(content::WebContents* rp_web_contents,
                             content::WebContents* idp_web_contents,

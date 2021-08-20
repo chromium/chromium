@@ -39,13 +39,13 @@ class AccountSelectionView {
   // Instructs the view to show the provided |accounts| to the user.
   // |rp_url| is the relying party's url which is normally the current page's
   // url, and |idp_url| is the identity provider's url that is providing
-  // the accounts. |is_auto_sign_in| represents whether this is an auto sign in
+  // the accounts. |sign_in_mode| represents whether this is an auto sign in
   // flow. After user interaction either OnAccountSelected() or
   // OnDismiss() gets invoked.
   virtual void Show(const GURL& rp_url,
                     const GURL& idp_url,
                     base::span<const Account> accounts,
-                    bool is_auto_sign_in) = 0;
+                    Account::SignInMode sign_in_mode) = 0;
 
  protected:
   Delegate* delegate_ = nullptr;
