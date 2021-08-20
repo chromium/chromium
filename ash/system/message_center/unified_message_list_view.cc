@@ -22,7 +22,6 @@
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/canvas.h"
-#include "ui/message_center/message_center.h"
 #include "ui/message_center/notification_view_controller.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/views/message_view.h"
@@ -248,6 +247,7 @@ UnifiedMessageListView::UnifiedMessageListView(
       message_center_view_(message_center_view),
       model_(model),
       animation_(std::make_unique<gfx::LinearAnimation>(this)) {
+  message_center_observation_.Observe(MessageCenter::Get());
   animation_->SetCurrentValue(1.0);
   SetBackground(views::CreateSolidBackground(
       message_center_style::kSwipeControlBackgroundColor));
@@ -270,10 +270,6 @@ void UnifiedMessageListView::Init() {
         new MessageViewContainer(CreateMessageView(*notification), this);
     view->LoadExpandedState(model_, is_latest);
     AddChildViewAt(view, 0);
-
-    if (notification->group_parent())
-      PopulateGroupParent(notification->id());
-
     MessageCenter::Get()->DisplayedNotification(
         notification->id(), message_center::DISPLAY_SOURCE_MESSAGE_CENTER);
     is_latest = false;
@@ -423,9 +419,6 @@ void UnifiedMessageListView::ConvertGroupedNotificationViewToNotificationView(
 }
 
 void UnifiedMessageListView::OnNotificationAdded(const std::string& id) {
-  if (ash::features::IsNotificationsRefreshEnabled())
-    message_center::NotificationViewController::OnNotificationAdded(id);
-
   auto* notification = MessageCenter::Get()->FindVisibleNotificationById(id);
   if (!notification)
     return;
@@ -466,10 +459,6 @@ void UnifiedMessageListView::OnNotificationRemoved(const std::string& id,
                                                    bool by_user) {
   if (ignore_notification_remove_)
     return;
-
-  if (ash::features::IsNotificationsRefreshEnabled())
-    message_center::NotificationViewController::OnNotificationRemoved(id,
-                                                                      by_user);
 
   // The corresponding MessageView may have already been deleted after being
   // manually slid out.

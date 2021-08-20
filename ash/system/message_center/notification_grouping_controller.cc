@@ -2,19 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/message_center/notification_view_controller.h"
-#include <iterator>
-#include <memory>
+#include "ash/system/message_center/notification_grouping_controller.h"
 
-#include "ash/constants/ash_features.h"
-#include "base/debug/stack_trace.h"
-#include "base/no_destructor.h"
-#include "base/time/time.h"
+#include "ash/system/message_center/unified_message_center_bubble.h"
+#include "ash/system/message_center/unified_message_center_view.h"
+#include "ash/system/message_center/unified_message_list_view.h"
+#include "ash/system/unified/unified_system_tray.h"
+#include "ui/message_center/message_center_types.h"
+#include "ui/message_center/notification_view_controller.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/views/message_view.h"
 
-namespace message_center {
+using message_center::MessageCenter;
+using message_center::MessageView;
+using message_center::Notification;
+
+namespace ash {
 
 namespace {
 
@@ -108,34 +112,27 @@ class GroupedNotificationList {
   std::map<std::string, std::set<std::string>> notifications_in_parent_map_;
 };
 
-// Needs to be a static instance because
-// we need a single instance to be shared across MessagePopupCollection and
-// UnifiedMessageListView. TODO(crbug/1239033) Refactor
-// NotificationViewController so we won't have to do this.
-GroupedNotificationList& GetGroupedNotificationListInstance() {
-  static base::NoDestructor<GroupedNotificationList> instance;
-  return *instance;
-}
-
 }  // namespace
 
-NotificationViewController::NotificationViewController()
-    : grouped_notification_list_(&GetGroupedNotificationListInstance()) {
+NotificationGroupingController::NotificationGroupingController(
+    UnifiedSystemTray* tray)
+    : tray_(tray),
+      grouped_notification_list_(std::make_unique<GroupedNotificationList>()) {
   observer_.Observe(MessageCenter::Get());
 }
 
-NotificationViewController::~NotificationViewController() {
-  observer_.Reset();
-}
+NotificationGroupingController::~NotificationGroupingController() = default;
 
-void NotificationViewController::PopulateGroupParent(
+void NotificationGroupingController::PopulateGroupParent(
     const std::string& notification_id) {
   DCHECK(MessageCenter::Get()
              ->FindNotificationById(notification_id)
              ->group_parent());
-  MessageView* parent_view = GetMessageViewForNotificationId(notification_id);
+  MessageView* parent_view =
+      GetActiveNotificationViewController()->GetMessageViewForNotificationId(
+          notification_id);
 
-  for (auto* notification : MessageCenter::Get()->GetNotifications()) {
+  for (const auto* notification : MessageCenter::Get()->GetNotifications()) {
     if (notification->notifier_id() == parent_view->notifier_id() &&
         notification->id() != parent_view->notification_id()) {
       grouped_notification_list_->AddGroupedNotification(notification->id(),
@@ -145,12 +142,11 @@ void NotificationViewController::PopulateGroupParent(
   }
 }
 
-const std::string& NotificationViewController::GetParentIdForChildForTest(
-    const std::string& notification_id) {
+const std::string& NotificationGroupingController::GetParentIdForChildForTest(
+    const std::string& notification_id) const {
   return grouped_notification_list_->GetParentForChild(notification_id);
 }
-
-void NotificationViewController::SetupParentNotification(
+void NotificationGroupingController::SetupParentNotification(
     std::string* parent_id) {
   Notification* parent_notification =
       MessageCenter::Get()->FindNotificationById(*parent_id);
@@ -167,9 +163,10 @@ void NotificationViewController::SetupParentNotification(
   Notification* new_parent_notification = notification_copy.get();
   MessageCenter::Get()->AddNotification(std::move(notification_copy));
 
-  ConvertNotificationViewToGroupedNotificationView(
-      /*ungrouped_notification_id=*/old_parent_id,
-      /*new_grouped_notification_id=*/new_parent_id);
+  GetActiveNotificationViewController()
+      ->ConvertNotificationViewToGroupedNotificationView(
+          /*ungrouped_notification_id=*/old_parent_id,
+          /*new_grouped_notification_id=*/new_parent_id);
 
   grouped_notification_list_->ReplaceParentId(
       /*new_parent_id=*/new_parent_id,
@@ -181,26 +178,32 @@ void NotificationViewController::SetupParentNotification(
   new_parent_notification->SetGroupParent();
   parent_notification->SetGroupChild();
 
-  auto* parent_view = GetMessageViewForNotificationId(new_parent_id);
+  auto* parent_view =
+      GetActiveNotificationViewController()->GetMessageViewForNotificationId(
+          new_parent_id);
   if (parent_view)
     parent_view->AddGroupNotification(*parent_notification,
                                       /*newest_first=*/false);
 }
 
-void NotificationViewController::SetupSingleNotificationFromGroupedNotification(
-    const std::string& group_parent_id,
-    const std::string& new_single_notification_id) {
+void NotificationGroupingController::
+    SetupSingleNotificationFromGroupedNotification(
+        const std::string& group_parent_id,
+        const std::string& new_single_notification_id) {
   auto* message_center = MessageCenter::Get();
-  MessageView* parent_view = GetMessageViewForNotificationId(group_parent_id);
+  MessageView* parent_view =
+      GetActiveNotificationViewController()->GetMessageViewForNotificationId(
+          group_parent_id);
   auto* new_single_notification =
       message_center->FindNotificationById(new_single_notification_id);
 
   parent_view->RemoveGroupNotification(new_single_notification_id);
   parent_view->UpdateWithNotification(*new_single_notification);
 
-  ConvertGroupedNotificationViewToNotificationView(
-      /*grouped_notification_id=*/group_parent_id,
-      /*new_single_notification_id=*/new_single_notification_id);
+  GetActiveNotificationViewController()
+      ->ConvertGroupedNotificationViewToNotificationView(
+          /*grouped_notification_id=*/group_parent_id,
+          /*new_single_notification_id=*/new_single_notification_id);
 
   message_center->FindNotificationById(group_parent_id)->ClearGroupParent();
   new_single_notification->ClearGroupChild();
@@ -211,17 +214,18 @@ void NotificationViewController::SetupSingleNotificationFromGroupedNotification(
 }
 
 std::unique_ptr<Notification>
-NotificationViewController::CreateCopyForParentNotification(
+NotificationGroupingController::CreateCopyForParentNotification(
     const Notification& parent_notification) {
   // Create a copy with a timestamp that is older than the copied notification.
   // We need to set an older timestamp so that this notification will become
   // the parent notification for it's notifier_id.
   auto child_copy = std::make_unique<Notification>(
-      NotificationType::NOTIFICATION_TYPE_SIMPLE,
-      parent_notification.id() + kIdSuffixForGroupContainerNotification,
+      message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE,
+      parent_notification.id() +
+          message_center::kIdSuffixForGroupContainerNotification,
       parent_notification.title(), parent_notification.message(), gfx::Image(),
       std::u16string(), parent_notification.origin_url(),
-      parent_notification.notifier_id(), RichNotificationData(),
+      parent_notification.notifier_id(), message_center::RichNotificationData(),
       /*delegate=*/nullptr);
   child_copy->set_timestamp(parent_notification.timestamp() -
                             base::TimeDelta::FromMilliseconds(1));
@@ -230,7 +234,7 @@ NotificationViewController::CreateCopyForParentNotification(
   return child_copy;
 }
 
-void NotificationViewController::RemoveGroupedChild(
+void NotificationGroupingController::RemoveGroupedChild(
     const std::string& notification_id) {
   if (!grouped_notification_list_->GroupedChildNotificationExists(
           notification_id)) {
@@ -240,7 +244,9 @@ void NotificationViewController::RemoveGroupedChild(
   const std::string parent_id =
       grouped_notification_list_->GetParentForChild(notification_id);
 
-  MessageView* parent_view = GetMessageViewForNotificationId(parent_id);
+  MessageView* parent_view =
+      GetActiveNotificationViewController()->GetMessageViewForNotificationId(
+          parent_id);
   if (parent_view)
     parent_view->RemoveGroupNotification(notification_id);
 
@@ -250,7 +256,8 @@ void NotificationViewController::RemoveGroupedChild(
   // group child left in the group notification.
   auto grouped_notifications =
       grouped_notification_list_->GetGroupedNotificationsForParent(parent_id);
-  if (GetMessageViewForNotificationId(parent_id) &&
+  if (GetActiveNotificationViewController()->GetMessageViewForNotificationId(
+          parent_id) &&
       grouped_notifications.size() == 1) {
     SetupSingleNotificationFromGroupedNotification(
         /*group_parent_id=*/parent_id,
@@ -258,7 +265,18 @@ void NotificationViewController::RemoveGroupedChild(
   }
 }
 
-void NotificationViewController::OnNotificationAdded(
+message_center::NotificationViewController*
+NotificationGroupingController::GetActiveNotificationViewController() {
+  if (tray_->IsMessageCenterBubbleShown()) {
+    return tray_->message_center_bubble()
+        ->message_center_view()
+        ->message_list_view();
+  } else {
+    return tray_->GetMessagePopupCollection();
+  }
+}
+
+void NotificationGroupingController::OnNotificationAdded(
     const std::string& notification_id) {
   auto* message_center = MessageCenter::Get();
   Notification* notification =
@@ -287,14 +305,23 @@ void NotificationViewController::OnNotificationAdded(
   grouped_notification_list_->AddGroupedNotification(notification_id,
                                                      parent_id);
 
-  MessageView* parent_view = GetMessageViewForNotificationId(parent_id);
+  MessageView* parent_view =
+      GetActiveNotificationViewController()->GetMessageViewForNotificationId(
+          parent_id);
   if (parent_view)
     parent_view->AddGroupNotification(*notification, /*newest_first=*/false);
   else
     message_center->ResetSinglePopup(parent_id);
 }
 
-void NotificationViewController::OnNotificationRemoved(
+void NotificationGroupingController::OnNotificationDisplayed(
+    const std::string& notification_id,
+    const message_center::DisplaySource source) {
+  if (grouped_notification_list_->ParentNotificationExists(notification_id))
+    PopulateGroupParent(notification_id);
+}
+
+void NotificationGroupingController::OnNotificationRemoved(
     const std::string& notification_id,
     bool by_user) {
   if (grouped_notification_list_->GroupedChildNotificationExists(
@@ -316,4 +343,4 @@ void NotificationViewController::OnNotificationRemoved(
   }
 }
 
-}  // namespace message_center
+}  // namespace ash

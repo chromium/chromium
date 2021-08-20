@@ -6,7 +6,9 @@
 #define ASH_SYSTEM_MESSAGE_CENTER_UNIFIED_MESSAGE_LIST_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "base/scoped_observation.h"
 #include "ui/compositor/throughput_tracker.h"
+#include "ui/message_center/message_center.h"
 #include "ui/message_center/message_center_observer.h"
 #include "ui/message_center/notification_view_controller.h"
 #include "ui/message_center/views/message_view.h"
@@ -27,10 +29,11 @@ namespace ash {
 class UnifiedMessageCenterView;
 class UnifiedSystemTrayModel;
 
-// Manages list of notifications. The class doesn't know about the ScrollView
 // it's enclosed. This class is used only from UnifiedMessageCenterView.
+// Manages list of notifications. The class doesn't know about the ScrollView
 class ASH_EXPORT UnifiedMessageListView
     : public views::View,
+      public message_center::MessageCenterObserver,
       public message_center::NotificationViewController,
       public message_center::MessageView::Observer,
       public views::AnimationDelegateViews {
@@ -38,6 +41,9 @@ class ASH_EXPORT UnifiedMessageListView
   // |message_center_view| can be null in unit tests.
   UnifiedMessageListView(UnifiedMessageCenterView* message_center_view,
                          UnifiedSystemTrayModel* model);
+  UnifiedMessageListView(const UnifiedMessageListView& other) = delete;
+  UnifiedMessageListView& operator=(const UnifiedMessageListView& other) =
+      delete;
   ~UnifiedMessageListView() override;
 
   // Initializes the view with existing notifications. Should be called right
@@ -94,6 +100,8 @@ class ASH_EXPORT UnifiedMessageListView
   void ConvertGroupedNotificationViewToNotificationView(
       const std::string& grouped_notification_id,
       const std::string& new_single_notification_id) override;
+
+  // message_center::MessageCenterObserver:
   void OnNotificationAdded(const std::string& id) override;
   void OnNotificationRemoved(const std::string& id, bool by_user) override;
   void OnNotificationUpdated(const std::string& id) override;
@@ -228,7 +236,9 @@ class ASH_EXPORT UnifiedMessageListView
   // (e.g. crbug.com/933327) caused by the View destructor.
   bool is_deleting_removed_notifications_ = false;
 
-  DISALLOW_COPY_AND_ASSIGN(UnifiedMessageListView);
+  base::ScopedObservation<message_center::MessageCenter,
+                          message_center::MessageCenterObserver>
+      message_center_observation_{this};
 };
 
 }  // namespace ash

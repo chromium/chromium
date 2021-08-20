@@ -73,7 +73,6 @@ component("message_center") {
       "notification_blocker.h",
       "notification_list.cc",
       "notification_list.h",
-      "notification_view_controller.cc",
       "notification_view_controller.h",
       "popup_timer.cc",
       "popup_timer.h",
@@ -216,11 +215,6 @@ if (enable_message_center) {
         "//ui/views",
         "//ui/views:test_support",
       ]
-    }
-
-    if (is_chromeos_ash) {
-      sources += [ "notification_view_controller_unittest.cc" ]
-      deps += [ "//ash/constants" ]
     }
   }
 }

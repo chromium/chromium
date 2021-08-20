@@ -10,7 +10,6 @@
 #include "base/timer/timer.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/animation/tween.h"
-#include "ui/message_center/message_center.h"
 #include "ui/message_center/message_center_types.h"
 #include "ui/message_center/notification_view_controller.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
@@ -40,7 +39,9 @@ constexpr base::TimeDelta kWaitForReset = base::TimeDelta::FromSeconds(10);
 
 MessagePopupCollection::MessagePopupCollection()
     : animation_(std::make_unique<gfx::LinearAnimation>(this)),
-      weak_ptr_factory_(this) {}
+      weak_ptr_factory_(this) {
+  message_center_observation_.Observe(MessageCenter::Get());
+}
 
 MessagePopupCollection::~MessagePopupCollection() {
   // Ignore calls to update which can cause crashes.
@@ -169,12 +170,6 @@ void MessagePopupCollection::ConvertGroupedNotificationViewToNotificationView(
 
 void MessagePopupCollection::OnNotificationAdded(
     const std::string& notification_id) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (ash::features::IsNotificationsRefreshEnabled() &&
-      !MessageCenter::Get()->IsMessageCenterVisible()) {
-    NotificationViewController::OnNotificationAdded(notification_id);
-  }
-#endif
   // Should not call MessagePopupCollection::Update here. Because notification
   // may be removed before animation which is triggered by the previous
   // operation on MessagePopupCollection ends. As result, when a new
@@ -187,13 +182,6 @@ void MessagePopupCollection::OnNotificationAdded(
 void MessagePopupCollection::OnNotificationRemoved(
     const std::string& notification_id,
     bool by_user) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (ash::features::IsNotificationsRefreshEnabled() &&
-      !MessageCenter::Get()->IsMessageCenterVisible()) {
-    NotificationViewController::OnNotificationRemoved(notification_id, by_user);
-  }
-#endif
-
   if (by_user) {
     recently_closed_by_user_ = true;
     recently_closed_by_user_timer_ = std::make_unique<base::OneShotTimer>();
@@ -544,8 +532,6 @@ bool MessagePopupCollection::AddPopup() {
     }
 
     popup_items_.push_back(item);
-    if (new_notification->group_parent())
-      PopulateGroupParent(item.id);
 
     item.popup->Show();
     NotifyPopupAdded(item.popup);

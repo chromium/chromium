@@ -109,6 +109,7 @@ class UnifiedMessageCenterViewTest : public AshTestBase,
       int max_height) {
     auto message_center_view =
         std::make_unique<TestUnifiedMessageCenterView>(model_.get());
+    message_center_view->Init();
     message_center_view->AddObserver(this);
     message_center_view->SetMaxHeight(max_height);
     message_center_view->SetAvailableHeight(max_height);

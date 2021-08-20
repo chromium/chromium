@@ -17,6 +17,7 @@
 
 namespace message_center {
 class MessagePopupView;
+class NotificationViewController;
 }  // namespace message_center
 
 namespace ash {
@@ -159,6 +160,8 @@ class ASH_EXPORT UnifiedSystemTray : public TrayBackgroundView,
   void OnShelfConfigUpdated() override;
 
   std::u16string GetAccessibleNameForQuickSettingsBubble();
+
+  message_center::NotificationViewController* GetMessagePopupCollection();
 
   UnifiedSystemTrayModel* model() { return model_.get(); }
   UnifiedSystemTrayBubble* bubble() { return bubble_.get(); }

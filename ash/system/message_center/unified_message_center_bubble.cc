@@ -103,7 +103,7 @@ void UnifiedMessageCenterBubble::ShowBubble() {
   widget_layer->Add(border_->layer());
 
   bubble_view_->InitializeAndShowBubble();
-
+  message_center_view_->Init();
   UpdateBubbleState();
 }
 

@@ -81,7 +81,16 @@ UnifiedMessageCenterView::UnifiedMessageCenterView(
       message_list_view_(new UnifiedMessageListView(this, model)),
       last_scroll_position_from_bottom_(0),
       animation_(std::make_unique<gfx::LinearAnimation>(this)),
-      focus_search_(std::make_unique<views::FocusSearch>(this, false, false)) {
+      focus_search_(std::make_unique<views::FocusSearch>(this, false, false)) {}
+
+UnifiedMessageCenterView::~UnifiedMessageCenterView() {
+  model_->set_notification_target_mode(
+      UnifiedSystemTrayModel::NotificationTargetMode::LAST_NOTIFICATION);
+
+  RemovedFromWidget();
+}
+
+void UnifiedMessageCenterView::Init() {
   message_list_view_->Init();
 
   AddChildView(notification_bar_);
@@ -100,13 +109,6 @@ UnifiedMessageCenterView::UnifiedMessageCenterView(
       message_list_view_->GetTotalNotificationCount(),
       message_list_view_->GetTotalPinnedNotificationCount(),
       GetStackedNotifications());
-}
-
-UnifiedMessageCenterView::~UnifiedMessageCenterView() {
-  model_->set_notification_target_mode(
-      UnifiedSystemTrayModel::NotificationTargetMode::LAST_NOTIFICATION);
-
-  RemovedFromWidget();
 }
 
 void UnifiedMessageCenterView::SetMaxHeight(int max_height) {

@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/message_center/message_center.h"
 #include "ui/message_center/message_center_export.h"
 #include "ui/message_center/message_center_observer.h"
 #include "ui/message_center/notification_view_controller.h"
@@ -38,10 +39,14 @@ class PopupAlignmentDelegate;
 // Container of notification popups usually shown at the right bottom of the
 // screen. Manages animation state and updates these popup widgets.
 class MESSAGE_CENTER_EXPORT MessagePopupCollection
-    : public NotificationViewController,
+    : public MessageCenterObserver,
+      public NotificationViewController,
       public gfx::AnimationDelegate {
  public:
   MessagePopupCollection();
+  MessagePopupCollection(const MessagePopupCollection& other) = delete;
+  MessagePopupCollection& operator=(const MessagePopupCollection& other) =
+      delete;
   ~MessagePopupCollection() override;
 
   // Update popups based on current |state_|.
@@ -66,6 +71,8 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
   void ConvertGroupedNotificationViewToNotificationView(
       const std::string& grouped_notification_id,
       const std::string& new_single_notification_id) override;
+
+  // MessageCenterObserver:
   void OnNotificationAdded(const std::string& notification_id) override;
   void OnNotificationRemoved(const std::string& notification_id,
                              bool by_user) override;
@@ -333,9 +340,10 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
   //   * a notification comes out: FADE_OUT
   bool inverse_ = false;
 
-  base::WeakPtrFactory<MessagePopupCollection> weak_ptr_factory_{this};
+  base::ScopedObservation<MessageCenter, MessageCenterObserver>
+      message_center_observation_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(MessagePopupCollection);
+  base::WeakPtrFactory<MessagePopupCollection> weak_ptr_factory_{this};
 };
 
 }  // namespace message_center

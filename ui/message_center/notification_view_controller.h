@@ -5,46 +5,19 @@
 #ifndef UI_MESSAGE_CENTER_NOTIFICATION_VIEW_CONTROLLER_H_
 #define UI_MESSAGE_CENTER_NOTIFICATION_VIEW_CONTROLLER_H_
 
-#include "base/scoped_observation.h"
-#include "ui/message_center/message_center.h"
+#include <string>
+
 #include "ui/message_center/message_center_export.h"
-#include "ui/message_center/message_center_observer.h"
 
 namespace message_center {
-
-namespace {
-class GroupedNotificationList;
-}  // namespace
 
 class MessageView;
 
 // A controller class to manage adding, removing and updating group
 // notifications.
-class MESSAGE_CENTER_EXPORT NotificationViewController
-    : public MessageCenterObserver {
+class MESSAGE_CENTER_EXPORT NotificationViewController {
  public:
-  NotificationViewController();
-  NotificationViewController(const NotificationViewController& other) = delete;
-  NotificationViewController& operator=(
-      const NotificationViewController& other) = delete;
-  ~NotificationViewController() override;
-
-  // MessageCenterObserver:
-  void OnNotificationAdded(const std::string& notification_id) override;
-  void OnNotificationRemoved(const std::string& notification_id,
-                             bool by_user) override;
-
- protected:
-  // Adds grouped child notifications that belong to a parent message
-  // view.
-  void PopulateGroupParent(const std::string& notification_id);
-
-  const std::string& GetParentIdForChildForTest(
-      const std::string& notification_id);
-
- private:
-  friend class MockNotificationViewController;
-
+  // Returns the `MessageView` associated with `notification_id`
   virtual MessageView* GetMessageViewForNotificationId(
       const std::string& notification_id) = 0;
 
@@ -64,35 +37,6 @@ class MESSAGE_CENTER_EXPORT NotificationViewController
   virtual void ConvertGroupedNotificationViewToNotificationView(
       const std::string& grouped_notification_id,
       const std::string& new_single_notification_id) = 0;
-
-  // Sets up a parent view to hold all message views for
-  // a grouped notification. Does this by creating a copy of the
-  // parent notification and switching the notification_ids of the
-  // current message view associated with the parent notification.
-  void SetupParentNotification(std::string* parent_id);
-
-  // Clears all group data for `group_parent_id` and converts
-  // the existing message view for `group_parent_id` to a single
-  // ungrouped notification view representing `new_single_notification_id`.
-  void SetupSingleNotificationFromGroupedNotification(
-      const std::string& group_parent_id,
-      const std::string& new_single_notification_id);
-
-  // Creates a copy notification that will act as a parent notification
-  // for its group.
-  std::unique_ptr<Notification> CreateCopyForParentNotification(
-      const Notification& parent_notification);
-
-  // Remove `notification_id` from `child_parent_map` and
-  // `notifications_in_parent_map` Also remove from it's parent notification's
-  // view if if the view currently exists.
-  void RemoveGroupedChild(const std::string& notification_id);
-
-  // A data structure that holds all grouped notifications along with their
-  // associations with their parent notifications.
-  GroupedNotificationList* const grouped_notification_list_;
-
-  base::ScopedObservation<MessageCenter, MessageCenterObserver> observer_{this};
 };
 
 }  // namespace message_center

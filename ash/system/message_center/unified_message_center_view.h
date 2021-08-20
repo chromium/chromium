@@ -66,6 +66,10 @@ class ASH_EXPORT UnifiedMessageCenterView
                            UnifiedMessageCenterBubble* bubble);
   ~UnifiedMessageCenterView() override;
 
+  // Initializes the `UnifiedMessageListView` with existing notifications.
+  // Should be called after ctor.
+  void Init();
+
   // Sets the maximum height that the view can take.
   // TODO(tengs): The layout of this view is heavily dependant on this max
   // height (equal to the height of the entire tray), but we should refactor and
@@ -133,6 +137,7 @@ class ASH_EXPORT UnifiedMessageCenterView
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationCanceled(const gfx::Animation* animation) override;
 
+  UnifiedMessageListView* message_list_view() { return message_list_view_; }
   bool collapsed() { return collapsed_; }
 
  private:
