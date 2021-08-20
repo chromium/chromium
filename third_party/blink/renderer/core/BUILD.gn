@@ -1304,6 +1304,7 @@ source_set("unit_tests") {
     "input/scroll_snap_test.cc",
     "input/touch_action_test.cc",
     "input/touch_event_manager_test.cc",
+    "inspector/agent_registry_test.cc",
     "inspector/inspector_contrast_test.cc",
     "inspector/inspector_emulation_agent_test.cc",
     "inspector/inspector_highlight_test.cc",

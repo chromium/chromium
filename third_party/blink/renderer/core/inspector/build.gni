@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 blink_core_sources_inspector = [
+  "agent_registry.h",
   "console_message.cc",
   "console_message.h",
   "console_message_storage.cc",

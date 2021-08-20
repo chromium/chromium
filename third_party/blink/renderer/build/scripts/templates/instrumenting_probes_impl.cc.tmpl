@@ -49,7 +49,7 @@ unsigned {{sink_class}}::s_numSinksWith{{agent}} = 0;
 
 void {{sink_class}}::Add{{agent}}({{class_name}}* agent) {
   bool already_had_agent = Has{{agent}}s();
-  {{getter_name}}s_.insert(agent);
+  {{getter_name}}s_.AddAgent(agent);
 
   if (!already_had_agent) {
     MutexLocker lock(AgentCountMutex());
@@ -64,7 +64,7 @@ void {{sink_class}}::Remove{{agent}}({{class_name}}* agent) {
   if (!Has{{agent}}s())
     return;
 
-  {{getter_name}}s_.erase(agent);
+  {{getter_name}}s_.RemoveAgent(agent);
 
   if (!Has{{agent}}s()) {
     MutexLocker lock(AgentCountMutex());
@@ -101,8 +101,9 @@ namespace probe {
 {% for agent in probe.agents|sort %}
 {% set class_name = agent | agent_name_to_class %}
   if (probe_sink->Has{{agent}}s()) {
-    for ({{class_name}}* agent : probe_sink->{{class_name}}s())
+    probe_sink->{{class_name}}s().ForEachAgent([&]({{class_name}}* agent) {
       agent->{{agent_probe_name}}({{caller()}});
+    });
   }
 {% endfor %}
 {% endmacro -%}
