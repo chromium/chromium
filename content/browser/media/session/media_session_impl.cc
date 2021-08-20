@@ -188,6 +188,10 @@ std::u16string SanitizeMediaTitle(const std::u16string title) {
 
 }  // anonymous namespace
 
+constexpr int MediaSessionImpl::kDurationUpdateMaxAllowance;
+constexpr base::TimeDelta
+    MediaSessionImpl::kDurationUpdateAllowanceIncreaseInterval;
+
 MediaSessionImpl::PlayerIdentifier::PlayerIdentifier(
     MediaSessionPlayerObserver* observer,
     int player_id)
@@ -196,6 +200,11 @@ MediaSessionImpl::PlayerIdentifier::PlayerIdentifier(
 bool MediaSessionImpl::PlayerIdentifier::operator==(
     const PlayerIdentifier& other) const {
   return this->observer == other.observer && this->player_id == other.player_id;
+}
+
+bool MediaSessionImpl::PlayerIdentifier::operator!=(
+    const PlayerIdentifier& other) const {
+  return this->observer != other.observer || this->player_id != other.player_id;
 }
 
 bool MediaSessionImpl::PlayerIdentifier::operator<(
@@ -452,6 +461,9 @@ void MediaSessionImpl::RemovePlayer(MediaSessionPlayerObserver* observer,
   pepper_players_.erase(identifier);
   one_shot_players_.erase(identifier);
 
+  if (guarding_player_id_ && *guarding_player_id_ == identifier)
+    ResetDurationUpdateGuard();
+
   AbandonSystemAudioFocusIfNeeded();
   UpdateRoutedService();
 
@@ -481,6 +493,9 @@ void MediaSessionImpl::RemovePlayers(MediaSessionPlayerObserver* observer) {
     else
       ++it;
   }
+
+  if (guarding_player_id_ && guarding_player_id_->observer == observer)
+    ResetDurationUpdateGuard();
 
   AbandonSystemAudioFocusIfNeeded();
   UpdateRoutedService();
@@ -532,14 +547,29 @@ void MediaSessionImpl::RebuildAndNotifyMediaPositionChanged() {
   absl::optional<media_session::MediaPosition> position;
 
   // If there was a position specified from Blink then we should use that.
-  if (routed_service_ && routed_service_->position())
+  if (routed_service_ && routed_service_->position()) {
     position = routed_service_->position();
+
+    // We do not throttle updates from media session API because there's
+    // no effective way to disdinguish updates from single player or
+    // different players.
+    ResetDurationUpdateGuard();
+  }
 
   // If we only have a single player then we should use the position from that.
   if (!position && normal_players_.size() == 1 && one_shot_players_.empty() &&
       pepper_players_.empty()) {
     auto& first = normal_players_.begin()->first;
     position = first.observer->GetPosition(first.player_id);
+
+    if (should_throttle_duration_update_) {
+      if (!guarding_player_id_ || *guarding_player_id_ != first) {
+        ResetDurationUpdateGuard();
+        guarding_player_id_ = first;
+      }
+
+      position = MaybeGuardDurationUpdate(position);
+    }
   }
 
   if (position == position_)
@@ -892,6 +922,7 @@ MediaSessionImpl::MediaSessionImpl(WebContents* web_contents)
       routed_service_(nullptr) {
 #if defined(OS_ANDROID)
   session_android_ = std::make_unique<MediaSessionAndroid>(this);
+  should_throttle_duration_update_ = true;
 #endif  // defined(OS_ANDROID)
   if (web_contents && web_contents->GetMainFrame() &&
       web_contents->GetMainFrame()->GetView()) {
@@ -1716,6 +1747,68 @@ void MediaSessionImpl::ForAllPlayers(
 
   for (const auto& player : pepper_players_)
     callback.Run(player);
+}
+
+absl::optional<media_session::MediaPosition>
+MediaSessionImpl::MaybeGuardDurationUpdate(
+    absl::optional<media_session::MediaPosition> position) {
+  if (!position) {
+    // |position| should never go back to unset state once it's
+    // set. Therefore it's safe to return it here when it's unset.
+    DCHECK(!is_throttling_);
+    return position;
+  }
+
+  if (position_ && position_->duration() == position->duration())
+    return position;
+
+  if (duration_update_allowance_ == 0) {
+    is_throttling_ = true;
+    DCHECK(duration_update_allowance_timer_.IsRunning());
+
+    // Reset the timer so that we can keep the media as livestream
+    // until the time difference between two updates is greater
+    // than |kDurationUpdateAllowanceIncreaseInterval|.
+    duration_update_allowance_timer_.Reset();
+
+    return media_session::MediaPosition(
+        position->playback_rate(), base::TimeDelta::Max(),
+        position->GetPosition(), position->end_of_media());
+  }
+
+  --duration_update_allowance_;
+  DCHECK_GE(duration_update_allowance_, 0);
+  if (!duration_update_allowance_timer_.IsRunning()) {
+    duration_update_allowance_timer_.Start(
+        FROM_HERE, kDurationUpdateAllowanceIncreaseInterval, this,
+        &MediaSessionImpl::IncreaseDurationUpdateAllowance);
+  }
+
+  return position;
+}
+
+void MediaSessionImpl::IncreaseDurationUpdateAllowance() {
+  ++duration_update_allowance_;
+
+  if (duration_update_allowance_ == kDurationUpdateMaxAllowance)
+    duration_update_allowance_timer_.Stop();
+
+  if (is_throttling_) {
+    is_throttling_ = false;
+    RebuildAndNotifyMediaPositionChanged();
+  }
+}
+
+void MediaSessionImpl::ResetDurationUpdateGuard() {
+  duration_update_allowance_timer_.Stop();
+  duration_update_allowance_ = kDurationUpdateMaxAllowance;
+  is_throttling_ = false;
+  guarding_player_id_.reset();
+}
+
+void MediaSessionImpl::SetShouldThrottleDurationUpdateForTest(
+    bool should_throttle) {
+  should_throttle_duration_update_ = should_throttle;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(MediaSessionImpl)

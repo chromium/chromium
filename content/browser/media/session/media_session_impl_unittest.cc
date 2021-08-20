@@ -90,7 +90,9 @@ class MockWebContentsDelegate : public content::WebContentsDelegate {
 
 class MediaSessionImplTest : public RenderViewHostTestHarness {
  public:
-  MediaSessionImplTest() {
+  MediaSessionImplTest()
+      : RenderViewHostTestHarness(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     default_actions_.insert(media_session::mojom::MediaSessionAction::kPlay);
     default_actions_.insert(media_session::mojom::MediaSessionAction::kPause);
     default_actions_.insert(media_session::mojom::MediaSessionAction::kStop);
@@ -745,6 +747,90 @@ TEST_F(MediaSessionImplTest, RaiseActivatesWebContents) {
   // When the WebContents does not have a delegate, |Raise()| should not crash.
   web_contents()->SetDelegate(nullptr);
   GetMediaSession()->Raise();
+}
+
+// Tests for throttling duration updates.
+// TODO (jazzhsu): Remove these tests once media session supports livestream.
+class MediaSessionImplDurationThrottleTest : public MediaSessionImplTest {
+ public:
+  void SetUp() override {
+    MediaSessionImplTest::SetUp();
+    GetMediaSession()->SetShouldThrottleDurationUpdateForTest(true);
+  }
+
+  void FastForwardBy(base::TimeDelta delay) {
+    task_environment()->FastForwardBy(delay);
+  }
+
+  int GetDurationUpdateMaxAllowance() {
+    return MediaSessionImpl::kDurationUpdateMaxAllowance;
+  }
+
+  base::TimeDelta GetDurationUpdateAllowanceIncreaseInterval() {
+    return MediaSessionImpl::kDurationUpdateAllowanceIncreaseInterval;
+  }
+};
+
+TEST_F(MediaSessionImplDurationThrottleTest, ThrottleDurationUpdate) {
+  MockMediaSessionMojoObserver observer(*GetMediaSession());
+  int player_id = player_observer_->StartNewPlayer();
+  GetMediaSession()->AddPlayer(player_observer_.get(), player_id,
+                               media::MediaContentType::Persistent);
+
+  media_session::MediaPosition pos;
+  for (int duration = 0; duration <= GetDurationUpdateMaxAllowance();
+       ++duration) {
+    pos = media_session::MediaPosition(
+        /*playback_rate=*/0.0,
+        /*duration=*/base::TimeDelta::FromSeconds(duration),
+        /*position=*/base::TimeDelta(), /*end_of_media=*/false);
+
+    player_observer_->SetPosition(player_id, pos);
+    GetMediaSession()->RebuildAndNotifyMediaPositionChanged();
+    FlushForTesting(GetMediaSession());
+
+    if (duration == GetDurationUpdateMaxAllowance()) {
+      // Last update should be throttle and marked as +INF duration.
+      EXPECT_EQ(**observer.session_position(),
+                media_session::MediaPosition(
+                    /*playback_rate=*/0.0,
+                    /*duration=*/base::TimeDelta::Max(),
+                    /*position=*/base::TimeDelta(), /*end_of_media=*/false));
+    } else {
+      EXPECT_EQ(**observer.session_position(), pos);
+    }
+  }
+
+  // Media session should send last throttled duration update after certain
+  // delay.
+  FastForwardBy(GetDurationUpdateAllowanceIncreaseInterval());
+  FlushForTesting(GetMediaSession());
+  EXPECT_EQ(**observer.session_position(), pos);
+}
+
+TEST_F(MediaSessionImplDurationThrottleTest, ThrottleResetOnPlayerChange) {
+  MockMediaSessionMojoObserver observer(*GetMediaSession());
+
+  // Duration updates caused by player switch should not be throttled.
+  media_session::MediaPosition pos;
+  for (int duration = 0; duration <= GetDurationUpdateMaxAllowance();
+       ++duration) {
+    int player_id = player_observer_->StartNewPlayer();
+    GetMediaSession()->AddPlayer(player_observer_.get(), player_id,
+                                 media::MediaContentType::Persistent);
+
+    pos = media_session::MediaPosition(
+        /*playback_rate=*/0.0,
+        /*duration=*/base::TimeDelta::FromSeconds(duration),
+        /*position=*/base::TimeDelta(), /*end_of_media=*/false);
+
+    player_observer_->SetPosition(player_id, pos);
+    GetMediaSession()->RebuildAndNotifyMediaPositionChanged();
+    FlushForTesting(GetMediaSession());
+    EXPECT_EQ(**observer.session_position(), pos);
+
+    GetMediaSession()->RemovePlayer(player_observer_.get(), player_id);
+  }
 }
 
 }  // namespace content

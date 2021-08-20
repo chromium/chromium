@@ -45,6 +45,7 @@ namespace content {
 
 class AudioFocusManagerTest;
 class MediaSessionImplServiceRoutingTest;
+class MediaSessionImplServiceRoutingThrottleTest;
 class MediaSessionImplStateObserver;
 class MediaSessionImplVisibilityBrowserTest;
 class MediaSessionPlayerObserver;
@@ -323,9 +324,11 @@ class MediaSessionImpl : public MediaSession,
   friend class content::MediaSessionImplVisibilityBrowserTest;
   friend class content::AudioFocusManagerTest;
   friend class content::MediaSessionImplServiceRoutingTest;
+  friend class content::MediaSessionImplServiceRoutingThrottleTest;
   friend class content::MediaSessionImplStateObserver;
   friend class content::MediaSessionServiceImplBrowserTest;
   friend class MediaSessionImplTest;
+  friend class MediaSessionImplDurationThrottleTest;
   friend class MediaInternalsAudioFocusTest;
 
   CONTENT_EXPORT void RemoveAllPlayersForTest();
@@ -342,6 +345,7 @@ class MediaSessionImpl : public MediaSession,
     PlayerIdentifier& operator=(PlayerIdentifier&&) = default;
 
     bool operator==(const PlayerIdentifier& other) const;
+    bool operator!=(const PlayerIdentifier& other) const;
     bool operator<(const PlayerIdentifier& other) const;
 
     MediaSessionPlayerObserver* observer;
@@ -446,6 +450,27 @@ class MediaSessionImpl : public MediaSession,
   // with this media session.
   void ForAllPlayers(base::RepeatingCallback<void(const PlayerIdentifier&)>);
 
+  // Restrict duration update under certain frequency.
+  absl::optional<media_session::MediaPosition> MaybeGuardDurationUpdate(
+      absl::optional<media_session::MediaPosition> position);
+
+  void IncreaseDurationUpdateAllowance();
+
+  void ResetDurationUpdateGuard();
+
+  CONTENT_EXPORT void SetShouldThrottleDurationUpdateForTest(
+      bool should_throttle);
+
+  // Duration update allowance is inscreasing by 1 every 20 seconds, and
+  // capped at 3. Every duration updates will consume 1 allowance, and
+  // if updates happen when we have 0 allowance, we consider the media as
+  // a livestream and stop instreasing allowance until the time difference
+  // between two updates is greater than 20 seconds.
+  CONTENT_EXPORT static constexpr int kDurationUpdateMaxAllowance = 3;
+  CONTENT_EXPORT static constexpr base::TimeDelta
+      kDurationUpdateAllowanceIncreaseInterval =
+          base::TimeDelta::FromSeconds(20);
+
   // A set of actions supported by |routed_service_| and the current media
   // session.
   std::set<media_session::mojom::MediaSessionAction> actions_;
@@ -521,6 +546,19 @@ class MediaSessionImpl : public MediaSession,
   mojo::ReceiverSet<media_session::mojom::MediaSession> receivers_;
 
   mojo::RemoteSet<media_session::mojom::MediaSessionObserver> observers_;
+
+  base::RepeatingTimer duration_update_allowance_timer_;
+
+  bool is_throttling_ = false;
+
+  // This is guaranteed to be reset to |kDurationUpdateMaxAllowance| at
+  // first update because |guarding_player_id_| is always a mismatch
+  // at first, and will trigger a reset.
+  int duration_update_allowance_ = 0;
+
+  bool should_throttle_duration_update_ = false;
+
+  absl::optional<PlayerIdentifier> guarding_player_id_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
