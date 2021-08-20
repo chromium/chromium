@@ -202,7 +202,7 @@ static bool ConvertFontFamilyName(
     const Document* document_for_count) {
   if (auto* font_family_value = DynamicTo<CSSFontFamilyValue>(value)) {
     generic_family = FontDescription::kNoFamily;
-    family_name = AtomicString(font_family_value->Value());
+    family_name = font_family_value->Value();
 #if defined(OS_MAC)
     if (family_name == FontCache::LegacySystemFontFamily()) {
       document_for_count->CountUse(WebFeature::kBlinkMacSystemFont);

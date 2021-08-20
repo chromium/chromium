@@ -769,7 +769,7 @@ CSSValue* ValueForFamily(const AtomicString& family) {
   CSSValueID family_identifier = IdentifierForFamily(family);
   if (IsValidCSSValueID(family_identifier))
     return CSSIdentifierValue::Create(family_identifier);
-  return CSSFontFamilyValue::Create(family.GetString());
+  return CSSFontFamilyValue::Create(family);
 }
 
 CSSValueList* ComputedStyleUtils::ValueForFontFamily(

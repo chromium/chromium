@@ -36,7 +36,7 @@
 namespace blink {
 
 // "ident" from the CSS tokenizer, minus backslash-escape sequences
-static bool IsCSSTokenizerIdentifier(const String& string) {
+static bool IsCSSTokenizerIdentifier(const StringView& string) {
   unsigned length = string.length();
 
   if (!length)
@@ -142,7 +142,7 @@ String SerializeURI(const String& string) {
   return "url(" + SerializeString(string) + ")";
 }
 
-String SerializeFontFamily(const String& string) {
+String SerializeFontFamily(const AtomicString& string) {
   return IsCSSTokenizerIdentifier(string) ? string : SerializeString(string);
 }
 

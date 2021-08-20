@@ -3641,14 +3641,14 @@ CSSValue* ConsumeGenericFamily(CSSParserTokenRange& range) {
 CSSValue* ConsumeFamilyName(CSSParserTokenRange& range) {
   if (range.Peek().GetType() == kStringToken) {
     return CSSFontFamilyValue::Create(
-        range.ConsumeIncludingWhitespace().Value().ToString());
+        range.ConsumeIncludingWhitespace().Value().ToAtomicString());
   }
   if (range.Peek().GetType() != kIdentToken)
     return nullptr;
   String family_name = ConcatenateFamilyName(range);
   if (family_name.IsNull())
     return nullptr;
-  return CSSFontFamilyValue::Create(family_name);
+  return CSSFontFamilyValue::Create(AtomicString(family_name));
 }
 
 String ConcatenateFamilyName(CSSParserTokenRange& range) {

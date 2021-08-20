@@ -466,7 +466,7 @@ bool FontFace::SetPropertyValue(const CSSValue* value,
 bool FontFace::SetFamilyValue(const CSSValue& value) {
   AtomicString family;
   if (auto* family_value = DynamicTo<CSSFontFamilyValue>(value)) {
-    family = AtomicString(family_value->Value());
+    family = family_value->Value();
   } else if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     // We need to use the raw text for all the generic family types, since
     // @font-face is a way of actually defining what font to use for those
