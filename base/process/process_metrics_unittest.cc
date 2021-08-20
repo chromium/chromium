@@ -43,8 +43,10 @@
 namespace base {
 namespace debug {
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_WIN) || defined(OS_ANDROID)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) ||                               \
+    BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_WIN) || defined(OS_ANDROID) || \
+    defined(OS_FUCHSIA)
+
 namespace {
 
 void BusyWork(std::vector<std::string>* vec) {
@@ -56,9 +58,10 @@ void BusyWork(std::vector<std::string>* vec) {
 }
 
 }  // namespace
+
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) ||
         // BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_WIN) ||
-        // defined(OS_ANDROID)
+        // defined(OS_ANDROID) || defined(OS_FUCHSIA)
 
 // Tests for SystemMetrics.
 // Exists as a class so it can be a friend of SystemMetrics.
@@ -342,8 +345,9 @@ TEST_F(SystemMetricsTest, ParseVmstat) {
 }
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_WIN)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) ||                               \
+    BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_WIN) || defined(OS_ANDROID) || \
+    defined(OS_FUCHSIA)
 
 // Test that ProcessMetrics::GetPlatformIndependentCPUUsage() doesn't return
 // negative values when the number of threads running on the process decreases
@@ -397,7 +401,8 @@ TEST_F(SystemMetricsTest, TestNoNegativeCpuUsage) {
 }
 
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) ||
-        // BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_WIN)
+        // BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_WIN) ||
+        // defined(OS_ANDROID) || defined(OS_FUCHSIA)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 TEST_F(SystemMetricsTest, ParseZramMmStat) {

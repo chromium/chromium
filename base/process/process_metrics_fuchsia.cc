@@ -5,8 +5,10 @@
 #include "base/process/process_metrics.h"
 
 #include <lib/fdio/limits.h>
+#include <lib/zx/process.h>
 
-#include "base/notreached.h"
+#include "base/fuchsia/fuchsia_logging.h"
+#include "base/memory/ptr_util.h"
 
 namespace base {
 
@@ -25,16 +27,22 @@ size_t GetSystemCommitCharge() {
   return 0;
 }
 
+ProcessMetrics::ProcessMetrics(ProcessHandle process) : process_(process) {}
+
 // static
 std::unique_ptr<ProcessMetrics> ProcessMetrics::CreateProcessMetrics(
     ProcessHandle process) {
-  // TODO(https://crbug.com/926581).
-  return nullptr;
+  return base::WrapUnique(new ProcessMetrics(process));
 }
 
 TimeDelta ProcessMetrics::GetCumulativeCPUUsage() {
-  // TODO(https://crbug.com/926581).
-  return TimeDelta();
+  zx_info_task_runtime_t stats;
+
+  zx_status_t status = zx::unowned_process(process_)->get_info(
+      ZX_INFO_TASK_RUNTIME, &stats, sizeof(stats), nullptr, nullptr);
+  ZX_CHECK(status == ZX_OK, status);
+
+  return TimeDelta::FromZxDuration(stats.cpu_time);
 }
 
 bool GetSystemMemoryInfo(SystemMemoryInfoKB* meminfo) {
