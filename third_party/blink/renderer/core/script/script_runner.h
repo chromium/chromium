@@ -73,16 +73,8 @@ class CORE_EXPORT ScriptRunner final
   bool RemovePendingInOrderScript(PendingScript*);
   void ScheduleReadyInOrderScripts();
 
-  void PostTask(const base::Location&);
-
-  // Execute the given pending script. The script must be an in-order script.
-  void ExecuteInOrderPendingScript(PendingScript*);
-
-  // Execute any task in async_scripts_to_execute_soon_.
-  // Returns true if task was run, and false otherwise.
-  bool ExecuteAsyncTask();
-
-  void ExecuteTask();
+  // Execute the given pending script.
+  void ExecutePendingScript(PendingScript*);
 
   Member<Document> document_;
 
@@ -90,8 +82,6 @@ class CORE_EXPORT ScriptRunner final
   HeapDeque<Member<PendingScript>> pending_in_order_scripts_;
   // https://html.spec.whatwg.org/#set-of-scripts-that-will-execute-as-soon-as-possible
   HeapHashSet<Member<PendingScript>> pending_async_scripts_;
-
-  HeapDeque<Member<PendingScript>> async_scripts_to_execute_soon_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
