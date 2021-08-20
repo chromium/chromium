@@ -92,7 +92,7 @@ Selected Context: ${JSON.stringify(selector.selectedContext(), null, 3)}
     async function testOnListItemReplacedCalled() {
       function dumpItemCount() {
         TestRunner.addResult(
-            `_onListItemReplaced called with contexts (items) count: ${
+            `onListItemReplaced called with contexts (items) count: ${
                 this.items.length}`);
       }
 
