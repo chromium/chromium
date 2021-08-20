@@ -37,7 +37,6 @@ compile_js_files = [
   "models/file_namer.js",
   "models/file_system_access_entry.js",
   "models/file_system.js",
-  "models/file_util.js",
   "models/idb.js",
   "models/lazy_directory_entry.js",
   "models/load_time_data.js",
