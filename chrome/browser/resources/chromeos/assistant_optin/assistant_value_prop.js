@@ -196,13 +196,17 @@ Polymer({
 
   /**
    * Sets learn more content text and shows it as overlay dialog.
+   * @param {string} title Title of the dialog.
    * @param {string} content HTML formatted text to show.
+   * @param {string} buttonText Text on the button that closes the dialog.
    */
-  showLearnMoreOverlay(title, additionalInfo) {
+  showLearnMoreOverlay(title, content, buttonText) {
     this.$['overlay-title-text'].innerHTML =
         this.sanitizer_.sanitizeHtml(title);
     this.$['overlay-additional-info-text'].innerHTML =
-        this.sanitizer_.sanitizeHtml(additionalInfo);
+        this.sanitizer_.sanitizeHtml(content);
+    this.$['overlay-close-button-text'].textContent = buttonText;
+    this.$['overlay-close-button'].labelForAria = buttonText;
     this.$['learn-more-overlay'].setTitleAriaLabel(title);
 
     this.$['learn-more-overlay'].showModal();
@@ -350,11 +354,12 @@ Polymer({
       for (var j in zippy_data[i]) {
         var data = zippy_data[i][j];
         var zippy = document.createElement('setting-zippy');
+        let background = this.isMinorMode_ ? '#e8f0fe' /* gblue50 */ : 'white';
         zippy.setAttribute(
             'icon-src',
             'data:text/html;charset=utf-8,' +
-                encodeURIComponent(
-                    zippy.getWrappedIcon(data['iconUri'], data['title'])));
+                encodeURIComponent(zippy.getWrappedIcon(
+                    data['iconUri'], data['title'], background)));
         zippy.setAttribute('step', i);
         if (!this.newLayoutEnabled_) {
           zippy.setAttribute('hide-line', true);
@@ -379,15 +384,23 @@ Polymer({
         var learnMoreLink = document.createElement('a');
         learnMoreLink.textContent = data['popupLink'];
         learnMoreLink.setAttribute('href', 'javascript:void(0)');
-        learnMoreLink.onclick = function(title, additionalInfo, focus) {
+        learnMoreLink.onclick =
+            function(title, content, buttonText, focus) {
           this.lastFocusedElement = focus;
-          this.showLearnMoreOverlay(title, additionalInfo);
-        }.bind(this, data['title'], data['additionalInfo'], learnMoreLink);
+          this.showLearnMoreOverlay(title, content, buttonText);
+        }.bind(this, data['learnMoreDialogTitle'],
+               data['learnMoreDialogContent'], data['learnMoreDialogButton'],
+               learnMoreLink);
         description.appendChild(learnMoreLink);
         content.appendChild(description);
 
-        // TODO(https://crbug.com/1224850) Add additionalInfo in setting zippys
-        // and update content in learn more dialog.
+        if (this.isMinorMode_) {
+          var additionalInfo = document.createElement('div');
+          additionalInfo.innerHTML =
+              this.sanitizer_.sanitizeHtml(data['additionalInfo']);
+          content.appendChild(document.createElement('br'));
+          content.appendChild(additionalInfo);
+        }
 
         zippy.appendChild(content);
         this.$['consents-container'].appendChild(zippy);
@@ -478,6 +491,7 @@ Polymer({
     this.currentConsentStep_ += 1;
     this.showContentForStep_(this.currentConsentStep_);
     this.buttonsDisabled = false;
+    this.$['next-button'].focus();
   },
 
   /**

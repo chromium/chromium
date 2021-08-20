@@ -34,6 +34,10 @@ message ClassicActivityControlUiTexts {
     // Always present.
     optional string icon_uri = 4;
 
+    // Text for button at the end of the last description paragraph that opens
+    // a learn more dialog.
+    optional string learn_more = 5;
+
     // The setting set the text in this zippy corresponds to. This can be used
     // by clients for ARI logging.
     optional SettingSetId setting_set_id = 6;
