@@ -12,6 +12,7 @@
 #include "ash/quick_pair/common/protocol.h"
 #include "ash/quick_pair/proto/fastpair.pb.h"
 #include "ash/quick_pair/repository/mock_http_fetcher.h"
+#include "base/base64.h"
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
@@ -23,55 +24,41 @@
 
 namespace {
 
-constexpr char kValidResponse[] = R"(
-    {
-    "device": {
-      "id": "123",
-      "notificationType": "FAST_PAIR",
-      "imageUrl": "https://lh3.googleusercontent.com/wK3v3qR5wzG2NImpnKU2bZ_nQiv8xzRhT1ZudaOCaK9NW4UKyY5kobSkHyqyBYO5N3XwRo8_4DFGFpq-R3Vmng",
-      "name": "Headphone Buds",
-      "intentUri": "intent:#Intent;action=com.google.android.gms.nearby.discovery%3AACTION_MAGIC_PAIR;package=com.google.android.gms;component=com.google.android.gms/.nearby.discovery.service.DiscoveryService;S.com.google.android.gms.nearby.discovery%3AEXTRA_COMPANION_APP=com.google.android.apps.wearables.maestro.companion;end",
-      "triggerDistance": 0.6,
-      "antiSpoofingKeyPair": {
-        "publicKey": "KmmpnHD/WpMm4wFc87zHkYVQCYxzqyp8inrdfy/R9yZUEHaRQ9sNZXJT8eQfSNvpo71PSB7Ftl5bJ+s9Ph4HUw=="
-      },
-      "status": {
-        "statusType": "PUBLISHED"
-      },
-      "lastUpdateTimestamp": "2019-11-25T22:02:04.476Z",
-      "deviceType": "TRUE_WIRELESS_HEADPHONES",
-      "trueWirelessImages": {
-        "leftBudUrl": "https://lh3.googleusercontent.com/O9J8WGRC89CO58ASjaFmlcmS55f-1bIf2oQaWW1rKdD06mFZSKQ7EiMOrJIjcEKQGDS-IpRcvNwaPhoYp5aQng",
-        "rightBudUrl": "https://lh3.googleusercontent.com/YXyi8W-UBDJbIrIN4rxTAycGgRoiWMcnPZlVrQ1MLLyuZ2DmPHtbsD23bmey7ImyGejRmdvafHKKsmuzfnfT",
-        "caseUrl": "https://lh3.googleusercontent.com/hWygI3ibN4HWD-FjwvSnWPHnGs1AM15KrXvUlzNj6JRC2jM26nLVccKX41QdKf8q7hSvyRLb6LqRBD2VU9PZCPc"
-      },
-      "assistantSupported": true,
-      "companyName": "Google",
-      "displayName": "Black Headphone Buds",
-      "interactionType": "NOTIFICATION",
-      "companionDetail": {}
-    },
-    "image": "iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAABHNCSVQICAgIfAhkiAAAAPhJREFUGJVlkKFuhUAURGdJg6irQrUKx0dgWoepQPQ7MFgcClPxJB/QpKGpa1JTR/UT1QUSsgoIiM2yOzWP5pVOcjPintyZXIEzkbzOsuxjmqYrkqYoijchxAP2qqrqBQCDIODmJB8B4GKDkiR5zfM8iuMYruvC930YY36PiFPkfZqmz8YYkAQAhGGIKIreHce5Pe92sNZSa822bVnXNfu+J8m7jdmirVIK67pCKQWtNZRSAHC5gc7JV5LYxhgDrTUA6D34BQDWWizLgmVZMM8zABz/gEKIwzAMkFKi6zqM4wjP845CiO9/PyR5I6X8LMtyaprmab//AaFEknGJ38vvAAAAAElFTkSuQmCC",
-    "strings": {
-      "initialNotificationDescription": "Tap to pair. Earbuds will be tied to %s",
-      "initialNotificationDescriptionNoAccount": "Tap to pair with this device",
-      "openCompanionAppDescription": "Tap to finish setup",
-      "updateCompanionAppDescription": "Tap to update device settings and finish setup",
-      "downloadCompanionAppDescription": "Tap to download device app on Google Play and see all features",
-      "unableToConnectTitle": "Unable to connect",
-      "unableToConnectDescription": "Try manually pairing to the device",
-      "initialPairingDescription": "%s will appear on devices linked with %s",
-      "connectSuccessCompanionAppInstalled": "Your device is ready to be set up",
-      "connectSuccessCompanionAppNotInstalled": "Download the device app on Google Play to see all available features",
-      "subsequentPairingDescription": "Connect %s to this phone",
-      "retroactivePairingDescription": "Save device to %s for faster pairing to your other devices",
-      "waitLaunchCompanionAppDescription": "This will take a few moments",
-      "failConnectGoToSettingsDescription": "Try manually pairing to the device by going to Settings",
-      "assistantSetupHalfSheet": "Get the hands-free help on the go from Google Assistant",
-      "assistantSetupNotification": "Tap to set up your Google Assistant"
-    }
-  }
-)";
+constexpr char kValidResponseEncoded[] =
+    "Cr0HCKy4kAMYASJ4aHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL3dLM3YzcVI1d3"
+    "pHMk5JbXBuS1UyYlpfblFpdjh4elJoVDFadWRhT0NhSzlOVzRVS3lZNWtvYlNrSHlxeUJZTzVO"
+    "M1h3Um84XzRERkdGcHEtUjNWbW5nKgpQaXhlbCBCdWRzMrQCaW50ZW50OiNJbnRlbnQ7YWN0aW"
+    "9uPWNvbS5nb29nbGUuYW5kcm9pZC5nbXMubmVhcmJ5LmRpc2NvdmVyeSUzQUFDVElPTl9NQUdJ"
+    "Q19QQUlSO3BhY2thZ2U9Y29tLmdvb2dsZS5hbmRyb2lkLmdtcztjb21wb25lbnQ9Y29tLmdvb2"
+    "dsZS5hbmRyb2lkLmdtcy8ubmVhcmJ5LmRpc2NvdmVyeS5zZXJ2aWNlLkRpc2NvdmVyeVNlcnZp"
+    "Y2U7Uy5jb20uZ29vZ2xlLmFuZHJvaWQuZ21zLm5lYXJieS5kaXNjb3ZlcnklM0FFWFRSQV9DT0"
+    "1QQU5JT05fQVBQPWNvbS5nb29nbGUuYW5kcm9pZC5hcHBzLndlYXJhYmxlcy5tYWVzdHJvLmNv"
+    "bXBhbmlvbjtlbmRFmpkZP0pCEkAqaamccP9akybjAVzzvMeRhVAJjHOrKnyKet1/"
+    "L9H3JlQQdpFD2w1lclPx5B9I2+mjvU9IHsW2Xlsn6z0+HgdTUgIIA1oMCNye8e4FEIDe/"
+    "OIBaAd67QIKeGh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9POUo4V0dSQzg5Q08"
+    "1OEFTamFGbWxjbVM1NWYtMWJJZjJvUWFXVzFyS2REMDZtRlpTS1E3RWlNT3JKSWpjRUtRR0RTL"
+    "UlwUmN2TndhUGhvWXA1YVFuZxJ2aHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL1l"
+    "YeWk4Vy1VQkRKYklySU40cnhUQXljR2dSb2lXTWNuUFpsVnJRMU1MTHl1WjJEbVBIdGJzRDIzY"
+    "m1leTdJbXlHZWpSbWR2YWZIS0tzbXV6Zm5mVBp5aHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnR"
+    "lbnQuY29tL2hXeWdJM2liTjRIV0QtRmp3dlNuV1BIbkdzMUFNMTVLclh2VWx6Tmo2SlJDMmpNM"
+    "jZuTFZjY0tYNDFRZEtmOHE3aFN2eVJMYjZMcVJCRDJWVTlQWkNQY4ABAZoBBkdvb2dsZaoBF1B"
+    "yZXN0byBFVlQgQWxtb3N0IEJsYWNrsAECugEAGpEBiVBORw0KGgoAAAANSUhEUgAAAAQAAAAEC"
+    "AYAAACp8Z5+"
+    "AAAABHNCSVQICAgIfAhkiAAAAEhJREFUCJkFwTENgDAQQNGfYIAEXdjARTVUARI6UBMsnU9ADd"
+    "zM0Hze2wBKKfda65lzvqhna83eu+qOemWmESEA6jHG+NQK8AOtZCpIT/"
+    "9elAAAAABJRU5ErkJggiKjBRInVGFwIHRvIHBhaXIuIEVhcmJ1ZHMgd2lsbCBiZSB0aWVkIHRv"
+    "ICVzGhxUYXAgdG8gcGFpciB3aXRoIHRoaXMgZGV2aWNlIhNUYXAgdG8gZmluaXNoIHNldHVwKi"
+    "5UYXAgdG8gdXBkYXRlIGRldmljZSBzZXR0aW5ncyBhbmQgZmluaXNoIHNldHVwMj5UYXAgdG8g"
+    "ZG93bmxvYWQgZGV2aWNlIGFwcCBvbiBHb29nbGUgUGxheSBhbmQgc2VlIGFsbCBmZWF0dXJlcz"
+    "oRVW5hYmxlIHRvIGNvbm5lY3RCIlRyeSBtYW51YWxseSBwYWlyaW5nIHRvIHRoZSBkZXZpY2VK"
+    "KCVzIHdpbGwgYXBwZWFyIG9uIGRldmljZXMgbGlua2VkIHdpdGggJXNSIVlvdXIgZGV2aWNlIG"
+    "lzIHJlYWR5IHRvIGJlIHNldCB1cFpERG93bmxvYWQgdGhlIGRldmljZSBhcHAgb24gR29vZ2xl"
+    "IFBsYXkgdG8gc2VlIGFsbCBhdmFpbGFibGUgZmVhdHVyZXNiGENvbm5lY3QgJXMgdG8gdGhpcy"
+    "BwaG9uZWo6U2F2ZSBkZXZpY2UgdG8gJXMgZm9yIGZhc3RlciBwYWlyaW5nIHRvIHlvdXIgb3Ro"
+    "ZXIgZGV2aWNlc3IcVGhpcyB3aWxsIHRha2UgYSBmZXcgbW9tZW50c3o3VHJ5IG1hbnVhbGx5IH"
+    "BhaXJpbmcgdG8gdGhlIGRldmljZSBieSBnb2luZyB0byBTZXR0aW5nc7IBN0dldCB0aGUgaGFu"
+    "ZHMtZnJlZSBoZWxwIG9uIHRoZSBnbyBmcm9tIEdvb2dsZSBBc3Npc3RhbnS6ASNUYXAgdG8gc2"
+    "V0IHVwIHlvdXIgR29vZ2xlIEFzc2lzdGFudA==";
 constexpr char kEmptyResponse[] = "{}";
 constexpr char kInvalidResponse[] = "<html>404 error</html>";
 constexpr char kHexDeviceId[] = "07B";
@@ -104,14 +91,16 @@ TEST_F(DeviceMetadataFetcherTest, ValidResponse) {
         ASSERT_EQ(0u,
                   url.spec().find(
                       "https://nearbydevices-pa.googleapis.com/v1/device/123"));
-        std::move(callback).Run(std::make_unique<std::string>(kValidResponse));
+        std::string decoded;
+        base::Base64Decode(kValidResponseEncoded, &decoded);
+        std::move(callback).Run(std::make_unique<std::string>(decoded));
       });
 
   base::MockCallback<GetObservedDeviceCallback> callback;
   EXPECT_CALL(callback, Run)
       .WillOnce([](absl::optional<nearby::fastpair::GetObservedDeviceResponse>
                        response) {
-        ASSERT_EQ("Headphone Buds", response->device().name());
+        ASSERT_EQ("Pixel Buds", response->device().name());
         ASSERT_EQ(
             "https://lh3.googleusercontent.com/"
             "wK3v3qR5wzG2NImpnKU2bZ_"
