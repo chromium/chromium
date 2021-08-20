@@ -58,8 +58,8 @@ const base::Feature kReportKeepaliveUkm{"ReportKeepaliveUkm",
 
 // Controls whether every extension will require a locked process, preventing
 // process sharing between extensions. See https://crbug.com/1209417.
-const base::Feature kStrictExtensionIsolation{
-    "StrictExtensionIsolation", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kStrictExtensionIsolation{"StrictExtensionIsolation",
+                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Whether extension contexts can use SharedArrayBuffers unconditionally (i.e.
 // without requiring cross origin isolation).
