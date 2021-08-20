@@ -88,6 +88,10 @@ bool CachedMatchedProperties::DependenciesEqual(
   }
   if (parent_computed_style->Direction() != state.ParentStyle()->Direction())
     return false;
+  if (parent_computed_style->UsedColorScheme() !=
+      state.ParentStyle()->UsedColorScheme()) {
+    return false;
+  }
   if (computed_style->HasVariableReferenceFromNonInheritedProperty()) {
     if (parent_computed_style->InheritedVariables() !=
         state.ParentStyle()->InheritedVariables()) {

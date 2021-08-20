@@ -234,6 +234,24 @@ TEST_F(MatchedPropertiesCacheTest, DirectionDependency) {
   EXPECT_FALSE(cache.Find(key, *style_b, *parent_b));
 }
 
+TEST_F(MatchedPropertiesCacheTest, ColorSchemeDependency) {
+  TestCache cache(GetDocument());
+
+  auto parent_a = CreateStyle();
+  auto parent_b = CreateStyle();
+  auto style_a = CreateStyle();
+  auto style_b = CreateStyle();
+  parent_a->SetDarkColorScheme(false);
+  parent_b->SetDarkColorScheme(true);
+
+  TestKey key("display:block", 1, GetDocument());
+
+  cache.Add(key, *style_a, *parent_a);
+  EXPECT_TRUE(cache.Find(key, *style_a, *parent_a));
+  EXPECT_TRUE(cache.Find(key, *style_b, *parent_a));
+  EXPECT_FALSE(cache.Find(key, *style_b, *parent_b));
+}
+
 TEST_F(MatchedPropertiesCacheTest, VariableDependency) {
   TestCache cache(GetDocument());
 
