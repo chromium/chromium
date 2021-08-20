@@ -25,7 +25,21 @@ JavaScriptBrowserTest::JavaScriptBrowserTest() {
 JavaScriptBrowserTest::~JavaScriptBrowserTest() {
 }
 
+void JavaScriptBrowserTest::SetUpInProcessBrowserTestFixture() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (ash_starter_.HasLacrosArgument()) {
+    ASSERT_TRUE(ash_starter_.PrepareEnvironmentForLacros());
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
 void JavaScriptBrowserTest::SetUpOnMainThread() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (ash_starter_.HasLacrosArgument()) {
+    ash_starter_.StartLacros(this);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   JsTestApiConfig config;
   library_search_paths_.push_back(config.search_path);
   DCHECK(user_libraries_.empty());

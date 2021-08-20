@@ -20,6 +20,7 @@ E2ETestBase = class extends testing.Test {
   /** @override */
   testGenCppIncludes() {
     GEN(`
+  #include "chrome/browser/ash/crosapi/browser_manager.h"
   #include "chrome/browser/speech/extension_api/tts_engine_extension_api.h"
   #include "chrome/browser/ui/browser.h"
   #include "content/public/test/browser_test_utils.h"
@@ -32,6 +33,10 @@ E2ETestBase = class extends testing.Test {
   testGenPreamble() {
     GEN(`
     TtsExtensionEngine::GetInstance()->DisableBuiltInTTSEngineForTesting();
+    if (ash_starter().HasLacrosArgument()) {
+      crosapi::BrowserManager::Get()->NewTab();
+      ASSERT_TRUE(crosapi::BrowserManager::Get()->IsRunning());
+    }
       `);
   }
 
@@ -156,23 +161,95 @@ E2ETestBase = class extends testing.Test {
     callback = this.newCallback(callback);
     chrome.automation.getDesktop((desktop) => {
       const url = opt_params.url || DocUtils.createUrlForDoc(doc);
-      const listener = (event) => {
-        if (event.target.root.url !== url || !event.target.root.docLoaded) {
-          return;
-        }
 
-        desktop.removeEventListener('focus', listener, true);
-        desktop.removeEventListener('loadComplete', listener, true);
-        callback && callback(event.target.root);
-        callback = null;
-      };
+      chrome.commandLinePrivate.hasSwitch(
+          'lacros-chrome-path', hasLacrosChromePath => {
+            // The below block handles opening a url either in a Lacros tab or
+            // Ash tab. For Lacros, we re-use an already open Lacros tab. For
+            // Ash, we use the chrome.tabs api.
 
-      this.desktop_ = desktop;
-      desktop.addEventListener('focus', listener, true);
-      desktop.addEventListener('loadComplete', listener, true);
+            // This flag controls whether we've requested navigation to |url|
+            // within the open Lacros tab.
+            let didNavigateForLacros = false;
 
-      const createParams = {active: true, url};
-      chrome.tabs.create(createParams);
+            // Listens to both load completes and focus events to eventually
+            // trigger the test callback.
+            const listener = (event) => {
+              if (hasLacrosChromePath && !didNavigateForLacros) {
+                // We have yet to request navigation in the Lacros tab. Do so
+                // now by getting the default focus (the address bar), setting
+                // the value to the url and then performing do default on the
+                // auto completion node. This is somewhat involved, so each step
+                // is commented.
+                chrome.automation.getFocus(focus => {
+                  // It's possible focus is elsewhere; wait until it lands on
+                  // the address bar text field.
+                  if (focus.role !== chrome.automation.RoleType.TEXT_FIELD) {
+                    return;
+                  }
+
+                  // Next, we want to validate we're actually within a Lacros
+                  // window. Do so by scanning upward until we see the presence
+                  // of an app id which indicates an app subtree. See
+                  // go/lacros-accessibility for details.
+                  let app = focus;
+                  while (app && !app.appId) {
+                    app = app.parent;
+                  }
+
+                  if (app) {
+                    didNavigateForLacros = true;
+
+                    // This populates the address bar as if we typed the url.
+                    focus.setValue(url);
+
+                    // Next, wait until the auto completion shows up.
+                    const clickAutocomplete = () => {
+                      focus.removeEventListener(
+                          'controlsChanged', clickAutocomplete);
+
+                      // The text field relates to the auto complete list box
+                      // via controlledBy. The |controls| node structure here
+                      // nests several levels until the listBoxOption we want.
+                      const autoCompleteListBoxOption =
+                          focus.controls[0].firstChild.firstChild;
+                      assertEquals(
+                          'listBoxOption', autoCompleteListBoxOption.role);
+                      autoCompleteListBoxOption.doDefault();
+                    };
+                    focus.addEventListener(
+                        'controlsChanged', clickAutocomplete);
+                  }
+                });
+                return;
+              }
+
+              // Navigation has occurred, but we need to ensure the url we want
+              // has loaded.
+              if (event.target.root.url !== url ||
+                  !event.target.root.docLoaded) {
+                return;
+              }
+
+              // Finally, when we get here, we've successfully navigated to the
+              // |url| in either Lacros or Ash.
+              desktop.removeEventListener('focus', listener, true);
+              desktop.removeEventListener('loadComplete', listener, true);
+              callback && callback(event.target.root);
+              callback = null;
+            };
+
+            // Setup the listener above for focus and load complete listening.
+            this.desktop_ = desktop;
+            desktop.addEventListener('focus', listener, true);
+            desktop.addEventListener('loadComplete', listener, true);
+
+            // The easy case -- just open the Ash tab.
+            if (!hasLacrosChromePath) {
+              const createParams = {active: true, url};
+              chrome.tabs.create(createParams);
+            }
+          });
     });
   }
 
