@@ -164,12 +164,15 @@ void AccuracyService::MaybeShowAccuracyTip(content::WebContents* web_contents) {
 
   url_for_last_shown_tip_ = web_contents->GetLastCommittedURL();
 
+  web_contents_showing_accuracy_tip_ = web_contents;
   delegate_->ShowAccuracyTip(
       web_contents, AccuracyTipStatus::kShowAccuracyTip,
       /*show_opt_out=*/show_opt_out,
       base::BindOnce(&AccuracyService::OnAccuracyTipClosed,
                      weak_factory_.GetWeakPtr(), base::TimeTicks::Now(),
                      ukm::GetSourceIdForWebContentsDocument(web_contents)));
+  for (Observer& observer : observers_)
+    observer.OnAccuracyTipShown();
 }
 
 void AccuracyService::MaybeShowSurvey() {
@@ -209,6 +212,19 @@ void AccuracyService::OnURLsDeleted(
   }
 }
 
+void AccuracyService::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void AccuracyService::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+bool AccuracyService::IsShowingAccuracyTip(content::WebContents* web_contents) {
+  return web_contents_showing_accuracy_tip_ != nullptr &&
+         web_contents_showing_accuracy_tip_ == web_contents;
+}
+
 void AccuracyService::OnAccuracyTipClosed(base::TimeTicks time_opened,
                                           ukm::SourceId ukm_source_id,
                                           AccuracyTipInteraction interaction) {
@@ -240,6 +256,9 @@ void AccuracyService::OnAccuracyTipClosed(base::TimeTicks time_opened,
         "Privacy.AccuracyTip.AccuracyTipTimeOpen." + suffix, time_open);
   }
   ukm_builder.Record(ukm::UkmRecorder::Get());
+  web_contents_showing_accuracy_tip_ = nullptr;
+  for (Observer& observer : observers_)
+    observer.OnAccuracyTipClosed();
 }
 
 bool AccuracyService::CanShowSurvey() {
