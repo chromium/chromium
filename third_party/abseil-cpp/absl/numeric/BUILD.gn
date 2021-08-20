@@ -15,17 +15,6 @@ absl_source_set("bits") {
   ]
 }
 
-absl_source_set("bits_test") {
-  testonly = true
-  sources = [ "bits_test.cc" ]
-  deps = [
-    ":bits",
-    "//third_party/abseil-cpp/absl/random",
-    "//third_party/googletest:gmock",
-    "//third_party/googletest:gtest",
-  ]
-}
-
 absl_source_set("int128") {
   sources = [
     "int128.cc",
