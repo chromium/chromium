@@ -973,7 +973,7 @@ class _StackScriptContext(object):
     if input_file:
       cmd.append(input_file)
     logging.info('Running stack.py')
-    return subprocess.Popen(cmd, **kwargs)
+    return subprocess.Popen(cmd, universal_newlines=True, **kwargs)
 
 
 def _GenerateAvailableDevicesMessage(devices):

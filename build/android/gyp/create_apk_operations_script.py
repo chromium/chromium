@@ -26,21 +26,14 @@ def main():
   sys.path.append(resolve(${APK_OPERATIONS_DIR}))
   import apk_operations
   output_dir = resolve(${OUTPUT_DIR})
-  try:
-    apk_operations.Run(
-        output_dir,
-        resolve(${APK_PATH}),
-        [resolve(p) for p in ${ADDITIONAL_APK_PATHS}],
-        resolve(${INC_JSON_PATH}),
-        ${FLAGS_FILE},
-        ${TARGET_CPU},
-        resolve(${MAPPING_PATH}))
-  except TypeError:
-    rel_output_dir = os.path.relpath(output_dir)
-    rel_script_path = os.path.relpath(sys.argv[0], output_dir)
-    sys.stderr.write('Script out-of-date. Rebuild via:\\n')
-    sys.stderr.write('  ninja -C %s %s\\n' % (rel_output_dir, rel_script_path))
-    return 1
+  apk_operations.Run(
+      output_dir,
+      resolve(${APK_PATH}),
+      [resolve(p) for p in ${ADDITIONAL_APK_PATHS}],
+      resolve(${INC_JSON_PATH}),
+      ${FLAGS_FILE},
+      ${TARGET_CPU},
+      resolve(${MAPPING_PATH}))
 
 
 if __name__ == '__main__':
