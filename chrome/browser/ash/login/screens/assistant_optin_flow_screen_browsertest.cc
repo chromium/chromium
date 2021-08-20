@@ -542,7 +542,6 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest, Basic) {
   ShowAssistantOptInFlowScreen();
 
   OobeScreenWaiter screen_waiter(AssistantOptInFlowScreenView::kScreenId);
-  screen_waiter.set_assert_next_screen();
   screen_waiter.Wait();
 
   test::OobeJS().CreateVisibilityWaiter(true, kAssistantValueProp)->Wait();
@@ -583,7 +582,6 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest, DisableScreenContext) {
   ShowAssistantOptInFlowScreen();
 
   OobeScreenWaiter screen_waiter(AssistantOptInFlowScreenView::kScreenId);
-  screen_waiter.set_assert_next_screen();
   screen_waiter.Wait();
 
   test::OobeJS().CreateVisibilityWaiter(true, kAssistantValueProp)->Wait();
@@ -616,7 +614,6 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest, AssistantStateUpdateAfterShow) {
   ShowAssistantOptInFlowScreen();
 
   OobeScreenWaiter screen_waiter(AssistantOptInFlowScreenView::kScreenId);
-  screen_waiter.set_assert_next_screen();
   screen_waiter.Wait();
 
   AssistantState::Get()->NotifyStatusChanged(
@@ -657,7 +654,6 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest, RetryOnWebviewLoadFail) {
       chromeos::assistant::AssistantStatus::READY);
 
   OobeScreenWaiter screen_waiter(AssistantOptInFlowScreenView::kScreenId);
-  screen_waiter.set_assert_next_screen();
   screen_waiter.Wait();
 
   // Value prop webview requests are set to fail - loading screen should display
@@ -698,7 +694,6 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest, RejectValueProp) {
   ShowAssistantOptInFlowScreen();
 
   OobeScreenWaiter screen_waiter(AssistantOptInFlowScreenView::kScreenId);
-  screen_waiter.set_assert_next_screen();
   screen_waiter.Wait();
 
   test::OobeJS().CreateVisibilityWaiter(true, kAssistantValueProp)->Wait();
@@ -731,7 +726,6 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowNewLayoutDisabledTest,
   ShowAssistantOptInFlowScreen();
 
   OobeScreenWaiter screen_waiter(AssistantOptInFlowScreenView::kScreenId);
-  screen_waiter.set_assert_next_screen();
   screen_waiter.Wait();
 
   test::OobeJS().CreateVisibilityWaiter(true, kAssistantValueProp)->Wait();
@@ -777,7 +771,6 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowNewLayoutDisabledTest,
   ShowAssistantOptInFlowScreen();
 
   OobeScreenWaiter screen_waiter(AssistantOptInFlowScreenView::kScreenId);
-  screen_waiter.set_assert_next_screen();
   screen_waiter.Wait();
 
   test::OobeJS().CreateVisibilityWaiter(true, kAssistantValueProp)->Wait();
@@ -823,7 +816,6 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest, SkipShowingValueProp) {
   ShowAssistantOptInFlowScreen();
 
   OobeScreenWaiter screen_waiter(AssistantOptInFlowScreenView::kScreenId);
-  screen_waiter.set_assert_next_screen();
   screen_waiter.Wait();
 
   test::OobeJS().CreateVisibilityWaiter(true, kAssistantRelatedInfo)->Wait();
@@ -861,7 +853,6 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowNewLayoutDisabledTest,
   ShowAssistantOptInFlowScreen();
 
   OobeScreenWaiter screen_waiter(AssistantOptInFlowScreenView::kScreenId);
-  screen_waiter.set_assert_next_screen();
   screen_waiter.Wait();
 
   test::OobeJS().CreateVisibilityWaiter(true, kAssistantVoiceMatch)->Wait();
@@ -899,7 +890,6 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest, SpeakerIdEnrollment) {
   ShowAssistantOptInFlowScreen();
 
   OobeScreenWaiter screen_waiter(AssistantOptInFlowScreenView::kScreenId);
-  screen_waiter.set_assert_next_screen();
   screen_waiter.Wait();
 
   test::OobeJS().CreateVisibilityWaiter(true, kAssistantRelatedInfo)->Wait();
@@ -970,7 +960,6 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest,
   ShowAssistantOptInFlowScreen();
 
   OobeScreenWaiter screen_waiter(AssistantOptInFlowScreenView::kScreenId);
-  screen_waiter.set_assert_next_screen();
   screen_waiter.Wait();
 
   test::OobeJS().CreateVisibilityWaiter(true, kAssistantRelatedInfo)->Wait();
@@ -1019,7 +1008,6 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest,
   ShowAssistantOptInFlowScreen();
 
   OobeScreenWaiter screen_waiter(AssistantOptInFlowScreenView::kScreenId);
-  screen_waiter.set_assert_next_screen();
   screen_waiter.Wait();
 
   test::OobeJS().CreateVisibilityWaiter(true, kAssistantRelatedInfo)->Wait();
@@ -1153,7 +1141,6 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowMinorModeTest,
   ShowAssistantOptInFlowScreen();
 
   OobeScreenWaiter screen_waiter(AssistantOptInFlowScreenView::kScreenId);
-  screen_waiter.set_assert_next_screen();
   screen_waiter.Wait();
 
   test::OobeJS().CreateVisibilityWaiter(true, kAssistantValueProp)->Wait();
@@ -1200,7 +1187,6 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowMinorModeTest,
   ShowAssistantOptInFlowScreen();
 
   OobeScreenWaiter screen_waiter(AssistantOptInFlowScreenView::kScreenId);
-  screen_waiter.set_assert_next_screen();
   screen_waiter.Wait();
 
   test::OobeJS().CreateVisibilityWaiter(true, kAssistantValueProp)->Wait();
@@ -1233,7 +1219,6 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowMinorModeTest,
   ShowAssistantOptInFlowScreen();
 
   OobeScreenWaiter screen_waiter(AssistantOptInFlowScreenView::kScreenId);
-  screen_waiter.set_assert_next_screen();
   screen_waiter.Wait();
 
   test::OobeJS().CreateVisibilityWaiter(true, kAssistantValueProp)->Wait();
@@ -1272,7 +1257,6 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowMinorModeTest,
   ShowAssistantOptInFlowScreen();
 
   OobeScreenWaiter screen_waiter(AssistantOptInFlowScreenView::kScreenId);
-  screen_waiter.set_assert_next_screen();
   screen_waiter.Wait();
 
   test::OobeJS().CreateVisibilityWaiter(true, kAssistantValueProp)->Wait();
