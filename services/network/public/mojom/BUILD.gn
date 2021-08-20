@@ -530,6 +530,27 @@ mojom("mojom_schemeful_site") {
       traits_public_deps = [ "//net" ]
     },
   ]
+  blink_cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "network.mojom.SchemefulSite"
+          cpp = "::blink::BlinkSchemefulSite"
+        },
+      ]
+      traits_headers = [ "//third_party/blink/renderer/platform/network/blink_schemeful_site_mojom_traits.h" ]
+      traits_sources = [ "//third_party/blink/renderer/platform/network/blink_schemeful_site_mojom_traits.cc" ]
+
+      # The dependency on //url is a bit of a hack to ultimately depend upon
+      # blink/platform. We're doing this because directly depending on platform
+      # results in a difficult to solve circular dependency. Also, we do
+      # actually depend upon url so it's not that unreasonable.
+      traits_public_deps = [
+        "//net",
+        "//url",
+      ]
+    },
+  ]
 }
 
 mojom("mojom_network_param") {

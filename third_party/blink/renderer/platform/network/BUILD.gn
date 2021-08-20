@@ -23,6 +23,8 @@ group("make_generated") {
 
 blink_platform_sources("network") {
   sources = [
+    "blink_schemeful_site.cc",
+    "blink_schemeful_site.h",
     "content_security_policy_parsers.cc",
     "content_security_policy_parsers.h",
     "content_security_policy_response_headers.cc",
@@ -75,6 +77,8 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "blink_schemeful_site_mojom_traits_test.cc",
+    "blink_schemeful_site_test.cc",
     "content_security_policy_parsers_test.cc",
     "encoded_form_data_test.cc",
     "http_parsers_test.cc",

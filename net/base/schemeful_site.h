@@ -15,6 +15,10 @@
 
 class GURL;
 
+namespace blink {
+class BlinkSchemefulSite;
+}  // namespace blink
+
 namespace IPC {
 template <class P>
 struct ParamTraits;
@@ -47,6 +51,9 @@ class SiteForCookies;
 //    SchemefulSite iff they share a scheme and host.
 // 4. Origins which differ only by port have the same SchemefulSite.
 // 5. Websocket origins cannot have a SchemefulSite (they trigger a DCHECK).
+//
+// Note that blink::BlinkSchemefulSite mirrors this class and needs to be kept
+// in sync with any data member changes.
 class NET_EXPORT SchemefulSite {
  public:
   SchemefulSite() = default;
@@ -134,6 +141,8 @@ class NET_EXPORT SchemefulSite {
   friend struct mojo::StructTraits<network::mojom::SchemefulSiteDataView,
                                    SchemefulSite>;
   friend struct IPC::ParamTraits<net::SchemefulSite>;
+
+  friend class blink::BlinkSchemefulSite;
 
   // Create SiteForCookies from SchemefulSite needs to access internal origin,
   // and SiteForCookies needs to access private method SchemelesslyEqual.
