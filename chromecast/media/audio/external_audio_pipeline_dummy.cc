@@ -65,7 +65,6 @@ void ExternalAudioPipelineShlib::RemoveExternalMediaMetadataChangeObserver(
 std::unique_ptr<MixerOutputStream>
 ExternalAudioPipelineShlib::CreateMixerOutputStream() {
   NOTREACHED();
-  return nullptr;
 }
 
 }  // namespace media

@@ -28,7 +28,6 @@ bool RebootShlib::IsRebootSourceSupported(
 
 bool RebootShlib::RebootNow(RebootShlib::RebootSource /* reboot_source */) {
   NOTREACHED();
-  return false;
 }
 
 bool RebootShlib::IsFdrForNextRebootSupported() {
