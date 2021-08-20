@@ -1883,6 +1883,12 @@
   <message name="IDS_SETTINGS_SEARCH_ENGINES_MAKE_DEFAULT" desc="Text of the button that makes the selected engine the default search engine">
     Make default
   </message>
+  <message name="IDS_SETTINGS_SEARCH_ENGINES_ACTIVATE" desc="Text of the button that activates a search engine">
+    Activate
+  </message>
+  <message name="IDS_SETTINGS_SEARCH_ENGINES_DEACTIVATE" desc="Text of the button that deactivates a search engine">
+    Deactivate
+  </message>
   <message name="IDS_SETTINGS_SEARCH_ENGINES_REMOVE_FROM_LIST" desc="Label for a button that removes a search engine from the list of search engines">
     Remove from list
   </message>

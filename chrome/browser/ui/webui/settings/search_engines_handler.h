@@ -65,6 +65,10 @@ class SearchEnginesHandler : public SettingsPageUIHandler,
   // Sets the search engine at the given index to be default. Called from WebUI.
   void HandleSetDefaultSearchEngine(const base::ListValue* args);
 
+  // Activates or deactivates the search engine at the given index. Called from
+  // WebUI.
+  void HandleSetIsActiveSearchEngine(const base::ListValue* args);
+
   // Starts an edit session for the search engine at the given index. If the
   // index is -1, starts editing a new search engine instead of an existing one.
   // Called from WebUI.

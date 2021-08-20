@@ -251,6 +251,11 @@ class TemplateURLService : public WebDataServiceConsumer,
                         const std::u16string& keyword,
                         const std::string& search_url);
 
+  // Sets the `is_active` field of the specified TemplateURL to `kTrue` or
+  // `kFalse`. Called when a user explicitly activates/deactivates the search
+  // engine.
+  void SetIsActiveTemplateURL(TemplateURL* url, bool is_active);
+
   // Creates a TemplateURL for |keyword| marked with created_from_play_api().
   // Returns the newly created engine.
   //

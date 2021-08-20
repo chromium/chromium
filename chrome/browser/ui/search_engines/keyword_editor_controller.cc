@@ -84,6 +84,11 @@ void KeywordEditorController::MakeDefaultTemplateURL(int index) {
   table_model_->MakeDefaultTemplateURL(index);
 }
 
+void KeywordEditorController::SetIsActiveTemplateURL(int index,
+                                                     bool is_active) {
+  table_model_->SetIsActiveTemplateURL(index, is_active);
+}
+
 bool KeywordEditorController::loaded() const {
   return url_model_->loaded();
 }

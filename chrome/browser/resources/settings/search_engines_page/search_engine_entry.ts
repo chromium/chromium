@@ -38,6 +38,8 @@ class SettingsSearchEngineEntryElement extends
     return {
       engine: Object,
 
+      showActiveSearchEngines: Boolean,
+
       isDefault: {
         reflectToAttribute: true,
         type: Boolean,
@@ -89,6 +91,18 @@ class SettingsSearchEngineEntryElement extends
   private onMakeDefaultTap_() {
     this.closePopupMenu_();
     this.browserProxy_.setDefaultSearchEngine(this.engine.modelIndex);
+  }
+
+  private onActivateTap_() {
+    this.closePopupMenu_();
+    this.browserProxy_.setIsActiveSearchEngine(
+        this.engine.modelIndex, /*is_active=*/ true);
+  }
+
+  private onDeactivateTap_() {
+    this.closePopupMenu_();
+    this.browserProxy_.setIsActiveSearchEngine(
+        this.engine.modelIndex, /*is_active=*/ false);
   }
 }
 

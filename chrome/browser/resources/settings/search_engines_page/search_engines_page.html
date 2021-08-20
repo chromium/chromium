@@ -36,7 +36,8 @@
     </div>
     <settings-search-engines-list fixed-height
         hidden="[[!matchingDefaultEngines_.length]]"
-        engines="[[matchingDefaultEngines_]]">
+        engines="[[matchingDefaultEngines_]]"
+        show-active-search-engines="[[showActiveSearchEngines_]]">
     </settings-search-engines-list>
     <template is="dom-if" if="[[showDialog_]]" restamp>
       <settings-search-engine-dialog model="[[dialogModel_]]"
@@ -59,7 +60,8 @@
       <settings-search-engines-list id="activeEngines"
           hidden="[[!matchingActiveEngines_.length]]"
           engines="[[matchingActiveEngines_]]"
-          scroll-target="[[subpageScrollTarget]]">
+          scroll-target="[[subpageScrollTarget]]"
+          show-active-search-engines="[[showActiveSearchEngines_]]">
       </settings-search-engines-list>
     </template>
 
@@ -83,7 +85,8 @@
     <settings-search-engines-list id="otherEngines"
         hidden="[[!matchingOtherEngines_.length]]"
         engines="[[matchingOtherEngines_]]"
-        scroll-target="[[subpageScrollTarget]]">
+        scroll-target="[[subpageScrollTarget]]"
+        show-active-search-engines="[[showActiveSearchEngines_]]">
     </settings-search-engines-list>
     <template is="dom-if" if="[[showExtensionsList_]]">
       <div class="cr-row first">

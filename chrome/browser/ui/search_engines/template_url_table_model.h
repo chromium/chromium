@@ -73,6 +73,11 @@ class TemplateURLTableModel : public ui::TableModel,
   // if the index is invalid or it is already the default.
   void MakeDefaultTemplateURL(int index);
 
+  // Activates the TemplateURL at the specified index if `is_active` is true and
+  // deactivates if false. When the TemplateURL is active, it can be invoked by
+  // keyword via the omnibox.
+  void SetIsActiveTemplateURL(int index, bool is_active);
+
   // Returns the index of the last entry shown in the search engines group.
   int last_search_engine_index() const { return last_search_engine_index_; }
 

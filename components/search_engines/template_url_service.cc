@@ -651,6 +651,17 @@ void TemplateURLService::ResetTemplateURL(TemplateURL* url,
   Update(url, TemplateURL(data));
 }
 
+void TemplateURLService::SetIsActiveTemplateURL(TemplateURL* url,
+                                                bool is_active) {
+  DCHECK(url);
+
+  TemplateURLData data(url->data());
+  data.is_active = is_active ? TemplateURLData::ActiveStatus::kTrue
+                             : TemplateURLData::ActiveStatus::kFalse;
+
+  Update(url, TemplateURL(data));
+}
+
 TemplateURL* TemplateURLService::CreatePlayAPISearchEngine(
     const std::u16string& title,
     const std::u16string& keyword,

@@ -168,6 +168,13 @@ void TemplateURLTableModel::MakeDefaultTemplateURL(int index) {
   template_url_service_->SetUserSelectedDefaultSearchProvider(keyword);
 }
 
+void TemplateURLTableModel::SetIsActiveTemplateURL(int index, bool is_active) {
+  DCHECK(index >= 0 && index <= RowCount());
+  TemplateURL* keyword = GetTemplateURL(index);
+
+  template_url_service_->SetIsActiveTemplateURL(keyword, is_active);
+}
+
 void TemplateURLTableModel::OnTemplateURLServiceChanged() {
   Reload();
 }

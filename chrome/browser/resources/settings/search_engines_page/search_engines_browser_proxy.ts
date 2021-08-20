@@ -42,6 +42,8 @@ export type SearchEnginesInfo = {
 export interface SearchEnginesBrowserProxy {
   setDefaultSearchEngine(modelIndex: number): void;
 
+  setIsActiveSearchEngine(modelIndex: number, isActive: boolean): void;
+
   removeSearchEngine(modelIndex: number): void;
 
   searchEngineEditStarted(modelIndex: number): void;
@@ -61,6 +63,10 @@ export class SearchEnginesBrowserProxyImpl implements
     SearchEnginesBrowserProxy {
   setDefaultSearchEngine(modelIndex: number) {
     chrome.send('setDefaultSearchEngine', [modelIndex]);
+  }
+
+  setIsActiveSearchEngine(modelIndex: number, isActive: boolean) {
+    chrome.send('setIsActiveSearchEngine', [modelIndex, isActive]);
   }
 
   removeSearchEngine(modelIndex: number) {

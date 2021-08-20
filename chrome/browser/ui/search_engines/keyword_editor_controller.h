@@ -53,6 +53,10 @@ class KeywordEditorController {
   // default search provider.
   void MakeDefaultTemplateURL(int index);
 
+  // Activates the TemplateURL at the specified index in the TableModel if
+  // `is_active` is true or deactivates it if false.
+  void SetIsActiveTemplateURL(int index, bool is_active);
+
   // Return true if the |url_model_| data is loaded.
   bool loaded() const;
 

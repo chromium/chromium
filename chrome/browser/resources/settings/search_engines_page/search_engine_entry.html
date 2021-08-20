@@ -41,6 +41,14 @@
             disabled$="[[!engine.canBeDefault]]" id="makeDefault">
           $i18n{searchEnginesMakeDefault}
         </button>
+        <button class="dropdown-item" on-click="onActivateTap_"
+                hidden="[[!showActiveSearchEngines]]" id="activate">
+          $i18n{searchEnginesActivate}
+        </button>
+        <button class="dropdown-item" on-click="onDeactivateTap_"
+                hidden="[[!showActiveSearchEngines]]" id="deactivate">
+          $i18n{searchEnginesDeactivate}
+        </button>
         <button class="dropdown-item" on-click="onEditTap_"
             disabled$="[[!engine.canBeEdited]]" id="edit">
           $i18n{edit}

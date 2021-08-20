@@ -66,6 +66,10 @@ void SearchEnginesHandler::RegisterMessages() {
       base::BindRepeating(&SearchEnginesHandler::HandleSetDefaultSearchEngine,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
+      "setIsActiveSearchEngine",
+      base::BindRepeating(&SearchEnginesHandler::HandleSetIsActiveSearchEngine,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
       "removeSearchEngine",
       base::BindRepeating(&SearchEnginesHandler::HandleRemoveSearchEngine,
                           base::Unretained(this)));
@@ -263,6 +267,18 @@ void SearchEnginesHandler::HandleSetDefaultSearchEngine(
   list_controller_.MakeDefaultTemplateURL(index);
 
   base::RecordAction(base::UserMetricsAction("Options_SearchEngineSetDefault"));
+}
+
+void SearchEnginesHandler::HandleSetIsActiveSearchEngine(
+    const base::ListValue* args) {
+  CHECK_EQ(2U, args->GetList().size());
+  const int index = args->GetList()[0].GetInt();
+  const bool is_active = args->GetList()[1].GetBool();
+
+  if (index < 0 || index >= list_controller_.table_model()->RowCount())
+    return;
+
+  list_controller_.SetIsActiveTemplateURL(index, is_active);
 }
 
 void SearchEnginesHandler::HandleRemoveSearchEngine(

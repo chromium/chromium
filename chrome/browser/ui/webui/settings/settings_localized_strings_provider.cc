@@ -1743,6 +1743,8 @@ void AddSearchEnginesStrings(content::WebUIDataSource* html_source) {
       {"searchEnginesQueryURLExplanation",
        IDS_SETTINGS_SEARCH_ENGINES_QUERY_URL_EXPLANATION},
       {"searchEnginesMakeDefault", IDS_SETTINGS_SEARCH_ENGINES_MAKE_DEFAULT},
+      {"searchEnginesActivate", IDS_SETTINGS_SEARCH_ENGINES_ACTIVATE},
+      {"searchEnginesDeactivate", IDS_SETTINGS_SEARCH_ENGINES_DEACTIVATE},
       {"searchEnginesRemoveFromList",
        IDS_SETTINGS_SEARCH_ENGINES_REMOVE_FROM_LIST},
       {"searchEnginesManageExtension",
