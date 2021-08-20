@@ -6416,7 +6416,6 @@ crbug.com/476553 virtual/scroll-unification/fast/scroll-snap/animate-fling-to-sn
 crbug.com/1167679 accessibility/aom-focus-action.html [ Crash Failure Pass Timeout ]
 # More failing tests because of enabling scroll unification flag
 crbug.com/476553 virtual/scroll-unification/fast/events/touch/gesture/gesture-tap-active-state-hidden-iframe.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification/http/tests/misc/iframe-script-modify-attr.html [ Crash Failure Pass Timeout ]
 crbug.com/476553 virtual/scroll-unification-synchronous_html_parser/external/wpt/dom/events/scrolling/overscroll-event-fired-to-scrolled-element.html [ Crash Failure Pass Timeout ]
 crbug.com/476553 virtual/scroll-unification/fast/events/autoscroll-should-not-stop-on-keypress.html [ Crash Failure Pass Timeout ]
 crbug.com/476553 virtual/scroll-unification/fast/events/touch/gesture/gesture-tap-scrolled.html [ Crash Failure Pass Timeout ]
@@ -7201,3 +7200,4 @@ crbug.com/1241787 [ Mac10.15 ] inspector-protocol/dom/dom-get-nodes-for-subtree-
 crbug.com/1241787 [ Mac10.15 ] inspector-protocol/dom/dom-get-nodes-for-subtree-by-style-with-pierce-unslotted-elements.js [ Pass Timeout ]
 crbug.com/1241787 [ Mac10.15 ] inspector-protocol/dom/dom-get-nodes-for-subtree-by-style-with-pierce.js [ Pass Timeout ]
 crbug.com/1241787 [ Mac10.15 ] inspector-protocol/dom/dom-get-nodes-for-subtree-by-style.js [ Pass Timeout ]
+crbug.com/1194498 http/tests/misc/iframe-script-modify-attr.html [ Crash Failure Pass Timeout ]
