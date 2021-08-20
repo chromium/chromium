@@ -87,10 +87,15 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
     kError,
   };
 
-  struct Endpoints {
+  struct CONTENT_EXPORT Endpoints {
+    Endpoints();
+    ~Endpoints();
+    Endpoints(const Endpoints&);
+
     std::string idp;
     std::string token;
     std::string accounts;
+    std::string client_id_metadata;
   };
 
   static constexpr char kWellKnownFilePath[] = ".well-known/webid";

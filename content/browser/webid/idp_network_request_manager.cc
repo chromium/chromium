@@ -33,6 +33,7 @@ namespace {
 constexpr char kIdpEndpointKey[] = "idp_endpoint";
 constexpr char kTokenEndpointKey[] = "idtoken_endpoint";
 constexpr char kAccountsEndpointKey[] = "accounts_endpoint";
+constexpr char kClientIdMetadataEndpointKey[] = "client_id_metadata_endpoint";
 
 // Sign-in request response keys.
 // TODO(majidvp): For consistency rename to signin_endpoint and move into
@@ -146,6 +147,11 @@ bool ParseAccounts(const base::Value* accounts,
 }
 
 }  // namespace
+
+IdpNetworkRequestManager::Endpoints::Endpoints() = default;
+IdpNetworkRequestManager::Endpoints::~Endpoints() = default;
+IdpNetworkRequestManager::Endpoints::Endpoints(const Endpoints& other) =
+    default;
 
 // static
 constexpr char IdpNetworkRequestManager::kWellKnownFilePath[];
@@ -405,13 +411,13 @@ void IdpNetworkRequestManager::OnWellKnownParsed(
     return endpoint->GetString();
   };
 
-  auto idp_endpoint = ExtractEndpoint(kIdpEndpointKey);
-  auto token_endpoint = ExtractEndpoint(kTokenEndpointKey);
-  auto accounts_endpoint = ExtractEndpoint(kAccountsEndpointKey);
+  Endpoints endpoints;
+  endpoints.idp = ExtractEndpoint(kIdpEndpointKey);
+  endpoints.token = ExtractEndpoint(kTokenEndpointKey);
+  endpoints.accounts = ExtractEndpoint(kAccountsEndpointKey);
+  endpoints.client_id_metadata = ExtractEndpoint(kClientIdMetadataEndpointKey);
 
-  std::move(idp_well_known_callback_)
-      .Run(FetchStatus::kSuccess,
-           {idp_endpoint, token_endpoint, accounts_endpoint});
+  std::move(idp_well_known_callback_).Run(FetchStatus::kSuccess, endpoints);
 }
 
 void IdpNetworkRequestManager::OnSigninRequestResponse(
