@@ -91,7 +91,11 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, ApiTests) {
 
 // Tests that tab capture video frames can be received in a VIDEO element.
 // Disabled due to flakes on multiple platforms; see https://crbug.com/1040894.
-IN_PROC_BROWSER_TEST_F(TabCaptureApiPixelTest, EndToEndWithoutRemoting) {
+// Disabled due to flakes on Windows GPU bots during teardown, and because
+// IsTooIntensiveForThisPlatform prevents this test from actually executing
+// anyways; see crbug.com/1241790.
+IN_PROC_BROWSER_TEST_F(TabCaptureApiPixelTest,
+                       DISABLED_EndToEndWithoutRemoting) {
   if (IsTooIntensiveForThisPlatform()) {
     LOG(WARNING) << "Skipping this CPU-intensive test on this platform/build.";
     return;
