@@ -320,10 +320,10 @@ void ShareInfoFileHandler::OnFileStreamReadCompleted(
 
   const uint64_t expected_total_bytes = GetTotalSizeOfFiles();
   const size_t expected_total_files = GetNumberOfFiles();
-  VLOG(1) << "Streamed " << num_bytes_read_ << " of " << expected_total_bytes
-          << " bytes for " << num_files_streamed_ << " of "
-          << expected_total_files << " files";
-  if (!update_callback_.is_null()) {
+  DVLOG(1) << "Streamed " << num_bytes_read_ << " of " << expected_total_bytes
+           << " bytes for " << num_files_streamed_ << " of "
+           << expected_total_files << " files";
+  if (update_callback_) {
     update_callback_.Run(base::checked_cast<double>(num_bytes_read_) /
                          expected_total_bytes);
   }
@@ -336,7 +336,7 @@ void ShareInfoFileHandler::OnFileStreamReadCompleted(
       NotifyFileSharingCompleted(base::File::FILE_ERROR_INVALID_OPERATION);
       return;
     }
-    VLOG(1) << "OnFileStreamReadCompleted: Completed streaming all files";
+    DVLOG(1) << "OnFileStreamReadCompleted: Completed streaming all files";
     NotifyFileSharingCompleted(base::File::FILE_OK);
   }
 }
@@ -362,7 +362,7 @@ void ShareInfoFileHandler::NotifyFileSharingCompleted(
 
   // Only call |completed_callback_| if not null and file sharing is in started
   // state to prevent calling more than once.
-  if (file_sharing_started_ && !completed_callback_.is_null()) {
+  if (file_sharing_started_ && completed_callback_) {
     file_sharing_started_ = false;
     std::move(completed_callback_).Run(result);
   }

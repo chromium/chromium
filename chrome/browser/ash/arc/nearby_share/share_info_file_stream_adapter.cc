@@ -91,7 +91,7 @@ ShareInfoFileStreamAdapter::~ShareInfoFileStreamAdapter() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
   // There was an abort mid-operation and did not complete streaming.
-  if (!result_callback_.is_null())
+  if (result_callback_)
     OnStreamingFinished(false);
 }
 
