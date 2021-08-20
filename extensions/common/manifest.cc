@@ -338,7 +338,10 @@ bool Manifest::Get(
 
 bool Manifest::GetBoolean(
     const std::string& path, bool* out_value) const {
-  return available_values_->GetBoolean(path, out_value);
+  absl::optional<bool> value = available_values_->FindBoolPath(path);
+  if (value)
+    *out_value = *value;
+  return value.has_value();
 }
 
 bool Manifest::GetInteger(

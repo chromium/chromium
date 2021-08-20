@@ -584,9 +584,14 @@ bool ExtensionPrefs::ReadPrefAsBoolean(const std::string& extension_id,
   DCHECK_EQ(PrefType::kBool, pref.type);
 
   const base::DictionaryValue* ext = GetExtensionPref(extension_id);
-  if (!ext || !ext->GetBoolean(pref.name, out_value))
+  if (!ext)
     return false;
 
+  absl::optional<bool> value = ext->FindBoolPath(pref.name);
+  if (!value)
+    return false;
+
+  *out_value = *value;
   return true;
 }
 
@@ -656,9 +661,14 @@ bool ExtensionPrefs::ReadPrefAsBoolean(const std::string& extension_id,
                                        base::StringPiece pref_key,
                                        bool* out_value) const {
   const base::DictionaryValue* ext = GetExtensionPref(extension_id);
-  if (!ext || !ext->GetBoolean(pref_key, out_value))
+  if (!ext)
     return false;
 
+  absl::optional<bool> value = ext->FindBoolPath(pref_key);
+  if (!value)
+    return false;
+
+  *out_value = *value;
   return true;
 }
 
@@ -1155,9 +1165,8 @@ void ExtensionPrefs::SetLastActivePingDay(const std::string& extension_id,
 
 bool ExtensionPrefs::GetActiveBit(const std::string& extension_id) const {
   const base::DictionaryValue* dictionary = GetExtensionPref(extension_id);
-  bool result = false;
-  if (dictionary && dictionary->GetBoolean(kActiveBit, &result))
-    return result;
+  if (dictionary)
+    return dictionary->FindBoolKey(kActiveBit).value_or(false);
   return false;
 }
 
@@ -1254,11 +1263,9 @@ void ExtensionPrefs::SetExtensionRunning(const std::string& extension_id,
 
 bool ExtensionPrefs::IsExtensionRunning(const std::string& extension_id) const {
   const base::DictionaryValue* extension = GetExtensionPref(extension_id);
-  if (!extension)
-    return false;
-  bool running = false;
-  extension->GetBoolean(kPrefRunning, &running);
-  return running;
+  if (extension)
+    return extension->FindBoolKey(kPrefRunning).value_or(false);
+  return false;
 }
 
 void ExtensionPrefs::SetIsActive(const std::string& extension_id,
@@ -1269,11 +1276,9 @@ void ExtensionPrefs::SetIsActive(const std::string& extension_id,
 
 bool ExtensionPrefs::IsActive(const std::string& extension_id) const {
   const base::DictionaryValue* extension = GetExtensionPref(extension_id);
-  if (!extension)
-    return false;
-  bool is_active = false;
-  extension->GetBoolean(kIsActive, &is_active);
-  return is_active;
+  if (extension)
+    return extension->FindBoolKey(kIsActive).value_or(false);
+  return false;
 }
 
 bool ExtensionPrefs::IsIncognitoEnabled(const std::string& extension_id) const {
@@ -1678,18 +1683,16 @@ ExtensionPrefs::GetAllDelayedInstallInfo() const {
 bool ExtensionPrefs::IsFromWebStore(
     const std::string& extension_id) const {
   const base::DictionaryValue* dictionary = GetExtensionPref(extension_id);
-  bool result = false;
-  if (dictionary && dictionary->GetBoolean(kPrefFromWebStore, &result))
-    return result;
+  if (dictionary)
+    return dictionary->FindBoolKey(kPrefFromWebStore).value_or(false);
   return false;
 }
 
 bool ExtensionPrefs::IsFromBookmark(
     const std::string& extension_id) const {
   const base::DictionaryValue* dictionary = GetExtensionPref(extension_id);
-  bool result = false;
-  if (dictionary && dictionary->GetBoolean(kPrefFromBookmark, &result))
-    return result;
+  if (dictionary)
+    return dictionary->FindBoolKey(kPrefFromBookmark).value_or(false);
   return false;
 }
 
@@ -1723,18 +1726,15 @@ int ExtensionPrefs::GetDelayedInstallCreationFlags(
 bool ExtensionPrefs::WasInstalledByDefault(
     const std::string& extension_id) const {
   const base::DictionaryValue* dictionary = GetExtensionPref(extension_id);
-  bool result = false;
-  if (dictionary &&
-      dictionary->GetBoolean(kPrefWasInstalledByDefault, &result))
-    return result;
-  return false;
+  if (!dictionary)
+    return false;
+  return dictionary->FindBoolKey(kPrefWasInstalledByDefault).value_or(false);
 }
 
 bool ExtensionPrefs::WasInstalledByOem(const std::string& extension_id) const {
   const base::DictionaryValue* dictionary = GetExtensionPref(extension_id);
-  bool result = false;
-  if (dictionary && dictionary->GetBoolean(kPrefWasInstalledByOem, &result))
-    return result;
+  if (dictionary)
+    return dictionary->FindBoolKey(kPrefWasInstalledByOem).value_or(false);
   return false;
 }
 

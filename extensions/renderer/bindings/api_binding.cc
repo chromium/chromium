@@ -287,18 +287,17 @@ APIBinding::APIBinding(const std::string& api_name,
       bool supports_lazy_listeners = true;
       int max_listeners = binding::kNoListenerMax;
       if (event_dict->GetDictionary("options", &options)) {
-        bool temp_supports_filters = false;
         // TODO(devlin): For some reason, schemas indicate supporting filters
         // either through having a 'filters' property *or* through having
         // a 'supportsFilters' property. We should clean that up.
         supports_filters |=
-            (options->GetBoolean("supportsFilters", &temp_supports_filters) &&
-             temp_supports_filters);
-        if (options->GetBoolean("supportsRules", &supports_rules) &&
-            supports_rules) {
-          bool supports_listeners = false;
-          DCHECK(options->GetBoolean("supportsListeners", &supports_listeners));
-          DCHECK(!supports_listeners)
+            options->FindBoolKey("supportsFilters").value_or(false);
+        supports_rules = options->FindBoolKey("supportsRules").value_or(false);
+        if (supports_rules) {
+          absl::optional<bool> supports_listeners =
+              options->FindBoolKey("supportsListeners");
+          DCHECK(supports_listeners);
+          DCHECK(!*supports_listeners)
               << "Events cannot support rules and listeners.";
           auto get_values = [options](base::StringPiece name,
                                       std::vector<std::string>* out_value) {
@@ -314,11 +313,14 @@ APIBinding::APIBinding(const std::string& api_name,
         }
 
         options->GetInteger("maxListeners", &max_listeners);
-        bool unmanaged = false;
-        if (options->GetBoolean("unmanaged", &unmanaged))
-          notify_on_change = !unmanaged;
-        if (options->GetBoolean("supportsLazyListeners",
-                                &supports_lazy_listeners)) {
+        absl::optional<bool> unmanaged = options->FindBoolKey("unmanaged");
+        if (unmanaged)
+          notify_on_change = !*unmanaged;
+
+        absl::optional<bool> supports_lazy_listeners_value =
+            options->FindBoolKey("supportsLazyListeners");
+        if (supports_lazy_listeners_value) {
+          supports_lazy_listeners = *supports_lazy_listeners_value;
           DCHECK(!supports_lazy_listeners)
               << "Don't specify supportsLazyListeners: true; it's the default.";
         }
@@ -441,8 +443,7 @@ void APIBinding::DecorateTemplateWithProperties(
        iter.Advance()) {
     const base::DictionaryValue* dict = nullptr;
     CHECK(iter.value().GetAsDictionary(&dict));
-    bool optional = false;
-    if (dict->GetBoolean("optional", &optional)) {
+    if (dict->FindBoolKey("optional")) {
       // TODO(devlin): What does optional even mean here? It's only used, it
       // seems, for lastError and inIncognitoContext, which are both handled
       // with custom bindings. Investigate, and remove.
@@ -490,9 +491,9 @@ void APIBinding::DecorateTemplateWithProperties(
       CHECK(dict->GetInteger(kValueKey, &val));
       object_template->Set(v8_key, v8::Integer::New(isolate, val));
     } else if (type == "boolean") {
-      bool val = false;
-      CHECK(dict->GetBoolean(kValueKey, &val));
-      object_template->Set(v8_key, v8::Boolean::New(isolate, val));
+      absl::optional<bool> val = dict->FindBoolKey(kValueKey);
+      CHECK(val);
+      object_template->Set(v8_key, v8::Boolean::New(isolate, *val));
     } else if (type == "string") {
       std::string val;
       CHECK(dict->GetString(kValueKey, &val)) << iter.key();

@@ -67,10 +67,10 @@ std::unique_ptr<base::DictionaryValue> ParseDictionary(
 }
 
 bool GetBoolean(const base::DictionaryValue* val, const std::string& key) {
-  bool result = false;
-  if (!val->GetBoolean(key, &result))
+  absl::optional<bool> result = val->FindBoolKey(key);
+  if (!result)
     ADD_FAILURE() << key << " does not exist or is not a boolean.";
-  return result;
+  return result.value_or(false);
 }
 
 int GetInteger(const base::DictionaryValue* val, const std::string& key) {

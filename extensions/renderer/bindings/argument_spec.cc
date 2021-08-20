@@ -78,7 +78,7 @@ bool CheckFundamentalBounds(T value,
 ArgumentSpec::ArgumentSpec(const base::Value& value) {
   const base::DictionaryValue* dict = nullptr;
   CHECK(value.GetAsDictionary(&dict));
-  dict->GetBoolean("optional", &optional_);
+  optional_ = dict->FindBoolKey("optional").value_or(optional_);
   dict->GetString("name", &name_);
 
   InitializeType(dict);
@@ -200,7 +200,7 @@ void ArgumentSpec::InitializeType(const base::DictionaryValue* dict) {
   // on arguments of type object and any (in fact, it's only used in the storage
   // API), but it could potentially make sense for lists or functions as well.
   if (type_ == ArgumentType::OBJECT || type_ == ArgumentType::ANY)
-    dict->GetBoolean("preserveNull", &preserve_null_);
+    preserve_null_ = dict->FindBoolKey("preserveNull").value_or(preserve_null_);
 
   if (type_ == ArgumentType::OBJECT || type_ == ArgumentType::BINARY) {
     std::string instance_of;
