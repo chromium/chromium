@@ -86,7 +86,8 @@ LatencyInfo::LatencyInfo(SourceEventType type)
       source_event_type_(type),
       scroll_update_delta_(0),
       predicted_scroll_update_delta_(0),
-      gesture_scroll_id_(0) {}
+      gesture_scroll_id_(0),
+      touch_trace_id_(0) {}
 
 LatencyInfo::LatencyInfo(const LatencyInfo& other) = default;
 LatencyInfo::LatencyInfo(LatencyInfo&& other) = default;
@@ -102,7 +103,8 @@ LatencyInfo::LatencyInfo(int64_t trace_id, bool terminated)
       source_event_type_(SourceEventType::UNKNOWN),
       scroll_update_delta_(0),
       predicted_scroll_update_delta_(0),
-      gesture_scroll_id_(0) {}
+      gesture_scroll_id_(0),
+      touch_trace_id_(0) {}
 
 LatencyInfo& LatencyInfo::operator=(const LatencyInfo& other) = default;
 
@@ -158,6 +160,7 @@ void LatencyInfo::CopyLatencyFrom(const LatencyInfo& other,
 
   coalesced_ = other.coalesced();
   gesture_scroll_id_ = other.gesture_scroll_id();
+  touch_trace_id_ = other.touch_trace_id();
   scroll_update_delta_ = other.scroll_update_delta();
   // TODO(tdresser): Ideally we'd copy |began_| here as well, but |began_|
   // isn't very intuitive, and we can actually begin multiple times across
@@ -183,6 +186,7 @@ void LatencyInfo::AddNewLatencyFrom(const LatencyInfo& other) {
 
   coalesced_ = other.coalesced();
   gesture_scroll_id_ = other.gesture_scroll_id();
+  touch_trace_id_ = other.touch_trace_id();
   scroll_update_delta_ = other.scroll_update_delta();
   // TODO(tdresser): Ideally we'd copy |began_| here as well, but |began_| isn't
   // very intuitive, and we can actually begin multiple times across copied
@@ -287,6 +291,9 @@ void LatencyInfo::Terminate() {
 
           if (gesture_scroll_id_ > 0) {
             info->set_gesture_scroll_id(gesture_scroll_id_);
+          }
+          if (touch_trace_id_ > 0) {
+            info->set_touch_id(touch_trace_id_);
           }
 
           info->set_trace_id(trace_id_);

@@ -69,4 +69,6 @@ struct LatencyInfo {
   float predicted_scroll_update_delta;
   // optional: only valid on GestureScroll events.
   int64 gesture_scroll_id;
+  // optional: only valid on Touch events.
+  int64 touch_trace_id;
 };

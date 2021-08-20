@@ -128,6 +128,13 @@ StructTraits<ui::mojom::LatencyInfoDataView,
 }
 
 // static
+int64_t
+StructTraits<ui::mojom::LatencyInfoDataView, ui::LatencyInfo>::touch_trace_id(
+    const ui::LatencyInfo& info) {
+  return info.touch_trace_id();
+}
+
+// static
 bool StructTraits<ui::mojom::LatencyInfoDataView, ui::LatencyInfo>::Read(
     ui::mojom::LatencyInfoDataView data,
     ui::LatencyInfo* out) {
@@ -142,6 +149,7 @@ bool StructTraits<ui::mojom::LatencyInfoDataView, ui::LatencyInfo>::Read(
   out->scroll_update_delta_ = data.scroll_update_delta();
   out->predicted_scroll_update_delta_ = data.predicted_scroll_update_delta();
   out->gesture_scroll_id_ = data.gesture_scroll_id();
+  out->touch_trace_id_ = data.touch_trace_id();
 
   return true;
 }

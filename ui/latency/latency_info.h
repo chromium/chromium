@@ -14,6 +14,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_latency_info.pbzero.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -190,6 +191,8 @@ class LatencyInfo {
   }
   int64_t gesture_scroll_id() const { return gesture_scroll_id_; }
   void set_gesture_scroll_id(int64_t id) { gesture_scroll_id_ = id; }
+  int64_t touch_trace_id() const { return touch_trace_id_; }
+  void set_touch_trace_id(int64_t id) { touch_trace_id_ = id; }
 
  private:
   void AddLatencyNumberWithTimestampImpl(LatencyComponentType component,
@@ -222,6 +225,10 @@ class LatencyInfo {
   // implementation detail this unique id comes from the |trace_id| of the
   // associated GestureScrollBegin (-1 if there was none or it wasn't valid).
   int64_t gesture_scroll_id_;
+  // The unique id for denoting a touch, tracking from TouchStart through
+  // TouchMoves to TouchEnd. Used for TBMv3 metrics as in the same way as
+  // gesture_scroll_id_.
+  int64_t touch_trace_id_;
 
 #if !defined(OS_IOS)
   friend struct IPC::ParamTraits<ui::LatencyInfo>;
