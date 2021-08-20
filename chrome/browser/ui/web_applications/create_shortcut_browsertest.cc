@@ -21,7 +21,7 @@
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_app_prefs_utils.h"
-#include "chrome/browser/web_applications/test/web_app_test_install_observer.h"
+#include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_paths.h"
@@ -50,6 +50,7 @@ class CreateShortcutBrowserTest : public WebAppControllerBrowserTest {
   AppId InstallShortcutAppForCurrentUrl(bool open_as_window = false) {
     chrome::SetAutoAcceptWebAppDialogForTesting(true, open_as_window);
     WebAppTestInstallObserver observer(profile());
+    observer.BeginListening();
     CHECK(chrome::ExecuteCommand(browser(), IDC_CREATE_SHORTCUT));
     AppId app_id = observer.Wait();
     chrome::SetAutoAcceptWebAppDialogForTesting(false, false);

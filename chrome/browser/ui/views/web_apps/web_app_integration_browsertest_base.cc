@@ -37,8 +37,7 @@
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
-#include "chrome/browser/web_applications/test/web_app_test_install_observer.h"
-#include "chrome/browser/web_applications/test/web_app_test_registry_observer_adapter.h"
+#include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -360,6 +359,7 @@ void WebAppIntegrationBrowserTestBase::InstallMenuOption(
       content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
       content::NotificationService::AllSources());
   WebAppTestInstallObserver observer(profile());
+  observer.BeginListening();
   CHECK(chrome::ExecuteCommand(browser(), IDC_INSTALL_PWA));
   active_app_id_ = observer.Wait();
   app_loaded_observer.Wait();
@@ -906,6 +906,7 @@ void WebAppIntegrationBrowserTestBase::InstallCreateShortcut(
       /*auto_accept=*/true,
       /*auto_open_in_window=*/open_in_window);
   WebAppTestInstallObserver observer(profile());
+  observer.BeginListening();
   CHECK(chrome::ExecuteCommand(browser(), IDC_CREATE_SHORTCUT));
   active_app_id_ = observer.Wait();
   chrome::SetAutoAcceptWebAppDialogForTesting(false, false);

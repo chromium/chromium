@@ -22,7 +22,7 @@
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/os_integration_manager.h"
-#include "chrome/browser/web_applications/test/web_app_test_manifest_updated_observer.h"
+#include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -601,6 +601,7 @@ IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingOriginTrialBrowserTest,
   // Open the page again with the token missing.
   {
     WebAppTestManifestUpdatedObserver update_awaiter(&provider.registrar());
+    update_awaiter.BeginListening();
 
     serve_token = false;
     NavigateToURLAndWait(browser(), GURL(kTestWebAppUrl));

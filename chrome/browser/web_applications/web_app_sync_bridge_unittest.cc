@@ -20,7 +20,7 @@
 #include "chrome/browser/web_applications/test/test_web_app_database_factory.h"
 #include "chrome/browser/web_applications/test/test_web_app_registry_controller.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
-#include "chrome/browser/web_applications/test/web_app_test_registry_observer_adapter.h"
+#include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"

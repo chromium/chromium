@@ -56,8 +56,7 @@
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
-#include "chrome/browser/web_applications/test/web_app_test_install_observer.h"
-#include "chrome/browser/web_applications/test/web_app_test_registry_observer_adapter.h"
+#include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -143,6 +142,7 @@ class WebAppBrowserTest : public WebAppControllerBrowserTest {
   AppId InstallPwaForCurrentUrl() {
     chrome::SetAutoAcceptPWAInstallConfirmationForTesting(true);
     WebAppTestInstallObserver observer(profile());
+    observer.BeginListening();
     CHECK(chrome::ExecuteCommand(browser(), IDC_INSTALL_PWA));
     AppId app_id = observer.Wait();
     chrome::SetAutoAcceptPWAInstallConfirmationForTesting(false);
@@ -1454,6 +1454,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, WebAppInternalsPage) {
   chrome::SetAutoAcceptWebAppDialogForTesting(/*auto_accept=*/true,
                                               /*auto_open_in_window=*/false);
   WebAppTestInstallObserver observer(profile());
+  observer.BeginListening();
   CHECK(chrome::ExecuteCommand(browser(), IDC_CREATE_SHORTCUT));
   observer.Wait();
   chrome::SetAutoAcceptWebAppDialogForTesting(false, false);
@@ -1483,6 +1484,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, BrowserDisplayNotInstallable) {
   chrome::SetAutoAcceptWebAppDialogForTesting(/*auto_accept=*/true,
                                               /*auto_open_in_window=*/false);
   WebAppTestInstallObserver observer(profile());
+  observer.BeginListening();
   CHECK(chrome::ExecuteCommand(browser(), IDC_CREATE_SHORTCUT));
   observer.Wait();
   chrome::SetAutoAcceptWebAppDialogForTesting(false, false);

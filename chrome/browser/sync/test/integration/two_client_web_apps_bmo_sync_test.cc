@@ -21,9 +21,7 @@
 #include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/test_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
-#include "chrome/browser/web_applications/test/web_app_test_install_observer.h"
-#include "chrome/browser/web_applications/test/web_app_test_registry_observer_adapter.h"
-#include "chrome/browser/web_applications/test/web_app_test_uninstall_observer.h"
+#include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
@@ -86,7 +84,8 @@ class TwoClientWebAppsBMOSyncTest : public SyncTest {
     info.title = base::UTF8ToUTF16(url.spec());
     info.start_url = url;
     AppId dummy_app_id = InstallApp(info, profile1);
-    EXPECT_EQ(WebAppTestInstallObserver(profile2, {dummy_app_id}).Wait(),
+    EXPECT_EQ(WebAppTestInstallObserver(profile2).BeginListeningAndWait(
+                  {dummy_app_id}),
               dummy_app_id);
     return dummy_app_id;
   }
@@ -297,9 +296,11 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, DisplayMode) {
   ASSERT_TRUE(AllProfilesHaveSameWebAppIds());
   ASSERT_TRUE(embedded_test_server()->Start());
 
+  WebAppTestInstallObserver install_observer(GetProfile(1));
+  install_observer.BeginListening();
   // Install web app to profile 0 and wait for it to sync to profile 1.
   AppId app_id = InstallAppAsUserInitiated(GetProfile(0));
-  EXPECT_EQ(WebAppTestInstallObserver(GetProfile(1)).Wait(), app_id);
+  EXPECT_EQ(install_observer.Wait(), app_id);
 
   WebAppProvider::GetForTest(GetProfile(1))
       ->registry_controller()
@@ -499,7 +500,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, AppSortingFixCollisions) {
   ASSERT_NE(app_id1, app_id2);
 
   // Wait for both of the webapps to be installed on profile 1.
-  WebAppTestInstallObserver(GetProfile(1), {app_id1, app_id2}).Wait();
+  WebAppTestInstallObserver(GetProfile(1))
+      .BeginListeningAndWait({app_id1, app_id2});
   EXPECT_TRUE(AllProfilesHaveSameWebAppIds());
 
   syncer::StringOrdinal page_ordinal =
@@ -552,64 +554,36 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, MAYBE_UninstallSynced) {
   AppId app_id;
   // Install & uninstall on profile 0, and validate profile 1 sees it.
   {
-    base::RunLoop loop;
-    // TODO(songfangzhen@bytedance.com): Call BeginListening instead of setting
-    // the delegate & run loop.
     WebAppTestInstallObserver app_listener(GetProfile(1));
-    app_listener.SetWebAppInstalledDelegate(
-        base::BindLambdaForTesting([&](const AppId& installed_app_id) {
-          app_id = installed_app_id;
-          loop.Quit();
-        }));
-    app_id = InstallAppAsUserInitiated(GetProfile(0));
-    loop.Run();
+    app_listener.BeginListening();
+    InstallAppAsUserInitiated(GetProfile(0));
+    app_id = app_listener.Wait();
     EXPECT_TRUE(AllProfilesHaveSameWebAppIds());
   }
 
   // Uninstall the webapp on profile 0, and validate profile 1 gets the change.
   {
-    base::RunLoop loop;
-    // TODO(songfangzhen@bytedance.com): Call BeginListening instead of setting
-    // the delegate & run loop.
     WebAppTestUninstallObserver app_listener(GetProfile(1));
-    app_listener.SetWebAppUninstalledDelegate(
-        base::BindLambdaForTesting([&](const AppId& uninstalled_app_id) {
-          app_id = uninstalled_app_id;
-          loop.Quit();
-        }));
+    app_listener.BeginListening();
     UninstallWebApp(GetProfile(0), app_id);
-    loop.Run();
+    app_listener.Wait();
     EXPECT_TRUE(AllProfilesHaveSameWebAppIds());
   }
 
   // Next, install on profile 1, uninstall on profile 0, and validate that
   // profile 1 sees it.
   {
-    base::RunLoop loop;
-    // TODO(songfangzhen@bytedance.com): Call BeginListening instead of setting
-    // the delegate & run loop.
     WebAppTestInstallObserver app_listener(GetProfile(0));
-    app_listener.SetWebAppInstalledDelegate(
-        base::BindLambdaForTesting([&](const AppId& installed_app_id) {
-          app_id = installed_app_id;
-          loop.Quit();
-        }));
-    app_id = InstallAppAsUserInitiated(GetProfile(1));
-    loop.Run();
+    app_listener.BeginListening();
+    InstallAppAsUserInitiated(GetProfile(1));
+    app_id = app_listener.Wait();
     EXPECT_TRUE(AllProfilesHaveSameWebAppIds());
   }
   {
-    base::RunLoop loop;
-    // TODO(songfangzhen@bytedance.com): Call BeginListening instead of setting
-    // the delegate & run loop.
     WebAppTestUninstallObserver app_listener(GetProfile(1));
-    app_listener.SetWebAppUninstalledDelegate(
-        base::BindLambdaForTesting([&](const AppId& uninstalled_app_id) {
-          app_id = uninstalled_app_id;
-          loop.Quit();
-        }));
+    app_listener.BeginListening();
     UninstallWebApp(GetProfile(0), app_id);
-    loop.Run();
+    app_listener.Wait();
   }
 
   EXPECT_TRUE(AllProfilesHaveSameWebAppIds());

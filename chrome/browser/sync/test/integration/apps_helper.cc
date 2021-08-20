@@ -16,8 +16,7 @@
 #include "chrome/browser/sync/test/integration/sync_extension_helper.h"
 #include "chrome/browser/sync/test/integration/sync_extension_installer.h"
 #include "chrome/browser/web_applications/components/app_registry_controller.h"
-#include "chrome/browser/web_applications/test/web_app_test_install_observer.h"
-#include "chrome/browser/web_applications/test/web_app_test_uninstall_observer.h"
+#include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
@@ -43,8 +42,11 @@ SetupSyncInstallObserverForProfile(Profile* profile) {
   if (apps_to_be_sync_installed.empty()) {
     return nullptr;
   }
-  return std::make_unique<web_app::WebAppTestInstallObserver>(
-      profile, apps_to_be_sync_installed);
+
+  auto install_observer =
+      std::make_unique<web_app::WebAppTestInstallObserver>(profile);
+  install_observer->BeginListening(apps_to_be_sync_installed);
+  return install_observer;
 }
 
 std::unique_ptr<web_app::WebAppTestUninstallObserver>
@@ -58,8 +60,11 @@ SetupSyncUninstallObserverForProfile(Profile* profile) {
   if (apps_in_sync_uninstall.empty()) {
     return nullptr;
   }
-  return std::make_unique<web_app::WebAppTestUninstallObserver>(
-      profile, apps_in_sync_uninstall);
+
+  auto uninstall_observer =
+      std::make_unique<web_app::WebAppTestUninstallObserver>(profile);
+  uninstall_observer->BeginListening(apps_in_sync_uninstall);
+  return uninstall_observer;
 }
 
 }  // namespace

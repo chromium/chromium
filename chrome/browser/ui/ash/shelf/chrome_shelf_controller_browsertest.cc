@@ -85,7 +85,7 @@
 #include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/test/web_app_test_install_with_os_hooks_observer.h"
+#include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_shortcut_manager.h"
 #include "chrome/common/chrome_features.h"
@@ -1248,9 +1248,10 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, AppIDForPWA) {
 
   // Install PWA.
   chrome::SetAutoAcceptPWAInstallConfirmationForTesting(true);
+  web_app::WebAppTestInstallWithOsHooksObserver install_observer(profile());
+  install_observer.BeginListening();
   chrome::ExecuteCommand(browser(), IDC_INSTALL_PWA);
-  const web_app::AppId app_id =
-      web_app::WebAppTestInstallWithOsHooksObserver(profile()).Wait();
+  const web_app::AppId app_id = install_observer.Wait();
   chrome::SetAutoAcceptPWAInstallConfirmationForTesting(false);
 
   // Find the native window for the app.
@@ -2418,9 +2419,10 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest,
       ui::PAGE_TRANSITION_LINK);
   // Install PWA.
   chrome::SetAutoAcceptPWAInstallConfirmationForTesting(true);
+  web_app::WebAppTestInstallWithOsHooksObserver install_observer(profile());
+  install_observer.BeginListening();
   chrome::ExecuteCommand(browser(), IDC_INSTALL_PWA);
-  const web_app::AppId app_id =
-      web_app::WebAppTestInstallWithOsHooksObserver(profile()).Wait();
+  const web_app::AppId app_id = install_observer.Wait();
   chrome::SetAutoAcceptPWAInstallConfirmationForTesting(false);
 
   ash::ShelfID shelf_id(app_id);
@@ -2442,9 +2444,10 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest,
       ui::PAGE_TRANSITION_LINK);
   // Install shortcut app.
   chrome::SetAutoAcceptWebAppDialogForTesting(true, true);
+  web_app::WebAppTestInstallWithOsHooksObserver install_observer(profile());
+  install_observer.BeginListening();
   chrome::ExecuteCommand(browser(), IDC_CREATE_SHORTCUT);
-  const web_app::AppId app_id =
-      web_app::WebAppTestInstallWithOsHooksObserver(profile()).Wait();
+  const web_app::AppId app_id = install_observer.Wait();
   chrome::SetAutoAcceptWebAppDialogForTesting(false, false);
 
   ash::ShelfID shelf_id(app_id);
