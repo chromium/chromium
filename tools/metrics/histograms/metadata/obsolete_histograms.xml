@@ -9545,24 +9545,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Compositing.Browser.GPUMemoryForTilingsInKb" units="Kb"
-    expires_after="M87">
-  <obsolete>
-    Removed September, 2020. Memory.GPU.PeakMemoryUsage.PageLoad can be used to
-    track overall GPU memory usage.
-  </obsolete>
-  <owner>pdr@chromium.org</owner>
-  <owner>paint-dev@chromium.org</owner>
-  <summary>
-    The GPU memory allocated for tilings (in a browser process), summed over all
-    picture layers. Emitted once per drawing. Nothing is recorded if there are
-    no picture layers.
-
-    Tilings are used for decomposition of the layer's entire contents at a
-    picture screenspace resolution to do threaded rasterization.
-  </summary>
-</histogram>
-
 <histogram name="Compositing.Browser.PictureMemoryUsageKb" units="KB"
     expires_after="M85">
   <obsolete>

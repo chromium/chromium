@@ -21,6 +21,23 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<histogram name="Compositing.Browser.GPUMemoryForTilingsInKb" units="Kb"
+    expires_after="M99">
+  <owner>pdr@chromium.org</owner>
+  <owner>paint-dev@chromium.org</owner>
+  <owner>sky@chromium.org</owner>
+  <summary>
+    Warning: this histogram was expired from ~9/2020 to ~8/2021.
+
+    The GPU memory allocated for tilings (in a browser process), summed over all
+    picture layers. Emitted once per drawing. Nothing is recorded if there are
+    no picture layers.
+
+    Tilings are used for decomposition of the layer's entire contents at a
+    picture screenspace resolution to do threaded rasterization.
+  </summary>
+</histogram>
+
 <histogram name="Compositing.Browser.HitTestTimeToFindClosestLayer"
     units="microseconds" expires_after="2020-12-01">
   <obsolete>
