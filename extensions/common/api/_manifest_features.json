@@ -131,8 +131,7 @@
   },
   "declarative_net_request": {
     "channel": "stable",
-    "extension_types": ["extension"],
-    "feature_flag": "DeclarativeNetRequest"
+    "extension_types": ["extension"]
   },
   "default_locale": {
     "channel": "stable",

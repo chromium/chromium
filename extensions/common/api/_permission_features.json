@@ -191,13 +191,11 @@
   },
   "declarativeNetRequest": {
     "channel": "stable",
-    "extension_types": ["extension"],
-    "feature_flag": "DeclarativeNetRequest"
+    "extension_types": ["extension"]
   },
   "declarativeNetRequestFeedback": {
     "channel": "stable",
-    "extension_types": ["extension"],
-    "feature_flag": "DeclarativeNetRequest"
+    "extension_types": ["extension"]
   },
   "declarativeWebRequest": {
     "channel": "beta",
