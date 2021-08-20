@@ -21,24 +21,24 @@ SharedQuadState::~SharedQuadState() {
                                      "viz::SharedQuadState", this);
 }
 
-void SharedQuadState::SetAll(const gfx::Transform& quad_to_target_transform,
-                             const gfx::Rect& quad_layer_rect,
-                             const gfx::Rect& visible_quad_layer_rect,
-                             const gfx::MaskFilterInfo& mask_filter_info,
-                             const absl::optional<gfx::Rect>& clip_rect,
-                             bool are_contents_opaque,
-                             float opacity,
-                             SkBlendMode blend_mode,
-                             int sorting_context_id) {
-  this->quad_to_target_transform = quad_to_target_transform;
-  this->quad_layer_rect = quad_layer_rect;
-  this->visible_quad_layer_rect = visible_quad_layer_rect;
-  this->mask_filter_info = mask_filter_info;
-  this->clip_rect = clip_rect;
-  this->are_contents_opaque = are_contents_opaque;
-  this->opacity = opacity;
-  this->blend_mode = blend_mode;
-  this->sorting_context_id = sorting_context_id;
+void SharedQuadState::SetAll(const gfx::Transform& transform,
+                             const gfx::Rect& layer_rect,
+                             const gfx::Rect& visible_layer_rect,
+                             const gfx::MaskFilterInfo& filter_info,
+                             const absl::optional<gfx::Rect>& clip,
+                             bool contents_opaque,
+                             float opacity_f,
+                             SkBlendMode blend,
+                             int sorting_context) {
+  quad_to_target_transform = transform;
+  quad_layer_rect = layer_rect;
+  visible_quad_layer_rect = visible_layer_rect;
+  mask_filter_info = filter_info;
+  clip_rect = clip;
+  are_contents_opaque = contents_opaque;
+  opacity = opacity_f;
+  blend_mode = blend;
+  sorting_context_id = sorting_context;
 }
 
 void SharedQuadState::AsValueInto(base::trace_event::TracedValue* value) const {

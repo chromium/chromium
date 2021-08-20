@@ -272,7 +272,7 @@ void FakeSkiaOutputSurface::CopyOutput(
     // anything into the mailbox, but currently the only tests that use this
     // don't actually check the returned texture data.
     auto* sii = context_provider_->SharedImageInterface();
-    gpu::Mailbox mailbox = sii->CreateSharedImage(
+    gpu::Mailbox local_mailbox = sii->CreateSharedImage(
         ResourceFormat::RGBA_8888, geometry.result_selection.size(),
         color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
         gpu::SHARED_IMAGE_USAGE_GLES2, gpu::kNullSurfaceHandle);
@@ -283,11 +283,11 @@ void FakeSkiaOutputSurface::CopyOutput(
 
     CopyOutputResult::ReleaseCallbacks release_callbacks;
     release_callbacks.push_back(
-        texture_deleter_->GetReleaseCallback(context_provider_, mailbox));
+        texture_deleter_->GetReleaseCallback(context_provider_, local_mailbox));
 
     request->SendResult(std::make_unique<CopyOutputTextureResult>(
         geometry.result_bounds,
-        CopyOutputResult::TextureResult(mailbox, sync_token, color_space),
+        CopyOutputResult::TextureResult(local_mailbox, sync_token, color_space),
         std::move(release_callbacks)));
     return;
   }

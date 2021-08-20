@@ -567,15 +567,18 @@ void DCLayerOverlayProcessor::InsertDebugBorderDrawQuad(
   auto& quad_list = render_pass->quad_list;
 
   // Add debug borders for the root damage rect after overlay promotion.
-  SkColor border_color = SK_ColorGREEN;
-  auto it = quad_list.InsertBeforeAndInvalidateAllPointers<DebugBorderDrawQuad>(
-      quad_list.begin(), 1u);
-  auto* debug_quad = static_cast<DebugBorderDrawQuad*>(*it);
+  {
+    SkColor border_color = SK_ColorGREEN;
+    auto it =
+        quad_list.InsertBeforeAndInvalidateAllPointers<DebugBorderDrawQuad>(
+            quad_list.begin(), 1u);
+    auto* debug_quad = static_cast<DebugBorderDrawQuad*>(*it);
 
-  gfx::Rect rect = *damage_rect;
-  rect.Inset(kDCLayerDebugBorderInsets);
-  debug_quad->SetNew(shared_quad_state, rect, rect, border_color,
-                     kDCLayerDebugBorderWidth);
+    gfx::Rect rect = *damage_rect;
+    rect.Inset(kDCLayerDebugBorderInsets);
+    debug_quad->SetNew(shared_quad_state, rect, rect, border_color,
+                       kDCLayerDebugBorderWidth);
+  }
 
   // Add debug borders for overlays/underlays
   for (const auto& dc_layer : *dc_layer_overlays) {
@@ -648,7 +651,7 @@ void DCLayerOverlayProcessor::Process(
   // Used for generating the candidate index list.
   QuadList* quad_list = &root_render_pass->quad_list;
   std::vector<size_t> candidate_index_list;
-  size_t index = 0;
+  size_t candidate = 0;
 
   // Used for looping through candidate_index_list to UpdateDCLayerOverlays()
   size_t prev_index = 0;
@@ -658,7 +661,8 @@ void DCLayerOverlayProcessor::Process(
   int yuv_quads_in_quad_list = 0;
   bool has_protected_video_or_texture_overlays = false;
 
-  for (auto it = quad_list->begin(); it != quad_list->end(); ++it, ++index) {
+  for (auto it = quad_list->begin(); it != quad_list->end();
+       ++it, ++candidate) {
     if (it->material == DrawQuad::Material::kAggregatedRenderPass) {
       const auto* rpdq = AggregatedRenderPassDrawQuad::MaterialCast(*it);
       auto render_pass_it =
@@ -706,11 +710,11 @@ void DCLayerOverlayProcessor::Process(
       has_protected_video_or_texture_overlays = true;
 
     if (candidate_index_list.size() == 0) {
-      prev_index = index;
+      prev_index = candidate;
       prev_it = it;
     }
 
-    candidate_index_list.push_back(index);
+    candidate_index_list.push_back(candidate);
   }
 
   // We might not save power if there are more than one videos and only part of

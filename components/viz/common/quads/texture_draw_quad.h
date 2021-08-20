@@ -30,15 +30,15 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
               const gfx::Rect& visible_rect,
               bool needs_blending,
               ResourceId resource_id,
-              bool premultiplied_alpha,
-              const gfx::PointF& uv_top_left,
-              const gfx::PointF& uv_bottom_right,
-              SkColor background_color,
-              const float vertex_opacity[4],
-              bool y_flipped,
-              bool nearest_neighbor,
-              bool secure_output_only,
-              gfx::ProtectedVideoType protected_video_type);
+              bool premultiplied,
+              const gfx::PointF& top_left,
+              const gfx::PointF& bottom_right,
+              SkColor background,
+              const float opacity[4],
+              bool flipped,
+              bool nearest,
+              bool secure_output,
+              gfx::ProtectedVideoType video_type);
 
   void SetAll(const SharedQuadState* shared_quad_state,
               const gfx::Rect& rect,
@@ -46,15 +46,15 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
               bool needs_blending,
               ResourceId resource_id,
               gfx::Size resource_size_in_pixels,
-              bool premultiplied_alpha,
-              const gfx::PointF& uv_top_left,
-              const gfx::PointF& uv_bottom_right,
-              SkColor background_color,
-              const float vertex_opacity[4],
-              bool y_flipped,
-              bool nearest_neighbor,
-              bool secure_output_only,
-              gfx::ProtectedVideoType protected_video_type);
+              bool premultiplied,
+              const gfx::PointF& top_left,
+              const gfx::PointF& bottom_right,
+              SkColor background,
+              const float opacity[4],
+              bool flipped,
+              bool nearest,
+              bool secure_output,
+              gfx::ProtectedVideoType video_type);
 
   gfx::PointF uv_top_left;
   gfx::PointF uv_bottom_right;

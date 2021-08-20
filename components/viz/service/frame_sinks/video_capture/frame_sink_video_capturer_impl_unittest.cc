@@ -364,7 +364,7 @@ MATCHER_P2(IsLetterboxedFrame, color, content_rect, "") {
   const VideoFrame& frame = *arg;
   const gfx::Rect kContentRect = content_rect;
   const auto IsLetterboxedPlane = [&frame, kContentRect](int plane,
-                                                         uint8_t color) {
+                                                         uint8_t component) {
     gfx::Rect content_rect_copy = kContentRect;
     if (plane != VideoFrame::kYPlane) {
       content_rect_copy = gfx::Rect(
@@ -375,7 +375,7 @@ MATCHER_P2(IsLetterboxedFrame, color, content_rect, "") {
       const uint8_t* p = frame.visible_data(plane) + row * frame.stride(plane);
       for (int col = 0; col < frame.row_bytes(plane); ++col) {
         if (content_rect_copy.Contains(gfx::Point(col, row))) {
-          if (p[col] != color) {
+          if (p[col] != component) {
             return false;
           }
         } else {  // Letterbox border around content.

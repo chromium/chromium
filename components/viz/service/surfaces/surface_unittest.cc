@@ -115,7 +115,7 @@ TEST(SurfaceTest, CopyRequestLifetime) {
 
   int max_frame = 3, start_id = 200;
   for (int i = 0; i < max_frame; ++i) {
-    CompositorFrame frame = CompositorFrameBuilder().Build();
+    frame = CompositorFrameBuilder().Build();
     frame.render_pass_list.push_back(CompositorRenderPass::Create());
     frame.render_pass_list.back()->id =
         CompositorRenderPassId{i * 3 + start_id};

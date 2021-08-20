@@ -23,7 +23,7 @@ void AggregatedRenderPassDrawQuad::SetNew(
     const SharedQuadState* shared_quad_state,
     const gfx::Rect& rect,
     const gfx::Rect& visible_rect,
-    AggregatedRenderPassId render_pass_id,
+    AggregatedRenderPassId render_pass,
     ResourceId mask_resource_id,
     const gfx::RectF& mask_uv_rect,
     const gfx::Size& mask_texture_size,
@@ -32,11 +32,11 @@ void AggregatedRenderPassDrawQuad::SetNew(
     const gfx::RectF& tex_coord_rect,
     bool force_anti_aliasing_off,
     float backdrop_filter_quality) {
-  DCHECK(render_pass_id);
+  DCHECK(render_pass);
 
   bool needs_blending = true;
   bool intersects_damage_under = true;
-  SetAll(shared_quad_state, rect, visible_rect, needs_blending, render_pass_id,
+  SetAll(shared_quad_state, rect, visible_rect, needs_blending, render_pass,
          mask_resource_id, mask_uv_rect, mask_texture_size, filters_scale,
          filters_origin, tex_coord_rect, force_anti_aliasing_off,
          backdrop_filter_quality, intersects_damage_under);
@@ -47,7 +47,7 @@ void AggregatedRenderPassDrawQuad::SetAll(
     const gfx::Rect& rect,
     const gfx::Rect& visible_rect,
     bool needs_blending,
-    AggregatedRenderPassId render_pass_id,
+    AggregatedRenderPassId render_pass,
     ResourceId mask_resource_id,
     const gfx::RectF& mask_uv_rect,
     const gfx::Size& mask_texture_size,
@@ -57,11 +57,11 @@ void AggregatedRenderPassDrawQuad::SetAll(
     bool force_anti_aliasing_off,
     float backdrop_filter_quality,
     bool intersects_damage_under) {
-  DCHECK(render_pass_id);
+  DCHECK(render_pass);
 
   DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kAggregatedRenderPass,
                    rect, visible_rect, needs_blending);
-  this->render_pass_id = render_pass_id;
+  render_pass_id = render_pass;
   resources.ids[kMaskResourceIdIndex] = mask_resource_id;
   resources.count = mask_resource_id ? 1 : 0;
   this->mask_uv_rect = mask_uv_rect;

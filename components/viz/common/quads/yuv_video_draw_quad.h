@@ -35,43 +35,43 @@ class VIZ_COMMON_EXPORT YUVVideoDrawQuad : public DrawQuad {
               const gfx::Rect& rect,
               const gfx::Rect& visible_rect,
               bool needs_blending,
-              // |*_tex_coord_rect| contains non-normalized coordinates.
+              // |*_rect| contains non-normalized coordinates.
               // TODO(reveman): Make the use of normalized vs non-normalized
               // coordinates consistent across all quad types: crbug.com/487370
-              const gfx::RectF& ya_tex_coord_rect,
-              const gfx::RectF& uv_tex_coord_rect,
-              const gfx::Size& ya_tex_size,
-              const gfx::Size& uv_tex_size,
+              const gfx::RectF& ya_rect,
+              const gfx::RectF& uv_rect,
+              const gfx::Size& ya_size,
+              const gfx::Size& uv_size,
               ResourceId y_plane_resource_id,
               ResourceId u_plane_resource_id,
               ResourceId v_plane_resource_id,
               ResourceId a_plane_resource_id,
-              const gfx::ColorSpace& video_color_space,
+              const gfx::ColorSpace& color_space,
               float offset,
               float multiplier,
-              uint32_t bits_per_channel);
+              uint32_t bits);
 
   void SetAll(const SharedQuadState* shared_quad_state,
               const gfx::Rect& rect,
               const gfx::Rect& visible_rect,
               bool needs_blending,
-              // |*_tex_coord_rect| contains non-normalized coordinates.
+              // |*_rect| contains non-normalized coordinates.
               // TODO(reveman): Make the use of normalized vs non-normalized
               // coordinates consistent across all quad types: crbug.com/487370
-              const gfx::RectF& ya_tex_coord_rect,
-              const gfx::RectF& uv_tex_coord_rect,
-              const gfx::Size& ya_tex_size,
-              const gfx::Size& uv_tex_size,
+              const gfx::RectF& ya_rect,
+              const gfx::RectF& uv_rect,
+              const gfx::Size& ya_size,
+              const gfx::Size& uv_size,
               ResourceId y_plane_resource_id,
               ResourceId u_plane_resource_id,
               ResourceId v_plane_resource_id,
               ResourceId a_plane_resource_id,
-              const gfx::ColorSpace& video_color_space,
+              const gfx::ColorSpace& color_space,
               float offset,
               float multiplier,
-              uint32_t bits_per_channel,
-              gfx::ProtectedVideoType protected_video_type,
-              gfx::HDRMetadata hdr_metadata);
+              uint32_t bits,
+              gfx::ProtectedVideoType video_type,
+              gfx::HDRMetadata metadata);
 
   gfx::RectF ya_tex_coord_rect;
   gfx::RectF uv_tex_coord_rect;

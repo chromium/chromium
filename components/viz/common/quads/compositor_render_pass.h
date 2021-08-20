@@ -58,25 +58,25 @@ class VIZ_COMMON_EXPORT CompositorRenderPass : public RenderPassInternal {
       size_t shared_quad_state_list_size,
       size_t quad_list_size);
 
-  void SetNew(CompositorRenderPassId id,
+  void SetNew(CompositorRenderPassId pass_id,
               const gfx::Rect& output_rect,
               const gfx::Rect& damage_rect,
               const gfx::Transform& transform_to_root_target);
 
-  void SetAll(CompositorRenderPassId id,
+  void SetAll(CompositorRenderPassId pass_id,
               const gfx::Rect& output_rect,
               const gfx::Rect& damage_rect,
               const gfx::Transform& transform_to_root_target,
               const cc::FilterOperations& filters,
               const cc::FilterOperations& backdrop_filters,
               const absl::optional<gfx::RRectF>& backdrop_filter_bounds,
-              SubtreeCaptureId subtree_capture_id,
-              gfx::Size subtree_size,
+              SubtreeCaptureId capture_id,
+              gfx::Size size,
               bool has_transparent_background,
               bool cache_render_pass,
               bool has_damage_from_contributing_content,
               bool generate_mipmap,
-              bool has_per_quad_damage);
+              bool per_quad_damage);
 
   void AsValueInto(base::trace_event::TracedValue* dict) const;
 

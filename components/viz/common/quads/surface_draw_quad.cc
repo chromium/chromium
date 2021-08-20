@@ -23,33 +23,33 @@ SurfaceDrawQuad& SurfaceDrawQuad::operator=(const SurfaceDrawQuad& other) =
 void SurfaceDrawQuad::SetNew(const SharedQuadState* shared_quad_state,
                              const gfx::Rect& rect,
                              const gfx::Rect& visible_rect,
-                             const SurfaceRange& surface_range,
-                             SkColor default_background_color,
-                             bool stretch_content_to_fill_bounds) {
+                             const SurfaceRange& range,
+                             SkColor background_color,
+                             bool stretch_content) {
   bool needs_blending = true;
   DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kSurfaceContent, rect,
                    visible_rect, needs_blending);
-  this->surface_range = surface_range;
-  this->default_background_color = default_background_color;
-  this->stretch_content_to_fill_bounds = stretch_content_to_fill_bounds;
+  surface_range = range;
+  default_background_color = background_color;
+  stretch_content_to_fill_bounds = stretch_content;
 }
 
 void SurfaceDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
                              const gfx::Rect& rect,
                              const gfx::Rect& visible_rect,
                              bool needs_blending,
-                             const SurfaceRange& surface_range,
-                             SkColor default_background_color,
-                             bool stretch_content_to_fill_bounds,
-                             bool is_reflection,
-                             bool allow_merge) {
+                             const SurfaceRange& range,
+                             SkColor background_color,
+                             bool stretch_content,
+                             bool reflection,
+                             bool merge) {
   DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kSurfaceContent, rect,
                    visible_rect, needs_blending);
-  this->surface_range = surface_range;
-  this->default_background_color = default_background_color;
-  this->stretch_content_to_fill_bounds = stretch_content_to_fill_bounds;
-  this->is_reflection = is_reflection;
-  this->allow_merge = allow_merge;
+  surface_range = range;
+  default_background_color = background_color;
+  stretch_content_to_fill_bounds = stretch_content;
+  is_reflection = reflection;
+  allow_merge = merge;
 }
 
 const SurfaceDrawQuad* SurfaceDrawQuad::MaterialCast(const DrawQuad* quad) {

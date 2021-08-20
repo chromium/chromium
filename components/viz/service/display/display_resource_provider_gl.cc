@@ -170,9 +170,10 @@ void DisplayResourceProviderGL::UnlockForRead(ResourceId id,
       if (!resource->release_fence.is_null()) {
         auto fence = gfx::GpuFence(resource->release_fence.Clone());
         if (gl::GLFence::IsGpuFenceSupported()) {
-          auto id = gl->CreateClientGpuFenceCHROMIUM(fence.AsClientGpuFence());
-          gl->WaitGpuFenceCHROMIUM(id);
-          gl->DestroyGpuFenceCHROMIUM(id);
+          auto fence_id =
+              gl->CreateClientGpuFenceCHROMIUM(fence.AsClientGpuFence());
+          gl->WaitGpuFenceCHROMIUM(fence_id);
+          gl->DestroyGpuFenceCHROMIUM(fence_id);
         } else {
           fence.Wait();
         }

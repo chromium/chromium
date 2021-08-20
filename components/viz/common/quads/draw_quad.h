@@ -143,11 +143,11 @@ class VIZ_COMMON_EXPORT DrawQuad {
  protected:
   DrawQuad();
 
-  void SetAll(const SharedQuadState* shared_quad_state,
-              Material material,
-              const gfx::Rect& rect,
-              const gfx::Rect& visible_rect,
-              bool needs_blending);
+  void SetAll(const SharedQuadState* quad_state,
+              Material m,
+              const gfx::Rect& r,
+              const gfx::Rect& visible_r,
+              bool blending);
   virtual void ExtendValue(base::trace_event::TracedValue* value) const = 0;
 };
 

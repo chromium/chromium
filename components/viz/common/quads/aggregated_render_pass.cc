@@ -37,16 +37,16 @@ AggregatedRenderPass::AggregatedRenderPass(size_t shared_quad_state_size,
     : RenderPassInternal(shared_quad_state_size, draw_quad_size) {}
 
 void AggregatedRenderPass::SetNew(
-    AggregatedRenderPassId id,
+    AggregatedRenderPassId pass_id,
     const gfx::Rect& output_rect,
     const gfx::Rect& damage_rect,
     const gfx::Transform& transform_to_root_target) {
-  DCHECK(id);
+  DCHECK(pass_id);
   DCHECK(damage_rect.IsEmpty() || output_rect.Contains(damage_rect))
       << "damage_rect: " << damage_rect.ToString()
       << " output_rect: " << output_rect.ToString();
 
-  this->id = id;
+  id = pass_id;
   this->output_rect = output_rect;
   this->damage_rect = damage_rect;
   this->transform_to_root_target = transform_to_root_target;
@@ -56,28 +56,28 @@ void AggregatedRenderPass::SetNew(
 }
 
 void AggregatedRenderPass::SetAll(
-    AggregatedRenderPassId id,
+    AggregatedRenderPassId pass_id,
     const gfx::Rect& output_rect,
     const gfx::Rect& damage_rect,
     const gfx::Transform& transform_to_root_target,
     const cc::FilterOperations& filters,
     const cc::FilterOperations& backdrop_filters,
     const absl::optional<gfx::RRectF>& backdrop_filter_bounds,
-    gfx::ContentColorUsage content_color_usage,
+    gfx::ContentColorUsage color_usage,
     bool has_transparent_background,
     bool cache_render_pass,
     bool has_damage_from_contributing_content,
     bool generate_mipmap) {
-  DCHECK(id);
+  DCHECK(pass_id);
 
-  this->id = id;
+  id = pass_id;
   this->output_rect = output_rect;
   this->damage_rect = damage_rect;
   this->transform_to_root_target = transform_to_root_target;
   this->filters = filters;
   this->backdrop_filters = backdrop_filters;
   this->backdrop_filter_bounds = backdrop_filter_bounds;
-  this->content_color_usage = content_color_usage;
+  content_color_usage = color_usage;
   this->has_transparent_background = has_transparent_background;
   this->cache_render_pass = cache_render_pass;
   this->has_damage_from_contributing_content =

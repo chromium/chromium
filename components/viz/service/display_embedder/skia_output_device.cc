@@ -239,14 +239,14 @@ void SkiaOutputDevice::FinishSwapBuffers(
   if (!pending_swaps_.empty()) {
     auto iter = skipped_swap_info_.find(pending_swaps_.front().SwapId());
     if (iter != skipped_swap_info_.end()) {
-      OutputSurfaceFrame frame = std::move(iter->second);
-      gfx::Size frame_size = frame.size;
+      OutputSurfaceFrame output_frame = std::move(iter->second);
+      gfx::Size frame_size = output_frame.size;
       skipped_swap_info_.erase(iter);
       // Recursively call into FinishSwapBuffers until the head of the queue is
       // no longer a skipped swap.
       FinishSwapBuffers(
           gfx::SwapCompletionResult(gfx::SwapResult::SWAP_SKIPPED), frame_size,
-          std::move(frame));
+          std::move(output_frame));
     }
   }
 }

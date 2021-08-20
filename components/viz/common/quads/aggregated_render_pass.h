@@ -46,19 +46,19 @@ class VIZ_COMMON_EXPORT AggregatedRenderPass : public RenderPassInternal {
   AggregatedRenderPass();
   AggregatedRenderPass(size_t shared_quad_state_size, size_t draw_quad_size);
 
-  void SetNew(AggregatedRenderPassId id,
+  void SetNew(AggregatedRenderPassId pass_id,
               const gfx::Rect& output_rect,
               const gfx::Rect& damage_rect,
               const gfx::Transform& transform_to_root_target);
 
-  void SetAll(AggregatedRenderPassId id,
+  void SetAll(AggregatedRenderPassId pass_id,
               const gfx::Rect& output_rect,
               const gfx::Rect& damage_rect,
               const gfx::Transform& transform_to_root_target,
               const cc::FilterOperations& filters,
               const cc::FilterOperations& backdrop_filters,
               const absl::optional<gfx::RRectF>& backdrop_filter_bounds,
-              gfx::ContentColorUsage content_color_usage,
+              gfx::ContentColorUsage color_usage,
               bool has_transparent_background,
               bool cache_render_pass,
               bool has_damage_from_contributing_content,

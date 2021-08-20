@@ -202,8 +202,9 @@ void DisplayResourceProvider::ReceiveFromChild(
   CHECK(child_it != children_.end());
   Child& child_info = child_it->second;
   DCHECK(!child_info.marked_for_deletion);
-  for (const TransferableResource& resource : resources) {
-    auto resource_in_map_it = child_info.child_to_parent_map.find(resource.id);
+  for (const TransferableResource& transferable_resource : resources) {
+    auto resource_in_map_it =
+        child_info.child_to_parent_map.find(transferable_resource.id);
     if (resource_in_map_it != child_info.child_to_parent_map.end()) {
       ChildResource* resource = GetResource(resource_in_map_it->second);
       resource->marked_for_deletion = false;
@@ -211,20 +212,22 @@ void DisplayResourceProvider::ReceiveFromChild(
       continue;
     }
 
-    if (resource.is_software != IsSoftware() ||
-        resource.mailbox_holder.mailbox.IsZero()) {
+    if (transferable_resource.is_software != IsSoftware() ||
+        transferable_resource.mailbox_holder.mailbox.IsZero()) {
       TRACE_EVENT0(
           "viz", "DisplayResourceProvider::ReceiveFromChild dropping invalid");
       std::vector<ReturnedResource> returned;
-      returned.push_back(resource.ToReturnedResource());
+      returned.push_back(transferable_resource.ToReturnedResource());
       child_info.return_callback.Run(std::move(returned));
       continue;
     }
 
     ResourceId local_id = resource_id_generator_.GenerateNextId();
-    DCHECK(!resource.is_software || IsBitmapFormatSupported(resource.format));
-    resources_.emplace(local_id, ChildResource(child_id, resource));
-    child_info.child_to_parent_map[resource.id] = local_id;
+    DCHECK(!transferable_resource.is_software ||
+           IsBitmapFormatSupported(transferable_resource.format));
+    resources_.emplace(local_id,
+                       ChildResource(child_id, transferable_resource));
+    child_info.child_to_parent_map[transferable_resource.id] = local_id;
   }
 }
 

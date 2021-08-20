@@ -1914,7 +1914,7 @@ AggregatedFrame SurfaceAggregator::Aggregate(
   ResetAfterAggregate();
 
   for (auto it : previous_contained_surfaces_) {
-    Surface* surface = manager_->GetSurfaceForId(it.first);
+    surface = manager_->GetSurfaceForId(it.first);
     if (surface) {
       surface->allocation_group()->TakeAggregatedLatencyInfoUpTo(
           surface, &frame.latency_info);

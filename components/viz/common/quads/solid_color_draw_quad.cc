@@ -16,25 +16,25 @@ SolidColorDrawQuad::SolidColorDrawQuad()
 void SolidColorDrawQuad::SetNew(const SharedQuadState* shared_quad_state,
                                 const gfx::Rect& rect,
                                 const gfx::Rect& visible_rect,
-                                SkColor color,
-                                bool force_anti_aliasing_off) {
-  bool needs_blending = SkColorGetA(color) != 255;
+                                SkColor c,
+                                bool anti_aliasing_off) {
+  bool needs_blending = SkColorGetA(c) != 255;
   DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kSolidColor, rect,
                    visible_rect, needs_blending);
-  this->color = color;
-  this->force_anti_aliasing_off = force_anti_aliasing_off;
+  color = c;
+  force_anti_aliasing_off = anti_aliasing_off;
 }
 
 void SolidColorDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
                                 const gfx::Rect& rect,
                                 const gfx::Rect& visible_rect,
                                 bool needs_blending,
-                                SkColor color,
-                                bool force_anti_aliasing_off) {
+                                SkColor c,
+                                bool anti_aliasing_off) {
   DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kSolidColor, rect,
                    visible_rect, needs_blending);
-  this->color = color;
-  this->force_anti_aliasing_off = force_anti_aliasing_off;
+  color = c;
+  force_anti_aliasing_off = anti_aliasing_off;
 }
 
 const SolidColorDrawQuad* SolidColorDrawQuad::MaterialCast(
