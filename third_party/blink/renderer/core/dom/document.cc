@@ -1963,12 +1963,17 @@ static void AssertLayoutTreeUpdatedForPseudoElements(const Element& element) {
   }
 }
 
-static void AssertLayoutTreeUpdated(Node& root) {
+static void AssertLayoutTreeUpdated(Node& root,
+                                    bool allow_dirty_container_subtrees) {
   Node* node = &root;
   while (node) {
     if (auto* element = DynamicTo<Element>(node)) {
-      if (RuntimeEnabledFeatures::CSSContentVisibilityEnabled() &&
-          element->ChildStyleRecalcBlockedByDisplayLock()) {
+      if ((RuntimeEnabledFeatures::CSSContentVisibilityEnabled() &&
+           element->ChildStyleRecalcBlockedByDisplayLock()) ||
+          (allow_dirty_container_subtrees && element->GetLayoutObject() &&
+           element->GetLayoutObject()
+               ->StyleRef()
+               .IsContainerForContainerQueries())) {
         node = FlatTreeTraversal::NextSkippingChildren(*node);
         continue;
       }
@@ -1987,6 +1992,13 @@ static void AssertLayoutTreeUpdated(Node& root) {
 
     node = FlatTreeTraversal::Next(*node);
   }
+}
+
+#endif
+
+#if EXPENSIVE_DCHECKS_ARE_ON()
+void Document::AssertLayoutTreeUpdatedAfterLayout() {
+  AssertLayoutTreeUpdated(*this, false /* allow_dirty_container_subtrees */);
 }
 #endif
 
@@ -2032,7 +2044,8 @@ void Document::UpdateStyleAndLayoutTreeForThisDocument() {
                 .GetSlotAssignmentEngine()
                 .HasPendingSlotAssignmentRecalc());
     DCHECK(!owner->GetDocument().NeedsLayoutTreeUpdate());
-    AssertLayoutTreeUpdated(owner->GetDocument());
+    AssertLayoutTreeUpdated(owner->GetDocument(),
+                            false /* allow_dirty_container_subtrees */);
   }
 #endif  // EXPENSIVE_DCHECKS_ARE_ON()
 
@@ -2131,7 +2144,7 @@ void Document::UpdateStyleAndLayoutTreeForThisDocument() {
                    "elementCount", element_count);
 
 #if DCHECK_IS_ON()
-  AssertLayoutTreeUpdated(*this);
+  AssertLayoutTreeUpdated(*this, true /* allow_dirty_container_subtrees */);
 #endif
 }
 

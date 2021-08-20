@@ -33,6 +33,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/renderer/core/animation/document_animations.h"
+#include "third_party/blink/renderer/core/css/container_query_data.h"
 #include "third_party/blink/renderer/core/css/container_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/counter_style_map.h"
 #include "third_party/blink/renderer/core/css/css_default_style_sheets.h"
@@ -2005,6 +2006,8 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
   DCHECK(!container.NeedsStyleRecalc());
   DCHECK(!in_container_query_style_recalc_);
 
+  skipped_container_recalc_ = false;
+
   base::AutoReset<bool> cq_recalc(&in_container_query_style_recalc_, true);
 
   DCHECK(container.GetLayoutObject()) << "Containers must have a LayoutObject";
@@ -2017,12 +2020,16 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
 
   StyleRecalcChange change;
 
-  auto* evaluator = container.GetContainerQueryEvaluator();
+  auto* cq_data = container.GetContainerQueryData();
+  DCHECK(cq_data);
+  auto* evaluator = cq_data->GetContainerQueryEvaluator();
   DCHECK(evaluator);
 
   switch (evaluator->ContainerChanged(physical_size, physical_axes)) {
     case ContainerQueryEvaluator::Change::kNone:
-      return;
+      if (!cq_data->SkippedStyleRecalc())
+        return;
+      break;
     case ContainerQueryEvaluator::Change::kNearestContainer:
       change = change.ForceRecalcContainer();
       break;

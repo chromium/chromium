@@ -238,7 +238,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   }
   bool UsesContainerQueries() const {
     return GetRuleFeatureSet().UsesContainerQueries() ||
-           uses_container_relative_units_;
+           uses_container_relative_units_ || skipped_container_recalc_;
   }
 
   void SetUsesContainerRelativeUnits() {
@@ -447,6 +447,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   bool InContainerQueryStyleRecalc() const {
     return in_container_query_style_recalc_;
   }
+  void SkipStyleRecalcForContainer() { skipped_container_recalc_ = true; }
   void ChangeRenderingForHTMLSelect(HTMLSelectElement& select);
 
   void SetColorSchemeFromMeta(const CSSValue* color_scheme);
@@ -623,6 +624,13 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
 
   bool uses_rem_units_{false};
   bool uses_container_relative_units_{false};
+  // True if the previous UpdateStyleAndLayoutTree skipped style recalc for a
+  // subtree for a container to have the follow layout update the size of the
+  // container before continuing with interleaved style and layout with the
+  // correct container size for container queries. This being true is a signal
+  // to EnsureComputedStyle that we need to update layout to have up-to-date
+  // ComputedStyles.
+  bool skipped_container_recalc_{false};
   bool in_layout_tree_rebuild_{false};
   bool in_container_query_style_recalc_{false};
   bool in_dom_removal_{false};

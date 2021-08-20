@@ -25,6 +25,7 @@
 #include <memory>
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/aom/accessible_node.h"
+#include "third_party/blink/renderer/core/css/container_query_data.h"
 #include "third_party/blink/renderer/core/css/cssom/inline_style_property_map.h"
 #include "third_party/blink/renderer/core/css/inline_css_style_declaration.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
@@ -45,7 +46,7 @@
 
 namespace blink {
 
-class ContainerQueryEvaluator;
+class ContainerQueryData;
 class Element;
 class HTMLElement;
 class ResizeObservation;
@@ -204,11 +205,26 @@ class ElementRareData final : public NodeRareData {
   DisplayLockContext* GetDisplayLockContext() const {
     return display_lock_context_;
   }
+
+  ContainerQueryData& EnsureContainerQueryData() {
+    if (!container_query_data_)
+      container_query_data_ = MakeGarbageCollected<ContainerQueryData>();
+    return *container_query_data_;
+  }
+  ContainerQueryData* GetContainerQueryData() const {
+    return container_query_data_;
+  }
+
   ContainerQueryEvaluator* GetContainerQueryEvaluator() const {
-    return container_query_evaluator_;
+    if (!container_query_data_)
+      return nullptr;
+    return container_query_data_->GetContainerQueryEvaluator();
   }
   void SetContainerQueryEvaluator(ContainerQueryEvaluator* evaluator) {
-    container_query_evaluator_ = evaluator;
+    if (container_query_data_)
+      container_query_data_->SetContainerQueryEvaluator(evaluator);
+    else if (evaluator)
+      EnsureContainerQueryData().SetContainerQueryEvaluator(evaluator);
   }
 
   const AtomicString& GetNonce() const { return nonce_; }
@@ -244,7 +260,7 @@ class ElementRareData final : public NodeRareData {
   Member<AccessibleNode> accessible_node_;
 
   Member<DisplayLockContext> display_lock_context_;
-  Member<ContainerQueryEvaluator> container_query_evaluator_;
+  Member<ContainerQueryData> container_query_data_;
   bool did_attach_internals_ = false;
   bool should_force_legacy_layout_for_child_ = false;
   bool style_should_force_legacy_layout_ = false;

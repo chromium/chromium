@@ -31,7 +31,7 @@
 #include "third_party/blink/renderer/core/dom/element_rare_data.h"
 
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
-#include "third_party/blink/renderer/core/css/container_query_evaluator.h"
+#include "third_party/blink/renderer/core/css/container_query_data.h"
 #include "third_party/blink/renderer/core/css/cssom/inline_style_property_map.h"
 #include "third_party/blink/renderer/core/editing/ime/edit_context.h"
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
@@ -115,7 +115,7 @@ void ElementRareData::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(element_internals_);
   visitor->Trace(intersection_observer_data_);
   visitor->Trace(resize_observer_data_);
-  visitor->Trace(container_query_evaluator_);
+  visitor->Trace(container_query_data_);
   NodeRareData::TraceAfterDispatch(visitor);
 }
 

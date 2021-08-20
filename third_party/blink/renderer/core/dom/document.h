@@ -1541,6 +1541,10 @@ class CORE_EXPORT Document : public ContainerNode,
   }
 #endif
 
+#if EXPENSIVE_DCHECKS_ARE_ON()
+  void AssertLayoutTreeUpdatedAfterLayout();
+#endif
+
   unsigned& FlatTreeTraversalForbiddenRecursionDepth() {
     return flat_tree_traversal_forbidden_recursion_depth_;
   }

@@ -843,14 +843,14 @@ void LocalFrameView::PerformLayout() {
     }
   }
 
-  frame_->GetDocument()->Fetcher()->UpdateAllImageResourcePriorities();
+  document->Fetcher()->UpdateAllImageResourcePriorities();
 
   Lifecycle().AdvanceTo(DocumentLifecycle::kAfterPerformLayout);
 
   TRACE_EVENT_END1(PERFORM_LAYOUT_TRACE_CATEGORIES,
                    "LocalFrameView::performLayout", "counters",
                    AnalyzerCounters());
-  FirstMeaningfulPaintDetector::From(*frame_->GetDocument())
+  FirstMeaningfulPaintDetector::From(*document)
       .MarkNextPaintAsMeaningfulIfNeeded(
           layout_object_counter_, contents_height_before_layout,
           GetLayoutView()->DocumentRect().Height(), Height());
@@ -863,11 +863,15 @@ void LocalFrameView::PerformLayout() {
   }
 
   if (frame_->IsMainFrame()) {
-    if (auto* text_autosizer = frame_->GetDocument()->GetTextAutosizer()) {
+    if (auto* text_autosizer = document->GetTextAutosizer()) {
       if (text_autosizer->HasLayoutInlineSizeChanged())
         text_autosizer->UpdatePageInfoInAllFrames(frame_);
     }
   }
+#if EXPENSIVE_DCHECKS_ARE_ON()
+  DCHECK(!Lifecycle().LifecyclePostponed() && !ShouldThrottleRendering());
+  document->AssertLayoutTreeUpdatedAfterLayout();
+#endif
 }
 
 void LocalFrameView::UpdateLayout() {

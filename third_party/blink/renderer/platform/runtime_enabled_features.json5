@@ -559,6 +559,13 @@
       implied_by: ["CSSContainerQueries"]
     },
     {
+      // With this flag disabled, we run UpdateStyle() over the full DOM tree
+      // before running interleaved style/layout. With this flag enabled, we
+      // skip style recalc in UpdateStyle() for containers which are guaranteed
+      // to be reachable in the following layout.
+      name: "CSSContainerSkipStyleRecalc",
+    },
+    {
       // Support for contain:inline-size and contain:block-size
       name: "CSSContainSize1D",
       implied_by: ["CSSContainerQueries"]
