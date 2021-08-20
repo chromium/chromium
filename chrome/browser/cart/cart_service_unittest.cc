@@ -1587,3 +1587,16 @@ TEST_F(CartServiceRbdFastPathTest, TestAppendUTM) {
   EXPECT_EQ(GURL("https://www.foo.com?utm_source=chrome_cart_rbd"),
             CartService::AppendUTM(GURL(kMockMerchantURLA), true));
 }
+
+TEST_F(CartServiceRbdFastPathTest, TestAppendUTMAvoidDuplicates) {
+  std::string merchantUrl = "https://www.foo.com";
+  EXPECT_FALSE(service_->IsCartDiscountEnabled());
+  EXPECT_EQ(GURL("https://www.foo.com?utm_source=chrome_cart_no_rbd"),
+            CartService::AppendUTM(GURL(kMockMerchantURLA), false));
+
+  merchantUrl = "https://www.foo.com?utm_source=chrome_cart_no_rbd";
+  profile_.GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, true);
+  EXPECT_TRUE(service_->IsCartDiscountEnabled());
+  EXPECT_EQ(GURL("https://www.foo.com?utm_source=chrome_cart_rbd"),
+            CartService::AppendUTM(GURL(kMockMerchantURLA), true));
+}
