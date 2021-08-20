@@ -1491,6 +1491,7 @@ AxisEdge AxisEdgeFromItemPosition(const ComputedStyle& container_style,
                                   const StyleSelfAlignmentData& alignment,
                                   const bool is_replaced,
                                   const bool is_inline_axis,
+                                  const ItemType item_type,
                                   NGAutoBehavior* auto_behavior,
                                   bool* is_overflow_safe) {
   DCHECK(auto_behavior);
@@ -1499,7 +1500,7 @@ AxisEdge AxisEdgeFromItemPosition(const ComputedStyle& container_style,
   *is_overflow_safe = alignment.Overflow() == OverflowAlignment::kSafe;
 
   // Auto-margins take precedence over any alignment properties.
-  if (style.MayHaveMargin()) {
+  if (style.MayHaveMargin() && item_type == ItemType::kInGridFlow) {
     bool is_start_auto =
         is_inline_axis ? style.MarginStartUsing(container_style).IsAuto()
                        : style.MarginBeforeUsing(container_style).IsAuto();
@@ -1639,6 +1640,13 @@ NGGridLayoutAlgorithm::GridItemData NGGridLayoutAlgorithm::MeasureGridItem(
   const ComputedStyle& item_style = node.Style();
   const bool is_replaced = node.IsReplaced();
 
+  if (node.IsOutOfFlowPositioned()) {
+    item.item_type = ItemType::kOutOfFlow;
+    item.is_grid_containing_block = node.IsContainingBlockNGGrid();
+  } else {
+    item.item_type = ItemType::kInGridFlow;
+  }
+
   // Determine the alignment for the grid-item ahead of time (we may need to
   // know if it stretches ahead of time to correctly determine any block-axis
   // contribution).
@@ -1646,13 +1654,13 @@ NGGridLayoutAlgorithm::GridItemData NGGridLayoutAlgorithm::MeasureGridItem(
       container_style, item_style,
       item_style.ResolvedJustifySelf(ItemPosition::kNormal, &container_style),
       is_replaced,
-      /* is_inline_axis */ true, &item.inline_auto_behavior,
+      /* is_inline_axis */ true, item.item_type, &item.inline_auto_behavior,
       &item.is_inline_axis_overflow_safe);
   item.block_axis_alignment = AxisEdgeFromItemPosition(
       container_style, item_style,
       item_style.ResolvedAlignSelf(ItemPosition::kNormal, &container_style),
       is_replaced,
-      /* is_inline_axis */ false, &item.block_auto_behavior,
+      /* is_inline_axis */ false, item.item_type, &item.block_auto_behavior,
       &item.is_block_axis_overflow_safe);
 
   const auto item_writing_mode =
@@ -1661,13 +1669,6 @@ NGGridLayoutAlgorithm::GridItemData NGGridLayoutAlgorithm::MeasureGridItem(
       kForRows, container_writing_mode, item_writing_mode);
   item.column_baseline_type = DetermineBaselineType(
       kForColumns, container_writing_mode, item_writing_mode);
-
-  if (node.IsOutOfFlowPositioned()) {
-    item.item_type = ItemType::kOutOfFlow;
-    item.is_grid_containing_block = node.IsContainingBlockNGGrid();
-  } else {
-    item.item_type = ItemType::kInGridFlow;
-  }
 
   return item;
 }
