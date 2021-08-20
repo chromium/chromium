@@ -730,6 +730,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Download.Progress.InfoBar.CloseButtonClicked"
+    enum="DownloadInfoBarState" expires_after="M97">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>clank-downloads@google.com</owner>
+  <summary>
+    Records the state of the download progress infobar on android when the user
+    taps on the infobar's close button.
+  </summary>
+</histogram>
+
+<histogram name="Download.Progress.InfoBar.Shown"
+    enum="DownloadInfoBar.ShownState" expires_after="2022-02-01">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>clank-downloads@google.com</owner>
+  <summary>
+    Records various types of messages representing the state of the downloads as
+    they are shown on the download progress infobar on android.
+  </summary>
+</histogram>
+
 <histogram name="Download.QuarantineService.ConnectionError"
     enum="BooleanConnectionError" expires_after="M80">
   <owner>pmonette@chromium.org</owner>
