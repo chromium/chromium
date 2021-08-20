@@ -60,9 +60,6 @@ class COMPONENT_EXPORT(UI_BASE_X) X11WholeScreenMoveLoop
   // Creates an input-only window to be used during the drag.
   void CreateDragInputWindow(x11::Connection* connection);
 
-  // Dispatch mouse movement event to |delegate_| in a posted task.
-  void DispatchMouseMovement();
-
   void PostDispatchIfNeeded(const ui::MouseEvent& event);
 
   X11MoveLoopDelegate* delegate_;
@@ -91,7 +88,6 @@ class COMPONENT_EXPORT(UI_BASE_X) X11WholeScreenMoveLoop
   // pressing escape).
   bool canceled_;
 
-  std::unique_ptr<ui::MouseEvent> last_motion_in_screen_;
   base::WeakPtrFactory<X11WholeScreenMoveLoop> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(X11WholeScreenMoveLoop);
