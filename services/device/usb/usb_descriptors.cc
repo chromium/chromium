@@ -199,35 +199,11 @@ void OnReadStringDescriptor(
     size_t length) {
   std::u16string string;
   if (status == UsbTransferStatus::COMPLETED &&
-      ParseUsbStringDescriptor(base::make_span(buffer->front(), length),
-                               &string)) {
+      ParseUsbStringDescriptor(
+          std::vector<uint8_t>(buffer->front(), buffer->front() + length),
+          &string)) {
     std::move(callback).Run(string);
   } else {
-    std::move(callback).Run(std::u16string());
-  }
-}
-
-void OnReadStringDescriptorHeader(
-    scoped_refptr<UsbDeviceHandle> device_handle,
-    uint8_t index,
-    uint16_t language_id,
-    base::OnceCallback<void(const std::u16string&)> callback,
-    UsbTransferStatus status,
-    scoped_refptr<base::RefCountedBytes> header,
-    size_t length) {
-  if (status == UsbTransferStatus::COMPLETED && length == 2) {
-    const uint8_t* data = header->front();
-    uint8_t actual_length = data[0];
-    auto buffer = base::MakeRefCounted<base::RefCountedBytes>(actual_length);
-    device_handle->ControlTransfer(
-        UsbTransferDirection::INBOUND, UsbControlTransferType::STANDARD,
-        UsbControlTransferRecipient::DEVICE, kGetDescriptorRequest,
-        kStringDescriptorType << 8 | index, language_id, buffer,
-        kControlTransferTimeoutMs,
-        base::BindOnce(&OnReadStringDescriptor, std::move(callback)));
-  } else {
-    LOG(ERROR) << "Failed to read length for string " << static_cast<int>(index)
-               << ".";
     std::move(callback).Run(std::u16string());
   }
 }
@@ -237,14 +213,13 @@ void ReadStringDescriptor(
     uint8_t index,
     uint16_t language_id,
     base::OnceCallback<void(const std::u16string&)> callback) {
-  auto buffer = base::MakeRefCounted<base::RefCountedBytes>(2);
+  auto buffer = base::MakeRefCounted<base::RefCountedBytes>(255);
   device_handle->ControlTransfer(
       UsbTransferDirection::INBOUND, UsbControlTransferType::STANDARD,
       UsbControlTransferRecipient::DEVICE, kGetDescriptorRequest,
       kStringDescriptorType << 8 | index, language_id, buffer,
       kControlTransferTimeoutMs,
-      base::BindOnce(&OnReadStringDescriptorHeader, device_handle, index,
-                     language_id, std::move(callback)));
+      base::BindOnce(&OnReadStringDescriptor, std::move(callback)));
 }
 
 void OnReadLanguageIds(scoped_refptr<UsbDeviceHandle> device_handle,
@@ -386,7 +361,7 @@ void ReadUsbDescriptors(
                      std::move(callback)));
 }
 
-bool ParseUsbStringDescriptor(base::span<const uint8_t> descriptor,
+bool ParseUsbStringDescriptor(const std::vector<uint8_t>& descriptor,
                               std::u16string* output) {
   if (descriptor.size() < 2 || descriptor[1] != kStringDescriptorType)
     return false;
