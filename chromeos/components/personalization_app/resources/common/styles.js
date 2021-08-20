@@ -22,14 +22,12 @@ styles.innerHTML = `
     }
     @media (prefers-color-scheme: light) {
       .placeholder,
-      .photo-loading-placeholder,
       .photo-images-container {
         background-color: var(--google-grey-100);
       }
     }
     @media (prefers-color-scheme: dark) {
       .placeholder,
-      .photo-loading-placeholder,
       .photo-images-container {
         background-color: rgba(var(--google-grey-700-rgb), 0.3);
       }
@@ -55,10 +53,12 @@ styles.innerHTML = `
        elements ignoring parent interior padding. */
     .photo-inner-container {
       align-items: center;
+      border-radius: 12px;
       display: flex;
       cursor: pointer;
       height: 100%;
       justify-content: center;
+      overflow: hidden;
       position: relative;
       width: 100%;
     }

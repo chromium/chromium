@@ -48,6 +48,7 @@
     display: flex;
     flex-flow: column nowrap;
     justify-content: flex-end;
+    margin: 0;
   }
 
   #textContainer > * {
@@ -62,17 +63,17 @@
     margin-top: 4px;
   }
 
-  #textContainer > p:first-child {
+  #textContainer > span:first-child {
     color: var(--cros-text-color-secondary);
     font: var(--cros-body-2-font);
   }
 
-  #textContainer > p:nth-child(2) {
+  #textContainer > span:nth-child(2) {
     color: var(--cros-text-color-primary);
     font: var(--cros-display-6-font);
   }
 
-  #textContainer > p:nth-child(n+3) {
+  #textContainer > span:nth-child(n+3) {
     color: var(--cros-text-color-secondary);
     font-family: var(--personalization-app-font-google-sans);
     font-size: 14px;
@@ -99,7 +100,7 @@
     border: 0;
   }
 </style>
-<header id="container" aria-label$="[[getAriaLabel_(image_)]]">
+<header id="container">
   <template is="dom-if"
       if="[[showPlaceholders_(isLoading_, showImage_)]]">
     <div id="imagePlaceholder" class="placeholder"></div>
@@ -110,15 +111,17 @@
     <div id="imageContainer">
       <img src="[[getImageSrc_(image_)]]" aria-hidden="true">
     </div>
-    <div id="textContainer">
-      <p id="currentlySet">[[i18n('currentlySet')]]</p>
-      <p id="imageTitle" title="[[imageTitle_]]">[[imageTitle_]]</p>
+    <h2 id="textContainer" aria-live="polite" aria-label$="[[getAriaLabel_(image_)]]">
+      <span id="currentlySet" aria-hidden="true">[[i18n('currentlySet')]]</span>
+      <span id="imageTitle" title$="[[imageTitle_]]" aria-hidden="true">
+        [[imageTitle_]]
+      </span>
       <dom-repeat items="[[imageOtherAttribution_]]">
         <template>
-          <p title="[[item]]">[[item]]</p>
+          <span title$="[[item]]" aria-hidden="true">[[item]]</span>
         </template>
       </dom-repeat>
-    </div>
+    </h2>
     <div id="buttonContainer">
       <template is="dom-if" if="[[showWallpaperOptions_]]">
         <div id="wallpaperOptions">
@@ -140,7 +143,7 @@
           <cr-button id="dailyRefresh" data-collection-id$="[[collectionId]]"
               aria-label$="[[i18n('ariaLabelChangeDaily')]]"
               data-daily-refresh-collection-id$="[[dailyRefreshCollectionId_]]"
-              aria-pressed="[[ariaPressed_]]"
+              aria-pressed$="[[ariaPressed_]]"
               on-click="onClickDailyRefreshToggle_">
             <iron-icon icon="[[dailyRefreshIcon_]]"></iron-icon>
             <div class="text">[[i18n('changeDaily')]]</div>
@@ -148,7 +151,7 @@
           <cr-button id="refreshWallpaper"
               aria-label$="[[i18n('ariaLabelRefresh')]]"
               on-click="onClickUpdateDailyRefreshWallpaper_"
-              hidden="[[!showRefreshButton_]]">
+              hidden$="[[!showRefreshButton_]]">
             <iron-icon icon="personalization:refresh"></iron-icon>
             <div class="text">[[i18n('refresh')]]</div>
           </cr-button>

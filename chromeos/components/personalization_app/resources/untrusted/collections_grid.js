@@ -363,15 +363,6 @@ class CollectionsGrid extends PolymerElement {
   }
 
   /**
-   * @private
-   * @param {number} i
-   * @return {number}
-   */
-  getAriaIndex_(i) {
-    return i + 1;
-  }
-
-  /**
    * Not using I18nBehavior because of chrome-untrusted:// incompatibility.
    * @param {string} str
    * @return {string}

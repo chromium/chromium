@@ -18,7 +18,7 @@
         <template is="dom-if"
             if="[[isImageLoading_(item, imageDataLoading_)]]">
           <div tabindex$="[[tabIndex]]" role="option"
-              class="photo-loading-placeholder"
+              class="photo-inner-container placeholder"
               style$="[[getLoadingPlaceholderAnimationDelay_(index)]]"
               aria-posinset$="[[getAriaIndex_(index)]]"
               aria-label$="[[i18n('ariaLabelLoading')]]"
@@ -30,10 +30,10 @@
               tabindex$="[[tabIndex]]" data-id$="[[getImageKey_(item)]]"
               on-click="onImageSelected_" on-keypress="onImageSelected_"
               aria-posinset$="[[getAriaIndex_(index)]]"
-              aria-selected$="[[getAriaSelected_(item, currentSelected_, pendingSelected_)]]">
+              aria-selected$="[[getAriaSelected_(item, currentSelected_, pendingSelected_)]]"
+              aria-label$="[[item.name]]">
             <div class="photo-images-container">
-              <img src="[[getImageData_(item, imageData_)]]"
-                  alt="[[item.name]]">
+              <img src="[[getImageData_(item, imageData_)]]" aria-hidden="true">
               <iron-icon icon="personalization:checkmark"></iron-icon>
             </div>
           </div>

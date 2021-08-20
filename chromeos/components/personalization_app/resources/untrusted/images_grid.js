@@ -148,7 +148,7 @@ class ImagesGrid extends PolymerElement {
    * @param {!chromeos.personalizationApp.mojom.WallpaperImage} image
    * @return {string}
    */
-  getImgAlt_(image) {
+  getAriaLabel_(image) {
     return image.attribution.join(' ');
   }
 
