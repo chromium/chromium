@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/location.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
@@ -162,6 +163,22 @@ void Scheduler::SetNeedsPrepareTiles() {
 void Scheduler::DidSubmitCompositorFrame(uint32_t frame_token,
                                          EventMetricsSet events_metrics,
                                          bool has_missing_content) {
+  // Timedelta used from begin impl frame to submit frame.
+  const auto cc_begin_impl_to_submit_ = Now() - cc_frame_start_;
+  if (cc_frame_time_available_ >= cc_begin_impl_to_submit_) {
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "Scheduling.Renderer.FrameProduction.TimeUnused",
+        cc_frame_time_available_ - cc_begin_impl_to_submit_,
+        base::TimeDelta::FromMicroseconds(1),
+        base::TimeDelta::FromMilliseconds(50), 50);
+  } else {
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "Scheduling.Renderer.FrameProduction.TimeOverused",
+        cc_begin_impl_to_submit_ - cc_frame_time_available_,
+        base::TimeDelta::FromMicroseconds(1),
+        base::TimeDelta::FromMilliseconds(50), 50);
+  }
+
   compositor_frame_reporting_controller_->DidSubmitCompositorFrame(
       frame_token, begin_main_frame_args_.frame_id,
       last_activate_origin_frame_args_.frame_id, std::move(events_metrics),
@@ -592,10 +609,15 @@ void Scheduler::BeginImplFrameSynchronous(const viz::BeginFrameArgs& args) {
   begin_main_frame_args_ = args;
   begin_main_frame_args_.on_critical_path = !ImplLatencyTakesPriority();
 
-  BeginImplFrame(args, Now());
+  viz::BeginFrameArgs adjusted_args = args;
+  adjusted_args.deadline -= compositor_timing_history_->DrawDurationEstimate();
+  adjusted_args.deadline -= kDeadlineFudgeFactor;
+
+  BeginImplFrame(adjusted_args, Now());
   compositor_timing_history_->WillFinishImplFrame(
       state_machine_.needs_redraw());
-  compositor_frame_reporting_controller_->OnFinishImplFrame(args.frame_id);
+  compositor_frame_reporting_controller_->OnFinishImplFrame(
+      adjusted_args.frame_id);
   // Delay the call to |FinishFrame()| if a draw is anticipated, so that it is
   // called after the draw happens (in |OnDrawForLayerTreeFrameSink()|).
   needs_finish_frame_for_synchronous_compositor_ = true;
@@ -657,6 +679,9 @@ void Scheduler::BeginImplFrame(const viz::BeginFrameArgs& args,
             SchedulerStateMachine::BeginImplFrameState::IDLE);
   DCHECK(begin_impl_frame_deadline_task_.IsCancelled());
   DCHECK(state_machine_.HasInitializedLayerTreeFrameSink());
+  cc_frame_time_available_ = args.interval - kDeadlineFudgeFactor -
+                             compositor_timing_history_->DrawDurationEstimate();
+  cc_frame_start_ = now;
 
   {
     DCHECK(!inside_scheduled_action_);
