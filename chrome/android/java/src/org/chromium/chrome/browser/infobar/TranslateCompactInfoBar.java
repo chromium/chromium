@@ -669,8 +669,8 @@ public class TranslateCompactInfoBar
             case ACTION_AUTO_NEVER_LANGUAGE:
                 mOptions.toggleNeverTranslateLanguageState(
                         !mOptions.getTranslateState(TranslateOptions.Type.NEVER_LANGUAGE));
-                // If toggling never translate to true, after applying this option the infobar will
-                // dismiss.
+                // If toggling never translate to true, after applying this option the translation
+                // will revert and the infobar will dismiss.
                 TranslateCompactInfoBarJni.get().applyBoolTranslateOption(
                         mNativeTranslateInfoBarPtr, TranslateCompactInfoBar.this,
                         TranslateOption.NEVER_TRANSLATE,
@@ -680,8 +680,8 @@ public class TranslateCompactInfoBar
                 mOptions.toggleNeverTranslateDomainState(
                         !mOptions.getTranslateState(TranslateOptions.Type.NEVER_DOMAIN));
                 mUserInteracted = true;
-                // If toggling never translate to true, after applying this option the infobar will
-                // dismiss.
+                // If toggling never translate to true, after applying this option the translation
+                // will revert and the infobar will dismiss.
                 TranslateCompactInfoBarJni.get().applyBoolTranslateOption(
                         mNativeTranslateInfoBarPtr, TranslateCompactInfoBar.this,
                         TranslateOption.NEVER_TRANSLATE_SITE,
