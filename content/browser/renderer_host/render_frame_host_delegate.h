@@ -153,10 +153,6 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // Notifies that the manifest URL is updated.
   virtual void OnManifestUrlChanged(const PageImpl& page) {}
 
-  // Gets the last committed URL. See WebContents::GetLastCommittedURL for a
-  // description of the semantics.
-  virtual const GURL& GetMainFrameLastCommittedURL();
-
   // A message was added to to the console. |source_id| is a URL.
   // |untrusted_stack_trace| is not present for most messages; only when
   // requested in advance and only for exceptions.
@@ -521,7 +517,8 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   virtual bool IsAllowedToGoToEntryAtOffset(int32_t offset);
 
   virtual media::MediaMetricsProvider::RecordAggregateWatchTimeCallback
-  GetRecordAggregateWatchTimeCallback();
+  GetRecordAggregateWatchTimeCallback(
+      const GURL& page_main_frame_last_committed_url);
 
   // Determines if a clipboard paste using |data| of type |data_type| is allowed
   // in this renderer frame.  Possible data types supported for paste can be

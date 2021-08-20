@@ -571,7 +571,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void OnDidFinishLoad(RenderFrameHostImpl* render_frame_host,
                        const GURL& url) override;
   void OnManifestUrlChanged(const PageImpl& page) override;
-  const GURL& GetMainFrameLastCommittedURL() override;
   void RenderFrameCreated(RenderFrameHostImpl* render_frame_host) override;
   void RenderFrameDeleted(RenderFrameHostImpl* render_frame_host) override;
   void ShowContextMenu(
@@ -706,7 +705,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void OnFrameAudioStateChanged(RenderFrameHostImpl* host,
                                 bool is_audible) override;
   media::MediaMetricsProvider::RecordAggregateWatchTimeCallback
-  GetRecordAggregateWatchTimeCallback() override;
+  GetRecordAggregateWatchTimeCallback(
+      const GURL& page_main_frame_last_committed_url) override;
   std::vector<FrameTreeNode*> GetUnattachedOwnedNodes(
       RenderFrameHostImpl* owner) override;
   void RegisterProtocolHandler(RenderFrameHostImpl* source,

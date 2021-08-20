@@ -28,10 +28,6 @@ bool RenderFrameHostDelegate::OnMessageReceived(
   return false;
 }
 
-const GURL& RenderFrameHostDelegate::GetMainFrameLastCommittedURL() {
-  return GURL::EmptyGURL();
-}
-
 bool RenderFrameHostDelegate::DidAddMessageToConsole(
     RenderFrameHostImpl* source_frame,
     blink::mojom::ConsoleMessageLevel log_level,
@@ -145,7 +141,8 @@ std::vector<FrameTreeNode*> RenderFrameHostDelegate::GetUnattachedOwnedNodes(
 }
 
 media::MediaMetricsProvider::RecordAggregateWatchTimeCallback
-RenderFrameHostDelegate::GetRecordAggregateWatchTimeCallback() {
+RenderFrameHostDelegate::GetRecordAggregateWatchTimeCallback(
+    const GURL& page_main_frame_last_committed_url) {
   return base::NullCallback();
 }
 

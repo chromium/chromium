@@ -6534,10 +6534,6 @@ void WebContentsImpl::OnDidBlockNavigation(
     delegate_->OnDidBlockNavigation(this, blocked_url, initiator_url, reason);
 }
 
-const GURL& WebContentsImpl::GetMainFrameLastCommittedURL() {
-  return GetLastCommittedURL();
-}
-
 void WebContentsImpl::RenderFrameCreated(
     RenderFrameHostImpl* render_frame_host) {
   TRACE_EVENT1("content", "WebContentsImpl::RenderFrameCreated",
@@ -8577,25 +8573,28 @@ void WebContentsImpl::OnFrameAudioStateChanged(RenderFrameHostImpl* host,
 }
 
 media::MediaMetricsProvider::RecordAggregateWatchTimeCallback
-WebContentsImpl::GetRecordAggregateWatchTimeCallback() {
+WebContentsImpl::GetRecordAggregateWatchTimeCallback(
+    const GURL& page_main_frame_last_committed_url) {
   OPTIONAL_TRACE_EVENT0("content",
                         "WebContentsImpl::RecordAggregateWatchTimeCallback");
   if (!delegate_ || !delegate_->GetDelegateWeakPtr())
     return base::DoNothing();
 
   return base::BindRepeating(
-      [](base::WeakPtr<WebContentsDelegate> delegate, GURL last_committed_url,
+      [](base::WeakPtr<WebContentsDelegate> delegate,
+         GURL page_main_frame_last_committed_url,
          base::TimeDelta total_watch_time, base::TimeDelta time_stamp,
          bool has_video, bool has_audio) {
         content::MediaPlayerWatchTime watch_time(
-            last_committed_url, last_committed_url.GetOrigin(),
-            total_watch_time, time_stamp, has_video, has_audio);
+            page_main_frame_last_committed_url,
+            page_main_frame_last_committed_url.GetOrigin(), total_watch_time,
+            time_stamp, has_video, has_audio);
 
         // Save the watch time if the delegate is still alive.
         if (delegate)
           delegate->MediaWatchTimeChanged(watch_time);
       },
-      delegate_->GetDelegateWeakPtr(), GetMainFrameLastCommittedURL());
+      delegate_->GetDelegateWeakPtr(), page_main_frame_last_committed_url);
 }
 
 std::vector<FrameTreeNode*> WebContentsImpl::GetUnattachedOwnedNodes(

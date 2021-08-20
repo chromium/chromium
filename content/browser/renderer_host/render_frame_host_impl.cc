@@ -3288,7 +3288,7 @@ void RenderFrameHostImpl::DidAddMessageToConsole(
   // Pass through log severity only on builtin components pages to limit console
   // spew.
   const bool is_builtin_component =
-      HasWebUIScheme(delegate_->GetMainFrameLastCommittedURL()) ||
+      HasWebUIScheme(GetMainFrame()->GetLastCommittedURL()) ||
       GetContentClient()->browser()->IsBuiltinComponent(
           GetProcess()->GetBrowserContext(), GetLastCommittedOrigin());
   const bool is_off_the_record =
@@ -6980,7 +6980,8 @@ void RenderFrameHostImpl::HandleAXLocationChanges(
 
 media::MediaMetricsProvider::RecordAggregateWatchTimeCallback
 RenderFrameHostImpl::GetRecordAggregateWatchTimeCallback() {
-  return delegate_->GetRecordAggregateWatchTimeCallback();
+  return delegate_->GetRecordAggregateWatchTimeCallback(
+      GetMainFrame()->GetLastCommittedURL());
 }
 
 void RenderFrameHostImpl::ResetWaitingState() {
