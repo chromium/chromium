@@ -120,6 +120,9 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
     highlight_range_ = range;
   }
 
+  // Update search box view background when result container visibility changes.
+  void OnResultContainerVisibilityChanged(bool visible);
+
  private:
   // Updates the text field text color.
   void UpdateTextColor();
@@ -166,6 +169,12 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
 
   // Clear highlight range.
   void ResetHighlightRange();
+
+  // Tracks whether the search result page view is visible.
+  bool search_result_page_visible_ = false;
+
+  // Tracks the current app list state.
+  AppListState current_app_list_state_ = AppListState::kStateApps;
 
   std::u16string current_query_;
 

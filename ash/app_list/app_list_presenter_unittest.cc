@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/app_list/app_list_bubble_presenter.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_presenter_impl.h"
 #include "ash/app_list/app_list_test_view_delegate.h"
@@ -13,6 +14,8 @@
 #include "ash/app_list/model/app_list_test_model.h"
 #include "ash/app_list/model/search/test_search_result.h"
 #include "ash/app_list/test/app_list_test_helper.h"
+#include "ash/app_list/views/app_list_bubble_search_page.h"
+#include "ash/app_list/views/app_list_bubble_view.h"
 #include "ash/app_list/views/app_list_folder_view.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/app_list_main_view.h"
@@ -304,6 +307,99 @@ class AppListPresenterTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+// Tests search UI for all tablet/clamshell classic/bubble launcher
+// combinations.
+class SearchUITest
+    : public AshTestBase,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  SearchUITest() = default;
+  SearchUITest(const SearchUITest&) = delete;
+  SearchUITest& operator=(const SearchUITest&) = delete;
+  ~SearchUITest() override = default;
+
+  // testing::Test:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatureState(features::kAppListBubble,
+                                              app_list_bubble_flag());
+    AppListView::SetShortAnimationForTesting(true);
+    AshTestBase::SetUp();
+
+    // Make the display big enough to hold the app list.
+    UpdateDisplay("1024x768");
+  }
+
+  // testing::Test:
+  void TearDown() override {
+    AshTestBase::TearDown();
+    AppListView::SetShortAnimationForTesting(false);
+  }
+
+  // Whether we should use the AppListBubble flag.
+  bool app_list_bubble_flag() { return std::get<0>(GetParam()); }
+  // Whether we should run the test in tablet mode.
+  bool tablet_mode() { return std::get<1>(GetParam()); }
+
+  // Bubble launcher is visible in clamshell mode with kAppListBubble enabled.
+  bool should_show_bubble_launcher() {
+    return app_list_bubble_flag() && !tablet_mode();
+  }
+  // Zero state be shown in clamshell mode and in tablet mode when bubble
+  // launcher is not enabled.
+  bool should_show_zero_state_search() { return !app_list_bubble_flag(); }
+
+  void MaybeRefreshAppListSearchResultPage() {
+    // Bubble launcher has an AppListBubbleSearchPage which does not need to be
+    // refreshed like the SearchResultViewPage.
+    if (!should_show_bubble_launcher()) {
+      GetAppListTestHelper()
+          ->GetAppListView()
+          ->app_list_main_view()
+          ->contents_view()
+          ->search_result_page_view()
+          ->OnSearchResultContainerResultsChanged();
+    }
+  }
+
+  bool AppListSearchResultPageVisible() {
+    return should_show_bubble_launcher()
+               ? GetAppListTestHelper()->GetBubbleSearchPage()->GetVisible()
+               : GetAppListTestHelper()
+                     ->GetAppListView()
+                     ->app_list_main_view()
+                     ->contents_view()
+                     ->search_result_page_view()
+                     ->GetVisible();
+  }
+
+  void EnsureLauncherShown() {
+    if (should_show_bubble_launcher()) {
+      Shell::Get()->app_list_controller()->bubble_presenter_for_test()->Show(
+          GetPrimaryDisplay().id());
+    } else if (!tablet_mode()) {
+      // App list is always visible in tablet mode so we do not need to show it.
+      GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
+    }
+  }
+
+  gfx::Point SearchBoxCenterPoint() {
+    if (should_show_bubble_launcher()) {
+      return GetAppListTestHelper()
+          ->GetBubbleSearchBoxView()
+          ->GetBoundsInScreen()
+          .CenterPoint();
+    }
+    return GetAppListTestHelper()
+        ->GetAppListView()
+        ->search_box_view()
+        ->GetBoundsInScreen()
+        .CenterPoint();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 // Used to test app_list behavior with a populated apps_grid
 class PopulatedAppListTest : public AshTestBase,
                              public testing::WithParamInterface<bool> {
@@ -425,6 +521,35 @@ INSTANTIATE_TEST_SUITE_P(All, PopulatedAppListTest, testing::Bool());
 INSTANTIATE_TEST_SUITE_P(All,
                          PopulatedAppListWithVKEnabledTest,
                          testing::Bool());
+
+// Instantiate the values in the parameterized tests. First boolean is used to
+// determine whether we should use the kAppListBubble feature flag. The second
+// boolean is to determine whether we should run the test in tablet mode.
+INSTANTIATE_TEST_SUITE_P(All,
+                         SearchUITest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
+
+// Tests that Zero State Search is only shown when needed.
+TEST_P(SearchUITest, LauncherSearchZeroState) {
+  EnableTabletMode(tablet_mode());
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  EnsureLauncherShown();
+
+  // Tap Search Box to activate it and check search result view visibility.
+  generator->GestureTapAt(SearchBoxCenterPoint());
+  MaybeRefreshAppListSearchResultPage();
+  EXPECT_EQ(should_show_zero_state_search(), AppListSearchResultPageVisible());
+
+  // Type a character into the textfield and check visibility.
+  generator->PressKey(ui::VKEY_A, 0);
+  MaybeRefreshAppListSearchResultPage();
+  EXPECT_TRUE(AppListSearchResultPageVisible());
+
+  // Delete the character in the textfield and check visibility.
+  generator->PressKey(ui::VKEY_BACK, 0);
+  MaybeRefreshAppListSearchResultPage();
+  EXPECT_EQ(should_show_zero_state_search(), AppListSearchResultPageVisible());
+}
 
 // Verifies that context menu click should not activate the search box
 // (see https://crbug.com/941428).

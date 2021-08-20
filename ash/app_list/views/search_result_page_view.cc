@@ -17,6 +17,7 @@
 #include "ash/app_list/views/search_result_list_view.h"
 #include "ash/app_list/views/search_result_page_anchored_dialog.h"
 #include "ash/app_list/views/search_result_tile_item_list_view.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
@@ -296,17 +297,29 @@ void SearchResultPageView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 }
 
 void SearchResultPageView::UpdateResultContainersVisibility() {
+  bool should_show_page_view = false;
+
   for (auto* container : result_container_views_) {
     // Containers are wrapped by a `SearchCardView`, so update the parent
     // visibility.
-    container->parent()->SetVisible(container->num_results());
-    container->SetVisible(container->num_results());
+    bool should_show_container_view =
+        container->num_results() && ShouldShowSearchResultView();
+    container->parent()->SetVisible(should_show_container_view);
+    container->SetVisible(should_show_container_view);
+    should_show_page_view = should_show_page_view || should_show_container_view;
   }
 
   result_lists_separator_->SetVisible(
       search_result_tile_item_list_view_->num_results() &&
-      search_result_list_view_->num_results());
+      search_result_list_view_->num_results() && ShouldShowSearchResultView());
+
+  if (features::IsAppListBubbleEnabled())
+    SetVisible(should_show_page_view);
+
   Layout();
+  AppListPage::contents_view()
+      ->GetSearchBoxView()
+      ->OnResultContainerVisibilityChanged(should_show_page_view);
 }
 
 void SearchResultPageView::SelectedResultChanged() {
@@ -477,6 +490,13 @@ void SearchResultPageView::OnWillBeHidden() {
   anchored_dialog_.reset();
 }
 
+bool SearchResultPageView::ShouldShowSearchResultView() const {
+  return (!features::IsAppListBubbleEnabled() ||
+          !base::TrimWhitespace(search_model_->search_box()->text(),
+                                base::TrimPositions::TRIM_ALL)
+               .empty());
+}
+
 void SearchResultPageView::OnHidden() {
   // Hide the search results page when it is behind search box to avoid focus
   // being moved onto suggested apps when zero state is enabled.
@@ -486,13 +506,21 @@ void SearchResultPageView::OnHidden() {
   for (auto* container_view : result_container_views_) {
     container_view->SetShown(false);
   }
+
+  AppListPage::contents_view()
+      ->GetSearchBoxView()
+      ->OnResultContainerVisibilityChanged(false);
 }
 
 void SearchResultPageView::OnShown() {
   AppListPage::OnShown();
   for (auto* container_view : result_container_views_) {
-    container_view->SetShown(true);
+    container_view->SetShown(ShouldShowSearchResultView());
   }
+
+  AppListPage::contents_view()
+      ->GetSearchBoxView()
+      ->OnResultContainerVisibilityChanged(ShouldShowSearchResultView());
   ScheduleResultsChangedA11yNotification();
 }
 

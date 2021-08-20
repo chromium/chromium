@@ -373,6 +373,7 @@ void SearchBoxView::UpdateBackground(AppListState target_state) {
       GetSearchBoxBorderCornerRadiusForState(target_state));
   UpdateBackgroundColor(GetBackgroundColorForState(target_state));
   UpdateTextColor();
+  current_app_list_state_ = target_state;
 }
 
 void SearchBoxView::UpdateLayout(AppListState target_state,
@@ -390,6 +391,7 @@ void SearchBoxView::UpdateLayout(AppListState target_state,
         GetAssistantButtonOpacityForState(target_state));
   }
   InvalidateLayout();
+  current_app_list_state_ = target_state;
 }
 
 int SearchBoxView::GetSearchBoxBorderCornerRadiusForState(
@@ -403,7 +405,7 @@ int SearchBoxView::GetSearchBoxBorderCornerRadiusForState(
 
 SkColor SearchBoxView::GetBackgroundColorForState(AppListState state) const {
   if (state == AppListState::kStateSearchResults) {
-    if (features::IsDarkLightModeEnabled())
+    if (features::IsDarkLightModeEnabled() && search_result_page_visible_)
       return SK_ColorTRANSPARENT;
     return AppListColorProvider::Get()->GetSearchBoxCardBackgroundColor();
   }
@@ -478,6 +480,14 @@ void SearchBoxView::ProcessAutocomplete(
   // Current text in the search_box does not match the first result's url or
   // search result text.
   ClearAutocompleteText();
+}
+
+void SearchBoxView::OnResultContainerVisibilityChanged(bool visible) {
+  if (search_result_page_visible_ == visible)
+    return;
+  search_result_page_visible_ = visible;
+  UpdateBackgroundColor(GetBackgroundColorForState(current_app_list_state_));
+  SchedulePaint();
 }
 
 void SearchBoxView::UpdateTextColor() {
