@@ -28,6 +28,11 @@ def _CheckHtml(input_api, output_api):
       input_api, output_api, 80, lambda x: x.LocalPath().endswith('.html'))
 
 
+SKIP_PRESUBMIT_FILES = set([
+  'chromeos/components/camera_app_ui/resources/js/lib/ffmpeg.js'
+])
+
+
 def _CheckWebDevStyle(input_api, output_api):
   results = []
 
@@ -37,7 +42,10 @@ def _CheckWebDevStyle(input_api, output_api):
     cwd = input_api.PresubmitLocalPath()
     sys.path += [input_api.os_path.join(cwd, '..', '..', '..', 'tools')]
     from web_dev_style import presubmit_support
-    results += presubmit_support.CheckStyle(input_api, output_api)
+    results += presubmit_support.CheckStyle(
+        input_api,
+        output_api,
+        lambda x: x.LocalPath() not in SKIP_PRESUBMIT_FILES)
   finally:
     sys.path = old_sys_path
 
