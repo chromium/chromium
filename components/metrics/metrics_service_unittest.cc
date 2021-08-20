@@ -358,6 +358,8 @@ TEST_F(MetricsServiceTest, InitialStabilityLogAfterCrash) {
   // Save an existing system profile to prefs, to correspond to what would be
   // saved from a previous session.
   TestMetricsServiceClient client;
+  const std::string kCrashedVersion = "4.0.321.0-64-devel";
+  client.set_version_string(kCrashedVersion);
   TestMetricsLog log("client", 1, &client);
   DelegatingProvider delegating_provider;
   TestMetricsService::RecordCurrentEnvironmentHelper(&log, GetLocalState(),
@@ -370,6 +372,9 @@ TEST_F(MetricsServiceTest, InitialStabilityLogAfterCrash) {
                               client.GetVersionString());
 
   CleanExitBeacon::SetStabilityExitedCleanlyForTesting(GetLocalState(), false);
+
+  const std::string kCurrentVersion = "5.0.322.0-64-devel";
+  client.set_version_string(kCurrentVersion);
 
   TestMetricsService service(
       GetMetricsStateManager(), &client, GetLocalState());
@@ -407,6 +412,10 @@ TEST_F(MetricsServiceTest, InitialStabilityLogAfterCrash) {
   EXPECT_EQ(0, uma_log.omnibox_event_size());
   EXPECT_EQ(0, uma_log.perf_data_size());
   CheckForNonStabilityHistograms(uma_log);
+
+  EXPECT_EQ(kCrashedVersion, uma_log.system_profile().app_version());
+  EXPECT_EQ(kCurrentVersion,
+            uma_log.system_profile().log_written_by_app_version());
 
   EXPECT_EQ(1, uma_log.system_profile().stability().crash_count());
 }

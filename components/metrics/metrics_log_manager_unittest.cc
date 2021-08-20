@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "components/metrics/log_decoder.h"
 #include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_log_store.h"
 #include "components/metrics/metrics_pref_names.h"
@@ -35,6 +36,10 @@ class MetricsLogManagerTest : public testing::Test {
 
   MetricsLog* CreateLog(MetricsLog::LogType log_type) {
     return new MetricsLog("id", 0, log_type, &client_);
+  }
+
+  void SetClientVersion(const std::string& version) {
+    client_.set_version_string(version);
   }
 
  private:
@@ -121,6 +126,33 @@ TEST_F(MetricsLogManagerTest, InterjectedLogPreservesType) {
   log_manager.FinishCurrentLog(log_store());
   EXPECT_EQ(1U, log_store()->initial_log_count());
   EXPECT_EQ(1U, log_store()->ongoing_log_count());
+}
+
+// Make sure that when a log is finished and the client's version is different
+// from the version stored in the log, then the log_written_by_app_version field
+// is gets set to the current version.
+TEST_F(MetricsLogManagerTest, AppVersionChange) {
+  MetricsLogManager log_manager;
+
+  const std::string kNewVersion = "5.0.322.0-64-devel";
+  SetClientVersion(kNewVersion);
+
+  MetricsLog* metrics_log = CreateLog(MetricsLog::ONGOING_LOG);
+  log_manager.BeginLoggingWithLog(base::WrapUnique(metrics_log));
+
+  const std::string kOldVersion = "4.0.321.0-64-devel";
+  metrics_log->UmaProtoForTest()->mutable_system_profile()->set_app_version(
+      kOldVersion);
+
+  log_manager.FinishCurrentLog(log_store());
+
+  log_store()->StageNextLog();
+  EXPECT_TRUE(log_store()->has_staged_log());
+  ChromeUserMetricsExtension uma_log;
+  EXPECT_TRUE(DecodeLogDataToProto(log_store()->staged_log(), &uma_log));
+
+  EXPECT_EQ(kOldVersion, uma_log.system_profile().app_version());
+  EXPECT_EQ(kNewVersion, uma_log.system_profile().log_written_by_app_version());
 }
 
 }  // namespace metrics

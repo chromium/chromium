@@ -17,7 +17,7 @@ import "extension_install.proto";
 // Almost all the fields should be populated on every upload. (The only
 // exception is some fields in the stability section that are only uploaded
 // once per browsing session, usually shortly after startup.)
-// Next tag: 40
+// Next tag: 41
 message SystemProfileProto {
   // The time when the client was compiled/linked, in seconds since the epoch.
   optional int64 build_timestamp = 1;
@@ -45,6 +45,13 @@ message SystemProfileProto {
   // associated with the request; and including the postfix, may be more
   // specific.
   optional string app_version = 2;
+
+  // The application can create logs about previous versions. In particular the
+  // initial stability log refers to the previous run, which can be an older
+  // version. This field is set by the client when the log being written has an
+  // app_version that's different than the version of the app writing the log.
+  // Note that the version uploading the log may also be different.
+  optional string log_written_by_app_version = 40;
 
   // The brand code or distribution tag assigned to a partner, if available.
   // Brand codes are only available on Windows.  Not every Windows install

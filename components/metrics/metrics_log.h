@@ -167,6 +167,10 @@ class MetricsLog {
   bool LoadSavedEnvironmentFromPrefs(PrefService* local_state,
                                      std::string* app_version);
 
+  // Records the log_written_by_app_version system_profile field if the client's
+  // version is different from the system_profile's app_version.
+  void RecordLogWrittenByAppVersionIfNeeded();
+
   // Record data from providers about the previous session into the log.
   void RecordPreviousSessionData(DelegatingProvider* delegating_provider);
 

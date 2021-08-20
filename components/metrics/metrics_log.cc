@@ -397,6 +397,14 @@ bool MetricsLog::LoadSavedEnvironmentFromPrefs(PrefService* local_state,
   return success;
 }
 
+void MetricsLog::RecordLogWrittenByAppVersionIfNeeded() {
+  DCHECK(!closed_);
+  std::string current_version = client_->GetVersionString();
+  if (uma_proto()->system_profile().app_version() != current_version)
+    uma_proto()->mutable_system_profile()->set_log_written_by_app_version(
+        current_version);
+}
+
 void MetricsLog::CloseLog() {
   DCHECK(!closed_);
   closed_ = true;

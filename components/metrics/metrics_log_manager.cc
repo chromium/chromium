@@ -25,6 +25,7 @@ void MetricsLogManager::BeginLoggingWithLog(std::unique_ptr<MetricsLog> log) {
 
 void MetricsLogManager::FinishCurrentLog(MetricsLogStore* log_store) {
   DCHECK(current_log_);
+  current_log_->RecordLogWrittenByAppVersionIfNeeded();
   current_log_->CloseLog();
   std::string log_data;
   current_log_->GetEncodedLog(&log_data);
