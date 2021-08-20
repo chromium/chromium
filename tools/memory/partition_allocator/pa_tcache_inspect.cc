@@ -288,6 +288,4 @@ int main(int argc, char** argv) {
     std::cout << std::endl;
     usleep(100000);
   }
-
-  return 0;
 }
