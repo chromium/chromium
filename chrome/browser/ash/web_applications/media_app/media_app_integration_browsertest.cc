@@ -112,7 +112,7 @@ content::WebContents* PrepareActiveBrowserForTest() {
 content::EvalJsResult WaitForImageAlt(content::WebContents* web_ui,
                                       const std::string& alt) {
   constexpr char kScript[] = R"(
-      (async () => {
+      (async function waitForImageAlt() {
         const img = await waitForNode('img[alt="$1"]');
         return `$${img.naturalWidth}x$${img.naturalHeight}`;
       })();
@@ -128,7 +128,7 @@ content::EvalJsResult WaitForImageAlt(content::WebContents* web_ui,
 // available / while editing.
 content::EvalJsResult WaitForNavigable(content::WebContents* web_ui) {
   constexpr char kScript[] = R"(
-      (async () => {
+      (async function waitForNavigable() {
         await waitForNode(':not([panelopen])[shownav]');
       })();
   )";
@@ -210,7 +210,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, LoadsPdf) {
   // Note: If "object-src" is not set in the CSP, the `<embed>` element fails to
   // load and times out.
   constexpr char kLoadPdf[] = R"(
-      (() => {
+      (function loadPdf() {
         const embedBlob =  document.createElement('embed');
         embedBlob.type ='application/pdf';
         embedBlob.height = '100%';
@@ -244,7 +244,7 @@ constexpr char kCropAndRotateButtonSelector[] = "#icon-button-2723030533";
 // Clicks the button on the app bar with the specified selector.
 void clickAppBarButton(content::WebContents* app, const std::string& selector) {
   constexpr char kClickButton[] = R"(
-      (async () => {
+      (async function clickAppBarButton() {
         const button =
             await getNode('$1', ['backlight-app-bar', 'backlight-app']);
         button.click();
@@ -258,7 +258,7 @@ void clickAppBarButton(content::WebContents* app, const std::string& selector) {
 // 'on' attribute (indicating it's styled as active).
 bool isAppBarButtonOn(content::WebContents* app, const std::string& selector) {
   constexpr char kIsButtonOn[] = R"(
-    (async () => {
+    (async function isAppBarButtonOn() {
       const button =
           await getNode('$1', ['backlight-app-bar', 'backlight-app']);
       return button.hasAttribute('on');
@@ -286,7 +286,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, LoadsInkForImageAnnotation) {
   // insufficient since it has a default width of 300 and height of 150).
   // Note: The loading of ink engine elements can be async.
   constexpr char kCheckInkLoaded[] = R"(
-    (async () => {
+    (async function checkInkLoaded() {
       const inkEngineCanvas = await waitForNode(
           'canvas.ink-engine[width]', ['backlight-image-handler']);
       return !!inkEngineCanvas &&
@@ -313,7 +313,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, DISABLED_InformationPanel) {
 
   // Expect info panel to not be open on first load.
   constexpr char kHasInfoPanelOpen[] = R"(
-    (async () => {
+    (async function hasInfoPanelOpen() {
       const metadataPanel = await getNode(
           'backlight-metadata-panel', ['backlight-image-handler']);
       return !!metadataPanel;
@@ -334,7 +334,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, DISABLED_InformationPanel) {
   // disappear from the DOM until the close animation is complete.
   clickAppBarButton(app, kInfoButtonSelector);
   constexpr char kWaitForImageHandlerUpdate[] = R"(
-    (async () => {
+    (async function waitForImageHandlerUpdate() {
       const imageHandler = await getNode('backlight-image-handler');
       await childListUpdate(imageHandler.shadowRoot);
     })();
@@ -363,7 +363,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest,
   EXPECT_EQ("800x600", WaitForImageAlt(app, kFilePng800x600));
 
   constexpr char kHasSaveDiscardButtons[] = R"(
-    (async () => {
+    (async function hasSaveDiscardButtons() {
       const discardButton = await getNode('ea-button[label="Discard edits"]',
           ['backlight-app-bar', 'backlight-app']);
       const saveButton = await getNode('backlight-split-button[label="Save"]',
@@ -379,7 +379,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest,
   // buttons now exist.
   clickAppBarButton(app, kCropAndRotateButtonSelector);
   constexpr char kRotateImage[] = R"(
-    (async () => {
+    (async function rotateImage() {
       await waitForNode('backlight-crop-panel', ['backlight-image-handler']);
       const rotateAntiClockwiseButton = await getNode('#icon-button-427243323',
           ['backlight-crop-panel', 'backlight-image-handler']);
@@ -397,7 +397,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest,
 
   // Save the changes, then wait for the save to go through.
   constexpr char kClickSaveButton[] = R"(
-    (async () => {
+    (async function clickSaveButton() {
       const saveButton = await getNode('ea-button[label="Save"]',
           ['backlight-split-button[label="Save"]', 'backlight-app-bar',
           'backlight-app']);
@@ -415,7 +415,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest,
   MediaAppUiBrowserTest::EvalJsInAppFrame(app, kClickSaveButton);
 
   constexpr char kWaitForSaveToast[] = R"(
-    (async () => {
+    (async function waitForSaveToast() {
       const savedToast = await window['savedToastPromise'];
       return !!savedToast;
     })();
@@ -447,7 +447,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, HandleRawFiles) {
   // Inject a script to manipulate the RAW loader into returning a result that
   // includes an Exif rotation.
   constexpr char kAdd270DegreeRotation[] = R"(
-    (function() {
+    (function add270DegreeRotation() {
       const realPiexImage = getPiexModuleForTesting().image;
       getPiexModuleForTesting().image = (memory, length) => {
         const response = realPiexImage(memory, length);

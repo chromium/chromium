@@ -11,6 +11,8 @@
 #include "base/files/file_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/path_service.h"
+#include "base/test/scoped_run_loop_timeout.h"
+#include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/test/base/js_test_api.h"
 #include "chromeos/components/web_applications/webui_test_prod_util.h"
@@ -41,6 +43,10 @@ bool TestRequestHandlerShouldHandleRequest(
     const std::vector<std::string>& test_paths,
     const std::string& path) {
   return base::Contains(test_paths, path);
+}
+
+std::string DefaultScriptTimeoutLog(const std::string& script) {
+  return script;
 }
 
 }  // namespace
@@ -146,6 +152,11 @@ content::EvalJsResult SandboxedWebUiAppTestBase::EvalJsInAppFrame(
     const std::string& script) {
   // Clients of this helper all run in the same isolated world.
   constexpr int kWorldId = 1;
+
+  base::test::ScopedRunLoopTimeout scoped_run_timeout(
+      FROM_HERE, TestTimeouts::action_timeout(),
+      base::BindRepeating(&DefaultScriptTimeoutLog, script));
+
   return EvalJs(GetAppFrame(web_ui), script,
                 content::EXECUTE_SCRIPT_DEFAULT_OPTIONS, kWorldId);
 }
