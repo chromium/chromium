@@ -1778,6 +1778,9 @@
       },
       'jingle_unittests': {
         'mixins': ['fuchsia_runner_logs'],
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.jingle_unittests.filter',
+        ],
       },
       'message_center_unittests': {
         'mixins': ['fuchsia_runner_logs'],
@@ -1790,6 +1793,9 @@
       },
       'zlib_unittests': {
         'mixins': ['fuchsia_runner_logs'],
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.zlib_unittests.filter',
+        ],
       },
     },
 

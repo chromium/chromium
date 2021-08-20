@@ -1,0 +1,5 @@
+# https://crbug.com/1241675
+-ZipReaderTest.Open_ValidZipPlatformFile
+-ZipReaderTest.PlatformFileIteration
+-ZipTest.Unzip*
+-ZipTest.Zip*

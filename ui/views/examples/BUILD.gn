@@ -312,6 +312,11 @@ test("views_examples_unittests") {
     ]
   }
 
+  if (is_fuchsia) {
+    additional_manifest_fragments =
+        [ "//build/config/fuchsia/test/vulkan_capabilities.test-cmx" ]
+  }
+
   data_deps = [
     ":views_examples_resources_pak",
     "//ui/resources:ui_test_pak_data",
