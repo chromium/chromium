@@ -1212,7 +1212,12 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackgroundForBlockInInline(
     const PhysicalOffset& paint_offset) {
   while (*children) {
     const NGFragmentItem* item = children->Current().Item();
-    if (const NGPhysicalBoxFragment* fragment = item->BoxFragment()) {
+    if (const NGPhysicalLineBoxFragment* line = item->LineBoxFragment()) {
+      if (!line->IsBlockInInline()) {
+        children->MoveToNextSkippingChildren();
+        continue;
+      }
+    } else if (const NGPhysicalBoxFragment* fragment = item->BoxFragment()) {
       if (fragment->HasSelfPaintingLayer()) {
         children->MoveToNextSkippingChildren();
         continue;
