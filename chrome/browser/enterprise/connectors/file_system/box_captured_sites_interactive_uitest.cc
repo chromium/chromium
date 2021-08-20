@@ -87,6 +87,7 @@ const char kBoxAccountUserName[] = "user_name";
 const char kBoxAccountPassword[] = "password";
 
 enum TestExecutionMode { kReplay, kRecord, kLive };
+enum DownloadServiceProvider { kLocal, kBox, kUnknown };
 
 const std::string GetBoxAccountUserName() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -144,6 +145,44 @@ std::string GetAllAllowedTestPolicy(const char* enterprise_id) {
            "service_provider": "box"
         } ])PREFIX";
   return base::StringPrintf(kConnectorPolicyString, enterprise_id);
+}
+
+std::string GetTestPolicyWithEnabledFilter(const char* enterprise_id,
+                                           const char* include_url,
+                                           const char* include_mime) {
+  const char kConnectorPolicyString[] = R"PREFIX(
+        [ {
+           "domain": "*",
+           "enable": [ {
+               "mime_types": [ "%s" ],
+               "url_list": [ "%s" ]
+           } ],
+           "enterprise_id": "%s",
+           "service_provider": "box"
+        } ])PREFIX";
+  return base::StringPrintf(kConnectorPolicyString, include_mime, include_url,
+                            enterprise_id);
+}
+
+std::string GetTestPolicyWithDisabledFilter(const char* enterprise_id,
+                                            const char* exclude_url,
+                                            const char* exclude_mime) {
+  const char kConnectorPolicyString[] = R"PREFIX(
+        [ {
+           "domain": "*",
+           "enable": [ {
+               "mime_types": [ "*" ],
+               "url_list": [ "*" ]
+           } ],
+           "disable": [ {
+               "mime_types": [ "%s" ],
+               "url_list": [ "%s" ]
+           } ],
+           "enterprise_id": "%s",
+           "service_provider": "box"
+        } ])PREFIX";
+  return base::StringPrintf(kConnectorPolicyString, exclude_mime, exclude_url,
+                            enterprise_id);
 }
 
 std::string FilePathToUTF8(const base::FilePath::StringType& str) {
@@ -580,7 +619,6 @@ class BoxSignInObserver : public SigninExperienceTestObserver,
       current_page_ = Page::kAuth;
     else
       current_page_ = Page::kUnknown;
-    VLOG(0) << url.spec();
   }
 
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
@@ -684,6 +722,7 @@ class BoxSignInObserver : public SigninExperienceTestObserver,
   base::OnceClosure stop_waiting_for_page_load_;
   base::OnceClosure stop_waiting_for_widget_to_show_;
   base::OnceClosure stop_waiting_for_dialog_shutdown_;
+  base::OnceClosure stop_waiting_for_authorization_completion_;
 };
 
 class BoxDownloadItemObserver : public download::DownloadItem::Observer {
@@ -706,6 +745,16 @@ class BoxDownloadItemObserver : public download::DownloadItem::Observer {
   void OnDownloadUpdated(download::DownloadItem* item) override {
     DCHECK_EQ(item, download_item_);
 
+    if ((item->GetState() !=
+         download::DownloadItem::DownloadState::IN_PROGRESS) &&
+        (!stop_waiting_for_download_near_completion_.is_null())) {
+      // The download is no longer in progress (either because download
+      // completed, or because it was interrupted or cancelled). We can exit the
+      // wait loop for download to be near completion.
+      std::move(stop_waiting_for_download_near_completion_).Run();
+      stop_waiting_for_download_near_completion_.Reset();
+    }
+
     // Calling download::DownloadItem::GetRenameHandler before the
     // download::DownloadItem has a full path will result in the
     // creation of an invalid RenameHandler.
@@ -721,23 +770,64 @@ class BoxDownloadItemObserver : public download::DownloadItem::Observer {
     rename_handler_created_ = true;
     FileSystemRenameHandler* rename_handler =
         static_cast<FileSystemRenameHandler*>(item->GetRenameHandler());
+    rename_start_observer_ =
+        std::make_unique<RenameStartObserver>(rename_handler);
     sign_in_observer_ = std::make_unique<BoxSignInObserver>(rename_handler);
     fetch_access_token_observer_ =
         std::make_unique<BoxFetchAccessTokenTestObserver>(rename_handler);
     upload_observer_ =
         std::make_unique<BoxUploader::TestObserver>(rename_handler);
-    if (run_loop_rename_handler_.running())
-      run_loop_rename_handler_.Quit();
+
+    if (!stop_waiting_for_rename_handler_creation_.is_null()) {
+      std::move(stop_waiting_for_rename_handler_creation_).Run();
+      stop_waiting_for_rename_handler_creation_.Reset();
+    }
+
+    if (!stop_waiting_for_download_near_completion_.is_null()) {
+      std::move(stop_waiting_for_download_near_completion_).Run();
+      stop_waiting_for_download_near_completion_.Reset();
+    }
+  }
+
+  // Wait for when the reroute info on a download::DownloadItem is accurate.
+  // If the DownloadItem downloads to a local file, then this method should
+  // stop when the download completes.
+  // If the DownloadItem will be rerouted, then this method should stop when
+  // the DownloadItem's rename handler kicks off.
+  void WaitForDownloadItemRerouteInfo() {
+    if ((download_item_->GetState() ==
+         download::DownloadItem::DownloadState::IN_PROGRESS) &&
+        (!rename_handler_created_)) {
+      base::RunLoop run_loop;
+      stop_waiting_for_download_near_completion_ = run_loop.QuitClosure();
+      run_loop.Run();
+    }
+
+    if (rename_start_observer_) {
+      rename_start_observer_->WaitForStart();
+    }
   }
 
   void WaitForRenameHandlerCreation() {
-    if (sign_in_observer_.get() == nullptr)
-      run_loop_rename_handler_.Run();
+    if (!rename_handler_created_) {
+      base::RunLoop run_loop;
+      stop_waiting_for_rename_handler_creation_ = run_loop.QuitClosure();
+      run_loop.Run();
+    }
   }
 
   void WaitForSignInConfirmationDialog() {
     WaitForRenameHandlerCreation();
     sign_in_observer_->WaitForSignInConfirmationDialog();
+  }
+
+  DownloadServiceProvider GetServiceProvider() {
+    auto& reroute_info = download_item_->GetRerouteInfo();
+    if (!reroute_info.has_service_provider())
+      return DownloadServiceProvider::kLocal;
+    if (reroute_info.service_provider() == FileSystemServiceProvider::BOX)
+      return DownloadServiceProvider::kBox;
+    return DownloadServiceProvider::kUnknown;
   }
 
   download::DownloadItem* download_item() { return download_item_; }
@@ -754,8 +844,10 @@ class BoxDownloadItemObserver : public download::DownloadItem::Observer {
 
  private:
   download::DownloadItem* download_item_ = nullptr;
-  base::RunLoop run_loop_rename_handler_;
+  base::OnceClosure stop_waiting_for_rename_handler_creation_;
+  base::OnceClosure stop_waiting_for_download_near_completion_;
   bool rename_handler_created_ = false;
+  std::unique_ptr<RenameStartObserver> rename_start_observer_;
   std::unique_ptr<BoxSignInObserver> sign_in_observer_;
   std::unique_ptr<BoxFetchAccessTokenTestObserver> fetch_access_token_observer_;
   std::unique_ptr<BoxUploader::TestObserver> upload_observer_;
@@ -906,6 +998,59 @@ class BoxCapturedSitesInteractiveTest : public InProcessBrowserTest {
     ASSERT_TRUE(item_view) << "No download item view found!";
   }
 
+  void StartDownloadFromEmbeddedServerUrlByDownloadManagerRequest(
+      const char* relative_url) {
+    GURL url = embedded_test_server()->GetURL(relative_url);
+    VLOG(1) << url;
+    // First, set the tab URL to the download url's parent directory.
+    // I.e. If the url is https://www.foo.com/path/file.zip, then set the
+    // parent directory is https://www.foo.com/path.
+    // This is to avoid leaving the current tab on about:blank.
+    // When it comes to applying filters, the FSC will apply the url filter
+    // to both the download url and to the tab url. Leaving the tab at
+    // about:blank will result in unexpected filter behaviors.
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser(), url.GetWithoutFilename(), WindowOpenDisposition::CURRENT_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+    download_manager_observer_->download_manager()->DownloadUrl(
+        content::DownloadRequestUtils::CreateDownloadForWebContentsMainFrame(
+            browser()->tab_strip_model()->GetActiveWebContents(), url,
+            TRAFFIC_ANNOTATION_FOR_TESTS));
+    download_manager_observer_->WaitForDownloadCreation();
+  }
+
+  void DownloadFromEmbeddedServerAndVerifyDownloadServiceProvider(
+      const char* relative_url,
+      DownloadServiceProvider expected_service_provider,
+      bool& need_to_bypass_box_signin,
+      const char* expected_mime,
+      const std::string& username,
+      const std::string& password) {
+    StartDownloadFromEmbeddedServerUrlByDownloadManagerRequest(relative_url);
+    BoxDownloadItemObserver download_item_observer(
+        download_manager_observer()->GetLatestDownloadItem());
+    if (strlen(expected_mime) > 0)
+      EXPECT_EQ(download_item_observer.download_item()->GetMimeType(),
+                expected_mime);
+
+    download_item_observer.WaitForDownloadItemRerouteInfo();
+    auto service_provider = download_item_observer.GetServiceProvider();
+    ASSERT_NE(service_provider, DownloadServiceProvider::kUnknown);
+    EXPECT_EQ(service_provider, expected_service_provider);
+
+    if (service_provider == DownloadServiceProvider::kBox &&
+        need_to_bypass_box_signin) {
+      download_item_observer.WaitForSignInConfirmationDialog();
+      download_item_observer.sign_in_observer()->AcceptBoxSigninConfirmation();
+      download_item_observer.sign_in_observer()
+          ->AuthorizeWithUserAndPasswordSFA(username, password);
+      need_to_bypass_box_signin = false;
+      download_item_observer.upload_observer()->WaitForUploadCompletion();
+      download_manager_observer()->WaitForDownloadToFinish();
+    }
+  }
+
   DownloadManagerObserver* download_manager_observer() {
     return download_manager_observer_.get();
   }
@@ -931,6 +1076,9 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
       "direct_download_gibben.epub");
   BoxDownloadItemObserver download_item_observer(
       download_manager_observer()->GetLatestDownloadItem());
+  download_item_observer.WaitForDownloadItemRerouteInfo();
+  ASSERT_EQ(download_item_observer.GetServiceProvider(),
+            DownloadServiceProvider::kBox);
 
   download_item_observer.WaitForSignInConfirmationDialog();
   ASSERT_NO_FATAL_FAILURE(
@@ -990,6 +1138,9 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
       "direct_download_gibben.epub");
   BoxDownloadItemObserver download_item_observer(
       download_manager_observer()->GetLatestDownloadItem());
+  download_item_observer.WaitForDownloadItemRerouteInfo();
+  ASSERT_EQ(download_item_observer.GetServiceProvider(),
+            DownloadServiceProvider::kBox);
 
   download_item_observer.WaitForSignInConfirmationDialog();
   ASSERT_NO_FATAL_FAILURE(
@@ -1022,6 +1173,9 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
       "large_download_gibben.mobi");
   BoxDownloadItemObserver download_item_observer(
       download_manager_observer()->GetLatestDownloadItem());
+  download_item_observer.WaitForDownloadItemRerouteInfo();
+  ASSERT_EQ(download_item_observer.GetServiceProvider(),
+            DownloadServiceProvider::kBox);
 
   // Sign in to authorize Chrome to upload to Box.com.
   download_item_observer.WaitForSignInConfirmationDialog();
@@ -1076,6 +1230,9 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest, EnterpriseIdMismatch) {
       "direct_download_gibben.epub");
   BoxDownloadItemObserver download_item_observer(
       download_manager_observer()->GetLatestDownloadItem());
+  download_item_observer.WaitForDownloadItemRerouteInfo();
+  ASSERT_EQ(download_item_observer.GetServiceProvider(),
+            DownloadServiceProvider::kBox);
 
   download_item_observer.WaitForSignInConfirmationDialog();
   download_item_observer.sign_in_observer()->AcceptBoxSigninConfirmation();
@@ -1116,6 +1273,9 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
       "small_download.zip");
   BoxDownloadItemObserver download_item_observer(
       download_manager_observer()->GetLatestDownloadItem());
+  download_item_observer.WaitForDownloadItemRerouteInfo();
+  ASSERT_EQ(download_item_observer.GetServiceProvider(),
+            DownloadServiceProvider::kBox);
 
   download_item_observer.WaitForSignInConfirmationDialog();
   ASSERT_NO_FATAL_FAILURE(
@@ -1145,6 +1305,9 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest, ExitSignInDialog) {
       "small_download.zip");
   BoxDownloadItemObserver download_item_observer(
       download_manager_observer()->GetLatestDownloadItem());
+  download_item_observer.WaitForDownloadItemRerouteInfo();
+  ASSERT_EQ(download_item_observer.GetServiceProvider(),
+            DownloadServiceProvider::kBox);
 
   download_item_observer.WaitForSignInConfirmationDialog();
   ASSERT_NO_FATAL_FAILURE(
@@ -1165,6 +1328,197 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest, ExitSignInDialog) {
   ASSERT_NO_FATAL_FAILURE(GetItemViewForLastDownload(&item_view));
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_DOWNLOAD_STATUS_CANCELLED),
             item_view->GetStatusTextForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
+                       FilterByEnabledSettings_match_mime_only) {
+  // Set the SendDownloadToCloudEnterpriseConnector policy
+  // Configure a policy to only to upload downloaded files to Box.com IFF:
+  // - The download has a mime type of "application/zip".
+  ASSERT_NO_FATAL_FAILURE(SetCloudFSCPolicy(
+      GetTestPolicyWithEnabledFilter("797972721", "*", "application/zip")));
+  ASSERT_NO_FATAL_FAILURE(StartWprUsingFSCCaptureDir(
+      "box.com.filter.by.enabled.matching.mime.wpr"));
+
+  bool need_to_link_box_account = true;
+
+  // Download a svg image, which should be downloaded directly to the local
+  // file system.
+  ASSERT_NO_FATAL_FAILURE(
+      DownloadFromEmbeddedServerAndVerifyDownloadServiceProvider(
+          "/enterprise/connectors/file_system/downloads/sub/example.svg",
+          DownloadServiceProvider::kLocal, need_to_link_box_account,
+          "image/svg+xml", GetBoxAccountUserName(), GetBoxAccountPassword()));
+
+  // Download a zip file, which should be downloaded to Box.com.
+  ASSERT_NO_FATAL_FAILURE(
+      DownloadFromEmbeddedServerAndVerifyDownloadServiceProvider(
+          "/enterprise/connectors/file_system/downloads/sub/"
+          "angry_clouds.mp4.zip",
+          DownloadServiceProvider::kBox, need_to_link_box_account,
+          "application/zip", GetBoxAccountUserName(), GetBoxAccountPassword()));
+}
+
+IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
+                       FilterByEnabledSettings_match_url_only) {
+  // Set the SendDownloadToCloudEnterpriseConnector policy
+  // Configure a policy to only to upload downloaded files to Box.com IFF:
+  // - The download comes from the '.../sub/' url.
+  std::string include_url =
+      embedded_test_server()
+          ->GetURL("/enterprise/connectors/file_system/downloads/sub/")
+          .GetContent();
+  ASSERT_NO_FATAL_FAILURE(SetCloudFSCPolicy(
+      GetTestPolicyWithEnabledFilter("797972721", include_url.c_str(), "*")));
+  ASSERT_NO_FATAL_FAILURE(
+      StartWprUsingFSCCaptureDir("box.com.filter.by.enabled.matching.url.wpr"));
+
+  bool need_to_link_box_account = true;
+
+  // Download a zip file from outside the .../sub/ url, which should be
+  // downloaded directly to the local file system.
+  ASSERT_NO_FATAL_FAILURE(
+      DownloadFromEmbeddedServerAndVerifyDownloadServiceProvider(
+          "/enterprise/connectors/file_system/downloads/"
+          "angry_clouds.mp4.zip",
+          DownloadServiceProvider::kLocal, need_to_link_box_account,
+          "" /* No need to check mime. */, GetBoxAccountUserName(),
+          GetBoxAccountPassword()));
+
+  // Download a zip file from the .../sub/ url, which should be downloaded to
+  // Box.com.
+  ASSERT_NO_FATAL_FAILURE(
+      DownloadFromEmbeddedServerAndVerifyDownloadServiceProvider(
+          "/enterprise/connectors/file_system/downloads/sub/"
+          "angry_clouds.mp4.zip",
+          DownloadServiceProvider::kBox, need_to_link_box_account,
+          "" /* No need to check mime. */, GetBoxAccountUserName(),
+          GetBoxAccountPassword()));
+}
+
+IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
+                       FilterByEnabledSettings_match_mime_and_url) {
+  // Set the SendDownloadToCloudEnterpriseConnector policy
+  // Configure a policy to only to upload downloaded files to Box.com IFF:
+  // - The download comes from the '.../sub/' url.
+  // - The download has a mime type of "application/zip".
+  std::string include_url =
+      embedded_test_server()
+          ->GetURL("/enterprise/connectors/file_system/downloads/sub/")
+          .GetContent();
+  // Configure a policy to only to upload downloaded files to Box.com IFF:
+  // 1. The download comes from the '.../sub/' url.
+  // 2. The download has a mime type of "application/zip".
+  ASSERT_NO_FATAL_FAILURE(SetCloudFSCPolicy(GetTestPolicyWithEnabledFilter(
+      "797972721", include_url.c_str(), "application/zip")));
+  ASSERT_NO_FATAL_FAILURE(StartWprUsingFSCCaptureDir(
+      "box.com.filter.by.enabled.matching.url.and.mime.wpr"));
+
+  // Download a zip file from the .../sub/ url, which should be downloaded to
+  // Box.com.
+  bool need_to_link_box_account = true;
+  ASSERT_NO_FATAL_FAILURE(
+      DownloadFromEmbeddedServerAndVerifyDownloadServiceProvider(
+          "/enterprise/connectors/file_system/downloads/sub/"
+          "angry_clouds.mp4.zip",
+          DownloadServiceProvider::kBox, need_to_link_box_account,
+          "application/zip", GetBoxAccountUserName(), GetBoxAccountPassword()));
+}
+
+IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
+                       FilterByDisabledSettings_match_mime_only) {
+  // Set the SendDownloadToCloudEnterpriseConnector policy
+  // Configure a policy to only to upload downloaded files to Box.com UNLESS:
+  // - The download has a mime type of "application/zip".
+  ASSERT_NO_FATAL_FAILURE(SetCloudFSCPolicy(
+      GetTestPolicyWithDisabledFilter("797972721", "*", "application/zip")));
+  ASSERT_NO_FATAL_FAILURE(StartWprUsingFSCCaptureDir(
+      "box.com.filter.by.disabled.matching.mime.wpr"));
+
+  bool need_to_link_box_account = true;
+
+  // Download a svg image, which should be downloaded to Box.com.
+  ASSERT_NO_FATAL_FAILURE(
+      DownloadFromEmbeddedServerAndVerifyDownloadServiceProvider(
+          "/enterprise/connectors/file_system/downloads/sub/example.svg",
+          DownloadServiceProvider::kBox, need_to_link_box_account,
+          "image/svg+xml", GetBoxAccountUserName(), GetBoxAccountPassword()));
+
+  // Download a zip file, which should be downloaded directly to the local
+  // file system.
+  ASSERT_NO_FATAL_FAILURE(
+      DownloadFromEmbeddedServerAndVerifyDownloadServiceProvider(
+          "/enterprise/connectors/file_system/downloads/sub/"
+          "angry_clouds.mp4.zip",
+          DownloadServiceProvider::kLocal, need_to_link_box_account,
+          "application/zip", GetBoxAccountUserName(), GetBoxAccountPassword()));
+}
+
+IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
+                       FilterByDisabledSettings_match_url_only) {
+  // Set the SendDownloadToCloudEnterpriseConnector policy
+  // Configure a policy to only to upload downloaded files to Box.com UNLESS:
+  // - The download comes from the '.../sub/' url.
+  std::string include_url =
+      embedded_test_server()
+          ->GetURL("/enterprise/connectors/file_system/downloads/sub/")
+          .GetContent();
+  ASSERT_NO_FATAL_FAILURE(SetCloudFSCPolicy(
+      GetTestPolicyWithDisabledFilter("797972721", include_url.c_str(), "*")));
+  ASSERT_NO_FATAL_FAILURE(StartWprUsingFSCCaptureDir(
+      "box.com.filter.by.disabled.matching.url.wpr"));
+
+  bool need_to_link_box_account = true;
+
+  // Download a zip file from outside the .../sub/ url, which should be
+  // downloaded to Box.com.
+  ASSERT_NO_FATAL_FAILURE(
+      DownloadFromEmbeddedServerAndVerifyDownloadServiceProvider(
+          "/enterprise/connectors/file_system/downloads/"
+          "angry_clouds.mp4.zip",
+          DownloadServiceProvider::kBox, need_to_link_box_account,
+          "" /* No need to check mime. */, GetBoxAccountUserName(),
+          GetBoxAccountPassword()));
+
+  // Download a zip file from the .../sub/ url, which should be
+  // downloaded directly to the local file system.
+  ASSERT_NO_FATAL_FAILURE(
+      DownloadFromEmbeddedServerAndVerifyDownloadServiceProvider(
+          "/enterprise/connectors/file_system/downloads/sub/"
+          "angry_clouds.mp4.zip",
+          DownloadServiceProvider::kLocal, need_to_link_box_account,
+          "" /* No need to check mime. */, GetBoxAccountUserName(),
+          GetBoxAccountPassword()));
+}
+
+IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
+                       FilterByDisabledSettings_match_mime_and_url) {
+  // Set the SendDownloadToCloudEnterpriseConnector policy
+  // Configure a policy to only to upload downloaded files to Box.com IFF:
+  // - The download comes from the '.../sub/' url.
+  // - The download has a mime type of "application/zip".
+  std::string include_url =
+      embedded_test_server()
+          ->GetURL("/enterprise/connectors/file_system/downloads/sub/")
+          .GetContent();
+  // Configure a policy to only to upload downloaded files to Box.com UNLESS:
+  // 1. The download comes from the '.../sub/' url.
+  // 2. The download has a mime type of "application/zip".
+  ASSERT_NO_FATAL_FAILURE(SetCloudFSCPolicy(GetTestPolicyWithDisabledFilter(
+      "797972721", include_url.c_str(), "application/zip")));
+  ASSERT_NO_FATAL_FAILURE(StartWprUsingFSCCaptureDir(
+      "box.com.filter.by.disabled.matching.url.and.mime.wpr"));
+
+  // Download a zip file from the .../sub/ url, which should be
+  // downloaded directly to the local file system.
+  bool need_to_link_box_account = true;
+  ASSERT_NO_FATAL_FAILURE(
+      DownloadFromEmbeddedServerAndVerifyDownloadServiceProvider(
+          "/enterprise/connectors/file_system/downloads/sub/"
+          "angry_clouds.mp4.zip",
+          DownloadServiceProvider::kLocal, need_to_link_box_account,
+          "" /* No need to check mime. */, GetBoxAccountUserName(),
+          GetBoxAccountPassword()));
 }
 
 }  // namespace enterprise_connectors

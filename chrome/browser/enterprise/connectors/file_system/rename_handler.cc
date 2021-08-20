@@ -104,6 +104,8 @@ void FileSystemRenameHandler::Start(ProgressUpdateCallback progress_update_cb,
       base::BindRepeating(&FileSystemRenameHandler::OnApiAuthenticationError,
                           weak_factory_.GetWeakPtr()),
       std::move(progress_update_cb), std::move(upload_complete_cb), GetPrefs());
+  for (auto& observer : observers_)
+    observer.OnStart();
   StartInternal();
 }
 
@@ -342,6 +344,22 @@ void FileSystemRenameHandler::TestObserver::OnDestruction() {
 BoxUploader* FileSystemRenameHandler::TestObserver::GetBoxUploader(
     FileSystemRenameHandler* rename_handler) {
   return rename_handler->uploader_.get();
+}
+
+// RenameStartObserver
+RenameStartObserver::RenameStartObserver(
+    FileSystemRenameHandler* rename_handler)
+    : FileSystemRenameHandler::TestObserver(rename_handler) {}
+
+void RenameStartObserver::OnStart() {
+  started_ = true;
+  if (run_loop_.running())
+    run_loop_.Quit();
+}
+
+void RenameStartObserver::WaitForStart() {
+  if (!started_)
+    run_loop_.Run();
 }
 
 // BoxFetchAccessTokenTestObserver

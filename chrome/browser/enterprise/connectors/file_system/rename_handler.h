@@ -54,6 +54,7 @@ class FileSystemRenameHandler : public download::DownloadItemRenameHandler {
 
     enum Status { kNotStarted, kInProgress, kSucceeded, kFailed };
 
+    virtual void OnStart() {}
     virtual void OnFetchAccessTokenStart() {}
     virtual void OnAccessTokenFetched(const GoogleServiceAuthError& status) {}
     virtual void OnDestruction();
@@ -131,6 +132,21 @@ class FileSystemRenameHandler : public download::DownloadItemRenameHandler {
   base::ObserverList<TestObserver> observers_;
   SigninExperienceTestObserver* signin_observer_ = nullptr;
   base::WeakPtrFactory<FileSystemRenameHandler> weak_factory_{this};
+};
+
+class RenameStartObserver : public FileSystemRenameHandler::TestObserver {
+ public:
+  explicit RenameStartObserver(FileSystemRenameHandler* rename_handler);
+  ~RenameStartObserver() override = default;
+
+  // RenameHandlerObserver methods
+  void OnStart() override;
+
+  void WaitForStart();
+
+ private:
+  bool started_ = false;
+  base::RunLoop run_loop_;
 };
 
 class BoxFetchAccessTokenTestObserver
