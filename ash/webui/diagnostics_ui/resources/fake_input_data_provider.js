@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ConnectedDevicesObserverRemote, ConnectionType, GetConnectedDevicesResponse, InputDataProviderInterface, KeyboardInfo, TouchDeviceInfo, TouchDeviceType} from './diagnostics_types.js';
+import {ConnectedDevicesObserverRemote, ConnectionType, GetConnectedDevicesResponse, GetKeyboardVisualLayoutResponse, InputDataProviderInterface, KeyboardInfo, TouchDeviceInfo, TouchDeviceType} from './diagnostics_types.js';
 import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_resolver.js';
 
 /**
@@ -39,6 +39,7 @@ export class FakeInputDataProvider {
    */
   registerMethods() {
     this.methods_.register('getConnectedDevices');
+    this.methods_.register('getKeyboardVisualLayout');
   }
 
   /**
@@ -127,5 +128,12 @@ export class FakeInputDataProvider {
     for (let observer of this.observers_) {
       observer.onTouchDeviceDisconnected(id);
     }
+  }
+
+  /**
+   * @return {!Promise<!GetKeyboardVisualLayoutResponse>}
+   */
+  getKeyboardVisualLayout(id) {
+    return this.methods_.resolveMethod('getKeyboardVisualLayout');
   }
 }

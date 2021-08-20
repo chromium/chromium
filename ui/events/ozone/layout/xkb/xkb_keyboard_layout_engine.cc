@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -680,16 +681,25 @@ bool XkbKeyboardLayoutEngine::CanSetCurrentLayout() const {
 
 bool XkbKeyboardLayoutEngine::SetCurrentLayoutByName(
     const std::string& layout_name) {
+  return SetCurrentLayoutByNameWithCallback(layout_name,
+                                            base::DoNothing::Once());
+}
+
+bool XkbKeyboardLayoutEngine::SetCurrentLayoutByNameWithCallback(
+    const std::string& layout_name,
+    base::OnceClosure callback) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   current_layout_name_ = layout_name;
   for (const auto& entry : xkb_keymaps_) {
     if (entry.layout_name == layout_name) {
       SetKeymap(entry.keymap);
+      std::move(callback).Run();
       return true;
     }
   }
-  LoadKeymapCallback reply_callback = base::BindOnce(
-      &XkbKeyboardLayoutEngine::OnKeymapLoaded, weak_ptr_factory_.GetWeakPtr());
+  LoadKeymapCallback reply_callback =
+      base::BindOnce(&XkbKeyboardLayoutEngine::OnKeymapLoaded,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback));
   base::ThreadPool::PostTask(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
@@ -703,6 +713,7 @@ bool XkbKeyboardLayoutEngine::SetCurrentLayoutByName(
 }
 
 void XkbKeyboardLayoutEngine::OnKeymapLoaded(
+    base::OnceClosure callback,
     const std::string& layout_name,
     std::unique_ptr<char, base::FreeDeleter> keymap_str) {
   if (keymap_str) {
@@ -711,8 +722,10 @@ void XkbKeyboardLayoutEngine::OnKeymapLoaded(
         XKB_KEYMAP_COMPILE_NO_FLAGS);
     XkbKeymapEntry entry = {layout_name, keymap};
     xkb_keymaps_.push_back(entry);
-    if (layout_name == current_layout_name_)
+    if (layout_name == current_layout_name_) {
       SetKeymap(keymap);
+      std::move(callback).Run();
+    }
   } else {
     LOG(FATAL) << "Keymap file failed to load: " << layout_name;
   }

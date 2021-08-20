@@ -12,9 +12,15 @@
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
+#include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "chromeos/system/statistics_provider.h"
+#include "ui/base/ime/chromeos/input_method_manager.h"
+#include "ui/events/event_constants.h"
+#include "ui/events/keycodes/dom/keycode_converter.h"
 
 namespace ash {
 namespace diagnostics {
@@ -65,6 +71,18 @@ mojom::MechanicalLayout GetSystemMechanicalLayout() {
   }
 }
 
+// Convert an XKB layout string as stored in VPD (e.g. "xkb:us::eng" or
+// "xkb:cz:qwerty:cze") into the form used by XkbKeyboardLayoutEngine (e.g. "us"
+// or "cz(qwerty)").
+std::string ConvertXkbLayoutString(const std::string& input) {
+  std::vector<base::StringPiece> parts = base::SplitStringPiece(
+      input, ":", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  const base::StringPiece& id = parts[1];
+  const base::StringPiece& variant = parts[2];
+  return variant.empty() ? std::string(id)
+                         : base::StrCat({id, "(", variant, ")"});
+}
+
 }  // namespace
 
 std::unique_ptr<ui::EventDeviceInfo> InputDeviceInfoHelper::GetDeviceInfo(
@@ -84,13 +102,15 @@ std::unique_ptr<ui::EventDeviceInfo> InputDeviceInfoHelper::GetDeviceInfo(
 }
 
 InputDataProvider::InputDataProvider()
-    : device_manager_(ui::CreateDeviceManager()) {
+    : device_manager_(ui::CreateDeviceManager()),
+      xkb_layout_engine_(xkb_evdev_codes_) {
   Initialize();
 }
 
 InputDataProvider::InputDataProvider(
     std::unique_ptr<ui::DeviceManager> device_manager_for_test)
-    : device_manager_(std::move(device_manager_for_test)) {
+    : device_manager_(std::move(device_manager_for_test)),
+      xkb_layout_engine_(xkb_evdev_codes_) {
   Initialize();
 }
 
@@ -133,6 +153,97 @@ void InputDataProvider::GetConnectedDevices(
 void InputDataProvider::ObserveConnectedDevices(
     mojo::PendingRemote<mojom::ConnectedDevicesObserver> observer) {
   connected_devices_observers_.Add(std::move(observer));
+}
+
+void InputDataProvider::GetKeyboardVisualLayout(
+    uint32_t id,
+    GetKeyboardVisualLayoutCallback callback) {
+  if (!keyboards_.contains(id)) {
+    LOG(ERROR) << "Couldn't find keyboard with ID " << id
+               << "when retrieving visual layout.";
+    return;
+  }
+
+  std::string layout_name;
+  if (keyboards_[id]->connection_type == mojom::ConnectionType::kInternal) {
+    chromeos::system::StatisticsProvider* stats_provider =
+        chromeos::system::StatisticsProvider::GetInstance();
+    if (!stats_provider->GetMachineStatistic(
+            chromeos::system::kKeyboardLayoutKey, &layout_name) ||
+        layout_name.empty()) {
+      LOG(ERROR) << "Couldn't determine visual layout for keyboard with ID "
+                 << id;
+      return;
+    }
+    // In some regions, the keyboard layout string from the region database will
+    // contain multiple comma-separated parts, where the first is the XKB layout
+    // name. (For example, in region "gcc" (Gulf Cooperation Council), the
+    // string is "xkb:us::eng,m17n:ar,t13n:ar".) We just want the first part.
+    layout_name = base::SplitString(layout_name, ",", base::KEEP_WHITESPACE,
+                                    base::SPLIT_WANT_ALL)[0];
+    layout_name = ConvertXkbLayoutString(layout_name);
+  } else {
+    // External keyboards generally don't tell us what layout they have, so
+    // assume the layout the user has currently selected.
+    layout_name = chromeos::input_method::InputMethodManager::Get()
+                      ->GetActiveIMEState()
+                      ->GetCurrentInputMethod()
+                      .keyboard_layout();
+  }
+
+  xkb_layout_engine_.SetCurrentLayoutByNameWithCallback(
+      layout_name,
+      base::BindOnce(&InputDataProvider::ProcessXkbLayout,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void InputDataProvider::ProcessXkbLayout(
+    GetKeyboardVisualLayoutCallback callback) {
+  base::flat_map<uint32_t, mojom::KeyGlyphSetPtr> layout;
+
+  // Add the glyphs for each range of evdev keycodes we're concerned with.
+  // (The keycode ranges generally correspond to rows on a QWERTY keyboard, see
+  // Linux's input-event-codes.h.)
+  for (int evdev_code = KEY_1; evdev_code <= KEY_EQUAL; evdev_code++) {
+    layout[evdev_code] = LookupGlyphSet(evdev_code);
+  }
+  for (int evdev_code = KEY_Q; evdev_code <= KEY_RIGHTBRACE; evdev_code++) {
+    layout[evdev_code] = LookupGlyphSet(evdev_code);
+  }
+  for (int evdev_code = KEY_A; evdev_code <= KEY_GRAVE; evdev_code++) {
+    layout[evdev_code] = LookupGlyphSet(evdev_code);
+  }
+  for (int evdev_code = KEY_BACKSLASH; evdev_code <= KEY_SLASH; evdev_code++) {
+    layout[evdev_code] = LookupGlyphSet(evdev_code);
+  }
+  layout[KEY_102ND] = LookupGlyphSet(KEY_102ND);
+
+  std::move(callback).Run(std::move(layout));
+}
+
+mojom::KeyGlyphSetPtr InputDataProvider::LookupGlyphSet(uint32_t evdev_code) {
+  ui::DomCode dom_code = ui::KeycodeConverter::EvdevCodeToDomCode(evdev_code);
+  ui::DomKey dom_key;
+  ui::KeyboardCode key_code;
+  if (!xkb_layout_engine_.Lookup(dom_code, ui::EF_NONE, &dom_key, &key_code)) {
+    LOG(ERROR) << "Couldn't look up glyph for evdev code " << evdev_code;
+    return nullptr;
+  }
+  mojom::KeyGlyphSetPtr glyph_set = mojom::KeyGlyphSet::New();
+  glyph_set->main_glyph = ui::KeycodeConverter::DomKeyToKeyString(dom_key);
+
+  if (!xkb_layout_engine_.Lookup(dom_code, ui::EF_SHIFT_DOWN, &dom_key,
+                                 &key_code)) {
+    LOG(WARNING) << "Couldn't look up shift glyph for evdev code "
+                 << evdev_code;
+  } else {
+    const std::string shift_glyph =
+        ui::KeycodeConverter::DomKeyToKeyString(dom_key);
+    if (shift_glyph != base::ToUpperASCII(glyph_set->main_glyph)) {
+      glyph_set->shift_glyph = shift_glyph;
+    }
+  }
+  return glyph_set;
 }
 
 void InputDataProvider::OnDeviceEvent(const ui::DeviceEvent& event) {

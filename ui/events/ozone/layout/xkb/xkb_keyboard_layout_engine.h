@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/free_deleter.h"
@@ -36,6 +37,8 @@ class COMPONENT_EXPORT(EVENTS_OZONE_LAYOUT) XkbKeyboardLayoutEngine
   // KeyboardLayoutEngine:
   bool CanSetCurrentLayout() const override;
   bool SetCurrentLayoutByName(const std::string& layout_name) override;
+  bool SetCurrentLayoutByNameWithCallback(const std::string& layout_name,
+                                          base::OnceClosure callback);
   // Required by Ozone/Wayland (at least) for non ChromeOS builds. See
   // http://xkbcommon.org/doc/current/md_doc_quick-guide.html for further info.
   bool SetCurrentLayoutFromBuffer(const char* keymap_string,
@@ -132,7 +135,8 @@ class COMPONENT_EXPORT(EVENTS_OZONE_LAYOUT) XkbKeyboardLayoutEngine
                            xkb_mod_mask_t flags) const;
 
   // Callback when keymap file is loaded complete.
-  void OnKeymapLoaded(const std::string& layout_name,
+  void OnKeymapLoaded(base::OnceClosure callback,
+                      const std::string& layout_name,
                       std::unique_ptr<char, base::FreeDeleter> keymap_str);
 
   std::unique_ptr<xkb_context, XkbContextDeleter> xkb_context_;

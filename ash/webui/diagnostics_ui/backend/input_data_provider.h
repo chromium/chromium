@@ -20,6 +20,8 @@
 #include "ui/events/ozone/device/device_event_observer.h"
 #include "ui/events/ozone/device/device_manager.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
+#include "ui/events/ozone/layout/xkb/xkb_evdev_codes.h"
+#include "ui/events/ozone/layout/xkb/xkb_keyboard_layout_engine.h"
 
 namespace ash {
 namespace diagnostics {
@@ -50,6 +52,10 @@ class InputDataProvider : public mojom::InputDataProvider,
   void ObserveConnectedDevices(
       mojo::PendingRemote<mojom::ConnectedDevicesObserver> observer) override;
 
+  void GetKeyboardVisualLayout(
+      uint32_t id,
+      GetKeyboardVisualLayoutCallback callback) override;
+
   // ui::DeviceEventObserver:
   void OnDeviceEvent(const ui::DeviceEvent& event) override;
 
@@ -66,6 +72,9 @@ class InputDataProvider : public mojom::InputDataProvider,
   void AddTouchDevice(int id, const ui::EventDeviceInfo* device_info);
   void AddKeyboard(int id, const ui::EventDeviceInfo* device_info);
 
+  void ProcessXkbLayout(GetKeyboardVisualLayoutCallback callback);
+  mojom::KeyGlyphSetPtr LookupGlyphSet(uint32_t evdev_code);
+
   base::flat_map<int, mojom::KeyboardInfoPtr> keyboards_;
   base::flat_map<int, mojom::TouchDeviceInfoPtr> touch_devices_;
 
@@ -74,6 +83,9 @@ class InputDataProvider : public mojom::InputDataProvider,
   mojo::Receiver<mojom::InputDataProvider> receiver_{this};
 
   std::unique_ptr<ui::DeviceManager> device_manager_;
+
+  ui::XkbEvdevCodes xkb_evdev_codes_;
+  ui::XkbKeyboardLayoutEngine xkb_layout_engine_;
 
   base::WeakPtrFactory<InputDataProvider> weak_factory_{this};
 };

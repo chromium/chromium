@@ -380,5 +380,72 @@ TEST_F(InputDataProviderTest, BadDeviceDoesntCrash) {
   task_environment_.RunUntilIdle();
 }
 
+TEST_F(InputDataProviderTest, GetKeyboardVisualLayout_AmericanEnglish) {
+  statistics_provider_.SetMachineStatistic(chromeos::system::kKeyboardLayoutKey,
+                                           "xkb:us::eng,m17n:ar,t13n:ar");
+
+  ui::DeviceEvent add_keyboard_event(ui::DeviceEvent::DeviceType::INPUT,
+                                     ui::DeviceEvent::ActionType::ADD,
+                                     base::FilePath("/dev/input/event6"));
+  provider_->OnDeviceEvent(add_keyboard_event);
+  task_environment_.RunUntilIdle();
+
+  base::RunLoop run_loop;
+  provider_->GetKeyboardVisualLayout(
+      6, base::BindLambdaForTesting(
+             [&](base::flat_map<uint32_t, mojom::KeyGlyphSetPtr> layout) {
+               ASSERT_FALSE(layout[KEY_Q].is_null());
+               EXPECT_EQ("q", layout[KEY_Q]->main_glyph);
+               EXPECT_FALSE(layout[KEY_Q]->shift_glyph.has_value());
+
+               ASSERT_FALSE(layout[KEY_3].is_null());
+               EXPECT_EQ("3", layout[KEY_3]->main_glyph);
+               EXPECT_EQ("#", layout[KEY_3]->shift_glyph);
+
+               // Check all of the essential keys (at least on US QWERTY) have
+               // glyphs.
+               for (auto const& entry : layout) {
+                 EXPECT_FALSE(entry.second.is_null())
+                     << "No glyphs for evdev code " << entry.first;
+               }
+
+               run_loop.Quit();
+             }));
+  run_loop.Run();
+}
+
+TEST_F(InputDataProviderTest, GetKeyboardVisualLayout_FrenchFrench) {
+  statistics_provider_.SetMachineStatistic(chromeos::system::kKeyboardLayoutKey,
+                                           "xkb:fr::fra");
+
+  ui::DeviceEvent add_keyboard_event(ui::DeviceEvent::DeviceType::INPUT,
+                                     ui::DeviceEvent::ActionType::ADD,
+                                     base::FilePath("/dev/input/event6"));
+  provider_->OnDeviceEvent(add_keyboard_event);
+  task_environment_.RunUntilIdle();
+
+  base::RunLoop run_loop;
+  provider_->GetKeyboardVisualLayout(
+      6, base::BindLambdaForTesting(
+             [&](base::flat_map<uint32_t, mojom::KeyGlyphSetPtr> layout) {
+               ASSERT_FALSE(layout[KEY_Q].is_null());
+               EXPECT_EQ("a", layout[KEY_Q]->main_glyph);
+               EXPECT_FALSE(layout[KEY_Q]->shift_glyph.has_value());
+
+               ASSERT_FALSE(layout[KEY_3].is_null());
+               EXPECT_EQ("\"", layout[KEY_3]->main_glyph);
+               EXPECT_EQ("3", layout[KEY_3]->shift_glyph);
+
+               // Check all of the essential keys have glyphs.
+               for (auto const& entry : layout) {
+                 EXPECT_FALSE(entry.second.is_null())
+                     << "No glyphs for evdev code " << entry.first;
+               }
+
+               run_loop.Quit();
+             }));
+  run_loop.Run();
+}
+
 }  // namespace diagnostics
 }  // namespace ash

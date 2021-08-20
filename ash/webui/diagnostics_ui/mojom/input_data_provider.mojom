@@ -41,6 +41,17 @@ struct KeyboardInfo {
   bool has_assistant_key;
 };
 
+// Describes the glyphs that appear on a single key.
+struct KeyGlyphSet {
+  // Glyph if pressed without modifiers. Displayed in the centre or on the lower
+  // half of the key.
+  string main_glyph;
+
+  // Glyph if pressed with Shift. Displayed in the upper half. Null if it's just
+  // the main glyph in upper-case.
+  string? shift_glyph;
+};
+
 enum TouchDeviceType {
   kDirect,   // e.g. touchscreens, drawing tablets with screens.
   kPointer,  // e.g. touchpads, drawing tablets without displays.
@@ -80,4 +91,12 @@ interface InputDataProvider {
      array<TouchDeviceInfo> touch_devices);
   // Registers an observer of connected input devices.
   ObserveConnectedDevices(pending_remote<ConnectedDevicesObserver> observer);
+
+  // Returns the visual layout for the keyboard with the given ID. For external
+  // keyboards where we can't be sure of their layout, this will default to the
+  // system layout.
+  //
+  // The layout is represented as a map from the evdev code of a key to a
+  // KeyGlyphSet describing its glyphs.
+  GetKeyboardVisualLayout(uint32 id) => (map<uint32, KeyGlyphSet> layout);
 };
