@@ -345,7 +345,7 @@ ExtensionFunction::ResponseAction AutomationInternalEnableTabFunction::Run() {
 
   // This gets removed when the extension process dies.
   AutomationEventRouter::GetInstance()->RegisterListenerForOneTree(
-      extension_id(), source_process_id(), ax_tree_id);
+      extension_id(), source_process_id(), GetSenderWebContents(), ax_tree_id);
 
   return RespondNow(
       ArgumentList(api::automation_internal::EnableTab::Results::Create(
@@ -742,7 +742,7 @@ AutomationInternalEnableDesktopFunction::Run() {
 
   // This gets removed when the extension process dies.
   AutomationEventRouter::GetInstance()->RegisterListenerWithDesktopPermission(
-      extension_id(), source_process_id());
+      extension_id(), source_process_id(), GetSenderWebContents());
 
   AutomationInternalApiDelegate* automation_api_delegate =
       ExtensionsAPIClient::Get()->GetAutomationInternalApiDelegate();

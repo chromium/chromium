@@ -14,6 +14,7 @@
 #include "content/public/browser/ax_event_notification_details.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/api/automation_internal/automation_event_router_interface.h"
 #include "extensions/common/api/automation_internal.h"
 #include "extensions/common/extension_id.h"
@@ -51,13 +52,16 @@ class AutomationEventRouter : public content::RenderProcessHostObserver,
   // listener process dies.
   void RegisterListenerForOneTree(const ExtensionId& extension_id,
                                   int listener_process_id,
+                                  content::WebContents* web_contents,
                                   ui::AXTreeID source_ax_tree_id);
 
   // Indicates that the listener at |listener_process_id| wants to receive
   // automation events from all accessibility trees because it has Desktop
   // permission.
-  void RegisterListenerWithDesktopPermission(const ExtensionId& extension_id,
-                                             int listener_process_id);
+  void RegisterListenerWithDesktopPermission(
+      const ExtensionId& extension_id,
+      int listener_process_id,
+      content::WebContents* web_contents);
 
   void AddObserver(AutomationEventRouterObserver* observer);
   void RemoveObserver(AutomationEventRouterObserver* observer);
@@ -86,11 +90,18 @@ class AutomationEventRouter : public content::RenderProcessHostObserver,
   void RegisterRemoteRouter(AutomationEventRouterInterface* router);
 
  private:
-  struct AutomationListener {
-    AutomationListener();
-    AutomationListener(const AutomationListener& other);
-    ~AutomationListener();
+  class AutomationListener : public content::WebContentsObserver {
+   public:
+    explicit AutomationListener(content::WebContents* web_contents);
+    AutomationListener(const AutomationListener& other) = delete;
+    AutomationListener& operator=(const AutomationListener&) = delete;
+    ~AutomationListener() override;
 
+    // content:WebContentsObserver:
+    void DidFinishNavigation(
+        content::NavigationHandle* navigation_handle) override;
+
+    AutomationEventRouter* router;
     ExtensionId extension_id;
     int process_id;
     bool desktop;
@@ -103,6 +114,7 @@ class AutomationEventRouter : public content::RenderProcessHostObserver,
 
   void Register(const ExtensionId& extension_id,
                 int listener_process_id,
+                content::WebContents* web_contents,
                 ui::AXTreeID source_ax_tree_id,
                 bool desktop);
 
@@ -114,6 +126,8 @@ class AutomationEventRouter : public content::RenderProcessHostObserver,
       content::RenderProcessHost* host,
       const content::ChildProcessTerminationInfo& info) override;
   void RenderProcessHostDestroyed(content::RenderProcessHost* host) override;
+
+  void RemoveAutomationListener(content::RenderProcessHost* host);
 
   // Called when the user switches profiles or when a listener is added
   // or removed. The purpose is to ensure that multiple instances of the
@@ -128,7 +142,7 @@ class AutomationEventRouter : public content::RenderProcessHostObserver,
   void UpdateActiveProfile();
 
   content::NotificationRegistrar registrar_;
-  std::vector<AutomationListener> listeners_;
+  std::vector<std::unique_ptr<AutomationListener>> listeners_;
 
   content::BrowserContext* active_context_;
 
