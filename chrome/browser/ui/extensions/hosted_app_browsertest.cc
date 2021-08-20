@@ -473,6 +473,16 @@ IN_PROC_BROWSER_TEST_P(HostedAppTest, NotWebApp) {
   EXPECT_FALSE(app->from_bookmark());
 }
 
+IN_PROC_BROWSER_TEST_P(HostedAppTest, HasReloadButton) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL app_url = embedded_test_server()->GetURL("app.com", "/title1.html");
+  SetupAppWithURL(app_url);
+  EXPECT_EQ(app_browser_->app_controller()->app_id(), app_id_);
+  EXPECT_EQ(app_browser_->app_controller()->GetTitle(), u"Hosted App");
+  EXPECT_EQ(app_browser_->app_controller()->GetDefaultBounds(), gfx::Rect());
+  EXPECT_TRUE(app_browser_->app_controller()->HasReloadButton());
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_P(HostedAppTest, LoadIcon) {
   SetupApp("hosted_app");
