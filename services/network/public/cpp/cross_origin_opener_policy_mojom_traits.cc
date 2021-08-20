@@ -17,7 +17,8 @@ bool StructTraits<network::mojom::CrossOriginOpenerPolicyDataView,
       input.ReadReportingEndpoint(&result.reporting_endpoint) &&
       input.ReadReportOnlyValue(&result.report_only_value) &&
       input.ReadReportOnlyReportingEndpoint(
-          &result.report_only_reporting_endpoint)) {
+          &result.report_only_reporting_endpoint) &&
+      input.ReadSoapByDefaultValue(&result.soap_by_default_value)) {
     *output = std::move(result);
     return true;
   }

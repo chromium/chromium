@@ -63,4 +63,8 @@ struct CrossOriginOpenerPolicy {
         CrossOriginOpenerPolicyValue.kUnsafeNone;
     // The reporting endpoint for the "report only" mode.
     string? report_only_reporting_endpoint;
+    // The value of the policy when the default value of COOP is
+    // same-origin-allow-popups.
+    CrossOriginOpenerPolicyValue soap_by_default_value =
+        CrossOriginOpenerPolicyValue.kUnsafeNone;
 };

@@ -23,7 +23,9 @@ bool CrossOriginOpenerPolicy::operator==(
   return value == other.value &&
          reporting_endpoint == other.reporting_endpoint &&
          report_only_value == other.report_only_value &&
-         report_only_reporting_endpoint == other.report_only_reporting_endpoint;
+         report_only_reporting_endpoint ==
+             other.report_only_reporting_endpoint &&
+         soap_by_default_value == other.soap_by_default_value;
 }
 
 bool IsAccessFromCoopPage(mojom::CoopAccessReportType type) {
@@ -62,6 +64,14 @@ void AugmentCoopWithCoep(CrossOriginOpenerPolicy* coop,
   if (coop->value == mojom::CrossOriginOpenerPolicyValue::kSameOrigin &&
       CompatibleWithCrossOriginIsolated(coep.value)) {
     coop->value = mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep;
+  }
+
+  // COOP: SOAP by default
+  if (coop->soap_by_default_value ==
+          mojom::CrossOriginOpenerPolicyValue::kSameOrigin &&
+      CompatibleWithCrossOriginIsolated(coep.value)) {
+    coop->soap_by_default_value =
+        mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep;
   }
 
   // COOP-Report-Only:

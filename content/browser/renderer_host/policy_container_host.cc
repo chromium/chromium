@@ -81,7 +81,8 @@ std::ostream& operator<<(std::ostream& out,
       << ", report_only_reporting_endpoint: "
       << policies.cross_origin_opener_policy.report_only_reporting_endpoint
              .value_or("<null>")
-      << " }";
+      << ", soap_by_default_value: "
+      << policies.cross_origin_opener_policy.soap_by_default_value << " }";
 
   return out << " }";
 }

@@ -39,6 +39,8 @@ namespace {
 network::CrossOriginOpenerPolicy CoopSameOrigin() {
   network::CrossOriginOpenerPolicy coop;
   coop.value = network::mojom::CrossOriginOpenerPolicyValue::kSameOrigin;
+  coop.soap_by_default_value =
+      network::mojom::CrossOriginOpenerPolicyValue::kSameOrigin;
   return coop;
 }
 
@@ -46,12 +48,16 @@ network::CrossOriginOpenerPolicy CoopSameOriginPlusCoep() {
   network::CrossOriginOpenerPolicy coop;
   coop.value =
       network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep;
+  coop.soap_by_default_value =
+      network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep;
   return coop;
 }
 
 network::CrossOriginOpenerPolicy CoopSameOriginAllowPopups() {
   network::CrossOriginOpenerPolicy coop;
   coop.value =
+      network::mojom::CrossOriginOpenerPolicyValue::kSameOriginAllowPopups;
+  coop.soap_by_default_value =
       network::mojom::CrossOriginOpenerPolicyValue::kSameOriginAllowPopups;
   return coop;
 }
@@ -765,7 +771,8 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   GURL coop_allow_popups_page(https_server()->GetURL(
       "a.com",
       "/set-header?Cross-Origin-Opener-Policy: same-origin-allow-popups"));
-  GURL non_coop_page(https_server()->GetURL("a.com", "/title1.html"));
+  GURL non_coop_page(https_server()->GetURL(
+      "a.com", "/set-header?Cross-Origin-Opener-Policy: unsafe-none"));
   GURL cross_origin_non_coop_page(
       https_server()->GetURL("b.com", "/title1.html"));
   // Test a crash before the navigation.

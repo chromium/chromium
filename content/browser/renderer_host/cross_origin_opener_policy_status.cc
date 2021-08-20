@@ -312,9 +312,16 @@ void CrossOriginOpenerPolicyStatus::SanitizeCoopHeaders(
       // The COOP header must be ignored outside of the top-level context. It is
       // removed as a defensive measure.
       !frame_tree_node_->IsMainFrame()) {
+    bool has_coop_header =
+        coop.value !=
+            network::mojom::CrossOriginOpenerPolicyValue::kUnsafeNone ||
+        coop.report_only_value !=
+            network::mojom::CrossOriginOpenerPolicyValue::kUnsafeNone ||
+        coop.reporting_endpoint || coop.report_only_reporting_endpoint;
     coop = network::CrossOriginOpenerPolicy();
 
-    if (!network::IsUrlPotentiallyTrustworthy(response_url)) {
+    if (!network::IsUrlPotentiallyTrustworthy(response_url) &&
+        has_coop_header) {
       navigation_request_->AddDeferredConsoleMessage(
           blink::mojom::ConsoleMessageLevel::kError,
           "The Cross-Origin-Opener-Policy header has been ignored, because "
