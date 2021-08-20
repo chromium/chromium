@@ -12,10 +12,10 @@ class Profile;
 
 namespace app_list {
 
-// To normalize scores from the provider we store the distribution of scores in
-// an balanced reservoir. This reservoir is a subset of all provider scores.
-// The reservoir aims to have the number of scores observed between each score
-// in the reservoir to be evenly distributed.
+// To normalize scores we store the distribution of scores in a balanced
+// reservoir. This reservoir is a subset of all scores. The reservoir aims
+// to have the number of scores observed between each score in the reservoir
+// to be evenly distributed.
 class BalancedReservoir {
  public:
   BalancedReservoir(const std::string& provider,
@@ -58,16 +58,16 @@ class BalancedReservoir {
   void WritePrefs();
 
   std::vector<double> get_dividers() const { return dividers_; }
-  void set_dividers_for_test(const std::vector<double> dividers) {
-    dividers_ = dividers;
-  }
 
   std::vector<double> get_counts() const { return counts_; }
-  void set_counts_for_test(const std::vector<double> counts) {
-    counts_ = counts;
-  }
+
+  void SetStateForTest(const std::vector<double>& dividers,
+                       const std::vector<double>& counts);
 
  private:
+  // DCHECKs various pre/post-conditions on |dividers_| and |counts_|.
+  void CheckState();
+
   const int max_number_of_dividers_;
   std::vector<double> dividers_;
   std::vector<double> counts_;
