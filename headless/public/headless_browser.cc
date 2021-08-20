@@ -65,23 +65,23 @@ Builder::Builder() : options_(0, nullptr) {}
 Builder::~Builder() = default;
 
 Builder& Builder::SetProductNameAndVersion(
-    const std::string& name_and_version) {
-  options_.product_name_and_version = name_and_version;
+    const std::string& product_name_and_version) {
+  options_.product_name_and_version = product_name_and_version;
   return *this;
 }
 
-Builder& Builder::SetUserAgent(const std::string& agent) {
-  options_.user_agent = agent;
+Builder& Builder::SetUserAgent(const std::string& user_agent) {
+  options_.user_agent = user_agent;
   return *this;
 }
 
-Builder& Builder::SetAcceptLanguage(const std::string& language) {
-  options_.accept_language = language;
+Builder& Builder::SetAcceptLanguage(const std::string& accept_language) {
+  options_.accept_language = accept_language;
   return *this;
 }
 
-Builder& Builder::SetEnableBeginFrameControl(bool enable) {
-  options_.enable_begin_frame_control = enable;
+Builder& Builder::SetEnableBeginFrameControl(bool enable_begin_frame_control) {
+  options_.enable_begin_frame_control = enable_begin_frame_control;
   return *this;
 }
 
@@ -95,38 +95,40 @@ Builder& Builder::EnableDevToolsPipe() {
   return *this;
 }
 
-Builder& Builder::SetMessagePump(base::MessagePump* pump) {
-  options_.message_pump = pump;
+Builder& Builder::SetMessagePump(base::MessagePump* message_pump) {
+  options_.message_pump = message_pump;
   return *this;
 }
 
-Builder& Builder::SetProxyConfig(std::unique_ptr<net::ProxyConfig> config) {
-  options_.proxy_config = std::move(config);
+Builder& Builder::SetProxyConfig(
+    std::unique_ptr<net::ProxyConfig> proxy_config) {
+  options_.proxy_config = std::move(proxy_config);
   return *this;
 }
 
-Builder& Builder::SetSingleProcessMode(bool single_process) {
-  options_.single_process_mode = single_process;
+Builder& Builder::SetSingleProcessMode(bool single_process_mode) {
+  options_.single_process_mode = single_process_mode;
   return *this;
 }
 
-Builder& Builder::SetDisableSandbox(bool disable) {
-  options_.disable_sandbox = disable;
+Builder& Builder::SetDisableSandbox(bool disable_sandbox) {
+  options_.disable_sandbox = disable_sandbox;
   return *this;
 }
 
-Builder& Builder::SetEnableResourceScheduler(bool enable) {
-  options_.enable_resource_scheduler = enable;
+Builder& Builder::SetEnableResourceScheduler(bool enable_resource_scheduler) {
+  options_.enable_resource_scheduler = enable_resource_scheduler;
   return *this;
 }
 
-Builder& Builder::SetGLImplementation(const std::string& implementation) {
-  options_.gl_implementation = implementation;
+Builder& Builder::SetGLImplementation(const std::string& gl_implementation) {
+  options_.gl_implementation = gl_implementation;
   return *this;
 }
 
-Builder& Builder::SetANGLEImplementation(const std::string& implementation) {
-  options_.angle_implementation = implementation;
+Builder& Builder::SetANGLEImplementation(
+    const std::string& angle_implementation) {
+  options_.angle_implementation = angle_implementation;
   return *this;
 }
 
@@ -137,39 +139,39 @@ Builder& Builder::SetAppendCommandLineFlagsCallback(
 }
 
 #if defined(OS_WIN)
-Builder& Builder::SetInstance(HINSTANCE hinstance) {
-  options_.instance = hinstance;
+Builder& Builder::SetInstance(HINSTANCE instance) {
+  options_.instance = instance;
   return *this;
 }
 
-Builder& Builder::SetSandboxInfo(sandbox::SandboxInterfaceInfo* info) {
-  options_.sandbox_info = info;
+Builder& Builder::SetSandboxInfo(sandbox::SandboxInterfaceInfo* sandbox_info) {
+  options_.sandbox_info = sandbox_info;
   return *this;
 }
 #endif  // defined(OS_WIN)
 
-Builder& Builder::SetUserDataDir(const base::FilePath& dir) {
-  options_.user_data_dir = dir;
+Builder& Builder::SetUserDataDir(const base::FilePath& user_data_dir) {
+  options_.user_data_dir = user_data_dir;
   return *this;
 }
 
-Builder& Builder::SetWindowSize(const gfx::Size& size) {
-  options_.window_size = size;
+Builder& Builder::SetWindowSize(const gfx::Size& window_size) {
+  options_.window_size = window_size;
   return *this;
 }
 
-Builder& Builder::SetIncognitoMode(bool incognito) {
-  options_.incognito_mode = incognito;
+Builder& Builder::SetIncognitoMode(bool incognito_mode) {
+  options_.incognito_mode = incognito_mode;
   return *this;
 }
 
-Builder& Builder::SetSitePerProcess(bool per_process) {
-  options_.site_per_process = per_process;
+Builder& Builder::SetSitePerProcess(bool site_per_process) {
+  options_.site_per_process = site_per_process;
   return *this;
 }
 
-Builder& Builder::SetBlockNewWebContents(bool block) {
-  options_.block_new_web_contents = block;
+Builder& Builder::SetBlockNewWebContents(bool block_new_web_contents) {
+  options_.block_new_web_contents = block_new_web_contents;
   return *this;
 }
 
@@ -189,8 +191,9 @@ Builder& Builder::SetCrashDumpsDir(const base::FilePath& dir) {
   return *this;
 }
 
-Builder& Builder::SetFontRenderHinting(gfx::FontRenderParams::Hinting hinting) {
-  options_.font_render_hinting = hinting;
+Builder& Builder::SetFontRenderHinting(
+    gfx::FontRenderParams::Hinting font_render_hinting) {
+  options_.font_render_hinting = font_render_hinting;
   return *this;
 }
 

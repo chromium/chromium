@@ -75,16 +75,17 @@ TEST_F(BasicVulkanTest, EmptyVulkanSwaps) {
 
   // Also make sure we can swap multiple times.
   for (int i = 0; i < 10; ++i) {
+    absl::optional<VulkanSwapChain::ScopedWrite> scoped_write;
     scoped_write.emplace(surface->swap_chain());
     EXPECT_TRUE(scoped_write->success());
 
-    begin_semaphore = scoped_write->begin_semaphore();
+    VkSemaphore begin_semaphore = scoped_write->begin_semaphore();
     EXPECT_NE(begin_semaphore, kNullSemaphore);
 
-    end_semaphore = scoped_write->end_semaphore();
+    VkSemaphore end_semaphore = scoped_write->end_semaphore();
     EXPECT_NE(end_semaphore, kNullSemaphore);
 
-    command_buffer = command_pool->CreatePrimaryCommandBuffer();
+    auto command_buffer = command_pool->CreatePrimaryCommandBuffer();
     {
       ScopedSingleUseCommandBufferRecorder recorder(*command_buffer);
 

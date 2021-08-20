@@ -625,27 +625,28 @@ INSTANTIATE_TEST_SUITE_P(Service, GLES3DecoderTest2, ::testing::Bool());
 template <>
 void GLES2DecoderTestBase::SpecializedSetup<cmds::GetProgramInfoLog, 0>(
     bool /* valid */) {
-  const GLuint kTestClientVertexShaderId = 5001;
-  const GLuint kTestServiceVertexShaderId = 6001;
-  const GLuint kTestClientFragmentShaderId = 5002;
-  const GLuint kTestServiceFragmentShaderId = 6002;
+  const GLuint kClientVertexShaderId = 5001;
+  const GLuint kServiceVertexShaderId = 6001;
+  const GLuint kClientFragmentShaderId = 5002;
+  const GLuint kServiceFragmentShaderId = 6002;
   const char* log = "hello";  // Matches auto-generated unit test.
-  DoCreateShader(GL_VERTEX_SHADER, kTestClientVertexShaderId,
-                 kTestServiceVertexShaderId);
-  DoCreateShader(GL_FRAGMENT_SHADER, kTestClientFragmentShaderId,
-                 kTestServiceFragmentShaderId);
+  DoCreateShader(
+      GL_VERTEX_SHADER, kClientVertexShaderId, kServiceVertexShaderId);
+  DoCreateShader(
+      GL_FRAGMENT_SHADER, kClientFragmentShaderId, kServiceFragmentShaderId);
 
-  TestHelper::SetShaderStates(gl_.get(), GetShader(kTestClientVertexShaderId),
-                              true);
-  TestHelper::SetShaderStates(gl_.get(), GetShader(kTestClientFragmentShaderId),
-                              true);
+  TestHelper::SetShaderStates(
+      gl_.get(), GetShader(kClientVertexShaderId), true);
+  TestHelper::SetShaderStates(
+      gl_.get(), GetShader(kClientFragmentShaderId), true);
 
   InSequence dummy;
-  EXPECT_CALL(*gl_, AttachShader(kServiceProgramId, kTestServiceVertexShaderId))
+  EXPECT_CALL(*gl_,
+              AttachShader(kServiceProgramId, kServiceVertexShaderId))
       .Times(1)
       .RetiresOnSaturation();
   EXPECT_CALL(*gl_,
-              AttachShader(kServiceProgramId, kTestServiceFragmentShaderId))
+              AttachShader(kServiceProgramId, kServiceFragmentShaderId))
       .Times(1)
       .RetiresOnSaturation();
   EXPECT_CALL(*gl_, LinkProgram(kServiceProgramId))
@@ -672,10 +673,10 @@ void GLES2DecoderTestBase::SpecializedSetup<cmds::GetProgramInfoLog, 0>(
   ASSERT_TRUE(program != nullptr);
 
   cmds::AttachShader attach_cmd;
-  attach_cmd.Init(client_program_id_, kTestClientVertexShaderId);
+  attach_cmd.Init(client_program_id_, kClientVertexShaderId);
   EXPECT_EQ(error::kNoError, ExecuteCmd(attach_cmd));
 
-  attach_cmd.Init(client_program_id_, kTestClientFragmentShaderId);
+  attach_cmd.Init(client_program_id_, kClientFragmentShaderId);
   EXPECT_EQ(error::kNoError, ExecuteCmd(attach_cmd));
 
   program->Link(nullptr, Program::kCountOnlyStaticallyUsed, this);
@@ -753,26 +754,27 @@ void GLES2DecoderTestBase::SpecializedSetup<cmds::DeleteQueriesEXTImmediate, 0>(
 template <>
 void GLES2DecoderTestBase::SpecializedSetup<cmds::LinkProgram, 0>(
     bool /* valid */) {
-  const GLuint kTestClientVertexShaderId = 5001;
-  const GLuint kTestServiceVertexShaderId = 6001;
-  const GLuint kTestClientFragmentShaderId = 5002;
-  const GLuint kTestServiceFragmentShaderId = 6002;
-  DoCreateShader(GL_VERTEX_SHADER, kTestClientVertexShaderId,
-                 kTestServiceVertexShaderId);
-  DoCreateShader(GL_FRAGMENT_SHADER, kTestClientFragmentShaderId,
-                 kTestServiceFragmentShaderId);
+  const GLuint kClientVertexShaderId = 5001;
+  const GLuint kServiceVertexShaderId = 6001;
+  const GLuint kClientFragmentShaderId = 5002;
+  const GLuint kServiceFragmentShaderId = 6002;
+  DoCreateShader(
+      GL_VERTEX_SHADER, kClientVertexShaderId, kServiceVertexShaderId);
+  DoCreateShader(
+      GL_FRAGMENT_SHADER, kClientFragmentShaderId, kServiceFragmentShaderId);
 
-  TestHelper::SetShaderStates(gl_.get(), GetShader(kTestClientVertexShaderId),
-                              true);
-  TestHelper::SetShaderStates(gl_.get(), GetShader(kTestClientFragmentShaderId),
-                              true);
+  TestHelper::SetShaderStates(
+      gl_.get(), GetShader(kClientVertexShaderId), true);
+  TestHelper::SetShaderStates(
+      gl_.get(), GetShader(kClientFragmentShaderId), true);
 
   InSequence dummy;
-  EXPECT_CALL(*gl_, AttachShader(kServiceProgramId, kTestServiceVertexShaderId))
+  EXPECT_CALL(*gl_,
+              AttachShader(kServiceProgramId, kServiceVertexShaderId))
       .Times(1)
       .RetiresOnSaturation();
   EXPECT_CALL(*gl_,
-              AttachShader(kServiceProgramId, kTestServiceFragmentShaderId))
+              AttachShader(kServiceProgramId, kServiceFragmentShaderId))
       .Times(1)
       .RetiresOnSaturation();
   EXPECT_CALL(*gl_, GetProgramiv(kServiceProgramId, GL_LINK_STATUS, _))
@@ -789,10 +791,10 @@ void GLES2DecoderTestBase::SpecializedSetup<cmds::LinkProgram, 0>(
       .WillOnce(SetArgPointee<2>(0));
 
   cmds::AttachShader attach_cmd;
-  attach_cmd.Init(client_program_id_, kTestClientVertexShaderId);
+  attach_cmd.Init(client_program_id_, kClientVertexShaderId);
   EXPECT_EQ(error::kNoError, ExecuteCmd(attach_cmd));
 
-  attach_cmd.Init(client_program_id_, kTestClientFragmentShaderId);
+  attach_cmd.Init(client_program_id_, kClientFragmentShaderId);
   EXPECT_EQ(error::kNoError, ExecuteCmd(attach_cmd));
 }
 

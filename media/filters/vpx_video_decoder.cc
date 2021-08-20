@@ -158,7 +158,7 @@ void VpxVideoDecoder::Initialize(const VideoDecoderConfig& config,
 
   // Success!
   config_ = config;
-  state_ = DecoderState::kNormal;
+  state_ = kNormal;
   output_cb_ = output_cb;
   std::move(bound_init_cb).Run(OkStatus());
 }
@@ -169,32 +169,32 @@ void VpxVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(buffer);
   DCHECK(decode_cb);
-  DCHECK_NE(state_, DecoderState::kUninitialized)
+  DCHECK_NE(state_, kUninitialized)
       << "Called Decode() before successful Initialize()";
 
   DecodeCB bound_decode_cb = bind_callbacks_
                                  ? BindToCurrentLoop(std::move(decode_cb))
                                  : std::move(decode_cb);
 
-  if (state_ == DecoderState::kError) {
+  if (state_ == kError) {
     std::move(bound_decode_cb).Run(DecodeStatus::DECODE_ERROR);
     return;
   }
 
-  if (state_ == DecoderState::kDecodeFinished) {
+  if (state_ == kDecodeFinished) {
     std::move(bound_decode_cb).Run(DecodeStatus::OK);
     return;
   }
 
-  if (state_ == DecoderState::kNormal && buffer->end_of_stream()) {
-    state_ = DecoderState::kDecodeFinished;
+  if (state_ == kNormal && buffer->end_of_stream()) {
+    state_ = kDecodeFinished;
     std::move(bound_decode_cb).Run(DecodeStatus::OK);
     return;
   }
 
   scoped_refptr<VideoFrame> video_frame;
   if (!VpxDecode(buffer.get(), &video_frame)) {
-    state_ = DecoderState::kError;
+    state_ = kError;
     std::move(bound_decode_cb).Run(DecodeStatus::DECODE_ERROR);
     return;
   }
@@ -212,7 +212,7 @@ void VpxVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
 
 void VpxVideoDecoder::Reset(base::OnceClosure reset_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  state_ = DecoderState::kNormal;
+  state_ = kNormal;
 
   if (bind_callbacks_)
     BindToCurrentLoop(std::move(reset_cb)).Run();

@@ -109,7 +109,7 @@ H264Decoder::H264Accelerator::ParseEncryptedSliceHeader(
 H264Decoder::H264Decoder(std::unique_ptr<H264Accelerator> accelerator,
                          VideoCodecProfile profile,
                          const VideoColorSpace& container_color_space)
-    : state_(State::kNeedStreamMetadata),
+    : state_(kNeedStreamMetadata),
       container_color_space_(container_color_space),
       max_frame_num_(0),
       max_pic_num_(0),
@@ -159,8 +159,8 @@ void H264Decoder::Reset() {
   // If we are in kDecoding, we can resume without processing an SPS.
   // The state becomes kDecoding again, (1) at the first IDR slice or (2) at
   // the first slice after the recovery point SEI.
-  if (state_ == State::kDecoding)
-    state_ = State::kAfterReset;
+  if (state_ == kDecoding)
+    state_ = kAfterReset;
 }
 
 void H264Decoder::PrepareRefPicLists() {
@@ -876,8 +876,8 @@ bool H264Decoder::HandleMemoryManagementOps(scoped_refptr<H264Picture> pic) {
             ref_pic_marking->max_long_term_frame_idx_plus1 - 1;
         H264Picture::Vector long_terms;
         dpb_.GetLongTermRefPicsAppending(&long_terms);
-        for (size_t long_term = 0; long_term < long_terms.size(); ++long_term) {
-          scoped_refptr<H264Picture>& long_term_pic = long_terms[long_term];
+        for (size_t i = 0; i < long_terms.size(); ++i) {
+          scoped_refptr<H264Picture>& long_term_pic = long_terms[i];
           DCHECK(long_term_pic->ref && long_term_pic->long_term);
           // Ok to cast, max_long_term_frame_idx is much smaller than 16bit.
           if (long_term_pic->long_term_frame_idx >
@@ -899,8 +899,8 @@ bool H264Decoder::HandleMemoryManagementOps(scoped_refptr<H264Picture> pic) {
         // First unmark if any existing with this long_term_frame_idx...
         H264Picture::Vector long_terms;
         dpb_.GetLongTermRefPicsAppending(&long_terms);
-        for (size_t long_term = 0; long_term < long_terms.size(); ++long_term) {
-          scoped_refptr<H264Picture>& long_term_pic = long_terms[long_term];
+        for (size_t i = 0; i < long_terms.size(); ++i) {
+          scoped_refptr<H264Picture>& long_term_pic = long_terms[i];
           DCHECK(long_term_pic->ref && long_term_pic->long_term);
           // Ok to cast, long_term_frame_idx is much smaller than 16bit.
           if (long_term_pic->long_term_frame_idx ==
@@ -1364,7 +1364,7 @@ H264Decoder::H264Accelerator::Status H264Decoder::ProcessCurrentSlice() {
 #define SET_ERROR_AND_RETURN()         \
   do {                                 \
     DVLOG(1) << "Error during decode"; \
-    state_ = State::kError;            \
+    state_ = kError;                   \
     return H264Decoder::kDecodeError;  \
   } while (0)
 
@@ -1408,7 +1408,7 @@ void H264Decoder::SetStream(int32_t id, const DecoderBuffer& decoder_buffer) {
 }
 
 H264Decoder::DecodeResult H264Decoder::Decode() {
-  if (state_ == State::kError) {
+  if (state_ == kError) {
     DVLOG(1) << "Decoder in error state";
     return kDecodeError;
   }
@@ -1457,8 +1457,7 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
       case H264NALU::kNonIDRSlice:
         // We can't resume from a non-IDR slice unless recovery point SEI
         // process is going.
-        if (state_ == State::kError ||
-            (state_ == State::kAfterReset && !recovery_frame_cnt_))
+        if (state_ == kError || (state_ == kAfterReset && !recovery_frame_cnt_))
           break;
 
         FALLTHROUGH;
@@ -1466,7 +1465,7 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
         // TODO(posciak): the IDR may require an SPS that we don't have
         // available. For now we'd fail if that happens, but ideally we'd like
         // to keep going until the next SPS in the stream.
-        if (state_ == State::kNeedStreamMetadata) {
+        if (state_ == kNeedStreamMetadata) {
           // We need an SPS, skip this IDR and keep looking.
           break;
         }
@@ -1480,10 +1479,10 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
         // steps will be executed.
         if (!curr_slice_hdr_) {
           curr_slice_hdr_ = std::make_unique<H264SliceHeader>();
-          state_ = State::kParseSliceHeader;
+          state_ = kParseSliceHeader;
         }
 
-        if (state_ == State::kParseSliceHeader) {
+        if (state_ == kParseSliceHeader) {
           // Check if the slice header is encrypted.
           bool parsed_header = false;
           if (current_decrypt_config_) {
@@ -1505,18 +1504,18 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
             if (par_res != H264Parser::kOk)
               SET_ERROR_AND_RETURN();
           }
-          state_ = State::kTryPreprocessCurrentSlice;
+          state_ = kTryPreprocessCurrentSlice;
         }
 
-        if (state_ == State::kTryPreprocessCurrentSlice) {
+        if (state_ == kTryPreprocessCurrentSlice) {
           CHECK_ACCELERATOR_RESULT(PreprocessCurrentSlice());
-          state_ = State::kEnsurePicture;
+          state_ = kEnsurePicture;
         }
 
-        if (state_ == State::kEnsurePicture) {
+        if (state_ == kEnsurePicture) {
           if (curr_pic_) {
             // |curr_pic_| already exists, so skip to ProcessCurrentSlice().
-            state_ = State::kTryCurrentSlice;
+            state_ = kTryCurrentSlice;
           } else {
             // New picture/finished previous one, try to start a new one
             // or tell the client we need more surfaces.
@@ -1526,19 +1525,19 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
             if (current_decrypt_config_)
               curr_pic_->set_decrypt_config(current_decrypt_config_->Clone());
 
-            state_ = State::kTryNewFrame;
+            state_ = kTryNewFrame;
           }
         }
 
-        if (state_ == State::kTryNewFrame) {
+        if (state_ == kTryNewFrame) {
           CHECK_ACCELERATOR_RESULT(StartNewFrame(curr_slice_hdr_.get()));
-          state_ = State::kTryCurrentSlice;
+          state_ = kTryCurrentSlice;
         }
 
-        DCHECK_EQ(state_, State::kTryCurrentSlice);
+        DCHECK_EQ(state_, kTryCurrentSlice);
         CHECK_ACCELERATOR_RESULT(ProcessCurrentSlice());
         curr_slice_hdr_.reset();
-        state_ = State::kDecoding;
+        state_ = kDecoding;
         break;
       }
 
@@ -1556,8 +1555,8 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
 
         last_sps_nalu_.assign(curr_nalu_->data,
                               curr_nalu_->data + curr_nalu_->size);
-        if (state_ == State::kNeedStreamMetadata)
-          state_ = State::kAfterReset;
+        if (state_ == kNeedStreamMetadata)
+          state_ = kAfterReset;
 
         if (need_new_buffers) {
           curr_pic_ = nullptr;
@@ -1585,7 +1584,7 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
       case H264NALU::kAUD:
       case H264NALU::kEOSeq:
       case H264NALU::kEOStream:
-        if (state_ != State::kDecoding)
+        if (state_ != kDecoding)
           break;
 
         CHECK_ACCELERATOR_RESULT(FinishPrevFrameIfPresent());
@@ -1606,7 +1605,7 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
             sei_subsamples_.push_back(subsamples[0]);
           }
         }
-        if (state_ == State::kAfterReset && !recovery_frame_cnt_ &&
+        if (state_ == kAfterReset && !recovery_frame_cnt_ &&
             !recovery_frame_num_) {
           // If we are after reset, we can also resume from a SEI recovery point
           // (spec D.2.8) if one is present. However, if we are already in the

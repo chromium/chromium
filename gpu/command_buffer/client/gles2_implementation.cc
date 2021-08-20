@@ -7371,7 +7371,8 @@ bool GLES2Implementation::PackStringsToBucket(GLsizei count,
       if (copy_size < buffer.size()) {
         // Append NULL in the end.
         DCHECK(copy_size + 1 == buffer.size());
-        reinterpret_cast<char*>(buffer.address())[copy_size] = 0;
+        char* str = reinterpret_cast<char*>(buffer.address());
+        str[copy_size] = 0;
       }
       helper_->SetBucketData(kResultBucketId, offset, buffer.size(),
                              buffer.shm_id(), buffer.offset());

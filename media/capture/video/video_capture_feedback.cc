@@ -107,8 +107,8 @@ VideoCaptureFeedback& VideoCaptureFeedback::RequireMapped(bool require) {
 }
 
 VideoCaptureFeedback& VideoCaptureFeedback::WithMappedSizes(
-    std::vector<gfx::Size> sizes) {
-  mapped_sizes = std::move(sizes);
+    std::vector<gfx::Size> mapped_sizes) {
+  this->mapped_sizes = std::move(mapped_sizes);
   SortSizesDescending(mapped_sizes);
   return *this;
 }
