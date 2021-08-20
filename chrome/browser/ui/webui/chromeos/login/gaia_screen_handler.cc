@@ -225,15 +225,14 @@ std::string GetChromeType() {
   }
 }
 
-void UpdateAuthParams(base::DictionaryValue* params,
-                      bool is_restrictive_proxy) {
+void UpdateAuthParams(base::Value* params, bool is_restrictive_proxy) {
   CrosSettings* cros_settings = CrosSettings::Get();
   bool allow_new_user = true;
   cros_settings->GetBoolean(kAccountsPrefAllowNewUser, &allow_new_user);
 
   // nosignup flow if new users are not allowed.
   if (!allow_new_user || is_restrictive_proxy)
-    params->SetString("flow", "nosignup");
+    params->SetStringKey("flow", "nosignup");
 }
 
 bool ShouldCheckUserTypeBeforeAllowing() {
@@ -403,25 +402,25 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
     const std::string& partition_name,
     const std::string* platform_version,
     const bool* collect_stats_consent) {
-  base::DictionaryValue params;
+  base::Value params(base::Value::Type::DICTIONARY);
 
-  params.SetBoolean("forceReload", context.force_reload);
-  params.SetString("gaiaId", context.gaia_id);
-  params.SetBoolean("readOnlyEmail", true);
-  params.SetString("email", context.email);
+  params.SetBoolKey("forceReload", context.force_reload);
+  params.SetStringKey("gaiaId", context.gaia_id);
+  params.SetBoolKey("readOnlyEmail", true);
+  params.SetStringKey("email", context.email);
 
   UpdateAuthParams(&params, IsRestrictiveProxy());
 
   screen_mode_ = GetGaiaScreenMode(context.email);
-  params.SetInteger("screenMode", screen_mode_);
+  params.SetIntKey("screenMode", screen_mode_);
 
   const std::string app_locale = g_browser_process->GetApplicationLocale();
   if (!app_locale.empty())
-    params.SetString("hl", app_locale);
+    params.SetStringKey("hl", app_locale);
 
   std::string realm(GetRealm());
   if (!realm.empty()) {
-    params.SetString("realm", realm);
+    params.SetStringKey("realm", realm);
   }
 
   const std::string enterprise_display_domain(GetEnterpriseDisplayDomain());
@@ -431,24 +430,24 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
   const std::string sso_profile(GetSSOProfile());
 
   if (!enterprise_display_domain.empty())
-    params.SetString("enterpriseDisplayDomain", enterprise_display_domain);
+    params.SetStringKey("enterpriseDisplayDomain", enterprise_display_domain);
   if (!enterprise_enrollment_domain.empty()) {
-    params.SetString("enterpriseEnrollmentDomain",
-                     enterprise_enrollment_domain);
+    params.SetStringKey("enterpriseEnrollmentDomain",
+                        enterprise_enrollment_domain);
   }
   if (!sso_profile.empty()) {
-    params.SetString("ssoProfile", sso_profile);
+    params.SetStringKey("ssoProfile", sso_profile);
   }
   if (!enterprise_domain_manager.empty()) {
-    params.SetString("enterpriseDomainManager", enterprise_domain_manager);
+    params.SetStringKey("enterpriseDomainManager", enterprise_domain_manager);
   }
-  params.SetBoolean("enterpriseManagedDevice",
+  params.SetBoolKey("enterpriseManagedDevice",
                     g_browser_process->platform_part()
                         ->browser_policy_connector_ash()
                         ->IsDeviceEnterpriseManaged());
   const AccountId& owner_account_id =
       user_manager::UserManager::Get()->GetOwnerAccountId();
-  params.SetBoolean("hasDeviceOwner", owner_account_id.is_valid());
+  params.SetBoolKey("hasDeviceOwner", owner_account_id.is_valid());
   if (owner_account_id.is_valid() &&
       !::features::IsParentAccessCodeForOnlineLoginEnabled()) {
     // Some Autotest policy tests appear to wipe the user list in Local State
@@ -457,50 +456,50 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
         user_manager::UserManager::Get()->FindUser(owner_account_id);
     if (owner_user &&
         owner_user->GetType() == user_manager::UserType::USER_TYPE_CHILD) {
-      params.SetString("obfuscatedOwnerId", owner_account_id.GetGaiaId());
+      params.SetStringKey("obfuscatedOwnerId", owner_account_id.GetGaiaId());
     }
   }
 
-  params.SetString("chromeType", GetChromeType());
-  params.SetString("clientId",
-                   GaiaUrls::GetInstance()->oauth2_chrome_client_id());
-  params.SetString("clientVersion", version_info::GetVersionNumber());
+  params.SetStringKey("chromeType", GetChromeType());
+  params.SetStringKey("clientId",
+                      GaiaUrls::GetInstance()->oauth2_chrome_client_id());
+  params.SetStringKey("clientVersion", version_info::GetVersionNumber());
   if (!platform_version->empty())
-    params.SetString("platformVersion", *platform_version);
+    params.SetStringKey("platformVersion", *platform_version);
   // Extended stable channel is not supported on Chrome OS Ash.
-  params.SetString("releaseChannel",
-                   chrome::GetChannelName(chrome::WithExtendedStable(false)));
-  params.SetString("endpointGen", kEndpointGen);
+  params.SetStringKey("releaseChannel", chrome::GetChannelName(
+                                            chrome::WithExtendedStable(false)));
+  params.SetStringKey("endpointGen", kEndpointGen);
 
   std::string email_domain;
   if (CrosSettings::Get()->GetString(kAccountsPrefLoginScreenDomainAutoComplete,
                                      &email_domain) &&
       !email_domain.empty()) {
-    params.SetString("emailDomain", email_domain);
+    params.SetStringKey("emailDomain", email_domain);
   }
 
-  params.SetString("gaiaUrl", GaiaUrls::GetInstance()->gaia_url().spec());
+  params.SetStringKey("gaiaUrl", GaiaUrls::GetInstance()->gaia_url().spec());
   switch (gaia_path_) {
     case GaiaPath::kDefault:
       // Use the default gaia signin path embedded/setup/v2/chromeos which is
       // set in authenticator.js
       break;
     case GaiaPath::kChildSignup:
-      params.SetString("gaiaPath",
-                       GaiaUrls::GetInstance()
-                           ->embedded_setup_chromeos_kid_signup_url()
-                           .path()
-                           .substr(1));
+      params.SetStringKey("gaiaPath",
+                          GaiaUrls::GetInstance()
+                              ->embedded_setup_chromeos_kid_signup_url()
+                              .path()
+                              .substr(1));
       break;
     case GaiaPath::kChildSignin:
-      params.SetString("gaiaPath",
-                       GaiaUrls::GetInstance()
-                           ->embedded_setup_chromeos_kid_signin_url()
-                           .path()
-                           .substr(1));
+      params.SetStringKey("gaiaPath",
+                          GaiaUrls::GetInstance()
+                              ->embedded_setup_chromeos_kid_signin_url()
+                              .path()
+                              .substr(1));
       break;
     case GaiaPath::kReauth:
-      params.SetString(
+      params.SetStringKey(
           "gaiaPath",
           GaiaUrls::GetInstance()->embedded_reauth_chromeos_url().path().substr(
               1));
@@ -510,26 +509,27 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
   // We only send `chromeos_board` Gaia URL parameter if user has opted into
   // sending device statistics.
   if (*collect_stats_consent)
-    params.SetString("lsbReleaseBoard", base::SysInfo::GetLsbReleaseBoard());
+    params.SetStringKey("lsbReleaseBoard", base::SysInfo::GetLsbReleaseBoard());
 
-  params.SetString("webviewPartitionName", partition_name);
+  params.SetStringKey("webviewPartitionName", partition_name);
   signin_partition_name_ = partition_name;
 
-  params.SetBoolean("extractSamlPasswordAttributes",
+  params.SetBoolKey("extractSamlPasswordAttributes",
                     login::ExtractSamlPasswordAttributesEnabled());
-  params.SetBoolean("enableCloseView",
+  params.SetBoolKey("enableCloseView",
                     ash::features::IsGaiaCloseViewMessageEnabled());
 
   if (public_saml_url_fetcher_) {
-    params.SetBoolean("startsOnSamlPage", true);
+    params.SetBoolKey("startsOnSamlPage", true);
     DCHECK(base::CommandLine::ForCurrentProcess()->HasSwitch(
         switches::kPublicAccountsSamlAclUrl));
     std::string saml_acl_url =
         base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
             switches::kPublicAccountsSamlAclUrl);
-    params.SetString("samlAclUrl", saml_acl_url);
+    params.SetStringKey("samlAclUrl", saml_acl_url);
     if (public_saml_url_fetcher_->FetchSucceeded()) {
-      params.SetString("frameUrl", public_saml_url_fetcher_->GetRedirectUrl());
+      params.SetStringKey("frameUrl",
+                          public_saml_url_fetcher_->GetRedirectUrl());
     } else {
       LoginDisplayHost::default_host()->GetSigninUI()->ShowSigninError(
           SigninError::kFailedToFetchSamlRedirect, /*details=*/std::string());
@@ -548,8 +548,8 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
     // Enable the new endpoint for supervised account for now. We might expand
     // it to other account type in the future.
     if (is_child_account) {
-      params.SetBoolean("isSupervisedUser", is_child_account);
-      params.SetBoolean(
+      params.SetBoolKey("isSupervisedUser", is_child_account);
+      params.SetBoolKey(
           "isDeviceOwner",
           account_id == user_manager::UserManager::Get()->GetOwnerAccountId());
     }
