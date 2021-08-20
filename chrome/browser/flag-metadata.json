@@ -779,6 +779,11 @@
     "expiry_milestone": 82
   },
   {
+    "name": "contextual-search-new-settings",
+    "owners": [ "//chrome/android/java/src/org/chromium/chrome/browser/contextualsearch/OWNERS", "contextual-search-eng@google.com" ],
+    "expiry_milestone": 99
+  },
+  {
     "name": "contextual-search-ranker-query",
     "owners": [ "//chrome/android/java/src/org/chromium/chrome/browser/contextualsearch/OWNERS" ],
     "expiry_milestone": 82

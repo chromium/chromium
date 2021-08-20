@@ -47849,6 +47849,7 @@ from previous Chrome versions.
   <int value="-1324634193" label="EnablePalmOnMaxTouchMajor:disabled"/>
   <int value="-1324029365" label="EnableTLS13EarlyData:enabled"/>
   <int value="-1322882747" label="disable-datasaver-prompt"/>
+  <int value="-1322830330" label="ContextualSearchNewSettings:enabled"/>
   <int value="-1321935621" label="WebAppsCrosapi:enabled"/>
   <int value="-1321640296"
       label="AutofillDownstreamCvcPromptUseGooglePayLogo:enabled"/>
@@ -48805,6 +48806,7 @@ from previous Chrome versions.
   <int value="-556662059" label="AuraWindowSubtreeCapture:enabled"/>
   <int value="-556218705" label="SlowDCTimerInterruptsWin:enabled"/>
   <int value="-555341956" label="AutofillSaveAndFillVPA:enabled"/>
+  <int value="-552407626" label="ContextualSearchNewSettings:disabled"/>
   <int value="-551434067"
       label="QuickActionSearchWidgetAndroidDinoVariant:enabled"/>
   <int value="-548082154" label="protect-sync-credential:disabled"/>

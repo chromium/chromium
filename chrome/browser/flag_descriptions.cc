@@ -3008,6 +3008,12 @@ const char kContextualSearchMlTapSuppressionDescription[] =
     "learning.  The \"Contextual Search Ranker prediction\" flag must also be "
     "enabled!";
 
+const char KContextualSearchNewSettingsName[] =
+    "Contextual Search new settings";
+const char KContextualSearchNewSettingsDescription[] =
+    "Adds a toggle to Settings page to specifically control Contextual Search "
+    "opt-in state, and update Opt-in messages.";
+
 const char kContextualSearchRankerQueryName[] =
     "Contextual Search Ranker prediction";
 const char kContextualSearchRankerQueryDescription[] =

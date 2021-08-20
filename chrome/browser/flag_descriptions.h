@@ -1722,6 +1722,9 @@ extern const char kContextualSearchLongpressResolveDescription[];
 extern const char kContextualSearchMlTapSuppressionName[];
 extern const char kContextualSearchMlTapSuppressionDescription[];
 
+extern const char KContextualSearchNewSettingsName[];
+extern const char KContextualSearchNewSettingsDescription[];
+
 extern const char kContextualSearchRankerQueryName[];
 extern const char kContextualSearchRankerQueryDescription[];
 
