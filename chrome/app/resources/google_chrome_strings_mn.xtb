@@ -87,6 +87,8 @@
 <translation id="2888126860611144412">Chrome-н тухай</translation>
 <translation id="2926676257163822632">Сул нууц үгийг таахад хялбар байдаг. Chrome-д <ph name="BEGIN_LINK" />танд зориулан сайн нууц үг үүсгэж, санах<ph name="END_LINK" /> боломж олгоорой.</translation>
 <translation id="2929907241665500097">Chrome-г шинэчлээгүй, ямар нэг алдаа гарлаа. <ph name="BEGIN_LINK" />Chrome-г шинэчлэхтэй холбоотой асуудлууд болон амжилтгүй болсон шинэчлэлтүүдийг засна уу.<ph name="END_LINK" /></translation>
+<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Хамгийн сүүлийн нэг сануулагч: суулгаснаар <ph name="BEGIN_BOLD" />таны хатуу дискийг бүхэлд нь устгана<ph name="END_BOLD" />. Та аливаа чухал өгөгдлөө хуулбарласан эсэхээ шалгана уу.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Суулгаж эхэлмэгц үүнийг цуцлах боломжгүй.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Сүлжээнд нэвтрэх - Chrome</translation>
 <translation id="3037838751736561277">Google Chrome нь суурь горимд байна.</translation>
 <translation id="3059710691562604940">Аюулгүй үзэх онцлог унтраалттай байна. Chrome түүнийг асаахыг зөвлөж байна.</translation>

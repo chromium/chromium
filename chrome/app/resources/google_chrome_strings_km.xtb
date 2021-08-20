@@ -87,6 +87,8 @@
 <translation id="2888126860611144412">អំពី Chrome</translation>
 <translation id="2926676257163822632">ពាក្យសម្ងាត់ខ្សោយ​មានភាពងាយស្រួលក្នុងការ​ទាយដឹង​។ អនុញ្ញាតឱ្យ Chrome <ph name="BEGIN_LINK" />បង្កើត និងចងចាំពាក្យសម្ងាត់ខ្លាំងសម្រាប់អ្នក<ph name="END_LINK" />។</translation>
 <translation id="2929907241665500097">Chrome មិន​បានដំឡើងកំណែទេ មានអ្វីមួយខុសប្រក្រតី។ <ph name="BEGIN_LINK" />សូមដោះស្រាយបញ្ហា​នៃការដំឡើងកំណែ Chrome និងការដំឡើងកំណែដែលមិនបានសម្រេចផ្សេងៗ។<ph name="END_LINK" /></translation>
+<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />ការរំលឹកចុងក្រោយ៖ ការដំឡើង<ph name="BEGIN_BOLD" />នឹងលុបថាស​រឹងរបស់អ្នកទាំងស្រុង<ph name="END_BOLD" />។ សូម​ប្រាកដថា អ្នកបានបម្រុងទុកទិន្នន័យដែលចាំបាច់សម្រាប់អ្នក។<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />នៅពេលការដំឡើងចាប់ផ្ដើម អ្នកមិនអាចបោះបង់បានទេ។<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - ការចូលបណ្ដាញ - Chrome</translation>
 <translation id="3037838751736561277">Google Chrome នៅក្នុងរបៀបផ្ទៃខាងក្រោយ។</translation>
 <translation id="3059710691562604940">បានបិទមុខងាររុករក​ដោយសុវត្ថិភាព​។ Chrome ណែនាំឱ្យបើក​មុខងារនេះ។</translation>

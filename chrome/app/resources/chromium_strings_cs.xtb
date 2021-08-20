@@ -55,6 +55,8 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="2847479871509788944">Odstranit z prohlížeče Chromium...</translation>
 <translation id="2885378588091291677">Správce úloh</translation>
 <translation id="2910007522516064972">O prohlížeči &amp;Chromium</translation>
+<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Ještě poslední připomenutí: Při instalaci bude <ph name="BEGIN_BOLD" />zcela vymazán pevný disk.<ph name="END_BOLD" /> Zkontrolujte si, zda máte všechna důležitá data zálohovaná.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Po spuštění již instalaci nelze zrušit.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium je aktuální</translation>
 <translation id="2983934633046890458">Chromium se pokouší upravit hesla.</translation>
 <translation id="3032706164202344641">Chromium nemůže zkontrolovat hesla. Zkuste to později.</translation>

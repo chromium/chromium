@@ -53,6 +53,8 @@
 <translation id="2847479871509788944">Buang dari Chromium...</translation>
 <translation id="2885378588091291677">Pengelola Tugas</translation>
 <translation id="2910007522516064972">Tentang &amp;Chromium</translation>
+<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Pengingat terakhir: penginstalan <ph name="BEGIN_BOLD" />akan menghapus seluruh data di hard drive<ph name="END_BOLD" />. Pastikan Anda telah mencadangkan semua data penting.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Penginstalan tidak dapat dibatalkan setelah dimulai.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium sudah diperbarui</translation>
 <translation id="2983934633046890458">Chromium mencoba mengedit sandi.</translation>
 <translation id="3032706164202344641">Chromium tidak dapat memeriksa sandi Anda. Coba lagi nanti.</translation>

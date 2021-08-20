@@ -569,6 +569,7 @@
 <translation id="1602085790802918092">Виртуал машиныг эхлүүлж байна</translation>
 <translation id="1603914832182249871">(Нэрээ нууцлах)</translation>
 <translation id="1604432177629086300">Хэвлэж чадсангүй. Хэвлэгчийг шалгаад дахин оролдоно уу.</translation>
+<translation id="1606077700029460857">Хулганын тохиргоог өөрчлөх</translation>
 <translation id="1607139524282324606">Оролтыг устгах</translation>
 <translation id="1607499585984539560">Хэрэглэгч домэйнтэй холбоогүй байна</translation>
 <translation id="1608626060424371292">Энэ хэрэглэгчийг устга</translation>
@@ -699,6 +700,7 @@
 <translation id="1718835860248848330">Сүүлийн цаг</translation>
 <translation id="1719312230114180055">Санамж: Таны хурууны хээ нь хүчтэй нууц үг болон ПИН-ээс хамгаалалт муутай байж болзошгүй.</translation>
 <translation id="1720318856472900922">TLS WWW Сервер таниулах</translation>
+<translation id="1720941539803966190">Практик хичээлийг хаах</translation>
 <translation id="1721312023322545264">Та энэ сайтад зочлохын тулд <ph name="NAME" />-с зөвшөөрөл авах шаардлагатай</translation>
 <translation id="1722460139690167654"><ph name="ENROLLMENT_DOMAIN" />-с таны <ph name="BEGIN_LINK" /> <ph name="DEVICE_TYPE" />-г удирдаж байна<ph name="END_LINK" /></translation>
 <translation id="1723824996674794290">&amp;Шинэ цонх</translation>
@@ -773,6 +775,7 @@
 <translation id="1790194216133135334">Холбоосыг <ph name="DEVICE_NAME" />-д илгээх</translation>
 <translation id="1790976235243700817">Хандалтын эрхийг хасах</translation>
 <translation id="1792619191750875668">Өргөтгөсөн дэлгэц</translation>
+<translation id="1793625608969726781"><ph name="DEVICE_COUNT" />-с <ph name="DEVICE_INDEX" /> төхөөрөмж, <ph name="DEVICE_NAME" />, Компьютер, Батарейн түвшин <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1794051631868188691"><ph name="MERCHANT" />-г хэзээ ч бүү харуул</translation>
 <translation id="1794791083288629568">Энэ алдааг засахад бидэнд туслан, санал хүсэлтээ илгээнэ үү.</translation>
 <translation id="1795214765651529549">Сонгодог загварыг ашиглах</translation>
@@ -1153,6 +1156,7 @@
 <translation id="2179416702468739594">Боломжтой профайлыг хайж байна. Энэ нь таны мобайл сүлжээг хэдэн минутын турш салахад хүргэж болзошгүй.</translation>
 <translation id="2180620921879609685">Аливаа хуудсан дээрх контентыг блоклох</translation>
 <translation id="2182058453334755893">Түр санах ой руу хуулсан</translation>
+<translation id="2183027945672030611"><ph name="DEVICE_COUNT" />-с <ph name="DEVICE_INDEX" /> төхөөрөмж, <ph name="DEVICE_NAME" />, Тоглоомын гар, Батарейн түвшин <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="2184515124301515068">Сайтуудад дуу тоглуулах боломжтой үеийг сонгох зөвшөөрлийг Chrome-д олгох (санал болгосон)</translation>
 <translation id="2186711480981247270">Өөр төхөөрөмжөөс хуваалцсан хуудас</translation>
 <translation id="2187675480456493911">Таны бүртгэл дээрх бусад төхөөрөмжтэй синк хийдэг. Бусад хэрэглэгчийн өөрчилсөн тохиргоог синк хийхгүй. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
@@ -1272,6 +1276,7 @@
 <translation id="2301402091755573488">Хуваалцсан таб</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" нь нэмэлт зөвшөөрөл хүссэн байна.</translation>
 <translation id="23055578400314116">Хэрэглэгчийн нэр сонгоно уу</translation>
+<translation id="2306366691914573029"><ph name="DEVICE_COUNT" />-с <ph name="DEVICE_INDEX" /> төхөөрөмж, <ph name="DEVICE_NAME" />, Үл мэдэгдэх төхөөрөмжийн төрөл</translation>
 <translation id="2307462900900812319">Сүлжээг тохируулах</translation>
 <translation id="2307553512430195144">Хэрэв та зөвшөөрч байвал Google Туслах “Ok Google”-г илрүүлэхийн тулд зогсолтын горимд хүлээх бөгөөд Voice Match-тай ярьж байгаа хүн <ph name="SUPERVISED_USER_NAME" /> болохыг таних боломжтой.
     <ph name="BR" />
@@ -1557,6 +1562,7 @@
 <translation id="2606568927909309675">Англи хэл дээрх аудио болон видеонд автоматаар хадмал үүсгэдэг. Аудио болон хадмал таны төхөөрөмжөөс хэзээ ч гардаггүй.</translation>
 <translation id="2607101320794533334">Байгууллагын Public Key мэдээлэл</translation>
 <translation id="2609896558069604090">Богино холболтуудыг үүсгэх ...</translation>
+<translation id="2609902589050805912"><ph name="DEVICE_COUNT" />-с <ph name="DEVICE_INDEX" /> төхөөрөмж, <ph name="DEVICE_NAME" />, Аудио төхөөрөмж</translation>
 <translation id="2609980095400624569">Холболт тогтоож чадсангүй</translation>
 <translation id="2610157865375787051">Идэвхгүй</translation>
 <translation id="2610260699262139870">Бодит хэмжээ</translation>
@@ -1623,6 +1629,7 @@
 <translation id="2673135533890720193">Хайлтын хадгалагдсан мэдээллийг уншина</translation>
 <translation id="2674764818721168631">Унтраалттай</translation>
 <translation id="2678063897982469759">Дахин идэвхжүүл</translation>
+<translation id="2678676117809690850"><ph name="DEVICE_COUNT" />-с <ph name="DEVICE_INDEX" /> төхөөрөмж, <ph name="DEVICE_NAME" />, Утас, Батарейн түвшин <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="268053382412112343">Түүх</translation>
 <translation id="2681124317993121768">Зочны профайлуудыг дэмждэггүй</translation>
 <translation id="2682498795777673382">Таны эцэг эхийн хийсэн шинэчлэлт</translation>
@@ -1819,6 +1826,7 @@
 <translation id="287205682142673348">Порт дамжуулах</translation>
 <translation id="287286579981869940"><ph name="PROVIDER_NAME" />... нэмэх</translation>
 <translation id="2872961005593481000">Унтраах</translation>
+<translation id="2872966656309879564"><ph name="DEVICE_COUNT" />-с <ph name="DEVICE_INDEX" /> төхөөрөмж, <ph name="DEVICE_NAME" />, Компьютер</translation>
 <translation id="2874939134665556319">Өмнөх бичлэг</translation>
 <translation id="2875698561019555027">(Chrome алдааны хуудас)</translation>
 <translation id="2876336351874743617">Хуруу 2</translation>
@@ -1999,6 +2007,7 @@
 <translation id="3054766768827382232">Идэвхгүй болгосноор таны дагалдах төхөөрөмжүүдийн гүйцэтгэлийг сайжруулах боломжтой хэдий ч таны хувийн өгөгдлийг зөвшөөрөлгүй ашиглалтаар задруулж магадгүй.</translation>
 <translation id="3055590424724986000">Таны сонгосон үйлчилгээ үзүүлэгчийн</translation>
 <translation id="3058498974290601450">Та синкийг хүссэн үедээ тохиргоонд асааж болно</translation>
+<translation id="3058517085907878899">Төхөөрөмжид нэр өгөх</translation>
 <translation id="3060379269883947824">Ярихаар сонгох сонголтыг идэвхжүүлэх</translation>
 <translation id="3060952009917586498">Төхөөрөмжийн хэлийг өөрчилнө. Одоогийн хэл <ph name="LANGUAGE" /> байна.</translation>
 <translation id="3060987956645097882">Бид таны утастай холболт тогтоож чадсангүй. Таны утас ойрхон, түгжээг нь тайлсан, Bluetooth, Wi-Fi-г нь асаасан эсэхийг шалгана уу.</translation>
@@ -2009,6 +2018,7 @@
 <translation id="3067198360141518313">Энэ нэмэлт өргөтгөлийг ажиллуул</translation>
 <translation id="3071624960923923138">Та шинэ таб нээхийн тулд энд товших боломжтой</translation>
 <translation id="3072775339180057696">Сайтад <ph name="FILE_NAME" /> файлыг харахыг зөвшөөрөх үү?</translation>
+<translation id="3074799113165994093"><ph name="DEVICE_COUNT" />-с <ph name="DEVICE_INDEX" /> төхөөрөмж, <ph name="DEVICE_NAME" />, Утас</translation>
 <translation id="3075874217500066906">Powerwash процессыг эхлүүлэхийн тулд та төхөөрөмжөө дахин эхлүүлнэ үү. Төхөөрөмжийг дахин эхлүүлсний дараагаар танаас цаашид үргэлжлэх эсэхийг асууна.</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" /> / <ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Зөвхөн энэ төхөөрөмж дээр хадгалах</translation>
@@ -2050,6 +2060,7 @@
 <translation id="3117791853215125017">{COUNT,plural, =1{<ph name="ATTACHMENTS" />-г <ph name="DEVICE_NAME" /> руу илгээж чадсангүй}other{<ph name="ATTACHMENTS" />-г <ph name="DEVICE_NAME" /> руу илгээж чадсангүй}}</translation>
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> Тусламж</translation>
 <translation id="3118654181216384296">Хэдэн хормын дараа Linux-г дахин эхлүүлэхийг оролдоно уу.</translation>
+<translation id="3119689272338239690"><ph name="DEVICE_COUNT" />-с <ph name="DEVICE_INDEX" /> төхөөрөмж, <ph name="DEVICE_NAME" />, Үл мэдэгдэх төхөөрөмжийн төрөл, Батарейн түвшин <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3119948370277171654">Та ямар контент/URL дамжуулж байсан бэ?</translation>
 <translation id="3120430004221004537">Операторт хангалтгүй шифр байна: "<ph name="DEVICE_NAME" />".</translation>
 <translation id="3122464029669770682">CPU</translation>
@@ -2562,6 +2573,7 @@
 <translation id="3682824389861648626">Хөдөлгөөний босго</translation>
 <translation id="3683524264665795342"><ph name="APP_NAME" /> Дэлгэцийг хуваалцах хүсэлт</translation>
 <translation id="3685598397738512288">Linux-н USB сонголт</translation>
+<translation id="3686786761304157917"><ph name="DEVICE_COUNT" />-с <ph name="DEVICE_INDEX" /> төхөөрөмж, <ph name="DEVICE_NAME" />, Гар, Батарейн түвшин <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="368789413795732264">Файлыг бичиж авахыг оролдож байх үед алдаа гарлаа <ph name="ERROR_TEXT" /> .</translation>
 <translation id="3688507211863392146">Аппликейшн дотор өөрийн нээсэн файл болон хавтас бичнэ үү.</translation>
 <translation id="3688526734140524629">Сувгийг өөрчлөх</translation>
@@ -2661,6 +2673,7 @@
 <translation id="3778740492972734840">&amp; Хөгжүүлэгч хэрэгслүүд</translation>
 <translation id="3778868487658107119">Асуулт асууж, хийх зүйлийг нь хэлнэ үү. Таны хувийн Google танд туслахад хэзээд бэлэн байна.</translation>
 <translation id="3781742599892759500">Linux-н микрофоны хандалт</translation>
+<translation id="3782488227140539029"><ph name="DEVICE_COUNT" />-с <ph name="DEVICE_INDEX" /> төхөөрөмж, <ph name="DEVICE_NAME" />, Видео камер, Батарейн түвшин <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3782795641773236652">Одоогоор оноосон сэлгүүр эсвэл товчлуур алга</translation>
 <translation id="378312418865624974">Энэ компьютерийн тусгай танигчийг уншуул</translation>
 <translation id="3784372983762739446">Bluetooth төхөөрөмжүүд</translation>
@@ -2900,6 +2913,7 @@
 <translation id="4002329649066944389">Сайтын хувьд тодорхойлсон онцгой тохиолдлуудыг удирдах</translation>
 <translation id="4002440992267487163">Пинийн тохируулга</translation>
 <translation id="4005817994523282006">Цагийн бүс илрүүлэх арга</translation>
+<translation id="400645326027787740"><ph name="DEVICE_COUNT" />-с <ph name="DEVICE_INDEX" /> төхөөрөмж, <ph name="DEVICE_NAME" />, Тоглоомын гар</translation>
 <translation id="4007856537951125667">Товчлолыг нуух</translation>
 <translation id="4008291085758151621">Сайтын мэдээлэл VR-д боломжгүй байна</translation>
 <translation id="4010917659463429001">Хавчуургаа мобайл төхөөрөмждөө авахын тулд, <ph name="GET_IOS_APP_LINK" />.</translation>
@@ -3205,6 +3219,7 @@
 <translation id="4382131447572146376">{COUNT,plural, =0{<ph name="EMAIL" />}=1{<ph name="EMAIL" />, нэмэлт +1 бүртгэл}other{<ph name="EMAIL" />, нэмэлт +<ph name="EXTRA_ACCOUNTS" /> бүртгэл}}</translation>
 <translation id="4384312707950789900">Сонгосон жагсаалтад нэмэх</translation>
 <translation id="4384652540891215547">Өргөтгөлийг идэвхжүүлэх</translation>
+<translation id="4384886290276344300">Гарын тохиргоог өөрчлөх</translation>
 <translation id="438503109373656455">Saratoga</translation>
 <translation id="4385146930797718821">Дэлгэцийн агшныг түр санах ойд хуулсан</translation>
 <translation id="4385905942116811558">Bluetooth болон USB төхөөрөмжүүдийг хайж байна</translation>
@@ -3597,6 +3612,7 @@
 <translation id="4813136279048157860">Миний зураг</translation>
 <translation id="4813512666221746211">Сүлжээний алдаа</translation>
 <translation id="4814378367953456825">Энэ хурууны хээний нэрийг оруулна уу</translation>
+<translation id="4816097470512964351"><ph name="DEVICE" />, Дэлгэрэнгүй мэдээлэл</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 хавчуургыг устгасан}other{{COUNT} хавчуургыг устгасан}}</translation>
 <translation id="4819607494758673676">Google Туслахын мэдэгдэл</translation>
 <translation id="4820236583224459650">Идэвхтэй тасалбар болгож тохируулах</translation>
@@ -3672,6 +3688,7 @@
 <translation id="4884987973312178454">6x</translation>
 <translation id="4887424188275796356">Системийн харагчаар нээх</translation>
 <translation id="488785315393301722">Дэлгэрэнгүй мэдээллийг харуул</translation>
+<translation id="4889450157778777235"><ph name="DEVICE_COUNT" />-с <ph name="DEVICE_INDEX" /> төхөөрөмж, <ph name="DEVICE_NAME" />, Видео камер</translation>
 <translation id="4890773143211625964">Нарийвчилсан хэвлэгчийн сонголтыг харуулах</translation>
 <translation id="4891089016822695758">Бета форум</translation>
 <translation id="4892229439761351791">Сайт Bluetooth ашиглах боломжтой</translation>
@@ -3808,6 +3825,7 @@
 <translation id="5039696241953571917">Google Бүртгэлдээ хадгалсан нууц үгнүүдийг харах болон удирдах</translation>
 <translation id="5039804452771397117">Зөвшөөрөх</translation>
 <translation id="5040823038948176460">Контентын нэмэлт тохиргоо</translation>
+<translation id="5043440033854483429">Нэр нь үсэг, тоо, дундуур зураас (-) ашиглах боломжтой бөгөөд 1-ээс 15 тэмдэгттэй ёстой.</translation>
 <translation id="5043913660911154449">Эсвэл хэвлэгчийнхээ PPD-г заах <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Буруу нууц үг</translation>
 <translation id="504561833207953641">Ашиглалтад байгаа хөтчийн харилцан үйлдэлд нээж байна.</translation>
@@ -4061,6 +4079,7 @@
 <translation id="5319359161174645648">Google нь Chrome-г санал болгож байна</translation>
 <translation id="5319712128756744240">Шинэ төхөөрөмж хослуулах</translation>
 <translation id="5320135788267874712">Шинэ төхөөрөмжийн нэр</translation>
+<translation id="532043380734099846"><ph name="DEVICE_COUNT" />-с <ph name="DEVICE_INDEX" /> төхөөрөмж, <ph name="DEVICE_NAME" />, Хулгана, Батарейн түвшин <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="532247166573571973">Энэ серверт холбогдох боломжгүй байна. Дараа дахин оролдоно уу.</translation>
 <translation id="5324300749339591280">Аппын жагсаалт</translation>
 <translation id="5324780743567488672">Таны байршлын мэдээллийг ашиглан цагийн бүсийг автоматаар тохируулах</translation>
@@ -4088,6 +4107,7 @@
 <translation id="535123479159372765">Өөр төхөөрөмжөөс хуулсан текст</translation>
 <translation id="5352033265844765294">Цагаар тамгалах</translation>
 <translation id="5353252989841766347">Нууц үгийг Chrome-с экспортлох</translation>
+<translation id="5354531123814675522"><ph name="DEVICE_COUNT" />-с <ph name="DEVICE_INDEX" /> төхөөрөмж, <ph name="DEVICE_NAME" />, Таблет, Батарейн түвшин <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5355099869024327351">Туслахад танд мэдэгдэл харуулахыг зөвшөөрөх</translation>
 <translation id="5355191726083956201">Сайжруулсан хамгаалалт асаалттай байна</translation>
 <translation id="5355926466126177564">"<ph name="EXTENSION_NAME" />" өргөтгөл нь Omnibox-с хайлт хийхэд, хуудсын харуулж буй илэрцийг өөрчилсөн.</translation>
@@ -4257,6 +4277,7 @@
 <translation id="5534304873398226603">Зураг эсвэл видеог устгах</translation>
 <translation id="5535941515421698170">Мөн одоогийн өгөгдлөө энэ төхөөрөмжөөс устгана уу</translation>
 <translation id="5539221284352502426">Таны оруулсан нууц үгийг серверээс зөвшөөрөөгүй байна. Үүнд дараах шалтгаан байж болно: Нууц үг хэт богино. Нууц үг тоо эсвэл тэмдэгт агуулах ёстой. Нууц үг нь өмнөх нууц үгээс өөр байх шаардлагатай.</translation>
+<translation id="5539467723438368868"><ph name="DEVICE_COUNT" />-с <ph name="DEVICE_INDEX" /> төхөөрөмж, <ph name="DEVICE_NAME" />, Таблет</translation>
 <translation id="5541694225089836610">Таны админ үйлдлийг идэвхгүй болгосон байна</translation>
 <translation id="5542132724887566711">Танилцуулга</translation>
 <translation id="5542750926112347543"><ph name="DOMAIN" />-н күүкиг хориглосон</translation>
@@ -4317,6 +4338,7 @@
 <translation id="5601503069213153581">ПИН</translation>
 <translation id="5601823921345337195">MIDI төхөөрөмжүүдэд холбогдохыг зөвшөөрөөгүй</translation>
 <translation id="5602765853043467355">Энэ төхөөрөмжөөс хавчуурга, түүх, нууц үг болон бусад зүйлийг устгах</translation>
+<translation id="5604884720628869833"><ph name="DEVICE_COUNT" />-с <ph name="DEVICE_INDEX" /> төхөөрөмж, <ph name="DEVICE_NAME" />, Гар</translation>
 <translation id="5605623530403479164">Бусад хайлтын систем</translation>
 <translation id="5605758115928394442">Таныг мөн эсэхийг баталгаажуулах зорилгоор таны утсанд мэдэгдэл илгээсэн болно.</translation>
 <translation id="560834977503641186">Wi-Fi синк, Нэмэлт мэдээлэл авах</translation>
@@ -4777,6 +4799,7 @@
 <translation id="6113434369102685411">Chrome хөтөч болон <ph name="DEVICE_TYPE" />-н эхлүүлэгчид өгөгдмөл хайлтын системээ тохируулна уу</translation>
 <translation id="6113942107547980621">Smart Lock-г ашиглахын тулд утсан дээрээ үндсэн хэрэглэгчийн профайл руу сэлгэнэ үү</translation>
 <translation id="6116921718742659598">Хэл болон оролтын тохиргоог өөрчлөх</translation>
+<translation id="6119927814891883061">Төхөөрөмжийг <ph name="DEVICE_NAME" /> гэж нэрлэх</translation>
 <translation id="6120205520491252677">Эхлүүлэх дэлгэц дээр энэ хуудсыг тусгайлан сонгож оруул...</translation>
 <translation id="6122081475643980456">Таны интернет холболт хяналтанд байна</translation>
 <translation id="6122093587541546701">И-мэйл (заавал биш):</translation>
@@ -6981,6 +7004,7 @@
 <translation id="8475313423285172237">Таны компьютер дээрх программ өргөтгөл нэмсэн байна. Энэ нь Chrome-ийн ажиллагаанд нөлөөлж болох юм.</translation>
 <translation id="8477241577829954800">Хүчингүй болсон байна</translation>
 <translation id="8477384620836102176">&amp;Ерөнхий</translation>
+<translation id="8479109005219657634"><ph name="DEVICE_COUNT" />-с <ph name="DEVICE_INDEX" /> төхөөрөмж, <ph name="DEVICE_NAME" />, Аудио төхөөрөмж, Батарейн түвшин <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="8479176401914456949">Код буруу байна. Дахин оролдоно уу.</translation>
 <translation id="8480082892550707549">Та өмнө нь энэ сайтаас таталт хийж байсан ч энэ сайт түр хугацаанд аюултай болсон байна (хакердсан). Энэ файлыг дараа татна уу.</translation>
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" />-н үл мэдэгдэх төхөөрөмж</translation>
@@ -7457,6 +7481,7 @@
 <translation id="897525204902889653">Карантины үйлчилгээ</translation>
 <translation id="8975396729541388937">Хүлээн авсан имэйл дээрх холбоосыг товшиж хүссэн үедээ захиалгаа цуцлаарай.</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" болон бусад 1 таб}other{"<ph name="TAB_TITLE" />" болон бусад # таб}}</translation>
+<translation id="8977175149983066223"><ph name="DEVICE_COUNT" />-с <ph name="DEVICE_INDEX" /> төхөөрөмж, <ph name="DEVICE_NAME" />, Хулгана</translation>
 <translation id="8977811652087512276">Нууц үг буруу эсвэл файл гэмтсэн байна</translation>
 <translation id="8978154919215542464">Идэвхжүүлэх - бүгдийг синк хийх</translation>
 <translation id="897939795688207351"><ph name="ORIGIN" />-д</translation>

@@ -55,6 +55,8 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="2847479871509788944">Alisin sa Chromium...</translation>
 <translation id="2885378588091291677">Task Manager</translation>
 <translation id="2910007522516064972">Tungkol sa &amp;Chromium</translation>
+<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Huling paalala: mabubura ng pag-install <ph name="BEGIN_BOLD" />ang buong hard drive mo<ph name="END_BOLD" />. Pakitiyak na may backup na ang anumang data na mahalaga sa iyo.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Kapag nagsimula na ang pag-install, hindi na ito makakansela.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Napapanahon ang Chromium</translation>
 <translation id="2983934633046890458">Sinusubukan ng Chromium na i-edit ang mga password.</translation>
 <translation id="3032706164202344641">Hindi masuri ng Chromium ang iyong mga password. Subukan ulit sa ibang pagkakataon.</translation>

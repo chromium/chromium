@@ -55,6 +55,8 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2847479871509788944">Hiqe nga Chromium...</translation>
 <translation id="2885378588091291677">Menaxheri i detyrave</translation>
 <translation id="2910007522516064972">Rreth &amp;Chromium</translation>
+<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Një rikujtim i fundit: instalimi <ph name="BEGIN_BOLD" />do të fshijë të gjithë diskun tënd të ngurtë<ph name="END_BOLD" />. Sigurohu që t'i rezervosh të dhënat e rëndësishme për ty.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Pasi të fillojë instalimi, nuk mund të anulohet.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium është i përditësuar</translation>
 <translation id="2983934633046890458">Chromium po përpiqet t'i modifikojë fjalëkalimet.</translation>
 <translation id="3032706164202344641">Chromium nuk mund t'i kontrollojë fjalëkalimet e tua. Provo përsëri më vonë.</translation>

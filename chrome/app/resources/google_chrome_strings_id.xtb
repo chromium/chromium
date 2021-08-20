@@ -83,6 +83,8 @@
 <translation id="2888126860611144412">Tentang Chrome</translation>
 <translation id="2926676257163822632">Sandi yang lemah mudah ditebak. Izinkan Chrome <ph name="BEGIN_LINK" />membuat dan mengingat sandi yang kuat untuk Anda<ph name="END_LINK" />.</translation>
 <translation id="2929907241665500097">Chrome tidak dapat diupdate, terjadi error. <ph name="BEGIN_LINK" />Perbaiki masalah update Chrome dan update yang gagal.<ph name="END_LINK" /></translation>
+<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Pengingat terakhir: penginstalan <ph name="BEGIN_BOLD" />akan menghapus seluruh data di hard drive<ph name="END_BOLD" />. Pastikan Anda telah mencadangkan semua data penting.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Penginstalan tidak dapat dibatalkan setelah dimulai.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Login Jaringan - Chrome</translation>
 <translation id="3037838751736561277">Google Chrome berjalan di mode latar belakang.</translation>
 <translation id="3059710691562604940">Safe Browsing nonaktif. Chrome merekomendasikan untuk mengaktifkannya.</translation>

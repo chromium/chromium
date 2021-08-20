@@ -55,6 +55,8 @@
 <translation id="2847479871509788944">Выдаліць з Chromium...</translation>
 <translation id="2885378588091291677">Менеджар заданняў</translation>
 <translation id="2910007522516064972">Пра &amp;Chromium</translation>
+<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Яшчэ раз напамінаем, што пры ўсталяванні <ph name="BEGIN_BOLD" />ўсе даныя на цвёрдым дыску будуць сцёрты<ph name="END_BOLD" />. Упэўніцеся, што вы маеце іх рэзервовую копію.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Пасля таго як усталяванне пачнецца, працэс нельга будзе скасаваць.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium абноўлены</translation>
 <translation id="2983934633046890458">Chromium спрабуе змяніць паролі.</translation>
 <translation id="3032706164202344641">Браўзеру Chromium не ўдаецца праверыць паролі. Паўтарыце спробу пазней.</translation>

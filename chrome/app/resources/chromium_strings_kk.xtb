@@ -55,6 +55,8 @@
 <translation id="2847479871509788944">Chromium жүйесінен алып тастау…</translation>
 <translation id="2885378588091291677">Тапсырмалар реттегіші</translation>
 <translation id="2910007522516064972">&amp;Chromium туралы</translation>
+<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Соңғы ескерту: орнату процесі <ph name="BEGIN_BOLD" />қатты дискіні толық тазартады<ph name="END_BOLD" />. Барлық қажетті деректің сақтық көшірмесі жасалғанына көз жеткізіңіз.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Орнату басталcа, одан бас тарту мүмкін болмайды.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium жаңартылған</translation>
 <translation id="2983934633046890458">Chromium браузері құпия сөздерді өзгерткісі келеді.</translation>
 <translation id="3032706164202344641">Chromium сіздің құпия сөздеріңізді тексере алмай жатыр. Кейінірек қайталап көріңіз.</translation>

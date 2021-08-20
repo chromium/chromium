@@ -53,6 +53,8 @@
 <translation id="2847479871509788944">क्रोमियम से निकालें...</translation>
 <translation id="2885378588091291677">काम का मैनेजर</translation>
 <translation id="2910007522516064972">&amp;क्रोमियम के बारे में</translation>
+<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />आखिरी रिमाइंडर: Chrome OS इंस्टॉल करने पर, <ph name="BEGIN_BOLD" />आपकी हार्ड ड्राइव का सारा डेटा हमेशा के लिए मिटा दिया जाएगा<ph name="END_BOLD" />. कृपया पक्का करें कि आपने अपने ज़रूरी डेटा का बैक अप लिया है.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />इंस्टॉल करना शुरू करने के बाद, रद्द नहीं किया जा सकता.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">क्रोमियम अप टू डेट है</translation>
 <translation id="2983934633046890458">क्रोमियम, पासवर्ड में बदलाव करने की कोशिश कर रहा है.</translation>
 <translation id="3032706164202344641">क्रोमियम आपके पासवर्ड की जांच नहीं कर सकता. बाद में कोशिश करें.</translation>

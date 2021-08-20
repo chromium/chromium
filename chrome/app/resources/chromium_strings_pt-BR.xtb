@@ -53,6 +53,8 @@
 <translation id="2847479871509788944">Remover do Chromium</translation>
 <translation id="2885378588091291677">Gerenciador de tarefas</translation>
 <translation id="2910007522516064972">Sobre o &amp;Chromium</translation>
+<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Último lembrete: a instalação <ph name="BEGIN_BOLD" />apagará todo o disco rígido<ph name="END_BOLD" />. Confira se você fez backup dos dados importantes.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Não será possível cancelar a instalação depois que ela for iniciada.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">O Chromium está atualizado</translation>
 <translation id="2983934633046890458">O Chromium está tentando editar senhas.</translation>
 <translation id="3032706164202344641">O Chromium não pode verificar suas senhas. Tente mais tarde.</translation>

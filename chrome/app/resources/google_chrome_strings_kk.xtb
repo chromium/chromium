@@ -86,6 +86,8 @@
 <translation id="2888126860611144412">Chrome туралы</translation>
 <translation id="2926676257163822632">Құпия сөзіңіз оңай болса, оны табу да оңай. Chrome браузеріне <ph name="BEGIN_LINK" />күрделі құпия сөздер жасауға және сақтауға<ph name="END_LINK" /> мүмкіндік беріңіз.</translation>
 <translation id="2929907241665500097">Chrome жаңартылған жоқ. Бірдеңе дұрыс болмады. <ph name="BEGIN_LINK" />Chrome браузеріндегі жаңартуға қатысты мәселелерді түзетіңіз.<ph name="END_LINK" /></translation>
+<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Соңғы ескерту: орнату процесі <ph name="BEGIN_BOLD" />қатты дискіні толық тазартады<ph name="END_BOLD" />. Барлық қажетті деректің сақтық көшірмесі жасалғанына көз жеткізіңіз.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Орнату басталcа, одан бас тарту мүмкін болмайды.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Желіге кіру – Chrome</translation>
 <translation id="3037838751736561277">Google Chrome фондық режимде.</translation>
 <translation id="3059710691562604940">"Қауіпсіз шолу" функциясы өшірулі. Chrome браузері оны қосуды ұсынады.</translation>

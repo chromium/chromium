@@ -53,6 +53,8 @@
 <translation id="2847479871509788944">Chromiumist eemaldamine ...</translation>
 <translation id="2885378588091291677">Tegumihaldur</translation>
 <translation id="2910007522516064972">Teave &amp;Chromiumi kohta</translation>
+<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Viimane meeldetuletus: installimisel <ph name="BEGIN_BOLD" />tühjendatakse kogu kõvaketas<ph name="END_BOLD" />. Veenduge, et oleksite kõik olulised andmed varundanud.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Pärast installimise alustamist ei saa seda tühistada.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium on ajakohane</translation>
 <translation id="2983934633046890458">Chromium üritab paroole muuta.</translation>
 <translation id="3032706164202344641">Chromium ei saa teie paroole kontrollida. Proovige hiljem uuesti.</translation>

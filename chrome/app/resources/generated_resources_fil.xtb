@@ -574,6 +574,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1602085790802918092">Sinisimulan ang virtual machine</translation>
 <translation id="1603914832182249871">(Incognito)</translation>
 <translation id="1604432177629086300">Hindi ma-print. Suriin ang printer at subukan ulit.</translation>
+<translation id="1606077700029460857">Baguhin ang mga setting ng mouse</translation>
 <translation id="1607139524282324606">I-clear ang entry</translation>
 <translation id="1607499585984539560">Hindi affiliated ang user sa domain</translation>
 <translation id="1608626060424371292">Alisin ang user na ito</translation>
@@ -704,6 +705,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1718835860248848330">Huling oras</translation>
 <translation id="1719312230114180055">Tandaan: Maaaring hindi gaanong ligtas ang iyong fingerprint kaysa sa isang mahirap hulaang password o PIN.</translation>
 <translation id="1720318856472900922">TLS WWW na Pagpapatotoo ng Server</translation>
+<translation id="1720941539803966190">Isara ang tutorial</translation>
 <translation id="1721312023322545264">Kailangan mo ng pahintulot mula kay <ph name="NAME" /> upang mabisita ang site na ito</translation>
 <translation id="1722460139690167654">Ang iyong <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> ay pinapamahalaan<ph name="END_LINK" /> ng <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">&amp;Bagong window</translation>
@@ -778,6 +780,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1790194216133135334">Ipadala ang link sa <ph name="DEVICE_NAME" /></translation>
 <translation id="1790976235243700817">Alisin ang access</translation>
 <translation id="1792619191750875668">Pinalawak na display</translation>
+<translation id="1793625608969726781">Device <ph name="DEVICE_INDEX" /> sa <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, Computer, Antas ng baterya <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1794051631868188691">Huwag ipakita ang <ph name="MERCHANT" /></translation>
 <translation id="1794791083288629568">Magpadala ng feedback upang tulungan kaming ayusin ang isyung ito.</translation>
 <translation id="1795214765651529549">Gamitin ang Classic</translation>
@@ -1158,6 +1161,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2179416702468739594">Naghahanap ng mga available na profile. Posibleng magdiskonekta ang iyong mobile network nang ilang minuto dahil dito.</translation>
 <translation id="2180620921879609685">I-block ang content sa anumang page</translation>
 <translation id="2182058453334755893">Kinopya sa Iyong Clipboard</translation>
+<translation id="2183027945672030611">Device <ph name="DEVICE_INDEX" /> sa <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, Game controller, Antas ng baterya <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="2184515124301515068">Hayaan ang Chrome na pumili kung kailan makakapag-play ng tunog ang mga site (inirerekomenda)</translation>
 <translation id="2186711480981247270">Ibinahaging page mula sa ibang device</translation>
 <translation id="2187675480456493911">Naka-sync sa iba pang device sa iyong account. Hindi masi-sync ang mga setting na binago ng iba pang user. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
@@ -1277,6 +1281,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2301402091755573488">Tab ng Nakabahagi</translation>
 <translation id="23030561267973084">Humiling ng karagdagang mga pahintulot ang "<ph name="EXTENSION_NAME" />."</translation>
 <translation id="23055578400314116">Pumili ng username</translation>
+<translation id="2306366691914573029">Device <ph name="DEVICE_INDEX" /> sa <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, Hindi kilalang uri ng device</translation>
 <translation id="2307462900900812319">I-configure ang network</translation>
 <translation id="2307553512430195144">Kung sumasang-ayon ka, maghihintay ang Google Assistant sa standby mode para ma-detect ang “Hey Google” at makikilala nitong si <ph name="SUPERVISED_USER_NAME" /> ang nagsasalita gamit ang Voice Match.
     <ph name="BR" />
@@ -1562,6 +1567,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2606568927909309675">Awtomatikong gumagawa ng mga caption para sa English na audio at video. Hindi kailanman lumalabas sa iyong device ang audio at mga caption.</translation>
 <translation id="2607101320794533334">Impormasyon ng Pampublikong Key ng Paksa</translation>
 <translation id="2609896558069604090">Lumikha ng Mga Shortcut...</translation>
+<translation id="2609902589050805912">Device <ph name="DEVICE_INDEX" /> sa <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, Audio device</translation>
 <translation id="2609980095400624569">Hindi makakonekta</translation>
 <translation id="2610157865375787051">Sleep</translation>
 <translation id="2610260699262139870">A&amp;ktwal na Laki</translation>
@@ -1628,6 +1634,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2673135533890720193">Basahin ang iyong history ng pag-browse</translation>
 <translation id="2674764818721168631">Naka-off</translation>
 <translation id="2678063897982469759">Muling paganahin</translation>
+<translation id="2678676117809690850">Device <ph name="DEVICE_INDEX" /> sa <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, Telepono, Antas ng baterya <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="268053382412112343">Ka&amp;saysayan</translation>
 <translation id="2681124317993121768">Hindi sinusuportahan ang mga profile ng bisita</translation>
 <translation id="2682498795777673382">Update mula sa iyong magulang</translation>
@@ -1824,6 +1831,7 @@ at Ctrl+Alt+Bawasan ang liwanag para mag-zoom out.</translation>
 <translation id="287205682142673348">Pag-forward ng port</translation>
 <translation id="287286579981869940">Magdagdag ng <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">Shut down</translation>
+<translation id="2872966656309879564">Device <ph name="DEVICE_INDEX" /> sa <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, Computer</translation>
 <translation id="2874939134665556319">Nakaraang track</translation>
 <translation id="2875698561019555027">(Mga page ng error sa Chrome)</translation>
 <translation id="2876336351874743617">Daliri 2</translation>
@@ -2004,6 +2012,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3054766768827382232">Kapag na-disable ito, magiging mas mahusay ang performance ng iyong mga peripheral, pero posibleng malantad ang personal na data mo sa pamamagitan ng hindi awtorisadong paggamit.</translation>
 <translation id="3055590424724986000">Gamit ang isang provider na pipiliin mo</translation>
 <translation id="3058498974290601450">Maaari mong i-on ang pag-sync anumang oras sa mga setting.</translation>
+<translation id="3058517085907878899">Pangalan ng device</translation>
 <translation id="3060379269883947824">I-enable ang Select to Speak</translation>
 <translation id="3060952009917586498">Palitan ang wika ng device. Ang kasalukuyang wika ay <ph name="LANGUAGE" />.</translation>
 <translation id="3060987956645097882">Hindi kami makakonekta sa iyong telepono. Tiyaking nasa malapit at naka-unlock ang iyong telepono at naka-on ang Bluetooth at Wi-Fi nito.</translation>
@@ -2014,6 +2023,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3067198360141518313">Patakbuhin ang plugin na ito</translation>
 <translation id="3071624960923923138">Maaari kang mag-click dito upang magbukas ng bagong tab</translation>
 <translation id="3072775339180057696">Payagan ang site na tingnan ang <ph name="FILE_NAME" />?</translation>
+<translation id="3074799113165994093">Device <ph name="DEVICE_INDEX" /> sa <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, Telepono</translation>
 <translation id="3075874217500066906">Kailangang mag-restart upang masimulan ang proseso ng Powerwash. Pagkatapos mag-restart, hihilingin sa iyo na kumpirmahing gusto mong magpatuloy.</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">I-save lang sa device na ito</translation>
@@ -2055,6 +2065,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3117791853215125017">{COUNT,plural, =1{Hindi naipadala ang <ph name="ATTACHMENTS" /> sa <ph name="DEVICE_NAME" />}one{Hindi naipadala ang <ph name="ATTACHMENTS" /> sa <ph name="DEVICE_NAME" />}other{Hindi naipadala ang <ph name="ATTACHMENTS" /> sa <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> Help</translation>
 <translation id="3118654181216384296">Pakisubukan ulit na simulan ang Linux pagkalipas ng ilang sandali.</translation>
+<translation id="3119689272338239690">Device <ph name="DEVICE_INDEX" /> sa <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, Hindi kilalang uri ng device, Antas ng baterya <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3119948370277171654">Anong content/URL ang kina-cast mo?</translation>
 <translation id="3120430004221004537">Hindi sapat ang pag-encrypt para sa isang partikular na operation sa: "<ph name="DEVICE_NAME" />".</translation>
 <translation id="3122464029669770682">CPU</translation>
@@ -2567,6 +2578,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3682824389861648626">Limitasyon sa paggalaw</translation>
 <translation id="3683524264665795342"><ph name="APP_NAME" /> Kahilingan sa Pagbabahagi ng Screen</translation>
 <translation id="3685598397738512288">Mga kagustuhan sa USB ng Linux</translation>
+<translation id="3686786761304157917">Device <ph name="DEVICE_INDEX" /> sa <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, Keyboard, Antas ng baterya <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="368789413795732264">Nagkaroon ng error habang sinusubukang isulat ang file: <ph name="ERROR_TEXT" />.</translation>
 <translation id="3688507211863392146">Mag-write sa mga file at folder na iyong bubuksan sa application</translation>
 <translation id="3688526734140524629">Lumipat ng channel</translation>
@@ -2666,6 +2678,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3778740492972734840">Mga tool ng Nag-&amp;develop</translation>
 <translation id="3778868487658107119">Tanungin ito. Utusan ito. Ito ang iyong personal na Google, laging handang tumulong.</translation>
 <translation id="3781742599892759500">Access sa mikropono ng Linux</translation>
+<translation id="3782488227140539029">Device <ph name="DEVICE_INDEX" /> sa <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, Video camera, Antas ng baterya <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3782795641773236652">Wala pang naitatalagang switch o key</translation>
 <translation id="378312418865624974">Magbasa ng natatanging identifier para sa computer na ito</translation>
 <translation id="3784372983762739446">Mga device ng bluetooth</translation>
@@ -2906,6 +2919,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4002329649066944389">Pamahalaan ang mga exception na partikular sa site</translation>
 <translation id="4002440992267487163">I-pin ang pag-set up</translation>
 <translation id="4005817994523282006">Paraan ng pagtukoy ng time zone</translation>
+<translation id="400645326027787740">Device <ph name="DEVICE_INDEX" /> sa <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, Game controller</translation>
 <translation id="4007856537951125667">Itago ang mga shortcut</translation>
 <translation id="4008291085758151621">Hindi available ang impormasyon ng site sa VR</translation>
 <translation id="4010917659463429001">Upang makuha ang iyong mga bookmark sa mobile device mo, <ph name="GET_IOS_APP_LINK" />.</translation>
@@ -3211,6 +3225,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4382131447572146376">{COUNT,plural, =0{<ph name="EMAIL" />}=1{<ph name="EMAIL" />, +1 pang account}one{<ph name="EMAIL" />, +<ph name="EXTRA_ACCOUNTS" /> pang account}other{<ph name="EMAIL" />, +<ph name="EXTRA_ACCOUNTS" /> pang account}}</translation>
 <translation id="4384312707950789900">Idagdag sa mga gustong network</translation>
 <translation id="4384652540891215547">I-activate ang extension</translation>
+<translation id="4384886290276344300">Palitan ang mga setting ng keyboard</translation>
 <translation id="438503109373656455">Petra</translation>
 <translation id="4385146930797718821">Nakopya sa clipboard ang screenshot</translation>
 <translation id="4385905942116811558">Naghahanap ng mga Bluetooth at USB device</translation>
@@ -3603,6 +3618,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4813136279048157860">Aking Mga Larawan</translation>
 <translation id="4813512666221746211">Error sa network</translation>
 <translation id="4814378367953456825">Maglagay ng pangalan para sa fingerprint na ito</translation>
+<translation id="4816097470512964351"><ph name="DEVICE" />, Mga Detalye</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{Na-delete ang 1 bookmark}one{Na-delete ang {COUNT} bookmark}other{Na-delete ang {COUNT} na bookmark}}</translation>
 <translation id="4819607494758673676">Mga Notification ng Google Assistant</translation>
 <translation id="4820236583224459650">Itakda bilang aktibong ticket</translation>
@@ -3678,6 +3694,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4884987973312178454">6x</translation>
 <translation id="4887424188275796356">Buksan Gamit ang System Viewer</translation>
 <translation id="488785315393301722">Ipakita ang Mga Detalye</translation>
+<translation id="4889450157778777235">Device <ph name="DEVICE_INDEX" /> sa <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, Video camera</translation>
 <translation id="4890773143211625964">Ipakita ang mga advanced na opsyon sa printer</translation>
 <translation id="4891089016822695758">Forum sa Beta</translation>
 <translation id="4892229439761351791">Puwedeng gumamit ng Bluetooth ang site</translation>
@@ -3814,6 +3831,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="5039696241953571917">Tingnan at pamahalaan ang mga naka-save na password sa iyong Google Account</translation>
 <translation id="5039804452771397117">Payagan</translation>
 <translation id="5040823038948176460">Mga karagdagang setting ng content</translation>
+<translation id="5043440033854483429">Puwedeng gumamit ang pangalan ng mga titik, numero, at hyphen (-), at dapat nasa pagitan ito ng 1 hanggang 15 character.</translation>
 <translation id="5043913660911154449">O tukuyin ang PPD ng iyong printer <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Hindi wastong password</translation>
 <translation id="504561833207953641">Binubuksan sa kasalukuyang session ng browser.</translation>
@@ -4067,6 +4085,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="5319359161174645648">Inirerekomenda ng Google ang Chrome</translation>
 <translation id="5319712128756744240">Magpares ng bagong device</translation>
 <translation id="5320135788267874712">Bagong pangalan ng device</translation>
+<translation id="532043380734099846">Device <ph name="DEVICE_INDEX" /> sa <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, Mouse, Antas ng baterya <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="532247166573571973">Maaaring hindi makakonekta sa server. Subukang muli sa ibang pagkakataon.</translation>
 <translation id="5324300749339591280">Listahan ng mga app</translation>
 <translation id="5324780743567488672">Awtomatikong itakda ang time zone gamit ang iyong lokasyon</translation>
@@ -4094,6 +4113,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="535123479159372765">Nakopya ang text mula sa isa pang device</translation>
 <translation id="5352033265844765294">Time Stamping</translation>
 <translation id="5353252989841766347">Mag-export ng Mga Password mula sa Chrome</translation>
+<translation id="5354531123814675522">Device <ph name="DEVICE_INDEX" /> sa <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, Tablet, Antas ng baterya <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5355099869024327351">Payagan ang Assistant na magpakita sa iyo ng mga notification</translation>
 <translation id="5355191726083956201">Naka-on ang Enhanced Protection</translation>
 <translation id="5355926466126177564">Binago ng isang extension na "<ph name="EXTENSION_NAME" />" ang ipinapakitang page kapag naghanap ka sa Omnibox.</translation>
@@ -4263,6 +4283,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="5534304873398226603">I-discard ang larawan o video</translation>
 <translation id="5535941515421698170">Alisin din ang iyong kasalukuyang data sa device na ito</translation>
 <translation id="5539221284352502426">Tinanggihan ng server ang password na inilagay mo. Kabilang sa mga posibleng dahilan: Masyadong maikli ang password. Dapat may mga numero o simbolo ang password. Dapat naiiba ang password sa mga nakaraang password.</translation>
+<translation id="5539467723438368868">Device <ph name="DEVICE_INDEX" /> sa <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, Tablet</translation>
 <translation id="5541694225089836610">Na-disable ng iyong administrator ang pagkilos na ito</translation>
 <translation id="5542132724887566711">Profile</translation>
 <translation id="5542750926112347543">Na-block ang cookies mula sa <ph name="DOMAIN" /></translation>
@@ -4323,6 +4344,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">Hindi pinapayagang kumonekta sa mga MIDI device</translation>
 <translation id="5602765853043467355">I-clear ang mga bookmark, history, mga password, at higit pa sa device na ito</translation>
+<translation id="5604884720628869833">Device <ph name="DEVICE_INDEX" /> sa <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, Keyboard</translation>
 <translation id="5605623530403479164">Iba pang mga search engine</translation>
 <translation id="5605758115928394442">Nagpadala ng notification sa iyong telepono para kumpirmahing ikaw nga ito.</translation>
 <translation id="560834977503641186">Wi-Fi Sync, Matuto Pa</translation>
@@ -4783,6 +4805,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6113434369102685411">Itakda ang iyong default na search engine para sa Chrome browser at <ph name="DEVICE_TYPE" /> Launcher</translation>
 <translation id="6113942107547980621">Para gamitin ang Smart Lock, lumipat sa profile ng pangunahing user sa iyong telepono</translation>
 <translation id="6116921718742659598">Baguhin ang mga setting ng wika at input</translation>
+<translation id="6119927814891883061">Pangalanan ang device na <ph name="DEVICE_NAME" /></translation>
 <translation id="6120205520491252677">I-pin ang pahinang ito screen ng Simula...</translation>
 <translation id="6122081475643980456">Kinokontrol ang iyong koneksyon sa Internet</translation>
 <translation id="6122093587541546701">Email (opsyonal):</translation>
@@ -6991,6 +7014,7 @@ Pumindot ng nakatalagang switch para mag-alis ng pagtatalaga</translation>
 <translation id="8475313423285172237">Ang isa pang program sa iyong computer ay nagdagdag ng extension na maaaring magpabago sa paraan ng paggana ng Chrome.</translation>
 <translation id="8477241577829954800">Humalili</translation>
 <translation id="8477384620836102176">&amp;Pangkalahatan</translation>
+<translation id="8479109005219657634">Device <ph name="DEVICE_INDEX" /> sa <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, Audio device, Antas ng baterya <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="8479176401914456949">Invalid ang code. Pakisubukan ulit.</translation>
 <translation id="8480082892550707549">Kahit na nakapag-download ka na ng mga file mula sa site na ito dati, maaaring pansamantalang hindi ligtas (na-hack) ang site. Subukang i-download ang file na ito sa ibang pagkakataon.</translation>
 <translation id="8480869669560681089">Hindi kilalang device mula sa <ph name="VENDOR_NAME" /></translation>
@@ -7471,6 +7495,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="897525204902889653">Serbisyo ng Quarantine</translation>
 <translation id="8975396729541388937">Mag-unsubscribe anumang oras sa pamamagitan ng pag-click sa link sa mga email na natatanggap mo.</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" at 1 pang tab}one{"<ph name="TAB_TITLE" />" at # pang tab}other{"<ph name="TAB_TITLE" />" at # pang tab}}</translation>
+<translation id="8977175149983066223">Device <ph name="DEVICE_INDEX" /> sa <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, Mouse</translation>
 <translation id="8977811652087512276">Mali ang password o sira ang file</translation>
 <translation id="8978154919215542464">Naka-on - i-sync lahat</translation>
 <translation id="897939795688207351">Sa <ph name="ORIGIN" /></translation>

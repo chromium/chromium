@@ -567,6 +567,7 @@
 <translation id="1602085790802918092">Pajisja virtuale po niset</translation>
 <translation id="1603914832182249871">(I fshehtë)</translation>
 <translation id="1604432177629086300">Nuk mund të printohej. Kontrollo printerin dhe provo përsëri.</translation>
+<translation id="1606077700029460857">Ndrysho cilësimet e mausit</translation>
 <translation id="1607139524282324606">Pastro regjistrimin</translation>
 <translation id="1607499585984539560">Përdoruesi nuk ka lidhje me domenin</translation>
 <translation id="1608626060424371292">Hiqe këtë përdorues</translation>
@@ -689,6 +690,7 @@
 <translation id="1718835860248848330">Ora e fundit</translation>
 <translation id="1719312230114180055">Shënim. Gjurma jote e gishtit mund të jetë më pak e sigurt se një fjalëkalim ose një kod PIN i fortë.</translation>
 <translation id="1720318856472900922">Vërtetimi i serverit TLS WWW</translation>
+<translation id="1720941539803966190">Mbyll udhëzuesin</translation>
 <translation id="1721312023322545264">Të nevojitet leje nga <ph name="NAME" /> për të vizituar këtë sajt</translation>
 <translation id="1722460139690167654"><ph name="BEGIN_LINK" />Pajisja jote <ph name="DEVICE_TYPE" /> menaxhohet<ph name="END_LINK" /> nga <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">&amp;Dritare e re</translation>
@@ -763,6 +765,7 @@
 <translation id="1790194216133135334">Dërgo lidhjen te pajisja <ph name="DEVICE_NAME" /></translation>
 <translation id="1790976235243700817">Hiq qasjen</translation>
 <translation id="1792619191750875668">Ekrani i zgjeruar</translation>
+<translation id="1793625608969726781">Pajisja <ph name="DEVICE_INDEX" /> nga <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, kompjuter, niveli i baterisë <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1794051631868188691">Mos shfaq asnjëherë <ph name="MERCHANT" /></translation>
 <translation id="1794791083288629568">Dërgo komente për të na ndihmuar ta rregullojmë këtë problem.</translation>
 <translation id="1795214765651529549">Përdor temën klasike</translation>
@@ -1142,6 +1145,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2179416702468739594">Po kërkon për profilet e disponueshme. Kjo mund të bëjë që rrjeti yt celular të shkëputet për disa minuta.</translation>
 <translation id="2180620921879609685">Blloko përmbajtjen në çdo faqe</translation>
 <translation id="2182058453334755893">Kopjuar te kujtesa e fragmenteve</translation>
+<translation id="2183027945672030611">Pajisja <ph name="DEVICE_INDEX" /> nga <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, kontrollues loje, niveli i baterisë <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="2184515124301515068">Lejo që Chrome të zgjedhë se cilat sajte mund të luajnë tinguj (rekomandohet)</translation>
 <translation id="2186711480981247270">Faqja është ndarë nga një pajisje tjetër</translation>
 <translation id="2187675480456493911">Sinkronizuar me pajisjet e tjera në llogarinë tënde. Cilësimet e modifikuara nga përdoruesit e tjerë nuk do të sinkronizohen. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
@@ -1259,6 +1263,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2301402091755573488">Skeda e ndarë</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ka kërkuar leje shtesë.</translation>
 <translation id="23055578400314116">Zgjidh një emër përdoruesi</translation>
+<translation id="2306366691914573029">Pajisja <ph name="DEVICE_INDEX" /> nga <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, lloj i panjohur pajisjeje</translation>
 <translation id="2307462900900812319">Konfiguro rrjetin</translation>
 <translation id="2307553512430195144">Nëse je dakord, "Asistenti i Google" do të presë në modalitetin e gatishmërisë për të zbuluar “Ok Google” dhe mund të dallojë që është <ph name="SUPERVISED_USER_NAME" /> duke folur me Voice Match.
     <ph name="BR" />
@@ -1544,6 +1549,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2606568927909309675">Krijon automatikisht titra për audion dhe videon në anglisht. Audioja dhe titrat nuk largohen asnjëherë nga pajisja.</translation>
 <translation id="2607101320794533334">Informacion i çelësit publik të subjektit</translation>
 <translation id="2609896558069604090">Krijo shkurtore...</translation>
+<translation id="2609902589050805912">Pajisja <ph name="DEVICE_INDEX" /> nga <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, pajisje audio</translation>
 <translation id="2609980095400624569">Nuk mund të krijohej lidhje</translation>
 <translation id="2610157865375787051">Gjumë</translation>
 <translation id="2610260699262139870">Madhësia a&amp;ktuale</translation>
@@ -1610,6 +1616,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2673135533890720193">Lexo historikun e shfletimit</translation>
 <translation id="2674764818721168631">Joaktive</translation>
 <translation id="2678063897982469759">Aktivizoje përsëri</translation>
+<translation id="2678676117809690850">Pajisja <ph name="DEVICE_INDEX" /> nga <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, telefon, niveli i baterisë <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="268053382412112343">Hi&amp;storiku</translation>
 <translation id="2681124317993121768">Profilet e vizitorëve nuk mbështeten</translation>
 <translation id="2682498795777673382">Përditësim nga prindi</translation>
@@ -1805,6 +1812,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="287205682142673348">Transferimi i portës</translation>
 <translation id="287286579981869940">Shto <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">Ndërprit punën</translation>
+<translation id="2872966656309879564">Pajisja <ph name="DEVICE_INDEX" /> nga <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, kompjuter</translation>
 <translation id="2874939134665556319">Kënga e mëparshme</translation>
 <translation id="2875698561019555027">(Faqet e gabimit të Chrome)</translation>
 <translation id="2876336351874743617">Gishti 2</translation>
@@ -1985,6 +1993,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3054766768827382232">Çaktivizimi mund t'i bëjë pajisjet tuaja periferike të kenë cilësi funksionimi më të mirë, por mund të ekspozojë të dhënat e tua personale përmes përdorimit të paautorizuar.</translation>
 <translation id="3055590424724986000">Me një ofrues që e zgjedh vetë</translation>
 <translation id="3058498974290601450">Mund ta aktivizosh sinkronizimin në çdo kohë te cilësimet</translation>
+<translation id="3058517085907878899">Emërto pajisjen</translation>
 <translation id="3060379269883947824">Aktivizo "Zgjidh që të thuhet"</translation>
 <translation id="3060952009917586498">Ndrysho gjuhën e pajisjes. Gjuha aktuale është <ph name="LANGUAGE" />.</translation>
 <translation id="3060987956645097882">Nuk ishim në gjendje të krijonim një lidhje me telefonin tënd. Sigurohu që telefoni yt të jetë pranë, i shkyçur dhe të ketë të aktivizuar Bluetooth-in dhe Wi-Fi.</translation>
@@ -1995,6 +2004,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3067198360141518313">Vër në punë përbërësin shtesë</translation>
 <translation id="3071624960923923138">Mund të klikosh këtu për të hapur një skedë të re</translation>
 <translation id="3072775339180057696">Do ta lejosh sajtin të shikojë <ph name="FILE_NAME" />?</translation>
+<translation id="3074799113165994093">Pajisja <ph name="DEVICE_INDEX" /> nga <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, telefon</translation>
 <translation id="3075874217500066906">Kërkohet një rinisje për të filluar procesin Powerwash. Pas rinisjes, do të të kërkohet të konfirmosh që dëshiron të vazhdosh.</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Ruaje vetëm në këtë pajisje</translation>
@@ -2036,6 +2046,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3117791853215125017">{COUNT,plural, =1{Dërgimi te <ph name="DEVICE_NAME" /> dështoi: <ph name="ATTACHMENTS" />}other{Dërgimi te <ph name="DEVICE_NAME" /> dështoi: <ph name="ATTACHMENTS" />}}</translation>
 <translation id="3118319026408854581">Ndihma e <ph name="PRODUCT_NAME" /></translation>
 <translation id="3118654181216384296">Provo ta nisësh përsëri Linux pas disa minutash.</translation>
+<translation id="3119689272338239690">Pajisja <ph name="DEVICE_INDEX" /> nga <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, lloj i panjohur pajisjeje, niveli i baterisë <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3119948370277171654">Çfarë përmbajtjeje/URL-je po transmetoje?</translation>
 <translation id="3120430004221004537">Shifrimi i pamjaftueshëm për një veprim të dhënë në: "<ph name="DEVICE_NAME" />".</translation>
 <translation id="3122464029669770682">CPU</translation>
@@ -2548,6 +2559,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3682824389861648626">Pragu i lëvizjes</translation>
 <translation id="3683524264665795342">Kërkesa e ndarjes së ekranit e <ph name="APP_NAME" /></translation>
 <translation id="3685598397738512288">Preferencat e USB-së së Linux</translation>
+<translation id="3686786761304157917">Pajisja <ph name="DEVICE_INDEX" /> nga <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, tastierë, niveli i baterisë <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="368789413795732264">Pati një gabim gjatë përpjekjes së leximit të skedarit: <ph name="ERROR_TEXT" />.</translation>
 <translation id="3688507211863392146">Shkruaj në skedarët dhe dosjet që hap në aplikacion.</translation>
 <translation id="3688526734140524629">Ndrysho kanalin</translation>
@@ -2647,6 +2659,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3778740492972734840">&amp;Mjetet e zhvilluesit</translation>
 <translation id="3778868487658107119">Bëji pyetje. Thuaji që të bëjë gjëra. Është Google yt personal, gjithmonë gati për të të ndihmuar.</translation>
 <translation id="3781742599892759500">Qasja te mikrofoni i Linux</translation>
+<translation id="3782488227140539029">Pajisja <ph name="DEVICE_INDEX" /> nga <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, videokamerë, niveli i baterisë <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3782795641773236652">Nuk është caktuar ende asnjë çelës apo tast</translation>
 <translation id="378312418865624974">Lexo një identifikues unik për këtë kompjuter</translation>
 <translation id="3784372983762739446">Pajisjet me Bluetooth</translation>
@@ -2887,6 +2900,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4002329649066944389">Menaxho përjashtimet specifike të sajtit</translation>
 <translation id="4002440992267487163">Konfigurimi i kodit PIN</translation>
 <translation id="4005817994523282006">Metoda e zbulimit të brezit orar</translation>
+<translation id="400645326027787740">Pajisja <ph name="DEVICE_INDEX" /> nga <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, kontrollues loje</translation>
 <translation id="4007856537951125667">Fshih shkurtoret</translation>
 <translation id="4008291085758151621">Informacioni i sajtit nuk është i disponueshëm në VR</translation>
 <translation id="4010917659463429001">Për të marrë faqeshënuesit në pajisjen tënde celulare, <ph name="GET_IOS_APP_LINK" />.</translation>
@@ -3192,6 +3206,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4382131447572146376">{COUNT,plural, =0{<ph name="EMAIL" />}=1{<ph name="EMAIL" />, edhe 1 llogari tjetër}other{<ph name="EMAIL" />, edhe <ph name="EXTRA_ACCOUNTS" /> llogari të tjera}}</translation>
 <translation id="4384312707950789900">Shto te të preferuarat</translation>
 <translation id="4384652540891215547">Aktivizo shtesën</translation>
+<translation id="4384886290276344300">Ndrysho cilësimet e tastierës</translation>
 <translation id="438503109373656455">Saratoga</translation>
 <translation id="4385146930797718821">Pamja e ekranit u kopjua në kujtesën e fragmenteve</translation>
 <translation id="4385905942116811558">Po kërkon për pajisjet me Bluetooth dhe USB</translation>
@@ -3583,6 +3598,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4813136279048157860">Imazhet e mia</translation>
 <translation id="4813512666221746211">Gabim në rrjet</translation>
 <translation id="4814378367953456825">Fut një emër për këtë gjurmë gishti</translation>
+<translation id="4816097470512964351"><ph name="DEVICE" />, detaje</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{U fshi 1 faqëshënues}other{U fshinë {COUNT} faqeshënues}}</translation>
 <translation id="4819607494758673676">Njoftimet e "Asistentit të Google"</translation>
 <translation id="4820236583224459650">Vendose si biletë aktive</translation>
@@ -3658,6 +3674,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4884987973312178454">6x</translation>
 <translation id="4887424188275796356">Hap me "Shikuesin e sistemit"</translation>
 <translation id="488785315393301722">Shfaq detajet</translation>
+<translation id="4889450157778777235">Pajisja <ph name="DEVICE_INDEX" /> nga <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, videokamerë</translation>
 <translation id="4890773143211625964">Shfaq opsionet e përparuara të printerit</translation>
 <translation id="4891089016822695758">Forumi beta</translation>
 <translation id="4892229439761351791">Sajti mund të përdorë Bluetooth-in</translation>
@@ -3794,6 +3811,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="5039696241953571917">Shfaq dhe menaxho fjalëkalimet e ruajtura në "Llogarinë tënde të Google"</translation>
 <translation id="5039804452771397117">Lejo</translation>
 <translation id="5040823038948176460">Cilësimet shtesë të përmbajtjeve</translation>
+<translation id="5043440033854483429">Emri mund të përdorë germa, numra dhe viza (-), dhe duhet të jetë ndërmjet 1 dhe 15 germave, me këto përfshirë.</translation>
 <translation id="5043913660911154449">Ose specifiko skedarin PPD të printerit <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Fjalëkalim i gabuar</translation>
 <translation id="504561833207953641">Po hapet në sesionin ekzistues të shfletuesit.</translation>
@@ -4047,6 +4065,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="5319359161174645648">Google rekomandon Chrome</translation>
 <translation id="5319712128756744240">Çifto pajisjen e re</translation>
 <translation id="5320135788267874712">Emri i ri i pajisjes</translation>
+<translation id="532043380734099846">Pajisja <ph name="DEVICE_INDEX" /> nga <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, maus, niveli i baterisë <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="532247166573571973">Serveri mund të jetë i paarritshëm. Provo përsëri më vonë.</translation>
 <translation id="5324300749339591280">Lista e aplikacioneve</translation>
 <translation id="5324780743567488672">Caktoje automatikisht brezin orar duke përdorur vendndodhjen tënde</translation>
@@ -4074,6 +4093,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="535123479159372765">Teksti u kopjua nga pajisja tjetër</translation>
 <translation id="5352033265844765294">Stampimi i orës</translation>
 <translation id="5353252989841766347">Eksporto fjalëkalimet nga Chrome</translation>
+<translation id="5354531123814675522">Pajisja <ph name="DEVICE_INDEX" /> nga <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, tabletë, niveli i baterisë <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5355099869024327351">Lejo që "Asistenti" të të shfaqë njoftime</translation>
 <translation id="5355191726083956201">"Mbrojtja e përmirësuar" është aktive</translation>
 <translation id="5355926466126177564">Shtesa <ph name="EXTENSION_NAME" /> ka ndryshuar se cila faqe shfaqet kur kërkon nga Omnibox.</translation>
@@ -4243,6 +4263,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="5534304873398226603">Hiq fotografinë dhe videon</translation>
 <translation id="5535941515421698170">Hiq gjithashtu edhe të dhënat ekzistuese nga kjo pajisje</translation>
 <translation id="5539221284352502426">Fjalëkalimi që fute u refuzua nga serveri. Arsyet e mundshme përfshijnë: fjalëkalimi është tepër i shkurtër. Fjalëkalimi duhet të përfshijë numra ose simbole. Fjalëkalimi duhet të jetë i ndryshëm nga fjalëkalimet e mëparshme.</translation>
+<translation id="5539467723438368868">Pajisja <ph name="DEVICE_INDEX" /> nga <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, tabletë</translation>
 <translation id="5541694225089836610">Veprimi është çaktivizuar nga administratori yt</translation>
 <translation id="5542132724887566711">Profili</translation>
 <translation id="5542750926112347543">Kukit nga <ph name="DOMAIN" /> u bllokuan</translation>
@@ -4303,6 +4324,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="5601503069213153581">Kodi PIN</translation>
 <translation id="5601823921345337195">Nuk lejohen të lidhen me pajisjet MIDI</translation>
 <translation id="5602765853043467355">Pastro faqeshënuesit, historikun, fjalëkalimet dhe më shumë nga kjo pajisje</translation>
+<translation id="5604884720628869833">Pajisja <ph name="DEVICE_INDEX" /> nga <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, tastierë</translation>
 <translation id="5605623530403479164">Motorët e tjerë të kërkimit</translation>
 <translation id="5605758115928394442">Një njoftim është dërguar te telefoni yt për të konfirmuar që je ti.</translation>
 <translation id="560834977503641186">"Sinkronizimi i Wi-Fi", Mëso më shumë</translation>
@@ -4763,6 +4785,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="6113434369102685411">Cakto motorin tënd të parazgjedhur të kërkimit për shfletuesin e Chrome dhe nisësin e <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Për të përdorur Smart Lock, kalo te profili parësor i përdoruesit në telefonin tënd</translation>
 <translation id="6116921718742659598">Ndrysho cilësimet e gjuhës dhe të hyrjes</translation>
+<translation id="6119927814891883061">Emërtoje pajisjen në <ph name="DEVICE_NAME" /></translation>
 <translation id="6120205520491252677">Gozhdoje këtë faqe tek ekrani i Nisjes...</translation>
 <translation id="6122081475643980456">Lidhja jote e internetit po kontrollohet</translation>
 <translation id="6122093587541546701">Mail-i (opsional):</translation>
@@ -6967,6 +6990,7 @@ Shtyp një çelës të caktuar për të hequr caktimin</translation>
 <translation id="8475313423285172237">Një program tjetër në kompjuterin tënd shtoi një shtesë që mund të ndryshojë mënyrën e funksionimit të Chrome.</translation>
 <translation id="8477241577829954800">E zëvendësuar</translation>
 <translation id="8477384620836102176">&amp;Të përgjithshme</translation>
+<translation id="8479109005219657634">Pajisja <ph name="DEVICE_INDEX" /> nga <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, pajisje audio, niveli i baterisë <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="8479176401914456949">Kod i pavlefshëm. Provo përsëri.</translation>
 <translation id="8480082892550707549">Edhe nëse i ke shkarkuar skedarë nga ky sajt uebi më parë, sajti mund të jetë përkohësisht i pasigurt (i sulmuar). Provo ta shkarkosh këtë skedar më vonë.</translation>
 <translation id="8480869669560681089">Pajisje e panjohur nga <ph name="VENDOR_NAME" /></translation>
@@ -7445,6 +7469,7 @@ Shtyp një çelës të caktuar për të hequr caktimin</translation>
 <translation id="897525204902889653">Shërbimi i karantinës</translation>
 <translation id="8975396729541388937">Çregjistrohu në çdo kohë duke klikuar te lidhja në email-et që merr.</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" dhe 1 skedë tjetër}other{"<ph name="TAB_TITLE" />" dhe # skeda të tjera}}</translation>
+<translation id="8977175149983066223">Pajisja <ph name="DEVICE_INDEX" /> nga <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, maus</translation>
 <translation id="8977811652087512276">Fjalëkalim i pasaktë ose skedar i dëmtuar</translation>
 <translation id="8978154919215542464">Aktiv - sinkronizo çdo gjë</translation>
 <translation id="897939795688207351">Në <ph name="ORIGIN" /></translation>

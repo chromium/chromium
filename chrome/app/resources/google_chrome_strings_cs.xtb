@@ -87,6 +87,8 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="2888126860611144412">O aplikaci Chrome</translation>
 <translation id="2926676257163822632">Slabá hesla lze snadno uhodnout. Chrome vám může <ph name="BEGIN_LINK" />vytvářet a ukládat silná hesla<ph name="END_LINK" />.</translation>
 <translation id="2929907241665500097">Prohlížeč Chrome se neaktualizoval, něco se pokazilo. <ph name="BEGIN_LINK" />Vyřešte problémy se stahováním aktualizací Chromu a neúspěšnými aktualizacemi.<ph name="END_LINK" /></translation>
+<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Ještě poslední připomenutí: Při instalaci bude <ph name="BEGIN_BOLD" />zcela vymazán pevný disk.<ph name="END_BOLD" /> Zkontrolujte si, zda máte všechna důležitá data zálohovaná.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Po spuštění již instalaci nelze zrušit.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – přihlášení k síti – Chrome</translation>
 <translation id="3037838751736561277">Google Chrome je v režimu na pozadí.</translation>
 <translation id="3059710691562604940">Bezpečné prohlížení je vypnuté. Chrome ho doporučuje zapnout.</translation>
