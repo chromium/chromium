@@ -685,6 +685,10 @@ const std::string& BinaryUploadService::Request::digest() const {
   return content_analysis_request_.request_data().digest();
 }
 
+const std::string& BinaryUploadService::Request::content_type() const {
+  return content_analysis_request_.request_data().content_type();
+}
+
 void BinaryUploadService::Request::FinishRequest(
     Result result,
     enterprise_connectors::ContentAnalysisResponse response) {

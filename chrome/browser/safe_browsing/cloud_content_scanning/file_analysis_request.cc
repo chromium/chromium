@@ -203,9 +203,6 @@ bool FileAnalysisRequest::HasMalwareRequest() const {
 
 void FileAnalysisRequest::OnGotFileData(
     std::pair<BinaryUploadService::Result, Data> result_and_data) {
-  set_digest(result_and_data.second.hash);
-  set_content_type(result_and_data.second.mime_type);
-
   if (result_and_data.first != BinaryUploadService::Result::SUCCESS) {
     CacheResultAndData(result_and_data.first,
                        std::move(result_and_data.second));
@@ -281,6 +278,9 @@ void FileAnalysisRequest::CacheResultAndData(BinaryUploadService::Result result,
     data.mime_type = std::move(cached_data_.mime_type);
 
   cached_data_ = std::move(data);
+
+  set_digest(cached_data_.hash);
+  set_content_type(cached_data_.mime_type);
 }
 
 void FileAnalysisRequest::RunCallback() {

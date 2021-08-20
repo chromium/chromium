@@ -184,6 +184,7 @@ class BinaryUploadService : public KeyedService {
     const std::string& fcm_notification_token() const;
     const std::string& filename() const;
     const std::string& digest() const;
+    const std::string& content_type() const;
 
     // Finish the request, with the given |result| and |response| from the
     // server.
