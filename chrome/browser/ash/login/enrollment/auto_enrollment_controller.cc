@@ -16,6 +16,8 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_client_impl.h"
+#include "chrome/browser/ash/policy/enrollment/private_membership/fake_private_membership_rlwe_client.h"
+#include "chrome/browser/ash/policy/enrollment/private_membership/private_membership_rlwe_client.h"
 #include "chrome/browser/ash/policy/enrollment/private_membership/private_membership_rlwe_client_impl.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
@@ -408,7 +410,17 @@ AutoEnrollmentController::GetFRERequirement() {
 }
 
 AutoEnrollmentController::AutoEnrollmentController()
-    : system_clock_sync_waiter_(std::make_unique<SystemClockSyncWaiter>()) {}
+    : system_clock_sync_waiter_(std::make_unique<SystemClockSyncWaiter>()) {
+  // Create the PSM RLWE client factory depending on whether
+  // switches::kEnterpriseUseFakePsmRlweClient is set.
+  if (ShouldUseFakePsmRlweClient()) {
+    psm_rlwe_client_factory_ = std::make_unique<
+        policy::FakePrivateMembershipRlweClient::FactoryImpl>();
+  } else {
+    psm_rlwe_client_factory_ = std::make_unique<
+        policy::PrivateMembershipRlweClientImpl::FactoryImpl>();
+  }
+}
 
 AutoEnrollmentController::~AutoEnrollmentController() {}
 
@@ -765,7 +777,7 @@ void AutoEnrollmentController::StartClientForInitialEnrollment() {
           ->GetSharedURLLoaderFactory(),
       serial_number, rlz_brand_code, power_initial, power_limit,
       kInitialEnrollmentModulusPowerOutdatedServer,
-      &psm_rlwe_client_impl_factory_);
+      psm_rlwe_client_factory_.get());
 
   LOG(WARNING) << "Starting auto-enrollment client for Initial Enrollment.";
   client_->Start();
