@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {NetworkType, RoutineType} from 'chrome://diagnostics/diagnostics_types.js';
-import {convertFrequencyToChannel, convertKibToGibDecimalString, getRoutinesByNetworkType, getSubnetMaskFromRoutingPrefix} from 'chrome://diagnostics/diagnostics_utils.js';
+import {convertKibToGibDecimalString, getRoutinesByNetworkType, getSubnetMaskFromRoutingPrefix} from 'chrome://diagnostics/diagnostics_utils.js';
 
 import {assertArrayEquals, assertEquals} from '../../chai_assert.js';
 
@@ -54,30 +54,6 @@ export function diagnosticsUtilsTestSuite() {
     assertEquals(getSubnetMaskFromRoutingPrefix(30), '255.255.255.252');
     assertEquals(getSubnetMaskFromRoutingPrefix(31), '255.255.255.254');
     assertEquals(getSubnetMaskFromRoutingPrefix(32), '255.255.255.255');
-  });
-
-  test('ConvertFrequencyToChannel', () => {
-    assertEquals(convertFrequencyToChannel(0), null);
-    assertEquals(convertFrequencyToChannel(2411), null);
-    // Calculates 2.4GHz channels.
-    assertEquals(convertFrequencyToChannel(2412), 1);
-    assertEquals(convertFrequencyToChannel(2417), 2);
-    assertEquals(convertFrequencyToChannel(2422), 3);
-    assertEquals(convertFrequencyToChannel(2427), 4);
-    assertEquals(convertFrequencyToChannel(2432), 5);
-    assertEquals(convertFrequencyToChannel(2437), 6);
-    assertEquals(convertFrequencyToChannel(2442), 7);
-    assertEquals(convertFrequencyToChannel(2447), 8);
-    assertEquals(convertFrequencyToChannel(2452), 9);
-    assertEquals(convertFrequencyToChannel(2457), 10);
-    assertEquals(convertFrequencyToChannel(2462), 11);
-    assertEquals(convertFrequencyToChannel(2467), 12);
-    assertEquals(convertFrequencyToChannel(2472), 13);
-    // Special 2.4GHz channel range for Japan
-    assertEquals(convertFrequencyToChannel(2484), 14);
-    assertEquals(convertFrequencyToChannel(2495), 14);
-    // TODO(ashleydp): Fix expectation when 5GHz algorithm is ready.
-    assertEquals(convertFrequencyToChannel(2496), null);
   });
 
   test('GetRoutinesByNetworkType', () => {

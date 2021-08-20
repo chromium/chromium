@@ -12,7 +12,8 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Network, SecurityType} from './diagnostics_types.js';
-import {convertFrequencyToChannel, getSubnetMaskFromRoutingPrefix} from './diagnostics_utils.js';
+import {getSubnetMaskFromRoutingPrefix} from './diagnostics_utils.js';
+import {convertFrequencyToChannel} from './frequency_channel_utils.js';
 
 /**
  * @fileoverview

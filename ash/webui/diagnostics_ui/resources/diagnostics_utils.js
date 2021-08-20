@@ -18,25 +18,6 @@ export function convertKibToGibDecimalString(value, numDecimalPlaces) {
 }
 
 /**
- * Converts a MHz frequency into channel number. Should the frequency requested
- * not fall into the algorithm range null is returned.
- * @param {number} frequency Given in MHz.
- * @return {?number} channel
- */
-export function convertFrequencyToChannel(frequency) {
-  // Handle 2.4GHz channel calculation for channel 1-13.
-  if (frequency >= 2412 && frequency <= 2483) {
-    return Math.ceil(1 + ((frequency - 2412) / 5));
-  }
-  // Handle 2.4GHz channel 14 which is a special case for Japan.
-  if (frequency >= 2484 && frequency <= 2495) {
-    return 14;
-  }
-  // TODO(ashleydp): Add algorithm for 5GHz.
-  return null;
-}
-
-/**
  * Converts a KiB storage value to MiB.
  * @param {number} value
  * @return {number}
