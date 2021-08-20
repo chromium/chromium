@@ -371,7 +371,7 @@ public class MultiInstanceManager
             if (currentTab != null) moveTabToOtherWindow(currentTab);
             return true;
         } else if (id == org.chromium.chrome.R.id.new_window_menu_id) {
-            openNewWindow();
+            openNewWindow("MobileMenuNewWindow");
             return true;
         }
 
@@ -478,7 +478,7 @@ public class MultiInstanceManager
         RecordUserAction.record("MobileMenuMoveToOtherWindow");
     }
 
-    protected void openNewWindow() {
+    protected void openNewWindow(String umaAction) {
         assert mMultiWindowModeStateDispatcher.canEnterMultiWindowMode()
                 || mMultiWindowModeStateDispatcher.isInMultiWindowMode()
                 || mMultiWindowModeStateDispatcher.isInMultiDisplayMode();
@@ -491,7 +491,7 @@ public class MultiInstanceManager
         onMultiInstanceModeStarted();
         mActivity.startActivity(
                 intent, mMultiWindowModeStateDispatcher.getOpenInOtherWindowActivityOptions());
-        RecordUserAction.record("MobileMenuNewWindow");
+        RecordUserAction.record(umaAction);
     }
 
     /**

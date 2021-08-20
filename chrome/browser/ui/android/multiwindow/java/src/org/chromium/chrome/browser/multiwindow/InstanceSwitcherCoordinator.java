@@ -16,6 +16,7 @@ import android.widget.TextView;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.components.browser_ui.widget.listmenu.BasicListMenu;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuItemProperties;
@@ -207,8 +208,10 @@ public class InstanceSwitcherCoordinator {
                 }
             }
         };
-        builder.with(InstanceSwitcherItemProperties.MORE_MENU,
-                () -> new BasicListMenu(mContext, moreMenu, moreMenuDelegate));
+        BasicListMenu listMenu = new BasicListMenu(mContext, moreMenu, moreMenuDelegate);
+        listMenu.addContentViewClickRunnable(
+                () -> { RecordUserAction.record("Android.WindowManager.SecondaryMenu"); });
+        builder.with(InstanceSwitcherItemProperties.MORE_MENU, () -> listMenu);
     }
 
     private void switchToInstance(InstanceInfo item) {
@@ -238,7 +241,7 @@ public class InstanceSwitcherCoordinator {
             }
         }
         mCloseCallback.onResult(item);
-
+        RecordUserAction.record("Android.WindowManager.CloseWindow");
         // Removing an instance enables the new window item.
         enableNewWindowCommand(true);
     }
