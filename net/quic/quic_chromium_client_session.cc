@@ -3053,9 +3053,15 @@ ProbingResult QuicChromiumClientSession::MaybeStartProbing(
     return ProbingResult::DISABLED_WITH_IDLE_SESSION;
 
   // Abort probing if connection migration is disabled by config.
-  if (config()->DisableConnectionMigration() ||
-      (version().HasIetfQuicFrames() &&
-       !connection()->connection_migration_use_new_cid())) {
+  if (version().HasIetfQuicFrames() &&
+      !connection()->connection_migration_use_new_cid()) {
+    DVLOG(1) << "Client IETF connection migration is not enabled.";
+    HistogramAndLogMigrationFailure(MIGRATION_STATUS_NOT_ENABLED,
+                                    connection_id(),
+                                    "IETF migration flag is false");
+    return ProbingResult::DISABLED_BY_CONFIG;
+  }
+  if (config()->DisableConnectionMigration()) {
     DVLOG(1) << "Client disables probing network with connection migration "
              << "disabled by config";
     HistogramAndLogMigrationFailure(MIGRATION_STATUS_DISABLED_BY_CONFIG,
