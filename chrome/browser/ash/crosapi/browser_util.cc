@@ -359,6 +359,8 @@ const base::Feature kLacrosAllowOnStableChannel{
 const base::Feature kLacrosGooglePolicyRollout{
     "LacrosGooglePolicyRollout", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const char kLacrosNoStabilitySwitchDefaultChannel[] = "dev";
+
 const char kLacrosStabilitySwitch[] = "lacros-stability";
 const char kLacrosStabilityLeastStable[] = "least-stable";
 const char kLacrosStabilityLessStable[] = "less-stable";

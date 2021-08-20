@@ -17,7 +17,6 @@
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "base/version.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/ash/system_tray_client_impl.h"
 #include "chromeos/cryptohome/system_salt_getter.h"
@@ -242,7 +241,7 @@ void BrowserLoader::OnLoadSelectionMountStateful(
       path.empty()) {
     LOG(WARNING) << "Error loading lacros component image: "
                  << static_cast<int>(error);
-    std::move(callback).Run(base::FilePath());
+    std::move(callback).Run(base::FilePath(), LacrosSelection::kStateful);
     return;
   }
 
@@ -374,17 +373,23 @@ void BrowserLoader::OnLoadComplete(
     LoadCompletionCallback callback,
     component_updater::CrOSComponentManager::Error error,
     const base::FilePath& path) {
+  LacrosSelection selection = LacrosSelection::kStateful;
+  if (path == base::FilePath(kRootfsLacrosPath) ||
+      path == base::FilePath(kRootfsLacrosMountPoint)) {
+    selection = LacrosSelection::kRootfs;
+  }
+
   // Bail out on error or empty `path`.
   if (error != component_updater::CrOSComponentManager::Error::NONE ||
       path.empty()) {
     LOG(WARNING) << "Error loading lacros component image: "
                  << static_cast<int>(error);
-    std::move(callback).Run(base::FilePath());
+    std::move(callback).Run(base::FilePath(), selection);
     return;
   }
   // Log the path on success.
   LOG(WARNING) << "Loaded lacros image at " << path.MaybeAsASCII();
-  std::move(callback).Run(path);
+  std::move(callback).Run(path, selection);
 
   // May be null in tests.
   if (component_update_service_) {

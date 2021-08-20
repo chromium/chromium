@@ -98,7 +98,7 @@ TEST_F(BrowserLoaderTest, ShowUpdateNotification) {
   // The initial load of the component does not trigger an update notification.
   base::RunLoop run_loop;
   browser_loader_->Load(base::BindLambdaForTesting(
-      [&](const base::FilePath&) { run_loop.Quit(); }));
+      [&](const base::FilePath&, LacrosSelection) { run_loop.Quit(); }));
   run_loop.Run();
   EXPECT_EQ(0, delegate_->set_lacros_update_available_);
 
@@ -132,8 +132,11 @@ TEST_F(BrowserLoaderTest, OnLoadSelectionQuicklyChooseRootfs) {
       &callback_called));
   // Set `was_installed` to false, in order to quickly mount rootfs
   // lacros-chrome.
-  browser_loader_->OnLoadSelection(base::BindOnce([](const base::FilePath&) {}),
-                                   false);
+  browser_loader_->OnLoadSelection(
+      base::BindOnce([](const base::FilePath&, LacrosSelection selection) {
+        EXPECT_EQ(LacrosSelection::kRootfs, selection);
+      }),
+      false);
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(callback_called);
 }
@@ -159,7 +162,10 @@ TEST_F(BrowserLoaderTest, OnLoadVersionSelectionRootfs) {
       &callback_called));
   // Pass in a rootfs lacros-chrome version that is newer.
   browser_loader_->OnLoadVersionSelection(
-      base::BindOnce([](const base::FilePath&) {}), base::Version("2.0.0"));
+      base::BindOnce([](const base::FilePath&, LacrosSelection selection) {
+        EXPECT_EQ(LacrosSelection::kRootfs, selection);
+      }),
+      base::Version("2.0.0"));
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(callback_called);
 }

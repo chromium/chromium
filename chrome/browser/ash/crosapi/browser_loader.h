@@ -10,11 +10,14 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/component_updater/cros_component_manager.h"
 #include "chromeos/dbus/upstart/upstart_client.h"
 #include "components/component_updater/component_updater_service.h"
 
 namespace crosapi {
+
+using browser_util::LacrosSelection;
 
 // Manages download of the lacros-chrome binary. After the initial component is
 // downloaded and mounted, observes the component updater for future updates.
@@ -45,9 +48,10 @@ class BrowserLoader
 
   // Starts to load lacros-chrome binary or the rootfs lacros-chrome binary.
   // |callback| is called on completion with the path to the lacros-chrome on
-  // success, or an empty filepath on failure.
+  // success, or an empty filepath on failure, and the loaded lacros selection
+  // which is either 'rootfs' or 'stateful'.
   using LoadCompletionCallback =
-      base::OnceCallback<void(const base::FilePath&)>;
+      base::OnceCallback<void(const base::FilePath&, LacrosSelection)>;
   void Load(LoadCompletionCallback callback);
 
   // Starts to unload lacros-chrome binary.

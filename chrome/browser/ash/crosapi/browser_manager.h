@@ -39,6 +39,8 @@ class Crosapi;
 class BrowserLoader;
 class TestMojoConnectionManager;
 
+using browser_util::LacrosSelection;
+
 // Manages the lifetime of lacros-chrome, and its loading status. This class is
 // a part of ash-chrome.
 class BrowserManager : public session_manager::SessionManagerObserver,
@@ -210,6 +212,13 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Virtual for tests.
   virtual void Start(mojom::InitialBrowserAction initial_browser_action);
 
+  // Obtains the update channel name based on the loaded lacros selection and
+  // triggers the callback with it.
+  using ChannelCallback = base::OnceCallback<void(const std::string&)>;
+  void GetUpdateChannel(ChannelCallback callback);
+
+  void SetLacrosSelectionForTesting(LacrosSelection selection);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(BrowserManagerTest, LacrosKeepAlive);
 
@@ -274,9 +283,16 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   MaybeStartResult MaybeStart(
       mojom::InitialBrowserAction initial_browser_action);
 
+  // Triggers Pre-Launch work and posts StartWithLogFile to the thread pool.
+  void PostStartWithLogFileTask(
+      mojom::InitialBrowserAction initial_browser_action,
+      bool cleared_user_data_dir,
+      std::string update_channel);
+
   // Starts the lacros-chrome process and redirects stdout/err to file pointed
   // by logfd.
   void StartWithLogFile(mojom::InitialBrowserAction initial_browser_action,
+                        std::string update_channel,
                         LaunchParamsFromBackground params);
 
   // BrowserServiceHostObserver:
@@ -311,7 +327,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   void OnStoreDestruction(policy::CloudPolicyStore* store) override;
 
   // Called on load completion.
-  void OnLoadComplete(const base::FilePath& path);
+  void OnLoadComplete(const base::FilePath& path, LacrosSelection selection);
 
   // Methods for features to register and de-register for needing to keep Lacros
   // alive.
@@ -335,6 +351,9 @@ class BrowserManager : public session_manager::SessionManagerObserver,
 
   // Path to the lacros-chrome disk image directory.
   base::FilePath lacros_path_;
+
+  // Whether we are starting "rootfs" or "stateful" lacros.
+  absl::optional<LacrosSelection> lacros_selection_ = absl::nullopt;
 
   // Version of the browser (e.g. lacros-chrome) displayed to user in feedback
   // report, etc. It includes both browser version and channel in the format of:

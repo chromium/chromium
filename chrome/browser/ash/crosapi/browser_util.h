@@ -66,8 +66,19 @@ enum class LacrosLaunchSwitch {
   kLacrosOnly = 4
 };
 
+// Represents the different options available for lacros selection.
+enum class LacrosSelection {
+  kRootfs = 0,
+  kStateful = 1,
+  kMaxValue = kStateful,
+};
+
 extern const base::Feature kLacrosAllowOnStableChannel;
 extern const base::Feature kLacrosGooglePolicyRollout;
+
+// The default update channel to leverage for 'stateful' Lacros when no
+// stability switch value has been configured.
+extern const char kLacrosNoStabilitySwitchDefaultChannel[];
 
 // A command-line switch that can also be set from chrome://flags that affects
 // the frequency of Lacros updates.
