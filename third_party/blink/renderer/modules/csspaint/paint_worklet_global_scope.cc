@@ -236,7 +236,8 @@ void PaintWorkletGlobalScope::registerPaint(const ScriptState* script_state,
 
 CSSPaintDefinition* PaintWorkletGlobalScope::FindDefinition(
     const String& name) {
-  return paint_definitions_.DeprecatedAtOrEmptyValue(name);
+  auto it = paint_definitions_.find(name);
+  return it != paint_definitions_.end() ? it->value : nullptr;
 }
 
 double PaintWorkletGlobalScope::devicePixelRatio() const {
