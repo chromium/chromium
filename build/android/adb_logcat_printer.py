@@ -19,7 +19,6 @@ monitoring for the deletion of the aforementioned file.
 """
 # pylint: disable=W0702
 
-import cStringIO
 import logging
 import optparse
 import os
@@ -27,6 +26,8 @@ import re
 import signal
 import sys
 import time
+
+from io import StringIO
 
 
 # Set this to debug for more verbose output
@@ -160,7 +161,7 @@ def main(argv):
     parser.error('Wrong number of unparsed args')
   base_dir = args[0]
 
-  log_stringio = cStringIO.StringIO()
+  log_stringio = StringIO.StringIO()
   logger = logging.getLogger('LogcatPrinter')
   logger.setLevel(LOG_LEVEL)
   sh = logging.StreamHandler(log_stringio)
