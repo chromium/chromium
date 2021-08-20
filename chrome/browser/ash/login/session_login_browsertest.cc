@@ -14,10 +14,12 @@
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
+#include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
+#include "chrome/browser/ash/login/test/user_policy_mixin.h"
 #include "chrome/browser/ash/login/user_flow.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/browser_process.h"
@@ -119,6 +121,14 @@ IN_PROC_BROWSER_TEST_F(BrowserLoginTest,
 }
 
 class OnboardingTest : public LoginManagerTest {
+ public:
+  // Child users require a user policy, set up an empty one so the user can
+  // get through login.
+  void SetUpInProcessBrowserTestFixture() override {
+    ASSERT_TRUE(user_policy_mixin_.RequestPolicyUpdate());
+    LoginManagerTest::SetUpInProcessBrowserTestFixture();
+  }
+
  protected:
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_UNOWNED};
@@ -127,6 +137,11 @@ class OnboardingTest : public LoginManagerTest {
                                  &gaia_mixin_};
   AccountId regular_user_{
       AccountId::FromUserEmailGaiaId(test::kTestEmail, test::kTestGaiaId)};
+
+  LocalPolicyTestServerMixin policy_server_mixin_{&mixin_host_};
+
+  UserPolicyMixin user_policy_mixin_{&mixin_host_, regular_user_,
+                                     &policy_server_mixin_};
 };
 
 IN_PROC_BROWSER_TEST_F(OnboardingTest, PRE_OnboardingUserActivityRegularUser) {
@@ -143,8 +158,6 @@ IN_PROC_BROWSER_TEST_F(OnboardingTest, PRE_OnboardingUserActivityRegularUser) {
 
 IN_PROC_BROWSER_TEST_F(OnboardingTest, OnboardingUserActivityRegularUser) {
   login_mixin_.LoginAsNewRegularUser();
-  ash::LoginScreenTestApi::SubmitPassword(regular_user_, "password",
-                                          /*check_if_submittable=*/false);
   login_mixin_.WaitForActiveSession();
 
   ash::test::UserSessionManagerTestApi test_api(
