@@ -12169,7 +12169,7 @@
     },
     {
       'name': 'ScreenDimDelayAC',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['reinauer@google.com', 'chromeos-power@google.com'],
       'type': 'int',
       'schema': {
         'type': 'integer',
@@ -12200,7 +12200,7 @@
     },
     {
       'name': 'ScreenOffDelayAC',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['reinauer@google.com', 'chromeos-power@google.com'],
       'type': 'int',
       'schema': {
         'type': 'integer',
@@ -12231,7 +12231,7 @@
     },
     {
       'name': 'ScreenLockDelayAC',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['reinauer@google.com', 'chromeos-power@google.com'],
       'type': 'int',
       'schema': {
         'type': 'integer',
@@ -12264,7 +12264,7 @@
     },
     {
       'name': 'IdleWarningDelayAC',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['reinauer@google.com', 'chromeos-power@google.com'],
       'type': 'int',
       'schema': {
         'type': 'integer',
@@ -12295,7 +12295,7 @@
     },
     {
       'name': 'IdleDelayAC',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['reinauer@google.com', 'chromeos-power@google.com'],
       'type': 'int',
       'schema': {
         'type': 'integer',
@@ -12324,7 +12324,7 @@
     },
     {
       'name': 'ScreenDimDelayBattery',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['reinauer@google.com', 'chromeos-power@google.com'],
       'type': 'int',
       'schema': {
         'type': 'integer',
@@ -12355,7 +12355,7 @@
     },
     {
       'name': 'ScreenOffDelayBattery',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['reinauer@google.com', 'chromeos-power@google.com'],
       'type': 'int',
       'schema': {
         'type': 'integer',
@@ -12386,7 +12386,7 @@
     },
     {
       'name': 'ScreenLockDelayBattery',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['reinauer@google.com', 'chromeos-power@google.com'],
       'type': 'int',
       'schema': {
         'type': 'integer',
@@ -12419,7 +12419,7 @@
     },
     {
       'name': 'IdleWarningDelayBattery',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['reinauer@google.com', 'chromeos-power@google.com'],
       'type': 'int',
       'schema': {
         'type': 'integer',
@@ -12450,7 +12450,7 @@
     },
     {
       'name': 'IdleDelayBattery',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['reinauer@google.com', 'chromeos-power@google.com'],
       'type': 'int',
       'schema': {
         'type': 'integer',
@@ -12479,7 +12479,7 @@
     },
     {
       'name': 'IdleAction',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['reinauer@google.com', 'chromeos-power@google.com'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -12526,7 +12526,7 @@
     },
     {
       'name': 'IdleActionAC',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['reinauer@google.com', 'chromeos-power@google.com'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -12575,7 +12575,7 @@
     },
     {
       'name': 'IdleActionBattery',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['reinauer@google.com', 'chromeos-power@google.com'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -12624,7 +12624,7 @@
     },
     {
       'name': 'LidCloseAction',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['reinauer@google.com', 'chromeos-power@google.com'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -12669,7 +12669,7 @@
     },
     {
       'name': 'PowerManagementUsesAudioActivity',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['reinauer@google.com', 'chromeos-power@google.com'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:26-'],
@@ -12687,7 +12687,7 @@
     },
     {
       'name': 'PowerManagementUsesVideoActivity',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['reinauer@google.com', 'chromeos-power@google.com'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:26-'],
@@ -12706,7 +12706,7 @@
     },
     {
       'name': 'PresentationIdleDelayScale',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['reinauer@google.com', 'chromeos-power@google.com'],
       'type': 'int',
       'schema': { 'type': 'integer' },
       'supported_on': ['chrome_os:26-28'],
@@ -12723,7 +12723,7 @@
     },
     {
       'name': 'PresentationScreenDimDelayScale',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['reinauer@google.com', 'chromeos-power@google.com'],
       'type': 'int',
       'schema': { 'type': 'integer' },
       'supported_on': ['chrome_os:29-'],
@@ -12772,7 +12772,7 @@
     },
     {
       'name': 'AllowScreenWakeLocks',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['reinauer@google.com', 'chromeos-power@google.com'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:28-'],
@@ -12801,7 +12801,7 @@
     },
     {
       'name': 'UserActivityScreenDimDelayScale',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['reinauer@google.com', 'chromeos-power@google.com'],
       'type': 'int',
       'schema': { 'type': 'integer' },
       'supported_on': ['chrome_os:29-'],
@@ -12821,7 +12821,7 @@
     },
     {
       'name': 'WaitForInitialUserActivity',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['reinauer@google.com', 'chromeos-power@google.com'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:32-'],
@@ -12839,7 +12839,7 @@
     },
     {
       'name': 'PowerManagementIdleSettings',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['reinauer@google.com', 'chromeos-power@google.com'],
       'type': 'dict',
       'schema': {
         'type': 'object',
@@ -12943,7 +12943,7 @@
     },
     {
       'name': 'ScreenLockDelays',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['reinauer@google.com', 'chromeos-power@google.com'],
       'type': 'dict',
       'schema': {
         'type': 'object',
