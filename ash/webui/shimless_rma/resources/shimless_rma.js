@@ -68,24 +68,6 @@ const StateComponentMapping = {
     buttonCancel: ButtonState.VISIBLE,
     buttonBack: ButtonState.VISIBLE,
   },
-  [RmaState.kChooseDestination]: {
-    componentIs: 'onboarding-choose-destination-page',
-    buttonNext: ButtonState.VISIBLE,
-    buttonCancel: ButtonState.VISIBLE,
-    buttonBack: ButtonState.VISIBLE,
-  },
-  [RmaState.kChooseWriteProtectDisableMethod]: {
-    componentIs: 'onboarding-choose-wp-disable-method-page',
-    buttonNext: ButtonState.VISIBLE,
-    buttonCancel: ButtonState.VISIBLE,
-    buttonBack: ButtonState.VISIBLE,
-  },
-  [RmaState.kWaitForManualWPDisable]: {
-    componentIs: 'onboarding-wait-for-manual-wp-disable-page',
-    buttonNext: ButtonState.VISIBLE,
-    buttonCancel: ButtonState.HIDDEN,
-    buttonBack: ButtonState.VISIBLE,
-  },
   [RmaState.kUpdateOs]: {
     componentIs: 'onboarding-update-page',
     buttonNext: ButtonState.VISIBLE,
@@ -98,8 +80,26 @@ const StateComponentMapping = {
     buttonCancel: ButtonState.VISIBLE,
     buttonBack: ButtonState.VISIBLE,
   },
+  [RmaState.kChooseDestination]: {
+    componentIs: 'onboarding-choose-destination-page',
+    buttonNext: ButtonState.VISIBLE,
+    buttonCancel: ButtonState.VISIBLE,
+    buttonBack: ButtonState.VISIBLE,
+  },
+  [RmaState.kChooseWriteProtectDisableMethod]: {
+    componentIs: 'onboarding-choose-wp-disable-method-page',
+    buttonNext: ButtonState.VISIBLE,
+    buttonCancel: ButtonState.VISIBLE,
+    buttonBack: ButtonState.VISIBLE,
+  },
   [RmaState.kEnterRSUWPDisableCode]: {
     componentIs: 'onboarding-enter-rsu-wp-disable-code-page',
+    buttonNext: ButtonState.VISIBLE,
+    buttonCancel: ButtonState.HIDDEN,
+    buttonBack: ButtonState.VISIBLE,
+  },
+  [RmaState.kWaitForManualWPDisable]: {
+    componentIs: 'onboarding-wait-for-manual-wp-disable-page',
     buttonNext: ButtonState.VISIBLE,
     buttonCancel: ButtonState.HIDDEN,
     buttonBack: ButtonState.VISIBLE,
@@ -116,6 +116,7 @@ const StateComponentMapping = {
     buttonCancel: ButtonState.HIDDEN,
     buttonBack: ButtonState.VISIBLE,
   },
+  // TODO(gavindodd): kRestock
   [RmaState.kUpdateDeviceInformation]: {
     componentIs: 'reimaging-device-information-page',
     btnNext: ButtonState.VISIBLE,
@@ -128,12 +129,15 @@ const StateComponentMapping = {
     buttonCancel: ButtonState.HIDDEN,
     buttonBack: ButtonState.VISIBLE,
   },
+  // TODO(gavindodd): kSetupCalibration
+  // TODO(gavindodd): kRunCalibration
   [RmaState.kProvisionDevice]: {
     componentIs: 'reimaging-provisioning-page',
     btnNext: ButtonState.VISIBLE,
     btnCancel: ButtonState.HIDDEN,
     btnBack: ButtonState.VISIBLE,
   },
+  // TODO(gavindodd): kWaitForManualWpEnable
   [RmaState.kRepairComplete]: {
     componentIs: 'wrapup-repair-complete-page',
     buttonNext: ButtonState.VISIBLE,

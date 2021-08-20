@@ -11,15 +11,21 @@ export const fakeStates = [
   {state: RmaState.kWelcomeScreen, error: RmadErrorCode.kOk},
   {state: RmaState.kConfigureNetwork, error: RmadErrorCode.kOk},
   {state: RmaState.kUpdateOs, error: RmadErrorCode.kOk},
+  {state: RmaState.kSelectComponents, error: RmadErrorCode.kOk},
   {state: RmaState.kChooseDestination, error: RmadErrorCode.kOk},
   {state: RmaState.kChooseWriteProtectDisableMethod, error: RmadErrorCode.kOk},
-  {state: RmaState.kWaitForManualWPDisable, error: RmadErrorCode.kOk},
   {state: RmaState.kEnterRSUWPDisableCode, error: RmadErrorCode.kOk},
+  {state: RmaState.kWaitForManualWPDisable, error: RmadErrorCode.kOk},
   {state: RmaState.kWPDisableComplete, error: RmadErrorCode.kOk},
-  {state: RmaState.kSelectComponents, error: RmadErrorCode.kOk},
   {state: RmaState.kChooseFirmwareReimageMethod, error: RmadErrorCode.kOk},
+  // TODO(gavindodd): RmaState.kRestock
   {state: RmaState.kUpdateDeviceInformation, error: RmadErrorCode.kOk},
+  {state: RmaState.kCheckCalibration, error: RmadErrorCode.kOk},
+  // TODO(gavindodd): RmaState.kSetupCalibration
+  // TODO(gavindodd): RmaState.kRunCalibration
   {state: RmaState.kProvisionDevice, error: RmadErrorCode.kOk},
+  // TODO(gavindodd): RmaState.kWaitForManualWPEnable
+  {state: RmaState.kRepairComplete, error: RmadErrorCode.kOk},
 ];
 
 /** @type {!Array<string>} */
