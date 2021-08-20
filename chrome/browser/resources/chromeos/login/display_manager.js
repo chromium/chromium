@@ -18,28 +18,6 @@ cr.define('cr.ui.login', function() {
   var MAX_SCREEN_TRANSITION_DURATION = 250;
 
   /**
-   * Group of screens (screen IDs) where factory-reset screen invocation is
-   * available. Newer screens using Polymer use the attribute
-   * `resetAllowed` in their `ready()` method.
-   * @type Array<string>
-   * @const
-   */
-  var RESET_AVAILABLE_SCREEN_GROUP = [
-    SCREEN_OOBE_NETWORK,
-    SCREEN_GAIA_SIGNIN,
-    SCREEN_KIOSK_ENABLE,
-    SCREEN_ERROR_MESSAGE,
-    SCREEN_PASSWORD_CHANGED,
-    SCREEN_ARC_TERMS_OF_SERVICE,
-    SCREEN_CONFIRM_PASSWORD,
-    SCREEN_UPDATE_REQUIRED,
-    SCREEN_SYNC_CONSENT,
-    SCREEN_APP_DOWNLOADING,
-    SCREEN_PIN_SETUP,
-    SCREEN_MARKETING_OPT_IN,
-  ];
-
-  /**
    * As Polymer behaviors do not provide true inheritance, when two behaviors
    * would declare same method one of them will be hidden. Also, if element
    * re-declares the method it needs explicitly iterate over behaviors and call

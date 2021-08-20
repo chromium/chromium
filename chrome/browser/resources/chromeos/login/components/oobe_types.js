@@ -8,7 +8,7 @@
  * This file contains typedefs for chromeOS OOBE properties.
  */
 
-var OobeTypes = {};
+/* #export */ var OobeTypes = {};
 
 /**
  * ChromeOS OOBE language descriptor.

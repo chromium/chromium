@@ -42,8 +42,10 @@ group("closure_compile_module") {
     "oobe_vars:closure_compile_module",
 
     # Local targets
+    ":display_manager_types.m",
     ":hd_iron_icon.m",
     ":oobe_icons.m",
+    ":oobe_types.m",
   ]
 }
 
@@ -57,7 +59,8 @@ group("polymer3_elements") {
 
     # Local targets
     ":hd_iron_icon_module",
-    ":oobe_icons_module"
+    ":oobe_icons_module",
+    ":modulize",
   ]
 }
 
@@ -65,10 +68,17 @@ group("polymer3_elements") {
 ###############################
 # Closure compiler libraries below
 
-js_library("oobe_types") {
+js_library("display_manager_types") {
 }
 
-js_library("display_manager_types") {
+# This is special file to be used as a substitute of Authenticator object for
+# closure compilation until OOBE migrates to modules.
+js_library("fake_authenticator") {
+  deps = [ "//ui/webui/resources/js:cr" ]
+  externs_list = [
+    "$externs_path/chrome_extensions.js",
+    "$externs_path/webview_tag.js",
+  ]
 }
 
 # This is special file to be used as a substutute of Oobe object for closure
@@ -82,14 +92,10 @@ js_library("fake_oobe") {
   ]
 }
 
-# This is special file to be used as a substitute of Authenticaor object for
-# closure compilation until OOBE migrates to modules.
-js_library("fake_authenticator") {
-  deps = [ "//ui/webui/resources/js:cr" ]
-  externs_list = [
-    "$externs_path/chrome_extensions.js",
-    "$externs_path/webview_tag.js",
-  ]
+js_library("hd_iron_icon") {
+}
+
+js_library("html-echo") {
 }
 
 js_library("network_select_login") {
@@ -109,13 +115,16 @@ js_library("oobe_i18n_dropdown") {
 js_library("oobe_select") {
 }
 
-js_library("html-echo") {
-}
-
-js_library("hd_iron_icon") {
+js_library("oobe_types") {
 }
 
 #### Polymer3 / JS Modules
+
+js_library("display_manager_types.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/display_manager_types.m.js" ]
+  deps = []
+  extra_deps = [ ":modulize" ]
+}
 
 js_library("hd_iron_icon.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/hd_iron_icon.m.js" ]
@@ -131,6 +140,12 @@ js_library("oobe_icons.m") {
   extra_deps = [ ":oobe_icons_module" ]
 }
 
+js_library("oobe_types.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_types.m.js" ]
+  deps = []
+  extra_deps = [ ":modulize" ]
+}
+
 polymer_modulizer("hd_iron_icon") {
   js_file = "hd_iron_icon.js"
   html_file = "hd_iron_icon.html"
@@ -141,4 +156,12 @@ polymer_modulizer("oobe_icons") {
   js_file = "oobe_icons.m.js"
   html_file = "oobe_icons.html"
   html_type = "iron-iconset"
+}
+
+js_modulizer("modulize") {
+  input_files = [
+    "display_manager_types.js",
+    "oobe_types.js",
+  ]
+  namespace_rewrites = []
 }
