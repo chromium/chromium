@@ -162,6 +162,7 @@ blink_core_sources_paint = [
   "paint_layer.h",
   "paint_layer_clipper.cc",
   "paint_layer_clipper.h",
+  "paint_layer_fragment.cc",
   "paint_layer_fragment.h",
   "paint_layer_paint_order_iterator.cc",
   "paint_layer_paint_order_iterator.h",

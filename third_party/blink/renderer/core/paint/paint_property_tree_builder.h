@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scroll_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -36,12 +37,16 @@ struct PaintPropertyTreeBuilderFragmentContext {
   // Initializes all property tree nodes to the roots.
   PaintPropertyTreeBuilderFragmentContext();
 
+  void Trace(Visitor*) const;
+
   // State that propagates on the containing block chain (and so is adjusted
   // when an absolute or fixed position object is encountered).
   struct ContainingBlockContext {
     DISALLOW_NEW();
 
    public:
+    void Trace(Visitor*) const;
+
     // The combination of a transform and paint offset describes a linear space.
     // When a layout object recur to its children, the main context is expected
     // to refer the object's border box, then the callee will derive its own
@@ -81,7 +86,7 @@ struct PaintPropertyTreeBuilderFragmentContext {
     PhysicalOffset directly_composited_container_paint_offset_subpixel_delta;
 
     // The PaintLayer corresponding to the origin of |paint_offset|.
-    UntracedMember<const LayoutObject> paint_offset_root;
+    Member<const LayoutObject> paint_offset_root;
     // Whether newly created children should flatten their inherited transform
     // (equivalently, draw into the plane of their parent). Should generally
     // be updated whenever |transform| is; flattening only needs to happen
@@ -182,8 +187,9 @@ struct PaintPropertyTreeBuilderContext final {
   PaintPropertyTreeBuilderContext();
   PaintPropertyTreeBuilderContext(const PaintPropertyTreeBuilderContext&) =
       default;
+  ~PaintPropertyTreeBuilderContext();
 
-  Vector<PaintPropertyTreeBuilderFragmentContext, 1> fragments;
+  HeapVector<PaintPropertyTreeBuilderFragmentContext, 1> fragments;
 
   const LayoutObject* container_for_absolute_position = nullptr;
   const LayoutObject* container_for_fixed_position = nullptr;
@@ -382,5 +388,8 @@ class PaintPropertyTreeBuilder {
 };
 
 }  // namespace blink
+
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
+    blink::PaintPropertyTreeBuilderFragmentContext)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_PROPERTY_TREE_BUILDER_H_

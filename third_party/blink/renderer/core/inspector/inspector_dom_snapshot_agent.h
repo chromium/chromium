@@ -69,8 +69,8 @@ class CORE_EXPORT InspectorDOMSnapshotAgent final
       const LayoutObject* layout_object,
       const LayoutText::TextBoxInfo& text_box);
 
-  using PaintOrderMap = WTF::HashMap<PaintLayer*, int>;
-  static std::unique_ptr<PaintOrderMap> BuildPaintLayerTree(Document*);
+  using PaintOrderMap = HeapHashMap<Member<PaintLayer>, int>;
+  static PaintOrderMap* BuildPaintLayerTree(Document*);
 
  private:
   // Unconditionally enables the agent, even if |enabled_.Get()==true|.
@@ -128,7 +128,7 @@ class CORE_EXPORT InspectorDOMSnapshotAgent final
   bool include_text_color_opacities_ = false;
   std::unique_ptr<CSSPropertyFilter> css_property_filter_;
   // Maps a PaintLayer to its paint order index.
-  std::unique_ptr<PaintOrderMap> paint_order_map_;
+  Member<PaintOrderMap> paint_order_map_;
   // Maps a backend node id to the url of the script (if any) that generates
   // the corresponding node.
   std::unique_ptr<OriginUrlMap> origin_url_map_;

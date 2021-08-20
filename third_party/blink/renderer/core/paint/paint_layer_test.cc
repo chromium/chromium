@@ -440,9 +440,9 @@ TEST_P(PaintLayerTest, HasSelfPaintingParentNotSelfPainting) {
   EXPECT_FALSE(child->HasSelfPaintingLayerDescendant());
 }
 
-static const Vector<PaintLayer*>* LayersPaintingOverlayOverflowControlsAfter(
-    const PaintLayer* layer) {
-  return PaintLayerPaintOrderIterator(*layer->AncestorStackingContext(),
+static const HeapVector<Member<PaintLayer>>*
+LayersPaintingOverlayOverflowControlsAfter(const PaintLayer* layer) {
+  return PaintLayerPaintOrderIterator(layer->AncestorStackingContext(),
                                       kPositiveZOrderChildren)
       .LayersPaintingOverlayOverflowControlsAfter(layer);
 }
@@ -1118,18 +1118,18 @@ TEST_P(PaintLayerTest, NegativeZIndexChangeToPositive) {
   PaintLayer* target = GetPaintLayerByElementId("target");
 
   EXPECT_TRUE(
-      PaintLayerPaintOrderIterator(*target, kNegativeZOrderChildren).Next());
+      PaintLayerPaintOrderIterator(target, kNegativeZOrderChildren).Next());
   EXPECT_FALSE(
-      PaintLayerPaintOrderIterator(*target, kPositiveZOrderChildren).Next());
+      PaintLayerPaintOrderIterator(target, kPositiveZOrderChildren).Next());
 
   GetDocument().getElementById("child")->setAttribute(html_names::kStyleAttr,
                                                       "z-index: 1");
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_FALSE(
-      PaintLayerPaintOrderIterator(*target, kNegativeZOrderChildren).Next());
+      PaintLayerPaintOrderIterator(target, kNegativeZOrderChildren).Next());
   EXPECT_TRUE(
-      PaintLayerPaintOrderIterator(*target, kPositiveZOrderChildren).Next());
+      PaintLayerPaintOrderIterator(target, kPositiveZOrderChildren).Next());
 }
 
 TEST_P(PaintLayerTest, HasVisibleDescendant) {

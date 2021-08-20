@@ -249,4 +249,7 @@ class CORE_EXPORT PrePaintTreeWalk final {
 
 }  // namespace blink
 
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
+    blink::PrePaintTreeWalk::PrePaintTreeWalkContext)
+
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PRE_PAINT_TREE_WALK_H_

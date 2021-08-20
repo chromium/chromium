@@ -494,6 +494,7 @@ PaintResult PaintLayerPainter::PaintLayerContents(
   local_painting_info.sub_pixel_accumulation = subpixel_accumulation;
 
   PaintLayerFragments layer_fragments;
+  ClearCollectionScope<PaintLayerFragments> scope(&layer_fragments);
 
   if (should_paint_content || should_paint_self_outline ||
       is_painting_overlay_overflow_controls) {
@@ -700,7 +701,7 @@ PaintResult PaintLayerPainter::PaintChildren(
   if (paint_layer_.GetLayoutObject().ChildPaintBlockedByDisplayLock())
     return result;
 
-  PaintLayerPaintOrderIterator iterator(paint_layer_, children_to_visit);
+  PaintLayerPaintOrderIterator iterator(&paint_layer_, children_to_visit);
   while (PaintLayer* child = iterator.Next()) {
     // If this Layer should paint into its own backing or a grouped backing,
     // that will be done via CompositedLayerMapping::PaintContents() and
@@ -718,7 +719,7 @@ PaintResult PaintLayerPainter::PaintChildren(
 
     if (const auto* layers_painting_overlay_overflow_controls_after =
             iterator.LayersPaintingOverlayOverflowControlsAfter(child)) {
-      for (auto* reparent_overflow_controls_layer :
+      for (auto& reparent_overflow_controls_layer :
            *layers_painting_overlay_overflow_controls_after) {
         DCHECK(reparent_overflow_controls_layer
                    ->NeedsReorderOverlayOverflowControls());
