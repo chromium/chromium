@@ -274,7 +274,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureBrowserUrlsTest) {
 
   std::unique_ptr<ash::DeskTemplate> desk_template =
       CaptureActiveDeskAndSaveTemplate();
-  full_restore::RestoreData* restore_data = desk_template->desk_restore_data();
+  const full_restore::RestoreData* restore_data =
+      desk_template->desk_restore_data();
   const auto& app_id_to_launch_list = restore_data->app_id_to_launch_list();
   EXPECT_EQ(app_id_to_launch_list.size(), 1u);
 
@@ -305,7 +306,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureIncognitoBrowserTest) {
   std::unique_ptr<ash::DeskTemplate> desk_template =
       CaptureActiveDeskAndSaveTemplate();
   ASSERT_TRUE(desk_template);
-  full_restore::RestoreData* restore_data = desk_template->desk_restore_data();
+  const full_restore::RestoreData* restore_data =
+      desk_template->desk_restore_data();
   const auto& app_id_to_launch_list = restore_data->app_id_to_launch_list();
   EXPECT_EQ(app_id_to_launch_list.size(), 1u);
 
@@ -351,7 +353,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureActiveDeskAsTemplateTest) {
   EXPECT_EQ(desk_template->template_name(),
             desks_helper->GetDeskName(desks_helper->GetActiveDeskIndex()));
 
-  full_restore::RestoreData* restore_data = desk_template->desk_restore_data();
+  const full_restore::RestoreData* restore_data =
+      desk_template->desk_restore_data();
   const auto& app_id_to_launch_list = restore_data->app_id_to_launch_list();
   EXPECT_EQ(app_id_to_launch_list.size(), 2u);
 
@@ -716,7 +719,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
       CaptureActiveDeskAndSaveTemplate();
   ASSERT_TRUE(desk_template);
 
-  full_restore::RestoreData* restore_data = desk_template->desk_restore_data();
+  const full_restore::RestoreData* restore_data =
+      desk_template->desk_restore_data();
   const auto& app_id_to_launch_list = restore_data->app_id_to_launch_list();
   EXPECT_EQ(app_id_to_launch_list.size(), 2u);
 
@@ -864,7 +868,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithPWA) {
       CaptureActiveDeskAndSaveTemplate();
 
   // Find |pwa_browser| window's app restore data.
-  full_restore::RestoreData* restore_data = desk_template->desk_restore_data();
+  const full_restore::RestoreData* restore_data =
+      desk_template->desk_restore_data();
   const auto& app_id_to_launch_list = restore_data->app_id_to_launch_list();
   EXPECT_EQ(app_id_to_launch_list.size(), 1u);
   ASSERT_TRUE(restore_data->HasAppTypeBrowser());
@@ -912,7 +917,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithPWAInBrowser) {
       CaptureActiveDeskAndSaveTemplate();
 
   // Test that |pwa_browser| restore data can be found.
-  full_restore::RestoreData* restore_data = desk_template->desk_restore_data();
+  const full_restore::RestoreData* restore_data =
+      desk_template->desk_restore_data();
   const auto& app_id_to_launch_list = restore_data->app_id_to_launch_list();
   EXPECT_EQ(app_id_to_launch_list.size(), 1u);
 
@@ -964,7 +970,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientMultiProfileTest, MultiProfileTest) {
   // Capture the active desk, which contains the browser windows.
   std::unique_ptr<ash::DeskTemplate> desk_template =
       CaptureActiveDeskAndSaveTemplate();
-  full_restore::RestoreData* restore_data = desk_template->desk_restore_data();
+  const full_restore::RestoreData* restore_data =
+      desk_template->desk_restore_data();
   const auto& app_id_to_launch_list = restore_data->app_id_to_launch_list();
   EXPECT_EQ(app_id_to_launch_list.size(), 1u);
 

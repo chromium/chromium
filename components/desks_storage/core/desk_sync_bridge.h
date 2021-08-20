@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "components/account_id/account_id.h"
 #include "components/desks_storage/core/desk_model.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/model_type_store.h"
@@ -37,15 +38,14 @@ class DeskSyncBridge : public syncer::ModelTypeSyncBridge, public DeskModel {
  public:
   DeskSyncBridge(
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
-      syncer::OnceModelTypeStoreFactory create_store_callback);
+      syncer::OnceModelTypeStoreFactory create_store_callback,
+      const AccountId& account_id);
   DeskSyncBridge(const DeskSyncBridge&) = delete;
   DeskSyncBridge& operator=(const DeskSyncBridge&) = delete;
   ~DeskSyncBridge() override;
 
-  // Converts an ash::DeskTemplate to its corresponding WorkspaceDesk proto.
-  static sync_pb::WorkspaceDeskSpecifics AsSyncProto(
-      const ash::DeskTemplate* desk_template);
-  static std::unique_ptr<ash::DeskTemplate> FromProto(
+  // Converts a WorkspaceDesk proto to its corresponding ash::DeskTemplate.
+  static std::unique_ptr<ash::DeskTemplate> FromSyncProto(
       const sync_pb::WorkspaceDeskSpecifics& pb_entry);
 
   // syncer::ModelTypeSyncBridge overrides.
@@ -73,6 +73,10 @@ class DeskSyncBridge : public syncer::ModelTypeSyncBridge, public DeskModel {
   void DeleteAllEntries(DeleteEntryCallback callback) override;
 
   // Other helper methods.
+
+  // Converts an ash::DeskTemplate to its corresponding WorkspaceDesk proto.
+  sync_pb::WorkspaceDeskSpecifics ToSyncProto(
+      const ash::DeskTemplate* desk_template);
 
   // Whether this sync bridge is ready for saving and reading desk templates
   // locally.
@@ -122,6 +126,9 @@ class DeskSyncBridge : public syncer::ModelTypeSyncBridge, public DeskModel {
 
   // In charge of actually persisting changes to disk, or loading previous data.
   std::unique_ptr<syncer::ModelTypeStore> store_;
+
+  // Account ID of the user this class will sync data for.
+  const AccountId account_id_;
 
   base::WeakPtrFactory<DeskSyncBridge> weak_ptr_factory_{this};
 };

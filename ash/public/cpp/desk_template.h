@@ -41,9 +41,11 @@ class ASH_PUBLIC_EXPORT DeskTemplate {
   void set_template_name(const std::u16string& template_name) {
     template_name_ = template_name;
   }
-  full_restore::RestoreData* desk_restore_data() {
+
+  const full_restore::RestoreData* desk_restore_data() const {
     return desk_restore_data_.get();
   }
+
   void set_desk_restore_data(
       std::unique_ptr<full_restore::RestoreData> restore_data) {
     desk_restore_data_ = std::move(restore_data);

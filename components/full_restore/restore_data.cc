@@ -83,7 +83,7 @@ base::Value RestoreData::ConvertToValue() const {
   return restore_data_dict;
 }
 
-bool RestoreData::HasAppTypeBrowser() {
+bool RestoreData::HasAppTypeBrowser() const {
   auto it = app_id_to_launch_list_.find(extension_misc::kChromeAppId);
   if (it == app_id_to_launch_list_.end())
     return false;
@@ -97,7 +97,7 @@ bool RestoreData::HasAppTypeBrowser() {
   return false;
 }
 
-bool RestoreData::HasBrowser() {
+bool RestoreData::HasBrowser() const {
   auto it = app_id_to_launch_list_.find(extension_misc::kChromeAppId);
   if (it == app_id_to_launch_list_.end())
     return false;
