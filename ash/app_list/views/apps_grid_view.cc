@@ -1556,8 +1556,8 @@ bool AppsGridView::HandleVerticalFocusMovement(bool arrow_up) {
 
     // |target_page| may be invalid which makes |target_row| invalid, but
     // |target_row| will not be used if |target_page| is invalid.
-    target_row = (GetItemsNumOfPage(target_page) - 1) / cols_;
-  } else if (target_row > (GetItemsNumOfPage(target_page) - 1) / cols_) {
+    target_row = (GetNumberOfItemsOnPage(target_page) - 1) / cols_;
+  } else if (target_row > (GetNumberOfItemsOnPage(target_page) - 1) / cols_) {
     if (folder_delegate_) {
       // Move focus to folder name if we are in folder.
       contents_view_->apps_container_view()
@@ -1597,7 +1597,7 @@ bool AppsGridView::HandleVerticalFocusMovement(bool arrow_up) {
 
   // Ensure the focus is within the range of the target page.
   target_index.slot =
-      std::min(GetItemsNumOfPage(target_page) - 1, target_index.slot);
+      std::min(GetNumberOfItemsOnPage(target_page) - 1, target_index.slot);
   if (IsValidIndex(target_index)) {
     GetViewAtIndex(target_index)->RequestFocus();
     return true;
@@ -2327,8 +2327,8 @@ GridIndex AppsGridView::GetTargetGridIndexForKeyboardMove(
       return source_index;
 
     // When moving up, place the app in the last row.
-    target_row = (GetItemsNumOfPage(target_page) - 1) / cols_;
-  } else if (target_row > (GetItemsNumOfPage(target_page) - 1) / cols_) {
+    target_row = (GetNumberOfItemsOnPage(target_page) - 1) / cols_;
+  } else if (target_row > (GetNumberOfItemsOnPage(target_page) - 1) / cols_) {
     // The app will move to the first row of the next page.
     ++target_page;
     if (folder_delegate_) {
@@ -2349,8 +2349,9 @@ GridIndex AppsGridView::GetTargetGridIndexForKeyboardMove(
   // The ideal slot shares a column with |source_index|.
   const int ideal_slot = target_row * cols_ + source_index.slot % cols_;
   if (folder_delegate_) {
-    return GridIndex(target_page,
-                     std::min(GetItemsNumOfPage(target_page) - 1, ideal_slot));
+    return GridIndex(
+        target_page,
+        std::min(GetNumberOfItemsOnPage(target_page) - 1, ideal_slot));
   }
 
   // If the app is being moved to a new page there is 1 extra slot available.
@@ -2558,7 +2559,7 @@ void AppsGridView::RecordPageMetrics() {
   UMA_HISTOGRAM_COUNTS_100("Apps.NumberOfPagesNotFull", page_count);
 }
 
-int AppsGridView::GetItemsNumOfPage(int page) const {
+int AppsGridView::GetNumberOfItemsOnPage(int page) const {
   if (page < 0 || page >= pagination_model_.total_pages())
     return 0;
 

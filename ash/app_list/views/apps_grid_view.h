@@ -400,7 +400,7 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // Returns the number of existing items in specified page. Returns 0 if |page|
   // is out of range.
-  int GetItemsNumOfPage(int page) const;
+  int GetNumberOfItemsOnPage(int page) const;
 
   // Updates |drop_target_| and |drop_target_region_| based on |drag_view_|'s
   // position.

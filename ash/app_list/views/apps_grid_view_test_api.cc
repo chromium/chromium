@@ -92,7 +92,7 @@ int AppsGridViewTestApi::TilesPerPage(int page) const {
 }
 
 int AppsGridViewTestApi::AppsOnPage(int page) const {
-  return view_->GetItemsNumOfPage(page);
+  return view_->GetNumberOfItemsOnPage(page);
 }
 
 AppListItemView* AppsGridViewTestApi::GetViewAtIndex(GridIndex index) const {
