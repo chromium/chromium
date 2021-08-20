@@ -1970,7 +1970,7 @@ void RenderTextHarfBuzz::ShapeRuns(
       run->shape.glyphs.resize(run->shape.glyph_count);
       run->shape.glyph_to_char.resize(run->shape.glyph_count);
       run->shape.positions.resize(run->shape.glyph_count);
-      run->shape.width = glyph_width_for_test_;
+      // Keep width as zero since newline character doesn't have a width.
     } else {
       // This run needs shaping.
       need_shaping_runs.push_back(run);

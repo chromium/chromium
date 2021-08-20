@@ -768,8 +768,11 @@ class GFX_EXPORT RenderText {
   const BreakList<size_t>& GetLineBreaks();
 
   // Convert points from the text space to the view space. Handles the display
-  // area, display offset, application LTR/RTL mode and multiline.
-  Point ToViewPoint(const PointF& point, LogicalCursorDirection caret_affinity);
+  // area, display offset, application LTR/RTL mode and multiline. |line| is the
+  // index of the line in which |point| is found, and is required to be passed
+  // because by the time |point| is in text space, the information to account
+  // for certain zero-width characters (such as empty lines) is lost.
+  Point ToViewPoint(const PointF& point, size_t line);
 
   // Get the alignment, resolving ALIGN_TO_HEAD with the current text direction.
   HorizontalAlignment GetCurrentHorizontalAlignment();
