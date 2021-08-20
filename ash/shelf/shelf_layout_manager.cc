@@ -1521,7 +1521,27 @@ void ShelfLayoutManager::UpdateBoundsAndOpacity(bool animate) {
   HotseatWidget* hotseat_widget = shelf_->hotseat_widget();
   StatusAreaWidget* status_widget = shelf_widget_->status_area_widget();
   {
-    shelf_->shelf_widget()->UpdateLayout(animate);
+    // If the current shelf widget bounds is below the auto hidden bounds in the
+    // auto hide state, set |animate| to false to prevent the shelf widget
+    // animating upward and then disappearing with the opacity changes to 0
+    // while hiding. See crbug.com/1203861.
+    if (visibility_state() == SHELF_AUTO_HIDE &&
+        auto_hide_state() == SHELF_AUTO_HIDE_HIDDEN && animate) {
+      gfx::Rect current_shelf_bounds =
+          shelf_->shelf_widget()->GetWindowBoundsInScreen();
+      gfx::Rect shelf_target_bounds = shelf_->shelf_widget()->GetTargetBounds();
+      bool should_hide_shelf_immediately = shelf_->SelectValueForShelfAlignment(
+          current_shelf_bounds.y() >= shelf_target_bounds.y(),
+          current_shelf_bounds.right() <= shelf_target_bounds.right(),
+          current_shelf_bounds.x() >= shelf_target_bounds.x());
+
+      if (should_hide_shelf_immediately)
+        shelf_->shelf_widget()->UpdateLayout(false);
+      else
+        shelf_->shelf_widget()->UpdateLayout(animate);
+    } else {
+      shelf_->shelf_widget()->UpdateLayout(animate);
+    }
     hotseat_widget->UpdateLayout(animate);
     status_widget->UpdateLayout(animate);
     nav_widget->UpdateLayout(animate);

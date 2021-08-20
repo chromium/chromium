@@ -1932,9 +1932,10 @@ TEST_F(ShelfLayoutManagerTest, ShelfAnimatesToVisibleWhenGestureInComplete) {
   }
 }
 
-// Tests that the shelf animates to the auto hidden bounds after a swipe down
-// on the visible shelf.
-TEST_F(ShelfLayoutManagerTest, ShelfAnimatesToHiddenWhenGestureOutComplete) {
+// Tests that the shelf hide immediately without animation after a swipe down
+// on the visible shelf to the bottom of the display bounds.
+TEST_F(ShelfLayoutManagerTest,
+       ShelfHidesImmediatelyWhenGestureOutCompleteBelowTargetBounds) {
   Shelf* shelf = GetPrimaryShelf();
   shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
   EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
@@ -1960,16 +1961,74 @@ TEST_F(ShelfLayoutManagerTest, ShelfAnimatesToHiddenWhenGestureOutComplete) {
     EXPECT_TRUE(waiter1.WasValidAnimation());
     EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
 
-    // Now swipe down.
-    gfx::Point start =
-        GetShelfWidget()->GetWindowBoundsInScreen().CenterPoint();
-    gfx::Point end = gfx::Point(start.x(), start.y() + 100);
+    gfx::Point start = GetShelfWidget()->GetWindowBoundsInScreen().top_center();
+
+    // Set the endpoint below the display bounds of the shelf widget.
+    gfx::Point endpoint_below_target(start.x(), start.y() + 100);
+
+    // Now swipe down to the endpoint.
+    generator->GestureScrollSequence(start, endpoint_below_target,
+                                     base::TimeDelta::FromMilliseconds(10), 1);
+    EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
+    EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
+
+    // Check that the shelf widget is moved back to the auto hidden bounds
+    // without animating.
+    EXPECT_FALSE(GetShelfWidget()->GetLayer()->GetAnimator()->is_animating());
+    EXPECT_EQ(auto_hidden_bounds, GetShelfWidget()->GetWindowBoundsInScreen());
+  }
+}
+
+// Tests that the shelf animates to the auto hidden bounds after a swipe down
+// on the visible shelf to a point above the auto hidden bounds.
+TEST_F(ShelfLayoutManagerTest,
+       ShelfAnimatesToHiddenWhenGestureOutCompleteAboveTargetBounds) {
+  Shelf* shelf = GetPrimaryShelf();
+  shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
+  EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
+  EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
+  gfx::Rect visible_bounds = GetShelfWidget()->GetWindowBoundsInScreen();
+
+  // Create a visible window, otherwise the shelf will not hide.
+  CreateTestWidget();
+
+  gfx::Rect auto_hidden_bounds = GetShelfWidget()->GetWindowBoundsInScreen();
+
+  {
+    // Enable the animations so that we can make sure they do occur.
+    ui::ScopedAnimationDurationScaleMode regular_animations(
+        ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+    ui::test::EventGenerator* generator = GetEventGenerator();
+
+    // Show the shelf first.
+    views::WidgetAnimationWaiter waiter1(GetShelfWidget(), visible_bounds);
+    SwipeUpOnShelf();
+    waiter1.WaitForAnimation();
+    EXPECT_TRUE(waiter1.WasValidAnimation());
+    EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
+
+    gfx::Point start = GetShelfWidget()->GetWindowBoundsInScreen().top_center();
+
+    // Set the end point to a point above the target bounds which is
+    // hidden_shelf_in_screen_portion pixels high.
+    const gfx::Rect display_bounds =
+        display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+    gfx::Point endpoint_above_target = gfx::Point(
+        display_bounds.bottom_center().x(),
+        display_bounds.bottom_center().y() -
+            ShelfConfig::Get()->hidden_shelf_in_screen_portion() - 1);
+
+    // Now swipe down to the endpoint.
     views::WidgetAnimationWaiter waiter2(GetShelfWidget(), auto_hidden_bounds);
-    generator->GestureScrollSequence(start, end,
+    generator->GestureScrollSequence(start, endpoint_above_target,
                                      base::TimeDelta::FromMilliseconds(10), 1);
     EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
     EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
     waiter2.WaitForAnimation();
+
+    // Check if the shelf widget is animated to the auto hidden bounds after the
+    // drag.
     EXPECT_TRUE(waiter2.WasValidAnimation());
   }
 }
