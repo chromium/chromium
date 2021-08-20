@@ -395,6 +395,17 @@ void FocusWindowClient(ServiceWorkerContainerHost* container_host,
     return;
   }
 
+  // Avoid focusing on prerendered pages.
+  // TODO(https://crbug.com/1239553): Running the callback with nullptr
+  // results in NotFoundError whereas TypeError should be invoked
+  // according to the specification.
+  // https://w3c.github.io/ServiceWorker/#client-focus
+  if (render_frame_host->GetLifecycleState() ==
+      RenderFrameHost::LifecycleState::kPrerendering) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
   FrameTreeNode* frame_tree_node = render_frame_host->frame_tree_node();
 
   // Focus the frame in the frame tree node, in case it has changed.
