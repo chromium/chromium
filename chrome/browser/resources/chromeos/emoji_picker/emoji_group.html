@@ -3,8 +3,8 @@
     --emoji-group-clear-recents-icon-size: 16px;
     /*These padding values being discussed with UX*/
     --emoji-group-heading-size: 32px;
-    --emoji-group-heading-padding-bottom: 18px;
-    --emoji-group-heading-padding-top: 14px;
+    --emoji-group-heading-padding-bottom: 10px;
+    --emoji-group-heading-padding-top: 16px;
     margin-top: 10px;
     position: relative;
   }
@@ -25,6 +25,7 @@
   #heading-left {
     height: var(--emoji-group-heading-size);
     line-height: var(--emoji-group-heading-size);
+    user-select: none;
     width: 100%;
   }
 
@@ -40,7 +41,7 @@
     height: var(--emoji-group-heading-size);
     left: var(--emoji-picker-last-emoji-left);
     margin: 0;
-    width: var(--emoji-group-button-size);
+    width: var(--emoji-group-heading-size);
   }
 
   #clear-recents {
