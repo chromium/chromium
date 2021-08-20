@@ -1306,10 +1306,17 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, AllowRedirect) {
   }
 }
 
+// Test is flaky on win. http://crbug.com/1241762.
+#if defined(OS_WIN)
+#define MAYBE_Enable_Disable_Reload_Uninstall \
+  DISABLED_Enable_Disable_Reload_Uninstall
+#else
+#define MAYBE_Enable_Disable_Reload_Uninstall Enable_Disable_Reload_Uninstall
+#endif
 // Tests that the extension ruleset is active only when the extension is
 // enabled.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
-                       Enable_Disable_Reload_Uninstall) {
+                       MAYBE_Enable_Disable_Reload_Uninstall) {
   set_config_flags(ConfigFlag::kConfig_HasBackgroundScript);
 
   // Block all main frame requests to "static.example".
