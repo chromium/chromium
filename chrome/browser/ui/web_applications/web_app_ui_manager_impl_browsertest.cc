@@ -19,7 +19,7 @@
 #include "chrome/browser/web_applications/test/test_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/test/web_app_uninstall_waiter.h"
+#include "chrome/browser/web_applications/test/web_app_test_uninstall_observer.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -246,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUiManagerImplBrowserTest, DoubleMigration) {
   // Install a new app to migrate the old one to.
   AppId new_app_id = InstallWebApp(GURL("https://new.app.com"));
   {
-    WebAppUninstallWaiter waiter(browser()->profile(), old_app_id);
+    WebAppTestUninstallObserver waiter(browser()->profile(), {old_app_id});
     ui_manager().UninstallAndReplaceIfExists({old_app_id}, new_app_id);
     waiter.Wait();
     apps::AppServiceProxyFactory::GetForProfile(browser()->profile())

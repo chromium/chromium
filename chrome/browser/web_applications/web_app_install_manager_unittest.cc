@@ -32,8 +32,8 @@
 #include "chrome/browser/web_applications/test/test_web_app_ui_manager.h"
 #include "chrome/browser/web_applications/test/test_web_app_url_loader.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
-#include "chrome/browser/web_applications/test/web_app_install_observer.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
+#include "chrome/browser/web_applications/test/web_app_test_registry_observer_adapter.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
@@ -869,7 +869,7 @@ TEST_P(WebAppInstallManagerUninstallTest,
   };
   std::vector<Event> event_order;
 
-  WebAppInstallObserver observer(&registrar());
+  WebAppTestRegistryObserverAdapter observer(&registrar());
   observer.SetWebAppWillBeUninstalledDelegate(
       base::BindLambdaForTesting([&](const AppId& uninstalled_app_id) {
         EXPECT_EQ(uninstalled_app_id, app_id);
@@ -936,7 +936,7 @@ TEST_P(WebAppInstallManagerUninstallTest,
   EXPECT_FALSE(finalizer().WasPreinstalledWebAppUninstalled(app_id));
 
   bool observer_uninstall_called = false;
-  WebAppInstallObserver observer(&registrar());
+  WebAppTestRegistryObserverAdapter observer(&registrar());
   observer.SetWebAppUninstalledDelegate(
       base::BindLambdaForTesting([&](const AppId& uninstalled_app_id) {
         observer_uninstall_called = true;
@@ -972,7 +972,7 @@ TEST_P(WebAppInstallManagerUninstallTest, DefaultAndUser_UninstallWebApp) {
   EXPECT_TRUE(finalizer().CanUserUninstallWebApp(app_id));
   EXPECT_FALSE(finalizer().WasPreinstalledWebAppUninstalled(app_id));
 
-  WebAppInstallObserver observer(&registrar());
+  WebAppTestRegistryObserverAdapter observer(&registrar());
 
   bool observer_uninstalled_called = false;
 

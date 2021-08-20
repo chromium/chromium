@@ -56,7 +56,8 @@
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
-#include "chrome/browser/web_applications/test/web_app_install_observer.h"
+#include "chrome/browser/web_applications/test/web_app_test_install_observer.h"
+#include "chrome/browser/web_applications/test/web_app_test_registry_observer_adapter.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -141,9 +142,9 @@ class WebAppBrowserTest : public WebAppControllerBrowserTest {
 
   AppId InstallPwaForCurrentUrl() {
     chrome::SetAutoAcceptPWAInstallConfirmationForTesting(true);
-    WebAppInstallObserver observer(profile());
+    WebAppTestInstallObserver observer(profile());
     CHECK(chrome::ExecuteCommand(browser(), IDC_INSTALL_PWA));
-    AppId app_id = observer.AwaitNextInstall();
+    AppId app_id = observer.Wait();
     chrome::SetAutoAcceptPWAInstallConfirmationForTesting(false);
     return app_id;
   }
@@ -988,7 +989,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ShortcutIconCorrectColor) {
 
   // Wait for OS hooks and installation to complete and the app to launch.
   base::RunLoop run_loop_install;
-  WebAppInstallObserver observer(profile());
+  WebAppTestRegistryObserverAdapter observer(profile());
   observer.SetWebAppInstalledWithOsHooksDelegate(base::BindLambdaForTesting(
       [&](const AppId& installed_app_id) { run_loop_install.Quit(); }));
   content::WindowedNotificationObserver app_loaded_observer(
@@ -1047,7 +1048,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, WebAppCreateAndDeleteShortcut) {
 
   // Wait for OS hooks and installation to complete and the app to launch.
   base::RunLoop run_loop_install;
-  WebAppInstallObserver observer(profile());
+  WebAppTestRegistryObserverAdapter observer(profile());
   observer.SetWebAppInstalledWithOsHooksDelegate(base::BindLambdaForTesting(
       [&](const AppId& installed_app_id) { run_loop_install.Quit(); }));
   content::WindowedNotificationObserver app_loaded_observer(
@@ -1452,9 +1453,9 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, WebAppInternalsPage) {
       browser(), https_server()->GetURL("/banners/no_manifest_test_page.html"));
   chrome::SetAutoAcceptWebAppDialogForTesting(/*auto_accept=*/true,
                                               /*auto_open_in_window=*/false);
-  WebAppInstallObserver observer(profile());
+  WebAppTestInstallObserver observer(profile());
   CHECK(chrome::ExecuteCommand(browser(), IDC_CREATE_SHORTCUT));
-  observer.AwaitNextInstall();
+  observer.Wait();
   chrome::SetAutoAcceptWebAppDialogForTesting(false, false);
   // Loads with two apps.
   NavigateToURLAndWait(browser(), GURL("chrome://web-app-internals"));
@@ -1481,9 +1482,9 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, BrowserDisplayNotInstallable) {
   // Install using Create Shortcut.
   chrome::SetAutoAcceptWebAppDialogForTesting(/*auto_accept=*/true,
                                               /*auto_open_in_window=*/false);
-  WebAppInstallObserver observer(profile());
+  WebAppTestInstallObserver observer(profile());
   CHECK(chrome::ExecuteCommand(browser(), IDC_CREATE_SHORTCUT));
-  observer.AwaitNextInstall();
+  observer.Wait();
   chrome::SetAutoAcceptWebAppDialogForTesting(false, false);
 
   // Navigate to this site again and install should still be disabled.

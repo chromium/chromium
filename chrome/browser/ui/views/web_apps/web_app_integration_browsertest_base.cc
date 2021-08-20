@@ -37,7 +37,8 @@
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
-#include "chrome/browser/web_applications/test/web_app_install_observer.h"
+#include "chrome/browser/web_applications/test/web_app_test_install_observer.h"
+#include "chrome/browser/web_applications/test/web_app_test_registry_observer_adapter.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -309,7 +310,7 @@ void WebAppIntegrationBrowserTestBase::InstallPolicyAppInternal(
   WebAppRegistrar& web_app_registrar =
       WebAppProvider::GetForTest(profile())->registrar();
   base::RunLoop run_loop;
-  WebAppInstallObserver observer(profile());
+  WebAppTestRegistryObserverAdapter observer(profile());
   observer.SetWebAppInstalledDelegate(
       base::BindLambdaForTesting([&](const AppId& app_id) {
         bool is_installed = web_app_registrar.IsInstalled(app_id);
@@ -358,9 +359,9 @@ void WebAppIntegrationBrowserTestBase::InstallMenuOption(
   content::WindowedNotificationObserver app_loaded_observer(
       content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
       content::NotificationService::AllSources());
-  WebAppInstallObserver observer(profile());
+  WebAppTestInstallObserver observer(profile());
   CHECK(chrome::ExecuteCommand(browser(), IDC_INSTALL_PWA));
-  active_app_id_ = observer.AwaitNextInstall();
+  active_app_id_ = observer.Wait();
   app_loaded_observer.Wait();
   chrome::SetAutoAcceptPWAInstallConfirmationForTesting(/*auto_accept=*/false);
   auto* browser_list = BrowserList::GetInstance();
@@ -382,10 +383,8 @@ void WebAppIntegrationBrowserTestBase::InstallLocally(
   web_app_ids.Append(active_app_id_);
 
   base::RunLoop run_loop;
-  std::unique_ptr<WebAppInstallObserver> observer =
-      WebAppInstallObserver::CreateInstallWithOsHooksListener(profile(),
-                                                              {active_app_id_});
-  observer->SetWebAppInstalledWithOsHooksDelegate(base::BindLambdaForTesting(
+  WebAppTestRegistryObserverAdapter observer(profile());
+  observer.SetWebAppInstalledWithOsHooksDelegate(base::BindLambdaForTesting(
       [&](const AppId& installed_app_id) { run_loop.Quit(); }));
   handler.HandleInstallAppLocally(&web_app_ids);
   run_loop.Run();
@@ -545,7 +544,7 @@ void WebAppIntegrationBrowserTestBase::UninstallFromMenu(
       << "No app installed for scope: " << action_mode;
   auto app_id = app_state->id;
   base::RunLoop run_loop;
-  WebAppInstallObserver observer(profile());
+  WebAppTestRegistryObserverAdapter observer(profile());
   observer.SetWebAppUninstalledDelegate(
       base::BindLambdaForTesting([&](const AppId& app_id) {
         if (app_id == active_app_id_) {
@@ -582,7 +581,7 @@ void WebAppIntegrationBrowserTestBase::UninstallPolicyApp(
                                   profile(), action_mode);
   DCHECK(policy_app);
   base::RunLoop run_loop;
-  WebAppInstallObserver observer(profile());
+  WebAppTestRegistryObserverAdapter observer(profile());
   observer.SetWebAppUninstalledDelegate(
       base::BindLambdaForTesting([&](const AppId& app_id) {
         if (policy_app->id == app_id) {
@@ -906,9 +905,9 @@ void WebAppIntegrationBrowserTestBase::InstallCreateShortcut(
   chrome::SetAutoAcceptWebAppDialogForTesting(
       /*auto_accept=*/true,
       /*auto_open_in_window=*/open_in_window);
-  WebAppInstallObserver observer(profile());
+  WebAppTestInstallObserver observer(profile());
   CHECK(chrome::ExecuteCommand(browser(), IDC_CREATE_SHORTCUT));
-  active_app_id_ = observer.AwaitNextInstall();
+  active_app_id_ = observer.Wait();
   chrome::SetAutoAcceptWebAppDialogForTesting(false, false);
 }
 

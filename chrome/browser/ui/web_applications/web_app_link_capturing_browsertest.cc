@@ -22,6 +22,7 @@
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/os_integration_manager.h"
+#include "chrome/browser/web_applications/test/web_app_test_manifest_updated_observer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -599,21 +600,7 @@ IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingOriginTrialBrowserTest,
 
   // Open the page again with the token missing.
   {
-    class UpdateAwaiter : public AppRegistrarObserver {
-     public:
-      UpdateAwaiter() = default;
-      void AwaitUpdate() { run_loop_.Run(); }
-      void OnWebAppManifestUpdated(const AppId& app_id,
-                                   base::StringPiece old_name) override {
-        run_loop_.Quit();
-      }
-
-     private:
-      base::RunLoop run_loop_;
-    } update_awaiter;
-    base::ScopedObservation<WebAppRegistrar, AppRegistrarObserver>
-        observer_scope(&update_awaiter);
-    observer_scope.Observe(&provider.registrar());
+    WebAppTestManifestUpdatedObserver update_awaiter(&provider.registrar());
 
     serve_token = false;
     NavigateToURLAndWait(browser(), GURL(kTestWebAppUrl));
@@ -621,7 +608,7 @@ IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingOriginTrialBrowserTest,
     // Close the app window to unblock updating.
     app_web_contents->Close();
 
-    update_awaiter.AwaitUpdate();
+    update_awaiter.Wait();
   }
 
   // The app should update to no longer have capture_links defined without the

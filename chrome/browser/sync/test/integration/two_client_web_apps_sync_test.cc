@@ -18,7 +18,7 @@
 #include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/os_integration_manager.h"
-#include "chrome/browser/web_applications/test/web_app_install_observer.h"
+#include "chrome/browser/web_applications/test/web_app_test_install_observer.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -84,7 +84,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, Basic) {
   info.scope = GURL("http://www.chromium.org/");
   AppId app_id = apps_helper::InstallWebApp(GetProfile(0), info);
 
-  EXPECT_EQ(WebAppInstallObserver(GetProfile(1)).AwaitNextInstall(), app_id);
+  EXPECT_EQ(WebAppTestInstallObserver(GetProfile(1)).Wait(), app_id);
   const WebAppRegistrar& registrar = GetRegistrar(GetProfile(1));
   EXPECT_EQ(base::UTF8ToUTF16(registrar.GetAppShortName(app_id)), info.title);
   EXPECT_EQ(registrar.GetAppStartUrl(app_id), info.start_url);
@@ -99,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, Minimal) {
   info.start_url = GURL("http://www.chromium.org/");
   AppId app_id = apps_helper::InstallWebApp(GetProfile(0), info);
 
-  EXPECT_EQ(WebAppInstallObserver(GetProfile(1)).AwaitNextInstall(), app_id);
+  EXPECT_EQ(WebAppTestInstallObserver(GetProfile(1)).Wait(), app_id);
   const WebAppRegistrar& registrar = GetRegistrar(GetProfile(1));
   EXPECT_EQ(base::UTF8ToUTF16(registrar.GetAppShortName(app_id)), info.title);
   EXPECT_EQ(registrar.GetAppStartUrl(app_id), info.start_url);
@@ -116,7 +116,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, ThemeColor) {
   EXPECT_EQ(GetRegistrar(GetProfile(0)).GetAppThemeColor(app_id),
             info.theme_color);
 
-  EXPECT_EQ(WebAppInstallObserver(GetProfile(1)).AwaitNextInstall(), app_id);
+  EXPECT_EQ(WebAppTestInstallObserver(GetProfile(1)).Wait(), app_id);
   const WebAppRegistrar& registrar = GetRegistrar(GetProfile(1));
   EXPECT_EQ(base::UTF8ToUTF16(registrar.GetAppShortName(app_id)), info.title);
   EXPECT_EQ(registrar.GetAppStartUrl(app_id), info.start_url);
@@ -132,7 +132,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, IsLocallyInstalled) {
   AppId app_id = apps_helper::InstallWebApp(GetProfile(0), info);
   EXPECT_TRUE(GetRegistrar(GetProfile(0)).IsLocallyInstalled(app_id));
 
-  EXPECT_EQ(WebAppInstallObserver(GetProfile(1)).AwaitNextInstall(), app_id);
+  EXPECT_EQ(WebAppTestInstallObserver(GetProfile(1)).Wait(), app_id);
   bool is_locally_installed =
       GetRegistrar(GetProfile(1)).IsLocallyInstalled(app_id);
   EXPECT_EQ(is_locally_installed, AreAppsLocallyInstalledBySync());
@@ -152,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, AppFieldsChangeDoesNotSync) {
   info_a.theme_color = SK_ColorBLUE;
   AppId app_id_a = apps_helper::InstallWebApp(GetProfile(0), info_a);
 
-  EXPECT_EQ(WebAppInstallObserver(GetProfile(1)).AwaitNextInstall(), app_id_a);
+  EXPECT_EQ(WebAppTestInstallObserver(GetProfile(1)).Wait(), app_id_a);
 
   EXPECT_EQ(base::UTF8ToUTF16(registrar1.GetAppShortName(app_id_a)),
             info_a.title);
@@ -185,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, AppFieldsChangeDoesNotSync) {
   infoC.start_url = GURL("http://www.notchromium.org/");
   AppId app_id_c = apps_helper::InstallWebApp(GetProfile(0), infoC);
   EXPECT_NE(app_id_a, app_id_c);
-  EXPECT_EQ(WebAppInstallObserver(GetProfile(1)).AwaitNextInstall(), app_id_c);
+  EXPECT_EQ(WebAppTestInstallObserver(GetProfile(1)).Wait(), app_id_c);
 
   // After sync we should not see the metadata update in Profile 1.
   EXPECT_EQ(base::UTF8ToUTF16(registrar1.GetAppShortName(app_id_a)),
@@ -205,7 +205,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncFaviconOnly) {
   Profile* sourceProfile = GetProfile(0);
   Profile* destProfile = GetProfile(1);
 
-  WebAppInstallObserver destInstallObserver(destProfile);
+  WebAppTestInstallObserver destInstallObserver(destProfile);
 
   // Install favicon only page as web app.
   AppId app_id;
@@ -214,9 +214,9 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncFaviconOnly) {
     ui_test_utils::NavigateToURL(
         browser, embedded_test_server()->GetURL("/web_apps/favicon_only.html"));
     chrome::SetAutoAcceptWebAppDialogForTesting(true, true);
-    WebAppInstallObserver installObserver(sourceProfile);
+    WebAppTestInstallObserver installObserver(sourceProfile);
     chrome::ExecuteCommand(browser, IDC_CREATE_SHORTCUT);
-    app_id = installObserver.AwaitNextInstall();
+    app_id = installObserver.Wait();
     chrome::SetAutoAcceptWebAppDialogForTesting(false, false);
     chrome::CloseWindow(browser);
   }
@@ -228,7 +228,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncFaviconOnly) {
   EXPECT_FALSE(icon_infos[0].square_size_px.has_value());
 
   // Wait for app to sync across.
-  AppId synced_app_id = destInstallObserver.AwaitNextInstall();
+  AppId synced_app_id = destInstallObserver.Wait();
   EXPECT_EQ(synced_app_id, app_id);
   EXPECT_EQ(GetRegistrar(destProfile).GetAppShortName(app_id), "Favicon only");
   icon_infos = GetRegistrar(destProfile).GetAppIconInfos(app_id);
@@ -244,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncUsingStartUrlFallback) {
   Profile* source_profile = GetProfile(0);
   Profile* dest_profile = GetProfile(1);
 
-  WebAppInstallObserver dest_install_observer(dest_profile);
+  WebAppTestInstallObserver dest_install_observer(dest_profile);
 
   // Install app with name.
   WebApplicationInfo info;
@@ -257,7 +257,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncUsingStartUrlFallback) {
             info.start_url);
 
   // Wait for app to sync across.
-  AppId synced_app_id = dest_install_observer.AwaitNextInstall();
+  AppId synced_app_id = dest_install_observer.Wait();
   ASSERT_EQ(synced_app_id, app_id);
   EXPECT_EQ(GetRegistrar(dest_profile).GetAppShortName(app_id), "Test app");
   EXPECT_EQ(GetRegistrar(dest_profile).GetAppStartUrl(app_id), info.start_url);
@@ -273,7 +273,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncUsingNameFallback) {
   Profile* source_profile = GetProfile(0);
   Profile* dest_profile = GetProfile(1);
 
-  WebAppInstallObserver dest_install_observer(dest_profile);
+  WebAppTestInstallObserver dest_install_observer(dest_profile);
 
   // Install app with name.
   WebApplicationInfo info;
@@ -285,7 +285,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncUsingNameFallback) {
             "Correct App Name");
 
   // Wait for app to sync across.
-  AppId synced_app_id = dest_install_observer.AwaitNextInstall();
+  AppId synced_app_id = dest_install_observer.Wait();
   EXPECT_EQ(synced_app_id, app_id);
   EXPECT_EQ(GetRegistrar(dest_profile).GetAppShortName(app_id),
             "Correct App Name");
@@ -299,7 +299,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncWithoutUsingNameFallback) {
   Profile* source_profile = GetProfile(0);
   Profile* dest_profile = GetProfile(1);
 
-  WebAppInstallObserver dest_install_observer(dest_profile);
+  WebAppTestInstallObserver dest_install_observer(dest_profile);
 
   // Install app with name.
   WebApplicationInfo info;
@@ -310,7 +310,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncWithoutUsingNameFallback) {
             "Incorrect App Name");
 
   // Wait for app to sync across.
-  AppId synced_app_id = dest_install_observer.AwaitNextInstall();
+  AppId synced_app_id = dest_install_observer.Wait();
   EXPECT_EQ(synced_app_id, app_id);
   EXPECT_EQ(GetRegistrar(dest_profile).GetAppShortName(app_id),
             "Basic web app");
@@ -322,7 +322,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncUsingIconUrlFallback) {
   Profile* source_profile = GetProfile(0);
   Profile* dest_profile = GetProfile(1);
 
-  WebAppInstallObserver dest_install_observer(dest_profile);
+  WebAppTestInstallObserver dest_install_observer(dest_profile);
 
   // Install app with name.
   WebApplicationInfo info;
@@ -339,7 +339,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncUsingIconUrlFallback) {
   EXPECT_EQ(GetRegistrar(source_profile).GetAppShortName(app_id), "Blue icon");
 
   // Wait for app to sync across.
-  AppId synced_app_id = dest_install_observer.AwaitNextInstall();
+  AppId synced_app_id = dest_install_observer.Wait();
   EXPECT_EQ(synced_app_id, app_id);
   EXPECT_EQ(GetRegistrar(dest_profile).GetAppShortName(app_id), "Blue icon");
 

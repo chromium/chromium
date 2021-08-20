@@ -38,7 +38,7 @@
 #include "chrome/browser/web_applications/components/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/os_integration_manager.h"
-#include "chrome/browser/web_applications/test/web_app_install_observer.h"
+#include "chrome/browser/web_applications/test/web_app_test_install_observer.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -2294,11 +2294,11 @@ class WebAppInstallForceListPolicyTest : public ExtensionPolicyTest {
 IN_PROC_BROWSER_TEST_F(WebAppInstallForceListPolicyTest, StartUpInstallation) {
   const web_app::WebAppRegistrar& registrar =
       web_app::WebAppProvider::GetForTest(browser()->profile())->registrar();
-  web_app::WebAppInstallObserver install_observer(browser()->profile());
+  web_app::WebAppTestInstallObserver install_observer(browser()->profile());
   absl::optional<web_app::AppId> app_id =
       registrar.FindAppWithUrlInScope(policy_app_url_);
   if (!app_id)
-    app_id = install_observer.AwaitNextInstall();
+    app_id = install_observer.Wait();
   EXPECT_EQ(policy_app_url_, registrar.GetAppStartUrl(*app_id));
 }
 
@@ -2325,11 +2325,11 @@ IN_PROC_BROWSER_TEST_F(
     StartUpInstallationPWAFallbackName) {
   const web_app::WebAppRegistrar& registrar =
       web_app::WebAppProvider::GetForTest(browser()->profile())->registrar();
-  web_app::WebAppInstallObserver install_observer(browser()->profile());
+  web_app::WebAppTestInstallObserver install_observer(browser()->profile());
   absl::optional<web_app::AppId> app_id =
       registrar.FindAppWithUrlInScope(policy_app_url_);
   if (!app_id)
-    app_id = install_observer.AwaitNextInstall();
+    app_id = install_observer.Wait();
   EXPECT_EQ(policy_app_url_, registrar.GetAppStartUrl(*app_id));
 
   // We specifically don't expect the fallback name to be used for a PWA
@@ -2356,11 +2356,11 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallForceListPolicySAATest,
                        StartUpInstallationSAA) {
   const web_app::WebAppRegistrar& registrar =
       web_app::WebAppProvider::GetForTest(browser()->profile())->registrar();
-  web_app::WebAppInstallObserver install_observer(browser()->profile());
+  web_app::WebAppTestInstallObserver install_observer(browser()->profile());
   absl::optional<web_app::AppId> app_id =
       registrar.FindAppWithUrlInScope(policy_app_url_);
   if (!app_id)
-    app_id = install_observer.AwaitNextInstall();
+    app_id = install_observer.Wait();
   EXPECT_EQ(policy_app_url_, registrar.GetAppStartUrl(*app_id));
   EXPECT_NE(fallback_app_name_, registrar.GetAppShortName(*app_id));
 }
@@ -2384,11 +2384,11 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallForceListPolicyWithAppFallbackNameSAATest,
                        StartUpInstallationSAAFallbackName) {
   const web_app::WebAppRegistrar& registrar =
       web_app::WebAppProvider::GetForTest(browser()->profile())->registrar();
-  web_app::WebAppInstallObserver install_observer(browser()->profile());
+  web_app::WebAppTestInstallObserver install_observer(browser()->profile());
   absl::optional<web_app::AppId> app_id =
       registrar.FindAppWithUrlInScope(policy_app_url_);
   if (!app_id)
-    app_id = install_observer.AwaitNextInstall();
+    app_id = install_observer.Wait();
   EXPECT_EQ(policy_app_url_, registrar.GetAppStartUrl(*app_id));
   EXPECT_EQ(fallback_app_name_, registrar.GetAppShortName(*app_id));
 }
@@ -2416,11 +2416,11 @@ IN_PROC_BROWSER_TEST_F(
     StartUpInstallationPlaceholderFallbackName) {
   const web_app::WebAppRegistrar& registrar =
       web_app::WebAppProvider::GetForTest(browser()->profile())->registrar();
-  web_app::WebAppInstallObserver install_observer(browser()->profile());
+  web_app::WebAppTestInstallObserver install_observer(browser()->profile());
   absl::optional<web_app::AppId> app_id =
       registrar.FindAppWithUrlInScope(policy_app_url_);
   if (!app_id)
-    app_id = install_observer.AwaitNextInstall();
+    app_id = install_observer.Wait();
   EXPECT_EQ(policy_app_url_, registrar.GetAppStartUrl(*app_id));
   EXPECT_EQ(fallback_app_name_, registrar.GetAppShortName(*app_id));
 

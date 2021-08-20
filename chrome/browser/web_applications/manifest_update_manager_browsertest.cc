@@ -32,8 +32,8 @@
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_installation.h"
-#include "chrome/browser/web_applications/test/web_app_install_observer.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
+#include "chrome/browser/web_applications/test/web_app_test_registry_observer_adapter.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
@@ -726,7 +726,8 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
 
   // Check that OnWebAppInstalled and OnWebAppWillBeUninstalled are not called
   // if in-place web app update happens.
-  WebAppInstallObserver install_observer(&GetProvider().registrar());
+  WebAppTestRegistryObserverAdapter install_observer(
+      &GetProvider().registrar());
   install_observer.SetWebAppInstalledDelegate(
       base::BindLambdaForTesting([](const AppId& app_id) { NOTREACHED(); }));
   install_observer.SetWebAppUninstalledDelegate(

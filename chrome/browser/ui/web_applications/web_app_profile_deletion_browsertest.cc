@@ -9,7 +9,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
-#include "chrome/browser/web_applications/test/web_app_install_observer.h"
+#include "chrome/browser/web_applications/test/web_app_test_registry_observer_adapter.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "content/public/test/browser_test.h"
@@ -37,7 +37,7 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileDeletionBrowserTest,
   const AppId app_id = InstallPWA(app_url);
 
   base::RunLoop run_loop;
-  WebAppInstallObserver observer(&registrar());
+  WebAppTestRegistryObserverAdapter observer(&registrar());
   observer.SetWebAppProfileWillBeDeletedDelegate(
       base::BindLambdaForTesting([&](const AppId& app_to_be_uninstalled) {
         EXPECT_EQ(app_to_be_uninstalled, app_id);
