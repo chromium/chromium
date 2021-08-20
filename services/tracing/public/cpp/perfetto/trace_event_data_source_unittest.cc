@@ -74,11 +74,17 @@ constexpr uint32_t kClockIdAbsolute = 64;
 constexpr uint32_t kClockIdIncremental = 65;
 #endif
 
-class TraceEventDataSourceTest : public TracingUnitTest {
+class TraceEventDataSourceTest
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+    : public testing::Test
+#else
+    : public TracingUnitTest
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+{
  public:
   void SetUp() override {
-    TracingUnitTest::SetUp();
 #if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+    TracingUnitTest::SetUp();
     TraceEventDataSource::GetInstance()->RegisterStartupHooks();
     // TODO(eseckler): Initialize the entire perfetto client library instead.
     perfetto::internal::TrackRegistry::InitializeInstance();
@@ -128,7 +134,9 @@ class TraceEventDataSourceTest : public TracingUnitTest {
     base::trace_event::TraceLog::GetInstance()->set_process_name(
         old_process_name_);
 
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     TracingUnitTest::TearDown();
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
     // Destroy after task environment shuts down so that no other threads try to
     // add trace events.
@@ -815,6 +823,7 @@ class TraceEventDataSourceTest : public TracingUnitTest {
 
  protected:
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  base::test::TaskEnvironment task_environment_;
   base::test::TracingEnvironment tracing_environment_;
   std::vector<std::unique_ptr<perfetto::protos::TracePacket>>
       finalized_packets_;
@@ -2075,7 +2084,9 @@ TEST_F(TraceEventDataSourceTest, MAYBE_StartupTracingTimeout) {
 
   // Make sure that the TraceWriter destruction task posted from the ThreadPool
   // task's flush is executed.
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   RunUntilIdle();
+#endif
 }
 
 TEST_F(TraceEventDataSourceTest, TypedArgumentsTracingOff) {

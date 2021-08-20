@@ -94,6 +94,14 @@ class BASE_EXPORT TraceLog :
   // i.e. filters can only be enabled if not previously enabled.
   void SetEnabled(const TraceConfig& trace_config, uint8_t modes_to_enable);
 
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  // Enable tracing using a customized Perfetto trace config. This allows, for
+  // example, enabling additional data sources and enabling protobuf output
+  // instead of the legacy JSON trace format.
+  void SetEnabled(const TraceConfig& trace_config,
+                  const perfetto::TraceConfig& perfetto_config);
+#endif
+
   // TODO(ssid): Remove the default SetEnabled and IsEnabled. They should take
   // Mode as argument.
 
@@ -419,6 +427,10 @@ class BASE_EXPORT TraceLog :
   void SetTraceBufferForTesting(std::unique_ptr<TraceBuffer> trace_buffer);
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  void InitializePerfettoIfNeeded();
+  void SetEnabledImpl(const TraceConfig& trace_config,
+                      const perfetto::TraceConfig& perfetto_config);
+
   // perfetto::TrackEventSessionObserver implementation.
   void OnSetup(const perfetto::DataSourceBase::SetupArgs&) override;
   void OnStart(const perfetto::DataSourceBase::StartArgs&) override;
@@ -616,10 +628,12 @@ class BASE_EXPORT TraceLog :
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   std::unique_ptr<::base::tracing::PerfettoPlatform> perfetto_platform_;
   std::unique_ptr<perfetto::TracingSession> tracing_session_;
+  perfetto::TraceConfig perfetto_config_;
 #if !defined(OS_NACL)
   std::unique_ptr<perfetto::trace_processor::TraceProcessorStorage>
       trace_processor_;
   std::unique_ptr<JsonStringOutputWriter> json_output_writer_;
+  OutputCallback proto_output_callback_;
 #endif  // !defined(OS_NACL)
 #endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
