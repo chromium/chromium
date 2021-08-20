@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
@@ -451,22 +450,7 @@ std::u16string AppBrowserController::GetTitle() const {
 
   content::NavigationEntry* entry =
       web_contents->GetController().GetVisibleEntry();
-  std::u16string raw_title = entry ? entry->GetTitle() : std::u16string();
-
-  if (!base::FeatureList::IsEnabled(features::kPrefixWebAppWindowsWithAppName))
-    return raw_title;
-
-  std::u16string app_name =
-      base::UTF8ToUTF16(WebAppProvider::Get(browser()->profile())
-                            ->registrar()
-                            .GetAppShortName(app_id()));
-  if (base::StartsWith(raw_title, app_name)) {
-    return raw_title;
-  } else if (raw_title.empty()) {
-    return app_name;
-  } else {
-    return base::StrCat({app_name, u" - ", raw_title});
-  }
+  return entry ? entry->GetTitle() : std::u16string();
 }
 
 void AppBrowserController::OnTabStripModelChanged(

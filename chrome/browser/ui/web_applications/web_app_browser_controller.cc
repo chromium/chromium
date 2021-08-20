@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
 
 #include "base/callback_helpers.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/web_contents.h"
@@ -235,7 +237,20 @@ std::u16string WebAppBrowserController::GetTitle() const {
     return base::UTF8ToUTF16(registrar().GetAppShortName(app_id()));
   }
 
-  return AppBrowserController::GetTitle();
+  const std::u16string raw_title = AppBrowserController::GetTitle();
+
+  if (!base::FeatureList::IsEnabled(features::kPrefixWebAppWindowsWithAppName))
+    return raw_title;
+
+  const std::u16string app_name =
+      base::UTF8ToUTF16(provider_.registrar().GetAppShortName(app_id()));
+  if (base::StartsWith(raw_title, app_name)) {
+    return raw_title;
+  } else if (raw_title.empty()) {
+    return app_name;
+  } else {
+    return base::StrCat({app_name, u" - ", raw_title});
+  }
 }
 
 std::u16string WebAppBrowserController::GetAppShortName() const {
