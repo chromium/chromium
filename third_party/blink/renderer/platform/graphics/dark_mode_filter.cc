@@ -203,12 +203,16 @@ ScopedDarkModeElementRoleOverride::ScopedDarkModeElementRoleOverride(
     GraphicsContext* graphics_context,
     DarkModeFilter::ElementRole role)
     : graphics_context_(graphics_context) {
-  previous_role_override_ =
-      graphics_context_->GetDarkModeFilter()->role_override_;
-  graphics_context_->GetDarkModeFilter()->role_override_ = role;
+  if (!graphics_context_->IsDarkModeEnabled())
+    return;
+  DarkModeFilter* filter = graphics_context_->GetDarkModeFilter();
+  previous_role_override_ = filter->role_override_;
+  filter->role_override_ = role;
 }
 
 ScopedDarkModeElementRoleOverride::~ScopedDarkModeElementRoleOverride() {
+  if (!graphics_context_->IsDarkModeEnabled())
+    return;
   graphics_context_->GetDarkModeFilter()->role_override_ =
       previous_role_override_;
 }

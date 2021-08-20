@@ -158,11 +158,11 @@ void GraphicsContext::CopyConfigFrom(GraphicsContext& other) {
 }
 
 DarkModeFilter* GraphicsContext::GetDarkModeFilter() {
+  DCHECK(IsDarkModeEnabled());
   if (!dark_mode_filter_) {
     dark_mode_filter_ =
         std::make_unique<DarkModeFilter>(GetCurrentDarkModeSettings());
   }
-
   return dark_mode_filter_.get();
 }
 
