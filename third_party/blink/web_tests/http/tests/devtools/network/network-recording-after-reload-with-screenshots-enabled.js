@@ -19,7 +19,7 @@
   TestRunner.resourceTreeModel.reloadPage();
 
   function checkRecording() {
-    TestRunner.addResult(UI.panels.network.networkLogView._recording ? 'Still recording' : 'Not recording');
+    TestRunner.addResult(UI.panels.network.networkLogView.recording ? 'Still recording' : 'Not recording');
 
     TestRunner.completeTest();
   }
