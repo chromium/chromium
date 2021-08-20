@@ -36,6 +36,7 @@
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/pattern.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -793,6 +794,26 @@ int CountItemsInDirectory(const FilePath& dir) {
   return items;
 }
 
+// Truncates a snippet in the middle to the given byte limit. byte_limit should
+// be at least 30.
+std::string TruncateSnippet(const base::StringPiece snippet,
+                            size_t byte_limit) {
+  if (snippet.length() <= byte_limit) {
+    return std::string(snippet);
+  }
+  std::string truncation_message =
+      StringPrintf("\n<truncated (%zu bytes)>\n", snippet.length());
+  if (truncation_message.length() > byte_limit) {
+    // Fail gracefully.
+    return truncation_message;
+  }
+  size_t remaining_limit = byte_limit - truncation_message.length();
+  size_t first_half = remaining_limit / 2;
+  return base::StrCat(
+      {snippet.substr(0, first_half), truncation_message,
+       snippet.substr(snippet.length() - (remaining_limit - first_half))});
+}
+
 }  // namespace
 
 const char kGTestBreakOnFailure[] = "gtest_break_on_failure";
@@ -1146,14 +1167,8 @@ void TestLauncher::OnTestFinished(const TestResult& original_result) {
     if (result.status == TestResult::TEST_SUCCESS)
       result.status = TestResult::TEST_EXCESSIVE_OUTPUT;
 
-    // Keep the top and bottom of the log and truncate the middle part.
     result.output_snippet =
-        result.output_snippet.substr(0, kOutputSnippetBytesLimit / 2) + "\n" +
-        StringPrintf("<truncated (%zu bytes)>\n",
-                     result.output_snippet.length()) +
-        result.output_snippet.substr(result.output_snippet.length() -
-                                     kOutputSnippetBytesLimit / 2) +
-        "\n";
+        TruncateSnippetFocused(result.output_snippet, kOutputSnippetBytesLimit);
   }
 
   bool print_snippet = false;
@@ -2061,6 +2076,65 @@ std::string GetTestOutputSnippet(const TestResult& result,
     snippet = full_output.substr(run_pos, end_pos - run_pos);
 
   return snippet;
+}
+
+std::string TruncateSnippetFocused(const base::StringPiece snippet,
+                                   size_t byte_limit) {
+  // Find the start of anything that looks like a fatal log message.
+  // We want to preferentially preserve these from truncation as we
+  // run extraction of fatal test errors from snippets in result_adapter
+  // to populate failure reasons in ResultDB. It is also convenient for
+  // the user to see them.
+  // Refer to LogMessage::Init in base/logging[_platform].cc for patterns.
+  size_t fatal_message_pos =
+      std::min(snippet.find("FATAL:"), snippet.find("FATAL "));
+
+  size_t fatal_message_start = 0;
+  size_t fatal_message_end = 0;
+  if (fatal_message_pos != std::string::npos) {
+    // Find the line-endings before and after the fatal message.
+    size_t start_pos = snippet.rfind("\n", fatal_message_pos);
+    if (start_pos != std::string::npos) {
+      fatal_message_start = start_pos;
+    }
+    size_t end_pos = snippet.find("\n", fatal_message_pos);
+    if (end_pos != std::string::npos) {
+      // Include the new-line character.
+      fatal_message_end = end_pos + 1;
+    } else {
+      fatal_message_end = snippet.length();
+    }
+  }
+  // Limit fatal message length to half the snippet byte quota. This ensures
+  // we have space for some context at the beginning and end of the snippet.
+  fatal_message_end =
+      std::min(fatal_message_end, fatal_message_start + (byte_limit / 2));
+
+  // Distribute remaining bytes between start and end of snippet.
+  // The split is either even, or if one is small enough to be displayed
+  // without truncation, it gets displayed in full and the other split gets
+  // the remaining bytes.
+  size_t remaining_bytes =
+      byte_limit - (fatal_message_end - fatal_message_start);
+  size_t start_split_bytes;
+  size_t end_split_bytes;
+  if (fatal_message_start < remaining_bytes / 2) {
+    start_split_bytes = fatal_message_start;
+    end_split_bytes = remaining_bytes - fatal_message_start;
+  } else if ((snippet.length() - fatal_message_end) < remaining_bytes / 2) {
+    start_split_bytes =
+        remaining_bytes - (snippet.length() - fatal_message_end);
+    end_split_bytes = (snippet.length() - fatal_message_end);
+  } else {
+    start_split_bytes = remaining_bytes / 2;
+    end_split_bytes = remaining_bytes - start_split_bytes;
+  }
+  return base::StrCat(
+      {TruncateSnippet(snippet.substr(0, fatal_message_start),
+                       start_split_bytes),
+       snippet.substr(fatal_message_start,
+                      fatal_message_end - fatal_message_start),
+       TruncateSnippet(snippet.substr(fatal_message_end), end_split_bytes)});
 }
 
 }  // namespace base

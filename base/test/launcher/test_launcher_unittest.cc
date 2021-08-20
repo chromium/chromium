@@ -9,13 +9,17 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/process/launch.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/test/launcher/test_launcher.h"
 #include "base/test/launcher/test_launcher_test_utils.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/multiprocess_test.h"
+#include "base/test/scoped_logging_settings.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -933,6 +937,204 @@ TEST(TestLauncherTools, GetTestOutputSnippetTest) {
   EXPECT_EQ(GetTestOutputSnippet(result, output),
             "[ RUN      ] TestCase.ThirdTest\n"
             "[  SKIPPED ] TestCase.ThirdTest (0 ms)\n");
+}
+
+void CheckTruncatationPreservesMessage(std::string message) {
+  // Ensure the inserted message matches the expected pattern.
+  constexpr char kExpected[] = R"(FATAL.*message\n)";
+  ASSERT_THAT(message, ::testing::ContainsRegex(kExpected));
+
+  const std::string snippet =
+      base::StrCat({"[ RUN      ] SampleTestSuite.SampleTestName\n"
+                    "Padding log message added for testing purposes\n"
+                    "Padding log message added for testing purposes\n"
+                    "Padding log message added for testing purposes\n"
+                    "Padding log message added for testing purposes\n"
+                    "Padding log message added for testing purposes\n"
+                    "Padding log message added for testing purposes\n",
+                    message,
+                    "Padding log message added for testing purposes\n"
+                    "Padding log message added for testing purposes\n"
+                    "Padding log message added for testing purposes\n"
+                    "Padding log message added for testing purposes\n"
+                    "Padding log message added for testing purposes\n"
+                    "Padding log message added for testing purposes\n"});
+
+  // Strip the stack trace off the end of message.
+  size_t line_end_pos = message.find("\n");
+  std::string first_line = message.substr(0, line_end_pos + 1);
+
+  const std::string result = TruncateSnippetFocused(snippet, 300);
+  EXPECT_TRUE(result.find(first_line) > 0);
+  EXPECT_EQ(result.length(), 300UL);
+}
+
+void MatchesFatalMessagesTest() {
+  // Use a static because only captureless lambdas can be converted to a
+  // function pointer for SetLogMessageHandler().
+  static base::NoDestructor<std::string> log_string;
+  logging::SetLogMessageHandler([](int severity, const char* file, int line,
+                                   size_t start,
+                                   const std::string& str) -> bool {
+    *log_string = str;
+    return true;
+  });
+  // Different Chrome test suites have different settings for their logs.
+  // E.g. unit tests may not show the process ID (as they are single process),
+  // whereas browser tests usually do (as they are multi-process). This
+  // affects how log messages are formatted and hence how the log criticality
+  // i.e. "FATAL", appears in the log message. We test the two extremes --
+  // all process IDs, timestamps present, and all not present. We also test
+  // the presence/absence of an extra logging prefix.
+  {
+    // Process ID, Thread ID, Timestamp and Tickcount.
+    logging::SetLogItems(true, true, true, true);
+    logging::SetLogPrefix(nullptr);
+    LOG(FATAL) << "message";
+    CheckTruncatationPreservesMessage(*log_string);
+  }
+  {
+    logging::SetLogItems(false, false, false, false);
+    logging::SetLogPrefix(nullptr);
+    LOG(FATAL) << "message";
+    CheckTruncatationPreservesMessage(*log_string);
+  }
+  {
+    // Process ID, Thread ID, Timestamp and Tickcount.
+    logging::SetLogItems(true, true, true, true);
+    logging::SetLogPrefix("my_log_prefix");
+    LOG(FATAL) << "message";
+    CheckTruncatationPreservesMessage(*log_string);
+  }
+  {
+    logging::SetLogItems(false, false, false, false);
+    logging::SetLogPrefix("my_log_prefix");
+    LOG(FATAL) << "message";
+    CheckTruncatationPreservesMessage(*log_string);
+  }
+}
+
+// Validates TestSnippetFocused correctly identifies fatal messages to
+// retain during truncation.
+TEST(TestLauncherTools, TruncateSnippetFocusedMatchesFatalMessagesTest) {
+  logging::ScopedLoggingSettings scoped_logging_settings;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  scoped_logging_settings.SetLogFormat(logging::LogFormat::LOG_FORMAT_SYSLOG);
+#endif
+  MatchesFatalMessagesTest();
+}
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Validates TestSnippetFocused correctly identifies fatal messages to
+// retain during truncation, for ChromeOS Ash.
+TEST(TestLauncherTools, TruncateSnippetFocusedMatchesFatalMessagesCrosAshTest) {
+  logging::ScopedLoggingSettings scoped_logging_settings;
+  scoped_logging_settings.SetLogFormat(logging::LogFormat::LOG_FORMAT_CHROME);
+  MatchesFatalMessagesTest();
+}
+#endif
+
+// Validate TestSnippetFocused truncates snippets correctly, regardless of
+// whether fatal messages appear at the start, middle or end of the snippet.
+TEST(TestLauncherTools, TruncateSnippetFocusedTest) {
+  // Test where FATAL message appears in the start of the log.
+  const std::string snippet =
+      "[ RUN      ] "
+      "EndToEndTests/"
+      "EndToEndTest.WebTransportSessionUnidirectionalStreamSentEarly/"
+      "draft29_QBIC\n"
+      "[26219:26368:FATAL:tls_handshaker.cc(293)] 1-RTT secret(s) not set "
+      "yet.\n"
+      "#0 0x55619ad1fcdb in backtrace "
+      "/b/s/w/ir/cache/builder/src/third_party/llvm/compiler-rt/lib/asan/../"
+      "sanitizer_common/sanitizer_common_interceptors.inc:4205:13\n"
+      "#1 0x5561a6bdf519 in base::debug::CollectStackTrace(void**, unsigned "
+      "long) ./../../base/debug/stack_trace_posix.cc:845:39\n"
+      "#2 0x5561a69a1293 in StackTrace "
+      "./../../base/debug/stack_trace.cc:200:12\n"
+      "...\n";
+  const std::string result = TruncateSnippetFocused(snippet, 300);
+  EXPECT_EQ(
+      result,
+      "[ RUN      ] EndToEndTests/EndToEndTest.WebTransportSessionUnidirection"
+      "alStreamSentEarly/draft29_QBIC\n"
+      "[26219:26368:FATAL:tls_handshaker.cc(293)] 1-RTT secret(s) not set "
+      "yet.\n"
+      "#0 0x55619ad1fcdb in backtrace /b/s/w/ir/cache/bui\n"
+      "<truncated (358 bytes)>\n"
+      "Trace ./../../base/debug/stack_trace.cc:200:12\n"
+      "...\n");
+  EXPECT_EQ(result.length(), 300UL);
+
+  // Test where FATAL message appears in the middle of the log.
+  const std::string snippet_two =
+      "[ RUN      ] NetworkingPrivateApiTest.CreateSharedNetwork\n"
+      "Padding log information added for testing purposes\n"
+      "Padding log information added for testing purposes\n"
+      "Padding log information added for testing purposes\n"
+      "FATAL extensions_unittests[12666:12666]: [managed_network_configuration"
+      "_handler_impl.cc(525)] Check failed: !guid_str && !guid_str->empty().\n"
+      "#0 0x562f31dba779 base::debug::CollectStackTrace()\n"
+      "#1 0x562f31cdf2a3 base::debug::StackTrace::StackTrace()\n"
+      "#2 0x562f31cf4380 logging::LogMessage::~LogMessage()\n"
+      "#3 0x562f31cf4d3e logging::LogMessage::~LogMessage()\n";
+  const std::string result_two = TruncateSnippetFocused(snippet_two, 300);
+  EXPECT_EQ(
+      result_two,
+      "[ RUN      ] NetworkingPriv\n"
+      "<truncated (210 bytes)>\n"
+      " added for testing purposes\n"
+      "FATAL extensions_unittests[12666:12666]: [managed_network_configuration"
+      "_handler_impl.cc(525)] Check failed: !guid_str && !guid_str->empty().\n"
+      "#0 0x562f31dba779 base::deb\n"
+      "<truncated (213 bytes)>\n"
+      ":LogMessage::~LogMessage()\n");
+  EXPECT_EQ(result_two.length(), 300UL);
+
+  // Test where FATAL message appears at end of the log.
+  const std::string snippet_three =
+      "[ RUN      ] All/PDFExtensionAccessibilityTreeDumpTest.Highlights/"
+      "linux\n"
+      "[6741:6741:0716/171816.818448:ERROR:power_monitor_device_source_stub.cc"
+      "(11)] Not implemented reached in virtual bool base::PowerMonitorDevice"
+      "Source::IsOnBatteryPower()\n"
+      "[6741:6741:0716/171816.818912:INFO:content_main_runner_impl.cc(1082)]"
+      " Chrome is running in full browser mode.\n"
+      "libva error: va_getDriverName() failed with unknown libva error,driver"
+      "_name=(null)\n"
+      "[6741:6741:0716/171817.688633:FATAL:agent_scheduling_group_host.cc(290)"
+      "] Check failed: message->routing_id() != MSG_ROUTING_CONTROL "
+      "(2147483647 vs. 2147483647)\n";
+  const std::string result_three = TruncateSnippetFocused(snippet_three, 300);
+  EXPECT_EQ(
+      result_three,
+      "[ RUN      ] All/PDFExtensionAccessibilityTreeDumpTest.Hi\n"
+      "<truncated (432 bytes)>\n"
+      "Name() failed with unknown libva error,driver_name=(null)\n"
+      "[6741:6741:0716/171817.688633:FATAL:agent_scheduling_group_host.cc(290)"
+      "] Check failed: message->routing_id() != MSG_ROUTING_CONTROL "
+      "(2147483647 vs. 2147483647)\n");
+  EXPECT_EQ(result_three.length(), 300UL);
+
+  // Test where FATAL message does not appear.
+  const std::string snippet_four =
+      "[ RUN      ] All/PassingTest/linux\n"
+      "Padding log line 1 added for testing purposes\n"
+      "Padding log line 2 added for testing purposes\n"
+      "Padding log line 3 added for testing purposes\n"
+      "Padding log line 4 added for testing purposes\n"
+      "Padding log line 5 added for testing purposes\n"
+      "Padding log line 6 added for testing purposes\n";
+  const std::string result_four = TruncateSnippetFocused(snippet_four, 300);
+  EXPECT_EQ(result_four,
+            "[ RUN      ] All/PassingTest/linux\n"
+            "Padding log line 1 added for testing purposes\n"
+            "Padding log line 2 added for testing purposes\n"
+            "Padding lo\n<truncated (311 bytes)>\n"
+            "Padding log line 4 added for testing purposes\n"
+            "Padding log line 5 added for testing purposes\n"
+            "Padding log line 6 added for testing purposes\n");
+  EXPECT_EQ(result_four.length(), 300UL);
 }
 
 }  // namespace

@@ -332,6 +332,11 @@ size_t NumParallelJobs(unsigned int cores_per_job);
 std::string GetTestOutputSnippet(const TestResult& result,
                                  const std::string& full_output);
 
+// Truncates a snippet to approximately the allowed length, while trying to
+// retain fatal messages. Exposed for testing only.
+std::string TruncateSnippetFocused(const base::StringPiece snippet,
+                                   size_t byte_limit);
+
 }  // namespace base
 
 #endif  // BASE_TEST_LAUNCHER_TEST_LAUNCHER_H_
