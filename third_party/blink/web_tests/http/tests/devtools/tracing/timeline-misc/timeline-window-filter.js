@@ -32,7 +32,7 @@
   TestRunner.completeTest();
 
   function dumpFlameChartRecordsCountForRange(windowLeft, windowRight) {
-    var mainView = timeline.flameChart._mainFlameChart;
+    var mainView = timeline.flameChart.mainFlameChart;
     mainView.muteAnimation = true;
     overviewPane.overviewGrid.setWindow(windowLeft, windowRight);
     mainView.update();

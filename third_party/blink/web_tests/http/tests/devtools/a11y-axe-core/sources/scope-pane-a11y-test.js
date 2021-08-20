@@ -31,7 +31,7 @@
   await AxeCoreTestRunner.runValidation(scopePane.contentElement);
 
   TestRunner.addResult('Expanding the makeClosure closure.');
-  scopePane.treeOutline._rootElement.childAt(1).expand();
+  scopePane.treeOutline.rootElement().childAt(1).expand();
   await TestRunner.addSnifferPromise(ObjectUI.ObjectPropertyTreeElement, 'populateWithProperties');
   TestRunner.addResult(`Scope pane content: ${scopePane.contentElement.deepTextContent()}`);
   TestRunner.addResult(`Running the axe-core linter on the scope pane.`);
