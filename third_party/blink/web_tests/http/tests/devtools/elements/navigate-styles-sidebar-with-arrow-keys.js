@@ -78,7 +78,7 @@
   function waitForStylesRebuild(node) {
     if (node && node.getAttribute("id") === 'foo')
       return;
-    return TestRunner.addSnifferPromise(Elements.StylesSidebarPane.prototype, "_nodeStylesUpdatedForTest").then(waitForStylesRebuild);
+    return TestRunner.addSnifferPromise(Elements.StylesSidebarPane.prototype, "nodeStylesUpdatedForTest").then(waitForStylesRebuild);
   }
 
 

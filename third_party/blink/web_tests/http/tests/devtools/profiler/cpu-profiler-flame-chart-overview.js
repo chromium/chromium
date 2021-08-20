@@ -9,7 +9,7 @@
   await TestRunner.loadModule('profiler'); await TestRunner.loadTestModule('cpu_profiler_test_runner');
 
   var profileAndExpectations = {
-    _profile: {
+    profile: {
       'head': {
         'callFrame': {'functionName': '(root)', 'scriptId': '0', 'url': '', 'lineNumber': 0, 'columnNumber': 0},
         'hitCount': 0,
@@ -855,7 +855,7 @@
   var cpuProfileView = new Profiler.CPUProfileView(profileAndExpectations);
   cpuProfileView.viewSelectComboBox.setSelectedIndex(0);
   cpuProfileView.changeView();
-  var overviewPane = cpuProfileView.flameChart._overviewPane;
+  var overviewPane = cpuProfileView.flameChart.overviewPane;
   console.log(Object.values(overviewPane.calculateDrawData(16)));
   console.log(Object.values(overviewPane.calculateDrawData(8)));
   console.log(Object.values(overviewPane.calculateDrawData(4)));

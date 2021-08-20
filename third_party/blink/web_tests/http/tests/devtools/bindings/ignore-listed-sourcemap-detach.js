@@ -16,7 +16,7 @@
   async function step1() {
     TestRunner.addResult('Evaluating script with source map');
     await TestRunner.evaluateInPageAnonymously(content);
-    await new Promise(resolve => TestRunner.addSniffer(Bindings.CompilerScriptMapping.prototype, "_sourceMapAttachedForTest", resolve));
+    await new Promise(resolve => TestRunner.addSniffer(Bindings.CompilerScriptMapping.prototype, "sourceMapAttachedForTest", resolve));
     await ConsoleTestRunner.waitForConsoleMessagesPromise(1);
 
     await TestRunner.reloadPagePromise();

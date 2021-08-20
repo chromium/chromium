@@ -27,7 +27,7 @@
     };
 
     var mockNode = {
-      _calls: calls,
+      calls: calls,
       dataGrid: options.dataGrid,
       cookie: options.cookie,
       deselect: () => undefined,
@@ -70,7 +70,7 @@
       startEditingNextEditableColumnOfDataGridNode: function() {
         calls.startEditingNextEditableColumnOfDataGridNode.push(arguments);
       },
-      _calls: calls,
+      calls: calls,
     };
 
     return dataGrid;
