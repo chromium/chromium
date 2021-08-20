@@ -92,6 +92,12 @@ extern const base::FeatureParam<base::TimeDelta> kArcVmTrimBackoffTimeMs;
 // regardless of the user's interactions with ARCVM.
 extern const base::FeatureParam<bool> kTrimArcVmOnCriticalPressure;
 
+// If true then we will trim ARCVM's crosvm once on the first moderate (or
+// critical though unlikely) memory pressure after ARCVM boot. The trimming is
+// done regardless of the user's interactions with ARCVM.
+extern const base::FeatureParam<bool>
+    kTrimArcVmOnFirstMemoryPressureAfterArcVmBoot;
+
 struct TrimOnMemoryPressureParams {
   TrimOnMemoryPressureParams();
   TrimOnMemoryPressureParams(const TrimOnMemoryPressureParams& other);
@@ -116,6 +122,7 @@ struct TrimOnMemoryPressureParams {
   base::TimeDelta arcvm_inactivity_time;
   base::TimeDelta arcvm_trim_backoff_time;
   bool trim_arcvm_on_critical_pressure = false;
+  bool trim_arcvm_on_first_memory_pressure_after_arcvm_boot = false;
 };
 
 #if BUILDFLAG(USE_TCMALLOC)
