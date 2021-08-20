@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.webauth.authenticator;
 
 import android.app.Activity;
 import android.app.PendingIntent;
-import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -37,7 +36,6 @@ import com.google.android.gms.fido.fido2.api.common.PublicKeyCredentialType;
 import com.google.android.gms.fido.fido2.api.common.PublicKeyCredentialUserEntity;
 import com.google.android.gms.tasks.Task;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
@@ -66,13 +64,6 @@ class CableAuthenticator {
     private static final int CTAP2_ERR_UNSUPPORTED_OPTION = 0x2D;
     private static final int CTAP2_ERR_NO_CREDENTIALS = 0x2E;
     private static final int CTAP2_ERR_OTHER = 0x7F;
-
-    // sOwnBluetooth is true if this class owns the fact that Bluetooth is enabled and needs to
-    // disable it once complete.
-    private static boolean sOwnBluetooth;
-    // sInstanceCount is the number of instances of this class that have been created and not
-    // closed.
-    private static int sInstanceCount;
 
     private final Context mContext;
     private final CableAuthenticatorUI mUi;
@@ -104,8 +95,6 @@ class CableAuthenticator {
     public CableAuthenticator(Context context, CableAuthenticatorUI ui, long networkContext,
             long registration, byte[] secret, boolean isFcmNotification, UsbAccessory accessory,
             byte[] serverLink, byte[] fcmEvent) {
-        sInstanceCount++;
-
         mContext = context;
         mUi = ui;
         mFCMEvent = fcmEvent;
@@ -452,12 +441,9 @@ class CableAuthenticator {
 
     /**
      * Called to indicate that Bluetooth is now enabled and a cloud message can be processed.
-     *
-     * @param needToDisable true if BLE needs to be disabled afterwards
      */
-    void onBluetoothReady(boolean needToDisable) {
+    void onBluetoothReady() {
         assert mTaskRunner.belongsToCurrentThread();
-        sOwnBluetooth |= needToDisable;
         if (mServerLinkData != null) {
             mHandle = CableAuthenticatorJni.get().startServerLink(this, mServerLinkData);
         } else {
@@ -473,28 +459,6 @@ class CableAuthenticator {
     void close() {
         assert mTaskRunner.belongsToCurrentThread();
         CableAuthenticatorJni.get().stop(mHandle);
-
-        // If Bluetooth was enabled by CableAuthenticatorUI then |sOwnBluetooth| will be true.
-        // However, if another instance has already been created (because the user pressed another
-        // notification while this was still outstanding) then don't disable it yet.
-        sInstanceCount--;
-        if (sOwnBluetooth) {
-            if (sInstanceCount == 0) {
-                if (BuildInfo.isAtLeastS()) {
-                    // It's not possible to disable Bluetooth on Android 12 without another
-                    // permission prompt.
-                    Log.i(TAG, "not trying to disable Bluetooth on Android 12");
-                } else {
-                    Log.i(TAG, "disabling Bluetooth");
-                    BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
-                    adapter.disable();
-                }
-
-                sOwnBluetooth = false;
-            } else {
-                Log.i(TAG, "not disabling Bluetooth yet because other instances exist");
-            }
-        }
     }
 
     String getName() {

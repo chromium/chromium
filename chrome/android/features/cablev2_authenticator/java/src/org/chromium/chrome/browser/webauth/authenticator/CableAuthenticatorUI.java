@@ -129,14 +129,6 @@ public class CableAuthenticatorUI
     private String mPendingQRCode;
     private boolean mPendingShouldLink;
 
-    // This is true if we enabled Bluetooth and thus need to disable it once
-    // complete. This is only set while a Bluetooth permission prompt is
-    // outstanding, otherwise the value is passed around as a parameter.
-    // (A permission prompt is only shown on Android >=12, and on Android >=12
-    // it's not possible to disable Bluetooth. But we continue to accurately
-    // track this boolean in case that changes.)
-    private boolean mNeedToDisableBluetooth;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         // This code should not be reachable on older Android versions.
@@ -263,11 +255,6 @@ public class CableAuthenticatorUI
 
         if (mState == State.ENABLE_BLUETOOTH) {
             v = inflater.inflate(R.layout.cablev2_ble_enable, container, false);
-            if (BuildInfo.isAtLeastS()) {
-                // Don't claim that Bluetooth will be switched off afterwards on Android 12 and
-                // later because disabling Bluetooth requires an extra permission prompt.
-                ((TextView) v.findViewById(R.id.cablev2_ble_enable_body)).setText("");
-            }
             mSpinnerView = createSpinnerScreen(inflater, container);
         } else if (mState == State.ERROR) {
             fillOutErrorUI(mErrorCode);
@@ -319,29 +306,29 @@ public class CableAuthenticatorUI
                 }
             }, BLE_SCREEN_DELAY_SECS * 1000);
         } else if (mState == State.BLUETOOTH_PERMISSION) {
-            onBluetoothEnabled(/*needToDisableBluetooth=*/false);
+            onBluetoothEnabled();
         }
     }
 
     // Called when the Bluetooth adapter has been enabled, or was already enabled.
-    private void onBluetoothEnabled(boolean needToDisableBluetooth) {
+    private void onBluetoothEnabled() {
         // In Android 12 and above there is a new BLUETOOTH_ADVERTISE runtime permission.
         if (BuildInfo.isAtLeastS()) {
-            maybeGetBluetoothPermission(needToDisableBluetooth);
+            maybeGetBluetoothPermission();
             return;
         }
 
-        onHaveBluetoothPermission(needToDisableBluetooth);
+        onHaveBluetoothPermission();
     }
 
     // Called on Android 12 or later after the Bluetooth adaptor is enabled.
     @TargetApi(31)
-    private void maybeGetBluetoothPermission(boolean needToDisableBluetooth) {
+    private void maybeGetBluetoothPermission() {
         mState = State.BLUETOOTH_PERMISSION;
         final String advertise = permission.BLUETOOTH_ADVERTISE;
 
         if (getContext().checkSelfPermission(advertise) == PackageManager.PERMISSION_GRANTED) {
-            onHaveBluetoothPermission(needToDisableBluetooth);
+            onHaveBluetoothPermission();
             return;
         }
 
@@ -358,13 +345,12 @@ public class CableAuthenticatorUI
         // |onRequestPermissionsResult| callback to the Activity, and not
         // this fragment.
         mState = State.BLUETOOTH_PERMISSION_REQUESTED;
-        mNeedToDisableBluetooth = needToDisableBluetooth;
         requestPermissions(new String[] {advertise}, 1);
     }
 
     // Called once the BLUETOOTH_ADVERTISE permission has been granted, or if
     // its not needed on this version of Android.
-    private void onHaveBluetoothPermission(boolean needToDisableBluetooth) {
+    private void onHaveBluetoothPermission() {
         mState = State.RUNNING;
 
         if (mMode == Mode.QR) {
@@ -372,7 +358,7 @@ public class CableAuthenticatorUI
             mPendingQRCode = null;
             mAuthenticator.onQRCode(qrCode, mPendingShouldLink);
         } else {
-            mAuthenticator.onBluetoothReady(needToDisableBluetooth);
+            mAuthenticator.onBluetoothReady();
         }
     }
 
@@ -458,7 +444,7 @@ public class CableAuthenticatorUI
 
         BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
         if (adapter.isEnabled()) {
-            onBluetoothEnabled(/*needToDisableBluetooth=*/false);
+            onBluetoothEnabled();
         } else {
             mState = State.ENABLE_BLUETOOTH_REQUESTED;
             startActivityForResult(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE),
@@ -528,18 +514,11 @@ public class CableAuthenticatorUI
                 break;
 
             case BLUETOOTH_PERMISSION_REQUESTED:
-                final boolean needToDisable = mNeedToDisableBluetooth;
-                mNeedToDisableBluetooth = false;
-
                 if (granted) {
                     assert permissions[0].equals(permission.BLUETOOTH_ADVERTISE);
-                    onHaveBluetoothPermission(needToDisable);
+                    onHaveBluetoothPermission();
                 } else {
                     mState = State.ERROR;
-
-                    // If would be nice to disable Bluetooth here if we switched
-                    // it on previously, but Android 12 requires more
-                    // permissions to do that.
 
                     // TODO(agl): do a better UI once we're out of strings freeze.
                     mErrorCode = ERROR_NO_BLUETOOTH_PERMISSION;
@@ -597,7 +576,7 @@ public class CableAuthenticatorUI
 
         switch (mMode) {
             case QR:
-                onBluetoothEnabled(/*needToDisableBluetooth=*/true);
+                onBluetoothEnabled();
                 break;
 
             case FCM:
@@ -605,7 +584,7 @@ public class CableAuthenticatorUI
                 top.removeAllViews();
                 top.addView(mSpinnerView);
 
-                onBluetoothEnabled(/*needToDisableBluetooth=*/true);
+                onBluetoothEnabled();
                 break;
 
             default:

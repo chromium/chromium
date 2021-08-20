@@ -8,7 +8,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     a:layout_width="match_parent"
     a:layout_height="match_parent"
-    a:orientation="vertical">
+    a:orientation="vertical"
+    tools:ignore="UseCompoundDrawables">
 
   <TextView
       style="@style/TextAppearance.Headline.Primary"
@@ -35,16 +36,5 @@
       a:gravity="center_horizontal"
       a:src="@drawable/ble"
       tools:ignore="RtlHardcoded"/>
-
-  <TextView
-      style="@style/TextAppearance.TextMedium.Secondary"
-      a:id="@+id/cablev2_ble_enable_body"
-      a:layout_marginTop="4dp"
-      a:layout_marginLeft="40dp"
-      a:layout_marginRight="40dp"
-      a:layout_width="match_parent"
-      a:layout_height="wrap_content"
-      a:gravity="center_horizontal"
-      a:text="@string/cablev2_ble_enable_body"/>
 
 </LinearLayout>

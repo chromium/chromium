@@ -9,7 +9,8 @@
     a:layout_width="match_parent"
     a:layout_height="match_parent"
     a:orientation="vertical"
-    a:gravity="center">
+    a:gravity="center"
+    tools:ignore="UseCompoundDrawables">
 
   <TextView
       a:layout_width="match_parent"
@@ -38,15 +39,5 @@
       a:gravity="center_horizontal"
       a:src="@drawable/ble"
       tools:ignore="RtlHardcoded"/>
-
-  <TextView
-      a:layout_width="wrap_content"
-      a:id="@+id/cablev2_ble_enable_body"
-      a:layout_height="wrap_content"
-      a:layout_marginTop="4dp"
-      a:layout_gravity="center_horizontal"
-      a:padding="0px"
-      a:textSize="24sp"
-      a:text="@string/cablev2_ble_enable_body" />
 
 </LinearLayout>
