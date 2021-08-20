@@ -4892,7 +4892,6 @@
         'test_suites': {
           'gtest_tests': 'fuchsia_gtests',
           'isolated_scripts': 'fuchsia_isolated_scripts',
-          'gpu_telemetry_tests': 'fuchsia_gpu_telemetry_tests',
         },
       },
       'Leak Detection Linux': {
