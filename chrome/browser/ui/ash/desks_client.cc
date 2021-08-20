@@ -36,12 +36,11 @@ constexpr char kUserTemplateCountHistogramName[] =
 
 // Error strings
 constexpr char kMaximumDesksOpenedError[] =
-    "Maximum number of desks already open.";
+    "The maximum number of desks is already open.";
 constexpr char kMissingTemplateDataError[] =
-    "Template somehow missing template data!";
-constexpr char kStorageError[] =
-    "Storage error prevented operation from being successful";
-constexpr char kNoCurrentUserError[] = "No current active profile!";
+    "The desk template has invalid or missing data.";
+constexpr char kStorageError[] = "The operation failed due to a storage error.";
+constexpr char kNoCurrentUserError[] = "There is no active profile.";
 
 // Returns true if |profile| is a supported profile in desk template feature.
 bool IsSupportedProfile(Profile* profile) {
