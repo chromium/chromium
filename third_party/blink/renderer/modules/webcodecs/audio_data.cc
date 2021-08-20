@@ -8,6 +8,7 @@
 #include "base/numerics/checked_math.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_bus.h"
+#include "media/base/limits.h"
 #include "media/base/sample_format.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data_copy_to_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data_init.h"
@@ -131,6 +132,17 @@ AudioData::AudioData(AudioDataInit* init, ExceptionState& exception_state)
     return;
   }
 
+  auto sample_rate = static_cast<int>(init->sampleRate());
+  if (sample_rate < media::limits::kMinSampleRate ||
+      sample_rate > media::limits::kMaxSampleRate) {
+    exception_state.ThrowTypeError(
+        String::Format("sampleRate is outside of supported implementation "
+                       "limits: need between %u and %u, received %d.",
+                       media::limits::kMinSampleRate,
+                       media::limits::kMaxSampleRate, sample_rate));
+    return;
+  }
+
   std::vector<const uint8_t*> wrapped_data;
   if (media::IsInterleaved(media_format)) {
     // Interleaved data can directly added.
@@ -154,7 +166,7 @@ AudioData::AudioData(AudioDataInit* init, ExceptionState& exception_state)
 
   data_ = media::AudioBuffer::CopyFrom(
       media_format, media::GuessChannelLayout(init->numberOfChannels()),
-      init->numberOfChannels(), init->sampleRate(), init->numberOfFrames(),
+      init->numberOfChannels(), sample_rate, init->numberOfFrames(),
       wrapped_data.data(), base::TimeDelta::FromMicroseconds(timestamp_));
 }
 
