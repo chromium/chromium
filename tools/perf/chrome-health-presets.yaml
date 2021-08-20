@@ -5,7 +5,7 @@
 #   --presets-file /path/to/this/file \
 #   --preset=cwv <base-and-experiment-commit-flags>
 presets:
-  cwv:
+  chrome_health:
     telemetry_batch_experiment:
       - benchmark: loading.desktop
         configs:
@@ -167,3 +167,46 @@ presets:
           - Wikipedia
           - YahooNews
           - Youtube
+      - benchmark: speedometer2
+        configs:
+          - mac-10_12_laptop_low_end-perf
+          - linux-perf
+          - win-10-perf
+          - android-pixel2-perf
+          - android-pixel4-perf
+        stories:
+          - Speedometer2
+  chrome_health_summary_report:
+    batch_summary_report_spec:
+      loading.desktop:
+        metrics:
+          - name: largestContentfulPaint
+          - name: timeToFirstContentfulPaint
+          - name: overallCumulativeLayoutShift
+          - name: totalBlockingTime
+      loading.mobile:
+        metrics:
+          - name: largestContentfulPaint
+          - name: timeToFirstContentfulPaint
+          - name: overallCumulativeLayoutShift
+          - name: totalBlockingTime
+      speedometer2:
+        metrics:
+          - name: Angular2-TypeScript-TodoMVC
+          - name: AngularJS-TodoMVC
+          - name: BackboneJS-TodoMVC
+          - name: Elm-TodoMVC
+          - name: EmberJS-Debug-TodoMVC
+          - name: EmberJS-TodoMVC
+          - name: Flight-TodoMVC
+          - name: Inferno-TodoMVC
+          - name: jQuery-TodoMVC
+          - name: Preact-TodoMVC
+          - name: React-Redux-TodoMVC
+          - name: React-TodoMVC
+          - name: RunsPerMinute
+          - name: Total
+          - name: Vanilla-ES2015-Babel-Webpack-TodoMVC
+          - name: Vanilla-ES2015-TodoMVC
+          - name: VanillaJS-TodoMVC
+          - name: VueJS-TodoMVC
