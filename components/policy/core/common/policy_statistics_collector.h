@@ -23,6 +23,14 @@ namespace policy {
 
 class PolicyService;
 
+// Different types of policies
+enum Condition {
+  kDefault,
+  kMandatory,
+  kRecommended,
+  kIgnoredByAtomicGroup,
+};
+
 // Manages regular updates of policy usage UMA histograms.
 class POLICY_EXPORT PolicyStatisticsCollector {
  public:
@@ -48,9 +56,8 @@ class POLICY_EXPORT PolicyStatisticsCollector {
 
  protected:
   // protected virtual for mocking.
-  virtual void RecordPolicyUse(int id);
+  virtual void RecordPolicyUse(int id, Condition condition);
   virtual void RecordPolicyGroupWithConflicts(int id);
-  virtual void RecordPolicyIgnoredByAtomicGroup(int id);
 
  private:
   void CollectStatistics();

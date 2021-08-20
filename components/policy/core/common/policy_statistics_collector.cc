@@ -15,6 +15,7 @@
 #include "base/task_runner.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_service.h"
+#include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -45,8 +46,7 @@ void PolicyStatisticsCollector::Initialize() {
   using base::TimeDelta;
 
   TimeDelta update_rate = TimeDelta::FromMilliseconds(kStatisticsUpdateRate);
-  Time last_update = Time::FromInternalValue(
-      prefs_->GetInt64(policy_prefs::kLastPolicyStatisticsUpdate));
+  Time last_update = prefs_->GetTime(policy_prefs::kLastPolicyStatisticsUpdate);
   TimeDelta delay = std::max(Time::Now() - last_update, TimeDelta::FromDays(0));
   if (delay >= update_rate)
     CollectStatistics();
@@ -59,16 +59,26 @@ void PolicyStatisticsCollector::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterInt64Pref(policy_prefs::kLastPolicyStatisticsUpdate, 0);
 }
 
-void PolicyStatisticsCollector::RecordPolicyUse(int id) {
-  base::UmaHistogramSparse("Enterprise.Policies", id);
+void PolicyStatisticsCollector::RecordPolicyUse(int id, Condition condition) {
+  std::string suffix;
+  switch (condition) {
+    case kDefault:
+      break;
+    case kMandatory:
+      suffix = ".Mandatory";
+      break;
+    case kRecommended:
+      suffix = ".Recommended";
+      break;
+    case kIgnoredByAtomicGroup:
+      suffix = ".IgnoredByPolicyGroup";
+      break;
+  }
+  base::UmaHistogramSparse("Enterprise.Policies" + suffix, id);
 }
 
 void PolicyStatisticsCollector::RecordPolicyGroupWithConflicts(int id) {
   base::UmaHistogramSparse("Enterprise.Policies.SourceConflicts", id);
-}
-
-void PolicyStatisticsCollector::RecordPolicyIgnoredByAtomicGroup(int id) {
-  base::UmaHistogramSparse("Enterprise.Policies.IgnoredByPolicyGroup", id);
 }
 
 void PolicyStatisticsCollector::CollectStatistics() {
@@ -80,10 +90,16 @@ void PolicyStatisticsCollector::CollectStatistics() {
        !it.IsAtEnd(); it.Advance()) {
     if (policies.Get(it.key())) {
       const PolicyDetails* details = get_details_.Run(it.key());
-      if (details)
-        RecordPolicyUse(details->id);
-      else
+      if (details) {
+        RecordPolicyUse(details->id, kDefault);
+        if (policies.Get(it.key())->level == POLICY_LEVEL_MANDATORY) {
+          RecordPolicyUse(details->id, kMandatory);
+        } else {
+          RecordPolicyUse(details->id, kRecommended);
+        }
+      } else {
         NOTREACHED();
+      }
     }
   }
 
@@ -98,7 +114,7 @@ void PolicyStatisticsCollector::CollectStatistics() {
         group_has_conflicts = true;
         const PolicyDetails* details = get_details_.Run(*policy_name);
         if (details)
-          RecordPolicyIgnoredByAtomicGroup(details->id);
+          RecordPolicyUse(details->id, kIgnoredByAtomicGroup);
         else
           NOTREACHED();
       }
@@ -109,8 +125,7 @@ void PolicyStatisticsCollector::CollectStatistics() {
   }
 
   // Take care of next update.
-  prefs_->SetInt64(policy_prefs::kLastPolicyStatisticsUpdate,
-                   base::Time::Now().ToInternalValue());
+  prefs_->SetTime(policy_prefs::kLastPolicyStatisticsUpdate, base::Time::Now());
   ScheduleUpdate(base::TimeDelta::FromMilliseconds(kStatisticsUpdateRate));
 }
 

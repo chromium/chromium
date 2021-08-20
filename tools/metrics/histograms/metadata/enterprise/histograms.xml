@@ -46,6 +46,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <variant name=".InitialEnrollment" summary="Initial Enrollment Exchange"/>
 </variants>
 
+<variants name="PolicyLevel">
+  <variant name="Mandatory" summary="Mandatory Policy"/>
+  <variant name="Recommended" summary="Recommended Policy"/>
+</variants>
+
 <histogram name="Enterprise.AccountStatusCheckResult"
     enum="EnterpriseAccountStatus" expires_after="M99">
   <owner>raleksandrov@google.com</owner>
@@ -1617,6 +1622,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     is not running at the 24 hours mark, this will be recorded at the next
     startup.
   </summary>
+</histogram>
+
+<histogram name="Enterprise.Policies.{PolicyLevel}" enum="EnterprisePolicies"
+    expires_after="2022-03-15">
+  <owner>qiutanw@google.com</owner>
+  <owner>zmin@chromium.org</owner>
+  <summary>
+    A set of {PolicyLevel} enterprise policy rules that are in use. This is
+    recorded for each {PolicyLevel} policy every 24 hours and at startup, if the
+    last recording was earlier than a day before.
+  </summary>
+  <token key="PolicyLevel" variants="PolicyLevel"/>
 </histogram>
 
 <histogram name="Enterprise.PolicyHasVerifiedCachedKey"
