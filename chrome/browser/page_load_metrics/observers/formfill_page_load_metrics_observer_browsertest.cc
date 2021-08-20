@@ -53,8 +53,9 @@ class FormfillPageLoadMetricsObserverBrowserTest : public InProcessBrowserTest {
   }
 };
 
+// TODO(crbug.com/1241768): Test disabled due to flakiness.
 IN_PROC_BROWSER_TEST_F(FormfillPageLoadMetricsObserverBrowserTest,
-                       UserDataFieldFilledUseCounter) {
+                       DISABLED_UserDataFieldFilledUseCounter) {
   base::HistogramTester histogram_tester;
 
   ui_test_utils::NavigateToURL(
