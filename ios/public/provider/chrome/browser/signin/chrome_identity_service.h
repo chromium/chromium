@@ -43,9 +43,6 @@ typedef void (^AccessTokenCallback)(NSString* token,
 // completed with success.
 typedef void (^ForgetIdentityCallback)(NSError* error);
 
-// Callback passed to method |GetAvatarForIdentity()|.
-typedef void (^GetAvatarCallback)(UIImage* avatar);
-
 // Callback passed to method |GetHostedDomainForIdentity()|.
 // |hosted_domain|:
 //   + nil, if error.
@@ -208,13 +205,6 @@ class ChromeIdentityService {
                               const std::string& client_id,
                               const std::set<std::string>& scopes,
                               AccessTokenCallback callback);
-
-  // Fetches the profile avatar, from the cache or the network.
-  // For high resolution iPads, returns large images (200 x 200) to avoid
-  // pixelization. Calls back on the main thread. |callback| may be nil.
-  // DEPRECATED, use GetAvatarForIdentity(ChromeIdentity*).
-  virtual void GetAvatarForIdentity(ChromeIdentity* identity,
-                                    GetAvatarCallback callback);
 
   // Fetches the profile avatar, from the cache or the network.
   // For high resolution iPads, returns large images (200 x 200) to avoid

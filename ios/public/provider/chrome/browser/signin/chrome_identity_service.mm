@@ -124,15 +124,13 @@ void ChromeIdentityService::GetAccessToken(ChromeIdentity* identity,
                                            const std::set<std::string>& scopes,
                                            AccessTokenCallback callback) {}
 
-void ChromeIdentityService::GetAvatarForIdentity(ChromeIdentity* identity,
-                                                 GetAvatarCallback callback) {
-  GetAvatarForIdentity(identity);
+void ChromeIdentityService::GetAvatarForIdentity(ChromeIdentity* identity) {
+  NOTREACHED();
 }
-
-void ChromeIdentityService::GetAvatarForIdentity(ChromeIdentity* identity) {}
 
 UIImage* ChromeIdentityService::GetCachedAvatarForIdentity(
     ChromeIdentity* identity) {
+  NOTREACHED();
   return nil;
 }
 
