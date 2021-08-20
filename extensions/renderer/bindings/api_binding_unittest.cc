@@ -2014,4 +2014,65 @@ TEST_F(APIBindingUnittest, TestPromiseWithJSUpdateArgumentsPreValidate) {
   }
 }
 
+TEST_F(APIBindingUnittest, TestPromiseWithJSUpdateArgumentsPostValidate) {
+  bool context_allows_promises = true;
+  SetPromiseAvailabilityFlag(&context_allows_promises);
+
+  // Register an update arguments post validate hook for supportsPromises.
+  const char kRegisterHook[] = R"(
+      (function(hooks) {
+        hooks.setUpdateArgumentsPostValidate('supportsPromises',
+                                             (...arguments) => {
+          this.firstArgument = arguments[0];
+          this.secondArgument = arguments[1];
+          arguments[0] = 'bar' + this.firstArgument;
+          return arguments;
+        });
+      }))";
+  InitializeJSHooks(kRegisterHook);
+  SetFunctions(kFunctionsWithPromiseSignatures);
+  InitializeBinding();
+
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
+  v8::Local<v8::Object> binding_object = binding()->CreateInstance(context);
+
+  {
+    // Calling the method with an invalid signature should never enter the hook.
+    ExpectFailure(binding_object, "return obj.supportsPromises('foo');",
+                  api_errors::InvocationError(
+                      "test.supportsPromises", "integer int, function callback",
+                      api_errors::NoMatchingSignature()));
+    EXPECT_EQ("undefined", GetStringPropertyFromObject(
+                               context->Global(), context, "firstArgument"));
+  }
+
+  {
+    // Calling supportsPromises normally with a callback should work fine and
+    // the arguments should be manipulated.
+    auto result =
+        ExpectPass(binding_object, "return obj.supportsPromises(5, () => {});",
+                   R"(["bar5"])", true);
+    ASSERT_FALSE(result.IsEmpty());
+    EXPECT_TRUE(result->IsUndefined());
+    EXPECT_EQ(R"(5)", GetStringPropertyFromObject(context->Global(), context,
+                                                  "firstArgument"));
+    EXPECT_TRUE(
+        GetPropertyFromObject(context->Global(), context, "secondArgument")
+            ->IsFunction());
+  }
+
+  {
+    // Calling supportsPromises normally while omitting the callback should work
+    // fine, we should get a promise back and the arguments should be
+    // manipulated.
+    auto result = ExpectPass(binding_object, "return obj.supportsPromises(6);",
+                             R"(["bar6"])", true);
+    ASSERT_FALSE(result.IsEmpty());
+    EXPECT_TRUE(result->IsPromise());
+    EXPECT_EQ(R"(6)", GetStringPropertyFromObject(context->Global(), context,
+                                                  "firstArgument"));
+  }
+}
+
 }  // namespace extensions

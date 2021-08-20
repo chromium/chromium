@@ -528,8 +528,8 @@ APISignature::JSONParseResult APISignature::ParseArgumentsToJSON(
 APISignature::JSONParseResult APISignature::ConvertArgumentsIgnoringSchema(
     v8::Local<v8::Context> context,
     const std::vector<v8::Local<v8::Value>>& arguments) const {
+  JSONParseResult result;
   size_t size = arguments.size();
-  v8::Local<v8::Function> callback;
   // TODO(devlin): This is what the current bindings do, but it's quite terribly
   // incorrect. We only hit this flow when an API method has a hook to update
   // the arguments post-validation, and in some cases, the arguments returned by
@@ -539,18 +539,19 @@ APISignature::JSONParseResult APISignature::ConvertArgumentsIgnoringSchema(
   // not the last parameter is a callback, even though the hooks may not return
   // the arguments in the signature. This is very broken.
   if (has_async_return()) {
-    // We don't currently handle promises in parsing signatures while ignoring
-    // the schema.
-    DCHECK_EQ(binding::APIPromiseSupport::kUnsupported,
-              returns_async_->promise_support);
     CHECK(!arguments.empty());
     v8::Local<v8::Value> value = arguments.back();
     --size;
     // Bindings should ensure that the value here is appropriate, but see the
     // comment above for limitations.
     DCHECK(value->IsFunction() || value->IsUndefined() || value->IsNull());
-    if (value->IsFunction())
-      callback = value.As<v8::Function>();
+    if (value->IsFunction()) {
+      result.callback = value.As<v8::Function>();
+      result.async_type = binding::AsyncResponseType::kCallback;
+    } else if ((value->IsNull() || value->IsUndefined()) &&
+               CheckPromisesAllowed(context) == PromisesAllowed::kAllowed) {
+      result.async_type = binding::AsyncResponseType::kPromise;
+    }
   }
 
   base::Value::ListStorage json;
@@ -576,12 +577,7 @@ APISignature::JSONParseResult APISignature::ConvertArgumentsIgnoringSchema(
     json.push_back(base::Value::FromUniquePtrValue(std::move(converted)));
   }
 
-  JSONParseResult result;
   result.arguments_list = std::make_unique<base::ListValue>(std::move(json));
-  result.callback = callback;
-  result.async_type = callback.IsEmpty()
-                          ? binding::AsyncResponseType::kNone
-                          : binding::AsyncResponseType::kCallback;
   return result;
 }
 

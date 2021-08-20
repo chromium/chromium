@@ -520,6 +520,7 @@ TEST_F(APISignatureTest, ParseIgnoringSchema) {
     ASSERT_TRUE(parse_result.arguments_list);
     EXPECT_EQ("[1]", ValueToString(*parse_result.arguments_list));
     EXPECT_FALSE(parse_result.callback.IsEmpty());
+    EXPECT_EQ(binding::AsyncResponseType::kCallback, parse_result.async_type);
   }
 
   {
@@ -535,6 +536,7 @@ TEST_F(APISignatureTest, ParseIgnoringSchema) {
     ASSERT_TRUE(parse_result.arguments_list);
     EXPECT_EQ("[1]", ValueToString(*parse_result.arguments_list));
     EXPECT_TRUE(parse_result.callback.IsEmpty());
+    EXPECT_EQ(binding::AsyncResponseType::kNone, parse_result.async_type);
   }
 
   {
@@ -550,6 +552,7 @@ TEST_F(APISignatureTest, ParseIgnoringSchema) {
     EXPECT_EQ(R"([{"not":"a string"}])",
               ValueToString(*parse_result.arguments_list));
     EXPECT_TRUE(parse_result.callback.IsEmpty());
+    EXPECT_EQ(binding::AsyncResponseType::kNone, parse_result.async_type);
   }
 
   {
@@ -563,6 +566,7 @@ TEST_F(APISignatureTest, ParseIgnoringSchema) {
     EXPECT_EQ(R"([{"other":"bar","prop1":"foo"}])",
               ValueToString(*parse_result.arguments_list));
     EXPECT_TRUE(parse_result.callback.IsEmpty());
+    EXPECT_EQ(binding::AsyncResponseType::kNone, parse_result.async_type);
   }
 
   {
@@ -578,6 +582,92 @@ TEST_F(APISignatureTest, ParseIgnoringSchema) {
     ASSERT_TRUE(parse_result.arguments_list);
     EXPECT_EQ("[1,null,null]", ValueToString(*parse_result.arguments_list));
     EXPECT_TRUE(parse_result.callback.IsEmpty());
+    EXPECT_EQ(binding::AsyncResponseType::kNone, parse_result.async_type);
+  }
+}
+
+TEST_F(APISignatureTest, ParseIgnoringSchemaWithPromises) {
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
+  bool context_allows_promises = true;
+  auto promises_available = base::BindRepeating(
+      [](bool* flag, v8::Local<v8::Context> context) { return *flag; },
+      &context_allows_promises);
+  auto api_available =
+      base::BindRepeating([](v8::Local<v8::Context> context,
+                             const std::string& name) { return true; });
+  BindingAccessChecker access_checker(api_available, promises_available);
+
+  SpecVector specs;
+  specs.push_back(ArgumentSpecBuilder(ArgumentType::INTEGER, "int").Build());
+  auto int_and_optional_callback = std::make_unique<APISignature>(
+      std::move(specs),
+      ReturnsAsyncBuilder().MakeOptional().AddPromiseSupport().Build(),
+      &access_checker);
+
+  {
+    // Test with providing an optional callback.
+    std::vector<v8::Local<v8::Value>> v8_args =
+        StringToV8Vector(context, "[1, function() {}]");
+    APISignature::JSONParseResult parse_result =
+        int_and_optional_callback->ConvertArgumentsIgnoringSchema(context,
+                                                                  v8_args);
+    EXPECT_FALSE(parse_result.error);
+    ASSERT_TRUE(parse_result.arguments_list);
+    EXPECT_EQ("[1]", ValueToString(*parse_result.arguments_list));
+    EXPECT_FALSE(parse_result.callback.IsEmpty());
+    EXPECT_TRUE(parse_result.callback->IsFunction());
+    EXPECT_EQ(binding::AsyncResponseType::kCallback, parse_result.async_type);
+  }
+
+  {
+    // Test with omitting the optional callback.
+    std::vector<v8::Local<v8::Value>> v8_args =
+        StringToV8Vector(context, "[1, null]");
+    v8::Local<v8::Function> callback;
+    std::unique_ptr<base::ListValue> parsed;
+    APISignature::JSONParseResult parse_result =
+        int_and_optional_callback->ConvertArgumentsIgnoringSchema(context,
+                                                                  v8_args);
+    EXPECT_FALSE(parse_result.error);
+    ASSERT_TRUE(parse_result.arguments_list);
+    EXPECT_EQ("[1]", ValueToString(*parse_result.arguments_list));
+    EXPECT_TRUE(parse_result.callback.IsEmpty());
+    EXPECT_EQ(binding::AsyncResponseType::kPromise, parse_result.async_type);
+  }
+
+  {
+    // Test with providing something completely different than the spec, which
+    // is (unfortunately) allowed and used.
+    std::vector<v8::Local<v8::Value>> v8_args =
+        StringToV8Vector(context, "[{not: 'an int'}, null]");
+    APISignature::JSONParseResult parse_result =
+        int_and_optional_callback->ConvertArgumentsIgnoringSchema(context,
+                                                                  v8_args);
+    EXPECT_FALSE(parse_result.error);
+    ASSERT_TRUE(parse_result.arguments_list);
+    EXPECT_EQ(R"([{"not":"an int"}])",
+              ValueToString(*parse_result.arguments_list));
+    EXPECT_TRUE(parse_result.callback.IsEmpty());
+    EXPECT_EQ(binding::AsyncResponseType::kPromise, parse_result.async_type);
+  }
+
+  {
+    // If promises are not available and the optional callback is omitted, we
+    // should not get a promise response type.
+    context_allows_promises = false;
+    std::vector<v8::Local<v8::Value>> v8_args =
+        StringToV8Vector(context, "[1, null]");
+    v8::Local<v8::Function> callback;
+    std::unique_ptr<base::ListValue> parsed;
+    APISignature::JSONParseResult parse_result =
+        int_and_optional_callback->ConvertArgumentsIgnoringSchema(context,
+                                                                  v8_args);
+    EXPECT_FALSE(parse_result.error);
+    ASSERT_TRUE(parse_result.arguments_list);
+    EXPECT_EQ("[1]", ValueToString(*parse_result.arguments_list));
+    EXPECT_TRUE(parse_result.callback.IsEmpty());
+    EXPECT_EQ(binding::AsyncResponseType::kNone, parse_result.async_type);
   }
 }
 
