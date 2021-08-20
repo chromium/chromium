@@ -87,7 +87,7 @@ TEST_P(DisplayItemRasterInvalidatorTest,
 
   EXPECT_THAT(GetRasterInvalidations(),
               UnorderedElementsAre(RasterInvalidationInfo{
-                  &first, "first", IntRect(100, 100, 300, 350),
+                  first.Id(), "first", IntRect(100, 100, 300, 350),
                   PaintInvalidationReason::kStyle}));
   invalidator_.SetTracksRasterInvalidations(false);
 }
@@ -117,13 +117,14 @@ TEST_P(DisplayItemRasterInvalidatorTest, FullInvalidationWithGeometryChange) {
     DrawRect(context, first, kForegroundType, IntRect(200, 150, 300, 300));
   }
 
-  EXPECT_THAT(
-      GetRasterInvalidations(),
-      UnorderedElementsAre(
-          RasterInvalidationInfo{&first, "first", IntRect(100, 100, 300, 350),
-                                 PaintInvalidationReason::kStyle},
-          RasterInvalidationInfo{&first, "first", IntRect(200, 100, 300, 350),
-                                 PaintInvalidationReason::kStyle}));
+  EXPECT_THAT(GetRasterInvalidations(),
+              UnorderedElementsAre(
+                  RasterInvalidationInfo{first.Id(), "first",
+                                         IntRect(100, 100, 300, 350),
+                                         PaintInvalidationReason::kStyle},
+                  RasterInvalidationInfo{first.Id(), "first",
+                                         IntRect(200, 100, 300, 350),
+                                         PaintInvalidationReason::kStyle}));
   invalidator_.SetTracksRasterInvalidations(false);
 }
 
@@ -152,7 +153,7 @@ TEST_P(DisplayItemRasterInvalidatorTest, RemoveItemInMiddle) {
 
   EXPECT_THAT(GetRasterInvalidations(),
               UnorderedElementsAre(RasterInvalidationInfo{
-                  &second, "second", IntRect(100, 100, 200, 200),
+                  second.Id(), "second", IntRect(100, 100, 200, 200),
                   PaintInvalidationReason::kDisappeared}));
   invalidator_.SetTracksRasterInvalidations(false);
 }
@@ -190,7 +191,7 @@ TEST_P(DisplayItemRasterInvalidatorTest, SwapOrder) {
 
   EXPECT_THAT(GetRasterInvalidations(),
               UnorderedElementsAre(RasterInvalidationInfo{
-                  &first, "first", IntRect(100, 100, 100, 100),
+                  first.Id(), "first", IntRect(100, 100, 100, 100),
                   PaintInvalidationReason::kReordered}));
   invalidator_.SetTracksRasterInvalidations(false);
 }
@@ -223,7 +224,7 @@ TEST_P(DisplayItemRasterInvalidatorTest, SwapOrderAndInvalidateFirst) {
 
   EXPECT_THAT(GetRasterInvalidations(),
               UnorderedElementsAre(RasterInvalidationInfo{
-                  &first, "first", IntRect(100, 100, 100, 100),
+                  first.Id(), "first", IntRect(100, 100, 100, 100),
                   PaintInvalidationReason::kOutline}));
   invalidator_.SetTracksRasterInvalidations(false);
 }
@@ -256,7 +257,7 @@ TEST_P(DisplayItemRasterInvalidatorTest, SwapOrderAndInvalidateSecond) {
 
   EXPECT_THAT(GetRasterInvalidations(),
               UnorderedElementsAre(RasterInvalidationInfo{
-                  &second, "second", IntRect(100, 100, 50, 200),
+                  second.Id(), "second", IntRect(100, 100, 50, 200),
                   PaintInvalidationReason::kOutline}));
   invalidator_.SetTracksRasterInvalidations(false);
 }
@@ -290,7 +291,7 @@ TEST_P(DisplayItemRasterInvalidatorTest, SwapOrderWithIncrementalInvalidation) {
   // Incremental invalidation is not applicable when the item is reordered.
   EXPECT_THAT(GetRasterInvalidations(),
               UnorderedElementsAre(RasterInvalidationInfo{
-                  &first, "first", IntRect(100, 100, 100, 100),
+                  first.Id(), "first", IntRect(100, 100, 100, 100),
                   PaintInvalidationReason::kReordered}));
   invalidator_.SetTracksRasterInvalidations(false);
 }
@@ -321,7 +322,7 @@ TEST_P(DisplayItemRasterInvalidatorTest, NewItemInMiddle) {
 
   EXPECT_THAT(GetRasterInvalidations(),
               UnorderedElementsAre(RasterInvalidationInfo{
-                  &third, "third", IntRect(125, 100, 200, 50),
+                  third.Id(), "third", IntRect(125, 100, 200, 50),
                   PaintInvalidationReason::kAppeared}));
   invalidator_.SetTracksRasterInvalidations(false);
 }
@@ -361,35 +362,35 @@ TEST_P(DisplayItemRasterInvalidatorTest, Incremental) {
 
   EXPECT_THAT(GetRasterInvalidations(),
               UnorderedElementsAre(
-                  RasterInvalidationInfo{clients[0].get(), "0",
+                  RasterInvalidationInfo{clients[0]->Id(), "0",
                                          IntRect(200, 100, 50, 100),
                                          PaintInvalidationReason::kIncremental},
-                  RasterInvalidationInfo{clients[1].get(), "1",
+                  RasterInvalidationInfo{clients[1]->Id(), "1",
                                          IntRect(100, 200, 100, 50),
                                          PaintInvalidationReason::kIncremental},
-                  RasterInvalidationInfo{clients[2].get(), "2",
+                  RasterInvalidationInfo{clients[2]->Id(), "2",
                                          IntRect(200, 100, 50, 80),
                                          PaintInvalidationReason::kIncremental},
-                  RasterInvalidationInfo{clients[2].get(), "2",
+                  RasterInvalidationInfo{clients[2]->Id(), "2",
                                          IntRect(100, 180, 100, 20),
                                          PaintInvalidationReason::kIncremental},
-                  RasterInvalidationInfo{clients[3].get(), "3",
+                  RasterInvalidationInfo{clients[3]->Id(), "3",
                                          IntRect(180, 100, 20, 100),
                                          PaintInvalidationReason::kIncremental},
-                  RasterInvalidationInfo{clients[3].get(), "3",
+                  RasterInvalidationInfo{clients[3]->Id(), "3",
                                          IntRect(100, 200, 80, 50),
                                          PaintInvalidationReason::kIncremental},
-                  RasterInvalidationInfo{clients[4].get(), "4",
+                  RasterInvalidationInfo{clients[4]->Id(), "4",
                                          IntRect(200, 100, 50, 150),
                                          PaintInvalidationReason::kIncremental},
-                  RasterInvalidationInfo{clients[4].get(), "4",
+                  RasterInvalidationInfo{clients[4]->Id(), "4",
                                          IntRect(100, 200, 150, 50),
                                          PaintInvalidationReason::kIncremental},
-                  RasterInvalidationInfo{clients[5].get(), "5",
+                  RasterInvalidationInfo{clients[5]->Id(), "5",
                                          IntRect(180, 100, 20, 100),
                                          PaintInvalidationReason::kIncremental},
                   RasterInvalidationInfo{
-                      clients[5].get(), "5", IntRect(100, 180, 100, 20),
+                      clients[5]->Id(), "5", IntRect(100, 180, 100, 20),
                       PaintInvalidationReason::kIncremental}));
   invalidator_.SetTracksRasterInvalidations(false);
 }
@@ -422,15 +423,17 @@ TEST_P(DisplayItemRasterInvalidatorTest, AddRemoveFirstAndInvalidateSecond) {
     EXPECT_EQ(0u, NumCachedNewItems());
   }
 
-  EXPECT_THAT(
-      GetRasterInvalidations(),
-      UnorderedElementsAre(
-          RasterInvalidationInfo{&first, "first", IntRect(100, 100, 150, 150),
-                                 PaintInvalidationReason::kAppeared},
-          RasterInvalidationInfo{&second, "second", IntRect(200, 200, 50, 50),
-                                 PaintInvalidationReason::kFull},
-          RasterInvalidationInfo{&second, "second", IntRect(150, 250, 100, 100),
-                                 PaintInvalidationReason::kFull}));
+  EXPECT_THAT(GetRasterInvalidations(),
+              UnorderedElementsAre(
+                  RasterInvalidationInfo{first.Id(), "first",
+                                         IntRect(100, 100, 150, 150),
+                                         PaintInvalidationReason::kAppeared},
+                  RasterInvalidationInfo{second.Id(), "second",
+                                         IntRect(200, 200, 50, 50),
+                                         PaintInvalidationReason::kFull},
+                  RasterInvalidationInfo{second.Id(), "second",
+                                         IntRect(150, 250, 100, 100),
+                                         PaintInvalidationReason::kFull}));
   invalidator_.SetTracksRasterInvalidations(false);
 
   invalidator_.SetTracksRasterInvalidations(true);
@@ -444,7 +447,7 @@ TEST_P(DisplayItemRasterInvalidatorTest, AddRemoveFirstAndInvalidateSecond) {
 
   EXPECT_THAT(GetRasterInvalidations(),
               UnorderedElementsAre(RasterInvalidationInfo{
-                  &first, "first", IntRect(100, 100, 150, 150),
+                  first.Id(), "first", IntRect(100, 100, 150, 150),
                   PaintInvalidationReason::kDisappeared}));
   invalidator_.SetTracksRasterInvalidations(false);
 }
@@ -475,13 +478,14 @@ TEST_P(DisplayItemRasterInvalidatorTest, InvalidateFirstAndAddRemoveSecond) {
     DrawRect(context, second, kForegroundType, IntRect(200, 200, 50, 50));
   }
 
-  EXPECT_THAT(
-      GetRasterInvalidations(),
-      UnorderedElementsAre(
-          RasterInvalidationInfo{&first, "first", IntRect(100, 100, 150, 150),
-                                 PaintInvalidationReason::kFull},
-          RasterInvalidationInfo{&second, "second", IntRect(200, 200, 50, 50),
-                                 PaintInvalidationReason::kAppeared}));
+  EXPECT_THAT(GetRasterInvalidations(),
+              UnorderedElementsAre(
+                  RasterInvalidationInfo{first.Id(), "first",
+                                         IntRect(100, 100, 150, 150),
+                                         PaintInvalidationReason::kFull},
+                  RasterInvalidationInfo{second.Id(), "second",
+                                         IntRect(200, 200, 50, 50),
+                                         PaintInvalidationReason::kAppeared}));
   invalidator_.SetTracksRasterInvalidations(false);
 
   invalidator_.SetTracksRasterInvalidations(true);
@@ -495,13 +499,14 @@ TEST_P(DisplayItemRasterInvalidatorTest, InvalidateFirstAndAddRemoveSecond) {
     DrawRect(context, first, kForegroundType, IntRect(100, 100, 150, 150));
   }
 
-  EXPECT_THAT(
-      GetRasterInvalidations(),
-      UnorderedElementsAre(
-          RasterInvalidationInfo{&first, "first", IntRect(100, 100, 150, 150),
-                                 PaintInvalidationReason::kFull},
-          RasterInvalidationInfo{&second, "second", IntRect(200, 200, 50, 50),
-                                 PaintInvalidationReason::kDisappeared}));
+  EXPECT_THAT(GetRasterInvalidations(),
+              UnorderedElementsAre(
+                  RasterInvalidationInfo{first.Id(), "first",
+                                         IntRect(100, 100, 150, 150),
+                                         PaintInvalidationReason::kFull},
+                  RasterInvalidationInfo{
+                      second.Id(), "second", IntRect(200, 200, 50, 50),
+                      PaintInvalidationReason::kDisappeared}));
   invalidator_.SetTracksRasterInvalidations(false);
 }
 
@@ -545,10 +550,10 @@ TEST_P(DisplayItemRasterInvalidatorTest, SwapOrderWithChildren) {
 
   EXPECT_THAT(GetRasterInvalidations(),
               UnorderedElementsAre(
-                  RasterInvalidationInfo{&container1, "container1",
+                  RasterInvalidationInfo{container1.Id(), "container1",
                                          IntRect(100, 100, 100, 100),
                                          PaintInvalidationReason::kReordered},
-                  RasterInvalidationInfo{&content1, "content1",
+                  RasterInvalidationInfo{content1.Id(), "content1",
                                          IntRect(100, 100, 50, 200),
                                          PaintInvalidationReason::kReordered}));
   invalidator_.SetTracksRasterInvalidations(false);
@@ -595,13 +600,13 @@ TEST_P(DisplayItemRasterInvalidatorTest, SwapOrderWithChildrenAndInvalidation) {
 
   EXPECT_THAT(GetRasterInvalidations(),
               UnorderedElementsAre(
-                  RasterInvalidationInfo{&container1, "container1",
+                  RasterInvalidationInfo{container1.Id(), "container1",
                                          IntRect(100, 100, 100, 100),
                                          PaintInvalidationReason::kReordered},
-                  RasterInvalidationInfo{&content1, "content1",
+                  RasterInvalidationInfo{content1.Id(), "content1",
                                          IntRect(100, 100, 50, 200),
                                          PaintInvalidationReason::kReordered},
-                  RasterInvalidationInfo{&container2, "container2",
+                  RasterInvalidationInfo{container2.Id(), "container2",
                                          IntRect(100, 200, 100, 100),
                                          PaintInvalidationReason::kFull}));
   invalidator_.SetTracksRasterInvalidations(false);
@@ -622,17 +627,17 @@ TEST_P(DisplayItemRasterInvalidatorTest, SwapOrderCrossingChunks) {
   auto container2_properties = DefaultPaintChunkProperties();
   container2_properties.SetEffect(*container2_effect);
 
-  PaintChunk::Id container1_id(container1, kBackgroundType);
-  PaintChunk::Id container2_id(container2, kBackgroundType);
+  PaintChunk::Id container1_id(container1.Id(), kBackgroundType);
+  PaintChunk::Id container2_id(container2.Id(), kBackgroundType);
   {
     RasterInvalidationCycleScope cycle_scope(GetPaintController(),
                                              invalidator_);
     GetPaintController().UpdateCurrentPaintChunkProperties(
-        &container1_id, container1_properties);
+        container1_id, container1, container1_properties);
     DrawRect(context, container1, kBackgroundType, IntRect(100, 100, 100, 100));
     DrawRect(context, content1, kBackgroundType, IntRect(100, 100, 50, 200));
     GetPaintController().UpdateCurrentPaintChunkProperties(
-        &container2_id, container2_properties);
+        container2_id, container2, container2_properties);
     DrawRect(context, container2, kBackgroundType, IntRect(100, 200, 100, 100));
     DrawRect(context, content2, kBackgroundType, IntRect(100, 200, 50, 200));
   }
@@ -643,21 +648,21 @@ TEST_P(DisplayItemRasterInvalidatorTest, SwapOrderCrossingChunks) {
     RasterInvalidationCycleScope cycle_scope(GetPaintController(),
                                              invalidator_);
     GetPaintController().UpdateCurrentPaintChunkProperties(
-        &container1_id, container1_properties);
+        container1_id, container1, container1_properties);
     DrawRect(context, container1, kBackgroundType, IntRect(100, 100, 100, 100));
     DrawRect(context, content1, kBackgroundType, IntRect(100, 100, 50, 200));
     DrawRect(context, content2, kBackgroundType, IntRect(100, 200, 50, 200));
     GetPaintController().UpdateCurrentPaintChunkProperties(
-        &container2_id, container2_properties);
+        container2_id, container2, container2_properties);
     DrawRect(context, container2, kBackgroundType, IntRect(100, 200, 100, 100));
   }
 
   EXPECT_THAT(GetRasterInvalidations(),
               UnorderedElementsAre(
-                  RasterInvalidationInfo{&content2, "content2",
+                  RasterInvalidationInfo{content2.Id(), "content2",
                                          IntRect(100, 200, 50, 200),
                                          PaintInvalidationReason::kDisappeared},
-                  RasterInvalidationInfo{&content2, "content2",
+                  RasterInvalidationInfo{content2.Id(), "content2",
                                          IntRect(100, 200, 50, 200),
                                          PaintInvalidationReason::kAppeared}));
   invalidator_.SetTracksRasterInvalidations(false);
@@ -699,7 +704,7 @@ TEST_P(DisplayItemRasterInvalidatorTest, SkipCache) {
 
   EXPECT_THAT(GetRasterInvalidations(),
               UnorderedElementsAre(RasterInvalidationInfo{
-                  &content, "content", UnionRect(rect1, rect2),
+                  content.Id(), "content", UnionRect(rect1, rect2),
                   PaintInvalidationReason::kUncacheable}));
   invalidator_.SetTracksRasterInvalidations(false);
 
@@ -722,13 +727,13 @@ TEST_P(DisplayItemRasterInvalidatorTest, SkipCache) {
   EXPECT_THAT(
       GetRasterInvalidations(),
       UnorderedElementsAre(
-          RasterInvalidationInfo{&multicol, "multicol",
+          RasterInvalidationInfo{multicol.Id(), "multicol",
                                  IntRect(100, 200, 100, 100),
                                  PaintInvalidationReason::kFull},
-          RasterInvalidationInfo{&multicol, "multicol",
+          RasterInvalidationInfo{multicol.Id(), "multicol",
                                  IntRect(100, 100, 100, 100),
                                  PaintInvalidationReason::kFull},
-          RasterInvalidationInfo{&content, "content",
+          RasterInvalidationInfo{content.Id(), "content",
                                  UnionRect(rect1, UnionRect(rect2, rect3)),
                                  PaintInvalidationReason::kUncacheable}));
   invalidator_.SetTracksRasterInvalidations(false);
@@ -769,7 +774,7 @@ TEST_P(DisplayItemRasterInvalidatorTest, PartialSkipCache) {
   EXPECT_THAT(
       GetRasterInvalidations(),
       UnorderedElementsAre(RasterInvalidationInfo{
-          &content, "content", UnionRect(rect1, UnionRect(rect2, rect3)),
+          content.Id(), "content", UnionRect(rect1, UnionRect(rect2, rect3)),
           PaintInvalidationReason::kUncacheable}));
   invalidator_.SetTracksRasterInvalidations(false);
 }

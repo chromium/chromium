@@ -72,7 +72,7 @@ TEST_P(NGBoxFragmentPainterTest, ScrollHitTestOrder) {
 
   EXPECT_THAT(ContentDisplayItems(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
-                          IsSameId(&text_fragment, kForegroundType)));
+                          IsSameId(text_fragment.Id(), kForegroundType)));
   HitTestData scroll_hit_test;
   scroll_hit_test.scroll_translation =
       scroller.FirstFragment().PaintProperties()->ScrollTranslation();
@@ -82,13 +82,13 @@ TEST_P(NGBoxFragmentPainterTest, ScrollHitTestOrder) {
         ContentPaintChunks(),
         ElementsAre(
             VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
+            IsPaintChunk(1, 1,
+                         PaintChunk::Id(scroller.Layer()->Id(),
+                                        DisplayItem::kLayerChunk),
+                         scroller.FirstFragment().LocalBorderBoxProperties()),
             IsPaintChunk(
                 1, 1,
-                PaintChunk::Id(*scroller.Layer(), DisplayItem::kLayerChunk),
-                scroller.FirstFragment().LocalBorderBoxProperties()),
-            IsPaintChunk(
-                1, 1,
-                PaintChunk::Id(root_fragment, DisplayItem::kScrollHitTest),
+                PaintChunk::Id(root_fragment.Id(), DisplayItem::kScrollHitTest),
                 scroller.FirstFragment().LocalBorderBoxProperties(),
                 &scroll_hit_test, IntRect(0, 0, 40, 40)),
             IsPaintChunk(1, 2)));
@@ -99,7 +99,7 @@ TEST_P(NGBoxFragmentPainterTest, ScrollHitTestOrder) {
             VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
             IsPaintChunk(
                 1, 1,
-                PaintChunk::Id(root_fragment, DisplayItem::kScrollHitTest),
+                PaintChunk::Id(root_fragment.Id(), DisplayItem::kScrollHitTest),
                 scroller.FirstFragment().LocalBorderBoxProperties(),
                 &scroll_hit_test, IntRect(0, 0, 40, 40)),
             IsPaintChunk(1, 2)));

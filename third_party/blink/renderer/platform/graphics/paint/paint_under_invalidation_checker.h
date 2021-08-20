@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_PAINT_UNDER_INVALIDATION_CHECKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_PAINT_UNDER_INVALIDATION_CHECKER_H_
 
+#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -37,7 +38,7 @@ class PaintUnderInvalidationChecker {
   // under-invalidations.
   void WouldUseCachedSubsequence(const DisplayItemClient&);
   void CheckNewChunk();
-  void WillEndSubsequence(const DisplayItemClient& client,
+  void WillEndSubsequence(DisplayItemClientId client_id,
                           wtf_size_t start_chunk_index);
 
  private:
@@ -48,7 +49,7 @@ class PaintUnderInvalidationChecker {
                      const DisplayItem& new_item,
                      const DisplayItem* old_item = nullptr) const;
   void ShowSubsequenceError(const char* reason,
-                            const DisplayItemClient* = nullptr,
+                            DisplayItemClientId = kInvalidDisplayItemClientId,
                             const PaintChunk* new_chunk = nullptr,
                             const PaintChunk* old_chunk = nullptr);
 

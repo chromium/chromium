@@ -11,7 +11,7 @@ PaintRecordBuilder::PaintRecordBuilder()
       paint_controller_(&own_paint_controller_.value()),
       context_(*paint_controller_) {
   paint_controller_->UpdateCurrentPaintChunkProperties(
-      nullptr, PropertyTreeState::Root());
+      PropertyTreeState::Root());
 }
 
 PaintRecordBuilder::PaintRecordBuilder(GraphicsContext& containing_context)

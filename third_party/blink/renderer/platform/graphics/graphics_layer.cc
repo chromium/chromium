@@ -377,7 +377,7 @@ void GraphicsLayer::Paint(Vector<PreCompositedLayerInfo>& pre_composited_layers,
     GraphicsContext context(paint_controller);
     DCHECK(layer_state_) << "No layer state for GraphicsLayer: " << DebugName();
     paint_controller.UpdateCurrentPaintChunkProperties(
-        nullptr, layer_state_->state.GetPropertyTreeState());
+        layer_state_->state.GetPropertyTreeState());
     // If this uses pre-CAP compositing, contents_opaque will be calculated by
     // CompositedLayerMapping; otherwise, it is calculated by PaintChunker.
     paint_controller.SetShouldComputeContentsOpaque(
@@ -415,7 +415,7 @@ void GraphicsLayer::Paint(Vector<PreCompositedLayerInfo>& pre_composited_layers,
     PropertyTreeState property_tree_state = GetPropertyTreeState().Unalias();
     EnsureRasterInvalidator().Generate(
         raster_invalidation_function_, chunks, FloatPoint(layer_state_->offset),
-        IntSize(Size()), property_tree_state, this);
+        IntSize(Size()), property_tree_state, this->Id());
 
     absl::optional<RasterUnderInvalidationCheckingParams>
         raster_under_invalidation_params;
@@ -557,7 +557,7 @@ void GraphicsLayer::TrackRasterInvalidation(const DisplayItemClient& client,
   // directly, e.g. from SetContentsNeedsDisplay(), etc. Other raster
   // invalidations are tracked in RasterInvalidator.
   if (auto* tracking = GetRasterInvalidationTracking())
-    tracking->AddInvalidation(&client, client.DebugName(), rect, reason);
+    tracking->AddInvalidation(client.Id(), client.DebugName(), rect, reason);
 }
 
 String GraphicsLayer::DebugName(const cc::Layer* layer) const {

@@ -42,7 +42,7 @@ TEST_P(NGTextFragmentPainterTest, TestTextStyle) {
       *cursor.Current().GetDisplayItemClient();
   EXPECT_THAT(ContentDisplayItems(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
-                          IsSameId(&text_fragment, kForegroundType)));
+                          IsSameId(text_fragment.Id(), kForegroundType)));
 }
 
 TEST_P(NGTextFragmentPainterTest, LineBreak) {

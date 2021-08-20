@@ -30,8 +30,8 @@ TEST_F(PaintRecordBuilderTest, TransientPaintController) {
   builder.EndRecording(canvas);
 
   EXPECT_THAT(context.GetPaintController().GetDisplayItemList(),
-              ElementsAre(IsSameId(&client, kBackgroundType),
-                          IsSameId(&client, kForegroundType)));
+              ElementsAre(IsSameId(client.Id(), kBackgroundType),
+                          IsSameId(client.Id(), kForegroundType)));
   EXPECT_FALSE(ClientCacheIsValid(context.GetPaintController(), client));
 }
 
@@ -57,8 +57,8 @@ TEST_F(PaintRecordBuilderTest, LastingPaintController) {
   EXPECT_TRUE(ClientCacheIsValid(client));
 
   EXPECT_THAT(GetPaintController().GetDisplayItemList(),
-              ElementsAre(IsSameId(&client, kBackgroundType),
-                          IsSameId(&client, kForegroundType)));
+              ElementsAre(IsSameId(client.Id(), kBackgroundType),
+                          IsSameId(client.Id(), kForegroundType)));
 
   {
     PaintController::CycleScope cycle_scope(GetPaintController());
@@ -72,8 +72,8 @@ TEST_F(PaintRecordBuilderTest, LastingPaintController) {
   }
 
   EXPECT_THAT(GetPaintController().GetDisplayItemList(),
-              ElementsAre(IsSameId(&client, kBackgroundType),
-                          IsSameId(&client, kForegroundType)));
+              ElementsAre(IsSameId(client.Id(), kBackgroundType),
+                          IsSameId(client.Id(), kForegroundType)));
   EXPECT_TRUE(ClientCacheIsValid(client));
 }
 
@@ -89,8 +89,8 @@ TEST_F(PaintRecordBuilderTest, TransientAndAnotherPaintController) {
     GetPaintController().CommitNewDisplayItems();
   }
   EXPECT_THAT(GetPaintController().GetDisplayItemList(),
-              ElementsAre(IsSameId(&client, kBackgroundType),
-                          IsSameId(&client, kForegroundType)));
+              ElementsAre(IsSameId(client.Id(), kBackgroundType),
+                          IsSameId(client.Id(), kForegroundType)));
   EXPECT_TRUE(ClientCacheIsValid(client));
 
   {

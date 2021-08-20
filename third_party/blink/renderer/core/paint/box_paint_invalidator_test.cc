@@ -234,7 +234,7 @@ TEST_P(BoxPaintInvalidatorTest, ComputePaintInvalidationReasonOutline) {
   UpdateAllLifecyclePhasesForTest();
   EXPECT_THAT(GetRasterInvalidationTracking()->Invalidations(),
               UnorderedElementsAre(RasterInvalidationInfo{
-                  object, object->DebugName(), IntRect(0, 0, 72, 142),
+                  object->Id(), object->DebugName(), IntRect(0, 0, 72, 142),
                   PaintInvalidationReason::kStyle}));
   GetDocument().View()->SetTracksRasterInvalidations(false);
 
@@ -244,7 +244,7 @@ TEST_P(BoxPaintInvalidatorTest, ComputePaintInvalidationReasonOutline) {
   UpdateAllLifecyclePhasesForTest();
   EXPECT_THAT(GetRasterInvalidationTracking()->Invalidations(),
               UnorderedElementsAre(RasterInvalidationInfo{
-                  object, object->DebugName(), IntRect(0, 0, 122, 142),
+                  object->Id(), object->DebugName(), IntRect(0, 0, 122, 142),
                   PaintInvalidationReason::kGeometry}));
   GetDocument().View()->SetTracksRasterInvalidations(false);
 }

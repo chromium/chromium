@@ -51,7 +51,7 @@ class PaintControllerTestBase : public testing::Test {
  protected:
   PaintControllerTestBase()
       : root_paint_property_client_("root"),
-        root_paint_chunk_id_(root_paint_property_client_,
+        root_paint_chunk_id_(root_paint_property_client_.Id(),
                              DisplayItem::kUninitializedType),
         paint_controller_(std::make_unique<PaintController>()) {}
 
@@ -62,7 +62,8 @@ class PaintControllerTestBase : public testing::Test {
   void InitRootChunk() { InitRootChunk(GetPaintController()); }
   void InitRootChunk(PaintController& paint_controller) {
     paint_controller.UpdateCurrentPaintChunkProperties(
-        &root_paint_chunk_id_, DefaultPaintChunkProperties());
+        root_paint_chunk_id_, root_paint_property_client_,
+        DefaultPaintChunkProperties());
     paint_controller.RecordDebugInfo(root_paint_property_client_);
   }
   const PaintChunk::Id DefaultRootChunkId() const {
@@ -94,7 +95,7 @@ class PaintControllerTestBase : public testing::Test {
   using SubsequenceMarkers = PaintController::SubsequenceMarkers;
   const SubsequenceMarkers* GetSubsequenceMarkers(
       const DisplayItemClient& client) {
-    return paint_controller_->GetSubsequenceMarkers(client);
+    return paint_controller_->GetSubsequenceMarkers(client.Id());
   }
 
   static bool ClientCacheIsValid(const PaintController& paint_controller,
@@ -119,11 +120,11 @@ class PaintControllerTestBase : public testing::Test {
 MATCHER_P(IsSameId, id, "") {
   return arg.GetId() == id;
 }
-MATCHER_P2(IsSameId, client, type, "") {
-  return arg.GetId() == DisplayItem::Id(*client, type);
+MATCHER_P2(IsSameId, client_id, type, "") {
+  return arg.GetId() == DisplayItem::Id(client_id, type);
 }
-MATCHER_P3(IsSameId, client, type, fragment, "") {
-  return arg.GetId() == DisplayItem::Id(*client, type, fragment);
+MATCHER_P3(IsSameId, client_id, type, fragment, "") {
+  return arg.GetId() == DisplayItem::Id(client_id, type, fragment);
 }
 
 // Matcher for checking paint chunks. Sample usage:

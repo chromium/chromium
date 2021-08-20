@@ -20,10 +20,11 @@ namespace blink {
 class PLATFORM_EXPORT DrawingDisplayItem : public DisplayItem {
  public:
   DISABLE_CFI_PERF
-  DrawingDisplayItem(const DisplayItemClient& client,
+  DrawingDisplayItem(DisplayItemClientId client_id,
                      Type type,
                      const IntRect& visual_rect,
                      sk_sp<const PaintRecord> record,
+                     RasterEffectOutset raster_effect_outset,
                      PaintInvalidationReason paint_invalidation_reason =
                          PaintInvalidationReason::kJustCreated);
 
@@ -72,16 +73,18 @@ class PLATFORM_EXPORT DrawingDisplayItem : public DisplayItem {
 // TODO(dcheng): Move this ctor back inline once the clang plugin is fixed.
 DISABLE_CFI_PERF
 inline DrawingDisplayItem::DrawingDisplayItem(
-    const DisplayItemClient& client,
+    DisplayItemClientId client_id,
     Type type,
     const IntRect& visual_rect,
     sk_sp<const PaintRecord> record,
+    RasterEffectOutset raster_effect_outset,
     PaintInvalidationReason paint_invalidation_reason)
-    : DisplayItem(client,
+    : DisplayItem(client_id,
                   type,
                   UNLIKELY(ShouldTightenVisualRect(record))
                       ? TightenVisualRect(visual_rect, record)
                       : visual_rect,
+                  raster_effect_outset,
                   paint_invalidation_reason,
                   /* draws_content*/ record && record->size()),
       record_(DrawsContent() ? std::move(record) : nullptr) {

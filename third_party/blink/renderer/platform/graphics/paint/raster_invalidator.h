@@ -37,12 +37,13 @@ class PLATFORM_EXPORT RasterInvalidator {
 
   // Generate raster invalidations for a subset of the paint chunks in the
   // paint artifact.
-  void Generate(RasterInvalidationFunction,
-                const PaintChunkSubset&,
-                const FloatPoint& layer_offset,
-                const IntSize& layer_bounds,
-                const PropertyTreeState& layer_state,
-                const DisplayItemClient* layer_client = nullptr);
+  void Generate(
+      RasterInvalidationFunction,
+      const PaintChunkSubset&,
+      const FloatPoint& layer_offset,
+      const IntSize& layer_bounds,
+      const PropertyTreeState& layer_state,
+      DisplayItemClientId layer_client_id = kInvalidDisplayItemClientId);
 
   // Called when we repainted PaintArtifact but a ContentLayerClientImpl doesn't
   // have anything changed. We just need to let |old_paint_artifact_| point to
@@ -117,24 +118,24 @@ class PLATFORM_EXPORT RasterInvalidator {
       RasterInvalidationFunction,
       const PaintChunkInfo& old_chunk_info,
       const PaintChunkInfo& new_chunk_info,
-      const DisplayItemClient&);
+      DisplayItemClientId);
 
   // |old_or_new| indicates whether |client| is from the old or new
   // PaintArtifact, so we know which one can provide the client's debug name.
   enum ClientIsOldOrNew { kClientIsOld, kClientIsNew };
   void AddRasterInvalidation(RasterInvalidationFunction function,
                              const IntRect& rect,
-                             const DisplayItemClient& client,
+                             DisplayItemClientId client_id,
                              PaintInvalidationReason reason,
                              ClientIsOldOrNew old_or_new) {
     if (rect.IsEmpty())
       return;
     function.Run(rect);
     if (tracking_)
-      TrackRasterInvalidation(rect, client, reason, old_or_new);
+      TrackRasterInvalidation(rect, client_id, reason, old_or_new);
   }
   void TrackRasterInvalidation(const IntRect&,
-                               const DisplayItemClient&,
+                               DisplayItemClientId,
                                PaintInvalidationReason,
                                ClientIsOldOrNew);
 

@@ -1476,7 +1476,7 @@ TEST_F(WebPluginContainerTest, CompositedPluginCAP) {
   auto paint_controller =
       std::make_unique<PaintController>(PaintController::kTransient);
   paint_controller->UpdateCurrentPaintChunkProperties(
-      nullptr, PropertyTreeState::Root());
+      PropertyTreeState::Root());
   GraphicsContext graphics_context(*paint_controller);
   container->Paint(graphics_context, kGlobalPaintNormalPhase,
                    CullRect(IntRect(10, 10, 400, 300)));

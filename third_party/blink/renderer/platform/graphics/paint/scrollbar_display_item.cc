@@ -18,16 +18,18 @@
 namespace blink {
 
 ScrollbarDisplayItem::ScrollbarDisplayItem(
-    const DisplayItemClient& client,
+    DisplayItemClientId client_id,
     Type type,
     scoped_refptr<cc::Scrollbar> scrollbar,
     const IntRect& visual_rect,
     const TransformPaintPropertyNode* scroll_translation,
     CompositorElementId element_id,
+    RasterEffectOutset outset,
     PaintInvalidationReason paint_invalidation_reason)
-    : DisplayItem(client,
+    : DisplayItem(client_id,
                   type,
                   visual_rect,
+                  outset,
                   paint_invalidation_reason,
                   /*draws_content*/ true),
       data_(new Data{std::move(scrollbar), scroll_translation, element_id}) {
@@ -119,7 +121,8 @@ void ScrollbarDisplayItem::Record(
 
   paint_controller.CreateAndAppend<ScrollbarDisplayItem>(
       client, type, std::move(scrollbar), visual_rect, scroll_translation,
-      element_id, client.GetPaintInvalidationReason());
+      element_id, client.VisualRectOutsetForRasterEffects(),
+      client.GetPaintInvalidationReason());
   paint_controller.RecordDebugInfo(client);
 }
 

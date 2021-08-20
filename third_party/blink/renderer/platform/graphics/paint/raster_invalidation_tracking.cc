@@ -37,7 +37,7 @@ bool RasterInvalidationTracking::IsTracingRasterInvalidations() {
 }
 
 void RasterInvalidationTracking::AddInvalidation(
-    const DisplayItemClient* client,
+    DisplayItemClientId client_id,
     const String& debug_name,
     const IntRect& rect,
     PaintInvalidationReason reason) {
@@ -45,7 +45,7 @@ void RasterInvalidationTracking::AddInvalidation(
     return;
 
   RasterInvalidationInfo info;
-  info.client = client;
+  info.client_id = client_id;
   info.client_debug_name = debug_name;
   info.rect = rect;
   info.reason = reason;

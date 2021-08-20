@@ -78,7 +78,7 @@ static bool CheckChunkInvalidation(
   const auto& chunk = *(chunks.begin() + index);
   return ChunkRectToLayer(chunk_rect ? *chunk_rect : chunk.drawable_bounds,
                           layer_offset, mapper) == info.rect &&
-         &chunk.id.client == info.client && reason == info.reason;
+         chunk.id.client_id == info.client_id && reason == info.reason;
 }
 
 MATCHER_P5(ChunkInvalidation, chunks, index, reason, layer_offset, mapper, "") {
@@ -98,15 +98,16 @@ MATCHER_P3(IncrementalInvalidation, chunks, index, chunk_rect, "") {
 }
 
 TEST_P(RasterInvalidatorTest, ImplicitFullLayerInvalidation) {
-  PaintChunkSubset chunks(TestPaintArtifact().Chunk(0).Build());
+  scoped_refptr<PaintArtifact> artifact = TestPaintArtifact().Chunk(0).Build();
+  PaintChunkSubset chunks(artifact);
 
   invalidator_.SetTracksRasterInvalidations(true);
   invalidator_.Generate(base::DoNothing(), chunks, kDefaultLayerOffset,
                         kDefaultLayerBounds, DefaultPropertyTreeState());
-  const auto& client = chunks.begin()->id.client;
+  DisplayItemClientId client_id = chunks.begin()->id.client_id;
   EXPECT_THAT(TrackedRasterInvalidations(),
               ElementsAre(RasterInvalidationInfo{
-                  &client, client.DebugName(),
+                  client_id, artifact->ClientDebugName(client_id),
                   IntRect(IntPoint(), IntSize(kDefaultLayerBounds)),
                   PaintInvalidationReason::kFullLayer}));
   FinishCycle(chunks);

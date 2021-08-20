@@ -1474,8 +1474,9 @@ TEST_P(PaintLayerScrollableAreaTest,
       const auto& paint_chunks = ContentPaintChunks();
       bool found_root_scrollbar = false;
       for (const auto& chunk : paint_chunks) {
-        if (chunk.id == PaintChunk::Id(*root_scrollable->VerticalScrollbar(),
-                                       DisplayItem::kCustomScrollbarHitTest)) {
+        if (chunk.id ==
+            PaintChunk::Id(root_scrollable->VerticalScrollbar()->Id(),
+                           DisplayItem::kCustomScrollbarHitTest)) {
           EXPECT_EQ(
               &chunk.properties.Transform(),
               visual_viewport.GetOverscrollElasticityTransformNode()->Parent());
@@ -1508,8 +1509,9 @@ TEST_P(PaintLayerScrollableAreaTest,
       const auto& paint_chunks = ContentPaintChunks();
       bool found_subscroller_scrollbar = false;
       for (const auto& chunk : paint_chunks) {
-        if (chunk.id == PaintChunk::Id(*scrollable_area->VerticalScrollbar(),
-                                       DisplayItem::kCustomScrollbarHitTest)) {
+        if (chunk.id ==
+            PaintChunk::Id(scrollable_area->VerticalScrollbar()->Id(),
+                           DisplayItem::kCustomScrollbarHitTest)) {
           EXPECT_EQ(&chunk.properties.Transform(),
                     &paint_properties.Transform());
 

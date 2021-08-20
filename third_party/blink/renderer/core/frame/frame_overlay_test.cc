@@ -151,13 +151,14 @@ TEST_P(FrameOverlayTest, DeviceEmulationScale) {
                               &state](PaintController& paint_controller) {
     EXPECT_THAT(
         paint_controller.GetDisplayItemList(),
-        ElementsAre(IsSameId(frame_overlay.get(), DisplayItem::kFrameOverlay)));
+        ElementsAre(IsSameId(frame_overlay->Id(), DisplayItem::kFrameOverlay)));
     EXPECT_EQ(IntRect(0, 0, 800, 600),
               paint_controller.GetDisplayItemList()[0].VisualRect());
     EXPECT_THAT(
         paint_controller.PaintChunks(),
         ElementsAre(IsPaintChunk(
-            0, 1, PaintChunk::Id(*frame_overlay, DisplayItem::kFrameOverlay),
+            0, 1,
+            PaintChunk::Id(frame_overlay->Id(), DisplayItem::kFrameOverlay),
             state, nullptr, IntRect(0, 0, 800, 600))));
   };
 

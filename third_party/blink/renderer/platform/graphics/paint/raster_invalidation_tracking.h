@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/geometry/region.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/paint_invalidation_reason.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
@@ -20,14 +21,12 @@ struct LayerDebugInfo;
 
 namespace blink {
 
-class DisplayItemClient;
-
 struct RasterInvalidationInfo {
   DISALLOW_NEW();
 
   // This is for comparison only. Don't dereference because the client may have
   // died.
-  const DisplayItemClient* client = nullptr;
+  DisplayItemClientId client_id = kInvalidDisplayItemClientId;
   String client_debug_name;
   // For CAP, this is set in PaintArtifactCompositor when converting chunk
   // raster invalidations to cc raster invalidations.
@@ -37,8 +36,9 @@ struct RasterInvalidationInfo {
 
 inline bool operator==(const RasterInvalidationInfo& a,
                        const RasterInvalidationInfo& b) {
-  return a.client == b.client && a.client_debug_name == b.client_debug_name &&
-         a.rect == b.rect && a.reason == b.reason;
+  return a.client_id == b.client_id &&
+         a.client_debug_name == b.client_debug_name && a.rect == b.rect &&
+         a.reason == b.reason;
 }
 inline bool operator!=(const RasterInvalidationInfo& a,
                        const RasterInvalidationInfo& b) {
@@ -47,7 +47,7 @@ inline bool operator!=(const RasterInvalidationInfo& a,
 
 inline std::ostream& operator<<(std::ostream& os,
                                 const RasterInvalidationInfo& info) {
-  return os << info.client << ":" << info.client_debug_name
+  return os << info.client_id << ":" << info.client_debug_name
             << " rect=" << info.rect << " reason=" << info.reason;
 }
 
@@ -75,7 +75,7 @@ class PLATFORM_EXPORT RasterInvalidationTracking {
 
   static bool IsTracingRasterInvalidations();
 
-  void AddInvalidation(const DisplayItemClient*,
+  void AddInvalidation(DisplayItemClientId,
                        const String& debug_name,
                        const IntRect&,
                        PaintInvalidationReason);

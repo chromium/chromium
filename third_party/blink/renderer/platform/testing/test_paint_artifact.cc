@@ -39,9 +39,9 @@ TestPaintArtifact& TestPaintArtifact::Chunk(DisplayItemClient& client,
                                             DisplayItem::Type type) {
   auto& display_item_list = paint_artifact_->GetDisplayItemList();
   paint_artifact_->PaintChunks().emplace_back(
-      display_item_list.size(), display_item_list.size(),
-      PaintChunk::Id(client, type), PropertyTreeState::Root());
-  paint_artifact_->RecordDebugInfo(client, client.DebugName(),
+      display_item_list.size(), display_item_list.size(), client,
+      PaintChunk::Id(client.Id(), type), PropertyTreeState::Root());
+  paint_artifact_->RecordDebugInfo(client.Id(), client.DebugName(),
                                    client.OwnerNodeId());
   // Assume PaintController has processed this chunk.
   paint_artifact_->PaintChunks().back().client_is_just_created = false;
@@ -71,9 +71,10 @@ TestPaintArtifact& TestPaintArtifact::ForeignLayer(
   DEFINE_STATIC_LOCAL(LiteralDebugNameClient, client, ("ForeignLayer"));
   paint_artifact_->GetDisplayItemList()
       .AllocateAndConstruct<ForeignLayerDisplayItem>(
-          client, DisplayItem::kForeignLayerFirst, std::move(layer), offset,
+          client.Id(), DisplayItem::kForeignLayerFirst, std::move(layer),
+          offset, RasterEffectOutset::kNone,
           client.GetPaintInvalidationReason());
-  paint_artifact_->RecordDebugInfo(client, client.DebugName(),
+  paint_artifact_->RecordDebugInfo(client.Id(), client.DebugName(),
                                    client.OwnerNodeId());
   DidAddDisplayItem();
   return *this;
@@ -91,10 +92,11 @@ TestPaintArtifact& TestPaintArtifact::RectDrawing(DisplayItemClient& client,
   }
   paint_artifact_->GetDisplayItemList()
       .AllocateAndConstruct<DrawingDisplayItem>(
-          client, DisplayItem::kDrawingFirst, bounds,
+          client.Id(), DisplayItem::kDrawingFirst, bounds,
           recorder.finishRecordingAsPicture(),
+          client.VisualRectOutsetForRasterEffects(),
           client.GetPaintInvalidationReason());
-  paint_artifact_->RecordDebugInfo(client, client.DebugName(),
+  paint_artifact_->RecordDebugInfo(client.Id(), client.DebugName(),
                                    client.OwnerNodeId());
   DidAddDisplayItem();
   return *this;

@@ -48,6 +48,7 @@ DrawingRecorder::~DrawingRecorder() {
 
   context_.GetPaintController().CreateAndAppend<DrawingDisplayItem>(
       client_, type_, visual_rect_, context_.EndRecording(),
+      client_.VisualRectOutsetForRasterEffects(),
       client_.GetPaintInvalidationReason());
 }
 

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
 
+#include <cinttypes>
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/foreign_layer_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
@@ -35,7 +36,7 @@ void DisplayItem::Destruct() {
 bool DisplayItem::EqualsForUnderInvalidation(const DisplayItem& other) const {
   DCHECK(RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled());
   SECURITY_CHECK(!IsTombstone());
-  if (client_ != other.client_ || type_ != other.type_ ||
+  if (client_id_ != other.client_id_ || type_ != other.type_ ||
       fragment_ != other.fragment_ ||
       raster_effect_outset_ != other.raster_effect_outset_ ||
       draws_content_ != other.draws_content_)
@@ -221,7 +222,7 @@ void DisplayItem::PropertiesAsJSON(JSONObject& json,
   if (IsSubsequenceTombstone())
     return;
 
-  json.SetString("clientDebugName", paint_artifact.ClientDebugName(*client_));
+  json.SetString("clientDebugName", paint_artifact.ClientDebugName(client_id_));
   if (client_known_to_be_alive) {
     json.SetString("invalidation", PaintInvalidationReasonToString(
                                        GetPaintInvalidationReason()));
@@ -247,7 +248,8 @@ void DisplayItem::PropertiesAsJSON(JSONObject& json,
 #endif  // DCHECK_IS_ON()
 
 String DisplayItem::Id::ToString() const {
-  return String::Format("%p:%d:%d", &client, static_cast<int>(type), fragment);
+  return String::Format("0x%" PRIuPTR ":%d:%d", client_id,
+                        static_cast<int>(type), fragment);
 }
 
 String DisplayItem::Id::ToString(const PaintArtifact& paint_artifact) const {

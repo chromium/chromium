@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
+#include "third_party/blink/renderer/platform/graphics/paint/display_item_client.h"
 #include "third_party/blink/renderer/platform/graphics/paint/hit_test_data.h"
 #include "third_party/blink/renderer/platform/graphics/paint/layer_selection_data.h"
 #include "third_party/blink/renderer/platform/graphics/paint/raster_invalidation_tracking.h"
@@ -36,6 +37,7 @@ struct PLATFORM_EXPORT PaintChunk {
 
   PaintChunk(wtf_size_t begin,
              wtf_size_t end,
+             const DisplayItemClient& client,
              const Id& id,
              const PropertyTreeStateOrAlias& props,
              bool effectively_invisible = false)
@@ -47,8 +49,8 @@ struct PLATFORM_EXPORT PaintChunk {
         properties(props),
         text_known_to_be_on_opaque_background(true),
         has_text(false),
-        is_cacheable(id.client.IsCacheable()),
-        client_is_just_created(id.client.IsJustCreated()),
+        is_cacheable(client.IsCacheable()),
+        client_is_just_created(client.IsJustCreated()),
         is_moved_from_cached_subsequence(false),
         effectively_invisible(effectively_invisible) {}
 
@@ -72,12 +74,7 @@ struct PLATFORM_EXPORT PaintChunk {
         is_cacheable(other.is_cacheable),
         client_is_just_created(false),
         is_moved_from_cached_subsequence(true),
-        effectively_invisible(other.effectively_invisible) {
-#if DCHECK_IS_ON()
-    DCHECK(other.id.client.IsAlive());
-    DCHECK(!other.id.client.IsJustCreated());
-#endif
-  }
+        effectively_invisible(other.effectively_invisible) {}
 
   wtf_size_t size() const {
     DCHECK_GE(end_index, begin_index);
@@ -93,9 +90,6 @@ struct PLATFORM_EXPORT PaintChunk {
   bool Matches(const Id& other_id) const {
     if (!is_cacheable || id != other_id)
       return false;
-#if DCHECK_IS_ON()
-    DCHECK(id.client.IsAlive());
-#endif
     // A chunk whose client is just created should not match any cached chunk,
     // even if it's id equals the old chunk's id (which may happen if this
     // chunk's client is just created at the same address of the old chunk's

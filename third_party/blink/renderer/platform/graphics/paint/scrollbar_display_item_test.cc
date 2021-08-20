@@ -48,9 +48,10 @@ TEST(ScrollbarDisplayItemTest, HorizontalSolidColorScrollbar) {
   IntRect scrollbar_rect(0, 90, 100, 10);
   auto scroll_translation = CreateScrollTranslation();
   auto element_id = ScrollbarElementId(*scrollbar);
-  ScrollbarDisplayItem display_item(client, DisplayItem::kScrollbarHorizontal,
-                                    scrollbar, scrollbar_rect,
-                                    scroll_translation.get(), element_id);
+  ScrollbarDisplayItem display_item(
+      client.Id(), DisplayItem::kScrollbarHorizontal, scrollbar, scrollbar_rect,
+      scroll_translation.get(), element_id,
+      client.VisualRectOutsetForRasterEffects());
   auto layer = display_item.CreateOrReuseLayer(nullptr);
   ASSERT_EQ(cc::ScrollbarLayerBase::kSolidColor,
             layer->GetScrollbarLayerType());
@@ -80,9 +81,10 @@ TEST(ScrollbarDisplayItemTest, VerticalSolidColorScrollbar) {
   IntRect scrollbar_rect(90, 0, 10, 100);
   auto scroll_translation = CreateScrollTranslation();
   auto element_id = ScrollbarElementId(*scrollbar);
-  ScrollbarDisplayItem display_item(client, DisplayItem::kScrollbarHorizontal,
-                                    scrollbar, scrollbar_rect,
-                                    scroll_translation.get(), element_id);
+  ScrollbarDisplayItem display_item(
+      client.Id(), DisplayItem::kScrollbarHorizontal, scrollbar, scrollbar_rect,
+      scroll_translation.get(), element_id,
+      client.VisualRectOutsetForRasterEffects());
   auto layer = display_item.CreateOrReuseLayer(nullptr);
   ASSERT_EQ(cc::ScrollbarLayerBase::kSolidColor,
             layer->GetScrollbarLayerType());
@@ -106,9 +108,10 @@ TEST(ScrollbarDisplayItemTest, PaintedScrollbar) {
   IntRect scrollbar_rect(0, 90, 100, 10);
   auto scroll_translation = CreateScrollTranslation();
   auto element_id = ScrollbarElementId(*scrollbar);
-  ScrollbarDisplayItem display_item(client, DisplayItem::kScrollbarHorizontal,
-                                    scrollbar, scrollbar_rect,
-                                    scroll_translation.get(), element_id);
+  ScrollbarDisplayItem display_item(
+      client.Id(), DisplayItem::kScrollbarHorizontal, scrollbar, scrollbar_rect,
+      scroll_translation.get(), element_id,
+      client.VisualRectOutsetForRasterEffects());
   auto layer = display_item.CreateOrReuseLayer(nullptr);
   ASSERT_EQ(cc::ScrollbarLayerBase::kPainted, layer->GetScrollbarLayerType());
   EXPECT_TRUE(layer->HitTestable());
@@ -125,9 +128,10 @@ TEST(ScrollbarDisplayItemTest, PaintedScrollbarOverlayNonNinePatch) {
   IntRect scrollbar_rect(0, 90, 100, 10);
   auto scroll_translation = CreateScrollTranslation();
   auto element_id = ScrollbarElementId(*scrollbar);
-  ScrollbarDisplayItem display_item(client, DisplayItem::kScrollbarHorizontal,
-                                    scrollbar, scrollbar_rect,
-                                    scroll_translation.get(), element_id);
+  ScrollbarDisplayItem display_item(
+      client.Id(), DisplayItem::kScrollbarHorizontal, scrollbar, scrollbar_rect,
+      scroll_translation.get(), element_id,
+      client.VisualRectOutsetForRasterEffects());
   auto layer = display_item.CreateOrReuseLayer(nullptr);
   // We should create PaintedScrollbarLayer instead of
   // PaintedOverlayScrollbarLayer for non-nine-patch overlay scrollbars.
@@ -147,9 +151,10 @@ TEST(ScrollbarDisplayItemTest, PaintedScrollbarOverlayNinePatch) {
   IntRect scrollbar_rect(0, 90, 100, 10);
   auto scroll_translation = CreateScrollTranslation();
   auto element_id = ScrollbarElementId(*scrollbar);
-  ScrollbarDisplayItem display_item(client, DisplayItem::kScrollbarHorizontal,
-                                    scrollbar, scrollbar_rect,
-                                    scroll_translation.get(), element_id);
+  ScrollbarDisplayItem display_item(
+      client.Id(), DisplayItem::kScrollbarHorizontal, scrollbar, scrollbar_rect,
+      scroll_translation.get(), element_id,
+      client.VisualRectOutsetForRasterEffects());
   auto layer = display_item.CreateOrReuseLayer(nullptr);
   ASSERT_EQ(cc::ScrollbarLayerBase::kPaintedOverlay,
             layer->GetScrollbarLayerType());
@@ -165,21 +170,24 @@ TEST(ScrollbarDisplayItemTest, CreateOrReuseLayer) {
   IntRect scrollbar_rect(0, 90, 100, 10);
   auto scroll_translation = CreateScrollTranslation();
   auto element_id = ScrollbarElementId(*scrollbar1);
-  ScrollbarDisplayItem display_item1a(client, DisplayItem::kScrollbarHorizontal,
-                                      scrollbar1, scrollbar_rect,
-                                      scroll_translation.get(), element_id);
+  ScrollbarDisplayItem display_item1a(
+      client.Id(), DisplayItem::kScrollbarHorizontal, scrollbar1,
+      scrollbar_rect, scroll_translation.get(), element_id,
+      client.VisualRectOutsetForRasterEffects());
   auto layer1 = display_item1a.CreateOrReuseLayer(nullptr);
 
-  ScrollbarDisplayItem display_item1b(client, DisplayItem::kScrollbarHorizontal,
-                                      scrollbar1, scrollbar_rect,
-                                      scroll_translation.get(), element_id);
+  ScrollbarDisplayItem display_item1b(
+      client.Id(), DisplayItem::kScrollbarHorizontal, scrollbar1,
+      scrollbar_rect, scroll_translation.get(), element_id,
+      client.VisualRectOutsetForRasterEffects());
   // Should reuse layer for a different display item and the same scrollbar.
   EXPECT_EQ(layer1.get(), display_item1b.CreateOrReuseLayer(layer1.get()));
 
   auto scrollbar2 = base::MakeRefCounted<cc::FakeScrollbar>();
-  ScrollbarDisplayItem display_item2(client, DisplayItem::kScrollbarHorizontal,
-                                     scrollbar2, scrollbar_rect,
-                                     scroll_translation.get(), element_id);
+  ScrollbarDisplayItem display_item2(
+      client.Id(), DisplayItem::kScrollbarHorizontal, scrollbar2,
+      scrollbar_rect, scroll_translation.get(), element_id,
+      client.VisualRectOutsetForRasterEffects());
   // Should create new layer for a different scrollbar.
   EXPECT_NE(layer1.get(), display_item2.CreateOrReuseLayer(layer1.get()));
 
@@ -189,9 +197,10 @@ TEST(ScrollbarDisplayItemTest, CreateOrReuseLayer) {
   // the same scrollbar.
   EXPECT_NE(layer1.get(), display_item1a.CreateOrReuseLayer(layer1.get()));
 
-  ScrollbarDisplayItem display_item1c(client, DisplayItem::kScrollbarHorizontal,
-                                      scrollbar1, scrollbar_rect,
-                                      scroll_translation.get(), element_id);
+  ScrollbarDisplayItem display_item1c(
+      client.Id(), DisplayItem::kScrollbarHorizontal, scrollbar1,
+      scrollbar_rect, scroll_translation.get(), element_id,
+      client.VisualRectOutsetForRasterEffects());
   // Should reuse layer for a different display item and the same scrollbar.
   EXPECT_NE(layer1.get(), display_item1b.CreateOrReuseLayer(layer1.get()));
 }

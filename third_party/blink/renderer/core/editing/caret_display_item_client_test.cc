@@ -105,8 +105,8 @@ TEST_P(CaretDisplayItemClientTest, CaretPaintInvalidation) {
 
   EXPECT_THAT(GetRasterInvalidationTracking()->Invalidations(),
               UnorderedElementsAre(RasterInvalidationInfo{
-                  &GetCaretDisplayItemClient(), "Caret", IntRect(8, 8, 1, 1),
-                  PaintInvalidationReason::kAppeared}));
+                  GetCaretDisplayItemClient().Id(), "Caret",
+                  IntRect(8, 8, 1, 1), PaintInvalidationReason::kAppeared}));
   GetDocument().View()->SetTracksRasterInvalidations(false);
 
   // Move the caret to the end of the text. Should invalidate both the old and
@@ -128,11 +128,11 @@ TEST_P(CaretDisplayItemClientTest, CaretPaintInvalidation) {
 
   EXPECT_THAT(GetRasterInvalidationTracking()->Invalidations(),
               UnorderedElementsAre(
-                  RasterInvalidationInfo{&GetCaretDisplayItemClient(), "Caret",
-                                         IntRect(8, 8, 1, 1),
+                  RasterInvalidationInfo{GetCaretDisplayItemClient().Id(),
+                                         "Caret", IntRect(8, 8, 1, 1),
                                          PaintInvalidationReason::kCaret},
-                  RasterInvalidationInfo{&GetCaretDisplayItemClient(), "Caret",
-                                         IntRect(8 + delta, 8, 1, 1),
+                  RasterInvalidationInfo{GetCaretDisplayItemClient().Id(),
+                                         "Caret", IntRect(8 + delta, 8, 1, 1),
                                          PaintInvalidationReason::kCaret}));
   GetDocument().View()->SetTracksRasterInvalidations(false);
 
@@ -153,8 +153,8 @@ TEST_P(CaretDisplayItemClientTest, CaretPaintInvalidation) {
   EXPECT_THAT(
       GetRasterInvalidationTracking()->Invalidations(),
       UnorderedElementsAre(RasterInvalidationInfo{
-          &GetCaretDisplayItemClient(), "Caret", IntRect(8 + delta, 8, 1, 1),
-          PaintInvalidationReason::kDisappeared}));
+          GetCaretDisplayItemClient().Id(), "Caret",
+          IntRect(8 + delta, 8, 1, 1), PaintInvalidationReason::kDisappeared}));
   GetDocument().View()->SetTracksRasterInvalidations(false);
 }
 
@@ -201,11 +201,11 @@ TEST_P(CaretDisplayItemClientTest, CaretMovesBetweenBlocks) {
 
   EXPECT_THAT(GetRasterInvalidationTracking()->Invalidations(),
               UnorderedElementsAre(
-                  RasterInvalidationInfo{&GetCaretDisplayItemClient(), "Caret",
-                                         IntRect(8, 8, 1, 1),
+                  RasterInvalidationInfo{GetCaretDisplayItemClient().Id(),
+                                         "Caret", IntRect(8, 8, 1, 1),
                                          PaintInvalidationReason::kCaret},
-                  RasterInvalidationInfo{&GetCaretDisplayItemClient(), "Caret",
-                                         IntRect(8, 9, 1, 1),
+                  RasterInvalidationInfo{GetCaretDisplayItemClient().Id(),
+                                         "Caret", IntRect(8, 9, 1, 1),
                                          PaintInvalidationReason::kCaret}));
   GetDocument().View()->SetTracksRasterInvalidations(false);
 
@@ -229,11 +229,11 @@ TEST_P(CaretDisplayItemClientTest, CaretMovesBetweenBlocks) {
 
   EXPECT_THAT(GetRasterInvalidationTracking()->Invalidations(),
               UnorderedElementsAre(
-                  RasterInvalidationInfo{&GetCaretDisplayItemClient(), "Caret",
-                                         IntRect(8, 8, 1, 1),
+                  RasterInvalidationInfo{GetCaretDisplayItemClient().Id(),
+                                         "Caret", IntRect(8, 8, 1, 1),
                                          PaintInvalidationReason::kCaret},
-                  RasterInvalidationInfo{&GetCaretDisplayItemClient(), "Caret",
-                                         IntRect(8, 9, 1, 1),
+                  RasterInvalidationInfo{GetCaretDisplayItemClient().Id(),
+                                         "Caret", IntRect(8, 9, 1, 1),
                                          PaintInvalidationReason::kCaret}));
   GetDocument().View()->SetTracksRasterInvalidations(false);
 }
@@ -335,11 +335,11 @@ TEST_P(CaretDisplayItemClientTest, CaretHideMoveAndShow) {
 
   EXPECT_THAT(GetRasterInvalidationTracking()->Invalidations(),
               UnorderedElementsAre(
-                  RasterInvalidationInfo{&GetCaretDisplayItemClient(), "Caret",
-                                         IntRect(8, 8, 1, 1),
+                  RasterInvalidationInfo{GetCaretDisplayItemClient().Id(),
+                                         "Caret", IntRect(8, 8, 1, 1),
                                          PaintInvalidationReason::kCaret},
-                  RasterInvalidationInfo{&GetCaretDisplayItemClient(), "Caret",
-                                         IntRect(8 + delta, 8, 1, 1),
+                  RasterInvalidationInfo{GetCaretDisplayItemClient().Id(),
+                                         "Caret", IntRect(8 + delta, 8, 1, 1),
                                          PaintInvalidationReason::kCaret}));
   GetDocument().View()->SetTracksRasterInvalidations(false);
 }
@@ -413,17 +413,17 @@ TEST_P(CaretDisplayItemClientTest, FullDocumentPaintingWithCaret) {
   }
   EXPECT_THAT(ContentDisplayItems(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
-                          IsSameId(text_inline_box, kForegroundType)));
+                          IsSameId(text_inline_box->Id(), kForegroundType)));
 
   div.focus();
   UpdateAllLifecyclePhasesForTest();
 
-  EXPECT_THAT(
-      ContentDisplayItems(),
-      ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
-                  IsSameId(text_inline_box, kForegroundType),
-                  // New!
-                  IsSameId(&GetCaretDisplayItemClient(), DisplayItem::kCaret)));
+  EXPECT_THAT(ContentDisplayItems(),
+              ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
+                          IsSameId(text_inline_box->Id(), kForegroundType),
+                          // New!
+                          IsSameId(GetCaretDisplayItemClient().Id(),
+                                   DisplayItem::kCaret)));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

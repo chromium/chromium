@@ -118,8 +118,10 @@ class PLATFORM_EXPORT PaintController {
   // Provide a new set of paint chunk properties to apply to recorded display
   // items. If id is nullptr, the id of the first display item will be used as
   // the id of the paint chunk if needed.
-  void UpdateCurrentPaintChunkProperties(const PaintChunk::Id*,
+  void UpdateCurrentPaintChunkProperties(const PaintChunk::Id&,
+                                         const DisplayItemClient&,
                                          const PropertyTreeStateOrAlias&);
+  void UpdateCurrentPaintChunkProperties(const PropertyTreeStateOrAlias&);
   const PropertyTreeStateOrAlias& CurrentPaintChunkProperties() const {
     return paint_chunker_.CurrentPaintChunkProperties();
   }
@@ -174,7 +176,7 @@ class PLATFORM_EXPORT PaintController {
     DisplayItemClass& display_item =
         new_paint_artifact_->GetDisplayItemList()
             .AllocateAndConstruct<DisplayItemClass>(
-                client, std::forward<Args>(args)...);
+                client.Id(), std::forward<Args>(args)...);
     display_item.SetFragment(current_fragment_);
     ProcessNewItem(client, display_item);
   }
@@ -343,6 +345,7 @@ class PLATFORM_EXPORT PaintController {
   void ProcessNewItem(const DisplayItemClient&, DisplayItem&);
 
   void CheckNewItem(DisplayItem&);
+  void CheckNewChunkId(const PaintChunk::Id&);
   void CheckNewChunk();
 
   // Maps a display item id to the index of the display item or the paint chunk.
@@ -355,15 +358,16 @@ class PLATFORM_EXPORT PaintController {
                               wtf_size_t index,
                               IdIndexMap&);
 
-  wtf_size_t FindCachedItem(const DisplayItem::Id&);
-  wtf_size_t FindOutOfOrderCachedItemForward(const DisplayItem::Id&);
+  wtf_size_t FindCachedItem(const DisplayItemClient&, const DisplayItem::Id&);
+  wtf_size_t FindOutOfOrderCachedItemForward(const DisplayItemClient&,
+                                             const DisplayItem::Id&);
   void AppendSubsequenceByMoving(const DisplayItemClient&,
                                  wtf_size_t subsequence_index,
                                  wtf_size_t start_chunk_index,
                                  wtf_size_t end_chunk_index);
 
   struct SubsequenceMarkers {
-    const DisplayItemClient* client = nullptr;
+    DisplayItemClientId client_id = kInvalidDisplayItemClientId;
     // The start and end (not included) index of paint chunks in this
     // subsequence.
     wtf_size_t start_chunk_index = 0;
@@ -371,11 +375,10 @@ class PLATFORM_EXPORT PaintController {
     bool is_moved_from_cached_subsequence = false;
   };
 
-  wtf_size_t GetSubsequenceIndex(const DisplayItemClient&) const;
-  const SubsequenceMarkers* GetSubsequenceMarkers(
-      const DisplayItemClient&) const;
+  wtf_size_t GetSubsequenceIndex(DisplayItemClientId) const;
+  const SubsequenceMarkers* GetSubsequenceMarkers(DisplayItemClientId) const;
 
-  void ValidateNewChunkId(const PaintChunk::Id&);
+  void ValidateNewChunkClient(const DisplayItemClient&);
 
   PaintUnderInvalidationChecker& EnsureUnderInvalidationChecker();
   ALWAYS_INLINE bool IsCheckingUnderInvalidation() const;
@@ -454,7 +457,7 @@ class PLATFORM_EXPORT PaintController {
 
   struct SubsequencesData {
     // Map a client to the index into |tree|.
-    HashMap<const DisplayItemClient*, wtf_size_t> map;
+    HashMap<DisplayItemClientId, wtf_size_t> map;
     // A pre-order list of the subsequence tree.
     Vector<SubsequenceMarkers> tree;
   };

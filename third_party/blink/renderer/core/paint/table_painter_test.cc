@@ -47,7 +47,7 @@ TEST_P(TablePainterTest, Background) {
   EXPECT_THAT(
       ContentDisplayItems(),
       ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
-                  IsSameId(&row1, DisplayItem::kBoxDecorationBackground)));
+                  IsSameId(row1.Id(), DisplayItem::kBoxDecorationBackground)));
 
   UpdateAllLifecyclePhasesExceptPaint();
   PaintContents(IntRect(0, 300, 200, 1000));
@@ -55,7 +55,7 @@ TEST_P(TablePainterTest, Background) {
   EXPECT_THAT(
       ContentDisplayItems(),
       ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
-                  IsSameId(&row2, DisplayItem::kBoxDecorationBackground)));
+                  IsSameId(row2.Id(), DisplayItem::kBoxDecorationBackground)));
 }
 
 TEST_P(TablePainterTest, BackgroundWithCellSpacing) {
@@ -88,8 +88,8 @@ TEST_P(TablePainterTest, BackgroundWithCellSpacing) {
   EXPECT_THAT(
       ContentDisplayItems(),
       ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
-                  IsSameId(&row1, DisplayItem::kBoxDecorationBackground),
-                  IsSameId(&cell1, DisplayItem::kBoxDecorationBackground)));
+                  IsSameId(row1.Id(), DisplayItem::kBoxDecorationBackground),
+                  IsSameId(cell1.Id(), DisplayItem::kBoxDecorationBackground)));
 
   UpdateAllLifecyclePhasesExceptPaint();
   // Intersects the spacing only.
@@ -98,7 +98,7 @@ TEST_P(TablePainterTest, BackgroundWithCellSpacing) {
   EXPECT_THAT(
       ContentDisplayItems(),
       ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
-                  IsSameId(&row1, DisplayItem::kBoxDecorationBackground)));
+                  IsSameId(row1.Id(), DisplayItem::kBoxDecorationBackground)));
 
   UpdateAllLifecyclePhasesExceptPaint();
   // Intersects cell2 only.
@@ -107,8 +107,8 @@ TEST_P(TablePainterTest, BackgroundWithCellSpacing) {
   EXPECT_THAT(
       ContentDisplayItems(),
       ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
-                  IsSameId(&row2, DisplayItem::kBoxDecorationBackground),
-                  IsSameId(&cell2, DisplayItem::kBoxDecorationBackground)));
+                  IsSameId(row2.Id(), DisplayItem::kBoxDecorationBackground),
+                  IsSameId(cell2.Id(), DisplayItem::kBoxDecorationBackground)));
 }
 
 TEST_P(TablePainterTest, BackgroundInSelfPaintingRow) {
@@ -136,8 +136,8 @@ TEST_P(TablePainterTest, BackgroundInSelfPaintingRow) {
   EXPECT_THAT(
       ContentDisplayItems(),
       ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
-                  IsSameId(&row, DisplayItem::kBoxDecorationBackground),
-                  IsSameId(&cell1, DisplayItem::kBoxDecorationBackground)));
+                  IsSameId(row.Id(), DisplayItem::kBoxDecorationBackground),
+                  IsSameId(cell1.Id(), DisplayItem::kBoxDecorationBackground)));
 
   UpdateAllLifecyclePhasesExceptPaint();
   // Intersects the spacing only.
@@ -153,8 +153,8 @@ TEST_P(TablePainterTest, BackgroundInSelfPaintingRow) {
   EXPECT_THAT(
       ContentDisplayItems(),
       ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
-                  IsSameId(&row, DisplayItem::kBoxDecorationBackground),
-                  IsSameId(&cell2, DisplayItem::kBoxDecorationBackground)));
+                  IsSameId(row.Id(), DisplayItem::kBoxDecorationBackground),
+                  IsSameId(cell2.Id(), DisplayItem::kBoxDecorationBackground)));
 }
 
 TEST_P(TablePainterTest, CollapsedBorderAndOverflow) {
@@ -179,15 +179,15 @@ TEST_P(TablePainterTest, CollapsedBorderAndOverflow) {
   PaintContents(IntRect(0, 0, 100, 100));
 
   // We should paint all display items of cell.
-  EXPECT_THAT(
-      ContentDisplayItems(),
-      ElementsAre(
-          VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
-          IsSameId(cell_layout_object, DisplayItem::kBoxDecorationBackground),
-          IsSameId(cell->RowInterface()->ToLayoutObject(),
-                   DisplayItem::kTableCollapsedBorders),
-          IsSameId(cell_layout_object, DisplayItem::PaintPhaseToDrawingType(
-                                           PaintPhase::kSelfOutlineOnly))));
+  EXPECT_THAT(ContentDisplayItems(),
+              ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
+                          IsSameId(cell_layout_object->Id(),
+                                   DisplayItem::kBoxDecorationBackground),
+                          IsSameId(cell->RowInterface()->ToLayoutObject()->Id(),
+                                   DisplayItem::kTableCollapsedBorders),
+                          IsSameId(cell_layout_object->Id(),
+                                   DisplayItem::PaintPhaseToDrawingType(
+                                       PaintPhase::kSelfOutlineOnly))));
 }
 
 TEST_P(TablePainterTest, DontPaintEmptyDecorationBackground) {
@@ -220,9 +220,9 @@ TEST_P(TablePainterTest, DontPaintEmptyDecorationBackground) {
           ->ToLayoutObject();
   EXPECT_THAT(ContentDisplayItems(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
-                          IsSameId(table1, kBackgroundType),
-                          IsSameId(table_1_descendant, kBackgroundType),
-                          IsSameId(table_2_descendant,
+                          IsSameId(table1->Id(), kBackgroundType),
+                          IsSameId(table_1_descendant->Id(), kBackgroundType),
+                          IsSameId(table_2_descendant->Id(),
                                    DisplayItem::kTableCollapsedBorders)));
 }
 

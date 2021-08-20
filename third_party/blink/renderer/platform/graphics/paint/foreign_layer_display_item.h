@@ -8,12 +8,14 @@
 #include "base/dcheck_is_on.h"
 #include "cc/layers/layer.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
+#include "third_party/blink/renderer/platform/graphics/paint/display_item_client.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
+class DisplayItemClient;
 class GraphicsContext;
 
 // Represents foreign content (produced outside Blink) which draws to a layer.
@@ -24,10 +26,11 @@ class GraphicsContext;
 // GraphicsLayer tree.
 class PLATFORM_EXPORT ForeignLayerDisplayItem : public DisplayItem {
  public:
-  ForeignLayerDisplayItem(const DisplayItemClient& client,
+  ForeignLayerDisplayItem(DisplayItemClientId client_id,
                           Type,
                           scoped_refptr<cc::Layer>,
                           const IntPoint& offset,
+                          RasterEffectOutset,
                           PaintInvalidationReason);
 
   cc::Layer* GetLayer() const {

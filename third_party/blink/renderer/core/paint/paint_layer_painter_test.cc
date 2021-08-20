@@ -76,19 +76,20 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceAndChunksWithBackgrounds) {
   auto check_results = [&]() {
     EXPECT_THAT(
         ContentDisplayItems(),
-        ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
-                    IsSameId(GetDisplayItemClientFromLayoutObject(container1),
-                             kBackgroundType),
-                    IsSameId(GetDisplayItemClientFromLayoutObject(content1),
-                             kBackgroundType),
-                    IsSameId(GetDisplayItemClientFromLayoutObject(filler1),
-                             kBackgroundType),
-                    IsSameId(GetDisplayItemClientFromLayoutObject(container2),
-                             kBackgroundType),
-                    IsSameId(GetDisplayItemClientFromLayoutObject(content2),
-                             kBackgroundType),
-                    IsSameId(GetDisplayItemClientFromLayoutObject(filler2),
-                             kBackgroundType)));
+        ElementsAre(
+            VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
+            IsSameId(GetDisplayItemClientFromLayoutObject(container1)->Id(),
+                     kBackgroundType),
+            IsSameId(GetDisplayItemClientFromLayoutObject(content1)->Id(),
+                     kBackgroundType),
+            IsSameId(GetDisplayItemClientFromLayoutObject(filler1)->Id(),
+                     kBackgroundType),
+            IsSameId(GetDisplayItemClientFromLayoutObject(container2)->Id(),
+                     kBackgroundType),
+            IsSameId(GetDisplayItemClientFromLayoutObject(content2)->Id(),
+                     kBackgroundType),
+            IsSameId(GetDisplayItemClientFromLayoutObject(filler2)->Id(),
+                     kBackgroundType)));
 
     // Check that new paint chunks were forced for the layers.
     auto chunks = ContentPaintChunks();
@@ -104,25 +105,29 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceAndChunksWithBackgrounds) {
         chunks,
         ElementsAre(
             VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
+            IsPaintChunk(1, 2,
+                         PaintChunk::Id(container1_layer->Id(),
+                                        DisplayItem::kLayerChunk),
+                         chunk_state, nullptr, IntRect(0, 0, 200, 200)),
             IsPaintChunk(
-                1, 2,
-                PaintChunk::Id(*container1_layer, DisplayItem::kLayerChunk),
-                chunk_state, nullptr, IntRect(0, 0, 200, 200)),
-            IsPaintChunk(
-                2, 3, PaintChunk::Id(*content1_layer, DisplayItem::kLayerChunk),
+                2, 3,
+                PaintChunk::Id(content1_layer->Id(), DisplayItem::kLayerChunk),
                 chunk_state, nullptr, IntRect(0, 0, 100, 100)),
             IsPaintChunk(
-                3, 4, PaintChunk::Id(*filler1_layer, DisplayItem::kLayerChunk),
+                3, 4,
+                PaintChunk::Id(filler1_layer->Id(), DisplayItem::kLayerChunk),
                 chunk_state, nullptr, IntRect(0, 200, 20, 20)),
+            IsPaintChunk(4, 5,
+                         PaintChunk::Id(container2_layer->Id(),
+                                        DisplayItem::kLayerChunk),
+                         chunk_state, nullptr, IntRect(0, 220, 200, 200)),
             IsPaintChunk(
-                4, 5,
-                PaintChunk::Id(*container2_layer, DisplayItem::kLayerChunk),
-                chunk_state, nullptr, IntRect(0, 220, 200, 200)),
-            IsPaintChunk(
-                5, 6, PaintChunk::Id(*content2_layer, DisplayItem::kLayerChunk),
+                5, 6,
+                PaintChunk::Id(content2_layer->Id(), DisplayItem::kLayerChunk),
                 chunk_state, nullptr, IntRect(0, 220, 100, 100)),
             IsPaintChunk(
-                6, 7, PaintChunk::Id(*filler2_layer, DisplayItem::kLayerChunk),
+                6, 7,
+                PaintChunk::Id(filler2_layer->Id(), DisplayItem::kLayerChunk),
                 chunk_state, nullptr, IntRect(0, 420, 20, 20))));
   };
 
@@ -194,20 +199,24 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceAndChunksWithoutBackgrounds) {
       ElementsAre(
           VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
           IsPaintChunk(
-              1, 1, PaintChunk::Id(*container_layer, DisplayItem::kLayerChunk),
+              1, 1,
+              PaintChunk::Id(container_layer->Id(), DisplayItem::kLayerChunk),
               container_properties, nullptr, IntRect(0, 0, 150, 150)),
           IsPaintChunk(
-              1, 1, PaintChunk::Id(*container, DisplayItem::kScrollHitTest),
+              1, 1,
+              PaintChunk::Id(container->Id(), DisplayItem::kScrollHitTest),
               container_properties, &scroll_hit_test, IntRect(0, 0, 150, 150)),
-          IsPaintChunk(1, 1,
-                       PaintChunk::Id(*content_layer, DisplayItem::kLayerChunk),
-                       content_properties, nullptr, IntRect(0, 0, 200, 100)),
           IsPaintChunk(
               1, 1,
-              PaintChunk::Id(*inner_content_layer, DisplayItem::kLayerChunk),
-              content_properties, nullptr, IntRect(0, 0, 100, 100)),
+              PaintChunk::Id(content_layer->Id(), DisplayItem::kLayerChunk),
+              content_properties, nullptr, IntRect(0, 0, 200, 100)),
+          IsPaintChunk(1, 1,
+                       PaintChunk::Id(inner_content_layer->Id(),
+                                      DisplayItem::kLayerChunk),
+                       content_properties, nullptr, IntRect(0, 0, 100, 100)),
           IsPaintChunk(
-              1, 1, PaintChunk::Id(*filler_layer, DisplayItem::kLayerChunk),
+              1, 1,
+              PaintChunk::Id(filler_layer->Id(), DisplayItem::kLayerChunk),
               content_properties, nullptr, IntRect(0, 100, 300, 300))));
 
   To<HTMLElement>(inner_content->GetNode())
@@ -222,9 +231,10 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceAndChunksWithoutBackgrounds) {
 
   EXPECT_THAT(
       ContentDisplayItems(),
-      ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
-                  IsSameId(GetDisplayItemClientFromLayoutObject(inner_content),
-                           kBackgroundType)));
+      ElementsAre(
+          VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
+          IsSameId(GetDisplayItemClientFromLayoutObject(inner_content)->Id(),
+                   kBackgroundType)));
 
   chunks = ContentPaintChunks();
   EXPECT_SUBSEQUENCE_FROM_CHUNK(*container_layer, chunks.begin() + 1, 5);
@@ -237,20 +247,24 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceAndChunksWithoutBackgrounds) {
       ElementsAre(
           VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
           IsPaintChunk(
-              1, 1, PaintChunk::Id(*container_layer, DisplayItem::kLayerChunk),
+              1, 1,
+              PaintChunk::Id(container_layer->Id(), DisplayItem::kLayerChunk),
               container_properties, nullptr, IntRect(0, 0, 150, 150)),
           IsPaintChunk(
-              1, 1, PaintChunk::Id(*container, DisplayItem::kScrollHitTest),
+              1, 1,
+              PaintChunk::Id(container->Id(), DisplayItem::kScrollHitTest),
               container_properties, &scroll_hit_test, IntRect(0, 0, 150, 150)),
-          IsPaintChunk(1, 1,
-                       PaintChunk::Id(*content_layer, DisplayItem::kLayerChunk),
-                       content_properties, nullptr, IntRect(0, 0, 200, 100)),
           IsPaintChunk(
-              1, 2,
-              PaintChunk::Id(*inner_content_layer, DisplayItem::kLayerChunk),
-              content_properties, nullptr, IntRect(0, 100, 100, 100)),
+              1, 1,
+              PaintChunk::Id(content_layer->Id(), DisplayItem::kLayerChunk),
+              content_properties, nullptr, IntRect(0, 0, 200, 100)),
+          IsPaintChunk(1, 2,
+                       PaintChunk::Id(inner_content_layer->Id(),
+                                      DisplayItem::kLayerChunk),
+                       content_properties, nullptr, IntRect(0, 100, 100, 100)),
           IsPaintChunk(
-              2, 2, PaintChunk::Id(*filler_layer, DisplayItem::kLayerChunk),
+              2, 2,
+              PaintChunk::Id(filler_layer->Id(), DisplayItem::kLayerChunk),
               content_properties, nullptr, IntRect(0, 100, 300, 300))));
 }
 
@@ -301,12 +315,12 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceOnCullRectChange) {
   // Container3 is partly in the interest rect.
   EXPECT_THAT(ContentDisplayItems(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
-                          IsSameId(&container1, kBackgroundType),
-                          IsSameId(&content1, kBackgroundType),
-                          IsSameId(&container2, kBackgroundType),
-                          IsSameId(&content2a, kBackgroundType),
-                          IsSameId(&container3, kBackgroundType),
-                          IsSameId(&content3, kBackgroundType)));
+                          IsSameId(container1.Id(), kBackgroundType),
+                          IsSameId(content1.Id(), kBackgroundType),
+                          IsSameId(container2.Id(), kBackgroundType),
+                          IsSameId(content2a.Id(), kBackgroundType),
+                          IsSameId(container3.Id(), kBackgroundType),
+                          IsSameId(content3.Id(), kBackgroundType)));
 
   UpdateAllLifecyclePhasesExceptPaint();
   PaintController::CounterForTesting counter;
@@ -321,11 +335,11 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceOnCullRectChange) {
 
   EXPECT_THAT(ContentDisplayItems(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
-                          IsSameId(&container1, kBackgroundType),
-                          IsSameId(&content1, kBackgroundType),
-                          IsSameId(&container2, kBackgroundType),
-                          IsSameId(&content2a, kBackgroundType),
-                          IsSameId(&content2b, kBackgroundType)));
+                          IsSameId(container1.Id(), kBackgroundType),
+                          IsSameId(content1.Id(), kBackgroundType),
+                          IsSameId(container2.Id(), kBackgroundType),
+                          IsSameId(content2a.Id(), kBackgroundType),
+                          IsSameId(content2b.Id(), kBackgroundType)));
 }
 
 TEST_P(PaintLayerPainterTest,
@@ -379,10 +393,10 @@ TEST_P(PaintLayerPainterTest,
 
   EXPECT_THAT(ContentDisplayItems(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
-                          IsSameId(&container1, kBackgroundType),
-                          IsSameId(&content1, kBackgroundType),
-                          IsSameId(&container2, kBackgroundType),
-                          IsSameId(&content2, kBackgroundType)));
+                          IsSameId(container1.Id(), kBackgroundType),
+                          IsSameId(content1.Id(), kBackgroundType),
+                          IsSameId(container2.Id(), kBackgroundType),
+                          IsSameId(content2.Id(), kBackgroundType)));
 
   To<HTMLElement>(GetElementById("content1"))
       ->setAttribute(html_names::kStyleAttr,
@@ -395,10 +409,10 @@ TEST_P(PaintLayerPainterTest,
 
   EXPECT_THAT(ContentDisplayItems(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
-                          IsSameId(&container1, kBackgroundType),
-                          IsSameId(&content1, kBackgroundType),
-                          IsSameId(&container2, kBackgroundType),
-                          IsSameId(&content2, kBackgroundType)));
+                          IsSameId(container1.Id(), kBackgroundType),
+                          IsSameId(content1.Id(), kBackgroundType),
+                          IsSameId(container2.Id(), kBackgroundType),
+                          IsSameId(content2.Id(), kBackgroundType)));
 }
 
 TEST_P(PaintLayerPainterTest, CachedSubsequenceRetainsPreviousPaintResult) {
@@ -424,7 +438,7 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceRetainsPreviousPaintResult) {
   // |content2| is out of the cull rect.
   EXPECT_THAT(ContentDisplayItems(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
-                          IsSameId(content1, kBackgroundType)));
+                          IsSameId(content1->Id(), kBackgroundType)));
   EXPECT_EQ(IntRect(0, 0, 800, 4600), GetCullRect(*target_layer).Rect());
   auto chunks = ContentPaintChunks();
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
@@ -435,7 +449,7 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceRetainsPreviousPaintResult) {
   } else {
     EXPECT_THAT(ContentDisplayItems(),
                 ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
-                            IsSameId(content1, kBackgroundType)));
+                            IsSameId(content1->Id(), kBackgroundType)));
     // |target| still created subsequence (cached).
     EXPECT_SUBSEQUENCE_FROM_CHUNK(*target_layer, chunks.begin() + 1, 1);
     EXPECT_THAT(chunks, ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
@@ -457,14 +471,14 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceRetainsPreviousPaintResult) {
   EXPECT_EQ(kMayBeClippedByCullRect, target_layer->PreviousPaintResult());
   EXPECT_THAT(ContentDisplayItems(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
-                          IsSameId(content1, kBackgroundType)));
+                          IsSameId(content1->Id(), kBackgroundType)));
   EXPECT_EQ(IntRect(0, 0, 800, 4600), GetCullRect(*target_layer).Rect());
   chunks = ContentPaintChunks();
   EXPECT_EQ(CullRect(IntRect(0, 0, 800, 4600)), GetCullRect(*target_layer));
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
     EXPECT_THAT(ContentDisplayItems(),
                 ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
-                            IsSameId(content1, kBackgroundType)));
+                            IsSameId(content1->Id(), kBackgroundType)));
     // |target| still created subsequence (cached).
     EXPECT_SUBSEQUENCE_FROM_CHUNK(*target_layer, chunks.begin() + 1, 2);
     EXPECT_THAT(chunks, ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
@@ -500,8 +514,8 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceRetainsPreviousPaintResult) {
   // Painted result should include both |content1| and |content2|.
   EXPECT_THAT(ContentDisplayItems(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
-                          IsSameId(content1, kBackgroundType),
-                          IsSameId(content2, kBackgroundType)));
+                          IsSameId(content1->Id(), kBackgroundType),
+                          IsSameId(content2->Id(), kBackgroundType)));
   EXPECT_EQ(IntRect(0, 0, 800, 7600), GetCullRect(*target_layer).Rect());
   chunks = ContentPaintChunks();
   EXPECT_EQ(CullRect(IntRect(0, 0, 800, 7600)), GetCullRect(*target_layer));
@@ -545,32 +559,32 @@ TEST_P(PaintLayerPainterTest, HintedPaintChunksWithBackgrounds) {
 
   EXPECT_THAT(ContentDisplayItems(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
-                          IsSameId(container1, kBackgroundType),
-                          IsSameId(content1a, kBackgroundType),
-                          IsSameId(content1b, kBackgroundType),
-                          IsSameId(container2, kBackgroundType),
-                          IsSameId(content2b, kBackgroundType),
-                          IsSameId(content2a, kBackgroundType)));
+                          IsSameId(container1->Id(), kBackgroundType),
+                          IsSameId(content1a->Id(), kBackgroundType),
+                          IsSameId(content1b->Id(), kBackgroundType),
+                          IsSameId(container2->Id(), kBackgroundType),
+                          IsSameId(content2b->Id(), kBackgroundType),
+                          IsSameId(content2a->Id(), kBackgroundType)));
 
   EXPECT_THAT(
       ContentPaintChunks(),
       ElementsAre(
           VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
           // Includes |container1| and |content1a|.
-          IsPaintChunk(
-              1, 4,
-              PaintChunk::Id(*container1->Layer(), DisplayItem::kLayerChunk),
-              chunk_state, nullptr, IntRect(0, 0, 800, 200)),
-          IsPaintChunk(
-              4, 5,
-              PaintChunk::Id(*container2->Layer(), DisplayItem::kLayerChunk),
-              chunk_state, nullptr, IntRect(0, 150, 800, 200)),
-          IsPaintChunk(
-              5, 6,
-              PaintChunk::Id(*content2b->Layer(), DisplayItem::kLayerChunk),
-              chunk_state, nullptr, IntRect(0, 250, 800, 100)),
+          IsPaintChunk(1, 4,
+                       PaintChunk::Id(container1->Layer()->Id(),
+                                      DisplayItem::kLayerChunk),
+                       chunk_state, nullptr, IntRect(0, 0, 800, 200)),
+          IsPaintChunk(4, 5,
+                       PaintChunk::Id(container2->Layer()->Id(),
+                                      DisplayItem::kLayerChunk),
+                       chunk_state, nullptr, IntRect(0, 150, 800, 200)),
+          IsPaintChunk(5, 6,
+                       PaintChunk::Id(content2b->Layer()->Id(),
+                                      DisplayItem::kLayerChunk),
+                       chunk_state, nullptr, IntRect(0, 250, 800, 100)),
           IsPaintChunk(6, 7,
-                       PaintChunk::Id(*container2->Layer(),
+                       PaintChunk::Id(container2->Layer()->Id(),
                                       DisplayItem::kLayerChunkForeground),
                        chunk_state, nullptr, IntRect(0, 150, 800, 100))));
 }
@@ -604,20 +618,20 @@ TEST_P(PaintLayerPainterTest, HintedPaintChunksWithoutBackgrounds) {
       ContentPaintChunks(),
       ElementsAre(
           VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
-          IsPaintChunk(
-              1, 1,
-              PaintChunk::Id(*container1->Layer(), DisplayItem::kLayerChunk),
-              chunk_state, nullptr, IntRect(0, 0, 800, 200)),
-          IsPaintChunk(
-              1, 1,
-              PaintChunk::Id(*container2->Layer(), DisplayItem::kLayerChunk),
-              chunk_state, nullptr, IntRect(0, 150, 800, 200)),
-          IsPaintChunk(
-              1, 1,
-              PaintChunk::Id(*content2b->Layer(), DisplayItem::kLayerChunk),
-              chunk_state, nullptr, IntRect(0, 250, 800, 100)),
           IsPaintChunk(1, 1,
-                       PaintChunk::Id(*container2->Layer(),
+                       PaintChunk::Id(container1->Layer()->Id(),
+                                      DisplayItem::kLayerChunk),
+                       chunk_state, nullptr, IntRect(0, 0, 800, 200)),
+          IsPaintChunk(1, 1,
+                       PaintChunk::Id(container2->Layer()->Id(),
+                                      DisplayItem::kLayerChunk),
+                       chunk_state, nullptr, IntRect(0, 150, 800, 200)),
+          IsPaintChunk(1, 1,
+                       PaintChunk::Id(content2b->Layer()->Id(),
+                                      DisplayItem::kLayerChunk),
+                       chunk_state, nullptr, IntRect(0, 250, 800, 100)),
+          IsPaintChunk(1, 1,
+                       PaintChunk::Id(container2->Layer()->Id(),
                                       DisplayItem::kLayerChunkForeground),
                        chunk_state, nullptr, IntRect(0, 150, 800, 100))));
 }
@@ -663,7 +677,7 @@ TEST_P(PaintLayerPainterTest, PaintPhaseOutline) {
   EXPECT_FALSE(self_painting_layer.NeedsPaintPhaseDescendantOutlines());
   EXPECT_FALSE(non_self_painting_layer.NeedsPaintPhaseDescendantOutlines());
   EXPECT_THAT(ContentDisplayItems(),
-              Contains(IsSameId(&self_painting_layer_object,
+              Contains(IsSameId(self_painting_layer_object.Id(),
                                 DisplayItem::PaintPhaseToDrawingType(
                                     PaintPhase::kSelfOutlineOnly))));
 
@@ -677,8 +691,8 @@ TEST_P(PaintLayerPainterTest, PaintPhaseOutline) {
   UpdateAllLifecyclePhasesForTest();
   EXPECT_THAT(
       ContentDisplayItems(),
-      Contains(IsSameId(&outline_div, DisplayItem::PaintPhaseToDrawingType(
-                                          PaintPhase::kSelfOutlineOnly))));
+      Contains(IsSameId(outline_div.Id(), DisplayItem::PaintPhaseToDrawingType(
+                                              PaintPhase::kSelfOutlineOnly))));
 
   // needsPaintPhaseDescendantOutlines should be reset when no outline is
   // actually painted.
@@ -728,9 +742,9 @@ TEST_P(PaintLayerPainterTest, PaintPhaseFloat) {
   EXPECT_TRUE(self_painting_layer.NeedsPaintPhaseFloat());
   EXPECT_FALSE(non_self_painting_layer.NeedsPaintPhaseFloat());
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_THAT(
-      ContentDisplayItems(),
-      Contains(IsSameId(&float_div, DisplayItem::kBoxDecorationBackground)));
+  EXPECT_THAT(ContentDisplayItems(),
+              Contains(IsSameId(float_div.Id(),
+                                DisplayItem::kBoxDecorationBackground)));
 
   // needsPaintPhaseFloat should be reset when there is no float actually
   // painted.
@@ -776,9 +790,9 @@ TEST_P(PaintLayerPainterTest, PaintPhaseFloatUnderInlineLayer) {
     EXPECT_FALSE(span_layer.NeedsPaintPhaseFloat());
   }
   EXPECT_FALSE(non_self_painting_layer.NeedsPaintPhaseFloat());
-  EXPECT_THAT(
-      ContentDisplayItems(),
-      Contains(IsSameId(&float_div, DisplayItem::kBoxDecorationBackground)));
+  EXPECT_THAT(ContentDisplayItems(),
+              Contains(IsSameId(float_div.Id(),
+                                DisplayItem::kBoxDecorationBackground)));
 }
 
 TEST_P(PaintLayerPainterTest, PaintPhasesUpdateOnLayerAddition) {
@@ -981,23 +995,25 @@ TEST_P(PaintLayerPainterTestCAP, WholeDocumentCullRect) {
   EXPECT_EQ(IntRect(0, 0, 200, 4200),
             GetCullRect(*GetPaintLayerByElementId("below-scroll")).Rect());
 
-  EXPECT_THAT(ContentDisplayItems(),
-              UnorderedElementsAre(
-                  VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
-                  IsSameId(GetDisplayItemClientFromElementId("relative"),
-                           kBackgroundType),
-                  IsSameId(GetDisplayItemClientFromElementId("normal"),
-                           kBackgroundType),
-                  IsSameId(GetDisplayItemClientFromElementId("scroll"),
-                           kBackgroundType),
-                  IsSameId(&GetLayoutBoxByElementId("scroll")
-                                ->GetScrollableArea()
-                                ->GetScrollingBackgroundDisplayItemClient(),
-                           kBackgroundType),
-                  IsSameId(GetDisplayItemClientFromElementId("below-scroll"),
-                           kBackgroundType),
-                  IsSameId(GetDisplayItemClientFromElementId("fixed"),
-                           kBackgroundType)));
+  EXPECT_THAT(
+      ContentDisplayItems(),
+      UnorderedElementsAre(
+          VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
+          IsSameId(GetDisplayItemClientFromElementId("relative")->Id(),
+                   kBackgroundType),
+          IsSameId(GetDisplayItemClientFromElementId("normal")->Id(),
+                   kBackgroundType),
+          IsSameId(GetDisplayItemClientFromElementId("scroll")->Id(),
+                   kBackgroundType),
+          IsSameId(GetLayoutBoxByElementId("scroll")
+                       ->GetScrollableArea()
+                       ->GetScrollingBackgroundDisplayItemClient()
+                       .Id(),
+                   kBackgroundType),
+          IsSameId(GetDisplayItemClientFromElementId("below-scroll")->Id(),
+                   kBackgroundType),
+          IsSameId(GetDisplayItemClientFromElementId("fixed")->Id(),
+                   kBackgroundType)));
 }
 
 TEST_P(PaintLayerPainterTestCAP, VerticalRightLeftWritingModeDocument) {
@@ -1306,15 +1322,18 @@ class PaintLayerPainterPaintedOutputInvisibleTest
           ElementsAre(
               VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
               IsPaintChunk(
-                  1, 1, PaintChunk::Id(*parent_layer, DisplayItem::kLayerChunk),
+                  1, 1,
+                  PaintChunk::Id(parent_layer->Id(), DisplayItem::kLayerChunk),
                   parent->FirstFragment().LocalBorderBoxProperties(), nullptr,
                   IntRect(0, 0, 10, 10)),
               IsPaintChunk(
-                  1, 1, PaintChunk::Id(*target_layer, DisplayItem::kLayerChunk),
+                  1, 1,
+                  PaintChunk::Id(target_layer->Id(), DisplayItem::kLayerChunk),
                   target->FirstFragment().LocalBorderBoxProperties(), nullptr,
                   IntRect(0, 0, 100, 100)),
               IsPaintChunk(
-                  1, 1, PaintChunk::Id(*child_layer, DisplayItem::kLayerChunk),
+                  1, 1,
+                  PaintChunk::Id(child_layer->Id(), DisplayItem::kLayerChunk),
                   child->FirstFragment().LocalBorderBoxProperties(), nullptr,
                   IntRect(0, 0, 200, 50))));
       EXPECT_FALSE((chunks.begin() + 1)->effectively_invisible);

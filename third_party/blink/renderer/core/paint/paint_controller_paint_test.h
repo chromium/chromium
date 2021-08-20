@@ -72,7 +72,7 @@ class PaintControllerPaintTestBase : public RenderingTest {
 
   using SubsequenceMarkers = const PaintController::SubsequenceMarkers;
   SubsequenceMarkers* GetSubsequenceMarkers(const DisplayItemClient& client) {
-    return RootPaintController().GetSubsequenceMarkers(client);
+    return RootPaintController().GetSubsequenceMarkers(client.Id());
   }
 
   static bool IsNotContentType(DisplayItem::Type type) {
@@ -89,11 +89,13 @@ class PaintControllerPaintTestBase : public RenderingTest {
     wtf_size_t begin_index = 0;
     wtf_size_t end_index = display_item_list.size();
     while (begin_index < end_index &&
-           &display_item_list[begin_index].Client() == &GetLayoutView())
+           display_item_list[begin_index].ClientId() == GetLayoutView().Id()) {
       begin_index++;
+    }
     while (end_index > begin_index &&
-           IsNotContentType(display_item_list[end_index - 1].GetType()))
+           IsNotContentType(display_item_list[end_index - 1].GetType())) {
       end_index--;
+    }
     return display_item_list.ItemsInRange(begin_index, end_index);
   }
 
@@ -105,9 +107,11 @@ class PaintControllerPaintTestBase : public RenderingTest {
     wtf_size_t begin_index = 0;
     wtf_size_t end_index = chunks.size();
     while (begin_index < end_index) {
-      const auto& client = chunks[begin_index].id.client;
-      if (&client != &GetLayoutView() && &client != GetLayoutView().Layer())
+      DisplayItemClientId client_id = chunks[begin_index].id.client_id;
+      if (client_id != GetLayoutView().Id() &&
+          client_id != GetLayoutView().Layer()->Id()) {
         break;
+      }
       begin_index++;
     }
     while (end_index > begin_index &&
@@ -134,15 +138,16 @@ const DisplayItem::Type kClippedContentsBackgroundChunkType =
     DisplayItem::PaintPhaseToClipType(
         PaintPhase::kDescendantBlockBackgroundsOnly);
 
-#define VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM \
-  IsSameId(&ViewScrollingBackgroundClient(), DisplayItem::kDocumentBackground)
+#define VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM   \
+  IsSameId(ViewScrollingBackgroundClient().Id(), \
+           DisplayItem::kDocumentBackground)
 
 // Checks for view scrolling background chunk in common case that there is only
 // one display item in the chunk and no hit test rects.
-#define VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON                   \
-  IsPaintChunk(0, 1,                                             \
-               PaintChunk::Id(ViewScrollingBackgroundClient(),   \
-                              DisplayItem::kDocumentBackground), \
+#define VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON                      \
+  IsPaintChunk(0, 1,                                                \
+               PaintChunk::Id(ViewScrollingBackgroundClient().Id(), \
+                              DisplayItem::kDocumentBackground),    \
                GetLayoutView().FirstFragment().ContentsProperties())
 
 // This version also checks the following additional parameters:
@@ -151,7 +156,7 @@ const DisplayItem::Type kClippedContentsBackgroundChunkType =
 //   (optional) const IntRect& bounds
 #define VIEW_SCROLLING_BACKGROUND_CHUNK(display_item_count, ...)     \
   IsPaintChunk(0, display_item_count,                                \
-               PaintChunk::Id(ViewScrollingBackgroundClient(),       \
+               PaintChunk::Id(ViewScrollingBackgroundClient().Id(),  \
                               DisplayItem::kDocumentBackground),     \
                GetLayoutView().FirstFragment().ContentsProperties(), \
                __VA_ARGS__)

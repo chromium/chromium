@@ -39,21 +39,22 @@ TEST_P(BoxPainterTest, EmptyDecorationBackground) {
   auto* div2 = GetLayoutObjectByElementId("div2");
   auto* body = GetDocument().body()->GetLayoutBox();
   // Empty backgrounds don't generate display items.
-  EXPECT_THAT(ContentDisplayItems(),
-              ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
-                          IsSameId(div1, kBackgroundType),
-                          IsSameId(div2, DisplayItem::PaintPhaseToDrawingType(
-                                             PaintPhase::kSelfOutlineOnly))));
+  EXPECT_THAT(
+      ContentDisplayItems(),
+      ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
+                  IsSameId(div1->Id(), kBackgroundType),
+                  IsSameId(div2->Id(), DisplayItem::PaintPhaseToDrawingType(
+                                           PaintPhase::kSelfOutlineOnly))));
 
   EXPECT_THAT(
       ContentPaintChunks(),
-      ElementsAre(
-          VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
-          // Empty backgrounds contribute to bounds of paint chunks.
-          IsPaintChunk(1, 3,
-                       PaintChunk::Id(*body->Layer(), DisplayItem::kLayerChunk),
-                       body->FirstFragment().LocalBorderBoxProperties(),
-                       nullptr, IntRect(-2, 0, 202, 350))));
+      ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
+                  // Empty backgrounds contribute to bounds of paint chunks.
+                  IsPaintChunk(1, 3,
+                               PaintChunk::Id(body->Layer()->Id(),
+                                              DisplayItem::kLayerChunk),
+                               body->FirstFragment().LocalBorderBoxProperties(),
+                               nullptr, IntRect(-2, 0, 202, 350))));
 }
 
 TEST_P(BoxPainterTest, ScrollHitTestOrderWithScrollBackgroundAttachment) {
@@ -88,8 +89,8 @@ TEST_P(BoxPainterTest, ScrollHitTestOrderWithScrollBackgroundAttachment) {
     // non-scrolling container background into the root layer.
     EXPECT_THAT(ContentDisplayItems(),
                 ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
-                            IsSameId(&container, kBackgroundType),
-                            IsSameId(&child, kBackgroundType)));
+                            IsSameId(container.Id(), kBackgroundType),
+                            IsSameId(child.Id(), kBackgroundType)));
     HitTestData scroll_hit_test;
     scroll_hit_test.scroll_translation =
         container.FirstFragment().PaintProperties()->ScrollTranslation();
@@ -98,14 +99,15 @@ TEST_P(BoxPainterTest, ScrollHitTestOrderWithScrollBackgroundAttachment) {
         ContentPaintChunks(),
         ElementsAre(
             VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
+            IsPaintChunk(1, 2,
+                         PaintChunk::Id(container.Layer()->Id(),
+                                        DisplayItem::kLayerChunk),
+                         container.FirstFragment().LocalBorderBoxProperties()),
             IsPaintChunk(
-                1, 2,
-                PaintChunk::Id(*container.Layer(), DisplayItem::kLayerChunk),
-                container.FirstFragment().LocalBorderBoxProperties()),
-            IsPaintChunk(2, 2,
-                         PaintChunk::Id(container, DisplayItem::kScrollHitTest),
-                         container.FirstFragment().LocalBorderBoxProperties(),
-                         &scroll_hit_test, IntRect(0, 0, 200, 200)),
+                2, 2,
+                PaintChunk::Id(container.Id(), DisplayItem::kScrollHitTest),
+                container.FirstFragment().LocalBorderBoxProperties(),
+                &scroll_hit_test, IntRect(0, 0, 200, 200)),
             IsPaintChunk(2, 3)));
   } else {
     // Because the frame composited scrolls, no scroll hit test is needed.
@@ -114,13 +116,13 @@ TEST_P(BoxPainterTest, ScrollHitTestOrderWithScrollBackgroundAttachment) {
                                           ->GetCompositedLayerMapping()
                                           ->MainGraphicsLayer();
     EXPECT_THAT(non_scrolling_layer->GetPaintController().GetDisplayItemList(),
-                ElementsAre(IsSameId(&container, kBackgroundType)));
+                ElementsAre(IsSameId(container.Id(), kBackgroundType)));
     const auto* scrolling_layer = To<LayoutBlock>(container)
                                       .Layer()
                                       ->GetCompositedLayerMapping()
                                       ->ScrollingContentsLayer();
     EXPECT_THAT(scrolling_layer->GetPaintController().GetDisplayItemList(),
-                ElementsAre(IsSameId(&child, kBackgroundType)));
+                ElementsAre(IsSameId(child.Id(), kBackgroundType)));
   }
 }
 
@@ -159,8 +161,8 @@ TEST_P(BoxPainterTest, ScrollHitTestOrderWithLocalBackgroundAttachment) {
     EXPECT_THAT(
         ContentDisplayItems(),
         ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
-                    IsSameId(container_scrolling_client, kBackgroundType),
-                    IsSameId(&child, kBackgroundType)));
+                    IsSameId(container_scrolling_client->Id(), kBackgroundType),
+                    IsSameId(child.Id(), kBackgroundType)));
     HitTestData scroll_hit_test;
     scroll_hit_test.scroll_translation =
         container.FirstFragment().PaintProperties()->ScrollTranslation();
@@ -169,16 +171,18 @@ TEST_P(BoxPainterTest, ScrollHitTestOrderWithLocalBackgroundAttachment) {
         ContentPaintChunks(),
         ElementsAre(
             VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
+            IsPaintChunk(1, 1,
+                         PaintChunk::Id(container.Layer()->Id(),
+                                        DisplayItem::kLayerChunk),
+                         container.FirstFragment().LocalBorderBoxProperties()),
             IsPaintChunk(
                 1, 1,
-                PaintChunk::Id(*container.Layer(), DisplayItem::kLayerChunk),
-                container.FirstFragment().LocalBorderBoxProperties()),
-            IsPaintChunk(1, 1,
-                         PaintChunk::Id(container, DisplayItem::kScrollHitTest),
-                         container.FirstFragment().LocalBorderBoxProperties(),
-                         &scroll_hit_test, IntRect(0, 0, 200, 200)),
+                PaintChunk::Id(container.Id(), DisplayItem::kScrollHitTest),
+                container.FirstFragment().LocalBorderBoxProperties(),
+                &scroll_hit_test, IntRect(0, 0, 200, 200)),
             IsPaintChunk(
-                1, 3, PaintChunk::Id(container, kScrollingBackgroundChunkType),
+                1, 3,
+                PaintChunk::Id(container.Id(), kScrollingBackgroundChunkType),
                 container.FirstFragment().ContentsProperties())));
   } else {
     // Because the frame composited scrolls, no scroll hit test is needed.
@@ -192,8 +196,8 @@ TEST_P(BoxPainterTest, ScrollHitTestOrderWithLocalBackgroundAttachment) {
                                       ->ScrollingContentsLayer();
     EXPECT_THAT(
         scrolling_layer->GetPaintController().GetDisplayItemList(),
-        ElementsAre(IsSameId(container_scrolling_client, kBackgroundType),
-                    IsSameId(&child, kBackgroundType)));
+        ElementsAre(IsSameId(container_scrolling_client->Id(), kBackgroundType),
+                    IsSameId(child.Id(), kBackgroundType)));
   }
 }
 
@@ -227,8 +231,8 @@ TEST_P(BoxPainterTest, ScrollHitTestProperties) {
             container.GetBackgroundPaintLocation());
   EXPECT_THAT(ContentDisplayItems(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
-                          IsSameId(&container, kBackgroundType),
-                          IsSameId(&child, kBackgroundType)));
+                          IsSameId(container.Id(), kBackgroundType),
+                          IsSameId(child.Id(), kBackgroundType)));
 
   HitTestData scroll_hit_test_data;
   const auto& scrolling_contents_properties =
@@ -242,16 +246,16 @@ TEST_P(BoxPainterTest, ScrollHitTestProperties) {
           VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
           IsPaintChunk(
               1, 2,
-              PaintChunk::Id(*container.Layer(), DisplayItem::kLayerChunk),
+              PaintChunk::Id(container.Layer()->Id(), DisplayItem::kLayerChunk),
               container.FirstFragment().LocalBorderBoxProperties()),
-          IsPaintChunk(2, 2,
-                       PaintChunk::Id(container, DisplayItem::kScrollHitTest),
-                       container.FirstFragment().LocalBorderBoxProperties(),
-                       &scroll_hit_test_data, IntRect(0, 0, 200, 200)),
           IsPaintChunk(
-              2, 3,
-              PaintChunk::Id(container, kClippedContentsBackgroundChunkType),
-              scrolling_contents_properties)));
+              2, 2, PaintChunk::Id(container.Id(), DisplayItem::kScrollHitTest),
+              container.FirstFragment().LocalBorderBoxProperties(),
+              &scroll_hit_test_data, IntRect(0, 0, 200, 200)),
+          IsPaintChunk(2, 3,
+                       PaintChunk::Id(container.Id(),
+                                      kClippedContentsBackgroundChunkType),
+                       scrolling_contents_properties)));
 
   // We always create scroll node for the root layer.
   const auto& root_transform =

@@ -2213,7 +2213,7 @@ TEST_P(VisualViewportTest, ResizeNonCompositedAndFixedBackground) {
   EXPECT_THAT(
       ScrollingContentsLayerRasterInvalidations(document),
       UnorderedElementsAre(RasterInvalidationInfo{
-          &ScrollingBackgroundClient(document),
+          ScrollingBackgroundClient(document).Id(),
           ScrollingBackgroundClient(document).DebugName(),
           IntRect(0, 0, 640, 1000), PaintInvalidationReason::kBackground}));
 
@@ -2230,7 +2230,7 @@ TEST_P(VisualViewportTest, ResizeNonCompositedAndFixedBackground) {
   EXPECT_THAT(
       ScrollingContentsLayerRasterInvalidations(document),
       UnorderedElementsAre(RasterInvalidationInfo{
-          &ScrollingBackgroundClient(document),
+          ScrollingBackgroundClient(document).Id(),
           ScrollingBackgroundClient(document).DebugName(),
           IntRect(0, 0, 640, 1000), PaintInvalidationReason::kBackground}));
 
@@ -2340,7 +2340,7 @@ TEST_P(VisualViewportTest, InvalidateLayoutViewWhenDocumentSmallerThanView) {
     EXPECT_THAT(
         ScrollingContentsLayerRasterInvalidations(document),
         UnorderedElementsAre(RasterInvalidationInfo{
-            &ScrollingBackgroundClient(document),
+            ScrollingBackgroundClient(document).Id(),
             ScrollingBackgroundClient(document).DebugName(),
             IntRect(0, 590, 320, 50), PaintInvalidationReason::kIncremental}));
   }

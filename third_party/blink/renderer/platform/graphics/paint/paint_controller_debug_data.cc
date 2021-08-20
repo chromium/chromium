@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 
+#include <cinttypes>
 #include "base/logging.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
 
@@ -46,9 +47,10 @@ PaintController::PaintArtifactAsJSON::SubsequenceAsJSONObjectRecursive() {
 
   auto json_object = std::make_unique<JSONObject>();
 
-  json_object->SetString("subsequence",
-                         String::Format("client: %p ", subsequence.client) +
-                             artifact_.ClientDebugName(*subsequence.client));
+  json_object->SetString(
+      "subsequence",
+      String::Format("client: 0x%" PRIuPTR " ", subsequence.client_id) +
+          artifact_.ClientDebugName(subsequence.client_id));
   json_object->SetArray(
       "chunks", ChunksAsJSONArrayRecursive(subsequence.start_chunk_index,
                                            subsequence.end_chunk_index));
@@ -66,7 +68,7 @@ PaintController::PaintArtifactAsJSON::ChunksAsJSONArrayRecursive(
   while (next_subsequence_ != subsequences_.end() &&
          next_subsequence_->start_chunk_index < end_chunk_index) {
     const auto& subsequence = *next_subsequence_;
-    if (!subsequence.client) {
+    if (!subsequence.client_id) {
       // Skip unfinished subsequences during painting.
       next_subsequence_++;
       continue;
@@ -95,8 +97,9 @@ void PaintController::PaintArtifactAsJSON::AppendChunksAsJSON(
     const auto& chunk = artifact_.PaintChunks()[i];
     auto json_object = std::make_unique<JSONObject>();
 
-    json_object->SetString("chunk", artifact_.ClientDebugName(chunk.id.client) +
-                                        " " + chunk.id.ToString(artifact_));
+    json_object->SetString("chunk",
+                           artifact_.ClientDebugName(chunk.id.client_id) + " " +
+                               chunk.id.ToString(artifact_));
     json_object->SetString("state", chunk.properties.ToString());
     json_object->SetString("bounds", chunk.bounds.ToString());
     if (flags_ & DisplayItemList::kShowPaintRecords)

@@ -34,23 +34,23 @@ class DisplayItemRasterInvalidator {
   static const auto kClientIsOld = RasterInvalidator::kClientIsOld;
   static const auto kClientIsNew = RasterInvalidator::kClientIsNew;
 
-  ALWAYS_INLINE void AddRasterInvalidation(const DisplayItemClient&,
+  ALWAYS_INLINE void AddRasterInvalidation(DisplayItemClientId,
                                            const IntRect&,
                                            PaintInvalidationReason,
                                            RasterInvalidator::ClientIsOldOrNew);
   ALWAYS_INLINE DisplayItemIterator
   MatchNewDisplayItemInOldChunk(const DisplayItem& new_item,
                                 DisplayItemIterator& next_old_item_to_match);
-  ALWAYS_INLINE void GenerateRasterInvalidation(const DisplayItemClient&,
+  ALWAYS_INLINE void GenerateRasterInvalidation(DisplayItemClientId,
                                                 const IntRect& old_visual_rect,
                                                 const IntRect& new_visual_rect,
                                                 PaintInvalidationReason);
   ALWAYS_INLINE void GenerateIncrementalRasterInvalidation(
-      const DisplayItemClient&,
+      DisplayItemClientId,
       const IntRect& old_visual_rect,
       const IntRect& new_visual_rect);
   ALWAYS_INLINE void GenerateFullRasterInvalidation(
-      const DisplayItemClient&,
+      DisplayItemClientId,
       const IntRect& old_visual_rect,
       const IntRect& new_visual_rect,
       PaintInvalidationReason reason);
@@ -61,7 +61,7 @@ class DisplayItemRasterInvalidator {
   const DisplayItemRange& new_display_items_;
   const ChunkToLayerMapper& mapper_;
   // Maps clients to indices of display items in old_display_items_.
-  HashMap<const DisplayItemClient*, Vector<DisplayItemIterator>>
+  HashMap<DisplayItemClientId, Vector<DisplayItemIterator>>
       old_display_items_index_;
 };
 

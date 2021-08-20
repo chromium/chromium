@@ -56,14 +56,14 @@ class PLATFORM_EXPORT PaintArtifact final : public RefCounted<PaintArtifact> {
   sk_sp<PaintRecord> GetPaintRecord(
       const PropertyTreeState& replay_state) const;
 
-  void RecordDebugInfo(const DisplayItemClient&, const String&, DOMNodeId);
+  void RecordDebugInfo(DisplayItemClientId, const String&, DOMNodeId);
   // Note that ClientDebugName() returns the debug name at the time the client
   // was last painted, which may be out-of-date for a client whose debug name
   // has changed, but not in a way that caused it to be repainted.  This can
   // happen, for example, when the 'id' or 'class' attribute on a DOM element
   // changes, but the change doesn't cause a style invalidation.
-  String ClientDebugName(const DisplayItemClient& client) const;
-  DOMNodeId ClientOwnerNodeId(const DisplayItemClient& client) const;
+  String ClientDebugName(DisplayItemClientId) const;
+  DOMNodeId ClientOwnerNodeId(DisplayItemClientId) const;
   String IdAsString(const DisplayItem::Id& id) const;
 
  private:
@@ -72,7 +72,7 @@ class PLATFORM_EXPORT PaintArtifact final : public RefCounted<PaintArtifact> {
     DOMNodeId owner_node_id;
   };
 
-  using DebugInfo = HashMap<const DisplayItemClient*, ClientDebugInfo>;
+  using DebugInfo = HashMap<DisplayItemClientId, ClientDebugInfo>;
 
   DisplayItemList display_item_list_;
   Vector<PaintChunk> chunks_;

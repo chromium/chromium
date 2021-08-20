@@ -20,8 +20,8 @@ class ChunkToLayerMapperTest : public testing::Test {
     DEFINE_STATIC_LOCAL(FakeDisplayItemClient, fake_client, ());
     DEFINE_STATIC_LOCAL(
         absl::optional<PaintChunk::Id>, id,
-        (PaintChunk::Id(fake_client, DisplayItem::kDrawingFirst)));
-    PaintChunk chunk(0, 1, *id, state);
+        (PaintChunk::Id(fake_client.Id(), DisplayItem::kDrawingFirst)));
+    PaintChunk chunk(0, 1, fake_client, *id, state);
     return chunk;
   }
 

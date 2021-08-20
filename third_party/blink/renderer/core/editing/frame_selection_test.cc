@@ -38,7 +38,7 @@ class FrameSelectionTest : public EditingTestBase {
  public:
   FrameSelectionTest()
       : root_paint_property_client_("root"),
-        root_paint_chunk_id_(root_paint_property_client_,
+        root_paint_chunk_id_(root_paint_property_client_.Id(),
                              DisplayItem::kUninitializedType) {}
   FakeDisplayItemClient root_paint_property_client_;
   PaintChunk::Id root_paint_chunk_id_;
@@ -148,7 +148,8 @@ TEST_F(FrameSelectionTest, PaintCaretShouldNotLayout) {
   {
     GraphicsContext context(*paint_controller);
     paint_controller->UpdateCurrentPaintChunkProperties(
-        &root_paint_chunk_id_, PropertyTreeState::Root());
+        root_paint_chunk_id_, root_paint_property_client_,
+        PropertyTreeState::Root());
     Selection().PaintCaret(context, PhysicalOffset());
   }
   paint_controller->CommitNewDisplayItems();

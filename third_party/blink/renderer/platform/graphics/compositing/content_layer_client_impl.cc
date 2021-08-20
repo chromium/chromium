@@ -100,7 +100,7 @@ scoped_refptr<cc::PictureLayer> ContentLayerClientImpl::UpdateCcPictureLayer(
     raster_under_invalidation_params.emplace(
         *raster_invalidator_.GetTracking(), IntRect(IntPoint(), layer_bounds),
         paint_chunks.GetPaintArtifact().ClientDebugName(
-            paint_chunks.begin()->id.client));
+            paint_chunks.begin()->id.client_id));
   }
 
   // Note: cc::Layer API assumes the layer bounds start at (0, 0), but the

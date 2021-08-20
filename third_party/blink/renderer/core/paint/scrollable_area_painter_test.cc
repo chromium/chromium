@@ -35,13 +35,14 @@ TEST_P(ScrollableAreaPainterTest, OverlayScrollbars) {
   ASSERT_TRUE(properties->VerticalScrollbarEffect());
 
   PaintChunk::Id horizontal_id(
-      *target->GetScrollableArea()->HorizontalScrollbar(),
+      target->GetScrollableArea()->HorizontalScrollbar()->Id(),
       DisplayItem::kScrollbarHorizontal);
   auto horizontal_state = target->FirstFragment().LocalBorderBoxProperties();
   horizontal_state.SetEffect(*properties->HorizontalScrollbarEffect());
 
-  PaintChunk::Id vertical_id(*target->GetScrollableArea()->VerticalScrollbar(),
-                             DisplayItem::kScrollbarVertical);
+  PaintChunk::Id vertical_id(
+      target->GetScrollableArea()->VerticalScrollbar()->Id(),
+      DisplayItem::kScrollbarVertical);
   auto vertical_state = target->FirstFragment().LocalBorderBoxProperties();
   vertical_state.SetEffect(*properties->VerticalScrollbarEffect());
 

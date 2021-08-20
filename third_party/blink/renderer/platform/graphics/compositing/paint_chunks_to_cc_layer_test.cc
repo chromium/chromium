@@ -149,10 +149,14 @@ class PaintRecordMatcher
     EXPECT_EQ(SkRRect(r), clip_op->rrect);                     \
   } while (false)
 
-PaintChunk::Id DefaultId() {
+const DisplayItemClient& DefaultClient() {
   DEFINE_STATIC_LOCAL(FakeDisplayItemClient, fake_client,
                       ("FakeDisplayItemClient"));
-  return PaintChunk::Id(fake_client, DisplayItem::kDrawingFirst);
+  return fake_client;
+}
+
+PaintChunk::Id DefaultId() {
+  return PaintChunk::Id(DefaultClient().Id(), DisplayItem::kDrawingFirst);
 }
 
 class TestChunks {
@@ -181,11 +185,12 @@ class TestChunks {
     auto& items = paint_artifact_->GetDisplayItemList();
     auto i = items.size();
     items.AllocateAndConstruct<DrawingDisplayItem>(
-        DefaultId().client, DefaultId().type,
-        drawable_bounds ? *drawable_bounds : bounds, std::move(record));
+        DefaultId().client_id, DefaultId().type,
+        drawable_bounds ? *drawable_bounds : bounds, std::move(record),
+        RasterEffectOutset::kNone);
 
     auto& chunks = paint_artifact_->PaintChunks();
-    chunks.emplace_back(i, i + 1, DefaultId(),
+    chunks.emplace_back(i, i + 1, DefaultClient(), DefaultId(),
                         PropertyTreeStateOrAlias(t, c, e));
     chunks.back().bounds = bounds;
     chunks.back().drawable_bounds = drawable_bounds ? *drawable_bounds : bounds;
@@ -197,7 +202,8 @@ class TestChunks {
                      const IntRect& bounds = IntRect(0, 0, 100, 100)) {
     auto& chunks = paint_artifact_->PaintChunks();
     auto i = paint_artifact_->GetDisplayItemList().size();
-    chunks.emplace_back(i, i, DefaultId(), PropertyTreeState(t, c, e));
+    chunks.emplace_back(i, i, DefaultClient(), DefaultId(),
+                        PropertyTreeState(t, c, e));
     chunks.back().bounds = bounds;
   }
 

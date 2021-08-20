@@ -1369,8 +1369,8 @@ static void UpdateLayerDebugInfo(
     const PaintArtifact& paint_artifact,
     CompositingReasons compositing_reasons,
     RasterInvalidationTracking* raster_invalidation_tracking) {
-  UpdateLayerDebugInfo(layer, id, paint_artifact.ClientDebugName(id.client),
-                       paint_artifact.ClientOwnerNodeId(id.client),
+  UpdateLayerDebugInfo(layer, id, paint_artifact.ClientDebugName(id.client_id),
+                       paint_artifact.ClientOwnerNodeId(id.client_id),
                        compositing_reasons, raster_invalidation_tracking);
 }
 
@@ -1413,7 +1413,7 @@ void PaintArtifactCompositor::UpdateDebugInfo() const {
     if (pending_layer.GetGraphicsLayer()) {
       UpdateLayerDebugInfo(
           *layer,
-          PaintChunk::Id(*pending_layer.GetGraphicsLayer(),
+          PaintChunk::Id(pending_layer.GetGraphicsLayer()->Id(),
                          DisplayItem::kUninitializedType),
           pending_layer.GetGraphicsLayer()->DebugName(),
           pending_layer.GetGraphicsLayer()->OwnerNodeId(),

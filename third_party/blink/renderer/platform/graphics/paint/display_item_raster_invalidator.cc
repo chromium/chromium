@@ -16,8 +16,7 @@ void DisplayItemRasterInvalidator::Generate() {
     IntRect new_visual_rect;
     PaintInvalidationReason reason = PaintInvalidationReason::kNone;
   };
-  HashMap<const DisplayItemClient*, OldAndNewDisplayItems>
-      clients_to_invalidate;
+  HashMap<DisplayItemClientId, OldAndNewDisplayItems> clients_to_invalidate;
 
   Vector<bool> old_display_items_matched;
   old_display_items_matched.resize(old_display_items_.size());
@@ -32,7 +31,7 @@ void DisplayItemRasterInvalidator::Generate() {
         // Will invalidate for the new display item which doesn't match any old
         // display item.
         auto& value = clients_to_invalidate
-                          .insert(&new_item.Client(), OldAndNewDisplayItems())
+                          .insert(new_item.ClientId(), OldAndNewDisplayItems())
                           .stored_value->value;
         value.new_visual_rect.Unite(new_item.VisualRect());
         if (value.reason == PaintInvalidationReason::kNone) {
@@ -57,7 +56,7 @@ void DisplayItemRasterInvalidator::Generate() {
       // The display item reordered, skipped cache or changed. Will invalidate
       // for both the old and new display items.
       auto& value = clients_to_invalidate
-                        .insert(&new_item.Client(), OldAndNewDisplayItems())
+                        .insert(new_item.ClientId(), OldAndNewDisplayItems())
                         .stored_value->value;
       if (old_item.IsTombstone() || old_item.DrawsContent())
         value.old_visual_rect.Unite(old_item.VisualRect());
@@ -88,13 +87,13 @@ void DisplayItemRasterInvalidator::Generate() {
 
     const auto& old_item = *it;
     if (old_item.DrawsContent() || old_item.IsTombstone()) {
-      clients_to_invalidate.insert(&old_item.Client(), OldAndNewDisplayItems())
+      clients_to_invalidate.insert(old_item.ClientId(), OldAndNewDisplayItems())
           .stored_value->value.old_visual_rect.Unite(old_item.VisualRect());
     }
   }
 
   for (const auto& item : clients_to_invalidate) {
-    GenerateRasterInvalidation(*item.key, item.value.old_visual_rect,
+    GenerateRasterInvalidation(item.key, item.value.old_visual_rect,
                                item.value.new_visual_rect, item.value.reason);
   }
 }
@@ -113,12 +112,12 @@ DisplayItemIterator DisplayItemRasterInvalidator::MatchNewDisplayItemInOldChunk(
       return next_old_item_to_match++;
     // Add the skipped old item into index.
     old_display_items_index_
-        .insert(&old_item.Client(), Vector<DisplayItemIterator>())
+        .insert(old_item.ClientId(), Vector<DisplayItemIterator>())
         .stored_value->value.push_back(next_old_item_to_match);
   }
 
   // Didn't find matching old item in sequential matching. Look up the index.
-  auto it = old_display_items_index_.find(&new_item.Client());
+  auto it = old_display_items_index_.find(new_item.ClientId());
   if (it == old_display_items_index_.end())
     return old_display_items_.end();
   for (auto i : it->value) {
@@ -129,7 +128,7 @@ DisplayItemIterator DisplayItemRasterInvalidator::MatchNewDisplayItemInOldChunk(
 }
 
 void DisplayItemRasterInvalidator::AddRasterInvalidation(
-    const DisplayItemClient& client,
+    DisplayItemClientId client_id,
     const IntRect& rect,
     PaintInvalidationReason reason,
     RasterInvalidator::ClientIsOldOrNew old_or_new) {
@@ -137,18 +136,18 @@ void DisplayItemRasterInvalidator::AddRasterInvalidation(
   if (r.IsEmpty())
     return;
 
-  invalidator_.AddRasterInvalidation(raster_invalidation_function_, r, client,
-                                     reason, old_or_new);
+  invalidator_.AddRasterInvalidation(raster_invalidation_function_, r,
+                                     client_id, reason, old_or_new);
 }
 
 void DisplayItemRasterInvalidator::GenerateRasterInvalidation(
-    const DisplayItemClient& client,
+    DisplayItemClientId client_id,
     const IntRect& old_visual_rect,
     const IntRect& new_visual_rect,
     PaintInvalidationReason reason) {
   if (new_visual_rect.IsEmpty()) {
     if (!old_visual_rect.IsEmpty()) {
-      AddRasterInvalidation(client, old_visual_rect,
+      AddRasterInvalidation(client_id, old_visual_rect,
                             PaintInvalidationReason::kDisappeared,
                             kClientIsOld);
     }
@@ -156,17 +155,17 @@ void DisplayItemRasterInvalidator::GenerateRasterInvalidation(
   }
 
   if (old_visual_rect.IsEmpty()) {
-    AddRasterInvalidation(client, new_visual_rect,
+    AddRasterInvalidation(client_id, new_visual_rect,
                           PaintInvalidationReason::kAppeared, kClientIsNew);
     return;
   }
 
-  if (client.IsJustCreated()) {
+  if (reason == PaintInvalidationReason::kJustCreated) {
     // The old client has been deleted and the new client happens to be at the
     // same address. They have no relationship.
-    AddRasterInvalidation(client, old_visual_rect,
+    AddRasterInvalidation(client_id, old_visual_rect,
                           PaintInvalidationReason::kDisappeared, kClientIsOld);
-    AddRasterInvalidation(client, new_visual_rect,
+    AddRasterInvalidation(client_id, new_visual_rect,
                           PaintInvalidationReason::kAppeared, kClientIsNew);
     return;
   }
@@ -176,13 +175,13 @@ void DisplayItemRasterInvalidator::GenerateRasterInvalidation(
     reason = PaintInvalidationReason::kGeometry;
 
   if (IsFullPaintInvalidationReason(reason)) {
-    GenerateFullRasterInvalidation(client, old_visual_rect, new_visual_rect,
+    GenerateFullRasterInvalidation(client_id, old_visual_rect, new_visual_rect,
                                    reason);
     return;
   }
 
   DCHECK_EQ(old_visual_rect.Location(), new_visual_rect.Location());
-  GenerateIncrementalRasterInvalidation(client, old_visual_rect,
+  GenerateIncrementalRasterInvalidation(client_id, old_visual_rect,
                                         new_visual_rect);
 }
 
@@ -217,7 +216,7 @@ static IntRect ComputeBottomDelta(const IntPoint& location,
 }
 
 void DisplayItemRasterInvalidator::GenerateIncrementalRasterInvalidation(
-    const DisplayItemClient& client,
+    DisplayItemClientId client_id,
     const IntRect& old_visual_rect,
     const IntRect& new_visual_rect) {
   DCHECK(old_visual_rect.Location() == new_visual_rect.Location());
@@ -226,7 +225,7 @@ void DisplayItemRasterInvalidator::GenerateIncrementalRasterInvalidation(
       ComputeRightDelta(new_visual_rect.Location(), old_visual_rect.Size(),
                         new_visual_rect.Size());
   if (!right_delta.IsEmpty()) {
-    AddRasterInvalidation(client, right_delta,
+    AddRasterInvalidation(client_id, right_delta,
                           PaintInvalidationReason::kIncremental, kClientIsNew);
   }
 
@@ -234,23 +233,23 @@ void DisplayItemRasterInvalidator::GenerateIncrementalRasterInvalidation(
       ComputeBottomDelta(new_visual_rect.Location(), old_visual_rect.Size(),
                          new_visual_rect.Size());
   if (!bottom_delta.IsEmpty()) {
-    AddRasterInvalidation(client, bottom_delta,
+    AddRasterInvalidation(client_id, bottom_delta,
                           PaintInvalidationReason::kIncremental, kClientIsNew);
   }
 }
 
 void DisplayItemRasterInvalidator::GenerateFullRasterInvalidation(
-    const DisplayItemClient& client,
+    DisplayItemClientId client_id,
     const IntRect& old_visual_rect,
     const IntRect& new_visual_rect,
     PaintInvalidationReason reason) {
   if (!new_visual_rect.Contains(old_visual_rect)) {
-    AddRasterInvalidation(client, old_visual_rect, reason, kClientIsNew);
+    AddRasterInvalidation(client_id, old_visual_rect, reason, kClientIsNew);
     if (old_visual_rect.Contains(new_visual_rect))
       return;
   }
 
-  AddRasterInvalidation(client, new_visual_rect, reason, kClientIsNew);
+  AddRasterInvalidation(client_id, new_visual_rect, reason, kClientIsNew);
 }
 
 }  // namespace blink
