@@ -533,6 +533,23 @@ class SessionRestoreImpl : public BrowserListObserver {
     }
 
     for (auto i = windows->begin(); i != windows->end(); ++i) {
+      // Check if a collapse tab group will be restored and if the feature flag
+      // |kTabGroupsCollapseFreezing| is enabled. UMA metrics for features are
+      // gathered based on the check of the feature flag. The goal of this code
+      // is to ensure the feature is initialized before the first UMA snapshot
+      // gets uploaded.
+      // TODO(1110108): Remove this check once the feature is fully launched.
+      for (auto& session_tab_group : (*i)->tab_groups) {
+        // Ensure that the user has a collapsed group before checking if the
+        // freezing experiment is enabled to ensure our metrics accurately track
+        // the impact of freezing for users with collapsed tab groups.
+        if (session_tab_group->visual_data.is_collapsed() &&
+            base::FeatureList::IsEnabled(
+                features::kTabGroupsCollapseFreezing)) {
+          break;
+        }
+      }
+
       ++(*window_count);
       // 1. Choose between restoring tabs in an existing browser or in a newly
       //    created browser.
