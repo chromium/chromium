@@ -15,12 +15,12 @@
 
   async function onAfterContent({ content, error, isEncoded }) {
     SourcesTestRunner.waitForScriptSource('before.css', uiSourceCode => uiSourceCode.setWorkingCopy(content));
-    TestRunner.addSniffer(Changes.ChangesView.prototype, '_renderDiffRows', rowsRendered, true);
+    TestRunner.addSniffer(Changes.ChangesView.prototype, 'renderDiffRows', rowsRendered, true);
     await UI.viewManager.showView('changes.changes');
   }
 
   function rowsRendered() {
-    var codeMirror = this._editor._codeMirror;
+    var codeMirror = this.editor._codeMirror;
     for (var i = 0; i < codeMirror.lineCount(); i++) {
       codeMirror.scrollIntoView(i);  // Ensure highlighting
       var lineInfo = codeMirror.lineInfo(i);

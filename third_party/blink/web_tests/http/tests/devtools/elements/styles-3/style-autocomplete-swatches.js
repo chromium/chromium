@@ -20,7 +20,7 @@
   await ElementsTestRunner.selectNodeAndWaitForStylesPromise('inner');
   const treeElement = ElementsTestRunner.getMatchedStylePropertyTreeItem('color');
   const valuePrompt = new Elements.StylesSidebarPane.CSSPropertyPrompt(treeElement, false /* isEditingName */);
-  const results = await valuePrompt._buildPropertyCompletions('var(', '--', true /* true */)
+  const results = await valuePrompt.buildPropertyCompletions('var(', '--', true /* true */)
   for (const result of results) {
     TestRunner.addResult(result.title)
     TestRunner.addResult('  text: ' + result.text)

@@ -21,8 +21,8 @@
     'x', 'y.foo'
   ]);
   await SourcesTestRunner.startDebuggerTestPromise();
-  UI.panels.sources._sidebarPaneStack.showView(
-      UI.panels.sources._watchSidebarPane);
+  UI.panels.sources.sidebarPaneStack.showView(
+      UI.panels.sources.watchSidebarPane);
   TestRunner.addResult('Watches before running testFunction:');
   await waitForUpdate();
   TestRunner.evaluateInPagePromise('testFunction()');
@@ -33,19 +33,19 @@
   function waitForUpdate() {
     return new Promise(resolve => {
       TestRunner.addSniffer(
-          Sources.WatchExpression.prototype, '_createWatchExpression',
+          Sources.WatchExpression.prototype, 'createWatchExpression',
           watchExpressionsUpdated);
       let updateCount = 2;
       function watchExpressionsUpdated(result, wasThrown) {
         if (result !== undefined || wasThrown !== undefined) {
-          TestRunner.addResult(this._element.deepTextContent());
+          TestRunner.addResult(this.element.deepTextContent());
           if (--updateCount === 0) {
             resolve();
             return;
           }
         }
         TestRunner.addSniffer(
-            Sources.WatchExpression.prototype, '_createWatchExpression',
+            Sources.WatchExpression.prototype, 'createWatchExpression',
             watchExpressionsUpdated);
       }
     });

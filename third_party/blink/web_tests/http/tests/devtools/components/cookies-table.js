@@ -14,8 +14,8 @@
     TestRunner.addResult(`# of node.appendChild calls: ${calls.appendChild.length}`);
     TestRunner.addResult(`# of node.removeChildren calls: ${calls.removeChildren.length}`);
     calls.appendChild.forEach(node => {
-      const data = node._data;
-      const selected = node._selected ? '[selected]' : '';
+      const data = node.data;
+      const selected = node.selected ? '[selected]' : '';
       TestRunner.addResult(`node.appendChild call: ${data.name} ${data.value} ${data.expires} ${selected}`.trim());
     });
   }
@@ -90,8 +90,8 @@
   function createSortAndDumpCookies(cookieData, sortColumn, isAsc) {
     const table = new CookieTable.CookiesTable(SDK.targetManager.mainTarget(), true);
     const cookies = cookieData.map(createCookie);
-    table._dataGrid = mockDataGrid({sortColumn, isAsc});
-    table._sortCookies(cookies);
+    table.dataGrid = mockDataGrid({sortColumn, isAsc});
+    table.sortCookies(cookies);
     TestRunner.addResult(`params: ${sortColumn} ${isAsc ? 'asc' : 'desc'}`);
     dumpCookies(cookies);
   }
@@ -100,15 +100,15 @@
     const table = new CookieTable.CookiesTable(SDK.targetManager.mainTarget(), true);
     const cookies = cookieData && cookieData.map(createCookie);
     const rootNode = mockNode({});
-    table._lastEditedColumnId = lastEditedColumn || null;
-    table._dataGrid = mockDataGrid({
+    table.lastEditedColumnId = lastEditedColumn || null;
+    table.dataGrid = mockDataGrid({
       isAsc: Boolean(isAsc),
       sortColumn: 'name',
       rootNode: rootNode,
       selectedNode: selectedNode,
     });
     table.setCookies(cookies);
-    dumpNodeCalls(rootNode._calls);
+    dumpNodeCalls(rootNode.calls);
   }
 
   function testSortCookies(cookieData) {

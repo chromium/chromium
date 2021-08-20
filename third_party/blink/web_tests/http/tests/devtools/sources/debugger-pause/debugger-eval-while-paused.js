@@ -29,7 +29,7 @@
   function step1() {
     SourcesTestRunner.runTestFunctionAndWaitUntilPaused();
     TestRunner.addSniffer(
-              Sources.CallStackSidebarPane.prototype, '_updatedForTest', step2);
+              Sources.CallStackSidebarPane.prototype, 'updatedForTest', step2);
   }
 
   function step2(callFrames) {
@@ -39,7 +39,7 @@
   function step3(callFrames, result) {
     TestRunner.addResult('Evaluated script on the top frame: ' + result);
     var pane = Sources.CallStackSidebarPane.instance();
-    pane._selectNextCallFrameOnStack();
+    pane.selectNextCallFrameOnStack();
     TestRunner.deprecatedRunAfterPendingDispatches(step4);
   }
 

@@ -82,7 +82,7 @@
     return event;
   }
 
-  var section = UI.panels.elements._metricsWidget;
+  var section = UI.panels.elements.metricsWidget;
 
   TestRunner.runTestSuite([
     function testBorderBoxInit1(next) {

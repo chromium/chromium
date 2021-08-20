@@ -16,7 +16,7 @@
   let supports = executionContext.runtimeModel.hasSideEffectSupport();
   TestRunner.addResult(`\nDoes the runtime also support side effect checks? ${supports}`);
   TestRunner.addResult(`\nClearing cached side effect support`);
-  executionContext.runtimeModel._hasSideEffectSupport = null;
+  executionContext.runtimeModel.hasSideEffectSupport = null;
 
   // Debugger evaluateOnCallFrame test.
   await TestRunner.evaluateInPagePromise(`
@@ -52,7 +52,7 @@
 
   function printDetails(result) {
     const customFormatters = {};
-    for (let name of ['_runtimeModel', '_runtimeAgent'])
+    for (let name of ['runtimeModel', '_runtimeAgent'])
       customFormatters[name] = 'formatAsTypeNameOrNull';
     TestRunner.dump(result, customFormatters);
   }

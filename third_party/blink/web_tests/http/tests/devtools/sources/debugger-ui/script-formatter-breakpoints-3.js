@@ -8,7 +8,7 @@
   await TestRunner.showPanel('sources');
   await TestRunner.addScriptTag('../debugger/resources/unformatted3.js');
 
-  Bindings.breakpointManager._storage._breakpoints = new Map();
+  Bindings.breakpointManager.storage._breakpoints = new Map();
   var panel = UI.panels.sources;
   var scriptFormatter;
 
@@ -25,7 +25,7 @@
 
       function didShowScriptSource(frame) {
         TestRunner.addSniffer(
-            Sources.ScriptFormatterEditorAction.prototype, '_updateButton', uiSourceCodeScriptFormatted);
+            Sources.ScriptFormatterEditorAction.prototype, 'updateButton', uiSourceCodeScriptFormatted);
         scriptFormatter.toggleFormatScriptSource();
       }
 

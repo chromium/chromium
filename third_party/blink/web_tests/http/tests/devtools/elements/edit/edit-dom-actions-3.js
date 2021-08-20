@@ -49,11 +49,11 @@
         TestRunner.deprecatedRunAfterPendingDispatches(step2);
 
         function step2() {
-          TestRunner.addResult(treeElement._editing.editor.text());
-          treeElement._editing.editor.setText('<div foo="bar-comment">Element</div>');
+          TestRunner.addResult(treeElement.editing.editor.text());
+          treeElement.editing.editor.setText('<div foo="bar-comment">Element</div>');
           var event = TestRunner.createKeyEvent('Enter');
           event.isMetaOrCtrlForTest = true;
-          treeElement._editing.editor.widget().element.dispatchEvent(event);
+          treeElement.editing.editor.widget().element.dispatchEvent(event);
           TestRunner.deprecatedRunAfterPendingDispatches(done);
         }
       }
@@ -69,11 +69,11 @@
         TestRunner.deprecatedRunAfterPendingDispatches(step2);
 
         function step2() {
-          TestRunner.addResult(treeElement._editing.editor.text());
-          treeElement._editing.editor.setText('<span foo="bar"><span id="inner-span">Span contents</span></span>');
+          TestRunner.addResult(treeElement.editing.editor.text());
+          treeElement.editing.editor.setText('<span foo="bar"><span id="inner-span">Span contents</span></span>');
           var event = TestRunner.createKeyEvent('Enter');
           event.isMetaOrCtrlForTest = true;
-          treeElement._editing.editor.widget().element.dispatchEvent(event);
+          treeElement.editing.editor.widget().element.dispatchEvent(event);
           TestRunner.deprecatedRunAfterPendingDispatches(
               ElementsTestRunner.expandElementsTree.bind(ElementsTestRunner, done));
         }

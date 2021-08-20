@@ -19,7 +19,7 @@
   }
 
   function step2(uiSourceCode) {
-    TestRunner.addSnifferPromise(Bindings.ResourceScriptFile.prototype, '_mappingCheckedForTest')
+    TestRunner.addSnifferPromise(Bindings.ResourceScriptFile.prototype, 'mappingCheckedForTest')
         .then(() => step3(uiSourceCode));
     SourcesTestRunner.showScriptSource('test.js');
   }
@@ -40,9 +40,9 @@
 
     TestRunner
         .addSnifferPromise(
-            Sources.DebuggerPlugin.prototype, '_didDivergeFromVM')
+            Sources.DebuggerPlugin.prototype, 'didDivergeFromVM')
         .then(dumpDivergeFromVM);
-    TestRunner.addSnifferPromise(Bindings.ResourceScriptFile.prototype, '_mappingCheckedForTest')
+    TestRunner.addSnifferPromise(Bindings.ResourceScriptFile.prototype, 'mappingCheckedForTest')
         .then(() => SourcesTestRunner.completeDebuggerTest());
     TestRunner.evaluateInPage(changedScriptSource);
   }

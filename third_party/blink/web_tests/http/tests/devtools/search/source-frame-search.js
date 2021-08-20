@@ -19,15 +19,15 @@
     TestRunner.addResult('Running search test for query = ' + searchConfig.query + modifiersString + ':');
     sourceFrame.performSearch(searchConfig, false, false);
 
-    var searchResults = sourceFrame._searchResults;
+    var searchResults = sourceFrame.searchResults;
     for (var i = 0; i < searchResults.length; ++i) {
       var range = searchResults[i];
       var prefixRange = new TextUtils.TextRange(range.startLine, 0, range.startLine, range.startColumn);
       var postfixRange = new TextUtils.TextRange(
-          range.endLine, range.endColumn, range.endLine, sourceFrame._textEditor.line(range.endLine).length);
-      var prefix = sourceFrame._textEditor.text(prefixRange);
-      var result = sourceFrame._textEditor.text(range);
-      var postfix = sourceFrame._textEditor.text(postfixRange);
+          range.endLine, range.endColumn, range.endLine, sourceFrame.textEditor.line(range.endLine).length);
+      var prefix = sourceFrame.textEditor.text(prefixRange);
+      var result = sourceFrame.textEditor.text(range);
+      var postfix = sourceFrame.textEditor.text(postfixRange);
       TestRunner.addResult('  - ' + prefix + '<' + result + '>' + postfix);
     }
   }

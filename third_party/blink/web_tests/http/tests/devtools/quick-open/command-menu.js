@@ -29,7 +29,7 @@
 
     TestRunner.addResult('Switching to console panel');
     try {
-      commands.get('Panel: Show Console')._executeHandler().then(() => {
+      commands.get('Panel: Show Console').executeHandler().then(() => {
         TestRunner.addResult('Current panel: ' + UI.inspectorView.currentPanelDeprecated().name);
         TestRunner.completeTest();
       });

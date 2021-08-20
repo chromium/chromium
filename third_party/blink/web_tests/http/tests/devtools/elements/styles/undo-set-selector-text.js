@@ -23,8 +23,8 @@
     await ElementsTestRunner.dumpSelectedElementStyles(true);
     var section = ElementsTestRunner.firstMatchedStyleSection();
     section.startEditingSelector();
-    section._selectorElement.textContent = '#inspected, #other';
-    section._selectorElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
+    section.selectorElement.textContent = '#inspected, #other';
+    section.selectorElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
     ElementsTestRunner.selectNodeAndWaitForStyles('other', step2);
   }
 

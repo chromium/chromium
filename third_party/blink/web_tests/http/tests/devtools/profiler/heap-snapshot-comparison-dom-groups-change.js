@@ -84,12 +84,12 @@
     }
 
     function step3(row) {
-      TestRunner.addResult('Delta: +' + row._addedCount + ' -' + row._removedCount);
+      TestRunner.addResult('Delta: +' + row.addedCount + ' -' + row._removedCount);
       var added = [];
       var removed = [];
       for (var i = 0; i < row.children.length; i++) {
         var child = row.children[i];
-        if (child._isDeletedNode)
+        if (child.isDeletedNode)
           removed.push(child.snapshotNodeId);
         else
           added.push(child.snapshotNodeId);

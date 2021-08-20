@@ -10,7 +10,7 @@
     return generateFrames(3);
   }`);
 
-  UI.panels.timeline._captureLayersAndPicturesSetting.set(true);
+  UI.panels.timeline.captureLayersAndPicturesSetting.set(true);
   await PerformanceTestRunner.invokeAsyncWithTimeline('doActions');
   const frames = PerformanceTestRunner.timelineFrameModel().getFrames();
   const lastFrame = frames[frames.length - 1];

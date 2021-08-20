@@ -12,11 +12,11 @@
   var section = ElementsTestRunner.inlineStyleSection();
   const treeElement = section.addNewBlankProperty(0);
   treeElement.startEditing();
-  await TestRunner.addSnifferPromise(UI.TextPrompt.prototype, '_completionsReady');
+  await TestRunner.addSnifferPromise(UI.TextPrompt.prototype, 'completionsReady');
 
   treeElement.nameElement.textContent = 'white-space';
   treeElement.nameElement.dispatchEvent(TestRunner.createKeyEvent('Tab'));
-  await TestRunner.addSnifferPromise(UI.TextPrompt.prototype, '_completionsReady');
+  await TestRunner.addSnifferPromise(UI.TextPrompt.prototype, 'completionsReady');
 
   // Precondition: we have suggestions and a default queryRange
   // Trigger an input. This will change the queryRange to be 'n'
@@ -26,7 +26,7 @@
   treeElement.valueElement.textContent = userInput;
   treeElement.valueElement.dispatchEvent(TestRunner.createKeyEvent(userInput));
   treeElement.valueElement.dispatchEvent(TestRunner.createKeyEvent('Tab'));
-  await TestRunner.addSnifferPromise(UI.TextPrompt.prototype, '_completionsReady');
+  await TestRunner.addSnifferPromise(UI.TextPrompt.prototype, 'completionsReady');
   dumpFocus();
   ElementsTestRunner.dumpRenderedMatchedStyles();
   TestRunner.completeTest();

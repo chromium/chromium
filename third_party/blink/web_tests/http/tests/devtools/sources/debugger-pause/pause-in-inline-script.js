@@ -45,7 +45,7 @@
         uiLocation.uiSourceCode, dumpCallFrameLine);
 
     function dumpCallFrameLine(sourceFrame) {
-      var resourceText = sourceFrame._textEditor.text();
+      var resourceText = sourceFrame.textEditor.text();
       var lines = resourceText.split('\n');
       var lineNumber = uiLocation.lineNumber;
       TestRunner.addResult(

@@ -11,9 +11,9 @@
 
   function createNetworkRequest(mimeType, content, statusCode, resourceType) {
     var request = SDK.NetworkRequest.create(0, 'http://localhost');
-    request._resourceType = resourceType;
+    request.resourceType = resourceType;
     request.mimeType = mimeType;
-    request._contentData = Promise.resolve({error: null, content: content, encoded: false});
+    request.contentData = Promise.resolve({error: null, content: content, encoded: false});
     if (statusCode !== undefined)
       request.statusCode = statusCode;
     return request;
@@ -23,9 +23,9 @@
     if (!previewer)
       return '** NONE **';
     if (previewer instanceof SourceFrame.ResourceSourceFrame.SearchableContainer)
-      return '_SearchableContainer > ' + getViewName(previewer.children()[0]);
+      return 'SearchableContainer > ' + getViewName(previewer.children()[0]);
     if (previewer instanceof UI.SearchableView)
-      return 'SearchableView > ' + getViewName(previewer._searchProvider);
+      return 'SearchableView > ' + getViewName(previewer.searchProvider);
     return previewer.contentElement.className;
   }
 
@@ -41,7 +41,7 @@
       var previewView = new Network.RequestPreviewView(request, new Network.RequestResponseView(request));
       previewView.wasShown();
       TestRunner.addResult(
-          'ResourceType(' + resourceType.name() + '): ' + getViewName(await previewView._contentViewPromise));
+          'ResourceType(' + resourceType.name() + '): ' + getViewName(await previewView.contentViewPromise));
     }
     TestRunner.addResult('');
   }

@@ -10,7 +10,7 @@
   await TestRunner.navigatePromise(
       'resources/dynamic-scripts-breakpoints.html');
 
-  Bindings.breakpointManager._storage._breakpoints = new Map();
+  Bindings.breakpointManager.storage._breakpoints = new Map();
   var panel = UI.panels.sources;
 
   SourcesTestRunner.startDebuggerTest();
@@ -24,7 +24,7 @@
 
   function dumpBreakpointStorage() {
     var breakpointManager = Bindings.breakpointManager;
-    var breakpoints = breakpointManager._storage._setting.get();
+    var breakpoints = breakpointManager.storage._setting.get();
     TestRunner.addResult('    Dumping breakpoint storage');
     for (var i = 0; i < breakpoints.length; ++i)
       TestRunner.addResult(
@@ -36,7 +36,7 @@
     TestRunner.addResult('Setting breakpoint:');
     TestRunner.addSniffer(
         Bindings.BreakpointManager.ModelBreakpoint.prototype,
-        '_addResolvedLocation', breakpointResolved);
+        'addResolvedLocation', breakpointResolved);
     await SourcesTestRunner.setBreakpoint(sourceFrame, 7, '', true);
   }
 

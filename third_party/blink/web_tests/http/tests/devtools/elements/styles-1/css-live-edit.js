@@ -16,7 +16,7 @@
     SourcesTestRunner.showScriptSource('css-live-edit.css', didShowResource);
 
     function didShowResource(sourceFrame) {
-      TestRunner.addSniffer(SDK.CSSModel.prototype, '_fireStyleSheetChanged', didEditResource);
+      TestRunner.addSniffer(SDK.CSSModel.prototype, 'fireStyleSheetChanged', didEditResource);
       SourcesTestRunner.replaceInSource(sourceFrame, 'font-size: 12px;', 'font-size: 20px;');
     }
 

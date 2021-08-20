@@ -19,7 +19,7 @@
   SecurityTestRunner.dispatchRequestFinished(request2);
 
   TestRunner.addResult('Before interstitial is shown:');
-  TestRunner.dumpDeepInnerHTML(Security.SecurityPanel._instance()._sidebarTree.element);
+  TestRunner.dumpDeepInnerHTML(Security.SecurityPanel.instance()._sidebarTree.element);
 
   // Test that the sidebar is hidden when an interstitial is shown. https://crbug.com/559150
   TestRunner.mainTarget.model(SDK.ResourceTreeModel)
@@ -30,13 +30,13 @@
   request3.setSecurityState(Protocol.Security.SecurityState.Unknown);
   SecurityTestRunner.dispatchRequestFinished(request3);
   TestRunner.addResult('After interstitial is shown:');
-  TestRunner.dumpDeepInnerHTML(Security.SecurityPanel._instance()._sidebarTree.element);
+  TestRunner.dumpDeepInnerHTML(Security.SecurityPanel.instance()._sidebarTree.element);
 
   // Test that the sidebar is shown again when the interstitial is hidden. https://crbug.com/559150
   TestRunner.mainTarget.model(SDK.ResourceTreeModel)
       .dispatchEventToListeners(SDK.ResourceTreeModel.Events.InterstitialHidden);
   TestRunner.addResult('After interstitial is hidden:');
-  TestRunner.dumpDeepInnerHTML(Security.SecurityPanel._instance()._sidebarTree.element);
+  TestRunner.dumpDeepInnerHTML(Security.SecurityPanel.instance()._sidebarTree.element);
 
   TestRunner.completeTest();
 })();

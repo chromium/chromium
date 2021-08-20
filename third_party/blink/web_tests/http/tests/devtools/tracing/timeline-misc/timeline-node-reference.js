@@ -47,7 +47,7 @@
     const records = await PerformanceTestRunner.evaluateWithTimeline('performActions()');
     const layoutEvent = PerformanceTestRunner.findTimelineEvent(TimelineModel.TimelineModel.RecordType.Layout);
     UI.context.addFlavorChangeListener(SDK.DOMNode, onSelectedNodeChanged);
-    var model = UI.panels.timeline._performanceModel.timelineModel();
+    var model = UI.panels.timeline.performanceModel.timelineModel();
     var element = await Timeline.TimelineUIUtils.buildTraceEventDetails(layoutEvent, model, new Components.Linkifier(), true);
     rows = Array.from(element.querySelectorAll('.timeline-details-view-row'));
     clickNextLayoutRoot();

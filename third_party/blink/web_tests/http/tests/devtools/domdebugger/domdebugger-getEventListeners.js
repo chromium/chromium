@@ -22,10 +22,10 @@
   function dumpListeners(listeners) {
     listeners.sort((a, b) => a.type().localeCompare(b.type()));
     for (var listener of listeners) {
-      delete listener._location.scriptId;
-      var sourceURL = listener._sourceURL;
+      delete listener.location.scriptId;
+      var sourceURL = listener.sourceURL;
       sourceURL = sourceURL.substr(sourceURL.lastIndexOf('/') + 1);
-      listener._sourceURL = sourceURL;
+      listener.sourceURL = sourceURL;
 
       TestRunner.addResult('type: ' + listener.type());
       TestRunner.addResult('useCapture: ' + listener.useCapture());

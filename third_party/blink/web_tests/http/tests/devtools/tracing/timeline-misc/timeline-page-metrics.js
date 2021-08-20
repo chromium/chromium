@@ -10,33 +10,33 @@
   function processTraceEvents(title, traceEvents) {
     TestRunner.addResult('\n\n' + title);
     const timeline = UI.panels.timeline;
-    timeline._setModel(PerformanceTestRunner.createPerformanceModelWithEvents(traceEvents));
-    const flamechart = timeline._flameChart._mainFlameChart;
+    timeline.setModel(PerformanceTestRunner.createPerformanceModelWithEvents(traceEvents));
+    const flamechart = timeline.flameChart._mainFlameChart;
 
     TestRunner.addResult(`Entries:`);
-    const data = flamechart._timelineData();
+    const data = flamechart.timelineData();
     for (let i = 0; i < data.entryStartTimes.length; ++i) {
       TestRunner.addResult(
-          `${data.entryStartTimes[i]} ${data.entryTotalTimes[i]} ${flamechart._dataProvider.entryTitle(i)}`);
+          `${data.entryStartTimes[i]} ${data.entryTotalTimes[i]} ${flamechart.dataProvider.entryTitle(i)}`);
     }
 
     TestRunner.addResult(`\nMarkers:`);
     for (const marker of data.markers)
-      TestRunner.addResult(`${marker._startTime} ${marker._startOffset} ${marker._style.title}`);
+      TestRunner.addResult(`${marker.startTime} ${marker._startOffset} ${marker._style.title}`);
   }
 
   processTraceEvents("Only main frame", [
     {
       'args': {'name': 'CrBrowserMain'},
-      'cat': '__metadata',
+      'cat': '_metadata',
       'name': 'process_name',
       'ph': 'M',
       'pid': 17800,
       'tid': 123,
       'ts': 0
     },
-    {'args':{'name':'Renderer'},'cat':'__metadata','name':'process_name','ph':'M','pid':17850,'tid':230,'ts':0},
-    {'args':{'name':'CrRendererMain'},'cat':'__metadata','name':'thread_name','ph':'M','pid':17850,'tid':230,'ts':0},
+    {'args':{'name':'Renderer'},'cat':'_metadata','name':'process_name','ph':'M','pid':17850,'tid':230,'ts':0},
+    {'args':{'name':'CrRendererMain'},'cat':'_metadata','name':'thread_name','ph':'M','pid':17850,'tid':230,'ts':0},
     {
       'args': {
         "data": {
@@ -65,19 +65,19 @@
   processTraceEvents("Multiple frames", [
     {
       'args': {'name': 'CrBrowserMain'},
-      'cat': '__metadata',
+      'cat': '_metadata',
       'name': 'process_name',
       'ph': 'M',
       'pid': 17800,
       'tid': 123,
       'ts': 0
     },
-    {'args':{'name':'Renderer'},'cat':'__metadata','name':'process_name','ph':'M','pid':17850,'tid':230,'ts':0},
-    {'args':{'name':'Renderer'},'cat':'__metadata','name':'process_name','ph':'M','pid':17851,'tid':231,'ts':0},
-    {'args':{'name':'Renderer'},'cat':'__metadata','name':'process_name','ph':'M','pid':17852,'tid':232,'ts':0},
-    {'args':{'name':'CrRendererMain'},'cat':'__metadata','name':'thread_name','ph':'M','pid':17850,'tid':230,'ts':0},
-    {'args':{'name':'CrRendererMain'},'cat':'__metadata','name':'thread_name','ph':'M','pid':17851,'tid':231,'ts':0},
-    {'args':{'name':'CrRendererMain'},'cat':'__metadata','name':'thread_name','ph':'M','pid':17852,'tid':232,'ts':0},
+    {'args':{'name':'Renderer'},'cat':'_metadata','name':'process_name','ph':'M','pid':17850,'tid':230,'ts':0},
+    {'args':{'name':'Renderer'},'cat':'_metadata','name':'process_name','ph':'M','pid':17851,'tid':231,'ts':0},
+    {'args':{'name':'Renderer'},'cat':'_metadata','name':'process_name','ph':'M','pid':17852,'tid':232,'ts':0},
+    {'args':{'name':'CrRendererMain'},'cat':'_metadata','name':'thread_name','ph':'M','pid':17850,'tid':230,'ts':0},
+    {'args':{'name':'CrRendererMain'},'cat':'_metadata','name':'thread_name','ph':'M','pid':17851,'tid':231,'ts':0},
+    {'args':{'name':'CrRendererMain'},'cat':'_metadata','name':'thread_name','ph':'M','pid':17852,'tid':232,'ts':0},
     {
       'args': {
         "data": {
@@ -121,15 +121,15 @@
  processTraceEvents("LCP invalidation 1", [
     {
       'args': {'name': 'CrBrowserMain'},
-      'cat': '__metadata',
+      'cat': '_metadata',
       'name': 'process_name',
       'ph': 'M',
       'pid': 17800,
       'tid': 123,
       'ts': 0
     },
-    {'args':{'name':'Renderer'},'cat':'__metadata','name':'process_name','ph':'M','pid':17850,'tid':230,'ts':0},
-    {'args':{'name':'CrRendererMain'},'cat':'__metadata','name':'thread_name','ph':'M','pid':17850,'tid':230,'ts':0},
+    {'args':{'name':'Renderer'},'cat':'_metadata','name':'process_name','ph':'M','pid':17850,'tid':230,'ts':0},
+    {'args':{'name':'CrRendererMain'},'cat':'_metadata','name':'thread_name','ph':'M','pid':17850,'tid':230,'ts':0},
     {
       'args': {
         "data": {
@@ -162,15 +162,15 @@
   processTraceEvents("LCP invalidation 2", [
     {
       'args': {'name': 'CrBrowserMain'},
-      'cat': '__metadata',
+      'cat': '_metadata',
       'name': 'process_name',
       'ph': 'M',
       'pid': 17800,
       'tid': 123,
       'ts': 0
     },
-    {'args':{'name':'Renderer'},'cat':'__metadata','name':'process_name','ph':'M','pid':17850,'tid':230,'ts':0},
-    {'args':{'name':'CrRendererMain'},'cat':'__metadata','name':'thread_name','ph':'M','pid':17850,'tid':230,'ts':0},
+    {'args':{'name':'Renderer'},'cat':'_metadata','name':'process_name','ph':'M','pid':17850,'tid':230,'ts':0},
+    {'args':{'name':'CrRendererMain'},'cat':'_metadata','name':'thread_name','ph':'M','pid':17850,'tid':230,'ts':0},
     {
       'args': {
         "data": {

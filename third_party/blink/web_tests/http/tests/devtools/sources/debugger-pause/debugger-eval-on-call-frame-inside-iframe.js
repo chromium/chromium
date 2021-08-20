@@ -61,7 +61,7 @@
   }
 
   async function step2(callFrames) {
-    await TestRunner.addSnifferPromise(Sources.CallStackSidebarPane.prototype, '_updatedForTest');
+    await TestRunner.addSnifferPromise(Sources.CallStackSidebarPane.prototype, 'updatedForTest');
     await SourcesTestRunner.captureStackTrace(callFrames);
     TestRunner.addResult('\n=== Evaluating on iframe ===');
     evaluateInConsoleAndDump(step3);
@@ -69,7 +69,7 @@
 
   function step3() {
     var pane = Sources.CallStackSidebarPane.instance();
-    pane._selectNextCallFrameOnStack();
+    pane.selectNextCallFrameOnStack();
     TestRunner.deprecatedRunAfterPendingDispatches(step4);
   }
 

@@ -14,11 +14,11 @@
 
   TestRunner.addResult('Invalid Origins:');
   invalidOrigins.map(origin => {
-    TestRunner.addResult(origin + ', valid = ' + indexedDBModel._isValidSecurityOrigin(origin));
+    TestRunner.addResult(origin + ', valid = ' + indexedDBModel.isValidSecurityOrigin(origin));
   });
   TestRunner.addResult('\nValid Origins:');
   validOrigins.map(origin => {
-    TestRunner.addResult(origin + ', valid = ' + indexedDBModel._isValidSecurityOrigin(origin));
+    TestRunner.addResult(origin + ', valid = ' + indexedDBModel.isValidSecurityOrigin(origin));
   });
   TestRunner.completeTest();
 })();

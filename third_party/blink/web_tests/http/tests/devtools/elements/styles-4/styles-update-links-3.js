@@ -44,7 +44,7 @@
     function testDisableProperty(next) {
       var treeItem = ElementsTestRunner.getMatchedStylePropertyTreeItem('border');
       ElementsTestRunner.waitForStyleApplied(onPropertyDisabled);
-      treeItem._toggleDisabled(true);
+      treeItem.toggleDisabled(true);
 
       async function onPropertyDisabled() {
         TestRunner.addResult('\n\n#### AFTER PROPERTY DISABLED ####\n\n');

@@ -61,7 +61,7 @@
 
   function onTestStarted() {
     TestRunner.addSniffer(
-        Sources.ScopeChainSidebarPane.prototype, '_sidebarPaneUpdatedForTest', onSidebarRendered, true);
+        Sources.ScopeChainSidebarPane.prototype, 'sidebarPaneUpdatedForTest', onSidebarRendered, true);
     SourcesTestRunner.runTestFunctionAndWaitUntilPaused(() => {});
   }
 

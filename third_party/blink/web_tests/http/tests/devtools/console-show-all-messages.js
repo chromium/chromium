@@ -14,12 +14,12 @@
     name: 'myIFrame'
   });
 
-  var filterByExecutionContextSetting = Console.ConsoleView.instance()._filter._filterByExecutionContextSetting;
-  Console.ConsoleView.instance()._setImmediatelyFilterMessagesForTest();
+  var filterByExecutionContextSetting = Console.ConsoleView.instance().filter._filterByExecutionContextSetting;
+  Console.ConsoleView.instance().setImmediatelyFilterMessagesForTest();
 
   //we can't use usual ConsoleTestRunner.dumpConsoleMessages(), because it dumps url of message and it flakes in case of iframe
   function dumpVisibleConsoleMessageText() {
-    var messageViews = Console.ConsoleView.instance()._visibleViewMessages;
+    var messageViews = Console.ConsoleView.instance().visibleViewMessages;
     for (var i = 0; i < messageViews.length; ++i) {
       TestRunner.addResult(messageViews[i].consoleMessage().messageText);
     }

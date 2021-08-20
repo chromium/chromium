@@ -25,7 +25,7 @@
   await Common.Revealer.reveal(uiSourceCode);
   await uiSourceCode.rename('my_snippet_name');
   const bindingPromise = Persistence.persistence.once(Persistence.Persistence.Events.BindingCreated);
-  Sources.SourcesPanel.instance()._runSnippet();
+  Sources.SourcesPanel.instance().runSnippet();
   const binding = await bindingPromise;
   TestRunner.addResult(binding.network.url() + ' <=> ' + binding.fileSystem.url());
 

@@ -30,12 +30,12 @@
   async function search(label, isRegex, ignoreCase, query = 'd.search') {
     TestRunner.addResult(label);
     const view = await Network.SearchNetworkView.openSearch(query);
-    view._matchCaseButton.setToggled(!ignoreCase);
-    view._regexButton.setToggled(isRegex);
-    const promise = TestRunner.addSnifferPromise(view, '_searchFinished');
-    view._onAction();
+    view.matchCaseButton.setToggled(!ignoreCase);
+    view.regexButton.setToggled(isRegex);
+    const promise = TestRunner.addSnifferPromise(view, 'searchFinished');
+    view.onAction();
     await promise;
-    const element = printSubtree(view._visiblePane._treeOutline.rootElement());
+    const element = printSubtree(view.visiblePane._treeOutline.rootElement());
     TestRunner.addResult('');
     return element;
   }
@@ -43,8 +43,8 @@
   function networkItemSelected() {
     return new Promise(resolve => {
       function checkSelected() {
-        if (UI.panels.network._networkLogView._dataGrid.selectedNode)
-          resolve(UI.panels.network._networkLogView._dataGrid.selectedNode);
+        if (UI.panels.network.networkLogView._dataGrid.selectedNode)
+          resolve(UI.panels.network.networkLogView._dataGrid.selectedNode);
         else
           setTimeout(checkSelected, 0);
       }
@@ -81,8 +81,8 @@
     const link = lastResult.listItemElement.getElementsByClassName('devtools-link')[0];
     link.click();
     const requestNode = await networkItemSelected();
-    const requestName = requestNode._request.name();
-    TestRunner.addResult(`Selected Node Name: ${requestName.substr(requestName.length - 100)}, URL: ${requestNode._request.url()}`);
+    const requestName = requestNode.request.name();
+    TestRunner.addResult(`Selected Node Name: ${requestName.substr(requestName.length - 100)}, URL: ${requestNode.request.url()}`);
     TestRunner.completeTest();
   }
 })();

@@ -10,56 +10,56 @@
   var phone1 = DeviceModeTestRunner.buildFakePhone();
 
   var view = new Emulation.DeviceModeView();
-  var toolbar = view._toolbar;
-  var model = view._model;
+  var toolbar = view.toolbar;
+  var model = view.model;
   var viewportSize = new UI.Size(320, 480);
   model.setAvailableSize(viewportSize, viewportSize);
 
   TestRunner.addResult(
       '\nSetting device mode to responsive mode with viewport of size: ' + JSON.stringify(viewportSize));
-  toolbar._switchToResponsive();
+  toolbar.switchToResponsive();
   dumpModelInfo();
 
   var width = viewportSize.width - 1;
   TestRunner.addResult('Setting width to ' + width);
-  toolbar._applyWidth(width);
+  toolbar.applyWidth(width);
   dumpModelInfo();
 
   width = viewportSize.width + 1;
   TestRunner.addResult('Setting width to ' + width);
-  toolbar._applyWidth(width);
+  toolbar.applyWidth(width);
   dumpModelInfo();
 
   TestRunner.addResult('Setting width to ' + viewportSize.width);
-  toolbar._applyWidth(viewportSize.width);
+  toolbar.applyWidth(viewportSize.width);
   dumpModelInfo();
 
 
   var height = viewportSize.height - 1;
   TestRunner.addResult('Setting height to ' + height);
-  toolbar._applyHeight(height);
+  toolbar.applyHeight(height);
   dumpModelInfo();
 
   height = viewportSize.height + 1;
   TestRunner.addResult('Setting height to ' + height);
-  toolbar._applyHeight(height);
+  toolbar.applyHeight(height);
   dumpModelInfo();
 
   TestRunner.addResult('Setting height to ' + viewportSize.height);
-  toolbar._applyHeight(viewportSize.height);
+  toolbar.applyHeight(viewportSize.height);
   dumpModelInfo();
 
 
   TestRunner.addResult('\nSetting scale to 0.5');
-  toolbar._onScaleMenuChanged(0.5);
+  toolbar.onScaleMenuChanged(0.5);
   dumpModelInfo();
 
   TestRunner.addResult('Setting scale to 1');
-  toolbar._onScaleMenuChanged(1);
+  toolbar.onScaleMenuChanged(1);
   dumpModelInfo();
 
   TestRunner.addResult('Setting scale to 1.25');
-  toolbar._onScaleMenuChanged(1.25);
+  toolbar.onScaleMenuChanged(1.25);
   dumpModelInfo();
 
   TestRunner.completeTest();

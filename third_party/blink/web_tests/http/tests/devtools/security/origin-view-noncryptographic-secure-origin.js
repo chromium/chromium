@@ -13,10 +13,10 @@
   request1.setSecurityState(Protocol.Security.SecurityState.Secure);
   SecurityTestRunner.dispatchRequestFinished(request1);
 
-  Security.SecurityPanel._instance()._sidebarTree._elementsByOrigin.get('chrome-test://test').select();
+  Security.SecurityPanel.instance()._sidebarTree._elementsByOrigin.get('chrome-test://test').select();
 
   TestRunner.addResult('Panel on origin view:');
-  TestRunner.dumpDeepInnerHTML(Security.SecurityPanel._instance()._visibleView.contentElement);
+  TestRunner.dumpDeepInnerHTML(Security.SecurityPanel.instance()._visibleView.contentElement);
 
   TestRunner.completeTest();
 })();

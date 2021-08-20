@@ -17,7 +17,7 @@
   TestRunner.evaluateInPage('createContentScript()', step1);
   function step1() {
     var scripts = SourcesTestRunner.queryScripts(function(script) {
-      return script._isContentScript && !script._isInternalScript;
+      return script.isContentScript && !script._isInternalScript;
     });
     TestRunner.addResult('Content Scripts:');
     for (var i = 0; i < scripts.length; ++i) {

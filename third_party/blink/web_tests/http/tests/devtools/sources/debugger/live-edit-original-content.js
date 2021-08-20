@@ -37,7 +37,7 @@
   }
 
   function replaceInSource(sourceFrame, string, replacement, callback) {
-    TestRunner.addSniffer(TestRunner.debuggerModel, '_didEditScriptSource', callback);
+    TestRunner.addSniffer(TestRunner.debuggerModel, 'didEditScriptSource', callback);
     SourcesTestRunner.replaceInSource(sourceFrame, string, replacement);
     SourcesTestRunner.commitSource(sourceFrame);
   }

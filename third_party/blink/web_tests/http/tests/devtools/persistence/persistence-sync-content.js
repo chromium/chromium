@@ -33,31 +33,31 @@
 
     function addFileSystemRevision(next) {
       TestRunner.addSniffer(
-          Persistence.Persistence.prototype, '_contentSyncedForTest', dumpWorkingCopiesAndNext.bind(null, next));
+          Persistence.Persistence.prototype, 'contentSyncedForTest', dumpWorkingCopiesAndNext.bind(null, next));
       fsEntry.setContent('window.foo3 = 3;');
     },
 
     function addFileSystemWorkingCopy(next) {
       TestRunner.addSniffer(
-          Persistence.Persistence.prototype, '_contentSyncedForTest', dumpWorkingCopiesAndNext.bind(null, next));
+          Persistence.Persistence.prototype, 'contentSyncedForTest', dumpWorkingCopiesAndNext.bind(null, next));
       fileSystemCode.setWorkingCopy('window.foo4 = 4;');
     },
 
     function resetFileSystemWorkingCopy(next) {
       TestRunner.addSniffer(
-          Persistence.Persistence.prototype, '_contentSyncedForTest', dumpWorkingCopiesAndNext.bind(null, next));
+          Persistence.Persistence.prototype, 'contentSyncedForTest', dumpWorkingCopiesAndNext.bind(null, next));
       fileSystemCode.resetWorkingCopy();
     },
 
     function setNetworkRevision(next) {
       TestRunner.addSniffer(
-          Persistence.Persistence.prototype, '_contentSyncedForTest', dumpWorkingCopiesAndNext.bind(null, next));
+          Persistence.Persistence.prototype, 'contentSyncedForTest', dumpWorkingCopiesAndNext.bind(null, next));
       networkCode.addRevision('window.foo2 = 2;');
     },
 
     function setNetworkWorkingCopy(next) {
       TestRunner.addSniffer(
-          Persistence.Persistence.prototype, '_contentSyncedForTest', dumpWorkingCopiesAndNext.bind(null, next));
+          Persistence.Persistence.prototype, 'contentSyncedForTest', dumpWorkingCopiesAndNext.bind(null, next));
       networkCode.setWorkingCopy('window.foo5 = 5;');
     },
   ]);

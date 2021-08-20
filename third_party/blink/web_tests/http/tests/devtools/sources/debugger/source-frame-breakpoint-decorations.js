@@ -8,7 +8,7 @@
   await TestRunner.showPanel('sources');
   await TestRunner.addScriptTag('resources/edit-me-breakpoints.js');
 
-  Bindings.breakpointManager._storage._breakpoints = new Map();
+  Bindings.breakpointManager.storage._breakpoints = new Map();
   SourcesTestRunner.runDebuggerTestSuite([
     function testAddRemoveBreakpoint(next) {
       var javaScriptSourceFrame;

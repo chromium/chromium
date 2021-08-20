@@ -54,7 +54,7 @@
   await TestRunner.showPanel('resources');
 
   TestRunner.addResult('Expanded IndexedDB tree element.');
-  UI.panels.resources._sidebar.indexedDBListTreeElement.expand();
+  UI.panels.resources.sidebar.indexedDBListTreeElement.expand();
   ApplicationTestRunner.dumpIndexedDBTree();
   TestRunner.addResult('Creating database.');
   createDatabase(databaseCreated);
@@ -63,7 +63,7 @@
     TestRunner.addResult('Created database.');
     indexedDBModel = ApplicationTestRunner.indexedDBModel();
     indexedDBModel.addEventListener(Resources.IndexedDBModel.Events.DatabaseLoaded, databaseLoaded);
-    UI.panels.resources._sidebar.indexedDBListTreeElement.refreshIndexedDB();
+    UI.panels.resources.sidebar.indexedDBListTreeElement.refreshIndexedDB();
     TestRunner.addResult('Refreshing.');
   }
 
@@ -85,7 +85,7 @@
   function navigatedBack() {
     TestRunner.addResult('Navigated back.');
     indexedDBModel.addEventListener(Resources.IndexedDBModel.Events.DatabaseLoaded, databaseLoaded2);
-    UI.panels.resources._sidebar.indexedDBListTreeElement.refreshIndexedDB();
+    UI.panels.resources.sidebar.indexedDBListTreeElement.refreshIndexedDB();
     TestRunner.addResult('Refreshing.');
   }
 
@@ -102,15 +102,15 @@
   function databaseDeleted() {
     TestRunner.addResult('Deleted database.');
     TestRunner.addResult('Refreshing.');
-    UI.panels.resources._sidebar.indexedDBListTreeElement.refreshIndexedDB();
+    UI.panels.resources.sidebar.indexedDBListTreeElement.refreshIndexedDB();
     TestRunner.addSniffer(
-        Resources.IndexedDBModel.prototype, '_updateOriginDatabaseNames', databaseNamesLoadedAfterDeleting, false);
+        Resources.IndexedDBModel.prototype, 'updateOriginDatabaseNames', databaseNamesLoadedAfterDeleting, false);
   }
 
   function databaseNamesLoadedAfterDeleting() {
     TestRunner.addResult('Refreshed.');
     ApplicationTestRunner.dumpIndexedDBTree();
-    UI.panels.resources._sidebar.indexedDBListTreeElement.collapse();
+    UI.panels.resources.sidebar.indexedDBListTreeElement.collapse();
     TestRunner.completeTest();
   }
 })();
