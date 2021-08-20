@@ -55,6 +55,8 @@ class MockAccuracyServiceDelegate : public AccuracyService::Delegate {
       void(const std::map<std::string, bool>& product_specific_bits_data,
            const std::map<std::string, std::string>&
                product_specific_string_data));
+
+  MOCK_METHOD1(IsSecureConnection, bool(content::WebContents*));
 };
 
 class MockSafeBrowsingDatabaseManager

@@ -40,6 +40,7 @@ class MockAccuracyService : public AccuracyService {
       : AccuracyService(nullptr, nullptr, nullptr, nullptr, nullptr, nullptr) {}
   MOCK_METHOD2(CheckAccuracyStatus, void(const GURL&, AccuracyCheckCallback));
   MOCK_METHOD1(MaybeShowAccuracyTip, void(content::WebContents*));
+  MOCK_METHOD1(IsSecureConnection, bool(content::WebContents*));
 };
 
 class AccuracyWebContentsObserverTest
@@ -62,34 +63,54 @@ TEST_F(AccuracyWebContentsObserverTest, CheckServiceOnNavigationToRandomSite) {
   AccuracyWebContentsObserver::CreateForWebContents(web_contents(), service());
   EXPECT_CALL(*service(), CheckAccuracyStatus(GURL("https://example.com"), _))
       .WillOnce(Invoke(&ReturnNone));
+  EXPECT_CALL(*service(), IsSecureConnection(web_contents()));
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("https://example.com"));
 }
 
 TEST_F(AccuracyWebContentsObserverTest, CheckServiceOnNavigationToBadSite) {
   AccuracyWebContentsObserver::CreateForWebContents(web_contents(), service());
-  EXPECT_CALL(*service(), CheckAccuracyStatus(GURL("https://badurl.com"), _))
+  EXPECT_CALL(*service(),
+              CheckAccuracyStatus(GURL("https://accuracytip.com"), _))
       .WillOnce(Invoke(&ReturnIsMisinformation));
+  EXPECT_CALL(*service(), IsSecureConnection(web_contents()))
+      .WillOnce(testing::Return(true));
   EXPECT_CALL(*service(), MaybeShowAccuracyTip(web_contents()));
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL("https://badurl.com"));
+      web_contents(), GURL("https://accuracytip.com"));
+}
+
+TEST_F(AccuracyWebContentsObserverTest,
+       CheckServiceOnNavigationToNotSecureSite) {
+  AccuracyWebContentsObserver::CreateForWebContents(web_contents(), service());
+  EXPECT_CALL(*service(),
+              CheckAccuracyStatus(GURL("https://accuracytip.com"), _))
+      .WillOnce(Invoke(&ReturnIsMisinformation));
+  EXPECT_CALL(*service(), IsSecureConnection(web_contents()))
+      .WillOnce(testing::Return(false));
+  EXPECT_CALL(*service(), MaybeShowAccuracyTip(web_contents())).Times(0);
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://accuracytip.com"));
 }
 
 TEST_F(AccuracyWebContentsObserverTest, CheckServiceAndNavigationBeforeResult) {
   AccuracyWebContentsObserver::CreateForWebContents(web_contents(), service());
   // Capture callback for first navigation.
   AccuracyCheckCallback callback;
-  EXPECT_CALL(*service(), CheckAccuracyStatus(GURL("https://badurl.com"), _))
+  EXPECT_CALL(*service(),
+              CheckAccuracyStatus(GURL("https://accuracytip.com"), _))
       .WillOnce(Invoke([&](const GURL&, AccuracyCheckCallback cb) {
         callback = std::move(cb);
       }));
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL("https://badurl.com"));
+      web_contents(), GURL("https://accuracytip.com"));
   Mock::VerifyAndClearExpectations(service());
 
   // Navigate to a different site.
   EXPECT_CALL(*service(), CheckAccuracyStatus(GURL("https://example.com"), _))
       .WillOnce(Invoke(&ReturnNone));
+  // Twice, once per each time a callback is ran.
+  EXPECT_CALL(*service(), IsSecureConnection(web_contents())).Times(2);
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("https://example.com"));
 
@@ -102,12 +123,13 @@ TEST_F(AccuracyWebContentsObserverTest, CheckServiceAndNavigationBeforeResult) {
 TEST_F(AccuracyWebContentsObserverTest, CheckServiceAndDestroyBeforeResult) {
   AccuracyWebContentsObserver::CreateForWebContents(web_contents(), service());
   AccuracyCheckCallback callback;
-  EXPECT_CALL(*service(), CheckAccuracyStatus(GURL("https://badurl.com"), _))
+  EXPECT_CALL(*service(),
+              CheckAccuracyStatus(GURL("https://accuracytip.com"), _))
       .WillOnce(Invoke([&](const GURL&, AccuracyCheckCallback cb) {
         callback = std::move(cb);
       }));
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL("https://badurl.com"));
+      web_contents(), GURL("https://accuracytip.com"));
 
   // Invoke callback after webcontents is destroyed.
   DeleteContents();

@@ -72,6 +72,9 @@ class AccuracyService : public KeyedService, history::HistoryServiceObserver {
         const std::map<std::string, std::string>&
             product_specific_string_data) = 0;
 
+    // Returns whether the security level of |web_contents| is secure.
+    virtual bool IsSecureConnection(content::WebContents* web_contents) = 0;
+
     virtual ~Delegate() = default;
   };
 
@@ -101,6 +104,11 @@ class AccuracyService : public KeyedService, history::HistoryServiceObserver {
   // Shows a HaTS survey after checking features states and pre-conditions
   // configured by feature params in `CanShowSurvey`.
   void MaybeShowSurvey();
+
+  // TODO(olesiamarukhno): Figure out how to remove content dependencies if we
+  // want to use this service on iOS.
+  // Returns is the security level of |web_contents| is secure.
+  virtual bool IsSecureConnection(content::WebContents* web_contents);
 
   // KeyedService:
   void Shutdown() override;

@@ -6,6 +6,7 @@
 
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/page_info/chrome_accuracy_tip_ui.h"
@@ -53,4 +54,13 @@ void AccuracyServiceDelegate::ShowSurvey(
                              /*failure_callback=*/base::DoNothing(),
                              product_specific_bits_data,
                              product_specific_string_data);
+}
+
+bool AccuracyServiceDelegate::IsSecureConnection(
+    content::WebContents* web_contents) {
+  SecurityStateTabHelper* helper =
+      SecurityStateTabHelper::FromWebContents(web_contents);
+  return helper ? helper->GetSecurityLevel() ==
+                      security_state::SecurityLevel::SECURE
+                : false;
 }

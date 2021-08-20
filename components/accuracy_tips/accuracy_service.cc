@@ -187,6 +187,10 @@ void AccuracyService::MaybeShowSurvey() {
   }
 }
 
+bool AccuracyService::IsSecureConnection(content::WebContents* web_contents) {
+  return delegate_->IsSecureConnection(web_contents);
+}
+
 void AccuracyService::OnURLsDeleted(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
