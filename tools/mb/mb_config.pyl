@@ -3282,6 +3282,7 @@
     },
 
     'gpu_fyi_tests': {
+      'gn_args': 'is_gpu_fyi_bot=true',
       'mixins': ['angle_trace_perf_tests', 'gpu_tests', 'internal_gles_conform_tests'],
     },
 

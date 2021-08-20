@@ -197,10 +197,16 @@ can_unwind_with_cfi_table = is_android && !is_component_build &&
 enable_arm_cfi_table = is_android && !is_component_build && current_cpu == "arm"
 
 declare_args() {
+  # If this running on a GPU FYI bot.
+  # TODO(https://crbug.com/1233871): Remove this again.
+  is_gpu_fyi_bot = false
+}
+
+declare_args() {
   # Set to true to use lld, the LLVM linker.
-  # In late bring-up on macOS (see docs/mac_lld.md), and not functional at all for
-  # iOS. The default linker everywhere else.
-  use_lld = is_clang && (!is_apple || host_os == "linux")
+  # In late bring-up on macOS (see docs/mac_lld.md). Not used on iOS.
+  # The default linker everywhere else.
+  use_lld = is_clang && !is_ios && !(is_mac && is_gpu_fyi_bot)
 }
 
 declare_args() {
