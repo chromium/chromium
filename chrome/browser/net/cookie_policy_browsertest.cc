@@ -26,6 +26,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "net/base/escape.h"
 #include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -757,7 +758,10 @@ class SamePartyIsFirstPartyCookiePolicyBrowserTest
                            kHostC));
   }
 
+  std::string AllCookies() const { return "thirdparty=1; firstparty=1"; }
+
   std::string ExpectedSamePartyCookies() const {
+    // Assumes a cross-site context.
     if (block_third_party_cookies()) {
       if (sameparty_considered_first_party())
         return "firstparty=1";
@@ -769,6 +773,7 @@ class SamePartyIsFirstPartyCookiePolicyBrowserTest
   }
 
   std::string ExpectedCrossPartyCookies() const {
+    // Assumes a cross-site context.
     if (block_third_party_cookies())
       return "";
 
@@ -809,7 +814,7 @@ IN_PROC_BROWSER_TEST_P(SamePartyIsFirstPartyCookiePolicyBrowserTest,
 IN_PROC_BROWSER_TEST_P(SamePartyIsFirstPartyCookiePolicyBrowserTest,
                        Read_HTTP) {
   SetBlockThirdPartyCookies(block_third_party_cookies());
-  // Set cookies on `b.com`.
+  // Set cookies on `b.test`.
   for (const std::string& cookie_line : CookieLines()) {
     ASSERT_TRUE(content::SetCookie(
         browser()->profile(), https_server_.GetURL(kHostB, "/"), cookie_line));
@@ -868,7 +873,7 @@ IN_PROC_BROWSER_TEST_P(SamePartyIsFirstPartyCookiePolicyBrowserTest, Write_JS) {
 
 IN_PROC_BROWSER_TEST_P(SamePartyIsFirstPartyCookiePolicyBrowserTest, Read_JS) {
   SetBlockThirdPartyCookies(block_third_party_cookies());
-  // Set cookies on `b.com`.
+  // Set cookies on `b.test`.
   for (const std::string& cookie_line : CookieLines()) {
     ASSERT_TRUE(content::SetCookie(
         browser()->profile(), https_server_.GetURL(kHostB, "/"), cookie_line));
@@ -909,6 +914,54 @@ IN_PROC_BROWSER_TEST_P(SamePartyIsFirstPartyCookiePolicyBrowserTest, Read_JS) {
   NavigateFrameTo(kHostA, "/iframe.html");
   NavigateNestedFrameTo(kHostB, "/empty.html");
   EXPECT_EQ(ExpectedCrossPartyCookies(), GetCookieViaJS(GetNestedFrame()));
+}
+
+IN_PROC_BROWSER_TEST_P(SamePartyIsFirstPartyCookiePolicyBrowserTest,
+                       Redirect_HTTP) {
+  SetBlockThirdPartyCookies(block_third_party_cookies());
+  // Set cookies on `a.test`.
+  for (const std::string& cookie_line : CookieLines()) {
+    ASSERT_TRUE(content::SetCookie(
+        browser()->profile(), https_server_.GetURL(kHostA, "/"), cookie_line));
+  }
+
+  // Navigate iframe to a cross-site, cross-party page. Then redirect to a
+  // same-site (same-party) cookie-reading endpoint, and verify that the
+  // appropriate cookies are sent.
+  // A(D -> A)
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(
+      kHostD, base::StrCat({
+                  "/server-redirect?",
+                  net::EscapeQueryParamValue(
+                      https_server_.GetURL(kHostA, "/echoheader?cookie").spec(),
+                      /*use_plus=*/false),
+              }));
+  ExpectFrameContent(AllCookies());
+}
+
+IN_PROC_BROWSER_TEST_P(SamePartyIsFirstPartyCookiePolicyBrowserTest,
+                       Redirect_JS) {
+  SetBlockThirdPartyCookies(block_third_party_cookies());
+  // Set cookies on `a.test`.
+  for (const std::string& cookie_line : CookieLines()) {
+    ASSERT_TRUE(content::SetCookie(
+        browser()->profile(), https_server_.GetURL(kHostA, "/"), cookie_line));
+  }
+
+  // Navigate iframe to a cross-site, cross-party page. Then redirect to a
+  // same-site (same-party) cookie-reading endpoint, and verify that the
+  // appropriate cookies are sent.
+  // A(D -> A)
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(
+      kHostD, base::StrCat({
+                  "/script_redirect.html?",
+                  net::EscapeQueryParamValue(
+                      https_server_.GetURL(kHostA, "/echoheader?cookie").spec(),
+                      /*use_plus=*/false),
+              }));
+  ExpectFrameContent(AllCookies());
 }
 
 INSTANTIATE_TEST_CASE_P(FlagAndSettings,
