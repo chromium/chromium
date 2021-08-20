@@ -147,6 +147,8 @@ class QuotaManagerImplTest : public testing::Test {
     return mock_quota_client_ptr;
   }
 
+  void OpenDatabase() { quota_manager_impl_->EnsureDatabaseOpened(); }
+
   void GetOrCreateBucket(const StorageKey& storage_key,
                          const std::string& bucket_name) {
     base::RunLoop run_loop;
@@ -572,6 +574,10 @@ class QuotaManagerImplTest : public testing::Test {
 
   bool is_db_disabled() { return quota_manager_impl_->db_disabled_; }
 
+  void disable_quota_database(bool disable) {
+    quota_manager_impl_->database_->SetDisabledForTesting(disable);
+  }
+
   QuotaStatusCode status() const { return quota_status_; }
   const UsageInfoEntries& usage_info() const { return usage_info_; }
   int64_t usage() const { return usage_; }
@@ -729,6 +735,17 @@ TEST_F(QuotaManagerImplTest, GetStorageKeysForType) {
   GetStorageKeysForType(kPerm);
   EXPECT_THAT(storage_keys_.value(),
               testing::UnorderedElementsAre(storage_key_c));
+}
+
+TEST_F(QuotaManagerImplTest, GetStorageKeysForTypeWithDatabaseError) {
+  OpenDatabase();
+
+  // Disable quota database for database error behavior.
+  disable_quota_database(true);
+
+  // Return empty set when error is encountered.
+  GetStorageKeysForType(kTemp);
+  EXPECT_TRUE(storage_keys_.value().empty());
 }
 
 TEST_F(QuotaManagerImplTest, GetUsageAndQuota_Simple) {
@@ -2851,6 +2868,20 @@ TEST_F(QuotaManagerImplTest, GetBucketsModifiedBetween) {
   EXPECT_THAT(modified_buckets(),
               testing::UnorderedElementsAre(testing::Field(
                   &BucketInfo::storage_key, ToStorageKey("http://a.com/"))));
+  EXPECT_EQ(modified_buckets_type(), kTemp);
+}
+
+TEST_F(QuotaManagerImplTest, GetBucketsModifiedBetweenWithDatabaseError) {
+  OpenDatabase();
+
+  // Disable quota database for database error behavior.
+  disable_quota_database(true);
+
+  GetBucketsModifiedBetween(kTemp, base::Time(), base::Time::Max());
+  task_environment_.RunUntilIdle();
+
+  // Return empty set when error is encountered.
+  EXPECT_TRUE(modified_buckets().empty());
   EXPECT_EQ(modified_buckets_type(), kTemp);
 }
 

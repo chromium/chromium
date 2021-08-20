@@ -193,6 +193,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   bool IsBootstrappedForEviction();
   bool SetBootstrappedForEviction(bool bootstrap_flag);
 
+  // Manually disable database to test database error scenarios for testing.
+  void SetDisabledForTesting(bool disable) { is_disabled_ = disable; }
+
  private:
   struct COMPONENT_EXPORT(STORAGE_BROWSER) QuotaTableEntry {
     std::string host;
