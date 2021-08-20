@@ -1,0 +1,40 @@
+digraph graphname {
+    graph [fontname = "helvetica", fontsize=11];
+    node [shape="box", fontname = "helvetica", fontsize=11];
+    edge [fontname = "helvetica", fontsize=11];
+    rankdir="RL";
+
+    subgraph cluster_browser {
+        label = "Browser Process";
+
+	subgraph cluster_browser_ax {
+		label = "BrowserAccessibilityManager";
+
+		ax_tree [label="AXTree"];
+	}
+    }
+
+    subgraph cluster_render {
+        label = "Render Process";
+
+	subgraph cluster_blink {
+		label = "Blink";
+
+		dom_node [label="Node"];
+		dom_node -> {layout_object, ax_object};
+		css [label="CSS"];
+		css -> layout_object;
+		layout_object [label="LayoutObject"];
+		layout_object -> ax_object;
+		ax_object [label="AXObject"];
+	}
+
+	render_ax [label="RenderAccessibilityImpl"];
+	ax_object -> render_ax;
+    }
+
+    render_ax -> ax_tree [label="AXTreeSerializer"];
+
+    ax_tree -> at [label="Platform\nAccessibility APIs"];
+    at [label="Assistive\nTechnology"];
+}

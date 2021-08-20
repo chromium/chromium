@@ -2,6 +2,7 @@ digraph graphname {
     graph [fontname = "helvetica", fontsize=11];
     node [shape="box", fontname = "helvetica", fontsize=11];
     edge [fontname = "helvetica", fontsize=11];
+    rankdir="RL";
 
     subgraph cluster_browser {
         label = "Browser";
