@@ -6552,10 +6552,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kChromeOSSharingHub)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-    {"schemeful-same-site", flag_descriptions::kSchemefulSameSiteName,
-     flag_descriptions::kSchemefulSameSiteDescription, kOsAll,
-     FEATURE_VALUE_TYPE(net::features::kSchemefulSameSite)},
-
     {"enable-bluetooth-spp-in-serial-api",
      flag_descriptions::kEnableBluetoothSerialPortProfileInSerialApiName,
      flag_descriptions::kEnableBluetoothSerialPortProfileInSerialApiDescription,

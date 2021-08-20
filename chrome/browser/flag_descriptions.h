@@ -1243,9 +1243,6 @@ extern const char kSamePartyCookiesConsideredFirstPartyDescription[];
 extern const char kPartitionedCookiesName[];
 extern const char kPartitionedCookiesDescription[];
 
-extern const char kSchemefulSameSiteName[];
-extern const char kSchemefulSameSiteDescription[];
-
 extern const char kScrollableTabStripFlagId[];
 extern const char kScrollableTabStripName[];
 extern const char kScrollableTabStripDescription[];

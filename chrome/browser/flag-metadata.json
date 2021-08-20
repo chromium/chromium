@@ -4807,10 +4807,6 @@
     // exposed to users.
     "expiry_milestone": -1
   },
-  {"name": "schemeful-same-site",
-    "owners": [ "bingler", "chlily" ],
-    "expiry_milestone": 92
-  },
   {
     "name": "screen-capture-android",
     "owners": [ "alcooper", "guidou" ],

@@ -2182,12 +2182,6 @@ const char kPartitionedCookiesName[] = "Partitioned cookies";
 const char kPartitionedCookiesDescription[] =
     "Controls if the Partitioned cookie attribute is enabled.";
 
-const char kSchemefulSameSiteName[] = "Schemeful Same-Site";
-const char kSchemefulSameSiteDescription[] =
-    "Modify the same-site computation such that origins with the same "
-    "registrable domain but different schemes are considered cross-site. This "
-    "change only applies to cookies with the 'SameSite' attribute.";
-
 const char kScrollableTabStripFlagId[] = "scrollable-tabstrip";
 const char kScrollableTabStripName[] = "Tab Scrolling";
 const char kScrollableTabStripDescription[] =
