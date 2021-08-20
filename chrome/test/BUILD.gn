@@ -6313,6 +6313,7 @@ test("unit_tests") {
       "../browser/ui/ash/network/tether_notification_presenter_unittest.cc",
       "../browser/ui/ash/notification_badge_color_cache_unittest.cc",
       "../browser/ui/ash/session_controller_client_impl_unittest.cc",
+      "../browser/ui/ash/sharesheet/sharesheet_bubble_view_unittest.cc",
       "../browser/ui/ash/shelf/arc_app_shelf_id_unittest.cc",
       "../browser/ui/ash/shelf/chrome_shelf_controller_unittest.cc",
       "../browser/ui/ash/shelf/shelf_context_menu_unittest.cc",

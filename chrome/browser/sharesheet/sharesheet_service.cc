@@ -66,11 +66,21 @@ void SharesheetService::ShowBubble(content::WebContents* web_contents,
                                    SharesheetMetrics::LaunchSource source,
                                    DeliveredCallback delivered_callback,
                                    CloseCallback close_callback) {
+  ShowBubble(web_contents->GetTopLevelNativeWindow(), std::move(intent),
+             /*contains_hosted_document=*/false, source,
+             std::move(delivered_callback), std::move(close_callback));
+}
+
+void SharesheetService::ShowBubble(gfx::NativeWindow native_window,
+                                   apps::mojom::IntentPtr intent,
+                                   bool contains_hosted_document,
+                                   SharesheetMetrics::LaunchSource source,
+                                   DeliveredCallback delivered_callback,
+                                   CloseCallback close_callback) {
   DCHECK(intent->action == apps_util::kIntentActionSend ||
          intent->action == apps_util::kIntentActionSendMultiple);
   SharesheetMetrics::RecordSharesheetLaunchSource(source);
-  auto* sharesheet_service_delegate =
-      GetOrCreateDelegate(web_contents->GetTopLevelNativeWindow());
+  auto* sharesheet_service_delegate = GetOrCreateDelegate(native_window);
   ShowBubbleWithDelegate(
       sharesheet_service_delegate, std::move(intent), contains_hosted_document,
       std::move(delivered_callback), std::move(close_callback));
@@ -170,30 +180,6 @@ bool SharesheetService::OnAcceleratorPressed(
              : share_action->OnAcceleratorPressed(accelerator);
 }
 
-SharesheetServiceDelegate* SharesheetService::GetOrCreateDelegate(
-    gfx::NativeWindow native_window) {
-  auto* delegate = GetDelegate(native_window);
-  if (delegate == nullptr) {
-    auto new_delegate =
-        std::make_unique<SharesheetServiceDelegate>(native_window, this);
-    delegate = new_delegate.get();
-    active_delegates_.push_back(std::move(new_delegate));
-  }
-  return delegate;
-}
-
-SharesheetServiceDelegate* SharesheetService::GetDelegate(
-    gfx::NativeWindow native_window) {
-  auto iter = active_delegates_.begin();
-  while (iter != active_delegates_.end()) {
-    if ((*iter)->GetNativeWindow() == native_window) {
-      return iter->get();
-    }
-    ++iter;
-  }
-  return nullptr;
-}
-
 bool SharesheetService::HasShareTargets(const apps::mojom::IntentPtr& intent,
                                         bool contains_hosted_document) {
   std::vector<apps::IntentLaunchInfo> intent_launch_info =
@@ -211,6 +197,12 @@ Profile* SharesheetService::GetProfile() {
 const gfx::VectorIcon* SharesheetService::GetVectorIcon(
     const std::u16string& display_name) {
   return sharesheet_action_cache_->GetVectorIconFromName(display_name);
+}
+
+SharesheetUiDelegate* SharesheetService::GetUiDelegateForTesting(
+    gfx::NativeWindow native_window) {
+  auto* delegate = GetDelegate(native_window);
+  return delegate->GetUiDelegateForTesting();  // IN-TEST
 }
 
 // static
@@ -343,6 +335,30 @@ void SharesheetService::ShowBubbleWithDelegate(
       base::BindOnce(&SharesheetService::OnAppIconsLoaded,
                      weak_factory_.GetWeakPtr(), delegate, std::move(intent),
                      std::move(delivered_callback), std::move(close_callback)));
+}
+
+SharesheetServiceDelegate* SharesheetService::GetOrCreateDelegate(
+    gfx::NativeWindow native_window) {
+  auto* delegate = GetDelegate(native_window);
+  if (delegate == nullptr) {
+    auto new_delegate =
+        std::make_unique<SharesheetServiceDelegate>(native_window, this);
+    delegate = new_delegate.get();
+    active_delegates_.push_back(std::move(new_delegate));
+  }
+  return delegate;
+}
+
+SharesheetServiceDelegate* SharesheetService::GetDelegate(
+    gfx::NativeWindow native_window) {
+  auto iter = active_delegates_.begin();
+  while (iter != active_delegates_.end()) {
+    if ((*iter)->GetNativeWindow() == native_window) {
+      return iter->get();
+    }
+    ++iter;
+  }
+  return nullptr;
 }
 
 void SharesheetService::RecordUserActionMetrics(

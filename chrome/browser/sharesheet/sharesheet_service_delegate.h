@@ -51,6 +51,8 @@ class SharesheetServiceDelegate {
   // out of SharesheetHeaderView.
   Profile* GetProfile();
 
+  SharesheetUiDelegate* GetUiDelegateForTesting();
+
   // ==========================================================================
   // ======================== SHARESHEET SERVICE TO UI ========================
   // ==========================================================================

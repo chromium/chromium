@@ -9,6 +9,7 @@
 #include "base/callback.h"
 #include "chrome/browser/sharesheet/sharesheet_service.h"
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_bubble_view_delegate.h"
+#include "chrome/browser/ui/ash/sharesheet/sharesheet_header_view.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/views/view.h"
 
@@ -39,6 +40,10 @@ SharesheetController* SharesheetServiceDelegate::GetSharesheetController() {
 
 Profile* SharesheetServiceDelegate::GetProfile() {
   return sharesheet_service_->GetProfile();
+}
+
+SharesheetUiDelegate* SharesheetServiceDelegate::GetUiDelegateForTesting() {
+  return sharesheet_controller_.get();
 }
 
 void SharesheetServiceDelegate::ShowBubble(std::vector<TargetInfo> targets,

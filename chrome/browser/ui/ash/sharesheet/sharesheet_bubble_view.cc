@@ -188,8 +188,8 @@ void SharesheetBubbleView::ShowBubble(
   header_view_ =
       main_view_->AddChildView(std::make_unique<SharesheetHeaderView>(
           intent_->Clone(), delegate_->GetProfile(), show_content_previews));
-  auto* body_view = main_view_->AddChildView(std::make_unique<views::View>());
-  body_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
+  body_view_ = main_view_->AddChildView(std::make_unique<views::View>());
+  body_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
   footer_view_ = main_view_->AddChildView(std::make_unique<views::View>());
   auto* footer_layout =
@@ -202,33 +202,34 @@ void SharesheetBubbleView::ShowBubble(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
   if (targets.empty()) {
-    auto* image = body_view->AddChildView(std::make_unique<views::ImageView>());
+    auto* image =
+        body_view_->AddChildView(std::make_unique<views::ImageView>());
     image->SetImage(*ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
         IDR_SHARESHEET_EMPTY));
     image->SetProperty(views::kMarginsKey, gfx::Insets(0, 0, kSpacing, 0));
-    body_view->AddChildView(CreateShareLabel(
+    body_view_->AddChildView(CreateShareLabel(
         l10n_util::GetStringUTF16(IDS_SHARESHEET_ZERO_STATE_PRIMARY_LABEL),
         CONTEXT_SHARESHEET_BUBBLE_BODY, kPrimaryTextLineHeight,
         kPrimaryTextColor, gfx::ALIGN_CENTER));
-    body_view->AddChildView(CreateShareLabel(
+    body_view_->AddChildView(CreateShareLabel(
         l10n_util::GetStringUTF16(IDS_SHARESHEET_ZERO_STATE_SECONDARY_LABEL),
         CONTEXT_SHARESHEET_BUBBLE_BODY_SECONDARY, kPrimaryTextLineHeight,
         kSecondaryTextColor, gfx::ALIGN_CENTER, views::style::STYLE_PRIMARY));
   } else {
     if (show_content_previews) {
       header_body_separator_ =
-          body_view->AddChildView(std::make_unique<views::Separator>());
+          body_view_->AddChildView(std::make_unique<views::Separator>());
     }
 
     const size_t targets_size = targets.size();
     auto scroll_view = std::make_unique<views::ScrollView>();
     scroll_view->SetContents(MakeScrollableTargetView(std::move(targets)));
     scroll_view->ClipHeightTo(kTargetViewHeight, kTargetViewExpandedHeight);
-    body_view->AddChildView(std::move(scroll_view));
+    body_view_->AddChildView(std::move(scroll_view));
 
     if (expanded_view_) {
       body_footer_separator_ =
-          body_view->AddChildView(std::make_unique<views::Separator>());
+          body_view_->AddChildView(std::make_unique<views::Separator>());
       expand_button_ =
           footer_view_->AddChildView(std::make_unique<SharesheetExpandButton>(
               base::BindRepeating(&SharesheetBubbleView::ExpandButtonPressed,
@@ -454,6 +455,18 @@ void SharesheetBubbleView::CloseBubble(views::Widget::ClosedReason reason) {
   if (!is_bubble_closing_) {
     CloseWidgetWithAnimateFadeOut(reason);
   }
+}
+
+SharesheetHeaderView* SharesheetBubbleView::GetHeaderViewForTesting() {
+  return header_view_;
+}
+
+views::View* SharesheetBubbleView::GetBodyViewForTesting() {
+  return body_view_;
+}
+
+views::View* SharesheetBubbleView::GetFooterViewForTesting() {
+  return footer_view_;
 }
 
 bool SharesheetBubbleView::AcceleratorPressed(

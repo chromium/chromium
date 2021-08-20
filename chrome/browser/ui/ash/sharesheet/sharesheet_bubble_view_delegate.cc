@@ -90,5 +90,9 @@ bool SharesheetBubbleViewDelegate::IsBubbleVisible() const {
          sharesheet_bubble_view_->GetWidget()->IsVisible();
 }
 
+SharesheetBubbleView* SharesheetBubbleViewDelegate::GetBubbleViewForTesting() {
+  return sharesheet_bubble_view_;
+}
+
 }  // namespace sharesheet
 }  // namespace ash

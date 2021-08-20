@@ -45,6 +45,7 @@ struct VectorIcon;
 namespace sharesheet {
 
 class SharesheetServiceDelegate;
+class SharesheetUiDelegate;
 
 // The SharesheetService is the root service that provides a sharesheet for
 // Chrome desktop.
@@ -77,6 +78,12 @@ class SharesheetService : public KeyedService {
                   SharesheetMetrics::LaunchSource source,
                   DeliveredCallback delivered_callback,
                   CloseCallback close_callback = base::NullCallback());
+  void ShowBubble(gfx::NativeWindow native_window,
+                  apps::mojom::IntentPtr intent,
+                  bool contains_hosted_document,
+                  SharesheetMetrics::LaunchSource source,
+                  DeliveredCallback delivered_callback,
+                  CloseCallback close_callback = base::NullCallback());
   // Closes the sharesheet dialog (aka bubble) for the given |native_window|
   // with result. If the |native_window| is null or if it's not showing the
   // sharesheet dialog, this function is a no-op.
@@ -100,10 +107,6 @@ class SharesheetService : public KeyedService {
                         views::View* share_action_view);
   bool OnAcceleratorPressed(const ui::Accelerator& accelerator,
                             const std::u16string& active_action);
-  SharesheetServiceDelegate* GetOrCreateDelegate(
-      gfx::NativeWindow native_window);
-  SharesheetServiceDelegate* GetDelegate(gfx::NativeWindow native_window);
-
   // If the files to share contains a Google Drive hosted document, only the
   // drive share action will be shown.
   bool HasShareTargets(const apps::mojom::IntentPtr& intent,
@@ -111,6 +114,11 @@ class SharesheetService : public KeyedService {
   Profile* GetProfile();
   const gfx::VectorIcon* GetVectorIcon(const std::u16string& display_name);
 
+  // ==========================================================================
+  // ========================== Testing APIs ==================================
+  // ==========================================================================
+  SharesheetUiDelegate* GetUiDelegateForTesting(
+      gfx::NativeWindow native_window);
   static void SetSelectedAppForTesting(const std::u16string& target_name);
 
  private:
@@ -142,6 +150,9 @@ class SharesheetService : public KeyedService {
                               bool contains_hosted_document,
                               DeliveredCallback delivered_callback,
                               CloseCallback close_callback);
+  SharesheetServiceDelegate* GetOrCreateDelegate(
+      gfx::NativeWindow native_window);
+  SharesheetServiceDelegate* GetDelegate(gfx::NativeWindow native_window);
 
   void RecordUserActionMetrics(const std::u16string& target_name);
   void RecordTargetCountMetrics(const std::vector<TargetInfo>& targets);

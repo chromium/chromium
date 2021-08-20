@@ -54,6 +54,10 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView {
   void ResizeBubble(const int& width, const int& height);
   void CloseBubble(views::Widget::ClosedReason reason);
 
+  SharesheetHeaderView* GetHeaderViewForTesting();
+  views::View* GetBodyViewForTesting();
+  views::View* GetFooterViewForTesting();
+
  private:
   class SharesheetParentWidgetObserver;
 
@@ -106,6 +110,7 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView {
 
   views::View* main_view_ = nullptr;
   SharesheetHeaderView* header_view_ = nullptr;
+  views::View* body_view_ = nullptr;
   views::View* footer_view_ = nullptr;
   views::View* default_view_ = nullptr;
   views::View* expanded_view_ = nullptr;
