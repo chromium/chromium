@@ -237,15 +237,14 @@ void NGHighlightPainter::SelectionPaintState::
   }
 }
 
-NGHighlightPainter::NGHighlightPainter(
-    NGTextPainter& text_painter,
-    const PaintInfo& paint_info,
-    const NGInlineCursor& cursor,
-    const NGFragmentItem& fragment_item,
-    const PhysicalOffset& box_origin,
-    const ComputedStyle& style,
-    absl::optional<SelectionPaintState> selection,
-    bool is_printing)
+NGHighlightPainter::NGHighlightPainter(NGTextPainter& text_painter,
+                                       const PaintInfo& paint_info,
+                                       const NGInlineCursor& cursor,
+                                       const NGFragmentItem& fragment_item,
+                                       const PhysicalOffset& box_origin,
+                                       const ComputedStyle& style,
+                                       SelectionPaintState* selection,
+                                       bool is_printing)
     : text_painter_(text_painter),
       paint_info_(paint_info),
       cursor_(cursor),
