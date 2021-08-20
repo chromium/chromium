@@ -10,20 +10,13 @@
 #include "third_party/blink/renderer/core/css/cssom/paint_worklet_input.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
-#include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/style/shape_clip_path_operation.h"
-#include "third_party/blink/renderer/core/workers/worker_backing_thread_startup_data.h"
 #include "third_party/blink/renderer/modules/csspaint/paint_rendering_context_2d.h"
-#include "third_party/blink/renderer/modules/csspaint/paint_worklet_id_generator.h"
-#include "third_party/blink/renderer/modules/csspaint/paint_worklet_proxy_client.h"
 #include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/graphics/paint_worklet_paint_dispatcher.h"
 #include "third_party/blink/renderer/platform/graphics/platform_paint_worklet_layer_painter.h"
-#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
-#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
 
@@ -104,37 +97,9 @@ ClipPathPaintDefinition* ClipPathPaintDefinition::Create(
 }
 
 ClipPathPaintDefinition::ClipPathPaintDefinition(LocalFrame& local_root)
-    : worklet_id_(PaintWorkletIdGenerator::NextId()) {
-  DCHECK(local_root.IsLocalRoot());
-  DCHECK(IsMainThread());
-  ExecutionContext* context = local_root.DomWindow();
-  FrameOrWorkerScheduler* scheduler =
-      context ? context->GetScheduler() : nullptr;
-  // TODO(crbug.com/1143407): We don't need this thread if we can make the
-  // compositor thread support GC.
-  ThreadCreationParams params(ThreadType::kAnimationAndPaintWorkletThread);
-  worker_backing_thread_ = std::make_unique<WorkerBackingThread>(
-      params.SetFrameOrWorkerScheduler(scheduler));
-  auto startup_data = WorkerBackingThreadStartupData::CreateDefault();
-  PostCrossThreadTask(
-      *worker_backing_thread_->BackingThread().GetTaskRunner(), FROM_HERE,
-      CrossThreadBindOnce(&WorkerBackingThread::InitializeOnBackingThread,
-                          CrossThreadUnretained(worker_backing_thread_.get()),
-                          startup_data));
-  RegisterProxyClient(local_root);
-}
-
-void ClipPathPaintDefinition::RegisterProxyClient(LocalFrame& local_root) {
-  proxy_client_ =
-      PaintWorkletProxyClient::Create(local_root.DomWindow(), worklet_id_);
-  proxy_client_->RegisterForNativePaintWorklet(
-      worker_backing_thread_.get(), this,
-      PaintWorkletInput::PaintWorkletInputType::kClipPath);
-}
-
-void ClipPathPaintDefinition::UnregisterProxyClient() {
-  proxy_client_->UnregisterForNativePaintWorklet();
-}
+    : NativePaintDefinition(
+          &local_root,
+          PaintWorkletInput::PaintWorkletInputType::kClipPath) {}
 
 sk_sp<PaintRecord> ClipPathPaintDefinition::Paint(
     const CompositorPaintWorkletInput* compositor_input,
@@ -217,7 +182,6 @@ scoped_refptr<Image> ClipPathPaintDefinition::Paint(
 }
 
 void ClipPathPaintDefinition::Trace(Visitor* visitor) const {
-  visitor->Trace(proxy_client_);
   NativePaintDefinition::Trace(visitor);
 }
 

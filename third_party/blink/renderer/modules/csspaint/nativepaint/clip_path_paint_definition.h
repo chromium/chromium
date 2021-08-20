@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CSSPAINT_NATIVEPAINT_CLIP_PATH_PAINT_DEFINITION_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CSSPAINT_NATIVEPAINT_CLIP_PATH_PAINT_DEFINITION_H_
 
-#include "third_party/blink/renderer/core/workers/worker_backing_thread.h"
 #include "third_party/blink/renderer/modules/csspaint/nativepaint/native_paint_definition.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 
@@ -15,7 +14,6 @@ class FloatRect;
 class Image;
 class LocalFrame;
 class Node;
-class PaintWorkletProxyClient;
 
 class MODULES_EXPORT ClipPathPaintDefinition final
     : public GarbageCollected<ClipPathPaintDefinition>,
@@ -37,23 +35,7 @@ class MODULES_EXPORT ClipPathPaintDefinition final
                              const FloatRect& reference_box,
                              const Node&);
 
-  // Unregister the painter to ensure that there is no memory leakage on the
-  // compositor thread.
-  void UnregisterProxyClient();
-
   void Trace(Visitor* visitor) const override;
-
- private:
-  // Register the PaintWorkletProxyClient to the compositor thread that
-  // will hold a cross thread persistent pointer to it. This should be called
-  // during the construction of native paint worklets, to ensure that the proxy
-  // client is ready on the compositor thread when dispatching a paint job.
-  void RegisterProxyClient(LocalFrame&);
-
-  int worklet_id_;
-  // The worker thread that does the paint work.
-  std::unique_ptr<WorkerBackingThread> worker_backing_thread_;
-  Member<PaintWorkletProxyClient> proxy_client_;
 };
 
 }  // namespace blink

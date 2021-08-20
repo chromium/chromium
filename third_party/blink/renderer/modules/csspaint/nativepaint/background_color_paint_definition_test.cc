@@ -23,19 +23,19 @@
 
 namespace blink {
 
-namespace {
+class BackgroundColorPaintDefinitionTest : public PageTestBase {
+ public:
+  BackgroundColorPaintDefinitionTest() = default;
+  ~BackgroundColorPaintDefinitionTest() override = default;
 
-void RunPaintForTest(
-    const Vector<Color>& animated_colors,
-    const Vector<double>& offsets,
-    const CompositorPaintWorkletJob::AnimatedPropertyValues& property_values) {
-  BackgroundColorPaintDefinition* definition =
-      MakeGarbageCollected<BackgroundColorPaintDefinition>();
-  definition->PaintForTest(animated_colors, offsets, property_values);
-}
-}  // namespace
-
-using BackgroundColorPaintDefinitionTest = PageTestBase;
+  void RunPaintForTest(const Vector<Color>& animated_colors,
+                       const Vector<double>& offsets,
+                       const CompositorPaintWorkletJob::AnimatedPropertyValues&
+                           property_values) {
+    BackgroundColorPaintDefinition definition;
+    definition.PaintForTest(animated_colors, offsets, property_values);
+  }
+};
 
 // Test the case where there is a background-color animation with two simple
 // keyframes that will not fall back to main.

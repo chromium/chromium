@@ -22,6 +22,7 @@ blink_modules_sources("csspaint") {
     "nativepaint/clip_path_paint_definition.h",
     "nativepaint/clip_path_paint_image_generator_impl.cc",
     "nativepaint/clip_path_paint_image_generator_impl.h",
+    "nativepaint/native_paint_definition.cc",
     "nativepaint/native_paint_definition.h",
     "paint_definition.h",
     "paint_rendering_context_2d.cc",
