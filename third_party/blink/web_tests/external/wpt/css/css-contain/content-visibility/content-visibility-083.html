@@ -1,11 +1,11 @@
 <!doctype HTML>
 <html class="reftest-wait">
 <meta charset="utf8">
-<title>Content Visibility: scrollIntoView prevented</title>
+<title>Content Visibility: anchor links prevented on hidden</title>
 <link rel="author" title="Vladimir Levin" href="mailto:vmpstr@chromium.org">
 <link rel="help" href="https://drafts.csswg.org/css-contain/#content-visibility">
 <link rel="match" href="spacer-and-container-ref.html">
-<meta name="assert" content="scrollIntoView is prevented when the target is hidden">
+<meta name="assert" content="anchor link scroll is prevented when the target is hidden">
 
 <script src="/common/reftest-wait.js"></script>
 
@@ -21,10 +21,10 @@
   background: lightgreen;
   content-visibility: hidden;
 }
+
 #target {
   width: 100px;
   height: 100px;
-  background: green;
 }
 </style>
 
@@ -33,7 +33,7 @@
 
 <script>
 function runTest() {
-  document.getElementById("target").scrollIntoView();
+  location.href += "#target";
   requestAnimationFrame(takeScreenshot);
 }
 

@@ -1207,6 +1207,11 @@ void Element::ScrollIntoViewNoVisualUpdate(
   if (!GetLayoutObject() || !GetDocument().GetPage())
     return;
 
+  if (DisplayLockUtilities::ShouldIgnoreNodeDueToDisplayLock(
+          *this, DisplayLockActivationReason::kScrollIntoView)) {
+    return;
+  }
+
   mojom::blink::ScrollBehavior behavior =
       (options->behavior() == "smooth") ? mojom::blink::ScrollBehavior::kSmooth
                                         : mojom::blink::ScrollBehavior::kAuto;
