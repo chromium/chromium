@@ -95,6 +95,7 @@
 #include "chrome/browser/sharing/sharing_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
+#include "chrome/browser/ssl/https_first_mode_settings_tracker.h"
 #include "chrome/browser/ssl/stateful_ssl_host_state_delegate_factory.h"
 #include "chrome/browser/startup_data.h"
 #include "chrome/browser/storage/storage_notification_service_factory.h"
@@ -834,6 +835,8 @@ void ProfileImpl::DoFinalInit(CreateMode create_mode) {
   }
 
   SharingServiceFactory::GetForBrowserContext(this);
+
+  HttpsFirstModeServiceFactory::GetForProfile(this);
 
   // The creation of FlocIdProvider should align with the start of a browser
   // profile session, so initialize it here.

@@ -19,6 +19,7 @@
 
 class ChromeMetricsServiceClient;
 class ChromePasswordManagerClient;
+class HttpsFirstModeService;
 class NavigationMetricsRecorder;
 class PrefService;
 class Profile;
@@ -134,6 +135,7 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class feed::FeedServiceDelegateImpl;
   friend class browser_sync::DeviceInfoSyncClientImpl;
   friend class feed::FeedServiceBridge;
+  friend class HttpsFirstModeService;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   friend class ChromeCameraAppUIDelegate;

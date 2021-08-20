@@ -22,7 +22,7 @@ class HttpsOnlyModeBlockingPage : public SecurityInterstitialPage {
   ~HttpsOnlyModeBlockingPage() override;
 
   // SecurityInterstitialPage:
-  void OnInterstitialClosing() override {}
+  void OnInterstitialClosing() override;
   SecurityInterstitialPage::TypeID GetTypeForTesting() override;
 
  protected:
@@ -33,6 +33,8 @@ class HttpsOnlyModeBlockingPage : public SecurityInterstitialPage {
  private:
   // Adds values required for shared interstitial HTML to |load_time_data|.
   void PopulateValuesForSharedHTML(base::Value* load_time_data);
+
+  bool user_made_decision_ = false;
 };
 
 }  // namespace security_interstitials

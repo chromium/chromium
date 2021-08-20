@@ -5,6 +5,7 @@
 #include "chrome/browser/ssl/https_only_mode_navigation_throttle.h"
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "chrome/browser/ssl/https_only_mode_tab_helper.h"
@@ -15,12 +16,20 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "net/base/net_errors.h"
 
 namespace {
 
 // Time that the throttle will wait before canceling the upgraded navigation and
 // showing the HTTPS-Only Mode interstitial.
 base::TimeDelta g_fallback_delay = base::TimeDelta::FromSeconds(3);
+
+// Helper to record an HTTPS-First Mode navigation event.
+void RecordHttpsFirstModeNavigation(
+    HttpsOnlyModeNavigationThrottle::Event event) {
+  base::UmaHistogramEnumeration("Security.HttpsFirstMode.NavigationEvent",
+                                event);
+}
 
 }  // namespace
 
@@ -71,6 +80,7 @@ HttpsOnlyModeNavigationThrottle::WillStartRequest() {
   auto* tab_helper = HttpsOnlyModeTabHelper::FromWebContents(
                         navigation_handle()->GetWebContents());
   if (tab_helper->is_navigation_upgraded()) {
+    RecordHttpsFirstModeNavigation(Event::kUpgradeAttempted);
     timer_.Start(FROM_HERE, g_fallback_delay, this,
                  &HttpsOnlyModeNavigationThrottle::OnHttpsLoadTimeout);
   }
@@ -101,6 +111,18 @@ HttpsOnlyModeNavigationThrottle::WillFailRequest() {
   auto* contents = handle->GetWebContents();
   auto* tab_helper = HttpsOnlyModeTabHelper::FromWebContents(contents);
   if (tab_helper->is_navigation_upgraded()) {
+    // Record failure type metrics for upgraded navigations.
+    RecordHttpsFirstModeNavigation(Event::kUpgradeFailed);
+    if (net::IsCertificateError(handle->GetNetErrorCode())) {
+      RecordHttpsFirstModeNavigation(Event::kUpgradeCertError);
+    } else if (handle->GetNetErrorCode() == net::ERR_TIMED_OUT) {
+      // TODO(crbug.com/1218526): Move this to the fast timeout code once
+      // that is implemented.
+      RecordHttpsFirstModeNavigation(Event::kUpgradeTimedOut);
+    } else {
+      RecordHttpsFirstModeNavigation(Event::kUpgradeNetError);
+    }
+
     std::unique_ptr<security_interstitials::HttpsOnlyModeBlockingPage>
         blocking_page = blocking_page_factory_->CreateHttpsOnlyModeBlockingPage(
             contents, handle->GetURL());
@@ -134,6 +156,7 @@ HttpsOnlyModeNavigationThrottle::WillRedirectRequest() {
   auto* tab_helper = HttpsOnlyModeTabHelper::FromWebContents(
                         navigation_handle()->GetWebContents());
   if (tab_helper->is_navigation_upgraded() && !timer_.IsRunning()) {
+    RecordHttpsFirstModeNavigation(Event::kUpgradeAttempted);
     timer_.Start(FROM_HERE, g_fallback_delay, this,
                  &HttpsOnlyModeNavigationThrottle::OnHttpsLoadTimeout);
   }
@@ -149,7 +172,10 @@ HttpsOnlyModeNavigationThrottle::WillProcessResponse() {
   // Clear the status for this navigation as it will successfully commit.
   auto* tab_helper = HttpsOnlyModeTabHelper::FromWebContents(
                         navigation_handle()->GetWebContents());
-  tab_helper->set_is_navigation_upgraded(false);
+  if (tab_helper->is_navigation_upgraded()) {
+    RecordHttpsFirstModeNavigation(Event::kUpgradeSucceeded);
+    tab_helper->set_is_navigation_upgraded(false);
+  }
 
   return content::NavigationThrottle::PROCEED;
 }
