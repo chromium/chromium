@@ -308,11 +308,11 @@
        请注意，先前我们误在 Android 设备上启用了此政策，但我们从未在 Android 设备上为这项功能提供完整支持。</translation>
 <translation id="1435493974546396517">控制 <ph name="PRODUCT_NAME" /> 如何在 <ph name="MS_WIN_NAME" /> 和 <ph name="MAC_OS_NAME" /> 上提供“以图片形式打印”选项来打印 PDF。
 
-      如果在 <ph name="MS_WIN_NAME" /> 或 <ph name="MAC_OS_NAME" /> 上打印 PDF，某些打印机有时需要将打印任务光栅化为图片，才能输出正确的结果。
+如果在 <ph name="MS_WIN_NAME" /> 或 <ph name="MAC_OS_NAME" /> 上打印 PDF，某些打印机有时需要将打印任务光栅化为图片，才能输出正确的结果。
 
-      如果此政策已启用，在打印 PDF 时，<ph name="PRODUCT_NAME" /> 将在“打印预览”对话框中提供“以图片形式打印”选项。
+如果此政策已启用，在打印 PDF 时，<ph name="PRODUCT_NAME" /> 将在“打印预览”对话框中提供“以图片形式打印”选项。
 
-      如果此政策已停用或未设置，<ph name="PRODUCT_NAME" /> 将不会在“打印预览”对话框中向用户提供“以图片形式打印”选项，PDF 将会像平常一样打印，而不会在发送到目的地之前光栅化为图片。</translation>
+如果此政策已停用或未设置，<ph name="PRODUCT_NAME" /> 将不会在“打印预览”对话框中向用户提供“以图片形式打印”选项，PDF 将会像平常一样打印，而不会在发送到目标打印机之前光栅化为图片。</translation>
 <translation id="1435659902881071157">设备级网络配置</translation>
 <translation id="1438739959477268107">默认的密钥生成设置</translation>
 <translation id="1449083855104537880">如果此政策设为 True，无障碍选项将会显示在系统任务栏菜单中。如果此政策设为 False，这些选项就不会显示在菜单中。
@@ -6063,7 +6063,7 @@
       基于扩展程序的打印机也称为打印提供程序目的地，包括 <ph name="PRODUCT_NAME" /> 扩展程序名下的所有目的地。
 
       本地打印机也称为本机打印目的地，包括可供本地计算机使用的目的地以及共享的网络打印机。</translation>
-<translation id="8753264624162178499">向用户提供“以图片形式打印”选项，以允许在将打印任务发送到目的地之前进行 PDF 光栅化。</translation>
+<translation id="8753264624162178499">向用户提供“以图片形式打印”选项，以允许在将打印任务发送到目标打印机之前进行 PDF 光栅化。</translation>
 <translation id="8757552286070680084">Wilco DTC 配置</translation>
 <translation id="8758831693895931466">启用强制性云管理注册</translation>
 <translation id="8759829385824155666">允许的 Kerberos 加密类型</translation>
@@ -6478,7 +6478,7 @@
 
       注意：屏蔽内部 chrome://* 网址可能会导致意外的错误。</translation>
 <translation id="957778406002650056">可供下载相应 <ph name="PLUGIN_VM_NAME" /> 图片的网址。</translation>
-<translation id="971677226939413180">提供“以图片形式打印”选项供用户选择。</translation>
+<translation id="971677226939413180">不提供“以图片形式打印”选项供用户选择。</translation>
 <translation id="974349541138387272">指定所需 DNS-over-HTTPS 解析器的 URI 模板</translation>
 <translation id="979467274961593903">不允许进行远程调试</translation>
 <translation id="980218166381006412">如果此政策已启用，系统会开启后台模式。在后台模式下，<ph name="PRODUCT_NAME" /> 进程会在用户登录操作系统时启动，并会在最后一个浏览器窗口关闭后继续运行，从而使后台应用和浏览会话保持活动状态。系统任务栏中会显示该后台进程的图标，用户可以随时在此处关闭该后台进程。
