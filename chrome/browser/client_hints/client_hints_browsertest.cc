@@ -2335,8 +2335,6 @@ class CriticalClientHintsBrowserTest : public InProcessBrowserTest {
   }
 
   void SetUp() override {
-    InProcessBrowserTest::SetUp();
-
     std::unique_ptr<base::FeatureList> feature_list =
         std::make_unique<base::FeatureList>();
     // Don't include LangClientHintHeader in the enabled features; we will
@@ -2346,12 +2344,14 @@ class CriticalClientHintsBrowserTest : public InProcessBrowserTest {
         "PrefersColorSchemeClientHintHeader",
         "");
     scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
+
+    InProcessBrowserTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
-
     host_resolver()->AddRule("*", "127.0.0.1");
+
+    InProcessBrowserTest::SetUpOnMainThread();
   }
 
   GURL critical_ch_ua_full_version_url() const {
@@ -2402,18 +2402,10 @@ class CriticalClientHintsBrowserTest : public InProcessBrowserTest {
   absl::optional<std::string> ch_lang_ GUARDED_BY(ch_lang_lock_);
 };
 
-#if defined(OS_CHROMEOS)
-// Flaky on the linux-chromeos-chrome try bot: http://crbug.com/1222742
-#define MAYBE_CriticalClientHintInRequestHeader \
-  DISABLED_CriticalClientHintInRequestHeader
-#else
-#define MAYBE_CriticalClientHintInRequestHeader \
-  CriticalClientHintInRequestHeader
-#endif
 // Verify that setting Critical-CH in the response header causes the request to
 // be resent with the client hint included.
 IN_PROC_BROWSER_TEST_F(CriticalClientHintsBrowserTest,
-                       MAYBE_CriticalClientHintInRequestHeader) {
+                       CriticalClientHintInRequestHeader) {
   blink::UserAgentMetadata ua = embedder_support::GetUserAgentMetadata();
   // On the first navigation request, the client hints in the Critical-CH
   // should be set on the request header.
@@ -2542,23 +2534,23 @@ class UaReducedOriginTrialBrowserTest : public InProcessBrowserTest {
   }
 
   void SetUp() override {
-    InProcessBrowserTest::SetUp();
-
     std::unique_ptr<base::FeatureList> feature_list =
         std::make_unique<base::FeatureList>();
     feature_list->InitializeFromCommandLine("CriticalClientHint", "");
     scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
+
+    InProcessBrowserTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
-
     // We use a URLLoaderInterceptor, rather than the EmbeddedTestServer, since
     // the origin trial token in the response is associated with a fixed
     // origin, whereas EmbeddedTestServer serves content on a random port.
     url_loader_interceptor_ =
         content::URLLoaderInterceptor::ServeFilesFromDirectoryAtOrigin(
             "chrome/test/data/client_hints", GURL(kOriginUrl));
+
+    InProcessBrowserTest::SetUpOnMainThread();
   }
 
   void TearDownOnMainThread() override {
@@ -2733,16 +2725,8 @@ IN_PROC_BROWSER_TEST_F(UaReducedOriginTrialBrowserTest,
       /*critical_ch_ua_reduced_expected=*/false);
 }
 
-#if defined(OS_CHROMEOS)
-// Flaky on the linux-chromeos-chrome try bot: http://crbug.com/1222742
-#define MAYBE_CriticalChUaReducedWithValidOriginTrialToken \
-  DISABLED_CriticalChUaReducedWithValidOriginTrialToken
-#else
-#define MAYBE_CriticalChUaReducedWithValidOriginTrialToken \
-  CriticalChUaReducedWithValidOriginTrialToken
-#endif
 IN_PROC_BROWSER_TEST_F(UaReducedOriginTrialBrowserTest,
-                       MAYBE_CriticalChUaReducedWithValidOriginTrialToken) {
+                       CriticalChUaReducedWithValidOriginTrialToken) {
   // The initial navigation also contains the Critical-CH header, so the
   // Sec-CH-UA-Reduced header should be set after the first navigation.
   NavigateTwiceAndCheckHeader(
