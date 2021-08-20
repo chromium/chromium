@@ -308,7 +308,9 @@ void ConversionManagerImpl::HandleReportsSentFromWebUI(
 
 void ConversionManagerImpl::OnReportSent(SentReportInfo info) {
   // Reports that should be retried are not deleted.
-  if (!ShouldRetryReport(*conversion_policy_, clock_->Now(), info)) {
+  const bool should_retry =
+      ShouldRetryReport(*conversion_policy_, clock_->Now(), info);
+  if (!should_retry) {
     conversion_storage_.AsyncCall(&ConversionStorage::DeleteConversion)
         .WithArgs(info.conversion_id)
         .Then(base::DoNothing::Once<bool>());
@@ -326,7 +328,8 @@ void ConversionManagerImpl::OnReportSent(SentReportInfo info) {
     std::move(send_reports_for_web_ui_callback_).Run();
   }
 
-  if (info.report_url.is_empty())
+  // TODO(apaseltiner): Consider surfacing retry attempts in internals UI.
+  if (info.report_url.is_empty() || should_retry)
     return;
 
   while (sent_reports_.size() >= max_sent_reports_to_store_)

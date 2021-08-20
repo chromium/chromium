@@ -391,6 +391,12 @@ TEST_F(ConversionManagerImplTest, QueuedReportSent_SentReportInfoUpdated) {
   sent_report_info_2.report_url = GURL("https://example/b");
   sent_report_info_2.http_response_code = 404;
 
+  // This one shouldn't be stored, as it will be retried.
+  SentReportInfo sent_report_info_3 = GetBlankSentReportInfo();
+  sent_report_info_3.report_url = GURL("https://example/c");
+  sent_report_info_3.http_response_code = 404;
+  sent_report_info_3.should_retry = true;
+
   test_reporter_->ShouldRunReportSentCallbacks(true);
 
   test_reporter_->SetSentReportInfo(sent_report_info_1);
@@ -419,6 +425,13 @@ TEST_F(ConversionManagerImplTest, QueuedReportSent_SentReportInfoUpdated) {
 
   // The other report is deleted, so id 1 is reused.
   sent_report_info_2.conversion_id = 1;
+  task_environment_.FastForwardBy(kFirstReportingWindow -
+                                  kConversionManagerQueueReportsInterval);
+
+  test_reporter_->SetSentReportInfo(sent_report_info_3);
+  conversion_manager_->HandleImpression(
+      ImpressionBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
+  conversion_manager_->HandleConversion(DefaultConversion());
   task_environment_.FastForwardBy(kFirstReportingWindow -
                                   kConversionManagerQueueReportsInterval);
 
