@@ -33,6 +33,7 @@
 #include "storage/common/file_system/file_system_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace {
 
@@ -91,7 +92,7 @@ class PluginVmFilesTest : public testing::Test {
 
   storage::FileSystemURL GetMyFilesFileSystemURL(const std::string& path) {
     return mount_points_->CreateExternalFileSystemURL(
-        url::Origin(), mount_name_, base::FilePath(path));
+        blink::StorageKey(), mount_name_, base::FilePath(path));
   }
 
   struct ScopedDBusThreadManager {
@@ -233,7 +234,7 @@ TEST_F(PluginVmFilesTest, LaunchAppFail) {
       "other-volume", storage::kFileSystemTypeLocal,
       storage::FileSystemMountOption(), GetMyFilesFolderPath());
   storage::FileSystemURL url = mount_points_->CreateExternalFileSystemURL(
-      url::Origin(), "other-volume", base::FilePath("other/volume"));
+      blink::StorageKey(), "other-volume", base::FilePath("other/volume"));
   LaunchPluginVmApp(&profile_, app_id_, {url},
                     base::BindOnce(capture_result, &actual_result));
   task_environment_.RunUntilIdle();

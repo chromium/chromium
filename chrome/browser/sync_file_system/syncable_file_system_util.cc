@@ -64,14 +64,15 @@ FileSystemURL CreateSyncableFileSystemURL(const GURL& origin,
     path_for_url = base::FilePath(path.value().substr(1));
 
   return ExternalMountPoints::GetSystemInstance()->CreateExternalFileSystemURL(
-      url::Origin::Create(origin), kSyncableMountName, path_for_url);
+      blink::StorageKey(url::Origin::Create(origin)), kSyncableMountName,
+      path_for_url);
 }
 
 FileSystemURL CreateSyncableFileSystemURLForSync(
     storage::FileSystemContext* file_system_context,
     const FileSystemURL& syncable_url) {
   return ExternalMountPoints::GetSystemInstance()->CreateExternalFileSystemURL(
-      syncable_url.origin(), kSyncableMountNameForInternalSync,
+      syncable_url.storage_key(), kSyncableMountNameForInternalSync,
       syncable_url.path());
 }
 

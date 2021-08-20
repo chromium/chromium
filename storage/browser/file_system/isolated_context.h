@@ -23,13 +23,11 @@ class GURL;
 
 namespace blink {
 class StorageKey;
-}
+}  // namespace blink
 
 namespace storage {
+
 class FileSystemURL;
-}
-
-namespace storage {
 
 // Manages isolated filesystem mount points which have no well-known names
 // and are identified by a string 'filesystem ID', which usually just looks
@@ -182,7 +180,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) IsolatedContext : public MountPoints {
   FileSystemURL CrackURL(const GURL& url,
                          const blink::StorageKey& storage_key) const override;
   FileSystemURL CreateCrackedFileSystemURL(
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       FileSystemType type,
       const base::FilePath& virtual_path) const override;
 

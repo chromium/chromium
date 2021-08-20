@@ -29,6 +29,7 @@
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/isolated_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace ash {
 namespace file_system_provider {
@@ -55,7 +56,8 @@ storage::FileSystemURL CreateFileSystemURL(
   DCHECK(file_path.IsAbsolute());
   base::FilePath relative_path(file_path.value().substr(1));
   return mount_points->CreateCrackedFileSystemURL(
-      url::Origin::Create(GURL(origin)), storage::kFileSystemTypeExternal,
+      blink::StorageKey::CreateFromStringForTesting(origin),
+      storage::kFileSystemTypeExternal,
       base::FilePath(mount_path.BaseName().Append(relative_path)));
 }
 
@@ -222,8 +224,7 @@ TEST_F(FileSystemProviderMountPathUtilTest, Parser_IsolatedURL) {
 
   const storage::FileSystemURL isolated_url =
       isolated_context->CreateCrackedFileSystemURL(
-          url.origin(),
-          storage::kFileSystemTypeIsolated,
+          url.storage_key(), storage::kFileSystemTypeIsolated,
           isolated_virtual_path);
 
   EXPECT_TRUE(isolated_url.is_valid());

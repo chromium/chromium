@@ -17,17 +17,16 @@
 #include "storage/browser/file_system/mount_points.h"
 #include "storage/common/file_system/file_system_mount_option.h"
 #include "storage/common/file_system/file_system_types.h"
-#include "url/origin.h"
 
 class GURL;
 
 namespace base {
 class FilePath;
-}
+}  // namespace base
 
 namespace blink {
 class StorageKey;
-}
+}  // namespace blink
 
 namespace storage {
 
@@ -87,7 +86,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ExternalMountPoints
   FileSystemURL CrackURL(const GURL& url,
                          const blink::StorageKey& storage_key) const override;
   FileSystemURL CreateCrackedFileSystemURL(
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       FileSystemType type,
       const base::FilePath& virtual_path) const override;
 
@@ -114,9 +113,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ExternalMountPoints
   // Returns the virtual root path that looks like /<mount_name>.
   base::FilePath CreateVirtualRootPath(const std::string& mount_name) const;
 
-  FileSystemURL CreateExternalFileSystemURL(const url::Origin& origin,
-                                            const std::string& mount_name,
-                                            const base::FilePath& path) const;
+  FileSystemURL CreateExternalFileSystemURL(
+      const blink::StorageKey& storage_key,
+      const std::string& mount_name,
+      const base::FilePath& path) const;
 
   // Revoke all registered filesystems. Used only by testing (for clean-ups).
   void RevokeAllFileSystems();

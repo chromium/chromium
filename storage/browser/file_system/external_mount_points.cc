@@ -199,12 +199,9 @@ FileSystemURL ExternalMountPoints::CrackURL(
 }
 
 FileSystemURL ExternalMountPoints::CreateCrackedFileSystemURL(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     FileSystemType type,
     const base::FilePath& virtual_path) const {
-  // TODO(https://crbug.com/1221308): function will have StorageKey param in
-  // future CL; conversion from url::Origin is temporary
-  const blink::StorageKey storage_key = blink::StorageKey(origin);
   return CrackFileSystemURL(FileSystemURL(storage_key, type, virtual_path));
 }
 
@@ -241,11 +238,11 @@ base::FilePath ExternalMountPoints::CreateVirtualRootPath(
 }
 
 FileSystemURL ExternalMountPoints::CreateExternalFileSystemURL(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     const std::string& mount_name,
     const base::FilePath& path) const {
   return CreateCrackedFileSystemURL(
-      origin, kFileSystemTypeExternal,
+      storage_key, kFileSystemTypeExternal,
       // Avoid using FilePath::Append as path may be an absolute path.
       base::FilePath(CreateVirtualRootPath(mount_name).value() +
                      base::FilePath::kSeparators[0] + path.value()));

@@ -25,6 +25,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
 using content::BrowserThread;
@@ -301,7 +302,7 @@ RecentArcMediaSource::MediaRoot::BuildDocumentsProviderUrl(
       storage::ExternalMountPoints::GetSystemInstance();
 
   return mount_points->CreateExternalFileSystemURL(
-      url::Origin::Create(params_.value().origin()),
+      blink::StorageKey(url::Origin::Create(params_.value().origin())),
       arc::kDocumentsProviderMountPointName, relative_mount_path_.Append(path));
 }
 

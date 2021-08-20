@@ -44,7 +44,6 @@
 #include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
-#include "url/origin.h"
 
 using base::FilePath;
 using storage::FileSystemURL;
@@ -448,7 +447,8 @@ TEST_F(FileManagerPathUtilTest, ConvertBetweenFileSystemURLAndPathInsideVM) {
     EXPECT_TRUE(ConvertFileSystemURLToPathInsideVM(
         profile_.get(),
         mount_points->CreateExternalFileSystemURL(
-            url::Origin(), test.mount_name, base::FilePath(test.relative_path)),
+            blink::StorageKey(), test.mount_name,
+            base::FilePath(test.relative_path)),
         vm_mount, /*map_crostini_home=*/false, &inside));
     EXPECT_EQ(test.inside, inside.value());
 
@@ -468,14 +468,14 @@ TEST_F(FileManagerPathUtilTest, ConvertBetweenFileSystemURLAndPathInsideVM) {
   EXPECT_TRUE(ConvertFileSystemURLToPathInsideVM(
       profile_.get(),
       mount_points->CreateExternalFileSystemURL(
-          url::Origin(), "crostini_0123456789abcdef_termina_penguin",
+          blink::StorageKey(), "crostini_0123456789abcdef_termina_penguin",
           base::FilePath("path/in/crostini")),
       vm_mount, /*map_crostini_home=*/true, &inside));
   EXPECT_EQ("/home/testuser/path/in/crostini", inside.value());
   EXPECT_TRUE(ConvertFileSystemURLToPathInsideCrostini(
       profile_.get(),
       mount_points->CreateExternalFileSystemURL(
-          url::Origin(), "crostini_0123456789abcdef_termina_penguin",
+          blink::StorageKey(), "crostini_0123456789abcdef_termina_penguin",
           base::FilePath("path/in/crostini")),
       &inside));
   EXPECT_EQ("/home/testuser/path/in/crostini", inside.value());
@@ -483,7 +483,7 @@ TEST_F(FileManagerPathUtilTest, ConvertBetweenFileSystemURLAndPathInsideVM) {
   EXPECT_FALSE(ConvertFileSystemURLToPathInsideVM(
       profile_.get(),
       mount_points->CreateExternalFileSystemURL(
-          url::Origin(), "unknown", base::FilePath("path/in/unknown")),
+          blink::StorageKey(), "unknown", base::FilePath("path/in/unknown")),
       vm_mount, /*map_crostini_home=*/false, &inside));
 
   // Special case for Crostini $HOME ConvertPathInsideVMToFileSystemURL.

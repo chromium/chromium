@@ -29,6 +29,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/test/test_windows.h"
@@ -438,8 +439,8 @@ TEST_F(ChromeDataExchangeDelegateTest, HasUrlsInPickle) {
   // Valid FileInfo.url.
   base::Pickle valid;
   storage::FileSystemURL url = mount_points_->CreateExternalFileSystemURL(
-      url::Origin::Create(GURL("http://example.com")), myfiles_mount_name_,
-      base::FilePath("path"));
+      blink::StorageKey::CreateFromStringForTesting("http://example.com"),
+      myfiles_mount_name_, base::FilePath("path"));
   file_info.url = url.ToGURL();
   content::DropData::FileSystemFileInfo::WriteFileSystemFilesToPickle(
       {file_info}, &valid);

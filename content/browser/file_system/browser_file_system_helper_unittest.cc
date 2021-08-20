@@ -25,6 +25,7 @@
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -58,7 +59,8 @@ TEST(BrowserFileSystemHelperTest,
       storage::FileSystemMountOption(), mount_path));
   storage::FileSystemURL original_file =
       external_mount_points->CreateExternalFileSystemURL(
-          url::Origin::Create(kSensitiveOrigin), kMountName, kTestPath);
+          blink::StorageKey(url::Origin::Create(kSensitiveOrigin)), kMountName,
+          kTestPath);
   EXPECT_TRUE(original_file.is_valid());
   EXPECT_EQ(kSensitiveOrigin, original_file.origin().GetURL());
 

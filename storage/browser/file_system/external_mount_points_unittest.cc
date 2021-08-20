@@ -263,8 +263,8 @@ TEST(ExternalMountPointsTest, CreateCrackedFileSystemURL) {
   scoped_refptr<ExternalMountPoints> mount_points =
       ExternalMountPoints::CreateRefCounted();
 
-  const url::Origin kTestOrigin =
-      url::Origin::Create(GURL("http://chromium.org"));
+  const blink::StorageKey kTestStorageKey =
+      blink::StorageKey::CreateFromStringForTesting("http://chromium.org");
 
   mount_points->RegisterFileSystem("c", kFileSystemTypeLocal,
                                    FileSystemMountOption(),
@@ -286,12 +286,12 @@ TEST(ExternalMountPointsTest, CreateCrackedFileSystemURL) {
 
   // Try cracking isolated path.
   FileSystemURL isolated = mount_points->CreateCrackedFileSystemURL(
-      kTestOrigin, kFileSystemTypeIsolated, base::FilePath(FPL("c")));
+      kTestStorageKey, kFileSystemTypeIsolated, base::FilePath(FPL("c")));
   EXPECT_FALSE(isolated.is_valid());
 
   // Try native local which is not cracked.
   FileSystemURL native_local = mount_points->CreateCrackedFileSystemURL(
-      kTestOrigin, kFileSystemTypeLocal, base::FilePath(FPL("c")));
+      kTestStorageKey, kFileSystemTypeLocal, base::FilePath(FPL("c")));
   EXPECT_FALSE(native_local.is_valid());
 
   struct TestCase {
@@ -332,7 +332,7 @@ TEST(ExternalMountPointsTest, CreateCrackedFileSystemURL) {
 
   for (size_t i = 0; i < base::size(kTestCases); ++i) {
     FileSystemURL cracked = mount_points->CreateCrackedFileSystemURL(
-        kTestOrigin, kFileSystemTypeExternal,
+        kTestStorageKey, kFileSystemTypeExternal,
         base::FilePath(kTestCases[i].path));
 
     EXPECT_EQ(kTestCases[i].expect_valid, cracked.is_valid())
@@ -341,7 +341,8 @@ TEST(ExternalMountPointsTest, CreateCrackedFileSystemURL) {
     if (!kTestCases[i].expect_valid)
       continue;
 
-    EXPECT_EQ(kTestOrigin, cracked.origin()) << "Test case index: " << i;
+    EXPECT_EQ(kTestStorageKey.origin(), cracked.origin())
+        << "Test case index: " << i;
     EXPECT_EQ(kTestCases[i].expect_type, cracked.type())
         << "Test case index: " << i;
     EXPECT_EQ(

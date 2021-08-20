@@ -33,7 +33,7 @@
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "url/gurl.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace {
 
@@ -454,7 +454,7 @@ void GuestOsSharePath::CallSeneschalUnsharePath(const std::string& vm_name,
   bool result = mount_points->GetVirtualPath(path, &virtual_path);
   if (result) {
     storage::FileSystemURL url = mount_points->CreateCrackedFileSystemURL(
-        url::Origin(), storage::kFileSystemTypeExternal, virtual_path);
+        blink::StorageKey(), storage::kFileSystemTypeExternal, virtual_path);
     result = file_manager::util::ConvertFileSystemURLToPathInsideVM(
         profile_, url, dummy_vm_mount,
         /*map_crostini_home=*/vm_name == crostini::kCrostiniDefaultVmName,

@@ -197,7 +197,7 @@ std::vector<FileInfo> CrackPaths(std::vector<base::FilePath> paths) {
     storage::FileSystemURL url;
     if (mount_points->GetVirtualPath(path, &virtual_path)) {
       url = mount_points->CreateCrackedFileSystemURL(
-          url::Origin(), storage::kFileSystemTypeExternal, virtual_path);
+          blink::StorageKey(), storage::kFileSystemTypeExternal, virtual_path);
     }
     file_info.push_back({std::move(path), std::move(url)});
   }

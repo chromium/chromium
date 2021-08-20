@@ -45,9 +45,11 @@
 #include "net/base/escape.h"
 #include "net/base/filename_util.h"
 #include "storage/browser/file_system/external_mount_points.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace file_manager {
 namespace util {
@@ -504,8 +506,8 @@ bool ConvertPathInsideVMToFileSystemURL(
     if (container_info &&
         AppendRelativePath(container_info->homedir, inside, &relative_path)) {
       *file_system_url = mount_points->CreateExternalFileSystemURL(
-          GetFilesAppOrigin(), GetCrostiniMountPointName(profile),
-          relative_path);
+          blink::StorageKey(GetFilesAppOrigin()),
+          GetCrostiniMountPointName(profile), relative_path);
       return file_system_url->is_valid();
     }
   }
@@ -581,8 +583,9 @@ bool ConvertPathInsideVMToFileSystemURL(
   }
 
   *file_system_url = mount_points->CreateExternalFileSystemURL(
-      url::Origin::Create(extensions::Extension::GetBaseURLFromExtensionId(
-          file_manager::kFileManagerAppId)),
+      blink::StorageKey(
+          url::Origin::Create(extensions::Extension::GetBaseURLFromExtensionId(
+              file_manager::kFileManagerAppId))),
       mount_name, path);
   return file_system_url->is_valid();
 }
