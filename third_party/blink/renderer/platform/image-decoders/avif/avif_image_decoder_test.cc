@@ -889,7 +889,8 @@ TEST(StaticAVIFTests, SizeAvailableBeforeAllDataReceived) {
   EXPECT_TRUE(decoder->IsSizeAvailable());
 }
 
-TEST(StaticAVIFTests, ProgressiveDecoding) {
+// TODO(crbug.com/1239472): Re-enable progressive support once fixed.
+TEST(StaticAVIFTests, DISABLED_ProgressiveDecoding) {
   scoped_refptr<SharedBuffer> stream_buffer = WTF::SharedBuffer::Create();
   scoped_refptr<SegmentReader> segment_reader =
       SegmentReader::CreateFromSharedBuffer(stream_buffer);
