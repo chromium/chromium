@@ -186,6 +186,18 @@ void ExtractDomainFromUsername(base::DictionaryValue* dict) {
     dict->SetString("domain", gaia::ExtractDomainName(username));
 }
 
+// MachineStatus box labels itself as `machine policies` on desktop. In the
+// domain of mobile devices such as iOS or Android we want to label this box as
+// `device policies`. This is a helper function that retrieves the expected
+// labelKey
+std::string GetMachineStatusLegendKey() {
+#if defined(OS_ANDROID)
+  return "statusDevice";
+#else
+  return "statusMachine";
+#endif  // defined(OS_ANDROID)
+}
+
 }  // namespace
 
 // Status provider implementation that pulls cloud policy status from a
@@ -709,7 +721,6 @@ void PolicyUIHandler::RegisterMessages() {
         user_cloud_policy_manager->core(), profile);
   }
 
-#if !defined(OS_ANDROID)
   policy::MachineLevelUserCloudPolicyManager* manager =
       g_browser_process->browser_policy_connector()
           ->machine_level_user_cloud_policy_manager();
@@ -734,7 +745,6 @@ void PolicyUIHandler::RegisterMessages() {
                 {dmTokenStorage->RetrieveEnrollmentToken(),
                  dmTokenStorage->RetrieveClientId(), lastCloudReportSent}));
   }
-#endif  // !defined(OS_ANDROID)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -974,7 +984,8 @@ base::DictionaryValue PolicyUIHandler::GetStatusValue(bool for_webui) const {
 
   if (!machine_status->DictEmpty()) {
     if (for_webui)
-      machine_status->SetString("boxLegendKey", "statusMachine");
+      machine_status->SetString("boxLegendKey", GetMachineStatusLegendKey());
+
     status.Set("machine", std::move(machine_status));
   }
 
