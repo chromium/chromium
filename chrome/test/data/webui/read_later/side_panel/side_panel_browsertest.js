@@ -62,3 +62,16 @@ var SidePanelBookmarkFolderTest = class extends SidePanelBrowserTest {
 TEST_F('SidePanelBookmarkFolderTest', 'All', function() {
   mocha.run();
 });
+
+
+// eslint-disable-next-line no-var
+var SidePanelBookmarksDragManagerTest = class extends SidePanelBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://read-later.top-chrome/test_loader.html?module=read_later/side_panel/bookmarks_drag_manager_test.js';
+  }
+};
+
+TEST_F('SidePanelBookmarksDragManagerTest', 'All', function() {
+  mocha.run();
+});

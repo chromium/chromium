@@ -70,6 +70,9 @@ ReadLaterUI::ReadLaterUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(features::kReadLaterAddFromDialog) ||
           show_side_panel);
   source->AddBoolean("useRipples", views::PlatformStyle::kUseRipples);
+  source->AddBoolean("bookmarksDragAndDropEnabled",
+                     show_side_panel && base::FeatureList::IsEnabled(
+                                            features::kSidePanelDragAndDrop));
 
   Profile* profile = Profile::FromWebUI(web_ui);
   content::URLDataSource::Add(

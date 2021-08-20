@@ -198,3 +198,19 @@ export class BookmarkFolderElement extends PolymerElement {
 }
 
 customElements.define(BookmarkFolderElement.is, BookmarkFolderElement);
+
+interface DraggableElement extends HTMLElement {
+  dataBookmark: chrome.bookmarks.BookmarkTreeNode;
+}
+
+export function getBookmarkFromDragEvent(e: DragEvent):
+    chrome.bookmarks.BookmarkTreeNode|null {
+  const dragElement =
+      e.composedPath().find(target => (target as HTMLElement).draggable) as
+      DraggableElement;
+  if (!dragElement) {
+    return null;
+  }
+
+  return dragElement.dataBookmark;
+}

@@ -7,6 +7,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {BookmarkFolderElement, FOLDER_OPEN_CHANGED_EVENT} from './bookmark_folder.js';
 import {BookmarksApiProxy} from './bookmarks_api_proxy.js';
+import {BookmarksDragManager} from './bookmarks_drag_manager.js';
 
 // Key for localStorage object that refers to all the open folders.
 export const LOCAL_STORAGE_OPEN_FOLDERS_KEY = 'openFolders';
@@ -39,6 +40,8 @@ export class BookmarksListElement extends BookmarksListElementBase {
   }
 
   private bookmarksApi_: BookmarksApiProxy = BookmarksApiProxy.getInstance();
+  private bookmarksDragManager_: BookmarksDragManager =
+      new BookmarksDragManager(this);
   private listeners_ = new Map<string, Function>();
   private folders_: chrome.bookmarks.BookmarkTreeNode[];
   private openFolders_: string[];
@@ -84,6 +87,8 @@ export class BookmarksListElement extends BookmarksListElementBase {
         window.localStorage[LOCAL_STORAGE_OPEN_FOLDERS_KEY] =
             JSON.stringify(this.openFolders_);
       }
+
+      this.bookmarksDragManager_.startObserving();
     });
   }
 
@@ -91,6 +96,7 @@ export class BookmarksListElement extends BookmarksListElementBase {
     for (const [eventName, callback] of this.listeners_.entries()) {
       this.bookmarksApi_.callbackRouter[eventName]!.removeListener(callback);
     }
+    this.bookmarksDragManager_.stopObserving();
   }
 
   private addListener_(eventName: string, callback: Function): void {

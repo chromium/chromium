@@ -93,6 +93,8 @@
 </style>
 <div id="container" role="treeitem" aria-expanded="[[getAriaExpanded_(open_)]]">
   <button id="folder" class="row"
+      draggable="true"
+      data-bookmark="[[folder]]"
       empty$="[[!folder.children.length]]"
       on-click="onFolderClick_" on-contextmenu="onFolderContextMenu_">
     <div id="arrow" hidden$="[[!folder.children.length]]">
@@ -119,6 +121,7 @@
 
       <template is="dom-if" if="[[item.url]]" restamp>
         <a role="treeitem" href="[[item.url]]" class="bookmark row"
+            draggable="true" data-bookmark="[[item]]"
             on-click="onBookmarkClick_"
             on-auxclick="onBookmarkClick_"
             on-contextmenu="onBookmarkContextMenu_">

@@ -142,9 +142,11 @@ ts_library("build_ts") {
     "side_panel/bookmark_folder.ts",
     "side_panel/bookmarks_list.ts",
     "side_panel/bookmarks_api_proxy.ts",
+    "side_panel/bookmarks_drag_manager.ts",
     "side_panel/bookmarks.mojom-webui.js",
   ]
   definitions = [
+    "//tools/typescript/definitions/bookmark_manager_private.d.ts",
     "//tools/typescript/definitions/bookmarks.d.ts",
     "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
