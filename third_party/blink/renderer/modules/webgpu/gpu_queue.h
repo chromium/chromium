@@ -83,14 +83,14 @@ class GPUQueue : public DawnObject<WGPUQueue> {
   bool CopyContentFromCPU(StaticBitmapImage* image,
                           const WGPUOrigin3D& origin,
                           const WGPUExtent3D& copy_size,
-                          const WGPUTextureCopyView& destination,
+                          const WGPUImageCopyTexture& destination,
                           const WGPUTextureFormat dest_texture_format,
                           bool premultiplied_alpha,
                           bool flipY = false);
   bool CopyContentFromGPU(StaticBitmapImage* image,
                           const WGPUOrigin3D& origin,
                           const WGPUExtent3D& copy_size,
-                          const WGPUTextureCopyView& destination,
+                          const WGPUImageCopyTexture& destination,
                           const WGPUTextureFormat dest_texture_format,
                           bool premultiplied_alpha,
                           bool flipY = false);

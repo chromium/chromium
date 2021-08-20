@@ -104,11 +104,10 @@ WGPUColorTargetState AsDawnType(const GPUColorTargetState* webgpu_desc) {
 
 namespace {
 
-WGPUStencilStateFaceDescriptor AsDawnType(
-    const GPUStencilFaceState* webgpu_desc) {
+WGPUStencilFaceState AsDawnType(const GPUStencilFaceState* webgpu_desc) {
   DCHECK(webgpu_desc);
 
-  WGPUStencilStateFaceDescriptor dawn_desc = {};
+  WGPUStencilFaceState dawn_desc = {};
   dawn_desc.compare = AsDawnEnum<WGPUCompareFunction>(webgpu_desc->compare());
   dawn_desc.depthFailOp =
       AsDawnEnum<WGPUStencilOperation>(webgpu_desc->depthFailOp());

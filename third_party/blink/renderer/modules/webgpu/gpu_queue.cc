@@ -403,7 +403,7 @@ void GPUQueue::WriteTextureImpl(GPUImageCopyTexture* destination,
                                 const V8GPUExtent3D* write_size,
                                 ExceptionState& exception_state) {
   WGPUExtent3D dawn_write_size = AsDawnType(write_size);
-  WGPUTextureCopyView dawn_destination = AsDawnType(destination, device_);
+  WGPUImageCopyTexture dawn_destination = AsDawnType(destination, device_);
 
   WGPUTextureDataLayout dawn_data_layout = {};
   {
@@ -481,7 +481,7 @@ void GPUQueue::copyExternalImageToTexture(
     return;
   }
 
-  WGPUTextureCopyView dawn_destination = AsDawnType(destination, device_);
+  WGPUImageCopyTexture dawn_destination = AsDawnType(destination, device_);
 
   if (!IsValidExternalImageDestinationFormat(
           destination->texture()->Format())) {
@@ -614,7 +614,7 @@ void GPUQueue::copyImageBitmapToTexture(GPUImageCopyImageBitmap* source,
     return;
   }
 
-  WGPUTextureCopyView dawn_destination = AsDawnType(destination, device_);
+  WGPUImageCopyTexture dawn_destination = AsDawnType(destination, device_);
 
   if (!IsValidCopyIB2TDestinationFormat(destination->texture()->Format())) {
     return exception_state.ThrowTypeError("Invalid gpu texture format.");
@@ -640,7 +640,7 @@ void GPUQueue::copyImageBitmapToTexture(GPUImageCopyImageBitmap* source,
 bool GPUQueue::CopyContentFromCPU(StaticBitmapImage* image,
                                   const WGPUOrigin3D& origin,
                                   const WGPUExtent3D& copy_size,
-                                  const WGPUTextureCopyView& destination,
+                                  const WGPUImageCopyTexture& destination,
                                   const WGPUTextureFormat dest_texture_format,
                                   bool premultiplied_alpha,
                                   bool flipY) {
@@ -685,7 +685,7 @@ bool GPUQueue::CopyContentFromCPU(StaticBitmapImage* image,
   }
 
   // Start a B2T copy to move contents from buffer to destination texture
-  WGPUBufferCopyView dawn_intermediate = {};
+  WGPUImageCopyBuffer dawn_intermediate = {};
   dawn_intermediate.nextInChain = nullptr;
   dawn_intermediate.buffer = buffer;
   dawn_intermediate.layout.offset = 0;
@@ -715,7 +715,7 @@ bool GPUQueue::CopyContentFromCPU(StaticBitmapImage* image,
 bool GPUQueue::CopyContentFromGPU(StaticBitmapImage* image,
                                   const WGPUOrigin3D& origin,
                                   const WGPUExtent3D& copy_size,
-                                  const WGPUTextureCopyView& destination,
+                                  const WGPUImageCopyTexture& destination,
                                   const WGPUTextureFormat dest_texture_format,
                                   bool premultiplied_alpha,
                                   bool flipY) {
@@ -743,7 +743,7 @@ bool GPUQueue::CopyContentFromGPU(StaticBitmapImage* image,
   WGPUTexture src_texture = mailbox_texture->GetTexture();
   DCHECK(src_texture != nullptr);
 
-  WGPUTextureCopyView src = {};
+  WGPUImageCopyTexture src = {};
   src.texture = src_texture;
   src.origin = origin;
 

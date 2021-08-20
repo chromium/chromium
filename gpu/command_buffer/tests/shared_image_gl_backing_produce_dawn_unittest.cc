@@ -154,12 +154,12 @@ TEST_F(SharedImageGLBackingProduceDawnTest, Basic) {
     buffer_desc.usage = wgpu::BufferUsage::MapRead | wgpu::BufferUsage::CopyDst;
     wgpu::Buffer readback_buffer = device.CreateBuffer(&buffer_desc);
 
-    wgpu::TextureCopyView copy_src = {};
+    wgpu::ImageCopyTexture copy_src = {};
     copy_src.texture = wgpu_texture;
     copy_src.mipLevel = 0;
     copy_src.origin = {0, 0, 0};
 
-    wgpu::BufferCopyView copy_dst = {};
+    wgpu::ImageCopyBuffer copy_dst = {};
     copy_dst.buffer = readback_buffer;
     copy_dst.layout.offset = 0;
     copy_dst.layout.bytesPerRow = 256;
