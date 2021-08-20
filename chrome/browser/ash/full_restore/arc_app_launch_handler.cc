@@ -35,7 +35,9 @@
 #include "chromeos/system/scheduler_configuration_manager_base.h"
 #include "components/arc/arc_util.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
+#include "components/exo/wm_helper.h"
 #include "components/full_restore/app_launch_info.h"
+#include "components/full_restore/features.h"
 #include "components/full_restore/full_restore_read_handler.h"
 #include "components/full_restore/full_restore_utils.h"
 #include "components/full_restore/restore_data.h"
@@ -79,6 +81,9 @@ constexpr char kArcGhostWindowLaunchHistogram[] = "Apps.ArcGhostWindowLaunch";
 constexpr char kRestoreArcAppStates[] = "Apps.RestoreArcAppStates";
 
 constexpr char kGhostWindowPopToArcHistogram[] = "Arc.LaunchedWithGhostWindow";
+
+constexpr char kNoGhostWindowReasonHistogram[] =
+    "Apps.RestoreNoGhostWindowReason";
 
 }  // namespace
 
@@ -428,6 +433,9 @@ void ArcAppLaunchHandler::PrepareAppLaunching(const std::string& app_id) {
       launch_ghost_window = true;
     } else {
       RecordArcGhostWindowLaunch(/*is_arc_ghost_window=*/false);
+      // Only record bounds state when no ghost window launch.
+      RecordLaunchBoundsState(data_it.second->bounds_in_root.has_value(),
+                              data_it.second->current_bounds.has_value());
     }
 #endif
 
@@ -796,6 +804,45 @@ void ArcAppLaunchHandler::OnProbeServiceDisconnect() {
 void ArcAppLaunchHandler::RecordArcGhostWindowLaunch(bool is_arc_ghost_window) {
   base::UmaHistogramBoolean(kArcGhostWindowLaunchHistogram,
                             is_arc_ghost_window);
+
+  if (!is_arc_ghost_window) {
+    if (!::full_restore::features::IsArcGhostWindowEnabled()) {
+      base::UmaHistogramEnumeration(kNoGhostWindowReasonHistogram,
+                                    NoGhostWindowReason::kFlagDisabled);
+    }
+    if (!arc::IsArcVmEnabled()) {
+      base::UmaHistogramEnumeration(kNoGhostWindowReasonHistogram,
+                                    NoGhostWindowReason::kNotARCVM);
+    }
+    if (!exo::WMHelper::HasInstance()) {
+      base::UmaHistogramEnumeration(kNoGhostWindowReasonHistogram,
+                                    NoGhostWindowReason::kNoExoHelper);
+    }
+  }
+}
+
+void ArcAppLaunchHandler::RecordLaunchBoundsState(bool has_root_bounds,
+                                                  bool has_screen_bounds) {
+  bool is_from_crash =
+      handler_->profile_->GetLastSessionExitType() == Profile::EXIT_CRASHED;
+  if (!has_root_bounds) {
+    base::UmaHistogramEnumeration(
+        kNoGhostWindowReasonHistogram,
+        is_from_crash ? NoGhostWindowReason::kNoRootBoundsFromCrash
+                      : NoGhostWindowReason::kNoRootBounds);
+  }
+  if (!has_screen_bounds) {
+    base::UmaHistogramEnumeration(
+        kNoGhostWindowReasonHistogram,
+        is_from_crash ? NoGhostWindowReason::kNoScreenBoundsFromCrash
+                      : NoGhostWindowReason::kNoScreenBounds);
+  }
+  if (!window_handler_) {
+    base::UmaHistogramEnumeration(kNoGhostWindowReasonHistogram,
+                                  is_from_crash
+                                      ? NoGhostWindowReason::kNoHandlerFromCrash
+                                      : NoGhostWindowReason::kNoHandler);
+  }
 }
 
 void ArcAppLaunchHandler::RecordRestoreResult() {

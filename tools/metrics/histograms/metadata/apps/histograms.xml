@@ -2456,6 +2456,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Apps.RestoreNoGhostWindowReason" enum="ArcNoWindowReason"
+    expires_after="2021-12-31">
+  <owner>nancylingwang@chromium.org</owner>
+  <owner>sstan@chromium.org</owner>
+  <summary>
+    Records the reason of ARC app launched without ghost window on ARC VM.
+  </summary>
+</histogram>
+
 <histogram name="Apps.RestoreNotification" enum="RestoreAction"
     expires_after="2021-11-01">
   <owner>nancylingwang@chromium.org</owner>
