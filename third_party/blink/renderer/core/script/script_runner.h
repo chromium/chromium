@@ -84,8 +84,6 @@ class CORE_EXPORT ScriptRunner final
   HeapHashSet<Member<PendingScript>> pending_async_scripts_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-  int number_of_in_order_scripts_with_pending_notification_ = 0;
 };
 
 }  // namespace blink

@@ -62,7 +62,6 @@ void ScriptRunner::QueueScriptForExecution(PendingScript* pending_script) {
 
     case ScriptSchedulingType::kInOrder:
       pending_in_order_scripts_.push_back(pending_script);
-      number_of_in_order_scripts_with_pending_notification_++;
       break;
 
     default:
@@ -84,15 +83,9 @@ void ScriptRunner::ScheduleReadyInOrderScripts() {
 }
 
 void ScriptRunner::NotifyScriptReady(PendingScript* pending_script) {
-  SECURITY_CHECK(pending_script);
-
   switch (pending_script->GetSchedulingType()) {
     case ScriptSchedulingType::kAsync:
-      // SECURITY_CHECK() makes us crash in a controlled way in error cases
-      // where the PendingScript is associated with the wrong ScriptRunner
-      // (otherwise we'd cause a use-after-free in ~ScriptRunner when it tries
-      // to detach).
-      SECURITY_CHECK(pending_async_scripts_.Contains(pending_script));
+      CHECK(pending_async_scripts_.Contains(pending_script));
       pending_async_scripts_.erase(pending_script);
 
       task_runner_->PostTask(
@@ -102,11 +95,7 @@ void ScriptRunner::NotifyScriptReady(PendingScript* pending_script) {
       break;
 
     case ScriptSchedulingType::kInOrder:
-      SECURITY_CHECK(number_of_in_order_scripts_with_pending_notification_ > 0);
-      number_of_in_order_scripts_with_pending_notification_--;
-
       ScheduleReadyInOrderScripts();
-
       break;
 
     default:
@@ -121,8 +110,6 @@ bool ScriptRunner::RemovePendingInOrderScript(PendingScript* pending_script) {
   if (it == pending_in_order_scripts_.end())
     return false;
   pending_in_order_scripts_.erase(it);
-  SECURITY_CHECK(number_of_in_order_scripts_with_pending_notification_ > 0);
-  number_of_in_order_scripts_with_pending_notification_--;
   return true;
 }
 
