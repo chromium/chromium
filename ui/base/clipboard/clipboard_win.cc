@@ -316,6 +316,9 @@ void ClipboardWin::ReadAvailableTypes(
           ClipboardFormatType::HtmlType().ToFormatEtc().cfFormat))
     types->push_back(base::UTF8ToUTF16(kMimeTypeHTML));
   if (::IsClipboardFormatAvailable(
+          ClipboardFormatType::SvgType().ToFormatEtc().cfFormat))
+    types->push_back(base::UTF8ToUTF16(kMimeTypeSvg));
+  if (::IsClipboardFormatAvailable(
           ClipboardFormatType::RtfType().ToFormatEtc().cfFormat))
     types->push_back(base::UTF8ToUTF16(kMimeTypeRTF));
   if (::IsClipboardFormatAvailable(CF_DIB))

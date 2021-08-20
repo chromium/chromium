@@ -216,6 +216,8 @@ std::vector<std::string> XClipboardHelper::GetAvailableTypes(
     available_types.push_back(kMimeTypeText);
   if (target_list.ContainsFormat(ClipboardFormatType::HtmlType()))
     available_types.push_back(kMimeTypeHTML);
+  if (target_list.ContainsFormat(ClipboardFormatType::SvgType()))
+    available_types.push_back(kMimeTypeSvg);
   if (target_list.ContainsFormat(ClipboardFormatType::RtfType()))
     available_types.push_back(kMimeTypeRTF);
   if (target_list.ContainsFormat(ClipboardFormatType::BitmapType()))

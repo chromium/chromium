@@ -60,7 +60,8 @@ void HeadlessClipboard::ReadAvailableTypes(
     types->push_back(base::UTF8ToUTF16(ui::kMimeTypeText));
   if (IsFormatAvailable(ui::ClipboardFormatType::HtmlType(), buffer, data_dst))
     types->push_back(base::UTF8ToUTF16(ui::kMimeTypeHTML));
-
+  if (IsFormatAvailable(ui::ClipboardFormatType::SvgType(), buffer, data_dst))
+    types->push_back(base::UTF8ToUTF16(ui::kMimeTypeSvg));
   if (IsFormatAvailable(ui::ClipboardFormatType::RtfType(), buffer, data_dst))
     types->push_back(base::UTF8ToUTF16(ui::kMimeTypeRTF));
   if (IsFormatAvailable(ui::ClipboardFormatType::PngType(), buffer, data_dst))

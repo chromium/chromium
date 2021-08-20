@@ -482,6 +482,9 @@ void ClipboardNonBacked::ReadAvailableTypes(
   if (IsFormatAvailable(ClipboardFormatType::HtmlType(), buffer, data_dst))
     types->push_back(
         base::UTF8ToUTF16(ClipboardFormatType::HtmlType().GetName()));
+  if (IsFormatAvailable(ClipboardFormatType::SvgType(), buffer, data_dst))
+    types->push_back(
+        base::UTF8ToUTF16(ClipboardFormatType::SvgType().GetName()));
   if (IsFormatAvailable(ClipboardFormatType::RtfType(), buffer, data_dst))
     types->push_back(
         base::UTF8ToUTF16(ClipboardFormatType::RtfType().GetName()));

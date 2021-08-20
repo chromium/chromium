@@ -244,6 +244,8 @@ TYPED_TEST(ClipboardTest, SvgTest) {
     clipboard_writer.WriteSvg(markup);
   }
 
+  EXPECT_THAT(this->GetAvailableTypes(ClipboardBuffer::kCopyPaste),
+              Contains(ASCIIToUTF16(kMimeTypeSvg)));
   EXPECT_TRUE(this->clipboard().IsFormatAvailable(
       ClipboardFormatType::SvgType(), ClipboardBuffer::kCopyPaste,
       /* data_dst = */ nullptr));

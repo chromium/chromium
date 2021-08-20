@@ -561,6 +561,8 @@ void ClipboardAndroid::ReadAvailableTypes(
     types->push_back(base::UTF8ToUTF16(kMimeTypeText));
   if (IsFormatAvailable(ClipboardFormatType::HtmlType(), buffer, data_dst))
     types->push_back(base::UTF8ToUTF16(kMimeTypeHTML));
+  if (IsFormatAvailable(ClipboardFormatType::SvgType(), buffer, data_dst))
+    types->push_back(base::UTF8ToUTF16(kMimeTypeSvg));
   // We can read images from either the Android clipboard or the local map.
   if (IsFormatAvailable(ClipboardFormatType::BitmapType(), buffer, data_dst) ||
       IsFormatAvailable(ClipboardFormatType::PngType(), buffer, data_dst)) {

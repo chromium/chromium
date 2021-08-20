@@ -121,7 +121,8 @@ void TestClipboard::ReadAvailableTypes(
   }
   if (IsFormatAvailable(ClipboardFormatType::HtmlType(), buffer, data_dst))
     types->push_back(base::UTF8ToUTF16(kMimeTypeHTML));
-
+  if (IsFormatAvailable(ClipboardFormatType::SvgType(), buffer, data_dst))
+    types->push_back(base::UTF8ToUTF16(kMimeTypeSvg));
   if (IsFormatAvailable(ClipboardFormatType::RtfType(), buffer, data_dst))
     types->push_back(base::UTF8ToUTF16(kMimeTypeRTF));
   if (IsFormatAvailable(ClipboardFormatType::PngType(), buffer, data_dst) ||
