@@ -1049,7 +1049,8 @@ void CompositorFrameReporter::ReportCompositorLatencyTraceEvents() const {
   const auto trace_track =
       perfetto::Track(base::trace_event::GetNextGlobalTraceId());
   TRACE_EVENT_BEGIN(
-      "cc,benchmark", "PipelineReporter", trace_track, args_.frame_time,
+      "cc,benchmark," TRACE_DISABLED_BY_DEFAULT("devtools.timeline.frame"),
+      "PipelineReporter", trace_track, args_.frame_time,
       [&](perfetto::EventContext context) {
         using perfetto::protos::pbzero::ChromeFrameReporter;
         bool frame_dropped = TestReportType(FrameReportType::kDroppedFrame);
@@ -1112,8 +1113,9 @@ void CompositorFrameReporter::ReportCompositorLatencyTraceEvents() const {
     if (stage.start_time == stage.end_time)
       continue;
     const char* stage_name = GetStageName(stage_type_index);
-    TRACE_EVENT_BEGIN("cc,benchmark", perfetto::StaticString{stage_name},
-                      trace_track, stage.start_time);
+    TRACE_EVENT_BEGIN(
+        "cc,benchmark," TRACE_DISABLED_BY_DEFAULT("devtools.timeline.frame"),
+        perfetto::StaticString{stage_name}, trace_track, stage.start_time);
     if (stage.stage_type ==
         StageType::kSubmitCompositorFrameToPresentationCompositorFrame) {
       DCHECK(processed_viz_breakdown_);
