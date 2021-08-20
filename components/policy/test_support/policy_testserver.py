@@ -765,7 +765,7 @@ class PolicyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     pir_response.queried_encrypted_id = encrypted_id
     pir_response.pir_response.plaintext_entry_size =\
         self.GetPsmMembershipResponse(encrypted_id)
-    query_response.pir_responses.append(pir_res)
+    query_response.pir_responses.append(pir_response)
     return query_response
 
   def ProcessPsmAutoEnrollment(self, msg):
