@@ -159,6 +159,9 @@ absl::Status ModelMetadataExtractor::InitFromModelBuffer(
   // Look for the "TFLITE_METADATA" field, if any.
   for (int i = 0; i < model_->metadata()->size(); ++i) {
     const auto metadata = model_->metadata()->Get(i);
+    if (!metadata->name()) {
+      continue;
+    }
     if (metadata->name()->str() != kMetadataBufferName) {
       continue;
     }
