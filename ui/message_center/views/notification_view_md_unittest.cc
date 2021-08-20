@@ -618,8 +618,8 @@ TEST_F(NotificationViewMDTest, TestActionButtonClick) {
   EXPECT_EQ(1, delegate_->clicked_button_index());
 }
 
-// TODO(crbug.com/1232197): Test failing on linux-lacros-tester-rel.
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug.com/1232197): Test failing on linux-lacros-tester-rel and ozone.
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || defined(USE_OZONE)
 #define MAYBE_TestInlineReply DISABLED_TestInlineReply
 #else
 #define MAYBE_TestInlineReply TestInlineReply
