@@ -543,6 +543,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "canvas-oop-rasterization",
+    "owners": [ "junov", "vasilyt" ],
+    "expiry_milestone": 105
+  },
+  {
     "name": "categorical-search",
     "owners": [ "tby", "thanhdng", "wrong" ],
     "expiry_milestone": 100

@@ -16,6 +16,12 @@ const char kAccelerated2dCanvasDescription[] =
     "Enables the use of the GPU to perform 2d canvas rendering instead of "
     "using software rendering.";
 
+const char kCanvasOopRasterizationName[] =
+    "Out-of-process 2D canvas rasterization.";
+const char kCanvasOopRasterizationDescription[] =
+    "The rasterization of 2d canvas contents is performed in the GPU process. "
+    "Requires that out-of-process rasterization be enabled.";
+
 const char kAcceleratedVideoDecodeName[] = "Hardware-accelerated video decode";
 const char kAcceleratedVideoDecodeDescription[] =
     "Hardware-accelerated video decode where available.";
@@ -1866,7 +1872,7 @@ const char kEnableSearchPrefetchDescription[] =
     "Allow the default search engine to specify prefetch behavior for "
     "suggestions to search results pages.";
 
-const char kOopRasterizationName[] = "Out of process rasterization";
+const char kOopRasterizationName[] = "Out-of-process rasterization";
 const char kOopRasterizationDescription[] =
     "Perform Ganesh raster in the GPU Process instead of the renderer.  "
     "Must also enable GPU rasterization";

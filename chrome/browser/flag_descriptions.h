@@ -238,6 +238,9 @@ extern const char kBorealisDiskManagementDescription[];
 extern const char kBypassAppBannerEngagementChecksName[];
 extern const char kBypassAppBannerEngagementChecksDescription[];
 
+extern const char kCanvasOopRasterizationName[];
+extern const char kCanvasOopRasterizationDescription[];
+
 extern const char kCheckOfflineCapabilityName[];
 extern const char kCheckOfflineCapabilityDescription[];
 
