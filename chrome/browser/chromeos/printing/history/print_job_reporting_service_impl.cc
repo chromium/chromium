@@ -134,6 +134,7 @@ class PrintJobReportingServiceImpl : public PrintJobReportingService {
     auto* printer = print_job_event.mutable_printer();
     printer->set_uri(print_job_info.printer().uri());
     printer->set_name(print_job_info.printer().name());
+    printer->set_id(print_job_info.printer().id());
     return print_job_event;
   }
 

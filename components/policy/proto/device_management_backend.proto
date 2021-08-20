@@ -3506,6 +3506,9 @@ message PrintJobEvent {
 
     // URI of the printer, which serves as a unique identifier.
     optional string uri = 2;
+
+    // Printer ID.
+    optional string id = 3;
   }
 
   // The finishing settings of the print job.

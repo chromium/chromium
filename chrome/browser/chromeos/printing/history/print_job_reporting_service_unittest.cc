@@ -65,6 +65,7 @@ em::PrintJobEvent CreateJobEvent(
   // Printer
   event.mutable_printer()->set_uri("ipp://192.168.1.5:631");
   event.mutable_printer()->set_name("name1");
+  event.mutable_printer()->set_id(id);
   // User
   event.set_user_type(em::PrintJobEvent_UserType_KIOSK);
   return event;
@@ -99,6 +100,7 @@ print::PrintJobInfo CreateJobInfo(const std::string id,
   info.mutable_printer()->set_name("name1");
   info.mutable_printer()->set_uri("ipp://192.168.1.5:631");
   info.mutable_printer()->set_source(print::Printer_PrinterSource_POLICY);
+  info.mutable_printer()->set_id(id);
   return info;
 }
 
@@ -227,6 +229,11 @@ class PrintJobEventMatcher : public MatcherInterface<const em::PrintJobEvent&> {
     if (!printer_name_equal) {
       *listener << " |printer name| is " << event.printer().name();
     }
+    bool printer_id_equal = event.printer().id() == id_;
+    if (!printer_id_equal) {
+      *listener << " |printer id| is " << event.printer().id();
+    }
+
     // User
     bool user_type_equal = event.user_type() == user_type_;
     if (!user_type_equal) {
@@ -237,7 +244,7 @@ class PrintJobEventMatcher : public MatcherInterface<const em::PrintJobEvent&> {
            creation_timestamp_ms_equal && completion_timestamp_ms_equal &&
            pages_equal && color_equal && duplex_equal && media_equal &&
            copies_equal && printer_uri_equal && printer_name_equal &&
-           user_type_equal;
+           printer_id_equal && user_type_equal;
   }
 
   void DescribeTo(::std::ostream* os) const {}
