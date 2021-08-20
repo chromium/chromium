@@ -1,0 +1,9 @@
+This test passes by not crashing.
+<canvas id='cid1'>
+<script>
+var cnv=document.getElementById('cid1');
+var ctx=cnv.getContext('2d');
+ctx.setTransform(1,0,0,0,1,1);
+// Reset the canvas while it has a non-invertible matrix on its state stack
+cnv.height = cnv.height;
+</script>

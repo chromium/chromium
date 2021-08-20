@@ -305,6 +305,7 @@ void BaseRenderingContext2D::reset() {
   UnwindStateStack();
   state_stack_.resize(1);
   state_stack_.front() = MakeGarbageCollected<CanvasRenderingContext2DState>();
+  SetIsTransformInvertible(true);
   path_.Clear();
   if (cc::PaintCanvas* c = GetPaintCanvas()) {
     // The canvas should always have an initial/unbalanced save frame, which
