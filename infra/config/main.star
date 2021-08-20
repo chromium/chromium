@@ -86,7 +86,7 @@ luci.project(
 
 luci.cq(
     submit_max_burst = 2,
-    submit_burst_delay = 5 * time.minute,
+    submit_burst_delay = time.minute,
     status_host = "chromium-cq-status.appspot.com",
 )
 
