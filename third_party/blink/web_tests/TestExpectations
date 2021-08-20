@@ -1963,10 +1963,6 @@ crbug.com/1218729 virtual/stable/webexposed/feature-policy-features.html [ Failu
 # This test relies on racy should_send_resource_timing_info_to_parent() flag being sent between processes.
 crbug.com/957181 external/wpt/resource-timing/nested-context-navigations-iframe.html [ Failure Pass ]
 
-# Landing a failing test temporarily to observe results on other browsers
-# through wpt.fyi
-crbug.com/1218565 external/wpt/resource-timing/TAO-match.html [ Failure Timeout ]
-
 # During work on crbug.com/1171767, we discovered a bug demonstrable through
 # WPT. Marking as a failing test until we update our implementation.
 crbug.com/1223118 external/wpt/resource-timing/initiator-type/link.html [ Failure ]
