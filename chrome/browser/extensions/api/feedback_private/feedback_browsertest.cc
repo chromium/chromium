@@ -110,7 +110,8 @@ class TestFeedbackUploaderDelegate
   base::RunLoop* quit_on_dispatch_;
 };
 
-IN_PROC_BROWSER_TEST_F(FeedbackTest, ShowFeedback) {
+// TODO(crbug.com/1241504): disable tests.
+IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_ShowFeedback) {
   WaitForExtensionViewsToLoad();
 
   ASSERT_TRUE(IsFeedbackAppAvailable());
@@ -118,7 +119,8 @@ IN_PROC_BROWSER_TEST_F(FeedbackTest, ShowFeedback) {
   VerifyFeedbackAppLaunch();
 }
 
-IN_PROC_BROWSER_TEST_F(FeedbackTest, ShowLoginFeedback) {
+// TODO(crbug.com/1241504): disable tests.
+IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_ShowLoginFeedback) {
   WaitForExtensionViewsToLoad();
 
   ASSERT_TRUE(IsFeedbackAppAvailable());
@@ -141,7 +143,8 @@ IN_PROC_BROWSER_TEST_F(FeedbackTest, ShowLoginFeedback) {
 }
 
 // Tests that there's an option in the email drop down box with a value ''.
-IN_PROC_BROWSER_TEST_F(FeedbackTest, AnonymousUser) {
+// TODO(crbug.com/1241504): disable tests.
+IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_AnonymousUser) {
   WaitForExtensionViewsToLoad();
 
   ASSERT_TRUE(IsFeedbackAppAvailable());
