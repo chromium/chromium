@@ -244,9 +244,7 @@ void RenderViewHostTestHarness::SetUp() {
 
   consistency_checker_ = std::make_unique<ContentBrowserConsistencyChecker>();
 
-#if !defined(OS_ANDROID)
   network_change_notifier_ = net::test::MockNetworkChangeNotifier::Create();
-#endif
 
   DCHECK(!browser_context_);
   browser_context_ = CreateBrowserContext();
