@@ -231,8 +231,6 @@ bool CreateShortcutsInPaths(const base::FilePath& web_app_path,
 // Gets the directories with shortcuts for an app, and deletes the shortcuts.
 // This will search the standard locations for shortcuts named |title| that open
 // in the profile with |profile_path|.
-// |was_pinned_to_taskbar| will be set to true if there was previously a
-// shortcut pinned to the taskbar for this app; false otherwise.
 // If |web_app_path| is empty, this will not delete shortcuts from the web app
 // directory. If |title| is empty, all shortcuts for this profile will be
 // deleted.
@@ -244,7 +242,6 @@ bool GetShortcutLocationsAndDeleteShortcuts(
     const base::FilePath& web_app_path,
     const base::FilePath& profile_path,
     const std::u16string& title,
-    bool* was_pinned_to_taskbar,
     std::vector<base::FilePath>* shortcut_paths) {
   bool result = true;
 
@@ -262,34 +259,20 @@ bool GetShortcutLocationsAndDeleteShortcuts(
   if (!web_app_path.empty())
     all_paths.push_back(web_app_path);
 
-  if (was_pinned_to_taskbar) {
-    // Determine if there is a link to this app in the TaskBar pin directory.
-    base::FilePath taskbar_pin_path;
-    if (base::PathService::Get(base::DIR_TASKBAR_PINS, &taskbar_pin_path)) {
-      std::vector<base::FilePath> taskbar_pin_files =
-          FindAppShortcutsByProfileAndTitle(taskbar_pin_path, profile_path,
-                                            title);
-      *was_pinned_to_taskbar = !taskbar_pin_files.empty();
-    } else {
-      *was_pinned_to_taskbar = false;
-    }
-  }
-
-  for (std::vector<base::FilePath>::const_iterator i = all_paths.begin();
-       i != all_paths.end(); ++i) {
+  std::vector<base::FilePath> all_shortcuts;
+  for (const auto& path : all_paths) {
     std::vector<base::FilePath> shortcut_files =
-        FindAppShortcutsByProfileAndTitle(*i, profile_path, title);
-    if (shortcut_paths && !shortcut_files.empty()) {
-      shortcut_paths->push_back(*i);
-    }
-    for (std::vector<base::FilePath>::const_iterator j = shortcut_files.begin();
-         j != shortcut_files.end(); ++j) {
-      // Any shortcut could have been pinned, either by chrome or the user, so
-      // they are all unpinned.
-      base::win::UnpinShortcutFromTaskbar(*j);
-      if (!base::DeleteFile(*j))
-        result = false;
-    }
+        FindAppShortcutsByProfileAndTitle(path, profile_path, title);
+    if (shortcut_paths && !shortcut_files.empty())
+      shortcut_paths->push_back(path);
+
+    all_shortcuts.insert(all_shortcuts.end(), shortcut_files.begin(),
+                         shortcut_files.end());
+  }
+  for (const auto& shortcut : all_shortcuts) {
+    base::win::UnpinShortcutFromTaskbar(shortcut);
+    if (!base::DeleteFile(shortcut))
+      result = false;
   }
   return result;
 }
@@ -482,10 +465,21 @@ void UpdatePlatformShortcuts(const base::FilePath& web_app_path,
     // recreate them in any locations they already existed (but do not add them
     // to locations where they do not currently exist).
     bool was_pinned_to_taskbar;
+    // Determine if there is a link to this app in the taskbar pin directory.
+    base::FilePath taskbar_pin_path;
+    if (base::PathService::Get(base::DIR_TASKBAR_PINS, &taskbar_pin_path)) {
+      const std::vector<base::FilePath> taskbar_pin_files =
+          FindAppShortcutsByProfileAndTitle(
+              taskbar_pin_path, shortcut_info.profile_path, old_app_title);
+      was_pinned_to_taskbar = !taskbar_pin_files.empty();
+    } else {
+      was_pinned_to_taskbar = false;
+    }
+
     std::vector<base::FilePath> shortcut_paths;
-    GetShortcutLocationsAndDeleteShortcuts(
-        web_app_path, shortcut_info.profile_path, old_app_title,
-        &was_pinned_to_taskbar, &shortcut_paths);
+    GetShortcutLocationsAndDeleteShortcuts(web_app_path,
+                                           shortcut_info.profile_path,
+                                           old_app_title, &shortcut_paths);
     CreateShortcutsInPaths(web_app_path, shortcut_info, shortcut_paths,
                            SHORTCUT_CREATION_BY_USER, "", nullptr);
     // If the shortcut was pinned to the taskbar,
@@ -560,8 +554,7 @@ ShortcutLocations GetAppExistingShortCutLocationImpl(
 bool DeletePlatformShortcuts(const base::FilePath& web_app_path,
                              const ShortcutInfo& shortcut_info) {
   bool result = GetShortcutLocationsAndDeleteShortcuts(
-      web_app_path, shortcut_info.profile_path, shortcut_info.title, nullptr,
-      nullptr);
+      web_app_path, shortcut_info.profile_path, shortcut_info.title, nullptr);
 
   // If there are no more shortcuts in the Chrome Apps subdirectory, remove it.
   base::FilePath chrome_apps_dir;
@@ -582,7 +575,7 @@ void DeleteAllShortcutsForProfile(const base::FilePath& profile_path) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   GetShortcutLocationsAndDeleteShortcuts(base::FilePath(), profile_path,
-                                         std::u16string(), nullptr, nullptr);
+                                         std::u16string(), nullptr);
 
   // If there are no more shortcuts in the Chrome Apps subdirectory, remove it.
   base::FilePath chrome_apps_dir;
