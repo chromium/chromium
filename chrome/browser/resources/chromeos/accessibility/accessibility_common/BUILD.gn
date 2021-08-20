@@ -28,6 +28,9 @@ run_jsbundler("accessibility_common_copied_files") {
     "autoclick/autoclick.js",
     "background.html",
     "dictation/dictation.js",
+    "dictation/earcons/audio_end.wav",
+    "dictation/earcons/audio_initiate.wav",
+    "dictation/earcons/null_selection.wav",
     "magnifier/magnifier.js",
   ]
   rewrite_rules = [
@@ -74,6 +77,7 @@ js2gtest("accessibility_common_extjs_tests") {
     "../common/testing/mock_input_ime.js",
     "../common/testing/mock_input_method_private.js",
     "../common/testing/mock_language_settings_private.js",
+    "../common/testing/mock_speech_recognition.js",
   ]
 
   # The test base classes generate C++ code with these deps.

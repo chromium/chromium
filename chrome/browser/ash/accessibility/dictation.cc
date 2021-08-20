@@ -18,6 +18,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/speech/network_speech_recognizer.h"
 #include "chrome/browser/speech/on_device_speech_recognizer.h"
+#include "chrome/common/extensions/api/accessibility_private.h"
+#include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/language/core/common/locale_util.h"
@@ -29,6 +31,7 @@
 #include "services/audio/public/cpp/sounds/sounds_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/accessibility/accessibility_switches.h"
 #include "ui/base/ime/chromeos/extension_ime_util.h"
 #include "ui/base/ime/chromeos/ime_bridge.h"
 #include "ui/base/ime/chromeos/ime_input_context_handler_interface.h"
@@ -247,9 +250,14 @@ Dictation::~Dictation() {
 }
 
 bool Dictation::OnToggleDictation() {
-  if (speech_recognizer_) {
+  if (is_started_) {
     DictationOff();
     return false;
+  }
+  is_started_ = true;
+  if (switches::IsExperimentalAccessibilityDictationExtensionEnabled()) {
+    NotifyDictationToggled(true);
+    return true;
   }
   has_committed_text_ = false;
   const std::string locale = GetUserLocale(profile_);
@@ -366,6 +374,12 @@ void Dictation::OnTextInputStateChanged(const ui::TextInputClient* client) {
 }
 
 void Dictation::DictationOff() {
+  is_started_ = false;
+  NotifyDictationToggled(false);
+  AccessibilityStatusEventDetails details(
+      AccessibilityNotificationType::kToggleDictation, false /* enabled */);
+  AccessibilityManager::Get()->NotifyAccessibilityStatusChanged(details);
+
   current_state_ = SPEECH_RECOGNIZER_OFF;
   StopSpeechTimeout();
   if (!speech_recognizer_)
@@ -381,10 +395,6 @@ void Dictation::DictationOff() {
     audio::SoundsManager::Get()->Play(
         static_cast<int>(Sound::kDictationCancel));
   }
-
-  AccessibilityStatusEventDetails details(
-      AccessibilityNotificationType::kToggleDictation, false /* enabled */);
-  AccessibilityManager::Get()->NotifyAccessibilityStatusChanged(details);
   speech_recognizer_.reset();
 
   // Duration matches the lifetime of the speech recognizer.
@@ -426,6 +436,20 @@ void Dictation::StopSpeechTimeout() {
 
 void Dictation::OnSpeechTimeout() {
   DictationOff();
+}
+
+void Dictation::NotifyDictationToggled(bool toggled_on) {
+  // Send a message to the Dictation extension.
+  extensions::EventRouter* event_router =
+      extensions::EventRouter::Get(profile_);
+  auto event_args = std::vector<base::Value>();
+  event_args.emplace_back(toggled_on);
+  auto event = std::make_unique<extensions::Event>(
+      extensions::events::ACCESSIBILITY_PRIVATE_ON_TOGGLE_DICTATION,
+      extensions::api::accessibility_private::OnToggleDictation::kEventName,
+      std::move(event_args));
+  event_router->DispatchEventWithLazyListener(
+      extension_misc::kAccessibilityCommonExtensionId, std::move(event));
 }
 
 }  // namespace ash
