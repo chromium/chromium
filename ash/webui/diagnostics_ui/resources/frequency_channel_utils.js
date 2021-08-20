@@ -66,6 +66,7 @@ export function convertFrequencyToChannel(frequency) {
   if (frequency >= 2484 && frequency <= 2495) {
     return 14;
   }
-  // TODO(ashleydp): Add algorithm for 5GHz.
-  return null;
+
+  // Return matching 5GHz channel or null.
+  return convertFrequencyToFiveGhzChannel(frequency);
 }

@@ -77,12 +77,10 @@ export function wifiInfoTestSuite() {
           wifiInfoElement, '#signalStrength',
           wifiInfoElement.i18n('networkSignalStrengthLabel'),
           `${fakeWifiNetwork.typeProperties.wifi.signalStrength}`);
-      // TODO(ashleydp): Update test expectation when 5 GHz channel conversion
-      // algorithm provided.
       assertDataPointHasExpectedHeaderAndValue(
           wifiInfoElement, '#channel',
           wifiInfoElement.i18n('networkChannelLabel'),
-          `? (${expectedGhz} GHz)`);
+          `149 (${expectedGhz} GHz)`);
     });
   });
 

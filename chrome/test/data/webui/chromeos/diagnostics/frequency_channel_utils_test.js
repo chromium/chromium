@@ -20,8 +20,12 @@ export function frequencyChannelUtilsTestSuite() {
   });
 
   test('ConvertFrequencyToChannel', () => {
+    // Frequencies outside of handled ranges.
     assertEquals(convertFrequencyToChannel(0), null);
     assertEquals(convertFrequencyToChannel(2411), null);
+    assertEquals(convertFrequencyToChannel(2496), null);
+    assertEquals(convertFrequencyToChannel(5149), null);
+    assertEquals(convertFrequencyToChannel(5991), null);
     // Calculates 2.4GHz channels.
     assertEquals(convertFrequencyToChannel(2412), 1);
     assertEquals(convertFrequencyToChannel(2417), 2);
@@ -39,7 +43,8 @@ export function frequencyChannelUtilsTestSuite() {
     // Special 2.4GHz channel range for Japan
     assertEquals(convertFrequencyToChannel(2484), 14);
     assertEquals(convertFrequencyToChannel(2495), 14);
-    // TODO(ashleydp): Fix expectation when 5GHz algorithm is ready.
-    assertEquals(convertFrequencyToChannel(2496), null);
+    // 5GHz channels.
+    assertEquals(convertFrequencyToChannel(5160), 32);
+    assertEquals(convertFrequencyToChannel(5980), 196);
   });
 }
