@@ -15,6 +15,7 @@
 #include "chromeos/printing/cups_printer_status.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "chromeos/printing/uri.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/url_constants.h"
 
 using base::DictionaryValue;
@@ -40,20 +41,20 @@ const char kGuid[] = "guid";
 
 // Populates the |printer| object with corresponding fields from |value|.
 // Returns false if |value| is missing a required field.
-bool DictionaryToPrinter(const DictionaryValue& value, Printer* printer) {
+bool DictionaryToPrinter(const base::Value& value, Printer* printer) {
   // Mandatory fields
-  std::string display_name;
-  if (value.GetString(kDisplayName, &display_name)) {
-    printer->set_display_name(display_name);
+  const std::string* display_name = value.FindStringKey(kDisplayName);
+  if (display_name) {
+    printer->set_display_name(*display_name);
   } else {
     LOG(WARNING) << "Display name required";
     return false;
   }
 
-  std::string uri;
-  if (value.GetString(kUri, &uri)) {
+  const std::string* uri = value.FindStringKey(kUri);
+  if (uri) {
     std::string message;
-    if (!printer->SetUri(uri, &message)) {
+    if (!printer->SetUri(*uri, &message)) {
       LOG(WARNING) << message;
       return false;
     }
@@ -63,25 +64,23 @@ bool DictionaryToPrinter(const DictionaryValue& value, Printer* printer) {
   }
 
   // Optional fields
-  std::string description;
-  if (value.GetString(kDescription, &description))
-    printer->set_description(description);
+  const std::string* description = value.FindStringKey(kDescription);
+  if (description)
+    printer->set_description(*description);
 
-  std::string manufacturer;
-  value.GetString(kManufacturer, &manufacturer);
+  const std::string* manufacturer = value.FindStringKey(kManufacturer);
+  const std::string* model = value.FindStringKey(kModel);
 
-  std::string model;
-  value.GetString(kModel, &model);
-
-  std::string make_and_model = manufacturer;
-  if (!manufacturer.empty() && !model.empty())
+  std::string make_and_model = manufacturer ? *manufacturer : std::string();
+  if (!make_and_model.empty() && model && !model->empty())
     make_and_model.append(" ");
-  make_and_model.append(model);
+  if (model)
+    make_and_model.append(*model);
   printer->set_make_and_model(make_and_model);
 
-  std::string uuid;
-  if (value.GetString(kUUID, &uuid))
-    printer->set_uuid(uuid);
+  const std::string* uuid = value.FindStringKey(kUUID);
+  if (uuid)
+    printer->set_uuid(*uuid);
 
   return true;
 }
@@ -122,11 +121,16 @@ std::string PrinterAddress(const Uri& uri) {
 
 const char kPrinterId[] = "id";
 
-std::unique_ptr<Printer> RecommendedPrinterToPrinter(
-    const base::DictionaryValue& pref) {
+std::unique_ptr<Printer> RecommendedPrinterToPrinter(const base::Value& pref) {
   std::string id;
   // Printer id comes from the id or guid field depending on the source.
-  if (!pref.GetString(kPrinterId, &id) && !pref.GetString(kGuid, &id)) {
+  const std::string* printer_id = pref.FindStringKey(kPrinterId);
+  const std::string* printer_guid = pref.FindStringKey(kGuid);
+  if (printer_id) {
+    id = *printer_id;
+  } else if (printer_guid) {
+    id = *printer_guid;
+  } else {
     LOG(WARNING) << "Record id required";
     return nullptr;
   }
@@ -139,15 +143,15 @@ std::unique_ptr<Printer> RecommendedPrinterToPrinter(
 
   printer->set_source(Printer::SRC_POLICY);
 
-  const DictionaryValue* ppd;
-  if (pref.GetDictionary(kPpdResource, &ppd)) {
+  const base::Value* ppd = pref.FindDictKey(kPpdResource);
+  if (ppd) {
     Printer::PpdReference* ppd_reference = printer->mutable_ppd_reference();
-    std::string make_and_model;
-    if (ppd->GetString(kEffectiveModel, &make_and_model))
-      ppd_reference->effective_make_and_model = make_and_model;
-    bool autoconf;
-    if (ppd->GetBoolean(kAutoconf, &autoconf))
-      ppd_reference->autoconf = autoconf;
+    const std::string* make_and_model = ppd->FindStringKey(kEffectiveModel);
+    if (make_and_model)
+      ppd_reference->effective_make_and_model = *make_and_model;
+    absl::optional<bool> autoconf = ppd->FindBoolKey(kAutoconf);
+    if (autoconf.has_value())
+      ppd_reference->autoconf = *autoconf;
   }
   if (!printer->ppd_reference().autoconf &&
       printer->ppd_reference().effective_make_and_model.empty()) {
