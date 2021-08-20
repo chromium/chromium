@@ -157,7 +157,9 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     await windowPopstatePromise;
   });
 
-  test('Device UI states test', async function() {
+  // TODO(crbug.com/1010321): Fix flakiness of this test caused by bluetooth
+  // revamp; details in comment #90.
+  test.skip('Device UI states test', async function() {
     init();
     const getBluetoothStatusIcon = () =>
         bluetoothDeviceDetailPage.$$('#statusIcon');
