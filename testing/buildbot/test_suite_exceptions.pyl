@@ -214,11 +214,6 @@
           'shards': 30,
         },
       },
-      'fuchsia-fyi-arm64-dbg': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.debug.blink_unittests.filter',
-        ],
-      },
     },
   },
   'blink_web_tests': {

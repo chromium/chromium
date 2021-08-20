@@ -4,7 +4,6 @@
 -WidgetScrollViewTest.CompositedScrollEvents
 -WidgetScrollViewTest.EventLocation
 -WidgetScrollViewTest.ScrollTrackScrolling
-# Being ported, https://crbug.com/1206224.
 
 # TODO(crbug.com/1231509): These tests require
 # OSExchangeDataProviderFactory::CreateProvider to be implemented.

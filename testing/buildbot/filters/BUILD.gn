@@ -22,6 +22,7 @@ source_set("cc_unittests_filters") {
   data = [
     "//testing/buildbot/filters/android.emulator.cc_unittests.filter",
     "//testing/buildbot/filters/android.emulator_11.cc_unittests.filter",
+    "//testing/buildbot/filters/fuchsia.debug.cc_unittests.filter",
     "//testing/buildbot/filters/gpu.linux.skiarenderer_dawn_cc_unittests.filter",
     "//testing/buildbot/filters/gpu.skiarenderer_dawn_cc_unittests.filter",
   ]
@@ -39,6 +40,7 @@ source_set("blink_unittests_filters") {
 
   data = [
     "//testing/buildbot/filters/android.emulator_11.blink_unittests.filter",
+    "//testing/buildbot/filters/fuchsia.blink_unittests.filter",
   ]
 }
 
@@ -103,6 +105,7 @@ source_set("components_unittests_filters") {
 
   data = [
     "//testing/buildbot/filters/android.emulator_11.components_unittests.filter",
+    "//testing/buildbot/filters/fuchsia.components_unittests.filter",
     "//testing/buildbot/filters/linux-lacros.components_unittests.filter",
   ]
 }
@@ -144,7 +147,10 @@ source_set("content_shell_test_apk_filters") {
 source_set("content_unittests_filters") {
   testonly = true
 
-  data = [ "//testing/buildbot/filters/webrtc.content_unittests.filter" ]
+  data = [
+    "//testing/buildbot/filters/fuchsia.content_unittests.filter",
+    "//testing/buildbot/filters/webrtc.content_unittests.filter",
+  ]
 }
 
 source_set("crashpad_tests_filters") {
@@ -163,20 +169,20 @@ source_set("sync_integration_tests_filters") {
   ]
 }
 
+# This target groups together Fuchsia specific filter files not included
+# in filter files for particular test suites and is meant to be temporary.
 source_set("fuchsia_filters") {
   data = [
     "//testing/buildbot/filters/fuchsia.base_perftests.filter",
-    "//testing/buildbot/filters/fuchsia.blink_unittests.filter",
-    "//testing/buildbot/filters/fuchsia.components_unittests.filter",
-    "//testing/buildbot/filters/fuchsia.content_unittests.filter",
+    "//testing/buildbot/filters/fuchsia.debug.compositor_unittests.filter",
+    "//testing/buildbot/filters/fuchsia.debug.snapshot_unittests.filter",
+    "//testing/buildbot/filters/fuchsia.debug.views_unittests.filter",
     "//testing/buildbot/filters/fuchsia.headless_browsertests.filter",
     "//testing/buildbot/filters/fuchsia.net_perftests.filter",
-    "//testing/buildbot/filters/fuchsia.net_unittests.filter",
     "//testing/buildbot/filters/fuchsia.services_unittests.filter",
     "//testing/buildbot/filters/fuchsia.storage_unittests.filter",
     "//testing/buildbot/filters/fuchsia.ui_base_unittests.filter",
     "//testing/buildbot/filters/fuchsia.views_unittests.filter",
-    "//testing/buildbot/filters/fuchsia.viz_unittests.filter",
   ]
 }
 
@@ -218,6 +224,7 @@ source_set("media_unittests_filters") {
     "//testing/buildbot/filters/android.emulator_11.media_unittests.filter",
     "//testing/buildbot/filters/android.emulator_m.media_unittests.filter",
     "//testing/buildbot/filters/android.emulator_p.media_unittests.filter",
+    "//testing/buildbot/filters/fuchsia.debug.media_unittests.filter",
   ]
 }
 
@@ -226,6 +233,7 @@ source_set("net_unittests_filters") {
     "//testing/buildbot/filters/android.emulator.net_unittests.filter",
     "//testing/buildbot/filters/android.emulator_10.net_unittests.filter",
     "//testing/buildbot/filters/android.emulator_11.net_unittests.filter",
+    "//testing/buildbot/filters/fuchsia.net_unittests.filter",
   ]
 }
 
@@ -254,6 +262,8 @@ source_set("viz_unittests_filters") {
   data = [
     "//testing/buildbot/filters/android.emulator.viz_unittests.filter",
     "//testing/buildbot/filters/android.emulator_11.viz_unittests.filter",
+    "//testing/buildbot/filters/fuchsia.debug.viz_unittests.filter",
+    "//testing/buildbot/filters/fuchsia.viz_unittests.filter",
     "//testing/buildbot/filters/gpu.linux.skiarenderer_dawn_viz_unittests.filter",
   ]
 }
