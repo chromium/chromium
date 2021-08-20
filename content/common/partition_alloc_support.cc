@@ -8,7 +8,6 @@
 
 #include "base/allocator/allocator_shim.h"
 #include "base/allocator/buildflags.h"
-#include "base/allocator/partition_allocator/extended_api.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
@@ -203,17 +202,6 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   base::allocator::ReconfigurePartitionAllocLazyCommit();
-
-#if defined(OS_ANDROID)
-  // The thread cache consumes more memory. Don't use one on low-memory devices
-  // if thread cache purging is not enabled.
-  if (base::SysInfo::IsLowEndDevice() &&
-      !base::FeatureList::IsEnabled(
-          base::features::kPartitionAllocThreadCachePeriodicPurge)) {
-    base::DisablePartitionAllocThreadCacheForProcess();
-  }
-#endif  // defined(OS_ANDROID)
-
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
   bool scan_enabled = EnablePCScanForMallocPartitionsIfNeeded();
@@ -263,20 +251,16 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
   // initialized later.
   DCHECK(process_type != switches::kZygoteProcess);
 
-  if (base::FeatureList::IsEnabled(
-          base::features::kPartitionAllocThreadCachePeriodicPurge)) {
-    auto& registry = base::internal::ThreadCacheRegistry::Instance();
-    registry.StartPeriodicPurge();
+  auto& registry = base::internal::ThreadCacheRegistry::Instance();
+  registry.StartPeriodicPurge();
 
 #if defined(OS_ANDROID)
-    // Lower thread cache limits to avoid stranding too much memory in the
-    // caches.
-    if (base::SysInfo::IsLowEndDevice()) {
-      registry.SetThreadCacheMultiplier(
-          base::internal::ThreadCache::kDefaultMultiplier / 2.);
-    }
-#endif  // defined(OS_ANDROID)
+  // Lower thread cache limits to avoid stranding too much memory in the caches.
+  if (base::SysInfo::IsLowEndDevice()) {
+    registry.SetThreadCacheMultiplier(
+        base::internal::ThreadCache::kDefaultMultiplier / 2.);
   }
+#endif  // defined(OS_ANDROID)
 
   // Renderer processes are more performance-sensitive, increase thread cache
   // limits.

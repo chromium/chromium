@@ -26,10 +26,6 @@ const Feature kPartitionAllocPCScanBrowserOnly{
 const Feature kPartitionAllocBackupRefPtrControl{
     "PartitionAllocBackupRefPtrControl", FEATURE_DISABLED_BY_DEFAULT};
 
-// If enabled, the thread cache will be periodically purged.
-const Feature kPartitionAllocThreadCachePeriodicPurge{
-    "PartitionAllocThreadCachePeriodicPurge", FEATURE_ENABLED_BY_DEFAULT};
-
 // Use a larger maximum thread cache cacheable bucket size.
 const Feature kPartitionAllocLargeThreadCacheSize{
     "PartitionAllocLargeThreadCacheSize", FEATURE_DISABLED_BY_DEFAULT};

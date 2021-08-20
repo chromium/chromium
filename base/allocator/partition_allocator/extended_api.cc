@@ -10,7 +10,11 @@
 
 namespace base {
 
-namespace internal {
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+    defined(PA_THREAD_CACHE_SUPPORTED)
+
+namespace {
+
 void DisableThreadCacheForRootIfEnabled(ThreadSafePartitionRoot* root) {
   // Some platforms don't have a thread cache, or it could already have been
   // disabled.
@@ -31,14 +35,27 @@ void EnablePartitionAllocThreadCacheForRootIfDisabled(
   root->with_thread_cache = true;
 }
 
-}  // namespace internal
+void DisablePartitionAllocThreadCacheForProcess() {
+  auto* regular_allocator = internal::PartitionAllocMalloc::Allocator();
+  auto* aligned_allocator = internal::PartitionAllocMalloc::AlignedAllocator();
+  DisableThreadCacheForRootIfEnabled(regular_allocator);
+  if (aligned_allocator != regular_allocator)
+    DisableThreadCacheForRootIfEnabled(aligned_allocator);
+  DisableThreadCacheForRootIfEnabled(
+      internal::PartitionAllocMalloc::OriginalAllocator());
+}
+
+}  // namespace
+
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
+        // defined(PA_THREAD_CACHE_SUPPORTED)
 
 void SwapOutProcessThreadCacheForTesting(ThreadSafePartitionRoot* root) {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
     defined(PA_THREAD_CACHE_SUPPORTED)
   DisablePartitionAllocThreadCacheForProcess();
   internal::ThreadCache::SwapForTesting(root);
-  internal::EnablePartitionAllocThreadCacheForRootIfDisabled(root);
+  EnablePartitionAllocThreadCacheForRootIfDisabled(root);
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
         // defined(PA_THREAD_CACHE_SUPPORTED)
 }
@@ -47,27 +64,14 @@ void SwapInProcessThreadCacheForTesting(ThreadSafePartitionRoot* root) {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
     defined(PA_THREAD_CACHE_SUPPORTED)
   // First, disable the test thread cache we have.
-  internal::DisableThreadCacheForRootIfEnabled(root);
+  DisableThreadCacheForRootIfEnabled(root);
 
-  auto* regular_allocator = base::internal::PartitionAllocMalloc::Allocator();
-  internal::EnablePartitionAllocThreadCacheForRootIfDisabled(regular_allocator);
+  auto* regular_allocator = internal::PartitionAllocMalloc::Allocator();
+  EnablePartitionAllocThreadCacheForRootIfDisabled(regular_allocator);
 
   internal::ThreadCache::SwapForTesting(regular_allocator);
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
         // defined(PA_THREAD_CACHE_SUPPORTED)
-}
-
-void DisablePartitionAllocThreadCacheForProcess() {
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  auto* regular_allocator = base::internal::PartitionAllocMalloc::Allocator();
-  auto* aligned_allocator =
-      base::internal::PartitionAllocMalloc::AlignedAllocator();
-  internal::DisableThreadCacheForRootIfEnabled(regular_allocator);
-  if (aligned_allocator != regular_allocator)
-    internal::DisableThreadCacheForRootIfEnabled(aligned_allocator);
-  internal::DisableThreadCacheForRootIfEnabled(
-      base::internal::PartitionAllocMalloc::OriginalAllocator());
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
 
 }  // namespace base

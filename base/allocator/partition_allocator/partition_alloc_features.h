@@ -22,7 +22,6 @@ extern const BASE_EXPORT Feature kPartitionAllocPCScan;
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 extern const BASE_EXPORT Feature kPartitionAllocPCScanBrowserOnly;
 extern const BASE_EXPORT Feature kPartitionAllocBackupRefPtrControl;
-extern const BASE_EXPORT Feature kPartitionAllocThreadCachePeriodicPurge;
 extern const BASE_EXPORT Feature kPartitionAllocLargeThreadCacheSize;
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
