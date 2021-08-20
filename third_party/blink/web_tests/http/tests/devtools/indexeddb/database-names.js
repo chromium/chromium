@@ -15,13 +15,13 @@
     TestRunner.addResult('Dumping database names:');
     var securityOrigins = TestRunner.securityOriginManager.securityOrigins();
     var securityOrigin = securityOrigins[0];
-    var names = indexedDBModel.databaseNamesBySecurityOrigin[securityOrigin];
+    var names = indexedDBModel._databaseNamesBySecurityOrigin[securityOrigin];
     for (var i = 0; i < names.length; ++i)
       TestRunner.addResult('    ' + names[i]);
     TestRunner.addResult('');
   }
 
-  TestRunner.addSniffer(Resources.IndexedDBModel.prototype, 'updateOriginDatabaseNames', step2, false);
+  TestRunner.addSniffer(Resources.IndexedDBModel.prototype, '_updateOriginDatabaseNames', step2, false);
 
   function step2() {
     dumpDatabaseNames();
@@ -29,7 +29,7 @@
   }
 
   function step3() {
-    TestRunner.addSniffer(Resources.IndexedDBModel.prototype, 'updateOriginDatabaseNames', step4, false);
+    TestRunner.addSniffer(Resources.IndexedDBModel.prototype, '_updateOriginDatabaseNames', step4, false);
     indexedDBModel.refreshDatabaseNames();
   }
 
@@ -39,7 +39,7 @@
   }
 
   function step5() {
-    TestRunner.addSniffer(Resources.IndexedDBModel.prototype, 'updateOriginDatabaseNames', step6, false);
+    TestRunner.addSniffer(Resources.IndexedDBModel.prototype, '_updateOriginDatabaseNames', step6, false);
     indexedDBModel.refreshDatabaseNames();
   }
 
@@ -49,7 +49,7 @@
   }
 
   function step7() {
-    TestRunner.addSniffer(Resources.IndexedDBModel.prototype, 'updateOriginDatabaseNames', step8, false);
+    TestRunner.addSniffer(Resources.IndexedDBModel.prototype, '_updateOriginDatabaseNames', step8, false);
     indexedDBModel.refreshDatabaseNames();
   }
 
@@ -59,7 +59,7 @@
   }
 
   function step9() {
-    TestRunner.addSniffer(Resources.IndexedDBModel.prototype, 'updateOriginDatabaseNames', step10, false);
+    TestRunner.addSniffer(Resources.IndexedDBModel.prototype, '_updateOriginDatabaseNames', step10, false);
     indexedDBModel.refreshDatabaseNames();
   }
 

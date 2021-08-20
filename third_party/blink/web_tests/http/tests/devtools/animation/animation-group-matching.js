@@ -57,7 +57,7 @@
     var group = event.data;
     if (!firstGroup)
       firstGroup = group;
-    TestRunner.addResult('Matches first group: ' + firstGroup.matches(group));
+    TestRunner.addResult('Matches first group: ' + firstGroup._matches(group));
     i++;
     if (i < 5)
       TestRunner.evaluateInPage('startCSSTransition()');

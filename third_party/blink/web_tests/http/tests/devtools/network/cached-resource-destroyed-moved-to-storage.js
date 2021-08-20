@@ -65,7 +65,7 @@
   }
 
   function step6() {
-    delete imageRequest.contentData;
+    delete imageRequest._contentData;
     imageRequest.requestContent().then(step7);
   }
 

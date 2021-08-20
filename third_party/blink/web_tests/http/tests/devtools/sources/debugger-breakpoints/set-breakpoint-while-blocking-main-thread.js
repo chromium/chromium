@@ -30,7 +30,7 @@
       }
 
       async function paused() {
-        plugin.createNewBreakpoint(10, '', true);
+        plugin._createNewBreakpoint(10, '', true);
         await SourcesTestRunner.waitBreakpointSidebarPane();
         SourcesTestRunner.dumpBreakpointSidebarPane();
         next();

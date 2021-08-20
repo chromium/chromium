@@ -7,10 +7,10 @@
   await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
 
-  var target = UI.panels.network.networkLogView;
-  target.resourceCategoryFilterUI._toggleTypeFilter(Common.resourceTypes.XHR.category().title(), false);
+  var target = UI.panels.network._networkLogView;
+  target._resourceCategoryFilterUI._toggleTypeFilter(Common.resourceTypes.XHR.category().title(), false);
   TestRunner.addResult('Clicked \'' + Common.resourceTypes.XHR.name() + '\' button.');
-  target.reset();
+  target._reset();
 
   function appendRequest(id, type, startTime, endTime) {
     var request = SDK.NetworkRequest.create('', '', '', '', '');
@@ -18,8 +18,8 @@
     request.setRequestIdForTest(id);
     request.setIssueTime(startTime);
     request.endTime = endTime;
-    TestRunner.networkManager.dispatcher._startNetworkRequest(request);
-    target.refresh();
+    TestRunner.networkManager._dispatcher._startNetworkRequest(request);
+    target._refresh();
 
     var isFilteredOut = Network.NetworkLogView.isRequestFilteredOut(
         target.nodeForRequest(request));
@@ -28,7 +28,7 @@
         'Appended request [' + request.requestId() + '] of type \'' + request.resourceType().name() +
         '\' is hidden: ' + isFilteredOut + ' from [' + request.startTime + '] to [' + request.endTime + ']');
     TestRunner.addResult(
-        'Timeline: from [' + target.calculator.minimumBoundary() + '] to [' + target._calculator.maximumBoundary() +
+        'Timeline: from [' + target._calculator.minimumBoundary() + '] to [' + target._calculator.maximumBoundary() +
         ']');
   }
 

@@ -23,7 +23,7 @@
     TestRunner.addResult('Main resource was shown.');
     await SourcesTestRunner.setBreakpoint(sourceFrame, 11, '', true);
     TestRunner.debuggerModel.addEventListener(SDK.DebuggerModel.Events.DebuggerWasDisabled, step3, this);
-    TestRunner.debuggerModel.disableDebugger();
+    TestRunner.debuggerModel._disableDebugger();
   }
 
   function step3() {
@@ -36,7 +36,7 @@
   function step4() {
     TestRunner.addResult('function evaluated without a pause on the breakpoint.');
     TestRunner.debuggerModel.addEventListener(SDK.DebuggerModel.Events.DebuggerWasEnabled, step5, this);
-    TestRunner.debuggerModel.enableDebugger();
+    TestRunner.debuggerModel._enableDebugger();
   }
 
   function step5() {

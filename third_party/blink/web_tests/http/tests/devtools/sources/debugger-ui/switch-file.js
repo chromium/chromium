@@ -32,7 +32,7 @@
 
   TestRunner.addResult('Dumping next file for each file:');
   for (var uiSourceCode of uiSourceCodes) {
-    var nextUISourceCode = Sources.SourcesView.SwitchFileActionDelegate.nextFile(uiSourceCode);
+    var nextUISourceCode = Sources.SourcesView.SwitchFileActionDelegate._nextFile(uiSourceCode);
     var nextURI = nextUISourceCode ? nextUISourceCode.url() : '<none>';
     TestRunner.addResult(`Next file for ${uiSourceCode.url()} is ${nextURI}.`);
   }

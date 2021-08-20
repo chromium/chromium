@@ -24,14 +24,14 @@
   await SourcesTestRunner.startDebuggerTestPromise(/* quiet */ true);
   await SourcesTestRunner.runTestFunctionAndWaitUntilPausedPromise();
   await TestRunner.addSnifferPromise(
-      Sources.CallStackSidebarPane.prototype, 'updatedForTest');
+      Sources.CallStackSidebarPane.prototype, '_updatedForTest');
   dumpCallStackSidebarPane();
 
   TestRunner.addResult('\n---------------\nClicks show more..');
   const pane = Sources.CallStackSidebarPane.instance();
   pane.contentElement.querySelector('.show-more-message > .link').click();
   await TestRunner.addSnifferPromise(
-      Sources.CallStackSidebarPane.prototype, 'updatedForTest');
+      Sources.CallStackSidebarPane.prototype, '_updatedForTest');
   dumpCallStackSidebarPane();
   SourcesTestRunner.completeDebuggerTest();
 

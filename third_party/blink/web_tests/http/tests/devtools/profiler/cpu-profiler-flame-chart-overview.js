@@ -842,24 +842,24 @@
       ]
     }
   };
-  var profile = profileAndExpectations.profile;
+  var profile = profileAndExpectations._profile;
   profile.startTime *= 1000;
   profile.endTime *= 1000;
   var samplingInterval = (profile.endTime - profile.startTime) / (profile.samples.length - 1);
   profile.timeDeltas = [0, ...new Array(profile.samples.length - 1).fill(samplingInterval)];
-  profileAndExpectations.cpuProfilerModel = null;
-  profileAndExpectations.debuggerModel = null;
+  profileAndExpectations._cpuProfilerModel = null;
+  profileAndExpectations._debuggerModel = null;
   profileAndExpectations.debuggerModel = () => null;
   profileAndExpectations.weakTarget = () => new WeakReference(null);
   profileAndExpectations.profileModel = () => new SDK.CPUProfileDataModel(profile);
   var cpuProfileView = new Profiler.CPUProfileView(profileAndExpectations);
   cpuProfileView.viewSelectComboBox.setSelectedIndex(0);
-  cpuProfileView.changeView();
-  var overviewPane = cpuProfileView.flameChart._overviewPane;
-  console.log(Object.values(overviewPane.calculateDrawData(16)));
-  console.log(Object.values(overviewPane.calculateDrawData(8)));
-  console.log(Object.values(overviewPane.calculateDrawData(4)));
-  console.log(Object.values(overviewPane.calculateDrawData(2)));
-  console.log(Object.values(overviewPane.calculateDrawData(1)));
+  cpuProfileView._changeView();
+  var overviewPane = cpuProfileView._flameChart._overviewPane;
+  console.log(Object.values(overviewPane._calculateDrawData(16)));
+  console.log(Object.values(overviewPane._calculateDrawData(8)));
+  console.log(Object.values(overviewPane._calculateDrawData(4)));
+  console.log(Object.values(overviewPane._calculateDrawData(2)));
+  console.log(Object.values(overviewPane._calculateDrawData(1)));
   TestRunner.completeTest();
 })();

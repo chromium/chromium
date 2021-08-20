@@ -24,7 +24,7 @@
   var testSuite = [
     function testSummonSuggestBox(next) {
       TestRunner.addSniffer(
-          TextEditor.TextEditorAutocompleteController.prototype, 'onSuggestionsShownForTest', onSuggestionsShown);
+          TextEditor.TextEditorAutocompleteController.prototype, '_onSuggestionsShownForTest', onSuggestionsShown);
       SourcesTestRunner.typeIn(consoleEditor, 'f');
 
       function onSuggestionsShown() {
@@ -35,9 +35,9 @@
 
     function testTypeText(next) {
       TestRunner.addSniffer(
-          TextEditor.TextEditorAutocompleteController.prototype, 'onSuggestionsHiddenForTest', onSuggestionsHidden);
+          TextEditor.TextEditorAutocompleteController.prototype, '_onSuggestionsHiddenForTest', onSuggestionsHidden);
       TestRunner.addSniffer(
-          TextEditor.TextEditorAutocompleteController.prototype, 'onCursorActivityHandledForTest',
+          TextEditor.TextEditorAutocompleteController.prototype, '_onCursorActivityHandledForTest',
           onCursorActivityHandled);
       SourcesTestRunner.typeIn(consoleEditor, 'o');
 

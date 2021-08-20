@@ -43,10 +43,10 @@
   TestRunner.addResult('Sidebar Origins --------------------------------');
   SecurityTestRunner.dumpSecurityPanelSidebarOrigins();
 
-  Security.SecurityPanel.instance()._sidebarTree._elementsByOrigin.get('https://foo.test').select();
+  Security.SecurityPanel._instance()._sidebarTree._elementsByOrigin.get('https://foo.test').select();
 
   TestRunner.addResult('Origin view ------------------------------------');
-  TestRunner.dumpDeepInnerHTML(Security.SecurityPanel.instance()._visibleView.contentElement);
+  TestRunner.dumpDeepInnerHTML(Security.SecurityPanel._instance()._visibleView.contentElement);
 
   TestRunner.completeTest();
 })();

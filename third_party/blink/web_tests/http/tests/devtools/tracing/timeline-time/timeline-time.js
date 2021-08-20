@@ -77,7 +77,7 @@
       if (namesToDump.has(event.name))
         TestRunner.addResult('----'.repeat(level) + '> ' + Timeline.TimelineUIUtils.eventTitle(event));
     }
-    UI.panels.timeline.disableCaptureJSProfileSetting.set(true);
+    UI.panels.timeline._disableCaptureJSProfileSetting.set(true);
     await PerformanceTestRunner.evaluateWithTimeline(actions);
     await PerformanceTestRunner.walkTimelineEventTree(dumpName);
     next();

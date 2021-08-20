@@ -25,7 +25,7 @@
   async function step2(sourceFrame) {
     TestRunner.addResult('Main resource was shown.');
     await SourcesTestRunner.setBreakpoint(sourceFrame, 8, '', true);
-    UI.panels.sources.toggleBreakpointsActive();
+    UI.panels.sources._toggleBreakpointsActive();
     TestRunner.reloadPage(step3);
   }
 

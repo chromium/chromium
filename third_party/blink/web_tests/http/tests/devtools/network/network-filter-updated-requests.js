@@ -7,22 +7,22 @@
   await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
 
-  var target = UI.panels.network.networkLogView;
+  var target = UI.panels.network._networkLogView;
   var types = Common.resourceTypes;
 
   var categoryName = types.XHR.category().title();
-  target.resourceCategoryFilterUI._toggleTypeFilter(categoryName, false);
+  target._resourceCategoryFilterUI._toggleTypeFilter(categoryName, false);
   TestRunner.addResult('Clicked \'' + categoryName + '\' button.');
 
   var requestFoo = SDK.NetworkRequest.create('', '', '', '', '');
   requestFoo.setResourceType(types.Script);
   requestFoo.setRequestIdForTest('foo');
-  TestRunner.networkManager.dispatcher._startNetworkRequest(requestFoo);
+  TestRunner.networkManager._dispatcher._startNetworkRequest(requestFoo);
 
   var requestBar = SDK.NetworkRequest.create('', '', '', '', '');
   requestBar.setResourceType(types.Script);
   requestBar.setRequestIdForTest('bar');
-  TestRunner.networkManager.dispatcher._startNetworkRequest(requestBar);
+  TestRunner.networkManager._dispatcher._startNetworkRequest(requestBar);
 
   async function isFilteredOut(request) {
     var node = await NetworkTestRunner.waitForNetworkLogViewNodeForRequest(request);
@@ -39,11 +39,11 @@
 
   TestRunner.addResult('');
   requestFoo.setResourceType(types.XHR);
-  TestRunner.networkManager.dispatcher._updateNetworkRequest(requestFoo);
+  TestRunner.networkManager._dispatcher._updateNetworkRequest(requestFoo);
   TestRunner.addResult('Updated request [' + requestFoo.requestId() + '] type.');
-  TestRunner.networkManager.dispatcher._updateNetworkRequest(requestBar);
+  TestRunner.networkManager._dispatcher._updateNetworkRequest(requestBar);
   TestRunner.addResult('Updated request [' + requestBar.requestId() + '].');
-  target.refresh();
+  target._refresh();
 
   TestRunner.addResult('');
   TestRunner.addResult(

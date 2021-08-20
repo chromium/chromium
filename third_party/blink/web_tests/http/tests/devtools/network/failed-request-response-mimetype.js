@@ -24,7 +24,7 @@
 
       const responseView = new Network.RequestResponseView(networkRequest);
       responseView.showPreview().then((emptyWidgetView) => {
-        TestRunner.addResult(emptyWidgetView.textElement.textContent);
+        TestRunner.addResult(emptyWidgetView._textElement.textContent);
         TestRunner.completeTest();
       });
     }

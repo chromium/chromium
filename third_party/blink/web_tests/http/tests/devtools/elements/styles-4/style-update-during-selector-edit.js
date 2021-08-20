@@ -34,7 +34,7 @@
   }
 
   function rebuildUpdate() {
-    if (UI.panels.elements.stylesWidget.node === treeOutline.selectedDOMNode())
+    if (UI.panels.elements._stylesWidget.node === treeOutline.selectedDOMNode())
       seenRebuildUpdate = true;
   }
 
@@ -42,7 +42,7 @@
     TestRunner.addSniffer(Elements.StylesSidebarPane.prototype, 'doUpdate', rebuildUpdate);
     TestRunner.domModel.addEventListener(SDK.DOMModel.Events.AttrModified, attributeChanged, this);
     // Click "Add new rule".
-    UI.panels.elements.stylesWidget.contentElement.querySelector('.styles-pane-toolbar')
+    UI.panels.elements._stylesWidget.contentElement.querySelector('.styles-pane-toolbar')
         .shadowRoot.querySelector('.largeicon-add')
         .click();
     TestRunner.evaluateInPage('addStyleClass()', step2);

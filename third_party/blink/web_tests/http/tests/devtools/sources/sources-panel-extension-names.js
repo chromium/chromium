@@ -16,7 +16,7 @@
 
   TestRunner.runTestSuite([
     async function testAddExecutionContextBeforeFile(next) {
-      TestRunner.runtimeModel.executionContextCreated(mockExecutionContext);
+      TestRunner.runtimeModel._executionContextCreated(mockExecutionContext);
       await SourcesTestRunner.addScriptUISourceCode(mockContentScriptURL, '', true, 1234567);
       SourcesTestRunner.dumpNavigatorView(contentScriptsNavigatorView);
       next();

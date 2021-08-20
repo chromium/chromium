@@ -27,7 +27,7 @@
     function step3(row) {
       row.collapse();
       row.expand();
-      var visibleChildren = row.children.filter(c => c.element.classList.contains('revealed'));
+      var visibleChildren = row.children.filter(c => c._element.classList.contains('revealed'));
       TestRunner.assertEquals(11, visibleChildren.length);
       next();
     }

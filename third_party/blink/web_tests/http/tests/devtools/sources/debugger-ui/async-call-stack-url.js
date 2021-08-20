@@ -25,13 +25,13 @@
   }
 
   function step4() {
-    TestRunner.addSniffer(Sources.ScriptFormatterEditorAction.prototype, 'updateButton', step5);
+    TestRunner.addSniffer(Sources.ScriptFormatterEditorAction.prototype, '_updateButton', step5);
     scriptFormatter.toggleFormatScriptSource();
   }
 
   function step5() {
     SourcesTestRunner.runTestFunctionAndWaitUntilPaused();
-    TestRunner.addSniffer(Sources.CallStackSidebarPane.prototype, 'updatedForTest', step6);
+    TestRunner.addSniffer(Sources.CallStackSidebarPane.prototype, '_updatedForTest', step6);
   }
 
   function step6() {

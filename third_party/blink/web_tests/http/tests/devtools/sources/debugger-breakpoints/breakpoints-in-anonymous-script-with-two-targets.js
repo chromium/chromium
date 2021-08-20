@@ -31,7 +31,7 @@
   function waitForPausedUISourceCode() {
     return new Promise(resolve => {
       TestRunner.addSniffer(
-          Sources.DebuggerPlugin.prototype, 'executionLineChanged',
+          Sources.DebuggerPlugin.prototype, '_executionLineChanged',
           function() {
             resolve(UI.panels.sources.visibleView);
           });

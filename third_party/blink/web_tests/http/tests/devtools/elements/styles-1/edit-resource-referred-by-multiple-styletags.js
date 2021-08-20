@@ -34,13 +34,13 @@
   TestRunner.markStep('Make edits with Sources Panel');
   var sourceFrame = await new Promise(x => SourcesTestRunner.showScriptSource('stylesheet.css', x));
   SourcesTestRunner.replaceInSource(sourceFrame, 'red', 'EDITED');
-  await TestRunner.addSnifferPromise(Bindings.StyleFile.prototype, 'styleFileSyncedForTest');
+  await TestRunner.addSnifferPromise(Bindings.StyleFile.prototype, '_styleFileSyncedForTest');
   await checkHeadersContent();
 
 
   TestRunner.markStep('Make edits via css model');
   TestRunner.cssModel.setStyleSheetText(headers[0].id, '* { --foo: "bar" }');
-  await TestRunner.addSnifferPromise(Bindings.StyleFile.prototype, 'styleFileSyncedForTest');
+  await TestRunner.addSnifferPromise(Bindings.StyleFile.prototype, '_styleFileSyncedForTest');
   await checkHeadersContent();
   TestRunner.completeTest();
 

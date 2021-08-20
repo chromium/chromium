@@ -35,7 +35,7 @@
 
   function reload() {
     page.reload();
-    return new Promise(fulfill => TestRunner.addSniffer(SDK.ResourceTreeModel.prototype, 'frameNavigated', fulfill));
+    return new Promise(fulfill => TestRunner.addSniffer(SDK.ResourceTreeModel.prototype, '_frameNavigated', fulfill));
   }
 
   TestRunner.runTestSuite([

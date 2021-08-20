@@ -26,7 +26,7 @@
       textEditor.setText('name1 name2 name3 name4\nna');
       textEditor.setSelection(TextUtils.TextRange.createFromLocation(1, 2));
       TestRunner.addSniffer(
-          TextEditor.TextEditorAutocompleteController.prototype, 'onSuggestionsShownForTest',
+          TextEditor.TextEditorAutocompleteController.prototype, '_onSuggestionsShownForTest',
           onAutocompletionSuggestBox);
       SourcesTestRunner.typeIn(textEditor, 'm');
       function onAutocompletionSuggestBox() {
@@ -68,7 +68,7 @@
   ];
 
   function dumpDictionary(next) {
-    var wordsInDictionary = textEditor.autocompleteController._dictionary.wordsWithPrefix('');
+    var wordsInDictionary = textEditor._autocompleteController._dictionary.wordsWithPrefix('');
     TestRunner.addResult('========= Text in editor =========');
     SourcesTestRunner.dumpTextWithSelection(textEditor);
     TestRunner.addResult('======= Words in dictionary =======');

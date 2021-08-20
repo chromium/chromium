@@ -19,7 +19,7 @@
 
   ElementsTestRunner.selectNodeAndWaitForStyles('inspected', selectCallback);
   function selectCallback() {
-    TestRunner.addSniffer(Elements.StylesSidebarPane.prototype, 'innerRebuildUpdate', sniffUpdate, true);
+    TestRunner.addSniffer(Elements.StylesSidebarPane.prototype, '_innerRebuildUpdate', sniffUpdate, true);
     var element = ElementsTestRunner.firstElementsTreeOutline().element;
     for (var i = 0; i < keydownCount; ++i)
       element.dispatchEvent(TestRunner.createKeyEvent('ArrowUp'));

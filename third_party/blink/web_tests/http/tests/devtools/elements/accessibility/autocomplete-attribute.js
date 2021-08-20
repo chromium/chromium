@@ -17,8 +17,8 @@
 
   function getPromptForAttribute(attribute) {
     var treeElement = AccessibilityTestRunner.findARIAAttributeTreeElement(attribute);
-    treeElement.startEditing();
-    return treeElement.prompt;
+    treeElement._startEditing();
+    return treeElement._prompt;
   }
 
   function runTests() {
@@ -54,9 +54,9 @@
       selectionRange.selectNodeContents(proxyElement);
     }
     var range = selectionRange.startContainer.rangeOfWord(
-        selectionRange.startOffset, prompt.completionStopCharacters, proxyElement, 'backward');
+        selectionRange.startOffset, prompt._completionStopCharacters, proxyElement, 'backward');
     var prefix = range.toString();
-    prompt.buildPropertyCompletions(inputText.substring(0, inputText.length - prefix.length), prefix, true)
+    prompt._buildPropertyCompletions(inputText.substring(0, inputText.length - prefix.length), prefix, true)
         .then(completions);
 
     function completions(result) {

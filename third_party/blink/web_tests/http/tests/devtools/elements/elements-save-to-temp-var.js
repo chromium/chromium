@@ -10,10 +10,10 @@
   await TestRunner.loadHTML(`<div id="node"></div>`);
 
   const node = await ElementsTestRunner.nodeWithIdPromise('node');
-  ElementsTestRunner.firstElementsTreeOutline().saveNodeToTempVariable(node);
-  const promise = TestRunner.addSnifferPromise(Console.ConsoleViewMessage.prototype, 'formattedParameterAsNodeForTest');
+  ElementsTestRunner.firstElementsTreeOutline()._saveNodeToTempVariable(node);
+  const promise = TestRunner.addSnifferPromise(Console.ConsoleViewMessage.prototype, '_formattedParameterAsNodeForTest');
   await ConsoleTestRunner.waitForConsoleMessagesPromise(2);
-  const secondMessage = Console.ConsoleView.instance().visibleViewMessages[1];
+  const secondMessage = Console.ConsoleView.instance()._visibleViewMessages[1];
   await promise;
   await ConsoleTestRunner.dumpConsoleMessages();
 

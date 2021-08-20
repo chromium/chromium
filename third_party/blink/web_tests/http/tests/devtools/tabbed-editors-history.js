@@ -7,7 +7,7 @@
   await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
 
   function dumpHistory(history) {
-    TestRunner.addResult('  history = ' + JSON.stringify(history.serializeToObject()) + '');
+    TestRunner.addResult('  history = ' + JSON.stringify(history._serializeToObject()) + '');
   }
 
   function updateScrollAndSelectionAndDump(history, url, scrollLineNumber, selection) {

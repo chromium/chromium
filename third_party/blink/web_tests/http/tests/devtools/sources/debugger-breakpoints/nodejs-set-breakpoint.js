@@ -20,7 +20,7 @@
   async function didShowScriptSource(sourceFrame) {
     TestRunner.addResult('Setting breakpoint:');
     TestRunner.addSniffer(
-        Bindings.BreakpointManager.ModelBreakpoint.prototype, 'addResolvedLocation', breakpointResolved);
+        Bindings.BreakpointManager.ModelBreakpoint.prototype, '_addResolvedLocation', breakpointResolved);
     await SourcesTestRunner.setBreakpoint(sourceFrame, 1, '', true);
   }
 

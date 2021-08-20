@@ -21,7 +21,7 @@
   SecurityTestRunner.dispatchRequestFinished(request);
 
   var explanations =
-      Security.SecurityPanel.instance()._mainView.contentElement.getElementsByClassName('security-explanation');
+      Security.SecurityPanel._instance()._mainView.contentElement.getElementsByClassName('security-explanation');
   for (var i = 0; i < explanations.length; i++)
     TestRunner.dumpDeepInnerHTML(explanations[i]);
 
@@ -30,7 +30,7 @@
       .dispatchEventToListeners(
           SDK.ResourceTreeModel.Events.MainFrameNavigated, TestRunner.resourceTreeModel.mainFrame);
   explanations =
-      Security.SecurityPanel.instance()._mainView.contentElement.getElementsByClassName('security-explanation');
+      Security.SecurityPanel._instance()._mainView.contentElement.getElementsByClassName('security-explanation');
   for (var i = 0; i < explanations.length; i++)
     TestRunner.dumpDeepInnerHTML(explanations[i]);
 

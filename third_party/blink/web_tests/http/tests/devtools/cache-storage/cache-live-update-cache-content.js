@@ -18,12 +18,12 @@
   await ApplicationTestRunner.dumpCacheTree();
   await ApplicationTestRunner.createCache('testCache1');
   await ApplicationTestRunner.dumpCacheTree();
-  var promise = TestRunner.addSnifferPromise(Resources.ServiceWorkerCacheView.prototype, 'updatedForTest');
+  var promise = TestRunner.addSnifferPromise(Resources.ServiceWorkerCacheView.prototype, '_updatedForTest');
   await ApplicationTestRunner.addCacheEntry('testCache1', 'http://fake.request.com/1', 'OK');
   await promise;
   TestRunner.addResult('Added entry');
   await ApplicationTestRunner.dumpCacheTreeNoRefresh();
-  promise = TestRunner.addSnifferPromise(Resources.ServiceWorkerCacheView.prototype, 'updatedForTest');
+  promise = TestRunner.addSnifferPromise(Resources.ServiceWorkerCacheView.prototype, '_updatedForTest');
   await ApplicationTestRunner.deleteCacheEntry('testCache1', 'http://fake.request.com/1');
   await promise;
   TestRunner.addResult('Deleted entry');

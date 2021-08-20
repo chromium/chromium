@@ -24,7 +24,7 @@
   CoverageTestRunner.dumpCoverageListView();
 
   var coverageView = Coverage.CoverageView.instance();
-  coverageView.clear();
+  coverageView._clear();
   await CoverageTestRunner.startCoverage(false);
   await CoverageTestRunner.stopCoverage();
   TestRunner.addResult('After clear');

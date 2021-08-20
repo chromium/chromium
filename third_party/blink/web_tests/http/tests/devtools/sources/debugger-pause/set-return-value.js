@@ -16,7 +16,7 @@
   await SourcesTestRunner.startDebuggerTestPromise();
   await TestRunner.DebuggerAgent.invoke_setBreakpointByUrl({lineNumber: 11, url: 'test.js', columnNumber: 37});
   let sidebarUpdated = TestRunner.addSnifferPromise(
-        Sources.ScopeChainSidebarPane.prototype, 'sidebarPaneUpdatedForTest');
+        Sources.ScopeChainSidebarPane.prototype, '_sidebarPaneUpdatedForTest');
   await Promise.all([SourcesTestRunner.runTestFunctionAndWaitUntilPausedPromise(), sidebarUpdated]);
   let localScope = SourcesTestRunner.scopeChainSections()[0];
 
@@ -26,19 +26,19 @@
 
   TestRunner.addResult('Set return value to {a:1}');
   let returnValueElement = localScope.children().find(x => x.property.name === 'Return value');
-  await returnValueElement.applyExpression('{a:1}');
+  await returnValueElement._applyExpression('{a:1}');
   await new Promise(resolve => SourcesTestRunner.expandProperties([localScope, ['Return value']], resolve));
   SourcesTestRunner.dumpScopeVariablesSidebarPane();
 
   TestRunner.addResult('Try to remove return value');
   returnValueElement = localScope.children().find(x => x.property.name === 'Return value');
-  await returnValueElement.applyExpression('');
+  await returnValueElement._applyExpression('');
   await new Promise(resolve => SourcesTestRunner.expandProperties([localScope, ['Return value']], resolve));
   SourcesTestRunner.dumpScopeVariablesSidebarPane();
 
   TestRunner.addResult('Set return value to 239');
   returnValueElement = localScope.children().find(x => x.property.name === 'Return value');
-  await returnValueElement.applyExpression('239');
+  await returnValueElement._applyExpression('239');
   await new Promise(resolve => SourcesTestRunner.expandProperties([localScope, ['Return value']], resolve));
   SourcesTestRunner.dumpScopeVariablesSidebarPane();
 

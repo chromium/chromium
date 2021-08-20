@@ -13,20 +13,20 @@
 
   var deviceModeView = new Emulation.DeviceModeView();
 
-  var deviceModeThrottling = deviceModeView.toolbar._throttlingConditionsItem;
+  var deviceModeThrottling = deviceModeView._toolbar._throttlingConditionsItem;
   var networkPanelThrottling = UI.panels.network.throttlingSelectForTest();
   var networkConfigView = Network.NetworkConfigView.instance();
   var networkConditionsDrawerThrottlingSelector =
       networkConfigView.contentElement.querySelector('.network-config-throttling select.chrome-select');
-  var performancePanelNetworkThrottling = UI.panels.timeline.networkThrottlingSelect;
-  var performancePanelCPUThrottling = UI.panels.timeline.cpuThrottlingSelect;
+  var performancePanelNetworkThrottling = UI.panels.timeline._networkThrottlingSelect;
+  var performancePanelCPUThrottling = UI.panels.timeline._cpuThrottlingSelect;
 
   function dumpThrottlingState() {
     TestRunner.addResult('=== THROTTLING STATE ===');
     var {download, upload, latency} = SDK.multitargetNetworkManager.networkConditions();
     TestRunner.addResult(`Network throttling - download: ${Math.round(download)} upload: ${Math.round(upload)} latency: ${latency}`);
     TestRunner.addResult('CPU throttling rate: ' + SDK.CPUThrottlingManager.instance().cpuThrottlingRate());
-    TestRunner.addResult('Device mode throttling: ' + deviceModeThrottling.text);
+    TestRunner.addResult('Device mode throttling: ' + deviceModeThrottling._text);
     TestRunner.addResult('Network panel throttling: ' + networkPanelThrottling.selectedOption().text);
     TestRunner.addResult('Network conditions drawer throttling: ' + networkConditionsDrawerThrottlingSelector.value);
     TestRunner.addResult(

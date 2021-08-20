@@ -33,13 +33,13 @@
   ElementsTestRunner.waitForAnimationAdded(step2);
 
   function step2(group) {
-    TestRunner.addResult(timeline.groupBuffer.indexOf(group) !== -1);
+    TestRunner.addResult(timeline._groupBuffer.indexOf(group) !== -1);
     ElementsTestRunner.waitForAnimationAdded(step3);
     TestRunner.evaluateInPage('startAnimationWithNegativeStartTime()');
   }
 
   function step3(group) {
-    TestRunner.addResult(timeline.groupBuffer.indexOf(group) !== -1);
+    TestRunner.addResult(timeline._groupBuffer.indexOf(group) !== -1);
     TestRunner.completeTest();
   }
 })();

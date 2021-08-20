@@ -34,7 +34,7 @@
       .then(() => SourcesTestRunner.runTestFunctionAndWaitUntilPausedPromise())
       .then(
           () => TestRunner.addSnifferPromise(
-              Sources.CallStackSidebarPane.prototype, 'updatedForTest'))
+              Sources.CallStackSidebarPane.prototype, '_updatedForTest'))
       .then(() => dumpCallStackSidebarPane())
       .then(() => SourcesTestRunner.completeDebuggerTest());
 

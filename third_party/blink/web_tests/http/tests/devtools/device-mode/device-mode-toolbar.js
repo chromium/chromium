@@ -8,8 +8,8 @@
 
   var phoneA = DeviceModeTestRunner.buildFakePhone();
   var view = new Emulation.DeviceModeView();
-  var toolbar = view.toolbar;
-  var model = view.model;
+  var toolbar = view._toolbar;
+  var model = view._model;
   var viewportSize = new UI.Size(800, 600);
   model.setAvailableSize(viewportSize, viewportSize);
 
@@ -18,18 +18,18 @@
 
   model.emulate(Emulation.DeviceModeModel.Type.None, null, null);
   dumpType();
-  toolbar.switchToResponsive();
+  toolbar._switchToResponsive();
   dumpInfo();
 
   model.emulate(Emulation.DeviceModeModel.Type.None, null, null);
   dumpType();
-  toolbar.emulateDevice(phoneA);
+  toolbar._emulateDevice(phoneA);
   dumpInfo();
 
-  toolbar.switchToResponsive();
+  toolbar._switchToResponsive();
   dumpInfo();
 
-  toolbar.emulateDevice(phoneA);
+  toolbar._emulateDevice(phoneA);
   dumpInfo();
 
   function dumpType() {
@@ -38,7 +38,7 @@
 
   function dumpInfo() {
     dumpType();
-    TestRunner.addResult(`Rotate: ${toolbar.modeButton._enabled ? 'enabled': 'disabled'}, Width/Height: ${!toolbar._widthInput.disabled ? 'enabled': 'disabled'}`);
+    TestRunner.addResult(`Rotate: ${toolbar._modeButton._enabled ? 'enabled': 'disabled'}, Width/Height: ${!toolbar._widthInput.disabled ? 'enabled': 'disabled'}`);
   }
 
   TestRunner.completeTest();

@@ -11,17 +11,17 @@
   SourcesTestRunner.showScriptSource('bezier.css', onSourceFrame);
 
   function onSourceFrame(sourceFrame) {
-    var cssPlugin = sourceFrame.plugins.find(plugin => plugin instanceof Sources.CSSPlugin);
+    var cssPlugin = sourceFrame._plugins.find(plugin => plugin instanceof Sources.CSSPlugin);
     TestRunner.addResult('Initial swatch positions:');
     SourcesTestRunner.dumpSwatchPositions(sourceFrame, Sources.CSSPlugin.SwatchBookmark);
 
     TestRunner.runTestSuite([
       function testEditBezier(next) {
-        var swatch = sourceFrame.textEditor.codeMirrorElement.querySelector('span[is=bezier-swatch]');
+        var swatch = sourceFrame.textEditor._codeMirrorElement.querySelector('span[is=bezier-swatch]');
         swatch.shadowRoot.querySelector('.bezier-swatch-icon').click();
-        cssPlugin.bezierEditor.setBezier(UI.Geometry.CubicBezier.parse('linear'));
-        cssPlugin.bezierEditor._onchange();
-        cssPlugin.swatchPopoverHelper.hide(true);
+        cssPlugin._bezierEditor.setBezier(UI.Geometry.CubicBezier.parse('linear'));
+        cssPlugin._bezierEditor._onchange();
+        cssPlugin._swatchPopoverHelper.hide(true);
         SourcesTestRunner.dumpSwatchPositions(sourceFrame, Sources.CSSPlugin.SwatchBookmark);
         next();
       },

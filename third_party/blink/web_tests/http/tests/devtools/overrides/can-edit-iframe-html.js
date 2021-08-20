@@ -19,6 +19,6 @@
     throw "No uiSourceCode.";
   var uiSourceCodeFrame = new Sources.UISourceCodeFrame(uiSourceCode);
   TestRunner.addResult('URL: ' + uiSourceCode.url().substr(uiSourceCode.url().lastIndexOf('/') + 1));
-  TestRunner.addResult('Can Edit Source: ' + uiSourceCodeFrame.canEditSource());
+  TestRunner.addResult('Can Edit Source: ' + uiSourceCodeFrame._canEditSource());
   TestRunner.completeTest();
 })();

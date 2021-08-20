@@ -72,7 +72,7 @@
 
   function setFormat(newFormat, callback) {
     Common.settingForTest('colorFormat').set(newFormat);
-    UI.panels.elements.stylesWidget.doUpdate().then(callback);
+    UI.panels.elements._stylesWidget.doUpdate().then(callback);
   }
 
   function startEditingAndDumpValue(nodeId, format, propertyName, next) {
@@ -90,7 +90,7 @@
     function waitForStylesRebuild(node) {
       if (node && node.getAttribute('id') === nodeId)
         return;
-      return TestRunner.addSnifferPromise(Elements.StylesSidebarPane.prototype, 'nodeStylesUpdatedForTest').then(waitForStylesRebuild);
+      return TestRunner.addSnifferPromise(Elements.StylesSidebarPane.prototype, '_nodeStylesUpdatedForTest').then(waitForStylesRebuild);
     }
   }
 })();

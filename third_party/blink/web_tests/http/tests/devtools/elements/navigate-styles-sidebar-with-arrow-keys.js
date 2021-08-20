@@ -26,11 +26,11 @@
 
   await waitForStylesRebuild();
 
-  let ssp = Elements.ElementsPanel.instance().stylesWidget;
+  let ssp = Elements.ElementsPanel.instance()._stylesWidget;
 
   // start editing
-  ssp.sectionBlocks[0].sections[0].element.focus();
-  ssp.sectionBlocks[0].sections[0].addNewBlankProperty(0).startEditing();
+  ssp._sectionBlocks[0].sections[0].element.focus();
+  ssp._sectionBlocks[0].sections[0].addNewBlankProperty(0).startEditing();
 
   dumpState();
 

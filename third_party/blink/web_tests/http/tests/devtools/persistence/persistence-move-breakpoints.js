@@ -54,8 +54,8 @@
 
   function dumpBreakpointSidebarPane() {
     var pane = Sources.JavaScriptBreakpointsSidebarPane.instance();
-    if (!pane.emptyElement.classList.contains('hidden'))
-      return TestRunner.textContentWithLineBreaks(pane.emptyElement);
+    if (!pane._emptyElement.classList.contains('hidden'))
+      return TestRunner.textContentWithLineBreaks(pane._emptyElement);
     var entries = Array.from(pane.contentElement.querySelectorAll('.breakpoint-entry'));
     for (var entry of entries) {
       var uiLocation = Sources.JavaScriptBreakpointsSidebarPane.retrieveLocationForElement(entry);

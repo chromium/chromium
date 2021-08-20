@@ -52,14 +52,14 @@
   TestRunner.completeTest();
 
   function isOverviewShowing() {
-    if (!networkPanel.overviewPane)
+    if (!networkPanel._overviewPane)
       return false;
-    return networkPanel.overviewPane.isShowing();
+    return networkPanel._overviewPane.isShowing();
   }
 
   function isFilmstripShowing() {
-    if (!networkPanel.filmStripView)
+    if (!networkPanel._filmStripView)
       return false;
-    return networkPanel.filmStripView.isShowing();
+    return networkPanel._filmStripView.isShowing();
   }
 })();

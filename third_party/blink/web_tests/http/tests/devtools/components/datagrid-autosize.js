@@ -9,7 +9,7 @@
     function testAutoSize(widths, minPercent, maxPercent) {
       TestRunner.addResult(
           'Auto sizing ' + JSON.stringify(widths) + ', minPercent=' + minPercent + ', maxPercent=' + maxPercent);
-      var result = DataGrid.DataGrid.prototype.autoSizeWidths(widths, minPercent, maxPercent);
+      var result = DataGrid.DataGrid.prototype._autoSizeWidths(widths, minPercent, maxPercent);
       TestRunner.addResult('    ' + JSON.stringify(result));
     }
 

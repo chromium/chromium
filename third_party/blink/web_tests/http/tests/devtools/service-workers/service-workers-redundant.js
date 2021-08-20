@@ -17,9 +17,9 @@
   let step = 0;
   let firstVersionId = -1;
   let secondVersionId = -1;
-  Resources.ServiceWorkersView.noThrottle = true;
+  Resources.ServiceWorkersView._noThrottle = true;
 
-  TestRunner.addSniffer(Resources.ServiceWorkersView.prototype, 'updateRegistration', updateRegistration, true);
+  TestRunner.addSniffer(Resources.ServiceWorkersView.prototype, '_updateRegistration', updateRegistration, true);
   function updateRegistration(registration) {
     if (registration.scopeURL != scope)
       return;
@@ -57,6 +57,6 @@
       TestRunner.completeTest();
     }
   }
-  UI.panels.resources.sidebar.serviceWorkersTreeElement.select();
+  UI.panels.resources._sidebar.serviceWorkersTreeElement.select();
   ApplicationTestRunner.registerServiceWorker(scriptURL, scope);
 })();

@@ -24,7 +24,7 @@
 
       function nodeCallback(node) {
         nodeId = node.id;
-        stylesPane = UI.panels.elements.stylesWidget;
+        stylesPane = UI.panels.elements._stylesWidget;
         ElementsTestRunner.addNewRule('foo, #inspected, .bar, #inspected', callback);
       }
 
@@ -37,7 +37,7 @@
     function changeSelector(next) {
       var section = ElementsTestRunner.firstMatchedStyleSection();
       section.startEditingSelector();
-      var selectorElement = section.selectorElement;
+      var selectorElement = section._selectorElement;
       selectorElement.textContent = '#inspected, a, hr';
       ElementsTestRunner.waitForSelectorCommitted(callback);
       selectorElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));

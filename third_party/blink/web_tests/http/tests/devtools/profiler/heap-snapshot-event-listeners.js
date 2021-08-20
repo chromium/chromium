@@ -20,8 +20,8 @@
 
   var heapProfileType = Profiler.ProfileTypeRegistry.instance.heapSnapshotProfileType;
   heapProfileType.addEventListener(Profiler.HeapSnapshotProfileType.SnapshotReceived, finishHeapSnapshot);
-  TestRunner.addSniffer(heapProfileType, 'snapshotReceived', snapshotReceived);
-  heapProfileType.takeHeapSnapshot();
+  TestRunner.addSniffer(heapProfileType, '_snapshotReceived', snapshotReceived);
+  heapProfileType._takeHeapSnapshot();
 
   function finishHeapSnapshot(uid) {
     var profiles = heapProfileType.getProfiles();
@@ -37,7 +37,7 @@
   }
 
   async function snapshotReceived(profile) {
-    var snapshotProxy = profile.snapshotProxy;
+    var snapshotProxy = profile._snapshotProxy;
     var classNames = await snapshotProxy.aggregatesWithFilter(new HeapSnapshotModel.NodeFilter());
     var found = Object.keys(classNames).includes('EventListenerWrapperTest');
     if (found)

@@ -38,7 +38,7 @@
   async function processElement(element) {
     if (element instanceof Elements.ElementsTreeElement && !element.isClosingTag() && element.node().nodeNameInCorrectCase() !== 'base') {
       TestRunner.addResult('\n' + element.listItemElement.textContent);
-      await element.copyStyles();
+      await element._copyStyles();
     }
     for (const child of element.children()) {
       await processElement(child);

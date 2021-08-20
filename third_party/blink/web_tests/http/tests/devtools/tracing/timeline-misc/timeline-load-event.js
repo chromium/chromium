@@ -7,7 +7,7 @@
   await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
 
-  UI.panels.timeline.disableCaptureJSProfileSetting.set(true);
+  UI.panels.timeline._disableCaptureJSProfileSetting.set(true);
   await PerformanceTestRunner.startTimeline();
   await TestRunner.reloadPagePromise();
   await TestRunner.evaluateInPagePromise(`

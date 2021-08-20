@@ -57,13 +57,13 @@
   ]);
 
   function dumpTabs(title) {
-    var tabbedPane = UI.panels.sources.sourcesView._editorContainer._tabbedPane;
-    var tabs = tabbedPane.tabs;
+    var tabbedPane = UI.panels.sources._sourcesView._editorContainer._tabbedPane;
+    var tabs = tabbedPane._tabs;
     TestRunner.addResult(title);
     for (var i = 0; i < tabs.length; ++i) {
       var text = (i + 1) + ': ';
       text += tabs[i].title;
-      if (tabs[i] === tabbedPane.currentTab)
+      if (tabs[i] === tabbedPane._currentTab)
         text += ' [selected]';
       TestRunner.addResult('    ' + text);
     }

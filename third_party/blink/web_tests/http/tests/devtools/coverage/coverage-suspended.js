@@ -31,7 +31,7 @@
   await CoverageTestRunner.resumeCoverageModel();
 
   var coverageView = Coverage.CoverageView.instance();
-  coverageView.clear();
+  coverageView._clear();
 
   await CoverageTestRunner.startCoverage(true);
   await TestRunner.evaluateInPagePromise('performActions()');

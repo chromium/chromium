@@ -13,8 +13,8 @@
 
   const panel = UI.panels.timeline;
   PerformanceTestRunner.runWhenTimelineIsReady(recordingStopped);
-  panel.millisecondsToRecordAfterLoadEvent = 1;
-  panel.recordReload();
+  panel._millisecondsToRecordAfterLoadEvent = 1;
+  panel._recordReload();
 
   async function recordingStopped() {
     TestRunner.addResult('Recording stopped');
@@ -28,7 +28,7 @@
         } else if (requestId !== event.args.data.requestId) {
           TestRunner.addResult(`Events did not have the same request id.`)
         }
-        TestRunner.addResult(`${event.name} from thread ${event.thread.name}`);
+        TestRunner.addResult(`${event.name} from thread ${event.thread._name}`);
       }
     }
     TestRunner.completeTest();

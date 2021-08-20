@@ -11,7 +11,7 @@
   var rawTraceEvents = [
     {
       'args': {'name': 'Renderer'},
-      'cat': '_metadata',
+      'cat': '__metadata',
       'name': 'process_name',
       'ph': 'M',
       'pid': 17851,
@@ -20,7 +20,7 @@
     },
     {
       'args': {'name': 'CrRendererMain'},
-      'cat': '_metadata',
+      'cat': '__metadata',
       'name': 'thread_name',
       'ph': 'M',
       'pid': 17851,

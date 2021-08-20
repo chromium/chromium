@@ -97,25 +97,25 @@
   view.setModel(model, PerformanceTestRunner.mainTrack());
   view.updateContents(Timeline.TimelineSelection.fromRange(
       model.timelineModel().minimumRecordTime(), model.timelineModel().maximumRecordTime()));
-  const filtersControl = view.filtersControl;
+  const filtersControl = view._filtersControl;
 
   TestRunner.addResult('Original records');
-  filtersControl.notifyFiltersChanged();
+  filtersControl._notifyFiltersChanged();
   await dumpVisibleRecords();
 
   TestRunner.addResult(`Visible records when 'loading' is disabled`);
   Timeline.TimelineUIUtils.categories().loading.hidden = true;
-  filtersControl.notifyFiltersChanged();
+  filtersControl._notifyFiltersChanged();
   await dumpVisibleRecords();
 
   TestRunner.addResult(`Visible records when 'scripting' is disabled`);
   Timeline.TimelineUIUtils.categories().scripting.hidden = true;
-  filtersControl.notifyFiltersChanged();
+  filtersControl._notifyFiltersChanged();
   await dumpVisibleRecords();
 
   TestRunner.completeTest();
 
   async function dumpVisibleRecords() {
-    await PerformanceTestRunner.walkTimelineEventTreeUnderNode(event => TestRunner.addResult(event.name), view.currentTree);
+    await PerformanceTestRunner.walkTimelineEventTreeUnderNode(event => TestRunner.addResult(event.name), view._currentTree);
   }
 })();

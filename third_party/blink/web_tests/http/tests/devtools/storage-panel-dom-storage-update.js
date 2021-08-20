@@ -39,8 +39,8 @@
     var rows = [];
     for (var i = 0; i < nodes.length; ++i) {
       var node = nodes[i];
-      if (typeof node.data.key === 'string')
-        rows.push(node.data.key + ' = ' + node._data.value);
+      if (typeof node._data.key === 'string')
+        rows.push(node._data.key + ' = ' + node._data.value);
     }
     rows.sort();
     TestRunner.addResult('Table rows: [' + rows.join(', ') + ']');
@@ -69,15 +69,15 @@
       TestRunner.assertTrue(!!storage, 'Local storage not found.');
 
       UI.panels.resources.showDOMStorage(storage);
-      view = UI.panels.resources.domStorageView;
-      TestRunner.addSniffer(view, 'showDOMStorageItems', viewUpdated);
+      view = UI.panels.resources._domStorageView;
+      TestRunner.addSniffer(view, '_showDOMStorageItems', viewUpdated);
     },
 
     function addItemTest(next) {
       var indicesToAdd = [1, 2, 3, 4, 5, 6];
 
       function itemAdded() {
-        dumpDataGrid(view.dataGrid.rootNode());
+        dumpDataGrid(view._dataGrid.rootNode());
         addItem();
       }
 
@@ -88,7 +88,7 @@
           return;
         }
         TestRunner.addResult('');
-        TestRunner.addSniffer(ApplicationTestRunner.domStorageModel(), 'domStorageItemAdded', itemAdded);
+        TestRunner.addSniffer(ApplicationTestRunner.domStorageModel(), '_domStorageItemAdded', itemAdded);
         var command = 'addItem(\'key' + index + '\', \'value' + index + '\');';
         TestRunner.addResult(command);
         TestRunner.evaluateInPage(command);
@@ -101,7 +101,7 @@
       var indicesToRemove = [1, 3, 5];
 
       function itemRemoved() {
-        dumpDataGrid(view.dataGrid.rootNode());
+        dumpDataGrid(view._dataGrid.rootNode());
         removeItem();
       }
 
@@ -112,7 +112,7 @@
           return;
         }
         TestRunner.addResult('');
-        TestRunner.addSniffer(ApplicationTestRunner.domStorageModel(), 'domStorageItemRemoved', itemRemoved);
+        TestRunner.addSniffer(ApplicationTestRunner.domStorageModel(), '_domStorageItemRemoved', itemRemoved);
         var command = 'removeItem(\'key' + index + '\');';
         TestRunner.addResult(command);
         TestRunner.evaluateInPage(command);
@@ -123,25 +123,25 @@
 
     function updateItemTest(next) {
       TestRunner.addResult('');
-      TestRunner.addSniffer(ApplicationTestRunner.domStorageModel(), 'domStorageItemUpdated', itemUpdated);
+      TestRunner.addSniffer(ApplicationTestRunner.domStorageModel(), '_domStorageItemUpdated', itemUpdated);
       var command = 'updateItem(\'key2\', \'VALUE2\');';
       TestRunner.addResult(command);
       TestRunner.evaluateInPage(command);
 
       function itemUpdated() {
-        dumpDataGrid(view.dataGrid.rootNode());
+        dumpDataGrid(view._dataGrid.rootNode());
         next();
       }
     },
 
     function clearTest(next) {
       function itemsCleared() {
-        dumpDataGrid(view.dataGrid.rootNode());
+        dumpDataGrid(view._dataGrid.rootNode());
         next();
       }
 
       TestRunner.addResult('');
-      TestRunner.addSniffer(ApplicationTestRunner.domStorageModel(), 'domStorageItemsCleared', itemsCleared);
+      TestRunner.addSniffer(ApplicationTestRunner.domStorageModel(), '_domStorageItemsCleared', itemsCleared);
       var command = 'clear()';
       TestRunner.addResult(command);
       TestRunner.evaluateInPage(command);

@@ -35,7 +35,7 @@
         var maybeNumber = parseInt(words[i], 10);
         if (!isNaN(maybeNumber))
           TestRunner.assertEquals(
-              instanceCount - row.dataGrid.defaultPopulateCount(), maybeNumber, buttonsNode.showAll.textContent);
+              instanceCount - row._dataGrid.defaultPopulateCount(), maybeNumber, buttonsNode.showAll.textContent);
       }
       HeapProfilerTestRunner.clickShowMoreButton('showAll', buttonsNode, step4);
     }

@@ -45,7 +45,7 @@
 
     function reply() {
       var paths = ['/var/www' + fsEntry.fullPath];
-      Persistence.isolatedFileSystemManager.onSearchCompleted(
+      Persistence.isolatedFileSystemManager._onSearchCompleted(
           {data: {requestId: requestId, fileSystemPath: path, files: paths}});
     }
   };

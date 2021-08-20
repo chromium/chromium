@@ -34,7 +34,7 @@
   function step2() {
     TestRunner.addResult('Remove listeners..');
     var eventListenersWidget = ElementsTestRunner.eventListenersWidget();
-    var listenerTypes = eventListenersWidget.eventListenersView._treeOutline.rootElement().children();
+    var listenerTypes = eventListenersWidget._eventListenersView._treeOutline.rootElement().children();
     var promises = [];
     for (var i in listenerTypes) {
       var listenersItems = listenerTypes[i].children();

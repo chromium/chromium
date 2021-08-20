@@ -12,7 +12,7 @@
 
   function onSourceFrame(sourceFrame) {
     TestRunner.addSniffer(
-        Sources.JavaScriptCompilerPlugin.prototype, 'compilationFinishedForTest',
+        Sources.JavaScriptCompilerPlugin.prototype, '_compilationFinishedForTest',
         onCompilationFinished.bind(null, sourceFrame));
     sourceFrame.textEditor.setSelection(TextUtils.TextRange.createFromLocation(0, 0));
     SourcesTestRunner.typeIn(sourceFrame.textEditor, 'test!');

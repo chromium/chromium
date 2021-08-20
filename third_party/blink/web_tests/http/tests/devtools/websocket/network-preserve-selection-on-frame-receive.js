@@ -10,20 +10,20 @@
   NetworkTestRunner.recordNetwork();
 
   const wsUrl = 'ws://localhost:8880/echo';
-  const networkLogView = UI.panels.network.networkLogView;
-  const dataGrid = networkLogView.dataGrid;
+  const networkLogView = UI.panels.network._networkLogView;
+  const dataGrid = networkLogView._dataGrid;
   await TestRunner.evaluateInPagePromise('ws = new WebSocket(\'' + wsUrl + '\')');
   var websocketRequest = NetworkTestRunner.findRequestsByURLPattern(createPlainTextSearchRegex(wsUrl))[0];
   await NetworkTestRunner.waitForRequestResponse(websocketRequest);
   var node = await NetworkTestRunner.waitForNetworkLogViewNodeForRequest(websocketRequest);
-  networkLogView.refresh();
+  networkLogView._refresh();
   node.select();
   logSelectedNode();
 
   TestRunner.addResult('Sending Websocket frame');
   await TestRunner.evaluateInPagePromise('ws.send(\'test\')');
   await NetworkTestRunner.waitForWebsocketFrameReceived(websocketRequest, 'test');
-  networkLogView.refresh();
+  networkLogView._refresh();
   TestRunner.addResult('Websocket Frame Received');
   logSelectedNode();
 

@@ -28,7 +28,7 @@
 
   function step1() {
     TestRunner.addSniffer(
-        Sources.ScopeChainSidebarPane.prototype, 'sidebarPaneUpdatedForTest', onSidebarRendered, true);
+        Sources.ScopeChainSidebarPane.prototype, '_sidebarPaneUpdatedForTest', onSidebarRendered, true);
     SourcesTestRunner.runTestFunctionAndWaitUntilPaused(() => {});
   }
 

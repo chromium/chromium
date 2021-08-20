@@ -9,15 +9,15 @@
   await TestRunner.showPanel('timeline');
 
   var timeline = UI.panels.timeline;
-  timeline.onModeChanged();
-  timeline.flameChart._automaticallySizeWindow = true;
+  timeline._onModeChanged();
+  timeline._flameChart._automaticallySizeWindow = true;
 
   function setWindowTimesHook(startTime, endTime) {
     if (startTime)
       TestRunner.addResult('time delta: ' + (endTime - startTime));
   }
 
-  timeline.overviewPane.setWindowTimes = setWindowTimesHook;
+  timeline._overviewPane.setWindowTimes = setWindowTimesHook;
   await PerformanceTestRunner.loadTimeline(PerformanceTestRunner.timelineData());
   TestRunner.completeTest();
 })();

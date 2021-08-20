@@ -38,7 +38,7 @@
 
   function step1(node) {
     dataTreeElement = ElementsTestRunner.firstElementsTreeOutline().findTreeElement(node);
-    dataTreeElement.expandedChildrenLimit = 5;
+    dataTreeElement._expandedChildrenLimit = 5;
     dataTreeElement.reveal();
     dataTreeElement.expand();
     TestRunner.deprecatedRunAfterPendingDispatches(step2);
@@ -47,7 +47,7 @@
   function step2() {
     TestRunner.addResult('=========== Loaded 5 children ===========');
     dumpElementsTree();
-    TestRunner.addSniffer(Elements.ElementsTreeOutline.prototype, 'updateModifiedNodes', step3);
+    TestRunner.addSniffer(Elements.ElementsTreeOutline.prototype, '_updateModifiedNodes', step3);
     TestRunner.evaluateInPage('insertNode()');
   }
 

@@ -6,20 +6,20 @@
   await TestRunner.showPanel('network');
 
   var panel = UI.panels.network;
-  var target = panel.networkLogView;
+  var target = panel._networkLogView;
   var types = Common.resourceTypes;
 
   var requestFoo = SDK.NetworkRequest.create('', '', '', '', '');
   requestFoo.setResourceType(types.XHR);
   requestFoo.setRequestIdForTest('foo');
   TestRunner.addResult('Showing request foo');
-  panel.onRequestSelected({data: requestFoo});
-  panel.showRequestPanel();
-  TestRunner.addResult('Network Item View: ' + (panel.networkItemView && panel._networkItemView.isShowing()));
+  panel._onRequestSelected({data: requestFoo});
+  panel._showRequestPanel();
+  TestRunner.addResult('Network Item View: ' + (panel._networkItemView && panel._networkItemView.isShowing()));
 
   TestRunner.addResult('Hiding request');
-  panel.hideRequestPanel();
-  TestRunner.addResult('Network Item View: ' + (panel.networkItemView && panel._networkItemView.isShowing()));
+  panel._hideRequestPanel();
+  TestRunner.addResult('Network Item View: ' + (panel._networkItemView && panel._networkItemView.isShowing()));
 
   TestRunner.completeTest();
 })();

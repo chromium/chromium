@@ -102,9 +102,9 @@
 
   function dumpInOutBoundingMapSize() {
     // TODO(crbug.com/1238850): Remove the _outboundEdgeMap branch.
-    if (graph.hasOwnProperty('outboundEdgeMap')) {
-      TestRunner.addResult(`Number of nodes with out-bound edges: ${graph.outboundEdgeMap.size}`);
-      TestRunner.addResult(`Number of nodes with in-bound edges: ${graph.inboundEdgeMap.size}`);
+    if (graph.hasOwnProperty('_outboundEdgeMap')) {
+      TestRunner.addResult(`Number of nodes with out-bound edges: ${graph._outboundEdgeMap.size}`);
+      TestRunner.addResult(`Number of nodes with in-bound edges: ${graph._inboundEdgeMap.size}`);
     } else {
       TestRunner.addResult(`Number of nodes with out-bound edges: ${graph.outboundEdgeMap.size}`);
       TestRunner.addResult(`Number of nodes with in-bound edges: ${graph.inboundEdgeMap.size}`);

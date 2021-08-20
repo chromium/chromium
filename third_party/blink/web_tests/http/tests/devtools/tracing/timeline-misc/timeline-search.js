@@ -26,7 +26,7 @@
     },
     {
       'args': {'name': 'Renderer'},
-      'cat': '_metadata',
+      'cat': '__metadata',
       'name': 'process_name',
       'ph': 'M',
       'pid': pid,
@@ -35,7 +35,7 @@
     },
     {
       'args': {'name': 'CrRendererMain'},
-      'cat': '_metadata',
+      'cat': '__metadata',
       'name': 'thread_name',
       'ph': 'M',
       'pid': pid,
@@ -44,7 +44,7 @@
     },
     {
       'args': {'name': 'CompositorTileWorker'},
-      'cat': '_metadata',
+      'cat': '__metadata',
       'name': 'thread_name',
       'ph': 'M',
       'pid': pid,
@@ -200,13 +200,13 @@
 
   var timeline = UI.panels.timeline;
   var model = PerformanceTestRunner.createPerformanceModelWithEvents(testData);
-  timeline.setModel(model);
-  var flameChartView = timeline.flameChart;
+  timeline._setModel(model);
+  var flameChartView = timeline._flameChart;
   var searchConfig = new UI.SearchableView.SearchConfig('Paint', false, false);
   flameChartView.performSearch(searchConfig, true, false);
-  TestRunner.addResult(`Count: ${flameChartView.searchResults.length}`);
-  for (var i = 0; i <= flameChartView.searchResults.length; ++i) {
-    var selection = timeline.selection;
+  TestRunner.addResult(`Count: ${flameChartView._searchResults.length}`);
+  for (var i = 0; i <= flameChartView._searchResults.length; ++i) {
+    var selection = timeline._selection;
     if (!selection || selection.type() !== Timeline.TimelineSelection.Type.TraceEvent) {
       TestRunner.addResult(`Invalid selection type: ${selection && selection.type()}`);
       continue;

@@ -7,7 +7,7 @@
   await TestRunner.loadModule('console'); await TestRunner.loadTestModule('application_test_runner');
 
   var tableName = 'table-name-with-dashes-and-"quotes"';
-  var escapedTableName = Resources.DatabaseTableView.prototype.escapeTableName(tableName, '', true);
+  var escapedTableName = Resources.DatabaseTableView.prototype._escapeTableName(tableName, '', true);
   TestRunner.addResult('Original value: ' + tableName);
   TestRunner.addResult('Escaped value: ' + escapedTableName);
   TestRunner.completeTest();

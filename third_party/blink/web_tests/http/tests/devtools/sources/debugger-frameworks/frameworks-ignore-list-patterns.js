@@ -34,7 +34,7 @@
   for (var i = 0; i < testCases.length; i += 2) {
     var url = testCases[i];
     TestRunner.addResult('Testing "' + url + '"');
-    var regexValue = Bindings.ignoreListManager.urlToRegExpString(url);
+    var regexValue = Bindings.ignoreListManager._urlToRegExpString(url);
     TestRunner.assertEquals(testCases[i + 1], regexValue);
     if (!regexValue)
       continue;

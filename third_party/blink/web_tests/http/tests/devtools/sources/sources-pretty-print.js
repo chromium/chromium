@@ -14,7 +14,7 @@
   const sourceFrame = await SourcesTestRunner.showScriptSourcePromise('ugly-function.js');
   dumpState('Initial state');
 
-  await sourceFrame.setPretty(true);
+  await sourceFrame._setPretty(true);
   dumpState('Toggle pretty print on');
 
   await new Promise(x => SourcesTestRunner.typeIn(sourceFrame.textEditor, 'X', x));
@@ -23,14 +23,14 @@
   sourceFrame.textEditor.codeMirror().execCommand('undo');
   dumpState('Undo');
 
-  await sourceFrame.setPretty(false);
+  await sourceFrame._setPretty(false);
   dumpState('Toggle pretty print off');
 
   TestRunner.completeTest();
 
   function dumpState(info) {
     const uiSourceCode = sourceFrame.uiSourceCode();
-    const button = sourceFrame.prettyToggle;
+    const button = sourceFrame._prettyToggle;
     let buttonState = 'invisible';
     button.element.disabled
     if (button.visible()) {

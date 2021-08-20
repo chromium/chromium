@@ -55,11 +55,11 @@ function submitWord(url) {
 
   function nextOccurrence(times) {
     for (var i = 0; i < times; ++i)
-      textEditor.selectNextOccurrenceController.selectNextOccurrence();
+      textEditor._selectNextOccurrenceController.selectNextOccurrence();
   }
 
   function undoLastSelection() {
-    textEditor.selectNextOccurrenceController.undoLastSelection();
+    textEditor._selectNextOccurrenceController.undoLastSelection();
   }
 
   function lineSelection(line, from, to) {

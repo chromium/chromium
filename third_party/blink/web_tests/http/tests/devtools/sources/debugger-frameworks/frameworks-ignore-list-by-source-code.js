@@ -18,7 +18,7 @@
   SourcesTestRunner.startDebuggerTest(step1, true);
 
   function step1() {
-    TestRunner.addSniffer(Bindings.IgnoreListManager.prototype, 'patternChangeFinishedForTests', step2);
+    TestRunner.addSniffer(Bindings.IgnoreListManager.prototype, '_patternChangeFinishedForTests', step2);
     var frameworkRegexString = '^framework\\.js$';
     Common.settingForTest('skipStackFramesPattern').set(frameworkRegexString);
   }

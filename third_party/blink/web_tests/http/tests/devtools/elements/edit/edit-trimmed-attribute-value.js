@@ -21,7 +21,7 @@
     TestRunner.addResult('Original textContent');
     TestRunner.addResult(treeElement.title.textContent);
 
-    treeElement.startEditingTarget(textElement);
+    treeElement._startEditingTarget(textElement);
     TestRunner.addResult('textContent when editing \'href\'');
     TestRunner.addResult(treeElement.title.textContent);
 

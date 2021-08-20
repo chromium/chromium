@@ -42,7 +42,7 @@
       HeapProfilerTestRunner.expandRow(row, expandA);
       function expandA(row) {
         function propertyMatcher(data) {
-          return data.referenceName === 'a' && data._name.charAt(0) === 'A';
+          return data._referenceName === 'a' && data._name.charAt(0) === 'A';
         }
         var aRow = HeapProfilerTestRunner.findMatchingRow(propertyMatcher, row);
         TestRunner.assertEquals(true, !!aRow, '"a: A" row');

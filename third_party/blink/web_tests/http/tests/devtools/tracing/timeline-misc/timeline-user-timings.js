@@ -12,7 +12,7 @@
   const rawTraceEvents = [
     {
       'args': {'name': 'Renderer'},
-      'cat': '_metadata',
+      'cat': '__metadata',
       'name': 'process_name',
       'ph': 'M',
       'pid': 17851,
@@ -21,7 +21,7 @@
     },
     {
       'args': {'name': 'CrRendererMain'},
-      'cat': '_metadata',
+      'cat': '__metadata',
       'name': 'thread_name',
       'ph': 'M',
       'pid': 17851,
@@ -54,7 +54,7 @@
   ];
 
   const timeline = UI.panels.timeline;
-  timeline.setModel(PerformanceTestRunner.createPerformanceModelWithEvents(rawTraceEvents));
+  timeline._setModel(PerformanceTestRunner.createPerformanceModelWithEvents(rawTraceEvents));
 
   testEventTree('CallTree');
   testEventTree('BottomUp');
@@ -62,25 +62,25 @@
   TestRunner.completeTest();
 
   function getTreeView(type) {
-    timeline.flameChart._detailsView._tabbedPane.selectTab(type, true);
-    return timeline.flameChart._detailsView._tabbedPane.visibleView;
+    timeline._flameChart._detailsView._tabbedPane.selectTab(type, true);
+    return timeline._flameChart._detailsView._tabbedPane.visibleView;
   }
 
   function testEventTree(type) {
-    const flameChart = timeline.flameChart._mainFlameChart;
-    flameChart.selectGroup(flameChart._rawTimelineData.groups.findIndex(group => group.name === 'Timings'));
+    const flameChart = timeline._flameChart._mainFlameChart;
+    flameChart._selectGroup(flameChart._rawTimelineData.groups.findIndex(group => group.name === 'Timings'));
     TestRunner.addResult('');
     TestRunner.addResult(type);
     const tree = getTreeView(type);
     const rootNode = tree.dataGrid.rootNode();
     for (const node of rootNode.children)
-      printEventTree(1, node.profileNode, node._treeView);
+      printEventTree(1, node._profileNode, node._treeView);
   }
 
   function printEventTree(padding, node, treeView) {
     let name;
     if (node.isGroupNode()) {
-      name = treeView.displayInfoForGroupNode(node).name;
+      name = treeView._displayInfoForGroupNode(node).name;
     } else {
       name = node.event.name === TimelineModel.TimelineModel.RecordType.JSFrame ?
           UI.beautifyFunctionName(node.event.args['data']['functionName']) :

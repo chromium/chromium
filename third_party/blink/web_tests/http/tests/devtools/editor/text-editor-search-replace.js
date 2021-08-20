@@ -15,14 +15,14 @@
   function showReplaceField() {
     var searchableView = UI.panels.sources.searchableView();
     searchableView.showSearchField();
-    searchableView.replaceToggleButton.setToggled(true);
-    searchableView.updateSecondRowVisibility();
+    searchableView._replaceToggleButton.setToggled(true);
+    searchableView._updateSecondRowVisibility();
   }
 
   function runReplaceAll(searchValue, replaceValue) {
-    panel.searchableView().searchInputElement.value = searchValue;
-    panel.searchableView().replaceInputElement.value = replaceValue;
-    panel.searchableView().replaceAll();
+    panel.searchableView()._searchInputElement.value = searchValue;
+    panel.searchableView()._replaceInputElement.value = replaceValue;
+    panel.searchableView()._replaceAll();
   }
 
   function dumpTextEditor(message) {
@@ -31,7 +31,7 @@
   }
 
   function didShowScriptSource(sourceFrame) {
-    textEditor = sourceFrame.textEditor;
+    textEditor = sourceFrame._textEditor;
     showReplaceField();
 
     TestRunner.runTestSuite([

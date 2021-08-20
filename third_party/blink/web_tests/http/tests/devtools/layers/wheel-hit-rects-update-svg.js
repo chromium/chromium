@@ -42,8 +42,8 @@
 
   TestRunner.addResult('Scroll rectangles');
   LayersTestRunner.layerTreeModel().layerTree().forEachLayer(layer => {
-    if (layer.scrollRects.length > 0)
-      TestRunner.addObject(layer.scrollRects);
+    if (layer._scrollRects.length > 0)
+      TestRunner.addObject(layer._scrollRects);
   });
   TestRunner.completeTest();
 })();

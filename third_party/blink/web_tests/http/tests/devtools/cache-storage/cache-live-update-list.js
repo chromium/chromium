@@ -12,22 +12,22 @@
 
   var cacheStorageModel = TestRunner.mainTarget.model(SDK.ServiceWorkerCacheModel);
   cacheStorageModel.enable();
-  cacheStorageModel.throttler._timeout = 0;
+  cacheStorageModel._throttler._timeout = 0;
 
   await ApplicationTestRunner.clearAllCaches();
   await ApplicationTestRunner.dumpCacheTree();
 
-  var promise = TestRunner.addSnifferPromise(SDK.ServiceWorkerCacheModel.prototype, 'cacheAdded');
+  var promise = TestRunner.addSnifferPromise(SDK.ServiceWorkerCacheModel.prototype, '_cacheAdded');
   ApplicationTestRunner.createCache('testCache1');
   await promise;
   await ApplicationTestRunner.dumpCacheTreeNoRefresh();
 
-  promise = TestRunner.addSnifferPromise(SDK.ServiceWorkerCacheModel.prototype, 'cacheAdded');
+  promise = TestRunner.addSnifferPromise(SDK.ServiceWorkerCacheModel.prototype, '_cacheAdded');
   ApplicationTestRunner.createCache('testCache2');
   await promise;
   await ApplicationTestRunner.dumpCacheTreeNoRefresh();
 
-  promise = TestRunner.addSnifferPromise(SDK.ServiceWorkerCacheModel.prototype, 'cacheRemoved');
+  promise = TestRunner.addSnifferPromise(SDK.ServiceWorkerCacheModel.prototype, '_cacheRemoved');
   ApplicationTestRunner.deleteCache('testCache1');
   await promise;
   await ApplicationTestRunner.dumpCacheTreeNoRefresh();

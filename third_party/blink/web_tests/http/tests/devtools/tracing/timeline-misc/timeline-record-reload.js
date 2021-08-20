@@ -11,8 +11,8 @@
   var panel = UI.panels.timeline;
   PerformanceTestRunner.runWhenTimelineIsReady(recordingStopped);
 
-  panel.millisecondsToRecordAfterLoadEvent = 1;
-  panel.recordReload();
+  panel._millisecondsToRecordAfterLoadEvent = 1;
+  panel._recordReload();
 
   function recordingStopped() {
     TestRunner.addResult('Recording stopped');

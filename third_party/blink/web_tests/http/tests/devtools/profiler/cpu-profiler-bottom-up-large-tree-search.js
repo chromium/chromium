@@ -53,12 +53,12 @@
   };
   var view = new Profiler.CPUProfileView(profileAndExpectations);
   view.viewSelectComboBox.setSelectedIndex(1);
-  view.changeView();
+  view._changeView();
   var tree = view.profileDataGridTree;
   if (!tree)
     TestRunner.addResult('no tree');
   tree.performSearch(new UI.SearchableView.SearchConfig('foo12', true, false), false);
-  for (var item of tree.searchResults) {
+  for (var item of tree._searchResults) {
     var node = item.profileNode;
     TestRunner.addResult(`${node.callUID}: ${node.functionName} ${node.self} ${node.total}`);
   }

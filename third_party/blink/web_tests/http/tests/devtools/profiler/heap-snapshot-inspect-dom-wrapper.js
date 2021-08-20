@@ -14,8 +14,8 @@
 
   var heapProfileType = Profiler.ProfileTypeRegistry.instance.heapSnapshotProfileType;
   heapProfileType.addEventListener(Profiler.HeapSnapshotProfileType.SnapshotReceived, finishHeapSnapshot);
-  TestRunner.addSniffer(heapProfileType, 'snapshotReceived', snapshotReceived);
-  heapProfileType.takeHeapSnapshot();
+  TestRunner.addSniffer(heapProfileType, '_snapshotReceived', snapshotReceived);
+  heapProfileType._takeHeapSnapshot();
 
   function finishHeapSnapshot(uid) {
     TestRunner.addResult('PASS: snapshot was taken');
@@ -33,8 +33,8 @@
 
   async function snapshotReceived(profile) {
     TestRunner.addResult('PASS: snapshot was received');
-    var snapshotProxy = profile.snapshotProxy;
-    var bodyWrapperIds = await snapshotProxy.callMethodPromise('idsOfObjectsWithName', 'HTMLBodyElement');
+    var snapshotProxy = profile._snapshotProxy;
+    var bodyWrapperIds = await snapshotProxy._callMethodPromise('idsOfObjectsWithName', 'HTMLBodyElement');
 
     if (bodyWrapperIds.length < 3)
       return clear('FAILED: less than 3 HTMLBodyElement objects were detected');
@@ -63,7 +63,7 @@
     if (errorMessage)
       TestRunner.addResult(errorMessage);
     setTimeout(done, 0);
-    UI.panels.heap_profiler.reset();
+    UI.panels.heap_profiler._reset();
     return !errorMessage;
   }
 

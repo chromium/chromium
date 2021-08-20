@@ -14,24 +14,24 @@
   SourcesTestRunner.showScriptSource('edit-me.js', step1);
 
   function step1(sourceFrame) {
-    sourceFrame.textEditor.setSelection(findString(sourceFrame, 'return'));
+    sourceFrame._textEditor.setSelection(findString(sourceFrame, 'return'));
     setTimeout(step2);
   }
 
   async function step2() {
     panel.searchableView().showSearchField();
-    TestRunner.addResult('Search controller: \'' + panel.searchableView().searchInputElement.value + '\'');
+    TestRunner.addResult('Search controller: \'' + panel.searchableView()._searchInputElement.value + '\'');
     var action = new Sources.SearchSourcesView.ActionDelegate();
-    await action.showSearch();
+    await action._showSearch();
     var searchView = /** @type {!Search.SearchView} */ (
         Sources.SearchSourcesView.instance());
-    TestRunner.addResult('Advanced search controller: \'' + searchView.search.value + '\'');
+    TestRunner.addResult('Advanced search controller: \'' + searchView._search.value + '\'');
     TestRunner.completeTest();
   }
 
   function findString(sourceFrame, string) {
-    for (var i = 0; i < sourceFrame.textEditor.linesCount; ++i) {
-      var line = sourceFrame.textEditor.line(i);
+    for (var i = 0; i < sourceFrame._textEditor.linesCount; ++i) {
+      var line = sourceFrame._textEditor.line(i);
       var column = line.indexOf(string);
       if (column === -1)
         continue;

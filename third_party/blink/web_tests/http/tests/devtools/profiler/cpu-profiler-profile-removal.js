@@ -25,9 +25,9 @@
       while (type.getProfiles().length !== 0)
         type.removeProfile(type.getProfiles()[0]);
       TestRunner.addResult('Profile groups after removal:');
-      for (var key in profiles.profileGroups)
-        TestRunner.addResult(key + ': ' + profiles.profileGroups[key].length);
-      var section = profiles.typeIdToSidebarSection[type.id];
+      for (var key in profiles._profileGroups)
+        TestRunner.addResult(key + ': ' + profiles._profileGroups[key].length);
+      var section = profiles._typeIdToSidebarSection[type.id];
       TestRunner.assertEquals(0, section.children.length, 'All children has been removed');
       CPUProfilerTestRunner.completeProfilerTest();
     }

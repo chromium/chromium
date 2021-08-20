@@ -19,7 +19,7 @@
   function step1() {
     TestRunner.evaluateInPage('installWorker()');
     SourcesTestRunner.waitUntilPaused(paused);
-    TestRunner.addSniffer(Bindings.CompilerScriptMapping.prototype, 'sourceMapAttachedForTest', sourceMapLoaded);
+    TestRunner.addSniffer(Bindings.CompilerScriptMapping.prototype, '_sourceMapAttachedForTest', sourceMapLoaded);
   }
 
   var callFrames;

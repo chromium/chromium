@@ -62,7 +62,7 @@
       textEditor.setSelection(TextUtils.TextRange.createFromLocation(1, 10));
       SourcesTestRunner.dumpTextWithSelection(textEditor);
       TestRunner.addSniffer(
-          TextEditor.TextEditorAutocompleteController.prototype, 'onSuggestionsShownForTest', suggestionsShown);
+          TextEditor.TextEditorAutocompleteController.prototype, '_onSuggestionsShownForTest', suggestionsShown);
       SourcesTestRunner.typeIn(textEditor, ':');
 
       function suggestionsShown(words) {

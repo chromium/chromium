@@ -37,9 +37,9 @@
 
       var section = ElementsTestRunner.firstMatchedStyleSection();
       section.startEditingSelector();
-      section.selectorElement.textContent = '#container, SELECTOR';
+      section._selectorElement.textContent = '#container, SELECTOR';
       ElementsTestRunner.waitForSelectorCommitted(next);
-      section.selectorElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
+      section._selectorElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
     },
 
     async function editMedia(next) {

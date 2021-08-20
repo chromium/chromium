@@ -70,7 +70,7 @@
       var paths = [];
       for (var i = 0; i < names.length; ++i)
         paths.push('/var/www/' + names[i]);
-      Persistence.isolatedFileSystemManager.onSearchCompleted(
+      Persistence.isolatedFileSystemManager._onSearchCompleted(
           {data: {requestId: requestId, fileSystemPath: path, files: paths}});
     }
   };

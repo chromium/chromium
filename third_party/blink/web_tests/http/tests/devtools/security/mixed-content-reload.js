@@ -20,7 +20,7 @@
 
   // At this point, the page has mixed content but no mixed requests have been recorded, so the user should be prompted to refresh.
   var explanations =
-      Security.SecurityPanel.instance()._mainView.contentElement.getElementsByClassName('security-explanation');
+      Security.SecurityPanel._instance()._mainView.contentElement.getElementsByClassName('security-explanation');
   for (var i = 0; i < explanations.length; i++)
     TestRunner.dumpDeepInnerHTML(explanations[i]);
 
@@ -38,7 +38,7 @@
   SecurityTestRunner.dispatchRequestFinished(request);
 
   var explanations =
-      Security.SecurityPanel.instance()._mainView.contentElement.getElementsByClassName('security-explanation');
+      Security.SecurityPanel._instance()._mainView.contentElement.getElementsByClassName('security-explanation');
   for (var i = 0; i < explanations.length; i++)
     TestRunner.dumpDeepInnerHTML(explanations[i]);
   TestRunner.completeTest();

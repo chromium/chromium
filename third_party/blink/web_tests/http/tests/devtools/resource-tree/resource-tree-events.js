@@ -8,7 +8,7 @@
   await TestRunner.showPanel('resources');
 
   // Reset resourceTreeModel.
-  TestRunner.resourceTreeModel.mainFrame.remove();
+  TestRunner.resourceTreeModel.mainFrame._remove();
 
   for (var eventName in SDK.ResourceTreeModel.Events)
     TestRunner.resourceTreeModel.addEventListener(
@@ -48,25 +48,25 @@
 
   // Simulate navigation to new render view: do not attach root frame.
   TestRunner.addResult('Navigating root frame');
-  TestRunner.resourceTreeModel.frameNavigated(createFramePayload('root1'));
+  TestRunner.resourceTreeModel._frameNavigated(createFramePayload('root1'));
   TestRunner.addResult('Navigating child frame 1');
-  TestRunner.resourceTreeModel.frameAttached('child1', 'root1');
-  TestRunner.resourceTreeModel.frameNavigated(createFramePayload('child1', 'root1'));
+  TestRunner.resourceTreeModel._frameAttached('child1', 'root1');
+  TestRunner.resourceTreeModel._frameNavigated(createFramePayload('child1', 'root1'));
   TestRunner.addResult('Navigating child frame 1 to a different URL');
-  TestRunner.resourceTreeModel.frameNavigated(createFramePayload('child1', 'root1', 'child1-new'));
+  TestRunner.resourceTreeModel._frameNavigated(createFramePayload('child1', 'root1', 'child1-new'));
   TestRunner.addResult('Navigating child frame 2');
-  TestRunner.resourceTreeModel.frameAttached('child2', 'root1');
-  TestRunner.resourceTreeModel.frameNavigated(createFramePayload('child2', 'root1'));
+  TestRunner.resourceTreeModel._frameAttached('child2', 'root1');
+  TestRunner.resourceTreeModel._frameNavigated(createFramePayload('child2', 'root1'));
   TestRunner.addResult('Detaching child frame 1');
-  TestRunner.resourceTreeModel.frameDetached('child1');
+  TestRunner.resourceTreeModel._frameDetached('child1');
 
   TestRunner.addResult('Navigating root frame');
-  TestRunner.resourceTreeModel.frameAttached('root2');
-  TestRunner.resourceTreeModel.frameNavigated(createFramePayload('root2'));
+  TestRunner.resourceTreeModel._frameAttached('root2');
+  TestRunner.resourceTreeModel._frameNavigated(createFramePayload('root2'));
 
   TestRunner.addResult('Navigating root frame, unreachable');
-  TestRunner.resourceTreeModel.frameAttached('rootUnreachable');
-  TestRunner.resourceTreeModel.frameNavigated(createUnreachableFramePayload('rootUnreachable'));
+  TestRunner.resourceTreeModel._frameAttached('rootUnreachable');
+  TestRunner.resourceTreeModel._frameNavigated(createUnreachableFramePayload('rootUnreachable'));
 
   TestRunner.completeTest();
 

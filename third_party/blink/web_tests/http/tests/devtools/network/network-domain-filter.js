@@ -10,11 +10,11 @@
   function checkSubdomains(domain) {
     TestRunner.addResult('');
     TestRunner.addResult('Domain: ' + domain);
-    TestRunner.addResult('Subdomains: ' + JSON.stringify(Network.NetworkLogView.subdomains(domain)));
+    TestRunner.addResult('Subdomains: ' + JSON.stringify(Network.NetworkLogView._subdomains(domain)));
   }
 
   function checkFilter(value, domains) {
-    var filter = Network.NetworkLogView.createRequestDomainFilter(value);
+    var filter = Network.NetworkLogView._createRequestDomainFilter(value);
     TestRunner.addResult('');
     TestRunner.addResult('Filter: ' + value);
     for (var i = 0; i < domains.length; ++i)

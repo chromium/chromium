@@ -67,18 +67,18 @@
   ElementsTestRunner.waitForAnimationAdded(step2);
 
   function step2(group) {
-    timeline.selectAnimationGroup(group);
-    timeline.render();
+    timeline._selectAnimationGroup(group);
+    timeline._render();
     TestRunner.addResult('>>>> Animation with start delay only');
     ElementsTestRunner.dumpAnimationTimeline(timeline);
-    timeline.reset();
+    timeline._reset();
     ElementsTestRunner.waitForAnimationAdded(step3);
     TestRunner.evaluateInPage('startAnimationWithEndDelay()');
   }
 
   function step3(group) {
-    timeline.selectAnimationGroup(group);
-    timeline.render();
+    timeline._selectAnimationGroup(group);
+    timeline._render();
     TestRunner.addResult('>>>> Animation with start and end delay');
     ElementsTestRunner.dumpAnimationTimeline(timeline);
     ElementsTestRunner.waitForAnimationAdded(step5);
@@ -86,28 +86,28 @@
   }
 
   function step5(group) {
-    timeline.selectAnimationGroup(group);
-    timeline.render();
+    timeline._selectAnimationGroup(group);
+    timeline._render();
     TestRunner.addResult('>>>> Animation with step timing function');
     ElementsTestRunner.dumpAnimationTimeline(timeline);
-    timeline.reset();
+    timeline._reset();
     ElementsTestRunner.waitForAnimationAdded(step6);
     TestRunner.evaluateInPage('startCSSAnimation()');
   }
 
   function step6(group) {
-    timeline.selectAnimationGroup(group);
-    timeline.render();
+    timeline._selectAnimationGroup(group);
+    timeline._render();
     TestRunner.addResult('>>>> CSS animation started');
     ElementsTestRunner.dumpAnimationTimeline(timeline);
-    timeline.reset();
+    timeline._reset();
     ElementsTestRunner.waitForAnimationAdded(step7);
     TestRunner.evaluateInPage('startCSSTransition()');
   }
 
   function step7(group) {
-    timeline.selectAnimationGroup(group);
-    timeline.render();
+    timeline._selectAnimationGroup(group);
+    timeline._render();
     TestRunner.addResult('>>>> CSS transition started');
     ElementsTestRunner.dumpAnimationTimeline(timeline);
     TestRunner.completeTest();

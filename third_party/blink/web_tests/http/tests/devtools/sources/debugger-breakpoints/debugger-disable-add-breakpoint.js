@@ -22,7 +22,7 @@
     TestRunner.addResult('Main resource was shown.');
     TestRunner.debuggerModel.addEventListener(
         SDK.DebuggerModel.Events.DebuggerWasDisabled, step3, this);
-    TestRunner.debuggerModel.disableDebugger();
+    TestRunner.debuggerModel._disableDebugger();
   }
 
   async function step3() {
@@ -31,7 +31,7 @@
     TestRunner.addResult('Debugger disabled.');
     await SourcesTestRunner.setBreakpoint(testSourceFrame, 3, '', true);
     TestRunner.addResult('Breakpoint added');
-    await TestRunner.debuggerModel.enableDebugger();
+    await TestRunner.debuggerModel._enableDebugger();
     step4();
   }
 
@@ -48,7 +48,7 @@
     TestRunner.addResult('Disable debugger again');
     TestRunner.debuggerModel.addEventListener(
         SDK.DebuggerModel.Events.DebuggerWasDisabled, step7, this);
-    TestRunner.debuggerModel.disableDebugger();
+    TestRunner.debuggerModel._disableDebugger();
   }
 
   function step7() {
@@ -59,7 +59,7 @@
     TestRunner.addResult('Breakpoint removed');
     TestRunner.debuggerModel.addEventListener(
         SDK.DebuggerModel.Events.DebuggerWasEnabled, step8, this);
-    TestRunner.debuggerModel.enableDebugger();
+    TestRunner.debuggerModel._enableDebugger();
   }
 
   function step8() {

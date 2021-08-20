@@ -15,7 +15,7 @@
       function runVersionControllerTest(oldVersion, currentVersion) {
         TestRunner.addResult('Testing methods to run to upgrade from ' + oldVersion + ' to ' + currentVersion + '.');
         var versionController = new Common.VersionController();
-        var methodsToRun = versionController.methodsToRunToUpdateVersion(oldVersion, currentVersion);
+        var methodsToRun = versionController._methodsToRunToUpdateVersion(oldVersion, currentVersion);
         TestRunner.addResult('Methods to run: ' + JSON.stringify(methodsToRun));
         TestRunner.addResult('');
       }
@@ -41,7 +41,7 @@
         for (var i = 0; i < breakpointsCount; ++i)
           serializedBreakpoints.push(createBreakpoint('file' + i + '.js', i % 10, '', true));
         var breakpointsSetting = new TestRunner.MockSetting(serializedBreakpoints);
-        versionController.clearBreakpointsWhenTooMany(breakpointsSetting, maxBreakpointsCount);
+        versionController._clearBreakpointsWhenTooMany(breakpointsSetting, maxBreakpointsCount);
         TestRunner.addResult(
             'Number of breakpoints left in the setting after the test: ' + breakpointsSetting.get().length + '.');
         TestRunner.addResult('');

@@ -9,7 +9,7 @@
     `console.log(1);
 //# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZXZhbC1pbi5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbImV2YWwtaW4iXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEsT0FBTyxDQUFDLEdBQUcsQ0FBQyxDQUFDLENBQUMsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbImNvbnNvbGUubG9nKDEpOyJdfQ==`;
 
-  TestRunner.addSniffer(Bindings.IgnoreListManager.prototype, 'patternChangeFinishedForTests', step1);
+  TestRunner.addSniffer(Bindings.IgnoreListManager.prototype, '_patternChangeFinishedForTests', step1);
   var frameworkRegexString = '.*';
   Common.settingForTest('skipStackFramesPattern').set('.*');
 
@@ -20,7 +20,7 @@
     await ConsoleTestRunner.waitForConsoleMessagesPromise(1);
 
     await TestRunner.reloadPagePromise();
-    TestRunner.addResult(`After reload, Console message count: ${SDK.consoleModel.messages.length}`);
+    TestRunner.addResult(`After reload, Console message count: ${SDK.consoleModel._messages.length}`);
     TestRunner.completeTest();
   }
 })();

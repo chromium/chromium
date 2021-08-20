@@ -49,7 +49,7 @@
   async function waitForNextCreatedFile() {
     return new Promise(result => {
       TestRunner.addSniffer(
-          Persistence.networkPersistenceManager, 'fileCreatedForTest',
+          Persistence.networkPersistenceManager, '_fileCreatedForTest',
           (path, name) => result(path + '/' + name), false);
     });
   }

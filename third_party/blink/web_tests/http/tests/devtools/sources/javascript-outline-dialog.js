@@ -13,7 +13,7 @@
   var provider;
   function onSourceShown(sourceFrame) {
     TestRunner.addSniffer(Sources.OutlineQuickOpen.prototype, 'refresh', onQuickOpenFulfilled);
-    UI.panels.sources.sourcesView._showOutlineQuickOpen();
+    UI.panels.sources._sourcesView._showOutlineQuickOpen();
   }
 
   function onQuickOpenFulfilled() {

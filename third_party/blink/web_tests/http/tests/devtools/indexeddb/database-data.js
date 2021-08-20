@@ -87,7 +87,7 @@
     }
   }
 
-  TestRunner.addSniffer(Resources.IndexedDBModel.prototype, 'updateOriginDatabaseNames', fillDatabase, false);
+  TestRunner.addSniffer(Resources.IndexedDBModel.prototype, '_updateOriginDatabaseNames', fillDatabase, false);
 
   function fillDatabase() {
     ApplicationTestRunner.createDatabase(mainFrameId, databaseName, step2);
@@ -118,7 +118,7 @@
           databaseId, {name: objectStoreName2, autoIncrement: true}).then(printMetadata);
         resolve();
       });
-      TestRunner.addSniffer(Resources.IndexedDBModel.prototype, 'updateOriginDatabaseNames', refreshDatabase, false);
+      TestRunner.addSniffer(Resources.IndexedDBModel.prototype, '_updateOriginDatabaseNames', refreshDatabase, false);
       indexedDBModel.refreshDatabaseNames();
 
       function printMetadata(metadata) {

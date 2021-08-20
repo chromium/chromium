@@ -10,34 +10,34 @@
   await TestRunner.showPanel('timeline');
 
   var timeline = UI.panels.timeline;
-  var overviewPane = timeline.overviewPane;
+  var overviewPane = timeline._overviewPane;
 
   await PerformanceTestRunner.loadTimeline(PerformanceTestRunner.timelineData());
 
-  overviewPane.update();
+  overviewPane._update();
   TestRunner.addResult('OverviewPane:');
-  overviewPane.overviewCalculator.setDisplayWidth(450);
-  dumpDividers(overviewPane.overviewCalculator);
+  overviewPane._overviewCalculator.setDisplayWidth(450);
+  dumpDividers(overviewPane._overviewCalculator);
   TestRunner.addResult('');
 
   dumpFlameChartRecordsCountForRange(0, 1);
   dumpFlameChartRecordsCountForRange(0.25, 0.75);
   dumpFlameChartRecordsCountForRange(0.33, 0.66);
 
-  overviewPane.overviewGrid.setWindow(0.1, 0.9);
+  overviewPane._overviewGrid.setWindow(0.1, 0.9);
 
   TestRunner.addResult('--------------------------------------------------------');
-  const window = timeline.performanceModel.window();
+  const window = timeline._performanceModel.window();
   TestRunner.addResult(`time range = ${window.left} - ${window.right}`);
   TestRunner.completeTest();
 
   function dumpFlameChartRecordsCountForRange(windowLeft, windowRight) {
-    var mainView = timeline.flameChart._mainFlameChart;
-    mainView.muteAnimation = true;
-    overviewPane.overviewGrid.setWindow(windowLeft, windowRight);
+    var mainView = timeline._flameChart._mainFlameChart;
+    mainView._muteAnimation = true;
+    overviewPane._overviewGrid.setWindow(windowLeft, windowRight);
     mainView.update();
     TestRunner.addResult('range = ' + windowLeft + ' - ' + windowRight);
-    const window = timeline.performanceModel.window();
+    const window = timeline._performanceModel.window();
     TestRunner.addResult(`time range = ${window.left} - ${window.right}`);
     TestRunner.addResult('');
   }

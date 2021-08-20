@@ -73,7 +73,7 @@
   };
   var view = new Profiler.CPUProfileView(profileAndExpectations);
   view.viewSelectComboBox.setSelectedIndex(1);
-  view.changeView();
+  view._changeView();
   var tree = view.profileDataGridTree;
   if (!tree)
     TestRunner.addResult('no tree');

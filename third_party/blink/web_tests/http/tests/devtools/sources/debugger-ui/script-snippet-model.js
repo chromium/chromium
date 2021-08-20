@@ -118,7 +118,7 @@ doesNothing;
 
       const functionPromise = TestRunner.addSnifferPromise(
           Console.ConsoleViewMessage.prototype,
-          'formattedParameterAsFunctionForTest');
+          '_formattedParameterAsFunctionForTest');
       TestRunner.addResult('Run Snippet2..');
       Snippets.evaluateScriptSnippet(uiSourceCode2);
       await ConsoleTestRunner.waitUntilMessageReceivedPromise();
@@ -162,7 +162,7 @@ doesNothing;
 
     async function testEvaluateWithWorker(next) {
       TestRunner.addSniffer(
-          SDK.RuntimeModel.prototype, 'executionContextCreated',
+          SDK.RuntimeModel.prototype, '_executionContextCreated',
           contextCreated);
       TestRunner.evaluateInPagePromise(`
           var workerScript = "postMessage('Done.');";

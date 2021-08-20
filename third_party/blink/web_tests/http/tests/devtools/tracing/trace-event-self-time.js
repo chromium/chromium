@@ -11,7 +11,7 @@
   var rawTraceEvents = [
     {
       'args': {'name': 'Renderer'},
-      'cat': '_metadata',
+      'cat': '__metadata',
       'name': 'process_name',
       'ph': 'M',
       'pid': 17851,
@@ -20,7 +20,7 @@
     },
     {
       'args': {'name': 'CrRendererMain'},
-      'cat': '_metadata',
+      'cat': '__metadata',
       'name': 'thread_name',
       'ph': 'M',
       'pid': 17851,
@@ -237,10 +237,10 @@
   };
 
   var timelineController = PerformanceTestRunner.createTimelineController();
-  timelineController.addCpuProfile(SDK.targetManager.mainTarget().id(), cpuProfile);
+  timelineController._addCpuProfile(SDK.targetManager.mainTarget().id(), cpuProfile);
   timelineController.traceEventsCollected(rawTraceEvents);
-  await timelineController.finalizeTrace();
-  var events = UI.panels.timeline.performanceModel.timelineModel().inspectedTargetEvents();
+  await timelineController._finalizeTrace();
+  var events = UI.panels.timeline._performanceModel.timelineModel().inspectedTargetEvents();
   events.forEach(
       e => TestRunner.addResult(
           `${e.name}: ${e.startTime} ${(e.selfTime || 0).toFixed(2)}/${(e.duration || 0).toFixed(2)}`));

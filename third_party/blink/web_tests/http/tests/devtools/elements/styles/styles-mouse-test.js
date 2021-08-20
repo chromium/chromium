@@ -17,8 +17,8 @@
   `);
   await new Promise(x => ElementsTestRunner.selectNodeAndWaitForStyles('inspected', x));
 
-  var stylesPane = UI.panels.elements.stylesWidget;
-  var firstRule = stylesPane.sectionBlocks[0].sections[1].propertiesTreeOutline;
+  var stylesPane = UI.panels.elements._stylesWidget;
+  var firstRule = stylesPane._sectionBlocks[0].sections[1].propertiesTreeOutline;
   var blueElement = () => firstRule.firstChild().valueElement;
   var colorElement = () => firstRule.firstChild().nameElement;
   var listItemElement = () => firstRule.firstChild().listItemElement;
@@ -65,7 +65,7 @@
   TestRunner.completeTest();
 
   function dumpEditingState() {
-    if (!stylesPane.isEditingStyle) {
+    if (!stylesPane._isEditingStyle) {
       TestRunner.addResult('Not editing');
       return;
     }

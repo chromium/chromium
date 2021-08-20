@@ -23,15 +23,15 @@
     function editSelector(next) {
       var section = ElementsTestRunner.firstMatchedStyleSection();
       section.startEditingSelector();
-      section.selectorElement.textContent = '#inspected, .INSERTED-OTHER-SELECTOR';
+      section._selectorElement.textContent = '#inspected, .INSERTED-OTHER-SELECTOR';
       ElementsTestRunner.waitForSelectorCommitted(next);
-      section.selectorElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
+      section._selectorElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
     },
 
     function testDisableProperty(next) {
       var treeItem = ElementsTestRunner.getMatchedStylePropertyTreeItem('color');
       ElementsTestRunner.waitForStyleApplied(onPropertyDisabled);
-      treeItem.toggleDisabled(true);
+      treeItem._toggleDisabled(true);
 
       async function onPropertyDisabled() {
         TestRunner.addResult('\n\n#### AFTER PROPERTY DISABLED ####\n\n');

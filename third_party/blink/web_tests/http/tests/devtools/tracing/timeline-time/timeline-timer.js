@@ -26,7 +26,7 @@
       }
   `);
 
-  UI.panels.timeline.disableCaptureJSProfileSetting.set(true);
+  UI.panels.timeline._disableCaptureJSProfileSetting.set(true);
   await PerformanceTestRunner.invokeAsyncWithTimeline('performActions');
 
   await PerformanceTestRunner.printTimelineRecordsWithDetails('TimerInstall');

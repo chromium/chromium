@@ -50,7 +50,7 @@
     }
   }
 
-  TestRunner.addSniffer(Resources.IndexedDBModel.prototype, 'updateOriginDatabaseNames', fillDatabase, false);
+  TestRunner.addSniffer(Resources.IndexedDBModel.prototype, '_updateOriginDatabaseNames', fillDatabase, false);
 
   function fillDatabase() {
     TestRunner.addResult('Preparing database');
@@ -104,22 +104,22 @@
   }
 
   function checkDatabaseDoesExist(callback) {
-    TestRunner.addSniffer(Resources.IndexedDBModel.prototype, 'updateOriginDatabaseNames', step2, false);
+    TestRunner.addSniffer(Resources.IndexedDBModel.prototype, '_updateOriginDatabaseNames', step2, false);
     indexedDBModel.refreshDatabaseNames();
 
     function step2() {
-      var names = indexedDBModel.databaseNamesBySecurityOrigin[securityOrigin];
+      var names = indexedDBModel._databaseNamesBySecurityOrigin[securityOrigin];
       TestRunner.assertGreaterOrEqual(0, names.indexOf(databaseName), 'Database should exist');
       callback();
     }
   }
 
   function checkDatabaseDoesNotExist(callback) {
-    TestRunner.addSniffer(Resources.IndexedDBModel.prototype, 'updateOriginDatabaseNames', step2, false);
+    TestRunner.addSniffer(Resources.IndexedDBModel.prototype, '_updateOriginDatabaseNames', step2, false);
     indexedDBModel.refreshDatabaseNames();
 
     function step2() {
-      var names = indexedDBModel.databaseNamesBySecurityOrigin[securityOrigin];
+      var names = indexedDBModel._databaseNamesBySecurityOrigin[securityOrigin];
       TestRunner.assertEquals(-1, names.indexOf(databaseName), 'Database should not exist');
       callback();
     }

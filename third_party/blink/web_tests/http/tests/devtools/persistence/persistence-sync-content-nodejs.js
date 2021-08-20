@@ -13,8 +13,8 @@
 
   var content = ['', '', 'var express = require("express");', '//TODO'].join('\n');
 
-  var fsContent = Persistence.Persistence.NodeShebang + content;
-  var nodeContent = Persistence.Persistence.NodePrefix + content + Persistence.Persistence._NodeSuffix;
+  var fsContent = Persistence.Persistence._NodeShebang + content;
+  var nodeContent = Persistence.Persistence._NodePrefix + content + Persistence.Persistence._NodeSuffix;
 
   TestRunner.addResult('Initial fileSystem content:');
   TestRunner.addResult(indent(fsContent));
@@ -41,7 +41,7 @@
   var testSuite = [
     function addNetworkUISourceCodeRevision(next) {
       var newContent = nodeContent.replace('//TODO', 'network();\n//TODO');
-      TestRunner.addSniffer(Persistence.Persistence.prototype, 'contentSyncedForTest', onSynced);
+      TestRunner.addSniffer(Persistence.Persistence.prototype, '_contentSyncedForTest', onSynced);
       const writePromise = TestRunner.addSnifferPromise(BindingsTestRunner.TestFileSystem.Writer.prototype, 'truncate');
       binding.network.addRevision(newContent);
 
@@ -53,7 +53,7 @@
 
     function setNetworkUISourceCodeWorkingCopy(next) {
       var newContent = nodeContent.replace('//TODO', 'workingCopy1();\n//TODO');
-      TestRunner.addSniffer(Persistence.Persistence.prototype, 'contentSyncedForTest', onSynced);
+      TestRunner.addSniffer(Persistence.Persistence.prototype, '_contentSyncedForTest', onSynced);
       binding.network.setWorkingCopy(newContent);
 
       function onSynced() {
@@ -64,7 +64,7 @@
 
     async function changeFileSystemFile(next) {
       var newContent = fsContent.replace('//TODO', 'filesystem();\n//TODO');
-      TestRunner.addSniffer(Persistence.Persistence.prototype, 'contentSyncedForTest', onSynced);
+      TestRunner.addSniffer(Persistence.Persistence.prototype, '_contentSyncedForTest', onSynced);
       fsEntry.setContent(newContent);
 
       function onSynced() {
@@ -75,7 +75,7 @@
 
     function setFileSystemUISourceCodeWorkingCopy(next) {
       var newContent = fsContent.replace('//TODO', 'workingCopy2();\n//TODO');
-      TestRunner.addSniffer(Persistence.Persistence.prototype, 'contentSyncedForTest', onSynced);
+      TestRunner.addSniffer(Persistence.Persistence.prototype, '_contentSyncedForTest', onSynced);
       binding.fileSystem.setWorkingCopy(newContent);
 
       function onSynced() {

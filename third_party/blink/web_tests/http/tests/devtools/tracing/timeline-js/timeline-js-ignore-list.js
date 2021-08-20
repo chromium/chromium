@@ -11,7 +11,7 @@
   const rawTraceEvents = [
     {
       'args': {'name': 'Renderer'},
-      'cat': '_metadata',
+      'cat': '__metadata',
       'name': 'process_name',
       'ph': 'M',
       'pid': 17851,
@@ -20,7 +20,7 @@
     },
     {
       'args': {'name': 'CrRendererMain'},
-      'cat': '_metadata',
+      'cat': '__metadata',
       'name': 'thread_name',
       'ph': 'M',
       'pid': 17851,
@@ -219,11 +219,11 @@
   dataProvider.setModel(PerformanceTestRunner.createPerformanceModelWithEvents(rawTraceEvents));
 
   TestRunner.addResult('\nIgnore listed url: lib_script.js');
-  Bindings.ignoreListManager.ignoreListURL('lib_script.js');
+  Bindings.ignoreListManager._ignoreListURL('lib_script.js');
   printTimelineData(dataProvider);
 
   TestRunner.addResult('\nUnignored url: lib_script.js');
-  Bindings.ignoreListManager.unIgnoreListURL('lib_script.js');
+  Bindings.ignoreListManager._unIgnoreListURL('lib_script.js');
   printTimelineData(dataProvider);
   TestRunner.completeTest();
 })();

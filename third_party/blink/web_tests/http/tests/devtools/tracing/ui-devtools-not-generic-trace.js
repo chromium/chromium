@@ -11,7 +11,7 @@
   const rawTraceEvents = [
     {
       'args': {'name': 'CrBrowserMain'},
-      'cat': '_metadata',
+      'cat': '__metadata',
       'name': 'process_name',
       'ph': 'M',
       'pid': 10000,
@@ -49,10 +49,10 @@
 
   const timeline = UI.panels.timeline;
   const model = PerformanceTestRunner.createPerformanceModelWithEvents(rawTraceEvents);
-  timeline.setModel(model);
+  timeline._setModel(model);
 
   TestRunner.addResult(`isGenericTrace: ${model.timelineModel().isGenericTrace()}\n`);
-  const frames = timeline.flameChart._mainDataProvider._performanceModel.frames();
+  const frames = timeline._flameChart._mainDataProvider._performanceModel.frames();
   TestRunner.addResult(`Number of frames: ${frames.length}\n`);
 
   TestRunner.completeTest();

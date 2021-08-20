@@ -25,7 +25,7 @@
   }
 
   function getDocumentElement() {
-    var map = TestRunner.domModel.idToDOMNode;
+    var map = TestRunner.domModel._idToDOMNode;
     for (var id in map) {
       if (map[id].nodeName() === '#document')
         return map[id];

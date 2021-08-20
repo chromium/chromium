@@ -13,9 +13,9 @@
   ElementsTestRunner.selectNodeAndWaitForStyles('inspected', next);
 
   async function next() {
-    await Elements.StylesSidebarPane.instance().createNewRuleInViaInspectorStyleSheet();
+    await Elements.StylesSidebarPane.instance()._createNewRuleInViaInspectorStyleSheet();
     eventSender.keyDown('Tab');
-    await TestRunner.addSnifferPromise(Elements.StylePropertiesSection.prototype, 'editingSelectorCommittedForTest');
+    await TestRunner.addSnifferPromise(Elements.StylePropertiesSection.prototype, '_editingSelectorCommittedForTest');
 
     TestRunner.addResult('Is editing? ' + UI.isEditing());
     await ElementsTestRunner.dumpSelectedElementStyles(true, false, true);

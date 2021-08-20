@@ -11,10 +11,10 @@
   `);
 
   var watchExpressionsPane = Sources.WatchExpressionsSidebarPane.instance();
-  UI.panels.sources.sidebarPaneStack.showView(UI.panels.sources._watchSidebarPane).then(() => {
+  UI.panels.sources._sidebarPaneStack.showView(UI.panels.sources._watchSidebarPane).then(() => {
     watchExpressionsPane.doUpdate();
-    watchExpressionsPane.createWatchExpression('#$%');
-    watchExpressionsPane.saveExpressions();
+    watchExpressionsPane._createWatchExpression('#$%');
+    watchExpressionsPane._saveExpressions();
     TestRunner.deprecatedRunAfterPendingDispatches(step1);
   });
 
@@ -24,7 +24,7 @@
         watchExpressionsPane.contentElement.deepTextContent().indexOf('<not available>') !== -1 ? 'SUCCESS' : 'FAILED');
 
     // Clear watch expressions after execution.
-    watchExpressionsPane.deleteAllButtonClicked();
+    watchExpressionsPane._deleteAllButtonClicked();
     TestRunner.completeTest();
   }
 })();

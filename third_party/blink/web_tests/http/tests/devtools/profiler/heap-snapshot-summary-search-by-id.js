@@ -22,12 +22,12 @@
     var view;
     function addNodeSelectSniffer(constructorName, nodeId, onSuccess) {
       TestRunner.addSniffer(
-          view, 'selectRevealedNode', checkNodeIsSelected.bind(view, constructorName, nodeId, onSuccess));
+          view, '_selectRevealedNode', checkNodeIsSelected.bind(view, constructorName, nodeId, onSuccess));
     }
 
     function step1() {
       view = HeapProfilerTestRunner.currentProfileView();
-      TestRunner.addSniffer(view, 'selectRevealedNode', step2);
+      TestRunner.addSniffer(view, '_selectRevealedNode', step2);
       view.performSearch({query: '@1', caseSensitive: false});
     }
 
@@ -44,12 +44,12 @@
 
     function step3() {
       view.performSearch({query: '@a', caseSensitive: false});
-      if (view.searchResults.length !== 0) {
+      if (view._searchResults.length !== 0) {
         TestRunner.addResult('FAIL: node @a found');
         return next();
       }
       TestRunner.addResult('PASS: node @a was not found');
-      TestRunner.addSniffer(view, 'selectRevealedNode', step5);
+      TestRunner.addSniffer(view, '_selectRevealedNode', step5);
       view.performSearch({query: '@999', caseSensitive: false}, step5);
     }
 
@@ -78,8 +78,8 @@
         TestRunner.addResult('FAIL: node @' + nodeId + ' not found');
         return next();
       }
-      if (constructorName !== node.parent.name) {
-        TestRunner.addResult('FAIL: constructor name doesn\'t match. ' + constructorName + ' !== ' + node.parent.name);
+      if (constructorName !== node.parent._name) {
+        TestRunner.addResult('FAIL: constructor name doesn\'t match. ' + constructorName + ' !== ' + node.parent._name);
         next();
       }
       if (nodeId != node.snapshotNodeId) {

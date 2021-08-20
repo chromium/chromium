@@ -15,10 +15,10 @@
   await TestRunner.evaluateInPagePromise('performActions()');
   await CoverageTestRunner.stopCoverage();
   var node = CoverageTestRunner.findCoverageNodeForURL('long-mangled.css');
-  var coverageListView = Coverage.CoverageView.instance().listView;
-  var decoratePromise = TestRunner.addSnifferPromise(Coverage.CoverageView.LineDecorator.prototype, 'innerDecorate');
+  var coverageListView = Coverage.CoverageView.instance()._listView;
+  var decoratePromise = TestRunner.addSnifferPromise(Coverage.CoverageView.LineDecorator.prototype, '_innerDecorate');
   node.select();
-  coverageListView.revealSourceForSelectedNode();
+  coverageListView._revealSourceForSelectedNode();
   await decoratePromise;
   TestRunner.addResult('The below should be formatted');
   CoverageTestRunner.dumpDecorationsInSourceFrame(UI.panels.sources.visibleView);

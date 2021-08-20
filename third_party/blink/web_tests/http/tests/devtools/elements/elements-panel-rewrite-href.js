@@ -24,7 +24,7 @@
   ElementsTestRunner.expandElementsTree(step1);
 
   function step1() {
-    var innerMapping = TestRunner.domModel.idToDOMNode;
+    var innerMapping = TestRunner.domModel._idToDOMNode;
 
     var outputLines = [];
     for (var nodeId in innerMapping) {

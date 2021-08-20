@@ -5,10 +5,10 @@
 function dumpPreviewPanel() {
   TestRunner.addResult('Panel view:');
 
-  const treeElement = UI.panels.resources.sidebar.backgroundFetchTreeElement;
+  const treeElement = UI.panels.resources._sidebar.backgroundFetchTreeElement;
   treeElement.onselect(false);
 
-  const preview = treeElement.view._preview;
+  const preview = treeElement._view._preview;
 
   let text = '';
   if (preview.contentElement.getElementsByClassName('background-service-metadata-entry').length)
@@ -24,11 +24,11 @@ function dumpPreviewPanel() {
 };
 
 async function toggleRecord(model) {
-  const treeElement = UI.panels.resources.sidebar.backgroundFetchTreeElement;
+  const treeElement = UI.panels.resources._sidebar.backgroundFetchTreeElement;
   treeElement.onselect(false);
 
   // Simulate click.
-  treeElement.view._toggleRecording();
+  treeElement._view._toggleRecording();
 
   // Wait for the view to be aware of the change.
   await new Promise(r => {
@@ -79,14 +79,14 @@ async function toggleRecord(model) {
   });
   dumpPreviewPanel();
 
-  const dataGrid = UI.panels.resources.sidebar.backgroundFetchTreeElement._view._dataGrid;
+  const dataGrid = UI.panels.resources._sidebar.backgroundFetchTreeElement._view._dataGrid;
   dataGrid.rootNode().children[0].select();
   dumpPreviewPanel();
   dataGrid.rootNode().children[1].select();
   dumpPreviewPanel();
 
   // Simulate clicking the clear button.
-  UI.panels.resources.sidebar.backgroundFetchTreeElement._view._clearEvents();
+  UI.panels.resources._sidebar.backgroundFetchTreeElement._view._clearEvents();
   dumpPreviewPanel();
 
   TestRunner.completeTest();

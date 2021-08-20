@@ -20,17 +20,17 @@
 
   function checkAlphaChange(inputColor, format) {
     setColor(inputColor, format);
-    spectrum.hsv[3] = 0;
-    spectrum.innerSetColor(spectrum._hsv, undefined, undefined /* colorName */, undefined, ColorPicker.Spectrum._ChangeSource.Other);
+    spectrum._hsv[3] = 0;
+    spectrum._innerSetColor(spectrum._hsv, undefined, undefined /* colorName */, undefined, ColorPicker.Spectrum._ChangeSource.Other);
     TestRunner.addResult(spectrum.colorString());
   }
 
   function checkNextFormat(inputColor, format) {
     setColor(inputColor, format);
-    spectrum.formatViewSwitch();
-    TestRunner.addResult(spectrum.colorFormat);
-    spectrum.formatViewSwitch();
-    TestRunner.addResult(spectrum.colorFormat);
+    spectrum._formatViewSwitch();
+    TestRunner.addResult(spectrum._colorFormat);
+    spectrum._formatViewSwitch();
+    TestRunner.addResult(spectrum._colorFormat);
   }
 
   var spectrum = new ColorPicker.Spectrum();

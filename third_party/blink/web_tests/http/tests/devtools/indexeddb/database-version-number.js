@@ -16,7 +16,7 @@
 
   function dumpDatabase() {
     TestRunner.addResult('Dumping database:');
-    const database = indexedDBModel.databases.get(databaseId);
+    const database = indexedDBModel._databases.get(databaseId);
     if (!database)
       return;
     TestRunner.addResult(database.databaseId.name);
@@ -43,14 +43,14 @@
     TestRunner.addResult('');
 }
 
-  TestRunner.addSniffer(Resources.IndexedDBModel.prototype, 'updateOriginDatabaseNames', step2, false);
+  TestRunner.addSniffer(Resources.IndexedDBModel.prototype, '_updateOriginDatabaseNames', step2, false);
 
   function step2() {
     ApplicationTestRunner.createDatabaseWithVersion(mainFrameId, databaseName, 2147483647, step3);
   }
 
   function step3() {
-    TestRunner.addSniffer(Resources.IndexedDBModel.prototype, 'updateOriginDatabaseNames', step4, false);
+    TestRunner.addSniffer(Resources.IndexedDBModel.prototype, '_updateOriginDatabaseNames', step4, false);
     indexedDBModel.refreshDatabaseNames();
   }
 

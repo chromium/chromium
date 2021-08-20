@@ -21,7 +21,7 @@
   var testSuite = [
     function testSummonSuggestBox(next) {
       TestRunner.addSniffer(
-          TextEditor.TextEditorAutocompleteController.prototype, 'onSuggestionsShownForTest', onSuggestionsShown);
+          TextEditor.TextEditorAutocompleteController.prototype, '_onSuggestionsShownForTest', onSuggestionsShown);
 
       textEditor.setText('one\n()');
       textEditor.setSelection(TextUtils.TextRange.createFromLocation(1, 1));
@@ -35,7 +35,7 @@
 
     function testTypeSmartBrace(next) {
       TestRunner.addSniffer(
-          TextEditor.TextEditorAutocompleteController.prototype, 'onSuggestionsHiddenForTest', onSuggestionsHidden);
+          TextEditor.TextEditorAutocompleteController.prototype, '_onSuggestionsHiddenForTest', onSuggestionsHidden);
       SourcesTestRunner.typeIn(textEditor, ')', function() {});
 
       function onSuggestionsHidden() {

@@ -37,7 +37,7 @@
     for (var i = 0; i < nodes.length; ++i) {
       var node = nodes[i];
       if (!node.isCreationNode)
-        rows.push(node.data.key + node._data.value);
+        rows.push(node._data.key + node._data.value);
     }
     rows.sort();
     TestRunner.addResult('KeyValue pairs: ' + rows.join(''));
@@ -54,8 +54,8 @@
     TestRunner.addResult('Did show: ' + name(storage));
     TestRunner.deprecatedRunAfterPendingDispatches(function() {
       TestRunner.addResult(name(storage) + ' content: ');
-      var view = UI.panels.resources.domStorageView;
-      dumpDataGridContent(view.dataGrid);
+      var view = UI.panels.resources._domStorageView;
+      dumpDataGridContent(view._dataGrid);
       TestRunner.deprecatedRunAfterPendingDispatches(() => testStorageInView(storages));
     });
   }

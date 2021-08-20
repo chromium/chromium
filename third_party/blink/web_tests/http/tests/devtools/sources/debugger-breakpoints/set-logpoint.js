@@ -19,7 +19,7 @@
       function didShowScriptSource(sourceFrame) {
         currentSourceFrame = sourceFrame;
         TestRunner.addResult('Script source was shown.');
-        const condition = Sources.BreakpointEditDialog.conditionForLogpoint(`"x is", x`);
+        const condition = Sources.BreakpointEditDialog._conditionForLogpoint(`"x is", x`);
         SourcesTestRunner
             .createNewBreakpoint(currentSourceFrame, 14, condition, true)
             .then(() => SourcesTestRunner.waitBreakpointSidebarPane())

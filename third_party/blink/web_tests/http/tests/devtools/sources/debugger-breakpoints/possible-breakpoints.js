@@ -19,7 +19,7 @@
       () => SourcesTestRunner.showScriptSource('foo.js', didShowScriptSource));
 
   function didShowScriptSource(sourceFrame) {
-    var uiSourceCode = sourceFrame.uiSourceCode;
+    var uiSourceCode = sourceFrame._uiSourceCode;
     var breakpointManager = Bindings.breakpointManager;
 
     TestRunner.addResult('Locations for first line');

@@ -23,7 +23,7 @@
   function onBeforeUISourceCode(uiSourceCode) {
     uiSourceCode.setWorkingCopy(textAfter);
     TestRunner.addSniffer(
-        Sources.GutterDiffPlugin.prototype, 'decorationsSetForTest',
+        Sources.GutterDiffPlugin.prototype, '_decorationsSetForTest',
         decorationsSet);
     SourcesTestRunner.showUISourceCodePromise(uiSourceCode);
   }

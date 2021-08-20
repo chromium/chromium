@@ -25,9 +25,9 @@
     await ElementsTestRunner.dumpSelectedElementStyles(true);
     var section = ElementsTestRunner.firstMatchedStyleSection();
     section.startEditingSelector();
-    section.selectorElement.textContent = 'hr, #inspected ';
+    section._selectorElement.textContent = 'hr, #inspected ';
     ElementsTestRunner.waitForSelectorCommitted(step2);
-    section.selectorElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
+    section._selectorElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
   }
 
   async function step2() {
@@ -35,9 +35,9 @@
     await ElementsTestRunner.dumpSelectedElementStyles(true);
     var section = ElementsTestRunner.firstMatchedStyleSection();
     section.startEditingSelector();
-    section.selectorElement.textContent = '#inspectedChanged';
+    section._selectorElement.textContent = '#inspectedChanged';
     ElementsTestRunner.waitForSelectorCommitted(step3);
-    section.selectorElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
+    section._selectorElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
   }
 
   async function step3() {

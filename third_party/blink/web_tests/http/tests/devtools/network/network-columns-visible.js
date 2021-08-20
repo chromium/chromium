@@ -29,7 +29,7 @@
       request => request.name() === 'empty.html?xhr');
   var xhrNode = await NetworkTestRunner.waitForNetworkLogViewNodeForRequest(request);
 
-  UI.panels.network.networkLogView._refresh();
+  UI.panels.network._networkLogView._refresh();
   for (var columnName of columnsToTest) {
     const cell = xhrNode.createCell(columnName);
     // Cell may contain live locations that are unresolved.

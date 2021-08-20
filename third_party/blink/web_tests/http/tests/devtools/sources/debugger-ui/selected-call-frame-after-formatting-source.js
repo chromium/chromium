@@ -40,12 +40,12 @@
     SourcesTestRunner.completeDebuggerTest();
     return;
     TestRunner.debuggerModel.setSelectedCallFrame(TestRunner.debuggerModel.debuggerPausedDetails().callFrames[1]);
-    sourceFrame.toggleFormatSource(step4);
+    sourceFrame._toggleFormatSource(step4);
   }
 
   function step4() {
     TestRunner.assertEquals('testFunction', UI.context.flavor(SDK.DebuggerModel.CallFrame).functionName);
-    sourceFrame.toggleFormatSource(step5);
+    sourceFrame._toggleFormatSource(step5);
   }
 
   function step5() {

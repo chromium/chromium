@@ -22,7 +22,7 @@
   dumpValueLength();
 
   TestRunner.addResult("\nTest committing a long key");
-  dataGrid.startEditing(keyElement);
+  dataGrid._startEditing(keyElement);
   keyElement.textContent = "k".repeat(3000);
   dumpKeyLength();
   TestRunner.addResult("Blurring the key");
@@ -30,14 +30,14 @@
   dumpKeyLength();
 
   TestRunner.addResult("\nTest no-op editing the key");
-  dataGrid.startEditing(keyElement);
+  dataGrid._startEditing(keyElement);
   dumpKeyLength();
   TestRunner.addResult("Blurring the key");
   keyElement.blur();
   dumpKeyLength();
 
   TestRunner.addResult("\nTest committing a long value");
-  dataGrid.startEditing(valueElement);
+  dataGrid._startEditing(valueElement);
   valueElement.textContent = "v".repeat(3000);
   dumpValueLength();
   TestRunner.addResult("Blurring the value");
@@ -45,7 +45,7 @@
   dumpValueLength();
 
   TestRunner.addResult("\nTest no-op editing the value");
-  dataGrid.startEditing(valueElement);
+  dataGrid._startEditing(valueElement);
   dumpValueLength();
   TestRunner.addResult("Blurring the value");
   valueElement.blur();

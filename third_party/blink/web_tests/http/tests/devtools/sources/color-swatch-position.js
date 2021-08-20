@@ -11,18 +11,18 @@
   SourcesTestRunner.showScriptSource('color.css', onSourceFrame);
 
   function onSourceFrame(sourceFrame) {
-    var cssPlugin = sourceFrame.plugins.find(plugin => plugin instanceof Sources.CSSPlugin);
+    var cssPlugin = sourceFrame._plugins.find(plugin => plugin instanceof Sources.CSSPlugin);
     TestRunner.addResult('Initial swatch positions:');
     SourcesTestRunner.dumpSwatchPositions(sourceFrame, Sources.CSSPlugin.SwatchBookmark);
 
     TestRunner.runTestSuite([
       function testEditSpectrum(next) {
-        var swatch = sourceFrame.textEditor.codeMirrorElement.querySelector('devtools-color-swatch');
+        var swatch = sourceFrame.textEditor._codeMirrorElement.querySelector('devtools-color-swatch');
         swatch.shadowRoot.querySelector('.color-swatch-inner').click();
-        cssPlugin.spectrum._innerSetColor(
+        cssPlugin._spectrum._innerSetColor(
             Common.Color.parse('#008000').hsva(), '', undefined /* colorName */, Common.Color.Format.HEX,
-            ColorPicker.Spectrum.ChangeSource.Other);
-        cssPlugin.swatchPopoverHelper.hide(true);
+            ColorPicker.Spectrum._ChangeSource.Other);
+        cssPlugin._swatchPopoverHelper.hide(true);
         SourcesTestRunner.dumpSwatchPositions(sourceFrame, Sources.CSSPlugin.SwatchBookmark);
         next();
       },

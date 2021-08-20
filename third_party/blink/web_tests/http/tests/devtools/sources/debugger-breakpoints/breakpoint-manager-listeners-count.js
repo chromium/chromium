@@ -35,7 +35,7 @@
         if (!(listener.thisObject instanceof Sources.DebuggerPlugin))
           return;
         var sourceFrame = listener.thisObject;
-        TestRunner.addResult('    ' + sourceFrame.uiSourceCode.name());
+        TestRunner.addResult('    ' + sourceFrame._uiSourceCode.name());
       }
 
       TestRunner.addResult(

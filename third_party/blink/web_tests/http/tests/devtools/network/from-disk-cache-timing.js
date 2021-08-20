@@ -48,11 +48,11 @@
   function step5() {
     var request = NetworkTestRunner.networkRequests().pop();
     TestRunner.addResult('URL:' + request.url());
-    TestRunner.addResult('from memory cache: ' + !!request.fromMemoryCache);
-    TestRunner.addResult('from disk cache: ' + !!request.fromDiskCache);
-    TestRunner.addResult('has timing: ' + !!request.timing);
+    TestRunner.addResult('from memory cache: ' + !!request._fromMemoryCache);
+    TestRunner.addResult('from disk cache: ' + !!request._fromDiskCache);
+    TestRunner.addResult('has timing: ' + !!request._timing);
     TestRunner.addResult('');
-    timeZero = request.timing.requestTime;
+    timeZero = request._timing.requestTime;
     TestRunner.NetworkAgent.setCacheDisabled(false).then(step6);
   }
 
@@ -64,11 +64,11 @@
   function step7() {
     var request = NetworkTestRunner.networkRequests().pop();
     TestRunner.addResult('URL:' + request.url());
-    TestRunner.addResult('from memory cache: ' + !!request.fromMemoryCache);
-    TestRunner.addResult('from disk cache: ' + !!request.fromDiskCache);
-    TestRunner.addResult('has timing: ' + !!request.timing);
+    TestRunner.addResult('from memory cache: ' + !!request._fromMemoryCache);
+    TestRunner.addResult('from disk cache: ' + !!request._fromDiskCache);
+    TestRunner.addResult('has timing: ' + !!request._timing);
     TestRunner.addResult('');
-    var time = request.timing.requestTime;
+    var time = request._timing.requestTime;
     TestRunner.addResult('Second request starts later than first: ' + (time > timeZero));
     TestRunner.completeTest();
   }

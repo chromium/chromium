@@ -8,7 +8,7 @@
   await self.runtime.loadModulePromise('perf_ui');
   await TestRunner.loadLegacyModule('main');
   await TestRunner.loadLegacyModule('source_frame');
-  await Main.Main.instanceForTest.lateInitDonePromiseForTest();
+  await Main.Main._instanceForTest.lateInitDonePromiseForTest();
   await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
 

@@ -50,10 +50,10 @@
   function liveLocationsCount() {
     var count = 0;
     var infos = Object.values(TestRunner.debuggerModel.scripts)
-                    .map(script => script[Bindings.DebuggerWorkspaceBinding.ScriptInfoSymbol])
+                    .map(script => script[Bindings.DebuggerWorkspaceBinding._ScriptInfoSymbol])
                     .filter(info => !!info);
     infos.forEach(function(info) {
-      count += info.locations ? info._locations.size : 0;
+      count += info._locations ? info._locations.size : 0;
     });
     return count;
   }

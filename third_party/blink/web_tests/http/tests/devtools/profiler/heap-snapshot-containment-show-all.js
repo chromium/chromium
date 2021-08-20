@@ -33,7 +33,7 @@
           var maybeNumber = parseInt(words[i], 10);
           if (!isNaN(maybeNumber))
             TestRunner.assertEquals(
-                instanceCount - row.dataGrid.defaultPopulateCount(), maybeNumber, buttonsNode.showAll.textContent);
+                instanceCount - row._dataGrid.defaultPopulateCount(), maybeNumber, buttonsNode.showAll.textContent);
         }
         HeapProfilerTestRunner.clickShowMoreButton('showAll', buttonsNode, step4);
       }
@@ -98,16 +98,16 @@
       }
 
       function step3(row) {
-        TestRunner.assertEquals('(GC roots)', row.name, '(GC roots) object');
+        TestRunner.assertEquals('(GC roots)', row._name, '(GC roots) object');
         TestRunner.assertEquals('\u2212', row.data.distance, '(GC roots) distance should be zero');
         HeapProfilerTestRunner.findAndExpandWindow(step4);
       }
 
       function step4(row) {
-        TestRunner.assertEquals('Window', row.name, 'Window object');
-        TestRunner.assertEquals(distance, row.distance, 'Window distance should be 1');
+        TestRunner.assertEquals('Window', row._name, 'Window object');
+        TestRunner.assertEquals(distance, row._distance, 'Window distance should be 1');
         var child = HeapProfilerTestRunner.findMatchingRow(function(obj) {
-          return obj.referenceName === 'next';
+          return obj._referenceName === 'next';
         }, row);
         TestRunner.assertEquals(true, !!child, 'next found');
         HeapProfilerTestRunner.expandRow(child, step5);
@@ -115,18 +115,18 @@
 
       function step5(row) {
         ++distance;
-        TestRunner.assertEquals(distance, row.distance, 'Check distance of objects chain');
-        if (row.name === 'Tail') {
+        TestRunner.assertEquals(distance, row._distance, 'Check distance of objects chain');
+        if (row._name === 'Tail') {
           TestRunner.assertEquals(7, distance, 'Tail distance');
           setTimeout(next, 0);
           return;
         }
-        TestRunner.assertEquals('Body', row.name, 'Body');
+        TestRunner.assertEquals('Body', row._name, 'Body');
         var child = HeapProfilerTestRunner.findMatchingRow(function(obj) {
-          return obj.referenceName === 'next';
+          return obj._referenceName === 'next';
         }, row);
         TestRunner.assertEquals(true, !!child, 'next found');
-        if (child.name !== 'Tail')
+        if (child._name !== 'Tail')
           HeapProfilerTestRunner.expandRow(child, step5);
         else
           step5(child);

@@ -23,8 +23,8 @@
   TestRunner.completeTest();
 
   function setFilter(text) {
-    coverageView.filterInput.setValue(text);
-    coverageView.filterInput._onChangeCallback();
+    coverageView._filterInput.setValue(text);
+    coverageView._filterInput._onChangeCallback();
     TestRunner.addResult(`Filter: '${text}'`);
   }
 })();

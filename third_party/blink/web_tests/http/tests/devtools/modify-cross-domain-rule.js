@@ -35,7 +35,7 @@
       ElementsTestRunner.selectNodeAndWaitForStyles('inspected', selectCallback);
 
       function selectCallback() {
-        var idToDOMNode = TestRunner.domModel.idToDOMNode;
+        var idToDOMNode = TestRunner.domModel._idToDOMNode;
         for (var id in idToDOMNode) {
           const node = idToDOMNode[id];
           if (node.getAttribute && node.getAttribute('id') === 'inspected') {
