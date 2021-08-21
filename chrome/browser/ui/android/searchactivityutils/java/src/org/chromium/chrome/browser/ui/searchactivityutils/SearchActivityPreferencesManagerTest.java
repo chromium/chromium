@@ -29,8 +29,10 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Consumer;
 import org.chromium.base.library_loader.LibraryLoader;
-import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager.SearchActivityPreferences;
@@ -38,6 +40,8 @@ import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.LoadListener;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -45,8 +49,8 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * Tests for {@link SearchActivityPreferencesManager}.
  */
-@RunWith(BaseRobolectricTestRunner.class)
-@Batch(Batch.UNIT_TESTS)
+@RunWith(BaseJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 public class SearchActivityPreferencesManagerTest {
     @Mock
     private TemplateUrlService mTemplateUrlServiceMock;
@@ -63,6 +67,7 @@ public class SearchActivityPreferencesManagerTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlServiceMock);
         LibraryLoader.setLibraryLoaderForTesting(mLibraryLoaderMock);
 
@@ -80,9 +85,11 @@ public class SearchActivityPreferencesManagerTest {
                 .when(mTemplateUrlServiceMock)
                 .addObserver(anyObject());
 
-        SearchActivityPreferencesManager.resetForTesting();
-        // Reseta any cached values so we consistently start with a predictable state.
-        SearchActivityPreferencesManager.resetCachedValues();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            SearchActivityPreferencesManager.resetForTesting();
+            // Reseta any cached values so we consistently start with a predictable state.
+            SearchActivityPreferencesManager.resetCachedValues();
+        });
 
         // Make sure there were no premature attempts to register observers.
         Assert.assertNull(mTemplateUrlServiceLoadListener);
@@ -91,6 +98,7 @@ public class SearchActivityPreferencesManagerTest {
 
     @Test
     @SmallTest
+    @UiThreadTest
     public void preferenceTest_equalWithSameContent() {
         SearchActivityPreferences p1 =
                 new SearchActivityPreferences("test", "test.url", true, true);
@@ -117,6 +125,7 @@ public class SearchActivityPreferencesManagerTest {
 
     @Test
     @SmallTest
+    @UiThreadTest
     public void preferenceTest_notEqualWithDifferentVoiceAvailability() {
         SearchActivityPreferences p1 =
                 new SearchActivityPreferences("test", "test.url", true, false);
@@ -128,6 +137,7 @@ public class SearchActivityPreferencesManagerTest {
 
     @Test
     @SmallTest
+    @UiThreadTest
     public void preferenceTest_notEqualWithDifferentLensAvailability() {
         SearchActivityPreferences p1 =
                 new SearchActivityPreferences("test", "test.url", true, true);
@@ -139,6 +149,7 @@ public class SearchActivityPreferencesManagerTest {
 
     @Test
     @SmallTest
+    @UiThreadTest
     public void preferenceTest_notEqualWithDifferentSearchEngineName() {
         SearchActivityPreferences p1 =
                 new SearchActivityPreferences("Search Engine 1", "test.url", true, true);
@@ -150,6 +161,7 @@ public class SearchActivityPreferencesManagerTest {
 
     @Test
     @SmallTest
+    @UiThreadTest
     public void preferenceTest_notEqualWithDifferentSearchEngineUrl() {
         SearchActivityPreferences p1 =
                 new SearchActivityPreferences("Google", "www.google.com", true, true);
@@ -161,40 +173,42 @@ public class SearchActivityPreferencesManagerTest {
 
     @Test
     @SmallTest
+    @UiThreadTest
     public void managerTest_updateIsPropagatedToAllObservers() {
         final AtomicInteger numCalls = new AtomicInteger(0);
         // Add 2 distinct listeners and confirm everybody gets called immediately with initial
         // values.
         SearchActivityPreferencesManager.addObserver(prefs -> numCalls.incrementAndGet());
-        Assert.assertEquals(1, numCalls.get());
+        CriteriaHelper.pollUiThreadNested(() -> numCalls.get() == 1);
         SearchActivityPreferencesManager.addObserver(prefs -> numCalls.incrementAndGet());
-        Assert.assertEquals(2, numCalls.get());
+        CriteriaHelper.pollUiThreadNested(() -> numCalls.get() == 2);
 
         // Perform an update and check the number of calls.
         numCalls.set(0);
         SearchActivityPreferencesManager.setCurrentlyLoadedPreferences(
                 new SearchActivityPreferences("Search Engine", "URL", false, true), false);
-        Assert.assertEquals(2, numCalls.get());
+        CriteriaHelper.pollUiThreadNested(() -> numCalls.get() == 2);
 
         // Add a new listener.
         numCalls.set(0);
         SearchActivityPreferencesManager.addObserver(prefs -> numCalls.incrementAndGet());
-        Assert.assertEquals(1, numCalls.get());
+        CriteriaHelper.pollUiThreadNested(() -> numCalls.get() == 1);
 
         // Perform an update and check the number of calls.
         numCalls.set(0);
         SearchActivityPreferencesManager.setCurrentlyLoadedPreferences(
                 new SearchActivityPreferences("Search Engine", "URL", true, true), false);
-        Assert.assertEquals(3, numCalls.get());
+        CriteriaHelper.pollUiThreadNested(() -> numCalls.get() == 3);
 
         // Finally, reset settings to safe defaults. All listeners should be notified.
         numCalls.set(0);
         SearchActivityPreferencesManager.resetCachedValues();
-        Assert.assertEquals(3, numCalls.get());
+        CriteriaHelper.pollUiThreadNested(() -> numCalls.get() == 3);
     }
 
     @Test
     @SmallTest
+    @UiThreadTest
     public void managerTest_eachObserverCanOnlyBeAddedOnce() {
         final AtomicInteger numCalls = new AtomicInteger(0);
         final Consumer<SearchActivityPreferences> listener = prefs -> numCalls.incrementAndGet();
@@ -215,16 +229,17 @@ public class SearchActivityPreferencesManagerTest {
         numCalls.set(0);
         SearchActivityPreferencesManager.setCurrentlyLoadedPreferences(
                 new SearchActivityPreferences("ABC", "abc.xyz", false, true), false);
-        Assert.assertEquals(2, numCalls.get());
+        CriteriaHelper.pollUiThreadNested(() -> numCalls.get() == 2);
 
         // Finally, confirm reset.
         numCalls.set(0);
         SearchActivityPreferencesManager.resetCachedValues();
-        Assert.assertEquals(2, numCalls.get());
+        CriteriaHelper.pollUiThreadNested(() -> numCalls.get() == 2);
     }
 
     @Test
     @SmallTest
+    @UiThreadTest
     public void managerTest_preferencesRetentionTest() {
         final SharedPreferencesManager manager = SharedPreferencesManager.getInstance();
 
@@ -260,6 +275,7 @@ public class SearchActivityPreferencesManagerTest {
 
     @Test
     @SmallTest
+    @UiThreadTest
     public void managerTest_earlyInitializationOfTemplateUrlService() {
         // Install event listener.
         final AtomicInteger numCalls = new AtomicInteger(0);
@@ -287,11 +303,12 @@ public class SearchActivityPreferencesManagerTest {
         // Confirm no data and no updates.
         Assert.assertNull(SearchActivityPreferencesManager.getCurrent().searchEngineName);
         Assert.assertNull(SearchActivityPreferencesManager.getCurrent().searchEngineUrl);
-        Assert.assertEquals(0, numCalls.get());
+        CriteriaHelper.pollUiThreadNested(() -> numCalls.get() == 0);
     }
 
     @Test
     @SmallTest
+    @UiThreadTest
     public void managerTest_lateInitializationOfTemplateUrlService() {
         // Install event listener.
         final AtomicInteger numCalls = new AtomicInteger(0);
@@ -326,8 +343,8 @@ public class SearchActivityPreferencesManagerTest {
         mTemplateUrlServiceLoadListener.onTemplateUrlServiceLoaded();
 
         // Confirm data is available and update is pushed.
-        Assert.assertEquals(1, numCalls.get());
+        CriteriaHelper.pollUiThreadNested(() -> numCalls.get() == 1);
         Assert.assertEquals("Cowabunga", refPrefs.get().searchEngineName);
-        Assert.assertEquals("https://www.cowabunga.com", refPrefs.get().searchEngineUrl);
+        Assert.assertEquals("https://www.cowabunga.com/", refPrefs.get().searchEngineUrl);
     }
 }

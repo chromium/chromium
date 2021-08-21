@@ -21,7 +21,6 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.task.PostTask;
-import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.components.search_engines.TemplateUrl;
@@ -29,6 +28,7 @@ import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.LoadListener;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.url.GURL;
 
 import java.util.Arrays;
 
@@ -291,14 +291,9 @@ public class SearchActivityPreferencesManager {
         TemplateUrl dseTemplateUrl = service.getDefaultSearchEngineTemplateUrl();
         if (dseTemplateUrl == null) return null;
 
-        String searchEngineUrl =
-                service.getSearchEngineUrlFromTemplateUrl(dseTemplateUrl.getKeyword());
-        UrlBarData urlBarData = UrlBarData.forUrl(searchEngineUrl);
+        GURL url = new GURL(service.getSearchEngineUrlFromTemplateUrl(dseTemplateUrl.getKeyword()));
 
-        return new Pair<>(dseTemplateUrl.getShortName(),
-                urlBarData.displayText
-                        .subSequence(urlBarData.originStartIndex, urlBarData.originEndIndex)
-                        .toString());
+        return new Pair<>(dseTemplateUrl.getShortName(), url.getOrigin().getSpec());
     }
 
     /**
