@@ -4,11 +4,15 @@
 
 #include "ui/ozone/platform/scenic/scenic_screen.h"
 
+#include "base/notreached.h"
 #include "ui/display/display.h"
 #include "ui/display/display_observer.h"
 #include "ui/gfx/geometry/point.h"
 
 namespace ui {
+
+// TODO(crbug.com/1242052): Integrate with platform APIs for screen enumeration
+// and management, when available.
 
 ScenicScreen::ScenicScreen() : weak_factory_(this) {}
 
@@ -89,13 +93,13 @@ gfx::AcceleratedWidget ScenicScreen::GetAcceleratedWidgetAtScreenPoint(
 
 display::Display ScenicScreen::GetDisplayNearestPoint(
     const gfx::Point& point) const {
-  NOTREACHED();
+  NOTIMPLEMENTED_LOG_ONCE();
   return display::Display();
 }
 
 display::Display ScenicScreen::GetDisplayMatching(
     const gfx::Rect& match_rect) const {
-  NOTREACHED();
+  NOTIMPLEMENTED_LOG_ONCE();
   return display::Display();
 }
 
