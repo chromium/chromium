@@ -264,11 +264,6 @@ class PrefersColorSchemeTest : public testing::WithParamInterface<bool>,
     return GetParam() ? "dark" : "light";
   }
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "MediaQueryPrefersColorScheme");
-  }
-
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     original_client_ = SetBrowserClientForTesting(&theme_client_);
