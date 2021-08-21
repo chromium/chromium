@@ -7,6 +7,7 @@
 #include <cmath>
 
 #include "base/bind_post_task.h"
+#include "base/time/time.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/capture/video/chromeos/camera_app_device_bridge_impl.h"
@@ -362,6 +363,11 @@ void CameraAppDeviceImpl::OnMojoConnectionError() {
       device_id_);
 }
 
+bool CameraAppDeviceImpl::IsCloseToPreviousDetectionRequest() {
+  return document_detection_timer_ &&
+         document_detection_timer_->Elapsed().InMilliseconds() < 300;
+}
+
 void CameraAppDeviceImpl::DetectDocumentCornersOnMojoThread(
     std::unique_ptr<gpu::GpuMemoryBufferImpl> image,
     VideoRotation rotation) {
@@ -369,6 +375,7 @@ void CameraAppDeviceImpl::DetectDocumentCornersOnMojoThread(
   DCHECK(document_scanner_service_);
 
   if (!document_scanner_service_->IsLoaded() ||
+      IsCloseToPreviousDetectionRequest() ||
       has_ongoing_document_detection_task_) {
     return;
   }
@@ -400,6 +407,7 @@ void CameraAppDeviceImpl::DetectDocumentCornersOnMojoThread(
   }
 
   has_ongoing_document_detection_task_ = true;
+  document_detection_timer_ = std::make_unique<base::ElapsedTimer>();
   // Since we destroy |document_scanner_service_| on mojo thread and this
   // callback is also called on mojo thread, it should be safe to just use
   // base::Unretained(this) here.
