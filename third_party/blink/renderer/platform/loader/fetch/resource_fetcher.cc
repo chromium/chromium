@@ -2261,8 +2261,9 @@ void ResourceFetcher::PopulateAndAddResourceTimingInfo(
   if (it != early_hints_preloaded_resources_.end()) {
     early_hints_preloaded_resources_.erase(it);
     const ResourceResponse& response = resource->GetResponse();
-    if (response.WasCached() && (!response.WasFetchedViaServiceWorker() ||
-                                 response.IsServiceWorkerPassThrough())) {
+    if (!response.NetworkAccessed() &&
+        (!response.WasFetchedViaServiceWorker() ||
+         response.IsServiceWorkerPassThrough())) {
       info->SetInitiatorType("early-hints");
     }
   }
