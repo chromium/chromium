@@ -16,8 +16,8 @@
 class CookieTreeNode;
 
 namespace base {
-class DictionaryValue;
 class ListValue;
+class Value;
 }
 
 class CookiesTreeModelUtil {
@@ -60,7 +60,7 @@ class CookiesTreeModelUtil {
   // maps. Returns false if the |node| does not need to be shown.
   bool GetCookieTreeNodeDictionary(const CookieTreeNode& node,
                                    bool include_quota_nodes,
-                                   base::DictionaryValue* dict);
+                                   base::Value* dict);
 
   // IDMap to create unique ID and look up the object for an ID.
   CookiesTreeNodeIdMap id_map_;
