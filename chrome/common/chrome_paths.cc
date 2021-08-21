@@ -20,6 +20,7 @@
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths_internal.h"
 #include "media/media_buildflags.h"
+#include "ppapi/buildflags/buildflags.h"
 
 #if defined(OS_ANDROID)
 #include "base/android/path_utils.h"
@@ -77,6 +78,7 @@ base::FilePath& GetInvalidSpecifiedUserDataDirInternal() {
 
 // Gets the path for internal plugins.
 bool GetInternalPluginsDirectory(base::FilePath* result) {
+#if BUILDFLAG(ENABLE_PLUGINS)
 #if defined(OS_MAC)
   // If called from Chrome, get internal plugins from a subdirectory of the
   // framework.
@@ -87,17 +89,24 @@ bool GetInternalPluginsDirectory(base::FilePath* result) {
     return true;
   }
   // In tests, just look in the module directory (below).
-#endif
+#endif  //  defined(OS_MAC)
 
   // The rest of the world expects plugins in the module directory.
   return base::PathService::Get(base::DIR_MODULE, result);
+#else  // BUILDFLAG(ENABLE_PLUGINS)
+  // Plugins are not enabled, so don't return an internal plugins path.
+  return false;
+#endif
 }
 
 // Gets the path for bundled implementations of components. Note that these
 // implementations should not be used if higher-versioned component-updated
 // implementations are available in DIR_USER_DATA.
 bool GetComponentDirectory(base::FilePath* result) {
-#if defined(OS_MAC)
+#if defined(OS_FUCHSIA)
+  // TODO(crbug.com/1241871): Support bundled components.
+  return false;
+#elif defined(OS_MAC)
   // If called from Chrome, return the framework's Libraries directory.
   if (base::mac::AmIBundled()) {
     *result = chrome::GetFrameworkBundlePath();
@@ -235,6 +244,9 @@ bool PathProvider(int key, base::FilePath* result) {
 #if defined(OS_MAC)
       cur = base::mac::FrameworkBundlePath();
       cur = cur.Append(FILE_PATH_LITERAL("Resources"));
+#elif defined(OS_FUCHSIA)
+      if (!base::PathService::Get(base::DIR_ASSETS, &cur))
+        return false;
 #else
       if (!base::PathService::Get(chrome::DIR_APP, &cur))
         return false;
@@ -351,9 +363,10 @@ bool PathProvider(int key, base::FilePath* result) {
         cur = cur.Append(FILE_PATH_LITERAL("resources.pak"));
       }
 #else
-      // If we're not bundled on mac or Android, resources.pak should be next
-      // to the binary (e.g., for unit tests).
-      if (!base::PathService::Get(base::DIR_MODULE, &cur))
+      // If we're not bundled on mac or Android, resources.pak should be in
+      // the "assets" location (e.g. next to the binary, on many platforms, or
+      // in /pkg/data under Fuchsia, etc).
+      if (!base::PathService::Get(base::DIR_ASSETS, &cur))
         return false;
       cur = cur.Append(FILE_PATH_LITERAL("resources.pak"));
 #endif
@@ -441,7 +454,10 @@ bool PathProvider(int key, base::FilePath* result) {
     }
 #endif
     case chrome::DIR_EXTERNAL_EXTENSIONS:
-#if defined(OS_MAC)
+#if defined(OS_FUCHSIA)
+      // TODO(crbug.com/1241872): Support external extensions.
+      return false;
+#elif defined(OS_MAC)
       if (!chrome::GetGlobalApplicationSupportDirectory(&cur))
         return false;
 
@@ -459,7 +475,10 @@ bool PathProvider(int key, base::FilePath* result) {
       break;
 
     case chrome::DIR_DEFAULT_APPS:
-#if defined(OS_MAC)
+#if defined(OS_FUCHSIA)
+      // TODO(crbug.com/1241872): Support default-installed apps.
+      return false;
+#elif defined(OS_MAC)
       cur = base::mac::FrameworkBundlePath();
       cur = cur.Append(FILE_PATH_LITERAL("Default Apps"));
 #else
