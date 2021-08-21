@@ -392,6 +392,11 @@ device::mojom::XRRenderInfoPtr ValidateFrameData(
     ret->pose->position = gfx::Point3F();
   }
 
+  ret->views.resize(data->views.size());
+  for (size_t i = 0; i < data->views.size(); i++) {
+    ret->views[i] = std::move(data->views[i]);
+  }
+
   ret->frame_id = data->frame_id;
 
   return ret;
@@ -413,10 +418,15 @@ void VRBrowserRendererThreadWin::OnPose(int request_id,
     return;
   }
 
+  data = ValidateFrameData(std::move(data));
+
+  // If we're getting poses and should be drawing, StartOverlay() should have
+  // initialized graphics_.
+  DCHECK(graphics_);
+  graphics_->UpdateViews(std::move(data->views));
+
   if (!PreRender())
     return;
-
-  data = ValidateFrameData(std::move(data));
 
   // Deliver pose to input and scheduler.
   DCHECK(data);

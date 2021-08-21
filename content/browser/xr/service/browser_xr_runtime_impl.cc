@@ -32,8 +32,7 @@
 
 namespace content {
 namespace {
-bool IsValidTransform(const gfx::Transform& transform,
-                      float max_translate_meters) {
+bool IsValidTransform(const gfx::Transform& transform) {
   if (!transform.IsInvertible() || transform.HasPerspective())
     return false;
 
@@ -55,8 +54,6 @@ bool IsValidTransform(const gfx::Transform& transform,
     if (abs(decomp.skew[i]) > kEpsilon)
       return false;
     if (abs(decomp.perspective[i]) > kEpsilon)
-      return false;
-    if (abs(decomp.translate[i]) > max_translate_meters)
       return false;
   }
 
@@ -96,12 +93,10 @@ device::mojom::XRViewPtr ValidateXRView(const device::mojom::XRView* view) {
     ret->field_of_view->right_degrees = kDefaultFOV;
   }
 
-  // Head-from-Eye Transform
-  // Maximum 10m translation.
-  if (IsValidTransform(view->head_from_eye, 10)) {
-    ret->head_from_eye = view->head_from_eye;
+  if (IsValidTransform(view->mojo_from_view)) {
+    ret->mojo_from_view = view->mojo_from_view;
   }
-  // else, ret->head_from_eye remains the identity transform
+  // else, ret->mojo_from_view remains the identity transform
 
   // Renderwidth/height
   int kMaxSize = 16384;
