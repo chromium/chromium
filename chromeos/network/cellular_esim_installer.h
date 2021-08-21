@@ -44,9 +44,15 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimInstaller {
             NetworkConnectionHandler* network_connection_handler,
             NetworkStateHandler* network_state_handler);
 
+  // Return callback for the InstallProfileFromActivationCode method.
+  // |hermes_status| is the status of the eSIM installation.
+  // |profile_path| is the path to the newly installed eSIM profile
+  // and |service_path| is the path to the corresponding network service.
+  // |profile_path| and |service_path| will be absl::nullopt on error.
   using InstallProfileFromActivationCodeCallback =
-      base::OnceCallback<void(HermesResponseStatus,
-                              absl::optional<dbus::ObjectPath>)>;
+      base::OnceCallback<void(HermesResponseStatus hermes_status,
+                              absl::optional<dbus::ObjectPath> profile_path,
+                              absl::optional<std::string> service_path)>;
 
   // Installs an ESim profile and network with given |activation_code|,
   // |confirmation_code| and |euicc_path|. This method will also attempt
@@ -98,6 +104,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimInstaller {
       const std::string& service_path,
       const std::string& error_name);
   void HandleNewProfileEnableFailure(const dbus::ObjectPath& profile_path,
+                                     const std::string& service_path,
                                      const std::string& error_name);
 
   CellularConnectionHandler* cellular_connection_handler_;

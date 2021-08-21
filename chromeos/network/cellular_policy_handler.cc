@@ -94,7 +94,8 @@ const std::string& CellularPolicyHandler::GetCurrentSmdpAddress() const {
 
 void CellularPolicyHandler::OnESimProfileInstallAttemptComplete(
     HermesResponseStatus hermes_status,
-    absl::optional<dbus::ObjectPath> profile_path) {
+    absl::optional<dbus::ObjectPath> profile_path,
+    absl::optional<std::string> service_path) {
   DCHECK(is_installing_);
 
   if (hermes_status == HermesResponseStatus::kSuccess) {

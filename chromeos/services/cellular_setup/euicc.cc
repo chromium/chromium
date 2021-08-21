@@ -128,7 +128,8 @@ void Euicc::InstallProfileFromActivationCode(
 void Euicc::OnESimInstallProfileResult(
     InstallProfileFromActivationCodeCallback callback,
     HermesResponseStatus hermes_status,
-    absl::optional<dbus::ObjectPath> profile_path) {
+    absl::optional<dbus::ObjectPath> profile_path,
+    absl::optional<std::string> /*service_path*/) {
   mojom::ProfileInstallResult status = InstallResultFromStatus(hermes_status);
   if (status != mojom::ProfileInstallResult::kSuccess) {
     std::move(callback).Run(status, mojo::NullRemote());

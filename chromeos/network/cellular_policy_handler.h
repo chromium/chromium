@@ -50,7 +50,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler {
   const std::string& GetCurrentSmdpAddress() const;
   void OnESimProfileInstallAttemptComplete(
       HermesResponseStatus hermes_status,
-      absl::optional<dbus::ObjectPath> profile_path);
+      absl::optional<dbus::ObjectPath> profile_path,
+      absl::optional<std::string> service_path);
   void CompleteCurrentRequest(absl::optional<const std::string> iccid);
 
   CellularESimInstaller* cellular_esim_installer_ = nullptr;

@@ -28,8 +28,9 @@ CreateTimedInstallProfileCallback(
       [](CellularESimInstaller::InstallProfileFromActivationCodeCallback
              callback,
          base::Time installation_start_time, HermesResponseStatus result,
-         absl::optional<dbus::ObjectPath> esim_profile_path) -> void {
-        std::move(callback).Run(result, esim_profile_path);
+         absl::optional<dbus::ObjectPath> esim_profile_path,
+         absl::optional<std::string> service_path) -> void {
+        std::move(callback).Run(result, esim_profile_path, service_path);
         if (result != HermesResponseStatus::kSuccess)
           return;
         UMA_HISTOGRAM_MEDIUM_TIMES(
@@ -91,7 +92,8 @@ void CellularESimInstaller::PerformInstallProfileFromActivationCode(
     RecordInstallProfileViaQrCodeResult(
         InstallProfileViaQrCodeResult::kInhibitFailed);
     std::move(callback).Run(HermesResponseStatus::kErrorWrongState,
-                            absl::nullopt);
+                            /*profile_path=*/absl::nullopt,
+                            /*service_path=*/absl::nullopt);
     return;
   }
 
@@ -115,7 +117,8 @@ void CellularESimInstaller::OnProfileInstallResult(
                    << static_cast<int>(status);
     RecordInstallProfileViaQrCodeResult(
         InstallProfileViaQrCodeResult::kHermesInstallFailed);
-    std::move(callback).Run(status, absl::nullopt);
+    std::move(callback).Run(status, /*profile_path=*/absl::nullopt,
+                            /*service_path=*/absl::nullopt);
     return;
   }
 
@@ -139,7 +142,7 @@ void CellularESimInstaller::OnPrepareCellularNetworkForConnectionSuccess(
   const NetworkState* network_state =
       network_state_handler_->GetNetworkState(service_path);
   if (!network_state) {
-    HandleNewProfileEnableFailure(profile_path,
+    HandleNewProfileEnableFailure(profile_path, service_path,
                                   NetworkConnectionHandler::kErrorNotFound);
     return;
   }
@@ -160,26 +163,31 @@ void CellularESimInstaller::OnPrepareCellularNetworkForConnectionSuccess(
   InstallProfileFromActivationCodeCallback callback = std::move(it->second);
   install_calls_pending_connect_.erase(it);
 
-  std::move(callback).Run(HermesResponseStatus::kSuccess, profile_path);
+  std::move(callback).Run(HermesResponseStatus::kSuccess, profile_path,
+                          service_path);
 }
 
 void CellularESimInstaller::OnPrepareCellularNetworkForConnectionFailure(
     const dbus::ObjectPath& profile_path,
     const std::string& service_path,
     const std::string& error_name) {
-  HandleNewProfileEnableFailure(profile_path, error_name);
+  HandleNewProfileEnableFailure(profile_path, service_path, error_name);
 }
 
 void CellularESimInstaller::HandleNewProfileEnableFailure(
     const dbus::ObjectPath& profile_path,
+    const std::string& service_path,
     const std::string& error_name) {
   NET_LOG(ERROR) << "Error enabling newly created profile path="
-                 << profile_path.value() << " error_name=" << error_name;
+                 << profile_path.value() << ", service path=" << service_path
+                 << ", error_name=" << error_name;
 
   auto it = install_calls_pending_connect_.find(profile_path);
   DCHECK(it != install_calls_pending_connect_.end());
   std::move(it->second)
-      .Run(HermesResponseStatus::kErrorWrongState, absl::nullopt);
+      .Run(HermesResponseStatus::kErrorWrongState,
+           /*profile_path=*/absl::nullopt,
+           /*service_path=*/absl::nullopt);
   install_calls_pending_connect_.erase(it);
 }
 

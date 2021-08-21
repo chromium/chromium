@@ -87,7 +87,8 @@ class Euicc : public mojom::Euicc {
   void OnESimInstallProfileResult(
       InstallProfileFromActivationCodeCallback callback,
       HermesResponseStatus hermes_status,
-      absl::optional<dbus::ObjectPath> profile_path);
+      absl::optional<dbus::ObjectPath> profile_path,
+      absl::optional<std::string> service_path);
   void OnNewProfileConnectSuccess(const dbus::ObjectPath& profile_path);
   void PerformRequestPendingProfiles(
       RequestPendingProfilesCallback callback,
