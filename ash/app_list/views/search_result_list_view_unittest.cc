@@ -166,11 +166,11 @@ TEST_F(SearchResultListViewTest, SearchResultViewPreferredSize) {
   // Set SearchResultListView bounds and check views are default size.
   view()->SetBounds(0, 0, kPreferredWidth, 400);
   SetUpSearchResults();
-  EXPECT_EQ(gfx::Size(kPreferredWidth, kDefaultViewHeight),
+  EXPECT_EQ(gfx::Size(kPreferredWidth, kClassicViewHeight),
             GetResultViewAt(0)->size());
-  EXPECT_EQ(gfx::Size(kPreferredWidth, kDefaultViewHeight),
+  EXPECT_EQ(gfx::Size(kPreferredWidth, kClassicViewHeight),
             GetResultViewAt(1)->size());
-  EXPECT_EQ(gfx::Size(kPreferredWidth, kDefaultViewHeight),
+  EXPECT_EQ(gfx::Size(kPreferredWidth, kClassicViewHeight),
             GetResultViewAt(2)->size());
 
   // Override search result tpyes
