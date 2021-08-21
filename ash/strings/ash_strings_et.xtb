@@ -192,6 +192,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2427507373259914951">Vasakklikk</translation>
 <translation id="2429753432712299108">Bluetoothi seade „<ph name="DEVICE_NAME" />” küsib luba sidumiseks. Enne nõustumist veenduge, et selles seadmes oleks kuvatud see parool: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Kuva parool</translation>
+<translation id="24452542372838207">Laienda märguannet</translation>
 <translation id="2450205753526923158">Ekraanipildirežiim</translation>
 <translation id="2473177541599297363">Kinnitage eraldusvõime</translation>
 <translation id="2475982808118771221">Tekkis viga</translation>
@@ -826,9 +827,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="7461924472993315131">Kinnita</translation>
 <translation id="746232733191930409">Ekraanisalvestuse režiim</translation>
 <translation id="7466449121337984263">Puudutage andurit</translation>
-<translation id="7473891865547856676">Tänan, ei</translation>
 <translation id="7477793887173910789">Hallake oma muusikat, videoid ja muud</translation>
-<translation id="7482097454533720217">Hankige tekstil paremklõpsates või seda pikalt puudutades definitsioone, tõlkeid või ühikute teisendusi.</translation>
 <translation id="7483025031359818980">Valikualaks on määratud täisekraan</translation>
 <translation id="7486227320194954040">Ahenda markeerimistööristade loendit</translation>
 <translation id="7497767806359279797">Valige keel ja klaviatuur</translation>
@@ -870,6 +869,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="7780159184141939021">Ekraanikuva pööramine</translation>
 <translation id="7796353162336583443">Puudutage riiulil elektronpliiatsi nuppu, et teha märkmeid, jäädvustada ekraanipilti, kasutada Google'i assistenti, laserkursorit või suurendusklaasi.</translation>
 <translation id="7798302898096527229">Tühistamiseks vajutage otsinguklahvi või tõstuklahvi.</translation>
+<translation id="780301667611848630">Ei, aitäh</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> ja <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Tugev signaal</translation>
 <translation id="7837740436429729974">Aeg on läbi</translation>
@@ -1031,6 +1031,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="9024331582947483881">täisekraan</translation>
 <translation id="9047624247355796468">Ava võrgu <ph name="NETWORK_NAME" /> seaded</translation>
 <translation id="9056839673611986238">Seade viiakse vanemale versioonile</translation>
+<translation id="9059834730836941392">Ahenda märguannet</translation>
 <translation id="9063800855227801443">Konfidentsiaalset sisu ei saa jäädvustada</translation>
 <translation id="9065203028668620118">Muuda</translation>
 <translation id="9070640332319875144">Assistendi seaded</translation>

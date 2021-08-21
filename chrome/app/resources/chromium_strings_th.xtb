@@ -53,6 +53,8 @@
 <translation id="2847479871509788944">นำออกจาก Chromium...</translation>
 <translation id="2885378588091291677">ตัวจัดการงาน</translation>
 <translation id="2910007522516064972">เกี่ยวกับ &amp;Chromium</translation>
+<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />การช่วยเตือนครั้งสุดท้าย: การติดตั้ง<ph name="BEGIN_BOLD" />จะลบฮาร์ดไดรฟ์ทั้งหมด<ph name="END_BOLD" /> โปรดตรวจสอบว่าคุณสำรองข้อมูลที่สำคัญแล้ว<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />เมื่อเริ่มการติดตั้งแล้วจะยกเลิกไม่ได้<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium อัปเดตแล้ว</translation>
 <translation id="2983934633046890458">Chromium กำลังพยายามแก้ไขรหัสผ่าน</translation>
 <translation id="3032706164202344641">Chromium ตรวจสอบรหัสผ่านของคุณไม่ได้ โปรดลองอีกครั้งภายหลัง</translation>

@@ -192,6 +192,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2427507373259914951">Left click</translation>
 <translation id="2429753432712299108">Bluetooth device "<ph name="DEVICE_NAME" />" would like permission to pair. Before accepting, please confirm that this passkey is shown on that device: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Show password</translation>
+<translation id="24452542372838207">Expand notification</translation>
 <translation id="2450205753526923158">Screenshot mode</translation>
 <translation id="2473177541599297363">Confirm resolution</translation>
 <translation id="2475982808118771221">An error occurred</translation>
@@ -825,9 +826,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="7461924472993315131">Pin</translation>
 <translation id="746232733191930409">Screen recording mode</translation>
 <translation id="7466449121337984263">Please touch the sensor</translation>
-<translation id="7473891865547856676">No, thanks</translation>
 <translation id="7477793887173910789">Control your music, videos and more</translation>
-<translation id="7482097454533720217">Get definitions, translations or unit conversions when you right-click or touch and hold text.</translation>
 <translation id="7483025031359818980">Selection area set to full screen</translation>
 <translation id="7486227320194954040">Collapse marker tools</translation>
 <translation id="7497767806359279797">Choose language and keyboard</translation>
@@ -869,6 +868,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="7780159184141939021">Rotate screen</translation>
 <translation id="7796353162336583443">Tap the stylus button on the shelf to take a note, screenshot, use the Google Assistant, laser pointer or magnifying glass.</translation>
 <translation id="7798302898096527229">Press Search or Shift to cancel.</translation>
+<translation id="780301667611848630">No, thanks</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> and <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Strong signal</translation>
 <translation id="7837740436429729974">Time's up</translation>
@@ -1030,6 +1030,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="9024331582947483881">full screen</translation>
 <translation id="9047624247355796468">Open settings for <ph name="NETWORK_NAME" /></translation>
 <translation id="9056839673611986238">Device will be rolled back</translation>
+<translation id="9059834730836941392">Collapse notification</translation>
 <translation id="9063800855227801443">Can't capture confidential content</translation>
 <translation id="9065203028668620118">Edit</translation>
 <translation id="9070640332319875144">Assistant settings</translation>

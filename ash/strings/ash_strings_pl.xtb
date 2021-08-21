@@ -192,6 +192,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2427507373259914951">Kliknięcie lewym przyciskiem</translation>
 <translation id="2429753432712299108">Urządzenie Bluetooth „<ph name="DEVICE_NAME" />” chce się sparować. Zanim to zaakceptujesz, sprawdź, czy na tym urządzeniu wyświetla się klucz: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Pokaż hasło</translation>
+<translation id="24452542372838207">Rozwiń powiadomienie</translation>
 <translation id="2450205753526923158">Tryb zrzutu ekranu</translation>
 <translation id="2473177541599297363">Potwierdź rozdzielczość</translation>
 <translation id="2475982808118771221">Wystąpił błąd</translation>
@@ -825,9 +826,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7461924472993315131">Przypnij</translation>
 <translation id="746232733191930409">Tryb nagrywania ekranu</translation>
 <translation id="7466449121337984263">Dotknij czytnika</translation>
-<translation id="7473891865547856676">Nie, dziękuję</translation>
 <translation id="7477793887173910789">Steruj filmami, muzyką i innymi multimediami</translation>
-<translation id="7482097454533720217">Kliknij tekst prawym przyciskiem lub dotknij go i przytrzymaj, aby zobaczyć definicję, tłumaczenie lub konwersję jednostek.</translation>
 <translation id="7483025031359818980">Jako obszar ustawiono cały ekran</translation>
 <translation id="7486227320194954040">Zwiń narzędzia pisaka</translation>
 <translation id="7497767806359279797">Wybierz język i klawiaturę</translation>
@@ -869,6 +868,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7780159184141939021">Obróć ekran</translation>
 <translation id="7796353162336583443">Kliknij przycisk rysika na półce, by zrobić notatkę lub zrzut ekranu, skorzystać z Asystenta Google albo użyć wskaźnika laserowego lub lupy.</translation>
 <translation id="7798302898096527229">Aby anulować, naciśnij Szukaj lub Shift.</translation>
+<translation id="780301667611848630">Nie, dziękuję</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> i <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">silny sygnał</translation>
 <translation id="7837740436429729974">Czas minął</translation>
@@ -1030,6 +1030,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="9024331582947483881">pełny ekran</translation>
 <translation id="9047624247355796468">Otwórz ustawienia sieci <ph name="NETWORK_NAME" /></translation>
 <translation id="9056839673611986238">Na urządzeniu zostanie przywrócona wcześniejsza wersja oprogramowania</translation>
+<translation id="9059834730836941392">Zwiń powiadomienie</translation>
 <translation id="9063800855227801443">Nie można przechwycić obrazu poufnej treści</translation>
 <translation id="9065203028668620118">Edytuj</translation>
 <translation id="9070640332319875144">Ustawienia Asystenta</translation>

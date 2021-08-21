@@ -55,6 +55,8 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2847479871509788944">Desinstalar de Chromium...</translation>
 <translation id="2885378588091291677">Administrador de tareas</translation>
 <translation id="2910007522516064972">Información de &amp;Chromium</translation>
+<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Un último recordatorio: la instalación <ph name="BEGIN_BOLD" />borrará todo tu disco duro<ph name="END_BOLD" />. Asegúrate de tener una copia de seguridad de los datos importantes.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />La instalación no se podrá cancelar una vez que empiece.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium está actualizado</translation>
 <translation id="2983934633046890458">Chromium está intentando cambiar contraseñas.</translation>
 <translation id="3032706164202344641">Chromium no puede comprobar tus contraseñas. Vuelve a intentarlo más tarde.</translation>

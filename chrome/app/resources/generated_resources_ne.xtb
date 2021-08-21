@@ -567,6 +567,7 @@
 <translation id="1602085790802918092">भर्चुअल मेसिन सुरु हुँदै छ</translation>
 <translation id="1603914832182249871">(इन्कगनिटो)</translation>
 <translation id="1604432177629086300">प्रिन्ट गर्न सकिएन। प्रिन्टरको जाँच गरी फेरि प्रयास गर्नुहोस्।</translation>
+<translation id="1606077700029460857">माउससम्बन्धी सेटिङ मिलाउनुहोस्</translation>
 <translation id="1607139524282324606">प्रविष्टि खाली गर्नुहोस्</translation>
 <translation id="1607499585984539560">यी प्रयोगकर्ता यो डोमेनमा आबद्ध हुनुहुन्न</translation>
 <translation id="1608626060424371292">यो प्रयोगकर्तालाई हटाउनुहोस्</translation>
@@ -689,6 +690,7 @@
 <translation id="1718835860248848330">पछिल्लो घन्टा</translation>
 <translation id="1719312230114180055">टिपोट: तपाईंको फिंगरप्रिन्ट भरपर्दो पासवर्ड वा PIN भन्दा कम सुरक्षित हुन सक्छ।</translation>
 <translation id="1720318856472900922">TLS WWW सर्भर प्रमाणीकरण</translation>
+<translation id="1720941539803966190">ट्युटोरियल बन्द गर्नुहोस्</translation>
 <translation id="1721312023322545264">यो साइटमा जान तपाईंलाई <ph name="NAME" /> को अनुमति आवश्यक छ</translation>
 <translation id="1722460139690167654"><ph name="ENROLLMENT_DOMAIN" /> ले तपाईंको <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> को व्यवस्थापन गर्छ<ph name="END_LINK" /></translation>
 <translation id="1723824996674794290">&amp;नयाँ सञ्झ्याल</translation>
@@ -763,6 +765,7 @@
 <translation id="1790194216133135334"><ph name="DEVICE_NAME" /> मा लिंक पठाउनुहोस्</translation>
 <translation id="1790976235243700817">पहुँच हटाउनुहोस्</translation>
 <translation id="1792619191750875668">विस्तारित प्रदर्शन</translation>
+<translation id="1793625608969726781"><ph name="DEVICE_COUNT" /> वटामध्ये <ph name="DEVICE_INDEX" /> औँ डिभाइस, <ph name="DEVICE_NAME" />, कम्प्युटर, ब्याट्रीको स्तर <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1794051631868188691"><ph name="MERCHANT" /> कहिल्यै नदेखाइयोस्</translation>
 <translation id="1794791083288629568">हामीलाई यस समस्याको समाधान गर्नमा मद्दत गर्न प्रतिक्रिया पठाउनुहोस्।</translation>
 <translation id="1795214765651529549">क्लासिक प्रयोग गर्नुहोस्</translation>
@@ -1142,6 +1145,7 @@
 <translation id="2179416702468739594">उपलब्ध प्रोफाइलहरू खोजिँदै छ। यसले गर्दा तपाईंको मोबाइल नेटवर्क केही मिनेट डिस्कनेक्ट हुन सक्छ।</translation>
 <translation id="2180620921879609685">कुनै पनि पेजमा भएका सामग्री ब्लक गर्न</translation>
 <translation id="2182058453334755893">तपाईंको क्लिपबोर्डमा प्रतिलिपि गरियो</translation>
+<translation id="2183027945672030611"><ph name="DEVICE_COUNT" /> वटामध्ये <ph name="DEVICE_INDEX" /> औँ डिभाइस, <ph name="DEVICE_NAME" />, गेम कन्ट्रोलर, ब्याट्रीको स्तर <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="2184515124301515068">साइटहरूले ध्वनि कहिले प्ले गर्न सक्छन् भन्ने कुरा Chrome लाई छनौट गर्न दिनुहोस् (सिफारिस गरिएको)</translation>
 <translation id="2186711480981247270">अर्को डिभाइसबाट पेज सेयर गरिएको छ</translation>
 <translation id="2187675480456493911">तपाईंको खाता साइन इन गरिएका अन्य यन्त्रमा सिंक गरिएको छ। अन्य प्रयोगकर्ताहरूले परिमार्जन गरेका सेटिङ सिंक गरिने छैनन्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
@@ -1258,6 +1262,7 @@
 <translation id="2301402091755573488">सेयर गरिएको ट्याब</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ले थप अनुमतिहरू अनुरोध गरेको छ।</translation>
 <translation id="23055578400314116">युजरनेम चयन गर्नुहोस्</translation>
+<translation id="2306366691914573029"><ph name="DEVICE_COUNT" /> वटामध्ये <ph name="DEVICE_INDEX" /> औँ डिभाइस, <ph name="DEVICE_NAME" />, डिभाइसको प्रकार थाहा छैन</translation>
 <translation id="2307462900900812319">नेटवर्क कन्फिगर गर्नुहोस्</translation>
 <translation id="2307553512430195144">तपाईंले यसमा सहमति जनाउनुभयो भने Google सहायक “Ok Google” भनेको कुरा पहिचान गर्न स्ट्यान्डबाई मोडमा तयार भएर बस्ने छ र यसले Voice Match को सहयोगले बोल्ने व्यक्ति <ph name="SUPERVISED_USER_NAME" /> हो भन्ने कुरा चिन्न सक्छ।
     <ph name="BR" />
@@ -1543,6 +1548,7 @@
 <translation id="2606568927909309675">अङ्ग्रेजी भाषाका अडियो तथा भिडियोमा क्याप्सनहरू स्वतः सिर्जना गर्छ। तपाईंको डिभाइसमा सधैँ अडियो सुन्न र क्याप्सनहरू हेर्न मिल्छ।</translation>
 <translation id="2607101320794533334">विषय सार्वजनिक कुञ्जी जानकारी</translation>
 <translation id="2609896558069604090">सर्टकटहरू सिर्जना गर्नुहोस्...</translation>
+<translation id="2609902589050805912"><ph name="DEVICE_COUNT" /> वटामध्ये <ph name="DEVICE_INDEX" /> औँ डिभाइस, <ph name="DEVICE_NAME" />, अडियो डिभाइस</translation>
 <translation id="2609980095400624569">कनेक्ट गर्न सकिएन</translation>
 <translation id="2610157865375787051">शयन अवस्थामा लानुहोस्</translation>
 <translation id="2610260699262139870">वा&amp;स्तविक परिमाण</translation>
@@ -1573,6 +1579,7 @@
 <translation id="2635276683026132559">साइन गर्दै</translation>
 <translation id="2636625531157955190">Chrome ले छवि पहुँच गर्न सक्दैन।</translation>
 <translation id="2637400434494156704">PIN मिलेन। तपाईं अब एक पटक मात्र प्रयास गर्न सक्नुहुन्छ।</translation>
+<translation id="2638286699381354126">अपडेट गर्नुहोस्...</translation>
 <translation id="2638662041295312666">प्रोफाइल फोटो</translation>
 <translation id="2640549051766135490"><ph name="TITLE" /> <ph name="DESC" /> एल्बम चयन गरियो</translation>
 <translation id="264083724974021997">आफ्नो फोनमा जोडिनुहोस् - संवाद</translation>
@@ -1609,6 +1616,7 @@
 <translation id="2673135533890720193">तपाईंको ब्राउजिङ इतिहास पढ्नुहोस्</translation>
 <translation id="2674764818721168631">निष्क्रिय छ</translation>
 <translation id="2678063897982469759">पुन: सक्षम गर्नुहोस्</translation>
+<translation id="2678676117809690850"><ph name="DEVICE_COUNT" /> वटामध्ये <ph name="DEVICE_INDEX" /> औँ डिभाइस, <ph name="DEVICE_NAME" />, फोन, ब्याट्रीको स्तर <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="268053382412112343">इति&amp;हास</translation>
 <translation id="2681124317993121768">गेस्ट प्रोफाइल प्रयोग गर्न मिल्दैन</translation>
 <translation id="2682498795777673382">तपाईंका अभिभावकबाट प्राप्त अद्यावधिक</translation>
@@ -1805,6 +1813,7 @@
 <translation id="287205682142673348">पोर्ट फर्वार्ड गरिँदै</translation>
 <translation id="287286579981869940"><ph name="PROVIDER_NAME" /> थप्नुहोस्...</translation>
 <translation id="2872961005593481000">बन्द गर्नुहोस्</translation>
+<translation id="2872966656309879564"><ph name="DEVICE_COUNT" /> वटामध्ये <ph name="DEVICE_INDEX" /> औँ डिभाइस, <ph name="DEVICE_NAME" />, कम्प्युटर</translation>
 <translation id="2874939134665556319">अघिल्लो ट्र्याक</translation>
 <translation id="2875698561019555027">(क्रोम त्रुटि पृष्ठ)</translation>
 <translation id="2876336351874743617">औँला २</translation>
@@ -1986,6 +1995,7 @@
 <translation id="3054766768827382232">तपाईंले डेटा प्रयोग गर्न रोक लगाउने सुविधा अफ गर्नुभयो भने तपाईंका सहायक यन्त्रले अझ राम्रोसँग काम गर्न सक्छन् तर यिनले तपाईंको व्यक्तिगत जानकारी अनधिकृत रूपले प्रयोग गरी ती जानकारी खुलासा गर्न सक्छन्।</translation>
 <translation id="3055590424724986000">तपाईंको रोजाइको सेवा प्रदायकमार्फत</translation>
 <translation id="3058498974290601450">तपाईं सेटिङहरूमा गई जुनसुकै बेला सिंक सक्रिय गर्न सक्नुहुन्छ</translation>
+<translation id="3058517085907878899">डिभाइसको नाम राख्नुहोस्</translation>
 <translation id="3060379269883947824">सेलेक्ट टु स्पिक नामक सेवालाई सक्षम पार्नुहोस्‌</translation>
 <translation id="3060952009917586498">यन्त्रको भाषा परिवर्तन गर्नुहोस्। यन्त्रमा हाल भाषा <ph name="LANGUAGE" /> प्रयोग भइरहेको छ।</translation>
 <translation id="3060987956645097882">हामीले तपाईंको फोनसँग कनेक्ट गर्न सकेनौँ। तपाईंको फोन नजिकै छ, अनलक गरिएको छ र त्यसको ब्लुटुथ र Wi-Fi अन छ भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
@@ -1996,6 +2006,7 @@
 <translation id="3067198360141518313">यो प्लगइन चलाउनुहोस्</translation>
 <translation id="3071624960923923138">एउटा नयाँ ट्याब खोल्न यहाँ क्लिक गर्न सक्नुहुन्छ</translation>
 <translation id="3072775339180057696">साइटलाई <ph name="FILE_NAME" /> हेर्न दिने हो?</translation>
+<translation id="3074799113165994093"><ph name="DEVICE_COUNT" /> वटामध्ये <ph name="DEVICE_INDEX" /> औँ डिभाइस, <ph name="DEVICE_NAME" />, फोन</translation>
 <translation id="3075874217500066906">पावरवास प्रक्रिया सुरु गर्नको लागि एक फेरि सुरु गर्न आवश्यक छ। सुरु गरेपछि तपाइँलाई के तपाइँ अघि बढ्न चाहनुहुन्छ भनेर निश्चय गर्न सोधिनेछ।</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">यो डिभाइसमा मात्र सुरक्षित गरियोस्</translation>
@@ -2037,6 +2048,7 @@
 <translation id="3117791853215125017">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> मा <ph name="ATTACHMENTS" /> पठाउन सकिएन}other{<ph name="DEVICE_NAME" /> मा <ph name="ATTACHMENTS" /> पठाउन सकिएन}}</translation>
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> मद्दत</translation>
 <translation id="3118654181216384296">कृपया केही मिनेटपछि पुनः Linux सुरु गरी हेर्नुहोस्।</translation>
+<translation id="3119689272338239690"><ph name="DEVICE_COUNT" /> वटामध्ये <ph name="DEVICE_INDEX" /> औँ डिभाइस, <ph name="DEVICE_NAME" />, डिभाइसको प्रकार थाहा छैन, ब्याट्रीको स्तर <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3119948370277171654">तपाईं कुन सामग्री/URL कास्ट गर्दै हुनुहुन्थ्यो?</translation>
 <translation id="3120430004221004537">"<ph name="DEVICE_NAME" />" मा दिइएको कार्यको लागि अपर्याप्त इन्क्रिप्सन</translation>
 <translation id="3122464029669770682">CPU</translation>
@@ -2549,6 +2561,7 @@
 <translation id="3682824389861648626">चालको थ्रेसहोल्ड</translation>
 <translation id="3683524264665795342"><ph name="APP_NAME" /> स्क्रीन साझा अनुरोध</translation>
 <translation id="3685598397738512288">Linux मा USB सम्बन्धी प्राथमिकताहरू</translation>
+<translation id="3686786761304157917"><ph name="DEVICE_COUNT" /> वटामध्ये <ph name="DEVICE_INDEX" /> औँ डिभाइस, <ph name="DEVICE_NAME" />, किबोर्ड, ब्याट्रीको स्तर <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="368789413795732264">फाइल लेख्ने प्यास गर्दा एउटा त्रुटि भयो: <ph name="ERROR_TEXT" />।</translation>
 <translation id="3688507211863392146">तपाईंले एप्लिकेसनमा खोल्नुहुने फाइलहरू र फोल्डरहरूमा लेख्नुहोस्।</translation>
 <translation id="3688526734140524629">च्यानल परिवर्तन गर्नुहोस्</translation>
@@ -2648,6 +2661,7 @@
 <translation id="3778740492972734840">&amp;विकासकर्ता उपकरणहरू</translation>
 <translation id="3778868487658107119">यसलाई प्रश्नहरू सोध्नुहोस्। यसलाई कार्यहरू गर्न अह्राउनुहोस्। यो मद्दतका लागि सधैँ तत्पर तपाईंको व्यक्तिगत Google हो।</translation>
 <translation id="3781742599892759500">Linux लाई माइक्रोफोन प्रयोग गर्न दिने सेटिङ</translation>
+<translation id="3782488227140539029"><ph name="DEVICE_COUNT" /> वटामध्ये <ph name="DEVICE_INDEX" /> औँ डिभाइस, <ph name="DEVICE_NAME" />, भिडियो क्यामेरा, ब्याट्रीको स्तर <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3782795641773236652">अहिलेसम्म कुनै पनि स्विच वा की तोकिएको छैन</translation>
 <translation id="378312418865624974">यो कम्प्युटरको लागि एउटा अद्वितीय पहिचानकर्ता पढ्नुहोस्</translation>
 <translation id="3784372983762739446">ब्लुटुथ उपकरणहरू</translation>
@@ -2887,6 +2901,7 @@
 <translation id="4002329649066944389">कुनै विशेष साइटमा लागू हुने अपवादहरूको व्यवस्थापन गर्नुहोस्</translation>
 <translation id="4002440992267487163">Pin सेटअप गर्नुहोस्</translation>
 <translation id="4005817994523282006">प्रामाणिक समय पत्ता लगाउने विधि</translation>
+<translation id="400645326027787740"><ph name="DEVICE_COUNT" /> वटामध्ये <ph name="DEVICE_INDEX" /> औँ डिभाइस, <ph name="DEVICE_NAME" />, गेम कन्ट्रोलर</translation>
 <translation id="4007856537951125667">सर्टकटहरू लुकाउनुहोस्</translation>
 <translation id="4008291085758151621">VR मा साइटसम्बन्धी जानकारी उपलब्ध छैन</translation>
 <translation id="4010917659463429001">आफ्नो मोबाइल यन्त्रमा आफ्ना पुस्तक चिन्हहरू प्राप्त गर्न, <ph name="GET_IOS_APP_LINK" />।</translation>
@@ -3192,6 +3207,7 @@
 <translation id="4382131447572146376">{COUNT,plural, =0{<ph name="EMAIL" />}=1{<ph name="EMAIL" />, +१ थप खाता}other{<ph name="EMAIL" />, +<ph name="EXTRA_ACCOUNTS" /> थप खाताहरू}}</translation>
 <translation id="4384312707950789900">रुचाइएकोमा थप्नुहोस्</translation>
 <translation id="4384652540891215547">विस्तार सक्रिय गर्नुहोस्</translation>
+<translation id="4384886290276344300">किबोर्डसम्बन्धी सेटिङ मिलाउनुहोस्</translation>
 <translation id="438503109373656455">साराटोगा</translation>
 <translation id="4385146930797718821">स्क्रिनसट कपी गरी क्लिपबोर्डमा राखियो</translation>
 <translation id="4385905942116811558">ब्लुटुथ तथा USB यन्त्रहरू खोजिँदै छ</translation>
@@ -3583,6 +3599,7 @@
 <translation id="4813136279048157860">मेरा फोटो</translation>
 <translation id="4813512666221746211">सञ्जाल त्रुटि</translation>
 <translation id="4814378367953456825">यो फिंगरप्रिन्टको नाम प्रविष्टि गर्नुहोस्</translation>
+<translation id="4816097470512964351"><ph name="DEVICE" />, विवरणहरू</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{एउटा पुस्तक चिन्ह मेटाइयो}other{{COUNT} वटा पुस्तक चिन्ह मेटाइए}}</translation>
 <translation id="4819607494758673676">Google सहायकका सूचनाहरू</translation>
 <translation id="4820236583224459650">सक्रिय टिकटको रूपमा सेट गर्नुहोस्</translation>
@@ -3658,6 +3675,7 @@
 <translation id="4884987973312178454">६ गुणा</translation>
 <translation id="4887424188275796356">सिस्टम दर्शक मार्फत खोल्नुहोस्</translation>
 <translation id="488785315393301722">विवरणहरू देखाउनुहोस्</translation>
+<translation id="4889450157778777235"><ph name="DEVICE_COUNT" /> वटामध्ये <ph name="DEVICE_INDEX" /> औँ डिभाइस, <ph name="DEVICE_NAME" />, भिडियो क्यामेरा</translation>
 <translation id="4890773143211625964">प्रिन्टरका उन्नत विकल्पहरू देखाउनुहोस्</translation>
 <translation id="4891089016822695758">बिटा फोरम</translation>
 <translation id="4892229439761351791">साइटले ब्लुटुथ प्रयोग गर्न सक्छ</translation>
@@ -3794,6 +3812,7 @@
 <translation id="5039696241953571917">आफ्नो Google खातामा सुरक्षित गरिएका पासवर्डहरू हेर्नुहोस् र व्यवस्थापन गर्नुहोस्</translation>
 <translation id="5039804452771397117">अनुमति दिनुहोस्</translation>
 <translation id="5040823038948176460">सामग्रीका अतिरिक्त सेटिङहरू</translation>
+<translation id="5043440033854483429">नाममा अक्षर, सङ्ख्या र हाइफन चिन्ह (-) प्रयोग गर्न मिल्छ र १ देखि १५ वटा वर्ण प्रयोग गरिनु पर्छ।</translation>
 <translation id="5043913660911154449">वा आफ्नो प्रिन्टरको PPD तोक्नुहोस् <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">गलत पासवर्ड</translation>
 <translation id="504561833207953641">विद्यमान ब्राउजर सत्रमा खोल्दै।</translation>
@@ -4047,6 +4066,7 @@
 <translation id="5319359161174645648">Google ले Chrome प्रयोग गर्ने सुझाव दिन्छ</translation>
 <translation id="5319712128756744240">नयाँ डिभाइस कनेक्ट गर्नुहोस्</translation>
 <translation id="5320135788267874712">यन्त्रको नयाँ नाम</translation>
+<translation id="532043380734099846"><ph name="DEVICE_COUNT" /> वटामध्ये <ph name="DEVICE_INDEX" /> औँ डिभाइस, <ph name="DEVICE_NAME" />, माउस, ब्याट्रीको स्तर <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="532247166573571973">सर्भर पहुँचयोग्य नहुन सक्छ। पछि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="5324300749339591280">एपको सूची</translation>
 <translation id="5324780743567488672">तपाईँको स्थान प्रयोग गरेर प्रामाणिक समय सेट गर्नुहोस्</translation>
@@ -4074,6 +4094,7 @@
 <translation id="535123479159372765">अर्को यन्त्रबाट पाठ कपी गरियो</translation>
 <translation id="5352033265844765294">समय स्याम्पिङ</translation>
 <translation id="5353252989841766347">Chrome का पासवर्डहरूलाई निर्यात गर्नुहोस्</translation>
+<translation id="5354531123814675522"><ph name="DEVICE_COUNT" /> वटामध्ये <ph name="DEVICE_INDEX" /> औँ डिभाइस, <ph name="DEVICE_NAME" />, ट्याब्लेट, ब्याट्रीको स्तर <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5355099869024327351">सहायकलाई तपाईंलाई सूचनाहरू देखाउन दिनुहोस्</translation>
 <translation id="5355191726083956201">'उन्नत सुरक्षा' सक्रिय छ</translation>
 <translation id="5355926466126177564">विस्तार "<ph name="EXTENSION_NAME" />" ले तपाईँले ओम्निबक्सबाट खोज गर्दा देखाइएको पृष्ठलाई परिवर्तन गरेको छ।</translation>
@@ -4243,6 +4264,7 @@
 <translation id="5534304873398226603">तस्बिर वा भिडियो खारेज गर्नुहोस्</translation>
 <translation id="5535941515421698170">यस डिभाइसबाट तपाईंको विद्यमान डेटा पनि हटाउनुहोस्</translation>
 <translation id="5539221284352502426">तपाईंले प्रविष्ट गर्नुभएको पासवर्ड सर्भरद्वारा अस्वीकार गरियो। यसका सम्भावित कारणहरू निम्न हुन सक्छन्: पासवर्ड निकै छोटो छ। पासवर्डमा अनिवार्य रूपमा सङ्ख्या वा चिन्हहरू समावेश हुनु पर्छ। पासवर्ड अनिवार्य रूपमा अघिल्ला पासवर्डहरूभन्दा फरक हुनु पर्छ।</translation>
+<translation id="5539467723438368868"><ph name="DEVICE_COUNT" /> वटामध्ये <ph name="DEVICE_INDEX" /> औँ डिभाइस, <ph name="DEVICE_NAME" />, ट्याब्लेट</translation>
 <translation id="5541694225089836610">तपाईंका प्रशासकले कारबाहीसम्बन्धी सुविधा असक्षम पार्नुभएको छ</translation>
 <translation id="5542132724887566711">प्रोफाइल</translation>
 <translation id="5542750926112347543"><ph name="DOMAIN" /> का कुकीहरूमाथि रोक लगाइयो</translation>
@@ -4303,6 +4325,7 @@
 <translation id="5601503069213153581">पिन</translation>
 <translation id="5601823921345337195">MIDI यन्त्रहरूमा कनेक्ट गर्न अनुमति नदिइएका साइटहरू</translation>
 <translation id="5602765853043467355">यो यन्त्रबाट पुस्तक चिन्ह, इतिहास, पासवर्ड र थप कुराहरू खाली गर्नुहोस्</translation>
+<translation id="5604884720628869833"><ph name="DEVICE_COUNT" /> वटामध्ये <ph name="DEVICE_INDEX" /> औँ डिभाइस, <ph name="DEVICE_NAME" />, किबोर्ड</translation>
 <translation id="5605623530403479164">अन्य खोज इन्धनहरू</translation>
 <translation id="5605758115928394442">यो व्यक्ति तपाईं नै हो भन्ने सुनिश्चित गर्न तपाईंको फोनमा एउटा सूचना पठाइयो।</translation>
 <translation id="560834977503641186">Wi-Fi सिंकका बारेमा थप जान्नुहोस्</translation>
@@ -4762,6 +4785,7 @@
 <translation id="6113434369102685411">Chrome ब्राउजर र <ph name="DEVICE_TYPE" /> लन्चरका हकमा डिफल्ट सर्च इन्जिन तोक्नुहोस्</translation>
 <translation id="6113942107547980621">Smart Lock प्रयोग गर्न, आफ्नो फोनको प्राथमिक प्रयोगकर्ता प्रोफाइल प्रयोग गर्नुहोस्</translation>
 <translation id="6116921718742659598">भाषा र इनपुट सेटिङहरू परिवर्तन गर्नुहोस्</translation>
+<translation id="6119927814891883061">यो डिभाइसको नाम <ph name="DEVICE_NAME" /> राख्नुहोस्</translation>
 <translation id="6120205520491252677">यस पृष्ठलाई सुरुवात स्क्रिनमा पिन गर्नुहोस्...</translation>
 <translation id="6122081475643980456">तपाईंको इन्टरनेट जडान नियन्त्रणमा रहेको छ</translation>
 <translation id="6122093587541546701">इमेल (वैकल्पिक):</translation>
@@ -6968,6 +6992,7 @@
 <translation id="8475313423285172237">तपाईंको कम्प्युटरमा रहेको अर्को प्रोग्रामले एउटा एक्स्टेन्स थपेको छ जसले Chrome को काम गर्ने तरिकालाई परिवर्तन गर्न सक्छ।</translation>
 <translation id="8477241577829954800">सुपरसिडेड</translation>
 <translation id="8477384620836102176">&amp;सामान्य</translation>
+<translation id="8479109005219657634"><ph name="DEVICE_COUNT" /> वटामध्ये <ph name="DEVICE_INDEX" /> औँ डिभाइस, <ph name="DEVICE_NAME" />, अडियो डिभाइस, ब्याट्रीको स्तर <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="8479176401914456949">कोड अवैध छ। कृपया फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="8480082892550707549">तपाईँले पहिले यस साइटबाट फाइलहरू डाउनलोड गर्नुभएको भए पनि यो साइट अस्थायी रूपमा असुरक्षित (ह्याक गरिएको) हुन सक्छ। यो फाइल प‍छि डाउनलोड गरी हेर्नुहोस्।</translation>
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" /> को अज्ञात यन्त्र</translation>
@@ -7446,6 +7471,7 @@
 <translation id="897525204902889653">अलग्गै राख्ने सेवा</translation>
 <translation id="8975396729541388937">तपाईंले प्राप्त गर्ने इमेलमा भएको लिंकमा क्लिक गरी जुनसुकै बेला सदस्यता रद्द गर्नुहोस्।</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" र अरू १ ट्याब}other{"<ph name="TAB_TITLE" />" र अरू # ट्याबहरू}}</translation>
+<translation id="8977175149983066223"><ph name="DEVICE_COUNT" /> वटामध्ये <ph name="DEVICE_INDEX" /> औँ डिभाइस, <ph name="DEVICE_NAME" />, माउस</translation>
 <translation id="8977811652087512276">गलत पासवर्ड वा बिग्रिएको फाइल</translation>
 <translation id="8978154919215542464">सक्रिय - सबै सिंक गर्नुहोस्</translation>
 <translation id="897939795688207351"><ph name="ORIGIN" /> मा</translation>

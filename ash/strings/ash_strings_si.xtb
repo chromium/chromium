@@ -192,6 +192,7 @@
 <translation id="2427507373259914951">වම්පස ක්ලික් කිරීම</translation>
 <translation id="2429753432712299108">"<ph name="DEVICE_NAME" />" බ්ලූටූත් උපාංගය යුගල කිරීමට අවසර පතයි. අනුමත කිරීමට පෙර, මෙම මුරවදන එම උපාංගයේ දිස් වූ බව තහවුරු කරගන්න: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">මුරපදය පෙන්වන්න</translation>
+<translation id="24452542372838207">දැනුම්දීම දිග හරින්න</translation>
 <translation id="2450205753526923158">තිර රූ ප්‍රකාරය</translation>
 <translation id="2473177541599297363">විභේදනය තහවුරු කරන්න</translation>
 <translation id="2475982808118771221">දෝෂයක් සිදු විණි</translation>
@@ -825,9 +826,7 @@
 <translation id="7461924472993315131">පින්</translation>
 <translation id="746232733191930409">තිර පටිගත කිරීම් ප්‍රකාරය</translation>
 <translation id="7466449121337984263">සංවේදකය ස්පර්ශ කරන්න</translation>
-<translation id="7473891865547856676">එපා ස්තූතියි</translation>
 <translation id="7477793887173910789">ඔබේ සංගීත, වීඩියෝ, සහ තවත් ඒවා පාලන කරන්න</translation>
-<translation id="7482097454533720217">ඔබ දකුණු-ක්ලික් කළ විට හෝ පෙළ ස්පර්ශ කර අල්ලාගෙන සිටින විට නිර්වචන, පරිවර්තන හෝ ඒකක පරිවර්තනය ලබා ගන්න.</translation>
 <translation id="7483025031359818980">තේරීම් ප්‍රදේශය පූර්ණ තිරයට සකසා ඇත</translation>
 <translation id="7486227320194954040">ලකුණුකර මෙවලම් හකුළන්න</translation>
 <translation id="7497767806359279797">භාෂාව සහ යතුරු පුවරුව තෝරන්න</translation>
@@ -869,6 +868,7 @@
 <translation id="7780159184141939021">තිරය කරකවන්න</translation>
 <translation id="7796353162336583443">සටහනක්, තිර රුවක් ගැනීමට, Google සහායක, ලේසර් දර්ශකය හෝ විශාලක කදාව භාවිතා කිරීමට රාක්කයේ පන්හිඳ බොත්තම තට්ටු කරන්න.</translation>
 <translation id="7798302898096527229">අවලංගු කිරීමට සෙවීම හෝ Shift ඔබන්න.</translation>
+<translation id="780301667611848630">එපා, ස්තූතියි</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> සහ <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">ප්‍රබල සංඥාව</translation>
 <translation id="7837740436429729974">වේලාව ඉවරයි</translation>
@@ -1030,6 +1030,7 @@
 <translation id="9024331582947483881">පූර්ණ තිරය</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> සඳහ සැකසීම් විවෘත කරන්න</translation>
 <translation id="9056839673611986238">උපාංගය ආපසු පෙරළෙනු ඇත</translation>
+<translation id="9059834730836941392">දැනුම්දීම හකුළන්න</translation>
 <translation id="9063800855227801443">රහස්‍ය අන්තර්ගතය ග්‍රහණය කළ නොහැකිය</translation>
 <translation id="9065203028668620118">සංස්කරණය කරන්න</translation>
 <translation id="9070640332319875144">සහායක සැකසීම්</translation>

@@ -192,6 +192,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2427507373259914951">Clic con botón izquierdo</translation>
 <translation id="2429753432712299108">El dispositivo Bluetooth "<ph name="DEVICE_NAME" />" solicita permiso para sincronizarse. Antes de aceptar, debes confirmar que aparece la siguiente clave de contraseña en el dispositivo: <ph name="PASSKEY" />.</translation>
 <translation id="2435457462613246316">Mostrar contraseña</translation>
+<translation id="24452542372838207">Expandir notificación</translation>
 <translation id="2450205753526923158">Modo de captura de pantalla</translation>
 <translation id="2473177541599297363">Confirmar la resolución</translation>
 <translation id="2475982808118771221">Se ha producido un error</translation>
@@ -826,9 +827,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="7461924472993315131">Fijar</translation>
 <translation id="746232733191930409">Modo de grabación de pantalla</translation>
 <translation id="7466449121337984263">Toca el sensor</translation>
-<translation id="7473891865547856676">No, gracias</translation>
 <translation id="7477793887173910789">Controla tu música, videos y mucho más</translation>
-<translation id="7482097454533720217">Obtén definiciones, traducciones o conversión de unidades cuando haces clic con el botón derecho o mantienes presionado texto.</translation>
 <translation id="7483025031359818980">Se estableció la pantalla completa como área de selección</translation>
 <translation id="7486227320194954040">Contraer las herramientas de marcado</translation>
 <translation id="7497767806359279797">Elegir idioma y teclado</translation>
@@ -870,6 +869,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="7780159184141939021">Girar pantalla</translation>
 <translation id="7796353162336583443">Presiona el botón de la pluma stylus en la biblioteca para tomar notas o capturas de pantalla, usar el Asistente de Google y activar las funciones de puntero láser o lupa.</translation>
 <translation id="7798302898096527229">Presiona mayúscula o la tecla de búsqueda para cancelarlo.</translation>
+<translation id="780301667611848630">No, gracias</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> y <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Señal fuerte</translation>
 <translation id="7837740436429729974">Tiempo agotado</translation>
@@ -1031,6 +1031,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="9024331582947483881">pantalla completa</translation>
 <translation id="9047624247355796468">Abrir la configuración para <ph name="NETWORK_NAME" /></translation>
 <translation id="9056839673611986238">Se restablecerá el dispositivo</translation>
+<translation id="9059834730836941392">Contraer notificación</translation>
 <translation id="9063800855227801443">No se puede capturar contenido confidencial</translation>
 <translation id="9065203028668620118">Editar</translation>
 <translation id="9070640332319875144">Configuración de Asistente</translation>

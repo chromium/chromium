@@ -192,6 +192,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2427507373259914951">Vänsterklicka</translation>
 <translation id="2429753432712299108">Bluetooth-enheten <ph name="DEVICE_NAME" /> har begärt tillstånd för koppling. Innan du godkänner bekräftar du att den här lösenordsnyckeln visas på den enheten: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Visa lösenord</translation>
+<translation id="24452542372838207">Utöka avisering</translation>
 <translation id="2450205753526923158">Skärmbildsläge</translation>
 <translation id="2473177541599297363">Bekräfta upplösningen</translation>
 <translation id="2475982808118771221">Det uppstod ett fel</translation>
@@ -825,9 +826,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="7461924472993315131">Fäst</translation>
 <translation id="746232733191930409">Skärminspelningsläge</translation>
 <translation id="7466449121337984263">Tryck på sensorn</translation>
-<translation id="7473891865547856676">Nej tack</translation>
 <translation id="7477793887173910789">Styr uppspelningen av musik, videor med mera</translation>
-<translation id="7482097454533720217">Få definitioner, översättningar eller enhetskonverteringar när du högerklickar eller trycker länge på text.</translation>
 <translation id="7483025031359818980">Markeringsområdet är inställt på helskärm</translation>
 <translation id="7486227320194954040">Komprimera markeringsverktygen</translation>
 <translation id="7497767806359279797">Välj språk och tangentbord</translation>
@@ -869,6 +868,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="7780159184141939021">Rotera skärmen</translation>
 <translation id="7796353162336583443">När du har tryckt på e-pennan på hyllan kan du anteckna, ta en skärmbild eller använda Google Assistent, laserpekaren eller förstoringsglaset.</translation>
 <translation id="7798302898096527229">Avbryt genom att trycka på söktangenten eller Skift.</translation>
+<translation id="780301667611848630">Nej tack</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> och <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">stark signal</translation>
 <translation id="7837740436429729974">Tiden är ute</translation>
@@ -1030,6 +1030,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="9024331582947483881">helskärm</translation>
 <translation id="9047624247355796468">Öppnar inställningarna för <ph name="NETWORK_NAME" /></translation>
 <translation id="9056839673611986238">Enheten återställs</translation>
+<translation id="9059834730836941392">Komprimera avisering</translation>
 <translation id="9063800855227801443">Det går inte att ta bilder på konfidentiellt innehåll</translation>
 <translation id="9065203028668620118">Redigera</translation>
 <translation id="9070640332319875144">Inställningar för Google-assistenten</translation>

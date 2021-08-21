@@ -192,6 +192,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2427507373259914951">Levi klik</translation>
 <translation id="2429753432712299108">Bluetooth uređaj „<ph name="DEVICE_NAME" />“ želi dozvolu za uparivanje. Pre nego što mu je date, uverite se da je ova šifra prikazana na tom uređaju: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Prikaži lozinku</translation>
+<translation id="24452542372838207">Proširi obaveštenje</translation>
 <translation id="2450205753526923158">Režim snimka ekrana</translation>
 <translation id="2473177541599297363">Potvrdite rezoluciju</translation>
 <translation id="2475982808118771221">Došlo je do greške</translation>
@@ -825,9 +826,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="7461924472993315131">Zakači</translation>
 <translation id="746232733191930409">Režim snimanja ekrana</translation>
 <translation id="7466449121337984263">Dodirnite senzor</translation>
-<translation id="7473891865547856676">Ne, hvala</translation>
 <translation id="7477793887173910789">Kontrolišite muziku, video snimke i drugo</translation>
-<translation id="7482097454533720217">Dobijajte definicije, prevode ili konverzije jedinica kada kliknete desnim tasterom na tekst ili ga dodirnete i zadržite.</translation>
 <translation id="7483025031359818980">Oblast za izbor je podešena na ceo ekran</translation>
 <translation id="7486227320194954040">Skupi alatke za marker</translation>
 <translation id="7497767806359279797">Odaberite jezik i tastaturu</translation>
@@ -869,6 +868,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="7780159184141939021">Rotirajte ekran</translation>
 <translation id="7796353162336583443">Dodirnite dugme pisaljke na polici da biste napravili belešku i snimak ekrana i da biste koristili Google pomoćnik, laserski pokazivač ili lupu.</translation>
 <translation id="7798302898096527229">Pritisnite taster za pretragu ili Shift da biste otkazali.</translation>
+<translation id="780301667611848630">Ne, hvala</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> i <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Jak signal</translation>
 <translation id="7837740436429729974">Vreme je isteklo</translation>
@@ -1030,6 +1030,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="9024331582947483881">ceo ekran</translation>
 <translation id="9047624247355796468">Otvorite podešavanja za <ph name="NETWORK_NAME" /></translation>
 <translation id="9056839673611986238">Uređaj će biti vraćen na raniju verziju</translation>
+<translation id="9059834730836941392">Skupi obaveštenje</translation>
 <translation id="9063800855227801443">Snimanje poverljivog sadržaja nije uspelo</translation>
 <translation id="9065203028668620118">Izmeni</translation>
 <translation id="9070640332319875144">Podešavanja Pomoćnika</translation>

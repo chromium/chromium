@@ -55,6 +55,8 @@
 <translation id="2847479871509788944">Chromium बाट हटाउनुहोस् ...</translation>
 <translation id="2885378588091291677">कार्य व्यवस्थापक</translation>
 <translation id="2910007522516064972">&amp;क्रोमियमको बारेमा</translation>
+<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />अन्तिम चेतावनी: तपाईंले इन्स्टल गर्नुभयो भने <ph name="BEGIN_BOLD" />तपाईंको हार्ड ड्राइभमा भएका सबै डेटा मेटिने छन्<ph name="END_BOLD" />। कृपया तपाईंले आफ्ना सबै महत्त्वपूर्ण डेटा ब्याकअप गरिसक्नुभएको छ भन्ने कुरा सुनिश्चित गर्नुहोस्।<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />इन्स्टल गर्ने प्रक्रिया थालिसकेपछि उक्त प्रक्रिया रद्द गर्न मिल्दैन।<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium अद्यावधिक छ</translation>
 <translation id="2983934633046890458">Chromium ले पासवर्डहरू सम्पादन गर्ने प्रयास गरिरहेको छ।</translation>
 <translation id="3032706164202344641">Chromium ले तपाईंका पासवर्डहरूको जाँच गर्न सकेन। पछि फेरि प्रयास गर्नुहोस्।</translation>

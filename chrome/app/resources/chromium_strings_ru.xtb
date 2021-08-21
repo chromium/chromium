@@ -53,6 +53,8 @@
 <translation id="2847479871509788944">Удалить из Chromium</translation>
 <translation id="2885378588091291677">Диспетчер задач</translation>
 <translation id="2910007522516064972">О &amp;Chromium</translation>
+<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Ещё раз обращаем ваше внимание на то, что установка приведет к <ph name="BEGIN_BOLD" />удалению всей информации с жесткого диска<ph name="END_BOLD" />. Убедитесь, что вы сохранили резервные копии нужных данных.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Установку нельзя будет отменить.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Вы используете последнюю версию Chromium</translation>
 <translation id="2983934633046890458">Chromium пытается изменить пароли</translation>
 <translation id="3032706164202344641">Не удается запустить проверку паролей в Chromium. Повторите попытку позже.</translation>

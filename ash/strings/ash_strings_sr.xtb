@@ -192,6 +192,7 @@
 <translation id="2427507373259914951">Леви клик</translation>
 <translation id="2429753432712299108">Bluetooth уређај „<ph name="DEVICE_NAME" />“ жели дозволу за упаривање. Пре него што му је дате, уверите се да је ова шифра приказана на том уређају: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Прикажи лозинку</translation>
+<translation id="24452542372838207">Прошири обавештење</translation>
 <translation id="2450205753526923158">Режим снимка екрана</translation>
 <translation id="2473177541599297363">Потврдите резолуцију</translation>
 <translation id="2475982808118771221">Дошло је до грешке</translation>
@@ -825,9 +826,7 @@
 <translation id="7461924472993315131">Закачи</translation>
 <translation id="746232733191930409">Режим снимања екрана</translation>
 <translation id="7466449121337984263">Додирните сензор</translation>
-<translation id="7473891865547856676">Не, хвала</translation>
 <translation id="7477793887173910789">Контролишите музику, видео снимке и друго</translation>
-<translation id="7482097454533720217">Добијајте дефиниције, преводе или конверзије јединица када кликнете десним тастером на текст или га додирнете и задржите.</translation>
 <translation id="7483025031359818980">Област за избор је подешена на цео екран</translation>
 <translation id="7486227320194954040">Скупи алатке за маркер</translation>
 <translation id="7497767806359279797">Одаберите језик и тастатуру</translation>
@@ -869,6 +868,7 @@
 <translation id="7780159184141939021">Ротирајте екран</translation>
 <translation id="7796353162336583443">Додирните дугме писаљке на полици да бисте направили белешку и снимак екрана и да бисте користили Google помоћник, ласерски показивач или лупу.</translation>
 <translation id="7798302898096527229">Притисните тастер за претрагу или Shift да бисте отказали.</translation>
+<translation id="780301667611848630">Не, хвала</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> и <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Јак сигнал</translation>
 <translation id="7837740436429729974">Време је истекло</translation>
@@ -1030,6 +1030,7 @@
 <translation id="9024331582947483881">цео екран</translation>
 <translation id="9047624247355796468">Отворите подешавања за <ph name="NETWORK_NAME" /></translation>
 <translation id="9056839673611986238">Уређај ће бити враћен на ранију верзију</translation>
+<translation id="9059834730836941392">Скупи обавештење</translation>
 <translation id="9063800855227801443">Снимање поверљивог садржаја није успело</translation>
 <translation id="9065203028668620118">Измени</translation>
 <translation id="9070640332319875144">Подешавања Помоћника</translation>

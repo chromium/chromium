@@ -192,6 +192,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2427507373259914951">Clicar com o botão esquerdo do rato</translation>
 <translation id="2429753432712299108">O dispositivo Bluetooth "<ph name="DEVICE_NAME" />" necessita de autorização para sincronizar. Antes de aceitar, confirme que esta chave está indicada nesse dispositivo: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Mostrar palavra-passe</translation>
+<translation id="24452542372838207">Expandir notificação</translation>
 <translation id="2450205753526923158">Modo de captura de ecrã</translation>
 <translation id="2473177541599297363">Confirme a resolução</translation>
 <translation id="2475982808118771221">Ocorreu um erro</translation>
@@ -825,9 +826,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="7461924472993315131">Fixar</translation>
 <translation id="746232733191930409">Modo de gravação de ecrã</translation>
 <translation id="7466449121337984263">Toque no sensor.</translation>
-<translation id="7473891865547856676">Não, obrigado</translation>
 <translation id="7477793887173910789">Controle a sua música, vídeos e muito mais.</translation>
-<translation id="7482097454533720217">Obtenha definições, traduções ou conversões de unidades quando clicar com o botão direito do rato ou tocar sem soltar no texto.</translation>
 <translation id="7483025031359818980">Área de seleção definida para ecrã inteiro</translation>
 <translation id="7486227320194954040">Reduzir ferramentas de marcador</translation>
 <translation id="7497767806359279797">Escolher idioma e teclado</translation>
@@ -869,6 +868,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="7780159184141939021">Rodar ecrã</translation>
 <translation id="7796353162336583443">Toque no botão da caneta stylus na prateleira para tirar uma nota, criar uma captura de ecrã ou utilizar o Assistente Google, o ponteiro de laser ou a lupa.</translation>
 <translation id="7798302898096527229">Prima Pesquisar ou Shift para cancelar.</translation>
+<translation id="780301667611848630">Não, obrigado</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> e <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Sinal forte</translation>
 <translation id="7837740436429729974">Acabou o tempo</translation>
@@ -1030,6 +1030,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="9024331582947483881">ecrã inteiro</translation>
 <translation id="9047624247355796468">Abrir as definições de <ph name="NETWORK_NAME" /></translation>
 <translation id="9056839673611986238">O dispositivo voltará à versão anterior</translation>
+<translation id="9059834730836941392">Reduzir notificação</translation>
 <translation id="9063800855227801443">Não é possível capturar conteúdo confidencial</translation>
 <translation id="9065203028668620118">Editar</translation>
 <translation id="9070640332319875144">Definições do Assistente</translation>

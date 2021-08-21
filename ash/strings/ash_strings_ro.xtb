@@ -192,6 +192,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2427507373259914951">Clic stânga</translation>
 <translation id="2429753432712299108">Dispozitivul Bluetooth „<ph name="DEVICE_NAME" />” solicită permisiunea de a se conecta. Înainte de a continua, verificați dacă această parolă apare pe dispozitivul respectiv: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Afișați parola</translation>
+<translation id="24452542372838207">Extinde notificarea</translation>
 <translation id="2450205753526923158">Modul Captură de ecran</translation>
 <translation id="2473177541599297363">Confirmă rezoluția</translation>
 <translation id="2475982808118771221">A apărut o eroare</translation>
@@ -825,9 +826,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="7461924472993315131">Fixează</translation>
 <translation id="746232733191930409">Modul de înregistrare a ecranului</translation>
 <translation id="7466449121337984263">Atinge senzorul</translation>
-<translation id="7473891865547856676">Nu, mulțumesc</translation>
 <translation id="7477793887173910789">Gestionează muzica, videoclipurile și altele</translation>
-<translation id="7482097454533720217">Obții definiții, traduceri sau conversii ale unităților când dai clic dreapta sau apeși lung textul.</translation>
 <translation id="7483025031359818980">Zona de selectare este setată la ecran complet</translation>
 <translation id="7486227320194954040">Restrânge instrumentele pentru marker</translation>
 <translation id="7497767806359279797">Alege limba și tastatura</translation>
@@ -869,6 +868,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="7780159184141939021">Rotește ecranul</translation>
 <translation id="7796353162336583443">Atinge butonul creion de pe raft ca să creezi note și capturi de ecran, să folosești Asistentul Google, indicatorul laser sau lupa.</translation>
 <translation id="7798302898096527229">Apasă pe tasta de căutare sau pe Shift pentru a anula.</translation>
+<translation id="780301667611848630">Nu, mulțumesc</translation>
 <translation id="7814236020522506259"><ph name="HOUR" />:<ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Semnal puternic</translation>
 <translation id="7837740436429729974">Timpul a expirat!</translation>
@@ -1030,6 +1030,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="9024331582947483881">ecran complet</translation>
 <translation id="9047624247355796468">Deschide setările pentru <ph name="NETWORK_NAME" /></translation>
 <translation id="9056839673611986238">SO de pe dispozitiv va fi adus la o versiune anterioară</translation>
+<translation id="9059834730836941392">Restrânge notificarea</translation>
 <translation id="9063800855227801443">Capturarea conținutului confidențial nu este permisă</translation>
 <translation id="9065203028668620118">Editează</translation>
 <translation id="9070640332319875144">Setări pentru Asistent</translation>

@@ -192,6 +192,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2427507373259914951">Venstreklikk</translation>
 <translation id="2429753432712299108">Bluetooth-enheten «<ph name="DEVICE_NAME" />» ber om tillatelse til å koble til. Før du godtar dette, må du bekrefte at denne tilgangskoden vises på den aktuelle enheten: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Vis passord</translation>
+<translation id="24452542372838207">Vis varselet</translation>
 <translation id="2450205753526923158">Skjermdumpmodus</translation>
 <translation id="2473177541599297363">Bekreft oppløsningen</translation>
 <translation id="2475982808118771221">Det oppstod en feil</translation>
@@ -825,9 +826,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="7461924472993315131">Fest</translation>
 <translation id="746232733191930409">Skjermopptaksmodus</translation>
 <translation id="7466449121337984263">Trykk på sensoren</translation>
-<translation id="7473891865547856676">Nei takk</translation>
 <translation id="7477793887173910789">Styr musikk, video og mer</translation>
-<translation id="7482097454533720217">Få definisjoner, oversettelser eller enhetskonverteringer når du høyreklikker eller trykker og holder inne på tekst.</translation>
 <translation id="7483025031359818980">Hele skjermen er valgt som kilde</translation>
 <translation id="7486227320194954040">Skjul merkepennverktøy</translation>
 <translation id="7497767806359279797">Velg språk og tastatur</translation>
@@ -869,6 +868,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="7780159184141939021">Rotér skjermen</translation>
 <translation id="7796353162336583443">Trykk på pekepenn-knappen på hyllen for å gjøre et notat, ta en skjermdump eller bruke Google-assistenten, laserpekeren eller forstørrelsesglasset.</translation>
 <translation id="7798302898096527229">Trykk på Søk eller Shift for å avbryte</translation>
+<translation id="780301667611848630">Nei takk</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> og <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Sterkt signal</translation>
 <translation id="7837740436429729974">Tiden er ute</translation>
@@ -1030,6 +1030,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="9024331582947483881">full skjerm</translation>
 <translation id="9047624247355796468">Åpne innstillinger for <ph name="NETWORK_NAME" /></translation>
 <translation id="9056839673611986238">Enheten blir tilbakestilt til forrige versjon</translation>
+<translation id="9059834730836941392">Skjul varselet</translation>
 <translation id="9063800855227801443">Kan ikke ta bilde av konfidensielt innhold</translation>
 <translation id="9065203028668620118">Endre</translation>
 <translation id="9070640332319875144">Assistent-innstillinger</translation>

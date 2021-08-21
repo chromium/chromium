@@ -192,6 +192,7 @@
 <translation id="2427507373259914951">按左鍵</translation>
 <translation id="2429753432712299108">藍牙裝置「<ph name="DEVICE_NAME" />」要求配對權限。接受要求前，請確認裝置顯示以下密碼金鑰：<ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">顯示密碼</translation>
+<translation id="24452542372838207">展開通知</translation>
 <translation id="2450205753526923158">螢幕截圖模式</translation>
 <translation id="2473177541599297363">確認解析度</translation>
 <translation id="2475982808118771221">發生錯誤</translation>
@@ -825,9 +826,7 @@
 <translation id="7461924472993315131">固定</translation>
 <translation id="746232733191930409">螢幕畫面錄製模式</translation>
 <translation id="7466449121337984263">請輕觸感應器</translation>
-<translation id="7473891865547856676">不用了，謝謝</translation>
 <translation id="7477793887173910789">控管你的音樂、影片等項目</translation>
-<translation id="7482097454533720217">按住文字或在文字上按一下滑鼠右鍵後，就能取得定義、翻譯或單位轉換結果。</translation>
 <translation id="7483025031359818980">選取區域為全螢幕</translation>
 <translation id="7486227320194954040">收合標記工具</translation>
 <translation id="7497767806359279797">選擇語言和鍵盤配置</translation>
@@ -869,6 +868,7 @@
 <translation id="7780159184141939021">旋轉螢幕</translation>
 <translation id="7796353162336583443">輕觸檔案櫃的觸控筆圖示即可寫筆記、擷取螢幕畫面，以及使用 Google 助理、雷射筆和放大鏡。</translation>
 <translation id="7798302898096527229">按下搜尋鍵或 Shift 鍵即可取消。</translation>
+<translation id="780301667611848630">不用了，謝謝</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> 小時 <ph name="MINUTE" /> 分鐘</translation>
 <translation id="7829386189513694949">訊號穩定</translation>
 <translation id="7837740436429729974">時間到</translation>
@@ -1030,6 +1030,7 @@
 <translation id="9024331582947483881">全螢幕</translation>
 <translation id="9047624247355796468">開啟「<ph name="NETWORK_NAME" />」設定</translation>
 <translation id="9056839673611986238">裝置將復原</translation>
+<translation id="9059834730836941392">收合通知</translation>
 <translation id="9063800855227801443">無法擷取機密內容</translation>
 <translation id="9065203028668620118">編輯</translation>
 <translation id="9070640332319875144">個人助理設定</translation>

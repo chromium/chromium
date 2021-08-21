@@ -55,6 +55,8 @@
 <translation id="2847479871509788944">Chromiumৰপৰা আঁতৰাওক...</translation>
 <translation id="2885378588091291677">কাৰ্য পৰিচালক</translation>
 <translation id="2910007522516064972">&amp;Chromiumৰ বিষয়ে</translation>
+<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />এটা অন্তিম ৰিমাইণ্ডাৰ: ইনষ্টল কৰিলে <ph name="BEGIN_BOLD" />আপোনাৰ সম্পূৰ্ণ হাৰ্ড ড্ৰাইভটোৰ ডেটা মচা যাব<ph name="END_BOLD" />। অনুগ্ৰহ কৰি আপুনি গুৰুত্বপূৰ্ণ বুলি বিবেচনা কৰা আটাইবোৰ ডেটাৰ বেক আপ লোৱাটো নিশ্চিত কৰক।<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />ইনষ্টল হোৱা আৰম্ভ হ’লে ইয়াক বাতিল কৰিব নোৱাৰি।<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium একেবাৰে শেহতীয়া অৱস্থাত আছে</translation>
 <translation id="2983934633046890458">Chromiumএ পাছৱর্ডসমূহ সম্পাদনা কৰিবলৈ চেষ্টা কৰি আছে।</translation>
 <translation id="3032706164202344641">Chromiumএ আপোনাৰ পাছৱর্ডসমূহ পৰীক্ষা কৰিব নোৱাৰে। পাছত আকৌ চেষ্টা কৰক।</translation>
