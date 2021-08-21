@@ -24,15 +24,16 @@ class BuilderRunsTestOfInterestUnittest(unittest.TestCase):
         self.assertTrue(
             self.instance._BuilderRunsTestOfInterest(test_map, None))
 
-        test_map = {
-            'isolated_scripts': [
-                {
-                    'isolate_name': 'webgpu_blink_web_tests',
-                },
-            ],
-        }
-        self.assertTrue(
-            self.instance._BuilderRunsTestOfInterest(test_map, None))
+        # Re-add once WebGPU tests are supported.
+        # test_map = {
+        #     'isolated_scripts': [
+        #         {
+        #             'isolate_name': 'webgpu_blink_web_tests',
+        #         },
+        #     ],
+        # }
+        # self.assertTrue(
+        #     self.instance._BuilderRunsTestOfInterest(test_map, None))
 
     def testNoMatch(self):
         test_map = {

@@ -127,6 +127,11 @@ class TestResultSink(object):
                  self._port.flag_specific_config_name() or '')
         ]
 
+        for used_file in self._port.used_expectations_files():
+            tags.append(
+                pair('web_tests_used_expectations_file',
+                     self._port.relative_test_filename(used_file)))
+
         if expectations:
             expectation_tags = expectations.system_condition_tags
             test_expectation = expectations.get_expectations(result.test_name)

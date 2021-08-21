@@ -133,6 +133,26 @@ class TestResultSinkMessage(TestResultSinkTestBase):
                 'value': ''
             },
             {
+                'key': 'web_tests_used_expectations_file',
+                'value': 'TestExpectations',
+            },
+            {
+                'key': 'web_tests_used_expectations_file',
+                'value': 'WebDriverExpectations',
+            },
+            {
+                'key': 'web_tests_used_expectations_file',
+                'value': 'NeverFixTests',
+            },
+            {
+                'key': 'web_tests_used_expectations_file',
+                'value': 'StaleTestExpectations',
+            },
+            {
+                'key': 'web_tests_used_expectations_file',
+                'value': 'SlowTests',
+            },
+            {
                 'key': 'raw_typ_expectation',
                 'value': 'Failure'
             },
@@ -167,6 +187,26 @@ class TestResultSinkMessage(TestResultSinkTestBase):
             {
                 'key': 'web_tests_flag_specific_config_name',
                 'value': ''
+            },
+            {
+                'key': 'web_tests_used_expectations_file',
+                'value': 'TestExpectations',
+            },
+            {
+                'key': 'web_tests_used_expectations_file',
+                'value': 'WebDriverExpectations',
+            },
+            {
+                'key': 'web_tests_used_expectations_file',
+                'value': 'NeverFixTests',
+            },
+            {
+                'key': 'web_tests_used_expectations_file',
+                'value': 'StaleTestExpectations',
+            },
+            {
+                'key': 'web_tests_used_expectations_file',
+                'value': 'SlowTests',
             },
         ]
         sent_data = self.sink(True, tr)
