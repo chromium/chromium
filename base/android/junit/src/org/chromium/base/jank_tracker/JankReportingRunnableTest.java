@@ -67,7 +67,9 @@ public class JankReportingRunnableTest {
         verify(metricsStore).startTrackingScenario(JankScenario.TAB_SWITCHER);
         verify(metricsStore).stopTrackingScenario(JankScenario.TAB_SWITCHER);
 
-        verify(mNativeMock).recordJankMetrics("TabSwitcher", new long[] {1_000L}, new long[0], 1);
+        verify(mNativeMock)
+                .recordJankMetrics("TabSwitcher", new long[] {1_000_000L}, new long[] {1_000L},
+                        new long[0], 1);
     }
 
     @Test
