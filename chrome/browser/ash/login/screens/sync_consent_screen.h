@@ -73,6 +73,15 @@ class SyncConsentScreen : public BaseScreen,
     DISALLOW_COPY_AND_ASSIGN(SyncConsentScreenTestDelegate);
   };
 
+  class SyncConsentScreenExitTestDelegate {
+   public:
+    virtual ~SyncConsentScreenExitTestDelegate() = default;
+
+    virtual void OnSyncConsentScreenExit(
+        Result result,
+        ScreenExitCallback& original_callback) = 0;
+  };
+
   // Launches the sync consent settings dialog if the user requested to review
   // them after completing OOBE.
   static void MaybeLaunchSyncConsentSettings(Profile* profile);
@@ -108,23 +117,19 @@ class SyncConsentScreen : public BaseScreen,
   void OnTimeout();
 
   // Sets internal condition "Sync disabled by policy" for tests.
-  void SetProfileSyncDisabledByPolicyForTesting(bool value);
+  static void SetProfileSyncDisabledByPolicyForTesting(bool value);
 
   // Sets internal condition "Sync engine initialized" for tests.
-  void SetProfileSyncEngineInitializedForTesting(bool value);
+  static void SetProfileSyncEngineInitializedForTesting(bool value);
 
   // Test API.
   void SetDelegateForTesting(
       SyncConsentScreen::SyncConsentScreenTestDelegate* delegate);
   SyncConsentScreenTestDelegate* GetDelegateForTesting() const;
 
-  void set_exit_callback_for_testing(const ScreenExitCallback& exit_callback) {
-    exit_callback_ = exit_callback;
-  }
-
-  const ScreenExitCallback& get_exit_callback_for_testing() {
-    return exit_callback_;
-  }
+  // When set, test callback will be called instead of the |exit_callback_|.
+  static void SetSyncConsentScreenExitTestDelegate(
+      SyncConsentScreenExitTestDelegate* test_delegate);
 
  private:
   // Marks the dialog complete and runs `exit_callback_`.
@@ -183,9 +188,6 @@ class SyncConsentScreen : public BaseScreen,
 
   // The time when sync consent screen starts loading.
   base::TimeTicks start_time_;
-
-  absl::optional<bool> test_sync_disabled_by_policy_;
-  absl::optional<bool> test_sync_engine_initialized_;
 
   // Notify tests.
   SyncConsentScreenTestDelegate* test_delegate_ = nullptr;

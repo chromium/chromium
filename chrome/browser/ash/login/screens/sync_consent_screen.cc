@@ -48,6 +48,12 @@ constexpr base::TimeDelta kWaitTimeout = base::TimeDelta::FromSeconds(10);
 constexpr base::TimeDelta kWaitTimeoutForTest =
     base::TimeDelta::FromMilliseconds(1);
 
+absl::optional<bool> sync_disabled_by_policy_for_test;
+absl::optional<bool> sync_engine_initialized_for_test;
+
+SyncConsentScreen::SyncConsentScreenExitTestDelegate* test_exit_delegate_ =
+    nullptr;
+
 syncer::SyncService* GetSyncService(Profile* profile) {
   if (SyncServiceFactory::HasSyncService(profile))
     return SyncServiceFactory::GetForProfile(profile);
@@ -151,7 +157,11 @@ void SyncConsentScreen::Finish(Result result) {
   bool sync_enabled = service && service->CanSyncFeatureStart() &&
                       service->GetUserSettings()->IsSyncEverythingEnabled();
   base::UmaHistogramBoolean("OOBE.SyncConsentScreen.SyncEnabled", sync_enabled);
-  exit_callback_.Run(result);
+  if (test_exit_delegate_) {
+    test_exit_delegate_->OnSyncConsentScreenExit(result, exit_callback_);
+  } else {
+    exit_callback_.Run(result);
+  }
 }
 
 bool SyncConsentScreen::MaybeSkip(WizardContext* context) {
@@ -324,6 +334,12 @@ void SyncConsentScreen::SetDelegateForTesting(
   test_delegate_ = delegate;
 }
 
+// static
+void SyncConsentScreen::SetSyncConsentScreenExitTestDelegate(
+    SyncConsentScreen::SyncConsentScreenExitTestDelegate* test_delegate) {
+  test_exit_delegate_ = test_delegate;
+}
+
 SyncConsentScreen::SyncConsentScreenTestDelegate*
 SyncConsentScreen::GetDelegateForTesting() const {
   return test_delegate_;
@@ -422,16 +438,16 @@ void SyncConsentScreen::RecordConsent(
 }
 
 bool SyncConsentScreen::IsProfileSyncDisabledByPolicy() const {
-  if (test_sync_disabled_by_policy_.has_value())
-    return test_sync_disabled_by_policy_.value();
+  if (sync_disabled_by_policy_for_test.has_value())
+    return sync_disabled_by_policy_for_test.value();
   const syncer::SyncService* sync_service = GetSyncService(profile_);
   return sync_service->HasDisableReason(
       syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
 }
 
 bool SyncConsentScreen::IsProfileSyncEngineInitialized() const {
-  if (test_sync_engine_initialized_.has_value())
-    return test_sync_engine_initialized_.value();
+  if (sync_engine_initialized_for_test.has_value())
+    return sync_engine_initialized_for_test.value();
   const syncer::SyncService* sync_service = GetSyncService(profile_);
   return sync_service->IsEngineInitialized();
 }
@@ -455,11 +471,14 @@ void SyncConsentScreen::SetSyncEverythingEnabled(bool enabled) {
   }
 }
 
+// static
 void SyncConsentScreen::SetProfileSyncDisabledByPolicyForTesting(bool value) {
-  test_sync_disabled_by_policy_ = value;
+  sync_disabled_by_policy_for_test = value;
 }
+
+// static
 void SyncConsentScreen::SetProfileSyncEngineInitializedForTesting(bool value) {
-  test_sync_engine_initialized_ = value;
+  sync_engine_initialized_for_test = value;
 }
 
 }  // namespace ash
