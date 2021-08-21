@@ -4636,6 +4636,20 @@
     Your device can be unlocked with Smart Lock. Press Enter to unlock.
   </message>
 
+  <!-- Strings for EcheApp -->
+  <message name="IDS_ECHE_APP_SCREEN_LOCK_SETTINGS_BUTTON" desc="Label for the button in the screen lock notification of EcheApp to open the settings app.">
+    Open Settings
+  </message>
+  <message name="IDS_ECHE_APP_SCREEN_LOCK_LEARN_MORE" desc="Learn more link text in screen lock notification of EcheApp.">
+    Learn more
+  </message>
+  <message name="IDS_ECHE_APP_SCREEN_LOCK_NOTIFICATION_TITLE" desc="Title for notification shown when screen lock is not enabled while using app stream of EcheApp.">
+    Couldn’t open the App
+  </message>
+  <message name="IDS_ECHE_APP_SCREEN_LOCK_NOTIFICATION_MESSAGE" desc="Message for the notification shown when screen lock is not enabled while using app stream of EcheApp.">
+    Set a pin or password on this Chromebook to protect access to your phone’s apps.
+  </message>
+
   <!-- User Image Selection Dialog -->
   <message name="IDS_USER_IMAGE_SCREEN_TITLE" desc="String to be displayed in the title bar of the oobe/login user image selection dialog">
     Set your profile picture

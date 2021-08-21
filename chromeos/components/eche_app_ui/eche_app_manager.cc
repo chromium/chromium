@@ -7,6 +7,7 @@
 #include "base/system/sys_info.h"
 #include "chromeos/components/eche_app_ui/eche_signaler.h"
 #include "chromeos/components/eche_app_ui/eche_uid_provider.h"
+#include "chromeos/components/eche_app_ui/launch_app_helper.h"
 #include "chromeos/components/eche_app_ui/system_info.h"
 #include "chromeos/components/eche_app_ui/system_info_provider.h"
 #include "chromeos/components/phonehub/phone_hub_manager.h"
@@ -28,11 +29,9 @@ EcheAppManager::EcheAppManager(
     device_sync::DeviceSyncClient* device_sync_client,
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
     secure_channel::SecureChannelClient* secure_channel_client,
-    EcheNotificationClickHandler::LaunchEcheAppFunction
-        launch_eche_app_function,
-    EcheNotificationClickHandler::CloseEcheAppFunction close_eche_app_function,
-    EcheRecentAppClickHandler::LaunchEcheAppFunction
-        recent_app_launch_eche_app_function)
+    LaunchAppHelper::LaunchEcheAppFunction launch_eche_app_function,
+    LaunchAppHelper::CloseEcheAppFunction close_eche_app_function,
+    LaunchAppHelper::LaunchNotificationFunction launch_notification_function)
     : connection_manager_(
           std::make_unique<secure_channel::ConnectionManagerImpl>(
               multidevice_setup_client,
@@ -47,12 +46,16 @@ EcheAppManager::EcheAppManager(
           device_sync_client,
           multidevice_setup_client,
           connection_manager_.get())),
+      launch_app_helper_(
+          std::make_unique<LaunchAppHelper>(phone_hub_manager,
+                                            launch_eche_app_function,
+                                            close_eche_app_function,
+                                            launch_notification_function)),
       eche_notification_click_handler_(
           std::make_unique<EcheNotificationClickHandler>(
               phone_hub_manager,
               feature_status_provider_.get(),
-              launch_eche_app_function,
-              close_eche_app_function)),
+              launch_app_helper_.get())),
       eche_connector_(
           std::make_unique<EcheConnector>(feature_status_provider_.get(),
                                           connection_manager_.get())),
@@ -65,7 +68,7 @@ EcheAppManager::EcheAppManager(
           std::make_unique<EcheRecentAppClickHandler>(
               phone_hub_manager,
               feature_status_provider_.get(),
-              recent_app_launch_eche_app_function)) {}
+              launch_app_helper_.get())) {}
 
 EcheAppManager::~EcheAppManager() = default;
 
@@ -93,6 +96,7 @@ void EcheAppManager::Shutdown() {
   signaler_.reset();
   eche_connector_.reset();
   eche_notification_click_handler_.reset();
+  launch_app_helper_.reset();
   feature_status_provider_.reset();
   connection_manager_.reset();
 }

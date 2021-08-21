@@ -4,8 +4,10 @@
 
 #include "chromeos/components/eche_app_ui/eche_recent_app_click_handler.h"
 
+#include "chromeos/components/eche_app_ui/launch_app_helper.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/phonehub/phone_hub_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace eche_app {
@@ -13,9 +15,9 @@ namespace eche_app {
 EcheRecentAppClickHandler::EcheRecentAppClickHandler(
     phonehub::PhoneHubManager* phone_hub_manager,
     FeatureStatusProvider* feature_status_provider,
-    LaunchEcheAppFunction launch_eche_app_function)
+    LaunchAppHelper* launch_app_helper)
     : feature_status_provider_(feature_status_provider),
-      launch_eche_app_function_(launch_eche_app_function) {
+      launch_app_helper_(launch_app_helper) {
   notification_handler_ =
       phone_hub_manager->GetNotificationInteractionHandler();
   recent_apps_handler_ = phone_hub_manager->GetRecentAppsInteractionHandler();
@@ -40,14 +42,21 @@ EcheRecentAppClickHandler::~EcheRecentAppClickHandler() {
 void EcheRecentAppClickHandler::HandleNotificationClick(
     int64_t notification_id,
     const phonehub::Notification::AppMetadata& app_metadata) {
-  if (recent_apps_handler_)
+  if (recent_apps_handler_ && launch_app_helper_->IsAppLaunchAllowed()) {
     recent_apps_handler_->NotifyRecentAppAddedOrUpdated(app_metadata,
                                                         base::Time::Now());
+  }
 }
 
 void EcheRecentAppClickHandler::OnRecentAppClicked(
     const std::string& recent_app_package_name) {
-  launch_eche_app_function_.Run(recent_app_package_name);
+  if (launch_app_helper_->IsAppLaunchAllowed()) {
+    launch_app_helper_->LaunchEcheApp(/*notification_id=*/absl::nullopt,
+                                      recent_app_package_name);
+  } else {
+    launch_app_helper_->ShowNotification(
+        LaunchAppHelper::NotificationType::kScreenLock);
+  }
 }
 
 void EcheRecentAppClickHandler::OnFeatureStatusChanged() {
@@ -60,7 +69,7 @@ void EcheRecentAppClickHandler::OnFeatureStatusChanged() {
     recent_apps_handler_->AddRecentAppClickObserver(this);
     is_click_handler_set_ = true;
   } else if (is_click_handler_set_ && !clickable) {
-    // This handler doesn't run |close_eche_app_function| since it possibly
+    // This handler doesn't run |CloseEcheApp| since it possibly
     // closes twice on EcheNotificationClickHandler and here.
     notification_handler_->RemoveNotificationClickHandler(this);
     recent_apps_handler_->RemoveRecentAppClickObserver(this);

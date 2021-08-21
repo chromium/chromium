@@ -36,6 +36,8 @@ static_library("eche_app_ui") {
     "feature_status.h",
     "feature_status_provider.cc",
     "feature_status_provider.h",
+    "launch_app_helper.cc",
+    "launch_app_helper.h",
     "system_info.cc",
     "system_info.h",
     "system_info_provider.cc",
@@ -47,6 +49,7 @@ static_library("eche_app_ui") {
   ]
 
   deps = [
+    "//ash",
     "//ash/constants",
     "//ash/public/cpp",
     "//chromeos/components/eche_app_ui/mojom",

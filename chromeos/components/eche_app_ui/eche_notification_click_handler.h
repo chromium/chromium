@@ -5,8 +5,6 @@
 #ifndef CHROMEOS_COMPONENTS_ECHE_APP_UI_ECHE_NOTIFICATION_CLICK_HANDLER_H_
 #define CHROMEOS_COMPONENTS_ECHE_APP_UI_ECHE_NOTIFICATION_CLICK_HANDLER_H_
 
-#include <string>
-
 #include "base/callback.h"
 #include "chromeos/components/eche_app_ui/feature_status_provider.h"
 #include "chromeos/components/phonehub/notification.h"
@@ -21,19 +19,15 @@ class PhoneHubManager;
 
 namespace eche_app {
 
+class LaunchAppHelper;
+
 // Handles notification clicks originating from Phone Hub notifications.
 class EcheNotificationClickHandler : public phonehub::NotificationClickHandler,
                                      public FeatureStatusProvider::Observer {
  public:
-  using LaunchEcheAppFunction =
-      base::RepeatingCallback<void(int64_t notification_id,
-                                   const std::string& package_name)>;
-  using CloseEcheAppFunction = base::RepeatingCallback<void()>;
-
   EcheNotificationClickHandler(phonehub::PhoneHubManager* phone_hub_manager,
                                FeatureStatusProvider* feature_status_provider,
-                               LaunchEcheAppFunction launch_eche_app_function,
-                               CloseEcheAppFunction close_eche_app_function);
+                               LaunchAppHelper* launch_app_helper);
   ~EcheNotificationClickHandler() override;
 
   EcheNotificationClickHandler(const EcheNotificationClickHandler&) = delete;
@@ -55,8 +49,7 @@ class EcheNotificationClickHandler : public phonehub::NotificationClickHandler,
 
   phonehub::NotificationInteractionHandler* handler_;
   FeatureStatusProvider* feature_status_provider_;
-  LaunchEcheAppFunction launch_eche_app_function_;
-  CloseEcheAppFunction close_eche_app_function_;
+  LaunchAppHelper* launch_app_helper_;
   bool is_click_handler_set_ = false;
 };
 

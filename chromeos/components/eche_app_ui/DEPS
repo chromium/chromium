@@ -2,6 +2,8 @@ include_rules = [
   # Do not add chrome here (use a delegate instead).
   "+ash/public/cpp",
   "+ash/grit/ash_sample_system_web_app_resources.h",
+  "+ash/session/session_controller_impl.h",
+  "+ash/shell.h",
   "+components/keyed_service/core/keyed_service.h",
   "+components/prefs",
   "+content/public/browser",

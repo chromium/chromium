@@ -1,0 +1,71 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_CHROMEOS_ECHE_APP_ECHE_APP_NOTIFICATION_CONTROLLER_H_
+#define CHROME_BROWSER_CHROMEOS_ECHE_APP_ECHE_APP_NOTIFICATION_CONTROLLER_H_
+
+#include "base/memory/weak_ptr.h"
+#include "ui/message_center/public/cpp/notification.h"
+#include "ui/message_center/public/cpp/notification_delegate.h"
+
+class Profile;
+
+namespace chromeos {
+namespace eche_app {
+
+extern const char kEcheAppScreenLockNotifierId[];
+
+// Controller class to manage screen lock notification.
+class EcheAppNotificationController {
+ public:
+  explicit EcheAppNotificationController(Profile* profile);
+  virtual ~EcheAppNotificationController();
+
+  EcheAppNotificationController(const EcheAppNotificationController&) = delete;
+  EcheAppNotificationController& operator=(
+      const EcheAppNotificationController&) = delete;
+
+  // Shows the notification when screen lock is already enabled on the phone,
+  // but the ChromeOS is not enabled.
+  void ShowScreenLockNotification();
+
+ protected:
+  // Exposed for testing.
+  virtual void LaunchSettings();
+  virtual void LaunchLearnMore();
+
+ private:
+  // NotificationDelegate implementation for handling click events.
+  class NotificationDelegate : public message_center::NotificationDelegate {
+   public:
+    NotificationDelegate(const std::string& notification_id,
+                         const base::WeakPtr<EcheAppNotificationController>&
+                             notification_controller);
+
+    NotificationDelegate(const NotificationDelegate&) = delete;
+    NotificationDelegate& operator=(const NotificationDelegate&) = delete;
+
+    // message_center::NotificationDelegate:
+    void Click(const absl::optional<int>& button_index,
+               const absl::optional<std::u16string>& reply) override;
+
+   private:
+    ~NotificationDelegate() override;
+
+    std::string notification_id_;
+    base::WeakPtr<EcheAppNotificationController> notification_controller_;
+  };
+
+  // Displays the notification to the user.
+  void ShowNotification(
+      std::unique_ptr<message_center::Notification> notification);
+
+  Profile* profile_;
+  base::WeakPtrFactory<EcheAppNotificationController> weak_ptr_factory_{this};
+};
+
+}  // namespace eche_app
+}  // namespace chromeos
+
+#endif  // CHROME_BROWSER_CHROMEOS_ECHE_APP_ECHE_APP_NOTIFICATION_CONTROLLER_H_

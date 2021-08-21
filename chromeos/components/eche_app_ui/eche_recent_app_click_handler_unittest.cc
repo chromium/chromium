@@ -10,11 +10,33 @@
 #include "base/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/components/eche_app_ui/fake_feature_status_provider.h"
+#include "chromeos/components/eche_app_ui/launch_app_helper.h"
 #include "chromeos/components/phonehub/fake_phone_hub_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace eche_app {
+
+class TestableLaunchAppHelper : public LaunchAppHelper {
+ public:
+  TestableLaunchAppHelper(
+      phonehub::PhoneHubManager* phone_hub_manager,
+      LaunchEcheAppFunction launch_eche_app_function,
+      CloseEcheAppFunction close_eche_app_function,
+      LaunchNotificationFunction launch_notification_function)
+      : LaunchAppHelper(phone_hub_manager,
+                        launch_eche_app_function,
+                        close_eche_app_function,
+                        launch_notification_function) {}
+
+  ~TestableLaunchAppHelper() override = default;
+  TestableLaunchAppHelper(const TestableLaunchAppHelper&) = delete;
+  TestableLaunchAppHelper& operator=(const TestableLaunchAppHelper&) = delete;
+
+  // LaunchAppHelper:
+  bool IsAppLaunchAllowed() const override { return true; }
+};
 
 class EcheRecentAppClickHandlerTest : public testing::Test {
  protected:
@@ -33,15 +55,38 @@ class EcheRecentAppClickHandlerTest : public testing::Test {
         /*enabled_features=*/{features::kEcheSWA,
                               features::kPhoneHubRecentApps},
         /*disabled_features=*/{});
-    handler_ = std::make_unique<EcheRecentAppClickHandler>(
-        &fake_phone_hub_manager_, &fake_feature_status_provider_,
+    launch_app_helper_ = std::make_unique<TestableLaunchAppHelper>(
+        &fake_phone_hub_manager_,
         base::BindRepeating(
             &EcheRecentAppClickHandlerTest::FakeLaunchEcheAppFunction,
+            base::Unretained(this)),
+        base::BindRepeating(
+            &EcheRecentAppClickHandlerTest::FakeCloseEcheAppFunction,
+            base::Unretained(this)),
+        base::BindRepeating(
+            &EcheRecentAppClickHandlerTest::FakeLaunchNotificationFunction,
             base::Unretained(this)));
+    handler_ = std::make_unique<EcheRecentAppClickHandler>(
+        &fake_phone_hub_manager_, &fake_feature_status_provider_,
+        launch_app_helper_.get());
   }
 
-  void FakeLaunchEcheAppFunction(const std::string& package_name) {
+  void TearDown() override {
+    launch_app_helper_.reset();
+    handler_.reset();
+  }
+
+  void FakeLaunchEcheAppFunction(absl::optional<int64_t> notification_id,
+                                 const std::string& package_name) {
     package_name_ = package_name;
+  }
+
+  void FakeLaunchNotificationFunction(LaunchAppHelper::NotificationType type) {
+    // Do nothing.
+  }
+
+  void FakeCloseEcheAppFunction() {
+    // Do nothing.
   }
 
   void SetStatus(FeatureStatus status) {
@@ -75,6 +120,7 @@ class EcheRecentAppClickHandlerTest : public testing::Test {
   phonehub::FakePhoneHubManager fake_phone_hub_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
   eche_app::FakeFeatureStatusProvider fake_feature_status_provider_;
+  std::unique_ptr<LaunchAppHelper> launch_app_helper_;
   std::unique_ptr<EcheRecentAppClickHandler> handler_;
   std::string package_name_;
 };
