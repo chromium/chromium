@@ -49,6 +49,8 @@ class HTMLSelectMenuElement final : public HTMLElement {
   void EnsureSelectedOptionIsValid();
   Element* SelectedOption();
   void SetSelectedOption(Element* selected_option);
+  void SelectNextOption();
+  void SelectPreviousOption();
   void UpdateSelectedValuePartContents();
 
   void ButtonPartInserted(Element*);
@@ -63,9 +65,9 @@ class HTMLSelectMenuElement final : public HTMLElement {
   void OptionPartInserted(Element*);
   void OptionPartRemoved(Element*);
 
-  bool IsValidButtonPart(const Element* part, bool show_warning) const;
-  bool IsValidListboxPart(const Element* part, bool show_warning) const;
-  bool IsValidOptionPart(const Element* part, bool show_warning) const;
+  bool IsValidButtonPart(const Node* node, bool show_warning) const;
+  bool IsValidListboxPart(const Node* node, bool show_warning) const;
+  bool IsValidOptionPart(const Node* node, bool show_warning) const;
 
   void SetButtonPart(Element* new_button_part);
   void SetListboxPart(HTMLPopupElement* new_listbox_part);
