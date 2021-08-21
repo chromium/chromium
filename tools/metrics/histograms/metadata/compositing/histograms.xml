@@ -463,8 +463,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Compositing.Renderer.LayerSkippedForDrawPropertiesDueToBackface"
-    units="boolean" expires_after="M94">
+    units="boolean" expires_after="2021-10-25">
   <owner>chrishtr@chromium.org</owner>
+  <owner>dbaron@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
     Records whether layer draw properties updates were skipped due to the layer
@@ -508,6 +509,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Compositing.Renderer.LayerUpdateSkippedDueToBackface"
     units="boolean" expires_after="2021-10-25">
   <owner>chrishtr@chromium.org</owner>
+  <owner>dbaron@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
     Records whether a layer update was skipped due to the layer being
