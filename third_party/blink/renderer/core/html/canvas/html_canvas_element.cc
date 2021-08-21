@@ -310,7 +310,7 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContext(
     UseCounter::Count(doc, WebFeature::kCanvasUseColorSpace);
   }
 
-  if (RuntimeEnabledFeatures::NewCanvas2DAPIEnabled())
+  if (RuntimeEnabledFeatures::NewCanvas2DAPIEnabled(GetExecutionContext()))
     UseCounter::Count(doc, WebFeature::kNewCanvas2DAPI);
 
   if (ContentsCcLayer() != old_contents_cc_layer)

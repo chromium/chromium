@@ -317,7 +317,7 @@ CanvasRenderingContext* OffscreenCanvas::GetCanvasRenderingContext(
       UseCounter::Count(window->document(), WebFeature::kCanvasUseColorSpace);
     }
 
-    if (RuntimeEnabledFeatures::NewCanvas2DAPIEnabled())
+    if (RuntimeEnabledFeatures::NewCanvas2DAPIEnabled(GetTopExecutionContext()))
       UseCounter::Count(window->document(), WebFeature::kNewCanvas2DAPI);
   }
 

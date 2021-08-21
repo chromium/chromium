@@ -1484,6 +1484,7 @@
     },
     {
       name: "NewCanvas2DAPI",
+      origin_trial_feature_name: "NewCanvas2DAPI",
       status: "experimental",
     },
     // Not a web exposed feature, enabled from the command line.

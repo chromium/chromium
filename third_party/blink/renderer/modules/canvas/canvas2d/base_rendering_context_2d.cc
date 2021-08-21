@@ -397,7 +397,9 @@ void BaseRenderingContext2D::setStrokeStyle(
   switch (style->GetContentType()) {
     case V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString::
         ContentType::kCSSColorValue:
-      if (!RuntimeEnabledFeatures::NewCanvas2DAPIEnabled())
+      if (GetCanvasRenderingContextHost() &&
+          !RuntimeEnabledFeatures::NewCanvas2DAPIEnabled(
+              GetCanvasRenderingContextHost()->GetTopExecutionContext()))
         return;
       canvas_style = MakeGarbageCollected<CanvasStyle>(
           style->GetAsCSSColorValue()->ToColor().Rgb());
@@ -458,7 +460,9 @@ void BaseRenderingContext2D::setFillStyle(
   switch (style->GetContentType()) {
     case V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString::
         ContentType::kCSSColorValue:
-      if (!RuntimeEnabledFeatures::NewCanvas2DAPIEnabled())
+      if (GetCanvasRenderingContextHost() &&
+          !RuntimeEnabledFeatures::NewCanvas2DAPIEnabled(
+              GetCanvasRenderingContextHost()->GetTopExecutionContext()))
         return;
       canvas_style = MakeGarbageCollected<CanvasStyle>(
           style->GetAsCSSColorValue()->ToColor().Rgb());
@@ -715,7 +719,9 @@ void BaseRenderingContext2D::setFilter(
 
   switch (input->GetContentType()) {
     case V8UnionCanvasFilterOrString::ContentType::kCanvasFilter:
-      if (RuntimeEnabledFeatures::NewCanvas2DAPIEnabled()) {
+      if (GetCanvasRenderingContextHost() &&
+          RuntimeEnabledFeatures::NewCanvas2DAPIEnabled(
+              GetCanvasRenderingContextHost()->GetTopExecutionContext())) {
         GetState().SetCanvasFilter(input->GetAsCanvasFilter());
         SnapshotStateForFilter();
         // TODO(crbug.com/1234113): Instrument new canvas APIs.
@@ -1171,7 +1177,9 @@ void BaseRenderingContext2D::setTransform(DOMMatrixInit* transform,
   // The new canvas 2d API supports 3d transforms.
   // https://github.com/fserb/canvas2D/blob/master/spec/perspective-transforms.md
   // If it is not enabled, throw 3d information away.
-  if (RuntimeEnabledFeatures::NewCanvas2DAPIEnabled()) {
+  if (GetCanvasRenderingContextHost() &&
+      RuntimeEnabledFeatures::NewCanvas2DAPIEnabled(
+          GetCanvasRenderingContextHost()->GetTopExecutionContext())) {
     setTransform(m->m11(), m->m12(), m->m13(), m->m14(), m->m21(), m->m22(),
                  m->m23(), m->m24(), m->m31(), m->m32(), m->m33(), m->m34(),
                  m->m41(), m->m42(), m->m43(), m->m44());
@@ -1679,7 +1687,8 @@ bool BaseRenderingContext2D::ShouldDrawImageAntialiased(
 
 void BaseRenderingContext2D::DispatchContextLostEvent(TimerBase*) {
   if (GetCanvasRenderingContextHost() &&
-      RuntimeEnabledFeatures::NewCanvas2DAPIEnabled()) {
+      RuntimeEnabledFeatures::NewCanvas2DAPIEnabled(
+          GetCanvasRenderingContextHost()->GetTopExecutionContext())) {
     Event* event = Event::CreateCancelable(event_type_names::kContextlost);
     GetCanvasRenderingContextHost()->HostDispatchEvent(event);
 
@@ -1703,7 +1712,9 @@ void BaseRenderingContext2D::DispatchContextRestoredEvent(TimerBase*) {
   DCHECK(context_lost_mode_ != CanvasRenderingContext::kNotLostContext);
   reset();
   context_lost_mode_ = CanvasRenderingContext::kNotLostContext;
-  if (RuntimeEnabledFeatures::NewCanvas2DAPIEnabled()) {
+  if (GetCanvasRenderingContextHost() &&
+      RuntimeEnabledFeatures::NewCanvas2DAPIEnabled(
+          GetCanvasRenderingContextHost()->GetTopExecutionContext())) {
     Event* event(Event::Create(event_type_names::kContextrestored));
     GetCanvasRenderingContextHost()->HostDispatchEvent(event);
     UseCounter::Count(
@@ -2196,7 +2207,9 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
   // TODO(crbug.com/1090180): New Canvas2D API utilizes willReadFrequently
   // attribute that let the users indicate if a canvas will be read frequently
   // through getImageData, thus uses CPU rendering from the start in such cases.
-  if (!RuntimeEnabledFeatures::NewCanvas2DAPIEnabled()) {
+  if (GetCanvasRenderingContextHost() &&
+      !RuntimeEnabledFeatures::NewCanvas2DAPIEnabled(
+          GetCanvasRenderingContextHost()->GetTopExecutionContext())) {
     // GetImagedata is faster in Unaccelerated canvases.
     // In Desynchronized canvas disabling the acceleration will break
     // putImageData: crbug.com/1112060.
