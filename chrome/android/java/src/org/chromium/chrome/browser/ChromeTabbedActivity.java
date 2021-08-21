@@ -221,6 +221,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     private static final String IS_INCOGNITO_SELECTED = "is_incognito_selected";
 
+    private static final int INVALID_WINDOW_ID = TabWindowManager.INVALID_WINDOW_INDEX;
+
     // How long to delay closing the current tab when our app is minimized.  Have to delay this
     // so that we don't show the contents of the next tab while minimizing.
     private static final long CLOSE_TAB_ON_MINIMIZE_DELAY_MS = 500;
@@ -1756,7 +1758,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     @Override
     protected void createTabModels() {
         assert mTabModelSelector == null;
-        assert mWindowId != TabWindowManager.INVALID_WINDOW_INDEX;
+        assert mWindowId != INVALID_WINDOW_ID;
 
         Bundle savedInstanceState = getSavedInstanceState();
 
@@ -1911,7 +1913,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         int windowId = getExtraWindowIdFromIntent(intent);
         if (savedInstanceState != null && savedInstanceState.containsKey(WINDOW_INDEX)) {
             // Activity is recreated after destruction. |windowId| must not be valid in this case.
-            assert windowId == TabWindowManager.INVALID_WINDOW_INDEX;
+            assert windowId == INVALID_WINDOW_ID;
             mWindowId = savedInstanceState.getInt(WINDOW_INDEX, 0);
         } else if (mMultiInstanceManager != null) {
             // |allocInstanceId| doesn't do any disk I/O that would add a long-running task
@@ -1919,7 +1921,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             boolean preferNew = getExtraPreferNewFromIntent(intent);
             mWindowId = mMultiInstanceManager.allocInstanceId(windowId, getTaskId(), preferNew);
         }
-        if (mWindowId == TabWindowManager.INVALID_WINDOW_INDEX) {
+        if (mWindowId == INVALID_WINDOW_ID) {
             Log.i(TAG, "Window ID not allocated. Finishing the activity");
             Toast.makeText(this, R.string.max_number_of_windows, Toast.LENGTH_LONG).show();
             return false;
@@ -1934,8 +1936,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     }
 
     private static int getExtraWindowIdFromIntent(Intent intent) {
-        return IntentUtils.safeGetIntExtra(
-                intent, IntentHandler.EXTRA_WINDOW_ID, TabWindowManager.INVALID_WINDOW_INDEX);
+        int windowId = IntentUtils.safeGetIntExtra(
+                intent, IntentHandler.EXTRA_WINDOW_ID, INVALID_WINDOW_ID);
+        return IntentUtils.isTrustedIntentFromSelf(intent) ? windowId : INVALID_WINDOW_ID;
     }
 
     private static boolean getExtraPreferNewFromIntent(Intent intent) {
