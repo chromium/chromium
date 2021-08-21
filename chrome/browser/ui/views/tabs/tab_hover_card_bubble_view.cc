@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/views/tabs/tab_hover_card_bubble_view.h"
 
 #include <algorithm>
+#include <cctype>
+#include <cwctype>
 #include <ios>
 #include <memory>
 #include <string>
@@ -14,6 +16,7 @@
 #include "base/i18n/char_iterator.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_piece_forward.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/themes/theme_properties.h"
@@ -176,6 +179,55 @@ std::u16string TabHoverCardBubbleView::FilenameElider::Elide(
   return ElideImpl(GetLineLengths(display_rect));
 }
 
+// static
+std::u16string::size_type
+TabHoverCardBubbleView::FilenameElider::FindImageDimensions(
+    const std::u16string& text) {
+  // We don't have regexes in Chrome, but we can still do a rough evaluation of
+  // the line to see if it ends with the expected pattern:
+  //
+  // title[ (width×height)]
+  //
+  // We'll look for the open parenthesis, then the rest of the size. Note that
+  // we don't have to worry about graphemes or combining characters because any
+  // character that's not of the expected type means there is no dimension.
+
+  // Find the start of the extension.
+  const auto paren_pos = text.find_last_of(u'(');
+  if (paren_pos == 0 || paren_pos == std::u16string::npos ||
+      !std::isspace(text[paren_pos - 1])) {
+    return std::u16string::npos;
+  }
+
+  // Fast forward to the unicode character following the paren.
+  base::i18n::UTF16CharIterator it(
+      base::StringPiece16(text).substr(paren_pos + 1));
+
+  // Look for the image width.
+  if (!std::isdigit(it.get()))
+    return std::u16string::npos;
+  while (it.Advance() && std::isdigit(it.get())) {
+    // empty loop
+  }
+
+  // Look for the × character and the height.
+  constexpr char16_t kMultiplicationSymbol = u'\u00D7';
+  if (it.end() || it.get() != kMultiplicationSymbol || !it.Advance() ||
+      !std::isdigit(it.get())) {
+    return std::u16string::npos;
+  }
+  while (it.Advance() && std::isdigit(it.get())) {
+    // empty loop
+  }
+
+  // Look for the closing parenthesis and make sure we've hit the end of the
+  // string.
+  if (it.end() || it.get() != u')')
+    return std::u16string::npos;
+  it.Advance();
+  return it.end() ? paren_pos : std::u16string::npos;
+}
+
 TabHoverCardBubbleView::FilenameElider::LineLengths
 TabHoverCardBubbleView::FilenameElider::GetLineLengths(
     const gfx::Rect& display_rect) const {
@@ -207,9 +259,9 @@ TabHoverCardBubbleView::FilenameElider::GetLineLengths(
   // calculate the length of the string sans ellipsis.
   DCHECK_EQ(gfx::kEllipsisUTF16[0], tentative_second_line[0]);
 
-  // Elision is still a little flaky, so we'll make sure we didn't stop in the
-  // middle of a grapheme. The +1 is to move past the ellipsis which is not
-  // part of the original string.
+  // TODO(crbug.com/1239317): Elision is still a little flaky, so we'll make
+  // sure we didn't stop in the middle of a grapheme. The +1 is to move past
+  // the ellipsis which is not part of the original string.
   size_t pos = text.length() - tentative_second_line.length() + 1;
   if (!render_text_->IsGraphemeBoundary(pos))
     pos = render_text_->IndexOfAdjacentGrapheme(pos, gfx::CURSOR_FORWARD);
@@ -222,7 +274,8 @@ TabHoverCardBubbleView::FilenameElider::GetLineLengths(
   render_text_->SetElideBehavior(gfx::ElideBehavior::TRUNCATE);
   result.first = render_text_->GetDisplayText().length();
 
-  // Handle the case where we ended up in the middle of a grapheme.
+  // TOOD(crbug.com/1239317) Handle the case where we ended up in the middle
+  // of a grapheme.
   if (!render_text_->IsGraphemeBoundary(result.first)) {
     result.first = render_text_->IndexOfAdjacentGrapheme(result.first,
                                                          gfx::CURSOR_BACKWARD);
@@ -263,24 +316,28 @@ std::u16string TabHoverCardBubbleView::FilenameElider::ElideImpl(
   // show an ellipsis in the final string).
   const bool is_whole_string = (cut_point == line_lengths.first);
 
-  // If we got the whole thing and there is a file extension and the dot
-  // separating the extension from the rest of the filename is in the
-  // overlapped region (i.e. the region that could go on either the first or
-  // second line) then we should preferably put the line break immediately
-  // before the extension. This solves some rendering problems when the
-  // filename is in an RTL language but the extension is in Latin characters.
-  // (We'll actually catch the case where the lines exactly match up as well
-  // because it will result in better formatting later.)
+  // If there is some flexibility in where we make our cut point (that is, the
+  // potential first and second lines overlap), there are a few specific places
+  // we preferentially want to separate the lines.
   bool adjusted_cut_point = false;
   if (is_whole_string && cut_point >= second_line_cut) {
-    // Note that this could theoretically cause a problem if there is a
-    // combining diacritic with the dot that precedes it but that's not
-    // typically how filenames work.
-    const size_t dot_pos = text.find_last_of(u'.');
-    if (dot_pos != std::u16string::npos && dot_pos >= second_line_cut &&
-        dot_pos <= cut_point) {
-      cut_point = dot_pos;
+    // First, if there are image dimensions, preferentially put those on the
+    // second line.
+    const auto paren_pos = FindImageDimensions(text);
+    if (paren_pos != std::u16string::npos && paren_pos >= second_line_cut &&
+        paren_pos <= cut_point) {
+      cut_point = paren_pos;
       adjusted_cut_point = true;
+    }
+
+    // Second, we can break at the start of the file extension.
+    if (!adjusted_cut_point) {
+      const size_t dot_pos = text.find_last_of(u'.');
+      if (dot_pos != std::u16string::npos && dot_pos >= second_line_cut &&
+          dot_pos <= cut_point) {
+        cut_point = dot_pos;
+        adjusted_cut_point = true;
+      }
     }
   }
 
@@ -835,6 +892,16 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
               url_formatter::kFormatUrlOmitTrivialSubdomains |
               url_formatter::kFormatUrlTrimAfterHost,
           net::UnescapeRule::NORMAL, nullptr, nullptr, nullptr);
+
+      // Most of the time we want our standard (tail-elided) formatting for web
+      // pages, but when viewing an image in the browser, many users want to
+      // view the image dimensions (see crbug.com/1222984) so for titles that
+      // "look" like images (i.e. that end with a dimension) we instead switch
+      // to middle-elide.
+      if (FilenameElider::FindImageDimensions(title) != std::u16string::npos) {
+        is_filename = true;
+        title = title_label_->TruncateFilenameToTwoLines(title);
+      }
     }
   }
   title_label_->SetText(title, is_filename);

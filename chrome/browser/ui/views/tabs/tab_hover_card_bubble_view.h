@@ -53,6 +53,17 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
     std::u16string Elide(const std::u16string& text,
                          const gfx::Rect& display_rect) const;
 
+    // Returns the start of the image dimensions as typically formatted by
+    // Chrome in page titles, as a hint at how to potentially elide or split
+    // the title. Expects something in the format "title (width×height)".
+    // Returns std::u16string::npos if this pattern isn't found, otherwise
+    // returns the index of the opening parenthesis in the string.
+    //
+    // If the result isn't npos, then the character previous to the open paren
+    // character is guaranteed to be whitespace.
+    static std::u16string::size_type FindImageDimensions(
+        const std::u16string& text);
+
    private:
     friend class TabHoverCardBubbleViewFilenameEliderTest;
 

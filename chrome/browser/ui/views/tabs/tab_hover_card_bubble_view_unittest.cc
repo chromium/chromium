@@ -106,6 +106,7 @@ class TabHoverCardBubbleViewFilenameEliderTest {
 };
 
 #define EM_SPACE u"\u2003"
+#define MULT_SYMBOL u"\u00D7"
 #define COMBINING_CIRCUMFLEX u"\u0302"
 
 #define MEDICAL_SYMBOL_EMOJI u"\u2695\uFE0F"
@@ -202,6 +203,20 @@ const ElideImplTestParams kElideImplTestParams[]{
      "Cut after compound emoji does not elide emoji."},
     {u"abco" COMBINING_CIRCUMFLEX u" def", 3, 4, ELLIPSIZE(u"abc", u"def"),
      "Eliminates whitespace after elided combining character."},
+    {u"abc.png (123" MULT_SYMBOL u"456)", 15, 15,
+     BIDIFY(u"abc.png ", u"(123" MULT_SYMBOL u"456)"),
+     "Prefer to break before image dimensions (1)."},
+    {u"abc.png (123" MULT_SYMBOL u"456)", 8, 15,
+     BIDIFY(u"abc.png ", u"(123" MULT_SYMBOL u"456)"),
+     "Prefer to break before image dimensions (2)."},
+    {u"abc.png (123,456)", 15, 15, BIDIFY(u"abc", u".png (123,456)"),
+     "Prefer to break before extension if dimensions malformatted."},
+    {u"abc.png (123" MULT_SYMBOL u"456)", 15, 9,
+     BIDIFY(u"abc.png ", u"(123" MULT_SYMBOL u"456)"),
+     "Force break before image dimensions."},
+    {u"abc.png (123" MULT_SYMBOL u"456)", 7, 15,
+     BIDIFY(u"abc", u".png (123" MULT_SYMBOL u"456)"),
+     "Force break before extension."},
 };
 
 class TabHoverCardBubbleViewFilenameEliderElideImplTest
@@ -306,8 +321,16 @@ const ElideTestParams kElideTestParams[]{
     {u"abcde.fgh", 5, 5, 4, BIDIFY(u"abcde", u".fgh"),
      "Entire extension placed on second line (2)."},
     {u"abc.fgh", 4, 4, 3, u"abc.\nfgh", "Force break after period."},
-    {u"abcde.jpg (100x100)", 15, 15, 14, BIDIFY(u"abcde", u".jpg (100x100)"),
-     "Extension plus size put on second line."}};
+    {u"ab.c (1" MULT_SYMBOL u"2)", 9, 9, 8,
+     BIDIFY(u"ab.c ", u"(1" MULT_SYMBOL u"2)"),
+     "Prefer to break before dimensions."},
+    {u"a.b (1" MULT_SYMBOL u"2)", 8, 8, 7,
+     BIDIFY(u"a.b ", u"(1" MULT_SYMBOL u"2)"),
+     "Force break before dimensions."},
+    {u"abcdefghij.png (1" MULT_SYMBOL u"2)", 13, 13, 12,
+     BIDIFY(u"abcdefghij", u".png (1" MULT_SYMBOL u"2)"),
+     "Force break before extension."},
+};
 
 class TabHoverCardBubbleViewFilenameEliderGetLineLengthsTest
     : public TabHoverCardBubbleViewFilenameEliderTest,
@@ -340,4 +363,69 @@ TEST_P(TabHoverCardBubbleViewFilenameEliderGetLineLengthsTest, Elide) {
   FilenameElider elider(CreateRenderText(std::u16string()));
   EXPECT_EQ(std::u16string(params.elided),
             elider.Elide(params.text, GetTextRect(params.chars_per_line)));
+}
+
+struct FindImageDimensionsTestParams {
+  const char16_t* const text;
+  const std::u16string::size_type expected;
+  const char* const comment;
+};
+
+void PrintTo(const FindImageDimensionsTestParams& params, ::std::ostream* os) {
+  *os << params.comment << " (\"" << params.text << "\")";
+}
+
+const FindImageDimensionsTestParams kFindImageDimensionsTestParams[]{
+    {u"", std::u16string::npos, "Empty string has no dimensions."},
+    {u"(", std::u16string::npos, "Single open paren has no dimensions."},
+    {u"a (", std::u16string::npos, "Single open paren has no dimensions. (2)"},
+    {u"a ()", std::u16string::npos, "Just parens has no dimensions."},
+    {u"a (" MULT_SYMBOL u")", std::u16string::npos,
+     "No numbers has no dimensions."},
+    {u"a (1" MULT_SYMBOL u")", std::u16string::npos,
+     "Missing height has no dimensions (1)."},
+    {u"a (1234" MULT_SYMBOL u")", std::u16string::npos,
+     "Missing height has no dimensions (2)."},
+    {u"a (" MULT_SYMBOL u"1)", std::u16string::npos,
+     "Missing width has no dimensions (1)."},
+    {u"a (" MULT_SYMBOL u"1234)", std::u16string::npos,
+     "Missing width has no dimensions (2)."},
+    {u"a(1" MULT_SYMBOL u"1)", std::u16string::npos,
+     "Missing whitespace has no dimensions."},
+    {u"a (1" MULT_SYMBOL u"1", std::u16string::npos,
+     "Missing end paren has dimensions."},
+    {u"a (1234)", std::u16string::npos, "Missing x has no dimensions."},
+    {u"a (1" MULT_SYMBOL u"4)", 2U, "Single digits finds dimensions."},
+    {u"a (123" MULT_SYMBOL u"456)", 2U, "Multiple digits finds dimensions."},
+    {u"a (123 " MULT_SYMBOL u"456)", std::u16string::npos,
+     "Extra whitespace has no dimensions (1)."},
+    {u"a (123" MULT_SYMBOL u" 456)", std::u16string::npos,
+     "Extra whitespace has no dimensions (2)."},
+    {u"a (123 " MULT_SYMBOL u" 456)", std::u16string::npos,
+     "Extra whitespace has no dimensions (3)."},
+    {u"a (1234567890" MULT_SYMBOL u"1234567890)", 2U,
+     "All digits finds dimensions."},
+    {u"abc def ghi 12345 () xxxxx foo (123" MULT_SYMBOL u"456)", 31U,
+     "Long filename finds dimensions."},
+    {u"a (123" MULT_SYMBOL u"456) ", std::u16string::npos,
+     "Extra space at end has no dimensions."},
+    {u"a (123" MULT_SYMBOL u"456)x", std::u16string::npos,
+     "Extra characters at end has no dimensions (1)."},
+    {u"a (123" MULT_SYMBOL u"456)(", std::u16string::npos,
+     "Extra characters at end has no dimensions (2)."},
+};
+
+class TabHoverCardBubbleViewFilenameEliderFindImageDimensionsTest
+    : public TabHoverCardBubbleViewFilenameEliderTest,
+      public testing::TestWithParam<FindImageDimensionsTestParams> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    TabHoverCardBubbleViewFilenameEliderFindImageDimensionsTest,
+    testing::ValuesIn(kFindImageDimensionsTestParams));
+
+TEST_P(TabHoverCardBubbleViewFilenameEliderFindImageDimensionsTest,
+       FindImageDimensions) {
+  const FindImageDimensionsTestParams& params = GetParam();
+  EXPECT_EQ(params.expected, FilenameElider::FindImageDimensions(params.text));
 }
