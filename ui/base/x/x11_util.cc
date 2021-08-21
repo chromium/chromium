@@ -353,6 +353,10 @@ int CoalescePendingMotionEvents(const x11::Event& x11_event,
 
   conn->ReadResponses();
   for (auto& event : conn->events()) {
+    // There may be non-input events such as ConfigureNotifyEvents and
+    // PropertyNotifyEvents that get interleaved between mouse events, so it is
+    // necessary to skip over those to coalesce as many pending motion events as
+    // possible so mouse dragging is smooth.
     if (!EventHasCoordinates(event))
       continue;
 
