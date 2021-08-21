@@ -42,7 +42,7 @@ TEST(LinkHeaderParserTest, UndefinedAttribute) {
       base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\n");
   // `unknownattr` is not pre-defined.
   headers->AddHeader("link",
-                     "</style.css>; rel=preload; as=stylesheet; unknownattr");
+                     "</style.css>; rel=preload; as=style; unknownattr");
 
   std::vector<mojom::LinkHeaderPtr> parsed_headers =
       ParseLinkHeaders(*headers, kBaseUrl);
@@ -112,7 +112,7 @@ TEST(LinkHeaderParserTest, LinkAsAttribute) {
   headers->AddHeader("link", "</font.woff2>; rel=preload; as=font");
   headers->AddHeader("link", "</image.jpg>; rel=preload; as=image");
   headers->AddHeader("link", "</script.js>; rel=preload; as=script");
-  headers->AddHeader("link", "</style.css>; rel=preload; as=stylesheet");
+  headers->AddHeader("link", "</style.css>; rel=preload; as=style");
 
   std::vector<mojom::LinkHeaderPtr> parsed_headers =
       ParseLinkHeaders(*headers, kBaseUrl);
