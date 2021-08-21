@@ -11,67 +11,88 @@ import './icons.js';
 import './print_preview_shared_css.js';
 import './settings_section.js';
 
-import {Base, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Base, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DuplexMode} from '../data/model.js';
 import {getSelectDropdownBackground} from '../print_preview_utils.js';
 
-import {SelectBehavior} from './select_behavior.js';
-import {SettingsBehavior} from './settings_behavior.js';
+import {SelectBehavior, SelectBehaviorInterface} from './select_behavior.js';
+import {SettingsBehavior, SettingsBehaviorInterface} from './settings_behavior.js';
 
-Polymer({
-  is: 'print-preview-duplex-settings',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {SettingsBehaviorInterface}
+ * @implements {SelectBehaviorInterface}
+ */
+const PrintPreviewDuplexSettingsElementBase =
+    mixinBehaviors([SettingsBehavior, SelectBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class PrintPreviewDuplexSettingsElement extends
+    PrintPreviewDuplexSettingsElementBase {
+  static get is() {
+    return 'print-preview-duplex-settings';
+  }
 
-  behaviors: [SettingsBehavior, SelectBehavior],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    dark: Boolean,
+  static get properties() {
+    return {
+      dark: Boolean,
 
-    disabled: Boolean,
+      disabled: Boolean,
 
-    /**
-     * Mirroring the enum so that it can be used from HTML bindings.
-     * @private
-     */
-    duplexValueEnum_: {
-      type: Object,
-      value: DuplexMode,
-    },
-  },
+      /**
+       * Mirroring the enum so that it can be used from HTML bindings.
+       * @private
+       */
+      duplexValueEnum_: {
+        type: Object,
+        value: DuplexMode,
+      },
+    };
+  }
 
-  observers: [
-    'onDuplexSettingChange_(settings.duplex.*)',
-    'onDuplexTypeChange_(settings.duplexShortEdge.*)',
-  ],
+  static get observers() {
+    return [
+      'onDuplexSettingChange_(settings.duplex.*)',
+      'onDuplexTypeChange_(settings.duplexShortEdge.*)',
+    ];
+  }
 
-  /** @private {!IronMetaElement} */
-  meta_: /** @type {!IronMetaElement} */ (
-      Base.create('iron-meta', {type: 'iconset'})),
+  constructor() {
+    super();
+
+    /** @private {!IronMetaElement} */
+    this.meta_ = /** @type {!IronMetaElement} */ (
+        Base.create('iron-meta', {type: 'iconset'}));
+  }
 
   /** @private */
   onDuplexSettingChange_() {
     this.$.duplex.checked = this.getSettingValue('duplex');
-  },
+  }
 
   /** @private */
   onDuplexTypeChange_() {
     this.selectedValue = this.getSettingValue('duplexShortEdge') ?
         this.duplexValueEnum_.SHORT_EDGE.toString() :
         this.duplexValueEnum_.LONG_EDGE.toString();
-  },
+  }
 
   /** @private */
   onCheckboxChange_() {
     this.setSetting('duplex', this.$.duplex.checked);
-  },
+  }
 
   onProcessSelectChange(value) {
     this.setSetting(
         'duplexShortEdge',
         value === this.duplexValueEnum_.SHORT_EDGE.toString());
-  },
+  }
 
   /**
    * @return {boolean} Whether to expand the collapse for the dropdown.
@@ -80,7 +101,7 @@ Polymer({
   getOpenCollapse_() {
     return this.getSetting('duplexShortEdge').available &&
         /** @type {boolean} */ (this.getSettingValue('duplex'));
-  },
+  }
 
   /**
    * @param {boolean} managed Whether the setting is managed by policy.
@@ -90,7 +111,7 @@ Polymer({
    */
   getDisabled_(managed, disabled) {
     return managed || disabled;
-  },
+  }
 
   /**
    * @return {string} An inline svg corresponding to |icon| and the image for
@@ -103,5 +124,8 @@ Polymer({
     const iconset = /** @type {!IronIconsetSvgElement} */ (
         this.meta_.byKey('print-preview'));
     return getSelectDropdownBackground(iconset, icon, this);
-  },
-});
+  }
+}
+
+customElements.define(
+    PrintPreviewDuplexSettingsElement.is, PrintPreviewDuplexSettingsElement);

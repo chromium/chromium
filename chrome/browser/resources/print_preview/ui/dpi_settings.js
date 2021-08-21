@@ -8,9 +8,9 @@ import '../strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SettingsBehavior} from './settings_behavior.js';
+import {SettingsBehavior, SettingsBehaviorInterface} from './settings_behavior.js';
 import {SelectOption} from './settings_select.js';
 
 /**
@@ -30,29 +30,45 @@ let DpiOption;
  */
 let LabelledDpiOption;
 
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {SettingsBehaviorInterface}
+ */
+const PrintPreviewDpiSettingsElementBase =
+    mixinBehaviors([SettingsBehavior], PolymerElement);
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'print-preview-dpi-settings',
+/** @polymer */
+export class PrintPreviewDpiSettingsElement extends
+    PrintPreviewDpiSettingsElementBase {
+  static get is() {
+    return 'print-preview-dpi-settings';
+  }
 
-  behaviors: [SettingsBehavior],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /** @type {{ option: Array<!SelectOption> }} */
-    capability: Object,
+  static get properties() {
+    return {
+      /** @type {{ option: Array<!SelectOption> }} */
+      capability: Object,
 
-    disabled: Boolean,
+      disabled: Boolean,
 
-    /** @private {{ option: Array<!SelectOption> }} */
-    capabilityWithLabels_: {
-      type: Object,
-      computed: 'computeCapabilityWithLabels_(capability)',
-    },
-  },
+      /** @private {{ option: Array<!SelectOption> }} */
+      capabilityWithLabels_: {
+        type: Object,
+        computed: 'computeCapabilityWithLabels_(capability)',
+      },
+    };
+  }
 
-  observers: [
-    'onDpiSettingChange_(settings.dpi.*, capabilityWithLabels_.option)',
-  ],
+  static get observers() {
+    return [
+      'onDpiSettingChange_(settings.dpi.*, capabilityWithLabels_.option)',
+    ];
+  }
 
   /**
    * Adds default labels for each option.
@@ -81,7 +97,7 @@ Polymer({
       }
     });
     return result;
-  },
+  }
 
   /** @private */
   onDpiSettingChange_() {
@@ -98,7 +114,7 @@ Polymer({
       if (dpiValue.horizontal_dpi === dpiOption.horizontal_dpi &&
           dpiValue.vertical_dpi === dpiOption.vertical_dpi &&
           dpiValue.vendor_id === dpiOption.vendor_id) {
-        this.$$('print-preview-settings-select')
+        this.shadowRoot.querySelector('print-preview-settings-select')
             .selectValue(JSON.stringify(option));
         return;
       }
@@ -108,5 +124,8 @@ Polymer({
         this.capabilityWithLabels_.option.find(o => !!o.is_default) ||
         this.capabilityWithLabels_.option[0];
     this.setSetting('dpi', defaultOption);
-  },
-});
+  }
+}
+
+customElements.define(
+    PrintPreviewDpiSettingsElement.is, PrintPreviewDpiSettingsElement);

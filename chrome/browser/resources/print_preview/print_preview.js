@@ -52,7 +52,9 @@ export {PrintPreviewDestinationSelectElement} from './ui/destination_select.js';
 // <if expr="chromeos or lacros">
 export {PrintPreviewDestinationSelectCrosElement} from './ui/destination_select_cros.js';
 // </if>
-export {DestinationState, NUM_PERSISTED_DESTINATIONS} from './ui/destination_settings.js';
+export {DestinationState, NUM_PERSISTED_DESTINATIONS, PrintPreviewDestinationSettingsElement} from './ui/destination_settings.js';
+export {PrintPreviewDpiSettingsElement} from './ui/dpi_settings.js';
+export {PrintPreviewDuplexSettingsElement} from './ui/duplex_settings.js';
 export {PDFPlugin, PluginProxy, PluginProxyImpl} from './ui/plugin_proxy.js';
 export {PreviewAreaState} from './ui/preview_area.js';
 export {SelectBehavior} from './ui/select_behavior.js';

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CloudPrintInterfaceEventType, CloudPrintInterfaceImpl, Destination, DestinationConnectionStatus, DestinationOrigin, DestinationStore, DestinationType, LocalDestinationInfo, makeRecentDestination, MeasurementSystemUnitType, NativeInitialSettings, NativeLayer, NativeLayerImpl, PluginProxyImpl, PrintPreviewAppElement, ScalingType, State, whenReady} from 'chrome://print/print_preview.js';
+import {CloudPrintInterfaceEventType, CloudPrintInterfaceImpl, Destination, DestinationConnectionStatus, DestinationOrigin, DestinationStore, DestinationType, LocalDestinationInfo, makeRecentDestination, MeasurementSystemUnitType, NativeInitialSettings, NativeLayer, NativeLayerImpl, PluginProxyImpl, PrintPreviewAppElement, PrintPreviewDestinationSettingsElement, ScalingType, State, whenReady} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {isWindows} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -220,8 +220,9 @@ suite(invalid_settings_browsertest.suiteName, function() {
 
               // Select should still be enabled so that the user can select a
               // new printer.
-              assertFalse(
-                  destinationSettings.$$('#destinationSelect').disabled);
+              assertFalse(destinationSettings.shadowRoot
+                              .querySelector('#destinationSelect')
+                              .disabled);
 
               // Reset
               nativeLayer.reset();
@@ -354,8 +355,9 @@ suite(invalid_settings_browsertest.suiteName, function() {
 
               // The destination select dropdown should be enabled, so that the
               // user can select a new printer.
-              assertFalse(
-                  destinationSettings.$$('#destinationSelect').disabled);
+              assertFalse(destinationSettings.shadowRoot
+                              .querySelector('#destinationSelect')
+                              .disabled);
 
               // Reset
               nativeLayer.reset();
@@ -376,8 +378,9 @@ suite(invalid_settings_browsertest.suiteName, function() {
               assertFalse(scalingSettings.$$('cr-input').disabled);
 
               // The destination select dropdown should still be enabled.
-              assertFalse(
-                  destinationSettings.$$('#destinationSelect').disabled);
+              assertFalse(destinationSettings.shadowRoot
+                              .querySelector('#destinationSelect')
+                              .disabled);
 
               // Message text should have changed and overlay should be
               // invisible.

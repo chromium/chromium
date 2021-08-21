@@ -26,10 +26,10 @@ import '../strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {beforeNextRender, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {beforeNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CloudPrintInterfaceImpl} from '../cloud_print_interface_impl.js';
 import {CloudOrigins, createDestinationKey, createRecentDestinationKey, Destination, DestinationOrigin, makeRecentDestination, RecentDestination} from '../data/destination.js';
@@ -40,7 +40,7 @@ import {getPrinterTypeForDestination, PrinterType} from '../data/destination_mat
 import {DestinationErrorType, DestinationStore} from '../data/destination_store.js';
 import {Error, State} from '../data/state.js';
 
-import {SettingsBehavior} from './settings_behavior.js';
+import {SettingsBehavior, SettingsBehaviorInterface} from './settings_behavior.js';
 
 /** @enum {number} */
 export const DestinationState = {
@@ -63,117 +63,136 @@ NUM_PERSISTED_DESTINATIONS = 10;
  */
 const NUM_UNPINNED_DESTINATIONS = 3;
 
-Polymer({
-  is: 'print-preview-destination-settings',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ * @implements {SettingsBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const PrintPreviewDestinationSettingsElementBase = mixinBehaviors(
+    [I18nBehavior, SettingsBehavior, WebUIListenerBehavior], PolymerElement);
 
-  behaviors: [
-    I18nBehavior,
-    SettingsBehavior,
-    WebUIListenerBehavior,
-  ],
+/** @polymer */
+export class PrintPreviewDestinationSettingsElement extends
+    PrintPreviewDestinationSettingsElementBase {
+  static get is() {
+    return 'print-preview-destination-settings';
+  }
 
-  properties: {
-    dark: Boolean,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @type {?Destination} */
-    destination: {
-      type: Object,
-      notify: true,
-      value: null,
-    },
+  static get properties() {
+    return {
+      dark: Boolean,
 
-    /** @type {!DestinationState} */
-    destinationState: {
-      type: Number,
-      notify: true,
-      value: DestinationState.INIT,
-      observer: 'updateDestinationSelect_',
-    },
+      /** @type {?Destination} */
+      destination: {
+        type: Object,
+        notify: true,
+        value: null,
+      },
 
-    disabled: Boolean,
+      /** @type {!DestinationState} */
+      destinationState: {
+        type: Number,
+        notify: true,
+        value: DestinationState.INIT,
+        observer: 'updateDestinationSelect_',
+      },
 
-    /** @type {!Error} */
-    error: {
-      type: Number,
-      notify: true,
-      observer: 'onErrorChanged_',
-    },
+      disabled: Boolean,
 
-    firstLoad: Boolean,
+      /** @type {!Error} */
+      error: {
+        type: Number,
+        notify: true,
+        observer: 'onErrorChanged_',
+      },
 
-    /** @type {!State} */
-    state: Number,
+      firstLoad: Boolean,
+
+      /** @type {!State} */
+      state: Number,
+
+      /** @private {string} */
+      activeUser_: {
+        type: String,
+        observer: 'onActiveUserChanged_',
+      },
+
+      /** @private {boolean} */
+      cloudPrintDisabled_: {
+        type: Boolean,
+        value: true,
+      },
+
+      /** @private {?DestinationStore} */
+      destinationStore_: {
+        type: Object,
+        value: null,
+      },
+
+      /** @private {!Array<!Destination>} */
+      displayedDestinations_: Array,
+
+      // <if expr="chromeos or lacros">
+      /** @private {string} */
+      driveDestinationKey_: {
+        type: String,
+        value: '',
+      },
+
+      hasPinSetting_: {
+        type: Boolean,
+        computed: 'computeHasPinSetting_(settings.pin.available)',
+        reflectToAttribute: true,
+      },
+      // </if>
+
+      /** @private {boolean} */
+      isDialogOpen_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @private {boolean} */
+      noDestinations_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @private {boolean} */
+      pdfPrinterDisabled_: Boolean,
+
+      /** @private */
+      loaded_: {
+        type: Boolean,
+        computed: 'computeLoaded_(destinationState, destination)',
+      },
+
+      /** @private {!Array<string>} */
+      users_: Array,
+    };
+  }
+
+  constructor() {
+    super();
 
     /** @private {string} */
-    activeUser_: {
-      type: String,
-      observer: 'onActiveUserChanged_',
-    },
+    this.lastUser_ = '';
 
-    /** @private {boolean} */
-    cloudPrintDisabled_: {
-      type: Boolean,
-      value: true,
-    },
-
-    /** @private {?DestinationStore} */
-    destinationStore_: {
-      type: Object,
-      value: null,
-    },
-
-    /** @private {!Array<!Destination>} */
-    displayedDestinations_: Array,
-
-    // <if expr="chromeos or lacros">
-    /** @private {string} */
-    driveDestinationKey_: {
-      type: String,
-      value: '',
-    },
-
-    hasPinSetting_: {
-      type: Boolean,
-      computed: 'computeHasPinSetting_(settings.pin.available)',
-      reflectToAttribute: true,
-    },
-    // </if>
-
-    /** @private {boolean} */
-    isDialogOpen_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /** @private {boolean} */
-    noDestinations_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /** @private {boolean} */
-    pdfPrinterDisabled_: Boolean,
-
-    /** @private */
-    loaded_: {
-      type: Boolean,
-      computed: 'computeLoaded_(destinationState, destination)',
-    },
-
-    /** @private {!Array<string>} */
-    users_: Array,
-  },
-
-  /** @private {string} */
-  lastUser_: '',
-
-  /** @private {!EventTracker} */
-  tracker_: new EventTracker(),
+    /** @private {!EventTracker} */
+    this.tracker_ = new EventTracker();
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     this.destinationStore_ =
         new DestinationStore(this.addWebUIListener.bind(this));
     this.tracker_.add(
@@ -202,13 +221,15 @@ Polymer({
         DestinationStore.EventType.DESTINATION_EULA_READY,
         this.updateDestinationEulaUrl_.bind(this));
     // </if>
-  },
+  }
 
   /** @override */
-  detached() {
+  disconnectedCallback() {
+    super.disconnectedCallback();
+
     this.destinationStore_.resetTracker();
     this.tracker_.removeAll();
-  },
+  }
 
   /** @private */
   onActiveUserChanged_() {
@@ -251,7 +272,7 @@ Polymer({
       return;
     }
     this.destinationStore_.selectDefaultDestination();
-  },
+  }
 
   /**
    * @param {string} defaultPrinter The system default printer ID.
@@ -293,7 +314,7 @@ Polymer({
     this.destinationStore_.init(
         this.pdfPrinterDisabled_, isDriveMounted, defaultPrinter,
         serializedDefaultDestinationRulesStr, recentDestinations);
-  },
+  }
 
   /**
    * @param {!Array<!RecentDestination>} recentDestinations recent destinations.
@@ -319,7 +340,7 @@ Polymer({
       }
     }
     return Math.min(recentDestinations.length, numDestinationsToDisplay);
-  },
+  }
 
   /** @private */
   onDestinationSelect_() {
@@ -346,7 +367,7 @@ Polymer({
     // destinationState.
     this.destination = destination;
     this.updateRecentDestinations_();
-  },
+  }
 
   /** @private */
   onDestinationCapabilitiesReady_() {
@@ -355,7 +376,7 @@ Polymer({
     if (this.destinationState === DestinationState.SET) {
       this.destinationState = DestinationState.UPDATED;
     }
-  },
+  }
 
   /**
    * @param {!CustomEvent<!DestinationErrorType>} e
@@ -378,7 +399,7 @@ Polymer({
         break;
     }
     this.error = errorType;
-  },
+  }
 
   /** @private */
   onErrorChanged_() {
@@ -387,7 +408,7 @@ Polymer({
         this.error === Error.NO_DESTINATIONS) {
       this.destinationState = DestinationState.ERROR;
     }
-  },
+  }
 
   /**
    * @param {!RecentDestination} destination
@@ -402,7 +423,7 @@ Polymer({
     // </if>
 
     return destination.id === Destination.GooglePromotedId.SAVE_AS_PDF;
-  },
+  }
 
   /** @private */
   updateRecentDestinations_() {
@@ -463,7 +484,7 @@ Polymer({
         (isNew || !isVisible)) {
       this.updateDropdownDestinations_();
     }
-  },
+  }
 
   /** @private */
   updateDropdownDestinations_() {
@@ -488,7 +509,7 @@ Polymer({
     }
 
     this.displayedDestinations_ = updatedDestinations;
-  },
+  }
 
   /**
    * @return {boolean} Whether the destinations dropdown should be disabled.
@@ -498,7 +519,7 @@ Polymer({
     return this.state === State.FATAL_ERROR ||
         (this.destinationState === DestinationState.UPDATED && this.disabled &&
          this.state !== State.NOT_READY);
-  },
+  }
 
   /** @private */
   computeLoaded_() {
@@ -508,7 +529,7 @@ Polymer({
          (!!this.destination.capabilities ||
           getPrinterTypeForDestination(this.destination) ===
               PrinterType.PDF_PRINTER));
-  },
+  }
 
   // <if expr="chromeos or lacros">
   /**
@@ -517,7 +538,7 @@ Polymer({
    */
   computeHasPinSetting_() {
     return this.getSetting('pin').available;
-  },
+  }
   // </if>
 
   /**
@@ -535,7 +556,7 @@ Polymer({
     } else {
       this.destinationStore_.selectDestinationByKey(value);
     }
-  },
+  }
 
   /**
    * @param {!CustomEvent<string>} e Event containing the new active user
@@ -546,7 +567,7 @@ Polymer({
     assert(!this.cloudPrintDisabled_);
     this.shadowRoot.querySelector('#userManager')
         .updateActiveUser(e.detail, true);
-  },
+  }
 
   /** @private */
   onDialogClose_() {
@@ -558,7 +579,7 @@ Polymer({
     // selecting a new destination.
     this.updateDestinationSelect_();
     this.isDialogOpen_ = false;
-  },
+  }
 
   /** @private */
   updateDestinationSelect_() {
@@ -579,12 +600,12 @@ Polymer({
         this.$.destinationSelect.focus();
       }
     });
-  },
+  }
 
   /** @return {!DestinationStore} */
   getDestinationStoreForTest() {
     return assert(this.destinationStore_);
-  },
+  }
 
   // <if expr="chromeos or lacros">
   /**
@@ -598,6 +619,10 @@ Polymer({
 
     this.destination.eulaUrl = e.detail;
     this.notifyPath('destination.eulaUrl');
-  },
+  }
   // </if>
-});
+}
+
+customElements.define(
+    PrintPreviewDestinationSettingsElement.is,
+    PrintPreviewDestinationSettingsElement);

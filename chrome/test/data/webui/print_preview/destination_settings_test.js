@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CloudPrintInterface, CloudPrintInterfaceEventType, CloudPrintInterfaceImpl, Destination, DestinationConnectionStatus, DestinationErrorType, DestinationOrigin, DestinationState, DestinationStore, DestinationType, Error, LocalDestinationInfo, makeRecentDestination, NativeLayer, NativeLayerImpl, NUM_PERSISTED_DESTINATIONS, RecentDestination, State} from 'chrome://print/print_preview.js';
+import {CloudPrintInterface, CloudPrintInterfaceEventType, CloudPrintInterfaceImpl, Destination, DestinationConnectionStatus, DestinationErrorType, DestinationOrigin, DestinationState, DestinationStore, DestinationType, Error, LocalDestinationInfo, makeRecentDestination, NativeLayer, NativeLayerImpl, NUM_PERSISTED_DESTINATIONS, PrintPreviewDestinationSettingsElement, RecentDestination, State} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {isChromeOS, isLacros, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -124,11 +124,11 @@ suite(destination_settings_test.suiteName, function() {
   test(
       assert(destination_settings_test.TestNames.ChangeDropdownState),
       function() {
-        const dropdown = destinationSettings.$$('#destinationSelect');
+        const dropdown =
+            destinationSettings.shadowRoot.querySelector('#destinationSelect');
         // Initial state: No destination store means that there is no
         // destination yet.
         assertFalse(dropdown.loaded);
-        destinationSettings.cloudPrintInterface = cloudPrintInterface;
 
         // Set up the destination store, but no destination yet. Dropdown is
         // still not loaded.
@@ -204,9 +204,7 @@ suite(destination_settings_test.suiteName, function() {
    */
   function initialize() {
     // Initialize destination settings.
-    destinationSettings.cloudPrintInterface = cloudPrintInterface;
     destinationSettings.setSetting('recentDestinations', recentDestinations);
-    destinationSettings.appKioskMode = false;
     destinationSettings.init(
         '' /* printerName */, pdfPrinterDisabled, isDriveMounted,
         '' /* serializedDefaultDestinationSelectionRulesStr */);
@@ -229,7 +227,8 @@ suite(destination_settings_test.suiteName, function() {
    */
   function assertDropdownItems(expectedDestinations) {
     const options =
-        destinationSettings.$$('#destinationSelect').getVisibleItemsForTest();
+        destinationSettings.shadowRoot.querySelector('#destinationSelect')
+            .getVisibleItemsForTest();
     assertEquals(expectedDestinations.length + 1, options.length);
     expectedDestinations.forEach((expectedValue, index) => {
       assertEquals(expectedValue, options[index].value);
@@ -249,7 +248,9 @@ suite(destination_settings_test.suiteName, function() {
           assertEquals(
               Destination.GooglePromotedId.SAVE_AS_PDF,
               destinationSettings.destination.id);
-          assertFalse(destinationSettings.$$('#destinationSelect').disabled);
+          assertFalse(
+              destinationSettings.shadowRoot.querySelector('#destinationSelect')
+                  .disabled);
           const dropdownItems = ['Save as PDF/local/'];
           if (isChromeOS || isLacros) {
             dropdownItems.push(driveDestinationKey);
@@ -279,8 +280,9 @@ suite(destination_settings_test.suiteName, function() {
               // This will result in the destination store setting the most
               // recent destination.
               assertEquals('ID1', destinationSettings.destination.id);
-              assertFalse(
-                  destinationSettings.$$('#destinationSelect').disabled);
+              assertFalse(destinationSettings.shadowRoot
+                              .querySelector('#destinationSelect')
+                              .disabled);
               const dropdownItems = [
                 makeLocalDestinationKey('ID1'),
                 makeLocalDestinationKey('ID2'),
@@ -317,8 +319,9 @@ suite(destination_settings_test.suiteName, function() {
               // This will result in the destination store setting the most
               // recent destination.
               assertEquals('ID1', destinationSettings.destination.id);
-              assertFalse(
-                  destinationSettings.$$('#destinationSelect').disabled);
+              assertFalse(destinationSettings.shadowRoot
+                              .querySelector('#destinationSelect')
+                              .disabled);
               const dropdownItems = [
                 makeLocalDestinationKey('ID1'),
                 makeLocalDestinationKey('ID3'),
@@ -350,7 +353,9 @@ suite(destination_settings_test.suiteName, function() {
           // This will result in the destination store setting the most recent
           // destination.
           assertEquals('ID1', destinationSettings.destination.id);
-          assertFalse(destinationSettings.$$('#destinationSelect').disabled);
+          assertFalse(
+              destinationSettings.shadowRoot.querySelector('#destinationSelect')
+                  .disabled);
           const dropdownItems = [
             makeLocalDestinationKey('ID1'),
             makeLocalDestinationKey('ID3'),
@@ -387,8 +392,9 @@ suite(destination_settings_test.suiteName, function() {
               // This will result in the destination store setting the most
               // recent destination.
               assertEquals('ID1', destinationSettings.destination.id);
-              assertFalse(
-                  destinationSettings.$$('#destinationSelect').disabled);
+              assertFalse(destinationSettings.shadowRoot
+                              .querySelector('#destinationSelect')
+                              .disabled);
 
               let dropdownItems;
               if (isChromeOS || isLacros) {
@@ -439,8 +445,9 @@ suite(destination_settings_test.suiteName, function() {
                   isChromeOS || isLacros ? 'Save to Drive CrOS' :
                                            '__google__docs',
                   destinationSettings.destination.id);
-              assertFalse(
-                  destinationSettings.$$('#destinationSelect').disabled);
+              assertFalse(destinationSettings.shadowRoot
+                              .querySelector('#destinationSelect')
+                              .disabled);
 
               let dropdownItems;
               if (isChromeOS || isLacros) {
@@ -475,7 +482,8 @@ suite(destination_settings_test.suiteName, function() {
         nativeLayer.whenCalled('getPrinterCapabilities');
     initialize();
 
-    const dropdown = destinationSettings.$$('#destinationSelect');
+    const dropdown =
+        destinationSettings.shadowRoot.querySelector('#destinationSelect');
 
     return whenCapabilitiesDone
         .then(() => {
@@ -530,7 +538,8 @@ suite(destination_settings_test.suiteName, function() {
         const whenCapabilitiesDone =
             nativeLayer.whenCalled('getPrinterCapabilities');
         initialize();
-        const dropdown = destinationSettings.$$('#destinationSelect');
+        const dropdown =
+            destinationSettings.shadowRoot.querySelector('#destinationSelect');
 
         return whenCapabilitiesDone
             .then(() => {
@@ -587,7 +596,8 @@ suite(destination_settings_test.suiteName, function() {
         const whenCapabilitiesDone =
             nativeLayer.whenCalled('getPrinterCapabilities');
         initialize();
-        const dropdown = destinationSettings.$$('#destinationSelect');
+        const dropdown =
+            destinationSettings.shadowRoot.querySelector('#destinationSelect');
 
         return whenCapabilitiesDone
             .then(() => {
@@ -629,7 +639,8 @@ suite(destination_settings_test.suiteName, function() {
     const whenCapabilitiesDone =
         nativeLayer.whenCalled('getPrinterCapabilities');
     initialize();
-    const dropdown = destinationSettings.$$('#destinationSelect');
+    const dropdown =
+        destinationSettings.shadowRoot.querySelector('#destinationSelect');
 
     return whenCapabilitiesDone
         .then(() => {
@@ -657,12 +668,13 @@ suite(destination_settings_test.suiteName, function() {
         .then(() => {
           if (isChromeOS || isLacros) {
             assertTrue(
-                destinationSettings.$$('print-preview-destination-dialog-cros')
+                destinationSettings.shadowRoot
+                    .querySelector('print-preview-destination-dialog-cros')
                     .isOpen());
           } else {
-            assertTrue(
-                destinationSettings.$$('print-preview-destination-dialog')
-                    .isOpen());
+            assertTrue(destinationSettings.shadowRoot
+                           .querySelector('print-preview-destination-dialog')
+                           .isOpen());
           }
         });
   });
@@ -697,7 +709,8 @@ suite(destination_settings_test.suiteName, function() {
         initialize();
         flush();
 
-        const dropdown = destinationSettings.$$('#destinationSelect');
+        const dropdown =
+            destinationSettings.shadowRoot.querySelector('#destinationSelect');
 
         return whenPrinter
             .then(() => {
@@ -724,9 +737,10 @@ suite(destination_settings_test.suiteName, function() {
             })
             .then(() => {
               const dialog = isChromeOS || isLacros ?
-                  destinationSettings.$$(
+                  destinationSettings.shadowRoot.querySelector(
                       'print-preview-destination-dialog-cros') :
-                  destinationSettings.$$('print-preview-destination-dialog');
+                  destinationSettings.shadowRoot.querySelector(
+                      'print-preview-destination-dialog');
               assertTrue(dialog.isOpen());
               const whenAdded = eventToPromise(
                   DestinationStore.EventType.DESTINATIONS_INSERTED,
@@ -809,7 +823,7 @@ suite(destination_settings_test.suiteName, function() {
               // Reselect a recent destination. Still 2 destinations, but in a
               // different order.
               nativeLayer.resetResolver('getPrinterCapabilities');
-              destinationSettings.$$('#destinationSelect')
+              destinationSettings.shadowRoot.querySelector('#destinationSelect')
                   .dispatchEvent(new CustomEvent('selected-option-change', {
                     detail: 'Save as PDF/local/',
                   }));
