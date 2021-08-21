@@ -1,0 +1,34 @@
+{
+  "type": "object",
+  "properties": {
+    "string-policy": { "type": "string" },
+    "string-enum-policy": {
+      "type": "string",
+      "enum": ["value-1", "value-2", "value-3"]
+    },
+    "another-string-policy": { "type": "string" },
+    "int-policy": { "type": "integer" },
+    "int-enum-policy": {
+      "type": "integer",
+      "enum": [0, 1, 2]
+    },
+    "double-policy": { "type": "number" },
+    "boolean-policy": { "type": "boolean" },
+    "list-policy": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "dict-policy": {
+      "type": "object",
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": { "type": "integer" }
+          }
+        }
+      }
+    }
+  }
+}

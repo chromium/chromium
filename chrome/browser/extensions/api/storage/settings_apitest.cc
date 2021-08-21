@@ -49,10 +49,7 @@
 
 namespace extensions {
 
-using testing::_;
-using testing::Mock;
 using testing::NiceMock;
-using testing::Return;
 
 namespace {
 
@@ -64,12 +61,26 @@ const syncer::ModelType kModelType = syncer::EXTENSION_SETTINGS;
 // the extension.
 const char kManagedStorageExtensionId[] = "kjmkgkdkpedkejedfhmfcenooemhbpbo";
 
-class MockSchemaRegistryObserver : public policy::SchemaRegistry::Observer {
+class TestSchemaRegistryObserver : public policy::SchemaRegistry::Observer {
  public:
-  MockSchemaRegistryObserver() {}
-  ~MockSchemaRegistryObserver() override {}
+  TestSchemaRegistryObserver() = default;
+  ~TestSchemaRegistryObserver() override = default;
+  TestSchemaRegistryObserver(const TestSchemaRegistryObserver&) = delete;
+  TestSchemaRegistryObserver& operator=(const TestSchemaRegistryObserver&) =
+      delete;
 
-  MOCK_METHOD1(OnSchemaRegistryUpdated, void(bool));
+  void OnSchemaRegistryUpdated(bool has_new_schemas) override {
+    has_new_schemas_ = has_new_schemas;
+    run_loop_.Quit();
+  }
+
+  void WaitForSchemaRegistryUpdated() { run_loop_.Run(); }
+
+  bool has_new_schemas() const { return has_new_schemas_; }
+
+ private:
+  bool has_new_schemas_ = false;
+  base::RunLoop run_loop_;
 };
 
 }  // namespace
@@ -605,9 +616,46 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest, IsStorageEnabled) {
   EXPECT_TRUE(frontend->IsStorageEnabled(settings_namespace::MANAGED));
 }
 
-// Bulk disabled as part of arm64 bot stabilization: https://crbug.com/1154345
-// TODO(crbug.com/1177118) Re-enable test
-IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest, DISABLED_ExtensionsSchemas) {
+using ContextType = ExtensionBrowserTest::ContextType;
+
+class ExtensionSettingsManagedStorageApiTest
+    : public ExtensionSettingsApiTest,
+      public testing::WithParamInterface<ContextType> {
+ public:
+  ExtensionSettingsManagedStorageApiTest() = default;
+  ~ExtensionSettingsManagedStorageApiTest() override = default;
+  ExtensionSettingsManagedStorageApiTest(
+      const ExtensionSettingsManagedStorageApiTest& other) = delete;
+  ExtensionSettingsManagedStorageApiTest& operator=(
+      const ExtensionSettingsManagedStorageApiTest& other) = delete;
+
+ protected:
+  bool RunTest(const char* test) WARN_UNUSED_RESULT {
+    return RunExtensionTest(
+        test, {},
+        {.load_as_service_worker = GetParam() == ContextType::kServiceWorker});
+  }
+
+  const extensions::Extension* LoadExtensionWithParamOptions(
+      const base::FilePath& path,
+      LoadOptions options = {}) WARN_UNUSED_RESULT {
+    if (GetParam() == ContextType::kServiceWorker)
+      options.load_as_service_worker = true;
+
+    return LoadExtension(path, options);
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         ExtensionSettingsManagedStorageApiTest,
+                         ::testing::Values(ContextType::kPersistentBackground));
+
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         ExtensionSettingsManagedStorageApiTest,
+                         ::testing::Values(ContextType::kServiceWorker));
+
+IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest,
+                       ExtensionsSchemas) {
   // Verifies that the Schemas for the extensions domain are created on startup.
   Profile* profile = browser()->profile();
   ExtensionSystem* extension_system = ExtensionSystem::Get(profile);
@@ -629,15 +677,20 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest, DISABLED_ExtensionsSchemas) {
   EXPECT_FALSE(registry->schema_map()->GetSchema(policy::PolicyNamespace(
       policy::POLICY_DOMAIN_EXTENSIONS, kManagedStorageExtensionId)));
 
-  NiceMock<MockSchemaRegistryObserver> observer;
+  TestSchemaRegistryObserver observer;
   registry->AddObserver(&observer);
 
   // Install a managed extension.
-  EXPECT_CALL(observer, OnSchemaRegistryUpdated(true));
-  const Extension* extension =
-      LoadExtension(test_data_dir_.AppendASCII("settings/managed_storage"));
+  ExtensionTestMessageListener listener("ready", false);
+  const Extension* extension = LoadExtensionWithParamOptions(
+      test_data_dir_.AppendASCII("settings/managed_storage_schemas"));
+  ASSERT_TRUE(listener.WaitUntilSatisfied());
   ASSERT_TRUE(extension);
-  Mock::VerifyAndClearExpectations(&observer);
+  observer.WaitForSchemaRegistryUpdated();
+
+  // Verify the schemas were installed.
+  EXPECT_TRUE(observer.has_new_schemas());
+
   registry->RemoveObserver(&observer);
 
   // Verify that its schema has been published, and verify its contents.
@@ -687,8 +740,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest, DISABLED_ExtensionsSchemas) {
 }
 
 // Bulk disabled as part of arm64 bot stabilization: https://crbug.com/1154345
-// TODO(crbug.com/1177118) Re-enable test
-IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest, DISABLED_ManagedStorage) {
+// TODO(crbug.com/1241494): Extremely flaky on mac-arm64-rel and somewhat flaky
+// on linux-chromeos-rel. Not very flaky on other platforms.
+IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest,
+                       DISABLED_ManagedStorage) {
   // Set policies for the test extension.
   std::unique_ptr<base::DictionaryValue> policy =
       extensions::DictionaryBuilder()
@@ -719,10 +774,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest, DISABLED_ManagedStorage) {
           .Build();
   SetPolicies(*policy);
   // Now run the extension.
-  ASSERT_TRUE(RunExtensionTest("settings/managed_storage")) << message_;
+  ASSERT_TRUE(RunTest("settings/managed_storage")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest, PRE_ManagedStorageEvents) {
+// TODO(crbug.com/1241501): Somewhat flaky on all bots, but worse on the Linux
+// and ChromeOS bots.
+IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest,
+                       DISABLED_PRE_ManagedStorageEvents) {
   ResultCatcher catcher;
 
   // This test starts without any test extensions installed.
@@ -739,9 +797,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest, PRE_ManagedStorageEvents) {
   SetPolicies(*policy);
 
   ExtensionTestMessageListener ready_listener("ready", false);
-  // Load the extension to install the event listener.
-  const Extension* extension = LoadExtension(
-      test_data_dir_.AppendASCII("settings/managed_storage_events"));
+  // Load the extension to install the event listener and wait for the
+  // extension's registration to be stored since it must persist after
+  // this PRE_ step exits. Otherwise, the test will be flaky, since the
+  // extension's service worker registration might not get stored.
+  const Extension* extension = LoadExtensionWithParamOptions(
+      test_data_dir_.AppendASCII("settings/managed_storage_events"),
+      {.wait_for_registration_stored = true});
   ASSERT_TRUE(extension);
   // Wait until the extension sends the "ready" message.
   ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
@@ -756,7 +818,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest, PRE_ManagedStorageEvents) {
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest, ManagedStorageEvents) {
+// TODO(crbug.com/1241501): Somewhat flaky on all bots, but worse on the Linux
+// and ChromeOS bots.
+IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest,
+                       DISABLED_ManagedStorageEvents) {
   // This test runs after PRE_ManagedStorageEvents without having deleted the
   // profile, so the extension is still around. While the browser restarted the
   // policy went back to the empty default, and so the extension should receive
@@ -774,14 +839,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest, ManagedStorageEvents) {
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest, ManagedStorageDisabled) {
+IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest,
+                       ManagedStorageDisabled) {
   // Disable the 'managed' namespace.
   StorageFrontend* frontend = StorageFrontend::Get(browser()->profile());
   frontend->DisableStorageForTesting(settings_namespace::MANAGED);
   EXPECT_FALSE(frontend->IsStorageEnabled(settings_namespace::MANAGED));
   // Now run the extension.
-  ASSERT_TRUE(RunExtensionTest("settings/managed_storage_disabled"))
-      << message_;
+  ASSERT_TRUE(RunTest("settings/managed_storage_disabled")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest, StorageAreaOnChanged) {
