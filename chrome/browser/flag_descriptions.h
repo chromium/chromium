@@ -2532,6 +2532,9 @@ extern const char kEnableNetworkingInDiagnosticsAppDescription[];
 extern const char kEnableOAuthIppName[];
 extern const char kEnableOAuthIppDescription[];
 
+extern const char kEnableRevenLogSourceName[];
+extern const char kEnableRevenLogSourceDescription[];
+
 extern const char kEnableSuggestedFilesName[];
 extern const char kEnableSuggestedFilesDescription[];
 

@@ -5524,6 +5524,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnablePalmOnToolTypePalmDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ui::kEnablePalmOnToolTypePalm)},
 
+    {"enable-reven-log-source", flag_descriptions::kEnableRevenLogSourceName,
+     flag_descriptions::kEnableRevenLogSourceDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kRevenLogSource)},
+
     {"enable-pci-guard-ui", flag_descriptions::kEnablePciguardUiName,
      flag_descriptions::kEnablePciguardUiDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kEnablePciguardUi)},
