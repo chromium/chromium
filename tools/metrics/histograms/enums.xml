@@ -52367,6 +52367,11 @@ from previous Chrome versions.
   <int value="2" label="MEMORY_ALLOCATION_ERROR"/>
 </enum>
 
+<enum name="MachineLearningServiceDocumentScannerResultEvent">
+  <int value="0" label="OK"/>
+  <int value="1" label="ERROR"/>
+</enum>
+
 <enum name="MachineLearningServiceExecuteResultEvent">
   <int value="0" label="OK"/>
   <int value="1" label="MEMORY_ALLOCATION_ERROR"/>
