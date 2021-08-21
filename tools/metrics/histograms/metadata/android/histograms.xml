@@ -1868,6 +1868,38 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Android.MultiInstance.NumActivities" units="activities"
+    expires_after="2022-08-19">
+  <owner>jinsukkim@chromium.org</owner>
+  <owner>twellington@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Records the number of running ChromeTabbedActivity's on every
+    ChromeTabbedActivity startup. This includes activities that may not be
+    visible on screen (i.e. it includes ChromeTabbedActivity's in the
+    &quot;stopped&quot; state). This does not include ChromeTabbedActivity's
+    that have been destroyed regardless of whether their owning Android Task may
+    be retrieved in Android Recents. Applicable to Android S+ only.
+  </summary>
+</histogram>
+
+<histogram name="Android.MultiInstance.NumInstances" units="instances"
+    expires_after="2022-08-19">
+  <owner>jinsukkim@chromium.org</owner>
+  <owner>twellington@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    The number of allocated instance IDs which corresponds to the number of
+    retrievable Chrome instances (aka windows). An instance is considered
+    retrievable if it has tab state data on disk irrespective of whether that
+    data is currently assigned to a running ChromeTabbedActivity. These
+    instances may be retrieved from Chrome's in-app window manager from Android
+    Recents if they are associated with a live ChromeTabbedActivity or Android
+    Task. Recorded on every ChromeTabbedActivity start-up. Applicable to Android
+    S+ only.
+  </summary>
+</histogram>
+
 <histogram name="Android.MultiWindowMode.Active" enum="BooleanEnabled"
     expires_after="never">
 <!-- expires-never: topline metric for monitoring multi-window mode usage on Chrome for Android. -->
