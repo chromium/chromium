@@ -1540,7 +1540,7 @@
     },
     {
       "id": 167,
-      "description": "8.17.10.* AMD drivers trigger hands in video stack",
+      "description": "8.17.10.* AMD drivers trigger hangs in video stack",
       "cr_bugs": [1160623],
       "os": {
         "type": "win"
@@ -1566,6 +1566,28 @@
         }
       },
       "gl_renderer": "ANGLE (Imagination Technologies, PowerVR .*",
+      "features": [
+        "all"
+      ]
+    },
+    {
+      "id": 169,
+      "description": "Many crashes with the old Intel Haswell driver on Windows 8.1.",
+      "driver_update_url": "https://www.intel.com/content/www/us/en/download-center/home.html",
+      "cr_bugs": [620885],
+      "os": {
+        "type": "win",
+        "version": {
+          "op": "=",
+          "value": "8.1"
+        }
+      },
+      "vendor_id": "0x0806",
+      "device_id": ["0x0a16"],
+      "driver_version": {
+        "op": "=",
+        "value": "10.18.10.3496"
+      },
       "features": [
         "all"
       ]
