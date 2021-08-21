@@ -12,14 +12,7 @@
 namespace ui {
 
 void ResourceBundle::LoadCommonResources() {
-  constexpr char kCommonResourcesPakPath[] = "common_resources.pak";
-
-  base::FilePath asset_root;
-  bool result = base::PathService::Get(base::DIR_ASSETS, &asset_root);
-  DCHECK(result);
-
-  AddDataPackFromPath(asset_root.Append(kCommonResourcesPakPath),
-                      ui::k100Percent);
+  LoadChromeResources();
 }
 
 gfx::Image& ResourceBundle::GetNativeImageNamed(int resource_id) {

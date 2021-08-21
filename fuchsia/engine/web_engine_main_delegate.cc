@@ -29,6 +29,8 @@ namespace {
 WebEngineMainDelegate* g_current_web_engine_main_delegate = nullptr;
 
 void InitializeResources() {
+  constexpr char kCommonResourcesPakPath[] = "web_engine_common_resources.pak";
+
   constexpr char kWebUiResourcesPakPath[] = "ui/resources/webui_resources.pak";
   constexpr char kWebUiGeneratedResourcesPakPath[] =
       "ui/resources/webui_generated_resources.pak";
@@ -37,10 +39,13 @@ void InitializeResources() {
   bool result = base::PathService::Get(base::DIR_ASSETS, &asset_root);
   DCHECK(result);
 
-  // Initialize common locale-agnostic resources.
+  // Initialize the process-global ResourceBundle, and manually load the
+  // WebEngine locale-agnostic resources.
   const std::string locale = ui::ResourceBundle::InitSharedInstanceWithLocale(
       base::i18n::GetConfiguredLocale(), nullptr,
-      ui::ResourceBundle::LOAD_COMMON_RESOURCES);
+      ui::ResourceBundle::DO_NOT_LOAD_COMMON_RESOURCES);
+  ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
+      asset_root.Append(kCommonResourcesPakPath), ui::kScaleFactorNone);
   VLOG(1) << "Loaded resources including locale: " << locale;
 
   // Conditionally load WebUI resource PAK if visible from namespace.
