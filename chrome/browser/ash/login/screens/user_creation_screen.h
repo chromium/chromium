@@ -30,9 +30,19 @@ class UserCreationScreen
     SKIPPED,
   };
 
+  using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
+
+  class UserCreationScreenExitTestDelegate {
+   public:
+    virtual ~UserCreationScreenExitTestDelegate() = default;
+
+    virtual void OnUserCreationScreenExit(
+        Result result,
+        const ScreenExitCallback& original_callback) = 0;
+  };
+
   static std::string GetResultString(Result result);
 
-  using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
   explicit UserCreationScreen(UserCreationView* view,
                               ErrorScreen* error_screen,
                               const ScreenExitCallback& exit_callback);
@@ -45,16 +55,11 @@ class UserCreationScreen
   // associated View if this class is destroyed before that.
   void OnViewDestroyed(UserCreationView* view);
 
-  void set_exit_callback_for_testing(const ScreenExitCallback& exit_callback) {
-    exit_callback_ = exit_callback;
-  }
-
-  const ScreenExitCallback& get_exit_callback_for_testing() {
-    return exit_callback_;
-  }
-
   // NetworkStateInformer::NetworkStateInformerObserver implementation:
   void UpdateState(NetworkError::ErrorReason reason) override;
+
+  static void SetUserCreationScreenExitTestDelegate(
+      UserCreationScreenExitTestDelegate* test_delegate);
 
  private:
   // BaseScreen:
@@ -63,6 +68,9 @@ class UserCreationScreen
   void HideImpl() override;
   void OnUserAction(const std::string& action_id) override;
   bool HandleAccelerator(LoginAcceleratorAction action) override;
+
+  // Runs either exit_callback_ or |test_exit_delegate| observer.
+  void RunExitCallback(Result result);
 
   UserCreationView* view_ = nullptr;
 
@@ -76,6 +84,7 @@ class UserCreationScreen
   // TODO(crbug.com/1154669) Refactor error screen usage
   bool error_screen_visible_ = false;
 
+  // Remember to always use RunExitCallback() above!
   ScreenExitCallback exit_callback_;
 };
 

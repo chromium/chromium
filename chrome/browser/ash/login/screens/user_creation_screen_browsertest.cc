@@ -40,19 +40,21 @@ const test::UIPath kChildSignInButton = {kUserCreationId, "childSignInButton"};
 const test::UIPath kChildBackButton = {kUserCreationId, "childBackButton"};
 const test::UIPath kChildNextButton = {kUserCreationId, "childNextButton"};
 
-class UserCreationScreenTest : public OobeBaseTest {
+class UserCreationScreenTest
+    : public OobeBaseTest,
+      public UserCreationScreen::UserCreationScreenExitTestDelegate {
  public:
   UserCreationScreenTest() = default;
   ~UserCreationScreenTest() override = default;
 
   void SetUpOnMainThread() override {
-    UserCreationScreen* screen = static_cast<UserCreationScreen*>(
-        WizardController::default_controller()->screen_manager()->GetScreen(
-            UserCreationView::kScreenId));
-    original_callback_ = screen->get_exit_callback_for_testing();
-    screen->set_exit_callback_for_testing(base::BindRepeating(
-        &UserCreationScreenTest::HandleScreenExit, base::Unretained(this)));
+    UserCreationScreen::SetUserCreationScreenExitTestDelegate(this);
     OobeBaseTest::SetUpOnMainThread();
+  }
+
+  void TearDownOnMainThread() override {
+    OobeBaseTest::TearDownOnMainThread();
+    UserCreationScreen::SetUserCreationScreenExitTestDelegate(nullptr);
   }
 
   void SelectUserTypeOnUserCreationScreen(test::UIPath element_id) {
@@ -88,18 +90,20 @@ class UserCreationScreenTest : public OobeBaseTest {
   NetworkPortalDetectorMixin network_portal_detector_{&mixin_host_};
 
  private:
-  void HandleScreenExit(UserCreationScreen::Result result) {
+  // UserCreationScreen::UserCreationScreenExitTestDelegate
+  void OnUserCreationScreenExit(UserCreationScreen::Result result,
+                                const UserCreationScreen::ScreenExitCallback&
+                                    original_callback) override {
     ASSERT_FALSE(screen_exited_);
     screen_exited_ = true;
     screen_result_ = result;
-    original_callback_.Run(result);
+    original_callback.Run(result);
     if (screen_exit_callback_)
       std::move(screen_exit_callback_).Run();
   }
 
   bool screen_exited_ = false;
   base::RepeatingClosure screen_exit_callback_;
-  UserCreationScreen::ScreenExitCallback original_callback_;
 
   base::test::ScopedFeatureList feature_list_;
   FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
