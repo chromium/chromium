@@ -291,7 +291,8 @@ GPUExternalTexture* GPUDevice::importExternalTexture(
     ExceptionState& exception_state) {
   GPUExternalTexture* externalTexture =
       GPUExternalTexture::FromVideo(this, descriptor, exception_state);
-  EnsureExternalTextureDestroyed(externalTexture);
+  if (externalTexture)
+    EnsureExternalTextureDestroyed(externalTexture);
   return externalTexture;
 }
 
@@ -485,7 +486,9 @@ void GPUDevice::Trace(Visitor* visitor) const {
 
 void GPUDevice::EnsureExternalTextureDestroyed(
     GPUExternalTexture* externalTexture) {
+  DCHECK(externalTexture);
   external_textures_pending_destroy_.push_back(externalTexture);
+
   if (has_pending_microtask_)
     return;
 
