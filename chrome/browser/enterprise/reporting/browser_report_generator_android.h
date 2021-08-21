@@ -1,16 +1,15 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_POLICY_REPORTING_BROWSER_REPORT_GENERATOR_IOS_H_
-#define IOS_CHROME_BROWSER_POLICY_REPORTING_BROWSER_REPORT_GENERATOR_IOS_H_
-
-#include "components/enterprise/browser/reporting/browser_report_generator.h"
+#ifndef CHROME_BROWSER_ENTERPRISE_REPORTING_BROWSER_REPORT_GENERATOR_ANDROID_H_
+#define CHROME_BROWSER_ENTERPRISE_REPORTING_BROWSER_REPORT_GENERATOR_ANDROID_H_
 
 #include <memory>
+#include <string>
 
-#include "base/callback.h"
-#include "components/version_info/channel.h"
+#include "base/callback_forward.h"
+#include "components/enterprise/browser/reporting/browser_report_generator.h"
 
 namespace enterprise_management {
 class BrowserReport;
@@ -18,20 +17,20 @@ class BrowserReport;
 
 namespace enterprise_reporting {
 
-// iOS implementation of platform-specific info fetching for Enterprise browser
-// report generation.
-class BrowserReportGeneratorIOS : public BrowserReportGenerator::Delegate {
+// Android implementation of platform-specific info fetching for Enterprise
+// browser report generation.
+class BrowserReportGeneratorAndroid : public BrowserReportGenerator::Delegate {
  public:
   using ReportCallback = base::OnceCallback<void(
       std::unique_ptr<enterprise_management::BrowserReport>)>;
 
-  BrowserReportGeneratorIOS();
-  BrowserReportGeneratorIOS(const BrowserReportGeneratorIOS&) = delete;
-  BrowserReportGeneratorIOS& operator=(const BrowserReportGeneratorIOS&) =
-      delete;
-  ~BrowserReportGeneratorIOS() override;
+  BrowserReportGeneratorAndroid();
+  BrowserReportGeneratorAndroid(const BrowserReportGeneratorAndroid&) = delete;
+  BrowserReportGeneratorAndroid& operator=(
+      const BrowserReportGeneratorAndroid&) = delete;
+  ~BrowserReportGeneratorAndroid() override;
 
-  // BrowserReportGenerator::Delegate implementation.
+  // BrowserReportGenerator::Delegate implementation
   std::string GetExecutablePath() override;
   version_info::Channel GetChannel() override;
   std::vector<BrowserReportGenerator::ReportedProfileData> GetReportedProfiles(
@@ -47,4 +46,4 @@ class BrowserReportGeneratorIOS : public BrowserReportGenerator::Delegate {
 
 }  // namespace enterprise_reporting
 
-#endif  // IOS_CHROME_BROWSER_POLICY_REPORTING_BROWSER_REPORT_GENERATOR_IOS_H_
+#endif  // CHROME_BROWSER_ENTERPRISE_REPORTING_BROWSER_REPORT_GENERATOR_ANDROID_H_

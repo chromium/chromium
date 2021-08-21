@@ -7,6 +7,7 @@
 #include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
@@ -33,6 +34,25 @@ version_info::Channel BrowserReportGeneratorIOS::GetChannel() {
   return ::GetChannel();
 }
 
+std::vector<BrowserReportGenerator::ReportedProfileData>
+BrowserReportGeneratorIOS::GetReportedProfiles(ReportType report_type) {
+  std::vector<BrowserReportGenerator::ReportedProfileData> reportedProfileData;
+  for (const auto* entry : GetApplicationContext()
+                               ->GetChromeBrowserStateManager()
+                               ->GetLoadedBrowserStates()) {
+    // Skip off-the-record profile.
+    if (entry->IsOffTheRecord()) {
+      continue;
+    }
+
+    reportedProfileData.push_back(
+        {entry->GetStatePath().AsUTF8Unsafe(),
+         entry->GetStatePath().BaseName().AsUTF8Unsafe()});
+  }
+
+  return reportedProfileData;
+}
+
 bool BrowserReportGeneratorIOS::IsExtendedStableChannel() {
   return false;  // Not supported on iOS.
 }
@@ -42,29 +62,15 @@ void BrowserReportGeneratorIOS::GenerateBuildStateInfo(
   // Not used on iOS because there is no in-app auto-update.
 }
 
-void BrowserReportGeneratorIOS::GenerateProfileInfo(ReportType report_type,
-                                                    em::BrowserReport* report) {
-  for (const auto* entry : GetApplicationContext()
-                               ->GetChromeBrowserStateManager()
-                               ->GetLoadedBrowserStates()) {
-    // Skip off-the-record profile.
-    if (entry->IsOffTheRecord()) {
-      continue;
-    }
-
-    em::ChromeUserProfileInfo* profile =
-        report->add_chrome_user_profile_infos();
-    profile->set_id(entry->GetStatePath().AsUTF8Unsafe());
-    profile->set_name(entry->GetStatePath().BaseName().AsUTF8Unsafe());
-    profile->set_is_detail_available(false);
-  }
-}
-
 void BrowserReportGeneratorIOS::GeneratePluginsIfNeeded(
     ReportCallback callback,
     std::unique_ptr<em::BrowserReport> report) {
   // There are no plugins on iOS.
   std::move(callback).Run(std::move(report));
+}
+
+void BrowserReportGeneratorIOS::OnProfileInfoGenerated(ReportType report_type) {
+  // Not used on iOS because there is no throttling profiles.
 }
 
 }  // namespace enterprise_reporting

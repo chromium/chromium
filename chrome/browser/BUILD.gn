@@ -3033,6 +3033,8 @@ static_library("browser") {
       "download/android/service/download_task_scheduler.h",
       "download/android/string_utils.cc",
       "download/download_crx_util_android.cc",
+      "enterprise/reporting/browser_report_generator_android.cc",
+      "enterprise/reporting/browser_report_generator_android.h",
       "enterprise/reporting/profile_report_generator_android.cc",
       "enterprise/reporting/profile_report_generator_android.h",
       "enterprise/reporting/profile_report_generator_delegate_base.cc",
