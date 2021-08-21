@@ -324,7 +324,7 @@ def _ZipMultidex(file_dir, dex_files):
   if not ordered_files:
     raise Exception('Could not find classes.dex multidex file in %s',
                     dex_files)
-  for dex_idx in xrange(2, len(dex_files) + 1):
+  for dex_idx in range(2, len(dex_files) + 1):
     archive_name = 'classes%d.dex' % dex_idx
     for f in dex_files:
       if f.endswith(archive_name):
