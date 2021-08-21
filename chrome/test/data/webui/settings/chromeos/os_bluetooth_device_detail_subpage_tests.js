@@ -53,6 +53,7 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
       },
     };
     bluetoothConfig.observeSystemProperties(propertiesObserver);
+    Polymer.dom.flush();
   }
 
   function flushAsync() {
@@ -64,29 +65,6 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     bluetoothDeviceDetailPage.remove();
     bluetoothDeviceDetailPage = null;
     settings.Router.getInstance().resetRouteForTesting();
-  });
-
-
-  test('Base Test', async function() {
-    init();
-    bluetoothConfig.setBluetoothEnabledState(/*enabled=*/ true);
-
-    const device1 = createDefaultBluetoothDevice(
-        /*id=*/ '12//345&6789',
-        /*publicName=*/ 'BeatsX',
-        /*connected=*/ true,
-        /*nickname=*/ 'device1');
-
-    bluetoothConfig.appendToPairedDeviceList([device1]);
-    await flushAsync();
-
-    const params = new URLSearchParams();
-    params.append('id', '12//345&6789');
-    settings.Router.getInstance().navigateTo(
-        settings.routes.BLUETOOTH_DEVICE_DETAIL, params);
-
-    await flushAsync();
-    assertEquals('device1', bluetoothDeviceDetailPage.parentNode.pageTitle);
   });
 
   test('Show change settings row', async function() {
@@ -136,12 +114,17 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
         /*id=*/ '12345/6789&',
         /*publicName=*/ 'BeatsX',
         /*connected=*/ true,
-        /*nickname=*/ 'device1');
+        /*nickname=*/ 'device1',
+        /*audioCapability=*/ mojom.AudioOutputCapability.kCapableOfAudioOutput,
+        /*deviceType=*/ mojom.DeviceType.kMouse);
 
     const device2 = createDefaultBluetoothDevice(
         /*id=*/ '987654321',
         /*publicName=*/ 'MX 3',
-        /*connected=*/ true);
+        /*connected=*/ true,
+        /*nickname=*/ 'device2',
+        /*audioCapability=*/ mojom.AudioOutputCapability.kCapableOfAudioOutput,
+        /*deviceType=*/ mojom.DeviceType.kMouse);
 
     bluetoothConfig.appendToPairedDeviceList([device1, device2]);
     await flushAsync();
@@ -157,9 +140,7 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     await windowPopstatePromise;
   });
 
-  // TODO(crbug.com/1010321): Fix flakiness of this test caused by bluetooth
-  // revamp; details in comment #90.
-  test.skip('Device UI states test', async function() {
+  test('Device UI states test', async function() {
     init();
     const getBluetoothStatusIcon = () =>
         bluetoothDeviceDetailPage.$$('#statusIcon');
@@ -219,7 +200,7 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     device1.deviceProperties.audioCapability =
         mojom.AudioOutputCapability.kNotCapableOfAudioOutput;
     device1.deviceProperties.batteryInfo = {defaultProperties: null};
-    bluetoothConfig.updatePairedDevice({...device1});
+    bluetoothConfig.updatePairedDevice(device1);
     await flushAsync();
 
     assertFalse(!!getBluetoothStateBtn());
@@ -244,7 +225,10 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
             /*id=*/ '12//345&6789',
             /*publicName=*/ 'BeatsX',
             /*connected=*/ true,
-            /*nickname=*/ 'device1');
+            /*nickname=*/ 'device1',
+            /*audioCapability=*/
+            mojom.AudioOutputCapability.kCapableOfAudioOutput,
+            /*deviceType=*/ mojom.DeviceType.kMouse);
 
         bluetoothConfig.appendToPairedDeviceList([device1]);
         await flushAsync();
