@@ -713,14 +713,14 @@ class ComputedStyle : public ComputedStyleBase,
   void SetOutlineWidth(float v) { SetOutlineWidthInternal(LayoutUnit(v)); }
   // TODO(rego): This is a temporal method that will be removed once we start
   // using the float OutlineWidth() in the painting code.
-  uint16_t OutlineWidthInt() const {
+  int OutlineWidthInt() const {
     if (OutlineStyle() == EBorderStyle::kNone)
       return 0;
-    return OutlineWidthInternal().ToUnsigned();
+    return OutlineWidthInternal().ToInt();
   }
 
   // outline-offset
-  int16_t OutlineOffsetInt() const { return OutlineOffset().ToInt(); }
+  int OutlineOffsetInt() const { return OutlineOffset().ToInt(); }
 
   // For history and compatibility reasons, we draw outline:auto (for focus
   // rings) and normal style outline differently.

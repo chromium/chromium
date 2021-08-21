@@ -111,6 +111,18 @@ TEST_F(ComputedStyleTest, FocusRingOutset) {
   EXPECT_EQ(4, style->OutlineOutsetExtent());
 }
 
+TEST_F(ComputedStyleTest, OutlineWidthOffsetIntNoOverflow) {
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
+  style->SetOutlineWidth(1e20f);
+  style->SetOutlineOffset(LayoutUnit::Max());
+  style->SetOutlineStyle(EBorderStyle::kSolid);
+  EXPECT_EQ(LayoutUnit::Max().ToFloat(), style->OutlineWidth());
+  EXPECT_EQ(LayoutUnit::Max().ToInt(), style->OutlineWidthInt());
+  EXPECT_EQ(LayoutUnit::Max().ToFloat(), style->OutlineOffset());
+  EXPECT_EQ(LayoutUnit::Max().ToInt(), style->OutlineOffsetInt());
+  EXPECT_TRUE(style->HasOutline());
+}
+
 TEST_F(ComputedStyleTest, SVGStackingContext) {
   scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   style->UpdateIsStackingContextWithoutContainment(false, false, true);
