@@ -65,9 +65,6 @@ class VIEWS_EXPORT TouchSelectionMenuViews : public BubbleDialogDelegateView {
   TouchSelectionMenuRunnerViews* owner_;
   ui::TouchSelectionMenuClient* const client_;
 
-  // TODO(jamescook): Remove after investigation of https://crbug.com/1146270
-  const char* const client_type_;
-
   DISALLOW_COPY_AND_ASSIGN(TouchSelectionMenuViews);
 };
 

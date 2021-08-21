@@ -69,7 +69,6 @@ class VIEWS_EXPORT TouchSelectionControllerImpl
   bool ShouldShowHandleFor(const gfx::SelectionBound& bound) const;
 
   // ui::TouchSelectionMenuClient:
-  const char* GetType() override;
   bool IsCommandIdEnabled(int command_id) const override;
   void ExecuteCommand(int command_id, int event_flags) override;
   void RunContextMenu() override;

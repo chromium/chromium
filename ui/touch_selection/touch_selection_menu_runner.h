@@ -27,14 +27,6 @@ class UI_TOUCH_SELECTION_EXPORT TouchSelectionMenuClient {
   TouchSelectionMenuClient();
   virtual ~TouchSelectionMenuClient();
 
-  // Returns true if `client` is valid (e.g. not deleted).
-  // TODO(jamescook): Remove after investigation of https://crbug.com/1146270
-  static bool IsValid(TouchSelectionMenuClient* client);
-
-  // Must return a static string that outlives `this`.
-  // TODO(jamescook): Remove after investigation of https://crbug.com/1146270
-  virtual const char* GetType() = 0;
-
   virtual bool IsCommandIdEnabled(int command_id) const = 0;
   virtual void ExecuteCommand(int command_id, int event_flags) = 0;
 
