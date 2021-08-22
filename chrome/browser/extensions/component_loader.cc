@@ -425,16 +425,6 @@ void ComponentLoader::AddChromeCameraApp() {
   }
 }
 
-void ComponentLoader::AddZipArchiverExtension() {
-  base::FilePath resources_path;
-  if (base::PathService::Get(chrome::DIR_RESOURCES, &resources_path)) {
-    AddWithNameAndDescriptionFromDir(
-        resources_path.Append(extension_misc::kZipArchiverExtensionPath),
-        extension_misc::kZipArchiverExtensionId,
-        l10n_util::GetStringUTF8(IDS_ZIP_ARCHIVER_NAME),
-        l10n_util::GetStringUTF8(IDS_ZIP_ARCHIVER_DESCRIPTION));
-  }
-}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 scoped_refptr<const Extension> ComponentLoader::CreateExtension(
@@ -554,10 +544,6 @@ void ComponentLoader::AddDefaultComponentExtensionsWithBackgroundPages(
     AddAudioPlayerExtension();
     AddFileManagerExtension();
     AddImageLoaderExtension();
-
-#if BUILDFLAG(ENABLE_NACL)
-    AddZipArchiverExtension();
-#endif  // BUILDFLAG(ENABLE_NACL)
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     if (!base::FeatureList::IsEnabled(

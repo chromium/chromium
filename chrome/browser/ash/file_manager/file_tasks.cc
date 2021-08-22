@@ -157,8 +157,8 @@ void AdjustTasksForMediaApp(const std::vector<extensions::EntryInfo>& entries,
   media_app_task->is_file_extension_match = true;
 
   // The logic in ChooseAndSetDefaultTask() also requires the following to hold.
-  // This should only fail if the media app is configured for "*" (e.g. like
-  // Zip Archiver). "image/*" does not count as "generic".
+  // This should only fail if the media app is configured for "*".
+  // "image/*" does not count as "generic".
   DCHECK(!media_app_task->is_generic_file_handler);
 
   // Otherwise, build a new list with Media App at the front.

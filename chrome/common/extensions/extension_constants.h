@@ -232,10 +232,6 @@ extern const char kEspeakSpeechSynthesisExtensionPath[];
 extern const char kEspeakSpeechSynthesisExtensionId[];
 // The extension id of the wallpaper manager application.
 extern const char kWallpaperManagerId[];
-// The extension id of the zip archiver extension.
-extern const char kZipArchiverExtensionId[];
-// Path to preinstalled zip archiver extension.
-extern const char kZipArchiverExtensionPath[];
 // Path to preinstalled Chrome camera app.
 extern const char kCameraAppPath[];
 #endif

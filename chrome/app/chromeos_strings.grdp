@@ -110,53 +110,6 @@
     Default wallpaper
   </message>
 
-  <!-- Zip Archiver -->
-  <message desc="The product name for Zip Archiver." name="IDS_ZIP_ARCHIVER_NAME">
-    Zip Archiver
-  </message>
-  <message desc="The product description, displayed in the Chrome Extensions page." name="IDS_ZIP_ARCHIVER_DESCRIPTION">
-    Zip Archiver - Open and pack ZIP files in Files app.
-  </message>
-  <message desc="Title of the password input dialog." name="IDS_ZIP_ARCHIVER_PASSPHRASE_TITLE">
-    Enter your password
-  </message>
-  <message desc="Label of the password input field." name="IDS_ZIP_ARCHIVER_PASSPHRASE_INPUT_LABEL">
-    Password
-  </message>
-  <message desc="Short name of the password accept button." name="IDS_ZIP_ARCHIVER_PASSPHRASE_ACCEPT">
-    Unlock
-  </message>
-  <message desc="Short name of the password cancel button." name="IDS_ZIP_ARCHIVER_PASSPHRASE_CANCEL">
-    Cancel
-  </message>
-  <message desc="Title for of a checkbox whether the password should be remembered. Please keep it as short." name="IDS_ZIP_ARCHIVER_PASSPHRASE_REMEMBER">
-    Remember
-  </message>
-  <message desc="Error message when opening an archive fails because of an unknown reason." name="IDS_ZIP_ARCHIVER_OTHER_ERROR_MESSAGE">
-    The archive format is not supported, or the file is broken.
-  </message>
-  <message desc="Error message when the Zip Archiver has crashed." name="IDS_ZIP_ARCHIVER_CRASH_ERROR_MESSAGE">
-    Aw, Snap! The Zip Archiver encountered an error.
-  </message>
-  <message desc="Message shown when opening an archive takes long time." name="IDS_ZIP_ARCHIVER_MOUNTING_MESSAGE">
-    Please wait, the archive is being scanned...
-  </message>
-  <message desc="Message shown when packing an archive takes long time." name="IDS_ZIP_ARCHIVER_PACKING_DEFERRED_MESSAGE">
-    Please wait...
-  </message>
-  <message desc="Message shown when packing fails." name="IDS_ZIP_ARCHIVER_PACKING_ERROR_MESSAGE">
-    Packing failed.
-  </message>
-  <message desc="Message shown when packing is in progress." name="IDS_ZIP_ARCHIVER_PACKING_PROGRESS_MESSAGE">
-    Please wait, packing...
-  </message>
-  <message desc="Label text used to cancel zip operation in progress." name="IDS_ZIP_ARCHIVER_PACKING_CANCEL_BUTTON_LABEL">
-    Cancel
-  </message>
-  <message desc="Message shown when limit of open FSPs reached." name="IDS_ZIP_ARCHIVER_TOO_MANY_OPENED">
-    Too many file systems opened.
-  </message>
-
   <!-- MultiDevice setup dialog. -->
   <message name="IDS_MULTIDEVICE_SETUP_ACCEPT_LABEL" desc="Label for button to accept conditions and begin MultiDevice setup workflow.">
     Accept &amp; continue

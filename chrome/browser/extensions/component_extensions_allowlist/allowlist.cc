@@ -41,7 +41,6 @@ bool IsComponentExtensionAllowlisted(const std::string& extension_id) {
     extension_misc::kGuestModeTestExtensionId,
     extension_misc::kSelectToSpeakExtensionId,
     extension_misc::kSwitchAccessExtensionId,
-    extension_misc::kZipArchiverExtensionId,
 #endif
   };
 
