@@ -33,6 +33,10 @@ namespace switches {
 const char kSetDisplayVersionProduct[] = "set-display-version-product";
 const char kSetDisplayVersionValue[] = "set-display-version-value";
 
+// A handle number for an event to be signaled when the process is ready for
+// work.
+const char kStartupEventHandle[] = "startup-event-handle";
+
 // Run setup.exe to conduct a post-update experiment.
 const char kUserExperiment[] = "user-experiment";
 
