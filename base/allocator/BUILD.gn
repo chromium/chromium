@@ -311,13 +311,23 @@ buildflag_header("buildflags") {
   # AlignedAlloc relies on natural alignment offered by the allocator (see the
   # comment inside PartitionRoot::AlignedAllocFlags). Any extras in front of the
   # allocation will mess up that alignment. Such extras are used when DCHECK is
-  # on or when BackupRefPtr is on (but not when ref-count is at the end of the
-  # previous slot). In these cases, we have to create a separate, small
-  # partition, dedicated to handle only aligned allocations, where those extras
-  # are disabled.
-  _use_dedicated_partition_for_aligned_alloc =
+  # on or when BackupRefPtr is on. In these cases, we have to create a separate,
+  # small partition, dedicated to handle only aligned allocations, where those
+  # extras are disabled.
+  # The BackupRefPtr case has two exceptions, however:
+  # 1. When ref-count is at the end of the previous slot, it doesn't get in the
+  #    way of aligned allocations at all.
+  # 2. When _enable_runtime_backup_ref_ptr_control is on, we start with BRP
+  #    disabled, so no need for a dedicated partition at init. We'll need it
+  #    only when BRP is enabled.
+  _use_dedicated_partition_for_aligned_alloc_at_init =
       dcheck_always_on ||
-      (_use_backup_ref_ptr && !_put_ref_count_in_previous_slot)
+      (_use_backup_ref_ptr && !_enable_runtime_backup_ref_ptr_control &&
+       !_put_ref_count_in_previous_slot)
+  _use_dedicated_partition_for_aligned_alloc_upon_enabling_brp =
+      !_use_dedicated_partition_for_aligned_alloc_at_init &&
+      _use_backup_ref_ptr && enable_runtime_backup_ref_ptr_control &&
+      !_put_ref_count_in_previous_slot
 
   flags = [
     "USE_ALLOCATOR_SHIM=$use_allocator_shim",
@@ -332,7 +342,8 @@ buildflag_header("buildflags") {
     "ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=$_enable_backup_ref_ptr_slow_checks",
     "PUT_REF_COUNT_IN_PREVIOUS_SLOT=$_put_ref_count_in_previous_slot",
     "NEVER_REMOVE_FROM_BRP_POOL_BLOCKLIST=$_never_remove_from_brp_pool_from_blocklist",
-    "USE_DEDICATED_PARTITION_FOR_ALIGNED_ALLOC=$_use_dedicated_partition_for_aligned_alloc",
+    "USE_DEDICATED_PARTITION_FOR_ALIGNED_ALLOC_AT_INIT=$_use_dedicated_partition_for_aligned_alloc_at_init",
+    "USE_DEDICATED_PARTITION_FOR_ALIGNED_ALLOC_UPON_ENABLING_BRP=$_use_dedicated_partition_for_aligned_alloc_upon_enabling_brp",
   ]
 }
 
