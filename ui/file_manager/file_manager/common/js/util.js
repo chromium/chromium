@@ -1492,15 +1492,6 @@ util.isSwaEnabled = () => {
 };
 
 /**
- * Returns true when FilesZipPack feature is enabled.
- * TODO(crbug.com/912236) Remove once transition to new ZIP system is finished.
- * @return {boolean}
- */
-util.isZipPackEnabled = () => {
-  return loadTimeData.getBoolean('ZIP_PACK');
-};
-
-/**
  * Returns true when FilesZipUnpack feature is enabled.
  * TODO(crbug.com/912236) Remove once transition to new ZIP system is finished.
  * @return {boolean}

@@ -2142,7 +2142,7 @@ CommandHandler.COMMANDS_['toggle-pinned'] = new class extends FilesCommand {
 };
 
 /**
- * Creates zip file for current selection.
+ * Creates ZIP file for current selection.
  */
 CommandHandler.COMMANDS_['zip-selection'] = new class extends FilesCommand {
   execute(event, fileManager) {
@@ -2154,30 +2154,9 @@ CommandHandler.COMMANDS_['zip-selection'] = new class extends FilesCommand {
       return;
     }
 
-    if (util.isZipPackEnabled()) {
-      const selectionEntries = fileManager.getSelection().entries;
-      fileManager.fileOperationManager.zipSelection(
-          selectionEntries, /** @type {!DirectoryEntry} */ (dirEntry));
-
-    } else {
-      fileManager.taskController.getFileTasks()
-          .then(tasks => {
-            if (fileManager.directoryModel.isOnDrive() ||
-                fileManager.directoryModel.isOnMTP()) {
-              tasks.execute(/** @type {chrome.fileManagerPrivate.FileTask} */ ({
-                descriptor: FileTasks.ZIP_ARCHIVER_ZIP_USING_TMP_TASK_DESCRIPTOR
-              }));
-            } else {
-              tasks.execute(/** @type {chrome.fileManagerPrivate.FileTask} */ (
-                  {descriptor: FileTasks.ZIP_ARCHIVER_ZIP_TASK_DESCRIPTOR}));
-            }
-          })
-          .catch(error => {
-            if (error) {
-              console.error(error.stack || error);
-            }
-          });
-    }
+    const selectionEntries = fileManager.getSelection().entries;
+    fileManager.fileOperationManager.zipSelection(
+        selectionEntries, /** @type {!DirectoryEntry} */ (dirEntry));
   }
 
   /** @override */
@@ -2198,8 +2177,7 @@ CommandHandler.COMMANDS_['zip-selection'] = new class extends FilesCommand {
     event.command.setHidden(noEntries);
 
     // TODO(crbug/1226915) Make it work with MTP.
-    const isOnEligibleLocation =
-        !util.isZipPackEnabled() || fileManager.directoryModel.isOnNative();
+    const isOnEligibleLocation = fileManager.directoryModel.isOnNative();
 
     event.canExecute = dirEntry && !fileManager.directoryModel.isReadOnly() &&
         isOnEligibleLocation && selection && selection.totalCount > 0;
