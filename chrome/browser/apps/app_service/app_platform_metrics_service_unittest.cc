@@ -263,11 +263,11 @@ class AppPlatformMetricsServiceTest : public testing::Test {
         /*expected_count=*/0);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(AppTypeName::kWeb),
-        /*expected_count=*/0);
+        /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallSourceHistogramNameForTest(
             AppTypeName::kWeb, apps::mojom::InstallSource::kSync),
-        /*expected_count=*/0);
+        /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
             AppTypeName::kMacOs),
@@ -1055,7 +1055,7 @@ TEST_F(AppPlatformMetricsServiceTest, InstalledAppsUkm) {
   VerifyInstalledAppsUkm("https://os-settings", AppTypeName::kSystemWeb,
                          apps::mojom::InstallSource::kSystem,
                          InstallTime::kInit);
-  VerifyInstalledAppsUkm("https://foo.com", AppTypeName::kChromeBrowser,
+  VerifyInstalledAppsUkm("https://foo.com", AppTypeName::kWeb,
                          apps::mojom::InstallSource::kSync, InstallTime::kInit);
 
   // Install a new ARC app during the running time.
@@ -1089,14 +1089,14 @@ TEST_F(AppPlatformMetricsServiceTest, LaunchAppsUkm) {
   proxy->LaunchAppWithUrl(
       /*app_id=*/"w", ui::EventFlags::EF_NONE, GURL("https://boo.com/a"),
       apps::mojom::LaunchSource::kFromFileManager, nullptr);
-  VerifyAppsLaunchUkm("https://foo.com", AppTypeName::kChromeBrowser,
+  VerifyAppsLaunchUkm("https://foo.com", AppTypeName::kWeb,
                       apps::mojom::LaunchSource::kFromFileManager);
 
   proxy->BrowserAppLauncher()->LaunchAppWithParams(apps::AppLaunchParams(
       "s", apps::mojom::LaunchContainer::kLaunchContainerTab,
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       apps::mojom::AppLaunchSource::kSourceTest));
-  VerifyAppsLaunchUkm("https://os-settings", AppTypeName::kChromeBrowser,
+  VerifyAppsLaunchUkm("https://os-settings", AppTypeName::kSystemWeb,
                       apps::mojom::LaunchSource::kFromTest);
 }
 

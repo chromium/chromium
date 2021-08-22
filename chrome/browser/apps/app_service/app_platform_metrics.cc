@@ -141,16 +141,26 @@ apps::AppTypeName GetAppTypeNameForWebApp(
     Profile* profile,
     const std::string& app_id,
     apps::mojom::LaunchContainer container) {
-  auto* provider = web_app::WebAppProvider::Get(profile);
-  DCHECK(provider);
+  apps::AppTypeName type_name = apps::AppTypeName::kChromeBrowser;
+  apps::mojom::WindowMode window_mode = apps::mojom::WindowMode::kBrowser;
+  apps::AppServiceProxyFactory::GetForProfile(profile)
+      ->AppRegistryCache()
+      .ForOneApp(app_id, [&type_name,
+                          &window_mode](const apps::AppUpdate& update) {
+        if (update.AppType() == apps::mojom::AppType::kSystemWeb) {
+          DCHECK(update.InstallSource() == apps::mojom::InstallSource::kSystem);
+          type_name = apps::AppTypeName::kSystemWeb;
+        } else if (update.AppType() == apps::mojom::AppType::kWeb) {
+          type_name =
+              (update.InstallSource() == apps::mojom::InstallSource::kSystem)
+                  ? apps::AppTypeName::kSystemWeb
+                  : apps::AppTypeName::kWeb;
+        }
+        window_mode = update.WindowMode();
+      });
 
-  const auto* web_app = provider->registrar().GetAppById(app_id);
-  if (!web_app) {
-    return apps::AppTypeName::kChromeBrowser;
-  }
-
-  if (web_app->IsSystemApp()) {
-    return apps::AppTypeName::kSystemWeb;
+  if (type_name != apps::AppTypeName::kWeb) {
+    return type_name;
   }
 
   switch (container) {
@@ -162,9 +172,7 @@ apps::AppTypeName GetAppTypeNameForWebApp(
       break;
   }
 
-  if (web_app::ConvertDisplayModeToAppLaunchContainer(
-          provider->registrar().GetAppEffectiveDisplayMode(app_id)) ==
-      apps::mojom::LaunchContainer::kLaunchContainerTab) {
+  if (window_mode == apps::mojom::WindowMode::kBrowser) {
     return apps::AppTypeName::kChromeBrowser;
   }
 
