@@ -171,41 +171,6 @@ apps::AppTypeName GetAppTypeNameForWebApp(
   return apps::AppTypeName::kWeb;
 }
 
-// Returns AppTypeName used for app launch metrics.
-apps::AppTypeName GetAppTypeName(Profile* profile,
-                                 apps::mojom::AppType app_type,
-                                 const std::string& app_id,
-                                 apps::mojom::LaunchContainer container) {
-  switch (app_type) {
-    case apps::mojom::AppType::kUnknown:
-      return apps::AppTypeName::kUnknown;
-    case apps::mojom::AppType::kArc:
-      return apps::AppTypeName::kArc;
-    case apps::mojom::AppType::kBuiltIn:
-      return apps::AppTypeName::kBuiltIn;
-    case apps::mojom::AppType::kCrostini:
-      return apps::AppTypeName::kCrostini;
-    case apps::mojom::AppType::kExtension:
-      return GetAppTypeNameForChromeApp(profile, app_id, container);
-    case apps::mojom::AppType::kWeb:
-      return GetAppTypeNameForWebApp(profile, app_id, container);
-    case apps::mojom::AppType::kMacOs:
-      return apps::AppTypeName::kMacOs;
-    case apps::mojom::AppType::kPluginVm:
-      return apps::AppTypeName::kPluginVm;
-    case apps::mojom::AppType::kStandaloneBrowser:
-      return apps::AppTypeName::kStandaloneBrowser;
-    case apps::mojom::AppType::kRemote:
-      return apps::AppTypeName::kRemote;
-    case apps::mojom::AppType::kBorealis:
-      return apps::AppTypeName::kBorealis;
-    case apps::mojom::AppType::kSystemWeb:
-      return apps::AppTypeName::kSystemWeb;
-    case apps::mojom::AppType::kStandaloneBrowserExtension:
-      return apps::AppTypeName::kStandaloneBrowserExtension;
-  }
-}
-
 std::string GetInstallSource(apps::mojom::InstallSource install_source) {
   switch (install_source) {
     case apps::mojom::InstallSource::kUnknown:
@@ -255,10 +220,10 @@ apps::AppTypeName GetAppTypeNameForWebAppWindow(Profile* profile,
 }
 
 // Returns AppTypeName used for app running metrics.
-apps::AppTypeName GetAppTypeName(Profile* profile,
-                                 apps::mojom::AppType app_type,
-                                 const std::string& app_id,
-                                 aura::Window* window) {
+apps::AppTypeName GetAppTypeNameForWindow(Profile* profile,
+                                          apps::mojom::AppType app_type,
+                                          const std::string& app_id,
+                                          aura::Window* window) {
   switch (app_type) {
     case apps::mojom::AppType::kUnknown:
       return apps::AppTypeName::kUnknown;
@@ -503,6 +468,40 @@ const std::set<apps::AppTypeName>& GetAppTypeNameSet() {
   return ::GetAppTypeNameSet();
 }
 
+apps::AppTypeName GetAppTypeName(Profile* profile,
+                                 apps::mojom::AppType app_type,
+                                 const std::string& app_id,
+                                 apps::mojom::LaunchContainer container) {
+  switch (app_type) {
+    case apps::mojom::AppType::kUnknown:
+      return apps::AppTypeName::kUnknown;
+    case apps::mojom::AppType::kArc:
+      return apps::AppTypeName::kArc;
+    case apps::mojom::AppType::kBuiltIn:
+      return apps::AppTypeName::kBuiltIn;
+    case apps::mojom::AppType::kCrostini:
+      return apps::AppTypeName::kCrostini;
+    case apps::mojom::AppType::kExtension:
+      return GetAppTypeNameForChromeApp(profile, app_id, container);
+    case apps::mojom::AppType::kWeb:
+      return GetAppTypeNameForWebApp(profile, app_id, container);
+    case apps::mojom::AppType::kMacOs:
+      return apps::AppTypeName::kMacOs;
+    case apps::mojom::AppType::kPluginVm:
+      return apps::AppTypeName::kPluginVm;
+    case apps::mojom::AppType::kStandaloneBrowser:
+      return apps::AppTypeName::kStandaloneBrowser;
+    case apps::mojom::AppType::kRemote:
+      return apps::AppTypeName::kRemote;
+    case apps::mojom::AppType::kBorealis:
+      return apps::AppTypeName::kBorealis;
+    case apps::mojom::AppType::kSystemWeb:
+      return apps::AppTypeName::kSystemWeb;
+    case apps::mojom::AppType::kStandaloneBrowserExtension:
+      return apps::AppTypeName::kStandaloneBrowserExtension;
+  }
+}
+
 void RecordAppLaunchMetrics(Profile* profile,
                             apps::mojom::AppType app_type,
                             const std::string& app_id,
@@ -724,8 +723,8 @@ void AppPlatformMetrics::OnInstanceUpdate(const apps::InstanceUpdate& update) {
   if (is_active) {
     if (it == running_start_time_.end()) {
       AppTypeName app_type_name =
-          GetAppTypeName(profile_, app_type, app_id,
-                         update.InstanceKey().GetEnclosingAppWindow());
+          GetAppTypeNameForWindow(profile_, app_type, app_id,
+                                  update.InstanceKey().GetEnclosingAppWindow());
       if (app_type_name == apps::AppTypeName::kUnknown) {
         return;
       }

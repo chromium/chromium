@@ -110,6 +110,12 @@ std::string GetAppTypeHistogramNameV2(apps::AppTypeNameV2 app_type_name);
 
 const std::set<apps::AppTypeName>& GetAppTypeNameSet();
 
+// Returns AppTypeName used for app launch metrics.
+apps::AppTypeName GetAppTypeName(Profile* profile,
+                                 apps::mojom::AppType app_type,
+                                 const std::string& app_id,
+                                 apps::mojom::LaunchContainer container);
+
 // Records metrics when launching apps.
 void RecordAppLaunchMetrics(Profile* profile,
                             apps::mojom::AppType app_type,

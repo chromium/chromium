@@ -2894,6 +2894,7 @@ if (!is_android && !is_fuchsia) {
     # NOTE: This is the main "browser_tests" section for |is_chromeos_ash|.
     if (is_chromeos_ash) {
       sources += [
+        "../browser/apps/app_service/app_platform_metrics_browsertest.cc",
         "../browser/apps/app_service/browser_app_instance_tracker_browsertest.cc",
         "../browser/apps/app_service/intent_util_browsertest.cc",
         "../browser/apps/app_service/media_access_browsertest.cc",
