@@ -269,10 +269,11 @@ HRESULT AXPlatformNodeTextRangeProviderWin::ExpandToEnclosingUnitImpl(
           base::BindRepeating(&AtEndOfLinePredicate)));
       break;
     case TextUnit_Paragraph:
-      SetStart(start()->CreatePreviousParagraphStartPosition(
-          AXBoundaryBehavior::StopIfAlreadyAtBoundary));
-      SetEnd(start()->CreateNextParagraphEndPosition(
-          AXBoundaryBehavior::StopIfAlreadyAtBoundary));
+      SetStart(
+          start()->CreatePreviousParagraphStartPositionSkippingEmptyParagraphs(
+              AXBoundaryBehavior::StopIfAlreadyAtBoundary));
+      SetEnd(start()->CreateNextParagraphStartPositionSkippingEmptyParagraphs(
+          AXBoundaryBehavior::StopAtLastAnchorBoundary));
       break;
     case TextUnit_Page: {
       // Per UIA spec, if the document containing the current range doesn't
@@ -1137,11 +1138,10 @@ AXPlatformNodeTextRangeProviderWin::MoveEndpointByParagraph(
     const bool is_start_endpoint,
     const int count,
     int* units_moved) {
-  return MoveEndpointByUnitHelper(std::move(endpoint),
-                                  is_start_endpoint
-                                      ? ax::mojom::TextBoundary::kParagraphStart
-                                      : ax::mojom::TextBoundary::kParagraphEnd,
-                                  count, units_moved);
+  return MoveEndpointByUnitHelper(
+      std::move(endpoint),
+      ax::mojom::TextBoundary::kParagraphStartSkippingEmptyParagraphs, count,
+      units_moved);
 }
 
 AXPlatformNodeTextRangeProviderWin::AXPositionInstance

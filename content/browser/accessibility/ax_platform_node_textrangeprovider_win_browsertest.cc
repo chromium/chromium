@@ -1314,7 +1314,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   ComPtr<ITextRangeProvider> text_range_provider;
   GetTextRangeProviderFromTextNode(*start_node, &text_range_provider);
   ASSERT_NE(nullptr, text_range_provider.Get());
-  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"start");
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, paragraphs[0].c_str());
 
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
@@ -1329,42 +1329,42 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
       /*count*/ 1,
-      /*expected_text*/ paragraphs[0].c_str(),
+      /*expected_text*/ (paragraphs[0] + L'\n').c_str(),
       /*expected_count*/ 1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
       /*count*/ 1,
-      /*expected_text*/ (paragraphs[0] + L"\n" + paragraphs[1]).c_str(),
+      /*expected_text*/ (paragraphs[0] + L'\n' + paragraphs[1] + L'\n').c_str(),
       /*expected_count*/ 1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
       /*count*/ 1,
-      /*expected_text*/ paragraphs[1].c_str(),
+      /*expected_text*/ (paragraphs[1] + L'\n').c_str(),
       /*expected_count*/ 1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
       /*count*/ 1,
-      /*expected_text*/ (paragraphs[1] + L"\n" + paragraphs[2]).c_str(),
+      /*expected_text*/ (paragraphs[1] + L'\n' + paragraphs[2] + L'\n').c_str(),
       /*expected_count*/ 1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
       /*count*/ 1,
-      /*expected_text*/ paragraphs[2].c_str(),
+      /*expected_text*/ (paragraphs[2] + L'\n').c_str(),
       /*expected_count*/ 1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
       /*count*/ 1,
-      /*expected_text*/ (paragraphs[2] + L"\n" + paragraphs[3]).c_str(),
+      /*expected_text*/ (paragraphs[2] + L'\n' + paragraphs[3] + L'\n').c_str(),
       /*expected_count*/ 1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
       /*count*/ 1,
-      /*expected_text*/ paragraphs[3].c_str(),
+      /*expected_text*/ (paragraphs[3] + L'\n').c_str(),
       /*expected_count*/ 1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
       /*count*/ 1,
-      /*expected_text*/ (paragraphs[3] + L"\n" + paragraphs[4]).c_str(),
+      /*expected_text*/ (paragraphs[3] + L'\n' + paragraphs[4]).c_str(),
       /*expected_count*/ 1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
@@ -1382,10 +1382,13 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
       /*expected_text*/ L"",
       /*expected_count*/ 1);
 
+  //
   // REVERSE NAVIGATION
+  //
+
   GetTextRangeProviderFromTextNode(*end_node, &text_range_provider);
   ASSERT_NE(nullptr, text_range_provider.Get());
-  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"end");
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, paragraphs[4].c_str());
 
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
@@ -1405,47 +1408,47 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
       /*count*/ -1,
-      /*expected_text*/ (paragraphs[3] + L"\n" + paragraphs[4]).c_str(),
+      /*expected_text*/ (paragraphs[3] + L'\n' + paragraphs[4]).c_str(),
       /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
       /*count*/ -1,
-      /*expected_text*/ paragraphs[3].c_str(),
+      /*expected_text*/ (paragraphs[3] + L'\n').c_str(),
       /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
       /*count*/ -1,
-      /*expected_text*/ (paragraphs[2] + L"\n" + paragraphs[3]).c_str(),
+      /*expected_text*/ (paragraphs[2] + L'\n' + paragraphs[3] + L'\n').c_str(),
       /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
       /*count*/ -1,
-      /*expected_text*/ paragraphs[2].c_str(),
+      /*expected_text*/ (paragraphs[2] + L'\n').c_str(),
       /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
       /*count*/ -1,
-      /*expected_text*/ (paragraphs[1] + L"\n" + paragraphs[2]).c_str(),
+      /*expected_text*/ (paragraphs[1] + L'\n' + paragraphs[2] + L'\n').c_str(),
       /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
       /*count*/ -1,
-      /*expected_text*/ paragraphs[1].c_str(),
+      /*expected_text*/ (paragraphs[1] + L'\n').c_str(),
       /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
       /*count*/ -1,
-      /*expected_text*/ (paragraphs[0] + L"\n" + paragraphs[1]).c_str(),
+      /*expected_text*/ (paragraphs[0] + L'\n' + paragraphs[1] + L'\n').c_str(),
       /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
       /*count*/ -1,
-      /*expected_text*/ paragraphs[0].c_str(),
+      /*expected_text*/ (paragraphs[0] + L'\n').c_str(),
       /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
       /*count*/ -1,
-      /*expected_text*/ paragraphs[0].c_str(),
+      /*expected_text*/ (paragraphs[0] + L'\n').c_str(),
       /*expected_count*/ 0);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
@@ -1479,6 +1482,9 @@ IN_PROC_BROWSER_TEST_F(
       FindNode(ax::mojom::Role::kStaticText, "end");
   ASSERT_NE(nullptr, end_node);
 
+  // The three <br> elements should be merged with the previous paragraph,
+  // because according to MSDN, in UI Automation, any trailing whitespace should
+  // be part of the previous paragraph.
   std::vector<std::wstring> paragraphs = {
       L"start",
       L"some text\n\n\n",
@@ -1490,13 +1496,19 @@ IN_PROC_BROWSER_TEST_F(
   ComPtr<ITextRangeProvider> text_range_provider;
   GetTextRangeProviderFromTextNode(*start_node, &text_range_provider);
   ASSERT_NE(nullptr, text_range_provider.Get());
-  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"start");
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, paragraphs[0].c_str());
 
+  // There is no trailing '\n' because the second paragraph already has merged
+  // trailing whitespace in it, and in such cases we made the design decision
+  // not to add an extra line break.
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
       /*count*/ 1,
-      /*expected_text*/ (paragraphs[0] + L"\n" + paragraphs[1]).c_str(),
+      /*expected_text*/ (paragraphs[0] + L'\n' + paragraphs[1]).c_str(),
       /*expected_count*/ 1);
+  // There is no trailing '\n' because the second paragraph already has merged
+  // trailing whitespace in it, and in such cases we made the design decision
+  // not to add an extra line break.
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
       /*count*/ 1,
@@ -1505,59 +1517,106 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
       /*count*/ 1,
-      /*expected_text*/ (paragraphs[1] + paragraphs[2]).c_str(),
+      /*expected_text*/ (paragraphs[1] + paragraphs[2] + L'\n').c_str(),
       /*expected_count*/ 1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
       /*count*/ 1,
-      /*expected_text*/ paragraphs[2].c_str(),
+      /*expected_text*/ (paragraphs[2] + L'\n').c_str(),
       /*expected_count*/ 1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
       /*count*/ 1,
-      /*expected_text*/ (paragraphs[2] + L"\n" + paragraphs[3]).c_str(),
+      /*expected_text*/ (paragraphs[2] + L'\n' + paragraphs[3]).c_str(),
       /*expected_count*/ 1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
       /*count*/ 1,
       /*expected_text*/ paragraphs[3].c_str(),
       /*expected_count*/ 1);
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
+      /*count*/ 1,
+      /*expected_text*/ paragraphs[3].c_str(),
+      /*expected_count*/ 0);
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
+      /*count*/ 1,
+      /*expected_text*/ L"",
+      /*expected_count*/ 1);
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
+      /*count*/ 1,
+      /*expected_text*/ L"",
+      /*expected_count*/ 0);
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
+      /*count*/ 1,
+      /*expected_text*/ L"",
+      /*expected_count*/ 0);
 
+  //
   // REVERSE NAVIGATION
+  //
+
   GetTextRangeProviderFromTextNode(*end_node, &text_range_provider);
   ASSERT_NE(nullptr, text_range_provider.Get());
-  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"end");
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, paragraphs[3].c_str());
 
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
       /*count*/ -1,
-      /*expected_text*/ (paragraphs[2] + L"\n" + paragraphs[3]).c_str(),
+      /*expected_text*/ (paragraphs[2] + L'\n' + paragraphs[3]).c_str(),
       /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
       /*count*/ -1,
-      /*expected_text*/ paragraphs[2].c_str(),
+      /*expected_text*/ (paragraphs[2] + L'\n').c_str(),
       /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
       /*count*/ -1,
-      /*expected_text*/ (paragraphs[1] + paragraphs[2]).c_str(),
+      /*expected_text*/ (paragraphs[1] + paragraphs[2] + L'\n').c_str(),
+      /*expected_count*/ -1);
+  // There is no trailing '\n' because the second paragraph already has merged
+  // trailing whitespace in it.
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
+      /*count*/ -1,
+      /*expected_text*/ (paragraphs[1]).c_str(),
+      /*expected_count*/ -1);
+  // There is no trailing '\n' because the second paragraph already has merged
+  // trailing whitespace in it.
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
+      /*count*/ -1,
+      /*expected_text*/ (paragraphs[0] + L'\n' + paragraphs[1]).c_str(),
       /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
       /*count*/ -1,
-      /*expected_text*/ paragraphs[1].c_str(),
+      /*expected_text*/ (paragraphs[0] + L'\n').c_str(),
       /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
       /*count*/ -1,
-      /*expected_text*/ (paragraphs[0] + L"\n" + paragraphs[1]).c_str(),
-      /*expected_count*/ -1);
+      /*expected_text*/ (paragraphs[0] + L'\n').c_str(),
+      /*expected_count*/ 0);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
       /*count*/ -1,
-      /*expected_text*/ paragraphs[0].c_str(),
+      /*expected_text*/ L"",
       /*expected_count*/ -1);
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
+      /*count*/ -1,
+      /*expected_text*/ L"",
+      /*expected_count*/ 0);
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
+      /*count*/ -1,
+      /*expected_text*/ L"",
+      /*expected_count*/ 0);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1615,31 +1674,33 @@ IN_PROC_BROWSER_TEST_F(
   ComPtr<ITextRangeProvider> text_range_provider;
   GetTextRangeProviderFromTextNode(*start_node, &text_range_provider);
   ASSERT_NE(nullptr, text_range_provider.Get());
-  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"start");
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, paragraphs[0].c_str());
 
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
       /*count*/ 1,
-      /*expected_text*/ (paragraphs[0] + L"\n" + paragraphs[1]).c_str(),
+      /*expected_text*/ (paragraphs[0] + L'\n' + paragraphs[1] + L'\n').c_str(),
       /*expected_count*/ 1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
       /*count*/ 1,
       /*expected_text*/
-      (paragraphs[0] + L"\n" + paragraphs[1] + L"\n" + paragraphs[2]).c_str(),
+      (paragraphs[0] + L'\n' + paragraphs[1] + L'\n' + paragraphs[2]).c_str(),
       /*expected_count*/ 1);
 
+  //
   // Reverse navigation.
-  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
-      text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
-      /*count*/ -1,
-      /*expected_text*/ (paragraphs[0] + L"\n" + paragraphs[1]).c_str(),
-      /*expected_count*/ -1);
+  //
 
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
       /*count*/ -1,
-      /*expected_text*/ paragraphs[0].c_str(),
+      /*expected_text*/ (paragraphs[0] + L'\n' + paragraphs[1] + L'\n').c_str(),
+      /*expected_count*/ -1);
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
+      /*count*/ -1,
+      /*expected_text*/ (paragraphs[0] + L'\n').c_str(),
       /*expected_count*/ -1);
 }
 
@@ -1684,106 +1745,129 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
 
   ComPtr<ITextRangeProvider> text_range_provider;
 
+  // According to MSDN, empty paragraphs should be merged with the previous
+  // paragraph. However, paragraphs containing only spaces are not considered
+  // empty. Otherwise, deleting all the text except a few spaces from an
+  // existing paragraph while editing a document will confusingly make the
+  // paragraph disappear.
+  //
+  // Note that two out of the three empty paragraphs span two lines, hence the
+  // '\n' suffix.
   std::vector<std::wstring> paragraphs = {
-      L"start\n",
-      L"          First Paragraph\n",
-      L"          Second Paragraph\n        \n",
-      L"Third Paragraph\n",
-      L"Fourth Paragraph\n\n          ",
-      L"Fifth               Paragraph\n          ",
-      L"Sixth               Paragraph\n        \n          ",
-      L"Seventh             Paragraph\n          ",
-      L"Eighth              Paragraph\n        ",
+      L"start",
+      L"          First Paragraph",
+      L"          Second Paragraph",
+      L"        \n",  // Empty paragraph 1.
+      L"Third Paragraph",
+      L"Fourth Paragraph\n",
+      L"          Fifth               Paragraph",
+      L"          Sixth               Paragraph",
+      L"        \n",  // Empty paragraph 2.
+      L"          Seventh             Paragraph",
+      L"          Eighth              Paragraph",
+      L"        ",  // Empty paragraph 3.
       L"end",
   };
 
   // FORWARD NAVIGATION
   GetTextRangeProviderFromTextNode(*start_node, &text_range_provider);
   ASSERT_NE(nullptr, text_range_provider.Get());
-  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"start");
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, paragraphs[0].c_str());
 
   // The first paragraph extends beyond the end of the "start" node, because
   // the preserved whitespace node begins with a line break, so
   // move once to capture that.
+  //
+  // Also, some paragraphs end with a line break, '\n', and in those cases
+  // `AXRange::GetText()` does not add an additional line break. Hence you might
+  // see some expectations that at first glance appear to be inconsistent with
+  // one another.
+
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
       /*count*/ 1,
-      /*expected_text*/ paragraphs[0].c_str(),
+      /*expected_text*/ (paragraphs[0] + L'\n').c_str(),
       /*expected_count*/ 1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
       /*count*/ 1,
-      /*expected_text*/ (paragraphs[0] + paragraphs[1]).c_str(),
+      /*expected_text*/ (paragraphs[0] + L'\n' + paragraphs[1] + L'\n').c_str(),
       /*expected_count*/ 1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
       /*count*/ 1,
-      /*expected_text*/ paragraphs[1].c_str(),
+      /*expected_text*/ (paragraphs[1] + L'\n').c_str(),
       /*expected_count*/ 1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
       /*count*/ 1,
-      /*expected_text*/ (paragraphs[1] + paragraphs[2]).c_str(),
+      /*expected_text*/ (paragraphs[1] + L'\n' + paragraphs[2] + L'\n').c_str(),
       /*expected_count*/ 1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
       /*count*/ 1,
-      /*expected_text*/ paragraphs[2].c_str(),
+      /*expected_text*/ (paragraphs[2] + L'\n').c_str(),
       /*expected_count*/ 1);
+  // Since paragraphs[3] ends with a line break, '\n', `AXRange::GetText()` does
+  // not add an additional line break.
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
       /*count*/ 1,
-      /*expected_text*/ (paragraphs[2] + paragraphs[3]).c_str(),
+      /*expected_text*/ (paragraphs[2] + L'\n' + paragraphs[3]).c_str(),
       /*expected_count*/ 1);
+  // Since paragraphs[3] ends with a line break, '\n', `AXRange::GetText()` does
+  // not add an additional line break.
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
       /*count*/ 1,
       /*expected_text*/ paragraphs[3].c_str(),
       /*expected_count*/ 1);
+  // Since paragraphs[3] ends with a line break, '\n', `AXRange::GetText()` does
+  // not add an additional line break.
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
       /*count*/ 1,
-      /*expected_text*/ (paragraphs[3] + paragraphs[4]).c_str(),
+      /*expected_text*/ (paragraphs[3] + paragraphs[4] + L'\n').c_str(),
       /*expected_count*/ 1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
       /*count*/ 1,
-      /*expected_text*/ paragraphs[4].c_str(),
+      /*expected_text*/ (paragraphs[4] + L'\n').c_str(),
       /*expected_count*/ 1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
       /*count*/ 1,
-      /*expected_text*/ (paragraphs[4] + paragraphs[5]).c_str(),
+      /*expected_text*/ (paragraphs[4] + L'\n' + paragraphs[5] + L'\n').c_str(),
       /*expected_count*/ 1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
       /*count*/ 1,
-      /*expected_text*/ paragraphs[5].c_str(),
+      /*expected_text*/ (paragraphs[5] + L'\n').c_str(),
       /*expected_count*/ 1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
       /*count*/ 1,
-      /*expected_text*/ (paragraphs[5] + paragraphs[6]).c_str(),
+      /*expected_text*/ (paragraphs[5] + L'\n' + paragraphs[6] + L'\n').c_str(),
       /*expected_count*/ 1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
       /*count*/ 1,
-      /*expected_text*/ paragraphs[6].c_str(),
+      /*expected_text*/ (paragraphs[6] + L'\n').c_str(),
       /*expected_count*/ 1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
       /*count*/ 1,
-      /*expected_text*/ (paragraphs[6] + paragraphs[7]).c_str(),
+      /*expected_text*/ (paragraphs[6] + L'\n' + paragraphs[7] + L'\n').c_str(),
       /*expected_count*/ 1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
       /*count*/ 1,
-      /*expected_text*/ paragraphs[7].c_str(),
+      /*expected_text*/ (paragraphs[7] + L'\n').c_str(),
       /*expected_count*/ 1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
       /*count*/ 1,
-      /*expected_text*/ (paragraphs[7] + paragraphs[8]).c_str(),
+      /*expected_text*/ (paragraphs[7] + L'\n' + paragraphs[8]).c_str(),
       /*expected_count*/ 1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
@@ -1793,23 +1877,88 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
       /*count*/ 1,
-      /*expected_text*/ (paragraphs[8] + paragraphs[9]).c_str(),
+      /*expected_text*/ (paragraphs[8] + paragraphs[9] + L'\n').c_str(),
       /*expected_count*/ 1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
       /*count*/ 1,
-      /*expected_text*/ paragraphs[9].c_str(),
+      /*expected_text*/ (paragraphs[9] + L'\n').c_str(),
+      /*expected_count*/ 1);
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
+      /*count*/ 1,
+      /*expected_text*/
+      (paragraphs[9] + L'\n' + paragraphs[10] + L'\n').c_str(),
+      /*expected_count*/ 1);
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
+      /*count*/ 1,
+      /*expected_text*/ (paragraphs[10] + L'\n').c_str(),
+      /*expected_count*/ 1);
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
+      /*count*/ 1,
+      /*expected_text*/ (paragraphs[10] + L'\n' + paragraphs[11]).c_str(),
+      /*expected_count*/ 1);
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
+      /*count*/ 1,
+      /*expected_text*/ (paragraphs[11] + L'\n').c_str(),
+      /*expected_count*/ 1);
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
+      /*count*/ 1,
+      /*expected_text*/ (paragraphs[11] + L'\n' + paragraphs[12]).c_str(),
+      /*expected_count*/ 1);
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
+      /*count*/ 1,
+      /*expected_text*/ paragraphs[12].c_str(),
       /*expected_count*/ 1);
 
+  //
   // REVERSE NAVIGATION
+  //
+
   GetTextRangeProviderFromTextNode(*end_node, &text_range_provider);
   ASSERT_NE(nullptr, text_range_provider.Get());
-  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"end");
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, paragraphs[12].c_str());
 
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
       /*count*/ -1,
-      /*expected_text*/ (paragraphs[8] + paragraphs[9]).c_str(),
+      /*expected_text*/ (paragraphs[11] + L'\n' + paragraphs[12]).c_str(),
+      /*expected_count*/ -1);
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
+      /*count*/ -1,
+      /*expected_text*/ (paragraphs[11] + L'\n').c_str(),
+      /*expected_count*/ -1);
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
+      /*count*/ -1,
+      /*expected_text*/ (paragraphs[10] + L'\n' + paragraphs[11]).c_str(),
+      /*expected_count*/ -1);
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
+      /*count*/ -1,
+      /*expected_text*/ (paragraphs[10] + L'\n').c_str(),
+      /*expected_count*/ -1);
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
+      /*count*/ -1,
+      /*expected_text*/
+      (paragraphs[9] + L'\n' + paragraphs[10] + L'\n').c_str(),
+      /*expected_count*/ -1);
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
+      /*count*/ -1,
+      /*expected_text*/ (paragraphs[9] + L'\n').c_str(),
+      /*expected_count*/ -1);
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
+      /*count*/ -1,
+      /*expected_text*/ (paragraphs[8] + paragraphs[9] + L'\n').c_str(),
       /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
@@ -1819,47 +1968,47 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
       /*count*/ -1,
-      /*expected_text*/ (paragraphs[7] + paragraphs[8]).c_str(),
+      /*expected_text*/ (paragraphs[7] + L'\n' + paragraphs[8]).c_str(),
       /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
       /*count*/ -1,
-      /*expected_text*/ paragraphs[7].c_str(),
+      /*expected_text*/ (paragraphs[7] + L'\n').c_str(),
       /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
       /*count*/ -1,
-      /*expected_text*/ (paragraphs[6] + paragraphs[7]).c_str(),
+      /*expected_text*/ (paragraphs[6] + L'\n' + paragraphs[7] + L'\n').c_str(),
       /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
       /*count*/ -1,
-      /*expected_text*/ paragraphs[6].c_str(),
+      /*expected_text*/ (paragraphs[6] + L'\n').c_str(),
       /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
       /*count*/ -1,
-      /*expected_text*/ (paragraphs[5] + paragraphs[6]).c_str(),
+      /*expected_text*/ (paragraphs[5] + L'\n' + paragraphs[6] + L'\n').c_str(),
       /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
       /*count*/ -1,
-      /*expected_text*/ paragraphs[5].c_str(),
+      /*expected_text*/ (paragraphs[5] + L'\n').c_str(),
       /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
       /*count*/ -1,
-      /*expected_text*/ (paragraphs[4] + paragraphs[5]).c_str(),
+      /*expected_text*/ (paragraphs[4] + L'\n' + paragraphs[5] + L'\n').c_str(),
       /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
       /*count*/ -1,
-      /*expected_text*/ paragraphs[4].c_str(),
+      /*expected_text*/ (paragraphs[4] + L'\n').c_str(),
       /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
       /*count*/ -1,
-      /*expected_text*/ (paragraphs[3] + paragraphs[4]).c_str(),
+      /*expected_text*/ (paragraphs[3] + paragraphs[4] + L'\n').c_str(),
       /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
@@ -1869,32 +2018,32 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
       /*count*/ -1,
-      /*expected_text*/ (paragraphs[2] + paragraphs[3]).c_str(),
+      /*expected_text*/ (paragraphs[2] + L'\n' + paragraphs[3]).c_str(),
       /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
       /*count*/ -1,
-      /*expected_text*/ paragraphs[2].c_str(),
+      /*expected_text*/ (paragraphs[2] + L'\n').c_str(),
       /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
       /*count*/ -1,
-      /*expected_text*/ (paragraphs[1] + paragraphs[2]).c_str(),
+      /*expected_text*/ (paragraphs[1] + L'\n' + paragraphs[2] + L'\n').c_str(),
       /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
       /*count*/ -1,
-      /*expected_text*/ paragraphs[1].c_str(),
+      /*expected_text*/ (paragraphs[1] + L'\n').c_str(),
       /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
       /*count*/ -1,
-      /*expected_text*/ (paragraphs[0] + paragraphs[1]).c_str(),
+      /*expected_text*/ (paragraphs[0] + L'\n' + paragraphs[1] + L'\n').c_str(),
       /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
       /*count*/ -1,
-      /*expected_text*/ paragraphs[0].c_str(),
+      /*expected_text*/ (paragraphs[0] + L'\n').c_str(),
       /*expected_count*/ -1);
 }
 
@@ -1932,13 +2081,13 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   </html>)HTML";
 
   const std::vector<const wchar_t*> paragraphs = {
-      L"start",
-      L"1. Paragraph with hidden inline in between",
-      L"2. Paragraph parts wrapped by span with hidden inline in between",
-      L"3. Paragraph before hidden block",
-      L"4. Paragraph after hidden block",
-      L"5. Paragraph with leading and trailing hidden span",
-      L"6. Paragraph with leading and trailing hidden block",
+      L"start\n",
+      L"1. Paragraph with hidden inline in between\n",
+      L"2. Paragraph parts wrapped by span with hidden inline in between\n",
+      L"3. Paragraph before hidden block\n",
+      L"4. Paragraph after hidden block\n",
+      L"5. Paragraph with leading and trailing hidden span\n",
+      L"6. Paragraph with leading and trailing hidden block\n",
       L"end",
   };
 
@@ -1974,7 +2123,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   ComPtr<ITextRangeProvider> text_range_provider;
   GetTextRangeProviderFromTextNode(*start_node, &text_range_provider);
   ASSERT_NE(nullptr, text_range_provider.Get());
-  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"start");
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, paragraphs[0].c_str());
 
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
@@ -1989,22 +2138,22 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
       /*count*/ 1,
-      /*expected_text*/ paragraphs[0].c_str(),
+      /*expected_text*/ (paragraphs[0] + L'\n').c_str(),
       /*expected_count*/ 1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
       /*count*/ 1,
-      /*expected_text*/ (paragraphs[0] + paragraphs[1]).c_str(),
+      /*expected_text*/ (paragraphs[0] + L'\n' + paragraphs[1] + L'\n').c_str(),
       /*expected_count*/ 1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
       /*count*/ 1,
-      /*expected_text*/ paragraphs[1].c_str(),
+      /*expected_text*/ (paragraphs[1] + L'\n').c_str(),
       /*expected_count*/ 1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
       /*count*/ 1,
-      /*expected_text*/ (paragraphs[1] + paragraphs[2]).c_str(),
+      /*expected_text*/ (paragraphs[1] + L'\n' + paragraphs[2]).c_str(),
       /*expected_count*/ 1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
@@ -2022,10 +2171,13 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
       /*expected_text*/ L"",
       /*expected_count*/ 1);
 
+  //
   // REVERSE NAVIGATION
+  //
+
   GetTextRangeProviderFromTextNode(*end_node, &text_range_provider);
   ASSERT_NE(nullptr, text_range_provider.Get());
-  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"end");
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, paragraphs[2].c_str());
 
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
@@ -2045,27 +2197,27 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
       /*count*/ -1,
-      /*expected_text*/ (paragraphs[1] + paragraphs[2]).c_str(),
+      /*expected_text*/ (paragraphs[1] + L'\n' + paragraphs[2]).c_str(),
       /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
       /*count*/ -1,
-      /*expected_text*/ paragraphs[1].c_str(),
+      /*expected_text*/ (paragraphs[1] + L'\n').c_str(),
       /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
       /*count*/ -1,
-      /*expected_text*/ (paragraphs[0] + paragraphs[1]).c_str(),
+      /*expected_text*/ (paragraphs[0] + L'\n' + paragraphs[1] + L'\n').c_str(),
       /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
       /*count*/ -1,
-      /*expected_text*/ paragraphs[0].c_str(),
+      /*expected_text*/ (paragraphs[0] + L'\n').c_str(),
       /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
       /*count*/ -1,
-      /*expected_text*/ paragraphs[0].c_str(),
+      /*expected_text*/ (paragraphs[0] + L'\n').c_str(),
       /*expected_count*/ 0);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
@@ -2451,10 +2603,6 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
       {L"plain text ", L"bold text ",
        L"bold and italic text more bold and italic text", L" italic text",
        L" plain text"});
-
-  AssertMoveByUnitForMarkup(
-      TextUnit_Format, "before <img src='test'> after",
-      {L"before ", kEmbeddedCharacterAsString.c_str(), L" after"});
 
   AssertMoveByUnitForMarkup(TextUnit_Format,
                             "before <a href='test'>link</a> after",

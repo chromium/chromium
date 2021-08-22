@@ -310,13 +310,18 @@ class AXRange {
         if (concatenation_behavior ==
                 AXTextConcatenationBehavior::kAsInnerText &&
             !start->IsInWhiteSpace()) {
-          if (is_first_non_whitespace_leaf) {
+          if (is_first_non_whitespace_leaf && !is_first_unignored_leaf) {
             // The first non-whitespace leaf in the range could be preceded by
             // whitespace spanning even before the start of this range, we need
             // to check such positions in order to correctly determine if this
             // is a paragraph's start (see |AXPosition::AtStartOfParagraph|).
+            // However, if the first paragraph boundary in the range is ignored,
+            // e.g. <div aria-hidden="true"></div>, we do not take it into
+            // consideration even when `include_ignored` == true, because the
+            // beginning of the text range, as experienced by the user, is after
+            // any trailing ignored nodes.
             crossed_paragraph_boundary =
-                !is_first_unignored_leaf && start->AtStartOfParagraph();
+                !start->IsIgnored() && start->AtStartOfParagraph();
           }
 
           // When preserving layout line breaks, don't append `\n` next if the
@@ -358,12 +363,13 @@ class AXRange {
       if (start->GetAnchor() == end->GetAnchor() ||
           static_cast<int>(range_text.length()) == max_count) {
         break;
-      } else if (concatenation_behavior ==
-                     AXTextConcatenationBehavior::kAsInnerText &&
-                 !crossed_paragraph_boundary && !is_first_non_whitespace_leaf) {
-        start = start->CreateNextLeafTextPosition(&crossed_paragraph_boundary);
       } else {
         start = start->CreateNextLeafTextPosition();
+        if (concatenation_behavior ==
+                AXTextConcatenationBehavior::kAsInnerText &&
+            !crossed_paragraph_boundary && !is_first_non_whitespace_leaf) {
+          crossed_paragraph_boundary = start->AtStartOfParagraph();
+        }
       }
     }
 
