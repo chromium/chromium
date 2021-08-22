@@ -27,11 +27,6 @@ const char kZucchini[] = "zucchini";
 
 namespace switches {
 
-// Setting this will delay the operation of setup by the specified number of
-// seconds.  This is used when changing the DisplayVersion registry value
-// only after some time has passed, called by the MSI installer.
-const char kDelay[] = "delay";
-
 // Set the MSI-managed DisplayVersion in the registry to match Chrome's real
 // version number. The parameter to this option specifies the product-id in
 // the registry under HKLM.

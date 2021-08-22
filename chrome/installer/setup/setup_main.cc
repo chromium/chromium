@@ -34,7 +34,6 @@
 #include "base/process/memory.h"
 #include "base/process/process.h"
 #include "base/process/process_metrics.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -107,7 +106,6 @@ namespace {
 
 const wchar_t kSystemPrincipalSid[] = L"S-1-5-18";
 const wchar_t kDisplayVersion[] = L"DisplayVersion";
-const wchar_t kMsiDisplayVersionOverwriteDelay[] = L"10";  // seconds as string
 const wchar_t kMsiProductIdPrefix[] = L"EnterpriseProduct";
 
 // Overwrite an existing DisplayVersion as written by the MSI installer
@@ -176,8 +174,6 @@ void DelayedOverwriteDisplayVersions(const base::FilePath& setup_exe,
                                  id);
   command_line.AppendSwitchASCII(installer::switches::kSetDisplayVersionValue,
                                  version.GetString());
-  command_line.AppendSwitchNative(installer::switches::kDelay,
-                                  kMsiDisplayVersionOverwriteDelay);
 
   base::LaunchOptions launch_options;
   launch_options.force_breakaway_from_job_ = true;
@@ -187,6 +183,48 @@ void DelayedOverwriteDisplayVersions(const base::FilePath& setup_exe,
                 << "could not launch subprocess to make desired changes."
                 << " <<" << command_line.GetCommandLineString() << ">>";
   }
+}
+
+// Waits up to a minute for msiexec to release its mutex and then overwrites
+// DisplayVersion in the Windows registry.
+LONG OverwriteDisplayVersionsAfterMsiexec(const std::wstring& product,
+                                          const std::wstring& value) {
+  bool adjusted_priority = false;
+  bool acquired_mutex = false;
+  base::win::ScopedHandle msi_handle(::OpenMutexW(
+      SYNCHRONIZE, /*bInheritHandle=*/FALSE, L"Global\\_MSIExecute"));
+  if (msi_handle.IsValid()) {
+    VLOG(1) << "Blocking to acquire MSI mutex.";
+
+    // Raise the priority class for the process so that it can do its work as
+    // soon as possible after acquiring the mutex.
+    adjusted_priority =
+        ::SetPriorityClass(::GetCurrentProcess(), REALTIME_PRIORITY_CLASS) != 0;
+
+    auto wait_result = ::WaitForSingleObject(msi_handle.Get(), 60 * 1000);
+    if (wait_result == WAIT_FAILED) {
+      PLOG(ERROR) << "Failed to wait for MSI mutex";
+    } else if (wait_result == WAIT_ABANDONED || wait_result == WAIT_OBJECT_0) {
+      VLOG(1) << "Acquired MSI mutex; overwriting DisplayVersion.";
+      acquired_mutex = true;
+    } else {
+      DCHECK_EQ(wait_result, static_cast<DWORD>(WAIT_TIMEOUT));
+      LOG(ERROR) << "Timed out waiting for MSI mutex.";
+    }
+  } else {
+    VPLOG(1) << "Overwriting DisplayVersion immediately after failing to "
+                "open the MSI mutex";
+  }
+
+  auto result = OverwriteDisplayVersions(product, value);
+
+  if (adjusted_priority)
+    ::SetPriorityClass(::GetCurrentProcess(), NORMAL_PRIORITY_CLASS);
+
+  if (acquired_mutex)
+    ::ReleaseMutex(msi_handle.Get());
+
+  return result;
 }
 
 // Returns nullptr if no compressed archive is available for processing,
@@ -793,18 +831,6 @@ bool HandleNonInstallCmdLineOptions(installer::ModifyParams& modify_params,
       &(modify_params.installation_state);
   const base::FilePath& setup_exe = modify_params.setup_path;
 
-  // This option is independent of all others so doesn't belong in the if/else
-  // block below.
-  if (cmd_line.HasSwitch(installer::switches::kDelay)) {
-    const std::string delay_seconds_string(
-        cmd_line.GetSwitchValueASCII(installer::switches::kDelay));
-    int delay_seconds;
-    if (base::StringToInt(delay_seconds_string, &delay_seconds) &&
-        delay_seconds > 0) {
-      base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(delay_seconds));
-    }
-  }
-
   // TODO(gab): Add a local |status| variable which each block below sets;
   // only determine the |exit_code| from |status| at the end (this will allow
   // this method to validate that
@@ -1030,7 +1056,8 @@ bool HandleNonInstallCmdLineOptions(installer::ModifyParams& modify_params,
         installer::switches::kSetDisplayVersionProduct));
     const std::wstring registry_value(cmd_line.GetSwitchValueNative(
         installer::switches::kSetDisplayVersionValue));
-    *exit_code = OverwriteDisplayVersions(registry_product, registry_value);
+    *exit_code =
+        OverwriteDisplayVersionsAfterMsiexec(registry_product, registry_value);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   } else if (cmd_line.HasSwitch(installer::switches::kStoreDMToken)) {
     // Write the specified token to the registry, overwriting any already
