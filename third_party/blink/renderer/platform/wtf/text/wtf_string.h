@@ -47,12 +47,6 @@ namespace WTF {
 
 struct StringHash;
 
-enum UTF8ConversionMode {
-  kLenientUTF8Conversion,
-  kStrictUTF8Conversion,
-  kStrictUTF8ConversionReplacingUnpairedSurrogatesWithFFFD
-};
-
 #define DISPATCH_CASE_OP(caseSensitivity, op, args)     \
   ((caseSensitivity == kTextCaseSensitive)              \
        ? op args                                        \
@@ -178,8 +172,10 @@ class WTF_EXPORT String {
 
   std::string Ascii() const WARN_UNUSED_RESULT;
   std::string Latin1() const WARN_UNUSED_RESULT;
-  std::string Utf8(UTF8ConversionMode = kLenientUTF8Conversion) const
-      WARN_UNUSED_RESULT;
+  std::string Utf8(UTF8ConversionMode mode = kLenientUTF8Conversion) const
+      WARN_UNUSED_RESULT {
+    return StringView(*this).Utf8(mode);
+  }
 
   UChar operator[](wtf_size_t index) const {
     if (!impl_ || index >= impl_->length())

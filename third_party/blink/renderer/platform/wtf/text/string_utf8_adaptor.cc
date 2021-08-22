@@ -6,7 +6,7 @@
 
 namespace WTF {
 
-StringUTF8Adaptor::StringUTF8Adaptor(const String& string,
+StringUTF8Adaptor::StringUTF8Adaptor(StringView string,
                                      UTF8ConversionMode mode) {
   if (string.IsEmpty())
     return;
