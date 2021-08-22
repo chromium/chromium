@@ -37,6 +37,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "base/version.h"
@@ -203,7 +204,12 @@ LONG OverwriteDisplayVersionsAfterMsiexec(const std::wstring& product,
 
     auto wait_result = ::WaitForSingleObject(msi_handle.Get(), 60 * 1000);
     if (wait_result == WAIT_FAILED) {
-      PLOG(ERROR) << "Failed to wait for MSI mutex";
+      // The handle is valid and was opened with SYNCHRONIZE, so the wait should
+      // never fail. If it does, wait ten seconds and proceed with the overwrite
+      // to match the old behavior.
+      PLOG(ERROR) << "Overwriting DisplayVersion in 10s after failing to wait "
+                     "for the MSI mutex";
+      base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(10));
     } else if (wait_result == WAIT_ABANDONED || wait_result == WAIT_OBJECT_0) {
       VLOG(1) << "Acquired MSI mutex; overwriting DisplayVersion.";
       acquired_mutex = true;
