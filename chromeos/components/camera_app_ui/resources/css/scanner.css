@@ -356,11 +356,11 @@ body.enable-scan-barcode .barcode-scan-box {
 #preview-document-corner-overlay .no-document-toast {
   background: var(--grey-900);
   border-radius: 6px;
-  color: var(--grey-500);
+  color: var(--grey-400);
   display: inline-block;
   font: normal 400 14px/20px Roboto;
   left: 50%;
-  padding: 10px 8px;
+  padding: 8px 10px;
   position: absolute;
   text-align: center;
   top: 22px;
