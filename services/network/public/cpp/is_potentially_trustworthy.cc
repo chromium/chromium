@@ -20,6 +20,7 @@
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "net/base/ip_address.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/network_switches.h"
@@ -36,6 +37,44 @@ namespace network {
 
 namespace {
 
+// Best effort test if the hostname with wildcards can match a raw IPv4 address
+// taken from a GURL (e.g., "1.2.3.4").  This excludes things like
+// "0x1.0x2.0x3.0x4", since GURL will map that to 1.2.3.4. Can potentially
+// incorrectly return true cases with extra 0's (e.g., "*.2.3.00").
+bool PatternCanMatchIpV4Host(const std::string& hostname_pattern) {
+  int num_dots =
+      std::count(hostname_pattern.begin(), hostname_pattern.end(), '.');
+  // If there are more than 3 dots, it can't match an IPv4 IP.
+  if (num_dots > 3)
+    return false;
+
+  // If anything but a dot is after a wildcard, remove it. Otherwise, replace it
+  // with a "0". Fail if anything that's not a number is found.
+  std::string wildcards_replaced;
+  wildcards_replaced.reserve(hostname_pattern.size());
+  for (size_t i = 0; i < hostname_pattern.size(); ++i) {
+    if (hostname_pattern[i] == '*') {
+      // Current wildcard has a non-wildcard before it, so skip it.
+      if (wildcards_replaced.size() > 0 && wildcards_replaced.back() != '.')
+        continue;
+      // Current wildcard has a non-wildcard after it, so skip it.
+      if (i + 1 < hostname_pattern.size() && hostname_pattern[i + 1] != '.')
+        continue;
+      wildcards_replaced.push_back('0');
+      continue;
+    }
+    wildcards_replaced.push_back(hostname_pattern[i]);
+  }
+  while (num_dots < 3) {
+    wildcards_replaced.append(".0");
+    ++num_dots;
+  }
+
+  net::IPAddress ip_address;
+  return ip_address.AssignFromIPLiteral(wildcards_replaced) &&
+         ip_address.IsIPv4();
+}
+
 // Given a hostname pattern with a wildcard such as "*.foo.com", returns
 // true if |hostname_pattern| meets both of these conditions:
 // 1.) A string matching |hostname_pattern| is a valid hostname.
@@ -43,16 +82,21 @@ namespace {
 //     valid but "*.com" is not.
 bool IsValidWildcardPattern(const std::string& hostname_pattern) {
   // Replace wildcards with dummy values to check whether a matching origin is
-  // valid.
+  // valid. Use "z" so it won't potentially map to a hex digit, since IPv4 IPs
+  // are tested by PatternCanMatchIpV4Ip().
   std::string wildcards_replaced;
-  if (!base::ReplaceChars(hostname_pattern, "*", "a", &wildcards_replaced))
+  if (!base::ReplaceChars(hostname_pattern, "*", "z", &wildcards_replaced))
     return false;
   // Construct a SchemeHostPort with a dummy scheme and port to check that the
   // hostname is valid.
   url::SchemeHostPort scheme_host_port(
       GURL(base::StringPrintf("http://%s:80", wildcards_replaced.c_str())));
-  if (!scheme_host_port.IsValid())
-    return false;
+  if (!scheme_host_port.IsValid()) {
+    // Have to check for IPv4 separately. "http://z.0.0.1/" is considered
+    // invalid, but "http://0.0.0.1/" is valid.
+    if (!PatternCanMatchIpV4Host(hostname_pattern))
+      return false;
+  }
 
   // Check that wildcards only appear beyond the eTLD+1.
   size_t registry_length =

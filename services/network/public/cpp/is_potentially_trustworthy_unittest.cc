@@ -103,14 +103,31 @@ TEST_F(SecureOriginAllowlistTest, HostnamePatterns) {
       // With Hostname pattern, all schemes are allowed.
       {"*.foo.com", "ws://bar.foo.com", true},
       {"*.foo.com", "blob:http://bar.foo.com/guid-goes-here", true},
-      // Hostname pattern works on IP addresses, but wildcards must be beyond
-      // eTLD+1.
+      // Hostname pattern works on IP addresses, but wildcards must be before
+      // the last two components.
       {"*.20.30.40", "http://10.20.30.40", true},
       {"*.30.40", "http://10.20.30.40", true},
       {"*.40", "http://10.20.30.40", false},
+      {"10.*.30.40", "http://10.20.30.40", true},
+      {"*.*.30.40", "http://10.20.30.40", true},
+      {"10.20.*.40", "http://10.20.30.40", false},
+      // These are likely bugs.
+      {"10.20.30.*", "http://10.20.30.40", true},
+      {"foo.*", "http://foo.com", true},
+      // *'s don't work as part of a component in IPv4 addresses - they must be
+      // an entire component.
+      {"10*.20.30.40", "http://10.20.30.40", false},
+      {"*10.20.30.40", "http://10.20.30.40", false},
+      {"*0.20.30.40", "http://10.20.30.40", false},
+      {"0*.20.30.40", "http://10.20.30.40", false},
+      {"*.20*.30.40", "http://10.20.30.40", false},
+      {"10.20*.30.40", "http://10.20.30.40", false},
+      {"10.20.30.40", "http://10.20.30.40", false},
   };
 
   for (const auto& test : kTestCases) {
+    SCOPED_TRACE(test.pattern);
+
     base::test::ScopedCommandLine scoped_command_line;
     base::CommandLine* command_line =
         scoped_command_line.GetProcessCommandLine();
