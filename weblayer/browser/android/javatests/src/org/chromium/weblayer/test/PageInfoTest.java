@@ -11,7 +11,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import android.content.Context;
-import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.view.View;
 
@@ -26,7 +25,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
-import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.weblayer.TestWebLayer;
 import org.chromium.weblayer.shell.InstrumentationActivity;
@@ -35,6 +34,7 @@ import org.chromium.weblayer.shell.InstrumentationActivity;
  * Tests the behavior of the Page Info UI.
  */
 @RunWith(WebLayerJUnit4ClassRunner.class)
+@DisabledTest(message = "https://crbug.com/1223953")
 public class PageInfoTest {
     private static final String CONNECTION_IS_NOT_SECURE_TEXT = "Connection is not secure";
 
@@ -106,8 +106,6 @@ public class PageInfoTest {
 
     @Test
     @SmallTest
-    @DisableIf.Build(message = "Flaky on Android Marshmallow x86, see crbug.com/1188735",
-            sdk_is_greater_than = VERSION_CODES.LOLLIPOP_MR1, sdk_is_less_than = VERSION_CODES.N)
     public void
     testPageInfoCookiesSubPage() {
         Bundle extras = new Bundle();
