@@ -53,18 +53,16 @@ void ScreenshotCapturedBubbleController::Capture(Browser* browser) {
 
   base::OnceCallback<void(const image_editor::ScreenshotCaptureResult&)>
       callback = base::BindOnce(
-          [](Browser* browser,
+          [](base::WeakPtr<content::WebContents> web_contents,
              const image_editor::ScreenshotCaptureResult& image) {
-            if (image.image.IsEmpty())
+            if (image.image.IsEmpty() || !web_contents)
               return;
-            content::WebContents* web_contents =
-                browser->tab_strip_model()->GetActiveWebContents();
             sharing_hub::ScreenshotCapturedBubbleController* controller =
                 sharing_hub::ScreenshotCapturedBubbleController::Get(
-                    web_contents);
+                    web_contents.get());
             controller->ShowBubble(image);
           },
-          browser);
+          web_contents->GetWeakPtr());
 
   screenshot_flow_->Start(std::move(callback));
 }
