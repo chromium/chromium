@@ -6,12 +6,15 @@
 #define CHROME_SERVICES_MAC_NOTIFICATIONS_MAC_NOTIFICATION_SERVICE_UN_H_
 
 #include "base/mac/scoped_nsobject.h"
+#include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "chrome/common/notifications/notification_image_retainer.h"
 #import "chrome/services/mac_notifications/notification_category_manager.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 @class AlertUNNotificationCenterDelegate;
 @class UNUserNotificationCenter;
@@ -46,7 +49,11 @@ class API_AVAILABLE(macos(10.14)) MacNotificationServiceUN
   // to accept permissions if not granted or denied already.
   void RequestPermission();
 
+  // Called by |delegate_| when a user interacts with a notification.
+  void OnNotificationAction(mojom::NotificationActionInfoPtr action);
+
   mojo::Receiver<mojom::MacNotificationService> binding_;
+  mojo::Remote<mojom::MacNotificationActionHandler> action_handler_;
   base::scoped_nsobject<AlertUNNotificationCenterDelegate> delegate_;
   base::scoped_nsobject<UNUserNotificationCenter> notification_center_;
 
@@ -54,6 +61,10 @@ class API_AVAILABLE(macos(10.14)) MacNotificationServiceUN
   NotificationCategoryManager category_manager_;
   // Image retainer to pass image attachments to notifications.
   NotificationImageRetainer image_retainer_;
+
+  // Ensures that the methods in this class are called on the same sequence.
+  SEQUENCE_CHECKER(sequence_checker_);
+  base::WeakPtrFactory<MacNotificationServiceUN> weak_factory_{this};
 };
 
 }  // namespace mac_notifications

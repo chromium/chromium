@@ -11,6 +11,8 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/bind_post_task.h"
+#include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -18,7 +20,6 @@
 #include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
 #include "chrome/services/mac_notifications/public/cpp/notification_operation.h"
 #include "chrome/services/mac_notifications/unnotification_metrics.h"
-#include "mojo/public/cpp/bindings/shared_remote.h"
 #include "ui/gfx/image/image.h"
 
 // This uses a private API so that updated banners do not keep reappearing on
@@ -38,8 +39,8 @@ API_AVAILABLE(macosx(10.14))
 @interface AlertUNNotificationCenterDelegate
     : NSObject <UNUserNotificationCenterDelegate>
 - (instancetype)initWithActionHandler:
-    (mojo::PendingRemote<
-        mac_notifications::mojom::MacNotificationActionHandler>)handler;
+    (base::RepeatingCallback<
+        void(mac_notifications::mojom::NotificationActionInfoPtr)>)handler;
 @end
 
 namespace {
@@ -88,10 +89,13 @@ MacNotificationServiceUN::MacNotificationServiceUN(
     mojo::PendingRemote<mojom::MacNotificationActionHandler> handler,
     UNUserNotificationCenter* notification_center)
     : binding_(this, std::move(service)),
-      delegate_([[AlertUNNotificationCenterDelegate alloc]
-          initWithActionHandler:std::move(handler)]),
+      action_handler_(std::move(handler)),
       notification_center_([notification_center retain]),
       category_manager_(notification_center) {
+  delegate_.reset([[AlertUNNotificationCenterDelegate alloc]
+      initWithActionHandler:base::BindRepeating(
+                                &MacNotificationServiceUN::OnNotificationAction,
+                                weak_factory_.GetWeakPtr())]);
   [notification_center_ setDelegate:delegate_.get()];
   LogUNNotificationSettings(notification_center_.get());
   // TODO(crbug.com/1129366): Determine when to ask for permissions.
@@ -104,6 +108,7 @@ MacNotificationServiceUN::~MacNotificationServiceUN() {
 
 void MacNotificationServiceUN::DisplayNotification(
     mojom::NotificationPtr notification) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::scoped_nsobject<UNMutableNotificationContent> content(
       [[UNMutableNotificationContent alloc] init]);
 
@@ -193,6 +198,7 @@ void MacNotificationServiceUN::DisplayNotification(
 void MacNotificationServiceUN::GetDisplayedNotifications(
     mojom::ProfileIdentifierPtr profile,
     GetDisplayedNotificationsCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Move |callback| into block storage so we can use it from the block below.
   __block GetDisplayedNotificationsCallback block_callback =
       std::move(callback);
@@ -233,6 +239,7 @@ void MacNotificationServiceUN::GetDisplayedNotifications(
 
 void MacNotificationServiceUN::CloseNotification(
     mojom::NotificationIdentifierPtr identifier) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   NSString* notification_id = base::SysUTF8ToNSString(DeriveMacNotificationId(
       identifier->profile->incognito, identifier->profile->id, identifier->id));
   [notification_center_
@@ -241,6 +248,7 @@ void MacNotificationServiceUN::CloseNotification(
 
 void MacNotificationServiceUN::CloseNotificationsForProfile(
     mojom::ProfileIdentifierPtr profile) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   NSString* profile_id = base::SysUTF8ToNSString(profile->id);
   bool incognito = profile->incognito;
 
@@ -268,10 +276,12 @@ void MacNotificationServiceUN::CloseNotificationsForProfile(
 }
 
 void MacNotificationServiceUN::CloseAllNotifications() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   [notification_center_ removeAllDeliveredNotifications];
 }
 
 void MacNotificationServiceUN::RequestPermission() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   UNAuthorizationOptions authOptions = UNAuthorizationOptionAlert |
                                        UNAuthorizationOptionSound |
                                        UNAuthorizationOptionBadge;
@@ -287,20 +297,28 @@ void MacNotificationServiceUN::RequestPermission() {
                                       completionHandler:resultHandler];
 }
 
+void MacNotificationServiceUN::OnNotificationAction(
+    mojom::NotificationActionInfoPtr action) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  action_handler_->OnNotificationAction(std::move(action));
+}
+
 }  // namespace mac_notifications
 
 @implementation AlertUNNotificationCenterDelegate {
-  // We're using a SharedRemote here as we need to reply on the same sequence
-  // that created the mojo connection and the methods below get called by macOS.
-  mojo::SharedRemote<mac_notifications::mojom::MacNotificationActionHandler>
+  base::RepeatingCallback<void(
+      mac_notifications::mojom::NotificationActionInfoPtr)>
       _handler;
 }
 
 - (instancetype)initWithActionHandler:
-    (mojo::PendingRemote<
-        mac_notifications::mojom::MacNotificationActionHandler>)handler {
+    (base::RepeatingCallback<
+        void(mac_notifications::mojom::NotificationActionInfoPtr)>)handler {
   if ((self = [super init])) {
-    _handler.Bind(std::move(handler), /*bind_task_runner=*/nullptr);
+    // We're binding to the current sequence here as we need to reply on the
+    // same sequence and the methods below get called by macOS.
+    _handler = base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
+                                  std::move(handler));
   }
   return self;
 }
@@ -329,7 +347,7 @@ void MacNotificationServiceUN::RequestPermission() {
   int buttonIndex = GetActionButtonIndexFromAction([response actionIdentifier]);
   auto actionInfo = mac_notifications::mojom::NotificationActionInfo::New(
       std::move(meta), operation, buttonIndex, /*reply=*/absl::nullopt);
-  _handler->OnNotificationAction(std::move(actionInfo));
+  _handler.Run(std::move(actionInfo));
   completionHandler();
 }
 
