@@ -23,7 +23,7 @@
 
 namespace blink {
 
-constexpr size_t kDefaultMaxBufferedBodyBytesPerRequest = 100 * 1000;
+constexpr size_t kDefaultMaxBufferedBodyBytesPerRequest = 200 * 1000;
 
 class ResponseBodyLoader::DelegatingBytesConsumer final
     : public BytesConsumer,

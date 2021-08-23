@@ -232,7 +232,7 @@ const int kBurstDownloadLimit = 10;
 
 // Maximum number of bytes that can be buffered in total (per-process) by all
 // network requests in one renderer process while in back-forward cache.
-constexpr size_t kDefaultMaxBufferedBodyBytesPerProcess = 512 * 1000;
+constexpr size_t kDefaultMaxBufferedBodyBytesPerProcess = 1024 * 1000;
 
 // Singleton utility class for process-wide back-forward cache buffer limit
 // tracking.
