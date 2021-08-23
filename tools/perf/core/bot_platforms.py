@@ -602,7 +602,7 @@ ANDROID_PIXEL4A_POWER = PerfPlatform('android-pixel4a_power-perf',
 
 # Cros/Lacros
 LACROS_EVE_PERF = PerfPlatform('lacros-eve-perf', '',
-                               _LACROS_EVE_BENCHMARK_CONFIGS, 10, 'chromeos')
+                               _LACROS_EVE_BENCHMARK_CONFIGS, 8, 'chromeos')
 
 # FYI bots
 WIN_10_LOW_END_HP_CANDIDATE = PerfPlatform(

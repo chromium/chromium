@@ -1206,7 +1206,7 @@
           "ignore_task_failure": false,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 10
+          "shards": 8
         },
         "trigger_script": {
           "args": [
