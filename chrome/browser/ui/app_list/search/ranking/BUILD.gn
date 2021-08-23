@@ -4,6 +4,9 @@
 
 import("//third_party/protobuf/proto_library.gni")
 
-proto_library("ranking_proto") {
-  sources = [ "persistent_proto_test.proto" ]
+proto_library("proto") {
+  sources = [
+    "mrfu_cache.proto",
+    "persistent_proto_test.proto",
+  ]
 }

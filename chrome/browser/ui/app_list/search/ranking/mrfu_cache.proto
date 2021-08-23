@@ -1,0 +1,21 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package app_list;
+
+// The storage proto for the MrfuCache class.
+//
+// TODO(crbug.com/1199206): Expand on details once implemented.
+message MrfuCacheProto {
+  message ScoreData {
+    optional float score = 1;
+    optional int64 last_update_count = 2;
+  }
+
+  map<string, ScoreData> values = 1;
+}
