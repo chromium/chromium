@@ -78,17 +78,6 @@ class AccuracyService : public KeyedService, history::HistoryServiceObserver {
     virtual ~Delegate() = default;
   };
 
-  class Observer {
-   public:
-    // Called when an accuracy tip was shown.
-    virtual void OnAccuracyTipShown() = 0;
-
-    // Called when an accuracy tip was closed.
-    virtual void OnAccuracyTipClosed() = 0;
-
-    virtual ~Observer() = default;
-  };
-
   AccuracyService(
       std::unique_ptr<Delegate> delegate,
       PrefService* pref_service,
@@ -121,18 +110,12 @@ class AccuracyService : public KeyedService, history::HistoryServiceObserver {
   // Returns is the security level of |web_contents| is secure.
   virtual bool IsSecureConnection(content::WebContents* web_contents);
 
-  bool IsShowingAccuracyTip(content::WebContents* web_contents);
-
   // KeyedService:
   void Shutdown() override;
 
   // history::HistoryServiceObserver:
   void OnURLsDeleted(history::HistoryService* history_service,
                      const history::DeletionInfo& deletion_info) override;
-
-  // Adds/Removes an Observer.
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
 
   void SetClockForTesting(base::Clock* clock) { clock_ = clock; }
 
@@ -161,10 +144,6 @@ class AccuracyService : public KeyedService, history::HistoryServiceObserver {
   const bool disable_ui_ = false;
 
   base::Clock* clock_ = base::DefaultClock::GetInstance();
-
-  content::WebContents* web_contents_showing_accuracy_tip_ = nullptr;
-
-  base::ObserverList<Observer>::Unchecked observers_;
 
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>

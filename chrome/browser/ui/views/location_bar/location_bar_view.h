@@ -28,7 +28,6 @@
 #include "chrome/browser/ui/views/location_bar/permission_chip.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
-#include "components/accuracy_tips/accuracy_service.h"
 #include "components/security_state/core/security_state.h"
 #include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -77,8 +76,7 @@ class LocationBarView : public LocationBar,
                         public LocationIconView::Delegate,
                         public ContentSettingImageView::Delegate,
                         public PageActionIconView::Delegate,
-                        public device::GeolocationManager::PermissionObserver,
-                        public accuracy_tips::AccuracyService::Observer {
+                        public device::GeolocationManager::PermissionObserver {
  public:
   METADATA_HEADER(LocationBarView);
 
@@ -225,10 +223,6 @@ class LocationBarView : public LocationBar,
   // GeolocationManager::PermissionObserver:
   void OnSystemPermissionUpdated(
       device::LocationSystemPermissionStatus new_status) override;
-
-  // accuracy_tips::AccuracyService::Observer:
-  void OnAccuracyTipShown() override;
-  void OnAccuracyTipClosed() override;
 
   static bool IsVirtualKeyboardVisible(views::Widget* widget);
 
@@ -484,10 +478,6 @@ class LocationBarView : public LocationBar,
       ui::TouchUiController::Get()->RegisterCallback(
           base::BindRepeating(&LocationBarView::OnTouchUiChanged,
                               base::Unretained(this)));
-
-  base::ScopedObservation<accuracy_tips::AccuracyService,
-                          accuracy_tips::AccuracyService::Observer>
-      accuracy_service_observation_{this};
 
   base::WeakPtrFactory<LocationBarView> weak_factory_{this};
 };

@@ -60,10 +60,6 @@ bool LocationBarModelDelegate::IsHomePage(const GURL& url) const {
   return false;
 }
 
-bool LocationBarModelDelegate::IsShowingAccuracyTip() const {
-  return false;
-}
-
 AutocompleteClassifier* LocationBarModelDelegate::GetAutocompleteClassifier() {
   return nullptr;
 }

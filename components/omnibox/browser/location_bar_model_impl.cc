@@ -200,11 +200,6 @@ const gfx::VectorIcon& LocationBarModelImpl::GetVectorIcon() const {
 
   if (IsOfflinePage())
     return omnibox::kOfflinePinIcon;
-
-  if (GetSecurityLevel() == security_state::SecurityLevel::SECURE &&
-      delegate_->IsShowingAccuracyTip()) {
-    return omnibox::kHttpIcon;
-  }
 #endif
 
   return location_bar_model::GetSecurityVectorIcon(
@@ -224,9 +219,7 @@ std::u16string LocationBarModelImpl::GetSecureDisplayText() const {
     case security_state::WARNING:
       return l10n_util::GetStringUTF16(IDS_NOT_SECURE_VERBOSE_STATE);
     case security_state::SECURE:
-      return delegate_->IsShowingAccuracyTip()
-                 ? l10n_util::GetStringUTF16(IDS_ACCURACY_CHECK_VERBOSE_STATE)
-                 : std::u16string();
+      return std::u16string();
     case security_state::DANGEROUS: {
       std::unique_ptr<security_state::VisibleSecurityState>
           visible_security_state = delegate_->GetVisibleSecurityState();
