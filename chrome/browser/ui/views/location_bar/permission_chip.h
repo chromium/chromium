@@ -11,12 +11,8 @@
 #include "components/permissions/permission_request.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/accessible_pane_view.h"
+#include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget_observer.h"
-
-namespace views {
-class Widget;
-class BubbleDialogDelegateView;
-}  // namespace views
 
 class BubbleOwnerDelegate {
  public:
@@ -48,7 +44,7 @@ class PermissionChip : public views::AccessiblePaneView,
   ~PermissionChip() override;
 
   // Opens the permission prompt bubble.
-  virtual void OpenBubble() = 0;
+  void OpenBubble();
 
   void Hide();
   void Reshow();
@@ -61,22 +57,26 @@ class PermissionChip : public views::AccessiblePaneView,
   void AddedToWidget() override;
 
   // views::WidgetObserver:
-  void OnWidgetClosing(views::Widget* widget) override;
+  void OnWidgetDestroying(views::Widget* widget) override;
 
   // BubbleOwnerDelegate:
   bool IsBubbleShowing() const override;
 
-  virtual views::BubbleDialogDelegateView*
-  GetPermissionPromptBubbleForTest() = 0;
+  views::Widget* GetPromptBubbleWidgetForTesting();
 
   bool should_start_open_for_testing() { return should_start_open_; }
   bool should_expand_for_testing() { return should_expand_; }
   OmniboxChipButton* get_chip_button_for_testing() { return chip_button_; }
 
  protected:
+  // Returns a newly-created permission prompt bubble.
+  virtual views::View* CreateBubble() WARN_UNUSED_RESULT = 0;
+
   permissions::PermissionPrompt::Delegate* delegate() const {
     return delegate_;
   }
+
+  views::Widget* GetPromptBubbleWidget();
 
   virtual void Collapse(bool allow_restart);
   void ShowBlockedBadge();
@@ -94,6 +94,9 @@ class PermissionChip : public views::AccessiblePaneView,
   void AnimateExpand();
 
   permissions::PermissionPrompt::Delegate* const delegate_;
+
+  // ViewTracker used to track the prompt bubble.
+  views::ViewTracker prompt_bubble_tracker_;
 
   // A timer used to collapse the chip after a delay.
   base::OneShotTimer collapse_timer_;

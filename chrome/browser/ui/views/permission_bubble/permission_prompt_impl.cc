@@ -214,6 +214,14 @@ PermissionPromptImpl::GetPromptDisposition() const {
   }
 }
 
+views::Widget* PermissionPromptImpl::GetPromptBubbleWidgetForTesting() {
+  if (prompt_bubble_) {
+    return prompt_bubble_->GetWidget();
+  }
+  return chip_ ? chip_->GetPromptBubbleWidgetForTesting()  // IN-TEST
+               : nullptr;
+}
+
 void PermissionPromptImpl::OnWidgetClosing(views::Widget* widget) {
   DCHECK_EQ(widget, prompt_bubble_->GetWidget());
   widget->RemoveObserver(this);

@@ -65,9 +65,7 @@ void PermissionRequestManagerTestApi::AddSimpleRequest(
 views::Widget* PermissionRequestManagerTestApi::GetPromptWindow() {
   PermissionPromptImpl* prompt =
       static_cast<PermissionPromptImpl*>(manager_->view_.get());
-  return prompt ? prompt->prompt_bubble_for_testing()
-                      ->GetWidget()
-                : nullptr;
+  return prompt ? prompt->GetPromptBubbleWidgetForTesting() : nullptr;
 }
 
 void PermissionRequestManagerTestApi::SimulateWebContentsDestroyed() {
