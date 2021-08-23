@@ -100,10 +100,12 @@ class AppServiceInstanceRegistryHelper {
   // application.
   std::string GetAppId(content::WebContents* contents) const;
 
-  // Returns a window to represent |contents| in InstanceRegistry. If |contents|
-  // is a Web app, returns the native window for it. If there is no app in
-  // |contents|, returns the toplevel window.
-  aura::Window* GetWindow(content::WebContents* contents);
+  // Returns an InstanceKey to represent |contents| in InstanceRegistry. If
+  // |contents| is a Web app, returns an InstanceKey representing the
+  // WebContents for it. If there is no app in |contents|, returns an
+  // InstanceKey for the toplevel window.
+  apps::Instance::InstanceKey GetInstanceKeyForWebContents(
+      content::WebContents* contents);
 
   // Returns instance keys in InstanceRegistry for the given |app_id|.
   std::set<apps::Instance::InstanceKey> GetInstanceKeys(
