@@ -610,7 +610,7 @@ deps = {
   },
 
   'src/ios/third_party/material_components_ios/src': {
-      'url': Var('chromium_git') + '/external/github.com/material-components/material-components-ios.git' + '@' + 'ce90d137bc5fbaca5851fd645503d64f1b1760d0',
+      'url': Var('chromium_git') + '/external/github.com/material-components/material-components-ios.git' + '@' + 'abc5919e0c9138ead2b044987e17d0ffc850900f',
       'condition': 'checkout_ios',
   },
 
