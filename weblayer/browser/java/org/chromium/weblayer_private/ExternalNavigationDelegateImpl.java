@@ -223,6 +223,11 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
         return false;
     }
 
+    @Override
+    public boolean shouldLaunchWebApksOnInitialIntent() {
+        return false;
+    }
+
     /**
      * Resolve the default external handler of an intent.
      * @return Whether the default external handler is found.

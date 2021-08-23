@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Function;
@@ -25,6 +26,8 @@ import org.chromium.chrome.browser.ChromeTabbedActivity2;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantFacade;
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.instantapps.AuthenticatedProxyActivity;
 import org.chromium.chrome.browser.instantapps.InstantAppsHandler;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -339,5 +342,12 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
             return true;
         }
         return false;
+    }
+
+    @Override
+    public boolean shouldLaunchWebApksOnInitialIntent() {
+        return BuildInfo.isAtLeastS()
+                && CachedFeatureFlags.isEnabled(
+                        ChromeFeatureList.WEB_APK_TRAMPOLINE_ON_INITIAL_INTENT);
     }
 }

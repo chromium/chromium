@@ -1876,6 +1876,37 @@ public class ExternalNavigationHandlerTest {
                         START_OTHER_ACTIVITY);
     }
 
+    /**
+     * Tests that a WebAPK isn't launched from an initial Intent if the delegate doesn't say it
+     * should.
+     */
+    @Test
+    @SmallTest
+    public void testLaunchWebApk_InitialIntent_DelegateReturnsFalse() {
+        mDelegate.add(new IntentActivity(WEBAPK_SCOPE, WEBAPK_PACKAGE_NAME));
+
+        int transitionTypeIncomingIntent = PageTransition.LINK | PageTransition.FROM_API;
+        checkUrl(WEBAPK_SCOPE)
+                .withPageTransition(transitionTypeIncomingIntent)
+                .expecting(OverrideUrlLoadingResultType.NO_OVERRIDE, IGNORE);
+    }
+
+    /**
+     * Tests that a WebAPK is launched from an initial Intent if the delegate says it should.
+     */
+    @Test
+    @SmallTest
+    public void testLaunchWebApk_InitialIntent_DelegateReturnsTrue() {
+        mDelegate.add(new IntentActivity(WEBAPK_SCOPE, WEBAPK_PACKAGE_NAME));
+        mDelegate.setShouldLaunchWebApksOnInitialIntent(true);
+
+        int transitionTypeIncomingIntent = PageTransition.LINK | PageTransition.FROM_API;
+        checkUrl(WEBAPK_SCOPE)
+                .withPageTransition(transitionTypeIncomingIntent)
+                .expecting(
+                        OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT, START_WEBAPK);
+    }
+
     @Test
     @SmallTest
     public void testMarketIntent_MarketInstalled() {
@@ -2576,6 +2607,11 @@ public class ExternalNavigationHandlerTest {
             return mHandleWithAutofillAssistant;
         }
 
+        @Override
+        public boolean shouldLaunchWebApksOnInitialIntent() {
+            return mShouldLaunchWebApksOnInitialIntent;
+        }
+
         public void reset() {
             startActivityIntent = null;
             startIncognitoIntentCalled = false;
@@ -2647,6 +2683,10 @@ public class ExternalNavigationHandlerTest {
             mShouldPresentLeavingIncognitoDialog = value;
         }
 
+        public void setShouldLaunchWebApksOnInitialIntent(boolean value) {
+            mShouldLaunchWebApksOnInitialIntent = value;
+        }
+
         public Intent startActivityIntent;
         public boolean startIncognitoIntentCalled;
         public boolean maybeSetRequestMetadataCalled;
@@ -2668,6 +2708,7 @@ public class ExternalNavigationHandlerTest {
         private @IntentToAutofillAllowingAppResult int mAutofillAssistantAllowAppOverrideResult;
         private boolean mCanLoadUrlInTab;
         private boolean mShouldPresentLeavingIncognitoDialog;
+        private boolean mShouldLaunchWebApksOnInitialIntent;
         private Context mContext;
     }
 
