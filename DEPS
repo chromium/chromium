@@ -1417,7 +1417,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/google/quic-trace.git' + '@' + '413c3a4a641c014193eabb8d282c2348ccec3c5b',
 
   'src/third_party/pywebsocket3/src':
-    Var('chromium_git') + '/external/github.com/GoogleChromeLabs/pywebsocket3.git' + '@' + '9db3d29db4f3e3efb1722c0210bc88500ab00611',
+    Var('chromium_git') + '/external/github.com/GoogleChromeLabs/pywebsocket3.git' + '@' + '50602a14f1b6da17e0b619833a13addc6ea78bc2',
 
   'src/third_party/qemu-linux-arm64': {
       'packages': [
