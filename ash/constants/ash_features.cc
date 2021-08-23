@@ -700,6 +700,10 @@ const base::Feature kLockScreenMediaControls{"LockScreenMediaControls",
 const base::Feature kManagedDeviceUIRedesign{"ManagedDeviceUIRedesign",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Whether audio files are opened by default in the ChromeOS media app.
+const base::Feature kMediaAppHandlesAudio{"MediaAppHandlesAudio",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Whether PDF files are opened by default in the ChromeOS media app.
 const base::Feature kMediaAppHandlesPdf{"MediaAppHandlesPdf",
                                         base::FEATURE_DISABLED_BY_DEFAULT};

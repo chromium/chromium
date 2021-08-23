@@ -24,6 +24,7 @@ extern const char kGoogleSheetsAppId[];
 extern const char kGoogleSlidesAppId[];
 extern const char kHelpAppId[];
 extern const char kMediaAppId[];
+extern const char kMediaAppAudioId[];
 extern const char kMessagesAppId[];
 extern const char kMockSystemAppId[];
 extern const char kOsFeedbackAppId[];

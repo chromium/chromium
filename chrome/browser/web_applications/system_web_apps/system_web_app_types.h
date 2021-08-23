@@ -32,7 +32,15 @@ enum class SystemAppType {
   SETTINGS = 4,
   CAMERA = 5,
   TERMINAL = 6,
+
+  // The ChromeOS Media App. Acts as a file handler for a variety of file types.
+  //
+  // Source: //chromeos/components/media_app
+  // Contact: essential-apps-dev@chromium.org
+  // Buganizer component (preferred): b/components/562866
+  // Monorail component: Platform>Apps>MediaPlayer
   MEDIA = 7,
+
   HELP = 8,
   PRINT_MANAGEMENT = 9,
   SCANNING = 10,
@@ -82,10 +90,15 @@ enum class SystemAppType {
   // will have a mock page.
   PROJECTOR = 20,
 
+  // The ChromeOS Media App, with an "audio" start_url and alternate manifest.
+  //
+  // See: "MEDIA", above.
+  MEDIA_AUDIO = 21,
+
   // When adding a new System App, remember to:
   //
   // 1. Add a corresponding histogram suffix in WebAppSystemAppInternalName
-  //    (histograms.xml). The suffix name should match the App's
+  //    (histogram_suffixes_list.xml). The suffix name should match the App's
   //    |internal_name|. This is for reporting per-app install results.
   //
   // 2. Add a corresponding proto enum entry (with the same numerical value) to
@@ -117,7 +130,7 @@ enum class SystemAppType {
   //
   // 7. Have one of System Web App Platform owners review the CL.
   //    See: //chromeos/components/system_apps/PLATFORM_OWNERS
-  kMaxValue = PROJECTOR
+  kMaxValue = MEDIA_AUDIO
 };
 
 }  // namespace web_app

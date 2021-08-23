@@ -389,8 +389,13 @@ void ComponentLoader::AddVideoPlayerExtension() {
 }
 
 void ComponentLoader::AddAudioPlayerExtension() {
-  Add(IDR_AUDIO_PLAYER_MANIFEST,
-      base::FilePath(FILE_PATH_LITERAL("audio_player")));
+  // TODO(b/189172062): Guard this with ShouldInstallObsoleteComponentExtension
+  // when the feature is on and stable.
+  if (!base::FeatureList::IsEnabled(
+          chromeos::features::kMediaAppHandlesAudio)) {
+    Add(IDR_AUDIO_PLAYER_MANIFEST,
+        base::FilePath(FILE_PATH_LITERAL("audio_player")));
+  }
 }
 
 void ComponentLoader::AddImageLoaderExtension() {

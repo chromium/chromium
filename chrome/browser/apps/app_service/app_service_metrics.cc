@@ -68,10 +68,11 @@ enum class DefaultAppName {
   kShimlessRMAApp = 45,
   kOsFeedbackApp = 46,
   kA4 = 47,
+  kMediaAppAudio = 48,
 
   // Add any new values above this one, and update kMaxValue to the highest
   // enumerator value.
-  kMaxValue = kA4,
+  kMaxValue = kMediaAppAudio,
 };
 
 void RecordDefaultAppLaunch(DefaultAppName default_app_name,
@@ -232,6 +233,8 @@ void RecordAppLaunch(const std::string& app_id,
     RecordDefaultAppLaunch(DefaultAppName::kHelpApp, launch_source);
   } else if (app_id == web_app::kMediaAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kMediaApp, launch_source);
+  } else if (app_id == web_app::kMediaAppAudioId) {
+    RecordDefaultAppLaunch(DefaultAppName::kMediaAppAudio, launch_source);
   } else if (app_id == extension_misc::kChromeAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kChrome, launch_source);
   } else if (app_id == extension_misc::kGoogleDocAppId) {

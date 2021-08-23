@@ -78,6 +78,10 @@ const char kHelpAppId[] = "nbljnnecbjbmifnoehiemkgefbnpoeak";
 const char kMediaAppId[] = "jhdjimmaggjajfjphpljagpgkidjilnj";
 
 // Generated as: web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(
+//     "chrome://media-app/audio/"))
+const char kMediaAppAudioId[] = "ehpdnehdmjhimljbjinkfmgechlofodn";
+
+// Generated as: web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(
 //     "https://messages.google.com/web/"))
 const char kMessagesAppId[] = "hpfldicfbfomlpcikngkocigghgafkph";
 

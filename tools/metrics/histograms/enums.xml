@@ -19140,6 +19140,7 @@ Called by update_debug_scenarios.py.-->
   <int value="45" label="ShimlessRMAApp"/>
   <int value="46" label="OSFeedbackApp"/>
   <int value="47" label="A4"/>
+  <int value="48" label="Media App Audio"/>
 </enum>
 
 <enum name="DefaultBrowserAsyncAttemptResult">
@@ -51744,6 +51745,7 @@ from previous Chrome versions.
   <int value="1814671708" label="disable-password-manager-reauthentication"/>
   <int value="1816174635" label="RequestUnbufferedDispatch:enabled"/>
   <int value="1816723085" label="SchemefulSameSite:enabled"/>
+  <int value="1816816375" label="MediaAppHandlesAudio:disabled"/>
   <int value="1816843861" label="ServiceWorkerServicification:enabled"/>
   <int value="1817312143" label="num-raster-threads"/>
   <int value="1817420759" label="CpuAffinityRestrictToLittleCores:disabled"/>
@@ -51888,6 +51890,7 @@ from previous Chrome versions.
   <int value="1925627218" label="FullscreenToolbarReveal:disabled"/>
   <int value="1926524951" label="SystemWebApps:disabled"/>
   <int value="1927218315" label="ShelfNewUi:disabled"/>
+  <int value="1927254377" label="MediaAppHandlesAudio:enabled"/>
   <int value="1927259098" label="TranslateLanguageByULP:enabled"/>
   <int value="1927374573" label="EnterpriseRealtimeExtensionRequest:enabled"/>
   <int value="1928944156" label="ReadLaterNewBadgePromo:disabled"/>

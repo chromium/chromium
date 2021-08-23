@@ -31,6 +31,7 @@ message SystemWebAppDataProto {
     DEMO_MODE = 18;
     OS_FEEDBACK = 19;
     PROJECTOR = 20;
+    MEDIA_AUDIO = 21;
   };
 
   optional SystemAppType system_app_type = 1;

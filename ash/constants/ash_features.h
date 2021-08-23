@@ -265,6 +265,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kLockScreenMediaControls;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kManagedDeviceUIRedesign;
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kMediaAppHandlesAudio;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kMediaAppHandlesPdf;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kMediaAppMultiWindow;
 COMPONENT_EXPORT(ASH_CONSTANTS)

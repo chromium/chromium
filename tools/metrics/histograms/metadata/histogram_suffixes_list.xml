@@ -18647,6 +18647,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Eche" label="Eche"/>
   <suffix name="Help" label="Help"/>
   <suffix name="Media" label="Media"/>
+  <suffix name="MediaAudio" label="MediaAudio"/>
   <suffix name="OSFeedback" label="OSFeedback"/>
   <suffix name="OSSettings" label="OS Settings"/>
   <suffix name="Personalization" label="Personalization"/>
