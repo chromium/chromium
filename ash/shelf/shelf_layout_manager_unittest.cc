@@ -16,6 +16,7 @@
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/drag_drop/drag_drop_controller.h"
 #include "ash/focus_cycler.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/keyboard/ui/keyboard_ui.h"
@@ -80,9 +81,12 @@
 #include "components/prefs/pref_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/client/window_parenting_client.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
+#include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
@@ -93,6 +97,7 @@
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
 #include "ui/events/test/event_generator.h"
@@ -2966,6 +2971,167 @@ TEST_F(ShelfLayoutManagerTest, AutoHideShelfWithContextMenu) {
   ASSERT_FALSE(TriggerAutoHideTimeout());
   EXPECT_FALSE(shelf->shelf_widget()->IsShowingMenu());
   EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
+}
+
+namespace {
+
+class DragTestView : public views::View {
+ public:
+  DragTestView() = default;
+  DragTestView(const DragTestView&) = delete;
+  DragTestView& operator=(const DragTestView&) = delete;
+  ~DragTestView() override = default;
+
+  int DragThreshold() { return views::View::GetVerticalDragThreshold(); }
+
+ private:
+  // views::View:
+  int GetDragOperations(const gfx::Point& press_pt) override {
+    return ui::DragDropTypes::DRAG_COPY;
+  }
+
+  void WriteDragData(const gfx::Point& p, OSExchangeData* data) override {
+    gfx::ImageSkiaRep image_rep(gfx::Size(1, 1), 1.0f);
+    gfx::ImageSkia image_skia(image_rep);
+    data->provider().SetDragImage(image_skia, gfx::Vector2d());
+  }
+};
+
+enum class DragEventType {
+  kMouse,
+  kGesture,
+};
+
+}  // namespace
+
+// Shelf tests parametrized to perform drags using mouse and gesture events.
+class ShelfLayoutManagerDragDropTest
+    : public ShelfLayoutManagerTestBase,
+      public testing::WithParamInterface<DragEventType> {
+ public:
+  ShelfLayoutManagerDragDropTest() = default;
+
+  void SetUp() override {
+    ShelfLayoutManagerTestBase::SetUp();
+
+    auto* drag_drop_controller =
+        static_cast<DragDropController*>(aura::client::GetDragDropClient(
+            GetPrimaryShelf()->GetWindow()->GetRootWindow()));
+    drag_drop_controller->set_should_block_during_drag_drop(false);
+    generator_ = GetEventGenerator();
+  }
+
+  // Moves to `view` and mouse/gesture presses it. Does not actually start
+  // dragging `view` to a different location.
+  void StartDrag(DragTestView* view) {
+    if (GetParam() == DragEventType::kMouse) {
+      generator_->MoveMouseTo(view->GetBoundsInScreen().origin());
+      generator_->PressLeftButton();
+    } else {
+      generator_->PressTouch(view->GetBoundsInScreen().origin());
+      ui::GestureEvent long_press(
+          generator_->current_screen_location().x(),
+          generator_->current_screen_location().y(), ui::EF_NONE,
+          ui::EventTimeForNow(),
+          ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
+      generator_->Dispatch(&long_press);
+    }
+  }
+
+  // Drags a view vertically by `dy` pixels. Assumes the drag has been started.
+  void MoveDragBy(int dy) {
+    auto move_fn =
+        base::BindRepeating(GetParam() == DragEventType::kMouse
+                                ? &ui::test::EventGenerator::MoveMouseBy
+                                : &ui::test::EventGenerator::MoveTouchBy,
+                            base::Unretained(generator_));
+    const int step = dy / abs(dy);
+    for (int i = 0; i < abs(dy); ++i) {
+      move_fn.Run(0, step);
+    }
+  }
+
+  // Releases the mouse/gesture press that started a drag, possibly triggering
+  // a drop.
+  void EndDrag() {
+    if (GetParam() == DragEventType::kMouse) {
+      generator_->ReleaseLeftButton();
+    } else {
+      generator_->ReleaseTouch();
+    }
+  }
+
+ private:
+  ui::test::EventGenerator* generator_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ShelfLayoutManagerDragDropTest,
+                         testing::Values(DragEventType::kMouse,
+                                         DragEventType::kGesture));
+
+// Tests the auto-hide shelf status with drag-drop events.
+TEST_P(ShelfLayoutManagerDragDropTest, AutoHideShelfOnDragDropEvents) {
+  // Create one window, or the shelf won't auto-hide.
+  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
+
+  // Set the shelf to auto-hide.
+  Shelf* shelf = GetPrimaryShelf();
+  shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
+  ShelfLayoutManager* layout_manager = GetShelfLayoutManager();
+  layout_manager->LayoutShelf();
+  EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
+  EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
+
+  // Create draggable view.
+  DragTestView* view =
+      widget->SetContentsView(std::make_unique<DragTestView>());
+  const int drag_distance =
+      view->DragThreshold() + layout_manager->GetIdealBounds().height();
+  auto bounds = gfx::Rect(
+      0, GetShelfWidget()->GetVisibleShelfBounds().y() - drag_distance, 1, 1);
+
+  // `DragDropController` applies a vertical offset when determining the target
+  // view for touch-initiated dragging, so we compensate for that here.
+  if (GetParam() == DragEventType::kGesture)
+    bounds.Offset(0, /*DragDropController::kTouchDragImageVerticalOffset=*/25);
+
+  widget->SetBounds(bounds);
+
+  // Drag a view to make the shelf appear.
+  StartDrag(view);
+  MoveDragBy(drag_distance);
+  ASSERT_TRUE(TriggerAutoHideTimeout());
+  EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
+
+  // Drag a view away to make the shelf disappear.
+  MoveDragBy(-drag_distance);
+  ASSERT_TRUE(TriggerAutoHideTimeout());
+  EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
+
+  // Drag a view to make the shelf reappear (make sure all state has reset).
+  MoveDragBy(drag_distance);
+  ASSERT_TRUE(TriggerAutoHideTimeout());
+  EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
+
+  // End the drag with mouse over the shelf, so the shelf should stay shown.
+  EndDrag();
+  ASSERT_FALSE(TriggerAutoHideTimeout());
+  EXPECT_EQ(GetParam() == DragEventType::kMouse ? SHELF_AUTO_HIDE_SHOWN
+                                                : SHELF_AUTO_HIDE_HIDDEN,
+            shelf->GetAutoHideState());
+
+  // Move pointer away to make the shelf disappear.
+  StartDrag(view);
+  ASSERT_FALSE(TriggerAutoHideTimeout());
+  EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
+
+  // Drag a view to make the shelf reappear (make sure all state has reset).
+  MoveDragBy(drag_distance);
+  ASSERT_TRUE(TriggerAutoHideTimeout());
+  EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
+
+  // TODO(crbug.com/1240332): Test screen exits when behavior is consistent.
 }
 
 class AppListBubbleShelfLayoutManagerTest : public ShelfLayoutManagerTest {

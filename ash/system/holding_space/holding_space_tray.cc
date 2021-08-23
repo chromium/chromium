@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/drag_drop/scoped_drag_drop_observer.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
@@ -17,7 +18,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
-#include "ash/shell_observer.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/holding_space/holding_space_animation_registry.h"
 #include "ash/system/holding_space/holding_space_progress_ring.h"
@@ -34,8 +34,6 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/pickle.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "ui/aura/client/drag_drop_client.h"
-#include "ui/aura/client/drag_drop_client_observer.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
@@ -197,47 +195,6 @@ std::unique_ptr<views::View> CreateDropTargetOverlay() {
   drop_target_overlay->layer()->SetFillsBoundsOpaquely(false);
   return drop_target_overlay;
 }
-
-// ScopedDragDropObserver ------------------------------------------------------
-
-// A class which observes an `aura::client::DragDropClient` for the scope of its
-// existence. Drag events are passed to a callback supplied in the constructor.
-class ScopedDragDropObserver : public aura::client::DragDropClientObserver,
-                               public ShellObserver {
- public:
-  ScopedDragDropObserver(
-      aura::client::DragDropClient* client,
-      base::RepeatingCallback<void(const ui::DropTargetEvent*)> event_callback)
-      : event_callback_(std::move(event_callback)) {
-    drag_drop_client_observer_.Observe(client);
-    shell_observer_.Observe(Shell::Get());
-  }
-
-  ScopedDragDropObserver(const ScopedDragDropObserver&) = delete;
-  ScopedDragDropObserver& operator=(const ScopedDragDropObserver&) = delete;
-  ~ScopedDragDropObserver() override = default;
-
- private:
-  // aura::client::DragDropClientObserver:
-  void OnDragUpdated(const ui::DropTargetEvent& event) override {
-    event_callback_.Run(&event);
-  }
-
-  void OnDragEnded() override { event_callback_.Run(/*event=*/nullptr); }
-
-  // ShellObserver:
-  void OnShellDestroying() override { drag_drop_client_observer_.Reset(); }
-
-  base::RepeatingCallback<void(const ui::DropTargetEvent*)> event_callback_;
-  base::ScopedObservation<aura::client::DragDropClient,
-                          aura::client::DragDropClientObserver>
-      drag_drop_client_observer_{this};
-  base::ScopedObservation<Shell,
-                          ShellObserver,
-                          &Shell::AddShellObserver,
-                          &Shell::RemoveShellObserver>
-      shell_observer_{this};
-};
 
 }  // namespace
 

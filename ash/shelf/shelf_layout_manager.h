@@ -56,6 +56,7 @@ class HomeToOverviewNudgeController;
 class InAppToHomeNudgeController;
 class PanelLayoutManagerTest;
 class PresentationTimeRecorder;
+class ScopedDragDropObserver;
 class Shelf;
 class ShelfLayoutManagerObserver;
 class ShelfLayoutManagerTestBase;
@@ -150,7 +151,7 @@ class ASH_EXPORT ShelfLayoutManager
   void HideContextualNudges();
 
   // Called by AutoHideEventHandler to process the gesture events when shelf is
-  // auto hide.
+  // auto hidden.
   void ProcessGestureEventOfAutoHideShelf(ui::GestureEvent* event,
                                           aura::Window* target);
 
@@ -349,7 +350,7 @@ class ASH_EXPORT ShelfLayoutManager
     // Returns whether the session is in an active state.
     bool IsActiveSessionState() const;
 
-    // Returns whether shelf is in auto hide mode and is currently hidden.
+    // Returns whether shelf is in auto-hide mode and is currently hidden.
     bool IsShelfAutoHidden() const;
 
     // Returns whether shelf is currently visible.
@@ -386,7 +387,7 @@ class ASH_EXPORT ShelfLayoutManager
   // Sets the visibility of the shelf to |state|.
   void SetState(ShelfVisibilityState visibility_state);
 
-  // Returns shelf visibility state based on current value of auto hide
+  // Returns shelf visibility state based on current value of auto-hide
   // behavior setting.
   ShelfVisibilityState CalculateShelfVisibility();
 
@@ -415,14 +416,17 @@ class ASH_EXPORT ShelfLayoutManager
   // used by |CalculateTargetBounds()|.
   void UpdateTargetBoundsForGesture(HotseatState target_hotseat_state);
 
-  // Updates the auto hide state immediately.
+  // Updates the auto-hide state for drag-drop actions.
+  void UpdateAutoHideForDragDrop(const ui::DropTargetEvent* event);
+
+  // Updates the auto-hide state immediately.
   void UpdateAutoHideStateNow();
 
-  // Starts the auto hide timer, so that the shelf will be hidden after the
+  // Starts the auto-hide timer, so that the shelf will be hidden after the
   // timeout (unless something else happens to interrupt / reset it).
   void StartAutoHideTimer();
 
-  // Stops the auto hide timer and clears
+  // Stops the auto-hide timer and clears
   // |mouse_over_shelf_when_auto_hide_timer_started_|.
   void StopAutoHideTimer();
 
@@ -432,11 +436,16 @@ class ASH_EXPORT ShelfLayoutManager
   // two displays.
   gfx::Rect GetAutoHideShowShelfRegionInScreen() const;
 
-  // Returns the AutoHideState. This value is determined from the shelf and
+  // Returns the auto-hide state. This value is determined from the shelf and
   // tray.
   ShelfAutoHideState CalculateAutoHideState(
       ShelfVisibilityState visibility_state) const;
 
+  // Returns the auto-hide state based on the position of an ongoing drag-drop.
+  ShelfAutoHideState CalculateAutoHideStateBasedOnDragLocation() const;
+
+  // Returns the auto-hide state if the cursor's current position can be used to
+  // make a decision, or no value if its position gives no useful information.
   absl::optional<ShelfAutoHideState>
   CalculateAutoHideStateBasedOnCursorLocation() const;
 
@@ -457,7 +466,7 @@ class ASH_EXPORT ShelfLayoutManager
   bool IsShelfHiddenForFullscreen() const;
 
   // Returns true if there is a fullscreen or maximized window open that causes
-  // the shelf to be autohidden.
+  // the shelf to be auto hidden.
   bool IsShelfAutoHideForFullscreenMaximized() const;
 
   // Returns true if the home gesture handler should handle the event.
@@ -535,6 +544,9 @@ class ASH_EXPORT ShelfLayoutManager
   // True if the last mouse event was a mouse drag.
   bool in_mouse_drag_ = false;
 
+  // True if a mouse or gesture drag is in progress.
+  bool in_drag_drop_ = false;
+
   // Current state.
   State state_;
 
@@ -555,19 +567,26 @@ class ASH_EXPORT ShelfLayoutManager
 
   base::OneShotTimer auto_hide_timer_;
 
-  // Whether the mouse was over the shelf when the auto hide timer started.
-  // False when neither the auto hide timer nor the timer task are running.
+  // Whether the mouse was over the shelf when the auto-hide timer started.
+  // False when neither the auto-hide timer nor the timer task are running.
   bool mouse_over_shelf_when_auto_hide_timer_started_ = false;
+
+  // Whether a drag was over the shelf when the auto-hide timer started.
+  // False when neither the auto-hide timer nor the timer task are running.
+  bool drag_over_shelf_when_auto_hide_timer_started_ = false;
 
   // Whether the mouse pointer (not the touch pointer) was over the shelf last
   // time we saw it. This is used to differentiate between mouse and touch in
-  // the shelf autohide behavior.
+  // the shelf auto-hide behavior.
   bool last_seen_mouse_position_was_over_shelf_ = false;
+
+  // Whether the last location update from a drag-drop was over the shelf.
+  bool last_seen_drag_position_was_over_shelf_ = false;
 
   base::ObserverList<ShelfLayoutManagerObserver>::Unchecked observers_;
 
   // The enum keeps track of the present status of the drag (from gesture or
-  // mouse). The shelf reacts to drags, and can be set to auto-hide for certain
+  // mouse). The shelf reacts to drags, and can be set to auto hide for certain
   // events. For example, swiping up from the shelf in tablet mode can open the
   // fullscreen app list. Some shelf behaviour (e.g. visibility state,
   // background color etc.) are affected by various stages of the drag.
@@ -642,13 +661,19 @@ class ASH_EXPORT ShelfLayoutManager
 
   display::ScopedDisplayObserver display_observer_{this};
 
-  // Location of the most recent mouse drag event in screen coordinate.
-  gfx::Point last_mouse_drag_position_;
+  // Observer that allows drag events to un-hide an auto-hidden shelf.
+  std::unique_ptr<ScopedDragDropObserver> drag_drop_observer_;
+
+  // Location of the most recent mouse drag event in screen coordinates.
+  gfx::Point last_mouse_drag_position_in_screen_;
+
+  // Location of the most recent drag-drop event in screen coordinates.
+  gfx::Point last_drag_drop_position_in_screen_;
 
   // Location of the beginning of a drag in screen coordinates.
   gfx::Point drag_start_point_in_screen_;
 
-  // When it is true, |CalculateAutoHideState| returns the current auto hide
+  // When it is true, |CalculateAutoHideState| returns the current auto-hide
   // state.
   bool is_auto_hide_state_locked_ = false;
 

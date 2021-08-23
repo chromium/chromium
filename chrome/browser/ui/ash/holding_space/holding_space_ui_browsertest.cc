@@ -125,7 +125,7 @@ void GestureDrag(const views::View* from,
 
   // Generate multiple interpolated touch move events.
   // NOTE: The `ash::DragDropController` applies a vertical offset when
-  // determining the target view for touch initiated dragging so that needs to
+  // determining the target view for touch-initiated dragging, so that needs to
   // be compensated for here.
   constexpr int kNumberOfTouchMoveEvents = 25;
   constexpr gfx::Vector2d offset(0, 25);

@@ -394,6 +394,8 @@ component("ash") {
     "drag_drop/drag_drop_tracker.h",
     "drag_drop/drag_image_view.cc",
     "drag_drop/drag_image_view.h",
+    "drag_drop/scoped_drag_drop_observer.cc",
+    "drag_drop/scoped_drag_drop_observer.h",
     "drag_drop/tab_drag_drop_delegate.cc",
     "drag_drop/tab_drag_drop_delegate.h",
     "drag_drop/toplevel_window_drag_delegate.h",
