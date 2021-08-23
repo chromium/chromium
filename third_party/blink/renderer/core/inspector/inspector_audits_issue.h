@@ -40,6 +40,11 @@ enum class AttributionReportingIssueType {
   kAttributionUntrustworthyOrigin,
 };
 
+enum class SharedArrayBufferIssueType {
+  kTransferIssue,
+  kCreationIssue,
+};
+
 // |AuditsIssue| is a thin wrapper around the Audits::InspectorIssue
 // protocol class.
 //
@@ -106,6 +111,11 @@ class CORE_EXPORT AuditsIssue {
       WTF::String source_origin,
       WTF::String target_origin,
       bool is_warning);
+
+  static void ReportSharedArrayBufferIssue(
+      ExecutionContext* execution_context,
+      bool shared_buffer_transfer_allowed,
+      SharedArrayBufferIssueType issue_type);
 
  private:
   explicit AuditsIssue(std::unique_ptr<protocol::Audits::InspectorIssue> issue);

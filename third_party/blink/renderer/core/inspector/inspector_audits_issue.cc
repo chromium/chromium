@@ -56,6 +56,8 @@ void AuditsIssue::ReportQuirksModeIssue(ExecutionContext* execution_context,
   execution_context->AddInspectorIssue(AuditsIssue(std::move(issue)));
 }
 
+namespace {
+
 protocol::Network::CorsError RendererCorsIssueCodeToProtocol(
     RendererCorsIssueCode code) {
   switch (code) {
@@ -67,6 +69,8 @@ protocol::Network::CorsError RendererCorsIssueCodeToProtocol(
       return protocol::Network::CorsErrorEnum::DisallowedByMode;
   }
 }
+
+}  // namespace
 
 std::unique_ptr<protocol::Audits::SourceCodeLocation> CreateProtocolLocation(
     const SourceLocation& location) {
@@ -249,6 +253,44 @@ void AuditsIssue::ReportCrossOriginWasmModuleSharingIssue(
                                 WasmCrossOriginModuleSharingIssue)
                    .setDetails(std::move(issue_details))
                    .build();
+  execution_context->AddInspectorIssue(AuditsIssue(std::move(issue)));
+}
+
+namespace {
+
+protocol::Audits::SharedArrayBufferIssueType
+SharedArrayBufferIssueTypeToProtocol(SharedArrayBufferIssueType issue_type) {
+  switch (issue_type) {
+    case SharedArrayBufferIssueType::kTransferIssue:
+      return protocol::Audits::SharedArrayBufferIssueTypeEnum::TransferIssue;
+    case SharedArrayBufferIssueType::kCreationIssue:
+      return protocol::Audits::SharedArrayBufferIssueTypeEnum::CreationIssue;
+  }
+}
+
+}  // namespace
+
+void AuditsIssue::ReportSharedArrayBufferIssue(
+    ExecutionContext* execution_context,
+    bool shared_buffer_transfer_allowed,
+    SharedArrayBufferIssueType issue_type) {
+  auto source_location = SourceLocation::Capture(execution_context);
+  auto sab_issue_details =
+      protocol::Audits::SharedArrayBufferIssueDetails::create()
+          .setSourceCodeLocation(CreateProtocolLocation(*source_location))
+          .setIsWarning(shared_buffer_transfer_allowed)
+          .setType(SharedArrayBufferIssueTypeToProtocol(issue_type))
+          .build();
+  auto issue_details =
+      protocol::Audits::InspectorIssueDetails::create()
+          .setSharedArrayBufferIssueDetails(std::move(sab_issue_details))
+          .build();
+  auto issue =
+      protocol::Audits::InspectorIssue::create()
+          .setCode(
+              protocol::Audits::InspectorIssueCodeEnum::SharedArrayBufferIssue)
+          .setDetails(std::move(issue_details))
+          .build();
   execution_context->AddInspectorIssue(AuditsIssue(std::move(issue)));
 }
 }  // namespace blink
