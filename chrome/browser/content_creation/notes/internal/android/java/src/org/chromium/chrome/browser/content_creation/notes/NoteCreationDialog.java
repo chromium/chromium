@@ -216,11 +216,16 @@ public class NoteCreationDialog extends DialogFragment {
     // For that, set left padding exactly what is needed to push the first item to the center, but
     // set a smaller padding for the following items (except the last item which has more padding on
     // the right).
+    //
+    // NOTE: When reading template and padding dimentions don't use |getDimensionPixelSize| as it
+    // rounds up the pixel size which brings the sum of template width and right/left paddings 1px
+    // larger than the screensize. Because of this the scrolling doesn't work as expected and the
+    // selected template doesn't update correctly. See crbug.com/1240537.
     private void setPadding(boolean isFirst, boolean isLast, View itemView) {
         int dialogWidth = getActivity().getResources().getDisplayMetrics().widthPixels;
-        int templateWidth = getActivity().getResources().getDimensionPixelSize(R.dimen.note_width);
+        int templateWidth = (int) getActivity().getResources().getDimension(R.dimen.note_width);
         int defaultPadding =
-                getActivity().getResources().getDimensionPixelSize(R.dimen.note_side_padding);
+                (int) getActivity().getResources().getDimension(R.dimen.note_side_padding);
         int paddingLeft = defaultPadding;
         if (isFirst) {
             paddingLeft =
