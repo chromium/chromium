@@ -866,7 +866,8 @@ void AppMenuModel::Build() {
     AddItem(IDC_INSTALL_PWA, *name);
   } else if (absl::optional<web_app::AppId> app_id =
                  web_app::GetWebAppForActiveTab(browser_)) {
-    auto* provider = web_app::WebAppProvider::Get(browser_->profile());
+    auto* provider =
+        web_app::WebAppProvider::GetForLocalApps(browser_->profile());
     const std::u16string short_name =
         base::UTF8ToUTF16(provider->registrar().GetAppShortName(*app_id));
     const std::u16string truncated_name = gfx::TruncateString(
