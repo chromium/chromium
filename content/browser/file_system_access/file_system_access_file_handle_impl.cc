@@ -6,9 +6,12 @@
 
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
+#include "base/files/file_util.h"
 #include "base/guid.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/thread_pool.h"
+#include "build/build_config.h"
 #include "content/browser/file_system_access/file_system_access_access_handle_host_impl.h"
 #include "content/browser/file_system_access/file_system_access_error.h"
 #include "content/browser/file_system_access/file_system_access_handle_base.h"
@@ -23,12 +26,17 @@
 #include "storage/browser/blob/blob_impl.h"
 #include "storage/browser/blob/blob_storage_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
+#include "storage/common/file_system/file_system_types.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/mojom/blob/serialized_blob.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_capacity_allocation_host.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_handle.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom.h"
+
+#if defined(OS_WIN)
+#include <windows.h>
+#endif
 
 using blink::mojom::FileSystemAccessStatus;
 using storage::BlobDataHandle;
@@ -73,6 +81,28 @@ void CreateBlobOnIOThread(
 
 bool IsAccessHandleEnabled() {
   return base::FeatureList::IsEnabled(features::kFileSystemAccessAccessHandle);
+}
+
+bool HasWritePermission(const base::FilePath& path) {
+  if (!base::PathExists(path))
+    return true;
+
+#if defined(OS_POSIX)
+  int mode;
+  if (!base::GetPosixFilePermissions(path, &mode))
+    return true;
+
+  if (!(mode & base::FILE_PERMISSION_WRITE_BY_USER))
+    return false;
+#elif defined(OS_WIN)
+  DWORD attrs = ::GetFileAttributes(path.value().c_str());
+  if (attrs == INVALID_FILE_ATTRIBUTES)
+    return true;
+  if (attrs & FILE_ATTRIBUTE_READONLY)
+    return false;
+#endif  // defined(OS_POSIX)
+
+  return true;
 }
 
 }  // namespace
@@ -400,6 +430,36 @@ void FileSystemAccessFileHandleImpl::CreateFileWriterImpl(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(GetWritePermissionStatus(),
             blink::mojom::PermissionStatus::GRANTED);
+
+  // TODO(crbug.com/1241401): Expand this check to all backends.
+  if (url().type() == storage::kFileSystemTypeLocal) {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock()},
+        base::BindOnce(&HasWritePermission, url().path()),
+        base::BindOnce(
+            &FileSystemAccessFileHandleImpl::DidVerifyHasWritePermissions,
+            weak_factory_.GetWeakPtr(), keep_existing_data, auto_close,
+            std::move(callback)));
+    return;
+  }
+
+  DidVerifyHasWritePermissions(keep_existing_data, auto_close,
+                               std::move(callback), /*can_write=*/true);
+}
+
+void FileSystemAccessFileHandleImpl::DidVerifyHasWritePermissions(
+    bool keep_existing_data,
+    bool auto_close,
+    CreateFileWriterCallback callback,
+    bool can_write) {
+  if (!can_write) {
+    std::move(callback).Run(
+        file_system_access_error::FromStatus(
+            FileSystemAccessStatus::kNoModificationAllowedError,
+            "Cannot write to a read-only file."),
+        mojo::NullRemote());
+    return;
+  }
 
   // We first attempt to create the swap file, even if we might do a subsequent
   // operation to copy a file to the same path if keep_existing_data is set.

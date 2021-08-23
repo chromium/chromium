@@ -66,6 +66,10 @@ class CONTENT_EXPORT FileSystemAccessFileHandleImpl
   void CreateFileWriterImpl(bool keep_existing_data,
                             bool auto_close,
                             CreateFileWriterCallback callback);
+  void DidVerifyHasWritePermissions(bool keep_existing_data,
+                                    bool auto_close,
+                                    CreateFileWriterCallback callback,
+                                    bool can_write);
   void CreateSwapFile(int count,
                       bool keep_existing_data,
                       bool auto_close,

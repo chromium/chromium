@@ -1365,13 +1365,13 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
 IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, StartIn_FileHandle) {
   // Ensure test file exists in a directory which could not be a default.
   base::FilePath test_file_dir;
+  base::FilePath test_file;
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
     EXPECT_TRUE(base::CreateTemporaryDirInDir(
         temp_dir_.GetPath(), FILE_PATH_LITERAL("handles"), &test_file_dir));
+    EXPECT_TRUE(base::CreateTemporaryFileInDir(test_file_dir, &test_file));
   }
-  const base::FilePath test_file =
-      test_file_dir.Append(base::FilePath::FromUTF8Unsafe("file.txt"));
 
   SelectFileDialogParams dialog_params;
   ui::SelectFileDialog::SetFactory(
