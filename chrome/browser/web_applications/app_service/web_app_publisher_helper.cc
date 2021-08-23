@@ -251,6 +251,10 @@ apps::mojom::AppPtr WebAppPublisherHelper::ConvertWebApp(
       app_type(), web_app->app_id(), readiness, web_app->name(),
       GetHighestPriorityInstallSource(web_app));
 
+  // For system web apps (only), the install source is |kSystem|.
+  DCHECK_EQ(web_app->IsSystemApp(),
+            app->install_source == apps::mojom::InstallSource::kSystem);
+
   app->description = web_app->description();
   app->additional_search_terms = web_app->additional_search_terms();
   app->last_launch_time = web_app->last_launch_time();

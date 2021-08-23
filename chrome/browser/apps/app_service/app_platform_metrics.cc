@@ -145,19 +145,20 @@ apps::AppTypeName GetAppTypeNameForWebApp(
   apps::mojom::WindowMode window_mode = apps::mojom::WindowMode::kBrowser;
   apps::AppServiceProxyFactory::GetForProfile(profile)
       ->AppRegistryCache()
-      .ForOneApp(app_id, [&type_name,
-                          &window_mode](const apps::AppUpdate& update) {
-        if (update.AppType() == apps::mojom::AppType::kSystemWeb) {
-          DCHECK(update.InstallSource() == apps::mojom::InstallSource::kSystem);
-          type_name = apps::AppTypeName::kSystemWeb;
-        } else if (update.AppType() == apps::mojom::AppType::kWeb) {
-          type_name =
-              (update.InstallSource() == apps::mojom::InstallSource::kSystem)
-                  ? apps::AppTypeName::kSystemWeb
-                  : apps::AppTypeName::kWeb;
-        }
-        window_mode = update.WindowMode();
-      });
+      .ForOneApp(
+          app_id, [&type_name, &window_mode](const apps::AppUpdate& update) {
+            DCHECK(update.AppType() == apps::mojom::AppType::kWeb ||
+                   update.AppType() == apps::mojom::AppType::kSystemWeb);
+
+            // For system web apps, the install source is |kSystem|.
+            // The app type may be kSystemWeb (system web apps in Ash when
+            // Lacros web apps are enabled), or kWeb (all other cases).
+            type_name =
+                (update.InstallSource() == apps::mojom::InstallSource::kSystem)
+                    ? apps::AppTypeName::kSystemWeb
+                    : apps::AppTypeName::kWeb;
+            window_mode = update.WindowMode();
+          });
 
   if (type_name != apps::AppTypeName::kWeb) {
     return type_name;
