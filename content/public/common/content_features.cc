@@ -640,13 +640,10 @@ const base::Feature kRunVideoCaptureServiceInBrowserProcess{
 const base::Feature kSavePageAsWebBundle{"SavePageAsWebBundle",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Browser-side feature flag for SecurePaymentConfirmation, which can be used to
-// disable the feature. Enabling the browser-side feature by itself does not
-// actually enable the feature by default. The feature is also controlled by the
-// Blink runtime feature "SecurePaymentConfirmation". Both have to be enabled
-// for SecurePaymentConfirmation to be available.
+// Browser-side feature flag for Secure Payment Confirmation (SPC) that also
+// controls the render side feature state.
 const base::Feature kSecurePaymentConfirmation{
-    "SecurePaymentConfirmationBrowser", base::FEATURE_ENABLED_BY_DEFAULT};
+    "SecurePaymentConfirmationBrowser", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Used to enable API changes for Secure Payment Confirmation.
 // TODO(crbug.com/1228924): Enable by default in M94.
