@@ -428,11 +428,12 @@ class PLATFORM_EXPORT FontCachePurgePreventer {
 AtomicString ToAtomicString(const SkString&);
 
 #if defined(OS_ANDROID)
+// TODO(crbug.com/1241875) Can this be simplified?
 // static
 inline const char* FontCache::GetLocaleSpecificFamilyName(
     const AtomicString& family_name) {
   // Only `serif` has `fallbackFor` according to the current `fonts.xml`.
-  if (family_name == font_family_names::kWebkitSerif)
+  if (family_name == font_family_names::kSerif)
     return "serif";
   return nullptr;
 }

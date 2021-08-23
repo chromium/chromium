@@ -116,14 +116,14 @@ void DrawImageExpectingIconOnly(PlaceholderImage& image,
 float GetExpectedPlaceholderTextWidth(const StringView& text,
                                       float scale_factor) {
   FontDescription description;
-  description.FirstFamily().SetFamily("Roboto");
+  description.FirstFamily().SetFamily("Roboto", FontFamily::Type::kFamilyName);
 
   scoped_refptr<SharedFontFamily> helvetica_neue = SharedFontFamily::Create();
-  helvetica_neue->SetFamily("Helvetica Neue");
+  helvetica_neue->SetFamily("Helvetica Neue", FontFamily::Type::kFamilyName);
   scoped_refptr<SharedFontFamily> helvetica = SharedFontFamily::Create();
-  helvetica->SetFamily("Helvetica");
+  helvetica->SetFamily("Helvetica", FontFamily::Type::kFamilyName);
   scoped_refptr<SharedFontFamily> arial = SharedFontFamily::Create();
-  arial->SetFamily("Arial");
+  arial->SetFamily("Arial", FontFamily::Type::kFamilyName);
 
   helvetica->AppendFamily(std::move(arial));
   helvetica_neue->AppendFamily(std::move(helvetica));

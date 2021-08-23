@@ -134,7 +134,8 @@ TEST(DragImageTest, TrimWhitespace) {
   float device_scale_factor = 1.0f;
 
   FontDescription font_description;
-  font_description.FirstFamily().SetFamily("Arial");
+  font_description.FirstFamily().SetFamily("Arial",
+                                           FontFamily::Type::kFamilyName);
   font_description.SetSpecifiedSize(16);
   font_description.SetIsAbsoluteSize(true);
   font_description.SetGenericFamily(FontDescription::kNoFamily);

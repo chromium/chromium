@@ -226,7 +226,8 @@ FontDescription::FamilyDescription StyleBuilderConverterBase::ConvertFontFamily(
 
   if (const auto* system_font =
           DynamicTo<cssvalue::CSSPendingSystemFontValue>(value)) {
-    desc.family.SetFamily(system_font->ResolveFontFamily());
+    desc.family.SetFamily(system_font->ResolveFontFamily(),
+                          FontFamily::Type::kFamilyName);
     return desc;
   }
 
@@ -249,7 +250,10 @@ FontDescription::FamilyDescription StyleBuilderConverterBase::ConvertFontFamily(
       curr_family = new_family.get();
     }
 
-    curr_family->SetFamily(family_name);
+    curr_family->SetFamily(family_name,
+                           generic_family == FontDescription::kNoFamily
+                               ? FontFamily::Type::kFamilyName
+                               : FontFamily::Type::kGenericFamily);
 
     if (generic_family != FontDescription::kNoFamily)
       desc.generic_family = generic_family;

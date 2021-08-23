@@ -31,9 +31,8 @@ class TestFontSelector : public FontSelector {
   }
   ~TestFontSelector() override = default;
 
-  scoped_refptr<FontData> GetFontData(
-      const FontDescription& font_description,
-      const AtomicString& family_name) override {
+  scoped_refptr<FontData> GetFontData(const FontDescription& font_description,
+                                      const FontFamily&) override {
     FontSelectionCapabilities normal_capabilities(
         {NormalWidthValue(), NormalWidthValue()},
         {NormalSlopeValue(), NormalSlopeValue()},
@@ -89,7 +88,7 @@ class TestFontSelector : public FontSelector {
 
   bool IsPlatformFamilyMatchAvailable(
       const FontDescription&,
-      const AtomicString& passed_family) override {
+      const FontFamily& passed_family) override {
     return false;
   }
 
@@ -104,7 +103,7 @@ Font CreateTestFont(const AtomicString& family_name,
                     float size,
                     const FontDescription::VariantLigatures* ligatures) {
   FontFamily family;
-  family.SetFamily(family_name);
+  family.SetFamily(family_name, FontFamily::Type::kFamilyName);
 
   FontDescription font_description;
   font_description.SetFamily(family);

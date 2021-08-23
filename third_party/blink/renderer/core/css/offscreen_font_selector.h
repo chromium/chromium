@@ -19,6 +19,7 @@ namespace blink {
 
 class ExecutionContext;
 class FontDescription;
+class FontFamily;
 
 class CORE_EXPORT OffscreenFontSelector : public FontSelector {
  public:
@@ -64,7 +65,7 @@ class CORE_EXPORT OffscreenFontSelector : public FontSelector {
                                        unsigned num_broken_clusters) override;
 
   scoped_refptr<FontData> GetFontData(const FontDescription&,
-                                      const AtomicString&) override;
+                                      const FontFamily&) override;
   void WillUseFontData(const FontDescription&,
                        const AtomicString& family,
                        const String& text) override;
@@ -86,9 +87,8 @@ class CORE_EXPORT OffscreenFontSelector : public FontSelector {
 
   FontFaceCache* GetFontFaceCache() override { return font_face_cache_; }
 
-  bool IsPlatformFamilyMatchAvailable(
-      const FontDescription&,
-      const AtomicString& passed_family) override;
+  bool IsPlatformFamilyMatchAvailable(const FontDescription&,
+                                      const FontFamily& passed_family) override;
 
   ExecutionContext* GetExecutionContext() const override {
     return worker_ ? worker_->GetExecutionContext() : nullptr;

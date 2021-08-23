@@ -378,7 +378,7 @@ scoped_refptr<SimpleFontData> FontCache::GetDWriteFallbackFamily(
     }
     return FontDataFromFontPlatformData(data, kDoNotRetain);
   } else {
-    std::string family_name = font_description.Family().Family().Utf8();
+    std::string family_name = font_description.Family().FamilyName().Utf8();
 
     Bcp47Vector locales;
     locales.push_back(fallback_locale->LocaleForSkFontMgr());

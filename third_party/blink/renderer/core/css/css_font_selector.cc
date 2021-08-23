@@ -97,12 +97,15 @@ void CSSFontSelector::FontCacheInvalidated() {
 
 scoped_refptr<FontData> CSSFontSelector::GetFontData(
     const FontDescription& font_description,
-    const AtomicString& family_name) {
+    const FontFamily& font_family) {
+  const auto& family_name = font_family.FamilyName();
   Document& document = GetTreeScope()->GetDocument();
-  if (CSSSegmentedFontFace* face =
-          font_face_cache_->Get(font_description, family_name)) {
-    document.GetFontMatchingMetrics()->ReportWebFontFamily(family_name);
-    return face->GetFontData(font_description);
+  if (!font_family.FamilyIsGeneric()) {
+    if (CSSSegmentedFontFace* face =
+            font_face_cache_->Get(font_description, family_name)) {
+      document.GetFontMatchingMetrics()->ReportWebFontFamily(family_name);
+      return face->GetFontData(font_description);
+    }
   }
 
   document.GetFontMatchingMetrics()->ReportSystemFontFamily(family_name);
@@ -110,7 +113,7 @@ scoped_refptr<FontData> CSSFontSelector::GetFontData(
   // Try to return the correct font based off our settings, in case we were
   // handed the generic font family name.
   AtomicString settings_family_name = FamilyNameFromSettings(
-      generic_font_family_settings_, font_description, family_name);
+      generic_font_family_settings_, font_description, font_family);
   if (settings_family_name.IsEmpty())
     return nullptr;
 
@@ -146,11 +149,11 @@ void CSSFontSelector::WillUseRange(const FontDescription& font_description,
 
 bool CSSFontSelector::IsPlatformFamilyMatchAvailable(
     const FontDescription& font_description,
-    const AtomicString& passed_family) {
+    const FontFamily& passed_family) {
   AtomicString family = FamilyNameFromSettings(generic_font_family_settings_,
                                                font_description, passed_family);
   if (family.IsEmpty())
-    family = passed_family;
+    family = passed_family.FamilyName();
   return FontCache::GetFontCache()->IsPlatformFamilyMatchAvailable(
       font_description, family);
 }

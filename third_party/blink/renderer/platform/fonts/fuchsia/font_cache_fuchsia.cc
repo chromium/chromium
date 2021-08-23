@@ -50,7 +50,7 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
     const SimpleFontData* font_data_to_substitute,
     FontFallbackPriority fallback_priority) {
   sk_sp<SkFontMgr> font_mgr(SkFontMgr::RefDefault());
-  std::string family_name = font_description.Family().Family().Utf8();
+  std::string family_name = font_description.Family().FamilyName().Utf8();
   Bcp47Vector locales =
       GetBcp47LocaleForRequest(font_description, fallback_priority);
   sk_sp<SkTypeface> typeface(font_mgr->matchFamilyStyleCharacter(

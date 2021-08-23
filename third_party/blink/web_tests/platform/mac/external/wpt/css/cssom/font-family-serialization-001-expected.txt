@@ -1,7 +1,7 @@
 This is a testharness.js-based test.
 PASS Serialization of <generic-family>
-FAIL Serialization of quoted "<generic-family>" assert_equals: expected "\"serif\"" but got "serif"
-FAIL Serialization of prefixed -webkit-<generic-family> assert_equals: expected "-webkit-serif" but got "serif"
-FAIL Serialization of -webkit-body,-webkit-standard,-webkit-pictograph assert_equals: expected "-webkit-body" but got "Times"
+FAIL Serialization of quoted "<generic-family>" assert_equals: expected "\"system-ui\"" but got "system-ui"
+PASS Serialization of prefixed -webkit-<generic-family>
+PASS Serialization of -webkit-body,-webkit-standard,-webkit-pictograph
 Harness: the test ran to completion.
 

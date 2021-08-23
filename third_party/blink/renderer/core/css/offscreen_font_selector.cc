@@ -41,7 +41,8 @@ void OffscreenFontSelector::UnregisterForInvalidationCallbacks(
 
 scoped_refptr<FontData> OffscreenFontSelector::GetFontData(
     const FontDescription& font_description,
-    const AtomicString& family_name) {
+    const FontFamily& font_family) {
+  const auto& family_name = font_family.FamilyName();
   if (CSSSegmentedFontFace* face =
           font_face_cache_->Get(font_description, family_name)) {
     worker_->GetFontMatchingMetrics()->ReportWebFontFamily(family_name);
@@ -53,7 +54,7 @@ scoped_refptr<FontData> OffscreenFontSelector::GetFontData(
   // Try to return the correct font based off our settings, in case we were
   // handed the generic font family name.
   AtomicString settings_family_name = FamilyNameFromSettings(
-      generic_font_family_settings_, font_description, family_name);
+      generic_font_family_settings_, font_description, font_family);
   if (settings_family_name.IsEmpty())
     return nullptr;
 
@@ -90,11 +91,11 @@ void OffscreenFontSelector::WillUseRange(
 
 bool OffscreenFontSelector::IsPlatformFamilyMatchAvailable(
     const FontDescription& font_description,
-    const AtomicString& passed_family) {
+    const FontFamily& passed_family) {
   AtomicString family = FamilyNameFromSettings(generic_font_family_settings_,
                                                font_description, passed_family);
   if (family.IsEmpty())
-    family = passed_family;
+    family = passed_family.FamilyName();
   return FontCache::GetFontCache()->IsPlatformFamilyMatchAvailable(
       font_description, family);
 }

@@ -388,9 +388,11 @@ unsigned FontDescription::GetHash() const {
   unsigned hash = StyleHashWithoutFamilyList();
   for (const FontFamily* family = &family_list_; family;
        family = family->Next()) {
-    if (family->Family().IsEmpty())
+    if (family->FamilyName().IsEmpty())
       continue;
-    WTF::AddIntToHash(hash, WTF::AtomicStringHash::GetHash(family->Family()));
+    WTF::AddIntToHash(hash, family->FamilyIsGeneric());
+    WTF::AddIntToHash(hash,
+                      WTF::AtomicStringHash::GetHash(family->FamilyName()));
   }
   return hash;
 }

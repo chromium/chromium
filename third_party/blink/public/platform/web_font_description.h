@@ -67,6 +67,7 @@ struct WebFontDescription {
   WebString family;
   GenericFamily generic_family = kGenericFamilyNone;
   float size = 0;
+  bool family_is_generic = false;
   bool italic = false;
   bool small_caps = false;
   Weight weight = kWeightNormal;

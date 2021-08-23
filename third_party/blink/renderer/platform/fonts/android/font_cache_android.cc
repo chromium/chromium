@@ -204,7 +204,7 @@ AtomicString FontCache::GetGenericFamilyNameForScript(
   // i18n fonts are likely not monospace. Monospace is mostly used
   // for code, but when i18n characters appear in monospace, system
   // fallback can still render the characters.
-  if (family_name == font_family_names::kWebkitMonospace)
+  if (family_name == font_family_names::kMonospace)
     return family_name;
 
   // The CJK hack below should be removed, at latest when we have

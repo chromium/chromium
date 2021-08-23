@@ -99,13 +99,15 @@ class HarfBuzzShaperTest : public testing::Test {
   void SelectDevanagariFont() {
     FontFamily devanagari_family;
     // Windows 10
-    devanagari_family.SetFamily("Nirmala UI");
+    devanagari_family.SetFamily("Nirmala UI", FontFamily::Type::kFamilyName);
     // Windows 7
-    devanagari_family.AppendFamily("Mangal");
+    devanagari_family.AppendFamily("Mangal", FontFamily::Type::kFamilyName);
     // Linux
-    devanagari_family.AppendFamily("Lohit Devanagari");
+    devanagari_family.AppendFamily("Lohit Devanagari",
+                                   FontFamily::Type::kFamilyName);
     // Mac
-    devanagari_family.AppendFamily("ITF Devanagari");
+    devanagari_family.AppendFamily("ITF Devanagari",
+                                   FontFamily::Type::kFamilyName);
 
     font_description.SetFamily(devanagari_family);
     font = Font(font_description);

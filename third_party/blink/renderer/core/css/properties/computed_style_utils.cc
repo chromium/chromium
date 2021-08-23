@@ -752,31 +752,36 @@ CSSValue* ComputedStyleUtils::ComputedValueForLineHeight(
 }
 
 CSSValueID IdentifierForFamily(const AtomicString& family) {
-  if (family == font_family_names::kWebkitCursive)
+  // TODO(crbug.com/1065468): Add system-ui.
+  if (family == font_family_names::kCursive)
     return CSSValueID::kCursive;
-  if (family == font_family_names::kWebkitFantasy)
+  if (family == font_family_names::kFantasy)
     return CSSValueID::kFantasy;
-  if (family == font_family_names::kWebkitMonospace)
+  if (family == font_family_names::kMonospace)
     return CSSValueID::kMonospace;
-  if (family == font_family_names::kWebkitSansSerif)
+  if (family == font_family_names::kSansSerif)
     return CSSValueID::kSansSerif;
-  if (family == font_family_names::kWebkitSerif)
+  if (family == font_family_names::kSerif)
     return CSSValueID::kSerif;
-  return CSSValueID::kInvalid;
+  // If family does not correspond to any of the above, then it was actually
+  // converted from -webkit-body by FontBuilder, so put this value back.
+  // TODO(crbug.com/1065468): This trick does not work if
+  // FontBuilder::StandardFontFamilyName() actually returned one of the generic
+  // family above.
+  return CSSValueID::kWebkitBody;
 }
 
-CSSValue* ValueForFamily(const AtomicString& family) {
-  CSSValueID family_identifier = IdentifierForFamily(family);
-  if (IsValidCSSValueID(family_identifier))
-    return CSSIdentifierValue::Create(family_identifier);
-  return CSSFontFamilyValue::Create(family);
+CSSValue* ValueForFamily(const FontFamily& family) {
+  if (family.FamilyIsGeneric())
+    return CSSIdentifierValue::Create(IdentifierForFamily(family.FamilyName()));
+  return CSSFontFamilyValue::Create(family.FamilyName());
 }
 
 CSSValueList* ComputedStyleUtils::ValueForFontFamily(
     const FontFamily& font_family) {
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
   for (const FontFamily* family = &font_family; family; family = family->Next())
-    list->Append(*ValueForFamily(family->Family()));
+    list->Append(*ValueForFamily(*family));
   return list;
 }
 

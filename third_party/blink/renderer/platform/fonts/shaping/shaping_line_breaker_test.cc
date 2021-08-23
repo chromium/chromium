@@ -57,13 +57,13 @@ class ShapingLineBreakerTest : public testing::Test {
   void SelectLucidaFont() {
     FontFamily lucida_family;
     // Windows 10
-    lucida_family.SetFamily("Lucida Grande");
+    lucida_family.SetFamily("Lucida Grande", FontFamily::Type::kFamilyName);
     // Windows 7
-    lucida_family.AppendFamily("Lucida Grande");
+    lucida_family.AppendFamily("Lucida Grande", FontFamily::Type::kFamilyName);
     // Linux
-    lucida_family.AppendFamily("Lucida Medium");
+    lucida_family.AppendFamily("Lucida Medium", FontFamily::Type::kFamilyName);
     // Mac
-    lucida_family.AppendFamily("Lucida Medium");
+    lucida_family.AppendFamily("Lucida Medium", FontFamily::Type::kFamilyName);
 
     font_description.SetFamily(lucida_family);
     font = Font(font_description);

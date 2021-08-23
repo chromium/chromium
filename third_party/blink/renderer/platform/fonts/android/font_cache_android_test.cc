@@ -94,18 +94,18 @@ TEST(FontCacheAndroid, GenericFamilyNameForScript) {
   EXPECT_EQ(font_family_names::kWebkitStandard,
             FontCache::GetGenericFamilyNameForScript(
                 font_family_names::kWebkitStandard, english));
-  EXPECT_EQ(font_family_names::kWebkitMonospace,
+  EXPECT_EQ(font_family_names::kMonospace,
             FontCache::GetGenericFamilyNameForScript(
-                font_family_names::kWebkitMonospace, english));
+                font_family_names::kMonospace, english));
 
   // For CJK, getGenericFamilyNameForScript should return CJK fonts except
   // monospace.
   EXPECT_NE(font_family_names::kWebkitStandard,
             FontCache::GetGenericFamilyNameForScript(
                 font_family_names::kWebkitStandard, chinese));
-  EXPECT_EQ(font_family_names::kWebkitMonospace,
+  EXPECT_EQ(font_family_names::kMonospace,
             FontCache::GetGenericFamilyNameForScript(
-                font_family_names::kWebkitMonospace, chinese));
+                font_family_names::kMonospace, chinese));
 }
 
 }  // namespace blink

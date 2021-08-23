@@ -66,7 +66,9 @@ void FontBuilder::DidChangeWritingMode() {
 
 FontFamily FontBuilder::StandardFontFamily() const {
   FontFamily family;
-  family.SetFamily(StandardFontFamilyName());
+  const AtomicString& standard_font_family = StandardFontFamilyName();
+  family.SetFamily(standard_font_family,
+                   FontFamily::InferredTypeFor(standard_font_family));
   return family;
 }
 
@@ -88,15 +90,15 @@ AtomicString FontBuilder::GenericFontFamilyName(
     case FontDescription::kStandardFamily:
       return StandardFontFamilyName();
     case FontDescription::kSerifFamily:
-      return font_family_names::kWebkitSerif;
+      return font_family_names::kSerif;
     case FontDescription::kSansSerifFamily:
-      return font_family_names::kWebkitSansSerif;
+      return font_family_names::kSansSerif;
     case FontDescription::kMonospaceFamily:
-      return font_family_names::kWebkitMonospace;
+      return font_family_names::kMonospace;
     case FontDescription::kCursiveFamily:
-      return font_family_names::kWebkitCursive;
+      return font_family_names::kCursive;
     case FontDescription::kFantasyFamily:
-      return font_family_names::kWebkitFantasy;
+      return font_family_names::kFantasy;
   }
 }
 
@@ -217,7 +219,7 @@ void FontBuilder::SetFamilyDescription(
 
   bool is_initial =
       family_description.generic_family == FontDescription::kStandardFamily &&
-      family_description.family.Family().IsEmpty();
+      family_description.family.FamilyName().IsEmpty();
 
   font_description.SetGenericFamily(family_description.generic_family);
   font_description.SetFamily(is_initial ? StandardFontFamily()

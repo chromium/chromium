@@ -9,6 +9,6 @@ PASS e.style['font-family'] = "serif, sans-serif, cursive, fantasy, monospace, s
 PASS e.style['font-family'] = "Helvetica, Verdana, sans-serif" should set the property value
 PASS e.style['font-family'] = "\"New Century Schoolbook\", serif" should set the property value
 PASS e.style['font-family'] = "'21st Century', fantasy" should set the property value
-FAIL e.style['font-family'] = "\"inherit\", \"serif\"" should set the property value assert_equals: serialization should be canonical expected "\"inherit\", \"serif\"" but got "inherit, serif"
+PASS e.style['font-family'] = "\"inherit\", \"serif\"" should set the property value
 Harness: the test ran to completion.
 

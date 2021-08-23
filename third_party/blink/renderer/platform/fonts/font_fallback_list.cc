@@ -162,40 +162,44 @@ scoped_refptr<FontData> FontFallbackList::GetFontData(
 
   for (; curr_family; curr_family = curr_family->Next()) {
     family_index_++;
-    if (!curr_family->Family().IsEmpty()) {
+    if (!curr_family->FamilyName().IsEmpty()) {
       scoped_refptr<FontData> result;
       if (GetFontSelector()) {
-        result = GetFontSelector()->GetFontData(font_description,
-                                                curr_family->Family());
+        result = GetFontSelector()->GetFontData(font_description, *curr_family);
       }
 
       if (!result) {
-        result = FontCache::GetFontCache()->GetFontData(font_description,
-                                                        curr_family->Family());
+        result = FontCache::GetFontCache()->GetFontData(
+            font_description, curr_family->FamilyName());
         if (GetFontSelector()) {
           GetFontSelector()->ReportFontLookupByUniqueOrFamilyName(
-              curr_family->Family(), font_description,
+              curr_family->FamilyName(), font_description,
               DynamicTo<SimpleFontData>(result.get()));
         }
       }
       if (result) {
         if (GetFontSelector()) {
           GetFontSelector()->ReportSuccessfulFontFamilyMatch(
-              curr_family->Family());
+              curr_family->FamilyName());
         }
         return result;
       }
 
-      if (GetFontSelector())
-        GetFontSelector()->ReportFailedFontFamilyMatch(curr_family->Family());
+      if (GetFontSelector()) {
+        GetFontSelector()->ReportFailedFontFamilyMatch(
+            curr_family->FamilyName());
+      }
     }
   }
   family_index_ = kCAllFamiliesScanned;
 
   if (GetFontSelector()) {
     // Try the user's preferred standard font.
-    if (scoped_refptr<FontData> data = GetFontSelector()->GetFontData(
-            font_description, font_family_names::kWebkitStandard))
+    FontFamily font_family;
+    font_family.SetFamily(font_family_names::kWebkitStandard,
+                          FontFamily::Type::kGenericFamily);
+    if (scoped_refptr<FontData> data =
+            GetFontSelector()->GetFontData(font_description, font_family))
       return data;
   }
 
@@ -214,13 +218,13 @@ FallbackListCompositeKey FontFallbackList::CompositeKey(
   FallbackListCompositeKey key(font_description);
   const FontFamily* current_family = &font_description.Family();
   while (current_family) {
-    if (!current_family->Family().IsEmpty()) {
-      FontFaceCreationParams params(
-          AdjustFamilyNameToAvoidUnsupportedFonts(current_family->Family()));
+    if (!current_family->FamilyName().IsEmpty()) {
+      FontFaceCreationParams params(AdjustFamilyNameToAvoidUnsupportedFonts(
+          current_family->FamilyName()));
       scoped_refptr<FontData> result;
       if (GetFontSelector()) {
-        result = GetFontSelector()->GetFontData(font_description,
-                                                current_family->Family());
+        result =
+            GetFontSelector()->GetFontData(font_description, *current_family);
       }
       if (!result) {
         if (FontPlatformData* platform_data =

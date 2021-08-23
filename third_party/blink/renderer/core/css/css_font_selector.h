@@ -39,6 +39,7 @@
 namespace blink {
 
 class FontDescription;
+class FontFamily;
 
 class CORE_EXPORT CSSFontSelector : public FontSelector {
  public:
@@ -84,7 +85,7 @@ class CORE_EXPORT CSSFontSelector : public FontSelector {
                                        unsigned num_broken_clusters) override;
 
   scoped_refptr<FontData> GetFontData(const FontDescription&,
-                                      const AtomicString&) override;
+                                      const FontFamily&) override;
   void WillUseFontData(const FontDescription&,
                        const AtomicString& family,
                        const String& text) override;
@@ -92,7 +93,7 @@ class CORE_EXPORT CSSFontSelector : public FontSelector {
                     const AtomicString& family_name,
                     const FontDataForRangeSet&) override;
   bool IsPlatformFamilyMatchAvailable(const FontDescription&,
-                                      const AtomicString& family) override;
+                                      const FontFamily& family) override;
 
   void FontFaceInvalidated(FontInvalidationReason) override;
 

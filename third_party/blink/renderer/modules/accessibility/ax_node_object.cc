@@ -2301,7 +2301,7 @@ const AtomicString& AXNodeObject::ComputedFontFamily() const {
     return AXObject::ComputedFontFamily();
 
   const FontDescription& font_description = style->GetFontDescription();
-  return font_description.FirstFamily().Family();
+  return font_description.FirstFamily().FamilyName();
 }
 
 String AXNodeObject::FontFamilyForSerialization() const {

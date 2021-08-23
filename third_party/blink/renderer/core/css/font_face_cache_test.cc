@@ -101,7 +101,8 @@ FontDescription FontFaceCacheTest::FontDescriptionForRequest(
     FontSelectionValue style,
     FontSelectionValue weight) {
   FontFamily font_family;
-  font_family.SetFamily(kFontNameForTesting);
+  font_family.SetFamily(kFontNameForTesting,
+                        FontFamily::InferredTypeFor(kFontNameForTesting));
   FontDescription description;
   description.SetFamily(font_family);
   description.SetStretch(stretch);

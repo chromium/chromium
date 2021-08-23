@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_fallback_list.h"
 #include "third_party/blink/renderer/platform/fonts/font_fallback_map.h"
+#include "third_party/blink/renderer/platform/fonts/font_family.h"
 #include "third_party/blink/renderer/platform/fonts/generic_font_family_settings.h"
 
 namespace blink {
@@ -16,14 +17,27 @@ namespace blink {
 AtomicString FontSelector::FamilyNameFromSettings(
     const GenericFontFamilySettings& settings,
     const FontDescription& font_description,
-    const AtomicString& generic_family_name) {
+    const FontFamily& generic_family) {
+  // Quoted <font-family> values corresponding to a <generic-family> keyword
+  // should not be converted to a family name via user settings.
+  auto& generic_family_name = generic_family.FamilyName();
+  if (font_description.GenericFamily() != FontDescription::kStandardFamily &&
+      !generic_family.FamilyIsGeneric() &&
+      generic_family_name != font_family_names::kWebkitPictograph &&
+      generic_family_name != font_family_names::kWebkitStandard)
+    return g_empty_atom;
 #if defined(OS_ANDROID)
   if (font_description.GenericFamily() == FontDescription::kStandardFamily) {
     return FontCache::GetGenericFamilyNameForScript(
         font_family_names::kWebkitStandard, font_description);
   }
 
-  if (generic_family_name.StartsWith("-webkit-")) {
+  if (generic_family_name == font_family_names::kSerif ||
+      generic_family_name == font_family_names::kSansSerif ||
+      generic_family_name == font_family_names::kCursive ||
+      generic_family_name == font_family_names::kFantasy ||
+      generic_family_name == font_family_names::kMonospace ||
+      generic_family_name == font_family_names::kWebkitStandard) {
     return FontCache::GetGenericFamilyNameForScript(generic_family_name,
                                                     font_description);
   }
@@ -31,15 +45,15 @@ AtomicString FontSelector::FamilyNameFromSettings(
   UScriptCode script = font_description.GetScript();
   if (font_description.GenericFamily() == FontDescription::kStandardFamily)
     return settings.Standard(script);
-  if (generic_family_name == font_family_names::kWebkitSerif)
+  if (generic_family_name == font_family_names::kSerif)
     return settings.Serif(script);
-  if (generic_family_name == font_family_names::kWebkitSansSerif)
+  if (generic_family_name == font_family_names::kSansSerif)
     return settings.SansSerif(script);
-  if (generic_family_name == font_family_names::kWebkitCursive)
+  if (generic_family_name == font_family_names::kCursive)
     return settings.Cursive(script);
-  if (generic_family_name == font_family_names::kWebkitFantasy)
+  if (generic_family_name == font_family_names::kFantasy)
     return settings.Fantasy(script);
-  if (generic_family_name == font_family_names::kWebkitMonospace)
+  if (generic_family_name == font_family_names::kMonospace)
     return settings.Fixed(script);
   if (generic_family_name == font_family_names::kWebkitPictograph)
     return settings.Pictograph(script);

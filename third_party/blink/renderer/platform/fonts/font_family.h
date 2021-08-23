@@ -42,22 +42,25 @@ class PLATFORM_EXPORT FontFamily {
   FontFamily() = default;
   ~FontFamily();
 
-  void SetFamily(const AtomicString& family) { family_ = family; }
+  // https://drafts.csswg.org/css-fonts/#font-family-prop
+  enum class Type : uint8_t { kFamilyName, kGenericFamily };
+
+  void SetFamily(const AtomicString& family_name, Type family_type) {
+    family_name_ = family_name;
+    family_type_ = family_type;
+  }
   // Return this font family's name. Note that it is never quoted nor escaped.
   // For web-exposed serialization, please rely instead on the functions
   // ComputedStyleUtils::ValueForFontFamily(const FontFamily&) and
   // CSSValue::CssText() in order to match formatting rules from the CSSOM
   // specification.
-  // TODO(crbug.com/1065468): Generic font families "cursive", "fantasy",
-  // "monospace", "sans-serif" and "serif" are currently encoded internally with
-  // a "-webkit" prefix. The <generic-family> "system-ui" is encoded without
-  // prefix but can't be distinguished from the <family-name> "system-ui".
-  const AtomicString& Family() const { return family_; }
+  const AtomicString& FamilyName() const { return family_name_; }
+  bool FamilyIsGeneric() const { return family_type_ == Type::kGenericFamily; }
 
   const FontFamily* Next() const;
 
   void AppendFamily(scoped_refptr<SharedFontFamily>);
-  void AppendFamily(AtomicString family);
+  void AppendFamily(AtomicString family_name, Type family_type);
   scoped_refptr<SharedFontFamily> ReleaseNext();
 
   // Returns this font family's name followed by all subsequent linked
@@ -66,15 +69,17 @@ class PLATFORM_EXPORT FontFamily {
   // the functions ComputedStyleUtils::ValueForFontFamily(const FontFamily&) and
   // CSSValue::CssText() in order to match formatting rules from the CSSOM
   // specification.
-  // TODO(crbug.com/1065468): Generic font families "cursive", "fantasy",
-  // "monospace", "sans-serif" and "serif" are currently encoded internally with
-  // a "-webkit" prefix. The <generic-family> "system-ui" is encoded without
-  // prefix but can't be distinguished from the <family-name> "system-ui".
   String ToString() const;
 
+  // Return kGenericFamily if family_name is equal to one of the supported
+  // <generic-family> keyword from the CSS fonts module spec and kFamilyName
+  // otherwise.
+  static Type InferredTypeFor(const AtomicString& family_name);
+
  private:
-  AtomicString family_;
+  AtomicString family_name_;
   scoped_refptr<SharedFontFamily> next_;
+  Type family_type_ = Type::kFamilyName;
 };
 
 class PLATFORM_EXPORT SharedFontFamily : public FontFamily,

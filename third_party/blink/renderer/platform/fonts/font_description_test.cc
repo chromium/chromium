@@ -140,9 +140,9 @@ TEST(FontDescriptionTest, ToString) {
   FontDescription description;
 
   FontFamily family;
-  family.SetFamily("A");
+  family.SetFamily("A", FontFamily::Type::kFamilyName);
   scoped_refptr<SharedFontFamily> b_family = SharedFontFamily::Create();
-  b_family->SetFamily("B");
+  b_family->SetFamily("B", FontFamily::Type::kFamilyName);
   family.AppendFamily(b_family);
   description.SetFamily(family);
 
@@ -204,9 +204,9 @@ TEST(FontDescriptionTest, DefaultHashTrait) {
   description1.SetWeight(FontSelectionValue(100));
 
   FontFamily family;
-  family.SetFamily("A");
+  family.SetFamily("A", FontFamily::Type::kFamilyName);
   scoped_refptr<SharedFontFamily> b_family = SharedFontFamily::Create();
-  b_family->SetFamily("B");
+  b_family->SetFamily("B", FontFamily::Type::kFamilyName);
   family.AppendFamily(b_family);
   FontDescription description3;
   description3.SetFamily(family);

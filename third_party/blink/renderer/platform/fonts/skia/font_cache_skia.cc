@@ -96,7 +96,7 @@ scoped_refptr<SimpleFontData> FontCache::FallbackOnStandardFontStyle(
   substitute_description.SetWeight(NormalWeightValue());
 
   FontFaceCreationParams creation_params(
-      substitute_description.Family().Family());
+      substitute_description.Family().FamilyName());
   FontPlatformData* substitute_platform_data =
       GetFontPlatformData(substitute_description, creation_params);
   if (substitute_platform_data &&
@@ -210,9 +210,8 @@ sk_sp<SkTypeface> FontCache::CreateTypeface(
 
   const AtomicString& family = creation_params.Family();
   DCHECK_NE(family, font_family_names::kSystemUi);
-  // If we're creating a fallback font (e.g. "-webkit-monospace"), convert the
-  // name into the fallback name (like "monospace") that fontconfig understands.
-  if (!family.length() || family.StartsWith("-webkit-")) {
+  // TODO(crbug.com/1241875) Can this be simplified?
+  if (!family.length()) {
     name = GetFallbackFontFamily(font_description).GetString().Utf8();
   } else {
     // convert the name to utf8
