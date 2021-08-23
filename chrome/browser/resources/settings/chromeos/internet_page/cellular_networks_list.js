@@ -563,6 +563,9 @@ Polymer({
         return this.i18n('cellularNetworkConnectingToProfile');
       case mojom.kRefreshingProfileList:
         return this.i18n('cellularNetworRefreshingProfileListProfile');
+      case mojom.kResettingEuiccMemory:
+        // TODO(crbug.com/1231305) Fix string when finalized.
+        return this.i18n('cellularNetworkRemovingProfile');
     }
 
     return '';

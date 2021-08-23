@@ -480,6 +480,8 @@ mojom::InhibitReason GetInhibitReason(
       return mojom::InhibitReason::kConnectingToProfile;
     case CellularInhibitor::InhibitReason::kRefreshingProfileList:
       return mojom::InhibitReason::kRefreshingProfileList;
+    case CellularInhibitor::InhibitReason::kResettingEuiccMemory:
+      return mojom::InhibitReason::kResettingEuiccMemory;
   }
 }
 

@@ -68,7 +68,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularInhibitor
     kRenamingProfile,
     kRemovingProfile,
     kConnectingToProfile,
-    kRefreshingProfileList
+    kRefreshingProfileList,
+    kResettingEuiccMemory
   };
 
   // Callback which returns InhibitLock on inhibit success or nullptr on

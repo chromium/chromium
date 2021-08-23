@@ -133,7 +133,9 @@ enum InhibitReason {
   kConnectingToProfile,
   // Inhibited because the list of pending eSIM profiles is being refreshed by
   // checking with an SMDS server.
-  kRefreshingProfileList
+  kRefreshingProfileList,
+  // Inhibited because the EUICC memory is being reset.
+  kResettingEuiccMemory
 };
 
 // Always-on VPN operating mode.

@@ -383,6 +383,9 @@ std::ostream& operator<<(
     case chromeos::CellularInhibitor::InhibitReason::kRefreshingProfileList:
       stream << "[Refreshing profile list]";
       break;
+    case chromeos::CellularInhibitor::InhibitReason::kResettingEuiccMemory:
+      stream << "[Resetting EUICC memory]";
+      break;
   }
   return stream;
 }
