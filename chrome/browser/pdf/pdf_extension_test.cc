@@ -2181,7 +2181,13 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionInternalLinkClickTest, Middle) {
   EXPECT_EQ("page=2&zoom=100,0,200", url.ref());
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionInternalLinkClickTest, ShiftLeft) {
+// TODO(crbug.com/1239995): Flaky on Mac.
+#if defined(OS_MAC)
+#define MAYBE_ShiftLeft DISABLED_ShiftLeft
+#else
+#define MAYBE_ShiftLeft ShiftLeft
+#endif
+IN_PROC_BROWSER_TEST_P(PDFExtensionInternalLinkClickTest, MAYBE_ShiftLeft) {
   LoadTestLinkPdfGetGuestContents();
 
   ASSERT_EQ(1U, chrome::GetTotalBrowserCount());
