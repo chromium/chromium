@@ -21,10 +21,7 @@ bool SchedulingParams::operator==(const SchedulingParams& rhs) const {
 }
 
 RequestParams::RequestParams()
-    : method("GET"),
-      fetch_error_body(false),
-      require_safety_checks(true),
-      credentials_mode(::network::mojom::CredentialsMode::kInclude) {}
+    : method("GET"), fetch_error_body(false), require_safety_checks(true) {}
 
 RequestParams::RequestParams(const RequestParams& other) = default;
 

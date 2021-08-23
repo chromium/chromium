@@ -81,7 +81,6 @@ component("public") {
     "//components/services/quarantine/public/mojom",
     "//mojo/public/cpp/bindings",
     "//services/network/public/cpp",
-    "//services/network/public/mojom:url_loader_base",
   ]
 
   deps = [

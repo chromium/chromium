@@ -5,7 +5,6 @@ include_rules = [
   "+net/http",
   "+net/traffic_annotation",
   "+services/network/public/cpp",
-  "+services/network/public/mojom",
   "+storage/browser",
   "+url",
 ]

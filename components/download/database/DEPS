@@ -2,6 +2,5 @@ include_rules = [
   "+components/download/public/common",
   "+components/enterprise/common/proto",
   "+components/leveldb_proto",
-  "+services/metrics/public",
-  "+services/network/public/mojom",
+  "+services/metrics/public"
 ]
