@@ -18,6 +18,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
+#include "build/build_config.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/wm/core/window_util.h"
 
@@ -395,7 +396,14 @@ TEST_F(BackGestureContextualNudgeControllerTest, GesturePerformedMetricTest) {
       base::TimeDelta::FromSeconds(0), 1);
 }
 
-TEST_P(BackGestureContextualNudgeControllerTestA11yPrefs, TimeoutMetricsTest) {
+// crbug.com/1239200: flaky on linux.
+#if defined(OS_LINUX)
+#define MAYBE_TimeoutMetricsTest DISABLED_TimeoutMetricsTest
+#else
+#define MAYBE_TimeoutMetricsTest TimeoutMetricsTest
+#endif
+TEST_P(BackGestureContextualNudgeControllerTestA11yPrefs,
+       MAYBE_TimeoutMetricsTest) {
   base::HistogramTester histogram_tester;
   ui::ScopedAnimationDurationScaleMode non_zero(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
