@@ -1026,16 +1026,16 @@ TEST_F(AccountTrackerServiceTest, ChildStatusMigration) {
                 ->GetAccountInfo(AccountKeyToAccountId(kAccountKeyAlpha))
                 .is_child_account);
   ListPrefUpdate update(prefs(), prefs::kAccountInfo);
-  base::DictionaryValue* dict = nullptr;
-  update->GetDictionary(0, &dict);
-  ASSERT_TRUE(dict);
+  base::Value* dict = nullptr;
+  update->Get(0, &dict);
+  ASSERT_TRUE(dict && dict->is_dict());
   const char kDeprecatedChildKey[] = "is_child_account";
   const char kNewChildKey[] = "is_supervised_child";
   // The deprecated key is not set.
   EXPECT_FALSE(dict->FindBoolKey(kDeprecatedChildKey));
 
   // Set the child status using the deprecated key, and reload the account.
-  dict->SetBoolean(kDeprecatedChildKey, true);
+  dict->SetBoolKey(kDeprecatedChildKey, true);
   dict->RemoveKey(kNewChildKey);
   ClearAccountTrackerEvents();
   ResetAccountTrackerWithPersistence(scoped_user_data_dir.GetPath());
@@ -1283,16 +1283,16 @@ TEST_F(AccountTrackerServiceTest, MigrateAccountIdToGaiaId) {
 
   ListPrefUpdate update(prefs(), prefs::kAccountInfo);
 
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  dict->SetString("account_id", email_alpha);
-  dict->SetString("email", email_alpha);
-  dict->SetString("gaia", gaia_alpha);
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetStringKey("account_id", email_alpha);
+  dict.SetStringKey("email", email_alpha);
+  dict.SetStringKey("gaia", gaia_alpha);
   update->Append(std::move(dict));
 
-  dict = std::make_unique<base::DictionaryValue>();
-  dict->SetString("account_id", email_beta);
-  dict->SetString("email", email_beta);
-  dict->SetString("gaia", gaia_beta);
+  dict = base::Value(base::Value::Type::DICTIONARY);
+  dict.SetStringKey("account_id", email_beta);
+  dict.SetStringKey("email", email_beta);
+  dict.SetStringKey("gaia", gaia_beta);
   update->Append(std::move(dict));
 
   base::HistogramTester tester;
@@ -1331,16 +1331,16 @@ TEST_F(AccountTrackerServiceTest, CanNotMigrateAccountIdToGaiaId) {
 
   ListPrefUpdate update(prefs(), prefs::kAccountInfo);
 
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  dict->SetString("account_id", email_alpha);
-  dict->SetString("email", email_alpha);
-  dict->SetString("gaia", gaia_alpha);
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetStringKey("account_id", email_alpha);
+  dict.SetStringKey("email", email_alpha);
+  dict.SetStringKey("gaia", gaia_alpha);
   update->Append(std::move(dict));
 
-  dict = std::make_unique<base::DictionaryValue>();
-  dict->SetString("account_id", email_beta);
-  dict->SetString("email", email_beta);
-  dict->SetString("gaia", "");
+  dict = base::Value(base::Value::Type::DICTIONARY);
+  dict.SetStringKey("account_id", email_beta);
+  dict.SetStringKey("email", email_beta);
+  dict.SetStringKey("gaia", "");
   update->Append(std::move(dict));
 
   base::HistogramTester tester;
@@ -1380,23 +1380,23 @@ TEST_F(AccountTrackerServiceTest, GaiaIdMigrationCrashInTheMiddle) {
 
   ListPrefUpdate update(prefs(), prefs::kAccountInfo);
 
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  dict->SetString("account_id", email_alpha);
-  dict->SetString("email", email_alpha);
-  dict->SetString("gaia", gaia_alpha);
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetStringKey("account_id", email_alpha);
+  dict.SetStringKey("email", email_alpha);
+  dict.SetStringKey("gaia", gaia_alpha);
   update->Append(std::move(dict));
 
-  dict = std::make_unique<base::DictionaryValue>();
-  dict->SetString("account_id", email_beta);
-  dict->SetString("email", email_beta);
-  dict->SetString("gaia", gaia_beta);
+  dict = base::Value(base::Value::Type::DICTIONARY);
+  dict.SetStringKey("account_id", email_beta);
+  dict.SetStringKey("email", email_beta);
+  dict.SetStringKey("gaia", gaia_beta);
   update->Append(std::move(dict));
 
   // Succeed miggrated account.
-  dict = std::make_unique<base::DictionaryValue>();
-  dict->SetString("account_id", gaia_alpha);
-  dict->SetString("email", email_alpha);
-  dict->SetString("gaia", gaia_alpha);
+  dict = base::Value(base::Value::Type::DICTIONARY);
+  dict.SetStringKey("account_id", gaia_alpha);
+  dict.SetStringKey("email", email_alpha);
+  dict.SetStringKey("gaia", gaia_alpha);
   update->Append(std::move(dict));
 
   base::HistogramTester tester;
@@ -1679,16 +1679,16 @@ TEST_F(AccountTrackerServiceTest, CountOfLoadedAccounts_TwoAccounts) {
 
   ListPrefUpdate update(prefs(), prefs::kAccountInfo);
 
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  dict->SetString("account_id", email_alpha);
-  dict->SetString("email", email_alpha);
-  dict->SetString("gaia", gaia_alpha);
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetStringKey("account_id", email_alpha);
+  dict.SetStringKey("email", email_alpha);
+  dict.SetStringKey("gaia", gaia_alpha);
   update->Append(std::move(dict));
 
-  dict = std::make_unique<base::DictionaryValue>();
-  dict->SetString("account_id", email_beta);
-  dict->SetString("email", email_beta);
-  dict->SetString("gaia", gaia_beta);
+  dict = base::Value(base::Value::Type::DICTIONARY);
+  dict.SetStringKey("account_id", email_beta);
+  dict.SetStringKey("email", email_beta);
+  dict.SetStringKey("gaia", gaia_beta);
   update->Append(std::move(dict));
 
   base::HistogramTester tester;
@@ -1707,18 +1707,18 @@ TEST_F(AccountTrackerServiceTest, CountOfLoadedAccounts_TwoAccountsOneInvalid) {
 
   ListPrefUpdate update(prefs(), prefs::kAccountInfo);
 
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  dict->SetString("account_id", email_alpha);
-  dict->SetString("email", email_alpha);
-  dict->SetString("gaia", gaia_alpha);
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetStringKey("account_id", email_alpha);
+  dict.SetStringKey("email", email_alpha);
+  dict.SetStringKey("gaia", gaia_alpha);
   update->Append(std::move(dict));
 
   // This account is invalid because the account_id is a non-canonicalized
   // version of the email.
-  dict = std::make_unique<base::DictionaryValue>();
-  dict->SetString("account_id", email_foobar);
-  dict->SetString("email", email_foobar);
-  dict->SetString("gaia", gaia_foobar);
+  dict = base::Value(base::Value::Type::DICTIONARY);
+  dict.SetStringKey("account_id", email_foobar);
+  dict.SetStringKey("email", email_foobar);
+  dict.SetStringKey("gaia", gaia_foobar);
   update->Append(std::move(dict));
 
   base::HistogramTester tester;
