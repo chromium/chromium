@@ -57,6 +57,7 @@ assert(!is_ios, "Chromium/iOS shouldn't use anything in //chrome")
 if (is_android) {
   import("//build/config/android/rules.gni")
   import("//chrome/android/features/dev_ui/dev_ui_module.gni")
+  import("//chrome/browser/password_manager/android/unittest_sources.gni")
   import("//tools/perf/chrome_telemetry_build/android_browser_types.gni")
   import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
 }
@@ -5453,18 +5454,6 @@ test("unit_tests") {
       "../browser/optimization_guide/android/optimization_guide_bridge_unittest.cc",
       "../browser/page_load_metrics/observers/android_page_load_metrics_observer_unittest.cc",
       "../browser/page_load_metrics/observers/offline_measurements_page_load_metrics_observer_unittest.cc",
-      "../browser/password_manager/android/account_chooser_dialog_android_unittest.cc",
-      "../browser/password_manager/android/all_passwords_bottom_sheet_controller_unittest.cc",
-      "../browser/password_manager/android/all_passwords_bottom_sheet_helper_unittest.cc",
-      "../browser/password_manager/android/auto_signin_first_run_dialog_android_unittest.cc",
-      "../browser/password_manager/android/credential_leak_controller_android_unittest.cc",
-      "../browser/password_manager/android/generated_password_saved_message_delegate_unittest.cc",
-      "../browser/password_manager/android/password_accessory_controller_impl_unittest.cc",
-      "../browser/password_manager/android/password_generation_controller_impl_unittest.cc",
-      "../browser/password_manager/android/password_store_android_backend_unittest.cc",
-      "../browser/password_manager/android/save_password_infobar_delegate_android_unittest.cc",
-      "../browser/password_manager/android/save_password_message_delegate_unittest.cc",
-      "../browser/password_manager/android/update_password_infobar_delegate_android_unittest.cc",
       "../browser/permissions/permission_prompt_android_unittest.cc",
       "../browser/policy/browser_dm_token_storage_android_unittest.cc",
       "../browser/policy/chrome_browser_cloud_management_controller_android_unittest.cc",
@@ -5478,6 +5467,7 @@ test("unit_tests") {
       "../browser/ui/autofill/payments/autofill_error_dialog_controller_impl_unittest.cc",
       "../browser/ui/autofill/payments/autofill_snackbar_controller_impl_unittest.cc",
     ]
+    sources += password_manager_android_unittest_sources
 
     deps += [
       "//base:base_java",
