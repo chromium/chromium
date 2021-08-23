@@ -20,11 +20,7 @@ BluetoothAdvertisementMonitorApplicationServiceProviderImpl::
       object_path_(object_path) {
   DVLOG(1) << "Creating Bluetooth Advertisement Monitor application: "
            << object_path_.value();
-  if (!bus_) {
-    LOG(WARNING) << "Invalid bus";
-    return;
-  }
-
+  DCHECK(bus_);
   DCHECK(object_path_.IsValid());
 
   exported_object_ = bus_->GetExportedObject(object_path_);
@@ -50,8 +46,8 @@ BluetoothAdvertisementMonitorApplicationServiceProviderImpl::
     ~BluetoothAdvertisementMonitorApplicationServiceProviderImpl() {
   DVLOG(1) << "Cleaning up Advertisement Monitor Application: "
            << object_path_.value();
-  if (bus_)
-    bus_->UnregisterExportedObject(object_path_);
+  DCHECK(bus_);
+  bus_->UnregisterExportedObject(object_path_);
 }
 
 void BluetoothAdvertisementMonitorApplicationServiceProviderImpl::AddMonitor(
@@ -78,7 +74,6 @@ void BluetoothAdvertisementMonitorApplicationServiceProviderImpl::AddMonitor(
       bluetooth_advertisement_monitor::kBluetoothAdvertisementMonitorInterface,
       advertisement_monitor_providers_[monitor_path.value()].get());
   writer.CloseContainer(&array_writer);
-
   exported_object_->SendSignal(&signal);
 }
 

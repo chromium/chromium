@@ -270,7 +270,10 @@ test("device_unittests") {
     ]
 
     if (is_chromeos_ash) {
-      sources += [ "bluetooth/dbus/bluetooth_advertisement_monitor_service_provider_unittest.cc" ]
+      sources += [
+        "bluetooth/dbus/bluetooth_advertisement_monitor_application_service_provider_unittest.cc",
+        "bluetooth/dbus/bluetooth_advertisement_monitor_service_provider_unittest.cc",
+      ]
       deps += [ "//services/data_decoder/public/mojom" ]
     }
   }
