@@ -96,6 +96,7 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
 #include "chrome/browser/ui/aura/accessibility/automation_manager_aura.h"
 #include "chrome/browser/ui/browser.h"
@@ -4714,7 +4715,7 @@ ExtensionFunction::ResponseAction AutotestPrivatePinShelfIconFunction::Run() {
   if (!controller)
     return RespondNow(Error("Controller not available"));
 
-  controller->PinAppWithID(params->app_id);
+  PinAppWithIDToShelf(params->app_id);
   return RespondNow(NoArguments());
 }
 
@@ -4766,9 +4767,9 @@ AutotestPrivateSetShelfIconPinFunction::Run() {
       continue;
 
     if (update_param.pinned)
-      controller->PinAppWithID(app_id);
+      PinAppWithIDToShelf(app_id);
     else
-      controller->UnpinAppWithID(app_id);
+      UnpinAppWithIDFromShelf(app_id);
     updated_apps.push_back(app_id);
   }
 

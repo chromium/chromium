@@ -28,6 +28,7 @@
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -1470,7 +1471,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerShortcutTest, ShortcutUrl) {
   std::unique_ptr<ui::SimpleMenuModel> menu_model;
   {
     ash::ShelfModel* const shelf_model = ash::ShelfModel::Get();
-    shelf_model->PinAppWithID(app_id);
+    PinAppWithIDToShelf(app_id);
     ash::ShelfItemDelegate* const delegate =
         shelf_model->GetShelfItemDelegate(ash::ShelfID(app_id));
     base::RunLoop run_loop;

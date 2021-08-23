@@ -341,14 +341,17 @@ TEST_F(ShelfModelTest, ClosedAppPinning) {
   EXPECT_EQ(0, model_->item_count());
 
   // Pinning a previously unknown app should add an item.
-  model_->PinAppWithID(app_id);
+  ShelfItem item;
+  item.id = ShelfID(app_id);
+  item.type = TYPE_PINNED_APP;
+  model_->Add(item, std::make_unique<TestShelfItemDelegate>(item.id));
   EXPECT_TRUE(model_->IsAppPinned(app_id));
   EXPECT_EQ(1, model_->item_count());
   EXPECT_EQ(TYPE_PINNED_APP, model_->items()[0].type);
   EXPECT_EQ(app_id, model_->items()[0].id.app_id);
 
   // Pinning the same app id again should have no change.
-  model_->PinAppWithID(app_id);
+  model_->PinExistingItemWithID(app_id);
   EXPECT_TRUE(model_->IsAppPinned(app_id));
   EXPECT_EQ(1, model_->item_count());
   EXPECT_EQ(TYPE_PINNED_APP, model_->items()[0].type);
@@ -387,14 +390,14 @@ TEST_F(ShelfModelTest, RunningAppPinning) {
   EXPECT_EQ(item.id, model_->items()[index].id);
 
   // Pinning the item should just change its type.
-  model_->PinAppWithID(app_id);
+  model_->PinExistingItemWithID(app_id);
   EXPECT_TRUE(model_->IsAppPinned(app_id));
   EXPECT_EQ(1, model_->item_count());
   EXPECT_EQ(TYPE_PINNED_APP, model_->items()[index].type);
   EXPECT_EQ(item.id, model_->items()[index].id);
 
   // Pinning the same app id again should have no change.
-  model_->PinAppWithID(app_id);
+  model_->PinExistingItemWithID(app_id);
   EXPECT_TRUE(model_->IsAppPinned(app_id));
   EXPECT_EQ(1, model_->item_count());
   EXPECT_EQ(TYPE_PINNED_APP, model_->items()[index].type);

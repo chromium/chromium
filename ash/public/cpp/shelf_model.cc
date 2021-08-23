@@ -55,29 +55,6 @@ ShelfModel::ShelfModel() = default;
 
 ShelfModel::~ShelfModel() = default;
 
-void ShelfModel::PinAppWithID(const std::string& app_id) {
-  const ShelfID shelf_id(app_id);
-
-  // If the app is already pinned, do nothing and return.
-  if (IsAppPinned(shelf_id.app_id))
-    return;
-
-  // Convert an existing item to be pinned, or create a new pinned item.
-  const int index = ItemIndexByID(shelf_id);
-  if (index >= 0) {
-    ShelfItem item = items_[index];
-    DCHECK_EQ(item.type, TYPE_APP);
-    DCHECK(!item.pinned_by_policy);
-    item.type = TYPE_PINNED_APP;
-    Set(index, item);
-  } else if (!shelf_id.IsNull()) {
-    ShelfItem item;
-    item.type = TYPE_PINNED_APP;
-    item.id = shelf_id;
-    Add(item);
-  }
-}
-
 void ShelfModel::AddAndPinAppWithFactoryConstructedDelegate(
     const std::string& app_id) {
   DCHECK_LT(ItemIndexByAppID(app_id), 0);

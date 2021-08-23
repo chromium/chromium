@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/ash/shelf/arc_app_shelf_id.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_test_util.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
@@ -379,7 +380,7 @@ IN_PROC_BROWSER_TEST_F(ArcAppDeferredShelfBrowserTest,
 
   ChromeShelfController* const controller = ChromeShelfController::instance();
   const std::string app_id = GetTestApp1Id(kTestAppPackage);
-  controller->PinAppWithID(app_id);
+  PinAppWithIDToShelf(app_id);
 
   aura::Window* const root_window = ash::Shell::GetPrimaryRootWindow();
   ash::ShelfViewTestAPI test_api(
@@ -442,7 +443,7 @@ IN_PROC_BROWSER_TEST_P(ArcAppDeferredShelfWithParamsBrowserTest,
   const std::string app_id = GetTestApp1Id(kTestAppPackage);
   const ash::ShelfID shelf_id(app_id);
   if (is_pinned()) {
-    controller->PinAppWithID(app_id);
+    PinAppWithIDToShelf(app_id);
     const ash::ShelfItem* item = controller->GetItem(shelf_id);
     EXPECT_EQ(kTestAppName16, item->title);
   } else {
@@ -524,8 +525,8 @@ IN_PROC_BROWSER_TEST_F(ArcAppShelfBrowserTest, PinOnPackageUpdateAndRemove) {
   const ash::ShelfID shelf_id1(GetTestApp1Id(kTestAppPackage));
   const ash::ShelfID shelf_id2(GetTestApp2Id(kTestAppPackage));
   ChromeShelfController* controller = ChromeShelfController::instance();
-  controller->PinAppWithID(shelf_id1.app_id);
-  controller->PinAppWithID(shelf_id2.app_id);
+  PinAppWithIDToShelf(shelf_id1.app_id);
+  PinAppWithIDToShelf(shelf_id2.app_id);
   EXPECT_TRUE(controller->GetItem(shelf_id1));
   EXPECT_TRUE(controller->GetItem(shelf_id2));
 

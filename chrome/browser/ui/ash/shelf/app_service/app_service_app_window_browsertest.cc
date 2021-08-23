@@ -772,7 +772,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowArcAppBrowserTest, ArcAppsWindow) {
   EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning |
                 apps::InstanceState::kActive | apps::InstanceState::kVisible,
             latest_state);
-  controller_->PinAppWithID(app_id1);
+  controller_->shelf_model()->PinExistingItemWithID(app_id1);
 
   // Create the task id for app2 first, then create the window.
   const std::string app_id2 = GetTestApp2Id(kTestAppPackage);

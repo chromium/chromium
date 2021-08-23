@@ -528,7 +528,7 @@ IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, PinRunning) {
             shelf_model()->ItemIndexByID(id));
 
   // Pin the app. The item should remain.
-  controller_->PinAppWithID(extension->id());
+  controller_->shelf_model()->PinExistingItemWithID(extension->id());
   ASSERT_EQ(item_count, shelf_model()->item_count());
   const ash::ShelfItem& item2 = *shelf_model()->ItemByID(id);
   EXPECT_EQ(ash::TYPE_PINNED_APP, item2.type);
@@ -1170,7 +1170,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, AppIDForPinnedHostedApp) {
   const Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("app1/"));
   ASSERT_TRUE(extension);
-  controller_->PinAppWithID(extension->id());
+  PinAppWithIDToShelf(extension->id());
 
   // Navigate to the app's launch URL.
   ui_test_utils::NavigateToURL(
@@ -1220,7 +1220,7 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, AppIDForPinnedWebApp) {
   const GURL app_url = GetSecureAppURL();
   const web_app::AppId web_app_id = InstallWebApp(app_url);
 
-  controller_->PinAppWithID(web_app_id);
+  PinAppWithIDToShelf(web_app_id);
 
   // Navigate to the app's launch URL.
   ui_test_utils::NavigateToURL(browser(), app_url);
@@ -2218,7 +2218,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, MatchingShelfIDAndActiveTab) {
 // Disabled due to https://crbug.com/838743.
 IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, DISABLED_V1AppNavigation) {
   // We assume that the web store is always there (which it apparently is).
-  controller_->PinAppWithID(extensions::kWebStoreAppId);
+  PinAppWithIDToShelf(extensions::kWebStoreAppId);
   const ash::ShelfID id(extensions::kWebStoreAppId);
   EXPECT_EQ(ash::STATUS_CLOSED, shelf_model()->ItemByID(id)->status);
 
@@ -2311,13 +2311,13 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, TabbedHostedAndWebApps) {
   const Extension* hosted_app =
       LoadExtension(test_data_dir_.AppendASCII("app1/"));
   ASSERT_TRUE(hosted_app);
-  controller_->PinAppWithID(hosted_app->id());
+  PinAppWithIDToShelf(hosted_app->id());
   const ash::ShelfID hosted_app_shelf_id(hosted_app->id());
 
   // Load and pin a web app.
   const GURL web_app_url = GetSecureAppURL();
   const web_app::AppId web_app_id = InstallWebApp(web_app_url);
-  controller_->PinAppWithID(web_app_id);
+  PinAppWithIDToShelf(web_app_id);
   const ash::ShelfID web_app_shelf_id(web_app_id);
 
   // The apps should be closed.
@@ -2355,13 +2355,13 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WindowedHostedAndWebApps) {
   const Extension* hosted_app =
       LoadExtension(test_data_dir_.AppendASCII("app1/"));
   ASSERT_TRUE(hosted_app);
-  controller_->PinAppWithID(hosted_app->id());
+  PinAppWithIDToShelf(hosted_app->id());
   const ash::ShelfID hosted_app_shelf_id(hosted_app->id());
 
   // Load and pin a web app.
   const GURL web_app_url = GetSecureAppURL();
   const web_app::AppId web_app_id = InstallWebApp(web_app_url);
-  controller_->PinAppWithID(web_app_id);
+  PinAppWithIDToShelf(web_app_id);
   const ash::ShelfID web_app_shelf_id(web_app_id);
 
   // Set both apps to open in windows.

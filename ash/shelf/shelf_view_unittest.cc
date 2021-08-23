@@ -420,8 +420,6 @@ class ShelfViewTest : public AshTestBase {
 
   ShelfItem GetItemByID(const ShelfID& id) { return *model_->ItemByID(id); }
 
-  void PinAppWithID(const ShelfID& id) { model_->PinAppWithID(id.app_id); }
-
   bool IsAppPinned(const ShelfID& id) { return model_->IsAppPinned(id.app_id); }
 
   void CheckModelIDs(
@@ -1098,7 +1096,7 @@ TEST_P(LtrRtlShelfViewTest, DragAndDropPinnedRunningApp) {
   int index = model_->ItemIndexByID(id);
   ShelfItem item = GetItemByID(id);
   EXPECT_EQ(STATUS_RUNNING, item.status);
-  PinAppWithID(id);
+  model_->PinExistingItemWithID(id.app_id);
   EXPECT_TRUE(IsAppPinned(GetItemId(index)));
 
   gfx::Point app_location = GetButtonCenter(GetButtonByID(id));

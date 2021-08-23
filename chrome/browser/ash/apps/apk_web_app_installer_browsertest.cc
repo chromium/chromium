@@ -22,6 +22,7 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/components/app_registrar_observer.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
@@ -466,7 +467,7 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerWithShelfControllerBrowserTest,
   EXPECT_FALSE(shelf_controller_->IsAppPinned(arc_app_id));
 
   // Pin the app to the shelf.
-  shelf_controller_->PinAppWithID(arc_app_id);
+  PinAppWithIDToShelf(arc_app_id);
   EXPECT_TRUE(shelf_controller_->IsAppPinned(arc_app_id));
 
   int pin_index = shelf_controller_->PinnedItemIndexByAppID(arc_app_id);

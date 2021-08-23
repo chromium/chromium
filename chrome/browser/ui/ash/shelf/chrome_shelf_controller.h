@@ -258,7 +258,6 @@ class ChromeShelfController
   // Helpers that call through to corresponding ShelfModel functions.
   bool AllowedToSetAppPinState(const std::string& app_id,
                                bool target_pin) const;
-  void PinAppWithID(const std::string& app_id);
   bool IsAppPinned(const std::string& app_id);
   void UnpinAppWithID(const std::string& app_id);
 

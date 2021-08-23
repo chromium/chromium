@@ -74,11 +74,6 @@ class ASH_PUBLIC_EXPORT ShelfModel {
   ShelfModel();
   ~ShelfModel();
 
-  // Pins an app with |app_id| to shelf. A running instance will get pinned.
-  // If there is no running instance, a new shelf item is created and pinned.
-  // DEPRECATED. Use PinExistingItemWithID() instead.
-  void PinAppWithID(const std::string& app_id);
-
   // Adds an item to the shelf, using the default factory to construct a
   // delegate. If a delegate cannot be constructed for this type of app, then no
   // item will be added.

@@ -792,10 +792,6 @@ bool ChromeShelfController::AllowedToSetAppPinState(const std::string& app_id,
   return model_->AllowedToSetAppPinState(app_id, target_pin);
 }
 
-void ChromeShelfController::PinAppWithID(const std::string& app_id) {
-  model_->PinAppWithID(app_id);
-}
-
 bool ChromeShelfController::IsAppPinned(const std::string& app_id) {
   return model_->IsAppPinned(app_id);
 }

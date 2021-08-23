@@ -9,6 +9,7 @@
 #include "base/callback_helpers.h"
 #include "chrome/browser/ash/crostini/crostini_terminal.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -41,7 +42,7 @@ class AppShortcutShelfItemControllerBrowserTest : public InProcessBrowserTest {
     app_id_ = *web_app::GetAppIdForSystemWebApp(
         browser()->profile(), web_app::SystemAppType::TERMINAL);
     app_shelf_id_ = ash::ShelfID(app_id_);
-    controller_->PinAppWithID(app_id_);
+    PinAppWithIDToShelf(app_id_);
   }
 
   Browser* LaunchApp() {

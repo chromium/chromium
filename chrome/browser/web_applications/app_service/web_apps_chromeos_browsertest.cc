@@ -14,6 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
@@ -86,7 +87,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsWebAppsChromeOsBrowserTest, ShortcutIcons) {
   std::unique_ptr<ui::SimpleMenuModel> menu_model;
   {
     ash::ShelfModel* const shelf_model = ash::ShelfModel::Get();
-    shelf_model->PinAppWithID(app_id);
+    PinAppWithIDToShelf(app_id);
     ash::ShelfItemDelegate* const delegate =
         shelf_model->GetShelfItemDelegate(ash::ShelfID(app_id));
     base::RunLoop run_loop;
