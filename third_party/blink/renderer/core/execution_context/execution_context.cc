@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/core/script/fetch_client_settings_object_impl.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
+#include "third_party/blink/renderer/core/workers/worklet_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/context_lifecycle_notifier.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -219,10 +220,16 @@ bool ExecutionContext::SharedArrayBufferTransferAllowed() const {
     return true;
   }
 
-  if (SecurityPolicy::IsSharedArrayBufferAlwaysAllowedForOrigin(
-          GetSecurityOrigin())) {
+  // Check if the SharedArrayBuffer is always allowed for this origin. For
+  // worklets use the origin of the main document (consistent with how origin is
+  // verified in origin trials).
+  const SecurityOrigin* origin;
+  if (auto* worklet_scope = DynamicTo<WorkletGlobalScope>(this))
+    origin = worklet_scope->DocumentSecurityOrigin();
+  else
+    origin = GetSecurityOrigin();
+  if (SecurityPolicy::IsSharedArrayBufferAlwaysAllowedForOrigin(origin))
     return true;
-  }
 
 #if defined(OS_ANDROID)
   return false;
