@@ -163,8 +163,9 @@ def main():
     print('  %s' % s)
   print()
   if not query_yes_no(
-      'Do you want to upload these to Google Cloud Storage?\n\n'
-      'FILES WILL BE PUBLIC, DO NOT UPLOAD ANYTHING CONFIDENTIAL.'):
+      'Do you want to upload these to Google Cloud Storage?\n\n' (
+          'FILES WILL BE VISIBLE TO A LARGE NUMBER OF PEOPLE. '
+          'DO NOT UPLOAD ANYTHING CONFIDENTIAL.')):
     exit(0)
 
   # Creating a standard gsutil object, assuming there are depot_tools
