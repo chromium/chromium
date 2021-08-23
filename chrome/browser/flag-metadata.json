@@ -4414,22 +4414,22 @@
   {
     "name": "permission-chip",
     "owners": [ "bsep", "engedy", "olesiamarukhno" ],
-    "expiry_milestone": 94
+    "expiry_milestone": 100
   },
   {
     "name": "permission-chip-gesture",
     "owners": [ "bsep", "engedy", "olesiamarukhno" ],
-    "expiry_milestone": 94
+    "expiry_milestone": 100
   },
   {
     "name": "permission-chip-request-type",
     "owners": [ "bsep", "engedy", "olesiamarukhno" ],
-    "expiry_milestone": 94
+    "expiry_milestone": 100
   },
   {
     "name": "permission-predictions",
     "owners": [ "andypaicu", "engedy", "ravjit", "mkwst", "hkamila", "elklm" ],
-    "expiry_milestone": 93
+    "expiry_milestone": 100
   },
   {
     "name": "permission-quiet-chip",
