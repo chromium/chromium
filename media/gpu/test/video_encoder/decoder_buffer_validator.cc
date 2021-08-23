@@ -292,9 +292,11 @@ VP9Validator::~VP9Validator() = default;
 
 bool VP9Validator::Validate(const DecoderBuffer& decoder_buffer,
                             const BitstreamBufferMetadata& metadata) {
-  constexpr uint8_t kSuperFrameMarker = 0b11000110;
+  // See Annex B "Superframes" in VP9 spec.
+  constexpr uint8_t kSuperFrameMarkerMask = 0b11100000;
+  constexpr uint8_t kSuperFrameMarker = 0b11000000;
   if ((decoder_buffer.data()[decoder_buffer.data_size() - 1] &
-       kSuperFrameMarker) == kSuperFrameMarker) {
+       kSuperFrameMarkerMask) == kSuperFrameMarker) {
     LOG(ERROR) << "Support for super-frames not yet implemented.";
     return false;
   }
