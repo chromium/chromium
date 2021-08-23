@@ -376,13 +376,7 @@ IN_PROC_BROWSER_TEST_F(LoginOfflineManagedTest,
   TestSystemTrayIsVisible();
 }
 
-// crbug.com/1240620: test is flaky on chromeos.
-#if defined(OS_CHROMEOS)
-#define MAYBE_BackButtonTest DISABLED_BackButtonTest
-#else
-#define MAYBE_BackButtonTest BackButtonTest
-#endif
-IN_PROC_BROWSER_TEST_F(LoginOfflineManagedTest, MAYBE_BackButtonTest) {
+IN_PROC_BROWSER_TEST_F(LoginOfflineManagedTest, BackButtonTest) {
   std::string domain = gaia::ExtractDomainName(managed_user_id_.GetUserEmail());
 
   ConfigurePolicy(domain);
