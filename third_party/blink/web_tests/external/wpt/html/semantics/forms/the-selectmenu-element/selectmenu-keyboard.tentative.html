@@ -5,14 +5,17 @@
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-actions.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
-<selectmenu id="selectMenu0">
+  <selectmenu id="selectMenu0">
     <div id="selectMenu0-button0" slot="button" part="button" tabindex="0">button</div>
     <option>one</option>
     <option>two</option>
     <option>three</option>
   </selectmenu>
-<script>
 
+  <selectmenu id="selectMenu1">
+    <option id="selectMenu1-child0">one</option>
+  </selectmenu>
+<script>
 // See https://w3c.github.io/webdriver/#keyboard-actions
 const KEY_CODE_MAP = {
   'Enter':      '\uE007',
@@ -70,4 +73,11 @@ promise_test(async t => {
   await test_driver.send_keys(selectMenu, KEY_CODE_MAP.Enter);
   assert_false(selectMenu.open, "Enter key should close selectmenu");
 }, "Validate Enter, Up/Down Arrow, and Space keyboard accessibility support for <selecmenu>");
+
+promise_test(async t => {
+  const selectMenuOption = document.getElementById("selectMenu1-child0");
+  const event = document.createEvent("Event");
+  event.initEvent("keydown");
+  selectMenuOption.dispatchEvent(event);
+}, "Firing a synthetic event at a selectmenu's option doesn't crash");
 </script>

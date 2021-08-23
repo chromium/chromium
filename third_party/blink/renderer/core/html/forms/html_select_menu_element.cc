@@ -671,6 +671,8 @@ void HTMLSelectMenuElement::ButtonPartEventListener::Invoke(ExecutionContext*,
   } else if (event->type() == event_type_names::kKeydown) {
     bool handled = false;
     auto* keyboard_event = DynamicTo<KeyboardEvent>(event);
+    if (!keyboard_event)
+      return;
     switch (keyboard_event->keyCode()) {
       case VKEY_RETURN:
       case VKEY_SPACE:
@@ -699,6 +701,8 @@ void HTMLSelectMenuElement::OptionPartEventListener::Invoke(ExecutionContext*,
   } else if (event->type() == event_type_names::kKeydown) {
     bool handled = false;
     auto* keyboard_event = DynamicTo<KeyboardEvent>(event);
+    if (!keyboard_event)
+      return;
     switch (keyboard_event->keyCode()) {
       case VKEY_RETURN: {
         Element* target_element =
