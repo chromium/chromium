@@ -68,7 +68,17 @@ RebindableTaskRunner* GetClientLibTaskRunner() {
 }  // namespace
 
 TracingEnvironment::TracingEnvironment() {
-  trace_event::TraceLog::GetInstance()->ResetForTesting();
+  if (perfetto::Tracing::IsInitialized())
+    return;
+  static tracing::PerfettoPlatform perfetto_platform(
+      tracing::PerfettoPlatform::TaskRunnerType::kBuiltin);
+  perfetto::TracingInitArgs init_args;
+  init_args.backends = perfetto::BackendType::kInProcessBackend;
+  init_args.platform = &perfetto_platform;
+  perfetto::Tracing::Initialize(init_args);
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  perfetto::TrackEvent::Register();
+#endif
 }
 
 TracingEnvironment::TracingEnvironment(
