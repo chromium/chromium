@@ -62,6 +62,9 @@ class FullRestoreAppLaunchHandler : public AppLaunchHandler {
   // true to allow the restoration.
   void SetShouldRestore();
 
+  // Returns true if the full restore data from the full restore file is loaded.
+  bool IsRestoreDataLoaded();
+
   base::TimeTicks restore_start_time() const { return restore_start_time_; }
 
   // AppLaunchHandler:

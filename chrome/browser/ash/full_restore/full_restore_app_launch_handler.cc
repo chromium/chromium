@@ -102,6 +102,10 @@ void FullRestoreAppLaunchHandler::SetShouldRestore() {
   MaybePostRestore();
 }
 
+bool FullRestoreAppLaunchHandler::IsRestoreDataLoaded() {
+  return restore_data_ != nullptr;
+}
+
 void FullRestoreAppLaunchHandler::OnAppUpdate(const apps::AppUpdate& update) {
   // If the restore flag `should_restore_` is true, launch the app for
   // restoration.
