@@ -135,9 +135,9 @@ bool BrowserStateInfoCache::BrowserStateIsAuthenticatedAtIndex(
 }
 
 bool BrowserStateInfoCache::BrowserStateIsAuthErrorAtIndex(size_t index) const {
-  bool value = false;
-  GetInfoForBrowserStateAtIndex(index)->GetBoolean(kIsAuthErrorKey, &value);
-  return value;
+  return GetInfoForBrowserStateAtIndex(index)
+      ->FindBoolPath(kIsAuthErrorKey)
+      .value_or(false);
 }
 
 void BrowserStateInfoCache::SetAuthInfoOfBrowserStateAtIndex(

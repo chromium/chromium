@@ -179,7 +179,7 @@ void NotificationPromo::InitFromPrefs() {
 
   ntp_promo->GetDouble(kPrefPromoFirstViewTime, &first_view_time_);
   ntp_promo->GetInteger(kPrefPromoViews, &views_);
-  ntp_promo->GetBoolean(kPrefPromoClosed, &closed_);
+  closed_ = ntp_promo->FindBoolPath(kPrefPromoClosed).value_or(closed_);
 }
 
 bool NotificationPromo::CanShow() const {

@@ -93,10 +93,16 @@ InspectDOMHandler::~InspectDOMHandler() {
 }
 
 void InspectDOMHandler::HandleSetLoggingEnabled(const base::ListValue* args) {
-  DCHECK_EQ(1u, args->GetSize());
+  auto args_list = args->GetList();
+  if (args_list.size() != 1) {
+    NOTREACHED();
+    return;
+  }
 
   bool enabled = false;
-  if (!args->GetBoolean(0, &enabled)) {
+  if (args_list[0].is_bool()) {
+    enabled = args_list[0].GetBool();
+  } else {
     NOTREACHED();
   }
 

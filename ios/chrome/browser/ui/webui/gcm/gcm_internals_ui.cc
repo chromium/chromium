@@ -77,15 +77,12 @@ void GcmInternalsUIMessageHandler::ReturnResults(
 }
 
 void GcmInternalsUIMessageHandler::RequestAllInfo(const base::ListValue* args) {
-  if (args->GetSize() != 1) {
+  auto args_list = args->GetList();
+  if (args_list.size() != 1 || !args_list[0].is_bool()) {
     NOTREACHED();
     return;
   }
-  bool clear_logs = false;
-  if (!args->GetBoolean(0, &clear_logs)) {
-    NOTREACHED();
-    return;
-  }
+  bool clear_logs = args_list[0].GetBool();
 
   gcm::GCMDriver::ClearActivityLogs clear_activity_logs =
       clear_logs ? gcm::GCMDriver::CLEAR_LOGS : gcm::GCMDriver::KEEP_LOGS;
@@ -107,15 +104,12 @@ void GcmInternalsUIMessageHandler::RequestAllInfo(const base::ListValue* args) {
 }
 
 void GcmInternalsUIMessageHandler::SetRecording(const base::ListValue* args) {
-  if (args->GetSize() != 1) {
+  auto args_list = args->GetList();
+  if (args_list.size() != 1 || !args_list[0].is_bool()) {
     NOTREACHED();
     return;
   }
-  bool recording = false;
-  if (!args->GetBoolean(0, &recording)) {
-    NOTREACHED();
-    return;
-  }
+  bool recording = args_list[0].GetBool();
 
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromWebUIIOS(web_ui());
