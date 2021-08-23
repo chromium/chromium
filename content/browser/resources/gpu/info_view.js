@@ -277,6 +277,7 @@ export function makeInfoView(browserBridge) {
         'vpx_decode': 'VPx Video Decode',
         'webgl2': 'WebGL2',
         'skia_renderer': 'Skia Renderer',
+        'canvas_oop_rasterization': 'Canvas out-of-process rasterization',
       };
 
       const statusMap = {

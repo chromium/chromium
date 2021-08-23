@@ -812,18 +812,11 @@ RendererBlinkPlatformImpl::CreateOffscreenGraphicsContext3DProvider(
   attributes.sample_buffers = 0;
   attributes.bind_generates_resource = false;
   attributes.enable_raster_interface = web_attributes.enable_raster_interface;
-
-  // Only support OOPR on this context if the general feature is enabled in
-  // addition to OOPR for canvas. Otherwise this context will raster canvas
-  // through Skia's GrContext.
   attributes.enable_oop_rasterization =
       attributes.enable_raster_interface &&
       gpu_channel_host->gpu_feature_info()
-              .status_values[gpu::GPU_FEATURE_TYPE_OOP_RASTERIZATION] ==
-          gpu::kGpuFeatureStatusEnabled &&
-      !gpu_channel_host->gpu_feature_info().IsWorkaroundEnabled(
-          gpu::DISABLE_CANVAS_OOP_RASTERIZATION) &&
-      base::FeatureList::IsEnabled(features::kCanvasOopRasterization);
+              .status_values[gpu::GPU_FEATURE_TYPE_CANVAS_OOP_RASTERIZATION] ==
+          gpu::kGpuFeatureStatusEnabled;
   attributes.enable_gles2_interface = !attributes.enable_oop_rasterization;
 
   attributes.gpu_preference = web_attributes.prefer_low_power_gpu

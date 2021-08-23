@@ -104,6 +104,24 @@ const GpuFeatureData GetGpuFeatureData(
          "Accelerated 2D canvas is unavailable: either disabled "
          "via blocklist or the command line."),
      true},
+    {"canvas_oop_rasterization",
+     SafeGetFeatureStatus(gpu_feature_info,
+                          gpu::GPU_FEATURE_TYPE_CANVAS_OOP_RASTERIZATION),
+     !base::FeatureList::IsEnabled(features::kCanvasOopRasterization),
+#if 0
+     // TODO(crbug.com/1240756): Remove the "#if 0" once OOPR-Canvas is fully
+     // launched.
+     DisableInfo::Problem(
+         "Canvas out-of-process rasterization has been disabled, either via "
+         "blocklist, the command line, about:flags, or because out-of-process "
+         "rasterization is disabled."
+     ),
+#else
+     // As long as the Finch experiment is running, having the feature disabled
+     // is not a "problem".
+     DisableInfo::NotProblem(),
+#endif
+     /*fallback_to_software=*/false},
     {"gpu_compositing",
      // TODO(rivr): Replace with a check to see which backend is used for
      // compositing; do the same for GPU rasterization if it's enabled. For now
@@ -237,6 +255,9 @@ base::Value GetFeatureStatusImpl(GpuFeatureInfoType type) {
       status = "unavailable_software";
     } else {
       status = "enabled";
+      if (gpu_feature_data.name == "canvas_oop_rasterization") {
+        status += "_on";
+      }
       if ((gpu_feature_data.name == "webgl" ||
            gpu_feature_data.name == "webgl2") &&
           is_gpu_compositing_disabled)
