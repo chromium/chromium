@@ -124,6 +124,8 @@ public class ReaderModeTest implements CustomMainActivityStart {
 
     @Test
     @MediumTest
+    // TODO(crbug.com/1225333): Implement corresponding test for messages.
+    @DisableFeatures(ChromeFeatureList.MESSAGES_FOR_ANDROID_READER_MODE)
     public void testReaderModeInfobarShown() {
         waitForReaderModeInfobar();
     }
