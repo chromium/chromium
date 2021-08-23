@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher.TabListDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
@@ -314,7 +315,6 @@ public class StartSurfaceLayout extends Layout {
     public void doneHiding() {
         try (TraceEvent e = TraceEvent.scoped("StartSurfaceLayout.DoneHiding")) {
             super.doneHiding();
-            mStartSurface.onHide();
             RecordUserAction.record("MobileExitStackView");
             // When shown on StartSurface jank is tracked under
             // JankScenario.START_SURFACE_TAB_SWITCHER and it's started/stopped on
@@ -536,8 +536,8 @@ public class StartSurfaceLayout extends Layout {
     }
 
     private void postHiding() {
-        if (isHidingStartSurface()) {
-            getCarouselOrSingleTabListDelegate().postHiding();
+        if (ReturnToChromeExperimentsUtil.isStartSurfaceHomepageEnabled()) {
+            mStartSurface.onHide();
         } else {
             getGridTabListDelegate().postHiding();
         }

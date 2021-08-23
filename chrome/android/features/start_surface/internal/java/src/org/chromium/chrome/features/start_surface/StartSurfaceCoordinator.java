@@ -315,6 +315,9 @@ public class StartSurfaceCoordinator implements StartSurface {
         if (mTasksSurface != null) {
             mTasksSurface.onHide();
         }
+        if (mSecondaryTasksSurface != null) {
+            mSecondaryTasksSurface.onHide();
+        }
         if (mFeedPlaceholderCoordinator != null) {
             mFeedPlaceholderCoordinator.destroy();
             mFeedPlaceholderCoordinator = null;

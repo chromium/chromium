@@ -28,7 +28,8 @@ public interface StartSurface {
     void destroy();
 
     /**
-     * Called when the Start surface is hidden.
+     * Called when the Start surface is hidden. It hides TasksSurfaces which are created when the
+     * Start surface is enabled.
      */
     void onHide();
 

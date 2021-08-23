@@ -226,6 +226,7 @@ public class TasksSurfaceCoordinator implements TasksSurface {
             mMostVisitedList.destroyMVTiles();
             mIsMVTilesInitialized = false;
         }
+        mTabSwitcher.getTabListDelegate().postHiding();
     }
 
     @VisibleForTesting
