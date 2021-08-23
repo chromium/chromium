@@ -83,6 +83,8 @@ void AppLaunchSplashScreenHandler::Show() {
     return;
   }
 
+  is_shown_ = true;
+
   base::DictionaryValue data;
   data.SetBoolean("shortcutEnabled",
                   !KioskAppManager::Get()->GetDisableBailoutShortcut());
@@ -93,6 +95,12 @@ void AppLaunchSplashScreenHandler::Show() {
 
   SetLaunchText(l10n_util::GetStringUTF8(GetProgressMessageFromState(state_)));
   ShowScreenWithData(kScreenId, &data);
+  if (toggle_network_config_on_show_.has_value()) {
+    DoToggleNetworkConfig(toggle_network_config_on_show_.value());
+    toggle_network_config_on_show_.reset();
+  }
+  if (network_config_shown_)
+    ShowNetworkConfigureUI();
 }
 
 void AppLaunchSplashScreenHandler::RegisterMessages() {
@@ -106,10 +114,16 @@ void AppLaunchSplashScreenHandler::RegisterMessages() {
               &AppLaunchSplashScreenHandler::HandleNetworkConfigRequested);
 }
 
-void AppLaunchSplashScreenHandler::Hide() {}
+void AppLaunchSplashScreenHandler::Hide() {
+  is_shown_ = false;
+}
 
 void AppLaunchSplashScreenHandler::ToggleNetworkConfig(bool visible) {
-  CallJS("login.AppLaunchSplashScreen.toggleNetworkConfig", visible);
+  if (!is_shown_) {
+    toggle_network_config_on_show_ = visible;
+    return;
+  }
+  DoToggleNetworkConfig(visible);
 }
 
 void AppLaunchSplashScreenHandler::UpdateAppLaunchState(AppLaunchState state) {
@@ -287,6 +301,10 @@ void AppLaunchSplashScreenHandler::HandleContinueAppLaunch() {
   network_config_shown_ = false;
   delegate_->OnNetworkConfigFinished();
   Show();
+}
+
+void AppLaunchSplashScreenHandler::DoToggleNetworkConfig(bool visible) {
+  CallJS("login.AppLaunchSplashScreen.toggleNetworkConfig", visible);
 }
 
 }  // namespace chromeos
