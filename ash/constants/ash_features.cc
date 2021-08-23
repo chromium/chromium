@@ -719,7 +719,7 @@ const base::Feature kMinimumChromeVersion{"MinimumChromeVersion",
 // minor mode(e.g. under the age of 18) to provide unnecessary consents to share
 // personal data.
 const base::Feature kMinorModeRestriction{"MinorModeRestriction",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables the use of Mojo by Chrome-process code to communicate with Power
 // Manager. In order to use mojo, this feature must be turned on and a callsite

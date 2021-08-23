@@ -38,8 +38,10 @@ extern const base::Feature kWipeDataOnChildAccountSignin;
 extern const base::Feature kForceStartupSigninPromo;
 #endif
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Support for the minor mode.
 extern const base::Feature kMinorModeSupport;
+#endif
 
 // This feature disables all extended sync promos.
 extern const base::Feature kForceDisableExtendedSyncPromos;
