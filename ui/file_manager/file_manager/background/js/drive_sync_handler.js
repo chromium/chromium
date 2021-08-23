@@ -424,8 +424,8 @@ export class DriveSyncHandlerImpl extends EventTarget {
       // TODO(austinct): Change launchFileManager() to have return type
       // Promise<?string>.
       appId = /** @type {?string} */ (await launcher.launchFileManager(
-          /* opt_appState */ {}, /* opt_id */ undefined,
-          LaunchType.FOCUS_ANY_OR_CREATE));
+          /*appState=*/ {},
+          /*id=*/ undefined, LaunchType.FOCUS_ANY_OR_CREATE));
     }
     if (!appId) {
       xfm.notifications.create(

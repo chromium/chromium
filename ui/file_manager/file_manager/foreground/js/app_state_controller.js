@@ -5,10 +5,10 @@
 import {assert} from 'chrome://resources/js/assert.m.js';
 
 import {appUtil} from '../../common/js/app_util.js';
+import {DialogType} from '../../common/js/dialog_type.js';
 import {util} from '../../common/js/util.js';
 import {xfm} from '../../common/js/xfm.js';
 
-import {DialogType} from './dialog_type.js';
 import {DirectoryModel} from './directory_model.js';
 import {FileManagerUI} from './ui/file_manager_ui.js';
 import {ListContainer} from './ui/list_container.js';
@@ -218,12 +218,11 @@ export class AppStateController {
       }
     }
 
-    // TODO(mtomasz): Consider remembering the selection.
     appUtil.updateAppState(
         this.directoryModel_.getCurrentDirEntry() ?
             this.directoryModel_.getCurrentDirEntry().toURL() :
             '',
-        '' /* selectionURL */, '' /* opt_param */);
+        /*selectionURL=*/ '');
   }
 }
 

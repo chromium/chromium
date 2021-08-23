@@ -25,6 +25,7 @@ group("js_modules") {
   deps = [
     ":app_util",
     ":async_util",
+    ":dialog_type",
     ":error_counter",
     ":file_operation_common",
     ":file_type",
@@ -112,6 +113,9 @@ js_library("async_util") {
 js_library("error_counter") {
 }
 
+js_library("dialog_type") {
+}
+
 js_unittest("files_app_entry_types_unittest.m") {
   deps = [
     ":files_app_entry_types",
@@ -127,6 +131,13 @@ js_library("files_app_entry_types") {
   deps = [
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:volume_info",
+  ]
+}
+
+js_library("files_app_state") {
+  deps = [
+    ":dialog_type",
+    ":volume_manager_types",
   ]
 }
 

@@ -9,6 +9,7 @@ import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
 import {contextMenuHandler} from 'chrome://resources/js/cr/ui/context_menu_handler.m.js';
 import {List} from 'chrome://resources/js/cr/ui/list.m.js';
 
+import {DialogType} from '../../common/js/dialog_type.js';
 import {FileOperationProgressEvent} from '../../common/js/file_operation_common.js';
 import {FileType} from '../../common/js/file_type.js';
 import {EntryList} from '../../common/js/files_app_entry_types.js';
@@ -24,7 +25,6 @@ import {VolumeManager} from '../../externs/volume_manager.js';
 
 import {ActionsModel} from './actions_model.js';
 import {constants} from './constants.js';
-import {DialogType} from './dialog_type.js';
 import {DirectoryModel} from './directory_model.js';
 import {FileSelection, FileSelectionHandler} from './file_selection.js';
 import {FileTasks} from './file_tasks.js';

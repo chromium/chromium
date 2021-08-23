@@ -63,6 +63,7 @@ js_type_check("closure_compile") {
 js_library("background") {
   testonly = true
   deps = [
+    "//ui/file_manager/file_manager/common/js:files_app_state",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/integration_tests:remote_call",
     "//ui/file_manager/integration_tests:test_util",
@@ -218,7 +219,10 @@ js_library("providers") {
 
 js_library("quick_view") {
   testonly = true
-  deps = [ "//ui/file_manager/integration_tests:testcase" ]
+  deps = [
+    "//ui/file_manager/file_manager/common/js:dialog_type",
+    "//ui/file_manager/integration_tests:testcase",
+  ]
 }
 
 js_library("recents") {
@@ -238,7 +242,10 @@ js_library("restore_prefs") {
 
 js_library("search") {
   testonly = true
-  deps = [ "//ui/file_manager/integration_tests:testcase" ]
+  deps = [
+    "//ui/file_manager/file_manager/common/js:files_app_state",
+    "//ui/file_manager/integration_tests:testcase",
+  ]
 }
 
 js_library("share_and_manage_dialog") {

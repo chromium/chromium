@@ -9,6 +9,7 @@ import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
 
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
+import {DialogType} from '../../common/js/dialog_type.js';
 import {installMockChrome} from '../../common/js/mock_chrome.js';
 import {MockDirectoryEntry, MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
@@ -17,7 +18,6 @@ import {importerHistoryInterfaces} from '../../externs/background/import_history
 import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
-import {DialogType} from './dialog_type.js';
 import {FakeFileSelectionHandler} from './fake_file_selection_handler.js';
 import {FileListModel} from './file_list_model.js';
 import {FileSelectionHandler} from './file_selection.js';

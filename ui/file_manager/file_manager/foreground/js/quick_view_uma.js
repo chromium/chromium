@@ -4,12 +4,12 @@
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 
+import {DialogType} from '../../common/js/dialog_type.js';
 import {FileType} from '../../common/js/file_type.js';
 import {metrics} from '../../common/js/metrics.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
-import {DialogType} from './dialog_type.js';
 import {FileTasks} from './file_tasks.js';
 
 /**

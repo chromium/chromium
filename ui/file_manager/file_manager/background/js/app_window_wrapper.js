@@ -8,6 +8,7 @@ import {assertInstanceof} from 'chrome://resources/js/assert.m.js';
 
 import {appUtil} from '../../common/js/app_util.js';
 import {AsyncUtil} from '../../common/js/async_util.js';
+import {FilesAppState} from '../../common/js/files_app_state.js';
 import {xfm} from '../../common/js/xfm.js';
 
 /**
@@ -35,6 +36,7 @@ export class AppWindowWrapper {
     this.options_ = /** @type {!chrome.app.window.CreateWindowOptions} */ (
         JSON.parse(JSON.stringify(options)));
     this.window_ = null;
+    /** @private {?FilesAppState} */
     this.appState_ = null;
     this.openingOrOpened_ = false;
 
@@ -184,7 +186,7 @@ export class AppWindowWrapper {
   /**
    * Opens the window.
    *
-   * @param {Object} appState App state.
+   * @param {!FilesAppState} appState App state.
    * @param {boolean} reopen True if the launching is triggered automatically.
    *     False otherwise.
    * @return {Promise} Resolved when the window is launched.
@@ -336,7 +338,7 @@ export class SingletonAppWindowWrapper extends AppWindowWrapper {
    *
    * Activates an existing window or creates a new one.
    *
-   * @param {Object} appState App state.
+   * @param {!FilesAppState} appState App state.
    * @param {boolean} reopen True if the launching is triggered automatically.
    *     False otherwise.
    * @return {Promise} Resolved when the window is launched.

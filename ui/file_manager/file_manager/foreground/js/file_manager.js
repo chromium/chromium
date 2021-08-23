@@ -11,7 +11,9 @@ import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
 
+import {DialogType} from '../../common/js/dialog_type.js';
 import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
+import {FilesAppState} from '../../common/js/files_app_state.js';
 import {FilteredVolumeManager} from '../../common/js/filtered_volume_manager.js';
 import {metrics} from '../../common/js/metrics.js';
 import {ProgressItemState} from '../../common/js/progress_center_common.js';
@@ -38,7 +40,6 @@ import {ColumnVisibilityController} from './column_visibility_controller.js';
 import {crossoverSearchUtils} from './crossover_search_utils.js';
 import {CrostiniController} from './crostini_controller.js';
 import {DialogActionController} from './dialog_action_controller.js';
-import {DialogType} from './dialog_type.js';
 import {FileFilter} from './directory_contents.js';
 import {DirectoryModel} from './directory_model.js';
 import {DirectoryTreeNamingController} from './directory_tree_naming_controller.js';
@@ -585,7 +586,7 @@ export class FileManager extends EventTarget {
 
   /**
    * Launch a new File Manager app.
-   * @param {Object=} appState App state.
+   * @param {!FilesAppState=} appState App state.
    */
   launchFileManager(appState) {
     this.fileBrowserBackground_.launchFileManager(appState);
@@ -923,10 +924,6 @@ export class FileManager extends EventTarget {
         params[name] = window.appState[name];
       }
 
-      for (const name in window.appState.params) {
-        params[name] = window.appState.params[name];
-      }
-
       this.launchParams_ = new LaunchParam(params);
     } else {
       // Used by the select dialog only.
@@ -934,7 +931,8 @@ export class FileManager extends EventTarget {
       if (location.search) {
         const query = location.search.substr(1);
         try {
-          json = /** @type {!Object} */ (JSON.parse(decodeURIComponent(query)));
+          json = /** @type {!FilesAppState} */ (
+              JSON.parse(decodeURIComponent(query)));
         } catch (e) {
           console.debug(`Error parsing location.search "${query}" due to ${e}`);
         }

@@ -123,6 +123,7 @@ js_library("app_window_wrapper") {
     ":app_windows",
     "//ui/file_manager/file_manager/common/js:app_util",
     "//ui/file_manager/file_manager/common/js:async_util",
+    "//ui/file_manager/file_manager/common/js:files_app_state",
     "//ui/webui/resources/js:assert.m",
   ]
 }
@@ -147,6 +148,7 @@ js_library("background") {
     ":mount_metrics",
     ":progress_center",
     ":volume_manager_factory",
+    "//ui/file_manager/file_manager/common/js:files_app_state",
     "//ui/file_manager/file_manager/common/js:importer_common",
     "//ui/file_manager/file_manager/common/js:metrics",
     "//ui/file_manager/file_manager/common/js:url_constants",
@@ -462,6 +464,7 @@ js_unittest("import_history_unittest.m") {
 js_library("launcher") {
   deps = [
     ":app_window_wrapper",
+    "//ui/file_manager/file_manager/common/js:files_app_state",
     "//ui/file_manager/file_manager/common/js:util",
   ]
 }
@@ -657,6 +660,7 @@ js_library("test_util") {
     ":background",
     ":launcher",
     ":test_util_base",
+    "//ui/file_manager/file_manager/common/js:files_app_state",
     "//ui/file_manager/file_manager/common/js:progress_center_common",
     "//ui/file_manager/file_manager/common/js:util",
   ]

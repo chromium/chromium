@@ -38,7 +38,7 @@ testcase.metricsOpenSwa = async () => {
   // Open Files SWA:
   await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.photos], []);
 
-  // Value basd on DialogType in file_manager/foreground/js/dialog_type.js:
+  // Value basd on DialogType in file_manager/common/js/dialog_type.js:
   const FileDialogTypeValues = {
     FULL_PAGE: 5,
   };

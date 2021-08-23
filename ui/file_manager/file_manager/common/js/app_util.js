@@ -33,14 +33,9 @@ appUtil.saveAppState = () => {
  *     If null the value is left unchanged.
  * @param {?string} selectionURL Currently selected entry as an URL. If null the
  *     value is left unchanged.
- * @param {string|Object=} opt_param Additional parameters, to be stored. If
- *     null, then left unchanged.
  */
-appUtil.updateAppState = (currentDirectoryURL, selectionURL, opt_param) => {
+appUtil.updateAppState = (currentDirectoryURL, selectionURL) => {
   window.appState = window.appState || {};
-  if (opt_param !== undefined && opt_param !== null) {
-    window.appState.params = opt_param;
-  }
   if (currentDirectoryURL !== null) {
     window.appState.currentDirectoryURL = currentDirectoryURL;
   }

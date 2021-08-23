@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {FilesAppState} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/common/js/files_app_state.js';
+
 import {addEntries, ENTRIES, getCaller, pending, repeatUntil, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
@@ -264,6 +266,7 @@ testcase.searchQueryLaunchParam = async () => {
 
   // Open Files app with LaunchParam.searchQuery='gdoc'.
   const query = 'gdoc';
+  /** @type {!FilesAppState} */
   const appState = {searchQuery: query};
   const appId =
       await remoteCall.callRemoteTestUtil('openMainWindow', null, [appState]);

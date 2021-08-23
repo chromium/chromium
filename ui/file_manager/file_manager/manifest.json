@@ -150,9 +150,11 @@
   "web_accessible_resources": [
     "common/js/app_util.js",
     "common/js/async_util.js",
+    "common/js/dialog_type.js",
     "common/js/file_operation_common.js",
     "common/js/file_type.js",
     "common/js/files_app_entry_types.js",
+    "common/js/files_app_state.js",
     "common/js/filtered_volume_manager.js",
     "common/js/lru_cache.js",
     "common/js/metrics.js",

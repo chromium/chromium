@@ -31,9 +31,11 @@ generate_grd("build_static_grdp") {
 
     # For some unittests:
     "common/js/app_util.js",
+    "common/js/dialog_type.js",
     "common/js/lru_cache.js",
     "common/js/file_type.js",
     "common/js/files_app_entry_types.js",
+    "common/js/files_app_state.js",
     "common/js/mock_chrome.js",
     "common/js/power.js",
     "common/js/storage_adapter.js",

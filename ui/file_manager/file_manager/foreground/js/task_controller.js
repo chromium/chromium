@@ -6,12 +6,12 @@ import {assert, assertInstanceof, assertNotReached} from 'chrome://resources/js/
 import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
+import {DialogType} from '../../common/js/dialog_type.js';
 import {str, strf, util} from '../../common/js/util.js';
 import {Crostini} from '../../externs/background/crostini.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
-import {DialogType} from './dialog_type.js';
 import {DirectoryModel} from './directory_model.js';
 import {FileSelection, FileSelectionHandler} from './file_selection.js';
 import {FileTasks} from './file_tasks.js';

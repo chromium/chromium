@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {FilesAppState} from '../../common/js/files_app_state.js';
 import {importer} from '../../common/js/importer_common.js';
 import {metrics} from '../../common/js/metrics.js';
 import {str, util} from '../../common/js/util.js';
@@ -204,12 +205,12 @@ class FileBrowserBackgroundImpl extends BackgroundBaseImpl {
   /**
    * Launches a new File Manager window.
    *
-   * @param {Object=} opt_appState App state.
+   * @param {!FilesAppState=} appState App state.
    * @return {!Promise<chrome.app.window.AppWindow|string>} Resolved with the
    *     App ID.
    */
-  async launchFileManager(opt_appState) {
-    return launcher.launchFileManager(opt_appState);
+  async launchFileManager(appState = {}) {
+    return launcher.launchFileManager(appState);
   }
 
   /**
@@ -439,7 +440,8 @@ class FileBrowserBackgroundImpl extends BackgroundBaseImpl {
             metrics.startInterval('Load.BackgroundRestart');
             const id = Number(match[1]);
             try {
-              const appState = /** @type {Object} */ (JSON.parse(items[key]));
+              const appState =
+                  /** @type {!FilesAppState} */ (JSON.parse(items[key]));
               launcher.launchFileManager(appState, id, undefined).then(() => {
                 metrics.recordInterval('Load.BackgroundRestart');
               });
