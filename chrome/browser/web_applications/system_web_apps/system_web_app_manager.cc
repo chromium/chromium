@@ -551,9 +551,14 @@ absl::optional<SystemAppType> SystemWebAppManager::GetCapturingSystemAppForURL(
     // TODO(crbug://1051229): Expand ShouldCaptureNavigation to take a GURL, and
     // move this into the camera one.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (type == SystemAppType::CAMERA &&
-      url.spec() != chromeos::kChromeUICameraAppMainURL)
-    return absl::nullopt;
+  if (type == SystemAppType::CAMERA) {
+    url::Replacements<char> replacements;
+    replacements.ClearQuery();
+    replacements.ClearRef();
+    if (url.ReplaceComponents(replacements).spec() !=
+        chromeos::kChromeUICameraAppMainURL)
+      return absl::nullopt;
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return type;
