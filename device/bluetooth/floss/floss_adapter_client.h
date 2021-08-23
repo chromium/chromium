@@ -9,13 +9,19 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "dbus/exported_object.h"
 #include "dbus/object_path.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/floss/floss_dbus_client.h"
 
 namespace dbus {
+class ErrorResponse;
+class MessageReader;
+class MessageWriter;
 class ObjectPath;
+class Response;
 }  // namespace dbus
 
 namespace floss {
@@ -71,9 +77,20 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
   // Creates the instance.
   static std::unique_ptr<FlossAdapterClient> Create();
 
+  // Parses |FlossDeviceId| from a property map in DBus. The data is provided as
+  // an array of dict entries (with a signature of a{sv}).
+  static bool ParseFlossDeviceId(dbus::MessageReader* reader,
+                                 FlossDeviceId* device);
+
+  // Serializes |FlossDeviceId| as a property map in DBus (written as an array
+  // of dict entries with a signature of a{sv}).
+  static void SerializeFlossDeviceId(dbus::MessageWriter* writer,
+                                     const FlossDeviceId& device);
+
   FlossAdapterClient(const FlossAdapterClient&) = delete;
   FlossAdapterClient& operator=(const FlossAdapterClient&) = delete;
 
+  FlossAdapterClient();
   ~FlossAdapterClient() override;
 
   // Manage observers.
@@ -81,27 +98,71 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
   void RemoveObserver(Observer* observer);
 
   // Get the address of this adapter.
-  virtual std::string GetAddress() const = 0;
+  const std::string& GetAddress() const { return adapter_address_; }
 
   // Start a discovery session.
-  virtual void StartDiscovery(ResponseCallback callback) = 0;
+  virtual void StartDiscovery(ResponseCallback callback);
 
   // Cancel the active discovery session.
-  virtual void CancelDiscovery(ResponseCallback callback) = 0;
+  virtual void CancelDiscovery(ResponseCallback callback);
 
   // Create a bond with the given device and transport.
   virtual void CreateBond(ResponseCallback callback,
                           FlossDeviceId device,
-                          BluetoothTransport transport) = 0;
+                          BluetoothTransport transport);
 
   // Get the object path for this adapter.
-  virtual const dbus::ObjectPath* GetObjectPath() const = 0;
+  const dbus::ObjectPath* GetObjectPath() const { return &adapter_path_; }
+
+  // Initialize the adapter client.
+  void Init(dbus::Bus* bus,
+            const std::string& service_name,
+            const std::string& adapter_path) override;
 
  protected:
-  FlossAdapterClient();
+  friend class FlossAdapterClientTest;
+
+  // Handle response to |GetAddress| DBus method call.
+  void HandleGetAddress(dbus::Response* response,
+                        dbus::ErrorResponse* error_response);
+
+  // Handle callback |OnAddressChanged| on exported object path.
+  void OnAddressChanged(dbus::MethodCall* method_call,
+                        dbus::ExportedObject::ResponseSender response_sender);
+
+  // Handle callback |OnDiscoveringChanged| on exported object path.
+  void OnDiscoveringChanged(
+      dbus::MethodCall* method_call,
+      dbus::ExportedObject::ResponseSender response_sender);
+
+  // Handle callback |OnDeviceFound| on exported object path.
+  void OnDeviceFound(dbus::MethodCall* method_call,
+                     dbus::ExportedObject::ResponseSender response_sender);
+
+  // Handle callback |OnSspRequest| on exported object path.
+  void OnSspRequest(dbus::MethodCall* method_call,
+                    dbus::ExportedObject::ResponseSender response_sender);
 
   // List of observers interested in event notifications from this client.
   base::ObserverList<Observer> observers_;
+
+  // Managed by FlossDBusManager - we keep local pointer to access object proxy.
+  dbus::Bus* bus_ = nullptr;
+
+  // Adapter managed by this client.
+  dbus::ObjectPath adapter_path_;
+
+  // Service which implements the adapter interface.
+  std::string service_name_;
+
+  // Address of adapter.
+  std::string adapter_address_;
+
+ private:
+  // Object path for exported callbacks registered against adapter interface.
+  static const char kExportedCallbacksPath[];
+
+  base::WeakPtrFactory<FlossAdapterClient> weak_ptr_factory_{this};
 };
 
 }  // namespace floss
