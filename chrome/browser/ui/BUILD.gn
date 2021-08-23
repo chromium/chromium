@@ -1887,6 +1887,7 @@ static_library("ui") {
       "app_list/search/ranking/filtering_ranker.h",
       "app_list/search/ranking/launch_data.cc",
       "app_list/search/ranking/launch_data.h",
+      "app_list/search/ranking/persistent_proto.h",
       "app_list/search/ranking/ranker.h",
       "app_list/search/ranking/ranker_delegate.cc",
       "app_list/search/ranking/ranker_delegate.h",
