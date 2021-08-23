@@ -37,6 +37,7 @@
 #include "fuchsia/engine/browser/media_resource_provider_service.h"
 #include "fuchsia/engine/browser/web_engine_browser_context.h"
 #include "fuchsia/engine/browser/web_engine_devtools_controller.h"
+#include "fuchsia/engine/browser/web_engine_memory_inspector.h"
 #include "fuchsia/engine/common/cast_streaming.h"
 #include "fuchsia/engine/switches.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
@@ -126,6 +127,10 @@ int WebEngineBrowserMainParts::PreMainMessageLoopRun() {
   component_inspector_ = std::make_unique<sys::ComponentInspector>(
       base::ComponentContextForProcess());
   cr_fuchsia::PublishVersionInfoToInspect(component_inspector_.get());
+
+  // Add a node providing memory details for this whole web instance.
+  memory_inspector_ =
+      std::make_unique<WebEngineMemoryInspector>(component_inspector_->root());
 
   const auto* command_line = base::CommandLine::ForCurrentProcess();
 
