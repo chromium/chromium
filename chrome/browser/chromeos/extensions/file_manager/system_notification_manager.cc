@@ -667,7 +667,9 @@ void SystemNotificationManager::HandleMountCompletedEvent(
       }
       break;
     case file_manager_private::MOUNT_COMPLETED_EVENT_TYPE_UNMOUNT:
-      // TODO(b/194637114) Remove navigate removable device notification.
+      GetNotificationDisplayService()->Close(
+          NotificationHandler::Type::TRANSIENT, kRemovableNotificationId);
+
       if (volume.device_type() != chromeos::DEVICE_TYPE_UNKNOWN &&
           !volume.storage_device_path().empty()) {
         UpdateDeviceMountStatus(event, volume);
