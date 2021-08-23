@@ -200,6 +200,7 @@ styles.innerHTML = `
     }
     .photo-empty .photo-text-container > p {
       color: var(--cros-button-label-color-secondary);
+      text-shadow: none;
     }
     .photo-gradient-mask {
       border-radius: 12px;
