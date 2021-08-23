@@ -71,6 +71,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               (const GURL&),
               (const, override));
   MOCK_METHOD(bool, IsCommittedMainFrameSecure, (), (const, override));
+  MOCK_METHOD(bool, IsWebAuthnAutofillEnabled, (), (const, override));
 };
 
 PasswordForm CreateForm(std::u16string username,
@@ -262,6 +263,27 @@ TEST_F(PasswordFormFillingTest, TestFillOnLoadSuggestion) {
     }
   }
 }
+
+#if !defined(ANDROID) && !defined(OS_IOS)
+TEST_F(PasswordFormFillingTest, DontFillOnLoadWebAuthnCredentials) {
+  observed_form_.accepts_webauthn_credentials = true;
+  for (bool webauthn_autofill_enabled : {false, true}) {
+    PasswordFormFillData fill_data;
+    EXPECT_CALL(client_, IsWebAuthnAutofillEnabled())
+        .WillOnce(Return(webauthn_autofill_enabled));
+    EXPECT_CALL(driver_, FillPasswordForm(_)).WillOnce(SaveArg<0>(&fill_data));
+    EXPECT_CALL(client_, PasswordWasAutofilled);
+    LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
+        &client_, &driver_, observed_form_, {&saved_match_}, federated_matches_,
+        &saved_match_, /*blocked_by_user=*/false, metrics_recorder_.get());
+    if (webauthn_autofill_enabled) {
+      EXPECT_EQ(LikelyFormFilling::kFillOnAccountSelect, likely_form_filling);
+    } else {
+      EXPECT_EQ(LikelyFormFilling::kFillOnPageLoad, likely_form_filling);
+    }
+  }
+}
+#endif
 
 // Test autofill when username and password are prefilled. Overwrite password
 // if server side classification thought the username was a placeholder or the

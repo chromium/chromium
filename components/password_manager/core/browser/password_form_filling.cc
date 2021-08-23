@@ -240,6 +240,10 @@ LikelyFormFilling SendFillInformationToRenderer(
     wait_for_username_reason = WaitForUsernameReason::kInsecureOrigin;
   } else if (IsFillOnAccountSelectFeatureEnabled()) {
     wait_for_username_reason = WaitForUsernameReason::kFoasFeature;
+  } else if (observed_form.accepts_webauthn_credentials &&
+             client->IsWebAuthnAutofillEnabled()) {
+    wait_for_username_reason =
+        WaitForUsernameReason::kAcceptsWebAuthnCredentials;
   }
 
   // Record no "FirstWaitForUsernameReason" metrics for a form that is not meant

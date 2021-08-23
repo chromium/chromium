@@ -101,6 +101,7 @@ struct FormParsingTestCase {
   SubmissionIndicatorEvent submission_event = SubmissionIndicatorEvent::NONE;
   absl::optional<bool> is_new_password_reliable;
   bool form_has_autofilled_value = false;
+  bool accepts_webauthn_credentials = false;
 };
 
 // Returns numbers which are distinct from each other within the scope of one
@@ -368,6 +369,9 @@ void CheckTestData(const std::vector<FormParsingTestCase>& test_cases) {
           EXPECT_EQ(*test_case.is_new_password_reliable,
                     parsed_form->is_new_password_reliable);
         }
+        EXPECT_EQ(test_case.accepts_webauthn_credentials &&
+                      mode == FormDataParser::Mode::kFilling,
+                  parsed_form->accepts_webauthn_credentials);
         EXPECT_EQ(test_case.form_has_autofilled_value,
                   parsed_form->form_has_autofilled_value);
 
@@ -2848,6 +2852,29 @@ TEST(FormParserTest, UsernameWithTypePasswordAndServerPredictions) {
                    .name = u"field2",
                    .form_control_type = "password"},
               },
+      },
+  });
+}
+
+// Tests that if a field is marked as autofill="webauthn" then the
+// `accepts_webauthn_credentials` flag is set.
+TEST(FormParserTest, AcceptsWebAuthnCredentials) {
+  CheckTestData({
+      {
+          .description_for_logging = "Field tagged with autofill=\"webauthn\"",
+          .fields =
+              {
+                  {.role = ElementRole::USERNAME,
+                   .autocomplete_attribute = "webauthn",
+                   .value = u"rosalina",
+                   .name = u"username",
+                   .form_control_type = "text"},
+                  {.role = ElementRole::CURRENT_PASSWORD,
+                   .value = u"luma",
+                   .name = u"password",
+                   .form_control_type = "password"},
+              },
+          .accepts_webauthn_credentials = true,
       },
   });
 }

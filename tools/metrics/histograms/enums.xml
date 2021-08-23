@@ -63935,6 +63935,9 @@ Called by update_net_trust_anchors.py.-->
     A credential exists for an affiliated matched site but not for the current
     security origin.
   </int>
+  <int value="10" label="Accepts WebAuthn credentials">
+    The form acccepts WebAuthn credentials from an active WebAuthn request.
+  </int>
 </enum>
 
 <enum name="PasswordManagerHttpCredentialType">

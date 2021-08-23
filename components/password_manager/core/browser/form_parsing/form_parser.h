@@ -28,6 +28,7 @@ enum class AutocompleteFlag {
   kUsername,
   kCurrentPassword,
   kNewPassword,
+  kWebAuthn,
   // Represents the whole family of cc-* flags + OTP flag.
   kNonPassword
 };

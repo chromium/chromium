@@ -230,7 +230,9 @@ class PasswordFormMetricsRecorder
     kPasswordPrefilled = 8,
     // A credential exists for affiliated website.
     kAffiliatedWebsite = 9,
-    kMaxValue = kAffiliatedWebsite,
+    // The form may accept WebAuthn credentials.
+    kAcceptsWebAuthnCredentials = 10,
+    kMaxValue = kAcceptsWebAuthnCredentials,
   };
 
   // Used in UMA histogram, please do NOT reorder.

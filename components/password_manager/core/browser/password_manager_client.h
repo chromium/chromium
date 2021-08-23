@@ -421,6 +421,9 @@ class PasswordManagerClient {
   // Returns a FieldInfoManager associated with the current profile.
   virtual FieldInfoManager* GetFieldInfoManager() const = 0;
 
+  // Returns true if integration between WebAuthn and Autofill is enabled.
+  virtual bool IsWebAuthnAutofillEnabled() const;
+
   // Returns if the Autofill Assistant UI is shown.
   virtual bool IsAutofillAssistantUIVisible() const = 0;
 
