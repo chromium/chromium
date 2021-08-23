@@ -270,7 +270,8 @@ void WebAXObjectProxy::UpdateLayout() {
 
 ui::AXNodeData WebAXObjectProxy::GetAXNodeData() const {
   ui::AXNodeData node_data;
-  accessibility_object_.Serialize(&node_data, ui::kAXModeComplete);
+  if (!IsDetached())
+    accessibility_object_.Serialize(&node_data, ui::kAXModeComplete);
   return node_data;
 }
 
@@ -460,6 +461,8 @@ gin::ObjectTemplateBuilder WebAXObjectProxy::GetObjectTemplateBuilder(
 }
 
 v8::Local<v8::Object> WebAXObjectProxy::GetChildAtIndex(unsigned index) {
+  if (IsDetached())
+    return v8::Local<v8::Object>();
   UpdateLayout();
   return factory_->GetOrCreate(accessibility_object_.ChildAt(index));
 }
@@ -509,6 +512,8 @@ void WebAXObjectProxy::NotificationReceived(
 
 void WebAXObjectProxy::Reset() {
   notification_callback_.Reset();
+  factory_ = nullptr;
+  accessibility_object_ = blink::WebAXObject();
 }
 
 std::string WebAXObjectProxy::Role() {
@@ -547,6 +552,8 @@ int WebAXObjectProxy::Height() {
 }
 
 v8::Local<v8::Value> WebAXObjectProxy::InPageLinkTarget() {
+  if (IsDetached())
+    return v8::Local<v8::Object>();
   UpdateLayout();
   blink::WebAXObject target = accessibility_object_.InPageLinkTarget();
   if (target.IsNull())
@@ -621,6 +628,9 @@ bool WebAXObjectProxy::SelectionIsBackward() {
 }
 
 v8::Local<v8::Value> WebAXObjectProxy::SelectionAnchorObject() {
+  if (IsDetached())
+    return v8::Local<v8::Object>();
+
   UpdateLayout();
 
   bool is_selection_backward = false;
@@ -676,6 +686,9 @@ std::string WebAXObjectProxy::SelectionAnchorAffinity() {
 }
 
 v8::Local<v8::Value> WebAXObjectProxy::SelectionFocusObject() {
+  if (IsDetached())
+    return v8::Local<v8::Object>();
+
   UpdateLayout();
 
   bool is_selection_backward = false;
@@ -880,6 +893,8 @@ bool WebAXObjectProxy::IsIgnored() {
 }
 
 v8::Local<v8::Object> WebAXObjectProxy::ActiveDescendant() {
+  if (IsDetached())
+    return v8::Local<v8::Object>();
   UpdateLayout();
   blink::WebAXObject element = accessibility_object_.AriaActiveDescendant();
   return factory_->GetOrCreate(element);

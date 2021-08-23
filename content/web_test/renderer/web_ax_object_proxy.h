@@ -58,6 +58,8 @@ class WebAXObjectProxy : public gin::Wrappable<WebAXObjectProxy> {
 
   Factory* factory() const { return factory_; }
 
+  bool IsDetached() const { return !factory_; }
+
  private:
   friend class WebAXObjectProxyBindings;
 
