@@ -14,7 +14,6 @@
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/infobars/core/infobar_manager.h"
-#include "components/signin/public/base/account_consistency_method.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_service_utils.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -107,11 +106,7 @@ bool SyncErrorInfoBarDelegate::Accept() {
   if (error_state_ == SyncSetupService::kSyncServiceSignInNeedsUpdate) {
     [presenter_ showReauthenticateSignin];
   } else if (ShouldShowSyncSettings(error_state_)) {
-    if (signin::IsMobileIdentityConsistencyEnabled()) {
-      [presenter_ showAccountSettings];
-    } else {
-      [presenter_ showGoogleServicesSettings];
-    }
+    [presenter_ showAccountSettings];
   } else if (error_state_ == SyncSetupService::kSyncServiceNeedsPassphrase) {
     [presenter_ showSyncPassphraseSettings];
   } else if (error_state_ ==

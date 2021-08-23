@@ -114,7 +114,6 @@ source_set("test_support") {
     "//base",
     "//components/image_fetcher/core:test_support",
     "//components/keyed_service/core",
-    "//components/signin/public/base",
     "//components/signin/public/base:test_support",
     "//components/signin/public/identity_manager:test_support",
     "//ios/chrome/browser/browser_state",

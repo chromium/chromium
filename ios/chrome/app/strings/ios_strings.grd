@@ -2035,9 +2035,6 @@ Try to use a unique password for every site.
       <message name="IDS_IOS_SETTINGS_SAFETY_CHECK_UPDATES_MANAGED_DESC" desc="Description text for when the device has updates managed by an administrator">
        Managed by your administrator
       </message>
-      <message name="IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_DISABLED_INFO" desc="String in the popover for the Safe Browsing check to direct the user to the Sync and Google Services page if Safe Browsing is disabled">
-        To turn on Safe Browsing, open <ph name="BEGIN_LINK">BEGIN_LINK</ph>Sync and Google Services<ph name="END_LINK">END_LINK</ph> and tap Safe Browsing.
-      </message>
       <message name="IDS_IOS_SETTINGS_SAFETY_CHECK_OPEN_SAFE_BROWSING_INFO" desc="String in the popover for the Safe Browsing check to direct the user to the Google Services page if Safe Browsing is disabled">
         To turn on Safe Browsing, open <ph name="BEGIN_LINK">BEGIN_LINK</ph>Google Services<ph name="END_LINK">END_LINK</ph> and tap Safe Browsing.
       </message>

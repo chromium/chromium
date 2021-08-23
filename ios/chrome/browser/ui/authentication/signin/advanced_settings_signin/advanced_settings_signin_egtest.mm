@@ -4,7 +4,6 @@
 
 #include "base/ios/ios_util.h"
 #import "base/test/ios/wait_util.h"
-#import "components/signin/public/base/account_consistency_method.h"
 #import "ios/chrome/browser/ui/authentication/signin/advanced_settings_signin/advanced_settings_signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui.h"

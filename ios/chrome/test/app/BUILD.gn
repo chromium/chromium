@@ -47,7 +47,6 @@ source_set("test_support") {
     "//components/metrics/demographics:test_support",
     "//components/prefs",
     "//components/previous_session_info",
-    "//components/signin/public/base",
     "//components/sync:test_support_nigori",
     "//components/sync/base",
     "//components/sync/test/fake_server",

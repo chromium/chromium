@@ -19,7 +19,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safety_check/safety_check.h"
-#include "components/signin/public/base/account_consistency_method.h"
 #include "components/version_info/version_info.h"
 #include "ios/chrome/browser/application_context.h"
 #import "ios/chrome/browser/omaha/omaha_service.h"
@@ -465,12 +464,8 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
     case PasswordItemType:
       return [self passwordCheckErrorInfo];
     case SafeBrowsingItemType: {
-      NSString* message =
-          signin::IsMobileIdentityConsistencyEnabled()
-              ? l10n_util::GetNSString(
-                    IDS_IOS_SETTINGS_SAFETY_CHECK_OPEN_SAFE_BROWSING_INFO)
-              : l10n_util::GetNSString(
-                    IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_DISABLED_INFO);
+      NSString* message = l10n_util::GetNSString(
+          IDS_IOS_SETTINGS_SAFETY_CHECK_OPEN_SAFE_BROWSING_INFO);
       GURL safeBrowsingURL(
           base::SysNSStringToUTF8(kSafeBrowsingSafetyCheckStringURL));
       return [self attributedStringWithText:message link:safeBrowsingURL];

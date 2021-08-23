@@ -6,7 +6,6 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "components/infobars/core/infobar_manager.h"
-#include "components/signin/public/base/account_consistency_method.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/infobars/infobar_manager_impl.h"
@@ -211,11 +210,7 @@ bool DisplaySyncErrors(ChromeBrowserState* browser_state,
       // valid end state.
       // TODO(crbug.com/1084941): the kSyncSettingsNotConfirmed case should be
       // removed following the launch of MICE.
-      if (signin::IsMobileIdentityConsistencyEnabled()) {
-        return false;
-      }
-      loggedErrorState = SYNC_SYNC_SETTINGS_NOT_CONFIRMED;
-      break;
+      return false;
   }
   UMA_HISTOGRAM_ENUMERATION("Sync.SyncErrorInfobarDisplayed", loggedErrorState);
 

@@ -310,12 +310,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (ItemArray)nonPersonalizedItems {
   if (!_nonPersonalizedItems) {
     NSMutableArray* items = [NSMutableArray array];
-    if (signin::IsMobileIdentityConsistencyEnabled()) {
-      TableViewItem* allowSigninItem = [self allowChromeSigninItem];
-      allowSigninItem.accessibilityIdentifier =
-          kAllowSigninItemAccessibilityIdentifier;
-      [items addObject:allowSigninItem];
-    }
+
+    TableViewItem* allowSigninItem = [self allowChromeSigninItem];
+    allowSigninItem.accessibilityIdentifier =
+        kAllowSigninItemAccessibilityIdentifier;
+    [items addObject:allowSigninItem];
+
     if (self.userPrefService->IsManagedPreference(
             prefs::kSearchSuggestEnabled)) {
       TableViewInfoButtonItem* autocompleteItem = [self

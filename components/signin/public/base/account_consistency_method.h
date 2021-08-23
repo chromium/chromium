@@ -18,9 +18,6 @@ namespace signin {
 // Mice is similar to Mirror but also works when the user is not opted into
 // Sync.
 extern const base::Feature kMobileIdentityConsistency;
-// Returns true if the flag |kMobileIdentityConsistency| is enabled for the
-// platform.
-bool IsMobileIdentityConsistencyEnabled();
 
 // Feature flag for FRE related changes as part of MICE.
 extern const base::Feature kMobileIdentityConsistencyFRE;

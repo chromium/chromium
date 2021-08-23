@@ -57,7 +57,6 @@ source_set("policy") {
     "//components/safe_browsing/core/common:safe_browsing_policy_handler",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/search_engines",
-    "//components/signin/public/base",
     "//components/strings:components_strings_grit",
     "//components/translate/core/browser:translate_pref_names",
     "//components/unified_consent:unified_consent",

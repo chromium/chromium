@@ -59,7 +59,6 @@ source_set("commands") {
     "//base",
     "//components/browsing_data/core",
     "//components/password_manager/core/browser",
-    "//components/signin/public/base",
     "//ios/chrome/browser/browsing_data:browsing_data_remove_mask",
   ]
 }

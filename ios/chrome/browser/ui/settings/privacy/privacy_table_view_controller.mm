@@ -15,7 +15,6 @@
 #import "components/prefs/ios/pref_observer_bridge.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/public/base/account_consistency_method.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/driver/sync_service.h"
 #include "ios/chrome/browser/application_context.h"
@@ -223,10 +222,7 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   syncer::SyncService* syncService =
       SyncServiceFactory::GetInstance()->GetForBrowserState(_browserState);
 
-  if (!signin::IsMobileIdentityConsistencyEnabled()) {
-    privacyFooterText =
-        l10n_util::GetNSString(IDS_IOS_OPTIONS_PRIVACY_GOOGLE_SERVICES_FOOTER);
-  } else if (syncService->IsSyncFeatureEnabled()) {
+  if (syncService->IsSyncFeatureEnabled()) {
     privacyFooterText =
         l10n_util::GetNSString(IDS_IOS_PRIVACY_SYNC_AND_GOOGLE_SERVICES_FOOTER);
     urls.push_back(GURL(kSyncSettingsURL));

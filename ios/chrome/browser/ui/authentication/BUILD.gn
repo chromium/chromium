@@ -114,7 +114,6 @@ source_set("unit_tests") {
     "//components/consent_auditor:test_support",
     "//components/pref_registry",
     "//components/prefs",
-    "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
     "//components/sync/driver:test_support",

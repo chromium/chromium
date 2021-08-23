@@ -25,18 +25,8 @@ const base::Feature kMobileIdentityConsistency{
 
 const base::Feature kMICEWebSignIn{"MICEWebSignIn",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
-#endif  // defined(OS_IOS)
-
-#if defined(OS_ANDROID) || defined(OS_IOS)
-bool IsMobileIdentityConsistencyEnabled() {
-  return base::FeatureList::IsEnabled(kMobileIdentityConsistency);
-}
-#endif  // defined(OS_ANDROID) || defined(OS_IOS)
-
-#if defined(OS_IOS)
 bool IsMICEWebSignInEnabled() {
-  return IsMobileIdentityConsistencyEnabled() &&
-         base::FeatureList::IsEnabled(kMICEWebSignIn);
+  return base::FeatureList::IsEnabled(kMICEWebSignIn);
 }
 #endif  // defined(OS_IOS)
 
