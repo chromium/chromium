@@ -10269,7 +10269,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ManagedUsers.SafetyFilter"
-    enum="SupervisedUserSafetyFilterResult" expires_after="2021-09-27">
+    enum="SupervisedUserSafetyFilterResult" expires_after="2022-08-19">
   <owner>agawronska@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -10277,7 +10277,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     includes the outcome of the filter (i.e. allowed, blocked, or unknown) and
     the page transition type (how the user got there, e.g. typed URL, clicked
     link). This only includes URL requests that were handled by the SafeSites
-    filter (both online and the static blacklist).
+    filter (both online and the static blocklist).
   </summary>
 </histogram>
 
