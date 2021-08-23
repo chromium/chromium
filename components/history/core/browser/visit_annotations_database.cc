@@ -433,7 +433,6 @@ VisitAnnotationsDatabase::GetAllContextAnnotationsForTesting() {
 }
 
 void VisitAnnotationsDatabase::DeleteAnnotationsForVisit(VisitID visit_id) {
-  DCHECK_GT(visit_id, 0);
   sql::Statement statement;
 
   statement.Assign(GetDB().GetCachedStatement(
