@@ -3083,7 +3083,6 @@ crbug.com/626703 [ Mac11.0 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCDa
 crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc/simplecall-no-ssrcs.https.html [ Timeout ]
 crbug.com/626703 [ Mac11.0 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/protocol/dtls-fingerprint-validation.html [ Timeout ]
 crbug.com/1209223 external/wpt/css/css-images/image-set/webkit-image-set.tentative.html [ Failure ]
-crbug.com/1209223 external/wpt/html/rendering/replaced-elements/attributes-for-embedded-content-and-images/canvas-aspect-ratio.html [ Failure ]
 crbug.com/1209223 external/wpt/html/syntax/xmldecl/xmldecl-2.html [ Failure ]
 crbug.com/626703 [ Mac ] editing/pasteboard/drag-selected-image-to-contenteditable.html [ Failure ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/webrtc-encoded-transform/idlharness.https.window.html [ Crash Failure ]

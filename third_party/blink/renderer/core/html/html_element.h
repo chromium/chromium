@@ -184,9 +184,20 @@ class CORE_EXPORT HTMLElement : public Element {
                            CSSPropertyID,
                            const String& color);
 
+  // This corresponds to:
+  //  'map to the aspect-ratio property (using dimension rules)'
+  // described by:
+  // https://html.spec.whatwg.org/multipage/rendering.html#map-to-the-aspect-ratio-property-(using-dimension-rules)
   void ApplyAspectRatioToStyle(const AtomicString& width,
                                const AtomicString& height,
                                MutableCSSPropertyValueSet*);
+  // This corresponds to:
+  //  'map to the aspect-ratio property'
+  // described by:
+  // https://html.spec.whatwg.org/multipage/rendering.html#map-to-the-aspect-ratio-property
+  void ApplyIntegerAspectRatioToStyle(const AtomicString& width,
+                                      const AtomicString& height,
+                                      MutableCSSPropertyValueSet*);
   void ApplyAlignmentAttributeToStyle(const AtomicString&,
                                       MutableCSSPropertyValueSet*);
   void ApplyBorderAttributeToStyle(const AtomicString&,
@@ -222,6 +233,9 @@ class CORE_EXPORT HTMLElement : public Element {
 
   void MapLanguageAttributeToLocale(const AtomicString&,
                                     MutableCSSPropertyValueSet*);
+  void ApplyAspectRatioToStyle(double width,
+                               double height,
+                               MutableCSSPropertyValueSet* style);
 
   DocumentFragment* TextToFragment(const String&, ExceptionState&);
 

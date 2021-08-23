@@ -927,17 +927,35 @@ void HTMLElement::setOuterText(const String& text,
 void HTMLElement::ApplyAspectRatioToStyle(const AtomicString& width,
                                           const AtomicString& height,
                                           MutableCSSPropertyValueSet* style) {
-  HTMLDimension width_dim, height_dim;
-  if (!ParseDimensionValue(width, width_dim))
+  HTMLDimension width_dim;
+  if (!ParseDimensionValue(width, width_dim) || !width_dim.IsAbsolute())
     return;
-  if (!ParseDimensionValue(height, height_dim))
+  HTMLDimension height_dim;
+  if (!ParseDimensionValue(height, height_dim) || !height_dim.IsAbsolute())
     return;
-  if (!width_dim.IsAbsolute() || !height_dim.IsAbsolute())
+  ApplyAspectRatioToStyle(width_dim.Value(), height_dim.Value(), style);
+}
+
+void HTMLElement::ApplyIntegerAspectRatioToStyle(
+    const AtomicString& width,
+    const AtomicString& height,
+    MutableCSSPropertyValueSet* style) {
+  unsigned width_val = 0;
+  if (!ParseHTMLNonNegativeInteger(width, width_val))
     return;
+  unsigned height_val = 0;
+  if (!ParseHTMLNonNegativeInteger(height, height_val))
+    return;
+  ApplyAspectRatioToStyle(width_val, height_val, style);
+}
+
+void HTMLElement::ApplyAspectRatioToStyle(double width,
+                                          double height,
+                                          MutableCSSPropertyValueSet* style) {
   CSSValue* width_val = CSSNumericLiteralValue::Create(
-      width_dim.Value(), CSSPrimitiveValue::UnitType::kNumber);
+      width, CSSPrimitiveValue::UnitType::kNumber);
   CSSValue* height_val = CSSNumericLiteralValue::Create(
-      height_dim.Value(), CSSPrimitiveValue::UnitType::kNumber);
+      height, CSSPrimitiveValue::UnitType::kNumber);
   CSSValueList* ratio_list = CSSValueList::CreateSlashSeparated();
   ratio_list->Append(*width_val);
   ratio_list->Append(*height_val);

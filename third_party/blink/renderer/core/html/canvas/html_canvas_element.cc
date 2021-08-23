@@ -1067,15 +1067,13 @@ void HTMLCanvasElement::CollectStyleForPresentationAttribute(
     const AtomicString& value,
     MutableCSSPropertyValueSet* style) {
   if (name == html_names::kWidthAttr) {
-    if (FastHasAttribute(html_names::kHeightAttr)) {
-      const AtomicString& height = FastGetAttribute(html_names::kHeightAttr);
-      ApplyAspectRatioToStyle(value, height, style);
-    }
+    const AtomicString& height = FastGetAttribute(html_names::kHeightAttr);
+    if (!height.IsNull())
+      ApplyIntegerAspectRatioToStyle(value, height, style);
   } else if (name == html_names::kHeightAttr) {
-    if (FastHasAttribute(html_names::kWidthAttr)) {
-      const AtomicString& width = FastGetAttribute(html_names::kWidthAttr);
-      ApplyAspectRatioToStyle(width, value, style);
-    }
+    const AtomicString& width = FastGetAttribute(html_names::kWidthAttr);
+    if (!width.IsNull())
+      ApplyIntegerAspectRatioToStyle(width, value, style);
   } else {
     HTMLElement::CollectStyleForPresentationAttribute(name, value, style);
   }
