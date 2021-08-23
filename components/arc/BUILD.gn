@@ -518,6 +518,7 @@ source_set("unit_tests") {
     "session/arc_instance_mode_unittest.cc",
     "session/arc_session_impl_unittest.cc",
     "session/arc_session_runner_unittest.cc",
+    "session/arc_stop_reason_unittest.cc",
     "session/arc_vm_client_adapter_unittest.cc",
     "session/file_system_status_unittest.cc",
     "storage_manager/arc_storage_manager_unittest.cc",
