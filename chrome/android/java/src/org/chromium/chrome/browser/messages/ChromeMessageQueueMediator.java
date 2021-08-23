@@ -128,6 +128,7 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate {
 
     @Override
     public void onStartShowing(Runnable runnable) {
+        if (mBrowserControlsManager == null) return;
         mBrowserControlsToken =
                 mBrowserControlsManager.getBrowserVisibilityDelegate().showControlsPersistent();
         mContainerCoordinator.showMessageContainer();

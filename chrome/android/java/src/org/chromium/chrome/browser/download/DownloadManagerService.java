@@ -33,6 +33,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -406,7 +407,7 @@ public class DownloadManagerService implements DownloadController.Observer,
      * Called when browser activity is launched. For background resumption and cancellation, this
      * will not be called.
      */
-    public void onActivityLaunched(Activity activity, MessageDispatcher messageDispatcher,
+    public void onActivityLaunched(Activity activity, Supplier<MessageDispatcher> messageDispatcher,
             ModalDialogManager modalDialogManager, ActivityTabProvider activityTabProvider) {
         if (!mActivityLaunched) {
             OTRProfileID primaryOTRProfileID = OTRProfileID.getPrimaryOTRProfileID();
