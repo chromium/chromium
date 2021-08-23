@@ -2865,6 +2865,9 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_FOLLOW_MANAGE_UPDATES_UNAVAILABLE" desc="Label this web feed source as unavailable so the user will not expect updates from it.">
         Updates Unavailable
       </message>
+      <message name="IDS_FOLLOW_MANAGE_WAITING_FOR_CONTENT" desc="Label this web feed source as waiting for content so the user will know to check  back later.">
+        Waiting for content
+      </message>
       <message name="IDS_NTP_TURN_OFF_FEED" desc="Content description to turn off the feed from the feed header overflow menu.">
         Turn off
       </message>
