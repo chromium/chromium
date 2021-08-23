@@ -238,8 +238,11 @@ ToolsMenuModel::~ToolsMenuModel() = default;
 // - Developer tools.
 // - Option to enable profiling.
 void ToolsMenuModel::Build(Browser* browser) {
-  if (!base::FeatureList::IsEnabled(sharing_hub::kSharingHubDesktopAppMenu))
+  if (!base::FeatureList::IsEnabled(sharing_hub::kSharingHubDesktopAppMenu) ||
+      browser->profile()->IsIncognitoProfile() ||
+      browser->profile()->IsGuestSession()) {
     AddItemWithStringId(IDC_SAVE_PAGE, IDS_SAVE_PAGE);
+  }
 
   AddItemWithStringId(IDC_CREATE_SHORTCUT, IDS_ADD_TO_OS_LAUNCH_SURFACE);
   if (base::FeatureList::IsEnabled(features::kWindowNaming))
@@ -838,7 +841,9 @@ void AppMenuModel::Build() {
   CreateZoomMenu();
   AddSeparator(ui::UPPER_SEPARATOR);
 
-  if (sharing_hub::SharingHubAppMenuEnabled(browser()->profile())) {
+  if (!(browser_->profile()->IsIncognitoProfile() ||
+        browser_->profile()->IsGuestSession()) &&
+      sharing_hub::SharingHubAppMenuEnabled(browser()->profile())) {
     sub_menus_.push_back(
         std::make_unique<sharing_hub::SharingHubSubMenuModel>(browser_));
     AddSubMenuWithStringId(IDC_SHARING_HUB_MENU, IDS_SHARING_HUB_TITLE,
@@ -847,7 +852,9 @@ void AppMenuModel::Build() {
 
   AddItemWithStringId(IDC_PRINT, IDS_PRINT);
 
-  if (!base::FeatureList::IsEnabled(sharing_hub::kSharingHubDesktopAppMenu)) {
+  if (!base::FeatureList::IsEnabled(sharing_hub::kSharingHubDesktopAppMenu) ||
+      browser_->profile()->IsIncognitoProfile() ||
+      browser_->profile()->IsGuestSession()) {
     if (media_router::MediaRouterEnabled(browser()->profile()))
       AddItemWithStringId(IDC_ROUTE_MEDIA, IDS_MEDIA_ROUTER_MENU_ITEM_TITLE);
   }
