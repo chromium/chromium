@@ -184,7 +184,8 @@ class ExecutiveTest(unittest.TestCase):
         # Killing again should fail silently.
         executive.kill_process(process.pid)
 
-    def test_timeout_exceeded(self):
+    # Flaky on Win. See crbug.com/1242429.
+    def disabled_test_timeout_exceeded(self):
         executive = Executive()
 
         def timeout():
@@ -194,7 +195,8 @@ class ExecutiveTest(unittest.TestCase):
         with self.assertRaises(ScriptError):
             timeout()
 
-    def test_timeout_exceeded_exit_code(self):
+    # Flaky on Win. See crbug.com/1242429.
+    def disabled_test_timeout_exceeded_exit_code(self):
         executive = Executive()
         exit_code = executive.run_command(
             command_line('sleep', 'infinity'),
