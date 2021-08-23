@@ -180,6 +180,15 @@ void ApplyInit(const URLPatternInit* init,
   }
 }
 
+URLPatternComponentResult* MakeURLPatternComponentResult(
+    const String& input,
+    const Vector<std::pair<String, String>>& group_values) {
+  auto* result = URLPatternComponentResult::Create();
+  result->setInput(input);
+  result->setGroups(group_values);
+  return result;
+}
+
 }  // namespace
 
 URLPattern* URLPattern::Create(const V8URLPatternInput* input,
@@ -515,14 +524,16 @@ bool URLPattern::Match(
     }
   }
 
-  Vector<String> protocol_group_list;
-  Vector<String> username_group_list;
-  Vector<String> password_group_list;
-  Vector<String> hostname_group_list;
-  Vector<String> port_group_list;
-  Vector<String> pathname_group_list;
-  Vector<String> search_group_list;
-  Vector<String> hash_group_list;
+  // Declare vectors to hold matched group name/value pairs produced by the
+  // matching algorithm.
+  Vector<std::pair<String, String>> protocol_group_list;
+  Vector<std::pair<String, String>> username_group_list;
+  Vector<std::pair<String, String>> password_group_list;
+  Vector<std::pair<String, String>> hostname_group_list;
+  Vector<std::pair<String, String>> port_group_list;
+  Vector<std::pair<String, String>> pathname_group_list;
+  Vector<std::pair<String, String>> search_group_list;
+  Vector<std::pair<String, String>> hash_group_list;
 
   // If we are not generating a full result then we don't need to populate
   // group lists.
@@ -561,32 +572,22 @@ bool URLPattern::Match(
   result->setInputs(std::move(inputs));
 
   result->setProtocol(
-      MakeURLPatternComponentResult(protocol_, protocol, protocol_group_list));
+      MakeURLPatternComponentResult(protocol, protocol_group_list));
   result->setUsername(
-      MakeURLPatternComponentResult(username_, username, username_group_list));
+      MakeURLPatternComponentResult(username, username_group_list));
   result->setPassword(
-      MakeURLPatternComponentResult(password_, password, password_group_list));
+      MakeURLPatternComponentResult(password, password_group_list));
   result->setHostname(
-      MakeURLPatternComponentResult(hostname_, hostname, hostname_group_list));
-  result->setPort(MakeURLPatternComponentResult(port_, port, port_group_list));
+      MakeURLPatternComponentResult(hostname, hostname_group_list));
+  result->setPort(MakeURLPatternComponentResult(port, port_group_list));
   result->setPathname(
-      MakeURLPatternComponentResult(pathname_, pathname, pathname_group_list));
-  result->setSearch(
-      MakeURLPatternComponentResult(search_, search, search_group_list));
-  result->setHash(MakeURLPatternComponentResult(hash_, hash, hash_group_list));
+      MakeURLPatternComponentResult(pathname, pathname_group_list));
+  result->setSearch(MakeURLPatternComponentResult(search, search_group_list));
+  result->setHash(MakeURLPatternComponentResult(hash, hash_group_list));
 
   return true;
 }
 
 // static
-URLPatternComponentResult* URLPattern::MakeURLPatternComponentResult(
-    Component* component,
-    const String& input,
-    const Vector<String>& group_values) {
-  auto* result = URLPatternComponentResult::Create();
-  result->setInput(input);
-  result->setGroups(component->MakeGroupList(group_values));
-  return result;
-}
 
 }  // namespace blink

@@ -14,7 +14,6 @@
 namespace blink {
 
 class ExceptionState;
-class URLPatternComponentResult;
 class URLPatternInit;
 class URLPatternResult;
 
@@ -83,13 +82,6 @@ class MODULES_EXPORT URLPattern : public ScriptWrappable {
              const String& base_url,
              URLPatternResult* result,
              ExceptionState& exception_state) const;
-
-  // A utility function that constructs a URLPatternComponentResult for
-  // a given |component|, |input|, and |group_list|.
-  static URLPatternComponentResult* MakeURLPatternComponentResult(
-      Component* component,
-      const String& input,
-      const Vector<String>& group_values);
 
   // The compiled patterns for each URL component.
   Member<Component> protocol_;

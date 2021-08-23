@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/url_pattern/url_pattern_component.h"
 
+#include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "third_party/blink/renderer/modules/url_pattern/url_pattern_canon.h"
@@ -150,19 +151,6 @@ const liburlpattern::Options& GetOptions(Component::Type type,
   NOTREACHED();
 }
 
-// Utility function to return a statically allocated Part list.
-const std::vector<liburlpattern::Part>& GetWildcardOnlyPartList() {
-  using liburlpattern::Modifier;
-  using liburlpattern::Part;
-  using liburlpattern::PartType;
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      std::vector<Part>, instance,
-      ({Part(PartType::kFullWildcard,
-             /*name=*/"",
-             /*prefix=*/"", /*value=*/"", /*suffix=*/"", Modifier::kNone)}));
-  return instance;
-}
-
 int ComparePart(const liburlpattern::Part& lh, const liburlpattern::Part& rh) {
   // We prioritize PartType in the ordering so we can favor fixed text.  The
   // type ordering is:
@@ -201,110 +189,81 @@ int ComparePart(const liburlpattern::Part& lh, const liburlpattern::Part& rh) {
     return 1;
 }
 
-// Utility method to compare two part lists.
-int ComparePartList(const std::vector<liburlpattern::Part>& lh,
-                    const std::vector<liburlpattern::Part>& rh) {
-  using liburlpattern::Modifier;
-  using liburlpattern::Part;
-  using liburlpattern::PartType;
-
-  // Begin by comparing each Part in the lists with each other.  If any
-  // are not equal, then we are done.
-  size_t i = 0;
-  for (; i < lh.size() && i < rh.size(); ++i) {
-    int r = ComparePart(lh[i], rh[i]);
-    if (r)
-      return r;
-  }
-
-  // We reached the end of at least one of the lists without finding a
-  // difference.  However, we must handle the case where one list is longer
-  // than the other.  In this case we compare the next Part from the
-  // longer list to a synthetically created empty kFixed Part.  This is
-  // necessary in order for "/foo/" to be considered more restrictive, and
-  // therefore greater, than "/foo/*".
-  if (i == lh.size() && i != rh.size())
-    return ComparePart(Part(PartType::kFixed, "", Modifier::kNone), rh[i]);
-  else if (i != lh.size() && i == rh.size())
-    return ComparePart(lh[i], Part(PartType::kFixed, "", Modifier::kNone));
-
-  // No differences were found, so declare them equal.
-  return 0;
-}
-
 }  // anonymous namespace
 
 // static
-Component* Component::Compile(const String& pattern,
+Component* Component::Compile(StringView pattern,
                               Type type,
                               Component* protocol_component,
                               ExceptionState& exception_state) {
-  // If the pattern is null then return a special Component object that matches
-  // any input as if the pattern was `*`.
-  if (pattern.IsNull()) {
-    return MakeGarbageCollected<Component>(type, base::PassKey<Component>());
-  }
-
+  StringView final_pattern = pattern.IsNull() ? "*" : pattern;
   const liburlpattern::Options& options = GetOptions(type, protocol_component);
 
   // Parse the pattern.
-  StringUTF8Adaptor utf8(pattern);
+  // Lossy UTF8 conversion is fine given the input has come through a
+  // USVString webidl argument.
+  StringUTF8Adaptor utf8(final_pattern);
   auto parse_result = liburlpattern::Parse(
       absl::string_view(utf8.data(), utf8.size()),
       GetEncodeCallback(type, protocol_component), options);
   if (!parse_result.ok()) {
     exception_state.ThrowTypeError(
-        "Invalid " + TypeToString(type) + " pattern '" + pattern + "'. " +
+        "Invalid " + TypeToString(type) + " pattern '" + final_pattern + "'. " +
         String::FromUTF8(parse_result.status().message().data(),
                          parse_result.status().message().size()));
     return nullptr;
   }
 
-  // Extract a regular expression string from the parsed pattern.
-  std::vector<std::string> name_list;
-  std::string regexp_string =
-      parse_result.value().GenerateRegexString(&name_list);
+  Vector<String> wtf_name_list;
+  ScriptRegexp* regexp = nullptr;
 
-  // Compile the regular expression to verify it is valid.
-  auto case_sensitive = options.sensitive ? WTF::kTextCaseSensitive
-                                          : WTF::kTextCaseASCIIInsensitive;
-  DCHECK(base::IsStringASCII(regexp_string));
-  ScriptRegexp* regexp = MakeGarbageCollected<ScriptRegexp>(
-      String(regexp_string.data(), regexp_string.size()), case_sensitive,
-      kMultilineDisabled, ScriptRegexp::UTF16);
-  if (!regexp->IsValid()) {
-    // The regular expression failed to compile.  This means that some
-    // custom regexp group within the pattern is illegal.  Attempt to
-    // compile each regexp group individually in order to identify the
-    // culprit.
-    for (auto& part : parse_result.value().PartList()) {
-      if (part.type != liburlpattern::PartType::kRegex)
-        continue;
-      DCHECK(base::IsStringASCII(part.value));
-      String group_value(part.value.data(), part.value.size());
-      regexp = MakeGarbageCollected<ScriptRegexp>(
-          group_value, case_sensitive, kMultilineDisabled, ScriptRegexp::UTF16);
-      if (regexp->IsValid())
-        continue;
+  if (!parse_result.value().CanDirectMatch()) {
+    // Extract a regular expression string from the parsed pattern.
+    std::vector<std::string> name_list;
+    std::string regexp_string =
+        parse_result.value().GenerateRegexString(&name_list);
+
+    // Compile the regular expression to verify it is valid.
+    auto case_sensitive = options.sensitive ? WTF::kTextCaseSensitive
+                                            : WTF::kTextCaseASCIIInsensitive;
+    DCHECK(base::IsStringASCII(regexp_string));
+    regexp = MakeGarbageCollected<ScriptRegexp>(
+        String(regexp_string.data(), regexp_string.size()), case_sensitive,
+        kMultilineDisabled, ScriptRegexp::UTF16);
+    if (!regexp->IsValid()) {
+      // The regular expression failed to compile.  This means that some
+      // custom regexp group within the pattern is illegal.  Attempt to
+      // compile each regexp group individually in order to identify the
+      // culprit.
+      for (auto& part : parse_result.value().PartList()) {
+        if (part.type != liburlpattern::PartType::kRegex)
+          continue;
+        DCHECK(base::IsStringASCII(part.value));
+        String group_value(part.value.data(), part.value.size());
+        regexp = MakeGarbageCollected<ScriptRegexp>(group_value, case_sensitive,
+                                                    kMultilineDisabled,
+                                                    ScriptRegexp::UTF16);
+        if (regexp->IsValid())
+          continue;
+        exception_state.ThrowTypeError("Invalid " + TypeToString(type) +
+                                       " pattern '" + final_pattern +
+                                       "'. Custom regular expression group '" +
+                                       group_value + "' is invalid.");
+        return nullptr;
+      }
+      // We couldn't find a bad regexp group, but we still have an overall
+      // error.  This shouldn't happen, but we handle it anyway.
       exception_state.ThrowTypeError("Invalid " + TypeToString(type) +
-                                     " pattern '" + pattern +
-                                     "'. Custom regular expression group '" +
-                                     group_value + "' is invalid.");
+                                     " pattern '" + final_pattern +
+                                     "'. An unexpected error has occurred.");
       return nullptr;
     }
-    // We couldn't find a bad regexp group, but we still have an overall
-    // error.  This shouldn't happen, but we handle it anyway.
-    exception_state.ThrowTypeError("Invalid " + TypeToString(type) +
-                                   " pattern '" + pattern +
-                                   "'. An unexpected error has occurred.");
-    return nullptr;
-  }
 
-  Vector<String> wtf_name_list;
-  wtf_name_list.ReserveInitialCapacity(
-      static_cast<wtf_size_t>(name_list.size()));
-  for (const auto& name : name_list) {
-    wtf_name_list.push_back(String::FromUTF8(name.data(), name.size()));
+    wtf_name_list.ReserveInitialCapacity(
+        static_cast<wtf_size_t>(name_list.size()));
+    for (const auto& name : name_list) {
+      wtf_name_list.push_back(String::FromUTF8(name.data(), name.size()));
+    }
   }
 
   return MakeGarbageCollected<Component>(
@@ -318,23 +277,31 @@ int Component::Compare(const Component& lh, const Component& rh) {
   using liburlpattern::Part;
   using liburlpattern::PartType;
 
-  // If both the left and right components are empty wildcards, then they are
-  // effectively equal.
-  if (!lh.pattern_.has_value() && !rh.pattern_.has_value())
-    return 0;
+  auto& left = lh.pattern_.PartList();
+  auto& right = rh.pattern_.PartList();
 
-  // If one side has a real pattern and the other side is an empty component,
-  // then we have to compare to a part list with a single full wildcard.
-  if (lh.pattern_.has_value() && !rh.pattern_.has_value()) {
-    return ComparePartList(lh.pattern_->PartList(), GetWildcardOnlyPartList());
+  // Begin by comparing each Part in the lists with each other.  If any
+  // are not equal, then we are done.
+  size_t i = 0;
+  for (; i < left.size() && i < right.size(); ++i) {
+    int r = ComparePart(left[i], right[i]);
+    if (r)
+      return r;
   }
 
-  if (!lh.pattern_.has_value() && rh.pattern_.has_value()) {
-    return ComparePartList(GetWildcardOnlyPartList(), rh.pattern_->PartList());
-  }
+  // We reached the end of at least one of the lists without finding a
+  // difference.  However, we must handle the case where one list is longer
+  // than the other.  In this case we compare the next Part from the
+  // longer list to a synthetically created empty kFixed Part.  This is
+  // necessary in order for "/foo/" to be considered more restrictive, and
+  // therefore greater, than "/foo/*".
+  if (i == left.size() && i != right.size())
+    return ComparePart(Part(PartType::kFixed, "", Modifier::kNone), right[i]);
+  else if (i != left.size() && i == right.size())
+    return ComparePart(left[i], Part(PartType::kFixed, "", Modifier::kNone));
 
-  // Otherwise compare the part lists of the patterns on each side.
-  return ComparePartList(lh.pattern_->PartList(), rh.pattern_->PartList());
+  // No differences were found, so declare them equal.
+  return 0;
 }
 
 Component::Component(Type type,
@@ -347,52 +314,63 @@ Component::Component(Type type,
       regexp_(regexp),
       name_list_(std::move(name_list)) {}
 
-Component::Component(Type type, base::PassKey<Component> key)
-    : type_(type), name_list_({"0"}) {}
-
-bool Component::Match(StringView input, Vector<String>* group_list) const {
+bool Component::Match(StringView input,
+                      Vector<std::pair<String, String>>* group_list) const {
+  // If there is a regexp, then we cannot directly match the pattern.
   if (regexp_) {
-    return regexp_->Match(input, /*start_from=*/0, /*match_length=*/nullptr,
-                          group_list) == 0;
-  } else {
-    if (group_list)
-      group_list->push_back(input.ToString());
-    return true;
+    Vector<String> value_list;
+    if (group_list) {
+      value_list.ReserveInitialCapacity(
+          base::checked_cast<wtf_size_t>(name_list_.size()));
+    }
+    bool result =
+        regexp_->Match(input, /*start_from=*/0, /*match_length=*/nullptr,
+                       group_list ? &value_list : nullptr) == 0;
+    if (result && group_list) {
+      DCHECK_EQ(name_list_.size(), value_list.size());
+      group_list->ReserveInitialCapacity(name_list_.size());
+      for (wtf_size_t i = 0; i < name_list_.size(); ++i) {
+        group_list->emplace_back(name_list_[i], std::move(value_list[i]));
+      }
+    }
+    return result;
   }
-}
 
-String Component::GeneratePatternString() const {
-  if (pattern_.has_value())
-    return String::FromUTF8(pattern_->GeneratePatternString());
-  else
-    return "*";
-}
-
-Vector<std::pair<String, String>> Component::MakeGroupList(
-    const Vector<String>& group_values) const {
-  DCHECK_EQ(name_list_.size(), group_values.size());
-  Vector<std::pair<String, String>> result;
-  result.ReserveInitialCapacity(group_values.size());
-  for (wtf_size_t i = 0; i < group_values.size(); ++i) {
-    result.emplace_back(name_list_[i], group_values[i]);
+  // There is no regexp, so directly match against the pattern.
+  std::vector<std::pair<absl::string_view, absl::string_view>>
+      pattern_group_list;
+  // Lossy UTF8 conversion is fine given the input has come through a
+  // USVString webidl argument.
+  StringUTF8Adaptor utf8(input);
+  bool result =
+      pattern_.DirectMatch(absl::string_view(utf8.data(), utf8.size()),
+                           group_list ? &pattern_group_list : nullptr);
+  if (group_list) {
+    group_list->ReserveInitialCapacity(
+        base::checked_cast<wtf_size_t>(pattern_group_list.size()));
+    for (const auto& pair : pattern_group_list) {
+      group_list->emplace_back(
+          String::FromUTF8(pair.first.data(), pair.first.length()),
+          String::FromUTF8(pair.second.data(), pair.second.length()));
+    }
   }
   return result;
 }
 
+String Component::GeneratePatternString() const {
+  return String::FromUTF8(pattern_.GeneratePatternString());
+}
+
 bool Component::ShouldTreatAsStandardURL() const {
   DCHECK(type_ == Type::kProtocol);
-
-  if (!pattern_.has_value())
-    return true;
 
   if (should_treat_as_standard_url_.has_value())
     return *should_treat_as_standard_url_;
 
   const auto protocol_matches = [&](const std::string& scheme) {
     DCHECK(base::IsStringASCII(scheme));
-    return Match(
-        StringView(scheme.data(), static_cast<unsigned>(scheme.size())),
-        /*group_list=*/nullptr);
+    return Match(String(scheme.data(), static_cast<unsigned>(scheme.size())),
+                 /*group_list=*/nullptr);
   };
 
   should_treat_as_standard_url_ =

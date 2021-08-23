@@ -368,6 +368,26 @@ std::string Pattern::GenerateRegexString(
   return result;
 }
 
+bool Pattern::CanDirectMatch() const {
+  // We currently only support direct matching with the options used by
+  // URLPattern.
+  return options_.start && options_.end && options_.strict &&
+         options_.sensitive && IsOnlyFullWildcard();
+}
+
+bool Pattern::DirectMatch(
+    absl::string_view input,
+    std::vector<std::pair<absl::string_view, absl::string_view>>*
+        group_list_out) const {
+  ABSL_ASSERT(CanDirectMatch());
+  if (IsOnlyFullWildcard()) {
+    if (group_list_out)
+      group_list_out->emplace_back(part_list_[0].name, input);
+    return true;
+  }
+  return false;
+}
+
 size_t Pattern::RegexStringLength() const {
   size_t result = 0;
 
@@ -480,6 +500,16 @@ void Pattern::AppendEndsWith(std::string& append_target) const {
 
 size_t Pattern::EndsWithLength() const {
   return EscapedRegexpStringLength(options_.ends_with) + 4;
+}
+
+bool Pattern::IsOnlyFullWildcard() const {
+  if (part_list_.size() != 1)
+    return false;
+  auto& part = part_list_[0];
+  // The modifier does not matter as an optional or repeated full wildcard
+  // is functionally equivalent.
+  return part.type == PartType::kFullWildcard && part.prefix.empty() &&
+         part.suffix.empty();
 }
 
 }  // namespace liburlpattern

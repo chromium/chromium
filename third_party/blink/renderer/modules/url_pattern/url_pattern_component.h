@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/trace_traits.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/liburlpattern/parse.h"
 #include "third_party/liburlpattern/pattern.h"
@@ -40,14 +41,12 @@ class Component final : public GarbageCollected<Component> {
   };
 
   // A utility function that takes a given `pattern` and compiles it into a
-  // Component structure.  If the `pattern` is null then nullptr
-  // may be returned without throwing an exception.  In this case the
-  // Component is not constructed and the nullptr value should be
-  // treated as matching any input value for the component.  The `type`
-  // specifies which URL component is the pattern is being compiled for.  This
-  // will select the correct encoding callback, liburlpattern options, and
-  // populate errors messages with the correct component string.
-  static Component* Compile(const String& pattern,
+  // Component structure.  If the `pattern` is null, then it will be defaulted
+  // to `*`.  The `type` specifies which URL component is the pattern is being
+  // compiled for.  This will select the correct encoding callback,
+  // liburlpattern options, and populate errors messages with the correct
+  // component string.
+  static Component* Compile(StringView pattern,
                             Type type,
                             Component* protocol_component,
                             ExceptionState& exception_state);
@@ -67,24 +66,16 @@ class Component final : public GarbageCollected<Component> {
             Vector<String> name_list,
             base::PassKey<Component> key);
 
-  // Constructs an empty Component that matches any input as if it had the
-  // pattern `*`.
-  Component(Type type, base::PassKey<Component> key);
-
   // Match the given `input` against the component pattern.  Returns `true`
   // if there is a match.  If `group_list` is not nullptr, then it will be
-  // populated with group values captured by the pattern.
-  bool Match(StringView input, Vector<String>* group_list) const;
+  // populated with group name:value tuples captured by the pattern.
+  bool Match(StringView input,
+             Vector<std::pair<String, String>>* group_list) const;
 
   // Convert the compiled component pattern back into a pattern string.  This
   // will be functionally equivalent to the original, but may differ based on
   // canonicalization that occurred during parsing.
   String GeneratePatternString() const;
-
-  // Combines the given list of group values with the group names specified in
-  // the original pattern.  The return result is a vector of name:value tuples.
-  Vector<std::pair<String, String>> MakeGroupList(
-      const Vector<String>& group_values) const;
 
   // Method to determine if the URL associated with this component should be
   // treated as a "standard" URL like `https://foo` vs a "path" URL like
@@ -97,13 +88,16 @@ class Component final : public GarbageCollected<Component> {
   const Type type_;
 
   // The parsed pattern.
-  const absl::optional<liburlpattern::Pattern> pattern_;
+  const liburlpattern::Pattern pattern_;
 
-  // The pattern compiled down to a js regular expression.
+  // The pattern compiled down to a js regular expression.  This is only
+  // generated if `pattern_.CanDirectMatch()` returns false.
   const Member<ScriptRegexp> regexp_;
 
   // The names to be applied to the regular expression capture groups.  Note,
   // liburlpattern regular expressions do not use named capture groups directly.
+  // `name_list_` will only be populated if `pattern_.CanDirectMatch()` returns
+  // false.
   const Vector<String> name_list_;
 
   // The cached result of computing if a protocol component should cause the
