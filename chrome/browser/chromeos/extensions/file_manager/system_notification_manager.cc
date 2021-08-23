@@ -164,6 +164,8 @@ void SystemNotificationManager::Dismiss(const std::string& notification_id) {
                                          notification_id);
 }
 
+constexpr char kDeviceFailNotificationId[] = "swa-device-fail-id";
+
 void SystemNotificationManager::HandleDeviceEvent(
     const file_manager_private::DeviceEvent& event) {
   if (!swa_enabled_) {
@@ -181,7 +183,13 @@ void SystemNotificationManager::HandleDeviceEvent(
                              IDS_EXTERNAL_STORAGE_DISABLED_MESSAGE);
       break;
     case file_manager_private::DEVICE_EVENT_TYPE_REMOVED:
-      // TODO(b/188487301) Hide device fail & storage disabled notifications.
+      // Hide device fail & storage disabled notifications.
+      GetNotificationDisplayService()->Close(
+          NotificationHandler::Type::TRANSIENT, kDeviceFailNotificationId);
+      GetNotificationDisplayService()->Close(
+          NotificationHandler::Type::TRANSIENT,
+          file_manager_private::ToString(
+              file_manager_private::DEVICE_EVENT_TYPE_DISABLED));
       break;
     case file_manager_private::DEVICE_EVENT_TYPE_HARD_UNPLUGGED:
       notification = CreateNotification(id, IDS_DEVICE_HARD_UNPLUGGED_TITLE,
@@ -456,7 +464,6 @@ void SystemNotificationManager::HandleCopyEvent(
 }
 
 constexpr char kRemovableNotificationId[] = "swa-removable-device-id";
-constexpr char kDeviceFailNotificationId[] = "swa-device-fail-id";
 
 void SystemNotificationManager::HandleRemovableNotificationClick(
     const std::string& path,
