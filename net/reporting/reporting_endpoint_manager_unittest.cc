@@ -111,6 +111,11 @@ class TestReportingCache : public ReportingCache {
       std::vector<ReportingEndpointGroup> parsed_header) override {
     NOTREACHED();
   }
+  void OnParsedReportingEndpointsHeader(
+      const base::UnguessableToken& reporting_source,
+      std::vector<ReportingEndpoint> endpoints) override {
+    NOTREACHED();
+  }
   std::set<url::Origin> GetAllOrigins() const override {
     NOTREACHED();
     return std::set<url::Origin>();
@@ -143,6 +148,12 @@ class TestReportingCache : public ReportingCache {
     return 0;
   }
   void Flush() override { NOTREACHED(); }
+  ReportingEndpoint GetV1EndpointForTesting(
+      const base::UnguessableToken& reporting_source,
+      const std::string& endpoint_name) const override {
+    NOTREACHED();
+    return ReportingEndpoint();
+  }
   ReportingEndpoint GetEndpointForTesting(
       const ReportingEndpointGroupKey& group_key,
       const GURL& url) const override {
@@ -174,6 +185,11 @@ class TestReportingCache : public ReportingCache {
                              base::Time expires,
                              int priority,
                              int weight) override {
+    NOTREACHED();
+  }
+  void SetV1EndpointForTesting(const ReportingEndpointGroupKey& group_key,
+                               const base::UnguessableToken& reporting_source,
+                               const GURL& url) override {
     NOTREACHED();
   }
 

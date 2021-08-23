@@ -964,6 +964,108 @@ TEST_P(ReportingCacheTest, GetCandidateEndpointsForDelivery) {
   EXPECT_EQ(kGroupKey21_, candidate_endpoints[0].group_key);
 }
 
+TEST_P(ReportingCacheTest, GetCandidateEndpointsFromDocumentForDelivery) {
+  const base::UnguessableToken reporting_source_1 =
+      base::UnguessableToken::Create();
+  const base::UnguessableToken reporting_source_2 =
+      base::UnguessableToken::Create();
+
+  const ReportingEndpointGroupKey document_group_key_1 =
+      ReportingEndpointGroupKey(kNik_, reporting_source_1, kOrigin1_, kGroup1_);
+  const ReportingEndpointGroupKey document_group_key_2 =
+      ReportingEndpointGroupKey(kNik_, reporting_source_1, kOrigin1_, kGroup2_);
+  const ReportingEndpointGroupKey document_group_key_3 =
+      ReportingEndpointGroupKey(kNik_, reporting_source_2, kOrigin1_, kGroup1_);
+
+  SetV1EndpointInCache(document_group_key_1, reporting_source_1, kEndpoint1_);
+  SetV1EndpointInCache(document_group_key_2, reporting_source_1, kEndpoint2_);
+  SetV1EndpointInCache(document_group_key_3, reporting_source_2, kEndpoint1_);
+  const ReportingEndpointGroupKey kReportGroupKey =
+      ReportingEndpointGroupKey(kNik_, reporting_source_1, kOrigin1_, kGroup1_);
+  std::vector<ReportingEndpoint> candidate_endpoints =
+      cache()->GetCandidateEndpointsForDelivery(kReportGroupKey);
+  ASSERT_EQ(1u, candidate_endpoints.size());
+  EXPECT_EQ(document_group_key_1, candidate_endpoints[0].group_key);
+}
+
+// V1 reporting endpoints must not be returned in response to a request for
+// endpoints for network reports (with no reporting source).
+TEST_P(ReportingCacheTest, GetCandidateEndpointsFromDocumentForNetworkReports) {
+  const base::UnguessableToken reporting_source =
+      base::UnguessableToken::Create();
+
+  const ReportingEndpointGroupKey kDocumentGroupKey =
+      ReportingEndpointGroupKey(kNik_, reporting_source, kOrigin1_, kGroup1_);
+
+  SetV1EndpointInCache(kDocumentGroupKey, reporting_source, kEndpoint1_);
+  const ReportingEndpointGroupKey kNetworkReportGroupKey =
+      ReportingEndpointGroupKey(kNik_, absl::nullopt, kOrigin1_, kGroup1_);
+  std::vector<ReportingEndpoint> candidate_endpoints =
+      cache()->GetCandidateEndpointsForDelivery(kNetworkReportGroupKey);
+  ASSERT_EQ(0u, candidate_endpoints.size());
+}
+
+// V1 reporting endpoints must not be returned in response to a request for
+// endpoints for a different source.
+TEST_P(ReportingCacheTest, GetCandidateEndpointsFromDifferentDocument) {
+  const base::UnguessableToken reporting_source =
+      base::UnguessableToken::Create();
+
+  const ReportingEndpointGroupKey kDocumentGroupKey =
+      ReportingEndpointGroupKey(kNik_, reporting_source, kOrigin1_, kGroup1_);
+
+  SetV1EndpointInCache(kDocumentGroupKey, reporting_source, kEndpoint1_);
+  const ReportingEndpointGroupKey kOtherGroupKey = ReportingEndpointGroupKey(
+      kNik_, base::UnguessableToken::Create(), kOrigin1_, kGroup1_);
+  std::vector<ReportingEndpoint> candidate_endpoints =
+      cache()->GetCandidateEndpointsForDelivery(kOtherGroupKey);
+  ASSERT_EQ(0u, candidate_endpoints.size());
+}
+
+// When both V0 and V1 endpoints are present, V1 endpoints must only be
+// returned when the reporting source matches. Only when no reporting source is
+// given, or if there is no V1 endpoint with a matching source and name defined
+// should a V0 endpoint be used.
+TEST_P(ReportingCacheTest, GetMixedCandidateEndpointsForDelivery) {
+  LoadReportingClients();
+
+  // Set up V0 endpoint groups for this origin
+  ASSERT_TRUE(SetEndpointInCache(kGroupKey11_, kEndpoint1_, kExpires1_));
+  ASSERT_TRUE(SetEndpointInCache(kGroupKey11_, kEndpoint2_, kExpires1_));
+  ASSERT_TRUE(SetEndpointInCache(kGroupKey12_, kEndpoint2_, kExpires1_));
+  ASSERT_TRUE(SetEndpointInCache(kGroupKey21_, kEndpoint1_, kExpires1_));
+
+  // Set up a V1 endpoint for a document at the same origin
+  const base::UnguessableToken reporting_source =
+      base::UnguessableToken::Create();
+  const ReportingEndpointGroupKey document_group_key =
+      ReportingEndpointGroupKey(kNik_, reporting_source, kOrigin1_, kGroup1_);
+  SetV1EndpointInCache(document_group_key, reporting_source, kEndpoint1_);
+
+  // This group key will match both the V1 endpoint, and two V0 endpoints. Only
+  // the V1 endpoint should be returned.
+  std::vector<ReportingEndpoint> candidate_endpoints =
+      cache()->GetCandidateEndpointsForDelivery(ReportingEndpointGroupKey(
+          kNik_, reporting_source, kOrigin1_, kGroup1_));
+  ASSERT_EQ(1u, candidate_endpoints.size());
+  EXPECT_EQ(document_group_key, candidate_endpoints[0].group_key);
+
+  // This group key has no reporting source, so only V0 endpoints can be
+  // returned.
+  candidate_endpoints = cache()->GetCandidateEndpointsForDelivery(
+      ReportingEndpointGroupKey(kNik_, absl::nullopt, kOrigin1_, kGroup1_));
+  ASSERT_EQ(2u, candidate_endpoints.size());
+  EXPECT_EQ(kGroupKey11_, candidate_endpoints[0].group_key);
+  EXPECT_EQ(kGroupKey11_, candidate_endpoints[1].group_key);
+
+  // This group key has a reporting source, but no matching V1 endpoints have
+  // been configured, so we should fall back to the V0 endpoints.
+  candidate_endpoints = cache()->GetCandidateEndpointsForDelivery(
+      ReportingEndpointGroupKey(kNik_, reporting_source, kOrigin1_, kGroup2_));
+  ASSERT_EQ(1u, candidate_endpoints.size());
+  EXPECT_EQ(kGroupKey12_, candidate_endpoints[0].group_key);
+}
+
 TEST_P(ReportingCacheTest, GetCandidateEndpointsDifferentNik) {
   LoadReportingClients();
 

@@ -141,6 +141,10 @@ CachedReportingEndpointGroup::CachedReportingEndpointGroup(
     : CachedReportingEndpointGroup(endpoint_group.group_key,
                                    endpoint_group.include_subdomains,
                                    now + endpoint_group.ttl /* expires */,
-                                   now /* last_used */) {}
+                                   now /* last_used */) {
+  // Don't cache V1 document endpoints; this should only be used for V0
+  // endpoint groups.
+  DCHECK(!endpoint_group.group_key.IsDocumentEndpoint());
+}
 
 }  // namespace net

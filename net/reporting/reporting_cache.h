@@ -142,6 +142,19 @@ class NET_EXPORT ReportingCache {
       const url::Origin& origin,
       std::vector<ReportingEndpointGroup> parsed_header) = 0;
 
+  // Adds named endpoints for |reporting_source| to the cache, based on the
+  // received Reporting-Endpoints header.
+  // |reporting_source| is the token identifying the document or worker with
+  // which this header was received, and may not be empty.
+  // |origin| is the origin of the document or worker represented by
+  // |reporting_source|, and |network_isolation_key| is the appropriate NIK for
+  // that source. These two parameters are currently needed because the new
+  // Reporting API currently shares the cache, delivery agent and
+  // ReportingEndpoint struct with the old API.
+  virtual void OnParsedReportingEndpointsHeader(
+      const base::UnguessableToken& reporting_source,
+      std::vector<ReportingEndpoint> parsed_header) = 0;
+
   // Gets all the origins of clients in the cache.
   virtual std::set<url::Origin> GetAllOrigins() const = 0;
 
@@ -210,6 +223,14 @@ class NET_EXPORT ReportingCache {
   // Flush the contents of the cache to disk, if applicable.
   virtual void Flush() = 0;
 
+  // Returns the endpoint named |endpoint_name| for the reporting source, if it
+  // was configured with the Reporting-Endpoints header, otherwise returns an
+  // invalid ReportingEndpoint.
+  // |reporting_source| must not be empty.
+  virtual ReportingEndpoint GetV1EndpointForTesting(
+      const base::UnguessableToken& reporting_source,
+      const std::string& endpoint_name) const = 0;
+
   // Finds an endpoint for the given |group_key| and |url|, otherwise returns an
   // invalid ReportingEndpoint.
   virtual ReportingEndpoint GetEndpointForTesting(
@@ -239,13 +260,21 @@ class NET_EXPORT ReportingCache {
   // guaranteed to exist in the cache after calling this function, if endpoint
   // eviction is triggered. Unlike the AddOrUpdate*() methods used in header
   // parsing, this method inserts or updates a single endpoint while leaving the
-  // exiting configuration for that origin intact.
+  // existing configuration for that origin intact.
   virtual void SetEndpointForTesting(const ReportingEndpointGroupKey& group_key,
                                      const GURL& url,
                                      OriginSubdomains include_subdomains,
                                      base::Time expires,
                                      int priority,
                                      int weight) = 0;
+
+  // Sets a V1 named endpoint with the given key for |reporting_source|,
+  // bypassing header parsing. This method inserts a single endpoint while
+  // leaving the existing configuration for that source intact.
+  virtual void SetV1EndpointForTesting(
+      const ReportingEndpointGroupKey& group_key,
+      const base::UnguessableToken& reporting_source,
+      const GURL& url) = 0;
 };
 
 // Persistent storage for Reporting reports and clients.

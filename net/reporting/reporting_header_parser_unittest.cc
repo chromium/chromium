@@ -1770,7 +1770,8 @@ class ReportingHeaderParserStructuredHeaderTest
     return header;
   }
 
-  void ParseHeader(const NetworkIsolationKey& network_isolation_key,
+  void ParseHeader(const base::UnguessableToken& reporting_source,
+                   const NetworkIsolationKey& network_isolation_key,
                    const url::Origin& origin,
                    const std::string& header_string) {
     absl::optional<base::flat_map<std::string, std::string>> header_map =
@@ -1778,36 +1779,80 @@ class ReportingHeaderParserStructuredHeaderTest
 
     if (header_map) {
       ReportingHeaderParser::ProcessParsedReportingEndpointsHeader(
-          context(), base::UnguessableToken::Create(), network_isolation_key,
-          origin, *header_map);
+          context(), reporting_source, network_isolation_key, origin,
+          *header_map);
     }
   }
+  void ProcessParsedHeader(
+      const base::UnguessableToken& reporting_source,
+      const NetworkIsolationKey& network_isolation_key,
+      const url::Origin& origin,
+      const absl::optional<base::flat_map<std::string, std::string>>&
+          header_map) {
+    ReportingHeaderParser::ProcessParsedReportingEndpointsHeader(
+        context(), reporting_source, network_isolation_key, origin,
+        *header_map);
+  }
+
+  const base::UnguessableToken kReportingSource_ =
+      base::UnguessableToken::Create();
 };
 
-TEST_P(ReportingHeaderParserStructuredHeaderTest, Invalid) {
+TEST_P(ReportingHeaderParserStructuredHeaderTest, ParseInvalid) {
   static const struct {
     const char* header_value;
     const char* description;
   } kInvalidHeaderTestCases[] = {
       {"default=", "missing url"},
       {"default=1", "non-string url"},
+  };
+
+  for (auto& test_case : kInvalidHeaderTestCases) {
+    auto parsed_result = ParseReportingEndpoints(test_case.header_value);
+
+    EXPECT_FALSE(parsed_result.has_value())
+        << "Invalid Reporting-Endpoints header (" << test_case.description
+        << ": \"" << test_case.header_value << "\") parsed as valid.";
+  }
+}
+
+TEST_P(ReportingHeaderParserStructuredHeaderTest, ProcessInvalid) {
+  static const struct {
+    const char* header_value;
+    const char* description;
+  } kInvalidHeaderTestCases[] = {
       {"default=\"//scheme/relative\"", "scheme-relative url"},
       {"default=\"relative/path\"", "path relative url"},
       {"default=\"http://insecure/\"", "insecure url"}};
 
   for (auto& test_case : kInvalidHeaderTestCases) {
-    ParseHeader(kNik_, kOrigin1_, test_case.header_value);
+    auto parsed_result = ParseReportingEndpoints(test_case.header_value);
 
-    EXPECT_EQ(0u, cache()->GetEndpointCount())
-        << "Invalid Reporting-Endpoints header (" << test_case.description
-        << ": \"" << test_case.header_value << "\") parsed as valid.";
+    EXPECT_TRUE(parsed_result.has_value())
+        << "Syntactically valid Reporting-Endpoints header (\""
+        << test_case.description << ": \"" << test_case.header_value
+        << "\") parsed as invalid.";
+    ProcessParsedHeader(kReportingSource_, kNik_, kOrigin1_, parsed_result);
 
-    if (mock_store()) {
-      mock_store()->Flush();
-      EXPECT_EQ(0, mock_store()->StoredEndpointsCount());
-      EXPECT_EQ(0, mock_store()->StoredEndpointGroupsCount());
-    }
+    // The endpoint should not have been set up in the cache.
+    ReportingEndpoint endpoint =
+        cache()->GetV1EndpointForTesting(kReportingSource_, "default");
+    EXPECT_FALSE(endpoint);
   }
+}
+
+TEST_P(ReportingHeaderParserStructuredHeaderTest, ParseBasic) {
+  std::vector<ReportingEndpoint::EndpointInfo> endpoints = {{kEndpoint1_}};
+
+  std::string header =
+      ConstructHeaderGroupString(MakeEndpointGroup(kGroup1_, endpoints));
+  auto parsed_result = ParseReportingEndpoints(header);
+
+  EXPECT_TRUE(parsed_result.has_value())
+      << "Valid Reporting-Endpoints header (\"" << header
+      << "\") parsed as invalid.";
+  EXPECT_EQ(1u, parsed_result->size());
+  EXPECT_EQ(parsed_result->at(kGroup1_), kEndpoint1_.spec());
 }
 
 TEST_P(ReportingHeaderParserStructuredHeaderTest, Basic) {
@@ -1815,15 +1860,16 @@ TEST_P(ReportingHeaderParserStructuredHeaderTest, Basic) {
 
   std::string header =
       ConstructHeaderGroupString(MakeEndpointGroup(kGroup1_, endpoints));
+  auto parsed_result = ParseReportingEndpoints(header);
+  ProcessParsedHeader(kReportingSource_, kNik_, kOrigin1_, parsed_result);
 
-  ParseHeader(kNik_, kOrigin1_, header);
-  EXPECT_EQ(1u, cache()->GetEndpointGroupCountForTesting());
-  EXPECT_TRUE(
-      EndpointGroupExistsInCache(kGroupKey11_, OriginSubdomains::DEFAULT));
-  EXPECT_TRUE(ClientExistsInCacheForOrigin(kOrigin1_));
-  EXPECT_EQ(1u, cache()->GetEndpointCount());
-  ReportingEndpoint endpoint = FindEndpointInCache(kGroupKey11_, kEndpoint1_);
-  ASSERT_TRUE(endpoint);
+  // Ensure that the endpoint was not inserted into the persistent endpoint
+  // groups used for v0 reporting.
+  EXPECT_EQ(0u, cache()->GetEndpointGroupCountForTesting());
+
+  ReportingEndpoint endpoint =
+      cache()->GetV1EndpointForTesting(kReportingSource_, kGroup1_);
+  EXPECT_TRUE(endpoint);
   EXPECT_EQ(kOrigin1_, endpoint.group_key.origin);
   EXPECT_EQ(kGroup1_, endpoint.group_key.group_name);
   EXPECT_EQ(kEndpoint1_, endpoint.info.url);
@@ -1832,32 +1878,27 @@ TEST_P(ReportingHeaderParserStructuredHeaderTest, Basic) {
   EXPECT_EQ(ReportingEndpoint::EndpointInfo::kDefaultWeight,
             endpoint.info.weight);
 
+  // Ephemeral endpoints should not be persisted in the store
   if (mock_store()) {
     mock_store()->Flush();
-    EXPECT_EQ(1, mock_store()->StoredEndpointsCount());
-    EXPECT_EQ(1, mock_store()->StoredEndpointGroupsCount());
-    MockPersistentReportingStore::CommandList expected_commands;
-    expected_commands.emplace_back(CommandType::ADD_REPORTING_ENDPOINT,
-                                   kGroupKey11_, kEndpoint1_);
-    expected_commands.emplace_back(CommandType::ADD_REPORTING_ENDPOINT_GROUP,
-                                   kGroupKey11_);
-    EXPECT_THAT(mock_store()->GetAllCommands(),
-                testing::IsSupersetOf(expected_commands));
+    EXPECT_EQ(0, mock_store()->StoredEndpointsCount());
+    EXPECT_EQ(0, mock_store()->StoredEndpointGroupsCount());
   }
 }
 
 TEST_P(ReportingHeaderParserStructuredHeaderTest, PathAbsoluteURLEndpoint) {
   std::string header = "group1=\"/path-absolute-url\"";
+  auto parsed_result = ParseReportingEndpoints(header);
+  ProcessParsedHeader(kReportingSource_, kNik_, kOrigin1_, parsed_result);
 
-  ParseHeader(kNik_, kOrigin1_, header);
-  EXPECT_EQ(1u, cache()->GetEndpointGroupCountForTesting());
-  EXPECT_TRUE(
-      EndpointGroupExistsInCache(kGroupKey11_, OriginSubdomains::DEFAULT));
-  EXPECT_TRUE(ClientExistsInCacheForOrigin(kOrigin1_));
-  EXPECT_EQ(1u, cache()->GetEndpointCount());
+  // Ensure that the endpoint was not inserted into the persistent endpoint
+  // groups used for v0 reporting.
+  EXPECT_EQ(0u, cache()->GetEndpointGroupCountForTesting());
+  ParseHeader(kReportingSource_, kNik_, kOrigin1_, header);
+
   ReportingEndpoint endpoint =
-      FindEndpointInCache(kGroupKey11_, kEndpointPathAbsolute_);
-  ASSERT_TRUE(endpoint);
+      cache()->GetV1EndpointForTesting(kReportingSource_, kGroup1_);
+  EXPECT_TRUE(endpoint);
   EXPECT_EQ(kOrigin1_, endpoint.group_key.origin);
   EXPECT_EQ(kGroup1_, endpoint.group_key.group_name);
   EXPECT_EQ(kEndpointPathAbsolute_, endpoint.info.url);
@@ -1866,22 +1907,11 @@ TEST_P(ReportingHeaderParserStructuredHeaderTest, PathAbsoluteURLEndpoint) {
   EXPECT_EQ(ReportingEndpoint::EndpointInfo::kDefaultWeight,
             endpoint.info.weight);
 
+  // Ephemeral endpoints should not be persisted in the store
   if (mock_store()) {
     mock_store()->Flush();
-    EXPECT_EQ(1, mock_store()->StoredEndpointsCount());
-    EXPECT_EQ(1, mock_store()->StoredEndpointGroupsCount());
-    MockPersistentReportingStore::CommandList expected_commands;
-    expected_commands.emplace_back(
-        CommandType::ADD_REPORTING_ENDPOINT,
-        ReportingEndpoint(kGroupKey11_, ReportingEndpoint::EndpointInfo{
-                                            kEndpointPathAbsolute_}));
-    expected_commands.emplace_back(
-        CommandType::ADD_REPORTING_ENDPOINT_GROUP,
-        CachedReportingEndpointGroup(
-            kGroupKey11_, OriginSubdomains::DEFAULT /* irrelevant */,
-            base::Time() /* irrelevant */, base::Time() /* irrelevant */));
-    EXPECT_THAT(mock_store()->GetAllCommands(),
-                testing::IsSupersetOf(expected_commands));
+    EXPECT_EQ(0, mock_store()->StoredEndpointsCount());
+    EXPECT_EQ(0, mock_store()->StoredEndpointGroupsCount());
   }
 }
 

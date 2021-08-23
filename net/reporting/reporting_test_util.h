@@ -205,6 +205,12 @@ class ReportingTestBase : public TestWithTaskEnvironment {
       int priority = ReportingEndpoint::EndpointInfo::kDefaultPriority,
       int weight = ReportingEndpoint::EndpointInfo::kDefaultWeight);
 
+  // Sets an endpoint with the given group_key and url as origin in the document
+  // endpoints map using |reporting_source| as key.
+  void SetV1EndpointInCache(const ReportingEndpointGroupKey& group_key,
+                            const base::UnguessableToken& reporting_source,
+                            const GURL& url);
+
   // Returns whether an endpoint with the given properties exists in the cache.
   bool EndpointExistsInCache(const ReportingEndpointGroupKey& group_key,
                              const GURL& url);

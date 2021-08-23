@@ -70,6 +70,9 @@ class ReportingCacheImpl : public ReportingCache {
       const NetworkIsolationKey& network_isolation_key,
       const url::Origin& origin,
       std::vector<ReportingEndpointGroup> parsed_header) override;
+  void OnParsedReportingEndpointsHeader(
+      const base::UnguessableToken& reporting_source,
+      std::vector<ReportingEndpoint> parsed_header) override;
   std::set<url::Origin> GetAllOrigins() const override;
   void RemoveClient(const NetworkIsolationKey& network_isolation_key,
                     const url::Origin& origin) override;
@@ -86,6 +89,9 @@ class ReportingCacheImpl : public ReportingCache {
   base::Value GetClientsAsValue() const override;
   size_t GetEndpointCount() const override;
   void Flush() override;
+  ReportingEndpoint GetV1EndpointForTesting(
+      const base::UnguessableToken& reporting_source,
+      const std::string& endpoint_name) const override;
   ReportingEndpoint GetEndpointForTesting(
       const ReportingEndpointGroupKey& group_key,
       const GURL& url) const override;
@@ -102,6 +108,9 @@ class ReportingCacheImpl : public ReportingCache {
                              base::Time expires,
                              int priority,
                              int weight) override;
+  void SetV1EndpointForTesting(const ReportingEndpointGroupKey& group_key,
+                               const base::UnguessableToken& reporting_source,
+                               const GURL& url) override;
 
  private:
   // Represents the entire Report-To configuration for a (NIK, origin) pair.
@@ -312,20 +321,39 @@ class ReportingCacheImpl : public ReportingCache {
   // Reports that have not yet been successfully uploaded.
   ReportSet reports_;
 
+  // Reporting API V0 Cache:
+  // The |clients_|, |endpoint_groups_| and |endpoints_| members all hold
+  // endpoint group configuration for the V0 API. These endpoint groups are
+  // configured through the Report-To HTTP header, and are currently used for
+  // both document and network reports.
+
   // Map of clients for all configured origins and NIKs, keyed on domain name
   // (there may be multiple NIKs and origins per domain name).
   ClientMap clients_;
 
-  // Map of endpoint groups, keyed on origin and group name.
+  // Map of endpoint groups, keyed on origin and group name. Keys and values
+  // must only contain V0 endpoint group keys.
   EndpointGroupMap endpoint_groups_;
 
   // Map of endpoints, keyed on origin and group name (there may be multiple
-  // endpoints for a given origin and group, with different urls).
+  // endpoints for a given origin and group, with different urls). Keys must
+  // only contain V0 endpoint group keys.
   EndpointMap endpoints_;
 
   // Index of endpoints stored in |endpoints_| keyed on URL, for easier lookup
   // during RemoveEndpointsForUrl(). Should stay in sync with |endpoints_|.
   std::multimap<GURL, EndpointMap::iterator> endpoint_its_by_url_;
+
+  // Reporting API V1 Cache:
+  // The |document_endpoints_| member holds endpoint configuration for the V1
+  // API, configured through the Reporting-Endpoints HTTP header. These
+  // endpoints are strongly associated with the resource which configured them,
+  // and are only used for document reports.
+
+  // Map of endpoints for each reporting source, keyed on the reporting source
+  // token. This contains only V1 document endpoints.
+  std::map<base::UnguessableToken, const std::vector<ReportingEndpoint>>
+      document_endpoints_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

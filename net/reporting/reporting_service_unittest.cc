@@ -198,9 +198,11 @@ TEST_P(ReportingServiceTest, ProcessReportingEndpointsHeader) {
                                            *parsed_header);
   FinishLoading(true /* load_success */);
 
-  EXPECT_EQ(1u, context()->cache()->GetEndpointCount());
-  EXPECT_TRUE(context()->cache()->GetEndpointForTesting(
-      ReportingEndpointGroupKey(kNik_, kOrigin_, kGroup_), kEndpoint_));
+  // Endpoint should not be part of the persistent store.
+  EXPECT_EQ(0u, context()->cache()->GetEndpointCount());
+  // Endpoint should be associated with the reporting source.
+  EXPECT_TRUE(
+      context()->cache()->GetV1EndpointForTesting(*kReportingSource_, kGroup_));
 }
 
 TEST_P(ReportingServiceTest, ProcessReportingEndpointsHeaderPathAbsolute) {
@@ -212,7 +214,14 @@ TEST_P(ReportingServiceTest, ProcessReportingEndpointsHeaderPathAbsolute) {
                                            *parsed_header);
   FinishLoading(true /* load_success */);
 
-  EXPECT_EQ(1u, context()->cache()->GetEndpointCount());
+  // Endpoint should not be part of the persistent store.
+  EXPECT_EQ(0u, context()->cache()->GetEndpointCount());
+  // Endpoint should be associated with the reporting source.
+  ReportingEndpoint endpoint =
+      context()->cache()->GetV1EndpointForTesting(*kReportingSource_, kGroup_);
+  EXPECT_TRUE(endpoint);
+  // Endpoint should have the correct path.
+  EXPECT_EQ(kUrl_.Resolve("/path-absolute"), endpoint.info.url);
 }
 
 TEST_P(ReportingServiceTest, ProcessReportToHeaderPathAbsolute) {

@@ -40,8 +40,8 @@ void ReportingCacheImpl::AddReport(
   // If |reporting_source| is present, it must not be empty.
   DCHECK(!(reporting_source.has_value() && reporting_source->is_empty()));
   auto report = std::make_unique<ReportingReport>(
-      absl::nullopt, network_isolation_key, url, user_agent, group_name, type,
-      std::move(body), depth, queued, attempts);
+      reporting_source, network_isolation_key, url, user_agent, group_name,
+      type, std::move(body), depth, queued, attempts);
 
   auto inserted = reports_.insert(std::move(report));
   DCHECK(inserted.second);
@@ -280,6 +280,14 @@ void ReportingCacheImpl::OnParsedHeader(
   context_->NotifyCachedClientsUpdated();
 }
 
+void ReportingCacheImpl::OnParsedReportingEndpointsHeader(
+    const base::UnguessableToken& reporting_source,
+    std::vector<ReportingEndpoint> endpoints) {
+  DCHECK(!reporting_source.is_empty());
+  DCHECK(!endpoints.empty());
+  document_endpoints_.insert({reporting_source, std::move(endpoints)});
+}
+
 std::set<url::Origin> ReportingCacheImpl::GetAllOrigins() const {
   ConsistencyCheckClients();
   std::set<url::Origin> origins_out;
@@ -480,16 +488,54 @@ void ReportingCacheImpl::AddClientsLoadedFromStore(
   ConsistencyCheckClients();
 }
 
+// Until the V0 Reporting API is deprecated and removed, this method needs to
+// handle endpoint groups configured by both the V0 Report-To header, which are
+// persisted and used by any resource on the origin which defined them, as well
+// as the V1 Reporting-Endpoints header, which defines ephemeral endpoints
+// which can only be used by the resource which defines them.
+// In order to properly isolate reports from different documents, any reports
+// which can be sent to a V1 endpoint must be. V0 endpoints are selected only
+// for those reports with no reporting source token, or when no matching V1
+// endpoint has been configured.
+// To achieve this, the reporting service continues to use the EndpointGroupKey
+// structure, which uses the presence of an optional reporting source token to
+// distinguish V1 endpoints from V0 endpoint groups.
 std::vector<ReportingEndpoint>
 ReportingCacheImpl::GetCandidateEndpointsForDelivery(
     const ReportingEndpointGroupKey& group_key) {
   base::Time now = clock().Now();
   ConsistencyCheckClients();
 
+  // If |group_key| has a defined |reporting_source| field, then this method is
+  // being called for reports with an associated source. We need to first look
+  // for a matching V1 endpoint, based on |reporting_source| and |group_name|.
+  if (group_key.IsDocumentEndpoint()) {
+    const auto it =
+        document_endpoints_.find(group_key.reporting_source.value());
+    if (it != document_endpoints_.end()) {
+      for (const ReportingEndpoint& endpoint : it->second) {
+        if (endpoint.group_key == group_key) {
+          return {endpoint};
+        }
+      }
+    }
+  }
+
+  // Either |group_key| does not have a defined |reporting_source|, which means
+  // that this method was called for reports without a source (e.g. NEL), or
+  // we tried and failed to find an appropriate V1 endpoint. In either case, we
+  // now look for the appropriate V0 endpoints.
+
+  // We need to clear out the |reporting_source| field to get a group key which
+  // can be compared to any V0 endpoint groups.
+  ReportingEndpointGroupKey v0_lookup_group_key(
+      group_key.network_isolation_key, group_key.origin, group_key.group_name);
+
   // Look for an exact origin match for |origin| and |group|.
-  EndpointGroupMap::iterator group_it = FindEndpointGroupIt(group_key);
+  EndpointGroupMap::iterator group_it =
+      FindEndpointGroupIt(v0_lookup_group_key);
   if (group_it != endpoint_groups_.end() && group_it->second.expires > now) {
-    ClientMap::iterator client_it = FindClientIt(group_key);
+    ClientMap::iterator client_it = FindClientIt(v0_lookup_group_key);
     MarkEndpointGroupAndClientUsed(client_it, group_it, now);
     ConsistencyCheckClients();
     context_->NotifyCachedClientsUpdated();
@@ -499,18 +545,20 @@ ReportingCacheImpl::GetCandidateEndpointsForDelivery(
   // If no endpoints were found for an exact match, look for superdomain matches
   // TODO(chlily): Limit the number of labels to go through when looking for a
   // superdomain match.
-  std::string domain = group_key.origin.host();
+  std::string domain = v0_lookup_group_key.origin.host();
   while (!domain.empty()) {
     const auto domain_range = clients_.equal_range(domain);
     for (auto client_it = domain_range.first; client_it != domain_range.second;
          ++client_it) {
       // Client for a superdomain of |origin|
       const Client& client = client_it->second;
-      if (client.network_isolation_key != group_key.network_isolation_key)
+      if (client.network_isolation_key !=
+          v0_lookup_group_key.network_isolation_key)
         continue;
-      ReportingEndpointGroupKey new_group(group_key.network_isolation_key,
-                                          client.origin, group_key.group_name);
-      group_it = FindEndpointGroupIt(new_group);
+      ReportingEndpointGroupKey superdomain_lookup_group_key(
+          v0_lookup_group_key.network_isolation_key, client.origin,
+          v0_lookup_group_key.group_name);
+      group_it = FindEndpointGroupIt(superdomain_lookup_group_key);
 
       if (group_it == endpoint_groups_.end())
         continue;
@@ -522,7 +570,7 @@ ReportingCacheImpl::GetCandidateEndpointsForDelivery(
         MarkEndpointGroupAndClientUsed(client_it, group_it, now);
         ConsistencyCheckClients();
         context_->NotifyCachedClientsUpdated();
-        return GetEndpointsInGroup(new_group);
+        return GetEndpointsInGroup(superdomain_lookup_group_key);
       }
     }
     domain = GetSuperdomain(domain);
@@ -547,6 +595,20 @@ size_t ReportingCacheImpl::GetEndpointCount() const {
 void ReportingCacheImpl::Flush() {
   if (context_->IsClientDataPersisted())
     store()->Flush();
+}
+
+ReportingEndpoint ReportingCacheImpl::GetV1EndpointForTesting(
+    const base::UnguessableToken& reporting_source,
+    const std::string& endpoint_name) const {
+  DCHECK(!reporting_source.is_empty());
+  const auto it = document_endpoints_.find(reporting_source);
+  if (it != document_endpoints_.end()) {
+    for (const ReportingEndpoint& endpoint : it->second) {
+      if (endpoint_name == endpoint.group_key.group_name)
+        return endpoint;
+    }
+  }
+  return ReportingEndpoint();
 }
 
 ReportingEndpoint ReportingCacheImpl::GetEndpointForTesting(
@@ -599,6 +661,28 @@ size_t ReportingCacheImpl::GetEndpointGroupCountForTesting() const {
 
 size_t ReportingCacheImpl::GetClientCountForTesting() const {
   return clients_.size();
+}
+
+void ReportingCacheImpl::SetV1EndpointForTesting(
+    const ReportingEndpointGroupKey& group_key,
+    const base::UnguessableToken& reporting_source,
+    const GURL& url) {
+  DCHECK(!reporting_source.is_empty());
+  DCHECK(group_key.IsDocumentEndpoint());
+  DCHECK_EQ(reporting_source, group_key.reporting_source.value());
+  ReportingEndpoint::EndpointInfo info;
+  info.url = url;
+  ReportingEndpoint new_endpoint(group_key, info);
+  if (document_endpoints_.count(reporting_source) > 0) {
+    // The endpoints list is const, so remove and replace with an updated list.
+    std::vector<ReportingEndpoint> endpoints =
+        document_endpoints_.at(reporting_source);
+    endpoints.push_back(std::move(new_endpoint));
+    document_endpoints_.erase(reporting_source);
+    document_endpoints_.insert({reporting_source, std::move(endpoints)});
+  } else {
+    document_endpoints_.insert({reporting_source, {std::move(new_endpoint)}});
+  }
 }
 
 void ReportingCacheImpl::SetEndpointForTesting(
@@ -745,6 +829,9 @@ size_t ReportingCacheImpl::ConsistencyCheckClient(const std::string& domain,
     size_t groups_with_name = 0;
     for (const auto& key_and_group : endpoint_groups_) {
       const ReportingEndpointGroupKey& key = key_and_group.first;
+      // There should not be any V1 document endpoints; this is a V0 endpoint
+      // group.
+      DCHECK(!key_and_group.first.IsDocumentEndpoint());
       if (key.origin == client.origin &&
           key.network_isolation_key == client.network_isolation_key &&
           key.group_name == group_name) {

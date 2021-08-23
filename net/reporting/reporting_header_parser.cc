@@ -219,37 +219,26 @@ bool ProcessEndpoint(ReportingDelegate* delegate,
 }
 
 // Process a single endpoint received in a Reporting-Endpoints header.
-// Since the new header format only contains information for a single endpoint,
-// the endpoint group we create here is just a wrapper for that endpoint. The
-// endpoint name will be stored in the group name here as individual endpoint
-// doesn't have names.
-bool ProcessDocumentEndpoint(
-    ReportingDelegate* delegate,
-    ReportingCache* cache,
-    const NetworkIsolationKey& network_isolation_key,
-    const url::Origin& origin,
-    const std::string& endpoint_name,
-    const std::string& endpoint_url_string,
-    ReportingEndpointGroup& parsed_endpoint_group_out) {
-  ReportingEndpointGroupKey group_key(network_isolation_key, origin,
-                                      endpoint_name);
-  parsed_endpoint_group_out.group_key = group_key;
-
-  // Default to a fixed number of days as Reporting-Endpoints doesn't have the
-  // concept of a ttl, its lifespan will be bound to the containing document. 30
-  // days is picked as long enough so endpoints are unlikely to be removed
-  // before the document is closed.
-  parsed_endpoint_group_out.ttl = base::TimeDelta::FromDays(30);
+bool ProcessV1Endpoint(ReportingDelegate* delegate,
+                       ReportingCache* cache,
+                       const base::UnguessableToken& reporting_source,
+                       const NetworkIsolationKey& network_isolation_key,
+                       const url::Origin& origin,
+                       const std::string& endpoint_name,
+                       const std::string& endpoint_url_string,
+                       ReportingEndpoint& parsed_endpoint_out) {
+  DCHECK(!reporting_source.is_empty());
+  ReportingEndpointGroupKey group_key(network_isolation_key, reporting_source,
+                                      origin, endpoint_name);
+  parsed_endpoint_out.group_key = group_key;
 
   ReportingEndpoint::EndpointInfo parsed_endpoint;
 
   if (!ProcessEndpoint(delegate, group_key, endpoint_url_string,
                        parsed_endpoint)) {
-    // Remove the group if it does not have a proper endpoint.
-    cache->RemoveEndpointGroup(group_key);
     return false;
   }
-  parsed_endpoint_group_out.endpoints = {std::move(parsed_endpoint)};
+  parsed_endpoint_out.info = std::move(parsed_endpoint);
   return true;
 }
 
@@ -341,12 +330,13 @@ void ReportingHeaderParser::ProcessParsedReportingEndpointsHeader(
   ReportingDelegate* delegate = context->delegate();
   ReportingCache* cache = context->cache();
 
-  std::vector<ReportingEndpointGroup> parsed_header;
+  std::vector<ReportingEndpoint> parsed_header;
 
   for (const auto& member : header) {
-    ReportingEndpointGroup parsed_endpoint;
-    if (ProcessDocumentEndpoint(delegate, cache, network_isolation_key, origin,
-                                member.first, member.second, parsed_endpoint)) {
+    ReportingEndpoint parsed_endpoint;
+    if (ProcessV1Endpoint(delegate, cache, reporting_source,
+                          network_isolation_key, origin, member.first,
+                          member.second, parsed_endpoint)) {
       parsed_header.push_back(std::move(parsed_endpoint));
     }
   }
@@ -357,8 +347,8 @@ void ReportingHeaderParser::ProcessParsedReportingEndpointsHeader(
     return;
   }
 
-  cache->OnParsedHeader(network_isolation_key, origin,
-                        std::move(parsed_header));
+  cache->OnParsedReportingEndpointsHeader(reporting_source,
+                                          std::move(parsed_header));
 }
 
 }  // namespace net
