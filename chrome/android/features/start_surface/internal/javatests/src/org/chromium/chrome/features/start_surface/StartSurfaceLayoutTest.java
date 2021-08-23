@@ -576,6 +576,7 @@ public class StartSurfaceLayoutTest {
     @Test
     @MediumTest
     @DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
+    @DisabledTest(message = "crbug.com/1237623 test is flaky")
     public void testGridToTabToOtherFrozen() throws InterruptedException {
         assertFalse(TabUiFeatureUtilities.isTabToGtsAnimationEnabled());
         prepareTabs(2, 0, mUrl);
