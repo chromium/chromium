@@ -429,7 +429,6 @@ class MediaCodecUtil {
 
                 // The following chipsets have been confirmed by MediaTek to work on P+
                 return Build.HARDWARE.startsWith("mt5599") || Build.HARDWARE.startsWith("mt5895")
-                        || Build.HARDWARE.startsWith("m7332")
                         || Build.HARDWARE.startsWith("mt8768");
             }
         } else if (mime.equals(MimeTypes.VIDEO_VP9)) {
