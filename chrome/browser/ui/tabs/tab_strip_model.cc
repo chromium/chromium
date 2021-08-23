@@ -2032,6 +2032,7 @@ void TabStripModel::MoveWebContentsAtImpl(int index,
 
   TabStripSelectionChange selection(GetActiveWebContents(), selection_model_);
 
+  CHECK_LT(index, static_cast<int>(contents_data_.size()));
   std::unique_ptr<WebContentsData> moved_data =
       std::move(contents_data_[index]);
   WebContents* web_contents = moved_data->web_contents();
