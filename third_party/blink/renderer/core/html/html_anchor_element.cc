@@ -68,6 +68,8 @@ namespace blink {
 
 namespace {
 
+const int kMaxDownloadAttrLength = 1000000;
+
 // Note: Here it covers download originated from clicking on <a download> link
 // that results in direct download. Features in this method can also be logged
 // from browser for download due to navigations to non-web-renderable content.
@@ -456,8 +458,23 @@ void HTMLAnchorElement::HandleClick(Event& event) {
       window->GetSecurityOrigin()->CanReadContent(completed_url)) {
     if (ShouldInterveneDownloadByFramePolicy(frame))
       return;
-    request.SetSuggestedFilename(
-        static_cast<String>(FastGetAttribute(html_names::kDownloadAttr)));
+
+    String download_attr =
+        static_cast<String>(FastGetAttribute(html_names::kDownloadAttr));
+    if (download_attr.length() > kMaxDownloadAttrLength) {
+      ConsoleMessage* console_message = MakeGarbageCollected<ConsoleMessage>(
+          mojom::blink::ConsoleMessageSource::kRendering,
+          mojom::blink::ConsoleMessageLevel::kError,
+          String::Format("Download attribute for anchor element is too long. "
+                         "Max: %d, given: %d",
+                         kMaxDownloadAttrLength, download_attr.length()));
+      console_message->SetNodes(GetDocument().GetFrame(),
+                                {DOMNodeIds::IdForNode(this)});
+      GetDocument().AddConsoleMessage(console_message);
+      return;
+    }
+
+    request.SetSuggestedFilename(download_attr);
     request.SetRequestContext(mojom::blink::RequestContextType::DOWNLOAD);
     request.SetRequestorOrigin(window->GetSecurityOrigin());
     network::mojom::ReferrerPolicy referrer_policy =
