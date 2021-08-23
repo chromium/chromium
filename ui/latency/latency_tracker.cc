@@ -134,6 +134,23 @@ void LatencyTracker::ReportUkmScrollLatency(
   builder.Record(ukm_recorder);
 }
 
+// Checking whether one update event length (measured in frames) is janky
+// compared to another (either previous or next). Update is deemed janky when
+// it's half of a frame longer than a neighbouring update.
+//
+// A small number is added to 0.5 in order to make sure that the comparison does
+// not filter out ratios that are precisely 0.5, which can fall a little above
+// or below exact value due to inherent inaccuracy of operations with
+// floating-point numbers. Value 1e-9 have been chosen as follows: the ratio has
+// less than nanosecond precision in numerator and VSync interval in
+// denominator. Assuming refresh rate more than 1 FPS (and therefore VSync
+// interval less than a second), this ratio should increase with increments more
+// than minimal value in numerator (1ns) divided by maximum value in
+// denominator, giving 1e-9.
+static bool IsJankyComparison(double frames, double other_frames) {
+  return frames > other_frames + 0.5 + 1e-9;
+}
+
 void LatencyTracker::ReportJankyFrame(base::TimeTicks original_timestamp,
                                       base::TimeTicks gpu_swap_end_timestamp,
                                       const ui::LatencyInfo& latency,
@@ -188,7 +205,8 @@ void LatencyTracker::ReportJankyFrame(base::TimeTicks original_timestamp,
     if (!jank_state_.prev_scroll_update_reported_) {
       // The information about previous GestureScrollUpdate was not reported:
       // check whether it's janky by comparing to the current frame and report.
-      if (prev_frames_taken > frames_taken + 0.5) {
+
+      if (IsJankyComparison(prev_frames_taken, frames_taken)) {
         UMA_HISTOGRAM_BOOLEAN("Event.Latency.ScrollJank", true);
         jank_state_.janky_update_events_++;
         jank_state_.janky_update_duration_ += jank_state_.prev_duration_;
@@ -198,7 +216,7 @@ void LatencyTracker::ReportJankyFrame(base::TimeTicks original_timestamp,
     }
 
     // The current GestureScrollUpdate is janky compared to the previous one.
-    if (frames_taken > prev_frames_taken + 0.5) {
+    if (IsJankyComparison(frames_taken, prev_frames_taken)) {
       UMA_HISTOGRAM_BOOLEAN("Event.Latency.ScrollJank", true);
       jank_state_.janky_update_events_++;
       jank_state_.janky_update_duration_ += dur;
