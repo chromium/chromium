@@ -34,8 +34,8 @@ WebFeedMetadata MakeWebFeedMetadata(
     const feedstore::WebFeedInfo& web_feed_info) {
   WebFeedMetadata result;
   result.web_feed_id = web_feed_info.web_feed_id();
-  result.is_active = web_feed_info.state() ==
-                     feedstore::WebFeedInfo::State::WebFeedInfo_State_ACTIVE;
+  result.availability_status =
+      static_cast<WebFeedAvailabilityStatus>(web_feed_info.state());
 
   if (!web_feed_info.rss_uri().empty()) {
     result.publisher_url = GURL(web_feed_info.rss_uri());

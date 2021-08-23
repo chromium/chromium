@@ -290,7 +290,7 @@ public final class WebFeedMainMenuItemTest {
     private WebFeedBridge.WebFeedMetadata createWebFeedMetadata(
             @WebFeedSubscriptionStatus int subscriptionStatus) {
         return new WebFeedBridge.WebFeedMetadata("id".getBytes(), "title", TEST_URL,
-                subscriptionStatus, /*isActive=*/false, /*isRecommended=*/false);
+                subscriptionStatus, WebFeedAvailabilityStatus.INACTIVE, /*isRecommended=*/false);
     }
 
     private void setGetWebFeedMetadataForPageRepsonse(WebFeedBridge.WebFeedMetadata metadata) {

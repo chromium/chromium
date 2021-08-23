@@ -209,8 +209,8 @@ public final class WebFeedSnackbarControllerTest {
         WebFeedBridge.FollowResults followResults =
                 new WebFeedBridge.FollowResults(WebFeedSubscriptionRequestStatus.SUCCESS,
                         new WebFeedBridge.WebFeedMetadata(sFollowId, sTitle, sTestUrl,
-                                WebFeedSubscriptionRequestStatus.SUCCESS, /*isActive=*/
-                                false, /*isRecommended=*/false));
+                                WebFeedSubscriptionRequestStatus.SUCCESS,
+                                WebFeedAvailabilityStatus.INACTIVE, /*isRecommended=*/false));
 
         mWebFeedSnackbarController.showPostFollowHelp(
                 mTab, followResults, sFollowId, sTestUrl, sTitle);
@@ -404,7 +404,7 @@ public final class WebFeedSnackbarControllerTest {
     private WebFeedBridge.FollowResults getSuccessfulFollowResult() {
         return new WebFeedBridge.FollowResults(WebFeedSubscriptionRequestStatus.SUCCESS,
                 new WebFeedBridge.WebFeedMetadata(sFollowId, sTitle, sTestUrl,
-                        WebFeedSubscriptionStatus.SUBSCRIBED, /*isActive=*/true,
+                        WebFeedSubscriptionStatus.SUBSCRIBED, WebFeedAvailabilityStatus.ACTIVE,
                         /*isRecommended=*/true));
     }
 

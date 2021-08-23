@@ -167,8 +167,8 @@ base::android::ScopedJavaLocalRef<jobject> ToJava(
       env, ToJavaWebFeedId(env, metadata.web_feed_id),
       base::android::ConvertUTF8ToJavaString(env, metadata.title),
       url::GURLAndroid::FromNativeGURL(env, metadata.publisher_url),
-      static_cast<int>(metadata.subscription_status), metadata.is_active,
-      metadata.is_recommended);
+      static_cast<int>(metadata.subscription_status),
+      static_cast<int>(metadata.availability_status), metadata.is_recommended);
 }
 
 base::android::ScopedJavaLocalRef<jobject> ToJava(

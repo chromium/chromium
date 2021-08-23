@@ -21,6 +21,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.feed.webfeed.WebFeedAvailabilityStatus;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge.WebFeedMetadata;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridgeJni;
@@ -120,9 +121,10 @@ public class FollowManagementMediatorTest {
         GURL url1 = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
         GURL url2 = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2);
         metadataList.add(new WebFeedMetadata(id1, "Programmers at work", url1,
-                WebFeedSubscriptionStatus.SUBSCRIBED, true, false));
+                WebFeedSubscriptionStatus.SUBSCRIBED, WebFeedAvailabilityStatus.ACTIVE, false));
         metadataList.add(new WebFeedMetadata(id1, "Programmers at play", url2,
-                WebFeedSubscriptionStatus.NOT_SUBSCRIBED, false, false));
+                WebFeedSubscriptionStatus.NOT_SUBSCRIBED, WebFeedAvailabilityStatus.INACTIVE,
+                false));
 
         mFollowManagementMediator.fillRecyclerView(metadataList);
 

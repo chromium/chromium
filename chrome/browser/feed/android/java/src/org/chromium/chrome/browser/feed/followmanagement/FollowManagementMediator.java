@@ -16,9 +16,11 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView.Adapter;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Log;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 import org.chromium.chrome.browser.feed.webfeed.R;
+import org.chromium.chrome.browser.feed.webfeed.WebFeedAvailabilityStatus;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge.WebFeedMetadata;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSubscriptionStatus;
@@ -180,14 +182,23 @@ class FollowManagementMediator {
                 mContext.getResources().getString(R.string.follow_manage_updates_unavailable);
         String waitingForContent =
                 mContext.getResources().getString(R.string.follow_manage_waiting_for_content);
+
         // Remove the loading UI from the recycler view before showing the results.
         mModelList.clear();
 
         // Add the list items (if any) to the recycler view.
         for (WebFeedMetadata page : followedWebFeeds) {
+            Log.d(TAG,
+                    "page: " + page.visitUrl + ", availability status " + page.availabilityStatus);
             String title = page.title;
             GURL url = page.visitUrl;
-            String status = page.isActive ? "" : updatesUnavailable;
+
+            String status = "";
+            if (page.availabilityStatus == WebFeedAvailabilityStatus.WAITING_FOR_CONTENT) {
+                status = waitingForContent;
+            } else if (page.availabilityStatus == WebFeedAvailabilityStatus.INACTIVE) {
+                status = updatesUnavailable;
+            }
             byte[] id = page.id;
             boolean subscribed = false;
             int subscriptionStatus = page.subscriptionStatus;
