@@ -93,7 +93,9 @@ class MacNotificationServiceUNTest : public testing::Test {
       const std::string& profile_id,
       bool incognito) {
     NSString* identifier = base::SysUTF8ToNSString(
-        DeriveMacNotificationId(incognito, profile_id, notification_id));
+        DeriveMacNotificationId(mojom::NotificationIdentifier::New(
+            notification_id,
+            mojom::ProfileIdentifier::New(profile_id, incognito))));
 
     UNMutableNotificationContent* content =
         [[UNMutableNotificationContent alloc] init];

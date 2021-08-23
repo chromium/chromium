@@ -194,9 +194,8 @@ void MacNotificationServiceNS::DisplayNotification(
   if (!notification->icon.isNull())
     [toast setContentImage:gfx::Image(notification->icon).ToNSImage()];
 
-  const mojom::NotificationIdentifierPtr& identifier = notification->meta->id;
-  NSString* notification_id = base::SysUTF8ToNSString(DeriveMacNotificationId(
-      identifier->profile->incognito, identifier->profile->id, identifier->id));
+  NSString* notification_id =
+      base::SysUTF8ToNSString(DeriveMacNotificationId(notification->meta->id));
   [toast setIdentifier:notification_id];
 
   [notification_center_ deliverNotification:toast.get()];

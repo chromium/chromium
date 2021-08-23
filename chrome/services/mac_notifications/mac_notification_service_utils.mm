@@ -53,12 +53,11 @@ mojom::NotificationMetadataPtr GetMacNotificationMetadata(
       GURL(base::SysNSStringToUTF8(origin_url_ns)), creator_pid);
 }
 
-std::string DeriveMacNotificationId(bool incognito,
-                                    const std::string& profile_id,
-                                    const std::string& notification_id) {
+std::string DeriveMacNotificationId(
+    const mojom::NotificationIdentifierPtr& identifier) {
   // i: incognito, r: regular profile
-  return base::StrCat(
-      {incognito ? "i" : "r", "|", profile_id, "|", notification_id});
+  return base::StrCat({identifier->profile->incognito ? "i" : "r", "|",
+                       identifier->profile->id, "|", identifier->id});
 }
 
 NSString* const kNotificationButtonOne = @"buttonOne";

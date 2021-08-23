@@ -117,9 +117,7 @@ void MacNotificationServiceUN::DisplayNotification(
   [content setBody:base::SysUTF16ToNSString(notification->body)];
   [content setUserInfo:GetMacNotificationUserInfo(notification)];
 
-  const mojom::NotificationIdentifierPtr& identifier = notification->meta->id;
-  std::string notification_id = DeriveMacNotificationId(
-      identifier->profile->incognito, identifier->profile->id, identifier->id);
+  std::string notification_id = DeriveMacNotificationId(notification->meta->id);
   NSString* notification_id_ns = base::SysUTF8ToNSString(notification_id);
 
   // TODO(knollr): Also pass placeholder once we support inline replies.
@@ -240,8 +238,8 @@ void MacNotificationServiceUN::GetDisplayedNotifications(
 void MacNotificationServiceUN::CloseNotification(
     mojom::NotificationIdentifierPtr identifier) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NSString* notification_id = base::SysUTF8ToNSString(DeriveMacNotificationId(
-      identifier->profile->incognito, identifier->profile->id, identifier->id));
+  NSString* notification_id =
+      base::SysUTF8ToNSString(DeriveMacNotificationId(identifier));
   [notification_center_
       removeDeliveredNotificationsWithIdentifiers:@[ notification_id ]];
 }

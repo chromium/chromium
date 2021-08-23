@@ -21,9 +21,8 @@ mojom::NotificationMetadataPtr GetMacNotificationMetadata(
 
 // Derives a unique notification identifier to be used by the macOS system
 // notification center to uniquely identify a notification.
-std::string DeriveMacNotificationId(bool incognito,
-                                    const std::string& profile_id,
-                                    const std::string& notification_id);
+std::string DeriveMacNotificationId(
+    const mojom::NotificationIdentifierPtr& identifier);
 
 extern NSString* const kNotificationButtonOne;
 extern NSString* const kNotificationButtonTwo;
