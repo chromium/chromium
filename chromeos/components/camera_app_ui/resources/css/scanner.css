@@ -27,7 +27,7 @@ body:is(:not(.show-scanner-mode), :not(.scanner), :not(.streaming)) #scanner-mod
 #scanner-modes-group {
   background-color: rgba(var(--grey-900-rgb), 0.8);
   border-radius: var(--border-radius-rounded-with-short-side);
-  bottom: 96px;
+  bottom: calc(var(--bottom-line) * 2 + 8px);
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25), 0 1px 2px rgba(0, 0, 0, 0.3);
   color: white;
   display: flex;
@@ -51,15 +51,16 @@ body:is(:not(.show-scanner-mode), :not(.scanner), :not(.streaming)) #scanner-mod
 
 .scanner-mode-item > div.label {
   border-radius: var(--border-radius-rounded-with-short-side);
-  font-family: var(--default-font-family);
+  font: 14px/20px var(--default-font-family);
   line-height: 20px;
   padding: 6px 16px;
-  size: 14px;
   z-index: 0;
 }
 
 .scanner-mode-item input:checked + div.label {
-  background: rgb(26, 115, 232);
+  background: white;
+  box-shadow: 0 2px 3px rgba(var(--grey-900-rgb), 0.3);
+  color: var(--grey-900);
 }
 
 /* The container of scan box for layout and positioning. */
