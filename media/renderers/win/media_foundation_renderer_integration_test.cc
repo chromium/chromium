@@ -8,6 +8,7 @@
 
 #include <mfapi.h>
 
+#include "base/win/windows_version.h"
 #include "media/test/pipeline_integration_test_base.h"
 #include "media/test/test_media_source.h"
 
@@ -72,6 +73,11 @@ class MediaFoundationRendererIntegrationTest
 };
 
 TEST_F(MediaFoundationRendererIntegrationTest, BasicPlayback) {
+  // TODO(crbug.com/1240681): This test is very flaky on win10-20h2.
+  if (base::win::OSInfo::GetInstance()->version() >=
+      base::win::Version::WIN10_20H2) {
+    GTEST_SKIP() << "Skipping test for WIN10_20H2 and greater";
+  }
   if (!CanDecodeVp9())
     return;
 
@@ -81,6 +87,11 @@ TEST_F(MediaFoundationRendererIntegrationTest, BasicPlayback) {
 }
 
 TEST_F(MediaFoundationRendererIntegrationTest, BasicPlayback_MediaSource) {
+  // TODO(crbug.com/1240681): This test is very flaky on win10-20h2.
+  if (base::win::OSInfo::GetInstance()->version() >=
+      base::win::Version::WIN10_20H2) {
+    GTEST_SKIP() << "Skipping test for WIN10_20H2 and greater";
+  }
   if (!CanDecodeVp9())
     return;
 
