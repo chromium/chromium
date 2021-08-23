@@ -132,6 +132,8 @@ class CORE_EXPORT NGInlineLayoutAlgorithm final
   NGInlineLayoutStateStack* box_states_;
   NGInlineChildLayoutContext* context_;
 
+  NGMarginStrut end_margin_strut_;
+
   FontBaseline baseline_type_ = FontBaseline::kAlphabeticBaseline;
 
   // True if in quirks or limited-quirks mode, which require line-height quirks.

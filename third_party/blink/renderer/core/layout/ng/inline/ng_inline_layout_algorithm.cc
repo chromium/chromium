@@ -605,35 +605,31 @@ void NGInlineLayoutAlgorithm::PlaceBlockInInline(
   DCHECK_EQ(item.Type(), NGInlineItem::kBlockInInline);
   LayoutObject* layout_object = item.GetLayoutObject();
   DCHECK(layout_object);
+  DCHECK(layout_object->IsAnonymous());
   DCHECK(!layout_object->IsInline());
   DCHECK(item_result->layout_result);
   const NGLayoutResult& result = *item_result->layout_result;
+  NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
+                         To<NGPhysicalBoxFragment>(result.PhysicalFragment()));
 
   // Setup |container_builder_|. Set it up here instead of in |CreateLine|,
   // because there should be only one block-in-inline, and we need data from the
   // |NGLayoutResult|.
   container_builder_.SetIsBlockInInline();
+  container_builder_.SetInlineSize(fragment.InlineSize());
   container_builder_.SetBaseDirection(line_info.BaseDirection());
-  if (absl::optional<LayoutUnit> block_offset = result.BfcBlockOffset()) {
-    container_builder_.SetBfcBlockOffset(*block_offset);
-    container_builder_.SetLineBoxBfcBlockOffset(*block_offset);
-    container_builder_.SetEndMarginStrut(result.EndMarginStrut());
-    container_builder_.SetAdjoiningObjectTypes(result.AdjoiningObjectTypes());
-    const NGConstraintSpace& space = ConstraintSpace();
-    NGBoxFragment fragment(
-        space.GetWritingDirection(),
-        To<NGPhysicalBoxFragment>(result.PhysicalFragment()));
-    container_builder_.SetInlineSize(fragment.InlineSize());
+
+  if (!result.IsSelfCollapsing()) {
     // Block-in-inline is wrapped in an anonymous block that has no margins.
-    DCHECK(layout_object->IsAnonymous());
     const FontHeight metrics = fragment.BaselineMetrics(
         /* margins */ NGLineBoxStrut(), baseline_type_);
     box_states_->OnBlockInInline(metrics, line_box);
     container_builder_.SetMetrics(metrics);
-  } else {
-    container_builder_.SetIsSelfCollapsing();
-    container_builder_.SetIsEmptyLineBox();
   }
+
+  // TODO(ikilpatrick): Set/propagate exclusion space.
+  end_margin_strut_ = result.EndMarginStrut();
+  container_builder_.SetAdjoiningObjectTypes(result.AdjoiningObjectTypes());
 
   line_box->AddChild(std::move(item_result->layout_result),
                      /* offset */ LogicalOffset(), item_result->inline_size,
@@ -1068,6 +1064,7 @@ LayoutUnit NGInlineLayoutAlgorithm::ComputeContentSize(
 scoped_refptr<const NGLayoutResult> NGInlineLayoutAlgorithm::Layout() {
   NGExclusionSpace initial_exclusion_space(ConstraintSpace().ExclusionSpace());
 
+  end_margin_strut_ = ConstraintSpace().MarginStrut();
   container_builder_.SetAdjoiningObjectTypes(
       ConstraintSpace().AdjoiningObjectTypes());
 
@@ -1147,16 +1144,31 @@ scoped_refptr<const NGLayoutResult> NGInlineLayoutAlgorithm::Layout() {
                                leading_floats, handled_leading_floats_index,
                                break_token, &exclusion_space);
     line_breaker.NextLine(&line_info);
-    if (UNLIKELY(line_info.AbortedLayoutResult()))
-      return line_info.AbortedLayoutResult();
+
+    const auto* block_in_inline_result = line_info.BlockInInlineLayoutResult();
+    if (UNLIKELY(block_in_inline_result && block_in_inline_result->Status() !=
+                                               NGLayoutResult::kSuccess)) {
+      items_builder->ReleaseCurrentLogicalLineItems();
+      return block_in_inline_result;
+    }
 
     // Set our BFC block-offset if we aren't an empty line.
     if (!line_info.IsEmptyLine()) {
-      container_builder_.SetBfcBlockOffset(bfc_block_offset);
-      container_builder_.SetLineBoxBfcBlockOffset(
-          line_info.BfcOffset().block_offset);
-      if (is_pushed_by_floats)
-        container_builder_.SetIsPushedByFloats();
+      if (block_in_inline_result && block_in_inline_result->BfcBlockOffset()) {
+        const auto result_bfc_block_offset =
+            block_in_inline_result->BfcBlockOffset();
+        DCHECK(result_bfc_block_offset);
+        container_builder_.SetBfcBlockOffset(*result_bfc_block_offset);
+        container_builder_.SetLineBoxBfcBlockOffset(*result_bfc_block_offset);
+        if (block_in_inline_result->IsPushedByFloats())
+          container_builder_.SetIsPushedByFloats();
+      } else {
+        container_builder_.SetBfcBlockOffset(bfc_block_offset);
+        container_builder_.SetLineBoxBfcBlockOffset(
+            line_info.BfcOffset().block_offset);
+        if (is_pushed_by_floats)
+          container_builder_.SetIsPushedByFloats();
+      }
 
       // Abort if something before needs to know the correct BFC block-offset.
       if (container_builder_.AdjoiningObjectTypes() &&
@@ -1269,10 +1281,6 @@ scoped_refptr<const NGLayoutResult> NGInlineLayoutAlgorithm::Layout() {
       container_builder_.SetIsSelfCollapsing();
       container_builder_.SetIsEmptyLineBox();
 
-      // Margins should collapse across "certain zero-height line boxes".
-      // https://drafts.csswg.org/css2/box.html#collapsing-margins
-      container_builder_.SetEndMarginStrut(ConstraintSpace().MarginStrut());
-
       // Finally respect the forced BFC block-offset if present.
       if (auto forced_bfc_block_offset =
               ConstraintSpace().ForcedBfcBlockOffset()) {
@@ -1286,6 +1294,11 @@ scoped_refptr<const NGLayoutResult> NGInlineLayoutAlgorithm::Layout() {
       container_builder_.SetBlockSize(
           ComputeContentSize(line_info, exclusion_space));
 
+      // Margins should only collapse across "certain zero-height line boxes".
+      // https://drafts.csswg.org/css2/box.html#collapsing-margins
+      if (!line_info.IsBlockInInline())
+        end_margin_strut_ = NGMarginStrut();
+
       // As we aren't an empty inline we should have correctly placed all
       // our adjoining objects, and shouldn't propagate this information
       // to siblings.
@@ -1295,6 +1308,7 @@ scoped_refptr<const NGLayoutResult> NGInlineLayoutAlgorithm::Layout() {
   }
 
   CHECK(is_line_created);
+  container_builder_.SetEndMarginStrut(end_margin_strut_);
   container_builder_.SetExclusionSpace(std::move(exclusion_space));
 
   DCHECK(items_builder);

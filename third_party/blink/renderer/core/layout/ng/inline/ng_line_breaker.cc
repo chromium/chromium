@@ -2003,11 +2003,14 @@ void NGLineBreaker::HandleBlockInInline(const NGInlineItem& item,
     scoped_refptr<const NGLayoutResult> layout_result =
         NGBlockNode(To<LayoutBox>(item.GetLayoutObject()))
             .Layout(constraint_space_, block_break_token);
+    line_info->SetBlockInInlineLayoutResult(layout_result);
+
+    // Early exit if the layout didn't succeed.
     if (layout_result->Status() != NGLayoutResult::kSuccess) {
-      line_info->SetAbortedLayoutResult(std::move(layout_result));
       state_ = LineBreakState::kDone;
       return;
     }
+
     const NGPhysicalFragment& fragment = layout_result->PhysicalFragment();
     item_result->inline_size =
         NGFragment(constraint_space_.GetWritingDirection(), fragment)
@@ -2015,10 +2018,6 @@ void NGLineBreaker::HandleBlockInInline(const NGInlineItem& item,
 
     item_result->should_create_line_box = !layout_result->IsSelfCollapsing();
     item_result->layout_result = std::move(layout_result);
-
-    DCHECK(!line_info->BlockInInlineBreakToken());
-    line_info->SetBlockInInlineBreakToken(
-        To<NGBlockBreakToken>(fragment.BreakToken()));
   } else {
     DCHECK(mode_ == NGLineBreakerMode::kMaxContent ||
            mode_ == NGLineBreakerMode::kMinContent);

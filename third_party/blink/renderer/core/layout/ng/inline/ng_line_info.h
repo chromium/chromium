@@ -73,10 +73,11 @@ class CORE_EXPORT NGLineInfo {
   bool IsBlockInInline() const { return is_block_in_inline_; }
   void SetIsBlockInInline() { is_block_in_inline_ = true; }
   const NGBlockBreakToken* BlockInInlineBreakToken() const {
-    return block_in_inline_break_token_;
-  }
-  void SetBlockInInlineBreakToken(const NGBlockBreakToken* break_token) {
-    block_in_inline_break_token_ = break_token;
+    if (!block_in_inline_layout_result_)
+      return nullptr;
+
+    return To<NGBlockBreakToken>(
+        block_in_inline_layout_result_->PhysicalFragment().BreakToken());
   }
 
   // NGInlineItemResults for this line.
@@ -153,13 +154,13 @@ class CORE_EXPORT NGLineInfo {
   // justify alignment.
   bool NeedsAccurateEndPosition() const { return needs_accurate_end_position_; }
 
-  // Line breaker may abort if block-in-inline aborts the layout.
-  const NGLayoutResult* AbortedLayoutResult() const {
-    return aborted_layout_result_.get();
+  // The block-in-inline layout result.
+  const NGLayoutResult* BlockInInlineLayoutResult() const {
+    return block_in_inline_layout_result_.get();
   }
-  void SetAbortedLayoutResult(
+  void SetBlockInInlineLayoutResult(
       scoped_refptr<const NGLayoutResult> layout_result) {
-    aborted_layout_result_ = std::move(layout_result);
+    block_in_inline_layout_result_ = std::move(layout_result);
   }
 
   // |MayHaveTextCombineItem()| is used for treating text-combine box as
@@ -181,8 +182,7 @@ class CORE_EXPORT NGLineInfo {
 
   NGBfcOffset bfc_offset_;
 
-  const NGBlockBreakToken* block_in_inline_break_token_ = nullptr;
-  scoped_refptr<const NGLayoutResult> aborted_layout_result_;
+  scoped_refptr<const NGLayoutResult> block_in_inline_layout_result_;
 
   LayoutUnit available_width_;
   LayoutUnit width_;
