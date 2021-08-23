@@ -207,7 +207,9 @@ static IsolatedWorldStableIdMap& IsolatedWorldStableIds() {
 
 String DOMWrapperWorld::NonMainWorldStableId() const {
   DCHECK(!IsMainWorld());
-  return IsolatedWorldStableIds().DeprecatedAtOrEmptyValue(GetWorldId());
+  const auto& map = IsolatedWorldStableIds();
+  const auto it = map.find(GetWorldId());
+  return it != map.end() ? it->value : String();
 }
 
 void DOMWrapperWorld::SetNonMainWorldStableId(int32_t world_id,
@@ -227,8 +229,9 @@ static IsolatedWorldHumanReadableNameMap& IsolatedWorldHumanReadableNames() {
 
 String DOMWrapperWorld::NonMainWorldHumanReadableName() const {
   DCHECK(!IsMainWorld());
-  return IsolatedWorldHumanReadableNames().DeprecatedAtOrEmptyValue(
-      GetWorldId());
+  const auto& map = IsolatedWorldHumanReadableNames();
+  const auto it = map.find(GetWorldId());
+  return it != map.end() ? it->value : String();
 }
 
 void DOMWrapperWorld::SetNonMainWorldHumanReadableName(
