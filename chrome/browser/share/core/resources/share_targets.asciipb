@@ -5,7 +5,7 @@
 ##
 ## Top level settings
 ##
-version_id: 5
+version_id: 6
 
 ##
 ## Share Targets
@@ -361,7 +361,7 @@ targets {
 
 targets {
   nickname: "LinkedIn"
-  url: "http://www.linkedi  n.com/shareArticle?url=%(escaped_url)&title=%(escaped_title)"
+  url: "http://www.linkedin.com/shareArticle?url=%(escaped_url)&title=%(escaped_title)"
   icon:
     "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAA"
     "AERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKAC"
