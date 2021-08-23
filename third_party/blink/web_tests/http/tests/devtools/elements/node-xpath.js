@@ -13,7 +13,7 @@
 
   function dumpNodes(prefix, node) {
     if (!doc) {
-      doc = getDocumentElement();
+      doc = ElementsTestRunner.getDocumentElement();
       node = doc;
     }
     dumpNodeData(node, prefix);
@@ -22,16 +22,6 @@
       dumpNodes(prefix + '  ', children[i]);
     if (node === doc)
       TestRunner.completeTest();
-  }
-
-  function getDocumentElement() {
-    var map = TestRunner.domModel.idToDOMNode;
-    for (var id in map) {
-      if (map[id].nodeName() === '#document')
-        return map[id];
-    }
-
-    return null;
   }
 
   function dumpNodeData(node, prefix) {

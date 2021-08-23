@@ -35,9 +35,7 @@
       ElementsTestRunner.selectNodeAndWaitForStyles('inspected', selectCallback);
 
       function selectCallback() {
-        var idToDOMNode = TestRunner.domModel.idToDOMNode;
-        for (var id in idToDOMNode) {
-          const node = idToDOMNode[id];
+        for (const [id, node] of ElementsTestRunner.mappedNodes()) {
           if (node.getAttribute && node.getAttribute('id') === 'inspected') {
             nodeId = parseInt(id, 10);
             break;

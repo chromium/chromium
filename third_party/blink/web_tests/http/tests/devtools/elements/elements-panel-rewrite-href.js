@@ -24,11 +24,8 @@
   ElementsTestRunner.expandElementsTree(step1);
 
   function step1() {
-    var innerMapping = TestRunner.domModel.idToDOMNode;
-
     var outputLines = [];
-    for (var nodeId in innerMapping) {
-      var node = innerMapping[nodeId];
+    for (const [id, node] of ElementsTestRunner.mappedNodes()) {
       if (node.nodeName() === 'LINK' || node.nodeName() === 'SCRIPT') {
         var segments = [];
         var href = node.resolveURL(node.getAttribute('src') || node.getAttribute('href'));

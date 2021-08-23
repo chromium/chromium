@@ -128,7 +128,7 @@
   ElementsTestRunner.expandElementsTree(enqueueNodes);
 
   function enqueueNodes() {
-    enqueueNode('', getDocumentElement());
+    enqueueNode('', ElementsTestRunner.getDocumentElement());
     dumpNodeData();
   }
 
@@ -147,16 +147,6 @@
       TestRunner.assertEquals(true, result);
       dumpNodeData();
     }
-  }
-
-  function getDocumentElement() {
-    var map = TestRunner.domModel.idToDOMNode;
-    for (var id in map) {
-      if (map[id].nodeName() === '#document')
-        return map[id];
-    }
-
-    return null;
   }
 
   function enqueueNode(prefix, node) {
