@@ -8,6 +8,7 @@
 #include "components/download/public/common/download_features.h"
 #include "components/download/public/common/download_schedule.h"
 #include "components/download/public/common/download_url_parameters.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -52,6 +53,7 @@ InProgressInfo CreateInProgressInfo() {
       std::make_pair<std::string, std::string>("ABC", "def"));
   info.download_schedule = absl::make_optional<DownloadSchedule>(
       false /*only_on_wifi*/, absl::nullopt);
+  info.credentials_mode = ::network::mojom::CredentialsMode::kOmit;
   return info;
 }
 
