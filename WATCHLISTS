@@ -160,15 +160,24 @@
       'filepath': 'ash/webui/common/'\
                   '|chrome/test/data/webui/chromeos/ash_common/',
     },
-    'assistant': {
-      'filepath': 'ash/ambient/ui/.*assistant.*'\
+    'assistive': {
+      'filepath': 'ash/ambient/'\
                   '|ash/app_list/views/assistant/'\
                   '|ash/assistant/'\
+                  '|ash/public/cpp/ambient/'\
+                  '|ash/public/cpp/assistant/'\
+                  '|ash/public/cpp/wallpaper/'\
                   '|ash/wallpaper/'\
                   '|chromeos/assistant/'\
                   '|chromeos/components/personalization_app/'\
                   '|chromeos/services/assistant/'\
-                  '|chrome/browser/ui/ash/assistant/'
+                  '|chromeos/services/libassistant/'\
+                  '|chrome/browser/ash/web_applications/personalization_app/'\
+                  '|chrome/browser/resources/settings/chromeos/ambient_mode_page/'\
+                  '|chrome/browser/ui/ash/.*wallpaper.*/'\
+                  '|chrome/browser/ui/ash/ambient/'\
+                  '|chrome/browser/ui/ash/assistant/'\
+                  '|chrome/browser/ui/webui/settings/chromeos/ambient_mode_handler.*'\
     },
     'audio_service': {
       'filepath': 'services/audio/'
@@ -2159,7 +2168,7 @@
     'ash_webui_common': ['gavinwill+watch-ash-webui-common@chromium.org',
                          'jimmyxgong+watch-ash-webui-common@chromium.org',
                          'zentaro+watch-ash-webui-common@chromium.org'],
-    'assistant': ['croissant-eng+reviews@chromium.org'],
+    'assistive': ['croissant-eng+reviews@chromium.org'],
     'audio_service': ['marinaciocea+watch@chromium.org',
                       'olka+watch@chromium.org'],
     'aura': ['sadrul@chromium.org'],
