@@ -3151,7 +3151,7 @@
   {
     "name": "force-spectre-v2-mitigation",
     "owners": [ "chromeos-security@google.com" ],
-    "expiry_milestone": 92
+    "expiry_milestone": 98
   },
   {
     "name": "force-startup-signin-promo",
