@@ -8344,12 +8344,11 @@ BackgroundPaintLocation LayoutBox::ComputeBackgroundPaintLocationIfComposited()
     if (layer->Attachment() == EFillAttachment::kLocal)
       continue;
 
-    if (!layer->GetImage() && background_color.Alpha() > 0 &&
+    // The background color is either the only background or it's the
+    // bottommost value from the background property (see final-bg-layer in
+    // https://drafts.csswg.org/css-backgrounds/#the-background).
+    if (!layer->GetImage() && !layer->Next() && background_color.Alpha() > 0 &&
         StyleRef().IsScrollbarGutterAuto()) {
-      // The background color is either the only background or it's the
-      // bottommost value from the background property (see final-bg-layer in
-      // https://drafts.csswg.org/css-backgrounds/#the-background).
-      DCHECK(!layer->Next());
       // Solid color layers with an effective background clip of the padding box
       // can be treated as local.
       EFillBox clip = layer->Clip();
