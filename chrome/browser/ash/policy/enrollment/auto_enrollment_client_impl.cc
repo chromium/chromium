@@ -147,23 +147,37 @@ psm_rlwe::RlwePlaintextId ConstructDeviceRlweId(
   return rlwe_id;
 }
 
-// Subclasses of this class provide an identifier and specify the identifier
-// set for the DeviceAutoEnrollmentRequest,
-class AutoEnrollmentClientImpl::DeviceIdentifierProvider {
+class AutoEnrollmentClientImpl::DeviceIdentifierProviderFRE {
  public:
-  virtual ~DeviceIdentifierProvider() {}
+  explicit DeviceIdentifierProviderFRE(
+      const std::string& server_backed_state_key) {
+    CHECK(!server_backed_state_key.empty());
+    server_backed_state_key_hash_ =
+        crypto::SHA256HashString(server_backed_state_key);
+  }
+
+  // Disallow copy constructor and assignment operator.
+  DeviceIdentifierProviderFRE(const DeviceIdentifierProviderFRE&) = delete;
+  DeviceIdentifierProviderFRE& operator=(const DeviceIdentifierProviderFRE&) =
+      delete;
+
+  ~DeviceIdentifierProviderFRE() = default;
 
   // Should return the EnrollmentCheckType to be used in the
   // DeviceAutoEnrollmentRequest. This specifies the identifier set used on
   // the server.
-  virtual enterprise_management::DeviceAutoEnrollmentRequest::
-      EnrollmentCheckType
-      GetEnrollmentCheckType() const = 0;
+  EnrollmentCheckType GetEnrollmentCheckType() const {
+    return em::DeviceAutoEnrollmentRequest::ENROLLMENT_CHECK_TYPE_FRE;
+  }
 
   // Should return the hash of this device's identifier. The
   // DeviceAutoEnrollmentRequest exchange will check if this hash is in the
   // server-side identifier set specified by |GetEnrollmentCheckType()|
-  virtual const std::string& GetIdHash() const = 0;
+  const std::string& GetIdHash() const { return server_backed_state_key_hash_; }
+
+ private:
+  // SHA-256 digest of the stable identifier.
+  std::string server_backed_state_key_hash_;
 };
 
 // Subclasses of this class generate the request to download the device state
@@ -652,32 +666,6 @@ class PsmHelper {
 };
 
 namespace {
-
-// Provides device identifier for Forced Re-Enrollment (FRE), where the
-// server-backed state key is used.
-class DeviceIdentifierProviderFRE
-    : public AutoEnrollmentClientImpl::DeviceIdentifierProvider {
- public:
-  explicit DeviceIdentifierProviderFRE(
-      const std::string& server_backed_state_key) {
-    CHECK(!server_backed_state_key.empty());
-    server_backed_state_key_hash_ =
-        crypto::SHA256HashString(server_backed_state_key);
-  }
-
-  EnrollmentCheckType GetEnrollmentCheckType() const override {
-    return em::DeviceAutoEnrollmentRequest::ENROLLMENT_CHECK_TYPE_FRE;
-  }
-
-  const std::string& GetIdHash() const override {
-    return server_backed_state_key_hash_;
-  }
-
- private:
-  // SHA-256 digest of the stable identifier.
-  std::string server_backed_state_key_hash_;
-};
-
 // Handles DeviceInitialEnrollmentStateRequest /
 // DeviceInitialEnrollmentStateResponse for Forced Initial Enrollment.
 class StateDownloadMessageProcessorInitialEnrollment
@@ -872,7 +860,7 @@ AutoEnrollmentClientImpl::FactoryImpl::CreateForInitialEnrollment(
   return base::WrapUnique(new AutoEnrollmentClientImpl(
       progress_callback, device_management_service, local_state,
       url_loader_factory,
-      /*device_identifier_provider=*/nullptr,
+      /*device_identifier_provider_fre=*/nullptr,
       std::make_unique<StateDownloadMessageProcessorInitialEnrollment>(
           device_serial_number, device_brand_code),
       power_initial, power_limit,
@@ -954,7 +942,7 @@ AutoEnrollmentClientImpl::AutoEnrollmentClientImpl(
     DeviceManagementService* service,
     PrefService* local_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    std::unique_ptr<DeviceIdentifierProvider> device_identifier_provider,
+    std::unique_ptr<DeviceIdentifierProviderFRE> device_identifier_provider_fre,
     std::unique_ptr<StateDownloadMessageProcessor>
         state_download_message_processor,
     int power_initial,
@@ -974,7 +962,8 @@ AutoEnrollmentClientImpl::AutoEnrollmentClientImpl(
       device_management_service_(service),
       local_state_(local_state),
       url_loader_factory_(url_loader_factory),
-      device_identifier_provider_(std::move(device_identifier_provider)),
+      device_identifier_provider_fre_(
+          std::move(device_identifier_provider_fre)),
       state_download_message_processor_(
           std::move(state_download_message_processor)),
       psm_helper_(std::move(private_set_membership_helper)),
@@ -1131,11 +1120,15 @@ void AutoEnrollmentClientImpl::NextStep() {
 }
 
 void AutoEnrollmentClientImpl::SendBucketDownloadRequest() {
+  // |device_identifier_provider_fre_| has to be non-null when calling this
+  // method.
+  DCHECK(device_identifier_provider_fre_);
+
   // Start the Hash dance timer during the first attempt.
   if (hash_dance_time_start_.is_null())
     hash_dance_time_start_ = base::TimeTicks::Now();
 
-  std::string id_hash = device_identifier_provider_->GetIdHash();
+  std::string id_hash = device_identifier_provider_fre_->GetIdHash();
   // Currently AutoEnrollmentClientImpl supports working with hashes that are at
   // least 8 bytes long. If this is reduced, the computation of the remainder
   // must also be adapted to handle the case of a shorter hash gracefully.
@@ -1174,7 +1167,7 @@ void AutoEnrollmentClientImpl::SendBucketDownloadRequest() {
   request->set_remainder(remainder);
   request->set_modulus(INT64_C(1) << current_power_);
   request->set_enrollment_check_type(
-      device_identifier_provider_->GetEnrollmentCheckType());
+      device_identifier_provider_fre_->GetEnrollmentCheckType());
 
   request_job_ = device_management_service_->CreateJob(std::move(config));
 }
@@ -1358,7 +1351,11 @@ bool AutoEnrollmentClientImpl::OnDeviceStateRequestCompletion(
 
 bool AutoEnrollmentClientImpl::IsIdHashInProtobuf(
     const google::protobuf::RepeatedPtrField<std::string>& hashes) {
-  std::string id_hash = device_identifier_provider_->GetIdHash();
+  // |device_identifier_provider_fre_| has to be non-null when calling this
+  // method.
+  DCHECK(device_identifier_provider_fre_);
+
+  std::string id_hash = device_identifier_provider_fre_->GetIdHash();
   for (int i = 0; i < hashes.size(); ++i) {
     if (hashes.Get(i) == id_hash)
       return true;

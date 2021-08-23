@@ -93,9 +93,10 @@ class AutoEnrollmentClientImpl
     : public AutoEnrollmentClient,
       public network::NetworkConnectionTracker::NetworkConnectionObserver {
  public:
-  // Subclasses of this class provide an identifier and specify the identifier
-  // set for the DeviceAutoEnrollmentRequest,
-  class DeviceIdentifierProvider;
+  // Provides device identifier for Forced Re-Enrollment (FRE), where the
+  // server-backed state key is used. It will set the identifier for the
+  // DeviceAutoEnrollmentRequest.
+  class DeviceIdentifierProviderFRE;
 
   // Subclasses of this class generate the request to download the device state
   // (after determining that there is server-side device state) and parse the
@@ -163,7 +164,8 @@ class AutoEnrollmentClientImpl
       DeviceManagementService* device_management_service,
       PrefService* local_state,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      std::unique_ptr<DeviceIdentifierProvider> device_identifier_provider,
+      std::unique_ptr<DeviceIdentifierProviderFRE>
+          device_identifier_provider_fre,
       std::unique_ptr<StateDownloadMessageProcessor>
           state_download_message_processor,
       int power_initial,
@@ -240,7 +242,7 @@ class AutoEnrollmentClientImpl
       const enterprise_management::DeviceManagementResponse& response);
 
   // Returns true if the identifier hash provided by
-  // |device_identifier_provider_| is contained in |hashes|.
+  // |device_identifier_provider_fre_| is contained in |hashes|.
   bool IsIdHashInProtobuf(
       const google::protobuf::RepeatedPtrField<std::string>& hashes);
 
@@ -299,9 +301,8 @@ class AutoEnrollmentClientImpl
   // The loader factory to use to perform the auto enrollment request.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
-  // Specifies the identifier set and the hash of the device's current
-  // identifier.
-  std::unique_ptr<DeviceIdentifierProvider> device_identifier_provider_;
+  // Specifies the device identifier for FRE and its corresponding hash.
+  std::unique_ptr<DeviceIdentifierProviderFRE> device_identifier_provider_fre_;
 
   // Fills and parses state retrieval request / response.
   std::unique_ptr<StateDownloadMessageProcessor>
