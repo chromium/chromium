@@ -94,7 +94,9 @@ export class SettingsSafetyCheckChromeCleanerChildElement extends
   }
 
   private showChild_(): boolean {
-    return this.status_ !== SafetyCheckChromeCleanerStatus.HIDDEN;
+    return this.status_ !== SafetyCheckChromeCleanerStatus.HIDDEN &&
+        loadTimeData.valueExists('safetyCheckChromeCleanerChildEnabled') &&
+        loadTimeData.getBoolean('safetyCheckChromeCleanerChildEnabled');
   }
 
   private getIconStatus_(): SafetyCheckIconStatus {

@@ -588,6 +588,12 @@
     "expiry_milestone": 93
   },
   {
+    "name": "chrome-cleanup-scan-completed-notification",
+    "owners": ["rainhard", "msramek",
+      "chrome-friendly-settings@google.com"],
+    "expiry_milestone": 92
+  },
+  {
     "name": "chrome-labs",
     "owners": ["elainechien", "robliao"],
     "expiry_milestone": 107
@@ -4777,6 +4783,15 @@
       "chrome-safebrowsing-core@google.com"
     ],
     "expiry_milestone": 95
+  },
+  {
+    "name": "safety-check-chrome-cleaner-child",
+    "owners": [
+      "rainhard",
+      "msramek",
+      "chrome-friendly-settings@google.com"
+    ],
+    "expiry_milestone": 94
   },
   {
     "name": "safety-tips",

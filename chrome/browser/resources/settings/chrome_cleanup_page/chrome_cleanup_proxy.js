@@ -17,8 +17,9 @@ export class ChromeCleanupProxy {
   /**
    * Starts scanning the user's computer.
    * @param {boolean} logsUploadEnabled
+   * @param {boolean} notificationEnabled
    */
-  startScanning(logsUploadEnabled) {}
+  startScanning(logsUploadEnabled, notificationEnabled) {}
 
   /**
    * Starts a cleanup on the user's computer.
@@ -69,7 +70,9 @@ export class ChromeCleanupProxyImpl {
   }
 
   /** @override */
-  startScanning(logsUploadEnabled) {
+  startScanning(logsUploadEnabled, notificationEnabled) {
+    // TODO(1087263): Send the |notificationEnabled| parameter which indicates
+    // if a completion dialog should be shown once the scan completed.
     chrome.send('startScanning', [logsUploadEnabled]);
   }
 
