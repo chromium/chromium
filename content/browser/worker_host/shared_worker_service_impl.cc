@@ -146,8 +146,7 @@ void SharedWorkerServiceImpl::ConnectToWorker(
 
   RenderFrameHost* main_frame = render_frame_host->frame_tree()->GetMainFrame();
   if (!GetContentClient()->browser()->AllowSharedWorker(
-          info->url,
-          render_frame_host->ComputeSiteForCookies().RepresentativeUrl(),
+          info->url, render_frame_host->ComputeSiteForCookies(),
           main_frame->GetLastCommittedOrigin(), info->options->name,
           storage_key,
           WebContentsImpl::FromRenderFrameHostID(client_render_frame_host_id)

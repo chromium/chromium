@@ -9,9 +9,13 @@
 
 class GURL;
 
+namespace net {
+class SiteForCookies;
+}  // namespace net
+
 namespace url {
 class Origin;
-}
+}  // namespace url
 
 namespace content {
 
@@ -24,15 +28,13 @@ class AppCachePolicy {
   // without any user prompt.
   virtual bool CanLoadAppCache(
       const GURL& manifest_url,
-
-      const GURL& site_for_cookies,
+      const net::SiteForCookies& site_for_cookies,
       const absl::optional<url::Origin>& top_frame_origin) = 0;
 
   // Called prior to creating a new appcache. Returns true if allowed.
   virtual bool CanCreateAppCache(
       const GURL& manifest_url,
-
-      const GURL& site_for_cookies,
+      const net::SiteForCookies& site_for_cookies,
       const absl::optional<url::Origin>& top_frame_origin) = 0;
 
   // Returns true if origin trial tokens are required in order to fetch or

@@ -19,20 +19,24 @@ class StorageKey;
 
 namespace content_settings {
 class CookieSettings;
-}
+}  // namespace content_settings
+
+namespace net {
+class SiteForCookies;
+}  // namespace net
 
 namespace embedder_support {
 
 // See ContentBrowserClient::AllowAppCache.
 bool AllowAppCache(const GURL& manifest_url,
-                   const GURL& site_for_cookies,
+                   const net::SiteForCookies& site_for_cookies,
                    const absl::optional<url::Origin>& top_frame_origin,
                    const content_settings::CookieSettings* cookie_settings);
 
 // See ContentBrowserClient::AllowServiceWorker.
 content::AllowServiceWorkerResult AllowServiceWorker(
     const GURL& scope,
-    const GURL& site_for_cookies,
+    const net::SiteForCookies& site_for_cookies,
     const absl::optional<url::Origin>& top_frame_origin,
     const content_settings::CookieSettings* cookie_settings,
     const HostContentSettingsMap* settings_map);
@@ -40,7 +44,7 @@ content::AllowServiceWorkerResult AllowServiceWorker(
 // See ContentBrowserClient::AllowSharedWorker. This also notifies content
 // settings of shared worker access.
 bool AllowSharedWorker(const GURL& worker_url,
-                       const GURL& site_for_cookies,
+                       const net::SiteForCookies& site_for_cookies,
                        const absl::optional<url::Origin>& top_frame_origin,
                        const std::string& name,
                        const blink::StorageKey& storage_key,

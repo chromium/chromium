@@ -71,6 +71,7 @@
 #include "content/public/common/window_container_type.mojom.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "net/cert/x509_certificate.h"
+#include "net/cookies/site_for_cookies.h"
 #include "net/proxy_resolution/proxy_config.h"
 #include "net/ssl/client_cert_identity.h"
 #include "net/ssl/ssl_private_key.h"
@@ -326,7 +327,7 @@ std::string ContentBrowserClientImpl::GetAcceptLangs(
 
 bool ContentBrowserClientImpl::AllowAppCache(
     const GURL& manifest_url,
-    const GURL& site_for_cookies,
+    const net::SiteForCookies& site_for_cookies,
     const absl::optional<url::Origin>& top_frame_origin,
     content::BrowserContext* context) {
   return embedder_support::AllowAppCache(
@@ -336,7 +337,7 @@ bool ContentBrowserClientImpl::AllowAppCache(
 
 content::AllowServiceWorkerResult ContentBrowserClientImpl::AllowServiceWorker(
     const GURL& scope,
-    const GURL& site_for_cookies,
+    const net::SiteForCookies& site_for_cookies,
     const absl::optional<url::Origin>& top_frame_origin,
     const GURL& script_url,
     content::BrowserContext* context) {
@@ -348,7 +349,7 @@ content::AllowServiceWorkerResult ContentBrowserClientImpl::AllowServiceWorker(
 
 bool ContentBrowserClientImpl::AllowSharedWorker(
     const GURL& worker_url,
-    const GURL& site_for_cookies,
+    const net::SiteForCookies& site_for_cookies,
     const absl::optional<url::Origin>& top_frame_origin,
     const std::string& name,
     const blink::StorageKey& storage_key,

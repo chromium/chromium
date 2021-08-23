@@ -23,6 +23,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "media/base/media_switches.h"
+#include "net/cookies/site_for_cookies.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 
 namespace content {
@@ -142,7 +143,7 @@ MediaDeviceSaltAndOrigin GetMediaDeviceSaltAndOrigin(int render_process_id,
 
   url::Origin origin;
   GURL url;
-  GURL site_for_cookies;
+  net::SiteForCookies site_for_cookies;
   url::Origin top_level_origin;
   std::string frame_salt;
   bool has_focus = true;
@@ -150,7 +151,7 @@ MediaDeviceSaltAndOrigin GetMediaDeviceSaltAndOrigin(int render_process_id,
   if (frame_host) {
     origin = frame_host->GetLastCommittedOrigin();
     url = frame_host->GetLastCommittedURL();
-    site_for_cookies = frame_host->ComputeSiteForCookies().RepresentativeUrl();
+    site_for_cookies = frame_host->ComputeSiteForCookies();
     top_level_origin = frame_host->frame_tree_node()
                            ->frame_tree()
                            ->GetMainFrame()

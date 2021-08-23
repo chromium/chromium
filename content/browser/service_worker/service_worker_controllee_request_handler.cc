@@ -234,8 +234,7 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithRegistration(
 
   AllowServiceWorkerResult allow_service_worker =
       GetContentClient()->browser()->AllowServiceWorker(
-          registration->scope(),
-          container_host_->site_for_cookies().RepresentativeUrl(),
+          registration->scope(), container_host_->site_for_cookies(),
           container_host_->top_frame_origin(), /*script_url=*/GURL(),
           browser_context_);
 

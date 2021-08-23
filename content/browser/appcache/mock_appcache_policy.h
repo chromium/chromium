@@ -9,6 +9,14 @@
 #include "content/browser/appcache/appcache_policy.h"
 #include "url/gurl.h"
 
+namespace net {
+class SiteForCookies;
+}  // namespace net
+
+namespace url {
+class Origin;
+}  // namespace url
+
 namespace content {
 
 class MockAppCachePolicy : public AppCachePolicy {
@@ -18,11 +26,11 @@ class MockAppCachePolicy : public AppCachePolicy {
 
   bool CanLoadAppCache(
       const GURL& manifest_url,
-      const GURL& site_for_cookies,
+      const net::SiteForCookies& site_for_cookies,
       const absl::optional<url::Origin>& top_frame_origin) override;
   bool CanCreateAppCache(
       const GURL& manifest_url,
-      const GURL& site_for_cookies,
+      const net::SiteForCookies& site_for_cookies,
       const absl::optional<url::Origin>& top_frame_origin) override;
   bool IsOriginTrialRequiredForAppCache() override;
 

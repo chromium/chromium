@@ -50,6 +50,7 @@
 #include "ipc/ipc_message.h"
 #include "mojo/public/c/system/types.h"
 #include "net/base/net_errors.h"
+#include "net/cookies/site_for_cookies.h"
 #include "net/http/http_response_headers.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
@@ -2353,7 +2354,8 @@ bool ServiceWorkerVersion::IsStartWorkerAllowed() const {
   // disallow this scope. Since this worker might not be used for a specific
   // tab, pass a null callback as WebContents getter.
   if (!GetContentClient()->browser()->AllowServiceWorker(
-          scope_, scope_, url::Origin::Create(scope_), script_url_,
+          scope_, net::SiteForCookies::FromUrl(scope_),
+          url::Origin::Create(scope_), script_url_,
           context_->wrapper()->browser_context())) {
     return false;
   }

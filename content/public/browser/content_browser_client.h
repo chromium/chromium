@@ -653,21 +653,21 @@ class CONTENT_EXPORT ContentBrowserClient {
   // This is called on the UI thread.
   virtual bool AllowAppCache(
       const GURL& manifest_url,
-      const GURL& site_for_cookies,
+      const net::SiteForCookies& site_for_cookies,
       const absl::optional<url::Origin>& top_frame_origin,
       BrowserContext* context);
 
   // Allows the embedder to control if a service worker is allowed at the given
-  // |scope| and can be accessed from |site_for_cookies| and |top_frame_origin|.
-  // |site_for_cookies| is used to determine whether the request is done in a
-  // third-party context. |top_frame_origin| is used to check if any
+  // `scope` and can be accessed from `site_for_cookies` and `top_frame_origin`.
+  // `site_for_cookies` is used to determine whether the request is done in a
+  // third-party context. `top_frame_origin` is used to check if any
   // content_setting affects this request. Only calls that are made within the
-  // context of a tab can provide a proper |top_frame_origin|, otherwise the
+  // context of a tab can provide a proper `top_frame_origin`, otherwise the
   // scope of the service worker is used.
   // This function is called whenever an attempt is made to create or access the
   // persistent state of the registration, or to start the service worker.
   //
-  // If non-empty, |script_url| is the script of the service worker that is
+  // If non-empty, `script_url` is the script of the service worker that is
   // attempted to be registered or started. If it's empty, an attempt is being
   // made to access the registration but there is no specific service worker in
   // the registration being acted on.
@@ -675,7 +675,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   // This is called on the UI thread.
   virtual AllowServiceWorkerResult AllowServiceWorker(
       const GURL& scope,
-      const GURL& site_for_cookies,
+      const net::SiteForCookies& site_for_cookies,
       const absl::optional<url::Origin>& top_frame_origin,
       const GURL& script_url,
       BrowserContext* context);
@@ -685,7 +685,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   // This is called on the UI thread.
   virtual bool AllowSharedWorker(
       const GURL& worker_url,
-      const GURL& site_for_cookies,
+      const net::SiteForCookies& site_for_cookies,
       const absl::optional<url::Origin>& top_frame_origin,
       const std::string& name,
       const blink::StorageKey& storage_key,
@@ -1923,7 +1923,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool ArePersistentMediaDeviceIDsAllowed(
       content::BrowserContext* browser_context,
       const GURL& scope,
-      const GURL& site_for_cookies,
+      const net::SiteForCookies& site_for_cookies,
       const absl::optional<url::Origin>& top_frame_origin);
 
   // Requests an SMS from |origin_list| from a remote device with telephony

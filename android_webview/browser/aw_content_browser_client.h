@@ -23,15 +23,16 @@
 
 namespace content {
 class RenderFrameHost;
-}
+}  // namespace content
 
 namespace safe_browsing {
 class UrlCheckerDelegate;
-}
+}  // namespace safe_browsing
 
 namespace net {
 class IsolationInfo;
-}
+class SiteForCookies;
+}  // namespace net
 
 namespace android_webview {
 
@@ -85,7 +86,7 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
   std::string GetAcceptLangs(content::BrowserContext* context) override;
   gfx::ImageSkia GetDefaultFavicon() override;
   bool AllowAppCache(const GURL& manifest_url,
-                     const GURL& site_for_cookies,
+                     const net::SiteForCookies& site_for_cookies,
                      const absl::optional<url::Origin>& top_frame_origin,
                      content::BrowserContext* context) override;
   scoped_refptr<content::QuotaPermissionContext> CreateQuotaPermissionContext()

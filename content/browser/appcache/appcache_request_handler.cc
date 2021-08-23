@@ -372,8 +372,7 @@ void AppCacheRequestHandler::OnMainResponseFound(
   AppCachePolicy* policy = host_->service()->appcache_policy();
   bool was_blocked_by_policy =
       !manifest_url.is_empty() && policy &&
-      !policy->CanLoadAppCache(manifest_url,
-                               host_->site_for_cookies().RepresentativeUrl(),
+      !policy->CanLoadAppCache(manifest_url, host_->site_for_cookies(),
                                host_->top_frame_origin());
 
   if (was_blocked_by_policy) {

@@ -20,7 +20,11 @@
 
 namespace base {
 class FilePath;
-}
+}  // namespace base
+
+namespace net {
+class SiteForCookies;
+}  // namespace net
 
 namespace content {
 class BrowserContext;
@@ -63,11 +67,11 @@ class CONTENT_EXPORT ChromeAppCacheService
   // AppCachePolicy overrides
   bool CanLoadAppCache(
       const GURL& manifest_url,
-      const GURL& site_for_cookies,
+      const net::SiteForCookies& site_for_cookies,
       const absl::optional<url::Origin>& top_frame_origin) override;
   bool CanCreateAppCache(
       const GURL& manifest_url,
-      const GURL& site_for_cookies,
+      const net::SiteForCookies& site_for_cookies,
       const absl::optional<url::Origin>& top_frame_origin) override;
   bool IsOriginTrialRequiredForAppCache() override;
 

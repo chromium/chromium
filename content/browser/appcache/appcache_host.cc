@@ -216,9 +216,8 @@ void AppCacheHost::SelectCache(const GURL& document_url,
     // continue whether it was set or not.
 
     AppCachePolicy* policy = service()->appcache_policy();
-    if (policy && !policy->CanCreateAppCache(
-                      manifest_url, site_for_cookies_.RepresentativeUrl(),
-                      top_frame_origin_)) {
+    if (policy && !policy->CanCreateAppCache(manifest_url, site_for_cookies_,
+                                             top_frame_origin_)) {
       FinishCacheSelection(nullptr, nullptr, mojo::ReportBadMessageCallback());
       frontend()->EventRaised(
           blink::mojom::AppCacheEventID::APPCACHE_CHECKING_EVENT);

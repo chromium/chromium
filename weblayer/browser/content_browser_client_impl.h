@@ -24,6 +24,10 @@ namespace blink {
 class StorageKey;
 }  // namespace blink
 
+namespace net {
+class SiteForCookies;
+}  // namespace net
+
 namespace weblayer {
 
 class FeatureListCreator;
@@ -45,17 +49,17 @@ class ContentBrowserClientImpl : public content::ContentBrowserClient {
   std::string GetApplicationLocale() override;
   std::string GetAcceptLangs(content::BrowserContext* context) override;
   bool AllowAppCache(const GURL& manifest_url,
-                     const GURL& site_for_cookies,
+                     const net::SiteForCookies& site_for_cookies,
                      const absl::optional<url::Origin>& top_frame_origin,
                      content::BrowserContext* context) override;
   content::AllowServiceWorkerResult AllowServiceWorker(
       const GURL& scope,
-      const GURL& site_for_cookies,
+      const net::SiteForCookies& site_for_cookies,
       const absl::optional<url::Origin>& top_frame_origin,
       const GURL& script_url,
       content::BrowserContext* context) override;
   bool AllowSharedWorker(const GURL& worker_url,
-                         const GURL& site_for_cookies,
+                         const net::SiteForCookies& site_for_cookies,
                          const absl::optional<url::Origin>& top_frame_origin,
                          const std::string& name,
                          const blink::StorageKey& storage_key,

@@ -39,6 +39,7 @@
 #include "content/test/test_content_browser_client.h"
 #include "content/test/test_content_client.h"
 #include "mojo/public/cpp/system/functions.h"
+#include "net/cookies/site_for_cookies.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -69,7 +70,7 @@ class ServiceWorkerTestContentBrowserClient : public TestContentBrowserClient {
   struct AllowServiceWorkerCallLog {
     AllowServiceWorkerCallLog(
         const GURL& scope,
-        const GURL& site_for_cookies,
+        const net::SiteForCookies& site_for_cookies,
         const absl::optional<url::Origin>& top_frame_origin,
         const GURL& script_url)
         : scope(scope),
@@ -77,7 +78,7 @@ class ServiceWorkerTestContentBrowserClient : public TestContentBrowserClient {
           top_frame_origin(top_frame_origin),
           script_url(script_url) {}
     const GURL scope;
-    const GURL site_for_cookies;
+    const net::SiteForCookies site_for_cookies;
     const absl::optional<url::Origin> top_frame_origin;
     const GURL script_url;
   };
@@ -86,7 +87,7 @@ class ServiceWorkerTestContentBrowserClient : public TestContentBrowserClient {
 
   AllowServiceWorkerResult AllowServiceWorker(
       const GURL& scope,
-      const GURL& site_for_cookies,
+      const net::SiteForCookies& site_for_cookies,
       const absl::optional<url::Origin>& top_frame_origin,
       const GURL& script_url,
       content::BrowserContext* context) override {
@@ -691,10 +692,8 @@ TEST_F(ServiceWorkerContainerHostTest,
   ASSERT_EQ(1ul, test_browser_client.logs().size());
   EXPECT_EQ(GURL("https://www.example.com/scope"),
             test_browser_client.logs()[0].scope);
-  EXPECT_TRUE(net::SiteForCookies::FromUrl(
-                  test_browser_client.logs()[0].site_for_cookies)
-                  .IsEquivalent(net::SiteForCookies::FromUrl(
-                      GURL("https://www.example.com/top"))));
+  EXPECT_TRUE(test_browser_client.logs()[0].site_for_cookies.IsEquivalent(
+      net::SiteForCookies::FromUrl(GURL("https://www.example.com/top"))));
   EXPECT_EQ(url::Origin::Create(GURL("https://www.example.com")),
             test_browser_client.logs()[0].top_frame_origin);
   EXPECT_EQ(GURL("https://www.example.com/bar"),
@@ -706,10 +705,8 @@ TEST_F(ServiceWorkerContainerHostTest,
   ASSERT_EQ(2ul, test_browser_client.logs().size());
   EXPECT_EQ(GURL("https://www.example.com/foo"),
             test_browser_client.logs()[1].scope);
-  EXPECT_TRUE(net::SiteForCookies::FromUrl(
-                  test_browser_client.logs()[1].site_for_cookies)
-                  .IsEquivalent(net::SiteForCookies::FromUrl(
-                      GURL("https://www.example.com/top"))));
+  EXPECT_TRUE(test_browser_client.logs()[1].site_for_cookies.IsEquivalent(
+      net::SiteForCookies::FromUrl(GURL("https://www.example.com/top"))));
 
   EXPECT_EQ(url::Origin::Create(GURL("https://www.example.com")),
             test_browser_client.logs()[1].top_frame_origin);
@@ -720,10 +717,8 @@ TEST_F(ServiceWorkerContainerHostTest,
   ASSERT_EQ(3ul, test_browser_client.logs().size());
   EXPECT_EQ(GURL("https://www.example.com/foo"),
             test_browser_client.logs()[2].scope);
-  EXPECT_TRUE(net::SiteForCookies::FromUrl(
-                  test_browser_client.logs()[2].site_for_cookies)
-                  .IsEquivalent(net::SiteForCookies::FromUrl(
-                      GURL("https://www.example.com/top"))));
+  EXPECT_TRUE(test_browser_client.logs()[2].site_for_cookies.IsEquivalent(
+      net::SiteForCookies::FromUrl(GURL("https://www.example.com/top"))));
   EXPECT_EQ(url::Origin::Create(GURL("https://www.example.com")),
             *test_browser_client.logs()[2].top_frame_origin);
   EXPECT_EQ(GURL(), test_browser_client.logs()[2].script_url);
@@ -757,10 +752,8 @@ TEST_F(ServiceWorkerContainerHostTest, AllowsServiceWorker) {
   ASSERT_EQ(1ul, test_browser_client.logs().size());
   EXPECT_EQ(GURL("https://www.example.com/scope"),
             test_browser_client.logs()[0].scope);
-  EXPECT_TRUE(net::SiteForCookies::FromUrl(
-                  test_browser_client.logs()[0].site_for_cookies)
-                  .IsEquivalent(net::SiteForCookies::FromUrl(
-                      GURL("https://www.example.com/sw.js"))));
+  EXPECT_TRUE(test_browser_client.logs()[0].site_for_cookies.IsEquivalent(
+      net::SiteForCookies::FromUrl(GURL("https://www.example.com/sw.js"))));
   EXPECT_EQ(url::Origin::Create(GURL("https://www.example.com")),
             test_browser_client.logs()[0].top_frame_origin);
   SetBrowserClientForTesting(old_browser_client);

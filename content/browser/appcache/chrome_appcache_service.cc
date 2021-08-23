@@ -15,6 +15,7 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
 #include "net/base/net_errors.h"
+#include "net/cookies/site_for_cookies.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "third_party/blink/public/mojom/appcache/appcache.mojom.h"
 
@@ -58,7 +59,7 @@ void ChromeAppCacheService::Shutdown() {
 
 bool ChromeAppCacheService::CanLoadAppCache(
     const GURL& manifest_url,
-    const GURL& site_for_cookies,
+    const net::SiteForCookies& site_for_cookies,
     const absl::optional<url::Origin>& top_frame_origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return GetContentClient()->browser()->AllowAppCache(
@@ -67,7 +68,7 @@ bool ChromeAppCacheService::CanLoadAppCache(
 
 bool ChromeAppCacheService::CanCreateAppCache(
     const GURL& manifest_url,
-    const GURL& site_for_cookies,
+    const net::SiteForCookies& site_for_cookies,
     const absl::optional<url::Origin>& top_frame_origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return GetContentClient()->browser()->AllowAppCache(
