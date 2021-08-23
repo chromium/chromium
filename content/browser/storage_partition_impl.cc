@@ -1760,56 +1760,50 @@ void StoragePartitionImpl::OnAuthRequired(
   int process_id = url_loader_network_observers_.current_context().process_id;
   int routing_id = url_loader_network_observers_.current_context().routing_id;
 
-  if (process_id == network::mojom::kBrowserProcessId) {
-    // Route via `frame_tree_node_id`.
+  if (window_id) {
+    // Use `window_id` if it is provided, because this request was sent by a
+    // service worker; service workers use `window_id` to identify the frame
+    // that sends the request since a worker is shared among multiple frames.
+    // TODO(https://crbug.com/1240483): Add a DCHECK here that process_id and
+    // routing_id are invalid. It can't be added yet because somehow routing_id
+    // is valid here.
     int frame_tree_node_id = RenderFrameHost::kNoFrameTreeNodeId;
-    if (window_id) {
-      // Use `window_id` if it is provided. This observer is created for service
-      // workers.
-      DCHECK_EQ(routing_id, RenderFrameHost::kNoFrameTreeNodeId);
-      if (service_worker_context_->context()) {
-        auto* container_host =
-            service_worker_context_->context()->GetContainerHostByWindowId(
-                *window_id);
-        if (container_host) {
-          // TODO(https://crbug.com/1223838): Use RenderFrameHost instead of
-          // FrameTreeNode when possible.
-          frame_tree_node_id = container_host->frame_tree_node_id();
-        }
+    if (service_worker_context_->context()) {
+      auto* container_host =
+          service_worker_context_->context()->GetContainerHostByWindowId(
+              *window_id);
+      if (container_host) {
+        // TODO(https://crbug.com/1223838): Use RenderFrameHost instead of
+        // FrameTreeNode when possible.
+        frame_tree_node_id = container_host->frame_tree_node_id();
       }
-    } else {
-      // This observer is created for NavigationRequest. See
-      // `CreateURLLoaderNetworkObserverForNavigationRequest()`.
-      frame_tree_node_id = routing_id;
     }
-    if (CancelIfPrerendering(frame_tree_node_id,
+
+    // Overwrite the process_id and routing_id; set `process_id` to
+    // kBrowserProcessId which indicates that `routing_id` is actually a
+    // FrameTreeNode ID.
+    // TODO(https://crbug.com/1239554): Optimize locating logic.
+    process_id = network::mojom::kBrowserProcessId;
+    routing_id = frame_tree_node_id;
+  }
+
+  // If the request is for a prerendering page, prerendering should be cancelled
+  // because the embedder may show UI for auth requests, and it's unsuitable for
+  // a hidden page.
+  if (process_id == network::mojom::kBrowserProcessId) {
+    if (CancelIfPrerendering(routing_id,
                              PrerenderHost::FinalStatus::kLoginAuthRequested)) {
       return;
     }
-
-    FrameTreeNode* frame_tree_node =
-        FrameTreeNode::GloballyFindByID(frame_tree_node_id);
-    if (frame_tree_node) {
-      is_primary_main_frame =
-          frame_tree_node->current_frame_host()->IsInPrimaryMainFrame();
-      web_contents_getter = base::BindRepeating(
-          &WebContents::FromFrameTreeNodeId, frame_tree_node_id);
-    }
-  } else {
-    DCHECK(!window_id);
-    if (CancelIfPrerendering(GlobalRenderFrameHostId(process_id, routing_id),
-                             PrerenderHost::FinalStatus::kLoginAuthRequested)) {
-      return;
-    }
-
-    is_primary_main_frame = IsPrimaryMainFrameRequest(process_id, routing_id);
+  } else if (CancelIfPrerendering(
+                 GlobalRenderFrameHostId(process_id, routing_id),
+                 PrerenderHost::FinalStatus::kLoginAuthRequested)) {
+    return;
   }
 
-  if (!web_contents_getter) {
-    web_contents_getter =
-        base::BindRepeating(GetWebContents, process_id, routing_id);
-  }
-
+  is_primary_main_frame = IsPrimaryMainFrameRequest(process_id, routing_id);
+  web_contents_getter =
+      base::BindRepeating(GetWebContents, process_id, routing_id);
   OnAuthRequiredContinuation(
       process_id, routing_id, request_id, url, is_primary_main_frame,
       first_auth_attempt, auth_info, head_headers,
@@ -1825,64 +1819,51 @@ void StoragePartitionImpl::OnCertificateRequested(
   int process_id = url_loader_network_observers_.current_context().process_id;
   int routing_id = url_loader_network_observers_.current_context().routing_id;
 
-  // Checks for prerendering state and cancels the certificate request and
-  // prerendering for prerendered frame tree. Prerendering should be cancelled
-  // because chrome may show a dialog for choosing a cert, and it's unsuitable
-  // for a hidden page.
-  // Then, determines the destination WebContents that the certificate request
-  // should be sent to.
-  if (process_id == network::mojom::kBrowserProcessId) {
-    // Route via `frame_tree_node_id`.
+  if (window_id) {
+    // Use `window_id` if it is provided, because this request was sent by a
+    // service worker; service workers use `window_id` to identify the frame
+    // that sends the request since a worker is shared among multiple frames.
+    // TODO(https://crbug.com/1240483): Add a DCHECK here that process_id and
+    // routing_id are invalid. It can't be added yet because somehow routing_id
+    // is valid here.
     int frame_tree_node_id = RenderFrameHost::kNoFrameTreeNodeId;
-    if (window_id) {
-      // Use `window_id` if it is provided. This observer is created for service
-      // workers.
-      DCHECK_EQ(routing_id, RenderFrameHost::kNoFrameTreeNodeId);
-      if (service_worker_context_->context()) {
-        auto* container_host =
-            service_worker_context_->context()->GetContainerHostByWindowId(
-                *window_id);
-        if (container_host) {
-          // TODO(https://crbug.com/1223838): Use RenderFrameHost instead of
-          // FrameTreeNode when possible.
-          frame_tree_node_id = container_host->frame_tree_node_id();
-        }
+    if (service_worker_context_->context()) {
+      auto* container_host =
+          service_worker_context_->context()->GetContainerHostByWindowId(
+              *window_id);
+      if (container_host) {
+        // TODO(https://crbug.com/1223838): Use RenderFrameHost instead of
+        // FrameTreeNode when possible.
+        frame_tree_node_id = container_host->frame_tree_node_id();
       }
-    } else {
-      // This observer is created for NavigationRequest. See
-      // `CreateURLLoaderNetworkObserverForNavigationRequest()`.
-      frame_tree_node_id = routing_id;
     }
 
-    // Cancel this request and the prerendering if the request is for a
-    // prerendering page, because prerendering pages are invisible and browser
-    // cannot prompt the user to select certificates on invisible pages.
-    if (CancelIfPrerendering(
-            frame_tree_node_id,
-            PrerenderHost::FinalStatus::kClientCertRequested)) {
-      CallCancelRequest(std::move(cert_responder));
-      return;
-    }
-    web_contents_getter = base::BindRepeating(&WebContents::FromFrameTreeNodeId,
-                                              frame_tree_node_id);
-  } else {
-    // Route via `process_id` and `routing_id`, which can identify
-    // RenderFrameHostImpl instances.
-    DCHECK(!window_id);
-    // Cancel this request and the prerendering if the request is for a
-    // prerendering page, because prerendering pages are invisble and browser
-    // cannot select certificates on invisible pages.
-    if (CancelIfPrerendering(
-            GlobalRenderFrameHostId(process_id, routing_id),
-            PrerenderHost::FinalStatus::kClientCertRequested)) {
-      CallCancelRequest(std::move(cert_responder));
-      return;
-    }
-
-    web_contents_getter =
-        base::BindRepeating(GetWebContents, process_id, routing_id);
+    // Overwrite the process_id and routing_id; set `process_id` to
+    // kBrowserProcessId which indicates that `routing_id` is actually a
+    // FrameTreeNode ID.
+    // TODO(https://crbug.com/1239554): Optimize locating logic.
+    process_id = network::mojom::kBrowserProcessId;
+    routing_id = frame_tree_node_id;
   }
 
+  // If the request is for a prerendering page, prerendering should be cancelled
+  // because the embedder may show a dialog and ask users to select client
+  // certificates, and it's unsuitable for a hidden page.
+  if (process_id == network::mojom::kBrowserProcessId) {
+    if (CancelIfPrerendering(
+            routing_id, PrerenderHost::FinalStatus::kClientCertRequested)) {
+      CallCancelRequest(std::move(cert_responder));
+      return;
+    }
+  } else if (CancelIfPrerendering(
+                 GlobalRenderFrameHostId(process_id, routing_id),
+                 PrerenderHost::FinalStatus::kClientCertRequested)) {
+    CallCancelRequest(std::move(cert_responder));
+    return;
+  }
+
+  web_contents_getter =
+      base::BindRepeating(GetWebContents, process_id, routing_id);
   OnCertificateRequestedContinuation(cert_info, std::move(cert_responder),
                                      std::move(web_contents_getter));
 }
