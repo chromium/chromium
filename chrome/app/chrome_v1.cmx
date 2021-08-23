@@ -24,6 +24,8 @@
       "fuchsia.posix.socket.Provider",
       "fuchsia.process.Launcher",
       "fuchsia.sysmem.Allocator",
+      "fuchsia.ui.input3.Keyboard",
+      "fuchsia.ui.scenic.Scenic",
       "fuchsia.vulkan.loader.Loader"
     ]
   }
