@@ -152,39 +152,6 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerSkipSheetTest, NoSkipWithoutUserGesture) {
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_SELECTED_OTHER);
 }
 
-class SecurePaymentConfirmationSkipSheetTest
-    : public PaymentHandlerJustInTimeInstallationTest {
- protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    PaymentHandlerJustInTimeInstallationTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(
-        switches::kEnableExperimentalWebPlatformFeatures);
-  }
-};
-
-// TODO(crbug.com/825270): Remove this special case user gesture exception is
-// removed.
-IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationSkipSheetTest,
-                       SkipWithoutUserGesture) {
-  base::HistogramTester histogram_tester;
-  ResetEventWaiterForSingleEvent(TestEvent::kPaymentCompleted);
-  EXPECT_TRUE(
-      content::ExecJs(GetActiveWebContents(),
-                      "testPaymentMethods([ "
-                      " {supportedMethods: 'https://kylepay.com/webpay'}])",
-                      content::EXECUTE_SCRIPT_NO_USER_GESTURE));
-  WaitForObservedEvent();
-  ExpectBodyContains("kylepay.com/webpay");
-
-  std::vector<base::Bucket> buckets =
-      histogram_tester.GetAllSamples("PaymentRequest.Events");
-  ASSERT_EQ(1U, buckets.size());
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_SKIPPED_SHOW);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_SHOWN);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_AVAILABLE_METHOD_OTHER);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_SELECTED_OTHER);
-}
-
 class AlwaysAllowJustInTimePaymentAppTest
     : public PaymentHandlerJustInTimeInstallationTest,
       public testing::WithParamInterface<bool> {

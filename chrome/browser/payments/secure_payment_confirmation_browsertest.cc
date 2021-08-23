@@ -789,7 +789,9 @@ IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
             content::EvalJs(
                 GetActiveWebContents(),
                 content::JsReplace("getTotalAmountFromClientData($1, $2);",
-                                   second_credential_identifier, "0.01")));
+                                   second_credential_identifier, "0.01"),
+                // PaymentRequest.show() for SPC works without user gesture.
+                content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 }
 
 // b.com cannot create a credential with RP = "a.com".

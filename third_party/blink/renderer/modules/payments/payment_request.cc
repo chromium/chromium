@@ -847,14 +847,6 @@ ScriptPromise PaymentRequest::show(ScriptState* script_state,
     }
     LocalFrame::ConsumeTransientUserActivation(local_frame);
     local_frame->ConsumePaymentRequestToken();
-
-  } else if (RuntimeEnabledFeatures::SecurePaymentConfirmationEnabled(
-                 GetExecutionContext())) {
-    // TODO(crbug.com/825270): Pretend that a user gesture is provided to allow
-    // origins that are part of the Secure Payment Confirmation Origin Trial to
-    // use skip-the-sheet flow as a hack for secure modal window
-    // (crbug.com/1122028). Remove this after user gesture delegation ships.
-    payment_request_allowed = true;
   }
 
   // TODO(crbug.com/779126): add support for handling payment requests in
