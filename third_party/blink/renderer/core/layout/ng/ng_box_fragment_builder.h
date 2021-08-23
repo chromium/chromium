@@ -392,10 +392,6 @@ class CORE_EXPORT NGBoxFragmentBuilder final
     may_have_descendant_above_block_start_ = b;
   }
 
-  void SetLinesUntilClamp(const absl::optional<int>& value) {
-    lines_until_clamp_ = value;
-  }
-
   void SetEarlyBreak(const NGEarlyBreak* breakpoint, NGBreakAppeal appeal) {
     early_break_ = breakpoint;
     break_appeal_ = appeal;
@@ -667,7 +663,6 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   LogicalBoxSides sides_to_include_;
 
   scoped_refptr<SerializedScriptValue> custom_layout_data_;
-  absl::optional<int> lines_until_clamp_;
 
   std::unique_ptr<NGMathMLPaintInfo> mathml_paint_info_;
   absl::optional<NGLayoutResult::MathData> math_data_;

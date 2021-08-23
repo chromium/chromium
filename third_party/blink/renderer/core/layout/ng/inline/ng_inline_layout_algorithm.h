@@ -132,6 +132,7 @@ class CORE_EXPORT NGInlineLayoutAlgorithm final
 
   NGMarginStrut end_margin_strut_;
   NGExclusionSpace exclusion_space_;
+  absl::optional<int> lines_until_clamp_;
 
   FontBaseline baseline_type_ = FontBaseline::kAlphabeticBaseline;
 

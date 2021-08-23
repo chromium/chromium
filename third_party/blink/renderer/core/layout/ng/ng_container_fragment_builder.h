@@ -84,6 +84,10 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
     exclusion_space_ = std::move(exclusion_space);
   }
 
+  void SetLinesUntilClamp(const absl::optional<int>& value) {
+    lines_until_clamp_ = value;
+  }
+
   const NGUnpositionedListMarker& UnpositionedListMarker() const {
     return unpositioned_list_marker_;
   }
@@ -337,6 +341,7 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   absl::optional<LayoutUnit> bfc_block_offset_;
   NGMarginStrut end_margin_strut_;
   NGExclusionSpace exclusion_space_;
+  absl::optional<int> lines_until_clamp_;
 
   Vector<NGLogicalOutOfFlowPositionedNode> oof_positioned_candidates_;
   Vector<NGLogicalOutOfFlowPositionedNode>

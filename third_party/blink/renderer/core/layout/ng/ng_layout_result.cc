@@ -65,8 +65,6 @@ NGLayoutResult::NGLayoutResult(
     EnsureRareData()->custom_layout_data =
         std::move(builder->custom_layout_data_);
   }
-  if (builder->lines_until_clamp_)
-    EnsureRareData()->lines_until_clamp = *builder->lines_until_clamp_;
   if (builder->annotation_overflow_)
     EnsureRareData()->annotation_overflow = builder->annotation_overflow_;
   if (builder->block_end_annotation_space_) {
@@ -231,6 +229,8 @@ NGLayoutResult::NGLayoutResult(
   } else {
     space_.ExclusionSpace().MoveDerivedGeometry(builder->exclusion_space_);
   }
+  if (builder->lines_until_clamp_)
+    EnsureRareData()->lines_until_clamp = *builder->lines_until_clamp_;
 
   // If we produced a fragment that we didn't break inside, provide the best
   // early possible breakpoint that we found inside. This early breakpoint will

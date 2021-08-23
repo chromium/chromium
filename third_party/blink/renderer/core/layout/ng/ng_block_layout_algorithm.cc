@@ -1969,13 +1969,8 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::FinishInflow(
 
   // Update |lines_until_clamp_| from the LayoutResult.
   if (lines_until_clamp_) {
-    if (const auto* line_box =
-            DynamicTo<NGPhysicalLineBoxFragment>(physical_fragment)) {
-      if (!line_box->IsEmptyLineBox())
-        lines_until_clamp_ = *lines_until_clamp_ - 1;
-    } else {
-      lines_until_clamp_ = layout_result->LinesUntilClamp();
-    }
+    lines_until_clamp_ = layout_result->LinesUntilClamp();
+
     if (lines_until_clamp_ <= 0 &&
         !intrinsic_block_size_when_clamped_.has_value()) {
       // If line-clamping occurred save the intrinsic block-size, as this

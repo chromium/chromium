@@ -637,6 +637,7 @@ void NGInlineLayoutAlgorithm::PlaceBlockInInline(
   end_margin_strut_ = result.EndMarginStrut();
   exclusion_space_ = result.ExclusionSpace();
   container_builder_.SetAdjoiningObjectTypes(result.AdjoiningObjectTypes());
+  lines_until_clamp_ = result.LinesUntilClamp();
 
   line_box->AddChild(std::move(item_result->layout_result),
                      /* offset */ LogicalOffset(), item_result->inline_size,
@@ -1072,6 +1073,7 @@ scoped_refptr<const NGLayoutResult> NGInlineLayoutAlgorithm::Layout() {
   end_margin_strut_ = ConstraintSpace().MarginStrut();
   container_builder_.SetAdjoiningObjectTypes(
       ConstraintSpace().AdjoiningObjectTypes());
+  lines_until_clamp_ = ConstraintSpace().LinesUntilClamp();
 
   // In order to get the correct list of layout opportunities, we need to
   // position any "leading" floats within the exclusion space first.
@@ -1301,8 +1303,11 @@ scoped_refptr<const NGLayoutResult> NGInlineLayoutAlgorithm::Layout() {
 
       // Margins should only collapse across "certain zero-height line boxes".
       // https://drafts.csswg.org/css2/box.html#collapsing-margins
-      if (!line_info.IsBlockInInline())
+      if (!line_info.IsBlockInInline()) {
         end_margin_strut_ = NGMarginStrut();
+        if (lines_until_clamp_)
+          *lines_until_clamp_ = *lines_until_clamp_ - 1;
+      }
 
       // As we aren't an empty inline we should have correctly placed all
       // our adjoining objects, and shouldn't propagate this information
@@ -1315,6 +1320,7 @@ scoped_refptr<const NGLayoutResult> NGInlineLayoutAlgorithm::Layout() {
   CHECK(is_line_created);
   container_builder_.SetEndMarginStrut(end_margin_strut_);
   container_builder_.SetExclusionSpace(std::move(exclusion_space_));
+  container_builder_.SetLinesUntilClamp(lines_until_clamp_);
 
   DCHECK(items_builder);
   container_builder_.PropagateChildrenData(*line_box);
