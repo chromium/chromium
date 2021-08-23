@@ -34,7 +34,6 @@ class GtkUiPlatformX11 : public GtkUiPlatform {
                                 gfx::AcceleratedWidget parent) override;
   void ClearTransientFor(gfx::AcceleratedWidget parent) override;
   void ShowGtkWindow(GtkWindow* window) override;
-  int GetGdkKeyState() override;
 
  private:
   GdkDisplay* GetGdkDisplay();

@@ -44,9 +44,4 @@ bool LinuxUiDelegateWayland::ExportWindowHandle(
   return true;
 }
 
-int LinuxUiDelegateWayland::GetKeyState() {
-  // TODO(crbug/1159460): Test fcitx unikey IME on ozone/wayland.
-  return connection_->event_source()->keyboard_modifiers();
-}
-
 }  // namespace ui

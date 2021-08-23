@@ -92,8 +92,4 @@ void GtkUiPlatformWayland::OnHandleForward(
   std::move(callback).Run("wayland:" + handle);
 }
 
-int GtkUiPlatformWayland::GetGdkKeyState() {
-  return ui::LinuxUiDelegate::GetInstance()->GetKeyState();
-}
-
 }  // namespace gtk

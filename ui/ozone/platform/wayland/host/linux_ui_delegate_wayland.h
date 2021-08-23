@@ -22,7 +22,6 @@ class LinuxUiDelegateWayland : public LinuxUiDelegate {
   bool ExportWindowHandle(
       gfx::AcceleratedWidget parent,
       base::OnceCallback<void(const std::string&)> callback) override;
-  int GetKeyState() override;
 
  private:
   WaylandConnection* const connection_;

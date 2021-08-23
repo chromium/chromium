@@ -110,16 +110,4 @@ void GtkUiPlatformX11::ShowGtkWindow(GtkWindow* window) {
       static_cast<uint32_t>(ui::X11EventSource::GetInstance()->GetTimestamp()));
 }
 
-int GtkUiPlatformX11::GetGdkKeyState() {
-  auto* xevent =
-      ui::X11EventSource::GetInstance()->connection()->dispatching_event();
-
-  if (!xevent)
-    return ui::EF_NONE;
-
-  auto* key_xevent = xevent->As<x11::KeyEvent>();
-  DCHECK(key_xevent);
-  return static_cast<int>(key_xevent->state);
-}
-
 }  // namespace gtk
