@@ -483,12 +483,12 @@ class BoxSignInObserver : public SigninExperienceTestObserver,
   // Accept the Sign in confirmation dialog to bring up the Box.com
   // sign in dialog.
   void AcceptBoxSigninConfirmation() {
-    signin_confirmation_dlg_->Accept();
+    signin_confirmation_dlg_->AcceptDialog();
     WaitForSignInDialogToShow();
   }
 
   void CancelBoxSignInConfirmation() {
-    signin_confirmation_dlg_->Cancel();
+    signin_confirmation_dlg_->CancelDialog();
   }
 
   // Bypass Single-Factor-Authentication sign in and authorize
