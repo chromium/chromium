@@ -569,6 +569,9 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
       "multipaste-suggestion",
       base::FeatureList::IsEnabled(
           chromeos::features::kVirtualKeyboardMultipasteSuggestion)));
+  features.Append(GenerateFeatureFlag(
+      "imeoptionsinsettings",
+      base::FeatureList::IsEnabled(chromeos::features::kImeOptionsInSettings)));
 
   results->SetKey("features", std::move(features));
 
