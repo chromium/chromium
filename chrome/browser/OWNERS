@@ -4,6 +4,7 @@ per-file about_flags.cc=*
 per-file flag_descriptions.*=*
 per-file flag-metadata.json=*
 
+per-file about_flags.h=file://components/flags_ui/OWNERS
 per-file about_flags_unittest.cc=file://components/flags_ui/OWNERS
 per-file about_flags_browsertest.cc=file://components/flags_ui/OWNERS
 
