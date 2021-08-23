@@ -826,7 +826,15 @@ TEST_F(CoordinatorImplTest, DumpsArentAddedToTraceUnlessRequested) {
   EXPECT_EQ(trace_data_tester.producer()->GetFinalizedPacketCount(), 0u);
 }
 
-TEST_F(CoordinatorImplTest, DumpsAreAddedToTraceWhenRequested) {
+// crbug.com: 1238428: flaky on Linux.
+#if defined(OS_LINUX)
+#define MAYBE_DumpsAreAddedToTraceWhenRequested \
+  DISABLED_DumpsAreAddedToTraceWhenRequested
+#else
+#define MAYBE_DumpsAreAddedToTraceWhenRequested \
+  DumpsAreAddedToTraceWhenRequested
+#endif
+TEST_F(CoordinatorImplTest, MAYBE_DumpsAreAddedToTraceWhenRequested) {
   CoordinatorImpl* coordinator = CoordinatorImpl::GetInstance();
   ASSERT_TRUE(coordinator->use_proto_writer_);
   tracing::DataSourceTester trace_data_tester(
