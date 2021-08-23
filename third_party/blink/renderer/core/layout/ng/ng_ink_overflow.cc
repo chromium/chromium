@@ -164,7 +164,9 @@ PhysicalRect NGInkOverflow::Contents(Type type,
   switch (type) {
     case kNotSet:
     case kInvalidated:
-#if DCHECK_IS_ON()
+// TODO(crbug.com/1241714): Revert crrev/c/3110183 to re-enable this DCHECK on
+// CrOS.
+#if DCHECK_IS_ON() && !BUILDFLAG(IS_CHROMEOS_ASH)
       if (!read_unset_as_none_)
         NOTREACHED();
       FALLTHROUGH;
