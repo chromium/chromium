@@ -80631,6 +80631,11 @@ would be helpful to identify which type is being sent.
       label="Opened a recently closed item from a filtered item list"/>
 </enum>
 
+<enum name="TabSearchRecentlyClosedToggleActions">
+  <int value="0" label="Expand the recently closed items section"/>
+  <int value="1" label="Collapse the recently closed items section"/>
+</enum>
+
 <enum name="TabSearchTabSwitchAction">
   <int value="0" label="Switch to tab from unfiltered tab list"/>
   <int value="1" label="Switch to tab from filtered search tab list"/>

@@ -136,6 +136,14 @@ void TabSearchPageHandler::GetProfileData(GetProfileDataCallback callback) {
     base::UmaHistogramCounts100("Tabs.TabSearch.NumWindowsOnOpen",
                                 profile_tabs->windows.size());
     base::UmaHistogramCounts10000("Tabs.TabSearch.NumTabsOnOpen", tab_count);
+
+    bool expand_preference =
+        Profile::FromWebUI(web_ui_)->GetPrefs()->GetBoolean(
+            tab_search_prefs::kTabSearchRecentlyClosedSectionExpanded);
+    base::UmaHistogramEnumeration(
+        "Tabs.TabSearch.RecentlyClosedSectionToggleStateOnOpen",
+        expand_preference ? TabSearchRecentlyClosedToggleAction::kExpand
+                          : TabSearchRecentlyClosedToggleAction::kCollapse);
   }
 
   std::move(callback).Run(std::move(profile_tabs));
@@ -192,6 +200,11 @@ void TabSearchPageHandler::OpenRecentlyClosedEntry(int32_t session_id) {
 void TabSearchPageHandler::SaveRecentlyClosedExpandedPref(bool expanded) {
   Profile::FromWebUI(web_ui_)->GetPrefs()->SetBoolean(
       tab_search_prefs::kTabSearchRecentlyClosedSectionExpanded, expanded);
+
+  base::UmaHistogramEnumeration(
+      "Tabs.TabSearch.RecentlyClosedSectionToggleAction",
+      expanded ? TabSearchRecentlyClosedToggleAction::kExpand
+               : TabSearchRecentlyClosedToggleAction::kCollapse);
 }
 
 void TabSearchPageHandler::ShowUI() {

@@ -2342,6 +2342,40 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Tabs.TabSearch.RecentlyClosedSectionToggleAction"
+    enum="TabSearchRecentlyClosedToggleActions" expires_after="2022-01-23">
+  <owner>romanarora@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <summary>
+    Tab Search is a feature that allows users to better search for and switch to
+    their desired tabs. The Tab Search UI displays both open and recently closed
+    tabs under different list sections. The recently closed section can be
+    expanded or collapsed by the user by clicking a button.
+
+    This metric tracks the recently closed section being expandeded or collapsed
+    via the toggle button.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabSearch.RecentlyClosedSectionToggleStateOnOpen"
+    enum="TabSearchRecentlyClosedToggleActions" expires_after="2022-01-23">
+  <owner>romanarora@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <summary>
+    Tab Search is a feature that allows users to better search for and switch to
+    their desired tabs. The Tab Search UI displays both open and recently closed
+    tabs under different list sections. The recently closed section can be
+    expanded or collapsed by the user by clicking a button.
+
+    This metric tracks if the recently closed section is in an expanded or
+    collapsed state at the time of opening the Tab Search dialog.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.TabSearch.WebUI.IndexOf{Action}TabIn{State}List"
     units="tabs" expires_after="2021-11-21">
   <owner>tluk@chromium.org</owner>
