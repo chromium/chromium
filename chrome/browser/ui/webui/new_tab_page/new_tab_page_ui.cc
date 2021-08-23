@@ -61,6 +61,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/resources/grit/webui_generated_resources.h"
 #include "url/url_util.h"
 
@@ -372,6 +373,7 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
 
   // Load time data is cached across page reloads. Listen for theme changes so
   // that theme info is up-to-date when reloading.
+  native_theme_observation_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
   theme_service_observation_.Observe(theme_service_);
   ntp_custom_background_service_observation_.Observe(
       ntp_custom_background_service_);
@@ -544,6 +546,10 @@ void NewTabPageUI::CreatePageHandler(
       navigation_start_time_);
   most_visited_page_handler_->EnableCustomLinks(IsCustomLinksEnabled());
   most_visited_page_handler_->SetShortcutsVisible(IsShortcutsVisible());
+}
+
+void NewTabPageUI::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
+  OnThemeChanged();
 }
 
 void NewTabPageUI::OnThemeChanged() {

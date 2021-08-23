@@ -28,6 +28,8 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/base/resource/scale_factor.h"
+#include "ui/native_theme/native_theme.h"
+#include "ui/native_theme/native_theme_observer.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/customize_themes/customize_themes.mojom.h"
 #include "ui/webui/resources/cr_components/most_visited/most_visited.mojom.h"
@@ -65,6 +67,7 @@ class NewTabPageUI
       public customize_themes::mojom::CustomizeThemesHandlerFactory,
       public most_visited::mojom::MostVisitedPageHandlerFactory,
       public promo_browser_command::mojom::CommandHandlerFactory,
+      public ui::NativeThemeObserver,
       public ThemeServiceObserver,
       public NtpCustomBackgroundServiceObserver,
       content::WebContentsObserver {
@@ -166,6 +169,9 @@ class NewTabPageUI
       mojo::PendingReceiver<most_visited::mojom::MostVisitedPageHandler>
           pending_page_handler) override;
 
+  // ui::NativeThemeObserver:
+  void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
+
   // ThemeServiceObserver:
   void OnThemeChanged() override;
 
@@ -206,6 +212,8 @@ class NewTabPageUI
   Profile* profile_;
   ThemeService* theme_service_;
   NtpCustomBackgroundService* ntp_custom_background_service_;
+  base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
+      native_theme_observation_{this};
   base::ScopedObservation<ThemeService, ThemeServiceObserver>
       theme_service_observation_{this};
   base::ScopedObservation<NtpCustomBackgroundService,
