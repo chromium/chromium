@@ -5125,9 +5125,6 @@ crbug.com/947690 [ Debug ] http/tests/history/back-during-beforeunload.html [ Fa
 crbug.com/946335 [ Linux ] fast/filesystem/file-writer-abort-depth.html [ Crash Pass ]
 crbug.com/946335 [ Mac ] fast/filesystem/file-writer-abort-depth.html [ Crash Pass ]
 
-# Sheriff 2019-04-15
-crbug.com/952708 external/wpt/css/css-paint-api/parse-input-arguments-018.https.html [ Failure Pass ]
-
 # The postMessage() calls intended to complete the test are blocked due to being
 # cross-origin between the portal and the host..
 crbug.com/1220891 virtual/portals/external/wpt/portals/csp/frame-src.sub.html [ Timeout ]
@@ -7143,3 +7140,7 @@ crbug.com/1241787 [ Mac10.15 ] inspector-protocol/dom/dom-get-nodes-for-subtree-
 crbug.com/1241787 [ Mac10.15 ] inspector-protocol/dom/dom-get-nodes-for-subtree-by-style-with-pierce.js [ Pass Timeout ]
 crbug.com/1241787 [ Mac10.15 ] inspector-protocol/dom/dom-get-nodes-for-subtree-by-style.js [ Pass Timeout ]
 crbug.com/1194498 http/tests/misc/iframe-script-modify-attr.html [ Crash Failure Pass Timeout ]
+
+# Sheriff 2021-08-23
+crbug.com/1242243 external/wpt/css/css-paint-api/parse-input-arguments-018.https.html [ Crash Failure Pass ]
+crbug.com/1242243 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/parse-input-arguments-018.https.html [ Crash Failure Pass ]
