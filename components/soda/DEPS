@@ -9,9 +9,3 @@ include_rules = [
   "+media/base",
   "+ui/base",
 ]
-
-specific_include_rules = {
-  "soda_installer_impl_chromeos_unittest.cc": [
-    "+content/public/test/browser_task_environment.h",
-  ]
-}

@@ -39,8 +39,6 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstallerImplChromeOS
   std::vector<std::string> GetAvailableLanguages() const override;
 
  private:
-  friend class SodaInstallerImplChromeOSTest;
-
   // SodaInstaller:
   void InstallSoda(PrefService* global_prefs) override;
   // Here "uninstall" is used in the DLC sense of the term: Uninstallation will

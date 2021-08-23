@@ -80,7 +80,7 @@ void SodaInstaller::Init(PrefService* profile_prefs,
 
   if (IsAnyFeatureUsingSodaEnabled(profile_prefs)) {
     soda_installer_initialized_ = true;
-    global_prefs->SetTime(prefs::kSodaScheduledDeletionTime, base::Time());
+    global_prefs->SetTime(prefs::kSodaScheduledDeletionTime, base::Time::Now());
     SodaInstaller::GetInstance()->InstallSoda(global_prefs);
     for (const auto& language :
          global_prefs->GetList(prefs::kSodaRegisteredLanguagePacks)
@@ -91,7 +91,7 @@ void SodaInstaller::Init(PrefService* profile_prefs,
   } else {
     base::Time deletion_time =
         global_prefs->GetTime(prefs::kSodaScheduledDeletionTime);
-    if (!deletion_time.is_null() && deletion_time < base::Time::Now()) {
+    if (!deletion_time.is_null() && deletion_time <= base::Time::Now()) {
       UninstallSoda(global_prefs);
       soda_installer_initialized_ = false;
     }

@@ -7,17 +7,18 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/dlcservice/fake_dlcservice_client.h"
 #include "components/live_caption/pref_names.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/soda/pref_names.h"
-#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 const speech::LanguageCode kEnglishLocale = speech::LanguageCode::kEnUs;
+const base::TimeDelta kSodaUninstallTime = base::TimeDelta::FromDays(30);
 }  // namespace
 
 namespace speech {
@@ -35,7 +36,7 @@ class SodaInstallerImplChromeOSTest : public testing::Test {
     pref_service_->registry()->RegisterBooleanPref(
         ash::prefs::kAccessibilityDictationEnabled, true);
     pref_service_->registry()->RegisterBooleanPref(prefs::kLiveCaptionEnabled,
-                                                   false);
+                                                   true);
 
     chromeos::DBusThreadManager::Initialize();
     chromeos::DlcserviceClient::InitializeFake();
@@ -84,11 +85,35 @@ class SodaInstallerImplChromeOSTest : public testing::Test {
     fake_dlcservice_client_->set_install_error(dlcservice::kErrorNeedReboot);
   }
 
+  void SetUninstallTimer() {
+    soda_installer_impl_->SetUninstallTimer(pref_service_.get(),
+                                            pref_service_.get());
+  }
+
+  void FastForwardBy(base::TimeDelta delta) {
+    task_environment_.FastForwardBy(delta);
+  }
+
+  void SetDictationEnabled(bool enabled) {
+    pref_service_->SetManagedPref(ash::prefs::kAccessibilityDictationEnabled,
+                                  std::make_unique<base::Value>(enabled));
+  }
+
+  void SetLiveCaptionEnabled(bool enabled) {
+    pref_service_->SetManagedPref(prefs::kLiveCaptionEnabled,
+                                  std::make_unique<base::Value>(enabled));
+  }
+
+  void SetSodaInstallerInitialized(bool initialized) {
+    soda_installer_impl_->soda_installer_initialized_ = initialized;
+  }
+
  private:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<SodaInstallerImplChromeOS> soda_installer_impl_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   chromeos::FakeDlcserviceClient* fake_dlcservice_client_;
-  content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -199,6 +224,48 @@ TEST_F(SodaInstallerImplChromeOSTest, LanguagePackErrorForTesting) {
   GetInstance()->NotifyOnSodaLanguagePackErrorForTesting(fr_fr);
   ASSERT_FALSE(IsLanguageInstalled(fr_fr));
   ASSERT_FALSE(GetInstance()->IsSodaDownloading(fr_fr));
+}
+
+TEST_F(SodaInstallerImplChromeOSTest, UninstallSodaAfterThirtyDays) {
+  Init();
+  RunUntilIdle();
+  ASSERT_TRUE(IsSodaInstalled());
+  // Turn off features that use SODA so that the uninstall timer can be set.
+  SetDictationEnabled(false);
+  SetLiveCaptionEnabled(false);
+  SetUninstallTimer();
+  ASSERT_TRUE(IsSodaInstalled());
+  // If 30 days pass without the uninstall time being pushed, SODA will be
+  // uninstalled the next time Init() is called.
+  // Set SodaInstaller initialized state to false to mimic a browser shutdown.
+  SetSodaInstallerInitialized(false);
+  FastForwardBy(kSodaUninstallTime);
+  ASSERT_TRUE(IsSodaInstalled());
+  // The uninstallation process doesn't start until Init() is called again.
+  Init();
+  RunUntilIdle();
+  ASSERT_FALSE(IsSodaInstalled());
+}
+
+// Tests that SODA stays installed if thirty days pass and a feature using SODA
+// is enabled.
+TEST_F(SodaInstallerImplChromeOSTest,
+       SodaStaysInstalledAfterThirtyDaysIfFeatureEnabled) {
+  Init();
+  RunUntilIdle();
+  ASSERT_TRUE(IsSodaInstalled());
+  // Turn off Dictation, but keep live caption enabled. This should prevent
+  // SODA from automatically uninstalling.
+  SetDictationEnabled(false);
+  SetUninstallTimer();
+  ASSERT_TRUE(IsSodaInstalled());
+  // Set SodaInstaller initialized state to false to mimic a browser shutdown.
+  SetSodaInstallerInitialized(false);
+  FastForwardBy(kSodaUninstallTime);
+  ASSERT_TRUE(IsSodaInstalled());
+  Init();
+  RunUntilIdle();
+  ASSERT_TRUE(IsSodaInstalled());
 }
 
 }  // namespace speech
