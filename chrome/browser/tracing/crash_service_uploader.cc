@@ -245,7 +245,9 @@ void TraceCrashServiceUploader::SetupMultipart(
     for (base::DictionaryValue::Iterator it(*metadata); !it.IsAtEnd();
          it.Advance()) {
       std::string value;
-      if (!it.value().GetAsString(&value)) {
+      if (it.value().is_string()) {
+        value = it.value().GetString();
+      } else {
         if (!base::JSONWriter::Write(it.value(), &value))
           continue;
       }

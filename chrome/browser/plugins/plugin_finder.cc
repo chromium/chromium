@@ -55,14 +55,11 @@ void LoadMimeTypes(bool matching_mime_types,
     return;
 
   for (const auto& mime_type : mime_types->GetList()) {
-    std::string mime_type_str;
-    bool success = mime_type.GetAsString(&mime_type_str);
-    DCHECK(success);
-    if (matching_mime_types) {
+    const std::string& mime_type_str = mime_type.GetString();
+    if (matching_mime_types)
       plugin->AddMatchingMimeType(mime_type_str);
-    } else {
+    else
       plugin->AddMimeType(mime_type_str);
-    }
   }
 }
 

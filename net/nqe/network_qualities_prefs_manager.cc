@@ -39,13 +39,8 @@ ParsedPrefs ConvertDictionaryValueToMap(const base::DictionaryValue* value) {
     nqe::internal::NetworkID network_id =
         nqe::internal::NetworkID::FromString(it.first);
 
-    std::string effective_connection_type_string;
-    const bool effective_connection_type_available =
-        it.second.GetAsString(&effective_connection_type_string);
-    DCHECK(effective_connection_type_available);
-
     absl::optional<EffectiveConnectionType> effective_connection_type =
-        GetEffectiveConnectionTypeForName(effective_connection_type_string);
+        GetEffectiveConnectionTypeForName(it.second.GetString());
     DCHECK(effective_connection_type.has_value());
 
     nqe::internal::CachedNetworkQuality cached_network_quality(
