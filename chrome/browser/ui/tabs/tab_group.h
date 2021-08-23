@@ -68,6 +68,9 @@ class TabGroup {
   // Returns whether the user has explicitly set the visual data themselves.
   bool IsCustomized() const;
 
+  // Returns whether the user set the group as saved or not.
+  bool IsSaved() const;
+
   // Gets the model index of this group's first tab, or nullopt if it is
   // empty. Similar to ListTabs() it traverses through TabStripModel's
   // tabs. Unlike ListTabs() this is always safe to call.
@@ -97,6 +100,14 @@ class TabGroup {
   // steps.
   gfx::Range ListTabs() const;
 
+  // Currently only sets is_saved_ to true but in the future should also
+  // place the group into the bookmarks bar.
+  void SaveGroup();
+
+  // Currently only sets is_saved_ to false but in the future should also
+  // take the group out of the bookmakrs bar.
+  void UnsaveGroup();
+
  private:
   TabGroupController* controller_;
 
@@ -106,6 +117,7 @@ class TabGroup {
   int tab_count_ = 0;
 
   bool is_customized_ = false;
+  bool is_saved_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_GROUP_H_

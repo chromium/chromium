@@ -188,6 +188,10 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
         std::make_unique<views::ToggleButton>(
             base::BindRepeating(&TabGroupEditorBubbleView::OnSaveTogglePressed,
                                 base::Unretained(this))));
+
+    bool is_saved =
+        tab_strip_model->group_model()->GetTabGroup(group_)->IsSaved();
+    save_group_toggle_->SetIsOn(is_saved);
   }
 
   auto* const new_tab_menu_item = AddChildView(CreateMenuItem(
@@ -309,12 +313,16 @@ void TabGroupEditorBubbleView::UpdateGroup() {
 }
 
 void TabGroupEditorBubbleView::OnSaveTogglePressed() {
+  auto* group = browser_->tab_strip_model()->group_model()->GetTabGroup(group_);
+
   if (save_group_toggle_->GetIsOn()) {
     base::RecordAction(
         base::UserMetricsAction("TabGroups_TabGroupBubble_GroupSaved"));
+    group->SaveGroup();
   } else {
     base::RecordAction(
         base::UserMetricsAction("TabGroups_TabGroupBubble_GroupUnsaved"));
+    group->UnsaveGroup();
   }
 }
 
