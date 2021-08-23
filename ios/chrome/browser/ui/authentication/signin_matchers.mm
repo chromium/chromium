@@ -32,6 +32,12 @@ id<GREYMatcher> WebSigninSkipButtonMatcher() {
       grey_sufficientlyVisible(), nil);
 }
 
+id<GREYMatcher> WebSigninContinueButtonMatcher() {
+  return grey_allOf(
+      grey_accessibilityID(kWebSigninContinueAsButtonAccessibilityIdentifier),
+      grey_sufficientlyVisible(), nil);
+}
+
 id<GREYMatcher> GoogleSyncSettingsButton() {
   return grey_allOf(
       grey_kindOfClass([UITableViewCell class]), grey_sufficientlyVisible(),
