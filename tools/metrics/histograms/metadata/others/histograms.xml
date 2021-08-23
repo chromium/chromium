@@ -374,30 +374,32 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AddSupervisionDialog.EnrollmentCompletedUserTime" units="ms"
-    expires_after="2021-09-08">
+    expires_after="2022-08-23">
   <owner>tobyhuang@chromium.org</owner>
   <owner>michaelpg@chromium.org</owner>
   <owner>danan@chromium.org</owner>
   <summary>
     Measures the amount of time in milliseconds for users to successfully enroll
-    in supervision.
+    in supervision. Elapsed time is measured starting from when the Add
+    Supervision dialog was first opened.
   </summary>
 </histogram>
 
 <histogram name="AddSupervisionDialog.EnrollmentNotCompletedUserTime"
-    units="ms" expires_after="2021-09-08">
+    units="ms" expires_after="2021-08-23">
   <owner>tobyhuang@chromium.org</owner>
   <owner>michaelpg@chromium.org</owner>
   <owner>danan@chromium.org</owner>
   <summary>
     Measures the amount of time in milliseconds for users to exit the Add
     Supervision dialog without enrollment. This can happen if the user closes
-    the Add Supervision dialog or signs out to switch accounts.
+    the Add Supervision dialog or signs out to switch accounts. Elapsed time is
+    measured starting from when the Add Supervision dialog was first opened.
   </summary>
 </histogram>
 
 <histogram name="AddSupervisionDialog.SignoutCompletedUserTime" units="ms"
-    expires_after="2021-09-08">
+    expires_after="2021-08-23">
   <owner>tobyhuang@chromium.org</owner>
   <owner>michaelpg@chromium.org</owner>
   <owner>danan@chromium.org</owner>
