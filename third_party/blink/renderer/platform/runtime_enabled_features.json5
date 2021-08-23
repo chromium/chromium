@@ -1163,8 +1163,7 @@
     },
     {
       name: "IdleDetection",
-      origin_trial_feature_name: "IdleDetection",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "ImplicitRootScroller",

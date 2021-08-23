@@ -61,7 +61,7 @@ CameraSystemAppDelegate::CameraSystemAppDelegate(Profile* profile)
           GURL("chrome://camera-app/views/main.html"),
           profile,
           web_app::OriginTrialsMap({{web_app::GetOrigin("chrome://camera-app"),
-                                     {"FileHandling", "IdleDetection"}}})) {}
+                                     {"FileHandling"}}})) {}
 
 std::unique_ptr<WebApplicationInfo> CameraSystemAppDelegate::GetWebAppInfo()
     const {
