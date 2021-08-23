@@ -78,7 +78,6 @@ TEST_F(H265ParserTest, RawHevcStreamFileParsing) {
       DVLOG(4) << "Found NALU " << nalu.nal_unit_type;
 
       H265SliceHeader shdr;
-      H265SliceHeader prior_shdr;
       switch (nalu.nal_unit_type) {
         case H265NALU::SPS_NUT:
           int sps_id;
@@ -106,8 +105,7 @@ TEST_F(H265ParserTest, RawHevcStreamFileParsing) {
         case H265NALU::IDR_W_RADL:
         case H265NALU::IDR_N_LP:
         case H265NALU::CRA_NUT:  // fallthrough
-          res = parser_.ParseSliceHeader(nalu, &shdr, &prior_shdr);
-          prior_shdr = shdr;
+          res = parser_.ParseSliceHeader(nalu, &shdr, nullptr);
           break;
         default:
           break;

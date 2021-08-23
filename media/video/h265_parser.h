@@ -287,12 +287,16 @@ struct MEDIA_EXPORT H265SliceHeader {
   int slice_pic_parameter_set_id;
   bool dependent_slice_segment_flag;
   int slice_segment_address;
+  // Do not move any of the above fields below or vice-versa, everything after
+  // this is copied as a block.
   int slice_type;
   bool pic_output_flag;
   int colour_plane_id;
   int slice_pic_order_cnt_lsb;
   bool short_term_ref_pic_set_sps_flag;
   H265StRefPicSet st_ref_pic_set;
+  // Do not change the order of the following fields up through
+  // slice_sao_luma_flag. They are compared as a block.
   int short_term_ref_pic_set_idx;
   int num_long_term_sps;
   int num_long_term_pics;
