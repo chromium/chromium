@@ -387,7 +387,13 @@ IN_PROC_BROWSER_TEST_F(LoginOfflineManagedTest, BackButtonTest) {
   EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(LoginOfflineManagedTest, LoginAllowlistedUser) {
+// crbug.com/1240601: test is flaky on chromeos.
+#if defined(OS_CHROMEOS)
+#define MAYBE_LoginAllowlistedUser DISABLED_LoginAllowlistedUser
+#else
+#define MAYBE_LoginAllowlistedUser LoginAllowlistedUser
+#endif
+IN_PROC_BROWSER_TEST_F(LoginOfflineManagedTest, MAYBE_LoginAllowlistedUser) {
   std::string domain = gaia::ExtractDomainName(managed_user_id_.GetUserEmail());
   ConfigurePolicy(domain);
   SetDeviceAllowNewUsersPolicy(false);
