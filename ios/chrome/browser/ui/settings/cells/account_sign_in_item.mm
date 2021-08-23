@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/ui/settings/cells/account_sign_in_item.h"
 
-#include "base/feature_list.h"
-#include "components/signin/public/base/account_consistency_method.h"
 #import "ios/chrome/browser/ui/authentication/authentication_constants.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_cell.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
@@ -35,14 +33,7 @@
 - (void)configureCell:(SettingsImageDetailTextCell*)cell
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:cell withStyler:styler];
-  if (base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency)) {
-    cell.textLabel.text =
-        l10n_util::GetNSString(IDS_IOS_SYNC_PROMO_TURN_ON_SYNC);
-  } else {
-    cell.textLabel.text =
-        l10n_util::GetNSString(IDS_IOS_SIGN_IN_TO_CHROME_SETTING_TITLE);
-  }
-
+  cell.textLabel.text = l10n_util::GetNSString(IDS_IOS_SYNC_PROMO_TURN_ON_SYNC);
   cell.detailTextLabel.text = self.detailText;
   cell.image = CircularImageFromImage(ios::provider::GetSigninDefaultAvatar(),
                                       kAccountProfilePhotoDimension);

@@ -37,7 +37,6 @@ source_set("cells") {
   deps = [
     ":public",
     "//components/autofill/core/browser",
-    "//components/signin/public/base",
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui:feature_flags",

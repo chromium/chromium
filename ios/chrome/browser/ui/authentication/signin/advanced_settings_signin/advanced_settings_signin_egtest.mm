@@ -47,8 +47,7 @@ const NSTimeInterval kSyncOperationTimeout = 5.0;
 
 }  // namespace
 
-// Interaction tests for advanced settings sign-in with
-// |kMobileIdentityConsistency| feature enabled.
+// Interaction tests for advanced settings sign-in.
 @interface AdvancedSettingsSigninTestCase : WebHttpServerChromeTestCase
 @end
 

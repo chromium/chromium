@@ -25,7 +25,6 @@ typedef NS_ENUM(NSInteger, SettingsItemType) {
   SettingsItemTypeSignInButton = kItemTypeEnumZero,
   SettingsItemTypeSigninPromo,
   SettingsItemTypeAccount,
-  SettingsItemTypeSyncAndGoogleServices,
   SettingsItemTypeGoogleSync,
   SettingsItemTypeGoogleServices,
   SettingsItemTypeHeader,

@@ -69,16 +69,10 @@ using unified_consent::metrics::RecordSyncSetupDataTypesHistrogam;
           UserMetricsAction("Signin_Signin_ConfirmAdvancedSyncSettings"));
       RecordSyncSetupDataTypesHistrogam(self.syncService->GetUserSettings(),
                                         self.prefService);
-      if (self.syncSetupService->CanSyncFeatureStart() ||
-          base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency)) {
-        // Pre-MICe: FirstSetupComplete flag should be only turned on when
-        // the user agrees to start Sync.
-        // MICe: Turn on sync, when the user agrees on the advanced sign-in
-        // settings.
-        self.syncSetupService->PrepareForFirstSyncSetup();
-        self.syncSetupService->SetFirstSetupComplete(
-            SyncFirstSetupCompleteSource::ADVANCED_FLOW_CONFIRM);
-      }
+      // Turn on sync, when the user agrees on the advanced sign-in settings.
+      self.syncSetupService->PrepareForFirstSyncSetup();
+      self.syncSetupService->SetFirstSetupComplete(
+          SyncFirstSetupCompleteSource::ADVANCED_FLOW_CONFIRM);
       break;
     }
     case SigninCoordinatorResultCanceledByUser:

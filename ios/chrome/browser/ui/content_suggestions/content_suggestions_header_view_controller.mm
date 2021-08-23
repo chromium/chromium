@@ -5,12 +5,10 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_view_controller.h"
 
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/ios/ios_util.h"
 #include "base/mac/foundation_util.h"
 #include "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
-#include "components/signin/public/base/account_consistency_method.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
@@ -459,11 +457,7 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 
 - (void)identityDiscTapped {
   base::RecordAction(base::UserMetricsAction("MobileNTPIdentityDiscTapped"));
-  if (base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency)) {
-    [self.dispatcher showSettingsFromViewController:self];
-  } else {
-    [self.dispatcher showGoogleServicesSettingsFromViewController:nil];
-  }
+  [self.dispatcher showSettingsFromViewController:self];
 }
 
 // TODO(crbug.com/807330) The fakebox is currently a collection of views spread

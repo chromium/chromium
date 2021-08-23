@@ -211,8 +211,7 @@
   self.googleServicesSettingsCoordinator =
       [[GoogleServicesSettingsCoordinator alloc]
           initWithBaseNavigationController:self.baseNavigationController
-                                   browser:self.browser
-                                      mode:GoogleServicesSettingsModeSettings];
+                                   browser:self.browser];
   self.googleServicesSettingsCoordinator.handler = self.handler;
   self.googleServicesSettingsCoordinator.delegate = self;
   [self.googleServicesSettingsCoordinator start];

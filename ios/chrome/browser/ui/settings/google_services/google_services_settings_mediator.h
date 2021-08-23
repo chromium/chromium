@@ -8,7 +8,6 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_consumer.h"
-#import "ios/chrome/browser/ui/settings/google_services/google_services_settings_mode.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_service_delegate.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_view_controller_model_delegate.h"
@@ -19,7 +18,6 @@ class ChromeAccountManagerService;
 @class GoogleServicesSettingsViewController;
 class PrefService;
 @protocol SyncErrorSettingsCommandHandler;
-class SyncSetupService;
 
 namespace syncer {
 class SyncService;
@@ -34,8 +32,6 @@ class IdentityManager;
     : NSObject <GoogleServicesSettingsServiceDelegate,
                 GoogleServicesSettingsViewControllerModelDelegate>
 
-// Google services settings mode.
-@property(nonatomic, assign, readonly) GoogleServicesSettingsMode mode;
 // View controller.
 @property(nonatomic, weak) id<GoogleServicesSettingsConsumer> consumer;
 // Authentication service.
@@ -53,14 +49,11 @@ class IdentityManager;
 // Designated initializer. All the paramters should not be null.
 // |userPrefService|: preference service from the browser state.
 // |localPrefService|: preference service from the application context.
-// |syncSetupService|: allows configuring sync.
 // |mode|: mode to display the Google services settings.
 - (instancetype)initWithUserPrefService:(PrefService*)userPrefService
                        localPrefService:(PrefService*)localPrefService
-                       syncSetupService:(SyncSetupService*)syncSetupService
                   accountManagerService:
                       (ChromeAccountManagerService*)accountManagerService
-                                   mode:(GoogleServicesSettingsMode)mode
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

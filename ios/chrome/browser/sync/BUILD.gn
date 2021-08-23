@@ -57,7 +57,6 @@ source_set("sync") {
     "//components/search_engines",
     "//components/send_tab_to_self",
     "//components/sessions",
-    "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//components/sync",
     "//components/sync_device_info",

@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/feature_list.h"
 #import "base/mac/foundation_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
@@ -22,7 +21,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/util.h"
-#include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -168,8 +166,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   } else if (!syncSetupService->CanSyncFeatureStart()) {
     // Sync engine is off.
     return kSyncOff;
-  } else if (base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency) &&
-             syncService->GetUserSettings()->GetSelectedTypes().Empty()) {
+  } else if (syncService->GetUserSettings()->GetSelectedTypes().Empty()) {
     // User has deselected all sync data types.
     // With pre-MICE, the sync status should be kSyncEnabled to show the same
     // value than the sync toggle.
@@ -549,7 +546,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
     // preference.
     DCHECK(!authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin));
     item = [self signinDisabledByPolicyTextItem];
-  } else if (self.shouldDisplaySyncPromo || self.shouldDisplaySigninPromo) {
+  } else if (self.shouldDisplaySyncPromo) {
     // Create the sign-in promo mediator if it doesn't exist.
     if (!_signinPromoViewMediator) {
       _signinPromoViewMediator = [[SigninPromoViewMediator alloc]
@@ -618,46 +615,24 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   }
 
   // Add Sync & Google Services cell.
-  if (base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency)) {
-    // Sync item.
-    if (authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
-      [model addItem:[self googleSyncDetailItem]
-          toSectionWithIdentifier:SettingsSectionIdentifierAccount];
-    }
-    // Google Services item.
-    [model addItem:[self googleServicesCellItem]
-        toSectionWithIdentifier:SettingsSectionIdentifierAccount];
-  } else {
-    // Sync & Google Services item.
-    [model addItem:[self syncAndGoogleServicesCellItem]
+  // Sync item.
+  if (authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+    [model addItem:[self googleSyncDetailItem]
         toSectionWithIdentifier:SettingsSectionIdentifierAccount];
   }
+  // Google Services item.
+  [model addItem:[self googleServicesCellItem]
+      toSectionWithIdentifier:SettingsSectionIdentifierAccount];
 }
 
 #pragma mark - Properties
-
-// Returns YES if the sign-in promo has not previously been closed or seen
-// too many times by a single user account (as defined in
-// SigninPromoViewMediator).
-- (BOOL)shouldDisplaySigninPromo {
-  AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForBrowserState(_browserState);
-  return !base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency) &&
-         [SigninPromoViewMediator
-             shouldDisplaySigninPromoViewWithAccessPoint:
-                 signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS
-                                             prefService:_browserState
-                                                             ->GetPrefs()] &&
-         !authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
-}
 
 // Returns YES if the Sync service is available and all promos have not been
 // previously closed or seen too many times by a single user account.
 - (BOOL)shouldDisplaySyncPromo {
   SyncSetupService* syncSetupService =
       SyncSetupServiceFactory::GetForBrowserState(_browserState);
-  return base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency) &&
-         [SigninPromoViewMediator
+  return [SigninPromoViewMediator
              shouldDisplaySigninPromoViewWithAccessPoint:
                  signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS
                                              prefService:_browserState
@@ -734,20 +709,6 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   }
 
   return _googleSyncDetailItem;
-}
-
-- (TableViewItem*)syncAndGoogleServicesCellItem {
-  SettingsImageDetailTextItem* googleServicesItem =
-      [[SettingsImageDetailTextItem alloc]
-          initWithType:SettingsItemTypeSyncAndGoogleServices];
-  googleServicesItem.accessoryType =
-      UITableViewCellAccessoryDisclosureIndicator;
-  googleServicesItem.text =
-      l10n_util::GetNSString(IDS_IOS_GOOGLE_SERVICES_SYNC_SETTINGS_TITLE);
-  googleServicesItem.accessibilityIdentifier =
-      kSettingsGoogleSyncAndServicesCellId;
-  [self updateSyncAndGoogleServicesItem:googleServicesItem];
-  return googleServicesItem;
 }
 
 - (TableViewItem*)defaultBrowserCellItem {
@@ -1181,7 +1142,6 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
       controller = [[AccountsTableViewController alloc] initWithBrowser:_browser
                                               closeSettingsOnAddAccount:NO];
       break;
-    case SettingsItemTypeSyncAndGoogleServices:
     case SettingsItemTypeGoogleServices:
       base::RecordAction(base::UserMetricsAction("Settings.GoogleServices"));
       [self showGoogleServices];
@@ -1197,8 +1157,6 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
           break;
         }
         case kSyncOff: {
-          DCHECK(
-              base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency));
           [self showGoogleSync];
           break;
         }
@@ -1397,8 +1355,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   _googleServicesSettingsCoordinator =
       [[GoogleServicesSettingsCoordinator alloc]
           initWithBaseNavigationController:self.navigationController
-                                   browser:_browser
-                                      mode:GoogleServicesSettingsModeSettings];
+                                   browser:_browser];
   _googleServicesSettingsCoordinator.handler = self.dispatcher;
   _googleServicesSettingsCoordinator.delegate = self;
   [_googleServicesSettingsCoordinator start];
@@ -1612,20 +1569,6 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 
 // Updates and reloads the Google service cell.
 - (void)reloadSyncAndGoogleServicesCell {
-  if (!base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency)) {
-    NSIndexPath* googleServicesCellIndexPath = [self.tableViewModel
-        indexPathForItemType:SettingsItemTypeSyncAndGoogleServices
-           sectionIdentifier:SettingsSectionIdentifierAccount];
-    SettingsImageDetailTextItem* googleServicesItem =
-        base::mac::ObjCCast<SettingsImageDetailTextItem>(
-            [self.tableViewModel itemAtIndexPath:googleServicesCellIndexPath]);
-    DCHECK(googleServicesItem);
-    [self updateSyncAndGoogleServicesItem:googleServicesItem];
-    [self reloadCellsForItems:@[ googleServicesItem ]
-             withRowAnimation:UITableViewRowAnimationNone];
-    return;
-  }
-
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForBrowserState(_browserState);
   if (authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {

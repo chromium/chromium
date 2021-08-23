@@ -16,9 +16,6 @@
                withValue:(BOOL)value
               targetRect:(CGRect)targetRect;
 
-// Called when cell is tapped.
-- (void)didSelectItem:(TableViewItem*)item;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_GOOGLE_SERVICES_GOOGLE_SERVICES_SETTINGS_SERVICE_DELEGATE_H_

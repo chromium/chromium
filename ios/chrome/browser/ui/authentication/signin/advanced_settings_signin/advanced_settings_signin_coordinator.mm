@@ -20,7 +20,6 @@
 #import "ios/chrome/browser/ui/authentication/signin/advanced_settings_signin/advanced_settings_signin_navigation_controller.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator+protected.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_coordinator.h"
-#import "ios/chrome/browser/ui/settings/google_services/google_services_settings_mode.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_coordinator.h"
 #import "ios/chrome/browser/ui/settings/google_services/sync_settings_view_state.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -150,24 +149,13 @@ using l10n_util::GetNSString;
 - (void)startSyncSettingsCoordinator {
   DCHECK(!self.syncSettingsCoordinator);
 
-  if (base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency)) {
-    ManageSyncSettingsCoordinator* manageSyncSettingsCoordinator =
-        [[ManageSyncSettingsCoordinator alloc]
-            initWithBaseNavigationController:
-                self.advancedSettingsSigninNavigationController
-                                     browser:self.browser];
-    manageSyncSettingsCoordinator.delegate = self;
-    self.syncSettingsCoordinator = manageSyncSettingsCoordinator;
-  } else {
-    // Init and start Google settings coordinator.
-    GoogleServicesSettingsMode mode =
-        GoogleServicesSettingsModeAdvancedSigninSettings;
-    self.syncSettingsCoordinator = [[GoogleServicesSettingsCoordinator alloc]
-        initWithBaseNavigationController:
-            self.advancedSettingsSigninNavigationController
-                                 browser:self.browser
-                                    mode:mode];
-  }
+  ManageSyncSettingsCoordinator* manageSyncSettingsCoordinator =
+      [[ManageSyncSettingsCoordinator alloc]
+          initWithBaseNavigationController:
+              self.advancedSettingsSigninNavigationController
+                                   browser:self.browser];
+  manageSyncSettingsCoordinator.delegate = self;
+  self.syncSettingsCoordinator = manageSyncSettingsCoordinator;
   [self.syncSettingsCoordinator start];
 }
 

@@ -56,8 +56,6 @@ using signin_metrics::PromoAction;
     SyncErrorSettingsCommandHandler,
     SyncSettingsViewState>
 
-// Google services settings mode.
-@property(nonatomic, assign, readonly) GoogleServicesSettingsMode mode;
 // Google services settings mediator.
 @property(nonatomic, strong) GoogleServicesSettingsMediator* mediator;
 // Returns the authentication service.
@@ -90,12 +88,9 @@ using signin_metrics::PromoAction;
 
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
-                                         browser:(Browser*)browser
-                                            mode:(GoogleServicesSettingsMode)
-                                                     mode {
+                                         browser:(Browser*)browser {
   if ([super initWithBaseViewController:navigationController browser:browser]) {
     _baseNavigationController = navigationController;
-    _mode = mode;
   }
   return self;
 }
@@ -111,17 +106,12 @@ using signin_metrics::PromoAction;
           initWithStyle:ChromeTableViewStyle()];
   viewController.presentationDelegate = self;
   self.viewController = viewController;
-  SyncSetupService* syncSetupService =
-      SyncSetupServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
   self.mediator = [[GoogleServicesSettingsMediator alloc]
       initWithUserPrefService:self.browser->GetBrowserState()->GetPrefs()
              localPrefService:GetApplicationContext()->GetLocalState()
-             syncSetupService:syncSetupService
         accountManagerService:ChromeAccountManagerServiceFactory::
                                   GetForBrowserState(
-                                      self.browser->GetBrowserState())
-                         mode:self.mode];
+                                      self.browser->GetBrowserState())];
   self.mediator.consumer = viewController;
   self.mediator.authService = self.authService;
   self.mediator.identityManager = IdentityManagerFactory::GetForBrowserState(
@@ -151,9 +141,8 @@ using signin_metrics::PromoAction;
     SyncSetupService* syncSetupService =
         SyncSetupServiceFactory::GetForBrowserState(
             self.browser->GetBrowserState());
-    if (self.mode == GoogleServicesSettingsModeSettings &&
-        syncSetupService->GetSyncServiceState() ==
-            SyncSetupService::kSyncSettingsNotConfirmed) {
+    if (syncSetupService->GetSyncServiceState() ==
+        SyncSetupService::kSyncSettingsNotConfirmed) {
       // If Sync is still in aborted state, this means the user didn't turn on
       // sync, and wants Sync off. To acknowledge, Sync has to be turned off.
       syncSetupService->SetSyncEnabled(false);

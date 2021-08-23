@@ -137,10 +137,7 @@ NSString* const kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 // Updates the sync everything item, and notify the consumer if |notifyConsumer|
 // is set to YES.
 - (void)updateSyncEverythingItemNotifyConsumer:(BOOL)notifyConsumer {
-  BOOL shouldSyncEverythingBeEditable =
-      (self.syncSetupService->CanSyncFeatureStart() ||
-       base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency)) &&
-      (!self.disabledBecauseOfSyncError);
+  BOOL shouldSyncEverythingBeEditable = !self.disabledBecauseOfSyncError;
   BOOL shouldSyncEverythingItemBeOn =
       self.syncSetupService->CanSyncFeatureStart() &&
       self.syncSetupService->IsSyncingAllDataTypes();
@@ -169,13 +166,9 @@ NSString* const kGoogleServicesSyncErrorImage = @"google_services_sync_error";
         static_cast<SyncSetupService::SyncableDatatype>(
             syncSwitchItem.dataType);
     syncer::ModelType modelType = self.syncSetupService->GetModelType(dataType);
-    BOOL isDataTypeSynced;
-    if (base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency)) {
-      isDataTypeSynced = self.syncSetupService->IsSyncRequested() &&
-                         self.syncSetupService->IsDataTypePreferred(modelType);
-    } else {
-      isDataTypeSynced = self.syncSetupService->IsDataTypePreferred(modelType);
-    }
+    BOOL isDataTypeSynced =
+        self.syncSetupService->IsSyncRequested() &&
+        self.syncSetupService->IsDataTypePreferred(modelType);
     BOOL needsUpdate =
         (syncSwitchItem.on != isDataTypeSynced) ||
         (syncSwitchItem.isEnabled != self.shouldSyncDataItemEnabled);
@@ -192,24 +185,13 @@ NSString* const kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 - (void)updateAutocompleteWalletItemNotifyConsumer:(BOOL)notifyConsumer {
   syncer::ModelType autofillModelType =
       self.syncSetupService->GetModelType(SyncSetupService::kSyncAutofill);
-  BOOL isAutofillOn;
-  if (base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency)) {
-    isAutofillOn =
-        self.syncSetupService->IsSyncRequested() &&
-        self.syncSetupService->IsDataTypePreferred(autofillModelType);
-  } else {
-    isAutofillOn =
-        self.syncSetupService->IsDataTypePreferred(autofillModelType);
-  }
+  BOOL isAutofillOn =
+      self.syncSetupService->IsSyncRequested() &&
+      self.syncSetupService->IsDataTypePreferred(autofillModelType);
   BOOL autocompleteWalletEnabled =
       isAutofillOn && self.shouldSyncDataItemEnabled;
-  BOOL autocompleteWalletOn;
-  if (base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency)) {
-    autocompleteWalletOn = self.syncSetupService->IsSyncRequested() &&
-                           self.autocompleteWalletPreference.value;
-  } else {
-    autocompleteWalletOn = self.autocompleteWalletPreference.value;
-  }
+  BOOL autocompleteWalletOn = self.syncSetupService->IsSyncRequested() &&
+                              self.autocompleteWalletPreference.value;
   BOOL needsUpdate =
       (self.autocompleteWalletItem.enabled != autocompleteWalletEnabled) ||
       (self.autocompleteWalletItem.on != autocompleteWalletOn);
@@ -290,11 +272,6 @@ NSString* const kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 #pragma mark - Loads sign out section
 
 - (void)loadSignOutSection {
-  // The sign-out section will only apply to kMobileIdentityConsistency.
-  if (!base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency)) {
-    return;
-  }
-
   // Creates the sign-out item and its section.
   TableViewModel* model = self.consumer.tableViewModel;
   [model addSectionWithIdentifier:SignOutSectionIdentifier];
@@ -313,11 +290,6 @@ NSString* const kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 }
 
 - (void)updateSignOutSection {
-  // The sign-out section will only apply to kMobileIdentityConsistency.
-  if (!base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency)) {
-    return;
-  }
-
   BOOL hasModelUpdate = NO;
   TableViewModel* model = self.consumer.tableViewModel;
   BOOL hasSignOutItem = [model hasItem:self.signOutAndTurnOffSyncItem];
@@ -407,14 +379,9 @@ NSString* const kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 }
 
 - (BOOL)shouldSyncDataItemEnabled {
-  if (base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency)) {
-    return (!self.syncSetupService->IsSyncingAllDataTypes() ||
-            !self.syncSetupService->IsSyncRequested()) &&
-           (!self.disabledBecauseOfSyncError);
-  }
-  return (!self.syncSetupService->IsSyncingAllDataTypes() &&
-          self.syncSetupService->CanSyncFeatureStart() &&
-          (!self.disabledBecauseOfSyncError));
+  return (!self.syncSetupService->IsSyncingAllDataTypes() ||
+          !self.syncSetupService->IsSyncRequested()) &&
+         !self.disabledBecauseOfSyncError;
 }
 
 // Only requires Sync-the-feature to not have any disable reasons and for the
@@ -427,9 +394,7 @@ NSString* const kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 }
 
 - (BOOL)shouldDisplaySignoutSection {
-  return self.syncSetupService->IsFirstSetupComplete() &&
-         (self.syncSetupService->CanSyncFeatureStart() ||
-          base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency));
+  return self.syncSetupService->IsFirstSetupComplete();
 }
 
 #pragma mark - ManageSyncSettingsTableViewControllerModelDelegate
@@ -656,8 +621,7 @@ NSString* const kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 // Updates the sync errors section. If |notifyConsumer| is YES, the consumer is
 // notified about model changes.
 - (void)updateSyncErrorsSection:(BOOL)notifyConsumer {
-  if (!base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency) ||
-      !self.syncSetupService->HasFinishedInitialSetup()) {
+  if (!self.syncSetupService->HasFinishedInitialSetup()) {
     return;
   }
 
