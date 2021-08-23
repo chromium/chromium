@@ -32,6 +32,7 @@
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_manager.h"
 #include "components/version_info/version_info.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 
 namespace ash {
 namespace {
@@ -50,9 +51,14 @@ const char* const kCopyUserDataPaths[] = {"First Run"};
 const char kBrowserDataMigrationForceSkip[] = "force-skip";
 const char kBrowserDataMigrationForceMigration[] = "force-migration";
 
-// Finch flag to enable/disable profile migration.
-const base::Feature kLacrosProfileMigrationSupport{
-    "LacrosProfileMigrationSupport", base::FEATURE_DISABLED_BY_DEFAULT};
+// Enable this to turn on profile migration for non-googlers. Currently the
+// feature is only limited to googlers only.
+const base::Feature kLacrosProfileMigrationForAnyUser{
+    "LacrosProfileMigrationForAnyUser", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Emergency switch to turn off profile migration via Finch.
+const base::Feature kLacrosProfileMigrationForceOff{
+    "LacrosProfileMigrationForceOff", base::FEATURE_DISABLED_BY_DEFAULT};
 
 void OnRestartRequestResponse(bool result) {
   if (!result) {
@@ -108,8 +114,16 @@ void BrowserDataMigrator::MaybeRestartToMigrate(
     return;
   }
 
-  // Unless the finch flag is enabled, skip migration.
-  if (!base::FeatureList::IsEnabled(kLacrosProfileMigrationSupport))
+  //  Currently we turn on profile migration only for Googlers.
+  //  `kLacrosProfileMigrationForAnyUser` can be enabled to allow testing with
+  //  non-googler accounts.
+  if (!gaia::IsGoogleInternalAccountEmail(account_id.GetUserEmail()) &&
+      !base::FeatureList::IsEnabled(kLacrosProfileMigrationForAnyUser))
+    return;
+
+  // Emergency switch to turn off profile migration. Turn this on via Finch in
+  // case profile migration needs to be turned off after launch.
+  if (base::FeatureList::IsEnabled(kLacrosProfileMigrationForceOff))
     return;
 
   const std::string user_id_hash = user_context.GetUserIDHash();
