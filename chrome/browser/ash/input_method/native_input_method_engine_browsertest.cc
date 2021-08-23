@@ -155,7 +155,8 @@ class NativeInputMethodEngineTest : public InProcessBrowserTest,
                               features::kAssistPersonalInfoEmail,
                               features::kAssistPersonalInfoName,
                               features::kEmojiSuggestAddition,
-                              features::kMultilingualTyping},
+                              features::kMultilingualTyping,
+                              features::kOnDeviceGrammarCheck},
         /*disabled_features=*/{});
   }
 
@@ -400,9 +401,6 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
   ui::IMEBridge::Initialize();
   ui::IMEBridge::Get()->SetInputContextHandler(&mock_ime_input_context_handler);
 
-  mock_ime_input_context_handler.AddGrammarFragments(
-      {ui::GrammarFragment(gfx::Range(0, 16), "test")});
-
   base::HistogramTester histogram_tester;
 
   signin::IdentityManager* identity_manager =
@@ -420,6 +418,8 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
   helper.GetTextInputClient()->InsertText(
       text,
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+  mock_ime_input_context_handler.AddGrammarFragments(
+      {ui::GrammarFragment(gfx::Range(0, 16), "test")});
   helper.GetTextInputClient()->SetEditableSelectionRange(gfx::Range(12, 12));
   helper.WaitForSurroundingTextChanged(text);
   histogram_tester.ExpectUniqueSample("InputMethod.Assistive.Match",

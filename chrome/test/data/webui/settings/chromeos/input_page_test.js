@@ -493,7 +493,10 @@ suite('input page', () => {
       inputPage.languageSettingsV2Update2Enabled_ = false;
       // However, we should still set loadTimeData as some other code may use
       // it (such as languages.js).
-      loadTimeData.overrideValues({enableLanguageSettingsV2Update2: false});
+      loadTimeData.overrideValues({
+        enableLanguageSettingsV2Update2: false,
+        onDeviceGrammarCheckEnabled: false,
+      });
 
       Polymer.dom.flush();
       // spell check is initially on
