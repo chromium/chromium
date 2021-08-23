@@ -43,6 +43,7 @@ class FeedbackPrivateAPI : public BrowserContextKeyedAPI {
       api::feedback_private::FeedbackFlow flow,
       bool from_assistant,
       bool include_bluetooth_logs,
+      bool show_questionnaire,
       bool from_chrome_labs_or_kaleidoscope);
 
   void RequestFeedbackForFlow(const std::string& description_template,
@@ -53,6 +54,7 @@ class FeedbackPrivateAPI : public BrowserContextKeyedAPI {
                               api::feedback_private::FeedbackFlow flow,
                               bool from_assistant = false,
                               bool include_bluetooth_logs = false,
+                              bool show_questionnaire = false,
                               bool from_chrome_labs_or_kaleidoscope = false);
 
   // BrowserContextKeyedAPI implementation.

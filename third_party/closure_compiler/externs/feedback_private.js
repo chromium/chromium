@@ -61,7 +61,8 @@ chrome.feedbackPrivate.FeedbackFlow = {
  *   sendTabTitles: (boolean|undefined),
  *   assistantDebugInfoAllowed: (boolean|undefined),
  *   fromAssistant: (boolean|undefined),
- *   includeBluetoothLogs: (boolean|undefined)
+ *   includeBluetoothLogs: (boolean|undefined),
+ *   showQuestionnaire: (boolean|undefined)
  * }}
  */
 chrome.feedbackPrivate.FeedbackInfo;

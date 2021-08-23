@@ -205,6 +205,7 @@ void LoginFeedback::EnsureFeedbackUI() {
         extensions::api::feedback_private::FeedbackFlow::FEEDBACK_FLOW_LOGIN,
         /*from_assistant=*/false,
         /*include_bluetooth_logs=*/false,
+        /*show_questionnaire=*/false,
         /*from_chrome_labs_or_kaleidoscope=*/false);
 
     FeedbackDialog::CreateOrShow(*info);

@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -42,6 +43,7 @@ namespace chrome {
 namespace {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Returns whether the user has an internal Google account (e.g. @google.com).
 bool IsGoogleInternalAccount(Profile* profile) {
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
@@ -108,10 +110,14 @@ void RequestFeedbackFlow(const GURL& page_url,
           : feedback_private::FeedbackFlow::FEEDBACK_FLOW_REGULAR;
 
   bool include_bluetooth_logs = false;
+  bool show_questionnaire = false;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (IsGoogleInternalAccount(profile)) {
     flow = feedback_private::FeedbackFlow::FEEDBACK_FLOW_GOOGLEINTERNAL;
     include_bluetooth_logs = IsFromUserInteraction(source);
+    show_questionnaire = base::FeatureList::IsEnabled(
+                             ash::features::kShowFeedbackReportQuestionnaire) &&
+                         IsFromUserInteraction(source);
   }
 #endif
 
@@ -119,7 +125,7 @@ void RequestFeedbackFlow(const GURL& page_url,
     auto info = api->CreateFeedbackInfo(
         description_template, description_placeholder_text, category_tag,
         extra_diagnostics, page_url, flow, source == kFeedbackSourceAssistant,
-        include_bluetooth_logs,
+        include_bluetooth_logs, show_questionnaire,
         source == kFeedbackSourceChromeLabs ||
             source == kFeedbackSourceKaleidoscope);
 
@@ -128,7 +134,7 @@ void RequestFeedbackFlow(const GURL& page_url,
     api->RequestFeedbackForFlow(
         description_template, description_placeholder_text, category_tag,
         extra_diagnostics, page_url, flow, source == kFeedbackSourceAssistant,
-        include_bluetooth_logs,
+        include_bluetooth_logs, show_questionnaire,
         source == kFeedbackSourceChromeLabs ||
             source == kFeedbackSourceKaleidoscope);
   }

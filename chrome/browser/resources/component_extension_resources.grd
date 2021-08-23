@@ -37,6 +37,7 @@
         <include name="IDR_FEEDBACK_ASSISTANT_LOGS_INFO_JS" file="feedback/js/assistant_logs_info.js" type="BINDATA" />
         <include name="IDR_FEEDBACK_FEEDBACK_UTIL_JS" file="feedback/js/feedback_util.js" type="BINDATA" />
         <include name="IDR_FEEDBACK_EVENT_HANDLER_JS" file="feedback/js/event_handler.js" flattenhtml="true" type="BINDATA" />
+        <include name="IDR_FEEDBACK_QUESTIONNAIRE_JS" file="feedback/js/questionnaire.js" type="BINDATA" />
         <include name="IDR_FEEDBACK_FEEDBACK_JS" file="feedback/js/feedback.js" preprocess="true" type="BINDATA" />
         <include name="IDR_FEEDBACK_SYSINFO_JS" file="feedback/js/sys_info.js" type="BINDATA" />
         <include name="IDR_FEEDBACK_TAKE_SCREENSHOT_JS" file="feedback/js/take_screenshot.js" type="BINDATA" />

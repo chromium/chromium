@@ -3118,6 +3118,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMicrophoneMuteSwitchDeviceName,
      flag_descriptions::kMicrophoneMuteSwitchDeviceDescription, kOsCrOS,
      SINGLE_VALUE_TYPE("enable-microphone-mute-switch-device")},
+    {"show-feedback-report-questionnaire",
+     flag_descriptions::kShowFeedbackReportQuestionnaireName,
+     flag_descriptions::kShowFeedbackReportQuestionnaireDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kShowFeedbackReportQuestionnaire)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_CHROMEOS)

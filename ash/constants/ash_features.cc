@@ -974,6 +974,11 @@ const base::Feature kShimlessRMAFlow{"ShimlessRMAFlow",
 const base::Feature kShowBluetoothDebugLogToggle{
     "ShowBluetoothDebugLogToggle", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Whether to show domain-related questionnaire in feedback report UI
+// (crbug/1241169).
+const base::Feature kShowFeedbackReportQuestionnaire{
+    "FeedbackReportQuestionnaire", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables the system tray to show date in sufficiently large screen.
 const base::Feature kShowDateInTrayButton{"ShowDateInTrayButton",
                                           base::FEATURE_DISABLED_BY_DEFAULT};

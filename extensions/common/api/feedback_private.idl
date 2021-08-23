@@ -96,6 +96,10 @@ namespace feedbackPrivate {
 
     // Whether or not to include bluetooth logs.
     boolean? includeBluetoothLogs;
+
+    // Whether to show questionnaire in the report description based on detected
+    // domain-related keywords (crbug/1241169).
+    boolean? showQuestionnaire;
   };
 
   // Status of the sending of a feedback report.

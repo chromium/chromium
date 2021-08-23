@@ -214,6 +214,7 @@ std::unique_ptr<FeedbackInfo> FeedbackPrivateAPI::CreateFeedbackInfo(
     api::feedback_private::FeedbackFlow flow,
     bool from_assistant,
     bool include_bluetooth_logs,
+    bool show_questionnaire,
     bool from_chrome_labs_or_kaleidoscope) {
   auto info = std::make_unique<FeedbackInfo>();
 
@@ -226,6 +227,7 @@ std::unique_ptr<FeedbackInfo> FeedbackPrivateAPI::CreateFeedbackInfo(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   info->from_assistant = std::make_unique<bool>(from_assistant);
   info->include_bluetooth_logs = std::make_unique<bool>(include_bluetooth_logs);
+  info->show_questionnaire = std::make_unique<bool>(show_questionnaire);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Any extra diagnostics information should be added to the sys info.
@@ -268,12 +270,14 @@ void FeedbackPrivateAPI::RequestFeedbackForFlow(
     api::feedback_private::FeedbackFlow flow,
     bool from_assistant,
     bool include_bluetooth_logs,
+    bool show_questionnaire,
     bool from_chrome_labs_or_kaleidoscope) {
   if (browser_context_ && EventRouter::Get(browser_context_)) {
     auto info = CreateFeedbackInfo(
         description_template, description_placeholder_text, category_tag,
         extra_diagnostics, page_url, flow, from_assistant,
-        include_bluetooth_logs, from_chrome_labs_or_kaleidoscope);
+        include_bluetooth_logs, show_questionnaire,
+        from_chrome_labs_or_kaleidoscope);
 
     auto args = feedback_private::OnFeedbackRequested::Create(*info);
 
