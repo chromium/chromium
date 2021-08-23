@@ -72,7 +72,7 @@ class MediaRouterMojoImpl : public MediaRouterBase, public mojom::MediaRouter {
                              base::TimeDelta timeout,
                              bool off_the_record) final;
   void TerminateRoute(const MediaRoute::Id& route_id) final;
-  void DetachRoute(const MediaRoute::Id& route_id) final;
+  void DetachRoute(MediaRoute::Id route_id) final;
   void SendRouteMessage(const MediaRoute::Id& route_id,
                         const std::string& message) final;
   void SendRouteBinaryMessage(const MediaRoute::Id& route_id,

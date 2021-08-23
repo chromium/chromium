@@ -51,7 +51,7 @@ class MediaRouterAndroid : public MediaRouterBase {
                              MediaRouteResponseCallback callback,
                              base::TimeDelta timeout,
                              bool incognito) override;
-  void DetachRoute(const MediaRoute::Id& route_id) override;
+  void DetachRoute(MediaRoute::Id route_id) override;
   void TerminateRoute(const MediaRoute::Id& route_id) override;
   void SendRouteMessage(const MediaRoute::Id& route_id,
                         const std::string& message) override;
