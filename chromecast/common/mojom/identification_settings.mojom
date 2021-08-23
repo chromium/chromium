@@ -134,3 +134,39 @@ interface IdentificationSettingsManager {
   // Updates the app's background mode.
   UpdateBackgroundMode(bool background_mode);
 };
+
+// Singular browser interface for modifying URL requests that originate in the
+// browser process.
+interface BrowserIdentificationSettingsManager {
+  // Creates a session and sets the list of possible substitutable parameters.
+  // This may only be called once per session; once called, the list of
+  // parameters is fixed. Values associated with each substitutable parameter
+  // can later be updated with a call to `UpdateSubstitutableParamValues`.
+  // Note: This moethod needs to be called before any navigation request is
+  // made from a session.
+  CreateSessionWithSubstitutions(string session_id,
+                                 array<SubstitutableParameter> params);
+
+  // Sets the ClientAuthDelegate.
+  SetClientAuthForSession(
+      string session_id,
+      pending_remote<ClientAuthDelegate> client_auth_delegate);
+
+  // Updates app specific settings.
+  UpdateAppSettingsForSession(string session_id, AppSettings app_settings);
+
+  // Updates device specific settings.
+  UpdateDeviceSettingsForSession(string session_id,
+                                 DeviceSettings device_settings);
+
+  // Updates user tokens.
+  UpdateSubstitutableParamValuesForSession(
+      string session_id, array<IndexValuePair> updated_values);
+
+  // Updates the app's background mode.
+  UpdateBackgroundModeForSession(string session_id, bool background_mode);
+
+  // This must be called when the session has ended. This deletes the associated
+  // URL throttle for the session.
+  OnSessionDestroyed(string session_id);
+};

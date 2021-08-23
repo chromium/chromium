@@ -66,7 +66,6 @@ void CastServiceSimple::StartInternal() {
 
   CastWebView::CreateParams create_params;
   create_params.delegate = weak_factory_.GetWeakPtr();
-  create_params.web_contents_delegate = weak_factory_.GetWeakPtr();
   create_params.window_delegate = weak_factory_.GetWeakPtr();
 
   ::chromecast::mojom::CastWebViewParamsPtr params =

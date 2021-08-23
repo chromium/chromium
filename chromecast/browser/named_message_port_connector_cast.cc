@@ -26,7 +26,7 @@ NamedMessagePortConnectorCast::NamedMessagePortConnectorCast(
     : cast_web_contents_(cast_web_contents) {
   DCHECK(cast_web_contents_);
 
-  CastWebContents::Observer::Observe(cast_web_contents_);
+  CastWebContentsObserver::Observe(cast_web_contents_);
 
   // Register the port connection JS script for early injection.
   std::string bindings_script_string =
@@ -40,7 +40,7 @@ NamedMessagePortConnectorCast::NamedMessagePortConnectorCast(
 }
 
 NamedMessagePortConnectorCast::~NamedMessagePortConnectorCast() {
-  CastWebContents::Observer::Observe(nullptr);
+  CastWebContentsObserver::Observe(nullptr);
 }
 
 void NamedMessagePortConnectorCast::OnPageLoaded() {
@@ -61,7 +61,7 @@ void NamedMessagePortConnectorCast::PageStateChanged(PageState page_state) {
   switch (page_state) {
     case PageState::DESTROYED:
     case PageState::ERROR:
-      CastWebContents::Observer::Observe(nullptr);
+      CastWebContentsObserver::Observe(nullptr);
       cast_web_contents_ = nullptr;
       break;
     case PageState::LOADED:

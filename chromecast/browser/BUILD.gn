@@ -81,6 +81,8 @@ cast_source_set("named_message_port_connector_cast") {
     "named_message_port_connector_cast.h",
   ]
 
+  public_deps = [ ":client" ]
+
   deps = [
     "//base",
     "//chromecast/browser:public",
@@ -190,12 +192,14 @@ cast_source_set("browser_base") {
   ]
 
   public_deps = [
+    ":client",
     ":feature_list",
     ":prefs",
     ":public",
     "//chromecast/browser/metrics",
     "//chromecast/browser/mojom",
     "//chromecast/metrics",
+    "//chromecast/mojo",
     "//components/media_control/mojom",
   ]
 
@@ -579,6 +583,7 @@ cast_source_set("public") {
   # Need to expose this so that internal public_configs are propagated.
   public_deps = [
     ":base_types",
+    ":client",
     "//chromecast/browser/mojom",
     "//chromecast/common/mojom",
     "//content/public/browser",
@@ -592,6 +597,21 @@ cast_source_set("public") {
     "//chromecast/ui/mojom",
     "//content/public/common",
     "//ui/events",
+    "//url",
+  ]
+}
+
+cast_source_set("client") {
+  public = [ "cast_web_contents_observer.h" ]
+  sources = [ "cast_web_contents_observer.cc" ]
+
+  public_deps = [
+    ":base_types",
+    "//chromecast/browser/mojom",
+    "//chromecast/common/mojom",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//ui/gfx/geometry",
     "//url",
   ]
 }
@@ -643,6 +663,7 @@ cast_source_set("browsertests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   deps = [
+    ":client",
     ":test_interfaces",
     ":test_support",
     "//base",
@@ -651,6 +672,7 @@ cast_source_set("browsertests") {
     "//chromecast/base:chromecast_switches",
     "//chromecast/base/metrics",
     "//chromecast/graphics:graphics",
+    "//chromecast/mojo",
     "//components/keyed_service/content",
     "//components/prefs",
     "//content/public/browser",

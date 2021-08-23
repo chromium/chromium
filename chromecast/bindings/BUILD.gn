@@ -86,6 +86,7 @@ if (is_linux || is_chromeos || is_android) {
       "//chromecast/base:chromecast_switches",
       "//chromecast/bindings:bindings_manager_cast",
       "//chromecast/browser:browser",
+      "//chromecast/browser:client",
       "//chromecast/browser:public",
       "//components/cast/message_port:test_message_port_receiver",
       "//components/cast/named_message_port_connector:resources",

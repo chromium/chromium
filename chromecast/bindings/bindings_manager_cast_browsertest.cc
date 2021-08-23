@@ -23,6 +23,7 @@
 #include "chromecast/browser/cast_browser_context.h"
 #include "chromecast/browser/cast_browser_process.h"
 #include "chromecast/browser/cast_web_contents_impl.h"
+#include "chromecast/browser/cast_web_contents_observer.h"
 #include "components/cast/message_port/test_message_port_receiver.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -63,7 +64,7 @@ base::FilePath GetTestDataFilePath(const std::string& name) {
   return file_path.Append(GetTestDataPath()).AppendASCII(name);
 }
 
-class TitleChangeObserver : public CastWebContents::Observer {
+class TitleChangeObserver : public CastWebContentsObserver {
  public:
   TitleChangeObserver() = default;
   ~TitleChangeObserver() override = default;
@@ -81,7 +82,7 @@ class TitleChangeObserver : public CastWebContents::Observer {
     }
   }
 
-  // CastWebContents::Observer implementation:
+  // CastWebContentsObserver implementation:
   void UpdateTitle(const std::string& title) override {
     // Resumes execution of RunUntilTitleEquals() if |title| matches
     // expectations.
@@ -112,21 +113,6 @@ class MockWebContentsDelegate : public content::WebContentsDelegate {
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockWebContentsDelegate);
-};
-
-class MockCastWebContentsDelegate
-    : public base::SupportsWeakPtr<MockCastWebContentsDelegate>,
-      public CastWebContents::Delegate {
- public:
-  MockCastWebContentsDelegate() {}
-  ~MockCastWebContentsDelegate() override = default;
-
-  MOCK_METHOD2(InnerContentsCreated,
-               void(CastWebContents* inner_contents,
-                    CastWebContents* outer_contents));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockCastWebContentsDelegate);
 };
 
 }  // namespace
@@ -164,8 +150,7 @@ class BindingsManagerCastBrowserTest : public content::BrowserTestBase {
     params->is_root_window = true;
 
     cast_web_contents_ = std::make_unique<CastWebContentsImpl>(
-        web_contents_.get(), mock_cast_wc_delegate_.AsWeakPtr(),
-        std::move(params));
+        web_contents_.get(), std::move(params));
     title_change_observer_.Observe(cast_web_contents_.get());
     bindings_manager_ = std::make_unique<bindings::BindingsManagerCast>();
     cast_web_contents_->ConnectToBindingsService(
@@ -183,7 +168,6 @@ class BindingsManagerCastBrowserTest : public content::BrowserTestBase {
     embedded_test_server()->StartAcceptingConnections();
   }
 
-  NiceMock<MockCastWebContentsDelegate> mock_cast_wc_delegate_;
   NiceMock<MockWebContentsDelegate> mock_wc_delegate_;
   TitleChangeObserver title_change_observer_;
   std::unique_ptr<content::WebContents> web_contents_;

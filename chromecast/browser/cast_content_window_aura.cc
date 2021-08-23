@@ -99,7 +99,7 @@ CastContentWindowAura::CastContentWindowAura(base::WeakPtr<Delegate> delegate,
 
 CastContentWindowAura::~CastContentWindowAura() {
   content::WebContentsObserver::Observe(nullptr);
-  CastWebContents::Observer::Observe(nullptr);
+  CastWebContentsObserver::Observe(nullptr);
   if (window_manager_) {
     window_manager_->RemoveGestureHandler(gesture_dispatcher_.get());
   }
@@ -113,7 +113,7 @@ void CastContentWindowAura::CreateWindow(
     VisibilityPriority visibility_priority) {
   DCHECK(window_manager_) << "A CastWindowManager must be provided before "
                           << "creating a window for WebContents.";
-  CastWebContents::Observer::Observe(cast_web_contents());
+  CastWebContentsObserver::Observe(cast_web_contents());
   content::WebContentsObserver::Observe(WebContents());
   window_ = WebContents()->GetNativeView();
   if (!window_->HasObserver(this)) {
@@ -163,12 +163,6 @@ mojom::MediaControlUi* CastContentWindowAura::media_controls() {
   return media_controls_.get();
 }
 
-void CastContentWindowAura::MainFrameResized(const gfx::Rect& bounds) {
-  if (media_controls_) {
-    media_controls_->SetBounds(bounds);
-  }
-}
-
 void CastContentWindowAura::RequestVisibility(
     VisibilityPriority visibility_priority) {}
 
@@ -209,6 +203,14 @@ void CastContentWindowAura::DidStartNavigation(
   }
   resize_window_when_navigation_starts_ = false;
   SetFullWindowBounds();
+}
+
+void CastContentWindowAura::MainFrameWasResized(bool width_changed) {
+  if (!web_contents())
+    return;
+  if (media_controls_) {
+    media_controls_->SetBounds(web_contents()->GetContainerBounds());
+  }
 }
 
 void CastContentWindowAura::SetFullWindowBounds() {

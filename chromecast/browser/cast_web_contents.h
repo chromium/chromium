@@ -11,26 +11,23 @@
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
 #include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/process/process.h"
 #include "chromecast/bindings/public/mojom/api_bindings.mojom.h"
+#include "chromecast/browser/cast_web_contents_observer.h"
 #include "chromecast/browser/mojom/cast_web_contents.mojom.h"
 #include "chromecast/browser/web_types.h"
 #include "chromecast/common/mojom/feature_manager.mojom.h"
 #include "content/public/common/media_playback_renderer_type.mojom.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
-#include "services/service_manager/public/cpp/binder_registry.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/messaging/web_message_port.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
-
-namespace blink {
-class AssociatedInterfaceProvider;
-}  // namespace blink
 
 namespace content {
 class NavigationHandle;
@@ -111,23 +108,9 @@ struct RendererFeature {
 // an Observer event, it should post a task to destroy CastWebContents.
 class CastWebContents : public mojom::CastWebContents {
  public:
-  class Delegate {
-   public:
-    // Notify that an inner WebContents was created. |inner_contents| is created
-    // in a default-initialized state with no delegate, and can be safely
-    // initialized by the delegate.
-    virtual void InnerContentsCreated(CastWebContents* inner_contents,
-                                      CastWebContents* outer_contents) {}
-
-   protected:
-    virtual ~Delegate() {}
-  };
-
-  // Observers must use Observer::Observe(cast_web_contents | nullptr) to
-  // add/remove themselves from the observer list. The Observer must not destroy
-  // CastWebContents during any of these events, otherwise other observers might
-  // try to use a freed pointer to |cast_web_contents|.
-  class Observer : public mojom::CastWebContentsObserver {
+  // Synchronous in-process observer for CastWebContents. Observers must not
+  // destroy CastWebContents in any of the methods below.
+  class Observer : public base::CheckedObserver {
    public:
     Observer();
 
@@ -136,71 +119,21 @@ class CastWebContents : public mojom::CastWebContents {
     // observed.
     void Observe(CastWebContents* cast_web_contents);
 
-    // =========================================================================
-    // Observer Methods
-    // =========================================================================
-
-    // Advertises page state for the CastWebContents.
-    void PageStateChanged(PageState page_state) override {}
-
-    // Called when the page has stopped. e.g.: A 404 occurred when loading the
-    // page or if the render process for the main frame crashes. |error_code|
-    // will return a net::Error describing the failure, or net::OK if the page
-    // closed intentionally.
-    //
-    // After this method, the page state will be one of the following:
-    // CLOSED: Page was closed as expected and the WebContents exists. The page
-    //     should generally not be reloaded, since the page closure was
-    //     triggered intentionally.
-    // ERROR: Page is in an error state. It should be reloaded or deleted.
-    // DESTROYED: Page was closed due to deletion of WebContents. The
-    //     CastWebContents instance is no longer usable and should be deleted.
-    void PageStopped(PageState page_state, int error_code) override {}
-
-    // A new RenderFrame was created for the WebContents. |frame_interfaces| are
-    // provided by the new frame.
-    virtual void RenderFrameCreated(
-        int render_process_id,
-        int render_frame_id,
-        service_manager::InterfaceProvider* frame_interfaces,
-        blink::AssociatedInterfaceProvider* frame_associated_interfaces) {}
-
     // Called when the navigation is ready to be committed in the WebContents'
     // main frame.
     virtual void MainFrameReadyToCommitNavigation(
         content::NavigationHandle* navigation_handle) {}
 
-    // A navigation has finished in the WebContents' main frame.
-    void MainFrameFinishedNavigation() override {}
-
-    // These methods are calls forwarded from WebContentsObserver.
-    void UpdateTitle(const std::string& title) override {}
-    void UpdateFaviconURL(const GURL& url) override {}
-    void DidFirstVisuallyNonEmptyPaint() override {}
-    virtual void MainFrameResized(const gfx::Rect& bounds) {}
-
-    // Notifies that a resource for the main frame failed to load.
-    virtual void ResourceLoadFailed(CastWebContents* cast_web_contents) {}
-
-    // Propagates the process information via observer, in particular to
-    // the underlying OnRendererProcessStarted() method.
-    void OnRenderProcessReady(int pid) override {}
-
-    // Notify media playback state changes for the underlying WebContents.
-    void MediaPlaybackChanged(bool media_playing) override {}
-
-    // Removes |this| from the ObserverList in the implementation of
-    // |cast_web_contents_|. This is only invoked by CastWebContents and is used
-    // to ensure that once the observed CastWebContents object is destructed the
-    // CastWebContents::Observer does not invoke any additional function calls
-    // on it.
+    // Sets |cast_web_contents_| to |nullptr| but does not remove the Observer
+    // from the ObserverList. Called for each Observer during CastWebContents
+    // destruction; we don't use Observe(nullptr) since it would mutate the
+    // ObserverList during iteration.
     void ResetCastWebContents();
 
    protected:
     ~Observer() override;
 
     CastWebContents* cast_web_contents_;
-    mojo::Receiver<mojom::CastWebContentsObserver> receiver_{this};
   };
 
   static std::vector<CastWebContents*>& GetAll();
@@ -225,41 +158,34 @@ class CastWebContents : public mojom::CastWebContents {
   virtual content::WebContents* web_contents() const = 0;
   virtual PageState page_state() const = 0;
 
-  // Returns the PID of the main frame process if valid.
-  virtual absl::optional<pid_t> GetMainFrameRenderProcessPid() const = 0;
-
   // mojom::CastWebContents implementation:
+  void SetAppProperties(const std::string& app_id,
+                        const std::string& session_id,
+                        bool is_audio_app,
+                        const GURL& app_web_url) override = 0;
+  void AddRendererFeatures(base::Value features) override = 0;
+  void SetInterfacesForRenderer(mojo::PendingRemote<mojom::RemoteInterfaces>
+                                    remote_interfaces) override = 0;
   void LoadUrl(const GURL& url) override = 0;
   void ClosePage() override = 0;
   void SetWebVisibilityAndPaint(bool visible) override = 0;
   void BlockMediaLoading(bool blocked) override = 0;
   void BlockMediaStarting(bool blocked) override = 0;
   void EnableBackgroundVideoPlayback(bool enabled) override = 0;
+  void ConnectToBindingsService(
+      mojo::PendingRemote<mojom::ApiBindings> api_bindings_remote) override = 0;
   void SetEnabledForRemoteDebugging(bool enabled) override = 0;
   void AddObserver(
       mojo::PendingRemote<mojom::CastWebContentsObserver> observer) override;
+  void GetMainFramePid(GetMainFramePidCallback cb) override = 0;
 
   // ===========================================================================
   // Initialization and Setup
   // ===========================================================================
 
-  // Add a set of features for all renderers in the WebContents. Features are
-  // configured when `CastWebContents::RenderFrameCreated` is invoked.
-  virtual void AddRendererFeatures(std::vector<RendererFeature> features) = 0;
-
   // TODO(b/149041392): This can be an initialization parameter.
   virtual void AllowWebAndMojoWebUiBindings() = 0;
   virtual void ClearRenderWidgetHostView() = 0;
-
-  // Associates transparent app properties to a given session ID. This data is
-  // used elsewhere in the browser to gate output stream selection. We expose
-  // this API on CastWebContents for the sake of convenience.
-  virtual void SetAppProperties(const std::string& session_id,
-                                bool is_audio_app) = 0;
-
-  // TODO(b/191718807) need to pass App's page permissions here.
-  virtual void SetCastPermissionUserData(const std::string& app_id,
-                                         const GURL& app_web_url) = 0;
 
   // ===========================================================================
   // Page Lifetime
@@ -313,21 +239,9 @@ class CastWebContents : public mojom::CastWebContents {
       const std::u16string& javascript,
       base::OnceCallback<void(base::Value)> callback) = 0;
 
-  // Connects and fetches JS API bindings from |api_bindings_remote|.
-  // This method will fetch bindings scripts from |api_bindings_remote|
-  // immediately after the invocation, all of the bindings should be
-  // initialized before this point.
-  virtual void ConnectToBindingsService(
-      mojo::PendingRemote<mojom::ApiBindings> api_bindings_remote) = 0;
-
   // ===========================================================================
   // Utility Methods
   // ===========================================================================
-
-  // Used to expose CastWebContents's |binder_registry_| to Delegate.
-  // Delegate should register its mojo interface binders via this function
-  // when it is ready.
-  virtual service_manager::BinderRegistry* binder_registry() = 0;
 
   // Asks the CastWebContents to bind an interface receiver using either its
   // registry or any registered InterfaceProvider.
@@ -348,24 +262,21 @@ class CastWebContents : public mojom::CastWebContents {
   // Returns true if mixer audio is enabled.
   virtual bool is_mixer_audio_enabled() = 0;
 
-  // Returns whether or not CastWebContents binder_registry() is valid for
-  // binding interfaces.
-  virtual bool can_bind_interfaces() = 0;
-
   // Binds a receiver for remote control of CastWebContents.
   void BindReceiver(mojo::PendingReceiver<mojom::CastWebContents> receiver);
 
  protected:
-  mojo::Receiver<mojom::CastWebContents> receiver_{this};
+  mojo::ReceiverSet<mojom::CastWebContents> receivers_;
   mojo::RemoteSet<mojom::CastWebContentsObserver> observers_;
+  base::ObserverList<Observer> sync_observers_;
 
  private:
   friend class Observer;
 
   // These functions should only be invoked by CastWebContents::Observer in a
   // valid sequence, enforced via SequenceChecker.
-  virtual void AddObserver(Observer* observer) = 0;
-  virtual void RemoveObserver(Observer* observer) = 0;
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   DISALLOW_COPY_AND_ASSIGN(CastWebContents);
 };

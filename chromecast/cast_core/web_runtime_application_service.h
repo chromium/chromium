@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
+#include "chromecast/browser/cast_web_contents_observer.h"
 #include "chromecast/browser/cast_web_view.h"
 #include "chromecast/cast_core/grpc_server.h"
 #include "chromecast/cast_core/runtime_application_service.h"
@@ -26,7 +27,7 @@ class WebRuntimeApplicationService final
       public RuntimeApplicationServiceDelegate,
       public RuntimeMessagePortApplicationServiceDelegate,
       public CastWebView::Delegate,
-      public CastWebContents::Observer {
+      public CastWebContentsObserver {
  public:
   WebRuntimeApplicationService(
       CastWebService* web_service,
@@ -54,12 +55,12 @@ class WebRuntimeApplicationService final
                       GestureHandledCallback handled_callback) override;
   void OnVisibilityChange(VisibilityType visibility_type) override;
 
-  // CastWebContents::Observer implementation:
-  void RenderFrameCreated(
-      int render_process_id,
-      int render_frame_id,
-      service_manager::InterfaceProvider* frame_interfaces,
-      blink::AssociatedInterfaceProvider* frame_associated_interfaces) override;
+  // CastWebContentsObserver implementation:
+  void RenderFrameCreated(int render_process_id,
+                          int render_frame_id,
+                          mojo::PendingAssociatedRemote<
+                              chromecast::mojom::IdentificationSettingsManager>
+                              settings_manager) override;
 
  private:
   void FinishLaunch(const std::string& core_application_service_address);

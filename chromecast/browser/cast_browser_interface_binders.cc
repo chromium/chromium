@@ -33,11 +33,10 @@ void BindApplicationMediaCapabilities(
   if (!web_contents)
     return;
   auto* cast_web_contents = CastWebContents::FromWebContents(web_contents);
-  if (!cast_web_contents || !cast_web_contents->can_bind_interfaces())
+  if (!cast_web_contents)
     return;
-  auto interface_pipe = receiver.PassPipe();
-  cast_web_contents->binder_registry()->TryBindInterface(
-      mojom::ApplicationMediaCapabilities::Name_, &interface_pipe);
+  mojo::GenericPendingReceiver generic_receiver(std::move(receiver));
+  cast_web_contents->TryBindReceiver(generic_receiver);
 }
 
 void BindMediaRemotingRemotee(
@@ -47,11 +46,10 @@ void BindMediaRemotingRemotee(
   if (!web_contents)
     return;
   auto* cast_web_contents = CastWebContents::FromWebContents(web_contents);
-  if (!cast_web_contents || !cast_web_contents->can_bind_interfaces())
+  if (!cast_web_contents)
     return;
-  auto interface_pipe = receiver.PassPipe();
-  cast_web_contents->binder_registry()->TryBindInterface(
-      ::media::mojom::Remotee::Name_, &interface_pipe);
+  mojo::GenericPendingReceiver generic_receiver(std::move(receiver));
+  cast_web_contents->TryBindReceiver(generic_receiver);
 }
 
 // Some Cast internals still dynamically set up interface binders after
@@ -76,11 +74,6 @@ bool HandleGenericReceiver(content::RenderFrameHost* frame_host,
   auto* cast_web_contents = CastWebContents::FromWebContents(web_contents);
   if (!cast_web_contents) {
     LOG(ERROR) << "Could not find target CastWebContents for receiver.";
-    return false;
-  }
-
-  if (!cast_web_contents->can_bind_interfaces()) {
-    LOG(ERROR) << "Target CastWebContents cannot bind receivers.";
     return false;
   }
 

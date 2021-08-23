@@ -48,7 +48,7 @@ class FlutterSemanticsNode;
 // OnAccessibilityEventRequest proto into a tree update Chrome's accessibility
 // API can work with.
 class AXTreeSourceFlutter : public ui::AXTreeSource<FlutterSemanticsNode*>,
-                            public CastWebContents::Observer,
+                            public CastWebContentsObserver,
                             public ui::AXActionHandler {
  public:
   class Delegate {
@@ -92,7 +92,7 @@ class AXTreeSourceFlutter : public ui::AXTreeSource<FlutterSemanticsNode*>,
 
   void UpdateTree();
 
-  // CastWebContents::Observer
+  // CastWebContentsObserver
   void PageStopped(PageState page_state, int error_code) override;
 
   void SetAccessibilityEnabled(bool value);

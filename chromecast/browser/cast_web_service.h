@@ -19,6 +19,7 @@
 #include "chromecast/browser/cast_web_view.h"
 #include "chromecast/browser/mojom/cast_web_service.mojom.h"
 #include "chromecast/common/identification_settings_manager.h"
+#include "chromecast/common/mojom/identification_settings.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace base {
@@ -41,7 +42,8 @@ class LRURendererCache;
 // they go out of scope, allowing us to keep the pages alive for extra time if
 // needed. CastWebService allows us to synchronously destroy all pages when the
 // system is shutting down, preventing use of freed browser resources.
-class CastWebService : public mojom::CastWebService {
+class CastWebService : public mojom::CastWebService,
+                       public mojom::BrowserIdentificationSettingsManager {
  public:
   CastWebService(content::BrowserContext* browser_context,
                  CastWebViewFactory* web_view_factory,
@@ -80,6 +82,8 @@ class CastWebService : public mojom::CastWebService {
       mojo::PendingReceiver<mojom::CastContentWindow> window) override;
   void RegisterWebUiClient(mojo::PendingRemote<mojom::WebUiClient> client,
                            const std::vector<std::string>& hosts) override;
+
+  // mojom::BrowserIdentificationSettingsManager implementation:
   void CreateSessionWithSubstitutions(
       const std::string& session_id,
       std::vector<mojom::SubstitutableParameterPtr> params) override;

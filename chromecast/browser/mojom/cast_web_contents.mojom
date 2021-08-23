@@ -4,6 +4,10 @@
 
 module chromecast.mojom;
 
+import "chromecast/bindings/public/mojom/api_bindings.mojom";
+import "chromecast/common/mojom/identification_settings.mojom";
+import "chromecast/mojo/mojom/remote_interfaces.mojom";
+import "mojo/public/mojom/base/values.mojom";
 import "url/mojom/url.mojom";
 
 // Page state for the main frame.
@@ -35,6 +39,14 @@ interface CastWebContentsObserver {
   //     CastWebContents instance is no longer usable and should be deleted.
   PageStopped(PageState state, int32 error_code);
 
+  // A new RenderFrame was created for the WebContents. |settings_manager| is
+  // provided by the frame.
+  RenderFrameCreated(
+      int32 render_process_id,
+      int32 render_frame_id,
+      pending_associated_remote<chromecast.mojom.IdentificationSettingsManager>
+          settings_manager);
+
   // A navigation has finished in the WebContents' main frame.
   MainFrameFinishedNavigation();
 
@@ -47,6 +59,9 @@ interface CastWebContentsObserver {
   // Forwarded from WebContentsObserver.
   DidFirstVisuallyNonEmptyPaint();
 
+  // Notifies that a resource for the main frame failed to load.
+  ResourceLoadFailed();
+
   // Propagates the process information via observer, in particular to
   // the underlying OnRendererProcessStarted() method.
   OnRenderProcessReady(int32 pid);
@@ -54,12 +69,36 @@ interface CastWebContentsObserver {
   // Notify media playback state changes for the underlying WebContents. Media
   // events in sub-frames will also generate this notification event.
   MediaPlaybackChanged(bool media_playing);
+
+  // Notify that a new WebContents was created in a child frame. This only
+  // happens for pages that embed a <webview> (such as certain WebUI pages).
+  InnerContentsCreated(pending_remote<CastWebContents> web_contents);
 };
 
 // Wraps a content::WebContents hosted in the Cast Web Service. The lifetime
 // of the WebContents is constrained by the lifetime of the mojo::Remote on the
 // client side.
 interface CastWebContents {
+  // ===========================================================================
+  // Initialization and Setup
+  // ===========================================================================
+
+  // Associates transparent app properties to a given session ID. This data is
+  // used elsewhere in the browser to gate output stream selection. We expose
+  // this API on CastWebContents for the sake of convenience.
+  SetAppProperties(string app_id,
+                   string session_id,
+                   bool is_audio_app,
+                   url.mojom.Url app_web_url);
+
+  // Dictionary of renderer feature configurations.
+  AddRendererFeatures(mojo_base.mojom.Value features);
+
+  // These interfaces will be exposed to RenderFrames. The interfaces are only
+  // used as backends for built-in Cast V8 bindings. Sensitive APIs should
+  // *never* be exposed through |remote_interfaces|.
+  SetInterfacesForRenderer(pending_remote<RemoteInterfaces> remote_interfaces);
+
   // ===========================================================================
   // Page Lifetime
   // ===========================================================================
@@ -100,6 +139,17 @@ interface CastWebContents {
   EnableBackgroundVideoPlayback(bool enabled);
 
   // ===========================================================================
+  // Page Communication
+  // ===========================================================================
+
+  // Connects and fetches JS API bindings from |api_bindings_remote|.
+  // This method will fetch bindings scripts from |api_bindings_remote|
+  // immediately after the invocation, all of the bindings should be
+  // initialized before this point.
+  ConnectToBindingsService(
+      pending_remote<chromecast.mojom.ApiBindings> api_bindings_remote);
+
+  // ===========================================================================
   // Utility Methods
   // ===========================================================================
 
@@ -109,4 +159,11 @@ interface CastWebContents {
   // Enable or disable devtools remote debugging for this WebContents and any
   // inner WebContents that are spawned from it.
   SetEnabledForRemoteDebugging(bool enabled);
+
+  // ===========================================================================
+  // Getters
+  // ===========================================================================
+
+  // PID for main frame render process.
+  GetMainFramePid() => (int32 pid);
 };

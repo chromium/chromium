@@ -27,8 +27,7 @@ class CastWebService;
 // A simplified interface for loading and displaying WebContents in cast_shell.
 class CastWebView {
  public:
-  class Delegate : public CastWebContents::Delegate,
-                   public CastContentWindow::Delegate {};
+  class Delegate : public CastContentWindow::Delegate {};
 
   // When the unique_ptr is reset, the CastWebView may not necessarily be
   // destroyed. In some cases ownership will be passed to the CastWebService,
@@ -42,9 +41,6 @@ class CastWebView {
   struct CreateParams {
     // CastWebView delegate. Must be non-null.
     base::WeakPtr<Delegate> delegate = nullptr;
-
-    // CastWebContents delegate. This may be null.
-    base::WeakPtr<CastWebContents::Delegate> web_contents_delegate = nullptr;
 
     // CastContentWindow delegate. This may be null.
     base::WeakPtr<CastContentWindow::Delegate> window_delegate = nullptr;

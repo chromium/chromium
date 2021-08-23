@@ -94,9 +94,9 @@ WebviewController::WebviewController(content::BrowserContext* browser_context,
   mojom::CastWebViewParamsPtr params = mojom::CastWebViewParams::New();
   params->is_root_window = true;
   params->enabled_for_dev = enabled_for_dev;
-  cast_web_contents_ = std::make_unique<CastWebContentsImpl>(
-      contents_.get(), weak_ptr_factory_.GetWeakPtr(), std::move(params));
-  CastWebContents::Observer::Observe(cast_web_contents_.get());
+  cast_web_contents_ =
+      std::make_unique<CastWebContentsImpl>(contents_.get(), std::move(params));
+  CastWebContentsObserver::Observe(cast_web_contents_.get());
 
   content::WebContentsObserver::Observe(contents_.get());
 
@@ -115,7 +115,7 @@ WebviewController::WebviewController(content::BrowserContext* browser_context,
 }
 
 WebviewController::~WebviewController() {
-  CastWebContents::Observer::Observe(nullptr);
+  CastWebContentsObserver::Observe(nullptr);
 }
 
 std::unique_ptr<content::NavigationThrottle>
@@ -330,7 +330,7 @@ void WebviewController::PageStopped(PageState page_state, int error_code) {
   }
 }
 
-void WebviewController::ResourceLoadFailed(CastWebContents* cast_web_contents) {
+void WebviewController::ResourceLoadFailed() {
   if (client_) {
     std::unique_ptr<webview::WebviewResponse> response =
         std::make_unique<webview::WebviewResponse>();

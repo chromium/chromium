@@ -12,6 +12,7 @@ include_rules = [
   "+chromecast/internal/shell/browser",
   "+chromecast/media",
   "+chromecast/metrics",
+  "+chromecast/mojo",
   "+chromecast/net",
   "+chromecast/service",
   "+chromecast/ui",

@@ -141,6 +141,11 @@ struct CastWebViewParams {
 
   // Window's gesture priority for when it is visible.
   GesturePriority gesture_priority = GesturePriority.NONE;
+
+  // Enables mojo and WebUi bindings permission for the page. Note that this
+  // setting alone does not guarantee the bindings will be added, just that
+  // they have the appropriate permissions.
+  bool enable_webui_bindings_permission = false;
 };
 
 // Service interface for creating/managing web pages in the Cast Browser. The
@@ -158,35 +163,5 @@ interface CastWebService {
   // for details on how Web UIs are used in the Cast Browser.
   RegisterWebUiClient(pending_remote<WebUiClient> client,
                       array<string> hosts);
-
-  // Creates a session and sets the list of possible substitutable parameters.
-  // This may only be called once per session; once called, the list of
-  // parameters is fixed. Values associated with each substitutable parameter
-  // can later be updated with a call to `UpdateSubstitutableParamValues`.
-  // Note: This moethod needs to be called before any navigation request is
-  // made from a session.
-  CreateSessionWithSubstitutions(string session_id,
-                                 array<SubstitutableParameter> params);
-
-  // Sets the ClientAuthDelegate.
-  SetClientAuthForSession(string session_id,
-                          pending_remote<ClientAuthDelegate> client_auth_delegate);
-
-  // Updates app specific settings.
-  UpdateAppSettingsForSession(string session_id, AppSettings app_settings);
-
-  // Updates device specific settings.
-  UpdateDeviceSettingsForSession(string session_id,
-                                 DeviceSettings device_settings);
-
-  // Updates user tokens.
-  UpdateSubstitutableParamValuesForSession(string session_id,
-                                           array<IndexValuePair> updated_values);
-
-  // Updates the app's background mode.
-  UpdateBackgroundModeForSession(string session_id, bool background_mode);
-
-  // Called when the session has ended.
-  OnSessionDestroyed(string session_id);
 };
 

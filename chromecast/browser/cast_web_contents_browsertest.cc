@@ -28,8 +28,10 @@
 #include "chromecast/browser/cast_browser_context.h"
 #include "chromecast/browser/cast_browser_process.h"
 #include "chromecast/browser/cast_web_contents_impl.h"
+#include "chromecast/browser/cast_web_contents_observer.h"
 #include "chromecast/browser/mojom/cast_web_service.mojom.h"
 #include "chromecast/browser/test_interfaces.test-mojom.h"
+#include "chromecast/mojo/interface_bundle.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -99,35 +101,20 @@ std::unique_ptr<net::test_server::HttpResponse> DefaultHandler(
 // =============================================================================
 // Mocks
 // =============================================================================
-class MockCastWebContentsDelegate
-    : public base::SupportsWeakPtr<MockCastWebContentsDelegate>,
-      public CastWebContents::Delegate {
- public:
-  MockCastWebContentsDelegate() {}
-  ~MockCastWebContentsDelegate() override = default;
-
-  MOCK_METHOD2(InnerContentsCreated,
-               void(CastWebContents* inner_contents,
-                    CastWebContents* outer_contents));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockCastWebContentsDelegate);
-};
-
-class MockCastWebContentsObserver : public CastWebContents::Observer {
+class MockCastWebContentsObserver : public CastWebContentsObserver {
  public:
   MockCastWebContentsObserver() {}
   ~MockCastWebContentsObserver() override = default;
 
   MOCK_METHOD1(PageStateChanged, void(PageState page_state));
   MOCK_METHOD2(PageStopped, void(PageState page_state, int error_code));
-  MOCK_METHOD4(
-      RenderFrameCreated,
-      void(int render_process_id,
-           int render_frame_id,
-           service_manager::InterfaceProvider* frame_interfaces,
-           blink::AssociatedInterfaceProvider* frame_associated_interfaces));
-  MOCK_METHOD1(ResourceLoadFailed, void(CastWebContents* cast_web_contents));
+  MOCK_METHOD3(RenderFrameCreated,
+               void(int render_process_id,
+                    int render_frame_id,
+                    mojo::PendingAssociatedRemote<
+                        chromecast::mojom::IdentificationSettingsManager>
+                        settings_manager));
+  MOCK_METHOD0(ResourceLoadFailed, void());
   MOCK_METHOD1(UpdateTitle, void(const std::string& title));
 
  private:
@@ -142,7 +129,7 @@ class MockWebContentsDelegate : public content::WebContentsDelegate {
   MOCK_METHOD1(CloseContents, void(content::WebContents* source));
 };
 
-class TitleChangeObserver : public CastWebContents::Observer {
+class TitleChangeObserver : public CastWebContentsObserver {
  public:
   TitleChangeObserver() = default;
   ~TitleChangeObserver() override = default;
@@ -160,7 +147,7 @@ class TitleChangeObserver : public CastWebContents::Observer {
     }
   }
 
-  // CastWebContents::Observer implementation:
+  // CastWebContentsObserver implementation:
   void UpdateTitle(const std::string& title) override {
     // Resumes execution of RunUntilTitleEquals() if |title| matches
     // expectations.
@@ -268,8 +255,7 @@ class CastWebContentsBrowserTest : public content::BrowserTestBase,
     mojom::CastWebViewParamsPtr params = mojom::CastWebViewParams::New();
     params->is_root_window = true;
     cast_web_contents_ = std::make_unique<CastWebContentsImpl>(
-        web_contents_.get(), mock_cast_wc_delegate_.AsWeakPtr(),
-        std::move(params));
+        web_contents_.get(), std::move(params));
     mock_cast_wc_observer_.Observe(cast_web_contents_.get());
     title_change_observer_.Observe(cast_web_contents_.get());
 
@@ -301,7 +287,6 @@ class CastWebContentsBrowserTest : public content::BrowserTestBase,
   }
 
   MockWebContentsDelegate mock_wc_delegate_;
-  MockCastWebContentsDelegate mock_cast_wc_delegate_;
   NiceMock<MockCastWebContentsObserver> mock_cast_wc_observer_;
   TitleChangeObserver title_change_observer_;
   std::unique_ptr<content::WebContents> web_contents_;
@@ -631,8 +616,7 @@ IN_PROC_BROWSER_TEST_F(CastWebContentsBrowserTest, NotifyMissingResource) {
     EXPECT_CALL(mock_cast_wc_observer_, PageStateChanged(PageState::LOADED))
         .WillOnce(InvokeWithoutArgs([&]() { QuitRunLoop(); }));
   }
-  EXPECT_CALL(mock_cast_wc_observer_,
-              ResourceLoadFailed(cast_web_contents_.get()));
+  EXPECT_CALL(mock_cast_wc_observer_, ResourceLoadFailed());
 
   base::FilePath path = GetTestDataFilePath("missing_resource.html");
   cast_web_contents_->LoadUrl(content::GetFileUrlWithQuery(path, ""));
@@ -1148,8 +1132,9 @@ IN_PROC_BROWSER_TEST_F(CastWebContentsBrowserTest, InterfaceBinding) {
   // on the WebContents) or the newer BrowserInterfaceBroker API which is used
   // in most other places (including from Mojo JS).
   TestInterfaceProvider provider;
-  cast_web_contents_->binder_registry()->AddInterface(
-      provider.MakeAdderBinder());
+  InterfaceBundle bundle_;
+  bundle_.AddBinder(provider.MakeAdderBinder());
+  cast_web_contents_->SetInterfacesForRenderer(bundle_.CreateRemote());
   cast_web_contents_->RegisterInterfaceProvider(
       CastWebContents::InterfaceSet{mojom::TestDoubler::Name_},
       provider.interface_provider());

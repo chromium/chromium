@@ -12,7 +12,7 @@ CastWebContents::~CastWebContents() = default;
 
 void CastWebContents::BindReceiver(
     mojo::PendingReceiver<mojom::CastWebContents> receiver) {
-  receiver_.Bind(std::move(receiver));
+  receivers_.Add(this, std::move(receiver));
 }
 
 void CastWebContents::AddObserver(
@@ -20,12 +20,20 @@ void CastWebContents::AddObserver(
   observers_.Add(std::move(observer));
 }
 
+void CastWebContents::AddObserver(CastWebContents::Observer* observer) {
+  DCHECK(observer);
+  sync_observers_.AddObserver(observer);
+}
+
+void CastWebContents::RemoveObserver(CastWebContents::Observer* observer) {
+  DCHECK(observer);
+  sync_observers_.RemoveObserver(observer);
+}
+
 CastWebContents::Observer::Observer() : cast_web_contents_(nullptr) {}
 
 CastWebContents::Observer::~Observer() {
-  if (cast_web_contents_) {
-    cast_web_contents_->RemoveObserver(this);
-  }
+  Observe(nullptr);
 }
 
 void CastWebContents::Observer::Observe(CastWebContents* cast_web_contents) {
@@ -35,18 +43,14 @@ void CastWebContents::Observer::Observe(CastWebContents* cast_web_contents) {
   }
   if (cast_web_contents_) {
     cast_web_contents_->RemoveObserver(this);
-    receiver_.reset();
   }
   cast_web_contents_ = cast_web_contents;
   if (cast_web_contents_) {
     cast_web_contents_->AddObserver(this);
-    cast_web_contents_->AddObserver(receiver_.BindNewPipeAndPassRemote());
   }
 }
 
 void CastWebContents::Observer::ResetCastWebContents() {
-  cast_web_contents_->RemoveObserver(this);
-  receiver_.reset();
   cast_web_contents_ = nullptr;
 }
 

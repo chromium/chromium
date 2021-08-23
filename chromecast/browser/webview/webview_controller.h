@@ -9,6 +9,7 @@
 
 #include "base/supports_user_data.h"
 #include "chromecast/browser/cast_web_contents.h"
+#include "chromecast/browser/cast_web_contents_observer.h"
 #include "chromecast/browser/webview/proto/webview.pb.h"
 #include "chromecast/browser/webview/web_content_controller.h"
 #include "url/gurl.h"
@@ -31,8 +32,7 @@ class WebviewTest;
 
 // This owns a WebContents and CastWebContents and processes proto commands
 // to allow the web contents to be controlled and embedded.
-class WebviewController : public CastWebContents::Delegate,
-                          public CastWebContents::Observer,
+class WebviewController : public CastWebContentsObserver,
                           public WebContentController {
  public:
   WebviewController(content::BrowserContext* browser_context,
@@ -83,10 +83,10 @@ class WebviewController : public CastWebContents::Delegate,
 
   webview::AsyncPageEvent_State current_state();
 
-  // CastWebContents::Observer
+  // CastWebContentsObserver implementation:
   void PageStateChanged(PageState page_state) override;
   void PageStopped(PageState page_state, int error_code) override;
-  void ResourceLoadFailed(CastWebContents* cast_web_contents) override;
+  void ResourceLoadFailed() override;
 
   // content::WebContentsObserver
   void DidFirstVisuallyNonEmptyPaint() override;

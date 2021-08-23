@@ -22,6 +22,7 @@
 #include "chromecast/browser/cast_permission_user_data.h"
 #include "chromecast/browser/devtools/remote_debugging_server.h"
 #include "chromecast/common/mojom/activity_url_filter.mojom.h"
+#include "chromecast/common/mojom/identification_settings.mojom.h"
 #include "chromecast/common/mojom/queryable_data_store.mojom.h"
 #include "chromecast/common/queryable_data.h"
 #include "chromecast/net/connectivity_checker.h"
@@ -37,6 +38,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/bindings_policy.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
@@ -129,10 +131,8 @@ void CastWebContentsImpl::RemoveRenderProcessHostObserver() {
 }
 
 CastWebContentsImpl::CastWebContentsImpl(content::WebContents* web_contents,
-                                         base::WeakPtr<Delegate> delegate,
                                          mojom::CastWebViewParamsPtr params)
     : web_contents_(web_contents),
-      delegate_(delegate),
       params_(std::move(params)),
       page_state_(PageState::IDLE),
       last_state_(PageState::IDLE),
@@ -181,6 +181,10 @@ CastWebContentsImpl::CastWebContentsImpl(content::WebContents* web_contents,
 
   web_contents_->SetPageBaseBackgroundColor(chromecast::GetSwitchValueColor(
       switches::kCastAppBackgroundColor, SK_ColorBLACK));
+
+  if (params_->enable_webui_bindings_permission) {
+    AllowWebAndMojoWebUiBindings();
+  }
 }
 
 CastWebContentsImpl::~CastWebContentsImpl() {
@@ -189,7 +193,8 @@ CastWebContentsImpl::~CastWebContentsImpl() {
                          "notification!";
   RemoveRenderProcessHostObserver();
   DisableDebugging();
-  for (auto& observer : observer_list_) {
+  observers_.Clear();
+  for (auto& observer : sync_observers_) {
     observer.ResetCastWebContents();
   }
   RemoveCastWebContents(this);
@@ -213,26 +218,14 @@ PageState CastWebContentsImpl::page_state() const {
   return page_state_;
 }
 
-absl::optional<pid_t> CastWebContentsImpl::GetMainFrameRenderProcessPid()
-    const {
-  // Returns empty value if |web_contents_| is (being) destroyed or the main
-  // frame is not available yet.
-  if (!web_contents_ || !web_contents_->GetMainFrame()) {
-    return absl::nullopt;
-  }
-
-  auto* rph = web_contents_->GetMainFrame()->GetProcess();
-  if (!rph || rph->GetProcess().Handle() == base::kNullProcessHandle) {
-    return absl::nullopt;
-  }
-  return absl::make_optional(rph->GetProcess().Handle());
+void CastWebContentsImpl::AddRendererFeatures(base::Value features) {
+  DCHECK(features.is_dict());
+  renderer_features_ = std::move(features);
 }
 
-void CastWebContentsImpl::AddRendererFeatures(
-    std::vector<RendererFeature> features) {
-  for (auto& feature : features) {
-    renderer_features_.push_back({feature.name, feature.value.Clone()});
-  }
+void CastWebContentsImpl::SetInterfacesForRenderer(
+    mojo::PendingRemote<mojom::RemoteInterfaces> remote_interfaces) {
+  remote_interfaces_.SetProvider(std::move(remote_interfaces));
 }
 
 void CastWebContentsImpl::LoadUrl(const GURL& url) {
@@ -349,18 +342,19 @@ void CastWebContentsImpl::ClearRenderWidgetHostView() {
   }
 }
 
-void CastWebContentsImpl::SetAppProperties(const std::string& session_id,
-                                           bool is_audio_app) {
+void CastWebContentsImpl::SetAppProperties(const std::string& app_id,
+                                           const std::string& session_id,
+                                           bool is_audio_app,
+                                           const GURL& app_web_url) {
   if (!web_contents_)
     return;
   shell::CastNavigationUIData::SetAppPropertiesForWebContents(
       web_contents_, session_id, is_audio_app);
-}
-
-void CastWebContentsImpl::SetCastPermissionUserData(const std::string& app_id,
-                                                    const GURL& app_web_url) {
-  DCHECK(web_contents_);
-  new shell::CastPermissionUserData(web_contents_, app_id, app_web_url);
+  // Cast Activities should not use CastPermissionUserData. Since they don't
+  // set |app_id|, we use this to gate the behavior.
+  if (!app_id.empty()) {
+    new shell::CastPermissionUserData(web_contents_, app_id, app_web_url);
+  }
 }
 
 void CastWebContentsImpl::AddBeforeLoadJavaScript(uint64_t id,
@@ -417,18 +411,6 @@ void CastWebContentsImpl::ConnectToBindingsService(
                                        base::Unretained(this)));
 }
 
-void CastWebContentsImpl::AddObserver(CastWebContents::Observer* observer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(observer);
-  observer_list_.AddObserver(observer);
-}
-
-void CastWebContentsImpl::RemoveObserver(CastWebContents::Observer* observer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(observer);
-  observer_list_.RemoveObserver(observer);
-}
-
 void CastWebContentsImpl::SetEnabledForRemoteDebugging(bool enabled) {
   DCHECK(remote_debugging_server_);
 
@@ -447,17 +429,24 @@ void CastWebContentsImpl::SetEnabledForRemoteDebugging(bool enabled) {
   }
 }
 
-service_manager::BinderRegistry* CastWebContentsImpl::binder_registry() {
-  return &binder_registry_;
+void CastWebContentsImpl::GetMainFramePid(GetMainFramePidCallback cb) {
+  if (!web_contents_ || !web_contents_->GetMainFrame()) {
+    std::move(cb).Run(base::kNullProcessHandle);
+    return;
+  }
+
+  auto* rph = web_contents_->GetMainFrame()->GetProcess();
+  if (!rph || rph->GetProcess().Handle() == base::kNullProcessHandle) {
+    std::move(cb).Run(base::kNullProcessHandle);
+    return;
+  }
+  std::move(cb).Run(rph->GetProcess().Handle());
 }
 
 bool CastWebContentsImpl::TryBindReceiver(
     mojo::GenericPendingReceiver& receiver) {
   const std::string interface_name = *receiver.interface_name();
   mojo::ScopedMessagePipeHandle interface_pipe = receiver.PassPipe();
-  if (binder_registry_.TryBindInterface(interface_name, &interface_pipe)) {
-    return true;
-  }
 
   for (auto& entry : interface_providers_map_) {
     auto const& interface_set = entry.first;
@@ -470,10 +459,14 @@ bool CastWebContentsImpl::TryBindReceiver(
     }
   }
 
-  // Unsuccessful, so give the caller its receiver back.
   receiver =
       mojo::GenericPendingReceiver(interface_name, std::move(interface_pipe));
-  return false;
+  remote_interfaces_.Bind(std::move(receiver));
+
+  // The PendingReceiver has been passed along at this point, so return true.
+  // Note that this doesn't guarantee that the interface will eventually be
+  // connected.
+  return true;
 }
 
 void CastWebContentsImpl::RegisterInterfaceProvider(
@@ -489,13 +482,6 @@ bool CastWebContentsImpl::is_websql_enabled() {
 
 bool CastWebContentsImpl::is_mixer_audio_enabled() {
   return params_->enable_mixer_audio;
-}
-
-bool CastWebContentsImpl::can_bind_interfaces() {
-  // We assume that the interface binders are owned by the delegate. This is a
-  // cheap trick so that all of the interfaces don't have to provide binder
-  // callbacks with WeakPtr.
-  return delegate_ != nullptr;
 }
 
 void CastWebContentsImpl::OnClosePageTimeout() {
@@ -517,11 +503,21 @@ void CastWebContentsImpl::RenderFrameCreated(
   const int render_frame_id = frame_host->GetRoutingID();
 
   // Allow observers to use remote interfaces which are hosted by the new
-  // RenderFrame.
-  for (Observer& observer : observer_list_) {
-    observer.RenderFrameCreated(render_process_id, render_frame_id,
-                                frame_host->GetRemoteInterfaces(),
-                                frame_host->GetRemoteAssociatedInterfaces());
+  // RenderFrame. Since the observer is potentially in a different process,
+  // we have to proxy requests through the browser. The easiest way to do this
+  // is to bind local mojo::Remote<> as the "implementation" for a
+  // mojo::ReceiverSet<> in this process.
+  identification_settings_proxies[frame_host] =
+      std::make_unique<IdentificationSettingsProxy>();
+  auto* proxy = identification_settings_proxies[frame_host].get();
+  frame_host->GetRemoteAssociatedInterfaces()->GetInterface(&(proxy->remote));
+  for (auto& observer : observers_) {
+    mojo::PendingAssociatedRemote<mojom::IdentificationSettingsManager>
+        settings_manager;
+    proxy->receivers.Add(proxy->remote.get(),
+                         settings_manager.InitWithNewEndpointAndPassReceiver());
+    observer->RenderFrameCreated(render_process_id, render_frame_id,
+                                 std::move(settings_manager));
   }
 
   // TODO(b/187758538): Merge the two ConfigureFeatures() calls.
@@ -579,12 +575,17 @@ void CastWebContentsImpl::RenderFrameCreated(
   }
 }
 
+void CastWebContentsImpl::RenderFrameDeleted(
+    content::RenderFrameHost* frame_host) {
+  identification_settings_proxies.erase(frame_host);
+}
+
 std::vector<chromecast::shell::mojom::FeaturePtr>
 CastWebContentsImpl::GetRendererFeatures() {
   std::vector<chromecast::shell::mojom::FeaturePtr> features;
-  for (const auto& feature : renderer_features_) {
+  for (auto feature : renderer_features_.DictItems()) {
     features.push_back(chromecast::shell::mojom::Feature::New(
-        feature.name, feature.value.Clone()));
+        feature.first, feature.second.Clone()));
   }
   return features;
 }
@@ -715,7 +716,7 @@ void CastWebContentsImpl::ReadyToCommitNavigation(
   }
 
   // Notifies observers that the navigation of the main frame is ready.
-  for (Observer& observer : observer_list_) {
+  for (Observer& observer : sync_observers_) {
     observer.MainFrameReadyToCommitNavigation(navigation_handle);
   }
 }
@@ -751,9 +752,6 @@ void CastWebContentsImpl::DidFinishNavigation(
 
   // Notifies observers that the navigation of the main frame has finished
   // with no errors.
-  for (Observer& observer : observer_list_) {
-    observer.MainFrameFinishedNavigation();
-  }
   for (auto& observer : observers_) {
     observer->MainFrameFinishedNavigation();
   }
@@ -832,6 +830,11 @@ void CastWebContentsImpl::DidFailLoad(
   DCHECK_EQ(PageState::ERROR, page_state_);
 }
 
+CastWebContentsImpl::IdentificationSettingsProxy::
+    IdentificationSettingsProxy() = default;
+CastWebContentsImpl::IdentificationSettingsProxy::
+    ~IdentificationSettingsProxy() = default;
+
 void CastWebContentsImpl::OnPageLoading() {
   closing_ = false;
   stopped_ = false;
@@ -889,14 +892,6 @@ void CastWebContentsImpl::NotifyPageState() {
   notifying_ = false;
 }
 
-void CastWebContentsImpl::MainFrameWasResized(bool width_changed) {
-  if (!web_contents_)
-    return;
-  for (auto& observer : observer_list_) {
-    observer.MainFrameResized(web_contents_->GetContainerBounds());
-  }
-}
-
 void CastWebContentsImpl::ResourceLoadComplete(
     content::RenderFrameHost* render_frame_host,
     const content::GlobalRequestID& request_id,
@@ -914,22 +909,27 @@ void CastWebContentsImpl::ResourceLoadComplete(
              << " failed to load with net_error=" << net_error
              << ", description=" << net::ErrorToShortString(net_error);
   shell::CastBrowserProcess::GetInstance()->connectivity_checker()->Check();
-  for (auto& observer : observer_list_) {
-    observer.ResourceLoadFailed(this);
+  for (auto& observer : observers_) {
+    observer->ResourceLoadFailed();
   }
 }
 
 void CastWebContentsImpl::InnerWebContentsCreated(
     content::WebContents* inner_web_contents) {
-  if (!params_->handle_inner_contents || !delegate_)
+  if (!params_->handle_inner_contents)
     return;
 
   mojom::CastWebViewParamsPtr params = mojom::CastWebViewParams::New();
   params->enabled_for_dev = params_->enabled_for_dev;
   params->background_color = params_->background_color;
   auto result = inner_contents_.insert(std::make_unique<CastWebContentsImpl>(
-      inner_web_contents, delegate_, std::move(params)));
-  delegate_->InnerContentsCreated(result.first->get(), this);
+      inner_web_contents, std::move(params)));
+  for (auto& observer : observers_) {
+    mojo::PendingRemote<mojom::CastWebContents> pending_remote;
+    result.first->get()->BindReceiver(
+        pending_remote.InitWithNewPipeAndPassReceiver());
+    observer->InnerContentsCreated(std::move(pending_remote));
+  }
 }
 
 void CastWebContentsImpl::TitleWasSet(content::NavigationEntry* entry) {
@@ -946,9 +946,6 @@ void CastWebContentsImpl::DidFirstVisuallyNonEmptyPaint() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   metrics::CastMetricsHelper::GetInstance()->LogTimeToFirstPaint();
 
-  for (Observer& observer : observer_list_) {
-    observer.DidFirstVisuallyNonEmptyPaint();
-  }
   for (auto& observer : observers_) {
     observer->DidFirstVisuallyNonEmptyPaint();
   }
@@ -1004,8 +1001,8 @@ void CastWebContentsImpl::MediaStartedPlaying(
     const content::MediaPlayerId& id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   metrics::CastMetricsHelper::GetInstance()->LogMediaPlay();
-  for (Observer& observer : observer_list_) {
-    observer.MediaPlaybackChanged(true /* media_playing */);
+  for (auto& observer : observers_) {
+    observer->MediaPlaybackChanged(true /* media_playing */);
   }
 }
 
@@ -1015,8 +1012,8 @@ void CastWebContentsImpl::MediaStoppedPlaying(
     content::WebContentsObserver::MediaStoppedReason reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   metrics::CastMetricsHelper::GetInstance()->LogMediaPause();
-  for (Observer& observer : observer_list_) {
-    observer.MediaPlaybackChanged(false /* media_playing */);
+  for (auto& observer : observers_) {
+    observer->MediaPlaybackChanged(false /* media_playing */);
   }
 }
 

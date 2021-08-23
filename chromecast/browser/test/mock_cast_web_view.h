@@ -20,23 +20,16 @@ class MockCastWebContents : public CastWebContents {
   MOCK_METHOD(int, id, (), (const, override));
   MOCK_METHOD(content::WebContents*, web_contents, (), (const, override));
   MOCK_METHOD(PageState, page_state, (), (const, override));
-  MOCK_METHOD(absl::optional<pid_t>,
-              GetMainFrameRenderProcessPid,
-              (),
-              (const, override));
+  MOCK_METHOD(void, AddRendererFeatures, (base::Value), (override));
   MOCK_METHOD(void,
-              AddRendererFeatures,
-              (std::vector<RendererFeature>),
+              SetInterfacesForRenderer,
+              (mojo::PendingRemote<mojom::RemoteInterfaces>),
               (override));
   MOCK_METHOD(void, AllowWebAndMojoWebUiBindings, (), (override));
   MOCK_METHOD(void, ClearRenderWidgetHostView, (), (override));
   MOCK_METHOD(void,
               SetAppProperties,
-              (const std::string& session_id, bool is_audio_app),
-              (override));
-  MOCK_METHOD(void,
-              SetCastPermissionUserData,
-              (const std::string& app_id, const GURL& app_web_url),
+              (const std::string&, const std::string&, bool, const GURL&),
               (override));
   MOCK_METHOD(void, LoadUrl, (const GURL&), (override));
   MOCK_METHOD(void, ClosePage, (), (override));
@@ -63,22 +56,18 @@ class MockCastWebContents : public CastWebContents {
               ConnectToBindingsService,
               (mojo::PendingRemote<mojom::ApiBindings> api_bindings_remote),
               (override));
-  MOCK_METHOD(void, AddObserver, (Observer*), (override));
-  MOCK_METHOD(void, RemoveObserver, (Observer*), (override));
   MOCK_METHOD(void, SetEnabledForRemoteDebugging, (bool), (override));
+  MOCK_METHOD(void, GetMainFramePid, (GetMainFramePidCallback), (override));
   MOCK_METHOD(void,
               RegisterInterfaceProvider,
               (const InterfaceSet&, service_manager::InterfaceProvider*),
               (override));
   MOCK_METHOD(bool, is_websql_enabled, (), (override));
   MOCK_METHOD(bool, is_mixer_audio_enabled, (), (override));
-  MOCK_METHOD(bool, can_bind_interfaces, (), (override));
 
-  service_manager::BinderRegistry* binder_registry() override;
   bool TryBindReceiver(mojo::GenericPendingReceiver&) override;
 
  private:
-  service_manager::BinderRegistry registry_;
 };
 
 class MockCastWebView : public CastWebView {

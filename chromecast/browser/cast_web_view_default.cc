@@ -90,9 +90,7 @@ CastWebViewDefault::CastWebViewDefault(
                                                     web_service_)),
       site_instance_(Prelaunch(renderer_prelauncher_.get())),
       web_contents_(CreateWebContents(browser_context, site_instance_)),
-      cast_web_contents_(web_contents_.get(),
-                         create_params.web_contents_delegate,
-                         params_->Clone()),
+      cast_web_contents_(web_contents_.get(), params_->Clone()),
       window_(cast_content_window
                   ? std::move(cast_content_window)
                   : web_service->CreateWindow(create_params.window_delegate,

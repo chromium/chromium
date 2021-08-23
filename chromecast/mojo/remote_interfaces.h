@@ -7,6 +7,7 @@
 
 #include "base/sequence_checker.h"
 #include "chromecast/mojo/mojom/remote_interfaces.mojom.h"
+#include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -65,6 +66,9 @@ class RemoteInterfaces {
   // does not fulfill the request, then the Remote/PendingRemote will become
   // disconnected (remote.is_connected() == false), but still be bound.
   // ===========================================================================
+
+  // Binds a generic receiver to an implementation in the remote provider.
+  void Bind(mojo::GenericPendingReceiver receiver);
 
   // Binds an <Interface> implementation in the remote provider.
   template <typename Interface>
