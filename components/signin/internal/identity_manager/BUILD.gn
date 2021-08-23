@@ -98,6 +98,7 @@ source_set("identity_manager") {
   }
 
   if (is_chromeos_ash) {
+    deps += [ "//ash/constants" ]
     public_deps += [ "//ash/components/account_manager" ]
   } else {
     sources += [
@@ -183,7 +184,10 @@ source_set("unit_tests") {
   if (is_chromeos_ash) {
     sources += [ "profile_oauth2_token_service_delegate_chromeos_unittest.cc" ]
 
-    deps += [ "//ash/components/account_manager" ]
+    deps += [
+      "//ash/components/account_manager",
+      "//ash/constants",
+    ]
   } else {
     sources += [ "primary_account_policy_manager_impl_unittest.cc" ]
   }

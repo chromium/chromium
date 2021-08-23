@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
@@ -31,6 +30,10 @@
 #include "components/signin/public/identity_manager/account_capabilities.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#endif
 
 #if defined(OS_ANDROID)
 #include "components/signin/internal/identity_manager/child_account_info_fetcher_android.h"
@@ -238,7 +241,7 @@ bool AccountFetcherService::IsAccountCapabilitiesFetcherEnabled() {
     return true;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return base::FeatureList::IsEnabled(switches::kMinorModeSupport);
+  return ash::features::IsMinorModeRestrictionEnabled();
 #endif
   return false;
 }

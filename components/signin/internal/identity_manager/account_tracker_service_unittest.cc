@@ -41,6 +41,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#endif
+
 #if defined(OS_ANDROID)
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #endif
@@ -705,7 +709,8 @@ TEST_F(AccountTrackerServiceTest,
        TokenAvailable_AccountCapabilitiesFetcherDisabled) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(switches::kMinorModeSupport);
+  scoped_feature_list.InitAndDisableFeature(
+      ash::features::kMinorModeRestriction);
 #endif
 
   account_fetcher()->EnableAccountCapabilitiesFetcherForTest(false);
