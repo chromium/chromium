@@ -48,7 +48,7 @@ TestExtensionSystem::TestExtensionSystem(Profile* profile)
       store_factory_(new TestValueStoreFactory()),
       state_store_(new StateStore(profile_,
                                   store_factory_,
-                                  ValueStoreFrontend::BackendType::RULES,
+                                  StateStore::BackendType::RULES,
                                   false)),
       info_map_(new InfoMap()),
       quota_service_(new QuotaService()),

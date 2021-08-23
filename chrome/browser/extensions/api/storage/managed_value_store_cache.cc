@@ -28,6 +28,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/storage/backend_task_runner.h"
+#include "extensions/browser/api/storage/value_store_util.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -56,8 +57,8 @@ class ExtensionRegistry;
 namespace {
 
 // Only extension settings are stored in the managed namespace - not apps.
-const ValueStoreFactory::ModelType kManagedModelType =
-    ValueStoreFactory::ModelType::EXTENSION;
+const value_store_util::ModelType kManagedModelType =
+    value_store_util::ModelType::EXTENSION;
 
 }  // namespace
 
@@ -359,8 +360,9 @@ PolicyValueStore* ManagedValueStoreCache::GetStoreFor(
   // sends updated values.
   std::unique_ptr<PolicyValueStore> store(new PolicyValueStore(
       extension_id, observers_,
-      storage_factory_->CreateSettingsStore(settings_namespace::MANAGED,
-                                            kManagedModelType, extension_id)));
+      value_store_util::CreateSettingsStore(settings_namespace::MANAGED,
+                                            kManagedModelType, extension_id,
+                                            storage_factory_)));
   PolicyValueStore* raw_store = store.get();
   store_map_[extension_id] = std::move(store);
 
@@ -369,8 +371,9 @@ PolicyValueStore* ManagedValueStoreCache::GetStoreFor(
 
 bool ManagedValueStoreCache::HasStore(const std::string& extension_id) const {
   // Note: Currently only manage extensions (not apps).
-  return storage_factory_->HasSettings(settings_namespace::MANAGED,
-                                       kManagedModelType, extension_id);
+  return value_store_util::HasValueStore(settings_namespace::MANAGED,
+                                         kManagedModelType, extension_id,
+                                         storage_factory_);
 }
 
 }  // namespace extensions

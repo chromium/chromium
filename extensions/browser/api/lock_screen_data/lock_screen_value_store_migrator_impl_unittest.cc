@@ -24,6 +24,7 @@
 #include "extensions/browser/api/lock_screen_data/operation_result.h"
 #include "extensions/browser/api/storage/backend_task_runner.h"
 #include "extensions/browser/api/storage/local_value_store_cache.h"
+#include "extensions/browser/api/storage/value_store_util.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/test_extensions_browser_client.h"
 #include "extensions/browser/value_store/test_value_store_factory.h"
@@ -349,8 +350,11 @@ class LockScreenValueStoreMigratorImplTest : public testing::Test {
     TestValueStoreFactory* factory = storage_type == StorageType::SOURCE
                                          ? source_value_store_factory_.get()
                                          : target_value_store_factory_.get();
+    base::FilePath value_store_dir = value_store_util::GetValueStoreDir(
+        settings_namespace::LOCAL, value_store_util::ModelType::APP,
+        extension_id);
     TestingValueStore* store =
-        static_cast<TestingValueStore*>(factory->GetExisting(extension_id));
+        static_cast<TestingValueStore*>(factory->GetExisting(value_store_dir));
     ASSERT_TRUE(store);
 
     store->set_status_code(code);

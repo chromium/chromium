@@ -25,10 +25,12 @@ namespace extensions {
 class ValueStoreFrontend::Backend : public base::RefCountedThreadSafe<Backend> {
  public:
   Backend(const scoped_refptr<ValueStoreFactory>& store_factory,
-          BackendType backend_type,
+          const base::FilePath& directory,
+          const std::string& uma_client_name,
           const scoped_refptr<base::SequencedTaskRunner>& task_runner)
       : store_factory_(store_factory),
-        backend_type_(backend_type),
+        directory_(directory),
+        uma_client_name_(uma_client_name),
         task_runner_(task_runner) {}
   Backend(const Backend&) = delete;
   Backend& operator=(const Backend&) = delete;
@@ -87,14 +89,7 @@ class ValueStoreFrontend::Backend : public base::RefCountedThreadSafe<Backend> {
     if (storage_)
       return;
     TRACE_EVENT0("ValueStoreFrontend::Backend", "LazyInit");
-    switch (backend_type_) {
-      case BackendType::RULES:
-        storage_ = store_factory_->CreateRulesStore();
-        break;
-      case BackendType::STATE:
-        storage_ = store_factory_->CreateStateStore();
-        break;
-    }
+    storage_ = store_factory_->CreateValueStore(directory_, uma_client_name_);
   }
 
   void RunCallback(ValueStoreFrontend::ReadCallback callback,
@@ -106,7 +101,8 @@ class ValueStoreFrontend::Backend : public base::RefCountedThreadSafe<Backend> {
   // The factory which will be used to lazily create the ValueStore when needed.
   // Used exclusively on the backend sequence.
   scoped_refptr<ValueStoreFactory> store_factory_;
-  BackendType backend_type_;
+  const base::FilePath directory_;
+  const std::string uma_client_name_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
@@ -119,10 +115,12 @@ class ValueStoreFrontend::Backend : public base::RefCountedThreadSafe<Backend> {
 
 ValueStoreFrontend::ValueStoreFrontend(
     const scoped_refptr<ValueStoreFactory>& store_factory,
-    BackendType backend_type,
+    const base::FilePath& directory,
+    const std::string& uma_client_name,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner)
     : backend_(base::MakeRefCounted<Backend>(store_factory,
-                                             backend_type,
+                                             directory,
+                                             uma_client_name,
                                              task_runner)),
       task_runner_(task_runner) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

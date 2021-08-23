@@ -31,6 +31,9 @@ class StateStore : public base::SupportsWeakPtr<StateStore>,
  public:
   typedef ValueStoreFrontend::ReadCallback ReadCallback;
 
+  // The kind of extensions data stored in a backend.
+  enum class BackendType { RULES, STATE };
+
   class TestObserver {
    public:
     virtual ~TestObserver() {}
@@ -42,7 +45,7 @@ class StateStore : public base::SupportsWeakPtr<StateStore>,
   // application is less busy on startup.
   StateStore(content::BrowserContext* context,
              const scoped_refptr<ValueStoreFactory>& store_factory,
-             ValueStoreFrontend::BackendType backend_type,
+             BackendType backend_type,
              bool deferred_load);
   // This variant is useful for testing (using a mock ValueStore).
   StateStore(content::BrowserContext* context,

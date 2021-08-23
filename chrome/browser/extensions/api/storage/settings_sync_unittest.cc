@@ -28,6 +28,7 @@
 #include "extensions/browser/api/storage/backend_task_runner.h"
 #include "extensions/browser/api/storage/settings_test_util.h"
 #include "extensions/browser/api/storage/storage_frontend.h"
+#include "extensions/browser/api/storage/value_store_util.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_system.h"
@@ -247,9 +248,25 @@ class ExtensionSettingsSyncTest : public testing::Test {
 
   // This class uses it's TestingValueStore in such a way that it always mints
   // new TestingValueStore instances.
-  TestingValueStore* GetExisting(const ExtensionId& extension_id) {
+  TestingValueStore* GetExisting(const ExtensionId& extension_id,
+                                 syncer::ModelType type) {
+    base::FilePath value_store_dir;
+    value_store_util::ModelType model_type;
+    switch (type) {
+      case syncer::APP_SETTINGS:
+        model_type = value_store_util::ModelType::APP;
+        break;
+      case syncer::EXTENSION_SETTINGS:
+        model_type = value_store_util::ModelType::EXTENSION;
+        break;
+      default:
+        NOTREACHED();
+        return nullptr;
+    }
+    value_store_dir = value_store_util::GetValueStoreDir(
+        settings_namespace::SYNC, model_type, extension_id);
     return static_cast<TestingValueStore*>(
-        storage_factory_->GetExisting(extension_id));
+        storage_factory_->GetExisting(value_store_dir));
   }
 
   template <typename Func>
@@ -726,7 +743,7 @@ TEST_F(ExtensionSettingsSyncTest, FailingStartSyncingDisablesSync) {
 
   PostOnBackendSequenceAndWait(FROM_HERE, [&, this]() {
     // Make bad fail for incoming sync changes.
-    GetExisting("bad")->set_status_code(ValueStore::CORRUPTION);
+    GetExisting("bad", model_type)->set_status_code(ValueStore::CORRUPTION);
     {
       syncer::SyncDataList sync_data;
       sync_data.push_back(
@@ -738,7 +755,7 @@ TEST_F(ExtensionSettingsSyncTest, FailingStartSyncingDisablesSync) {
               model_type, sync_data, std::move(sync_processor_wrapper_),
               std::make_unique<syncer::SyncErrorFactoryMock>());
     }
-    GetExisting("bad")->set_status_code(ValueStore::OK);
+    GetExisting("bad", model_type)->set_status_code(ValueStore::OK);
 
     {
       base::DictionaryValue dict;
@@ -820,7 +837,7 @@ TEST_F(ExtensionSettingsSyncTest, FailingStartSyncingDisablesSync) {
     }
 
     // Failing ProcessSyncChanges shouldn't go to the storage.
-    GetExisting("bad")->set_status_code(ValueStore::CORRUPTION);
+    GetExisting("bad", model_type)->set_status_code(ValueStore::CORRUPTION);
     {
       syncer::SyncChangeList change_list;
       change_list.push_back(settings_sync_util::CreateUpdate(
@@ -831,7 +848,7 @@ TEST_F(ExtensionSettingsSyncTest, FailingStartSyncingDisablesSync) {
       GetSyncableService(model_type)
           ->ProcessSyncChanges(FROM_HERE, change_list);
     }
-    GetExisting("bad")->set_status_code(ValueStore::OK);
+    GetExisting("bad", model_type)->set_status_code(ValueStore::OK);
 
     {
       base::DictionaryValue dict;
@@ -943,7 +960,7 @@ TEST_F(ExtensionSettingsSyncTest, FailingProcessChangesDisablesSync) {
     }
 
     // Now fail ProcessSyncChanges for bad.
-    GetExisting("bad")->set_status_code(ValueStore::CORRUPTION);
+    GetExisting("bad", model_type)->set_status_code(ValueStore::CORRUPTION);
     {
       syncer::SyncChangeList change_list;
       change_list.push_back(
@@ -953,7 +970,7 @@ TEST_F(ExtensionSettingsSyncTest, FailingProcessChangesDisablesSync) {
       GetSyncableService(model_type)
           ->ProcessSyncChanges(FROM_HERE, change_list);
     }
-    GetExisting("bad")->set_status_code(ValueStore::OK);
+    GetExisting("bad", model_type)->set_status_code(ValueStore::OK);
 
     {
       base::DictionaryValue dict;
@@ -1017,7 +1034,7 @@ TEST_F(ExtensionSettingsSyncTest, FailingGetAllSyncDataDoesntStopSync) {
 
     // Even though bad will fail to get all sync data, sync data should still
     // include that from good.
-    GetExisting("bad")->set_status_code(ValueStore::CORRUPTION);
+    GetExisting("bad", model_type)->set_status_code(ValueStore::CORRUPTION);
     {
       syncer::SyncDataList all_sync_data =
           GetSyncableService(model_type)->GetAllSyncDataForTesting(model_type);
@@ -1025,7 +1042,7 @@ TEST_F(ExtensionSettingsSyncTest, FailingGetAllSyncDataDoesntStopSync) {
       EXPECT_EQ(syncer::ClientTagHash::FromUnhashed(model_type, "good/foo"),
                 all_sync_data[0].GetClientTagHash());
     }
-    GetExisting("bad")->set_status_code(ValueStore::OK);
+    GetExisting("bad", model_type)->set_status_code(ValueStore::OK);
 
     // Sync shouldn't be disabled for good (nor bad -- but this is unimportant).
     GetSyncableService(model_type)
@@ -1068,13 +1085,13 @@ TEST_F(ExtensionSettingsSyncTest, FailureToReadChangesToPushDisablesSync) {
 
     // good will successfully push foo:fooValue to sync, but bad will fail to
     // get them so won't.
-    GetExisting("bad")->set_status_code(ValueStore::CORRUPTION);
+    GetExisting("bad", model_type)->set_status_code(ValueStore::CORRUPTION);
     GetSyncableService(model_type)
         ->MergeDataAndStartSyncing(
             model_type, syncer::SyncDataList(),
             std::move(sync_processor_wrapper_),
             std::make_unique<syncer::SyncErrorFactoryMock>());
-    GetExisting("bad")->set_status_code(ValueStore::OK);
+    GetExisting("bad", model_type)->set_status_code(ValueStore::OK);
 
     EXPECT_EQ(syncer::SyncChange::ACTION_ADD,
               sync_processor_->GetOnlyChange("good", "foo")->change_type());

@@ -76,31 +76,39 @@ extern const int kDefaultUpdateFrequencySeconds;
 
 // The name of the directory inside the profile where per-app local settings
 // are stored.
-extern const char kLocalAppSettingsDirectoryName[];
+extern const base::FilePath::CharType kLocalAppSettingsDirectoryName[];
 
 // The name of the directory inside the profile where per-extension local
 // settings are stored.
-extern const char kLocalExtensionSettingsDirectoryName[];
+extern const base::FilePath::CharType kLocalExtensionSettingsDirectoryName[];
 
 // The name of the directory inside the profile where per-app synced settings
 // are stored.
-extern const char kSyncAppSettingsDirectoryName[];
+extern const base::FilePath::CharType kSyncAppSettingsDirectoryName[];
 
 // The name of the directory inside the profile where per-extension synced
 // settings are stored.
-extern const char kSyncExtensionSettingsDirectoryName[];
+extern const base::FilePath::CharType kSyncExtensionSettingsDirectoryName[];
 
 // The name of the directory inside the profile where per-extension persistent
 // managed settings are stored.
-extern const char kManagedSettingsDirectoryName[];
+extern const base::FilePath::CharType kManagedSettingsDirectoryName[];
 
 // The name of the database inside the profile where chrome-internal
 // extension state resides.
-extern const char kStateStoreName[];
+extern const base::FilePath::CharType kStateStoreName[];
 
 // The name of the database inside the profile where declarative extension
 // rules are stored.
-extern const char kRulesStoreName[];
+extern const base::FilePath::CharType kRulesStoreName[];
+
+// Statistics are logged to UMA with these strings as part of histogram name.
+// They can all be found under Extensions.Database.Open.<client>. Changing this
+// needs to synchronize with histograms.xml, AND will also become incompatible
+// with older browsers still reporting the previous values.
+extern const char kSettingsDatabaseUMAClientName[];
+extern const char kRulesDatabaseUMAClientName[];
+extern const char kStateDatabaseUMAClientName[];
 
 // The URL query parameter key corresponding to multi-login user index.
 extern const char kAuthUserQueryKey[];

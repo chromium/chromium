@@ -23,6 +23,8 @@ source_set("api") {
     "storage/local_value_store_cache.h",
     "storage/session_storage_manager.cc",
     "storage/session_storage_manager.h",
+    "storage/settings_namespace.cc",
+    "storage/settings_namespace.h",
     "storage/settings_observer.h",
     "storage/settings_storage_quota_enforcer.cc",
     "storage/settings_storage_quota_enforcer.h",
@@ -34,6 +36,8 @@ source_set("api") {
     "storage/storage_frontend.h",
     "storage/value_store_cache.cc",
     "storage/value_store_cache.h",
+    "storage/value_store_util.cc",
+    "storage/value_store_util.h",
     "storage/weak_unlimited_settings_storage.cc",
     "storage/weak_unlimited_settings_storage.h",
   ]

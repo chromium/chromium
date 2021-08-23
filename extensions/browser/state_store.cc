@@ -15,6 +15,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/value_store/value_store_factory.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 
 namespace {
@@ -67,13 +68,22 @@ void StateStore::DelayedTaskQueue::SetReady() {
 
 StateStore::StateStore(content::BrowserContext* context,
                        const scoped_refptr<ValueStoreFactory>& store_factory,
-                       ValueStoreFrontend::BackendType backend_type,
+                       BackendType backend_type,
                        bool deferred_load)
-    : store_(
-          std::make_unique<ValueStoreFrontend>(store_factory,
-                                               backend_type,
-                                               GetExtensionFileTaskRunner())),
-      task_queue_(std::make_unique<DelayedTaskQueue>()) {
+    : task_queue_(std::make_unique<DelayedTaskQueue>()) {
+  switch (backend_type) {
+    case BackendType::RULES:
+      store_ = std::make_unique<ValueStoreFrontend>(
+          store_factory, base::FilePath(kRulesStoreName),
+          kRulesDatabaseUMAClientName, GetExtensionFileTaskRunner());
+      break;
+    case BackendType::STATE:
+      store_ = std::make_unique<ValueStoreFrontend>(
+          store_factory, base::FilePath(kStateStoreName),
+          kStateDatabaseUMAClientName, GetExtensionFileTaskRunner());
+      break;
+  }
+
   extension_registry_observation_.Observe(ExtensionRegistry::Get(context));
 
   if (deferred_load) {

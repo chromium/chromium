@@ -11,6 +11,7 @@
 
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/storage/backend_task_runner.h"
+#include "extensions/browser/api/storage/value_store_util.h"
 #include "extensions/browser/api/storage/weak_unlimited_settings_storage.h"
 #include "extensions/browser/value_store/value_store_factory.h"
 #include "extensions/common/api/storage.h"
@@ -65,12 +66,14 @@ void LocalValueStoreCache::RunWithValueStoreForExtension(
 void LocalValueStoreCache::DeleteStorageSoon(const std::string& extension_id) {
   DCHECK(IsOnBackendSequence());
   storage_map_.erase(extension_id);
-  storage_factory_->DeleteSettings(settings_namespace::LOCAL,
-                                   ValueStoreFactory::ModelType::APP,
-                                   extension_id);
-  storage_factory_->DeleteSettings(settings_namespace::LOCAL,
-                                   ValueStoreFactory::ModelType::EXTENSION,
-                                   extension_id);
+
+  value_store_util::DeleteValueStore(settings_namespace::LOCAL,
+                                     value_store_util::ModelType::APP,
+                                     extension_id, storage_factory_);
+
+  value_store_util::DeleteValueStore(settings_namespace::LOCAL,
+                                     value_store_util::ModelType::EXTENSION,
+                                     extension_id, storage_factory_);
 }
 
 ValueStore* LocalValueStoreCache::GetStorage(const Extension* extension) {
@@ -78,11 +81,11 @@ ValueStore* LocalValueStoreCache::GetStorage(const Extension* extension) {
   if (iter != storage_map_.end())
     return iter->second.get();
 
-  ValueStoreFactory::ModelType model_type =
-      extension->is_app() ? ValueStoreFactory::ModelType::APP
-                          : ValueStoreFactory::ModelType::EXTENSION;
-  std::unique_ptr<ValueStore> store = storage_factory_->CreateSettingsStore(
-      settings_namespace::LOCAL, model_type, extension->id());
+  value_store_util::ModelType model_type =
+      extension->is_app() ? value_store_util::ModelType::APP
+                          : value_store_util::ModelType::EXTENSION;
+  std::unique_ptr<ValueStore> store = value_store_util::CreateSettingsStore(
+      settings_namespace::LOCAL, model_type, extension->id(), storage_factory_);
   std::unique_ptr<SettingsStorageQuotaEnforcer> storage(
       new SettingsStorageQuotaEnforcer(quota_, std::move(store)));
   DCHECK(storage.get());

@@ -46,8 +46,8 @@ class ValueStoreFrontendTest : public testing::Test {
   // Reset the value store, reloading the DB from disk.
   void ResetStorage() {
     storage_ = std::make_unique<ValueStoreFrontend>(
-        factory_, ValueStoreFrontend::BackendType::RULES,
-        value_store::GetValueStoreTaskRunner());
+        factory_, base::FilePath(FILE_PATH_LITERAL("Test dir")),
+        "test_uma_name", value_store::GetValueStoreTaskRunner());
   }
 
   bool Get(const std::string& key, std::unique_ptr<base::Value>* output) {

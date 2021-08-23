@@ -113,10 +113,10 @@ void ExtensionSystemImpl::Shared::InitPrefs() {
   // loaded immediately so that the rules are ready before we issue network
   // requests.
   state_store_ = std::make_unique<StateStore>(
-      profile_, store_factory_, ValueStoreFrontend::BackendType::STATE, true);
+      profile_, store_factory_, StateStore::BackendType::STATE, true);
 
   rules_store_ = std::make_unique<StateStore>(
-      profile_, store_factory_, ValueStoreFrontend::BackendType::RULES, false);
+      profile_, store_factory_, StateStore::BackendType::RULES, false);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // We can not perform check for Signin Profile here, as it would result in

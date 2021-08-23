@@ -53,14 +53,25 @@ const base::FilePath::CharType kExtensionKeyFileExtension[] =
 // If auto-updates are turned on, default to running every 5 hours.
 const int kDefaultUpdateFrequencySeconds = 60 * 60 * 5;
 
-const char kLocalAppSettingsDirectoryName[] = "Local App Settings";
-const char kLocalExtensionSettingsDirectoryName[] = "Local Extension Settings";
-const char kSyncAppSettingsDirectoryName[] = "Sync App Settings";
-const char kSyncExtensionSettingsDirectoryName[] = "Sync Extension Settings";
-const char kManagedSettingsDirectoryName[] = "Managed Extension Settings";
-const char kStateStoreName[] = "Extension State";
-const char kRulesStoreName[] = "Extension Rules";
+const base::FilePath::CharType kLocalAppSettingsDirectoryName[] =
+    FILE_PATH_LITERAL("Local App Settings");
+const base::FilePath::CharType kLocalExtensionSettingsDirectoryName[] =
+    FILE_PATH_LITERAL("Local Extension Settings");
+const base::FilePath::CharType kSyncAppSettingsDirectoryName[] =
+    FILE_PATH_LITERAL("Sync App Settings");
+const base::FilePath::CharType kSyncExtensionSettingsDirectoryName[] =
+    FILE_PATH_LITERAL("Sync Extension Settings");
+const base::FilePath::CharType kManagedSettingsDirectoryName[] =
+    FILE_PATH_LITERAL("Managed Extension Settings");
+const base::FilePath::CharType kStateStoreName[] =
+    FILE_PATH_LITERAL("Extension State");
+const base::FilePath::CharType kRulesStoreName[] =
+    FILE_PATH_LITERAL("Extension Rules");
 const char kWebStoreAppId[] = "ahfgeienlihckogmohjhadlkjgocpleb";
+
+const char kSettingsDatabaseUMAClientName[] = "Settings";
+const char kRulesDatabaseUMAClientName[] = "Rules";
+const char kStateDatabaseUMAClientName[] = "State";
 
 const uint8_t kWebstoreSignaturesPublicKey[] = {
     0x30, 0x82, 0x01, 0x22, 0x30, 0x0d, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86,

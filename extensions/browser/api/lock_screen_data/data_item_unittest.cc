@@ -22,6 +22,7 @@
 #include "extensions/browser/api/lock_screen_data/operation_result.h"
 #include "extensions/browser/api/storage/backend_task_runner.h"
 #include "extensions/browser/api/storage/local_value_store_cache.h"
+#include "extensions/browser/api/storage/value_store_util.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/test_extensions_browser_client.h"
 #include "extensions/browser/value_store/test_value_store_factory.h"
@@ -236,8 +237,11 @@ class DataItemTest : public testing::Test {
 
   void SetReturnCodeForValueStoreOperations(const std::string& extension_id,
                                             ValueStore::StatusCode code) {
+    base::FilePath value_store_dir = value_store_util::GetValueStoreDir(
+        settings_namespace::LOCAL, value_store_util::ModelType::APP,
+        extension_id);
     TestingValueStore* store = static_cast<TestingValueStore*>(
-        value_store_factory_->GetExisting(extension_id));
+        value_store_factory_->GetExisting(value_store_dir));
     ASSERT_TRUE(store);
     store->set_status_code(code);
   }

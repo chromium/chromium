@@ -66,11 +66,6 @@ class SyncStorageBackend : public syncer::SyncableService {
       const std::string& extension_id,
       std::unique_ptr<base::DictionaryValue> sync_data) const;
 
-  // Gets all extension IDs known to extension settings.  This may not be all
-  // installed extensions.
-  std::set<std::string> GetKnownExtensionIDs(
-      ValueStoreFactory::ModelType model_type) const;
-
   // Creates a new SettingsSyncProcessor for an extension.
   std::unique_ptr<SettingsSyncProcessor> CreateSettingsSyncProcessor(
       const std::string& extension_id) const;
