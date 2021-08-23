@@ -389,7 +389,13 @@ class AmbientAuthenticationTestWithPolicy : public policy::PolicyTest {
   policy::PolicyMap policies_;
 };
 
-IN_PROC_BROWSER_TEST_F(AmbientAuthenticationTestWithPolicy, RegularOnly) {
+// TODO(crbug/1242432): Flaky on Mac.
+#if defined(OS_MAC)
+#define MAYBE_RegularOnly DISABLED_RegularOnly
+#else
+#define MAYBE_RegularOnly RegularOnly
+#endif
+IN_PROC_BROWSER_TEST_F(AmbientAuthenticationTestWithPolicy, MAYBE_RegularOnly) {
   EnablePolicyWithValue(net::AmbientAuthAllowedProfileTypes::REGULAR_ONLY);
   IsAmbientAuthAllowedForProfilesTest();
 }
