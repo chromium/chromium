@@ -29,7 +29,6 @@
 #include "chrome/chrome_cleaner/os/layered_service_provider_wrapper.h"
 #include "chrome/chrome_cleaner/os/pre_fetched_paths.h"
 #include "chrome/chrome_cleaner/os/system_util.h"
-#include "chrome/chrome_cleaner/os/whitelisted_directory.h"
 #include "chrome/chrome_cleaner/test/child_process_logger.h"
 #include "chrome/chrome_cleaner/test/file_remover_test_util.h"
 #include "chrome/chrome_cleaner/test/reboot_deletion_helper.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/chrome_cleaner/os/whitelisted_directory.h"
+#include "chrome/chrome_cleaner/os/file_remover_allowlist.h"
 
 #include <shlobj.h>
 
@@ -12,7 +12,7 @@ namespace chrome_cleaner {
 
 namespace {
 
-const int kCsidlWhiteList[] = {
+const int kCsidlAllowlist[] = {
     CSIDL_ADMINTOOLS,
     CSIDL_APPDATA,
     CSIDL_COMMON_ADMINTOOLS,
@@ -72,42 +72,42 @@ const int kCsidlWhiteList[] = {
 }  // namespace
 
 // static
-WhitelistedDirectory* WhitelistedDirectory::GetInstance() {
-  return base::Singleton<WhitelistedDirectory>::get();
+FileRemoverAllowlist* FileRemoverAllowlist::GetInstance() {
+  return base::Singleton<FileRemoverAllowlist>::get();
 }
 
-WhitelistedDirectory::~WhitelistedDirectory() = default;
+FileRemoverAllowlist::~FileRemoverAllowlist() = default;
 
-void WhitelistedDirectory::DisableCache() {
+void FileRemoverAllowlist::DisableCache() {
   cache_disabled_ = true;
 }
 
-bool WhitelistedDirectory::IsWhitelistedDirectory(const base::FilePath& path) {
+bool FileRemoverAllowlist::IsAllowlisted(const base::FilePath& path) {
   if (cache_disabled_) {
-    GenerateDirectoryWhitelist();
+    GenerateFileRemoverAllowlist();
   }
 
-  return whitelisted_directories_.find(NormalizePath(path)) !=
-         whitelisted_directories_.end();
+  return allowlisted_paths_.find(NormalizePath(path)) !=
+         allowlisted_paths_.end();
 }
 
-WhitelistedDirectory::WhitelistedDirectory() {
-  GenerateDirectoryWhitelist();
+FileRemoverAllowlist::FileRemoverAllowlist() {
+  GenerateFileRemoverAllowlist();
 }
 
-void WhitelistedDirectory::GenerateDirectoryWhitelist() {
-  whitelisted_directories_.clear();
+void FileRemoverAllowlist::GenerateFileRemoverAllowlist() {
+  allowlisted_paths_.clear();
 
   // Ensure no footprint are the root of a CSIDL.
   base::FilePath empty_path;
-  for (int csidl : kCsidlWhiteList) {
+  for (int csidl : kCsidlAllowlist) {
     base::FilePath expanded_csidl = ExpandSpecialFolderPath(csidl, empty_path);
     if (!expanded_csidl.empty())
-      whitelisted_directories_.insert(NormalizePath(expanded_csidl));
+      allowlisted_paths_.insert(NormalizePath(expanded_csidl));
   }
 
   for (const base::FilePath& path : GetRewrittenPaths())
-    whitelisted_directories_.insert(path);
+    allowlisted_paths_.insert(path);
 }
 
 }  // namespace chrome_cleaner
