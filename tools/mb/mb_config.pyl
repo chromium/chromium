@@ -2421,7 +2421,7 @@
     ],
 
     'libfuzzer_asan_clang_tot_release': [
-      'libfuzzer', 'asan', 'clang_tot', 'release', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl',
+      'libfuzzer', 'asan', 'clang_tot', 'release', 'shared', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'mojo_fuzzer',
     ],
 
     'libfuzzer_msan_release_bot': [
