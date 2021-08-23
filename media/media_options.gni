@@ -229,7 +229,6 @@ declare_args() {
   # Valid options are:
   # - "browser": Use mojo media service hosted in the browser process.
   # - "gpu": Use mojo media service hosted in the gpu process.
-  # - "utility": Use mojo media service hosted in the utility process.
   # - "": Do not use mojo media service.
   mojo_media_host = _default_mojo_media_host
 }
