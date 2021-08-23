@@ -93,14 +93,10 @@ static_assert(sizeof(void*) != 8, "");
 
 // Enable free list hardening as much as possible.
 //
-// Disabled on ARM64 Macs, as this crashes very early (crbug.com/1172236).
-// TODO(lizeb): Enable in as many configurations as possible.
-//
 // Disabled when putting refcount in the previous slot, which is what
 // PUT_REF_COUNT_IN_PREVIOUS_SLOT does. In this case the refcount overlaps with
 // the next pointer shadow for the smallest bucket.
-#if !(defined(OS_MAC) && defined(ARCH_CPU_ARM64)) && \
-    !BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
+#if !BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
 #define PA_HAS_FREELIST_HARDENING
 #endif
 
