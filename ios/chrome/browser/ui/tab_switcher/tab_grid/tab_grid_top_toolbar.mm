@@ -38,6 +38,7 @@ const int kSelectionModeButtonSize = 17;
   UIBarButtonItem* _closeAllOrUndoButton;
   UIBarButtonItem* _editButton;
   UIBarButtonItem* _pageControlItem;
+  BOOL _undoActive;
 }
 
 - (UIBarButtonItem*)anchorItem {
@@ -130,6 +131,10 @@ const int kSelectionModeButtonSize = 17;
           kTabGridCloseAllButtonIdentifier;
     }
   }
+  if (_undoActive != useUndo) {
+    _undoActive = useUndo;
+    [self setItemsForTraitCollection:self.traitCollection];
+  }
 }
 
 - (void)configureDeselectAllButtonTitle {
@@ -212,7 +217,7 @@ const int kSelectionModeButtonSize = 17;
   }
   // In Landscape normal mode leading button is always "closeAll", or "Edit" if
   // bulk actions feature is enabled.
-  if (IsTabsBulkActionsEnabled())
+  if (IsTabsBulkActionsEnabled() && !_undoActive)
     _leadingButton = _editButton;
   else
     _leadingButton = _closeAllOrUndoButton;
