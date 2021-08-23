@@ -657,7 +657,9 @@ const NGPhysicalBoxFragment* NGPhysicalBoxFragment::PostLayout() const {
   if (post_layout == this)
     return this;
 
-#if DCHECK_IS_ON()
+// TODO(crbug.com/1241721): Revert https://crrev.com/c/3108806 to re-enable this
+// DCHECK on CrOS.
+#if DCHECK_IS_ON() && !BUILDFLAG(IS_CHROMEOS_ASH)
   DCHECK(AllowPostLayoutScope::IsAllowed());
 #endif
   return post_layout;
