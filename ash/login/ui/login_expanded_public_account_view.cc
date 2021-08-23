@@ -125,6 +125,7 @@ class SelectionButtonView : public LoginButton {
  public:
   SelectionButtonView(PressedCallback callback, const std::u16string& text)
       : LoginButton(std::move(callback)) {
+    SetAccessibleName(text);
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
     SetFocusBehavior(FocusBehavior::ALWAYS);
