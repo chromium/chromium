@@ -56,6 +56,7 @@
 #include "base/test/icu_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/compositor/layer.h"
@@ -1410,7 +1411,16 @@ TEST_F(AppListViewFocusTest, CtrlASelectsAllTextInSearchbox) {
 
 // Tests that the first search result's view is selected after search results
 // are updated when the focus is on search box.
-TEST_F(AppListViewFocusTest, FirstResultSelectedAfterSearchResultsUpdated) {
+// crbug.com/1242053: flaky on chromeos
+#if defined(OS_CHROMEOS)
+#define MAYBE_FirstResultSelectedAfterSearchResultsUpdated \
+  DISABLED_FirstResultSelectedAfterSearchResultsUpdated
+#else
+#define MAYBE_FirstResultSelectedAfterSearchResultsUpdated \
+  FirstResultSelectedAfterSearchResultsUpdated
+#endif
+TEST_F(AppListViewFocusTest,
+       MAYBE_FirstResultSelectedAfterSearchResultsUpdated) {
   Show();
 
   // Type something in search box to transition to HALF state and populate
