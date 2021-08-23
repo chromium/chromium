@@ -59,6 +59,7 @@ source_set("browser") {
     "//cc/animation",
     "//cc/mojo_embedder",
     "//cc/paint",
+    "//components/back_forward_cache:enum",
     "//components/cbor",
     "//components/discardable_memory/common",
     "//components/discardable_memory/service",

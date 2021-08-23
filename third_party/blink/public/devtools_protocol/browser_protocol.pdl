@@ -7897,17 +7897,33 @@ domain Page
       OutstandingNetworkRequestDirectSocket
       IsolatedWorldScript
       InjectedStyleSheet
-      # Disabled for render frame host reasons
       MediaSessionImplOnServiceCreated
-      SecurityHandler
-      WebAuthenticationAPI
-      FileChooser
-      Serial
-      FileSystemAccess
-      MediaDevicesDispatcherHost
-      WebBluetooth
-      WebUSB
-      MediaSession
+      # Disabled for render frame host reasons
+      ContentMediaSessionImplOnServiceCreated
+      ContentSecurityHandler
+      ContentWebAuthenticationAPI
+      ContentFileChooser
+      ContentSerial
+      ContentFileSystemAccess
+      ContentMediaDevicesDispatcherHost
+      ContentWebBluetooth
+      ContentWebUSB
+      ContentMediaSession
+      EmbedderPopupBlockerTabHelper
+      EmbedderSafeBrowsingTriggeredPopupBlocker
+      EmbedderSafeBrowsingThreatDetails
+      EmbedderAppBannerManager
+      EmbedderDomDistillerViewerSource
+      EmbedderDomDistillerSelfDeletingRequestDelegate
+      EmbedderOomInterventionTabHelper
+      EmbedderOfflinePage
+      EmbedderChromePasswordManagerClientBindCredentialManager
+      EmbedderPermissionRequestManager
+      EmbedderModalDialog
+      EmbedderExtensions
+      EmbedderExtensionMessaging
+      EmbedderExtensionMessagingForOpenPort
+      EmbedderExtensionSentMessageToCachedFrame
 
   # Types of not restored reasons for back-forward cache.
   experimental type BackForwardCacheNotRestoredReasonType extends string
