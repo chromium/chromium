@@ -349,7 +349,7 @@ class FileSystemAccessManagerImplTest : public testing::Test {
   const int kFrameRoutingId = 2;
   const GlobalRenderFrameHostId kFrameId{kProcessId, kFrameRoutingId};
   const FileSystemAccessManagerImpl::BindingContext kBindingContext = {
-      kTestStorageKey.origin(), kTestURL, kFrameId};
+      kTestStorageKey, kTestURL, kFrameId};
 
   BrowserTaskEnvironment task_environment_;
 
@@ -1123,8 +1123,7 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_OpenFile) {
 
   mojo::Remote<blink::mojom::FileSystemAccessManager> manager_remote;
   FileSystemAccessManagerImpl::BindingContext binding_context = {
-      kTestStorageKey.origin(), kTestURL,
-      web_contents_->GetMainFrame()->GetGlobalId()};
+      kTestStorageKey, kTestURL, web_contents_->GetMainFrame()->GetGlobalId()};
   manager_->BindReceiver(binding_context,
                          manager_remote.BindNewPipeAndPassReceiver());
 
@@ -1203,8 +1202,7 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_SaveFile) {
 
   mojo::Remote<blink::mojom::FileSystemAccessManager> manager_remote;
   FileSystemAccessManagerImpl::BindingContext binding_context = {
-      kTestStorageKey.origin(), kTestURL,
-      web_contents_->GetMainFrame()->GetGlobalId()};
+      kTestStorageKey, kTestURL, web_contents_->GetMainFrame()->GetGlobalId()};
   manager_->BindReceiver(binding_context,
                          manager_remote.BindNewPipeAndPassReceiver());
 
@@ -1285,8 +1283,7 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_OpenDirectory) {
 
   mojo::Remote<blink::mojom::FileSystemAccessManager> manager_remote;
   FileSystemAccessManagerImpl::BindingContext binding_context = {
-      kTestStorageKey.origin(), kTestURL,
-      web_contents_->GetMainFrame()->GetGlobalId()};
+      kTestStorageKey, kTestURL, web_contents_->GetMainFrame()->GetGlobalId()};
   manager_->BindReceiver(binding_context,
                          manager_remote.BindNewPipeAndPassReceiver());
 
@@ -1359,8 +1356,7 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_InvalidStartInID) {
 
   mojo::Remote<blink::mojom::FileSystemAccessManager> manager_remote;
   FileSystemAccessManagerImpl::BindingContext binding_context = {
-      kTestStorageKey.origin(), kTestURL,
-      web_contents_->GetMainFrame()->GetGlobalId()};
+      kTestStorageKey, kTestURL, web_contents_->GetMainFrame()->GetGlobalId()};
   manager_->BindReceiver(binding_context,
                          manager_remote.BindNewPipeAndPassReceiver());
 

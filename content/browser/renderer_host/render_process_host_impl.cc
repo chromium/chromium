@@ -222,6 +222,7 @@
 #include "ui/display/display_switches.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/native_theme/native_theme_features.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
 
@@ -2193,6 +2194,9 @@ void RenderProcessHostImpl::BindFileSystemManager(
                      std::move(receiver)));
 }
 
+// TODO(https://crbug.com/1240755): Refactor BindFileSystemAccessManager to use
+// StorageKey rather than url::Origin; replace in-line construction with the
+// piped in 3rd-party StorageKey.
 void RenderProcessHostImpl::BindFileSystemAccessManager(
     const url::Origin& origin,
     mojo::PendingReceiver<blink::mojom::FileSystemAccessManager> receiver) {
@@ -2205,7 +2209,7 @@ void RenderProcessHostImpl::BindFileSystemAccessManager(
   auto* manager = storage_partition->GetFileSystemAccessManager();
   manager->BindReceiver(
       FileSystemAccessManagerImpl::BindingContext(
-          origin,
+          blink::StorageKey(origin),
           // TODO(https://crbug.com/989323): Obtain and use a better
           // URL for workers instead of the origin as source url.
           // This URL will be used for SafeBrowsing checks and for

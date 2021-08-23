@@ -22,6 +22,8 @@
 #include "storage/browser/test/test_file_system_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/gurl.h"
 
 namespace content {
 
@@ -52,14 +54,14 @@ class FileSystemAccessDirectoryHandleImplTest : public testing::Test {
     handle_ = std::make_unique<FileSystemAccessDirectoryHandleImpl>(
         manager_.get(),
         FileSystemAccessManagerImpl::BindingContext(
-            test_src_origin_, test_src_url_, /*worker_process_id=*/1),
+            test_src_storage_key_, test_src_url_, /*worker_process_id=*/1),
         url,
         FileSystemAccessManagerImpl::SharedHandleState(allow_grant_,
                                                        allow_grant_));
     denied_handle_ = std::make_unique<FileSystemAccessDirectoryHandleImpl>(
         manager_.get(),
         FileSystemAccessManagerImpl::BindingContext(
-            test_src_origin_, test_src_url_, /*worker_process_id=*/1),
+            test_src_storage_key_, test_src_url_, /*worker_process_id=*/1),
         url,
         FileSystemAccessManagerImpl::SharedHandleState(deny_grant_,
                                                        deny_grant_));
@@ -74,7 +76,7 @@ class FileSystemAccessDirectoryHandleImplTest : public testing::Test {
     auto handle = std::make_unique<FileSystemAccessDirectoryHandleImpl>(
         manager_.get(),
         FileSystemAccessManagerImpl::BindingContext(
-            test_src_origin_, test_src_url_, /*worker_process_id=*/1),
+            test_src_storage_key_, test_src_url_, /*worker_process_id=*/1),
         url,
         FileSystemAccessManagerImpl::SharedHandleState(
             /*read_grant=*/read ? allow_grant_ : deny_grant_,
@@ -84,7 +86,8 @@ class FileSystemAccessDirectoryHandleImplTest : public testing::Test {
 
  protected:
   const GURL test_src_url_ = GURL("http://example.com/foo");
-  const url::Origin test_src_origin_ = url::Origin::Create(test_src_url_);
+  const blink::StorageKey test_src_storage_key_ =
+      blink::StorageKey::CreateFromStringForTesting("http://example.com/foo");
 
   BrowserTaskEnvironment task_environment_;
 

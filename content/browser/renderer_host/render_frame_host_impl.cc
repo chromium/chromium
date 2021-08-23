@@ -9410,7 +9410,7 @@ void RenderFrameHostImpl::GetFileSystemAccessManager(
   auto* manager = storage_partition->GetFileSystemAccessManager();
   manager->BindReceiver(
       FileSystemAccessManagerImpl::BindingContext(
-          GetLastCommittedOrigin(), GetLastCommittedURL(), GetGlobalId()),
+          storage_key(), GetLastCommittedURL(), GetGlobalId()),
       std::move(receiver));
 }
 

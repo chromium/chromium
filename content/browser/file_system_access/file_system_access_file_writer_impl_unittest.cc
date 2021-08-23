@@ -155,8 +155,8 @@ class FileSystemAccessFileWriterImplTest : public testing::Test {
         });
 
     handle_ = manager_->CreateFileWriter(
-        FileSystemAccessManagerImpl::BindingContext(kTestStorageKey.origin(),
-                                                    kTestURL, kFrameId),
+        FileSystemAccessManagerImpl::BindingContext(kTestStorageKey, kTestURL,
+                                                    kFrameId),
         test_file_url_, test_swap_url_,
         FileSystemAccessManagerImpl::SharedHandleState(permission_grant_,
                                                        permission_grant_),
@@ -683,15 +683,15 @@ TEST_F(FileSystemAccessFileWriterAfterWriteChecksTest,
                                                      test_swap_url_));
 
   mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter> remote;
-  handle_ = manager_->CreateFileWriter(
-      FileSystemAccessManagerImpl::BindingContext(kTestStorageKey.origin(),
-                                                  kTestURL, kFrameId),
-      test_file_url_, test_swap_url_,
-      FileSystemAccessManagerImpl::SharedHandleState(permission_grant_,
-                                                     permission_grant_),
-      remote.InitWithNewPipeAndPassReceiver(),
-      /*has_transient_user_activation=*/false,
-      /*auto_close=*/false, quarantine_callback_);
+  handle_ =
+      manager_->CreateFileWriter(FileSystemAccessManagerImpl::BindingContext(
+                                     kTestStorageKey, kTestURL, kFrameId),
+                                 test_file_url_, test_swap_url_,
+                                 FileSystemAccessManagerImpl::SharedHandleState(
+                                     permission_grant_, permission_grant_),
+                                 remote.InitWithNewPipeAndPassReceiver(),
+                                 /*has_transient_user_activation=*/false,
+                                 /*auto_close=*/false, quarantine_callback_);
 
   uint64_t bytes_written;
   FileSystemAccessStatus result = WriteSync(0, "foo", &bytes_written);

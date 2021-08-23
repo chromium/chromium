@@ -28,6 +28,7 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "third_party/blink/public/mojom/web_launch/web_launch.mojom.h"
@@ -67,7 +68,7 @@ class EntriesBuilder {
                            ->GetProcess()
                            ->GetStoragePartition()
                            ->GetFileSystemAccessEntryFactory()),
-        context_(url::Origin::Create(launch_url),
+        context_(blink::StorageKey(url::Origin::Create(launch_url)),
                  launch_url,
                  content::GlobalRenderFrameHostId(
                      web_contents->GetMainFrame()->GetProcess()->GetID(),
