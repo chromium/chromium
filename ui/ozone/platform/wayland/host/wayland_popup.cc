@@ -71,14 +71,15 @@ bool WaylandPopup::CreateShellPopup() {
     return false;
   }
 
-  const auto parent_insets = parent_window()->frame_insets_px();
-  if (parent_insets && !parent_insets->IsEmpty()) {
-    set_frame_insets_px(*parent_insets);
+  const auto parent_insets_px = parent_window()->frame_insets_px();
+  if (parent_insets_px && !parent_insets_px->IsEmpty()) {
+    set_frame_insets_px(*parent_insets_px);
     // Popups should have the same offset for their geometry as their parents
     // have, otherwise Wayland draws them incorrectly.
-    shell_popup_->SetWindowGeometry(
-        {parent_insets->left(), parent_insets->top(), params.bounds.width(),
-         params.bounds.height()});
+    shell_popup_->SetWindowGeometry({parent_insets_px->left() / window_scale(),
+                                     parent_insets_px->top() / window_scale(),
+                                     params.bounds.width(),
+                                     params.bounds.height()});
   }
 
   parent_window()->set_child_window(this);
