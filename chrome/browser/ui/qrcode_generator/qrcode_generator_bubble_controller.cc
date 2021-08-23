@@ -67,6 +67,9 @@ void QRCodeGeneratorBubbleController::OnBubbleClosed() {
 
 void QRCodeGeneratorBubbleController::UpdateIcon() {
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+  // UpdateIcon() can be called during browser teardown.
+  if (!browser)
+    return;
   browser->window()->UpdatePageActionIcon(PageActionIconType::kQRCodeGenerator);
 }
 
