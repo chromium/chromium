@@ -669,9 +669,11 @@ TEST_P(ConnectionTest, DISABLED_VideoStats) {
   EXPECT_LE(stats.client_stats.time_rendered, finish_time);
 }
 
-// Slow/fails on Linux ASan/TSan (http://crbug.com/1045344).
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && \
-    (defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER))
+// Slow/fails on Linux ASan/TSan (crbug.com/1045344) and flaky on Mac
+// (crbug.com/1237376).
+#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) &&                   \
+        (defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER)) || \
+    defined(OS_MAC)
 #define MAYBE_Audio DISABLED_Audio
 #else
 #define MAYBE_Audio Audio
