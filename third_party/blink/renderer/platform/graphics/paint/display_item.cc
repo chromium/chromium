@@ -248,8 +248,14 @@ void DisplayItem::PropertiesAsJSON(JSONObject& json,
 #endif  // DCHECK_IS_ON()
 
 String DisplayItem::Id::ToString() const {
-  return String::Format("0x%" PRIuPTR ":%d:%d", client_id,
-                        static_cast<int>(type), fragment);
+#if DCHECK_IS_ON()
+  return String::Format("%" PRIuPTR ":%s:%d", client_id,
+                        DisplayItem::TypeAsDebugString(type).Utf8().data(),
+                        fragment);
+#else
+  return String::Format("%" PRIuPTR ":%d:%d", client_id, static_cast<int>(type),
+                        fragment);
+#endif
 }
 
 String DisplayItem::Id::ToString(const PaintArtifact& paint_artifact) const {
@@ -262,6 +268,14 @@ std::ostream& operator<<(std::ostream& os, DisplayItem::Type type) {
 #else
   return os << static_cast<int>(type);
 #endif
+}
+
+std::ostream& operator<<(std::ostream& os, const DisplayItem::Id& id) {
+  return os << id.ToString().Utf8();
+}
+
+std::ostream& operator<<(std::ostream& os, const DisplayItem& item) {
+  return os << "{\"id\": " << item.GetId() << "}";
 }
 
 }  // namespace blink

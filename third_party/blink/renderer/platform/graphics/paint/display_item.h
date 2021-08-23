@@ -172,9 +172,10 @@ class PLATFORM_EXPORT DisplayItem {
     Id(const Id& id, wtf_size_t fragment)
         : client_id(id.client_id), type(id.type), fragment(fragment) {}
 
-    // The no-argument version is required for DCHECK support; all values
-    // compared in a DCHECK must be convertible to string.
+    // The no-argument version is for operator<< which is used in DCHECK and
+    // unit tests.
     String ToString() const;
+    // This version will output the debug name of the client.
     String ToString(const PaintArtifact&) const;
 
     const DisplayItemClientId client_id;
@@ -352,6 +353,11 @@ inline bool operator!=(const DisplayItem::Id& a, const DisplayItem::Id& b) {
 }
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, DisplayItem::Type);
+// These are mainly for DCHECK and unit tests. They don't output debug names of
+// DisplayItemClients. Use the argumented version of DisplayItem::Id::ToString()
+// or DisplayItem::AsDebugString() if you want to see debug names.
+PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const DisplayItem::Id&);
+PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const DisplayItem&);
 
 }  // namespace blink
 

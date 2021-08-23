@@ -113,7 +113,10 @@ struct PLATFORM_EXPORT PaintChunk {
 
   size_t MemoryUsageInBytes() const;
 
-  String ToString(const PaintArtifact&) const;
+  // The no-argument version is for operator<< which is used in DCHECK and unit
+  // tests. It doesn't output the debug name of the client.
+  String ToString() const;
+  String ToString(const PaintArtifact& paint_artifact) const;
 
   // Index of the first drawing in this chunk.
   wtf_size_t begin_index;
@@ -174,6 +177,8 @@ struct PLATFORM_EXPORT PaintChunk {
   bool is_moved_from_cached_subsequence : 1;
   bool effectively_invisible : 1;
 };
+
+PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const PaintChunk&);
 
 }  // namespace blink
 
