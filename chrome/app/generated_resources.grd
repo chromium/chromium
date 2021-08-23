@@ -6075,6 +6075,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_READ_LATER_MENU_TOOLTIP_MARK_AS_UNREAD" desc="Tooltip for the button to mark a read later entry as unread.">
         Mark as unread
       </message>
+      <message name="IDS_READ_LATER_MENU_EMPTY_STATE_ADD_FROM_DIALOG_SUBHEADER" desc="Subheader for the read later menu when there are no unread or read entries.">
+        To add a page to read later, click the button
+      </message>
       <message name="IDS_READ_LATER_MENU_EMPTY_STATE_HEADER" desc="Header for the read later menu when there are no unread or read entries.">
         You'll find your reading list here
       </message>

@@ -158,7 +158,7 @@
      hidden="[[!isReadingListEmpty_(unreadItems_, readItems_)]]">
   <img id="empty-state-image" aria-hidden="true">
   <div id="empty-state-header">$i18n{emptyStateHeader}</div>
-  <div id="empty-state-subheader">$i18n{emptyStateSubheader}</div>
+  <div id="empty-state-subheader">[[getEmptyStateSubheaderText_()]]</div>
 </div>
 <cr-button id="currentPageActionButton"
     hidden$="[[!shouldShowCurrentPageActionButton_()]]"
