@@ -31,6 +31,7 @@
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/widget/widget.h"
 
@@ -128,6 +129,28 @@ TEST_F(AppListBubbleViewTest, LayerConfiguration) {
   EXPECT_EQ(layer->background_color(),
             AshColorProvider::Get()->GetBaseLayerColor(
                 AshColorProvider::BaseLayerType::kTransparent80));
+}
+
+// Tests some basic layout coordinates, because we don't have screenshot tests.
+// See go/cros-launcher-spec for layout.
+TEST_F(AppListBubbleViewTest, Layout) {
+  ShowAppList();
+
+  // Check the bounds of the search box search icon.
+  auto* search_box_view = GetSearchBoxView();
+  auto* search_icon = search_box_view->get_search_icon_for_test();
+  gfx::Rect search_icon_bounds =
+      search_icon->ConvertRectToWidget(search_icon->GetLocalBounds());
+  EXPECT_EQ("16,16 24x24", search_icon_bounds.ToString());
+
+  // Check height of search box view.
+  EXPECT_EQ(56, search_box_view->height());
+
+  // The separator is immediately under the search box.
+  gfx::Point separator_origin;
+  views::View::ConvertPointToWidget(GetSeparator(), &separator_origin);
+  EXPECT_EQ(0, separator_origin.x());
+  EXPECT_EQ(search_box_view->height(), separator_origin.y());
 }
 
 TEST_F(AppListBubbleViewTest, OpeningBubbleFocusesSearchBox) {

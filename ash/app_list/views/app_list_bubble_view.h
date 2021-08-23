@@ -48,6 +48,7 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   int GetHeightToFitAllApps() const;
 
   // views::View:
+  const char* GetClassName() const override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   void OnThemeChanged() override;
 

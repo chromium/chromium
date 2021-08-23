@@ -52,6 +52,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -67,6 +68,12 @@ constexpr int kSearchBoxFocusRingCornerRadius = 28;
 
 // Minimum amount of characters required to enable autocomplete.
 constexpr int kMinimumLengthToAutocomplete = 2;
+
+// Border insets for SearchBoxView in bubble launcher.
+constexpr gfx::Insets kBorderInsetsForAppListBubble(4, 4, 4, 0);
+
+// Margins for the search box text field in bubble launcher.
+constexpr gfx::Insets kTextFieldMarginsForAppListBubble(8, 0, 0, 0);
 
 float GetAssistantButtonOpacityForState(AppListState state) {
   if (state == AppListState::kStateSearchResults)
@@ -99,6 +106,12 @@ void SearchBoxView::Init(const InitParams& params) {
   SearchBoxViewBase::Init(params);
   UpdatePlaceholderTextAndAccessibleName();
   current_query_ = search_box()->GetText();
+  if (is_app_list_bubble_) {
+    // Add margins to the text field because the BoxLayout vertical centering
+    // does not properly align the text baseline with the icons.
+    search_box()->SetProperty(views::kMarginsKey,
+                              kTextFieldMarginsForAppListBubble);
+  }
 }
 
 void SearchBoxView::SetResultSelectionController(
@@ -230,8 +243,15 @@ void SearchBoxView::UpdatePlaceholderTextStyle() {
 }
 
 void SearchBoxView::UpdateSearchBoxBorder() {
-  // Creates an empty border to create a region for the focus ring to appear.
-  SetBorder(views::CreateEmptyBorder(gfx::Insets(GetFocusRingSpacing())));
+  gfx::Insets border_insets;
+  if (!is_app_list_bubble_) {
+    // Creates an empty border to create a region for the focus ring to appear.
+    border_insets = gfx::Insets(GetFocusRingSpacing());
+  } else {
+    // Bubble search box does not use a focus ring.
+    border_insets = kBorderInsetsForAppListBubble;
+  }
+  SetBorder(views::CreateEmptyBorder(border_insets));
 }
 
 void SearchBoxView::OnPaintBackground(gfx::Canvas* canvas) {

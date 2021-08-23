@@ -149,6 +149,10 @@ int AppListBubbleView::GetHeightToFitAllApps() const {
          search_box_view_->GetPreferredSize().height();
 }
 
+const char* AppListBubbleView::GetClassName() const {
+  return "AppListBubbleView";
+}
+
 bool AppListBubbleView::AcceleratorPressed(const ui::Accelerator& accelerator) {
   switch (accelerator.key_code()) {
     case ui::VKEY_ESCAPE:
