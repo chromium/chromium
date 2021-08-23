@@ -30,14 +30,14 @@
         android:textAppearance="@style/TextAppearance.Headline.Primary.Light" />
 
     <LinearLayout
-        android:id="@+id/revamped_incognito_ntp_description_and_learn_more_container"
+        android:id="@+id/revamped_incognito_ntp_content"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <LinearLayout
             android:id="@+id/revamped_incognito_ntp_description_text_container"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <RelativeLayout
@@ -124,6 +124,57 @@
             android:textAppearance="@style/TextAppearance.TextMedium.Secondary.Light"
             android:minHeight="@dimen/min_touch_target_size"
             android:gravity="center_vertical"/>
+
+        <RelativeLayout
+            android:id="@+id/revamped_cookie_controls_card"
+            style="@style/CardTransparentForDark"
+            android:visibility="gone"
+            android:layout_gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp">
+
+            <ImageView
+                android:id="@+id/revamped_cookie_controls_card_managed_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:ignore="ContentDescription"
+                android:layout_marginEnd="10dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentStart="true"
+                app:tint="@color/default_icon_color_light" />
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/revamped_cookie_controls_card_toggle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:theme="@style/SwitchMaterialDark"
+                android:layout_alignParentEnd="true"
+                app:showText="false" />
+
+            <org.chromium.ui.widget.TextViewWithLeading
+                android:id="@+id/revamped_cookie_controls_card_title"
+                android:text="@string/new_tab_otr_third_party_cookie"
+                android:textAppearance="@style/TextAppearance.TextLarge.Primary.Light"
+                android:layout_toStartOf="@id/revamped_cookie_controls_card_toggle"
+                android:layout_toEndOf="@id/revamped_cookie_controls_card_managed_icon"
+                android:layout_marginBottom="@dimen/md_incognito_ntp_line_spacing"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent" />
+
+            <org.chromium.ui.widget.TextViewWithLeading
+                android:id="@+id/revamped_cookie_controls_card_subtitle"
+                android:text="@string/new_tab_otr_third_party_cookie_sublabel"
+                android:textAppearance="@style/TextAppearance.TextMedium.Secondary.Light"
+                android:layout_toStartOf="@id/revamped_cookie_controls_card_toggle"
+                android:layout_toEndOf="@id/revamped_cookie_controls_card_managed_icon"
+                android:layout_below="@id/revamped_cookie_controls_card_title"
+                app:leading="@dimen/text_size_medium_leading"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent" />
+
+        </RelativeLayout>
 
     </LinearLayout>
 
