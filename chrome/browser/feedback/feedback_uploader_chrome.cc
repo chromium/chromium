@@ -18,6 +18,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "services/network/public/cpp/resource_request.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -37,8 +38,6 @@ constexpr char kAuthenticationErrorLogMessage[] =
     "Feedback report will be sent without authentication.";
 
 constexpr char kConsumer[] = "feedback_uploader_chrome";
-
-constexpr char kScope[] = "https://www.googleapis.com/auth/supportcontent";
 
 void QueueSingleReport(base::WeakPtr<feedback::FeedbackUploader> uploader,
                        scoped_refptr<FeedbackReport> report) {
@@ -131,7 +130,7 @@ void FeedbackUploaderChrome::StartDispatchingReport() {
   if (identity_manager &&
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     signin::ScopeSet scopes;
-    scopes.insert(kScope);
+    scopes.insert(GaiaConstants::kSupportContentOAuth2Scope);
     primary_account_token_fetcher_ =
         std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
             kConsumer, identity_manager, scopes,
@@ -158,7 +157,7 @@ void FeedbackUploaderChrome::StartDispatchingReport() {
       policy::EnrollmentRequisitionManager::IsRemoraRequisition();
   if (isMeetDevice && !device_identity_provider->GetActiveAccountId().empty()) {
     OAuth2AccessTokenManager::ScopeSet scopes;
-    scopes.insert(kScope);
+    scopes.insert(GaiaConstants::kSupportContentOAuth2Scope);
     active_account_token_fetcher_ = device_identity_provider->FetchAccessToken(
         kConsumer, scopes,
         base::BindOnce(

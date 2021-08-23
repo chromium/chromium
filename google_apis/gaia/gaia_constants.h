@@ -57,6 +57,7 @@ extern const char kGCMGroupServerOAuth2Scope[];
 extern const char kGCMCheckinServerOAuth2Scope[];
 extern const char kChromeWebstoreOAuth2Scope[];
 extern const char kAccountCapabilitiesOAuth2Scope[];
+extern const char kSupportContentOAuth2Scope[];
 
 // Used with uber auth tokens when needed.
 extern const char kGaiaSid[];
