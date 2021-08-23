@@ -182,8 +182,6 @@ bundle_data_ib_file("base_scene_storyboard") {
 }
 
 test("ios_chrome_unittests") {
-  info_plist = "//ios/chrome/test/unittest-scene-lifecycle-Info.plist"
-
   deps = [
     # Ensure that all unit tests are run, use fake hooks and pack resources.
     ":run_all_unittests",

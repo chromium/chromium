@@ -173,5 +173,26 @@
 	</array>
 	<key>SSOAuthURLScheme</key>
 	<string>${IOS_BUNDLE_ID_PREFIX}.sso.${PRODUCT_NAME:rfc1034identifier}</string>
+  <key>UIApplicationSceneManifest</key>
+  <dict>
+          <key>UIApplicationSupportsMultipleScenes</key>
+          <false/>
+          <key>UISceneConfigurations</key>
+          <dict>
+                  <key>UIWindowSceneSessionRoleApplication</key>
+                  <array>
+                          <dict>
+                                  <key>UISceneClassName</key>
+                                  <string>UIWindowScene</string>
+                                  <key>UISceneDelegateClassName</key>
+                                  <string>ChromeUnitTestSceneDelegate</string>
+                                  <key>UISceneConfigurationName</key>
+                                  <string>Default Configuration</string>
+                                  <key>UILaunchStoryboardName</key>
+                                  <string>LaunchScreen</string>
+                          </dict>
+                  </array>
+          </dict>
+  </dict>
 </dict>
 </plist>
