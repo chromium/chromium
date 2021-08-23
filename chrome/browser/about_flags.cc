@@ -7779,13 +7779,10 @@ ScopedFeatureEntries::~ScopedFeatureEntries() {
   FlagsStateSingleton::GetInstance()->RestoreDefaultState();
 }
 
-const FeatureEntry* GetFeatureEntries(size_t* count) {
-  if (!GetEntriesForTesting()->empty()) {
-    *count = GetEntriesForTesting()->size();
-    return GetEntriesForTesting()->data();
-  }
-  *count = base::size(kFeatureEntries);
-  return kFeatureEntries;
+base::span<const FeatureEntry> GetFeatureEntries() {
+  if (!GetEntriesForTesting()->empty())
+    return base::span<FeatureEntry>(*GetEntriesForTesting());
+  return base::make_span(kFeatureEntries, base::size(kFeatureEntries));
 }
 
 }  // namespace testing

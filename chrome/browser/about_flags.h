@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/metrics/histogram_base.h"
 #include "base/values.h"
 #include "components/flags_ui/feature_entry.h"
@@ -113,7 +114,7 @@ class ScopedFeatureEntries final {
   ~ScopedFeatureEntries();
 };
 
-const flags_ui::FeatureEntry* GetFeatureEntries(size_t* count);
+base::span<const flags_ui::FeatureEntry> GetFeatureEntries();
 
 }  // namespace testing
 

@@ -1120,9 +1120,9 @@ void ResetAllFlags(flags_ui::FlagsStorage* flags_storage) {
 
 namespace testing {
 
-const flags_ui::FeatureEntry* GetFeatureEntries(size_t* count) {
-  *count = base::size(kFeatureEntries);
-  return kFeatureEntries;
+base::span<const flags_ui::FeatureEntry> GetFeatureEntries() {
+  return base::span<const flags_ui::FeatureEntry>(kFeatureEntries,
+                                                  base::size(kFeatureEntries));
 }
 
 }  // namespace testing

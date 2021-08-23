@@ -64,7 +64,7 @@ void ResetAllFlags(flags_ui::FlagsStorage* flags_storage);
 namespace testing {
 
 // Returns the global set of feature entries.
-const flags_ui::FeatureEntry* GetFeatureEntries(size_t* count);
+base::span<const flags_ui::FeatureEntry> GetFeatureEntries();
 
 }  // namespace testing
 
