@@ -238,3 +238,27 @@ interface HTMLVideoElement {
   requestVideoFrameCallback(callback: VideoFrameRequestCallback): number;
   cancelVideoFrameCallback(handle: number): undefined;
 }
+
+// Barcode Detection API, this is currently only supported in Chrome on
+// ChromeOS, Android or macOS.
+// https://wicg.github.io/shape-detection-api/
+declare class BarcodeDetector {
+  static getSupportedFormats(): Promise<BarcodeFormat[]>;
+  constructor(barcodeDetectorOptions?: BarcodeDetectorOptions);
+  detect(image: ImageBitmapSource): Promise<DetectedBarcode[]>;
+}
+
+interface BarcodeDetectorOptions {
+  formats?: BarcodeFormat[];
+}
+
+interface DetectedBarcode {
+  boundingBox: DOMRectReadOnly;
+  rawValue: string;
+  format: BarcodeFormat;
+  cornerPoints: ReadonlyArray<Point2D>;
+}
+
+type BarcodeFormat =
+    'aztec'|'code_128'|'code_39'|'code_93'|'codabar'|'data_matrix'|'ean_13'|
+    'ean_8'|'itf'|'pdf417'|'qr_code'|'unknown'|'upc_a'|'upc_e';
