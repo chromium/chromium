@@ -1064,10 +1064,6 @@ TEST_F(ParkableStringTest, ReportTotalUnparkingTime) {
 TEST_F(ParkableStringTest, ReportTotalDiskTime) {
   base::ScopedMockElapsedTimersForTest mock_elapsed_timers;
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      {features::kCompressParkableStrings, features::kParkableStringsToDisk},
-      {});
   ASSERT_TRUE(features::IsParkableStringsToDiskEnabled());
 
   ParkableString parkable(MakeLargeString().ReleaseImpl());

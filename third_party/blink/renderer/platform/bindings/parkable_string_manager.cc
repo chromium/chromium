@@ -318,10 +318,8 @@ void ParkableStringManager::RecordStatisticsAfter5Minutes() const {
   }
 
   // May not be usable, e.g. Incognito, permission or write failure.
-  if (features::IsParkableStringsToDiskEnabled()) {
-    base::UmaHistogramBoolean("Memory.ParkableString.DiskIsUsable.5min",
-                              data_allocator().may_write());
-  }
+  base::UmaHistogramBoolean("Memory.ParkableString.DiskIsUsable.5min",
+                            data_allocator().may_write());
   // These metrics only make sense if the disk allocator is used.
   if (data_allocator().may_write()) {
     base::UmaHistogramTimes("Memory.ParkableString.DiskWriteTime.5min",

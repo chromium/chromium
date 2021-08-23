@@ -746,14 +746,9 @@ const char kSkipTouchEventFilterFilteringProcessParamValueBrowserAndRenderer[] =
 const base::Feature kCompressParkableStrings{"CompressParkableStrings",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Whether ParkableStrings can be written out to disk.
-// Depends on compression above.
-const base::Feature kParkableStringsToDisk{"ParkableStringsToDisk",
-                                           base::FEATURE_ENABLED_BY_DEFAULT};
-
 bool IsParkableStringsToDiskEnabled() {
-  return base::FeatureList::IsEnabled(kParkableStringsToDisk) &&
-         base::FeatureList::IsEnabled(kCompressParkableStrings);
+  // Always enabled as soon as compression is enabled.
+  return base::FeatureList::IsEnabled(kCompressParkableStrings);
 }
 
 // Controls whether to auto select on contextual menu click in Chrome OS.
