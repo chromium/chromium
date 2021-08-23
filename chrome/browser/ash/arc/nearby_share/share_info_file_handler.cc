@@ -145,9 +145,11 @@ const std::vector<std::string>& ShareInfoFileHandler::GetMimeTypes() const {
 }
 
 void ShareInfoFileHandler::StartPreparingFiles(
+    StartedCallback started_callback,
     CompletedCallback completed_callback,
     ProgressBarUpdateCallback update_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(started_callback);
   DCHECK(completed_callback);
   DCHECK(update_callback);
 
@@ -188,7 +190,8 @@ void ShareInfoFileHandler::StartPreparingFiles(
       base::BindOnce(&ShareInfoFileHandler::CreateDirectoryAndStreamFiles,
                      this),
       base::BindOnce(&ShareInfoFileHandler::OnCreatedDirectoryAndStreamingFiles,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(started_callback)));
 }
 
 bool ShareInfoFileHandler::CreateDirectoryAndStreamFiles() {
@@ -275,7 +278,9 @@ base::ScopedFD ShareInfoFileHandler::CreateFileForWrite(
   return base::ScopedFD(dest_file.TakePlatformFile());
 }
 
-void ShareInfoFileHandler::OnCreatedDirectoryAndStreamingFiles(bool result) {
+void ShareInfoFileHandler::OnCreatedDirectoryAndStreamingFiles(
+    StartedCallback callback,
+    bool result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (!result) {
@@ -297,6 +302,7 @@ void ShareInfoFileHandler::OnCreatedDirectoryAndStreamingFiles(bool result) {
         base::BindOnce(&ShareInfoFileHandler::OnFileStreamingTimeout,
                        weak_ptr_factory_.GetWeakPtr(), timeout_message));
   }
+  std::move(callback).Run();
 }
 
 void ShareInfoFileHandler::OnFileStreamReadCompleted(

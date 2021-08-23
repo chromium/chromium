@@ -16,6 +16,9 @@
   <message name="IDS_ASH_ARC_APP_COMPAT_RESIZE_CONFIRM_DONT_ASK_ME" desc="Label for check box that prevents the dialog from being shown in the future">
     Don’t ask again for this app
   </message>
+  <message name="IDS_ASH_ARC_NEARBY_SHARE_FILES_PREPARATION_PROGRESS" desc="Label for progress bar that shows files preparation progress during Nearby Share from the ARC application.">
+    Preparing files
+  </message>
   <message name="IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_PHONE" desc="Item in a list of possible sizes for the app. Makes the app in a portrait, phone size.">
     Phone
   </message>

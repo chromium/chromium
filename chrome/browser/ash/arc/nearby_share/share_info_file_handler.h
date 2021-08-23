@@ -48,6 +48,9 @@ namespace arc {
 class ShareInfoFileHandler
     : public base::RefCountedThreadSafe<ShareInfoFileHandler> {
  public:
+  // Signifies whether all shared files have started streaming successfully.
+  using StartedCallback = base::OnceCallback<void(void)>;
+
   // |result| signifies state of shared files after streaming has completed.
   using CompletedCallback =
       base::OnceCallback<void(absl::optional<base::File::Error> result)>;
@@ -82,11 +85,14 @@ class ShareInfoFileHandler
 
   // Start streaming virtual files to destination file descriptors in
   // preparation for Nearby Share.  Callbacks are run on the UI thread.
+  // |started_callback| is called when all files have successfully started
+  // streaming.
   // |completed_callback| is called when file streaming is completed with
   // either error or success.
   // |update_callback| is for updating a progress bar view value if needed
   // (e.g. views::ProgressBar::SetValue(double)).
-  void StartPreparingFiles(CompletedCallback completed_callback,
+  void StartPreparingFiles(StartedCallback started_callback,
+                           CompletedCallback completed_callback,
                            ProgressBarUpdateCallback update_callback);
 
  private:
@@ -102,7 +108,8 @@ class ShareInfoFileHandler
 
   // Called when temp directory for Nearby Share cached files is created and
   // started streaming files.
-  void OnCreatedDirectoryAndStreamingFiles(bool result);
+  void OnCreatedDirectoryAndStreamingFiles(StartedCallback callback,
+                                           bool result);
 
   // Called when the raw bytes of files have completed streaming from ARC VFS
   // to Chrome local path.

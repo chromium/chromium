@@ -10,12 +10,16 @@
 
 #include "ash/public/cpp/app_types_util.h"
 #include "base/bind.h"
+#include "base/callback_forward.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/ash/arc/nearby_share/ui/nearby_share_overlay_view.h"
+#include "chrome/browser/ash/arc/nearby_share/ui/progress_bar_dialog_view.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharesheet/sharesheet_service.h"
@@ -40,6 +44,11 @@ namespace {
 // initialized.
 constexpr base::TimeDelta kWindowInitializationTimeout =
     base::TimeDelta::FromSeconds(1);
+
+constexpr base::TimeDelta kProgressBarUpdateInterval =
+    base::TimeDelta::FromMilliseconds(1500);
+
+constexpr uint64_t kShowProgressBarMinSizeInBytes = 12000000;  // 12MB.
 
 constexpr char kIntentExtraText[] = "android.intent.extra.TEXT";
 
@@ -111,7 +120,7 @@ void NearbyShareSessionImpl::OnNearbyShareClosed(
   if (!file_handler_) {
     // Delete the current session object by using the task ID associated with
     // it.
-    VLOG(1) << "OnNearbyShareClosed: Deleting session with task_id "
+    VLOG(1) << "OnNearbyShareClosed: Deleting session with task ID: "
             << task_id_;
     std::move(session_finished_callback_).Run(task_id_);
   }
@@ -232,6 +241,8 @@ void NearbyShareSessionImpl::OnPreparedDirectory(aura::Window* const arc_window,
       << "Prepare Directory was not successful";
 
   file_handler_->StartPreparingFiles(
+      base::BindOnce(&NearbyShareSessionImpl::OnFileStreamingStarted,
+                     weak_ptr_factory_.GetWeakPtr(), arc_window),
       base::BindOnce(&NearbyShareSessionImpl::ShowNearbyShareBubbleInArcWindow,
                      weak_ptr_factory_.GetWeakPtr(), arc_window),
       base::BindRepeating(&NearbyShareSessionImpl::OnProgressBarUpdate,
@@ -264,6 +275,27 @@ void NearbyShareSessionImpl::OnNearbyShareBubbleShown(
   }
 }
 
+void NearbyShareSessionImpl::OnFileStreamingStarted(
+    aura::Window* const window) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(file_handler_);
+
+  DVLOG(1) << __func__;
+  // Only show the progress bar if total files size is greater than
+  // |kShowProgressBarMinSizeInBytes|, otherwise minimize unnecessary
+  // UI step as the file streaming time should be < 1 second.
+  if (file_handler_->GetTotalSizeOfFiles() > kShowProgressBarMinSizeInBytes) {
+    progress_bar_view_ = std::make_unique<ProgressBarDialogView>();
+    ProgressBarDialogView::Show(window, progress_bar_view_.get());
+
+    // Keep updating the progress bar if the interval timer elapsed to update
+    // the user on the file streaming progress.
+    progress_bar_update_timer_.Start(
+        FROM_HERE, kProgressBarUpdateInterval, this,
+        &NearbyShareSessionImpl::OnProgressBarIntervalElapsed);
+  }
+}
+
 void NearbyShareSessionImpl::ShowNearbyShareBubbleInArcWindow(
     aura::Window* const arc_window,
     absl::optional<base::File::Error> result) {
@@ -280,7 +312,18 @@ void NearbyShareSessionImpl::ShowNearbyShareBubbleInArcWindow(
     return;
   }
 
-  VLOG(1) << "Getting Sharesheet service";
+  // If the progress bar is visible at this point, hide it and stop the update
+  // interval timer so that we can show the Nearby Share bubble.
+  if (progress_bar_update_timer_.IsRunning()) {
+    progress_bar_update_timer_.Stop();
+  }
+  if (progress_bar_view_) {
+    progress_bar_view_->SetVisible(false);
+  }
+
+  // Close any overlay views that may still be shown.
+  NearbyShareOverlayView::CloseOverlayOn(arc_window);
+
   sharesheet::SharesheetService* sharesheet_service =
       sharesheet::SharesheetServiceFactory::GetForProfile(profile_);
   if (!sharesheet_service) {
@@ -319,11 +362,25 @@ void NearbyShareSessionImpl::OnTimerFired() {
   OnCleanupSession();
 }
 
+void NearbyShareSessionImpl::OnProgressBarIntervalElapsed() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (progress_bar_view_) {
+    progress_bar_view_->UpdateInterpolatedProgressBarValue();
+  }
+}
+
 void NearbyShareSessionImpl::OnProgressBarUpdate(double value) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // TODO(b/191705289): Add UI integration with views::ProgressBar.
   DVLOG(1) << "Called OnProgressBarUpdate with value: " << value;
+
+  if (progress_bar_view_) {
+    // Only show value if there is forward progress.
+    if (value > progress_bar_view_->GetProgressBarValue()) {
+      progress_bar_view_->UpdateProgressBarValue(value);
+    }
+  }
 }
 
 void NearbyShareSessionImpl::OnSessionDisconnected() {
@@ -382,7 +439,7 @@ void NearbyShareSessionImpl::OnCleanupSession() {
   if (!IsNearbyShareBubbleVisible()) {
     // Delete the current session object by using the task ID associated with
     // it.
-    VLOG(1) << "OnCleanupSession: Deleting session with task_id " << task_id_;
+    VLOG(1) << "OnCleanupSession: Deleting session with task ID: " << task_id_;
     std::move(session_finished_callback_).Run(task_id_);
   }
 }
