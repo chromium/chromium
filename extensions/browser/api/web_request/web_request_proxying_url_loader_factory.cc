@@ -712,7 +712,7 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
     // intuitive), |onBeforeSendHeaders| is only dispatched for HTTP and HTTPS
     // and urn: requests.
 
-    const auto state_on_error = State::kRejectedByOnBeforeSendHeaders;
+    state_on_error = State::kRejectedByOnBeforeSendHeaders;
     auto continuation =
         base::BindRepeating(&InProgressRequest::ContinueToSendHeaders,
                             weak_factory_.GetWeakPtr(), state_on_error);

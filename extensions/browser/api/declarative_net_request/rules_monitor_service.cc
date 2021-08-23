@@ -850,22 +850,23 @@ void RulesMonitorService::OnNewStaticRulesetsLoaded(
   if (matcher) {
     // Iterate over the existing matchers to compute `static_rule_count` and
     // `static_ruleset_count`.
-    for (const std::unique_ptr<RulesetMatcher>& matcher : matcher->matchers()) {
+    for (const std::unique_ptr<RulesetMatcher>& ruleset_matcher :
+         matcher->matchers()) {
       // Exclude since we are only including static rulesets.
-      if (matcher->id() == kDynamicRulesetID)
+      if (ruleset_matcher->id() == kDynamicRulesetID)
         continue;
 
       // Exclude since we'll be removing this |matcher|.
-      if (base::Contains(ids_to_disable, matcher->id()))
+      if (base::Contains(ids_to_disable, ruleset_matcher->id()))
         continue;
 
       // Exclude to prevent double counting. This will be a part of
       // |new_matchers| below.
-      if (base::Contains(ids_to_enable, matcher->id()))
+      if (base::Contains(ids_to_enable, ruleset_matcher->id()))
         continue;
 
       static_ruleset_count += 1;
-      static_rule_count += matcher->GetRulesCountPair();
+      static_rule_count += ruleset_matcher->GetRulesCountPair();
     }
   }
 
@@ -877,9 +878,9 @@ void RulesMonitorService::OnNewStaticRulesetsLoaded(
       return;
     }
 
-    std::unique_ptr<RulesetMatcher> matcher = ruleset.TakeMatcher();
+    std::unique_ptr<RulesetMatcher> ruleset_matcher = ruleset.TakeMatcher();
 
-    RulesCountPair matcher_count = matcher->GetRulesCountPair();
+    RulesCountPair matcher_count = ruleset_matcher->GetRulesCountPair();
 
     // Per-ruleset limits should have been enforced during
     // indexing/installation.
@@ -889,7 +890,7 @@ void RulesMonitorService::OnNewStaticRulesetsLoaded(
 
     static_ruleset_count += 1;
     static_rule_count += matcher_count;
-    new_matchers.push_back(std::move(matcher));
+    new_matchers.push_back(std::move(ruleset_matcher));
   }
 
   if (static_ruleset_count > dnr_api::MAX_NUMBER_OF_ENABLED_STATIC_RULESETS) {

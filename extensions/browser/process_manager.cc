@@ -900,7 +900,7 @@ void ProcessManager::CloseLazyBackgroundPageNow(const std::string& extension_id,
       UnregisterRenderFrameHost(frame);
     }
 
-    ExtensionHost* host = GetBackgroundHostForExtension(extension_id);
+    host = GetBackgroundHostForExtension(extension_id);
     if (host)
       CloseBackgroundHost(host);
   }

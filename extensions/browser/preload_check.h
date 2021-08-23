@@ -22,13 +22,12 @@ class PreloadCheck {
  public:
   // These enumerators should only be referred to by name, so it is safe to
   // insert or remove values as necessary.
-  enum Error {
-    NONE,
-    BLOCKLISTED_ID,
-    BLOCKLISTED_UNKNOWN,
-    DISALLOWED_BY_POLICY,
-    WEBGL_NOT_SUPPORTED,
-    WINDOW_SHAPE_NOT_SUPPORTED,
+  enum class Error {
+    kBlocklistedId,
+    kBlocklistedUnknown,
+    kDisallowedByPolicy,
+    kWebglNotSupported,
+    kWindowShapeNotSupported,
   };
 
   using Errors = std::set<Error>;

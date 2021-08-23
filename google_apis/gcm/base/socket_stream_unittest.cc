@@ -471,10 +471,7 @@ TEST_F(GCMSocketStreamTest, WritePartialWithLengthChecking) {
   // to make sure data is as what we expected, and there is no trailing garbage
   // data.
   while (true) {
-    char buffer[5];
-    uint32_t read_size = sizeof(buffer);
-    MojoResult r =
-        consumer_handle->ReadData(buffer, &read_size, MOJO_READ_DATA_FLAG_NONE);
+    r = consumer_handle->ReadData(buffer, &read_size, MOJO_READ_DATA_FLAG_NONE);
     if (r == MOJO_RESULT_SHOULD_WAIT)
       continue;
     if (r != MOJO_RESULT_OK)

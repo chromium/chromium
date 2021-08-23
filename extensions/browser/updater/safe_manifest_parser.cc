@@ -225,9 +225,10 @@ void ParseXmlDone(ParseUpdateManifestCallback callback,
   std::string error_msg;
   int prodversionmin_count = 0;
   for (const auto* app : apps) {
-    UpdateManifestResult result;
-    ParseSingleAppTag(*app, gupdate_ns, &result, &prodversionmin_count);
-    results->update_list.push_back(result);
+    UpdateManifestResult manifest_result;
+    ParseSingleAppTag(*app, gupdate_ns, &manifest_result,
+                      &prodversionmin_count);
+    results->update_list.push_back(manifest_result);
   }
   // Parsing error corresponding to each extension are stored in the results.
   std::move(callback).Run(std::move(results), absl::nullopt);

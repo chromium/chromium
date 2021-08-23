@@ -715,12 +715,12 @@ TEST_F(APIEventHandlerTest, CallbackNotifications) {
         .Times(1);
     // And add a listener to an event in a different context to make sure the
     // associated context is correct.
-    v8::Local<v8::Function> add_listener =
+    v8::Local<v8::Function> add_listener_b =
         FunctionFromString(context_b, kAddListenerFunction);
     v8::Local<v8::Function> listener =
         FunctionFromString(context_b, "(function() {})");
     v8::Local<v8::Value> argv[] = {event1_b, listener};
-    RunFunction(add_listener, context_b, base::size(argv), argv);
+    RunFunction(add_listener_b, context_b, base::size(argv), argv);
     ::testing::Mock::VerifyAndClearExpectations(&change_handler);
   }
   EXPECT_EQ(1u,
@@ -950,14 +950,14 @@ TEST_F(APIEventHandlerTest, TestCreateCustomEvent) {
   v8::Local<v8::Object> event = handler.CreateAnonymousEventInstance(context);
   ASSERT_FALSE(event.IsEmpty());
 
-  const char kAddListenerFunction[] =
+  const char kLocalAddListenerFunction[] =
       "(function(event) {\n"
       "  event.addListener(function() {\n"
       "    this.eventArgs = Array.from(arguments);\n"
       "  });\n"
       "})";
   v8::Local<v8::Value> add_listener_argv[] = {event};
-  RunFunction(FunctionFromString(context, kAddListenerFunction), context,
+  RunFunction(FunctionFromString(context, kLocalAddListenerFunction), context,
               base::size(add_listener_argv), add_listener_argv);
 
   // Test dispatching to the listeners.
@@ -998,12 +998,12 @@ TEST_F(APIEventHandlerTest, TestCreateCustomEventWithCyclicDependency) {
   v8::Local<v8::Object> event = handler.CreateAnonymousEventInstance(context);
   ASSERT_FALSE(event.IsEmpty());
 
-  const char kAddListenerFunction[] =
+  const char kLocalAddListenerFunction[] =
       "(function(event) {\n"
       "  event.addListener(function() {}.bind(null, event));\n"
       "})";
   v8::Local<v8::Value> add_listener_argv[] = {event};
-  RunFunction(FunctionFromString(context, kAddListenerFunction), context,
+  RunFunction(FunctionFromString(context, kLocalAddListenerFunction), context,
               base::size(add_listener_argv), add_listener_argv);
 
   DisposeContext(context);

@@ -298,8 +298,9 @@ std::vector<std::string> GetPublicRulesetIDs(const Extension& extension,
                                              const CompositeMatcher& matcher) {
   std::vector<std::string> ids;
   ids.reserve(matcher.matchers().size());
-  for (const std::unique_ptr<RulesetMatcher>& matcher : matcher.matchers())
-    ids.push_back(GetPublicRulesetID(extension, matcher->id()));
+  for (const std::unique_ptr<RulesetMatcher>& ruleset_matcher :
+       matcher.matchers())
+    ids.push_back(GetPublicRulesetID(extension, ruleset_matcher->id()));
 
   return ids;
 }

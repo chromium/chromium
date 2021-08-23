@@ -713,19 +713,19 @@ void GCMStoreImpl::Backend::SetGServicesSettings(
   // Remove all existing settings.
   leveldb::ReadOptions read_options;
   read_options.verify_checksums = true;
-  std::unique_ptr<leveldb::Iterator> iter(db_->NewIterator(read_options));
-  for (iter->Seek(MakeSlice(kGServiceSettingKeyStart));
-       iter->Valid() && iter->key().ToString() < kGServiceSettingKeyEnd;
-       iter->Next()) {
-    write_batch.Delete(iter->key());
+  std::unique_ptr<leveldb::Iterator> db_it(db_->NewIterator(read_options));
+  for (db_it->Seek(MakeSlice(kGServiceSettingKeyStart));
+       db_it->Valid() && db_it->key().ToString() < kGServiceSettingKeyEnd;
+       db_it->Next()) {
+    write_batch.Delete(db_it->key());
   }
 
   // Add the new settings.
-  for (std::map<std::string, std::string>::const_iterator iter =
+  for (std::map<std::string, std::string>::const_iterator map_it =
            settings.begin();
-       iter != settings.end(); ++iter) {
-    write_batch.Put(MakeSlice(MakeGServiceSettingKey(iter->first)),
-                    MakeSlice(iter->second));
+       map_it != settings.end(); ++map_it) {
+    write_batch.Put(MakeSlice(MakeGServiceSettingKey(map_it->first)),
+                    MakeSlice(map_it->second));
   }
 
   // Update the settings digest.

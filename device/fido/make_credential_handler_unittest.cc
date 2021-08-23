@@ -394,8 +394,8 @@ ACTION_P(Reply, reply) {
       base::BindOnce(
           [](base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)>
                  callback,
-             std::vector<uint8_t> reply) {
-            std::move(callback).Run(std::move(reply));
+             std::vector<uint8_t> reply_bytes) {
+            std::move(callback).Run(std::move(reply_bytes));
           },
           std::move(arg1), std::vector<uint8_t>(reply.begin(), reply.end())));
 }

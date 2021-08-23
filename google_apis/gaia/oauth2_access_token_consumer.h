@@ -45,10 +45,10 @@ class OAuth2AccessTokenConsumer {
       Builder();
       ~Builder();
 
-      Builder& WithAccessToken(const std::string& access_token);
-      Builder& WithRefreshToken(const std::string& refresh_token);
-      Builder& WithExpirationTime(const base::Time& expiration_time);
-      Builder& WithIdToken(const std::string& id_token);
+      Builder& WithAccessToken(const std::string& token);
+      Builder& WithRefreshToken(const std::string& token);
+      Builder& WithExpirationTime(const base::Time& time);
+      Builder& WithIdToken(const std::string& token);
 
       TokenResponse build();
 

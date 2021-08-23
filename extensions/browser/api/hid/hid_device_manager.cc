@@ -371,9 +371,9 @@ void HidDeviceManager::OnEnumerationComplete(
   enumeration_ready_ = true;
 
   for (const auto& params : pending_enumerations_) {
-    std::unique_ptr<base::ListValue> devices =
+    std::unique_ptr<base::ListValue> devices_list =
         CreateApiDeviceList(params->extension, params->filters);
-    std::move(params->callback).Run(std::move(devices));
+    std::move(params->callback).Run(std::move(devices_list));
   }
   pending_enumerations_.clear();
 }

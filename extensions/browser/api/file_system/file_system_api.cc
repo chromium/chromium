@@ -837,26 +837,27 @@ ExtensionFunction::ResponseAction FileSystemRetainEntryFunction::Run() {
     if (!storage::CrackIsolatedFileSystemName(filesystem_name, &filesystem_id))
       return RespondNow(Error(kRetainEntryError));
 
-    storage::FileSystemContext* const context =
+    storage::FileSystemContext* const file_system_context =
         util::GetStoragePartitionForExtensionId(extension_id(),
                                                 browser_context())
             ->GetFileSystemContext();
 
-    const storage::FileSystemURL url = context->CreateCrackedFileSystemURL(
-        blink::StorageKey(url::Origin::Create(extension()->url())),
-        storage::kFileSystemTypeIsolated,
-        storage::IsolatedContext::GetInstance()
-            ->CreateVirtualRootPath(filesystem_id)
-            .Append(base::FilePath::FromUTF8Unsafe(filesystem_path)));
+    const storage::FileSystemURL url =
+        file_system_context->CreateCrackedFileSystemURL(
+            blink::StorageKey(url::Origin::Create(extension()->url())),
+            storage::kFileSystemTypeIsolated,
+            storage::IsolatedContext::GetInstance()
+                ->CreateVirtualRootPath(filesystem_id)
+                .Append(base::FilePath::FromUTF8Unsafe(filesystem_path)));
 
     // It is safe to use base::Unretained() for operation_runner(), since it
-    // is owned by |context| which will delete it on the IO thread.
+    // is owned by |file_system_context| which will delete it on the IO thread.
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(
             base::IgnoreResult(
                 &storage::FileSystemOperationRunner::GetMetadata),
-            base::Unretained(context->operation_runner()), url,
+            base::Unretained(file_system_context->operation_runner()), url,
             storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY,
             base::BindOnce(
                 &PassFileInfoToUIThread,

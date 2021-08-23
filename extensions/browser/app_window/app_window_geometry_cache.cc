@@ -95,20 +95,22 @@ void AppWindowGeometryCache::SaveGeometry(const std::string& extension_id,
 void AppWindowGeometryCache::SyncToStorage() {
   std::set<std::string> tosync;
   tosync.swap(unsynced_extensions_);
-  for (auto it = tosync.cbegin(), eit = tosync.cend(); it != eit; ++it) {
-    const std::string& extension_id = *it;
+  for (auto sync_it = tosync.cbegin(), sync_eit = tosync.cend();
+       sync_it != sync_eit; ++sync_it) {
+    const std::string& extension_id = *sync_it;
     const ExtensionData& extension_data = cache_[extension_id];
 
     std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue);
-    for (auto it = extension_data.cbegin(), eit = extension_data.cend();
-         it != eit; ++it) {
+    for (auto data_it = extension_data.cbegin(),
+              data_eit = extension_data.cend();
+         data_it != data_eit; ++data_it) {
       std::unique_ptr<base::DictionaryValue> value =
           std::make_unique<base::DictionaryValue>();
-      const gfx::Rect& bounds = it->second.bounds;
-      const gfx::Rect& screen_bounds = it->second.screen_bounds;
+      const gfx::Rect& bounds = data_it->second.bounds;
+      const gfx::Rect& screen_bounds = data_it->second.screen_bounds;
       DCHECK(!bounds.IsEmpty());
       DCHECK(!screen_bounds.IsEmpty());
-      DCHECK(it->second.window_state != ui::SHOW_STATE_DEFAULT);
+      DCHECK(data_it->second.window_state != ui::SHOW_STATE_DEFAULT);
       value->SetInteger("x", bounds.x());
       value->SetInteger("y", bounds.y());
       value->SetInteger("w", bounds.width());
@@ -117,14 +119,15 @@ void AppWindowGeometryCache::SyncToStorage() {
       value->SetInteger("screen_bounds_y", screen_bounds.y());
       value->SetInteger("screen_bounds_w", screen_bounds.width());
       value->SetInteger("screen_bounds_h", screen_bounds.height());
-      value->SetInteger("state", it->second.window_state);
+      value->SetInteger("state", data_it->second.window_state);
       value->SetString(
-          "ts", base::NumberToString(it->second.last_change.ToInternalValue()));
-      dict->SetKey(it->first,
+          "ts",
+          base::NumberToString(data_it->second.last_change.ToInternalValue()));
+      dict->SetKey(data_it->first,
                    base::Value::FromUniquePtrValue(std::move(value)));
 
       for (auto& observer : observers_)
-        observer.OnGeometryCacheChanged(extension_id, it->first, bounds);
+        observer.OnGeometryCacheChanged(extension_id, data_it->first, bounds);
     }
 
     prefs_->SetGeometryCache(extension_id, std::move(dict));

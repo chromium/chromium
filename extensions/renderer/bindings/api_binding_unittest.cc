@@ -570,7 +570,7 @@ TEST_F(APIBindingUnittest, TypeRefsTest) {
 }
 
 TEST_F(APIBindingUnittest, RestrictedAPIs) {
-  const char kFunctions[] =
+  const char kLocalFunctions[] =
       "[{"
       "  'name': 'allowedOne',"
       "  'parameters': []"
@@ -584,7 +584,7 @@ TEST_F(APIBindingUnittest, RestrictedAPIs) {
       "  'name': 'restrictedTwo',"
       "  'parameters': []"
       "}]";
-  SetFunctions(kFunctions);
+  SetFunctions(kLocalFunctions);
   const char kEvents[] =
       "[{'name': 'allowedEvent'}, {'name': 'restrictedEvent'}]";
   SetEvents(kEvents);

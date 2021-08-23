@@ -1240,11 +1240,11 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
 
   if (request.resident_key_required) {
     // If there's already a registration for this RP and user ID, delete it.
-    for (const auto& registration : mutable_state()->registrations) {
-      if (registration.second.is_resident &&
-          rp_id_hash == registration.second.application_parameter &&
-          registration.second.user->id == request.user.id) {
-        mutable_state()->registrations.erase(registration.first);
+    for (const auto& reg : mutable_state()->registrations) {
+      if (reg.second.is_resident &&
+          rp_id_hash == reg.second.application_parameter &&
+          reg.second.user->id == request.user.id) {
+        mutable_state()->registrations.erase(reg.first);
         break;
       }
     }
@@ -1801,10 +1801,10 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnPINCommand(
             subcommand,
             static_cast<int>(device::pin::Subcommand::
                                  kGetPinUvAuthTokenUsingPinWithPermissions));
-        CtapDeviceResponseCode response =
+        CtapDeviceResponseCode response_code =
             ExtractPermissions(request_map, config_, permissions);
-        if (response != CtapDeviceResponseCode::kSuccess) {
-          return response;
+        if (response_code != CtapDeviceResponseCode::kSuccess) {
+          return response_code;
         }
       }
 
@@ -1851,10 +1851,10 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnPINCommand(
       }
 
       PinUvAuthTokenPermissions permissions;
-      CtapDeviceResponseCode response =
+      CtapDeviceResponseCode response_code =
           ExtractPermissions(request_map, config_, permissions);
-      if (response != CtapDeviceResponseCode::kSuccess) {
-        return response;
+      if (response_code != CtapDeviceResponseCode::kSuccess) {
+        return response_code;
       }
 
       if (device_info_->options.user_verification_availability ==

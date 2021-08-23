@@ -2679,11 +2679,11 @@ WebRequestInternalEventHandledFunction::Run() {
 
   std::unique_ptr<ExtensionWebRequestEventRouter::EventResponse> response;
   if (HasOptionalArgument(4)) {
-    const base::DictionaryValue& value =
+    const base::DictionaryValue& dict_value =
         base::Value::AsDictionaryValue(args()[4]);
-    EXTENSION_FUNCTION_VALIDATE(value.is_dict());
+    EXTENSION_FUNCTION_VALIDATE(dict_value.is_dict());
 
-    if (!value.DictEmpty()) {
+    if (!dict_value.DictEmpty()) {
       base::Time install_time = ExtensionPrefs::Get(browser_context())
                                     ->GetInstallTime(extension_id_safe());
       response =
@@ -2691,12 +2691,13 @@ WebRequestInternalEventHandledFunction::Run() {
               extension_id_safe(), install_time);
     }
 
-    const base::Value* redirect_url_value = value.FindKey("redirectUrl");
+    const base::Value* redirect_url_value = dict_value.FindKey("redirectUrl");
     const base::Value* auth_credentials_value =
-        value.FindKey(keys::kAuthCredentialsKey);
-    const base::Value* request_headers_value = value.FindKey("requestHeaders");
+        dict_value.FindKey(keys::kAuthCredentialsKey);
+    const base::Value* request_headers_value =
+        dict_value.FindKey("requestHeaders");
     const base::Value* response_headers_value =
-        value.FindKey("responseHeaders");
+        dict_value.FindKey("responseHeaders");
 
     // In Public Session we restrict everything but "cancel" (except for
     // whitelisted extensions which have no such restrictions).
@@ -2710,10 +2711,10 @@ WebRequestInternalEventHandledFunction::Run() {
       return RespondNow(Error(keys::kInvalidPublicSessionBlockingResponse));
     }
 
-    const base::Value* cancel_value = value.FindKey("cancel");
+    const base::Value* cancel_value = dict_value.FindKey("cancel");
     if (cancel_value) {
       // Don't allow cancel mixed with other keys.
-      if (value.DictSize() != 1) {
+      if (dict_value.DictSize() != 1) {
         OnError(event_name, sub_event_name, request_id, render_process_id,
                 web_view_instance_id, std::move(response));
         return RespondNow(Error(keys::kInvalidBlockingResponse));
@@ -2749,12 +2750,12 @@ WebRequestInternalEventHandledFunction::Run() {
       std::unique_ptr<helpers::ResponseHeaders> response_headers;
       if (has_request_headers) {
         request_headers = std::make_unique<net::HttpRequestHeaders>();
-        headers_value = value.FindKeyOfType(keys::kRequestHeadersKey,
-                                            base::Value::Type::LIST);
+        headers_value = dict_value.FindKeyOfType(keys::kRequestHeadersKey,
+                                                 base::Value::Type::LIST);
       } else {
         response_headers = std::make_unique<helpers::ResponseHeaders>();
-        headers_value = value.FindKeyOfType(keys::kResponseHeadersKey,
-                                            base::Value::Type::LIST);
+        headers_value = dict_value.FindKeyOfType(keys::kResponseHeadersKey,
+                                                 base::Value::Type::LIST);
       }
       EXTENSION_FUNCTION_VALIDATE(headers_value);
 

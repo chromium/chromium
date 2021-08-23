@@ -224,8 +224,9 @@ TEST_F(DeclarativeEventWithSchemaTest, TestAllMethods) {
                     actions: ['cat'],
                   }]);
              }))";
-    v8::Local<v8::Function> add_rules = FunctionFromString(context, kAddRules);
-    RunFunctionOnGlobal(add_rules, context, base::size(args), args);
+    v8::Local<v8::Function> add_rules_func =
+        FunctionFromString(context, kAddRules);
+    RunFunctionOnGlobal(add_rules_func, context, base::size(args), args);
     ValidateLastRequest("events.addRules",
                         "['alpha.declarativeEvent',0,"
                         "[{'actions':['cat'],"

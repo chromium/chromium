@@ -635,8 +635,9 @@ class CTAP2Processor : public Transaction {
     }
   }
 
-  void OnMakeCredentialResponse(uint32_t ctap_status,
-                                base::span<const uint8_t> attestation_object) {
+  void OnMakeCredentialResponse(
+      uint32_t ctap_status,
+      base::span<const uint8_t> attestation_object_bytes) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK_LE(ctap_status, 0xFFu);
 
@@ -644,7 +645,7 @@ class CTAP2Processor : public Transaction {
     if (ctap_status == static_cast<uint8_t>(CtapDeviceResponseCode::kSuccess)) {
       // TODO: pass response parameters from the Java side.
       absl::optional<cbor::Value> cbor_attestation_object =
-          cbor::Reader::Read(attestation_object);
+          cbor::Reader::Read(attestation_object_bytes);
       if (!cbor_attestation_object || !cbor_attestation_object->is_map()) {
         FIDO_LOG(ERROR) << "invalid CBOR attestation object";
         return;

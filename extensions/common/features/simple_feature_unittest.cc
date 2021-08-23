@@ -378,10 +378,10 @@ TEST_F(SimpleFeatureTest, Context) {
   }
 
   {
-    SimpleFeature feature;
-    feature.set_location(SimpleFeature::COMPONENT_LOCATION);
+    SimpleFeature other_feature;
+    other_feature.set_location(SimpleFeature::COMPONENT_LOCATION);
     EXPECT_EQ(Feature::INVALID_LOCATION,
-              feature
+              other_feature
                   .IsAvailableToContext(extension.get(),
                                         Feature::BLESSED_EXTENSION_CONTEXT,
                                         Feature::CHROMEOS_PLATFORM)

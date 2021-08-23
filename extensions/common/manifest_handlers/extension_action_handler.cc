@@ -77,9 +77,8 @@ bool ExtensionActionHandler::Parse(Extension* extension,
     // browser action) for MV2 because the action should not be seen as enabled
     // on every page. We achieve the same in MV3 by adjusting the default
     // state to be disabled by default.
-    const ActionInfo::Type type = extension->manifest_version() >= 3
-                                      ? ActionInfo::TYPE_ACTION
-                                      : ActionInfo::TYPE_PAGE;
+    type = extension->manifest_version() >= 3 ? ActionInfo::TYPE_ACTION
+                                              : ActionInfo::TYPE_PAGE;
     auto action_info = std::make_unique<ActionInfo>(type);
     action_info->synthesized = true;
     if (type == ActionInfo::TYPE_ACTION)

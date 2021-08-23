@@ -314,7 +314,7 @@ ExtensionPrefValueMap::GetEffectivePrefValueController(
     }
 
     if (!incognito) {
-      const PrefValueMap* prefs = GetExtensionPrefValueMap(
+      prefs = GetExtensionPrefValueMap(
           ext_id, extensions::kExtensionPrefsScopeRegularOnly);
       if (prefs->GetValue(key, &value)) {
         winner = i;

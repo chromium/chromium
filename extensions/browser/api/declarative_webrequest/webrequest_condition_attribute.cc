@@ -370,12 +370,12 @@ std::unique_ptr<const HeaderMatcher> HeaderMatcher::Create(
     const base::ListValue* tests) {
   std::vector<std::unique_ptr<const HeaderMatchTest>> header_tests;
   for (const auto& entry : tests->GetList()) {
-    const base::DictionaryValue* tests = nullptr;
-    if (!entry.GetAsDictionary(&tests))
+    const base::DictionaryValue* tests_dict = nullptr;
+    if (!entry.GetAsDictionary(&tests_dict))
       return nullptr;
 
     std::unique_ptr<const HeaderMatchTest> header_test(
-        HeaderMatchTest::Create(tests));
+        HeaderMatchTest::Create(tests_dict));
     if (header_test.get() == nullptr)
       return nullptr;
     header_tests.push_back(std::move(header_test));
@@ -488,19 +488,20 @@ HeaderMatcher::HeaderMatchTest::Create(const base::DictionaryValue* tests) {
     }
     const base::Value* content = &it.value();
 
-    std::vector<std::unique_ptr<const StringMatchTest>>* tests =
+    std::vector<std::unique_ptr<const StringMatchTest>>* matching_tests =
         is_name ? &name_match : &value_match;
     switch (content->type()) {
       case base::Value::Type::LIST: {
         const base::ListValue* list = nullptr;
         CHECK(content->GetAsList(&list));
-        for (const auto& it : list->GetList()) {
-          tests->push_back(StringMatchTest::Create(it, match_type, !is_name));
+        for (const auto& elem : list->GetList()) {
+          matching_tests->push_back(
+              StringMatchTest::Create(elem, match_type, !is_name));
         }
         break;
       }
       case base::Value::Type::STRING: {
-        tests->push_back(
+        matching_tests->push_back(
             StringMatchTest::Create(*content, match_type, !is_name));
         break;
       }

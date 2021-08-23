@@ -307,13 +307,14 @@ scoped_refptr<const WebRequestAction> CreateRequestCookieAction(
 
   // Get new value.
   if (modification.type == helpers::ADD) {
-    const base::DictionaryValue* value = NULL;
-    INPUT_FORMAT_VALIDATE(dict->GetDictionary(keys::kCookieKey, &value));
-    modification.modification = ParseRequestCookie(value);
+    const base::DictionaryValue* dict_value = NULL;
+    INPUT_FORMAT_VALIDATE(dict->GetDictionary(keys::kCookieKey, &dict_value));
+    modification.modification = ParseRequestCookie(dict_value);
   } else if (modification.type == helpers::EDIT) {
-    const base::DictionaryValue* value = NULL;
-    INPUT_FORMAT_VALIDATE(dict->GetDictionary(keys::kModificationKey, &value));
-    modification.modification = ParseRequestCookie(value);
+    const base::DictionaryValue* dict_value = NULL;
+    INPUT_FORMAT_VALIDATE(
+        dict->GetDictionary(keys::kModificationKey, &dict_value));
+    modification.modification = ParseRequestCookie(dict_value);
   }
 
   return base::MakeRefCounted<WebRequestRequestCookieAction>(
@@ -352,13 +353,14 @@ scoped_refptr<const WebRequestAction> CreateResponseCookieAction(
 
   // Get new value.
   if (modification.type == helpers::ADD) {
-    const base::DictionaryValue* value = NULL;
-    INPUT_FORMAT_VALIDATE(dict->GetDictionary(keys::kCookieKey, &value));
-    modification.modification = ParseResponseCookie(value);
+    const base::DictionaryValue* dict_value = NULL;
+    INPUT_FORMAT_VALIDATE(dict->GetDictionary(keys::kCookieKey, &dict_value));
+    modification.modification = ParseResponseCookie(dict_value);
   } else if (modification.type == helpers::EDIT) {
-    const base::DictionaryValue* value = NULL;
-    INPUT_FORMAT_VALIDATE(dict->GetDictionary(keys::kModificationKey, &value));
-    modification.modification = ParseResponseCookie(value);
+    const base::DictionaryValue* dict_value = NULL;
+    INPUT_FORMAT_VALIDATE(
+        dict->GetDictionary(keys::kModificationKey, &dict_value));
+    modification.modification = ParseResponseCookie(dict_value);
   }
 
   return base::MakeRefCounted<WebRequestResponseCookieAction>(

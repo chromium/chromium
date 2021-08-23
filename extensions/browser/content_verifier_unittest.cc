@@ -151,7 +151,7 @@ class ContentVerifierTest : public ExtensionsTest {
 
     // Manually register handlers since the |ContentScriptsHandler| is not
     // usually registered in extensions_unittests.
-    ScopedTestingManifestHandlerRegistry registry;
+    ScopedTestingManifestHandlerRegistry scoped_registry;
     {
       ManifestHandlerRegistry* registry = ManifestHandlerRegistry::Get();
       registry->RegisterHandler(std::make_unique<BackgroundManifestHandler>());
