@@ -113,7 +113,7 @@ export class ScannerOptions {
 
     /**
      * Called when scanner option changed.
-     * @type {function(): undefined}
+     * @type {function(): void}
      * @public
      */
     this.onChange = () => {};
