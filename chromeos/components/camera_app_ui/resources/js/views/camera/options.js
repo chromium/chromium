@@ -196,9 +196,10 @@ export class Options {
 
   /**
    * Gets the video device ids sorted by preference.
+   * @param {!Facing} facing Preferred facing to use
    * @return {!Array<string>}
    */
-  videoDeviceIds() {
+  videoDeviceIds(facing) {
     /** @type {!Array<(!Camera3DeviceInfo|!MediaDeviceInfo)>} */
     let devices;
     /**
@@ -218,14 +219,15 @@ export class Options {
       devices = this.infoUpdater_.getDevicesInfo();
     }
 
-    const defaultFacing = util.getDefaultFacing();
+    const preferredFacing =
+        facing === Facing.NOT_SET ? util.getDefaultFacing() : facing;
     // Put the selected video device id first.
     const sorted = devices.map((device) => device.deviceId).sort((a, b) => {
       if (a === b) {
         return 0;
       }
       if (this.videoDeviceId_ ? a === this.videoDeviceId_ :
-                                (facings && facings[a] === defaultFacing)) {
+                                (facings && facings[a] === preferredFacing)) {
         return -1;
       }
       return 1;

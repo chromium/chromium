@@ -73,7 +73,7 @@ export class CameraIntent extends Camera {
     });
     super(
         resultSaver, infoUpdater, photoPreferrer, videoPreferrer, intent.mode,
-        perfLogger);
+        perfLogger, /* facing= */ null);
 
     /**
      * @type {!Intent}

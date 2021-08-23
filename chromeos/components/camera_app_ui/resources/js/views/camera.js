@@ -94,10 +94,11 @@ export class Camera extends View {
    * @param {!VideoConstraintsPreferrer} videoPreferrer
    * @param {!Mode} defaultMode
    * @param {!PerfLogger} perfLogger
+   * @param {?Facing} facing
    */
   constructor(
       resultSaver, infoUpdater, photoPreferrer, videoPreferrer, defaultMode,
-      perfLogger) {
+      perfLogger, facing) {
     super(ViewName.CAMERA);
 
     /**
@@ -223,7 +224,7 @@ export class Camera extends View {
      * @type {!Facing}
      * @protected
      */
-    this.facingMode_ = Facing.NOT_SET;
+    this.facingMode_ = facing ?? Facing.NOT_SET;
 
     /**
      * @type {!metrics.ShutterType}
@@ -1017,7 +1018,7 @@ export class Camera extends View {
     try {
       await this.infoUpdater_.lockDeviceInfo(async () => {
         if (!this.isSuspended()) {
-          for (const id of this.options_.videoDeviceIds()) {
+          for (const id of this.options_.videoDeviceIds(this.facingMode_)) {
             if (await this.startWithDevice_(id)) {
               // Make the different active camera announced by screen reader.
               const currentId = this.options_.currentDeviceId;

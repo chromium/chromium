@@ -28,7 +28,14 @@ import {PerfLogger} from './perf.js';
 import {preloadImagesList} from './preload_images.js';
 import * as state from './state.js';
 import * as tooltip from './tooltip.js';
-import {ErrorLevel, ErrorType, Mode, PerfEvent, ViewName} from './type.js';
+import {
+  ErrorLevel,
+  ErrorType,
+  Facing,
+  Mode,
+  PerfEvent,
+  ViewName,
+} from './type.js';
 import {addUnloadCallback} from './unload.js';
 import * as util from './util.js';
 import {Camera} from './views/camera.js';
@@ -53,10 +60,11 @@ export class App {
    * @param {{
    *     perfLogger: !PerfLogger,
    *     intent: ?Intent,
+   *     facing: ?Facing,
    * }} params
    * @public
    */
-  constructor({perfLogger, intent}) {
+  constructor({perfLogger, intent, facing}) {
     /**
      * @type {!PerfLogger}
      * @private
@@ -110,7 +118,7 @@ export class App {
         const mode = this.intent_ !== null ? this.intent_.mode : Mode.PHOTO;
         return new Camera(
             this.galleryButton_, this.infoUpdater_, this.photoPreferrer_,
-            this.videoPreferrer_, mode, this.perfLogger_);
+            this.videoPreferrer_, mode, this.perfLogger_, facing);
       }
     })();
 
@@ -359,6 +367,32 @@ export class App {
 }
 
 /**
+ * Parse search params in URL.
+ * @return {{intent: ?Intent, facing: ?Facing}}
+ */
+function parseSearchParams() {
+  const url = new URL(window.location.href);
+  const params = url.searchParams;
+
+  const intent = params.get('intentId') !== null ? Intent.create(url) : null;
+
+  // TODO(pihsun): Intent.create has almost same code for checking a string is
+  // an enum variant, extract them to a util function when we change TypeScript
+  // since the util function type is hard to be described in closure compiler
+  // due to lack of generic type bounds.
+  /** @type {?Facing} */
+  const facing = (() => {
+    const facing = params.get('facing');
+    if (facing === null || !Object.values(Facing).includes(facing)) {
+      return null;
+    }
+    return /** @type {!Facing} */ (facing);
+  })();
+
+  return {intent, facing};
+}
+
+/**
  * Singleton of the App object.
  * @type {?App}
  */
@@ -373,9 +407,8 @@ let instance = null;
   }
 
   const perfLogger = new PerfLogger();
-  const url = new URL(window.location.href);
-  const intent =
-      url.searchParams.get('intentId') !== null ? Intent.create(url) : null;
+
+  const {intent, facing} = parseSearchParams();
 
   state.set(state.State.INTENT, intent !== null);
 
@@ -435,6 +468,6 @@ let instance = null;
     });
   });
 
-  instance = new App({perfLogger, intent});
+  instance = new App({perfLogger, intent, facing});
   await instance.start();
 })();
