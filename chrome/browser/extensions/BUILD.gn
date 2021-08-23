@@ -1141,9 +1141,6 @@ static_library("extensions") {
       "//ui/ozone",
       "//ui/views",
     ]
-    if (enable_nacl) {
-      deps += [ "//chrome/browser/resources/chromeos/zip_archiver" ]
-    }
     if (is_cfm) {
       deps += [
         "//chromeos/services/chromebox_for_meetings/public/cpp",

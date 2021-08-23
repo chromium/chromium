@@ -97,7 +97,6 @@ static_library("minizip") {
     # NOTE: Modifying visibility list requires approval from security team.
     ":minizip_compress_fuzzer",
     ":minizip_uncompress_fuzzer",
-    "//chrome/browser/resources/chromeos/zip_archiver/cpp:zip_archiver_library",
   ]
 }
 
