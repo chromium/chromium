@@ -36,12 +36,14 @@
 #include "chrome/browser/ash/file_manager/guest_os_file_tasks.h"
 #include "chrome/browser/ash/file_manager/open_util.h"
 #include "chrome/browser/ash/file_manager/open_with_browser.h"
+#include "chrome/browser/ash/file_manager/url_util.h"
 #include "chrome/browser/ash/file_manager/web_file_tasks.h"
 #include "chrome/browser/chromeos/fileapi/file_system_backend.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
+#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #include "chrome/browser/web_applications/components/web_app_id_constants.h"
 #include "chrome/common/chrome_features.h"
@@ -69,6 +71,8 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/shell_dialogs/select_file_dialog.h"
+#include "url/gurl.h"
 
 using extensions::Extension;
 using extensions::api::file_manager_private::Verb;
@@ -560,6 +564,34 @@ bool ExecuteFileTask(Profile* profile,
           extensions::api::file_manager_private::TASK_RESULT_OPENED, "");
     }
     return result;
+  }
+
+  // When the FilesSWA is enabled: Open Files SWA if the task is for Files app.
+  if (ash::features::IsFileManagerSwaEnabled() &&
+      task.app_id == kFileManagerAppId) {
+    std::u16string title;
+    const GURL destination_folder =
+        file_urls.size() ? file_urls[0].ToGURL() : GURL();
+    GURL filesSwaURL =
+        ::file_manager::util::GetFileManagerMainPageUrlWithParams(
+            ui::SelectFileDialog::SELECT_NONE, title, destination_folder,
+            /*selection_url=*/{},
+            /*target_name=*/{},
+            /*file_types=*/nullptr,
+            /*file_type_index=*/0,
+            /*search_query=*/{},
+            /*show_android_picker_apps=*/false);
+
+    web_app::SystemAppLaunchParams params;
+    params.url = filesSwaURL;
+
+    web_app::LaunchSystemWebAppAsync(
+        profile, web_app::SystemAppType::FILE_MANAGER, params);
+    if (done) {
+      std::move(done).Run(
+          extensions::api::file_manager_private::TASK_RESULT_OPENED, "");
+    }
+    return true;
   }
 
   // Get the extension.
