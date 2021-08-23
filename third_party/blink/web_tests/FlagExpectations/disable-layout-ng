@@ -1279,3 +1279,6 @@ crbug.com/591099 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-029.
 crbug.com/591099 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-030.html [ Failure ]
 crbug.com/591099 http/tests/devtools/webaudio/graphview-test.js [ Failure ]
 crbug.com/591099 virtual/shared_array_buffer_on_desktop/http/tests/devtools/webaudio/graphview-test.js [ Failure ]
+
+#unblock wpt-importer
+crbug.com/591099 external/wpt/css/css-overflow/scrollable-overflow-input-001.html [ Failure ]

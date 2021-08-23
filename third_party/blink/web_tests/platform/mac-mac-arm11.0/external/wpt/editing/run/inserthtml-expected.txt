@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1498 tests; 1439 PASS, 59 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1462 tests; 1404 PASS, 58 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS [["stylewithcss","true"],["inserthtml","ab<b>c</b>d"]] "foo[]bar": execCommand("stylewithcss", false, "true") return value
 PASS [["stylewithcss","true"],["inserthtml","ab<b>c</b>d"]] "foo[]bar": execCommand("inserthtml", false, "ab<b>c</b>d") return value
 PASS [["stylewithcss","true"],["inserthtml","ab<b>c</b>d"]] "foo[]bar" checks for modifications to non-editable content
@@ -1462,41 +1462,5 @@ PASS [["inserthtml","<!--abc-->"]] "<p><span><!--foo--><br><!--bar--></span>{}</
 PASS [["inserthtml","<!--abc-->"]] "<p><span><!--foo--><br><!--bar--></span>{}</p>" queryCommandIndeterm("inserthtml") after
 PASS [["inserthtml","<!--abc-->"]] "<p><span><!--foo--><br><!--bar--></span>{}</p>" queryCommandState("inserthtml") after
 PASS [["inserthtml","<!--abc-->"]] "<p><span><!--foo--><br><!--bar--></span>{}</p>" queryCommandValue("inserthtml") after
-PASS [["inserthtml","<pre>abc</pre>"]] "<pre>12[]34</pre>": execCommand("inserthtml", false, "<pre>abc</pre>") return value
-PASS [["inserthtml","<pre>abc</pre>"]] "<pre>12[]34</pre>" checks for modifications to non-editable content
-PASS [["inserthtml","<pre>abc</pre>"]] "<pre>12[]34</pre>" compare innerHTML
-PASS [["inserthtml","<pre>abc</pre>"]] "<pre>12[]34</pre>" queryCommandIndeterm("inserthtml") before
-PASS [["inserthtml","<pre>abc</pre>"]] "<pre>12[]34</pre>" queryCommandState("inserthtml") before
-PASS [["inserthtml","<pre>abc</pre>"]] "<pre>12[]34</pre>" queryCommandValue("inserthtml") before
-PASS [["inserthtml","<pre>abc</pre>"]] "<pre>12[]34</pre>" queryCommandIndeterm("inserthtml") after
-PASS [["inserthtml","<pre>abc</pre>"]] "<pre>12[]34</pre>" queryCommandState("inserthtml") after
-PASS [["inserthtml","<pre>abc</pre>"]] "<pre>12[]34</pre>" queryCommandValue("inserthtml") after
-PASS [["inserthtml","<pre>abc</pre>"]] "<pre>1[23]4</pre>": execCommand("inserthtml", false, "<pre>abc</pre>") return value
-PASS [["inserthtml","<pre>abc</pre>"]] "<pre>1[23]4</pre>" checks for modifications to non-editable content
-PASS [["inserthtml","<pre>abc</pre>"]] "<pre>1[23]4</pre>" compare innerHTML
-PASS [["inserthtml","<pre>abc</pre>"]] "<pre>1[23]4</pre>" queryCommandIndeterm("inserthtml") before
-PASS [["inserthtml","<pre>abc</pre>"]] "<pre>1[23]4</pre>" queryCommandState("inserthtml") before
-PASS [["inserthtml","<pre>abc</pre>"]] "<pre>1[23]4</pre>" queryCommandValue("inserthtml") before
-PASS [["inserthtml","<pre>abc</pre>"]] "<pre>1[23]4</pre>" queryCommandIndeterm("inserthtml") after
-PASS [["inserthtml","<pre>abc</pre>"]] "<pre>1[23]4</pre>" queryCommandState("inserthtml") after
-PASS [["inserthtml","<pre>abc</pre>"]] "<pre>1[23]4</pre>" queryCommandValue("inserthtml") after
-PASS [["inserthtml","<pre>abc</pre>"]] "<pre>[1234]</pre>": execCommand("inserthtml", false, "<pre>abc</pre>") return value
-PASS [["inserthtml","<pre>abc</pre>"]] "<pre>[1234]</pre>" checks for modifications to non-editable content
-PASS [["inserthtml","<pre>abc</pre>"]] "<pre>[1234]</pre>" compare innerHTML
-PASS [["inserthtml","<pre>abc</pre>"]] "<pre>[1234]</pre>" queryCommandIndeterm("inserthtml") before
-PASS [["inserthtml","<pre>abc</pre>"]] "<pre>[1234]</pre>" queryCommandState("inserthtml") before
-PASS [["inserthtml","<pre>abc</pre>"]] "<pre>[1234]</pre>" queryCommandValue("inserthtml") before
-PASS [["inserthtml","<pre>abc</pre>"]] "<pre>[1234]</pre>" queryCommandIndeterm("inserthtml") after
-PASS [["inserthtml","<pre>abc</pre>"]] "<pre>[1234]</pre>" queryCommandState("inserthtml") after
-PASS [["inserthtml","<pre>abc</pre>"]] "<pre>[1234]</pre>" queryCommandValue("inserthtml") after
-PASS [["inserthtml","<pre>abc</pre>"]] "<pre contenteditable=\"false\"><span contenteditable>[1234]</span></pre>": execCommand("inserthtml", false, "<pre>abc</pre>") return value
-PASS [["inserthtml","<pre>abc</pre>"]] "<pre contenteditable=\"false\"><span contenteditable>[1234]</span></pre>" checks for modifications to non-editable content
-FAIL [["inserthtml","<pre>abc</pre>"]] "<pre contenteditable=\"false\"><span contenteditable>[1234]</span></pre>" compare innerHTML assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<pre contenteditable=\"false\"><span contenteditable=\"\"><pre>abc</pre></span></pre>" not in array ["<pre contenteditable=\"false\"><span contenteditable=\"\">abc</span></pre>", "<pre contenteditable=\"false\"><span contenteditable=\"\">abc<br></span></pre>"]
-PASS [["inserthtml","<pre>abc</pre>"]] "<pre contenteditable=\"false\"><span contenteditable>[1234]</span></pre>" queryCommandIndeterm("inserthtml") before
-PASS [["inserthtml","<pre>abc</pre>"]] "<pre contenteditable=\"false\"><span contenteditable>[1234]</span></pre>" queryCommandState("inserthtml") before
-PASS [["inserthtml","<pre>abc</pre>"]] "<pre contenteditable=\"false\"><span contenteditable>[1234]</span></pre>" queryCommandValue("inserthtml") before
-PASS [["inserthtml","<pre>abc</pre>"]] "<pre contenteditable=\"false\"><span contenteditable>[1234]</span></pre>" queryCommandIndeterm("inserthtml") after
-PASS [["inserthtml","<pre>abc</pre>"]] "<pre contenteditable=\"false\"><span contenteditable>[1234]</span></pre>" queryCommandState("inserthtml") after
-PASS [["inserthtml","<pre>abc</pre>"]] "<pre contenteditable=\"false\"><span contenteditable>[1234]</span></pre>" queryCommandValue("inserthtml") after
 Harness: the test ran to completion.
 

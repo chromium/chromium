@@ -86442,12 +86442,12 @@
        ]
       ],
       "content-visibility-056.html": [
-       "4c12d2bf2a7aed4e6de7e4badd66d45103f64750",
+       "4372bab6c0e86029957b4765bb41c08a843b901f",
        [
         null,
         [
          [
-          "/css/css-contain/content-visibility/spacer-and-container-scrolled-ref.html",
+          "/css/css-contain/content-visibility/spacer-and-container-ref.html",
           "=="
          ]
         ],
@@ -86474,19 +86474,6 @@
         [
          [
           "/css/css-contain/content-visibility/content-visibility-058-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "content-visibility-059.html": [
-       "1242a5b55a0b92ff1221638848262f66c82ab72d",
-       [
-        null,
-        [
-         [
-          "/css/css-contain/content-visibility/content-visibility-059-ref.html",
           "=="
          ]
         ],
@@ -86682,6 +86669,32 @@
         [
          [
           "/css/css-contain/content-visibility/container-focus-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "content-visibility-083.html": [
+       "27f04713fe321ed6a4da52671c891e3d8ae48646",
+       [
+        null,
+        [
+         [
+          "/css/css-contain/content-visibility/spacer-and-container-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "content-visibility-084.html": [
+       "33d11cf220f2d08016db060cd89789bde68b2ebb",
+       [
+        null,
+        [
+         [
+          "/css/css-contain/content-visibility/spacer-and-container-ref.html",
           "=="
          ]
         ],
@@ -105655,6 +105668,19 @@
         [
          [
           "/css/css-grid/abspos/positioned-grid-items-023-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "positioned-grid-items-024.html": [
+       "b214787026abe911d314128754b39dd86e181e12",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
           "=="
          ]
         ],
@@ -126310,6 +126336,19 @@
        {}
       ]
      ],
+     "orthogonal-writing-mode-spanner.html": [
+      "a0f175141dda3117c60c5a72d90cec94388901ae",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "overflow-unsplittable-001.html": [
       "2baaaaedf6bc7817e6914441ee51603da5bda392",
       [
@@ -126356,6 +126395,19 @@
        [
         [
          "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "replaced-content-spanner-auto-width.html": [
+      "90720852ca39d314c79c79d075dc35e4984ed973",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
          "=="
         ]
        ],
@@ -127413,6 +127465,32 @@
        [
         [
          "/css/css-overflow/overflow-scroll-resize-visibility-hidden-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "scrollable-overflow-input-001.html": [
+      "1b58803079f8b60b68eb1c57a0c522962e0a8019",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/scrollable-overflow-input-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "scrollable-overflow-input-002.html": [
+      "3efebf0b90da7eec05fa4df14b4ac6c78e774773",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/scrollable-overflow-input-002-ref.html",
          "=="
         ]
        ],
@@ -141314,6 +141392,32 @@
       ],
       "contain-intrinsic-size-027.html": [
        "61581e893f51910f1ecba1281a72a51aea4f8a69",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square-only.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "contain-intrinsic-size-logical-001.html": [
+       "9a84bff491b5ef3e7928e4cb8a03568eac775d36",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square-only.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "contain-intrinsic-size-logical-002.html": [
+       "b5b9748f81419451e5a34174898d2c43e8348f64",
        [
         null,
         [
@@ -231401,12 +231505,8 @@
       []
      ],
      "parsing": {
-      "font-family-computed-expected.txt": [
-       "f8162e3bf71c7c5fec74f796c90b4f2c21e22cdc",
-       []
-      ],
       "font-family-valid-expected.txt": [
-       "37685b30cd5e8020c6de44a2fbaf5b53284281b9",
+       "0a4eada118dddf6451de8ac57812d913a8ef880a",
        []
       ],
       "font-language-override-computed-expected.txt": [
@@ -242698,6 +242798,14 @@
        []
       ]
      },
+     "scrollable-overflow-input-001-ref.html": [
+      "151843a72c00616dfb7ad723be6b1d3435cde65b",
+      []
+     ],
+     "scrollable-overflow-input-002-ref.html": [
+      "782ffab9da1c1cb55b4488e7fc8f913dd18857f3",
+      []
+     ],
      "text-overflow-ellipsis-editing-input-ref.html": [
       "3902072bc58b7bf62290edafbce1b735288af716",
       []
@@ -256285,7 +256393,7 @@
       []
      ],
      "getComputedStyle-detached-subtree-expected.txt": [
-      "e1c2ab5987f3d320c81a0497ed01b304d397daf5",
+      "6f1d965ab32effef644229bfbd1b458cd64b2fee",
       []
      ],
      "getComputedStyle-insets-absolute-expected.txt": [
@@ -260105,7 +260213,7 @@
       []
      ],
      "delete.js": [
-      "57ddb1520cfd847b4899fb87b0d8bc16ab13e35a",
+      "ecbc398c8e5121c931e55cfeba5c4193d9e7aa6f",
       []
      ],
      "fontname.js": [
@@ -260125,7 +260233,7 @@
       []
      ],
      "forwarddelete.js": [
-      "eeee322169df58eec9cd5c7e07a0ddb33f0bf16a",
+      "61a70b7c3f96e47348d0fc2087d59b26df913da5",
       []
      ],
      "hilitecolor.js": [
@@ -260145,7 +260253,7 @@
       []
      ],
      "inserthtml.js": [
-      "a3a23cd99e1b7140a9215554d2d17dc6cf34f51c",
+      "b11e443547f17a3b4b932bcd72f0e7768be05b48",
       []
      ],
      "insertimage.js": [
@@ -260362,6 +260470,10 @@
       "699e4ef25de0e47e4ed2cdd217db617e5fac390e",
       []
      ],
+     "delete_6001-7000-expected.txt": [
+      "732c8ae6294483a081e4edc9f9054174b8012b5d",
+      []
+     ],
      "delete_6001-last-expected.txt": [
       "e8432ad328f421dc8619273a926651ee4170913b",
       []
@@ -260487,7 +260599,7 @@
       []
      ],
      "inserthtml-expected.txt": [
-      "4f3841ec61e7baaa517bf9df9192bd64f1c169d6",
+      "fe3e57e47911774064447fd829ef014e73db163a",
       []
      ],
      "insertimage-expected.txt": [
@@ -265790,7 +265902,7 @@
      ]
     },
     "support.js": [
-     "960b5721c376973d8721cdd4e602c43f08897679",
+     "0f0e7f65b2c253c1068414727f44175c5f9a878a",
      []
     ]
    },
@@ -289177,7 +289289,7 @@
       []
      ],
      "webxr-test.js": [
-      "4e3299284f993528d2b3769ce22d3a7450fae97e",
+      "e8e370814d9e131e54c5d1c30c6be484d9295e1b",
       []
      ],
      "webxr-test.js.headers": [
@@ -316279,6 +316391,13 @@
      ],
      "goTo-current.html": [
       "30ea3983f83f83e6d55bff572999dbdc14e343e0",
+      [
+       null,
+       {}
+      ]
+     ],
+     "goTo-detach-between-navigate-and-navigatesuccess.html": [
+      "6b51af7305af80ae6e679c67c103bce5f2f43a95",
       [
        null,
        {}
@@ -347622,21 +347741,21 @@
       },
       "parsing": {
        "contain-intrinsic-size-computed.html": [
-        "68ec4fce76916aab977fc95eb5e07b56d6daccc8",
+        "19c6f224399b4f357c686675596430ddec354c0e",
         [
          null,
          {}
         ]
        ],
        "contain-intrinsic-size-invalid.html": [
-        "2ee8a20a9cdfc8ce703dc9319b7e1ea871f87a2d",
+        "4bd6eb04195420ebe951bf2c4630a713f56d9b10",
         [
          null,
          {}
         ]
        ],
        "contain-intrinsic-size-valid.html": [
-        "8cd3922071b80a8a10c8bbd97473a4ee5526fe7d",
+        "a1ff2743235e467eaf431e845ec32a2a5883b63b",
         [
          null,
          {}
@@ -365358,7 +365477,7 @@
       ]
      ],
      "delete.html": [
-      "6d7a7c8f0c5a88cba7a23815cc9da44aca032d0c",
+      "2d11f6af26b82fbbb0a0e92d26713396c74ef502",
       [
        "editing/run/delete.html?1-1000",
        {
@@ -365396,7 +365515,13 @@
        }
       ],
       [
-       "editing/run/delete.html?6001-last",
+       "editing/run/delete.html?6001-7000",
+       {
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/run/delete.html?7001-last",
        {
         "timeout": "long"
        }
@@ -426111,6 +426236,15 @@
        ]
       },
       "the-selectmenu-element": {
+       "selectmenu-keyboard.tentative.html": [
+        "bb69c3555129a33d8d47efa8c9a9e71a3d7bb89f",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
        "selectmenu-nested.tentative.html": [
         "70fccedfea097115408cea8cde2a5161e603015f",
         [
@@ -447222,6 +447356,17 @@
       {}
      ]
     ],
+    "droppedentriescount.any.js": [
+     "4de816bdc42bd8f73defcb07cb694a5fddfe058b",
+     [
+      "performance-timeline/droppedentriescount.any.html",
+      {}
+     ],
+     [
+      "performance-timeline/droppedentriescount.any.worker.html",
+      {}
+     ]
+    ],
     "get-invalid-entries.html": [
      "33d6589e275e265180e0571ca3103dbf9aa179b8",
      [
@@ -466233,9 +466378,13 @@
       ]
      ],
      "initial-selection-on-focus.tentative.html": [
-      "b2bf422b4953a88e610fb9a8cdc0fb95ba5a122d",
+      "fcaf70d877f9b20baed20730df99cb60946e974b",
       [
-       null,
+       "selection/contenteditable/initial-selection-on-focus.tentative.html?div",
+       {}
+      ],
+      [
+       "selection/contenteditable/initial-selection-on-focus.tentative.html?span",
        {}
       ]
      ],
@@ -492971,7 +493120,7 @@
      ]
     ],
     "video-encoder.any.js": [
-     "aa2473e5e2b77135ca2cf51e14ee50c6c8061296",
+     "cad0c4f25817553c61918c7eb97f9361031536ea",
      [
       "webcodecs/video-encoder.any.html",
       {
@@ -493398,7 +493547,7 @@
      ]
     ],
     "videoFrame-construction.any.js": [
-     "ccc645f797fb303fc901782d94e65fc57277a4c3",
+     "c3b2dd121a6bd17ccd22dde62337884bc555de81",
      [
       "webcodecs/videoFrame-construction.any.html",
       {
