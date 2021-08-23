@@ -2361,8 +2361,14 @@ IN_PROC_BROWSER_TEST_F(SessionRestorePageLoadMetricsBrowserTest,
   }
 }
 
+// TODO(crbug.com/1242284): Flaky on Linux.
+#if defined(OS_LINUX)
+#define MAYBE_RestoreForeignSession DISABLED_RestoreForeignSession
+#else
+#define MAYBE_RestoreForeignSession RestoreForeignSession
+#endif
 IN_PROC_BROWSER_TEST_F(SessionRestorePageLoadMetricsBrowserTest,
-                       RestoreForeignSession) {
+                       MAYBE_RestoreForeignSession) {
   Profile* profile = browser()->profile();
 
   // Set up the restore data: one window with two tabs.
