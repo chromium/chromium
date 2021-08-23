@@ -72,8 +72,9 @@ class ContinuousSearchListViewBinder {
 
     private static void setupTextView(
             TextView textView, String text, int maxWidth, TextUtils.TruncateAt truncateAt) {
-        textView.setEllipsize(truncateAt);
+        textView.setSingleLine();
         textView.setMaxLines(1);
+        textView.setEllipsize(truncateAt);
         textView.setTextDirection(View.TEXT_DIRECTION_LTR);
         textView.setMaxWidth(maxWidth);
         textView.setText(text);

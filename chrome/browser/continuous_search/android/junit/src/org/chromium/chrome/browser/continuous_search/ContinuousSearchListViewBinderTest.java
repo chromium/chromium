@@ -140,8 +140,9 @@ public class ContinuousSearchListViewBinderTest {
 
     private void checkTextViewSetup(InOrder inOrder, TextView textView, String text, int maxWidth,
             TextUtils.TruncateAt truncateAt) {
-        inOrder.verify(textView).setEllipsize(truncateAt);
+        inOrder.verify(textView).setSingleLine();
         inOrder.verify(textView).setMaxLines(1);
+        inOrder.verify(textView).setEllipsize(truncateAt);
         inOrder.verify(textView).setTextDirection(View.TEXT_DIRECTION_LTR);
         inOrder.verify(textView).setMaxWidth(maxWidth);
         inOrder.verify(textView).setText(text);
