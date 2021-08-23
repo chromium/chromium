@@ -25,6 +25,9 @@ class InitializerImpl : public Initializer {
   std::unique_ptr<DeviceCache> CreateDeviceCache(
       AdapterStateController* adapter_state_controller,
       scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) override;
+  std::unique_ptr<DiscoverySessionManager> CreateDiscoverySessionManager(
+      AdapterStateController* adapter_state_controller,
+      scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) override;
 };
 
 }  // namespace bluetooth_config

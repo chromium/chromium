@@ -4,6 +4,7 @@
 
 #include "chromeos/services/bluetooth_config/cros_bluetooth_config.h"
 
+#include "chromeos/services/bluetooth_config/discovery_session_manager.h"
 #include "chromeos/services/bluetooth_config/initializer.h"
 #include "chromeos/services/bluetooth_config/system_properties_provider_impl.h"
 #include "device/bluetooth/bluetooth_adapter.h"
@@ -22,7 +23,10 @@ CrosBluetoothConfig::CrosBluetoothConfig(
       system_properties_provider_(
           std::make_unique<SystemPropertiesProviderImpl>(
               adapter_state_controller_.get(),
-              device_cache_.get())) {}
+              device_cache_.get())),
+      discovery_session_manager_(initializer.CreateDiscoverySessionManager(
+          adapter_state_controller_.get(),
+          bluetooth_adapter)) {}
 
 CrosBluetoothConfig::~CrosBluetoothConfig() = default;
 
@@ -38,6 +42,11 @@ void CrosBluetoothConfig::ObserveSystemProperties(
 
 void CrosBluetoothConfig::SetBluetoothEnabledState(bool enabled) {
   adapter_state_controller_->SetBluetoothEnabledState(enabled);
+}
+
+void CrosBluetoothConfig::StartDiscovery(
+    mojo::PendingRemote<mojom::BluetoothDiscoveryDelegate> delegate) {
+  discovery_session_manager_->StartDiscovery(std::move(delegate));
 }
 
 }  // namespace bluetooth_config

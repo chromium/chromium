@@ -149,4 +149,9 @@ interface CrosBluetoothConfig {
   // Turns Bluetooth on or off. If Bluetooth is unavailable or if it is
   // not currently modifiable, this function is a no-op.
   SetBluetoothEnabledState(bool enabled);
+
+  // Starts a discovery session, during which time it will be possible
+  // to find new devices and pair them. To stop discovery, disconnect
+  // |delegate|.
+  StartDiscovery(pending_remote<BluetoothDiscoveryDelegate> delegate);
 };

@@ -18,6 +18,7 @@ namespace bluetooth_config {
 
 class AdapterStateController;
 class DeviceCache;
+class DiscoverySessionManager;
 
 // Responsible for initializing the classes needed by the CrosBluetoothConfig
 // API.
@@ -30,6 +31,10 @@ class Initializer {
   virtual std::unique_ptr<AdapterStateController> CreateAdapterStateController(
       scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) = 0;
   virtual std::unique_ptr<DeviceCache> CreateDeviceCache(
+      AdapterStateController* adapter_state_controller,
+      scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) = 0;
+  virtual std::unique_ptr<DiscoverySessionManager>
+  CreateDiscoverySessionManager(
       AdapterStateController* adapter_state_controller,
       scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) = 0;
 
