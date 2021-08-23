@@ -7,7 +7,7 @@
 
 // This header contains types related to the security token PIN requests.
 
-namespace chromeos {
+namespace ash {
 namespace security_token_pin {
 
 // Type of the information asked from the user during a security token PIN
@@ -27,14 +27,14 @@ enum class ErrorLabel {
 };
 
 }  // namespace security_token_pin
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-namespace security_token_pin {
-using ::chromeos::security_token_pin::CodeType;
-using ::chromeos::security_token_pin::ErrorLabel;
-}  // namespace security_token_pin
 }  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+namespace security_token_pin {
+using ::ash::security_token_pin::CodeType;
+using ::ash::security_token_pin::ErrorLabel;
+}  // namespace security_token_pin
+}  // namespace chromeos
 
 #endif  // ASH_COMPONENTS_SECURITY_TOKEN_PIN_CONSTANTS_H_

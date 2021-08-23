@@ -10,7 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace security_token_pin {
 
 class SecurityTokenPinErrorGeneratorTest : public testing::Test {
@@ -106,4 +106,4 @@ TEST_F(SecurityTokenPinErrorGeneratorTest, InvalidPinWithHiddenAttempts) {
 }
 
 }  // namespace security_token_pin
-}  // namespace chromeos
+}  // namespace ash

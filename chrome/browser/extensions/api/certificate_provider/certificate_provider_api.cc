@@ -28,12 +28,12 @@
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 
-namespace api_cp = extensions::api::certificate_provider;
-namespace api_cpi = extensions::api::certificate_provider_internal;
-using PinCodeType = chromeos::security_token_pin::CodeType;
-using PinErrorLabel = chromeos::security_token_pin::ErrorLabel;
-
 namespace {
+
+namespace api_cp = ::extensions::api::certificate_provider;
+namespace api_cpi = ::extensions::api::certificate_provider_internal;
+using PinCodeType = ::ash::security_token_pin::CodeType;
+using PinErrorLabel = ::ash::security_token_pin::ErrorLabel;
 
 PinErrorLabel GetErrorLabelForDialog(api_cp::PinRequestErrorType error_type) {
   switch (error_type) {

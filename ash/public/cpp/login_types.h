@@ -348,16 +348,16 @@ struct ASH_PUBLIC_EXPORT SecurityTokenPinRequest {
   AccountId account_id;
 
   // Type of the code requested from the user.
-  chromeos::security_token_pin::CodeType code_type =
-      chromeos::security_token_pin::CodeType::kPin;
+  ash::security_token_pin::CodeType code_type =
+      ash::security_token_pin::CodeType::kPin;
 
   // Whether the UI controls that allow user to enter the value should be
   // enabled. MUST be |false| when |attempts_left| is zero.
   bool enable_user_input = true;
 
   // An optional error to be displayed to the user.
-  chromeos::security_token_pin::ErrorLabel error_label =
-      chromeos::security_token_pin::ErrorLabel::kNone;
+  ash::security_token_pin::ErrorLabel error_label =
+      ash::security_token_pin::ErrorLabel::kNone;
 
   // When non-negative, the UI should indicate this number to the user;
   // otherwise must be equal to -1.

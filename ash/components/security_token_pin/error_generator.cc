@@ -9,7 +9,7 @@
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace chromeos {
+namespace ash {
 namespace security_token_pin {
 
 // Only inform the user about the number of attempts left if it's smaller or
@@ -58,4 +58,4 @@ std::u16string GenerateErrorMessage(ErrorLabel error_label,
 }
 
 }  // namespace security_token_pin
-}  // namespace chromeos
+}  // namespace ash

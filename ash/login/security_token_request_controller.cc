@@ -101,16 +101,16 @@ bool SecurityTokenRequestController::SetPinUiState(
   PinRequestWidget::Get()->ClearInput();
   PinRequestWidget::Get()->SetPinInputEnabled(request.enable_user_input);
 
-  if (request.error_label == chromeos::security_token_pin::ErrorLabel::kNone) {
+  if (request.error_label == security_token_pin::ErrorLabel::kNone) {
     PinRequestWidget::Get()->UpdateState(PinRequestViewState::kNormal,
                                          GetTitle(), GetDescription());
   } else {
     PinRequestWidget::Get()->UpdateState(
         PinRequestViewState::kError,
         /*title=*/
-        chromeos::security_token_pin::GenerateErrorMessage(
-            request.error_label, request.attempts_left,
-            request.enable_user_input),
+        security_token_pin::GenerateErrorMessage(request.error_label,
+                                                 request.attempts_left,
+                                                 request.enable_user_input),
         /*description=*/std::u16string());
   }
   return true;
