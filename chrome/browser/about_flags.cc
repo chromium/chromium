@@ -6705,10 +6705,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(blink::features::kJXL)},
 #endif  // BUILDFLAG(ENABLE_JXL_DECODER)
 
-    {"window-naming", flag_descriptions::kWindowNamingName,
-     flag_descriptions::kWindowNamingDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kWindowNaming)},
-
 #if defined(OS_ANDROID)
     {"messages-for-android-ads-blocked",
      flag_descriptions::kMessagesForAndroidAdsBlockedName,

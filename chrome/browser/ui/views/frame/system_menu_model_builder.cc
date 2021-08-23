@@ -122,8 +122,7 @@ void SystemMenuModelBuilder::BuildSystemMenuForBrowserWindow(
   model->AddItemWithStringId(IDC_NEW_TAB, IDS_NEW_TAB);
   model->AddItemWithStringId(IDC_RESTORE_TAB, IDS_RESTORE_TAB);
   model->AddItemWithStringId(IDC_BOOKMARK_ALL_TABS, IDS_BOOKMARK_ALL_TABS);
-  if (base::FeatureList::IsEnabled(features::kWindowNaming))
-    model->AddItemWithStringId(IDC_NAME_WINDOW, IDS_NAME_WINDOW);
+  model->AddItemWithStringId(IDC_NAME_WINDOW, IDS_NAME_WINDOW);
   if (chrome::CanOpenTaskManager()) {
     model->AddSeparator(ui::NORMAL_SEPARATOR);
     model->AddItemWithStringId(IDC_TASK_MANAGER, IDS_TASK_MANAGER);

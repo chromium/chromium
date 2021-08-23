@@ -738,9 +738,6 @@ extern const base::Feature kWin10AcceleratedDefaultBrowserFlow;
 #endif  // defined(OS_WIN)
 
 COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kWindowNaming;
-
-COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kWriteBasicSystemProfileToPersistentHistogramsFile;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

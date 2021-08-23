@@ -1111,9 +1111,6 @@ const base::Feature kWin10AcceleratedDefaultBrowserFlow{
     "Win10AcceleratedDefaultBrowserFlow", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // defined(OS_WIN)
 
-const base::Feature kWindowNaming{"WindowNaming",
-                                  base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables writing basic system profile to the persistent histograms files
 // earlier.
 const base::Feature kWriteBasicSystemProfileToPersistentHistogramsFile{

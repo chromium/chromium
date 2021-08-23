@@ -370,8 +370,6 @@ base::scoped_nsobject<NSMenuItem> BuildWindowMenu(
     id app_delegate,
     const std::u16string& product_name,
     bool is_pwa) {
-  const bool window_naming =
-      base::FeatureList::IsEnabled(features::kWindowNaming);
   base::scoped_nsobject<NSMenuItem> item =
       Item(IDS_WINDOW_MENU_MAC)
           .tag(IDC_WINDOW_MENU)
@@ -388,7 +386,7 @@ base::scoped_nsobject<NSMenuItem> BuildWindowMenu(
                     .remove_if(is_pwa),
                 Item(IDS_NAME_WINDOW)
                     .command_id(IDC_NAME_WINDOW)
-                    .remove_if(is_pwa || !window_naming),
+                    .remove_if(is_pwa),
                 Item().is_separator().remove_if(is_pwa),
                 Item(IDS_SHOW_DOWNLOADS_MAC)
                     .command_id(IDC_SHOW_DOWNLOADS)

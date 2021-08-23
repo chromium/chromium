@@ -246,10 +246,10 @@ void ToolsMenuModel::Build(Browser* browser) {
   }
 
   AddItemWithStringId(IDC_CREATE_SHORTCUT, IDS_ADD_TO_OS_LAUNCH_SURFACE);
-  if (base::FeatureList::IsEnabled(features::kWindowNaming))
-    AddItemWithStringId(IDC_NAME_WINDOW, IDS_NAME_WINDOW);
+  AddItemWithStringId(IDC_NAME_WINDOW, IDS_NAME_WINDOW);
   if (commander::IsEnabled())
     AddItemWithStringId(IDC_TOGGLE_COMMANDER, IDS_TOGGLE_COMMANDER);
+
   AddSeparator(ui::NORMAL_SEPARATOR);
   AddItemWithStringId(IDC_CLEAR_BROWSING_DATA, IDS_CLEAR_BROWSING_DATA);
   AddItemWithStringId(IDC_MANAGE_EXTENSIONS, IDS_SHOW_EXTENSIONS);
