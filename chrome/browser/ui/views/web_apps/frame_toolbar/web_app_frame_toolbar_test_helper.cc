@@ -25,7 +25,7 @@ WebAppFrameToolbarTestHelper::WebAppFrameToolbarTestHelper() {
 
 WebAppFrameToolbarTestHelper::~WebAppFrameToolbarTestHelper() = default;
 
-void WebAppFrameToolbarTestHelper::InstallAndLaunchWebApp(
+web_app::AppId WebAppFrameToolbarTestHelper::InstallAndLaunchWebApp(
     Browser* browser,
     const GURL& start_url) {
   auto web_app_info = std::make_unique<WebApplicationInfo>();
@@ -50,9 +50,10 @@ void WebAppFrameToolbarTestHelper::InstallAndLaunchWebApp(
   web_app_frame_toolbar_ = frame_view_->web_app_frame_toolbar_for_testing();
   DCHECK(web_app_frame_toolbar_);
   DCHECK(web_app_frame_toolbar_->GetVisible());
+  return app_id;
 }
 
-void WebAppFrameToolbarTestHelper::InstallAndLaunchCustomWebApp(
+web_app::AppId WebAppFrameToolbarTestHelper::InstallAndLaunchCustomWebApp(
     Browser* browser,
     std::unique_ptr<WebApplicationInfo> web_app_info,
     const GURL& start_url) {
@@ -71,4 +72,5 @@ void WebAppFrameToolbarTestHelper::InstallAndLaunchCustomWebApp(
   web_app_frame_toolbar_ = frame_view_->web_app_frame_toolbar_for_testing();
   DCHECK(web_app_frame_toolbar_);
   DCHECK(web_app_frame_toolbar_->GetVisible());
+  return app_id;
 }

@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "chrome/browser/web_applications/components/web_app_id.h"
+
 struct WebApplicationInfo;
 class Browser;
 class BrowserNonClientFrameView;
@@ -23,8 +25,9 @@ class WebAppFrameToolbarTestHelper {
       delete;
   ~WebAppFrameToolbarTestHelper();
 
-  void InstallAndLaunchWebApp(Browser* browser, const GURL& start_url);
-  void InstallAndLaunchCustomWebApp(
+  web_app::AppId InstallAndLaunchWebApp(Browser* browser,
+                                        const GURL& start_url);
+  web_app::AppId InstallAndLaunchCustomWebApp(
       Browser* browser,
       std::unique_ptr<WebApplicationInfo> web_app_info,
       const GURL& start_url);
