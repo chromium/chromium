@@ -111,6 +111,13 @@ export class ScannerOptions {
      */
     this.docModeDevices_ = [];
 
+    /**
+     * Called when scanner option changed.
+     * @type {function(): undefined}
+     * @public
+     */
+    this.onChange = () => {};
+
     const updateShowScannerMode = () => {
       state.set(
           state.State.SHOW_SCANNER_MODE,
@@ -243,6 +250,8 @@ export class ScannerOptions {
     } else {
       await this.documentCornerOverylay_.stop();
     }
+
+    this.onChange();
   }
 
   /**
