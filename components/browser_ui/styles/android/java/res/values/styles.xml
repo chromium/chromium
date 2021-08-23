@@ -62,7 +62,7 @@
 
     <!-- Popup and long-press context popup menu style -->
     <style name="PopupMenuStyle" parent="Widget.AppCompat.Light.PopupMenu">
-        <item name="android:popupBackground">@drawable/popup_bg_tinted</item>
+        <item name="android:popupBackground">@drawable/menu_bg_tinted</item>
         <item name="android:overlapAnchor" tools:targetApi="21">true</item>
         <item name="android:popupElevation" tools:targetApi="21">0dp</item>
     </style>

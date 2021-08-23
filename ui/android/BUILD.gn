@@ -185,6 +185,7 @@ android_resources("ui_java_resources") {
     "java/res/drawable/drag_handlebar.xml",
     "java/res/drawable/ic_apps_blue_24dp.xml",
     "java/res/drawable/ic_expand_more_horizontal_black_24dp.xml",
+    "java/res/drawable/menu_bg_tinted.xml",
     "java/res/drawable/popup_bg_tinted.xml",
     "java/res/font/accent_font.xml",
     "java/res/layout/custom_toast_layout.xml",
