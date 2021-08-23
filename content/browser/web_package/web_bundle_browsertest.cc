@@ -2085,7 +2085,8 @@ IN_PROC_BROWSER_TEST_P(WebBundleFileBrowserTest, DataDecoderRestart) {
 }
 
 // TODO(https://crbug.com/1225178): flaky
-#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_ANDROID)
+#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_ANDROID) || \
+    defined(OS_MAC)
 #define MAYBE_ParseMetadataCrash DISABLED_ParseMetadataCrash
 #else
 #define MAYBE_ParseMetadataCrash ParseMetadataCrash
