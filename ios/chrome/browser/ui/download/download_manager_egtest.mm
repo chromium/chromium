@@ -196,7 +196,8 @@ bool WaitForOpenInDownloadsButton() {
 }
 
 // Tests "Open in New Tab" on download link.
-- (void)testDownloadInNewTab {
+// crbug.com/1240571: test is flaky
+- (void)DISABLED_testDownloadInNewTab {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGrey waitForWebStateContainingText:"Download"];
 
