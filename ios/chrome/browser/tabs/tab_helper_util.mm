@@ -44,6 +44,7 @@
 #import "ios/chrome/browser/metrics/pageload_foreground_duration_tab_helper.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/open_in/open_in_tab_helper.h"
+#import "ios/chrome/browser/optimization_guide/optimization_guide_tab_helper.h"
 #import "ios/chrome/browser/overscroll_actions/overscroll_actions_tab_helper.h"
 #import "ios/chrome/browser/passwords/password_tab_helper.h"
 #import "ios/chrome/browser/passwords/well_known_change_password_tab_helper.h"
@@ -153,6 +154,7 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
 
   NewTabPageTabHelper::CreateForWebState(web_state);
   OpenInTabHelper::CreateForWebState(web_state);
+  OptimizationGuideTabHelper::CreateForWebState(web_state);
   ChromeBrowserState* original_browser_state =
       browser_state->GetOriginalChromeBrowserState();
   favicon::WebFaviconDriver::CreateForWebState(
