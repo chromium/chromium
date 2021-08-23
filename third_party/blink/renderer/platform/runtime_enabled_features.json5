@@ -1072,6 +1072,10 @@
       // No status, as the web platform runtime enabled feature is controlled by
       // a Chromium level feature.
     },
+    {
+      name: "FontSynthesis",
+      status: "test",
+    },
     // For simulating Android's overlay fullscreen video in web tests on Linux.
     {
       name: "ForcedColors",
