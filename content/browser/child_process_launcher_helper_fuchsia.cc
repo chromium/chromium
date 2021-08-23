@@ -10,6 +10,7 @@
 #include "content/browser/child_process_launcher.h"
 #include "content/public/browser/child_process_launcher_utils.h"
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
+#include "sandbox/policy/sandbox_type.h"
 
 namespace content {
 namespace internal {
@@ -25,15 +26,24 @@ const char* ProcessNameFromSandboxType(
       return "renderer";
     case sandbox::policy::SandboxType::kUtility:
       return "utility";
+    case sandbox::policy::SandboxType::kService:
+      return "service";
     case sandbox::policy::SandboxType::kGpu:
       return "gpu";
     case sandbox::policy::SandboxType::kNetwork:
       return "network";
     case sandbox::policy::SandboxType::kVideoCapture:
       return "video-capture";
-    default:
-      NOTREACHED() << "Unknown sandbox_type.";
-      return nullptr;
+    case sandbox::policy::SandboxType::kAudio:
+      return "audio";
+    case sandbox::policy::SandboxType::kCdm:
+      return "cdm";
+    case sandbox::policy::SandboxType::kPpapi:
+      return "ppapi";
+    case sandbox::policy::SandboxType::kPrintCompositor:
+      return "print-compositor";
+    case sandbox::policy::SandboxType::kSpeechRecognition:
+      return "speech-recognition";
   }
 }
 
