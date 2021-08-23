@@ -376,7 +376,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Autofill.BetterAuth.CardUnmaskDuration.Fido.{CardType}.{Result}"
-    units="ms" expires_after="2021-10-04">
+    units="ms" expires_after="2022-08-01">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>autofill-auth-team@google.com</owner>
@@ -390,7 +390,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Autofill.BetterAuth.CardUnmaskDuration.Fido{AutofillRealPanResultGroups}"
-    units="ms" expires_after="2021-12-05">
+    units="ms" expires_after="2022-08-01">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>autofill-auth-team@google.com</owner>
@@ -405,7 +405,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.BetterAuth.CardUnmaskPreflightCalled"
-    enum="BooleanHit" expires_after="2021-12-05">
+    enum="BooleanHit" expires_after="2022-08-01">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>autofill-auth-team@google.com</owner>
@@ -422,7 +422,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.BetterAuth.CardUnmaskPreflightDuration" units="ms"
-    expires_after="2021-12-05">
+    expires_after="2022-08-01">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>autofill-auth-team@google.com</owner>
@@ -435,7 +435,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.BetterAuth.CardUnmaskTypeDecision"
-    enum="AutofillCreditCardUnmaskDecisionMetric" expires_after="2021-12-05">
+    enum="AutofillCreditCardUnmaskDecisionMetric" expires_after="2022-08-01">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>autofill-auth-team@google.com</owner>
@@ -449,7 +449,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Autofill.BetterAuth.FlowEvents.{BetterAuthFlowType}.{CardType}"
-    enum="AutofillCreditCardAuthenticationEvents" expires_after="2021-12-05">
+    enum="AutofillCreditCardAuthenticationEvents" expires_after="2022-08-01">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>autofill-auth-team@google.com</owner>
@@ -464,7 +464,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Autofill.BetterAuth.FlowEvents{AutofillCreditCardAuthenticationFlows}"
-    enum="AutofillCreditCardAuthenticationEvents" expires_after="2021-12-05">
+    enum="AutofillCreditCardAuthenticationEvents" expires_after="2022-08-01">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>autofill-auth-team@google.com</owner>
@@ -485,7 +485,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Autofill.BetterAuth.OptInCalled{AutofillCreditCardWebauthnOptInOrigin}"
-    enum="AutofillCreditCardWebauthnOptInParameters" expires_after="2021-12-05">
+    enum="AutofillCreditCardWebauthnOptInParameters" expires_after="2022-08-01">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>autofill-auth-team@google.com</owner>
@@ -508,7 +508,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Autofill.BetterAuth.OptInPromoShown{AutofillCreditCardWebauthnOptInOrigin}"
-    enum="BooleanHit" expires_after="2021-10-04">
+    enum="BooleanHit" expires_after="2022-08-01">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>autofill-auth-team@google.com</owner>
@@ -537,7 +537,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Autofill.BetterAuth.OptInPromoUserDecision{AutofillCreditCardWebauthnOptInOrigin}"
-    enum="AutofillWebauthnOptInPromoUserDecision" expires_after="2021-12-05">
+    enum="AutofillWebauthnOptInPromoUserDecision" expires_after="2022-08-01">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>autofill-auth-team@google.com</owner>
@@ -559,7 +559,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.BetterAuth.OptOutCalled.FromSettingsPage"
-    enum="BooleanHit" expires_after="2021-12-05">
+    enum="BooleanHit" expires_after="2022-08-01">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>autofill-auth-team@google.com</owner>
@@ -576,7 +576,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Autofill.BetterAuth.UserPerceivedLatencyOnCardSelection.OptedIn.Duration"
-    units="ms" expires_after="2021-10-04">
+    units="ms" expires_after="2022-08-01">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>autofill-auth-team@google.com</owner>
@@ -592,7 +592,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="Autofill.BetterAuth.UserPerceivedLatencyOnCardSelection.OptedIn.TimedOutCvcFallback"
     enum="AutofillCreditCardUserPerceivedLatencyFollowUp"
-    expires_after="2021-10-04">
+    expires_after="2022-08-01">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>autofill-auth-team@google.com</owner>
@@ -607,7 +607,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Autofill.BetterAuth.UserPerceivedLatencyOnCardSelection{AutofillFidoAuthenticationEnabledState}"
-    enum="AutofillCreditCardPreflightCallEvent" expires_after="2021-12-05">
+    enum="AutofillCreditCardPreflightCallEvent" expires_after="2022-08-01">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>autofill-auth-team@google.com</owner>
@@ -630,7 +630,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.BetterAuth.UserVerifiabilityCheckDuration" units="ms"
-    expires_after="2021-10-04">
+    expires_after="2022-08-01">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>autofill-auth-team@google.com</owner>
@@ -643,7 +643,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Autofill.BetterAuth.WebauthnResult{AutofillFidoUserVerificationFlow}"
-    enum="AutofillCreditCardWebauthnResultMetric" expires_after="2021-12-05">
+    enum="AutofillCreditCardWebauthnResultMetric" expires_after="2022-08-01">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>autofill-auth-team@google.com</owner>
@@ -918,7 +918,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.ExpirationDateFixFlowPrompt.Events"
-    enum="AutofillExpirationDateFixFlowPromptEvent" expires_after="2021-10-04">
+    enum="AutofillExpirationDateFixFlowPromptEvent" expires_after="2022-08-01">
   <owner>siashah@google.com</owner>
   <owner>jsaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -930,7 +930,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.ExpirationDateFixFlowPromptShown" enum="Boolean"
-    expires_after="2021-10-17">
+    expires_after="2022-08-01">
   <owner>siashah@google.com</owner>
   <owner>jsaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
