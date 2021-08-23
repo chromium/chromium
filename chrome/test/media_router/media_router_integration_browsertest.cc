@@ -595,7 +595,14 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
       web_contents->GetDelegate()->IsFullscreenForTabOrPending(web_contents));
 }
 
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest, SendAndOnMessage) {
+// crbug.com/1238728: test is flaky on win and linux.
+#if defined(OS_LINUX) || defined(OS_WIN)
+#define MAYBE_SendAndOnMessage DISABLED_SendAndOnMessage
+#else
+#define MAYBE_SendAndOnMessage SendAndOnMessage
+#endif
+IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
+                       MAYBE_SendAndOnMessage) {
   RunSendMessageTest("foo");
 }
 
