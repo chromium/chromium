@@ -412,7 +412,7 @@ TYPED_TEST(ClipboardTest, MAYBE_UnicodeHTMLTest) {
 }
 
 // TODO(estade): Port the following test (decide what target we use for urls)
-#if !defined(OS_POSIX) || defined(OS_APPLE)
+#if !defined(OS_POSIX) || defined(OS_APPLE) || defined(OS_WIN)
 TYPED_TEST(ClipboardTest, BookmarkTest) {
   std::u16string title(u"The Example Company"), title_result;
   std::string url("http://www.example.com/"), url_result;
@@ -427,7 +427,12 @@ TYPED_TEST(ClipboardTest, BookmarkTest) {
       /* data_dst = */ nullptr));
   this->clipboard().ReadBookmark(/* data_dst = */ nullptr, &title_result,
                                  &url_result);
+#if !defined(OS_WIN)
   EXPECT_EQ(title, title_result);
+#else
+  // On Windows the title should be empty when CFSTR_INETURLW is queried.
+  EXPECT_EQ(std::string(), UTF16ToUTF8(title_result));
+#endif
   EXPECT_EQ(url, url_result);
 }
 #endif  // !defined(OS_POSIX) || defined(OS_APPLE)

@@ -194,24 +194,6 @@ void MakeBitmapOpaque(SkPixmap* pixmap) {
   }
 }
 
-void ParseBookmarkClipboardFormat(const std::u16string& bookmark,
-                                  std::u16string* title,
-                                  std::string* url) {
-  const std::u16string kDelim = u"\r\n";
-
-  const size_t title_end = bookmark.find_first_of(kDelim);
-  if (title)
-    title->assign(bookmark.substr(0, title_end));
-
-  if (url) {
-    const size_t url_start = bookmark.find_first_not_of(kDelim, title_end);
-    if (url_start != std::u16string::npos) {
-      *url =
-          base::UTF16ToUTF8(bookmark.substr(url_start, std::u16string::npos));
-    }
-  }
-}
-
 template <typename StringType>
 void TrimAfterNull(StringType* result) {
   // Text copied to the clipboard may explicitly contain null characters that
@@ -665,7 +647,7 @@ void ClipboardWin::ReadBookmark(const DataTransferEndpoint* data_dst,
   ::GlobalUnlock(data);
   TrimAfterNull(&bookmark);
 
-  ParseBookmarkClipboardFormat(bookmark, title, url);
+  *url = base::UTF16ToUTF8(bookmark);
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other
@@ -756,10 +738,10 @@ void ClipboardWin::WriteBookmark(const char* title_data,
                                  size_t title_len,
                                  const char* url_data,
                                  size_t url_len) {
-  std::string bookmark(title_data, title_len);
-  bookmark.append(1, L'\n');
-  bookmark.append(url_data, url_len);
-
+  // On Windows, CFSTR_INETURLW is expected to only contain the URL & not the
+  // title separated by a newline.
+  // https://docs.microsoft.com/en-us/windows/win32/shell/clipboard#cfstr_ineturl.
+  std::string bookmark(url_data, url_len);
   std::u16string wide_bookmark = base::UTF8ToUTF16(bookmark);
   HGLOBAL glob = CreateGlobalData(wide_bookmark);
 

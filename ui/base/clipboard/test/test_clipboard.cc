@@ -373,7 +373,9 @@ void TestClipboard::WriteBookmark(const char* title_data,
                                   size_t url_len) {
   GetDefaultStore().data[ClipboardFormatType::UrlType()] =
       std::string(url_data, url_len);
+#if !defined(OS_WIN)
   GetDefaultStore().url_title = std::string(title_data, title_len);
+#endif
 }
 
 void TestClipboard::WriteWebSmartPaste() {
