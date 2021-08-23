@@ -54,6 +54,10 @@ extern const base::Feature kMessagesForAndroidSaveCard;
 // Infobars infrastructure.
 extern const base::Feature kMessagesForAndroidUpdatePassword;
 
+// Feature that controls whether we always update layout parameters or only
+// while the message container is visible.
+extern const base::Feature kMessagesForAndroidReduceLayoutChanges;
+
 bool IsAdsBlockedMessagesUiEnabled();
 
 bool IsNotificationBlockedMessagesUiEnabled();
