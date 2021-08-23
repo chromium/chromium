@@ -149,10 +149,29 @@ TEST_F(EnhancedNetworkTtsUtilsTest, UnpackJsonResponseSucceed) {
   const std::unique_ptr<base::Value> json =
       base::JSONReader::ReadDeprecated(server_response);
 
-  mojom::TtsResponsePtr result = UnpackJsonResponse(*json);
+  mojom::TtsResponsePtr result = UnpackJsonResponse(*json, 0 /* start_index */,
+                                                    true /* is_last_request */);
 
   EXPECT_TRUE(result->is_data());
   EXPECT_EQ(result->get_data()->audio, std::vector<uint8_t>({1, 2, 5}));
+  EXPECT_TRUE(result->get_data()->last_data);
+  EXPECT_EQ(result->get_data()->time_info[0]->text_offset, 0);
+
+  result = UnpackJsonResponse(*json, 4 /* start_index */,
+                              true /* is_last_request */);
+
+  EXPECT_TRUE(result->is_data());
+  EXPECT_EQ(result->get_data()->audio, std::vector<uint8_t>({1, 2, 5}));
+  EXPECT_TRUE(result->get_data()->last_data);
+  EXPECT_EQ(result->get_data()->time_info[0]->text_offset, 4);
+
+  result = UnpackJsonResponse(*json, 4 /* start_index */,
+                              false /* is_last_request */);
+
+  EXPECT_TRUE(result->is_data());
+  EXPECT_EQ(result->get_data()->audio, std::vector<uint8_t>({1, 2, 5}));
+  EXPECT_FALSE(result->get_data()->last_data);
+  EXPECT_EQ(result->get_data()->time_info[0]->text_offset, 4);
 }
 
 TEST_F(EnhancedNetworkTtsUtilsTest,
@@ -161,7 +180,8 @@ TEST_F(EnhancedNetworkTtsUtilsTest,
   const std::unique_ptr<base::Value> json =
       base::JSONReader::ReadDeprecated(encoded_response);
 
-  mojom::TtsResponsePtr result = UnpackJsonResponse(*json);
+  mojom::TtsResponsePtr result = UnpackJsonResponse(*json, 0 /* start_index */,
+                                                    true /* is_last_request */);
 
   EXPECT_TRUE(result->is_error_code());
   EXPECT_EQ(result->get_error_code(),
@@ -178,7 +198,8 @@ TEST_F(EnhancedNetworkTtsUtilsTest,
   const std::unique_ptr<base::Value> json =
       base::JSONReader::ReadDeprecated(encoded_response);
 
-  mojom::TtsResponsePtr result = UnpackJsonResponse(*json);
+  mojom::TtsResponsePtr result = UnpackJsonResponse(*json, 0 /* start_index */,
+                                                    true /* is_last_request */);
 
   EXPECT_TRUE(result->is_error_code());
   EXPECT_EQ(result->get_error_code(),

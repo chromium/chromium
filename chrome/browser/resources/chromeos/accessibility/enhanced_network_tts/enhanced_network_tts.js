@@ -26,10 +26,8 @@ export class EnhancedNetworkTts {
       utterance, options, audioStreamOptions, sendTtsAudio, sendError) {
     let api;
     try {
-      api = /**
-               @type {!ash.enhancedNetworkTts.mojom.EnhancedNetworkTtsRemote}
-                 */
-          (await chrome.mojoPrivate.requireAsync('ash.enhanced_network_tts'));
+      api = /** @type {EnhancedNetworkTtsAdapter} */ (
+          await chrome.mojoPrivate.requireAsync('ash.enhanced_network_tts'));
     } catch (e) {
       console.warn('Could not get mojoPrivate bindings: ' + e.message);
       // TODO(crbug.com/1231318): Provide more appropriate error handling.
@@ -37,8 +35,22 @@ export class EnhancedNetworkTts {
     }
 
     const request = EnhancedNetworkTts.generateRequest(utterance, options);
-    const response = /** @type {!ash.enhancedNetworkTts.mojom.TtsResponse} */
-        ((await api.getAudioData(request)).response);
+    const processResponse = (response) => EnhancedNetworkTts.processResponse(
+        response, audioStreamOptions, sendTtsAudio, sendError);
+    await (api.getAudioDataWithCallback(request, processResponse));
+  }
+
+  /**
+   * Callback for processing the |response| from the mojo API.
+   * @param {!ash.enhancedNetworkTts.mojom.TtsResponse} response
+   * @param {!chrome.ttsEngine.AudioStreamOptions} audioStreamOptions Contains
+   *     the audio stream format expected to be produced by this engine.
+   * @param {function(!chrome.ttsEngine.AudioBuffer): void} sendTtsAudio A
+   *     function that accepts AudioBuffer for playback.
+   * @param {function(string): void} sendError A function that signals error.
+   */
+  static async processResponse(
+      response, audioStreamOptions, sendTtsAudio, sendError) {
     if (!response.data) {
       console.warn('Could not get the data from Enhanced Network mojo API.');
       if (response.errorCode === undefined) {
@@ -66,6 +78,7 @@ export class EnhancedNetworkTts {
       return;
     }
 
+    const lastData = response.data.lastData;
     const audioData = new Uint8Array(response.data.audio).buffer;
     const timeInfo = response.data.timeInfo;
     const decodedAudioData =
@@ -74,7 +87,7 @@ export class EnhancedNetworkTts {
 
     EnhancedNetworkTts.sendAudioDataInBuffers(
         decodedAudioData, audioStreamOptions.sampleRate,
-        audioStreamOptions.bufferSize, timeInfo, sendTtsAudio);
+        audioStreamOptions.bufferSize, timeInfo, sendTtsAudio, lastData);
   }
 
   /**
@@ -170,9 +183,11 @@ export class EnhancedNetworkTts {
    *     of timestamp information for each word in the |audioData|.
    * @param {function(!chrome.ttsEngine.AudioBuffer): void} sendTtsAudio The
    *     function that takes |AudioBuffer| for playback.
+   * @param {boolean} lastData Whether this is the last data we expect to
+   * receive for the initial request.
    */
   static sendAudioDataInBuffers(
-      audioData, sampleRate, bufferSize, timeInfo, sendTtsAudio) {
+      audioData, sampleRate, bufferSize, timeInfo, sendTtsAudio, lastData) {
     if (!audioData) {
       // TODO(crbug.com/1231318): Provide more appropriate error handling.
       return;
@@ -195,7 +210,6 @@ export class EnhancedNetworkTts {
       let charIndex;
       if (i <= wordStartAtAudioData && i + bufferSize > wordStartAtAudioData) {
         charIndex = timeInfo[timeInfoIdx].textOffset;
-
         // Prepare for the next word.
         if (timeInfoIdx < timeInfo.length - 1) {
           timeInfoIdx++;
@@ -205,9 +219,20 @@ export class EnhancedNetworkTts {
       }
 
       // Determine if the given buffer is the last buffer in the audioData.
-      const isLastBuffer = i + bufferSize >= audioData.length;
-
+      const isLastBuffer = lastData && (i + bufferSize >= audioData.length);
       sendTtsAudio({audioBuffer, charIndex, isLastBuffer});
+    }
+  }
+
+  static async clearMojoRequests() {
+    try {
+      const api = /** @type {EnhancedNetworkTtsAdapter} */
+          (await chrome.mojoPrivate.requireAsync('ash.enhanced_network_tts'));
+      api.resetApi();
+    } catch (e) {
+      console.warn('Could not get mojoPrivate bindings: ' + e.message);
+      // TODO(crbug.com/1231318): Provide more appropriate error handling.
+      return;
     }
   }
 }
