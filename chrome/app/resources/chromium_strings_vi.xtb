@@ -53,6 +53,8 @@
 <translation id="2847479871509788944">Xóa khỏi Chromium...</translation>
 <translation id="2885378588091291677">Trình quản lý tác vụ</translation>
 <translation id="2910007522516064972">Giới thiệu về &amp;Chromium</translation>
+<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Lời nhắc cuối cùng: quá trình cài đặt <ph name="BEGIN_BOLD" />sẽ xoá toàn bộ ổ cứng của bạn<ph name="END_BOLD" />. Hãy chắc chắn rằng bạn đã sao lưu mọi dữ liệu quan trọng.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Quá trình cài đặt không thể hủy được một khi đã bắt đầu.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium đã được cập nhật</translation>
 <translation id="2983934633046890458">Chromium đang cố gắng chỉnh sửa mật khẩu.</translation>
 <translation id="3032706164202344641">Chromium không thể kiểm tra mật khẩu của bạn. Hãy thử lại sau.</translation>

@@ -3129,6 +3129,7 @@
 <translation id="4268670020635416342">新增名稱或標籤，例如公司、個人或子女</translation>
 <translation id="4270393598798225102">版本 <ph name="NUMBER" /></translation>
 <translation id="4272765551319099134">無法存取此網頁</translation>
+<translation id="4274604968379621964">儲存群組</translation>
 <translation id="4274667386947315930">登入資料</translation>
 <translation id="4274673989874969668">在您離開網站後，網站通常會保持同步以完成工作，例如上載相片或傳送即時通訊訊息</translation>
 <translation id="4275291496240508082">啟動音效</translation>
@@ -3582,6 +3583,7 @@
 <translation id="4770119228883592393">要求咗權限，㩒 ⌘ + Option + 向下箭咀就可以回覆</translation>
 <translation id="4773112038801431077">升級 Linux</translation>
 <translation id="477647109558161443">建立桌面捷徑</translation>
+<translation id="4776594120007763294">如要儲存頁面以便稍後閱讀，請點選這個按鈕</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> 的密碼</translation>
 <translation id="4777458362738635055">此裝置的其他使用者可使用此網絡</translation>
 <translation id="4777825441726637019">Play 商店</translation>
@@ -3667,6 +3669,7 @@
 <translation id="4864805589453749318">請選取要授予新增學校帳戶權限的家長。</translation>
 <translation id="486635084936119914">下載特定類型的檔案後自動開啟</translation>
 <translation id="4868281708609571334">訓練「Google 助理」識別<ph name="SUPERVISED_USER_NAME" />的聲音</translation>
+<translation id="4868284252360267853">這個對話方塊未處於聚焦狀態。按下 Command + Shift + Option + A 鍵即可聚焦這個對話方塊。</translation>
 <translation id="48704129375571883">新增其他功能</translation>
 <translation id="4870758487381879312">輸入管理員提供的密碼，即可取得設定資料</translation>
 <translation id="4870903493621965035">沒有已配對的裝置</translation>
@@ -4243,6 +4246,7 @@
 <translation id="5496730470963166430">不允許傳送彈出式視窗或使用重新導向</translation>
 <translation id="5497251278400702716">此檔案</translation>
 <translation id="5498967291577176373">透過內嵌建議迅速輸入您的姓名、地址或電話號碼</translation>
+<translation id="5499211612787418966">這個對話方塊未處於聚焦狀態。按下 Alt + Shift + A 鍵即可聚焦這個對話方塊。</translation>
 <translation id="5499313591153584299">這個檔案可能對您的電腦有害。</translation>
 <translation id="5499453227627332024">您的 Linux 容器有可用的升級。您亦可稍後從「設定」應用程式進行升級。</translation>
 <translation id="549957179819296104">新圖示</translation>
@@ -5628,6 +5632,7 @@
 <translation id="7005496624875927304">其他權限</translation>
 <translation id="7005812687360380971">故障</translation>
 <translation id="7005848115657603926">頁面範圍無效，請使用 <ph name="EXAMPLE_PAGE_RANGE" /></translation>
+<translation id="7006438259896942210">這個帳戶 (<ph name="USER_EMAIL_ADDRESS" />) 是由 <ph name="PROFILE_NAME" /> 管理</translation>
 <translation id="700651317925502808">要重設設定嗎？</translation>
 <translation id="7006634003215061422">下邊界</translation>
 <translation id="7007648447224463482">在新視窗中開啟所有書籤</translation>
@@ -6968,6 +6973,7 @@
 <translation id="8425213833346101688">變更</translation>
 <translation id="8425492902634685834">固定至工作列</translation>
 <translation id="8425768983279799676">您可以使用 PIN 解鎖裝置。</translation>
+<translation id="8426111352542548860">儲存群組</translation>
 <translation id="8426713856918551002">正在啟用</translation>
 <translation id="8427213022735114808">「語音聽寫」將您的語音傳送給 Google，以便透過語音輸入填寫任何文字欄位。</translation>
 <translation id="8427292751741042100">嵌入至任何主機</translation>
@@ -7562,6 +7568,7 @@
 <translation id="9042893549633094279">私隱權和安全性</translation>
 <translation id="904451693890288097">請輸入「<ph name="DEVICE_NAME" />」的密碼金鑰：</translation>
 <translation id="9044646465488564462">無法連線至網絡：<ph name="DETAILS" /></translation>
+<translation id="9045160989383249058">你的閱讀清單已移至新的側邊面板。按這裡即可體驗。</translation>
 <translation id="9045430190527754450">將您嘗試瀏覽的網頁網址傳送至 Google</translation>
 <translation id="9048745018038487540">選取所有字型</translation>
 <translation id="9050666287014529139">複雜密碼</translation>

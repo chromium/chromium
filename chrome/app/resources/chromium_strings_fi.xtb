@@ -53,6 +53,8 @@
 <translation id="2847479871509788944">Poista Chromiumista…</translation>
 <translation id="2885378588091291677">Tehtävänhallinta</translation>
 <translation id="2910007522516064972">Tietoja &amp;Chromiumista</translation>
+<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Muista: asennus <ph name="BEGIN_BOLD" />tyhjentää koko kiintolevysi<ph name="END_BOLD" />. Varmista, että olet varmuuskopioinut tärkeän datan.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />Kun asennus on alkanut, sitä ei voi perua.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium on ajan tasalla.</translation>
 <translation id="2983934633046890458">Chromium yrittää muuttaa salasanoja.</translation>
 <translation id="3032706164202344641">Chromium ei voi tarkistaa salasanojasi. Yritä myöhemmin uudelleen.</translation>

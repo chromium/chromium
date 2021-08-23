@@ -744,6 +744,7 @@
 <translation id="1971991630422430420">このポリシーを有効に設定した場合、ワイヤレス アクセス ポイントが対応していれば高速切り替えが使用されます。この設定は、デバイスのすべてのユーザーとインターフェースに適用されます。
 
       このポリシーを無効に設定するか未設定のままにした場合、高速切り替えは使用されません。</translation>
+<translation id="1972134432340252414">ブラウザ プロセスで従来の拡張機能ポイントをブロックする</translation>
 <translation id="1977581177449752640">このポリシーを設定した場合、リモート アクセス ホストは発行元の CN が指定されたクライアント証明書を使用して <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" /> に対し認証を行います。利用可能な任意のクライアント証明書を使用するには、このポリシーを「<ph name="WILDCARD_VALUE" />」に設定します。このポリシーを空白にした場合または設定しない場合、この機能は無効になります。</translation>
 <translation id="1988345404999458987">使用できるプリント サーバーの設定を指定します。
 
@@ -778,6 +779,11 @@
       <ph name="CLOUD_PRINT_NAME" /> に接続されるプリンタは <ph name="PRINTER_TYPE_CLOUD" /> と見なされ、それ以外のプリンタは <ph name="PRINTER_TYPE_LOCAL" /> に分類されます。
 
       注: フィールドを省略すると、すべての値に一致することになります。たとえば、接続の種類を指定しない場合、印刷プレビューは <ph name="PRINTER_TYPE_LOCAL" /> か <ph name="PRINTER_TYPE_CLOUD" /> かを問わず、あらゆる種類のプリンタの検出を開始することになります。正規表現は JavaScript RegExp 構文で指定する必要があり、大文字と小文字が区別されます。</translation>
+<translation id="2003441790537575907">このポリシーを有効に設定するか未設定のままにした場合、<ph name="LEGACY_EXTENSION_DISABLE_API" /> によりブラウザ プロセスで従来の拡張機能ポイントをブロックできます。
+
+      このポリシーを無効に設定した場合、悪質な疑いのある不明なコードに対して <ph name="PRODUCT_NAME" /> のブラウザ プロセス内での読み込みが許可されるため、<ph name="PRODUCT_NAME" /> のセキュリティと安定性が低下します。このポリシーは、<ph name="PRODUCT_NAME" /> のブラウザ プロセス内で実行する必要のあるサードパーティ ソフトウェアとの間で互換性の問題が発生する場合にのみ無効にしてください。
+
+      注: 詳しくはプロセス対応ポリシー（https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies）をご覧ください。</translation>
 <translation id="2005506794355327448">ディスプレイを閉じたときに行うアクション</translation>
 <translation id="2006530844219044261">電源管理</translation>
 <translation id="2008514891623783266">WebRTC の IP 取り扱いポリシー</translation>
@@ -1068,6 +1074,7 @@
 <translation id="22941467117331786">このポリシーを True に設定した場合、アクティブなセッション中に画面がロックされていなければ、システムトレイに赤い大きなログアウト ボタンが表示されます。このポリシーを False に設定するか未設定のままにした場合、ボタンは表示されません。</translation>
 <translation id="2294382669900758280">Android アプリで再生中の動画は、このポリシーを <ph name="TRUE" /> に設定した場合でも考慮されません。</translation>
 <translation id="2299220924812062390">有効なプラグインのリストを指定する</translation>
+<translation id="2301048990069984110">Windows、Mac、Linux で Chrome アプリを使用できるようサポートを拡張する。</translation>
 <translation id="2303795211377219696">クレジット カードの自動入力を有効にする</translation>
 <translation id="2307496301287881990">ディスプレイとグラフィックのステータスを報告する</translation>
 <translation id="2309390639296060546">デフォルトの位置情報設定</translation>
@@ -1108,6 +1115,11 @@
 <translation id="2358176879566587521">このポリシーは削除されました。このバージョンの <ph name="PRODUCT_NAME" /> には対応していません。詳しくは、https://support.google.com/chrome/a/answer/7643500 をご覧ください。</translation>
 <translation id="2362469626417133796">再起動の時間枠</translation>
 <translation id="2364639863953745682">アシスタントのオンボーディング エクスペリエンスのモード</translation>
+<translation id="2365764204944230431">このポリシーはサポートが終了しています。代わりに BrowserSignin の使用をご検討ください。
+
+      ユーザーによる <ph name="PRODUCT_NAME" /> へのログインを許可します。
+
+      このポリシーでは、ユーザーによる <ph name="PRODUCT_NAME" /> へのログインを許可するかどうかを設定できます。このポリシーを「False」に設定すると、chrome.identity API を使用するアプリや拡張機能が機能しなくなるため、代わりに <ph name="SYNC_DISABLED_POLICY_NAME" /> の使用をおすすめします。</translation>
 <translation id="2384233438419344179">このポリシーを有効に設定した場合、ブラウザのアドレスバーに表示されているドメイン以外のウェブページ要素からは、Cookie を設定できなくなります。このポリシーを無効に設定した場合、これらの要素による Cookie の設定が許可され、ユーザーはこの設定を変更できません。
 
       このポリシーを未設定のままにした場合、サードパーティ Cookie は有効になりますが、ユーザーはこの設定を変更できます。</translation>
@@ -1494,6 +1506,7 @@
 <translation id="2838830882081735096">データ移行と ARC を許可しない</translation>
 <translation id="2839294585867804686">ネットワーク ファイル共有の設定</translation>
 <translation id="284288632677954003">ブラウザの切り替えを行わない URL のリストを含む XML ファイルの URL です。</translation>
+<translation id="2853649500575897584">ブラウザ プロセスで従来の拡張機能ポイントをブロックしない</translation>
 <translation id="2854607717796010700">デバイスのメモリに関する情報を報告します。
 
       このポリシーを false に設定するか未設定のままにした場合、この情報は報告されません。
@@ -1501,6 +1514,7 @@
 <translation id="285480231336205327">ハイ コントラスト モードを有効にする</translation>
 <translation id="285627849510728211">詳細なバッテリー充電モードの曜日の設定を行う</translation>
 <translation id="2856674246949497058">OS のバージョンが対象バージョンより新しい場合に、対象バージョンに戻してそのバージョンを維持します。このプロセスでは Powerwash が行われます。</translation>
+<translation id="2866619962692161453">Metapolicy タイプ</translation>
 <translation id="2869762730352628426">ログイン画面で自動クリックを有効にする</translation>
 <translation id="2872961005593481000">終了</translation>
 <translation id="2874209944580848064">Android アプリをサポートする <ph name="PRODUCT_OS_NAME" /> デバイスに関する注意:</translation>
@@ -1756,6 +1770,13 @@
 <translation id="3118552207903834734">デバイスのホスト名の設定をユーザーに許可する</translation>
 <translation id="3122082892722698079">安全でないコンテンツの例外の使用を管理する</translation>
 <translation id="3128072319047570212">keygen の設定</translation>
+<translation id="3135820765957090754">この設定を有効にした場合、ユーザーは <ph name="PRODUCT_OS_NAME" /> デバイスと接続された Android スマートフォンとの間で Wi-Fi ネットワーク設定を同期できます。Wi-Fi ネットワーク設定を同期する前に、ユーザーは設定手順を完了して、この機能を明示的に有効にする必要があります。
+
+      この設定を無効にした場合、ユーザーは Wi-Fi ネットワーク設定を同期できません。
+
+      この機能は、<ph name="CHROME_SYNC_NAME" /> で <ph name="WIFI_CONFIGURATIONS_DATATYPE_NAME" /> データタイプが有効になっているかどうかに依存します。<ph name="SYNC_TYPES_LIST_DISABLED_POLICY_NAME" /> ポリシーで <ph name="WIFI_CONFIGURATIONS_DATATYPE_NAME" /> が無効になっている場合、または <ph name="SYNC_DISABLED_POLICY_NAME" /> ポリシーで <ph name="CHROME_SYNC_NAME" /> が無効になっている場合、この機能は有効にできません。
+
+      このポリシーを未設定のままにした場合、管理対象ユーザーはデフォルトでこの機能を有効にできません。</translation>
 <translation id="3142410959002029864">このポリシーでは、デフォルトの両面印刷モードをオーバーライドできます。このモードを使用できない場合、このポリシーは無視されます。</translation>
 <translation id="3144173889708944482"><ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> の値に <ph name="PRINTERS_BLOCKLIST" /> が選択されている場合、<ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> でユーザーが使用できないプリンタを指定できます。ユーザーは、このポリシーで指定されている ID 以外のすべてのプリンタを使用できます。この ID は、<ph name="DEVICE_PRINTERS_POLICY_NAME" /> で指定されたファイル内の「<ph name="ID_FIELD" />」または「<ph name="GUID_FIELD" />」フィールドに対応している必要があります。</translation>
 <translation id="3146711617256415776">「選択して読み上げ」の使用時に Enhanced Network のテキスト読み上げ音声を許可しない</translation>
@@ -2444,6 +2465,7 @@
 <translation id="398884292557092447">このポリシーを True に設定するか未設定のままにした場合、ユーザーは UI でクレジット カードの自動入力候補を管理できます。
 
       このポリシーを False に設定した場合、クレジット カード情報が候補として表示されたり、自動入力されたりすることはありません。また、ユーザーがウェブの利用中にクレジット カード情報を送信した場合もその情報が追加で保存されることはありません。</translation>
+<translation id="3989829840000169163">ブラウザの従来の拡張機能ポイントをブロックする</translation>
 <translation id="3996594590700242138">このポリシーを未設定のままか有効に設定した場合、<ph name="PRODUCT_NAME" /> のすべてのコンポーネントでコンポーネントの更新が有効になります。
 
       このポリシーを無効に設定した場合、コンポーネントの更新は無効になります。ただし、一部のコンポーネント（実行可能コードを含まないコンポーネント、ブラウザの動作を著しく変更しないコンポーネント、セキュリティ上重要なコンポーネント）はこのポリシーの適用外で、これらのコンポーネントの更新は無効にはなりません。
@@ -3104,6 +3126,9 @@
       このポリシーが false に設定されている場合は、<ph name="PRODUCT_NAME" /> のユーザー管理画面で新しいプロフィールを作成することはできません。</translation>
 <translation id="4970046075219007744">File Handling API を通じたファイル形式へのアクセスをユーザーに求めることをウェブアプリに許可する</translation>
 <translation id="4970855112942626932">ブラウザのログインを無効にする</translation>
+<translation id="4976928720873547342">このポリシーを設定した場合、指定したすべてのデータタイプが <ph name="CHROME_SYNC_NAME" /> とローミング プロファイルの同期から除外されます。これにより、ローミング プロファイルのサイズを抑えたり、<ph name="CHROME_SYNC_NAME" /> サーバーにアップロードされるデータのタイプを制限したりできます。
+
+      現在、このポリシーで指定できるデータタイプは次のとおりです: "bookmarks"、"readingList"、"preferences"、"passwords"、"autofill"、"themes"、"typedUrls"、"extensions"、"apps"、"tabs"、"wifiConfigurations"。データタイプの名前では大文字と小文字が区別されます。</translation>
 <translation id="4977702914571821981">ブロック可能な（アクティブな）混合コンテンツ（HTTPS サイトの HTTP コンテンツ）の表示を許可しないサイトと、任意でブロック可能な（パッシブな）混合コンテンツをアップグレードするサイトを URL パターンのリストで設定できます。
 
           このポリシーを未設定のままにした場合、ブロック可能な混合コンテンツはブロックされ、任意でブロック可能な混合コンテンツはアップグレードされますが、ユーザーは特定のサイトについてそうしたコンテンツを許可する例外を設定できます。
@@ -3575,6 +3600,7 @@
       有効な <ph name="URL_LABEL" /> パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。このポリシーの値に「<ph name="WILDCARD_VALUE" />」は使用できません。</translation>
 <translation id="5620392548325769024">OS のアップグレード後に初めてブラウザを起動したときのウェルカム ページの表示を有効にする</translation>
 <translation id="5622924058222112599">デフォルトの CECPQ2 導入プロセスを有効にする</translation>
+<translation id="5625771176514429288">指定プラットフォームで Chrome アプリを実行できる。</translation>
 <translation id="5630352020869108293">最後のセッションを復元する</translation>
 <translation id="5633871703004128675">「テキストカーソルによるハイライト表示」のユーザー補助機能を有効にする</translation>
 <translation id="5636088574608432506">ブラウザのログイン動作を制御するポリシーです。このポリシーによって、ユーザーが自分のアカウントで <ph name="PRODUCT_NAME" /> にログインして <ph name="PRODUCT_NAME" /> 同期などのアカウント関連のサービスを使用できるかどうかを指定できます。このポリシーを「ブラウザのログインを無効にする」に設定した場合、ユーザーはブラウザにログインして、アカウントに基づくサービスを使用することができません。この場合、<ph name="PRODUCT_NAME" /> 同期などのブラウザレベルの機能は使用不可となります。<ph name="IOS_NAME" /> では、ユーザーがログインしている状態でこのポリシーが「無効」に設定されると、そのユーザーは直ちにログアウト状態になります。その他のプラットフォームでは、ユーザーは次回の <ph name="PRODUCT_NAME" /> の実行時にログアウト状態になります。すべてのプラットフォームで、ブックマークやパスワードなどのローカルのプロファイル データは保持され、引き続き使用できます。ユーザーは引き続きログインして、Gmail などの Google ウェブサービスを使用できます。このポリシーを「ブラウザのログインを有効にする」に設定した場合、ユーザーはブラウザにログインできます。<ph name="IOS_NAME" /> を除くすべてのプラットフォームでは、ユーザーは Gmail などの Google ウェブサービスにログインするとブラウザに自動的にログインした状態になります。ブラウザにログインしているときには、ユーザーのアカウント情報がブラウザで保持されます。ただし、<ph name="PRODUCT_NAME" /> 同期はデフォルトではオンになりません。この機能を使用するには、ユーザーが別途オンにする必要があります。このポリシーを有効にした場合、ユーザーは「ブラウザのログインを許可する」設定をオフにできません。<ph name="PRODUCT_NAME" /> 同期を利用できるかどうかを制御するには、<ph name="SYNC_POLICY_NAME" /> ポリシーを使用します。このポリシーが「ブラウザのログインを必須とする」に設定されている場合、ユーザーにはアカウント選択のダイアログが表示されます。ブラウザを使用するには、いずれかのアカウントを選択してログインする必要があります。管理対象アカウントの場合、この設定を使用することで、アカウントに関連付けられているポリシーの適用を徹底できます。これによって、対象アカウントに対してデフォルトで <ph name="PRODUCT_NAME" /> 同期がオンになります（ドメイン管理者または <ph name="SYNC_POLICY_NAME" /> ポリシーによって <ph name="PRODUCT_NAME" /> 同期が無効に設定されている場合を除く）。<ph name="GUEST_MODE_POLICY_NAME" /> のデフォルト値は無効に設定されます。このポリシーを有効にした後、ログインしていない既存のプロファイルはロックされ、アクセスできなくなります。詳細については、ヘルプセンターの記事（https://support.google.com/chrome/a/answer/7572556）をご覧ください。このオプションは、<ph name="LINUX_OS_NAME" />、<ph name="ANDROID_NAME" />、<ph name="IOS_NAME" /> ではサポートされていません。このオプションを使用した場合は、「ブラウザのログインを有効にする」の設定にフォールバックします。このポリシーが未設定の場合、ユーザーは <ph name="PRODUCT_NAME" /> の設定でブラウザのログインを有効にするかどうかを自身で判断し、状況に応じて使い分けできます。</translation>
@@ -4972,6 +4998,7 @@
        このポリシーを無効に設定するか未設定のままにした場合、サードパーティの画像による認証プロンプトの表示は許可されません。
 
       通常、このポリシーはフィッシング対策のため無効になっています。</translation>
+<translation id="7406039009275722824"><ph name="CHROME_SYNC_NAME" /> を無効にすると、Android のバックアップと復旧が適切に機能しなくなります。</translation>
 <translation id="7407441173422042771">このポリシーでは、<ph name="PRODUCT_NAME" /> でのネットワーク予測を制御します。DNS のプリフェッチ、TCP、SSL の事前接続、ウェブページの事前レンダリングを制御できます。
 
       このポリシーを設定した場合、ユーザーは設定を変更できません。設定しない場合、ネットワーク予測は有効になりますが、ユーザーはこの設定を変更できます。</translation>
@@ -5034,6 +5061,19 @@
       このポリシーを無効に設定するか未設定のままにした場合、ユーザーはこの設定を変更できます。
 
       注: Android の場合は、代わりに <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> ポリシーを使用してください。</translation>
+<translation id="7508067364927180229">この設定は、<ph name="LACROS_NAME" /> ブラウザの使用に関する複数のオプションを提供します。
+
+      このポリシーを <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" /> に設定した場合、ユーザーは <ph name="LACROS_NAME" /> を有効にして、メインのブラウザとして設定できます。
+
+      このポリシーを <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" /> に設定した場合、ユーザーは <ph name="LACROS_NAME" /> を使用できません。
+
+      このポリシーを <ph name="LACROS_AVAILABILITY_SIDE_BY_SIDE_VALUE" /> に設定した場合、<ph name="LACROS_NAME" /> は有効になりますが、メインのブラウザとしては設定されません。
+
+      このポリシーを <ph name="LACROS_AVAILABILITY_LACROS_PRIMARY_VALUE" /> に設定した場合、<ph name="LACROS_NAME" /> は有効になり、メインのブラウザとして設定されます。
+
+      このポリシーが未設定の場合、デフォルトで、企業の管理対象ユーザーは <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" />、管理対象外のユーザーは <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" /> に設定されます。
+
+      今後、<ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" /> 値を使用して、<ph name="PRODUCT_OS_NAME" /> で <ph name="LACROS_NAME" /> を唯一の使用可能なブラウザとして設定できるようになる予定です。</translation>
 <translation id="7519218194072744342">プロトコル ハンドラの URL です。</translation>
 <translation id="7519251620064708155">指定サイトでのキー生成を許可する</translation>
 <translation id="7529144158022474049">自動更新の散乱係数</translation>
@@ -5409,6 +5449,11 @@
           このポリシーが true、空白のまま、または未設定の場合、ポリシーは無視されます。</translation>
 <translation id="8008421342605619236">ネイティブ メッセージングのポリシーを設定します。ブロックされたネイティブ メッセージング ホストは、許可されていない限り読み込みできません。</translation>
 <translation id="8011935490612940798"><ph name="PRODUCT_NAME" /> の機能を制御する。</translation>
+<translation id="8013739405949922317">この設定はサポートが終了しています。代わりに <ph name="LACROS_AVAILABILITY_POLICY_NAME" /> を使用してください。
+
+      このポリシーを無効に設定するか未設定のままにした場合、ユーザーは <ph name="LACROS_NAME" /> を使用できません。
+
+      このポリシーを有効に設定した場合、ユーザーは <ph name="LACROS_NAME" /> ブラウザを使用できます。</translation>
 <translation id="802147957407376460">画面を 0 度回転（回転なし）</translation>
 <translation id="802776363472387903"><ph name="PLUGIN_VM_NAME" /> 画像の SHA-256 ハッシュです。</translation>
 <translation id="8029201909194194377">リモート アクセス接続で許可する最長セッション継続時間</translation>
@@ -5999,6 +6044,7 @@
 <translation id="8801680448782904838">ブラウザまたはデバイスの再起動が推奨されるか必要であることをユーザーに通知する</translation>
 <translation id="8804685015028424497">シークレット モードを無効にする</translation>
 <translation id="8807313206348471682">ログアウト確認ダイアログを表示する</translation>
+<translation id="8816370949847593408">サポート終了の段階に応じて、一部の Chrome アプリの実行を許可しない。</translation>
 <translation id="8817960019535659860">ユーザーに Chrome OS の登録特典の利用を許可しない</translation>
 <translation id="8818173863808665831">デバイスの地理的位置をレポートします。
 
@@ -6142,6 +6188,10 @@
 <translation id="8951350807133946005">ディスクのキャッシュ ディレクトリの設定</translation>
 <translation id="8955719471735800169">トップへ戻る</translation>
 <translation id="8959992920425111821">デフォルトの構成</translation>
+<translation id="8967125680876068695">Chrome アプリは、Windows、Mac、Linux でのサポートが終了しています。
+      このポリシーを有効に設定した場合、2022 年 6 月にすべてのプラットフォームで Chrome アプリのサポートが廃止される日まで、これらのプラットフォームでは引き続き <ph name="PRODUCT_NAME" /> で Chrome アプリを実行できます。
+      このポリシーを無効に設定するか未設定のままにした場合、サポート終了の段階に応じて、一部の Chrome アプリは実行できなくなります。
+      いずれの場合も、ポリシーにより自動インストールされた Chrome アプリについては引き続き実行できます。</translation>
 <translation id="8970205333161758602"><ph name="PRODUCT_FRAME_NAME" /> のサポート終了メッセージを抑制する</translation>
 <translation id="8974216995125236948">ポップアップの設定</translation>
 <translation id="8976248126101463034">リモート アクセス ホストに対して gnubby 認証を許可する</translation>
@@ -6258,6 +6308,11 @@
       このポリシーが未設定の場合、デフォルトにより、企業の管理対象ユーザーは使用を許可されず、管理対象外のユーザーは使用を許可されます。</translation>
 <translation id="9096086085182305205">認証サーバーのホワイトリスト</translation>
 <translation id="9096772739225230999">ネットワーク設定を報告しない</translation>
+<translation id="9097005000667946359">このポリシーでは、ユーザーに操作を求めずにサイレント インストールするウェブアプリのリストを指定します。ユーザーはこれらのウェブアプリをアンインストールすることもオフにすることもできません。
+
+      このポリシーで指定するリストの個々の項目は、必須の <ph name="URL_LABEL" />（インストールするウェブアプリの URL）と、5 つの省略可能な <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />（ウェブアプリを開く方法、デフォルトは新しいタブ）、<ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />（<ph name="LINUX_OS_NAME" /> と <ph name="MS_WIN_NAME" /> のデスクトップ ショートカットを作成する場合は True）、<ph name="FALLBACK_APP_NAME_LABEL" />（<ph name="PRODUCT_NAME" /> バージョン 90 以降では、プログレッシブ ウェブアプリ（PWA）以外のアプリ名をオーバーライドできます。また、PWA であってもインストールの完了に認証が必要な場合は、一時的にインストールされたアプリ名をオーバーライドできます。<ph name="CUSTOM_NAME_LABEL" /> と <ph name="FALLBACK_APP_NAME_LABEL" /> の両方が設定されている場合、後者は無視されます）、<ph name="OVERRIDE_APP_NAME_LABEL" />（<ph name="PRODUCT_NAME" /> バージョン 96 以降では、すべてのウェブアプリと PWA のアプリ名を完全にオーバーライドできます）、<ph name="CUSTOM_ICON_LABEL" />（<ph name="PRODUCT_NAME" /> バージョン 96 以降では、インストールされたアプリのアプリアイコンをオーバーライドできます。アイコンは正方形でサイズを 1 MB 以内とし、jpeg、png、gif、webp、ico のいずれかの形式にする必要があります。ハッシュ値は SHA256 ハッシュのアイコン ファイルとします）で構成されるオブジェクトとなります。
+
+      <ph name="PRODUCT_OS_NAME" /> シェルフへのアプリの固定については、<ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> ポリシーをご覧ください。</translation>
 <translation id="9098409326885953506">背面にあるウィンドウを検出して、描画を一時停止する</translation>
 <translation id="9105265795073104888">Android アプリではプロキシ設定オプションの一部のみを使用できます。プロキシを使用するかどうかは Android アプリ側の選択となります。Android アプリにプロキシの使用を強制することはできません。</translation>
 <translation id="9106865192244721694">WebUSB を許可するサイト</translation>
@@ -6305,6 +6360,12 @@
 <translation id="913195841488580904">URL のリストへのアクセスをブロックする</translation>
 <translation id="9135033364005346124"><ph name="CLOUD_PRINT_NAME" /> プロキシを有効にする</translation>
 <translation id="9136399279941091445">指定されたデバイスポリシーが解除されたときの管理外時間の間隔</translation>
+<translation id="9150385995327221969">「このポリシーを有効に設定した場合、Google でホストされる同期サービスを使用した <ph name="PRODUCT_NAME" /> でのデータ同期が無効になります。
+      <ph name="CHROME_SYNC_NAME" /> サービスを完全に無効にするには、<ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> でこのサービスを無効にすることをおすすめします。
+
+      このポリシーを無効に設定するか未設定のままにした場合、ユーザーは <ph name="CHROME_SYNC_NAME" /> を使用するかどうかを選択できます。
+
+      注: <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> が有効に設定されている場合は、同じクライアントサイドの機能が共有されるため、このポリシーを有効にしないでください。この場合、Google でホストされる同期は完全に無効になります。」</translation>
 <translation id="9150416707757015439">このポリシーは今後使用できなくなりますので、IncognitoModeAvailability をご使用ください。<ph name="PRODUCT_NAME" /> でシークレット モードを有効にします。この設定が有効または設定されていない場合、ユーザーはシークレット モードでウェブページを開くことができます。この設定を無効にすると、ユーザーはシークレット モードでウェブページを開くことができません。このポリシーが未設定の場合は有効になり、ユーザーはシークレット モードを使用できます。</translation>
 <translation id="9152473318295429890">現在のウェブページに関連するおすすめのウェブページの表示を有効にする</translation>
 <translation id="9153446010242995516">OS のバージョンが対象バージョンより新しい場合は、対象バージョンに戻してそのバージョンを維持します。ロールバック プロセスでデバイスごとの設定（ネットワーク認証情報など）を引き継げる場合は、引き継ぎを試みますが、データの復元が可能でない（対象バージョンがデータの復元に対応していない、または後方互換性のない変更がある）場合でも、完全な Powerwash によるロールバックを行います。

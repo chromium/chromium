@@ -53,6 +53,8 @@
 <translation id="2847479871509788944">Chromium から削除...</translation>
 <translation id="2885378588091291677">タスク マネージャ</translation>
 <translation id="2910007522516064972">Chromium について(&amp;C)</translation>
+<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />重要: インストールすると、<ph name="BEGIN_BOLD" />ハードドライブのデータはすべて消去されます<ph name="END_BOLD" />。大切なデータがすべてバックアップされていることをご確認ください。<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />インストールを開始した後にキャンセルすることはできません。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium は最新版です</translation>
 <translation id="2983934633046890458">Chromium でパスワードを編集しようとしています。</translation>
 <translation id="3032706164202344641">Chromium でパスワードを確認できません。しばらくしてからもう一度お試しください。</translation>

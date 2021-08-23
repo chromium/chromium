@@ -573,6 +573,7 @@
 <translation id="1602085790802918092">వర్చువల్ మెషిన్‌ను ప్రారంభిస్తోంది</translation>
 <translation id="1603914832182249871">(అజ్ఞాతంగా)</translation>
 <translation id="1604432177629086300">ముద్రించడం సాధ్యపడలేదు. ప్రింటర్‌ను పరిశీలించి, మళ్ళీ ప్రయత్నించండి.</translation>
+<translation id="1606077700029460857">మౌస్ సెట్టింగ్‌లను మార్చండి</translation>
 <translation id="1607139524282324606">నమోదును తీసివేయండి</translation>
 <translation id="1607499585984539560">యూజర్ డొమైన్‌తో అనుబంధించబడలేదు</translation>
 <translation id="1608626060424371292">ఈ వినియోగదారును తీసివేయండి</translation>
@@ -702,6 +703,7 @@
 <translation id="1718835860248848330">చివరి గంట</translation>
 <translation id="1719312230114180055">గమనిక: శక్తివంతమైన పాస్‌వర్డ్ లేదా PIN కంటే మీ వేలిముద్ర తక్కువ సురక్షితంగా ఉండవచ్చు.</translation>
 <translation id="1720318856472900922">TLS WWW సర్వర్ ప్రామాణీకరణ</translation>
+<translation id="1720941539803966190">ట్యుటోరియల్‌ను మూసివేయండి</translation>
 <translation id="1721312023322545264">ఈ సైట్‌ని సందర్శించడానికి మీకు <ph name="NAME" /> నుండి అనుమతి అవసరం</translation>
 <translation id="1722460139690167654">మీ <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> నిర్వహణ<ph name="END_LINK" /> <ph name="ENROLLMENT_DOMAIN" /> ద్వారా చేయబడుతోంది</translation>
 <translation id="1723824996674794290">&amp;కొత్త విండో</translation>
@@ -776,6 +778,7 @@
 <translation id="1790194216133135334">లింక్‌ను <ph name="DEVICE_NAME" />‌కు పంపండి</translation>
 <translation id="1790976235243700817">యాక్సెస్‌ను తీసివేయి</translation>
 <translation id="1792619191750875668">విస్తారిత డిస్‌ప్లే</translation>
+<translation id="1793625608969726781"><ph name="DEVICE_COUNT" />లో <ph name="DEVICE_INDEX" /> పరికరం, <ph name="DEVICE_NAME" />, కంప్యూటర్, బ్యాటరీ స్థాయి <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1794051631868188691"><ph name="MERCHANT" />ను ఎప్పుడూ చూపవద్దు</translation>
 <translation id="1794791083288629568">ఈ సమస్యను పరిష్కరించడంలో మాకు సహాయం చేయడానికి అభిప్రాయాన్ని పంపుతుంది.</translation>
 <translation id="1795214765651529549">క్లాసిక్‌ను ఉపయోగించు</translation>
@@ -1156,6 +1159,7 @@
 <translation id="2179416702468739594">అందుబాటులో ఉన్న ప్రొఫైల్‌ల కోసం వెతుకుతోంది. ఇది మీ మొబైల్ నెట్‌వర్క్ కొన్ని నిముషాలు డిస్‌కనెక్ట్ కావడానికి కారణం కావచ్చు.</translation>
 <translation id="2180620921879609685">ఏ పేజీలోనైనా కంటెంట్‌ను బ్లాక్ చేయడం</translation>
 <translation id="2182058453334755893">మీ క్లిప్‌బోర్డ్‌కు కాపీ చేయబడింది</translation>
+<translation id="2183027945672030611"><ph name="DEVICE_COUNT" />లో <ph name="DEVICE_INDEX" /> పరికరం, <ph name="DEVICE_NAME" />, గేమ్ కంట్రోలర్, బ్యాటరీ స్థాయి <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="2184515124301515068">సైట్‌లు ధ్వనిని ఎప్పుడు ప్లే చేయాలనేది Chrome ఎంచుకునేలా సెట్ చేయండి (సిఫార్సు చేయబడింది)</translation>
 <translation id="2186711480981247270">మరో పరికరం నుండి పేజీ షేర్ చేయబడింది</translation>
 <translation id="2187675480456493911">మీ ఖాతాలోని ఇతర పరికరాలతో సింక్ చేయబడింది. ఇతర యూజర్‌ల చేత మార్చబడిన సెట్టింగ్‌లు సింక్ చేయబడవు. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
@@ -1275,6 +1279,7 @@
 <translation id="2301402091755573488">షేర్ చేసిన ట్యాబ్</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" అదనపు అనుమతులను అభ్యర్థించింది.</translation>
 <translation id="23055578400314116">ఒక యూజర్‌నేమ్ ఎంచుకోండి</translation>
+<translation id="2306366691914573029"><ph name="DEVICE_COUNT" />లో <ph name="DEVICE_INDEX" /> పరికరం, <ph name="DEVICE_NAME" />, తెలియని పరికర రకం</translation>
 <translation id="2307462900900812319">నెట్‌వర్క్‌ను కాన్ఫిగర్ చేయి</translation>
 <translation id="2307553512430195144">మీరు అంగీకరిస్తే, Google Assistant "Ok Google"ను గుర్తించడానికి స్టాండ్‌బై మోడ్‌లో ఉండి, వాయిస్ మ్యాచ్ సహాయంతో మాట్లాడేది <ph name="SUPERVISED_USER_NAME" /> అని గుర్తుపట్టగలదు.
     <ph name="BR" />
@@ -1560,6 +1565,7 @@
 <translation id="2606568927909309675">ఇంగ్లీష్ ఆడియో, వీడియో కోసం క్యాప్షన్‌లను ఆటోమేటిక్‌గా క్రియేట్ చేస్తుంది. ఆడియో, క్యాప్షన్‌లు ఎప్పటికీ మీ పరికరంలోనే ఉంటాయి.</translation>
 <translation id="2607101320794533334">విషయం పబ్లిక్ కీ సమాచారం</translation>
 <translation id="2609896558069604090">షార్ట్‌కట్‌లను క్రియేట్ చేయండి...</translation>
+<translation id="2609902589050805912"><ph name="DEVICE_COUNT" />లో <ph name="DEVICE_INDEX" /> పరికరం, <ph name="DEVICE_NAME" />, ఆడియో పరికరం</translation>
 <translation id="2609980095400624569">కనెక్షన్‌ను ఏర్పాటు చేయడం సాధ్యపడలేదు</translation>
 <translation id="2610157865375787051">నిద్రావస్థ</translation>
 <translation id="2610260699262139870">&amp;సాధారణ పరిమాణం</translation>
@@ -1627,6 +1633,7 @@
 <translation id="2673135533890720193">మీ బ్రౌజింగ్ చరిత్రను చదవడానికి అనుమతి</translation>
 <translation id="2674764818721168631">ఆఫ్ చేయబడి ఉంది</translation>
 <translation id="2678063897982469759">మ‌ళ్లీ-ప్రారంభించు</translation>
+<translation id="2678676117809690850"><ph name="DEVICE_COUNT" />లో <ph name="DEVICE_INDEX" /> పరికరం, <ph name="DEVICE_NAME" />, ఫోన్, బ్యాటరీ స్థాయి <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="268053382412112343">&amp;చరిత్ర</translation>
 <translation id="2681124317993121768">గెస్ట్ ప్రొఫైల్‌లు సపోర్ట్ చేయవు</translation>
 <translation id="2682498795777673382">మీ తల్లి/తండ్రి నుండి అప్‌డేట్</translation>
@@ -1823,6 +1830,7 @@
 <translation id="287205682142673348">పోర్ట్ ఫార్వర్డింగ్</translation>
 <translation id="287286579981869940"><ph name="PROVIDER_NAME" />ని జోడించు...</translation>
 <translation id="2872961005593481000">షట్ డౌన్ చేయండి</translation>
+<translation id="2872966656309879564"><ph name="DEVICE_COUNT" />లో <ph name="DEVICE_INDEX" /> పరికరం, <ph name="DEVICE_NAME" />, కంప్యూటర్</translation>
 <translation id="2874939134665556319">మునుపటి ట్రాక్</translation>
 <translation id="2875698561019555027">(Chrome ఎర్రర్ పేజీలు)</translation>
 <translation id="2876336351874743617">రెండో వేలు</translation>
@@ -2003,6 +2011,7 @@
 <translation id="3054766768827382232">డిజేబుల్ చేయడం వలన మీ పెరిఫెరల్‌లు మెరుగ్గా పని చేస్తాయి, కాని అనధికార వినియోగం ద్వారా మీ వ్యక్తిగత డేటాను బబహిర్గతం కావచ్చు.</translation>
 <translation id="3055590424724986000">మీరు ఎంచుకునే ప్రొవైడర్‌తో</translation>
 <translation id="3058498974290601450">సెట్టింగ్‌లలో ఎప్పుడైనా మీరు సింక్‌ను ఆన్ చేయవచ్చు</translation>
+<translation id="3058517085907878899">పరికరానికి పేరు పెట్టండి</translation>
 <translation id="3060379269883947824">వినడానికి-ఎంచుకోండిని ప్రారంభించు</translation>
 <translation id="3060952009917586498">పరికర భాషను మార్చండి. ప్రస్తుత భాష <ph name="LANGUAGE" />.</translation>
 <translation id="3060987956645097882">మీ ఫోన్‌తో కనెక్షన్‌ను ఏర్పాటు చేయడం మాకు సాధ్యపడలేదు. మీ ఫోన్ సమీపంలోనే ఉండి, అలాగే బ్లూటూత్, Wi-Fi ఆన్ చేయబడి ఉందని నిర్ధారించుకోండి.</translation>
@@ -2013,6 +2022,7 @@
 <translation id="3067198360141518313">ఈ ప్లగ్ఇన్‌ను అమలు చేయి</translation>
 <translation id="3071624960923923138">మీరు కొత్త ట్యాబ్‌ను తెరవడానికి ఇక్కడ క్లిక్ చేయవచ్చు</translation>
 <translation id="3072775339180057696"><ph name="FILE_NAME" />ను చూడటానికి సైట్‌ను అనుమతించాలనుకుంటున్నారా?</translation>
+<translation id="3074799113165994093"><ph name="DEVICE_COUNT" />లో <ph name="DEVICE_INDEX" /> పరికరం, <ph name="DEVICE_NAME" />, ఫోన్</translation>
 <translation id="3075874217500066906">పవర్‌వాష్ ప్రక్రియను మొదలుపెట్టడానికి పునఃప్రారంభించడం అవసరం. పునఃప్రారంభించిన తర్వాత మీరు కొనసాగించాలనుకుంటున్నారో లేదో నిర్ధారించమని మిమ్మల్ని అడగడం జరుగుతుంది.</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">ఈ పరికరంలో మాత్రమే సేవ్ చేయండి</translation>
@@ -2054,6 +2064,7 @@
 <translation id="3117791853215125017">{COUNT,plural, =1{<ph name="DEVICE_NAME" />కి <ph name="ATTACHMENTS" />ని పంపడంలో విఫలమైంది}other{<ph name="DEVICE_NAME" />కి <ph name="ATTACHMENTS" />ని పంపడంలో విఫలమైంది}}</translation>
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> సహాయం</translation>
 <translation id="3118654181216384296">దయచేసి, కొన్ని క్షణాల్లో Linuxను మళ్లీ ప్రారంభించండానికి ట్రై చేయండి.</translation>
+<translation id="3119689272338239690"><ph name="DEVICE_COUNT" />లో <ph name="DEVICE_INDEX" /> పరికరం, <ph name="DEVICE_NAME" />, తెలియని పరికర రకం, బ్యాటరీ స్థాయి <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3119948370277171654">మీరు ఏ కంటెంట్/URLను ప్రసారం చేస్తున్నారు?</translation>
 <translation id="3120430004221004537">దీనిలో నిర్దిష్ట చర్య కోసం తగిన ఎన్‌క్రిప్షన్ లేదు: "<ph name="DEVICE_NAME" />".</translation>
 <translation id="3122464029669770682">CPU</translation>
@@ -2566,6 +2577,7 @@
 <translation id="3682824389861648626">కదలిక థ్రెషోల్డ్</translation>
 <translation id="3683524264665795342"><ph name="APP_NAME" /> స్క్రీన్ షేరింగ్ రిక్వెస్ట్‌</translation>
 <translation id="3685598397738512288">Linux USB ప్రాధాన్యతలు</translation>
+<translation id="3686786761304157917"><ph name="DEVICE_COUNT" />లో <ph name="DEVICE_INDEX" /> పరికరం, <ph name="DEVICE_NAME" />, కీబోర్డ్, బ్యాటరీ స్థాయి <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="368789413795732264">ఫైల్‌ను వ్రాయడానికి ప్రయత్నించడంలో ఎర్రర్ జరిగింది: <ph name="ERROR_TEXT" />.</translation>
 <translation id="3688507211863392146">మీరు అప్లికేషన్‌లో తెరిచే ఫైళ్లు మరియు ఫోల్డర్‌లలో వ్రాయండి</translation>
 <translation id="3688526734140524629">ఛానెల్‌ను మార్చు</translation>
@@ -2665,6 +2677,7 @@
 <translation id="3778740492972734840">డెవలపర్ ఉపకరణాలు</translation>
 <translation id="3778868487658107119">దీనిని ప్రశ్నలు అడగండి. పనులు చేయమని చెప్పండి. ఇది మీ వ్యక్తిగతమైన Google, ఎల్లవేళలా సహాయం చేయడానికి సిద్ధంగా ఉంటుంది.</translation>
 <translation id="3781742599892759500">Linux మైక్రోఫోన్ యాక్సెస్</translation>
+<translation id="3782488227140539029"><ph name="DEVICE_COUNT" />లో <ph name="DEVICE_INDEX" /> పరికరం, <ph name="DEVICE_NAME" />, వీడియో కెమెరా, బ్యాటరీ స్థాయి <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3782795641773236652">ఇప్పటికీ ఎలాంటి స్విచ్ లేదా కీ కేటాయించబడలేదు</translation>
 <translation id="378312418865624974">ఈ కంప్యూటర్ యొక్క ప్రత్యేక ఐడెంటిఫైయర్‌ని చదవడం</translation>
 <translation id="3784372983762739446">బ్లూటూత్ పరికరాలు</translation>
@@ -2905,6 +2918,7 @@
 <translation id="4002329649066944389">సైట్‌కు ప్రత్యేకమైన మినహాయింపులను మేనేజ్ చేయండి</translation>
 <translation id="4002440992267487163">పిన్ సెటప్</translation>
 <translation id="4005817994523282006">సమయ మండలి గుర్తింపు పద్ధతి</translation>
+<translation id="400645326027787740"><ph name="DEVICE_COUNT" />లో <ph name="DEVICE_INDEX" /> పరికరం, <ph name="DEVICE_NAME" />, గేమ్ కంట్రోలర్</translation>
 <translation id="4007856537951125667">షార్ట్‌కట్‌లను దాచు</translation>
 <translation id="4008291085758151621">VRలో సైట్ సమాచారం అందుబాటులో లేదు</translation>
 <translation id="4010917659463429001">మీ బుక్‌మార్క్‌లను మీ మొబైల్ పరికరంలో పొందడానికి, <ph name="GET_IOS_APP_LINK" />.</translation>
@@ -3210,6 +3224,7 @@
 <translation id="4382131447572146376">{COUNT,plural, =0{<ph name="EMAIL" />}=1{<ph name="EMAIL" />, +మరో 1 ఖాతా ఉంది}other{<ph name="EMAIL" />, +మరో <ph name="EXTRA_ACCOUNTS" /> ఖాతాలు ఉన్నాయి}}</translation>
 <translation id="4384312707950789900">ప్రాధాన్య నెట్‌వర్క్‌లకు జోడించు</translation>
 <translation id="4384652540891215547">ఎక్స్‌టెన్షన్‌ను యాక్టివేట్ చేయండి</translation>
+<translation id="4384886290276344300">కీబోర్డ్ సెట్టింగ్‌లను మార్చండి</translation>
 <translation id="438503109373656455">సారటోగా</translation>
 <translation id="4385146930797718821">స్క్రీన్‌షాట్ క్లిప్‌బోర్డ్‌కు కాపీ చేయబడింది</translation>
 <translation id="4385905942116811558">బ్లూటూత్, అలాగే USB పరికరాల కోసం సెర్చ్ చేస్తోంది</translation>
@@ -3602,6 +3617,7 @@
 <translation id="4813136279048157860">నా చిత్రాలు</translation>
 <translation id="4813512666221746211">నెట్‌వర్క్ ఎర్రర్</translation>
 <translation id="4814378367953456825">ఈ వేలి ముద్రకు ఒక పేరు పెట్టండి</translation>
+<translation id="4816097470512964351"><ph name="DEVICE" />, వివరాలు</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 బుక్‌మార్క్ తొలగించబడింది}other{{COUNT} బుక్‌మార్క్‌లు తొలగించబడ్డాయి}}</translation>
 <translation id="4819607494758673676">Google Assistant నోటిఫికేషన్‌లు</translation>
 <translation id="4820236583224459650">యాక్టివ్ టిక్కెట్‌గా సెట్ చేయి</translation>
@@ -3677,6 +3693,7 @@
 <translation id="4884987973312178454">6x</translation>
 <translation id="4887424188275796356">సిస్టమ్ వ్యూయర్‌తో తెరవండి</translation>
 <translation id="488785315393301722">వివరాలను చూపించు</translation>
+<translation id="4889450157778777235"><ph name="DEVICE_COUNT" />లో <ph name="DEVICE_INDEX" /> పరికరం, <ph name="DEVICE_NAME" />, వీడియో కెమెరా</translation>
 <translation id="4890773143211625964">అధునాతన ప్రింటర్ ఎంపికలను చూపు</translation>
 <translation id="4891089016822695758">బీటా ఫోరమ్</translation>
 <translation id="4892229439761351791">బ్లూటూత్‌ను సైట్ ఉపయోగించవచ్చు</translation>
@@ -3813,6 +3830,7 @@
 <translation id="5039696241953571917">మీ Google ఖాతాలో సేవ్ చేసిన పాస్‌వర్డ్‌లను చూడండి, మేనేజ్ చేయండి</translation>
 <translation id="5039804452771397117">అనుమతించు</translation>
 <translation id="5040823038948176460">అదనపు కంటెంట్ సెట్టింగ్‌లు</translation>
+<translation id="5043440033854483429">పేరులో అక్షరాలు, నంబర్‌లు, ఇంకా హైఫన్‌లు (-) ఉపయోగించవచ్చు, ఇంకా పేరు తప్పనిసరిగా 1 నుండి 15 (వీటిని కలుపుకుని) అక్షరాల మధ్యలో ఉండాలి.</translation>
 <translation id="5043913660911154449">లేదా మీ ప్రింటర్ PPDని పేర్కొనండి <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">సరికాని పాస్‌వర్డ్</translation>
 <translation id="504561833207953641">ఇప్పటికే ఉన్న బ్రౌజర్ సెషన్‌లో తెరుస్తోంది.</translation>
@@ -4066,6 +4084,7 @@
 <translation id="5319359161174645648">Chromeను Google సిఫార్సు చేస్తోంది</translation>
 <translation id="5319712128756744240">కొత్త పరికరాన్ని పెయిర్ చేయండి</translation>
 <translation id="5320135788267874712">కొత్త పరికరం పేరు</translation>
+<translation id="532043380734099846"><ph name="DEVICE_COUNT" />లో <ph name="DEVICE_INDEX" /> పరికరం, <ph name="DEVICE_NAME" />, మౌస్, బ్యాటరీ స్థాయి <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="532247166573571973">సర్వర్ అందుబాటులో లేకపోవచ్చు. తర్వాత మళ్లీ ప్రయత్నించండి.</translation>
 <translation id="5324300749339591280">యాప్‌ల లిస్ట్</translation>
 <translation id="5324780743567488672">మీ స్థానాన్ని ఉపయోగించి సమయ మండలిని ఆటోమేటిక్‌గా సెట్ చేయండి</translation>
@@ -4093,6 +4112,7 @@
 <translation id="535123479159372765">ఇతర పరికరం నుండి కాపీ చేసిన వచనం</translation>
 <translation id="5352033265844765294">టైమ్ స్టాంపింగ్</translation>
 <translation id="5353252989841766347">Chrome నుండి పాస్‌వర్డ్‌లను ఎగుమతి చేయండి</translation>
+<translation id="5354531123814675522"><ph name="DEVICE_COUNT" />లో <ph name="DEVICE_INDEX" /> పరికరం, <ph name="DEVICE_NAME" />, టాబ్లెట్, బ్యాటరీ స్థాయి <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5355099869024327351">మీకు నోటిఫికేషన్‌లను చూపించడానికి అసిస్టెంట్‌ను అనుమతించండి</translation>
 <translation id="5355191726083956201">మెరుగైన రక్షణ ఆన్‌లో ఉంది</translation>
 <translation id="5355926466126177564">మీరు ఓమ్నిబాక్స్ నుండి వెతికేటప్పుడు చూపబడే పేజీని "<ph name="EXTENSION_NAME" />" ఎక్స్‌టెన్షన్ మార్చింది.</translation>
@@ -4262,6 +4282,7 @@
 <translation id="5534304873398226603">ఫోటో లేదా వీడియోను విస్మరించు</translation>
 <translation id="5535941515421698170">అలాగే ఈ పరికరం నుండి ఇప్పటికే ఉన్న మీ డేటాను తీసివేయండి</translation>
 <translation id="5539221284352502426">మీరు నమోదు చేసిన పాస్‌వర్డ్‌ను సర్వర్ తిరస్కరించింది. సంభావ్య కారణాలు: పాస్‌వర్డ్ చాలా చిన్నదిగా ఉంది. పాస్‌వర్డ్ తప్పనిసరిగా సంఖ్యలు లేదా గుర్తులను కలిగి ఉండాలి. మునుపు ఉపయోగించిన పాస్‌వర్డ్‌లలో దేనినీ తిరిగి ఉపయోగించకూడదు.</translation>
+<translation id="5539467723438368868"><ph name="DEVICE_COUNT" />లో <ph name="DEVICE_INDEX" /> పరికరం, <ph name="DEVICE_NAME" />, టాబ్లెట్</translation>
 <translation id="5541694225089836610">మీ నిర్వాహకుల ద్వారా చర్య నిలిపివేయబడింది</translation>
 <translation id="5542132724887566711">ప్రొఫైల్</translation>
 <translation id="5542750926112347543"><ph name="DOMAIN" /> నుండి కుక్కీలు బ్లాక్ చేయబడ్డాయి</translation>
@@ -4322,6 +4343,7 @@
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">MIDI పరికరాలకు కనెక్ట్ చేయడానికి అనుమతించబడలేదు</translation>
 <translation id="5602765853043467355">ఈ పరికరం నుండి బుక్‌మార్క్‌లు, చరిత్ర, పాస్‌వర్డ్‌లు వంటివాటిని తీసివేయి</translation>
+<translation id="5604884720628869833"><ph name="DEVICE_COUNT" />లో <ph name="DEVICE_INDEX" /> పరికరం, <ph name="DEVICE_NAME" />, కీబోర్డ్</translation>
 <translation id="5605623530403479164">ఇతర సెర్చ్ ఇంజిన్‌లు</translation>
 <translation id="5605758115928394442">మీరేనని నిర్ధారించుకోవడానికి మీ ఫోన్‌కు ఒక నోటిఫికేషన్ పంపబడింది.</translation>
 <translation id="560834977503641186">Wi-Fi సింక్, మరింత తెలుసుకోండి</translation>
@@ -4782,6 +4804,7 @@
 <translation id="6113434369102685411">Chrome బ్రౌజర్, <ph name="DEVICE_TYPE" /> లాంచర్ కోసం మీ ఆటోమేటిక్ సెర్చ్ ఇంజిన్‌ను సెట్ చేయండి</translation>
 <translation id="6113942107547980621">Smart Lockను ఉపయోగించడానికి, మీ ఫోన్‌లో ప్రాథమిక వినియోగదారు ప్రొఫైల్‌కు మారండి</translation>
 <translation id="6116921718742659598">భాష మరియు ఇన్‌పుట్ సెట్టింగ్‌లను మార్చండి</translation>
+<translation id="6119927814891883061">పరికరానికి <ph name="DEVICE_NAME" /> అని పేరు పెట్టండి</translation>
 <translation id="6120205520491252677">ప్రారంభ స్క్రీన్‌కు ఈ పేజీని పిన్ చేయి...</translation>
 <translation id="6122081475643980456">మీ ఇంటర్నెట్ కనెక్షన్ నియంత్రించబడుతోంది</translation>
 <translation id="6122093587541546701">ఇమెయిల్ (ఐచ్ఛికం):</translation>
@@ -6985,6 +7008,7 @@
 <translation id="8475313423285172237">మీ కంప్యూటర్‌లోని మరో ప్రోగ్రామ్ జోడించిన ఎక్స్‌టెన్షన్ కారణంగా Chrome పని చేసే విధానం మారవచ్చు.</translation>
 <translation id="8477241577829954800">బదులు పెట్టు</translation>
 <translation id="8477384620836102176">&amp;సాధారణ</translation>
+<translation id="8479109005219657634"><ph name="DEVICE_COUNT" />లో <ph name="DEVICE_INDEX" /> పరికరం, <ph name="DEVICE_NAME" />, ఆడియో పరికరం, బ్యాటరీ స్థాయి <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="8479176401914456949">చెల్లని కోడ్. దయచేసి మళ్లీ ట్రై చేయండి.</translation>
 <translation id="8480082892550707549">మీరు ఇంతకుముందు ఈ సైట్ నుండి ఫైళ్లను డౌన్‌లోడ్ చేసినప్పటికీ, సైట్ తాత్కాలికంగా అసురక్షితం కావచ్చు (హ్యాకింగ్‌కు గురై ఉండవచ్చు). ఈ ఫైల్‌ను తర్వాత డౌన్‌లోడ్ చేయడానికి ప్రయత్నించండి.</translation>
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" /> నుండి తెలియని పరికరం</translation>
@@ -7463,6 +7487,7 @@
 <translation id="897525204902889653">క్వారెంటైన్ సేవ</translation>
 <translation id="8975396729541388937">మీరు అందుకునే ఇమెయిల్‌లలోని లింక్‌ను క్లిక్ చేయడం ద్వారా ఎప్పుడైనా సబ్‌స్క్రిప్షన్‌ను తీసివేయవచ్చు.</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" ఇంకా 1 వేరే ట్యాబ్}other{"<ph name="TAB_TITLE" />" ఇంకా # వేరే ట్యాబ్‌లు}}</translation>
+<translation id="8977175149983066223"><ph name="DEVICE_COUNT" />లో <ph name="DEVICE_INDEX" /> పరికరం, <ph name="DEVICE_NAME" />, మౌస్</translation>
 <translation id="8977811652087512276">పాస్‌వర్డ్ తప్పు లేదా ఫైల్ పాడైంది</translation>
 <translation id="8978154919215542464">ఆన్‌లో ఉంది - ప్రతిదీ సమకాలీకరిస్తుంది</translation>
 <translation id="897939795688207351"><ph name="ORIGIN" />లో</translation>

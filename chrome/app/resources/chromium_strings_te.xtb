@@ -53,6 +53,8 @@
 <translation id="2847479871509788944">Chromium నుండి తీసివేయి...</translation>
 <translation id="2885378588091291677">విధి సంచాలకులు</translation>
 <translation id="2910007522516064972">&amp;Chromium గురించి</translation>
+<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />ఒక చివరి రిమైండర్: ఇన్‌స్టాలేషన్ అనేది <ph name="BEGIN_BOLD" />మీ మొత్తం హార్డ్ డ్రైవ్‌ను ఫ్యాక్టరీ రీసెట్ చేస్తుంది<ph name="END_BOLD" />. మీకు కావాలనుకునే డేటాను దయచేసి బ్యాకప్ చేసుకొనేలా చూసుకోండి.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />ఇన్‌స్టాలేషన్ ఒకసారి ప్రారంభం అయిన తర్వాత దాన్ని రద్దు చేయలేరు.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2977470724722393594">Chromium తాజాగా ఉంది</translation>
 <translation id="2983934633046890458">Chromium పాస్‌వర్డ్‌లను ఎడిట్ చేయడానికి ప్రయత్నిస్తోంది.</translation>
 <translation id="3032706164202344641">Chromium మీ పాస్‌వర్డ్‌లను తనిఖీ చేయలేకపోయింది. తర్వాత మళ్లీ ట్రై చేయండి.</translation>

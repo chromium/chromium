@@ -3117,6 +3117,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4268670020635416342">Pridajte názov alebo štítok, napríklad Práca, Osobné alebo Deti</translation>
 <translation id="4270393598798225102">Verzia <ph name="NUMBER" /></translation>
 <translation id="4272765551319099134">Táto stránka je nedostupná</translation>
+<translation id="4274604968379621964">Uložiť skupinu</translation>
 <translation id="4274667386947315930">Prihlasovacie údaje</translation>
 <translation id="4274673989874969668">Keď web opustíte, môže naďalej synchronizovať dokončenie úloh, napríklad nahrávanie fotiek alebo odoslanie četovej správy</translation>
 <translation id="4275291496240508082">Zvuk pri spustení</translation>
@@ -3569,6 +3570,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4770119228883592393">Vyžaduje sa povolenie, reagujte stlačením klávesov ⌘ + Option + šípka nadol</translation>
 <translation id="4773112038801431077">Inovácia systému Linux</translation>
 <translation id="477647109558161443">Vytvoriť odkaz na pracovnej ploche</translation>
+<translation id="4776594120007763294">Ak chcete pridať stránku na čítanie neskôr, kliknite na tlačidlo</translation>
 <translation id="4776917500594043016">Heslo pre účet <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777458362738635055">Ostatní používatelia tohto zariadenia môžu túto sieť používať</translation>
 <translation id="4777825441726637019">Obchod Play</translation>
@@ -3654,6 +3656,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4864805589453749318">Vyberte rodiča, ktorý udeľuje povolenie pridať školský účet.</translation>
 <translation id="486635084936119914">Automaticky otvoriť určité typy súborov po ich stiahnutí</translation>
 <translation id="4868281708609571334">Naučte Asistenta Google rozpoznávať hlas dieťaťa <ph name="SUPERVISED_USER_NAME" /></translation>
+<translation id="4868284252360267853">Toto dialógové okno nie je momentálne označené. Označíte ho stlačením kombinácie klávesov Command-Shift-Option A.</translation>
 <translation id="48704129375571883">Pridať ďalšie funkcie</translation>
 <translation id="4870758487381879312">Ak chcete získať informácie o konfigurácii, zadajte heslo od správcu</translation>
 <translation id="4870903493621965035">Žiadne spárované zariadenia</translation>
@@ -4230,6 +4233,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="5496730470963166430">Nemôže odosielať vyskakovacie okná ani používať presmerovania</translation>
 <translation id="5497251278400702716">Tento súbor</translation>
 <translation id="5498967291577176373">Zrýchlite si písanie návrhmi mena, adresy alebo telefóneho čísla v texte</translation>
+<translation id="5499211612787418966">Toto dialógové okno nie je momentálne označené. Označíte ho stlačením kombinácie klávesov Alt-Shift A.</translation>
 <translation id="5499313591153584299">Tento súbor môže poškodiť váš počítať.</translation>
 <translation id="5499453227627332024">Pre váš kontajner systému Linux je k dispozícii inovácia. Inovovať môžete aj neskôr v aplikácii Nastavenia.</translation>
 <translation id="549957179819296104">Nová ikona</translation>
@@ -5615,6 +5619,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="7005496624875927304">Ďalšie povolenia</translation>
 <translation id="7005812687360380971">Zlyhanie</translation>
 <translation id="7005848115657603926">Neplatný rozsah stránok, použite formát <ph name="EXAMPLE_PAGE_RANGE" /></translation>
+<translation id="7006438259896942210">Tento účet (<ph name="USER_EMAIL_ADDRESS" />) je spravovaný profilom <ph name="PROFILE_NAME" /></translation>
 <translation id="700651317925502808">Chcete resetovať nastavenia?</translation>
 <translation id="7006634003215061422">Dolný okraj</translation>
 <translation id="7007648447224463482">Otvoriť všetky v novom okne</translation>
@@ -6954,6 +6959,7 @@ Ak chcete pridelenie odstrániť, stlačte pridelený prepínač</translation>
 <translation id="8425213833346101688">Zmeniť</translation>
 <translation id="8425492902634685834">Pripnúť na panel úloh</translation>
 <translation id="8425768983279799676">Kódom PIN môžete odomknúť zariadenie.</translation>
+<translation id="8426111352542548860">Uložiť skupinu</translation>
 <translation id="8426713856918551002">Aktivuje sa</translation>
 <translation id="8427213022735114808">Diktovanie odosiela váš hlas do Googlu a umožňuje tak hlasové zadávanie do všetkých textových polí.</translation>
 <translation id="8427292751741042100">vložené do ľubovoľného webu</translation>
@@ -7550,6 +7556,7 @@ Ak chcete pridelenie odstrániť, stlačte pridelený prepínač</translation>
 <translation id="9042893549633094279">Ochrana súkromia a zabezpečenie</translation>
 <translation id="904451693890288097">Zadajte prístupový kľúč pre zariadenie „<ph name="DEVICE_NAME" />“:</translation>
 <translation id="9044646465488564462">Nepodarilo sa pripojiť k sieti: <ph name="DETAILS" /></translation>
+<translation id="9045160989383249058">Čitateľský zoznam bol presunutý na nový bočný panel. Vyskúšajte ho tu.</translation>
 <translation id="9045430190527754450">Odošle Googlu webovú adresu stránky, na ktorú sa pokúšate prejsť</translation>
 <translation id="9048745018038487540">Vybrať všetky písma</translation>
 <translation id="9050666287014529139">Prístupová fráza</translation>
