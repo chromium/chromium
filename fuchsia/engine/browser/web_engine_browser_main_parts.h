@@ -38,7 +38,6 @@ class ComponentInspector;
 }
 
 class MediaResourceProviderService;
-class WebEngineMemoryInspector;
 
 class WEB_ENGINE_EXPORT WebEngineBrowserMainParts
     : public content::BrowserMainParts {
@@ -88,7 +87,6 @@ class WEB_ENGINE_EXPORT WebEngineBrowserMainParts
 
   // Used to publish diagnostics including the active Contexts and FrameHosts.
   std::unique_ptr<sys::ComponentInspector> component_inspector_;
-  std::unique_ptr<WebEngineMemoryInspector> memory_inspector_;
 
   // Browsing contexts for the connected clients.
   fidl::BindingSet<fuchsia::web::Context, std::unique_ptr<ContextImpl>>
