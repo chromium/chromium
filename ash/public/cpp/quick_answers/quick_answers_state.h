@@ -21,10 +21,10 @@ class PrefService;
 
 namespace ash {
 
-// The consent will appear up to a total of 3 times.
-constexpr int kConsentImpressionCap = 3;
-// The consent will appear until viewed for a cumulative 8 seconds.
-constexpr int kConsentDurationCap = 8;
+// The consent will appear up to a total of 6 times.
+constexpr int kConsentImpressionCap = 6;
+// The consent need to show for at least 1 second to be counted.
+constexpr int kConsentImpressionMinimumDuration = 1;
 
 // Consent result of the consent-view.
 enum class ConsentResultType {
