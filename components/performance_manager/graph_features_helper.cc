@@ -10,6 +10,7 @@
 #include "components/performance_manager/decorators/frame_visibility_decorator.h"
 #include "components/performance_manager/decorators/freezing_vote_decorator.h"
 #include "components/performance_manager/decorators/page_load_tracker_decorator.h"
+#include "components/performance_manager/decorators/process_hosted_content_types_aggregator.h"
 #include "components/performance_manager/execution_context/execution_context_registry_impl.h"
 #include "components/performance_manager/execution_context_priority/execution_context_priority_decorator.h"
 #include "components/performance_manager/graph/frame_node_impl_describer.h"
@@ -52,6 +53,8 @@ void GraphFeaturesHelper::ConfigureGraph(Graph* graph) const {
     Install<PageLoadTrackerDecorator>(graph);
   if (flags_.page_node_impl_describer)
     Install<PageNodeImplDescriber>(graph);
+  if (flags_.process_hosted_content_types_aggregator)
+    Install<ProcessHostedContentTypesAggregator>(graph);
   if (flags_.process_node_impl_describer)
     Install<ProcessNodeImplDescriber>(graph);
   if (flags_.tab_properties_decorator)

@@ -99,19 +99,24 @@ void MetricsCollector::OnFaviconUpdated(const PageNode* page_node) {
 
 void MetricsCollector::OnBeforeProcessNodeRemoved(
     const ProcessNode* process_node) {
+  // Skip non-renderers.
+  if (process_node->GetProcessType() != content::PROCESS_TYPE_RENDERER)
+    return;
+
   const base::TimeDelta lifetime =
       base::Time::Now() - process_node->GetLaunchTime();
-  if (process_node->GetProcessType() == content::PROCESS_TYPE_RENDERER &&
-      lifetime > base::TimeDelta()) {
-    // Do not record in the rare case system time was adjusted and now < launch
-    // time. This could also happen if the process was never launched.
-    UMA_HISTOGRAM_CUSTOM_TIMES("Renderer.ProcessLifetime2.HighResolution",
-                               lifetime, base::TimeDelta::FromSeconds(1),
-                               base::TimeDelta::FromMinutes(5), 100);
-    UMA_HISTOGRAM_CUSTOM_TIMES("Renderer.ProcessLifetime2.LowResolution",
-                               lifetime, base::TimeDelta::FromSeconds(1),
-                               base::TimeDelta::FromDays(1), 100);
-  }
+
+  // Do not record in the rare case system time was adjusted and now < launch
+  // time. This could also happen if the process was never launched.
+  if (lifetime <= base::TimeDelta())
+    return;
+
+  UMA_HISTOGRAM_CUSTOM_TIMES("Renderer.ProcessLifetime2.HighResolution",
+                             lifetime, base::TimeDelta::FromSeconds(1),
+                             base::TimeDelta::FromMinutes(5), 100);
+  UMA_HISTOGRAM_CUSTOM_TIMES("Renderer.ProcessLifetime2.LowResolution",
+                             lifetime, base::TimeDelta::FromSeconds(1),
+                             base::TimeDelta::FromDays(1), 100);
 }
 
 void MetricsCollector::OnTitleUpdated(const PageNode* page_node) {

@@ -32,6 +32,7 @@ class GraphFeaturesHelper {
       bool page_live_state_decorator : 1;
       bool page_load_tracker_decorator : 1;
       bool page_node_impl_describer : 1;
+      bool process_hosted_content_types_aggregator : 1;
       bool process_node_impl_describer : 1;
       bool site_data_recorder : 1;
       bool tab_properties_decorator : 1;
@@ -85,6 +86,11 @@ class GraphFeaturesHelper {
     return *this;
   }
 
+  constexpr GraphFeaturesHelper& EnableProcessHostedContentTypesAggregator() {
+    flags_.process_hosted_content_types_aggregator = true;
+    return *this;
+  }
+
   constexpr GraphFeaturesHelper& EnableProcessNodeImplDescriber() {
     flags_.process_node_impl_describer = true;
     return *this;
@@ -131,6 +137,7 @@ class GraphFeaturesHelper {
     EnablePageLiveStateDecorator();
     EnablePageLoadTrackerDecorator();
     EnablePageNodeImplDescriber();
+    EnableProcessHostedContentTypesAggregator();
     EnableProcessNodeImplDescriber();
     EnableSiteDataRecorder();
     EnableTabPropertiesDecorator();

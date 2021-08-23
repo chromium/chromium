@@ -6,6 +6,7 @@
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_GRAPH_PROCESS_NODE_H_
 
 #include "base/callback_forward.h"
+#include "base/containers/enum_set.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/process/process.h"
@@ -43,6 +44,16 @@ class ProcessNode : public Node {
   using FrameNodeVisitor = base::RepeatingCallback<bool(const FrameNode*)>;
   using Observer = ProcessNodeObserver;
   class ObserverDefaultImpl;
+
+  // The type of content a renderer can host.
+  enum class ContentType : uint32_t {
+    kExtension = 1 << 0,
+    kMainFrame = 1 << 1,
+    kAd = 1 << 2,
+  };
+
+  using ContentTypes =
+      base::EnumSet<ContentType, ContentType::kExtension, ContentType::kAd>;
 
   ProcessNode();
   ~ProcessNode() override;
@@ -111,6 +122,10 @@ class ProcessNode : public Node {
 
   // Returns the current priority of the process.
   virtual base::TaskPriority GetPriority() const = 0;
+
+  // Returns a bit field indicating what type of content this process has
+  // hosted, either currently or in the past.
+  virtual ContentTypes GetHostedContentTypes() const = 0;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ProcessNode);
