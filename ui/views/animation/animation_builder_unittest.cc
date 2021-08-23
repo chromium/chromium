@@ -186,56 +186,6 @@ TEST_F(AnimationBuilderTest, CheckStartEndCallbacks) {
   EXPECT_TRUE(ended);
 }
 
-TEST_F(AnimationBuilderTest, DelayedStart) {
-  TestAnimatibleLayerOwner* view = CreateTestLayerOwner();
-  ui::LayerAnimationDelegate* delegate = view->delegate();
-
-  constexpr auto kDelay = base::TimeDelta::FromSeconds(1);
-  constexpr auto kDuration = base::TimeDelta::FromSeconds(1);
-
-  {
-    // clang-format off
-    AnimationBuilder()
-      .Once()
-      .At(kDelay)
-      .SetDuration(kDuration)
-      .SetOpacity(view, 0.4f);
-    // clang-format on
-  }
-
-  // Original value before the animation steps.
-  EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 1.0);
-  Step(kDelay);
-  // The animation on opacity is not yet started.
-  EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 1.0);
-  Step(kDuration);
-  EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.4f);
-}
-
-TEST_F(AnimationBuilderTest, TwoKeyFrame) {
-  TestAnimatibleLayerOwner* view = CreateTestLayerOwner();
-  ui::LayerAnimationDelegate* delegate = view->delegate();
-
-  constexpr auto kDuration = base::TimeDelta::FromSeconds(1);
-
-  {
-    AnimationBuilder()
-        .Once()
-        .SetDuration(kDuration)
-        .SetOpacity(view, 0.4f)
-        .Then()
-        .SetDuration(kDuration)
-        .SetOpacity(view, 0.9f);
-  }
-
-  // The animation on opacity is not yet started.
-  EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 1.0);
-  Step(kDuration);
-  EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.4f);
-  Step(kDuration);
-  EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.9f);
-}
-
 // This test checks that repeat callbacks are called after each sequence
 // repetition and callbacks from one sequence do not affect calls from another
 // sequence.
@@ -279,6 +229,423 @@ TEST_F(AnimationBuilderTest, CheckOnWillRepeatCallbacks) {
   Step(kDelay * 2);
   EXPECT_EQ(first_repeat_count, 2);
   EXPECT_EQ(second_repeat_count, 2);
+}
+
+// We use these notations to illustrate the tested timeline,
+// Pause:    ---|
+// KeyFrame: -->|
+// Repeat:  [...]
+//
+// Opacity ---|-->|
+TEST_F(AnimationBuilderTest, DelayedStart) {
+  TestAnimatibleLayerOwner* view = CreateTestLayerOwner();
+  ui::LayerAnimationDelegate* delegate = view->delegate();
+
+  constexpr auto kDelay = base::TimeDelta::FromSeconds(1);
+  constexpr auto kDuration = base::TimeDelta::FromSeconds(1);
+
+  {
+    // clang-format off
+    AnimationBuilder()
+      .Once()
+      .At(kDelay)
+      .SetDuration(kDuration)
+      .SetOpacity(view, 0.4f);
+    // clang-format on
+  }
+
+  Step(kDelay);
+  // The animation on opacity is not yet started.
+  EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 1.0);
+  Step(kDuration);
+  EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.4f);
+}
+
+// Opacity -->|-->|
+TEST_F(AnimationBuilderTest, TwoKeyFrame) {
+  TestAnimatibleLayerOwner* view = CreateTestLayerOwner();
+  ui::LayerAnimationDelegate* delegate = view->delegate();
+
+  constexpr auto kDuration = base::TimeDelta::FromSeconds(1);
+
+  {
+    AnimationBuilder()
+        .Once()
+        .SetDuration(kDuration)
+        .SetOpacity(view, 0.4f)
+        .Then()
+        .SetDuration(kDuration)
+        .SetOpacity(view, 0.9f);
+  }
+
+  Step(kDuration);
+  EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.4f);
+  Step(kDuration);
+  EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.9f);
+}
+
+// Opacity -->|---|-->|
+TEST_F(AnimationBuilderTest, PauseInTheMiddle) {
+  TestAnimatibleLayerOwner* view = CreateTestLayerOwner();
+  ui::LayerAnimationDelegate* delegate = view->delegate();
+
+  constexpr auto kDuration = base::TimeDelta::FromSeconds(1);
+
+  {
+    AnimationBuilder()
+        .Once()
+        .SetDuration(kDuration)
+        .SetOpacity(view, 0.4f)
+        .Then()
+        .Offset(kDuration)
+        .SetDuration(kDuration)
+        .SetOpacity(view, 0.9f);
+  }
+
+  Step(kDuration);
+  EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.4f);
+  Step(kDuration);
+  EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.4f);
+  Step(kDuration);
+  EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.9f);
+}
+
+// Opacity        -->|
+// RoundedCorners ----->|
+TEST_F(AnimationBuilderTest, TwoPropertiesOfDifferentDuration) {
+  TestAnimatibleLayerOwner* view = CreateTestLayerOwner();
+  ui::LayerAnimationDelegate* delegate = view->delegate();
+
+  gfx::RoundedCornersF rounded_corners(12.0f, 12.0f, 12.0f, 12.0f);
+  // Make sure that the opacity keyframe finishes at the middle of the rounded
+  // corners keyframe.
+  constexpr auto kDurationShort = base::TimeDelta::FromSeconds(1);
+  constexpr auto kDurationLong = kDurationShort * 2;
+
+  {
+    AnimationBuilder()
+        .Once()
+        .SetDuration(kDurationShort)
+        .SetOpacity(view, 0.4f)
+        .At(base::TimeDelta())
+        .SetDuration(kDurationLong)
+        .SetRoundedCorners(view, rounded_corners);
+  }
+
+  Step(kDurationShort);
+  EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.4f);
+  EXPECT_FLOAT_EQ(delegate->GetRoundedCornersForAnimation().upper_left(), 6.0f);
+  Step(kDurationLong - kDurationShort);
+  EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.4f);
+  EXPECT_FLOAT_EQ(delegate->GetRoundedCornersForAnimation().upper_left(),
+                  12.0f);
+}
+
+// Opacity        ----->|
+// RoundedCorners    ----->|
+TEST_F(AnimationBuilderTest, TwoPropertiesOfDifferentStartTime) {
+  TestAnimatibleLayerOwner* view = CreateTestLayerOwner();
+  ui::LayerAnimationDelegate* delegate = view->delegate();
+
+  gfx::RoundedCornersF rounded_corners(12.0f, 12.0f, 12.0f, 12.0f);
+  // Make sure that the opacity keyframe finishes at the middle of the rounded
+  // corners keyframe.
+  constexpr auto kDelay = base::TimeDelta::FromSeconds(1);
+  constexpr auto kDuration = kDelay * 2;
+
+  {
+    AnimationBuilder()
+        .Once()
+        .SetDuration(kDuration)
+        .SetOpacity(view, 0.4f)
+        .At(kDelay)
+        .SetDuration(kDuration)
+        .SetRoundedCorners(view, rounded_corners);
+  }
+
+  Step(kDelay);
+  // Unfortunately, we can't test threaded animations in the midst of a frame
+  // because they don't update LayerAnimationDelegate in OnProgress().
+  EXPECT_FLOAT_EQ(delegate->GetRoundedCornersForAnimation().upper_left(), 0.0);
+  Step(kDuration - kDelay);
+  EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.4f);
+  EXPECT_FLOAT_EQ(delegate->GetRoundedCornersForAnimation().upper_left(), 6.0f);
+  Step(kDelay);
+  EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.4f);
+  EXPECT_FLOAT_EQ(delegate->GetRoundedCornersForAnimation().upper_left(),
+                  12.0f);
+}
+
+// Opacity        ----->|---|-->|
+// RoundedCorners     ----->|-->|
+TEST_F(AnimationBuilderTest, ThenAddsImplicitPause) {
+  TestAnimatibleLayerOwner* view = CreateTestLayerOwner();
+  ui::LayerAnimationDelegate* delegate = view->delegate();
+
+  gfx::RoundedCornersF rounded_corners1(12.0f, 12.0f, 12.0f, 12.0f);
+  gfx::RoundedCornersF rounded_corners2(5.0f, 5.0f, 5.0f, 5.0f);
+  // Make sure that the first opacity keyframe finishes at the middle of the
+  // first rounded corners keyframe.
+  constexpr auto kDelay = base::TimeDelta::FromSeconds(1);
+  constexpr auto kDuration = kDelay * 2;
+
+  {
+    AnimationBuilder()
+        .Once()
+        .SetDuration(kDuration)
+        .SetOpacity(view, 0.4f)
+        .At(kDelay)
+        .SetDuration(kDuration)
+        .SetRoundedCorners(view, rounded_corners1)
+        .Then()
+        .SetDuration(kDuration)
+        .SetOpacity(view, 0.9f)
+        .SetRoundedCorners(view, rounded_corners2);
+  }
+
+  Step(kDelay);
+  // Unfortunately, we can't test threaded animations in the midst of a frame
+  // because they don't update LayerAnimationDelegate in OnProgress().
+  EXPECT_FLOAT_EQ(delegate->GetRoundedCornersForAnimation().upper_left(), 0.0);
+  Step(kDuration - kDelay);
+  EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.4f);
+  EXPECT_FLOAT_EQ(delegate->GetRoundedCornersForAnimation().upper_left(), 6.0f);
+  Step(kDelay);
+  EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.4f);
+  EXPECT_FLOAT_EQ(delegate->GetRoundedCornersForAnimation().upper_left(),
+                  12.0f);
+  Step(kDuration);
+  EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.9f);
+  EXPECT_FLOAT_EQ(delegate->GetRoundedCornersForAnimation().upper_left(), 5.0f);
+}
+
+// Opacity [-->|-->]
+TEST_F(AnimationBuilderTest, Repeat) {
+  TestAnimatibleLayerOwner* view = CreateTestLayerOwner();
+  ui::LayerAnimationDelegate* delegate = view->delegate();
+
+  constexpr auto kDuration = base::TimeDelta::FromSeconds(1);
+
+  {
+    AnimationBuilder()
+        .Repeatedly()
+        .SetDuration(kDuration)
+        .SetOpacity(view, 0.4f)
+        .Then()
+        .SetDuration(kDuration)
+        .SetOpacity(view, 0.9f);
+  }
+
+  Step(kDuration);
+  EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.4f);
+  Step(kDuration);
+  EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.9f);
+  Step(kDuration);
+  EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.4f);
+  Step(kDuration);
+  EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.9f);
+}
+
+// Opacity [-->|-->|   ]
+TEST_F(AnimationBuilderTest, RepeatWithExplicitTrailingPause) {
+  TestAnimatibleLayerOwner* view = CreateTestLayerOwner();
+  ui::LayerAnimationDelegate* delegate = view->delegate();
+
+  constexpr auto kDuration = base::TimeDelta::FromSeconds(1);
+
+  {
+    AnimationBuilder()
+        .Repeatedly()
+        .SetDuration(kDuration)
+        .SetOpacity(view, 0.4f)
+        .Then()
+        .SetDuration(kDuration)
+        .SetOpacity(view, 0.9f)
+        .Then()
+        .SetDuration(kDuration);
+  }
+
+  Step(kDuration);
+  EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.4f);
+  Step(kDuration);
+  EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.9f);
+  Step(kDuration);
+  EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.9f);
+  Step(kDuration);
+  EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.4f);
+  Step(kDuration);
+  EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.9f);
+  Step(kDuration);
+  EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.9f);
+}
+
+// Opacity        [-->|-->]
+// RoundedCorners [-->|-->]
+TEST_F(AnimationBuilderTest, RepeatTwoProperties) {
+  TestAnimatibleLayerOwner* view = CreateTestLayerOwner();
+  ui::LayerAnimationDelegate* delegate = view->delegate();
+
+  gfx::RoundedCornersF rounded_corners1(12.0f, 12.0f, 12.0f, 12.0f);
+  gfx::RoundedCornersF rounded_corners2(5.0f, 5.0f, 5.0f, 5.0f);
+  constexpr auto kDuration = base::TimeDelta::FromSeconds(1);
+
+  {
+    AnimationBuilder()
+        .Repeatedly()
+        .SetDuration(kDuration)
+        .SetOpacity(view, 0.4f)
+        .SetRoundedCorners(view, rounded_corners1)
+        .Then()
+        .SetDuration(kDuration)
+        .SetOpacity(view, 0.9f)
+        .SetRoundedCorners(view, rounded_corners2);
+  }
+
+  Step(kDuration);
+  EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.4f);
+  EXPECT_FLOAT_EQ(delegate->GetRoundedCornersForAnimation().upper_left(), 12.0);
+  Step(kDuration);
+  EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.9f);
+  EXPECT_FLOAT_EQ(delegate->GetRoundedCornersForAnimation().upper_left(), 5.0);
+  Step(kDuration);
+  EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.4f);
+  EXPECT_FLOAT_EQ(delegate->GetRoundedCornersForAnimation().upper_left(), 12.0);
+  Step(kDuration);
+  EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.9f);
+  EXPECT_FLOAT_EQ(delegate->GetRoundedCornersForAnimation().upper_left(), 5.0);
+}
+
+// Opacity        -->|-->|
+// RoundedCorners   -->|-->|
+TEST_F(AnimationBuilderTest, AtCanSkipThenBlock) {
+  TestAnimatibleLayerOwner* view = CreateTestLayerOwner();
+  ui::LayerAnimationDelegate* delegate = view->delegate();
+
+  gfx::RoundedCornersF rounded_corners1(12.0f, 12.0f, 12.0f, 12.0f);
+  gfx::RoundedCornersF rounded_corners2(4.0f, 4.0f, 4.0f, 4.0f);
+  // Make sure that the first opacity keyframe finishes at the middle of the
+  // first rounded corners keyframe.
+  constexpr auto kDelay = base::TimeDelta::FromSeconds(1);
+  constexpr auto kDuration = kDelay * 2;
+
+  {
+    AnimationBuilder()
+        .Once()
+        .SetDuration(kDuration)
+        .SetOpacity(view, 0.4f)
+        .Then()
+        .SetDuration(kDuration)
+        .SetOpacity(view, 0.9f)
+        .At(kDelay)
+        .SetDuration(kDuration)
+        .SetRoundedCorners(view, rounded_corners1)
+        .Then()
+        .SetDuration(kDuration)
+        .SetRoundedCorners(view, rounded_corners2);
+  }
+
+  Step(kDelay);
+  // Unfortunately, we can't test threaded animations in the midst of a frame
+  // because they don't update LayerAnimationDelegate in OnProgress().
+  EXPECT_FLOAT_EQ(delegate->GetRoundedCornersForAnimation().upper_left(), 0.0);
+  Step(kDuration - kDelay);
+  EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.4f);
+  EXPECT_FLOAT_EQ(delegate->GetRoundedCornersForAnimation().upper_left(), 6.0);
+  Step(kDelay);
+  EXPECT_FLOAT_EQ(delegate->GetRoundedCornersForAnimation().upper_left(), 12.0);
+  Step(kDuration - kDelay);
+  EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.9f);
+  EXPECT_FLOAT_EQ(delegate->GetRoundedCornersForAnimation().upper_left(), 8.0);
+  Step(kDelay);
+  EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.9f);
+  EXPECT_FLOAT_EQ(delegate->GetRoundedCornersForAnimation().upper_left(), 4.0);
+}
+
+// Opacity        -->|-->|
+// RoundedCorners   -->|
+TEST_F(AnimationBuilderTest, OffsetCanRewindTime) {
+  TestAnimatibleLayerOwner* view = CreateTestLayerOwner();
+  ui::LayerAnimationDelegate* delegate = view->delegate();
+
+  gfx::RoundedCornersF rounded_corners(12.0f, 12.0f, 12.0f, 12.0f);
+  // Make sure that the first opacity keyframe finishes at the middle of the
+  // first rounded corners keyframe.
+  constexpr auto kDelay = base::TimeDelta::FromSeconds(1);
+  constexpr auto kDuration = kDelay * 2;
+
+  {
+    AnimationBuilder()
+        .Once()
+        .SetDuration(kDuration)
+        .SetOpacity(view, 0.4f)
+        .Then()
+        .SetDuration(kDuration)
+        .SetOpacity(view, 0.9f)
+        .Offset(kDelay - kDuration)
+        .SetDuration(kDuration)
+        .SetRoundedCorners(view, rounded_corners);
+  }
+
+  Step(kDelay);
+  // Unfortunately, we can't test threaded animations in the midst of a frame
+  // because they don't update LayerAnimationDelegate in OnProgress().
+  EXPECT_FLOAT_EQ(delegate->GetRoundedCornersForAnimation().upper_left(), 0.0);
+  Step(kDuration - kDelay);
+  EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.4f);
+  EXPECT_FLOAT_EQ(delegate->GetRoundedCornersForAnimation().upper_left(), 6.0);
+  Step(kDelay);
+  EXPECT_FLOAT_EQ(delegate->GetRoundedCornersForAnimation().upper_left(), 12.0);
+  Step(kDuration - kDelay);
+  EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.9f);
+  EXPECT_FLOAT_EQ(delegate->GetRoundedCornersForAnimation().upper_left(), 12.0);
+}
+
+// Opacity        [-->|-->  ]
+// RoundedCorners [-->|---->]
+TEST_F(AnimationBuilderTest, RepeatedlyImplicitlyAppendsTrailingPause) {
+  TestAnimatibleLayerOwner* view = CreateTestLayerOwner();
+  ui::LayerAnimationDelegate* delegate = view->delegate();
+
+  gfx::RoundedCornersF rounded_corners1(12.0f, 12.0f, 12.0f, 12.0f);
+  gfx::RoundedCornersF rounded_corners2(4.0f, 4.0f, 4.0f, 4.0f);
+  // Make sure that the second opacity keyframe finishes at the middle of the
+  // second rounded corners keyframe.
+  constexpr auto kDurationShort = base::TimeDelta::FromSeconds(1);
+  constexpr auto kDurationLong = kDurationShort * 2;
+
+  {
+    AnimationBuilder()
+        .Repeatedly()
+        .SetDuration(kDurationShort)
+        .SetOpacity(view, 0.4f)
+        .SetRoundedCorners(view, rounded_corners1)
+        .Then()
+        .SetDuration(kDurationShort)
+        .SetOpacity(view, 0.9f)
+        .Offset(base::TimeDelta())
+        .SetDuration(kDurationLong)
+        .SetRoundedCorners(view, rounded_corners2);
+  }
+
+  Step(kDurationShort);
+  EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.4f);
+  EXPECT_FLOAT_EQ(delegate->GetRoundedCornersForAnimation().upper_left(), 12.0);
+  Step(kDurationShort);
+  EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.9f);
+  EXPECT_FLOAT_EQ(delegate->GetRoundedCornersForAnimation().upper_left(), 8.0);
+  Step(kDurationLong - kDurationShort);
+  EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.9f);
+  EXPECT_FLOAT_EQ(delegate->GetRoundedCornersForAnimation().upper_left(), 4.0);
+  // Repeat
+  Step(kDurationShort);
+  EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.4f);
+  EXPECT_FLOAT_EQ(delegate->GetRoundedCornersForAnimation().upper_left(), 12.0);
+  Step(kDurationShort);
+  EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.9f);
+  EXPECT_FLOAT_EQ(delegate->GetRoundedCornersForAnimation().upper_left(), 8.0);
+  Step(kDurationLong - kDurationShort);
+  EXPECT_FLOAT_EQ(delegate->GetOpacityForAnimation(), 0.9f);
+  EXPECT_FLOAT_EQ(delegate->GetRoundedCornersForAnimation().upper_left(), 4.0);
 }
 
 }  // namespace views
