@@ -297,6 +297,10 @@ bool WaylandConnection::IsDragInProgress() const {
               WaylandWindowDragController::State::kIdle);
 }
 
+bool WaylandConnection::SupportsSetWindowGeometry() const {
+  return shell_ || shell_v6_;
+}
+
 wl::Object<wl_surface> WaylandConnection::CreateSurface() {
   DCHECK(compositor_);
   return wl::Object<wl_surface>(

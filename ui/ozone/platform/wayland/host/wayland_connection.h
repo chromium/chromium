@@ -249,6 +249,10 @@ class WaylandConnection {
     return zwp_idle_inhibit_manager_.get();
   }
 
+  // Returns whether protocols that support setting window geometry are
+  // available.
+  bool SupportsSetWindowGeometry() const;
+
   // Returns true when dragging is entered or started.
   bool IsDragInProgress() const;
 

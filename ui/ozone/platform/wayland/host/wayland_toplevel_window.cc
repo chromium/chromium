@@ -257,7 +257,10 @@ bool WaylandToplevelWindow::ShouldUpdateWindowShape() const {
 }
 
 bool WaylandToplevelWindow::CanSetDecorationInsets() const {
-  return decorations_allowed_for_test_ && shell_toplevel_.get();
+  return decorations_allowed_for_test_ &&
+         const_cast<WaylandToplevelWindow*>(this)
+             ->connection()
+             ->SupportsSetWindowGeometry();
 }
 
 void WaylandToplevelWindow::SetOpaqueRegion(std::vector<gfx::Rect> region_px) {
@@ -467,7 +470,10 @@ bool WaylandToplevelWindow::IsSurfaceConfigured() {
 }
 
 void WaylandToplevelWindow::SetWindowGeometry(gfx::Rect bounds_dip) {
-  DCHECK(shell_toplevel_);
+  DCHECK(connection()->SupportsSetWindowGeometry());
+
+  if (!shell_toplevel_)
+    return;
 
   if (frame_insets_px()) {
     bounds_dip.Inset(
