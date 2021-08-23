@@ -2904,8 +2904,8 @@ void DragWindowAndVerifyOffset(DetachToBrowserTabDragControllerTest* test,
 
 }  // namespace
 
-#if defined(OS_WIN)
-// TODO(mukai): enable those tests on Windows.
+#if defined(OS_WIN) || defined(OS_LINUX)
+// TODO(mukai): enable this test on Windows and Linux.
 #define MAYBE_OffsetForDraggingTab DISABLED_OffsetForDraggingTab
 #else
 #define MAYBE_OffsetForDraggingTab OffsetForDraggingTab
