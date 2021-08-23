@@ -161,16 +161,20 @@ IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerBrowserTest, CustomHandler) {
 
   ui_test_utils::NavigateToURL(browser(), GURL("news:test"));
 
-  ASSERT_EQ(handler_url,
-            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
+  ASSERT_EQ(handler_url, browser()
+                             ->tab_strip_model()
+                             ->GetActiveWebContents()
+                             ->GetLastCommittedURL());
 
   // Also check redirects.
   GURL redirect_url =
       embedded_test_server()->GetURL("/server-redirect?news:test");
   ui_test_utils::NavigateToURL(browser(), redirect_url);
 
-  ASSERT_EQ(handler_url,
-            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
+  ASSERT_EQ(handler_url, browser()
+                             ->tab_strip_model()
+                             ->GetActiveWebContents()
+                             ->GetLastCommittedURL());
 }
 
 class RegisterProtocolHandlerSubresourceWebBundlesBrowserTest
@@ -240,8 +244,10 @@ IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerExtensionBrowserTest, Basic) {
 
   // Test the handler.
   ui_test_utils::NavigateToURL(browser(), GURL("geo:test"));
-  ASSERT_EQ(GURL(handler_url + "?geo%3Atest"),
-            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
+  ASSERT_EQ(GURL(handler_url + "?geo%3Atest"), browser()
+                                                   ->tab_strip_model()
+                                                   ->GetActiveWebContents()
+                                                   ->GetLastCommittedURL());
 }
 
 class RegisterProtocolHandlerAndServiceWorkerInterceptor
