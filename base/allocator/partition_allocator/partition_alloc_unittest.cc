@@ -918,8 +918,9 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndStart) {
   EXPECT_LT(requested_size, actual_capacity);
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
   for (size_t offset = 0; offset < requested_size; ++offset) {
-    EXPECT_EQ(PartitionAllocGetSlotStart(static_cast<char*>(ptr) + offset),
-              slot_start);
+    EXPECT_EQ(
+        PartitionAllocGetSlotStartInBRPPool(static_cast<char*>(ptr) + offset),
+        slot_start);
   }
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
   allocator.root()->Free(ptr);
@@ -939,8 +940,9 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndStart) {
   EXPECT_EQ(requested_size, actual_capacity);
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
   for (size_t offset = 0; offset < requested_size; offset += 877) {
-    EXPECT_EQ(PartitionAllocGetSlotStart(static_cast<char*>(ptr) + offset),
-              slot_start);
+    EXPECT_EQ(
+        PartitionAllocGetSlotStartInBRPPool(static_cast<char*>(ptr) + offset),
+        slot_start);
   }
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
   allocator.root()->Free(ptr);
@@ -965,8 +967,9 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndStart) {
   EXPECT_EQ(requested_size + SystemPageSize(), actual_capacity);
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
   for (size_t offset = 0; offset < requested_size; offset += 4999) {
-    EXPECT_EQ(PartitionAllocGetSlotStart(static_cast<char*>(ptr) + offset),
-              slot_start);
+    EXPECT_EQ(
+        PartitionAllocGetSlotStartInBRPPool(static_cast<char*>(ptr) + offset),
+        slot_start);
   }
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
@@ -984,8 +987,9 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndStart) {
   EXPECT_EQ(requested_size, actual_capacity);
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
   for (size_t offset = 0; offset < requested_size; offset += 4999) {
-    EXPECT_EQ(PartitionAllocGetSlotStart(static_cast<char*>(ptr) + offset),
-              slot_start);
+    EXPECT_EQ(
+        PartitionAllocGetSlotStartInBRPPool(static_cast<char*>(ptr) + offset),
+        slot_start);
   }
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
@@ -1009,8 +1013,9 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndStart) {
     EXPECT_LT(requested_size, actual_capacity);
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
     for (size_t offset = 0; offset < requested_size; offset += 16111) {
-      EXPECT_EQ(PartitionAllocGetSlotStart(static_cast<char*>(ptr) + offset),
-                slot_start);
+      EXPECT_EQ(
+          PartitionAllocGetSlotStartInBRPPool(static_cast<char*>(ptr) + offset),
+          slot_start);
     }
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
     allocator.root()->Free(ptr);
@@ -1047,8 +1052,9 @@ TEST_F(PartitionAllocTest, GetSlotStartMultiplePages) {
     char* slot_start =
         reinterpret_cast<char*>(ptr) - allocator.root()->extras_offset;
     for (size_t offset = 0; offset < requested_size; offset += 13) {
-      EXPECT_EQ(PartitionAllocGetSlotStart(static_cast<char*>(ptr) + offset),
-                slot_start);
+      EXPECT_EQ(
+          PartitionAllocGetSlotStartInBRPPool(static_cast<char*>(ptr) + offset),
+          slot_start);
     }
     allocator.root()->Free(ptr);
   }

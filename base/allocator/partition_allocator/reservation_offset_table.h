@@ -107,6 +107,7 @@ ALWAYS_INLINE const uint16_t* GetReservationOffsetTableEnd(pool_handle handle) {
   return GetReservationOffsetTable(handle) +
          ReservationOffsetTable::kReservationOffsetTableLength;
 }
+
 ALWAYS_INLINE uint16_t* GetReservationOffsetTable(uintptr_t address) {
   pool_handle handle = GetPool(reinterpret_cast<void*>(address));
   return GetReservationOffsetTable(handle);
@@ -115,6 +116,14 @@ ALWAYS_INLINE uint16_t* GetReservationOffsetTable(uintptr_t address) {
 ALWAYS_INLINE const uint16_t* GetReservationOffsetTableEnd(uintptr_t address) {
   pool_handle handle = GetPool(reinterpret_cast<void*>(address));
   return GetReservationOffsetTableEnd(handle);
+}
+
+ALWAYS_INLINE uint16_t* ReservationOffsetPointer(pool_handle pool,
+                                                 uintptr_t offset_in_pool) {
+  size_t table_index = offset_in_pool >> kSuperPageShift;
+  PA_DCHECK(table_index <
+            ReservationOffsetTable::kReservationOffsetTableLength);
+  return GetReservationOffsetTable(pool) + table_index;
 }
 #else
 ALWAYS_INLINE uint16_t* GetReservationOffsetTable(uintptr_t address) {
@@ -130,18 +139,22 @@ ALWAYS_INLINE const uint16_t* GetReservationOffsetTableEnd(uintptr_t address) {
 ALWAYS_INLINE uint16_t* ReservationOffsetPointer(uintptr_t address) {
 #if defined(PA_HAS_64_BITS_POINTERS)
   // In 64-bit mode, find the owning Pool and compute the offset from its base.
-  pool_handle handle;
+  pool_handle pool;
   uintptr_t offset;
-  std::tie(handle, offset) = GetPoolAndOffset(reinterpret_cast<void*>(address));
-  size_t table_index = offset >> kSuperPageShift;
-  uint16_t* table = GetReservationOffsetTable(handle);
+  std::tie(pool, offset) = GetPoolAndOffset(reinterpret_cast<void*>(address));
+  return ReservationOffsetPointer(pool, offset);
 #else
   size_t table_index = address >> kSuperPageShift;
-  uint16_t* table = GetReservationOffsetTable(address);
-#endif
   PA_DCHECK(table_index <
             ReservationOffsetTable::kReservationOffsetTableLength);
-  return table + table_index;
+  return GetReservationOffsetTable(address) + table_index;
+#endif
+}
+
+ALWAYS_INLINE uintptr_t ComputeReservationStart(void* address,
+                                                uint16_t* offset_ptr) {
+  return (reinterpret_cast<uintptr_t>(address) & kSuperPageBaseMask) -
+         (static_cast<size_t>(*offset_ptr) << kSuperPageShift);
 }
 
 // If the given address doesn't point to direct-map allocated memory,
@@ -156,9 +169,7 @@ ALWAYS_INLINE uintptr_t GetDirectMapReservationStart(void* address) {
   PA_DCHECK(*offset_ptr != kOffsetTagNotAllocated);
   if (*offset_ptr == kOffsetTagNormalBuckets)
     return 0;
-  uintptr_t reservation_start =
-      (ptr_as_uintptr & kSuperPageBaseMask) -
-      (static_cast<size_t>(*offset_ptr) << kSuperPageShift);
+  uintptr_t reservation_start = ComputeReservationStart(address, offset_ptr);
 #if DCHECK_IS_ON()
   // Make sure the reservation start is in the same pool as |address|.
   // In the 32-bit mode, the beginning of a reservation may be excluded from the
@@ -179,6 +190,27 @@ ALWAYS_INLINE uintptr_t GetDirectMapReservationStart(void* address) {
 
   return reservation_start;
 }
+
+#if defined(PA_HAS_64_BITS_POINTERS)
+// If the given address doesn't point to direct-map allocated memory,
+// returns 0.
+// This variant has better performance than the regular one on 64-bit builds if
+// the Pool that an allocation belongs to is known.
+ALWAYS_INLINE uintptr_t GetDirectMapReservationStart(void* address,
+                                                     pool_handle pool,
+                                                     uintptr_t offset_in_pool) {
+  PA_DCHECK(AddressPoolManager::GetInstance()->GetPoolBaseAddress(pool) +
+                offset_in_pool ==
+            reinterpret_cast<uintptr_t>(address));
+  uint16_t* offset_ptr = ReservationOffsetPointer(pool, offset_in_pool);
+  PA_DCHECK(*offset_ptr != kOffsetTagNotAllocated);
+  if (*offset_ptr == kOffsetTagNormalBuckets)
+    return 0;
+  uintptr_t reservation_start = ComputeReservationStart(address, offset_ptr);
+  PA_DCHECK(*ReservationOffsetPointer(reservation_start) == 0);
+  return reservation_start;
+}
+#endif  // defined(PA_HAS_64_BITS_POINTERS)
 
 // Returns true if |address| is the beginning of the first super page of a
 // reservation, i.e. either a normal bucket super page, or the first super page

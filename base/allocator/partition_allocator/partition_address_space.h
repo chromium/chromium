@@ -127,6 +127,11 @@ class BASE_EXPORT PartitionAddressSpace {
            brp_pool_base_address_;
   }
 
+  static ALWAYS_INLINE uintptr_t OffsetInBRPPool(const void* address) {
+    PA_DCHECK(IsInBRPPool(address));
+    return reinterpret_cast<uintptr_t>(address) - brp_pool_base_address_;
+  }
+
   static ALWAYS_INLINE uintptr_t BRPPoolBase() {
     return brp_pool_base_address_;
   }
@@ -204,14 +209,6 @@ class BASE_EXPORT PartitionAddressSpace {
   static pool_handle brp_pool_;
 };
 
-ALWAYS_INLINE pool_handle GetNonBRPPool() {
-  return PartitionAddressSpace::GetNonBRPPool();
-}
-
-ALWAYS_INLINE pool_handle GetBRPPool() {
-  return PartitionAddressSpace::GetBRPPool();
-}
-
 ALWAYS_INLINE std::pair<pool_handle, uintptr_t> GetPoolAndOffset(
     const void* address) {
   return PartitionAddressSpace::GetPoolAndOffset(address);
@@ -219,6 +216,10 @@ ALWAYS_INLINE std::pair<pool_handle, uintptr_t> GetPoolAndOffset(
 
 ALWAYS_INLINE pool_handle GetPool(const void* address) {
   return std::get<0>(GetPoolAndOffset(address));
+}
+
+ALWAYS_INLINE uintptr_t OffsetInBRPPool(const void* address) {
+  return PartitionAddressSpace::OffsetInBRPPool(address);
 }
 
 #endif  // defined(PA_HAS_64_BITS_POINTERS)

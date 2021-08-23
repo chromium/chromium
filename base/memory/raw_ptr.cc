@@ -25,7 +25,7 @@ void BackupRefPtrImpl::AcquireInternal(void* ptr) {
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
   CHECK(IsManagedByPartitionAllocBRPPool(ptr));
 #endif
-  void* slot_start = PartitionAllocGetSlotStart(ptr);
+  void* slot_start = PartitionAllocGetSlotStartInBRPPool(ptr);
   PartitionRefCountPointer(slot_start)->Acquire();
 }
 
@@ -33,7 +33,7 @@ void BackupRefPtrImpl::ReleaseInternal(void* ptr) {
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
   CHECK(IsManagedByPartitionAllocBRPPool(ptr));
 #endif
-  void* slot_start = PartitionAllocGetSlotStart(ptr);
+  void* slot_start = PartitionAllocGetSlotStartInBRPPool(ptr);
   if (PartitionRefCountPointer(slot_start)->Release())
     PartitionAllocFreeForRefCounting(slot_start);
 }
@@ -42,7 +42,7 @@ bool BackupRefPtrImpl::IsPointeeAlive(void* ptr) {
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
   CHECK(IsManagedByPartitionAllocBRPPool(ptr));
 #endif
-  void* slot_start = PartitionAllocGetSlotStart(ptr);
+  void* slot_start = PartitionAllocGetSlotStartInBRPPool(ptr);
   return PartitionRefCountPointer(slot_start)->IsAlive();
 }
 

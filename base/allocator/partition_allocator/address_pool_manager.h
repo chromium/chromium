@@ -126,31 +126,19 @@ class BASE_EXPORT AddressPoolManager {
 
   Pool pools_[kNumPools];
 
-#else  // defined(PA_HAS_64_BITS_POINTERS)
-
-  // BRP stands for BackupRefPtr. GigaCage is split into pools, one which
-  // supports BackupRefPtr and one that doesn't.
-  static constexpr pool_handle kNonBRPPoolHandle = 1;
-  static constexpr pool_handle kBRPPoolHandle = 2;
-  friend pool_handle GetNonBRPPool();
-  friend pool_handle GetBRPPool();
-
 #endif  // defined(PA_HAS_64_BITS_POINTERS)
 
   friend struct base::LazyInstanceTraitsBase<AddressPoolManager>;
   DISALLOW_COPY_AND_ASSIGN(AddressPoolManager);
 };
 
-#if !defined(PA_HAS_64_BITS_POINTERS)
 ALWAYS_INLINE pool_handle GetNonBRPPool() {
-  return AddressPoolManager::kNonBRPPoolHandle;
+  return kNonBRPPoolHandle;
 }
 
 ALWAYS_INLINE pool_handle GetBRPPool() {
-  return AddressPoolManager::kBRPPoolHandle;
+  return kBRPPoolHandle;
 }
-
-#endif  // !defined(PA_HAS_64_BITS_POINTERS)
 
 }  // namespace internal
 

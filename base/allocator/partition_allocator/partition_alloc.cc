@@ -108,11 +108,11 @@ template void PartitionAllocator<internal::NotThreadSafe>::init(
 #if (DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)) && \
     BUILDFLAG(USE_BACKUP_REF_PTR)
 void CheckThatSlotOffsetIsZero(void* ptr) {
-  // Add kPartitionPastAllocationAdjustment, because PartitionAllocGetSlotStart
-  // will subtract it.
-  PA_CHECK(PartitionAllocGetSlotStart(reinterpret_cast<char*>(ptr) +
-                                      kPartitionPastAllocationAdjustment) ==
-           ptr);
+  // Add kPartitionPastAllocationAdjustment, because
+  // PartitionAllocGetSlotStartInBRPPool will subtract it.
+  PA_CHECK(PartitionAllocGetSlotStartInBRPPool(
+               reinterpret_cast<char*>(ptr) +
+               kPartitionPastAllocationAdjustment) == ptr);
 }
 #endif
 

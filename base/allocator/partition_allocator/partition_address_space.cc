@@ -54,7 +54,7 @@ void PartitionAddressSpace::Init() {
   PA_DCHECK(!(non_brp_pool_base_address_ & (kNonBRPPoolSize - 1)));
   non_brp_pool_ = internal::AddressPoolManager::GetInstance()->Add(
       current, kNonBRPPoolSize);
-  PA_DCHECK(non_brp_pool_);
+  PA_CHECK(non_brp_pool_ == kNonBRPPoolHandle);
   PA_DCHECK(!IsInNonBRPPool(reinterpret_cast<void*>(current - 1)));
   PA_DCHECK(IsInNonBRPPool(reinterpret_cast<void*>(current)));
   current += kNonBRPPoolSize;
@@ -65,7 +65,7 @@ void PartitionAddressSpace::Init() {
   PA_DCHECK(!(brp_pool_base_address_ & (kBRPPoolSize - 1)));
   brp_pool_ =
       internal::AddressPoolManager::GetInstance()->Add(current, kBRPPoolSize);
-  PA_DCHECK(brp_pool_);
+  PA_CHECK(brp_pool_ == kBRPPoolHandle);
   PA_DCHECK(!IsInBRPPool(reinterpret_cast<void*>(current - 1)));
   PA_DCHECK(IsInBRPPool(reinterpret_cast<void*>(current)));
   current += kBRPPoolSize;

@@ -681,8 +681,19 @@ PartitionAllocGetSlotSpanForSizeQuery(void* ptr) {
   return slot_span;
 }
 
-ALWAYS_INLINE void* PartitionAllocGetDirectMapSlotStart(void* ptr) {
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
+
+ALWAYS_INLINE void* PartitionAllocGetDirectMapSlotStartInBRPPool(void* ptr) {
+  PA_DCHECK(IsManagedByPartitionAllocBRPPool(ptr));
+#if defined(PA_HAS_64_BITS_POINTERS)
+  // Use this variant of GetDirectMapReservationStart as it has better
+  // performance.
+  uintptr_t offset = OffsetInBRPPool(ptr);
+  uintptr_t reservation_start =
+      GetDirectMapReservationStart(ptr, kBRPPoolHandle, offset);
+#else
   uintptr_t reservation_start = GetDirectMapReservationStart(ptr);
+#endif
   if (!reservation_start)
     return nullptr;
 
@@ -709,8 +720,6 @@ ALWAYS_INLINE void* PartitionAllocGetDirectMapSlotStart(void* ptr) {
   return ret;
 }
 
-#if BUILDFLAG(USE_BACKUP_REF_PTR)
-
 // Gets the pointer to the beginning of the allocated slot.
 //
 // This isn't a general purpose function, it is used specifically for obtaining
@@ -720,7 +729,7 @@ ALWAYS_INLINE void* PartitionAllocGetDirectMapSlotStart(void* ptr) {
 // This function is not a template, and can be used on either variant
 // (thread-safe or not) of the allocator. This relies on the two PartitionRoot<>
 // having the same layout, which is enforced by static_assert().
-ALWAYS_INLINE void* PartitionAllocGetSlotStart(void* ptr) {
+ALWAYS_INLINE void* PartitionAllocGetSlotStartInBRPPool(void* ptr) {
   // Adjust to support pointers right past the end of an allocation, which in
   // some cases appear to point outside the designated allocation slot.
   //
@@ -734,7 +743,8 @@ ALWAYS_INLINE void* PartitionAllocGetSlotStart(void* ptr) {
   PA_DCHECK(IsManagedByNormalBucketsOrDirectMap(ptr));
   DCheckIfManagedByPartitionAllocBRPPool(ptr);
 
-  void* directmap_slot_start = PartitionAllocGetDirectMapSlotStart(ptr);
+  void* directmap_slot_start =
+      PartitionAllocGetDirectMapSlotStartInBRPPool(ptr);
   if (UNLIKELY(directmap_slot_start))
     return directmap_slot_start;
   auto* slot_span =
@@ -768,16 +778,16 @@ ALWAYS_INLINE void* PartitionAllocGetSlotStart(void* ptr) {
 // having the same layout, which is enforced by static_assert().
 ALWAYS_INLINE bool PartitionAllocIsValidPtrDelta(void* ptr, ptrdiff_t delta) {
   // Required for pointers right past an allocation. See
-  // |PartitionAllocGetSlotStart()|.
+  // |PartitionAllocGetSlotStartInBRPPool()|.
   void* adjusted_ptr =
       reinterpret_cast<char*>(ptr) - kPartitionPastAllocationAdjustment;
 
   internal::DCheckIfManagedByPartitionAllocBRPPool(adjusted_ptr);
 
   void* directmap_old_slot_start =
-      PartitionAllocGetDirectMapSlotStart(adjusted_ptr);
+      PartitionAllocGetDirectMapSlotStartInBRPPool(adjusted_ptr);
   if (UNLIKELY(directmap_old_slot_start)) {
-    void* new_slot_start = PartitionAllocGetDirectMapSlotStart(
+    void* new_slot_start = PartitionAllocGetDirectMapSlotStartInBRPPool(
         reinterpret_cast<char*>(ptr) + delta);
     return directmap_old_slot_start == new_slot_start;
   }
@@ -788,8 +798,9 @@ ALWAYS_INLINE bool PartitionAllocIsValidPtrDelta(void* ptr, ptrdiff_t delta) {
   // Double check that ref-count is indeed present.
   PA_DCHECK(root->allow_ref_count);
 
-  uintptr_t user_data_start = reinterpret_cast<uintptr_t>(
-      root->AdjustPointerForExtrasAdd(PartitionAllocGetSlotStart(ptr)));
+  uintptr_t user_data_start =
+      reinterpret_cast<uintptr_t>(root->AdjustPointerForExtrasAdd(
+          PartitionAllocGetSlotStartInBRPPool(ptr)));
   size_t user_data_size = slot_span->GetUsableSize(root);
   uintptr_t new_ptr = reinterpret_cast<uintptr_t>(ptr) + delta;
 
