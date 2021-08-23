@@ -344,18 +344,27 @@ class RenderFrameDeletedObserver : public WebContentsObserver {
   void WaitUntilDeleted();
   bool deleted() const;
 
+  GlobalRenderFrameHostId routing_id() { return routing_id_; }
+
+  // Debug information about whether a frame was eligible for the back/forward
+  // cache before it was deleted.
+  std::string BackForwardCacheEligibilityForDebug();
+
  private:
   // We cannot keep a pointer because if the RenderFrameHost is not in the
   // created state when this class is initialized, then RenderFrameDeleted might
   // not be called when it is destroyed.
   GlobalRenderFrameHostId routing_id_;
   std::unique_ptr<base::RunLoop> runner_;
+  std::string back_forward_cache_eligibility_for_debug_;
 
   DISALLOW_COPY_AND_ASSIGN(RenderFrameDeletedObserver);
 };
 
 // This class holds a RenderFrameHost*, providing safe access to it for testing.
-// If the RFH is destroyed, it can no longer be accessed.
+// If the RFH is destroyed, it can no longer be accessed. Attempting to access
+// it via dereference will cause a DCHECK failure and print an error message
+// with some debug information.
 //
 // For convenience, it also wraps a RenderFrameDeletedObserver and provides
 // access to |deleted| and |WaitForDeleted|. Note, deletion of the RenderFrame
@@ -382,8 +391,6 @@ class RenderFrameHostWrapper {
   RenderFrameHost* operator->() const;
 
  private:
-  const GlobalRenderFrameHostId routing_id_;
-
   // It's tempting to just inherit but RenderFrameDeletedObserver is not
   // movable because it is a WebContentsObserver.
   std::unique_ptr<RenderFrameDeletedObserver> deleted_observer_;
