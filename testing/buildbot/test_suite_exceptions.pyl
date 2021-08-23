@@ -721,6 +721,9 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/linux_trusty_rel.browser_tests.filter',
         ],
       },
+      'mac-arm64-rel-tests': {
+        'ci_only': False,  # https://crbug.com/1234525
+      },
       'win-asan': {
         # These are very slow on the ASAN trybot for some reason.
         # crbug.com/794372

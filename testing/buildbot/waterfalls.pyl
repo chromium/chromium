@@ -5214,6 +5214,8 @@
       },
       'mac-arm64-rel-tests': {
         'mixins': [
+            # Only run selected test suites on CQ. https://crbug.com/1234525.
+            'ci_only',
             'mac_11_arm64',
         ],
         'test_suites': {

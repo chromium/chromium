@@ -335,6 +335,11 @@
   'chromium-webrtc-rel-win8': {
     'perf_builder_name_alias': 'chromium-webrtc-rel-win8',
   },
+  # Used for invert CQ tests selection. Adding ci_only: False to
+  # test_suite_exceptions.pyl to select tests that are allowed on CQ builders.
+  'ci_only': {
+    'ci_only': True,
+  },
   'dawn_end2end_gpu_test': {
     '$mixin_append': {
       'args': [
