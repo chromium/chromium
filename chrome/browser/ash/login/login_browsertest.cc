@@ -355,7 +355,14 @@ IN_PROC_BROWSER_TEST_F(LoginOfflineManagedTest, MAYBE_CorrectDomainCompletion) {
   TestSystemTrayIsVisible();
 }
 
-IN_PROC_BROWSER_TEST_F(LoginOfflineManagedTest, FullEmailDontMatchProvided) {
+// crbug.com/1240619: test is flaky on chromeos.
+#if defined(OS_CHROMEOS)
+#define MAYBE_FullEmailDontMatchProvided DISABLED_FullEmailDontMatchProvided
+#else
+#define MAYBE_FullEmailDontMatchProvided FullEmailDontMatchProvided
+#endif
+IN_PROC_BROWSER_TEST_F(LoginOfflineManagedTest,
+                       MAYBE_FullEmailDontMatchProvided) {
   ConfigurePolicy("another.domain");
 
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
