@@ -2170,6 +2170,7 @@ try_.infra_builder(
 try_.infra_builder(
     name = "win-bootstrap",
     bootstrap = True,
+    builderless = True,
     os = os.WINDOWS_10,
 )
 

@@ -5903,6 +5903,7 @@ ci.infra_builder(
 ci.infra_builder(
     name = "win-bootstrap",
     bootstrap = True,
+    builderless = True,
     console_view_entry = consoles.console_view_entry(
         category = "bootstrap|win",
         short_name = "bld",
