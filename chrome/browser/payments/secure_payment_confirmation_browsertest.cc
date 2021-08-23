@@ -153,8 +153,7 @@ class SecurePaymentConfirmationTestWithParameter
 
 INSTANTIATE_TEST_SUITE_P(APIVersion,
                          SecurePaymentConfirmationTestWithParameter,
-                         testing::Values(APIVersion::kApiV2,
-                                         APIVersion::kApiV3),
+                         testing::Values(APIVersion::kApiV3),
                          APIVersionToString);
 
 IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationTestWithParameter,
@@ -573,8 +572,7 @@ class SecurePaymentConfirmationCreationTestWithParameter
 
 INSTANTIATE_TEST_SUITE_P(APIVersion,
                          SecurePaymentConfirmationCreationTestWithParameter,
-                         testing::Values(APIVersion::kApiV2,
-                                         APIVersion::kApiV3),
+                         testing::Values(APIVersion::kApiV3),
                          APIVersionToString);
 
 IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
@@ -695,8 +693,8 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationDisableDebugTest,
   NavigateTo("a.com", "/secure_payment_confirmation.html");
   RespondToFutureEnrollments(/*confirm=*/true);
   EXPECT_EQ(
-      "NotAllowedError: A user verifying platform authenticator is required "
-      "for payments.",
+      "NotSupportedError: A user verifying platform authenticator with "
+      "resident key support is required for 'payment' extension.",
       content::EvalJs(GetActiveWebContents(),
                       content::JsReplace("createPaymentCredential($1)",
                                          GetDefaultIconURL())));
@@ -994,6 +992,9 @@ IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
 
 IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
                        InsecureIcon) {
+  if (GetParam() == APIVersion::kApiV3)
+    return;
+
   NavigateTo("a.com", "/secure_payment_confirmation.html");
   ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
 
@@ -1210,6 +1211,9 @@ IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
 // regression test for crbug.com/1183559.
 IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
                        MissingRpId) {
+  if (GetParam() == APIVersion::kApiV3)
+    return;
+
   NavigateTo("a.com", "/secure_payment_confirmation.html");
 
   EXPECT_EQ(

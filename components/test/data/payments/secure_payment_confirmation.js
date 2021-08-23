@@ -134,10 +134,7 @@ async function createCredentialAndReturnItsType(icon) { // eslint-disable-line n
  * @return {PaymentCredential} - The new credential.
  */
 async function createAndReturnPaymentCredential(icon) {
-  const paymentInstrument = {
-    displayName: 'display_name_for_instrument',
-    icon,
-  };
+  const textEncoder = new TextEncoder();
   const publicKeyRP = {
       id: 'a.com',
       name: 'Acme',
@@ -146,13 +143,18 @@ async function createAndReturnPaymentCredential(icon) {
       type: 'public-key',
       alg: -7,
   }];
-  const payment = {
+  const publicKey = {
+      user: {
+        displayName: 'User',
+        id: textEncoder.encode('user_123'),
+        name: 'user@acme.com',
+      },
       rp: publicKeyRP,
-      instrument: paymentInstrument,
-      challenge: new TextEncoder().encode('climb a mountain'),
+      challenge: textEncoder.encode('climb a mountain'),
       pubKeyCredParams: publicKeyParameters,
+      extensions: {payment: {isPayment: true}},
   };
-  return navigator.credentials.create({payment});
+  return navigator.credentials.create({publicKey});
 }
 
 /**
@@ -196,10 +198,7 @@ async function createPublicKeyCredentialWithPaymentExtensionAndReturnItsId() { /
  * @return {PaymentCredential} - The new credential.
  */
 async function createCredentialWithNoRpId(icon) { // eslint-disable-line no-unused-vars, max-len
-  const paymentInstrument = {
-    displayName: 'display_name_for_instrument',
-    icon,
-  };
+  const textEncoder = new TextEncoder();
   const publicKeyRP = {
       // id omitted
       name: 'Acme',
@@ -208,11 +207,16 @@ async function createCredentialWithNoRpId(icon) { // eslint-disable-line no-unus
       type: 'public-key',
       alg: -7,
   }];
-  const payment = {
+  const publicKey = {
+      user: {
+        displayName: 'User',
+        id: textEncoder.encode('user_123'),
+        name: 'user@acme.com',
+      },
       rp: publicKeyRP,
-      instrument: paymentInstrument,
-      challenge: new TextEncoder().encode('climb a mountain'),
+      challenge: textEncoder.encode('climb a mountain'),
       pubKeyCredParams: publicKeyParameters,
+      extensions: {payment: {isPayment: true}},
   };
-  return navigator.credentials.create({payment});
+  return navigator.credentials.create({publicKey});
 }

@@ -1384,7 +1384,7 @@ ScriptPromise CredentialsContainer::create(
     return promise;
   }
   if (options->hasPayment()) {
-    if (RuntimeEnabledFeatures::SecurePaymentConfirmationEnabled(
+    if (RuntimeEnabledFeatures::SecurePaymentConfirmationCredentialEnabled(
             resolver->GetExecutionContext()) &&
         resolver->GetExecutionContext()->IsFeatureEnabled(
             mojom::blink::PermissionsPolicyFeature::kPayment)) {
