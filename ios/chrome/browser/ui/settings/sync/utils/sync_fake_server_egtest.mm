@@ -192,7 +192,8 @@ void AssertNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
 }
 
 // Tests that autofill profile injected in FakeServer gets synced to client.
-- (void)testSyncDownloadAutofillProfile {
+// crbug.com/1237348: test is flaky.
+- (void)DISABLED_testSyncDownloadAutofillProfile {
   const std::string kGuid = "2340E83B-5BEE-4560-8F95-5914EF7F539E";
   const std::string kFullName = "Peter Pan";
   GREYAssertFalse([ChromeEarlGrey isAutofillProfilePresentWithGUID:kGuid
