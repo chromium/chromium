@@ -122,7 +122,8 @@ export class RemoteCall {
   /**
    * Waits until a window having the given ID prefix appears.
    * @param {string} windowIdPrefix ID prefix of the requested window.
-   * @return {Promise} promise Promise to be fulfilled with a found window's ID.
+   * @return {!Promise<string>} promise Promise to be fulfilled with a found
+   *     window's ID.
    */
   waitForWindow(windowIdPrefix) {
     const caller = getCaller();
@@ -476,6 +477,43 @@ export class RemoteCallFilesApp extends RemoteCall {
         }
       });
     });
+  }
+
+  /** @override */
+  async waitForWindow(windowIdPrefix) {
+    if (!this.isSwaMode()) {
+      return super.waitForWindow(windowIdPrefix);
+    }
+
+    return this.waitForSwaWindowAndLoadTestUtils();
+  }
+
+  /**
+   * Wait for a SWA window to be open and load the test utils to allow running
+   * test commands in the window.
+   * @return {!Promise<string>}
+   */
+  async waitForSwaWindowAndLoadTestUtils() {
+    await this.waitForSwaWindow();
+    return await sendTestMessage({name: 'loadSwaTestUtils'});
+  }
+
+  /**
+   * Wait for a SWA window to be open.
+   * @return {!Promise<string>}
+   */
+  async waitForSwaWindow() {
+    const caller = getCaller();
+    const appId = await repeatUntil(async () => {
+      const ret = await sendTestMessage({name: 'findSwaWindow'});
+      if (ret === 'none') {
+        return pending(caller, 'Wait for SWA window');
+      }
+      return ret;
+    });
+
+    // FIXME: SWA currently doesn't have appId.
+    return appId;
   }
 
   /**

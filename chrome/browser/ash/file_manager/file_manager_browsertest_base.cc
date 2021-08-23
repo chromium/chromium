@@ -28,6 +28,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
@@ -63,6 +64,7 @@
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/extensions/extension_dialog.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension.h"
@@ -2073,21 +2075,33 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
         profile(), web_app::SystemAppType::FILE_MANAGER, params);
     observer.Wait();
     ASSERT_TRUE(observer.last_navigation_succeeded());
-    CHECK(observer.web_contents());
+    LoadSwaTestUtils(observer.web_contents());
 
-    // Load runtime and static test_utils.js. In Files.app test_utils.js is
-    // always loaded, while runtime_loaded_test_util.js is loaded on the first
-    // chrome.runtime.sendMessage is sent by the test extension. However, since
-    // we use callSwaTestMessageListener, rather than c.r.sendMessage to
-    // communicate with Files SWA, we need to explicitly load those files.
-    bool result;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-        observer.web_contents(), "test.swaLoadTestUtils()", &result));
-    ASSERT_TRUE(result);
-    const std::string app_id = base::StrCat({baseURL, launchDir});
+    const std::string app_id = GetSwaAppId(observer.web_contents());
+
     swa_list_.push_back(std::make_pair(app_id, observer.web_contents()));
     *output = app_id;
     return;
+  }
+
+  if (name == "loadSwaTestUtils") {
+    content::WebContents* web_contents = GetLastOpenWindowWebContents();
+    LoadSwaTestUtils(web_contents);
+    *output = GetSwaAppId(web_contents);
+    return;
+  }
+
+  if (name == "findSwaWindow") {
+    const Options& options = GetOptions();
+    if (options.files_swa) {
+      content::WebContents* web_contents = GetLastOpenWindowWebContents();
+      if (web_contents) {
+        *output = GetSwaAppId(web_contents);
+      } else {
+        *output = "none";
+      }
+      return;
+    }
   }
 
   if (name == "callSwaTestMessageListener") {
@@ -2794,12 +2808,60 @@ void FileManagerBrowserTestBase::EnableVirtualKeyboard() {
   ash::ShellTestApi().EnableVirtualKeyboard();
 }
 
+// Load runtime and static test_utils.js. In Files.app test_utils.js is always
+// loaded, while runtime_loaded_test_util.js is loaded on the first
+// chrome.runtime.sendMessage is sent by the test extension. However, since we
+// use callSwaTestMessageListener, rather than c.r.sendMessage to communicate
+// with Files SWA, we need to explicitly load those files.
+void FileManagerBrowserTestBase::LoadSwaTestUtils(
+    content::WebContents* web_contents) {
+  CHECK(web_contents);
+
+  bool result;
+  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
+      web_contents, "test.swaLoadTestUtils()", &result));
+  ASSERT_TRUE(result);
+}
+
+std::string FileManagerBrowserTestBase::GetSwaAppId(
+    content::WebContents* web_contents) {
+  CHECK(web_contents);
+
+  // FIXME: Implement proper appId instead of emulating with current directory.
+  std::string current_directory_url;
+  CHECK(content::ExecuteScriptAndExtractString(
+      web_contents, "test.getSwaAppId()", &current_directory_url));
+  swa_list_.push_back(std::make_pair(current_directory_url, web_contents));
+
+  return current_directory_url;
+}
+
 content::WebContents*
 FileManagerBrowserTestBase::GetLastOpenWindowWebContents() {
   const Options& options = GetOptions();
   if (options.files_swa) {
     if (!swa_list_.empty()) {
       return swa_list_.back().second;
+    }
+
+    BrowserList* browser_list = BrowserList::GetInstance();
+
+    for (auto browser_iterator =
+             browser_list->begin_browsers_ordered_by_activation();
+         browser_iterator != browser_list->end_browsers_ordered_by_activation();
+         ++browser_iterator) {
+      Browser* browser = *browser_iterator;
+
+      content::WebContents* web_contents =
+          browser->tab_strip_model()->GetActiveWebContents();
+
+      const std::string& url = web_contents->GetVisibleURL().spec();
+      if (!!browser && browser->is_trusted_source() && web_contents &&
+          base::StartsWith(url, ash::file_manager::kChromeUIFileManagerURL) &&
+          !web_contents->IsLoading()) {
+        web_contents = browser->tab_strip_model()->GetActiveWebContents();
+        return web_contents;
+      }
     }
   }
   // Assuming legacy Chrome App.

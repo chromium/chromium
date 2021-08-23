@@ -179,6 +179,12 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
   // File Manager app.
   content::WebContents* GetLastOpenWindowWebContents();
 
+  // Loads the test utils in the WebContents.
+  void LoadSwaTestUtils(content::WebContents*);
+
+  // Returns appId from its WebContents.
+  std::string GetSwaAppId(content::WebContents*);
+
   // Tries to dispatch a key event via aura::WindowTreeHost. Returns true, if
   // successful, false otherwise.
   bool PostKeyEvent(ui::KeyEvent* key_event);
