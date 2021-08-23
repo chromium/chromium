@@ -49367,6 +49367,7 @@ from previous Chrome versions.
   <int value="-89567017" label="ChromeColorsCustomColorPicker:enabled"/>
   <int value="-89434839" label="SystemTrayMicGainSetting:enabled"/>
   <int value="-88822940" label="ssl-version-min"/>
+  <int value="-88638121" label="AutofillFixFillableFieldTypes:enabled"/>
   <int value="-88273414" label="ContentSuggestionsShowSummary:enabled"/>
   <int value="-87405369" label="PageInfoDiscoverability:enabled"/>
   <int value="-86788587" label="allow-autofill-sync-credential"/>
@@ -49995,6 +49996,7 @@ from previous Chrome versions.
   <int value="412957264" label="tab-close-buttons-hidden-with-touch"/>
   <int value="413062443" label="MessagesForAndroidInfrastructure:disabled"/>
   <int value="413081240" label="enable-new-md-input-view"/>
+  <int value="413528228" label="AutofillFixFillableFieldTypes:disabled"/>
   <int value="413695227" label="NTPSuggestionsStandaloneUI:enabled"/>
   <int value="414114078" label="LitePageServerPreviews:disabled"/>
   <int value="414342153" label="AssistantIntentPageUrl:disabled"/>

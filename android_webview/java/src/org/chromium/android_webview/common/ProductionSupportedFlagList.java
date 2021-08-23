@@ -149,6 +149,8 @@ public final class ProductionSupportedFlagList {
                     AutofillFeatures.AUTOFILL_ENABLE_SUPPORT_FOR_MORE_STRUCTURE_IN_ADDRESSES,
                     "Enables support for address with a rich structure including separate street "
                             + "names and house numberse."),
+            Flag.baseFeature(AutofillFeatures.AUTOFILL_FIX_FILLABLE_FIELD_TYPES,
+                    "Fix how it is determined if a field type is fillable with Autofill"),
             Flag.baseFeature(
                     NetworkServiceFeatures.TRUST_TOKENS, "Enables the prototype Trust Tokens API."),
             Flag.baseFeature(AwFeatures.WEBVIEW_APPS_PACKAGE_NAMES_ALLOWLIST,
