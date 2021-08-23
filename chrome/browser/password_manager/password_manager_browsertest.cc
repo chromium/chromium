@@ -4640,8 +4640,16 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerPrerenderBrowserTest,
 // Tests that RenderWidgetHost::InputEventObserver is updated with the
 // RenderFrameHost that NavigationHandle has when the RenderFrameHost is
 // activated from the prerendering.
+// Flaky on Mac. https://crbug.com/1242366.
+#if defined(OS_MAC)
+#define MAYBE_InputWorksAfterPrerenderActivation \
+  DISABLED_InputWorksAfterPrerenderActivation
+#else
+#define MAYBE_InputWorksAfterPrerenderActivation \
+  InputWorksAfterPrerenderActivation
+#endif
 IN_PROC_BROWSER_TEST_F(PasswordManagerPrerenderBrowserTest,
-                       InputWorksAfterPrerenderActivation) {
+                       MAYBE_InputWorksAfterPrerenderActivation) {
   GetNewTabWithTestPasswordManagerClient();
   MockPrerenderPasswordManagerDriverInjector injector(web_contents());
 
