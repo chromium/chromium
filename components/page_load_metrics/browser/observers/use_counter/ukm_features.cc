@@ -214,6 +214,7 @@ UseCounterPageLoadMetricsObserver::GetAllowedUkmFeatures() {
           WebFeature::
               kBlobStoreAccessAcrossAgentClustersInResolveAsURLLoaderFactory,
           WebFeature::kBlobStoreAccessAcrossAgentClustersInResolveForNavigation,
+          WebFeature::kReadOrWriteWebDatabaseThirdPartyContext,
       }));
   return *opt_in_features;
 }

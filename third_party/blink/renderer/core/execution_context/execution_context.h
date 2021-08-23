@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/dom_timer_coordinator.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/platform/heap_observer_set.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/console_logger.h"
@@ -165,6 +166,9 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   virtual bool IsContextThread() const { return true; }
 
   virtual bool ShouldInstallV8Extensions() const { return false; }
+
+  virtual void CountUseOnlyInCrossSiteIframe(mojom::blink::WebFeature feature) {
+  }
 
   const SecurityOrigin* GetSecurityOrigin() const;
   SecurityOrigin* GetMutableSecurityOrigin();
