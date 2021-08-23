@@ -61,10 +61,6 @@ class UI_CHROMEOS_EXPORT SuggestionWindowView
   void SetButtonHighlighted(const AssistiveWindowButton& button,
                             bool highlighted);
 
-  // Announces the given message to the user via the system's text-to-speech
-  // feature
-  void Announce(const std::u16string& message);
-
   views::View* candidate_area_for_testing() { return candidate_area_; }
   views::Link* setting_link_for_testing() { return setting_link_; }
   views::ImageButton* learn_more_button_for_testing() {
@@ -106,12 +102,6 @@ class UI_CHROMEOS_EXPORT SuggestionWindowView
 
   // The currently-highlighted candidate, if any.
   SuggestionView* highlighted_candidate_ = nullptr;
-
-  // Accessibility label used for live region announcements
-  //
-  // TODO(crbug/1146266): investigate moving this label to its own view that
-  // remains "visible".
-  SuggestionAccessibilityLabel* accessibility_label_ = nullptr;
 
   // TODO(crbug/1099062): Add tests for mouse hovered and pressed.
   base::flat_map<views::View*, base::CallbackListSubscription> subscriptions_;

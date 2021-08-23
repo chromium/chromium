@@ -696,7 +696,8 @@ InputImeSetAssistiveWindowPropertiesFunction::Run() {
   assistive_window.visible = window.visible;
   assistive_window.type = ConvertAssistiveWindowType(window.type);
   if (window.announce_string)
-    assistive_window.announce_string = *window.announce_string;
+    assistive_window.announce_string =
+        base::UTF8ToUTF16(*window.announce_string);
 
   engine->SetAssistiveWindowProperties(params.context_id, assistive_window,
                                        &error);
@@ -722,7 +723,7 @@ InputImeSetAssistiveWindowButtonHighlightedFunction::Run() {
   button.id = ConvertAssistiveWindowButtonId(params.button_id);
   button.window_type = ConvertAssistiveWindowType(params.window_type);
   if (params.announce_string)
-    button.announce_string = *params.announce_string;
+    button.announce_string = base::UTF8ToUTF16(*params.announce_string);
 
   engine->SetButtonHighlighted(params.context_id, button, params.highlighted,
                                &error);

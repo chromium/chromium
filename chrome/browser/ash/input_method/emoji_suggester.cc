@@ -118,7 +118,8 @@ EmojiSuggester::EmojiSuggester(SuggestionHandlerInterface* suggestion_handler,
   suggestion_button_.window_type =
       ui::ime::AssistiveWindowType::kEmojiSuggestion;
   learn_more_button_.id = ui::ime::ButtonId::kLearnMore;
-  learn_more_button_.announce_string = l10n_util::GetStringUTF8(IDS_LEARN_MORE);
+  learn_more_button_.announce_string =
+      l10n_util::GetStringUTF16(IDS_LEARN_MORE);
   learn_more_button_.window_type =
       ui::ime::AssistiveWindowType::kEmojiSuggestion;
 }
@@ -260,7 +261,7 @@ void EmojiSuggester::ShowSuggestion(const std::string& text) {
   properties_.visible = true;
   properties_.candidates = candidates_;
   properties_.announce_string =
-      l10n_util::GetStringUTF8(IDS_SUGGESTION_EMOJI_SUGGESTED);
+      l10n_util::GetStringUTF16(IDS_SUGGESTION_EMOJI_SUGGESTED);
   properties_.show_setting_link =
       GetPrefValue(kEmojiSuggesterShowSettingCount) <
       kEmojiSuggesterShowSettingMaxCount;
@@ -272,7 +273,7 @@ void EmojiSuggester::ShowSuggestion(const std::string& text) {
   buttons_.clear();
   for (size_t i = 0; i < candidates_.size(); i++) {
     suggestion_button_.index = i;
-    suggestion_button_.announce_string = l10n_util::GetStringFUTF8(
+    suggestion_button_.announce_string = l10n_util::GetStringFUTF16(
         IDS_SUGGESTION_EMOJI_CHOSEN, candidates_[i], base::FormatNumber(i + 1),
         base::FormatNumber(candidates_.size()));
     buttons_.push_back(suggestion_button_);
@@ -314,7 +315,7 @@ void EmojiSuggester::DismissSuggestion() {
   std::string error;
   properties_.visible = false;
   properties_.announce_string =
-      l10n_util::GetStringUTF8(IDS_SUGGESTION_DISMISSED);
+      l10n_util::GetStringUTF16(IDS_SUGGESTION_DISMISSED);
   suggestion_handler_->SetAssistiveWindowProperties(context_id_, properties_,
                                                     &error);
   if (!error.empty()) {

@@ -115,7 +115,13 @@ class TestSuggestionHandler : public SuggestionHandlerInterface {
 
   bool IsSuggestionAccepted() { return suggestion_accepted_; }
 
-  void Announce(const std::u16string& message) override {}
+  void Announce(const std::u16string& message) override {
+    announced_text_ = message;
+  }
+
+  void VerifyAnnouncement(const std::u16string& expected_text) {
+    EXPECT_EQ(announced_text_, expected_text);
+  }
 
  private:
   std::u16string suggestion_text_;
@@ -125,20 +131,7 @@ class TestSuggestionHandler : public SuggestionHandlerInterface {
   bool suggestion_accepted_ = false;
   ui::ime::ButtonId button_clicked_ = ui::ime::ButtonId::kNone;
   std::vector<std::string> previous_suggestions_;
-};
-
-class TestTtsHandler : public TtsHandler {
- public:
-  explicit TestTtsHandler(Profile* profile) : TtsHandler(profile) {}
-
-  void VerifyAnnouncement(const std::string& expected_text) {
-    EXPECT_EQ(text_, expected_text);
-  }
-
- private:
-  void Speak(const std::string& text) override { text_ = text; }
-
-  std::string text_ = "";
+  std::u16string announced_text_ = u"";
 };
 
 }  // namespace
@@ -151,17 +144,13 @@ class PersonalInfoSuggesterTest : public testing::Test {
 
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();
-    auto tts_handler = std::make_unique<TestTtsHandler>(profile_.get());
-    tts_handler_ = tts_handler.get();
-
     suggestion_handler_ = std::make_unique<TestSuggestionHandler>();
 
     personal_data_ = std::make_unique<autofill::TestPersonalDataManager>();
     personal_data_->SetPrefService(autofill_client_.GetPrefs());
 
     suggester_ = std::make_unique<PersonalInfoSuggester>(
-        suggestion_handler_.get(), profile_.get(), personal_data_.get(),
-        std::move(tts_handler));
+        suggestion_handler_.get(), profile_.get(), personal_data_.get());
 
     chrome_keyboard_controller_client_ =
         ChromeKeyboardControllerClient::CreateForTest();
@@ -178,7 +167,6 @@ class PersonalInfoSuggesterTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   std::unique_ptr<TestingProfile> profile_;
-  TestTtsHandler* tts_handler_;
   std::unique_ptr<TestSuggestionHandler> suggestion_handler_;
   std::unique_ptr<PersonalInfoSuggester> suggester_;
   std::unique_ptr<ChromeKeyboardControllerClient>
@@ -644,27 +632,6 @@ TEST_F(PersonalInfoSuggesterTest, SuggestsWithConfirmedLength) {
   suggestion_handler_->VerifySuggestion(phone_number_, 2);
 }
 
-TEST_F(PersonalInfoSuggesterTest,
-       DoesntAnnounceSpokenFeedbackWhenChromeVoxIsOff) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAssistPersonalInfoEmail},
-      /*disabled_features=*/{});
-
-  profile_->set_profile_name(base::UTF16ToUTF8(email_));
-  profile_->GetPrefs()->SetBoolean(
-      ash::prefs::kAccessibilitySpokenFeedbackEnabled, false);
-
-  suggester_->Suggest(u"my email is ", 12, 12);
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(5000));
-  tts_handler_->VerifyAnnouncement("");
-
-  SendKeyboardEvent(ui::DomCode::ARROW_DOWN);
-  SendKeyboardEvent(ui::DomCode::ENTER);
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(5000));
-  tts_handler_->VerifyAnnouncement("");
-}
-
 TEST_F(PersonalInfoSuggesterTest, AnnouncesSpokenFeedbackWhenChromeVoxIsOn) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -676,25 +643,24 @@ TEST_F(PersonalInfoSuggesterTest, AnnouncesSpokenFeedbackWhenChromeVoxIsOn) {
       ash::prefs::kAccessibilitySpokenFeedbackEnabled, true);
 
   suggester_->Suggest(u"my email is ", 12, 12);
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(500));
-  tts_handler_->VerifyAnnouncement("");
-
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1000));
-  tts_handler_->VerifyAnnouncement(
-      "Personal info suggested. Press down arrow to access; escape to ignore.");
+  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(200));
+  suggestion_handler_->VerifyAnnouncement(
+      u"Personal info suggested. Press down arrow to access; escape to "
+      u"ignore.");
 
   SendKeyboardEvent(ui::DomCode::ARROW_DOWN);
   SendKeyboardEvent(ui::DomCode::ENTER);
   task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(200));
-  tts_handler_->VerifyAnnouncement("Suggestion inserted.");
+  suggestion_handler_->VerifyAnnouncement(u"Suggestion inserted.");
 
   suggester_->Suggest(u"my email is ", 12, 12);
   task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1500));
-  tts_handler_->VerifyAnnouncement(
-      "Personal info suggested. Press down arrow to access; escape to ignore.");
+  suggestion_handler_->VerifyAnnouncement(
+      u"Personal info suggested. Press down arrow to access; escape to "
+      u"ignore.");
   SendKeyboardEvent(ui::DomCode::ESCAPE);
   task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(200));
-  tts_handler_->VerifyAnnouncement("Suggestion dismissed.");
+  suggestion_handler_->VerifyAnnouncement(u"Suggestion dismissed.");
 }
 
 TEST_F(PersonalInfoSuggesterTest, DoesntShowAnnotationAfterMaxAcceptanceCount) {
