@@ -671,18 +671,23 @@ void InteractiveDetector::RecordInputEventTimingUKM(
     base::TimeDelta input_delay,
     base::TimeDelta processing_time,
     base::TimeDelta time_to_next_paint,
-    WTF::AtomicString event_type) {
+    AtomicString event_type) {
+  auto EventTypeToEnum = [](const AtomicString& name) -> InputEventType {
+    if (name == "mousedown")
+      return InputEventType::kMousedown;
+    if (name == "click")
+      return InputEventType::kClick;
+    if (name == "keydown")
+      return InputEventType::kKeydown;
+    if (name == "pointerup")
+      return InputEventType::kPointerup;
+    CHECK(false) << "Unknown event name: " << name;
+    return InputEventType();
+  };
   ukm::SourceId source_id = GetSupplementable()->UkmSourceID();
-
   DCHECK_NE(source_id, ukm::kInvalidSourceId);
-  static const WTF::HashMap<WTF::AtomicString, blink::InputEventType>&
-      event_type_to_enum = {{"mousedown", blink::InputEventType::kMousedown},
-                            {"click", blink::InputEventType::kClick},
-                            {"keydown", blink::InputEventType::kKeydown},
-                            {"pointerup", blink::InputEventType::kPointerup}};
   ukm::builders::InputEvent(source_id)
-      .SetEventType(static_cast<int>(
-          event_type_to_enum.DeprecatedAtOrEmptyValue(event_type)))
+      .SetEventType(static_cast<int>(EventTypeToEnum(event_type)))
       .SetInteractiveTiming_InputDelay(input_delay.InMilliseconds())
       .SetInteractiveTiming_ProcessingTime(processing_time.InMilliseconds())
       .SetInteractiveTiming_ProcessingFinishedToNextPaint(
