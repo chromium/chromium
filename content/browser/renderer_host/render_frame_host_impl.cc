@@ -2793,6 +2793,15 @@ void RenderFrameHostImpl::RenderProcessExited(
   if (base::FeatureList::IsEnabled(features::kCrashReporting))
     MaybeGenerateCrashReport(info.status, info.exit_code);
 
+  // Reporting API: Send any queued reports and mark the reporting source as
+  // expired so that the reporting configuration in the network service can be
+  // removed. This is done here, rather than in the destructor, as it needs the
+  // mojo pipe to the network service.
+  GetProcess()
+      ->GetStoragePartition()
+      ->GetNetworkContext()
+      ->SendReportsAndRemoveSource(GetReportingSource());
+
   // When a frame's process dies, its RenderFrame no longer exists, which means
   // that its child frames must be cleaned up as well.
   ResetChildren();
@@ -3481,7 +3490,9 @@ void RenderFrameHostImpl::DidNavigate(
   if (did_create_new_document)
     DidCommitNewDocument(params, navigation_request);
 
-  // Set up reporting endpoints for this document.
+  // Reporting API: If a Reporting-Endpoints header was received with this
+  // document, send it to the network service to configure the endpoints in the
+  // reporting cache.
   if (!reporting_endpoints_.empty()) {
     GetStoragePartition()->GetNetworkContext()->SetDocumentReportingEndpoints(
         GetReportingSource(), params.origin,
@@ -10146,6 +10157,13 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     if (lifecycle_state() != LifecycleStateImpl::kPendingCommit &&
         !committed_speculative_rfh_before_navigation_commit_) {
       DCHECK_NE(lifecycle_state(), LifecycleStateImpl::kSpeculative);
+      // The old Reporting API configuration is no longer valid, as a new
+      // document is being loaded into the frame. Inform the network service
+      // of this, so that it can send any queued reports and mark the source
+      // as expired.
+      GetStoragePartition()->GetNetworkContext()->SendReportsAndRemoveSource(
+          GetReportingSource());
+
       // Clear all document-associated data for the non-pending commit
       // RenderFrameHosts because the navigation has created a new document.
       // Make sure the data doesn't get cleared for the cases when the

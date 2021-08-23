@@ -46,8 +46,10 @@ class ReportingServiceTest : public ::testing::TestWithParam<bool>,
   const url::Origin kOrigin_ = url::Origin::Create(kUrl_);
   const url::Origin kOrigin2_ = url::Origin::Create(kUrl2_);
   const GURL kEndpoint_ = GURL("https://endpoint/");
+  const GURL kEndpoint2_ = GURL("https://endpoint2/");
   const std::string kUserAgent_ = "Mozilla/1.0";
   const std::string kGroup_ = "group";
+  const std::string kGroup2_ = "group2";
   const std::string kType_ = "type";
   const absl::optional<base::UnguessableToken> kReportingSource_ =
       base::UnguessableToken::Create();
@@ -203,6 +205,85 @@ TEST_P(ReportingServiceTest, ProcessReportingEndpointsHeader) {
   // Endpoint should be associated with the reporting source.
   EXPECT_TRUE(
       context()->cache()->GetV1EndpointForTesting(*kReportingSource_, kGroup_));
+}
+
+TEST_P(ReportingServiceTest, SendReportsAndRemoveSource) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(net::features::kDocumentReporting);
+  auto parsed_header =
+      ParseReportingEndpoints(kGroup_ + "=\"" + kEndpoint_.spec() + "\", " +
+                              kGroup2_ + "=\"" + kEndpoint2_.spec() + "\"");
+  ASSERT_TRUE(parsed_header.has_value());
+  service()->SetDocumentReportingEndpoints(*kReportingSource_, kOrigin_, kNik_,
+                                           *parsed_header);
+  // This report should be sent immediately, starting the delivery agent timer.
+  service()->QueueReport(kUrl_, kReportingSource_, kNik_, kUserAgent_, kGroup_,
+                         kType_, std::make_unique<base::DictionaryValue>(), 0);
+
+  FinishLoading(true /* load_success */);
+
+  std::vector<const ReportingReport*> reports;
+  context()->cache()->GetReports(&reports);
+  ASSERT_EQ(1u, reports.size());
+  EXPECT_EQ(0u, context()->cache()->GetReportCountWithStatusForTesting(
+                    ReportingReport::Status::QUEUED));
+
+  // Now simulate the source being destroyed.
+  service()->SendReportsAndRemoveSource(*kReportingSource_);
+
+  // There should be no queued reports, but the previously sent report should
+  // still be pending.
+  EXPECT_EQ(0u, context()->cache()->GetReportCountWithStatusForTesting(
+                    ReportingReport::Status::QUEUED));
+  EXPECT_EQ(1u, context()->cache()->GetReportCountWithStatusForTesting(
+                    ReportingReport::Status::PENDING));
+  // Source should be marked as expired.
+  ASSERT_TRUE(
+      context()->cache()->GetExpiredSources().contains(*kReportingSource_));
+}
+
+TEST_P(ReportingServiceTest, SendReportsAndRemoveSourceWithPendingReports) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(net::features::kDocumentReporting);
+  auto parsed_header =
+      ParseReportingEndpoints(kGroup_ + "=\"" + kEndpoint_.spec() + "\", " +
+                              kGroup2_ + "=\"" + kEndpoint2_.spec() + "\"");
+  ASSERT_TRUE(parsed_header.has_value());
+  service()->SetDocumentReportingEndpoints(*kReportingSource_, kOrigin_, kNik_,
+                                           *parsed_header);
+  // This report should be sent immediately, starting the delivery agent timer.
+  service()->QueueReport(kUrl_, kReportingSource_, kNik_, kUserAgent_, kGroup_,
+                         kType_, std::make_unique<base::DictionaryValue>(), 0);
+
+  FinishLoading(true /* load_success */);
+
+  std::vector<const ReportingReport*> reports;
+  context()->cache()->GetReports(&reports);
+  ASSERT_EQ(1u, reports.size());
+  EXPECT_EQ(0u, context()->cache()->GetReportCountWithStatusForTesting(
+                    ReportingReport::Status::QUEUED));
+  EXPECT_EQ(1u, context()->cache()->GetReportCountWithStatusForTesting(
+                    ReportingReport::Status::PENDING));
+
+  // Queue another report, which should remain queued.
+  service()->QueueReport(kUrl_, kReportingSource_, kNik_, kUserAgent_, kGroup_,
+                         kType_, std::make_unique<base::DictionaryValue>(), 0);
+  EXPECT_EQ(1u, context()->cache()->GetReportCountWithStatusForTesting(
+                    ReportingReport::Status::QUEUED));
+  EXPECT_EQ(1u, context()->cache()->GetReportCountWithStatusForTesting(
+                    ReportingReport::Status::PENDING));
+
+  // Now simulate the source being destroyed.
+  service()->SendReportsAndRemoveSource(*kReportingSource_);
+
+  // The report should still be queued, while the source should be marked as
+  // expired. (The original report is still pending.)
+  EXPECT_EQ(1u, context()->cache()->GetReportCountWithStatusForTesting(
+                    ReportingReport::Status::QUEUED));
+  EXPECT_EQ(1u, context()->cache()->GetReportCountWithStatusForTesting(
+                    ReportingReport::Status::PENDING));
+  ASSERT_TRUE(
+      context()->cache()->GetExpiredSources().contains(kReportingSource_));
 }
 
 TEST_P(ReportingServiceTest, ProcessReportingEndpointsHeaderPathAbsolute) {

@@ -12,6 +12,8 @@ void ReportingCacheObserver::OnReportAdded(const ReportingReport* report) {}
 
 void ReportingCacheObserver::OnClientsUpdated() {}
 
+void ReportingCacheObserver::OnEndpointsUpdated() {}
+
 ReportingCacheObserver::ReportingCacheObserver() = default;
 
 ReportingCacheObserver::~ReportingCacheObserver() = default;

@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/time/clock.h"
 #include "base/time/tick_clock.h"
@@ -130,6 +131,22 @@ std::vector<const ReportingReport*> ReportingCacheImpl::GetReportsToDeliver() {
   return reports_out;
 }
 
+std::vector<const ReportingReport*>
+ReportingCacheImpl::GetReportsToDeliverForSource(
+    const base::UnguessableToken& reporting_source) {
+  DCHECK(!reporting_source.is_empty());
+  std::vector<const ReportingReport*> reports_out;
+  for (const auto& report : reports_) {
+    if (report->reporting_source == reporting_source) {
+      if (report->IsUploadPending())
+        continue;
+      report->status = ReportingReport::Status::PENDING;
+      reports_out.push_back(report.get());
+    }
+  }
+  return reports_out;
+}
+
 void ReportingCacheImpl::ClearReportsPending(
     const std::vector<const ReportingReport*>& reports) {
   std::vector<const ReportingReport*> reports_to_remove;
@@ -177,6 +194,17 @@ void ReportingCacheImpl::IncrementEndpointDeliveries(
   }
 }
 
+void ReportingCacheImpl::SetExpiredSource(
+    const base::UnguessableToken& reporting_source) {
+  DCHECK(!reporting_source.is_empty());
+  expired_sources_.insert(reporting_source);
+}
+
+const base::flat_set<base::UnguessableToken>&
+ReportingCacheImpl::GetExpiredSources() const {
+  return expired_sources_;
+}
+
 void ReportingCacheImpl::RemoveReports(
     const std::vector<const ReportingReport*>& reports) {
   for (const ReportingReport* report : reports) {
@@ -200,6 +228,16 @@ void ReportingCacheImpl::RemoveAllReports() {
 
 size_t ReportingCacheImpl::GetFullReportCountForTesting() const {
   return reports_.size();
+}
+
+size_t ReportingCacheImpl::GetReportCountWithStatusForTesting(
+    ReportingReport::Status status) const {
+  size_t count = 0;
+  for (const auto& report : reports_) {
+    if (report->status == status)
+      ++count;
+  }
+  return count;
 }
 
 bool ReportingCacheImpl::IsReportPendingForTesting(
@@ -280,12 +318,30 @@ void ReportingCacheImpl::OnParsedHeader(
   context_->NotifyCachedClientsUpdated();
 }
 
+void ReportingCacheImpl::RemoveSourceAndEndpoints(
+    const base::UnguessableToken& reporting_source) {
+  DCHECK(!reporting_source.is_empty());
+  // Sanity checks: The source must be in the list of expired sources, and
+  // there must be no more cached reports for it (except reports already marked
+  // as doomed, as they will be garbage collected soon).
+  DCHECK(expired_sources_.contains(reporting_source));
+  DCHECK(
+      base::ranges::none_of(reports_, [reporting_source](const auto& report) {
+        return report->reporting_source == reporting_source &&
+               report->status != ReportingReport::Status::DOOMED;
+      }));
+  document_endpoints_.erase(reporting_source);
+  expired_sources_.erase(reporting_source);
+  context_->NotifyEndpointsUpdated();
+}
+
 void ReportingCacheImpl::OnParsedReportingEndpointsHeader(
     const base::UnguessableToken& reporting_source,
     std::vector<ReportingEndpoint> endpoints) {
   DCHECK(!reporting_source.is_empty());
   DCHECK(!endpoints.empty());
   document_endpoints_.insert({reporting_source, std::move(endpoints)});
+  context_->NotifyEndpointsUpdated();
 }
 
 std::set<url::Origin> ReportingCacheImpl::GetAllOrigins() const {
@@ -663,6 +719,10 @@ size_t ReportingCacheImpl::GetClientCountForTesting() const {
   return clients_.size();
 }
 
+size_t ReportingCacheImpl::GetReportingSourceCountForTesting() const {
+  return document_endpoints_.size();
+}
+
 void ReportingCacheImpl::SetV1EndpointForTesting(
     const ReportingEndpointGroupKey& group_key,
     const base::UnguessableToken& reporting_source,
@@ -683,6 +743,7 @@ void ReportingCacheImpl::SetV1EndpointForTesting(
   } else {
     document_endpoints_.insert({reporting_source, {std::move(new_endpoint)}});
   }
+  context_->NotifyEndpointsUpdated();
 }
 
 void ReportingCacheImpl::SetEndpointForTesting(

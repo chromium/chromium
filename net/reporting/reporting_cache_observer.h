@@ -24,6 +24,9 @@ class NET_EXPORT ReportingCacheObserver {
   // ReportingCache.
   virtual void OnClientsUpdated();
 
+  // Called when V1 reporting endpoints are updated in the ReportingCache.
+  virtual void OnEndpointsUpdated();
+
  protected:
   ReportingCacheObserver();
 

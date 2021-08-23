@@ -163,6 +163,15 @@ SharedWorkerHost::~SharedWorkerHost() {
       info.client->OnScriptLoadFailed(/*error_message=*/"");
   }
 
+  // Send any final reports and allow the reporting configuration to be
+  // removed.
+  if (site_instance_->HasProcess()) {
+    GetProcessHost()
+        ->GetStoragePartition()
+        ->GetNetworkContext()
+        ->SendReportsAndRemoveSource(reporting_source_);
+  }
+
   // Notify the service that each client still connected will be removed and
   // that the worker will terminate.
   for (const auto& client : clients_) {

@@ -771,6 +771,14 @@ void ServiceWorkerContextCore::RemoveLiveVersion(int64_t id) {
                            &ServiceWorkerContextCoreObserver::OnStopped, id);
   }
 
+  // Send any final reports and allow the reporting configuration to be
+  // removed.
+  if (wrapper_->storage_partition()) {
+    wrapper_->storage_partition()
+        ->GetNetworkContext()
+        ->SendReportsAndRemoveSource(version->reporting_source());
+  }
+
   observer_list_->Notify(
       FROM_HERE, &ServiceWorkerContextCoreObserver::OnLiveVersionDestroyed, id);
 

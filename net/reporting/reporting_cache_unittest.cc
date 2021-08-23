@@ -185,7 +185,7 @@ class ReportingCacheTest : public ReportingTestBase,
   const url::Origin kOrigin1_ = url::Origin::Create(GURL("https://origin1/"));
   const url::Origin kOrigin2_ = url::Origin::Create(GURL("https://origin2/"));
   const absl::optional<base::UnguessableToken> kReportingSource_ =
-      absl::nullopt;
+      base::UnguessableToken::Create();
   const NetworkIsolationKey kNik_;
   const NetworkIsolationKey kOtherNik_ =
       NetworkIsolationKey(SchemefulSite(kOrigin1_), SchemefulSite(kOrigin2_));
@@ -486,6 +486,79 @@ TEST_P(ReportingCacheTest, GetReportsAsValue) {
   // GetReportsToDeliver only returns the non-pending reports.
   EXPECT_THAT(cache()->GetReportsToDeliver(),
               ::testing::UnorderedElementsAre(report3, report4));
+}
+
+TEST_P(ReportingCacheTest, GetReportsToDeliverForSource) {
+  LoadReportingClients();
+
+  auto source1 = base::UnguessableToken::Create();
+  auto source2 = base::UnguessableToken::Create();
+
+  // Queue a V1 report for each of these sources, and a V0 report (with a null
+  // source) for the same URL.
+  cache()->AddReport(source1, kNik_, kUrl1_, kUserAgent_, kGroup1_, kType_,
+                     std::make_unique<base::DictionaryValue>(), 0, kNowTicks_,
+                     0);
+  cache()->AddReport(source2, kNik_, kUrl1_, kUserAgent_, kGroup1_, kType_,
+                     std::make_unique<base::DictionaryValue>(), 0, kNowTicks_,
+                     0);
+  cache()->AddReport(absl::nullopt, kNik_, kUrl1_, kUserAgent_, kGroup1_,
+                     kType_, std::make_unique<base::DictionaryValue>(), 0,
+                     kNowTicks_, 0);
+  EXPECT_EQ(3, observer()->cached_reports_update_count());
+
+  std::vector<const ReportingReport*> reports;
+  cache()->GetReports(&reports);
+  ASSERT_EQ(3u, reports.size());
+
+  const auto report1 =
+      base::ranges::find(reports, source1, &ReportingReport::reporting_source);
+  DCHECK(report1 != reports.end());
+  const auto report2 =
+      base::ranges::find(reports, source2, &ReportingReport::reporting_source);
+  DCHECK(report2 != reports.end());
+  const auto report3 = base::ranges::find(reports, absl::nullopt,
+                                          &ReportingReport::reporting_source);
+  DCHECK(report3 != reports.end());
+
+  // Get the reports for Source 1 and check the status of all reports.
+  EXPECT_EQ(std::vector<const ReportingReport*>{*report1},
+            cache()->GetReportsToDeliverForSource(source1));
+  EXPECT_TRUE(cache()->IsReportPendingForTesting(*report1));
+  EXPECT_FALSE(cache()->IsReportDoomedForTesting(*report1));
+  EXPECT_FALSE(cache()->IsReportPendingForTesting(*report2));
+  EXPECT_FALSE(cache()->IsReportDoomedForTesting(*report2));
+  EXPECT_FALSE(cache()->IsReportPendingForTesting(*report3));
+  EXPECT_FALSE(cache()->IsReportDoomedForTesting(*report3));
+
+  // There should be one pending and two cached reports at this point.
+  EXPECT_EQ(1u, cache()->GetReportCountWithStatusForTesting(
+                    ReportingReport::Status::PENDING));
+  EXPECT_EQ(2u, cache()->GetReportCountWithStatusForTesting(
+                    ReportingReport::Status::QUEUED));
+
+  // Calling the method again should not retrieve any more reports, and should
+  // not change the status of any other reports in the cache.
+  EXPECT_EQ(0u, cache()->GetReportsToDeliverForSource(source1).size());
+  EXPECT_EQ(1u, cache()->GetReportCountWithStatusForTesting(
+                    ReportingReport::Status::PENDING));
+  EXPECT_EQ(2u, cache()->GetReportCountWithStatusForTesting(
+                    ReportingReport::Status::QUEUED));
+
+  // Get the reports for Source 2 and check the status again.
+  EXPECT_EQ(std::vector<const ReportingReport*>{*report2},
+            cache()->GetReportsToDeliverForSource(source2));
+  EXPECT_TRUE(cache()->IsReportPendingForTesting(*report1));
+  EXPECT_FALSE(cache()->IsReportDoomedForTesting(*report1));
+  EXPECT_TRUE(cache()->IsReportPendingForTesting(*report2));
+  EXPECT_FALSE(cache()->IsReportDoomedForTesting(*report2));
+  EXPECT_FALSE(cache()->IsReportPendingForTesting(*report3));
+  EXPECT_FALSE(cache()->IsReportDoomedForTesting(*report3));
+
+  EXPECT_EQ(2u, cache()->GetReportCountWithStatusForTesting(
+                    ReportingReport::Status::PENDING));
+  EXPECT_EQ(1u, cache()->GetReportCountWithStatusForTesting(
+                    ReportingReport::Status::QUEUED));
 }
 
 TEST_P(ReportingCacheTest, Endpoints) {
@@ -877,6 +950,47 @@ TEST_P(ReportingCacheTest, RemoveEndpointsForUrl) {
     EXPECT_THAT(store()->GetAllCommands(),
                 testing::IsSupersetOf(expected_commands));
   }
+}
+
+TEST_P(ReportingCacheTest, RemoveSourceAndEndpoints) {
+  const base::UnguessableToken reporting_source_2 =
+      base::UnguessableToken::Create();
+  LoadReportingClients();
+
+  cache()->SetV1EndpointForTesting(
+      ReportingEndpointGroupKey(kNik_, *kReportingSource_, kOrigin1_, kGroup1_),
+      *kReportingSource_, kUrl1_);
+  cache()->SetV1EndpointForTesting(
+      ReportingEndpointGroupKey(kNik_, *kReportingSource_, kOrigin1_, kGroup2_),
+      *kReportingSource_, kUrl2_);
+  cache()->SetV1EndpointForTesting(
+      ReportingEndpointGroupKey(kNik_, reporting_source_2, kOrigin2_, kGroup1_),
+      reporting_source_2, kUrl2_);
+
+  EXPECT_EQ(2u, cache()->GetReportingSourceCountForTesting());
+  EXPECT_TRUE(cache()->GetV1EndpointForTesting(*kReportingSource_, kGroup1_));
+  EXPECT_TRUE(cache()->GetV1EndpointForTesting(*kReportingSource_, kGroup2_));
+  EXPECT_TRUE(cache()->GetV1EndpointForTesting(reporting_source_2, kGroup1_));
+  EXPECT_FALSE(cache()->GetExpiredSources().contains(*kReportingSource_));
+  EXPECT_FALSE(cache()->GetExpiredSources().contains(reporting_source_2));
+
+  cache()->SetExpiredSource(*kReportingSource_);
+
+  EXPECT_EQ(2u, cache()->GetReportingSourceCountForTesting());
+  EXPECT_TRUE(cache()->GetV1EndpointForTesting(*kReportingSource_, kGroup1_));
+  EXPECT_TRUE(cache()->GetV1EndpointForTesting(*kReportingSource_, kGroup2_));
+  EXPECT_TRUE(cache()->GetV1EndpointForTesting(reporting_source_2, kGroup1_));
+  EXPECT_TRUE(cache()->GetExpiredSources().contains(*kReportingSource_));
+  EXPECT_FALSE(cache()->GetExpiredSources().contains(reporting_source_2));
+
+  cache()->RemoveSourceAndEndpoints(*kReportingSource_);
+
+  EXPECT_EQ(1u, cache()->GetReportingSourceCountForTesting());
+  EXPECT_FALSE(cache()->GetV1EndpointForTesting(*kReportingSource_, kGroup1_));
+  EXPECT_FALSE(cache()->GetV1EndpointForTesting(*kReportingSource_, kGroup2_));
+  EXPECT_TRUE(cache()->GetV1EndpointForTesting(reporting_source_2, kGroup1_));
+  EXPECT_FALSE(cache()->GetExpiredSources().contains(*kReportingSource_));
+  EXPECT_FALSE(cache()->GetExpiredSources().contains(reporting_source_2));
 }
 
 TEST_P(ReportingCacheTest, GetClientsAsValue) {

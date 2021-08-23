@@ -327,6 +327,9 @@ class TestReportingService : public ReportingService {
       const net::NetworkIsolationKey& network_isolation_key,
       const base::flat_map<std::string, std::string>& endpoints) override {}
 
+  void SendReportsAndRemoveSource(
+      const base::UnguessableToken& reporting_source) override {}
+
   void QueueReport(
       const GURL& url,
       const absl::optional<base::UnguessableToken>& reporting_source,

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/unguessable_token.h"
 #include "net/base/net_export.h"
 #include "net/base/rand_callback.h"
 
@@ -57,6 +58,12 @@ class NET_EXPORT ReportingDeliveryAgent {
   // MockOneShotTimer.
   virtual void SetTimerForTesting(
       std::unique_ptr<base::OneShotTimer> timer) = 0;
+
+  // Bypasses the schedule to attempt delivery of all outstanding reports
+  // for a single `reporting_source`. Called when the source document or worker
+  // is being destroyed.
+  virtual void SendReportsForSource(
+      base::UnguessableToken reporting_source) = 0;
 };
 
 }  // namespace net

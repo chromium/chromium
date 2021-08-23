@@ -946,6 +946,15 @@ void NetworkContext::SetDocumentReportingEndpoints(
   }
 }
 
+void NetworkContext::SendReportsAndRemoveSource(
+    const base::UnguessableToken& reporting_source) {
+  DCHECK(!reporting_source.is_empty());
+  net::ReportingService* reporting_service =
+      url_request_context()->reporting_service();
+  if (reporting_service)
+    reporting_service->SendReportsAndRemoveSource(reporting_source);
+}
+
 void NetworkContext::QueueReport(
     const std::string& type,
     const std::string& group,
@@ -1114,6 +1123,11 @@ void NetworkContext::SetDocumentReportingEndpoints(
     const url::Origin& origin,
     const net::NetworkIsolationKey& network_isolation_key,
     const base::flat_map<std::string, std::string>& endpoints) {
+  NOTREACHED();
+}
+
+void NetworkContext::SendReportsAndRemoveSource(
+    const base::UnguessableToken& reporting_source) {
   NOTREACHED();
 }
 

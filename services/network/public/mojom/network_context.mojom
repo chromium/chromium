@@ -936,6 +936,13 @@ interface NetworkContext {
       url.mojom.Origin origin, NetworkIsolationKey network_isolation_key,
       map<string,string> endpoints);
 
+  // Queues any outstanding reports for a single |reporting_source| (which
+  // must not be empty), and removes the reporting endpoint configuration for
+  // that source. This is called when the reporting source (document or worker)
+  // is destroyed.
+  SendReportsAndRemoveSource(
+      mojo_base.mojom.UnguessableToken reporting_source);
+
   // Queues a report via the Reporting API. |type| describes the type of report
   // (as well as what data will contained in |body|). |group| specifies the
   // endpoint group that the report will be delivered to. |url| indicates the

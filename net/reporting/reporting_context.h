@@ -60,6 +60,7 @@ class NET_EXPORT ReportingContext {
   void NotifyCachedReportsUpdated();
   void NotifyReportAdded(const ReportingReport* report);
   void NotifyCachedClientsUpdated();
+  void NotifyEndpointsUpdated();
 
   // Returns whether the data in the cache is persisted across restarts in the
   // PersistentReportingStore.

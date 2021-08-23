@@ -98,6 +98,12 @@ class NET_EXPORT ReportingService {
       const NetworkIsolationKey& network_isolation_key,
       const base::flat_map<std::string, std::string>& endpoints) = 0;
 
+  // Attempts to send any queued reports and removes all associated
+  // configuration for `reporting_source`. This is called when a source is
+  // destroyed.
+  virtual void SendReportsAndRemoveSource(
+      const base::UnguessableToken& reporting_source) = 0;
+
   // Removes browsing data from the Reporting system. See
   // ReportingBrowsingDataRemover for more details.
   virtual void RemoveBrowsingData(

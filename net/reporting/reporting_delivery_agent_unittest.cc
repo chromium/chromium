@@ -80,6 +80,10 @@ class ReportingDeliveryAgentTest : public ReportingTestBase {
     EXPECT_TRUE(delivery_timer()->IsRunning());
   }
 
+  void SendReportsForSource(base::UnguessableToken reporting_source) {
+    delivery_agent()->SendReportsForSource(reporting_source);
+  }
+
   base::test::ScopedFeatureList feature_list_;
 
   base::Value report_body_{base::Value::Type::DICTIONARY};
@@ -634,6 +638,128 @@ TEST_F(ReportingDeliveryAgentTest, BatchReportsAcrossGroups) {
     EXPECT_EQ(1, stats.attempted_reports);
     EXPECT_EQ(1, stats.successful_reports);
   }
+}
+
+// Tests that the agent can send all outstanding reports for a single source
+// when necessary. This test queues two reports for the same reporting source,
+// for different endpoints, another for a different source at the same URL, and
+// another for a different source on a different origin.
+TEST_F(ReportingDeliveryAgentTest, SendReportsForSource) {
+  static const std::string kGroup2("group2");
+
+  // Two other reporting sources; kReportingSource2 will enqueue reports for the
+  // same URL as kReportingSource_, while kReportingSource3 will be a separate
+  // origin.
+  const base::UnguessableToken kReportingSource1 =
+      base::UnguessableToken::Create();
+  const base::UnguessableToken kReportingSource2 =
+      base::UnguessableToken::Create();
+  const base::UnguessableToken kReportingSource3 =
+      base::UnguessableToken::Create();
+
+  // Set up identical endpoint configuration for kReportingSource1 and
+  // kReportingSource2. kReportingSource3 is independent.
+  const ReportingEndpointGroupKey kGroup1Key1(kNik_, kReportingSource1,
+                                              kOrigin_, kGroup_);
+  const ReportingEndpointGroupKey kGroup2Key1(kNik_, kReportingSource1,
+                                              kOrigin_, kGroup2);
+  const ReportingEndpointGroupKey kGroup1Key2(kNik_, kReportingSource2,
+                                              kOrigin_, kGroup_);
+  const ReportingEndpointGroupKey kGroup2Key2(kNik_, kReportingSource2,
+                                              kOrigin_, kGroup2);
+  const ReportingEndpointGroupKey kOtherGroupKey(kOtherNik_, kReportingSource3,
+                                                 kOtherOrigin_, kGroup_);
+
+  SetV1EndpointInCache(kGroup1Key1, kReportingSource1, kUrl_);
+  SetV1EndpointInCache(kGroup2Key1, kReportingSource1, kUrl_);
+  SetV1EndpointInCache(kGroup1Key2, kReportingSource2, kUrl_);
+  SetV1EndpointInCache(kGroup2Key2, kReportingSource2, kUrl_);
+  SetV1EndpointInCache(kOtherGroupKey, kReportingSource3, kOtherUrl_);
+
+  UploadFirstReportAndStartTimer();
+
+  AddReport(kReportingSource1, kNik_, kUrl_, kGroup_);
+  AddReport(kReportingSource1, kNik_, kUrl_, kGroup2);
+  AddReport(kReportingSource2, kNik_, kUrl_, kGroup_);
+  AddReport(kReportingSource3, kOtherNik_, kUrl_, kGroup_);
+
+  // There should be four queued reports at this point.
+  EXPECT_EQ(4u, cache()->GetReportCountWithStatusForTesting(
+                    ReportingReport::Status::QUEUED));
+  EXPECT_EQ(0u, pending_uploads().size());
+  SendReportsForSource(kReportingSource1);
+  // Sending all reports for the source should only queue two, despite the fact
+  // that there are other reports queued for the same origin and endpoint.
+  EXPECT_EQ(2u, cache()->GetReportCountWithStatusForTesting(
+                    ReportingReport::Status::QUEUED));
+  EXPECT_EQ(2u, cache()->GetReportCountWithStatusForTesting(
+                    ReportingReport::Status::PENDING));
+  // All pending reports for the same source should be batched into a single
+  // upload.
+  ASSERT_EQ(1u, pending_uploads().size());
+  pending_uploads()[0]->Complete(ReportingUploader::Outcome::SUCCESS);
+  EXPECT_EQ(0u, pending_uploads().size());
+}
+
+// Tests that the agent can send all outstanding V1 reports for multiple sources
+// and that these are not batched together.
+TEST_F(ReportingDeliveryAgentTest, SendReportsForMultipleSources) {
+  static const std::string kGroup2("group2");
+
+  // Two other reporting sources; kReportingSource2 will enqueue reports for the
+  // same URL as kReportingSource_, while kReportingSource3 will be a separate
+  // origin.
+  const base::UnguessableToken kReportingSource1 =
+      base::UnguessableToken::Create();
+  const base::UnguessableToken kReportingSource2 =
+      base::UnguessableToken::Create();
+  const base::UnguessableToken kReportingSource3 =
+      base::UnguessableToken::Create();
+
+  // Set up identical endpoint configuration for kReportingSource1 and
+  // kReportingSource2. kReportingSource3 is independent.
+  const ReportingEndpointGroupKey kGroup1Key1(kNik_, kReportingSource1,
+                                              kOrigin_, kGroup_);
+  const ReportingEndpointGroupKey kGroup2Key1(kNik_, kReportingSource1,
+                                              kOrigin_, kGroup2);
+  const ReportingEndpointGroupKey kGroup1Key2(kNik_, kReportingSource2,
+                                              kOrigin_, kGroup_);
+  const ReportingEndpointGroupKey kGroup2Key2(kNik_, kReportingSource2,
+                                              kOrigin_, kGroup2);
+  const ReportingEndpointGroupKey kOtherGroupKey(kOtherNik_, kReportingSource3,
+                                                 kOtherOrigin_, kGroup_);
+
+  SetV1EndpointInCache(kGroup1Key1, kReportingSource1, kUrl_);
+  SetV1EndpointInCache(kGroup2Key1, kReportingSource1, kUrl_);
+  SetV1EndpointInCache(kGroup1Key2, kReportingSource2, kUrl_);
+  SetV1EndpointInCache(kGroup2Key2, kReportingSource2, kUrl_);
+  SetV1EndpointInCache(kOtherGroupKey, kReportingSource3, kOtherUrl_);
+
+  UploadFirstReportAndStartTimer();
+
+  AddReport(kReportingSource1, kNik_, kUrl_, kGroup_);
+  AddReport(kReportingSource1, kNik_, kUrl_, kGroup2);
+  AddReport(kReportingSource2, kNik_, kUrl_, kGroup_);
+  AddReport(kReportingSource3, kOtherNik_, kUrl_, kGroup_);
+
+  // There should be four queued reports at this point.
+  EXPECT_EQ(4u, cache()->GetReportCountWithStatusForTesting(
+                    ReportingReport::Status::QUEUED));
+  EXPECT_EQ(0u, pending_uploads().size());
+
+  // Send reports for both ReportingSource 1 and 2 at the same time. These
+  // should be sent to the same endpoint, but should still not be batched
+  // together.
+  SendReportsForSource(kReportingSource1);
+  SendReportsForSource(kReportingSource2);
+
+  // We expect to see three pending reports, and one still queued. The pending
+  // reports should be divided into two uploads.
+  EXPECT_EQ(1u, cache()->GetReportCountWithStatusForTesting(
+                    ReportingReport::Status::QUEUED));
+  EXPECT_EQ(3u, cache()->GetReportCountWithStatusForTesting(
+                    ReportingReport::Status::PENDING));
+  ASSERT_EQ(2u, pending_uploads().size());
 }
 
 }  // namespace

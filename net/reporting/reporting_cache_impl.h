@@ -52,6 +52,8 @@ class ReportingCacheImpl : public ReportingCache {
       std::vector<const ReportingReport*>* reports_out) const override;
   base::Value GetReportsAsValue() const override;
   std::vector<const ReportingReport*> GetReportsToDeliver() override;
+  std::vector<const ReportingReport*> GetReportsToDeliverForSource(
+      const base::UnguessableToken& reporting_source) override;
   void ClearReportsPending(
       const std::vector<const ReportingReport*>& reports) override;
   void IncrementReportsAttempts(
@@ -60,10 +62,16 @@ class ReportingCacheImpl : public ReportingCache {
                                    const GURL& url,
                                    int reports_delivered,
                                    bool successful) override;
+  void SetExpiredSource(
+      const base::UnguessableToken& reporting_source) override;
+  const base::flat_set<base::UnguessableToken>& GetExpiredSources()
+      const override;
   void RemoveReports(
       const std::vector<const ReportingReport*>& reports) override;
   void RemoveAllReports() override;
   size_t GetFullReportCountForTesting() const override;
+  size_t GetReportCountWithStatusForTesting(
+      ReportingReport::Status status) const override;
   bool IsReportPendingForTesting(const ReportingReport* report) const override;
   bool IsReportDoomedForTesting(const ReportingReport* report) const override;
   void OnParsedHeader(
@@ -80,6 +88,8 @@ class ReportingCacheImpl : public ReportingCache {
   void RemoveAllClients() override;
   void RemoveEndpointGroup(const ReportingEndpointGroupKey& group_key) override;
   void RemoveEndpointsForUrl(const GURL& url) override;
+  void RemoveSourceAndEndpoints(
+      const base::UnguessableToken& reporting_source) override;
   void AddClientsLoadedFromStore(
       std::vector<ReportingEndpoint> loaded_endpoints,
       std::vector<CachedReportingEndpointGroup> loaded_endpoint_groups)
@@ -102,6 +112,7 @@ class ReportingCacheImpl : public ReportingCache {
                               const url::Origin& origin) const override;
   size_t GetEndpointGroupCountForTesting() const override;
   size_t GetClientCountForTesting() const override;
+  size_t GetReportingSourceCountForTesting() const override;
   void SetEndpointForTesting(const ReportingEndpointGroupKey& group_key,
                              const GURL& url,
                              OriginSubdomains include_subdomains,
@@ -354,6 +365,11 @@ class ReportingCacheImpl : public ReportingCache {
   // token. This contains only V1 document endpoints.
   std::map<base::UnguessableToken, const std::vector<ReportingEndpoint>>
       document_endpoints_;
+
+  // Reporting source tokens representing sources which have been destroyed.
+  // The configuration in `document_endpoints_` for these sources can be
+  // removed once all outstanding reports are delivered (or expired).
+  base::flat_set<base::UnguessableToken> expired_sources_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

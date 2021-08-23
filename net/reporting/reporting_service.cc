@@ -21,6 +21,7 @@
 #include "net/reporting/reporting_cache.h"
 #include "net/reporting/reporting_context.h"
 #include "net/reporting/reporting_delegate.h"
+#include "net/reporting/reporting_delivery_agent.h"
 #include "net/reporting/reporting_header_parser.h"
 #include "net/reporting/reporting_uploader.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -66,6 +67,13 @@ class ReportingServiceImpl : public ReportingService {
                        base::Unretained(this), reporting_source,
                        FixupNetworkIsolationKey(network_isolation_key), origin,
                        std::move(endpoints)));
+  }
+
+  void SendReportsAndRemoveSource(
+      const base::UnguessableToken& reporting_source) override {
+    DCHECK(!reporting_source.is_empty());
+    context_->delivery_agent()->SendReportsForSource(reporting_source);
+    context_->cache()->SetExpiredSource(reporting_source);
   }
 
   void QueueReport(

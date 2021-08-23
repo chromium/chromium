@@ -106,6 +106,13 @@ DedicatedWorkerHost::~DedicatedWorkerHost() {
   // This DedicatedWorkerHost is destroyed via either the mojo disconnection
   // or RenderProcessHostObserver. This destruction should be called before
   // the observed render process host (`worker_process_host_`) is destroyed.
+
+  // Send any final reports and allow the reporting configuration to be
+  // removed.
+  worker_process_host_->GetStoragePartition()
+      ->GetNetworkContext()
+      ->SendReportsAndRemoveSource(reporting_source_);
+
   service_->NotifyBeforeWorkerDestroyed(token_, ancestor_render_frame_host_id_);
 }
 

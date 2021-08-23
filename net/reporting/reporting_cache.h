@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -94,6 +95,15 @@ class NET_EXPORT ReportingCache {
   // as the reports are still pending.
   virtual std::vector<const ReportingReport*> GetReportsToDeliver() = 0;
 
+  // Gets all reports in the cache which are eligible for delivery, which were
+  // queued for a single `reporting_source`, and marks returned reports as
+  // pending in preparation for a delivery attempt. The returned pointers are
+  // valid as long as the reports are still pending. This method is used when a
+  // reporting source is being destroyed, to trigger delivery of any remaining
+  // outstanding reports.
+  virtual std::vector<const ReportingReport*> GetReportsToDeliverForSource(
+      const base::UnguessableToken& reporting_source) = 0;
+
   // Unmarks a set of reports as pending. |reports| must be previously marked as
   // pending.
   virtual void ClearReportsPending(
@@ -111,6 +121,17 @@ class NET_EXPORT ReportingCache {
       int reports_delivered,
       bool successful) = 0;
 
+  // Marks a `reporting_source` as expired, when the source (document or
+  // worker) has beed destroyed. The endpoint configuration for the source will
+  // be removed by the garbage collector once all outstanding reports have been
+  // delivered or expired.
+  virtual void SetExpiredSource(
+      const base::UnguessableToken& reporting_source) = 0;
+
+  // Gets the current set of expired reporting sources.
+  virtual const base::flat_set<base::UnguessableToken>& GetExpiredSources()
+      const = 0;
+
   // Removes a set of reports. Any reports that are pending will not be removed
   // immediately, but rather marked doomed and removed once they are no longer
   // pending.
@@ -127,6 +148,10 @@ class NET_EXPORT ReportingCache {
   // method provides a view of *every* report in the cache, just non-doomed
   // ones.
   virtual size_t GetFullReportCountForTesting() const = 0;
+
+  // Gets the count of reports in the cache with a specific `status`.
+  virtual size_t GetReportCountWithStatusForTesting(
+      ReportingReport::Status status) const = 0;
 
   virtual bool IsReportPendingForTesting(
       const ReportingReport* report) const = 0;
@@ -180,6 +205,12 @@ class NET_EXPORT ReportingCache {
   // when a delivery returns 410 Gone. May cause deletion of groups/clients if
   // they become empty.
   virtual void RemoveEndpointsForUrl(const GURL& url) = 0;
+
+  // Remove `reporting_source` from the cache, including any configured
+  // endpoints. There should be no non-doomed reports in the cache for
+  // `reporting_source` when this is called.
+  virtual void RemoveSourceAndEndpoints(
+      const base::UnguessableToken& reporting_source) = 0;
 
   // Insert endpoints and endpoint groups that have been loaded from the store.
   //
@@ -254,6 +285,9 @@ class NET_EXPORT ReportingCache {
 
   // Returns number of endpoint groups.
   virtual size_t GetClientCountForTesting() const = 0;
+
+  // Returns number of reporting source tokens associated with endpoints.
+  virtual size_t GetReportingSourceCountForTesting() const = 0;
 
   // Sets an endpoint with the given properties in a group with the given
   // properties, bypassing header parsing. Note that the endpoint is not

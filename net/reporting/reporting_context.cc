@@ -81,6 +81,11 @@ void ReportingContext::NotifyCachedClientsUpdated() {
     observer.OnClientsUpdated();
 }
 
+void ReportingContext::NotifyEndpointsUpdated() {
+  for (auto& observer : cache_observers_)
+    observer.OnEndpointsUpdated();
+}
+
 bool ReportingContext::IsReportDataPersisted() const {
   return store_ && policy_.persist_reports_across_restarts;
 }
