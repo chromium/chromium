@@ -4,8 +4,11 @@
 
 #include "chrome/browser/devtools/protocol/page_handler.h"
 
+#include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "components/subresource_filter/content/browser/devtools_interaction_tracker.h"
-#include "components/webapps/browser/installable/installable_manager.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "ui/gfx/image/image.h"
 
 PageHandler::PageHandler(content::WebContents* web_contents,
@@ -145,4 +148,37 @@ void PageHandler::PrintToPDF(protocol::Maybe<bool> landscape,
                              std::unique_ptr<PrintToPDFCallback> callback) {
   callback->sendFailure(
       protocol::Response::ServerError("PrintToPDF is not implemented"));
+}
+
+void PageHandler::GetAppId(std::unique_ptr<GetAppIdCallback> callback) {
+  webapps::InstallableManager* manager =
+      web_contents_
+          ? webapps::InstallableManager::FromWebContents(web_contents_.get())
+          : nullptr;
+
+  if (!manager) {
+    callback->sendFailure(
+        protocol::Response::ServerError("Unable to fetch app id for target"));
+    return;
+  }
+
+  webapps::InstallableParams params;
+  manager->GetData(params, base::BindOnce(&PageHandler::OnDidGetManifest,
+                                          weak_ptr_factory_.GetWeakPtr(),
+                                          std::move(callback)));
+}
+
+void PageHandler::OnDidGetManifest(std::unique_ptr<GetAppIdCallback> callback,
+                                   const webapps::InstallableData& data) {
+  if (blink::IsEmptyManifest(data.manifest) ||
+      !base::FeatureList::IsEnabled(blink::features::kWebAppEnableManifestId)) {
+    callback->sendSuccess(protocol::Maybe<protocol::String>());
+    return;
+  }
+  absl::optional<std::string> id;
+  if (data.manifest.id.has_value()) {
+    id = base::UTF16ToUTF8(data.manifest.id.value());
+  }
+  callback->sendSuccess(
+      web_app::GenerateAppIdUnhashed(id, data.manifest.start_url));
 }

@@ -1263,6 +1263,12 @@ void PageHandler::GetManifestIcons(
   callback->sendSuccess(Maybe<Binary>());
 }
 
+void PageHandler::GetAppId(std::unique_ptr<GetAppIdCallback> callback) {
+  // TODO: Use InstallableManager once it moves into content/.
+  // Until then, this code is only used to return no image data in the tests.
+  callback->sendSuccess(protocol::Maybe<protocol::String>());
+}
+
 Response PageHandler::SetBypassCSP(bool enabled) {
   bypass_csp_ = enabled;
   return Response::FallThrough();

@@ -29,6 +29,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/ssl/ssl_cipher_suite_names.h"
 #include "net/ssl/ssl_connection_status_flags.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 
 using DevToolsProtocolTest = DevToolsProtocolTestBase;
@@ -95,6 +96,51 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
   EXPECT_EQ(chrome::kChromeUINewTabURL, wc->GetLastCommittedURL().spec());
 
   // Should not crash by this point.
+}
+
+class DevToolsProtocolTest_AppId : public DevToolsProtocolTest {
+ public:
+  DevToolsProtocolTest_AppId() {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kWebAppEnableManifestId);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_AppId, ReturnsManifestAppId) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url(embedded_test_server()->GetURL("/web_apps/basic.html"));
+  ui_test_utils::NavigateToURL(browser(), url);
+  Attach();
+
+  SendCommandSync("Page.getAppId");
+  EXPECT_EQ(*result_.FindStringPath("appId"),
+            embedded_test_server()->GetURL("/some_id"));
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_AppId,
+                       ReturnsStartUrlAsManifestAppIdIfNotSet) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url(
+      embedded_test_server()->GetURL("/web_apps/no_service_worker.html"));
+  ui_test_utils::NavigateToURL(browser(), url);
+  Attach();
+
+  SendCommandSync("Page.getAppId");
+  EXPECT_EQ(*result_.FindStringPath("appId"),
+            embedded_test_server()->GetURL("/web_apps/no_service_worker.html"));
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_AppId, ReturnsNoAppIdIfNoManifest) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url(embedded_test_server()->GetURL("/empty.html"));
+  ui_test_utils::NavigateToURL(browser(), url);
+  Attach();
+
+  SendCommandSync("Page.getAppId");
+  ASSERT_TRUE(result_.FindPath("appId") == nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, VisibleSecurityStateSecureState) {

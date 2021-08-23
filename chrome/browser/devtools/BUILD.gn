@@ -122,6 +122,7 @@ static_library("devtools") {
       "//chrome/browser:browser_process",
       "//chrome/browser/media/router:media_router_feature",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/web_applications",
       "//chrome/common",
       "//components/guest_view/browser",
       "//components/infobars/content",

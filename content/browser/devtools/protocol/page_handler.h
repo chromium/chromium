@@ -162,6 +162,8 @@ class PageHandler : public DevToolsDomainHandler,
   void GetManifestIcons(
       std::unique_ptr<GetManifestIconsCallback> callback) override;
 
+  void GetAppId(std::unique_ptr<GetAppIdCallback> callback) override;
+
   Response SetBypassCSP(bool enabled) override;
 
  private:

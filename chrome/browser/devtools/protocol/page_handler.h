@@ -10,6 +10,9 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/devtools/protocol/forward.h"
 #include "chrome/browser/devtools/protocol/page.h"
+#include "components/webapps/browser/installable/installable_manager.h"
+#include "content/public/browser/web_contents_observer.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 
 namespace content {
 struct InstallabilityError;
@@ -54,6 +57,8 @@ class PageHandler : public protocol::Page::Backend {
                   protocol::Maybe<protocol::String> transfer_mode,
                   std::unique_ptr<PrintToPDFCallback> callback) override;
 
+  void GetAppId(std::unique_ptr<GetAppIdCallback> callback) override;
+
  private:
   static void GotInstallabilityErrors(
       std::unique_ptr<GetInstallabilityErrorsCallback> callback,
@@ -63,9 +68,13 @@ class PageHandler : public protocol::Page::Backend {
       std::unique_ptr<GetManifestIconsCallback> callback,
       const SkBitmap* primary_icon);
 
+  void OnDidGetManifest(std::unique_ptr<GetAppIdCallback> callback,
+                        const webapps::InstallableData& data);
+
   base::WeakPtr<content::WebContents> web_contents_;
 
   bool enabled_ = false;
+  base::WeakPtrFactory<PageHandler> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PageHandler);
 };
