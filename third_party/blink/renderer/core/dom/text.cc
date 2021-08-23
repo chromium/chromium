@@ -447,6 +447,17 @@ static bool ShouldUpdateLayoutByReattaching(const Text& text_node,
     return text_fragment_layout_object.GetFirstLetterPseudoElement() ||
            !text_fragment_layout_object.IsRemainingTextLayoutObject();
   }
+  // If we force a re-attach for password inputs and other elements hiding text
+  // input via -webkit-text-security, the last character input will be hidden
+  // immediately, even if the passwordEchoEnabled setting is enabled.
+  // ::first-letter do not seem to apply to text inputs, so for those skipping
+  // the re-attachment should be safe.
+  // We can possibly still cause DCHECKs for mismatch of first letter text in
+  // editing with the combination of -webkit-text-security in author styles on
+  // other elements in combination with ::first-letter.
+  // See crbug.com/1240988
+  if (text_layout_object->IsSecure())
+    return false;
   if (!FirstLetterPseudoElement::FirstLetterLength(
           text_layout_object->GetText()) &&
       FirstLetterPseudoElement::FirstLetterLength(text_node.data())) {
