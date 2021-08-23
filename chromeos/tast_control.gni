@@ -24,9 +24,6 @@ tast_disabled_tests_from_chrome_all = [
   # crbug.com/1184931
   "health.ProbeBatteryMetrics",
 
-  # crbug.com/1240818
-  "health.ProbeNetworkInfo",
-
   # crbug.com/1182538
   "policy.URLCheck.allowlist",
   "policy.URLCheck.blocklist",
