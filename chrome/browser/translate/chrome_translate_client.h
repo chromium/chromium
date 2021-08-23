@@ -92,12 +92,11 @@ class ChromeTranslateClient
       std::unique_ptr<translate::TranslateInfoBarDelegate> delegate)
       const override;
   int GetInfobarIconID() const override;
-#endif
 
   // Trigger a manual translation when the necessary state (e.g. source
   // language) is ready.
   void ManualTranslateWhenReady();
-
+#endif
   void SetPredefinedTargetLanguage(const std::string& translate_language_code);
 
   bool ShowTranslateUI(translate::TranslateStep step,
@@ -145,9 +144,11 @@ class ChromeTranslateClient
       per_frame_translate_driver_;
   std::unique_ptr<translate::TranslateManager> translate_manager_;
 
+#if defined(OS_ANDROID)
   // Whether to trigger a manual translation when ready.
   // See ChromeTranslateClient::ManualTranslateOnReady
   bool manual_translate_on_ready_ = false;
+#endif
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

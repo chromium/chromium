@@ -1101,19 +1101,8 @@ TEST_F(TranslateManagerTest, CanManuallyTranslate_EmptySourceLanguage) {
 
   translate_manager_->GetLanguageState()->LanguageDetermined("", true);
 
-  // Translation before language detection is complete is not supported on iOS.
-  // Experiment in place for supporting it on Android.
-  bool unknown_source_supported = true;
-#if defined(OS_ANDROID)
-  if (!base::FeatureList::IsEnabled(language::kDetectedSourceLanguageOption))
-    unknown_source_supported = false;
-#elif defined(OS_IOS)
-  unknown_source_supported = false;
-#endif
-  EXPECT_EQ(translate_manager_->CanManuallyTranslate(),
-            unknown_source_supported);
-  EXPECT_EQ(translate_manager_->CanManuallyTranslate(true),
-            unknown_source_supported);
+  EXPECT_FALSE(translate_manager_->CanManuallyTranslate());
+  EXPECT_FALSE(translate_manager_->CanManuallyTranslate(true));
 }
 
 TEST_F(TranslateManagerTest, CanManuallyTranslate_UndefinedSourceLanguage) {
@@ -1139,8 +1128,6 @@ TEST_F(TranslateManagerTest, CanManuallyTranslate_UndefinedSourceLanguage) {
   unknown_source_supported = false;
 #endif
   EXPECT_EQ(translate_manager_->CanManuallyTranslate(),
-            unknown_source_supported);
-  EXPECT_EQ(translate_manager_->CanManuallyTranslate(true),
             unknown_source_supported);
 }
 
