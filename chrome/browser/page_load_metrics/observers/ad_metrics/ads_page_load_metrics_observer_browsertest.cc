@@ -849,7 +849,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
 }
 
 // TODO(https://crbug.com/1234339): Test is flaky.
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #define MAYBE_DocOverwritesNavigation DISABLED_DocOverwritesNavigation
 #else
 #define MAYBE_DocOverwritesNavigation DocOverwritesNavigation
