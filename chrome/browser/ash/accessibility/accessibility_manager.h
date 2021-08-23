@@ -396,6 +396,9 @@ class AccessibilityManager
   void PostLoadAccessibilityCommon();
   void PostUnloadAccessibilityCommon();
 
+  void LoadEnhancedNetworkTts();
+  void UnloadEnhancedNetworkTts();
+
   void UpdateAlwaysShowMenuFromPref();
   void OnLargeCursorChanged();
   void OnStickyKeysChanged();

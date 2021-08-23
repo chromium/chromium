@@ -49,6 +49,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/api/braille_display_private/stub_braille_controller.h"
+#include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
@@ -1648,6 +1649,8 @@ void AccessibilityManager::OnChromeVoxPanelDestroying() {
 
 void AccessibilityManager::PostLoadSelectToSpeak() {
   InitializeFocusRings(extension_misc::kSelectToSpeakExtensionId);
+
+  LoadEnhancedNetworkTts();
 }
 
 void AccessibilityManager::PostUnloadSelectToSpeak() {
@@ -1657,6 +1660,43 @@ void AccessibilityManager::PostUnloadSelectToSpeak() {
   // Clear the accessibility focus ring and highlight.
   RemoveFocusRings(extension_misc::kSelectToSpeakExtensionId);
   HideHighlights();
+
+  UnloadEnhancedNetworkTts();
+}
+
+void AccessibilityManager::LoadEnhancedNetworkTts() {
+  if (!profile_)
+    return;
+
+  extensions::ComponentLoader* component_loader =
+      extensions::ExtensionSystem::Get(profile_)
+          ->extension_service()
+          ->component_loader();
+
+  if (!features::IsEnhancedNetworkVoicesEnabled() ||
+      component_loader->Exists(extension_misc::kEnhancedNetworkTtsExtensionId))
+    return;
+
+  base::FilePath resources_path;
+  if (!base::PathService::Get(chrome::DIR_RESOURCES, &resources_path))
+    NOTREACHED();
+  component_loader->AddComponentFromDirWithManifestFilename(
+      resources_path.Append(extension_misc::kEnhancedNetworkTtsExtensionPath),
+      extension_misc::kEnhancedNetworkTtsExtensionId,
+      extension_misc::kEnhancedNetworkTtsManifestFilename,
+      extension_misc::kEnhancedNetworkTtsGuestManifestFilename,
+      base::DoNothing());
+}
+
+void AccessibilityManager::UnloadEnhancedNetworkTts() {
+  if (!profile_)
+    return;
+
+  extensions::ComponentLoader* component_loader =
+      extensions::ExtensionSystem::Get(profile_)
+          ->extension_service()
+          ->component_loader();
+  component_loader->Remove(extension_misc::kEnhancedNetworkTtsExtensionId);
 }
 
 void AccessibilityManager::PostLoadSwitchAccess() {
