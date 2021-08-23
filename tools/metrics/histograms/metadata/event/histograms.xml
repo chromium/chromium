@@ -1859,7 +1859,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Event.UserActivation.TriggerFor{ActivationGatedApiType}"
-    enum="UserActivationTriggerEnum" expires_after="2021-09-30">
+    enum="UserActivationTriggerEnum" expires_after="2022-06-30">
   <owner>mustaq@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
