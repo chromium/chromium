@@ -614,7 +614,14 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest, CloseOnError) {
                        kSendMessageAndExpectConnectionCloseOnErrorScript);
 }
 
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest, Fail_SendMessage) {
+// crbug.com/1238688: test is flaky on win and linux.
+#if defined(OS_LINUX) || defined(OS_WIN)
+#define MAYBE_Fail_SendMessage DISABLED_Fail_SendMessage
+#else
+#define MAYBE_Fail_SendMessage Fail_SendMessage
+#endif
+IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
+                       MAYBE_Fail_SendMessage) {
   RunFailToSendMessageTest();
 }
 
