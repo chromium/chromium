@@ -33,32 +33,39 @@ bool PaymentMethodData::operator!=(const PaymentMethodData& other) const {
   return !(*this == other);
 }
 
-bool PaymentMethodData::FromDictionaryValue(
-    const base::DictionaryValue& value) {
-  supported_networks.clear();
-
-  // The value of supportedMethods should be a string.
-  if (!value.GetString(kSupportedMethods, &supported_method) ||
-      !base::IsStringASCII(supported_method) || supported_method.empty()) {
+bool PaymentMethodData::FromValue(const base::Value& value) {
+  if (!value.is_dict()) {
     return false;
   }
 
+  supported_networks.clear();
+
+  // The value of supportedMethods should be a string.
+  const std::string* supported_method_in =
+      value.FindStringKey(kSupportedMethods);
+  if (!supported_method_in || !base::IsStringASCII(*supported_method_in) ||
+      supported_method_in->empty()) {
+    return false;
+  }
+  supported_method = *supported_method_in;
+
   // Data is optional, but if a dictionary is present, save a stringified
   // version and attempt to parse supportedNetworks.
-  const base::DictionaryValue* data_dict = nullptr;
-  if (value.GetDictionary(kMethodDataData, &data_dict)) {
+  const base::Value* data_dict = value.FindDictKey(kMethodDataData);
+  if (data_dict) {
     std::string json_data;
     base::JSONWriter::Write(*data_dict, &json_data);
     data = json_data;
-    const base::ListValue* supported_networks_list = nullptr;
-    if (data_dict->GetList(kSupportedNetworks, &supported_networks_list)) {
-      for (size_t i = 0; i < supported_networks_list->GetSize(); ++i) {
-        std::string supported_network;
-        if (!supported_networks_list->GetString(i, &supported_network) ||
-            !base::IsStringASCII(supported_network)) {
+    const base::Value* supported_networks_list =
+        data_dict->FindListKey(kSupportedNetworks);
+    if (supported_networks_list) {
+      for (const base::Value& supported_network :
+           supported_networks_list->GetList()) {
+        if (!supported_network.is_string() ||
+            !base::IsStringASCII(supported_network.GetString())) {
           return false;
         }
-        supported_networks.push_back(supported_network);
+        supported_networks.push_back(supported_network.GetString());
       }
     }
   }

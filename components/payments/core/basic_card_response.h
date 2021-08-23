@@ -11,7 +11,7 @@
 #include "components/payments/core/payment_address.h"
 
 namespace base {
-class DictionaryValue;
+class Value;
 }
 
 namespace payments {
@@ -27,7 +27,7 @@ struct BasicCardResponse {
   bool operator!=(const BasicCardResponse& other) const;
 
   // Populates |value| with the properties of this BasicCardResponse.
-  std::unique_ptr<base::DictionaryValue> ToDictionaryValue() const;
+  base::Value ToValue() const;
 
   // The cardholder's name as it appears on the card.
   std::u16string cardholder_name;

@@ -41,12 +41,11 @@ static const char* kBasicCardNetworks[] = {"amex",     "diners",     "discover",
 // PaymentAddress spec.
 TEST(PaymentRequestDataUtilTest, GetPaymentAddressFromAutofillProfile) {
   autofill::AutofillProfile address = autofill::test::GetFullProfile();
-  std::unique_ptr<base::DictionaryValue> address_value =
-      payments::PaymentAddressToDictionaryValue(
-          *payments::data_util::GetPaymentAddressFromAutofillProfile(address,
-                                                                     "en-US"));
+  base::Value address_value = payments::PaymentAddressToValue(
+      *payments::data_util::GetPaymentAddressFromAutofillProfile(address,
+                                                                 "en-US"));
   std::string json_address;
-  base::JSONWriter::Write(*address_value, &json_address);
+  base::JSONWriter::Write(address_value, &json_address);
   EXPECT_EQ(
       "{\"addressLine\":[\"666 Erebus St.\",\"Apt 8\"],"
       "\"city\":\"Elysium\","
@@ -67,12 +66,12 @@ TEST(PaymentRequestDataUtilTest, GetBasicCardResponseFromAutofillCreditCard) {
   autofill::AutofillProfile address = autofill::test::GetFullProfile();
   autofill::CreditCard card = autofill::test::GetCreditCard();
   card.set_billing_address_id(address.guid());
-  std::unique_ptr<base::DictionaryValue> response_value =
+  base::Value response_value =
       payments::data_util::GetBasicCardResponseFromAutofillCreditCard(
           card, u"123", address, "en-US")
-          ->ToDictionaryValue();
+          ->ToValue();
   std::string json_response;
-  base::JSONWriter::Write(*response_value, &json_response);
+  base::JSONWriter::Write(response_value, &json_response);
   EXPECT_EQ(base::StringPrintf(
                 "{\"billingAddress\":"
                 "{\"addressLine\":[\"666 Erebus St.\",\"Apt 8\"],"

@@ -18,7 +18,7 @@
 // https://w3c.github.io/payment-request/#payment-details-dictionaries
 
 namespace base {
-class DictionaryValue;
+class Value;
 }
 
 namespace payments {
@@ -37,8 +37,7 @@ class PaymentDetails {
   // Populates the properties of this PaymentDetails from |value|. Returns true
   // if the required values are present. If |requires_total| is true, the total
   // property has to be present.
-  bool FromDictionaryValue(const base::DictionaryValue& value,
-                           bool requires_total);
+  bool FromValue(const base::Value& value, bool requires_total);
 
   // The unique free-form identifier for this payment request.
   std::string id;

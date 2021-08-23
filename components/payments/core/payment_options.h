@@ -11,10 +11,6 @@
 // following spec:
 // https://w3c.github.io/payment-request/#paymentoptions-dictionary
 
-namespace base {
-class DictionaryValue;
-}
-
 namespace payments {
 
 class PaymentOptions {
@@ -24,10 +20,6 @@ class PaymentOptions {
 
   bool operator==(const PaymentOptions& other) const;
   bool operator!=(const PaymentOptions& other) const;
-
-  // Populates the properties of this PaymentOptions from |value|. Returns true
-  // if the required values are present.
-  bool FromDictionaryValue(const base::DictionaryValue& value);
 
   // Indicates whether the user agent should collect and return the payer's name
   // as part of the payment request. For example, this would be set to true to

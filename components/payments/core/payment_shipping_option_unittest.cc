@@ -13,7 +13,7 @@ namespace payments {
 
 // Tests the success case when populating a PaymentShippingOption from a
 // dictionary.
-TEST(PaymentRequestTest, PaymentShippingOptionFromDictionaryValueSuccess) {
+TEST(PaymentRequestTest, PaymentShippingOptionFromValueSuccess) {
   PaymentShippingOption expected;
   expected.id = "123";
   expected.label = "Ground Shipping";
@@ -21,24 +21,24 @@ TEST(PaymentRequestTest, PaymentShippingOptionFromDictionaryValueSuccess) {
   expected.amount->value = "4,000.32";
   expected.selected = true;
 
-  base::DictionaryValue shipping_option_dict;
-  shipping_option_dict.SetString("id", "123");
-  shipping_option_dict.SetString("label", "Ground Shipping");
-  base::DictionaryValue amount_dict;
-  amount_dict.SetString("currency", "BRL");
-  amount_dict.SetString("value", "4,000.32");
+  base::Value shipping_option_dict(base::Value::Type::DICTIONARY);
+  shipping_option_dict.SetStringKey("id", "123");
+  shipping_option_dict.SetStringKey("label", "Ground Shipping");
+  base::Value amount_dict(base::Value::Type::DICTIONARY);
+  amount_dict.SetStringKey("currency", "BRL");
+  amount_dict.SetStringKey("value", "4,000.32");
   shipping_option_dict.SetKey("amount", std::move(amount_dict));
-  shipping_option_dict.SetBoolean("selected", true);
+  shipping_option_dict.SetBoolKey("selected", true);
 
   PaymentShippingOption actual;
-  EXPECT_TRUE(actual.FromDictionaryValue(shipping_option_dict));
+  EXPECT_TRUE(actual.FromValue(shipping_option_dict));
 
   EXPECT_EQ(expected, actual);
 }
 
 // Tests the failure case when populating a PaymentShippingOption from a
 // dictionary.
-TEST(PaymentRequestTest, PaymentShippingOptionFromDictionaryValueFailure) {
+TEST(PaymentRequestTest, PaymentShippingOptionFromValueFailure) {
   PaymentShippingOption expected;
   expected.id = "123";
   expected.label = "Ground Shipping";
@@ -47,27 +47,40 @@ TEST(PaymentRequestTest, PaymentShippingOptionFromDictionaryValueFailure) {
   expected.selected = true;
 
   PaymentShippingOption actual;
-  base::DictionaryValue shipping_option_dict;
+
+  // Make sure non-dictionary input values are handled correctly.
+  EXPECT_FALSE(actual.FromValue(base::Value("hi")));
+
+  base::Value shipping_option_dict(base::Value::Type::DICTIONARY);
 
   // Id, Label, and amount are required.
-  shipping_option_dict.SetString("id", "123");
-  EXPECT_FALSE(actual.FromDictionaryValue(shipping_option_dict));
+  shipping_option_dict.SetStringKey("id", "123");
+  EXPECT_FALSE(actual.FromValue(shipping_option_dict));
 
-  shipping_option_dict.SetString("label", "Ground Shipping");
-  EXPECT_FALSE(actual.FromDictionaryValue(shipping_option_dict));
+  shipping_option_dict.SetStringKey("label", "Ground Shipping");
+  EXPECT_FALSE(actual.FromValue(shipping_option_dict));
 
   // Id must be a string.
-  base::DictionaryValue amount_dict;
-  amount_dict.SetString("currency", "BRL");
-  amount_dict.SetString("value", "4,000.32");
+  base::Value amount_dict(base::Value::Type::DICTIONARY);
+  amount_dict.SetStringKey("currency", "BRL");
+  amount_dict.SetStringKey("value", "4,000.32");
   shipping_option_dict.SetKey("amount", std::move(amount_dict));
-  shipping_option_dict.SetInteger("id", 123);
-  EXPECT_FALSE(actual.FromDictionaryValue(shipping_option_dict));
+  shipping_option_dict.SetIntKey("id", 123);
+  EXPECT_FALSE(actual.FromValue(shipping_option_dict));
 
   // Label must be a string.
-  shipping_option_dict.SetString("id", "123");
-  shipping_option_dict.SetInteger("label", 123);
-  EXPECT_FALSE(actual.FromDictionaryValue(shipping_option_dict));
+  shipping_option_dict.SetStringKey("id", "123");
+  shipping_option_dict.SetIntKey("label", 123);
+  EXPECT_FALSE(actual.FromValue(shipping_option_dict));
+
+  // Check for trouble with amount.
+  shipping_option_dict.SetStringKey("label", "123");
+  shipping_option_dict.SetStringKey("amount", "123.49 USD");
+  EXPECT_FALSE(actual.FromValue(shipping_option_dict));
+
+  base::Value bad_amount_dict(base::Value::Type::DICTIONARY);
+  shipping_option_dict.SetKey("amount", std::move(bad_amount_dict));
+  EXPECT_FALSE(actual.FromValue(shipping_option_dict));
 }
 
 // Tests that two shipping option objects are not equal if their property values
@@ -104,6 +117,31 @@ TEST(PaymentRequestTest, PaymentShippingOptionEquality) {
   EXPECT_NE(shipping_option1, shipping_option2);
   shipping_option2.selected = true;
   EXPECT_EQ(shipping_option1, shipping_option2);
+}
+
+TEST(PaymentRequestTest, Assign) {
+  PaymentShippingOption shipping_option1, shipping_option2;
+
+  shipping_option1.id = "abc";
+  shipping_option1.label = "Ground";
+  shipping_option1.amount.reset();
+
+  // All this should be overwritten.
+  shipping_option2.id = "def";
+  shipping_option2.label = "Air";
+  shipping_option2.amount = mojom::PaymentCurrencyAmount::New();
+  shipping_option2.amount->currency = "USD";
+  shipping_option2.amount->value = "50.0";
+
+  shipping_option2 = shipping_option1;
+  EXPECT_EQ(shipping_option2, shipping_option1);
+
+  // Also test with amount.
+  shipping_option1.amount = mojom::PaymentCurrencyAmount::New();
+  shipping_option1.amount->currency = "CAD";
+  shipping_option1.amount->value = "10.0";
+  shipping_option2 = shipping_option1;
+  EXPECT_EQ(shipping_option2, shipping_option1);
 }
 
 }  // namespace payments

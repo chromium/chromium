@@ -13,7 +13,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 
 namespace base {
-class DictionaryValue;
+class Value;
 }
 
 namespace payments {
@@ -31,7 +31,7 @@ class PaymentMethodData {
 
   // Populates the properties of this PaymentMethodData from |value|. Returns
   // true if the required values are present.
-  bool FromDictionaryValue(const base::DictionaryValue& value);
+  bool FromValue(const base::Value& value);
 
   // Payment method identifier for payment method that the merchant web site
   // accepts.
