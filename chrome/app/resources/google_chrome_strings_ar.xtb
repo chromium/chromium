@@ -85,6 +85,8 @@
 <translation id="2888126860611144412">‏لمحة عن Chrome</translation>
 <translation id="2926676257163822632">‏من السهل تخمين كلمات المرور الضعيفة. يمكنك السماح لمتصفِّح Chrome <ph name="BEGIN_LINK" />بإنشاء كلمات مرور قوية وتذكُّرها نيابة عنك<ph name="END_LINK" />.</translation>
 <translation id="2929907241665500097">‏تعذّر تحديث Chrome بسبب حدوث خطأ. <ph name="BEGIN_LINK" />حلّ مشاكل تحديث Chrome وتعذُّر التحديثات<ph name="END_LINK" /></translation>
+<translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />تذكير أخير: ستؤدي عملية التثبيت إلى <ph name="BEGIN_BOLD" />محو بيانات محرك الأقراص الثابتة بالكامل<ph name="END_BOLD" />. يُرجى التأكّد من احتفاظك بنسخة احتياطية من أي بيانات مُهمّة.<ph name="END_PARAGRAPH1" />
+          <ph name="BEGIN_PARAGRAPH2" />عند بدء عملية التثبيت، لا يمكن إلغاؤها.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2969728957078202736">‏<ph name="PAGE_TITLE" /> - Chrome - تسجيل الدخول إلى الشبكة</translation>
 <translation id="3037838751736561277">‏Google Chrome في وضع الخلفية.</translation>
 <translation id="3059710691562604940">‏تم إيقاف "التصفّح الآمن" ويقترح متصفّح Chrome تفعيله.</translation>
