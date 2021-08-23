@@ -204,11 +204,6 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   int BuildRequestHeaders(bool using_http_proxy_without_tunnel);
 
 #if BUILDFLAG(ENABLE_REPORTING)
-  // Processes the Reporting-Endpoints header specified in document reporting
-  // spec, if one exists. This header configures where the Reporting API (in
-  // net/reporting) will send reports for the document.
-  void ProcessReportingEndpointsHeader();
-
   // Processes the Report-To header, if one exists. This header configures where
   // the Reporting API (in //net/reporting) will send reports for the origin.
   void ProcessReportToHeader();
