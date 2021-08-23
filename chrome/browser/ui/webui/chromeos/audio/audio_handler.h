@@ -35,6 +35,8 @@ class AudioHandler : public audio::mojom::PageHandler,
   void GetActiveInputDeviceName(
       GetActiveInputDeviceNameCallback callback) override;
 
+  void OpenFeedbackDialog() override;
+
   void OnAudioNodesChanged() override;
 
   void OnOutputNodeVolumeChanged(uint64_t node_id, int volume) override;

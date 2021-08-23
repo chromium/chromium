@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 import {$} from 'chrome://resources/js/util.m.js';
+
 import {DevicePage} from './device_page.js';
+import {FeedbackPage} from './feedback_page.js';
 import {InputPage} from './input_page.js';
 import {OutputPage} from './output_page.js';
 import {PageNavigator} from './page.js';
@@ -14,9 +16,11 @@ function initialize() {
   const devicePage = DevicePage.getInstance();
   const outputPage = OutputPage.getInstance();
   const inputPage = InputPage.getInstance();
+  const feedbackPage = FeedbackPage.getInstance();
   pageNavigator.addPage(devicePage);
   pageNavigator.addPage(outputPage);
   pageNavigator.addPage(inputPage);
+  pageNavigator.addPage(feedbackPage);
   window.addEventListener('hashchange', function() {
     const pageName = window.location.hash.substr(1);
     if ($(pageName)) {

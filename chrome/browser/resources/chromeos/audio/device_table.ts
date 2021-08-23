@@ -23,6 +23,8 @@ export class DeviceTable extends HTMLTableElement {
   setDevices(deviceMap: DeviceMap) {
     this.devices = deviceMap;
     this.redrawTable();
+    this.checkInactiveDevice();
+    this.checkMutedDevice();
   }
 
   setDeviceVolume(nodeId: number, volume: number) {
@@ -30,7 +32,7 @@ export class DeviceTable extends HTMLTableElement {
       (this.devices[nodeId] as DeviceData).volumeGainPercent = volume;
       const row = <HTMLTableRowElement>$(String(nodeId));
       if (row && row.cells[3]) {
-        row.cells[3].textContent = String(volume);
+        row.cells[3].textContent = String(volume) + '%';
       }
     }
   }
@@ -43,14 +45,19 @@ export class DeviceTable extends HTMLTableElement {
         row.cells[4].textContent = String(isMuted);
       }
     }
+    this.checkMutedDevice();
   }
 
   redrawTable() {
     this.removeChild(this.tbody);
     this.tbody = this.createTBody();
     this.appendChild(this.tbody);
-    for (const device of Object.values(this.devices)) {
-      this.addRow(device as DeviceData);
+    for (const item of Object.values(this.devices)) {
+      const device = item as DeviceData;
+      if (!(device.type === 'POST_MIX_LOOPBACK' ||
+            device.type === 'POST_DSP_LOOPBACK')) {
+        this.addRow(device);
+      }
     }
   }
 
@@ -66,8 +73,53 @@ export class DeviceTable extends HTMLTableElement {
     newType.appendChild(document.createTextNode(device.type));
     newActive.appendChild(document.createTextNode(String(device.isActive)));
     newVolume.appendChild(
-        document.createTextNode(String(device.volumeGainPercent)));
+        document.createTextNode(String(device.volumeGainPercent) + '%'));
     newMuted.appendChild(document.createTextNode(String(device.isMuted)));
+  }
+
+  checkMutedDevice() {
+    var hasMuted = false;
+    for (const item of Object.values(this.devices)) {
+      const device = item as DeviceData;
+      if (device.isMuted) {
+        hasMuted = true;
+      }
+    }
+    if (hasMuted) {
+      this.updateWarningBanner('muted');
+    } else {
+      $('warning-banner').hidden = true;
+    }
+  }
+
+  checkInactiveDevice() {
+    var allInactive = true;
+    for (const item of Object.values(this.devices)) {
+      const device = item as DeviceData;
+      if (device.isActive) {
+        allInactive = false;
+      }
+    }
+    if (allInactive) {
+      this.updateWarningBanner('inactive');
+    } else {
+      $('warning-banner').hidden = true;
+    }
+  }
+
+  updateWarningBanner(reason: string) {
+    $('warning-banner').hidden = false;
+    if (reason === 'inactive') {
+      $('warning-msg').innerHTML =
+          'Warning: There is no detected active audio device. ' +
+          'Have a device connected but cannot see it on the table or marked as active?';
+    }
+    if (reason === 'muted') {
+      $('warning-msg').innerHTML =
+          'Warning: One or more of your active devices is muted. ' +
+          'Please try unmuting it by toggling the audio setting. ' +
+          'Have unmuted the device but still see it marked as muted?';
+    }
   }
 }
 customElements.define('device-table', DeviceTable, {extends: 'table'});

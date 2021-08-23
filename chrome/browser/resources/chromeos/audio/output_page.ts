@@ -11,7 +11,7 @@ const AUDIOS = [
 ];
 
 export class OutputPage extends Page {
-  private testOutputFeedback: Map<string, null|boolean>;
+  testOutputFeedback: Map<string, null|boolean>;
   constructor() {
     super('output');
     this.testOutputFeedback = new Map();

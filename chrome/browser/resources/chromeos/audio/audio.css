@@ -46,6 +46,62 @@ table th {
   font-weight: normal;
 }
 
+/* Device Page */
+#devices {
+  margin: auto;
+  width: 70%;
+}
+#warning-banner {
+  background: rgb(255,255,102);
+  position: relative;
+}
+
+#warning-msg {
+  padding: 10px;
+}
+
+.feedback-btn {
+  background: none;
+  border: none;
+  color: blue;
+  font-size: 120%;
+  font-weight: bold;
+  padding: 0;
+  position: absolute;
+  text-decoration: underline;
+}
+
+.banner-feedback {
+  right: 645px;
+  top: 28px;
+}
+
+#test-buttons {
+  margin: auto;
+  position: relative;
+}
+
+#device-not-present {
+  position: absolute;
+}
+
+#input-btn {
+  font-weight: bold;
+  position: absolute;
+  top: 40px;
+}
+
+#output-btn {
+  font-weight: bold;
+  position: absolute;
+  top: 70px;
+}
+
+#no-device-feedback {
+  left: 300px;
+  top: 15px;
+}
+
 /* Output Page */
 #output-explainer {
   margin: auto;
@@ -170,4 +226,45 @@ table th {
   background: none;
   border: none;
   font-size: 120%;
+}
+
+/*Feedback Page*/
+#feedback {
+  margin: auto;
+  width: 50%;
+}
+
+#feedback-explainer {
+  margin-top: 30px;
+}
+
+.instruction {
+  margin-top: -15px;
+  padding-inline-start: 17px;
+}
+
+.feedback-list {
+  margin-bottom: 20px;
+}
+
+.feedback-step {
+  margin-bottom: 30px;
+}
+
+#copy-btn {
+  position: absolute;
+}
+
+#input-replay {
+  margin-top: 10px;
+}
+
+#audio-info {
+  margin-inline-start: 55px;
+}
+
+#download-btn {
+  bottom: 20px;
+  position: relative;
+  right: 5px;
 }

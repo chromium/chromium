@@ -28,12 +28,17 @@ interface PageHandlerFactory {
 interface PageHandler {
     // Request to get audio device information from the browser side.
     GetAudioDeviceInfo();
+
     // Request to get active output device name from the browser side.
     // Return nullopt if active output device does not exist.
     GetActiveOutputDeviceName() => (string? device_name);
+
     // Request to get active input device name from the browser side.
     // Return nullopt if active input device does not exist.
     GetActiveInputDeviceName() => (string? device_name);
+
+    // Request to open Chrome feedback dialog.
+    OpenFeedbackDialog();
 };
 
 // Interface for the WebUI page.
