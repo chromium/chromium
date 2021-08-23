@@ -461,22 +461,69 @@ struct Complicated {
 
   Simple simple_;
   static int objects_constructed_;
+  bool operator==(const Complicated& other) const {
+    return simple_.value_ == other.simple_.value_;
+  }
 };
 
 int Complicated::objects_constructed_ = 0;
+
+struct ComplicatedHashTraits : GenericHashTraits<Complicated> {
+  static const bool kEmptyValueIsZero = false;
+  static const Complicated EmptyValue() { return static_cast<Complicated>(0); }
+  static void ConstructDeletedValue(Complicated& slot, bool) {
+    slot = static_cast<Complicated>(-1);
+  }
+  static bool IsDeletedValue(const Complicated value) {
+    return value == static_cast<Complicated>(-1);
+  }
+};
 
 struct ComplicatedHashFunctions {
   static unsigned GetHash(const Complicated& key) { return key.simple_.value_; }
   static bool Equal(const Complicated& a, const Complicated& b) {
     return a.simple_.value_ == b.simple_.value_;
   }
+  static const bool safe_to_compare_to_empty_or_deleted = true;
 };
+
 struct ComplexityTranslator {
   static unsigned GetHash(const Simple& key) { return key.value_; }
   static bool Equal(const Complicated& a, const Simple& b) {
     return a.simple_.value_ == b.value_;
   }
 };
+
+template <typename Set>
+class ListOrLinkedHashSetHashFunctionsTest : public testing::Test {};
+
+using HashFunctionsSetTypes =
+    testing::Types<ListHashSet<Complicated, 256, ComplicatedHashFunctions>,
+                   ListHashSet<Complicated, 1, ComplicatedHashFunctions>,
+                   LinkedHashSet<Complicated,
+                                 ComplicatedHashTraits,
+                                 ComplicatedHashFunctions>>;
+TYPED_TEST_SUITE(ListOrLinkedHashSetHashFunctionsTest, HashFunctionsSetTypes);
+
+TYPED_TEST(ListOrLinkedHashSetHashFunctionsTest, CustomHashFunction) {
+  using Set = TypeParam;
+  Set set;
+  set.insert(Complicated(42));
+
+  typename Set::iterator it = set.find(Complicated(42));
+  EXPECT_NE(it, set.end());
+
+  it = set.find(Complicated(103));
+  EXPECT_EQ(it, set.end());
+
+  const Set& const_set(set);
+
+  typename Set::const_iterator const_iterator = const_set.find(Complicated(42));
+  EXPECT_NE(const_iterator, const_set.end());
+
+  const_iterator = const_set.find(Complicated(103));
+  EXPECT_EQ(const_iterator, const_set.end());
+}
 
 template <typename Set>
 class ListOrLinkedHashSetTranslatorTest : public testing::Test {};

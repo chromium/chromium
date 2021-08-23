@@ -340,7 +340,7 @@ class VectorBackedLinkedList {
   int64_t modifications_ = 0;
 #endif
 
-  template <typename T, typename U, typename V>
+  template <typename T, typename U, typename V, typename W>
   friend class LinkedHashSet;
   FRIEND_TEST_ALL_PREFIXES(VectorBackedLinkedListTest, Insert);
   FRIEND_TEST_ALL_PREFIXES(VectorBackedLinkedListTest, PushFront);
