@@ -46,7 +46,7 @@ void SVGModelObjectPainter::PaintOutline(const PaintInfo& paint_info) {
     return;
   if (layout_svg_model_object_.StyleRef().Visibility() != EVisibility::kVisible)
     return;
-  if (!layout_svg_model_object_.StyleRef().OutlineWidth())
+  if (!layout_svg_model_object_.StyleRef().HasOutline())
     return;
 
   PaintInfo outline_paint_info(paint_info);

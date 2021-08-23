@@ -63,6 +63,7 @@
 #include "third_party/blink/renderer/core/paint/css_mask_painter.h"
 #include "third_party/blink/renderer/core/paint/frame_paint_timing.h"
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
+#include "third_party/blink/renderer/core/paint/outline_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_paint_order_iterator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_painter.h"
@@ -144,11 +145,11 @@ static bool NeedsDecorationOutlineLayer(const PaintLayer& paint_layer,
   // so only 2/3 of the width is outside of the offset.
   const int outline_drawn_inside =
       style.OutlineStyleIsAuto()
-          ? std::ceil(style.FocusRingInnerStrokeWidth()) + 1
+          ? OutlinePainter::FocusRingWidthInsideBorderBox(style)
           : 0;
 
   return could_obscure_decorations && style.HasOutline() &&
-         (style.OutlineOffsetInt() - outline_drawn_inside) <
+         (style.OutlineOffset().ToInt() - outline_drawn_inside) <
              -min_border_width.ToInt();
 }
 

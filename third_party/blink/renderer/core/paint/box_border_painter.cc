@@ -857,12 +857,13 @@ BoxBorderPainter::BoxBorderPainter(GraphicsContext& context,
 BoxBorderPainter::BoxBorderPainter(GraphicsContext& context,
                                    const ComputedStyle& style,
                                    const PhysicalRect& border_rect,
+                                   int width,
                                    int inner_outset_x,
                                    int inner_outset_y)
     : context_(context),
       border_rect_(border_rect),
-      outer_outset_x_(inner_outset_x + style.OutlineWidthInt()),
-      outer_outset_y_(inner_outset_y + style.OutlineWidthInt()),
+      outer_outset_x_(inner_outset_x + width),
+      outer_outset_y_(inner_outset_y + width),
       style_(style),
       bleed_avoidance_(kBackgroundBleedNone),
       sides_to_include_(PhysicalBoxSides()),
@@ -876,7 +877,7 @@ BoxBorderPainter::BoxBorderPainter(GraphicsContext& context,
       has_alpha_(false) {
   DCHECK(style.HasOutline());
 
-  BorderEdge edge(style.OutlineWidthInt(),
+  BorderEdge edge(width,
                   style.VisitedDependentColor(GetCSSPropertyOutlineColor()),
                   style.OutlineStyle());
   for (auto& e : edges_)

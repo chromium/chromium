@@ -5,27 +5,36 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_OUTLINE_PAINTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_OUTLINE_PAINTER_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
 class ComputedStyle;
+class DisplayItemClient;
 class GraphicsContext;
 class Path;
+struct PaintInfo;
 struct PhysicalRect;
 
-class OutlinePainter {
+class CORE_EXPORT OutlinePainter {
   STATIC_ONLY(OutlinePainter);
 
  public:
-  static void PaintOutlineRects(GraphicsContext&,
+  static void PaintOutlineRects(const PaintInfo&,
+                                const DisplayItemClient&,
                                 const Vector<PhysicalRect>&,
                                 const ComputedStyle&);
 
   static void PaintFocusRingPath(GraphicsContext&,
                                  const Path&,
                                  const ComputedStyle&);
+
+  static int OutlineOutsetExtent(const ComputedStyle&);
+
+  // For pre-CompositeAfterPaint only.
+  static int FocusRingWidthInsideBorderBox(const ComputedStyle&);
 };
 
 }  // namespace blink

@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_viewport_container.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/paint/outline_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/style/shape_clip_path_operation.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
@@ -61,8 +62,8 @@ FloatRect SVGLayoutSupport::LocalVisualRect(const LayoutObject& object) {
     return FloatRect();
 
   FloatRect visual_rect = object.VisualRectInLocalSVGCoordinates();
-  if (int outline_outset = object.StyleRef().OutlineOutsetExtent())
-    visual_rect.Inflate(outline_outset);
+  if (int outset = OutlinePainter::OutlineOutsetExtent(object.StyleRef()))
+    visual_rect.Inflate(outset);
   return visual_rect;
 }
 

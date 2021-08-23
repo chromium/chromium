@@ -37,9 +37,10 @@ class BoxBorderPainter {
   static void PaintSingleRectOutline(GraphicsContext& context,
                                      const ComputedStyle& style,
                                      const PhysicalRect& border_rect,
+                                     int width,
                                      int inner_outset_x,
                                      int inner_outset_y) {
-    BoxBorderPainter(context, style, border_rect, inner_outset_x,
+    BoxBorderPainter(context, style, border_rect, width, inner_outset_x,
                      inner_outset_y)
         .Paint();
   }
@@ -81,6 +82,7 @@ class BoxBorderPainter {
   BoxBorderPainter(GraphicsContext&,
                    const ComputedStyle&,
                    const PhysicalRect& border_rect,
+                   int width,
                    int inner_outset_x,
                    int inner_outset_y);
 

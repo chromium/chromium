@@ -92,37 +92,6 @@ TEST_F(ComputedStyleTest, ClipPathEqual) {
   EXPECT_EQ(*style1, *style2);
 }
 
-TEST_F(ComputedStyleTest, FocusRingWidth) {
-  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
-  style->SetOutlineStyleIsAuto(static_cast<bool>(OutlineIsAuto::kOn));
-  EXPECT_EQ(3, style->FocusRingStrokeWidth());
-  EXPECT_EQ(2, style->FocusRingOuterStrokeWidth());
-  EXPECT_EQ(1, style->FocusRingInnerStrokeWidth());
-  style->SetEffectiveZoom(3.5);
-  style->SetOutlineWidth(4);
-  EXPECT_EQ(3.5, style->FocusRingStrokeWidth());
-}
-
-TEST_F(ComputedStyleTest, FocusRingOutset) {
-  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
-  style->SetOutlineStyle(EBorderStyle::kSolid);
-  style->SetOutlineStyleIsAuto(static_cast<bool>(OutlineIsAuto::kOn));
-  style->SetEffectiveZoom(4.75);
-  EXPECT_EQ(4, style->OutlineOutsetExtent());
-}
-
-TEST_F(ComputedStyleTest, OutlineWidthOffsetIntNoOverflow) {
-  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
-  style->SetOutlineWidth(1e20f);
-  style->SetOutlineOffset(LayoutUnit::Max());
-  style->SetOutlineStyle(EBorderStyle::kSolid);
-  EXPECT_EQ(LayoutUnit::Max().ToFloat(), style->OutlineWidth());
-  EXPECT_EQ(LayoutUnit::Max().ToInt(), style->OutlineWidthInt());
-  EXPECT_EQ(LayoutUnit::Max().ToFloat(), style->OutlineOffset());
-  EXPECT_EQ(LayoutUnit::Max().ToInt(), style->OutlineOffsetInt());
-  EXPECT_TRUE(style->HasOutline());
-}
-
 TEST_F(ComputedStyleTest, SVGStackingContext) {
   scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   style->UpdateIsStackingContextWithoutContainment(false, false, true);

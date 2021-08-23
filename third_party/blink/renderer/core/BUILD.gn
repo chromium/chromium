@@ -1519,6 +1519,7 @@ source_set("unit_tests") {
     "paint/ng/ng_text_fragment_painter_test.cc",
     "paint/nine_piece_image_grid_test.cc",
     "paint/object_paint_invalidator_test.cc",
+    "paint/outline_painter_test.cc",
     "paint/paint_and_raster_invalidation_test.cc",
     "paint/paint_and_raster_invalidation_test.h",
     "paint/paint_controller_paint_test.cc",

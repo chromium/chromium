@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_ink_overflow.h"
 #include "third_party/blink/renderer/core/paint/box_painter.h"
 #include "third_party/blink/renderer/core/paint/inline_flow_box_painter.h"
+#include "third_party/blink/renderer/core/paint/outline_painter.h"
 #include "third_party/blink/renderer/core/paint/rounded_border_geometry.h"
 #include "third_party/blink/renderer/core/style/shadow_list.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
@@ -1081,7 +1082,7 @@ inline void InlineFlowBox::AddOutlineVisualOverflow(
   if (!style.HasOutline())
     return;
 
-  logical_visual_overflow.Inflate(style.OutlineOutsetExtent());
+  logical_visual_overflow.Inflate(OutlinePainter::OutlineOutsetExtent(style));
 }
 
 inline void InlineFlowBox::AddTextBoxVisualOverflow(
