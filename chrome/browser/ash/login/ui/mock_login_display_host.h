@@ -93,6 +93,10 @@ class MockLoginDisplayHost : public LoginDisplayHost {
   MOCK_METHOD(void, AddObserver, (LoginDisplayHost::Observer*), (override));
   MOCK_METHOD(void, RemoveObserver, (LoginDisplayHost::Observer*), (override));
   MOCK_METHOD(SigninUI*, GetSigninUI, (), (override));
+  MOCK_METHOD(bool,
+              GetKeyboardRemappedPrefValue,
+              (const std::string& pref_name, int* value),
+              (const, final));
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockLoginDisplayHost);

@@ -30,6 +30,7 @@
 #include "chrome/browser/ash/login/user_board_view_mojo.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/login_screen_client_impl.h"
 #include "chrome/browser/ui/ash/system_tray_client_impl.h"
@@ -399,6 +400,14 @@ void LoginDisplayHostMojo::OnCancelPasswordChangedFlow() {
 
 void LoginDisplayHostMojo::ShowEnableConsumerKioskScreen() {
   NOTREACHED();
+}
+
+bool LoginDisplayHostMojo::GetKeyboardRemappedPrefValue(
+    const std::string& pref_name,
+    int* value) const {
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  return focused_pod_account_id_.is_valid() &&
+         known_user.GetIntegerPref(focused_pod_account_id_, pref_name, value);
 }
 
 void LoginDisplayHostMojo::HandleAuthenticateUserWithPasswordOrPin(

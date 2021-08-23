@@ -1082,6 +1082,13 @@ void LoginDisplayHostWebUI::OnNetworkErrorScreenShown() {
   session_observation_.Reset();
 }
 
+bool LoginDisplayHostWebUI::GetKeyboardRemappedPrefValue(
+    const std::string& pref_name,
+    int* value) const {
+  NOTIMPLEMENTED();
+  return false;
+}
+
 void LoginDisplayHostWebUI::PlayStartupSoundIfPossible() {
   if (!need_to_play_startup_sound_ || oobe_startup_sound_played_)
     return;

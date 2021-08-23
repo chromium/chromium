@@ -153,4 +153,10 @@ SigninUI* FakeLoginDisplayHost::GetSigninUI() {
   return nullptr;
 }
 
+bool FakeLoginDisplayHost::GetKeyboardRemappedPrefValue(
+    const std::string& pref_name,
+    int* value) const {
+  return false;
+}
+
 }  // namespace ash

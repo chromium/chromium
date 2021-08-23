@@ -71,6 +71,8 @@ class FakeLoginDisplayHost : public LoginDisplayHost {
   void AddObserver(LoginDisplayHost::Observer* observer) override;
   void RemoveObserver(LoginDisplayHost::Observer* observer) override;
   SigninUI* GetSigninUI() override;
+  bool GetKeyboardRemappedPrefValue(const std::string& pref_name,
+                                    int* value) const final;
 
  private:
   class FakeBaseScreen;

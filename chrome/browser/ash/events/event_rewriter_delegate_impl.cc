@@ -9,8 +9,6 @@
 #include "chrome/browser/ash/notifications/deprecation_notification_controller.h"
 #include "chrome/browser/extensions/extension_commands_global_registry.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
-#include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
@@ -57,12 +55,10 @@ bool EventRewriterDelegateImpl::GetKeyboardRemappedPrefValue(
   // If we're at the login screen, try to get the pref from the global prefs
   // dictionary.
   if (LoginDisplayHost::default_host() &&
-      LoginDisplayHost::default_host()->GetOobeUI() &&
-      LoginDisplayHost::default_host()
-          ->GetOobeUI()
-          ->signin_screen_handler()
-          ->GetKeyboardRemappedPrefValue(pref_name, value))
+      LoginDisplayHost::default_host()->GetKeyboardRemappedPrefValue(pref_name,
+                                                                     value)) {
     return true;
+  }
   const PrefService* pref_service = GetPrefService();
   if (!pref_service)
     return false;

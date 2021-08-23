@@ -138,10 +138,6 @@ class SigninScreenHandler
   // configurations like MSAN, where it otherwise triggers on every run.
   void SetOfflineTimeoutForTesting(base::TimeDelta offline_timeout);
 
-  // Gets the keyboard remapped pref value for `pref_name` key. Returns true if
-  // successful, otherwise returns false.
-  bool GetKeyboardRemappedPrefValue(const std::string& pref_name, int* value);
-
  private:
   friend class GaiaScreenHandler;
   friend class ash::LoginDisplayHostMojo;

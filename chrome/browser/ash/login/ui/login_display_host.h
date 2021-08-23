@@ -226,6 +226,12 @@ class LoginDisplayHost {
   // Result should not be stored.
   virtual SigninUI* GetSigninUI() = 0;
 
+  // Gets the keyboard remapped pref value for `pref_name` key. Returns true if
+  // successful, otherwise returns false.
+  // TODO (crbug.com/1168114): Double check if this method belongs here.
+  virtual bool GetKeyboardRemappedPrefValue(const std::string& pref_name,
+                                            int* value) const = 0;
+
  protected:
   LoginDisplayHost();
   virtual ~LoginDisplayHost();

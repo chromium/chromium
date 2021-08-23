@@ -388,16 +388,6 @@ void SigninScreenHandler::SetOfflineTimeoutForTesting(
   offline_timeout_for_test_ = offline_timeout;
 }
 
-// TODO (crbug.com/1168114): Such method should be implemented in
-// native-view-based UI, and be removed here.
-bool SigninScreenHandler::GetKeyboardRemappedPrefValue(
-    const std::string& pref_name,
-    int* value) {
-  return focused_pod_account_id_ && focused_pod_account_id_->is_valid() &&
-         user_manager::known_user::GetIntegerPref(*focused_pod_account_id_,
-                                                  pref_name, value);
-}
-
 // SigninScreenHandler, private: -----------------------------------------------
 
 void SigninScreenHandler::ShowImpl() {

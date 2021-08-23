@@ -96,6 +96,8 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   void StartBrowserDataMigration() override;
   void AddObserver(LoginDisplayHost::Observer* observer) override;
   void RemoveObserver(LoginDisplayHost::Observer* observer) override;
+  bool GetKeyboardRemappedPrefValue(const std::string& pref_name,
+                                    int* value) const final;
 
   // session_manager::SessionManagerObserver:
   void OnNetworkErrorScreenShown() override;
