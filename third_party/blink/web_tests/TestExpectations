@@ -1656,8 +1656,6 @@ crbug.com/1170052 external/wpt/mediacapture-streams/MediaStreamTrack-MediaElemen
 crbug.com/1174937 virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStream-clone.https.html [ Crash ]
 crbug.com/1174937 external/wpt/mediacapture-streams/MediaStream-clone.https.html [ Crash ]
 
-crbug.com/1178292 fast/mediacapturefromelement/CanvasCaptureMediaStream-canvas-initially-too-large.html [ Crash ]
-
 crbug.com/766135 fast/dom/Window/redirect-with-timer.html [ Pass Timeout ]
 
 # Ref tests that needs investigation.
@@ -7107,7 +7105,6 @@ crbug.com/1236466 inspector-protocol/runtime/runtime-execution-contexts-events.j
 # Sheriff 2021-08/05
 crbug.com/1230534 external/wpt/webrtc/simulcast/getStats.https.html [ Failure Pass Timeout ]
 crbug.com/1237132 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-pattern-over-gradient.html [ Pass Timeout ]
-crbug.com/1178292 [ Mac ] fast/mediacapturefromelement/CanvasCaptureMediaStream-set-size-too-large.html [ Pass Timeout ]
 
 crbug.com/1236774 external/wpt/css/css-contain/content-visibility/slot-content-visibility-1-crash.html [ Crash ]
 crbug.com/1236774 external/wpt/css/css-contain/content-visibility/slot-content-visibility-2-crash.html [ Crash ]

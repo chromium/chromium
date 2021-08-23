@@ -1411,6 +1411,23 @@ gfx::Size VideoFrame::DetermineAlignedSize(VideoPixelFormat format,
   return adjusted;
 }
 
+bool VideoFrame::IsValidSize(const gfx::Size& coded_size,
+                             const gfx::Rect& visible_rect,
+                             const gfx::Size& natural_size) {
+  int coded_size_area = coded_size.GetCheckedArea().ValueOrDefault(INT_MAX);
+  int natural_size_area = natural_size.GetCheckedArea().ValueOrDefault(INT_MAX);
+  static_assert(limits::kMaxCanvas < INT_MAX, "");
+  return !(coded_size_area > limits::kMaxCanvas ||
+           coded_size.width() > limits::kMaxDimension ||
+           coded_size.height() > limits::kMaxDimension ||
+           visible_rect.x() < 0 || visible_rect.y() < 0 ||
+           visible_rect.right() > coded_size.width() ||
+           visible_rect.bottom() > coded_size.height() ||
+           natural_size_area > limits::kMaxCanvas ||
+           natural_size.width() > limits::kMaxDimension ||
+           natural_size.height() > limits::kMaxDimension);
+}
+
 // static
 bool VideoFrame::IsValidConfigInternal(VideoPixelFormat format,
                                        FrameControlType frame_control_type,
@@ -1418,17 +1435,7 @@ bool VideoFrame::IsValidConfigInternal(VideoPixelFormat format,
                                        const gfx::Rect& visible_rect,
                                        const gfx::Size& natural_size) {
   // Check maximum limits for all formats.
-  int coded_size_area = coded_size.GetCheckedArea().ValueOrDefault(INT_MAX);
-  int natural_size_area = natural_size.GetCheckedArea().ValueOrDefault(INT_MAX);
-  static_assert(limits::kMaxCanvas < INT_MAX, "");
-  if (coded_size_area > limits::kMaxCanvas ||
-      coded_size.width() > limits::kMaxDimension ||
-      coded_size.height() > limits::kMaxDimension || visible_rect.x() < 0 ||
-      visible_rect.y() < 0 || visible_rect.right() > coded_size.width() ||
-      visible_rect.bottom() > coded_size.height() ||
-      natural_size_area > limits::kMaxCanvas ||
-      natural_size.width() > limits::kMaxDimension ||
-      natural_size.height() > limits::kMaxDimension) {
+  if (!IsValidSize(coded_size, visible_rect, natural_size)) {
     return false;
   }
 

@@ -200,6 +200,13 @@ void CanvasCaptureHandler::SendNewFrame(
   if (!image)
     return;
 
+  const auto size = gfx::Size(image->Size());
+  if (!media::VideoFrame::IsValidSize(size, gfx::Rect(size), size)) {
+    DVLOG(1) << __func__ << " received frame with invalid size "
+             << size.ToString();
+    return;
+  }
+
   if (!image->IsTextureBacked()) {
     // Initially try accessing pixels directly if they are in memory.
     sk_sp<SkImage> sk_image = image->PaintImageForCurrentFrame().GetSwSkImage();

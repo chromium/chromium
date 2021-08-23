@@ -121,6 +121,13 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   VideoFrame(const VideoFrame&) = delete;
   VideoFrame& operator=(const VideoFrame&) = delete;
 
+  // Returns true if size is valid for a VideoFrame. This method returns false
+  // if the size is empty, even though it is possible to create a zero-sized
+  // VideoFrame if the VideoPixelFormat is PIXEL_FORMAT_UNKNOWN.
+  static bool IsValidSize(const gfx::Size& coded_size,
+                          const gfx::Rect& visible_rect,
+                          const gfx::Size& natural_size);
+
   // Returns true if frame configuration is valid.
   static bool IsValidConfig(VideoPixelFormat format,
                             StorageType storage_type,

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/mediacapturefromelement/html_canvas_element_capture.h"
 
 #include <memory>
+#include "media/base/video_frame.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -58,6 +59,12 @@ MediaStream* HTMLCanvasElementCapture::captureStream(
   LocalFrame* frame = ToLocalFrameIfNotDetached(script_state->GetContext());
   MediaStreamComponent* component = nullptr;
   const gfx::Size size(element.width(), element.height());
+  if (!media::VideoFrame::IsValidSize(size, gfx::Rect(size), size)) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      "Current canvas size is not supported by "
+                                      "CanvasCaptureMediaStreamTrack.");
+    return nullptr;
+  }
   std::unique_ptr<CanvasCaptureHandler> handler;
   if (given_frame_rate) {
     handler = CanvasCaptureHandler::CreateCanvasCaptureHandler(
