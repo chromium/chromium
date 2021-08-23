@@ -307,7 +307,13 @@ IN_PROC_BROWSER_TEST_F(LoginOfflineTest, PRE_AuthOffline) {
   offline_login_test_mixin_.PrepareOfflineLogin();
 }
 
-IN_PROC_BROWSER_TEST_F(LoginOfflineTest, AuthOffline) {
+// crbug.com/1240578: test is flaky on chromeos.
+#if defined(OS_CHROMEOS)
+#define MAYBE_AuthOffline DISABLED_AuthOffline
+#else
+#define MAYBE_AuthOffline AuthOffline
+#endif
+IN_PROC_BROWSER_TEST_F(LoginOfflineTest, MAYBE_AuthOffline) {
   network_portal_detector_.SimulateDefaultNetworkState(
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_OFFLINE);
   offline_login_test_mixin_.GoOffline();
