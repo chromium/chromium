@@ -332,15 +332,26 @@ void RuleSet::AddRule(StyleRule* rule,
     visited_dependent_rules_.push_back(visited_dependent);
   }
 
-  if (RuntimeEnabledFeatures::CSSCascadeLayersEnabled()) {
-    if (!cascade_layer)
-      cascade_layer = EnsureRootLayer();
-    if (!layer_intervals_.size() ||
-        layer_intervals_.back().layer != cascade_layer) {
-      layer_intervals_.push_back(
-          LayerInterval(cascade_layer, rule_data->GetPosition()));
-    }
-  }
+  if (RuntimeEnabledFeatures::CSSCascadeLayersEnabled())
+    AddRuleToLayerIntervals(cascade_layer, rule_data->GetPosition());
+}
+
+void RuleSet::AddRuleToLayerIntervals(const CascadeLayer* cascade_layer,
+                                      unsigned position) {
+  // Add a new interval only if the current layer is different from the last
+  // interval's layer. Note that the implicit outer layer may also be
+  // represented by a nullptr.
+  const CascadeLayer* last_interval_layer =
+      layer_intervals_.size() ? layer_intervals_.back().layer.Get()
+                              : implicit_outer_layer_.Get();
+  if (!cascade_layer)
+    cascade_layer = implicit_outer_layer_;
+  if (cascade_layer == last_interval_layer)
+    return;
+
+  if (!cascade_layer)
+    cascade_layer = EnsureImplicitOuterLayer();
+  layer_intervals_.push_back(LayerInterval(cascade_layer, position));
 }
 
 void RuleSet::AddPageRule(StyleRulePage* rule) {
@@ -425,18 +436,14 @@ void RuleSet::AddChildRules(const HeapVector<Member<StyleRuleBase>>& rules,
       AddChildRules(container_rule->ChildRules(), medium, add_rule_flags,
                     &container_rule->GetContainerQuery(), cascade_layer);
     } else if (auto* layer_block_rule = DynamicTo<StyleRuleLayerBlock>(rule)) {
-      if (!cascade_layer)
-        cascade_layer = EnsureRootLayer();
       CascadeLayer* sub_layer =
-          cascade_layer->GetOrAddSubLayer(layer_block_rule->GetName());
+          GetOrAddSubLayer(cascade_layer, layer_block_rule->GetName());
       AddChildRules(layer_block_rule->ChildRules(), medium, add_rule_flags,
                     container_query, sub_layer);
     } else if (auto* layer_statement_rule =
                    DynamicTo<StyleRuleLayerStatement>(rule)) {
-      if (!cascade_layer)
-        cascade_layer = EnsureRootLayer();
       for (const auto& layer_name : layer_statement_rule->GetNames())
-        cascade_layer->GetOrAddSubLayer(layer_name);
+        GetOrAddSubLayer(cascade_layer, layer_name);
     }
   }
 }
@@ -461,11 +468,6 @@ void RuleSet::AddRulesFromSheet(StyleSheetContents* sheet,
 
   DCHECK(sheet);
 
-  if (RuntimeEnabledFeatures::CSSCascadeLayersEnabled()) {
-    if (!cascade_layer)
-      cascade_layer = EnsureRootLayer();
-  }
-
   const HeapVector<Member<StyleRuleImport>>& import_rules =
       sheet->ImportRules();
   for (unsigned i = 0; i < import_rules.size(); ++i) {
@@ -473,7 +475,7 @@ void RuleSet::AddRulesFromSheet(StyleSheetContents* sheet,
     CascadeLayer* import_layer = cascade_layer;
     if (import_rule->IsLayered()) {
       import_layer =
-          cascade_layer->GetOrAddSubLayer(import_rule->GetLayerName());
+          GetOrAddSubLayer(cascade_layer, import_rule->GetLayerName());
     }
     if (import_rule->GetStyleSheet() &&
         MatchMediaForAddRules(medium, import_rule->MediaQueries())) {
@@ -495,6 +497,13 @@ void RuleSet::AddStyleRule(StyleRule* rule, AddRuleFlags add_rule_flags) {
     AddRule(rule, selector_index, add_rule_flags, nullptr /* container_query */,
             nullptr /* cascade_layer */);
   }
+}
+
+CascadeLayer* RuleSet::GetOrAddSubLayer(CascadeLayer* cascade_layer,
+                                        const StyleRuleBase::LayerName& name) {
+  if (!cascade_layer)
+    cascade_layer = EnsureImplicitOuterLayer();
+  return cascade_layer->GetOrAddSubLayer(name);
 }
 
 void RuleSet::CompactPendingRules(PendingRuleMap& pending_map,
@@ -558,14 +567,16 @@ const ContainerQuery* RuleData::GetContainerQuery() const {
   return nullptr;
 }
 
-const CascadeLayer& RuleSet::GetLayerForTest(const RuleData& rule) const {
+const CascadeLayer* RuleSet::GetLayerForTest(const RuleData& rule) const {
   DCHECK(RuntimeEnabledFeatures::CSSCascadeLayersEnabled());
-  DCHECK(layer_intervals_.size());
+  if (!layer_intervals_.size() ||
+      layer_intervals_[0].start_position > rule.GetPosition())
+    return implicit_outer_layer_;
   for (unsigned i = 1; i < layer_intervals_.size(); ++i) {
     if (layer_intervals_[i].start_position > rule.GetPosition())
-      return *layer_intervals_[i - 1].layer;
+      return layer_intervals_[i - 1].layer;
   }
-  return *layer_intervals_.back().layer;
+  return layer_intervals_.back().layer;
 }
 
 void RuleData::Trace(Visitor* visitor) const {
@@ -630,7 +641,7 @@ void RuleSet::Trace(Visitor* visitor) const {
   visitor->Trace(scroll_timeline_rules_);
   visitor->Trace(slotted_pseudo_element_rules_);
   visitor->Trace(pending_rules_);
-  visitor->Trace(root_layer_);
+  visitor->Trace(implicit_outer_layer_);
   visitor->Trace(layer_intervals_);
 #ifndef NDEBUG
   visitor->Trace(all_rules_);

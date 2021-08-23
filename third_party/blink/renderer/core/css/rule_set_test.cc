@@ -353,24 +353,24 @@ class RuleSetCascadeLayerTest : public SimTest,
                         kRuleHasNoSpecialState);
   }
 
-  const CascadeLayer& GetLayerByRule(const RuleData& rule) {
+  const CascadeLayer* GetLayerByRule(const RuleData& rule) {
     return GetRuleSet().GetLayerForTest(rule);
   }
 
-  const CascadeLayer& GetLayerByName(const LayerName name) {
-    return *const_cast<CascadeLayer&>(ImplicitOuterLayer())
-                .GetOrAddSubLayer(name);
+  const CascadeLayer* GetLayerByName(const LayerName name) {
+    return const_cast<CascadeLayer*>(ImplicitOuterLayer())
+        ->GetOrAddSubLayer(name);
   }
 
-  const CascadeLayer& ImplicitOuterLayer() {
-    return GetRuleSet().CascadeLayers();
+  const CascadeLayer* ImplicitOuterLayer() {
+    return GetRuleSet().implicit_outer_layer_;
   }
 
   const RuleData& GetIdRule(const AtomicString& key) {
     return *GetRuleSet().IdRules(key)->front();
   }
 
-  const CascadeLayer& GetLayerByIdRule(const AtomicString& key) {
+  const CascadeLayer* GetLayerByIdRule(const AtomicString& key) {
     return GetLayerByRule(GetIdRule(key));
   }
 
@@ -378,6 +378,20 @@ class RuleSetCascadeLayerTest : public SimTest,
     return GetRuleSet().CascadeLayers().ToStringForTesting();
   }
 };
+
+TEST_F(RuleSetCascadeLayerTest, NoLayer) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <!doctype html>
+    <style>
+      #no-layers { }
+    </style>
+  )HTML");
+
+  EXPECT_FALSE(GetRuleSet().HasCascadeLayers());
+  EXPECT_FALSE(ImplicitOuterLayer());
+}
 
 TEST_F(RuleSetCascadeLayerTest, Basic) {
   SimRequest main_resource("https://example.com/", "text/html");
@@ -401,15 +415,15 @@ TEST_F(RuleSetCascadeLayerTest, Basic) {
 
   EXPECT_EQ("foo,foo.bar", LayersToString());
 
-  EXPECT_EQ(&ImplicitOuterLayer(), &GetLayerByIdRule("zero"));
-  EXPECT_EQ(&GetLayerByName(LayerName({"foo"})), &GetLayerByIdRule("one"));
-  EXPECT_EQ(&GetLayerByName(LayerName({"foo"})), &GetLayerByIdRule("two"));
-  EXPECT_EQ(&GetLayerByName(LayerName({"foo", "bar"})),
-            &GetLayerByIdRule("three"));
-  EXPECT_EQ(&GetLayerByName(LayerName({"foo", "bar"})),
-            &GetLayerByIdRule("four"));
-  EXPECT_EQ(&GetLayerByName(LayerName({"foo"})), &GetLayerByIdRule("five"));
-  EXPECT_EQ(&ImplicitOuterLayer(), &GetLayerByIdRule("six"));
+  EXPECT_EQ(ImplicitOuterLayer(), GetLayerByIdRule("zero"));
+  EXPECT_EQ(GetLayerByName(LayerName({"foo"})), GetLayerByIdRule("one"));
+  EXPECT_EQ(GetLayerByName(LayerName({"foo"})), GetLayerByIdRule("two"));
+  EXPECT_EQ(GetLayerByName(LayerName({"foo", "bar"})),
+            GetLayerByIdRule("three"));
+  EXPECT_EQ(GetLayerByName(LayerName({"foo", "bar"})),
+            GetLayerByIdRule("four"));
+  EXPECT_EQ(GetLayerByName(LayerName({"foo"})), GetLayerByIdRule("five"));
+  EXPECT_EQ(ImplicitOuterLayer(), GetLayerByIdRule("six"));
 }
 
 TEST_F(RuleSetCascadeLayerTest, NestingAndFlatListName) {
@@ -433,14 +447,12 @@ TEST_F(RuleSetCascadeLayerTest, NestingAndFlatListName) {
 
   EXPECT_EQ("foo,foo.bar", LayersToString());
 
-  EXPECT_EQ(&GetLayerByName(LayerName({"foo", "bar"})),
-            &GetLayerByIdRule("zero"));
-  EXPECT_EQ(&GetLayerByName(LayerName({"foo", "bar"})),
-            &GetLayerByIdRule("one"));
-  EXPECT_EQ(&GetLayerByName(LayerName({"foo", "bar"})),
-            &GetLayerByIdRule("two"));
-  EXPECT_EQ(&GetLayerByName(LayerName({"foo", "bar"})),
-            &GetLayerByIdRule("three"));
+  EXPECT_EQ(GetLayerByName(LayerName({"foo", "bar"})),
+            GetLayerByIdRule("zero"));
+  EXPECT_EQ(GetLayerByName(LayerName({"foo", "bar"})), GetLayerByIdRule("one"));
+  EXPECT_EQ(GetLayerByName(LayerName({"foo", "bar"})), GetLayerByIdRule("two"));
+  EXPECT_EQ(GetLayerByName(LayerName({"foo", "bar"})),
+            GetLayerByIdRule("three"));
 }
 
 TEST_F(RuleSetCascadeLayerTest, LayerStatementOrdering) {
@@ -464,10 +476,9 @@ TEST_F(RuleSetCascadeLayerTest, LayerStatementOrdering) {
 
   EXPECT_EQ("foo,foo.baz,bar", LayersToString());
 
-  EXPECT_EQ(&GetLayerByName(LayerName({"bar"})), &GetLayerByIdRule("zero"));
-  EXPECT_EQ(&GetLayerByName(LayerName({"foo"})), &GetLayerByIdRule("one"));
-  EXPECT_EQ(&GetLayerByName(LayerName({"foo", "baz"})),
-            &GetLayerByIdRule("two"));
+  EXPECT_EQ(GetLayerByName(LayerName({"bar"})), GetLayerByIdRule("zero"));
+  EXPECT_EQ(GetLayerByName(LayerName({"foo"})), GetLayerByIdRule("one"));
+  EXPECT_EQ(GetLayerByName(LayerName({"foo", "baz"})), GetLayerByIdRule("two"));
 }
 
 TEST_F(RuleSetCascadeLayerTest, LayeredImport) {
@@ -495,13 +506,11 @@ TEST_F(RuleSetCascadeLayerTest, LayeredImport) {
 
   test::RunPendingTasks();
 
-  EXPECT_EQ(&GetLayerByName(LayerName({"foo"})), &GetLayerByIdRule("zero"));
-  EXPECT_EQ(&GetLayerByName(LayerName({"foo", "bar"})),
-            &GetLayerByIdRule("one"));
-  EXPECT_EQ(&GetLayerByName(LayerName({"foo", "bar"})),
-            &GetLayerByIdRule("two"));
-  EXPECT_EQ(&GetLayerByName(LayerName({"foo", "bar"})),
-            &GetLayerByIdRule("three"));
+  EXPECT_EQ(GetLayerByName(LayerName({"foo"})), GetLayerByIdRule("zero"));
+  EXPECT_EQ(GetLayerByName(LayerName({"foo", "bar"})), GetLayerByIdRule("one"));
+  EXPECT_EQ(GetLayerByName(LayerName({"foo", "bar"})), GetLayerByIdRule("two"));
+  EXPECT_EQ(GetLayerByName(LayerName({"foo", "bar"})),
+            GetLayerByIdRule("three"));
 }
 
 }  // namespace blink

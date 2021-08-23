@@ -342,9 +342,10 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
     return slotted_pseudo_element_rules_;
   }
 
+  bool HasCascadeLayers() const { return implicit_outer_layer_; }
   const CascadeLayer& CascadeLayers() const {
-    DCHECK(root_layer_);
-    return *root_layer_;
+    DCHECK(implicit_outer_layer_);
+    return *implicit_outer_layer_;
   }
 
   unsigned RuleCount() const { return rule_count_; }
@@ -440,13 +441,18 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
     return pending_rules_.Get();
   }
 
-  CascadeLayer* EnsureRootLayer() {
-    if (!root_layer_)
-      root_layer_ = MakeGarbageCollected<CascadeLayer>(g_empty_atom);
-    return root_layer_;
+  CascadeLayer* EnsureImplicitOuterLayer() {
+    if (!implicit_outer_layer_)
+      implicit_outer_layer_ = MakeGarbageCollected<CascadeLayer>();
+    return implicit_outer_layer_;
   }
 
-  const CascadeLayer& GetLayerForTest(const RuleData&) const;
+  CascadeLayer* GetOrAddSubLayer(CascadeLayer*,
+                                 const StyleRuleBase::LayerName&);
+  void AddRuleToLayerIntervals(const CascadeLayer*, unsigned position);
+
+  // May return nullptr for the implicit outer layer.
+  const CascadeLayer* GetLayerForTest(const RuleData&) const;
 
   CompactRuleMap id_rules_;
   CompactRuleMap class_rules_;
@@ -474,7 +480,9 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   unsigned rule_count_;
   Member<PendingRuleMaps> pending_rules_;
 
-  Member<CascadeLayer> root_layer_;
+  // nullptr if the stylesheet doesn't explicitly declare any layer.
+  Member<CascadeLayer> implicit_outer_layer_;
+  // Empty vector if the stylesheet doesn't explicitly declare any layer.
   HeapVector<LayerInterval> layer_intervals_;
 
 #ifndef NDEBUG
