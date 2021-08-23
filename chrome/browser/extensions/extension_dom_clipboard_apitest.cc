@@ -95,7 +95,13 @@ bool ClipboardApiTest::ExecuteScriptInSelectedTab(const std::string& script) {
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(ClipboardApiTest, Extension) {
+// Flaky on Mac. See https://crbug.com/1242373.
+#if defined(OS_MAC)
+#define MAYBE_Extension DISABLED_Extension
+#else
+#define MAYBE_Extension Extension
+#endif
+IN_PROC_BROWSER_TEST_F(ClipboardApiTest, MAYBE_Extension) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("clipboard/extension")) << message_;
 }
