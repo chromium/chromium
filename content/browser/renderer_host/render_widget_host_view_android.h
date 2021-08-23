@@ -396,6 +396,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
 
  private:
   friend class RenderWidgetHostViewAndroidTest;
+  friend class RenderWidgetHostViewAndroidRotationTest;
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessBrowserTest,
                            GestureManagerListensToChildFrames);
 
@@ -470,6 +471,10 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   void OnUpdateScopedSelectionHandles();
 
   void HandleSwipeToMoveCursorGestureAck(const blink::WebGestureEvent& event);
+
+  void BeginRotationBatching();
+  void EndRotationBatching();
+  void BeginRotationEmbed();
 
   bool is_showing_;
 
@@ -562,6 +567,9 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
 
   viz::ParentLocalSurfaceIdAllocator local_surface_id_allocator_;
   bool in_rotation_ = false;
+  // Tracks whether rotation was due to a fullscreen transition. Upon exiting
+  // fullscren the subsequent rotation order will be different.
+  bool fullscreen_rotation_ = false;
   // Tracks the time at which rotation started, along with the targeted
   // viz::LocalSurfaceId which would first embed the new rotation. This is a
   // deque because it is possible that one rotation may be interrupted by
