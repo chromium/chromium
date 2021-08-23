@@ -218,6 +218,12 @@ CSSValue* AtRuleDescriptorParser::ParseFontFaceDescriptor(
   range.ConsumeWhitespace();
   switch (id) {
     case AtRuleDescriptorID::FontFamily:
+      // In order to avoid confusion, <family-name> does not accept unquoted
+      // <generic-family> keywords and general CSS keywords.
+      // ConsumeGenericFamily will take care of excluding the former while the
+      // ConsumeFamilyName will take care of excluding the latter.
+      // See https://drafts.csswg.org/css-fonts/#family-name-syntax,
+      // TODO(crbug.com/1065468): Handle system-ui
       if (css_parsing_utils::ConsumeGenericFamily(range))
         return nullptr;
       parsed_value = css_parsing_utils::ConsumeFamilyName(range);

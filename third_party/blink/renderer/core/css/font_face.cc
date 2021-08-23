@@ -195,9 +195,9 @@ FontFace* FontFace::Create(Document* document,
   const CSSPropertyValueSet& properties = font_face_rule->Properties();
 
   // Obtain the font-family property and the src property. Both must be defined.
-  const CSSValue* family =
-      properties.GetPropertyCSSValue(AtRuleDescriptorID::FontFamily);
-  if (!family || (!family->IsFontFamilyValue() && !family->IsIdentifierValue()))
+  auto* family = DynamicTo<CSSFontFamilyValue>(
+      properties.GetPropertyCSSValue(AtRuleDescriptorID::FontFamily));
+  if (!family)
     return nullptr;
   const CSSValue* src = properties.GetPropertyCSSValue(AtRuleDescriptorID::Src);
   if (!src || !src->IsValueList())
@@ -205,9 +205,9 @@ FontFace* FontFace::Create(Document* document,
 
   FontFace* font_face =
       MakeGarbageCollected<FontFace>(document->GetExecutionContext());
+  font_face->SetFamilyValue(*family);
 
-  if (font_face->SetFamilyValue(*family) &&
-      font_face->SetPropertyFromStyle(properties,
+  if (font_face->SetPropertyFromStyle(properties,
                                       AtRuleDescriptorID::FontStyle) &&
       font_face->SetPropertyFromStyle(properties,
                                       AtRuleDescriptorID::FontWeight) &&
@@ -463,39 +463,8 @@ bool FontFace::SetPropertyValue(const CSSValue* value,
   return true;
 }
 
-bool FontFace::SetFamilyValue(const CSSValue& value) {
-  AtomicString family;
-  if (auto* family_value = DynamicTo<CSSFontFamilyValue>(value)) {
-    family = family_value->Value();
-  } else if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
-    // We need to use the raw text for all the generic family types, since
-    // @font-face is a way of actually defining what font to use for those
-    // types.
-    // TODO(crbug.com/1065468): Is this code ever executed? A nullptr is
-    // returned by AtRuleDescriptorParser::ParseFontFaceDescriptor if
-    // ConsumeGenericFamily succeeds.
-    switch (identifier_value->GetValueID()) {
-      case CSSValueID::kSerif:
-        family = font_family_names::kSerif;
-        break;
-      case CSSValueID::kSansSerif:
-        family = font_family_names::kSansSerif;
-        break;
-      case CSSValueID::kCursive:
-        family = font_family_names::kCursive;
-        break;
-      case CSSValueID::kFantasy:
-        family = font_family_names::kFantasy;
-        break;
-      case CSSValueID::kMonospace:
-        family = font_family_names::kMonospace;
-        break;
-      default:
-        return false;
-    }
-  }
-  family_ = family;
-  return true;
+void FontFace::SetFamilyValue(const CSSFontFamilyValue& family_value) {
+  family_ = family_value.Value();
 }
 
 String FontFace::status() const {

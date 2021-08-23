@@ -46,6 +46,7 @@
 namespace blink {
 
 class CSSFontFace;
+class CSSFontFamilyValue;
 class CSSPropertyValueSet;
 class CSSValue;
 class DOMArrayBuffer;
@@ -175,7 +176,7 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
                              ExceptionState* = nullptr);
   bool SetPropertyFromStyle(const CSSPropertyValueSet&, AtRuleDescriptorID);
   bool SetPropertyValue(const CSSValue*, AtRuleDescriptorID);
-  bool SetFamilyValue(const CSSValue&);
+  void SetFamilyValue(const CSSFontFamilyValue&);
   ScriptPromise FontStatusPromise(ScriptState*);
   void RunCallbacks();
 
