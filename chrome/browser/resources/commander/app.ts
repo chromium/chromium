@@ -9,11 +9,26 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BrowserProxy, BrowserProxyImpl} from './browser_proxy.js';
+import {BrowserProxy} from './browser_proxy.js';
 import {CommanderOptionElement} from './option.js';
 import {Action, Entity, Option, ViewModel} from './types.js';
 
-export class CommanderAppElement extends PolymerElement {
+/** Event interface for dom-repeat */
+interface OptionRepeaterEvent extends CustomEvent {
+  model: {
+    item: Option,
+    index: number,
+  }
+}
+
+interface CommanderAppElement {
+  $: {
+    input: HTMLInputElement,
+    inputRow: HTMLElement,
+  }
+}
+
+class CommanderAppElement extends PolymerElement {
   static get is() {
     return 'commander-app';
   }
@@ -24,32 +39,30 @@ export class CommanderAppElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** @private {!Array<!Option>} */
       options_: Array,
-      /** @private */
       focusedIndex_: {
         type: Number,
         notify: true,
         observer: 'onFocusedIndexChanged_',
       },
-      /** @private {?string} */
       promptText_: String,
     };
   }
 
+  private options_: Option[];
+  private focusedIndex_: number;
+  private promptText_: string|null;
+  private browserProxy_: BrowserProxy;
+  private resultSetId_: number|null;
+  private savedInput_: string;
+
   constructor() {
     super();
-    /** @private {!BrowserProxy} */
-    this.browserProxy_ = BrowserProxyImpl.getInstance();
-
-    /** @type {?number} */
+    this.browserProxy_ = BrowserProxy.getInstance();
     this.resultSetId_ = null;
-
-    /** @type {!string} */
     this.savedInput_ = '';
   }
 
-  /** @override */
   ready() {
     super.ready();
     addWebUIListener('view-model-updated', this.onViewModelUpdated_.bind(this));
@@ -58,9 +71,8 @@ export class CommanderAppElement extends PolymerElement {
 
   /**
    * Resets the UI for a new session.
-   * @private
    */
-  initialize_() {
+  private initialize_() {
     this.options_ = [];
     this.$.input.value = '';
     this.focusedIndex_ = -1;
@@ -69,11 +81,7 @@ export class CommanderAppElement extends PolymerElement {
     this.savedInput_ = '';
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onKeydown_(e) {
+  private onKeydown_(e: KeyboardEvent) {
     if (e.key === 'Escape') {
       this.browserProxy_.dismiss();
       return;
@@ -101,18 +109,11 @@ export class CommanderAppElement extends PolymerElement {
     }
   }
 
-  /**
-   * @private
-   */
-  onInput_() {
+  private onInput_() {
     this.browserProxy_.textChanged(this.$.input.value);
   }
 
-  /**
-   * @param {!ViewModel} viewModel
-   * @private
-   */
-  onViewModelUpdated_(viewModel) {
+  private onViewModelUpdated_(viewModel: ViewModel) {
     if (viewModel.action === Action.DISPLAY_RESULTS) {
       this.options_ = viewModel.options || [];
       this.resultSetId_ = viewModel.resultSetId;
@@ -129,25 +130,21 @@ export class CommanderAppElement extends PolymerElement {
     }
   }
 
-  /** @private */
-  onDomChange_() {
+  private onDomChange_() {
     this.browserProxy_.heightChanged(document.body.offsetHeight);
   }
 
   /**
    * Called when a result option is clicked via mouse.
-   * @param {!Event} e
-   * @private
    */
-  onOptionClick_(e) {
+  private onOptionClick_(e: OptionRepeaterEvent) {
     this.notifySelectedAtIndex_(e.model.index);
   }
 
   /**
    *  Used to set `aria-activedescendant` when the focused option changes.
-   * @private
    */
-  onFocusedIndexChanged_() {
+  private onFocusedIndexChanged_() {
     if (this.focusedIndex_ === -1) {
       this.$.inputRow.removeAttribute('aria-activedescendant');
     } else {
@@ -158,51 +155,33 @@ export class CommanderAppElement extends PolymerElement {
 
   /**
    * Informs the browser that the option at |index| was selected.
-   * @param {number} index
-   * @private
    */
-  notifySelectedAtIndex_(index) {
+  private notifySelectedAtIndex_(index: number) {
     if (this.resultSetId_ !== null) {
-      this.browserProxy_.optionSelected(
-          index, /** type {number} */ this.resultSetId_);
+      this.browserProxy_.optionSelected(index, this.resultSetId_);
     }
   }
 
-  /**
-   * @return {string}
-   * @param {number} index
-   */
-  getOptionClass_(index) {
+  private getOptionClass_(index: number): string {
     return index === this.focusedIndex_ ? 'focused' : '';
   }
 
   /**
    * An id is required for aria-activedescendant
-   * @return {string}
-   * @param {number} index
    */
-  getOptionId_(index) {
+  private getOptionId_(index: number): string {
     return 'option-' + index;
   }
 
-  /**
-   * @return {boolean}
-   */
-  computeShowChip_() {
+  private computeShowChip_(): boolean {
     return this.promptText_ !== null;
   }
 
-  /**
-   * @return {string}
-   */
-  computeExpanded_() {
+  private computeExpanded_(): string {
     return this.options_.length > 0 ? 'true' : 'false';
   }
 
-  /**
-   * @return {string}
-   */
-  computeAriaSelected_(index) {
+  private computeAriaSelected_(index: number): string {
     return index === this.focusedIndex_ ? 'true' : 'false';
   }
 }

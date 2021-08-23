@@ -12,12 +12,11 @@ import {Entity, Option} from './types.js';
 /**
  * Represents a substring of the option title, annotated with whether it's part
  * of a match or not.
- * @typedef {{
- *   text : string,
- *   isMatch : boolean,
- * }}
  */
-export let MatchSpan;
+export type MatchSpan = {
+  text: string,
+  isMatch: boolean,
+};
 
 export class CommanderOptionElement extends PolymerElement {
   static get is() {
@@ -30,16 +29,13 @@ export class CommanderOptionElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** @type {!Option} */
       model: Object,
     };
   }
 
-  /**
-   * @return {string} Appropriate iron-icon 'icon' value for this.model.entity
-   * @private
-   */
-  computeIcon_() {
+  model: Option;
+
+  private computeIcon_(): string {
     switch (this.model.entity) {
       case Entity.COMMAND:
         return 'commander-icons:chrome';
@@ -59,12 +55,9 @@ export class CommanderOptionElement extends PolymerElement {
   /**
    * Splits this.model.title into a list of substrings, each marked with
    * whether they should be displayed as a match or not.
-   * @return !{Array<!MatchSpan>}
-   * @private
    */
-  computeMatchSpans_() {
-    /** @type {!Array<!MatchSpan>} */
-    const result = [];
+  private computeMatchSpans_(): MatchSpan[] {
+    const result: MatchSpan[] = [];
     let firstNonmatch = 0;
     for (const r of this.model.matchedRanges) {
       const [start, end] = r;
@@ -85,12 +78,7 @@ export class CommanderOptionElement extends PolymerElement {
     return result;
   }
 
-  /**
-   * @param {boolean} isMatch
-   * @return {string}
-   * @private
-   */
-  getClassForMatch(isMatch) {
+  private getClassForMatch_(isMatch: boolean): string {
     return isMatch ? 'match' : '';
   }
 }

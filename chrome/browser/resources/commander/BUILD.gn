@@ -25,8 +25,8 @@ preprocess_if_expr("preprocess") {
   in_folder = "./"
   out_folder = "$target_gen_dir/$preprocess_folder"
   in_files = [
-    "browser_proxy.js",
-    "types.js",
+    "browser_proxy.ts",
+    "types.ts",
   ]
 }
 
@@ -35,9 +35,9 @@ preprocess_if_expr("preprocess_generated") {
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
   in_files = [
-    "app.js",
-    "icons.js",
-    "option.js",
+    "app.ts",
+    "icons.ts",
+    "option.ts",
   ]
 }
 
@@ -59,9 +59,9 @@ grit("resources") {
 
 html_to_js("web_components") {
   js_files = [
-    "app.js",
-    "option.js",
-    "icons.js",
+    "app.ts",
+    "option.ts",
+    "icons.ts",
   ]
 }
 
@@ -70,11 +70,11 @@ ts_library("build") {
   out_dir = "$target_gen_dir/tsc"
   tsconfig_base = "tsconfig_base.json"
   in_files = [
-    "app.js",
-    "browser_proxy.js",
-    "icons.js",
-    "option.js",
-    "types.js",
+    "app.ts",
+    "browser_proxy.ts",
+    "icons.ts",
+    "option.ts",
+    "types.ts",
   ]
   definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   deps = [
