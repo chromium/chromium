@@ -182,42 +182,6 @@ bool IsApplistActiveInTabletMode(const aura::Window* active_window) {
   return active_window == app_list_controller->GetWindow();
 }
 
-// Observer to observe the desk switch animation and destroy itself when the
-// animation is finished.
-class DeskSwitchAnimationObserver : public DesksController::Observer {
- public:
-  explicit DeskSwitchAnimationObserver(
-      base::OnceCallback<void(bool)> complete_callback)
-      : complete_callback_(std::move(complete_callback)) {
-    DesksController::Get()->AddObserver(this);
-  }
-  DeskSwitchAnimationObserver(const DeskSwitchAnimationObserver& other) =
-      delete;
-  DeskSwitchAnimationObserver& operator=(
-      const DeskSwitchAnimationObserver& rhs) = delete;
-
-  ~DeskSwitchAnimationObserver() override {
-    DesksController::Get()->RemoveObserver(this);
-  }
-
-  // DesksController::Observer:
-  void OnDeskAdded(const Desk* desk) override {}
-  void OnDeskRemoved(const Desk* desk) override {}
-  void OnDeskReordered(int old_index, int new_index) override {}
-  void OnDeskActivationChanged(const Desk* activated,
-                               const Desk* deactivated) override {}
-  void OnDeskSwitchAnimationLaunching() override {}
-  void OnDeskSwitchAnimationFinished() override {
-    std::move(complete_callback_).Run(/*success=*/true);
-    delete this;
-  }
-  void OnDeskNameChanged(const Desk* desk,
-                         const std::u16string& new_name) override {}
-
- private:
-  base::OnceCallback<void(bool)> complete_callback_;
-};
-
 }  // namespace
 
 // Helper class which wraps around a OneShotTimer and used for recording how
@@ -922,6 +886,8 @@ std::unique_ptr<DeskTemplate> DesksController::CaptureActiveDeskAsTemplate()
 void DesksController::CreateAndActivateNewDeskForTemplate(
     const std::u16string& template_name,
     base::OnceCallback<void(bool)> callback) {
+  DCHECK(!callback.is_null());
+
   if (!CanCreateDesks()) {
     std::move(callback).Run(/*success=*/false);
     return;
@@ -946,9 +912,13 @@ void DesksController::CreateAndActivateNewDeskForTemplate(
   desk->SetName(desk_name, /*set_by_user=*/true);
   // Force update user prefs because `SetName()` does not trigger it.
   desks_restore_util::UpdatePrimaryUserDeskNamesPrefs();
-  new DeskSwitchAnimationObserver(std::move(callback));
   ActivateDesk(desk, DesksSwitchSource::kLaunchTemplate);
   DCHECK(animation_);
+  animation_->set_finished_callback(base::BindOnce(
+      [](base::OnceCallback<void(bool)> passed_callback) {
+        std::move(passed_callback).Run(/*success=*/true);
+      },
+      std::move(callback)));
 }
 
 bool DesksController::OnSingleInstanceAppLaunchingFromTemplate(

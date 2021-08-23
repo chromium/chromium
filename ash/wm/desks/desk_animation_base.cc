@@ -30,6 +30,9 @@ DeskAnimationBase::DeskAnimationBase(DesksController* controller,
 DeskAnimationBase::~DeskAnimationBase() {
   for (auto& observer : controller_->observers_)
     observer.OnDeskSwitchAnimationFinished();
+
+  if (finished_callback_)
+    std::move(finished_callback_).Run();
 }
 
 void DeskAnimationBase::Launch() {
