@@ -424,6 +424,11 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   return editRect;
 }
 
+- (CGRect)caretRectForPosition:(UITextPosition*)position {
+  return ([self hasAutocompleteText]) ? CGRectZero
+                                      : [super caretRectForPosition:position];
+}
+
 #pragma mark - UITextInput
 
 - (void)beginFloatingCursorAtPoint:(CGPoint)point {
