@@ -182,11 +182,8 @@ class CookieSettings : public CookieSettingsBase,
   const bool is_incognito_;
   const char* extension_scheme_;  // Weak.
 
-  // Used around accesses to |block_third_party_cookies_| to guarantee thread
-  // safety.
   mutable base::Lock lock_;
-
-  bool block_third_party_cookies_;
+  bool block_third_party_cookies_ GUARDED_BY(lock_);
 
   DISALLOW_COPY_AND_ASSIGN(CookieSettings);
 };
