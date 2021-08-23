@@ -14,6 +14,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeClassQualifiedName;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.chrome.browser.feed.v2.ContentOrder;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 import org.chromium.chrome.browser.xsurface.ImagePrefetcher;
 import org.chromium.chrome.browser.xsurface.ProcessScope;
@@ -131,6 +132,15 @@ public final class FeedServiceBridge {
         return FeedServiceBridgeJni.get().isAutoplayEnabled();
     }
 
+    @ContentOrder
+    public static int getContentOrderForWebFeed() {
+        return FeedServiceBridgeJni.get().getContentOrderForWebFeed();
+    }
+
+    public static void setContentOrderForWebFeed(@ContentOrder int contentOrder) {
+        FeedServiceBridgeJni.get().setContentOrderForWebFeed(contentOrder);
+    }
+
     /**
      * Reports that a user action occurred which is untied to a Feed tab. Use
      * FeedStream.reportOtherUserAction for stream-specific actions.
@@ -179,6 +189,9 @@ public final class FeedServiceBridge {
         long getReliabilityLoggingId();
         boolean isAutoplayEnabled();
         void reportOtherUserAction(@FeedUserActionType int userAction);
+        @ContentOrder
+        int getContentOrderForWebFeed();
+        void setContentOrderForWebFeed(@ContentOrder int contentOrder);
 
         long addUnreadContentObserver(Object object, boolean isWebFeed);
         @NativeClassQualifiedName("feed::JavaUnreadContentObserver")

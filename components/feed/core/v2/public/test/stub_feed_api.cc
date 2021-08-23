@@ -70,6 +70,10 @@ base::Time StubFeedApi::GetLastFetchTime(const StreamType& stream_type) {
   return base::Time();
 }
 
+ContentOrder StubFeedApi::GetContentOrder(const StreamType& stream_type) {
+  return ContentOrder::kUnspecified;
+}
+
 ContentOrder StubFeedApi::GetContentOrderFromPrefs(
     const StreamType& stream_type) {
   return ContentOrder::kUnspecified;

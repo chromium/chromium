@@ -11,6 +11,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/check_op.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
 #include "chrome/browser/android/feed/v2/feed_service_factory.h"
 #include "chrome/browser/browser_process.h"
@@ -21,6 +22,7 @@
 #include "components/feed/core/shared_prefs/pref_names.h"
 #include "components/feed/core/v2/config.h"
 #include "components/feed/core/v2/public/feed_service.h"
+#include "components/feed/core/v2/public/stream_type.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/metrics/metrics_service.h"
 #include "components/prefs/pref_service.h"
@@ -106,7 +108,7 @@ static jlong JNI_FeedServiceBridge_AddUnreadContentObserver(
     jboolean is_web_feed) {
   FeedApi* api = GetFeedApi();
   if (!api)
-    return 0;
+    return static_cast<jint>(ContentOrder::kUnspecified);
   JavaUnreadContentObserver* observer = new JavaUnreadContentObserver(
       base::android::ScopedJavaGlobalRef<jobject>(j_observer));
   api->AddUnreadContentObserver(is_web_feed ? kWebFeedStream : kForYouStream,
@@ -121,6 +123,32 @@ static void JNI_FeedServiceBridge_ReportOtherUserAction(JNIEnv* env,
     return;
   api->ReportOtherUserAction(StreamType(),
                              static_cast<FeedUserActionType>(action));
+}
+
+static jint JNI_FeedServiceBridge_GetContentOrderForWebFeed(JNIEnv* env) {
+  FeedApi* api = GetFeedApi();
+  if (!api)
+    return 0;
+  return static_cast<int>(api->GetContentOrder(kWebFeedStream));
+}
+
+static void JNI_FeedServiceBridge_SetContentOrderForWebFeed(
+    JNIEnv* env,
+    jint content_order) {
+  FeedApi* api = GetFeedApi();
+  if (!api)
+    return;
+  switch (content_order) {
+    case static_cast<jint>(ContentOrder::kGrouped):
+      api->SetContentOrder(kWebFeedStream, ContentOrder::kGrouped);
+      return;
+    case static_cast<jint>(ContentOrder::kReverseChron):
+      api->SetContentOrder(kWebFeedStream, ContentOrder::kReverseChron);
+      return;
+    case static_cast<jint>(ContentOrder::kUnspecified):
+      break;
+  }
+  NOTREACHED() << "Invalid content order: " << content_order;
 }
 
 std::string FeedServiceBridge::GetLanguageTag() {

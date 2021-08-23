@@ -2597,6 +2597,8 @@ TEST_F(FeedStreamTestForAllStreamTypes, SetContentOrderReloadsContent) {
   EXPECT_EQ(
       feedwire::FeedQuery::ContentOrder::FeedQuery_ContentOrder_RECENT,
       network_.query_request_sent->feed_request().feed_query().order_by());
+  EXPECT_EQ(ContentOrder::kReverseChron,
+            stream_->GetContentOrder(kWebFeedStream));
 }
 
 TEST_F(FeedStreamTestForAllStreamTypes,
@@ -2615,6 +2617,7 @@ TEST_F(FeedStreamTestForAllStreamTypes,
   // "Raw prefs" order value should have been updated.
   EXPECT_EQ(ContentOrder::kGrouped,
             feed::prefs::GetWebFeedContentOrder(profile_prefs_));
+  EXPECT_EQ(ContentOrder::kGrouped, stream_->GetContentOrder(kWebFeedStream));
 }
 
 TEST_F(FeedStreamTestForAllStreamTypes, ContentOrderIsFinchControllable) {
@@ -2632,6 +2635,8 @@ TEST_F(FeedStreamTestForAllStreamTypes, ContentOrderIsFinchControllable) {
   EXPECT_EQ(
       feedwire::FeedQuery::ContentOrder::FeedQuery_ContentOrder_RECENT,
       network_.query_request_sent->feed_request().feed_query().order_by());
+  EXPECT_EQ(ContentOrder::kReverseChron,
+            stream_->GetContentOrder(kWebFeedStream));
 }
 
 TEST_F(FeedStreamTestForAllStreamTypes, ContentOrderPrefOverridesFinch) {
@@ -2651,6 +2656,7 @@ TEST_F(FeedStreamTestForAllStreamTypes, ContentOrderPrefOverridesFinch) {
   EXPECT_EQ(
       feedwire::FeedQuery::ContentOrder::FeedQuery_ContentOrder_GROUPED,
       network_.query_request_sent->feed_request().feed_query().order_by());
+  EXPECT_EQ(ContentOrder::kGrouped, stream_->GetContentOrder(kWebFeedStream));
 }
 
 // Keep instantiations at the bottom.

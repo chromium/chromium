@@ -1294,6 +1294,16 @@ void FeedStream::SetContentOrder(const StreamType& stream_type,
           &FeedStream::ForceRefreshTask, base::Unretained(this), stream_type)));
 }
 
+ContentOrder FeedStream::GetContentOrder(const StreamType& stream_type) {
+  if (!stream_type.IsWebFeed()) {
+    NOTREACHED()
+        << "GetContentOrderFromPrefs is not supported for this stream_type "
+        << stream_type;
+    return ContentOrder::kUnspecified;
+  }
+  return GetValidWebFeedContentOrder(*profile_prefs_);
+}
+
 ContentOrder FeedStream::GetContentOrderFromPrefs(
     const StreamType& stream_type) {
   if (!stream_type.IsWebFeed()) {
