@@ -56,8 +56,8 @@ class BLINK_COMMON_EXPORT StorageKey {
   // Copyable and Moveable.
   StorageKey(const StorageKey& other) = default;
   StorageKey& operator=(const StorageKey& other) = default;
-  StorageKey(StorageKey&& other) = default;
-  StorageKey& operator=(StorageKey&& other) = default;
+  StorageKey(StorageKey&& other) noexcept = default;
+  StorageKey& operator=(StorageKey&& other) noexcept = default;
 
   ~StorageKey() = default;
 

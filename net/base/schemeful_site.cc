@@ -91,10 +91,11 @@ SchemefulSite::SchemefulSite(const GURL& url)
     : SchemefulSite(url::Origin::Create(url)) {}
 
 SchemefulSite::SchemefulSite(const SchemefulSite& other) = default;
-SchemefulSite::SchemefulSite(SchemefulSite&& other) = default;
+SchemefulSite::SchemefulSite(SchemefulSite&& other) noexcept = default;
 
 SchemefulSite& SchemefulSite::operator=(const SchemefulSite& other) = default;
-SchemefulSite& SchemefulSite::operator=(SchemefulSite&& other) = default;
+SchemefulSite& SchemefulSite::operator=(SchemefulSite&& other) noexcept =
+    default;
 
 // static
 bool SchemefulSite::FromWire(const url::Origin& site_as_origin,

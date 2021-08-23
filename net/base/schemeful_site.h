@@ -69,10 +69,10 @@ class NET_EXPORT SchemefulSite {
   explicit SchemefulSite(const GURL& url);
 
   SchemefulSite(const SchemefulSite& other);
-  SchemefulSite(SchemefulSite&& other);
+  SchemefulSite(SchemefulSite&& other) noexcept;
 
   SchemefulSite& operator=(const SchemefulSite& other);
-  SchemefulSite& operator=(SchemefulSite&& other);
+  SchemefulSite& operator=(SchemefulSite&& other) noexcept;
 
   // Tries to construct an instance from a (potentially untrusted) value of the
   // internal `site_as_origin_` that got received over an RPC.
