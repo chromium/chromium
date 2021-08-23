@@ -8,6 +8,7 @@
     <meta charset="utf-8">
     <!-- main.css contains all :root styles require to be loaded first. -->
     <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/button.css">
     <link rel="stylesheet" href="/css/document_mode_dialog.css">
     <link rel="stylesheet" href="/css/focus_ring.css">
     <link rel="stylesheet" href="/css/inkdrop.css">
@@ -267,9 +268,14 @@
         <img id="document-image">
       </div>
       <div id="review-document-button-groups">
-        <button id="save-pdf-document" tabindex="0">Save as PDF</button>
-        <button id="save-photo-document" tabindex="0">Save as Photo</button>
-        <button id="retake-document" tabindex="0">Retake</button>
+        <button id="save-pdf-document" class="text-button pill primary dark
+                inkdrop" tabindex="0" i18n-text="label_save_pdf_document">
+        </button>
+        <button id="save-photo-document" class="text-button pill secondary dark
+                inkdrop" tabindex="0" i18n-text="label_save_photo_document">
+        </button>
+        <button id="retake-document" class="text-button pill secondary dark
+                inkdrop" tabindex="0" i18n-text="label_retake"></button>
       </div>
     </div>
     <div id="view-ptz-panel">

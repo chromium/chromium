@@ -43,3 +43,7 @@ input {
 #focus-ring.circle {
   border-radius: 50%;
 }
+
+#focus-ring.pill {
+  border-radius: var(--border-radius-rounded-with-short-side);
+}

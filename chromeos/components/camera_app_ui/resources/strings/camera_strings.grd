@@ -505,6 +505,15 @@ If your feedback is about image or video quality, please attach a sample photo o
       <message desc="Message spoken by accessibility tool when document is detected in camera preview." name="IDS_MSG_DOCUMENT_DETECTED">
         Document detected
       </message>
+      <message desc="Label for button saving result document photo in PDF format" name="IDS_LABEL_SAVE_PDF_DOCUMENT">
+        Save as PDF
+      </message>
+      <message desc="Label for button saving result document photo in normal photo format" name="IDS_LABEL_SAVE_PHOTO_DOCUMENT">
+        Save as Photo
+      </message>
+      <message desc="Label for button for dropping current photo result and to retake another photo" name="IDS_LABEL_RETAKE">
+        Retake
+      </message>
     </messages>
   </release>
 </grit>

@@ -3,7 +3,7 @@
  * found in the LICENSE file. */
 
 #view-review-document {
-  background: black;
+  background: var(--grey-900);
 }
 
 #document-frame {
@@ -32,28 +32,9 @@
 }
 
 #review-document-button-groups button {
-  border-radius: var(--border-radius-rounded-with-short-side);
-  font-size: 13px
-  font-weight: 500;
-  line-height: 20px;
-  padding: 6px 16px;
   position: relative;
   top: 50%;
   transform: translateY(-50%);
-}
-
-#review-document-button-groups button:active {
-  transform: translateY(-50%) scale(1.07);
-}
-
-#review-document-button-groups button:not(#save-pdf-document) {
-  border: 1px solid rgba(95, 99, 104, 1);
-  color: rgba(138, 180, 248, 1);
-}
-
-#review-document-button-groups #save-pdf-document {
-  background: rgba(138, 180, 248, 1);
-  color: rgba(32, 33, 36, 1);
 }
 
 /* float direction */
