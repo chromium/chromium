@@ -9450,6 +9450,13 @@ be describing additional metrics about the same event.
       Encryption type of the audio stream such as whether audio is encrypted and
       if so whether it has clear lead.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="ContainerName">
     <summary>
@@ -9539,6 +9546,13 @@ be describing additional metrics about the same event.
       Encryption type of the video stream such as whether video is encrypted and
       if so whether it has clear lead.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
