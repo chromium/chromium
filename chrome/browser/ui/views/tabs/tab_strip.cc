@@ -3410,6 +3410,12 @@ gfx::Rect TabStrip::GetDropBounds(int drop_index,
                                   bool* is_beneath) {
   DCHECK_NE(drop_index, -1);
 
+  if (GetTabCount() == 0) {
+    // If the tabstrip is empty, it doesn't matter where the drop arrow goes.
+    // The tabstrip can only be transiently empty, e.g. during shutdown.
+    return gfx::Rect();
+  }
+
   Tab* tab = tab_at(std::min(drop_index, GetTabCount() - 1));
   int center_x = tab->x();
   const int width = tab->width();
