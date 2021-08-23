@@ -170,15 +170,8 @@ struct CORE_EXPORT PaintInfo {
       // match against. Since we got here, though, it has to mean that we should
       // paint the one and only fragment.
       if (box->PhysicalFragmentCount()) {
-        // TODO(mstensho): We should DCHECK that box->PhysicalFragmentCount() is
-        // exactly 1 here (i.e. that the object is monolithic), but we are not
-        // ready for that yet, as there's code that enters legacy paint
-        // functions when we're traversing the fragment tree. See
-        // e.g. NGBoxFragmentPainter::RecordScrollHitTestData(), and how it does
-        // the job by invoking BoxPainter, which has no concept of
-        // fragments. One of the tests that would fail with such a DCHECK here
-        // is:
-        // virtual/layout_ng_block_frag/fast/multicol/overflow-across-columns.html
+        DCHECK_EQ(box->PhysicalFragmentCount(), 1u);
+        DCHECK(!box->FirstFragment().NextFragment());
         return &box->FirstFragment();
       }
     }
