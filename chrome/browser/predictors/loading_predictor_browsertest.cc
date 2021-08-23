@@ -2394,14 +2394,14 @@ IN_PROC_BROWSER_TEST_F(MultiPageBrowserTest, LoadingPredictor) {
                                           std::string());
   ASSERT_TRUE(prerender_observer->WaitForRequestStart());
   ASSERT_TRUE(second_main_observer->WaitForRequestStart());
-  EXPECT_EQ(2u, loading_predictor->GetActiveNavigationsSizeForTesting());
+  EXPECT_EQ(1u, loading_predictor->GetActiveNavigationsSizeForTesting());
   prerender_observer->WaitForNavigationFinished();
   EXPECT_EQ(1u, loading_predictor->GetActiveNavigationsSizeForTesting());
   second_main_observer->WaitForNavigationFinished();
   EXPECT_EQ(0u, loading_predictor->GetActiveNavigationsSizeForTesting());
 
   content::WaitForLoadStop(web_contents());
-  EXPECT_EQ(3u, loading_predictor->GetTotalHintsActivatedForTesting());
+  EXPECT_EQ(2u, loading_predictor->GetTotalHintsActivatedForTesting());
 }
 
 }  // namespace predictors
