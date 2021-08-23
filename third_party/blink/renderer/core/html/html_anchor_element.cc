@@ -68,6 +68,10 @@ namespace blink {
 
 namespace {
 
+// The download attribute specifies a filename, and an excessively long one can
+// crash the browser process. Filepaths probably can't be longer than 4096
+// characters, but this is enough to prevent the browser process from becoming
+// unresponsive or crashing.
 const int kMaxDownloadAttrLength = 1000000;
 
 // Note: Here it covers download originated from clicking on <a download> link
