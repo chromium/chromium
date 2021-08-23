@@ -1127,6 +1127,61 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadWithConfirmations) {
   }
 }
 
+TEST_P(StorageTest, WriteAndRepeatedlySecurityUpload) {
+  CreateTestStorageOrDie(BuildTestStorageOptions());
+
+  // Upload is initiated asynchronously, so it may happen after the next
+  // record is also written. Because of that we set expectations for the
+  // records after the current one as |Possible|.
+  {
+    test::TestCallbackAutoWaiter waiter;
+    EXPECT_CALL(set_mock_uploader_expectations_,
+                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH), NotNull()))
+        .WillOnce(
+            WithArg<1>(Invoke([&waiter](MockUploadClient* mock_upload_client) {
+              MockUploadClient::SetUp(SECURITY, mock_upload_client, &waiter)
+                  .Required(0, kData[0]);
+              return Status::StatusOK();
+            })))
+        .RetiresOnSaturation();
+    WriteStringOrDie(SECURITY,
+                     kData[0]);  // Immediately uploads and verifies.
+  }
+
+  {
+    test::TestCallbackAutoWaiter waiter;
+    EXPECT_CALL(set_mock_uploader_expectations_,
+                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH), NotNull()))
+        .WillOnce(
+            WithArg<1>(Invoke([&waiter](MockUploadClient* mock_upload_client) {
+              MockUploadClient::SetUp(SECURITY, mock_upload_client, &waiter)
+                  .Required(0, kData[0])
+                  .Required(1, kData[1]);
+              return Status::StatusOK();
+            })))
+        .RetiresOnSaturation();
+    WriteStringOrDie(SECURITY,
+                     kData[1]);  // Immediately uploads and verifies.
+  }
+
+  {
+    test::TestCallbackAutoWaiter waiter;
+    EXPECT_CALL(set_mock_uploader_expectations_,
+                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH), NotNull()))
+        .WillOnce(
+            WithArg<1>(Invoke([&waiter](MockUploadClient* mock_upload_client) {
+              MockUploadClient::SetUp(SECURITY, mock_upload_client, &waiter)
+                  .Required(0, kData[0])
+                  .Required(1, kData[1])
+                  .Required(2, kData[2]);
+              return Status::StatusOK();
+            })))
+        .RetiresOnSaturation();
+    WriteStringOrDie(SECURITY,
+                     kData[2]);  // Immediately uploads and verifies.
+  }
+}
+
 TEST_P(StorageTest, WriteAndRepeatedlyImmediateUpload) {
   CreateTestStorageOrDie(BuildTestStorageOptions());
 
