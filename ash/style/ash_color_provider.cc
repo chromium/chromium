@@ -483,9 +483,6 @@ SkColor AshColorProvider::GetContentLayerColorImpl(ContentLayerType type,
       return gfx::kGoogleBlue300;
     case ContentLayerType::kSwitchAccessOuterStrokeColor:
       return gfx::kGoogleBlue900;
-    case ContentLayerType::kHighlightColorHover:
-      return use_dark_color ? SkColorSetA(SK_ColorWHITE, 0x0D)
-                            : SkColorSetA(SK_ColorBLACK, 0x14);
     default:
       return ResolveColor(type, use_dark_color);
   }

@@ -128,10 +128,7 @@ class ASH_PUBLIC_EXPORT ColorProvider {
 
     // Color for the media controls.
     kProgressBarColorForeground,
-    kProgressBarColorBackground,
-
-    // Color used to highlight a hovered view.
-    kHighlightColorHover
+    kProgressBarColorBackground
   };
 
   // Attributes of ripple, includes the base color, opacity of inkdrop and
