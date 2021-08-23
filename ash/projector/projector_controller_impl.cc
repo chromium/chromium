@@ -86,6 +86,12 @@ bool ProjectorControllerImpl::IsEligible() const {
   return is_speech_recognition_available_;
 }
 
+bool ProjectorControllerImpl::CanStartNewSession() const {
+  // TODO(b/177959166) Add other pre-conditions to starting a new projector
+  // session.
+  return IsEligible() && !projector_session_->is_active();
+}
+
 void ProjectorControllerImpl::SetCaptionBubbleState(bool is_on) {
   ui_controller_->SetCaptionBubbleState(is_on);
 }

@@ -57,9 +57,13 @@ class ASH_PUBLIC_EXPORT ProjectorController {
   // Sets Projector toolbar visibility.
   virtual void SetProjectorToolsVisible(bool is_visible) = 0;
 
-  // Returns true if Projector is eligible to start a new session.
-  // TODO(yilkal): Rename to something more descriptive, like CanStart().
+  // Returns true if Projector screen recording feature is available on the
+  // device. If on device speech recognition is not available on device, then
+  // Projector is not eligible.
   virtual bool IsEligible() const = 0;
+
+  // Returns true if we can start a new Projector session.
+  virtual bool CanStartNewSession() const = 0;
 };
 
 }  // namespace ash

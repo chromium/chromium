@@ -43,6 +43,7 @@
 #include "chrome/browser/ui/ash/network/mobile_data_notifications.h"
 #include "chrome/browser/ui/ash/network/network_connect_delegate_chromeos.h"
 #include "chrome/browser/ui/ash/network/network_portal_notification_controller.h"
+#include "chrome/browser/ui/ash/projector/projector_app_client_impl.h"
 #include "chrome/browser/ui/ash/projector/projector_client_impl.h"
 #include "chrome/browser/ui/ash/quick_answers/quick_answers_browser_client_impl.h"
 #include "chrome/browser/ui/ash/screen_orientation_delegate_chromeos.h"
@@ -221,6 +222,7 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   night_light_client_->Start();
 
   if (chromeos::features::IsProjectorEnabled()) {
+    projector_app_client_ = std::make_unique<ProjectorAppClientImpl>();
     projector_client_ = std::make_unique<ProjectorClientImpl>();
   }
 

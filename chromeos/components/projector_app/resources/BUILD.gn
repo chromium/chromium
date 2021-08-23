@@ -20,6 +20,7 @@ generate_grd("build_trusted_grd") {
     "annotator/annotator_embedder.html",
     "annotator/annotator_embedder.css",
     "annotator/annotator_embedder_impl.js",
+    "communication/projector_browser_proxy.js",
     "gallery/gallery_embedder.html",
     "gallery/gallery_embedder.css",
     "selfie_cam/selfie_cam.html",

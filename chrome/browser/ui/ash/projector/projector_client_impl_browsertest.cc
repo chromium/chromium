@@ -53,6 +53,7 @@ class ASH_PUBLIC_EXPORT MockProjectorController : public ProjectorController {
   MOCK_METHOD0(OnTranscriptionError, void());
   MOCK_METHOD1(SetProjectorToolsVisible, void(bool is_visible));
   MOCK_CONST_METHOD0(IsEligible, bool());
+  MOCK_CONST_METHOD0(CanStartNewSession, bool());
 };
 
 class ProjectorClientTest : public InProcessBrowserTest {

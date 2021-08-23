@@ -63,7 +63,6 @@ class ProjectorClientImpl : public ash::ProjectorClient,
 
  private:
   ash::ProjectorController* const controller_;
-
   SpeechRecognizerStatus recognizer_status_ =
       SpeechRecognizerStatus::SPEECH_RECOGNIZER_OFF;
   std::unique_ptr<OnDeviceSpeechRecognizer> speech_recognizer_;

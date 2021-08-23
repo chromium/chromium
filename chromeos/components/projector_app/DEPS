@@ -1,6 +1,7 @@
 include_rules = [
   "+ash/public/cpp/projector",
   "-chrome",
+  "+components/signin/public/identity_manager",
   "+content/public/browser",
   "+content/public/common",
   "+ui/webui",
