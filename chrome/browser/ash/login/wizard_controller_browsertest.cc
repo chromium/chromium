@@ -2752,8 +2752,6 @@ IN_PROC_BROWSER_TEST_F(WizardControllerOnboardingResumeTest,
 IN_PROC_BROWSER_TEST_F(WizardControllerOnboardingResumeTest,
                        ControlFlowResumeInterruptedOnboarding) {
   login_mixin_.LoginAsNewRegularUser();
-  ash::LoginScreenTestApi::SubmitPassword(user_, "password",
-                                          /*check_if_submittable=*/false);
   OobeScreenWaiter(MarketingOptInScreenView::kScreenId).Wait();
 }
 
