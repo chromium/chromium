@@ -11,9 +11,11 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
+#include "base/unguessable_token.h"
 #include "net/base/net_export.h"
 #include "net/reporting/reporting_cache.h"
 #include "net/reporting/reporting_cache_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -50,21 +52,26 @@ class NET_EXPORT ReportingService {
       std::unique_ptr<ReportingContext> reporting_context);
 
   // Queues a report for delivery. |url| is the URL that originated the report.
-  // |network_isolation_key| is used to restrict what reports can be merged, and
-  // for sending the report.
+  // |reporting_source| is the reporting source token for the document or
+  // worker which triggered this report, if it can be associated with one, or
+  // nullopt otherwise. If present, it may not be empty.
+  // Along with |network_isolation_key|, it is used to restrict what reports
+  // can be merged, and for sending the report.
   // |user_agent| is the User-Agent header that was used for the request.
   // |group| is the endpoint group to which the report should be delivered.
   // |type| is the type of the report. |body| is the body of the report.
   //
   // The Reporting system will take ownership of |body|; all other parameters
   // will be copied.
-  virtual void QueueReport(const GURL& url,
-                           const NetworkIsolationKey& network_isolation_key,
-                           const std::string& user_agent,
-                           const std::string& group,
-                           const std::string& type,
-                           std::unique_ptr<const base::Value> body,
-                           int depth) = 0;
+  virtual void QueueReport(
+      const GURL& url,
+      const absl::optional<base::UnguessableToken>& reporting_source,
+      const NetworkIsolationKey& network_isolation_key,
+      const std::string& user_agent,
+      const std::string& group,
+      const std::string& type,
+      std::unique_ptr<const base::Value> body,
+      int depth) = 0;
 
   // Processes a Report-To header. |url| is the URL that originated the header;
   // |header_value| is the normalized value of the Report-To header.
@@ -74,9 +81,19 @@ class NET_EXPORT ReportingService {
       const std::string& header_value) = 0;
 
   // Configures reporting endpoints set by the Reporting-Endpoints header, once
-  // the associated document has been committed.
+  // the associated document or worker (represented by |reporting_source|) has
+  // been committed.
+  // |reporting_source| is the unique identifier for the resource with which
+  // this header was received, and must not be empty.
   // |endpoints| is a mapping of endpoint names to URLs.
+  // |origin| is the origin of the reporting source, and
+  // |network_isolation_key| is the appropriate NIK for that source.
+  // (The isolation provided by Reporting-Endpoints is stronger than that
+  // provided by Report-To, so the origin and NIK aren't strictly necessary,
+  // but are currently required here because of shared infrastructure between
+  // the two versions of the reporting API.)
   virtual void SetDocumentReportingEndpoints(
+      const base::UnguessableToken& reporting_source,
       const url::Origin& origin,
       const NetworkIsolationKey& network_isolation_key,
       const base::flat_map<std::string, std::string>& endpoints) = 0;

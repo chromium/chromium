@@ -27,6 +27,7 @@ ReportingCacheImpl::ReportingCacheImpl(ReportingContext* context)
 ReportingCacheImpl::~ReportingCacheImpl() = default;
 
 void ReportingCacheImpl::AddReport(
+    const absl::optional<base::UnguessableToken>& reporting_source,
     const NetworkIsolationKey& network_isolation_key,
     const GURL& url,
     const std::string& user_agent,
@@ -36,6 +37,8 @@ void ReportingCacheImpl::AddReport(
     int depth,
     base::TimeTicks queued,
     int attempts) {
+  // If |reporting_source| is present, it must not be empty.
+  DCHECK(!(reporting_source.has_value() && reporting_source->is_empty()));
   auto report = std::make_unique<ReportingReport>(
       absl::nullopt, network_isolation_key, url, user_agent, group_name, type,
       std::move(body), depth, queued, attempts);

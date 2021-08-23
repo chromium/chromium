@@ -3480,8 +3480,8 @@ void RenderFrameHostImpl::DidNavigate(
   DCHECK(frame_token_.value());
   if (!reporting_endpoints_.empty()) {
     GetStoragePartition()->GetNetworkContext()->SetDocumentReportingEndpoints(
-        params.origin, isolation_info_.network_isolation_key(),
-        reporting_endpoints_);
+        frame_token_.value(), params.origin,
+        isolation_info_.network_isolation_key(), reporting_endpoints_);
   }
 
   // When the frame hosts a different document, its state must be replicated
@@ -10495,7 +10495,9 @@ void RenderFrameHostImpl::MaybeGenerateCrashReport(
   // Send the crash report to the Reporting API.
   GetProcess()->GetStoragePartition()->GetNetworkContext()->QueueReport(
       /*type=*/"crash", /*group=*/"default", last_committed_url_,
-      isolation_info_.network_isolation_key(), absl::nullopt, std::move(body));
+      frame_token_.value() /* reporting_source */,
+      isolation_info_.network_isolation_key(), absl::nullopt /* user_agent */,
+      std::move(body));
 }
 
 void RenderFrameHostImpl::SendCommitNavigation(

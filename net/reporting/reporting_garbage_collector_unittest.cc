@@ -14,6 +14,7 @@
 #include "net/reporting/reporting_report.h"
 #include "net/reporting/reporting_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 namespace {
@@ -26,6 +27,8 @@ class ReportingGarbageCollectorTest : public ReportingTestBase {
     return reports.size();
   }
 
+  const absl::optional<base::UnguessableToken> kReportingSource_ =
+      absl::nullopt;
   const NetworkIsolationKey kNik_;
   const GURL kUrl_ = GURL("https://origin/path");
   const std::string kUserAgent_ = "Mozilla/1.0";
@@ -42,8 +45,8 @@ TEST_F(ReportingGarbageCollectorTest, Created) {
 TEST_F(ReportingGarbageCollectorTest, Timer) {
   EXPECT_FALSE(garbage_collection_timer()->IsRunning());
 
-  cache()->AddReport(kNik_, kUrl_, kUserAgent_, kGroup_, kType_,
-                     std::make_unique<base::DictionaryValue>(), 0,
+  cache()->AddReport(kReportingSource_, kNik_, kUrl_, kUserAgent_, kGroup_,
+                     kType_, std::make_unique<base::DictionaryValue>(), 0,
                      tick_clock()->NowTicks(), 0);
 
   EXPECT_TRUE(garbage_collection_timer()->IsRunning());
@@ -54,8 +57,8 @@ TEST_F(ReportingGarbageCollectorTest, Timer) {
 }
 
 TEST_F(ReportingGarbageCollectorTest, Report) {
-  cache()->AddReport(kNik_, kUrl_, kUserAgent_, kGroup_, kType_,
-                     std::make_unique<base::DictionaryValue>(), 0,
+  cache()->AddReport(kReportingSource_, kNik_, kUrl_, kUserAgent_, kGroup_,
+                     kType_, std::make_unique<base::DictionaryValue>(), 0,
                      tick_clock()->NowTicks(), 0);
   garbage_collection_timer()->Fire();
 
@@ -63,8 +66,8 @@ TEST_F(ReportingGarbageCollectorTest, Report) {
 }
 
 TEST_F(ReportingGarbageCollectorTest, ExpiredReport) {
-  cache()->AddReport(kNik_, kUrl_, kUserAgent_, kGroup_, kType_,
-                     std::make_unique<base::DictionaryValue>(), 0,
+  cache()->AddReport(kReportingSource_, kNik_, kUrl_, kUserAgent_, kGroup_,
+                     kType_, std::make_unique<base::DictionaryValue>(), 0,
                      tick_clock()->NowTicks(), 0);
   tick_clock()->Advance(2 * policy().max_report_age);
   garbage_collection_timer()->Fire();
@@ -73,8 +76,8 @@ TEST_F(ReportingGarbageCollectorTest, ExpiredReport) {
 }
 
 TEST_F(ReportingGarbageCollectorTest, FailedReport) {
-  cache()->AddReport(kNik_, kUrl_, kUserAgent_, kGroup_, kType_,
-                     std::make_unique<base::DictionaryValue>(), 0,
+  cache()->AddReport(kReportingSource_, kNik_, kUrl_, kUserAgent_, kGroup_,
+                     kType_, std::make_unique<base::DictionaryValue>(), 0,
                      tick_clock()->NowTicks(), 0);
 
   std::vector<const ReportingReport*> reports;

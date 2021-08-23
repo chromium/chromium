@@ -13,6 +13,7 @@
 #include "base/macros.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/unguessable_token.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/rand_callback.h"
 #include "net/reporting/reporting_cache.h"
@@ -23,6 +24,7 @@
 #include "net/test/test_with_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -314,17 +316,20 @@ class TestReportingService : public ReportingService {
   ~TestReportingService() override;
 
   void SetDocumentReportingEndpoints(
+      const base::UnguessableToken& reporting_source,
       const url::Origin& origin,
       const net::NetworkIsolationKey& network_isolation_key,
       const base::flat_map<std::string, std::string>& endpoints) override {}
 
-  void QueueReport(const GURL& url,
-                   const NetworkIsolationKey& network_isolation_key,
-                   const std::string& user_agent,
-                   const std::string& group,
-                   const std::string& type,
-                   std::unique_ptr<const base::Value> body,
-                   int depth) override;
+  void QueueReport(
+      const GURL& url,
+      const absl::optional<base::UnguessableToken>& reporting_source,
+      const NetworkIsolationKey& network_isolation_key,
+      const std::string& user_agent,
+      const std::string& group,
+      const std::string& type,
+      std::unique_ptr<const base::Value> body,
+      int depth) override;
 
   void ProcessReportToHeader(const GURL& url,
                              const NetworkIsolationKey& network_isolation_key,

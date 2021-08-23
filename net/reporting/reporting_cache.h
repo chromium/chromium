@@ -13,11 +13,13 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "base/values.h"
 #include "net/base/net_export.h"
 #include "net/reporting/reporting_endpoint.h"
 #include "net/reporting/reporting_header_parser.h"
 #include "net/reporting/reporting_report.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -55,17 +57,23 @@ class NET_EXPORT ReportingCache {
 
   // Adds a report to the cache.
   //
-  // All parameters correspond to the desired values for the relevant fields in
-  // ReportingReport.
-  virtual void AddReport(const NetworkIsolationKey& network_isolation_key,
-                         const GURL& url,
-                         const std::string& user_agent,
-                         const std::string& group_name,
-                         const std::string& type,
-                         std::unique_ptr<const base::Value> body,
-                         int depth,
-                         base::TimeTicks queued,
-                         int attempts) = 0;
+  // |reporting_source| and |network_isolation_key| will be used when the
+  // report is delivered, to determine which endpoints are eligible to receive
+  // this report, and which other reports this report can be batched with.
+  //
+  // All other parameters correspond to the desired values for the relevant
+  // fields in ReportingReport.
+  virtual void AddReport(
+      const absl::optional<base::UnguessableToken>& reporting_source,
+      const NetworkIsolationKey& network_isolation_key,
+      const GURL& url,
+      const std::string& user_agent,
+      const std::string& group_name,
+      const std::string& type,
+      std::unique_ptr<const base::Value> body,
+      int depth,
+      base::TimeTicks queued,
+      int attempts) = 0;
 
   // Gets all reports in the cache. The returned pointers are valid as long as
   // either no calls to |RemoveReports| have happened or the reports' |pending|

@@ -18,6 +18,7 @@
 #include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "base/values.h"
 #include "net/reporting/reporting_cache.h"
 #include "net/reporting/reporting_context.h"
@@ -37,7 +38,8 @@ class ReportingCacheImpl : public ReportingCache {
   ~ReportingCacheImpl() override;
 
   // ReportingCache implementation
-  void AddReport(const NetworkIsolationKey& network_isolation_key,
+  void AddReport(const absl::optional<base::UnguessableToken>& reporting_source,
+                 const NetworkIsolationKey& network_isolation_key,
                  const GURL& url,
                  const std::string& user_agent,
                  const std::string& group_name,

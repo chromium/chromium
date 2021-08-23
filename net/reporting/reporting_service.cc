@@ -56,24 +56,31 @@ class ReportingServiceImpl : public ReportingService {
   }
 
   void SetDocumentReportingEndpoints(
+      const base::UnguessableToken& reporting_source,
       const url::Origin& origin,
       const net::NetworkIsolationKey& network_isolation_key,
       const base::flat_map<std::string, std::string>& endpoints) override {
-    DoOrBacklogTask(base::BindOnce(
-        &ReportingServiceImpl::DoSetDocumentReportingEndpoints,
-        base::Unretained(this), FixupNetworkIsolationKey(network_isolation_key),
-        origin, endpoints));
+    DCHECK(!reporting_source.is_empty());
+    DoOrBacklogTask(
+        base::BindOnce(&ReportingServiceImpl::DoSetDocumentReportingEndpoints,
+                       base::Unretained(this), reporting_source,
+                       FixupNetworkIsolationKey(network_isolation_key), origin,
+                       std::move(endpoints)));
   }
 
-  void QueueReport(const GURL& url,
-                   const NetworkIsolationKey& network_isolation_key,
-                   const std::string& user_agent,
-                   const std::string& group,
-                   const std::string& type,
-                   std::unique_ptr<const base::Value> body,
-                   int depth) override {
+  void QueueReport(
+      const GURL& url,
+      const absl::optional<base::UnguessableToken>& reporting_source,
+      const NetworkIsolationKey& network_isolation_key,
+      const std::string& user_agent,
+      const std::string& group,
+      const std::string& type,
+      std::unique_ptr<const base::Value> body,
+      int depth) override {
     DCHECK(context_);
     DCHECK(context_->delegate());
+    // If |reporting_source| is provided, it must not be empty.
+    DCHECK(!(reporting_source.has_value() && reporting_source->is_empty()));
 
     if (!context_->delegate()->CanQueueReport(url::Origin::Create(url)))
       return;
@@ -89,7 +96,7 @@ class ReportingServiceImpl : public ReportingService {
     // |task_backlog_| which will not outlive |this|.
     DoOrBacklogTask(base::BindOnce(
         &ReportingServiceImpl::DoQueueReport, base::Unretained(this),
-        FixupNetworkIsolationKey(network_isolation_key),
+        reporting_source, FixupNetworkIsolationKey(network_isolation_key),
         std::move(sanitized_url), user_agent, group, type, std::move(body),
         depth, queued_ticks));
   }
@@ -177,18 +184,20 @@ class ReportingServiceImpl : public ReportingService {
     std::move(task).Run();
   }
 
-  void DoQueueReport(const NetworkIsolationKey& network_isolation_key,
-                     GURL sanitized_url,
-                     const std::string& user_agent,
-                     const std::string& group,
-                     const std::string& type,
-                     std::unique_ptr<const base::Value> body,
-                     int depth,
-                     base::TimeTicks queued_ticks) {
+  void DoQueueReport(
+      const absl::optional<base::UnguessableToken>& reporting_source,
+      const NetworkIsolationKey& network_isolation_key,
+      GURL sanitized_url,
+      const std::string& user_agent,
+      const std::string& group,
+      const std::string& type,
+      std::unique_ptr<const base::Value> body,
+      int depth,
+      base::TimeTicks queued_ticks) {
     DCHECK(initialized_);
-    context_->cache()->AddReport(network_isolation_key, sanitized_url,
-                                 user_agent, group, type, std::move(body),
-                                 depth, queued_ticks, 0 /* attempts */);
+    context_->cache()->AddReport(
+        reporting_source, network_isolation_key, sanitized_url, user_agent,
+        group, type, std::move(body), depth, queued_ticks, 0 /* attempts */);
   }
 
   void DoProcessReportToHeader(const NetworkIsolationKey& network_isolation_key,
@@ -200,12 +209,14 @@ class ReportingServiceImpl : public ReportingService {
   }
 
   void DoSetDocumentReportingEndpoints(
+      const base::UnguessableToken& reporting_source,
       const NetworkIsolationKey& network_isolation_key,
       const url::Origin& origin,
       base::flat_map<std::string, std::string> header_value) {
     DCHECK(initialized_);
     ReportingHeaderParser::ProcessParsedReportingEndpointsHeader(
-        context_.get(), network_isolation_key, origin, std::move(header_value));
+        context_.get(), reporting_source, network_isolation_key, origin,
+        std::move(header_value));
   }
 
   void DoRemoveBrowsingData(

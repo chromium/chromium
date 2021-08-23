@@ -12,6 +12,7 @@
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
+#include "base/unguessable_token.h"
 #include "base/values.h"
 #include "net/base/backoff_entry.h"
 #include "net/base/features.h"
@@ -22,6 +23,7 @@
 #include "net/reporting/reporting_test_util.h"
 #include "net/reporting/reporting_uploader.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -49,13 +51,14 @@ class ReportingDeliveryAgentTest : public ReportingTestBase {
     report_body_.SetStringKey("key", "value");
   }
 
-  void AddReport(const NetworkIsolationKey& network_isolation_key,
+  void AddReport(const absl::optional<base::UnguessableToken>& reporting_source,
+                 const NetworkIsolationKey& network_isolation_key,
                  const GURL& url,
                  const std::string& group) {
-    cache()->AddReport(network_isolation_key, url, kUserAgent_, group, kType_,
-                       std::make_unique<base::Value>(report_body_.Clone()),
-                       0 /* depth */, tick_clock()->NowTicks() /* queued */,
-                       0 /* attempts */);
+    cache()->AddReport(
+        reporting_source, network_isolation_key, url, kUserAgent_, group,
+        kType_, std::make_unique<base::Value>(report_body_.Clone()),
+        0 /* depth */, tick_clock()->NowTicks() /* queued */, 0 /* attempts */);
   }
 
   // The first report added to the cache is uploaded immediately, and a timer is
@@ -68,8 +71,8 @@ class ReportingDeliveryAgentTest : public ReportingTestBase {
         "dummy");
     ASSERT_TRUE(SetEndpointInCache(
         dummy_group, GURL("https://dummy.test/upload"), kExpires_));
-    AddReport(dummy_group.network_isolation_key, dummy_group.origin.GetURL(),
-              dummy_group.group_name);
+    AddReport(absl::nullopt, dummy_group.network_isolation_key,
+              dummy_group.origin.GetURL(), dummy_group.group_name);
 
     ASSERT_EQ(1u, pending_uploads().size());
     pending_uploads()[0]->Complete(ReportingUploader::Outcome::SUCCESS);
@@ -86,6 +89,8 @@ class ReportingDeliveryAgentTest : public ReportingTestBase {
   const url::Origin kOrigin_ = url::Origin::Create(GURL("https://origin/"));
   const url::Origin kOtherOrigin_ =
       url::Origin::Create(GURL("https://other-origin/"));
+  const absl::optional<base::UnguessableToken> kReportingSource_ =
+      absl::nullopt;
   const NetworkIsolationKey kNik_ =
       NetworkIsolationKey(SchemefulSite(kOrigin_), SchemefulSite(kOrigin_));
   const NetworkIsolationKey kOtherNik_ =
@@ -102,7 +107,7 @@ class ReportingDeliveryAgentTest : public ReportingTestBase {
 
 TEST_F(ReportingDeliveryAgentTest, SuccessfulImmediateUpload) {
   ASSERT_TRUE(SetEndpointInCache(kGroupKey_, kEndpoint_, kExpires_));
-  AddReport(kNik_, kUrl_, kGroup_);
+  AddReport(kReportingSource_, kNik_, kUrl_, kGroup_);
 
   // Upload is automatically started when cache is modified.
 
@@ -148,7 +153,7 @@ TEST_F(ReportingDeliveryAgentTest, SuccessfulImmediateUpload) {
 TEST_F(ReportingDeliveryAgentTest, SuccessfulImmediateSubdomainUpload) {
   ASSERT_TRUE(SetEndpointInCache(kGroupKey_, kEndpoint_, kExpires_,
                                  OriginSubdomains::INCLUDE));
-  AddReport(kNik_, kSubdomainUrl_, kGroup_);
+  AddReport(kReportingSource_, kNik_, kSubdomainUrl_, kGroup_);
 
   // Upload is automatically started when cache is modified.
 
@@ -195,7 +200,7 @@ TEST_F(ReportingDeliveryAgentTest,
        SuccessfulImmediateSubdomainUploadWithOverwrittenEndpoint) {
   ASSERT_TRUE(SetEndpointInCache(kGroupKey_, kEndpoint_, kExpires_,
                                  OriginSubdomains::INCLUDE));
-  AddReport(kNik_, kSubdomainUrl_, kGroup_);
+  AddReport(kReportingSource_, kNik_, kSubdomainUrl_, kGroup_);
 
   // Upload is automatically started when cache is modified.
 
@@ -223,11 +228,11 @@ TEST_F(ReportingDeliveryAgentTest,
 TEST_F(ReportingDeliveryAgentTest, SuccessfulDelayedUpload) {
   // Trigger and complete an upload to start the delivery timer.
   ASSERT_TRUE(SetEndpointInCache(kGroupKey_, kEndpoint_, kExpires_));
-  AddReport(kNik_, kUrl_, kGroup_);
+  AddReport(kReportingSource_, kNik_, kUrl_, kGroup_);
   pending_uploads()[0]->Complete(ReportingUploader::Outcome::SUCCESS);
 
   // Add another report to upload after a delay.
-  AddReport(kNik_, kUrl_, kGroup_);
+  AddReport(kReportingSource_, kNik_, kUrl_, kGroup_);
 
   EXPECT_TRUE(delivery_timer()->IsRunning());
   delivery_timer()->Fire();
@@ -273,7 +278,7 @@ TEST_F(ReportingDeliveryAgentTest, SuccessfulDelayedUpload) {
 
 TEST_F(ReportingDeliveryAgentTest, FailedUpload) {
   ASSERT_TRUE(SetEndpointInCache(kGroupKey_, kEndpoint_, kExpires_));
-  AddReport(kNik_, kUrl_, kGroup_);
+  AddReport(kReportingSource_, kNik_, kUrl_, kGroup_);
 
   EXPECT_TRUE(delivery_timer()->IsRunning());
   delivery_timer()->Fire();
@@ -324,7 +329,7 @@ TEST_F(ReportingDeliveryAgentTest, DisallowedUpload) {
   body.SetString("key", "value");
 
   ASSERT_TRUE(SetEndpointInCache(kGroupKey_, kEndpoint_, kExpires_));
-  AddReport(kNik_, kUrl_, kGroup_);
+  AddReport(kReportingSource_, kNik_, kUrl_, kGroup_);
 
   tick_clock()->Advance(base::TimeDelta::FromMilliseconds(kAgeMillis));
 
@@ -357,7 +362,7 @@ TEST_F(ReportingDeliveryAgentTest, RemoveEndpointUpload) {
   ASSERT_TRUE(SetEndpointInCache(kGroupKey_, kEndpoint_, kExpires_));
   ASSERT_TRUE(SetEndpointInCache(kOtherGroupKey, kEndpoint_, kExpires_));
 
-  AddReport(kNik_, kUrl_, kGroup_);
+  AddReport(kReportingSource_, kNik_, kUrl_, kGroup_);
 
   EXPECT_TRUE(delivery_timer()->IsRunning());
   delivery_timer()->Fire();
@@ -384,7 +389,7 @@ TEST_F(ReportingDeliveryAgentTest, RemoveEndpointUpload) {
 
 TEST_F(ReportingDeliveryAgentTest, ConcurrentRemove) {
   ASSERT_TRUE(SetEndpointInCache(kGroupKey_, kEndpoint_, kExpires_));
-  AddReport(kNik_, kUrl_, kGroup_);
+  AddReport(kReportingSource_, kNik_, kUrl_, kGroup_);
 
   EXPECT_TRUE(delivery_timer()->IsRunning());
   delivery_timer()->Fire();
@@ -418,7 +423,7 @@ TEST_F(ReportingDeliveryAgentTest, ConcurrentRemoveDuringPermissionsCheck) {
   context()->test_delegate()->set_pause_permissions_check(true);
 
   ASSERT_TRUE(SetEndpointInCache(kGroupKey_, kEndpoint_, kExpires_));
-  AddReport(kNik_, kUrl_, kGroup_);
+  AddReport(kReportingSource_, kNik_, kUrl_, kGroup_);
 
   ASSERT_TRUE(context()->test_delegate()->PermissionsCheckPaused());
 
@@ -464,16 +469,16 @@ TEST_F(ReportingDeliveryAgentTest, OnlyBatchSameNikAndOrigin) {
 
   // Now that the delivery timer is running, these reports won't be immediately
   // uploaded.
-  AddReport(kNik_, kUrl_, kGroup_);
-  AddReport(kNik_, kOtherUrl_, kGroup_);
-  AddReport(kNik_, kOtherUrl_, kGroup_);
-  AddReport(kOtherNik_, kUrl_, kGroup_);
-  AddReport(kOtherNik_, kUrl_, kGroup_);
-  AddReport(kOtherNik_, kUrl_, kGroup_);
-  AddReport(kOtherNik_, kOtherUrl_, kGroup_);
-  AddReport(kOtherNik_, kOtherUrl_, kGroup_);
-  AddReport(kOtherNik_, kOtherUrl_, kGroup_);
-  AddReport(kOtherNik_, kOtherUrl_, kGroup_);
+  AddReport(kReportingSource_, kNik_, kUrl_, kGroup_);
+  AddReport(kReportingSource_, kNik_, kOtherUrl_, kGroup_);
+  AddReport(kReportingSource_, kNik_, kOtherUrl_, kGroup_);
+  AddReport(kReportingSource_, kOtherNik_, kUrl_, kGroup_);
+  AddReport(kReportingSource_, kOtherNik_, kUrl_, kGroup_);
+  AddReport(kReportingSource_, kOtherNik_, kUrl_, kGroup_);
+  AddReport(kReportingSource_, kOtherNik_, kOtherUrl_, kGroup_);
+  AddReport(kReportingSource_, kOtherNik_, kOtherUrl_, kGroup_);
+  AddReport(kReportingSource_, kOtherNik_, kOtherUrl_, kGroup_);
+  AddReport(kReportingSource_, kOtherNik_, kOtherUrl_, kGroup_);
   EXPECT_EQ(0u, pending_uploads().size());
 
   // There should be one upload per (NIK, origin).
@@ -511,14 +516,14 @@ TEST_F(ReportingDeliveryAgentTest, SerializeUploadsToGroup) {
   UploadFirstReportAndStartTimer();
 
   // First upload causes this group key to become pending.
-  AddReport(kNik_, kUrl_, kGroup_);
+  AddReport(kReportingSource_, kNik_, kUrl_, kGroup_);
   EXPECT_EQ(0u, pending_uploads().size());
   EXPECT_TRUE(delivery_timer()->IsRunning());
   delivery_timer()->Fire();
   EXPECT_EQ(1u, pending_uploads().size());
 
   // Second upload isn't started because the group is pending.
-  AddReport(kNik_, kUrl_, kGroup_);
+  AddReport(kReportingSource_, kNik_, kUrl_, kGroup_);
   EXPECT_TRUE(delivery_timer()->IsRunning());
   delivery_timer()->Fire();
   ASSERT_EQ(1u, pending_uploads().size());
@@ -562,8 +567,8 @@ TEST_F(ReportingDeliveryAgentTest, ParallelizeUploadsAcrossGroups) {
   // Trigger and complete an upload to start the delivery timer.
   UploadFirstReportAndStartTimer();
 
-  AddReport(kNik_, kUrl_, kGroup_);
-  AddReport(kNik_, kUrl_, kDifferentGroup);
+  AddReport(kReportingSource_, kNik_, kUrl_, kGroup_);
+  AddReport(kReportingSource_, kNik_, kUrl_, kDifferentGroup);
 
   EXPECT_TRUE(delivery_timer()->IsRunning());
   delivery_timer()->Fire();
@@ -604,8 +609,8 @@ TEST_F(ReportingDeliveryAgentTest, BatchReportsAcrossGroups) {
 
   UploadFirstReportAndStartTimer();
 
-  AddReport(kNik_, kUrl_, kGroup_);
-  AddReport(kNik_, kUrl_, kDifferentGroup);
+  AddReport(kReportingSource_, kNik_, kUrl_, kGroup_);
+  AddReport(kReportingSource_, kNik_, kUrl_, kDifferentGroup);
 
   EXPECT_TRUE(delivery_timer()->IsRunning());
   delivery_timer()->Fire();

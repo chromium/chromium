@@ -27,6 +27,7 @@
 #include "net/test/test_with_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -48,6 +49,8 @@ class ReportingServiceTest : public ::testing::TestWithParam<bool>,
   const std::string kUserAgent_ = "Mozilla/1.0";
   const std::string kGroup_ = "group";
   const std::string kType_ = "type";
+  const absl::optional<base::UnguessableToken> kReportingSource_ =
+      base::UnguessableToken::Create();
   const NetworkIsolationKey kNik_ =
       NetworkIsolationKey(SchemefulSite(kOrigin_), SchemefulSite(kOrigin_));
   const NetworkIsolationKey kNik2_ =
@@ -100,8 +103,8 @@ class ReportingServiceTest : public ::testing::TestWithParam<bool>,
 };
 
 TEST_P(ReportingServiceTest, QueueReport) {
-  service()->QueueReport(kUrl_, kNik_, kUserAgent_, kGroup_, kType_,
-                         std::make_unique<base::DictionaryValue>(), 0);
+  service()->QueueReport(kUrl_, kReportingSource_, kNik_, kUserAgent_, kGroup_,
+                         kType_, std::make_unique<base::DictionaryValue>(), 0);
   FinishLoading(true /* load_success */);
 
   std::vector<const ReportingReport*> reports;
@@ -117,8 +120,8 @@ TEST_P(ReportingServiceTest, QueueReport) {
 TEST_P(ReportingServiceTest, QueueReportSanitizeUrl) {
   // Same as kUrl_ but with username, password, and fragment.
   GURL url = GURL("https://username:password@origin/path#fragment");
-  service()->QueueReport(url, kNik_, kUserAgent_, kGroup_, kType_,
-                         std::make_unique<base::DictionaryValue>(), 0);
+  service()->QueueReport(url, kReportingSource_, kNik_, kUserAgent_, kGroup_,
+                         kType_, std::make_unique<base::DictionaryValue>(), 0);
   FinishLoading(true /* load_success */);
 
   std::vector<const ReportingReport*> reports;
@@ -135,8 +138,8 @@ TEST_P(ReportingServiceTest, DontQueueReportInvalidUrl) {
   GURL url = GURL("https://");
   // This does not trigger an attempt to load from the store because the url
   // is immediately rejected as invalid.
-  service()->QueueReport(url, kNik_, kUserAgent_, kGroup_, kType_,
-                         std::make_unique<base::DictionaryValue>(), 0);
+  service()->QueueReport(url, kReportingSource_, kNik_, kUserAgent_, kGroup_,
+                         kType_, std::make_unique<base::DictionaryValue>(), 0);
 
   std::vector<const ReportingReport*> reports;
   context()->cache()->GetReports(&reports);
@@ -151,8 +154,8 @@ TEST_P(ReportingServiceTest, QueueReportNetworkIsolationKeyDisabled) {
   // Re-create the store, so it reads the new feature value.
   Init();
 
-  service()->QueueReport(kUrl_, kNik_, kUserAgent_, kGroup_, kType_,
-                         std::make_unique<base::DictionaryValue>(), 0);
+  service()->QueueReport(kUrl_, kReportingSource_, kNik_, kUserAgent_, kGroup_,
+                         kType_, std::make_unique<base::DictionaryValue>(), 0);
   FinishLoading(true /* load_success */);
 
   std::vector<const ReportingReport*> reports;
@@ -191,7 +194,8 @@ TEST_P(ReportingServiceTest, ProcessReportingEndpointsHeader) {
   auto parsed_header =
       ParseReportingEndpoints(kGroup_ + "=\"" + kEndpoint_.spec() + "\"");
   ASSERT_TRUE(parsed_header.has_value());
-  service()->SetDocumentReportingEndpoints(kOrigin_, kNik_, *parsed_header);
+  service()->SetDocumentReportingEndpoints(*kReportingSource_, kOrigin_, kNik_,
+                                           *parsed_header);
   FinishLoading(true /* load_success */);
 
   EXPECT_EQ(1u, context()->cache()->GetEndpointCount());
@@ -204,7 +208,8 @@ TEST_P(ReportingServiceTest, ProcessReportingEndpointsHeaderPathAbsolute) {
   feature_list.InitAndEnableFeature(net::features::kDocumentReporting);
   auto parsed_header = ParseReportingEndpoints(kGroup_ + "=\"/path-absolute\"");
   ASSERT_TRUE(parsed_header.has_value());
-  service()->SetDocumentReportingEndpoints(kOrigin_, kNik_, *parsed_header);
+  service()->SetDocumentReportingEndpoints(*kReportingSource_, kOrigin_, kNik_,
+                                           *parsed_header);
   FinishLoading(true /* load_success */);
 
   EXPECT_EQ(1u, context()->cache()->GetEndpointCount());
@@ -326,8 +331,8 @@ TEST_P(ReportingServiceTest, WriteToStore) {
   EXPECT_THAT(store()->GetAllCommands(),
               testing::UnorderedElementsAreArray(expected_commands));
 
-  service()->QueueReport(kUrl_, kNik_, kUserAgent_, kGroup_, kType_,
-                         std::make_unique<base::DictionaryValue>(), 0);
+  service()->QueueReport(kUrl_, kReportingSource_, kNik_, kUserAgent_, kGroup_,
+                         kType_, std::make_unique<base::DictionaryValue>(), 0);
   expected_commands.emplace_back(
       CommandType::UPDATE_REPORTING_ENDPOINT_GROUP_ACCESS_TIME, kGroupKey_);
   EXPECT_THAT(store()->GetAllCommands(),
@@ -387,8 +392,8 @@ TEST_P(ReportingServiceTest, WaitUntilLoadFinishesBeforeWritingToStore) {
   EXPECT_THAT(store()->GetAllCommands(),
               testing::UnorderedElementsAreArray(expected_commands));
 
-  service()->QueueReport(kUrl_, kNik_, kUserAgent_, kGroup_, kType_,
-                         std::make_unique<base::DictionaryValue>(), 0);
+  service()->QueueReport(kUrl_, kReportingSource_, kNik_, kUserAgent_, kGroup_,
+                         kType_, std::make_unique<base::DictionaryValue>(), 0);
   EXPECT_THAT(store()->GetAllCommands(),
               testing::UnorderedElementsAreArray(expected_commands));
 

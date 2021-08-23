@@ -317,6 +317,7 @@ TestReportingService::~TestReportingService() = default;
 
 void TestReportingService::QueueReport(
     const GURL& url,
+    const absl::optional<base::UnguessableToken>& reporting_source,
     const NetworkIsolationKey& network_isolation_key,
     const std::string& user_agent,
     const std::string& group,

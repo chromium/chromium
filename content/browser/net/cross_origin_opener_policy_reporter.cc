@@ -244,8 +244,8 @@ void CrossOriginOpenerPolicyReporter::QueueAccessReport(
   }
 
   storage_partition_->GetNetworkContext()->QueueReport(
-      "coop", endpoint, context_url_, network_isolation_key_, absl::nullopt,
-      std::move(body));
+      "coop", endpoint, context_url_, reporting_source_, network_isolation_key_,
+      absl::nullopt, std::move(body));
 }
 
 // static
@@ -395,7 +395,7 @@ void CrossOriginOpenerPolicyReporter::QueueNavigationReport(
       kEffectivePolicy,
       ToString(is_report_only ? coop_.report_only_value : coop_.value));
   storage_partition_->GetNetworkContext()->QueueReport(
-      "coop", endpoint, context_url_, network_isolation_key_,
+      "coop", endpoint, context_url_, reporting_source_, network_isolation_key_,
       /*user_agent=*/absl::nullopt, std::move(body));
 }
 

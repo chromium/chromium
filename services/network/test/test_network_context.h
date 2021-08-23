@@ -12,6 +12,7 @@
 
 #include "base/component_export.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -110,15 +111,18 @@ class TestNetworkContext : public mojom::NetworkContext {
   void GetDomainReliabilityJSON(
       GetDomainReliabilityJSONCallback callback) override {}
   void SetDocumentReportingEndpoints(
+      const base::UnguessableToken& reporting_source,
       const url::Origin& origin,
       const net::NetworkIsolationKey& network_isolation_key,
       const base::flat_map<std::string, std::string>& endpoints) override {}
-  void QueueReport(const std::string& type,
-                   const std::string& group,
-                   const GURL& url,
-                   const net::NetworkIsolationKey& network_isolation_key,
-                   const absl::optional<std::string>& user_agent,
-                   base::Value body) override {}
+  void QueueReport(
+      const std::string& type,
+      const std::string& group,
+      const GURL& url,
+      const absl::optional<base::UnguessableToken>& reporting_source,
+      const net::NetworkIsolationKey& network_isolation_key,
+      const absl::optional<std::string>& user_agent,
+      base::Value body) override {}
   void QueueSignedExchangeReport(
       mojom::SignedExchangeReportPtr report,
       const net::NetworkIsolationKey& network_isolation_key) override {}

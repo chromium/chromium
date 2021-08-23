@@ -178,10 +178,12 @@
 
 #if BUILDFLAG(ENABLE_REPORTING)
 #include "base/containers/flat_map.h"
+#include "base/unguessable_token.h"
 #include "net/network_error_logging/network_error_logging_service.h"
 #include "net/reporting/reporting_browsing_data_remover.h"
 #include "net/reporting/reporting_policy.h"
 #include "net/reporting/reporting_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
 using content::BrowsingDataFilterBuilder;
@@ -901,19 +903,22 @@ class MockReportingService : public net::ReportingService {
   // net::ReportingService implementation:
 
   void SetDocumentReportingEndpoints(
+      const base::UnguessableToken& reporting_source,
       const url::Origin& origin,
       const net::NetworkIsolationKey& network_isolation_key,
       const base::flat_map<std::string, std::string>& endpoints) override {
     NOTREACHED();
   }
 
-  void QueueReport(const GURL& url,
-                   const net::NetworkIsolationKey& network_isolation_key,
-                   const std::string& user_agent,
-                   const std::string& group,
-                   const std::string& type,
-                   std::unique_ptr<const base::Value> body,
-                   int depth) override {
+  void QueueReport(
+      const GURL& url,
+      const absl::optional<base::UnguessableToken>& reporting_source,
+      const net::NetworkIsolationKey& network_isolation_key,
+      const std::string& user_agent,
+      const std::string& group,
+      const std::string& type,
+      std::unique_ptr<const base::Value> body,
+      int depth) override {
     NOTREACHED();
   }
 

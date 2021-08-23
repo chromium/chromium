@@ -114,7 +114,8 @@ void CrossOriginEmbedderPolicyReporter::QueueAndNotify(
     body_to_pass.SetString("disposition", disposition);
 
     storage_partition_->GetNetworkContext()->QueueReport(
-        kType, *endpoint, context_url_, network_isolation_key_,
+        kType, *endpoint, context_url_, reporting_source_,
+        network_isolation_key_,
         /*user_agent=*/absl::nullopt, std::move(body_to_pass));
   }
 }

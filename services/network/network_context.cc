@@ -933,14 +933,16 @@ void NetworkContext::ClearNetworkErrorLogging(
 }
 
 void NetworkContext::SetDocumentReportingEndpoints(
+    const base::UnguessableToken& reporting_source,
     const url::Origin& origin,
     const net::NetworkIsolationKey& network_isolation_key,
     const base::flat_map<std::string, std::string>& endpoints) {
+  DCHECK(!reporting_source.is_empty());
   net::ReportingService* reporting_service =
       url_request_context()->reporting_service();
   if (reporting_service) {
     reporting_service->SetDocumentReportingEndpoints(
-        origin, network_isolation_key, endpoints);
+        reporting_source, origin, network_isolation_key, endpoints);
   }
 }
 
@@ -948,9 +950,12 @@ void NetworkContext::QueueReport(
     const std::string& type,
     const std::string& group,
     const GURL& url,
+    const absl::optional<base::UnguessableToken>& reporting_source,
     const net::NetworkIsolationKey& network_isolation_key,
     const absl::optional<std::string>& user_agent,
     base::Value body) {
+  // If |reporting_source| is provided, it must not be empty.
+  DCHECK(!(reporting_source.has_value() && reporting_source->is_empty()));
   if (require_network_isolation_key_)
     DCHECK(!network_isolation_key.IsEmpty());
 
@@ -975,8 +980,8 @@ void NetworkContext::QueueReport(
   }
 
   reporting_service->QueueReport(
-      url, network_isolation_key, reported_user_agent, group, type,
-      base::Value::ToUniquePtrValue(std::move(body)), 0 /* depth */);
+      url, reporting_source, network_isolation_key, reported_user_agent, group,
+      type, base::Value::ToUniquePtrValue(std::move(body)), 0 /* depth */);
 }
 
 void NetworkContext::QueueSignedExchangeReport(
@@ -1105,6 +1110,7 @@ void NetworkContext::ClearNetworkErrorLogging(
 }
 
 void NetworkContext::SetDocumentReportingEndpoints(
+    const base::UnguessableToken& reporting_source,
     const url::Origin& origin,
     const net::NetworkIsolationKey& network_isolation_key,
     const base::flat_map<std::string, std::string>& endpoints) {
@@ -1115,6 +1121,7 @@ void NetworkContext::QueueReport(
     const std::string& type,
     const std::string& group,
     const GURL& url,
+    const absl::optional<base::UnguessableToken>& reporting_source,
     const net::NetworkIsolationKey& network_isolation_key,
     const absl::optional<std::string>& user_agent,
     base::Value body) {

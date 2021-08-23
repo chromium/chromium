@@ -9,6 +9,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "net/base/backoff_entry.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/schemeful_site.h"
@@ -17,6 +18,7 @@
 #include "net/reporting/reporting_policy.h"
 #include "net/reporting/reporting_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -48,7 +50,8 @@ class TestReportingCache : public ReportingCache {
   }
 
   // Everything below is NOTREACHED.
-  void AddReport(const NetworkIsolationKey& network_isolation_key,
+  void AddReport(const absl::optional<base::UnguessableToken>& reporting_source,
+                 const NetworkIsolationKey& network_isolation_key,
                  const GURL& url,
                  const std::string& user_agent,
                  const std::string& group_name,

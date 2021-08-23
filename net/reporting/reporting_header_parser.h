@@ -49,6 +49,7 @@ class NET_EXPORT ReportingHeaderParser {
 
   static void ProcessParsedReportingEndpointsHeader(
       ReportingContext* context,
+      const base::UnguessableToken& reporting_source,
       const NetworkIsolationKey& network_isolation_key,
       const url::Origin& origin,
       base::flat_map<std::string, std::string> parsed_header);

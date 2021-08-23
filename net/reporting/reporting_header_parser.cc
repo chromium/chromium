@@ -330,11 +330,13 @@ void ReportingHeaderParser::ParseReportToHeader(
 // static
 void ReportingHeaderParser::ProcessParsedReportingEndpointsHeader(
     ReportingContext* context,
+    const base::UnguessableToken& reporting_source,
     const NetworkIsolationKey& network_isolation_key,
     const url::Origin& origin,
     base::flat_map<std::string, std::string> header) {
   DCHECK(base::FeatureList::IsEnabled(net::features::kDocumentReporting));
   DCHECK(GURL::SchemeIsCryptographic(origin.scheme()));
+  DCHECK(!reporting_source.is_empty());
 
   ReportingDelegate* delegate = context->delegate();
   ReportingCache* cache = context->cache();

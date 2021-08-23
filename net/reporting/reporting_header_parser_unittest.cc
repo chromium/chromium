@@ -1778,7 +1778,8 @@ class ReportingHeaderParserStructuredHeaderTest
 
     if (header_map) {
       ReportingHeaderParser::ProcessParsedReportingEndpointsHeader(
-          context(), network_isolation_key, origin, *header_map);
+          context(), base::UnguessableToken::Create(), network_isolation_key,
+          origin, *header_map);
     }
   }
 };

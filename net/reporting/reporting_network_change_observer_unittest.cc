@@ -7,12 +7,14 @@
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/unguessable_token.h"
 #include "base/values.h"
 #include "net/base/network_change_notifier.h"
 #include "net/reporting/reporting_cache.h"
 #include "net/reporting/reporting_report.h"
 #include "net/reporting/reporting_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 namespace {
@@ -43,6 +45,8 @@ class ReportingNetworkChangeObserverTest : public ReportingTestBase {
     return reports.size();
   }
 
+  const absl::optional<base::UnguessableToken> kReportingSource_ =
+      absl::nullopt;
   const NetworkIsolationKey kNik_;
   const GURL kUrl_ = GURL("https://origin/path");
   const url::Origin kOrigin_ = url::Origin::Create(kUrl_);
@@ -60,8 +64,8 @@ TEST_F(ReportingNetworkChangeObserverTest, ClearNothing) {
   new_policy.persist_clients_across_network_changes = true;
   UsePolicy(new_policy);
 
-  cache()->AddReport(kNik_, kUrl_, kUserAgent_, kGroup_, kType_,
-                     std::make_unique<base::DictionaryValue>(), 0,
+  cache()->AddReport(kReportingSource_, kNik_, kUrl_, kUserAgent_, kGroup_,
+                     kType_, std::make_unique<base::DictionaryValue>(), 0,
                      tick_clock()->NowTicks(), 0);
   SetEndpoint();
   ASSERT_EQ(1u, report_count());
@@ -79,8 +83,8 @@ TEST_F(ReportingNetworkChangeObserverTest, ClearReports) {
   new_policy.persist_clients_across_network_changes = true;
   UsePolicy(new_policy);
 
-  cache()->AddReport(kNik_, kUrl_, kUserAgent_, kGroup_, kType_,
-                     std::make_unique<base::DictionaryValue>(), 0,
+  cache()->AddReport(kReportingSource_, kNik_, kUrl_, kUserAgent_, kGroup_,
+                     kType_, std::make_unique<base::DictionaryValue>(), 0,
                      tick_clock()->NowTicks(), 0);
   SetEndpoint();
   ASSERT_EQ(1u, report_count());
@@ -98,8 +102,8 @@ TEST_F(ReportingNetworkChangeObserverTest, ClearClients) {
   new_policy.persist_clients_across_network_changes = false;
   UsePolicy(new_policy);
 
-  cache()->AddReport(kNik_, kUrl_, kUserAgent_, kGroup_, kType_,
-                     std::make_unique<base::DictionaryValue>(), 0,
+  cache()->AddReport(kReportingSource_, kNik_, kUrl_, kUserAgent_, kGroup_,
+                     kType_, std::make_unique<base::DictionaryValue>(), 0,
                      tick_clock()->NowTicks(), 0);
   SetEndpoint();
   ASSERT_EQ(1u, report_count());
@@ -117,8 +121,8 @@ TEST_F(ReportingNetworkChangeObserverTest, ClearReportsAndClients) {
   new_policy.persist_clients_across_network_changes = false;
   UsePolicy(new_policy);
 
-  cache()->AddReport(kNik_, kUrl_, kUserAgent_, kGroup_, kType_,
-                     std::make_unique<base::DictionaryValue>(), 0,
+  cache()->AddReport(kReportingSource_, kNik_, kUrl_, kUserAgent_, kGroup_,
+                     kType_, std::make_unique<base::DictionaryValue>(), 0,
                      tick_clock()->NowTicks(), 0);
   SetEndpoint();
   ASSERT_EQ(1u, report_count());

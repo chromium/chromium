@@ -8,6 +8,7 @@
 
 #include "base/strings/string_piece.h"
 #include "base/test/task_environment.h"
+#include "base/unguessable_token.h"
 #include "base/values.h"
 #include "content/public/test/test_storage_partition.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -15,6 +16,7 @@
 #include "services/network/public/cpp/request_destination.h"
 #include "services/network/test/test_network_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/frame/reporting_observer.mojom.h"
 
 namespace content {
@@ -44,12 +46,14 @@ class TestNetworkContext : public network::TestNetworkContext {
     base::Value body;
   };
 
-  void QueueReport(const std::string& type,
-                   const std::string& group,
-                   const GURL& url,
-                   const net::NetworkIsolationKey& network_isolation_key,
-                   const absl::optional<std::string>& user_agent,
-                   base::Value body) override {
+  void QueueReport(
+      const std::string& type,
+      const std::string& group,
+      const GURL& url,
+      const absl::optional<base::UnguessableToken>& reporting_source,
+      const net::NetworkIsolationKey& network_isolation_key,
+      const absl::optional<std::string>& user_agent,
+      base::Value body) override {
     DCHECK(!user_agent);
     reports_.emplace_back(
         Report(type, group, url, network_isolation_key, std::move(body)));
