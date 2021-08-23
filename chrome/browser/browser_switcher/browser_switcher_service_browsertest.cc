@@ -533,6 +533,8 @@ IN_PROC_BROWSER_TEST_F(BrowserSwitcherServiceTest, WritesPrefsToCacheFile) {
   greylist.Append("foo.example.com");
   SetPolicy(&policies, policy::key::kBrowserSwitcherUrlGreylist,
             std::move(greylist));
+  SetPolicy(&policies, policy::key::kBrowserSwitcherParsingMode,
+            base::Value(static_cast<int>(ParsingMode::kIESiteListMode)));
   policy_provider().UpdateChromePolicy(policies);
   base::RunLoop().RunUntilIdle();
 
@@ -547,9 +549,10 @@ IN_PROC_BROWSER_TEST_F(BrowserSwitcherServiceTest, WritesPrefsToCacheFile) {
       "chrome.exe\n"
       "--force-dark-mode\n"
       "1\n"
-      "example.com\n"
+      "*://example.com/\n"
       "1\n"
-      "foo.example.com\n";
+      "*://foo.example.com/\n"
+      "ie_sitelist\n";
 
   base::ScopedAllowBlockingForTesting allow_blocking;
   std::string output;
@@ -679,7 +682,8 @@ IN_PROC_BROWSER_TEST_F(BrowserSwitcherServiceTest, CacheFileCorrectOnStartup) {
       "\n"
       "1\n"
       "docs.google.com\n"
-      "0\n",
+      "0\n"
+      "default\n",
       expected_chrome_path.MaybeAsASCII().c_str());
 
   std::string output;
