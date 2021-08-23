@@ -72,6 +72,8 @@ class NetworkHealthProvider
   // active network interface, if one exists.
   std::vector<std::string> GetObserverGuidsAndUpdateActiveGuid();
 
+  void SetNetworkingLogForTesting(NetworkingLog* networking_log_ptr);
+
  private:
   // Handler for receiving a list of active networks.
   void OnActiveNetworkStateListReceived(

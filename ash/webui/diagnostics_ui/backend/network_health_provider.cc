@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/webui/diagnostics_ui/backend/networking_log.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
@@ -544,6 +545,10 @@ void NetworkHealthProvider::NotifyNetworkStateObserver(
 
   network_info.observer->OnNetworkStateChanged(
       mojo::Clone(network_info.network));
+
+  if (IsLoggingEnabled() && network_info.network->guid == active_guid_) {
+    networking_log_ptr_->UpdateContents(network_info.network.Clone());
+  }
 }
 
 void NetworkHealthProvider::GetActiveNetworkState() {
@@ -559,6 +564,11 @@ void NetworkHealthProvider::GetDeviceState() {
   remote_cros_network_config_->GetDeviceStateList(
       base::BindOnce(&NetworkHealthProvider::OnDeviceStateListReceived,
                      base::Unretained(this)));
+}
+
+void NetworkHealthProvider::SetNetworkingLogForTesting(
+    NetworkingLog* networking_log_ptr) {
+  networking_log_ptr_ = networking_log_ptr;
 }
 
 bool NetworkHealthProvider::IsLoggingEnabled() const {

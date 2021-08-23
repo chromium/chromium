@@ -4,6 +4,7 @@
 
 #include "ash/webui/diagnostics_ui/backend/network_health_provider.h"
 
+#include "ash/webui/diagnostics_ui/backend/networking_log.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/task_environment.h"
@@ -998,6 +999,36 @@ TEST_F(NetworkHealthProviderTest, EthernetAndWifiOrderedCorrectly) {
   EXPECT_TRUE(list_observer.active_guid().empty());
   EXPECT_EQ(eth_guid, list_observer.observer_guids()[0]);
   EXPECT_EQ(wifi_guid, list_observer.observer_guids()[1]);
+}
+
+TEST_F(NetworkHealthProviderTest, NetworkingLog) {
+  NetworkingLog log;
+  network_health_provider_->SetNetworkingLogForTesting(&log);
+
+  // Observe the network list.
+  FakeNetworkListObserver list_observer;
+  SetupObserver(&list_observer);
+
+  // Create a wifi device and verify `list_observer` fired.
+  CreateWifiDevice();
+
+  // Observe the network and verify the observer fired.
+  FakeNetworkStateObserver observer;
+
+  SetupObserver(&observer, list_observer.observer_guids()[0]);
+  AssociateWifi();
+  EXPECT_TRUE(list_observer.active_guid().empty());
+
+  // No active network, log is empty.
+  EXPECT_TRUE(log.GetContents().empty());
+
+  // Put wifi into online state.
+  SetWifiOnline();
+
+  // Log is populated with network info now that WiFi is online.
+  // Log contents tested in networking_log_unittest.cc -
+  // NetworkingLogTest.DetailedLogContentsWiFi.
+  EXPECT_FALSE(log.GetContents().empty());
 }
 
 }  // namespace diagnostics
