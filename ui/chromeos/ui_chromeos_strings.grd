@@ -1722,6 +1722,12 @@
       <message name="IDS_NETWORK_ERROR_UNKNOWN" desc="Network error message shown for an unknown or unexpected network configuration error">
         Error configuring network
       </message>
+      <message name="IDS_NETWORK_INVALID_DSM_VALUE" desc="Network error message shown when the Domain Suffix Match list configured for an EAP network contains a value with non-RFC characters or an empty value">
+        Invalid domain suffix match value
+      </message>
+      <message name="IDS_NETWORK_INVALID_SAN_ENTRY" desc="Network error message shown when the Subject Alternative Name Match list configured for an EAP network contains a malformed entry">
+        Invalid subject alternative name match entry
+      </message>
 
       <!-- Settings strings -->
       <message name="IDS_SETTINGS_INTERNET_MOBILE_SEARCH" desc="Settings > Internet > Message in Mobile section when searching for mobile networks.">

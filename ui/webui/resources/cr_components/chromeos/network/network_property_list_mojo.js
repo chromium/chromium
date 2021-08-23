@@ -395,6 +395,18 @@ Polymer({
       value = OncMojo.getActiveValue(
           /** @type {!OncMojo.ManagedProperty} */ (value));
     }
+
+    if (key === 'wifi.eap.subjectAltNameMatch') {
+      return OncMojo.serializeSubjectAltNameMatch(
+          /** @type {!Array<!chromeos.networkConfig.mojom.SubjectAltName>} */ (
+              value));
+    }
+
+    if (key === 'wifi.eap.domainSuffixMatch') {
+      return OncMojo.serializeDomainSuffixMatch(
+          /** @type {!Array<string>} */ (value));
+    }
+
     if (Array.isArray(value)) {
       return value.join(', ');
     }

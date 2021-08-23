@@ -1272,6 +1272,12 @@ Try tapping the mic to ask me anything.
       <message name="IDS_ONC_EAP_SUBJECT_MATCH" desc="ONC Property label for EAP.SubjectMatch">
         Subject match
       </message>
+      <message name="IDS_ONC_EAP_SUBJECT_ALT_NAME_MATCH" desc="ONC Property label for EAP.SubjectAlternativeNameMatch">
+        Subject alternative name match
+      </message>
+      <message name="IDS_ONC_EAP_DOMAIN_SUFFIX_MATCH" desc="ONC Property label for EAP.DomainSuffixMatch">
+        Domain suffix match
+      </message>
       <message name="IDS_ONC_EAP_USER_CERT" desc="ONC Property label for EAP User Certs">
         User certificate
       </message>

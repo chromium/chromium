@@ -167,8 +167,32 @@ class CrosNetworkConfigTest : public testing::Test {
         user_policy_ssid.c_str(),
         base::HexEncode(user_policy_ssid.c_str(), user_policy_ssid.size())
             .c_str()));
+
+    base::Value wifi_eap_onc =
+        onc::ReadDictionaryFromJson(R"({ "GUID": "wifi_eap",
+      "Name": "wifi_eap",
+      "Type": "WiFi",
+      "WiFi": {
+         "AutoConnect": true,
+         "EAP": {
+            "Inner": "MD5",
+            "Outer": "PEAP",
+            "SubjectAlternativeNameMatch": [
+              { "Type": "DNS" , "Value" : "example.com"},
+              {"Type" : "EMAIL", "Value" : "test@example.com"}],
+            "DomainSuffixMatch": ["example1.com","example2.com"],
+            "Recommended": [ "AnonymousIdentity", "Identity", "Password",
+              "DomainSuffixMatch" , "SubjectAlternativeNameMatch"],
+            "UseSystemCAs": true
+         },
+         "SSID": "wifi_eap",
+         "Security": "WPA-EAP"
+      }
+}  )");
+
     base::ListValue user_policy_onc;
     user_policy_onc.Append(std::move(wifi2_onc));
+    user_policy_onc.Append(std::move(wifi_eap_onc));
     managed_network_configuration_handler->SetPolicy(
         ::onc::ONC_SOURCE_USER_POLICY, helper()->UserHash(), user_policy_onc,
         /*global_network_config=*/base::DictionaryValue());
@@ -760,27 +784,30 @@ TEST_F(CrosNetworkConfigTest, GetNetworkStateList) {
   filter->network_type = mojom::NetworkType::kWiFi;
   filter->limit = mojom::kNoLimit;
   networks = GetNetworkStateList(filter.Clone());
-  ASSERT_EQ(4u, networks.size());
+  ASSERT_EQ(5u, networks.size());
   EXPECT_EQ("wifi1_guid", networks[0]->guid);
   EXPECT_EQ("wifi2_guid", networks[1]->guid);
   EXPECT_EQ("wifi4_guid", networks[2]->guid);
-  EXPECT_EQ("wifi3_guid", networks[3]->guid);
+  EXPECT_EQ("wifi_eap", networks[3]->guid);
+  EXPECT_EQ("wifi3_guid", networks[4]->guid);
 
   // Visible wifi networks
   filter->filter = mojom::FilterType::kVisible;
   networks = GetNetworkStateList(filter.Clone());
-  ASSERT_EQ(3u, networks.size());
+  ASSERT_EQ(4u, networks.size());
   EXPECT_EQ("wifi1_guid", networks[0]->guid);
   EXPECT_EQ("wifi2_guid", networks[1]->guid);
   EXPECT_EQ("wifi4_guid", networks[2]->guid);
+  EXPECT_EQ("wifi_eap", networks[3]->guid);
 
   // Configured wifi networks
   filter->filter = mojom::FilterType::kConfigured;
   networks = GetNetworkStateList(filter.Clone());
-  ASSERT_EQ(3u, networks.size());
+  ASSERT_EQ(4u, networks.size());
   EXPECT_EQ("wifi2_guid", networks[0]->guid);
   EXPECT_EQ("wifi4_guid", networks[1]->guid);
-  EXPECT_EQ("wifi3_guid", networks[2]->guid);
+  EXPECT_EQ("wifi_eap", networks[2]->guid);
+  EXPECT_EQ("wifi3_guid", networks[3]->guid);
 }
 
 TEST_F(CrosNetworkConfigTest, ESimAndPSimSlotInfo) {
@@ -1039,6 +1066,30 @@ TEST_F(CrosNetworkConfigTest, GetManagedProperties) {
   ASSERT_TRUE(properties->type_properties->is_vpn());
   EXPECT_EQ(mojom::VpnType::kL2TPIPsec,
             properties->type_properties->get_vpn()->type);
+
+  properties = GetManagedProperties("wifi_eap");
+  ASSERT_TRUE(properties);
+  EXPECT_EQ("wifi_eap", properties->guid);
+  EXPECT_EQ(mojom::NetworkType::kWiFi, properties->type);
+  ASSERT_TRUE(properties->type_properties);
+  ASSERT_TRUE(properties->type_properties->is_wifi());
+  mojom::ManagedEAPPropertiesPtr eap =
+      std::move(properties->type_properties->get_wifi()->eap);
+  ASSERT_TRUE(eap);
+  ASSERT_TRUE(eap->subject_alt_name_match);
+  ASSERT_EQ(2u, eap->subject_alt_name_match->active_value.size());
+  EXPECT_EQ(mojom::SubjectAltName::Type::kDns,
+            eap->subject_alt_name_match->active_value[0]->type);
+  EXPECT_EQ("example.com", eap->subject_alt_name_match->active_value[0]->value);
+  EXPECT_EQ(mojom::SubjectAltName::Type::kEmail,
+            eap->subject_alt_name_match->active_value[1]->type);
+  EXPECT_EQ("test@example.com",
+            eap->subject_alt_name_match->active_value[1]->value);
+
+  ASSERT_TRUE(eap->domain_suffix_match);
+  ASSERT_EQ(2u, eap->domain_suffix_match->active_value.size());
+  EXPECT_EQ("example1.com", eap->domain_suffix_match->active_value[0]);
+  EXPECT_EQ("example2.com", eap->domain_suffix_match->active_value[1]);
 }
 
 // Test managed property policy values.
@@ -1159,6 +1210,37 @@ TEST_F(CrosNetworkConfigTest, SetProperties) {
   config->guid = "Mismatched guid";
   success = SetProperties(kGUID, std::move(config));
   EXPECT_FALSE(success);
+
+  // Set Eap.SubjectAlternativeNameMatch and Eap.DomainSuffixMatch.
+  config = mojom::ConfigProperties::New();
+  config->type_config = mojom::NetworkTypeConfigProperties::NewWifi(
+      mojom::WiFiConfigProperties::New());
+  auto eap = mojom::EAPConfigProperties::New();
+  eap->domain_suffix_match = {"example1.com", "example2.com"};
+  auto san = mojom::SubjectAltName::New();
+  san->type = mojom::SubjectAltName::Type::kDns;
+  san->value = "test.example.com";
+  eap->subject_alt_name_match.push_back(std::move(san));
+
+  config->type_config->get_wifi()->eap = std::move(eap);
+  config->guid = kGUID;
+  success = SetProperties(kGUID, std::move(config));
+  ASSERT_TRUE(success);
+  properties = GetManagedProperties(kGUID);
+  ASSERT_TRUE(properties);
+  ASSERT_EQ(kGUID, properties->guid);
+  ASSERT_TRUE(properties->type_properties);
+  wifi = properties->type_properties->get_wifi().get();
+  ASSERT_TRUE(wifi);
+  ASSERT_TRUE(wifi->eap);
+  EXPECT_EQ(2u, wifi->eap->domain_suffix_match->active_value.size());
+  EXPECT_EQ("example1.com", wifi->eap->domain_suffix_match->active_value[0]);
+  EXPECT_EQ("example2.com", wifi->eap->domain_suffix_match->active_value[1]);
+  EXPECT_EQ(1u, wifi->eap->subject_alt_name_match->active_value.size());
+  EXPECT_EQ(mojom::SubjectAltName::Type::kDns,
+            wifi->eap->subject_alt_name_match->active_value[0]->type);
+  EXPECT_EQ("test.example.com",
+            wifi->eap->subject_alt_name_match->active_value[0]->value);
 }
 
 TEST_F(CrosNetworkConfigTest, CustomAPN) {

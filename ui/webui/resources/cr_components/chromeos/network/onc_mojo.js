@@ -19,6 +19,11 @@
  * strings and for debugging. They are not intended to be drectly user facing.
  */
 
+  /**
+   * Regex expression to validate RFC compliant DNS characters.
+   */
+ const VALID_DNS_CHARS_REGEX = RegExp('^[a-zA-Z0-9-\\.]*$');
+
 /* #export */ class OncMojo {
   /**
    * @param {number|undefined} value
@@ -890,6 +895,7 @@
    *         !chromeos.networkConfig.mojom.ManagedString|
    *         !chromeos.networkConfig.mojom.ManagedStringList|
    *         !chromeos.networkConfig.mojom.ManagedApnList|
+   *         !chromeos.networkConfig.mojom.ManagedSubjectAltNameMatchList|
    *         null|undefined} property
    * @return {boolean|number|string|!Array<string>|
    *          !Array<!chromeos.networkConfig.mojom.ApnProperties>|undefined}
@@ -1267,6 +1273,127 @@
     }
     assertNotReached();
     return false;
+  }
+
+  /**
+   * Returns a string representation of the DomainSuffixMatch, formatted as a
+   * semicolon separated string of entries.
+   * See https://w1.fi/cgit/hostap/plain/wpa_supplicant/wpa_supplicant.conf.
+   * @param {!Array<!string>} domainSuffixMatch
+   * @return {string}
+   */
+  static serializeDomainSuffixMatch(domainSuffixMatch) {
+    if (!domainSuffixMatch || domainSuffixMatch.length === 0) {
+      return '';
+    }
+    return domainSuffixMatch.join(';');
+  }
+
+  /**
+   * Converts the string representation of the DomainSuffixMatch to a mojo
+   *  object. Returns null if `domainSuffixMatch` contains non-RFC compliant
+   * characters.
+   * @param {string} domainSuffixMatch
+   * @return  {?Array<!string>}
+   */
+  static deserializeDomainSuffixMatch(domainSuffixMatch) {
+    const entries = domainSuffixMatch.trim().split(';');
+    const result = [];
+    for (const e of entries) {
+      const value = VALID_DNS_CHARS_REGEX.exec(e);
+      if (!value || value.length !== 1) {
+        console.warn('Invalid Domain Suffix Match entry: ' + e);
+        return null;
+      }
+      const entry = value[0].trim();
+      if (entry !== '') {
+        result.push(value[0]);
+      }
+    }
+    return result;
+  }
+
+  /**
+   * Returns a string representation of the SubjectAlternativeNameMatch,
+   * formatted as a semicolon separated string of entries in the following
+   * format: <type>:<value>.
+   * See https://w1.fi/cgit/hostap/plain/wpa_supplicant/wpa_supplicant.conf.
+   * @param {!Array<!chromeos.networkConfig.mojom.SubjectAltName>}
+   *        subjectAltNameMatch
+   * @return {string}
+   */
+  static serializeSubjectAltNameMatch(subjectAltNameMatch) {
+    if (!subjectAltNameMatch || subjectAltNameMatch.length === 0) {
+      return '';
+    }
+    const result = [];
+    for (const e of subjectAltNameMatch) {
+      let type;
+      switch (e.type) {
+        case chromeos.networkConfig.mojom.SubjectAltName_Type.kEmail:
+          type = 'EMAIL';
+          break;
+        case chromeos.networkConfig.mojom.SubjectAltName_Type.kDns:
+          type = 'DNS';
+          break;
+        case chromeos.networkConfig.mojom.SubjectAltName_Type.kUri:
+          type = 'URI';
+          break;
+        default:
+          assertNotReached('Unknown subjectAltNameMatchType ' + e.type);
+      }
+      result.push(type + ':' + e.value);
+    }
+    return result.join(';');
+  }
+
+  /**
+   * Converts the string representation of the DomainSuffixMatch to a mojo
+   * object. Returns null if `subjectAltNameMatch` contains:
+   *  - entries not in the format <type>:<value>;
+   *  - a type other than 'EMAIL', 'DNS', 'URI';
+   *  - a value with non-RFC compliant characters.
+   * @param {string} subjectAltNameMatch
+   * @return {?Array<!chromeos.networkConfig.mojom.SubjectAltName>}
+   */
+  static deserializeSubjectAltNameMatch(subjectAltNameMatch) {
+    const regValidEmailChars = RegExp('^[a-zA-Z0-9-\\.\\+_~@]*$');
+    const regValidUriChars =
+      RegExp('^[a-zA-Z0-9-\\._~:/?#\\[\\]@!$&\'()\\*\\+,;=]*$');
+
+    const entries = subjectAltNameMatch.trim().split(';');
+    const result =
+      /*@type {Array<!chromeos.networkConfig.mojom.SubjectAltName>}*/[];
+
+    for (const entry of entries) {
+      if (entry === "") {
+        continue;
+      }
+      let type;
+      let value;
+      if (entry.toUpperCase().startsWith('EMAIL:')) {
+        type = chromeos.networkConfig.mojom.SubjectAltName_Type.kEmail;
+        value = regValidEmailChars.exec(entry.substring(6));
+      } else if (entry.toUpperCase().startsWith('DNS:')) {
+        type = chromeos.networkConfig.mojom.SubjectAltName_Type.kDns;
+        value = VALID_DNS_CHARS_REGEX.exec(entry.substring(4));
+      } else if (entry.toUpperCase().startsWith('URI:')) {
+        type = chromeos.networkConfig.mojom.SubjectAltName_Type.kUri;
+        value = regValidUriChars.exec(entry.substring(4));
+      } else {
+        console.warn('Invalid Subject Alternative Name Match type ' + entry);
+        return null;
+      }
+      if (!value || value.length !== 1) {
+        console.warn('Invalid Subject Alternative Name Match value ' + entry);
+        return null;
+      }
+      result.push(/* @type {!chromeos.networkConfig.mojom.SubjectAltName} */ {
+        type: type,
+        value: value[0]
+      });
+    }
+    return result;
   }
 }
 

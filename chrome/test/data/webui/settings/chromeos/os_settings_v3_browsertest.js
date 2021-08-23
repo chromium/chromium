@@ -421,6 +421,7 @@ TEST_F('OSSettingsOsBluetoothDeviceDetailSubpageV3Test', 'AllJsTests', () => {
  ['NetworkProxySection', 'network_proxy_section_test.m.js'],
  ['NetworkSummary', 'network_summary_test.m.js'],
  ['NetworkSummaryItem', 'network_summary_item_test.m.js'],
+ ['OncMojoTest', 'onc_mojo_test.m.js'],
  ['OsBluetoothDevicesSubpage', 'os_bluetooth_devices_subpage_tests.m.js'],
  ['OsBluetoothPage', 'os_bluetooth_page_tests.m.js'],
  ['OsBluetoothSummary', 'os_bluetooth_summary_tests.m.js'],

@@ -217,7 +217,7 @@ Polymer({
      *   Outer: (boolean|undefined),
      *   Inner: (boolean|undefined),
      *   ServerCA: (boolean|undefined),
-     *   SubjectMatch: (boolean|undefined),
+     *   EapServerCertMatch: (boolean|undefined),
      *   UserCert: (boolean|undefined),
      *   Identity: (boolean|undefined),
      *   Password: (boolean|undefined),
@@ -307,6 +307,18 @@ Polymer({
     configRequiresPassphrase_: {
       type: Boolean,
       computed: 'computeConfigRequiresPassphrase_(mojoType_, securityType_)',
+    },
+
+    /** @private */
+    serializedDomainSuffixMatch_: {
+      type: String,
+      value: '',
+    },
+
+    /** @private */
+    serializedSubjectAltNameMatch_: {
+      type: String,
+      value: '',
     },
   },
 
@@ -425,7 +437,25 @@ Polymer({
     }
     this.propertiesSent_ = true;
     this.error = '';
+    if (this.eapProperties_) {
+      const dsm = OncMojo.deserializeDomainSuffixMatch(
+          this.serializedDomainSuffixMatch_);
+      if (!dsm) {
+        this.setError_('invalidDomainSuffixMatchEntry');
+        this.propertiesSent_ = false;
+        return;
+      }
+      this.eapProperties_.domainSuffixMatch = dsm;
 
+      const sanm = OncMojo.deserializeSubjectAltNameMatch(
+          this.serializedSubjectAltNameMatch_);
+      if (!sanm) {
+        this.setError_('invalidSubjectAlternativeNameMatchEntry');
+        this.propertiesSent_ = false;
+        return;
+      }
+      this.eapProperties_.subjectAltNameMatch = sanm;
+    }
     const propertiesToSet = this.getPropertiesToSet_();
     if (this.managedProperties_.source === mojom.OncSource.kNone) {
       if (!this.autoConnect_) {
@@ -690,12 +720,16 @@ Polymer({
       anonymousIdentity: OncMojo.getActiveString(eap.anonymousIdentity),
       clientCertType: OncMojo.getActiveString(eap.clientCertType),
       clientCertPkcs11Id: OncMojo.getActiveString(eap.clientCertPkcs11Id),
+      domainSuffixMatch: this.getActiveStringList_(eap.domainSuffixMatch) || [],
       identity: OncMojo.getActiveString(eap.identity),
       inner: OncMojo.getActiveString(eap.inner),
       outer: OncMojo.getActiveString(eap.outer) || 'LEAP',
       password: OncMojo.getActiveString(eap.password),
       saveCredentials: this.getActiveBoolean_(eap.saveCredentials),
       serverCaPems: this.getActiveStringList_(eap.serverCaPems),
+      subjectAltNameMatch:
+          /** @type {!Array<!chromeos.networkConfig.mojom.SubjectAltName>} */
+          (OncMojo.getActiveValue(eap.subjectAltNameMatch) || []),
       subjectMatch: OncMojo.getActiveString(eap.subjectMatch),
       useSystemCas: this.getActiveBoolean_(eap.useSystemCas),
     };
@@ -830,6 +864,12 @@ Polymer({
     this.set('eapProperties_', this.getEap_(this.configProperties_));
     if (!this.eapProperties_) {
       this.showEap_ = null;
+    } else {
+      this.serializedDomainSuffixMatch_ = OncMojo.serializeDomainSuffixMatch(
+          this.eapProperties_.domainSuffixMatch);
+      this.serializedSubjectAltNameMatch_ =
+          OncMojo.serializeSubjectAltNameMatch(
+              this.eapProperties_.subjectAltNameMatch);
     }
     if (managedProperties.type === mojom.NetworkType.kVPN) {
       this.vpnType_ = this.getVpnTypeFromProperties_(this.configProperties_);
@@ -920,7 +960,8 @@ Polymer({
           Outer: true,
           Inner: outer === 'PEAP' || outer === 'EAP-TTLS',
           ServerCA: outer !== 'LEAP',
-          SubjectMatch: outer === 'EAP-TLS',
+          EapServerCertMatch:
+              outer === 'EAP-TLS' || outer === 'EAP-TTLS' || outer === 'PEAP',
           UserCert: outer === 'EAP-TLS',
           Identity: true,
           Password: outer !== 'EAP-TLS',
@@ -948,6 +989,8 @@ Polymer({
       return eap || {
         saveCredentials: false,
         useSystemCas: false,
+        domainSuffixMatch: [],
+        subjectAltNameMatch: [],
       };
     }
     return eap || null;

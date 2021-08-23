@@ -119,6 +119,7 @@ js_modulizer("modulize") {
     "network_proxy_section_test.js",
     "network_summary_test.js",
     "network_summary_item_test.js",
+    "onc_mojo_test.js",
     "os_a11y_page_tests.js",
     "os_about_page_tests.js",
     "os_bluetooth_page_tests.js",
