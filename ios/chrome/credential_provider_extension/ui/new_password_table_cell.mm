@@ -81,6 +81,14 @@ const CGFloat kButtonSpacing = 8;
     _titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
     _titleLabel.numberOfLines = 0;
 
+    // The text field should neither shrink or grow if possible
+    [_titleLabel setContentHuggingPriority:UILayoutPriorityDefaultHigh + 1
+                                   forAxis:UILayoutConstraintAxisHorizontal];
+    [_titleLabel
+        setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh + 1
+                                        forAxis:
+                                            UILayoutConstraintAxisHorizontal];
+
     _textField = [[UITextField alloc] init];
     _textField.translatesAutoresizingMaskIntoConstraints = NO;
     _textField.hidden = YES;
