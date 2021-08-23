@@ -298,6 +298,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // RenderFrameHost
   int GetRoutingID() override;
   const blink::LocalFrameToken& GetFrameToken() override;
+  const base::UnguessableToken& GetReportingSource() override;
 
   ui::AXTreeID GetAXTreeID() override;
   void RequestAXTreeSnapshot(AXTreeSnapshotCallback callback,
@@ -3800,6 +3801,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
     // or this document is not in prerendering. This is used to defer and
     // dispatch DidFinishLoad notification on prerender activation.
     absl::optional<GURL> pending_did_finish_load_url_for_prerendering;
+
+    // Reporting API:
+    //
+    // Contains the reporting source token for this document, which will be
+    // associated with the reporting endpoint configuration in the network
+    // service, as well as with any reports which are queued by this document.
+    base::UnguessableToken reporting_source;
   };
 
   std::unique_ptr<DocumentAssociatedData> document_associated_data_;

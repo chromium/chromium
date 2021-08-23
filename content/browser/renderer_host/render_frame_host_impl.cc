@@ -1701,6 +1701,11 @@ const blink::LocalFrameToken& RenderFrameHostImpl::GetFrameToken() {
   return frame_token_;
 }
 
+const base::UnguessableToken& RenderFrameHostImpl::GetReportingSource() {
+  DCHECK(!document_associated_data_->reporting_source.is_empty());
+  return document_associated_data_->reporting_source;
+}
+
 ui::AXTreeID RenderFrameHostImpl::GetAXTreeID() {
   return ax_tree_id();
 }
@@ -3477,10 +3482,9 @@ void RenderFrameHostImpl::DidNavigate(
     DidCommitNewDocument(params, navigation_request);
 
   // Set up reporting endpoints for this document.
-  DCHECK(frame_token_.value());
   if (!reporting_endpoints_.empty()) {
     GetStoragePartition()->GetNetworkContext()->SetDocumentReportingEndpoints(
-        frame_token_.value(), params.origin,
+        GetReportingSource(), params.origin,
         isolation_info_.network_isolation_key(), reporting_endpoints_);
   }
 
@@ -6518,7 +6522,7 @@ void RenderFrameHostImpl::CreateNewWindow(
         std::make_unique<CrossOriginOpenerPolicyReporter>(
             GetProcess()->GetStoragePartition(), GetLastCommittedURL(),
             params->referrer->url, new_main_rfh->cross_origin_opener_policy(),
-            frame_token_.value(), isolation_info_.network_isolation_key()));
+            GetReportingSource(), isolation_info_.network_isolation_key()));
   }
 
   mojo::PendingAssociatedRemote<mojom::Frame> pending_frame_remote;
@@ -9519,7 +9523,7 @@ RenderFrameHostImpl::CreateNavigationRequestForSynchronousRendererCommit(
         GetProcess()->GetStoragePartition(), url,
         cross_origin_embedder_policy_.reporting_endpoint,
         cross_origin_embedder_policy_.report_only_reporting_endpoint,
-        frame_token_.value(), isolation_info.network_isolation_key());
+        GetReportingSource(), isolation_info.network_isolation_key());
   }
   std::unique_ptr<WebBundleNavigationInfo> web_bundle_navigation_info;
   if (is_same_document && web_bundle_handle_ &&
@@ -10495,9 +10499,8 @@ void RenderFrameHostImpl::MaybeGenerateCrashReport(
   // Send the crash report to the Reporting API.
   GetProcess()->GetStoragePartition()->GetNetworkContext()->QueueReport(
       /*type=*/"crash", /*group=*/"default", last_committed_url_,
-      frame_token_.value() /* reporting_source */,
-      isolation_info_.network_isolation_key(), absl::nullopt /* user_agent */,
-      std::move(body));
+      GetReportingSource(), isolation_info_.network_isolation_key(),
+      absl::nullopt /* user_agent */, std::move(body));
 }
 
 void RenderFrameHostImpl::SendCommitNavigation(
@@ -12297,6 +12300,7 @@ RenderFrameHostImpl::DocumentAssociatedData::DocumentAssociatedData(
     DCHECK(page_delegate);
     owned_page = std::make_unique<PageImpl>(document, *page_delegate);
   }
+  reporting_source = base::UnguessableToken::Create();
 }
 RenderFrameHostImpl::DocumentAssociatedData::~DocumentAssociatedData() =
     default;
