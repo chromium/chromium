@@ -73,7 +73,7 @@ PerformanceMark* PerformanceMark::Create(ScriptState* script_state,
   }
 
   if (!is_worker_global_scope &&
-      PerformanceTiming::GetAttributeMapping().Contains(mark_name)) {
+      PerformanceTiming::IsAttributeName(mark_name)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
         "'" + mark_name +

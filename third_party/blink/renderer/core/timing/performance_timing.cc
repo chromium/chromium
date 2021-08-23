@@ -775,6 +775,38 @@ std::unique_ptr<TracedValue> PerformanceTiming::GetNavigationTracingData() {
 }
 
 // static
+bool PerformanceTiming::IsAttributeName(const AtomicString& name) {
+  return GetAttributeMapping().Contains(name);
+}
+
+uint64_t PerformanceTiming::GetNamedAttribute(const AtomicString& name) const {
+  DCHECK(IsAttributeName(name)) << "The string passed as parameter must be an "
+                                   "attribute of performance.timing";
+  PerformanceTimingGetter fn = GetAttributeMapping().at(name);
+  return (this->*fn)();
+}
+
+ScriptValue PerformanceTiming::toJSONForBinding(
+    ScriptState* script_state) const {
+  V8ObjectBuilder result(script_state);
+  for (const auto& name_attribute_pair : GetAttributeMapping()) {
+    result.AddNumber(name_attribute_pair.key,
+                     (this->*(name_attribute_pair.value))());
+  }
+  return result.GetScriptValue();
+}
+
+uint64_t PerformanceTiming::MonotonicTimeToIntegerMilliseconds(
+    base::TimeTicks time) const {
+  const DocumentLoadTiming* timing = GetDocumentLoadTiming();
+  if (!timing)
+    return 0;
+
+  return ToIntegerMilliseconds(timing->MonotonicTimeToPseudoWallTime(time),
+                               cross_origin_isolated_capability_);
+}
+
+// static
 const PerformanceTiming::NameToAttributeMap&
 PerformanceTiming::GetAttributeMapping() {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<NameToAttributeMap>, map, ());
@@ -806,26 +838,6 @@ PerformanceTiming::GetAttributeMapping() {
     };
   }
   return *map;
-}
-
-ScriptValue PerformanceTiming::toJSONForBinding(
-    ScriptState* script_state) const {
-  V8ObjectBuilder result(script_state);
-  for (const auto& name_attribute_pair : GetAttributeMapping()) {
-    result.AddNumber(name_attribute_pair.key,
-                     (this->*(name_attribute_pair.value))());
-  }
-  return result.GetScriptValue();
-}
-
-uint64_t PerformanceTiming::MonotonicTimeToIntegerMilliseconds(
-    base::TimeTicks time) const {
-  const DocumentLoadTiming* timing = GetDocumentLoadTiming();
-  if (!timing)
-    return 0;
-
-  return ToIntegerMilliseconds(timing->MonotonicTimeToPseudoWallTime(time),
-                               cross_origin_isolated_capability_);
 }
 
 void PerformanceTiming::Trace(Visitor* visitor) const {

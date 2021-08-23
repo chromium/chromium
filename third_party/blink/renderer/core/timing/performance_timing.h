@@ -199,9 +199,13 @@ class CORE_EXPORT PerformanceTiming final : public ScriptWrappable,
   // The start time of the prerender activation navigation.
   absl::optional<base::TimeDelta> PrerenderActivationStart() const;
 
-  typedef uint64_t (PerformanceTiming::*PerformanceTimingGetter)() const;
-  using NameToAttributeMap = HashMap<AtomicString, PerformanceTimingGetter>;
-  static const NameToAttributeMap& GetAttributeMapping();
+  // Returns true iff the given string identifies an attribute of
+  // |performance.timing|.
+  static bool IsAttributeName(const AtomicString&);
+
+  // Returns the attribute value identified by the given string. The string
+  // passed as parameter must be an attribute of |performance.timing|.
+  uint64_t GetNamedAttribute(const AtomicString&) const;
 
   ScriptValue toJSONForBinding(ScriptState*) const;
 
@@ -223,6 +227,11 @@ class CORE_EXPORT PerformanceTiming final : public ScriptWrappable,
   InteractiveDetector* GetInteractiveDetector() const;
   absl::optional<base::TimeDelta> MonotonicTimeToPseudoWallTime(
       const absl::optional<base::TimeTicks>&) const;
+
+  typedef uint64_t (PerformanceTiming::*PerformanceTimingGetter)() const;
+  using NameToAttributeMap = HashMap<AtomicString, PerformanceTimingGetter>;
+  static const NameToAttributeMap& GetAttributeMapping();
+
   bool cross_origin_isolated_capability_;
 };
 
