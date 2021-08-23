@@ -630,17 +630,6 @@ void NGInlineLayoutAlgorithm::PlaceBlockInInline(
         /* margins */ NGLineBoxStrut(), baseline_type_);
     box_states_->OnBlockInInline(metrics, line_box);
     container_builder_.SetMetrics(metrics);
-
-    // If a spanner was found inside the child, we need to finish up and
-    // propagate the spanner to the column layout algorithm, so that it can take
-    // care of it.
-    if (UNLIKELY(ConstraintSpace().IsInColumnBfc())) {
-      if (NGBlockNode spanner_node =
-              item_result->layout_result->ColumnSpanner()) {
-        DCHECK(!container_builder_.FoundColumnSpanner());
-        container_builder_.SetColumnSpanner(spanner_node);
-      }
-    }
   } else {
     container_builder_.SetIsSelfCollapsing();
     container_builder_.SetIsEmptyLineBox();

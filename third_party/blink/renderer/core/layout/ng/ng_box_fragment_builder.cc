@@ -382,6 +382,19 @@ void NGBoxFragmentBuilder::PropagateBreak(
 
   if (!is_fragmentation_context_root_)
     has_violating_break_ |= child_layout_result.HasViolatingBreak();
+
+  // If a spanner was found inside the child, we need to finish up and propagate
+  // the spanner to the column layout algorithm, so that it can take care of it.
+  if (UNLIKELY(ConstraintSpace()->IsInColumnBfc())) {
+    if (NGBlockNode spanner_node = child_layout_result.ColumnSpanner()) {
+      DCHECK(HasInflowChildBreakInside() ||
+             !child_layout_result.PhysicalFragment().IsBox());
+      SetColumnSpanner(spanner_node);
+      SetIsEmptySpannerParent(child_layout_result.IsEmptySpannerParent());
+    }
+  } else {
+    DCHECK(!child_layout_result.ColumnSpanner());
+  }
 }
 
 scoped_refptr<const NGLayoutResult> NGBoxFragmentBuilder::ToBoxFragment(
