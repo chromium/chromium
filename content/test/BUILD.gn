@@ -1935,6 +1935,7 @@ test("content_unittests") {
     "../browser/byte_stream_unittest.cc",
     "../browser/cache_storage/cache_storage_blob_to_disk_cache_unittest.cc",
     "../browser/cache_storage/cache_storage_cache_unittest.cc",
+    "../browser/cache_storage/cache_storage_context_unittest.cc",
     "../browser/cache_storage/cache_storage_index_unittest.cc",
     "../browser/cache_storage/cache_storage_manager_unittest.cc",
     "../browser/cache_storage/cache_storage_scheduler_unittest.cc",

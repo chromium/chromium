@@ -10,6 +10,8 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "components/services/storage/public/cpp/buckets/bucket_info.h"
+#include "components/services/storage/public/cpp/buckets/constants.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "components/services/storage/public/mojom/storage_policy_update.mojom.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
@@ -27,7 +29,9 @@
 
 namespace content {
 
-CacheStorageContextImpl::CacheStorageContextImpl() {
+CacheStorageContextImpl::CacheStorageContextImpl(
+    scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy)
+    : quota_manager_proxy_(std::move(quota_manager_proxy)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
@@ -58,7 +62,6 @@ CacheStorageContextImpl::CreateSchedulerTaskRunner() {
 void CacheStorageContextImpl::Init(
     mojo::PendingReceiver<storage::mojom::CacheStorageControl> control,
     const base::FilePath& user_data_directory,
-    scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
     mojo::PendingReceiver<storage::mojom::QuotaClient>
         cache_storage_client_remote,
     mojo::PendingReceiver<storage::mojom::QuotaClient>
@@ -66,7 +69,6 @@ void CacheStorageContextImpl::Init(
     mojo::PendingRemote<storage::mojom::BlobStorageContext>
         blob_storage_context) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(quota_manager_proxy);
 
   receivers_.Add(this, std::move(control));
   is_incognito_ = user_data_directory.empty();
@@ -79,7 +81,7 @@ void CacheStorageContextImpl::Init(
   DCHECK(!cache_manager_);
   cache_manager_ = LegacyCacheStorageManager::Create(
       user_data_directory, std::move(cache_task_runner),
-      base::SequencedTaskRunnerHandle::Get(), std::move(quota_manager_proxy),
+      base::SequencedTaskRunnerHandle::Get(), quota_manager_proxy_,
       base::MakeRefCounted<BlobStorageContextWrapper>(
           std::move(blob_storage_context)));
 
@@ -102,11 +104,13 @@ void CacheStorageContextImpl::AddReceiver(
     mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!dispatcher_host_)
-    dispatcher_host_ = std::make_unique<CacheStorageDispatcherHost>(this);
-  dispatcher_host_->AddReceiver(cross_origin_embedder_policy,
-                                std::move(coep_reporter), storage_key, owner,
-                                std::move(receiver));
+  quota_manager_proxy_->GetOrCreateBucket(
+      storage_key, storage::kDefaultBucketName,
+      base::SequencedTaskRunnerHandle::Get(),
+      base::BindOnce(&CacheStorageContextImpl::AddReceiverWithBucketInfo,
+                     weak_factory_.GetWeakPtr(), cross_origin_embedder_policy,
+                     std::move(coep_reporter), storage_key, owner,
+                     std::move(receiver)));
 }
 
 void CacheStorageContextImpl::GetAllStorageKeysInfo(
@@ -141,6 +145,24 @@ void CacheStorageContextImpl::ApplyPolicyUpdates(
       storage_keys_to_purge_on_shutdown_.insert(
           blink::StorageKey(std::move(update->origin)));
   }
+}
+
+void CacheStorageContextImpl::AddReceiverWithBucketInfo(
+    const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
+    mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
+        coep_reporter,
+    const blink::StorageKey& storage_key,
+    storage::mojom::CacheStorageOwner owner,
+    mojo::PendingReceiver<blink::mojom::CacheStorage> receiver,
+    storage::QuotaErrorOr<storage::BucketInfo> result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(result.ok());
+
+  if (!dispatcher_host_)
+    dispatcher_host_ = std::make_unique<CacheStorageDispatcherHost>(this);
+  dispatcher_host_->AddReceiver(cross_origin_embedder_policy,
+                                std::move(coep_reporter), storage_key, owner,
+                                std::move(receiver));
 }
 
 }  // namespace content
