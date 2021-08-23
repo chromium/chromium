@@ -2,26 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
-
-if (enable_chrome_android_internal) {
-  source_set("backend") {
-    visibility = [ "//chrome/browser/password_manager:backend_factory" ]
-
-    sources = [
-      "password_store_android_backend.cc",
-      "password_store_android_backend.h",
-      "password_store_android_backend_bridge.h",
-      "password_store_android_backend_bridge_impl.cc",
-      "password_store_android_backend_bridge_impl.h",
-    ]
-
-    public_deps = [ "//base" ]
-
-    deps = [ ":jni_headers" ]
-  }
-}
 
 android_library("java") {
   deps = [
@@ -47,19 +28,14 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/password_manager/ConfirmationDialogHelper.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerHelper.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordScriptsFetcherBridge.java",
+    "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreAndroidBackend.java",
+    "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreAndroidBackendBridgeImpl.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreBridge.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreCredential.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordAccessReauthenticationHelper.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordReauthenticationFragment.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/ReauthenticationManager.java",
   ]
-
-  if (enable_chrome_android_internal) {
-    sources += [
-      "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreAndroidBackend.java",
-      "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreAndroidBackendBridgeImpl.java",
-    ]
-  }
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
   resources_package = "org.chromium.chrome.browser.password_manager"
@@ -69,14 +45,10 @@ generate_jni("jni_headers") {
   visibility = [ "//chrome/browser" ]
   sources = [
     "java/src/org/chromium/chrome/browser/password_manager/PasswordScriptsFetcherBridge.java",
+    "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreAndroidBackendBridgeImpl.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreBridge.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreCredential.java",
   ]
-
-  if (enable_chrome_android_internal) {
-    visibility += [ ":backend" ]
-    sources += [ "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreAndroidBackendBridgeImpl.java" ]
-  }
 }
 
 junit_binary("password_manager_junit_tests") {
