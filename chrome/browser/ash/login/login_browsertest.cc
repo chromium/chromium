@@ -326,13 +326,7 @@ IN_PROC_BROWSER_TEST_F(LoginOfflineTest, MAYBE_AuthOffline) {
   TestSystemTrayIsVisible();
 }
 
-// crbug.com/1240579: test is flaky on chromeos.
-#if defined(OS_CHROMEOS)
-#define MAYBE_CorrectDomainCompletion DISABLED_CorrectDomainCompletion
-#else
-#define MAYBE_CorrectDomainCompletion CorrectDomainCompletion
-#endif
-IN_PROC_BROWSER_TEST_F(LoginOfflineManagedTest, MAYBE_CorrectDomainCompletion) {
+IN_PROC_BROWSER_TEST_F(LoginOfflineManagedTest, CorrectDomainCompletion) {
   std::string domain = gaia::ExtractDomainName(managed_user_id_.GetUserEmail());
 
   ConfigurePolicy(domain);
