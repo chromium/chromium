@@ -321,7 +321,7 @@ body.enable-scan-barcode .barcode-scan-box {
 }
 
 #preview-document-corner-overlay .corner div {
-  background: rgba(138, 180, 248, 1)
+  background: var(--blue-300);
 }
 
 #preview-document-corner-overlay .corner {
@@ -348,7 +348,7 @@ body.enable-scan-barcode .barcode-scan-box {
 }
 
 #preview-document-corner-overlay .side.line {
-  background: rgba(66, 133, 244, 1);
+  background: var(--blue-500);
   height: 1px;
   width: 1px;
 }
