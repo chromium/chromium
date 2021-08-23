@@ -66,12 +66,17 @@ chrome::MessageBoxResult ShowSync(gfx::NativeWindow parent,
                                   const std::u16string& yes_text,
                                   const std::u16string& no_text,
                                   const std::u16string& checkbox_text) {
-  chrome::MessageBoxResult result = chrome::MESSAGE_BOX_RESULT_NO;
+  static bool g_message_box_is_showing_sync = false;
+  // To avoid showing another MessageBoxDialog when one is already pending.
+  // Otherwise, this might lead to a stack overflow due to infinite runloops.
+  if (g_message_box_is_showing_sync)
+    return chrome::MESSAGE_BOX_RESULT_NO;
 
+  base::AutoReset<bool> is_showing(&g_message_box_is_showing_sync, true);
+  chrome::MessageBoxResult result = chrome::MESSAGE_BOX_RESULT_NO;
   // TODO(pkotwicz): Exit message loop when the dialog is closed by some other
   // means than |Cancel| or |Accept|. crbug.com/404385
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-
   MessageBoxDialog::Show(
       parent, title, message, type, yes_text, no_text, checkbox_text,
       base::BindOnce(
@@ -81,7 +86,6 @@ chrome::MessageBoxResult ShowSync(gfx::NativeWindow parent,
             run_loop->Quit();
           },
           &run_loop, &result));
-
   run_loop.Run();
   return result;
 }
