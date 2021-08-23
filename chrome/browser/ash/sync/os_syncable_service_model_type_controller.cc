@@ -39,7 +39,8 @@ OsSyncableServiceModelTypeController::OsSyncableServiceModelTypeController(
           syncable_service.get())),
       pref_service_(pref_service),
       sync_service_(sync_service) {
-  DCHECK(chromeos::features::IsSplitSettingsSyncEnabled());
+  DCHECK(chromeos::features::IsSplitSettingsSyncEnabled() ||
+         chromeos::features::IsSyncSettingsCategorizationEnabled());
   DCHECK(type == syncer::APP_LIST || type == syncer::OS_PREFERENCES ||
          type == syncer::OS_PRIORITY_PREFERENCES);
   DCHECK(pref_service_);

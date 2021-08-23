@@ -484,7 +484,8 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
         GetSyncableServiceForType(syncer::ARC_PACKAGE), dump_stack,
         sync_service, profile_));
   }
-  if (chromeos::features::IsSplitSettingsSyncEnabled()) {
+  if (chromeos::features::IsSplitSettingsSyncEnabled() ||
+      chromeos::features::IsSyncSettingsCategorizationEnabled()) {
     if (!disabled_types.Has(syncer::OS_PREFERENCES)) {
       controllers.push_back(
           std::make_unique<OsSyncableServiceModelTypeController>(
@@ -499,6 +500,8 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
               GetSyncableServiceForType(syncer::OS_PRIORITY_PREFERENCES),
               dump_stack, profile_->GetPrefs(), sync_service));
     }
+  }
+  if (chromeos::features::IsSplitSettingsSyncEnabled()) {
     if (!disabled_types.Has(syncer::PRINTERS)) {
       // Use the same delegate in full-sync and transport-only modes.
       syncer::ModelTypeControllerDelegate* delegate =

@@ -9,14 +9,8 @@
 SyncSettingsCategorizationSyncTest::SyncSettingsCategorizationSyncTest(
     TestType type)
     : SyncTest(type) {
-  // TODO(https://crbug.com/1227417): Remove SplitSettingsSync after migrating
-  // the affected tests.
-  settings_feature_list_.InitWithFeatures(
-      {
-          ash::features::kSyncSettingsCategorization,
-          ash::features::kSplitSettingsSync,
-      },
-      {});
+  settings_feature_list_.InitAndEnableFeature(
+      ash::features::kSyncSettingsCategorization);
 }
 
 SyncSettingsCategorizationSyncTest::~SyncSettingsCategorizationSyncTest() =

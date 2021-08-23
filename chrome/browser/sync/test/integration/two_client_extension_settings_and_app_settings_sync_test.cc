@@ -237,7 +237,7 @@ class TwoClientAppSettingsOsSyncTest
 
 IN_PROC_BROWSER_TEST_F(TwoClientAppSettingsOsSyncTest,
                        AppsStartWithSameSettings) {
-  ASSERT_TRUE(chromeos::features::IsSplitSettingsSyncEnabled());
+  ASSERT_TRUE(chromeos::features::IsSyncSettingsCategorizationEnabled());
   ASSERT_TRUE(SetupClients());
   ASSERT_PRED3(StartWithSameSettingsTest, InstallHostedAppForAllProfiles(0),
                InstallHostedAppForAllProfiles(1),
@@ -246,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientAppSettingsOsSyncTest,
 
 IN_PROC_BROWSER_TEST_F(TwoClientAppSettingsOsSyncTest,
                        AppsStartWithDifferentSettings) {
-  ASSERT_TRUE(chromeos::features::IsSplitSettingsSyncEnabled());
+  ASSERT_TRUE(chromeos::features::IsSyncSettingsCategorizationEnabled());
   ASSERT_TRUE(SetupClients());
   ASSERT_PRED3(
       StartWithDifferentSettingsTest, InstallHostedAppForAllProfiles(0),
