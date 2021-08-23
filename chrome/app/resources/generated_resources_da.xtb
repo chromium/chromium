@@ -2551,7 +2551,7 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3693415264595406141">Adgangskode:</translation>
 <translation id="3694027410380121301">Vælg forrige fane</translation>
 <translation id="369489984217678710">Adgangskoder og andre logindata</translation>
-<translation id="369522892592566391">{NUM_FILES,plural, =0{Sikkerhedstjekkene blev gennemført. Dine data uploades.}=1{Sikkerhedstjekkene blev gennemført. Din fil uploades.}one{Sikkerhedstjekkene blev gennemført. Din fil uploades.}other{Sikkerhedstjekkene blev gennemført. Dine filer uploades.}}</translation>
+<translation id="369522892592566391">{NUM_FILES,plural, =0{Sikkerhedstjekket blev gennemført. Dine data uploades.}=1{Sikkerhedstjekket blev gennemført. Din fil uploades.}one{Sikkerhedstjekket blev gennemført. Din fil uploades.}other{Sikkerhedstjekket blev gennemført. Dine filer uploades.}}</translation>
 <translation id="3696576298374669274">Se tjenestelogs</translation>
 <translation id="3699624789011381381">Mailadresse</translation>
 <translation id="3699920817649120894">Vil du deaktivere synkronisering og tilpasning?</translation>
@@ -2780,7 +2780,7 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3911824782900911339">Siden Ny fane</translation>
 <translation id="3914173277599553213">Påkrævet</translation>
 <translation id="3915280005470252504">Søg ved at indtale</translation>
-<translation id="3916233823027929090">Sikkerhedstjekkene blev gennemført</translation>
+<translation id="3916233823027929090">Sikkerhedstjekket blev gennemført</translation>
 <translation id="3916445069167113093">Denne filtype kan beskadige din computer. Vil du beholde <ph name="FILE_NAME" /> alligevel?</translation>
 <translation id="3918972485393593704">Rapportér detaljer til Google</translation>
 <translation id="3919145445993746351">Aktivér synkronisering for at få dine udvidelser på alle dine computere</translation>
