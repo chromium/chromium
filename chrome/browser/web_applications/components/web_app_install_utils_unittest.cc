@@ -856,24 +856,6 @@ TEST_P(FileHandlersFromManifestTest, Basic) {
   }
 }
 
-TEST_P(FileHandlersFromManifestTest, MaxFileHandlers) {
-  // Add more than |kMaxFileHandlers| file handlers.
-  std::vector<blink::mojom::ManifestFileHandlerPtr> manifest_file_handlers =
-      CreateManifestFileHandlers(2 * kMaxFileHandlers);
-
-  apps::FileHandlers file_handlers =
-      CreateFileHandlersFromManifest(manifest_file_handlers, GetStartUrl());
-  EXPECT_EQ(file_handlers.size(), kMaxFileHandlers);
-  for (unsigned i = 0; i < kMaxFileHandlers; ++i) {
-    EXPECT_EQ(file_handlers[i].action, MakeActionUrl(i));
-    EXPECT_EQ(file_handlers[i].accept.size(), 1U);
-    EXPECT_EQ(file_handlers[i].accept[0].mime_type, MakeMimeType(i));
-    EXPECT_EQ(file_handlers[i].accept[0].file_extensions.size(), 1U);
-    EXPECT_EQ(*file_handlers[i].accept[0].file_extensions.begin(),
-              MakeExtension(i));
-  }
-}
-
 TEST_P(FileHandlersFromManifestTest, PopulateFileHandlerIcons) {
   if (!FileHandlerManager::IconsEnabled())
     return;

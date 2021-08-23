@@ -31,8 +31,6 @@ namespace web_app {
 
 namespace {
 
-const char kChromeScheme[] = "chrome";
-
 // We restrict the number of icons to limit disk usage per installed PWA. This
 // value can change overtime as new features are added.
 constexpr int kMaxIcons = 20;
@@ -341,15 +339,7 @@ apps::FileHandlers CreateFileHandlersFromManifest(
     }
 
     web_app_file_handlers.push_back(std::move(web_app_file_handler));
-
-    if (web_app_file_handlers.size() == kMaxFileHandlers &&
-        !app_scope.SchemeIs(kChromeScheme)) {
-      break;
-    }
   }
-
-  DCHECK(web_app_file_handlers.size() <= kMaxFileHandlers ||
-         app_scope.SchemeIs(kChromeScheme));
 
   return web_app_file_handlers;
 }

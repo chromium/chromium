@@ -459,64 +459,6 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
   VerifyPwaDidReceiveFileLaunchParams(false);
 }
 
-// Disabled due to flakiness on Linux bots. http://crbug.com/1207370
-#if defined(OS_LINUX)
-#define MAYBE_UnlimitedFileHandlersForChrome \
-  DISABLED_UnlimitedFileHandlersForChrome
-#else
-#define MAYBE_UnlimitedFileHandlersForChrome UnlimitedFileHandlersForChrome
-#endif
-IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
-                       MAYBE_UnlimitedFileHandlersForChrome) {
-  // We install more than |kMaxFileHandlers| file handlers.
-  const unsigned kNumHandlers = 2 * kMaxFileHandlers + 1;
-
-  auto action_url = [](unsigned index) {
-    return GURL(base::StringPrintf("chrome://interstitials/#a%u", index));
-  };
-
-  auto mime_type = [](unsigned index) {
-    return base::StringPrintf("application/x-%u", index);
-  };
-
-  auto extension = [](unsigned index) {
-    return base::StringPrintf(".e%u", index);
-  };
-
-  AppId app_id;
-  {
-    auto web_app_info = std::make_unique<WebApplicationInfo>();
-    web_app_info->start_url = GURL("chrome://interstitials/");
-    web_app_info->scope = web_app_info->start_url;
-    web_app_info->title = u"Many File Handlers";
-
-    std::vector<blink::mojom::ManifestFileHandlerPtr> file_handlers;
-    for (unsigned i = 0; i < kNumHandlers; ++i) {
-      auto handler = blink::mojom::ManifestFileHandler::New();
-      handler->action = action_url(i);
-      handler->name = base::UTF8ToUTF16(base::StringPrintf("n%u", i));
-      handler->accept[base::UTF8ToUTF16(mime_type(i))] = {
-          base::UTF8ToUTF16(extension(i))};
-      file_handlers.push_back(std::move(handler));
-    }
-    web_app_info->file_handlers =
-        CreateFileHandlersFromManifest(file_handlers, web_app_info->scope);
-
-    app_id =
-        WebAppControllerBrowserTest::InstallWebApp(std::move(web_app_info));
-  }
-
-  EXPECT_EQ(registrar().GetAppById(app_id)->file_handlers().size(),
-            kNumHandlers);
-
-  SetFileHandlingPermission(CONTENT_SETTING_ALLOW);
-
-  // Test that file handler dispatches correct URL based on file extension.
-  for (unsigned i = 0; i < kNumHandlers; ++i) {
-    LaunchWithFiles(app_id, action_url(i), {NewTestFilePath(extension(i))});
-  }
-}
-
 // Tests that when two apps are installed and share an origin (but not scope),
 // `GetFileHandlersForAllWebAppsWithOrigin` will report all the file handlers
 // across both apps.
