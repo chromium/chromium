@@ -33,6 +33,10 @@ FastPairEnabledProvider::FastPairEnabledProvider(
         &FastPairEnabledProvider::OnSubProviderEnabledChanged,
         weak_factory_.GetWeakPtr()));
 
+    logged_in_user_enabled_provider_->SetCallback(base::BindRepeating(
+        &FastPairEnabledProvider::OnSubProviderEnabledChanged,
+        weak_factory_.GetWeakPtr()));
+
     SetEnabledAndInvokeCallback(AreSubProvidersEnabled());
   }
 }
