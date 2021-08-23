@@ -1784,8 +1784,15 @@ TEST_F(HarfBuzzShaperTest,
   }
 }
 
+#if defined(OS_ANDROID)
+#define MAYBE_ShapeHorizontalWithSubpixelPositionWithKerningIsNotRounded \
+  DISABLED_ShapeHorizontalWithSubpixelPositionWithKerningIsNotRounded
+#else
+#define MAYBE_ShapeHorizontalWithSubpixelPositionWithKerningIsNotRounded \
+  ShapeHorizontalWithSubpixelPositionWithKerningIsNotRounded
+#endif
 TEST_F(HarfBuzzShaperTest,
-       ShapeHorizontalWithSubpixelPositionWithKerningIsNotRounded) {
+       MAYBE_ShapeHorizontalWithSubpixelPositionWithKerningIsNotRounded) {
   ScopedSubpixelOverride subpixel_override(true);
 
   String string(u"AVOID");
