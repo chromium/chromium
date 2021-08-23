@@ -466,9 +466,9 @@ void MediaRouterIntegrationBrowserTest::RunReconnectSessionSameTabTest() {
   ASSERT_EQ(session_id, reconnected_session_id);
 }
 
-// crbug.com/1238758: test is flaky on win and linux.
+// TODO(crbug.com/1238758): Test is flaky on Windows and Linux.
 #if defined(OS_LINUX) || defined(OS_WIN)
-#define MAYBE_Basic DISABLED_Basic
+#define MAYBE_Basic MANUAL_Basic
 #else
 #define MAYBE_Basic Basic
 #endif
@@ -506,7 +506,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
 
 // TODO(http://crbug.com/1095068): There maybe a crash on Linux and ChromeOS.
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
-#define MAYBE_OpenLocalMediaFileInNewTab DISABLED_OpenLocalMediaFileInNewTab
+#define MAYBE_OpenLocalMediaFileInNewTab MANUAL_OpenLocalMediaFileInNewTab
 #else
 #define MAYBE_OpenLocalMediaFileInNewTab OpenLocalMediaFileInNewTab
 #endif
@@ -573,7 +573,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
 // Flaky on MSan bots: http://crbug.com/879885
 #if defined(MEMORY_SANITIZER)
 #define MAYBE_OpenLocalMediaFileCastFailNoFullscreen \
-  DISABLED_OpenLocalMediaFileCastFailNoFullscreen
+  MANUAL_OpenLocalMediaFileCastFailNoFullscreen
 #else
 #define MAYBE_OpenLocalMediaFileCastFailNoFullscreen \
   OpenLocalMediaFileCastFailNoFullscreen
@@ -601,9 +601,9 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
       web_contents->GetDelegate()->IsFullscreenForTabOrPending(web_contents));
 }
 
-// crbug.com/1238728: test is flaky on win and linux.
+// TODO(crbug.com/1238728): Test is flaky on Windows and Linux.
 #if defined(OS_LINUX) || defined(OS_WIN)
-#define MAYBE_SendAndOnMessage DISABLED_SendAndOnMessage
+#define MAYBE_SendAndOnMessage MANUAL_SendAndOnMessage
 #else
 #define MAYBE_SendAndOnMessage SendAndOnMessage
 #endif
@@ -620,9 +620,9 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest, CloseOnError) {
                        kSendMessageAndExpectConnectionCloseOnErrorScript);
 }
 
-// crbug.com/1238688: test is flaky on win and linux.
+// TODO(crbug.com/1238688): Test is flaky on Windows and Linux.
 #if defined(OS_LINUX) || defined(OS_WIN)
-#define MAYBE_Fail_SendMessage DISABLED_Fail_SendMessage
+#define MAYBE_Fail_SendMessage MANUAL_Fail_SendMessage
 #else
 #define MAYBE_Fail_SendMessage Fail_SendMessage
 #endif
