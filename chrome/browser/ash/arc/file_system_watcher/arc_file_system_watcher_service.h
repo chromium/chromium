@@ -77,7 +77,6 @@ class ArcFileSystemWatcherService
   content::BrowserContext* const context_;
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
 
-  std::unique_ptr<FileSystemWatcher> downloads_watcher_;
   std::unique_ptr<FileSystemWatcher> myfiles_watcher_;
   // A map from mount path to watcher.
   std::map<std::string, std::unique_ptr<FileSystemWatcher>>

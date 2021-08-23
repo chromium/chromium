@@ -24,7 +24,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/arc/file_system_watcher/arc_file_system_watcher_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
-#include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
@@ -50,7 +49,7 @@ constexpr base::FilePath::CharType kAndroidStorageDir[] =
 // The Downloads path inside ARC container. This will be the path that
 // is used in MediaScanner.scanFile request.
 constexpr base::FilePath::CharType kAndroidDownloadDir[] =
-    FILE_PATH_LITERAL("/storage/emulated/0/Download");
+    FILE_PATH_LITERAL("/storage/emulated/0/Download/");
 
 // TODO(crbug.com/929031): Move this to arc_volume_mounter_bridge.h.
 // The MyFiles path inside ARC container. This will be the path that is used in
@@ -304,6 +303,11 @@ void ArcFileSystemWatcherService::FileSystemWatcher::OnBuildTimestampMap(
   std::vector<std::string> string_paths(changed_paths.size());
   for (size_t i = 0; i < changed_paths.size(); ++i) {
     string_paths[i] = changed_paths[i].value();
+    // Files inside kAndroidMyFilesDownloadsDir are skipped by Android's
+    // MediaScanner in order to avoid duplicate indexing. They should be indexed
+    // as files inside kAndroidDownloadDir.
+    base::ReplaceFirstSubstringAfterOffset(
+        &string_paths[i], 0, kAndroidMyFilesDownloadsDir, kAndroidDownloadDir);
   }
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(callback_, std::move(string_paths)));
@@ -336,7 +340,6 @@ ArcFileSystemWatcherService::~ArcFileSystemWatcherService() {
 
   StopWatchingFileSystem(base::DoNothing());
   DCHECK(removable_media_watchers_.empty());
-  DCHECK(!downloads_watcher_);
   DCHECK(!myfiles_watcher_);
 
   arc_bridge_service_->file_system()->RemoveObserver(this);
@@ -370,13 +373,6 @@ void ArcFileSystemWatcherService::StartWatchingFileSystem() {
 
   Profile* profile = Profile::FromBrowserContext(context_);
 
-  DCHECK(!downloads_watcher_);
-  downloads_watcher_ = CreateAndStartFileSystemWatcher(
-      DownloadPrefs(profile)
-          .GetDefaultDownloadDirectoryForProfile()
-          .StripTrailingSeparators(),
-      base::FilePath(kAndroidDownloadDir), base::DoNothing());
-
   DCHECK(!myfiles_watcher_);
   myfiles_watcher_ = CreateAndStartFileSystemWatcher(
       file_manager::util::GetMyFilesFolderForProfile(profile),
@@ -390,8 +386,6 @@ void ArcFileSystemWatcherService::StopWatchingFileSystem(
     file_task_runner_->DeleteSoon(FROM_HERE, watcher.second.release());
   }
   removable_media_watchers_.clear();
-  if (downloads_watcher_)
-    file_task_runner_->DeleteSoon(FROM_HERE, downloads_watcher_.release());
   // Trigger the callback at the end of the StopWatchingFileSystem. This is
   // equivalent with DeleteSoon with a callback.
   file_task_runner_->PostTaskAndReply(
@@ -428,20 +422,7 @@ void ArcFileSystemWatcherService::OnFileSystemChanged(
   if (!instance)
     return;
 
-  std::vector<std::string> filtered_paths;
-  for (const std::string& path : paths) {
-    if (base::StartsWith(path, kAndroidMyFilesDownloadsDir,
-                         base::CompareCase::SENSITIVE)) {
-      // Exclude files under .../MyFiles/Downloads/ because they are also
-      // indexed as files under /storage/emulated/0/Download/ (which is
-      // updated by the inotify attached to Downloads directory outside
-      // MyFiles).
-      continue;
-    }
-    filtered_paths.push_back(path);
-  }
-
-  instance->RequestMediaScan(filtered_paths);
+  instance->RequestMediaScan(paths);
 }
 
 void ArcFileSystemWatcherService::StartWatchingRemovableMedia(
