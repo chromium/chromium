@@ -1998,6 +1998,13 @@ void NGLineBreaker::HandleBlockInInline(const NGInlineItem& item,
 
   NGInlineItemResult* item_result = AddItem(item, line_info);
   if (mode_ == NGLineBreakerMode::kContent) {
+    // The exclusion spaces *must* match. If they don't we'll have an incorrect
+    // layout (as it will potentially won't consider some preceeding floats).
+    // Move the derived geometry for performance.
+    DCHECK(*exclusion_space_ == constraint_space_.ExclusionSpace());
+    constraint_space_.ExclusionSpace().MoveAndUpdateDerivedGeometry(
+        *exclusion_space_);
+
     const NGBlockBreakToken* block_break_token =
         break_token_ ? break_token_->BlockInInlineBreakToken() : nullptr;
     scoped_refptr<const NGLayoutResult> layout_result =

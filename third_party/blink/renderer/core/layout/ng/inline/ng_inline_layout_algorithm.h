@@ -49,7 +49,6 @@ class CORE_EXPORT NGInlineLayoutAlgorithm final
   void CreateLine(const NGLineLayoutOpportunity&,
                   NGLineInfo*,
                   NGLogicalLineItems* line_box,
-                  NGExclusionSpace*,
                   LayoutUnit* ruby_block_start_adjust);
 
   scoped_refptr<const NGLayoutResult> Layout() override;
@@ -113,8 +112,7 @@ class CORE_EXPORT NGInlineLayoutAlgorithm final
                             const FontHeight&,
                             const NGLineLayoutOpportunity&,
                             LayoutUnit ruby_block_start_adjust,
-                            NGLogicalLineItems* line_box,
-                            NGExclusionSpace*);
+                            NGLogicalLineItems* line_box);
   void PlaceRelativePositionedItems(NGLogicalLineItems* line_box);
   void PlaceListMarker(const NGInlineItem&,
                        NGInlineItemResult*,
@@ -123,7 +121,7 @@ class CORE_EXPORT NGInlineLayoutAlgorithm final
   LayoutUnit ApplyTextAlign(NGLineInfo*);
   absl::optional<LayoutUnit> ApplyJustify(LayoutUnit space, NGLineInfo*);
 
-  LayoutUnit ComputeContentSize(const NGLineInfo&, const NGExclusionSpace&);
+  LayoutUnit ComputeContentSize(const NGLineInfo&);
 
   LayoutUnit SetAnnotationOverflow(const NGLineInfo& line_info,
                                    const NGLogicalLineItems& line_box,
@@ -133,6 +131,7 @@ class CORE_EXPORT NGInlineLayoutAlgorithm final
   NGInlineChildLayoutContext* context_;
 
   NGMarginStrut end_margin_strut_;
+  NGExclusionSpace exclusion_space_;
 
   FontBaseline baseline_type_ = FontBaseline::kAlphabeticBaseline;
 
