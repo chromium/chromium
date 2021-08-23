@@ -892,6 +892,7 @@ class SAMLPolicyTest : public SamlTest {
   // SamlTest:
   void SetUpInProcessBrowserTestFixture() override;
   void SetUpOnMainThread() override;
+  void SetUpCommandLine(base::CommandLine* command_line) override;
 
   void SetSAMLOfflineSigninTimeLimitPolicy(int limit);
   void EnableTransferSAMLCookiesPolicy();
@@ -998,6 +999,12 @@ void SAMLPolicyTest::SetUpOnMainThread() {
       ->GetTestInterface()
       ->SetupDefaultEnvironment();
 }
+void SAMLPolicyTest::SetUpCommandLine(base::CommandLine* command_line) {
+  SamlTest::SetUpCommandLine(command_line);
+
+  // Disable token check to allow offline sign-in for the fake gaia users.
+  command_line->AppendSwitch(chromeos::switches::kDisableGaiaServices);
+}
 
 void SAMLPolicyTest::SetSAMLOfflineSigninTimeLimitPolicy(int limit) {
   policy::PolicyMap user_policy;
@@ -1058,6 +1065,8 @@ void SAMLPolicyTest::SetLoginVideoCaptureAllowedUrls(
 }
 
 void SAMLPolicyTest::ShowGAIALoginForm() {
+  ash::LoginDisplayHost::default_host()->StartWizard(GaiaView::kScreenId);
+  OobeScreenWaiter(GaiaView::kScreenId).Wait();
   content::DOMMessageQueue message_queue;
   ASSERT_TRUE(content::ExecuteScript(
       GetLoginUI()->GetWebContents(),
@@ -1149,12 +1158,17 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, PRE_NoSAML) {
   fake_gaia_.SetupFakeGaiaForLogin(kNonSAMLUserEmail, "", kTestRefreshToken);
 
   // Log in without SAML.
+  LoginDisplayHost::default_host()->StartWizard(GaiaView::kScreenId);
   LoginDisplayHost::default_host()
       ->GetOobeUI()
       ->GetView<GaiaScreenHandler>()
       ->ShowSigninScreenForTest(kNonSAMLUserEmail, "password", "[]");
-
   test::WaitForPrimaryUserSessionStart();
+  // Fake OAUTH token for this user will be invalidated in-session.
+  // Pretend that it's still valid.
+  user_manager::UserManager::Get()->SaveUserOAuthStatus(
+      AccountId::FromUserEmail(kNonSAMLUserEmail),
+      user_manager::User::OAUTH2_TOKEN_STATUS_VALID);
 }
 
 // Verifies that the offline login time limit does not affect a user who
