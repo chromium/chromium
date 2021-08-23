@@ -45,7 +45,7 @@ enum Sandbox {
 
   // Equivalent to no sandbox on all non-Fuchsia platforms.
   // Minimally privileged sandbox on Fuchsia.
-  // TODO(crbug.com/1236898) Fix this mapping.
+  [EnableIf=is_fuchsia]
   kVideoCapture,
 
   // Allows access to file contents and Windows APIs for parsing icons from PE

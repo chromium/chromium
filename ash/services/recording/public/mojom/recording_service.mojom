@@ -60,7 +60,7 @@ interface RecordingServiceClient {
 // whose path was given to the Record*() functions.
 // Note that a maximum of one screen recording can be done at any time.
 // TODO(https://crbug.com/1147991) Explore alternative sandboxing.
-[ServiceSandbox=sandbox.mojom.Sandbox.kVideoCapture]
+[ServiceSandbox=sandbox.mojom.Sandbox.kNoSandbox]
 interface RecordingService {
   // All the below Record*() interfaces, take a pending remote to a client (e.g.
   // Ash) which will be notified when recording finishes and all the webm

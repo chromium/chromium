@@ -1230,8 +1230,6 @@ std::string SandboxWin::GetSandboxTypeInEnglish(SandboxType sandbox_type) {
       return "Media Foundation CDM";
     case SandboxType::kService:
       return "Service";
-    case SandboxType::kVideoCapture:
-      return "Video Capture";
     case SandboxType::kIconReader:
       return "Icon Reader";
   }

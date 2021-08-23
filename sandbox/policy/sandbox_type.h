@@ -110,14 +110,16 @@ enum class SandboxType {
   kZygoteIntermediateSandbox,
 #endif
 
-  // The speech recognition service process.
-  kSpeechRecognition,
-
+#if defined(OS_FUCHSIA)
   // Equivalent to no sandbox on all non-Fuchsia platforms.
   // Minimally privileged sandbox on Fuchsia.
   kVideoCapture,
+#endif  // defined(OS_FUCHSIA)
 
-  kMaxValue = kVideoCapture
+  // The speech recognition service process.
+  kSpeechRecognition,
+
+  kMaxValue = kSpeechRecognition
 };
 
 inline constexpr sandbox::policy::SandboxType MapToSandboxType(
@@ -137,8 +139,10 @@ inline constexpr sandbox::policy::SandboxType MapToSandboxType(
       return sandbox::policy::SandboxType::kSpeechRecognition;
     case sandbox::mojom::Sandbox::kUtility:
       return sandbox::policy::SandboxType::kUtility;
+#if defined(OS_FUCHSIA)
     case sandbox::mojom::Sandbox::kVideoCapture:
       return sandbox::policy::SandboxType::kVideoCapture;
+#endif
 #if defined(OS_WIN)
     case sandbox::mojom::Sandbox::kIconReader:
       return sandbox::policy::SandboxType::kIconReader;

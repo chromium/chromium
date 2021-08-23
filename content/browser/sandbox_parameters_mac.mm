@@ -230,7 +230,6 @@ void SetupSandboxParameters(sandbox::policy::SandboxType sandbox_type,
 #endif
       break;
     case sandbox::policy::SandboxType::kNoSandbox:
-    case sandbox::policy::SandboxType::kVideoCapture:
       CHECK(false) << "Unhandled parameters for sandbox_type "
                    << static_cast<int>(sandbox_type);
       break;

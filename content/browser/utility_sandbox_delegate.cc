@@ -56,7 +56,9 @@ UtilitySandboxedProcessLauncherDelegate::
 #endif
       sandbox_type_ == sandbox::policy::SandboxType::kPrintCompositor ||
       sandbox_type_ == sandbox::policy::SandboxType::kPpapi ||
+#if defined(OS_FUCHSIA)
       sandbox_type_ == sandbox::policy::SandboxType::kVideoCapture ||
+#endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       sandbox_type_ == sandbox::policy::SandboxType::kIme ||
       sandbox_type_ == sandbox::policy::SandboxType::kTts ||

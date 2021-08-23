@@ -206,7 +206,6 @@ std::unique_ptr<BPFBasePolicy> SandboxSeccompBPF::PolicyForSandboxType(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     case SandboxType::kZygoteIntermediateSandbox:
     case SandboxType::kNoSandbox:
-    case SandboxType::kVideoCapture:
       NOTREACHED();
       return nullptr;
   }
@@ -265,7 +264,6 @@ void SandboxSeccompBPF::RunSandboxSanityChecks(
 #endif
     case SandboxType::kUtility:
     case SandboxType::kNoSandbox:
-    case SandboxType::kVideoCapture:
     case SandboxType::kZygoteIntermediateSandbox:
       // Otherwise, no checks required.
       break;
