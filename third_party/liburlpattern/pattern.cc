@@ -371,8 +371,12 @@ std::string Pattern::GenerateRegexString(
 bool Pattern::CanDirectMatch() const {
   // We currently only support direct matching with the options used by
   // URLPattern.
-  return options_.start && options_.end && options_.strict &&
-         options_.sensitive && IsOnlyFullWildcard();
+  if (!options_.start || !options_.end || !options_.strict ||
+      !options_.sensitive) {
+    return false;
+  }
+
+  return part_list_.empty() || IsOnlyFullWildcard();
 }
 
 bool Pattern::DirectMatch(
@@ -380,11 +384,16 @@ bool Pattern::DirectMatch(
     std::vector<std::pair<absl::string_view, absl::string_view>>*
         group_list_out) const {
   ABSL_ASSERT(CanDirectMatch());
+
+  if (part_list_.empty())
+    return input.empty();
+
   if (IsOnlyFullWildcard()) {
     if (group_list_out)
       group_list_out->emplace_back(part_list_[0].name, input);
     return true;
   }
+
   return false;
 }
 

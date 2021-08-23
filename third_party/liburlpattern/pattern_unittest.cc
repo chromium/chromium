@@ -441,8 +441,11 @@ TEST(PatternDirectMatch, FullWildcardInGroupWithSuffixUnsupported) {
   RunDirectMatchUnsupportedTest("{*foo}");
 }
 
-TEST(PatternDirectMatch, EmptyPatternUnsupported) {
-  RunDirectMatchUnsupportedTest("");
+TEST(PatternDirectMatch, EmptyPatternSupported) {
+  RunDirectMatchTest("", {
+                             {.input = "", .expected_groups = {}},
+                             {.input = "/", .expected_match = false},
+                         });
 }
 
 TEST(PatternDirectMatch, FixedTextUnsupported) {
