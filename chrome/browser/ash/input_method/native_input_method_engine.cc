@@ -296,10 +296,24 @@ absl::optional<mojom::NamedDomKey> NamedDomKeyToMojom(
       return mojom::NamedDomKey::kEnter;
     case ui::DomKey::BACKSPACE:
       return mojom::NamedDomKey::kBackspace;
+    case ui::DomKey::ESCAPE:
+      return mojom::NamedDomKey::kEscape;
     case ui::DomKey::HANGUL_MODE:
       return mojom::NamedDomKey::kHangeulMode;
     case ui::DomKey::HANJA_MODE:
       return mojom::NamedDomKey::kHanjaMode;
+    case ui::DomKey::ARROW_DOWN:
+      return mojom::NamedDomKey::kArrowDown;
+    case ui::DomKey::ARROW_LEFT:
+      return mojom::NamedDomKey::kArrowLeft;
+    case ui::DomKey::ARROW_RIGHT:
+      return mojom::NamedDomKey::kArrowRight;
+    case ui::DomKey::ARROW_UP:
+      return mojom::NamedDomKey::kArrowUp;
+    case ui::DomKey::PAGE_DOWN:
+      return mojom::NamedDomKey::kPageDown;
+    case ui::DomKey::PAGE_UP:
+      return mojom::NamedDomKey::kPageUp;
     default:
       return absl::nullopt;
   }

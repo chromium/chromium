@@ -478,12 +478,11 @@ TEST_F(NativeInputMethodEngineTest, DoesNotSendUnhandledNamedKeys) {
       ui::TEXT_INPUT_FLAG_NONE, ui::TextInputClient::FOCUS_REASON_MOUSE,
       /*should_do_learning=*/true));
 
-  // Escape is a named DOM key, but is not used by IMEs.
-  engine.ProcessKeyEvent(
-      {ui::ET_KEY_PRESSED, ui::VKEY_ESCAPE, ui::DomCode::ESCAPE, ui::EF_NONE,
-       ui::DomKey::ESCAPE, base::TimeTicks()},
-      base::DoNothing());
-  engine.ProcessKeyEvent({ui::ET_KEY_RELEASED, ui::VKEY_ESCAPE, ui::EF_NONE},
+  // Help is a named DOM key, but is not used by IMEs.
+  engine.ProcessKeyEvent({ui::ET_KEY_PRESSED, ui::VKEY_HELP, ui::DomCode::HELP,
+                          ui::EF_NONE, ui::DomKey::HELP, base::TimeTicks()},
+                         base::DoNothing());
+  engine.ProcessKeyEvent({ui::ET_KEY_RELEASED, ui::VKEY_HELP, ui::EF_NONE},
                          base::DoNothing());
   engine.FlushForTesting();
 
