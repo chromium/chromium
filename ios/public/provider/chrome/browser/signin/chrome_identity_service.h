@@ -135,13 +135,6 @@ class ChromeIdentityService {
 
   // Handles open URL authentication callback. Returns whether the URL was
   // actually handled. This should be called within
-  // -[<UIApplicationDelegate> application:openURL:options:].
-  virtual bool HandleApplicationOpenURL(UIApplication* application,
-                                        NSURL* url,
-                                        NSDictionary* options);
-
-  // Handles open URL authentication callback. Returns whether the URL was
-  // actually handled. This should be called within
   // -[<UISceneDelegate> application:openURLContexts:].
   virtual bool HandleSessionOpenURLContexts(UIScene* scene, NSSet* url_contexts)
       API_AVAILABLE(ios(13.0));

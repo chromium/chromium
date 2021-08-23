@@ -74,12 +74,6 @@ ChromeIdentityService::~ChromeIdentityService() {
 
 void ChromeIdentityService::DismissDialogs() {}
 
-bool ChromeIdentityService::HandleApplicationOpenURL(UIApplication* application,
-                                                     NSURL* url,
-                                                     NSDictionary* options) {
-  return false;
-}
-
 bool ChromeIdentityService::HandleSessionOpenURLContexts(UIScene* scene,
                                                          NSSet* URLContexts) {
   return false;
