@@ -177,6 +177,7 @@ class LargeMessageCardView extends FrameLayout {
         TextBubble textBubble = new TextBubble(view.getContext(), view,
                 R.string.price_drop_spotted_lower_price, R.string.price_drop_spotted_lower_price,
                 true, rectProvider, ChromeAccessibilityUtil.get().isAccessibilityEnabled());
+        textBubble.setFocusable(true);
         textBubble.setDismissOnTouchInteraction(true);
         textBubble.show();
     }

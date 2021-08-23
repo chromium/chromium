@@ -350,6 +350,15 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
     }
 
     /**
+     * Changes the focusability of the bubble. If you are considering using this method, see
+     * crbug.com/1240841 for additional context on UX considerations and possible risks in testing.
+     * @param focusable True if the bubble is focusable, false otherwise.
+     */
+    public void setFocusable(boolean focusable) {
+        mPopupWindow.setFocusable(focusable);
+    }
+
+    /**
      * Updates the timeout that is used to determine when to automatically dismiss the bubble.  If
      * the bubble is already showing, the timeout will start from the time of this call.  Any
      * previous timeouts will be canceled.  {@link #NO_TIMEOUT} is the default value.
