@@ -4,10 +4,12 @@
 
 #include "content/browser/media/dcomp_surface_registry_broker.h"
 
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "content/browser/gpu/gpu_process_host.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/common/content_features.h"
 #include "media/base/bind_to_current_loop.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 
@@ -15,7 +17,7 @@ namespace content {
 
 namespace {
 
-void RegisterDCOMPSurfaceHandleOnIOThread(
+void RegisterDCOMPSurfaceHandleInternal(
     mojo::PlatformHandle surface_handle,
     DCOMPSurfaceRegistryBroker::RegisterDCOMPSurfaceHandleCallback callback) {
   auto* gpu_process_host =
@@ -32,8 +34,7 @@ void RegisterDCOMPSurfaceHandleOnIOThread(
                                      std::move(callback), absl::nullopt));
 }
 
-void UnregisterDCOMPSurfaceHandleOnIOThread(
-    const base::UnguessableToken& token) {
+void UnregisterDCOMPSurfaceHandleInternal(const base::UnguessableToken& token) {
   auto* gpu_process_host =
       GpuProcessHost::Get(GpuProcessKind::GPU_PROCESS_KIND_SANDBOXED, false);
   if (!gpu_process_host) {
@@ -55,18 +56,30 @@ void DCOMPSurfaceRegistryBroker::RegisterDCOMPSurfaceHandle(
     mojo::PlatformHandle surface_handle,
     RegisterDCOMPSurfaceHandleCallback callback) {
   DVLOG(1) << __func__;
-  GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&RegisterDCOMPSurfaceHandleOnIOThread,
-                                std::move(surface_handle),
-                                media::BindToCurrentLoop(std::move(callback))));
+
+  if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
+    RegisterDCOMPSurfaceHandleInternal(std::move(surface_handle),
+                                       std::move(callback));
+  } else {
+    GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&RegisterDCOMPSurfaceHandleInternal,
+                       std::move(surface_handle),
+                       media::BindToCurrentLoop(std::move(callback))));
+  }
 }
 
 void DCOMPSurfaceRegistryBroker::UnregisterDCOMPSurfaceHandle(
     const base::UnguessableToken& token) {
   DVLOG(1) << __func__;
-  GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&UnregisterDCOMPSurfaceHandleOnIOThread, token));
+
+  if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
+    UnregisterDCOMPSurfaceHandleInternal(token);
+  } else {
+    GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&UnregisterDCOMPSurfaceHandleInternal, token));
+  }
 }
 
 }  // namespace content
