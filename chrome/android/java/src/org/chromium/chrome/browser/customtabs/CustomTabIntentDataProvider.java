@@ -797,12 +797,15 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     @Override
     public @Px int getInitialActivityHeight() {
-        if (!mIsTrustedIntent
-                && !CachedFeatureFlags.isEnabled(
-                        ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES)) {
+        boolean enabledForAll =
+                CachedFeatureFlags.isEnabled(ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES);
+        boolean enabledDueToFirstParty = mIsTrustedIntent
+                && CachedFeatureFlags.isEnabled(ChromeFeatureList.CCT_RESIZABLE_FOR_FIRST_PARTIES);
+
+        if (enabledForAll || enabledDueToFirstParty) {
+            return mInitialActivityHeight;
+        } else {
             return 0;
         }
-
-        return mInitialActivityHeight;
     }
 }

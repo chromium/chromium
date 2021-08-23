@@ -43,6 +43,7 @@ extern const base::Feature kCCTPostMessageAPI;
 extern const base::Feature kCCTRedirectPreconnect;
 extern const base::Feature kCCTRemoveRemoteViewIds;
 extern const base::Feature kCCTReportParallelRequestStatus;
+extern const base::Feature kCCTResizableForFirstParties;
 extern const base::Feature kCCTResizableForThirdParties;
 extern const base::Feature kCCTResourcePrefetch;
 extern const base::Feature kDontAutoHideBrowserControls;
