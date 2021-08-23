@@ -7,9 +7,14 @@
 
 #include <string>
 
+#include "base/process/process_handle.h"
 #include "base/types/id_type.h"
 
 class Browser;
+
+namespace aura {
+class Window;
+}
 
 namespace content {
 class WebContents;
@@ -22,17 +27,24 @@ struct WebContentsIdTypeMarker {};
 typedef base::IdTypeU32<WebContentsIdTypeMarker> WebContentsId;
 
 // An instance of a browser-based app. Can represent either of:
-// - apps running inside Browser->WebContents,
-// - actual browser instances (a single browser window). In this case `contents`
-//   will be null and app ID will be set to |extension_misc::kChromeAppId|.
+// - apps running inside Browser->WebContents (in a tab or in a window),
+// - Chrome browser instances (a single browser window). In this case the app ID
+//   will be set to |extension_misc::kChromeAppId|.
 struct BrowserAppInstance {
+  enum class Type {
+    kAppTab,
+    kAppWindow,
+    kChromeWindow,
+  };
+
   ~BrowserAppInstance();
   BrowserAppInstance(const BrowserAppInstance&) = delete;
   BrowserAppInstance& operator=(const BrowserAppInstance&) = delete;
 
   std::string app_id;
-  Browser* browser;
-  content::WebContents* web_contents;
+  Type type;
+  base::ProcessId process_id;
+  aura::Window* window;
   WebContentsId web_contents_id;
   bool visible;
   bool active;

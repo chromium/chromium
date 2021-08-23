@@ -10,6 +10,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/macros.h"
+#include "base/process/process.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_observer.h"
 #include "chrome/browser/apps/app_service/web_contents_app_id_utils.h"
 #include "chrome/browser/extensions/tab_helper.h"
@@ -53,7 +54,7 @@ Browser* GetBrowserWithAuraWindow(aura::Window* aura_window) {
 }
 
 std::string GetAppId(content::WebContents* contents) {
-  return apps::GetInstanceAppIdForWebContents(contents).value_or("");
+  return GetInstanceAppIdForWebContents(contents).value_or("");
 }
 
 bool IsBrowserVisible(Browser* browser) {
@@ -114,7 +115,7 @@ const base::Feature BrowserAppInstanceTracker::kEnabled{
 BrowserAppInstanceTracker::BrowserAppInstanceTracker(
     Profile* profile,
     AppRegistryCache& app_registry_cache)
-    : apps::AppRegistryCache::Observer(&app_registry_cache),
+    : AppRegistryCache::Observer(&app_registry_cache),
       profile_(profile),
       browser_tab_strip_tracker_(this, this) {
   BrowserList::GetInstance()->AddObserver(this);
@@ -136,8 +137,7 @@ BrowserAppInstanceTracker::~BrowserAppInstanceTracker() {
 std::unique_ptr<BrowserAppInstanceTracker> BrowserAppInstanceTracker::Create(
     Profile* profile,
     AppRegistryCache& app_registry_cache) {
-  if (!base::FeatureList::IsEnabled(
-          apps::BrowserAppInstanceTracker::kEnabled)) {
+  if (!base::FeatureList::IsEnabled(kEnabled)) {
     return nullptr;
   }
   return std::make_unique<BrowserAppInstanceTracker>(profile,
@@ -271,7 +271,7 @@ void BrowserAppInstanceTracker::OnBrowserRemoved(Browser* browser) {
   }
 }
 
-void BrowserAppInstanceTracker::OnAppUpdate(const apps::AppUpdate& update) {
+void BrowserAppInstanceTracker::OnAppUpdate(const AppUpdate& update) {
   if (!apps_util::AppTypeUsesWebContents(update.AppType())) {
     return;
   }
@@ -289,7 +289,7 @@ void BrowserAppInstanceTracker::OnAppUpdate(const apps::AppUpdate& update) {
 }
 
 void BrowserAppInstanceTracker::OnAppRegistryCacheWillBeDestroyed(
-    apps::AppRegistryCache* cache) {
+    AppRegistryCache* cache) {
   Observe(nullptr);
 }
 
@@ -433,7 +433,7 @@ void BrowserAppInstanceTracker::OnTabAttached(Browser* browser,
   auto it = app_instances_.find(contents);
   if (it != app_instances_.end()) {
     auto& app_instance = it->second;
-    MaybeUpdateAppInstance(*app_instance, browser);
+    MaybeUpdateAppInstance(*app_instance, browser, contents);
   }
 }
 
@@ -452,7 +452,7 @@ void BrowserAppInstanceTracker::OnTabUpdated(Browser* browser,
       }
     } else {
       // App ID did not change, but other attributes may have.
-      MaybeUpdateAppInstance(*app_instance, browser);
+      MaybeUpdateAppInstance(*app_instance, browser, contents);
     }
   } else if (!new_app_id.empty()) {
     // Tab previously had no app ID, but navigated to a URL that does.
@@ -483,7 +483,7 @@ void BrowserAppInstanceTracker::OnBrowserWindowUpdated(Browser* browser) {
   }
   auto it = chrome_instances_.find(browser);
   if (it != chrome_instances_.end()) {
-    MaybeUpdateChromeInstance(*it->second);
+    MaybeUpdateChromeInstance(*it->second, browser);
   }
 
   TabStripModel* tab_strip_model = browser->tab_strip_model();
@@ -500,8 +500,11 @@ void BrowserAppInstanceTracker::CreateAppInstance(
   CreateInstance(app_instances_, contents,
                  base::WrapUnique(new BrowserAppInstance{
                      std::move(app_id),
-                     browser,
-                     contents,
+                     (browser->is_type_app() || browser->is_type_app_popup())
+                         ? BrowserAppInstance::Type::kAppWindow
+                         : BrowserAppInstance::Type::kAppTab,
+                     base::Process::Current().Pid(),
+                     browser->window()->GetNativeWindow(),
                      GetWebContentsIdGenerator().GenerateNextId(),
                      IsAppVisible(browser, contents),
                      IsAppActive(browser, contents),
@@ -510,8 +513,9 @@ void BrowserAppInstanceTracker::CreateAppInstance(
 
 void BrowserAppInstanceTracker::MaybeUpdateAppInstance(
     BrowserAppInstance& instance,
-    Browser* browser) {
-  MaybeUpdateInstance(instance, browser);
+    Browser* browser,
+    content::WebContents* contents) {
+  MaybeUpdateInstance(instance, browser, contents);
 }
 
 void BrowserAppInstanceTracker::RemoveAppInstanceIfExists(
@@ -523,8 +527,9 @@ void BrowserAppInstanceTracker::CreateChromeInstance(Browser* browser) {
   CreateInstance(chrome_instances_, browser,
                  base::WrapUnique(new BrowserAppInstance{
                      extension_misc::kChromeAppId,
-                     browser,
-                     nullptr /* contents */,
+                     BrowserAppInstance::Type::kChromeWindow,
+                     base::Process::Current().Pid(),
+                     browser->window()->GetNativeWindow(),
                      WebContentsId(0),
                      IsBrowserVisible(browser),
                      IsBrowserActive(browser),
@@ -532,9 +537,11 @@ void BrowserAppInstanceTracker::CreateChromeInstance(Browser* browser) {
 }
 
 void BrowserAppInstanceTracker::MaybeUpdateChromeInstance(
-    BrowserAppInstance& instance) {
-  // Browser does not change for Chrome instances.
-  MaybeUpdateInstance(instance, instance.browser);
+    BrowserAppInstance& instance,
+    Browser* browser) {
+  // Browser/WebContents itself does not change for Chrome instances, but other
+  // attributes may change.
+  MaybeUpdateInstance(instance, browser, nullptr /* contents */);
 }
 
 void BrowserAppInstanceTracker::RemoveChromeInstanceIfExists(Browser* browser) {
@@ -556,22 +563,24 @@ void BrowserAppInstanceTracker::CreateInstance(
 
 void BrowserAppInstanceTracker::MaybeUpdateInstance(
     BrowserAppInstance& instance,
-    Browser* browser) {
+    Browser* browser,
+    content::WebContents* contents) {
   DCHECK(browser);
   bool visible;
   bool active;
-  if (instance.web_contents) {
-    visible = IsAppVisible(browser, instance.web_contents);
-    active = IsAppActive(browser, instance.web_contents);
+  if (contents) {
+    visible = IsAppVisible(browser, contents);
+    active = IsAppActive(browser, contents);
   } else {
     visible = IsBrowserVisible(browser);
     active = IsBrowserActive(browser);
   }
-  if (instance.browser == browser && instance.visible == visible &&
+  aura::Window* window = browser->window()->GetNativeWindow();
+  if (instance.window == window && instance.visible == visible &&
       instance.active == active) {
     return;
   }
-  instance.browser = browser;
+  instance.window = window;
   instance.visible = visible;
   instance.active = active;
 

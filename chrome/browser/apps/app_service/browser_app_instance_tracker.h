@@ -40,7 +40,7 @@ class BrowserAppInstanceObserver;
 class BrowserAppInstanceTracker : public TabStripModelObserver,
                                   public BrowserTabStripTrackerDelegate,
                                   public aura::WindowObserver,
-                                  public apps::AppRegistryCache::Observer,
+                                  public AppRegistryCache::Observer,
                                   public BrowserListObserver {
  public:
   static const base::Feature kEnabled;
@@ -105,9 +105,8 @@ class BrowserAppInstanceTracker : public TabStripModelObserver,
   void OnBrowserRemoved(Browser* browser) override;
 
   // apps::AppRegistryCache::Observer:
-  void OnAppUpdate(const apps::AppUpdate& update) override;
-  void OnAppRegistryCacheWillBeDestroyed(
-      apps::AppRegistryCache* cache) override;
+  void OnAppUpdate(const AppUpdate& update) override;
+  void OnAppRegistryCacheWillBeDestroyed(AppRegistryCache* cache) override;
 
  private:
   class WebContentsObserver;
@@ -147,7 +146,9 @@ class BrowserAppInstanceTracker : public TabStripModelObserver,
 
   // Updates the app instance with the new attributes and notifies observers, if
   // it was updated.
-  void MaybeUpdateAppInstance(BrowserAppInstance& instance, Browser* browser);
+  void MaybeUpdateAppInstance(BrowserAppInstance& instance,
+                              Browser* browser,
+                              content::WebContents* contents);
 
   // Removes the app instance, if it exists, and notifies observers.
   void RemoveAppInstanceIfExists(content::WebContents* contents);
@@ -157,7 +158,8 @@ class BrowserAppInstanceTracker : public TabStripModelObserver,
 
   // Updates the browser instance with the new attributes and notifies
   // observers, if it was updated.
-  void MaybeUpdateChromeInstance(BrowserAppInstance& instance);
+  void MaybeUpdateChromeInstance(BrowserAppInstance& instance,
+                                 Browser* browser);
 
   // Removes the browser instance, if it exists, and notifies observers.
   void RemoveChromeInstanceIfExists(Browser* browser);
@@ -170,7 +172,9 @@ class BrowserAppInstanceTracker : public TabStripModelObserver,
 
   // Updates the instance (app or browser) with the new attributes and notifies
   // observers, if it was updated.
-  void MaybeUpdateInstance(BrowserAppInstance& instance, Browser* browser);
+  void MaybeUpdateInstance(BrowserAppInstance& instance,
+                           Browser* browser,
+                           content::WebContents* contents);
 
   bool IsBrowserTracked(Browser* browser) const;
   bool IsWindowTracked(aura::Window* window) const;
