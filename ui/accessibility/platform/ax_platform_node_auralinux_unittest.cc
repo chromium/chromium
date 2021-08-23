@@ -84,6 +84,20 @@ class AXPlatformNodeAuraLinuxTest : public AXPlatformNodeTest {
     return atk_state_type < max_state_type.value();
   }
 
+  // If we were compiled with a newer version of ATK than the runtime version,
+  // it's possible that the relation type we want to expose and/or emit an event
+  // for is not present. This will generate a runtime error.
+  bool PlatformSupportsRelation(AtkRelationType atk_relation_type) {
+    static absl::optional<int> max_relation_type = absl::nullopt;
+    if (!max_relation_type.has_value()) {
+      GEnumClass* enum_class =
+          G_ENUM_CLASS(g_type_class_ref(atk_relation_type_get_type()));
+      max_relation_type = enum_class->maximum;
+      g_type_class_unref(enum_class);
+    }
+    return atk_relation_type < max_relation_type.value();
+  }
+
  private:
   ui::testing::ScopedAxModeSetter ax_mode_setter_;
 };
@@ -231,6 +245,10 @@ static bool AtkObjectHasState(AtkObject* atk_object, AtkStateType state) {
 //
 #if defined(ATK_CHECK_VERSION) && ATK_CHECK_VERSION(2, 16, 0)
 #define ATK_216
+#endif
+
+#if defined(ATK_CHECK_VERSION) && ATK_CHECK_VERSION(2, 26, 0)
+#define ATK_226
 #endif
 
 TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkObjectDetachedObject) {
@@ -2186,12 +2204,16 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkRelations) {
   AtkObject* atk_child2(AtkObjectFromNode(GetRootAsAXNode()->children()[1]));
   AtkObject* atk_child3(AtkObjectFromNode(GetRootAsAXNode()->children()[2]));
 
-  assert_contains_relation(root_atk_object, atk_child1, ATK_RELATION_DETAILS);
-  assert_contains_relation(atk_child1, root_atk_object,
-                           ATK_RELATION_DETAILS_FOR);
-  assert_contains_relation(atk_child3, atk_child1, ATK_RELATION_DETAILS);
-  assert_contains_relation(atk_child1, atk_child3, ATK_RELATION_DETAILS_FOR);
-
+#if defined(ATK_226)
+  // Runtime check in case we were compiled with a newer version of ATK.
+  if (PlatformSupportsRelation(ATK_RELATION_DETAILS)) {
+    assert_contains_relation(root_atk_object, atk_child1, ATK_RELATION_DETAILS);
+    assert_contains_relation(atk_child1, root_atk_object,
+                             ATK_RELATION_DETAILS_FOR);
+    assert_contains_relation(atk_child3, atk_child1, ATK_RELATION_DETAILS);
+    assert_contains_relation(atk_child1, atk_child3, ATK_RELATION_DETAILS_FOR);
+  }
+#endif
   assert_contains_relation(atk_child2, root_atk_object,
                            ATK_RELATION_LABELLED_BY);
   assert_contains_relation(root_atk_object, atk_child2, ATK_RELATION_LABEL_FOR);
