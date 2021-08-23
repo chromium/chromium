@@ -1272,8 +1272,17 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, MixedContentWithSameDocumentNavigation) {
 
 // Tests that the WebContents's flag for displaying content with cert
 // errors get cleared upon navigation.
-IN_PROC_BROWSER_TEST_F(SSLUITest,
-                       DisplayedContentWithCertErrorsClearedOnNavigation) {
+// Flaky on Mac. https://crbug.com/1242369.
+#if defined(OS_MAC)
+#define MAYBE_DisplayedContentWithCertErrorsClearedOnNavigation \
+  DISABLED_DisplayedContentWithCertErrorsClearedOnNavigation
+#else
+#define MAYBE_DisplayedContentWithCertErrorsClearedOnNavigation \
+  DisplayedContentWithCertErrorsClearedOnNavigation
+#endif
+IN_PROC_BROWSER_TEST_F(
+    SSLUITest,
+    MAYBE_DisplayedContentWithCertErrorsClearedOnNavigation) {
   ASSERT_TRUE(https_server_.Start());
   ASSERT_TRUE(https_server_expired_.Start());
 
