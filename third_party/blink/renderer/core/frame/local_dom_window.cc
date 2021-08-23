@@ -259,6 +259,15 @@ bool LocalDOMWindow::IsCrossSiteSubframe() const {
       net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
 }
 
+bool LocalDOMWindow::IsCrossSiteSubframeIncludingScheme() const {
+  return GetFrame() && top()->GetFrame() &&
+         !top()
+              ->GetFrame()
+              ->GetSecurityContext()
+              ->GetSecurityOrigin()
+              ->IsSameSiteWith(GetSecurityContext().GetSecurityOrigin());
+}
+
 LocalDOMWindow* LocalDOMWindow::From(const ScriptState* script_state) {
   v8::HandleScope scope(script_state->GetIsolate());
   return blink::ToLocalDOMWindow(script_state->GetContext());
@@ -627,17 +636,8 @@ void LocalDOMWindow::CountUseOnlyInCrossOriginIframe(
 
 void LocalDOMWindow::CountUseOnlyInCrossSiteIframe(
     mojom::blink::WebFeature feature) {
-  if (!GetFrame())
-    return;
-
-  if (top()->GetFrame() &&
-      !top()
-           ->GetFrame()
-           ->GetSecurityContext()
-           ->GetSecurityOrigin()
-           ->IsSameSiteWith(GetSecurityContext().GetSecurityOrigin())) {
+  if (IsCrossSiteSubframeIncludingScheme())
     CountUse(feature);
-  }
 }
 
 bool LocalDOMWindow::HasInsecureContextInAncestors() {

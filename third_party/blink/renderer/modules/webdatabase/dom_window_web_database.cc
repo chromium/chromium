@@ -29,6 +29,7 @@
 #include "base/feature_list.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_database_callback.h"
+#include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/modules/webdatabase/database.h"
@@ -69,8 +70,15 @@ Database* DOMWindowWebDatabase::openDatabase(
     if (window.GetSecurityOrigin()->IsLocal())
       UseCounter::Count(window, WebFeature::kFileAccessedDatabase);
 
-    window.CountUseOnlyInCrossSiteIframe(
-        WebFeature::kOpenWebDatabaseThirdPartyContext);
+    if (window.IsCrossSiteSubframeIncludingScheme() &&
+        IsThirdPartyContextWebSQLDeprecated()) {
+      Deprecation::CountDeprecation(
+          &window, WebFeature::kOpenWebDatabaseThirdPartyContext);
+    } else {
+      // We still want to count usage even if deprecation is off.
+      window.CountUseOnlyInCrossSiteIframe(
+          WebFeature::kOpenWebDatabaseThirdPartyContext);
+    }
 
     String error_message;
     database = db_manager.OpenDatabase(&window, name, version, display_name,
