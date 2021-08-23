@@ -60,10 +60,11 @@ class CORE_EXPORT NGBreakToken : public GarbageCollected<NGBreakToken> {
 
  protected:
   NGBreakToken(NGBreakTokenType type,
-               NGLayoutInputNode node)
+               NGLayoutInputNode node,
+               unsigned flags = 0)
       : box_(node.GetLayoutBox()),
         type_(type),
-        flags_(0),
+        flags_(flags),
         is_break_before_(false),
         is_forced_break_(false),
         is_caused_by_column_spanner_(false),
@@ -85,7 +86,7 @@ class CORE_EXPORT NGBreakToken : public GarbageCollected<NGBreakToken> {
   // The following bitfields are only to be used by NGInlineBreakToken (it's
   // defined here to save memory, since that class has no bitfields).
 
-  unsigned flags_ : 4;  // NGInlineBreakTokenFlags
+  const unsigned flags_ : 4;  // NGInlineBreakTokenFlags
 
   // The following bitfields are only to be used by NGBlockBreakToken (it's
   // defined here to save memory, since that class has no bitfields).

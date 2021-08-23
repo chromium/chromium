@@ -88,14 +88,14 @@ class CORE_EXPORT NGInlineBreakToken final : public NGBreakToken {
   void Trace(Visitor*) const override;
 
  private:
-  const NGBlockBreakToken* const* BlockInInlineBreakTokenAddress() const;
+  const Member<const NGBlockBreakToken>* BlockInInlineBreakTokenAddress() const;
 
   scoped_refptr<const ComputedStyle> style_;
   unsigned item_index_;
   unsigned text_offset_;
 
   // This is an array of one item if |kHasBlockInInlineToken|, or zero.
-  NGBlockBreakToken* block_in_inline_break_token_[];
+  Member<const NGBlockBreakToken> block_in_inline_break_token_[];
 };
 
 template <>
