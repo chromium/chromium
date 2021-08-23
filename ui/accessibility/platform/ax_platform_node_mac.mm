@@ -518,11 +518,7 @@ bool IsAXSetter(SEL selector) {
 // NSAccessibility informal protocol implementation.
 
 - (BOOL)accessibilityIsIgnored {
-  if (!_node)
-    return YES;
-
-  return [[self AXRole] isEqualToString:NSAccessibilityUnknownRole] ||
-         _node->IsInvisibleOrIgnored();
+  return ![self isAccessibilityElement];
 }
 
 - (id)accessibilityHitTest:(NSPoint)point {
