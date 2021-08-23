@@ -865,15 +865,6 @@ bool FrameFetchContext::SendConversionRequestInsteadOfRedirecting(
         document_->domWindow(),
         AttributionReportingIssueType::kPermissionPolicyDisabled,
         GetFrame()->GetDevToolsFrameToken(), nullptr, devtools_request_id);
-
-    // TODO(crbug.com/1178400): Remove console message once the issue reported
-    //     above is actually shown in DevTools.
-    String message =
-        "The 'attribution-reporting' feature policy must be enabled to "
-        "register a conversion.";
-    document_->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kOther,
-        mojom::blink::ConsoleMessageLevel::kError, message));
     return false;
   }
 
