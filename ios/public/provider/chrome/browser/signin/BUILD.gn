@@ -13,8 +13,6 @@ source_set("signin") {
     "chrome_identity_service.mm",
     "chrome_trusted_vault_service.h",
     "chrome_trusted_vault_service.mm",
-    "signin_resources_provider.h",
-    "signin_resources_provider.mm",
   ]
   deps = [
     "//base",
@@ -48,8 +46,6 @@ source_set("test_support") {
     "fake_chrome_identity_service.mm",
     "fake_chrome_trusted_vault_service.h",
     "fake_chrome_trusted_vault_service.mm",
-    "test_signin_resources_provider.h",
-    "test_signin_resources_provider.mm",
   ]
   deps = [
     ":constants",

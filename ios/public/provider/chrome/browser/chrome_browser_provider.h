@@ -43,7 +43,6 @@ namespace ios {
 class ChromeBrowserProvider;
 class ChromeIdentityService;
 class ChromeTrustedVaultService;
-class SigninResourcesProvider;
 
 // Getter and setter for the provider. The provider should be set early, before
 // any browser code is called (as the getter will fail if the provider has not
@@ -91,8 +90,6 @@ class ChromeBrowserProvider {
   // This is called after web startup.
   virtual void Initialize() const;
 
-  // Returns an instance of a signin resources provider.
-  virtual SigninResourcesProvider* GetSigninResourcesProvider();
   // Sets the current instance of Chrome identity service. Used for testing.
   void SetChromeIdentityServiceForTesting(
       std::unique_ptr<ChromeIdentityService> service);

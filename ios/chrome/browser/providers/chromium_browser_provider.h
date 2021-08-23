@@ -13,7 +13,6 @@ class ChromiumBrowserProvider : public ios::ChromeBrowserProvider {
   ~ChromiumBrowserProvider() override;
 
   // ChromeBrowserProvider implementation
-  ios::SigninResourcesProvider* GetSigninResourcesProvider() override;
   UITextField* CreateStyledTextField() const override NS_RETURNS_RETAINED;
   VoiceSearchProvider* GetVoiceSearchProvider() const override;
 
@@ -26,7 +25,6 @@ class ChromiumBrowserProvider : public ios::ChromeBrowserProvider {
       override;
 
  private:
-  std::unique_ptr<ios::SigninResourcesProvider> signin_resources_provider_;
   std::unique_ptr<UserFeedbackProvider> user_feedback_provider_;
   std::unique_ptr<VoiceSearchProvider> voice_search_provider_;
   std::unique_ptr<OverridesProvider> overrides_provider_;

@@ -8,7 +8,6 @@
 
 #import "ios/chrome/browser/providers/chromium_logo_controller.h"
 #import "ios/chrome/browser/providers/chromium_voice_search_provider.h"
-#include "ios/chrome/browser/providers/signin/chromium_signin_resources_provider.h"
 #import "ios/public/provider/chrome/browser/discover_feed/discover_feed_provider.h"
 #include "ios/public/provider/chrome/browser/overrides_provider.h"
 #include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
@@ -19,19 +18,12 @@
 #endif
 
 ChromiumBrowserProvider::ChromiumBrowserProvider()
-    : signin_resources_provider_(
-          std::make_unique<ChromiumSigninResourcesProvider>()),
-      user_feedback_provider_(std::make_unique<UserFeedbackProvider>()),
+    : user_feedback_provider_(std::make_unique<UserFeedbackProvider>()),
       voice_search_provider_(std::make_unique<ChromiumVoiceSearchProvider>()),
       overrides_provider_(std::make_unique<OverridesProvider>()),
       discover_feed_provider_(std::make_unique<DiscoverFeedProvider>()) {}
 
 ChromiumBrowserProvider::~ChromiumBrowserProvider() {}
-
-ios::SigninResourcesProvider*
-ChromiumBrowserProvider::GetSigninResourcesProvider() {
-  return signin_resources_provider_.get();
-}
 
 UITextField* ChromiumBrowserProvider::CreateStyledTextField() const {
   return [[UITextField alloc] initWithFrame:CGRectZero];

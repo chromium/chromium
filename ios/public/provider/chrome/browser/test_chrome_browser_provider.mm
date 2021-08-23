@@ -12,7 +12,6 @@
 #include "ios/public/provider/chrome/browser/omaha/test_omaha_service_provider.h"
 #include "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #include "ios/public/provider/chrome/browser/signin/fake_chrome_trusted_vault_service.h"
-#include "ios/public/provider/chrome/browser/signin/test_signin_resources_provider.h"
 #import "ios/public/provider/chrome/browser/user_feedback/test_user_feedback_provider.h"
 #import "ios/public/provider/chrome/browser/voice/test_voice_search_provider.h"
 #import "ios/public/provider/chrome/browser/voice/voice_search_language.h"
@@ -25,8 +24,6 @@ namespace ios {
 
 TestChromeBrowserProvider::TestChromeBrowserProvider()
     : omaha_service_provider_(std::make_unique<TestOmahaServiceProvider>()),
-      signin_resources_provider_(
-          std::make_unique<TestSigninResourcesProvider>()),
       voice_search_provider_(std::make_unique<TestVoiceSearchProvider>()),
       user_feedback_provider_(std::make_unique<TestUserFeedbackProvider>()),
       mailto_handler_provider_(std::make_unique<TestMailtoHandlerProvider>()),
@@ -38,11 +35,6 @@ TestChromeBrowserProvider::~TestChromeBrowserProvider() {}
 TestChromeBrowserProvider& TestChromeBrowserProvider::GetTestProvider() {
   ChromeBrowserProvider& provider = GetChromeBrowserProvider();
   return static_cast<TestChromeBrowserProvider&>(provider);
-}
-
-SigninResourcesProvider*
-TestChromeBrowserProvider::GetSigninResourcesProvider() {
-  return signin_resources_provider_.get();
 }
 
 ChromeTrustedVaultService*

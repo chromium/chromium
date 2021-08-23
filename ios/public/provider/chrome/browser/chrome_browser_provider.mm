@@ -51,10 +51,6 @@ void ChromeBrowserProvider::AppendSwitchesFromExperimentalSettings(
 
 void ChromeBrowserProvider::Initialize() const {}
 
-SigninResourcesProvider* ChromeBrowserProvider::GetSigninResourcesProvider() {
-  return nullptr;
-}
-
 void ChromeBrowserProvider::SetChromeIdentityServiceForTesting(
     std::unique_ptr<ChromeIdentityService> service) {
   chrome_identity_service_ = std::move(service);
