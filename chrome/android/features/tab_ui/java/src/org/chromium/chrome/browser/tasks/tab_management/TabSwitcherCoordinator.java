@@ -106,7 +106,6 @@ public class TabSwitcherCoordinator
 
     private TabSelectionEditorCoordinator mTabSelectionEditorCoordinator;
     private TabGroupManualSelectionMode mTabGroupManualSelectionMode;
-    private UndoGroupSnackbarController mUndoGroupSnackbarController;
     private TabSuggestionsOrchestrator mTabSuggestionsOrchestrator;
     private NewTabTileCoordinator mNewTabTileCoordinator;
     private TabAttributeCache mTabAttributeCache;
@@ -300,13 +299,6 @@ public class TabSwitcherCoordinator
         }
 
         mMultiThumbnailCardProvider.initWithNative();
-
-        if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(context)) {
-            mUndoGroupSnackbarController =
-                    new UndoGroupSnackbarController(context, mTabModelSelector, snackbarManager);
-        } else {
-            mUndoGroupSnackbarController = null;
-        }
 
         if (mMode == TabListCoordinator.TabListMode.GRID) {
             if (CachedFeatureFlags.isEnabled(ChromeFeatureList.CLOSE_TAB_SUGGESTIONS)) {
@@ -635,9 +627,6 @@ public class TabSwitcherCoordinator
         mContainerViewChangeProcessor.destroy();
         if (mTabGridDialogCoordinator != null) {
             mTabGridDialogCoordinator.destroy();
-        }
-        if (mUndoGroupSnackbarController != null) {
-            mUndoGroupSnackbarController.destroy();
         }
         if (mTabGridIphDialogCoordinator != null) {
             mTabGridIphDialogCoordinator.destroy();

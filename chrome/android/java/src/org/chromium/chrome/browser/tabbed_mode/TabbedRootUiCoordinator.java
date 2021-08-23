@@ -85,6 +85,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.PriceTrackingUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
+import org.chromium.chrome.browser.tasks.tab_management.UndoGroupSnackbarController;
 import org.chromium.chrome.browser.toolbar.ToolbarButtonInProductHelpController;
 import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
@@ -150,6 +151,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private FindToolbarObserver mContinuousSearchFindToolbarObserver;
     private MerchantTrustSignalsCoordinator mMerchantTrustSignalsCoordinator;
     private CommerceSubscriptionsService mCommerceSubscriptionsService;
+    private UndoGroupSnackbarController mUndoGroupSnackbarController;
     private final IntentRequestTracker mIntentRequestTracker;
     private final int mControlContainerHeightResource;
     private final Supplier<InsetObserverView> mInsetObserverViewSupplier;
@@ -363,6 +365,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mContinuousSearchFindToolbarObserver = null;
         }
 
+        if (mUndoGroupSnackbarController != null) {
+            mUndoGroupSnackbarController.destroy();
+        }
+
         if (mMerchantTrustSignalsCoordinator != null) {
             mMerchantTrustSignalsCoordinator.destroy();
             mMerchantTrustSignalsCoordinator = null;
@@ -504,6 +510,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         initMerchantTrustSignals();
         initCommerceSubscriptionsService();
+        initUndoGroupSnackbarController();
     }
 
     private boolean isShowingStartSurfaceHomepage() {
@@ -640,6 +647,15 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mCommerceSubscriptionsService = factory.getForLastUsedProfile();
         mCommerceSubscriptionsService.initDeferredStartupForActivity(
                 mTabModelSelectorSupplier.get(), mActivityLifecycleDispatcher);
+    }
+
+    private void initUndoGroupSnackbarController() {
+        if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mActivity)) {
+            mUndoGroupSnackbarController = new UndoGroupSnackbarController(
+                    mActivity, mTabModelSelectorSupplier.get(), mSnackbarManagerSupplier.get());
+        } else {
+            mUndoGroupSnackbarController = null;
+        }
     }
 
     private void initStatusIndicatorCoordinator(LayoutManagerImpl layoutManager) {
