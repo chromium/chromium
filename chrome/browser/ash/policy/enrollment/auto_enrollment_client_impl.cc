@@ -1120,8 +1120,9 @@ void AutoEnrollmentClientImpl::NextStep() {
 }
 
 void AutoEnrollmentClientImpl::SendBucketDownloadRequest() {
-  // |device_identifier_provider_fre_| has to be non-null when calling this
-  // method.
+  // This method should only be called when the client has been created for FRE
+  // use case.
+  DCHECK(!IsClientForInitialEnrollment());
   DCHECK(device_identifier_provider_fre_);
 
   // Start the Hash dance timer during the first attempt.
@@ -1351,8 +1352,9 @@ bool AutoEnrollmentClientImpl::OnDeviceStateRequestCompletion(
 
 bool AutoEnrollmentClientImpl::IsIdHashInProtobuf(
     const google::protobuf::RepeatedPtrField<std::string>& hashes) {
-  // |device_identifier_provider_fre_| has to be non-null when calling this
-  // method.
+  // This method should only be called when the client has been created for FRE
+  // use case.
+  DCHECK(!IsClientForInitialEnrollment());
   DCHECK(device_identifier_provider_fre_);
 
   std::string id_hash = device_identifier_provider_fre_->GetIdHash();
