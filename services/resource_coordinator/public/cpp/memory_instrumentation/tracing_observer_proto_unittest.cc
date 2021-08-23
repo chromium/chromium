@@ -141,8 +141,16 @@ memory_instrumentation::mojom::OSMemDump GetFakeOSMemDump(
   );
 }
 
+// crbug.com/1242040: flaky on linux, chromeos and lacros
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_AddChromeDumpToTraceIfEnabled_When_TraceLog_Disabled \
+  DISABLED_AddChromeDumpToTraceIfEnabled_When_TraceLog_Disabled
+#else
+#define MAYBE_AddChromeDumpToTraceIfEnabled_When_TraceLog_Disabled \
+  AddChromeDumpToTraceIfEnabled_When_TraceLog_Disabled
+#endif
 TEST_F(TracingObserverProtoTest,
-       AddChromeDumpToTraceIfEnabled_When_TraceLog_Disabled) {
+       MAYBE_AddChromeDumpToTraceIfEnabled_When_TraceLog_Disabled) {
   auto tracing_observer =
       std::make_unique<memory_instrumentation::TracingObserverProto>(
           base::trace_event::TraceLog::GetInstance(), nullptr);
