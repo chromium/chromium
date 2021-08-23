@@ -216,13 +216,15 @@ void AppTimeControllerTest::CreateActivityForApp(const AppId& app_id,
   registry->SetAppLimit(app_id, limit);
   task_environment_.RunUntilIdle();
 
-  // AppActivityRegistry uses |window| to uniquely identify between different
-  // instances of the same active application. Since this test is just trying to
-  // mock one instance of an application, using nullptr is good enough.
-  registry->OnAppActive(app_id, /* window */ nullptr, base::Time::Now());
+  // AppActivityRegistry uses |instance_key| to uniquely identify between
+  // different instances of the same active application. Since this test is just
+  // trying to mock one instance of an application, using nullptr is good
+  // enough.
+  auto instance_key = apps::Instance::InstanceKey::ForWindowBasedApp(nullptr);
+  registry->OnAppActive(app_id, instance_key, base::Time::Now());
   task_environment_.FastForwardBy(time_active);
   if (time_active < time_limit) {
-    registry->OnAppInactive(app_id, /* window */ nullptr, base::Time::Now());
+    registry->OnAppInactive(app_id, instance_key, base::Time::Now());
   }
 }
 
@@ -393,8 +395,9 @@ TEST_F(AppTimeControllerTest, TimeLimitNotification) {
   registry->UpdateAppLimits(limits);
   task_environment().RunUntilIdle();
 
-  registry->OnAppActive(kApp1, /* window */ nullptr, base::Time::Now());
-  registry->OnAppActive(kApp2, /* window */ nullptr, base::Time::Now());
+  auto instance_key = apps::Instance::InstanceKey::ForWindowBasedApp(nullptr);
+  registry->OnAppActive(kApp1, instance_key, base::Time::Now());
+  registry->OnAppActive(kApp2, instance_key, base::Time::Now());
 
   task_environment().FastForwardBy(base::TimeDelta::FromMinutes(25));
 
@@ -476,11 +479,14 @@ TEST_F(AppTimeControllerTest, RestoreLastResetTime) {
   base::Time last_reset_time = GetLastResetTime(base::Time::Now());
   EXPECT_EQ(test_api()->GetLastResetTime(), last_reset_time);
 
-  controller()->app_registry()->OnAppActive(kApp1, nullptr, last_reset_time);
-  controller()->app_registry()->OnAppActive(kApp2, nullptr, last_reset_time);
+  auto instance_key = apps::Instance::InstanceKey::ForWindowBasedApp(nullptr);
+  controller()->app_registry()->OnAppActive(kApp1, instance_key,
+                                            last_reset_time);
+  controller()->app_registry()->OnAppActive(kApp2, instance_key,
+                                            last_reset_time);
   task_environment().FastForwardBy(kOneHour);
 
-  controller()->app_registry()->OnAppInactive(kApp1, nullptr,
+  controller()->app_registry()->OnAppInactive(kApp1, instance_key,
                                               base::Time::Now());
   EXPECT_EQ(controller()->app_registry()->GetAppState(kApp1),
             AppState::kAvailable);

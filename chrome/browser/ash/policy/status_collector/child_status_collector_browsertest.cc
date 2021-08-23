@@ -319,13 +319,14 @@ class ChildStatusCollectorTest : public testing::Test {
     app_registry->OnAppInstalled(app_id);
 
     // Window instance is irrelevant for tests here.
-    app_registry->OnAppActive(app_id, nullptr /* window */, Time::Now());
+    auto instance_key = apps::Instance::InstanceKey::ForWindowBasedApp(nullptr);
+    app_registry->OnAppActive(app_id, instance_key, Time::Now());
     if (should_run_tasks) {
       task_environment_.FastForwardBy(duration);
     } else {
       task_environment_.AdvanceClock(duration);
     }
-    app_registry->OnAppInactive(app_id, nullptr /* window */, Time::Now());
+    app_registry->OnAppInactive(app_id, instance_key, Time::Now());
   }
 
   virtual void RestartStatusCollector(

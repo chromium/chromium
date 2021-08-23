@@ -61,29 +61,29 @@ class AppServiceWrapper : public apps::AppRegistryCache::Observer,
 
     // Called when app with |app_id| becomes active.
     // Active means that the app is in usage (visible in foreground).
-    // |window| If the app is launched multiple times, |window| indicates which
-    // of the windows is active.
+    // If the app is launched multiple times, |instance_key| indicates which
+    // of the instances is active.
     // |timestamp| indicates the time when the app became active.
     virtual void OnAppActive(const AppId& app_id,
-                             aura::Window* window,
+                             const apps::Instance::InstanceKey& instance_key,
                              base::Time timestamp) {}
 
     // Called when app with |app_id| becomes inactive.
     // Inactive means that the app is not in the foreground. It still can run
     // and be partially visible. |timestamp| indicates the time when the app
-    // became inactive. |window| to specify which of the application's
-    // potentially multiple windows became inactive.Note: This can be called
+    // became inactive. |instance_key| to specify which of the application's
+    // potentially multiple instances became inactive. Note: This can be called
     // for the app that is already inactive.
     virtual void OnAppInactive(const AppId& app_id,
-                               aura::Window* window,
+                               const apps::Instance::InstanceKey& instance_key,
                                base::Time timestamp) {}
 
     // Called when app with |app_id| is destroyed.
     // |timestamp| indicates the time when the app is destroyed.
-    // |window| to specify which of the application's potentially multiple
-    // window was destroyed.
+    // |instance_key| to specify which of the application's potentially multiple
+    // instances was destroyed.
     virtual void OnAppDestroyed(const AppId& app_id,
-                                aura::Window* window,
+                                const apps::Instance::InstanceKey& instance_key,
                                 base::Time timestamp) {}
   };
 

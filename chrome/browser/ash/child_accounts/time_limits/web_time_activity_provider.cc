@@ -141,13 +141,14 @@ void WebTimeActivityProvider::OnBrowserRemoved(Browser* browser) {
   MaybeNotifyStateChange(base::Time::Now());
 }
 
-void WebTimeActivityProvider::OnAppActive(const AppId& app_id,
-                                          aura::Window* window,
-                                          base::Time timestamp) {
+void WebTimeActivityProvider::OnAppActive(
+    const AppId& app_id,
+    const apps::Instance::InstanceKey& instance_key,
+    base::Time timestamp) {
   if (app_id != GetChromeAppId())
     return;
 
-  const Browser* browser = GetBrowserForWindow(window);
+  const Browser* browser = GetBrowserForWindow(instance_key.Window());
   if (!browser)
     return;
 
@@ -155,13 +156,14 @@ void WebTimeActivityProvider::OnAppActive(const AppId& app_id,
   MaybeNotifyStateChange(timestamp);
 }
 
-void WebTimeActivityProvider::OnAppInactive(const AppId& app_id,
-                                            aura::Window* window,
-                                            base::Time timestamp) {
+void WebTimeActivityProvider::OnAppInactive(
+    const AppId& app_id,
+    const apps::Instance::InstanceKey& instance_key,
+    base::Time timestamp) {
   if (app_id != GetChromeAppId())
     return;
 
-  const Browser* browser = GetBrowserForWindow(window);
+  const Browser* browser = GetBrowserForWindow(instance_key.Window());
   if (!browser)
     return;
 

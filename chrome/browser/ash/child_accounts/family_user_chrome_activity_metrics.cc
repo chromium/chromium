@@ -14,7 +14,6 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "ui/aura/window.h"
 
 namespace ash {
 
@@ -70,42 +69,44 @@ void FamilyUserChromeActivityMetrics::SetActiveSessionStartForTesting(
   active_duration_start_ = time;
 }
 
-void FamilyUserChromeActivityMetrics::OnAppActive(const app_time::AppId& app_id,
-                                                  aura::Window* window,
-                                                  base::Time timestamp) {
-  if (app_id != app_time::GetChromeAppId())
-    return;
-
-  if (active_browser_windows_.empty())
-    UpdateUserEngagement(/*is_user_active=*/true);
-
-  active_browser_windows_.insert(window);
-}
-
-void FamilyUserChromeActivityMetrics::OnAppInactive(
+void FamilyUserChromeActivityMetrics::OnAppActive(
     const app_time::AppId& app_id,
-    aura::Window* window,
+    const apps::Instance::InstanceKey& instance_key,
     base::Time timestamp) {
   if (app_id != app_time::GetChromeAppId())
     return;
 
-  // OnAppInactive might get called for the same window multiple times. The
-  // |window| might have already been removed from |active_browser_windows_|.
-  if (!base::Contains(active_browser_windows_, window))
+  if (active_browser_instances_.empty())
+    UpdateUserEngagement(/*is_user_active=*/true);
+
+  active_browser_instances_.insert(instance_key);
+}
+
+void FamilyUserChromeActivityMetrics::OnAppInactive(
+    const app_time::AppId& app_id,
+    const apps::Instance::InstanceKey& instance_key,
+    base::Time timestamp) {
+  if (app_id != app_time::GetChromeAppId())
     return;
 
-  active_browser_windows_.erase(window);
-  if (active_browser_windows_.empty())
+  // OnAppInactive might get called for the same instance multiple times. The
+  // |instance| might have already been removed from
+  // |active_browser_instances_|.
+  if (!base::Contains(active_browser_instances_, instance_key))
+    return;
+
+  active_browser_instances_.erase(instance_key);
+  if (active_browser_instances_.empty())
     UpdateUserEngagement(/*is_user_active=*/false);
 }
 
 void FamilyUserChromeActivityMetrics::OnUsageTimeStateChange(
     UsageTimeStateNotifier::UsageTimeState state) {
-  if (active_browser_windows_.empty())
+  if (active_browser_instances_.empty())
     return;
 
   // We should exclude the duration when UsageTimeState is not active and
-  // `active_browser_windows_` has instance. For example, when screen is off,
+  // `active_browser_instances_` has instance. For example, when screen is off,
   // the browser might still be active.
   UpdateUserEngagement(state == UsageTimeStateNotifier::UsageTimeState::ACTIVE);
 }

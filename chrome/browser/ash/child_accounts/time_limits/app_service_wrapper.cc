@@ -275,13 +275,15 @@ void AppServiceWrapper::OnInstanceUpdate(const apps::InstanceUpdate& update) {
   bool is_destroyed = update.State() & apps::InstanceState::kDestroyed;
   for (auto& listener : listeners_) {
     if (is_active) {
-      listener.OnAppActive(app_id, update.Window(), update.LastUpdatedTime());
+      listener.OnAppActive(app_id, update.InstanceKey(),
+                           update.LastUpdatedTime());
     } else {
-      listener.OnAppInactive(app_id, update.Window(), update.LastUpdatedTime());
+      listener.OnAppInactive(app_id, update.InstanceKey(),
+                             update.LastUpdatedTime());
     }
 
     if (is_destroyed) {
-      listener.OnAppDestroyed(app_id, update.Window(),
+      listener.OnAppDestroyed(app_id, update.InstanceKey(),
                               update.LastUpdatedTime());
     }
   }
