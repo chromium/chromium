@@ -18,6 +18,10 @@ static_library("bluetooth_config") {
     "device_cache_impl.h",
     "device_conversion_util.cc",
     "device_conversion_util.h",
+    "discovery_session_manager.cc",
+    "discovery_session_manager.h",
+    "discovery_session_manager_impl.cc",
+    "discovery_session_manager_impl.h",
     "initializer.h",
     "initializer_impl.cc",
     "initializer_impl.h",
@@ -62,8 +66,12 @@ static_library("test_support") {
   sources = [
     "fake_adapter_state_controller.cc",
     "fake_adapter_state_controller.h",
+    "fake_bluetooth_discovery_delegate.cc",
+    "fake_bluetooth_discovery_delegate.h",
     "fake_device_cache.cc",
     "fake_device_cache.h",
+    "fake_discovery_session_manager.cc",
+    "fake_discovery_session_manager.h",
     "fake_system_properties_observer.cc",
     "fake_system_properties_observer.h",
     "scoped_bluetooth_config_test_helper.cc",
@@ -88,6 +96,7 @@ source_set("unit_tests") {
     "cros_bluetooth_config_unittest.cc",
     "device_cache_impl_unittest.cc",
     "device_conversion_util_unittest.cc",
+    "discovery_session_manager_impl_unittest.cc",
     "system_properties_provider_impl_unittest.cc",
   ]
 
