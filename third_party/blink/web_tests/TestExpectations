@@ -6274,6 +6274,11 @@ crbug.com/1045052 [ Linux ] virtual/split-http-cache-not-site-per-process/http/t
 crbug.com/1045052 [ Linux ] virtual/not-split-http-cache-not-site-per-process/http/tests/devtools/isolated-code-cache/stale-revalidation-test.js [ Failure Pass Timeout ]
 crbug.com/1181857 external/wpt/webaudio/the-audio-api/the-analysernode-interface/test-analyser-output.html [ Failure Pass ]
 
+# Temporarily disabled to unblock https://crrev.com/c/3109528
+crbug.com/1228674 http/tests/devtools/compiler-script-mapping.js [ Skip ]
+crbug.com/1228674 http/tests/devtools/elements/styles-4/styles-rerequest-sourcemap-on-watchdog.js [ Skip ]
+crbug.com/1228674 http/tests/devtools/inline-source-map-loading.js [ Skip ]
+
 # Sheriff 2021-02-25
 crbug.com/1182673 [ Win7 ] http/tests/devtools/profiler/live-line-level-heap-profile.js [ Timeout ]
 crbug.com/1182675 [ Linux ] dom/attr/id-update-map-crash.html [ Failure Pass ]
