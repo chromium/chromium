@@ -4,6 +4,7 @@
 
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -395,8 +396,14 @@ IN_PROC_BROWSER_TEST_P(PermissionsSecurityModelInteractiveUITest,
   VerifyPermissions(embedder_contents, blob_iframe_rfh);
 }
 
+// TODO(crbug.com/1242047): Flaky on Linux.
+#if defined(OS_LINUX)
+#define MAYBE_WindowOpenBlob DISABLED_WindowOpenBlob
+#else
+#define MAYBE_WindowOpenBlob WindowOpenBlob
+#endif
 IN_PROC_BROWSER_TEST_P(PermissionsSecurityModelInteractiveUITest,
-                       WindowOpenBlob) {
+                       MAYBE_WindowOpenBlob) {
   if (GetParam()) {
     // Blob iframe on an opener contents does not work if
     // `kRevisedOriginHandling` feature enabled.
@@ -462,8 +469,16 @@ IN_PROC_BROWSER_TEST_P(PermissionsSecurityModelInteractiveUITest,
   EXPECT_EQ("", popup_iframe->GetLastCommittedURL().scheme());
 }
 
+// TODO(crbug.com/1242046): Flaky on Linux and Mac.
+#if defined(OS_LINUX) || defined(OS_MAC)
+#define MAYBE_WindowOpenFileSystemBrowserNavigation \
+  DISABLED_WindowOpenFileSystemBrowserNavigation
+#else
+#define MAYBE_WindowOpenFileSystemBrowserNavigation \
+  WindowOpenFileSystemBrowserNavigation
+#endif
 IN_PROC_BROWSER_TEST_P(PermissionsSecurityModelInteractiveUITest,
-                       WindowOpenFileSystemBrowserNavigation) {
+                       MAYBE_WindowOpenFileSystemBrowserNavigation) {
   if (!GetParam()) {
     // Filesystem iframe on an opener contents does not work if
     // `kRevisedOriginHandling` feature disabled.
@@ -580,8 +595,14 @@ IN_PROC_BROWSER_TEST_P(PermissionsSecurityModelInteractiveUITest,
   VerifyPermissionsForFile(main_rfh, /*expect_granted*/ false);
 }
 
+// TODO(crbug.com/1242048): Flaky on Linux and Mac.
+#if defined(OS_LINUX) || defined(OS_MAC)
+#define MAYBE_UniversalAccessFromFileUrls DISABLED_UniversalAccessFromFileUrls
+#else
+#define MAYBE_UniversalAccessFromFileUrls UniversalAccessFromFileUrls
+#endif
 IN_PROC_BROWSER_TEST_P(PermissionsSecurityModelInteractiveUITest,
-                       UniversalAccessFromFileUrls) {
+                       MAYBE_UniversalAccessFromFileUrls) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   content::WebContents* embedder_contents =
