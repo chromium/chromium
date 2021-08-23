@@ -416,7 +416,13 @@ IN_PROC_BROWSER_TEST_P(CookieSettingsTest, BlockCookies) {
 
 // Verify that cookies can be allowed and set using exceptions for particular
 // website(s) when all others are blocked.
-IN_PROC_BROWSER_TEST_P(CookieSettingsTest, AllowCookiesUsingExceptions) {
+// Flaky on Mac (crbug.com/1155077) and Linux (crbug.com/1242410).
+#if defined(OS_MAC) || defined(OS_LINUX)
+#define MAYBE_AllowCookiesUsingExceptions DISABLED_AllowCookiesUsingExceptions
+#else
+#define MAYBE_AllowCookiesUsingExceptions AllowCookiesUsingExceptions
+#endif
+IN_PROC_BROWSER_TEST_P(CookieSettingsTest, MAYBE_AllowCookiesUsingExceptions) {
   ui_test_utils::NavigateToURL(browser(), GetPageURL());
   content_settings::CookieSettings* settings =
       CookieSettingsFactory::GetForProfile(browser()->profile()).get();
