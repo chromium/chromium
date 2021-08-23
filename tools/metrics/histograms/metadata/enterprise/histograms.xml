@@ -33,6 +33,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <variant name=".DeviceRefreshEnterpriseMachineCertificate"
       summary="Refresh enterprise machine certificate"/>
   <variant name=".DeviceRemotePowerwash" summary="Powerwash"/>
+  <variant name=".DeviceResetEuicc" summary="Reset EUICC"/>
   <variant name=".DeviceRunDiagnosticRoutine" summary="Run diagnostic routine"/>
   <variant name=".DeviceScreenshot" summary="Screenshot"/>
   <variant name=".DeviceSetVolume" summary="Set volume"/>

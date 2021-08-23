@@ -2603,7 +2603,8 @@ message RemoteCommand {
   // the names should also be updated:
   // - components/policy/core/common/cloud/enterprise_metrics.cc;
   // - components/policy/core/common/remote_commands/remote_commands_service.cc;
-  // - Enterprise.RemoteCommandType in tools/metrics/histograms/histograms.xml;
+  // - Enterprise.RemoteCommandType in
+  //     tools/metrics/histograms/metadata/enterprise/histograms.xml;
   enum Type {
     // Simple echo command for testing, will be ignored in production code.
     COMMAND_ECHO_TEST = -1;
@@ -2647,6 +2648,10 @@ message RemoteCommand {
 
     // Clear the cache and cookies associated with a given profile.
     BROWSER_CLEAR_BROWSING_DATA = 12;
+
+    // Reset the cellular EUICC (Embedded Universal Integrated Circuit Card) on
+    // the device.
+    DEVICE_RESET_EUICC = 13;
 
     // Please update metrics after adding a new item - see the comment above.
   }

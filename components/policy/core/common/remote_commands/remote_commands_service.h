@@ -65,8 +65,9 @@ class POLICY_EXPORT RemoteCommandsService
     kDeviceRunDiagnosticRoutine = 16,
     kDeviceGetDiagnosticRoutineUpdate = 17,
     kBrowserClearBrowsingData = 18,
+    kDeviceResetEuicc = 19,
     // Used by UMA histograms. Shall refer to the last enumeration.
-    kMaxValue = kBrowserClearBrowsingData
+    kMaxValue = kDeviceResetEuicc
   };
 
   // Returns the metric name to report received commands.
