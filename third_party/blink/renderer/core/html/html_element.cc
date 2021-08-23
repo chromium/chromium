@@ -975,7 +975,8 @@ void HTMLElement::ApplyAlignmentAttributeToStyle(
   CSSValueID float_value = CSSValueID::kInvalid;
   CSSValueID vertical_align_value = CSSValueID::kInvalid;
 
-  if (EqualIgnoringASCIICase(alignment, "absmiddle")) {
+  if (EqualIgnoringASCIICase(alignment, "absmiddle") ||
+      EqualIgnoringASCIICase(alignment, "abscenter")) {
     vertical_align_value = CSSValueID::kMiddle;
   } else if (EqualIgnoringASCIICase(alignment, "absbottom")) {
     vertical_align_value = CSSValueID::kBottom;

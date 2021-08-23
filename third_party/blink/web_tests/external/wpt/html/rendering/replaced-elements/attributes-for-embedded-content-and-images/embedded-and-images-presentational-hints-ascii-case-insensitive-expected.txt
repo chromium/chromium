@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-PASS keyword absbottom
-FAIL keyword abscenter assert_equals: lowercase valid expected "middle" but got "baseline"
-PASS keyword absmiddle
-Harness: the test ran to completion.
-
