@@ -14,11 +14,11 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_video_encoder.h"
 #include "third_party/blink/renderer/platform/webrtc/webrtc_video_utils.h"
+#include "third_party/webrtc/api/video_codecs/h264_profile_level_id.h"
 #include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
 #include "third_party/webrtc/api/video_codecs/video_encoder.h"
+#include "third_party/webrtc/api/video_codecs/vp9_profile.h"
 #include "third_party/webrtc/media/base/codec.h"
-#include "third_party/webrtc/media/base/h264_profile_level_id.h"
-#include "third_party/webrtc/media/base/vp9_profile.h"
 
 namespace blink {
 
@@ -74,7 +74,7 @@ absl::optional<webrtc::SdpVideoFormat> VEAToWebRTCFormat(
       return absl::nullopt;
 #endif
 
-    webrtc::H264::Profile h264_profile;
+    webrtc::H264Profile h264_profile;
     switch (profile.profile) {
       case media::H264PROFILE_BASELINE:
 #if defined(OS_ANDROID)
@@ -82,16 +82,16 @@ absl::optional<webrtc::SdpVideoFormat> VEAToWebRTCFormat(
         // - Only HW H264 is available on Android at present.
         // - MediaCodec only advise BP, which works same as CBP in most cases.
         // - Some peers only expect CBP in negotiation.
-        h264_profile = webrtc::H264::kProfileConstrainedBaseline;
+        h264_profile = webrtc::H264Profile::kProfileConstrainedBaseline;
 #else
-        h264_profile = webrtc::H264::kProfileBaseline;
+        h264_profile = webrtc::H264Profile::kProfileBaseline;
 #endif  // defined(OS_ANDROID)
         break;
       case media::H264PROFILE_MAIN:
-        h264_profile = webrtc::H264::kProfileMain;
+        h264_profile = webrtc::H264Profile::kProfileMain;
         break;
       case media::H264PROFILE_HIGH:
-        h264_profile = webrtc::H264::kProfileHigh;
+        h264_profile = webrtc::H264Profile::kProfileHigh;
         break;
       default:
         // Unsupported H264 profile in WebRTC.
@@ -103,15 +103,15 @@ absl::optional<webrtc::SdpVideoFormat> VEAToWebRTCFormat(
     const int fps = profile.max_framerate_numerator;
     DCHECK_EQ(1u, profile.max_framerate_denominator);
 
-    const absl::optional<webrtc::H264::Level> h264_level =
-        webrtc::H264::SupportedLevel(width * height, fps);
-    const webrtc::H264::ProfileLevelId profile_level_id(
-        h264_profile, h264_level.value_or(webrtc::H264::kLevel1));
+    const absl::optional<webrtc::H264Level> h264_level =
+        webrtc::H264SupportedLevel(width * height, fps);
+    const webrtc::H264ProfileLevelId profile_level_id(
+        h264_profile, h264_level.value_or(webrtc::H264Level::kLevel1));
 
     webrtc::SdpVideoFormat format("H264");
     format.parameters = {
         {cricket::kH264FmtpProfileLevelId,
-         *webrtc::H264::ProfileLevelIdToString(profile_level_id)},
+         *webrtc::H264ProfileLevelIdToString(profile_level_id)},
         {cricket::kH264FmtpLevelAsymmetryAllowed, "1"},
         {cricket::kH264FmtpPacketizationMode, "1"}};
     return format;
@@ -172,10 +172,11 @@ bool IsConstrainedH264(const webrtc::SdpVideoFormat& format) {
   bool is_constrained_h264 = false;
 
   if (format.name == cricket::kH264CodecName) {
-    const absl::optional<webrtc::H264::ProfileLevelId> profile_level_id =
-        webrtc::H264::ParseSdpProfileLevelId(format.parameters);
-    if (profile_level_id && profile_level_id->profile ==
-                                webrtc::H264::kProfileConstrainedBaseline) {
+    const absl::optional<webrtc::H264ProfileLevelId> profile_level_id =
+        webrtc::ParseSdpForH264ProfileLevelId(format.parameters);
+    if (profile_level_id &&
+        profile_level_id->profile ==
+            webrtc::H264Profile::kProfileConstrainedBaseline) {
       is_constrained_h264 = true;
     }
   }

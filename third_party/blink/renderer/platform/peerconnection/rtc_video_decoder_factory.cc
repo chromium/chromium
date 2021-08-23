@@ -21,9 +21,9 @@
 #include "third_party/blink/renderer/platform/peerconnection/rtc_video_decoder_adapter.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_video_decoder_stream_adapter.h"
 #include "third_party/blink/renderer/platform/webrtc/webrtc_video_utils.h"
-#include "third_party/webrtc/media/base/h264_profile_level_id.h"
+#include "third_party/webrtc/api/video_codecs/h264_profile_level_id.h"
+#include "third_party/webrtc/api/video_codecs/vp9_profile.h"
 #include "third_party/webrtc/media/base/media_constants.h"
-#include "third_party/webrtc/media/base/vp9_profile.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -85,16 +85,16 @@ absl::optional<webrtc::SdpVideoFormat> VdcToWebRtcFormat(
                    webrtc::VP9ProfileToString(vp9_profile)}});
     }
     case media::VideoCodec::kH264: {
-      webrtc::H264::Profile h264_profile;
+      webrtc::H264Profile h264_profile;
       switch (config.profile()) {
         case media::H264PROFILE_BASELINE:
-          h264_profile = webrtc::H264::kProfileBaseline;
+          h264_profile = webrtc::H264Profile::kProfileBaseline;
           break;
         case media::H264PROFILE_MAIN:
-          h264_profile = webrtc::H264::kProfileMain;
+          h264_profile = webrtc::H264Profile::kProfileMain;
           break;
         case media::H264PROFILE_HIGH:
-          h264_profile = webrtc::H264::kProfileHigh;
+          h264_profile = webrtc::H264Profile::kProfileHigh;
           break;
         default:
           // Unsupported H264 profile in WebRTC.
@@ -104,15 +104,15 @@ absl::optional<webrtc::SdpVideoFormat> VdcToWebRtcFormat(
       const int width = config.visible_rect().width();
       const int height = config.visible_rect().height();
 
-      const absl::optional<webrtc::H264::Level> h264_level =
-          webrtc::H264::SupportedLevel(width * height, kDefaultFps);
-      const webrtc::H264::ProfileLevelId profile_level_id(
-          h264_profile, h264_level.value_or(webrtc::H264::kLevel1));
+      const absl::optional<webrtc::H264Level> h264_level =
+          webrtc::H264SupportedLevel(width * height, kDefaultFps);
+      const webrtc::H264ProfileLevelId profile_level_id(
+          h264_profile, h264_level.value_or(webrtc::H264Level::kLevel1));
 
       webrtc::SdpVideoFormat format("H264");
       format.parameters = {
           {cricket::kH264FmtpProfileLevelId,
-           *webrtc::H264::ProfileLevelIdToString(profile_level_id)},
+           *webrtc::H264ProfileLevelIdToString(profile_level_id)},
           {cricket::kH264FmtpLevelAsymmetryAllowed, "1"},
           {cricket::kH264FmtpPacketizationMode, "1"}};
       return format;
@@ -130,15 +130,15 @@ absl::optional<webrtc::SdpVideoFormat> VdcToWebRtcFormat(
 void MapBaselineProfile(
     std::vector<webrtc::SdpVideoFormat>* supported_formats) {
   for (const auto& format : *supported_formats) {
-    const absl::optional<webrtc::H264::ProfileLevelId> profile_level_id =
-        webrtc::H264::ParseSdpProfileLevelId(format.parameters);
+    const absl::optional<webrtc::H264ProfileLevelId> profile_level_id =
+        webrtc::ParseSdpForH264ProfileLevelId(format.parameters);
     if (profile_level_id &&
-        profile_level_id->profile == webrtc::H264::kProfileBaseline) {
+        profile_level_id->profile == webrtc::H264Profile::kProfileBaseline) {
       webrtc::SdpVideoFormat cbp_format = format;
-      webrtc::H264::ProfileLevelId cbp_profile = *profile_level_id;
-      cbp_profile.profile = webrtc::H264::kProfileConstrainedBaseline;
+      webrtc::H264ProfileLevelId cbp_profile = *profile_level_id;
+      cbp_profile.profile = webrtc::H264Profile::kProfileConstrainedBaseline;
       cbp_format.parameters[cricket::kH264FmtpProfileLevelId] =
-          *webrtc::H264::ProfileLevelIdToString(cbp_profile);
+          *webrtc::H264ProfileLevelIdToString(cbp_profile);
       supported_formats->push_back(cbp_format);
       return;
     }
