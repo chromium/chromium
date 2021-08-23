@@ -678,36 +678,6 @@ class DeviceIdentifierProviderFRE
   std::string server_backed_state_key_hash_;
 };
 
-// Provides device identifier for Forced Initial Enrollment, where the brand
-// code and serial number is used.
-class DeviceIdentifierProviderInitialEnrollment
-    : public AutoEnrollmentClientImpl::DeviceIdentifierProvider {
- public:
-  DeviceIdentifierProviderInitialEnrollment(
-      const std::string& device_serial_number,
-      const std::string& device_brand_code) {
-    CHECK(!device_serial_number.empty());
-    CHECK(!device_brand_code.empty());
-    // The hash for initial enrollment is the first 8 bytes of
-    // SHA256(<brnad_code>_<serial_number>).
-    id_hash_ =
-        crypto::SHA256HashString(device_brand_code + "_" + device_serial_number)
-            .substr(0, 8);
-  }
-
-  EnrollmentCheckType GetEnrollmentCheckType() const override {
-    return em::DeviceAutoEnrollmentRequest::
-        ENROLLMENT_CHECK_TYPE_FORCED_ENROLLMENT;
-  }
-
-  const std::string& GetIdHash() const override { return id_hash_; }
-
- private:
-  // 8-byte Hash built from serial number and brand code passed to the
-  // constructor.
-  std::string id_hash_;
-};
-
 // Handles DeviceInitialEnrollmentStateRequest /
 // DeviceInitialEnrollmentStateResponse for Forced Initial Enrollment.
 class StateDownloadMessageProcessorInitialEnrollment
@@ -902,8 +872,7 @@ AutoEnrollmentClientImpl::FactoryImpl::CreateForInitialEnrollment(
   return base::WrapUnique(new AutoEnrollmentClientImpl(
       progress_callback, device_management_service, local_state,
       url_loader_factory,
-      std::make_unique<DeviceIdentifierProviderInitialEnrollment>(
-          device_serial_number, device_brand_code),
+      /*device_identifier_provider=*/nullptr,
       std::make_unique<StateDownloadMessageProcessorInitialEnrollment>(
           device_serial_number, device_brand_code),
       power_initial, power_limit,
