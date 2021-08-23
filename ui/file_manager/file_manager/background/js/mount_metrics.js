@@ -58,7 +58,6 @@ export class MountMetrics {
  */
 MountMetrics.FileSystemProvidersForUMA = {
   UNKNOWN: 0,
-  ZIP_UNPACKER: 1,
   FILE_SYSTEM_FOR_DROPBOX: 2,
   FILE_SYSTEM_FOR_ONEDRIVE: 3,
   SFTP_FILE_SYSTEM: 4,
@@ -72,7 +71,6 @@ MountMetrics.FileSystemProvidersForUMA = {
   WICKED_GOOD_UNARCHIVER: 12,
   NETWORK_FILE_SHARE_FOR_CHROMEOS: 13,
   LAN_FOLDER: 14,
-  ZIP_ARCHIVER: 15,
   SECURE_SHELL_APP: 16,
   NATIVE_NETWORK_SMB: 17,
 };
@@ -88,8 +86,6 @@ Object.freeze(MountMetrics.FileSystemProvidersForUMA);
  * @enum {MountMetrics.FileSystemProvidersForUMA<number>}
  */
 MountMetrics.FileSystemProviders = {
-  oedeeodfidgoollimchfdnbmhcpnklnd:
-      MountMetrics.FileSystemProvidersForUMA.ZIP_UNPACKER,
   hlffpaajmfllggclnjppbblobdhokjhe:
       MountMetrics.FileSystemProvidersForUMA.FILE_SYSTEM_FOR_DROPBOX,
   jbfdfcehgafdbfpniaimfbfomafoadgo:
@@ -115,8 +111,6 @@ MountMetrics.FileSystemProviders = {
       MountMetrics.FileSystemProvidersForUMA.NETWORK_FILE_SHARE_FOR_CHROMEOS,
   gmhmnhjihabohahcllfgjooaoecglhpi:
       MountMetrics.FileSystemProvidersForUMA.LAN_FOLDER,
-  dmboannefpncccogfdikhmhpmdnddgoe:
-      MountMetrics.FileSystemProvidersForUMA.ZIP_ARCHIVER,
   pnhechapfaindjhompbnflcldabbghjo:
       MountMetrics.FileSystemProvidersForUMA.SECURE_SHELL_APP,
   okddffdblfhhnmhodogpojmfkjmhinfp:

@@ -161,21 +161,6 @@ export class FileTasks {
               FileTasks.INSTALL_LINUX_PACKAGE_TASK_DESCRIPTOR));
     }
 
-    // Filters out Pack with Zip Archiver task because it will be accessible via
-    // 'Zip selection' context menu button
-    tasks = tasks.filter(
-        task =>
-            !util.descriptorEqual(
-                task.descriptor, FileTasks.ZIP_ARCHIVER_ZIP_TASK_DESCRIPTOR) &&
-            !util.descriptorEqual(
-                task.descriptor,
-                FileTasks.ZIP_ARCHIVER_ZIP_USING_TMP_TASK_DESCRIPTOR));
-
-    // TODO(crbug.com/1201052) Remove these lines when removing ZipArchiver.
-    const toExclude = FileTasks.ZIP_ARCHIVER_UNZIP_TASK_DESCRIPTOR;
-    tasks =
-        tasks.filter(task => !util.descriptorEqual(task.descriptor, toExclude));
-
     tasks = FileTasks.annotateTasks_(tasks, entries);
 
     const defaultTask = FileTasks.getDefaultTask(tasks, taskHistory);
@@ -300,19 +285,6 @@ export class FileTasks {
       FileTasks.recordEnumWithOnlineAndOffline_(
           volumeManager, 'ViewingRootType', rootType,
           VolumeManagerCommon.RootTypesForUMA);
-    }
-  }
-
-  /**
-   * @param {!chrome.fileManagerPrivate.FileTaskDescriptor} descriptor
-   */
-  static recordZipHandlerUMA_(descriptor) {
-    if (FileTasks.UMA_ZIP_HANDLER_TASK_DESCRIPTORS_.some(
-            zipDescriptor => util.descriptorEqual(zipDescriptor, descriptor))) {
-      metrics.recordEnum(
-          'ZipFileTask', util.makeTaskID(descriptor),
-          FileTasks.UMA_ZIP_HANDLER_TASK_DESCRIPTORS_.map(
-              desc => util.makeTaskID(desc)));
     }
   }
 
@@ -716,7 +688,6 @@ export class FileTasks {
       if (FileTasks.isInternalTask_(task.descriptor)) {
         this.executeInternalTask_(task.descriptor);
       } else {
-        FileTasks.recordZipHandlerUMA_(task.descriptor);
         chrome.fileManagerPrivate.executeTask(
             task.descriptor, this.entries_, onFileManagerPrivateExecuteTask);
       }
@@ -1325,48 +1296,6 @@ FileTasks.INSTALL_LINUX_PACKAGE_TASK_DESCRIPTOR = {
 FileTasks.VIDEO_PLAYER_ID = 'jcgeabjmjgoblfofpppfkcoakmfobdko';
 
 /**
- * The task descriptor of the zip unpacker app.
- * @const {!chrome.fileManagerPrivate.FileTaskDescriptor}
- */
-FileTasks.ZIP_UNPACKER_TASK_DESCRIPTOR = {
-  appId: 'oedeeodfidgoollimchfdnbmhcpnklnd',
-  taskType: 'app',
-  actionId: 'zip'
-};
-
-// TODO(crbug.com/1201052) Remove these lines when removing ZipArchiver.
-/**
- * The task descriptor of unzip action of Zip Archiver app.
- * @const {!chrome.fileManagerPrivate.FileTaskDescriptor}
- */
-FileTasks.ZIP_ARCHIVER_UNZIP_TASK_DESCRIPTOR = {
-  appId: 'dmboannefpncccogfdikhmhpmdnddgoe',
-  taskType: 'app',
-  actionId: 'open'
-};
-
-/**
- * The task descriptor of zip action of Zip Archiver app.
- * @const {!chrome.fileManagerPrivate.FileTaskDescriptor}
- */
-FileTasks.ZIP_ARCHIVER_ZIP_TASK_DESCRIPTOR = {
-  appId: 'dmboannefpncccogfdikhmhpmdnddgoe',
-  taskType: 'app',
-  actionId: 'pack'
-};
-
-/**
- * The task descriptor of zip action of Zip Archiver app, using temporary dir as
- * workdir.
- * @const {!chrome.fileManagerPrivate.FileTaskDescriptor}
- */
-FileTasks.ZIP_ARCHIVER_ZIP_USING_TMP_TASK_DESCRIPTOR = {
-  appId: 'dmboannefpncccogfdikhmhpmdnddgoe',
-  taskType: 'app',
-  actionId: 'pack_using_tmp'
-};
-
-/**
  * Available tasks in task menu button.
  * @enum {string}
  */
@@ -1423,19 +1352,6 @@ FileTasks.UMA_INDEX_KNOWN_EXTENSIONS = Object.freeze([
   '.dng',      '.nef',         '.nrw',
   '.orf',      '.raf',         '.rw2',
   '.tini'
-]);
-
-// TODO(crbug.com/1201052) Remove these lines when removing ZipArchiver.
-/**
- * Task IDs of the zip file handlers to be recorded.
- * The indexes of the IDs must match with the values of
- * FileManagerZipHandlerType in enums.xml, and should not change.
- * @const {Array<!chrome.fileManagerPrivate.FileTaskDescriptor>}
- */
-FileTasks.UMA_ZIP_HANDLER_TASK_DESCRIPTORS_ = Object.freeze([
-  FileTasks.ZIP_UNPACKER_TASK_DESCRIPTOR,
-  FileTasks.ZIP_ARCHIVER_UNZIP_TASK_DESCRIPTOR,
-  FileTasks.ZIP_ARCHIVER_ZIP_TASK_DESCRIPTOR
 ]);
 
 /**

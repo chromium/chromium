@@ -465,7 +465,7 @@ export class NavigationListModel extends EventTarget {
    *    4.3. Linux files (crostini volume or fake item) (if enabled).
    *  5. Drive volumes.
    *  6. Other FSP (File System Provider) (when mounted).
-   *  7. Other volumes (MTP, ARCHIVE, REMOVABLE, Zip volumes).
+   *  7. Other volumes (MTP, ARCHIVE, REMOVABLE).
    *  8. Add new services if (it exists).
    * @private
    */
@@ -488,20 +488,6 @@ export class NavigationListModel extends EventTarget {
           volumeIndexes[volumeType] = i;
           break;
         case VolumeManagerCommon.VolumeType.PROVIDED:
-          // ZipArchiver mounts zip files as PROVIDED volume type, however we
-          // want to display mounted zip files the same way as archive, so
-          // splitting them apart from PROVIDED.
-          volumeId = volumeList[i].volumeInfo.volumeId;
-          providedType = VolumeManagerCommon.VolumeType.PROVIDED;
-          if (volumeId.includes(NavigationListModel.ZIP_EXTENSION_ID)) {
-            providedType = NavigationListModel.ZIP_VOLUME_TYPE;
-          }
-          if (!volumeIndexes[providedType]) {
-            volumeIndexes[providedType] = [i];
-          } else {
-            volumeIndexes[providedType].push(i);
-          }
-          break;
         case VolumeManagerCommon.VolumeType.REMOVABLE:
         case VolumeManagerCommon.VolumeType.ARCHIVE:
         case VolumeManagerCommon.VolumeType.MTP:
@@ -776,12 +762,10 @@ export class NavigationListModel extends EventTarget {
     this.removableModels_ = removableModels;
 
     // Join MTP, ARCHIVE. These types belong to same section.
-    const zipIndexes = volumeIndexes[NavigationListModel.ZIP_VOLUME_TYPE] || [];
     const otherVolumes =
         [].concat(
               getVolumes(VolumeManagerCommon.VolumeType.ARCHIVE),
-              getVolumes(VolumeManagerCommon.VolumeType.MTP),
-              zipIndexes.map(idx => volumeList[idx]))
+              getVolumes(VolumeManagerCommon.VolumeType.MTP))
             .sort((volume1, volume2) => {
               return volume1.originalOrder - volume2.originalOrder;
             });
@@ -858,17 +842,3 @@ export class NavigationListModel extends EventTarget {
     return -1;
   }
 }
-
-/**
- * ZipArchiver mounts zip files as PROVIDED volume type.
- * This is a special case for zip volumes to be able to split them apart from
- * PROVIDED.
- * @const
- */
-NavigationListModel.ZIP_VOLUME_TYPE = '_ZIP_VOLUME_';
-
-/**
- * Id of the Zip Archiver extension, that can mount zip files.
- * @const
- */
-NavigationListModel.ZIP_EXTENSION_ID = 'dmboannefpncccogfdikhmhpmdnddgoe';

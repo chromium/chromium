@@ -77,20 +77,3 @@ export function testMountUnknownProvider() {
   assertEquals(metrics.calledName, 'FileSystemProviderMounted');
   assertEquals(metrics.calledValue, 0);
 }
-
-/**
- * Tests mounting Zip Archiver file system provider.
- */
-export function testMountZipArchiver() {
-  mockChrome.fileManagerPrivate.onMountCompleted.dispatchEvent({
-    eventType: 'mount',
-    status: 'success',
-    volumeMetadata: {
-      volumeType: VolumeManagerCommon.VolumeType.PROVIDED,
-      providerId: 'dmboannefpncccogfdikhmhpmdnddgoe',
-    }
-  });
-
-  assertEquals(metrics.calledName, 'FileSystemProviderMounted');
-  assertEquals(metrics.calledValue, 15);
-}
