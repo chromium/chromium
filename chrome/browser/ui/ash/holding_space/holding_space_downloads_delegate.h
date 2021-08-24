@@ -95,13 +95,8 @@ class HoldingSpaceDownloadsDelegate
   void OnDownloadUpdated(InProgressDownload* in_progress_download,
                          bool invalidate_image);
 
-  // Invoked when the specified `in_progress_download` is completed. If
-  // `invalidate_image` is `true`, the image for the associated holding space
-  // item will be explicitly invalidated. This is necessary if, for example, the
-  // underlying download is transitioning to/from a dangerous or mixed content
-  // state.
-  void OnDownloadCompleted(InProgressDownload* in_progress_download,
-                           bool invalidate_image);
+  // Invoked when the specified `in_progress_download` is completed.
+  void OnDownloadCompleted(InProgressDownload* in_progress_download);
 
   // Invoked when the specified `in_progress_download` fails. This may be due to
   // cancellation, interruption, or destruction of the underlying download.

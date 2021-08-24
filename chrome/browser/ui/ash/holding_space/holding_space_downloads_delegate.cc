@@ -368,8 +368,7 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
         delegate_->OnDownloadUpdated(this, invalidate_image);
         break;
       case crosapi::mojom::DownloadState::kComplete:
-        delegate_->OnDownloadCompleted(
-            this, invalidate_image);  // NOTE: Destroys `this`.
+        delegate_->OnDownloadCompleted(this);  // NOTE: Destroys `this`.
         break;
       case crosapi::mojom::DownloadState::kCancelled:
       case crosapi::mojom::DownloadState::kInterrupted:
@@ -769,11 +768,10 @@ void HoldingSpaceDownloadsDelegate::OnDownloadUpdated(
 }
 
 void HoldingSpaceDownloadsDelegate::OnDownloadCompleted(
-    InProgressDownload* in_progress_download,
-    bool invalidate_image) {
+    InProgressDownload* in_progress_download) {
   // If in-progress downloads integration is enabled, a holding space item will
   // have already been associated with the download while it was in-progress.
-  CreateOrUpdateHoldingSpaceItem(in_progress_download, invalidate_image);
+  CreateOrUpdateHoldingSpaceItem(in_progress_download, true);
   EraseDownload(in_progress_download);
 }
 
