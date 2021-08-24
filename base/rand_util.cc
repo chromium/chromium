@@ -79,21 +79,17 @@ std::string RandBytesAsString(size_t length) {
   return result;
 }
 
-void InsecureRandomGenerator::Seed() {
+InsecureRandomGenerator::InsecureRandomGenerator() {
   a_ = base::RandUint64();
   b_ = base::RandUint64();
-  seeded_ = true;
 }
 
-void InsecureRandomGenerator::SeedForTesting(uint64_t seed) {
+void InsecureRandomGenerator::ReseedForTesting(uint64_t seed) {
   a_ = seed;
   b_ = seed;
-  seeded_ = true;
 }
 
 uint64_t InsecureRandomGenerator::RandUint64() {
-  DCHECK(seeded_);
-
   // Using XorShift128+, which is simple and widely used. See
   // https://en.wikipedia.org/wiki/Xorshift#xorshift+ for details.
   uint64_t t = a_;

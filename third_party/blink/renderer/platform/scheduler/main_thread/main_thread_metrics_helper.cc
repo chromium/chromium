@@ -91,7 +91,6 @@ MainThreadMetricsHelper::MainThreadMetricsHelper(
           "Scheduler.Experimental.Renderer.TotalTime.Wall.MainThread.Negative"),
       main_thread_task_load_state_(MainThreadTaskLoadState::kUnknown) {
   main_thread_load_tracker_.Resume(now);
-  random_generator_.Seed();
   if (renderer_backgrounded) {
     background_main_thread_load_tracker_.Resume(now);
   } else {

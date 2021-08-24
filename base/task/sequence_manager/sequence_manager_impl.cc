@@ -267,7 +267,7 @@ SequenceManagerImpl::MainThreadOnly::MainThreadOnly(
     : selector(associated_thread, settings),
       real_time_domain(new internal::RealTimeDomain()) {
   if (settings.randomised_sampling_enabled) {
-    random_generator.Seed();
+    random_generator = base::InsecureRandomGenerator();
   }
 }
 
@@ -1064,7 +1064,7 @@ bool SequenceManagerImpl::ShouldRecordCPUTimeForTask() {
   DCHECK(ThreadTicks::IsSupported() ||
          !metric_recording_settings_.records_cpu_time_for_some_tasks());
   return metric_recording_settings_.records_cpu_time_for_some_tasks() &&
-         main_thread_only().random_generator.RandDouble() <
+         main_thread_only().random_generator->RandDouble() <
              metric_recording_settings_
                  .task_sampling_rate_for_recording_cpu_time;
 }
