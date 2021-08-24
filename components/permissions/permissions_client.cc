@@ -122,6 +122,11 @@ bool PermissionsClient::IsPermissionControlledByDse(
   return false;
 }
 
+bool PermissionsClient::IsDseOrigin(content::BrowserContext* browser_context,
+                                    const url::Origin& origin) {
+  return false;
+}
+
 bool PermissionsClient::ResetPermissionIfControlledByDse(
     content::BrowserContext* browser_context,
     ContentSettingsType type,
