@@ -711,8 +711,14 @@
   "base/tracing/protos/resources.grd": {
     "includes": [3150],
   },
+  "chromecast/app/resources/chromecast_settings.grd": {
+    "messages": [3160],
+  },
+  "chromecast/app/resources/shell_resources.grd": {
+    "includes": [3161],
+  },
   "chromecast/renderer/resources/extensions_renderer_resources.grd": {
-    "includes": [3160],
+    "includes": [3162],
   },
 
   "cloud_print/virtual_driver/win/install/virtual_driver_setup_resources.grd": {

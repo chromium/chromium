@@ -122,8 +122,6 @@ cast_source_set("unittests") {
 grit("resources") {
   source = "//chromecast/app/resources/shell_resources.grd"
 
-  resource_ids = "//chromecast/app/resources/resource_ids"
-
   outputs = [
     "grit/shell_resources.h",
     "shell_resources.pak",
@@ -132,7 +130,6 @@ grit("resources") {
 
 grit("chromecast_settings") {
   source = "//chromecast/app/resources/chromecast_settings.grd"
-  resource_ids = "//chromecast/app/resources/resource_ids"
 
   outputs = [ "grit/chromecast_settings.h" ]
   foreach(locale, cast_locales) {
