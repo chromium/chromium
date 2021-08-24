@@ -174,6 +174,9 @@ DisplayLockUtilities::ScopedForcedUpdate::Impl::Impl(const Node* node,
   if (!RuntimeEnabledFeatures::CSSContentVisibilityEnabled())
     return;
 
+  if (!node_)
+    return;
+
   auto* owner_node = GetFrameOwnerNode(node);
   if (owner_node)
     parent_frame_impl_ = MakeGarbageCollected<Impl>(owner_node, true);
@@ -216,6 +219,8 @@ DisplayLockUtilities::ScopedForcedUpdate::Impl::Impl(const Node* node,
 }
 
 void DisplayLockUtilities::ScopedForcedUpdate::Impl::Destroy() {
+  if (!node_)
+    return;
   if (RuntimeEnabledFeatures::CSSContentVisibilityEnabled())
     node_->GetDocument().GetDisplayLockDocumentState().EndNodeForcedScope(this);
   if (parent_frame_impl_)
