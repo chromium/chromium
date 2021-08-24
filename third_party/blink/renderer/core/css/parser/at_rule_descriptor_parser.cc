@@ -223,7 +223,6 @@ CSSValue* AtRuleDescriptorParser::ParseFontFaceDescriptor(
       // ConsumeGenericFamily will take care of excluding the former while the
       // ConsumeFamilyName will take care of excluding the latter.
       // See https://drafts.csswg.org/css-fonts/#family-name-syntax,
-      // TODO(crbug.com/1065468): Handle system-ui
       if (css_parsing_utils::ConsumeGenericFamily(range))
         return nullptr;
       parsed_value = css_parsing_utils::ConsumeFamilyName(range);

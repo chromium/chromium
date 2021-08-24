@@ -148,7 +148,6 @@ String SerializeURI(const String& string) {
 String SerializeFontFamily(const AtomicString& string) {
   // Some <font-family> values are serialized without quotes.
   // See https://github.com/w3c/csswg-drafts/issues/5846
-  // TODO(crbug.com/1065468): Add system-ui.
   return (css_parsing_utils::IsCSSWideKeyword(string) ||
           css_parsing_utils::IsDefaultKeyword(string) ||
           FontFamily::InferredTypeFor(string) ==

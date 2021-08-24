@@ -752,7 +752,6 @@ CSSValue* ComputedStyleUtils::ComputedValueForLineHeight(
 }
 
 CSSValueID IdentifierForFamily(const AtomicString& family) {
-  // TODO(crbug.com/1065468): Add system-ui.
   if (family == font_family_names::kCursive)
     return CSSValueID::kCursive;
   if (family == font_family_names::kFantasy)
@@ -763,6 +762,8 @@ CSSValueID IdentifierForFamily(const AtomicString& family) {
     return CSSValueID::kSansSerif;
   if (family == font_family_names::kSerif)
     return CSSValueID::kSerif;
+  if (family == font_family_names::kSystemUi)
+    return CSSValueID::kSystemUi;
   // If family does not correspond to any of the above, then it was actually
   // converted from -webkit-body by FontBuilder, so put this value back.
   // TODO(crbug.com/1065468): This trick does not work if

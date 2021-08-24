@@ -67,12 +67,12 @@ String FontFamily::ToString() const {
 
 /*static*/ FontFamily::Type FontFamily::InferredTypeFor(
     const AtomicString& family_name) {
-  // TODO(crbug.com/1065468): Add system-ui.
   return (family_name == font_family_names::kCursive ||
           family_name == font_family_names::kFantasy ||
           family_name == font_family_names::kMonospace ||
           family_name == font_family_names::kSansSerif ||
-          family_name == font_family_names::kSerif)
+          family_name == font_family_names::kSerif ||
+          family_name == font_family_names::kSystemUi)
              ? Type::kGenericFamily
              : Type::kFamilyName;
 }

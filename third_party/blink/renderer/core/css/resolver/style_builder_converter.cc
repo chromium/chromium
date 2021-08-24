@@ -210,9 +210,13 @@ static bool ConvertFontFamilyName(
     }
 #endif
   } else if (font_builder) {
-    generic_family =
-        ConvertGenericFamily(To<CSSIdentifierValue>(value).GetValueID());
-    family_name = font_builder->GenericFontFamilyName(generic_family);
+    // TODO(crbug.com/1065468): Get rid of GenericFamilyType.
+    auto cssValueID = To<CSSIdentifierValue>(value).GetValueID();
+    generic_family = ConvertGenericFamily(cssValueID);
+    if (generic_family != FontDescription::kNoFamily)
+      family_name = font_builder->GenericFontFamilyName(generic_family);
+    else if (cssValueID == CSSValueID::kSystemUi)
+      family_name = font_family_names::kSystemUi;
   }
 
   return !family_name.IsEmpty();
@@ -250,12 +254,14 @@ FontDescription::FamilyDescription StyleBuilderConverterBase::ConvertFontFamily(
       curr_family = new_family.get();
     }
 
-    curr_family->SetFamily(family_name,
-                           generic_family == FontDescription::kNoFamily
-                               ? FontFamily::Type::kFamilyName
-                               : FontFamily::Type::kGenericFamily);
+    // TODO(crbug.com/1065468): Get rid of GenericFamilyType.
+    bool is_generic = generic_family != FontDescription::kNoFamily ||
+                      IsA<CSSIdentifierValue>(*family);
+    curr_family->SetFamily(family_name, is_generic
+                                            ? FontFamily::Type::kGenericFamily
+                                            : FontFamily::Type::kFamilyName);
 
-    if (generic_family != FontDescription::kNoFamily)
+    if (is_generic)
       desc.generic_family = generic_family;
   }
 
