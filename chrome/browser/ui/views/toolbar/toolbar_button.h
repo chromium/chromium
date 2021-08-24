@@ -150,6 +150,10 @@ class ToolbarButton : public views::LabelButton,
   // Returns if menu should be shown. Override this to change default behavior.
   virtual bool ShouldShowMenu();
 
+  // Returns if the button inkdrop should persist after the user interacts with
+  // IPH for the button. Override this to change default behavior.
+  virtual bool ShouldShowInkdropAfterIphInteraction();
+
   // Function to show the dropdown menu.
   virtual void ShowDropDownMenu(ui::MenuSourceType source_type);
 

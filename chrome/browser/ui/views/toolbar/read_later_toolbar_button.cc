@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/chrome_view_class_properties.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
@@ -187,4 +188,8 @@ void ReadLaterToolbarButton::ButtonPressed() {
     side_panel_webview_ = nullptr;
     SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_SIDE_PANEL_SHOW));
   }
+}
+
+bool ReadLaterToolbarButton::ShouldShowInkdropAfterIphInteraction() {
+  return false;
 }

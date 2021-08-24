@@ -20,6 +20,9 @@ class ReadLaterToolbarButton : public ToolbarButton {
   ReadLaterToolbarButton& operator=(const ReadLaterToolbarButton&) = delete;
   ~ReadLaterToolbarButton() override;
 
+  // ToolbarButton
+  bool ShouldShowInkdropAfterIphInteraction() override;
+
  private:
   void ButtonPressed();
 
