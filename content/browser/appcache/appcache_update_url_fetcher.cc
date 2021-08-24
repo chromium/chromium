@@ -14,6 +14,7 @@
 #include "content/browser/appcache/appcache_update_job_state.h"
 #include "content/browser/appcache/appcache_update_url_loader_request.h"
 #include "net/base/load_flags.h"
+#include "net/cookies/site_for_cookies.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 
@@ -44,7 +45,8 @@ AppCacheUpdateJob::URLFetcher::URLFetcher(const GURL& url,
 AppCacheUpdateJob::URLFetcher::~URLFetcher() = default;
 
 void AppCacheUpdateJob::URLFetcher::Start() {
-  request_->SetSiteForCookies(job_->manifest_url_);
+  request_->SetSiteForCookies(
+      net::SiteForCookies::FromUrl(job_->manifest_url_));
   request_->SetInitiator(url::Origin::Create(job_->manifest_url_));
   if (fetch_type_ == FetchType::kManifest && job_->doing_full_update_check_) {
     request_->SetLoadFlags(request_->GetLoadFlags() | net::LOAD_BYPASS_CACHE);

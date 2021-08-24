@@ -23,7 +23,8 @@
 
 namespace net {
 class HttpResponseInfo;
-}
+class SiteForCookies;
+}  // namespace net
 
 namespace content {
 
@@ -62,7 +63,7 @@ class AppCacheUpdateJob::UpdateURLLoaderRequest
   std::string GetMimeType() const;
 
   // Cookie policy.
-  void SetSiteForCookies(const GURL& site_for_cookies);
+  void SetSiteForCookies(const net::SiteForCookies& site_for_cookies);
 
   // Sets the origin of the context which initiated the request.
   void SetInitiator(const absl::optional<url::Origin>& initiator);

@@ -9,6 +9,7 @@
 #include "content/browser/appcache/appcache_update_url_fetcher.h"
 #include "content/browser/storage_partition_impl.h"
 #include "net/base/ip_endpoint.h"
+#include "net/cookies/site_for_cookies.h"
 #include "net/http/http_response_info.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -90,8 +91,8 @@ std::string AppCacheUpdateJob::UpdateURLLoaderRequest::GetMimeType() const {
 }
 
 void AppCacheUpdateJob::UpdateURLLoaderRequest::SetSiteForCookies(
-    const GURL& site_for_cookies) {
-  request_.site_for_cookies = net::SiteForCookies::FromUrl(site_for_cookies);
+    const net::SiteForCookies& site_for_cookies) {
+  request_.site_for_cookies = site_for_cookies;
 }
 
 void AppCacheUpdateJob::UpdateURLLoaderRequest::SetInitiator(
