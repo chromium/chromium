@@ -117,7 +117,7 @@
 #include "ios/public/provider/chrome/browser/app_distribution/app_distribution_api.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #include "ios/public/provider/chrome/browser/mailto/mailto_handler_provider.h"
-#import "ios/public/provider/chrome/browser/overrides_provider.h"
+#import "ios/public/provider/chrome/browser/overrides/overrides_api.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_provider.h"
 #import "ios/web/common/features.h"
 #include "ios/web/public/webui/web_ui_ios_controller_factory.h"
@@ -249,7 +249,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 @interface MainController () <PrefObserverDelegate, BlockingSceneCommands> {
   IBOutlet UIWindow* _window;
 
-  // Weak; owned by the ChromeBrowserProvider.
+  // Weak; owned by the ApplicationContext.
   ios::ChromeBrowserStateManager* _browserStateManager;
 
   // The object that drives the Chrome startup/shutdown logic.
@@ -566,7 +566,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
       logLaunchMetricsWithStartupInformation:self
                              connectedScenes:self.appState.connectedScenes];
 
-  ios::GetChromeBrowserProvider().GetOverridesProvider()->InstallOverrides();
+  ios::provider::InstallOverrides();
 
   [self scheduleLowPriorityStartupTasks];
 
