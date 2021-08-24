@@ -40,7 +40,6 @@
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/file_system/file_system_manager_impl.h"
-#include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/renderer_host/cross_process_frame_connector.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/input/synthetic_touchscreen_pinch_gesture.h"
@@ -2060,15 +2059,6 @@ void FetchHistogramsFromChildProcesses() {
 void SetupCrossSiteRedirector(net::EmbeddedTestServer* embedded_test_server) {
   embedded_test_server->RegisterRequestHandler(base::BindRepeating(
       &CrossSiteRedirectResponseHandler, embedded_test_server));
-}
-
-void SetFileSystemAccessPermissionContext(
-    BrowserContext* browser_context,
-    FileSystemAccessPermissionContext* permission_context) {
-  static_cast<content::FileSystemAccessManagerImpl*>(
-      browser_context->GetDefaultStoragePartition()
-          ->GetFileSystemAccessEntryFactory())
-      ->SetPermissionContextForTesting(permission_context);
 }
 
 bool WaitForRenderFrameReady(RenderFrameHost* rfh) {

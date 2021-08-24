@@ -108,7 +108,6 @@ struct FrameVisualProperties;
 namespace content {
 
 class BrowserContext;
-class FileSystemAccessPermissionContext;
 class FrameTreeNode;
 class NavigationHandle;
 class NavigationRequest;
@@ -940,11 +939,6 @@ void FetchHistogramsFromChildProcesses();
 // |embedded_test_server| should not be running when passing it to this function
 // because adding the request handler won't be thread safe.
 void SetupCrossSiteRedirector(net::EmbeddedTestServer* embedded_test_server);
-
-// Sets the access permission context in FileSystemAccessManagerImpl.
-void SetFileSystemAccessPermissionContext(
-    BrowserContext* browser_context,
-    FileSystemAccessPermissionContext* permission_context);
 
 // Waits until all resources have loaded in the given RenderFrameHost.
 // When the load completes, this function sends a "pageLoadComplete" message
