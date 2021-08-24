@@ -8661,8 +8661,8 @@
             ],
             "experiments": [
                 {
-                    "name": "PreseedDisabled",
-                    "disable_features": [
+                    "name": "Enabled",
+                    "enable_features": [
                         "PreloadMediaEngagementData"
                     ]
                 }
