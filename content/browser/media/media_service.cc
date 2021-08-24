@@ -11,12 +11,14 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_features.h"
 #include "media/mojo/buildflags.h"
+#include "media/mojo/mojom/media_service.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 #if BUILDFLAG(ENABLE_MOJO_MEDIA_IN_GPU_PROCESS)
 #include "content/browser/gpu/gpu_process_host.h"
 #elif BUILDFLAG(ENABLE_MOJO_MEDIA_IN_BROWSER_PROCESS)
 #include "media/mojo/services/media_service_factory.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 #endif
 
 namespace content {
@@ -63,6 +65,9 @@ media::mojom::MediaService& GetMediaService() {
           base::BindOnce(&BindReceiverInGpuProcess, std::move(receiver)));
     }
 #elif BUILDFLAG(ENABLE_MOJO_MEDIA_IN_BROWSER_PROCESS)
+    static_assert(media::mojom::MediaService::kServiceSandbox ==
+                      sandbox::mojom::Sandbox::kNoSandbox,
+                  "MediaService requested in-browser but not with kNoSandbox");
     static base::NoDestructor<std::unique_ptr<media::MediaService>> service;
     *service = media::CreateMediaService(std::move(receiver));
 #endif

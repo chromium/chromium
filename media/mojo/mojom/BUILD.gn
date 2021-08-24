@@ -91,8 +91,21 @@ mojom("mojom") {
     public_deps += [ "//sandbox/mac/mojom" ]
   }
 
+  enabled_features = []
+
+  # Help select ServiceSandbox for media_service.mojom.
+  if (mojo_media_host == "browser") {
+    enabled_features += [ "mojo_media_in_browser" ]
+  } else if (mojo_media_host == "gpu") {
+    enabled_features += [ "mojo_media_in_gpu" ]
+  } else if (mojo_media_host == "") {
+    enabled_features += [ "mojo_media_service_unused" ]
+  } else {
+    assert(false, "Invalid mojo media host: $mojo_media_host")
+  }
+
   if (enable_cast_renderer) {
-    enabled_features = [ "enable_cast_renderer" ]
+    enabled_features += [ "enable_cast_renderer" ]
   }
 
   shared_typemaps = [

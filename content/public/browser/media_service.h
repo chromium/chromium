@@ -6,7 +6,7 @@
 #define CONTENT_PUBLIC_BROWSER_MEDIA_SERVICE_H_
 
 #include "content/common/content_export.h"
-#include "media/mojo/mojom/media_service.mojom.h"
+#include "media/mojo/mojom/media_service.mojom-forward.h"
 
 namespace content {
 

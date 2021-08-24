@@ -191,11 +191,6 @@ void BindShapeDetectionServiceOnProcessThread(
                                .WithDisplayName("Shape Detection Service")
                                .Pass());
 #else
-  // TODO(crbug.com/1238192) Verify services can be hosted in the process.
-  static_assert(
-      shape_detection::mojom::ShapeDetectionService::kServiceSandbox ==
-          sandbox::mojom::Sandbox::kGpu,
-      "ShapeDetectionService must have Sandbox==kGpu");
   auto* gpu = GpuProcessHost::Get();
   if (gpu)
     gpu->RunService(std::move(receiver));

@@ -31,6 +31,7 @@
 #include "gpu/config/gpu_mode.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom.h"
 #include "services/viz/privileged/mojom/gl/gpu_host.mojom.h"
 #include "services/viz/privileged/mojom/gl/gpu_service.mojom.h"
@@ -97,8 +98,20 @@ class GpuProcessHost : public BrowserChildProcessHostDelegate,
   void DumpProcessStack();
 
   // Asks the GPU process to run a service instance corresponding to the
-  // specific interface receiver type carried by |receiver|.
-  void RunService(mojo::GenericPendingReceiver receiver);
+  // specific interface receiver type carried by |receiver|. The interface must
+  // have the [ServiceSandbox=sandbox.mojom.Sandbox.kGpu] mojom attribute.
+  template <typename Interface>
+  void RunService(mojo::PendingReceiver<Interface> receiver) {
+    // Note: consult chrome-security before changing these asserts.
+    using ProvidedSandboxType = decltype(Interface::kServiceSandbox);
+    static_assert(
+        std::is_same<ProvidedSandboxType, const sandbox::mojom::Sandbox>::value,
+        "This interface does not declare a proper ServiceSandbox attribute. "
+        "See //docs/mojo_and_services.md (Specifying a sandbox).");
+    static_assert(Interface::kServiceSandbox == sandbox::mojom::Sandbox::kGpu,
+                  "This interface must have [ServiceSandbox=kGpu].");
+    return RunServiceImpl(std::move(receiver));
+  }
 
   CONTENT_EXPORT viz::mojom::GpuService* gpu_service();
 
@@ -180,6 +193,8 @@ class GpuProcessHost : public BrowserChildProcessHostDelegate,
 
   // Update GPU crash counters.  Disable GPU if crash limit is reached.
   void RecordProcessCrash();
+
+  void RunServiceImpl(mojo::GenericPendingReceiver receiver);
 
 #if !defined(OS_ANDROID)
   // Memory pressure handler, called by |memory_pressure_listener_|.
