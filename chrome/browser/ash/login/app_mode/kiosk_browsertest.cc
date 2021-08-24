@@ -865,6 +865,40 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, InstallAndLaunchApp) {
   EXPECT_EQ(ManifestLocation::kExternalPref, GetInstalledAppLocation());
 }
 
+// This test case is to cover crbug.com/1235334.
+IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, WindowViewsBounds) {
+  ExtensionTestMessageListener app_window_loaded_listener("appWindowLoaded",
+                                                          false);
+
+  // Start app launch with network portal state.
+  StartAppLaunchFromLoginScreen(
+      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+  EXPECT_TRUE(app_window_loaded_listener.WaitUntilSatisfied());
+
+  // Verify the primary user profile is existing.
+  Profile* app_profile = ProfileManager::GetPrimaryUserProfile();
+  ASSERT_TRUE(app_profile);
+
+  // Verify the app window and views.
+  extensions::AppWindowRegistry* app_window_registry =
+      extensions::AppWindowRegistry::Get(app_profile);
+  extensions::AppWindow* window =
+      apps::AppWindowWaiter(app_window_registry, test_app_id()).Wait();
+  ASSERT_TRUE(window);
+  native_app_window::NativeAppWindowViews* views =
+      static_cast<native_app_window::NativeAppWindowViews*>(
+          window->GetBaseWindow());
+  ASSERT_TRUE(views);
+
+  // The bounds of `frame_view` and `client_view` should be consistent when the
+  // Chrome app Kiosk session starts.
+  views::NonClientView* non_client_view = views->widget()->non_client_view();
+  const gfx::Rect& frame_view_bounds = non_client_view->frame_view()->bounds();
+  const gfx::Rect& client_view_bounds =
+      non_client_view->client_view()->bounds();
+  EXPECT_EQ(frame_view_bounds, client_view_bounds);
+}
+
 IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest,
                        VirtualKeyboardFeaturesEnabledByDefault) {
   StartAppLaunchFromLoginScreen(
