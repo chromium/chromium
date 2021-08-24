@@ -170,6 +170,7 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
                    int x,
                    int y) override;
   void WillOverwriteCanvas() override;
+  void DispatchContextLostEvent(TimerBase*) override;
   void TryRestoreContextEvent(TimerBase*) override;
 
  private:

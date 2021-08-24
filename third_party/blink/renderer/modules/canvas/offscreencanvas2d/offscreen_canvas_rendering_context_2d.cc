@@ -752,6 +752,14 @@ bool OffscreenCanvasRenderingContext2D::IsCanvas2DBufferValid() const {
   return false;
 }
 
+void OffscreenCanvasRenderingContext2D::DispatchContextLostEvent(
+    TimerBase* time) {
+  PostDeferrableAction(
+      WTF::Bind([](BaseRenderingContext2D* context) { context->reset(); },
+                WrapPersistent(this)));
+  BaseRenderingContext2D::DispatchContextLostEvent(time);
+}
+
 void OffscreenCanvasRenderingContext2D::TryRestoreContextEvent(
     TimerBase* timer) {
   if (context_lost_mode_ == kNotLostContext) {
