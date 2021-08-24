@@ -55,13 +55,7 @@ class MEDIA_EXPORT VpxVideoDecoder : public OffloadableVideoDecoder {
   }
 
  private:
-  enum DecoderState {
-    kUninitialized,
-    kNormal,
-    kFlushCodec,
-    kDecodeFinished,
-    kError
-  };
+  enum class DecoderState { kUninitialized, kNormal, kDecodeFinished, kError };
 
   // Return values for decoding alpha plane.
   enum AlphaDecodeStatus {
@@ -99,7 +93,7 @@ class MEDIA_EXPORT VpxVideoDecoder : public OffloadableVideoDecoder {
 
   // |state_| must only be read and written to on |offload_task_runner_| if it
   // is non-null and there are outstanding tasks on the offload thread.
-  DecoderState state_ = kUninitialized;
+  DecoderState state_ = DecoderState::kUninitialized;
 
   OutputCB output_cb_;
 

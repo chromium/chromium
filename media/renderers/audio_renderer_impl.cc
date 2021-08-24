@@ -538,11 +538,10 @@ void AudioRendererImpl::OnDeviceInfoReceived(
     // mixer will attempt to up-mix stereo source streams to just the left/right
     // speaker of the 5.1 setup, nulling out the other channels
     // (http://crbug.com/177872).
-    ChannelLayout hw_channel_layout =
-        hw_params.channel_layout() == CHANNEL_LAYOUT_DISCRETE ||
-                try_supported_channel_layouts
-            ? CHANNEL_LAYOUT_STEREO
-            : hw_params.channel_layout();
+    hw_channel_layout = hw_params.channel_layout() == CHANNEL_LAYOUT_DISCRETE ||
+                                try_supported_channel_layouts
+                            ? CHANNEL_LAYOUT_STEREO
+                            : hw_params.channel_layout();
     int hw_channel_count = ChannelLayoutToChannelCount(hw_channel_layout);
 
     // The layout we pass to |audio_parameters_| will be used for the lifetime

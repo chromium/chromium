@@ -235,38 +235,36 @@ class HEADLESS_EXPORT HeadlessBrowser::Options::Builder {
 
   Builder& EnableDevToolsServer(const net::HostPortPair& endpoint);
   Builder& EnableDevToolsPipe();
-  Builder& SetMessagePump(base::MessagePump* message_pump);
-  Builder& SetSingleProcessMode(bool single_process_mode);
-  Builder& SetDisableSandbox(bool disable_sandbox);
-  Builder& SetEnableResourceScheduler(bool enable_resource_scheduler);
-  Builder& SetGLImplementation(const std::string& gl_implementation);
-  Builder& SetANGLEImplementation(const std::string& angle_implementation);
+  Builder& SetMessagePump(base::MessagePump* pump);
+  Builder& SetSingleProcessMode(bool single_process);
+  Builder& SetDisableSandbox(bool disable);
+  Builder& SetEnableResourceScheduler(bool enable);
+  Builder& SetGLImplementation(const std::string& implementation);
+  Builder& SetANGLEImplementation(const std::string& implementation);
   Builder& SetAppendCommandLineFlagsCallback(
       const Options::AppendCommandLineFlagsCallback& callback);
 #if defined(OS_WIN)
-  Builder& SetInstance(HINSTANCE instance);
-  Builder& SetSandboxInfo(sandbox::SandboxInterfaceInfo* sandbox_info);
+  Builder& SetInstance(HINSTANCE hinstance);
+  Builder& SetSandboxInfo(sandbox::SandboxInterfaceInfo* info);
 #endif
 
   // Per-context settings.
 
-  Builder& SetProductNameAndVersion(
-      const std::string& product_name_and_version);
-  Builder& SetAcceptLanguage(const std::string& accept_language);
-  Builder& SetEnableBeginFrameControl(bool enable_begin_frame_control);
-  Builder& SetUserAgent(const std::string& user_agent);
-  Builder& SetProxyConfig(std::unique_ptr<net::ProxyConfig> proxy_config);
-  Builder& SetWindowSize(const gfx::Size& window_size);
-  Builder& SetUserDataDir(const base::FilePath& user_data_dir);
-  Builder& SetIncognitoMode(bool incognito_mode);
-  Builder& SetSitePerProcess(bool site_per_process);
-  Builder& SetBlockNewWebContents(bool block_new_web_contents);
+  Builder& SetProductNameAndVersion(const std::string& name_and_version);
+  Builder& SetAcceptLanguage(const std::string& language);
+  Builder& SetEnableBeginFrameControl(bool enable);
+  Builder& SetUserAgent(const std::string& agent);
+  Builder& SetProxyConfig(std::unique_ptr<net::ProxyConfig> config);
+  Builder& SetWindowSize(const gfx::Size& size);
+  Builder& SetUserDataDir(const base::FilePath& dir);
+  Builder& SetIncognitoMode(bool incognito);
+  Builder& SetSitePerProcess(bool per_process);
+  Builder& SetBlockNewWebContents(bool block);
   Builder& SetOverrideWebPreferencesCallback(
       base::RepeatingCallback<void(blink::web_pref::WebPreferences*)> callback);
   Builder& SetCrashReporterEnabled(bool enabled);
   Builder& SetCrashDumpsDir(const base::FilePath& dir);
-  Builder& SetFontRenderHinting(
-      gfx::FontRenderParams::Hinting font_render_hinting);
+  Builder& SetFontRenderHinting(gfx::FontRenderParams::Hinting hinting);
 
   Options Build();
 

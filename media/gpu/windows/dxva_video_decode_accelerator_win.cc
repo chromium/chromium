@@ -2742,8 +2742,8 @@ void DXVAVideoDecodeAccelerator::BindPictureBufferToSample(
     // Get the viz resource format per texture.
     std::array<viz::ResourceFormat, VideoFrame::kMaxPlanes> viz_formats;
     {
-      const bool result = VideoPixelFormatToVizFormat(
-          picture_buffer->pixel_format(), textures_per_picture, viz_formats);
+      result = VideoPixelFormatToVizFormat(picture_buffer->pixel_format(),
+                                           textures_per_picture, viz_formats);
       RETURN_AND_NOTIFY_ON_FAILURE(
           result, "Could not convert pixel format to viz format",
           PLATFORM_FAILURE, );
@@ -2899,8 +2899,7 @@ void DXVAVideoDecodeAccelerator::CopyTextureOnDecoderThread(
   DCHECK(d3d11_processor_.Get());
 
   if (dest_keyed_mutex) {
-    HRESULT hr =
-        dest_keyed_mutex->AcquireSync(keyed_mutex_value, kAcquireSyncWaitMs);
+    hr = dest_keyed_mutex->AcquireSync(keyed_mutex_value, kAcquireSyncWaitMs);
     RETURN_AND_NOTIFY_ON_FAILURE(
         hr == S_OK, "D3D11 failed to acquire keyed mutex for texture.",
         PLATFORM_FAILURE, );
@@ -2956,7 +2955,7 @@ void DXVAVideoDecodeAccelerator::CopyTextureOnDecoderThread(
                                   PLATFORM_FAILURE, );
 
   if (dest_keyed_mutex) {
-    HRESULT hr = dest_keyed_mutex->ReleaseSync(keyed_mutex_value + 1);
+    hr = dest_keyed_mutex->ReleaseSync(keyed_mutex_value + 1);
     RETURN_AND_NOTIFY_ON_FAILURE(hr == S_OK, "Failed to release keyed mutex.",
                                  PLATFORM_FAILURE, );
 

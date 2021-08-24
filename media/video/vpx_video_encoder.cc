@@ -348,7 +348,6 @@ void VpxVideoEncoder::Initialize(VideoCodecProfile profile,
 void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
                              bool key_frame,
                              StatusCB done_cb) {
-  Status status;
   done_cb = BindToCurrentLoop(std::move(done_cb));
   if (!codec_) {
     std::move(done_cb).Run(StatusCode::kEncoderInitializeNeverCompleted);
@@ -368,7 +367,7 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
                           frame->format() == PIXEL_FORMAT_ARGB;
   if ((!frame->IsMappable() && !frame->HasGpuMemoryBuffer()) ||
       !supported_format) {
-    status =
+    Status status =
         Status(StatusCode::kEncoderFailedEncode, "Unexpected frame format.")
             .WithData("IsMappable", frame->IsMappable())
             .WithData("format", frame->format());
@@ -392,6 +391,7 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
         is_yuv ? frame->format() : PIXEL_FORMAT_I420, options_.frame_size,
         gfx::Rect(options_.frame_size), options_.frame_size,
         frame->timestamp());
+    Status status;
     if (resized_frame) {
       status = ConvertAndScaleFrame(*frame, *resized_frame, resize_buf_);
     } else {
@@ -498,8 +498,8 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
                                          vpx_codec_err_to_string(vpx_error),
                                          vpx_codec_error_detail(codec_.get()));
     DLOG(ERROR) << msg;
-    status = Status(StatusCode::kEncoderFailedEncode, msg)
-                 .WithData("vpx_error", vpx_error);
+    Status status = Status(StatusCode::kEncoderFailedEncode, msg)
+                        .WithData("vpx_error", vpx_error);
     std::move(done_cb).Run(std::move(status));
     return;
   }

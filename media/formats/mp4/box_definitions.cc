@@ -1186,16 +1186,16 @@ bool VideoSampleEntry::Parse(BoxReader* reader) {
       video_color_space = vp_config->color_space;
       video_codec_level = vp_config->level;
 
-      SMPTE2086MasteringDisplayMetadataBox mastering_display_color_volume;
-      if (reader->HasChild(&mastering_display_color_volume)) {
-        RCHECK(reader->ReadChild(&mastering_display_color_volume));
-        this->mastering_display_color_volume = mastering_display_color_volume;
+      SMPTE2086MasteringDisplayMetadataBox color_volume;
+      if (reader->HasChild(&color_volume)) {
+        RCHECK(reader->ReadChild(&color_volume));
+        mastering_display_color_volume = color_volume;
       }
 
-      ContentLightLevel content_light_level_information;
-      if (reader->HasChild(&content_light_level_information)) {
-        RCHECK(reader->ReadChild(&content_light_level_information));
-        this->content_light_level_information = content_light_level_information;
+      ContentLightLevel level_information;
+      if (reader->HasChild(&level_information)) {
+        RCHECK(reader->ReadChild(&level_information));
+        content_light_level_information = level_information;
       }
       break;
     }
@@ -1225,16 +1225,16 @@ bool VideoSampleEntry::Parse(BoxReader* reader) {
         color_parameter_information);
   }
 
-  MasteringDisplayColorVolume mastering_display_color_volume;
-  if (reader->HasChild(&mastering_display_color_volume)) {
-    RCHECK(reader->ReadChild(&mastering_display_color_volume));
-    this->mastering_display_color_volume = mastering_display_color_volume;
+  MasteringDisplayColorVolume color_volume;
+  if (reader->HasChild(&color_volume)) {
+    RCHECK(reader->ReadChild(&color_volume));
+    mastering_display_color_volume = color_volume;
   }
 
-  ContentLightLevelInformation content_light_level_information;
-  if (reader->HasChild(&content_light_level_information)) {
-    RCHECK(reader->ReadChild(&content_light_level_information));
-    this->content_light_level_information = content_light_level_information;
+  ContentLightLevelInformation level_information;
+  if (reader->HasChild(&level_information)) {
+    RCHECK(reader->ReadChild(&level_information));
+    content_light_level_information = level_information;
   }
 
   if (video_codec_profile == VIDEO_CODEC_PROFILE_UNKNOWN) {

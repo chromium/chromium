@@ -121,7 +121,7 @@ TEST_F(AudioFifoTest, FramesInFifo) {
   const int frames_in_fifo = bus2->frames();
   fifo.Push(bus2.get());
   EXPECT_EQ(fifo.frames(), frames_in_fifo);
-  for (int n = 0; n < kMaxFrameCount; ++n) {
+  for (n = 0; n < kMaxFrameCount; ++n) {
     fifo.Push(bus2.get());
     fifo.Consume(bus2.get(), 0, frames_in_fifo);
     EXPECT_EQ(fifo.frames(), frames_in_fifo);

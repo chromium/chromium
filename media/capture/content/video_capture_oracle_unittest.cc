@@ -253,7 +253,7 @@ TEST(VideoCaptureOracleTest, SamplesAtCorrectTimesAroundRefreshRequests) {
     t += refresh_interval;
     if (oracle.ObserveEventAndDecideCapture(VideoCaptureOracle::kRefreshRequest,
                                             gfx::Rect(), t)) {
-      const int frame_number = oracle.next_frame_number();
+      frame_number = oracle.next_frame_number();
       oracle.RecordCapture(0.0);
       ASSERT_TRUE(oracle.CompleteCapture(frame_number, true, &ignored));
       did_complete_a_capture = true;

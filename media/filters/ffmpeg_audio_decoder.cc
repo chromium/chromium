@@ -52,7 +52,7 @@ FFmpegAudioDecoder::FFmpegAudioDecoder(
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     MediaLog* media_log)
     : task_runner_(task_runner),
-      state_(kUninitialized),
+      state_(DecoderState::kUninitialized),
       av_sample_format_(0),
       media_log_(media_log),
       pool_(new AudioBufferMemoryPool()) {
@@ -62,7 +62,7 @@ FFmpegAudioDecoder::FFmpegAudioDecoder(
 FFmpegAudioDecoder::~FFmpegAudioDecoder() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (state_ != kUninitialized)
+  if (state_ != DecoderState::kUninitialized)
     ReleaseFFmpegResources();
 }
 
@@ -105,7 +105,7 @@ void FFmpegAudioDecoder::Initialize(const AudioDecoderConfig& config,
   // Success!
   config_ = config;
   output_cb_ = BindToCurrentLoop(output_cb);
-  state_ = kNormal;
+  state_ = DecoderState::kNormal;
   std::move(bound_init_cb).Run(OkStatus());
 }
 
@@ -113,16 +113,16 @@ void FFmpegAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
                                 DecodeCB decode_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(decode_cb);
-  CHECK_NE(state_, kUninitialized);
+  CHECK_NE(state_, DecoderState::kUninitialized);
   DecodeCB decode_cb_bound = BindToCurrentLoop(std::move(decode_cb));
 
-  if (state_ == kError) {
+  if (state_ == DecoderState::kError) {
     std::move(decode_cb_bound).Run(DecodeStatus::DECODE_ERROR);
     return;
   }
 
   // Do nothing if decoding has finished.
-  if (state_ == kDecodeFinished) {
+  if (state_ == DecoderState::kDecodeFinished) {
     std::move(decode_cb_bound).Run(DecodeStatus::OK);
     return;
   }
@@ -134,7 +134,7 @@ void FFmpegAudioDecoder::Reset(base::OnceClosure closure) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   avcodec_flush_buffers(codec_context_.get());
-  state_ = kNormal;
+  state_ = DecoderState::kNormal;
   ResetTimestampState(config_);
   task_runner_->PostTask(FROM_HERE, std::move(closure));
 }
@@ -142,9 +142,9 @@ void FFmpegAudioDecoder::Reset(base::OnceClosure closure) {
 void FFmpegAudioDecoder::DecodeBuffer(const DecoderBuffer& buffer,
                                       DecodeCB decode_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_NE(state_, kUninitialized);
-  DCHECK_NE(state_, kDecodeFinished);
-  DCHECK_NE(state_, kError);
+  DCHECK_NE(state_, DecoderState::kUninitialized);
+  DCHECK_NE(state_, DecoderState::kDecodeFinished);
+  DCHECK_NE(state_, DecoderState::kError);
 
   // Make sure we are notified if http://crbug.com/49709 returns.  Issue also
   // occurs with some damaged files.
@@ -155,13 +155,13 @@ void FFmpegAudioDecoder::DecodeBuffer(const DecoderBuffer& buffer,
   }
 
   if (!FFmpegDecode(buffer)) {
-    state_ = kError;
+    state_ = DecoderState::kError;
     std::move(decode_cb).Run(DecodeStatus::DECODE_ERROR);
     return;
   }
 
   if (buffer.end_of_stream())
-    state_ = kDecodeFinished;
+    state_ = DecoderState::kDecodeFinished;
 
   std::move(decode_cb).Run(DecodeStatus::OK);
 }
@@ -337,7 +337,7 @@ bool FFmpegAudioDecoder::ConfigureDecoder(const AudioDecoderConfig& config) {
     DLOG(ERROR) << "Could not initialize audio decoder: "
                 << codec_context_->codec_id;
     ReleaseFFmpegResources();
-    state_ = kUninitialized;
+    state_ = DecoderState::kUninitialized;
     return false;
   }
   // Verify avcodec_open2() used all given options.
@@ -352,7 +352,7 @@ bool FFmpegAudioDecoder::ConfigureDecoder(const AudioDecoderConfig& config) {
         << " channels, but FFmpeg thinks the file contains "
         << codec_context_->channels << " channels";
     ReleaseFFmpegResources();
-    state_ = kUninitialized;
+    state_ = DecoderState::kUninitialized;
     return false;
   }
 
