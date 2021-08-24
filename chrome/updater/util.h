@@ -68,6 +68,11 @@ absl::optional<base::FilePath> GetVersionedUpdaterFolderPath(
 // /Library/Google/GoogleUpdater
 absl::optional<base::FilePath> GetUpdaterFolderPath(UpdaterScope scope);
 
+#if defined(OS_MAC)
+// For example: ~/Library/Google/GoogleUpdater/88.0.4293.0/GoogleUpdater.app
+absl::optional<base::FilePath> GetUpdaterAppBundlePath(UpdaterScope scope);
+#endif  // defined(OS_MAC)
+
 // For user installations:
 // ~/Library/Google/GoogleUpdater/88.0.4293.0/GoogleUpdater.app/Contents/
 //    MacOS/GoogleUpdater

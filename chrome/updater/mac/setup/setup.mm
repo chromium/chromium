@@ -367,9 +367,11 @@ int DoSetup(UpdaterScope scope) {
   // Quarantine attribute needs to be removed here as the copied bundle might be
   // given com.apple.quarantine attribute, and the server is attempted to be
   // launched below, Gatekeeper could prompt the user.
-  if (!RemoveQuarantineAttributes(
-          dest_path->Append(base::StrCat({PRODUCT_FULLNAME_STRING, ".app"})),
-          updater_executable_path)) {
+  const absl::optional<base::FilePath> bundle_path =
+      GetUpdaterAppBundlePath(scope);
+  if (!bundle_path)
+    return setup_exit_codes::kFailedToGetAppBundlePath;
+  if (!RemoveQuarantineAttributes(*bundle_path, updater_executable_path)) {
     VLOG(1) << "Couldn't remove quarantine bits for updater. This will likely "
                "cause Gatekeeper to show a prompt to the user.";
   }

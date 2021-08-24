@@ -78,6 +78,14 @@ absl::optional<base::FilePath> GetExecutableFolderPathForVersion(
   return path->Append(ExecutableFolderPath());
 }
 
+absl::optional<base::FilePath> GetUpdaterAppBundlePath(UpdaterScope scope) {
+  absl::optional<base::FilePath> path = GetVersionedUpdaterFolderPath(scope);
+  if (!path)
+    return absl::nullopt;
+  return path->Append(
+      base::StrCat({PRODUCT_FULLNAME_STRING, kExecutableSuffix, ".app"}));
+}
+
 absl::optional<base::FilePath> GetUpdaterExecutablePath(UpdaterScope scope) {
   absl::optional<base::FilePath> path = GetVersionedUpdaterFolderPath(scope);
   if (!path)
