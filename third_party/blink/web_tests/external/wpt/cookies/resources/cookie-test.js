@@ -108,27 +108,20 @@ function httpRedirectCookieTest(cookie, expectedValue, name, location) {
   }, name);
 }
 
-// Cleans up all cookies accessible via document.cookie. This will not clean up
-// any HttpOnly cookies.
-function dropAllDomCookies() {
-  let cookies = document.cookie.split('; ');
-  for (const cookie of cookies) {
-    if (!Boolean(cookie))
-      continue;
-    document.cookie = `${cookie}; expires=01 Jan 1970 00:00:00 GMT`;
-  }
-  assert_equals(document.cookie, '', 'All DOM cookies were dropped.');
-}
-
 // Sets a `cookie` via the DOM, checks it against `expectedValue` via the DOM,
 // then cleans it up via the DOM. This is needed in cases where going through
 // HTTP headers may modify the cookie line (e.g. by stripping control
 // characters).
+//
+// Note: this function has a dependency on testdriver.js. Any test files calling
+// it should include testdriver.js and testdriver-vendor.js
 function domCookieTest(cookie, expectedValue, name) {
   return promise_test(async (t) => {
+    await test_driver.delete_all_cookies();
+    t.add_cleanup(test_driver.delete_all_cookies);
+
     document.cookie = cookie;
     let cookies = document.cookie;
-    t.add_cleanup(dropAllDomCookies);
     assert_equals(cookies, expectedValue, Boolean(expectedValue) ?
                                           'The cookie was set as expected.' :
                                           'The cookie was rejected.');
