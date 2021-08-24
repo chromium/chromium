@@ -142,8 +142,12 @@ std::vector<GURL> TabsToUrls(const StartupTabs& tabs) {
 
 // Appends the contents of |from| to the end of |to|.
 void AppendTabs(const StartupTabs& from, StartupTabs* to) {
-  if (!from.empty())
-    to->insert(to->end(), from.begin(), from.end());
+  to->insert(to->end(), from.begin(), from.end());
+}
+
+// Prepends the contents of |from| to the beginning of |to|.
+void PrependTabs(const StartupTabs& from, StartupTabs* to) {
+  to->insert(to->begin(), from.begin(), from.end());
 }
 
 bool ShouldShowBadFlagsSecurityWarnings() {
@@ -197,27 +201,26 @@ void StartupBrowserCreatorImpl::MaybeToggleFullscreen(Browser* browser) {
 
 bool StartupBrowserCreatorImpl::Launch(
     Profile* profile,
-    const std::vector<GURL>& urls_to_open,
     bool process_startup,
     std::unique_ptr<LaunchModeRecorder> launch_mode_recorder) {
   DCHECK(profile);
   profile_ = profile;
 
+  LaunchResult launch_result = DetermineURLsAndLaunch(process_startup);
+
   // Check the true process command line for --try-chrome-again=N rather than
   // the one parsed for startup URLs and such.
   if (launch_mode_recorder) {
-    if (!base::CommandLine::ForCurrentProcess()
-             ->GetSwitchValueNative(switches::kTryChromeAgain)
+    if (!command_line_.GetSwitchValueNative(switches::kTryChromeAgain)
              .empty()) {
       launch_mode_recorder->SetLaunchMode(LaunchMode::kUserExperiment);
     } else {
-      launch_mode_recorder->SetLaunchMode(urls_to_open.empty()
-                                              ? LaunchMode::kToBeDecided
-                                              : LaunchMode::kWithUrls);
+      launch_mode_recorder->SetLaunchMode(launch_result ==
+                                                  LaunchResult::kWithGivenUrls
+                                              ? LaunchMode::kWithUrls
+                                              : LaunchMode::kToBeDecided);
     }
   }
-
-  DetermineURLsAndLaunch(process_startup, urls_to_open);
 
   if (command_line_.HasSwitch(switches::kInstallChromeApp)) {
     install_chrome_app::InstallChromeApp(
@@ -330,14 +333,10 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(Browser* browser,
   return browser;
 }
 
-void StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
-    bool process_startup,
-    const std::vector<GURL>& cmd_line_urls) {
+StartupBrowserCreatorImpl::LaunchResult
+StartupBrowserCreatorImpl::DetermineURLsAndLaunch(bool process_startup) {
   if (!ShouldLaunch(command_line_))
-    return;
-
-  StartupTabs cmd_line_tabs;
-  UrlsToTabs(cmd_line_urls, &cmd_line_tabs);
+    return LaunchResult::kNormally;
 
   const bool is_incognito_or_guest = profile_->IsOffTheRecord();
   bool is_post_crash_launch = HasPendingUncleanExit(profile_);
@@ -387,16 +386,16 @@ void StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
   const bool whats_new_enabled =
       promotional_tabs_enabled && whats_new::ShouldShowForState(local_state);
 
-  StartupTabs tabs = DetermineStartupTabs(
-      StartupTabProviderImpl(), cmd_line_tabs, process_startup,
-      is_incognito_or_guest, is_post_crash_launch,
-      has_incompatible_applications, promotional_tabs_enabled, welcome_enabled,
-      whats_new_enabled);
+  auto result = DetermineStartupTabs(
+      StartupTabProviderImpl(), process_startup, is_incognito_or_guest,
+      is_post_crash_launch, has_incompatible_applications,
+      promotional_tabs_enabled, welcome_enabled, whats_new_enabled);
+  StartupTabs tabs = std::move(result.tabs);
 
   // Return immediately if we start an async restore, since the remainder of
   // that process is self-contained.
   if (MaybeAsyncRestore(tabs, process_startup, is_post_crash_launch))
-    return;
+    return result.launch_result;
 
   BrowserOpenBehaviorOptions behavior_options = 0;
   if (process_startup)
@@ -405,7 +404,7 @@ void StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
     behavior_options |= IS_POST_CRASH_LAUNCH;
   if (command_line_.HasSwitch(switches::kOpenInNewWindow))
     behavior_options |= HAS_NEW_WINDOW_SWITCH;
-  if (!cmd_line_tabs.empty())
+  if (result.launch_result == LaunchResult::kWithGivenUrls)
     behavior_options |= HAS_CMD_LINE_TABS;
 
   BrowserOpenBehavior behavior = DetermineBrowserOpenBehavior(
@@ -434,11 +433,26 @@ void StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
   AddInfoBarsIfNecessary(
       browser, process_startup ? chrome::startup::IS_PROCESS_STARTUP
                                : chrome::startup::IS_NOT_PROCESS_STARTUP);
+  return result.launch_result;
 }
 
-StartupTabs StartupBrowserCreatorImpl::DetermineStartupTabs(
+StartupBrowserCreatorImpl::DetermineStartupTabsResult::
+    DetermineStartupTabsResult(StartupTabs tabs, LaunchResult launch_result)
+    : tabs(std::move(tabs)), launch_result(launch_result) {}
+
+StartupBrowserCreatorImpl::DetermineStartupTabsResult::
+    DetermineStartupTabsResult(DetermineStartupTabsResult&&) = default;
+
+StartupBrowserCreatorImpl::DetermineStartupTabsResult&
+StartupBrowserCreatorImpl::DetermineStartupTabsResult::operator=(
+    DetermineStartupTabsResult&&) = default;
+
+StartupBrowserCreatorImpl::DetermineStartupTabsResult::
+    ~DetermineStartupTabsResult() = default;
+
+StartupBrowserCreatorImpl::DetermineStartupTabsResult
+StartupBrowserCreatorImpl::DetermineStartupTabs(
     const StartupTabProvider& provider,
-    const StartupTabs& cmd_line_tabs,
     bool process_startup,
     bool is_incognito_or_guest,
     bool is_post_crash_launch,
@@ -446,38 +460,44 @@ StartupTabs StartupBrowserCreatorImpl::DetermineStartupTabs(
     bool promotional_tabs_enabled,
     bool welcome_enabled,
     bool whats_new_enabled) {
+  StartupTabs tabs =
+      provider.GetCommandLineTabs(command_line_, cur_dir_, profile_);
+  LaunchResult launch_result =
+      tabs.empty() ? LaunchResult::kNormally : LaunchResult::kWithGivenUrls;
+
   // Only the New Tab Page or command line URLs may be shown in incognito mode.
   // A similar policy exists for crash recovery launches, to prevent getting the
   // user stuck in a crash loop.
   if (is_incognito_or_guest || is_post_crash_launch) {
-    if (!cmd_line_tabs.empty())
-      return cmd_line_tabs;
+    if (!tabs.empty())
+      return {tabs, launch_result};
 
     if (is_post_crash_launch) {
-      const StartupTabs tabs =
-          provider.GetPostCrashTabs(has_incompatible_applications);
+      tabs = provider.GetPostCrashTabs(has_incompatible_applications);
       if (!tabs.empty())
-        return tabs;
+        return {tabs, launch_result};
     }
 
-    return StartupTabs({StartupTab(GURL(chrome::kChromeUINewTabURL), false)});
+    return {StartupTabs({StartupTab(GURL(chrome::kChromeUINewTabURL), false)}),
+            launch_result};
   }
 
   // A trigger on a profile may indicate that we should show a tab which
   // offers to reset the user's settings.  When this appears, it is first, and
   // may be shown alongside command-line tabs.
-  StartupTabs tabs = provider.GetResetTriggerTabs(profile_);
+  StartupTabs reset_tabs = provider.GetResetTriggerTabs(profile_);
 
   // URLs passed on the command line supersede all others, except pinned tabs.
-  AppendTabs(cmd_line_tabs, &tabs);
-  if (cmd_line_tabs.empty()) {
+  PrependTabs(reset_tabs, &tabs);
+
+  if (launch_result == LaunchResult::kNormally) {
     // An initial preferences file provided with this distribution may specify
     // tabs to be displayed on first run, overriding all non-command-line tabs,
     // including the profile reset tab.
     StartupTabs distribution_tabs =
         provider.GetDistributionFirstRunTabs(browser_creator_);
     if (!distribution_tabs.empty())
-      return distribution_tabs;
+      return {distribution_tabs, launch_result};
 
     StartupTabs onboarding_tabs;
     if (promotional_tabs_enabled) {
@@ -531,7 +551,7 @@ StartupTabs StartupBrowserCreatorImpl::DetermineStartupTabs(
   // Maybe add any tabs which the user has previously pinned.
   AppendTabs(provider.GetPinnedTabs(command_line_, profile_), &tabs);
 
-  return tabs;
+  return {tabs, launch_result};
 }
 
 bool StartupBrowserCreatorImpl::MaybeAsyncRestore(const StartupTabs& tabs,

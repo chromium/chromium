@@ -4,25 +4,39 @@
 
 #include "chrome/browser/ui/startup/startup_tab_provider.h"
 
+#include <algorithm>
+#include <string>
+
+#include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/threading/thread_restrictions.h"
 #include "build/branding_buildflags.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/first_run/first_run.h"
+#include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profile_resetter/triggered_profile_resetter.h"
 #include "chrome/browser/profile_resetter/triggered_profile_resetter_factory.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/tabs/pinned_tab_codec.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/webui/settings/reset_settings_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/search_engines/util.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "components/url_formatter/url_fixer.h"
+#include "content/public/browser/child_process_security_policy.h"
 #include "net/base/url_util.h"
 
 #if defined(OS_WIN)
@@ -33,6 +47,8 @@
 
 namespace {
 
+using content::ChildProcessSecurityPolicy;
+
 // Attempts to find an existing, non-empty tabbed browser for this profile.
 bool ProfileHasOtherTabbedBrowser(Profile* profile) {
   BrowserList* browser_list = BrowserList::GetInstance();
@@ -42,6 +58,83 @@ bool ProfileHasOtherTabbedBrowser(Profile* profile) {
                !browser->tab_strip_model()->empty();
       });
   return other_tabbed_browser != browser_list->end();
+}
+
+// Returns the list of URLs to open from the command line.
+std::vector<GURL> GetURLsFromCommandLine(const base::CommandLine& command_line,
+                                         const base::FilePath& cur_dir,
+                                         Profile* profile) {
+  std::vector<GURL> urls;
+
+  const base::CommandLine::StringVector& params = command_line.GetArgs();
+  for (size_t i = 0; i < params.size(); ++i) {
+    base::FilePath param = base::FilePath(params[i]);
+    // Handle Vista way of searching - "? <search-term>"
+    if ((param.value().size() > 2) && (param.value()[0] == '?') &&
+        (param.value()[1] == ' ')) {
+      GURL url(GetDefaultSearchURLForSearchTerms(
+          TemplateURLServiceFactory::GetForProfile(profile),
+          param.LossyDisplayName().substr(2)));
+      if (url.is_valid()) {
+        urls.push_back(url);
+        continue;
+      }
+    }
+
+    // Otherwise, fall through to treating it as a URL.
+
+    // This will create a file URL or a regular URL.
+    // This call can (in rare circumstances) block the UI thread.
+    // Allow it until this bug is fixed.
+    //  http://code.google.com/p/chromium/issues/detail?id=60641
+    GURL url = GURL(param.MaybeAsASCII());
+
+    // http://crbug.com/371030: Only use URLFixerUpper if we don't have a valid
+    // URL, otherwise we will look in the current directory for a file named
+    // 'about' if the browser was started with a about:foo argument.
+    // http://crbug.com/424991: Always use URLFixerUpper on file:// URLs,
+    // otherwise we wouldn't correctly handle '#' in a file name.
+    if (!url.is_valid() || url.SchemeIsFile()) {
+      base::ThreadRestrictions::ScopedAllowIO allow_io;
+      url = url_formatter::FixupRelativeFile(cur_dir, param);
+    }
+    // Exclude dangerous schemes.
+    if (!url.is_valid())
+      continue;
+
+    const GURL settings_url = GURL(chrome::kChromeUISettingsURL);
+    bool url_points_to_an_approved_settings_page = false;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // In ChromeOS, allow any settings page to be specified on the command line.
+    url_points_to_an_approved_settings_page =
+        url.GetOrigin() == settings_url.GetOrigin();
+#else
+    // Exposed for external cleaners to offer a settings reset to the
+    // user. The allowed URLs must match exactly.
+    const GURL reset_settings_url =
+        settings_url.Resolve(chrome::kResetProfileSettingsSubPage);
+    url_points_to_an_approved_settings_page = url == reset_settings_url;
+#if defined(OS_WIN)
+    // On Windows, also allow a hash for the Chrome Cleanup Tool.
+    const GURL reset_settings_url_with_cct_hash = reset_settings_url.Resolve(
+        std::string("#") +
+        settings::ResetSettingsHandler::kCctResetSettingsHash);
+    url_points_to_an_approved_settings_page =
+        url_points_to_an_approved_settings_page ||
+        url == reset_settings_url_with_cct_hash;
+#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+    ChildProcessSecurityPolicy* policy =
+        ChildProcessSecurityPolicy::GetInstance();
+    if (policy->IsWebSafeScheme(url.scheme()) ||
+        url.SchemeIs(url::kFileScheme) ||
+        url_points_to_an_approved_settings_page ||
+        (url.spec().compare(url::kAboutBlankURL) == 0)) {
+      urls.push_back(url);
+    }
+  }
+  return urls;
 }
 
 }  // namespace
@@ -136,6 +229,16 @@ StartupTabs StartupTabProviderImpl::GetNewTabPageTabs(
 StartupTabs StartupTabProviderImpl::GetPostCrashTabs(
     bool has_incompatible_applications) const {
   return GetPostCrashTabsForState(has_incompatible_applications);
+}
+
+StartupTabs StartupTabProviderImpl::GetCommandLineTabs(
+    const base::CommandLine& command_line,
+    const base::FilePath& cur_dir,
+    Profile* profile) const {
+  StartupTabs result;
+  for (const GURL& url : GetURLsFromCommandLine(command_line, cur_dir, profile))
+    result.push_back(StartupTab(url, false));
+  return result;
 }
 
 #if !defined(OS_ANDROID)

@@ -144,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTriggeredResetTest,
   base::CommandLine dummy(base::CommandLine::NO_PROGRAM);
   StartupBrowserCreatorImpl launch(base::FilePath(), dummy,
                                    chrome::startup::IS_NOT_FIRST_RUN);
-  ASSERT_TRUE(launch.Launch(profile, std::vector<GURL>(), false, nullptr));
+  ASSERT_TRUE(launch.Launch(profile, false, nullptr));
 
   // This should have created a new browser window.  |browser()| is still
   // around at this point, even though we've closed its window.
@@ -191,8 +191,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTriggeredResetFirstRunTest,
   base::CommandLine dummy(base::CommandLine::NO_PROGRAM);
   StartupBrowserCreatorImpl launch(base::FilePath(), dummy, &browser_creator,
                                    chrome::startup::IS_FIRST_RUN);
-  ASSERT_TRUE(
-      launch.Launch(browser()->profile(), std::vector<GURL>(), true, nullptr));
+  ASSERT_TRUE(launch.Launch(browser()->profile(), true, nullptr));
 
   // This should have created a new browser window.
   Browser* new_browser = FindOneOtherBrowser(browser());
@@ -228,8 +227,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTriggeredResetTest,
   {
     StartupBrowserCreatorImpl launch(base::FilePath(), dummy,
                                      chrome::startup::IS_NOT_FIRST_RUN);
-    ASSERT_TRUE(launch.Launch(browser()->profile(), std::vector<GURL>(), false,
-                              nullptr));
+    ASSERT_TRUE(launch.Launch(browser()->profile(), false, nullptr));
   }
 
   // This should have created a new browser window.  |browser()| is still
@@ -268,8 +266,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTriggeredResetTest,
   {
     StartupBrowserCreatorImpl launch(base::FilePath(), dummy,
                                      chrome::startup::IS_NOT_FIRST_RUN);
-    ASSERT_TRUE(
-        launch.Launch(other_profile_ptr, std::vector<GURL>(), false, nullptr));
+    ASSERT_TRUE(launch.Launch(other_profile_ptr, false, nullptr));
   }
 
   Browser* other_profile_browser =

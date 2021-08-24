@@ -276,11 +276,6 @@ class StartupBrowserCreator {
   static bool in_synchronous_profile_launch_;
 };
 
-// Returns the list of URLs to open from the command line.
-std::vector<GURL> GetURLsFromCommandLine(const base::CommandLine& command_line,
-                                         const base::FilePath& cur_dir,
-                                         Profile* profile);
-
 // Returns true if |profile| has exited uncleanly and has not been launched
 // after the unclean exit.
 bool HasPendingUncleanExit(Profile* profile);

@@ -6,8 +6,13 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
+#include "chrome/browser/prefs/session_startup_pref.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/keyed_service/core/keyed_service.h"
+#include "components/search_engines/template_url_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -243,4 +248,103 @@ TEST(StartupTabProviderTest, IncognitoProfile) {
   Profile* incognito = profile.GetPrimaryOTRProfile(/*create_if_needed=*/true);
   StartupTabs output = StartupTabProviderImpl().GetOnboardingTabs(incognito);
   EXPECT_TRUE(output.empty());
+}
+
+TEST(StartupTabProviderTest, GetCommandLineTabs) {
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  // Set up and inject a real instance for the profile.
+  TemplateURLServiceFactory::GetInstance()->SetTestingSubclassFactoryAndUse(
+      &profile,
+      base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
+
+  // Empty arguments case.
+  {
+    base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+    StartupTabs output = StartupTabProviderImpl().GetCommandLineTabs(
+        command_line, base::FilePath(), &profile);
+    EXPECT_TRUE(output.empty());
+  }
+
+  // Simple use. Pass google.com URL.
+  {
+    base::CommandLine command_line({"", "https://google.com"});
+    StartupTabs output = StartupTabProviderImpl().GetCommandLineTabs(
+        command_line, base::FilePath(), &profile);
+    ASSERT_EQ(1u, output.size());
+    EXPECT_EQ(GURL("https://google.com"), output[0].url);
+  }
+
+  // Two URL case.
+  {
+    base::CommandLine command_line(
+        {"", "https://google.com", "https://gmail.com"});
+    StartupTabs output = StartupTabProviderImpl().GetCommandLineTabs(
+        command_line, base::FilePath(), &profile);
+    ASSERT_EQ(2u, output.size());
+    EXPECT_EQ(GURL("https://google.com"), output[0].url);
+    EXPECT_EQ(GURL("https://gmail.com"), output[1].url);
+  }
+
+  // Vista way search query.
+  {
+    base::CommandLine command_line({"", "? Foo"});
+    StartupTabs output = StartupTabProviderImpl().GetCommandLineTabs(
+        command_line, base::FilePath(), &profile);
+    ASSERT_EQ(1u, output.size());
+    EXPECT_EQ(
+        GURL("https://www.google.com/search?q=Foo&sourceid=chrome&ie=UTF-8"),
+        output[0].url);
+  }
+
+  // "file:" path fix up.
+  {
+    base::CommandLine command_line({"", "file:foo.txt"});
+    StartupTabs output = StartupTabProviderImpl().GetCommandLineTabs(
+        command_line, base::FilePath(), &profile);
+    ASSERT_EQ(1u, output.size());
+    EXPECT_EQ(GURL("file:///foo.txt"), output[0].url);
+  }
+
+  // Unsafe scheme should be filtered out.
+  {
+    base::CommandLine command_line({"", "chrome://flags"});
+    StartupTabs output = StartupTabProviderImpl().GetCommandLineTabs(
+        command_line, base::FilePath(), &profile);
+    ASSERT_TRUE(output.empty());
+  }
+
+  // Exceptional settings page.
+  {
+    base::CommandLine command_line(
+        {"", "chrome://settings/resetProfileSettings"});
+    StartupTabs output = StartupTabProviderImpl().GetCommandLineTabs(
+        command_line, base::FilePath(), &profile);
+    ASSERT_EQ(1u, output.size());
+    EXPECT_EQ(GURL("chrome://settings/resetProfileSettings"), output[0].url);
+  }
+
+  // chrome://settings/ page handling.
+  {
+    base::CommandLine command_line({"", "chrome://settings/syncSetup"});
+    StartupTabs output = StartupTabProviderImpl().GetCommandLineTabs(
+        command_line, base::FilePath(), &profile);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // On Chrome OS (ash-chrome), settings page is allowed to be specified.
+    ASSERT_EQ(1u, output.size());
+    EXPECT_EQ(GURL("chrome://settings/syncSetup"), output[0].url);
+#else
+    // On other platforms, it is blocked.
+    EXPECT_TRUE(output.empty());
+#endif
+  }
+
+  // about:blank URL.
+  {
+    base::CommandLine command_line({"", "about:blank"});
+    StartupTabs output = StartupTabProviderImpl().GetCommandLineTabs(
+        command_line, base::FilePath(), &profile);
+    ASSERT_EQ(1u, output.size());
+    EXPECT_EQ(GURL("about:blank"), output[0].url);
+  }
 }

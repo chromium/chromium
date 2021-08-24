@@ -7,12 +7,18 @@
 
 #include <vector>
 
-#include "base/gtest_prod_util.h"
 #include "build/build_config.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
 #include "url/gurl.h"
+
+class Profile;
+class StartupBrowserCreator;
+struct SessionStartupPref;
+
+namespace base {
+class CommandLine;
+class FilePath;
+}  // namespace base
 
 // Provides the sets of tabs to be shown at startup for given sets of policy.
 // For instance, this class answers the question, "which tabs, if any, need to
@@ -61,6 +67,12 @@ class StartupTabProvider {
   // applications exist.
   virtual StartupTabs GetPostCrashTabs(
       bool has_incompatible_applications) const = 0;
+
+  // Returns the URLs given via the command line arguments to be opened at
+  // launching.
+  virtual StartupTabs GetCommandLineTabs(const base::CommandLine& command_line,
+                                         const base::FilePath& cur_dir,
+                                         Profile* profile) const = 0;
 
 #if !defined(OS_ANDROID)
   // Returns tabs related to the What's New UI (if applicable).
@@ -177,6 +189,10 @@ class StartupTabProviderImpl : public StartupTabProvider {
                                 Profile* profile) const override;
   StartupTabs GetPostCrashTabs(
       bool has_incompatible_applications) const override;
+  StartupTabs GetCommandLineTabs(const base::CommandLine& command_line,
+                                 const base::FilePath& cur_dir,
+                                 Profile* profile) const override;
+
 #if !defined(OS_ANDROID)
   StartupTabs GetNewFeaturesTabs(bool whats_new_enabled) const override;
 #endif
