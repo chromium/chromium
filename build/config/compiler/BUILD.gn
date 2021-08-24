@@ -1600,7 +1600,7 @@ config("default_warnings") {
 
     # use_xcode_clang only refers to the iOS toolchain, host binaries use
     # chromium's clang always.
-    if (!is_nacl) {
+    if (!is_nacl || is_nacl_saigo) {
       if (is_win) {
         # TODO(thakis): https://crbug.com/617318
         # Currently goma can not handle case sensitiveness for windows well.
@@ -1611,8 +1611,7 @@ config("default_warnings") {
       }
 
       if (current_toolchain == host_toolchain || !use_xcode_clang) {
-        # Flags NaCl (Clang 3.7) and Xcode 9.2 (Clang clang-900.0.39.2) do not
-        # recognize.
+        # Flags Xcode 9.2 (Clang clang-900.0.39.2) does not recognize.
         cflags += [
           "-Wenum-compare-conditional",
 
@@ -1630,14 +1629,16 @@ config("default_warnings") {
 
           # TODO(https://crbug.com/1028110): Evaluate and possible enable.
           "-Wno-deprecated-copy",
-
-          # TODO(https://crbug.com/1203071): Clean up and enable.
-          "-Wno-unused-but-set-parameter",
-          "-Wno-unused-but-set-variable",
-
-          # TODO(https://crbug.com/1239077): Fix and re-enable.
-          "-Wno-inline-asm",
         ]
+
+        # NaCl does not support flags from ToT.
+        if (!is_nacl) {
+          cflags += [
+            # TODO(https://crbug.com/1203071): Clean up and enable.
+            "-Wno-unused-but-set-parameter",
+            "-Wno-unused-but-set-variable",
+          ]
+        }
 
         if (enable_wmax_tokens) {
           cflags += [ "-Wmax-tokens" ]
