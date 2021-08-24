@@ -1,0 +1,38 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+static_library("power_bookmarks") {
+  sources = [
+    "power_bookmark_utils.cc",
+    "power_bookmark_utils.h",
+  ]
+
+  public_deps = [ ":proto" ]
+
+  deps = [
+    "//base",
+    "//components/bookmarks/browser",
+  ]
+}
+
+proto_library("proto") {
+  proto_in_dir = "../"
+  sources = [ "proto/power_bookmark_meta.proto" ]
+}
+
+static_library("unit_tests") {
+  testonly = true
+
+  sources = [ "power_bookmark_utils_unittest.cc" ]
+
+  deps = [
+    ":power_bookmarks",
+    "//base/test:test_support",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/test",
+    "//testing/gtest",
+  ]
+}

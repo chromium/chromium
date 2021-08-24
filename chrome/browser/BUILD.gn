@@ -3302,6 +3302,7 @@ static_library("browser") {
       "//chrome/browser/payments/android:jni_headers",
       "//chrome/browser/policy/android:android",
       "//chrome/browser/policy/android:jni_headers",
+      "//chrome/browser/power_bookmarks",
       "//chrome/browser/privacy:jni_headers",
       "//chrome/browser/privacy_sandbox/android:jni_headers",
       "//chrome/browser/reading_list/android",
