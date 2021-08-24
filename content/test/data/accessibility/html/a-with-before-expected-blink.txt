@@ -3,7 +3,7 @@ rootWebArea
 ++++genericContainer
 ++++++staticText name='Here is a '
 ++++++++inlineTextBox name='Here is a '
-++++++link linked name='link'
+++++++link linked name='[linked] link'
 ++++++++genericContainer ignored
 ++++++++++staticText linked name='[linked] '
 ++++++++++++inlineTextBox name='[linked] '
