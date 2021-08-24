@@ -802,7 +802,7 @@ struct XRFrameData {
   // The viewer pose of this frame. The pose may be null if the device lost
   // tracking. The XRFrameData can still have other data, such as pass through
   // camera image.
-  VRPose? pose;
+  VRPose? mojo_from_viewer;
   // Time delta from an unspecified origin.
   mojo_base.mojom.TimeDelta time_delta;
   // The buffer_holder is used for sending imagery data back and forth across

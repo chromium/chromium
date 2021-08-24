@@ -114,7 +114,7 @@ struct XRRenderInfo
   int16 frame_id;
 
   // The pose may be null if the device lost tracking.
-  VRPose? pose;
+  VRPose? mojo_from_viewer;
 
   // Information about all the views in a frame. Views can appear in any order
   // so it should not be assumed the left eye comes before the right eye. It is

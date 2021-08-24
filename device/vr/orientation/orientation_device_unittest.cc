@@ -143,7 +143,7 @@ class VROrientationDeviceTest : public testing::Test {
         [](base::OnceClosure quit_closure,
            base::OnceCallback<void(mojom::VRPosePtr)> callback,
            mojom::XRFrameDataPtr ptr) {
-          std::move(callback).Run(std::move(ptr->pose));
+          std::move(callback).Run(std::move(ptr->mojo_from_viewer));
           std::move(quit_closure).Run();
         },
         loop.QuitClosure(), std::move(callback)));

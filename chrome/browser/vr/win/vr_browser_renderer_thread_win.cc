@@ -359,37 +359,38 @@ void VRBrowserRendererThreadWin::OnWebXRSubmitted() {
 device::mojom::XRRenderInfoPtr ValidateFrameData(
     device::mojom::XRRenderInfoPtr data) {
   device::mojom::XRRenderInfoPtr ret = device::mojom::XRRenderInfo::New();
-  ret->pose = device::mojom::VRPose::New();
+  ret->mojo_from_viewer = device::mojom::VRPose::New();
 
-  if (data->pose) {
-    if (data->pose->orientation) {
-      if (abs(data->pose->orientation->Length() - 1) < kEpsilon) {
-        ret->pose->orientation = data->pose->orientation->Normalized();
+  if (data->mojo_from_viewer) {
+    if (data->mojo_from_viewer->orientation) {
+      if (abs(data->mojo_from_viewer->orientation->Length() - 1) < kEpsilon) {
+        ret->mojo_from_viewer->orientation =
+            data->mojo_from_viewer->orientation->Normalized();
       }
     }
 
-    if (data->pose->position) {
-      ret->pose->position = data->pose->position;
+    if (data->mojo_from_viewer->position) {
+      ret->mojo_from_viewer->position = data->mojo_from_viewer->position;
 
-      bool any_out_of_range = !(InRange(ret->pose->position->x()) &&
-                                InRange(ret->pose->position->y()) &&
-                                InRange(ret->pose->position->z()));
+      bool any_out_of_range = !(InRange(ret->mojo_from_viewer->position->x()) &&
+                                InRange(ret->mojo_from_viewer->position->y()) &&
+                                InRange(ret->mojo_from_viewer->position->z()));
       if (any_out_of_range) {
-        ret->pose->position = absl::nullopt;
+        ret->mojo_from_viewer->position = absl::nullopt;
         // If testing with unexpectedly high values, catch on debug builds
         // rather than silently change data.  On release builds its better to
         // be safe and validate.
         DCHECK(false);
       }
     }
-  }  // if (data->pose)
+  }  // if (data->mojo_from_viewer)
 
-  if (!ret->pose->orientation) {
-    ret->pose->orientation = gfx::Quaternion();
+  if (!ret->mojo_from_viewer->orientation) {
+    ret->mojo_from_viewer->orientation = gfx::Quaternion();
   }
 
-  if (!ret->pose->position) {
-    ret->pose->position = gfx::Point3F();
+  if (!ret->mojo_from_viewer->position) {
+    ret->mojo_from_viewer->position = gfx::Point3F();
   }
 
   ret->views.resize(data->views.size());
@@ -430,14 +431,15 @@ void VRBrowserRendererThreadWin::OnPose(int request_id,
 
   // Deliver pose to input and scheduler.
   DCHECK(data);
-  DCHECK(data->pose);
-  DCHECK(data->pose->orientation);
-  DCHECK(data->pose->position);
-  const gfx::Point3F& pos = *data->pose->position;
+  DCHECK(data->mojo_from_viewer);
+  DCHECK(data->mojo_from_viewer->orientation);
+  DCHECK(data->mojo_from_viewer->position);
+  const gfx::Point3F& pos = *data->mojo_from_viewer->position;
 
   // The incoming pose represents where the headset is in "world space".  So
   // we'll need to invert to get the view transform.
-  gfx::Transform head_from_unoriented_head(data->pose->orientation->inverse());
+  gfx::Transform head_from_unoriented_head(
+      data->mojo_from_viewer->orientation->inverse());
 
   // Negating all components will invert the translation.
   gfx::Transform unoriented_head_from_world;

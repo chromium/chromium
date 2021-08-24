@@ -69,7 +69,7 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
   frame_data->input_state = openxr_->GetInputState(
       IsFeatureEnabled(device::mojom::XRSessionFeature::HAND_INPUT));
 
-  frame_data->pose = openxr_->GetViewerPose();
+  frame_data->mojo_from_viewer = openxr_->GetViewerPose();
 
   UpdateStageParameters();
 
@@ -88,12 +88,13 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
   }
 
   if (IsFeatureEnabled(device::mojom::XRSessionFeature::HIT_TEST) &&
-      frame_data->pose->position && frame_data->pose->orientation) {
+      frame_data->mojo_from_viewer->position &&
+      frame_data->mojo_from_viewer->orientation) {
     OpenXRSceneUnderstandingManager* scene_understanding_manager =
         openxr_->GetOrCreateSceneUnderstandingManager(extension_helper_);
     if (scene_understanding_manager) {
-      device::Pose mojo_from_viewer(*frame_data->pose->position,
-                                    *frame_data->pose->orientation);
+      device::Pose mojo_from_viewer(*frame_data->mojo_from_viewer->position,
+                                    *frame_data->mojo_from_viewer->orientation);
       // Get results for hit test subscriptions.
       frame_data->hit_test_subscription_results =
           scene_understanding_manager->ProcessHitTestResultsForFrame(

@@ -768,7 +768,7 @@ void ArCoreGl::GetFrameData(
     frame_data->views.push_back(std::move(view));
   }
 
-  frame_data->pose = std::move(pose);
+  frame_data->mojo_from_viewer = std::move(pose);
   frame_data->time_delta = now - base::TimeTicks();
   if (rendering_time_ratio_ > 0) {
     frame_data->rendering_time_ratio = rendering_time_ratio_;
@@ -1545,19 +1545,19 @@ void ArCoreGl::ProcessFrame(
   if (pending_shutdown_)
     return;
   DVLOG(3) << __func__ << " frame=" << frame_data->frame_id << ", pose valid? "
-           << (frame_data->pose ? true : false);
+           << (frame_data->mojo_from_viewer ? true : false);
 
   DCHECK(IsOnGlThread());
   DCHECK(is_initialized_);
 
-  if (frame_data->pose) {
-    DCHECK(frame_data->pose->position);
-    DCHECK(frame_data->pose->orientation);
+  if (frame_data->mojo_from_viewer) {
+    DCHECK(frame_data->mojo_from_viewer->position);
+    DCHECK(frame_data->mojo_from_viewer->orientation);
 
     frame_data->input_state = GetInputSourceStates();
 
-    device::Pose mojo_from_viewer(*frame_data->pose->position,
-                                  *frame_data->pose->orientation);
+    device::Pose mojo_from_viewer(*frame_data->mojo_from_viewer->position,
+                                  *frame_data->mojo_from_viewer->orientation);
 
     // Get results for hit test subscriptions.
     frame_data->hit_test_subscription_results =

@@ -1562,7 +1562,7 @@ void XRSession::ApplyPendingRenderState() {
 
 void XRSession::UpdatePresentationFrameState(
     double timestamp,
-    const device::mojom::blink::VRPosePtr& frame_pose,
+    const device::mojom::blink::VRPosePtr& mojo_from_viewer_pose,
     const device::mojom::blink::XRFrameDataPtr& frame_data,
     int16_t frame_id,
     bool emulated_position) {
@@ -1598,7 +1598,7 @@ void XRSession::UpdatePresentationFrameState(
     }
   }
 
-  mojo_from_viewer_ = getPoseMatrix(frame_pose);
+  mojo_from_viewer_ = getPoseMatrix(mojo_from_viewer_pose);
   DVLOG(2) << __func__ << " : mojo_from_viewer_ valid? "
            << (mojo_from_viewer_ ? true : false);
 

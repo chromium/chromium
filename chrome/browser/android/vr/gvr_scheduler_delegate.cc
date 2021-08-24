@@ -991,7 +991,7 @@ void GvrSchedulerDelegate::SendVSync(device::mojom::VRPosePtr pose,
   TRACE_EVENT0("gpu", "GvrSchedulerDelegate::XRInput");
   frame_data->input_state = std::move(input_states_);
 
-  frame_data->pose = std::move(pose);
+  frame_data->mojo_from_viewer = std::move(pose);
 
   device::WebXrFrame* frame = webxr_.GetAnimatingFrame();
   frame->head_pose = head_mat;

@@ -889,7 +889,7 @@ class MockRuntime {
         }
 
         const frameData = {
-          pose: this.pose_,
+          mojoFromViewer: this.pose_,
           views: views,
           mojoSpaceReset: mojo_space_reset,
           inputState: input_state,

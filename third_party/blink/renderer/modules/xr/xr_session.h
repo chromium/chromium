@@ -353,7 +353,7 @@ class XRSession final
   // presentation frames.
   void UpdatePresentationFrameState(
       double timestamp,
-      const device::mojom::blink::VRPosePtr& frame_pose,
+      const device::mojom::blink::VRPosePtr& mojo_from_viewer_pose,
       const device::mojom::blink::XRFrameDataPtr& frame_data,
       int16_t frame_id,
       bool emulated_position);
