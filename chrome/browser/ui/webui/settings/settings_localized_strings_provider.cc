@@ -1615,6 +1615,8 @@ void AddPrivacyReviewStrings(content::WebUIDataSource* html_source) {
       {"privacyReviewPromoBody", IDS_SETTINGS_PRIVACY_REVIEW_PROMO_BODY},
       {"privacyReviewPromoStartButton",
        IDS_SETTINGS_PRIVACY_REVIEW_PROMO_START_BUTTON},
+      {"privacyReviewBackButton", IDS_SETTINGS_PRIVACY_REVIEW_BACK_BUTTON},
+      {"privacyReviewSteps", IDS_SETTINGS_PRIVACY_REVIEW_STEPS},
       {"privacyReviewNextButton", IDS_SETTINGS_PRIVACY_REVIEW_NEXT_BUTTON},
       {"privacyReviewFeatureDescriptionHeader",
        IDS_SETTINGS_PRIVACY_REVIEW_FEATURE_DESCRIPTION_HEADER},

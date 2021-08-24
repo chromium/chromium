@@ -13,39 +13,58 @@
     box-shadow: var(--cr-card-shadow);
   }
 
-  .fragment {
-    padding: 12px;
+  .footer {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    padding: 16px;
   }
 </style>
 <div class="privacy-review-card">
-  <div id="header"
-      hidden="[[!showHeader_(privacyReviewStep_)]]">
+  <div id="header" hidden="[[!showHeader_(privacyReviewStep_)]]">
     <div id="headerLabel">
       [[computeHeaderString_(privacyReviewStep_)]]
     </div>
   </div>
-  <div id="welcomeFragment" class="fragment"
+  <div id="welcomeFragment"
       hidden="[[!showWelcomeFragment_(privacyReviewStep_)]]">
     <div>$i18n{privacyReviewWelcomeCardHeader}</div>
+    <div class="footer">
+      <cr-button class="action-button" role="button" tabindex="0"
+          on-click="onNextButtonClick_">
+        $i18n{privacyReviewWelcomeCardStartButton}
+      </cr-button>
+    </div>
   </div>
-  <div id="completionFragment" class="fragment"
+  <div id="completionFragment"
        hidden="[[!showCompletionFragment_(privacyReviewStep_)]]">
     <div>$i18n{privacyReviewCompletionCardHeader}</div>
+    <div class="footer">
+      <cr-button class="action-button" role="button" tabindex="0"
+          on-click="onNextButtonClick_">
+        $i18n{privacyReviewCompletionCardLeaveButton}
+      </cr-button>
+    </div>
   </div>
   <template is="dom-if" if="[[showMsbbFragment_(privacyReviewStep_)]]">
-    <privacy-review-msbb-fragment id="msbbFragment" class="fragment"
-        prefs="{{prefs}}">
+    <privacy-review-msbb-fragment id="msbbFragment" prefs="{{prefs}}">
     </privacy-review-msbb-fragment>
   </template>
   <template is="dom-if" if="[[showClearOnExitFragment_(privacyReviewStep_)]]">
     <privacy-review-clear-on-exit-fragment id="clearOnExitFragment"
-        class="fragment" prefs="{{prefs}}">
+        prefs="{{prefs}}">
     </privacy-review-clear-on-exit-fragment>
   </template>
-  <div id="footer" class$="[[computeFooterClass_(privacyReviewStep_)]]">
-    <cr-button class="cr-button" id="nextButton" role="button" tabindex="0"
-        on-click="onNextButtonClick_">
-      [[computeNextButtonLabel_(privacyReviewStep_)]]
+  <div id="settingFooter" class="footer hr"
+      hidden="[[!showAnySettingFragment_(privacyReviewStep_)]]">
+    <cr-button class="cr-button" id="backButton" role="button"
+        on-click="onBackButtonClick_">
+      $i18n{privacyReviewBackButton}
+    </cr-button>
+    <step-indicator model="[[stepIndicatorModel_]]"></step-indicator>
+    <cr-button class="action-button" id="nextButton" role="button"
+        tabindex="0" on-click="onNextButtonClick_">
+      $i18n{privacyReviewNextButton}
     </cr-button>
   </div>
 </div>

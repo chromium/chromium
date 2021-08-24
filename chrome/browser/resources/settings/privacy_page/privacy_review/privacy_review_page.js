@@ -13,6 +13,7 @@ import '../../prefs/prefs.js';
 import '../../settings_shared_css.js';
 import './privacy_review_clear_on_exit_fragment.js';
 import './privacy_review_msbb_fragment.js';
+import './step_indicator.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
@@ -32,6 +33,13 @@ const PrivacyReviewStep = {
   CLEAR_ON_EXIT: 'clearOnExit',
   COMPLETION: 'completion',
 };
+
+/**
+ * TODO(crbug/1215630): This should be computed from the number of steps the
+ * user will actually see, but not all steps are implemented yet.
+ * @type {number}
+ */
+const REVIEW_STEPS = 5;
 
 /**
  * @constructor
@@ -69,6 +77,15 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
       privacyReviewStep_: {
         type: String,
         value: PrivacyReviewStep.WELCOME,
+      },
+
+      /**
+       * Used by the 'step-indicator' element to display its dots.
+       * @private {!Object<number, number>}
+       */
+      stepIndicatorModel_: {
+        type: Object,
+        computed: 'computeStepIndicatorModel_(privacyReviewStep_)',
       },
     };
   }
@@ -139,6 +156,34 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
 
   /**
    * @private
+   * @return {number}
+   */
+  computeActiveStepIndex_() {
+    switch (this.privacyReviewStep_) {
+      case PrivacyReviewStep.MSBB:
+        return 0;
+      case PrivacyReviewStep.CLEAR_ON_EXIT:
+        return 1;
+      default:
+        // Welcome or completion cards do not show the step indicator, but since
+        // the HTML element is still present it's computed anyway.
+        return 0;
+    }
+  }
+
+  /**
+   * @private
+   * @return {!Object<number, number>}
+   */
+  computeStepIndicatorModel_() {
+    return {
+      active: this.computeActiveStepIndex_(),
+      total: REVIEW_STEPS,
+    };
+  }
+
+  /**
+   * @private
    * @return {string|undefined}
    */
   computeHeaderString_() {
@@ -162,30 +207,6 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
 
   /**
    * @private
-   * @return {string}
-   */
-  computeNextButtonLabel_() {
-    switch (this.privacyReviewStep_) {
-      case PrivacyReviewStep.WELCOME:
-        return this.i18n('privacyReviewWelcomeCardStartButton');
-      case PrivacyReviewStep.COMPLETION:
-        return this.i18n('privacyReviewCompletionCardLeaveButton');
-      default:
-        return this.i18n('privacyReviewNextButton');
-    }
-  }
-
-  /**
-   * @private
-   * @return {string|undefined}
-   */
-  computeFooterClass_() {
-    return this.privacyReviewStep_ === PrivacyReviewStep.WELCOME ? undefined :
-                                                                   'hr';
-  }
-
-  /**
-   * @private
    * @return {boolean}
    */
   showWelcomeFragment_() {
@@ -198,6 +219,14 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
    */
   showCompletionFragment_() {
     return this.privacyReviewStep_ === PrivacyReviewStep.COMPLETION;
+  }
+
+  /**
+   * @private
+   * @return {boolean}
+   */
+  showAnySettingFragment_() {
+    return !this.showWelcomeFragment_() && !this.showCompletionFragment_();
   }
 
   /**
