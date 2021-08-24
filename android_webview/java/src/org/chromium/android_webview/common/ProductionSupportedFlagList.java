@@ -8,6 +8,7 @@ import org.chromium.base.BaseSwitches;
 import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.cc.base.CcSwitches;
 import org.chromium.components.autofill.AutofillFeatures;
+import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.metrics.MetricsSwitches;
 import org.chromium.components.power_scheduler.PowerSchedulerFeatures;
 import org.chromium.components.viz.common.VizFeatures;
@@ -151,6 +152,12 @@ public final class ProductionSupportedFlagList {
                             + "names and house numberse."),
             Flag.baseFeature(AutofillFeatures.AUTOFILL_FIX_FILLABLE_FIELD_TYPES,
                     "Fix how it is determined if a field type is fillable with Autofill"),
+            Flag.baseFeature(AutofillFeatures.AUTOFILL_ENABLE_MERCHANT_BOUND_VIRTUAL_CARDS,
+                    "When enabled, merchant bound virtual cards will be offered when users "
+                            + "interact with a payment form."),
+            Flag.baseFeature(FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_FEATURE,
+                    "When enabled, merchant bound virtual cards will be offered in the keyboard "
+                            + "accessory."),
             Flag.baseFeature(
                     NetworkServiceFeatures.TRUST_TOKENS, "Enables the prototype Trust Tokens API."),
             Flag.baseFeature(AwFeatures.WEBVIEW_APPS_PACKAGE_NAMES_ALLOWLIST,

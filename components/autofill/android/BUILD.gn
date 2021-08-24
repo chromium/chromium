@@ -38,7 +38,10 @@ java_cpp_enum("autofill_core_browser_java_enums") {
 
 java_cpp_features("java_features_srcjar") {
   visibility = [ ":*" ]
-  sources = [ "//components/autofill/core/common/autofill_features.cc" ]
+  sources = [
+    "//components/autofill/core/common/autofill_features.cc",
+    "//components/autofill/core/common/autofill_payments_features.cc",
+  ]
   template =
       "//components/autofill/android/java_templates/AutofillFeatures.java.tmpl"
 }

@@ -48700,6 +48700,8 @@ from previous Chrome versions.
       label="OmniboxUIExperimentBlueTitlesAndGrayUrlsOnPageSuggestions:disabled"/>
   <int value="-666712735" label="FeedShare:disabled"/>
   <int value="-666508951" label="CrOSContainer:enabled"/>
+  <int value="-665785501"
+      label="KeyboardAccessoryPaymentVirtualCardFeature:enabled"/>
   <int value="-665514294" label="FontAccess:disabled"/>
   <int value="-665006585" label="Bento:enabled"/>
   <int value="-663476391" label="enable-pixel-canvas-recording:enabled"/>
@@ -52078,6 +52080,8 @@ from previous Chrome versions.
   <int value="2063091429" label="OfflinePagesSharing:enabled"/>
   <int value="2063420769" label="SharedHighlightingV2:disabled"/>
   <int value="2066015302" label="QueryTiles:disabled"/>
+  <int value="2066268611"
+      label="KeyboardAccessoryPaymentVirtualCardFeature:disabled"/>
   <int value="2066508701" label="WebViewOriginTrials:disabled"/>
   <int value="2067634730" label="LsdPermissionPrompt:disabled"/>
   <int value="2067735898" label="WebVrAutopresentFromIntent:enabled"/>
