@@ -5,10 +5,15 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_DOWNLOAD_PROTECTION_DEEP_SCANNING_REQUEST_H_
 #define CHROME_BROWSER_SAFE_BROWSING_DOWNLOAD_PROTECTION_DEEP_SCANNING_REQUEST_H_
 
+#include <memory>
+
+#include "base/containers/flat_map.h"
+#include "base/files/file_path.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/file_analysis_request.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/file_opening_job.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 
@@ -59,14 +64,27 @@ class DeepScanningRequest : public download::DownloadItem::Observer {
   static absl::optional<enterprise_connectors::AnalysisSettings>
   ShouldUploadBinary(download::DownloadItem* item);
 
-  // Scan the given |item|, with the given |trigger|. The result of the scanning
-  // will be provided through |callback|. Take references to the owning
-  // |download_service| and the |binary_upload_service| to upload to.
+  // Scan the given `item`, with the given `trigger`. The result of the scanning
+  // will be provided through `callback`. Take a references to the owning
+  // `download_service`.
   DeepScanningRequest(download::DownloadItem* item,
                       DeepScanTrigger trigger,
                       CheckDownloadRepeatingCallback callback,
                       DownloadProtectionService* download_service,
                       enterprise_connectors::AnalysisSettings settings);
+
+  // Scan the given `item` that corresponds to a save package, with
+  // `save_package_page` mapping every currently on-disk file part of that
+  // package to their final target path. The result of the scanning is provided
+  // through `callback` once every file has been scanned, and the given result
+  // is the highest severity one. Takes a reference to the owning
+  // `download_service`.
+  DeepScanningRequest(
+      download::DownloadItem* item,
+      CheckDownloadRepeatingCallback callback,
+      DownloadProtectionService* download_service,
+      enterprise_connectors::AnalysisSettings settings,
+      base::flat_map<base::FilePath, base::FilePath> save_package_files);
 
   ~DeepScanningRequest() override;
 
@@ -77,15 +95,30 @@ class DeepScanningRequest : public download::DownloadItem::Observer {
   void RemoveObserver(Observer* observer);
 
  private:
+  // Starts the deep scanning request when there is a one-to-one mapping from
+  // the download item to a file.
+  void StartSingleFileScan();
+
+  // Starts the deep scanning requests when there is a one-to-many mapping from
+  // the download item to multiple files being scanned as a part of a save
+  // package.
+  void StartSavePackageScan();
+
   // Callback when the |download_request_maker_| is finished assembling the
   // download metadata request.
   void OnDownloadRequestReady(
+      const base::FilePath& current_path,
       std::unique_ptr<FileAnalysisRequest> deep_scan_request,
       std::unique_ptr<ClientDownloadRequest> download_request);
 
   // Callbacks for when |binary_upload_service_| finishes uploading.
-  void OnScanComplete(BinaryUploadService::Result result,
+  void OnScanComplete(const base::FilePath& current_path,
+                      BinaryUploadService::Result result,
                       enterprise_connectors::ContentAnalysisResponse response);
+
+  // Called when a single file scanning request has completed. Calls
+  // FinishRequest if it was the last required one.
+  void MaybeFinishRequest(DownloadCheckResult result);
 
   // Finishes the request, providing the result through |callback_| and
   // notifying |download_service_|.
@@ -104,9 +137,25 @@ class DeepScanningRequest : public download::DownloadItem::Observer {
   // Called to open the download. This is triggered by the timeout modal dialog.
   void OpenDownload();
 
-  // Populates a request with the appropriate data depending on the used proto.
-  void PrepareRequest(std::unique_ptr<FileAnalysisRequest> deep_scan_request,
-                      Profile* profile);
+  // Populates a request's proto fields with the appropriate data.
+  void PopulateRequest(FileAnalysisRequest* request,
+                       Profile* profile,
+                       const base::FilePath& path);
+
+  // Creates a ClientDownloadRequest asynchronously to attach to
+  // `deep_scan_request`. Once it is obtained, OnDownloadRequestReady is called
+  // to upload the request for deep scanning.
+  void PrepareClientDownloadRequest(
+      const base::FilePath& current_path,
+      std::unique_ptr<FileAnalysisRequest> deep_scan_request);
+
+  // Wrapper around OnDownloadRequestReady to facilitate opening files in
+  // parallel for save package scans.
+  void OnGotRequestData(const base::FilePath& final_path,
+                        const base::FilePath& current_path,
+                        std::unique_ptr<FileAnalysisRequest> request,
+                        BinaryUploadService::Result result,
+                        const BinaryUploadService::Request::Data& data);
 
   // The download item to scan. This is unowned, and could become nullptr if the
   // download is destroyed.
@@ -122,8 +171,8 @@ class DeepScanningRequest : public download::DownloadItem::Observer {
   // |download_service_| owns this class.
   DownloadProtectionService* download_service_;
 
-  // The time when uploading starts.
-  base::TimeTicks upload_start_time_;
+  // The time when uploading starts. Keyed with the file's current path.
+  base::flat_map<base::FilePath, base::TimeTicks> upload_start_times_;
 
   // The settings to apply to this scan.
   enterprise_connectors::AnalysisSettings analysis_settings_;
@@ -133,6 +182,30 @@ class DeepScanningRequest : public download::DownloadItem::Observer {
 
   // This list of observers of this request.
   base::ObserverList<Observer> observers_;
+
+  // Stores a mapping of final paths to temporary paths for save package files.
+  // This is empty on non-page save scanning requests.
+  base::flat_map<base::FilePath, base::FilePath> save_package_files_;
+
+  // Stores a mapping of a file's current path to its metadata so it can be used
+  // in reporting events. This is populated from opening the file for save
+  // package scans, or populated from `item_` for single file scans.
+  base::flat_map<base::FilePath, enterprise_connectors::FileMetadata>
+      file_metadata_;
+
+  // Owner of the FileOpeningJob used to safely open multiple files in parallel
+  // for save package scans. Always nullptr for non-save package scans.
+  std::unique_ptr<FileOpeningJob> file_opening_job_;
+
+  // The total number of files beings scanned for which OnScanComplete hasn't
+  // been called. Once this is 0, FinishRequest should be called and `this`
+  // should be destroyed.
+  size_t pending_scan_requests_;
+
+  // The highest precedence DownloadCheckResult obtained from scanning verdicts.
+  // This should be updated when a scan completes.
+  DownloadCheckResult download_check_result_ =
+      DownloadCheckResult::DEEP_SCANNED_SAFE;
 
   base::WeakPtrFactory<DeepScanningRequest> weak_ptr_factory_;
 };

@@ -140,6 +140,8 @@ FileMetadata::FileMetadata(const std::string& filename,
       size(size),
       scan_response(scan_response) {}
 FileMetadata::FileMetadata(FileMetadata&&) = default;
+FileMetadata::FileMetadata(const FileMetadata&) = default;
+FileMetadata& FileMetadata::operator=(const FileMetadata&) = default;
 FileMetadata::~FileMetadata() = default;
 
 const char ScanResult::kKey[] = "enterprise_connectors.scan_result_key";

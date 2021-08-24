@@ -60,6 +60,19 @@ class EventReportValidator {
       const std::string& expected_username,
       const std::string& expected_scan_id);
 
+  void ExpectSensitiveDataEvents(
+      const std::string& expected_url,
+      const std::vector<const std::string>& expected_filenames,
+      const std::vector<const std::string>& expected_sha256s,
+      const std::string& expected_trigger,
+      const std::vector<enterprise_connectors::ContentAnalysisResponse::Result>&
+          expected_dlp_verdicts,
+      const std::set<std::string>* expected_mimetypes,
+      int expected_content_size,
+      const std::vector<std::string>& expected_results,
+      const std::string& expected_username,
+      const std::vector<std::string>& expected_scan_ids);
+
   void ExpectDangerousDeepScanningResultAndSensitiveDataEvent(
       const std::string& expected_url,
       const std::string& expected_filename,
@@ -134,11 +147,13 @@ class EventReportValidator {
  private:
   void ValidateReport(base::Value* report);
   void ValidateMimeType(base::Value* value);
-  void ValidateDlpVerdict(base::Value* value);
+  void ValidateDlpVerdict(
+      base::Value* value,
+      const enterprise_connectors::ContentAnalysisResponse::Result& result);
   void ValidateDlpRule(base::Value* value,
                        const enterprise_connectors::ContentAnalysisResponse::
                            Result::TriggeredRule& expected_rule);
-  void ValidateFilenameAndHash(base::Value* value);
+  void ValidateFilenameMappedAttributes(base::Value* value);
   void ValidateField(base::Value* value,
                      const std::string& field_key,
                      const absl::optional<std::string>& expected_value);
@@ -154,22 +169,23 @@ class EventReportValidator {
   std::string event_key_;
   std::string url_;
   absl::optional<std::string> trigger_ = absl::nullopt;
-  absl::optional<enterprise_connectors::ContentAnalysisResponse::Result>
-      dlp_verdict_ = absl::nullopt;
   absl::optional<std::string> threat_type_ = absl::nullopt;
   absl::optional<std::string> unscanned_reason_ = absl::nullopt;
   absl::optional<int> content_size_ = absl::nullopt;
   const std::set<std::string>* mimetypes_ = nullptr;
-  absl::optional<std::string> result_ = absl::nullopt;
   std::string username_;
-  absl::optional<std::string> scan_id_ = absl::nullopt;
   absl::optional<bool> is_federated_ = absl::nullopt;
   absl::optional<std::string> federated_origin_ = absl::nullopt;
 
   // When multiple files generate events, we don't necessarily know in which
-  // order they will be reported. As such, we use a map to ensure all of them
+  // order they will be reported. As such, we use maps to ensure all of them
   // are called as expected.
+  base::flat_map<std::string,
+                 enterprise_connectors::ContentAnalysisResponse::Result>
+      dlp_verdicts_;
+  base::flat_map<std::string, std::string> results_;
   base::flat_map<std::string, std::string> filenames_and_hashes_;
+  base::flat_map<std::string, std::string> scan_ids_;
 
   base::RepeatingClosure done_closure_;
 };

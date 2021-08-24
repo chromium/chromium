@@ -155,13 +155,15 @@ TriggeredRule::Action GetHighestPrecedenceAction(
 // Struct used to persist metadata about a file in base::SupportsUserData
 // through ScanResult.
 struct FileMetadata {
-  explicit FileMetadata(const std::string& filename,
-                        const std::string& sha256,
-                        const std::string& mime_type,
-                        int64_t size,
-                        const ContentAnalysisResponse& scan_response);
+  FileMetadata(
+      const std::string& filename,
+      const std::string& sha256,
+      const std::string& mime_type,
+      int64_t size,
+      const ContentAnalysisResponse& scan_response = ContentAnalysisResponse());
   FileMetadata(FileMetadata&&);
-  FileMetadata(const FileMetadata&) = delete;
+  FileMetadata(const FileMetadata&);
+  FileMetadata& operator=(const FileMetadata&);
   ~FileMetadata();
 
   std::string filename;
