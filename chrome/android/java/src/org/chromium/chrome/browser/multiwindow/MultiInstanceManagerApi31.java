@@ -17,6 +17,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -47,7 +48,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-class MultiInstanceManagerApi31 extends MultiInstanceManager {
+class MultiInstanceManagerApi31 extends MultiInstanceManager implements ActivityStateListener {
     public static final int INVALID_INSTANCE_ID = MultiWindowUtils.INVALID_INSTANCE_ID;
     public static final int INVALID_TASK_ID = MultiWindowUtils.INVALID_TASK_ID;
 
@@ -58,7 +59,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
     private ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
 
     // Instance ID for the activity associated with this manager.
-    private int mInstanceId;
+    private int mInstanceId = INVALID_INSTANCE_ID;
 
     private TabModelSelectorTabModelObserver mTabModelObserver;
     private Tab mActiveTab;
@@ -95,7 +96,9 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
                     new LargeIconBridge(getProfile()),
                     (item) -> openInstance(item.instanceId, item.taskId),
                     (item) -> closeInstance(item.instanceId, item.taskId),
-                    this::openNewWindow, info.size() < MultiWindowUtils.getMaxInstances(), info);
+                    () -> openNewWindow("Android.WindowManager.NewWindow"),
+                    info.size() < MultiWindowUtils.getMaxInstances(), info);
+            RecordUserAction.record("MobileMenuWindowManager");
             return true;
         }
         // clang-format on
@@ -139,7 +142,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
     }
 
     @Override
-    protected void openNewWindow() {
+    protected void openNewWindow(String umaAction) {
         Intent intent = new Intent(mActivity, ChromeTabbedActivity.class);
         onMultiInstanceModeStarted();
         MultiWindowUtils.setOpenInOtherWindowIntentExtras(
@@ -156,7 +159,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
         } else {
             mActivity.startActivity(intent);
         }
-        RecordUserAction.record("MobileMenuNewWindow");
+        RecordUserAction.record(umaAction);
     }
 
     @Override
@@ -386,6 +389,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
         return ChromePreferenceKeys.MULTI_INSTANCE_URL.createKey(String.valueOf(index));
     }
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     static String readUrl(int index) {
         return SharedPreferencesManager.getInstance().readString(urlKey(index), null);
     }
@@ -436,6 +440,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
         return SharedPreferencesManager.getInstance().readInt(incognitoTabCountKey(index));
     }
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     static void writeTabCount(int index, TabModelSelector selector) {
         SharedPreferencesManager prefs = SharedPreferencesManager.getInstance();
         int tabCount = selector.getModel(false).getCount();
@@ -472,6 +477,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
      * @param taskId ID of the task the instance resides in.
      */
     private void openInstance(int instanceId, int taskId) {
+        RecordUserAction.record("Android.WindowManager.SelectWindow");
         if (taskId != INVALID_TASK_ID) {
             // Just bring the task foreground if it is alive. This either completes the opening
             // of the instance or leads to creating a new activity.
@@ -538,6 +544,14 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
     public void onResumeWithNative() {
         super.onResumeWithNative();
         writeLastAccessedTime(mInstanceId);
+    }
+
+    @Override
+    public void onActivityStateChange(Activity activity, int newState) {
+        if (!MultiWindowUtils.isMultiInstanceApi31Enabled()) return;
+        // TODO: Update UMA metrics:
+        //       - instance/task count
+        //       - multi-instance session (enter/exit/duration)
     }
 
     @VisibleForTesting
