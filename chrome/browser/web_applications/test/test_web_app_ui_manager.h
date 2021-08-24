@@ -18,7 +18,7 @@ class TestWebAppUiManager : public WebAppUiManager {
   TestWebAppUiManager& operator=(const TestWebAppUiManager&) = delete;
   ~TestWebAppUiManager() override;
 
-  void SetSubsystems(AppRegistryController* app_registry_controller,
+  void SetSubsystems(WebAppSyncBridge* sync_bridge,
                      OsIntegrationManager* os_integration_manager) override;
   void Start() override;
   void Shutdown() override;

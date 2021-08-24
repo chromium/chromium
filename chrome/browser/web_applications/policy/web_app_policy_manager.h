@@ -30,7 +30,7 @@ class PrefRegistrySyncable;
 
 namespace web_app {
 
-class AppRegistryController;
+class WebAppSyncBridge;
 class SystemWebAppManager;
 class OsIntegrationManager;
 
@@ -55,7 +55,7 @@ class WebAppPolicyManager {
   void SetSubsystems(
       ExternallyManagedAppManager* externally_managed_app_manager,
       WebAppRegistrar* app_registrar,
-      AppRegistryController* app_registry_controller,
+      WebAppSyncBridge* sync_bridge,
       SystemWebAppManager* web_app_manager,
       OsIntegrationManager* os_integration_manager);
 
@@ -66,7 +66,7 @@ class WebAppPolicyManager {
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   // Used for handling SystemFeaturesDisableList policy. Checks if the app is
-  // disabled and notifies app_registry_controller_ about the current app state.
+  // disabled and notifies sync_bridge_ about the current app state.
   void OnDisableListPolicyChanged();
 
   // Gets system web apps disabled by SystemFeaturesDisableList policy.
@@ -131,7 +131,7 @@ class WebAppPolicyManager {
   // (owned by WebAppProvider).
   ExternallyManagedAppManager* externally_managed_app_manager_ = nullptr;
   WebAppRegistrar* app_registrar_ = nullptr;
-  AppRegistryController* app_registry_controller_ = nullptr;
+  WebAppSyncBridge* sync_bridge_ = nullptr;
   SystemWebAppManager* web_app_manager_ = nullptr;
   OsIntegrationManager* os_integration_manager_ = nullptr;
 

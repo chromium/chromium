@@ -27,7 +27,7 @@ enum class WebappUninstallSource;
 
 namespace web_app {
 
-class AppRegistryController;
+class WebAppSyncBridge;
 class FileHandlersPermissionHelper;
 class WebAppUiManager;
 class WebApp;
@@ -132,7 +132,7 @@ class WebAppInstallFinalizer {
 
   void SetSubsystems(WebAppRegistrar* registrar,
                      WebAppUiManager* ui_manager,
-                     AppRegistryController* registry_controller,
+                     WebAppSyncBridge* sync_bridge,
                      OsIntegrationManager* os_integration_manager);
 
   virtual void SetRemoveSourceCallbackForTesting(
@@ -149,7 +149,8 @@ class WebAppInstallFinalizer {
   // FileHandlersPermissionHelper uses these getters.
   WebAppRegistrar& registrar() const { return *registrar_; }
 
-  AppRegistryController& registry_controller() { return *registry_controller_; }
+  // TODO(crbug.com/1225132): Rename this to `sync_bridge()`.
+  WebAppSyncBridge& registry_controller() { return *sync_bridge_; }
   OsIntegrationManager& os_integration_manager() {
     return *os_integration_manager_;
   }
@@ -204,7 +205,7 @@ class WebAppInstallFinalizer {
                           OsHooksErrors errors);
 
   WebAppRegistrar* registrar_ = nullptr;
-  AppRegistryController* registry_controller_ = nullptr;
+  WebAppSyncBridge* sync_bridge_ = nullptr;
   WebAppUiManager* ui_manager_ = nullptr;
   OsIntegrationManager* os_integration_manager_ = nullptr;
 

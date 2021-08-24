@@ -23,7 +23,7 @@ class WebContents;
 
 namespace web_app {
 
-class AppRegistryController;
+class WebAppSyncBridge;
 // WebAppUiManagerImpl can be used only in UI code.
 class WebAppUiManagerImpl;
 
@@ -35,7 +35,7 @@ class WebAppUiManager {
 
   virtual ~WebAppUiManager() = default;
 
-  virtual void SetSubsystems(AppRegistryController* app_registry_controller,
+  virtual void SetSubsystems(WebAppSyncBridge* sync_bridge,
                              OsIntegrationManager* os_integration_manager) = 0;
   virtual void Start() = 0;
   virtual void Shutdown() = 0;

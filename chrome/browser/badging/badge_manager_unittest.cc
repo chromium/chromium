@@ -85,8 +85,9 @@ class BadgeManagerUnittest : public ::testing::Test {
       Profile* profile,
       std::vector<web_app::AppId>& updated_apps) {
     auto* provider = web_app::TestWebAppProvider::Get(profile);
-    std::unique_ptr<web_app::AppRegistryController> test_registry_controller(
-        new TestBadgingAppRegistryController(profile, updated_apps));
+    auto test_registry_controller =
+        std::make_unique<TestBadgingAppRegistryController>(profile,
+                                                           updated_apps);
     provider->SetRegistryController(std::move(test_registry_controller));
     provider->Start();
   }

@@ -15,8 +15,6 @@ group("web_app_test_group") {
 source_set("web_applications") {
   sources = [
     "components/app_registrar_observer.h",
-    "components/app_registry_controller.cc",
-    "components/app_registry_controller.h",
     "components/external_install_options.cc",
     "components/external_install_options.h",
     "components/externally_installed_web_app_prefs.h",

@@ -28,7 +28,7 @@ class PrefRegistrySyncable;
 namespace web_app {
 
 // Forward declarations of generalized interfaces.
-class AppRegistryController;
+class WebAppSyncBridge;
 class WebAppIconManager;
 class PreinstalledWebAppManager;
 class WebAppInstallFinalizer;
@@ -104,7 +104,8 @@ class WebAppProvider : public KeyedService {
   // The app registry model.
   WebAppRegistrar& registrar();
   // The app registry controller.
-  AppRegistryController& registry_controller();
+  // TODO(crbug.com/1225132): Rename this to `sync_bridge()`.
+  WebAppSyncBridge& registry_controller();
   // UIs can use WebAppInstallManager for user-initiated Web Apps install.
   WebAppInstallManager& install_manager();
   // Implements persistence for Web Apps install.
@@ -157,9 +158,9 @@ class WebAppProvider : public KeyedService {
   // Wire together subsystems but do not start them (yet).
   void ConnectSubsystems();
 
-  // Start registry controller. All other subsystems depend on it.
-  void StartRegistryController();
-  void OnRegistryControllerReady();
+  // Start sync bridge. All other subsystems depend on it.
+  void StartSyncBridge();
+  void OnSyncBridgeReady();
 
   void CheckIsConnected() const;
 
@@ -169,7 +170,7 @@ class WebAppProvider : public KeyedService {
 
   // Generalized subsystems:
   std::unique_ptr<WebAppRegistrar> registrar_;
-  std::unique_ptr<AppRegistryController> registry_controller_;
+  std::unique_ptr<WebAppSyncBridge> sync_bridge_;
   std::unique_ptr<PreinstalledWebAppManager> preinstalled_web_app_manager_;
   std::unique_ptr<WebAppIconManager> icon_manager_;
   std::unique_ptr<WebAppInstallFinalizer> install_finalizer_;

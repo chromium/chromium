@@ -18,7 +18,7 @@ TestWebAppUiManager::TestWebAppUiManager() = default;
 TestWebAppUiManager::~TestWebAppUiManager() = default;
 
 void TestWebAppUiManager::SetSubsystems(
-    AppRegistryController* app_registry_controller,
+    WebAppSyncBridge* sync_bridge,
     OsIntegrationManager* os_integration_manager) {}
 
 void TestWebAppUiManager::Start() {}

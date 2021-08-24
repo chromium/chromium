@@ -8,9 +8,9 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "chrome/browser/web_applications/components/app_registry_controller.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 class Profile;
@@ -55,7 +55,7 @@ class TestWebAppProvider : public WebAppProvider {
   void SetRunSubsystemStartupTasks(bool run_subsystem_startup_tasks);
 
   void SetRegistrar(std::unique_ptr<WebAppRegistrar> registrar);
-  void SetRegistryController(std::unique_ptr<AppRegistryController> controller);
+  void SetRegistryController(std::unique_ptr<WebAppSyncBridge> sync_bridge);
   void SetOsIntegrationManager(
       std::unique_ptr<OsIntegrationManager> os_integration_manager);
   void SetInstallManager(std::unique_ptr<WebAppInstallManager> install_manager);

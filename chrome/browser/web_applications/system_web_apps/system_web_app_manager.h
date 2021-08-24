@@ -49,7 +49,7 @@ namespace web_app {
 
 class WebAppUiManager;
 class OsIntegrationManager;
-class AppRegistryController;
+class WebAppSyncBridge;
 class WebAppPolicyManager;
 
 using SystemAppDelegateMap =
@@ -84,7 +84,7 @@ class SystemWebAppManager {
   void SetSubsystems(
       ExternallyManagedAppManager* externally_managed_app_manager,
       WebAppRegistrar* registrar,
-      AppRegistryController* registry_controller,
+      WebAppSyncBridge* sync_bridge,
       WebAppUiManager* ui_manager,
       OsIntegrationManager* os_integration_manager,
       WebAppPolicyManager* web_app_policy_manager);
@@ -254,7 +254,7 @@ class SystemWebAppManager {
 
   WebAppRegistrar* registrar_ = nullptr;
 
-  AppRegistryController* registry_controller_ = nullptr;
+  WebAppSyncBridge* sync_bridge_ = nullptr;
 
   WebAppUiManager* ui_manager_ = nullptr;
 

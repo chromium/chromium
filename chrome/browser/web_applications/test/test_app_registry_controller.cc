@@ -19,7 +19,10 @@ TestAppRegistryController::TestAppRegistryController(
     Profile* profile,
     std::unique_ptr<TestWebAppDatabaseFactory> database_factory,
     std::unique_ptr<WebAppRegistrarMutable> registrar)
-    : AppRegistryController(profile),
+    : WebAppSyncBridge(profile,
+                       database_factory.get(),
+                       registrar.get(),
+                       nullptr),
       database_factory_(std::move(database_factory)),
       registrar_(std::move(registrar)) {}
 

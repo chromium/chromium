@@ -26,7 +26,6 @@
 #include "chrome/browser/ash/web_applications/chrome_camera_app_ui_constants.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/components/app_registry_controller.h"
 #include "chrome/browser/web_applications/components/external_install_options.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
@@ -39,6 +38,7 @@
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -268,13 +268,13 @@ void SystemWebAppManager::Shutdown() {
 void SystemWebAppManager::SetSubsystems(
     ExternallyManagedAppManager* externally_managed_app_manager,
     WebAppRegistrar* registrar,
-    AppRegistryController* registry_controller,
+    WebAppSyncBridge* sync_bridge,
     WebAppUiManager* ui_manager,
     OsIntegrationManager* os_integration_manager,
     WebAppPolicyManager* web_app_policy_manager) {
   externally_managed_app_manager_ = externally_managed_app_manager;
   registrar_ = registrar;
-  registry_controller_ = registry_controller;
+  sync_bridge_ = sync_bridge;
   ui_manager_ = ui_manager;
   os_integration_manager_ = os_integration_manager;
   web_app_policy_manager_ = web_app_policy_manager;

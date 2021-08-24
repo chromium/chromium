@@ -9,10 +9,10 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/web_applications/components/app_registry_controller.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/model_type_sync_bridge.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -44,10 +44,18 @@ class WebAppDatabase;
 class WebAppRegistryUpdate;
 struct RegistryUpdateData;
 
-// The sync bridge exclusively owns ModelTypeChangeProcessor and WebAppDatabase
-// (the storage).
-class WebAppSyncBridge : public AppRegistryController,
-                         public syncer::ModelTypeSyncBridge {
+// A unified sync and storage controller.
+//
+// While WebAppRegistrar is a read-only model, WebAppSyncBridge is a
+// controller for that model. WebAppSyncBridge is responsible for:
+// - Registry initialization (reading model from a persistent storage like
+// LevelDb or prefs).
+// - Writing all the registry updates to a persistent store and sync.
+//
+// WebAppSyncBridge is the key class to support integration with Unified Sync
+// and Storage (USS) system. The sync bridge exclusively owns
+// ModelTypeChangeProcessor and WebAppDatabase (the storage).
+class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
  public:
   WebAppSyncBridge(Profile* profile,
                    AbstractWebAppDatabaseFactory* database_factory,
@@ -71,28 +79,43 @@ class WebAppSyncBridge : public AppRegistryController,
   void CommitUpdate(std::unique_ptr<WebAppRegistryUpdate> update,
                     CommitCallback callback);
 
-  // AppRegistryController:
-  void Init(base::OnceClosure callback) override;
-  void SetAppUserDisplayMode(const AppId& app_id,
-                             DisplayMode user_display_mode,
-                             bool is_user_action) override;
-  void SetAppIsDisabled(const AppId& app_id, bool is_disabled) override;
-  void UpdateAppsDisableMode() override;
-  void SetExperimentalTabbedWindowMode(const AppId& app_id,
-                                       bool enabled,
-                                       bool is_user_action) override;
-  void SetAppIsLocallyInstalled(const AppId& app_id,
-                                bool is_locally_installed) override;
-  void SetAppLastBadgingTime(const AppId& app_id,
-                             const base::Time& time) override;
-  void SetAppLastLaunchTime(const AppId& app_id,
-                            const base::Time& time) override;
-  void SetAppInstallTime(const AppId& app_id, const base::Time& time) override;
-  void SetAppRunOnOsLoginMode(const AppId& app_id,
-                              RunOnOsLoginMode mode) override;
-  void SetAppWindowControlsOverlayEnabled(const AppId& app_id,
-                                          bool enabled) override;
-  WebAppSyncBridge* AsWebAppSyncBridge() override;
+  // All methods below are |virtual| for testing.
+
+  virtual void Init(base::OnceClosure callback);
+
+  virtual void SetAppUserDisplayMode(const AppId& app_id,
+                                     DisplayMode user_display_mode,
+                                     bool is_user_action);
+
+  virtual void SetAppIsDisabled(const AppId& app_id, bool is_disabled);
+
+  virtual void UpdateAppsDisableMode();
+
+  // TODO(crbug.com/897314): Finish experiment by legitimising it as a
+  // DisplayMode or removing entirely.
+  virtual void SetExperimentalTabbedWindowMode(const AppId& app_id,
+                                               bool enabled,
+                                               bool is_user_action);
+
+  virtual void SetAppIsLocallyInstalled(const AppId& app_id,
+                                        bool is_locally_installed);
+
+  virtual void SetAppLastBadgingTime(const AppId& app_id,
+                                     const base::Time& time);
+
+  virtual void SetAppLastLaunchTime(const AppId& app_id,
+                                    const base::Time& time);
+
+  virtual void SetAppInstallTime(const AppId& app_id, const base::Time& time);
+
+  virtual void SetAppRunOnOsLoginMode(const AppId& app_id,
+                                      RunOnOsLoginMode mode);
+
+  virtual void SetAppWindowControlsOverlayEnabled(const AppId& app_id,
+                                                  bool enabled);
+
+  // TODO(crbug.com/1225132): Remove AsWebAppSyncBridge.
+  virtual WebAppSyncBridge* AsWebAppSyncBridge();
 
   // These methods are used by extensions::AppSorting, which manages the sorting
   // of web apps on chrome://apps.
@@ -156,6 +179,8 @@ class WebAppSyncBridge : public AppRegistryController,
 
   void MaybeInstallAppsFromSyncAndPendingInstallation();
 
+  Profile* const profile_;
+
   std::unique_ptr<WebAppDatabase> database_;
   WebAppRegistrarMutable* const registrar_;
   SyncInstallDelegate* const install_delegate_;
@@ -163,7 +188,6 @@ class WebAppSyncBridge : public AppRegistryController,
   bool is_in_update_ = false;
 
   base::WeakPtrFactory<WebAppSyncBridge> weak_ptr_factory_{this};
-
 };
 
 std::unique_ptr<syncer::EntityData> CreateSyncEntityData(const WebApp& app);

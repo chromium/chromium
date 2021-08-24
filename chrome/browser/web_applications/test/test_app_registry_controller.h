@@ -5,14 +5,15 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_TEST_TEST_APP_REGISTRY_CONTROLLER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_TEST_TEST_APP_REGISTRY_CONTROLLER_H_
 
-#include "chrome/browser/web_applications/components/app_registry_controller.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 
 namespace web_app {
 
 class TestWebAppDatabaseFactory;
 class WebAppRegistrarMutable;
 
-class TestAppRegistryController : public AppRegistryController {
+// TODO(crbug.com/1225132): Retire TestAppRegistryController.
+class TestAppRegistryController : public WebAppSyncBridge {
  public:
   explicit TestAppRegistryController(Profile* profile);
 
@@ -23,7 +24,7 @@ class TestAppRegistryController : public AppRegistryController {
 
   ~TestAppRegistryController() override;
 
-  // AppRegistryController:
+  // WebAppSyncBridge:
   void Init(base::OnceClosure callback) override;
   void SetAppUserDisplayMode(const AppId& app_id,
                              DisplayMode display_mode,

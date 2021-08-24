@@ -131,9 +131,9 @@ WebAppRegistrar& WebAppProvider::registrar() {
   return *registrar_;
 }
 
-AppRegistryController& WebAppProvider::registry_controller() {
+WebAppSyncBridge& WebAppProvider::registry_controller() {
   CheckIsConnected();
-  return *registry_controller_;
+  return *sync_bridge_;
 }
 
 WebAppInstallManager& WebAppProvider::install_manager() {
@@ -212,7 +212,7 @@ void WebAppProvider::StartImpl() {
 }
 
 void WebAppProvider::OnExtensionSystemReady() {
-  StartRegistryController();
+  StartSyncBridge();
 }
 
 void WebAppProvider::CreateCommonSubsystems(Profile* profile) {
@@ -280,7 +280,7 @@ void WebAppProvider::CreateWebAppsSubsystems(Profile* profile) {
 
   // Upcast to unified subsystem types:
   registrar_ = std::move(registrar);
-  registry_controller_ = std::move(sync_bridge);
+  sync_bridge_ = std::move(sync_bridge);
   icon_manager_ = std::move(icon_manager);
 }
 
@@ -288,7 +288,7 @@ void WebAppProvider::ConnectSubsystems() {
   DCHECK(!started_);
 
   install_finalizer_->SetSubsystems(registrar_.get(), ui_manager_.get(),
-                                    registry_controller_.get(),
+                                    sync_bridge_.get(),
                                     os_integration_manager_.get());
   install_manager_->SetSubsystems(registrar_.get(),
                                   os_integration_manager_.get(),
@@ -304,14 +304,13 @@ void WebAppProvider::ConnectSubsystems() {
       registrar_.get(), externally_managed_app_manager_.get());
   system_web_app_manager_->SetSubsystems(
       externally_managed_app_manager_.get(), registrar_.get(),
-      registry_controller_.get(), ui_manager_.get(),
-      os_integration_manager_.get(), web_app_policy_manager_.get());
-  web_app_policy_manager_->SetSubsystems(
-      externally_managed_app_manager_.get(), registrar_.get(),
-      registry_controller_.get(), system_web_app_manager_.get(),
-      os_integration_manager_.get());
-  ui_manager_->SetSubsystems(registry_controller_.get(),
-                             os_integration_manager_.get());
+      sync_bridge_.get(), ui_manager_.get(), os_integration_manager_.get(),
+      web_app_policy_manager_.get());
+  web_app_policy_manager_->SetSubsystems(externally_managed_app_manager_.get(),
+                                         registrar_.get(), sync_bridge_.get(),
+                                         system_web_app_manager_.get(),
+                                         os_integration_manager_.get());
+  ui_manager_->SetSubsystems(sync_bridge_.get(), os_integration_manager_.get());
   os_integration_manager_->SetSubsystems(registrar_.get(), ui_manager_.get(),
                                          icon_manager_.get());
   registrar_->SetSubsystems(os_integration_manager_.get());
@@ -319,13 +318,12 @@ void WebAppProvider::ConnectSubsystems() {
   connected_ = true;
 }
 
-void WebAppProvider::StartRegistryController() {
-  registry_controller_->Init(
-      base::BindOnce(&WebAppProvider::OnRegistryControllerReady,
-                     weak_ptr_factory_.GetWeakPtr()));
+void WebAppProvider::StartSyncBridge() {
+  sync_bridge_->Init(base::BindOnce(&WebAppProvider::OnSyncBridgeReady,
+                                    weak_ptr_factory_.GetWeakPtr()));
 }
 
-void WebAppProvider::OnRegistryControllerReady() {
+void WebAppProvider::OnSyncBridgeReady() {
   DCHECK(!on_registry_ready_.is_signaled());
 
   registrar_->Start();

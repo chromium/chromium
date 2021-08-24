@@ -17,13 +17,13 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
-#include "chrome/browser/web_applications/components/app_registry_controller.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_app_prefs_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/test/browser_test.h"
@@ -63,7 +63,7 @@ class CreateShortcutBrowserTest : public WebAppControllerBrowserTest {
     return provider->registrar();
   }
 
-  AppRegistryController& registry_controller() {
+  WebAppSyncBridge& sync_bridge() {
     auto* provider = WebAppProvider::GetForTest(profile());
     CHECK(provider);
     return provider->registry_controller();
@@ -127,8 +127,8 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
   NavigateToURLAndWait(browser(), GetInstallableAppURL());
   AppId app_id = InstallShortcutAppForCurrentUrl();
   // Change launch container to open in window.
-  registry_controller().SetAppUserDisplayMode(app_id, DisplayMode::kStandalone,
-                                              /*is_user_action=*/false);
+  sync_bridge().SetAppUserDisplayMode(app_id, DisplayMode::kStandalone,
+                                      /*is_user_action=*/false);
 
   Browser* new_browser =
       NavigateInNewWindowAndAwaitInstallabilityCheck(GetInstallableAppURL());

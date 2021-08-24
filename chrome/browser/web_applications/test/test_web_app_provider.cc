@@ -69,9 +69,9 @@ void TestWebAppProvider::SetRegistrar(
 }
 
 void TestWebAppProvider::SetRegistryController(
-    std::unique_ptr<AppRegistryController> controller) {
+    std::unique_ptr<WebAppSyncBridge> sync_bridge) {
   CheckNotStarted();
-  registry_controller_ = std::move(controller);
+  sync_bridge_ = std::move(sync_bridge);
 }
 
 void TestWebAppProvider::SetInstallManager(

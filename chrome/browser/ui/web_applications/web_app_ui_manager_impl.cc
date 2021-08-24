@@ -24,11 +24,11 @@
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_metrics.h"
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals_source.h"
-#include "chrome/browser/web_applications/components/app_registry_controller.h"
 #include "chrome/browser/web_applications/components/web_app_callback_app_identity.h"
 #include "chrome/browser/web_applications/extensions/web_app_extension_shortcut.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
@@ -109,9 +109,9 @@ WebAppUiManagerImpl::WebAppUiManagerImpl(Profile* profile)
 WebAppUiManagerImpl::~WebAppUiManagerImpl() = default;
 
 void WebAppUiManagerImpl::SetSubsystems(
-    AppRegistryController* app_registry_controller,
+    WebAppSyncBridge* sync_bridge,
     OsIntegrationManager* os_integration_manager) {
-  app_registry_controller_ = app_registry_controller;
+  sync_bridge_ = sync_bridge;
   os_integration_manager_ = os_integration_manager;
 }
 
@@ -215,13 +215,13 @@ bool WebAppUiManagerImpl::UninstallAndReplaceIfExists(
             extensions::ExtensionPrefs::Get(profile_), from_extension)) {
           case extensions::LaunchContainer::kLaunchContainerWindow:
           case extensions::LaunchContainer::kLaunchContainerPanelDeprecated:
-            app_registry_controller_->SetAppUserDisplayMode(
+            sync_bridge_->SetAppUserDisplayMode(
                 to_app, DisplayMode::kStandalone, /*is_user_action=*/false);
             break;
           case extensions::LaunchContainer::kLaunchContainerTab:
           case extensions::LaunchContainer::kLaunchContainerNone:
-            app_registry_controller_->SetAppUserDisplayMode(
-                to_app, DisplayMode::kBrowser, /*is_user_action=*/false);
+            sync_bridge_->SetAppUserDisplayMode(to_app, DisplayMode::kBrowser,
+                                                /*is_user_action=*/false);
             break;
         }
         has_migrated = true;

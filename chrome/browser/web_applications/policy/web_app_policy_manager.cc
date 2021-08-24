@@ -15,7 +15,6 @@
 #include "base/syslog_logging.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/components/app_registry_controller.h"
 #include "chrome/browser/web_applications/components/external_install_options.h"
 #include "chrome/browser/web_applications/components/policy/web_app_policy_constants.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
@@ -24,6 +23,7 @@
 #include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -99,17 +99,17 @@ WebAppPolicyManager::~WebAppPolicyManager() = default;
 void WebAppPolicyManager::SetSubsystems(
     ExternallyManagedAppManager* externally_managed_app_manager,
     WebAppRegistrar* app_registrar,
-    AppRegistryController* app_registry_controller,
+    WebAppSyncBridge* sync_bridge,
     SystemWebAppManager* web_app_manager,
     OsIntegrationManager* os_integration_manager) {
   DCHECK(externally_managed_app_manager);
   DCHECK(app_registrar);
-  DCHECK(app_registry_controller);
+  DCHECK(sync_bridge);
   DCHECK(os_integration_manager);
 
   externally_managed_app_manager_ = externally_managed_app_manager;
   app_registrar_ = app_registrar;
-  app_registry_controller_ = app_registry_controller;
+  sync_bridge_ = sync_bridge;
   web_app_manager_ = web_app_manager;
   os_integration_manager_ = os_integration_manager;
 }
@@ -181,7 +181,7 @@ void WebAppPolicyManager::OnDisableListPolicyChanged() {
   std::vector<web_app::AppId> app_ids = app_registrar_->GetAppIds();
   for (const auto& id : app_ids) {
     const bool is_disabled = base::Contains(disabled_web_apps_, id);
-    app_registry_controller_->SetAppIsDisabled(id, is_disabled);
+    sync_bridge_->SetAppIsDisabled(id, is_disabled);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
@@ -312,15 +312,13 @@ void WebAppPolicyManager::ApplyPolicySettings() {
     RunOnOsLoginPolicy policy =
         GetUrlRunOnOsLoginPolicy(policy_installed_apps_[app_id]);
     if (policy == RunOnOsLoginPolicy::kBlocked) {
-      app_registry_controller_->SetAppRunOnOsLoginMode(
-          app_id, RunOnOsLoginMode::kNotRun);
+      sync_bridge_->SetAppRunOnOsLoginMode(app_id, RunOnOsLoginMode::kNotRun);
       OsHooksOptions os_hooks;
       os_hooks[OsHookType::kRunOnOsLogin] = true;
       os_integration_manager_->UninstallOsHooks(app_id, os_hooks,
                                                 base::DoNothing());
     } else if (policy == RunOnOsLoginPolicy::kRunWindowed) {
-      app_registry_controller_->SetAppRunOnOsLoginMode(
-          app_id, RunOnOsLoginMode::kWindowed);
+      sync_bridge_->SetAppRunOnOsLoginMode(app_id, RunOnOsLoginMode::kWindowed);
       InstallOsHooksOptions options;
       options.os_hooks[OsHookType::kRunOnOsLogin] = true;
       os_integration_manager_->InstallOsHooks(app_id, base::DoNothing(),
@@ -433,7 +431,7 @@ void WebAppPolicyManager::ObserveDisabledSystemFeaturesPolicy() {
 
 void WebAppPolicyManager::OnDisableModePolicyChanged() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  app_registry_controller_->UpdateAppsDisableMode();
+  sync_bridge_->UpdateAppsDisableMode();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 

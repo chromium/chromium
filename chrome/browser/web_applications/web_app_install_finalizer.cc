@@ -440,11 +440,11 @@ void WebAppInstallFinalizer::SetRemoveSourceCallbackForTesting(
 void WebAppInstallFinalizer::SetSubsystems(
     WebAppRegistrar* registrar,
     WebAppUiManager* ui_manager,
-    AppRegistryController* registry_controller,
+    WebAppSyncBridge* sync_bridge,
     OsIntegrationManager* os_integration_manager) {
   registrar_ = registrar;
   ui_manager_ = ui_manager;
-  registry_controller_ = registry_controller;
+  sync_bridge_ = sync_bridge;
   os_integration_manager_ = os_integration_manager;
 }
 

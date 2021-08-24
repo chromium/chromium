@@ -14,10 +14,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/web_applications/components/app_registry_controller.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -43,7 +43,7 @@ std::unique_ptr<WebAppMover> WebAppMover::CreateIfNeeded(
     WebAppRegistrar* registrar,
     WebAppInstallFinalizer* install_finalizer,
     WebAppInstallManager* install_manager,
-    AppRegistryController* controller) {
+    WebAppSyncBridge* sync_bridge) {
   if (g_disabled_for_testing)
     return nullptr;
 
@@ -104,7 +104,7 @@ std::unique_ptr<WebAppMover> WebAppMover::CreateIfNeeded(
   }
 
   return std::make_unique<WebAppMover>(
-      profile, registrar, install_finalizer, install_manager, controller,
+      profile, registrar, install_finalizer, install_manager, sync_bridge,
       uninstall_mode, uninstall_prefix_or_pattern, install_url);
 }
 
@@ -124,7 +124,7 @@ WebAppMover::WebAppMover(Profile* profile,
                          WebAppRegistrar* registrar,
                          WebAppInstallFinalizer* install_finalizer,
                          WebAppInstallManager* install_manager,
-                         AppRegistryController* controller,
+                         WebAppSyncBridge* sync_bridge,
                          UninstallMode uninstall_mode,
                          std::string uninstall_url_prefix_or_pattern,
                          const GURL& install_url)
@@ -132,7 +132,7 @@ WebAppMover::WebAppMover(Profile* profile,
       registrar_(registrar),
       install_finalizer_(install_finalizer),
       install_manager_(install_manager),
-      controller_(controller),
+      sync_bridge_(sync_bridge),
       uninstall_mode_(uninstall_mode),
       uninstall_url_prefix_or_pattern_(uninstall_url_prefix_or_pattern),
       install_url_(install_url) {}
@@ -327,7 +327,7 @@ void WebAppMover::OnInstallCompleted(
     InstallResultCode code) {
   if (code == InstallResultCode::kSuccessNewInstall) {
     if (new_app_open_as_window_)
-      controller_->SetAppUserDisplayMode(id, DisplayMode::kStandalone, false);
+      sync_bridge_->SetAppUserDisplayMode(id, DisplayMode::kStandalone, false);
     RecordResults(WebAppMoverResult::kSuccess);
   } else {
     LOG(WARNING) << "Installation in app move operation failed: " << code;
