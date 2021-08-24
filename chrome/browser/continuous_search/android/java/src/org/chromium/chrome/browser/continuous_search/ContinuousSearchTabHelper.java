@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.continuous_search;
 import org.chromium.base.FeatureList;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /**
  * Bootstraps continuous search by creating appropriate observers and user data objects.
@@ -21,7 +22,10 @@ public class ContinuousSearchTabHelper {
     public static void createForTab(Tab tab) {
         if (!FeatureList.isInitialized()) return;
 
-        if (tab.isIncognito()) return;
+        if (tab == null || DeviceFormFactor.isNonMultiDisplayContextOnTablet(tab.getContext())
+                || tab.isIncognito()) {
+            return;
+        }
 
         new BackNavigationTabObserver(tab);
 
