@@ -72,38 +72,47 @@ MUAwareTaskBasedBackend::MUAwareTaskBasedBackend(
 MUAwareTaskBasedBackend::~MUAwareTaskBasedBackend() = default;
 
 bool MUAwareTaskBasedBackend::LimitReached() {
-  base::AutoLock guard(scheduler_lock_);
-  // At this point we reached a limit where the schedule generally wants to
-  // trigger a scan.
-  if (hard_limit_) {
-    // The hard limit is not reset, indicating that the scheduler only hit the
-    // soft limit. See inlined comments for the algorithm.
-    auto& data = GetQuarantineData();
-    PA_DCHECK(hard_limit_ >= QuarantineData::kQuarantineSizeMinLimit);
-    // 1. Update the limit to the hard limit which will always immediately
+  bool should_reschedule = false;
+  base::TimeDelta reschedule_delay;
+  {
+    base::AutoLock guard(scheduler_lock_);
+    // At this point we reached a limit where the schedule generally wants to
     // trigger a scan.
-    data.size_limit.store(hard_limit_, std::memory_order_relaxed);
-    hard_limit_ = 0;
+    if (hard_limit_) {
+      // The hard limit is not reset, indicating that the scheduler only hit the
+      // soft limit. See inlined comments for the algorithm.
+      auto& data = GetQuarantineData();
+      PA_DCHECK(hard_limit_ >= QuarantineData::kQuarantineSizeMinLimit);
+      // 1. Update the limit to the hard limit which will always immediately
+      // trigger a scan.
+      data.size_limit.store(hard_limit_, std::memory_order_relaxed);
+      hard_limit_ = 0;
 
-    // 2. Unlikely case: If also above hard limit, start scan right away.
-    if (UNLIKELY(data.current_size.load(std::memory_order_relaxed) >
-                 data.size_limit.load(std::memory_order_relaxed))) {
-      return true;
+      // 2. Unlikely case: If also above hard limit, start scan right away.
+      if (UNLIKELY(data.current_size.load(std::memory_order_relaxed) >
+                   data.size_limit.load(std::memory_order_relaxed))) {
+        return true;
+      }
+
+      // 3. Otherwise, the soft limit would trigger a scan immediately if the
+      // mutator utilization requirement is satisfied.
+      reschedule_delay = earliest_next_scan_time_ - base::TimeTicks::Now();
+      if (reschedule_delay <= TimeDelta()) {
+        // May invoke scan immediately.
+        return true;
+      }
+
+      VLOG(3) << "Rescheduling scan with delay: "
+              << reschedule_delay.InMillisecondsF() << " ms";
+      // 4. If the MU requirement is not satisfied, schedule a delayed scan to
+      // the time instance when MU is satisfied.
+      should_reschedule = true;
     }
-
-    // 3. Otherwise, the soft limit would trigger a scan immediately if the
-    // mutator utilization requirement is satisfied.
-    const auto delay = earliest_next_scan_time_ - base::TimeTicks::Now();
-    if (delay <= TimeDelta()) {
-      // May invoke scan immediately.
-      return true;
-    }
-
-    VLOG(3) << "Rescheduling scan with delay: " << delay.InMillisecondsF()
-            << " ms";
-    // 4. If the MU requirement is not satisfied, schedule a delayed scan to the
-    // time instance when MU is satisfied.
-    schedule_delayed_scan_.Run(delay);
+  }
+  // Don't reschedule under the lock as the callback can call free() and
+  // recursively enter the lock.
+  if (should_reschedule) {
+    schedule_delayed_scan_.Run(reschedule_delay);
     return false;
   }
   return true;
