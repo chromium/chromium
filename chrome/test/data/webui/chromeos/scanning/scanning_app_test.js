@@ -1038,6 +1038,64 @@ export function scanningAppTest() {
         });
   });
 
+  // Verify if there's only one page in the multi-page scan session it can be
+  // removed, the scan is reset, and the user is returned to the scan settings
+  // page.
+  test('MultiPageScanRemoveLastPage', () => {
+    return initializeScanningApp(expectedScanners, capabilities)
+        .then(() => {
+          return getScannerCapabilities();
+        })
+        .then(() => {
+          scanningApp.selectedSource = PLATEN;
+          scanningApp.selectedFileType = FileType.PDF.toString();
+          return waitAfterNextRender(/** @type {!HTMLElement} */ (scanningApp));
+        })
+        .then(() => {
+          scanningApp.multiPageScanChecked = true;
+        })
+        .then(() => {
+          scanningApp.$$('#scanButton').click();
+          return fakeScanService_.whenCalled('startMultiPageScan');
+        })
+        .then(() => {
+          return fakeScanService_.simulatePageComplete(1);
+        })
+        .then(() => {
+          // Open the remove page dialog.
+          scanningApp.$$('#scanPreview')
+              .$$('action-toolbar')
+              .dispatchEvent(
+                  new CustomEvent('show-remove-page-dialog', {detail: 1}));
+          return flushTasks();
+        })
+        .then(() => {
+          scanningApp.$$('#scanPreview').$$('#actionButton').click();
+          return flushTasks();
+        })
+        .then(() => {
+          assertArrayEquals([], scanningApp.$$('#scanPreview').objectUrls);
+
+          // Attempt a new multi-page scan from the scan settings page.
+          scanningApp.$$('#scanButton').click();
+          return fakeScanService_.whenCalled('startMultiPageScan');
+        })
+        .then(() => {
+          return fakeScanService_.simulatePageComplete(1);
+        })
+        .then(() => {
+          // The scanned images and multi-page scan page should be visible.
+          assertTrue(isVisible(/** @type {!HTMLElement} */ (
+              scanningApp.$$('#scanPreview').$$('#scannedImages'))));
+          assertTrue(isVisible(
+              /** @type {!HTMLElement} */ (scanningApp.$$('multi-page-scan'))));
+
+          const scanNextPageButton =
+              scanningApp.$$('multi-page-scan').$$('#scanButton');
+          assertEquals('Scan page 2', scanNextPageButton.textContent.trim());
+        });
+  });
+
   // Verify the correct message is shown in the scan failed dialog based on the
   // error type.
   test('ScanResults', () => {

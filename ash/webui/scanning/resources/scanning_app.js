@@ -669,11 +669,23 @@ Polymer({
     this.splice('objectUrls_', pageIndex, 1);
     this.pageNumber_ = this.objectUrls_.length;
     this.multiPageScanController_.removePage(pageIndex);
+
+    // If the last page was removed, end the multi-page session and return to
+    // the scan settings page.
+    if (this.objectUrls_.length === 0) {
+      this.resetMultiPageScanController_();
+      this.setAppState_(AppState.READY);
+    }
   },
 
   /** @private */
   onCompleteMultiPageScan_() {
     this.multiPageScanController_.completeMultiPageScan();
+    this.resetMultiPageScanController_();
+  },
+
+  /** @private */
+  resetMultiPageScanController_() {
     this.multiPageScanController_.$.close();
     this.multiPageScanController_ = null;
   },
@@ -763,7 +775,8 @@ Polymer({
             this.appState_ === AppState.SETTING_SAVED_SETTINGS ||
             this.appState_ === AppState.SCANNING ||
             this.appState_ === AppState.DONE ||
-            this.appState_ === AppState.CANCELING);
+            this.appState_ === AppState.CANCELING ||
+            this.appState_ === AppState.MULTI_PAGE_NEXT_ACTION);
         this.clearObjectUrls_();
         break;
       case (AppState.SCANNING):

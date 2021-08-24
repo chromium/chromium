@@ -297,18 +297,22 @@ void ScanService::ScanNextPage(const base::UnguessableToken& scanner_id,
 }
 
 void ScanService::RemovePage(uint32_t page_index) {
-  // TODO: Update RemovePage() to allow removing with only one scanned image
-  // once the UI supports it.
-  if (scanned_images_.size() <= 1) {
-    mojo::ReportBadMessage(
-        "Invalid call to ScanService::RemovePage(), 1 or less scanned images "
-        "available");
-    return;
-  }
-
   if (page_index >= scanned_images_.size()) {
     mojo::ReportBadMessage(
         "Invalid page_index passed to ScanService::RemovePage()");
+    return;
+  }
+
+  if (scanned_images_.size() == 0) {
+    mojo::ReportBadMessage(
+        "Invalid call to ScanService::RemovePage(), no scanned images "
+        "available to remove");
+    return;
+  }
+
+  if (scanned_images_.size() == 1) {
+    ClearScanState();
+    multi_page_controller_receiver_.reset();
     return;
   }
 

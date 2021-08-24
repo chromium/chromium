@@ -347,6 +347,10 @@ class ScanServiceTest : public testing::Test {
     return true;
   }
 
+  void ResetMultiPageScanControllerRemote() {
+    multi_page_scan_controller_remote_.reset();
+  }
+
   bool ScanNextPage(const base::UnguessableToken& scanner_id,
                     mojo_ipc::ScanSettingsPtr settings) {
     bool success;
@@ -972,9 +976,9 @@ TEST_F(ScanServiceTest, MultiPageScanRemoveWithThreePages) {
   histogram_tester.ExpectUniqueSample("Scanning.NumPagesScanned", 2, 1);
 }
 
-// Test that if there's only one page available, it can't be removed during a
-// multi-page scan session.
-TEST_F(ScanServiceTest, MultiPageScanCantRemoveOnePage) {
+// Test that if there's only one page available, the page is removed and the
+// multi-page scan session is reset and a new session can be started.
+TEST_F(ScanServiceTest, MultiPageScanRemoveLastPage) {
   base::HistogramTester histogram_tester;
   scoped_feature_list_.InitWithFeatures(
       {chromeos::features::kScanAppMultiPageScan}, {});
@@ -991,8 +995,12 @@ TEST_F(ScanServiceTest, MultiPageScanCantRemoveOnePage) {
 
   EXPECT_TRUE(StartMultiPageScan(scanners[0]->id, settings.Clone()));
 
-  // The attempt to delete the only page should do nothing.
+  // Removing the page should reset the multi-page scan session.
   RemovePage(0);
+
+  // Start a new scan and complete it with 1 page.
+  ResetMultiPageScanControllerRemote();
+  EXPECT_TRUE(StartMultiPageScan(scanners[0]->id, settings.Clone()));
   CompleteMultiPageScan();
 
   const std::vector<std::string> scanned_images =
