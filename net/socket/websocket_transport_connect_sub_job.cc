@@ -107,9 +107,6 @@ class WebSocketStreamSocket final : public StreamSocket {
   int64_t GetTotalReceivedBytes() const override {
     return wrapped_socket_->GetTotalReceivedBytes();
   }
-  void DumpMemoryStats(SocketMemoryStats* stats) const override {
-    wrapped_socket_->DumpMemoryStats(stats);
-  }
   void ApplySocketTag(const SocketTag& tag) override {
     wrapped_socket_->ApplySocketTag(tag);
   }

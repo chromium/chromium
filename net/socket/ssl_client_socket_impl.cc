@@ -618,20 +618,6 @@ int64_t SSLClientSocketImpl::GetTotalReceivedBytes() const {
   return stream_socket_->GetTotalReceivedBytes();
 }
 
-void SSLClientSocketImpl::DumpMemoryStats(SocketMemoryStats* stats) const {
-  if (transport_adapter_)
-    stats->buffer_size = transport_adapter_->GetAllocationSize();
-  const STACK_OF(CRYPTO_BUFFER)* server_cert_chain =
-      SSL_get0_peer_certificates(ssl_.get());
-  if (server_cert_chain) {
-    for (const CRYPTO_BUFFER* cert : server_cert_chain) {
-      stats->cert_size += CRYPTO_BUFFER_len(cert);
-    }
-    stats->cert_count = sk_CRYPTO_BUFFER_num(server_cert_chain);
-  }
-  stats->total_size = stats->buffer_size + stats->cert_size;
-}
-
 void SSLClientSocketImpl::GetSSLCertRequestInfo(
     SSLCertRequestInfo* cert_request_info) const {
   if (!ssl_) {

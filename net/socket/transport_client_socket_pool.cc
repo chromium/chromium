@@ -726,43 +726,7 @@ base::Value TransportClientSocketPool::GetInfoAsValue(
 void TransportClientSocketPool::DumpMemoryStats(
     base::trace_event::ProcessMemoryDump* pmd,
     const std::string& parent_dump_absolute_name) const {
-  size_t socket_count = 0;
-  size_t total_size = 0;
-  size_t buffer_size = 0;
-  size_t cert_count = 0;
-  size_t cert_size = 0;
-  for (const auto& kv : group_map_) {
-    for (const auto& socket : kv.second->idle_sockets()) {
-      StreamSocket::SocketMemoryStats stats;
-      socket.socket->DumpMemoryStats(&stats);
-      total_size += stats.total_size;
-      buffer_size += stats.buffer_size;
-      cert_count += stats.cert_count;
-      cert_size += stats.cert_size;
-      ++socket_count;
-    }
-  }
-  // Only create a MemoryAllocatorDump if there is at least one idle socket
-  if (socket_count > 0) {
-    base::trace_event::MemoryAllocatorDump* socket_pool_dump =
-        pmd->CreateAllocatorDump(base::StringPrintf(
-            "%s/socket_pool", parent_dump_absolute_name.c_str()));
-    socket_pool_dump->AddScalar(
-        base::trace_event::MemoryAllocatorDump::kNameSize,
-        base::trace_event::MemoryAllocatorDump::kUnitsBytes, total_size);
-    socket_pool_dump->AddScalar(
-        base::trace_event::MemoryAllocatorDump::kNameObjectCount,
-        base::trace_event::MemoryAllocatorDump::kUnitsObjects, socket_count);
-    socket_pool_dump->AddScalar(
-        "buffer_size", base::trace_event::MemoryAllocatorDump::kUnitsBytes,
-        buffer_size);
-    socket_pool_dump->AddScalar(
-        "cert_count", base::trace_event::MemoryAllocatorDump::kUnitsObjects,
-        cert_count);
-    socket_pool_dump->AddScalar(
-        "cert_size", base::trace_event::MemoryAllocatorDump::kUnitsBytes,
-        cert_size);
-  }
+  // TODO(crbug.com/1239513): Remove this.
 }
 
 bool TransportClientSocketPool::IdleSocket::IsUsable(

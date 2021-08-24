@@ -5295,51 +5295,6 @@ TEST_F(SSLClientSocketZeroRTTTest, ZeroRTTParallelReadConfirm) {
   EXPECT_EQ(SSLInfo::HANDSHAKE_RESUME, ssl_info.handshake_type);
 }
 
-// Basic test for dumping memory stats.
-TEST_P(SSLClientSocketReadTest, DumpMemoryStats) {
-  ASSERT_TRUE(
-      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, GetServerConfig()));
-
-  // This test compares the memory usage when there is and isn't a pending read
-  // on the socket, so disable the post-handshake peek.
-  SSLConfig config;
-  config.disable_post_handshake_peek_for_testing = true;
-
-  int rv;
-  ASSERT_TRUE(CreateAndConnectSSLClientSocket(config, &rv));
-  EXPECT_THAT(rv, IsOk());
-  StreamSocket::SocketMemoryStats stats;
-  sock_->DumpMemoryStats(&stats);
-  EXPECT_EQ(0u, stats.buffer_size);
-  EXPECT_EQ(1u, stats.cert_count);
-  EXPECT_LT(0u, stats.cert_size);
-  EXPECT_EQ(stats.cert_size, stats.total_size);
-
-  // Read the response without writing a request, so the read will be pending.
-  TestCompletionCallback read_callback;
-  scoped_refptr<IOBuffer> buf = base::MakeRefCounted<IOBuffer>(4096);
-  rv = Read(sock_.get(), buf.get(), 4096, read_callback.callback());
-  EXPECT_EQ(ERR_IO_PENDING, rv);
-
-  // Dump memory again and check that |buffer_size| contain the read buffer.
-  StreamSocket::SocketMemoryStats stats2;
-  sock_->DumpMemoryStats(&stats2);
-
-  if (read_if_ready_supported()) {
-    EXPECT_EQ(0u, stats2.buffer_size);
-    EXPECT_EQ(stats.cert_size, stats2.total_size);
-  } else {
-    EXPECT_EQ(17 * 1024u, stats2.buffer_size);
-    EXPECT_LT(17 * 1024u, stats2.total_size);
-  }
-  EXPECT_EQ(1u, stats2.cert_count);
-  EXPECT_LT(0u, stats2.cert_size);
-
-  // Drop the socket. It has a pending read with a reference to |read_callback|,
-  // so the socket must be dropped before the test returns.
-  sock_ = nullptr;
-}
-
 TEST_P(SSLClientSocketReadTest, IdleAfterRead) {
   // Set up a TCP server.
   TCPServerSocket server_listener(nullptr, NetLogSource());
@@ -5407,14 +5362,6 @@ TEST_P(SSLClientSocketReadTest, IdleAfterRead) {
 
   // At this point the client socket should be idle.
   EXPECT_TRUE(client->IsConnectedAndIdle());
-
-  // The read buffer should be released.
-  StreamSocket::SocketMemoryStats stats;
-  client->DumpMemoryStats(&stats);
-  EXPECT_EQ(0u, stats.buffer_size);
-  EXPECT_EQ(1u, stats.cert_count);
-  EXPECT_LT(0u, stats.cert_size);
-  EXPECT_EQ(stats.cert_size, stats.total_size);
 }
 
 // Test that certificate errors are properly reported when the underlying

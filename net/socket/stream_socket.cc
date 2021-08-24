@@ -23,11 +23,6 @@ void StreamSocket::GetSSLCertRequestInfo(
   NOTREACHED();
 }
 
-StreamSocket::SocketMemoryStats::SocketMemoryStats()
-    : total_size(0), buffer_size(0), cert_count(0), cert_size(0) {}
-
-StreamSocket::SocketMemoryStats::~SocketMemoryStats() = default;
-
 int StreamSocket::ConfirmHandshake(CompletionOnceCallback callback) {
   return OK;
 }

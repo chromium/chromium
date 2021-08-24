@@ -92,7 +92,6 @@ class SSLClientSocketImpl : public SSLClientSocket,
   void ClearConnectionAttempts() override {}
   void AddConnectionAttempts(const ConnectionAttempts& attempts) override {}
   int64_t GetTotalReceivedBytes() const override;
-  void DumpMemoryStats(SocketMemoryStats* stats) const override;
   void GetSSLCertRequestInfo(
       SSLCertRequestInfo* cert_request_info) const override;
 
