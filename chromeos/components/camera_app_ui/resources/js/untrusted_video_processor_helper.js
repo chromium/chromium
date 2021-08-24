@@ -26,11 +26,11 @@ const mp4VideoProcessorURL = (() => {
  */
 async function connectToWorker(port) {
   /**
-   * Closure Compiler only supports string rather than TrustedScriptURL as
-   * parameter to Worker.
-   * @suppress {checkTypes}
+   * TODO(pihsun): Closure Compiler only supports string rather than
+   * TrustedScriptURL as parameter to Worker.
+   * @type {?}
    */
-  const /** string */ trustedURL = mp4VideoProcessorURL;
+  const trustedURL = mp4VideoProcessorURL;
 
   const worker = Comlink.wrap(new Worker(trustedURL, {type: 'module'}));
   await worker.exposeVideoProcessor(Comlink.transfer(port, [port]));
