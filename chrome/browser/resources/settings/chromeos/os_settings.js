@@ -90,7 +90,7 @@ import './os_settings_ui/os_settings_ui.m.js';
 import './os_settings_icons_css.m.js';
 import './os_settings_search_box/os_search_result_row.js';
 import './os_settings_search_box/os_settings_search_box.js';
-import './os_toolbar/os_toolbar.m.js';
+import './os_toolbar/os_toolbar.js';
 import './parental_controls_page/parental_controls_page.m.js';
 import './settings_scheduler_slider/settings_scheduler_slider.js';
 
