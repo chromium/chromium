@@ -85,7 +85,7 @@ import './os_search_page/os_search_page.js';
 import './os_settings_main/os_settings_main.m.js';
 import './os_settings_page/os_settings_page.m.js';
 import './os_settings_page/settings_idle_load.m.js';
-import './os_settings_menu/os_settings_menu.m.js';
+import './os_settings_menu/os_settings_menu.js';
 import './os_settings_ui/os_settings_ui.m.js';
 import './os_settings_icons_css.m.js';
 import './os_settings_search_box/os_search_result_row.js';
