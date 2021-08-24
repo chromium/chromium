@@ -69,10 +69,10 @@ std::vector<std::string> RankByUses(const std::map<std::string, int>& uses) {
 
 std::string HighestUnshown(const std::vector<std::string>& shown,
                            const std::map<std::string, int>& uses,
-                           unsigned int fold) {
+                           unsigned int length) {
   std::vector<std::string> ranked = RankByUses(uses);
   auto in_shown_above_fold = [&](const std::string& e) {
-    return RankingContains(shown, e, fold);
+    return RankingContains(shown, e, length);
   };
 
   ranked.erase(
@@ -106,20 +106,20 @@ std::vector<std::string> ReplaceUnavailableEntries(
 
 void FillGaps(std::vector<std::string>& ranking,
               const std::vector<std::string>& available,
-              unsigned int fold) {
+              unsigned int length) {
   std::vector<std::string> unused_available = available;
 
   unused_available.erase(
       std::remove_if(unused_available.begin(), unused_available.end(),
                      [&](const std::string& e) {
-                       return RankingContains(ranking, e, fold);
+                       return RankingContains(ranking, e, length);
                      }),
       unused_available.end());
   auto next_unused = unused_available.begin();
 
-  DCHECK_GE(ranking.size(), fold);
+  DCHECK_GE(ranking.size(), length);
 
-  for (unsigned int i = 0; i < fold; ++i) {
+  for (unsigned int i = 0; i < length; ++i) {
     if (ranking[i] == "" && *next_unused != "")
       ranking[i] = *(next_unused++);
   }
@@ -129,15 +129,15 @@ std::vector<std::string> MaybeUpdateRankingFromHistory(
     const std::vector<std::string>& old_ranking,
     const std::map<std::string, int>& recent_share_history,
     const std::map<std::string, int>& all_share_history,
-    unsigned int fold) {
+    unsigned int length) {
   const double RECENCY_WEIGHT = 2.0;
   const double DAMPENING = 1.1;
 
-  const std::string lowest_shown = old_ranking[fold - 1];
+  const std::string lowest_shown = old_ranking[length - 1];
   const std::string highest_unshown_recent =
-      HighestUnshown(old_ranking, recent_share_history, fold);
+      HighestUnshown(old_ranking, recent_share_history, length);
   const std::string highest_unshown_all =
-      HighestUnshown(old_ranking, all_share_history, fold);
+      HighestUnshown(old_ranking, all_share_history, length);
 
   std::vector<std::string> new_ranking = old_ranking;
 
@@ -183,9 +183,9 @@ bool EveryElementInList(const std::vector<std::string>& ranking,
 
 bool ElementIndexesAreUnchanged(const std::vector<std::string>& display,
                                 const std::vector<std::string>& old,
-                                unsigned int fold) {
-  for (unsigned int i = 0; i < display.size() && i < fold; ++i) {
-    if (RankingContains(old, display[i], fold) && display[i] != old[i])
+                                unsigned int length) {
+  for (unsigned int i = 0; i < display.size() && i < length; ++i) {
+    if (RankingContains(old, display[i], length) && display[i] != old[i])
       return false;
   }
   return true;
@@ -193,9 +193,9 @@ bool ElementIndexesAreUnchanged(const std::vector<std::string>& display,
 
 bool AtMostOneSlotChanged(const std::vector<std::string>& old_ranking,
                           const std::vector<std::string>& new_ranking,
-                          unsigned int fold) {
+                          unsigned int length) {
   bool change_seen = false;
-  for (unsigned int i = 0; i < old_ranking.size() && i < fold; ++i) {
+  for (unsigned int i = 0; i < old_ranking.size() && i < length; ++i) {
     if (old_ranking[i] != new_ranking[i]) {
       if (change_seen)
         return false;
@@ -207,10 +207,10 @@ bool AtMostOneSlotChanged(const std::vector<std::string>& old_ranking,
 }
 
 bool NoEmptySlots(const std::vector<std::string>& display_ranking,
-                  unsigned int fold) {
-  if (display_ranking.size() < fold)
+                  unsigned int length) {
+  if (display_ranking.size() < length)
     return false;
-  for (unsigned int i = 0; i < fold; i++) {
+  for (unsigned int i = 0; i < length; i++) {
     if (display_ranking[i] == "")
       return false;
   }
@@ -229,10 +229,10 @@ std::map<std::string, int> BuildHistoryMap(
 void InsertIntoRankingOrderedByUsage(
     std::vector<std::string>* ranking,
     const std::string& item,
-    unsigned int fold,
+    unsigned int length,
     const std::map<std::string, int>& history) {
   DCHECK_GT(history.count(item), 0U);
-  for (unsigned int i = fold; i < ranking->size(); ++i) {
+  for (unsigned int i = length; i < ranking->size(); ++i) {
     const std::string this_item = ranking->at(i);
     if (!history.count(this_item) || history.at(item) > history.at(this_item)) {
       ranking->insert(ranking->begin() + i, item);
@@ -245,18 +245,13 @@ void InsertIntoRankingOrderedByUsage(
 std::vector<std::string> AddMissingItemsFromHistory(
     const std::vector<std::string> existing,
     const std::map<std::string, int> history,
-    unsigned int fold) {
+    unsigned int length) {
   std::vector<std::string> updated = existing;
   for (const auto& item : history) {
     if (!RankingContains(updated, item.first))
-      InsertIntoRankingOrderedByUsage(&updated, item.first, fold, history);
+      InsertIntoRankingOrderedByUsage(&updated, item.first, length, history);
   }
   return updated;
-}
-
-bool ShouldFixMore() {
-  // TODO(ellyjones): Add a field trial and wire it up here.
-  return true;
 }
 
 }  // namespace
@@ -326,13 +321,13 @@ void ShareRanking::GetRanking(const std::string& type,
 void ShareRanking::Rank(ShareHistory* history,
                         const std::string& type,
                         const std::vector<std::string>& available_on_system,
-                        unsigned int fold,
+                        unsigned int length,
                         bool persist_update,
                         GetRankingCallback callback) {
   auto pending_call = std::make_unique<PendingRankCall>();
   pending_call->type = type;
   pending_call->available_on_system = available_on_system;
-  pending_call->fold = fold;
+  pending_call->length = length;
   pending_call->persist_update = persist_update;
   pending_call->callback = std::move(callback);
   pending_call->history_db = history->GetWeakPtr();
@@ -360,39 +355,28 @@ void ShareRanking::ComputeRanking(
     const std::map<std::string, int>& recent_share_history,
     const Ranking& old_ranking,
     const std::vector<std::string>& available_on_system,
-    unsigned int fold,
-    bool fix_more,
+    unsigned int length,
     Ranking* display_ranking,
     Ranking* persisted_ranking) {
   // Preconditions:
-  DCHECK_GE(old_ranking.size(), fold);
-  DCHECK_GE(available_on_system.size(), fold);
-
-  // When using the last slot for More, pretend that the fold is one slot less
-  // than it normally is - otherwise the logic for ensuring that targets are
-  // visible may try to move targets into the slot that is about to be
-  // overwritten with More.
-  int logical_fold = fix_more ? fold - 1 : fold;
+  DCHECK_GE(old_ranking.size(), length - 1);
+  DCHECK_GE(available_on_system.size(), length - 1);
 
   Ranking augmented_old_ranking = AddMissingItemsFromHistory(
-      AddMissingItemsFromHistory(old_ranking, all_share_history, logical_fold),
-      recent_share_history, logical_fold);
+      AddMissingItemsFromHistory(old_ranking, all_share_history, length - 1),
+      recent_share_history, length - 1);
 
   std::vector<std::string> new_ranking =
       MaybeUpdateRankingFromHistory(augmented_old_ranking, all_share_history,
-                                    recent_share_history, logical_fold);
+                                    recent_share_history, length - 1);
 
   Ranking computed_display_ranking =
       ReplaceUnavailableEntries(new_ranking, available_on_system);
 
-  FillGaps(computed_display_ranking, available_on_system, logical_fold);
+  FillGaps(computed_display_ranking, available_on_system, length - 1);
 
-  computed_display_ranking.resize(fold);
-
-  if (fix_more)
-    computed_display_ranking[logical_fold] = kMoreTarget;
-  else
-    computed_display_ranking.push_back(kMoreTarget);
+  computed_display_ranking.resize(length);
+  computed_display_ranking[length - 1] = kMoreTarget;
 
   *persisted_ranking = new_ranking;
   *display_ranking = computed_display_ranking;
@@ -404,14 +388,15 @@ void ShareRanking::ComputeRanking(
     available.push_back(kMoreTarget);
 
     DCHECK(EveryElementInList(*display_ranking, available));
-    DCHECK(ElementIndexesAreUnchanged(*display_ranking, old_ranking,
-                                      logical_fold));
-    DCHECK(AtMostOneSlotChanged(old_ranking, *persisted_ranking, logical_fold));
-    DCHECK(NoEmptySlots(*display_ranking, logical_fold));
+    DCHECK(
+        ElementIndexesAreUnchanged(*display_ranking, old_ranking, length - 1));
+    DCHECK(AtMostOneSlotChanged(old_ranking, *persisted_ranking, length - 1));
+    DCHECK(NoEmptySlots(*display_ranking, length));
 
     DCHECK(RankingContains(*display_ranking, kMoreTarget));
 
-    DCHECK_GE(persisted_ranking->size(), fold);
+    DCHECK_EQ(display_ranking->size(), length);
+    DCHECK_GE(persisted_ranking->size(), length - 1);
   }
 #endif  // DCHECK_IS_ON()
 }
@@ -490,8 +475,8 @@ void ShareRanking::OnRankGetOldRankingDone(
   Ranking display, persisted;
   ComputeRanking(BuildHistoryMap(pending->all_history),
                  BuildHistoryMap(pending->recent_history), *ranking,
-                 pending->available_on_system, pending->fold, ShouldFixMore(),
-                 &display, &persisted);
+                 pending->available_on_system, pending->length, &display,
+                 &persisted);
 
   if (pending->persist_update)
     UpdateRanking(pending->type, persisted);
