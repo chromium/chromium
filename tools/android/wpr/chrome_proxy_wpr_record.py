@@ -16,7 +16,6 @@ import time
 
 chrome_root = os.path.join(os.path.dirname(__file__), '../../..')
 sys.path.insert(0, os.path.join(chrome_root, 'build/android'))
-# Note that catapult/devil appears to require python2.
 sys.path.insert(0, os.path.join(chrome_root, 'third_party/catapult/devil'))
 
 from devil.android import device_utils
