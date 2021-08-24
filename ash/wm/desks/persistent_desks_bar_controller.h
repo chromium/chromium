@@ -59,7 +59,7 @@ class ASH_EXPORT PersistentDesksBarController
   void OnSessionStateChanged(session_manager::SessionState state) override;
 
   // OverviewObserver:
-  void OnOverviewModeWillStart() override;
+  void OnOverviewModeStarting() override;
   void OnOverviewModeEndingAnimationComplete(bool canceled) override;
 
   // DesksController::Observer:
@@ -103,6 +103,12 @@ class ASH_EXPORT PersistentDesksBarController
 
   // Destroys `persistent_desks_bar_widget_` and `persistent_desks_bar_view_`.
   void DestroyBarWidget();
+
+  // Updates the bar's status on window state changes.
+  void UpdateBarOnWindowStateChanges(aura::Window* window);
+
+  // Updates the bar's status when the given `window` is destroying.
+  void UpdateBarOnWindowDestroying(aura::Window* window);
 
  private:
   // Returns true if the persistent desks bar should be created and shown.
