@@ -59,7 +59,7 @@ class ScreenshotCapturedBubble : public LocationBarBubbleDelegateView {
 
   const gfx::Image& image_;
 
-  content::WebContents* web_contents_;
+  base::WeakPtr<content::WebContents> web_contents_;
 
   Profile* profile_;
 
