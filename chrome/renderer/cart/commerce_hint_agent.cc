@@ -76,6 +76,11 @@ constexpr base::FeatureParam<std::string> kPurchaseButtonPatternMapping{
     // Empty JSON map.
     "{}"};
 
+constexpr base::FeatureParam<base::TimeDelta> kCartExtractionGapTime{
+    &ntp_features::kNtpChromeCartModule, "cart-extraction-gap-time",
+    // Gap time is 0.5s by default.
+    base::TimeDelta::FromSecondsD(0.5)};
+
 std::string eTLDPlusOne(const GURL& url) {
   return net::registry_controlled_domains::GetDomainAndRegistry(
       url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
@@ -649,8 +654,23 @@ const std::vector<std::string> CommerceHintAgent::ExtractButtonTexts(
   return button_texts;
 }
 
+void CommerceHintAgent::MaybeExtractProducts() {
+  // TODO(crbug/1241582): Add a test for rate control based on whether the
+  // histogram is recorded.
+  static base::TimeDelta gap_time = kCartExtractionGapTime.Get();
+  if (!last_extraction_time_.is_null() &&
+      base::TimeTicks::Now() - last_extraction_time_ < gap_time) {
+    return;
+  }
+  last_extraction_time_ = base::TimeTicks::Now();
+  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&CommerceHintAgent::ExtractProducts,
+                     weak_factory_.GetWeakPtr()),
+      gap_time);
+}
+
 void CommerceHintAgent::ExtractProducts() {
-  // TODO(crbug/1164236): Implement rate control.
   blink::WebLocalFrame* main_frame = render_frame()->GetWebFrame();
   v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
   blink::WebScriptSource source =
@@ -754,7 +774,7 @@ void CommerceHintAgent::WillSendRequest(const blink::WebURLRequest& request) {
     return;
   if (IsVisitCart(url) && IsSameDomainXHR(url.host(), request)) {
     DVLOG(1) << "In-cart XHR: " << request.Url();
-    ExtractProducts();
+    MaybeExtractProducts();
   }
 }
 
@@ -801,7 +821,7 @@ void CommerceHintAgent::DidFinishLoad() {
   if (IsVisitCart(url)) {
     RecordCommerceEvent(CommerceEvent::kVisitCart);
     OnVisitCart(render_frame());
-    ExtractProducts();
+    MaybeExtractProducts();
   } else if (IsVisitCheckout(url)) {
     RecordCommerceEvent(CommerceEvent::kVisitCheckout);
     OnVisitCheckout(render_frame());
@@ -837,7 +857,7 @@ void CommerceHintAgent::ExtractCartFromCurrentFrame() {
     return;
 
   if (IsVisitCart(url)) {
-    ExtractProducts();
+    MaybeExtractProducts();
   }
 }
 
