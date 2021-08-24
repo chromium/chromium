@@ -76,8 +76,9 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
     @Override
     public boolean closeAllTabsRequest(boolean incognito) {
         if (getActiveLayout() == mStaticLayout && !incognito) {
-            startShowing(DeviceClassManager.enableAccessibilityLayout() ? mOverviewListLayout
-                                                                        : mOverviewLayout,
+            startShowing(DeviceClassManager.enableAccessibilityLayout(mHost.getContext())
+                            ? mOverviewListLayout
+                            : mOverviewLayout,
                     /* animate= */ false);
         }
         return super.closeAllTabsRequest(incognito);
@@ -117,8 +118,9 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
     @Override
     protected void tabClosed(int id, int nextId, boolean incognito, boolean tabRemoved) {
         boolean showOverview = nextId == Tab.INVALID_TAB_ID;
-        Layout overviewLayout = DeviceClassManager.enableAccessibilityLayout() ? mOverviewListLayout
-                                                                               : mOverviewLayout;
+        Layout overviewLayout = DeviceClassManager.enableAccessibilityLayout(mHost.getContext())
+                ? mOverviewListLayout
+                : mOverviewLayout;
         if (getActiveLayout() != overviewLayout && showOverview) {
             // Since there will be no 'next' tab to display, switch to
             // overview mode when the animation is finished.

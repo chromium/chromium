@@ -380,7 +380,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         // We have to iterate all menu items since same menu item ID may be associated with more
         // than one menu items.
         boolean isMenuGroupTabsVisible = TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mContext)
-                && !DeviceClassManager.enableAccessibilityLayout();
+                && !DeviceClassManager.enableAccessibilityLayout(mContext);
         boolean isMenuGroupTabsEnabled = isMenuGroupTabsVisible
                 && mTabModelSelector.getTabModelFilterProvider()
                                 .getCurrentTabModelFilter()
@@ -388,7 +388,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                                 .size()
                         > 1;
         boolean isPriceTrackingVisible = PriceTrackingUtilities.isPriceTrackingEligible()
-                && !DeviceClassManager.enableAccessibilityLayout() && !isIncognito;
+                && !DeviceClassManager.enableAccessibilityLayout(mContext) && !isIncognito;
         boolean isPriceTrackingEnabled = isPriceTrackingVisible;
 
         for (int i = 0; i < menu.size(); ++i) {

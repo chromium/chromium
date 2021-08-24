@@ -1849,7 +1849,9 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         mAnimateNormalToolbar = showToolbar;
         if (mTabSwitcherModeAnimation != null) mTabSwitcherModeAnimation.start();
 
-        if (DeviceClassManager.enableAccessibilityLayout() || !animate) finishAnimations();
+        if (DeviceClassManager.enableAccessibilityLayout(getContext()) || !animate) {
+            finishAnimations();
+        }
 
         postInvalidateOnAnimation();
     }

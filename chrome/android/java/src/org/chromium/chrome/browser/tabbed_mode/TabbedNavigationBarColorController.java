@@ -163,7 +163,7 @@ class TabbedNavigationBarColorController implements VrModeObserver {
                 && mOverviewModeBehavior.overviewVisible() && !mOverviewModeHiding;
 
         boolean forceDarkNavigation;
-        if (DeviceClassManager.enableAccessibilityLayout()
+        if (DeviceClassManager.enableAccessibilityLayout(mRootView.getContext())
                 || TabUiFeatureUtilities.isGridTabSwitcherEnabled(mRootView.getContext())) {
             forceDarkNavigation = mTabModelSelector.isIncognitoSelected();
         } else {
