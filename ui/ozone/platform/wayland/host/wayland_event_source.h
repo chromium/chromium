@@ -158,7 +158,7 @@ class WaylandEventSource : public PlatformEventSource,
   // PlatformEventSource:
   void OnDispatcherListChanged() override;
 
-  // WaylandWindowObserver
+  // WaylandWindowObserver:
   void OnWindowRemoved(WaylandWindow* window) override;
 
   void UpdateKeyboardModifiers(int modifier, bool down);

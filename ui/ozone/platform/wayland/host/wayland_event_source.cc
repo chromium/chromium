@@ -54,7 +54,7 @@ struct WaylandEventSource::TouchPoint {
   TouchPoint(gfx::PointF location, WaylandWindow* current_window);
   ~TouchPoint() = default;
 
-  WaylandWindow* const window;
+  WaylandWindow* window;
   gfx::PointF last_known_location;
 };
 
@@ -427,6 +427,13 @@ void WaylandEventSource::OnDispatcherListChanged() {
 }
 
 void WaylandEventSource::OnWindowRemoved(WaylandWindow* window) {
+  if (connection_->IsDragInProgress()) {
+    auto* target_window = window_manager_->GetCurrentTouchFocusedWindow();
+    for (auto& touch_point : touch_points_)
+      touch_point.second->window = target_window;
+    return;
+  }
+
   // Clear touch-related data.
   base::EraseIf(touch_points_, [window](const auto& point) {
     return point.second->window == window;
