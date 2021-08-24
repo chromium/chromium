@@ -95,10 +95,13 @@
   <message name="IDS_FILE_BROWSER_DOCPROVIDER_ROOT_LABEL_WITH_SUMMARY" desc="A label for a documents provider root, which has both title and summary.">
     <ph name="ROOT_TITLE">$1<ex>MyCloudProvider</ex></ph> (<ph name="ROOT_SUMMARY">$2<ex>me@example.com</ex></ph>)
   </message>
-  <!-- TODO (oto@): remove this msg as part of files-ng clean up process. -->
   <message name="IDS_FILE_BROWSER_DOWNLOADS_DIRECTORY_WARNING" desc="Warning displayed to user when viewing downloads folder.">
-    <ph name="BEGIN_BOLD">&lt;strong&gt;</ph>Caution:<ph name="END_BOLD">&lt;/strong&gt;</ph>  These files are temporary and may be automatically deleted to free up disk space.  <ph name="BEGIN_LINK">&lt;a href="javascript://"&gt;</ph>Learn More<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
+    Caution: These files are temporary and may be automatically deleted to free up disk space.
   </message>
+  <message name="IDS_FILE_BROWSER_LEARN_MORE_LABEL" desc="A label for the 'Learn more' button to get more information about a banner.">
+    Learn more
+  </message>
+  <!-- TODO (crbug.com/1228128): Remove IDS_FILE_BROWSER_DOWNLOADS_DIRECTORY_WARNING_FILESNG once migrated to new banner framework. -->
   <message name="IDS_FILE_BROWSER_DOWNLOADS_DIRECTORY_WARNING_FILESNG" desc="Warning displayed to user when viewing downloads folder.">
     Caution: These files are temporary and may be automatically deleted to free up disk space.  <ph name="BEGIN_LINK">&lt;a href="javascript://"&gt;</ph>Learn More<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
   </message>
