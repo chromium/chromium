@@ -418,15 +418,9 @@ void SearchResultView::PaintButtonContents(gfx::Canvas* canvas) {
   // transparent, so the previous FillRect is not redundant).
   if (selected() && !actions_view()->HasSelectedAction()) {
     // Fill search result view row item.
-    const AppListColorProvider* color_provider = AppListColorProvider::Get();
-    const SkColor bg_color = color_provider->GetSearchBoxBackgroundColor();
     canvas->FillRect(
         content_rect,
-        SkColorSetA(
-            color_provider->GetRippleAttributesBaseColor(bg_color),
-            color_provider->GetRippleAttributesHighlightOpacity(bg_color) *
-                255));
-
+        AppListColorProvider::Get()->GetSearchResultViewHighlightColor());
     PaintFocusBar(canvas, GetContentsBounds().origin(),
                   /*height=*/GetContentsBounds().height());
   }

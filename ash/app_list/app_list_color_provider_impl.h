@@ -48,6 +48,7 @@ class AppListColorProviderImpl : public AppListColorProvider {
       SkColor bg_color = gfx::kPlaceholderColor) const override;
   float GetRippleAttributesHighlightOpacity(
       SkColor bg_color = gfx::kPlaceholderColor) const override;
+  SkColor GetSearchResultViewHighlightColor() const override;
 
  private:
   // Unowned.

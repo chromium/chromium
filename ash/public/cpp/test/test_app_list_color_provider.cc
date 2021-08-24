@@ -131,4 +131,8 @@ float TestAppListColorProvider::GetRippleAttributesHighlightOpacity(
   return 0.08f;
 }
 
+SkColor TestAppListColorProvider::GetSearchResultViewHighlightColor() const {
+  return SkColorSetA(SK_ColorWHITE, 0x0D);
+}
+
 }  // namespace ash
