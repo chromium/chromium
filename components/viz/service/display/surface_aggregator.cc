@@ -35,6 +35,7 @@
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/yuv_video_draw_quad.h"
 #include "components/viz/common/surfaces/surface_range.h"
+#include "components/viz/service/debugger/viz_debugger.h"
 #include "components/viz/service/display/aggregated_frame.h"
 #include "components/viz/service/display/display_resource_provider.h"
 #include "components/viz/service/display/renderer_utils.h"
@@ -1622,6 +1623,7 @@ gfx::Rect SurfaceAggregator::PrewalkSurface(
     PrewalkResult& result) {
   Surface* surface = resolved_frame.surface();
   DCHECK(surface->HasActiveFrame());
+  DebugLogSurface(surface, will_draw);
 
   if (referenced_surfaces_.count(surface->surface_id()))
     return gfx::Rect();
@@ -2367,4 +2369,14 @@ void SurfaceAggregator::SetLastFrameHadJelly(bool had_jelly) {
   }
   last_frame_had_jelly_ = had_jelly;
 }
+
+void SurfaceAggregator::DebugLogSurface(const Surface* surface,
+                                        bool will_draw) {
+  DBG_LOG("aggregator.surface.log", "D%d - %s, %s draws=%s",
+          static_cast<int>(referenced_surfaces_.size()),
+          surface->surface_id().ToString().c_str(),
+          surface->size_in_pixels().ToString().c_str(),
+          will_draw ? "true" : "false");
+}
+
 }  // namespace viz

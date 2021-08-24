@@ -329,6 +329,9 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   // Update |last_frame_had_jelly_|, should be called once per frame.
   void SetLastFrameHadJelly(bool had_jelly);
 
+  // Logs the surface information for debugging purposes.
+  void DebugLogSurface(const Surface* surface, bool will_draw);
+
   // Records UMA histograms and resets |stats_|.
   void RecordStatHistograms();
 
