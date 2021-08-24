@@ -169,7 +169,7 @@ const char kUmaDownloadMobileConfigFileUI[] =
                       kUmaDownloadMobileConfigFileUI,
                       DownloadMobileConfigFileUI::KWarningAlertIsDismissed);
                 }
-                 style:UIAlertActionStyleDefault];
+                 style:UIAlertActionStyleCancel];
 
   __weak MobileConfigCoordinator* weakSelf = self;
   [self.alertCoordinator
@@ -178,7 +178,7 @@ const char kUmaDownloadMobileConfigFileUI[] =
                 action:^{
                   [weakSelf presentSFSafariViewController:fileURL];
                 }
-                 style:UIAlertActionStyleCancel];
+                 style:UIAlertActionStyleDefault];
 
   [self.alertCoordinator start];
 }
