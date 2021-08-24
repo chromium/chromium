@@ -7,5 +7,8 @@ per-file web_app*=dmurph@chromium.org
 per-file web_app*=msw@chromium.org
 per-file plugin_vm*=file://chrome/browser/ash/guest_os/OWNERS
 
-# For intent handling system:
+# For files and intent handling system:
 per-file intent*=mxcai@chromium.org
+per-file file*=mxcai@chromium.org
+per-file intent*=tsergeant@chromium.org
+per-file file*=tsergeant@chromium.org
