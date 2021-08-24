@@ -491,6 +491,16 @@ deps = {
     'dep_type': 'cipd',
     'condition': '(host_os == "linux" or host_os == "win") and checkout_reclient',
   },
+  'src/third_party/android_rust_toolchain/toolchain': {
+    'packages': [
+      {
+        'package': 'chromium/third_party/android_rust_toolchain/linux-amd64',
+        'version': 'u4qRwAAw_08dL-gXhJDVoRziUQp4cfF0m9TQS6f-ylMC',
+      },
+    ],
+    'dep_type': 'cipd',
+    'condition': '(host_os == "linux")',
+  },
 
   'src/android_webview/tools/cts_archive': {
       'packages': [
