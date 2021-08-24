@@ -177,30 +177,6 @@ class DeepScanningSideIconSpinnerView : public DeepScanningBaseView,
 BEGIN_METADATA(DeepScanningSideIconSpinnerView, views::Throbber)
 END_METADATA
 
-class DeepScanningMessageView : public DeepScanningBaseView,
-                                public views::Label {
- public:
-  METADATA_HEADER(DeepScanningMessageView);
-
-  using DeepScanningBaseView::DeepScanningBaseView;
-
-  void Update() {
-    if (!GetWidget())
-      return;
-    if (dialog()->is_failure() || dialog()->is_warning())
-      SetEnabledColor(dialog()->GetSideImageBackgroundColor());
-  }
-
- protected:
-  void OnThemeChanged() override {
-    views::Label::OnThemeChanged();
-    Update();
-  }
-};
-
-BEGIN_METADATA(DeepScanningMessageView, views::Label)
-END_METADATA
-
 // static
 base::TimeDelta ContentAnalysisDialog::GetMinimumPendingDialogTime() {
   return minimum_pending_dialog_time_;
@@ -335,7 +311,7 @@ views::View* ContentAnalysisDialog::GetContentsView() {
     layout->AddView(CreateSideIcon());
 
     // Add the message.
-    auto label = std::make_unique<DeepScanningMessageView>(this);
+    auto label = std::make_unique<views::Label>();
     label->SetText(GetDialogMessage());
     label->SetLineHeight(kLineHeight);
     label->SetMultiLine(true);
@@ -434,7 +410,6 @@ void ContentAnalysisDialog::UpdateViews() {
   DCHECK(contents_view_);
 
   // Update the style of the dialog to reflect the new state.
-  message_->Update();
   image_->Update();
   side_icon_image_->Update();
   // There isn't always a spinner, for instance when the dialog is started in a
