@@ -293,6 +293,14 @@ function currentSelectedReducer(state, action) {
 }
 
 /**
+ * Reducer for the pending selected image. The pendingSelected state is set when
+ * a user clicks on an image and before the client code is reached.
+ *
+ * Note: The pendingSelected state is not cleared when an image is selected i.e.
+ * the ActionName.END_SELECT_IMAGE because we allow multiple concurrent requests
+ * of selecting images while only keeping the latest pending image and clearing
+ * it results in a unwanted jumpy motion of selected state.
+ *
  * @param {?DisplayableImage} state
  * @param {!Action} action
  * @return {?DisplayableImage}
@@ -302,6 +310,21 @@ function pendingSelectedReducer(state, action) {
     case ActionName.BEGIN_SELECT_IMAGE:
       return action.image;
     case ActionName.BEGIN_UPDATE_DAILY_REFRESH_IMAGE:
+      return null;
+    case ActionName.SET_SELECTED_IMAGE:
+      const {image} = action;
+      if (!image) {
+        console.warn('pendingSelectedReducer: Failed to get selected image.');
+        return null;
+      }
+      return state;
+    case ActionName.END_SELECT_IMAGE:
+      const {success} =
+          /** @type {{name: string, success: boolean}} */ (action);
+      if (success) {
+        return state;
+      }
+      console.warn('pendingSelectedReducer: Failed to set image.');
       return null;
     default:
       return state;
