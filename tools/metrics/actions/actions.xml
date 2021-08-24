@@ -24271,6 +24271,18 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Signin_WipeDataOnChildAccountSignin">
+  <obsolete>
+    This metric was recorded in a wrong way. Deprecated in 2021/08.
+  </obsolete>
+  <owner>triploblastic@chromium.org</owner>
+  <owner>aliceywang@chromium.org</owner>
+  <description>
+    Recorded when wiping data during child account sign-in process. Only
+    recorded on Android.
+  </description>
+</action>
+
+<action name="Signin_Signin_WipeDataOnChildAccountSignin2">
   <owner>triploblastic@chromium.org</owner>
   <owner>aliceywang@chromium.org</owner>
   <description>

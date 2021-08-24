@@ -156,13 +156,17 @@ public class SigninChecker
                     @Override
                     public void onSignInAborted() {}
                 };
-                boolean shouldWipeData = ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.WIPE_DATA_ON_CHILD_ACCOUNT_SIGNIN);
-                SyncUserDataWiper.wipeSyncUserDataIfRequired(shouldWipeData).then((Void v) -> {
-                    RecordUserAction.record("Signin_Signin_WipeDataOnChildAccountSignin");
+                if (ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.WIPE_DATA_ON_CHILD_ACCOUNT_SIGNIN)) {
+                    SyncUserDataWiper.wipeSyncUserData().then((Void v) -> {
+                        RecordUserAction.record("Signin_Signin_WipeDataOnChildAccountSignin2");
+                        mSigninManager.signinAndEnableSync(
+                                SigninAccessPoint.FORCED_SIGNIN, account, signInCallback);
+                    });
+                } else {
                     mSigninManager.signinAndEnableSync(
                             SigninAccessPoint.FORCED_SIGNIN, account, signInCallback);
-                });
+                }
                 return;
             }
         }

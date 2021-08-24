@@ -147,6 +147,7 @@ public class SigninCheckerTest {
 
     @Test
     @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.WIPE_DATA_ON_CHILD_ACCOUNT_SIGNIN})
     public void signinWhenChildAccountIsTheOnlyAccount() {
         mActivityTestRule.startMainActivityOnBlankPage();
         UserActionTester actionTester = new UserActionTester();
@@ -160,7 +161,7 @@ public class SigninCheckerTest {
         });
         Assert.assertEquals(2, SigninHelperProvider.get().getNumOfChildAccountChecksDoneForTests());
         Assert.assertTrue(
-                actionTester.getActions().contains("Signin_Signin_WipeDataOnChildAccountSignin"));
+                actionTester.getActions().contains("Signin_Signin_WipeDataOnChildAccountSignin2"));
     }
 
     @Test
@@ -180,7 +181,7 @@ public class SigninCheckerTest {
         });
         Assert.assertNull(mAccountManagerTestRule.getCurrentSignedInAccount());
         Assert.assertFalse(
-                actionTester.getActions().contains("Signin_Signin_WipeDataOnChildAccountSignin"));
+                actionTester.getActions().contains("Signin_Signin_WipeDataOnChildAccountSignin2"));
     }
 
     @Test
@@ -198,7 +199,7 @@ public class SigninCheckerTest {
         });
         Assert.assertNull(mAccountManagerTestRule.getCurrentSignedInAccount());
         Assert.assertFalse(
-                actionTester.getActions().contains("Signin_Signin_WipeDataOnChildAccountSignin"));
+                actionTester.getActions().contains("Signin_Signin_WipeDataOnChildAccountSignin2"));
     }
 
     @Test
@@ -216,6 +217,6 @@ public class SigninCheckerTest {
         });
         Assert.assertNull(mAccountManagerTestRule.getCurrentSignedInAccount());
         Assert.assertFalse(
-                actionTester.getActions().contains("Signin_Signin_WipeDataOnChildAccountSignin"));
+                actionTester.getActions().contains("Signin_Signin_WipeDataOnChildAccountSignin2"));
     }
 }
