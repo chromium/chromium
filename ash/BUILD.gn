@@ -294,6 +294,8 @@ component("ash") {
     "clipboard/views/clipboard_history_text_item_view.cc",
     "clipboard/views/clipboard_history_text_item_view.h",
     "clipboard/views/clipboard_history_view_constants.h",
+    "controls/rounded_scroll_bar.cc",
+    "controls/rounded_scroll_bar.h",
     "dbus/ash_dbus_services.cc",
     "dbus/ash_dbus_services.h",
     "dbus/display_service_provider.cc",
