@@ -29,10 +29,12 @@ source_set("unit_tests") {
 
   deps = [
     ":pcie_peripheral",
+    "//ash:test_support",
     "//base/test:test_support",
     "//chromeos/dbus/pciguard",
     "//chromeos/dbus/typecd",
     "//services/device/public/cpp:test_support",
+    "//skia",
     "//testing/gtest",
   ]
 }

@@ -8,6 +8,8 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
 
 namespace ash {
@@ -22,6 +24,11 @@ void RecordConnectivityMetric(
     PciePeripheralManager::PciePeripheralConnectivityResults results) {
   base::UmaHistogramEnumeration("Ash.PciePeripheral.ConnectivityResults",
                                 results);
+}
+
+// Checks if the board supports Thunderbolt.
+bool CheckIfThunderboltFilepathExists(std::string root_prefix) {
+  return base::PathExists(base::FilePath(root_prefix + thunderbolt_file_path));
 }
 }  // namespace
 
@@ -71,9 +78,15 @@ void PciePeripheralManager::NotifyPeripheralBlockedReceived() {
     observer.OnPeripheralBlockedReceived();
 }
 
-void PciePeripheralManager::NotifyBillboardDeviceReceived() {
-  for (auto& observer : observer_list_)
-    observer.OnBillboardDeviceConnected();
+void PciePeripheralManager::OnBillboardDeviceConnected(
+    bool billboard_is_supported) {
+  if (!billboard_is_supported) {
+    for (auto& observer : observer_list_)
+      observer.OnBillboardDeviceConnected();
+
+    RecordConnectivityMetric(
+        PciePeripheralConnectivityResults::kBillboardDevice);
+  }
 }
 
 void PciePeripheralManager::OnThunderboltDeviceConnected(
@@ -113,11 +126,13 @@ void PciePeripheralManager::OnBlockedThunderboltDeviceConnected(
 
 void PciePeripheralManager::OnDeviceConnected(
     device::mojom::UsbDeviceInfo* device) {
-  if (device->class_code == kBillboardDeviceClassCode &&
-      !CheckIfThunderboltFilepathExists()) {
-    NotifyBillboardDeviceReceived();
-    RecordConnectivityMetric(
-        PciePeripheralConnectivityResults::kBillboardDevice);
+  if (device->class_code == kBillboardDeviceClassCode) {
+    // PathExist is a blocking call. PostTask it and wait on the result.
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+        base::BindOnce(&CheckIfThunderboltFilepathExists, root_prefix_),
+        base::BindOnce(&PciePeripheralManager::OnBillboardDeviceConnected,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
@@ -128,10 +143,6 @@ void PciePeripheralManager::SetPcieTunnelingAllowedState(
 
 void PciePeripheralManager::SetRootPrefixForTesting(const std::string& prefix) {
   root_prefix_ = prefix;
-}
-
-bool PciePeripheralManager::CheckIfThunderboltFilepathExists() {
-  return base::PathExists(base::FilePath(root_prefix_ + thunderbolt_file_path));
 }
 
 // static
