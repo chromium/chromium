@@ -72,6 +72,8 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
   bool IsPermissionControlledByDse(content::BrowserContext* browser_context,
                                    ContentSettingsType type,
                                    const url::Origin& origin) override;
+  bool IsDseOrigin(content::BrowserContext* browser_context,
+                   const url::Origin& origin) override;
   bool ResetPermissionIfControlledByDse(
       content::BrowserContext* browser_context,
       ContentSettingsType type,

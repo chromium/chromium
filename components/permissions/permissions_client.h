@@ -189,6 +189,11 @@ class PermissionsClient {
       ContentSettingsType type,
       const url::Origin& origin);
 
+  // Returns whether the given origin matches the default search engine (DSE)
+  // origin.
+  virtual bool IsDseOrigin(content::BrowserContext* browser_context,
+                           const url::Origin& origin);
+
   // Resets the permission if it's controlled by the default search
   // engine (DSE). The return value is true if the permission was reset.
   virtual bool ResetPermissionIfControlledByDse(
