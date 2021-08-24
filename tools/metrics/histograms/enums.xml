@@ -14045,6 +14045,7 @@ Called by update_net_error_codes.py.-->
   <int value="78" label="Federated identity request"/>
   <int value="79" label="Javascript JIT"/>
   <int value="80" label="Formfill metadata"/>
+  <int value="82" label="Federated identity active session"/>
 </enum>
 
 <enum name="ContentTypeParseableResult">

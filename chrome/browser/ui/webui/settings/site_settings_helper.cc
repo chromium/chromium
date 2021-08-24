@@ -162,6 +162,7 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::JAVASCRIPT_JIT, nullptr},
     {ContentSettingsType::HTTP_ALLOWED, nullptr},
     {ContentSettingsType::FORMFILL_METADATA, nullptr},
+    {ContentSettingsType::FEDERATED_IDENTITY_ACTIVE_SESSION, nullptr},
 };
 
 static_assert(base::size(kContentSettingsTypeGroupNames) ==

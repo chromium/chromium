@@ -84,6 +84,7 @@ class DownloadManager;
 class ClientHintsControllerDelegate;
 class ContentIndexProvider;
 class DownloadManagerDelegate;
+class FederatedIdentityActiveSessionPermissionContextDelegate;
 class FederatedIdentityRequestPermissionContextDelegate;
 class FederatedIdentitySharingPermissionContextDelegate;
 class FileSystemAccessPermissionContext;
@@ -400,6 +401,11 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   virtual std::unique_ptr<media::VideoDecodePerfHistory>
   CreateVideoDecodePerfHistory();
 
+  // Gets the permission context for allowing session management capabilities
+  // between an identity provider and a relying party if one exists, or
+  // nullptr otherwise.
+  virtual FederatedIdentityActiveSessionPermissionContextDelegate*
+  GetFederatedIdentityActiveSessionPermissionContext();
   // Gets the permission context for issuing WebID requests if one exists, or
   // nullptr otherwise.
   virtual FederatedIdentityRequestPermissionContextDelegate*

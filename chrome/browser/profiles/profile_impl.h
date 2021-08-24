@@ -101,6 +101,8 @@ class ProfileImpl : public Profile {
   content::FileSystemAccessPermissionContext*
   GetFileSystemAccessPermissionContext() override;
   content::ContentIndexProvider* GetContentIndexProvider() override;
+  content::FederatedIdentityActiveSessionPermissionContextDelegate*
+  GetFederatedIdentityActiveSessionPermissionContext() override;
   content::FederatedIdentityRequestPermissionContextDelegate*
   GetFederatedIdentityRequestPermissionContext() override;
   content::FederatedIdentitySharingPermissionContextDelegate*

@@ -75,6 +75,11 @@ Here are the permissions that are currently used:
   This allows a more fine grained control. It is only used with the mediation-oriented mode and is
   implemented by
   [federated_identity_sharing_permission_context.h](../../../chrome/browser/webid/federated_identity_sharing_permission_context.h).
+- **Active Session Permission**: This is used for session management features between the
+  RP and IdP, in particular logout and token renewal. When granted, it enables the IdP to
+  send a first-party credentialed logout request to the RP, and the RP to send first-party
+  credentialed token renewal requests to the IdP. It is revoked after being used for logout,
+  since that terminates the active session on the RP.
 
 
 

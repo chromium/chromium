@@ -277,6 +277,13 @@ enum class ContentSettingsType : int32_t {
   // autofilled on a specific website.
   FORMFILL_METADATA,
 
+  // Setting to indicate that there is an active federated sign-in session
+  // between a specified relying party and a specified identity provider for
+  // a specified account. When this is present it allows access to session
+  // management capabilities between the sites. This setting is associated
+  // with the relying party's origin.
+  FEDERATED_IDENTITY_ACTIVE_SESSION,
+
   NUM_TYPES,
 };
 
