@@ -183,6 +183,9 @@ export class WallpaperCollections extends WithPersonalizationStore {
    * @private
    */
   async onHiddenChanged_(hidden) {
+    if (!hidden) {
+      document.title = this.i18n('title');
+    }
     const iframe = await this.iframePromise_;
     sendVisible(/** @type {!Window} */ (iframe.contentWindow), !hidden);
   }

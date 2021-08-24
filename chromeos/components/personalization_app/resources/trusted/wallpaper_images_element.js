@@ -192,6 +192,9 @@ export class WallpaperImages extends WithPersonalizationStore {
    * @private
    */
   async onHiddenChanged_(hidden) {
+    if (!hidden) {
+      this.shadowRoot.getElementById('main').focus();
+    }
     const iframe = await this.iframePromise_;
     sendVisible(/** @type {!Window} */ (iframe.contentWindow), !hidden);
   }

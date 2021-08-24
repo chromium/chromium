@@ -21,9 +21,18 @@ styles.innerHTML = `
         width: calc(25% - 0.1px) !important;
       }
     }
+    main,
     iframe {
       height: 100%;
       width: 100%;
+    }
+    main:focus,
+    main:focus-visible,
+    main:focus-within,
+    iframe:focus,
+    iframe:focus-visible,
+    iframe:focus-within {
+      outline: none;
     }
   </style>
 </template>`;

@@ -28,7 +28,7 @@ export function onMessageReceived(event) {
       const collections = store.data.backdrop.collections;
 
       const selectedCollection = validateReceivedSelection(event, collections);
-      PersonalizationRouter.instance().selectCollection(selectedCollection.id);
+      PersonalizationRouter.instance().selectCollection(selectedCollection);
       break;
     case EventType.SELECT_LOCAL_COLLECTION:
       PersonalizationRouter.instance().selectLocalCollection();
