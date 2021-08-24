@@ -85,6 +85,7 @@ class MediaStreamDispatcherHost::Broker
   ~Broker() = default;
 
   void OnHostDestroyedOrStopped();
+  void OnHostDestroyedOrStoppedOnUI();
   void OnWebContentsFocused();
   void StartObservingWebContents(int render_process_id, int render_frame_id);
 
@@ -94,10 +95,20 @@ class MediaStreamDispatcherHost::Broker
 };
 
 void MediaStreamDispatcherHost::Broker::OnHostDestroyedOrStopped() {
+  {
+    base::AutoLock lock(lock_);
+    // Ensure the host_ pointer is cleared synchronously on Host being destroyed
+    host_ = nullptr;
+  }
+
+  base::OnceClosure stop_observing_cb = base::BindOnce(
+      &MediaStreamDispatcherHost::Broker::OnHostDestroyedOrStoppedOnUI, this);
+  GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(stop_observing_cb));
+}
+
+void MediaStreamDispatcherHost::Broker::OnHostDestroyedOrStoppedOnUI() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  base::AutoLock lock(lock_);
-  host_ = nullptr;
   web_contents_observer_->StopObserving();
   web_contents_observer_.reset();
 }
@@ -147,9 +158,7 @@ MediaStreamDispatcherHost::MediaStreamDispatcherHost(
 
 MediaStreamDispatcherHost::~MediaStreamDispatcherHost() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  base::OnceClosure stop_observing_cb = base::BindOnce(
-      &MediaStreamDispatcherHost::Broker::OnHostDestroyedOrStopped, broker_);
-  GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(stop_observing_cb));
+  broker_->OnHostDestroyedOrStopped();
   CancelAllRequests();
 }
 
