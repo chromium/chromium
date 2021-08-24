@@ -85,7 +85,7 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   uint32_t displayWidth() const;
   uint32_t displayHeight() const;
 
-  absl::optional<VideoColorSpace*> colorSpace();
+  VideoColorSpace* colorSpace();
 
   uint32_t allocationSize(VideoFrameCopyToOptions* options, ExceptionState&);
 
@@ -139,6 +139,7 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   Member<DOMRectReadOnly> coded_rect_;
   Member<DOMRectReadOnly> visible_rect_;
   Member<VideoColorSpace> color_space_;
+  Member<VideoColorSpace> empty_color_space_;
 };
 
 }  // namespace blink

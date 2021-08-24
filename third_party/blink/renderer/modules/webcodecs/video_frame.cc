@@ -674,10 +674,14 @@ absl::optional<uint64_t> VideoFrame::duration() const {
   return local_frame->metadata().frame_duration->InMicroseconds();
 }
 
-absl::optional<VideoColorSpace*> VideoFrame::colorSpace() {
+VideoColorSpace* VideoFrame::colorSpace() {
   auto local_frame = handle_->frame();
-  if (!local_frame)
-    return absl::nullopt;
+  if (!local_frame) {
+    if (!empty_color_space_)
+      empty_color_space_ = MakeGarbageCollected<VideoColorSpace>();
+
+    return empty_color_space_;
+  }
 
   if (!color_space_) {
     color_space_ =
@@ -932,6 +936,7 @@ void VideoFrame::Trace(Visitor* visitor) const {
   visitor->Trace(coded_rect_);
   visitor->Trace(visible_rect_);
   visitor->Trace(color_space_);
+  visitor->Trace(empty_color_space_);
   ScriptWrappable::Trace(visitor);
 }
 
