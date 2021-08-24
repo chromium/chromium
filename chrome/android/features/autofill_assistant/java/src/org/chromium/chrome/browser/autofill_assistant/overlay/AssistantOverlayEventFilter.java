@@ -77,6 +77,15 @@ class AssistantOverlayEventFilter
     /** The {@link WebContents} this Autofill Assistant is currently associated with. */
     private WebContents mWebContents;
 
+    /**
+     * Coordinates of the visual viewport within the page, if known, in CSS pixels relative to the
+     * origin of the page. This is used to convert pixel coordinates to CSS coordinates.
+     *
+     * The visual viewport includes the portion of the page that is really visible, excluding any
+     * area not fully visible because of the current zoom value.
+     */
+    private final RectF mVisualViewport = new RectF();
+
     /** Touchable area, expressed in CSS pixels relative to the layout viewport. */
     private List<AssistantOverlayRect> mTouchableArea = Collections.emptyList();
 
@@ -165,6 +174,11 @@ class AssistantOverlayEventFilter
 
     void setTapTrackingDurationMs(long durationMs) {
         mTapTrackingDurationMs = durationMs;
+    }
+
+    /** Sets the visual viewport. */
+    void setVisualViewport(RectF visualViewport) {
+        mVisualViewport.set(visualViewport);
     }
 
     /**
@@ -365,9 +379,8 @@ class AssistantOverlayEventFilter
         if (!rect.isFullWidth()) {
             return rect.contains(absoluteXCss, absoluteYCss);
         }
-        RectF rectCompare = new RectF(/* left= */ renderCoordinates.getScrollX(), rect.top,
-                /* right= */ renderCoordinates.getScrollX()
-                        + renderCoordinates.getContentWidthCss(),
+        RectF rectCompare = new RectF(/* left= */ mVisualViewport.left, rect.top,
+                /* right= */ mVisualViewport.left + renderCoordinates.getContentWidthCss(),
                 rect.bottom);
         return rectCompare.contains(absoluteXCss, absoluteYCss);
     }
@@ -384,8 +397,9 @@ class AssistantOverlayEventFilter
                 / (renderCoordinates.getPageScaleFactor()
                         * renderCoordinates.getDeviceScaleFactor());
 
-        float absoluteXCss = (x * physicalToCssPixels) + renderCoordinates.getScrollX();
-        float absoluteYCss = (y * physicalToCssPixels) + renderCoordinates.getScrollY();
+        // TODO(b/195482173): Use renderCoordinates to get left and top, remove mVisualViewport.
+        float absoluteXCss = (x * physicalToCssPixels) + mVisualViewport.left;
+        float absoluteYCss = (y * physicalToCssPixels) + mVisualViewport.top;
 
         for (AssistantOverlayRect rect : mRestrictedArea) {
             if (rectContains(rect, absoluteXCss, absoluteYCss, renderCoordinates)) return false;

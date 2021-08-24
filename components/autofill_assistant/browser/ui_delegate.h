@@ -172,6 +172,12 @@ class UiDelegate {
   virtual void GetTouchableArea(std::vector<RectF>* rectangles) const = 0;
   virtual void GetRestrictedArea(std::vector<RectF>* rectangles) const = 0;
 
+  // Returns the current size of the visual viewport. May be empty if
+  // unknown.
+  //
+  // The rectangle is expressed in absolute CSS coordinates.
+  virtual void GetVisualViewport(RectF* viewport) const = 0;
+
   // Reports a fatal error to Autofill Assistant, which should then stop.
   virtual void OnFatalError(const std::string& error_message,
                             bool show_feedback_chip,

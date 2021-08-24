@@ -311,6 +311,12 @@ class WebController {
       base::OnceCallback<void(const ClientStatus&, const std::string&)>
           callback);
 
+  // Gets the visual viewport coordinates and size.
+  //
+  // The rectangle is expressed in absolute CSS coordinates.
+  virtual void GetVisualViewport(
+      base::OnceCallback<void(const ClientStatus&, const RectF&)> callback);
+
   // Gets the position of the |element|.
   //
   // If unsuccessful, the callback gets the failure status with an empty rect.
@@ -514,6 +520,10 @@ class WebController {
       SendKeyboardInputWorker* worker_to_release,
       base::OnceCallback<void(const ClientStatus&)> callback,
       const ClientStatus& status);
+  void OnGetVisualViewport(
+      base::OnceCallback<void(const ClientStatus&, const RectF&)> callback,
+      const DevtoolsClient::ReplyStatus& reply_status,
+      std::unique_ptr<runtime::EvaluateResult> result);
   void OnGetElementRect(ElementRectGetter* getter_to_release,
                         ElementRectGetter::ElementRectCallback callback,
                         const ClientStatus& rect_status,

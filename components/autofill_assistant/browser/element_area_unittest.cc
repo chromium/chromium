@@ -91,6 +91,9 @@ class ElementAreaTest : public testing::Test {
     ON_CALL(mock_web_controller_, GetElementRect(_, _))
         .WillByDefault(
             RunOnceCallback<1>(ClientStatus(UNEXPECTED_JS_ERROR), RectF()));
+    ON_CALL(mock_web_controller_, GetVisualViewport(_))
+        .WillByDefault(
+            RunOnceCallback<0>(OkClientStatus(), RectF(0, 0, 200, 400)));
 
     element_area_.SetOnUpdate(base::BindRepeating(&ElementAreaTest::OnUpdate,
                                                   base::Unretained(this)));
@@ -109,9 +112,11 @@ class ElementAreaTest : public testing::Test {
 
   void Update() { element_area_.Update(); }
 
-  void OnUpdate(const std::vector<RectF>& touchable_area,
+  void OnUpdate(const RectF& visual_viewport,
+                const std::vector<RectF>& touchable_area,
                 const std::vector<RectF>& restricted_area) {
     on_update_call_count_++;
+    reported_visual_viewport_ = visual_viewport;
     reported_area_ = touchable_area;
     reported_restricted_area_ = restricted_area;
   }
@@ -124,6 +129,7 @@ class ElementAreaTest : public testing::Test {
   FakeScriptExecutorDelegate delegate_;
   ElementArea element_area_;
   int on_update_call_count_ = 0;
+  RectF reported_visual_viewport_;
   std::vector<RectF> reported_area_;
   std::vector<RectF> reported_restricted_area_;
 };
@@ -169,6 +175,7 @@ TEST_F(ElementAreaTest, CallOnUpdate) {
 
   SetElement("#found");
   EXPECT_EQ(on_update_call_count_, 1);
+  EXPECT_THAT(reported_visual_viewport_, MatchingRectF(0, 0, 200, 400));
   EXPECT_THAT(reported_area_, ElementsAre(MatchingRectF(25, 25, 75, 75)));
 }
 
@@ -469,6 +476,38 @@ TEST_F(ElementAreaTest, RestrictedElement) {
   EXPECT_THAT(touchable_rectangles, IsEmpty());
   EXPECT_THAT(restricted_rectangles,
               ElementsAre(MatchingRectF(25, 25, 75, 75)));
+}
+
+TEST_F(ElementAreaTest, DontCallOnUpdateWhenViewportMissing) {
+  Selector expected_selector({"#found"});
+
+  // Swallowing calls to GetVisualViewport guarantees that the viewport
+  // position will never be known.
+  EXPECT_CALL(mock_web_controller_, GetVisualViewport(_)).WillOnce(DoNothing());
+  EXPECT_CALL(mock_web_controller_,
+              GetElementRect(EqualsElement(test_util::MockFindElement(
+                                 mock_web_controller_, expected_selector)),
+                             _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(25, 25, 75, 75)));
+
+  SetElement("#found");
+  EXPECT_EQ(on_update_call_count_, 0);
+}
+
+TEST_F(ElementAreaTest, CallOnUpdateWhenViewportMissingAndEmptyRect) {
+  EXPECT_CALL(mock_web_controller_, GetVisualViewport(_))
+      .WillRepeatedly(
+          RunOnceCallback<0>(ClientStatus(UNEXPECTED_JS_ERROR), RectF()));
+
+  SetElement("#found");
+
+  // A newly empty element area should be reported.
+  on_update_call_count_ = 0;
+  element_area_.Clear();
+
+  EXPECT_EQ(on_update_call_count_, 1);
+  EXPECT_THAT(reported_visual_viewport_, EmptyRectF());
+  EXPECT_THAT(reported_area_, IsEmpty());
 }
 
 }  // namespace autofill_assistant

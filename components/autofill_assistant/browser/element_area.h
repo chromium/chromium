@@ -42,7 +42,8 @@ class ElementArea {
   // The argument reports the areas that corresponds to currently known
   // elements, which might be empty.
   void SetOnUpdate(
-      base::RepeatingCallback<void(const std::vector<RectF>& touchable_area,
+      base::RepeatingCallback<void(const RectF& visual_viewport,
+                                   const std::vector<RectF>& touchable_area,
                                    const std::vector<RectF>& restricted_area)>
           cb) {
     on_update_ = cb;
@@ -57,6 +58,12 @@ class ElementArea {
   // Note that the vector is not cleared before rectangles are added.
   void GetTouchableRectangles(std::vector<RectF>* area);
   void GetRestrictedRectangles(std::vector<RectF>* area);
+
+  // Gets the coordinates of the visual viewport, in CSS pixels relative to the
+  // layout viewport. Empty if the size of the visual viewport is not known.
+  void GetVisualViewport(RectF* visual_viewport) {
+    *visual_viewport = visual_viewport_;
+  }
 
  private:
   friend class ElementAreaTest;
@@ -116,19 +123,29 @@ class ElementArea {
   void OnGetElementRect(const Selector& selector,
                         const ClientStatus& rect_status,
                         const RectF& rect);
+  void OnGetVisualViewport(const ClientStatus& status, const RectF& rect);
   void ReportUpdate();
 
   ScriptExecutorDelegate* const delegate_;
   std::vector<Rectangle> rectangles_;
 
+  // If true, u pdate for the visual viewport position is currently scheduled.
+  bool visual_viewport_pending_update_ = false;
+
+  // Visual viewport coordinates, in CSS pixels. Relative to the layout
+  // viewport.
+  RectF visual_viewport_;
+
   // Cached positions from the last time an update was sent, used to avoid
   // sending updates when nothing has changed.
+  RectF last_visual_viewport_;
   std::vector<Rectangle> last_rectangles_;
 
   // While running, regularly calls Update().
   base::RepeatingTimer timer_;
 
-  base::RepeatingCallback<void(const std::vector<RectF>& touchable_area,
+  base::RepeatingCallback<void(const RectF& visual_viewport,
+                               const std::vector<RectF>& touchable_area,
                                const std::vector<RectF>& restricted_area)>
       on_update_;
 

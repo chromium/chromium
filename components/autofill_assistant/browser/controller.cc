@@ -1676,6 +1676,11 @@ void Controller::GetRestrictedArea(std::vector<RectF>* area) const {
     touchable_element_area_->GetRestrictedRectangles(area);
 }
 
+void Controller::GetVisualViewport(RectF* visual_viewport) const {
+  if (touchable_element_area_)
+    touchable_element_area_->GetVisualViewport(visual_viewport);
+}
+
 void Controller::OnScriptError(const std::string& error_message,
                                Metrics::DropOutReason reason) {
   if (state_ == AutofillAssistantState::STOPPED)
@@ -2041,10 +2046,12 @@ void Controller::OnValueChanged(const std::string& identifier,
 }
 
 void Controller::OnTouchableAreaChanged(
+    const RectF& visual_viewport,
     const std::vector<RectF>& touchable_areas,
     const std::vector<RectF>& restricted_areas) {
   for (ControllerObserver& observer : observers_) {
-    observer.OnTouchableAreaChanged(touchable_areas, restricted_areas);
+    observer.OnTouchableAreaChanged(visual_viewport, touchable_areas,
+                                    restricted_areas);
   }
 }
 

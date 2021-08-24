@@ -82,6 +82,10 @@ class ControllerObserver : public base::CheckedObserver {
   // Updates the area of the visible viewport that is accessible when the
   // overlay state is OverlayState::PARTIAL.
   //
+  // |visual_viewport| contains the position and size of the visual viewport in
+  // the layout viewport. It might be empty if not known or the touchable area
+  // is empty.
+  //
   // |touchable_areas| contains one element per configured rectangle that should
   // be visible/touchable, though these can correspond to empty rectangles.
   //
@@ -91,6 +95,7 @@ class ControllerObserver : public base::CheckedObserver {
   //
   // All rectangles are expressed in absolute CSS coordinates.
   virtual void OnTouchableAreaChanged(
+      const RectF& visual_viewport,
       const std::vector<RectF>& touchable_areas,
       const std::vector<RectF>& restricted_areas) = 0;
 
