@@ -3524,6 +3524,8 @@ static_library("test_support") {
     "../ash/login/test/logged_in_user_mixin.h",
     "../ash/login/test/login_manager_mixin.cc",
     "../ash/login/test/login_manager_mixin.h",
+    "../ash/login/test/login_or_lock_screen_visible_waiter.cc",
+    "../ash/login/test/login_or_lock_screen_visible_waiter.h",
     "../ash/login/test/oobe_auth_page_waiter.cc",
     "../ash/login/test/oobe_auth_page_waiter.h",
     "../ash/login/test/oobe_screen_exit_waiter.cc",

@@ -18,12 +18,12 @@
 
 namespace content {
 class WebUI;
-class WindowedNotificationObserver;
 }  // namespace content
 
 namespace chromeos {
 
 class FakeUpdateEngineClient;
+class LoginOrLockScreenVisibleWaiter;
 
 // Base class for OOBE, login, SAML and Kiosk tests.
 class OobeBaseTest : public MixinBasedInProcessBrowserTest {
@@ -83,8 +83,7 @@ class OobeBaseTest : public MixinBasedInProcessBrowserTest {
 
   FakeUpdateEngineClient* update_engine_client_ = nullptr;
 
-  std::unique_ptr<content::WindowedNotificationObserver>
-      login_screen_load_observer_;
+  std::unique_ptr<LoginOrLockScreenVisibleWaiter> login_screen_load_observer_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 

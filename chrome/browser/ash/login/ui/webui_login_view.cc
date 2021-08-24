@@ -93,8 +93,6 @@ WebUILoginView::WebUILoginView(const WebViewSettings& settings,
     : settings_(settings), controller_(controller) {
   ChromeKeyboardControllerClient::Get()->AddObserver(this);
 
-  registrar_.Add(this, chrome::NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE,
-                 content::NotificationService::AllSources());
   registrar_.Add(this, chrome::NOTIFICATION_APP_TERMINATING,
                  content::NotificationService::AllSources());
 
@@ -303,33 +301,25 @@ void WebUILoginView::AboutToRequestFocusFromTabTraversal(bool reverse) {
 void WebUILoginView::Observe(int type,
                              const content::NotificationSource& source,
                              const content::NotificationDetails& details) {
-  switch (type) {
-    case chrome::NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE: {
-      OnLoginPromptVisible();
-      registrar_.Remove(this, chrome::NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE,
-                        content::NotificationService::AllSources());
-      session_observation_.Reset();
-      break;
-    }
-    case chrome::NOTIFICATION_APP_TERMINATING: {
-      // In some tests, WebUILoginView remains after LoginScreenClientImpl gets
-      // deleted on shutdown. It should unregister itself before the deletion
-      // happens.
-      if (observing_system_tray_focus_) {
-        LoginScreenClientImpl::Get()->RemoveSystemTrayObserver(this);
-        observing_system_tray_focus_ = false;
-      }
-      break;
-    }
-    default:
-      NOTREACHED() << "Unexpected notification " << type;
+  DCHECK_EQ(chrome::NOTIFICATION_APP_TERMINATING, type)
+      << "Unexpected notification " << type;
+
+  // In some tests, WebUILoginView remains after LoginScreenClientImpl gets
+  // deleted on shutdown. It should unregister itself before the deletion
+  // happens.
+  if (observing_system_tray_focus_) {
+    LoginScreenClientImpl::Get()->RemoveSystemTrayObserver(this);
+    observing_system_tray_focus_ = false;
   }
 }
 
 void WebUILoginView::OnNetworkErrorScreenShown() {
   OnLoginPromptVisible();
-  registrar_.Remove(this, chrome::NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE,
-                    content::NotificationService::AllSources());
+  session_observation_.Reset();
+}
+
+void WebUILoginView::OnLoginOrLockScreenVisible() {
+  OnLoginPromptVisible();
   session_observation_.Reset();
 }
 

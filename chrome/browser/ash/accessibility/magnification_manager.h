@@ -11,9 +11,9 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/core/session_manager_observer.h"
 #include "components/user_manager/user_manager.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "ui/events/event_handler.h"
 #include "ui/views/accessibility/ax_event_observer.h"
 
@@ -31,7 +31,7 @@ namespace ash {
 //   - Watch change of the pref. When the pref changes, the setting of the
 //     magnifier will interlock with it.
 class MagnificationManager
-    : public content::NotificationObserver,
+    : public session_manager::SessionManagerObserver,
       public user_manager::UserManager::UserSessionStateObserver,
       public ProfileObserver,
       public ui::EventHandler,
@@ -85,10 +85,8 @@ class MagnificationManager
   MagnificationManager();
   ~MagnificationManager() override;
 
-  // content::NotificationObserver overrides:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // session_manager::SessionManagerObserver:
+  void OnLoginOrLockScreenVisible() override;
 
   // user_manager::UserManager::UserSessionStateObserver overrides:
   void ActiveUserChanged(user_manager::User* active_user) override;
@@ -115,7 +113,10 @@ class MagnificationManager
   bool keep_focus_centered_ = false;
   double scale_ = 0.0;
 
-  content::NotificationRegistrar registrar_;
+  base::ScopedObservation<session_manager::SessionManager,
+                          session_manager::SessionManagerObserver>
+      session_observation_{this};
+
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   base::WeakPtrFactory<MagnificationManager> weak_ptr_factory_{this};
 

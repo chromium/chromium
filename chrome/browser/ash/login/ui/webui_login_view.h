@@ -139,6 +139,7 @@ class WebUILoginView : public views::View,
 
   // session_manager::SessionManagerObserver:
   void OnNetworkErrorScreenShown() override;
+  void OnLoginOrLockScreenVisible() override;
 
  private:
   // Map type for the accelerator-to-identifier map.

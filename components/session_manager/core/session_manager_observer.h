@@ -32,6 +32,20 @@ class SessionManagerObserver : public base::CheckedObserver {
   // Invoked when a network error message is displayed on the WebUI login
   // screen.
   virtual void OnNetworkErrorScreenShown() {}
+
+  // Invoked when the specific part of login/lock WebUI is considered to be
+  // visible. That moment is tracked as the first paint event after
+  // `OnNetworkErrorScreenShown()`.
+  //
+  // Possible series of notifications:
+  // 1. Boot into fresh OOBE. `OnLoginOrLockScreenVisible()`.
+  // 2. Boot into user pods list (normal boot). Same for lock screen.
+  //    `OnLoginOrLockScreenVisible()`.
+  // 3. Boot into GAIA sign in UI (user pods display disabled or no users):
+  //    if no network is connected or flaky network
+  //    (`OnLoginOrLockScreenVisible()` + `OnNetworkErrorScreenShown()`).
+  // 4. Boot into retail mode. `OnLoginOrLockScreenVisible()`.
+  virtual void OnLoginOrLockScreenVisible() {}
 };
 
 }  // namespace session_manager

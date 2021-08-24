@@ -14,15 +14,11 @@
 #include "base/bind.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/focused_node_details.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_source.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/views/accessibility/ax_event_manager.h"
@@ -149,8 +145,7 @@ void MagnificationManager::SetProfileForTest(Profile* profile) {
 }
 
 MagnificationManager::MagnificationManager() {
-  registrar_.Add(this, chrome::NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE,
-                 content::NotificationService::AllSources());
+  session_observation_.Observe(session_manager::SessionManager::Get());
   user_manager::UserManager::Get()->AddSessionStateObserver(this);
   views::AXEventManager::Get()->AddObserver(this);
 }
@@ -161,19 +156,11 @@ MagnificationManager::~MagnificationManager() {
   user_manager::UserManager::Get()->RemoveSessionStateObserver(this);
 }
 
-void MagnificationManager::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  switch (type) {
-    case chrome::NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE: {
-      // Update |profile_| when entering the login screen.
-      Profile* profile = ProfileManager::GetActiveUserProfile();
-      if (ProfileHelper::IsSigninProfile(profile))
-        SetProfile(profile);
-      break;
-    }
-  }
+void MagnificationManager::OnLoginOrLockScreenVisible() {
+  // Update `profile_` when entering the login screen.
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  if (ProfileHelper::IsSigninProfile(profile))
+    SetProfile(profile);
 }
 
 void MagnificationManager::ActiveUserChanged(user_manager::User* active_user) {

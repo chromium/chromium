@@ -26,8 +26,6 @@
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display_observer.h"
@@ -101,6 +99,7 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
 
   // session_manager::SessionManagerObserver:
   void OnNetworkErrorScreenShown() override;
+  void OnLoginOrLockScreenVisible() override;
 
   // Trace id for ShowLoginWebUI event (since there exists at most one login
   // WebUI at a time).
@@ -113,11 +112,6 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
 
  protected:
   class KeyboardDrivenOobeKeyHandler;
-
-  // LoginDisplayHost:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
 
   // content::WebContentsObserver:
   void RenderProcessGone(base::TerminationStatus status) override;

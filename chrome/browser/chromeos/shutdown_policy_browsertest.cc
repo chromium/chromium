@@ -20,6 +20,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
+#include "chrome/browser/ash/login/test/login_or_lock_screen_visible_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/ui/webui_login_view.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
@@ -30,7 +31,6 @@
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/test/browser_test.h"
@@ -227,9 +227,7 @@ class ShutdownPolicyLoginTest : public ShutdownPolicyBaseTest {
   void SetUpOnMainThread() override {
     ShutdownPolicyBaseTest::SetUpOnMainThread();
 
-    content::WindowedNotificationObserver(
-        chrome::NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE,
-        content::NotificationService::AllSources()).Wait();
+    LoginOrLockScreenVisibleWaiter().Wait();
     LoginDisplayHost* host = LoginDisplayHost::default_host();
     ASSERT_TRUE(host);
     ASSERT_TRUE(host->GetOobeWebContents());

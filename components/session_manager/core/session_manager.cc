@@ -112,6 +112,12 @@ void SessionManager::NotifyNetworkErrorScreenShown() {
     observer.OnNetworkErrorScreenShown();
 }
 
+void SessionManager::NotifyLoginOrLockScreenVisible() {
+  login_or_lock_screen_shown_for_test_ = true;
+  for (auto& observer : observers_)
+    observer.OnLoginOrLockScreenVisible();
+}
+
 void SessionManager::NotifyUserLoggedIn(const AccountId& user_account_id,
                                         const std::string& user_id_hash,
                                         bool browser_restart,

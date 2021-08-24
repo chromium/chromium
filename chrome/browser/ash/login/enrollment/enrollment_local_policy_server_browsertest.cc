@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/login/test/kiosk_apps_mixin.h"
 #include "chrome/browser/ash/login/test/kiosk_test_helpers.h"
 #include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
+#include "chrome/browser/ash/login/test/login_or_lock_screen_visible_waiter.h"
 #include "chrome/browser/ash/login/test/network_portal_detector_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
@@ -34,7 +35,6 @@
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/chromeos/login/device_disabled_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
@@ -138,17 +138,15 @@ class EnrollmentLocalPolicyServerBase : public OobeBaseTest {
     test::OobeJS().ClickOnPath(kEnterprisePrimaryButton);
   }
 
-  std::unique_ptr<content::WindowedNotificationObserver>
+  std::unique_ptr<chromeos::LoginOrLockScreenVisibleWaiter>
   CreateLoginVisibleWaiter() {
-    return std::make_unique<content::WindowedNotificationObserver>(
-        chrome::NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE,
-        content::NotificationService::AllSources());
+    return std::make_unique<chromeos::LoginOrLockScreenVisibleWaiter>();
   }
 
   void ConfirmAndWaitLoginScreen() {
     auto login_screen_waiter = CreateLoginVisibleWaiter();
     enrollment_screen()->OnConfirmationClosed();
-    login_screen_waiter->Wait();
+    login_screen_waiter->WaitEvenIfShown();
   }
 
   void AddPublicUser(const std::string& account_id) {
@@ -559,7 +557,7 @@ IN_PROC_BROWSER_TEST_F(EnrollmentLocalPolicyServerBase,
   EXPECT_TRUE(InstallAttributes::Get()->IsCloudManaged());
   auto login_waiter = CreateLoginVisibleWaiter();
   enrollment_ui_.LeaveDeviceAttributeErrorScreen();
-  login_waiter->Wait();
+  login_waiter->WaitEvenIfShown();
   OobeScreenWaiter(GetFirstSigninScreen()).Wait();
 }
 

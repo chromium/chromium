@@ -93,8 +93,6 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "services/audio/public/cpp/sounds/sounds_manager.h"
@@ -450,11 +448,8 @@ LoginDisplayHostWebUI::LoginDisplayHostWebUI()
 
   ui::DeviceDataManager::GetInstance()->AddObserver(this);
 
-  // When we wait for WebUI to be initialized we wait for one of
-  // these notifications.
-  registrar_.Add(this, chrome::NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE,
-                 content::NotificationService::AllSources());
-
+  // When we wait for WebUI to be initialized we wait for the error screen to be
+  // shown or the login or lock screen to be shown.
   session_observation_.Observe(session_manager::SessionManager::Get());
 
   audio::SoundsManager* manager = audio::SoundsManager::Get();
@@ -685,23 +680,6 @@ content::WebContents* LoginDisplayHostWebUI::GetOobeWebContents() const {
   if (!login_view_)
     return nullptr;
   return login_view_->GetWebContents();
-}
-////////////////////////////////////////////////////////////////////////////////
-// LoginDisplayHostWebUI, content:NotificationObserver:
-
-void LoginDisplayHostWebUI::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  LoginDisplayHostCommon::Observe(type, source, details);
-
-  if (chrome::NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE == type) {
-    VLOG(1) << "Login WebUI >> WEBUI_VISIBLE";
-    ShowWebUI();
-    registrar_.Remove(this, chrome::NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE,
-                      content::NotificationService::AllSources());
-    session_observation_.Reset();
-  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1076,10 +1054,14 @@ void LoginDisplayHostWebUI::RemoveObserver(
 }
 
 void LoginDisplayHostWebUI::OnNetworkErrorScreenShown() {
+  VLOG(1) << "Login WebUI >> WEBUI_VISIBLE(ERROR_SCREEN)";
+  ShowWebUI();
+  session_observation_.Reset();
+}
+
+void LoginDisplayHostWebUI::OnLoginOrLockScreenVisible() {
   VLOG(1) << "Login WebUI >> WEBUI_VISIBLE";
   ShowWebUI();
-  registrar_.Remove(this, chrome::NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE,
-                    content::NotificationService::AllSources());
   session_observation_.Reset();
 }
 
@@ -1261,27 +1243,26 @@ void ShowLoginWizard(OobeScreenId first_screen) {
   TriggerShowLoginWizardFinish(locale, std::move(data));
 }
 
-class WebUIToViewsSwitchMetricsReporter : public content::NotificationObserver {
+class WebUIToViewsSwitchMetricsReporter
+    : public session_manager::SessionManagerObserver {
  public:
   WebUIToViewsSwitchMetricsReporter() {
-    registrar_.Add(this, chrome::NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE,
-                   content::NotificationService::AllSources());
+    session_observation_.Observe(session_manager::SessionManager::Get());
   }
 
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override {
-    DCHECK_EQ(LoginDisplayHost::default_host()->GetOobeUI()->display_type(),
-              OobeUI::kGaiaSigninDisplay);
+  // session_manager::SessionManagerObserver:
+  void OnLoginOrLockScreenVisible() override {
+    DCHECK_EQ(OobeUI::kGaiaSigninDisplay,
+              LoginDisplayHost::default_host()->GetOobeUI()->display_type());
     base::UmaHistogramTimes("OOBE.WebUIToViewsSwitch.Duration",
                             timer_.Elapsed());
-    registrar_.Remove(this, chrome::NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE,
-                      content::NotificationService::AllSources());
     base::SequencedTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
   }
 
  private:
-  content::NotificationRegistrar registrar_;
+  base::ScopedObservation<session_manager::SessionManager,
+                          session_manager::SessionManagerObserver>
+      session_observation_{this};
   base::ElapsedTimer timer_;
 };
 

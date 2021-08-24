@@ -7,9 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <memory>
 #include <utility>
-#include <vector>
 
 #include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
 #include "ash/components/audio/sounds.h"
@@ -278,9 +276,8 @@ void AccessibilityManager::ShowAccessibilityHelp(Browser* browser) {
 }
 
 AccessibilityManager::AccessibilityManager() {
-  notification_registrar_.Add(this,
-                              chrome::NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE,
-                              content::NotificationService::AllSources());
+  session_observation_.Observe(session_manager::SessionManager::Get());
+
   notification_registrar_.Add(this, chrome::NOTIFICATION_APP_TERMINATING,
                               content::NotificationService::AllSources());
 
@@ -1481,19 +1478,15 @@ void AccessibilityManager::Observe(
     int type,
     const content::NotificationSource& source,
     const content::NotificationDetails& details) {
-  switch (type) {
-    case chrome::NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE: {
-      // Update |profile_| when entering the login screen.
-      Profile* profile = ProfileManager::GetActiveUserProfile();
-      if (ProfileHelper::IsSigninProfile(profile))
-        SetProfile(profile);
-      break;
-    }
-    case chrome::NOTIFICATION_APP_TERMINATING: {
-      app_terminating_ = true;
-      break;
-    }
-  }
+  DCHECK_EQ(chrome::NOTIFICATION_APP_TERMINATING, type);
+  app_terminating_ = true;
+}
+
+void AccessibilityManager::OnLoginOrLockScreenVisible() {
+  // Update `profile_` when entering the login screen.
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  if (ProfileHelper::IsSigninProfile(profile))
+    SetProfile(profile);
 }
 
 void AccessibilityManager::OnFocusChangedInPage(

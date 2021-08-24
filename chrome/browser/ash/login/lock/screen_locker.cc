@@ -64,7 +64,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/device_service.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -215,10 +214,7 @@ void ScreenLocker::Init() {
   LoginScreen::Get()->ShowLockScreen();
   views_screen_locker_->Init();
 
-  content::NotificationService::current()->Notify(
-      chrome::NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE,
-      content::NotificationService::AllSources(),
-      content::NotificationService::NoDetails());
+  session_manager::SessionManager::Get()->NotifyLoginOrLockScreenVisible();
 
   // Start locking on ash side.
   SessionControllerClientImpl::Get()->StartLock(base::BindOnce(

@@ -12,9 +12,9 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
+#include "chrome/browser/ash/login/test/login_or_lock_screen_visible_waiter.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_mixin.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/net/nss_context.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -31,7 +31,6 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
 #include "content/public/test/test_utils.h"
@@ -161,9 +160,7 @@ class UserAffiliationBrowserTest
     MixinBasedInProcessBrowserTest::CreatedBrowserMainParts(browser_main_parts);
 
     login_ui_visible_waiter_ =
-        std::make_unique<content::WindowedNotificationObserver>(
-            chrome::NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE,
-            content::NotificationService::AllSources());
+        std::make_unique<chromeos::LoginOrLockScreenVisibleWaiter>();
   }
 
   void SetUpOnMainThread() override {
@@ -239,7 +236,7 @@ class UserAffiliationBrowserTest
 
   std::unique_ptr<crypto::ScopedTestSystemNSSKeySlot> test_system_slot_;
 
-  std::unique_ptr<content::WindowedNotificationObserver>
+  std::unique_ptr<chromeos::LoginOrLockScreenVisibleWaiter>
       login_ui_visible_waiter_;
 
   chromeos::DeviceStateMixin device_state_{

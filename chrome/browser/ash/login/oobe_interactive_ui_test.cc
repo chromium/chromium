@@ -32,6 +32,7 @@
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
+#include "chrome/browser/ash/login/test/login_or_lock_screen_visible_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
@@ -41,7 +42,6 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/extensions/quick_unlock_private/quick_unlock_private_api.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -797,12 +797,9 @@ void OobeZeroTouchInteractiveUITest::ZeroTouchEndToEnd() {
 
   test::WaitForEnrollmentScreen();
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
-  auto login_screen_waiter =
-      std::make_unique<content::WindowedNotificationObserver>(
-          chrome::NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE,
-          content::NotificationService::AllSources());
+  auto login_screen_waiter = std::make_unique<LoginOrLockScreenVisibleWaiter>();
   enrollment_ui_.LeaveSuccessScreen();
-  login_screen_waiter->Wait();
+  login_screen_waiter->WaitEvenIfShown();
 
   PerformSessionSignInSteps();
 
