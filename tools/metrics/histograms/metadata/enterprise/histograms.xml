@@ -381,6 +381,36 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.CBCMRealTimeReportEnqueue"
+    enum="EnterpriseCloudReportingStatusCode" expires_after="2022-10-01">
+  <owner>zmin@chromium.org</owner>
+  <owner>src/chrome/browser/enterprise/reporting/OWNERS</owner>
+  <summary>
+    Recorded when real time report enter the queue. It indicates whether the
+    report is pushed to the queue successfully or not.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.CBCMRealTimeReportQueueConfigurationCreation"
+    enum="EnterpriseCloudReportingStatusCode" expires_after="2022-10-01">
+  <owner>zmin@chromium.org</owner>
+  <owner>src/chrome/browser/enterprise/reporting/OWNERS</owner>
+  <summary>
+    Recorded when real time report queue is created. It indicates whether the
+    configuration is created successfully or not.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.CBCMRealTimeReportQueueCreation"
+    enum="EnterpriseCloudReportingStatusCode" expires_after="2022-10-01">
+  <owner>zmin@chromium.org</owner>
+  <owner>src/chrome/browser/enterprise/reporting/OWNERS</owner>
+  <summary>
+    Recorded when real time report queue is created. It indicates whether the
+    queue is created successfully or not.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.CBCMRemoteCommand.Executed"
     enum="RemoteCommandExecutionStatus" expires_after="2022-01-01">
   <owner>anthonyvd@chromium.org</owner>
