@@ -307,7 +307,7 @@ void ManagedConfigurationAPI::ProcessDecodedConfiguration(
     const url::Origin& origin,
     const std::string& url_hash,
     const data_decoder::DataDecoder::ValueOrError decoding_result) {
-  if (!decoding_result.value) {
+  if (!decoding_result.value || !decoding_result.value->is_dict()) {
     VLOG(1) << "Could not fetch managed configuration for app with origin = "
             << origin.Serialize();
     PostStoreConfiguration(origin, base::DictionaryValue());
