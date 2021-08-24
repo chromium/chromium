@@ -541,10 +541,9 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForBrowserState(_browserState);
   // If sign-in is disabled by policy there should not be a sign-in promo.
-  if (!signin::IsSigninAllowedByPolicy(_browserState->GetPrefs())) {
-    // Ensure that the user sign-in state always reflects the sign-in allowed
-    // preference.
-    DCHECK(!authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin));
+  if (!signin::IsSigninAllowedByPolicy(_browserState->GetPrefs()) ||
+      ([self isSyncDisabledByPolicy] &&
+       !authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin))) {
     item = [self signinDisabledByPolicyTextItem];
   } else if (self.shouldDisplaySyncPromo) {
     // Create the sign-in promo mediator if it doesn't exist.
@@ -629,6 +628,9 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 // Returns YES if the Sync service is available and all promos have not been
 // previously closed or seen too many times by a single user account.
 - (BOOL)shouldDisplaySyncPromo {
+  if ([self isSyncDisabledByPolicy])
+    return false;
+
   SyncSetupService* syncSetupService =
       SyncSetupServiceFactory::GetForBrowserState(_browserState);
   return [SigninPromoViewMediator
@@ -1100,14 +1102,12 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
     case SettingsItemTypeSigninDisabled: {
       // Adds a trailing button with more information when the sign-in policy
       // has been enabled by the organization.
-      if (!signin::IsSigninAllowedByPolicy(_browserState->GetPrefs())) {
-        TableViewInfoButtonCell* managedCell =
-            base::mac::ObjCCastStrict<TableViewInfoButtonCell>(cell);
-        [managedCell.trailingButton
-                   addTarget:self
-                      action:@selector(didTapSigninDisabledInfoButton:)
-            forControlEvents:UIControlEventTouchUpInside];
-      }
+      TableViewInfoButtonCell* managedCell =
+          base::mac::ObjCCastStrict<TableViewInfoButtonCell>(cell);
+      [managedCell.trailingButton
+                 addTarget:self
+                    action:@selector(didTapSigninDisabledInfoButton:)
+          forControlEvents:UIControlEventTouchUpInside];
       break;
     }
     case SettingsItemTypeManagedArticlesForYou: {
