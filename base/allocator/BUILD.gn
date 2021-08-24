@@ -5,6 +5,7 @@
 import("//base/allocator/allocator.gni")
 import("//build/buildflag_header.gni")
 import("//build/config/compiler/compiler.gni")
+import("//build/config/compiler/pgo/pgo.gni")
 import("//build/config/dcheck_always_on.gni")
 
 declare_args() {
@@ -329,6 +330,13 @@ buildflag_header("buildflags") {
       _use_backup_ref_ptr && enable_runtime_backup_ref_ptr_control &&
       !_put_ref_count_in_previous_slot
 
+  # Disable freelist hardening on bots only, to get performance numbers.
+  # Perf bots run official builds *without* PGO to get better reproducibility
+  # across revisions.
+  # See //tools/mb_mb_config.pyl, 'pgo_phase_0'.
+  _disable_freelist_hardening_on_perf_bots =
+      chrome_pgo_phase == 0 && is_official_build
+
   flags = [
     "USE_ALLOCATOR_SHIM=$use_allocator_shim",
     "USE_TCMALLOC=$_use_tcmalloc_as_malloc",
@@ -344,6 +352,7 @@ buildflag_header("buildflags") {
     "NEVER_REMOVE_FROM_BRP_POOL_BLOCKLIST=$_never_remove_from_brp_pool_from_blocklist",
     "USE_DEDICATED_PARTITION_FOR_ALIGNED_ALLOC_AT_INIT=$_use_dedicated_partition_for_aligned_alloc_at_init",
     "USE_DEDICATED_PARTITION_FOR_ALIGNED_ALLOC_UPON_ENABLING_BRP=$_use_dedicated_partition_for_aligned_alloc_upon_enabling_brp",
+    "DISABLE_FREELIST_HARDENING_ON_PERF_BOTS=$_disable_freelist_hardening_on_perf_bots",
   ]
 }
 
