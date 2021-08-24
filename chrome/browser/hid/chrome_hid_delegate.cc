@@ -104,7 +104,6 @@ bool ChromeHidDelegate::IsFidoAllowedForOrigin(const url::Origin& origin) {
       base::MakeFixedFlatSet<base::StringPiece>({
           "ckcendljdlmgnhghiaomidhiiclmapok",  // gnubbyd-v3 dev
           "lfboplenmmjcmpbkeemecobbadnmpfhi",  // gnubbyd-v3 prod
-          "pebbhcjfokadbgbnlmogdkkaahmamnap",  // gnubbyd-v3 local
       });
 
   if (origin.scheme() == extensions::kExtensionScheme &&
