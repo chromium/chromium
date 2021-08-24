@@ -4,7 +4,7 @@
 
 #include "chromeos/components/multidevice/logging/log_buffer.h"
 
-#include "base/lazy_instance.h"
+#include "base/no_destructor.h"
 
 namespace chromeos {
 
@@ -14,9 +14,6 @@ namespace {
 
 // The maximum number of logs that can be stored in the buffer.
 const size_t kMaxBufferSize = 1000;
-
-// The global instance returned by LogBuffer::GetInstance().
-base::LazyInstance<LogBuffer>::Leaky g_log_buffer = LAZY_INSTANCE_INITIALIZER;
 
 }  // namespace
 
@@ -33,7 +30,8 @@ LogBuffer::~LogBuffer() {}
 
 // static
 LogBuffer* LogBuffer::GetInstance() {
-  return &g_log_buffer.Get();
+  static base::NoDestructor<LogBuffer> log_buffer;
+  return log_buffer.get();
 }
 
 void LogBuffer::AddObserver(Observer* observer) {
