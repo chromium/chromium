@@ -8,7 +8,7 @@
   await TestRunner.showPanel('sources');
   await TestRunner.addScriptTag('../debugger/resources/unformatted2.js');
 
-  Bindings.breakpointManager.storage._breakpoints = new Map();
+  Bindings.breakpointManager.storage.breakpoints = new Map();
   var panel = UI.panels.sources;
   var scriptFormatter;
   var formattedSourceFrame;

@@ -13,8 +13,8 @@
 
   var content = ['', '', 'var express = require("express");', '//TODO'].join('\n');
 
-  var fsContent = Persistence.Persistence.NodeShebang + content;
-  var nodeContent = Persistence.Persistence.NodePrefix + content + Persistence.Persistence._NodeSuffix;
+  var fsContent = Persistence.Persistence._NodeShebang + content;
+  var nodeContent = Persistence.Persistence._NodePrefix + content + Persistence.Persistence._NodeSuffix;
 
   TestRunner.addResult('Initial fileSystem content:');
   TestRunner.addResult(indent(fsContent));

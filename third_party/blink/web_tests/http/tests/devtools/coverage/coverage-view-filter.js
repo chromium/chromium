@@ -24,7 +24,7 @@
 
   function setFilter(text) {
     coverageView.filterInput.setValue(text);
-    coverageView.filterInput._onChangeCallback();
+    coverageView.filterInput.onChangeCallback();
     TestRunner.addResult(`Filter: '${text}'`);
   }
 })();

@@ -16,7 +16,7 @@
 
   function dumpDatabase() {
     TestRunner.addResult('Dumping database:');
-    const database = indexedDBModel.databases.get(databaseId);
+    const database = indexedDBModel.databasesInternal.get(databaseId);
     if (!database)
       return;
     TestRunner.addResult(database.databaseId.name);

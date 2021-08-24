@@ -30,7 +30,7 @@
   TestRunner.completeTest();
 
   function dumpTabs(title) {
-    var tabbedPane = UI.panels.sources.sourcesView._editorContainer._tabbedPane;
+    var tabbedPane = UI.panels.sources.sourcesView().editorContainer.tabbedPane;
     var tabs = tabbedPane.tabs;
     TestRunner.addResult(title);
     for (var i = 0; i < tabs.length; ++i) {

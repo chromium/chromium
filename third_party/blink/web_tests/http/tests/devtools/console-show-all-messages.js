@@ -14,7 +14,7 @@
     name: 'myIFrame'
   });
 
-  var filterByExecutionContextSetting = Console.ConsoleView.instance().filter._filterByExecutionContextSetting;
+  var filterByExecutionContextSetting = Console.ConsoleView.instance().filter.filterByExecutionContextSetting;
   Console.ConsoleView.instance().setImmediatelyFilterMessagesForTest();
 
   //we can't use usual ConsoleTestRunner.dumpConsoleMessages(), because it dumps url of message and it flakes in case of iframe

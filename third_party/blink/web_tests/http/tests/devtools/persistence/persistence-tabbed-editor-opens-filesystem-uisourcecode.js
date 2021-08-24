@@ -28,7 +28,7 @@
   }
 
   function dumpEditorTabs(title) {
-    var editorContainer = UI.panels.sources.sourcesView._editorContainer;
+    var editorContainer = UI.panels.sources.sourcesView().editorContainer;
     var openedUISourceCodes = [...editorContainer.tabIds.keys()];
     openedUISourceCodes.sort((a, b) => a.url > b.url ? 1 : b.url > a.url ? -1 : 0);
     TestRunner.addResult(title);

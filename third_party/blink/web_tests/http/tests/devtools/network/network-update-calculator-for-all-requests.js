@@ -8,7 +8,7 @@
   await TestRunner.showPanel('network');
 
   var target = UI.panels.network.networkLogView;
-  target.resourceCategoryFilterUI._toggleTypeFilter(Common.resourceTypes.XHR.category().title(), false);
+  target.resourceCategoryFilterUI.toggleTypeFilter(Common.resourceTypes.XHR.category().title(), false);
   TestRunner.addResult('Clicked \'' + Common.resourceTypes.XHR.name() + '\' button.');
   target.reset();
 
@@ -18,7 +18,7 @@
     request.setRequestIdForTest(id);
     request.setIssueTime(startTime);
     request.endTime = endTime;
-    TestRunner.networkManager.dispatcher._startNetworkRequest(request);
+    TestRunner.networkManager.dispatcher.startNetworkRequest(request);
     target.refresh();
 
     var isFilteredOut = Network.NetworkLogView.isRequestFilteredOut(
@@ -28,7 +28,7 @@
         'Appended request [' + request.requestId() + '] of type \'' + request.resourceType().name() +
         '\' is hidden: ' + isFilteredOut + ' from [' + request.startTime + '] to [' + request.endTime + ']');
     TestRunner.addResult(
-        'Timeline: from [' + target.calculator.minimumBoundary() + '] to [' + target._calculator.maximumBoundary() +
+        'Timeline: from [' + target.calculator().minimumBoundary() + '] to [' + target.calculator().maximumBoundary() +
         ']');
   }
 

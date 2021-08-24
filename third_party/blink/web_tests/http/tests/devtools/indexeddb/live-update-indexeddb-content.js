@@ -11,14 +11,14 @@
   await TestRunner.showPanel('resources');
 
   let indexedDBModel = TestRunner.mainTarget.model(Resources.IndexedDBModel);
-  indexedDBModel.throttler._timeout = 0;
+  indexedDBModel.throttler.timeout = 0;
   var objectStore;
   var objectStoreView;
   var indexView;
 
   function isMarkedNeedsRefresh() {
     if (!objectStore) {
-      objectStore = UI.panels.resources.sidebar.indexedDBListTreeElement._idbDatabaseTreeElements[0].childAt(0);
+      objectStore = UI.panels.resources.sidebar.indexedDBListTreeElement.idbDatabaseTreeElements[0].childAt(0);
       objectStore.onselect(false);
       objectStore.childAt(0).onselect(false);
       objectStoreView = objectStore.view;

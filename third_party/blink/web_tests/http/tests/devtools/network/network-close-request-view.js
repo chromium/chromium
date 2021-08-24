@@ -15,11 +15,11 @@
   TestRunner.addResult('Showing request foo');
   panel.onRequestSelected({data: requestFoo});
   panel.showRequestPanel();
-  TestRunner.addResult('Network Item View: ' + (panel.networkItemView && panel._networkItemView.isShowing()));
+  TestRunner.addResult('Network Item View: ' + (panel.networkItemView && panel.networkItemView.isShowing()));
 
   TestRunner.addResult('Hiding request');
   panel.hideRequestPanel();
-  TestRunner.addResult('Network Item View: ' + (panel.networkItemView && panel._networkItemView.isShowing()));
+  TestRunner.addResult('Network Item View: ' + (panel.networkItemView && panel.networkItemView.isShowing()));
 
   TestRunner.completeTest();
 })();

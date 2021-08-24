@@ -84,7 +84,7 @@
     }
 
     function step3(row) {
-      TestRunner.addResult('Delta: +' + row.addedCount + ' -' + row._removedCount);
+      TestRunner.addResult('Delta: +' + row.addedCount + ' -' + row.removedCount);
       var added = [];
       var removed = [];
       for (var i = 0; i < row.children.length; i++) {

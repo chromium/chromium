@@ -29,7 +29,7 @@
   }
 
   async function didShowScriptSource(frame) {
-    scriptSource = frame.uiSourceCode;
+    scriptSource = frame.uiSourceCode();
     var matches =
         await scriptSource.searchInContent('magic-string', true, false);
     TestRunner.addResult('Pre-format search results:');

@@ -37,7 +37,7 @@
     for (var i = 0; i < nodes.length; ++i) {
       var node = nodes[i];
       if (!node.isCreationNode)
-        rows.push(node.data.key + node._data.value);
+        rows.push(node.data.key + node.data.value);
     }
     rows.sort();
     TestRunner.addResult('KeyValue pairs: ' + rows.join(''));

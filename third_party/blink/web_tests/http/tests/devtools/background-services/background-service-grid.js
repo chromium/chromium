@@ -8,7 +8,7 @@ function dumpBackgroundServiceGrid() {
   const treeElement = UI.panels.resources.sidebar.backgroundFetchTreeElement;
   treeElement.onselect(false);
 
-  const dataGrid = treeElement.view._dataGrid;
+  const dataGrid = treeElement.view.dataGrid;
   if (!dataGrid.rootNode().children.length) {
     TestRunner.addResult('    [empty]');
     return;
@@ -31,9 +31,9 @@ function dumpBackgroundServiceGrid() {
 function setOriginCheckbox(value) {
   const treeElement = UI.panels.resources.sidebar.backgroundFetchTreeElement;
   treeElement.onselect(false);
-  treeElement.view._originCheckbox.setChecked(value);
+  treeElement.view.originCheckbox.setChecked(value);
   // Simulate click.
-  treeElement.view._refreshView();
+  treeElement.view.refreshView();
 }
 
 (async function() {
@@ -101,7 +101,7 @@ function setOriginCheckbox(value) {
   dumpBackgroundServiceGrid();
 
   // Simulate clicking the clear button.
-  UI.panels.resources.sidebar.backgroundFetchTreeElement._view._clearEvents();
+  UI.panels.resources.sidebar.backgroundFetchTreeElement.view.clearEvents();
   dumpBackgroundServiceGrid();
 
   TestRunner.completeTest();

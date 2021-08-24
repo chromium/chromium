@@ -68,7 +68,7 @@
   ];
 
   function dumpDictionary(next) {
-    var wordsInDictionary = textEditor.autocompleteController._dictionary.wordsWithPrefix('');
+    var wordsInDictionary = textEditor.autocompleteController.dictionary.wordsWithPrefix('');
     TestRunner.addResult('========= Text in editor =========');
     SourcesTestRunner.dumpTextWithSelection(textEditor);
     TestRunner.addResult('======= Words in dictionary =======');

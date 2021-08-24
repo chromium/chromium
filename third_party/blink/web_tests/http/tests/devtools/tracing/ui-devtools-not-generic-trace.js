@@ -52,7 +52,7 @@
   timeline.setModel(model);
 
   TestRunner.addResult(`isGenericTrace: ${model.timelineModel().isGenericTrace()}\n`);
-  const frames = timeline.flameChart._mainDataProvider._performanceModel.frames();
+  const frames = timeline.flameChart.mainDataProvider.performanceModel.frames();
   TestRunner.addResult(`Number of frames: ${frames.length}\n`);
 
   TestRunner.completeTest();

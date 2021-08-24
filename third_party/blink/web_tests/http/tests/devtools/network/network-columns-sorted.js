@@ -24,7 +24,7 @@
   function ensureAllResources() {
     if (++resourceCount < totalResourceCount)
       return;
-    UI.panels.network.networkLogView._refresh();
+    UI.panels.network.networkLogView.refresh();
     sortGrid();
     TestRunner.completeTest();
   }

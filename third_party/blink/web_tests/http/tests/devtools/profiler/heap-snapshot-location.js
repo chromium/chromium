@@ -14,7 +14,7 @@ async function assertLocation(section, select_row) {
 
   let linkNode;
   do {
-    linkNode = rowWithLocation.element.querySelector('.heap-object-source-link .devtools-link');
+    linkNode = rowWithLocation.element().querySelector('.heap-object-source-link .devtools-link');
     await new Promise(r => requestAnimationFrame(r));
   } while (!linkNode);
 

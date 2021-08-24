@@ -28,10 +28,10 @@
   request1.setSecurityDetails(securityDetails);
   SecurityTestRunner.dispatchRequestFinished(request1);
 
-  Security.SecurityPanel.instance()._sidebarTree._elementsByOrigin.get('https://foo.test').select();
+  Security.SecurityPanel.instance().sidebarTree.elementsByOrigin.get('https://foo.test').select();
 
   TestRunner.addResult('Panel on origin view:');
-  TestRunner.dumpDeepInnerHTML(Security.SecurityPanel.instance()._visibleView.contentElement);
+  TestRunner.dumpDeepInnerHTML(Security.SecurityPanel.instance().visibleView.contentElement);
 
   TestRunner.completeTest();
 })();

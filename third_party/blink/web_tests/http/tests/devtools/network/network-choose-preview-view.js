@@ -13,7 +13,7 @@
     var request = SDK.NetworkRequest.create(0, 'http://localhost');
     request.resourceType = resourceType;
     request.mimeType = mimeType;
-    request.contentData = Promise.resolve({error: null, content: content, encoded: false});
+    request.contentDataInternal = Promise.resolve({error: null, content: content, encoded: false});
     if (statusCode !== undefined)
       request.statusCode = statusCode;
     return request;

@@ -38,7 +38,7 @@
 
   function dumpInfo() {
     dumpType();
-    TestRunner.addResult(`Rotate: ${toolbar.modeButton._enabled ? 'enabled': 'disabled'}, Width/Height: ${!toolbar._widthInput.disabled ? 'enabled': 'disabled'}`);
+    TestRunner.addResult(`Rotate: ${toolbar.modeButton.enabled ? 'enabled': 'disabled'}, Width/Height: ${!toolbar.widthInput.disabled ? 'enabled': 'disabled'}`);
   }
 
   TestRunner.completeTest();

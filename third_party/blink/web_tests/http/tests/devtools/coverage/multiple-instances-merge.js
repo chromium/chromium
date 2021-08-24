@@ -18,7 +18,7 @@
   await CoverageTestRunner.stopCoverage();
 
   const coverageView = Coverage.CoverageView.instance();
-  const dataGrid = coverageView.listView._dataGrid;
+  const dataGrid = coverageView.listView.dataGrid;
   for (const child of dataGrid.rootNode().children) {
     const data = child.coverageInfo;
     const url = TestRunner.formatters.formatAsURL(data.url());

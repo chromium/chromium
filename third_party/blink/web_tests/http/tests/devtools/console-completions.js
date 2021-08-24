@@ -13,7 +13,7 @@
 
       A.prototype.aMember = 1;
       A.prototype.shadowedMember = 0;
-      A.prototype._proto__ = null;
+      A.prototype.__proto__ = null;
 
       function B() {
           A.call(this);
@@ -22,7 +22,7 @@
       B.prototype.bMember = 1;
       B.prototype.ePriorityMember = 2;
       B.prototype.shadowedMember = 1;
-      B.prototype._proto__ = A.prototype;
+      B.prototype.__proto__ = A.prototype;
 
       function C() {
           B.call(this);
@@ -31,7 +31,7 @@
       C.prototype.cMember = 1;
       C.prototype.EPriorityMember = 2;
       C.prototype.shadowedMember = 2;
-      C.prototype._proto__ = B.prototype;
+      C.prototype.__proto__ = B.prototype;
 
       var objectC = new C();
 

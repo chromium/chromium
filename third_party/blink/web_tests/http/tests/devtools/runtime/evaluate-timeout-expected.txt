@@ -11,18 +11,18 @@ Testing expression 1 + 1 with timeout: undefined
 {
     exceptionDetails : undefined
     object : {
-        _className : null
-        _customPreview : null
-        _description : "2"
-        _hasChildren : false
-        _objectId : undefined
-        _preview : undefined
-        _runtimeAgent : <object>
-        _runtimeModel : <object>
-        _subtype : undefined
-        _type : "number"
-        _unserializableValue : undefined
-        _value : 2
+        classNameInternal : null
+        customPreviewInternal : null
+        descriptionInternal : "2"
+        hasChildrenInternal : false
+        objectIdInternal : undefined
+        previewInternal : undefined
+        runtimeAgent : <object>
+        runtimeModelInternal : <object>
+        subtypeInternal : undefined
+        typeInternal : "number"
+        unserializableValueInternal : undefined
+        valueInternal : 2
     }
 }
 
@@ -42,18 +42,18 @@ Testing expression 1 + 1 with timeout: undefined
 {
     exceptionDetails : undefined
     object : {
-        _className : null
-        _customPreview : null
-        _description : "2"
-        _hasChildren : false
-        _objectId : undefined
-        _preview : undefined
-        _runtimeAgent : <object>
-        _runtimeModel : <object>
-        _subtype : undefined
-        _type : "number"
-        _unserializableValue : undefined
-        _value : 2
+        classNameInternal : null
+        customPreviewInternal : null
+        descriptionInternal : "2"
+        hasChildrenInternal : false
+        objectIdInternal : undefined
+        previewInternal : undefined
+        runtimeAgent : <object>
+        runtimeModelInternal : <object>
+        subtypeInternal : undefined
+        typeInternal : "number"
+        unserializableValueInternal : undefined
+        valueInternal : 2
     }
 }
 Does the runtime also support side effect checks? true

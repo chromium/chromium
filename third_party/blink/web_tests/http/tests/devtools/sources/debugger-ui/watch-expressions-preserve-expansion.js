@@ -70,9 +70,9 @@
       var watch = pane.watchExpressions[i];
       TestRunner.addResult(
           watch.expression() + ': ' +
-          watch.treeElement._object._description);
+          watch.treeElement().object.description);
       dumpObjectPropertiesTreeElement(
-          watch.treeElement, '  ');
+          watch.treeElement(), '  ');
     }
   }
 
@@ -123,7 +123,7 @@
     for (var i = 0; i < pane.watchExpressions.length; i++) {
       var watch = pane.watchExpressions[i];
       if (watch.expression() === expression) {
-        expandProperties(watch.treeElement, path, callback);
+        expandProperties(watch.treeElement(), path, callback);
         break;
       }
     }

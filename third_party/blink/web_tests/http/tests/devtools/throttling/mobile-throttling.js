@@ -13,7 +13,7 @@
 
   var deviceModeView = new Emulation.DeviceModeView();
 
-  var deviceModeThrottling = deviceModeView.toolbar._throttlingConditionsItem;
+  var deviceModeThrottling = deviceModeView.toolbar.throttlingConditionsItem;
   var networkPanelThrottling = UI.panels.network.throttlingSelectForTest();
   var networkConfigView = Network.NetworkConfigView.instance();
   var networkConditionsDrawerThrottlingSelector =

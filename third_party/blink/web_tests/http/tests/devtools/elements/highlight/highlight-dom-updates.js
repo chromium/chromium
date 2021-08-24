@@ -141,7 +141,7 @@
 
     function callback() {
       var treeOutline = ElementsTestRunner.firstElementsTreeOutline();
-      var highlights = treeOutline.element.getElementsByClassName('dom-update-highlight');
+      var highlights = treeOutline.elementInternal.getElementsByClassName('dom-update-highlight');
       for (var i = 0; i < highlights.length; ++i)
         highlights[i].classList.remove('dom-update-highlight');
       next();

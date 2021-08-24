@@ -51,7 +51,7 @@
       HeapProfilerTestRunner.expandRow(bInstanceRow, expandA);
       function expandA(row) {
         function propertyMatcher(node) {
-          return node.referenceName === 'a' && node._name.charAt(0) === 'A';
+          return node.referenceName === 'a' && node.name.charAt(0) === 'A';
         }
         var aRow = HeapProfilerTestRunner.findMatchingRow(propertyMatcher, row);
         TestRunner.assertEquals(true, !!aRow, '"a: A" row');
@@ -63,14 +63,14 @@
       var row = HeapProfilerTestRunner.findRow('B');
       TestRunner.assertEquals(true, !!row, '"B" row');
       function deletedNodeMatcher(data) {
-        return data.isDeletedNode && data._name.charAt(0) === 'B';
+        return data.isDeletedNode && data.name.charAt(0) === 'B';
       }
       var bInstanceRow = HeapProfilerTestRunner.findMatchingRow(deletedNodeMatcher, row);
       TestRunner.assertEquals(true, !!bInstanceRow, '"B" instance row');
       HeapProfilerTestRunner.expandRow(bInstanceRow, expandA);
       function expandA(row) {
         function propertyMatcher(data) {
-          return data.referenceName === 'a' && data._name.charAt(0) === 'A';
+          return data.referenceName === 'a' && data.name.charAt(0) === 'A';
         }
         var aRow = HeapProfilerTestRunner.findMatchingRow(propertyMatcher, row);
         TestRunner.assertEquals(true, !!aRow, '"a: A" row');

@@ -11,17 +11,17 @@
   function dumpObjectStore(treeElement) {
     TestRunner.addResult(`            Index: ${treeElement.title}`);
     treeElement.select();
-    for (var entry of treeElement.view._entries)
+    for (var entry of treeElement.view.entries)
       TestRunner.addResult(`                Key = ${entry.primaryKey.value}, value = ${JSON.stringify(entry.value.preview.properties)}`);
   }
 
   function dumpObjectStores() {
     TestRunner.addResult('Dumping ObjectStore data:');
-    var idbDatabaseTreeElement = UI.panels.resources.sidebar.indexedDBListTreeElement._idbDatabaseTreeElements[0];
+    var idbDatabaseTreeElement = UI.panels.resources.sidebar.indexedDBListTreeElement.idbDatabaseTreeElements[0];
     for (var objectStoreTreeElement of idbDatabaseTreeElement.children()) {
       objectStoreTreeElement.select();
       TestRunner.addResult(`    Object store: ${objectStoreTreeElement.title}`);
-      for (var entry of objectStoreTreeElement.view._entries)
+      for (var entry of objectStoreTreeElement.view.entries)
         TestRunner.addResult(`            Key = ${entry.key.value}, value = ${JSON.stringify(entry.value.preview.properties)}`);
       for (var treeElement of objectStoreTreeElement.children())
         dumpObjectStore(treeElement);
@@ -36,7 +36,7 @@
   await databaseAddedPromise;
   UI.panels.resources.sidebar.indexedDBListTreeElement.expand();
 
-  var idbDatabaseTreeElement = UI.panels.resources.sidebar.indexedDBListTreeElement._idbDatabaseTreeElements[0];
+  var idbDatabaseTreeElement = UI.panels.resources.sidebar.indexedDBListTreeElement.idbDatabaseTreeElements[0];
   await ApplicationTestRunner.createObjectStoreAsync('database1', 'objectStore1', 'index1');
   idbDatabaseTreeElement.refreshIndexedDB();
   await TestRunner.addSnifferPromise(Resources.IDBIndexTreeElement.prototype, 'updateTooltip');
@@ -56,16 +56,16 @@
   await TestRunner.addSnifferPromise(Resources.IDBDataView.prototype, 'updatedDataForTests');
   dumpObjectStores();
 
-  var node = objectStoreTreeElement.view._dataGrid.rootNode().children[0];
+  var node = objectStoreTreeElement.view.dataGrid.rootNode().children[0];
   node.select();
-  objectStoreTreeElement.view._deleteButtonClicked(node);
+  objectStoreTreeElement.view.deleteButtonClicked(node);
   await TestRunner.addSnifferPromise(Resources.IDBDataView.prototype, 'updatedDataForTests');
   await TestRunner.addSnifferPromise(Resources.IDBDataView.prototype, 'updatedDataForTests');
   dumpObjectStores();
 
-  node = indexTreeElement.view._dataGrid.rootNode().children[0];
+  node = indexTreeElement.view.dataGrid.rootNode().children[0];
   node.select();
-  indexTreeElement.view._deleteButtonClicked(node);
+  indexTreeElement.view.deleteButtonClicked(node);
   await TestRunner.addSnifferPromise(Resources.IDBDataView.prototype, 'updatedDataForTests');
   await TestRunner.addSnifferPromise(Resources.IDBDataView.prototype, 'updatedDataForTests');
   dumpObjectStores();

@@ -24,7 +24,7 @@
     request.statusCode = 200;
     request.statusText = 'OK';
     request.resourceSize = 1000;
-    request.transferSize = 539;  // 39 = header size at the end of the day
+    request.transferSizeInternal = 539;  // 39 = header size at the end of the day
     request.setPriority('VeryHigh');
     request.setResourceType(Common.resourceTypes.Fetch);
 
@@ -80,8 +80,8 @@
   var stillNondeterministic = {
     'startedDateTime': 'formatAsTypeName',
     'time': 'formatAsTypeName',
-    'transferSize': 'formatAsTypeName',
-    'error': 'skip'
+    '_transferSize': 'formatAsTypeName',
+    '_error': 'skip'
   };
   var har = await NetworkTestRunner.buildHARLogEntry(testRequest);
   TestRunner.addObject(har, stillNondeterministic, '', 'HAR:');

@@ -43,7 +43,7 @@
   const har = JSON.parse(harString);
 
   const websocketEntry = har.log.entries.find(entry => entry.request.url.endsWith('/echo'));
-  const messages = websocketEntry.webSocketMessages.map(message => {
+  const messages = websocketEntry._webSocketMessages.map(message => {
     return {
       type: message.type,
       opcode: message.opcode,

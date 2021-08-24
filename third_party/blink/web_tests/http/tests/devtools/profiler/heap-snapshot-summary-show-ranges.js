@@ -21,7 +21,7 @@
       TestRunner.addResult(step);
       TestRunner.addResult('Retrieved ranges: ' + JSON.stringify(row.retrievedChildrenRanges));
       for (var i = 0; i < row.children.length; ++i)
-        TestRunner.addResult('[' + i + '] ' + row.children[i].element.textContent.replace(/[^\w\d]/mg, ' '));
+        TestRunner.addResult('[' + i + '] ' + row.children[i].element().textContent.replace(/[^\w\d]/mg, ' '));
       return row.populateChildren(from, to);
     }
 

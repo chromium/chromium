@@ -12,7 +12,7 @@
   const rawTraceEvents = [
     {
       'args': {'name': 'Renderer'},
-      'cat': '_metadata',
+      'cat': 'metadata',
       'name': 'process_name',
       'ph': 'M',
       'pid': 17851,
@@ -21,7 +21,7 @@
     },
     {
       'args': {'name': 'CrRendererMain'},
-      'cat': '_metadata',
+      'cat': 'metadata',
       'name': 'thread_name',
       'ph': 'M',
       'pid': 17851,
@@ -62,19 +62,19 @@
   TestRunner.completeTest();
 
   function getTreeView(type) {
-    timeline.flameChart._detailsView._tabbedPane.selectTab(type, true);
-    return timeline.flameChart._detailsView._tabbedPane.visibleView;
+    timeline.flameChart.detailsView.tabbedPane.selectTab(type, true);
+    return timeline.flameChart.detailsView.tabbedPane.visibleView;
   }
 
   function testEventTree(type) {
-    const flameChart = timeline.flameChart._mainFlameChart;
-    flameChart.selectGroup(flameChart._rawTimelineData.groups.findIndex(group => group.name === 'Timings'));
+    const flameChart = timeline.flameChart.mainFlameChart;
+    flameChart.selectGroup(flameChart.rawTimelineData.groups.findIndex(group => group.name === 'Timings'));
     TestRunner.addResult('');
     TestRunner.addResult(type);
     const tree = getTreeView(type);
     const rootNode = tree.dataGrid.rootNode();
     for (const node of rootNode.children)
-      printEventTree(1, node.profileNode, node._treeView);
+      printEventTree(1, node.profileNode, node.treeView);
   }
 
   function printEventTree(padding, node, treeView) {

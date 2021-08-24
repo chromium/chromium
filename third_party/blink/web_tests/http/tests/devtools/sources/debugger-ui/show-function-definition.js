@@ -39,7 +39,7 @@
     function testDumpFunctionDefinition(next) {
       TestRunner.addSniffer(ObjectUI.ObjectPropertiesSection, 'formatObjectAsFunction', onConsoleMessagesReceived);
       var consoleView = Console.ConsoleView.instance();
-      consoleView.prompt._appendCommand('jumpToMe', true);
+      consoleView.prompt.appendCommand('jumpToMe', true);
 
       function onConsoleMessagesReceived() {
         TestRunner.deprecatedRunAfterPendingDispatches(function() {

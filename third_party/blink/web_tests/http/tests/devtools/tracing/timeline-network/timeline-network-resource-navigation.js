@@ -27,7 +27,7 @@
         } else if (requestId !== event.args.data.requestId) {
           TestRunner.addResult(`Events did not have the same request id.`)
         }
-        TestRunner.addResult(`${event.name} from thread ${event.thread.name}`);
+        TestRunner.addResult(`${event.name} from thread ${event.thread.name()}`);
       }
     }
     TestRunner.completeTest();

@@ -35,7 +35,7 @@
     const promise = TestRunner.addSnifferPromise(view, 'searchFinished');
     view.onAction();
     await promise;
-    const element = printSubtree(view.visiblePane._treeOutline.rootElement());
+    const element = printSubtree(view.visiblePane.treeOutline.rootElement());
     TestRunner.addResult('');
     return element;
   }
@@ -43,8 +43,8 @@
   function networkItemSelected() {
     return new Promise(resolve => {
       function checkSelected() {
-        if (UI.panels.network.networkLogView._dataGrid.selectedNode)
-          resolve(UI.panels.network.networkLogView._dataGrid.selectedNode);
+        if (UI.panels.network.networkLogView.dataGrid.selectedNode)
+          resolve(UI.panels.network.networkLogView.dataGrid.selectedNode);
         else
           setTimeout(checkSelected, 0);
       }
@@ -81,8 +81,8 @@
     const link = lastResult.listItemElement.getElementsByClassName('devtools-link')[0];
     link.click();
     const requestNode = await networkItemSelected();
-    const requestName = requestNode.request.name();
-    TestRunner.addResult(`Selected Node Name: ${requestName.substr(requestName.length - 100)}, URL: ${requestNode.request.url()}`);
+    const requestName = requestNode.request().name();
+    TestRunner.addResult(`Selected Node Name: ${requestName.substr(requestName.length - 100)}, URL: ${requestNode.request().url()}`);
     TestRunner.completeTest();
   }
 })();

@@ -109,7 +109,7 @@
         var l1 = l2.children[0];
         TestRunner.assertEquals('x', l1.referenceName);
         TestRunner.assertEquals(2, l1.children.length, 'Two retainers of L1');
-        var l1retainers = [l1.children[0].referenceName, l1.children[1]._referenceName];
+        var l1retainers = [l1.children[0].referenceName, l1.children[1].referenceName];
         l1retainers.sort();
         TestRunner.assertEquals('l1a', l1retainers[0]);
         TestRunner.assertEquals('l1b', l1retainers[1]);

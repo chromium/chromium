@@ -25,7 +25,7 @@
   var messages = Console.ConsoleView.instance().visibleViewMessages;
   consoleView.setImmediatelyFilterMessagesForTest();
   if (!consoleView.isSidebarOpen)
-    consoleView.splitWidget._showHideSidebarButton.element.click();
+    consoleView.splitWidget.showHideSidebarButton.element.click();
 
   function dumpSidebar() {
     var treeElement = sidebar.tree.firstChild();

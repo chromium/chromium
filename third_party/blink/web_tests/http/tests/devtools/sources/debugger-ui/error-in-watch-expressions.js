@@ -11,7 +11,7 @@
   `);
 
   var watchExpressionsPane = Sources.WatchExpressionsSidebarPane.instance();
-  UI.panels.sources.sidebarPaneStack.showView(UI.panels.sources._watchSidebarPane).then(() => {
+  UI.panels.sources.sidebarPaneStack.showView(UI.panels.sources.watchSidebarPane).then(() => {
     watchExpressionsPane.doUpdate();
     watchExpressionsPane.createWatchExpression('#$%');
     watchExpressionsPane.saveExpressions();

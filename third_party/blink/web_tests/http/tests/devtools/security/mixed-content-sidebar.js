@@ -27,7 +27,7 @@
   SecurityTestRunner.dispatchRequestFinished(active);
 
   TestRunner.addResult('Origin sidebar:');
-  TestRunner.dumpDeepInnerHTML(Security.SecurityPanel.instance()._sidebarTree.element);
+  TestRunner.dumpDeepInnerHTML(Security.SecurityPanel.instance().sidebarTree.element);
 
   TestRunner.completeTest();
 })();

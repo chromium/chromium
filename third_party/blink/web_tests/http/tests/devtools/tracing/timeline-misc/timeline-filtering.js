@@ -278,7 +278,7 @@
   ];
 
   var model = PerformanceTestRunner.createPerformanceModelWithEvents(testData);
-  const tabbedPane = UI.panels.timeline.flameChart._detailsView._tabbedPane;
+  const tabbedPane = UI.panels.timeline.flameChart.detailsView.tabbedPane;
   tabbedPane.selectTab(Timeline.TimelineDetailsView.Tab.EventLog);
   const view = tabbedPane.visibleView;
 

@@ -21,8 +21,8 @@
     AccessibilityTestRunner.dumpSelectedElementAccessibilityNode();
     var treeElement = AccessibilityTestRunner.findARIAAttributeTreeElement('aria-checked');
     treeElement.startEditing();
-    treeElement.prompt._element.textContent = 'false';
-    treeElement.prompt._element.dispatchEvent(TestRunner.createKeyEvent('Enter'));
+    treeElement.prompt.element().textContent = 'false';
+    treeElement.prompt.element().dispatchEvent(TestRunner.createKeyEvent('Enter'));
     Accessibility.AccessibilitySidebarView.instance().doUpdate().then(() => {
       editRole();
     });
@@ -33,8 +33,8 @@
     AccessibilityTestRunner.dumpSelectedElementAccessibilityNode();
     var treeElement = AccessibilityTestRunner.findARIAAttributeTreeElement('role');
     treeElement.startEditing();
-    treeElement.prompt._element.textContent = 'radio';
-    treeElement.prompt._element.dispatchEvent(TestRunner.createKeyEvent('Enter'));
+    treeElement.prompt.element().textContent = 'radio';
+    treeElement.prompt.element().dispatchEvent(TestRunner.createKeyEvent('Enter'));
     // Give the document lifecycle a chance to run before updating the view.
     window.setTimeout(() => {
       Accessibility.AccessibilitySidebarView.instance().doUpdate().then(() => {

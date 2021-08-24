@@ -20,7 +20,7 @@
   }
 
   function rowsRendered() {
-    var codeMirror = this.editor._codeMirror;
+    var codeMirror = this.editor.codeMirror();
     for (var i = 0; i < codeMirror.lineCount(); i++) {
       codeMirror.scrollIntoView(i);  // Ensure highlighting
       var lineInfo = codeMirror.lineInfo(i);

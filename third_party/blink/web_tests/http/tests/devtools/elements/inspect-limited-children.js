@@ -25,7 +25,7 @@
 
   const containerNode = await ElementsTestRunner.nodeWithIdPromise('data');
   var containerTreeElement = ElementsTestRunner.firstElementsTreeOutline().findTreeElement(containerNode);
-  containerTreeElement.expandedChildrenLimit = 5;
+  containerTreeElement.expandedChildrenLimitInternal = 5;
   containerTreeElement.reveal();
   containerTreeElement.expand();
   TestRunner.deprecatedRunAfterPendingDispatches(step2);

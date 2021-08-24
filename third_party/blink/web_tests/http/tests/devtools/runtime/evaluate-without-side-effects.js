@@ -18,7 +18,7 @@
   let supports = executionContext.runtimeModel.hasSideEffectSupport();
   TestRunner.addResult(`Does the runtime support side effect checks? ${supports}`);
   TestRunner.addResult(`\nClearing cached side effect support`);
-  executionContext.runtimeModel.hasSideEffectSupport = null;
+  executionContext.runtimeModel.hasSideEffectSupportInternal = null;
 
   // Debugger evaluateOnCallFrame test.
   await TestRunner.evaluateInPagePromise(`

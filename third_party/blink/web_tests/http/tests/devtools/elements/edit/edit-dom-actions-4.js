@@ -80,7 +80,7 @@
         TestRunner.deprecatedRunAfterPendingDispatches(step2);
 
         function step2() {
-          var value = treeElement.editing.editor._codeMirror.getValue();
+          var value = treeElement.editing.editor.codeMirror().getValue();
           TestRunner.addResult(value);
           treeElement.editing.editor.setText(value.replace('100', '110'));
           var event = TestRunner.createKeyEvent('Enter');

@@ -22,7 +22,7 @@
       .dispatchEventToListeners(
           SDK.ResourceTreeModel.Events.MainFrameNavigated, TestRunner.resourceTreeModel.mainFrame);
   // Validate that this set the MainOrigin in the sidebar
-  const detectedMainOrigin = Security.SecurityPanel.instance()._sidebarTree._mainOrigin;
+  const detectedMainOrigin = Security.SecurityPanel.instance().sidebarTree.mainOrigin;
   TestRunner.addResult('Detected main origin: ' + detectedMainOrigin);
 
   // Send subdownload resource requests to other origins.

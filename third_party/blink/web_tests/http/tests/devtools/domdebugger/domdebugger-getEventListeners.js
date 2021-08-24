@@ -23,9 +23,9 @@
     listeners.sort((a, b) => a.type().localeCompare(b.type()));
     for (var listener of listeners) {
       delete listener.location.scriptId;
-      var sourceURL = listener.sourceURL;
+      var sourceURL = listener.sourceURLInternal;
       sourceURL = sourceURL.substr(sourceURL.lastIndexOf('/') + 1);
-      listener.sourceURL = sourceURL;
+      listener.sourceURLInternal = sourceURL;
 
       TestRunner.addResult('type: ' + listener.type());
       TestRunner.addResult('useCapture: ' + listener.useCapture());

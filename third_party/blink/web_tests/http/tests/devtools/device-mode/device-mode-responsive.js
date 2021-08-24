@@ -22,31 +22,31 @@
 
   var width = viewportSize.width - 1;
   TestRunner.addResult('Setting width to ' + width);
-  toolbar.applyWidth(width);
+  toolbar.model.setWidthAndScaleToFit(width);
   dumpModelInfo();
 
   width = viewportSize.width + 1;
   TestRunner.addResult('Setting width to ' + width);
-  toolbar.applyWidth(width);
+  toolbar.model.setWidthAndScaleToFit(width);
   dumpModelInfo();
 
   TestRunner.addResult('Setting width to ' + viewportSize.width);
-  toolbar.applyWidth(viewportSize.width);
+  toolbar.model.setWidthAndScaleToFit(viewportSize.width);
   dumpModelInfo();
 
 
   var height = viewportSize.height - 1;
   TestRunner.addResult('Setting height to ' + height);
-  toolbar.applyHeight(height);
+  toolbar.model.setHeightAndScaleToFit(height);
   dumpModelInfo();
 
   height = viewportSize.height + 1;
   TestRunner.addResult('Setting height to ' + height);
-  toolbar.applyHeight(height);
+  toolbar.model.setHeightAndScaleToFit(height);
   dumpModelInfo();
 
   TestRunner.addResult('Setting height to ' + viewportSize.height);
-  toolbar.applyHeight(viewportSize.height);
+  toolbar.model.setHeightAndScaleToFit(viewportSize.height);
   dumpModelInfo();
 
 

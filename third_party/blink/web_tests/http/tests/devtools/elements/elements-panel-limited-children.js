@@ -38,7 +38,7 @@
 
   function step1(node) {
     dataTreeElement = ElementsTestRunner.firstElementsTreeOutline().findTreeElement(node);
-    dataTreeElement.expandedChildrenLimit = 5;
+    dataTreeElement.expandedChildrenLimitInternal = 5;
     dataTreeElement.reveal();
     dataTreeElement.expand();
     TestRunner.deprecatedRunAfterPendingDispatches(step2);

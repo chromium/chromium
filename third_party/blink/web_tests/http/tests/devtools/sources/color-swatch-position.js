@@ -19,9 +19,9 @@
       function testEditSpectrum(next) {
         var swatch = sourceFrame.textEditor.codeMirrorElement.querySelector('devtools-color-swatch');
         swatch.shadowRoot.querySelector('.color-swatch-inner').click();
-        cssPlugin.spectrum._innerSetColor(
+        cssPlugin.spectrum.innerSetColor(
             Common.Color.parse('#008000').hsva(), '', undefined /* colorName */, Common.Color.Format.HEX,
-            ColorPicker.Spectrum.ChangeSource.Other);
+            'Other');
         cssPlugin.swatchPopoverHelper.hide(true);
         SourcesTestRunner.dumpSwatchPositions(sourceFrame, Sources.CSSPlugin.SwatchBookmark);
         next();
