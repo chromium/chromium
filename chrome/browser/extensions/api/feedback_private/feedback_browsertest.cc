@@ -175,7 +175,8 @@ IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_AnonymousUser) {
 
 // Ensures that when extra diagnostics are provided with feedback, they are
 // injected properly in the system information.
-IN_PROC_BROWSER_TEST_F(FeedbackTest, ExtraDiagnostics) {
+// TODO(crbug.com/1241504): disable tests.
+IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_ExtraDiagnostics) {
   WaitForExtensionViewsToLoad();
 
   ASSERT_TRUE(IsFeedbackAppAvailable());
