@@ -53,6 +53,10 @@ class FakeFastPairGattServiceClient : public FastPairGattServiceClient {
   void RunOnGattClientInitializedCallback(
       absl::optional<PairFailure> failure = absl::nullopt);
 
+  void RunWriteResponseCallback(
+      std::vector<uint8_t> data,
+      absl::optional<PairFailure> failure = absl::nullopt);
+
  private:
   base::OnceCallback<void(absl::optional<PairFailure>)>
       on_initialized_callback_;

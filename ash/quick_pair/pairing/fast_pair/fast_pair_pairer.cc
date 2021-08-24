@@ -82,7 +82,10 @@ void FastPairPairer::OnDataEncryptorCreateAsync(
 }
 
 void FastPairPairer::OnWriteResponse(std::vector<uint8_t> response_bytes,
-                                     absl::optional<PairFailure> failure) {}
+                                     absl::optional<PairFailure> failure) {
+  if (failure)
+    std::move(pair_failed_callback_).Run(device_, failure.value());
+}
 
 }  // namespace quick_pair
 }  // namespace ash

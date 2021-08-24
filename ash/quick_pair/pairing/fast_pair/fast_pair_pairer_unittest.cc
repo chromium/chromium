@@ -8,6 +8,7 @@
 
 #include "ash/quick_pair/common/account_key_failure.h"
 #include "ash/quick_pair/common/device.h"
+#include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/common/pair_failure.h"
 #include "ash/quick_pair/common/protocol.h"
 #include "ash/quick_pair/pairing/fast_pair/fake_fast_pair_gatt_service_client.h"
@@ -25,8 +26,12 @@
 
 namespace {
 
+const std::vector<uint8_t> kResponseBytes = {0xCF, 0x5E, 0x3F, 0x45, 0x61, 0xC3,
+                                             0x32, 0x1D, 0xA0, 0xBA, 0xF0, 0xBB,
+                                             0x95, 0x1F, 0xF7, 0xB6};
+
 constexpr char kMetadataId[] = "test_metadata_id";
-constexpr char kAddress[] = "test_address";
+constexpr char kAddress[] = "testad";
 constexpr char kDeviceName[] = "test_device_name";
 
 class FakeBluetoothAdapter
@@ -92,6 +97,7 @@ class FakeFastPairDataEncryptorImplFactory
 
     std::unique_ptr<FastPairDataEncryptor> data_encryptor =
         base::WrapUnique(new FakeFastPairDataEncryptor());
+    std::move(on_get_instance_callback).Run(std::move(data_encryptor));
   }
 
   ~FakeFastPairDataEncryptorImplFactory() override = default;
@@ -181,6 +187,13 @@ class FastPairPairerTest : public testing::Test {
         ->RunOnGattClientInitializedCallback(failure);
   }
 
+  void RunWriteResponseCallback(
+      std::vector<uint8_t> data,
+      absl::optional<PairFailure> failure = absl::nullopt) {
+    fast_pair_gatt_service_factory_.fake_fast_pair_gatt_service_client()
+        ->RunWriteResponseCallback(data, failure);
+  }
+
  protected:
   // This is done on-demand to enable setting up mock expectations first.
   void CreatePairer() {
@@ -221,12 +234,21 @@ TEST_F(FastPairPairerTest, PairFailedCallbackIsInvokedOnGattFailure) {
   RunOnGattClientInitializedCallback(PairFailure::kCreateGattConnection);
 }
 
-TEST_F(FastPairPairerTest,
-       PairFailedCallbackIsInvokedOnEncryptorRetrievalFailure) {
-  FailedDataEncryptorSetUp();
-  EXPECT_CALL(pair_failed_callback_, Run);
+TEST_F(FastPairPairerTest, PairFailedCallbackWriteResponseFailed) {
+  SuccessfulDataEncryptorSetUp();
   CreatePairer();
   RunOnGattClientInitializedCallback();
+  EXPECT_CALL(pair_failed_callback_, Run);
+  RunWriteResponseCallback({}, PairFailure::kKeyBasedPairingResponseTimeout);
+}
+
+TEST_F(FastPairPairerTest,
+       PairFailedCallbackWriteResponseSuccess) {
+  SuccessfulDataEncryptorSetUp();
+  CreatePairer();
+  RunOnGattClientInitializedCallback();
+  EXPECT_CALL(pair_failed_callback_, Run).Times(0);
+  RunWriteResponseCallback(kResponseBytes);
 }
 
 }  // namespace quick_pair

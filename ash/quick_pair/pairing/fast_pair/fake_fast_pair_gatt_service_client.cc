@@ -42,6 +42,12 @@ void FakeFastPairGattServiceClient::WriteRequestAsync(
   key_based_write_response_callback_ = std::move(write_response_callback);
 }
 
+void FakeFastPairGattServiceClient::RunWriteResponseCallback(
+    std::vector<uint8_t> data,
+    absl::optional<PairFailure> failure) {
+  std::move(key_based_write_response_callback_).Run(data, failure);
+}
+
 void FakeFastPairGattServiceClient::WritePasskeyAsync(
     uint8_t message_type,
     uint32_t passkey,
