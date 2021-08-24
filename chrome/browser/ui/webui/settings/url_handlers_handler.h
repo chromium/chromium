@@ -25,9 +25,7 @@ class UrlHandlersHandlerTest;
 
 class UrlHandlersHandler : public SettingsPageUIHandler {
  public:
-  UrlHandlersHandler(PrefService* local_state,
-                     Profile* profile,
-                     web_app::WebAppRegistrar* web_app_registrar);
+  UrlHandlersHandler(PrefService* local_state, Profile* profile);
   ~UrlHandlersHandler() override;
   UrlHandlersHandler(const UrlHandlersHandler&) = delete;
   UrlHandlersHandler& operator=(const UrlHandlersHandler&) = delete;
@@ -36,6 +34,12 @@ class UrlHandlersHandler : public SettingsPageUIHandler {
   void OnJavascriptAllowed() override;
   void OnJavascriptDisallowed() override;
   void RegisterMessages() override;
+
+ protected:
+  // Protected for tests.
+  UrlHandlersHandler(PrefService* local_state,
+                     Profile* profile,
+                     web_app::WebAppRegistrar* web_app_registrar);
 
  private:
   friend class ::settings::UrlHandlersHandlerTest;
@@ -63,9 +67,9 @@ class UrlHandlersHandler : public SettingsPageUIHandler {
   base::Value GetDisabledHandlersList();
 
   std::unique_ptr<PrefChangeRegistrar> local_state_pref_change_registrar_;
-  PrefService* local_state_ = nullptr;
-  Profile* profile_ = nullptr;
-  web_app::WebAppRegistrar* web_app_registrar_ = nullptr;
+  PrefService* const local_state_;
+  Profile* const profile_;
+  web_app::WebAppRegistrar* const web_app_registrar_;
 };
 
 }  // namespace settings
